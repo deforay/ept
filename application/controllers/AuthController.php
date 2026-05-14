@@ -145,7 +145,10 @@ class AuthController extends Zend_Controller_Action
 
             // Get user details and check permanent ban
             $userDetails = $dmDb->getUserDetails($username);
-            $_SESSION['currentUser'] = $username;
+            $attemptNs = new Zend_Session_Namespace('loginAttempts');
+            $attemptNs->currentUser = $username;
+            $counts = is_array($attemptNs->counts ?? null) ? $attemptNs->counts : [];
+            $timers = is_array($attemptNs->timers ?? null) ? $attemptNs->timers : [];
 
             if (
                 isset($userDetails) && !empty($userDetails) &&
@@ -157,43 +160,33 @@ class AuthController extends Zend_Controller_Action
                 return;
             }
 
-            // Initialize session arrays if not exist
-            if (!isset($_SESSION['loginAttempt'])) {
-                $_SESSION['loginAttempt'] = [];
-            }
-            if (!isset($_SESSION['loginAttemptTimer'])) {
-                $_SESSION['loginAttemptTimer'] = [];
-            }
-
             // Initialize login attempts for this user
             if (
-                !isset($_SESSION['loginAttempt'][$username]) ||
+                !isset($counts[$username]) ||
                 empty($loginBan) ||
                 $loginBan !== 'yes' ||
                 !$userDetails ||
                 empty($userDetails)
             ) {
-                $_SESSION['loginAttempt'][$username] = 0;
-                $_SESSION['loginAttemptTimer'][$username] = null;
+                $counts[$username] = 0;
+                $timers[$username] = null;
             }
 
             // Check if user is temporarily banned
-            if (
-                isset($_SESSION['loginAttemptTimer'][$username]) &&
-                $_SESSION['loginAttemptTimer'][$username] !== null
-            ) {
-                $banEndTime = strtotime($_SESSION['loginAttemptTimer'][$username]);
+            if (isset($timers[$username]) && $timers[$username] !== null) {
+                $banEndTime = strtotime($timers[$username]);
                 if (time() < $banEndTime) {
                     $remainingMinutes = ceil(($banEndTime - time()) / 60);
+                    $attemptNs->counts = $counts;
+                    $attemptNs->timers = $timers;
                     $sessionAlert->message = "Your account is temporarily locked. Please try again in {$remainingMinutes} minutes.";
                     $sessionAlert->status = 'failure';
                     $this->redirect($this->loginUri);
                     return;
-                } else {
-                    // Ban expired, reset attempts
-                    $_SESSION['loginAttempt'][$username] = 0;
-                    $_SESSION['loginAttemptTimer'][$username] = null;
                 }
+                // Ban expired, reset attempts
+                $counts[$username] = 0;
+                $timers[$username] = null;
             }
 
             // Authenticate user
@@ -206,12 +199,15 @@ class AuthController extends Zend_Controller_Action
             $userId = null;
             if (isset($result) && !empty($result) && $passwordVerify) {
                 // Successful login - clear login attempts
-                unset($_SESSION['loginAttempt'][$username]);
-                unset($_SESSION['loginAttemptTimer'][$username]);
+                unset($counts[$username], $timers[$username]);
+                $attemptNs->counts = $counts;
+                $attemptNs->timers = $timers;
+                unset($attemptNs->currentUser);
 
-                // Regenerate session ID for security
+                // Regenerate session ID for security. Cookie is intentionally a
+                // session cookie (no rememberMe) — the 30-min idle in PreSetter
+                // is the real ceiling, and a closed browser should require login.
                 Zend_Session::regenerateId();
-                Zend_Session::rememberMe(60 * 60 * 5); // 5 hours session
 
                 // Set up user sessions
                 $loggedUser = new Zend_Session_Namespace('loggedUser');
@@ -312,17 +308,19 @@ class AuthController extends Zend_Controller_Action
                 // Failed login - handle login attempts and banning
                 if (
                     isset($loginBan) && $loginBan === 'yes' &&
-                    isset($_SESSION['loginAttempt'][$username])
+                    isset($counts[$username])
                 ) {
 
-                    $_SESSION['loginAttempt'][$username]++;
+                    $counts[$username]++;
 
                     // Check for temporary ban
                     if (
-                        $_SESSION['loginAttempt'][$username] >= $maxAttemptTempBan &&
-                        $_SESSION['loginAttempt'][$username] < $maxAttemptPermBan
+                        $counts[$username] >= $maxAttemptTempBan &&
+                        $counts[$username] < $maxAttemptPermBan
                     ) {
-                        $_SESSION['loginAttemptTimer'][$username] = date('M d, Y H:i:s', strtotime("+{$loginBanTime} minutes"));
+                        $timers[$username] = date('M d, Y H:i:s', strtotime("+{$loginBanTime} minutes"));
+                        $attemptNs->counts = $counts;
+                        $attemptNs->timers = $timers;
                         $sessionAlert->message = "Your account has been temporarily locked. Please try again in {$loginBanTime} minutes.";
                         $sessionAlert->status = 'failure';
                         $this->redirect($this->loginUri);
@@ -330,18 +328,24 @@ class AuthController extends Zend_Controller_Action
                     }
 
                     // Check for permanent ban
-                    if ($_SESSION['loginAttempt'][$username] >= $maxAttemptPermBan) {
+                    if ($counts[$username] >= $maxAttemptPermBan) {
                         if (
                             isset($userDetails) && !empty($userDetails) &&
                             isset($userDetails['primary_email'])
                         ) {
                             $dmDb->setLoginAtempBan($userDetails['primary_email']);
                         }
+                        $attemptNs->counts = $counts;
+                        $attemptNs->timers = $timers;
                         $sessionAlert->message = 'Your account has been permanently locked. Please contact the PT Administrator for support.';
                         $sessionAlert->status = 'failure';
                         $this->redirect($this->loginUri);
                         return;
                     }
+
+                    // Persist incremented counter even when not yet banned.
+                    $attemptNs->counts = $counts;
+                    $attemptNs->timers = $timers;
                 }
 
                 // Insert login history
@@ -373,6 +377,14 @@ class AuthController extends Zend_Controller_Action
     }
     public function logoutAction()
     {
+        // If this is an admin viewing as participant, route the click to the
+        // impersonation-exit flow instead — Zend_Session::destroy() would
+        // also wipe the admin's own session under the same cookie.
+        $authNameSpace = new Zend_Session_Namespace('datamanagers');
+        if (!empty($authNameSpace->impersonatedBy)) {
+            $this->redirect('/admin/impersonate/stop');
+            return;
+        }
         $auditDb = new Application_Model_DbTable_AuditLog();
         $auditDb->addNewAuditLog('Logged out', 'auth');
         Zend_Auth::getInstance()->clearIdentity();

@@ -36,9 +36,10 @@ class Admin_LoginController extends Zend_Controller_Action
                 $passwordVerify = password_verify((string) $params['password'], (string) $result['password']);
             }
             if (isset($result) && !empty($result) && $passwordVerify) {
-                // keeping the session cookie active for 10 hours
-                Zend_Session::rememberMe(60 * 60 * 10);
-                // regenerate and delete old session to prevent fixation, before setting session data
+                // Session cookie only (no rememberMe). The 30-min idle in
+                // PreSetter governs lifetime; closing the browser ends the
+                // session, which is the right behavior for admin auth.
+                // Regenerate to prevent fixation before setting session data.
                 Zend_Session::regenerateId();
 
                 // Convert the row to an array so missing columns null-coalesce instead of
