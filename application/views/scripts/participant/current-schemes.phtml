@@ -40,10 +40,16 @@ $authNameSpace = new Zend_Session_Namespace('datamanagers');
     #currentSchemeTable td:nth-child(7) {
         white-space: normal;
     }
-    /* Keep per-column search inputs from forcing minimum column width */
+    /* Keep per-column search inputs from forcing minimum column width;
+       trim cell padding so the input visually fills the column. */
+    #currentSchemeTable .column-search-row > th {
+        padding: 4px 6px;
+    }
     #currentSchemeTable .col-search {
         min-width: 0;
         width: 100%;
+        box-sizing: border-box;
+        display: block;
     }
 </style>
 <section class="content-header">
