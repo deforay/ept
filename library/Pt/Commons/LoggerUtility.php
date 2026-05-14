@@ -105,7 +105,7 @@ final class Pt_Commons_LoggerUtility
                 'mtime' => filemtime($path) ?: 0,
             ];
         }
-        usort($files, static fn($a, $b) => strcmp($b['date'], $a['date']));
+        usort($files, static fn ($a, $b) => strcmp($b['date'], $a['date']));
         return $files;
     }
 

@@ -12,10 +12,10 @@ class Admin_LogViewerController extends Zend_Controller_Action
         $privileges = explode(',', (string) ($adminSession->privileges ?? ''));
         if (!in_array('analyze-generate-reports', $privileges, true)) {
             if ($request->isXmlHttpRequest()) {
-                return null;
+                return;
             }
             $this->redirect('/admin');
-            return null;
+            return;
         }
         $ajaxContext = $this->_helper->getHelper('AjaxContext');
         $ajaxContext->addActionContext('feed', 'json')

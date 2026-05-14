@@ -153,7 +153,7 @@ parameters:
 		-
 			message: '#^Access to an undefined property Zend_View_Interface\:\:\$email\.$#'
 			identifier: property.notFound
-			count: 2
+			count: 1
 			path: application/controllers/AuthController.php
 
 		-
@@ -625,33 +625,15 @@ parameters:
 			path: application/controllers/CustomTestController.php
 
 		-
-			message: '#^Access to an undefined property Zend_View_Interface\:\:\$contact\.$#'
-			identifier: property.notFound
-			count: 1
-			path: application/controllers/DataManagersController.php
-
-		-
-			message: '#^Access to an undefined property Zend_View_Interface\:\:\$countriesList\.$#'
-			identifier: property.notFound
-			count: 2
-			path: application/controllers/DataManagersController.php
-
-		-
-			message: '#^Access to an undefined property Zend_View_Interface\:\:\$participantList\.$#'
-			identifier: property.notFound
-			count: 1
-			path: application/controllers/DataManagersController.php
-
-		-
 			message: '#^Access to an undefined property Zend_View_Interface\:\:\$participants\.$#'
 			identifier: property.notFound
-			count: 3
+			count: 1
 			path: application/controllers/DataManagersController.php
 
 		-
 			message: '#^Access to an undefined property Zend_View_Interface\:\:\$passLength\.$#'
 			identifier: property.notFound
-			count: 3
+			count: 1
 			path: application/controllers/DataManagersController.php
 
 		-
@@ -664,12 +646,6 @@ parameters:
 			message: '#^Access to an undefined property Zend_View_Interface\:\:\$result\.$#'
 			identifier: property.notFound
 			count: 2
-			path: application/controllers/DataManagersController.php
-
-		-
-			message: '#^Access to an undefined property Zend_View_Interface\:\:\$rsUser\.$#'
-			identifier: property.notFound
-			count: 1
 			path: application/controllers/DataManagersController.php
 
 		-
@@ -1101,7 +1077,7 @@ parameters:
 		-
 			message: '#^Access to an undefined property Zend_View_Interface\:\:\$message\.$#'
 			identifier: property.notFound
-			count: 3
+			count: 4
 			path: application/controllers/ErrorController.php
 
 		-
@@ -1205,6 +1181,36 @@ parameters:
 			identifier: method.notFound
 			count: 4
 			path: application/controllers/IndexController.php
+
+		-
+			message: '#^Access to an undefined property Zend_Controller_Action_HelperBroker\:\:\$layout\.$#'
+			identifier: property.notFound
+			count: 1
+			path: application/controllers/LogController.php
+
+		-
+			message: '#^Access to an undefined property Zend_Controller_Action_HelperBroker\:\:\$viewRenderer\.$#'
+			identifier: property.notFound
+			count: 1
+			path: application/controllers/LogController.php
+
+		-
+			message: '#^Call to an undefined method Zend_Controller_Request_Abstract\:\:getHeader\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: application/controllers/LogController.php
+
+		-
+			message: '#^Parameter \#1 \$request of method LogController\:\:clientIp\(\) expects Zend_Controller_Request_Http, Zend_Controller_Request_Abstract given\.$#'
+			identifier: argument.type
+			count: 1
+			path: application/controllers/LogController.php
+
+		-
+			message: '#^Parameter \#1 \$request of method LogController\:\:parseRequestBody\(\) expects Zend_Controller_Request_Http, Zend_Controller_Request_Abstract given\.$#'
+			identifier: argument.type
+			count: 1
+			path: application/controllers/LogController.php
 
 		-
 			message: '#^Access to an undefined property Zend_Session_Namespace\:\:\$dm_id\.$#'
@@ -1983,7 +1989,7 @@ parameters:
 		-
 			message: '#^Call to function _\(\) on a separate line has no effect\.$#'
 			identifier: function.resultUnused
-			count: 194
+			count: 186
 			path: application/languages/db-translation-strings.php
 
 		-
@@ -2367,12 +2373,6 @@ parameters:
 		-
 			message: '#^Strict comparison using \!\=\= between int and false will always evaluate to true\.$#'
 			identifier: notIdentical.alwaysTrue
-			count: 1
-			path: application/models/DbTable/DataManagers.php
-
-		-
-			message: '#^Variable \$data might not be defined\.$#'
-			identifier: variable.undefined
 			count: 1
 			path: application/models/DbTable/DataManagers.php
 
@@ -4611,7 +4611,7 @@ parameters:
 		-
 			message: '#^Access to an undefined property Zend_View_Interface\:\:\$message\.$#'
 			identifier: property.notFound
-			count: 3
+			count: 4
 			path: application/modules/admin/controllers/ErrorController.php
 
 		-
@@ -5251,6 +5251,60 @@ parameters:
 			path: application/modules/admin/controllers/JobTrackingController.php
 
 		-
+			message: '#^Access to an undefined property Zend_Controller_Action_HelperBroker\:\:\$layout\.$#'
+			identifier: property.notFound
+			count: 2
+			path: application/modules/admin/controllers/LogViewerController.php
+
+		-
+			message: '#^Access to an undefined property Zend_Controller_Action_HelperBroker\:\:\$viewRenderer\.$#'
+			identifier: property.notFound
+			count: 2
+			path: application/modules/admin/controllers/LogViewerController.php
+
+		-
+			message: '#^Access to an undefined property Zend_View_Interface\:\:\$channel\.$#'
+			identifier: property.notFound
+			count: 1
+			path: application/modules/admin/controllers/LogViewerController.php
+
+		-
+			message: '#^Access to an undefined property Zend_View_Interface\:\:\$channels\.$#'
+			identifier: property.notFound
+			count: 1
+			path: application/modules/admin/controllers/LogViewerController.php
+
+		-
+			message: '#^Access to an undefined property Zend_View_Interface\:\:\$files\.$#'
+			identifier: property.notFound
+			count: 1
+			path: application/modules/admin/controllers/LogViewerController.php
+
+		-
+			message: '#^Access to an undefined property Zend_View_Interface\:\:\$levels\.$#'
+			identifier: property.notFound
+			count: 1
+			path: application/modules/admin/controllers/LogViewerController.php
+
+		-
+			message: '#^Call to an undefined method Zend_Controller_Action_HelperBroker\:\:layout\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: application/modules/admin/controllers/LogViewerController.php
+
+		-
+			message: '#^Call to an undefined method Zend_Controller_Action_Helper_Abstract\:\:addActionContext\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: application/modules/admin/controllers/LogViewerController.php
+
+		-
+			message: '#^Call to an undefined method Zend_Controller_Request_Abstract\:\:isPost\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: application/modules/admin/controllers/LogViewerController.php
+
+		-
 			message: '#^Access to an undefined property Zend_Session_Namespace\:\:\$activeScheme\.$#'
 			identifier: property.notFound
 			count: 1
@@ -5429,6 +5483,18 @@ parameters:
 			identifier: return.void
 			count: 1
 			path: application/modules/admin/controllers/ParticipantMessagesController.php
+
+		-
+			message: '#^Access to an undefined property Zend_Controller_Action_HelperBroker\:\:\$viewRenderer\.$#'
+			identifier: property.notFound
+			count: 1
+			path: application/modules/admin/controllers/ParticipantsController.php
+
+		-
+			message: '#^Access to an undefined property Zend_Session_Namespace\:\:\$message\.$#'
+			identifier: property.notFound
+			count: 1
+			path: application/modules/admin/controllers/ParticipantsController.php
 
 		-
 			message: '#^Access to an undefined property Zend_Session_Namespace\:\:\$mismatches\.$#'
@@ -5623,6 +5689,12 @@ parameters:
 			path: application/modules/admin/controllers/ParticipantsController.php
 
 		-
+			message: '#^Access to an undefined property Zend_View_Interface\:\:\$translate\.$#'
+			identifier: property.notFound
+			count: 1
+			path: application/modules/admin/controllers/ParticipantsController.php
+
+		-
 			message: '#^Access to an undefined property Zend_View_Interface\:\:\$unmappedParticipantCount\.$#'
 			identifier: property.notFound
 			count: 1
@@ -5639,36 +5711,6 @@ parameters:
 			identifier: method.notFound
 			count: 11
 			path: application/modules/admin/controllers/ParticipantsController.php
-
-		-
-			message: '#^Access to an undefined property Zend_Session_Namespace\:\:\$message\.$#'
-			identifier: property.notFound
-			count: 2
-			path: application/modules/admin/controllers/ParticipantsController.php
-
-		-
-			message: '#^Access to an undefined property Zend_View_Interface\:\:\$translate\.$#'
-			identifier: property.notFound
-			count: 1
-			path: application/modules/admin/controllers/ParticipantsController.php
-
-		-
-			message: '#^Access to an undefined property Zend_Controller_Action_HelperBroker\:\:\$viewRenderer\.$#'
-			identifier: property.notFound
-			count: 1
-			path: application/modules/admin/controllers/ParticipantsController.php
-
-		-
-			message: '#^Access to an undefined property Zend_Config_Ini\:\:\$resources\.$#'
-			identifier: property.notFound
-			count: 2
-			path: bin/check-participant-emails.php
-
-		-
-			message: '#^Access to an undefined property Zend_Config_Ini\:\:\$resources\.$#'
-			identifier: property.notFound
-			count: 1
-			path: bin/process-bounces.php
 
 		-
 			message: '#^Method Admin_ParticipantsController\:\:init\(\) with return type void returns null but should not return anything\.$#'
@@ -7497,7 +7539,7 @@ parameters:
 		-
 			message: '#^Access to an undefined property Zend_Config_Ini\:\:\$email\.$#'
 			identifier: property.notFound
-			count: 5
+			count: 3
 			path: application/services/Common.php
 
 		-
@@ -8413,6 +8455,12 @@ parameters:
 			path: bin/change-dm-email.php
 
 		-
+			message: '#^Access to an undefined property Zend_Config_Ini\:\:\$resources\.$#'
+			identifier: property.notFound
+			count: 1
+			path: bin/check-participant-emails.php
+
+		-
 			message: '#^Function fetchTranslatableStrings\(\) should return array\<string, list\<string\>\> but returns array\<string, non\-empty\-array\<non\-falsy\-string, non\-falsy\-string\>\>\.$#'
 			identifier: return.type
 			count: 1
@@ -8435,6 +8483,12 @@ parameters:
 			identifier: constant.notFound
 			count: 1
 			path: bin/migrate.php
+
+		-
+			message: '#^Access to an undefined property Zend_Config_Ini\:\:\$resources\.$#'
+			identifier: property.notFound
+			count: 1
+			path: bin/process-bounces.php
 
 		-
 			message: '#^Constant ROOT_PATH not found\.$#'
@@ -8673,7 +8727,7 @@ parameters:
 		-
 			message: '#^Constant ROOT_PATH not found\.$#'
 			identifier: constant.notFound
-			count: 1
+			count: 2
 			path: library/Pt/Commons/LoggerUtility.php
 
 		-
