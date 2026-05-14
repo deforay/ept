@@ -9,32 +9,27 @@ $authNameSpace = new Zend_Session_Namespace('datamanagers');
     /* Constrain narrow columns so they don't waste horizontal space.
        Columns are 1-indexed: 1=Shipment Date, 2=Scheme, 3=Shipment Code,
        4=PT Survey Code, 5=Participant ID, 6=Participant, 7=Institute Name,
-       8=Result Due Date, 9=Response Date, 10=Action. */
-    #currentSchemeTable th:nth-child(1),
+       8=Result Due Date, 9=Response Date, 10=Action.
+       Headers wrap (so "Shipment Code" can stack vertically); body cells
+       stay nowrap so dates/codes/IDs don't break mid-token. */
     #currentSchemeTable td:nth-child(1),
-    #currentSchemeTable th:nth-child(8),
-    #currentSchemeTable td:nth-child(8),
-    #currentSchemeTable th:nth-child(9),
-    #currentSchemeTable td:nth-child(9) {
-        white-space: nowrap;
-        width: 1%;
-    }
-    #currentSchemeTable th:nth-child(3),
     #currentSchemeTable td:nth-child(3),
-    #currentSchemeTable th:nth-child(4),
-    #currentSchemeTable td:nth-child(4) {
-        white-space: nowrap;
-        width: 1%;
-    }
-    #currentSchemeTable th:nth-child(5),
-    #currentSchemeTable td:nth-child(5) {
-        white-space: nowrap;
-        width: 1%;
-    }
-    #currentSchemeTable th:nth-child(10),
+    #currentSchemeTable td:nth-child(4),
+    #currentSchemeTable td:nth-child(5),
+    #currentSchemeTable td:nth-child(8),
+    #currentSchemeTable td:nth-child(9),
     #currentSchemeTable td:nth-child(10) {
         white-space: nowrap;
+    }
+    #currentSchemeTable th:nth-child(1),
+    #currentSchemeTable th:nth-child(3),
+    #currentSchemeTable th:nth-child(4),
+    #currentSchemeTable th:nth-child(5),
+    #currentSchemeTable th:nth-child(8),
+    #currentSchemeTable th:nth-child(9),
+    #currentSchemeTable th:nth-child(10) {
         width: 1%;
+        white-space: normal;
     }
     /* Scheme + Participant + Institute Name get the remaining space and may wrap */
     #currentSchemeTable th:nth-child(2),
@@ -44,6 +39,11 @@ $authNameSpace = new Zend_Session_Namespace('datamanagers');
     #currentSchemeTable th:nth-child(7),
     #currentSchemeTable td:nth-child(7) {
         white-space: normal;
+    }
+    /* Keep per-column search inputs from forcing minimum column width */
+    #currentSchemeTable .col-search {
+        min-width: 0;
+        width: 100%;
     }
 </style>
 <section class="content-header">
@@ -110,12 +110,12 @@ $authNameSpace = new Zend_Session_Namespace('datamanagers');
 					</tr>
 					<tr class="column-search-row">
 						<th scope="col"></th>
-						<th scope="col"><input style="width:130px;" type="text" class="form-control input-sm col-search" data-col="1" placeholder="<?= $this->translate->_('Search Scheme'); ?>" /></th>
-						<th scope="col"><input style="width:130px;" type="text" class="form-control input-sm col-search" data-col="2" placeholder="<?= $this->translate->_('Search Code'); ?>" /></th>
-						<th scope="col"><input style="width:130px;" type="text" class="form-control input-sm col-search" data-col="3" placeholder="<?= $this->translate->_('Search Survey Code'); ?>" /></th>
-						<th scope="col"><input style="width:130px;" type="text" class="form-control input-sm col-search" data-col="4" placeholder="<?= $this->translate->_('Search Participant ID'); ?>" /></th>
-						<th scope="col"><input style="width:130px;" type="text" class="form-control input-sm col-search" data-col="5" placeholder="<?= $this->translate->_('Search Name'); ?>" /></th>
-						<th scope="col"><input style="width:100px;" type="text" class="form-control input-sm col-search" data-col="6" placeholder="<?= $this->translate->_('Search Institute Name'); ?>" /></th>
+						<th scope="col"><input type="text" class="form-control input-sm col-search" data-col="1" placeholder="<?= $this->translate->_('Search Scheme'); ?>" /></th>
+						<th scope="col"><input type="text" class="form-control input-sm col-search" data-col="2" placeholder="<?= $this->translate->_('Search Code'); ?>" /></th>
+						<th scope="col"><input type="text" class="form-control input-sm col-search" data-col="3" placeholder="<?= $this->translate->_('Search Survey Code'); ?>" /></th>
+						<th scope="col"><input type="text" class="form-control input-sm col-search" data-col="4" placeholder="<?= $this->translate->_('Search Participant ID'); ?>" /></th>
+						<th scope="col"><input type="text" class="form-control input-sm col-search" data-col="5" placeholder="<?= $this->translate->_('Search Name'); ?>" /></th>
+						<th scope="col"><input type="text" class="form-control input-sm col-search" data-col="6" placeholder="<?= $this->translate->_('Search Institute Name'); ?>" /></th>
 						<th scope="col"></th>
 						<th scope="col"></th>
 						<th scope="col"></th>
@@ -145,6 +145,7 @@ $authNameSpace = new Zend_Session_Namespace('datamanagers');
 			"sPaginationType": "full_numbers",
 			"bRetrieve": false,
 			"bDestroy": true,
+			"bSortCellsTop": true,
 			"aoColumns": [{
 					"sClass": "center",
 				},
