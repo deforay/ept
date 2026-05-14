@@ -25,6 +25,18 @@ parameters:
 			path: application/controllers/AuthController.php
 
 		-
+			message: '#^Access to an undefined property Zend_Session_Namespace\:\:\$counts\.$#'
+			identifier: property.notFound
+			count: 5
+			path: application/controllers/AuthController.php
+
+		-
+			message: '#^Access to an undefined property Zend_Session_Namespace\:\:\$currentUser\.$#'
+			identifier: property.notFound
+			count: 1
+			path: application/controllers/AuthController.php
+
+		-
 			message: '#^Access to an undefined property Zend_Session_Namespace\:\:\$data_manager_type\.$#'
 			identifier: property.notFound
 			count: 1
@@ -142,6 +154,12 @@ parameters:
 			message: '#^Access to an undefined property Zend_Session_Namespace\:\:\$status\.$#'
 			identifier: property.notFound
 			count: 18
+			path: application/controllers/AuthController.php
+
+		-
+			message: '#^Access to an undefined property Zend_Session_Namespace\:\:\$timers\.$#'
+			identifier: property.notFound
+			count: 5
 			path: application/controllers/AuthController.php
 
 		-
@@ -5149,6 +5167,186 @@ parameters:
 			path: application/modules/admin/controllers/HomeSectionLinksController.php
 
 		-
+			message: '#^Access to an undefined property Zend_Session_Namespace\:\:\$UserID\.$#'
+			identifier: property.notFound
+			count: 1
+			path: application/modules/admin/controllers/ImpersonateController.php
+
+		-
+			message: '#^Access to an undefined property Zend_Session_Namespace\:\:\$data_manager_type\.$#'
+			identifier: property.notFound
+			count: 1
+			path: application/modules/admin/controllers/ImpersonateController.php
+
+		-
+			message: '#^Access to an undefined property Zend_Session_Namespace\:\:\$datamanagers\.$#'
+			identifier: property.notFound
+			count: 1
+			path: application/modules/admin/controllers/ImpersonateController.php
+
+		-
+			message: '#^Access to an undefined property Zend_Session_Namespace\:\:\$dm_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: application/modules/admin/controllers/ImpersonateController.php
+
+		-
+			message: '#^Access to an undefined property Zend_Session_Namespace\:\:\$email\.$#'
+			identifier: property.notFound
+			count: 1
+			path: application/modules/admin/controllers/ImpersonateController.php
+
+		-
+			message: '#^Access to an undefined property Zend_Session_Namespace\:\:\$enable_adding_test_response_date\.$#'
+			identifier: property.notFound
+			count: 1
+			path: application/modules/admin/controllers/ImpersonateController.php
+
+		-
+			message: '#^Access to an undefined property Zend_Session_Namespace\:\:\$enable_choosing_mode_of_receipt\.$#'
+			identifier: property.notFound
+			count: 1
+			path: application/modules/admin/controllers/ImpersonateController.php
+
+		-
+			message: '#^Access to an undefined property Zend_Session_Namespace\:\:\$first_name\.$#'
+			identifier: property.notFound
+			count: 2
+			path: application/modules/admin/controllers/ImpersonateController.php
+
+		-
+			message: '#^Access to an undefined property Zend_Session_Namespace\:\:\$forcePasswordReset\.$#'
+			identifier: property.notFound
+			count: 1
+			path: application/modules/admin/controllers/ImpersonateController.php
+
+		-
+			message: '#^Access to an undefined property Zend_Session_Namespace\:\:\$force_profile_check\.$#'
+			identifier: property.notFound
+			count: 1
+			path: application/modules/admin/controllers/ImpersonateController.php
+
+		-
+			message: '#^Access to an undefined property Zend_Session_Namespace\:\:\$force_profile_check_primary\.$#'
+			identifier: property.notFound
+			count: 1
+			path: application/modules/admin/controllers/ImpersonateController.php
+
+		-
+			message: '#^Access to an undefined property Zend_Session_Namespace\:\:\$impersonatedBy\.$#'
+			identifier: property.notFound
+			count: 1
+			path: application/modules/admin/controllers/ImpersonateController.php
+
+		-
+			message: '#^Access to an undefined property Zend_Session_Namespace\:\:\$impersonatedByEmail\.$#'
+			identifier: property.notFound
+			count: 1
+			path: application/modules/admin/controllers/ImpersonateController.php
+
+		-
+			message: '#^Access to an undefined property Zend_Session_Namespace\:\:\$impersonationStartedAt\.$#'
+			identifier: property.notFound
+			count: 1
+			path: application/modules/admin/controllers/ImpersonateController.php
+
+		-
+			message: '#^Access to an undefined property Zend_Session_Namespace\:\:\$impersonationTtl\.$#'
+			identifier: property.notFound
+			count: 1
+			path: application/modules/admin/controllers/ImpersonateController.php
+
+		-
+			message: '#^Access to an undefined property Zend_Session_Namespace\:\:\$language\.$#'
+			identifier: property.notFound
+			count: 1
+			path: application/modules/admin/controllers/ImpersonateController.php
+
+		-
+			message: '#^Access to an undefined property Zend_Session_Namespace\:\:\$lastActivity\.$#'
+			identifier: property.notFound
+			count: 1
+			path: application/modules/admin/controllers/ImpersonateController.php
+
+		-
+			message: '#^Access to an undefined property Zend_Session_Namespace\:\:\$last_name\.$#'
+			identifier: property.notFound
+			count: 2
+			path: application/modules/admin/controllers/ImpersonateController.php
+
+		-
+			message: '#^Access to an undefined property Zend_Session_Namespace\:\:\$loggedUser\.$#'
+			identifier: property.notFound
+			count: 1
+			path: application/modules/admin/controllers/ImpersonateController.php
+
+		-
+			message: '#^Access to an undefined property Zend_Session_Namespace\:\:\$message\.$#'
+			identifier: property.notFound
+			count: 1
+			path: application/modules/admin/controllers/ImpersonateController.php
+
+		-
+			message: '#^Access to an undefined property Zend_Session_Namespace\:\:\$partcipant_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: application/modules/admin/controllers/ImpersonateController.php
+
+		-
+			message: '#^Access to an undefined property Zend_Session_Namespace\:\:\$phone\.$#'
+			identifier: property.notFound
+			count: 1
+			path: application/modules/admin/controllers/ImpersonateController.php
+
+		-
+			message: '#^Access to an undefined property Zend_Session_Namespace\:\:\$primary_email\.$#'
+			identifier: property.notFound
+			count: 2
+			path: application/modules/admin/controllers/ImpersonateController.php
+
+		-
+			message: '#^Access to an undefined property Zend_Session_Namespace\:\:\$ptcc\.$#'
+			identifier: property.notFound
+			count: 1
+			path: application/modules/admin/controllers/ImpersonateController.php
+
+		-
+			message: '#^Access to an undefined property Zend_Session_Namespace\:\:\$qc_access\.$#'
+			identifier: property.notFound
+			count: 1
+			path: application/modules/admin/controllers/ImpersonateController.php
+
+		-
+			message: '#^Access to an undefined property Zend_Session_Namespace\:\:\$savedAt\.$#'
+			identifier: property.notFound
+			count: 1
+			path: application/modules/admin/controllers/ImpersonateController.php
+
+		-
+			message: '#^Access to an undefined property Zend_Session_Namespace\:\:\$status\.$#'
+			identifier: property.notFound
+			count: 1
+			path: application/modules/admin/controllers/ImpersonateController.php
+
+		-
+			message: '#^Access to an undefined property Zend_Session_Namespace\:\:\$view_only_access\.$#'
+			identifier: property.notFound
+			count: 1
+			path: application/modules/admin/controllers/ImpersonateController.php
+
+		-
+			message: '#^Call to an undefined method Zend_Controller_Action_HelperBroker\:\:layout\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: application/modules/admin/controllers/ImpersonateController.php
+
+		-
+			message: '#^Method Admin_ImpersonateController\:\:init\(\) with return type void returns null but should not return anything\.$#'
+			identifier: return.void
+			count: 1
+			path: application/modules/admin/controllers/ImpersonateController.php
+
+		-
 			message: '#^Access to an undefined property Zend_View_Interface\:\:\$emailHealth\.$#'
 			identifier: property.notFound
 			count: 1
@@ -8377,12 +8575,6 @@ parameters:
 			path: application/services/Shipments.php
 
 		-
-			message: '#^Unreachable statement \- code above always terminates\.$#'
-			identifier: deadCode.unreachable
-			count: 1
-			path: application/services/Shipments.php
-
-		-
 			message: '#^Variable \$docScore might not be defined\.$#'
 			identifier: variable.undefined
 			count: 3
@@ -8871,7 +9063,13 @@ parameters:
 		-
 			message: '#^Access to an undefined property Zend_Session_Namespace\:\:\$message\.$#'
 			identifier: property.notFound
-			count: 3
+			count: 4
+			path: library/Pt/Plugins/PreSetter.php
+
+		-
+			message: '#^Access to an undefined property Zend_Session_Namespace\:\:\$status\.$#'
+			identifier: property.notFound
+			count: 1
 			path: library/Pt/Plugins/PreSetter.php
 
 		-
