@@ -1,0 +1,77 @@
+# Cache / runtime dirs — ignore contents, keep index.php
+application/cache/*
+!application/cache/index.php
+logs/*
+!logs/index.php
+backup/*
+!backup/index.php
+public/uploads/*
+!public/uploads/index.php
+public/docs/*
+!public/docs/index.php
+public/temporary/*
+!public/temporary/index.php
+!public/temporary/cache/
+public/temporary/cache/*
+!public/temporary/cache/index.php
+scheduled-jobs/certificate/*
+!scheduled-jobs/certificate/index.php
+scheduled-jobs/certificates/*
+!scheduled-jobs/certificates/index.php
+scheduled-jobs/certificate-templates/*
+!scheduled-jobs/certificate-templates/index.php
+downloads/*
+!downloads/index.php
+
+# Backups — ignore contents, keep .hgkeep / .gitkeep / index.php
+backups/*
+!backups/db/
+!backups/config/
+!backups/index.php
+backups/db/*
+!backups/db/.hgkeep
+!backups/db/.gitkeep
+backups/config/*
+!backups/config/.hgkeep
+!backups/config/.gitkeep
+
+# DDEV — keep only config.yaml
+.ddev/*
+!.ddev/config.yaml
+
+# Dependency / editor / tool dirs
+node_modules/
+cypress/
+vendor/
+.vscode/
+.claude/
+.venv/
+*.vendor
+*.idea
+*.orig
+
+# OS / log junk
+error_log
+errors.log
+npm-debug.log
+Thumbs.db
+Thumbs.db.orig
+.DS_Store
+.DS_Store.orig
+
+# Local config / secrets
+application/configs/application.ini
+application/configs/config.ini
+application/configs/.env
+application.ini
+config.ini
+.env
+
+# Misc local files
+snyk_rules.instructions.md
+scheduled-jobs/reminder.php
+scheduled-jobs/*.docx
+cypress.config.js
+chart-render-test.json
+rector.php
+.php-cs-fixer.cache
