@@ -1747,7 +1747,8 @@ class Application_Service_Shipments
 
     public function addShipment($params)
     {
-
+        $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $dbAdapter->beginTransaction();
         try {
             $scheme = $params['schemeId'];
             $authNameSpace = new Zend_Session_Namespace('administrators');
@@ -2277,13 +2278,17 @@ class Application_Service_Shipments
                 }
             }
             $distroService->updateDistributionStatus($params['distribution'], 'pending');
-        } catch (Exception $e) {
-            // If any of the queries failed and threw an exception,
-            // we want to roll back the whole transaction, reversing
-            // changes made in the transaction, even those that succeeded.
-            // Thus all changes are committed together, or none are.
-            error_log("ERROR : {$e->getFile()}:{$e->getLine()} : {$e->getMessage()}");
-            error_log($e->getTraceAsString());
+            $dbAdapter->commit();
+        } catch (Throwable $e) {
+            $dbAdapter->rollBack();
+            Pt_Commons_LoggerUtility::logError('addShipment rolled back: ' . $e->getMessage(), [
+                'scheme' => $params['schemeId'] ?? null,
+                'distribution' => $params['distribution'] ?? null,
+                'file'  => $e->getFile(),
+                'line'  => $e->getLine(),
+                'trace' => substr($e->getTraceAsString(), 0, 8000),
+            ]);
+            throw $e;
         }
     }
 
