@@ -304,7 +304,10 @@ final class Pt_Commons_HelpCatalog
     /**
      * Split a guide's markdown body into one chunk per H2.
      *
-     * The H2 line itself is included in the chunk so the title renders.
+     * The H2 line itself is dropped — the drawer renders the step title
+     * from frontmatter as a styled header, so leaving the H2 inside the
+     * body too would duplicate the title.
+     *
      * Anything before the first H2 is dropped — that's intro prose that
      * belongs above the steps, not inside step 1.
      *
@@ -318,15 +321,15 @@ final class Pt_Commons_HelpCatalog
         foreach ($lines as $line) {
             if (preg_match('/^##\s+/', $line)) {
                 if ($buf !== null) {
-                    $chunks[] = rtrim($buf);
+                    $chunks[] = ltrim(rtrim($buf));
                 }
-                $buf = $line . "\n";
+                $buf = ''; // start a new chunk, drop the H2 line
             } elseif ($buf !== null) {
                 $buf .= $line . "\n";
             }
         }
         if ($buf !== null) {
-            $chunks[] = rtrim($buf);
+            $chunks[] = ltrim(rtrim($buf));
         }
         return $chunks;
     }
