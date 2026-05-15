@@ -20,9 +20,14 @@
  *   window.HELP_I18N       runtime-only translated strings
  *
  * Session keys (cleared on browser close):
- *   ept.help.activeGuide   slug of the pinned guide
- *   ept.help.guideStep     last viewed step id (number)
- *   ept.help.viewMode      'guide' | 'page' (which tab is active)
+ *   ept.help.activeGuide    slug of the pinned guide
+ *   ept.help.guideStep      last viewed step id (number)
+ *   ept.help.viewMode       'guide' | 'page' (which tab is active)
+ *   ept.help.guideStartedAt epoch ms — drives the 24-hour auto-expiry
+ *
+ * Storage is localStorage (not sessionStorage) so the guide stays pinned
+ * across tabs — important because guide steps offer "Open this screen in
+ * a new tab", which would otherwise lose the guide.
  */
 (function ($) {
     'use strict';
@@ -38,10 +43,12 @@
     var currentReq = null;
 
     var SS = {
-        activeGuide: 'ept.help.activeGuide',
-        guideStep:   'ept.help.guideStep',
-        viewMode:    'ept.help.viewMode'
+        activeGuide:    'ept.help.activeGuide',
+        guideStep:      'ept.help.guideStep',
+        viewMode:       'ept.help.viewMode',
+        guideStartedAt: 'ept.help.guideStartedAt'
     };
+    var GUIDE_TTL_MS = 24 * 60 * 60 * 1000; // 24h — drops haunted guides
 
     var t = function (key, fallback) {
         return (window.HELP_I18N && window.HELP_I18N[key]) || fallback;
@@ -131,23 +138,39 @@
         renderChipOnly();
     }
 
-    /* -------- session state -------- */
+    /* -------- guide state (localStorage, 24h TTL) -------- */
 
+    function isGuideExpired() {
+        try {
+            var t = parseInt(localStorage.getItem(SS.guideStartedAt), 10);
+            if (!t) return false;
+            return (Date.now() - t) > GUIDE_TTL_MS;
+        } catch (e) { return false; }
+    }
+    function clearGuideStorage() {
+        try {
+            localStorage.removeItem(SS.activeGuide);
+            localStorage.removeItem(SS.guideStep);
+            localStorage.removeItem(SS.viewMode);
+            localStorage.removeItem(SS.guideStartedAt);
+        } catch (e) { /* ignore */ }
+    }
     function getActiveGuideSlug() {
-        try { return sessionStorage.getItem(SS.activeGuide) || ''; } catch (e) { return ''; }
+        if (isGuideExpired()) { clearGuideStorage(); return ''; }
+        try { return localStorage.getItem(SS.activeGuide) || ''; } catch (e) { return ''; }
     }
     function getActiveStep() {
-        try { return parseInt(sessionStorage.getItem(SS.guideStep), 10) || 0; } catch (e) { return 0; }
+        try { return parseInt(localStorage.getItem(SS.guideStep), 10) || 0; } catch (e) { return 0; }
     }
     function getViewMode() {
-        try { return sessionStorage.getItem(SS.viewMode) || 'guide'; } catch (e) { return 'guide'; }
+        try { return localStorage.getItem(SS.viewMode) || 'guide'; } catch (e) { return 'guide'; }
     }
     function setSession(k, v) {
         try {
             if (v === null || v === undefined || v === '') {
-                sessionStorage.removeItem(k);
+                localStorage.removeItem(k);
             } else {
-                sessionStorage.setItem(k, String(v));
+                localStorage.setItem(k, String(v));
             }
         } catch (e) { /* ignore */ }
     }
@@ -424,6 +447,7 @@
             return;
         }
         setSession(SS.guideStep, next);
+        setSession(SS.guideStartedAt, Date.now()); // bump TTL on activity
         renderGuideStep();
         renderChipFromGuide(currentGuide);
     }
@@ -459,6 +483,7 @@
         setSession(SS.activeGuide, slug);
         setSession(SS.guideStep, 1);
         setSession(SS.viewMode, 'guide');
+        setSession(SS.guideStartedAt, Date.now());
         currentGuide = null;
         loadGuide(slug, function () {
             renderGuideStep();
@@ -467,9 +492,7 @@
     }
 
     function exitGuide() {
-        setSession(SS.activeGuide, null);
-        setSession(SS.guideStep, null);
-        setSession(SS.viewMode, null);
+        clearGuideStorage();
         currentGuide = null;
         $chipRegion.hide();
         $tabsRegion.hide();
