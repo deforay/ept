@@ -689,6 +689,10 @@ $helpSlugMap = [
 $resolvedHelpSlug = $helpSlugMap["$controllerName/$actionName"]
 	?? $helpSlugMap["$controllerName/index"]
 	?? '';
+// Used by guide mode to match a step's `target_pages` against the
+// current screen. Always set, even when there's no slug match — guides
+// rely on this for the "✓ You're here" marker.
+$helpPageKey = "$controllerName/$actionName";
 ?>
 <!DOCTYPE html>
 <html lang="en">

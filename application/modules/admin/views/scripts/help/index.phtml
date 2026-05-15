@@ -3,9 +3,12 @@
  * Admin help — full-page index. Every topic rendered inline so the page is
  * searchable (browser Cmd+F), printable, and deep-linkable via #slug.
  *
- * Expects: $this->topics — array of {slug, title, summary, html, locale, ...}
+ * Expects:
+ *   $this->topics — array of {slug, title, summary, html, locale, ...}
+ *   $this->guides — array of {slug, title, summary, estimated_minutes, tags}
  */
 $topics = $this->topics ?? [];
+$guides = $this->guides ?? [];
 ?>
 <section class="content-header">
     <h1><?= $this->htmlTranslate("Help"); ?></h1>
@@ -24,6 +27,19 @@ $topics = $this->topics ?? [];
                 </div>
                 <div class="box-body no-padding">
                     <ul class="nav nav-pills nav-stacked help-toc">
+                        <?php if (!empty($guides)): ?>
+                            <li class="help-toc-header"><?= $this->htmlTranslate("Workflow guides"); ?></li>
+                            <?php foreach ($guides as $g): ?>
+                                <li>
+                                    <a href="javascript:void(0)" class="help-toc-guide"
+                                       data-help-open="1" data-help-guide="<?= htmlspecialchars($g['slug']); ?>">
+                                        <i class="fa fa-bookmark"></i>
+                                        <?= htmlspecialchars($g['title']); ?>
+                                    </a>
+                                </li>
+                            <?php endforeach; ?>
+                            <li class="help-toc-header"><?= $this->htmlTranslate("Help topics"); ?></li>
+                        <?php endif; ?>
                         <?php foreach ($topics as $t): ?>
                             <li>
                                 <a href="#<?= htmlspecialchars($t['slug']); ?>">
@@ -66,6 +82,17 @@ $topics = $this->topics ?? [];
 
 <style>
 .help-page .help-toc a { padding: 8px 12px; font-size: 13px; }
+.help-page .help-toc-header {
+    padding: 10px 12px 4px;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #6b7280;
+}
+.help-page .help-toc-guide { background: #fffbeb; border-left: 3px solid #b8860b; }
+.help-page .help-toc-guide:hover { background: #fff3c4; }
+.help-page .help-toc-guide .fa-bookmark { color: #b8860b; margin-right: 6px; }
 .help-page .help-topic { scroll-margin-top: 80px; }
 .help-page .help-prose h1 { display: none; }
 .help-page .help-prose h2 { font-size: 16px; font-weight: 600; margin-top: 18px; }

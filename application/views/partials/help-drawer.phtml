@@ -93,9 +93,23 @@ $helpBaseUrl       = $helpBaseUrl       ?? '/help';
 window.HELP_AUDIENCE = "<?= $this->jsTranslate($audience); ?>";
 window.HELP_BASE_URL = "<?= $this->jsTranslate($helpBaseUrl); ?>";
 window.HELP_SLUG     = "<?= $this->jsTranslate($resolvedHelpSlug); ?>";
+window.HELP_PAGE_KEY = "<?= $this->jsTranslate($helpPageKey ?? ''); ?>";
 window.HELP_I18N = {
-    failedToLoad:  "<?= $this->jsTranslate("Couldn't load help. Please try again."); ?>",
-    noResults:     "<?= $this->jsTranslate("No topics match your search."); ?>",
-    openInNewTab:  "<?= $this->jsTranslate("Open full page in new tab"); ?>"
+    failedToLoad:    "<?= $this->jsTranslate("Couldn't load help. Please try again."); ?>",
+    noResults:       "<?= $this->jsTranslate("No topics match your search."); ?>",
+    openInNewTab:    "<?= $this->jsTranslate("Open full page in new tab"); ?>",
+    exit_guide:      "<?= $this->jsTranslate("Exit guide"); ?>",
+    tab_guide:       "<?= $this->jsTranslate("Guide"); ?>",
+    tab_this_page:   "<?= $this->jsTranslate("This page"); ?>",
+    prev_step:       "<?= $this->jsTranslate("Previous"); ?>",
+    next_step:       "<?= $this->jsTranslate("Next"); ?>",
+    done:            "<?= $this->jsTranslate("Done"); ?>",
+    step_of:         "<?= $this->jsTranslate("Step"); ?>",
+    of:              "<?= $this->jsTranslate("of"); ?>",
+    minutes:         "<?= $this->jsTranslate("min"); ?>",
+    youre_here:      "<?= $this->jsTranslate("You're on this screen now."); ?>",
+    open_screen:     "<?= $this->jsTranslate("Open this screen in a new tab"); ?>",
+    section_guides:  "<?= $this->jsTranslate("Workflow guides"); ?>",
+    section_topics:  "<?= $this->jsTranslate("Help topics"); ?>"
 };
 </script>

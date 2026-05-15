@@ -1,6 +1,7 @@
 <?php
 
 use League\CommonMark\GithubFlavoredMarkdownConverter;
+use Symfony\Component\Yaml\Yaml;
 
 /**
  * In-app help catalog. Reads markdown files from docs/help/{audience}/{locale}/
@@ -67,6 +68,10 @@ final class Pt_Commons_HelpCatalog
             if ($meta === null) {
                 continue;
             }
+            // Skip internal/schema files like guides/README.md
+            if (!empty($meta['internal'])) {
+                continue;
+            }
             $out[] = [
                 'slug' => $slug,
                 'title' => Pt_Commons_TranslateUtility::safeTranslate((string) ($meta['title'] ?? $slug)),
@@ -80,6 +85,103 @@ final class Pt_Commons_HelpCatalog
 
         usort($out, fn ($a, $b) => strcmp($a['title'], $b['title']));
         return $out;
+    }
+
+    /**
+     * List all workflow guides (frontmatter only).
+     *
+     * @return list<array{slug:string,title:string,summary:string,estimated_minutes:int,tags:list<string>}>
+     */
+    public function guides(): array
+    {
+        $slugs = array_unique(array_merge(
+            $this->guideSlugsIn($this->locale),
+            $this->guideSlugsIn(self::FALLBACK_LOCALE)
+        ));
+
+        $out = [];
+        foreach ($slugs as $slug) {
+            $file = $this->resolveGuideFile($slug);
+            if ($file === null) {
+                continue;
+            }
+            $meta = $this->parseFrontmatter($file);
+            if ($meta === null || !empty($meta['internal'])) {
+                continue;
+            }
+            $out[] = [
+                'slug' => $slug,
+                'title' => Pt_Commons_TranslateUtility::safeTranslate((string) ($meta['title'] ?? $slug)),
+                'summary' => Pt_Commons_TranslateUtility::safeTranslate((string) ($meta['summary'] ?? '')),
+                'estimated_minutes' => (int) ($meta['estimated_minutes'] ?? 0),
+                'tags' => array_values(array_map(
+                    fn ($t) => Pt_Commons_TranslateUtility::safeTranslate((string) $t),
+                    (array) ($meta['tags'] ?? [])
+                )),
+            ];
+        }
+
+        usort($out, fn ($a, $b) => strcmp($a['title'], $b['title']));
+        return $out;
+    }
+
+    /**
+     * Load a single guide with parsed steps.
+     *
+     * Each step has its own body, split from the markdown on H2 headings.
+     * `target_pages` lets the drawer match the user's current screen and
+     * decide whether to show "✓ You're here" or an "Open this screen" link.
+     *
+     * @return array{slug:string,title:string,summary:string,estimated_minutes:int,tags:list<string>,locale:string,steps:list<array{id:int,title:string,target_pages:list<string>,html:string}>}|null
+     */
+    public function findGuide(string $slug): ?array
+    {
+        $slug = $this->sanitizeSlug($slug);
+        if ($slug === '') {
+            return null;
+        }
+
+        $file = $this->resolveGuideFile($slug);
+        if ($file === null) {
+            return null;
+        }
+
+        $meta = $this->parseFrontmatter($file);
+        if ($meta === null || !empty($meta['internal'])) {
+            return null;
+        }
+
+        $body = $this->stripFrontmatter((string) file_get_contents($file));
+        $stepBodies = $this->splitBodyOnH2($body);
+
+        $steps = [];
+        foreach ((array) ($meta['steps'] ?? []) as $i => $stepMeta) {
+            $stepMeta = (array) $stepMeta;
+            $id = (int) ($stepMeta['id'] ?? ($i + 1));
+            $bodyMd = $stepBodies[$i] ?? '';
+            $steps[] = [
+                'id' => $id,
+                'title' => Pt_Commons_TranslateUtility::safeTranslate((string) ($stepMeta['title'] ?? "Step $id")),
+                'target_pages' => array_values(array_map(
+                    fn ($s) => (string) $s,
+                    (array) ($stepMeta['target_pages'] ?? [])
+                )),
+                'html' => $bodyMd === '' ? '' : (string) $this->md->convert($bodyMd),
+            ];
+        }
+
+        return [
+            'slug' => $slug,
+            'title' => Pt_Commons_TranslateUtility::safeTranslate((string) ($meta['title'] ?? $slug)),
+            'summary' => Pt_Commons_TranslateUtility::safeTranslate((string) ($meta['summary'] ?? '')),
+            'estimated_minutes' => (int) ($meta['estimated_minutes'] ?? 0),
+            'tags' => array_values(array_map(
+                fn ($t) => Pt_Commons_TranslateUtility::safeTranslate((string) $t),
+                (array) ($meta['tags'] ?? [])
+            )),
+            'locale' => basename(dirname(dirname($file))),
+            'steps' => $steps,
+        ];
     }
 
     /** @return array{slug:string,title:string,summary:string,tags:list<string>,html:string,locale:string}|null */
@@ -141,6 +243,24 @@ final class Pt_Commons_HelpCatalog
         return $out;
     }
 
+    /** @return list<string> */
+    private function guideSlugsIn(string $locale): array
+    {
+        $dir = $this->rootDir . '/' . $this->audience . '/' . $locale . '/guides';
+        if (!is_dir($dir)) {
+            return [];
+        }
+        $out = [];
+        foreach (glob($dir . '/*.md') ?: [] as $file) {
+            $name = pathinfo($file, PATHINFO_FILENAME);
+            if ($name === 'README') {
+                continue; // schema doc, not a guide
+            }
+            $out[] = $name;
+        }
+        return $out;
+    }
+
     private function resolveFile(string $slug): ?string
     {
         $slug = $this->sanitizeSlug($slug);
@@ -159,6 +279,56 @@ final class Pt_Commons_HelpCatalog
         }
 
         return null;
+    }
+
+    private function resolveGuideFile(string $slug): ?string
+    {
+        $slug = $this->sanitizeSlug($slug);
+        if ($slug === '') {
+            return null;
+        }
+
+        $primary = $this->rootDir . '/' . $this->audience . '/' . $this->locale . '/guides/' . $slug . '.md';
+        if (is_file($primary)) {
+            return $primary;
+        }
+
+        $fallback = $this->rootDir . '/' . $this->audience . '/' . self::FALLBACK_LOCALE . '/guides/' . $slug . '.md';
+        if (is_file($fallback)) {
+            return $fallback;
+        }
+
+        return null;
+    }
+
+    /**
+     * Split a guide's markdown body into one chunk per H2.
+     *
+     * The H2 line itself is included in the chunk so the title renders.
+     * Anything before the first H2 is dropped — that's intro prose that
+     * belongs above the steps, not inside step 1.
+     *
+     * @return list<string>
+     */
+    private function splitBodyOnH2(string $body): array
+    {
+        $lines = explode("\n", $body);
+        $chunks = [];
+        $buf = null;
+        foreach ($lines as $line) {
+            if (preg_match('/^##\s+/', $line)) {
+                if ($buf !== null) {
+                    $chunks[] = rtrim($buf);
+                }
+                $buf = $line . "\n";
+            } elseif ($buf !== null) {
+                $buf .= $line . "\n";
+            }
+        }
+        if ($buf !== null) {
+            $chunks[] = rtrim($buf);
+        }
+        return $chunks;
     }
 
     private function sanitizeSlug(string $slug): string
@@ -184,7 +354,12 @@ final class Pt_Commons_HelpCatalog
         }
 
         $block = substr($raw, 4, $end - 4);
-        return $this->parseYamlLike($block);
+        try {
+            $parsed = Yaml::parse($block);
+        } catch (Throwable $e) {
+            return null;
+        }
+        return is_array($parsed) ? $parsed : null;
     }
 
     private function stripFrontmatter(string $raw): string
@@ -197,36 +372,5 @@ final class Pt_Commons_HelpCatalog
             return $raw;
         }
         return ltrim(substr($raw, $end + 4));
-    }
-
-    /**
-     * Tiny YAML-ish parser — only what help frontmatter needs:
-     *   key: value
-     *   tags: [a, b, c]
-     *
-     * @return array<string,mixed>
-     */
-    private function parseYamlLike(string $block): array
-    {
-        $out = [];
-        foreach (explode("\n", $block) as $line) {
-            if (!preg_match('/^([a-z_]+)\s*:\s*(.*)$/i', trim($line), $m)) {
-                continue;
-            }
-            $key = $m[1];
-            $val = trim($m[2]);
-            if ($val === '') {
-                $out[$key] = '';
-                continue;
-            }
-            if (str_starts_with($val, '[') && str_ends_with($val, ']')) {
-                $items = substr($val, 1, -1);
-                $parts = array_filter(array_map('trim', explode(',', $items)), fn ($s) => $s !== '');
-                $out[$key] = array_map(fn ($s) => trim($s, "'\""), $parts);
-                continue;
-            }
-            $out[$key] = trim($val, "'\"");
-        }
-        return $out;
     }
 }
