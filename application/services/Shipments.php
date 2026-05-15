@@ -541,7 +541,7 @@ class Application_Service_Shipments
             } elseif (isset($params['confirmForm']) && trim($params['confirmForm']) == 'yes') {
                 $alertMsg->message = 'Thank you for submitting your result. We have received it and the PT Results will be published on or after the due date';
             } else {
-                $alertMsg->message = 'Confirm your response';
+                $alertMsg->message = '';
             }
         } catch (Exception $e) {
             // If any of the queries failed and threw an exception,
@@ -678,7 +678,7 @@ class Application_Service_Shipments
             } elseif (isset($params['confirmForm']) && trim($params['confirmForm']) == 'yes') {
                 $alertMsg->message = 'Thank you for submitting your result. We have received it and the PT Results will be published on or after the due date';
             } else {
-                $alertMsg->message = 'Confirm your response';
+                $alertMsg->message = '';
             }
         } catch (Exception $e) {
             // If any of the queries failed and threw an exception,
@@ -837,7 +837,7 @@ class Application_Service_Shipments
             } elseif (isset($params['confirmForm']) && trim($params['confirmForm']) == 'yes') {
                 $alertMsg->message = 'Thank you for submitting your result. We have received it and the PT Results will be published on or after the due date';
             } else {
-                $alertMsg->message = 'Confirm your response';
+                $alertMsg->message = '';
             }
         } catch (Exception $e) {
             // If any of the queries failed and threw an exception,
@@ -950,7 +950,7 @@ class Application_Service_Shipments
             } elseif (isset($params['confirmForm']) && trim($params['confirmForm']) == 'yes') {
                 $alertMsg->message = 'Thank you for submitting your result. We have received it and the PT Results will be published on or after the due date';
             } else {
-                $alertMsg->message = 'Confirm your response';
+                $alertMsg->message = '';
             }
         } catch (Exception $e) {
             // If any of the queries failed and threw an exception,
@@ -1564,7 +1564,7 @@ class Application_Service_Shipments
             } elseif (isset($params['confirmForm']) && trim($params['confirmForm']) == 'yes') {
                 $alertMessage = 'Thank you for submitting your result. We have received it and the PT Results will be published on or after the due date';
             } else {
-                $alertMessage = 'Confirm your response';
+                $alertMessage = '';
             }
             $alertMsg->message = $alertMessage;
         } catch (Exception $e) {
@@ -1652,7 +1652,7 @@ class Application_Service_Shipments
             } elseif (isset($params['confirmForm']) && trim($params['confirmForm']) == 'yes') {
                 $alertMsg->message = 'Thank you for submitting your result. We have received it and the PT Results will be published on or after the due date';
             } else {
-                $alertMsg->message = 'Confirm your response';
+                $alertMsg->message = '';
             }
         } catch (Exception $e) {
             // If any of the queries failed and threw an exception,
@@ -1826,7 +1826,7 @@ class Application_Service_Shipments
             } elseif (isset($params['confirmForm']) && trim($params['confirmForm']) == 'yes') {
                 $alertMsg->message = 'Thank you for submitting your result. We have received it and the PT Results will be published on or after the due date';
             } else {
-                $alertMsg->message = 'Confirm your response';
+                $alertMsg->message = '';
             }
         } catch (Exception $e) {
             // If any of the queries failed and threw an exception,

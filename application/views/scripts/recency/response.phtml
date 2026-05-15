@@ -28,6 +28,39 @@ if ($this->reqFrom == "admin") {
 		display: none;
 	}
 </style>
+<?php $inConfirmStep = isset($_SESSION['confirmForm']) && $_SESSION['confirmForm'] === 'yes';
+if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
+<style>
+	#confirmResponseBanner {
+		position: sticky;
+		top: 0;
+		z-index: 1030;
+		background: #fff3cd;
+		border: 2px solid #ff9800;
+		border-radius: 6px;
+		padding: 15px 20px;
+		margin: 0 0 20px 0;
+		box-shadow: 0 4px 12px rgba(255, 152, 0, 0.25);
+	}
+	#confirmResponseBanner .crb-row { display: flex; align-items: center; gap: 15px; }
+	#confirmResponseBanner .crb-icon { font-size: 34px; line-height: 1; }
+	#confirmResponseBanner .crb-title { font-size: 18px; font-weight: bold; color: #5a3e00; margin-bottom: 4px; }
+	#confirmResponseBanner .crb-body { font-size: 15px; color: #5a3e00; line-height: 1.4; }
+	.confirm-submit-btn {
+		background-color: #28a745 !important;
+		border-color: #1e7e34 !important;
+		color: #fff !important;
+		font-size: 18px !important;
+		font-weight: bold !important;
+		padding: 12px 30px !important;
+		animation: confirmPulse 1.8s infinite;
+	}
+	@keyframes confirmPulse {
+		0% { box-shadow: 0 0 0 0 rgba(40, 167, 69, 0.7); }
+		70% { box-shadow: 0 0 0 14px rgba(40, 167, 69, 0); }
+		100% { box-shadow: 0 0 0 0 rgba(40, 167, 69, 0); }
+	}
+</style>
 <section class="content-header">
 	<h1><?php echo $this->shipment['scheme_name']; ?></h1>
 </section>
@@ -37,6 +70,17 @@ if ($this->reqFrom == "admin") {
 		<form name="recencyResponseForm" id="recencyResponseForm" method="post" enctype="multipart/form-data"
 			action="<?php echo $this->url(array("controller" => "recency", "action" => "response"), null, true) ?>">
 			<div class="box-body">
+				<?php if ($inConfirmStep && $this->isEditable) { ?>
+					<div id="confirmResponseBanner">
+						<div class="crb-row">
+							<div class="crb-icon">&#9888;&#65039;</div>
+							<div>
+								<div class="crb-title"><?= $this->translate->_("Almost done — one more step"); ?></div>
+								<div class="crb-body"><?= $this->translate->_("Please review your answers below carefully. When you are sure they are correct, scroll to the bottom of this page and click the green Confirm Response button to finish."); ?></div>
+							</div>
+						</div>
+					</div>
+				<?php } ?>
 				<input type="hidden" id="hdLastDate" name="hdLastDate"
 					value="<?php echo $this->shipment['lastdate_response']; ?>" />
 				<input type="hidden" id="shipmentId" name="shipmentId" value="<?php echo $this->shipId; ?>" />
@@ -622,12 +666,11 @@ if ($this->reqFrom == "admin") {
 			<div id="respond" style="margin: 0px auto 0px auto; text-align: center;">
 				<p>
 					<?php $submitText = "Submit";
-					if (isset($_SESSION['confirmForm']) && !empty($_SESSION['confirmForm']) && $_SESSION['confirmForm'] == 'yes') {
-						$submitText = "Confirm Response";
-						$_SESSION['confirmForm'] = "" ?>
+					if ($inConfirmStep) {
+						$submitText = "Confirm Response"; ?>
 						<input type="hidden" name="confirmForm" value="yes" />
 					<?php } ?>
-					<input name="submitbtn" class="btn btn-primary" type="button" onclick="validateNow(); return false;"
+					<input name="submitbtn" class="btn btn-primary <?= $inConfirmStep ? 'confirm-submit-btn' : ''; ?>" type="button" onclick="validateNow(); return false;"
 						tabindex="7" value="<?= $this->translate->_($submitText); ?>" />
 					&nbsp;&nbsp;&nbsp;
 					<input name="cancel" class="btn btn-danger" type="button" id="reset" tabindex="8"
