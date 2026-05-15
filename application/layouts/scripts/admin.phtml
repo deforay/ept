@@ -802,6 +802,25 @@ $helpPageKey = "$controllerName/$actionName";
 		input[type="number"] {
 			-moz-appearance: textfield !important;
 		}
+
+		/* Top navbar right side — keep all items on the same vertical line.
+		   Bootstrap's default <a> uses text-baseline alignment, while the
+		   profile <button> uses flex-center. Force flex-center everywhere so
+		   icon glyphs and the avatar share the same midline. */
+		.navbar-nav.navbar-right > li > a {
+			display: inline-flex !important;
+			align-items: center;
+			justify-content: center;
+			height: 50px;
+			padding: 0 15px;
+			line-height: 1;
+		}
+		.navbar-nav.navbar-right > li > a > i {
+			font-size: 16px;
+			line-height: 1;
+			display: inline-flex;
+			align-items: center;
+		}
 	</style>
 	<script src="<?= $this->baseUrl('js/clientError.js'); ?>" defer></script>
 </head>
@@ -1143,9 +1162,9 @@ $helpPageKey = "$controllerName/$actionName";
 					} ?>
 					<li id="Logout" style="position:relative;">
 						<button class="profile-btn" id="profileBtn" onclick="toggleProfileDropdown(event)"
-							style="display:flex;align-items:center;gap:7px;height:50px;padding:0 14px;background:none;border:none;cursor:pointer;color:rgba(255,255,255,0.9);font-size:14px;white-space:nowrap;">
+							style="display:inline-flex;align-items:center;gap:8px;height:50px;padding:0 15px;background:none;border:none;cursor:pointer;color:rgba(255,255,255,0.9);font-size:14px;line-height:20px;white-space:nowrap;transition:background-color 0.15s;" onmouseover="this.style.background='rgba(255,255,255,0.08)'" onmouseout="this.style.background='none'">
 							<div
-								style="width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,0.25);color:#fff;font-size:12px;font-weight:bold;display:flex;align-items:center;justify-content:center;border:1.5px solid rgba(255,255,255,0.5);flex-shrink:0;">
+								style="width:18px;height:18px;border-radius:50%;background:rgba(255,255,255,0.18);color:#fff;font-size:9px;font-weight:600;line-height:1;display:inline-flex;align-items:center;justify-content:center;border:1px solid rgba(255,255,255,0.35);flex-shrink:0;">
 								<?php
 								$nameParts = explode(' ', trim($adminSession->first_name ?? 'Admin User'));
 								$initials = strtoupper(substr($nameParts[0], 0, 1) . (isset($nameParts[1]) ? substr($nameParts[1], 0, 1) : ''));
@@ -1153,8 +1172,8 @@ $helpPageKey = "$controllerName/$actionName";
 								?>
 							</div>
 							<span><?php echo htmlspecialchars($adminSession->first_name ?? 'Admin'); ?></span>
-							<svg id="profileChevron" width="12" height="12" viewBox="0 0 16 16" fill="none"
-								stroke="currentColor" stroke-width="1.8" style="transition:transform 0.2s;opacity:0.8;">
+							<svg id="profileChevron" width="10" height="10" viewBox="0 0 16 16" fill="none"
+								stroke="currentColor" stroke-width="2" style="transition:transform 0.2s;opacity:0.7;flex-shrink:0;">
 								<path d="M4 6l4 4 4-4" />
 							</svg>
 						</button>
