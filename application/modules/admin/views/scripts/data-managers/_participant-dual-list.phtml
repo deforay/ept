@@ -258,6 +258,14 @@ $preSelected = isset($this->preSelectedParticipants) ? (array)$this->preSelected
             recomputeFiltered(panes.right);
             render(panes.left);
             render(panes.right);
+            // Keep the hidden `allparticipant` field in sync with the right pane
+            // on every state change. This guarantees the selection survives any
+            // submit path — button click, Enter-in-input, JS .submit() — without
+            // depending on a separate "inject before submit" step that earlier
+            // paths could bypass.
+            if (typeof window.pdlInjectHiddenInputs === 'function') {
+                window.pdlInjectHiddenInputs();
+            }
         }
 
         function load(items) {

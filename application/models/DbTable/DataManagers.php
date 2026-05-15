@@ -49,7 +49,19 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         }
         if ($dmId > 0) {
             $params['participantsList'] = isset($params['allparticipant']) ? Common::removeEmpty($this->decodeParticipantList($params['allparticipant'])) : [];
-            $this->dmParticipantMap($params, $dmId, $isPtcc);
+            $mapResult = $this->dmParticipantMap($params, $dmId, $isPtcc);
+            // Surface mapping failures so the admin sees a notice on the
+            // listing page instead of a silent "DM created, no mappings" state.
+            if (!$isPtcc && is_array($mapResult) && isset($mapResult['ok']) && $mapResult['ok'] === false) {
+                $alert = new Zend_Session_Namespace('alertSpace');
+                $alert->alertMsg = 'Data Manager was created, but participant mapping was not saved. Open the Data Manager and map participants from there.';
+                Pt_Commons_LoggerUtility::logError('addUser: participant mapping skipped', [
+                    'dm_id'             => $dmId,
+                    'allparticipant_raw' => isset($params['allparticipant']) ? (is_string($params['allparticipant']) ? mb_substr($params['allparticipant'], 0, 200) : gettype($params['allparticipant'])) : 'missing',
+                    'participants_count' => count($params['participantsList']),
+                    'map_error'         => $mapResult['error'] ?? 'unknown',
+                ]);
+            }
 
             $firstName = isset($params['fname']) && $params['fname'] != '' ? $params['fname'] : null;
             $lastName = isset($params['lname']) && $params['lname'] != '' ? $params['lname'] : null;

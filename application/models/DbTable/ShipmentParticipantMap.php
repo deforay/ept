@@ -9,31 +9,55 @@ class Application_Model_DbTable_ShipmentParticipantMap extends Zend_Db_Table_Abs
     {
 
         try {
-            $shipmentService = new Application_Service_Shipments();
             $commonServices = new Application_Service_Common();
-            $this->getAdapter()->beginTransaction();
+            $db = $this->getAdapter();
+            $db->beginTransaction();
             $authNameSpace = new Zend_Session_Namespace('administrators');
-            // To fetch Already mapped participants
+            // Build a participant_id => map_id lookup from the existing
+            // shipment_participant_map rows. fetchParticipantListByShipmentId
+            // returns two GROUP_CONCAT strings in the same row order, so the
+            // i-th participant id pairs with the i-th map id.
             $participantList = $this->fetchParticipantListByShipmentId($params['shipmentId']);
-            $alreadyMappedParticipant = explode(',', $participantList['participantId']);
-            $alreadyMappedParticipant = array_unique($alreadyMappedParticipant);
-            $alreadyMappedId = explode(',', $participantList['mapId']);
-            $alreadyMappedId = array_unique($alreadyMappedId);
-            // To fetch newly enrolment list
+            $existingMap = [];
+            if (!empty($participantList) && !empty($participantList['participantId']) && !empty($participantList['mapId'])) {
+                $pIds = array_map('trim', explode(',', (string) $participantList['participantId']));
+                $mIds = array_map('trim', explode(',', (string) $participantList['mapId']));
+                foreach ($pIds as $i => $pid) {
+                    if ($pid !== '' && isset($mIds[$i]) && $mIds[$i] !== '') {
+                        $existingMap[(int) $pid] = (int) $mIds[$i];
+                    }
+                }
+            }
+            // Decode the JSON-encoded enrollment list posted by ship-it.phtml.
             $decoded = json_decode((string) ($params['selectedForEnrollment'] ?? ''), true);
             if (!is_array($decoded)) {
-                $this->getAdapter()->rollBack();
+                $db->rollBack();
                 $alertMsg = new Zend_Session_Namespace('alertSpace');
                 $alertMsg->message = 'Invalid shipment payload. Please reload the page and try again.';
                 return false;
             }
             $params['selectedForEnrollment'] = array_values(array_unique(array_filter(array_map('intval', $decoded))));
-            // To get the unmapped participants list
-            $deleteParticipant = array_diff($alreadyMappedParticipant, $params['selectedForEnrollment']);
-            if (isset($deleteParticipant) && !empty($deleteParticipant)) {
-                foreach ($deleteParticipant as $mapKey => $pId) {
-                    $shipmentService->removeShipmentParticipant($alreadyMappedId[$mapKey]);
+            // Remove participants previously mapped but no longer selected.
+            // Do the delete inline within the existing transaction — calling
+            // removeShipmentParticipant() here would open a second transaction,
+            // which Zend_Db does not support ("There is already an active
+            // transaction") and bubbled up as a generic "Shipping failed".
+            $selectedSet = array_flip($params['selectedForEnrollment']);
+            $mapIdsToRemove = [];
+            foreach ($existingMap as $pid => $mid) {
+                if (!isset($selectedSet[$pid])) {
+                    $mapIdsToRemove[] = $mid;
                 }
+            }
+            if (!empty($mapIdsToRemove)) {
+                $idList = implode(',', array_map('intval', $mapIdsToRemove));
+                $responseTables = ['response_result_dbs', 'response_result_dts', 'response_result_eid', 'response_result_recency', 'response_result_tb', 'response_result_vl'];
+                $db->query('SET FOREIGN_KEY_CHECKS = 0');
+                foreach ($responseTables as $tbl) {
+                    $db->delete($tbl, 'shipment_map_id IN (' . $idList . ')');
+                }
+                $db->delete('shipment_participant_map', 'map_id IN (' . $idList . ')');
+                $db->query('SET FOREIGN_KEY_CHECKS = 1');
             }
             foreach ($params['selectedForEnrollment'] as $participant) {
                 $data = [
