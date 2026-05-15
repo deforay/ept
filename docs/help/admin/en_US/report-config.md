@@ -10,11 +10,11 @@ This page controls the **look** of every PDF report the system
 produces — per-participant reports, summary reports, certificates,
 and so on. The form has three sections.
 
-## Report Header Configuration
+## Report Header
 
-- **Report Header Text** *(required)* — free-text that appears at
-  the top of every PDF page. Keep it concise (1-2 lines is the
-  sweet spot); long header text crowds the rest of the page.
+- **Report Header Text** *(required)* — free text that appears
+  at the top of every PDF page. Keep it short (1–2 lines is
+  best). Long header text pushes the rest of the page down.
 - **Institute Address Position** — choose where the institute
   address (set in *Global Settings*) is shown:
   - **Header** — print it under the report title on every page.
@@ -30,7 +30,7 @@ and so on. The form has three sections.
   images will be scaled down; transparent PNGs work well over the
   PDF background.
 - Click **Remove** to clear the saved logo. The change only
-  persists when you click **Update**.
+  saves when you click **Update**.
 
 ## Layout & Template Settings
 
@@ -49,13 +49,13 @@ uploading a background PDF template.
   **background** for every generated report (think:
   pre-printed letterhead). Useful when your organisation has a
   branded template with letterhead, watermark, footer lines, etc.
-  - When a template is already uploaded, you'll see an inline
+  - When a template is already uploaded, you will see a small
     preview with three actions:
-    - **View Full Size** — open the PDF in a modal.
+    - **View Full Size** — open the PDF in a pop-up.
     - **Replace** — swap in a new file.
-    - **Delete** — remove the template (a confirmation prompts;
-      action is irreversible).
-  - When no template is uploaded, you get a drop area to choose a
+    - **Delete** — remove the template. You will be asked to
+      confirm — this cannot be undone.
+  - When no template is uploaded, you get a drop area to pick a
     PDF.
 
 Only `.pdf` files are accepted for the template.
@@ -70,14 +70,13 @@ marked with `*`.
 ## Tips
 
 - Test changes by **regenerating** a single shipment's reports
-  from *Analyze → Generate Reports* — the new layout / margin /
-  template kicks in on the next generation.
+  from *Analyze → Generate Reports* — the new layout, margin or
+  template only takes effect on the next build.
 - If you replace the logo or template, **regenerate** any
-  important draft reports so the new visual is reflected.
-  Finalized reports keep the visuals from the time they were
-  finalized.
-- Top margin too small? Content overlaps the template's header.
-  Top margin too large? You waste space on the first page. Iterate
-  with regenerate-and-preview until it looks right.
-- Keep the **Report Header Text** short — long headers wrap and
+  important draft reports so the new look shows up. Finalized
+  reports keep the look from the time they were finalized.
+- Top margin too small? The content overlaps the template's
+  header. Top margin too large? You waste space on the first
+  page. Try regenerate-and-preview until it looks right.
+- Keep the **Report Header Text** short. Long headers wrap and
   push report content down on every page.

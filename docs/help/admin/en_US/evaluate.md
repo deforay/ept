@@ -1,132 +1,127 @@
 ---
 title: Evaluate PT Survey
-summary: Evaluate participant responses, generate reports, and finalize shipments
+summary: Score participant responses, then generate and finalize reports
 tags: [evaluate, evaluation, reports, finalize, re-evaluate]
 ---
 
 # Evaluate PT Survey
 
-Once participants have started responding to a shipment, you come
-here to **evaluate** their responses and generate the per-participant
-reports. Evaluation runs the scoring rules over the submitted
-responses and computes pass/fail, scores, and any flags. There is
-**no limit** on how many times you can evaluate — re-evaluating just
-re-runs the rules with the latest responses and any rule changes
-you've made. **Evaluation is internal to the admin and is not
-revealed to participants** until you generate and finalize the
-reports.
+Once participants start sending in their responses, come here to
+**evaluate** them. Evaluation applies the scoring rules and works
+out pass / fail and scores for every participant.
+
+You can re-evaluate as many times as you like. Each pass uses the
+latest responses and the latest rules. Evaluation is internal —
+**participants do not see anything until you generate and finalize
+the reports.**
 
 ## Step 1 — Pick a PT Survey
 
 The top table lists every PT Survey in the system.
 
-- Sort or page through to find the survey you want to work on.
+- Find the survey you want.
 - Click **View** in the Action column.
-- The selected survey row is highlighted, and the **Shipments
-  Under PT Survey ...** table appears below.
+- The row highlights and the **Shipments Under PT Survey ...**
+  table opens below.
 
-The system remembers the last survey you selected (via a cookie),
-so when you come back to this page it re-opens the same survey's
-shipments automatically.
+The system remembers the last survey you picked, so when you come
+back, the same shipments load again.
 
 ## Step 2 — The shipments table
 
-The bottom table shows every shipment under the selected survey,
-with response statistics:
+The lower table lists every shipment in that survey, with:
 
-- **Shipment Code** / **Scheme** — identifies the shipment.
+- **Shipment Code** / **Scheme** — what the shipment is.
 - **No. of Samples** — samples in the panel.
-- **No. of Participants** — labs mapped to this shipment.
-- **No. of Responses** — how many of those have responded so far.
-- **Response %** — quick read on response rate.
-- **Number Passed** — pass count after the most recent evaluation.
-  Zero until you've evaluated.
-- **Shipment Status** — derived from milestone timestamps:
+- **No. of Participants** — labs in this shipment.
+- **No. of Responses** — how many have responded so far.
+- **Response %** — quick read on the response rate.
+- **Number Passed** — pass count from the latest evaluation.
+  Zero until you have evaluated.
+- **Shipment Status** — the stage the shipment is at:
   *Pending response* → *Evaluated* → *Reports Generated* →
   *Finalized*.
-- **Action** — context-aware buttons (see below).
+- **Action** — buttons that change with the status (see below).
 
 ## The Action column — what you'll see when
 
-The buttons in the Action column **change based on the shipment's
-current status**. The general state machine is:
+The buttons here **change with the shipment's status**. The path
+is:
 
 > **Responses received** → **Evaluate** → **Generate Reports** →
 > **Finalize**
 
-**Once a shipment is finalized, it cannot be re-evaluated.** The
-Re-Evaluate, Generate Reports, Regenerate Reports, and Finalize
-buttons all disappear — only **View** remains. Make sure you're
-happy with the reports *before* finalizing, because that step
-locks the shipment and pushes reports out to participants.
+**Once a shipment is finalized, you cannot re-evaluate it.** The
+Re-Evaluate, Generate Reports and Finalize buttons all disappear
+— only **View** remains. Be sure the reports look right
+*before* you finalize, because finalize locks the shipment and
+sends reports to participants.
 
-### Initial — at least one response in, never evaluated
+### First time — at least one response in, never evaluated
 
-- **View** *(green eye)* — open the per-participant breakdown for
-  this shipment. See "View page" below.
-- **Evaluate** *(green pencil)* — schedules an evaluation job. The
-  shipment goes into a queue and is evaluated shortly. You're
-  alerted that it's been queued and the page reloads.
+- **View** *(green eye)* — open the per-participant breakdown
+  (see "View / Re-Evaluate Shipment").
+- **Evaluate** *(green pencil)* — queues an evaluation job. The
+  shipment is scored shortly. You will see a message that the
+  job is queued and the page reloads.
 - **Mail N Not Responded Participants** *(orange envelope)* —
-  shown when at least one mapped participant hasn't responded.
-  Sends a reminder email to just those labs. The button label
-  shows the actual count (e.g. *Mail 24 Not Responded
-  Participants*).
+  shows when some participants have not yet responded. Sends a
+  reminder email to just those labs. The label shows the count
+  (for example, *Mail 24 Not Responded Participants*).
 
-If no participant has responded yet, you'll only see a single
-disabled **View** button.
+If no participant has responded yet, you will see only a disabled
+**View** button.
 
-### After Evaluate — *evaluated_at* is set
+### After Evaluate
 
-- **View** — same as above; now reflects the latest evaluation.
-- **Re-Evaluate** — re-runs the evaluation. Use this after fixing
-  rules, after late responses come in, or any time you want a
-  fresh pass. There is no limit.
+- **View** — now shows the latest evaluation.
+- **Re-Evaluate** — re-scores the shipment. Use this after
+  fixing rules, after late responses, or any time you want a
+  fresh pass.
 - **Generate Reports** *(blue ✓)* — produces the per-participant
-  PDF reports for this shipment. Disabled if the shipment date is
-  in the future.
-- **VL Range** — shown only for **VL** scheme shipments. Opens the
-  manual reference-range editor for VL samples.
-- Mail-non-responders button continues to show while there are
-  outstanding participants.
+  PDF reports. Disabled if the shipment date is still in the
+  future.
+- **VL Range** — only for **VL** shipments. Opens the manual
+  reference-range editor.
+- The mail-non-responders button stays while some labs have not
+  responded.
 
-### After Generate Reports — *reports_generated_at* is set
+### After Generate Reports
 
-- **View Reports** *(light blue eye)* — opens the generated
-  reports for review.
-- **Regenerate Reports** *(orange refresh)* — replaces the
-  Generate Reports button. Re-runs the report generator with the
-  latest evaluation. Use this any time scores or rules change.
-- **Finalize** *(blue ✓)* — locks in the current set of reports
-  and makes them visible to participants. Disabled until the
-  shipment date has been reached.
-- Re-Evaluate / View / VL Range / Mail buttons remain available.
+- **View Reports** *(light blue eye)* — open the draft reports
+  to review.
+- **Regenerate Reports** *(orange refresh)* — re-builds the
+  reports with the latest evaluation. Use after any change.
+- **Finalize** *(blue ✓)* — lock the reports and show them to
+  participants. Disabled until the shipment date has been
+  reached.
+- Re-Evaluate, View, VL Range and the mail button stay
+  available.
 
-### After Finalize — *finalized_at* is set
+### After Finalize
 
 - **View** — only View remains. The shipment is locked: no more
-  re-evaluation, regeneration, or finalization. **Reports are now
-  visible to participants** on their dashboard.
+  evaluating, regenerating, or finalizing. **Participants can
+  now see the reports** on their dashboard.
 
-## Ephemeral statuses
+## While a job is running
 
-While an evaluation or report-generation job is running, the
-shipment shows a temporary status (*draft*, *ready*, *queued*,
-*processing*) and **all action buttons are disabled** — this
-prevents you from kicking off duplicate jobs. The page will pick
-up the new status on the next reload.
+While evaluation or report generation is running, the shipment
+shows a temporary status (*draft*, *ready*, *queued*,
+*processing*) and **all action buttons are disabled**. This stops
+you from starting the same job twice. Reload the page to pick up
+the new status.
 
-If a *queued* shipment seems stuck, the **Evaluate** button is
-re-enabled automatically after 15 minutes so you can retry.
+If a *queued* shipment looks stuck, the **Evaluate** button is
+re-enabled after 15 minutes so you can try again.
 
 ## Tips
 
-- **Re-evaluate freely.** Each re-evaluation overwrites the
-  previous scores. There's no audit/history written to participants
-  — they only ever see what was finalized.
-- **Generate Reports before Finalize** so you can review the PDFs.
-  Finalize is the irreversible step that pushes reports out.
-- For VL shipments, set the **VL Range** before generating
-  reports — manual ranges affect the pass/fail computation.
-- Use the **Mail Not Responded Participants** button judiciously;
-  participants get one email per click.
+- **Re-evaluate freely.** Each run replaces the previous scores.
+  Participants only ever see what you finalize.
+- **Generate Reports before Finalize** so you can review the
+  PDFs. Finalize cannot be undone.
+- For VL shipments, set the **VL Range** before you generate
+  reports — the ranges affect pass / fail.
+- Use **Mail Not Responded Participants** carefully — each click
+  sends one email.

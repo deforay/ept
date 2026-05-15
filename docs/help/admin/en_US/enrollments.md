@@ -11,23 +11,23 @@ participant must be enrolled in a scheme before they appear on
 shipments for that scheme — so this is where you decide which
 schemes (DTS, VL, TB, etc.) each participant takes part in.
 
-## Page Header
+## Page header
 
 - **Bulk Import Enrollment** — opens the bulk-import form for
   loading enrollments from an Excel spreadsheet.
 
-## Top Stats
+## Top stats
 
 A one-line table at the top shows the **count of active
-participants enrolled in each scheme** (e.g. *DTS = 142, VL =
-108, TB = 64*). A quick at-a-glance health check.
+participants enrolled in each scheme** (for example, *DTS = 142,
+VL = 108, TB = 64*). A quick health check.
 
-## Scheme Filter
+## Scheme filter
 
-- **Select Scheme Type** *(dropdown)* — picks which scheme's
-  enrollment list you want to see. Selecting a scheme:
+- **Select Scheme Type** *(dropdown)* — pick which scheme's
+  enrollment list you want to see. Picking a scheme:
   - Filters the table to participants enrolled in that scheme.
-  - Reveals the **Enroll Participants** button (see below).
+  - Shows the **Enroll Participants** button (see below).
 
 ## Enroll Action
 
@@ -50,18 +50,17 @@ When a scheme is picked, two buttons appear above the table:
   schemes appears as three rows.
 - **Enrolled On** — date of enrollment. Default sort is most
   recent first.
-- **Action** — **Know More** *(blue, eye icon)*. Opens
-  *`/admin/enrollments/view/pid/{participant_id}`*, a
+- **Action** — **Know More** *(blue, eye icon)*. Opens a
   per-participant **Shipment History** page listing every
-  shipment the participant has ever been on across **all**
+  shipment the participant has ever been on, across **all**
   their schemes: *Shipment Code*, *Shipment Date*, *Shipment
   Type* (the scheme), and *Status*. Sort by *Shipment Type* if
-  you want to scope the view to a single scheme. This is the
-  only place to see this — *Analyze → Evaluate* is per-shipment
-  and disappears once a shipment is finalized, so for
-  **historical, cross-shipment** lookups ("how has this lab
-  done over the last two years?"), Know More is the surface to
-  use. Rows with no scheme show `--` here instead of the
+  you want to limit the view to one scheme. This is the only
+  place to see this history — *Analyze → Evaluate* is
+  per-shipment and disappears once a shipment is finalized. So
+  for **long-running, cross-shipment** lookups ("how has this
+  lab done over the last two years?"), Know More is the page
+  to use. Rows with no scheme show `--` here instead of the
   button.
 
 ## Tips

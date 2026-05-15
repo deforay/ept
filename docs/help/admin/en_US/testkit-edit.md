@@ -6,9 +6,9 @@ tags: [config, testkit, edit, approval, additional-info]
 
 # Edit Test Kit
 
-Edits an existing test kit. Same fields as the **Add** form, plus
-an **Approved** dropdown so you can flip a kit's visibility to
-participants without deleting it.
+Edits an existing test kit. Same fields as the **Add** form,
+plus an **Approved** dropdown so you can show or hide a kit
+from participants without deleting it.
 
 ## Fields
 
@@ -44,17 +44,16 @@ participants without deleting it.
 
 ## Tips
 
-- **Flip Approved → No instead of deleting.** Past shipments may
-  reference this kit; switching to *No* removes it from the
-  participant dropdown without breaking historical data.
+- **Switch Approved → No instead of deleting.** Past shipments
+  may use this kit. Setting it to *No* hides it from the
+  participant dropdown without breaking old data.
 - Changing **Allow Additional Information** affects the
-  *participant response form going forward* — historical
-  responses keep whatever was captured at the time.
+  participant response form *from now on*. Old responses keep
+  whatever was recorded at the time.
 - If you switch **Allow Additional Information** from *Yes* to
-  *No*, the extra column disappears on new responses, but the
-  *Additional Information Label* and any captured values are
-  preserved on existing records.
+  *No*, the extra column disappears for new responses. The
+  *Additional Information Label* and any old values are kept.
 - For DTS, changing **Choose a Test Number** moves the kit
-  between test positions immediately — re-check the **Map Test
-  kits to Tests** page afterward to confirm the kit is still
-  selected (or deselected) at the right positions.
+  between test positions right away. Re-check the **Map Test
+  kits to Tests** page afterwards to confirm the kit is still
+  picked (or not) at the right positions.

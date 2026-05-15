@@ -6,16 +6,17 @@ tags: [config, testkit, dts, hiv-serology, approval]
 
 # Test Kits
 
-The **Test Kits** page lists every diagnostic kit configured in the
-system. Participants pick from this list when filling out their
-response form, so what you approve here determines what they see.
+The **Test Kits** page lists every diagnostic kit set up in the
+system. Participants pick from this list when filling in their
+response form. What you approve here is what they see.
 
 ## Page Header Buttons
 
 - **Add New Test Kit** — opens the *Add* form to create a new kit.
-- **Map Test kits to Tests** *(only when DTS / HIV Serology is an
-  active scheme)* — opens the kit-to-test-position mapping page
-  (Test 1 / Test 2 / Test 3, or generic-scheme tests).
+- **Map Test kits to Tests** *(only when DTS / HIV Serology is
+  an active scheme)* — opens the page that links kits to test
+  positions (Test 1 / Test 2 / Test 3, or generic-scheme
+  tests).
 
 ## Status Filter
 
@@ -52,16 +53,16 @@ clicking.
 
 ## Tips
 
-- A new kit defaults to **Approved = Yes** on creation. Switch it
-  to *No* via Edit if you want to hide it from the participant
-  form without deleting it.
-- Approve kits *before* shipping a survey that depends on them —
-  unapproved kits don't appear in participant dropdowns, so a
+- A new kit defaults to **Approved = Yes** when created. Switch
+  it to *No* via Edit if you want to hide it from the
+  participant form without deleting it.
+- Approve kits *before* shipping a survey that needs them.
+  Unapproved kits do not appear in participant dropdowns, so a
   late approval mid-cycle can leave participants stuck.
-- The **bulk Approve / Pending** actions are filtered by the
-  current status dropdown — switch to *Show Pending* first, then
-  bulk-approve to onboard a batch of newly-added kits at once.
-- For DTS, after approving a kit you usually want to also map it
-  to a test position (Test 1 / 2 / 3) via **Map Test kits to
-  Tests** — otherwise it won't surface in the response form for
-  that position.
+- The **bulk Approve / Pending** actions follow the current
+  status dropdown — switch to *Show Pending* first, then
+  bulk-approve to onboard a batch of new kits at once.
+- For DTS, after approving a kit you usually want to also link
+  it to a test position (Test 1 / 2 / 3) via **Map Test kits
+  to Tests** — otherwise it will not show up in the response
+  form for that position.

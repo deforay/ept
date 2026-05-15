@@ -12,8 +12,8 @@ going forward.
 
 ## Fields
 
-- **Name** *(required)* — full assay / platform name. Checked for
-  duplicates as you tab out.
+- **Name** *(required)* — full assay / platform name. The form
+  checks for duplicates as you tab out.
 - **Short Name** *(required)* — shorter label for tight spaces.
   Also checked for duplicates.
 
@@ -24,8 +24,11 @@ going forward.
 
 ## Tips
 
-- Use the **manufacturer + product line** for the *Name* (e.g.
-  *Abbott RealTime HIV-1*) — it's the convention participants
+- Use the **manufacturer + product line** for the *Name* (for
+  example, *Abbott RealTime HIV-1*) — that is what participants
   expect to see in their dropdown.
 - Keep the **Short Name** under ~20 characters — it shows up in
-  charts and report columns where horizontal space is limited.
+  charts and report columns where horizontal space is tight.
+- If you are not sure what to type, look at the existing assays
+  in the list and match their style. Consistency makes it easier
+  for participants to find their kit.

@@ -6,9 +6,9 @@ tags: [config, vl, viral-load, assay, platform]
 
 # VL Assays / Platforms
 
-Lists every **HIV Viral Load assay / platform** configured in the
-system. Participants pick from this list when filling out their VL
-response form, so what's here drives what they can choose.
+Lists every **HIV Viral Load assay / platform** set up in the
+system. Participants pick from this list when filling in their VL
+response form, so what is here is what they can choose.
 
 ## Page Header
 
@@ -24,10 +24,15 @@ response form, so what's here drives what they can choose.
 
 ## Tips
 
-- Use the **Short Name** for anything that might appear in a tight
-  column or chart legend — keep it under ~20 characters.
-- Both **Name** and **Short Name** are checked for duplicates as you
-  type — you cannot add two assays with the same name.
-- VL assays cannot be deleted from this page — if an assay is
-  retired, edit the name to flag it (e.g. *"[retired] Roche COBAS
-  v1"*) so historical responses still resolve correctly.
+- Use the **Short Name** for anything that might appear in a
+  tight column or chart legend — keep it under ~20 characters.
+- Both **Name** and **Short Name** are checked for duplicates as
+  you type — you cannot add two assays with the same name.
+- VL assays cannot be deleted from this page. If an assay is
+  retired, edit the name to flag it (for example, *"[retired]
+  Roche COBAS v1"*) so old responses still match the right
+  record.
+- If you are not sure what an assay is called, ask the lab
+  contact for the manufacturer and product name — the names on
+  this page should match what the manufacturer prints on the
+  device.

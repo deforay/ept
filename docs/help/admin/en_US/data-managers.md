@@ -1,6 +1,6 @@
 ---
 title: Data Managers (Participant Logins) and PT Country Coordinators
-summary: Manage Data Manager / PT Login accounts and PT Country Coordinators (PTCCs) — add, edit, reset password, change email, and map to participants
+summary: Manage Data Manager / PT Login accounts and PT Country Coordinators — add, edit, reset password, change email, and link to participants
 tags: [data-manager, pt-login, ptcc, participant-login, password, mapping]
 ---
 
@@ -8,46 +8,46 @@ tags: [data-manager, pt-login, ptcc, participant-login, password, mapping]
 
 This page lists the **PT Login** accounts that participants use
 to log into the participant side of the app. The same page
-serves two distinct roles, switched by the URL:
+handles two different roles, depending on the URL:
 
 - **`/admin/data-managers`** — *Data Managers (Participant
-  Logins)*. The standard PT Login. Each one is mapped to one or
-  more participants and only sees those participants when filling
-  out responses.
+  Logins)*. The standard PT Login. Each one is linked to one or
+  more participants and only sees those when filling in
+  responses.
 - **`/admin/data-managers/index/ptcc/1`** — *PT Country
-  Coordinators (PTCCs)*. A TB-specific role. PTCCs oversee a
-  geographic scope (country / state / district) instead of a
-  participant list. The page columns and action buttons are
-  different — see *PTCC mode* below.
+  Coordinators (PTCCs)*. A TB-specific role. A PTCC covers a
+  region (country / state / district) rather than a participant
+  list. The columns and action buttons are different — see
+  *PTCC mode* below.
 
-## Header Buttons (Data Manager mode)
+## Header buttons (Data Manager mode)
 
 - **Add New Data Manager (Participant Login)** — opens the *Add*
   form for a regular PT Login.
 
-## Header Buttons (PTCC mode)
+## Header buttons (PTCC mode)
 
-- **Add New PTCC** — opens the *Add* form pre-set to PTCC type.
+- **Add New PTCC** — opens the *Add* form set to PTCC type.
 - **Bulk Import PTCC** — opens the bulk-import form for loading
   many PTCCs from a spreadsheet.
 - **PTCC** *(green Download)* — exports the full PTCC list to
   Excel.
 - **PTCC Mapped Participants** *(green Download)* — exports the
-  PTCC ↔ Participant mapping to Excel.
+  PTCC ↔ Participant link to Excel.
 
 ## Filters
 
 - **Status** *(default: Active)* — *Active* / *Inactive* / *All*.
   Defaults to Active so retired logins don't clutter the view.
 - **Mapping** — *All* / *Mapped to a Participant* / *Not mapped
-  to any Participant*. Useful for finding stranded PT Logins that
-  won't see any participants.
-- **Per-column search** — small input under each column header
-  searches that column independently.
+  to any Participant*. Useful for finding PT Logins that won't
+  see any participants.
+- **Per-column search** — small input under each column heading
+  searches that column on its own.
 
-Active rows that are **not mapped to any participant** are
-highlighted with a yellow background — they're broken (the user
-can log in but won't see anything to do).
+Active rows that are **not linked to any participant** show a
+yellow background — they are broken (the user can log in but
+won't see anything to do).
 
 ## Columns
 
@@ -57,46 +57,44 @@ can log in but won't see anything to do).
 - **Primary Email**
 - **Status** — *Active* / *Inactive*.
 - **Country / State / District** *(PTCC mode only)* — the
-  geographic scope the PTCC oversees.
-- **Mapped Participants** — either *None mapped* (greyed out) or
-  a **View (n)** button that expands an in-row list of every
-  participant mapped to this PT Login. Click again to collapse.
+  region the PTCC covers.
+- **Mapped Participants** — either *None mapped* (greyed out)
+  or a **View (n)** button that expands a list of every
+  participant linked to this PT Login. Click again to close.
 - **Action** — see below.
 
-## Action Column
+## Action column
 
-Each row has a row of small buttons:
+Each row has small buttons:
 
-- **Edit** *(yellow)* — opens the edit form. Hidden when the
-  page is rendered as part of a participant edit (where the data
-  manager is just being shown for reference).
-- **Reset Password** *(blue, key icon)* — opens a modal to set a
-  new password for this PT Login.
-- **Change Email** *(grey, envelope icon)* — opens a modal to
-  change the **Primary Email** (which is also the username).
+- **Edit** *(yellow)* — opens the edit form. Hidden when this
+  page is shown as part of a participant edit (where the data
+  manager is just shown for reference).
+- **Reset Password** *(blue, key icon)* — opens a pop-up to
+  set a new password for this PT Login.
+- **Change Email** *(grey, envelope icon)* — opens a pop-up to
+  change the **Primary Email** (which is also the login name).
 - **Map Participants** *(green, user icon — Data Manager mode
-  only)* — opens the Map-Participants dual list in a modal,
-  pre-selected to this PT Login. Goes straight to the
-  participant-pane selector. PTCCs don't have this button — they
-  cover a region rather than a participant list.
+  only)* — opens the Map-Participants two-list selector in a
+  pop-up, already set to this PT Login. PTCCs don't have this
+  button — they cover a region, not a participant list.
 
 ## Tips
 
 - **Use the "Not mapped to any Participant" filter regularly.**
-  An active PT Login with no mapped participants is dead weight
+  An active PT Login with no linked participants is dead weight
   — they can log in, but their dashboard is empty. The yellow
-  highlight on the index page surfaces them; the filter narrows
-  the table to just those rows.
-- **Reset Password vs. Change Email are different forms.** If a
-  user can't access their old email, change the email *first*
-  (so the new email becomes their username), then reset the
-  password — the new credentials go to the new email.
-- **PTCC mode** is only relevant to the **TB** scheme. If TB
-  isn't an active scheme, you'll never need PTCCs and can ignore
-  the `/index/ptcc/1` URL.
+  highlight flags them; the filter narrows the table to just
+  those rows.
+- **Reset Password vs. Change Email are two different forms.**
+  If a user can't reach their old email, change the email
+  *first* (so the new email becomes their username), then reset
+  the password — the new credentials go to the new email.
+- **PTCC mode** is only used by the **TB** scheme. If TB is not
+  an active scheme, you can ignore the `/index/ptcc/1` URL.
 - The **PTCC Mapped Participants** export is a quick audit of
-  which participants fall under each PTCC — useful when reshuffling
-  geographic coverage.
-- Bulk import (PTCC) is the right tool when onboarding many
+  which participants fall under each PTCC — handy when you are
+  reshuffling regions.
+- Bulk import (PTCC) is the right tool for onboarding many
   coordinators at once. For one or two, **Add New PTCC** is
   faster.

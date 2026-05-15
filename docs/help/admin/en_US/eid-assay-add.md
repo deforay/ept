@@ -12,12 +12,12 @@ have separate lists; pick the right one before saving.
 
 ## Fields
 
-- **Choose Category** *(required)* — *Extraction* or *Detection*.
-  Pre-selected based on which tab you came from on the EID Assays
-  list. Determines which list the new entry lands in (and which
-  table is checked for duplicates).
-- **Name** *(required)* — assay / platform name. Checked for
-  duplicates within the chosen category.
+- **Choose Category** *(required)* — *Extraction* or
+  *Detection*. Pre-picked based on which tab you came from on
+  the EID Assays list. Decides which list the new entry lands
+  in (and which list is checked for duplicates).
+- **Name** *(required)* — assay / platform name. The form
+  checks for duplicates within the chosen category.
 
 ## Saving
 

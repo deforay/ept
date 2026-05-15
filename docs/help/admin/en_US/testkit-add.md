@@ -16,8 +16,8 @@ selected scheme(s).
   for duplicates as you tab out of the field.
 - **Short Test Kit Name** — optional shorter label (used where
   space is tight, like report tables).
-- **Approval Agency** *(required)* — the agency that approved /
-  validated the kit (WHO, FDA, MOH, etc.). Free text.
+- **Approval Agency** *(required)* — the agency that approved
+  the kit (WHO, FDA, MOH, and so on). Free text.
 - **Country Approved/Validated** *(required, Yes/No)* — whether
   the kit has country-level approval.
 - **Source Reference** — optional citation / URL / document name.
@@ -55,23 +55,22 @@ pass/fail result.
 - **Add** — saves the form and returns to the test-kit list.
 - **Cancel** — discards changes and returns to the list.
 
-A new kit is **automatically marked as Approved** on save — it
-appears in participant dropdowns immediately. Use the *Edit* form
-to flip it to unapproved if you want to hide it.
+A new kit is **marked as Approved by default** on save — it
+appears in participant dropdowns right away. Use the *Edit*
+form to switch it to unapproved if you want to hide it.
 
 ## Tips
 
-- Pick a **descriptive Test Kit Name** — it shows up in
-  participant dropdowns and on reports. *"Determine HIV-1/2 Ag/Ab
-  Combo (Abbott)"* is more useful than *"Determine"*.
-- For DTS, **always set the Test Number(s)** — a kit with no test
-  position assigned won't surface in the participant form for any
-  position. You can also do (or change) this later from **Map
-  Test kits to Tests**.
+- Pick a **clear Test Kit Name** — it shows up in participant
+  dropdowns and on reports. *"Determine HIV-1/2 Ag/Ab Combo
+  (Abbott)"* is more useful than *"Determine"*.
+- For DTS, **always set the Test Number(s)**. A kit with no
+  test position will not appear in the participant form for
+  any position. You can also change this later from **Map Test
+  kits to Tests**.
 - Use **Allow Additional Information** sparingly — every extra
-  mandatory column adds friction to the response form. Reserve
-  it for kits where the numeric reading is genuinely needed for
-  evaluation or auditing.
-- The *Comments* field is a good place to track internal notes
-  ("validated against panel X", "phasing out 2026") — none of
-  this is shown to participants.
+  required column adds work for participants. Use it only when
+  the numeric reading is really needed.
+- The *Comments* field is a good place for internal notes (for
+  example, "checked against panel X", "phasing out 2026").
+  None of this is shown to participants.

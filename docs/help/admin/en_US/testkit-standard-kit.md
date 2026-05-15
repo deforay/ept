@@ -6,15 +6,15 @@ tags: [config, testkit, mapping, dts, hiv-serology, generic-scheme]
 
 # Map Test Kits to Tests
 
-This page controls **which test kits show up in the participant's
-response form for each test position**. For example, if you map
-*Determine*, *SD Bioline*, and *Stat-Pak* to **HIV Serology — Test
-1**, those three kits (and only those three) appear in the *Test
-1* dropdown for the participant.
+This page controls **which test kits show up in the
+participant's response form for each test position**. For
+example, if you link *Determine*, *SD Bioline*, and *Stat-Pak*
+to **HIV Serology — Test 1**, those three kits (and only those
+three) appear in the *Test 1* dropdown for the participant.
 
-> Without a mapping, the test-position dropdown on the
-> participant form is empty — so this step is required for HIV
-> Serology / DTS shipments to be usable.
+> Without this link, the test-position dropdown on the
+> participant form is empty. So this step is required for HIV
+> Serology / DTS shipments to work.
 
 ## How to use it
 
@@ -36,9 +36,8 @@ response form for each test position**. For example, if you map
    selected pane.
 6. **Deselect All** *(right)* — moves every selected kit back to
    the available pane.
-7. **Save Selected** — persists the mapping for that test
-   position.
-8. **Cancel** — discards unsaved moves and resets the page.
+7. **Save Selected** — saves the choices for that test position.
+8. **Cancel** — drops unsaved moves and resets the page.
 
 ## Which kits appear on the left?
 
@@ -58,17 +57,14 @@ ticked.
 
 ## Tips
 
-- **Save each test position separately.** The form saves the
-  selection for the currently-loaded position only — switching
-  the dropdown to a different test discards unsaved changes.
-- **Updating a mapping is non-destructive for past responses.**
-  Removing a kit from a position only affects which kits a
-  participant can pick *going forward*; existing responses keep
-  whatever they recorded.
-- If you deselect every kit for a position, the participant form
-  for that position becomes effectively unusable — they'll see
-  an empty dropdown. Either keep at least one kit, or stop
-  using that test position.
-- Use the **search filter** in either pane for quick edits — the
-  multi-select widget can hold hundreds of kits and is hard to
-  scan visually otherwise.
+- **Save each test position on its own.** The form only saves
+  the position you are currently on. Switching the dropdown to
+  a different test drops any unsaved changes.
+- **Changing a link does not affect past responses.** Removing
+  a kit from a position only changes what a participant can
+  pick *from now on*. Old responses keep whatever they recorded.
+- If you remove every kit for a position, the participant form
+  for that position will show an empty dropdown. Keep at least
+  one kit, or stop using that test position.
+- Use the **search filter** in either pane for quick edits.
+  Long kit lists are hard to scan visually.

@@ -8,7 +8,7 @@ tags: [config, home, landing, hero, banner, faq]
 
 This page lets you customize the **public home page** that
 participants and visitors see at `/` before they log in. Each
-section is collapsible — open the ones you want to edit.
+section can be collapsed — open the ones you want to edit.
 
 ## Hero Content
 
@@ -22,10 +22,10 @@ The hero is the large banner block at the top of the home page.
 - **Video URL** — optional YouTube / video link to embed below
   the hero text.
 - **Page Title** — what shows in the browser tab.
-- **Additional Link URL** + **Additional Link Text** — extra
-  link button next to the hero (e.g. *"Download user guide"*
-  pointing to a PDF). Both fields together — leave both blank to
-  hide the button.
+- **Additional Link URL** + **Additional Link Text** — an extra
+  link button next to the hero (for example, *"Download user
+  guide"* pointing to a PDF). Both fields work together. Leave
+  both blank to hide the button.
 
 ## Home Banner Image
 
@@ -43,14 +43,14 @@ has an icon and a heading.
 
 - **Resource Section 1 / 2 / 3 — Icon** — pick an icon from the
   built-in icon picker (the small *Icon* button opens a
-  searchable modal). Stored as a class name (e.g. `bx bx-file`,
+  searchable pop-up). Stored as a class name (e.g. `bx bx-file`,
   `bi bi-book-half`).
 - **Resource Section 1 / 2 / 3 — Section Heading** — the title
   shown on the card.
 
 To set the **links** that go under each card heading, use
 **Manage → Home Section Links** (a separate admin page) — those
-are populated dynamically rather than hardcoded here.
+are loaded from elsewhere rather than set in code here.
 
 ## Home Page Logos
 
