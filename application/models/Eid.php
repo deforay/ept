@@ -311,7 +311,7 @@ class Application_Model_Eid
                 ->where('res.shipment_map_id = ?', $rowOverAll['map_id']);
             $resultResponse = $db->fetchAll($queryResponse);
 
-            $attributes = json_decode($rowOverAll['attributes'], true);
+            $attributes = Pt_Commons_JsonUtility::safeDecode($rowOverAll['attributes']);
             $extraction = (array_key_exists($attributes['extraction_assay'], $extractionAssayList)) ? $extractionAssayList[$attributes['extraction_assay']] : '';
             // $detection = (array_key_exists($attributes['detection_assay'], $detectionAssayList)) ? $detectionAssayList[$attributes['detection_assay']] : "";
             // $sampleRehydrationDate = (isset($attributes['sample_rehydration_date'])) ? Pt_Commons_DateUtility::humanReadableDateFormat($attributes['sample_rehydration_date']) : "";

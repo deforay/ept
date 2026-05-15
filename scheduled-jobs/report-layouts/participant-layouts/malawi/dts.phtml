@@ -73,7 +73,7 @@ if (!empty($resultArray['shipment'])) {
     $j = 1;
 
     foreach ($resultArray['shipment'] as $result) {
-        $shipmentAttributes = json_decode($result['shipment_attributes'], true);
+        $shipmentAttributes = Pt_Commons_JsonUtility::safeDecode($result['shipment_attributes']);
         $shipmentAttributes['shipment_id'] = $result['shipment_id'];
 
         if (
@@ -155,7 +155,7 @@ if (!empty($resultArray['shipment'])) {
         // FIX #3a: first (and only) decode of $attributes
         $attributes = [];
         if (isset($result['attributes'])) {
-            $attributes = json_decode($result['attributes'], true) ?? [];
+            $attributes = Pt_Commons_JsonUtility::safeDecode($result['attributes']);
         }
 
         /* Shipment attributes */
@@ -897,7 +897,7 @@ if (!empty($resultArray['shipment'])) {
                 $failRes = '<span style="font-weight:bold;font-size:12px;">Suggested Corrective actions for your response:</span> <br/>';
                 $failRes .= '<table border="1" style="font-size:11px;">';
                 $failRes .= '<tr style="background-color:#dbe4ee;"><td style="text-align:center;font-weight:bold;">Failure Reasons (or) Warnings</td><td style="text-align:center;font-weight:bold;">Corrective Actions (if any)</td></tr>';
-                $warnings = json_decode($result['responseResult'][0]['failure_reason'], true);
+                $warnings = Pt_Commons_JsonUtility::safeDecode($result['responseResult'][0]['failure_reason']);
                 if (is_array($warnings)) {
                     foreach ($warnings as $warning) {
                         $failRes .= '<tr>';

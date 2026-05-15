@@ -14,7 +14,7 @@ if (!empty($resultArray['shipment'])) {
     $j = 1;
     //$resultArray['dmResult'];
     foreach ($resultArray['shipment'] as $result) {
-        $shipmentAttributes = json_decode($result['shipment_attributes'], true);
+        $shipmentAttributes = Pt_Commons_JsonUtility::safeDecode($result['shipment_attributes']);
 
         $methodOfEvaluation = isset($shipmentAttributes['methodOfEvaluation']) ? $shipmentAttributes['methodOfEvaluation'] : 'standard';
 
@@ -113,7 +113,7 @@ if (!empty($resultArray['shipment'])) {
             $testThreeOptionalDisplay = "display:none;";
         }
         /* for Shipment attributes functionality start */
-        //$shipmentAttributes = json_decode($result['shipment_attributes'], true);
+        //$shipmentAttributes = Pt_Commons_JsonUtility::safeDecode($result['shipment_attributes']);
 
 
         /* for Shipment attributes functionality end */
@@ -124,7 +124,7 @@ if (!empty($resultArray['shipment'])) {
         }
         $attributes = '';
         if (isset($result['attributes'])) {
-            $attributes = json_decode($result['attributes'], true);
+            $attributes = Pt_Commons_JsonUtility::safeDecode($result['attributes']);
         }
 
         $shipmentReceiptDate = "";

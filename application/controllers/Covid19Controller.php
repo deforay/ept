@@ -58,7 +58,7 @@ class Covid19Controller extends Zend_Controller_Action
             $this->view->allSamples = $response;
 
             $shipment = $schemeService->getShipmentData($sID, $pID);
-            $shipment['attributes'] = json_decode($shipment['attributes'], true);
+            $shipment['attributes'] = Pt_Commons_JsonUtility::safeDecode($shipment['attributes']);
             $this->view->shipment = $shipment;
 
             $this->view->allTestTypes = $schemeService->getAllCovid19TestTypeResponseWise('covid19');
@@ -111,7 +111,7 @@ class Covid19Controller extends Zend_Controller_Action
         $this->view->referenceDetails = $schemeService->getCovid19ReferenceData($sID);
 
         $shipment = $schemeService->getShipmentData($sID, $pID);
-        $shipment['attributes'] = json_decode($shipment['attributes'], true);
+        $shipment['attributes'] = Pt_Commons_JsonUtility::safeDecode($shipment['attributes']);
         $this->view->shipment = $shipment;
     }
 }

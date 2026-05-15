@@ -53,7 +53,7 @@ class TbController extends Zend_Controller_Action
             $shipment = $schemeService->getShipmentData($sID, $pID);
             $this->view->allNotTestedReason = $schemeService->getNotTestedReasons('tb');
             $this->view->allSamples = $tbModel->getTbSamplesForParticipant($sID, $pID);
-            $shipment['attributes'] = json_decode($shipment['attributes'], true);
+            $shipment['attributes'] = Pt_Commons_JsonUtility::safeDecode($shipment['attributes']);
             $this->view->instruments = $participantService->getTbInstruments($shipment['map_id']);
             $this->view->shipment = $shipment;
             $this->view->shipId = $sID;
@@ -99,7 +99,7 @@ class TbController extends Zend_Controller_Action
         $this->view->participant = $participantService->getParticipantDetails($pID);
         $this->view->allSamples = $tbModel->getTbSamplesForParticipant($sID, $pID);
         $shipment = $schemeService->getShipmentData($sID, $pID);
-        $shipment['attributes'] = json_decode($shipment['attributes'], true);
+        $shipment['attributes'] = Pt_Commons_JsonUtility::safeDecode($shipment['attributes']);
         $this->view->instruments = $participantService->getTbInstruments($shipment['map_id']);
         $this->view->shipment = $shipment;
         $this->view->shipId = $sID;

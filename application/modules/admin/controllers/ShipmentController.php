@@ -442,7 +442,7 @@ class Admin_ShipmentController extends Zend_Controller_Action
             // Filter values are JSON-encoded into a single 'filters' POST var
             // to dodge PHP's max_input_vars truncating large multi-selects.
             if (!empty($params['filters']) && is_string($params['filters'])) {
-                $decoded = json_decode($params['filters'], true);
+                $decoded = Pt_Commons_JsonUtility::safeDecode($params['filters']);
                 if (is_array($decoded)) {
                     $params = array_merge($params, $decoded);
                 }

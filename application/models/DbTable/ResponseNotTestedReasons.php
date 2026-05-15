@@ -113,7 +113,7 @@ class Application_Model_DbTable_ResponseNotTestedReasons extends Zend_Db_Table_A
         foreach ($rResult as $aRow) {
             $row = [];
             $schemeData = [];
-            $scheme = json_decode($aRow['ntr_test_type'], true);
+            $scheme = Pt_Commons_JsonUtility::safeDecode($aRow['ntr_test_type']);
             foreach ($scheme as $r) {
                 $schemeData[] = $schemeList[$r];
             }

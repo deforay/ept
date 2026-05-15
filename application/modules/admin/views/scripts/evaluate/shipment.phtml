@@ -19,7 +19,7 @@ $shipmentAttributesDisplay = '';
 
 // Show shipment attributes as formatted JSON for admin debugging without affecting the default page flow.
 if ($shipmentAttributesRaw !== '') {
-	$shipmentAttributesDecoded = json_decode($shipmentAttributesRaw, true);
+	$shipmentAttributesDecoded = Pt_Commons_JsonUtility::safeDecode($shipmentAttributesRaw);
 	if (json_last_error() === JSON_ERROR_NONE) {
 		$shipmentAttributesDisplay = json_encode($shipmentAttributesDecoded, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
 	} else {

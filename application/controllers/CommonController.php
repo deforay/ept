@@ -280,7 +280,7 @@ class CommonController extends Zend_Controller_Action
                     ->from('shipment_participant_map', 'failure_reason')
                     ->where('map_id = ?', $mapId)
             );
-            $this->view->warnings = json_decode($failureReason, true) ?: [];
+            $this->view->warnings = Pt_Commons_JsonUtility::safeDecode($failureReason);
         } else {
             $this->view->warnings = [];
         }

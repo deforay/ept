@@ -51,7 +51,7 @@ class Application_Model_Covid19
             $algoResult = '';
             $lastDateResult = '';
 
-            $attributes = json_decode($shipment['attributes'], true);
+            $attributes = Pt_Commons_JsonUtility::safeDecode($shipment['attributes']);
 
             //Response was submitted after the last response date.
             $lastDate = Pt_Commons_DateUtility::endOfDay($shipment['lastdate_response']);
@@ -792,7 +792,7 @@ class Application_Model_Covid19
         //<-------- Document Score Sheet Heading (Sheet Four)-------
 
         /* if ($result['scheme_type'] == 'covid19') {
-            $shipmentAttributes = json_decode($aRow['shipment_attributes'], true);
+            $shipmentAttributes = Pt_Commons_JsonUtility::safeDecode($aRow['shipment_attributes']);
             if (isset($shipmentAttributes['sampleType']) && $shipmentAttributes['sampleType'] == 'dried') {
                 // for Dried Samples, we will have rehydration as one of the documentation scores
                 $documentationScorePerItem = round(($documentationScore / 5), 2);
@@ -953,7 +953,7 @@ class Application_Model_Covid19
                 }
 
                 if (trim($aRow['attributes']) != '') {
-                    $attributes = json_decode($aRow['attributes'], true);
+                    $attributes = Pt_Commons_JsonUtility::safeDecode($aRow['attributes']);
                     $sampleRehydrationDate = new Zend_Date($attributes['sample_rehydration_date']);
                     $rehydrationDate = Pt_Commons_General::excelDateFormat($attributes['sample_rehydration_date']);
                 }

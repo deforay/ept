@@ -3407,7 +3407,7 @@ class Application_Service_Reports
             $cResult = $db->fetchAll($cQuery);
             $k = 0;
             foreach ($cResult as $val) {
-                $valAttributes = json_decode($val['attributes'], true);
+                $valAttributes = Pt_Commons_JsonUtility::safeDecode($val['attributes']);
                 if ($assayRow['id'] == $valAttributes['vl_assay']) {
                     $k = $k + 1;
                 }
@@ -3450,7 +3450,7 @@ class Application_Service_Reports
                         ->where("sp.shipment_id='" . $shipmentId . "'");
                     $cResult = $db->fetchAll($cQuery);
                     foreach ($cResult as $val) {
-                        $valAttributes = json_decode($val['attributes'], true);
+                        $valAttributes = Pt_Commons_JsonUtility::safeDecode($val['attributes']);
                         if ($assayRow['id'] == $valAttributes['vl_assay']) {
                             //check pass result
                             $pQuery = $db->select()->from(['rrv' => 'response_result_vl'], ['passResult' => new Zend_Db_Expr("SUM(IF(rrv.calculated_score='pass',1,0))"), 'failResult' => new Zend_Db_Expr("SUM(IF(rrv.calculated_score='fail',1,0))"), 'exResult' => new Zend_Db_Expr("SUM(IF(rrv.calculated_score='excluded',1,0))")])
@@ -3503,7 +3503,7 @@ class Application_Service_Reports
 
         $shipmentId = $params['shipmentId'];
         $shipment = $db->fetchRow($db->select()->from(['s' => 'shipment'], ['shipment_attributes'])->where('s.shipment_id = ?', $shipmentId));
-        $shipmentAttributes = !empty($shipment['shipment_attributes']) ? json_decode($shipment['shipment_attributes'], true) : [];
+        $shipmentAttributes = !empty($shipment['shipment_attributes']) ? Pt_Commons_JsonUtility::safeDecode($shipment['shipment_attributes']) : [];
         $methodOfEvaluation = $shipmentAttributes['methodOfEvaluation'] ?? 'standard';
 
         $assayQuery = $db->select()
@@ -3613,7 +3613,7 @@ class Application_Service_Reports
                 continue;
             }
 
-            $attributes = json_decode($row['attributes'], true);
+            $attributes = Pt_Commons_JsonUtility::safeDecode($row['attributes']);
             if (empty($attributes) || empty($attributes['vl_assay'])) {
                 continue;
             }
@@ -3931,7 +3931,7 @@ class Application_Service_Reports
                     $participants[$shipment['unique_identifier']][$shipment['scheme_type']][$shipment['shipment_code']]['finalResult'] = $shipment['finalResult'] ?? '';
                     $participants[$shipment['unique_identifier']][$shipment['scheme_type']][$shipment['shipment_code']]['failure_reason'] = $shipment['failure_reason'] ?? '';
                     $participants[$shipment['unique_identifier']][$shipment['scheme_type']][$shipment['shipment_code']]['number_of_samples'] = $shipment['number_of_samples'] ?? '';
-                    $participants[$shipment['unique_identifier']][$shipment['scheme_type']][$shipment['shipment_code']]['attributes'] = json_decode($shipment['attributes'], true);
+                    $participants[$shipment['unique_identifier']][$shipment['scheme_type']][$shipment['shipment_code']]['attributes'] = Pt_Commons_JsonUtility::safeDecode($shipment['attributes']);
                     $participants[$shipment['unique_identifier']][$shipment['scheme_type']][$shipment['shipment_code']]['shipment_date'] = $shipment['shipment_date'] ?? '';
                     $participants[$shipment['unique_identifier']][$shipment['scheme_type']][$shipment['shipment_code']]['lastdate_response'] = $shipment['lastdate_response'] ?? '';
                     $participants[$shipment['unique_identifier']][$shipment['scheme_type']][$shipment['shipment_code']]['shipment_test_report_date'] = $shipment['shipment_test_report_date'] ?? '';
@@ -4164,7 +4164,7 @@ class Application_Service_Reports
                     }
                     $firstSheetRow[] = $participantArray[$shipmentType][$shipmentCode]['finalResult'];
                     if (isset($participantArray[$shipmentType][$shipmentCode]['failure_reason']) && !empty($participantArray[$shipmentType][$shipmentCode]['failure_reason']) && $participantArray[$shipmentType][$shipmentCode]['failure_reason'] != '[]') {
-                        $warnings = json_decode($participantArray[$shipmentType][$shipmentCode]['failure_reason'], true);
+                        $warnings = Pt_Commons_JsonUtility::safeDecode($participantArray[$shipmentType][$shipmentCode]['failure_reason']);
                         $txt = $note = '';
                         foreach ($warnings as $w) {
                             $txt .= $w['warning'] ?? '';
@@ -4275,7 +4275,7 @@ class Application_Service_Reports
                         $csvRow[] = $participantArray[$shipmentType][$shipmentCode]['finalResult'];
 
                         if (isset($participantArray[$shipmentType][$shipmentCode]['failure_reason']) && !empty($participantArray[$shipmentType][$shipmentCode]['failure_reason']) && $participantArray[$shipmentType][$shipmentCode]['failure_reason'] != '[]') {
-                            $warnings = json_decode($participantArray[$shipmentType][$shipmentCode]['failure_reason'], true);
+                            $warnings = Pt_Commons_JsonUtility::safeDecode($participantArray[$shipmentType][$shipmentCode]['failure_reason']);
                             $txt = $note = '';
                             foreach ($warnings as $w) {
                                 $txt .= $w['warning'] ?? '';
@@ -4858,7 +4858,7 @@ class Application_Service_Reports
         // Parse existing JSON data
         $reportData = [];
         if (!empty($existingData)) {
-            $reportData = json_decode($existingData, true);
+            $reportData = Pt_Commons_JsonUtility::safeDecode($existingData);
             if (!is_array($reportData)) {
                 $reportData = [];
             }

@@ -61,13 +61,13 @@ class DtsController extends Zend_Controller_Action
             $this->view->allNotTestedReason = $schemeService->getNotTestedReasons('dts');
 
             $shipment = $schemeService->getShipmentData($sID, $pID);
-            $shipment['attributes'] = ($shipment['attributes']) ? json_decode($shipment['attributes'], true) : null;
+            $shipment['attributes'] = ($shipment['attributes']) ? Pt_Commons_JsonUtility::safeDecode($shipment['attributes']) : null;
             $this->view->shipment = $shipment;
 
             //Zend_Debug::dump($this->view->shipment);
             $this->view->allTestKits = $dtsModel->getAllDtsTestKitList();
             $this->view->dtsPossibleResults = $schemeService->getPossibleResults('dts', 'participant');
-            $shipmentAttributes = isset($shipment['shipment_attributes']) ? json_decode($shipment['shipment_attributes'], true) : [];
+            $shipmentAttributes = isset($shipment['shipment_attributes']) ? Pt_Commons_JsonUtility::safeDecode($shipment['shipment_attributes']) : [];
             if (isset($shipmentAttributes['enableRtri']) && $shipmentAttributes['enableRtri'] == 'yes') {
                 $this->view->recencyPossibleResults = $schemeService->getPossibleResults('recency', 'participant');
             }
@@ -116,7 +116,7 @@ class DtsController extends Zend_Controller_Action
         $this->view->referenceDetails = $schemeService->getDtsReferenceData($sID);
 
         $shipment = $schemeService->getShipmentData($sID, $pID);
-        $shipment['attributes'] = json_decode($shipment['attributes'], true);
+        $shipment['attributes'] = Pt_Commons_JsonUtility::safeDecode($shipment['attributes']);
         $this->view->shipment = $shipment;
     }
 }

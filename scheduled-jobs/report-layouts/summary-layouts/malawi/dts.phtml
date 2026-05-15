@@ -2,7 +2,7 @@
 
 // Removed monochromatic palette — using meaningful colors below
 if ($resultArray['shipment'] != "") {
-    $shipmentAttributes = json_decode($resultArray['shipment']['shipment_attributes'], true);
+    $shipmentAttributes = Pt_Commons_JsonUtility::safeDecode($resultArray['shipment']['shipment_attributes']);
     $shipmentAttributes['shipment_id'] = $resultArray['shipment']['shipment_id'];
     if (!file_exists($reportsPath . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code']) && !is_dir($reportsPath . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'])) {
         mkdir($reportsPath . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'], 0777, true);

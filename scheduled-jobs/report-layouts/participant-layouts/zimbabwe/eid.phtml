@@ -16,7 +16,7 @@ if (!empty($resultArray['shipment'])) {
     foreach ($resultArray['shipment'] as $count => $result) {
 
         /* for Shipment attributes functionality start */
-        $shipmentAttributes = json_decode($result['shipment_attributes'], true);
+        $shipmentAttributes = Pt_Commons_JsonUtility::safeDecode($result['shipment_attributes']);
         $shipmentAttributes['shipment_id'] = $result['shipment_id'];
         if ( /*(isset($result['responseResult'][0]['is_excluded']) && $result['responseResult'][0]['is_excluded'] == 'yes') || */
             (isset($result['responseResult'][0]['is_pt_test_not_performed']) && $result['responseResult'][0]['is_pt_test_not_performed'] == 'yes')
@@ -102,7 +102,7 @@ if (!empty($resultArray['shipment'])) {
         }
         $attributes = '';
         if (isset($result['attributes'])) {
-            $attributes = json_decode($result['attributes'], true);
+            $attributes = Pt_Commons_JsonUtility::safeDecode($result['attributes']);
         }
 
         $shipmentReceiptDate = "";
@@ -246,7 +246,7 @@ if (!empty($resultArray['shipment'])) {
                             <td style="text-align:center;font-weight:bold;">Corrective Actions (if any)</td>
                         </tr>';
 
-                $warnings = json_decode($result['responseResult'][0]['failure_reason'], true);
+                $warnings = Pt_Commons_JsonUtility::safeDecode($result['responseResult'][0]['failure_reason']);
                 foreach ($warnings as $warning) {
                     $failRes .= '<tr>
                             <td>' . (isset($warning['warning']) ? $warning['warning'] : "") . '</td>

@@ -1964,9 +1964,9 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 }
             }
 
-            $shipmentAttributes = json_decode($row['shipment_attributes'], true);
+            $shipmentAttributes = Pt_Commons_JsonUtility::safeDecode($row['shipment_attributes']);
 
-            $attributes = json_decode($row['attributes'], true);
+            $attributes = Pt_Commons_JsonUtility::safeDecode($row['attributes']);
             $customField1 = $globalConfigDb->getValue('custom_field_1');
             $customField2 = $globalConfigDb->getValue('custom_field_2');
             $haveCustom = $globalConfigDb->getValue('custom_field_needed');
@@ -2195,8 +2195,8 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             $allSamples = $schemeService->getCovid19Samples($params['shipment_id'], $params['participant_id']);
         }
         $shipment = $schemeService->getShipmentData($params['shipment_id'], $params['participant_id']);
-        $shipment['attributes'] = json_decode($shipment['attributes'], true);
-        $shipment['shipment_attributes'] = json_decode($shipment['shipment_attributes'], true);
+        $shipment['attributes'] = Pt_Commons_JsonUtility::safeDecode($shipment['attributes']);
+        $shipment['shipment_attributes'] = Pt_Commons_JsonUtility::safeDecode($shipment['shipment_attributes']);
 
         $modeOfReceipt = $commonService->getAllModeOfReceipt();
         $globalQcAccess = $commonService->getConfig('qc_access');

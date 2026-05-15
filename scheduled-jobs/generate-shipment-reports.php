@@ -1011,7 +1011,7 @@ class ReportGenerator
             $shipmentsUnderDistro = $this->config->shipmentService->getShipmentInReports($totParticipantsRes['distribution_id'], $evalRow['shipment_id'])[0] ?? null;
         }
 
-        $shipmentAttribute = json_decode($evalRow['shipment_attributes'], true);
+        $shipmentAttribute = Pt_Commons_JsonUtility::safeDecode($evalRow['shipment_attributes']);
         $noOfTests = (isset($shipmentAttribute['dtsTestPanelType']) && $shipmentAttribute['dtsTestPanelType'] == 'yes')
             ? ['screening', 'confirmatory']
             : null;

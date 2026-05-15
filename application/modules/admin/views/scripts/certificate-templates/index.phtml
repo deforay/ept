@@ -188,8 +188,8 @@ $validateUrl = $this->url(array('module' => 'admin', 'controller' => 'certificat
     $schemeName = $scheme['scheme_name'];
     $pCert = $ct[$schemeType]['participation_certificate'] ?? null;
     $eCert = $ct[$schemeType]['excellence_certificate'] ?? null;
-    $pFields = !empty($ct[$schemeType]['p_detected_fields']) ? json_decode($ct[$schemeType]['p_detected_fields'], true) : [];
-    $eFields = !empty($ct[$schemeType]['e_detected_fields']) ? json_decode($ct[$schemeType]['e_detected_fields'], true) : [];
+    $pFields = !empty($ct[$schemeType]['p_detected_fields']) ? Pt_Commons_JsonUtility::safeDecode($ct[$schemeType]['p_detected_fields']) : [];
+    $eFields = !empty($ct[$schemeType]['e_detected_fields']) ? Pt_Commons_JsonUtility::safeDecode($ct[$schemeType]['e_detected_fields']) : [];
     // Check if files exist - either from DB record or by convention ({schemeType}-p.pdf / {schemeType}-e.pdf)
     $templateDir = SCHEDULED_JOBS_FOLDER . DIRECTORY_SEPARATOR . 'certificate-templates' . DIRECTORY_SEPARATOR;
     $pExists = (!empty($pCert) && file_exists($templateDir . $pCert)) || file_exists($templateDir . $schemeType . '-p.pdf');

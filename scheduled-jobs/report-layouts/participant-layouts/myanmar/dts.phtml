@@ -120,9 +120,9 @@ if ($totalPages > 0) {
             $width = 14.3;
         }
 
-        $attributes = json_decode($result['attributes'], true);
+        $attributes = Pt_Commons_JsonUtility::safeDecode($result['attributes']);
         /* for Shipment attributes functionality start */
-        $shipmentAttributes = json_decode($result['shipment_attributes'], true);
+        $shipmentAttributes = Pt_Commons_JsonUtility::safeDecode($result['shipment_attributes']);
         $shipmentAttributesScreeningTestDisplay = "";
         if (isset($shipmentAttributes["screeningTest"]) && $shipmentAttributes["screeningTest"] == 'yes') {
             $shipmentAttributesScreeningTestDisplay = "display:none;";
@@ -191,22 +191,19 @@ if ($totalPages > 0) {
             $splitDate = explode(" ", $result['responseResult'][0]['responseDate']);
             $responseDate = Pt_Commons_DateUtility::humanReadableDateFormat($splitDate[0]);
         }
-        $attributes = '';
-        if (isset($result['attributes'])) {
-            $attributes = json_decode($result['attributes'], true);
-        }
         $screening = '';
         if (is_array($attributes) && isset($attributes['dts_test_panel_type']) && $attributes['dts_test_panel_type'] !== '') {
             $screening = ' - ' . ucwords((string) $attributes['dts_test_panel_type']);
         }
 
         $sampleRehydrationDate = "";
-        if (isset($attributes['sample_rehydration_date']) && trim($attributes['sample_rehydration_date']) != "") {
+        if (!empty($attributes['sample_rehydration_date']) && trim((string) $attributes['sample_rehydration_date']) != "") {
             $sampleRehydrationDate = Pt_Commons_DateUtility::humanReadableDateFormat($attributes['sample_rehydration_date']);
         }
 
-        $srDate = (isset($attributes['sample_rehydration_date']) && !empty($attributes['sample_rehydration_date'])) ? new DateTime($attributes['sample_rehydration_date']) : null;
-        $testedOnDate = new DateTime($result['responseResult'][0]['shipment_test_date']);
+        $srDate = !empty($attributes['sample_rehydration_date']) ? new DateTime($attributes['sample_rehydration_date']) : null;
+        $shipmentTestDateRaw = $result['responseResult'][0]['shipment_test_date'] ?? null;
+        $testedOnDate = !empty($shipmentTestDateRaw) ? new DateTime($shipmentTestDateRaw) : null;
         $interval = (isset($attributes['sample_rehydration_date']) && !empty($attributes['sample_rehydration_date'])) ? $srDate->diff($testedOnDate) : null;
 
         // Testing should be done within 24*($sampleRehydrateDays) hours of rehydration.
@@ -528,7 +525,7 @@ if ($totalPages > 0) {
 
             $documentationScorePerItem = round(($documentationScore / $totalDocumentationItems), 2);
 
-            $attributes = json_decode($result['attributes'], true);
+            $attributes = Pt_Commons_JsonUtility::safeDecode($result['attributes']);
 
             $img = [];
             $imgPass = WEB_ROOT . '/images/check.jpg';
@@ -609,7 +606,7 @@ if ($totalPages > 0) {
                 $failRes = '<span style="font-weight:bold;font-size:12px;">Suggested Corrective actions for your response :</span> <br/>';
                 $failRes .= '<table border="1" style="font-size:11px;">';
                 $failRes .= '<tr style="background-color:#dbe4ee;"><td style="text-align:center;font-weight:bold;">Failure Reasons (or) Warnings</td><td style="text-align:center;font-weight:bold;">Corrective Actions (if any)</td></tr>';
-                $warnings = json_decode($result['responseResult'][0]['failure_reason'], true);
+                $warnings = Pt_Commons_JsonUtility::safeDecode($result['responseResult'][0]['failure_reason']);
                 foreach ($warnings as $warning) {
                     $failRes .= '<tr>';
                     $failRes .= '<td> ' . (isset($warning['warning']) ? $warning['warning'] : "") . ' </td>';

@@ -24,11 +24,11 @@ if (!empty($resultArray['shipment'])) {
     // Process each shipment result
     foreach ($resultArray['shipment'] as $result) {
         /* for Shipment attributes functionality start */
-        $shipmentAttributes = json_decode($result['shipment_attributes'], true);
+        $shipmentAttributes = Pt_Commons_JsonUtility::safeDecode($result['shipment_attributes']);
         $shipmentAttributes['shipment_id'] = $result['shipment_id'];
 
         $methodOfEvaluation = isset($shipmentAttributes['methodOfEvaluation']) ? $shipmentAttributes['methodOfEvaluation'] : 'standard';
-        $attributes = json_decode($result['attributes'] ?? '{}', true);
+        $attributes = Pt_Commons_JsonUtility::safeDecode($result['attributes']);
 
         $sampleRehydrationDate = '';
         if (!empty($attributes['sample_rehydration_date'])) {
@@ -352,7 +352,7 @@ if (!empty($resultArray['shipment'])) {
                         <td style="text-align:center;font-weight:bold;">Corrective Actions (if any)</td>
                     </tr>';
 
-                $warnings = json_decode($result['responseResult'][0]['failure_reason'], true);
+                $warnings = Pt_Commons_JsonUtility::safeDecode($result['responseResult'][0]['failure_reason']);
                 foreach ($warnings as $warning) {
                     $failRes .= '<tr>
                         <td>' . (isset($warning['warning']) ? $warning['warning'] : "") . '</td>

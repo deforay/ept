@@ -53,7 +53,7 @@ class CustomTestController extends Zend_Controller_Action
             $this->view->participant = $participantService->getParticipantDetails($pID);
             $shipment = $schemeService->getShipmentData($sID, $pID);
             $this->view->allNotTestedReason = $schemeService->getNotTestedReasons($shipment['scheme_type']);
-            $shipment['attributes'] = json_decode($shipment['attributes'], true);
+            $shipment['attributes'] = Pt_Commons_JsonUtility::safeDecode($shipment['attributes']);
             $this->view->otherTestsPossibleResults = $schemeService->getPossibleResults($shipment['scheme_type'], 'participant');
             $this->view->shipment = $shipment;
             $this->view->shipId = $sID;
@@ -96,7 +96,7 @@ class CustomTestController extends Zend_Controller_Action
         $this->view->referenceDetails = $schemeService->getDtsReferenceData($sID);
 
         $shipment = $schemeService->getShipmentData($sID, $pID);
-        $shipment['attributes'] = json_decode($shipment['attributes'], true);
+        $shipment['attributes'] = Pt_Commons_JsonUtility::safeDecode($shipment['attributes']);
         $this->view->shipment = $shipment;
     }
 }

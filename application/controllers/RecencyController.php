@@ -64,7 +64,7 @@ class RecencyController extends Zend_Controller_Action
             $this->view->allSamples = $schemeService->getRecencySamples($sID, $pID);
             $this->view->allNotTestedReason = $schemeService->getNotTestedReasons('recency');
             $shipment = $schemeService->getShipmentData($sID, $pID);
-            $shipment['attributes'] = json_decode($shipment['attributes'], true);
+            $shipment['attributes'] = Pt_Commons_JsonUtility::safeDecode($shipment['attributes']);
             $this->view->shipment = $shipment;
             $this->view->shipId = $sID;
             $this->view->participantId = $pID;
@@ -99,7 +99,7 @@ class RecencyController extends Zend_Controller_Action
         $this->view->referenceDetails = $schemeService->getRecencyReferenceData($sID);
 
         $shipment = $schemeService->getShipmentData($sID, $pID);
-        $shipment['attributes'] = json_decode($shipment['attributes'], true);
+        $shipment['attributes'] = Pt_Commons_JsonUtility::safeDecode($shipment['attributes']);
         $this->view->shipment = $shipment;
     }
 

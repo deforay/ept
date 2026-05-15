@@ -185,7 +185,7 @@ class Admin_EvaluateController extends Zend_Controller_Action
                     $shipmentService = new Application_Service_Shipments();
                     $shipment = $schemeService->getShipmentData($sid, $pid);
                     $this->view->allNotTestedReason = $schemeService->getNotTestedReasons('tb');
-                    $shipment['attributes'] = json_decode($shipment['attributes'], true);
+                    $shipment['attributes'] = Pt_Commons_JsonUtility::safeDecode($shipment['attributes']);
                     $this->view->shipment = $shipment;
                     $this->view->shipId = $sid;
                     $this->view->participantId = $pid;
@@ -369,7 +369,7 @@ class Admin_EvaluateController extends Zend_Controller_Action
         $tbModel = new Application_Model_Tb();
         $this->view->allSamples = $tbModel->getTbSamplesForParticipant($sID, $pID);
         $shipment = $schemeService->getShipmentData($sID, $pID);
-        $shipment['attributes'] = json_decode($shipment['attributes'], true);
+        $shipment['attributes'] = Pt_Commons_JsonUtility::safeDecode($shipment['attributes']);
         $this->view->shipment = $shipment;
         $this->view->shipId = $sID;
         $this->view->type = $type;

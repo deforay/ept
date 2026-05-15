@@ -41,7 +41,7 @@ final class Application_Model_Dts
         $scoreHolder = [];
         $config = Pt_Commons_SchemeConfig::get('dts');
         $schemeService = new Application_Service_Schemes();
-        $shipmentAttributes = json_decode($shipmentResult[0]['shipment_attributes'], true);
+        $shipmentAttributes = Pt_Commons_JsonUtility::safeDecode($shipmentResult[0]['shipment_attributes']);
         $dtsSchemeType = (isset($shipmentAttributes['dtsSchemeType']) && $shipmentAttributes['dtsSchemeType'] != '') ? $shipmentAttributes['dtsSchemeType'] : null;
         $syphilisEnabled = (isset($shipmentAttributes['enableSyphilis']) && $shipmentAttributes['enableSyphilis'] == 'yes') ? true : false;
         $rtriEnabled = (isset($shipmentAttributes['enableRtri']) && $shipmentAttributes['enableRtri'] == 'yes') ? true : false;
@@ -188,7 +188,7 @@ final class Application_Model_Dts
         $lastDateResult = '';
         $controlTesKitFail = '';
 
-        $attributes = json_decode($shipment['attributes'] ?? '{}', true);
+        $attributes = Pt_Commons_JsonUtility::safeDecode($shipment['attributes']);
 
         $attributes['algorithm'] ??= null;
         //$attributes['sample_rehydration_date'] = $attributes['sample_rehydration_date'] ?: null;
@@ -226,7 +226,7 @@ final class Application_Model_Dts
             echo 'Shipment Test Date is missing for shipment map id: ' . $shipment['map_id'] . ". Cannot evaluate DTS results.\n";
         }
 
-        $testedOn = new DateTimeImmutable($results[0]['shipment_test_date'] ?? $shipment['shipment_test_report_date']);
+        $testedOn = new DateTimeImmutable($results[0]['shipment_test_date'] ?? $shipment['shipment_test_report_date'] ?? 'now');
 
         // Getting the Test Date string to show in Corrective Actions and other sentences
         $testDate = $testedOn->format('d-M-Y');
@@ -414,6 +414,9 @@ final class Application_Model_Dts
             $reportedSyphilisResultCode = $result['syp_result_code'] ?? null;
             $reportedSyphilisResult = $result['syphilis_final'] ?? null;
             $expectedResultCode = $this->getResultCodeFromId($result['reference_result']);
+
+            // Default per-iteration; only the non-control branch reassigns it from the algo dispatcher.
+            $scorePercentageForAlgorithm = 0;
 
             // Checking algorithm Pass/Fail only if it is NOT a control.
             if (0 == $result['control']) {
@@ -1230,7 +1233,7 @@ final class Application_Model_Dts
         $shipmentAttributes = [];
         if (isset($shipmentResult) && !empty($shipmentResult)) {
 
-            $shipmentAttributes = json_decode($shipmentResult[0]['shipment_attributes'], true);
+            $shipmentAttributes = Pt_Commons_JsonUtility::safeDecode($shipmentResult[0]['shipment_attributes']);
 
             foreach ($shipmentResult as $aRow) {
                 $participantRow = [];
@@ -1322,7 +1325,7 @@ final class Application_Model_Dts
         if (!empty($shipmentResult[0]['attributes'])) {
             $participantAttributes = is_array($shipmentResult[0]['attributes'])
                 ? $shipmentResult[0]['attributes']
-                : (json_decode($shipmentResult[0]['attributes'], true) ?? []);
+                : (Pt_Commons_JsonUtility::safeDecode($shipmentResult[0]['attributes']));
         }
 
         $panelSettings = $this->getDtsPanelSettings(
@@ -1537,10 +1540,10 @@ final class Application_Model_Dts
             $colNo++;
         }
 
-        //$shipmentAttributes = json_decode($aRow['shipment_attributes'], true);
+        //$shipmentAttributes = Pt_Commons_JsonUtility::safeDecode($aRow['shipment_attributes']);
         $attributes = is_array($shipmentResult[0]['attributes'])
             ? $shipmentResult[0]['attributes']
-            : (json_decode($shipmentResult[0]['attributes'], true) ?? []);
+            : (Pt_Commons_JsonUtility::safeDecode($shipmentResult[0]['attributes']));
         if (empty($shipmentAttributes['sampleType']) || $shipmentAttributes['sampleType'] === 'dried') {
             // for Dried Samples, we will have 2 documentation checks for rehydration - Rehydration Date and Date Diff between Rehydration and Testing
             $totalDocumentationItems = 5;
@@ -1644,7 +1647,7 @@ final class Application_Model_Dts
 
                 $resultReportRow[] = $shipmentReceiptDate;
 
-                $attributes = !empty($aRow['attributes']) ? json_decode($aRow['attributes'], true) : [];
+                $attributes = !empty($aRow['attributes']) ? Pt_Commons_JsonUtility::safeDecode($aRow['attributes']) : [];
 
                 if (isset($attributes['dts_test_panel_type']) && !empty($attributes['dts_test_panel_type'])) {
                     $resultReportRow[] = ucwords($attributes['dts_test_panel_type']);
@@ -1932,7 +1935,7 @@ final class Application_Model_Dts
 
                 $warnings = '';
                 if (!empty($aRow['failure_reason'])) {
-                    $warningsArray = json_decode($aRow['failure_reason'], true);
+                    $warningsArray = Pt_Commons_JsonUtility::safeDecode($aRow['failure_reason']);
                     $warnings = implode(', ', array_map('strip_tags', array_column($warningsArray, 'warning')));
                 }
                 $totalScoreRow[] = $warnings;

@@ -18,7 +18,7 @@ if ($resultArray['shipment'] != "") {
         $pdf->setParams($resultStatus, $evalRow['date_finalised'], "", $watermark, "SUMMARY", $layout, $resultArray['shipment']['scheme_name']);
     } else {
         $pdf = new Pt_Reports_SummaryPdf(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
-        $shipmentAttributes = json_decode($resultArray['shipment']['shipment_attributes'], true);
+        $shipmentAttributes = Pt_Commons_JsonUtility::safeDecode($resultArray['shipment']['shipment_attributes']);
         $methodOfEvaluation = isset($shipmentAttributes['methodOfEvaluation']) ? $shipmentAttributes['methodOfEvaluation'] : 'standard';
         if ($methodOfEvaluation == 'iso17043') {
             $pdf->setSchemeName($header, $resultArray['shipment']['scheme_name'], $logo, $logoRight, $resultStatus, $resultArray['shipment']['scheme_type'], $evalRow['date_finalised'], "", $watermark, $evalRow['date_finalised'], $instituteAddressPosition, $layout);

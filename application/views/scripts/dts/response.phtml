@@ -58,7 +58,7 @@ if ($this->reqFrom == "admin") {
 $kitAttributes = [];
 foreach ($this->allTestKits as $kit) {
     if (isset($kit['attributes']) && !empty($kit['attributes'])) {
-        $kitAttributes[$kit['TESTKITNAMEID']] = json_decode($kit['attributes'], true);
+        $kitAttributes[$kit['TESTKITNAMEID']] = Pt_Commons_JsonUtility::safeDecode($kit['attributes']);
     }
 }
 

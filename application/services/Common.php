@@ -1764,13 +1764,13 @@ class Application_Service_Common
 
         // Fix: Decode JSON strings if needed (only overwrite if decode succeeds)
         if (isset($params['concat']) && is_string($params['concat'])) {
-            $decoded = json_decode($params['concat'], true);
+            $decoded = Pt_Commons_JsonUtility::safeDecode($params['concat']);
             if ($decoded !== null) {
                 $params['concat'] = $decoded;
             }
         }
         if (isset($params['fieldNames']) && is_string($params['fieldNames'])) {
-            $decoded = json_decode($params['fieldNames'], true);
+            $decoded = Pt_Commons_JsonUtility::safeDecode($params['fieldNames']);
             if ($decoded !== null) {
                 $params['fieldNames'] = $decoded;
             }

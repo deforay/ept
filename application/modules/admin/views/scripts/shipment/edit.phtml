@@ -1,7 +1,7 @@
 <?php
 $dtsConfig = $this->dtsConfig;
 $shipmentData = $this->shipmentData;
-$shipmentAttribute = json_decode($shipmentData['shipment']['shipment_attributes'], true);
+$shipmentAttribute = Pt_Commons_JsonUtility::safeDecode($shipmentData['shipment']['shipment_attributes']);
 $vHelper = $this->getHelper('DateFormat');
 $dtFormat = $vHelper->getDateFormat();
 

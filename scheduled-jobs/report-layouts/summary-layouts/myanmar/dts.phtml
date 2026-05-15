@@ -50,7 +50,7 @@ if (!empty($resultArray['shipment'])) {
 
     /* Set Font */
     $pdf->SetFont('freesans', '', 12);
-    $shipmentAttributes = isset($resultArray['shipment']['shipment_attributes']) ? json_decode($resultArray['shipment']['shipment_attributes'], true) : array();
+    $shipmentAttributes = isset($resultArray['shipment']['shipment_attributes']) ? Pt_Commons_JsonUtility::safeDecode($resultArray['shipment']['shipment_attributes']) : array();
 
     $htmlTitle = '<span style="font-weight: bold; font-size:10;text-align:center;">Summary Report</span>';
     $pdf->writeHTML($htmlTitle, true, false, true, false, '');

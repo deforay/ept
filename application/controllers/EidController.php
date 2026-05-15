@@ -64,7 +64,7 @@ class EidController extends Zend_Controller_Action
             $this->view->allSamples = $schemeService->getEidSamples($sID, $pID);
             $this->view->allNotTestedReason = $schemeService->getNotTestedReasons('eid');
             $shipment = $schemeService->getShipmentData($sID, $pID);
-            $shipment['attributes'] = json_decode($shipment['attributes'], true);
+            $shipment['attributes'] = Pt_Commons_JsonUtility::safeDecode($shipment['attributes']);
             $this->view->shipment = $shipment;
             $this->view->shipId = $sID;
             $this->view->participantId = $pID;
@@ -97,7 +97,7 @@ class EidController extends Zend_Controller_Action
         $this->view->referenceDetails = $schemeService->getEidReferenceData($sID);
 
         $shipment = $schemeService->getShipmentData($sID, $pID);
-        $shipment['attributes'] = json_decode($shipment['attributes'], true);
+        $shipment['attributes'] = Pt_Commons_JsonUtility::safeDecode($shipment['attributes']);
         $this->view->shipment = $shipment;
     }
 

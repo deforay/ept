@@ -98,7 +98,7 @@ class Application_Model_Tb
                     }
 
                     $assayShortName = '';
-                    $attributes = isset($result['attributes']) ? json_decode($result['attributes'], true) : [];
+                    $attributes = isset($result['attributes']) ? Pt_Commons_JsonUtility::safeDecode($result['attributes']) : [];
                     if (isset($attributes['assay_name'])) {
                         $assayShortName = $this->getTbAssayShortName($attributes['assay_name']);
                     } elseif (isset($attributes['other_assay_name'])) {
@@ -614,7 +614,7 @@ class Application_Model_Tb
                     $participantRow[] = $aRow['mobile'];
                     $participantRow[] = strtolower($aRow['email']);
 
-                    $reportTime = json_decode($aRow['report_download_metadata'], true);
+                    $reportTime = Pt_Commons_JsonUtility::safeDecode($aRow['report_download_metadata']);
                     $participantRow[] = Pt_Commons_General::excelDateFormat($reportTime['latest_individual_report_on']);
                     $participantRow[] = Pt_Commons_General::excelDateFormat($reportTime['latest_summary_report_on']);
 
@@ -726,7 +726,7 @@ class Application_Model_Tb
                     $panelScoreColumn = 1;
                     $totScoreCol = 1;
 
-                    $attributes = json_decode($aRow['attributes'], true);
+                    $attributes = Pt_Commons_JsonUtility::safeDecode($aRow['attributes']);
 
                     $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
                         ->setValueExplicit($aRow['unique_identifier'])->getStyle()->getFont()->getColor()->setARGB($txtColor);
@@ -844,7 +844,7 @@ class Application_Model_Tb
                         $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
                             ->setValueExplicit($aRow['user_comment'])->getStyle()->getFont()->getColor()->setARGB($txtColor);
 
-                        $warning = (isset($aRow['failure_reason']) && !empty($aRow['failure_reason'])) ? json_decode($aRow['failure_reason'], true) : '';
+                        $warning = (isset($aRow['failure_reason']) && !empty($aRow['failure_reason'])) ? Pt_Commons_JsonUtility::safeDecode($aRow['failure_reason']) : '';
                         $warning = (isset($warning) && !empty($warning)) ? str_replace(['<strong>', '</strong>'], ['', ''], $warning[0]['warning']) : '';
                         $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
                             ->setValueExplicit($warning)->getStyle()->getFont()->getColor()->setARGB($txtColor);
@@ -1497,7 +1497,7 @@ class Application_Model_Tb
         $shipmentData = $this->db->fetchRow($shipmentQuery);
 
         if (!empty($shipmentData['shipment_attributes'])) {
-            $shipmentAttrs = json_decode($shipmentData['shipment_attributes'], true);
+            $shipmentAttrs = Pt_Commons_JsonUtility::safeDecode($shipmentData['shipment_attributes']);
             $config = array_merge($config, $shipmentAttrs);
         }
 
@@ -1610,7 +1610,7 @@ class Application_Model_Tb
         $GLOBALS['formTitle'] = '';
 
         if (isset($result[0]['shipment_attributes']) && !empty($result[0]['shipment_attributes'])) {
-            $shipmentAttribute = json_decode($result[0]['shipment_attributes'], true);
+            $shipmentAttribute = Pt_Commons_JsonUtility::safeDecode($result[0]['shipment_attributes']);
             $GLOBALS['formVersion'] = $shipmentAttribute['form_version'] ?? '';
             $GLOBALS['effectiveDate'] = $shipmentAttribute['effectiveDate'] ?? '';
             $GLOBALS['formTitle'] = $shipmentAttribute['form_title'] ?? '';

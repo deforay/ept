@@ -286,7 +286,7 @@ class Application_Service_Evaluation
                     $scoreResult = '';
                     $failureReason = [];
 
-                    $attributes = json_decode($shipment['attributes'], true);
+                    $attributes = Pt_Commons_JsonUtility::safeDecode($shipment['attributes']);
 
                     foreach ($results as $result) {
 
@@ -502,7 +502,7 @@ class Application_Service_Evaluation
             $possibleResults = $schemeService->getPossibleResults('dts');
             $evalComments = $schemeService->getSchemeEvaluationComments('dts');
             $results = $dtsModel->getDtsSamples($shipmentId, $participantId);
-            $shipmentAttributes = isset($results[0]['shipment_attributes']) ? json_decode($results[0]['shipment_attributes'], true) : [];
+            $shipmentAttributes = isset($results[0]['shipment_attributes']) ? Pt_Commons_JsonUtility::safeDecode($results[0]['shipment_attributes']) : [];
             if (isset($shipmentAttributes['enableRtri']) && $shipmentAttributes['enableRtri'] == 'yes') {
                 $possibleResults['recency'] = $schemeService->getPossibleResults('recency');
             }
@@ -1542,7 +1542,7 @@ class Application_Service_Evaluation
     {
         $translator = Zend_Registry::get('translate');
         $btnClassName = 'btn-success';
-        $warnings = json_decode($shipment['failure_reason'] ?? '', true);
+        $warnings = Pt_Commons_JsonUtility::safeDecode($shipment['failure_reason']);
         $finalResult = (isset($shipment['final_result']) && $shipment['final_result'] != '' && $shipment['final_result'] != 0)
             ? $shipment['result_name'] : $translator->_('Not Evaluated');
 
@@ -1585,7 +1585,7 @@ class Application_Service_Evaluation
             $finalResult = htmlspecialchars($finalResult);
         }
 
-        $reportDownloadedOn = json_decode($shipment['report_download_metadata'] ?? '', true) ?: [];
+        $reportDownloadedOn = Pt_Commons_JsonUtility::safeDecode($shipment['report_download_metadata']);
 
         $expandBtn = '<a href="javascript:void(0);" class="btn btn-xs clicker ' . $btnClassName . '" data-btn-class="' . $btnClassName . '" data-map-id="' . (int) $shipment['map_id'] . '"><i class="icon-plus"></i></a>';
 
@@ -1781,7 +1781,7 @@ class Application_Service_Evaluation
     {
         $translator = Zend_Registry::get('translate');
         $btnClassName = 'btn-success';
-        $warnings = json_decode($shipment['failure_reason'] ?? '', true);
+        $warnings = Pt_Commons_JsonUtility::safeDecode($shipment['failure_reason']);
         $finalResult = (isset($shipment['final_result']) && $shipment['final_result'] != '' && $shipment['final_result'] != 0)
             ? $shipment['result_name'] : $translator->_('Not Evaluated');
 
@@ -2013,7 +2013,7 @@ class Application_Service_Evaluation
         } elseif (empty($shipment['final_result'])) {
             $btnClassName = 'btn-default';
         }
-        $warnings = json_decode($shipment['failure_reason'] ?? '', true);
+        $warnings = Pt_Commons_JsonUtility::safeDecode($shipment['failure_reason']);
         if ($displayResult === '' && empty($shipment['final_result']) && !empty($warnings)) {
             $btnClassName = 'btn-warning';
         }
@@ -2385,7 +2385,7 @@ class Application_Service_Evaluation
                     continue;
                 }
                 // Post-process with assay names
-                $rowAttributes = json_decode($eidRow['attributes'] ?? '{}', true);
+                $rowAttributes = Pt_Commons_JsonUtility::safeDecode($eidRow['attributes']);
                 $eidRow['extraction_assay_name'] = $eidExtractionAssay[$rowAttributes['extraction_assay']] ?? null;
                 $eidRow['vl_assay'] = $eidDetectionAssay[$rowAttributes['extraction_assay']] ?? null;
 
@@ -2442,7 +2442,7 @@ class Application_Service_Evaluation
                 //Zend_Debug::dump($shipmentResult);
             } elseif ($res['scheme_type'] == 'eid') {
                 // Use batch-loaded EID response data to avoid N+1 queries
-                $attributes = json_decode($res['attributes'], true);
+                $attributes = Pt_Commons_JsonUtility::safeDecode($res['attributes']);
 
                 // Set participant-specific assay values (use preloaded lookup tables)
                 if (isset($attributes['extraction_assay'])) {
@@ -2521,7 +2521,7 @@ class Application_Service_Evaluation
                 $response = [];
                 foreach ($result as $key => $row) {
                     if (isset($row['attributes'])) {
-                        //$attributes = json_decode($row['attributes'], true);
+                        //$attributes = Pt_Commons_JsonUtility::safeDecode($row['attributes']);
                     }
                     $response[$key] = $row;
                 }
@@ -3185,7 +3185,7 @@ class Application_Service_Evaluation
                 $extAssayResult = [];
 
                 foreach ($sQueryRes as $sVal) {
-                    $valAttributes = json_decode($sVal['attributes'], true);
+                    $valAttributes = Pt_Commons_JsonUtility::safeDecode($sVal['attributes']);
 
                     $cQuery = $db->select()->from(['refeid' => 'reference_result_eid'], ['refeid.sample_id', 'refeid.sample_label', 'refeid.reference_result', 'refeid.mandatory'])
                         ->joinLeft(['reseid' => 'response_result_eid'], 'reseid.sample_id = refeid.sample_id', ['reported_result'])
@@ -3317,7 +3317,7 @@ class Application_Service_Evaluation
                 $vlAssayList = $schemeService->getVlAssay();
                 $penResult = [];
                 foreach ($pendingResult as $pendingRow) {
-                    $valAttributes = json_decode($pendingRow['attributes'], true);
+                    $valAttributes = Pt_Commons_JsonUtility::safeDecode($pendingRow['attributes']);
                     if (isset($vlAssayList[$valAttributes['vl_assay']])) {
                         if ($valAttributes['vl_assay'] == 6) {
                             $penResult['assayNames'][] = $valAttributes['other_assay'];
@@ -3394,7 +3394,7 @@ class Application_Service_Evaluation
                         $cResult = $db->fetchAll($cQuery);
 
                         foreach ($cResult as $val) {
-                            $valAttributes = json_decode($val['attributes'], true);
+                            $valAttributes = Pt_Commons_JsonUtility::safeDecode($val['attributes']);
                             if (isset($valAttributes['other_assay'])) {
                                 if (!empty($otherAssayCounter[$valAttributes['other_assay']])) {
                                     $otherAssayCounter[$valAttributes['other_assay']]++;
@@ -4179,7 +4179,7 @@ class Application_Service_Evaluation
             } elseif (isset($aRow['final_result']) && $aRow['final_result'] == 3) {
                 $btnClassName = 'btn-default';
             } elseif (!empty($aRow['failure_reason'])) {
-                $warnings = json_decode($aRow['failure_reason'], true);
+                $warnings = Pt_Commons_JsonUtility::safeDecode($aRow['failure_reason']);
                 if (!empty($warnings)) {
                     $btnClassName = 'btn-warning';
                 }

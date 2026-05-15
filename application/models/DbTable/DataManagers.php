@@ -1769,7 +1769,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             return $value;
         }
         if (is_string($value) && $value !== '') {
-            $decoded = json_decode($value, true);
+            $decoded = Pt_Commons_JsonUtility::safeDecode($value);
             if (is_array($decoded)) {
                 return $decoded;
             }

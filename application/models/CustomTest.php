@@ -637,7 +637,7 @@ class Application_Model_CustomTest
                 $sheetThreeCol = 1;
                 $totScoreCol = 1;
                 $countCorrectResult = 0;
-                $attributes = json_decode($aRow['attributes'], true);
+                $attributes = Pt_Commons_JsonUtility::safeDecode($aRow['attributes']);
                 $colCellObj = $resultReportSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow);
                 $colCellObj->setValueExplicit(ucwords($aRow['unique_identifier']));
                 $cellName = $colCellObj->getColumn();
@@ -783,7 +783,7 @@ class Application_Model_CustomTest
             $shipmentResult['reported_count'] = $metadataResult['reported_count'];
         }
 
-        $testConfig = json_decode($metadataResult['user_test_config'], true);
+        $testConfig = Pt_Commons_JsonUtility::safeDecode($metadataResult['user_test_config']);
         $testType = $testConfig['testType'];
         $shipmentResult['testType'] = $testType;
 
@@ -878,7 +878,7 @@ class Application_Model_CustomTest
             $kitArray = $kitDb->getAllTestKitList($sQueryRes[0]['scheme_type'], false, true);
             $penResult = [];
             foreach ($pendingResult as $pendingRow) {
-                $valAttributes = json_decode($pendingRow['attributes'], true);
+                $valAttributes = Pt_Commons_JsonUtility::safeDecode($pendingRow['attributes']);
                 if (isset($kitArray[$valAttributes['kit_name']])) {
                     if ($valAttributes['kit_name'] == 6) {
                         $penResult['assayNames'][] = $valAttributes['other_assay'];
@@ -925,7 +925,7 @@ class Application_Model_CustomTest
                     $cResult = $db->fetchAll($cQuery);
 
                     foreach ($cResult as $val) {
-                        $valAttributes = json_decode($val['attributes'], true);
+                        $valAttributes = Pt_Commons_JsonUtility::safeDecode($val['attributes']);
                         if (isset($valAttributes['other_assay'])) {
                             if (!empty($otherAssayCounter[$valAttributes['other_assay']])) {
                                 $otherAssayCounter[$valAttributes['other_assay']]++;

@@ -1,6 +1,6 @@
 <?php
 if ($resultArray['shipment'] != "") {
-    $shipmentAttributes = json_decode($resultArray['shipment']['shipment_attributes'], true);
+    $shipmentAttributes = Pt_Commons_JsonUtility::safeDecode($resultArray['shipment']['shipment_attributes']);
     $methodOfEvaluation = isset($shipmentAttributes['methodOfEvaluation']) ? $shipmentAttributes['methodOfEvaluation'] : 'standard';
 
     if (!file_exists($reportsPath . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code']) && !is_dir($reportsPath . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'])) {

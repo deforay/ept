@@ -48,7 +48,7 @@ class DbsController extends Zend_Controller_Action
             $this->view->allSamples = $response;
 
             $shipment = $schemeService->getShipmentData($sID, $pID);
-            $shipment['attributes'] = json_decode($shipment['attributes'], true);
+            $shipment['attributes'] = Pt_Commons_JsonUtility::safeDecode($shipment['attributes']);
             $this->view->shipment = $shipment;
 
             $this->view->possibleResults = $schemeService->getPossibleResults('dbs', 'participant');

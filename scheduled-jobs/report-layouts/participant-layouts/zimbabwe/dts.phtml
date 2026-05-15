@@ -42,7 +42,7 @@ if (!empty($resultArray['shipment'])) {
         if (!file_exists($reportDir) && !is_dir($reportDir)) {
             mkdir($reportDir);
         }
-        $shipmentAttributes = json_decode($result['shipment_attributes'] ?? '{}', true) ?? [];
+        $shipmentAttributes = Pt_Commons_JsonUtility::safeDecode($result['shipment_attributes']);
         $shipmentAttributes['shipment_id'] = $result['shipment_id'];
         // Initialize PDF document
         $reportFormat = $reportService->getReportConfigValue('report-format');
@@ -77,7 +77,7 @@ if (!empty($resultArray['shipment'])) {
             $result['lastdate_response'] = Pt_Commons_DateUtility::humanReadableDateFormat($result['lastdate_response']);
         }
 
-        $attributes = json_decode($result['attributes'] ?? '{}', true);
+        $attributes = Pt_Commons_JsonUtility::safeDecode($result['attributes']);
 
         // Format response dates
         $responseDate = "";
@@ -474,7 +474,7 @@ if (!empty($resultArray['shipment'])) {
                             <td style="text-align:center;font-weight:bold;">Corrective Actions (if any)</td>
                         </tr>';
 
-                $warnings = json_decode($result['responseResult'][0]['failure_reason'], true);
+                $warnings = Pt_Commons_JsonUtility::safeDecode($result['responseResult'][0]['failure_reason']);
                 foreach ($warnings as $warning) {
                     $failRes .= '<tr>
                         <td>' . ($warning['warning'] ?? '') . '</td>

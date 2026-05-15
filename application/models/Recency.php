@@ -50,8 +50,8 @@ class Application_Model_Recency
 
             if ($createdOn <= $lastDate) {
 
-                $attributes = json_decode($shipment['attributes'], true);
-                $shipmentAttributes = json_decode($shipment['shipment_attributes'], true);
+                $attributes = Pt_Commons_JsonUtility::safeDecode($shipment['attributes']);
+                $shipmentAttributes = Pt_Commons_JsonUtility::safeDecode($shipment['shipment_attributes']);
                 $results = $schemeService->getRecencySamples($shipmentId, $shipment['participant_id']);
 
                 $documentationScoreArray = $this->getDocumentationScore($results, $attributes, $shipmentAttributes);
@@ -503,7 +503,7 @@ class Application_Model_Recency
                 ->where('ref.shipment_id = ?', $shipmentId);
             $refResponse = $db->fetchAll($rqResponse);
 
-            $attributes = json_decode($rowOverAll['attributes'], true);
+            $attributes = Pt_Commons_JsonUtility::safeDecode($rowOverAll['attributes']);
             $extraction = (array_key_exists($attributes['recency_assay'], $assayList)) ? $assayList[$attributes['recency_assay']] : '';
             $assayLot = $attributes['recency_assay_lot_no'];
             $sampleRehydrationDate = (isset($attributes['sample_rehydration_date'])) ? Pt_Commons_DateUtility::humanReadableDateFormat($attributes['sample_rehydration_date']) : '';
@@ -881,7 +881,7 @@ class Application_Model_Recency
                 }
 
                 if (trim($aRow['attributes']) != '') {
-                    $attributes = json_decode($aRow['attributes'], true);
+                    $attributes = Pt_Commons_JsonUtility::safeDecode($aRow['attributes']);
                     $sampleRehydrationDate = new Zend_Date($attributes['sample_rehydration_date']);
                     $rehydrationDate = Pt_Commons_General::excelDateFormat($attributes['sample_rehydration_date']);
                 }

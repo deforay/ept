@@ -127,6 +127,22 @@ final class Pt_Commons_JsonUtility
         return $data;
     }
 
+    // Null-safe decode for DB columns / API payloads that may be null, empty, or
+    // already an array. Avoids PHP 8.1+ deprecation from json_decode(null) and
+    // always returns $default (an array by default) instead of null/false, so
+    // callers can iterate the result without a guard.
+    public static function safeDecode(mixed $json, mixed $default = [], bool $associative = true): mixed
+    {
+        if (is_array($json) || is_object($json)) {
+            return $json;
+        }
+        if (!is_string($json) || $json === '') {
+            return $default;
+        }
+        $decoded = json_decode($json, $associative);
+        return $decoded ?? $default;
+    }
+
     // Minify JSON string
     public static function minifyJson($json): string
     {

@@ -17,7 +17,7 @@ if (!empty($resultArray['shipment'])) {
     $j = 1;
 
     foreach ($resultArray['shipment'] as $result) {
-        $shipmentAttributes = json_decode($result['shipment_attributes'], true);
+        $shipmentAttributes = Pt_Commons_JsonUtility::safeDecode($result['shipment_attributes']);
 
         $methodOfEvaluation = isset($shipmentAttributes['methodOfEvaluation']) ? $shipmentAttributes['methodOfEvaluation'] : 'standard';
 
@@ -42,7 +42,7 @@ if (!empty($resultArray['shipment'])) {
             $pdf->setParams($resultStatus, $evalRow['date_finalised'], "", $watermark, "INDIVIDUAL", $layout, $panelName, "", "", "", $shipmentAttributes);
         } else {
             $pdf = new Pt_Reports_IndividualPdf(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
-            $attributes = json_decode($result['attributes'], true);
+            $attributes = Pt_Commons_JsonUtility::safeDecode($result['attributes']);
             $pdf->setSchemeName($header, $panelName, $logo, $logoRight, $resultStatus, 'generic-test', 'generic-test', $evalRow['date_finalised'], "", $watermark, "", $instituteAddressPosition);
         }
 
@@ -125,7 +125,7 @@ if (!empty($resultArray['shipment'])) {
         }
         $attributes = '';
         if (isset($result['attributes'])) {
-            $attributes = json_decode($result['attributes'], true);
+            $attributes = Pt_Commons_JsonUtility::safeDecode($result['attributes']);
         }
 
         $shipmentReceiptDate = "";
@@ -312,7 +312,7 @@ if (!empty($resultArray['shipment'])) {
             $failRes = '<span style="font-weight:bold;font-size:12px;">Suggested Corrective actions for your response :</span> <br/>';
             $failRes .= '<table border="1" style="font-size:11px;">';
             $failRes .= '<tr style="background-color:#dbe4ee;"><td style="text-align:center;font-weight:bold;">Failure Reasons (or) Warnings</td><td style="text-align:center;font-weight:bold;">Corrective Actions (if any)</td></tr>';
-            $warnings = json_decode($result['responseResult'][0]['failure_reason'], true);
+            $warnings = Pt_Commons_JsonUtility::safeDecode($result['responseResult'][0]['failure_reason']);
             foreach ($warnings as $warning) {
                 $failRes .= '<tr>';
                 $failRes .= '<td> ' . (isset($warning['warning']) ? $warning['warning'] : "") . ' </td>';

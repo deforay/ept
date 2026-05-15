@@ -14,7 +14,7 @@ if (!empty($resultArray['shipment'])) {
 
     foreach ($resultArray['shipment'] as $result) {
 
-        $shipmentAttributes = json_decode($result['shipment_attributes'], true);
+        $shipmentAttributes = Pt_Commons_JsonUtility::safeDecode($result['shipment_attributes']);
         $effectiveDate = (isset($shipmentAttributes['effectiveDate']) && !empty($shipmentAttributes['effectiveDate'])) ? $shipmentAttributes['effectiveDate'] : 'October 2025';
         $formVersion = 'FRM-000214-ILB';
         if (!file_exists($reportsPath . DIRECTORY_SEPARATOR . $result['shipment_code']) && !is_dir($reportsPath . DIRECTORY_SEPARATOR . $result['shipment_code'])) {
@@ -106,7 +106,7 @@ if (!empty($resultArray['shipment'])) {
         }
         $attributes = '';
         if (isset($result['attributes'])) {
-            $attributes = json_decode($result['attributes'], true);
+            $attributes = Pt_Commons_JsonUtility::safeDecode($result['attributes']);
         }
 
         $shipmentReceiptDate = "";

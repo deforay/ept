@@ -44,8 +44,8 @@ class Application_Model_Vl
         foreach ($shipmentResult as $shipment) {
             Pt_Commons_MiscUtility::updateHeartbeat('shipment', 'shipment_id', $shipmentId);
             $shipment['is_excluded'] = 'no'; // setting it as no by default. It will become 'yes' if some condition matches.
-            $attributes = json_decode($shipment['attributes'], true);
-            $shipmentAttributes = json_decode($shipment['shipment_attributes'], true);
+            $attributes = Pt_Commons_JsonUtility::safeDecode($shipment['attributes']);
+            $shipmentAttributes = Pt_Commons_JsonUtility::safeDecode($shipment['shipment_attributes']);
 
             $methodOfEvaluation = $shipmentAttributes['methodOfEvaluation'] ?? 'standard';
 
@@ -75,7 +75,7 @@ class Application_Model_Vl
                         continue;
                     }
                     $calcResult = '';
-                    $responseAssay = json_decode($result['attributes'], true);
+                    $responseAssay = Pt_Commons_JsonUtility::safeDecode($result['attributes']);
                     $responseAssay = isset($responseAssay['vl_assay']) ? $responseAssay['vl_assay'] : '';
                     // if (!in_array($result['unique_identifier'], $meganda[$responseAssay]) && $shipment['is_pt_test_not_performed'] != 'yes') {
                     //     $meganda[$responseAssay][] = $result['unique_identifier'];
@@ -346,7 +346,7 @@ class Application_Model_Vl
             ->where('shipment_id = ?', $shipmentId);
         $result = $db->fetchRow($query);
 
-        $shipmentAttributes = json_decode($result['shipment_attributes'], true);
+        $shipmentAttributes = Pt_Commons_JsonUtility::safeDecode($result['shipment_attributes']);
         $methodOfEvaluation = isset($shipmentAttributes['methodOfEvaluation']) ? $shipmentAttributes['methodOfEvaluation'] : 'standard';
 
         $refQuery = $db->select()->from(['refRes' => 'reference_result_vl'])->where('refRes.shipment_id = ?', $shipmentId)->where('refRes.control!=1');
@@ -522,7 +522,7 @@ class Application_Model_Vl
             //echo $queryResponse;
             $resultResponse = $db->fetchAll($queryResponse);
 
-            $attributes = json_decode($rowOverAll['attributes'], true);
+            $attributes = Pt_Commons_JsonUtility::safeDecode($rowOverAll['attributes']);
 
             if (isset($attributes['other_assay']) && $attributes['other_assay'] != '') {
                 $assayName = 'Other - ' . $attributes['other_assay'];
@@ -726,7 +726,7 @@ class Application_Model_Vl
 
                 $otherAssayCounter = [];
                 foreach ($cResult as $val) {
-                    $valAttributes = json_decode($val['attributes'], true);
+                    $valAttributes = Pt_Commons_JsonUtility::safeDecode($val['attributes']);
                     if (isset($valAttributes['other_assay'])) {
                         if (!empty($otherAssayCounter[$valAttributes['other_assay']])) {
                             $otherAssayCounter[$valAttributes['other_assay']]++;
@@ -1237,7 +1237,7 @@ class Application_Model_Vl
         $schemeService = new Application_Service_Schemes();
         $vlAssayResultSet = $this->getVlAssay();
         $vlRange = $this->getVlRange($shipmentId);
-        $shipmentAttributes = json_decode($shipmentAttributesJson, true);
+        $shipmentAttributes = Pt_Commons_JsonUtility::safeDecode($shipmentAttributesJson);
         $methodOfEvaluation = $shipmentAttributes['methodOfEvaluation'] ?? 'standard';
 
         // Ensure vlRange is populated
@@ -1258,14 +1258,14 @@ class Application_Model_Vl
             }
 
             // Process this participant's samples
-            $participantAttributes = json_decode($samples[0]['attributes'] ?? '{}', true);
+            $participantAttributes = Pt_Commons_JsonUtility::safeDecode($samples[0]['attributes']);
             $responseAssayId = $participantAttributes['vl_assay'] ?? null;
 
             $toReturn = [];
             $counter = 0;
 
             foreach ($samples as $sample) {
-                $responseAssay = json_decode($sample['attributes'] ?? '{}', true);
+                $responseAssay = Pt_Commons_JsonUtility::safeDecode($sample['attributes']);
                 $assayId = $responseAssay['vl_assay'] ?? null;
                 if ($assayId == 6) {
                     $assayName = $responseAssay['other_assay'] ?? '';
@@ -1419,7 +1419,7 @@ class Application_Model_Vl
             $oldQuantRange[$beforeSetVlRangeRow['vl_assay']][$beforeSetVlRangeRow['sample_id']] = $beforeSetVlRangeRow;
         }
 
-        $shipmentAttributes = json_decode($shipment['shipment_attributes'], true);
+        $shipmentAttributes = Pt_Commons_JsonUtility::safeDecode($shipment['shipment_attributes']);
 
         $method = isset($shipmentAttributes['methodOfEvaluation']) ? $shipmentAttributes['methodOfEvaluation'] : 'standard';
 
@@ -1736,7 +1736,7 @@ class Application_Model_Vl
             $res = $db->fetchAll($sql);
         }
 
-        $shipmentAttributes = !empty($res[0]['shipment_attributes']) ? json_decode($res[0]['shipment_attributes'], true) : null;
+        $shipmentAttributes = !empty($res[0]['shipment_attributes']) ? Pt_Commons_JsonUtility::safeDecode($res[0]['shipment_attributes']) : null;
         $methodOfEvaluation = $shipmentAttributes['methodOfEvaluation'] ?? 'standard';
 
         $response = [];

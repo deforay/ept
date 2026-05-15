@@ -1,7 +1,7 @@
 <?php
 
 if (!empty($resultArray['shipment']) && $resultArray['shipment'] != "") {
-    $shipmentAttributes = json_decode($resultArray['shipment']['shipment_attributes'], true);
+    $shipmentAttributes = Pt_Commons_JsonUtility::safeDecode($resultArray['shipment']['shipment_attributes']);
 
     if (!file_exists($reportsPath . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code']) && !is_dir($reportsPath . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'])) {
         mkdir($reportsPath . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'], 0777, true);

@@ -300,7 +300,7 @@ if ($isLoggedInAsAdmin) {
                 } else {
                     $disabled = false;
                 }
-                $responseAttributes = json_decode($sample['response_attributes'], true);
+                $responseAttributes = Pt_Commons_JsonUtility::safeDecode($sample['response_attributes']);
                 $count++; ?>
                 <tr style="text-align:center;" class="light cepheidMTBXDRTest<?php echo $sample['sample_id']; ?>" style="<?php echo (!$rowShow) ? "display:none;" : ""; ?>">
                     <th scope="col">

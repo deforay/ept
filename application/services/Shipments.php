@@ -4509,7 +4509,7 @@ class Application_Service_Shipments
         $result = $db->fetchRow($sQuery);
         $shipmentAttributes = [];
         if (!empty($result['shipment_attributes'])) {
-            $shipmentAttributes = json_decode($result['shipment_attributes'], true) ?? [];
+            $shipmentAttributes = Pt_Commons_JsonUtility::safeDecode($result['shipment_attributes']);
         }
         if ($value != '') {
             return isset($shipmentAttributes[$value])

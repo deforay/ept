@@ -834,7 +834,7 @@ try {
 		$participants[$shipment['unique_identifier']][$shipment['scheme_type']][$shipment['shipment_code']]['result'] = $shipment['final_result'];
 		$participants[$shipment['unique_identifier']][$shipment['scheme_type']][$shipment['shipment_code']]['lastdate_response'] = $shipment['lastdate_response'];
 		$participants[$shipment['unique_identifier']][$shipment['scheme_type']][$shipment['shipment_code']]['shipment_test_report_date'] = $shipment['shipment_test_report_date'];
-		$participants[$shipment['unique_identifier']]['attribs'] = json_decode($shipment['attributes'] ?? '', true);
+		$participants[$shipment['unique_identifier']]['attribs'] = Pt_Commons_JsonUtility::safeDecode($shipment['attributes']);
 		//$participants[$shipment['unique_identifier']][$shipment['shipment_code']]=$shipment['shipment_score'];
 
 	}

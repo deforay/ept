@@ -264,7 +264,7 @@ try {
             // Parse attachments once
             $attachments = [];
             if (!empty($result['attachment'])) {
-                $decoded = json_decode($result['attachment'], true);
+                $decoded = Pt_Commons_JsonUtility::safeDecode($result['attachment']);
                 if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
                     $attachments = $decoded;
                 } else {
