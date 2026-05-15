@@ -4,6 +4,90 @@
     .control-label {
         margin-left: 20px;
     }
+
+    /* Child-row containers — drop default table cell padding so the colored
+       block fills the row edge-to-edge, giving a clean inset section look. */
+    #participantsTable .dm-child-container,
+    #participantsTable .shipments-child-container {
+        padding: 0 !important;
+        background: transparent;
+    }
+
+    .dm-child-row,
+    .shipments-child-row {
+        padding: 10px 16px 12px;
+        border-top: 1px solid transparent;
+        border-bottom: 1px solid transparent;
+    }
+    .dm-child-row {
+        background: linear-gradient(to right, #e6f0fa 0%, #f4f9fd 70%, #f9fcfe 100%);
+        border-left: 4px solid #337ab7;
+        border-top-color: #cfe1f2;
+        border-bottom-color: #cfe1f2;
+    }
+    .shipments-child-row {
+        background: linear-gradient(to right, #e7f3df 0%, #f3f8ed 70%, #f9fcf6 100%);
+        border-left: 4px solid #5cb85c;
+        border-top-color: #cfe3bd;
+        border-bottom-color: #cfe3bd;
+    }
+
+    /* Header line above the inner data card */
+    .dm-child-row .child-row-header,
+    .shipments-child-row .child-row-header {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 8px;
+        font-size: 13px;
+        font-weight: 600;
+        letter-spacing: 0.2px;
+    }
+    .dm-child-row .child-row-header { color: #1f4f82; }
+    .shipments-child-row .child-row-header { color: #356f35; }
+    .dm-child-row .child-row-header i,
+    .shipments-child-row .child-row-header i { opacity: 0.85; }
+
+    /* Inline filter input — tighter, accent-tinted focus */
+    .dm-child-row .dm-filter-input,
+    .shipments-child-row .shipments-filter-input {
+        height: 26px;
+        font-size: 12px;
+        padding: 2px 8px;
+        max-width: 260px;
+        display: inline-block;
+        margin-left: 6px;
+        font-weight: normal;
+    }
+
+    /* Inner data card */
+    .dm-child-row .dm-list-wrap,
+    .shipments-child-row .shipments-list-wrap {
+        background: #fff;
+        border-radius: 4px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    }
+    .dm-child-row .dm-list-wrap { border: 1px solid #cfe1f2; }
+    .shipments-child-row .shipments-list-wrap { border: 1px solid #cfe3bd; }
+    .dm-child-row .dm-list-wrap .table,
+    .shipments-child-row .shipments-list-wrap .table {
+        margin: 0;
+        background: transparent;
+    }
+    .dm-child-row .dm-list-wrap .table > thead > tr > th,
+    .shipments-child-row .shipments-list-wrap .table > thead > tr > th {
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+        color: #555;
+        background: #f7f9fb;
+        border-bottom: 1px solid #e2e8ee;
+    }
+    .dm-child-row .dm-list-wrap .table > tbody > tr > td,
+    .shipments-child-row .shipments-list-wrap .table > tbody > tr > td {
+        font-size: 13px;
+        vertical-align: middle;
+    }
 </style>
 <h4 style="width:100%;height:50px;border-bottom:1px solid #777;">
     <div style="font-size:22.5px;line-height:36px;color:#333;float:left;">
@@ -252,15 +336,22 @@
             var $btn = $(this);
             var participantId = $btn.data('participant-id');
             var tr = $btn.closest('tr')[0];
-            if (oTable.fnIsOpen(tr)) {
+            var $childTr = $(tr).next('tr');
+            var mineOpen = oTable.fnIsOpen(tr) && $childTr.find('.dm-child-row').length > 0;
+            if (mineOpen) {
                 oTable.fnClose(tr);
-                $btn.removeClass('btn-success').addClass('btn-primary');
                 return;
             }
+            // Close any OTHER open child row in the table — only one expanded at a time.
+            // Skip the current row: fnOpen below closes the existing child on this row atomically.
+            $('#participantsTable tbody tr').each(function () {
+                if (this !== tr && oTable.fnIsOpen(this)) {
+                    oTable.fnClose(this);
+                }
+            });
             // Inject a placeholder child row, then populate via AJAX
             var placeholder = '<div style="padding:12px;color:#888;"><i class="icon-refresh"></i> <?= $this->translate->_("Loading data managers…"); ?></div>';
             oTable.fnOpen(tr, placeholder, 'dm-child-container');
-            $btn.removeClass('btn-primary').addClass('btn-success');
             loadDmChildRow(tr, participantId);
         });
 
@@ -314,9 +405,13 @@
                 oTable.fnClose(tr);
                 return;
             }
-            if (oTable.fnIsOpen(tr)) {
-                oTable.fnClose(tr);
-            }
+            // Close any OTHER open child row in the table — only one expanded at a time.
+            // Skip the current row: fnOpen below closes the existing child on this row atomically.
+            $('#participantsTable tbody tr').each(function () {
+                if (this !== tr && oTable.fnIsOpen(this)) {
+                    oTable.fnClose(this);
+                }
+            });
             var placeholder = '<div style="padding:12px;color:#888;"><i class="icon-refresh"></i> <?= $this->translate->_("Loading shipments…"); ?></div>';
             oTable.fnOpen(tr, placeholder, 'shipments-child-container');
             loadShipmentsChildRow(tr, participantId);

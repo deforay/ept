@@ -5,17 +5,18 @@ $adminSession = new Zend_Session_Namespace('administrators');
 $adminPrivileges = array_map('trim', explode(',', (string)($adminSession->privileges ?? '')));
 $canViewAsParticipant = in_array('view-as-participant', $adminPrivileges, true);
 ?>
-<div class="dm-child-row" style="padding:10px 15px;background:#fafbfc;border-left:4px solid #337ab7;">
+<div class="dm-child-row">
     <?php if ($dmCount === 0) { ?>
         <em class="text-muted"><?= $this->translate->_('No data managers are currently mapped to this participant.'); ?></em>
     <?php } else { ?>
-        <div style="margin-bottom:6px;">
-            <strong><?= sprintf($this->translate->_('%d Data Manager(s) mapped'), $dmCount); ?></strong>
+        <div class="child-row-header">
+            <i class="icon-user"></i>
+            <span><?= sprintf($this->translate->_('%d Data Manager(s) mapped'), $dmCount); ?></span>
             <?php if ($dmCount > 5) { ?>
-                <input type="text" class="form-control input-sm dm-filter-input" placeholder="<?= $this->translate->_('Filter by name or email…'); ?>" style="max-width:280px;display:inline-block;margin-left:10px;" />
+                <input type="text" class="form-control input-sm dm-filter-input" placeholder="<?= $this->translate->_('Filter by name or email…'); ?>" />
             <?php } ?>
         </div>
-        <div class="dm-list-wrap" style="max-height:260px;overflow-y:auto;border:1px solid #e5e5e5;border-radius:3px;background:#fff;">
+        <div class="dm-list-wrap" style="max-height:260px;overflow-y:auto;">
             <table class="table table-condensed" style="margin:0;">
                 <thead>
                     <tr>

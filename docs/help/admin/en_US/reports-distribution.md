@@ -21,13 +21,18 @@ until you finalize.**
 
 ## How the page works
 
-The top table lists every PT Survey. Click the row or the
-**View** action to load the **Shipments Under PT Survey ...**
-table below — same pattern as the Evaluate page. The system
-remembers the last survey you opened, so it re-opens when you
-come back.
+The top table lists every PT Survey. Click **View** in the Action
+column to expand the **Shipments Under PT Survey ...** panel
+**inline directly under the row** — same pattern as the Evaluate
+page.
 
-The shipments table shows the same numbers as the evaluate page —
+- Click **View** again on the same row to collapse the panel.
+- Click **View** on a different row to swap the open panel —
+  only one survey is expanded at a time.
+- The system remembers the last survey you opened, so the panel
+  re-opens automatically when you come back.
+
+The shipments panel shows the same numbers as the evaluate page —
 *No. of Samples / Participants / Responses*, *Response %*,
 *Number Passed*, *Shipment Status* — and an **Action** column
 whose buttons depend on where the shipment is in the flow.

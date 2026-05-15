@@ -22,14 +22,17 @@ The top table lists every PT Survey in the system.
 - Find the survey you want.
 - Click **View** in the Action column.
 - The row highlights and the **Shipments Under PT Survey ...**
-  table opens below.
+  panel expands **inline directly under the row**.
+- Click **View** again on the same row to collapse it. Clicking
+  **View** on a different row swaps the open panel — only one
+  survey is expanded at a time.
 
 The system remembers the last survey you picked, so when you come
-back, the same shipments load again.
+back, the same shipments panel re-opens automatically.
 
-## Step 2 — The shipments table
+## Step 2 — The shipments panel
 
-The lower table lists every shipment in that survey, with:
+The expanded panel lists every shipment in that survey, with:
 
 - **Shipment Code** / **Scheme** — what the shipment is.
 - **No. of Samples** — samples in the panel.

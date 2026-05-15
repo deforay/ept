@@ -22,11 +22,17 @@ This is **Step 3** of the three-step reporting flow:
 ## How the page works
 
 The page mirrors *Generate Reports*. The top table lists every PT
-Survey. Click through to load the **Shipments Under PT Survey
-...** table below. The system remembers the last survey you
-opened.
+Survey. Click **View** in the Action column to expand the
+**Shipments Under PT Survey ...** panel **inline directly under
+the row**.
 
-The shipments table shows the same numbers as the evaluate /
+- Click **View** again on the same row to collapse the panel.
+- Click **View** on a different row to swap the open panel —
+  only one survey is expanded at a time.
+- The system remembers the last survey you opened, so the panel
+  re-opens automatically when you come back.
+
+The shipments panel shows the same numbers as the evaluate /
 generate pages — *No. of Samples / Participants / Responses*,
 *Response %*, *Number Passed*, *Shipment Status* — and an
 **Action** column made for finalization.

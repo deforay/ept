@@ -1,4 +1,11 @@
 <link rel="stylesheet" href="<?php echo $this->baseUrl("css/jquery.dataTables.css"); ?>" type="text/css" media="all">
+<style>
+    .shipments-child-row .modal-dialog { width: auto; margin: 0; transform: none; transition: none; box-shadow: none; }
+    .shipments-child-row .modal-header { padding: 4px 8px; border-bottom: 1px solid #e5e5e5; min-height: 0; }
+    .shipments-child-row .modal-header h4 { font-size: 14px; margin: 0; line-height: 1.4; }
+    .shipments-child-row .modal-body { padding: 6px 0 0; background: transparent; }
+    .shipments-child-row .modal-body > .table { margin-bottom: 0; background: transparent; }
+</style>
 <script src="<?= $this->assetUrl('js/reports.js'); ?>"></script>
 <h4 style="width:100%;height:50px;border-bottom:1px solid #777;">
     <div style="font-size:22.5px;line-height:36px;color:#333;float:left;">
@@ -30,8 +37,6 @@
     </tbody>
 </table>
 
-
-<div id="shipments" style="clear:both;margin-top:30px;"></div>
 
 <script type="text/javascript" charset="utf-8">
 
@@ -151,17 +156,43 @@
 
 
     function getShipmentInReports(did) {
-        $.blockUI();
-        //oTable.fnStandingRedraw();
         currentHighlighted = did;
         setCookie('did', did);
+
+        var $tr = $('#dist' + did);
+        if (!$tr.length) { return; }
+        var tr = $tr[0];
+
         $("#distroTable tr td").removeClass("highliter");
-        $("#dist" + currentHighlighted + " td").addClass("highliter");
+        $tr.find('td').addClass("highliter");
+
+        var $childTr = $tr.next('tr');
+        var mineOpen = oTable.fnIsOpen(tr) && $childTr.find('.shipments-child-row').length > 0;
+        if (mineOpen) {
+            oTable.fnClose(tr);
+            return;
+        }
+        // Close any other open child row in the table — only one expanded at a time.
+        $('#distroTable tbody tr').each(function () {
+            if (oTable.fnIsOpen(this)) {
+                oTable.fnClose(this);
+            }
+        });
+
+        var childStyle = 'padding:6px 12px;background:#fff8e1;border-left:4px solid #f0ad4e;';
+        var placeholder = '<div class="shipments-child-row" style="' + childStyle + 'color:#888;"><i class="icon-refresh"></i> <?= $this->translate->_("Loading shipments…"); ?></div>';
+        oTable.fnOpen(tr, placeholder, 'shipments-child-container');
+        $.blockUI();
         $.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'distribution', 'action' => 'get-shipments')); ?>", { did: did, format: "html" },
             function (data) {
-                $("#shipments").html(data);
-                //
+                var $newChildTr = $tr.next('tr');
+                $newChildTr.find('td').first().html('<div class="shipments-child-row" style="' + childStyle + '">' + data + '</div>');
                 $.unblockUI();
-            });
+            }
+        ).fail(function () {
+            var $newChildTr = $tr.next('tr');
+            $newChildTr.find('td').first().html('<div class="shipments-child-row" style="' + childStyle + 'color:#a94442;"><?= $this->translate->_("Failed to load shipments. Please try again."); ?></div>');
+            $.unblockUI();
+        });
     }
 </script>

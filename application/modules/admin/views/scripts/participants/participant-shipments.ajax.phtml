@@ -2,14 +2,15 @@
 $shipments = $this->shipments ?? [];
 $shipmentCount = count($shipments);
 ?>
-<div class="shipments-child-row" style="padding:10px 15px;background:#fafbfc;border-left:4px solid #5cb85c;">
+<div class="shipments-child-row">
     <?php if ($shipmentCount === 0) { ?>
         <em class="text-muted"><?= $this->translate->_('This participant is not part of any shipments.'); ?></em>
     <?php } else { ?>
-        <div style="margin-bottom:6px;">
-            <strong><?= sprintf($this->translate->_('%d Shipment(s)'), $shipmentCount); ?></strong>
+        <div class="child-row-header">
+            <i class="icon-truck"></i>
+            <span><?= sprintf($this->translate->_('%d Shipment(s)'), $shipmentCount); ?></span>
             <?php if ($shipmentCount > 5) { ?>
-                <input type="text" class="form-control input-sm shipments-filter-input" placeholder="<?= $this->translate->_('Filter by code, scheme, status…'); ?>" style="max-width:280px;display:inline-block;margin-left:10px;" />
+                <input type="text" class="form-control input-sm shipments-filter-input" placeholder="<?= $this->translate->_('Filter by code, scheme, status…'); ?>" />
             <?php } ?>
         </div>
         <style>
@@ -19,7 +20,7 @@ $shipmentCount = count($shipments);
                 vertical-align: middle;
             }
         </style>
-        <div class="shipments-list-wrap" style="max-height:320px;overflow-y:auto;border:1px solid #e5e5e5;border-radius:3px;background:#fff;">
+        <div class="shipments-list-wrap" style="max-height:320px;overflow-y:auto;">
             <table class="table table-condensed table-bordered table-striped" style="margin:0;">
                 <thead>
                     <tr>

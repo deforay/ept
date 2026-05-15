@@ -2,17 +2,18 @@
 $mappedParticipants = $this->mappedParticipants ?? [];
 $pCount = count($mappedParticipants);
 ?>
-<div class="participant-child-row" style="padding:10px 15px;background:#fafbfc;border-left:4px solid #337ab7;">
+<div class="participant-child-row">
     <?php if ($pCount === 0) { ?>
         <em class="text-muted"><?= $this->translate->_('No participants are currently mapped to this data manager.'); ?></em>
     <?php } else { ?>
-        <div style="margin-bottom:6px;">
-            <strong><?= sprintf($this->translate->_('%d Participant(s) mapped'), $pCount); ?></strong>
+        <div class="child-row-header">
+            <i class="icon-user"></i>
+            <span><?= sprintf($this->translate->_('%d Participant(s) mapped'), $pCount); ?></span>
             <?php if ($pCount > 5) { ?>
-                <input type="text" class="form-control input-sm participant-filter-input" placeholder="<?= $this->translate->_('Filter by ID, name, institute or email…'); ?>" style="max-width:320px;display:inline-block;margin-left:10px;" />
+                <input type="text" class="form-control input-sm participant-filter-input" placeholder="<?= $this->translate->_('Filter by ID, name, institute or email…'); ?>" />
             <?php } ?>
         </div>
-        <div class="participant-list-wrap" style="max-height:260px;overflow-y:auto;border:1px solid #e5e5e5;border-radius:3px;background:#fff;">
+        <div class="participant-list-wrap" style="max-height:260px;overflow-y:auto;">
             <table class="table table-condensed" style="margin:0;">
                 <thead>
                     <tr>
