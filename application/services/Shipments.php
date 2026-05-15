@@ -967,7 +967,14 @@ class Application_Service_Shipments
     public function removeDtsResults($mapId)
     {
         $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $dbAdapter->beginTransaction();
+        // tx-aware: only manage the transaction if the caller hasn't already
+        // opened one. Zend_Db (PDO) cannot nest begin/commit, and callers like
+        // ShipmentParticipantMap::saveShipmentByType() wrap several remove*Results
+        // calls inside a single outer transaction.
+        $ownTx = !$dbAdapter->getConnection()->inTransaction();
+        if ($ownTx) {
+            $dbAdapter->beginTransaction();
+        }
         try {
             $shipmentParticipantDb = new Application_Model_DbTable_ShipmentParticipantMap();
             $authNameSpace = new Zend_Session_Namespace('datamanagers');
@@ -1004,9 +1011,13 @@ class Application_Service_Shipments
 
             $dtsResponseDb = new Application_Model_DbTable_ResponseDts();
             $dtsResponseDb->removeShipmentResults($mapId);
-            $dbAdapter->commit();
+            if ($ownTx) {
+                $dbAdapter->commit();
+            }
         } catch (Throwable $e) {
-            $dbAdapter->rollBack();
+            if ($ownTx) {
+                $dbAdapter->rollBack();
+            }
             Pt_Commons_LoggerUtility::logError('removeDtsResults rolled back: ' . $e->getMessage(), [
                 'mapId' => $mapId,
                 'file'  => $e->getFile(),
@@ -1020,7 +1031,10 @@ class Application_Service_Shipments
     public function removeCovid19Results($mapId)
     {
         $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $dbAdapter->beginTransaction();
+        $ownTx = !$dbAdapter->getConnection()->inTransaction();
+        if ($ownTx) {
+            $dbAdapter->beginTransaction();
+        }
         try {
             $shipmentParticipantDb = new Application_Model_DbTable_ShipmentParticipantMap();
             $authNameSpace = new Zend_Session_Namespace('datamanagers');
@@ -1061,9 +1075,13 @@ class Application_Service_Shipments
 
             $covid19ResponseDb = new Application_Model_DbTable_ResponseCovid19();
             $covid19ResponseDb->removeShipmentResults($mapId);
-            $dbAdapter->commit();
+            if ($ownTx) {
+                $dbAdapter->commit();
+            }
         } catch (Throwable $e) {
-            $dbAdapter->rollBack();
+            if ($ownTx) {
+                $dbAdapter->rollBack();
+            }
             Pt_Commons_LoggerUtility::logError('removeCovid19Results rolled back: ' . $e->getMessage(), [
                 'mapId' => $mapId,
                 'file'  => $e->getFile(),
@@ -1177,7 +1195,10 @@ class Application_Service_Shipments
     public function removeDtsEidResults($mapId)
     {
         $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $dbAdapter->beginTransaction();
+        $ownTx = !$dbAdapter->getConnection()->inTransaction();
+        if ($ownTx) {
+            $dbAdapter->beginTransaction();
+        }
         try {
             $shipmentParticipantDb = new Application_Model_DbTable_ShipmentParticipantMap();
             $authNameSpace = new Zend_Session_Namespace('datamanagers');
@@ -1214,9 +1235,13 @@ class Application_Service_Shipments
 
             $responseDb = new Application_Model_DbTable_ResponseEid();
             $responseDb->delete("shipment_map_id=$mapId");
-            $dbAdapter->commit();
+            if ($ownTx) {
+                $dbAdapter->commit();
+            }
         } catch (Throwable $e) {
-            $dbAdapter->rollBack();
+            if ($ownTx) {
+                $dbAdapter->rollBack();
+            }
             Pt_Commons_LoggerUtility::logError('removeDtsEidResults rolled back: ' . $e->getMessage(), [
                 'mapId' => $mapId,
                 'file'  => $e->getFile(),
@@ -1229,7 +1254,10 @@ class Application_Service_Shipments
     public function removeRecencyResults($mapId)
     {
         $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $dbAdapter->beginTransaction();
+        $ownTx = !$dbAdapter->getConnection()->inTransaction();
+        if ($ownTx) {
+            $dbAdapter->beginTransaction();
+        }
         try {
             $shipmentParticipantDb = new Application_Model_DbTable_ShipmentParticipantMap();
             $authNameSpace = new Zend_Session_Namespace('datamanagers');
@@ -1266,9 +1294,13 @@ class Application_Service_Shipments
 
             $responseDb = new Application_Model_DbTable_ResponseRecency();
             $responseDb->delete("shipment_map_id=$mapId");
-            $dbAdapter->commit();
+            if ($ownTx) {
+                $dbAdapter->commit();
+            }
         } catch (Throwable $e) {
-            $dbAdapter->rollBack();
+            if ($ownTx) {
+                $dbAdapter->rollBack();
+            }
             Pt_Commons_LoggerUtility::logError('removeRecencyResults rolled back: ' . $e->getMessage(), [
                 'mapId' => $mapId,
                 'file'  => $e->getFile(),
@@ -1282,7 +1314,10 @@ class Application_Service_Shipments
     public function removeDtsVlResults($mapId)
     {
         $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $dbAdapter->beginTransaction();
+        $ownTx = !$dbAdapter->getConnection()->inTransaction();
+        if ($ownTx) {
+            $dbAdapter->beginTransaction();
+        }
         try {
             $shipmentParticipantDb = new Application_Model_DbTable_ShipmentParticipantMap();
             $authNameSpace = new Zend_Session_Namespace('datamanagers');
@@ -1319,9 +1354,13 @@ class Application_Service_Shipments
 
             $responseDb = new Application_Model_DbTable_ResponseVl();
             $responseDb->delete("shipment_map_id=$mapId");
-            $dbAdapter->commit();
+            if ($ownTx) {
+                $dbAdapter->commit();
+            }
         } catch (Throwable $e) {
-            $dbAdapter->rollBack();
+            if ($ownTx) {
+                $dbAdapter->rollBack();
+            }
             Pt_Commons_LoggerUtility::logError('removeDtsVlResults rolled back: ' . $e->getMessage(), [
                 'mapId' => $mapId,
                 'file'  => $e->getFile(),
@@ -3134,7 +3173,10 @@ class Application_Service_Shipments
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $responseTables = ['response_result_dbs', 'response_result_dts', 'response_result_eid', 'response_result_recency', 'response_result_tb', 'response_result_vl'];
-        $db->beginTransaction();
+        $ownTx = !$db->getConnection()->inTransaction();
+        if ($ownTx) {
+            $db->beginTransaction();
+        }
         $db->query('SET FOREIGN_KEY_CHECKS = 0;');
         try {
             foreach ($responseTables as $response) {
@@ -3147,10 +3189,14 @@ class Application_Service_Shipments
                 }
             }
             $rows = $db->delete('shipment_participant_map', 'map_id = ' . $mapId);
-            $db->commit();
+            if ($ownTx) {
+                $db->commit();
+            }
             return $rows;
         } catch (Throwable $e) {
-            $db->rollBack();
+            if ($ownTx) {
+                $db->rollBack();
+            }
             Pt_Commons_LoggerUtility::logError('removeShipmentParticipant rolled back: ' . $e->getMessage(), [
                 'mapId' => $mapId,
                 'sId'   => $sId,
