@@ -614,53 +614,77 @@ if (!$pstatus && in_array('access-reports', $privileges)) {
 $audience = 'admin';
 $helpBaseUrl = $this->baseUrl('/admin/help');
 $helpSlugMap = [
+	// Dashboard
 	'index/index' => 'dashboard',
-	'index/dashboard' => 'dashboard',
+
+	// PT Participants
 	'participants/index' => 'participants',
 	'participants/add' => 'participants-add',
 	'participants/edit' => 'participants-edit',
 	'participants/bulk-import' => 'participants-bulk-import',
-	'participants/manage' => 'participants',
-	'shipments/index' => 'shipments',
-	'shipments/add' => 'shipments',
-	'shipments/edit' => 'shipments',
-	'shipments/manage' => 'shipments',
+	'participants/participant-manager-map' => 'participants-manager-map',
+
+	// PT Surveys (Distributions controller in admin module)
 	'distributions/index' => 'distributions',
 	'distributions/add' => 'distributions-add',
 	'distributions/edit' => 'distributions-edit',
-	'distributions/manage' => 'distributions',
-	'reports/index' => 'reports',
+
+	// Shipments (Shipment controller — singular)
+	'shipment/index' => 'shipment',
+	'shipment/add' => 'shipment-add',
+	'shipment/edit' => 'shipment',
+	'shipment/manage-enroll' => 'shipment',
+	'shipment/view-enrollments' => 'shipment',
+	'shipment/add-enrollments' => 'shipment',
+	'shipment/ship-it' => 'shipment',
+	'shipment/new-shipment-mail' => 'shipment',
+	'shipment/not-participated-mail' => 'shipment',
+
+	// Scheme enrollments
+	'enrollments/index' => 'enrollments',
+	'enrollments/add' => 'enrollments-add',
+	'enrollments/bulk-enrollment' => 'enrollments-bulk-enrollment',
+
+	// Analyze
 	'evaluate/index' => 'evaluate',
 	'evaluate/shipment' => 'evaluate-shipment',
+
+	// Reports module (uses admin layout)
 	'distribution/index' => 'reports-distribution',
 	'finalize/index' => 'reports-finalize',
+
+	// Admin users
 	'system-admins/index' => 'users',
+	'system-admins/add' => 'users',
 	'system-admins/edit' => 'users',
 	'users/index' => 'users',
+	'users/add' => 'users',
 	'users/edit' => 'users',
-	'schemes/index' => 'schemes',
-	'schemes/edit' => 'schemes',
+
+	// Settings
 	'global-config/index' => 'global-config',
 	'report-config/index' => 'report-config',
 	'home-config/index' => 'home-config',
 	'dts-settings/index' => 'dts-settings',
 	'vl-settings/index' => 'vl-settings',
 	'tb-settings/index' => 'tb-settings',
+
+	// Test kits
 	'testkit/index' => 'testkit',
 	'testkit/add' => 'testkit-add',
 	'testkit/edit' => 'testkit-edit',
 	'testkit/standard-kit' => 'testkit-standard-kit',
+
+	// Assays
 	'vl-assay/index' => 'vl-assay',
 	'vl-assay/add' => 'vl-assay-add',
 	'vl-assay/edit' => 'vl-assay-edit',
 	'eid-assay/index' => 'eid-assay',
 	'eid-assay/add' => 'eid-assay-add',
-	'participants/participant-manager-map' => 'participants-manager-map',
+
+	// People
 	'data-managers/index' => 'data-managers',
 	'email-participants/index' => 'email-participants',
-	'enrollments/index' => 'enrollments',
-	'enrollments/add' => 'enrollments-add',
-	'enrollments/bulk-enrollment' => 'enrollments-bulk-enrollment',
 ];
 $resolvedHelpSlug = $helpSlugMap["$controllerName/$actionName"]
 	?? $helpSlugMap["$controllerName/index"]
