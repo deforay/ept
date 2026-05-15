@@ -29,7 +29,7 @@
 
     if (typeof $ === 'undefined') return;
 
-    var $root, $panel, $loading, $topic, $index, $error, $search, $toc, $noResults, $fullpage;
+    var $root, $panel, $loading, $topic, $topicWrap, $index, $error, $search, $toc, $noResults, $fullpage;
     var $guideRegion, $chipRegion, $tabsRegion;
     var topicsCache = null;
     var guidesCache = null;
@@ -53,6 +53,8 @@
         $panel     = $root.find('.help-drawer-panel');
         $loading   = $('#help-drawer-loading');
         $topic     = $('#help-drawer-topic');
+        $topicWrap = $('#help-drawer-topic-wrap');
+        if ($topicWrap.length === 0) $topicWrap = $topic; // legacy fallback
         $index     = $('#help-drawer-index');
         $error     = $('#help-drawer-error');
         $search    = $('#help-drawer-search');
@@ -85,6 +87,12 @@
             }
             var slug = $(this).attr('data-help-slug') || window.HELP_SLUG || '';
             open(slug);
+        });
+
+        // "Browse all topics & guides" link inside the topic view
+        $(document).on('click', '#help-drawer-back-to-index', function (e) {
+            e.preventDefault();
+            loadIndex();
         });
 
         window.addEventListener('help-drawer:open', function (ev) {
@@ -475,7 +483,8 @@
 
     function showOnly(which) {
         $loading.toggle(which === 'loading');
-        $topic.toggle(which === 'topic');
+        $topicWrap.toggle(which === 'topic');
+        if ($topicWrap !== $topic) $topic.toggle(which === 'topic');
         $index.toggle(which === 'index');
         $error.toggle(which === 'error');
         $guideRegion.toggle(which === 'guide');
@@ -508,6 +517,12 @@
         showOnly('loading');
         $('#help-drawer-title').text($('#help-drawer-title').data('default-title') || 'Help');
         $fullpage.attr('href', window.HELP_BASE_URL).show();
+
+        // The "No dedicated help for this page yet" callout is only useful
+        // when the drawer falls back to the index *because* the page has
+        // no slug. If the user reached the index intentionally (by clicking
+        // the back link), hide it.
+        $index.find('.help-drawer-callout').toggle(!window.HELP_SLUG);
 
         var render = function () {
             renderToc($search.val() || '');

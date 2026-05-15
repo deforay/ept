@@ -46,7 +46,13 @@ $helpBaseUrl       = $helpBaseUrl       ?? '/help';
                 <?= $this->htmlTranslate("Loading…"); ?>
             </div>
 
-            <div id="help-drawer-topic" class="help-prose" style="display:none;"></div>
+            <div id="help-drawer-topic-wrap" style="display:none;">
+                <a href="javascript:void(0);" id="help-drawer-back-to-index" class="help-drawer-back">
+                    <i class="fa fa-th-list"></i>
+                    <?= $this->htmlTranslate("Browse all topics &amp; guides"); ?>
+                </a>
+                <div id="help-drawer-topic" class="help-prose"></div>
+            </div>
 
             <div id="help-drawer-index" class="help-drawer-index" style="display:none;">
                 <div class="help-drawer-callout">
