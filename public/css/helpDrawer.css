@@ -298,14 +298,23 @@
 }
 .help-drawer-chip-close {
     flex: 0 0 auto;
-    border: none;
-    background: transparent;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    border: 1px solid #d4b76a;
+    background: #fff;
     color: #7a5d0c;
-    padding: 4px 8px;
+    padding: 4px 10px;
+    font-size: 12px;
+    font-weight: 600;
     cursor: pointer;
     border-radius: 4px;
 }
-.help-drawer-chip-close:hover { background: rgba(0,0,0,0.06); }
+.help-drawer-chip-close:hover {
+    background: #fef3c7;
+    border-color: #b8860b;
+}
+.help-drawer-chip-close-label { white-space: nowrap; }
 .help-drawer-chip-progress {
     height: 3px;
     background: #f1e3a3;

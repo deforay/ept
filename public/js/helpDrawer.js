@@ -165,9 +165,11 @@
                             '<div class="help-drawer-chip-step"></div>' +
                         '</div>' +
                         '<button type="button" class="help-drawer-chip-close" ' +
-                            'title="' + t('exit_guide', 'Exit guide') + '" ' +
                             'aria-label="' + t('exit_guide', 'Exit guide') + '">' +
-                            '<i class="fa fa-times"></i>' +
+                            '<i class="fa fa-times"></i> ' +
+                            '<span class="help-drawer-chip-close-label">' +
+                                t('exit_guide', 'Exit guide') +
+                            '</span>' +
                         '</button>' +
                     '</div>' +
                     '<div class="help-drawer-chip-progress">' +
