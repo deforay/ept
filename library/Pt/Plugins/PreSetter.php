@@ -222,5 +222,24 @@ class Pt_Plugins_PreSetter extends Zend_Controller_Plugin_Abstract
             }
             $layout->setLayout('admin');
         }
+
+        // Release PHP's exclusive session file-lock for AJAX requests before the
+        // controller dispatches. ZF1's Zend_Session_Namespace implicitly calls
+        // session_start(), which under the default file save_handler holds an
+        // exclusive flock on the session file from start() until the response
+        // is sent. Since this plugin now writes $authNameSpace->lastActivity on
+        // *every* request, every AJAX call holds that lock for its full duration.
+        // With heartbeat polls, DataTables, client-error pings, auto-refresh
+        // tables, and N concurrent AJAX from a single page, any one slow
+        // request serializes the rest behind it — workers pile up, pages stop
+        // responding, and only a `service apache2 restart` clears the queue.
+        // For non-AJAX requests we leave the lock alone (forms/page renders may
+        // legitimately write session data downstream). AJAX controllers that
+        // need to write session can still do so — Zend_Session_Namespace will
+        // re-call session_start() and re-acquire a brief lock just for that
+        // write, instead of holding it for the whole request.
+        if ($request->isXmlHttpRequest() && session_status() === PHP_SESSION_ACTIVE) {
+            session_write_close();
+        }
     }
 }
