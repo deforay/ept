@@ -1689,6 +1689,8 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
     }
 
     $(function () {
+       $("#repeat_check_1").attr("checked","checked");
+        showHideRepeatTests($('#repeat_check_1'), '.repeat_1');
         $("#avilableTestKit").select2({
             placeholder: $(this).attr('title'),
             minimumInputLength: 0,
