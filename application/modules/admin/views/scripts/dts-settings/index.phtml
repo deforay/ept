@@ -507,10 +507,10 @@ $dtFormat = $genderHelper->getDateFormat();
                             </label>
                             <div class="btn-group radioBtn">
                                 <a class="btn btn-primary btn-sm <?php echo (isset($dts['allowRepeatTests']) && $dts['allowRepeatTests'] == "yes") ? " active " : "notActive"; ?>"
-                                    data-toggle="allowRepeatTest" data-title="yes"
+                                    data-toggle="allowRepeatTests" data-title="yes"
                                     onclick="toggleRadios(this);"><?= $this->translate->_("YES"); ?></a>
                                 <a class="btn btn-primary btn-sm <?php echo (isset($dts['allowRepeatTests']) && $dts['allowRepeatTests'] == "no") ? " active " : "notActive"; ?>"
-                                    data-toggle="allowRepeatTest" data-title="no"
+                                    data-toggle="allowRepeatTests" data-title="no"
                                     onclick="toggleRadios(this);"><?= $this->translate->_("NO"); ?></a>
                             </div>
                             <input type="hidden" name="dts[allowRepeatTests]" id="allowRepeatTests"
