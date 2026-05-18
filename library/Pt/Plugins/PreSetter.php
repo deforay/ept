@@ -17,23 +17,29 @@ class Pt_Plugins_PreSetter extends Zend_Controller_Plugin_Abstract
         $csrfCheck = SecurityService::checkCSRF($request);
 
         if (!$csrfCheck) {
+            // Bounce to login as a real HTTP 302, NOT via setDispatched(false).
+            // The front controller's dispatch loop re-fires preDispatch after every
+            // setDispatched(false), but the request method survives — so on any POST
+            // where checkCSRF returns false (token mismatch, expired form, leaked
+            // PHPSESSID replayed by a bot scanning /), the next loop iteration sees
+            // the same POST + same in-session csrf.token and fails again, looping at
+            // 100% CPU forever until the worker is killed. A 302 sends the browser
+            // to GET /admin/login (or /auth/login); GET isn't in $modifyingMethods,
+            // so the follow-up trivially passes checkCSRF and the loop is broken.
+            // Pattern matches the existing impersonation-expiry path below.
             $translate = Zend_Registry::get('translate');
             $expiredMessage = $translate->_('Your session has expired. Please sign in again.');
             $alertMsg = new Zend_Session_Namespace('alertSpace');
             $alertMsg->message = $expiredMessage;
 
-            // Admin/reports area: bounce to admin login. Public area: send to participant login.
-            if (in_array($request->getModuleName(), ['admin', 'reports'], true)) {
-                $request->setModuleName('admin')
-                    ->setControllerName('login')
-                    ->setActionName('index');
-            } else {
-                $request->setModuleName('default')
-                    ->setControllerName('auth')
-                    ->setActionName('login');
-            }
-            $request->setDispatched(false);
-            return;
+            $loginUrl = in_array($request->getModuleName(), ['admin', 'reports'], true)
+                ? '/admin/login'
+                : '/auth/login';
+
+            $response = $this->getResponse();
+            $response->setRedirect($loginUrl, 302);
+            $response->sendResponse();
+            exit;
         }
 
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
