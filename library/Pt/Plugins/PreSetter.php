@@ -162,6 +162,57 @@ class Pt_Plugins_PreSetter extends Zend_Controller_Plugin_Abstract
             return;
         }
 
+        // Auto-teardown for admin hitting an admin-area URL while a
+        // 'view-as-participant' session is still live. Without this, the
+        // impersonated $datamanagers->dm_id silently scopes DbTable filters
+        // across the admin module (participants list, shipments list, country
+        // pickers, audit log queries, etc.) to whatever DM was last
+        // impersonated — surfaced recently as /admin/participants showing
+        // only the 4 labs mapped to the impersonated DM instead of all 800+.
+        // Restore from the impersonationBackup before dispatch so this
+        // request sees clean admin context. /admin/impersonate/* skips this
+        // because that controller has its own teardown semantics (the user
+        // explicitly clicked stop, or is mid-impersonation-start).
+        if (
+            $loggedInAsAdmin &&
+            !empty($authNameSpace->impersonatedBy) &&
+            $isAdminAreaRequest &&
+            $request->getControllerName() !== 'impersonate'
+        ) {
+            $loggedUser = new Zend_Session_Namespace('loggedUser');
+            $backup = new Zend_Session_Namespace('impersonationBackup');
+
+            $auditDb = new Application_Model_DbTable_AuditLog();
+            $auditDb->addNewAuditLog(
+                sprintf(
+                    'Auto-stopped view-as-participant on admin-area navigation: dm_id=%s (%s), target=%s',
+                    (string)($authNameSpace->dm_id ?? ''),
+                    (string)($authNameSpace->primary_email ?? ''),
+                    $request->getRequestUri()
+                ),
+                'auth'
+            );
+
+            $authNameSpace->unsetAll();
+            $loggedUser->unsetAll();
+            if (!empty($backup->datamanagers) && is_array($backup->datamanagers)) {
+                foreach ($backup->datamanagers as $k => $v) {
+                    $authNameSpace->$k = $v;
+                }
+            }
+            if (!empty($backup->loggedUser) && is_array($backup->loggedUser)) {
+                foreach ($backup->loggedUser as $k => $v) {
+                    $loggedUser->$k = $v;
+                }
+            }
+            $backup->unsetAll();
+
+            // The rest of preDispatch (and the dispatched controller) reads
+            // $loggedInAsParticipant — keep it consistent with the cleared
+            // session so downstream auth branches behave correctly.
+            $loggedInAsParticipant = !empty($authNameSpace->dm_id);
+        }
+
         if ($expiredKind !== null) {
             $loginUrl = $expiredKind === 'admin' ? '/admin' : '/auth/login';
 
