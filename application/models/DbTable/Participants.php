@@ -190,8 +190,15 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         if (isset($parameters['withStatus']) && $parameters['withStatus'] != '') {
             $sQuery = $sQuery->where('p.status = ? ', $parameters['withStatus']);
         }
+        // PTCC participant-side: scope the list to participants mapped to the
+        // logged-in DM. Suppress this scope when an admin is also logged in
+        // (active session or mid-impersonation) — /admin/participants must
+        // show every participant, and a stale `datamanagers` namespace from
+        // an impersonation that didn't fully tear down was previously dropping
+        // the admin's view to whatever DM was last impersonated.
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
-        if (!empty($authNameSpace->dm_id)) {
+        $adminAuthNameSpace = new Zend_Session_Namespace('administrators');
+        if (!empty($authNameSpace->dm_id) && empty($adminAuthNameSpace->admin_id)) {
             $sQuery = $sQuery->joinLeft(['pmm' => 'participant_manager_map'], 'pmm.participant_id=p.participant_id', [])
                 ->where('pmm.dm_id = ?', $authNameSpace->dm_id);
         }
