@@ -184,15 +184,37 @@ class ParticipantController extends Zend_Controller_Action
 
         /** @var Zend_Controller_Request_Http $request */
         $request = $this->getRequest();
+        $authNameSpace = new Zend_Session_Namespace('datamanagers');
+        $forceProfileConfirmation = (isset($authNameSpace->forcePasswordReset) && $authNameSpace->forcePasswordReset == 1);
+
         if ($request->isPost()) {
-            $user = new Application_Service_DataManagers();
+            // Step 1: profile confirmation acknowledgment. Redirect to GET so
+            // the session flag persists cleanly and the user can't get stuck
+            // on a re-POST loop.
+            if ($forceProfileConfirmation && $request->getPost('confirm_profile') !== null) {
+                $_SESSION['profile_confirmed'] = true;
+                $this->redirect('/participant/password');
+                return;
+            }
+
+            // Step 2: actual password change. Only treat the POST as a change
+            // attempt if newpassword is actually present — clicking the confirm
+            // button used to fall through into changePassword(null, null) and
+            // surface a confusing 'could not update' alert.
             $newPassword = $request->getPost('newpassword');
             $oldPassword = $request->getPost('oldpassword');
-            $response = $user->changePassword($oldPassword, $newPassword);
-            if ($response) {
-                $auditDb = new Application_Model_DbTable_AuditLog();
-                $auditDb->addNewAuditLog('Changed password', 'auth');
-                $this->redirect('/participant/current-schemes');
+            if ($newPassword !== null && $newPassword !== '') {
+                $user = new Application_Service_DataManagers();
+                $response = $user->changePassword($oldPassword, $newPassword);
+                if ($response) {
+                    if ($forceProfileConfirmation) {
+                        unset($_SESSION['profile_confirmed']);
+                    }
+                    $auditDb = new Application_Model_DbTable_AuditLog();
+                    $auditDb->addNewAuditLog('Changed password', 'auth');
+                    $this->redirect('/participant/current-schemes');
+                    return;
+                }
             }
         }
         $userService = new Application_Service_DataManagers();
@@ -201,6 +223,8 @@ class ParticipantController extends Zend_Controller_Action
         $this->view->rsUsersProfile = $dbUsersProfile->getUsersParticipants();
         $this->view->rsUser = $userInfo = $userService->getUserInfo();
         $this->view->passLength = $globalConfigDb->getValue('participant_login_password_length');
+        $this->view->forceProfileConfirmation = $forceProfileConfirmation;
+        $this->view->profileConfirmed = !empty($_SESSION['profile_confirmed']);
     }
 
     public function changePrimaryEmailAction()
