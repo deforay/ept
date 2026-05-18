@@ -115,6 +115,21 @@
             });
     };
 
+    // Response forms have a lot of expiry-date / receipt-date / test-date
+    // datepickers that often need to jump several years (reagent expiry can be
+    // 2-3 years out, backfilled receipt dates can be a few years old). Default
+    // jQuery UI shows only the prev/next month arrows, so reaching e.g. Jan
+    // 2028 from May 2026 means 32 clicks. Enable the month + year dropdowns
+    // and widen the year range so a single dropdown selection gets you there.
+    // Per-call dateFormat / minDate / maxDate options still override these.
+    if ($.datepicker) {
+        $.datepicker.setDefaults({
+            changeMonth: true,
+            changeYear: true,
+            yearRange: 'c-20:c+20'
+        });
+    }
+
     $.extend(true, $.fn.dataTable.defaults, {
         "language": {
             "lengthMenu": "_MENU_ <?= $this->jsTranslate("records per page"); ?>",
