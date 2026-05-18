@@ -1345,6 +1345,12 @@ parameters:
 			path: application/controllers/ParticipantController.php
 
 		-
+			message: '#^Access to an undefined property Zend_View_Interface\:\:\$forceProfileConfirmation\.$#'
+			identifier: property.notFound
+			count: 1
+			path: application/controllers/ParticipantController.php
+
+		-
 			message: '#^Access to an undefined property Zend_View_Interface\:\:\$globalQcAccess\.$#'
 			identifier: property.notFound
 			count: 1
@@ -1444,6 +1450,12 @@ parameters:
 			message: '#^Access to an undefined property Zend_View_Interface\:\:\$paticipantManagers\.$#'
 			identifier: property.notFound
 			count: 2
+			path: application/controllers/ParticipantController.php
+
+		-
+			message: '#^Access to an undefined property Zend_View_Interface\:\:\$profileConfirmed\.$#'
+			identifier: property.notFound
+			count: 1
 			path: application/controllers/ParticipantController.php
 
 		-
