@@ -351,8 +351,7 @@ class Admin_DataManagersController extends Zend_Controller_Action
         $pasted = (string) ($params['identifiers'] ?? '');
         $this->view->pastedText = $pasted;
 
-        $lines = preg_split('/[\r\n,;\t]+/', $pasted) ?: [];
-        $resolved = $userService->resolveDmIdentifiers($lines);
+        $resolved = $userService->resolveDmIdentifiers($this->tokenizePastedIdentifiers($pasted));
         $this->view->matched = $resolved['matched'];
         $this->view->unresolved = $resolved['unresolved'];
 
@@ -396,6 +395,31 @@ class Admin_DataManagersController extends Zend_Controller_Action
         }
 
         $this->view->step = 'resolved';
+    }
+
+    // Excel pastes are TSV with CSV-style quoting: a cell containing a newline
+    // arrives as "value\n", so naive splitting on \r\n leaves a stray quote
+    // alone on its own line. Parse with fgetcsv (tab delimiter, " enclosure,
+    // no escape char), then split each cell on comma/semicolon for users who
+    // paste comma-separated lists inline.
+    private function tokenizePastedIdentifiers(string $pasted): array
+    {
+        $lines = [];
+        $tmp = fopen('php://temp', 'r+');
+        if ($tmp === false) {
+            return preg_split('/[\r\n,;\t]+/', $pasted) ?: [];
+        }
+        fwrite($tmp, $pasted);
+        rewind($tmp);
+        while (($row = fgetcsv($tmp, 0, "\t", '"', '')) !== false) {
+            foreach ($row as $cell) {
+                foreach (preg_split('/[,;]+/', (string) $cell) ?: [] as $piece) {
+                    $lines[] = $piece;
+                }
+            }
+        }
+        fclose($tmp);
+        return $lines;
     }
 
     public function changePrimaryEmailAction()
