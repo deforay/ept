@@ -465,9 +465,15 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                 ->where('new_email = ?', $decodedEmail)
                 ->where('new_email IS NOT NULL')
         );
-        if ((isset($result) && $result != '') || isset($row) && $row != '') {
+        $newEmail = null;
+        if (is_array($result) && !empty($result['new_email'])) {
+            $newEmail = $result['new_email'];
+        } elseif ($row && !empty($row['new_email'])) {
+            $newEmail = $row['new_email'];
+        }
+        if ($newEmail !== null) {
             return $this->update(
-                ['force_profile_check' => 'no', 'primary_email' => $result['new_email'], 'new_email' => null],
+                ['force_profile_check' => 'no', 'primary_email' => $newEmail, 'new_email' => null],
                 ['new_email = ?' => $decodedEmail]
             );
         }
