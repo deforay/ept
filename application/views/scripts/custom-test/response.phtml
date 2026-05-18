@@ -211,14 +211,13 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
 						style="width:100%;margin:10px auto;">
 						<tr class="dark">
 							<td style="width:20%;"> <label class="control-lable"
-									for="analystName"><?= $this->translate->_("Tester Name"); ?> <span
-										class="mandatory">*</span></label></td>
+									for="analystName"><?= $this->translate->_("Tester Name"); ?></label></td>
 							<td style="width:30%;">
 								<input type="text" id="analystName" name="analystName" style="float:left;"
 									value="<?php echo $this->shipment['attributes']['analyst_name'] ?? null; ?>"
-									class="form-control vlResultValues isRequired"
+									class="form-control vlResultValues"
 									placeholder="<?= $this->translate->_("Enter tester name"); ?>"
-									title="<?= $this->translate->_("Please enter tester name"); ?>" />
+									title="<?= $this->translate->_("Enter tester name"); ?>" />
 							</td>
 							<td style="width:20%;"> <label class="control-lable"
 									for="receiptDate"><?= $this->translate->_("Date Panel Received"); ?> <span
