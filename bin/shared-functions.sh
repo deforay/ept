@@ -829,6 +829,31 @@ configure_php_ini() {
 
     print header "Configuring PHP ${php_version}"
 
+    # switch-php drops /etc/php/${ver}/mods-available/99-custom-tuning.ini and phpenmods it,
+    # which lands in conf.d/ and overrides every matching directive we set in php.ini below
+    # (notably opcache.max_accelerated_files=4000 — far below ePT's ~8700-file footprint, causing
+    # opcache thrash → slow-over-time → "had to restart Apache"). Disable it for both SAPIs so
+    # our php.ini values actually take effect. switch-php re-enables on each run; this re-disables.
+    local switch_php_override="/etc/php/${php_version}/mods-available/99-custom-tuning.ini"
+    if [ -f "$switch_php_override" ]; then
+        print info "Disabling switch-php's 99-custom-tuning.ini (overrides php.ini); settings now live in php.ini..."
+        phpdismod -v "$php_version" -s apache2 99-custom-tuning 2>/dev/null || true
+        phpdismod -v "$php_version" -s cli 99-custom-tuning 2>/dev/null || true
+    fi
+
+    # Compute memory_limit as a percentage of total RAM (PHP_MEMORY_PCT overrides; default 75%).
+    # Floor 512M (ePT's PDF/Imagick/Chart paths can spike), cap 4096M (beyond that = leak, not need).
+    # mod_php means each Apache child can use up to this ceiling — pair with sane MaxRequestWorkers.
+    local mem_pct="${PHP_MEMORY_PCT:-75}"
+    local mem_total_kb mem_total_mb mem_limit_mb
+    mem_total_kb=$(awk '/^MemTotal:/ {print $2}' /proc/meminfo 2>/dev/null || echo 2097152)
+    mem_total_mb=$((mem_total_kb / 1024))
+    mem_limit_mb=$((mem_total_mb * mem_pct / 100))
+    mem_limit_mb=$(( (mem_limit_mb / 64) * 64 ))
+    [ "$mem_limit_mb" -lt 512 ] && mem_limit_mb=512
+    [ "$mem_limit_mb" -gt 4096 ] && mem_limit_mb=4096
+    print info "Detected ${mem_total_mb}MB RAM; setting memory_limit=${mem_limit_mb}M (${mem_pct}% target)"
+
     # Define desired PHP settings
     local desired_error_reporting="error_reporting = E_ALL & ~E_DEPRECATED & ~E_STRICT & ~E_NOTICE & ~E_WARNING"
     local desired_display_errors="display_errors = Off"
@@ -838,7 +863,7 @@ configure_php_ini() {
     local desired_max_input_vars="max_input_vars = 10000"
     local desired_max_input_time="max_input_time = 300"
     local desired_max_execution_time="max_execution_time = 300"
-    local desired_memory_limit="memory_limit = 512M"
+    local desired_memory_limit="memory_limit = ${mem_limit_mb}M"
     local desired_session_auto_start="session.auto_start = 0"
     local desired_strict_mode="session.use_strict_mode = 1"
     local desired_sid_length="session.sid_length = 48"
