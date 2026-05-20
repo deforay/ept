@@ -173,7 +173,7 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
 							for="isPtTestNotPerformed"><?= $this->translate->_("Were you able to test the Panel?"); ?>&nbsp;
 							&nbsp;<label>
 								<select name="isPtTestNotPerformed" id="isPtTestNotPerformed" class="form-control">
-									<option value="no" <?php echo (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes') ? 'selected="selected"' : ''; ?>><?= $this->translate->_("Able to Test Panel"); ?></option>
+									<option value="no" <?php echo (!isset($this->shipment['is_pt_test_not_performed']) || $this->shipment['is_pt_test_not_performed'] != 'yes') ? 'selected="selected"' : ''; ?>><?= $this->translate->_("Able to Test Panel"); ?></option>
 									<option value="yes" <?php echo (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes') ? 'selected="selected"' : ''; ?>><?= $this->translate->_("Unable to Test Panel"); ?></option>
 								</select>
 					</div>
@@ -759,7 +759,6 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
 			$('.vlResultValues').val('');
 			$('.vlResultBlock').html('');
 			$('.ptNotPerformedSection').show();
-			$('.').css('visibility', 'hidden');
 			$('.vlResultValues').removeClass('isRequired');
 			$('#vlNotTestedReason').addClass('isRequired');
 			$('#ptNotTestedComments').addClass('isRequired');
@@ -768,16 +767,13 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
 		} else {
 			$('.vlResultSection').show();
 			$('.ptNotPerformedSection').hide();
-			$('.').css('visibility', 'visible');
 			$('.vlResultValues').addClass('isRequired');
 			$('#vlNotTestedReason').removeClass('isRequired');
 			$('#ptNotTestedComments').removeClass('isRequired');
 			$('#testDate,#receiptDate,#sampleRehydrationDate,#supervisorApproval').addClass('isRequired');
 			$('.ptTestPerformed').show();
-
 		}
-
-	});
+	}).trigger('change');
 
 	function testKitChanged(value) {
 		if (value.toLowerCase() == 'other') {
