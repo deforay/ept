@@ -215,7 +215,7 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
 							<td style="width:30%;">
 								<input type="text" id="analystName" name="analystName" style="float:left;"
 									value="<?php echo $this->shipment['attributes']['analyst_name'] ?? null; ?>"
-									class="form-control vlResultValues"
+									class="form-control"
 									placeholder="<?= $this->translate->_("Enter tester name"); ?>"
 									title="<?= $this->translate->_("Enter tester name"); ?>" />
 							</td>
