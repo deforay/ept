@@ -673,6 +673,10 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
 			minDate: 'today',
 			// maxDate: new Date('<?php echo $this->shipment['shipment_date']; ?>')
 		});
+		$("#responseDate").datepicker("option", {
+			minDate: new Date('<?php echo $this->shipment['shipment_date']; ?>'),
+			maxDate: 'today'
+		});
 
 		$(".expDatepicker").datepicker({
 			dateFormat: '<?php echo $dtFormat; ?>'

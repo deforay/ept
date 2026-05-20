@@ -1629,8 +1629,9 @@ class Application_Service_Shipments
                 $data['updated_on_admin'] = new Zend_Db_Expr('now()');
             }
 
-            if (isset($params['testReceiptDate']) && trim($params['testReceiptDate']) != '') {
-                $data['shipment_test_report_date'] = Pt_Commons_DateUtility::isoDateFormat($params['testReceiptDate']);
+            $responseDate = $params['responseDate'] ?? $params['testReceiptDate'] ?? null;
+            if (!empty($responseDate) && trim($responseDate) != '') {
+                $data['shipment_test_report_date'] = Pt_Commons_DateUtility::isoDateFormat($responseDate);
             } else {
                 $data['shipment_test_report_date'] = new Zend_Db_Expr('now()');
             }
