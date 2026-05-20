@@ -1619,7 +1619,17 @@ class Application_Service_Shipments
                 'participant_supervisor' => $params['participantSupervisor'],
                 'user_comment' => $params['userComments'],
                 'response_status' => $responseStatus,
+                'is_pt_test_not_performed' => null,
+                'vl_not_tested_reason' => null,
+                'pt_test_not_performed_comments' => null,
             ];
+
+            if (!empty($params['isPtTestNotPerformed']) && $params['isPtTestNotPerformed'] === 'yes') {
+                $data['is_pt_test_not_performed'] = 'yes';
+                $data['shipment_test_date'] = null;
+                $data['vl_not_tested_reason'] = $params['vlNotTestedReason'] ?? null;
+                $data['pt_test_not_performed_comments'] = $params['ptNotTestedComments'] ?? null;
+            }
 
             if (!empty($authNameSpace->dm_id)) {
                 $data['updated_by_user'] = $authNameSpace->dm_id ?? null;
