@@ -41,7 +41,9 @@ foreach ($this->otherTestsPossibleResults as $row) {
 	}
 </style>
 <?php $inConfirmStep = isset($_SESSION['confirmForm']) && $_SESSION['confirmForm'] === 'yes';
-if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
+if ($inConfirmStep) {
+	$_SESSION['confirmForm'] = '';
+} ?>
 <style>
 	#confirmResponseBanner {
 		position: sticky;
@@ -54,10 +56,31 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
 		margin: 0 0 20px 0;
 		box-shadow: 0 4px 12px rgba(255, 152, 0, 0.25);
 	}
-	#confirmResponseBanner .crb-row { display: flex; align-items: center; gap: 15px; }
-	#confirmResponseBanner .crb-icon { font-size: 34px; line-height: 1; }
-	#confirmResponseBanner .crb-title { font-size: 18px; font-weight: bold; color: #5a3e00; margin-bottom: 4px; }
-	#confirmResponseBanner .crb-body { font-size: 15px; color: #5a3e00; line-height: 1.4; }
+
+	#confirmResponseBanner .crb-row {
+		display: flex;
+		align-items: center;
+		gap: 15px;
+	}
+
+	#confirmResponseBanner .crb-icon {
+		font-size: 34px;
+		line-height: 1;
+	}
+
+	#confirmResponseBanner .crb-title {
+		font-size: 18px;
+		font-weight: bold;
+		color: #5a3e00;
+		margin-bottom: 4px;
+	}
+
+	#confirmResponseBanner .crb-body {
+		font-size: 15px;
+		color: #5a3e00;
+		line-height: 1.4;
+	}
+
 	.confirm-submit-btn {
 		background-color: #28a745 !important;
 		border-color: #1e7e34 !important;
@@ -67,10 +90,19 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
 		padding: 12px 30px !important;
 		animation: confirmPulse 1.8s infinite;
 	}
+
 	@keyframes confirmPulse {
-		0% { box-shadow: 0 0 0 0 rgba(40, 167, 69, 0.7); }
-		70% { box-shadow: 0 0 0 14px rgba(40, 167, 69, 0); }
-		100% { box-shadow: 0 0 0 0 rgba(40, 167, 69, 0); }
+		0% {
+			box-shadow: 0 0 0 0 rgba(40, 167, 69, 0.7);
+		}
+
+		70% {
+			box-shadow: 0 0 0 14px rgba(40, 167, 69, 0);
+		}
+
+		100% {
+			box-shadow: 0 0 0 0 rgba(40, 167, 69, 0);
+		}
 	}
 </style>
 <section class="content-header">
@@ -190,7 +222,7 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
 									<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
 									<?php
 									foreach ($this->allNotTestedReason as $reason) {
-										?>
+									?>
 										<option
 											data-collect-panel-receipt-date="<?= $reason['collect_panel_receipt_date']; ?>"
 											value="<?= $reason['ntr_id']; ?>" <?php echo ($this->shipment['vl_not_tested_reason'] == $reason['ntr_id']) ? 'selected="selected"' : ''; ?>><?php echo ($reason['ntr_reason']); ?></option>
@@ -289,7 +321,7 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
 								<input type="text" id="expiryDate" name="expiryDate" style="width:200px;float:left;"
 									placeholder="<?= $this->translate->_("Kit Expiry Date"); ?>"
 									title="<?= $this->translate->_("Please select the kit expiry date"); ?>"
-									class="form-control isRequired vlResultValues datepicker"
+									class="form-control isRequired vlResultValues"
 									value="<?php echo $kitExpiryDate; ?>" readonly="readonly" />
 								<i class="icon-remove-sign"
 									style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;"
@@ -456,7 +488,7 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
 												title="<?= $this->translate->_("Please enter comments"); ?>" />
 										</td>
 									</tr>
-								<?php }
+							<?php }
 							} ?>
 						</table>
 					</div>
@@ -472,18 +504,20 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
 									class="form-control isRequired">
 									<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
 									<option value="yes" <?php if ($this->shipment['supervisor_approval'] == 'yes')
-										echo " selected "; ?>><?= $this->translate->_("Yes"); ?></option>
+															echo " selected "; ?>><?= $this->translate->_("Yes"); ?></option>
 									<option value="no" <?php if ($this->shipment['supervisor_approval'] == 'no')
-										echo " selected "; ?>><?= $this->translate->_("No"); ?></option>
+															echo " selected "; ?>><?= $this->translate->_("No"); ?></option>
 								</select>
 							</td>
 							<th scope="col" class="participantSupervisor" <?php echo (isset($this->shipment['supervisor_approval']) && $this->shipment['supervisor_approval'] == 'yes') ? "" : "style='display:none;'" ?>>
 								<label for="participantSupervisor"><?= $this->translate->_("Supervisor Name"); ?> <span
-										class="mandatory">*</span></label></th>
+										class="mandatory">*</span></label>
+							</th>
 							<td class="participantSupervisor" <?php echo (isset($this->shipment['supervisor_approval']) && $this->shipment['supervisor_approval'] == 'yes') ? "" : "style='display:none;'" ?>>
 								<input name="participantSupervisor" id="participantSupervisor" type="text"
 									class="form-control"
-									value="<?php echo $this->shipment['participant_supervisor']; ?>" /></td>
+									value="<?php echo $this->shipment['participant_supervisor']; ?>" />
+							</td>
 						</tr>
 						<tr>
 							<th scope="col"><?= $this->translate->_("Comments"); ?> </th>
@@ -570,7 +604,7 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
 														value="<?php echo $warning['correctiveAction'] ?? null; ?>" checked><label
 														for="manualCorrective<?php echo $i; ?>"> </label></td>
 											</tr>
-											<?php $i++;
+										<?php $i++;
 										} ?>
 									</table>
 								</td>
@@ -656,7 +690,7 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
 
 	var timeOut;
 
-	$(function () {
+	$(function() {
 		$("#receiptDate").datepicker({
 			dateFormat: '<?php echo $dtFormat; ?>',
 			minDate: new Date('<?php echo $this->shipment['shipment_date']; ?>'),
@@ -666,6 +700,11 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
 			dateFormat: '<?php echo $dtFormat; ?>',
 			minDate: new Date('<?php echo $this->shipment['shipment_date']; ?>'),
 			maxDate: 'today'
+		});
+		$("#expiryDate").datepicker({
+			dateFormat: '<?php echo $dtFormat; ?>',
+			// minDate: new Date('<?php echo $this->shipment['shipment_date']; ?>'),
+			// maxDate: 'today'
 		});
 		$(".datepicker").datepicker({
 			dateFormat: '<?php echo $dtFormat; ?>',
@@ -681,7 +720,7 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
 		$(".expDatepicker").datepicker({
 			dateFormat: '<?php echo $dtFormat; ?>'
 		});
-		$('#isExcluded').change(function () {
+		$('#isExcluded').change(function() {
 			if (this.value == 'yes') {
 				if (confirm('Please note that this action cannot be undone and will remove the participant and their response (if any) from the system')) {
 					showdefModal('removeParticipant', 500, 250);
@@ -696,14 +735,14 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
 	function removeParticipantConfirmation() {
 		if ($('#removeParticipantPassword').val() != '') {
 			$.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'evaluate', 'action' => 'exclude-participant')); ?>", {
-				participantId: $('#participantId').val(),
-				shipmentId: $('#shipmentId').val(),
-				smid: $('#smid').val(),
-				password: $('#removeParticipantPassword').val(),
-				testType: 'generic_test',
-				format: "html"
-			},
-				function (data) {
+					participantId: $('#participantId').val(),
+					shipmentId: $('#shipmentId').val(),
+					smid: $('#smid').val(),
+					password: $('#removeParticipantPassword').val(),
+					testType: 'generic_test',
+					format: "html"
+				},
+				function(data) {
 					if (!data) {
 						alert('Entered Password was wrong please try again later');
 						return false;
@@ -728,7 +767,7 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
 			alert('Testing Date has to come after the Panel Receipt Date');
 			return false;
 		}
-		$(".oneDecimal").each(function () {
+		$(".oneDecimal").each(function() {
 			if (!$.isNumeric($(this).val())) {
 				alert('Please ensure all SPC and Probe values are valid numbers');
 				return false;
@@ -739,7 +778,7 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
 		});
 		return flag;
 	}
-	$('#supervisorApproval').change(function () {
+	$('#supervisorApproval').change(function() {
 		if ($('#supervisorApproval').val() == 'yes') {
 			$('#labSupervisor').show();
 			$('#labSupervisor').addClass('isRequired');
@@ -753,7 +792,7 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
 		}
 	});
 
-	$('#isPtTestNotPerformed').change(function () {
+	$('#isPtTestNotPerformed').change(function() {
 		if ($(this).val() == 'yes') {
 			$('.vlResultSection').hide();
 			$('.vlResultValues').val('');
