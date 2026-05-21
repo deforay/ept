@@ -201,7 +201,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                 ->from(['pmm' => 'participant_manager_map'], ['pmm.dm_id'])
                 ->join(['p' => 'participant'], 'p.participant_id = pmm.participant_id', [])
                 ->where(
-                    "p.first_name LIKE ? OR p.last_name LIKE ? OR CONCAT(p.first_name, ' ', p.last_name) LIKE ?",
+                    "p.unique_identifier LIKE ? OR p.first_name LIKE ? OR p.last_name LIKE ? OR CONCAT(p.first_name, ' ', p.last_name) LIKE ?",
                     '%' . $searchValue . '%'
                 );
 
