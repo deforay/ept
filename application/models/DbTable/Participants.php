@@ -174,7 +174,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         /* Individual column filtering */
         for ($i = 0; $i < count($aColumns); $i++) {
             if (isset($parameters['bSearchable_' . $i]) && $parameters['bSearchable_' . $i] == 'true' && $parameters['sSearch_' . $i] != '') {
-                // Special handling for column index 7 (Data Manager search)
+                // Special handling for columns index 7 (Data Manager search) and index 8 (Shipments search)
                 if ($i == 7 || $i == 8) {
                     // Skip here — handled separately after query is built
                     continue;

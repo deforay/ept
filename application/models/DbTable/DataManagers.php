@@ -85,9 +85,9 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         // Index 0 is the bulk-select checkbox column — not searchable/sortable,
         // empty placeholder keeps DataTables column index in sync with $aColumns.
         if (isset($parameters['ptcc']) && $parameters['ptcc'] == 1) {
-            $aColumns = ['', 'u.first_name', 'u.last_name', 'u.mobile', 'u.primary_email', 'u.status', 'c.iso_name', 'state', 'district'];
+            $aColumns = ['', 'u.first_name', 'u.last_name', 'u.mobile', 'u.primary_email', 'u.status', 'c.iso_name', 'state', 'district', ''];
         } else {
-            $aColumns = ['', 'u.first_name', 'u.last_name', 'u.institute', 'u.mobile', 'u.primary_email', 'u.status'];
+            $aColumns = ['', 'u.first_name', 'u.last_name', 'u.institute', 'u.mobile', 'u.primary_email', 'u.status', ''];
         }
 
         $sLimit = '';
@@ -119,7 +119,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                 } else {
                     $sWhereSub .= ' AND (';
                 }
-                $searchableColumns = array_values(array_filter($aColumns, fn ($c) => $c !== ''));
+                $searchableColumns = array_values(array_filter($aColumns, fn($c) => $c !== ''));
                 $colSize = count($searchableColumns);
 
                 for ($i = 0; $i < $colSize; $i++) {
@@ -140,6 +140,11 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                 continue;
             }
             if (isset($parameters['bSearchable_' . $i]) && $parameters['bSearchable_' . $i] == 'true' && $parameters['sSearch_' . $i] != '') {
+                // Special handling for columns index 7 or 9 (Participants search)
+                if ($i == 7 || $i == 9) {
+                    // Skip here — handled separately after query is built
+                    continue;
+                }
                 if ($sWhere == '') {
                     $sWhere .= $aColumns[$i] . " LIKE '%" . ($parameters['sSearch_' . $i]) . "%' ";
                 } else {
@@ -186,6 +191,21 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
 
         if (isset($sWhere) && $sWhere != '') {
             $sQuery = $sQuery->where($sWhere);
+        }
+        // Apply participants filter via subquery using participant_manager_map
+        if ((isset($parameters['bSearchable_7']) && $parameters['bSearchable_7'] == 'true' && $parameters['sSearch_7'] != '') || (isset($parameters['bSearchable_9']) && $parameters['bSearchable_9'] == 'true' && $parameters['sSearch_9'] != '')) {
+            $searchValue = $parameters['sSearch_7'] ?? $parameters['sSearch_9'];
+
+            // Subquery: get dm_ids linked to matching data managers
+            $dmSubquery = $this->getAdapter()->select()
+                ->from(['pmm' => 'participant_manager_map'], ['pmm.dm_id'])
+                ->join(['p' => 'participant'], 'p.participant_id = pmm.participant_id', [])
+                ->where(
+                    "p.first_name LIKE ? OR p.last_name LIKE ? OR CONCAT(p.first_name, ' ', p.last_name) LIKE ?",
+                    '%' . $searchValue . '%'
+                );
+
+            $sQuery = $sQuery->where('u.dm_id IN (?)', new Zend_Db_Expr('(' . $dmSubquery->assemble() . ')'));
         }
 
         if (!empty($sOrder)) {

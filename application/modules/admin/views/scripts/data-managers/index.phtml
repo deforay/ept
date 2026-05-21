@@ -33,7 +33,10 @@ if (isset($this->ptcc) && !empty($this->ptcc) && $this->ptcc == 1) {
         letter-spacing: 0.2px;
         color: #1f4f82;
     }
-    .participant-child-row .child-row-header i { opacity: 0.85; }
+
+    .participant-child-row .child-row-header i {
+        opacity: 0.85;
+    }
 
     .participant-child-row .participant-filter-input {
         height: 26px;
@@ -51,11 +54,13 @@ if (isset($this->ptcc) && !empty($this->ptcc) && $this->ptcc == 1) {
         border-radius: 4px;
         box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
     }
+
     .participant-child-row .participant-list-wrap .table {
         margin: 0;
         background: transparent;
     }
-    .participant-child-row .participant-list-wrap .table > thead > tr > th {
+
+    .participant-child-row .participant-list-wrap .table>thead>tr>th {
         font-size: 12px;
         text-transform: uppercase;
         letter-spacing: 0.3px;
@@ -63,7 +68,8 @@ if (isset($this->ptcc) && !empty($this->ptcc) && $this->ptcc == 1) {
         background: #f7f9fb;
         border-bottom: 1px solid #e2e8ee;
     }
-    .participant-child-row .participant-list-wrap .table > tbody > tr > td {
+
+    .participant-child-row .participant-list-wrap .table>tbody>tr>td {
         font-size: 13px;
         vertical-align: middle;
     }
@@ -103,14 +109,14 @@ if (isset($this->ptcc) && !empty($this->ptcc) && $this->ptcc == 1) {
         </select>
     </div>
     <?php if (!empty($this->unmappedDmCount)) { ?>
-    <div class="col-md-4">
-        <label><?= $this->translate->_("Mapping"); ?></label>
-        <select id="mappingFilter" class="form-control">
-            <option value=""><?= $this->translate->_("All"); ?></option>
-            <option value="mapped"><?= $this->translate->_("Mapped to a Participant"); ?></option>
-            <option value="unmapped"><?= $this->translate->_("Not mapped to any Participant"); ?></option>
-        </select>
-    </div>
+        <div class="col-md-4">
+            <label><?= $this->translate->_("Mapping"); ?></label>
+            <select id="mappingFilter" class="form-control">
+                <option value=""><?= $this->translate->_("All"); ?></option>
+                <option value="mapped"><?= $this->translate->_("Mapped to a Participant"); ?></option>
+                <option value="unmapped"><?= $this->translate->_("Not mapped to any Participant"); ?></option>
+            </select>
+        </div>
     <?php } ?>
     <div class="col-md-5" style="margin-top: 22px;">
         <span id="bulkActionBar" style="display:none;">
@@ -128,9 +134,17 @@ if (isset($this->ptcc) && !empty($this->ptcc) && $this->ptcc == 1) {
     </div>
 </div>
 <style>
-    #usersTable > tbody > tr > td { vertical-align: middle; }
-    #usersTable tr.row-unmapped > td { background-color: #fcf8e3 !important; }
-    #usersTable tr.row-unmapped:hover > td { background-color: #faf2cc !important; }
+    #usersTable>tbody>tr>td {
+        vertical-align: middle;
+    }
+
+    #usersTable tr.row-unmapped>td {
+        background-color: #fcf8e3 !important;
+    }
+
+    #usersTable tr.row-unmapped:hover>td {
+        background-color: #faf2cc !important;
+    }
 </style>
 <table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered table-hover"
     id="usersTable">
@@ -170,7 +184,7 @@ if (isset($this->ptcc) && !empty($this->ptcc) && $this->ptcc == 1) {
                 <th scope="col"><input type="text" class="form-control input-sm col-search" data-col="7" placeholder="<?= $this->translate->_('Search State'); ?>" /></th>
                 <th scope="col"><input type="text" class="form-control input-sm col-search" data-col="8" placeholder="<?= $this->translate->_('Search District'); ?>" /></th>
             <?php } ?>
-            <th scope="col"></th>
+            <th scope="col"><input type="text" class="form-control input-sm col-search" data-col="<?php echo (!isset($ptcc) || empty($ptcc) || $ptcc != 1) ? 7 : 9; ?>" placeholder="<?= $this->translate->_('Search Participants'); ?>" /></th>
             <th scope="col"></th>
         </tr>
     </thead>
@@ -185,13 +199,13 @@ if (isset($this->ptcc) && !empty($this->ptcc) && $this->ptcc == 1) {
 
 </div><!-- /.modal -->
 <script type="text/javascript" charset="utf-8">
-    $('#myModal').on('hidden.bs.modal', function () {
+    $('#myModal').on('hidden.bs.modal', function() {
 
         $(this).removeData('bs.modal');
     });
     /* Table initialisation */
     var oTable = null;
-    $(document).ready(function () {
+    $(document).ready(function() {
         oTable = $('#usersTable').dataTable({
 
             "bJQueryUI": false,
@@ -201,8 +215,7 @@ if (isset($this->ptcc) && !empty($this->ptcc) && $this->ptcc == 1) {
             "sPaginationType": "bootstrap",
             "bRetrieve": true,
             "bSortCellsTop": true,
-            "aoColumns": [
-                {
+            "aoColumns": [{
                     "sClass": "center",
                     "bSortable": false,
                     "bSearchable": false
@@ -249,7 +262,7 @@ if (isset($this->ptcc) && !empty($this->ptcc) && $this->ptcc == 1) {
             "bProcessing": true,
             "bServerSide": true,
             "sAjaxSource": "<?php echo $this->url(array('module' => 'admin', 'controller' => 'data-managers', 'action' => 'index', 'format' => 'html')); ?>",
-            "fnServerParams": function (aoData) {
+            "fnServerParams": function(aoData) {
                 schemeType = $("#scheme").val();
                 dateRange = $("#dateRange").val();
                 dataManager = $("#dataManager").val();
@@ -266,7 +279,7 @@ if (isset($this->ptcc) && !empty($this->ptcc) && $this->ptcc == 1) {
                     "value": $("#mappingFilter").val() || ""
                 });
             },
-            "fnServerData": function (sSource, aoData, fnCallback) {
+            "fnServerData": function(sSource, aoData, fnCallback) {
                 $.ajax({
                     "dataType": 'json',
                     "type": "POST",
@@ -275,7 +288,7 @@ if (isset($this->ptcc) && !empty($this->ptcc) && $this->ptcc == 1) {
                     "success": fnCallback
                 });
             },
-            "fnRowCallback": function (nRow, aData) {
+            "fnRowCallback": function(nRow, aData) {
                 // Highlight rows with no mapped participants (the column emits
                 // <em class="unmapped-tag">…</em> when the count is 0)
                 if ($(nRow).find('.unmapped-tag').length > 0) {
@@ -287,20 +300,20 @@ if (isset($this->ptcc) && !empty($this->ptcc) && $this->ptcc == 1) {
             }
         });
 
-        $("#statusFilter").change(function () {
+        $("#statusFilter").change(function() {
             oTable.fnDraw();
         });
 
-        $("#mappingFilter").change(function () {
+        $("#mappingFilter").change(function() {
             oTable.fnDraw();
         });
 
-        bindColSearch('#usersTable', function (value, colIdx) {
+        bindColSearch('#usersTable', function(value, colIdx) {
             oTable.fnFilter(value, colIdx);
         });
 
         // Mapped Participants column — expand/collapse child row with on-demand AJAX fetch
-        $('#usersTable tbody').on('click', 'a.toggle-participant-row', function (e) {
+        $('#usersTable tbody').on('click', 'a.toggle-participant-row', function(e) {
             e.preventDefault();
             var $btn = $(this);
             var dmId = $btn.data('dm-id');
@@ -311,7 +324,7 @@ if (isset($this->ptcc) && !empty($this->ptcc) && $this->ptcc == 1) {
             }
             // Close any OTHER open child row in the table — only one expanded at a time.
             // Skip the current row: fnOpen below closes the existing child on this row atomically.
-            $('#usersTable tbody tr').each(function () {
+            $('#usersTable tbody tr').each(function() {
                 if (this !== tr && oTable.fnIsOpen(this)) {
                     oTable.fnClose(this);
                 }
@@ -319,13 +332,14 @@ if (isset($this->ptcc) && !empty($this->ptcc) && $this->ptcc == 1) {
             var placeholder = '<div style="padding:12px;color:#888;"><i class="icon-refresh"></i> <?= $this->translate->_("Loading participants…"); ?></div>';
             oTable.fnOpen(tr, placeholder, 'participant-child-container');
             $.post(
-                "<?php echo $this->url(array('module' => 'admin', 'controller' => 'data-managers', 'action' => 'mapped-participants', 'format' => 'html')); ?>",
-                { id: dmId },
-                function (html) {
+                "<?php echo $this->url(array('module' => 'admin', 'controller' => 'data-managers', 'action' => 'mapped-participants', 'format' => 'html')); ?>", {
+                    id: dmId
+                },
+                function(html) {
                     var $childTr = $(tr).next('tr');
                     $childTr.find('td').first().html(html);
                 }
-            ).fail(function () {
+            ).fail(function() {
                 var $childTr = $(tr).next('tr');
                 $childTr.find('td').first().html('<div style="padding:12px;color:#a94442;"><?= $this->translate->_("Failed to load participants. Please try again."); ?></div>');
             });
@@ -334,7 +348,7 @@ if (isset($this->ptcc) && !empty($this->ptcc) && $this->ptcc == 1) {
         // Hook called by reset-password / change-primary-email modals on success.
         // Redraw the data-managers table in place so the updated email/status shows
         // without reloading the whole page.
-        window.afterDmActionSuccess = function () {
+        window.afterDmActionSuccess = function() {
             // Bulk modal also calls this after completion — clear selection too.
             selectedDmIds.clear();
             updateBulkUi();
@@ -360,17 +374,17 @@ if (isset($this->ptcc) && !empty($this->ptcc) && $this->ptcc == 1) {
         }
 
         // Restore checkbox state after each redraw (paging, filter, search).
-        $('#usersTable').on('draw.dt', function () {
-            $('#usersTable tbody input.dm-select').each(function () {
+        $('#usersTable').on('draw.dt', function() {
+            $('#usersTable tbody input.dm-select').each(function() {
                 this.checked = selectedDmIds.has(parseInt(this.value, 10));
             });
             updateBulkUi();
         });
 
         // Header "select all on this page" toggles every visible row's checkbox.
-        $('#dmSelectAll').on('change', function () {
+        $('#dmSelectAll').on('change', function() {
             var checked = this.checked;
-            $('#usersTable tbody input.dm-select').each(function () {
+            $('#usersTable tbody input.dm-select').each(function() {
                 var id = parseInt(this.value, 10);
                 this.checked = checked;
                 if (checked) {
@@ -382,7 +396,7 @@ if (isset($this->ptcc) && !empty($this->ptcc) && $this->ptcc == 1) {
             updateBulkUi();
         });
 
-        $('#usersTable tbody').on('change', 'input.dm-select', function () {
+        $('#usersTable tbody').on('change', 'input.dm-select', function() {
             var id = parseInt(this.value, 10);
             if (this.checked) {
                 selectedDmIds.add(id);
@@ -392,13 +406,13 @@ if (isset($this->ptcc) && !empty($this->ptcc) && $this->ptcc == 1) {
             updateBulkUi();
         });
 
-        $('#bulkClearBtn').on('click', function () {
+        $('#bulkClearBtn').on('click', function() {
             selectedDmIds.clear();
             $('#usersTable tbody input.dm-select').prop('checked', false);
             updateBulkUi();
         });
 
-        $('#bulkResetBtn').on('click', function () {
+        $('#bulkResetBtn').on('click', function() {
             if (selectedDmIds.size === 0) {
                 return;
             }
@@ -407,19 +421,19 @@ if (isset($this->ptcc) && !empty($this->ptcc) && $this->ptcc == 1) {
             layoutModal('/admin/data-managers/bulk-reset-password/ids/' + encodeURIComponent(ids), '720', '600');
         });
 
-        $('#bulkByListBtn').on('click', function () {
+        $('#bulkByListBtn').on('click', function() {
             layoutModal('/admin/data-managers/bulk-reset-by-list', '720', '640');
         });
 
         // Inline filter for the expanded participants list (only present when > 5 mapped)
-        $('#usersTable tbody').on('input', 'input.participant-filter-input', function () {
+        $('#usersTable tbody').on('input', 'input.participant-filter-input', function() {
             var q = $(this).val().toLowerCase().trim();
             var $rows = $(this).closest('.participant-child-row').find('tr.participant-row');
             if (q === '') {
                 $rows.show();
                 return;
             }
-            $rows.each(function () {
+            $rows.each(function() {
                 var blob = $(this).attr('data-p-search') || '';
                 $(this).toggle(blob.indexOf(q) !== -1);
             });
@@ -430,10 +444,10 @@ if (isset($this->ptcc) && !empty($this->ptcc) && $this->ptcc == 1) {
     function generatePtccExport(type) {
         $.blockUI();
         $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'data-managers', 'action' => 'export-ptcc')); ?>", {
-            type: type,
-            format: "html"
-        },
-            function (data) {
+                type: type,
+                format: "html"
+            },
+            function(data) {
                 if (data != "") {
                     //alert(data);$.unblockUI();return;
                     document.location.href = '/temporary/' + data;
