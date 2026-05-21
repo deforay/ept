@@ -174,6 +174,11 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         /* Individual column filtering */
         for ($i = 0; $i < count($aColumns); $i++) {
             if (isset($parameters['bSearchable_' . $i]) && $parameters['bSearchable_' . $i] == 'true' && $parameters['sSearch_' . $i] != '') {
+                // Special handling for column index 7 (Data Manager search)
+                if ($i == 7 || $i == 8) {
+                    // Skip here — handled separately after query is built
+                    continue;
+                }
                 if ($sWhere == '') {
                     $sWhere .= $aColumns[$i] . " LIKE '%" . ($parameters['sSearch_' . $i]) . "%' ";
                 } else {
@@ -225,6 +230,35 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         }
         if (isset($sWhere) && $sWhere != '') {
             $sQuery = $sQuery->where($sWhere);
+        }
+
+        // Apply Data Manager filter via subquery using shipment_participant_map
+        if (isset($parameters['bSearchable_7']) && $parameters['bSearchable_7'] == 'true' && $parameters['sSearch_7'] != '') {
+            $searchValue = $parameters['sSearch_7'];
+
+            // Subquery: get participant_ids linked to matching data managers
+            $dmSubquery = $this->getAdapter()->select()
+                ->from(['pmm' => 'participant_manager_map'], ['pmm.participant_id'])
+                ->join(['d' => 'data_manager'], 'd.dm_id = pmm.dm_id', [])
+                ->where(
+                    "d.primary_email LIKE ? OR d.first_name LIKE ? OR d.last_name LIKE ? OR CONCAT(d.first_name, ' ', d.last_name) LIKE ?",
+                    '%' . $searchValue . '%'
+                );
+
+            $sQuery = $sQuery->where('p.participant_id IN (?)', new Zend_Db_Expr('(' . $dmSubquery->assemble() . ')'));
+        }
+
+        // Apply Shipment filter via subquery using shipment_participant_map
+        if (isset($parameters['bSearchable_8']) && $parameters['bSearchable_8'] == 'true' && $parameters['sSearch_8'] != '') {
+            $searchValue = $parameters['sSearch_8'];
+
+            // Subquery: get participant_ids linked to matching shipments
+            $shipmentSubquery = $this->getAdapter()->select()
+                ->from(['spm3' => 'shipment_participant_map'], ['spm3.participant_id'])
+                ->join(['s' => 'shipment'], 's.shipment_id = spm3.shipment_id', [])
+                ->where("s.shipment_code LIKE ?", '%' . $searchValue . '%');
+
+            $sQuery = $sQuery->where('p.participant_id IN (?)', new Zend_Db_Expr('(' . $shipmentSubquery->assemble() . ')'));
         }
 
         if (!empty($sOrder)) {
@@ -1550,10 +1584,10 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         $db = $this->getAdapter();
         $sql = $sql->where(
             $db->quoteInto('first_name LIKE ?', $searchPattern) . ' OR ' .
-            $db->quoteInto('last_name LIKE ?', $searchPattern) . ' OR ' .
-            $db->quoteInto('unique_identifier LIKE ?', $searchPattern) . ' OR ' .
-            $db->quoteInto('institute_name LIKE ?', $searchPattern) . ' OR ' .
-            $db->quoteInto('region LIKE ?', $searchPattern)
+                $db->quoteInto('last_name LIKE ?', $searchPattern) . ' OR ' .
+                $db->quoteInto('unique_identifier LIKE ?', $searchPattern) . ' OR ' .
+                $db->quoteInto('institute_name LIKE ?', $searchPattern) . ' OR ' .
+                $db->quoteInto('region LIKE ?', $searchPattern)
         )
             ->where("status like 'active'");
         return $this->fetchAll($sql);

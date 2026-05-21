@@ -19,12 +19,14 @@
         border-top: 1px solid transparent;
         border-bottom: 1px solid transparent;
     }
+
     .dm-child-row {
         background: linear-gradient(to right, #e6f0fa 0%, #f4f9fd 70%, #f9fcfe 100%);
         border-left: 4px solid #337ab7;
         border-top-color: #cfe1f2;
         border-bottom-color: #cfe1f2;
     }
+
     .shipments-child-row {
         background: linear-gradient(to right, #e7f3df 0%, #f3f8ed 70%, #f9fcf6 100%);
         border-left: 4px solid #5cb85c;
@@ -43,10 +45,19 @@
         font-weight: 600;
         letter-spacing: 0.2px;
     }
-    .dm-child-row .child-row-header { color: #1f4f82; }
-    .shipments-child-row .child-row-header { color: #356f35; }
+
+    .dm-child-row .child-row-header {
+        color: #1f4f82;
+    }
+
+    .shipments-child-row .child-row-header {
+        color: #356f35;
+    }
+
     .dm-child-row .child-row-header i,
-    .shipments-child-row .child-row-header i { opacity: 0.85; }
+    .shipments-child-row .child-row-header i {
+        opacity: 0.85;
+    }
 
     /* Inline filter input — tighter, accent-tinted focus */
     .dm-child-row .dm-filter-input,
@@ -67,15 +78,23 @@
         border-radius: 4px;
         box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
     }
-    .dm-child-row .dm-list-wrap { border: 1px solid #cfe1f2; }
-    .shipments-child-row .shipments-list-wrap { border: 1px solid #cfe3bd; }
+
+    .dm-child-row .dm-list-wrap {
+        border: 1px solid #cfe1f2;
+    }
+
+    .shipments-child-row .shipments-list-wrap {
+        border: 1px solid #cfe3bd;
+    }
+
     .dm-child-row .dm-list-wrap .table,
     .shipments-child-row .shipments-list-wrap .table {
         margin: 0;
         background: transparent;
     }
-    .dm-child-row .dm-list-wrap .table > thead > tr > th,
-    .shipments-child-row .shipments-list-wrap .table > thead > tr > th {
+
+    .dm-child-row .dm-list-wrap .table>thead>tr>th,
+    .shipments-child-row .shipments-list-wrap .table>thead>tr>th {
         font-size: 12px;
         text-transform: uppercase;
         letter-spacing: 0.3px;
@@ -83,8 +102,9 @@
         background: #f7f9fb;
         border-bottom: 1px solid #e2e8ee;
     }
-    .dm-child-row .dm-list-wrap .table > tbody > tr > td,
-    .shipments-child-row .shipments-list-wrap .table > tbody > tr > td {
+
+    .dm-child-row .dm-list-wrap .table>tbody>tr>td,
+    .shipments-child-row .shipments-list-wrap .table>tbody>tr>td {
         font-size: 13px;
         vertical-align: middle;
     }
@@ -157,19 +177,27 @@
     </select>
 </div>
 <?php if (!empty($this->unmappedParticipantCount)) { ?>
-<div style="display:inline-block;margin-left:15px;">
-    <label style="margin:0 6px 0 0;font-weight:bold;"><?= $this->translate->_("Mapping:"); ?></label>
-    <select id="mappingFilter" class="form-control input-sm" style="display:inline-block;width:auto;vertical-align:middle;">
-        <option value=""><?= $this->translate->_("All"); ?></option>
-        <option value="mapped"><?= $this->translate->_("Mapped to a Data Manager"); ?></option>
-        <option value="unmapped"><?= $this->translate->_("Not mapped to any Data Manager"); ?></option>
-    </select>
-</div>
+    <div style="display:inline-block;margin-left:15px;">
+        <label style="margin:0 6px 0 0;font-weight:bold;"><?= $this->translate->_("Mapping:"); ?></label>
+        <select id="mappingFilter" class="form-control input-sm" style="display:inline-block;width:auto;vertical-align:middle;">
+            <option value=""><?= $this->translate->_("All"); ?></option>
+            <option value="mapped"><?= $this->translate->_("Mapped to a Data Manager"); ?></option>
+            <option value="unmapped"><?= $this->translate->_("Not mapped to any Data Manager"); ?></option>
+        </select>
+    </div>
 <?php } ?>
 <style>
-    #participantsTable > tbody > tr > td { vertical-align: middle; }
-    #participantsTable tr.row-unmapped > td { background-color: #fcf8e3 !important; }
-    #participantsTable tr.row-unmapped:hover > td { background-color: #faf2cc !important; }
+    #participantsTable>tbody>tr>td {
+        vertical-align: middle;
+    }
+
+    #participantsTable tr.row-unmapped>td {
+        background-color: #fcf8e3 !important;
+    }
+
+    #participantsTable tr.row-unmapped:hover>td {
+        background-color: #faf2cc !important;
+    }
 </style>
 <br />
 <br />
@@ -196,8 +224,8 @@
             <th scope="col"><input type="text" class="form-control input-sm col-search" data-col="4" placeholder="<?= $this->translate->_('Search District'); ?>" /></th>
             <th scope="col"><input type="text" class="form-control input-sm col-search" data-col="5" placeholder="<?= $this->translate->_('Search Email'); ?>" /></th>
             <th scope="col"><input type="text" class="form-control input-sm col-search" data-col="6" placeholder="<?= $this->translate->_('Search Status'); ?>" /></th>
-            <th scope="col"></th>
-            <th scope="col"></th>
+            <th scope="col"><input type="text" class="form-control input-sm col-search" data-col="7" placeholder="<?= $this->translate->_('Search Data Manager'); ?>" /></th>
+            <th scope="col"><input type="text" class="form-control input-sm col-search" data-col="8" placeholder="<?= $this->translate->_('Search Shipments'); ?>" /></th>
             <th scope="col"></th>
         </tr>
     </thead>
@@ -212,7 +240,7 @@
 <script type="text/javascript" charset="utf-8">
     /* Table initialisation */
     var oTable = null;
-    $(document).ready(function () {
+    $(document).ready(function() {
         oTable = $('#participantsTable').dataTable({
 
             "bJQueryUI": false,
@@ -223,38 +251,38 @@
             "bRetrieve": true,
             "bSortCellsTop": true,
             "aoColumns": [{
-                "sClass": "center"
-            },
-            {
-                "sClass": ""
-            },
-            {
-                "sClass": "center"
-            },
-            {
-                "sClass": "center"
-            },
-            {
-                "sClass": "center"
-            },
-            {
-                "sClass": ""
-            },
-            {
-                "sClass": "center"
-            },
-            {
-                "sClass": "center",
-                "bSortable": false
-            },
-            {
-                "sClass": "center",
-                "bSortable": false
-            },
-            {
-                "sClass": "center",
-                "bSortable": false
-            }
+                    "sClass": "center"
+                },
+                {
+                    "sClass": ""
+                },
+                {
+                    "sClass": "center"
+                },
+                {
+                    "sClass": "center"
+                },
+                {
+                    "sClass": "center"
+                },
+                {
+                    "sClass": ""
+                },
+                {
+                    "sClass": "center"
+                },
+                {
+                    "sClass": "center",
+                    "bSortable": false
+                },
+                {
+                    "sClass": "center",
+                    "bSortable": false
+                },
+                {
+                    "sClass": "center",
+                    "bSortable": false
+                }
             ],
             "aaSorting": [
                 [0, "asc"]
@@ -262,7 +290,7 @@
             "bProcessing": true,
             "bServerSide": true,
             "sAjaxSource": "<?php echo $this->url(array('module' => 'admin', 'controller' => 'participants', 'action' => 'index', 'format' => 'html')); ?>",
-            "fnServerParams": function (aoData) {
+            "fnServerParams": function(aoData) {
                 labName = $("#labId").val();
                 country = $("#country").val();
                 aoData.push({
@@ -282,7 +310,7 @@
                     "value": $("#mappingFilter").val() || ""
                 });
             },
-            "fnServerData": function (sSource, aoData, fnCallback) {
+            "fnServerData": function(sSource, aoData, fnCallback) {
                 $.ajax({
                     "dataType": 'json',
                     "type": "POST",
@@ -291,7 +319,7 @@
                     "success": fnCallback
                 });
             },
-            "fnRowCallback": function (nRow, aData) {
+            "fnRowCallback": function(nRow, aData) {
                 // Highlight rows with no mapped data managers (the DM column emits
                 // <em class="unmapped-tag">…</em> when the count is 0)
                 if ($(nRow).find('.unmapped-tag').length > 0) {
@@ -303,35 +331,36 @@
             }
         });
 
-        $("#statusFilter").change(function () {
+        $("#statusFilter").change(function() {
             oTable.fnDraw();
         });
 
-        $("#mappingFilter").change(function () {
+        $("#mappingFilter").change(function() {
             oTable.fnDraw();
         });
 
-        bindColSearch('#participantsTable', function (value, colIdx) {
+        bindColSearch('#participantsTable', function(value, colIdx) {
             oTable.fnFilter(value, colIdx);
         });
 
         // Data Managers column — expand/collapse child row with on-demand AJAX fetch
         function loadDmChildRow(tr, participantId) {
             $.post(
-                "<?php echo $this->url(array('module' => 'admin', 'controller' => 'participants', 'action' => 'mapped-data-managers', 'format' => 'html')); ?>",
-                { id: participantId },
-                function (html) {
+                "<?php echo $this->url(array('module' => 'admin', 'controller' => 'participants', 'action' => 'mapped-data-managers', 'format' => 'html')); ?>", {
+                    id: participantId
+                },
+                function(html) {
                     // fnOpen wraps our content in a td inside a tr — replace that td's content
                     var $childTr = $(tr).next('tr');
                     $childTr.find('td').first().html(html);
                 }
-            ).fail(function () {
+            ).fail(function() {
                 var $childTr = $(tr).next('tr');
                 $childTr.find('td').first().html('<div style="padding:12px;color:#a94442;"><?= $this->translate->_("Failed to load data managers. Please try again."); ?></div>');
             });
         }
 
-        $('#participantsTable tbody').on('click', 'a.toggle-dm-row', function (e) {
+        $('#participantsTable tbody').on('click', 'a.toggle-dm-row', function(e) {
             e.preventDefault();
             var $btn = $(this);
             var participantId = $btn.data('participant-id');
@@ -344,7 +373,7 @@
             }
             // Close any OTHER open child row in the table — only one expanded at a time.
             // Skip the current row: fnOpen below closes the existing child on this row atomically.
-            $('#participantsTable tbody tr').each(function () {
+            $('#participantsTable tbody tr').each(function() {
                 if (this !== tr && oTable.fnIsOpen(this)) {
                     oTable.fnClose(this);
                 }
@@ -358,19 +387,19 @@
         // Hook called by reset-password / change-primary-email modals on success.
         // Redraw the participants table in place — fnDraw closes expanded child
         // rows by design, so the user re-expands if they need to inspect.
-        window.afterDmActionSuccess = function () {
+        window.afterDmActionSuccess = function() {
             oTable.fnDraw(false);
         };
 
         // Inline filter for the expanded DM list (only present when > 5 mapped DMs)
-        $('#participantsTable tbody').on('input', 'input.dm-filter-input', function () {
+        $('#participantsTable tbody').on('input', 'input.dm-filter-input', function() {
             var q = $(this).val().toLowerCase().trim();
             var $rows = $(this).closest('.dm-child-row').find('tr.dm-row');
             if (q === '') {
                 $rows.show();
                 return;
             }
-            $rows.each(function () {
+            $rows.each(function() {
                 var blob = $(this).attr('data-dm-search') || '';
                 $(this).toggle(blob.indexOf(q) !== -1);
             });
@@ -382,19 +411,20 @@
         // ours. Toggling our own button collapses.
         function loadShipmentsChildRow(tr, participantId) {
             $.post(
-                "<?php echo $this->url(array('module' => 'admin', 'controller' => 'participants', 'action' => 'participant-shipments', 'format' => 'html')); ?>",
-                { id: participantId },
-                function (html) {
+                "<?php echo $this->url(array('module' => 'admin', 'controller' => 'participants', 'action' => 'participant-shipments', 'format' => 'html')); ?>", {
+                    id: participantId
+                },
+                function(html) {
                     var $childTr = $(tr).next('tr');
                     $childTr.find('td').first().html(html);
                 }
-            ).fail(function () {
+            ).fail(function() {
                 var $childTr = $(tr).next('tr');
                 $childTr.find('td').first().html('<div style="padding:12px;color:#a94442;"><?= $this->translate->_("Failed to load shipments. Please try again."); ?></div>');
             });
         }
 
-        $('#participantsTable tbody').on('click', 'a.toggle-shipments-row', function (e) {
+        $('#participantsTable tbody').on('click', 'a.toggle-shipments-row', function(e) {
             e.preventDefault();
             var $btn = $(this);
             var participantId = $btn.data('participant-id');
@@ -407,7 +437,7 @@
             }
             // Close any OTHER open child row in the table — only one expanded at a time.
             // Skip the current row: fnOpen below closes the existing child on this row atomically.
-            $('#participantsTable tbody tr').each(function () {
+            $('#participantsTable tbody tr').each(function() {
                 if (this !== tr && oTable.fnIsOpen(this)) {
                     oTable.fnClose(this);
                 }
@@ -418,14 +448,14 @@
         });
 
         // Inline filter for the expanded shipments list (only present when > 5 shipments)
-        $('#participantsTable tbody').on('input', 'input.shipments-filter-input', function () {
+        $('#participantsTable tbody').on('input', 'input.shipments-filter-input', function() {
             var q = $(this).val().toLowerCase().trim();
             var $rows = $(this).closest('.shipments-child-row').find('tr.shipment-row');
             if (q === '') {
                 $rows.show();
                 return;
             }
-            $rows.each(function () {
+            $rows.each(function() {
                 var blob = $(this).attr('data-shipment-search') || '';
                 $(this).toggle(blob.indexOf(q) !== -1);
             });
@@ -441,13 +471,13 @@
                 url: "<?php echo $this->url(array('module' => 'default', 'controller' => 'common', 'action' => 'get-all-countries')); ?>",
                 dataType: 'json',
                 delay: 250,
-                data: function (params) {
+                data: function(params) {
                     return {
                         search: params.term, // search term
                         page: params.page
                     };
                 },
-                processResults: function (data, params) {
+                processResults: function(data, params) {
                     params.page = params.page || 1;
                     return {
                         results: data.result,
@@ -458,7 +488,7 @@
                 },
                 //cache: true
             },
-            escapeMarkup: function (markup) {
+            escapeMarkup: function(markup) {
                 return markup;
             }
         });
@@ -468,7 +498,7 @@
             minimumInputLength: 3,
             width: '100%',
             allowClear: true,
-            id: function (bond) {
+            id: function(bond) {
                 return bond._id;
             },
             ajax: {
@@ -476,7 +506,7 @@
                 url: "<?php echo $this->url(array('module' => 'reports', 'controller' => 'common', 'action' => 'get-ajax-drop-downs')); ?>",
                 dataType: 'json',
                 delay: 250,
-                data: function (params) {
+                data: function(params) {
                     return {
                         tableName: 'participant',
                         returnId: 'institute_name',
@@ -486,7 +516,7 @@
                         page: params.page
                     };
                 },
-                processResults: function (data, params) {
+                processResults: function(data, params) {
                     params.page = params.page || 1;
                     return {
                         results: data.result,
@@ -497,7 +527,7 @@
                 },
                 //cache: true
             },
-            escapeMarkup: function (markup) {
+            escapeMarkup: function(markup) {
                 return markup;
             }
         });
@@ -506,7 +536,7 @@
     function downloadParticipantDetails() {
         $.blockUI();
         $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'participants', 'action' => 'export-participants-details', 'format' => 'html')); ?>",
-            function (data) {
+            function(data) {
                 $.unblockUI();
                 if (data == "" || data == null || data == undefined || $.trim(data) == 'not-found' || !data) {
                     alert('<?= $this->translate->_("Unable to generate download"); ?>');
@@ -521,10 +551,10 @@
             if (confirm("<?= $this->translate->_("Are you sure you want to delete this participant?"); ?> ")) {
                 // $.blockUI();
                 $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'participants', 'action' => 'delete-participant')); ?>", {
-                    participantId: id,
-                    format: "html"
-                },
-                    function (data) {
+                        participantId: id,
+                        format: "html"
+                    },
+                    function(data) {
                         $.unblockUI();
                         if (data > 0) {
                             oTable.fnDraw();
