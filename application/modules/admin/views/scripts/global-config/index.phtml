@@ -694,6 +694,24 @@ $faqResults = json_decode($this->faqs);
 				</div>
 				<div class="row">
 					<div class="col-md-6">
+						<label for="cutoff_timezone"
+							class="control-label"><?= $this->translate->_("Late-submission Cutoff Timezone"); ?></label>
+						<select class="form-control" id="cutoff_timezone" name="cutoff_timezone"
+							title="<?= $this->translate->_('Timezone in which a shipment due date ends at 23:59:59. Leave as default for single-country programs.'); ?>">
+							<option value="" <?php echo empty($this->cutoff_timezone) ? 'selected="selected"' : ''; ?>>
+								<?= $this->translate->_("Server timezone (default)"); ?>
+							</option>
+							<option value="UTC" <?php echo (isset($this->cutoff_timezone) && $this->cutoff_timezone === 'UTC') ? 'selected="selected"' : ''; ?>>
+								<?= $this->translate->_("UTC"); ?>
+							</option>
+							<option value="Etc/GMT+12" <?php echo (isset($this->cutoff_timezone) && $this->cutoff_timezone === 'Etc/GMT+12') ? 'selected="selected"' : ''; ?>>
+								<?= $this->translate->_("Anywhere on Earth (UTC-12)"); ?>
+							</option>
+						</select>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-md-6">
 						<label for="institute_name"
 							class="control-label"><?= $this->translate->_("Institute Name"); ?></label>
 						<textarea class="form-control" id="institute_name" name="institute_name"

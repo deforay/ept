@@ -269,7 +269,7 @@ class Application_Service_Evaluation
                     $createdOn = new DateTime('1970-01-01');
                 }
 
-                $lastDate = new DateTime($shipment['lastdate_response']);
+                $lastDate = Pt_Commons_DateUtility::shipmentCutoff($shipment['lastdate_response']);
                 if ($createdOn > $lastDate) {
 
                     $results = $schemeService->getDbsSamples($shipmentId, $shipment['participant_id']);

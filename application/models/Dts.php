@@ -197,7 +197,7 @@ final class Application_Model_Dts
         $isConfirmatory = (isset($attributes['dts_test_panel_type']) && $attributes['dts_test_panel_type'] === 'confirmatory') ? true : false;
 
         //Response was submitted after the last response date.
-        $lastDate = Pt_Commons_DateUtility::endOfDay($shipment['lastdate_response']);
+        $lastDate = Pt_Commons_DateUtility::shipmentCutoff($shipment['lastdate_response']);
         if ($shipmentTestReportDate > $lastDate) {
             $lastDateResult = 'Fail';
             $failureReason[] = [

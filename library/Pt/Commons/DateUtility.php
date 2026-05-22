@@ -320,6 +320,70 @@ final class Pt_Commons_DateUtility
         return (new DateTimeImmutable($date))->setTime(23, 59, 59);
     }
 
+    // Resolve the cutoff timezone for shipment due dates.
+    // Reads `cutoff_timezone` from global_config; falls back to the PHP default
+    // (application.ini `timezone`). International programs can set this to
+    // `Etc/GMT+12` (Anywhere on Earth) so participants in any TZ get the full day.
+    private static function cutoffTimezone(): DateTimeZone
+    {
+        $tz = null;
+        try {
+            $tz = Pt_Commons_General::getConfig('cutoff_timezone');
+        } catch (Throwable $e) {
+            // global_config table not reachable (CLI bootstrap edge cases); fall through.
+        }
+        if (empty($tz)) {
+            $tz = date_default_timezone_get();
+        }
+        try {
+            return new DateTimeZone($tz);
+        } catch (Throwable $e) {
+            return new DateTimeZone(date_default_timezone_get());
+        }
+    }
+
+    // Returns the cutoff moment for a shipment due date as an absolute instant.
+    // The due date is interpreted as 23:59:59 in the program's cutoff timezone,
+    // then converted to UTC for unambiguous comparison with response timestamps.
+    public static function shipmentCutoff(?string $dueDate): ?DateTimeImmutable
+    {
+        if (empty($dueDate) || trim((string) $dueDate) === '' || trim((string) $dueDate) === '0000-00-00') {
+            return null;
+        }
+        $tz = self::cutoffTimezone();
+        $dateOnly = explode(' ', trim((string) $dueDate))[0];
+        try {
+            return (new DateTimeImmutable($dateOnly . ' 23:59:59', $tz))->setTimezone(new DateTimeZone('UTC'));
+        } catch (Throwable $e) {
+            return null;
+        }
+    }
+
+    // True if the response was submitted strictly after the shipment cutoff.
+    // Missing data is treated as "not late" — callers gate the on-time path
+    // separately when a response is required at all.
+    public static function isResponseLate(?string $responseDate, ?string $dueDate): bool
+    {
+        $cutoff = self::shipmentCutoff($dueDate);
+        if ($cutoff === null || empty($responseDate)) {
+            return false;
+        }
+        $responseDateOnly = explode(' ', trim((string) $responseDate))[0];
+        if ($responseDateOnly === '' || $responseDateOnly === '0000-00-00') {
+            return false;
+        }
+        try {
+            // Response date is a calendar date (no time component captured today).
+            // Compare it as end-of-day in the same cutoff TZ — a response logged on
+            // the due date is on-time regardless of admin TZ.
+            $tz = self::cutoffTimezone();
+            $response = (new DateTimeImmutable($responseDateOnly . ' 23:59:59', $tz))->setTimezone(new DateTimeZone('UTC'));
+        } catch (Throwable $e) {
+            return false;
+        }
+        return $response > $cutoff;
+    }
+
     public static function getDateBeforeMonths(int $months): string
     {
         return (new DateTimeImmutable())->modify("-{$months} months")->format('Y-m-d');

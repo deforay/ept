@@ -67,7 +67,7 @@ class Application_Model_Tb
                 $createdOn = new DateTimeImmutable('1970-01-01');
             }
 
-            $lastDate = Pt_Commons_DateUtility::endOfDay($shipment['lastdate_response']);
+            $lastDate = Pt_Commons_DateUtility::shipmentCutoff($shipment['lastdate_response']);
 
             $results = $this->getTbSamplesForParticipant($shipmentId, $shipment['participant_id']);
 

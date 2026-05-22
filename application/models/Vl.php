@@ -56,7 +56,7 @@ class Application_Model_Vl
                 $createdOn = null;
             }
 
-            $lastDate = Pt_Commons_DateUtility::endOfDay($shipment['lastdate_response']);
+            $lastDate = Pt_Commons_DateUtility::shipmentCutoff($shipment['lastdate_response']);
 
             if (!empty($createdOn) && $createdOn <= $lastDate) {
                 $shipment['is_response_late'] = 'no';
