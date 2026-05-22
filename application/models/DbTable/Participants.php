@@ -174,11 +174,6 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         /* Individual column filtering */
         for ($i = 0; $i < count($aColumns); $i++) {
             if (isset($parameters['bSearchable_' . $i]) && $parameters['bSearchable_' . $i] == 'true' && $parameters['sSearch_' . $i] != '') {
-                // Special handling for columns index 7 (Data Manager search) and index 8 (Shipments search)
-                if ($i == 7 || $i == 8) {
-                    // Skip here — handled separately after query is built
-                    continue;
-                }
                 if ($sWhere == '') {
                     $sWhere .= $aColumns[$i] . " LIKE '%" . ($parameters['sSearch_' . $i]) . "%' ";
                 } else {
@@ -256,7 +251,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             $shipmentSubquery = $this->getAdapter()->select()
                 ->from(['spm3' => 'shipment_participant_map'], ['spm3.participant_id'])
                 ->join(['s' => 'shipment'], 's.shipment_id = spm3.shipment_id', [])
-                ->where("s.shipment_code LIKE ?", '%' . $searchValue . '%');
+                ->where('s.shipment_code LIKE ?', '%' . $searchValue . '%');
 
             $sQuery = $sQuery->where('p.participant_id IN (?)', new Zend_Db_Expr('(' . $shipmentSubquery->assemble() . ')'));
         }
