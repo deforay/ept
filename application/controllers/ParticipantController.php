@@ -229,6 +229,7 @@ class ParticipantController extends Zend_Controller_Action
 
     public function changePrimaryEmailAction()
     {
+        $this->_helper->layout()->activeMenu = 'my-account';
         $this->_helper->layout()->activeSubMenu = 'change-primary-email';
         /** @var Zend_Controller_Request_Http $request */
         $request = $this->getRequest();
