@@ -1,6 +1,89 @@
 <?php
 $shipments = $this->shipments ?? [];
 $shipmentCount = count($shipments);
+
+// Pre-compute the rendered values for each row so the filter dropdowns and the
+// table cells stay in lockstep. Mirrors the per-row logic below.
+$rowsView = [];
+$schemeOptions = [];
+$shipStatusOptions = [];
+$responseStatusOptions = [];
+$finalResultOptions = [];
+foreach ($shipments as $sh) {
+    $shipDateRaw = '';
+    $shipDateDisplay = '';
+    if (!empty($sh['shipment_date']) && $sh['shipment_date'] !== '0000-00-00') {
+        $shipDateRaw = (string) $sh['shipment_date'];
+        $shipDateDisplay = Pt_Commons_DateUtility::humanReadableDateFormat($sh['shipment_date']);
+    }
+
+    $shipStatusRaw = (string)($sh['shipment_status'] ?? '');
+    $shipStatusDisplay = ucwords(str_replace('_', ' ', $shipStatusRaw));
+
+    if (!empty($sh['is_excluded']) && strtolower($sh['is_excluded']) === 'yes') {
+        $responseStatus = 'Excluded';
+    } else {
+        $rs = strtolower((string)($sh['response_status'] ?? ''));
+        $hasTestDate = !empty($sh['shipment_test_date'])
+            && $sh['shipment_test_date'] !== '0000-00-00'
+            && strtolower((string)$sh['shipment_test_date']) !== 'null';
+        if ($rs === 'responded' || $hasTestDate) {
+            $responseStatus = 'Responded';
+        } elseif ($rs === 'noresponse' || $rs === '') {
+            $responseStatus = 'No Response';
+        } else {
+            $responseStatus = ucwords(str_replace('_', ' ', $rs));
+        }
+    }
+
+    $finalResultRaw = trim((string)($sh['final_result'] ?? ''));
+    $finalResultMap = [
+        '1' => ['Pass',     'label-success'],
+        '2' => ['Fail',     'label-danger'],
+        '3' => ['Excluded', 'label-warning'],
+    ];
+    if ($finalResultRaw === '' || $finalResultRaw === '0') {
+        $finalResultText = '';
+        $finalResultHtml = '<span class="text-muted">&mdash;</span>';
+    } elseif (isset($finalResultMap[$finalResultRaw])) {
+        [$frText, $frClass] = $finalResultMap[$finalResultRaw];
+        $finalResultText = $frText;
+        $finalResultHtml = '<span class="label ' . $frClass . '">' . htmlspecialchars($this->translate->_($frText), ENT_QUOTES, 'UTF-8') . '</span>';
+    } else {
+        $finalResultText = $finalResultRaw;
+        $finalResultHtml = htmlspecialchars($finalResultRaw, ENT_QUOTES, 'UTF-8');
+    }
+
+    $scheme = (string)($sh['scheme_name'] ?? '');
+
+    if ($scheme !== '') {
+        $schemeOptions[$scheme] = true;
+    }
+    if ($shipStatusDisplay !== '') {
+        $shipStatusOptions[$shipStatusDisplay] = true;
+    }
+    if ($responseStatus !== '') {
+        $responseStatusOptions[$responseStatus] = true;
+    }
+    if ($finalResultText !== '') {
+        $finalResultOptions[$finalResultText] = true;
+    }
+
+    $rowsView[] = [
+        'shipment_code'    => (string)($sh['shipment_code'] ?? ''),
+        'scheme'           => $scheme,
+        'ship_date_raw'    => $shipDateRaw,
+        'ship_date_disp'   => $shipDateDisplay,
+        'ship_status_disp' => $shipStatusDisplay,
+        'response_status'  => $responseStatus,
+        'final_result'     => $finalResultText,
+        'final_result_html' => $finalResultHtml,
+    ];
+}
+ksort($schemeOptions);
+ksort($shipStatusOptions);
+ksort($responseStatusOptions);
+ksort($finalResultOptions);
 ?>
 <div class="shipments-child-row">
     <?php if ($shipmentCount === 0) { ?>
@@ -9,15 +92,111 @@ $shipmentCount = count($shipments);
         <div class="child-row-header">
             <i class="icon-truck"></i>
             <span><?= sprintf($this->translate->_('%d Shipment(s)'), $shipmentCount); ?></span>
+            <span class="shipments-filter-count text-muted" style="margin-left:6px;display:none;"></span>
             <?php if ($shipmentCount > 5) { ?>
                 <input type="text" class="form-control input-sm shipments-filter-input" placeholder="<?= $this->translate->_('Filter by code, scheme, status…'); ?>" />
             <?php } ?>
         </div>
+        <?php if ($shipmentCount > 1) { ?>
+            <div class="shipments-filter-bar">
+                <label>
+                    <span><?= $this->translate->_('From'); ?></span>
+                    <input type="date" class="form-control input-sm shipments-filter-date-from" />
+                </label>
+                <label>
+                    <span><?= $this->translate->_('To'); ?></span>
+                    <input type="date" class="form-control input-sm shipments-filter-date-to" />
+                </label>
+                <?php if (count($schemeOptions) > 1) { ?>
+                    <label>
+                        <span><?= $this->translate->_('Scheme'); ?></span>
+                        <select class="form-control input-sm shipments-filter-scheme">
+                            <option value=""><?= $this->translate->_('All'); ?></option>
+                            <?php foreach (array_keys($schemeOptions) as $opt) { ?>
+                                <option value="<?= htmlspecialchars($opt, ENT_QUOTES, 'UTF-8'); ?>"><?= htmlspecialchars($opt, ENT_QUOTES, 'UTF-8'); ?></option>
+                            <?php } ?>
+                        </select>
+                    </label>
+                <?php } ?>
+                <?php if (count($shipStatusOptions) > 1) { ?>
+                    <label>
+                        <span><?= $this->translate->_('Shipment Status'); ?></span>
+                        <select class="form-control input-sm shipments-filter-ship-status">
+                            <option value=""><?= $this->translate->_('All'); ?></option>
+                            <?php foreach (array_keys($shipStatusOptions) as $opt) { ?>
+                                <option value="<?= htmlspecialchars($opt, ENT_QUOTES, 'UTF-8'); ?>"><?= htmlspecialchars($opt, ENT_QUOTES, 'UTF-8'); ?></option>
+                            <?php } ?>
+                        </select>
+                    </label>
+                <?php } ?>
+                <?php if (count($responseStatusOptions) > 1) { ?>
+                    <label>
+                        <span><?= $this->translate->_('Response Status'); ?></span>
+                        <select class="form-control input-sm shipments-filter-response-status">
+                            <option value=""><?= $this->translate->_('All'); ?></option>
+                            <?php foreach (array_keys($responseStatusOptions) as $opt) { ?>
+                                <option value="<?= htmlspecialchars($opt, ENT_QUOTES, 'UTF-8'); ?>"><?= htmlspecialchars($opt, ENT_QUOTES, 'UTF-8'); ?></option>
+                            <?php } ?>
+                        </select>
+                    </label>
+                <?php } ?>
+                <?php if (count($finalResultOptions) > 1) { ?>
+                    <label>
+                        <span><?= $this->translate->_('Final Result'); ?></span>
+                        <select class="form-control input-sm shipments-filter-final-result">
+                            <option value=""><?= $this->translate->_('All'); ?></option>
+                            <?php foreach (array_keys($finalResultOptions) as $opt) { ?>
+                                <option value="<?= htmlspecialchars($opt, ENT_QUOTES, 'UTF-8'); ?>"><?= htmlspecialchars($this->translate->_($opt), ENT_QUOTES, 'UTF-8'); ?></option>
+                            <?php } ?>
+                        </select>
+                    </label>
+                <?php } ?>
+                <button type="button" class="btn btn-default btn-xs shipments-filter-reset"><?= $this->translate->_('Reset'); ?></button>
+            </div>
+        <?php } ?>
         <style>
             .shipments-child-row .shipments-list-wrap .table > thead > tr > th,
             .shipments-child-row .shipments-list-wrap .table > tbody > tr > td {
                 text-align: center;
                 vertical-align: middle;
+            }
+            .shipments-child-row .shipments-filter-bar {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 8px 12px;
+                align-items: flex-end;
+                padding: 6px 4px 10px;
+                font-size: 12px;
+            }
+            .shipments-child-row .shipments-filter-bar label {
+                display: flex;
+                flex-direction: column;
+                margin: 0;
+                font-weight: 600;
+                color: #555;
+            }
+            .shipments-child-row .shipments-filter-bar label > span {
+                font-size: 11px;
+                line-height: 1.2;
+                margin-bottom: 2px;
+                text-transform: uppercase;
+                letter-spacing: .03em;
+            }
+            .shipments-child-row .shipments-filter-bar .form-control {
+                min-width: 130px;
+            }
+            .shipments-child-row .shipments-filter-bar .shipments-filter-reset {
+                align-self: flex-end;
+                margin-bottom: 1px;
+            }
+            .shipments-child-row tr.shipment-row.is-hidden-by-filter {
+                display: none;
+            }
+            .shipments-child-row .shipments-no-matches {
+                padding: 10px;
+                text-align: center;
+                color: #888;
+                font-style: italic;
             }
         </style>
         <div class="shipments-list-wrap" style="max-height:320px;overflow-y:auto;">
@@ -33,61 +212,33 @@ $shipmentCount = count($shipments);
                     </tr>
                 </thead>
                 <tbody>
-                    <?php foreach ($shipments as $sh) {
-                        $shipDate = '';
-                        if (!empty($sh['shipment_date']) && $sh['shipment_date'] !== '0000-00-00') {
-                            $shipDate = Pt_Commons_DateUtility::humanReadableDateFormat($sh['shipment_date']);
-                        }
-
-                        $shipStatus = (string)($sh['shipment_status'] ?? '');
-
-                        if (!empty($sh['is_excluded']) && strtolower($sh['is_excluded']) === 'yes') {
-                            $responseStatus = 'Excluded';
-                        } else {
-                            $rs = strtolower((string)($sh['response_status'] ?? ''));
-                            $hasTestDate = !empty($sh['shipment_test_date'])
-                                && $sh['shipment_test_date'] !== '0000-00-00'
-                                && strtolower((string)$sh['shipment_test_date']) !== 'null';
-                            if ($rs === 'responded' || $hasTestDate) {
-                                $responseStatus = 'Responded';
-                            } elseif ($rs === 'noresponse' || $rs === '') {
-                                $responseStatus = 'No Response';
-                            } else {
-                                $responseStatus = ucwords(str_replace('_', ' ', $rs));
-                            }
-                        }
-
-                        $finalResultRaw = trim((string)($sh['final_result'] ?? ''));
-                        $finalResultMap = [
-                            '1' => ['Pass',     'label-success'],
-                            '2' => ['Fail',     'label-danger'],
-                            '3' => ['Excluded', 'label-warning'],
-                        ];
-                        if ($finalResultRaw === '' || $finalResultRaw === '0') {
-                            $finalResult = '<span class="text-muted">&mdash;</span>';
-                        } elseif (isset($finalResultMap[$finalResultRaw])) {
-                            [$frText, $frClass] = $finalResultMap[$finalResultRaw];
-                            $finalResult = '<span class="label ' . $frClass . '">' . htmlspecialchars($this->translate->_($frText), ENT_QUOTES, 'UTF-8') . '</span>';
-                        } else {
-                            $finalResult = htmlspecialchars($finalResultRaw, ENT_QUOTES, 'UTF-8');
-                        }
-
+                    <?php foreach ($rowsView as $row) {
                         $searchBlob = strtolower(
-                            ($sh['shipment_code'] ?? '') . ' '
-                            . ($sh['scheme_name'] ?? '') . ' '
-                            . $shipStatus . ' '
-                            . $responseStatus
+                            $row['shipment_code'] . ' '
+                            . $row['scheme'] . ' '
+                            . $row['ship_status_disp'] . ' '
+                            . $row['response_status'] . ' '
+                            . $row['final_result']
                         );
                     ?>
-                        <tr class="shipment-row" data-shipment-search="<?= htmlspecialchars($searchBlob, ENT_QUOTES, 'UTF-8'); ?>">
-                            <td><?= htmlspecialchars($shipDate, ENT_QUOTES, 'UTF-8'); ?></td>
-                            <td><?= htmlspecialchars($sh['shipment_code'] ?? '', ENT_QUOTES, 'UTF-8'); ?></td>
-                            <td><?= htmlspecialchars($sh['scheme_name'] ?? '', ENT_QUOTES, 'UTF-8'); ?></td>
-                            <td><?= htmlspecialchars(ucwords(str_replace('_', ' ', $shipStatus)), ENT_QUOTES, 'UTF-8'); ?></td>
-                            <td><?= htmlspecialchars($responseStatus, ENT_QUOTES, 'UTF-8'); ?></td>
-                            <td><?= $finalResult; ?></td>
+                        <tr class="shipment-row"
+                            data-shipment-search="<?= htmlspecialchars($searchBlob, ENT_QUOTES, 'UTF-8'); ?>"
+                            data-shipment-date="<?= htmlspecialchars($row['ship_date_raw'], ENT_QUOTES, 'UTF-8'); ?>"
+                            data-scheme="<?= htmlspecialchars($row['scheme'], ENT_QUOTES, 'UTF-8'); ?>"
+                            data-ship-status="<?= htmlspecialchars($row['ship_status_disp'], ENT_QUOTES, 'UTF-8'); ?>"
+                            data-response-status="<?= htmlspecialchars($row['response_status'], ENT_QUOTES, 'UTF-8'); ?>"
+                            data-final-result="<?= htmlspecialchars($row['final_result'], ENT_QUOTES, 'UTF-8'); ?>">
+                            <td><?= htmlspecialchars($row['ship_date_disp'], ENT_QUOTES, 'UTF-8'); ?></td>
+                            <td><?= htmlspecialchars($row['shipment_code'], ENT_QUOTES, 'UTF-8'); ?></td>
+                            <td><?= htmlspecialchars($row['scheme'], ENT_QUOTES, 'UTF-8'); ?></td>
+                            <td><?= htmlspecialchars($row['ship_status_disp'], ENT_QUOTES, 'UTF-8'); ?></td>
+                            <td><?= htmlspecialchars($row['response_status'], ENT_QUOTES, 'UTF-8'); ?></td>
+                            <td><?= $row['final_result_html']; ?></td>
                         </tr>
                     <?php } ?>
+                    <tr class="shipments-no-matches-row" style="display:none;">
+                        <td colspan="6" class="shipments-no-matches"><?= $this->translate->_('No shipments match the current filters.'); ?></td>
+                    </tr>
                 </tbody>
             </table>
         </div>

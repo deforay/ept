@@ -447,18 +447,72 @@
             loadShipmentsChildRow(tr, participantId);
         });
 
-        // Inline filter for the expanded shipments list (only present when > 5 shipments)
-        $('#participantsTable tbody').on('input', 'input.shipments-filter-input', function() {
-            var q = $(this).val().toLowerCase().trim();
-            var $rows = $(this).closest('.shipments-child-row').find('tr.shipment-row');
-            if (q === '') {
-                $rows.show();
-                return;
-            }
+        // Inline filtering for the expanded shipments child row. Applies the universal
+        // search + per-dimension dropdowns + date range together. Re-run on any input.
+        function applyShipmentsFilters($container) {
+            var $rows = $container.find('tr.shipment-row');
+            var q = ($container.find('input.shipments-filter-input').val() || '').toLowerCase().trim();
+            var dateFrom = $container.find('input.shipments-filter-date-from').val() || '';
+            var dateTo = $container.find('input.shipments-filter-date-to').val() || '';
+            var scheme = $container.find('select.shipments-filter-scheme').val() || '';
+            var shipStatus = $container.find('select.shipments-filter-ship-status').val() || '';
+            var responseStatus = $container.find('select.shipments-filter-response-status').val() || '';
+            var finalResult = $container.find('select.shipments-filter-final-result').val() || '';
+
+            var shown = 0;
             $rows.each(function() {
-                var blob = $(this).attr('data-shipment-search') || '';
-                $(this).toggle(blob.indexOf(q) !== -1);
+                var $row = $(this);
+                var ok = true;
+                if (q !== '') {
+                    var blob = $row.attr('data-shipment-search') || '';
+                    if (blob.indexOf(q) === -1) ok = false;
+                }
+                if (ok && scheme !== '' && $row.attr('data-scheme') !== scheme) ok = false;
+                if (ok && shipStatus !== '' && $row.attr('data-ship-status') !== shipStatus) ok = false;
+                if (ok && responseStatus !== '' && $row.attr('data-response-status') !== responseStatus) ok = false;
+                if (ok && finalResult !== '' && ($row.attr('data-final-result') || '') !== finalResult) ok = false;
+                if (ok && (dateFrom !== '' || dateTo !== '')) {
+                    var d = $row.attr('data-shipment-date') || '';
+                    if (d === '') {
+                        ok = false;
+                    } else {
+                        if (dateFrom !== '' && d < dateFrom) ok = false;
+                        if (ok && dateTo !== '' && d > dateTo) ok = false;
+                    }
+                }
+                $row.toggleClass('is-hidden-by-filter', !ok);
+                if (ok) shown++;
             });
+
+            var anyFilterActive = (q !== '' || dateFrom !== '' || dateTo !== '' || scheme !== '' || shipStatus !== '' || responseStatus !== '' || finalResult !== '');
+            var $count = $container.find('.shipments-filter-count');
+            if (anyFilterActive) {
+                $count.text('— ' + shown + ' <?= $this->translate->_("match(es)"); ?>').show();
+            } else {
+                $count.hide().text('');
+            }
+            $container.find('tr.shipments-no-matches-row').toggle(anyFilterActive && shown === 0);
+        }
+
+        $('#participantsTable tbody').on(
+            'input change',
+            '.shipments-child-row input.shipments-filter-input, ' +
+            '.shipments-child-row input.shipments-filter-date-from, ' +
+            '.shipments-child-row input.shipments-filter-date-to, ' +
+            '.shipments-child-row select.shipments-filter-scheme, ' +
+            '.shipments-child-row select.shipments-filter-ship-status, ' +
+            '.shipments-child-row select.shipments-filter-response-status, ' +
+            '.shipments-child-row select.shipments-filter-final-result',
+            function() {
+                applyShipmentsFilters($(this).closest('.shipments-child-row'));
+            }
+        );
+
+        $('#participantsTable tbody').on('click', '.shipments-child-row button.shipments-filter-reset', function() {
+            var $container = $(this).closest('.shipments-child-row');
+            $container.find('input.shipments-filter-input, input.shipments-filter-date-from, input.shipments-filter-date-to').val('');
+            $container.find('select.shipments-filter-scheme, select.shipments-filter-ship-status, select.shipments-filter-response-status, select.shipments-filter-final-result').val('');
+            applyShipmentsFilters($container);
         });
 
         $("#country").select2({
