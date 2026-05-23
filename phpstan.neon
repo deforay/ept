@@ -27,3 +27,13 @@ parameters:
         - php
     treatPhpDocTypesAsCertain: false
     reportUnmatchedIgnoredErrors: false
+    # Zend 1 uses magic accessors that PHPStan cannot resolve structurally.
+    # Suppressing the whole pattern globally keeps the per-file baseline from drifting
+    # every time someone adds another $this->_helper->layout() / $this->view->foo / session-namespace access.
+    ignoreErrors:
+        -
+            message: '#^(Call to an undefined method|Access to an undefined property) Zend_Controller_Action_HelperBroker::#'
+        -
+            message: '#^Access to an undefined property Zend_View_Interface::#'
+        -
+            message: '#^Access to an undefined property Zend_Session_Namespace::#'
