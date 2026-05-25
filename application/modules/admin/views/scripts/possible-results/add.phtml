@@ -10,7 +10,8 @@
 				<div class="col-md-6">
 					<label for="schemeId" class="control-label"><?= $this->translate->_("Active Schemes"); ?> <span
 							class="mandatory">*</span></label>
-					<select id="schemeId" name="schemeId[]" multiple title="Please select the scheme">
+					<select id="schemeId" name="schemeId" class="form-control isRequired" title="Please select the scheme">
+						<option value="">--Select--</option>
 						<?php foreach ($this->allSchemes as $schemes) { ?>
 							<option value="<?php echo $schemes["scheme_id"] ?>">
 								<?php echo ucwords($schemes["scheme_name"]); ?>
@@ -67,13 +68,13 @@
 	var duplicated = false;
 
 	$(document).ready(function() {
-		// Initialize tom-select for scheme selection
-		new TomSelect('#schemeId', {
-			plugins: ['remove_button'],
-			maxItems: null,
-			placeholder: '<?= $this->translate->_("Select schemes..."); ?>',
-			allowEmptyOption: false
-		});
+		// // Initialize tom-select for scheme selection
+		// new TomSelect('#schemeId', {
+		// 	plugins: ['remove_button'],
+		// 	maxItems: null,
+		// 	placeholder: '<?= $this->translate->_("Select schemes..."); ?>',
+		// 	allowEmptyOption: false
+		// });
 	});
 
 	function checkDuplicate(tableName, fieldName, obj, fnct, msg) {

@@ -382,21 +382,19 @@ class Application_Model_DbTable_SchemeList extends Zend_Db_Table_Abstract
     public function savePossibleResultsTestDetails($params)
     {
         if (isset($params['schemeId']) && !empty($params['schemeId'])) {
-            foreach ($params['schemeId'] as $scheme) {
-                $resultType = $scheme . '-' . $params['resultType'];
-                $data = [
-                    'scheme_id' => $scheme,
-                    'scheme_sub_group' => $resultType,
-                    'response' => $params['response'],
-                    'result_code' => $params['resultCode'],
-                    'display_context' => 'all',
-                    'sort_order' => $params['sortOrder']
-                ];
-                if (isset($params['rId']) && !empty($params['rId'])) {
-                    $this->getAdapter()->update('r_possibleresult', $data, 'id = ' . base64_decode($params['rId']));
-                } else {
-                    $this->getAdapter()->insert('r_possibleresult', $data);
-                }
+            $resultType = $params['schemeId'] . '-' . $params['resultType'];
+            $data = [
+                'scheme_id' => $params['schemeId'],
+                'scheme_sub_group' => $resultType,
+                'response' => $params['response'],
+                'result_code' => $params['resultCode'],
+                'display_context' => 'all',
+                'sort_order' => $params['sortOrder']
+            ];
+            if (isset($params['rId']) && !empty($params['rId'])) {
+                $this->getAdapter()->update('r_possibleresult', $data, 'id = ' . base64_decode($params['rId']));
+            } else {
+                $this->getAdapter()->insert('r_possibleresult', $data);
             }
         }
     }
