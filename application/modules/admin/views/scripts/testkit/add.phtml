@@ -149,7 +149,7 @@
 <script type="text/javascript">
 	var duplicated = false;
 
-	$(document).ready(function () {
+	$(document).ready(function() {
 		$(".multiselect").select2({
 			placeholder: "<?= $this->translate->_("Choose one or more options"); ?>",
 			width: '100%'
@@ -158,13 +158,13 @@
 
 	function checkDuplicate(tableName, fieldName, obj, fnct, msg) {
 		$.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'common', 'action' => 'check-duplicate')); ?>", {
-			tableName: tableName,
-			fieldName: fieldName,
-			value: obj.value,
-			fnct: fnct,
-			format: "html"
-		},
-			function (data) {
+				tableName: tableName,
+				fieldName: fieldName,
+				value: obj.value,
+				fnct: fnct,
+				format: "html"
+			},
+			function(data) {
 				if (data > 0) {
 					alert(msg, "err");
 					duplicated = true;
@@ -195,7 +195,7 @@
 
 	function selectStages() {
 		let list = $('[name="scheme[]"]').val();
-		$(list).each(function (i, data) {
+		$(list).each(function(i, data) {
 			if (data == 'dts') {
 				console.log(data);
 				$('.testStages').removeClass('hide');

@@ -246,7 +246,7 @@ class Application_Service_Common
         $ns = new Zend_Session_Namespace($namespace);
         $used = is_array($ns->used ?? null) ? $ns->used : [];
         // Drop expired entries so this bucket can't grow unbounded.
-        $used = array_filter($used, static fn ($ts) => $ts > time() - 3600);
+        $used = array_filter($used, static fn($ts) => $ts > time() - 3600);
         if (isset($used[$hash])) {
             return false;
         }
@@ -2200,5 +2200,23 @@ class Application_Service_Common
             'active_schemes' => $activeSchemes,
             'scheme_breakdown' => array_values($schemeRows),
         ];
+    }
+
+    public function getAllPossibleResultsInGrid($parameters)
+    {
+        $schemeDb = new Application_Model_DbTable_SchemeList();
+        return $schemeDb->fetchAllPossibleResultsInGrid($parameters);
+    }
+
+    public function savePossibleResultsTest($params)
+    {
+        $schemeDb = new Application_Model_DbTable_SchemeList();
+        return $schemeDb->savePossibleResultsTestDetails($params);
+    }
+
+    public function getPossibleResultById($id)
+    {
+        $schemeDb = new Application_Model_DbTable_SchemeList();
+        return $schemeDb->fetchPossibleResultById($id);
     }
 }

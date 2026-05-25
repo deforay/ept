@@ -819,7 +819,7 @@ $helpPageKey = "$controllerName/$actionName";
 		   Bootstrap's default <a> uses text-baseline alignment, while the
 		   profile <button> uses flex-center. Force flex-center everywhere so
 		   icon glyphs and the avatar share the same midline. */
-		.navbar-nav.navbar-right > li > a {
+		.navbar-nav.navbar-right>li>a {
 			display: inline-flex !important;
 			align-items: center;
 			justify-content: center;
@@ -827,7 +827,8 @@ $helpPageKey = "$controllerName/$actionName";
 			padding: 0 15px;
 			line-height: 1;
 		}
-		.navbar-nav.navbar-right > li > a > i {
+
+		.navbar-nav.navbar-right>li>a>i {
 			font-size: 16px;
 			line-height: 1;
 			display: inline-flex;
@@ -933,8 +934,11 @@ $helpPageKey = "$controllerName/$actionName";
 										<li id="ShipmentQustionsMap"><a
 												href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'feedback-responses', 'action' => 'shipment-questions'), 'default', true); ?>"><?= $this->translate->_("Enable Feedback"); ?></a>
 										</li>
-									<?php }
-									if (in_array('dts', $adminSession->activeSchemes)) { ?>
+									<?php } ?>
+									<li id="possibleResults"><a
+											href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'possible-results'), 'default', true); ?>"><?= $this->translate->_("Possible Results"); ?></a>
+									</li>
+									<?php if (in_array('dts', $adminSession->activeSchemes)) { ?>
 										<li id="TestKits"><a
 												href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'testkit'), 'default', true); ?>"><?= $this->translate->_("Test Kits"); ?></a>
 										</li>
@@ -1293,15 +1297,15 @@ $helpPageKey = "$controllerName/$actionName";
 			quickActions: <?php echo json_encode($this->translate->_('Quick Actions')); ?>
 		};
 		window.spotlightCategoryOrder = <?php echo json_encode([
-			$this->translate->_('Recent'),
-			$this->translate->_('Recent Shipments'),
-			$this->translate->_('Quick Actions'),
-			$this->translate->_('Navigation'),
-			$this->translate->_('Configure'),
-			$this->translate->_('Manage'),
-			$this->translate->_('Analyze'),
-			$this->translate->_('Reports')
-		]); ?>;
+											$this->translate->_('Recent'),
+											$this->translate->_('Recent Shipments'),
+											$this->translate->_('Quick Actions'),
+											$this->translate->_('Navigation'),
+											$this->translate->_('Configure'),
+											$this->translate->_('Manage'),
+											$this->translate->_('Analyze'),
+											$this->translate->_('Reports')
+										]); ?>;
 	</script>
 
 	<script type="text/javascript">
@@ -1313,14 +1317,14 @@ $helpPageKey = "$controllerName/$actionName";
 			dd.style.display = isOpen ? 'none' : 'block';
 			ch.style.transform = isOpen ? '' : 'rotate(180deg)';
 		}
-		document.addEventListener('click', function () {
+		document.addEventListener('click', function() {
 			var dd = document.getElementById('profileDropdown');
 			if (dd) {
 				dd.style.display = 'none';
 				document.getElementById('profileChevron').style.transform = '';
 			}
 		});
-		$(function () {
+		$(function() {
 			str = $(location).attr('pathname');
 			splitsUrl = str.split("/", 6);
 			if (splitsUrl[2] == 'participants' && splitsUrl[3] == "participant-manager-map") {
@@ -1343,6 +1347,8 @@ $helpPageKey = "$controllerName/$actionName";
 				$('#TestKitReportForHIVSerology').addClass('active');
 			} else if (splitsUrl[2] == 'testkit') {
 				$('#TestKits').addClass('active');
+			} else if (splitsUrl[2] == 'possible-results') {
+				$('#possibleResults').addClass('active');
 			} else if (splitsUrl[2] == 'vl-assay') {
 				$('#VLAssay').addClass('active');
 			} else if (splitsUrl[2] == 'eid-assay') {
@@ -1437,8 +1443,8 @@ $helpPageKey = "$controllerName/$actionName";
 				$('#HIVRecencyRTRISettings').addClass('active');
 			}
 
-			$('.autoSelectIfOnlyOneOption').each(function () {
-				var nonEmptyOptions = $(this).find('option').filter(function () {
+			$('.autoSelectIfOnlyOneOption').each(function() {
+				var nonEmptyOptions = $(this).find('option').filter(function() {
 					return this.value.trim() !== "";
 				});
 
@@ -1447,7 +1453,7 @@ $helpPageKey = "$controllerName/$actionName";
 				}
 			});
 
-			$(".checkNum").keydown(function (e) {
+			$(".checkNum").keydown(function(e) {
 				// Allow: backspace, delete, tab, escape, enter and .
 				if ($.inArray(e.keyCode, [46, 8, 9, 27, 13, 110, 190]) !== -1 ||
 					// Allow: Ctrl+A
@@ -1466,7 +1472,7 @@ $helpPageKey = "$controllerName/$actionName";
 			<?php $alertMsg = new Zend_Session_Namespace('alertSpace');
 			if (isset($alertMsg->message) && $alertMsg->message != "") { ?>
 				alert(<?php echo json_encode($alertMsg->message); ?>);
-				<?php $alertMsg->message = "";
+			<?php $alertMsg->message = "";
 				unset($alertMsg->message);
 			} ?>
 
@@ -1513,9 +1519,9 @@ $helpPageKey = "$controllerName/$actionName";
 
 		function notifyRead(id) {
 			$.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'common', 'action' => 'notify-status'), 'default', true); ?>", {
-				nid: id
-			},
-				function (data) { })
+					nid: id
+				},
+				function(data) {})
 		}
 
 		function allowOnlyAlphaNumericAndHyphen(inputId) {
@@ -1526,9 +1532,9 @@ $helpPageKey = "$controllerName/$actionName";
 
 		function markasRead() {
 			$.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'common', 'action' => 'notify-status'), 'default', true); ?>", {
-				nid: 'all'
-			},
-				function (data) {
+					nid: 'all'
+				},
+				function(data) {
 					if (data > 0) {
 						$('.readc').removeAttr('style');
 						$('.count-notify').html('');
@@ -1553,11 +1559,11 @@ $helpPageKey = "$controllerName/$actionName";
 			let formData = $('#' + formId).serialize();
 			$.blockUI();
 			$.post("<?php echo $this->url(['module' => 'reports', 'controller' => 'common', 'action' => 'export-config']); ?>", {
-				formPost: formData,
-				scheme: schemeId,
-				file: schemeId
-			},
-				function (data) {
+					formPost: formData,
+					scheme: schemeId,
+					file: schemeId
+				},
+				function(data) {
 					if (data) {
 						window.open('/d/' + data, '_blank');
 					}
