@@ -4,27 +4,21 @@ $adminSession = new Zend_Session_Namespace('administrators');
 <h4 style="width:100%;height:50px;border-bottom:1px solid #777;">
 
     <div style="font-size:22.5px;line-height:36px;color:#333;float:left;">
-        <?= $this->translate->_("List of All Possible Results"); ?></div>
-    <div style="margin-top:10px;">
-        <a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'possible-results', 'action' => 'add'), 'default', true); ?>"
-            class="btn btn-primary" style="float:right;"><i
-                class="icon-user"></i>&nbsp;&nbsp;<?= $this->translate->_("Add New Possible Result"); ?></a>
-    </div>
+        <?= $this->translate->_("List of All Schemes Results"); ?></div>
 </h4>
 <table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered table-hover"
     id="possibleResultsTable">
     <thead>
         <tr>
             <th scope="col"><?= $this->translate->_("Scheme Name"); ?></th>
-            <th scope="col"><?= $this->translate->_("Response"); ?></th>
-            <th scope="col"><?= $this->translate->_("Result Code"); ?></th>
-            <th scope="col"><?= $this->translate->_("Sort"); ?></th>
+            <th scope="col"><?= $this->translate->_("Scheme ID"); ?></th>
+            <th scope="col"><?= $this->translate->_("Status"); ?></th>
             <th scope="col"><?= $this->translate->_("Action"); ?></th>
         </tr>
     </thead>
     <tbody>
         <tr>
-            <td colspan="5" class="dataTables_empty"><?= $this->translate->_("Loading data from server"); ?></td>
+            <td colspan="4" class="dataTables_empty"><?= $this->translate->_("Loading data from server"); ?></td>
         </tr>
     </tbody>
 </table>
@@ -65,9 +59,6 @@ $adminSession = new Zend_Session_Namespace('administrators');
                     "sClass": "center"
                 },
                 {
-                    "sClass": "center"
-                },
-                {
                     "sClass": "center",
                     "bSortable": false
                 }
@@ -87,7 +78,7 @@ $adminSession = new Zend_Session_Namespace('administrators');
             }, */
             "bProcessing": true,
             "bServerSide": true,
-            "sAjaxSource": "<?php echo $this->url(array('module' => 'admin', 'controller' => 'possible-results', 'action' => 'index', 'format' => 'html')); ?>",
+            "sAjaxSource": "<?php echo $this->url(array('module' => 'admin', 'controller' => 'schemes', 'action' => 'test-results', 'format' => 'html')); ?>",
             "fnServerParams": function(aoData) {
                 approvalStatus = $("#status").val();
                 aoData.push({

@@ -1,6 +1,6 @@
 <?php
 
-class Admin_PossibleResultsController extends Zend_Controller_Action
+class Admin_SchemesController extends Zend_Controller_Action
 {
     public function init()
     {
@@ -19,12 +19,13 @@ class Admin_PossibleResultsController extends Zend_Controller_Action
         }
         /** @var Zend_Controller_Action_Helper_AjaxContext $ajaxContext */
         $ajaxContext = $this->_helper->getHelper('AjaxContext');
-        $ajaxContext->addActionContext('index', 'html')
+        // $ajaxContext->addActionContext('index', 'html')
+        $ajaxContext->addActionContext('test-results', 'html')
             ->initContext();
         $this->_helper->layout()->pageName = 'configMenu';
     }
 
-    public function indexAction()
+    public function testResultsAction()
     {
         /** @var Zend_Controller_Request_Http $request */
         $request = $this->getRequest();
@@ -35,32 +36,24 @@ class Admin_PossibleResultsController extends Zend_Controller_Action
         }
     }
 
-    public function addAction()
+    public function manageTestResultsAction()
     {
         /** @var Zend_Controller_Request_Http $request */
         $request = $this->getRequest();
         $commonServices = new Application_Service_Common();
         if ($request->isPost()) {
             $params = $request->getPost();
-            $commonServices->savePossibleResultsTest($params);
-            $this->redirect('/admin/possible-results');
-        }
-        $this->view->allSchemes = $commonServices->getFullSchemesDetails();
-    }
-
-    public function editAction()
-    {
-        /** @var Zend_Controller_Request_Http $request */
-        $request = $this->getRequest();
-        $commonServices = new Application_Service_Common();
-        if ($request->isPost()) {
-            $params = $request->getPost();
-            $commonServices->savePossibleResultsTest($params);
-            $this->redirect('/admin/possible-results');
+            $result = $commonServices->savePossibleResultsTest($params);
+            $alertMsgInit = new Zend_Session_Namespace('alertSpace');
+            if ($result) {
+                $alertMsgInit->message = "Saved successfully";
+                $this->redirect('/admin/schemes/test-results');
+            } else {
+                $alertMsgInit->message = "Seomthing went wrong please try again later.";
+            }
         } elseif ($this->hasParam('id')) {
             $id = base64_decode($this->_getParam('id'));
-            $this->view->result = $commonServices->getPossibleResultById($id);
-            $this->view->allSchemes = $commonServices->getFullSchemesDetails();
+            $this->view->results = $commonServices->getPossibleResultById($id);
         }
     }
 }

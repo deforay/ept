@@ -935,8 +935,8 @@ $helpPageKey = "$controllerName/$actionName";
 												href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'feedback-responses', 'action' => 'shipment-questions'), 'default', true); ?>"><?= $this->translate->_("Enable Feedback"); ?></a>
 										</li>
 									<?php } ?>
-									<li id="possibleResults"><a
-											href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'possible-results'), 'default', true); ?>"><?= $this->translate->_("Possible Results"); ?></a>
+									<li id="testResults"><a
+											href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'schemes', 'action' => 'test-results'), 'default', true); ?>"><?= $this->translate->_("Schemes Results"); ?></a>
 									</li>
 									<?php if (in_array('dts', $adminSession->activeSchemes)) { ?>
 										<li id="TestKits"><a
@@ -1347,8 +1347,8 @@ $helpPageKey = "$controllerName/$actionName";
 				$('#TestKitReportForHIVSerology').addClass('active');
 			} else if (splitsUrl[2] == 'testkit') {
 				$('#TestKits').addClass('active');
-			} else if (splitsUrl[2] == 'possible-results') {
-				$('#possibleResults').addClass('active');
+			} else if (splitsUrl[2] == 'schemes' && splitsUrl[3] == 'test-results') {
+				$('#testResults').addClass('active');
 			} else if (splitsUrl[2] == 'vl-assay') {
 				$('#VLAssay').addClass('active');
 			} else if (splitsUrl[2] == 'eid-assay') {

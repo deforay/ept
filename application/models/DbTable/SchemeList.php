@@ -273,7 +273,7 @@ class Application_Model_DbTable_SchemeList extends Zend_Db_Table_Abstract
          * you want to insert a non-database field (for example a counter or static image)
          */
 
-        $aColumns = ['scheme_name', 'response', 'result_code', 'sort_order'];
+        $aColumns = ['scheme_name', 'scheme_id', 'status'];
 
         $sLimit = '';
         if (isset($parameters['iDisplayStart']) && $parameters['iDisplayLength'] != '-1') {
@@ -329,8 +329,7 @@ class Application_Model_DbTable_SchemeList extends Zend_Db_Table_Abstract
             }
         }
 
-        $sQuery = $this->getAdapter()->select()->from(['rp' => 'r_possibleresult'])
-            ->joinLeft(['sl' => 'scheme_list'], 'rp.scheme_id=sl.scheme_id', ['scheme_name']);
+        $sQuery = $this->getAdapter()->select()->from(['sl' => 'scheme_list']);
 
         if (isset($sWhere) && $sWhere != '') {
             $sQuery = $sQuery->where($sWhere);
@@ -369,10 +368,9 @@ class Application_Model_DbTable_SchemeList extends Zend_Db_Table_Abstract
         foreach ($rResult as $aRow) {
             $row = [];
             $row[] = ucwords($aRow['scheme_name']);
-            $row[] = $aRow['response'];
-            $row[] = $aRow['result_code'];
-            $row[] = $aRow['sort_order'];
-            $row[] = '<a href="/admin/possible-results/edit/id/' . base64_encode($aRow['id']) . '" class="btn btn-warning btn-xs" style="margin-right: 2px;"><i class="icon-pencil"></i> Edit</a>';
+            $row[] = ucwords($aRow['scheme_id']);
+            $row[] = ucwords($aRow['status']);
+            $row[] = '<a href="/admin/schemes/manage-test-results/id/' . base64_encode($aRow['scheme_id']) . '" class="btn btn-warning btn-xs" style="margin-right: 2px;"><i class="icon-pencil"></i> Test Results</a>';
             $output['aaData'][] = $row;
         }
 
@@ -381,25 +379,44 @@ class Application_Model_DbTable_SchemeList extends Zend_Db_Table_Abstract
 
     public function savePossibleResultsTestDetails($params)
     {
-        if (isset($params['schemeId']) && !empty($params['schemeId'])) {
-            $resultType = $params['schemeId'] . '-' . $params['resultType'];
+        if (empty($params['schemeId'])) {
+            return false;
+        }
+
+        $schemeId = base64_decode($params['schemeId']);
+        // $count = count($params['resultType']);
+
+        foreach ($params['resultType'] as $key => $resultType) {
+            $resultTypeCode = $schemeId . '-' . $params['resultType'][$key];
+
             $data = [
-                'scheme_id' => $params['schemeId'],
-                'scheme_sub_group' => $resultType,
-                'response' => $params['response'],
-                'result_code' => $params['resultCode'],
+                'scheme_id'       => $schemeId,
+                'scheme_sub_group' => $resultTypeCode,
+                'response'        => $params['response'][$key],
+                'result_code'     => $params['resultCode'][$key],
                 'display_context' => 'all',
-                'sort_order' => $params['sortOrder']
+                'sort_order'      => $params['sortOrder'][$key]
             ];
-            if (isset($params['rId']) && !empty($params['rId'])) {
-                $this->getAdapter()->update('r_possibleresult', $data, 'id = ' . base64_decode($params['rId']));
+
+            if (!empty($params['rId'][$key])) {
+                $this->getAdapter()->update(
+                    'r_possibleresult',
+                    $data,
+                    ['id = ?' => base64_decode($params['rId'][$key])]
+                );
             } else {
                 $this->getAdapter()->insert('r_possibleresult', $data);
             }
         }
+
+        return true;
     }
     public function fetchPossibleResultById($id)
     {
-        return  $this->getAdapter()->fetchRow($this->getAdapter()->select()->from(['rp' => 'r_possibleresult'])->where('id = ' . $id));
+        return  $this->getAdapter()->fetchAll(
+            $this->getAdapter()->select()->from(['rp' => 'r_possibleresult'], ['rp.id', 'rp.scheme_sub_group', 'rp.result_type', 'rp.response', 'rp.result_code', 'rp.sort_order'])
+                ->joinLeft(['sl' => 'scheme_list'], 'rp.scheme_id = sl.scheme_id', ['sl.scheme_id', 'scheme_name'])
+                ->where('rp.scheme_id = "' . $id . '"')
+        );
     }
 }

@@ -1,0 +1,279 @@
+<?php $subGroup = explode("-", $this->result['scheme_sub_group']); ?>
+<link rel="stylesheet" type="text/css" href="<?php echo $this->baseUrl('css/bootstrap-select.min.css'); ?>" />
+<link href="<?php echo $this->baseUrl('css/select2.css'); ?>" rel="stylesheet" />
+
+<style>
+	.results-table-wrap .table thead th {
+		background: #f8f9fa;
+		font-size: 12px;
+		font-weight: 600;
+		text-transform: uppercase;
+		letter-spacing: 0.04em;
+		color: #6c757d;
+		border-bottom: 2px solid #dee2e6;
+		vertical-align: middle;
+		white-space: nowrap;
+	}
+
+	.results-table-wrap .table tbody tr:hover {
+		background: #f8f9fa;
+	}
+
+	.results-table-wrap .table td {
+		vertical-align: middle;
+		padding: 6px 8px;
+	}
+
+	.results-table-wrap .form-control {
+		font-size: 13px;
+		height: 34px;
+		padding: 4px 8px;
+	}
+
+	.results-table-wrap .row-num {
+		font-size: 12px;
+		color: #adb5bd;
+		font-weight: 600;
+		text-align: center;
+	}
+
+	.btn-row-add {
+		padding: 3px 8px;
+		font-size: 16px;
+		line-height: 1;
+		color: #28a745;
+		background: transparent;
+		border: 1px solid #28a745;
+		border-radius: 4px;
+		cursor: pointer;
+	}
+
+	.btn-row-add:hover {
+		background: #e9f7ec;
+	}
+
+	.btn-row-remove {
+		padding: 3px 8px;
+		font-size: 16px;
+		line-height: 1;
+		color: #dc3545;
+		background: transparent;
+		border: 1px solid #dc3545;
+		border-radius: 4px;
+		cursor: pointer;
+	}
+
+	.btn-row-remove:hover {
+		background: #fdecea;
+	}
+
+	.action-cell {
+		white-space: nowrap;
+		text-align: center;
+	}
+
+	.mandatory {
+		color: #dc3545;
+	}
+</style>
+
+<div class="well">
+	<form name="updatePossibleResultsForm" id="updatePossibleResultsForm" method="post"
+		action="<?php echo $this->url(array("module" => "admin", "controller" => "schemes", "action" => "manage-test-results"), 'default', true); ?>"
+		class="form-horizontal" role="form" onsubmit="validateNow(); return false;">
+
+		<input type="hidden" name="schemeId" id="schemeId" value="<?php echo base64_encode($this->results[0]['scheme_id']); ?>" />
+
+		<fieldset>
+			<legend><?= $this->translate->_("Add / Edit Possible Results For ") . ' <strong>' . $this->results[0]['scheme_name']; ?></strong></legend>
+			<div class="results-table-wrap table-responsive">
+				<table class="table table-bordered" id="resultsTable">
+					<thead>
+						<tr>
+							<th style="width:36px;">#</th>
+							<th style="width:19%;"><?= $this->translate->_("Result Type"); ?> <span class="mandatory">*</span></th>
+							<th style="width:23%;"><?= $this->translate->_("Response"); ?> <span class="mandatory">*</span></th>
+							<th style="width:18%;"><?= $this->translate->_("Result Code"); ?> <span class="mandatory">*</span></th>
+							<th style="width:10%;"><?= $this->translate->_("Sort Order"); ?></th>
+							<th style="width:80px; text-align:center;"><?= $this->translate->_("Action"); ?></th>
+						</tr>
+					</thead>
+					<tbody id="rowsBody">
+						<?php
+						/*
+                         * For EDIT mode: loop over $this->results (array of rows).
+                         * For ADD mode (empty / single blank row), the JS will render one blank row.
+                         * Uncomment and adapt the loop below when $this->results is available.
+                         */
+						if (!empty($this->results)) :
+							foreach ($this->results as $i => $row) :
+								$sg = explode("-", $row['scheme_sub_group']);
+						?>
+								<tr id="row-php-<?= $i; ?>">
+									<td class="row-num"><?= $i + 1; ?></td>
+									<td>
+										<input type="hidden" name="rId[]" value="<?php echo base64_encode($row['id']); ?>" />
+										<select name="resultType[]" class="form-control isRequired" title="<?= $this->translate->_("Please select the result type"); ?>" required>
+											<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
+											<option value="TEST" <?= (isset($sg[1]) && $sg[1] == 'TEST')  ? 'selected="selected"' : ''; ?>><?= $this->translate->_("Test Result"); ?></option>
+											<option value="FINAL" <?= (isset($sg[1]) && $sg[1] == 'FINAL') ? 'selected="selected"' : ''; ?>><?= $this->translate->_("Final Interpretation"); ?></option>
+										</select>
+									</td>
+									<td>
+										<input type="text" name="response[]" class="form-control isRequired"
+											value="<?= htmlspecialchars($row['response']); ?>"
+											placeholder="<?= $this->translate->_("Enter response"); ?>"
+											title="<?= $this->translate->_("Please enter the response"); ?>" required />
+									</td>
+									<td>
+										<input type="text" name="resultCode[]" class="form-control isRequired"
+											value="<?= htmlspecialchars($row['result_code']); ?>"
+											placeholder="<?= $this->translate->_("e.g. POS"); ?>"
+											title="<?= $this->translate->_("Please enter the short result code"); ?>"
+											onblur="checkDuplicate('r_possibleresult', 'result_code', this, null, '<?= $this->translate->_("This result code already exists. Please try something else."); ?>')"
+											required />
+									</td>
+									<td>
+										<input type="text" name="sortOrder[]" class="form-control"
+											value="<?= htmlspecialchars($row['sort_order']); ?>"
+											placeholder="0" />
+									</td>
+									<td class="action-cell">
+										<button type="button" class="btn-row-add" title="<?= $this->translate->_("Add row below"); ?>"
+											onclick="insertRowAfter(this)">+</button>
+										<button type="button" class="btn-row-remove" title="<?= $this->translate->_("Remove row"); ?>"
+											onclick="removeRow(this)">&#8722;</button>
+									</td>
+								</tr>
+						<?php
+							endforeach;
+						endif;
+						?>
+					</tbody>
+				</table>
+			</div>
+
+			<div class="row">
+				<div class="col-md-12">
+					<div style="text-align:center; margin-top: 10px;" class="form-group">
+						<input name="submitbtn" class="btn btn-primary" type="submit" tabindex="7"
+							value="<?= $this->translate->_("Update"); ?>" />
+						<input class="btn btn-danger" type="button"
+							onclick="window.location.href = '/admin/schemes/test-results';"
+							tabindex="8" value="<?= $this->translate->_("Cancel"); ?>" />
+					</div>
+				</div>
+			</div>
+		</fieldset>
+	</form>
+</div>
+
+<script type="text/javascript" src="<?php echo $this->baseUrl('js/bootstrap-select.min.js'); ?>"></script>
+<script type="text/javascript" src="<?php echo $this->baseUrl('js/select2.min.js'); ?>"></script>
+
+<script type="text/javascript">
+	var duplicated = false;
+
+	/* ── On page load: if no PHP rows, add one blank row ── */
+	$(document).ready(function() {
+		if ($('#rowsBody tr').length === 0) {
+			appendNewRow(null);
+		}
+		reindex();
+	});
+
+	/* ── Build a new <tr> element ── */
+	function buildRow() {
+		var tr = document.createElement('tr');
+		tr.innerHTML =
+			'<td class="row-num"></td>' +
+			'<td>' +
+			'<select name="resultType[]" class="form-control isRequired" required>' +
+			'<option value="">-- <?= $this->translate->_("Select"); ?> --</option>' +
+			'<option value="TEST"><?= $this->translate->_("Test Result"); ?></option>' +
+			'<option value="FINAL"><?= $this->translate->_("Final Interpretation"); ?></option>' +
+			'</select>' +
+			'</td>' +
+			'<td>' +
+			'<input type="text" name="response[]" class="form-control isRequired"' +
+			'   placeholder="<?= $this->translate->_("Enter response"); ?>" required />' +
+			'</td>' +
+			'<td>' +
+			'<input type="text" name="resultCode[]" class="form-control isRequired"' +
+			'   placeholder="<?= $this->translate->_("e.g. POS"); ?>" required' +
+			'   onblur="checkDuplicate(\'r_possibleresult\',\'result_code\',this,null,\'<?= $this->translate->_("This result code already exists. Please try something else."); ?>\')" />' +
+			'</td>' +
+			'<td>' +
+			'<input type="text" name="sortOrder[]" class="form-control" placeholder="0" />' +
+			'</td>' +
+			'<td class="action-cell">' +
+			'<button type="button" class="btn-row-add" title="<?= $this->translate->_("Add row below"); ?>" onclick="insertRowAfter(this)">+</button> ' +
+			'<button type="button" class="btn-row-remove" title="<?= $this->translate->_("Remove row"); ?>" onclick="removeRow(this)">&#8722;</button>' +
+			'</td>';
+		return tr;
+	}
+
+	/* ── Append a new blank row at the end of tbody ── */
+	function appendNewRow(btn) {
+		var tbody = document.getElementById('rowsBody');
+		tbody.appendChild(buildRow());
+		reindex();
+	}
+
+	/* ── Insert a new blank row directly after the clicked row ── */
+	function insertRowAfter(btn) {
+		var currentRow = btn.closest('tr');
+		var newRow = buildRow();
+		currentRow.parentNode.insertBefore(newRow, currentRow.nextSibling);
+		reindex();
+	}
+
+	/* ── Remove the row the button belongs to ── */
+	function removeRow(btn) {
+		var tbody = document.getElementById('rowsBody');
+		if (tbody.rows.length <= 1) {
+			alert('<?= $this->translate->_("At least one row is required."); ?>');
+			return;
+		}
+		btn.closest('tr').remove();
+		reindex();
+	}
+
+	/* ── Re-number visible row index cells ── */
+	function reindex() {
+		var rows = document.querySelectorAll('#rowsBody tr');
+		rows.forEach(function(tr, i) {
+			tr.querySelector('.row-num').textContent = i + 1;
+		});
+	}
+
+	/* ── Duplicate check (unchanged from original) ── */
+	function checkDuplicate(tableName, fieldName, obj, fnct, msg) {
+		$.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'common', 'action' => 'check-duplicate')); ?>", {
+			tableName: tableName,
+			fieldName: fieldName,
+			value: obj.value,
+			fnct: fnct,
+			format: 'html'
+		}, function(data) {
+			if (data > 0) {
+				alert(msg, 'err');
+				duplicated = true;
+				$(obj).val('');
+			} else {
+				duplicated = false;
+			}
+		});
+	}
+
+	/* ── Form validation & submit ── */
+	function validateNow() {
+		var flag = deforayValidator.init({
+			formId: 'updatePossibleResultsForm'
+		});
+		if (flag && !duplicated) {
+			$.blockUI();
+			document.getElementById('updatePossibleResultsForm').submit();
+		}
+	}
+</script>
