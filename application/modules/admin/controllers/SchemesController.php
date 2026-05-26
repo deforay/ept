@@ -41,10 +41,10 @@ class Admin_SchemesController extends Zend_Controller_Action
         /** @var Zend_Controller_Request_Http $request */
         $request = $this->getRequest();
         $commonServices = new Application_Service_Common();
+        $alertMsgInit = new Zend_Session_Namespace('alertSpace');
         if ($request->isPost()) {
             $params = $request->getPost();
             $result = $commonServices->savePossibleResultsTest($params);
-            $alertMsgInit = new Zend_Session_Namespace('alertSpace');
             if ($result) {
                 $alertMsgInit->message = "Saved successfully";
                 $this->redirect('/admin/schemes/test-results');
@@ -53,6 +53,10 @@ class Admin_SchemesController extends Zend_Controller_Action
             }
         } elseif ($this->hasParam('id')) {
             $id = base64_decode($this->_getParam('id'));
+            if ($id == 'vl') {
+                $alertMsgInit->message = "Viral Load doesn't have the scheme results";
+                $this->redirect('/admin/schemes/test-results');
+            }
             $this->view->results = $commonServices->getPossibleResultById($id);
         }
     }

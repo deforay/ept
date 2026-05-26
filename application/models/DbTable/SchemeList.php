@@ -414,9 +414,10 @@ class Application_Model_DbTable_SchemeList extends Zend_Db_Table_Abstract
     public function fetchPossibleResultById($id)
     {
         return  $this->getAdapter()->fetchAll(
-            $this->getAdapter()->select()->from(['rp' => 'r_possibleresult'], ['rp.id', 'rp.scheme_sub_group', 'rp.result_type', 'rp.response', 'rp.result_code', 'rp.sort_order'])
-                ->joinLeft(['sl' => 'scheme_list'], 'rp.scheme_id = sl.scheme_id', ['sl.scheme_id', 'scheme_name'])
-                ->where('rp.scheme_id = "' . $id . '"')
+            $this->getAdapter()->select()->from(['sl' => 'scheme_list'], ['sl.scheme_id', 'scheme_name', 'is_user_configured'])
+                ->joinLeft(['rp' => 'r_possibleresult'], 'rp.scheme_id = sl.scheme_id', ['rp.id', 'rp.scheme_sub_group', 'rp.result_type', 'rp.response', 'rp.result_code', 'rp.sort_order'])
+                ->where('sl.scheme_id = "' . $id . '"')
+                ->order('rp.sort_order ASC')
         );
     }
 }

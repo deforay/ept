@@ -1,8 +1,78 @@
-<?php $subGroup = explode("-", $this->result['scheme_sub_group']); ?>
+<?php
+$isUserConfigured = !empty($this->results[0]['is_user_configured']) && $this->results[0]['is_user_configured'] === 'yes';
+$schemeId = !empty($this->results[0]['scheme_id']) ? strtoupper(trim($this->results[0]['scheme_id'])) : '';
+?>
 <link rel="stylesheet" type="text/css" href="<?php echo $this->baseUrl('css/bootstrap-select.min.css'); ?>" />
 <link href="<?php echo $this->baseUrl('css/select2.css'); ?>" rel="stylesheet" />
 
 <style>
+	/* ── Main container — mirrors .dts-settings-container ─────────────────── */
+	.scheme-results-container {
+		background: #fff;
+		border-radius: 8px;
+		box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+		padding: 0;
+		margin-bottom: 80px;
+	}
+
+	/* ── Legend/Header ─────────────────────────────────────────────────────── */
+	.scheme-results-container legend {
+		background: linear-gradient(135deg, #4a6fa5 0%, #3a5a8a 100%);
+		color: #fff;
+		font-weight: 500;
+		font-size: 16px;
+		padding: 14px 20px;
+		margin: 0;
+		border: none;
+		border-radius: 8px 8px 0 0;
+	}
+
+	.scheme-results-container legend i {
+		margin-right: 8px;
+	}
+
+	/* ── Form content area ─────────────────────────────────────────────────── */
+	.scheme-results-container .form-content {
+		padding: 25px;
+		background-color: #f8fafc;
+		border: 1px solid #e2e8f0;
+		border-top: none;
+		border-radius: 0 0 8px 8px;
+	}
+
+	/* ── Inner config card — mirrors .config-section ──────────────────────── */
+	.results-card {
+		background: #fff;
+		border: 1px solid #e2e8f0;
+		border-radius: 6px;
+		padding: 20px;
+		margin-bottom: 20px;
+	}
+
+	.results-card:hover {
+		border-color: #4a6fa5;
+		box-shadow: 0 2px 8px rgba(74, 111, 165, 0.1);
+	}
+
+	.results-card h5 {
+		color: #4a6fa5;
+		font-weight: 600;
+		margin-top: 0;
+		margin-bottom: 16px;
+		padding-bottom: 10px;
+		border-bottom: 2px solid #4a6fa5;
+		font-size: 15px;
+	}
+
+	.results-card h5 i {
+		margin-right: 8px;
+	}
+
+	/* ── Table ─────────────────────────────────────────────────────────────── */
+	.results-table-wrap .table {
+		margin-bottom: 0;
+	}
+
 	.results-table-wrap .table thead th {
 		background: #f8f9fa;
 		font-size: 12px;
@@ -13,10 +83,11 @@
 		border-bottom: 2px solid #dee2e6;
 		vertical-align: middle;
 		white-space: nowrap;
+		padding: 10px 8px;
 	}
 
 	.results-table-wrap .table tbody tr:hover {
-		background: #f8f9fa;
+		background: #f8fafc;
 	}
 
 	.results-table-wrap .table td {
@@ -30,13 +101,20 @@
 		padding: 4px 8px;
 	}
 
-	.results-table-wrap .row-num {
+	.results-table-wrap .form-control:focus {
+		border-color: #4a6fa5;
+		box-shadow: 0 0 0 3px rgba(74, 111, 165, 0.1);
+	}
+
+	/* ── Row number cell ───────────────────────────────────────────────────── */
+	.row-num {
 		font-size: 12px;
 		color: #adb5bd;
 		font-weight: 600;
 		text-align: center;
 	}
 
+	/* ── Add / Remove row buttons ──────────────────────────────────────────── */
 	.btn-row-add {
 		padding: 3px 8px;
 		font-size: 16px;
@@ -46,6 +124,7 @@
 		border: 1px solid #28a745;
 		border-radius: 4px;
 		cursor: pointer;
+		transition: background 0.15s;
 	}
 
 	.btn-row-add:hover {
@@ -61,6 +140,7 @@
 		border: 1px solid #dc3545;
 		border-radius: 4px;
 		cursor: pointer;
+		transition: background 0.15s;
 	}
 
 	.btn-row-remove:hover {
@@ -72,100 +152,225 @@
 		text-align: center;
 	}
 
+	/* ── Mandatory marker ──────────────────────────────────────────────────── */
 	.mandatory {
 		color: #dc3545;
+	}
+
+	/* ── Prefix addon (user-configured schemes) ────────────────────────────── */
+	.result-code-prefix-addon {
+		display: none;
+		padding: 6px 8px;
+	}
+
+	/* ── Input group addon — matches DTS theme ─────────────────────────────── */
+	.input-group-addon {
+		background: linear-gradient(135deg, #4a6fa5 0%, #3a5a8a 100%);
+		color: #fff;
+		border-color: #3a5a8a;
+	}
+
+	/* ── Floating save bar — mirrors .floating-buttons ─────────────────────── */
+	.floating-buttons {
+		position: fixed;
+		bottom: 20px;
+		right: 30px;
+		z-index: 1000;
+		display: flex;
+		gap: 10px;
+		background: #fff;
+		padding: 15px 20px;
+		border-radius: 8px;
+		box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+		border: 1px solid #e2e8f0;
+	}
+
+	.floating-buttons .btn {
+		padding: 10px 25px;
+		font-size: 14px;
+	}
+
+	/* ── Inline action row ─────────────────────────────────────────────────── */
+	.form-actions-inline {
+		margin-top: 20px;
+		text-align: center;
+	}
+
+	.form-actions-inline .btn {
+		padding: 10px 28px;
+		font-size: 14px;
+	}
+
+	/* ── Label style ───────────────────────────────────────────────────────── */
+	.results-card label,
+	.scheme-results-container .form-content label {
+		color: #374151;
+		font-weight: 500;
+		margin-bottom: 6px;
+		display: block;
+	}
+
+	/* ── Muted helper text ─────────────────────────────────────────────────── */
+	.text-muted {
+		color: #6b7280;
+		font-size: 12px;
+		margin-top: 4px;
 	}
 </style>
 
 <div class="well">
-	<form name="updatePossibleResultsForm" id="updatePossibleResultsForm" method="post"
-		action="<?php echo $this->url(array("module" => "admin", "controller" => "schemes", "action" => "manage-test-results"), 'default', true); ?>"
-		class="form-horizontal" role="form" onsubmit="validateNow(); return false;">
+	<div class="scheme-results-container">
+		<form name="updatePossibleResultsForm" id="updatePossibleResultsForm" method="post"
+			action="<?php echo $this->url(array("module" => "admin", "controller" => "schemes", "action" => "manage-test-results"), 'default', true); ?>"
+			class="form-horizontal" role="form" onsubmit="validateNow(); return false;">
 
-		<input type="hidden" name="schemeId" id="schemeId" value="<?php echo base64_encode($this->results[0]['scheme_id']); ?>" />
+			<input type="hidden" name="schemeId" id="schemeId"
+				value="<?php echo base64_encode($this->results[0]['scheme_id']); ?>" />
 
-		<fieldset>
-			<legend><?= $this->translate->_("Add / Edit Possible Results For ") . ' <strong>' . $this->results[0]['scheme_name']; ?></strong></legend>
-			<div class="results-table-wrap table-responsive">
-				<table class="table table-bordered" id="resultsTable">
-					<thead>
-						<tr>
-							<th style="width:36px;">#</th>
-							<th style="width:19%;"><?= $this->translate->_("Result Type"); ?> <span class="mandatory">*</span></th>
-							<th style="width:23%;"><?= $this->translate->_("Response"); ?> <span class="mandatory">*</span></th>
-							<th style="width:18%;"><?= $this->translate->_("Result Code"); ?> <span class="mandatory">*</span></th>
-							<th style="width:10%;"><?= $this->translate->_("Sort Order"); ?></th>
-							<th style="width:80px; text-align:center;"><?= $this->translate->_("Action"); ?></th>
-						</tr>
-					</thead>
-					<tbody id="rowsBody">
-						<?php
-						/*
-                         * For EDIT mode: loop over $this->results (array of rows).
-                         * For ADD mode (empty / single blank row), the JS will render one blank row.
-                         * Uncomment and adapt the loop below when $this->results is available.
-                         */
-						if (!empty($this->results)) :
-							foreach ($this->results as $i => $row) :
-								$sg = explode("-", $row['scheme_sub_group']);
-						?>
-								<tr id="row-php-<?= $i; ?>">
-									<td class="row-num"><?= $i + 1; ?></td>
-									<td>
-										<input type="hidden" name="rId[]" value="<?php echo base64_encode($row['id']); ?>" />
-										<select name="resultType[]" class="form-control isRequired" title="<?= $this->translate->_("Please select the result type"); ?>" required>
-											<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
-											<option value="TEST" <?= (isset($sg[1]) && $sg[1] == 'TEST')  ? 'selected="selected"' : ''; ?>><?= $this->translate->_("Test Result"); ?></option>
-											<option value="FINAL" <?= (isset($sg[1]) && $sg[1] == 'FINAL') ? 'selected="selected"' : ''; ?>><?= $this->translate->_("Final Interpretation"); ?></option>
-										</select>
-									</td>
-									<td>
-										<input type="text" name="response[]" class="form-control isRequired"
-											value="<?= htmlspecialchars($row['response']); ?>"
-											placeholder="<?= $this->translate->_("Enter response"); ?>"
-											title="<?= $this->translate->_("Please enter the response"); ?>" required />
-									</td>
-									<td>
-										<input type="text" name="resultCode[]" class="form-control isRequired"
-											value="<?= htmlspecialchars($row['result_code']); ?>"
-											placeholder="<?= $this->translate->_("e.g. POS"); ?>"
-											title="<?= $this->translate->_("Please enter the short result code"); ?>"
-											onblur="checkDuplicate('r_possibleresult', 'result_code', this, null, '<?= $this->translate->_("This result code already exists. Please try something else."); ?>')"
-											required />
-									</td>
-									<td>
-										<input type="text" name="sortOrder[]" class="form-control"
-											value="<?= htmlspecialchars($row['sort_order']); ?>"
-											placeholder="0" />
-									</td>
-									<td class="action-cell">
-										<button type="button" class="btn-row-add" title="<?= $this->translate->_("Add row below"); ?>"
-											onclick="insertRowAfter(this)">+</button>
-										<button type="button" class="btn-row-remove" title="<?= $this->translate->_("Remove row"); ?>"
-											onclick="removeRow(this)">&#8722;</button>
-									</td>
-								</tr>
-						<?php
-							endforeach;
-						endif;
-						?>
-					</tbody>
-				</table>
-			</div>
+			<fieldset>
+				<legend>
+					<i class="icon-beaker"></i>
+					<?= $this->translate->_("Add / Edit Possible Results For ") ?>
+					<strong><?= $this->results[0]['scheme_name']; ?></strong>
+				</legend>
 
-			<div class="row">
-				<div class="col-md-12">
-					<div style="text-align:center; margin-top: 10px;" class="form-group">
-						<input name="submitbtn" class="btn btn-primary" type="submit" tabindex="7"
-							value="<?= $this->translate->_("Update"); ?>" />
-						<input class="btn btn-danger" type="button"
-							onclick="window.location.href = '/admin/schemes/test-results';"
-							tabindex="8" value="<?= $this->translate->_("Cancel"); ?>" />
+				<div class="form-content">
+					<!-- Results table card -->
+					<div class="results-card">
+						<h5><i class="icon-list-alt"></i> <?= $this->translate->_("Result Entries"); ?></h5>
+
+						<div class="results-table-wrap table-responsive">
+							<table class="table table-bordered" id="resultsTable">
+								<thead>
+									<tr>
+										<th style="width:36px;">#</th>
+										<th style="width:19%;">
+											<?= $this->translate->_("Result Type"); ?>
+											<span class="mandatory">*</span>
+										</th>
+										<th style="width:23%;">
+											<?= $this->translate->_("Response"); ?>
+											<span class="mandatory">*</span>
+										</th>
+										<th style="width:18%;">
+											<?= $this->translate->_("Result Code"); ?>
+											<span class="mandatory">*</span>
+										</th>
+										<th style="width:10%;"><?= $this->translate->_("Sort Order"); ?></th>
+										<th style="width:80px; text-align:center;"><?= $this->translate->_("Action"); ?></th>
+									</tr>
+								</thead>
+								<tbody id="rowsBody">
+									<?php if (!empty($this->results)) : ?>
+										<?php foreach ($this->results as $i => $row) :
+											$sg = explode("-", $row['scheme_sub_group']);
+											$rowResultType = isset($sg[1]) ? $sg[1] : '';
+
+											$storedCode    = $row['result_code'];
+											$displaySuffix = $storedCode;
+											if ($isUserConfigured && $schemeId !== '') {
+												$prefixTest    = $schemeId . '-T-';
+												$prefixFinal   = $schemeId . '-F-';
+												$prefixGeneric = $schemeId . '-';
+												if (strpos($storedCode, $prefixTest) === 0) {
+													$displaySuffix = substr($storedCode, strlen($prefixTest));
+												} elseif (strpos($storedCode, $prefixFinal) === 0) {
+													$displaySuffix = substr($storedCode, strlen($prefixFinal));
+												} elseif (strpos($storedCode, $prefixGeneric) === 0) {
+													$displaySuffix = substr($storedCode, strlen($prefixGeneric));
+												}
+											}
+										?>
+											<tr id="row-php-<?= $i; ?>">
+												<td class="row-num"><?= $i + 1; ?></td>
+												<td>
+													<input type="hidden" name="rId[]"
+														value="<?php echo base64_encode($row['id']); ?>" />
+													<select name="resultType[]"
+														class="form-control isRequired<?= $isUserConfigured ? ' js-result-type' : ''; ?>"
+														title="<?= $this->translate->_("Please select the result type"); ?>"
+														required>
+														<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
+														<option value="TEST" <?= ($rowResultType === 'TEST')  ? 'selected="selected"' : ''; ?>><?= $this->translate->_("Test Result"); ?></option>
+														<option value="FINAL" <?= ($rowResultType === 'FINAL') ? 'selected="selected"' : ''; ?>><?= $this->translate->_("Final Interpretation"); ?></option>
+													</select>
+												</td>
+												<td>
+													<input type="text" name="response[]"
+														class="form-control isRequired"
+														value="<?= htmlspecialchars($row['response']); ?>"
+														placeholder="<?= $this->translate->_("Enter response"); ?>"
+														title="<?= $this->translate->_("Please enter the response"); ?>"
+														required />
+												</td>
+												<td>
+													<?php if ($isUserConfigured) : ?>
+														<div class="input-group input-group-sm" style="display:flex;">
+															<span class="input-group-addon result-code-prefix-addon js-code-prefix"
+																style="padding:6px 8px;display:inline-table;"></span>
+															<input type="text"
+																class="form-control isRequired js-code-suffix input-sm"
+																placeholder="<?= $this->translate->_("e.g. P"); ?>"
+																maxlength="20"
+																value="<?= htmlspecialchars($displaySuffix); ?>"
+																title="<?= $this->translate->_("Please enter the result code suffix"); ?>" />
+														</div>
+														<input type="hidden" name="resultCode[]" class="js-code-hidden"
+															value="<?= htmlspecialchars($storedCode); ?>" />
+													<?php else : ?>
+														<input type="text" name="resultCode[]"
+															class="form-control isRequired"
+															value="<?= htmlspecialchars($storedCode); ?>"
+															placeholder="<?= $this->translate->_("e.g. POS"); ?>"
+															title="<?= $this->translate->_("Please enter the short result code"); ?>"
+															onblur="checkDuplicate('r_possibleresult','result_code',this,null,'<?= $this->translate->_("This result code already exists. Please try something else."); ?>')"
+															required />
+													<?php endif; ?>
+												</td>
+												<td>
+													<input type="text" name="sortOrder[]" class="form-control"
+														value="<?= htmlspecialchars($row['sort_order']); ?>"
+														placeholder="0" />
+												</td>
+												<td class="action-cell">
+													<button type="button" class="btn-row-add"
+														title="<?= $this->translate->_("Add row below"); ?>"
+														onclick="insertRowAfter(this)">+</button>
+													<button type="button" class="btn-row-remove"
+														title="<?= $this->translate->_("Remove row"); ?>"
+														onclick="removeRow(this)">&#8722;</button>
+												</td>
+											</tr>
+										<?php endforeach; ?>
+									<?php endif; ?>
+								</tbody>
+							</table>
+						</div>
+					</div><!-- /.results-card -->
+
+					<!-- Inline action buttons -->
+					<div class="form-actions-inline">
+						<button type="submit" name="submitbtn" class="btn btn-primary btn-lg" tabindex="7">
+							<i class="icon-ok"></i> <?= $this->translate->_("Update"); ?>
+						</button>
+						<a href="/admin/schemes/test-results" class="btn btn-danger btn-lg" tabindex="8">
+							<i class="icon-arrow-left"></i> <?= $this->translate->_("Cancel"); ?>
+						</a>
 					</div>
-				</div>
-			</div>
-		</fieldset>
-	</form>
+				</div><!-- /.form-content -->
+			</fieldset>
+		</form>
+	</div><!-- /.scheme-results-container -->
+</div><!-- /.well -->
+
+<!-- Floating action bar (matches DTS settings) -->
+<div class="floating-buttons">
+	<button type="button" class="btn btn-primary" onclick="validateNow(); return false;">
+		<i class="icon-ok"></i> <?= $this->translate->_("Update"); ?>
+	</button>
+	<a href="/admin/schemes/test-results" class="btn btn-danger">
+		<i class="icon-arrow-left"></i> <?= $this->translate->_("Cancel"); ?>
+	</a>
 </div>
 
 <script type="text/javascript" src="<?php echo $this->baseUrl('js/bootstrap-select.min.js'); ?>"></script>
@@ -174,21 +379,71 @@
 <script type="text/javascript">
 	var duplicated = false;
 
-	/* ── On page load: if no PHP rows, add one blank row ── */
-	$(document).ready(function() {
-		if ($('#rowsBody tr').length === 0) {
-			appendNewRow(null);
-		}
-		reindex();
-	});
+	var IS_USER_CONFIGURED = <?= $isUserConfigured ? 'true' : 'false'; ?>;
+	var SCHEME_CODE = <?= json_encode($schemeId); ?>;
 
-	/* ── Build a new <tr> element ── */
+	/* ── Prefix helpers ──────────────────────────────────────────────────── */
+
+	function getPrefix(resultTypeValue) {
+		if (!SCHEME_CODE) return '';
+		if (resultTypeValue === 'TEST') return SCHEME_CODE + '-T-';
+		if (resultTypeValue === 'FINAL') return SCHEME_CODE + '-F-';
+		return SCHEME_CODE + '-';
+	}
+
+	function updateResultCodeForRow(tr) {
+		if (!IS_USER_CONFIGURED) return;
+
+		var $tr = $(tr);
+		var type = $tr.find('.js-result-type').val();
+		var prefix = getPrefix(type);
+		var $addon = $tr.find('.js-code-prefix');
+		var $suffix = $tr.find('.js-code-suffix');
+		var $hidden = $tr.find('.js-code-hidden');
+
+		var raw = ($suffix.val() || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+		if ($suffix.val() !== raw) $suffix.val(raw);
+
+		if (prefix) {
+			$addon.text(prefix).show();
+		} else {
+			$addon.text('').hide();
+		}
+
+		$hidden.val(raw ? prefix + raw : '');
+	}
+
+	function initAllPrefixes() {
+		if (!IS_USER_CONFIGURED) return;
+		$('#rowsBody tr').each(function() {
+			updateResultCodeForRow(this);
+		});
+	}
+
+	/* ── Row building ────────────────────────────────────────────────────── */
+
+	function buildResultCodeCell() {
+		if (IS_USER_CONFIGURED) {
+			return '<div class="input-group input-group-sm">' +
+				'<span class="input-group-addon result-code-prefix-addon js-code-prefix" style="padding:6px 8px;"></span>' +
+				'<input type="text" class="form-control isRequired js-code-suffix input-sm"' +
+				'   placeholder="<?= $this->translate->_("e.g. P"); ?>" maxlength="20"' +
+				'   title="<?= $this->translate->_("Please enter the result code suffix"); ?>" />' +
+				'</div>' +
+				'<input type="hidden" name="resultCode[]" class="js-code-hidden" />';
+		} else {
+			return '<input type="text" name="resultCode[]" class="form-control isRequired"' +
+				'   placeholder="<?= $this->translate->_("e.g. POS"); ?>" required' +
+				'   onblur="checkDuplicate(\'r_possibleresult\',\'result_code\',this,null,\'<?= $this->translate->_("This result code already exists. Please try something else."); ?>\')" />';
+		}
+	}
+
 	function buildRow() {
 		var tr = document.createElement('tr');
 		tr.innerHTML =
 			'<td class="row-num"></td>' +
 			'<td>' +
-			'<select name="resultType[]" class="form-control isRequired" required>' +
+			'<select name="resultType[]" class="form-control isRequired' + (IS_USER_CONFIGURED ? ' js-result-type' : '') + '" required>' +
 			'<option value="">-- <?= $this->translate->_("Select"); ?> --</option>' +
 			'<option value="TEST"><?= $this->translate->_("Test Result"); ?></option>' +
 			'<option value="FINAL"><?= $this->translate->_("Final Interpretation"); ?></option>' +
@@ -198,14 +453,8 @@
 			'<input type="text" name="response[]" class="form-control isRequired"' +
 			'   placeholder="<?= $this->translate->_("Enter response"); ?>" required />' +
 			'</td>' +
-			'<td>' +
-			'<input type="text" name="resultCode[]" class="form-control isRequired"' +
-			'   placeholder="<?= $this->translate->_("e.g. POS"); ?>" required' +
-			'   onblur="checkDuplicate(\'r_possibleresult\',\'result_code\',this,null,\'<?= $this->translate->_("This result code already exists. Please try something else."); ?>\')" />' +
-			'</td>' +
-			'<td>' +
-			'<input type="text" name="sortOrder[]" class="form-control" placeholder="0" />' +
-			'</td>' +
+			'<td>' + buildResultCodeCell() + '</td>' +
+			'<td><input type="text" name="sortOrder[]" class="form-control" placeholder="0" /></td>' +
 			'<td class="action-cell">' +
 			'<button type="button" class="btn-row-add" title="<?= $this->translate->_("Add row below"); ?>" onclick="insertRowAfter(this)">+</button> ' +
 			'<button type="button" class="btn-row-remove" title="<?= $this->translate->_("Remove row"); ?>" onclick="removeRow(this)">&#8722;</button>' +
@@ -213,22 +462,24 @@
 		return tr;
 	}
 
-	/* ── Append a new blank row at the end of tbody ── */
-	function appendNewRow(btn) {
+	/* ── Row management ──────────────────────────────────────────────────── */
+
+	function appendNewRow() {
 		var tbody = document.getElementById('rowsBody');
-		tbody.appendChild(buildRow());
+		var newRow = buildRow();
+		tbody.appendChild(newRow);
 		reindex();
+		if (IS_USER_CONFIGURED) updateResultCodeForRow(newRow);
 	}
 
-	/* ── Insert a new blank row directly after the clicked row ── */
 	function insertRowAfter(btn) {
 		var currentRow = btn.closest('tr');
 		var newRow = buildRow();
 		currentRow.parentNode.insertBefore(newRow, currentRow.nextSibling);
 		reindex();
+		if (IS_USER_CONFIGURED) updateResultCodeForRow(newRow);
 	}
 
-	/* ── Remove the row the button belongs to ── */
 	function removeRow(btn) {
 		var tbody = document.getElementById('rowsBody');
 		if (tbody.rows.length <= 1) {
@@ -239,15 +490,24 @@
 		reindex();
 	}
 
-	/* ── Re-number visible row index cells ── */
 	function reindex() {
-		var rows = document.querySelectorAll('#rowsBody tr');
-		rows.forEach(function(tr, i) {
+		document.querySelectorAll('#rowsBody tr').forEach(function(tr, i) {
 			tr.querySelector('.row-num').textContent = i + 1;
 		});
 	}
 
-	/* ── Duplicate check (unchanged from original) ── */
+	/* ── Event delegation ────────────────────────────────────────────────── */
+
+	$(document).on('change', '#rowsBody .js-result-type', function() {
+		updateResultCodeForRow($(this).closest('tr')[0]);
+	});
+
+	$(document).on('input', '#rowsBody .js-code-suffix', function() {
+		updateResultCodeForRow($(this).closest('tr')[0]);
+	});
+
+	/* ── Duplicate check ─────────────────────────────────────────────────── */
+
 	function checkDuplicate(tableName, fieldName, obj, fnct, msg) {
 		$.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'common', 'action' => 'check-duplicate')); ?>", {
 			tableName: tableName,
@@ -266,8 +526,21 @@
 		});
 	}
 
-	/* ── Form validation & submit ── */
+	/* ── Validation & submit ─────────────────────────────────────────────── */
+
 	function validateNow() {
+		if (IS_USER_CONFIGURED) {
+			var valid = true;
+			$('#rowsBody .js-code-hidden').each(function() {
+				if (!$(this).val()) {
+					alert('<?= $this->translate->_("Please enter a result code for all rows."); ?>');
+					valid = false;
+					return false;
+				}
+			});
+			if (!valid) return false;
+		}
+
 		var flag = deforayValidator.init({
 			formId: 'updatePossibleResultsForm'
 		});
@@ -276,4 +549,12 @@
 			document.getElementById('updatePossibleResultsForm').submit();
 		}
 	}
+
+	/* ── Init ────────────────────────────────────────────────────────────── */
+
+	$(document).ready(function() {
+		if ($('#rowsBody tr').length === 0) appendNewRow();
+		reindex();
+		initAllPrefixes();
+	});
 </script>
