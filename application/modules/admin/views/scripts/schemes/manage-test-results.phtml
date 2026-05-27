@@ -263,8 +263,14 @@ $schemeId = !empty($this->results[0]['scheme_id']) ? strtoupper(trim($this->resu
 								<tbody id="rowsBody">
 									<?php if (!empty($this->results)) : ?>
 										<?php foreach ($this->results as $i => $row) :
-											$sg = explode("-", $row['scheme_sub_group']);
-											$rowResultType = isset($sg[1]) ? $sg[1] : '';
+											$sg = explode("_", $row['scheme_sub_group']);
+											$sgLast = strtoupper(end($sg)); // Always gets last part e.g. TEST, FINAL, SYP
+
+											if (in_array($sgLast, ['TEST', 'FINAL'])) {
+												$rowResultType = $sgLast; // Use TEST or FINAL
+											} else {
+												$rowResultType = null; // or handle other cases
+											}
 
 											$storedCode    = $row['result_code'];
 											$displaySuffix = $storedCode;
