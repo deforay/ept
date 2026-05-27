@@ -280,13 +280,14 @@ $schemeId = !empty($this->results[0]['scheme_id']) ? strtoupper(trim($this->resu
 													$displaySuffix = substr($storedCode, strlen($prefixGeneric));
 												}
 											}
+											$disable = (isset($row['shipment_status']) && !empty($row['shipment_status']) && $row['shipment_status'] != 'finalized') ? 'disabled' : '';
 										?>
 											<tr id="row-php-<?= $i; ?>">
 												<td class="row-num"><?= $i + 1; ?></td>
 												<td>
-													<input type="hidden" name="rId[]"
+													<input type="hidden" name="rId[<?php echo $i; ?>]"
 														value="<?php echo base64_encode($row['id']); ?>" />
-													<select name="resultType[]"
+													<select name="resultType[<?php echo $i; ?>]" <?php echo $disable; ?>
 														class="form-control isRequired<?= $isUserConfigured ? ' js-result-type' : ''; ?>"
 														title="<?= $this->translate->_("Please select the result type"); ?>"
 														required>
@@ -296,7 +297,7 @@ $schemeId = !empty($this->results[0]['scheme_id']) ? strtoupper(trim($this->resu
 													</select>
 												</td>
 												<td>
-													<input type="text" name="response[]"
+													<input type="text" name="response[<?php echo $i; ?>]" <?php echo $disable; ?>
 														class="form-control isRequired"
 														value="<?= htmlspecialchars($row['response']); ?>"
 														placeholder="<?= $this->translate->_("Enter response"); ?>"
@@ -308,17 +309,17 @@ $schemeId = !empty($this->results[0]['scheme_id']) ? strtoupper(trim($this->resu
 														<div class="input-group input-group-sm" style="display:flex;">
 															<span class="input-group-addon result-code-prefix-addon js-code-prefix"
 																style="padding:6px 8px;display:inline-table;"></span>
-															<input type="text"
+															<input type="text" <?php echo $disable; ?>
 																class="form-control isRequired js-code-suffix input-sm"
 																placeholder="<?= $this->translate->_("e.g. P"); ?>"
 																maxlength="20"
 																value="<?= htmlspecialchars($displaySuffix); ?>"
 																title="<?= $this->translate->_("Please enter the result code suffix"); ?>" />
 														</div>
-														<input type="hidden" name="resultCode[]" class="js-code-hidden"
+														<input type="hidden" name="resultCode[<?php echo $i; ?>]" class="js-code-hidden"
 															value="<?= htmlspecialchars($storedCode); ?>" />
 													<?php else : ?>
-														<input type="text" name="resultCode[]"
+														<input type="text" name="resultCode[<?php echo $i; ?>]" <?php echo $disable; ?>
 															class="form-control isRequired"
 															value="<?= htmlspecialchars($storedCode); ?>"
 															placeholder="<?= $this->translate->_("e.g. POS"); ?>"
@@ -328,7 +329,7 @@ $schemeId = !empty($this->results[0]['scheme_id']) ? strtoupper(trim($this->resu
 													<?php endif; ?>
 												</td>
 												<td>
-													<input type="text" name="sortOrder[]" class="form-control"
+													<input type="text" name="sortOrder[<?php echo $i; ?>]" class="form-control" <?php echo $disable; ?>
 														value="<?= htmlspecialchars($row['sort_order']); ?>"
 														placeholder="0" />
 												</td>

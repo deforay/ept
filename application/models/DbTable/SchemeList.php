@@ -411,13 +411,118 @@ class Application_Model_DbTable_SchemeList extends Zend_Db_Table_Abstract
 
         return true;
     }
+
     public function fetchPossibleResultById($id)
     {
-        return  $this->getAdapter()->fetchAll(
-            $this->getAdapter()->select()->from(['sl' => 'scheme_list'], ['sl.scheme_id', 'scheme_name', 'is_user_configured'])
-                ->joinLeft(['rp' => 'r_possibleresult'], 'rp.scheme_id = sl.scheme_id', ['rp.id', 'rp.scheme_sub_group', 'rp.result_type', 'rp.response', 'rp.result_code', 'rp.sort_order'])
-                ->where('sl.scheme_id = "' . $id . '"')
+        $db = $this->getAdapter();
+
+        // Determine which table and result columns to use based on scheme $id
+        $schemeList = $db->fetchAll(
+            $db->select()
+                ->from(['sl' => 'scheme_list'], ['sl.scheme_id', 'scheme_name', 'is_user_configured'])
+                ->where('sl.scheme_id = ?', $id)
+        );
+
+        if (empty($schemeList)) {
+            return [];
+        }
+
+        $scheme = $schemeList[0];
+        $isUserConfigured = strtolower($scheme['is_user_configured']) === 'yes';
+
+        // Map scheme to response_result table and its result columns
+        if ($isUserConfigured) {
+            $responseTable  = 'response_result_generic_test';
+            $resultColumns  = ['reported_result'];
+        } elseif ($id === 'covid19') {
+            $responseTable  = 'response_result_covid19';
+            $resultColumns  = ['test_result_1', 'test_result_2', 'test_result_3', 'reported_result'];
+        } elseif ($id === 'dts') {
+            $responseTable  = 'response_result_dts';
+            $resultColumns  = ['test_result_1', 'test_result_2', 'test_result_3', 'syphilis_result', 'syphilis_final', 'reported_result'];
+        } elseif ($id === 'dbs') {
+            $responseTable  = 'response_result_dbs';
+            $resultColumns  = ['reported_result'];
+        } elseif ($id === 'eid') {
+            $responseTable  = 'response_result_eid';
+            $resultColumns  = ['reported_result'];
+        } elseif ($id === 'recency') {
+            $responseTable  = 'response_result_recency';
+            $resultColumns  = ['reported_result'];
+        } elseif ($id === 'tb') {
+            $responseTable  = 'response_result_tb';
+            $resultColumns  = ['mtb_detected', 'rif_resistance'];
+        } else {
+            // Fallback — no known response table for this scheme
+            $responseTable  = null;
+            $resultColumns  = [];
+        }
+
+        // Fetch all possible results for this scheme
+        $possibleResults = $db->fetchAll(
+            $db->select()
+                ->from(['sl' => 'scheme_list'], ['sl.scheme_id', 'scheme_name', 'is_user_configured'])
+                ->joinLeft(
+                    ['rp' => 'r_possibleresult'],
+                    'rp.scheme_id = sl.scheme_id',
+                    ['rp.id', 'rp.scheme_sub_group', 'rp.result_type', 'rp.response', 'rp.result_code', 'rp.sort_order']
+                )
+                ->where('sl.scheme_id = ?', $id)
                 ->order('rp.sort_order ASC')
         );
+
+        if (empty($possibleResults) || $responseTable === null) {
+            // Return as-is with defaults if no response table found
+            return array_map(function ($row) {
+                $row['is_matched']       = 0;
+                $row['shipment_status']  = null;
+                return $row;
+            }, $possibleResults);
+        }
+
+        // Build match check: fetch all response rows for this scheme via shipment_participant_map
+        // Join: response_result_* -> shipment_participant_map -> shipment
+        $responseSelect = $db->select()
+            ->from(['rr' => $responseTable], $resultColumns)
+            ->join(
+                ['spm' => 'shipment_participant_map'],
+                'spm.map_id = rr.shipment_map_id',
+                []
+            )
+            ->join(
+                ['s' => 'shipment'],
+                's.shipment_id = spm.shipment_id',
+                ['s.status']
+            )
+            ->where('s.scheme_type = ?', $id);
+
+        $responseRows = $db->fetchAll($responseSelect);
+
+        // Build a lookup: rp.id => shipment status (last matched wins)
+        // Collect all result values used across all result columns
+        $matchedResults = []; // [ rp_id => shipment_status ]
+
+        foreach ($responseRows as $row) {
+            foreach ($resultColumns as $col) {
+                if (!empty($row[$col])) {
+                    $matchedResults[$row[$col]] = $row['status'];
+                }
+            }
+        }
+
+        // Attach is_matched and shipment status to each possible result row
+        foreach ($possibleResults as &$row) {
+            $rpId = $row['id'];
+            if (isset($matchedResults[$rpId])) {
+                $row['is_matched']      = 1;
+                $row['shipment_status'] = $matchedResults[$rpId];
+            } else {
+                $row['is_matched']      = 0;
+                $row['shipment_status'] = null;
+            }
+        }
+        unset($row);
+
+        return $possibleResults;
     }
 }
