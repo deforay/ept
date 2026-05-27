@@ -196,8 +196,8 @@ class Pt_Reports_FpdiReport extends Fpdi
 
             $completeFooterHtml  = '<table style="width:100%; border-collapse:collapse;">';
             $completeFooterHtml .= '<tr>';
-            $completeFooterHtml .= '<td style="width:40%; ' . $td . ' text-align:left;"></td>';
-            $completeFooterHtml .= '<td style="width:40%; ' . $td . ' text-align:center;">Report generated on ' . $reportDate . $finalizeReport . '</td>';
+            $completeFooterHtml .= '<td style="width:20%; ' . $td . ' text-align:left;"></td>';
+            $completeFooterHtml .= '<td style="width:60%; ' . $td . ' text-align:center;">Report generated on ' . $reportDate . $finalizeReport . '</td>';
             $completeFooterHtml .= '<td style="width:20%; ' . $td . ' text-align:right;">' . $pageNumber . '</td>';
             $completeFooterHtml .= '</tr>';
             $completeFooterHtml .= '</table>';
@@ -217,7 +217,7 @@ class Pt_Reports_FpdiReport extends Fpdi
         }
 
         // Malawi is a single line so needs less room at the bottom
-        $this->SetY($this->layout == 'malawi' ? -12 : -18);
+        $this->SetY(-12);
         $this->SetFont('freesans', '', 7, '', true);
         $this->writeHTML($completeFooterHtml, true, false, false, false, '');
     }
