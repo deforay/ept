@@ -449,7 +449,7 @@ $dtFormat = $genderHelper->getDateFormat();
                                 <option value="drcDtsAlgo" <?php echo (!empty($allowedAlgorithms) && in_array("drcDtsAlgo", $allowedAlgorithms)) ? " selected='selected' " : ""; ?>>
                                     <?= $this->translate->_("DRC National Algorithm"); ?>
                                 </option>
-                                <option value="vietnamDtsAlgo" <?php echo (!empty($allowedAlgorithms) && in_array("vietnamDtsAlgo", $allowedAlgorithms)) ? " selected='selected' " : ""; ?>>
+                                <option value="vietnamNationalDtsAlgo" <?php echo (!empty($allowedAlgorithms) && in_array("vietnamNationalDtsAlgo", $allowedAlgorithms)) ? " selected='selected' " : ""; ?>>
                                     <?= $this->translate->_("Vietnam National Algorithm"); ?>
                                 </option>
                             </select>
@@ -878,7 +878,7 @@ $dtFormat = $genderHelper->getDateFormat();
             $('#dtsSchemeType').val('standard');
         } else if (_val.indexOf("parallel") > -1) {
             $('#dtsSchemeType').val('standard');
-        } else if (_val.indexOf("vietnamDtsAlgo") > -1) {
+        } else if (_val.indexOf("vietnamNationalDtsAlgo") > -1) {
             $('#dtsSchemeType').val('vietnam');
         }
         $('#allowedAlgorithms').multiselect('refresh');
@@ -908,7 +908,7 @@ $dtFormat = $genderHelper->getDateFormat();
         } else if ($(this).val() == 'vietnam') {
             $('.malawi-allowed').show();
             $('#allowedAlgorithms').multiselect('deselectAll', false);
-            $('#allowedAlgorithms').multiselect('select', ['vietnamDtsAlgo']);
+            $('#allowedAlgorithms').multiselect('select', ['vietnamNationalDtsAlgo']);
         } else if ($(this).val() == 'updated-3-tests' || $(this).val() == 'vietnam') {
             $('#dtsSyphilisDiv').hide();
             $('#dtsRtriDiv').show();

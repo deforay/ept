@@ -72,6 +72,18 @@ final class Application_Model_Dts
 
         $finalResultArray = $this->getFinalResults();
 
+        // Vietnam: diluted-sample peer-consensus needs every participant in scope, so compute
+        // the "Not Evaluated" exclusions up front (here) and feed them into the per-participant
+        // pass via $context. Empty for all other schemes.
+        $vietnamConsensusExclusions = [];
+        if ($dtsSchemeType === 'vietnam') {
+            $vietnamConsensusExclusions = $this->vietnamConsensusExclusions(
+                $resultsForShipmentDataset,
+                $recommendedTestkits,
+                $this->getDtsResultCodeMap()
+            );
+        }
+
         $shipmentWhere = $this->db->quoteInto('shipment_id = ?', $shipmentId);
         $this->db->update('shipment_participant_map', ['failure_reason' => null, 'is_followup' => 'no', 'is_excluded' => 'no'], $shipmentWhere);
         $this->db->update(
@@ -100,6 +112,7 @@ final class Application_Model_Dts
                     'syphilisEnabled' => $syphilisEnabled,
                     'rtriEnabled' => $rtriEnabled,
                     'possibleRecencyResults' => $possibleRecencyResults ?? [],
+                    'vietnamConsensusExclusions' => $vietnamConsensusExclusions,
                 ]
             );
 
@@ -150,6 +163,7 @@ final class Application_Model_Dts
         $syphilisEnabled = $context['syphilisEnabled'];
         $rtriEnabled = $context['rtriEnabled'];
         $possibleRecencyResults = $context['possibleRecencyResults'];
+        $vietnamConsensusExclusions = $context['vietnamConsensusExclusions'] ?? [];
 
         // dump($results[0]['map_id']);
         // dump($results[0]['response_status']);
@@ -402,6 +416,24 @@ final class Application_Model_Dts
                 $this->db->update(
                     'response_result_dts',
                     ['calculated_score' => 'N.A.'],
+                    [
+                        $this->db->quoteInto('shipment_map_id = ?', $result['map_id']),
+                        $this->db->quoteInto('sample_id = ?', $result['sample_id']),
+                    ]
+                );
+                continue;
+            }
+
+            // Vietnam: diluted sample on a non-reference kit whose peer group failed the
+            // consensus thresholds (computed up front in evaluate()) is Not Evaluated.
+            if (isset($vietnamConsensusExclusions[$result['map_id'] . ':' . $result['sample_id']])) {
+                $this->db->update(
+                    'response_result_dts',
+                    [
+                        'calculated_score' => 'Not Evaluated',
+                        'algorithm_result' => 'Not Evaluated',
+                        'interpretation_result' => 'Not Evaluated',
+                    ],
                     [
                         $this->db->quoteInto('shipment_map_id = ?', $result['map_id']),
                         $this->db->quoteInto('sample_id = ?', $result['sample_id']),
@@ -700,9 +732,14 @@ final class Application_Model_Dts
                     }
                     //T.5 Ensure expiry date information is submitted for all performed tests.
                     //T.15 Testing performed with a test kit that is not recommended by MOH
+                    // Vietnam: a non-reference (non-recommended) kit is normal — it routes the
+                    // sample to peer-consensus, not an automatic fail — so this per-position
+                    // penalty must not clobber the algoVietnam verdict.
                     if (
-                        (isset($testKitExpired[$kitIndex]) && $testKitExpired[$kitIndex]) ||
-                        (isset($testKitRecommendedUsed[$kitIndex]) && $testKitRecommendedUsed[$kitIndex] === false)
+                        $dtsSchemeType !== 'vietnam' && (
+                            (isset($testKitExpired[$kitIndex]) && $testKitExpired[$kitIndex]) ||
+                            (isset($testKitRecommendedUsed[$kitIndex]) && $testKitRecommendedUsed[$kitIndex] === false)
+                        )
                     ) {
                         $testKitExpiryResult = 'Fail';
 
@@ -741,7 +778,13 @@ final class Application_Model_Dts
             $this->db->update(
                 'response_result_dts',
                 [
-                    'calculated_score' => ($correctResponse && $algoResult != 'Fail' && $mandatoryResult != 'Fail' && $result['reference_result'] == $result['reported_result']) ? 'Pass' : 'Fail',
+                    // Vietnam is qualitative: algoVietnam already encodes full correctness
+                    // (tier, sample type, accepted Indeterminate/Inconclusive finals that do NOT
+                    // equal the reference), so its verdict IS the score. Other schemes keep the
+                    // generic "reference == reported" interpretation match.
+                    'calculated_score' => ($dtsSchemeType === 'vietnam')
+                        ? ($algoResult === 'Fail' ? 'Fail' : 'Pass')
+                        : (($correctResponse && $algoResult != 'Fail' && $mandatoryResult != 'Fail' && $result['reference_result'] == $result['reported_result']) ? 'Pass' : 'Fail'),
                     'algorithm_result' => $algoResult,
                     'interpretation_result' => $interpretationResult,
                 ],
@@ -1126,6 +1169,90 @@ final class Application_Model_Dts
             }
         }
         return $retval;
+    }
+
+    /** Map r_possibleresult.id => result_code for every 'dts' result (TEST + FINAL). */
+    private function getDtsResultCodeMap(): array
+    {
+        $rows = $this->db->fetchAll(
+            $this->db->select()->from('r_possibleresult', ['id', 'result_code'])->where('scheme_id = ?', 'dts')
+        );
+        $map = [];
+        foreach ($rows as $row) {
+            $map[(string) $row['id']] = (string) $row['result_code'];
+        }
+        return $map;
+    }
+
+    /**
+     * Vietnam (NIHE) diluted-sample peer-consensus exclusions.
+     *
+     * For a diluted, positive-reference sample reported on a NON-reference test kit, NIHE
+     * evaluates the participant against the peer group of labs using that same kit — but only
+     * if the group is large enough (>= MIN_PEER_LABS) and shows consensus reactivity
+     * (>= MIN_REACTIVE_PCT of the group reactive). Otherwise the sample is "Not Evaluated".
+     * Samples that PASS consensus need no special handling: they flow through the normal
+     * diluted path (reference = P), which algoVietnam already scores correctly.
+     *
+     * Reactive is test-level: a lab counts as reactive if ANY of its tests is R or WR.
+     * Peer group = primary kit (test_kit_name_1). Reference kit = primary kit present in the
+     * approved dts_recommended_testkits set. Tunable constants below.
+     *
+     * @param array $dataset             All sample rows for the shipment (every participant).
+     * @param array $recommendedTestkits getRecommededDtsTestkits() output [test_no => [ids]].
+     * @param array $codeMap             r_possibleresult.id => result_code (see getDtsResultCodeMap).
+     * @return array<string,true>        Set keyed "mapId:sampleId" of samples to mark Not Evaluated.
+     */
+    private function vietnamConsensusExclusions(array $dataset, array $recommendedTestkits, array $codeMap): array
+    {
+        $MIN_PEER_LABS    = 10;
+        $MIN_REACTIVE_PCT = 80.0;
+
+        $referenceKits = [];
+        foreach ($recommendedTestkits as $kits) {
+            foreach ((array) $kits as $k) {
+                $referenceKits[(string) $k] = true;
+            }
+        }
+
+        // Group non-reference-kit diluted+positive rows by (sample, primary kit).
+        $groups = [];
+        foreach ($dataset as $r) {
+            $diluted = in_array(strtolower(trim((string) ($r['is_sample_diluted'] ?? ''))), ['yes', '1', 'true'], true);
+            if (!$diluted) {
+                continue;
+            }
+            if (strtoupper((string) ($codeMap[(string) ($r['reference_result'] ?? '')] ?? '')) !== 'P') {
+                continue; // consensus only applies to diluted positive (weak-positive) samples
+            }
+            $primaryKit = (string) ($r['test_kit_name_1'] ?? '');
+            if ($primaryKit === '' || isset($referenceKits[$primaryKit])) {
+                continue; // no kit reported, or used the reference kit -> normal evaluation
+            }
+
+            $codes = [
+                $codeMap[(string) ($r['test_result_1'] ?? '')] ?? '-',
+                $codeMap[(string) ($r['test_result_2'] ?? '')] ?? '-',
+                $codeMap[(string) ($r['test_result_3'] ?? '')] ?? '-',
+            ];
+            $isReactive = (bool) array_intersect(['R', 'WR'], $codes);
+
+            $key = $r['sample_id'] . '|' . $primaryKit;
+            $groups[$key]['rows'][]    = $r['map_id'] . ':' . $r['sample_id'];
+            $groups[$key]['reactive']  = ($groups[$key]['reactive'] ?? 0) + ($isReactive ? 1 : 0);
+        }
+
+        $exclude = [];
+        foreach ($groups as $g) {
+            $labs = count($g['rows']);
+            $pct  = $labs > 0 ? ($g['reactive'] / $labs) * 100 : 0.0;
+            if ($labs < $MIN_PEER_LABS || $pct < $MIN_REACTIVE_PCT) {
+                foreach ($g['rows'] as $rowKey) {
+                    $exclude[$rowKey] = true;
+                }
+            }
+        }
+        return $exclude;
     }
 
     public function getAllDtsTestKitList($countryAdapted = false, $stage = null)
@@ -2268,6 +2395,24 @@ final class Application_Model_Dts
             'correctiveActionList' => [],
         ];
 
+        // Vietnam (NIHE): tier-aware + sample-type-aware qualitative evaluation.
+        // MUST run before the generic screening short-circuit below, because Vietnam
+        // screening needs an active "never conclude Positive" check, not a skip-and-pass.
+        if ($dtsSchemeType === 'vietnam' || ($attributes['algorithm'] ?? '') === 'vietnamNationalDtsAlgo') {
+            $this->algoVietnam(
+                $result,
+                $result1,
+                $result2,
+                $result3,
+                $reportedResultCode,
+                $expectedResultCode,
+                $isScreening,
+                $correctiveActions,
+                $out
+            );
+            return $out;
+        }
+
         // Screening: no algorithm check
         if ($isScreening) {
             $out['algoResult'] = 'Pass';
@@ -2438,6 +2583,115 @@ final class Application_Model_Dts
         } else {
             $this->warningForAlgo($out, $correctiveActions, $result['sample_label'] ?? '');
         }
+    }
+
+    /**
+     * Vietnam (NIHE) HIV serology — qualitative Acceptable/Unacceptable.
+     *
+     * Tier-aware: a screening lab may run up to three tests but must NEVER conclude
+     * Positive (it refers reactive samples as Inconclusive/Indeterminate); a confirmatory
+     * lab must run all three tests to conclude Positive. Sample-type-aware: diluted samples
+     * are weak-positive, so Indeterminate — or a carefully-interpreted Positive — is expected.
+     *
+     * Sets $out['algoResult'] Pass/Fail; the presentation layer relabels Pass→Acceptable,
+     * Fail→Unacceptable, excluded→Not Evaluated. Peer-consensus for diluted samples reported
+     * on a non-reference test kit is handled in the post-deadline pass, not here.
+     * Spec (kept out of repo): ~/Downloads/VIETNAM/vietnam-dts-algorithm.md
+     *
+     * Codes: tests R/WR/NR/IND/-, final N/P/IND(Indeterminate)/INC(Inconclusive), reference N/P.
+     */
+    private function algoVietnam(
+        array $result,
+        ?string $result1,
+        ?string $result2,
+        ?string $result3,
+        ?string $reportedResultCode,
+        ?string $expectedResultCode,
+        bool $isScreening,
+        array $correctiveActions,
+        array &$out
+    ) {
+        $t1 = $this->normalizeAlgoResult($result1);
+        $t2 = $this->normalizeAlgoResult($result2);
+        $t3 = $this->normalizeAlgoResult($result3);
+        // Final-interpretation codes (r_possibleresult DTS_FINAL): N, P, INC (Inconclusive),
+        // and I = Indeterminate (long-existing id 6 — NOT 'IND'; 'IND' is the test-level
+        // Indeterminate, DTS_TEST id 52, which appears in $t1/$t2/$t3, never here).
+        $final = strtoupper(trim((string) $reportedResultCode)); // N / P / I (Indeterminate) / INC
+        $ref   = strtoupper(trim((string) $expectedResultCode)); // N / P
+        $diluted = in_array(
+            strtolower(trim((string) ($result['is_sample_diluted'] ?? ''))),
+            ['yes', '1', 'true'],
+            true
+        );
+        $sampleLabel = $result['sample_label'] ?? '';
+
+        $tests       = array_values(array_filter([$t1, $t2, $t3], static fn ($t) => $t !== '-'));
+        $testsDone   = count($tests);
+        $anyReactive = (bool) array_intersect(['R', 'WR'], $tests);
+        $hasWeak     = in_array('WR', $tests, true);
+
+        if ($isScreening) {
+            // 1. A screening lab must never conclude Positive.
+            if ($final === 'P') {
+                return $this->warningForAlgo($out, $correctiveActions, $sampleLabel);
+            }
+            // 2. A positive sample (or any reactive test) reported as Negative fails.
+            if ($final === 'N' && ($ref === 'P' || $anyReactive)) {
+                return $this->warningForAlgo($out, $correctiveActions, $sampleLabel);
+            }
+            // 3. Correctly-called Negative, or any Inconclusive/Indeterminate referral, is
+            //    Acceptable regardless of how many tests were run.
+            if (($ref === 'N' && $final === 'N') || in_array($final, ['INC', 'I'], true)) {
+                $out['algoResult'] = 'Pass';
+                return;
+            }
+            return $this->warningForAlgo($out, $correctiveActions, $sampleLabel);
+        }
+
+        // Confirmatory — Negative reference: the final must resolve to Negative (intermediate
+        // reactivity is fine as long as the workup lands on Negative).
+        if ($ref === 'N') {
+            if ($final === 'N') {
+                $out['algoResult'] = 'Pass';
+                return;
+            }
+            return $this->warningForAlgo($out, $correctiveActions, $sampleLabel);
+        }
+
+        // Positive reference — reporting Negative misses a positive.
+        if ($final === 'N') {
+            return $this->warningForAlgo($out, $correctiveActions, $sampleLabel);
+        }
+
+        if (!$diluted) {
+            // Non-diluted positive: concluding Positive requires all three tests; a clear
+            // positive must not be under-called as Indeterminate.
+            if ($final === 'P' && $testsDone >= 3) {
+                $out['algoResult'] = 'Pass';
+                return;
+            }
+            return $this->warningForAlgo($out, $correctiveActions, $sampleLabel);
+        }
+
+        // Diluted positive (weak positive expected). Participant assumed on the reference kit;
+        // non-reference-kit peer-consensus is evaluated post-deadline.
+        if ($testsDone >= 3) {
+            // With a weak-reactive present, both Positive and Indeterminate are acceptable;
+            // when all three are strongly reactive, Indeterminate is under-calling.
+            if (in_array($final, $hasWeak ? ['P', 'I'] : ['P'], true)) {
+                $out['algoResult'] = 'Pass';
+                return;
+            }
+            return $this->warningForAlgo($out, $correctiveActions, $sampleLabel);
+        }
+
+        // Fewer than three tests on a diluted positive: only Indeterminate is acceptable.
+        if ($final === 'I') {
+            $out['algoResult'] = 'Pass';
+            return;
+        }
+        return $this->warningForAlgo($out, $correctiveActions, $sampleLabel);
     }
 
     /** RTRI rule-check, only sets rtriAlgoResult; leaves HIV algo as-is */

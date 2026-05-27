@@ -1,0 +1,184 @@
+<?php
+
+/**
+ * Vietnam (NIHE) DTS HIV serology — INDIVIDUAL participant report.
+ *
+ * Reproduces the NIHE individual-report layout: per-sample test breakdown
+ * (Test 1/2/3 → Conclusion · Reference · Result evaluation) using the qualitative
+ * Acceptable / Unacceptable / Not Evaluated vocabulary (NO numeric score).
+ * Selected when the install's report-layout config = "vietnam".
+ *
+ * Verdict source: response_result_dts.calculated_score, written by the Vietnam branch
+ * of Application_Model_Dts::evaluate (algoVietnam + diluted peer-consensus).
+ *   Pass -> Acceptable, Fail -> Unacceptable, 'Not Evaluated' -> Not Evaluated, N.A. -> N.A.
+ */
+
+$schemeType = $resultArray['shipment'][0]['scheme_type'] ?? 'dts';
+$pdfNew     = new Zend_Pdf();
+$extractor  = new Zend_Pdf_Resource_Extractor();
+$font       = Zend_Pdf_Font::fontWithName(Zend_Pdf_Font::FONT_HELVETICA);
+$shipmentCode = '';
+
+// result id -> human label, and final code -> human label
+$dtsResults = $dtsCodeToLabel = [];
+foreach ($schemeService->getPossibleResults('dts') as $pr) {
+    $dtsResults[$pr['id']] = $pr['response'];
+    if (in_array($pr['scheme_sub_group'], ['DTS_TEST', 'DTS_FINAL'], true)) {
+        $dtsCodeToLabel[$pr['result_code']] = $pr['response'];
+    }
+}
+
+// pretty-print an ALL-CAPS stored label e.g. "WEAK REACTIVE" -> "Weak Reactive"
+$pretty = static function ($label) {
+    $label = trim((string) $label);
+    return $label === '' ? '-' : ucwords(strtolower($label));
+};
+
+// qualitative verdict from the stored per-sample score
+$verdictText = static function ($score) {
+    switch ((string) $score) {
+        case 'Pass':          return 'Acceptable';
+        case 'Fail':          return 'Unacceptable';
+        case 'Not Evaluated': return 'Not Evaluated';
+        case 'N.A.':          return 'N.A.';
+        default:              return $score === '' ? 'Not Evaluated' : (string) $score;
+    }
+};
+
+if (!empty($resultArray['shipment'])) {
+
+    $totalPages = count($resultArray['shipment']);
+    $j = 1;
+
+    foreach ($resultArray['shipment'] as $result) {
+
+        if (isset($result['responseResult'][0]['is_pt_test_not_performed']) && $result['responseResult'][0]['is_pt_test_not_performed'] == 'yes') {
+            continue;
+        }
+
+        $shipmentDir = $reportsPath . DIRECTORY_SEPARATOR . $result['shipment_code'];
+        if (!is_dir($shipmentDir)) {
+            mkdir($shipmentDir);
+        }
+
+        $reportFormat = $reportService->getReportConfigValue('report-format');
+        if (!empty($reportFormat)) {
+            $pdf = new Pt_Reports_FpdiReport(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+            $pdf->setParams($resultStatus, $evalRow['date_finalised'], "", $watermark, "INDIVIDUAL", $layout, $result['scheme_name']);
+        } else {
+            $pdf = new Pt_Reports_IndividualPdf(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+            $pdf->setSchemeName($header, $result['scheme_name'], $logo, $logoRight, $resultStatus, $schemeType, $layout, $evalRow['date_finalised'], "", $watermark, "", $instituteAddressPosition);
+        }
+
+        $pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE, PDF_HEADER_STRING);
+        $pdf->setHeaderFont(['freesans', '', PDF_FONT_SIZE_MAIN]);
+        $pdf->setFooterFont(['freesans', '', PDF_FONT_SIZE_DATA]);
+        $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
+
+        $mt = (isset($templateTopMargin) && !empty($templateTopMargin)) ? $templateTopMargin : 45;
+        $pdf->SetMargins(PDF_MARGIN_LEFT, $mt, PDF_MARGIN_RIGHT);
+        $pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
+        $pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
+        $pdf->SetAutoPageBreak(true, PDF_MARGIN_BOTTOM);
+        $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
+        $pdf->AddPage('P', 'A4');
+        $pdf->SetFont('freesans', '', 11);
+
+        // ---- dates ----
+        $responseDate = '';
+        if (!empty($result['responseResult'][0]['responseDate'])) {
+            $responseDate = Pt_Commons_DateUtility::humanReadableDateFormat(explode(' ', $result['responseResult'][0]['responseDate'])[0]);
+        }
+        $shipmentDate  = trim((string) $result['shipment_date']) !== '' ? Pt_Commons_DateUtility::humanReadableDateFormat($result['shipment_date']) : '';
+        $receiptDate   = !empty($result['responseResult'][0]['shipment_receipt_date']) ? Pt_Commons_DateUtility::humanReadableDateFormat($result['responseResult'][0]['shipment_receipt_date']) : '';
+        $deadlineDate  = trim((string) $result['lastdate_response']) !== '' ? Pt_Commons_DateUtility::humanReadableDateFormat($result['lastdate_response']) : '';
+
+        // ---- Participant / Panel information ----
+        $info  = '<table cellpadding="3" border="1" style="font-size:11px;">';
+        $info .= '<tr style="background-color:#b7dde7;"><td colspan="4"><strong>' . Pt_Commons_TranslateUtility::safeTranslate('Participant Information') . '</strong></td></tr>';
+        $info .= '<tr><td><strong>' . Pt_Commons_TranslateUtility::safeTranslate('Laboratory ID') . '</strong></td><td>' . ($result['unique_identifier'] ?? '') . '</td>'
+               . '<td><strong>' . Pt_Commons_TranslateUtility::safeTranslate('Laboratory') . '</strong></td><td>' . ($result['labName'] ?? '') . '</td></tr>';
+        $info .= '<tr style="background-color:#b7dde7;"><td colspan="4"><strong>' . Pt_Commons_TranslateUtility::safeTranslate('Panel Information') . '</strong></td></tr>';
+        $info .= '<tr><td><strong>' . Pt_Commons_TranslateUtility::safeTranslate('Panel ID') . '</strong></td><td>' . ($result['shipment_code'] ?? '') . '</td>'
+               . '<td><strong>' . Pt_Commons_TranslateUtility::safeTranslate('Shipment date') . '</strong></td><td>' . $shipmentDate . '</td></tr>';
+        $info .= '<tr><td><strong>' . Pt_Commons_TranslateUtility::safeTranslate('Received date') . '</strong></td><td>' . $receiptDate . '</td>'
+               . '<td><strong>' . Pt_Commons_TranslateUtility::safeTranslate('Results deadline') . '</strong></td><td>' . $deadlineDate . '</td></tr>';
+        $info .= '</table><br/>';
+        $pdf->writeHTML($info, true, false, true, false, '');
+
+        // ---- HIV proficiency results (per-sample test breakdown) ----
+        if (!empty($result['responseResult'])) {
+            $tbl  = '<span style="font-weight:bold;font-size:13px;">' . Pt_Commons_TranslateUtility::safeTranslate('HIV proficiency results') . '</span><br/>';
+            $tbl .= '<table border="1" cellpadding="3" style="font-size:11px;border-color:#b7dde7;">';
+            $tbl .= '<tr style="background-color:#b7dde7;font-weight:bold;text-align:center;">'
+                  . '<td>' . Pt_Commons_TranslateUtility::safeTranslate('Sample') . '</td>'
+                  . '<td>' . Pt_Commons_TranslateUtility::safeTranslate('Test 1') . '</td>'
+                  . '<td>' . Pt_Commons_TranslateUtility::safeTranslate('Test 2') . '</td>'
+                  . '<td>' . Pt_Commons_TranslateUtility::safeTranslate('Test 3') . '</td>'
+                  . '<td>' . Pt_Commons_TranslateUtility::safeTranslate('Conclusion') . '</td>'
+                  . '<td>' . Pt_Commons_TranslateUtility::safeTranslate('Reference result') . '</td>'
+                  . '<td>' . Pt_Commons_TranslateUtility::safeTranslate('Result evaluation') . '</td>'
+                  . '</tr>';
+
+            foreach ($result['responseResult'] as $response) {
+                $t1 = isset($response['test_result_1']) && $response['test_result_1'] != '' ? $pretty($dtsResults[$response['test_result_1']] ?? '') : '-';
+                $t2 = isset($response['test_result_2']) && $response['test_result_2'] != '' ? $pretty($dtsResults[$response['test_result_2']] ?? '') : '-';
+                $t3 = isset($response['test_result_3']) && $response['test_result_3'] != '' ? $pretty($dtsResults[$response['test_result_3']] ?? '') : '-';
+                $conclusion = $pretty($response['labResult'] ?? '');
+                $reference  = $pretty($dtsCodeToLabel[$response['referenceResultCode'] ?? ''] ?? ($response['referenceResultCode'] ?? ''));
+                $evaluation = $verdictText($response['calculated_score'] ?? '');
+
+                $tbl .= '<tr style="text-align:center;">'
+                      . '<td>' . ($response['sample_label'] ?? '') . '</td>'
+                      . '<td>' . $t1 . '</td><td>' . $t2 . '</td><td>' . $t3 . '</td>'
+                      . '<td>' . $conclusion . '</td>'
+                      . '<td>' . $reference . '</td>'
+                      . '<td>' . Pt_Commons_TranslateUtility::safeTranslate($evaluation) . '</td>'
+                      . '</tr>';
+            }
+            $tbl .= '</table>';
+            $tbl .= '<span style="font-size:9px;">' . Pt_Commons_TranslateUtility::safeTranslate('R = Reactive, WR = Weak Reactive, NR = Non-reactive, Ind = Indeterminate') . '</span><br/>';
+            $pdf->SetLeftMargin(15);
+            $pdf->writeHTML($tbl, true, false, true, false, '');
+        }
+
+        // ---- Recommendation / corrective actions ----
+        $warnings = Pt_Commons_JsonUtility::safeDecode($result['failure_reason']);
+        if (!empty($warnings)) {
+            $ca  = '<br/><span style="font-weight:bold;font-size:12px;">' . Pt_Commons_TranslateUtility::safeTranslate('Recommendation for participant') . '</span>';
+            $ca .= '<table border="1" style="font-size:11px;"><tr style="background-color:#dbe4ee;font-weight:bold;">'
+                 . '<td style="text-align:center;width:55%;">' . Pt_Commons_TranslateUtility::safeTranslate('Observation') . '</td>'
+                 . '<td style="text-align:center;width:45%;">' . Pt_Commons_TranslateUtility::safeTranslate('Suggested corrective action') . '</td></tr>';
+            foreach ($warnings as $warning) {
+                $ca .= '<tr><td>' . (is_array($warning) ? ($warning['warning'] ?? '') : $warning) . '</td>'
+                     . '<td>' . (is_array($warning) ? ($warning['correctiveAction'] ?? '') : '') . '</td></tr>';
+            }
+            $ca .= '</table>';
+            $pdf->writeHTML($ca, true, false, true, false, '');
+        }
+
+        if (ob_get_contents()) {
+            ob_end_clean();
+        }
+
+        // ---- output ----
+        $nameParts = [];
+        foreach (['shipment_code', 'unique_identifier', 'region', 'state', 'district', 'city'] as $key) {
+            if (!empty($result[$key]) && strtoupper($result[$key]) != 'NULL') {
+                $nameParts[] = ($key == 'shipment_code') ? $result[$key] : strtoupper($result[$key]);
+            }
+        }
+        $fileName = Application_Service_Common::makeFileNameFriendly(implode('-', $nameParts) . '-' . $result['map_id']) . '.pdf';
+        $filePath = $shipmentDir . DIRECTORY_SEPARATOR . $fileName;
+        $pdf->Output($filePath, 'F');
+
+        $loadpdf = Zend_Pdf::load($filePath);
+        foreach ($loadpdf->pages as $page) {
+            $pdfExtract = $extractor->clonePage($page);
+            $pdfExtract->setFont($font, 8)->drawText('Page ' . $j . ' / ' . $totalPages, 280, 50);
+            $pdfNew->pages[] = $pdfExtract;
+        }
+        $shipmentCode = $result['shipment_code'];
+        $j++;
+    }
+}

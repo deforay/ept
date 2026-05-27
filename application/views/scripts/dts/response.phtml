@@ -322,8 +322,8 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
                                             <?= $this->translate->_("3 Test DTS Algorithm"); ?>
                                         </option>
                                     <?php }
-                                    if (!empty($allowedAlgorithms) && in_array('vietnamDtsAlgo', $allowedAlgorithms)) { ?>
-                                        <option value="vietnamDtsAlgo" <?php echo (isset($this->shipment['attributes']["algorithm"]) && $this->shipment['attributes']["algorithm"] == 'vietnamDtsAlgo') ? "selected='selected'" : ''; ?>>
+                                    if (!empty($allowedAlgorithms) && in_array('vietnamNationalDtsAlgo', $allowedAlgorithms)) { ?>
+                                        <option value="vietnamNationalDtsAlgo" <?php echo (isset($this->shipment['attributes']["algorithm"]) && $this->shipment['attributes']["algorithm"] == 'vietnamNationalDtsAlgo') ? "selected='selected'" : ''; ?>>
                                             <?= $this->translate->_("Vietnam National Algorithm"); ?>
                                         </option>
                                     <?php }
