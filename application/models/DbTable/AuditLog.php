@@ -193,6 +193,37 @@ class Application_Model_DbTable_AuditLog extends Zend_Db_Table_Abstract
         return $out;
     }
 
+    /**
+     * Recent DM self-initiated password changes for an email (NOT admin resets).
+     * Self-change events are logged with type='auth' and statement starting
+     * with 'Changed password' (see ParticipantController::changePasswordAction).
+     */
+    public function getRecentSelfPasswordChangesForEmail($targetEmail, $limit = 5)
+    {
+        $targetEmail = trim((string) $targetEmail);
+        if ($targetEmail === '') {
+            return [];
+        }
+        $limit = max(1, (int) $limit);
+        $db = $this->getAdapter();
+        $select = $db->select()
+            ->from($this->_name, ['statement', 'created_by', 'created_on'])
+            ->where('type = ?', 'auth')
+            ->where('statement LIKE ?', 'Changed password%')
+            ->where('created_by = ?', $targetEmail)
+            ->order('created_on DESC')
+            ->limit($limit);
+        $rows = $db->fetchAll($select);
+        $out = [];
+        foreach ($rows as $row) {
+            $out[] = [
+                'when'      => $row['created_on'],
+                'statement' => $row['statement'],
+            ];
+        }
+        return $out;
+    }
+
     public function fetchAuditLogFeed($parameters)
     {
         $page = isset($parameters['page']) ? max(1, (int)$parameters['page']) : 1;

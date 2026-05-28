@@ -221,41 +221,7 @@ class Admin_DataManagersController extends Zend_Controller_Action
             $this->view->user = $userService->getUserInfoBySystemId($userId);
             $targetEmail = $this->view->user['primary_email'] ?? '';
             if ($targetEmail !== '') {
-                $auditDb = new Application_Model_DbTable_AuditLog();
-                $tempMailDb = new Application_Model_DbTable_TempMail();
-                $confirmed = $auditDb->getRecentPasswordResetsForEmail($targetEmail, 5);
-                $likely    = $tempMailDb->getCredentialMailsForEmail($targetEmail, 5);
-                foreach ($confirmed as &$c) {
-                    $c['confirmed'] = true;
-                }
-                unset($c);
-                foreach ($likely as &$l) {
-                    $l['confirmed'] = false;
-                }
-                unset($l);
-                // Merge, then drop a temp_mail entry if an audit_log entry sits
-                // within 5 min of it (same event — admin used Reset & Email).
-                $merged = array_merge($confirmed, $likely);
-                usort($merged, function ($a, $b) {
-                    return strtotime((string) $b['when']) <=> strtotime((string) $a['when']);
-                });
-                $deduped = [];
-                foreach ($merged as $entry) {
-                    $ts = strtotime((string) $entry['when']);
-                    $isDup = false;
-                    if (!$entry['confirmed']) {
-                        foreach ($deduped as $kept) {
-                            if ($kept['confirmed'] && abs(strtotime((string) $kept['when']) - $ts) <= 300) {
-                                $isDup = true;
-                                break;
-                            }
-                        }
-                    }
-                    if (!$isDup) {
-                        $deduped[] = $entry;
-                    }
-                }
-                $this->view->recentResets = array_slice($deduped, 0, 3);
+                $this->view->recentActivity = $userService->getRecentAccountActivity($targetEmail, 6, 5);
             }
         }
         $globalConfigDb = new Application_Model_DbTable_GlobalConfig();

@@ -63,6 +63,44 @@ class Application_Model_DbTable_UserLoginHistory extends Zend_Db_Table_Abstract
     }
 
     /**
+     * Recent successful DM logins for a given primary email.
+     * Used by the admin Reset-Password modal/email to show user-side activity
+     * (e.g. "the user logged in 10 min ago, maybe they don't need a reset").
+     */
+    public function getRecentLoginsForEmail($email, $limit = 5)
+    {
+        $email = trim((string) $email);
+        if ($email === '') {
+            return [];
+        }
+        $limit = max(1, (int) $limit);
+        try {
+            $select = $this->getAdapter()->select()
+                ->from(['ulh' => $this->_name], ['login_attempted_datetime', 'ip_address', 'browser', 'operating_system'])
+                ->joinInner(['dm' => 'data_managers'], 'ulh.user_id = dm.dm_id', [])
+                ->where('dm.primary_email = ?', $email)
+                ->where('ulh.login_context = ?', 'participant')
+                ->where('ulh.login_status = ?', 'success')
+                ->order('ulh.login_attempted_datetime DESC')
+                ->limit($limit);
+            $rows = $this->getAdapter()->fetchAll($select);
+            $out = [];
+            foreach ($rows as $r) {
+                $out[] = [
+                    'when'    => $r['login_attempted_datetime'],
+                    'ip'      => $r['ip_address'] ?? '',
+                    'browser' => $r['browser'] ?? '',
+                    'os'      => $r['operating_system'] ?? '',
+                ];
+            }
+            return $out;
+        } catch (Exception $e) {
+            error_log('Error fetching recent logins for email: ' . $e->getMessage());
+            return [];
+        }
+    }
+
+    /**
      * Get login history for a specific login ID
      * @param string $loginId
      * @param int $limit
