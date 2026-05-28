@@ -11,7 +11,7 @@ class Application_Model_DbTable_SchemeList extends Zend_Db_Table_Abstract
         $schemes = [];
         if (isset($authNameSpace->activeScheme) && !empty($authNameSpace->activeScheme)) {
             foreach (explode(',', $authNameSpace->activeScheme) as $scheme) {
-                $schemes[] = sprintf("'%s'", $scheme);;
+                $schemes[] = sprintf("'%s'", $scheme);
             }
         }
         $sQuery = $this->getAdapter()->select()->from(['s' => $this->_name], ['*'])->where("status='active'")->order('scheme_name');
@@ -35,7 +35,7 @@ class Application_Model_DbTable_SchemeList extends Zend_Db_Table_Abstract
 
     public function countEnrollmentSchemes()
     {
-        $result = [];;
+        $result = [];
         $sql = $this->fetchAll($this->select()->where("status='active'"));
 
         foreach ($sql as $scheme) {
@@ -395,7 +395,7 @@ class Application_Model_DbTable_SchemeList extends Zend_Db_Table_Abstract
                 'response'        => $params['response'][$key],
                 'result_code'     => $params['resultCode'][$key],
                 'display_context' => 'all',
-                'sort_order'      => $params['sortOrder'][$key]
+                'sort_order'      => $params['sortOrder'][$key],
             ];
 
             if (!empty($params['rId'][$key])) {

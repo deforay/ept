@@ -4023,7 +4023,7 @@ class Application_Service_Reports
 
         $sQuery = $dbAdapter->select()
             ->from(['p' => 'participant'], [
-                'noOfParticipants' => new Zend_Db_Expr('COUNT(*)')
+                'noOfParticipants' => new Zend_Db_Expr('COUNT(*)'),
             ])
             ->join(['sp' => 'shipment_participant_map'], 'p.participant_id=sp.participant_id', [
                 'noOfResponded' => new Zend_Db_Expr("SUM(CASE WHEN (sp.response_status NOT LIKE '' AND sp.response_status IS NOT NULL AND sp.response_status LIKE 'responded') THEN 1 ELSE 0 END)"),
@@ -4034,7 +4034,7 @@ class Application_Service_Reports
             ->join(['s' => 'shipment'], 's.shipment_id=sp.shipment_id', [
                 'shipment_code',
                 'scheme_type',
-                'lastdate_response'
+                'lastdate_response',
             ]);
 
         if (isset($parameters['scheme']) && $parameters['scheme'] != '') {

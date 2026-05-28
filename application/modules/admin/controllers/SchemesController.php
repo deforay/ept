@@ -46,10 +46,10 @@ class Admin_SchemesController extends Zend_Controller_Action
             $params = $request->getPost();
             $result = $commonServices->savePossibleResultsTest($params);
             if ($result) {
-                $alertMsgInit->message = "Saved successfully";
+                $alertMsgInit->message = 'Saved successfully';
                 $this->redirect('/admin/schemes/test-results');
             } else {
-                $alertMsgInit->message = "Seomthing went wrong please try again later.";
+                $alertMsgInit->message = 'Seomthing went wrong please try again later.';
             }
         } elseif ($this->hasParam('id')) {
             $id = base64_decode($this->_getParam('id'));
