@@ -2677,22 +2677,22 @@ final class Application_Model_Dts
         if ($isScreening) {
             // 1. A screening lab must never conclude Positive.
             if ($final === 'P') {
-                return $this->vietnamFeedback($out, $sampleLabel, $SCREEN_NO_POS, true);
+                $this->vietnamFeedback($out, $sampleLabel, $SCREEN_NO_POS, true); return;
             }
             // 2. A positive sample (or any reactive test) reported as Negative fails.
             if ($final === 'N' && ($ref === 'P' || $anyReactive)) {
-                return $this->vietnamFeedback($out, $sampleLabel, $REVIEW_KIT, true);
+                $this->vietnamFeedback($out, $sampleLabel, $REVIEW_KIT, true); return;
             }
             // 3. Correctly-called Negative -> follow MOH; Inconclusive/Indeterminate -> refer.
             if ($ref === 'N' && $final === 'N') {
                 $out['algoResult'] = 'Pass';
-                return $this->vietnamFeedback($out, $sampleLabel, $FOLLOW_MOH);
+                $this->vietnamFeedback($out, $sampleLabel, $FOLLOW_MOH); return;
             }
             if (in_array($final, ['INC', 'I'], true)) {
                 $out['algoResult'] = 'Pass';
-                return $this->vietnamFeedback($out, $sampleLabel, $REFER_CONF);
+                $this->vietnamFeedback($out, $sampleLabel, $REFER_CONF); return;
             }
-            return $this->vietnamFeedback($out, $sampleLabel, $REVIEW_KIT, true);
+            $this->vietnamFeedback($out, $sampleLabel, $REVIEW_KIT, true); return;
         }
 
         // Confirmatory — Negative reference: the final must resolve to Negative (intermediate
@@ -2702,14 +2702,14 @@ final class Application_Model_Dts
                 $out['algoResult'] = 'Pass';
                 // Reactive Test 1 on a true-negative sample: acceptable final, but flag Test 1.
                 $note = in_array($t1, ['R', 'WR'], true) ? $T1_NOTE : $FOLLOW_MOH;
-                return $this->vietnamFeedback($out, $sampleLabel, $note);
+                $this->vietnamFeedback($out, $sampleLabel, $note); return;
             }
-            return $this->vietnamFeedback($out, $sampleLabel, $REVIEW_KIT, true);
+            $this->vietnamFeedback($out, $sampleLabel, $REVIEW_KIT, true); return;
         }
 
         // Positive reference — reporting Negative misses a positive.
         if ($final === 'N') {
-            return $this->vietnamFeedback($out, $sampleLabel, $REVIEW_SAMPLE, true);
+            $this->vietnamFeedback($out, $sampleLabel, $REVIEW_SAMPLE, true); return;
         }
 
         if (!$diluted) {
@@ -2718,11 +2718,11 @@ final class Application_Model_Dts
             if ($final === 'P' && $testsDone >= 3) {
                 $out['algoResult'] = 'Pass';
                 $note = $hasWeak ? $CHECK_WR : $FOLLOW_MOH;
-                return $this->vietnamFeedback($out, $sampleLabel, $note);
+                $this->vietnamFeedback($out, $sampleLabel, $note); return;
             }
             // Indeterminate under-call -> check the weak-reactive; else (e.g. only 2 tests) MOH.
             $note = ($final === 'I') ? $CHECK_WR : $FOLLOW_MOH;
-            return $this->vietnamFeedback($out, $sampleLabel, $note, true);
+            $this->vietnamFeedback($out, $sampleLabel, $note, true); return;
         }
 
         // Diluted positive (weak positive expected). Participant assumed on the reference kit;
@@ -2733,17 +2733,17 @@ final class Application_Model_Dts
             if (in_array($final, $hasWeak ? ['P', 'I'] : ['P'], true)) {
                 $out['algoResult'] = 'Pass';
                 $note = ($final === 'P') ? $INTERPRET_WP : $FOLLOW_MOH;
-                return $this->vietnamFeedback($out, $sampleLabel, $note);
+                $this->vietnamFeedback($out, $sampleLabel, $note); return;
             }
-            return $this->vietnamFeedback($out, $sampleLabel, $FOLLOW_MOH, true);
+            $this->vietnamFeedback($out, $sampleLabel, $FOLLOW_MOH, true); return;
         }
 
         // Fewer than three tests on a diluted positive: only Indeterminate is acceptable.
         if ($final === 'I') {
             $out['algoResult'] = 'Pass';
-            return $this->vietnamFeedback($out, $sampleLabel, $FOLLOW_MOH);
+            $this->vietnamFeedback($out, $sampleLabel, $FOLLOW_MOH); return;
         }
-        return $this->vietnamFeedback($out, $sampleLabel, $FOLLOW_MOH, true);
+        $this->vietnamFeedback($out, $sampleLabel, $FOLLOW_MOH, true); return;
     }
 
     /** RTRI rule-check, only sets rtriAlgoResult; leaves HIV algo as-is */

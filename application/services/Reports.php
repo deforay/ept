@@ -3997,9 +3997,6 @@ class Application_Service_Reports
                 }
                 $colSize = count($searchColumns);
                 for ($i = 0; $i < $colSize; $i++) {
-                    if ($searchColumns[$i] == '' || $searchColumns[$i] == null) {
-                        continue;
-                    }
                     if ($i < $colSize - 1) {
                         $sWhereSub .= $searchColumns[$i] . " LIKE '%" . ($search) . "%' OR ";
                     } else {
