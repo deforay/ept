@@ -337,13 +337,17 @@ final class Application_Model_Dts
                     $kitIdForCheck = $resolvedKitId;
                     if (!in_array($kitIdForCheck, $recommendedTestkits[$kitIndex])) {
                         $testKitRecommendedUsed[$kitIndex] = false;
-                        $warning = $kitIndex === 1
-                            ? 'For Test 1, testing is not performed with country approved test kit.--- ' . $kitIdForCheck
-                            : "For Test {$kitIndex}, testing is not performed with country approved test kit.";
-                        $failureReason[] = [
-                            'warning' => $warning,
-                            'correctiveAction' => $correctiveActions[17],
-                        ];
+                        // Vietnam: using a non-reference kit is normal (routes to peer-consensus),
+                        // so it is not a participant-facing warning here.
+                        if ($dtsSchemeType !== 'vietnam') {
+                            $warning = $kitIndex === 1
+                                ? 'For Test 1, testing is not performed with country approved test kit.--- ' . $kitIdForCheck
+                                : "For Test {$kitIndex}, testing is not performed with country approved test kit.";
+                            $failureReason[] = [
+                                'warning' => $warning,
+                                'correctiveAction' => $correctiveActions[17],
+                            ];
+                        }
                     } else {
                         $testKitRecommendedUsed[$kitIndex] = true;
                     }
@@ -364,8 +368,9 @@ final class Application_Model_Dts
             $shipment['is_excluded'] = 'yes';
         } elseif (count($nonEmptyTestKits) === 3 && count(array_unique($nonEmptyTestKits)) === 1) {
 
-            //Myanmar does not mind if all three test kits are same.
-            if ($dtsSchemeType != 'myanmar') {
+            //Myanmar does not mind if all three test kits are same. Vietnam compares kit SETS
+            //for peer-consensus, so a repeated kit is not a participant-facing warning.
+            if ($dtsSchemeType != 'myanmar' && $dtsSchemeType !== 'vietnam') {
                 //$testKitRepeatResult = 'Fail';
                 $failureReason[] = [
                     'warning' => '<strong>' . reset($nonEmptyTestKits) . '</strong> repeated for all three Test Kits',
@@ -374,8 +379,8 @@ final class Application_Model_Dts
                 $correctiveActionList[] = 8;
             }
         } else {
-            //Myanmar does not mind if test kits are repeated
-            if ($dtsSchemeType != 'myanmar') {
+            //Myanmar does not mind if test kits are repeated; Vietnam compares kit SETS for consensus.
+            if ($dtsSchemeType != 'myanmar' && $dtsSchemeType !== 'vietnam') {
                 foreach ([[1, 2], [2, 3], [1, 3]] as $pair) {
                     [$first, $second] = $pair;
                     if (
@@ -439,6 +444,10 @@ final class Application_Model_Dts
                         $this->db->quoteInto('sample_id = ?', $result['sample_id']),
                     ]
                 );
+                $failureReason[] = [
+                    'warning' => $result['sample_label'] ?? '',
+                    'correctiveAction' => 'Not evaluated: peer-group consensus not reached for the test kit used',
+                ];
                 continue;
             }
 
@@ -949,7 +958,11 @@ final class Application_Model_Dts
         $documentationScore = round($documentationScore);
         $grandTotal = $responseScore + $documentationScore;
         $passPercentage = $config['passPercentage'] ?? 100;
-        if ($grandTotal < $passPercentage) {
+        if ($dtsSchemeType === 'vietnam') {
+            // Vietnam is qualitative (Acceptable/Unacceptable per sample) — no numeric score
+            // threshold, so it never fails a participant on a percentage.
+            $scoreResult = 'Pass';
+        } elseif ($grandTotal < $passPercentage) {
             $scoreResult = 'Fail';
             $failureReason[] = [
                 'warning' => 'Participant did not meet the score criteria (Participant Score is <strong>' . round($grandTotal) . '</strong> and Required Score is <strong>' . round($passPercentage) . '</strong>)',
@@ -967,10 +980,14 @@ final class Application_Model_Dts
             $shipmentResultEntry['shipment_score'] = $responseScore = 0;
             $shipmentResultEntry['documentation_score'] = 0;
             $shipmentResultEntry['display_result'] = '';
-            $failureReason[] = [
-                'warning' => 'Excluded from Evaluation',
-                'correctiveAction' => '',
-            ];
+            // Vietnam: the per-sample 'Not Evaluated' verdict + specific data note already
+            // explain exclusion; skip the generic participant-level marker to keep the report clean.
+            if ($dtsSchemeType !== 'vietnam') {
+                $failureReason[] = [
+                    'warning' => 'Excluded from Evaluation',
+                    'correctiveAction' => '',
+                ];
+            }
             $finalResult = 3;
             $shipmentResultEntry['failure_reason'] = JsonUtility::encodeUtf8Json($failureReason);
         } else {
@@ -2407,7 +2424,6 @@ final class Application_Model_Dts
                 $reportedResultCode,
                 $expectedResultCode,
                 $isScreening,
-                $correctiveActions,
                 $out
             );
             return $out;
@@ -2538,6 +2554,23 @@ final class Application_Model_Dts
         $out['correctiveActionList'][] = 2;
     }
 
+    /**
+     * Vietnam feedback line: attaches NIHE-specific recommendation text for one sample to
+     * $out['failureReason'] (rendered, deduped + translated, in the vietnam report layout).
+     * Sets the verdict to Fail when $fail is true; otherwise leaves it (Pass branches carry
+     * acceptable-with-note feedback). $text is the translatable English string from the workbook.
+     */
+    private function vietnamFeedback(array &$out, string $sampleLabel, string $text, bool $fail = false): void
+    {
+        if ($fail) {
+            $out['algoResult'] = 'Fail';
+        }
+        $out['failureReason'][] = [
+            'warning' => $sampleLabel,
+            'correctiveAction' => $text,
+        ];
+    }
+
     private function normalizeAlgoResult(?string $result): string
     {
         return (in_array(trim(strtolower($result)), [null, '', 'x', 'n/a'], true)) ? '-' : $result;
@@ -2608,7 +2641,6 @@ final class Application_Model_Dts
         ?string $reportedResultCode,
         ?string $expectedResultCode,
         bool $isScreening,
-        array $correctiveActions,
         array &$out
     ) {
         $t1 = $this->normalizeAlgoResult($result1);
@@ -2631,22 +2663,36 @@ final class Application_Model_Dts
         $anyReactive = (bool) array_intersect(['R', 'WR'], $tests);
         $hasWeak     = in_array('WR', $tests, true);
 
+        // NIHE recommendation/feedback wording (workbook Feedback/Note/Recommendation columns).
+        // Stored on $out['failureReason'] and translated at render in the vietnam report layout.
+        $FOLLOW_MOH    = 'Follow MOH HIV testing strategy';
+        $T1_NOTE       = "The laboratory's final interpretation is acceptable, but the result for Test 1 is unacceptable";
+        $INTERPRET_WP  = 'Interpret weak positive results carefully';
+        $CHECK_WR      = 'Check the performance with the weak reactive result';
+        $REVIEW_KIT    = 'Review testing procedures and kit interpretation';
+        $REVIEW_SAMPLE = 'Review testing procedures and sample handling';
+        $REFER_CONF    = 'Sample should be referred to confirmation lab';
+        $SCREEN_NO_POS = 'Screening labs must not conclude "HIV Positive." Samples should be reported as "Inconclusive" and referred for confirmatory testing';
+
         if ($isScreening) {
             // 1. A screening lab must never conclude Positive.
             if ($final === 'P') {
-                return $this->warningForAlgo($out, $correctiveActions, $sampleLabel);
+                return $this->vietnamFeedback($out, $sampleLabel, $SCREEN_NO_POS, true);
             }
             // 2. A positive sample (or any reactive test) reported as Negative fails.
             if ($final === 'N' && ($ref === 'P' || $anyReactive)) {
-                return $this->warningForAlgo($out, $correctiveActions, $sampleLabel);
+                return $this->vietnamFeedback($out, $sampleLabel, $REVIEW_KIT, true);
             }
-            // 3. Correctly-called Negative, or any Inconclusive/Indeterminate referral, is
-            //    Acceptable regardless of how many tests were run.
-            if (($ref === 'N' && $final === 'N') || in_array($final, ['INC', 'I'], true)) {
+            // 3. Correctly-called Negative -> follow MOH; Inconclusive/Indeterminate -> refer.
+            if ($ref === 'N' && $final === 'N') {
                 $out['algoResult'] = 'Pass';
-                return;
+                return $this->vietnamFeedback($out, $sampleLabel, $FOLLOW_MOH);
             }
-            return $this->warningForAlgo($out, $correctiveActions, $sampleLabel);
+            if (in_array($final, ['INC', 'I'], true)) {
+                $out['algoResult'] = 'Pass';
+                return $this->vietnamFeedback($out, $sampleLabel, $REFER_CONF);
+            }
+            return $this->vietnamFeedback($out, $sampleLabel, $REVIEW_KIT, true);
         }
 
         // Confirmatory — Negative reference: the final must resolve to Negative (intermediate
@@ -2654,14 +2700,16 @@ final class Application_Model_Dts
         if ($ref === 'N') {
             if ($final === 'N') {
                 $out['algoResult'] = 'Pass';
-                return;
+                // Reactive Test 1 on a true-negative sample: acceptable final, but flag Test 1.
+                $note = in_array($t1, ['R', 'WR'], true) ? $T1_NOTE : $FOLLOW_MOH;
+                return $this->vietnamFeedback($out, $sampleLabel, $note);
             }
-            return $this->warningForAlgo($out, $correctiveActions, $sampleLabel);
+            return $this->vietnamFeedback($out, $sampleLabel, $REVIEW_KIT, true);
         }
 
         // Positive reference — reporting Negative misses a positive.
         if ($final === 'N') {
-            return $this->warningForAlgo($out, $correctiveActions, $sampleLabel);
+            return $this->vietnamFeedback($out, $sampleLabel, $REVIEW_SAMPLE, true);
         }
 
         if (!$diluted) {
@@ -2669,9 +2717,12 @@ final class Application_Model_Dts
             // positive must not be under-called as Indeterminate.
             if ($final === 'P' && $testsDone >= 3) {
                 $out['algoResult'] = 'Pass';
-                return;
+                $note = $hasWeak ? $CHECK_WR : $FOLLOW_MOH;
+                return $this->vietnamFeedback($out, $sampleLabel, $note);
             }
-            return $this->warningForAlgo($out, $correctiveActions, $sampleLabel);
+            // Indeterminate under-call -> check the weak-reactive; else (e.g. only 2 tests) MOH.
+            $note = ($final === 'I') ? $CHECK_WR : $FOLLOW_MOH;
+            return $this->vietnamFeedback($out, $sampleLabel, $note, true);
         }
 
         // Diluted positive (weak positive expected). Participant assumed on the reference kit;
@@ -2681,17 +2732,18 @@ final class Application_Model_Dts
             // when all three are strongly reactive, Indeterminate is under-calling.
             if (in_array($final, $hasWeak ? ['P', 'I'] : ['P'], true)) {
                 $out['algoResult'] = 'Pass';
-                return;
+                $note = ($final === 'P') ? $INTERPRET_WP : $FOLLOW_MOH;
+                return $this->vietnamFeedback($out, $sampleLabel, $note);
             }
-            return $this->warningForAlgo($out, $correctiveActions, $sampleLabel);
+            return $this->vietnamFeedback($out, $sampleLabel, $FOLLOW_MOH, true);
         }
 
         // Fewer than three tests on a diluted positive: only Indeterminate is acceptable.
         if ($final === 'I') {
             $out['algoResult'] = 'Pass';
-            return;
+            return $this->vietnamFeedback($out, $sampleLabel, $FOLLOW_MOH);
         }
-        return $this->warningForAlgo($out, $correctiveActions, $sampleLabel);
+        return $this->vietnamFeedback($out, $sampleLabel, $FOLLOW_MOH, true);
     }
 
     /** RTRI rule-check, only sets rtriAlgoResult; leaves HIV algo as-is */

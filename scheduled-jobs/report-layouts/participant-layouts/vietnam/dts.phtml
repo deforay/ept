@@ -142,16 +142,31 @@ if (!empty($resultArray['shipment'])) {
             $pdf->writeHTML($tbl, true, false, true, false, '');
         }
 
-        // ---- Recommendation / corrective actions ----
+        // ---- Recommendation for participant ----
+        // Group the NIHE feedback by recommendation text and list the samples it applies to,
+        // so identical guidance isn't repeated per sample. Text is translated at render.
         $warnings = Pt_Commons_JsonUtility::safeDecode($result['failure_reason']);
         if (!empty($warnings)) {
+            $grouped = [];
+            foreach ($warnings as $warning) {
+                $obs = is_array($warning) ? ($warning['warning'] ?? '') : (string) $warning;
+                $rec = is_array($warning) ? ($warning['correctiveAction'] ?? '') : '';
+                $key = $rec !== '' ? $rec : $obs; // entries without recommendation text key on the observation
+                if (!isset($grouped[$key])) {
+                    $grouped[$key] = ['rec' => $rec, 'obs' => []];
+                }
+                if ($obs !== '' && !in_array($obs, $grouped[$key]['obs'], true)) {
+                    $grouped[$key]['obs'][] = $obs;
+                }
+            }
+
             $ca  = '<br/><span style="font-weight:bold;font-size:12px;">' . Pt_Commons_TranslateUtility::safeTranslate('Recommendation for participant') . '</span>';
             $ca .= '<table border="1" style="font-size:11px;"><tr style="background-color:#dbe4ee;font-weight:bold;">'
-                 . '<td style="text-align:center;width:55%;">' . Pt_Commons_TranslateUtility::safeTranslate('Observation') . '</td>'
-                 . '<td style="text-align:center;width:45%;">' . Pt_Commons_TranslateUtility::safeTranslate('Suggested corrective action') . '</td></tr>';
-            foreach ($warnings as $warning) {
-                $ca .= '<tr><td>' . (is_array($warning) ? ($warning['warning'] ?? '') : $warning) . '</td>'
-                     . '<td>' . (is_array($warning) ? ($warning['correctiveAction'] ?? '') : '') . '</td></tr>';
+                 . '<td style="text-align:center;width:30%;">' . Pt_Commons_TranslateUtility::safeTranslate('Sample(s)') . '</td>'
+                 . '<td style="text-align:center;width:70%;">' . Pt_Commons_TranslateUtility::safeTranslate('Recommendation') . '</td></tr>';
+            foreach ($grouped as $g) {
+                $recText = $g['rec'] !== '' ? Pt_Commons_TranslateUtility::safeTranslate($g['rec']) : '';
+                $ca .= '<tr><td>' . implode(', ', $g['obs']) . '</td><td>' . $recText . '</td></tr>';
             }
             $ca .= '</table>';
             $pdf->writeHTML($ca, true, false, true, false, '');
