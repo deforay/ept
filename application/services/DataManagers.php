@@ -504,9 +504,9 @@ class Application_Service_DataManagers
                 }
                 $items .= '<li>' . $line . '</li>';
             }
-            $historyHtml = '<br/><br/>Just so you have a record &mdash; recent activity on this account:'
+            $historyHtml = '<br/><br/>For your security &mdash; recent activity on this account:'
                 . '<ul>' . $items . '</ul>'
-                . 'If anything here looks unfamiliar, feel free to reach out to ePT support &mdash; we are happy to help.';
+                . 'For any questions or support reach out to ePT support.';
         }
 
         $subject = 'Your ePT Login Credentials';
