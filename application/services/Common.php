@@ -1347,18 +1347,6 @@ class Application_Service_Common
         return rmdir($dirname);
     }
 
-    public function getEmailParticipantSubjects($search)
-    {
-        $db = new Application_Model_DbTable_EmailParticipants();
-        return $db->fetchEmailParticipantSubjects($search);
-    }
-
-    public function getEmailTemplateBySubject($subject)
-    {
-        $db = new Application_Model_DbTable_EmailParticipants();
-        return $db->fetchEmailParticipantSubjects($subject);
-    }
-
     public function svgRectPertangeToHeightConverter($score, $svgHeight = 100, $topOffset = 20)
     {
         return $svgHeight + $topOffset - $score;
