@@ -3955,32 +3955,33 @@ class Application_Service_Reports
         $searchColumns = [
             'noOfParticipants',
             'noOfResponded',
+            'noOfNotResponded',  // fixed: was missing
             'noOfPassed',
             'noOfFailed',
         ];
         $orderColumns = [
             'noOfParticipants',
             'noOfResponded',
+            'noOfNotResponded',  // fixed: was missing
             'noOfPassed',
             'noOfFailed',
         ];
 
         $sLimit = '';
+        $sOffset = 0;
         if (isset($parameters['iDisplayStart']) && $parameters['iDisplayLength'] != '-1') {
             $sOffset = $parameters['iDisplayStart'];
-            $sLimit = $parameters['iDisplayLength'];
+            $sLimit  = $parameters['iDisplayLength'];
         }
 
         $sOrder = '';
         if (isset($parameters['iSortCol_0'])) {
-            $sOrder = '';
             for ($i = 0; $i < intval($parameters['iSortingCols']); $i++) {
                 if ($parameters['bSortable_' . intval($parameters['iSortCol_' . $i])] == 'true') {
-                    $sOrder .= $orderColumns[intval($parameters['iSortCol_' . $i])] . '
-					    ' . ($parameters['sSortDir_' . $i]) . ', ';
+                    $sOrder .= $orderColumns[intval($parameters['iSortCol_' . $i])] . ' '
+                        . ($parameters['sSortDir_' . $i]) . ', ';
                 }
             }
-
             $sOrder = substr_replace($sOrder, '', -2);
         }
 
@@ -3995,7 +3996,6 @@ class Application_Service_Reports
                     $sWhereSub .= ' AND (';
                 }
                 $colSize = count($searchColumns);
-
                 for ($i = 0; $i < $colSize; $i++) {
                     if ($searchColumns[$i] == '' || $searchColumns[$i] == null) {
                         continue;
@@ -4011,7 +4011,6 @@ class Application_Service_Reports
             $sWhere .= $sWhereSub;
         }
 
-        //error_log($sHaving);
         /* Individual column filtering */
         for ($i = 0; $i < count($searchColumns); $i++) {
             if (isset($parameters['bSearchable_' . $i]) && $parameters['bSearchable_' . $i] == 'true' && $parameters['sSearch_' . $i] != '') {
@@ -4024,15 +4023,22 @@ class Application_Service_Reports
         }
 
         $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $sQuery = $dbAdapter->select()->from(['p' => 'participant'], ['noOfParticipants' => new Zend_Db_Expr('COUNT(*)')])
-            ->join(['sp' => 'shipment_participant_map'], 'p.participant_id=sp.participant_id', [
-                'noOfResponded' => new Zend_Db_Expr("SUM(CASE WHEN (sp.response_status not like '' AND sp.response_status is not null AND sp.response_status like 'responded') THEN 1 ELSE 0 END)"),
-                'noOfNotTested' => new Zend_Db_Expr("SUM(CASE WHEN (sp.is_pt_test_not_performed is not null and IFNULL(sp.is_pt_test_not_performed, 'no') like 'yes') THEN 1 ELSE 0 END)"),
-                'noOfNotResponded' => new Zend_Db_Expr("SUM(CASE WHEN (sp.response_status like '' OR sp.response_status like 'noresponse' OR sp.response_status is null) THEN 1 ELSE 0 END)"),
-                'noOfPassed' => new Zend_Db_Expr('SUM(CASE WHEN (sp.final_result like 1) THEN 1 ELSE 0 END)'),
-                'noOfFailed' => new Zend_Db_Expr('SUM(CASE WHEN (sp.final_result like 2) THEN 1 ELSE 0 END)'),
+
+        $sQuery = $dbAdapter->select()
+            ->from(['p' => 'participant'], [
+                'noOfParticipants' => new Zend_Db_Expr('COUNT(*)')
             ])
-            ->join(['s' => 'shipment'], 's.shipment_id=sp.shipment_id', ['shipment_code', 'scheme_type', 'lastdate_response']);
+            ->join(['sp' => 'shipment_participant_map'], 'p.participant_id=sp.participant_id', [
+                'noOfResponded' => new Zend_Db_Expr("SUM(CASE WHEN (sp.response_status NOT LIKE '' AND sp.response_status IS NOT NULL AND sp.response_status LIKE 'responded') THEN 1 ELSE 0 END)"),
+                'noOfNotResponded' => new Zend_Db_Expr("SUM(CASE WHEN (sp.response_status LIKE '' OR sp.response_status LIKE 'noresponse' OR sp.response_status IS NULL) THEN 1 ELSE 0 END)"),
+                'noOfPassed' => new Zend_Db_Expr('SUM(CASE WHEN (sp.final_result LIKE 1) THEN 1 ELSE 0 END)'),
+                'noOfFailed' => new Zend_Db_Expr('SUM(CASE WHEN (sp.final_result LIKE 2) THEN 1 ELSE 0 END)'),
+            ])
+            ->join(['s' => 'shipment'], 's.shipment_id=sp.shipment_id', [
+                'shipment_code',
+                'scheme_type',
+                'lastdate_response'
+            ]);
 
         if (isset($parameters['scheme']) && $parameters['scheme'] != '') {
             $sQuery = $sQuery->where('s.scheme_type IN (?)', (array) $parameters['scheme']);
@@ -4046,38 +4052,35 @@ class Application_Service_Reports
             $sQuery = $sQuery->where('p.country = ?', $parameters['country']);
         }
 
-        // if (!empty($sOrder)) {
-        //     $sQuery = $sQuery->order($sOrder);
-        // }
+        if (!empty($sOrder)) {
+            $sQuery = $sQuery->order($sOrder);
+        }
 
-        // if (isset($sLimit) && isset($sOffset)) {
-        //     $sQuery = $sQuery->limit($sLimit, $sOffset);
-        // }
+        if (!empty($sLimit)) {
+            $sQuery = $sQuery->limit($sLimit, $sOffset);
+        }
 
         $rResult = $dbAdapter->fetchAll($sQuery);
 
-        $iFilteredTotal = $iTotal = 1;
+        $iFilteredTotal = $iTotal = count($rResult);
 
-        /*
-         * Output
-         */
         $output = [
-            'sEcho' => intval($parameters['sEcho']),
-            'iTotalRecords' => $iTotal,
+            'sEcho'                => intval($parameters['sEcho']),
+            'iTotalRecords'        => $iTotal,
             'iTotalDisplayRecords' => $iFilteredTotal,
-            'aaData' => [],
+            'aaData'               => [],
         ];
 
         foreach ($rResult as $aRow) {
-            $row = [];
-            $row[] = $aRow['noOfParticipants'];
-            $row[] = $aRow['noOfResponded'];
-            $row[] = $aRow['noOfNotResponded'];
-            $row[] = $aRow['noOfNotTested'];
-            $row[] = $aRow['noOfPassed'];
-            $row[] = $aRow['noOfFailed'];
+            $row   = [];
+            $row[] = $aRow['noOfParticipants'];   // col 1: # of Participants
+            $row[] = $aRow['noOfResponded'];      // col 2: # Responded
+            $row[] = $aRow['noOfNotResponded'];   // col 3: # Not Responded
+            $row[] = $aRow['noOfPassed'];         // col 4: # Passed
+            $row[] = $aRow['noOfFailed'];         // col 5: # Failed
             $output['aaData'][] = $row;
         }
+
         echo json_encode($output);
     }
 

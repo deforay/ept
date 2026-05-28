@@ -5,7 +5,6 @@
 		#shipmentTable_filter,
 		#shipmentTable_info {
 			display: none;
-
 		}
 	}
 </style>
@@ -56,50 +55,38 @@
 		<?php } ?>
 	</tr>
 	<tr>
-		<?php
-		if (isset($this->regions) && !empty($this->regions)) { ?>
+		<?php if (isset($this->regions) && !empty($this->regions)) { ?>
 			<td style="width:20%"><?= $this->translate->_("Region"); ?></td>
-		<?php }
-		if (isset($this->states) && !empty($this->states)) { ?>
+		<?php } ?>
+		<?php if (isset($this->states) && !empty($this->states)) { ?>
 			<td style="width:20%"><?= $this->translate->_("Province"); ?></td>
-		<?php }
-		if (isset($this->states) && !empty($this->states)) { ?>
+		<?php } ?>
+		<?php if (isset($this->districts) && !empty($this->districts)) { ?>
 			<td style="width:20%"><?= $this->translate->_("District"); ?></td>
 		<?php } ?>
-
 	</tr>
 	<tr>
-		<?php
-		if (isset($this->regions) && !empty($this->regions)) { ?>
+		<?php if (isset($this->regions) && !empty($this->regions)) { ?>
 			<td style="width:20%">
 				<select class="form-control select2" id="region" name="region" title="<?= $this->htmlTranslate("Please select the region to filter"); ?>"
 					onchange="getOptions('participant', 'region', 'state', this.value, 'state');">
 					<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
-					<!-- <?php foreach ($this->regions as $region) { ?>
-						<option value="<?php echo $region['region']; ?>"><?php echo ucwords($region['region']); ?></option>
-					<?php } ?> -->
 				</select>
 			</td>
-		<?php }
-		if (isset($this->states) && !empty($this->states)) { ?>
+		<?php } ?>
+		<?php if (isset($this->states) && !empty($this->states)) { ?>
 			<td style="width:20%">
 				<select class="form-control select2" id="state" name="state" title="<?= $this->htmlTranslate("Please select the province to filter"); ?>"
 					onchange="getOptions('participant', 'state', 'district', this.value, 'district');">
 					<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
-					<!-- <?php foreach ($this->states as $state) { ?>
-						<option value="<?php echo $state['state']; ?>"><?php echo ucwords($state['state']); ?></option>
-					<?php } ?> -->
 				</select>
 			</td>
-		<?php }
-		if (isset($this->districts) && !empty($this->districts)) { ?>
+		<?php } ?>
+		<?php if (isset($this->districts) && !empty($this->districts)) { ?>
 			<td style="width:20%">
 				<select class="form-control select2" id="district" name="district"
 					title="<?= $this->htmlTranslate("Please select the district to filter"); ?>">
 					<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
-					<!-- <?php foreach ($this->districts as $district) { ?>
-						<option value="<?php echo $district['district']; ?>"><?php echo ucwords($district['district']); ?></option>
-					<?php } ?> -->
 				</select>
 			</td>
 		<?php } ?>
@@ -119,7 +106,7 @@
 			<th scope="col" style="text-align: center;"># <?= $this->translate->_("of Participants"); ?></th>
 			<th scope="col" style="text-align: center;"># <?= $this->translate->_("Responded"); ?></th>
 			<th scope="col" style="text-align: center;"># <?= $this->translate->_("Not Responded"); ?></th>
-			<th scope="col" style="text-align: center;"># <?= $this->translate->_("Passed"); ?></td>
+			<th scope="col" style="text-align: center;"># <?= $this->translate->_("Passed"); ?></th>
 			<th scope="col" style="text-align: center;"># <?= $this->translate->_("Failed"); ?></th>
 		</tr>
 	</thead>
@@ -143,7 +130,7 @@
 		<tr>
 			<th scope="col" style="text-align: center;"><?= $this->translate->_("Participant Name"); ?></th>
 			<th scope="col" style="text-align: center;"><?= $this->translate->_("Institute Name"); ?></th>
-			<th scope="col" style="text-align: center;"><?= $this->translate->_("Country"); ?></td>
+			<th scope="col" style="text-align: center;"><?= $this->translate->_("Country"); ?></th>
 			<th scope="col" style="text-align: center;"><?= $this->translate->_("Province"); ?></th>
 			<th scope="col" style="text-align: center;"><?= $this->translate->_("District"); ?></th>
 			<th scope="col" style="text-align: center;"><?= $this->translate->_("Shipment Code"); ?></th>
@@ -164,7 +151,7 @@
 	var paginate = true;
 	var startDate = "";
 	var endDate = "";
-	$(document).ready(function () {
+	$(document).ready(function() {
 		$("#scheme").select2({
 			placeholder: "<?= $this->translate->_("Select one or more schemes"); ?>",
 			allowClear: true
@@ -189,36 +176,34 @@
 			placeholder: "<?= $this->translate->_("Select District"); ?>",
 			allowClear: true
 		});
-		// $.blockUI();
 
 		$('#dateRange').daterangepicker({
-			locale: {
-				cancelLabel: 'Clear',
-				format: 'DD-MMM-YYYY',
-				separator: ' to ',
+				locale: {
+					cancelLabel: 'Clear',
+					format: 'DD-MMM-YYYY',
+					separator: ' to ',
+				},
+				autoApply: true,
+				showDropdowns: true,
+				alwaysShowCalendars: true,
+				autoUpdateInput: true,
+				startDate: moment().subtract(179, 'days'),
+				endDate: moment(),
+				maxDate: moment(),
+				ranges: {
+					'This Month': [moment().startOf('month'), moment().endOf('month')],
+					'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
+					'Last 60 Days': [moment().subtract(59, 'days'), moment()],
+					'Last 90 Days': [moment().subtract(89, 'days'), moment()],
+					'Last 180 Days': [moment().subtract(179, 'days'), moment()],
+					'Last 12 Months': [moment().subtract(12, 'month'), moment()],
+					'Last 18 Months': [moment().subtract(18, 'month'), moment()],
+				}
 			},
-			autoApply: true,
-			showDropdowns: true,
-			alwaysShowCalendars: true,
-			autoUpdateInput: true,
-			startDate: moment().subtract(179, 'days'),
-			endDate: moment(),
-			maxDate: moment(),
-			ranges: {
-				'This Month': [moment().startOf('month'), moment().endOf('month')],
-				'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
-				'Last 60 Days': [moment().subtract(59, 'days'), moment()],
-				'Last 90 Days': [moment().subtract(89, 'days'), moment()],
-				'Last 180 Days': [moment().subtract(179, 'days'), moment()],
-				'Last 12 Months': [moment().subtract(12, 'month'), moment()],
-				'Last 18 Months': [moment().subtract(18, 'month'), moment()],
-			}
-		},
-			function (start, end) {
+			function(start, end) {
 				startDate = start.format('DD-MMM-YYYY');
 				endDate = end.format('DD-MMM-YYYY');
 			});
-
 	});
 
 	function drawTable() {
@@ -229,8 +214,8 @@
 
 		$("#shipmentTable").removeClass("hide");
 		$(".participantTable").removeClass("hide");
-		oTable = $('#shipmentTable').dataTable({
 
+		oTable = $('#shipmentTable').dataTable({
 			"bJQueryUI": false,
 			"bAutoWidth": false,
 			"bInfo": true,
@@ -239,30 +224,29 @@
 			"bRetrieve": false,
 			"bDestroy": true,
 			"aoColumns": [{
-				"sClass": "center"
-			},
-			{
-				"sClass": "center"
-			},
-			{
-				"sClass": "center"
-			},
-			{
-				"sClass": "center"
-			},
-			{
-				"sClass": "center"
-			}
+					"sClass": "center"
+				}, // # of Participants
+				{
+					"sClass": "center"
+				}, // # Responded
+				{
+					"sClass": "center"
+				}, // # Not Responded
+				{
+					"sClass": "center"
+				}, // # Passed
+				{
+					"sClass": "center"
+				} // # Failed
 			],
 			"aaSorting": [
 				[1, "desc"]
 			],
 			"bProcessing": true,
 			"bServerSide": true,
-			"bAutoWidth": false,
 			"bStateSave": true,
 			"sAjaxSource": "<?php echo $this->url(array('module' => 'default', 'controller' => 'participant', 'action' => 'shipment-response-report', 'format' => 'html')); ?>",
-			"fnServerParams": function (aoData) {
+			"fnServerParams": function(aoData) {
 				aoData.push({
 					"name": "country",
 					"value": $("#country").val()
@@ -296,7 +280,7 @@
 					"value": endDate
 				});
 			},
-			"fnServerData": function (sSource, aoData, fnCallback) {
+			"fnServerData": function(sSource, aoData, fnCallback) {
 				$.ajax({
 					"dataType": 'json',
 					"type": "POST",
@@ -305,13 +289,12 @@
 					"success": fnCallback
 				});
 			},
-			"fnRowCallback": function (nRow, aData, iDisplayIndex) {
+			"fnRowCallback": function(nRow, aData, iDisplayIndex) {
 				$.unblockUI();
-			},
+			}
 		});
 
 		aTable = $('#participantTable').dataTable({
-
 			"bJQueryUI": false,
 			"bAutoWidth": false,
 			"bInfo": true,
@@ -320,42 +303,41 @@
 			"bRetrieve": false,
 			"bDestroy": true,
 			"aoColumns": [{
-				"sClass": ""
-			},
-			{
-				"sClass": "center"
-			},
-			{
-				"sClass": "center"
-			},
-			{
-				"sClass": "center"
-			},
-			{
-				"sClass": "center"
-			},
-			{
-				"sClass": "center"
-			},
-			{
-				"sClass": "center"
-			},
-			{
-				"sClass": "center"
-			},
-			{
-				"sClass": "center"
-			}
+					"sClass": ""
+				}, // Participant Name
+				{
+					"sClass": "center"
+				}, // Institute Name
+				{
+					"sClass": "center"
+				}, // Country
+				{
+					"sClass": "center"
+				}, // Province
+				{
+					"sClass": "center"
+				}, // District
+				{
+					"sClass": "center"
+				}, // Shipment Code
+				{
+					"sClass": "center"
+				}, // Response Status
+				{
+					"sClass": "center"
+				}, // Responded On
+				{
+					"sClass": "center"
+				} // Evaluation Result
 			],
 			"aaSorting": [
 				[0, "desc"]
 			],
 			"bProcessing": true,
 			"bServerSide": true,
-			"bAutoWidth": false,
 			"bStateSave": true,
 			"sAjaxSource": "<?php echo $this->url(array('module' => 'default', 'controller' => 'participant', 'action' => 'participant-response', 'format' => 'html')); ?>",
-			"fnServerParams": function (aoData) {
+			"fnServerParams": function(aoData) {
 				aoData.push({
 					"name": "country",
 					"value": $("#country").val()
@@ -389,7 +371,7 @@
 					"value": endDate
 				});
 			},
-			"fnServerData": function (sSource, aoData, fnCallback) {
+			"fnServerData": function(sSource, aoData, fnCallback) {
 				$.ajax({
 					"dataType": 'json',
 					"type": "POST",
@@ -398,9 +380,9 @@
 					"success": fnCallback
 				});
 			},
-			"fnRowCallback": function (nRow, aData, iDisplayIndex) {
+			"fnRowCallback": function(nRow, aData, iDisplayIndex) {
 				$.unblockUI();
-			},
+			}
 		});
 	}
 
@@ -427,19 +409,18 @@
 
 		$.blockUI();
 		$.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'common', 'action' => 'get-shipments-by-date')); ?>", {
-			schemeType: schemeType,
-			startDate: startDate,
-			endDate: endDate,
-			format: "html"
-		},
-			function (data) {
+				schemeType: schemeType,
+				startDate: startDate,
+				endDate: endDate,
+				format: "html"
+			},
+			function(data) {
 				if (data == 0) {
 					shipmentCode = false;
 				} else {
 					$("#shipmentId").html(data);
 					shipmentCode = true;
 				}
-
 				$.unblockUI();
 			});
 	}
@@ -447,17 +428,16 @@
 	function getOptions(table, searchfield, returnfield, searchvalue, returnid) {
 		$.blockUI();
 		$.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'common', 'action' => 'get-options-by-value')); ?>", {
-			table: table,
-			searchfield: searchfield,
-			returnfield: returnfield,
-			searchvalue: searchvalue,
-			format: "html"
-		},
-			function (data) {
+				table: table,
+				searchfield: searchfield,
+				returnfield: returnfield,
+				searchvalue: searchvalue,
+				format: "html"
+			},
+			function(data) {
 				if (data != 0 && data != '' && data != undefined) {
 					$("#" + returnid).html(data);
 				}
-
 				$.unblockUI();
 			});
 	}
@@ -465,7 +445,7 @@
 	function exportParticipantData() {
 		$.blockUI();
 		$.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'participant', 'action' => 'export-participants-response-details', 'format' => 'html')); ?>", {},
-			function (data) {
+			function(data) {
 				$.unblockUI();
 				if (data == "" || data == null || data == undefined || $.trim(data) == 'not-found' || !data) {
 					alert("<?= $this->jsTranslate("Unable to generate download"); ?>");
