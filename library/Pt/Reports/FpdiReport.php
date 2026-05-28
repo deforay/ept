@@ -69,7 +69,7 @@ class Pt_Reports_FpdiReport extends Fpdi
                 $this->SetFont('freesans', 'B', 10);
             }
         }
-        if ($this->layout != 'malawi' && $this->layout != 'zimbabwe') {
+        if ($this->layout != 'malawi' && $this->layout != 'zimbabwe' && $this->layout != 'default') {
             if (isset($this->reportType) && !empty($this->reportType) && strtolower($this->reportType) == 'summary' && $this->PageNo() == 1) {
                 $this->writeHTML('<br>All Participants Results Report', true, false, true, false, 'C');
             } elseif (strtolower($this->reportType) == 'individual' && $this->PageNo() == 1 && $this->schemeType != 'dts') {
@@ -217,7 +217,7 @@ class Pt_Reports_FpdiReport extends Fpdi
         }
 
         // Malawi is a single line so needs less room at the bottom
-        $this->SetY(-12);
+        $this->SetY(($this->layout != 'default') ? -5 : -10);
         $this->SetFont('freesans', '', 7, '', true);
         $this->writeHTML($completeFooterHtml, true, false, false, false, '');
     }
