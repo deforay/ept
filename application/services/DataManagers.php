@@ -478,36 +478,7 @@ class Application_Service_DataManagers
         $loginId  = (string) ($params['primaryMail'] ?? $to[0]);
         $password = (string) ($params['password'] ?? '');
 
-        $historyHtml = '';
-        if (!empty($priorHistory)) {
-            $items = '';
-            foreach ($priorHistory as $r) {
-                $ts = strtotime((string) ($r['when'] ?? ''));
-                $when = $ts ? date('d M Y, H:i', $ts) : (string) ($r['when'] ?? '');
-                $whenH = htmlspecialchars($when, ENT_QUOTES, 'UTF-8');
-                $kind = $r['kind'] ?? 'reset';
-                if ($kind === 'login') {
-                    $line = $whenH . ' &mdash; you logged in to ePT';
-                } elseif ($kind === 'self_change') {
-                    $line = $whenH . ' &mdash; you changed your password';
-                } else { // reset
-                    $actor = trim((string) ($r['actorName'] ?? '')) ?: trim((string) ($r['actorEmail'] ?? ''));
-                    $role  = !empty($r['actorRole']) ? ' (' . $r['actorRole'] . ')' : '';
-                    if ($actor !== '') {
-                        $line = $whenH . ' &mdash; password reset by ' . htmlspecialchars($actor . $role, ENT_QUOTES, 'UTF-8');
-                    } else {
-                        $line = $whenH . ' &mdash; password reset';
-                    }
-                    if (!empty($r['emailSent'])) {
-                        $line .= ' <em>(credentials email sent to you)</em>';
-                    }
-                }
-                $items .= '<li>' . $line . '</li>';
-            }
-            $historyHtml = '<br/><br/>For your security &mdash; recent activity on this account:'
-                . '<ul>' . $items . '</ul>'
-                . 'For any questions or support reach out to ePT support.';
-        }
+        $historyHtml = $this->renderActivityHistoryHtml($priorHistory);
 
         $subject = 'Your ePT Login Credentials';
         $message = 'Dear Participant,<br/><br/>'
@@ -536,6 +507,43 @@ class Application_Service_DataManagers
 
         $alert = new Zend_Session_Namespace('alertSpace');
         $alert->message = 'Password reset and login email queued for ' . $to[0];
+    }
+
+    /* Renders the "recent activity on this account" HTML block appended to
+       credentials emails. Shared by the single-user and bulk reset flows so
+       both emails stay consistent. Returns '' when there's no prior history. */
+    private function renderActivityHistoryHtml(array $priorHistory): string
+    {
+        if (empty($priorHistory)) {
+            return '';
+        }
+        $items = '';
+        foreach ($priorHistory as $r) {
+            $ts = strtotime((string) ($r['when'] ?? ''));
+            $when = $ts ? date('d M Y, H:i', $ts) : (string) ($r['when'] ?? '');
+            $whenH = htmlspecialchars($when, ENT_QUOTES, 'UTF-8');
+            $kind = $r['kind'] ?? 'reset';
+            if ($kind === 'login') {
+                $line = $whenH . ' &mdash; you logged in to ePT';
+            } elseif ($kind === 'self_change') {
+                $line = $whenH . ' &mdash; you changed your password';
+            } else { // reset
+                $actor = trim((string) ($r['actorName'] ?? '')) ?: trim((string) ($r['actorEmail'] ?? ''));
+                $role  = !empty($r['actorRole']) ? ' (' . $r['actorRole'] . ')' : '';
+                if ($actor !== '') {
+                    $line = $whenH . ' &mdash; password reset by ' . htmlspecialchars($actor . $role, ENT_QUOTES, 'UTF-8');
+                } else {
+                    $line = $whenH . ' &mdash; password reset';
+                }
+                if (!empty($r['emailSent'])) {
+                    $line .= ' <em>(credentials email sent to you)</em>';
+                }
+            }
+            $items .= '<li>' . $line . '</li>';
+        }
+        return '<br/><br/>For your security &mdash; recent activity on this account:'
+            . '<ul>' . $items . '</ul>'
+            . 'For any questions or support reach out to ePT support.';
     }
 
     /* Resolves a list of pasted identifiers (emails OR participant unique_identifier
@@ -732,10 +740,15 @@ class Application_Service_DataManagers
             }
             $summary['updated']++;
             $summary['success'][] = ['dm_id' => (int)$row['dm_id'], 'name' => $name, 'email' => $email];
+
+            // Capture prior activity BEFORE writing the audit row so the email
+            // lists history only, not the reset we just did (matches single-user flow).
+            $priorHistory = $sendEmail ? $this->getRecentAccountActivity($email) : [];
+
             $auditDb->addNewAuditLog("Reset password for {$email} (bulk)", 'password-reset', $actor);
 
             if ($sendEmail) {
-                $this->queueBulkCredentialsEmail($common, $email, $name, $newPassword, $loginUrl, $cc, $bcc);
+                $this->queueBulkCredentialsEmail($common, $email, $name, $newPassword, $loginUrl, $cc, $bcc, $priorHistory);
                 $summary['emailed']++;
             }
         }
@@ -749,17 +762,19 @@ class Application_Service_DataManagers
         return $summary;
     }
 
-    private function queueBulkCredentialsEmail(Application_Service_Common $common, string $toEmail, string $name, string $password, string $loginUrl, array $cc, array $bcc): void
+    private function queueBulkCredentialsEmail(Application_Service_Common $common, string $toEmail, string $name, string $password, string $loginUrl, array $cc, array $bcc, array $priorHistory = []): void
     {
         $greetingName = $name !== '' ? $name : 'Participant';
+        $historyHtml = $this->renderActivityHistoryHtml($priorHistory);
         $subject = 'Your ePT Login Credentials';
         $message = 'Dear ' . htmlspecialchars($greetingName, ENT_QUOTES, 'UTF-8') . ',<br/><br/>'
             . 'Please use the following to log in to ePT:<br/><br/>'
             . 'URL: <a href="' . htmlspecialchars($loginUrl, ENT_QUOTES, 'UTF-8') . '">'
             . htmlspecialchars($loginUrl, ENT_QUOTES, 'UTF-8') . '</a><br/>'
             . 'Login ID: ' . htmlspecialchars($toEmail, ENT_QUOTES, 'UTF-8') . '<br/>'
-            . 'Password: ' . htmlspecialchars($password, ENT_QUOTES, 'UTF-8') . '<br/><br/>'
-            . 'Thanks,<br/>ePT Support';
+            . 'Password: ' . htmlspecialchars($password, ENT_QUOTES, 'UTF-8')
+            . $historyHtml
+            . '<br/><br/>Thanks,<br/>ePT Support';
 
         $mailCfg = json_decode((string) Application_Service_Common::getConfig('mail'));
         $fromEmail = $mailCfg->fromEmail ?? Application_Service_Common::getConfig('admin_email');
