@@ -1082,17 +1082,31 @@ ensure_opcache() {
     print success "OPcache is ready for PHP ${ver} (Apache)."
 }
 
-# Ensure Node.js is installed (LTS version via nodesource)
+# Ensure Node.js 22.x is installed (pinned via NodeSource).
+#
+# Installed system-wide on purpose: chart rendering shells out to a bare `node`
+# (proc_open in Pt_Reports_ChartRenderer_ChartJsNode) from www-data under Apache
+# and from cron — neither sees a per-user nvm install, so nvm is deliberately
+# not used here. Pinning to a major (vs the floating setup_lts.x) keeps the
+# version deterministic, and we now upgrade an older major in place instead of
+# only installing when node is entirely absent.
 ensure_nodejs() {
+    local node_major=22
+    local current_major=0
+
     if command -v node &>/dev/null; then
-        print success "Node.js $(node -v) is already installed."
-        return 0
+        current_major="$(node -v 2>/dev/null | sed -E 's/^v([0-9]+).*/\1/')"
+        if [[ "$current_major" =~ ^[0-9]+$ ]] && [ "$current_major" -ge "$node_major" ]; then
+            print success "Node.js $(node -v) is already installed (>= ${node_major}.x)."
+            return 0
+        fi
+        print info "Node.js $(node -v) is older than ${node_major}.x — upgrading..."
+    else
+        print info "Installing Node.js ${node_major}.x..."
     fi
 
-    print info "Installing Node.js LTS..."
-
     if command -v curl &>/dev/null; then
-        curl -fsSL https://deb.nodesource.com/setup_lts.x | bash -
+        curl -fsSL "https://deb.nodesource.com/setup_${node_major}.x" | bash -
         apt-get install -y nodejs
     else
         apt-get install -y nodejs npm

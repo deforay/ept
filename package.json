@@ -4,6 +4,9 @@
   "description": "Server-side chart rendering for ePT reports",
   "type": "module",
   "private": true,
+  "engines": {
+    "node": ">=22"
+  },
   "scripts": {
     "test": "node chart-render.js < chart-render-test.json > /tmp/test-chart.png && echo 'Chart rendered to /tmp/test-chart.png'"
   },
