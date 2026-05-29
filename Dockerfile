@@ -18,8 +18,10 @@ RUN docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp \
 # Enable Apache modules
 RUN a2enmod rewrite headers expires
 
-# Node.js (LTS) for chart rendering
-ENV NODE_VERSION=22.15.0
+# Node.js 22.x (pinned) for chart rendering — installed system-wide so the
+# www-data Apache/cron processes that shell out to `node` find it on PATH.
+# Keep this major in sync with ensure_nodejs() in bin/shared-functions.sh.
+ENV NODE_VERSION=22.22.2
 RUN ARCH=$(dpkg --print-architecture) \
     && if [ "$ARCH" = "amd64" ]; then NODEARCH=x64; elif [ "$ARCH" = "arm64" ]; then NODEARCH=arm64; fi \
     && curl -fsSL "https://nodejs.org/dist/v${NODE_VERSION}/node-v${NODE_VERSION}-linux-${NODEARCH}.tar.xz" \
