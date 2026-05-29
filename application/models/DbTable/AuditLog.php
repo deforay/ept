@@ -73,10 +73,13 @@ class Application_Model_DbTable_AuditLog extends Zend_Db_Table_Abstract
         if (!empty($admin->primary_email)) {
             return [$admin->primary_email, 'admin'];
         }
+        // DM login (AuthController) sets ->email, not ->primary_email. Honor
+        // either so response-submission rows get the actor attached.
         $dm = new Zend_Session_Namespace('datamanagers');
-        if (!empty($dm->primary_email)) {
+        $dmEmail = !empty($dm->primary_email) ? $dm->primary_email : ($dm->email ?? null);
+        if (!empty($dmEmail)) {
             $role = ($dm->data_manager_type ?? null) === 'ptcc' ? 'ptcc' : 'datamanager';
-            return [$dm->primary_email, $role];
+            return [$dmEmail, $role];
         }
         $participant = new Zend_Session_Namespace('participants');
         if (!empty($participant->primary_email)) {
