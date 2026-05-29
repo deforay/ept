@@ -403,8 +403,16 @@ $preSelected = isset($this->preSelectedParticipants) ? (array)$this->preSelected
         $holder.empty();
         // Single JSON-encoded hidden input avoids PHP max_input_vars
         // truncating the list when many participants are selected.
-        $holder.append('<input type="hidden" name="allparticipant" value="' +
-            $('<div/>').text(JSON.stringify(ids)).html() + '" />');
+        // Set value via attr() so the DOM holds the raw JSON string —
+        // building the input via HTML-string concat and `text().html()`
+        // double-escapes embedded quotes (the AJAX returns string ids),
+        // and jQuery's HTML parser then decodes the entity back to `"`,
+        // terminating the value attribute at the first character (`[`).
+        $holder.append($('<input>', {
+            type: 'hidden',
+            name: 'allparticipant',
+            value: JSON.stringify(ids)
+        }));
         return ids.length;
     }
 
