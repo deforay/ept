@@ -17,20 +17,19 @@ class Application_Model_DbTable_AuditLog extends Zend_Db_Table_Abstract
             return self::$columnsCache;
         }
         try {
-            $rows = $this->getAdapter()->fetchCol(
-                'SELECT COLUMN_NAME FROM information_schema.COLUMNS '
-                . 'WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = ?',
-                [$this->_name]
-            );
-            self::$columnsCache = array_flip(array_map('strtolower', $rows));
+            // describeTable uses SHOW COLUMNS under the hood — more reliable
+            // and faster than an information_schema query, and it requires
+            // only the SELECT grant the table already needs to function.
+            $meta = $this->getAdapter()->describeTable($this->_name);
+            $cols = array_keys($meta);
+            self::$columnsCache = array_flip(array_map('strtolower', $cols));
             return self::$columnsCache;
         } catch (Exception $e) {
             // Do NOT poison the cache on transient errors. A single failed
-            // information_schema query used to set the cache to [] for the
-            // life of the PHP-FPM worker, which then silently dropped
-            // ip_address / user_agent / session_hash on EVERY subsequent
-            // insert. Return empty for this call only; next call retries.
-            error_log('AuditLog::availableColumns lookup failed: ' . $e->getMessage());
+            // lookup used to set the cache to [] for the life of the
+            // PHP-FPM worker, silently dropping ip_address / user_agent /
+            // session_hash on every subsequent insert AND select.
+            error_log('AuditLog::availableColumns describeTable failed: ' . $e->getMessage());
             return [];
         }
     }
