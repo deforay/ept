@@ -53,8 +53,14 @@ composer post-update --no-interaction 2>&1 || echo "Migration warning (may be fi
 # Run one-time scripts
 php bin/run-once.php 2>/dev/null || true
 
-# Ensure permissions
-chown -R www-data:www-data application/cache logs downloads backups public/temporary public/uploads
+# Ensure permissions. Includes application/configs because this entrypoint
+# generates application.ini/config.ini/.env above as root — without this chown
+# they stay root-owned and www-data (Apache) can't rewrite them, e.g. when the
+# global-config admin page saves settings. Runs after config generation so the
+# freshly-created files are covered. The volume-mounted dirs (uploads/logs/
+# backups/downloads) are re-chowned here too since the mount masks the
+# build-time ownership.
+chown -R www-data:www-data application/configs application/cache logs downloads backups public/temporary public/uploads
 
 # Start cron
 cron
