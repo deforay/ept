@@ -376,7 +376,7 @@ class Application_Model_DbTable_AuditLog extends Zend_Db_Table_Abstract
                 }
             }
             if ($name === '') {
-                $name = $row['created_by'] ?? 'System';
+                $name = $row['created_by'] ?? 'Unattributed';
             }
             $ts = strtotime($row['created_on']);
             $items[] = [
