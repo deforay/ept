@@ -33,6 +33,15 @@ $schedule->run($phpPath . " " . VENDOR_BIN . "/db-tools purge-binlogs --days=7")
     ->preventOverlapping()
     ->description('DB Tools: purge MySQL binary logs older than 7 days');
 
+// Housekeeping: prune grow-unbounded log/queue tables + stale FS artifacts.
+// Runs after the nightly backup so anything pruned is already captured.
+// Retention policy lives in bin/housekeeping.php; audit tables are excluded.
+$schedule->run($phpPath . " " . BIN_PATH . "/housekeeping.php --quiet")
+    ->cron('30 3 * * *') // 03:30 am daily
+    ->timezone($timezone)
+    ->preventOverlapping()
+    ->description('Housekeeping: prune transient tables and stale files');
+
 // Send Email Alerts
 $schedule->run($phpPath . " " . SCHEDULED_JOBS_FOLDER . "/send-emails.php")
     ->everyMinute()
@@ -71,5 +80,14 @@ $schedule->run($phpPath . " " . BIN_PATH . "/process-bounces.php --quiet")
     ->timezone($timezone)
     ->preventOverlapping()
     ->description('Processing email bounces');
+
+// Auto-close shipment response switches once the response deadline has passed.
+// Flips response_switch 'on' -> 'off' the day after lastdate_response (cutoff is
+// 23:59:59 in the cutoff_timezone). Skips finalized shipments. Idempotent.
+$schedule->run($phpPath . " " . SCHEDULED_JOBS_FOLDER . "/close-expired-response-switches.php")
+    ->hourly()
+    ->timezone($timezone)
+    ->preventOverlapping()
+    ->description('Closing expired shipment response switches');
 
 return $schedule;
