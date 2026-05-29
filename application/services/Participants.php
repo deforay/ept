@@ -552,9 +552,18 @@ class Application_Service_Participants
             $sheet->getStyle('L4')->applyFromArray($styleArray, true);
             $sheet->getStyle('M4')->applyFromArray($styleArray, true);
 
-            $sQuerySession = new Zend_Session_Namespace('notRespondedParticipantsExcel');
-            $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-            $rResult = $db->fetchAll($sQuerySession->shipmentRespondedParticipantQuery);
+            // When invoked from the Shipments Report listing the not-responded
+            // DataTable was never opened, so the session query is empty. Build the
+            // list directly from the shipment id; fall back to the session query
+            // for callers (e.g. manage-enroll) that still rely on it.
+            if (!empty($params['shipmentId'])) {
+                $participantDb = new Application_Model_DbTable_Participants();
+                $rResult = $participantDb->notRespondedParticipants($params['shipmentId']);
+            } else {
+                $sQuerySession = new Zend_Session_Namespace('notRespondedParticipantsExcel');
+                $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+                $rResult = $db->fetchAll($sQuerySession->shipmentRespondedParticipantQuery);
+            }
 
             foreach ($rResult as $aRow) {
                 $row = [];
@@ -605,7 +614,6 @@ class Application_Service_Participants
             $writer->save(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $filename);
             return $filename;
         } catch (Exception $exc) {
-            $sQuerySession->correctiveActionsQuery = '';
             error_log('GENERATE-SHIPMENT-NOT-RESPONDED-PARTICIPANT-REPORT-EXCEL--' . $exc->getMessage());
             error_log($exc->getTraceAsString());
 

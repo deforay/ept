@@ -387,11 +387,12 @@
 			});
 	}
 
-	function exportNotRespondedShipment(_shipmentCode, _shipmentDate) {
+	function exportNotRespondedShipment(_shipmentId, _shipmentCode, _shipmentDate) {
 		$.blockUI();
 		$.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'shipment', 'action' => 'export-shipment-not-responded-participants')); ?>", {
-			shipmentCode: _shipmentCode,
-			shipmentDate: _shipmentDate,
+			shipmentId: atob(_shipmentId),
+			shipmentCode: atob(_shipmentCode),
+			shipmentDate: atob(_shipmentDate),
 			format: "html"
 		},
 			function (data) {

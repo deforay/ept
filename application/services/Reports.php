@@ -225,14 +225,15 @@ class Application_Service_Reports
             $row[] = trim("$summaryDownload $allReportsDownload $viewFinalizedReports");
             if ($aRow['status'] != 'pending') {
 
-                $exportReport = "<a href='javascript:void(0);' class='btn btn-success btn-xs' onclick='generateShipmentParticipantList(\"" . base64_encode($aRow['shipment_id']) . '","' . $aRow['scheme_type'] . "\")'><i class='icon-download'></i> " . $this->translator->_('Overview Report') . '</a>';
+                $exportReport = "<a href='javascript:void(0);' class='btn btn-success btn-xs' style='display:inline-block;margin:2px;' onclick='generateShipmentParticipantList(\"" . base64_encode($aRow['shipment_id']) . '","' . $aRow['scheme_type'] . "\")'><i class='icon-download'></i> " . $this->translator->_('Overview Report') . '</a>';
+                $notResponded = '';
                 if ($aRow['status'] != 'finalized') {
-                    $notResponded = "<br> <a href='javascript:void(0);' class='btn btn-danger btn-xs'><i class='icon icon-download'></i> " . $this->translator->_('No Response Report') . '</a>';
+                    $notResponded = "<a href='javascript:void(0);' class='btn btn-danger btn-xs' style='display:inline-block;margin:2px;' onclick='exportNotRespondedShipment(\"" . base64_encode($aRow['shipment_id']) . '","' . base64_encode((string) $aRow['shipment_code']) . '","' . base64_encode(Pt_Commons_DateUtility::humanReadableDateFormat($aRow['distribution_date'])) . "\")'><i class='icon icon-download'></i> " . $this->translator->_('No Response Report') . '</a>';
                 }
 
                 $feedbackDownload = '';
                 if (!empty($aRow['feedback_count']) && $aRow['feedback_count'] > 0) {
-                    $feedbackDownload = "<a href='javascript:void(0);' class='btn btn-info btn-xs' style='margin-top:5px;' onclick='downloadFeedbackReport(" . $aRow['shipment_id'] . ")'><i class='icon-download'></i> " . $this->translator->_('Participant Feedback') . '</a>';
+                    $feedbackDownload = "<a href='javascript:void(0);' class='btn btn-info btn-xs' style='display:inline-block;margin:2px;' onclick='downloadFeedbackReport(" . $aRow['shipment_id'] . ")'><i class='icon-download'></i> " . $this->translator->_('Participant Feedback') . '</a>';
                 }
 
                 $row[] = "$exportReport $notResponded $feedbackDownload $downloadAllTBForms";
