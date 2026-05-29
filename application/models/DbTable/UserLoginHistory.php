@@ -34,6 +34,12 @@ class Application_Model_DbTable_UserLoginHistory extends Zend_Db_Table_Abstract
                 }
             }
 
+            // Hashed session id — written only if the column exists, so the
+            // code stays safe on instances pre-7.4.7 migration.
+            if (!array_key_exists('session_hash', $data) && $this->hasSessionHashColumn()) {
+                $data['session_hash'] = Pt_Commons_General::sessionHash();
+            }
+
             return $this->insert($data);
         } catch (Exception $e) {
             error_log('Error adding login history: ' . $e->getMessage());
@@ -331,6 +337,29 @@ class Application_Model_DbTable_UserLoginHistory extends Zend_Db_Table_Abstract
             error_log('Error cleaning old records: ' . $e->getMessage());
             return 0;
         }
+    }
+
+    /**
+     * Detect whether the 7.4.7 session_hash column has been applied — keeps
+     * the writer safe on pre-migration installs.
+     */
+    private function hasSessionHashColumn(): bool
+    {
+        static $cached = null;
+        if ($cached !== null) {
+            return $cached;
+        }
+        try {
+            $rows = $this->getAdapter()->fetchCol(
+                'SELECT COLUMN_NAME FROM information_schema.COLUMNS '
+                . 'WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = ? AND COLUMN_NAME = ?',
+                [$this->_name, 'session_hash']
+            );
+            $cached = !empty($rows);
+        } catch (Exception $e) {
+            $cached = false;
+        }
+        return $cached;
     }
 
     /**

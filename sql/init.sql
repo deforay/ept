@@ -72,10 +72,12 @@ CREATE TABLE IF NOT EXISTS `audit_log` (
   `type` varchar(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `ip_address` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `user_agent` varchar(512) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `session_hash` varchar(16) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   PRIMARY KEY (`audit_log_id`),
   KEY `idx_audit_log_created_by` (`created_by`),
   KEY `idx_audit_log_created_on` (`created_on`),
-  KEY `idx_audit_log_type` (`type`)
+  KEY `idx_audit_log_type` (`type`),
+  KEY `idx_audit_log_session_hash` (`session_hash`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
@@ -3118,8 +3120,10 @@ CREATE TABLE IF NOT EXISTS `user_login_history` (
   `ip_address` varchar(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `browser` varchar(1000) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `operating_system` varchar(1000) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `session_hash` varchar(16) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   PRIMARY KEY (`history_id`),
-  KEY `login_status_attempted_datetime_idx` (`login_status`,`login_attempted_datetime`)
+  KEY `login_status_attempted_datetime_idx` (`login_status`,`login_attempted_datetime`),
+  KEY `idx_user_login_history_session_hash` (`session_hash`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --

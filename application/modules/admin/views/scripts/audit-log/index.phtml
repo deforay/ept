@@ -336,6 +336,21 @@
         color: #94a3b8;
     }
 
+    .session-pill {
+        font-family: ui-monospace, "SF Mono", Menlo, monospace;
+        font-size: 10.5px;
+        color: #475569;
+        background: #f1f5f9;
+        border: 1px solid #e2e8f0;
+        border-radius: 10px;
+        padding: 1px 8px;
+        cursor: pointer;
+        user-select: all;
+        white-space: nowrap;
+    }
+    .session-pill:hover { background: #e2e8f0; color: #1e293b; }
+    .session-pill i { margin-right: 3px; opacity: 0.65; }
+
     .audit-time {
         color: #a0aec0;
         font-size: 12px;
@@ -465,6 +480,10 @@
             <label><?= $this->translate->_("Lab ID"); ?></label>
             <input type="search" id="labId" placeholder="<?= $this->translate->_("participant unique ID"); ?>" autocomplete="off" />
         </div>
+        <div class="field">
+            <label><?= $this->translate->_("Session"); ?></label>
+            <input type="search" id="sessionHash" placeholder="<?= $this->translate->_("16-char session hash"); ?>" autocomplete="off" />
+        </div>
         <button type="button" class="reset-btn" id="resetBtn"><?= $this->translate->_("Reset"); ?></button>
     </div>
 
@@ -517,6 +536,7 @@
         createdBy: '',
         actorEmail: '',
         labId: '',
+        sessionHash: '',
         search: ''
     };
 
@@ -604,6 +624,11 @@
         var uaHtml = uaShort
             ? '<span class="audit-ua" title="' + escapeHtml(item.userAgent) + '">' + escapeHtml(uaShort) + '</span>'
             : '';
+        var sessHtml = item.sessionHash
+            ? '<span class="session-pill" data-session="' + escapeHtml(item.sessionHash) + '" title="Click to filter by this session">'
+              +    '<i class="fas fa-fingerprint"></i> ' + escapeHtml(item.sessionHash.substring(0, 8))
+              + '</span>'
+            : '';
         return ''
             + '<div class="audit-item">'
             +   '<div class="audit-icon ' + escapeHtml(item.actionType) + '">'
@@ -620,6 +645,7 @@
             +       contextHtml
             +       ipHtml
             +       uaHtml
+            +       sessHtml
             +     '</div>'
             +   '</div>'
             +   '<div class="audit-time">' + escapeHtml(item.time) + '</div>'
@@ -684,6 +710,7 @@
                 createdBy: state.createdBy,
                 actorEmail: state.actorEmail,
                 labId: state.labId,
+                sessionHash: state.sessionHash,
                 search: state.search
             }
         }).done(function(payload) {
@@ -765,6 +792,27 @@
             }, 250);
         });
 
+        var sessionHashDebounce;
+        $('#sessionHash').on('input', function() {
+            var val = $(this).val();
+            clearTimeout(sessionHashDebounce);
+            sessionHashDebounce = setTimeout(function() {
+                state.sessionHash = val.trim();
+                state.page = 1;
+                fetchFeed();
+            }, 250);
+        });
+
+        // Click any per-row session pill to scope the feed to that session.
+        $feed.on('click', '.session-pill', function() {
+            var sh = $(this).data('session') || '';
+            if (!sh) return;
+            $('#sessionHash').val(sh);
+            state.sessionHash = sh;
+            state.page = 1;
+            fetchFeed();
+        });
+
         $('#searchBox').on('input', function() {
             var val = $(this).val();
             $('#searchWrap').toggleClass('has-value', val.length > 0);
@@ -810,9 +858,10 @@
             $('#createdBy').val('');
             $('#actorEmail').val('');
             $('#labId').val('');
+            $('#sessionHash').val('');
             $('#searchBox').val('');
             $('#searchWrap').removeClass('has-value');
-            state = { page: 1, pageSize: state.pageSize, startDate: '', endDate: '', type: '', createdBy: '', actorEmail: '', labId: '', search: '' };
+            state = { page: 1, pageSize: state.pageSize, startDate: '', endDate: '', type: '', createdBy: '', actorEmail: '', labId: '', sessionHash: '', search: '' };
             fetchFeed();
         });
 

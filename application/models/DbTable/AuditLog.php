@@ -61,6 +61,9 @@ class Application_Model_DbTable_AuditLog extends Zend_Db_Table_Abstract
         if ($this->hasColumn('user_agent')) {
             $data['user_agent'] = $this->captureUserAgent();
         }
+        if ($this->hasColumn('session_hash')) {
+            $data['session_hash'] = Pt_Commons_General::sessionHash();
+        }
         return $this->insert($data);
     }
 
@@ -241,6 +244,7 @@ class Application_Model_DbTable_AuditLog extends Zend_Db_Table_Abstract
         $createdBy = isset($parameters['createdBy']) ? trim($parameters['createdBy']) : '';
         $actorEmail = isset($parameters['actorEmail']) ? trim($parameters['actorEmail']) : '';
         $labId = isset($parameters['labId']) ? trim($parameters['labId']) : '';
+        $sessionHash = isset($parameters['sessionHash']) ? trim($parameters['sessionHash']) : '';
         $startDate = isset($parameters['startDate']) ? trim($parameters['startDate']) : '';
         $endDate = isset($parameters['endDate']) ? trim($parameters['endDate']) : '';
 
@@ -254,6 +258,9 @@ class Application_Model_DbTable_AuditLog extends Zend_Db_Table_Abstract
         }
         if ($this->hasColumn('user_agent')) {
             $alCols[] = 'user_agent';
+        }
+        if ($this->hasColumn('session_hash')) {
+            $alCols[] = 'session_hash';
         }
         $select = $db->select()
             ->from(['al' => $this->_name], $alCols)
@@ -306,6 +313,12 @@ class Application_Model_DbTable_AuditLog extends Zend_Db_Table_Abstract
                 ->joinInner(['pl' => 'participant'], 'pmm.participant_id = pl.participant_id', [])
                 ->where('pl.unique_identifier = ?', $labId);
             $select->where('al.created_by IN (?)', new Zend_Db_Expr((string) $dmEmailSub));
+        }
+
+        // Session-hash filter: group all rows from a single sitting (also
+        // disambiguates users behind CGNAT, where IP alone collides).
+        if ($sessionHash !== '' && $this->hasColumn('session_hash')) {
+            $select->where('al.session_hash = ?', $sessionHash);
         }
 
         if ($startDate !== '' && $endDate !== '') {
@@ -372,6 +385,7 @@ class Application_Model_DbTable_AuditLog extends Zend_Db_Table_Abstract
                 'userInitials' => $this->initials($name),
                 'ipAddress' => $row['ip_address'] ?? '',
                 'userAgent' => $row['user_agent'] ?? '',
+                'sessionHash' => $row['session_hash'] ?? '',
                 'context' => $row['type'] ? ucwords(str_replace('-', ' ', $row['type'])) : '',
                 'contextSlug' => $row['type'],
                 'timestamp' => $row['created_on'],

@@ -8,6 +8,25 @@ class Pt_Commons_General
         return strpos($haystack, $needle) !== false;
     }
 
+    /**
+     * Short, opaque per-session identifier stored alongside audit_log and
+     * user_login_history rows. Hashed (not the raw PHP session ID) so the
+     * stored value can't be replayed against an active session. 16 hex chars
+     * keeps the column narrow while leaving 64 bits of entropy. Returns ''
+     * in CLI/headless contexts where no session exists.
+     */
+    public static function sessionHash(): string
+    {
+        if (php_sapi_name() === 'cli') {
+            return '';
+        }
+        $sid = session_id();
+        if (!$sid) {
+            return '';
+        }
+        return substr(hash('sha256', $sid), 0, 16);
+    }
+
     public function copyDirectoryContents($source, $destination, $deleteSource = false)
     {
         if (!is_dir($destination)) {

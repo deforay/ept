@@ -111,11 +111,7 @@ class LogController extends Zend_Controller_Action
 
     private function sessionHash(): string
     {
-        $sid = session_id();
-        if (!$sid) {
-            return '';
-        }
-        return substr(hash('sha256', $sid), 0, 16);
+        return Pt_Commons_General::sessionHash();
     }
 
     private function detectRole(): string
