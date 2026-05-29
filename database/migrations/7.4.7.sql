@@ -29,15 +29,16 @@ ALTER TABLE `audit_log`
 ALTER TABLE `audit_log`
     ADD INDEX `idx_audit_log_created_by` (`created_by`);
 
+
+ALTER TABLE `user_login_history`
+    ADD COLUMN `session_hash` VARCHAR(16) NULL DEFAULT NULL AFTER `operating_system`;
+
+
 ALTER TABLE `audit_log`
     ADD INDEX `idx_audit_log_created_on` (`created_on`);
 
 ALTER TABLE `audit_log`
     ADD INDEX `idx_audit_log_type` (`type`);
-
-ALTER TABLE `user_login_history`
-    ADD COLUMN `session_hash` VARCHAR(16) NULL DEFAULT NULL AFTER `operating_system`;
-
 
 ALTER TABLE `audit_log`
     ADD INDEX `idx_audit_log_session_hash` (`session_hash`);
