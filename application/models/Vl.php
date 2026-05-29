@@ -580,7 +580,7 @@ class Application_Model_Vl
             if ($rowOverAll['is_pt_test_not_performed'] == 'yes') {
                 $firstSheet->getCell(Coordinate::stringFromColumnIndex(4) . $row)
                     ->setValueExplicit(html_entity_decode('PT TEST NOT PERFORMED', ENT_QUOTES, 'UTF-8'));
-                $col = 4 + count($refResult);
+                $col = 5 + count($refResult);
             } elseif (count($resultResponse) > 0) {
                 $firstSheet->getCell(Coordinate::stringFromColumnIndex(4) . $row)
                     ->setValueExplicit(html_entity_decode('Responded', ENT_QUOTES, 'UTF-8'));
@@ -615,7 +615,7 @@ class Application_Model_Vl
             } else {
                 $firstSheet->getCell(Coordinate::stringFromColumnIndex(4) . $row)
                     ->setValueExplicit(html_entity_decode('Not Responded', ENT_QUOTES, 'UTF-8'));
-                $col = 4 + count($refResult);
+                $col = 5 + count($refResult);
             }
 
             $firstSheet->getCell(Coordinate::stringFromColumnIndex($col++) . $row)
