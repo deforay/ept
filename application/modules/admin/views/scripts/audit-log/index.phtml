@@ -457,6 +457,14 @@
                 <?php endforeach; ?>
             </select>
         </div>
+        <div class="field">
+            <label><?= $this->translate->_("Actor email"); ?></label>
+            <input type="search" id="actorEmail" placeholder="<?= $this->translate->_("e.g. dm@lab.org"); ?>" autocomplete="off" />
+        </div>
+        <div class="field">
+            <label><?= $this->translate->_("Lab ID"); ?></label>
+            <input type="search" id="labId" placeholder="<?= $this->translate->_("participant unique ID"); ?>" autocomplete="off" />
+        </div>
         <button type="button" class="reset-btn" id="resetBtn"><?= $this->translate->_("Reset"); ?></button>
     </div>
 
@@ -507,6 +515,8 @@
         endDate: '',
         type: '',
         createdBy: '',
+        actorEmail: '',
+        labId: '',
         search: ''
     };
 
@@ -672,6 +682,8 @@
                 endDate: state.endDate,
                 type: state.type,
                 createdBy: state.createdBy,
+                actorEmail: state.actorEmail,
+                labId: state.labId,
                 search: state.search
             }
         }).done(function(payload) {
@@ -731,6 +743,28 @@
             fetchFeed();
         });
 
+        var actorEmailDebounce;
+        $('#actorEmail').on('input', function() {
+            var val = $(this).val();
+            clearTimeout(actorEmailDebounce);
+            actorEmailDebounce = setTimeout(function() {
+                state.actorEmail = val.trim();
+                state.page = 1;
+                fetchFeed();
+            }, 250);
+        });
+
+        var labIdDebounce;
+        $('#labId').on('input', function() {
+            var val = $(this).val();
+            clearTimeout(labIdDebounce);
+            labIdDebounce = setTimeout(function() {
+                state.labId = val.trim();
+                state.page = 1;
+                fetchFeed();
+            }, 250);
+        });
+
         $('#searchBox').on('input', function() {
             var val = $(this).val();
             $('#searchWrap').toggleClass('has-value', val.length > 0);
@@ -774,9 +808,11 @@
             $('#dateRange').val('');
             $('#type').val('');
             $('#createdBy').val('');
+            $('#actorEmail').val('');
+            $('#labId').val('');
             $('#searchBox').val('');
             $('#searchWrap').removeClass('has-value');
-            state = { page: 1, pageSize: state.pageSize, startDate: '', endDate: '', type: '', createdBy: '', search: '' };
+            state = { page: 1, pageSize: state.pageSize, startDate: '', endDate: '', type: '', createdBy: '', actorEmail: '', labId: '', search: '' };
             fetchFeed();
         });
 

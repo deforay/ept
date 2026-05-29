@@ -239,6 +239,8 @@ class Application_Model_DbTable_AuditLog extends Zend_Db_Table_Abstract
         $search = isset($parameters['search']) ? trim($parameters['search']) : '';
         $type = isset($parameters['type']) ? trim($parameters['type']) : '';
         $createdBy = isset($parameters['createdBy']) ? trim($parameters['createdBy']) : '';
+        $actorEmail = isset($parameters['actorEmail']) ? trim($parameters['actorEmail']) : '';
+        $labId = isset($parameters['labId']) ? trim($parameters['labId']) : '';
         $startDate = isset($parameters['startDate']) ? trim($parameters['startDate']) : '';
         $endDate = isset($parameters['endDate']) ? trim($parameters['endDate']) : '';
 
@@ -285,6 +287,25 @@ class Application_Model_DbTable_AuditLog extends Zend_Db_Table_Abstract
 
         if ($createdBy !== '') {
             $select->where('al.created_by = ?', $createdBy);
+        }
+
+        // Free-text actor-email filter: substring LIKE on created_by. Useful
+        // for DM emails since the createdBy dropdown only lists system admins.
+        if ($actorEmail !== '') {
+            $select->where('al.created_by LIKE ?', '%' . $actorEmail . '%');
+        }
+
+        // Lab ID filter: resolve participant.unique_identifier -> set of DM
+        // emails via participant_manager_map, then restrict to actions by
+        // any of those DMs. IN (subquery) handles the empty case naturally
+        // (no DMs -> zero rows, which is the right answer for "this lab").
+        if ($labId !== '') {
+            $dmEmailSub = $db->select()
+                ->from(['dm' => 'data_manager'], ['primary_email'])
+                ->joinInner(['pmm' => 'participant_manager_map'], 'dm.dm_id = pmm.dm_id', [])
+                ->joinInner(['pl' => 'participant'], 'pmm.participant_id = pl.participant_id', [])
+                ->where('pl.unique_identifier = ?', $labId);
+            $select->where('al.created_by IN (?)', new Zend_Db_Expr((string) $dmEmailSub));
         }
 
         if ($startDate !== '' && $endDate !== '') {
