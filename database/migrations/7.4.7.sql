@@ -9,6 +9,12 @@
 UPDATE `system_config` SET `value` = '7.4.7' WHERE `config` = 'app_version';
 
 ALTER TABLE `audit_log`
+    ADD COLUMN `ip_address` VARCHAR(64) NULL DEFAULT NULL AFTER `type`;
+
+ALTER TABLE `audit_log`
+    ADD COLUMN `user_agent` VARCHAR(512) NULL DEFAULT NULL AFTER `ip_address`;
+
+ALTER TABLE `audit_log`
     ADD COLUMN `session_hash` VARCHAR(16) NULL DEFAULT NULL AFTER `user_agent`;
 
 ALTER TABLE `audit_log`

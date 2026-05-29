@@ -197,11 +197,20 @@ function add_column_if_missing(Zend_Db_Adapter_Abstract $db, string $table, stri
 {
     $exists = column_exists($db, $table, $column);
     mig_trace('add_column_if_missing', "{$table}.{$column} exists=" . ($exists ? 'true' : 'false'));
-    if (!$exists) {
-        run_sql($db, $ddl);
-        return MIG_EXECUTED;
+    if ($exists) {
+        return MIG_SKIPPED;
     }
-    return MIG_SKIPPED;
+    // Schema drifts across installs: if the column is positioned `AFTER <anchor>`
+    // and that anchor column doesn't exist here, drop the AFTER clause so the ADD
+    // still lands (column order is cosmetic). Prevents a 1054 "Unknown column" on
+    // `AFTER <missing>` — the failure mode when an earlier migration that should
+    // have created the anchor never landed on this install.
+    if (preg_match('/\bafter\s+`?([a-z0-9_]+)`?\s*;?\s*$/i', $ddl, $am) && !column_exists($db, $table, $am[1])) {
+        $ddl = preg_replace('/\s+after\s+`?[a-z0-9_]+`?(\s*;?\s*)$/i', '$1', $ddl);
+        mig_trace('add_column_if_missing', "{$table}.{$column}: stripped dangling AFTER `{$am[1]}`");
+    }
+    run_sql($db, $ddl);
+    return MIG_EXECUTED;
 }
 
 /** Create index only if missing */
