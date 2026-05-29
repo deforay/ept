@@ -652,6 +652,7 @@
 
         // Send AJAX request to generate Excel file
         $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'shipment', 'action' => 'export-shipment-not-responded-participants')); ?>", {
+            shipmentId: "<?php echo $this->shipmentId; ?>",
             shipmentCode: "<?php echo $this->shipment['shipment']['shipment_code']; ?>",
             shipmentDate: "<?php echo $this->dateFormat($this->shipment['shipment']['shipment_date']); ?>",
             format: "html"
