@@ -82,10 +82,11 @@ $schedule->run($phpPath . " " . BIN_PATH . "/process-bounces.php --quiet")
     ->description('Processing email bounces');
 
 // Auto-close shipment response switches once the response deadline has passed.
-// Flips response_switch 'on' -> 'off' the day after lastdate_response (cutoff is
-// 23:59:59 in the cutoff_timezone). Skips finalized shipments. Idempotent.
+// Flips response_switch 'on' -> 'off' at the exact response_deadline instant
+// (interpreted in the cutoff timezone). Runs every minute so the switch closes
+// close to the set time. Skips finalized shipments. Idempotent.
 $schedule->run($phpPath . " " . SCHEDULED_JOBS_FOLDER . "/close-expired-response-switches.php")
-    ->hourly()
+    ->everyMinute()
     ->timezone($timezone)
     ->preventOverlapping()
     ->description('Closing expired shipment response switches');

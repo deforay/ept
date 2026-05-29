@@ -67,7 +67,7 @@ class Application_Model_Tb
                 $createdOn = new DateTimeImmutable('1970-01-01');
             }
 
-            $lastDate = Pt_Commons_DateUtility::shipmentCutoff($shipment['lastdate_response']);
+            $lastDate = Pt_Commons_DateUtility::shipmentCutoff($shipment['response_deadline']);
 
             $results = $this->getTbSamplesForParticipant($shipmentId, $shipment['participant_id']);
 
@@ -1559,7 +1559,7 @@ class Application_Model_Tb
             ->setBottom(0.5);
 
         $sheet->setCellValue('A2', $result[0]['shipment_code']);
-        $sheet->setCellValue('R2', Pt_Commons_DateUtility::humanReadableDateFormat($result[0]['lastdate_response']));
+        $sheet->setCellValue('R2', Pt_Commons_DateUtility::humanReadableDateFormat($result[0]['response_deadline']));
 
         if (isset($result[0]['iso_name']) && !empty($result[0]['iso_name'])) {
             $sheet->setCellValue('H2', $result[0]['iso_name']);

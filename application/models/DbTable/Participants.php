@@ -2388,7 +2388,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         $sQuery = $this->getAdapter()->select()->from(['p' => 'participant'], [new Zend_Db_Expr('SQL_CALC_FOUND_ROWS p.participant_id'), 'p.unique_identifier', 'p.institute_name', 'p.country', 'p.state', 'p.district', 'p.status', 'participantName' => new Zend_Db_Expr(self::participantNameGroupConcatExpr('p'))])
             ->joinLeft(['c' => 'countries'], 'c.id=p.country')
             ->joinLeft(['sp' => 'shipment_participant_map'], 'p.participant_id=sp.participant_id', ['shipment_test_report_date', 'final_result', 'RESPONSE' => new Zend_Db_Expr("CASE WHEN (sp.is_excluded ='yes') THEN 'Excluded'  WHEN (sp.shipment_test_date not like '' AND sp.shipment_test_date!='0000-00-00' AND sp.shipment_test_date not like 'NULL') THEN 'Responded' ELSE 'Not Responded' END")])
-            ->joinLeft(['s' => 'shipment'], 's.shipment_id=sp.shipment_id', ['shipment_code', 'scheme_type', 'lastdate_response', 'status'])
+            ->joinLeft(['s' => 'shipment'], 's.shipment_id=sp.shipment_id', ['shipment_code', 'scheme_type', 'response_deadline', 'status'])
             ->group('p.participant_id');
 
         if (isset($parameters['scheme']) && $parameters['scheme'] != '') {

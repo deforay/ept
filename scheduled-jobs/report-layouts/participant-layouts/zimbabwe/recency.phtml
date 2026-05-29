@@ -79,8 +79,8 @@ if (!empty($resultArray['shipment'])) {
         if (trim($result['shipment_date']) != "") {
             $result['shipment_date'] = Pt_Commons_DateUtility::humanReadableDateFormat($result['shipment_date']);
         }
-        if (trim($result['lastdate_response']) != "") {
-            $result['lastdate_response'] = Pt_Commons_DateUtility::humanReadableDateFormat($result['lastdate_response']);
+        if (trim($result['response_deadline']) != "") {
+            $result['response_deadline'] = Pt_Commons_DateUtility::humanReadableDateFormat($result['response_deadline']);
         }
 
         $responseDate = "";
@@ -157,7 +157,7 @@ if (!empty($resultArray['shipment'])) {
             $labInfo .= '<img style="width:10px;" src="' . $flag . '"/>';
         }
         $labInfo .= '</td>';
-        $labInfo .= '	<td style="border-bottom-color:white;border-spacing: 25px;border-collapse: separate;"><strong>Result Due Date</strong><br>' . $result['lastdate_response'] . '</td>';
+        $labInfo .= '	<td style="border-bottom-color:white;border-spacing: 25px;border-collapse: separate;"><strong>Result Due Date</strong><br>' . $result['response_deadline'] . '</td>';
         $labInfo .= '</tr>';
 
         $labInfo .= '<tr>';

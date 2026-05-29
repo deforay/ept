@@ -95,7 +95,7 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
 					</div>
 				<?php } ?>
 				<input type="hidden" id="hdLastDate" name="hdLastDate"
-					value="<?php echo $this->shipment['lastdate_response']; ?>" />
+					value="<?php echo $this->shipment['response_deadline']; ?>" />
 				<input type="hidden" id="smid" name="smid" value="<?php echo $this->shipment['map_id']; ?>" />
 				<input type="hidden" id="shipmentId" name="shipmentId" value="<?php echo $this->shipId; ?>" />
 				<input type="hidden" id="participantId" name="participantId"
@@ -123,7 +123,7 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
 					<?php
 
 					$date = (new DateTime())->setTime(0, 0, 0);
-					$lastDate = (new DateTime($this->shipment['lastdate_response']))->setTime(0, 0, 0);
+					$lastDate = (new DateTime($this->shipment['response_deadline']))->setTime(0, 0, 0);
 
 					if ($this->isEditable && !$adminAccess) {
 						if (($date > $lastDate) && $this->shipment['status'] == 'finalized') {
@@ -251,7 +251,7 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
 							<td style="width:30%;"><?php echo $this->dateFormat($this->shipment['shipment_date']); ?>
 							</td>
 							<td style="width:20%;"><label><?= $this->translate->_("Result Due Date"); ?></label></td>
-							<td><?php echo $this->dateFormat($this->shipment['lastdate_response']); ?> </td>
+							<td><?php echo $this->dateFormat($this->shipment['response_deadline'], true); ?> </td>
 						</tr>
 						<tr class="light">
 							<td><label><?= $this->translate->_("Test Receipt Date"); ?> <span

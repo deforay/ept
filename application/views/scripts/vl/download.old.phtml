@@ -136,7 +136,7 @@ $labInfo .= '<tr style="background-color:#F7F7F7;">';
 $labInfo .= '<td style="font-weight:bold;width:25%">Shipment Date</td>';
 $labInfo .= '<td style="font-weight:bold;width:25%">' . $this->dateFormat($this->shipment['shipment_date']) . '</td>';
 $labInfo .= '<td style="font-weight:bold;width:25%">Result Due Date <?php ?></td>';
-$labInfo .= '<td style="font-weight:bold;width:25%">' . $this->dateFormat($this->shipment["lastdate_response"]) . '</td>';
+$labInfo .= '<td style="font-weight:bold;width:25%">' . $this->dateFormat($this->shipment["response_deadline"], true) . '</td>';
 $labInfo .= '</tr>';
 
 $labInfo .= '<tr style="background-color:#CCCCCC;">';

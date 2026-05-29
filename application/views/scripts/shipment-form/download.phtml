@@ -72,6 +72,7 @@ class MYPDF extends TCPDF
 	}
 }
 
+$translator = Zend_Registry::get('translate');
 
 // create new PDF document
 $pdf = new MYPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
@@ -113,10 +114,10 @@ $labInfo = '<span class="pull-right">Fields marked <span class="mandatory">*</sp
 
 $labInfo .= '<table border="1" style="font-size:13px;width:100%;" cellspacing="0" cellpadding="4">';
 $labInfo .= '<tr style="background-color:#dbe4ee;">';
-$labInfo .= '<td style="text-align:center;font-weight:bold;width:25%"> <span class="txt"> Shipment Code</span> </td>';
-$labInfo .= '<td style="text-align:center;font-weight:bold;width:25%"><span class="txt"> Scheme Type </span> </td>';
-$labInfo .= '<td style="text-align:center;font-weight:bold;width:25%"><span class="txt"> PT Survey Code </span>  </td>';
-$labInfo .= '<td style="text-align:center;font-weight:bold;width:25%"><span class="txt"> PT Survey Date </span> </td>';
+$labInfo .= '<td style="text-align:center;font-weight:bold;width:25%"> <span class="txt"> ' . $translator->translate("Shipment Code") . '</span> </td>';
+$labInfo .= '<td style="text-align:center;font-weight:bold;width:25%"><span class="txt"> ' . $translator->translate("Scheme Type") . ' </span> </td>';
+$labInfo .= '<td style="text-align:center;font-weight:bold;width:25%"><span class="txt"> ' . $translator->translate("PT Survey Code") . ' </span>  </td>';
+$labInfo .= '<td style="text-align:center;font-weight:bold;width:25%"><span class="txt"> ' . $translator->translate("PT Survey Date") . ' </span> </td>';
 $labInfo .= '</tr>';
 $labInfo .= '<tr>';
 $labInfo .= '<td style="text-align:center;">' . $this->shipment["shipment_code"] . '</td>';
@@ -128,10 +129,10 @@ $labInfo .= '</table><br/><br/>';
 
 $labInfo .= '<table border="1" style="font-size:13px;width:100%;" cellspacing="0" cellpadding="4">';
 $labInfo .= '<tr style="background-color:#dbe4ee;">';
-$labInfo .= '<td style="text-align:center;font-weight:bold;width:25%"> <span class="txt"> Participant Name </span> </td>';
-$labInfo .= '<td style="text-align:center;font-weight:bold;width:25%"><span class="txt"> Participant Code </span> </td>';
-$labInfo .= '<td style="text-align:center;font-weight:bold;width:25%"><span class="txt"> Affiliation </span>  </td>';
-$labInfo .= '<td style="text-align:center;font-weight:bold;width:25%"><span class="txt"> Phone No </span> </td>';
+$labInfo .= '<td style="text-align:center;font-weight:bold;width:25%"> <span class="txt"> ' . $translator->translate("Participant Name") . ' </span> </td>';
+$labInfo .= '<td style="text-align:center;font-weight:bold;width:25%"><span class="txt"> ' . $translator->translate("Participant Code") . ' </span> </td>';
+$labInfo .= '<td style="text-align:center;font-weight:bold;width:25%"><span class="txt"> ' . $translator->translate("Affiliation") . ' </span>  </td>';
+$labInfo .= '<td style="text-align:center;font-weight:bold;width:25%"><span class="txt"> ' . $translator->translate("Phone No") . ' </span> </td>';
 $labInfo .= '</tr>';
 $labInfo .= '<tr>';
 $labInfo .= '<td style="text-align:center;font-weight:bold;width:25%"></td>';
@@ -141,9 +142,9 @@ $labInfo .= '<td style="text-align:center;font-weight:bold;width:25%"></td>';
 $labInfo .= '</tr>';
 
 $labInfo .= '<tr style="background-color:#dbe4ee;">';
-$labInfo .= '<td style="text-align:center;font-weight:bold;width:25%"> <span class="txt"> Contact Name </span> </td>';
-$labInfo .= '<td style="text-align:center;font-weight:bold;width:25%"><span class="txt"> Email Address </span> </td>';
-$labInfo .= '<td style="text-align:center;font-weight:bold;width:25%"><span class="txt"> Contact Phone Number </span>  </td>';
+$labInfo .= '<td style="text-align:center;font-weight:bold;width:25%"> <span class="txt"> ' . $translator->translate("Contact Name") . ' </span> </td>';
+$labInfo .= '<td style="text-align:center;font-weight:bold;width:25%"><span class="txt"> ' . $translator->translate("Email Address") . ' </span> </td>';
+$labInfo .= '<td style="text-align:center;font-weight:bold;width:25%"><span class="txt"> ' . $translator->translate("Contact Phone Number") . ' </span>  </td>';
 $labInfo .= '<td style="text-align:center;font-weight:bold;width:25%"></td>';
 $labInfo .= '</tr>';
 $labInfo .= '<tr>';
@@ -196,25 +197,25 @@ if ($this->shipment["scheme_type"] == 'dts') {
 
 	$labInfo .= '<table border="1" style="font-size:13px;width:100%;" cellspacing="0" cellpadding="4">';
 	$labInfo .= '<tr style="background-color:#F7F7F7;">';
-	$labInfo .= '<td style="font-weight:bold;width:25%">Shipment Date</td>';
+	$labInfo .= '<td style="font-weight:bold;width:25%">' . $translator->translate("Shipment Date") . '</td>';
 	$labInfo .= '<td style="width:25%">' . $this->dateFormat($this->shipment["shipment_date"]) . '</td>';
-	$labInfo .= '<td style="font-weight:bold;width:25%">Result Due Date</td>';
-	$labInfo .= '<td style="width:25%">' . $this->dateFormat($this->shipment["lastdate_response"]) . '</td>';
+	$labInfo .= '<td style="font-weight:bold;width:25%">' . $translator->translate("Result Due Date") . '</td>';
+	$labInfo .= '<td style="width:25%">' . $this->dateFormat($this->shipment["response_deadline"], true) . '</td>';
 	$labInfo .= '</tr>';
 
 
 
 	$labInfo .= '<tr style="background-color:#CCCCCC;" cellspacing="0" cellpadding="4">';
-	$labInfo .= '<td style="font-weight:bold;width:25%">Shipment Receipt Date</td>';
+	$labInfo .= '<td style="font-weight:bold;width:25%">' . $translator->translate("Shipment Receipt Date") . '</td>';
 	$labInfo .= '<td style="font-weight:bold;width:25%"></td>';
-	$labInfo .= '<td style="font-weight:bold;width:25%">Sample Rehydration Date</td>';
+	$labInfo .= '<td style="font-weight:bold;width:25%">' . $translator->translate("Sample Rehydration Date") . '</td>';
 	$labInfo .= '<td style="font-weight:bold;width:25%"></td>';
 	$labInfo .= '</tr>';
 
 	$labInfo .= '<tr style="background-color:#F7F7F7;">';
-	$labInfo .= '<td style="font-weight:bold;width:25%">Testing Date</td> ';
+	$labInfo .= '<td style="font-weight:bold;width:25%">' . $translator->translate("Testing Date") . '</td> ';
 	$labInfo .= '<td style="font-weight:bold;width:25%"></td>';
-	$labInfo .= '<td style="font-weight:bold;width:25%">Algorithm Used</td>';
+	$labInfo .= '<td style="font-weight:bold;width:25%">' . $translator->translate("Algorithm Used") . '</td>';
 	$labInfo .= '<td style="font-weight:bold;width:25%"></td>';
 	$labInfo .= '</tr>';
 
@@ -223,10 +224,10 @@ if ($this->shipment["scheme_type"] == 'dts') {
 	$labInfo .= '<table border="1" style="font-size:13px;width:100%;" cellspacing="0" cellpadding="4">';
 	$labInfo .= '<tr style="background-color:#CCCCCC;">';
 	$labInfo .= '<td style="width:' . $width . '%;"></td>';
-	$labInfo .= '<td style="text-align:center;font-weight:bold;width:' . $width . '%;">Test-1</td>';
-	$labInfo .= '<td style="text-align:center;font-weight:bold;width:' . $width . '%;">Test-2</td>';
+	$labInfo .= '<td style="text-align:center;font-weight:bold;width:' . $width . '%;">' . $translator->translate("Test-1") . '</td>';
+	$labInfo .= '<td style="text-align:center;font-weight:bold;width:' . $width . '%;">' . $translator->translate("Test-2") . '</td>';
 	if ($optionalTest3 == 'no') {
-		$labInfo .= '<td style="text-align:center;font-weight:bold;width:' . $width . '%;">Test-3</td>';
+		$labInfo .= '<td style="text-align:center;font-weight:bold;width:' . $width . '%;">' . $translator->translate("Test-3") . '</td>';
 	}
 
 	if ($allowRepeatTests == 'yes' && !in_array("ghanaNationalDtsAlgo", $allowedAlgorithms)) {
@@ -238,7 +239,7 @@ if ($this->shipment["scheme_type"] == 'dts') {
 	}
 	$labInfo .= '</tr>';
 	$labInfo .= '<tr style="background-color:#F7F7F7;" cellspacing="0" cellpadding="4">';
-	$labInfo .= '<td style="font-weight:bold;">Kit Name</td>';
+	$labInfo .= '<td style="font-weight:bold;">' . $translator->translate("Kit Name") . '</td>';
 	$labInfo .= '<td></td>';
 	$labInfo .= '<td></td>';
 	if ($optionalTest3 == 'no') {
@@ -254,7 +255,7 @@ if ($this->shipment["scheme_type"] == 'dts') {
 	$labInfo .= '</tr>';
 
 	$labInfo .= '<tr style="background-color:#F7F7F7;">';
-	$labInfo .= '<td style="font-weight:bold;">Lot No.</td>';
+	$labInfo .= '<td style="font-weight:bold;">' . $translator->translate("Lot No.") . '</td>';
 	$labInfo .= '<td></td>';
 	$labInfo .= '<td></td>';
 	if ($optionalTest3 == 'no') {
@@ -270,7 +271,7 @@ if ($this->shipment["scheme_type"] == 'dts') {
 	$labInfo .= '</tr>';
 
 	$labInfo .= '<tr style="background-color:#F7F7F7;">';
-	$labInfo .= '<td style="font-weight:bold;">Expiry Date</td>';
+	$labInfo .= '<td style="font-weight:bold;">' . $translator->translate("Expiry Date") . '</td>';
 	$labInfo .= '<td></td>';
 	$labInfo .= '<td></td>';
 	if ($optionalTest3 == 'no') {
@@ -331,8 +332,8 @@ if ($this->shipment["scheme_type"] == 'dts') {
 		$labInfo .= '<td style="font-weight:bold;">' . $sample['sample_label'] . '</td>';
 		if ($syphilisActive) {
 			$labInfo .= '<th scope="col">
-				<span style="border-bottom: 1px solid gray;">HIV</span><hr>
-				<span>SYPHILIS</span>
+				<span style="border-bottom: 1px solid gray;">' . $translator->translate("HIV") . '</span><hr>
+				<span>' . $translator->translate("SYPHILIS") . '</span>
 			</th>';
 		}
 		$labInfo .= '<td>';
@@ -403,35 +404,35 @@ if ($this->shipment["scheme_type"] == 'dts') {
 } elseif ($this->shipment["scheme_type"] == 'vl') {
 	$labInfo .= '<table border="1" style="font-size:13px;width:100%;" cellspacing="0" cellpadding="4">';
 	$labInfo .= '<tr style="background-color:#F7F7F7;">';
-	$labInfo .= '<td style="font-weight:bold;width:25%">Shipment Date</td>';
+	$labInfo .= '<td style="font-weight:bold;width:25%">' . $translator->translate("Shipment Date") . '</td>';
 	$labInfo .= '<td style="width:25%">' . $this->dateFormat($this->shipment["shipment_date"]) . '</td>';
-	$labInfo .= '<td style="font-weight:bold;width:25%">Result Due Date</td>';
-	$labInfo .= '<td style="width:25%">' . $this->dateFormat($this->shipment["lastdate_response"]) . '</td>';
+	$labInfo .= '<td style="font-weight:bold;width:25%">' . $translator->translate("Result Due Date") . '</td>';
+	$labInfo .= '<td style="width:25%">' . $this->dateFormat($this->shipment["response_deadline"], true) . '</td>';
 	$labInfo .= '</tr>';
 
 	$labInfo .= '<tr style="background-color:#CCCCCC;" cellspacing="0" cellpadding="4">';
-	$labInfo .= '<td style="font-weight:bold;width:25%">Shipment Receipt Date</td>';
+	$labInfo .= '<td style="font-weight:bold;width:25%">' . $translator->translate("Shipment Receipt Date") . '</td>';
 	$labInfo .= '<td style="font-weight:bold;width:25%"></td>';
-	$labInfo .= '<td style="font-weight:bold;width:25%">Sample Rehydration Date</td>';
+	$labInfo .= '<td style="font-weight:bold;width:25%">' . $translator->translate("Sample Rehydration Date") . '</td>';
 	$labInfo .= '<td style="font-weight:bold;width:25%"></td>';
 	$labInfo .= '</tr>';
 
 	$labInfo .= '<tr style="background-color:#F7F7F7;">';
-	$labInfo .= '<td style="font-weight:bold;width:25%">Testing Date</td> ';
+	$labInfo .= '<td style="font-weight:bold;width:25%">' . $translator->translate("Testing Date") . '</td> ';
 	$labInfo .= '<td style="font-weight:bold;width:25%"></td>';
-	$labInfo .= '<td style="font-weight:bold;width:25%">Specimen Volume</td>';
+	$labInfo .= '<td style="font-weight:bold;width:25%">' . $translator->translate("Specimen Volume") . '</td>';
 	$labInfo .= '<td style="font-weight:bold;width:25%"></td>';
 	$labInfo .= '</tr>';
 
 	$labInfo .= '<tr style="background-color:#CCCCCC;" cellspacing="0" cellpadding="4">';
-	$labInfo .= '<td style="font-weight:bold;width:25%">Viral Load Assay *</td>';
+	$labInfo .= '<td style="font-weight:bold;width:25%">' . $translator->translate("Viral Load Assay *") . '</td>';
 	$labInfo .= '<td style="font-weight:bold;width:25%"></td>';
-	$labInfo .= '<td style="font-weight:bold;width:25%">Assay Expiration Date</td>';
+	$labInfo .= '<td style="font-weight:bold;width:25%">' . $translator->translate("Assay Expiration Date") . '</td>';
 	$labInfo .= '<td style="font-weight:bold;width:25%"></td>';
 	$labInfo .= '</tr>';
 
 	$labInfo .= '<tr style="background-color:#F7F7F7;">';
-	$labInfo .= '<td style="font-weight:bold;width:25%">Assay Lot Number</td> ';
+	$labInfo .= '<td style="font-weight:bold;width:25%">' . $translator->translate("Assay Lot Number") . '</td> ';
 	$labInfo .= '<td style="font-weight:bold;" colspan="3"></td>';
 
 	$labInfo .= '</tr>';
@@ -440,8 +441,8 @@ if ($this->shipment["scheme_type"] == 'dts') {
 
 	$labInfo .= '<table border="1" style="font-size:13px;width:100%;" cellspacing="0" cellpadding="4">';
 	$labInfo .= '<tr style="background-color:#CCCCCC;">';
-	$labInfo .= '<td style="text-align:center;font-weight:bold;width:50%">Control/Sample</td>';
-	$labInfo .= '<td style="text-align:center;font-weight:bold;width:50%">Viral Load (log<sub>10</sub> copies/ml)</td>';
+	$labInfo .= '<td style="text-align:center;font-weight:bold;width:50%">' . $translator->translate("Control/Sample") . '</td>';
+	$labInfo .= '<td style="text-align:center;font-weight:bold;width:50%">' . $translator->translate("Viral Load (log<sub>10</sub> copies/ml)") . '</td>';
 	$labInfo .= '</tr>';
 
 	if (count($this->shipment["referenceResult"]) > 0) {
@@ -478,25 +479,25 @@ if ($this->shipment["scheme_type"] == 'dts') {
 	$labInfo .= '<td style="font-weight:bold;width:25%">Shipment Date</td>';
 	$labInfo .= '<td style="width:25%">' . $this->dateFormat($this->shipment["shipment_date"]) . '</td>';
 	$labInfo .= '<td style="font-weight:bold;width:25%">Result Due Date</td>';
-	$labInfo .= '<td style="width:25%">' . $this->dateFormat($this->shipment["lastdate_response"]) . '</td>';
+	$labInfo .= '<td style="width:25%">' . $this->dateFormat($this->shipment["response_deadline"], true) . '</td>';
 	$labInfo .= '</tr>';
 
 	$labInfo .= '<tr style="background-color:#CCCCCC;" cellspacing="0" cellpadding="4">';
-	$labInfo .= '<td style="font-weight:bold;width:25%">Shipment Receipt Date</td>';
+	$labInfo .= '<td style="font-weight:bold;width:25%">' . $translator->translate("Shipment Receipt Date") . '</td>';
 	$labInfo .= '<td style="font-weight:bold;width:25%"></td>';
-	$labInfo .= '<td style="font-weight:bold;width:25%">Testing Date</td>';
+	$labInfo .= '<td style="font-weight:bold;width:25%">' . $translator->translate("Testing Date") . '</td>';
 	$labInfo .= '<td style="font-weight:bold;width:25%"></td>';
 	$labInfo .= '</tr>';
 
 	$labInfo .= '<tr style="background-color:#F7F7F7;">';
-	$labInfo .= '<td style="font-weight:bold;width:25%">Extraction Assay</td> ';
+	$labInfo .= '<td style="font-weight:bold;width:25%">' . $translator->translate("Extraction Assay") . '</td> ';
 	$labInfo .= '<td style="font-weight:bold;width:25%"></td>';
-	$labInfo .= '<td style="font-weight:bold;width:25%">Detection Assay</td>';
+	$labInfo .= '<td style="font-weight:bold;width:25%">' . $translator->translate("Detection Assay") . '</td>';
 	$labInfo .= '<td style="font-weight:bold;width:25%"></td>';
 	$labInfo .= '</tr>';
 
 	$labInfo .= '<tr style="background-color:#CCCCCC;" cellspacing="0" cellpadding="4">';
-	$labInfo .= '<td style="font-weight:bold;width:25%">Sample Rehydration Date</td>';
+	$labInfo .= '<td style="font-weight:bold;width:25%">' . $translator->translate("Sample Rehydration Date") . '</td>';
 	$labInfo .= '<td style="font-weight:bold;" colspan="3"></td>';
 	$labInfo .= '</tr>';
 
@@ -505,10 +506,10 @@ if ($this->shipment["scheme_type"] == 'dts') {
 
 	$labInfo .= '<table border="1" style="font-size:13px;width:100%;" cellspacing="0" cellpadding="4">';
 	$labInfo .= '<tr style="background-color:#CCCCCC;">';
-	$labInfo .= '<td style="text-align:center;font-weight:bold;width:25%">Control/Sample</td>';
-	$labInfo .= '<td style="text-align:center;font-weight:bold;width:25%">Your Results</td>';
-	$labInfo .= '<td style="text-align:center;font-weight:bold;width:25%">HIV CT/OD</td>';
-	$labInfo .= '<td style="text-align:center;font-weight:bold;width:25%">IC/QS Values</td>';
+	$labInfo .= '<td style="text-align:center;font-weight:bold;width:25%">' . $translator->translate("Control/Sample") . '</td>';
+	$labInfo .= '<td style="text-align:center;font-weight:bold;width:25%">' . $translator->translate("Your Results") . '</td>';
+	$labInfo .= '<td style="text-align:center;font-weight:bold;width:25%">' . $translator->translate("HIV CT/OD") . '</td>';
+	$labInfo .= '<td style="text-align:center;font-weight:bold;width:25%">' . $translator->translate("IC/QS Values") . '</td>';
 	$labInfo .= '</tr>';
 	if (count($this->shipment["referenceResult"]) > 0) {
 		foreach ($this->shipment["referenceResult"] as $referenceRes) {
@@ -528,14 +529,14 @@ if ($this->shipment["scheme_type"] == 'dts') {
 
 	$labInfo .= '<table border="1" style="font-size:13px;width:100%;" cellspacing="0" cellpadding="4">';
 	$labInfo .= '<tr style="background-color:#CCCCCC;">';
-	$labInfo .= '<td style="font-weight:bold;">Supervisor Review</td>';
-	$labInfo .= '<td>Yes/No</td>';
-	$labInfo .= '<td style="font-weight:bold;">Supervisor Name</td>';
+	$labInfo .= '<td style="font-weight:bold;">' . $translator->translate("Supervisor Review") . '</td>';
+	$labInfo .= '<td>' . $translator->translate("Yes/No") . '</td>';
+	$labInfo .= '<td style="font-weight:bold;">' . $translator->translate("Supervisor Name") . '</td>';
 	$labInfo .= '<td></td>';
 	$labInfo .= '</tr>';
 
 	$labInfo .= '<tr style="background-color:#F7F7F7;">';
-	$labInfo .= '<td style="font-weight:bold;">Comments</td>';
+	$labInfo .= '<td style="font-weight:bold;">' . $translator->translate("Comments") . '</td>';
 	$labInfo .= '<td colspan="3"></td>';
 	$labInfo .= '</tr>';
 	$labInfo .= '</table>';
@@ -543,30 +544,30 @@ if ($this->shipment["scheme_type"] == 'dts') {
 
 	$labInfo .= '<table border="1" style="font-size:13px;width:100%;" cellspacing="0" cellpadding="4">';
 	$labInfo .= '<tr style="background-color:#F7F7F7;">';
-	$labInfo .= '<td style="font-weight:bold;width:25%">Shipment Date</td>';
+	$labInfo .= '<td style="font-weight:bold;width:25%">' . $translator->translate("Shipment Date") . '</td>';
 	$labInfo .= '<td style="width:25%">' . $this->dateFormat($this->shipment["shipment_date"]) . '</td>';
-	$labInfo .= '<td style="font-weight:bold;width:25%">Result Due Date</td>';
-	$labInfo .= '<td style="width:25%">' . $this->dateFormat($this->shipment["lastdate_response"]) . '</td>';
+	$labInfo .= '<td style="font-weight:bold;width:25%">' . $translator->translate("Result Due Date") . '</td>';
+	$labInfo .= '<td style="width:25%">' . $this->dateFormat($this->shipment["response_deadline"], true) . '</td>';
 	$labInfo .= '</tr>';
 
 	$labInfo .= '<tr style="background-color:#CCCCCC;" cellspacing="0" cellpadding="4">';
-	$labInfo .= '<td style="font-weight:bold;width:25%">Shipment Receipt Date</td>';
+	$labInfo .= '<td style="font-weight:bold;width:25%">' . $translator->translate("Shipment Receipt Date") . '</td>';
 	$labInfo .= '<td style="font-weight:bold;width:25%"></td>';
-	$labInfo .= '<td style="font-weight:bold;width:25%">Sample Rehydration Date</td>';
-	$labInfo .= '<td style="font-weight:bold;width:25%"></td>';
-	$labInfo .= '</tr>';
-
-	$labInfo .= '<tr style="background-color:#F7F7F7;">';
-	$labInfo .= '<td style="font-weight:bold;width:25%">Testing Date</td> ';
-	$labInfo .= '<td style="font-weight:bold;width:25%"></td>';
-	$labInfo .= '<td style="font-weight:bold;width:25%">Assay Name</td>';
+	$labInfo .= '<td style="font-weight:bold;width:25%">' . $translator->translate("Sample Rehydration Date") . '</td>';
 	$labInfo .= '<td style="font-weight:bold;width:25%"></td>';
 	$labInfo .= '</tr>';
 
 	$labInfo .= '<tr style="background-color:#F7F7F7;">';
-	$labInfo .= '<td style="font-weight:bold;width:25%">Assay Lot No</td> ';
+	$labInfo .= '<td style="font-weight:bold;width:25%">' . $translator->translate("Testing Date") . '</td> ';
 	$labInfo .= '<td style="font-weight:bold;width:25%"></td>';
-	$labInfo .= '<td style="font-weight:bold;width:25%">Assay Expiry Date</td>';
+	$labInfo .= '<td style="font-weight:bold;width:25%">' . $translator->translate("Assay Name") . '</td>';
+	$labInfo .= '<td style="font-weight:bold;width:25%"></td>';
+	$labInfo .= '</tr>';
+
+	$labInfo .= '<tr style="background-color:#F7F7F7;">';
+	$labInfo .= '<td style="font-weight:bold;width:25%">' . $translator->translate("Assay Lot No") . '</td> ';
+	$labInfo .= '<td style="font-weight:bold;width:25%"></td>';
+	$labInfo .= '<td style="font-weight:bold;width:25%">' . $translator->translate("Assay Expiry Date") . '</td>';
 	$labInfo .= '<td style="font-weight:bold;width:25%"></td>';
 	$labInfo .= '</tr>';
 
@@ -574,11 +575,11 @@ if ($this->shipment["scheme_type"] == 'dts') {
 
 	$labInfo .= '<table border="1" style="font-size:13px;width:100%;" cellspacing="0" cellpadding="4">';
 	$labInfo .= '<tr style="background-color:#CCCCCC;">';
-	$labInfo .= '<td style="text-align:center;font-weight:bold;">Control/Sample</td>';
-	$labInfo .= '<td style="text-align:center;font-weight:bold;">Control Line</td>';
-	$labInfo .= '<td style="text-align:center;font-weight:bold;">Verification Line</td>';
-	$labInfo .= '<td style="text-align:center;font-weight:bold;">Longterm Line</td>';
-	$labInfo .= '<td style="text-align:center;font-weight:bold;">Your Results</td>';
+	$labInfo .= '<td style="text-align:center;font-weight:bold;">' . $translator->translate("Control/Sample") . '</td>';
+	$labInfo .= '<td style="text-align:center;font-weight:bold;">' . $translator->translate("Control Line") . '</td>';
+	$labInfo .= '<td style="text-align:center;font-weight:bold;">' . $translator->translate("Verification Line") . '</td>';
+	$labInfo .= '<td style="text-align:center;font-weight:bold;">' . $translator->translate("Longterm Line") . '</td>';
+	$labInfo .= '<td style="text-align:center;font-weight:bold;">' . $translator->translate("Your Results") . '</td>';
 	$labInfo .= '</tr>';
 	foreach ($this->shipment["referenceResult"] as $sample) {
 		$labInfo .= '<tr style="background-color:#F7F7F7;">';
@@ -593,14 +594,14 @@ if ($this->shipment["scheme_type"] == 'dts') {
 
 	$labInfo .= '<table border="1" style="font-size:13px;width:100%;" cellspacing="0" cellpadding="4">';
 	$labInfo .= '<tr style="background-color:#CCCCCC;">';
-	$labInfo .= '<td style="font-weight:bold;">Supervisor Review</td>';
-	$labInfo .= '<td>Yes/No</td>';
-	$labInfo .= '<td style="font-weight:bold;">Supervisor Name</td>';
+	$labInfo .= '<td style="font-weight:bold;">' . $translator->translate("Supervisor Review") . '</td>';
+	$labInfo .= '<td>' . $translator->translate("Yes/No") . '</td>';
+	$labInfo .= '<td style="font-weight:bold;">' . $translator->translate("Supervisor Name") . '</td>';
 	$labInfo .= '<td></td>';
 	$labInfo .= '</tr>';
 
 	$labInfo .= '<tr style="background-color:#F7F7F7;">';
-	$labInfo .= '<td style="font-weight:bold;">Comments</td>';
+	$labInfo .= '<td style="font-weight:bold;">' . $translator->translate("Comments") . '</td>';
 	$labInfo .= '<td colspan="3"></td>';
 	$labInfo .= '</tr>';
 	$labInfo .= '</table>';
@@ -627,7 +628,7 @@ if ($this->shipment["scheme_type"] == 'dts') {
 	$labInfo .= '<td style="font-weight:bold;width:25%">Shipment Date</td>';
 	$labInfo .= '<td style="width:25%">' . $this->dateFormat($this->shipment["shipment_date"]) . '</td>';
 	$labInfo .= '<td style="font-weight:bold;width:25%">Result Due Date</td>';
-	$labInfo .= '<td style="width:25%">' . $this->dateFormat($this->shipment["lastdate_response"]) . '</td>';
+	$labInfo .= '<td style="width:25%">' . $this->dateFormat($this->shipment["response_deadline"], true) . '</td>';
 	$labInfo .= '</tr>';
 
 

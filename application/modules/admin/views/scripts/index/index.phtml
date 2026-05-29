@@ -277,7 +277,7 @@ if (count($this->pendingParticipants) > 0) {
 					$dataShipment[] = "{ y: '" . strtoupper($pc['shipment_code']) . "', a: " . $pc['participantCount'] . " , b: " . (isset($pc['receivedCount']) ? $pc['receivedCount'] : 0) . " }";
 					$ppercentage[] = "'" . $per . "%'";
 					$ppsSchemeType[] = "'" . strtoupper($pc['scheme_type']) . "'";
-					$ppsShipmentLastDate[] = "'" . $this->dateFormat($pc['lastdate_response']) . "'";
+					$ppsShipmentLastDate[] = "'" . $this->dateFormat($pc['response_deadline'], true) . "'";
 				}
 				?>
 

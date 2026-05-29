@@ -25,10 +25,17 @@ class Admin_GlobalConfigController extends Zend_Controller_Action
         $commonServices = new Application_Service_Common();
         if ($request->isPost()) {
             $params = $this->getAllParams();
+            // App timezone lives in application.ini, not global_config — handle it
+            // separately so it isn't fed to the global_config update path.
+            if (array_key_exists('app_timezone', $params)) {
+                $this->view->appTimezoneSaved = $commonServices->updateApplicationTimezone($params['app_timezone']);
+                unset($params['app_timezone']);
+            }
             $commonServices->updateConfig($params);
         }
         $assign = $commonServices->getGlobalConfigDetails();
         $this->view->assign($assign);
+        $this->view->app_timezone = $commonServices->getApplicationTimezone();
         $this->view->allSchemes = $commonServices->getFullSchemesDetails();
     }
 }

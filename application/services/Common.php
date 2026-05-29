@@ -455,6 +455,45 @@ class Application_Service_Common
         $db = new Application_Model_DbTable_GlobalConfig();
         $db->updateConfigDetails($params);
     }
+
+    // Current PHP application timezone, read from application.ini for the active
+    // environment. This is the single source of truth for the app timezone.
+    public function getApplicationTimezone(): string
+    {
+        try {
+            $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
+            return !empty($conf->timezone) ? (string) $conf->timezone : '';
+        } catch (Throwable $e) {
+            return '';
+        }
+    }
+
+    // Persists the PHP application timezone into application.ini's [production]
+    // base section (the other env sections inherit it). Validated against the IANA
+    // list so an invalid zone can never be written. Uses a targeted single-line
+    // replace to preserve comments and the section-inheritance structure that a
+    // full Zend_Config_Writer rewrite would flatten. Returns true on success.
+    public function updateApplicationTimezone($timezone): bool
+    {
+        $timezone = trim((string) $timezone);
+        if ($timezone === '' || !in_array($timezone, DateTimeZone::listIdentifiers(), true)) {
+            return false;
+        }
+        $iniPath = APPLICATION_PATH . '/configs/application.ini';
+        if (!is_writable($iniPath)) {
+            return false;
+        }
+        $contents = @file_get_contents($iniPath);
+        if ($contents === false) {
+            return false;
+        }
+        $count = 0;
+        $updated = preg_replace('/^(\s*timezone\s*=\s*).*$/m', '${1}"' . $timezone . '"', $contents, 1, $count);
+        if ($updated === null || $count < 1) {
+            return false;
+        }
+        return @file_put_contents($iniPath, $updated, LOCK_EX) !== false;
+    }
     public function getEmailTemplate($purpose)
     {
         $db = new Application_Model_DbTable_MailTemplate();

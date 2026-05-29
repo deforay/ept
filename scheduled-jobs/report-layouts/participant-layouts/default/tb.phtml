@@ -84,8 +84,8 @@ if (!empty($resultArray['shipment'])) {
         if (trim($result['shipment_date']) != "") {
             $result['shipment_date'] = Pt_Commons_DateUtility::humanReadableDateFormat($result['shipment_date']);
         }
-        if (trim($result['lastdate_response']) != "") {
-            $result['lastdate_response'] = Pt_Commons_DateUtility::humanReadableDateFormat($result['lastdate_response']);
+        if (trim($result['response_deadline']) != "") {
+            $result['response_deadline'] = Pt_Commons_DateUtility::humanReadableDateFormat($result['response_deadline']);
         }
 
         $responseDate = "";
@@ -146,9 +146,9 @@ if (!empty($resultArray['shipment'])) {
             $serialSN = (isset($attributes['instrument_sn']) && !empty($attributes['instrument_sn']) && trim($attributes['instrument_sn']) != '') ? $attributes['instrument_sn'] : "NO SERIAL ENTERED";
             $labInfo .= '	<td style="text-align:center;border-bottom:solid 2px;">' . $serialSN . '</td>';
             $labInfo .= '	<td style="text-align:center;border-bottom:solid 2px;">' . $attributes['date_of_xpert_instrument_calibration'] ?? null . '</td>';
-            $labInfo .= '	<td style="text-align:center;border-bottom:solid 2px;">' . $result['lastdate_response'] . '</td>';
+            $labInfo .= '	<td style="text-align:center;border-bottom:solid 2px;">' . $result['response_deadline'] . '</td>';
         } else {
-            $labInfo .= '	<td style="text-align:center;border-bottom:solid 2px;">' . $result['lastdate_response'] . '</td>';
+            $labInfo .= '	<td style="text-align:center;border-bottom:solid 2px;">' . $result['response_deadline'] . '</td>';
         }
         $labInfo .= '</tr>';
         $result['assayName'] = $result['assayName'] ?? 'Unspecified';

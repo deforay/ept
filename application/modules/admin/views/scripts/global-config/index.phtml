@@ -215,9 +215,9 @@ $faqResults = json_decode($this->faqs);
 		color: #fff;
 	}
 
-	/* Ensure TomSelect properly hides the original select - using multiple selectors for specificity */
-	.ts-wrapper~select#schemeId,
-	select#schemeId.tomselected,
+	/* Ensure TomSelect properly hides the original select (any tom-selected select, not just #schemeId) */
+	.ts-wrapper~select,
+	select.tomselected,
 	select.ts-hidden-accessible {
 		position: absolute !important;
 		left: -9999px !important;
@@ -605,22 +605,6 @@ $faqResults = json_decode($this->faqs);
 							title="<?= $this->translate->_('Enter the watermark text to display on training reports'); ?>"
 							value="<?php echo $this->training_instance_text; ?>" />
 					</div>
-					<div class="col-md-6">
-						<label for="response_after_evaluate"
-							class="control-label"><?= $this->translate->_("Accept Responses After Finalization"); ?></label>
-						<div class="input-group">
-							<div class="btn-group radioBtn">
-								<a class="btn btn-primary btn-sm <?php echo (isset($this->response_after_evaluate) && $this->response_after_evaluate == "yes") ? " active " : "notActive"; ?>"
-									data-toggle="response_after_evaluate" data-title="yes"
-									onclick="toggleRadios(this);"><?= $this->translate->_("YES"); ?></a>
-								<a class="btn btn-primary btn-sm <?php echo (!isset($this->response_after_evaluate) || $this->response_after_evaluate == "no") ? " active " : "notActive"; ?>"
-									data-toggle="response_after_evaluate" data-title="no"
-									onclick="toggleRadios(this);"><?= $this->translate->_("NO"); ?></a>
-							</div>
-							<input type="hidden" name="response_after_evaluate" id="response_after_evaluate"
-								value="<?php echo $this->response_after_evaluate ?? "no"; ?>">
-						</div>
-					</div>
 				</div>
 				<div class="row">
 					<div class="col-md-6">
@@ -694,15 +678,28 @@ $faqResults = json_decode($this->faqs);
 				</div>
 				<div class="row">
 					<div class="col-md-6">
+						<label for="app_timezone"
+							class="control-label"><?= $this->translate->_("Application Timezone"); ?></label>
+						<select class="form-control" id="app_timezone" name="app_timezone"
+							title="<?= $this->translate->_('The timezone the whole application runs in. Response deadline times are entered and judged in this zone. Changing it shifts how existing deadlines are interpreted, so set it once and avoid changing it mid-programme.'); ?>">
+							<?php foreach (DateTimeZone::listIdentifiers() as $tzId): ?>
+								<option value="<?= $this->escape($tzId); ?>" <?php echo (isset($this->app_timezone) && $this->app_timezone === $tzId) ? 'selected="selected"' : ''; ?>>
+									<?= $this->escape($tzId); ?>
+								</option>
+							<?php endforeach; ?>
+						</select>
+						<?php if (isset($this->appTimezoneSaved) && $this->appTimezoneSaved === false): ?>
+							<small
+								class="text-danger"><?= $this->translate->_('Could not update the Application Timezone (application.ini not writable or invalid value).'); ?></small>
+						<?php endif; ?>
+					</div>
+					<div class="col-md-6">
 						<label for="cutoff_timezone"
-							class="control-label"><?= $this->translate->_("Late-submission Cutoff Timezone"); ?></label>
+							class="control-label"><?= $this->translate->_("Response Deadline Cutoff Policy"); ?></label>
 						<select class="form-control" id="cutoff_timezone" name="cutoff_timezone"
-							title="<?= $this->translate->_('Timezone in which a shipment due date ends at 23:59:59. Leave as default for single-country programs.'); ?>">
+							title="<?= $this->translate->_('How a response deadline is judged to have passed. Application timezone closes at the exact local time. Anywhere on Earth keeps it open until the deadline has passed in every timezone (UTC-12).'); ?>">
 							<option value="" <?php echo empty($this->cutoff_timezone) ? 'selected="selected"' : ''; ?>>
-								<?= $this->translate->_("Server timezone (default)"); ?>
-							</option>
-							<option value="UTC" <?php echo (isset($this->cutoff_timezone) && $this->cutoff_timezone === 'UTC') ? 'selected="selected"' : ''; ?>>
-								<?= $this->translate->_("UTC"); ?>
+								<?= $this->translate->_("Application timezone (default)"); ?>
 							</option>
 							<option value="Etc/GMT+12" <?php echo (isset($this->cutoff_timezone) && $this->cutoff_timezone === 'Etc/GMT+12') ? 'selected="selected"' : ''; ?>>
 								<?= $this->translate->_("Anywhere on Earth (UTC-12)"); ?>
@@ -744,9 +741,11 @@ $faqResults = json_decode($this->faqs);
 							<option value="green" <?php echo (isset($this->theme_color) && $this->theme_color == 'green') ? 'selected="selected"' : ""; ?>><?= $this->translate->_("Green"); ?></option>
 							<option value="blue" <?php echo (isset($this->theme_color) && $this->theme_color == 'blue') ? 'selected="selected"' : ""; ?>><?= $this->translate->_("Blue"); ?></option>
 							<option value="yellow" <?php echo (isset($this->theme_color) && $this->theme_color == 'yellow') ? 'selected="selected"' : ""; ?>>
-								<?= $this->translate->_("Yellow"); ?></option>
+								<?= $this->translate->_("Yellow"); ?>
+							</option>
 							<option value="purple" <?php echo (isset($this->theme_color) && $this->theme_color == 'purple') ? 'selected="selected"' : ""; ?>>
-								<?= $this->translate->_("Purple"); ?></option>
+								<?= $this->translate->_("Purple"); ?>
+							</option>
 							<option value="red" <?php echo (isset($this->theme_color) && $this->theme_color == 'red') ? 'selected="selected"' : ""; ?>><?= $this->translate->_("Red"); ?></option>
 							<option value="black" <?php echo (isset($this->theme_color) && $this->theme_color == 'black') ? 'selected="selected"' : ""; ?>><?= $this->translate->_("Black"); ?></option>
 						</select>
@@ -1047,264 +1046,264 @@ $faqResults = json_decode($this->faqs);
 			</div><br>
 
 			<?php /* Home Page Settings section - commented out, managed at /admin/home-section-links instead
-	   <button type="button" class="collapsible active" data-toggle="collapse" data-target="#homeConfig"
-		   aria-expanded="true" aria-controls="collapseExample"><?= $this->translate->_("Home Page Settings"); ?> <b class="caret pull-right"
-			   style="text-align:right;"></b></button>
-	   <div class="collapse-content" id="homeConfig">
-		   <div class="alert alert-info" style="margin: 10px 0;">
-			   <i class="icon-info-sign"></i> <?= $this->translate->_("Home page customization is optional. Default values will be used if left empty."); ?>
-		   </div>
+<button type="button" class="collapsible active" data-toggle="collapse" data-target="#homeConfig"
+aria-expanded="true" aria-controls="collapseExample"><?= $this->translate->_("Home Page Settings"); ?> <b class="caret pull-right"
+style="text-align:right;"></b></button>
+<div class="collapse-content" id="homeConfig">
+<div class="alert alert-info" style="margin: 10px 0;">
+<i class="icon-info-sign"></i> <?= $this->translate->_("Home page customization is optional. Default values will be used if left empty."); ?>
+</div>
 
-		   <!-- Basic Settings -->
-		   <div class="row">
-			   <div class="col-md-6">
-				   <label for="homeTitle" class="control-label"><?= $this->translate->_("Page Title"); ?></label>
-				   <input type="text" value="<?php echo $home->title ?? null; ?>" id="homeTitle" name="home[title]"
-					   class="form-control"
-					   placeholder="<?= $this->translate->_('Enter the home page title'); ?>"
-					   title="<?= $this->translate->_('Enter the title displayed on the home page'); ?>" />
-			   </div>
-			   <div class="col-md-6">
-				   <label for="homeVideoUrl" class="control-label"><?= $this->translate->_("Video URL"); ?></label>
-				   <input type="text" value="<?php echo $home->videoUrl ?? null; ?>" id="homeVideoUrl" name="home[videoUrl]"
-					   class="form-control"
-					   placeholder="<?= $this->translate->_('e.g., https://youtube.com/watch?v=...'); ?>"
-					   title="<?= $this->translate->_('Enter a YouTube or video URL'); ?>" />
-			   </div>
-		   </div>
-		   <div class="row">
-			   <div class="col-md-6">
-				   <label for="homeAdditionalLink" class="control-label"><?= $this->translate->_("Additional Link URL"); ?></label>
-				   <input type="text" value="<?php echo $home->additionalLink ?? null; ?>" id="homeAdditionalLink" name="home[additionalLink]"
-					   class="form-control"
-					   placeholder="<?= $this->translate->_('e.g., https://example.com/more-info'); ?>"
-					   title="<?= $this->translate->_('Enter an additional link URL'); ?>" />
-			   </div>
-			   <div class="col-md-6">
-				   <label for="homeAdditionalLinkText" class="control-label"><?= $this->translate->_("Additional Link Text"); ?></label>
-				   <input type="text" value="<?php echo $home->additionalLinkText ?? null; ?>" id="homeAdditionalLinkText" name="home[additionalLinkText]"
-					   class="form-control"
-					   placeholder="<?= $this->translate->_('e.g., Learn More'); ?>"
-					   title="<?= $this->translate->_('Enter the text for the additional link'); ?>" />
-			   </div>
-		   </div>
+<!-- Basic Settings -->
+<div class="row">
+<div class="col-md-6">
+<label for="homeTitle" class="control-label"><?= $this->translate->_("Page Title"); ?></label>
+<input type="text" value="<?php echo $home->title ?? null; ?>" id="homeTitle" name="home[title]"
+   class="form-control"
+   placeholder="<?= $this->translate->_('Enter the home page title'); ?>"
+   title="<?= $this->translate->_('Enter the title displayed on the home page'); ?>" />
+</div>
+<div class="col-md-6">
+<label for="homeVideoUrl" class="control-label"><?= $this->translate->_("Video URL"); ?></label>
+<input type="text" value="<?php echo $home->videoUrl ?? null; ?>" id="homeVideoUrl" name="home[videoUrl]"
+   class="form-control"
+   placeholder="<?= $this->translate->_('e.g., https://youtube.com/watch?v=...'); ?>"
+   title="<?= $this->translate->_('Enter a YouTube or video URL'); ?>" />
+</div>
+</div>
+<div class="row">
+<div class="col-md-6">
+<label for="homeAdditionalLink" class="control-label"><?= $this->translate->_("Additional Link URL"); ?></label>
+<input type="text" value="<?php echo $home->additionalLink ?? null; ?>" id="homeAdditionalLink" name="home[additionalLink]"
+   class="form-control"
+   placeholder="<?= $this->translate->_('e.g., https://example.com/more-info'); ?>"
+   title="<?= $this->translate->_('Enter an additional link URL'); ?>" />
+</div>
+<div class="col-md-6">
+<label for="homeAdditionalLinkText" class="control-label"><?= $this->translate->_("Additional Link Text"); ?></label>
+<input type="text" value="<?php echo $home->additionalLinkText ?? null; ?>" id="homeAdditionalLinkText" name="home[additionalLinkText]"
+   class="form-control"
+   placeholder="<?= $this->translate->_('e.g., Learn More'); ?>"
+   title="<?= $this->translate->_('Enter the text for the additional link'); ?>" />
+</div>
+</div>
 
-		   <!-- Feature Cards Section -->
-		   <h5>
-			   <i class="icon-th-large"></i> <?= $this->translate->_("Feature Cards"); ?>
-		   </h5>
-		   <p class="text-muted"><?= $this->translate->_("Configure up to 3 feature cards displayed on the home page. Each card has an icon, heading, and description."); ?></p>
+<!-- Feature Cards Section -->
+<h5>
+<i class="icon-th-large"></i> <?= $this->translate->_("Feature Cards"); ?>
+</h5>
+<p class="text-muted"><?= $this->translate->_("Configure up to 3 feature cards displayed on the home page. Each card has an icon, heading, and description."); ?></p>
 
-		   <!-- Feature Card 1 -->
-		   <div class="row feature-card-row">
-			   <div class="col-md-12">
-				   <label class="control-label" style="font-weight: 600; color: #4a6fa5;"><?= $this->translate->_("Feature Card 1"); ?></label>
-			   </div>
-			   <div class="col-md-3">
-				   <label for="homeIcon1" class="control-label"><?= $this->translate->_("Icon"); ?></label>
-				   <div class="icon-input-wrapper">
-					   <span class="icon-preview" id="iconPreview1"><i class="<?php echo $home->icon1 ?? ''; ?>"></i></span>
-					   <input type="text" value="<?php echo $home->icon1 ?? null; ?>" id="homeIcon1" name="home[icon1]"
-						   class="form-control icon-input"
-						   placeholder="<?= $this->translate->_('e.g., icon-beaker'); ?>"
-						   title="<?= $this->translate->_('Enter the icon class name'); ?>"
-						   onchange="updateIconPreview('homeIcon1', 'iconPreview1')" />
-					   <button type="button" class="icon-picker-btn" onclick="openIconPicker('homeIcon1', 'iconPreview1')" title="<?= $this->translate->_('Browse icons'); ?>">
-						   <i class="icon-th"></i>
-					   </button>
-				   </div>
-			   </div>
-			   <div class="col-md-4">
-				   <label for="homeHeading1" class="control-label"><?= $this->translate->_("Heading"); ?></label>
-				   <input type="text" value="<?php echo $home->heading1 ?? null; ?>" id="homeHeading1" name="home[heading1]"
-					   class="form-control"
-					   placeholder="<?= $this->translate->_('Enter heading text'); ?>"
-					   title="<?= $this->translate->_('Enter the heading for this feature card'); ?>" />
-			   </div>
-			   <div class="col-md-5">
-				   <label for="homeSubHeading1" class="control-label"><?= $this->translate->_("Description"); ?></label>
-				   <textarea id="homeSubHeading1" name="home[subHeading1]" class="form-control" rows="2"
-					   placeholder="<?= $this->translate->_('Enter description text'); ?>"
-					   title="<?= $this->translate->_('Enter the description for this feature card'); ?>"><?php echo $home->subHeading1 ?? null; ?></textarea>
-			   </div>
-		   </div>
+<!-- Feature Card 1 -->
+<div class="row feature-card-row">
+<div class="col-md-12">
+<label class="control-label" style="font-weight: 600; color: #4a6fa5;"><?= $this->translate->_("Feature Card 1"); ?></label>
+</div>
+<div class="col-md-3">
+<label for="homeIcon1" class="control-label"><?= $this->translate->_("Icon"); ?></label>
+<div class="icon-input-wrapper">
+   <span class="icon-preview" id="iconPreview1"><i class="<?php echo $home->icon1 ?? ''; ?>"></i></span>
+   <input type="text" value="<?php echo $home->icon1 ?? null; ?>" id="homeIcon1" name="home[icon1]"
+	   class="form-control icon-input"
+	   placeholder="<?= $this->translate->_('e.g., icon-beaker'); ?>"
+	   title="<?= $this->translate->_('Enter the icon class name'); ?>"
+	   onchange="updateIconPreview('homeIcon1', 'iconPreview1')" />
+   <button type="button" class="icon-picker-btn" onclick="openIconPicker('homeIcon1', 'iconPreview1')" title="<?= $this->translate->_('Browse icons'); ?>">
+	   <i class="icon-th"></i>
+   </button>
+</div>
+</div>
+<div class="col-md-4">
+<label for="homeHeading1" class="control-label"><?= $this->translate->_("Heading"); ?></label>
+<input type="text" value="<?php echo $home->heading1 ?? null; ?>" id="homeHeading1" name="home[heading1]"
+   class="form-control"
+   placeholder="<?= $this->translate->_('Enter heading text'); ?>"
+   title="<?= $this->translate->_('Enter the heading for this feature card'); ?>" />
+</div>
+<div class="col-md-5">
+<label for="homeSubHeading1" class="control-label"><?= $this->translate->_("Description"); ?></label>
+<textarea id="homeSubHeading1" name="home[subHeading1]" class="form-control" rows="2"
+   placeholder="<?= $this->translate->_('Enter description text'); ?>"
+   title="<?= $this->translate->_('Enter the description for this feature card'); ?>"><?php echo $home->subHeading1 ?? null; ?></textarea>
+</div>
+</div>
 
-		   <!-- Feature Card 2 -->
-		   <div class="row feature-card-row">
-			   <div class="col-md-12">
-				   <label class="control-label" style="font-weight: 600; color: #4a6fa5;"><?= $this->translate->_("Feature Card 2"); ?></label>
-			   </div>
-			   <div class="col-md-3">
-				   <label for="homeIcon2" class="control-label"><?= $this->translate->_("Icon"); ?></label>
-				   <div class="icon-input-wrapper">
-					   <span class="icon-preview" id="iconPreview2"><i class="<?php echo $home->icon2 ?? ''; ?>"></i></span>
-					   <input type="text" value="<?php echo $home->icon2 ?? null; ?>" id="homeIcon2" name="home[icon2]"
-						   class="form-control icon-input"
-						   placeholder="<?= $this->translate->_('e.g., icon-group'); ?>"
-						   title="<?= $this->translate->_('Enter the icon class name'); ?>"
-						   onchange="updateIconPreview('homeIcon2', 'iconPreview2')" />
-					   <button type="button" class="icon-picker-btn" onclick="openIconPicker('homeIcon2', 'iconPreview2')" title="<?= $this->translate->_('Browse icons'); ?>">
-						   <i class="icon-th"></i>
-					   </button>
-				   </div>
-			   </div>
-			   <div class="col-md-4">
-				   <label for="homeHeading2" class="control-label"><?= $this->translate->_("Heading"); ?></label>
-				   <input type="text" value="<?php echo $home->heading2 ?? null; ?>" id="homeHeading2" name="home[heading2]"
-					   class="form-control"
-					   placeholder="<?= $this->translate->_('Enter heading text'); ?>"
-					   title="<?= $this->translate->_('Enter the heading for this feature card'); ?>" />
-			   </div>
-			   <div class="col-md-5">
-				   <label for="homeSubHeading2" class="control-label"><?= $this->translate->_("Description"); ?></label>
-				   <textarea id="homeSubHeading2" name="home[subHeading2]" class="form-control" rows="2"
-					   placeholder="<?= $this->translate->_('Enter description text'); ?>"
-					   title="<?= $this->translate->_('Enter the description for this feature card'); ?>"><?php echo $home->subHeading2 ?? null; ?></textarea>
-			   </div>
-		   </div>
+<!-- Feature Card 2 -->
+<div class="row feature-card-row">
+<div class="col-md-12">
+<label class="control-label" style="font-weight: 600; color: #4a6fa5;"><?= $this->translate->_("Feature Card 2"); ?></label>
+</div>
+<div class="col-md-3">
+<label for="homeIcon2" class="control-label"><?= $this->translate->_("Icon"); ?></label>
+<div class="icon-input-wrapper">
+   <span class="icon-preview" id="iconPreview2"><i class="<?php echo $home->icon2 ?? ''; ?>"></i></span>
+   <input type="text" value="<?php echo $home->icon2 ?? null; ?>" id="homeIcon2" name="home[icon2]"
+	   class="form-control icon-input"
+	   placeholder="<?= $this->translate->_('e.g., icon-group'); ?>"
+	   title="<?= $this->translate->_('Enter the icon class name'); ?>"
+	   onchange="updateIconPreview('homeIcon2', 'iconPreview2')" />
+   <button type="button" class="icon-picker-btn" onclick="openIconPicker('homeIcon2', 'iconPreview2')" title="<?= $this->translate->_('Browse icons'); ?>">
+	   <i class="icon-th"></i>
+   </button>
+</div>
+</div>
+<div class="col-md-4">
+<label for="homeHeading2" class="control-label"><?= $this->translate->_("Heading"); ?></label>
+<input type="text" value="<?php echo $home->heading2 ?? null; ?>" id="homeHeading2" name="home[heading2]"
+   class="form-control"
+   placeholder="<?= $this->translate->_('Enter heading text'); ?>"
+   title="<?= $this->translate->_('Enter the heading for this feature card'); ?>" />
+</div>
+<div class="col-md-5">
+<label for="homeSubHeading2" class="control-label"><?= $this->translate->_("Description"); ?></label>
+<textarea id="homeSubHeading2" name="home[subHeading2]" class="form-control" rows="2"
+   placeholder="<?= $this->translate->_('Enter description text'); ?>"
+   title="<?= $this->translate->_('Enter the description for this feature card'); ?>"><?php echo $home->subHeading2 ?? null; ?></textarea>
+</div>
+</div>
 
-		   <!-- Feature Card 3 -->
-		   <div class="row feature-card-row">
-			   <div class="col-md-12">
-				   <label class="control-label" style="font-weight: 600; color: #4a6fa5;"><?= $this->translate->_("Feature Card 3"); ?></label>
-			   </div>
-			   <div class="col-md-3">
-				   <label for="homeIcon3" class="control-label"><?= $this->translate->_("Icon"); ?></label>
-				   <div class="icon-input-wrapper">
-					   <span class="icon-preview" id="iconPreview3"><i class="<?php echo $home->icon3 ?? ''; ?>"></i></span>
-					   <input type="text" value="<?php echo $home->icon3 ?? null; ?>" id="homeIcon3" name="home[icon3]"
-						   class="form-control icon-input"
-						   placeholder="<?= $this->translate->_('e.g., icon-bar-chart'); ?>"
-						   title="<?= $this->translate->_('Enter the icon class name'); ?>"
-						   onchange="updateIconPreview('homeIcon3', 'iconPreview3')" />
-					   <button type="button" class="icon-picker-btn" onclick="openIconPicker('homeIcon3', 'iconPreview3')" title="<?= $this->translate->_('Browse icons'); ?>">
-						   <i class="icon-th"></i>
-					   </button>
-				   </div>
-			   </div>
-			   <div class="col-md-4">
-				   <label for="homeHeading3" class="control-label"><?= $this->translate->_("Heading"); ?></label>
-				   <input type="text" value="<?php echo $home->heading3 ?? null; ?>" id="homeHeading3" name="home[heading3]"
-					   class="form-control"
-					   placeholder="<?= $this->translate->_('Enter heading text'); ?>"
-					   title="<?= $this->translate->_('Enter the heading for this feature card'); ?>" />
-			   </div>
-			   <div class="col-md-5">
-				   <label for="homeSubHeading3" class="control-label"><?= $this->translate->_("Description"); ?></label>
-				   <textarea id="homeSubHeading3" name="home[subHeading3]" class="form-control" rows="2"
-					   placeholder="<?= $this->translate->_('Enter description text'); ?>"
-					   title="<?= $this->translate->_('Enter the description for this feature card'); ?>"><?php echo $home->subHeading3 ?? null; ?></textarea>
-			   </div>
-		   </div>
+<!-- Feature Card 3 -->
+<div class="row feature-card-row">
+<div class="col-md-12">
+<label class="control-label" style="font-weight: 600; color: #4a6fa5;"><?= $this->translate->_("Feature Card 3"); ?></label>
+</div>
+<div class="col-md-3">
+<label for="homeIcon3" class="control-label"><?= $this->translate->_("Icon"); ?></label>
+<div class="icon-input-wrapper">
+   <span class="icon-preview" id="iconPreview3"><i class="<?php echo $home->icon3 ?? ''; ?>"></i></span>
+   <input type="text" value="<?php echo $home->icon3 ?? null; ?>" id="homeIcon3" name="home[icon3]"
+	   class="form-control icon-input"
+	   placeholder="<?= $this->translate->_('e.g., icon-bar-chart'); ?>"
+	   title="<?= $this->translate->_('Enter the icon class name'); ?>"
+	   onchange="updateIconPreview('homeIcon3', 'iconPreview3')" />
+   <button type="button" class="icon-picker-btn" onclick="openIconPicker('homeIcon3', 'iconPreview3')" title="<?= $this->translate->_('Browse icons'); ?>">
+	   <i class="icon-th"></i>
+   </button>
+</div>
+</div>
+<div class="col-md-4">
+<label for="homeHeading3" class="control-label"><?= $this->translate->_("Heading"); ?></label>
+<input type="text" value="<?php echo $home->heading3 ?? null; ?>" id="homeHeading3" name="home[heading3]"
+   class="form-control"
+   placeholder="<?= $this->translate->_('Enter heading text'); ?>"
+   title="<?= $this->translate->_('Enter the heading for this feature card'); ?>" />
+</div>
+<div class="col-md-5">
+<label for="homeSubHeading3" class="control-label"><?= $this->translate->_("Description"); ?></label>
+<textarea id="homeSubHeading3" name="home[subHeading3]" class="form-control" rows="2"
+   placeholder="<?= $this->translate->_('Enter description text'); ?>"
+   title="<?= $this->translate->_('Enter the description for this feature card'); ?>"><?php echo $home->subHeading3 ?? null; ?></textarea>
+</div>
+</div>
 
-		   <!-- Home Page Logos -->
-		   <h5>
-			   <i class="icon-picture"></i> <?= $this->translate->_("Home Page Logos"); ?>
-		   </h5>
-		   <div class="row">
-			   <div class="col-md-6">
-				   <label for="home_left_logo" class="control-label"><?= $this->translate->_("Logo 1 (Left)"); ?></label>
-				   <div class="fileinput fileinput-new home_left_logo" data-provides="fileinput">
-					   <?php if (isset($this->home_left_logo) && trim($this->home_left_logo) != '' && file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logos' . DIRECTORY_SEPARATOR . $this->home_left_logo)) { ?>
-						   <img src="/uploads/logos/<?php echo $this->home_left_logo; ?>" alt="<?= $this->translate->_('Logo image'); ?>"
-							   class="home_left_logo_pic" style="width: 150px;">
-						   <a href="javascript:void(0);"
-							   onclick="deleteImg('home_left_logo', 'home_left_logo_pic', 'delete_home_left_logo', '<?= $this->home_left_logo; ?>');"
-							   class="mandatory home_left_logo_pic">x</a>
-						   <input class="readPage" type="file" id="home_left_logo" name="home_left_logo"
-							   title="<?= $this->translate->_('Select logo image'); ?>"
-							   accept="image/png, image/jpeg, image/gif" style="display: none;">
-					   <?php } else { ?>
-						   <input class="readPage" type="file" id="home_left_logo" name="home_left_logo"
-							   title="<?= $this->translate->_('Select logo image'); ?>"
-							   accept="image/png, image/jpeg, image/gif">
-					   <?php } ?>
-				   </div>
-				   <small class="text-muted"><?= $this->translate->_("Recommended size: 80x80 pixels"); ?></small>
-			   </div>
-			   <div class="col-md-6">
-				   <label for="home_right_logo" class="control-label"><?= $this->translate->_("Logo 2 (Right)"); ?></label>
-				   <div class="fileinput fileinput-new home_right_logo" data-provides="fileinput">
-					   <?php if (isset($this->home_right_logo) && trim($this->home_right_logo) != '' && file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logos' . DIRECTORY_SEPARATOR . $this->home_right_logo)) { ?>
-						   <img src="/uploads/logos/<?php echo $this->home_right_logo; ?>" alt="<?= $this->translate->_('Logo image'); ?>"
-							   class="home_right_logo_pic" style="width: 150px;">
-						   <a href="javascript:void(0);"
-							   onclick="deleteImg('home_right_logo', 'home_right_logo_pic', 'delete_home_right_logo', '<?php echo $this->home_right_logo; ?>');"
-							   class="mandatory home_right_logo_pic">x</a>
-						   <input class="readPage" type="file" id="home_right_logo" name="home_right_logo"
-							   title="<?= $this->translate->_('Select logo image'); ?>"
-							   style="display: none;" accept="image/png, image/jpeg, image/gif">
-					   <?php } else { ?>
-						   <input class="readPage" type="file" id="home_right_logo" name="home_right_logo"
-							   title="<?= $this->translate->_('Select logo image'); ?>"
-							   accept="image/png, image/jpeg, image/gif">
-					   <?php } ?>
-				   </div>
-				   <small class="text-muted"><?= $this->translate->_("Recommended size: 80x80 pixels"); ?></small>
-			   </div>
-		   </div>
+<!-- Home Page Logos -->
+<h5>
+<i class="icon-picture"></i> <?= $this->translate->_("Home Page Logos"); ?>
+</h5>
+<div class="row">
+<div class="col-md-6">
+<label for="home_left_logo" class="control-label"><?= $this->translate->_("Logo 1 (Left)"); ?></label>
+<div class="fileinput fileinput-new home_left_logo" data-provides="fileinput">
+   <?php if (isset($this->home_left_logo) && trim($this->home_left_logo) != '' && file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logos' . DIRECTORY_SEPARATOR . $this->home_left_logo)) { ?>
+	   <img src="/uploads/logos/<?php echo $this->home_left_logo; ?>" alt="<?= $this->translate->_('Logo image'); ?>"
+		   class="home_left_logo_pic" style="width: 150px;">
+	   <a href="javascript:void(0);"
+		   onclick="deleteImg('home_left_logo', 'home_left_logo_pic', 'delete_home_left_logo', '<?= $this->home_left_logo; ?>');"
+		   class="mandatory home_left_logo_pic">x</a>
+	   <input class="readPage" type="file" id="home_left_logo" name="home_left_logo"
+		   title="<?= $this->translate->_('Select logo image'); ?>"
+		   accept="image/png, image/jpeg, image/gif" style="display: none;">
+   <?php } else { ?>
+	   <input class="readPage" type="file" id="home_left_logo" name="home_left_logo"
+		   title="<?= $this->translate->_('Select logo image'); ?>"
+		   accept="image/png, image/jpeg, image/gif">
+   <?php } ?>
+</div>
+<small class="text-muted"><?= $this->translate->_("Recommended size: 80x80 pixels"); ?></small>
+</div>
+<div class="col-md-6">
+<label for="home_right_logo" class="control-label"><?= $this->translate->_("Logo 2 (Right)"); ?></label>
+<div class="fileinput fileinput-new home_right_logo" data-provides="fileinput">
+   <?php if (isset($this->home_right_logo) && trim($this->home_right_logo) != '' && file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logos' . DIRECTORY_SEPARATOR . $this->home_right_logo)) { ?>
+	   <img src="/uploads/logos/<?php echo $this->home_right_logo; ?>" alt="<?= $this->translate->_('Logo image'); ?>"
+		   class="home_right_logo_pic" style="width: 150px;">
+	   <a href="javascript:void(0);"
+		   onclick="deleteImg('home_right_logo', 'home_right_logo_pic', 'delete_home_right_logo', '<?php echo $this->home_right_logo; ?>');"
+		   class="mandatory home_right_logo_pic">x</a>
+	   <input class="readPage" type="file" id="home_right_logo" name="home_right_logo"
+		   title="<?= $this->translate->_('Select logo image'); ?>"
+		   style="display: none;" accept="image/png, image/jpeg, image/gif">
+   <?php } else { ?>
+	   <input class="readPage" type="file" id="home_right_logo" name="home_right_logo"
+		   title="<?= $this->translate->_('Select logo image'); ?>"
+		   accept="image/png, image/jpeg, image/gif">
+   <?php } ?>
+</div>
+<small class="text-muted"><?= $this->translate->_("Recommended size: 80x80 pixels"); ?></small>
+</div>
+</div>
 
-		   <!-- FAQ Section -->
-		   <h5 style="margin-top: 20px; border-bottom: 1px solid #ddd; padding-bottom: 10px;">
-			   <i class="icon-question-sign"></i> <?= $this->translate->_("Frequently Asked Questions (FAQ)"); ?>
-		   </h5>
-		   <p class="text-muted"><?= $this->translate->_("Add questions and answers to display on the home page FAQ section."); ?></p>
-		   <div class="row">
-			   <table style="width: 100%;" border="1" class="table table-bordered table-striped reftable clearfix"
-				   id="faqTable">
-				   <thead>
-					   <tr>
-						   <th scope="col" style="text-align: center;vertical-align:middle;">
-							   <?= $this->translate->_("Question"); ?></th>
-						   <th scope="col" style="text-align: center;vertical-align:middle;">
-							   <?= $this->translate->_("Answer"); ?></th>
-						   <th scope="col" style="width:5%;text-align: center;vertical-align:middle;">
-							   <?= $this->translate->_("Actions"); ?></th>
-					   </tr>
-				   </thead>
-				   <tbody id="faqTableBody">
-					   <?php if (isset($faqResults) && !empty($faqResults)) {
-						   foreach ((array) $faqResults as $faq => $answer) { ?>
-							   <tr>
-								   <td>
-									   <textarea name="faqQuestions[]" class="form-control input-sm"
-										   placeholder="<?= $this->translate->_('Enter the question'); ?>"
-										   title="<?= $this->translate->_('Enter the FAQ question'); ?>"><?php echo $faq; ?></textarea>
-								   </td>
-								   <td>
-									   <textarea name="faqAnswers[]" class="form-control input-sm"
-										   placeholder="<?= $this->translate->_('Enter the answer'); ?>"
-										   title="<?= $this->translate->_('Enter the FAQ answer'); ?>"><?php echo $answer; ?></textarea>
-								   </td>
-								   <td>
-									   <a href="javascript:void(0);" onclick="addTbRow(this);"
-										   class="btn btn-xs btn-info" title="<?= $this->translate->_('Add row'); ?>"><i class="icon-plus"></i></a>&nbsp;&nbsp;<a
-										   href="javascript:void(0);" onclick="removeRow(this)"
-										   class="btn btn-xs btn-danger" title="<?= $this->translate->_('Remove row'); ?>"><i class="icon-minus"></i></a>
-								   </td>
-							   </tr>
-						   <?php }
-					   } else { ?>
-						   <tr>
-							   <td>
-								   <textarea name="faqQuestions[]" class="form-control input-sm"
-									   placeholder="<?= $this->translate->_('Enter the question'); ?>" title="<?= $this->translate->_('Enter the FAQ question'); ?>"></textarea>
-							   </td>
-							   <td>
-								   <textarea name="faqAnswers[]" class="form-control input-sm"
-									   placeholder="<?= $this->translate->_('Enter the answer'); ?>" title="<?= $this->translate->_('Enter the FAQ answer'); ?>"></textarea>
-							   </td>
-							   <td>
-								   <a href="javascript:void(0);" onclick="addTbRow(this);"
-									   class="btn btn-xs btn-info" title="<?= $this->translate->_('Add row'); ?>"><i class="icon-plus"></i></a>
-							   </td>
-						   </tr>
-					   <?php } ?>
-				   </tbody>
-			   </table>
-		   </div>
-	   </div><br>
-	   */ ?>
+<!-- FAQ Section -->
+<h5 style="margin-top: 20px; border-bottom: 1px solid #ddd; padding-bottom: 10px;">
+<i class="icon-question-sign"></i> <?= $this->translate->_("Frequently Asked Questions (FAQ)"); ?>
+</h5>
+<p class="text-muted"><?= $this->translate->_("Add questions and answers to display on the home page FAQ section."); ?></p>
+<div class="row">
+<table style="width: 100%;" border="1" class="table table-bordered table-striped reftable clearfix"
+id="faqTable">
+<thead>
+   <tr>
+	   <th scope="col" style="text-align: center;vertical-align:middle;">
+		   <?= $this->translate->_("Question"); ?></th>
+	   <th scope="col" style="text-align: center;vertical-align:middle;">
+		   <?= $this->translate->_("Answer"); ?></th>
+	   <th scope="col" style="width:5%;text-align: center;vertical-align:middle;">
+		   <?= $this->translate->_("Actions"); ?></th>
+   </tr>
+</thead>
+<tbody id="faqTableBody">
+   <?php if (isset($faqResults) && !empty($faqResults)) {
+	   foreach ((array) $faqResults as $faq => $answer) { ?>
+		   <tr>
+			   <td>
+				   <textarea name="faqQuestions[]" class="form-control input-sm"
+					   placeholder="<?= $this->translate->_('Enter the question'); ?>"
+					   title="<?= $this->translate->_('Enter the FAQ question'); ?>"><?php echo $faq; ?></textarea>
+			   </td>
+			   <td>
+				   <textarea name="faqAnswers[]" class="form-control input-sm"
+					   placeholder="<?= $this->translate->_('Enter the answer'); ?>"
+					   title="<?= $this->translate->_('Enter the FAQ answer'); ?>"><?php echo $answer; ?></textarea>
+			   </td>
+			   <td>
+				   <a href="javascript:void(0);" onclick="addTbRow(this);"
+					   class="btn btn-xs btn-info" title="<?= $this->translate->_('Add row'); ?>"><i class="icon-plus"></i></a>&nbsp;&nbsp;<a
+					   href="javascript:void(0);" onclick="removeRow(this)"
+					   class="btn btn-xs btn-danger" title="<?= $this->translate->_('Remove row'); ?>"><i class="icon-minus"></i></a>
+			   </td>
+		   </tr>
+	   <?php }
+   } else { ?>
+	   <tr>
+		   <td>
+			   <textarea name="faqQuestions[]" class="form-control input-sm"
+				   placeholder="<?= $this->translate->_('Enter the question'); ?>" title="<?= $this->translate->_('Enter the FAQ question'); ?>"></textarea>
+		   </td>
+		   <td>
+			   <textarea name="faqAnswers[]" class="form-control input-sm"
+				   placeholder="<?= $this->translate->_('Enter the answer'); ?>" title="<?= $this->translate->_('Enter the FAQ answer'); ?>"></textarea>
+		   </td>
+		   <td>
+			   <a href="javascript:void(0);" onclick="addTbRow(this);"
+				   class="btn btn-xs btn-info" title="<?= $this->translate->_('Add row'); ?>"><i class="icon-plus"></i></a>
+		   </td>
+	   </tr>
+   <?php } ?>
+</tbody>
+</table>
+</div>
+</div><br>
+*/ ?>
 		</fieldset>
 
 		<div id="respond" style="margin: 0px auto 0px auto; text-align: center;" align="center">
@@ -1414,9 +1413,9 @@ $faqResults = json_decode($this->faqs);
 		}
 	}
 
-	$(document).ready(function() {
+	$(document).ready(function () {
 		// Collapsible functionality
-		$('.collapsible').on('click', function() {
+		$('.collapsible').on('click', function () {
 			$(this).toggleClass('active');
 			var content = $(this).next('.collapse-content');
 			if (content.is(':visible')) {
@@ -1427,19 +1426,19 @@ $faqResults = json_decode($this->faqs);
 		});
 
 		// Expand All functionality
-		$('#expandAll').on('click', function() {
+		$('#expandAll').on('click', function () {
 			$('.collapse-content').slideDown();
 			$('.collapsible').addClass('active');
 		});
 
 		// Collapse All functionality
-		$('#collapseAll').on('click', function() {
+		$('#collapseAll').on('click', function () {
 			$('.collapse-content').slideUp();
 			$('.collapsible').removeClass('active');
 		});
 
 		// Jump to section functionality
-		$('#jumpToSection').on('change', function() {
+		$('#jumpToSection').on('change', function () {
 			var sectionId = $(this).val();
 			if (sectionId) {
 				// Open the selected section
@@ -1454,7 +1453,7 @@ $faqResults = json_decode($this->faqs);
 		});
 
 		// Search functionality
-		$('#searchSettings').on('keyup', function() {
+		$('#searchSettings').on('keyup', function () {
 			var searchTerm = $(this).val().toLowerCase();
 
 			if (searchTerm === '') {
@@ -1466,11 +1465,11 @@ $faqResults = json_decode($this->faqs);
 			}
 
 			// Search through all form fields
-			$('.collapse-content').each(function() {
+			$('.collapse-content').each(function () {
 				var section = $(this);
 				var hasMatch = false;
 
-				section.find('label, input, textarea, select').each(function() {
+				section.find('label, input, textarea, select').each(function () {
 					var text = $(this).text().toLowerCase() || $(this).attr('placeholder')?.toLowerCase() || '';
 
 					if (text.includes(searchTerm)) {
@@ -1500,7 +1499,19 @@ $faqResults = json_decode($this->faqs);
 			allowEmptyOption: false
 		});
 
-		$('#training_instance').on('change', function() {
+		// Searchable Application Timezone picker — pick a valid IANA zone, no typos.
+		new TomSelect('#app_timezone', {
+			create: false,
+			placeholder: '<?= $this->translate->_("Search timezone..."); ?>'
+		});
+
+		// Cutoff policy: 2 fixed options, searchable for consistency.
+		new TomSelect('#cutoff_timezone', {
+			create: false,
+			allowEmptyOption: true
+		});
+
+		$('#training_instance').on('change', function () {
 			if ($(this).val() == 'no') {
 				$('#training_instance_text').val('');
 				$('.trainingText').hide();
@@ -1572,7 +1583,7 @@ $faqResults = json_decode($this->faqs);
 	}
 
 	function removeRow(obj) {
-		$(obj.parentNode.parentNode).fadeOut("normal", function() {
+		$(obj.parentNode.parentNode).fadeOut("normal", function () {
 			$(this).remove();
 		});
 	}
@@ -1649,7 +1660,7 @@ $faqResults = json_decode($this->faqs);
 		var gridHtml = '';
 		var currentValue = $('#' + inputId).val();
 
-		availableIcons.forEach(function(icon) {
+		availableIcons.forEach(function (icon) {
 			var selectedClass = (icon === currentValue) ? ' selected' : '';
 			gridHtml += '<div class="icon-item' + selectedClass + '" onclick="selectIcon(\'' + icon + '\')" data-icon="' + icon + '">';
 			gridHtml += '<i class="' + icon + '"></i>';
@@ -1663,7 +1674,7 @@ $faqResults = json_decode($this->faqs);
 
 		// Show modal using Bootstrap
 		$('#iconPickerModal').modal('show');
-		setTimeout(function() {
+		setTimeout(function () {
 			$('#iconSearchInput').focus();
 		}, 300);
 	}
@@ -1689,12 +1700,12 @@ $faqResults = json_decode($this->faqs);
 	}
 
 	// Icon search functionality
-	$(document).ready(function() {
-		$('#iconSearchInput').on('keyup', function() {
+	$(document).ready(function () {
+		$('#iconSearchInput').on('keyup', function () {
 			var searchTerm = $(this).val().toLowerCase();
 			var visibleCount = 0;
 
-			$('.icon-item').each(function() {
+			$('.icon-item').each(function () {
 				var iconName = $(this).data('icon').toLowerCase();
 				if (iconName.includes(searchTerm)) {
 					$(this).show();

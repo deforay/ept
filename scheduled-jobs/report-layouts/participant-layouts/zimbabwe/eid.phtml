@@ -128,7 +128,7 @@ if (!empty($resultArray['shipment'])) {
         // Prepare all fields with their labels and values
         $fields = [
             ['label' => 'Facility', 'value' => $result['first_name'] . " " . $result['last_name']],
-            ['label' => 'PT Panel Name & Date', 'value' => $result['distribution_code'] . '(' . Pt_Commons_DateUtility::humanReadableDateFormat($result['lastdate_response']) . ')'],
+            ['label' => 'PT Panel Name & Date', 'value' => $result['distribution_code'] . '(' . Pt_Commons_DateUtility::humanReadableDateFormat($result['response_deadline']) . ')'],
             ['label' => 'LAB ID', 'value' => $result['unique_identifier']],
             ['label' => 'Shipment Code', 'value' => $result['shipment_code']],
             ['label' => 'Province / Country', 'value' => $result['state'] . '(' . $result['iso_name'] . ')'],

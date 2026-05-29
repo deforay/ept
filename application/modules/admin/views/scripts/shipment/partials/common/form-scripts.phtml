@@ -96,6 +96,24 @@ $(document).ready(function() {
         dateFormat: '<?php echo $dtFormat; ?>'
     });
 
+    // Response deadline: single date + time picker (exact close time).
+    if ($('#lastDate').length && $.fn.daterangepicker) {
+        $('#lastDate').daterangepicker({
+            singleDatePicker: true,
+            timePicker: true,
+            timePicker24Hour: true,
+            autoUpdateInput: false,
+            startDate: ($('#lastDate').val() ? moment($('#lastDate').val(), 'DD-MMM-YYYY HH:mm') : moment().hour(23).minute(59).second(0)),
+            locale: { format: 'DD-MMM-YYYY HH:mm', cancelLabel: 'Clear' }
+        });
+        $('#lastDate').on('apply.daterangepicker', function(ev, picker) {
+            $(this).val(picker.startDate.format('DD-MMM-YYYY HH:mm'));
+        });
+        $('#lastDate').on('cancel.daterangepicker', function() {
+            $(this).val('');
+        });
+    }
+
     // Shipment code validation
     $('#shipmentCode').on('input', function(event) {
         allowOnlyAlphaNumericAndHyphen('#shipmentCode');

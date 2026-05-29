@@ -116,7 +116,7 @@ $labInfo .= '<tr>';
 $labInfo .= '<td style="text-align:center;font-weight:bold;width:25%">' . $this->shipment['shipment_code'] . ' ' . $this->participant['last_name'] . '</td>';
 $labInfo .= '<td style="text-align:center;font-weight:bold;width:25%">' . $this->shipment['scheme_name'] . '</td>';
 $labInfo .= '<td style="text-align:center;font-weight:bold;width:25%">' . $this->dateFormat($this->shipment['shipment_date']) . '</td>';
-$labInfo .= '<td style="text-align:center;font-weight:bold;width:25%">' . $this->dateFormat($this->shipment['lastdate_response']) . ' <br/> ' . $this->participant['phone'] . '</td>';
+$labInfo .= '<td style="text-align:center;font-weight:bold;width:25%">' . $this->dateFormat($this->shipment['response_deadline'], true) . ' <br/> ' . $this->participant['phone'] . '</td>';
 $labInfo .= '</tr>';
 
 $labInfo .= '<tr style="background-color:#dbe4ee;">';
@@ -140,7 +140,7 @@ $labInfo .= '<td style="text-align:center;font-weight:bold;width:25%"><span clas
 $labInfo .= '</tr>';
 $labInfo .= '<tr>';
 $labInfo .= '<td style="text-align:center;font-weight:bold;width:25%">' . $this->dateFormat($this->shipment["shipment_receipt_date"]) . '</td>';
-$labInfo .= '<td style="text-align:center;font-weight:bold;width:25%">' . $this->dateFormat($this->shipment["lastdate_response"]) . '</td>';
+$labInfo .= '<td style="text-align:center;font-weight:bold;width:25%">' . $this->dateFormat($this->shipment["response_deadline"], true) . '</td>';
 $labInfo .= '<td style="text-align:center;font-weight:bold;width:25%"></td>';
 $labInfo .= '<td style="text-align:center;font-weight:bold;width:25%"></td>';
 $labInfo .= '</tr>';

@@ -24,34 +24,47 @@ $dtFormat = $genderHelper->getDateFormat();
 <table style="margin:20px 0;background-color: aliceblue;" class="table table-bordered">
 	<thead>
 		<tr>
-			<th scope="col" style="width: 17%;">Participant ID:</th>
+			<th scope="col" style="width: 17%;">
+				<?= $this->htmlTranslate("Participant ID"); ?>:
+			</th>
 			<td style="width: 33%;"><?php echo $result['unique_identifier']; ?></td>
-			<th scope="col" style="width: 13%;">Participant Name:</th>
+			<th scope="col" style="width: 13%;">
+				<?= $this->htmlTranslate("Participant Name"); ?>:
+			</th>
 			<td style="width: 37%;"><?php echo $result['participantName']; ?></td>
 		</tr>
 		<tr>
-			<th scope="col" style="width: 17%;">Institute / Department:</th>
+			<th scope="col" style="width: 17%;"><?= $this->htmlTranslate("Institute / Department"); ?>:</th>
 			<td style="width: 33%;"><?php echo $result['institute_name'] . ' / ' . $result['department_name']; ?></td>
-			<th scope="col" style="width: 13%;">PT Survey Code:</th>
+			<th scope="col" style="width: 13%;">
+				<?= $this->htmlTranslate("PT Survey Code"); ?>:
+			</th>
 			<td style="width: 37%;"><?php echo $result['distribution_code']; ?></td>
 		</tr>
 		<tr>
-			<th scope="col" style="width: 17%;">PT Survey Date:</th>
+			<th scope="col" style="width: 17%;"><?= $this->htmlTranslate("PT Survey Date"); ?>:</th>
 			<td style="width: 33%;">
-				<?php echo Pt_Commons_DateUtility::humanReadableDateFormat($result['distribution_date']); ?></td>
-			<th scope="col" style="width: 13%;">Shipment Code:</th>
+				<?php echo Pt_Commons_DateUtility::humanReadableDateFormat($result['distribution_date']); ?>
+			</td>
+			<th scope="col" style="width: 13%;">
+				<?= $this->htmlTranslate("Shipment Code"); ?>:
+			</th>
 			<td style="width: 37%;"><?php echo $result['shipment_code']; ?></td>
 		</tr>
 		<tr>
-			<th scope="col" style="width: 17%;">Shipment Due Date:</th>
+			<th scope="col" style="width: 17%;"><?= $this->htmlTranslate("Shipment Due Date"); ?>:</th>
 			<td style="width: 33%;">
-				<?php echo Pt_Commons_DateUtility::humanReadableDateFormat($result['shipment_date']); ?></td>
-			<th scope="col" style="width: 13%;">Result Due Date:</th>
+				<?php echo Pt_Commons_DateUtility::humanReadableDateFormat($result['shipment_date']); ?>
+			</td>
+			<th scope="col" style="width: 13%;">
+				<?= $this->htmlTranslate("Result Due Date"); ?>:
+			</th>
 			<td style="width: 37%;">
-				<?php echo Pt_Commons_DateUtility::humanReadableDateFormat($result['lastdate_response']); ?></td>
+				<?php echo Pt_Commons_DateUtility::humanReadableDateFormat($result['response_deadline']); ?>
+			</td>
 		</tr>
 		<tr>
-			<th scope="col" style="width: 17%;">Final Result:</th>
+			<th scope="col" style="width: 17%;"><?= $this->htmlTranslate("Final Result"); ?>:</th>
 			<td style="width: 33%;"><?php echo ($result['final_result'] == 1) ? 'Pass' : 'Fail'; ?></td>
 			<th scope="col" style="width: 13%;">Score:</th>
 			<td style="width: 37%;"><?php echo ($result['shipment_score'] + $result['documentation_score']); ?>%</td>
@@ -65,13 +78,13 @@ $dtFormat = $genderHelper->getDateFormat();
 		<thead>
 			<tr>
 				<th scope="col" style="width:50%;text-align: left;font-weight:bold;">
-					Corrective Actions
+					<?= $this->htmlTranslate("Corrective Actions"); ?>
 				</th>
 				<th scope="col" style="width:25%;text-align: left;font-weight:bold;">
-					Actions Taken
+					<?= $this->htmlTranslate("Actions Taken"); ?>
 				</th>
 				<th scope="col" style="width:25%;text-align: left;font-weight:bold;">
-					Actions Date
+					<?= $this->htmlTranslate("Actions Date"); ?>:
 				</th>
 			</tr>
 		</thead>
@@ -79,15 +92,17 @@ $dtFormat = $genderHelper->getDateFormat();
 			<?php foreach ($this->correctiveActions as $key => $row) { ?>
 				<tr>
 					<td><input type="hidden" name="shipmentMapId[<?php echo $row['action_id']; ?>]"
-							value="<?php echo $row['shipment_map_id']; ?>" /><?php echo $row['corrective_action']; ?><br><small
-							style=" color: gray; "><?php echo $row['description']; ?></small></td>
-					<td><textarea name="actionToken[<?php echo $row['action_id']; ?>]" id="actionToken<?php echo ($key + 1); ?>"
-							placeholder="Enter the action token" title="Please enter the action token"
-							class="form-control"><?php echo $row['action_taken'] ?? null; ?></textarea></td>
+							value="<?php echo $row['shipment_map_id']; ?>" /><?= $row['corrective_action']; ?><br><small
+							style="color: gray; "><?= $row['description']; ?></small></td>
+					<td><textarea name="actionToken[<?php echo $row['action_id']; ?>]" id="actionToken<?= ($key + 1); ?>"
+							placeholder="<?= $this->htmlTranslate("Enter the action token"); ?>"
+							title="<?= $this->htmlTranslate("Please enter the action token"); ?>"
+							class="form-control"><?= $row['action_taken'] ?? null; ?></textarea></td>
 					<td><input type="text"
-							value="<?php echo Pt_Commons_DateUtility::humanReadableDateFormat($row['action_date']) ?? null; ?>"
-							name="actionDate[<?php echo $row['action_id']; ?>]" id="actionDate<?php echo ($key + 1); ?>"
-							placeholder="Select the action date" title="Please select the action date"
+							value="<?= Pt_Commons_DateUtility::humanReadableDateFormat($row['action_date']) ?? null; ?>"
+							name="actionDate[<?= $row['action_id']; ?>]" id="actionDate<?= ($key + 1); ?>"
+							placeholder="<?= $this->htmlTranslate("Select the action date"); ?>"
+							title="<?= $this->htmlTranslate("Please select the action date"); ?>"
 							class="form-control datepicker" readonly /></td>
 				</tr>
 			<?php } ?>

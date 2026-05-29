@@ -248,8 +248,8 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
          * you want to insert a non-database field (for example a counter or static image)
          */
 
-        $aColumns = ['DATE_FORMAT(shipment_date,"%d-%b-%Y")', 'scheme_name', 'shipment_code', 'distribution_code', 'unique_identifier', new Zend_Db_Expr(Application_Model_DbTable_Participants::participantNameExpr('p')), 'p.institute_name', 'DATE_FORMAT(lastdate_response,"%d-%b-%Y")', 'DATE_FORMAT(spm.shipment_test_report_date,"%d-%b-%Y")'];
-        $orderColumns = ['shipment_date', 'scheme_name', 'shipment_code', 'distribution_code', 'unique_identifier', 'first_name', 'p.institute_name', 'lastdate_response', 'spm.shipment_test_report_date'];
+        $aColumns = ['DATE_FORMAT(shipment_date,"%d-%b-%Y")', 'scheme_name', 'shipment_code', 'distribution_code', 'unique_identifier', new Zend_Db_Expr(Application_Model_DbTable_Participants::participantNameExpr('p')), 'p.institute_name', 'DATE_FORMAT(response_deadline,"%d-%b-%Y %H:%i")', 'DATE_FORMAT(spm.shipment_test_report_date,"%d-%b-%Y")'];
+        $orderColumns = ['shipment_date', 'scheme_name', 'shipment_code', 'distribution_code', 'unique_identifier', 'first_name', 'p.institute_name', 'response_deadline', 'spm.shipment_test_report_date'];
 
         /* Indexed column (used for fast and accurate table cardinality) */
         $sIndexColumn = $this->_primary;
@@ -307,7 +307,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         }
 
         $sQuery = $this->getAdapter()->select()
-            ->from(['s' => 'shipment'], [new Zend_Db_Expr('SQL_CALC_FOUND_ROWS s.scheme_type'), 's.shipment_date', 's.shipment_code', 's.lastdate_response', 's.shipment_id', 's.status', 's.response_switch', 'allow_editing_response', 'panelName' => new Zend_Db_Expr('shipment_attributes->>"$.panelName"')])
+            ->from(['s' => 'shipment'], [new Zend_Db_Expr('SQL_CALC_FOUND_ROWS s.scheme_type'), 's.shipment_date', 's.shipment_code', 's.response_deadline', 's.shipment_id', 's.status', 's.response_switch', 'allow_editing_response', 'panelName' => new Zend_Db_Expr('shipment_attributes->>"$.panelName"')])
             ->join(['d' => 'distributions'], 'd.distribution_id = s.distribution_id', ['distribution_code', 'distribution_date'])
             ->join(['sl' => 'scheme_list'], 'sl.scheme_id=s.scheme_type', ['scheme_name', 'is_user_configured'])
             ->join(['spm' => 'shipment_participant_map'], 'spm.shipment_id=s.shipment_id', ['spm.map_id', 'spm.evaluation_status', 'spm.response_status', 'spm.participant_id', 'RESPONSEDATE' => "DATE_FORMAT(spm.shipment_test_report_date,'%Y-%m-%d')"])
@@ -377,7 +377,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             $row[] = $aRow['unique_identifier'];
             $row[] = $aRow['first_name'] . ' ' . $aRow['last_name'];
             $row[] = $aRow['institute_name'];
-            $row[] = Pt_Commons_DateUtility::humanReadableDateFormat($aRow['lastdate_response']);
+            $row[] = Pt_Commons_DateUtility::humanReadableDateFormat($aRow['response_deadline'], true);
             $row[] = Pt_Commons_DateUtility::humanReadableDateFormat($aRow['RESPONSEDATE']);
 
             $buttonText = Pt_Commons_TranslateUtility::htmlTranslate('View/Edit');
@@ -428,8 +428,8 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
          * you want to insert a non-database field (for example a counter or static image)
          */
 
-        $aColumns = ['year(shipment_date)', 'DATE_FORMAT(shipment_date,"%d-%b-%Y")', 'scheme_name', 'shipment_code', 'unique_identifier', 'first_name', 'DATE_FORMAT(lastdate_response,"%d-%b-%Y")', 'DATE_FORMAT(spm.shipment_test_report_date,"%d-%b-%Y")'];
-        $orderColumns = ['shipment_date', 'shipment_date', 'scheme_name', 'shipment_code', 'unique_identifier', 'first_name', 'lastdate_response', 'spm.shipment_test_report_date'];
+        $aColumns = ['year(shipment_date)', 'DATE_FORMAT(shipment_date,"%d-%b-%Y")', 'scheme_name', 'shipment_code', 'unique_identifier', 'first_name', 'DATE_FORMAT(response_deadline,"%d-%b-%Y %H:%i")', 'DATE_FORMAT(spm.shipment_test_report_date,"%d-%b-%Y")'];
+        $orderColumns = ['shipment_date', 'shipment_date', 'scheme_name', 'shipment_code', 'unique_identifier', 'first_name', 'response_deadline', 'spm.shipment_test_report_date'];
 
         /* Indexed column (used for fast and accurate table cardinality) */
         $sIndexColumn = $this->_primary;
@@ -487,15 +487,15 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         }
 
         $sQuery = $this->getAdapter()->select()
-            ->from(['s' => 'shipment'], [new Zend_Db_Expr('SQL_CALC_FOUND_ROWS s.scheme_type'), 's.status', 'SHIP_YEAR' => 'year(s.shipment_date)', 's.shipment_date', 's.shipment_code', 's.lastdate_response', 's.shipment_id', 's.response_switch'])
-            ->join(['spm' => 'shipment_participant_map'], 'spm.shipment_id=s.shipment_id', ['spm.map_id', 'spm.evaluation_status', 'spm.participant_id', 'RESPONSEDATE' => "DATE_FORMAT(spm.shipment_test_report_date,'%Y-%m-%d')", 'ACTION' => new Zend_Db_Expr("CASE  WHEN substr(spm.evaluation_status,2,1)='1' THEN 'View' WHEN (substr(spm.evaluation_status,2,1)='9' AND s.lastdate_response>= CURDATE()) OR (s.status= 'finalized') THEN 'Enter Result' END"), 'STATUS' => new Zend_Db_Expr("CASE substr(spm.evaluation_status,3,1) WHEN 1 THEN 'On Time' WHEN '2' THEN 'Late' WHEN '0' THEN 'No Response' END")])
+            ->from(['s' => 'shipment'], [new Zend_Db_Expr('SQL_CALC_FOUND_ROWS s.scheme_type'), 's.status', 'SHIP_YEAR' => 'year(s.shipment_date)', 's.shipment_date', 's.shipment_code', 's.response_deadline', 's.shipment_id', 's.response_switch'])
+            ->join(['spm' => 'shipment_participant_map'], 'spm.shipment_id=s.shipment_id', ['spm.map_id', 'spm.evaluation_status', 'spm.participant_id', 'RESPONSEDATE' => "DATE_FORMAT(spm.shipment_test_report_date,'%Y-%m-%d')", 'ACTION' => new Zend_Db_Expr("CASE  WHEN substr(spm.evaluation_status,2,1)='1' THEN 'View' WHEN (substr(spm.evaluation_status,2,1)='9' AND s.response_deadline >= NOW()) OR (s.status= 'finalized') THEN 'Enter Result' END"), 'STATUS' => new Zend_Db_Expr("CASE substr(spm.evaluation_status,3,1) WHEN 1 THEN 'On Time' WHEN '2' THEN 'Late' WHEN '0' THEN 'No Response' END")])
             ->join(['sl' => 'scheme_list'], 'sl.scheme_id=s.scheme_type', ['scheme_name', 'is_user_configured'])
             ->join(['p' => 'participant'], 'p.participant_id=spm.participant_id', ['p.unique_identifier', 'p.first_name', 'p.last_name', 'p.participant_id', 'p.country'])
             ->joinLeft(['c' => 'countries'], 'p.country=c.id', ['c.iso_name'])
 
             ->where("s.status='shipped' OR s.status='evaluated'")
             ->where('year(s.shipment_date)  + 5 > year(CURDATE())')
-            ->where('s.lastdate_response <  CURDATE()')
+            ->where('s.response_deadline < NOW()')
             ->where("substr(spm.evaluation_status,3,1) <> '1'")
             ->order('s.shipment_date')
             ->order('spm.participant_id');
@@ -550,7 +550,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             $row[] = $aRow['shipment_code'];
             $row[] = $aRow['unique_identifier'];
             $row[] = $aRow['first_name'] . ' ' . $aRow['last_name'];
-            $row[] = Pt_Commons_DateUtility::humanReadableDateFormat($aRow['lastdate_response']);
+            $row[] = Pt_Commons_DateUtility::humanReadableDateFormat($aRow['response_deadline'], true);
             $row[] = $aRow['STATUS'];
             $row[] = Pt_Commons_DateUtility::humanReadableDateFormat($aRow['RESPONSEDATE']);
 
@@ -656,8 +656,8 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         }
 
         $sQuery = $this->getAdapter()->select()
-            ->from(['s' => 'shipment'], [new Zend_Db_Expr('SQL_CALC_FOUND_ROWS s.scheme_type'), 'SHIP_YEAR' => 'year(s.shipment_date)', 's.shipment_date', 's.shipment_code', 's.lastdate_response', 's.shipment_id', 's.status', 's.response_switch'])
-            ->join(['spm' => 'shipment_participant_map'], 'spm.shipment_id=s.shipment_id', ['spm.report_generated', 'spm.map_id', 'spm.evaluation_status', 'qc_date', 'spm.participant_id', 'RESPONSEDATE' => "DATE_FORMAT(spm.shipment_test_report_date,'%Y-%m-%d')", 'RESPONSE' => new Zend_Db_Expr("CASE  WHEN substr(spm.evaluation_status,3,1)='1' THEN 'View' WHEN (substr(spm.evaluation_status,3,1)='9' AND s.lastdate_response >= CURDATE()) OR (substr(spm.evaluation_status,3,1)='9' AND s.status= 'finalized') THEN 'Enter Result' END"), 'REPORT' => new Zend_Db_Expr("CASE  WHEN spm.report_generated='yes' AND s.status='finalized' THEN 'Report' END")])
+            ->from(['s' => 'shipment'], [new Zend_Db_Expr('SQL_CALC_FOUND_ROWS s.scheme_type'), 'SHIP_YEAR' => 'year(s.shipment_date)', 's.shipment_date', 's.shipment_code', 's.response_deadline', 's.shipment_id', 's.status', 's.response_switch'])
+            ->join(['spm' => 'shipment_participant_map'], 'spm.shipment_id=s.shipment_id', ['spm.report_generated', 'spm.map_id', 'spm.evaluation_status', 'qc_date', 'spm.participant_id', 'RESPONSEDATE' => "DATE_FORMAT(spm.shipment_test_report_date,'%Y-%m-%d')", 'RESPONSE' => new Zend_Db_Expr("CASE  WHEN substr(spm.evaluation_status,3,1)='1' THEN 'View' WHEN (substr(spm.evaluation_status,3,1)='9' AND s.response_deadline >= NOW()) OR (substr(spm.evaluation_status,3,1)='9' AND s.status= 'finalized') THEN 'Enter Result' END"), 'REPORT' => new Zend_Db_Expr("CASE  WHEN spm.report_generated='yes' AND s.status='finalized' THEN 'Report' END")])
             ->join(['sl' => 'scheme_list'], 'sl.scheme_id=s.scheme_type', ['scheme_name', 'is_user_configured'])
             ->join(['p' => 'participant'], 'p.participant_id=spm.participant_id', ['p.unique_identifier', 'p.first_name', 'p.last_name', 'p.participant_id'])
 
@@ -720,7 +720,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 }
             }
 
-            //$aRow['lastdate_response'];
+            //$aRow['response_deadline'];
 
             $qcBtnText = ' Quality Check';
             if ($aRow['RESPONSEDATE'] != '' && $aRow['RESPONSEDATE'] != '0000-00-00') {
@@ -1001,7 +1001,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             }
         }
 
-        $sQuery = $this->getAdapter()->select()->from(['s' => 'shipment'], [new Zend_Db_Expr('SQL_CALC_FOUND_ROWS s.scheme_type'), 'SHIP_YEAR' => 'year(s.shipment_date)', 's.shipment_date', 's.shipment_code', 's.lastdate_response', 's.shipment_id', 's.corrective_action_file', 'shipmentStatus' => 's.status', 'collect_feedback', 'feedback_expiry_date'])
+        $sQuery = $this->getAdapter()->select()->from(['s' => 'shipment'], [new Zend_Db_Expr('SQL_CALC_FOUND_ROWS s.scheme_type'), 'SHIP_YEAR' => 'year(s.shipment_date)', 's.shipment_date', 's.shipment_code', 's.response_deadline', 's.shipment_id', 's.corrective_action_file', 'shipmentStatus' => 's.status', 'collect_feedback', 'feedback_expiry_date'])
             ->join(['sl' => 'scheme_list'], 's.scheme_type=sl.scheme_id', ['scheme_name'])
             ->join(['spm' => 'shipment_participant_map'], 'spm.shipment_id=s.shipment_id', ['spm.map_id', 'final_result', 'spm.evaluation_status', 'spm.participant_id', 'shipment_score', 'documentation_score', 'is_excluded', 'is_pt_test_not_performed', 'RESPONSEDATE' => "DATE_FORMAT(spm.shipment_test_report_date,'%Y-%m-%d')", 'RESPONSE' => new Zend_Db_Expr("CASE substr(spm.evaluation_status,3,1) WHEN 1 THEN 'View' WHEN '9' THEN 'Enter Result' END"), 'response_status', 'REPORT' => new Zend_Db_Expr("CASE  WHEN spm.report_generated='yes' AND s.status='finalized' THEN 'Report' END")])
             ->join(['p' => 'participant'], 'p.participant_id=spm.participant_id', ['p.unique_identifier', 'p.first_name', 'p.last_name'])
@@ -1181,7 +1181,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
 
         $general = new Pt_Commons_General();
 
-        $sQuery = $this->getAdapter()->select()->from(['s' => 'shipment'], [new Zend_Db_Expr('SQL_CALC_FOUND_ROWS s.scheme_type'), 'SHIP_YEAR' => 'year(s.shipment_date)', 's.shipment_date', 's.shipment_code', 's.lastdate_response', 's.shipment_id', 's.corrective_action_file'])
+        $sQuery = $this->getAdapter()->select()->from(['s' => 'shipment'], [new Zend_Db_Expr('SQL_CALC_FOUND_ROWS s.scheme_type'), 'SHIP_YEAR' => 'year(s.shipment_date)', 's.shipment_date', 's.shipment_code', 's.response_deadline', 's.shipment_id', 's.corrective_action_file'])
             ->join(['sl' => 'scheme_list'], 's.scheme_type=sl.scheme_id', ['scheme_name'])
             ->join(['spm' => 'shipment_participant_map'], 'spm.shipment_id=s.shipment_id', ['spm.map_id', 'final_result', 'spm.evaluation_status', 'spm.participant_id', 'RESPONSEDATE' => "DATE_FORMAT(spm.shipment_test_report_date,'%Y-%m-%d')", 'RESPONSE' => new Zend_Db_Expr("CASE WHEN ASCII(SUBSTRING(spm.evaluation_status FROM 3 FOR 1)) = ASCII('1') THEN 'View' WHEN ASCII(SUBSTRING(spm.evaluation_status FROM 3 FOR 1)) = ASCII('9') THEN 'Enter Result' END"), 'REPORT' => new Zend_Db_Expr("CASE  WHEN spm.report_generated='yes' AND s.status='finalized' THEN 'Report' END")])
             ->join(['p' => 'participant'], 'p.participant_id=spm.participant_id', ['p.unique_identifier', 'p.first_name', 'p.last_name'])
@@ -1396,8 +1396,8 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             $parameters[$key] = trim($db->quote($value), "'");
         }
 
-        $aColumns = ['sl.scheme_name', 'shipment_code', 'distribution_code', "DATE_FORMAT(distribution_date,'%d-%b-%Y')", "DATE_FORMAT(lastdate_response,'%d-%b-%Y')"];
-        $orderColumns = ['sl.scheme_name', 'shipment_code', 'distribution_code', 'distribution_date', 'lastdate_response'];
+        $aColumns = ['sl.scheme_name', 'shipment_code', 'distribution_code', "DATE_FORMAT(distribution_date,'%d-%b-%Y')", "DATE_FORMAT(response_deadline,'%d-%b-%Y %H:%i')"];
+        $orderColumns = ['sl.scheme_name', 'shipment_code', 'distribution_code', 'distribution_date', 'response_deadline'];
 
         /* Indexed column (used for fast and accurate table cardinality) */
         $sIndexColumn = 'shipment_id';
@@ -1496,7 +1496,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             $row[] = $aRow['SCHEME'];
             $row[] = $aRow['distribution_code'];
             $row[] = Pt_Commons_DateUtility::humanReadableDateFormat($aRow['distribution_date']);
-            $row[] = Pt_Commons_DateUtility::humanReadableDateFormat($aRow['lastdate_response']);
+            $row[] = Pt_Commons_DateUtility::humanReadableDateFormat($aRow['response_deadline'], true);
             if ($aRow['scheme_id'] == 'tb') {
                 $row[] = '<a href="/shipment-form/tb-download/sid/' . base64_encode($aRow['shipment_id']) . '"  style="text-decoration : underline;" target="_blank" download> Download </a>';
             } else {
@@ -1701,7 +1701,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             }
         }
 
-        $sQuery = $this->getAdapter()->select()->from(['s' => 'shipment'], [new Zend_Db_Expr('SQL_CALC_FOUND_ROWS s.scheme_type'), 's.shipment_date', 's.shipment_code', 's.lastdate_response', 's.shipment_id', 's.status', 's.response_switch'])
+        $sQuery = $this->getAdapter()->select()->from(['s' => 'shipment'], [new Zend_Db_Expr('SQL_CALC_FOUND_ROWS s.scheme_type'), 's.shipment_date', 's.shipment_code', 's.response_deadline', 's.shipment_id', 's.status', 's.response_switch'])
             ->join(['spm' => 'shipment_participant_map'], 'spm.shipment_id=s.shipment_id', ['spm.report_generated', 'spm.map_id', 'spm.evaluation_status', 'qc_date', 'spm.participant_id', 'RESPONSEDATE' => "DATE_FORMAT(spm.shipment_test_report_date,'%Y-%m-%d')", 'spm.shipment_score'])
             ->join(['sl' => 'scheme_list'], 'sl.scheme_id=s.scheme_type', ['scheme_name'])
             ->join(['p' => 'participant'], 'p.participant_id=spm.participant_id', ['p.unique_identifier', 'p.first_name', 'p.last_name', 'p.participant_id'])
@@ -1780,7 +1780,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         }
 
         /* To check the shipment details for the data managers mapped participants */
-        $sQuery = $this->getAdapter()->select()->from(['s' => 'shipment'], ['s.scheme_type', 's.shipment_date', 's.shipment_code', 's.lastdate_response', 's.shipment_id', 's.status', 's.response_switch', 's.updated_on_admin'])
+        $sQuery = $this->getAdapter()->select()->from(['s' => 'shipment'], ['s.scheme_type', 's.shipment_date', 's.shipment_code', 's.response_deadline', 's.shipment_id', 's.status', 's.response_switch', 's.updated_on_admin'])
             ->join(['sl' => 'scheme_list'], 'sl.scheme_id=s.scheme_type', ['scheme_name'])
             ->join(['spm' => 'shipment_participant_map'], 'spm.shipment_id=s.shipment_id', ['spm.map_id', 'spm.evaluation_status', 'spm.participant_id', 'RESPONSEDATE' => "DATE_FORMAT(spm.shipment_test_report_date,'%Y-%m-%d')", 'created_on_admin', 'created_on_user', 'updated_on_user', 'is_excluded'])
             ->join(['p' => 'participant'], 'p.participant_id=spm.participant_id', ['p.unique_identifier', 'p.first_name', 'p.last_name', 'p.state'])
@@ -1833,7 +1833,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 'evaluationStatus' => $row['evaluation_status'],
                 'is_excluded' => $row['is_excluded'] ?? 'no',
                 'shipmentDate' => $row['shipment_date'],
-                'resultDueDate' => $row['lastdate_response'],
+                'resultDueDate' => $row['response_deadline'],
                 'responseDate' => $row['RESPONSEDATE'],
                 'status' => $row['status'],
                 'statusUpdatedOn' => $row['updated_on_admin'],
@@ -1909,7 +1909,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         }
 
         /* To check the shipment details for the data managers mapped participants */
-        $sQuery = $this->getAdapter()->select()->from(['s' => 'shipment'], ['s.scheme_type', 's.shipment_attributes', 's.shipment_date', 's.shipment_code', 's.lastdate_response', 's.shipment_id', 's.status', 's.response_switch', 's.updated_on_admin'])
+        $sQuery = $this->getAdapter()->select()->from(['s' => 'shipment'], ['s.scheme_type', 's.shipment_attributes', 's.shipment_date', 's.shipment_code', 's.response_deadline', 's.shipment_id', 's.status', 's.response_switch', 's.updated_on_admin'])
             ->join(['sl' => 'scheme_list'], 'sl.scheme_id=s.scheme_type', ['scheme_name', 'is_user_configured'])
             ->join(['spm' => 'shipment_participant_map'], 'spm.shipment_id=s.shipment_id', ['RESPONSEDATE' => "DATE_FORMAT(spm.shipment_test_report_date,'%Y-%m-%d')", '*'])
             ->join(['p' => 'participant'], 'p.participant_id=spm.participant_id', ['p.unique_identifier', 'p.first_name', 'p.last_name', 'p.state', 'p.affiliation', 'p.phone', 'p.mobile'])
@@ -1986,7 +1986,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 'is_excluded' => $row['is_excluded'] ?? 'no',
                 'shipmentDate' => $row['shipment_date'],
                 'shipmentReceiptDate' => $row['shipment_receipt_date'],
-                'resultDueDate' => $row['lastdate_response'],
+                'resultDueDate' => $row['response_deadline'],
                 'responseDate' => $row['RESPONSEDATE'],
                 'testingDate' => $row['shipment_test_date'],
                 'status' => $row['status'],
@@ -2028,7 +2028,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 $allSamples = $model->getSamplesForParticipant($row['shipment_id'], $row['participant_id']);
             }
             $isEditable = $spMap->isShipmentEditable($row['shipment_id'], $row['participant_id']);
-            $lastDate = new Zend_Date($row['lastdate_response']);
+            $lastDate = new Zend_Date($row['response_deadline']);
             $responseAccess = $date->compare($lastDate, Zend_Date::DATES);
             $dtsSchemeType = (isset($shipmentAttributes['dtsSchemeType']) && $shipmentAttributes['dtsSchemeType'] != '') ? $shipmentAttributes['dtsSchemeType'] : null;
 
@@ -2201,7 +2201,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         $modeOfReceipt = $commonService->getAllModeOfReceipt();
         $globalQcAccess = $commonService->getConfig('qc_access');
         $isEditable = $spMap->isShipmentEditable($params['shipment_id'], $params['participant_id']);
-        $lastDate = new Zend_Date($shipment['lastdate_response']);
+        $lastDate = new Zend_Date($shipment['response_deadline']);
         $responseAccess = $date->compare($lastDate, Zend_Date::DATES);
 
         if ($params['scheme_type'] == 'dts') {
@@ -2337,7 +2337,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 // For algorithmUsed end
                 $section2 = [
                     'shipmentDate' => date('d-M-Y', strtotime($shipment['shipment_date'])),
-                    'resultDueDate' => date('d-M-Y', strtotime($shipment['lastdate_response'])),
+                    'resultDueDate' => date('d-M-Y', strtotime($shipment['response_deadline'])),
                     'testReceiptDate' => (isset($shipment['shipment_receipt_date']) && $shipment['shipment_receipt_date'] != '' && $shipment['shipment_receipt_date'] != '0000:00:00') ? date('d-M-Y', strtotime($shipment['shipment_receipt_date'])) : '',
                     // 'sampleRehydrationDate'     => (isset($shipment['attributes']["sample_rehydration_date"]) && $shipment['attributes']["sample_rehydration_date"] != '' && $shipment['attributes']["sample_rehydration_date"] != '0000:00:00') ? date('d-M-Y', strtotime($shipment['attributes']["sample_rehydration_date"])) : '',
                     'testingDate' => (isset($shipment['shipment_test_date']) && $shipment['shipment_test_date'] != '' && $shipment['shipment_test_date'] != '0000-00-00') ? date('d-M-Y', strtotime($shipment['shipment_test_date'])) : '',
@@ -3168,7 +3168,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 }
                 $section2['status'] = true;
                 $section2['data']['shipmentDate'] = date('d-M-Y', strtotime($shipment['shipment_date']));
-                $section2['data']['resultDueDate'] = date('d-M-Y', strtotime($shipment['lastdate_response']));
+                $section2['data']['resultDueDate'] = date('d-M-Y', strtotime($shipment['response_deadline']));
                 $section2['data']['testReceiptDate'] = (isset($shipment['shipment_receipt_date']) && $shipment['shipment_receipt_date'] != '' && $shipment['shipment_receipt_date'] != '0000-00-00') ? date('d-M-Y', strtotime($shipment['shipment_receipt_date'])) : '';
                 $section2['data']['sampleRehydrationDate'] = (isset($shipment['attributes']['sample_rehydration_date']) && $shipment['attributes']['sample_rehydration_date'] != '' && $shipment['attributes']['sample_rehydration_date'] != '0000-00-00') ? date('d-M-Y', strtotime($shipment['attributes']['sample_rehydration_date'])) : '';
                 $section2['data']['testDate'] = (isset($shipment['shipment_test_date']) && $shipment['shipment_test_date'] != '' && $shipment['shipment_test_date'] != '0000-00-00') ? date('d-M-Y', strtotime($shipment['shipment_test_date'])) : '';
@@ -3398,7 +3398,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
 
                 $section2['status'] = true;
                 $section2['data']['shipmentDate'] = date('d-M-Y', strtotime($shipment['shipment_date']));
-                $section2['data']['resultDueDate'] = date('d-M-Y', strtotime($shipment['lastdate_response']));
+                $section2['data']['resultDueDate'] = date('d-M-Y', strtotime($shipment['response_deadline']));
                 $section2['data']['testReceiptDate'] = (isset($shipment['shipment_receipt_date']) && $shipment['shipment_receipt_date'] != '' && $shipment['shipment_receipt_date'] != '0000:00:00') ? date('d-M-Y', strtotime($shipment['shipment_receipt_date'])) : '';
                 $section2['data']['sampleRehydrationDate'] = (isset($shipment['attributes']['sample_rehydration_date']) && $shipment['attributes']['sample_rehydration_date'] != '' && $shipment['attributes']['sample_rehydration_date'] != '0000:00:00') ? date('d-M-Y', strtotime($shipment['attributes']['sample_rehydration_date'])) : '';
                 $section2['data']['testDate'] = (isset($shipment['shipment_test_date']) && $shipment['shipment_test_date'] != '' && $shipment['shipment_test_date'] != '0000-00-00') ? date('d-M-Y', strtotime($shipment['shipment_test_date'])) : '';
@@ -3612,7 +3612,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
 
                 $section2['status'] = true;
                 $section2['data']['shipmentDate'] = date('d-M-Y', strtotime($shipment['shipment_date']));
-                $section2['data']['resultDueDate'] = date('d-M-Y', strtotime($shipment['lastdate_response']));
+                $section2['data']['resultDueDate'] = date('d-M-Y', strtotime($shipment['response_deadline']));
                 $section2['data']['testReceiptDate'] = (isset($shipment['shipment_receipt_date']) && $shipment['shipment_receipt_date'] != '' && $shipment['shipment_receipt_date'] != '0000:00:00') ? date('d-M-Y', strtotime($shipment['shipment_receipt_date'])) : '';
                 $section2['data']['sampleRehydrationDate'] = (isset($shipment['attributes']['sample_rehydration_date']) && $shipment['attributes']['sample_rehydration_date'] != '' && $shipment['attributes']['sample_rehydration_date'] != '0000:00:00') ? date('d-M-Y', strtotime($shipment['attributes']['sample_rehydration_date'])) : '';
                 $section2['data']['testDate'] = (isset($shipment['shipment_test_date']) && $shipment['shipment_test_date'] != '' && $shipment['shipment_test_date'] != '0000-00-00') ? date('d-M-Y', strtotime($shipment['shipment_test_date'])) : '';
@@ -3838,7 +3838,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 $covid19['Section2']['status'] = true;
                 $section2 = [
                     'shipmentDate' => date('d-M-Y', strtotime($shipment['shipment_date'])),
-                    'resultDueDate' => date('d-M-Y', strtotime($shipment['lastdate_response'])),
+                    'resultDueDate' => date('d-M-Y', strtotime($shipment['response_deadline'])),
                     'testReceiptDate' => (isset($shipment['shipment_receipt_date']) && $shipment['shipment_receipt_date'] != '' && $shipment['shipment_receipt_date'] != '0000:00:00') ? date('d-M-Y', strtotime($shipment['shipment_receipt_date'])) : '',
                     'testingDate' => (isset($shipment['shipment_test_date']) && $shipment['shipment_test_date'] != '' && $shipment['shipment_test_date'] != '0000-00-00') ? date('d-M-Y', strtotime($shipment['shipment_test_date'])) : '',
                     // 'sampleType'                => (isset($shipment['shipment_attributes']["sampleType"]) && $shipment['shipment_attributes']["sampleType"] != '') ? $shipment['shipment_attributes']["sampleType"] : '',
@@ -4242,7 +4242,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
 
         /* Get individual reports using data manager */
         $resultData = [];
-        $sQuery = $this->getAdapter()->select()->from(['s' => 'shipment'], ['SHIP_YEAR' => 'year(s.shipment_date)', 's.scheme_type', 's.shipment_date', 's.shipment_code', 's.lastdate_response', 's.shipment_id', 's.status', 's.updated_on_admin'])
+        $sQuery = $this->getAdapter()->select()->from(['s' => 'shipment'], ['SHIP_YEAR' => 'year(s.shipment_date)', 's.scheme_type', 's.shipment_date', 's.shipment_code', 's.response_deadline', 's.shipment_id', 's.status', 's.updated_on_admin'])
             ->join(['sl' => 'scheme_list'], 'sl.scheme_id=s.scheme_type', ['scheme_name'])
             ->join(['spm' => 'shipment_participant_map'], 'spm.shipment_id=s.shipment_id', ['spm.map_id', 'spm.evaluation_status', 'spm.participant_id', 'RESPONSEDATE' => "DATE_FORMAT(spm.shipment_test_report_date,'%Y-%m-%d')", 'RESPONSE' => new Zend_Db_Expr("CASE substr(spm.evaluation_status,3,1) WHEN 1 THEN 'View' WHEN '9' THEN 'Enter Result' END"), 'REPORT' => new Zend_Db_Expr("CASE  WHEN spm.report_generated='yes' AND s.status='finalized' THEN 'Report' END")])
             ->join(['p' => 'participant'], 'p.participant_id=spm.participant_id', ['p.unique_identifier', 'p.first_name', 'p.last_name'])
@@ -4464,7 +4464,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 $data = [
                     'shipment_receipt_date' => date('Y-m-d', strtotime($params['vlData']->Section2->data->testReceiptDate)),
                     'shipment_test_date' => date('Y-m-d', strtotime($params['vlData']->Section2->data->testDate)),
-                    // "lastdate_response"         => (isset($params['vlData']->Section2->data->responseDate) && trim($params['vlData']->Section2->data->responseDate) != '')?date('Y-m-d',strtotime($params['vlData']->Section2->data->responseDate)):date('Y-m-d'),
+                    // "response_deadline"         => (isset($params['vlData']->Section2->data->responseDate) && trim($params['vlData']->Section2->data->responseDate) != '')?date('Y-m-d',strtotime($params['vlData']->Section2->data->responseDate)):date('Y-m-d'),
                     'response_status' => (isset($params['vlData']->Section2->data->responseStatus) && !empty($params['vlData']->Section2->data->responseStatus)) ? $params['vlData']->Section2->data->responseStatus : null,
                     'attributes' => $attributes,
                     'shipment_test_report_date' => (isset($params['vlData']->Section2->data->responseDate) && trim($params['vlData']->Section2->data->responseDate) != '') ? date('Y-m-d', strtotime($params['vlData']->Section2->data->responseDate)) : date('Y-m-d'),
@@ -4557,7 +4557,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                     'shipment_receipt_date' => date('Y-m-d', strtotime($params['dtsData']->Section2->data->testReceiptDate)),
                     'shipment_test_date' => date('Y-m-d', strtotime($params['dtsData']->Section2->data->testingDate)),
                     'shipment_test_report_date' => (isset($params['dtsData']->Section2->data->responseDate) && trim($params['dtsData']->Section2->data->responseDate) != '') ? date('Y-m-d', strtotime($params['dtsData']->Section2->data->responseDate)) : date('Y-m-d'),
-                    // "lastdate_response"         => (isset($params['dtsData']->Section2->data->respDate) && trim($params['dtsData']->Section2->data->respDate) != '')?date('Y-m-d',strtotime($params['dtsData']->Section2->data->respDate)):date('Y-m-d'),
+                    // "response_deadline"         => (isset($params['dtsData']->Section2->data->respDate) && trim($params['dtsData']->Section2->data->respDate) != '')?date('Y-m-d',strtotime($params['dtsData']->Section2->data->respDate)):date('Y-m-d'),
                     'response_status' => (isset($params['dtsData']->Section2->data->responseStatus) && !empty($params['dtsData']->Section2->data->responseStatus)) ? $params['dtsData']->Section2->data->responseStatus : null,
                     'attributes' => $attributes,
                     'supervisor_approval' => (isset($params['dtsData']->Section5->data->supervisorReviewSelected) && $params['dtsData']->Section5->data->supervisorReviewSelected != '') ? $params['dtsData']->Section5->data->supervisorReviewSelected : '',
@@ -4637,7 +4637,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                     'shipment_receipt_date' => date('Y-m-d', strtotime($params['eidData']->Section2->data->testReceiptDate)),
                     'shipment_test_date' => date('Y-m-d', strtotime($params['eidData']->Section2->data->testDate)),
                     'shipment_test_report_date' => (isset($params['eidData']->Section2->data->responseDate) && trim($params['eidData']->Section2->data->responseDate) != '') ? date('Y-m-d', strtotime($params['eidData']->Section2->data->responseDate)) : date('Y-m-d'),
-                    // "lastdate_response"         => (isset($params['eidData']->Section2->data->respDate) && trim($params['eidData']->Section2->data->respDate) != '')?date('Y-m-d',strtotime($params['eidData']->Section2->data->respDate)):date('Y-m-d'),
+                    // "response_deadline"         => (isset($params['eidData']->Section2->data->respDate) && trim($params['eidData']->Section2->data->respDate) != '')?date('Y-m-d',strtotime($params['eidData']->Section2->data->respDate)):date('Y-m-d'),
                     'response_status' => (isset($params['eidData']->Section2->data->responseStatus) && !empty($params['eidData']->Section2->data->responseStatus)) ? $params['eidData']->Section2->data->responseStatus : null,
                     'attributes' => $attributes,
                     'supervisor_approval' => $params['eidData']->Section4->data->supervisorReviewSelected,
@@ -4870,7 +4870,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
     public function getStatusOfMappedSites($parameters)
     {
         $sQuery = $this->getAdapter()->select()
-            ->from(['s' => 'shipment'], ['s.scheme_type', 's.shipment_date', 's.shipment_code', 's.lastdate_response', 's.shipment_id', 's.status', 's.response_switch', 'panelName' => new Zend_Db_Expr('shipment_attributes->>"$.panelName"')])
+            ->from(['s' => 'shipment'], ['s.scheme_type', 's.shipment_date', 's.shipment_code', 's.response_deadline', 's.shipment_id', 's.status', 's.response_switch', 'panelName' => new Zend_Db_Expr('shipment_attributes->>"$.panelName"')])
             ->join(['sl' => 'scheme_list'], 'sl.scheme_id=s.scheme_type', ['scheme_name', 'is_user_configured'])
             ->join(['spm' => 'shipment_participant_map'], 'spm.shipment_id=s.shipment_id', ['spm.map_id', 'spm.evaluation_status', 'spm.response_status', 'spm.participant_id', 'response_date' => "DATE_FORMAT(spm.shipment_test_report_date,'%d-%b-%Y')"])
             ->join(['p' => 'participant'], 'p.participant_id=spm.participant_id', ['p.unique_identifier', 'p.first_name', 'p.last_name', 'p.department_name', 'p.address', 'p.city', 'p.district', 'p.state', 'p.institute_name', 'p.country', 'p.email', 'p.mobile'])
@@ -4905,7 +4905,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
     public function fetchFinalizedShipmentReportByDmId($dmId)
     {
         $sQuery = $this->getAdapter()->select()
-            ->from(['s' => 'shipment'], ['s.scheme_type', 's.shipment_date', 's.shipment_code', 's.lastdate_response', 's.shipment_id', 's.status', 's.response_switch', 'panelName' => new Zend_Db_Expr('shipment_attributes->>"$.panelName"')])
+            ->from(['s' => 'shipment'], ['s.scheme_type', 's.shipment_date', 's.shipment_code', 's.response_deadline', 's.shipment_id', 's.status', 's.response_switch', 'panelName' => new Zend_Db_Expr('shipment_attributes->>"$.panelName"')])
             ->join(['spm' => 'shipment_participant_map'], 'spm.shipment_id=s.shipment_id', ['spm.map_id', 'spm.evaluation_status', 'spm.response_status', 'spm.participant_id', 'response_date' => "DATE_FORMAT(spm.shipment_test_report_date,'%d-%b-%Y')", 'report_download_metadata'])
             ->join(['p' => 'participant'], 'p.participant_id=spm.participant_id', ['p.unique_identifier', 'p.first_name', 'p.last_name', 'p.department_name', 'p.address', 'p.city', 'p.district', 'p.state', 'p.institute_name', 'p.country', 'p.email', 'p.mobile'])
             ->join(['pmm' => 'participant_manager_map'], 'p.participant_id=pmm.participant_id', [])

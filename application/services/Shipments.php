@@ -124,8 +124,8 @@ class Application_Service_Shipments
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
 
-        $aColumns = ['shipment_code', 'sl.scheme_name', 'distribution_code', "DATE_FORMAT(distribution_date,'%d-%b-%Y')", "DATE_FORMAT(lastdate_response,'%d-%b-%Y')", 'number_of_samples', '', '', 's.status'];
-        $orderColumns = ['shipment_code', 'sl.scheme_name', 'distribution_code', 'distribution_date', 'lastdate_response', 'number_of_samples', 'total_participants', '', 's.status'];
+        $aColumns = ['shipment_code', 'sl.scheme_name', 'distribution_code', "DATE_FORMAT(distribution_date,'%d-%b-%Y')", "DATE_FORMAT(response_deadline,'%d-%b-%Y %H:%i')", 'number_of_samples', '', '', 's.status'];
+        $orderColumns = ['shipment_code', 'sl.scheme_name', 'distribution_code', 'distribution_date', 'response_deadline', 'number_of_samples', 'total_participants', '', 's.status'];
 
         $sLimit = '';
         if (isset($parameters['iDisplayStart']) && $parameters['iDisplayLength'] != '-1') {
@@ -273,7 +273,7 @@ class Application_Service_Shipments
             $row[] = $aRow['SCHEME'];
             $row[] = $aRow['distribution_code'];
             $row[] = Pt_Commons_DateUtility::humanReadableDateFormat($aRow['distribution_date']);
-            $row[] = Pt_Commons_DateUtility::humanReadableDateFormat($aRow['lastdate_response']);
+            $row[] = Pt_Commons_DateUtility::humanReadableDateFormat($aRow['response_deadline'], true);
             $row[] = $aRow['number_of_samples'];
             $row[] = $aRow['total_participants'];
             $row[] = $responseSwitch;
@@ -1938,7 +1938,8 @@ class Application_Service_Shipments
                 'pt_co_ordinator_email' => $params['ptEmail'] ?? null,
                 'pt_co_ordinator_phone' => $params['ptPhone'] ?? null,
                 'collect_feedback' => $params['collectFeedBack'] ?? 'no',
-                'lastdate_response' => Pt_Commons_DateUtility::isoDateFormat($params['lastDate']),
+                'response_deadline' => Pt_Commons_DateUtility::shipmentDeadlineValue($params['lastDate'], $params['lastTime'] ?? null),
+                'auto_close_at_deadline' => (isset($params['autoCloseAtDeadline']) && $params['autoCloseAtDeadline'] === 'no') ? 'no' : 'yes',
                 'created_on_admin' => new Zend_Db_Expr('now()'),
                 'created_by_admin' => $authNameSpace->primary_email,
             ];
@@ -3065,7 +3066,8 @@ class Application_Service_Shipments
                     'pt_co_ordinator_email' => $params['ptEmail'] ?? null,
                     'pt_co_ordinator_phone' => $params['ptPhone'] ?? null,
                     'collect_feedback' => $params['collectFeedBack'],
-                    'lastdate_response' => Pt_Commons_DateUtility::isoDateFormat($params['lastDate']),
+                    'response_deadline' => Pt_Commons_DateUtility::shipmentDeadlineValue($params['lastDate'], $params['lastTime'] ?? null),
+                    'auto_close_at_deadline' => (isset($params['autoCloseAtDeadline']) && $params['autoCloseAtDeadline'] === 'no') ? 'no' : 'yes',
                 ],
                 'shipment_id = ' . $params['shipmentId']
             );
@@ -3169,7 +3171,7 @@ class Application_Service_Shipments
         $resultArray = [];
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
 
-        $sQuery = $db->select()->from(['s' => 'shipment'], ['s.shipment_code', 's.scheme_type', 's.lastdate_response'])
+        $sQuery = $db->select()->from(['s' => 'shipment'], ['s.shipment_code', 's.scheme_type', 's.response_deadline'])
             ->join(['sp' => 'shipment_participant_map'], 'sp.shipment_id=s.shipment_id', ['participantCount' => new Zend_Db_Expr('count(sp.participant_id)'), 'receivedCount' => new Zend_Db_Expr("SUM(sp.shipment_test_date not like '0000-00-00')")])
             ->where("s.status='shipped' OR s.status='evaluated' OR s.status='finalized'")
             //->where("YEAR(s.shipment_date) = YEAR(CURDATE())")
@@ -3476,7 +3478,7 @@ class Application_Service_Shipments
         // if (count($monthYear) > 0) {
         // foreach ($monthYear as $monthIndex => $monthYr) {
 
-        $sQuery = $db->select()->from(['s' => 'shipment'], ['s.shipment_code', 's.scheme_type', 's.lastdate_response', 'max_score', 'average_score'])
+        $sQuery = $db->select()->from(['s' => 'shipment'], ['s.shipment_code', 's.scheme_type', 's.response_deadline', 'max_score', 'average_score'])
             ->join(['sp' => 'shipment_participant_map'], 'sp.shipment_id=s.shipment_id', ['shipment_score' => new Zend_Db_Expr('SUM(sp.shipment_score)'), 'documentation_score' => new Zend_Db_Expr('SUM(sp.documentation_score)'), 'participantCount' => new Zend_Db_Expr('count(sp.participant_id)'), 'receivedCount' => new Zend_Db_Expr("SUM(sp.shipment_test_date not like '0000-00-00')")])
             ->where("s.status='finalized'")
             ->where('sp.participant_id IN(' . $participantIds . ')')
@@ -3522,7 +3524,7 @@ class Application_Service_Shipments
     {
         $total = $name = $response = [];
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $sQuery = $db->select()->from(['s' => 'shipment'], ['s.shipment_code', 's.scheme_type', 's.lastdate_response', 'max_score', 'average_score'])
+        $sQuery = $db->select()->from(['s' => 'shipment'], ['s.shipment_code', 's.scheme_type', 's.response_deadline', 'max_score', 'average_score'])
             ->join(['sp' => 'shipment_participant_map'], 'sp.shipment_id=s.shipment_id', ['shipment_score' => new Zend_Db_Expr('SUM(sp.shipment_score)'), 'documentation_score' => new Zend_Db_Expr('SUM(sp.documentation_score)'), 'participantCount' => new Zend_Db_Expr('count(sp.participant_id)'), 'receivedCount' => new Zend_Db_Expr("SUM(sp.shipment_test_date not like '0000-00-00')")])
             ->join(['sl' => 'scheme_list'], 's.scheme_type=sl.scheme_id', ['scheme_name'])
             ->where("s.status != 'pending'")
@@ -3582,7 +3584,7 @@ class Application_Service_Shipments
     {
         $domain = rtrim($conf->domain, '/');
         $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $sQuery = $dbAdapter->select()->from(['s' => 'shipment'], ['SHIP_YEAR' => 'year(s.shipment_date)', 's.scheme_type', 's.shipment_date', 's.shipment_code', 's.lastdate_response', 's.shipment_id', 's.corrective_action_file', 'status'])
+        $sQuery = $dbAdapter->select()->from(['s' => 'shipment'], ['SHIP_YEAR' => 'year(s.shipment_date)', 's.scheme_type', 's.shipment_date', 's.shipment_code', 's.response_deadline', 's.shipment_id', 's.corrective_action_file', 'status'])
             ->join(['sl' => 'scheme_list'], 's.scheme_type=sl.scheme_id', ['scheme_name'])
             ->join(['spm' => 'shipment_participant_map'], 'spm.shipment_id=s.shipment_id', ['spm.map_id', 'final_result', 'spm.evaluation_status', 'spm.participant_id', 'shipment_score', 'documentation_score', 'is_excluded', 'is_pt_test_not_performed', 'RESPONSEDATE' => "DATE_FORMAT(spm.shipment_test_report_date,'%Y-%m-%d')", 'RESPONSE' => new Zend_Db_Expr("CASE substr(spm.evaluation_status,3,1) WHEN 1 THEN 'View' WHEN '9' THEN 'Enter Result' END"), 'REPORT' => new Zend_Db_Expr("CASE  WHEN spm.report_generated='yes' AND s.status='finalized' THEN 'Report' END")])
             ->join(['p' => 'participant'], 'p.participant_id=spm.participant_id', ['p.unique_identifier', 'p.first_name', 'p.last_name', 'email', 'participantName' => new Zend_Db_Expr(Application_Model_DbTable_Participants::participantNameGroupConcatExpr('p'))])
@@ -3861,11 +3863,11 @@ class Application_Service_Shipments
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
         $dmId = $authNameSpace->dm_id;
         if (isset($parameters['originatedFrom']) && !empty($parameters['originatedFrom']) && $parameters['originatedFrom'] == 'admin') {
-            $aColumns = ['p.unique_identifier', 'p.first_name', 'distribution_code', "DATE_FORMAT(distribution_date,'%d-%b-%Y')", 'shipment_code', "DATE_FORMAT(shipment_date,'%d-%b-%Y')", "DATE_FORMAT(lastdate_response,'%d-%b-%Y')", 'sl.scheme_name', 'number_of_samples', 'shipment_score', 'final_result'];
-            $orderColumns = ['p.unique_identifier', 'p.first_name', 'distribution_code', 'distribution_date', 'shipment_code', 'shipment_date', 'lastdate_response', 'sl.scheme_name', 'number_of_samples', 'shipment_score', 'final_result'];
+            $aColumns = ['p.unique_identifier', 'p.first_name', 'distribution_code', "DATE_FORMAT(distribution_date,'%d-%b-%Y')", 'shipment_code', "DATE_FORMAT(shipment_date,'%d-%b-%Y')", "DATE_FORMAT(response_deadline,'%d-%b-%Y %H:%i')", 'sl.scheme_name', 'number_of_samples', 'shipment_score', 'final_result'];
+            $orderColumns = ['p.unique_identifier', 'p.first_name', 'distribution_code', 'distribution_date', 'shipment_code', 'shipment_date', 'response_deadline', 'sl.scheme_name', 'number_of_samples', 'shipment_score', 'final_result'];
         } else {
-            $aColumns = ['sl.scheme_name', 'shipment_code', 'distribution_code', "DATE_FORMAT(distribution_date,'%d-%b-%Y')", "DATE_FORMAT(lastdate_response,'%d-%b-%Y')", 'number_of_samples', '', '', 's.status'];
-            $orderColumns = ['sl.scheme_name', 'shipment_code', 'distribution_code', 'distribution_date', 'lastdate_response', 'number_of_samples', 'total_participants', '', 's.status'];
+            $aColumns = ['sl.scheme_name', 'shipment_code', 'distribution_code', "DATE_FORMAT(distribution_date,'%d-%b-%Y')", "DATE_FORMAT(response_deadline,'%d-%b-%Y %H:%i')", 'number_of_samples', '', '', 's.status'];
+            $orderColumns = ['sl.scheme_name', 'shipment_code', 'distribution_code', 'distribution_date', 'response_deadline', 'number_of_samples', 'total_participants', '', 's.status'];
         }
 
         $sLimit = '';
@@ -3939,7 +3941,7 @@ class Application_Service_Shipments
                 'reported_count' => new Zend_Db_Expr("SUM(response_status is not null AND response_status like 'responded')"),
             ]
         )
-            ->join(['s' => 'shipment'], 'spm.shipment_id=s.shipment_id', ['shipment_id', 'shipment_date', 'scheme_type', 'shipment_code', 'shipment_attributes', 'number_of_samples', 'lastdate_response'])
+            ->join(['s' => 'shipment'], 'spm.shipment_id=s.shipment_id', ['shipment_id', 'shipment_date', 'scheme_type', 'shipment_code', 'shipment_attributes', 'number_of_samples', 'response_deadline'])
             ->join(['p' => 'participant'], 'spm.participant_id=p.participant_id', ['participant_id', 'unique_identifier', 'institute_name', 'department_name', 'participantName' => new Zend_Db_Expr(Application_Model_DbTable_Participants::participantNameExpr('p'))])
             ->join(['pmm' => 'participant_manager_map'], 'pmm.participant_id=p.participant_id', [''])
             ->join(['sl' => 'scheme_list'], 's.scheme_type=sl.scheme_id', ['SCHEME' => 'sl.scheme_name', 'is_user_configured'])
@@ -4011,7 +4013,7 @@ class Application_Service_Shipments
             if (isset($parameters['originatedFrom']) && !empty($parameters['originatedFrom']) && $parameters['originatedFrom'] == 'admin') {
                 $row[] = Pt_Commons_DateUtility::humanReadableDateFormat($aRow['shipment_date']);
             }
-            $row[] = Pt_Commons_DateUtility::humanReadableDateFormat($aRow['lastdate_response']);
+            $row[] = Pt_Commons_DateUtility::humanReadableDateFormat($aRow['response_deadline'], true);
             $row[] = $aRow['SCHEME'];
             $row[] = $aRow['number_of_samples'];
             if (isset($parameters['originatedFrom']) && !empty($parameters['originatedFrom']) && $parameters['originatedFrom'] == 'admin') {
@@ -4132,7 +4134,7 @@ class Application_Service_Shipments
                 $row[] = Pt_Commons_DateUtility::humanReadableDateFormat($aRow['distribution_date']);
                 $row[] = $aRow['shipment_code'];
                 $row[] = Pt_Commons_DateUtility::humanReadableDateFormat($aRow['shipment_date']);
-                $row[] = Pt_Commons_DateUtility::humanReadableDateFormat($aRow['lastdate_response']);
+                $row[] = Pt_Commons_DateUtility::humanReadableDateFormat($aRow['response_deadline'], true);
                 $row[] = $aRow['SCHEME'];
                 $row[] = $aRow['number_of_samples'];
                 $row[] = ($aRow['final_result'] == 1) ? 'Pass' : 'Fail';
@@ -4251,7 +4253,7 @@ class Application_Service_Shipments
             $sheet->getCell(Coordinate::stringFromColumnIndex(2) . 5)
                 ->setValueExplicit(html_entity_decode(Pt_Commons_DateUtility::humanReadableDateFormat($result['shipment_date']), ENT_QUOTES, 'UTF-8'));
             $sheet->getCell(Coordinate::stringFromColumnIndex(5) . 5)
-                ->setValueExplicit(html_entity_decode(Pt_Commons_DateUtility::humanReadableDateFormat($result['lastdate_response']), ENT_QUOTES, 'UTF-8'));
+                ->setValueExplicit(html_entity_decode(Pt_Commons_DateUtility::humanReadableDateFormat($result['response_deadline'], true), ENT_QUOTES, 'UTF-8'));
             $sheet->getCell(Coordinate::stringFromColumnIndex(2) . 6)
                 ->setValueExplicit(html_entity_decode(($result['final_result'] == 1) ? 'Pass' : 'Fail', ENT_QUOTES, 'UTF-8'));
             $sheet->getCell(Coordinate::stringFromColumnIndex(5) . 6)

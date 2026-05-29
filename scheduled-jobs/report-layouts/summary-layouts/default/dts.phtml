@@ -55,7 +55,7 @@ if ($resultArray['shipment'] != "") {
         $referenceRes .= '<td style="font-weight:normal;width:25%;font-size:12px;"><span style="font-weight:bold;">' . Pt_Commons_TranslateUtility::safeTranslate('PT Survey') . '</span><br>' . $resultArray['shipment']['distribution_code'] . '</td>';
         $referenceRes .= '<td style="font-weight:normal;width:25%;font-size:12px;"><span style="font-weight:bold;">' . Pt_Commons_TranslateUtility::safeTranslate('Shipment Code') . '</span><br>' . $resultArray['shipment']['shipment_code'] . '</td>';
         $referenceRes .= '<td style="font-weight:normal;width:25%;font-size:12px;"><span style="font-weight:bold;">' . Pt_Commons_TranslateUtility::safeTranslate('Shipment Date') . '</span><br>' . Pt_Commons_DateUtility::humanReadableDateFormat($resultArray['shipment']['shipment_date']) . '</td>';
-        $referenceRes .= '<td style="font-weight:normal;width:25%;font-size:12px;"><span style="font-weight:bold;">' . Pt_Commons_TranslateUtility::safeTranslate('Due Date') . '</span><br>' . Pt_Commons_DateUtility::humanReadableDateFormat($resultArray['shipment']['lastdate_response']) . '</td>';
+        $referenceRes .= '<td style="font-weight:normal;width:25%;font-size:12px;"><span style="font-weight:bold;">' . Pt_Commons_TranslateUtility::safeTranslate('Due Date') . '</span><br>' . Pt_Commons_DateUtility::humanReadableDateFormat($resultArray['shipment']['response_deadline']) . '</td>';
         $referenceRes .= '</tr>';
         $referenceRes .= '</table>';
 

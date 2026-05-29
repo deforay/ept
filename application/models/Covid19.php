@@ -54,7 +54,7 @@ class Application_Model_Covid19
             $attributes = Pt_Commons_JsonUtility::safeDecode($shipment['attributes']);
 
             //Response was submitted after the last response date.
-            $lastDate = Pt_Commons_DateUtility::shipmentCutoff($shipment['lastdate_response']);
+            $lastDate = Pt_Commons_DateUtility::shipmentCutoff($shipment['response_deadline']);
             if ($createdOn > $lastDate) {
                 $lastDateResult = 'Fail';
                 $failureReason[] = [

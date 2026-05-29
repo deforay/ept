@@ -30,7 +30,7 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
 	<div class="box">
 		<form name="vlResponseForm" id="vlResponseForm" method="post" enctype="multipart/form-data" action="<?php echo $this->url(array("controller" => "vl", "action" => "response"), null, true) ?>">
 			<div class="box-body">
-				<input type="hidden" id="hdLastDate" name="hdLastDate" value="<?php echo $this->shipment['lastdate_response']; ?>" />
+				<input type="hidden" id="hdLastDate" name="hdLastDate" value="<?php echo $this->shipment['response_deadline']; ?>" />
 				<input type="hidden" id="smid" name="smid" value="<?php echo $this->shipment['map_id']; ?>" />
 				<input type="hidden" id="shipmentId" name="shipmentId" value="<?php echo $this->shipId; ?>" />
 				<input type="hidden" id="participantId" name="participantId" value="<?php echo $this->participantId; ?>" />
@@ -54,7 +54,7 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
 					<?php
 
 					$date = (new DateTime())->setTime(0, 0, 0);
-					$lastDate = (new DateTime($this->shipment['lastdate_response']))->setTime(0, 0, 0);
+					$lastDate = (new DateTime($this->shipment['response_deadline']))->setTime(0, 0, 0);
 
 					if ($this->isEditable) {
 						if (($date > $lastDate) && $this->shipment['status'] == 'finalized') {
@@ -104,7 +104,7 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
 							<td style="width:20%;"><label>Shipment Date</label></td>
 							<td style="width:30%;"><?php echo $this->dateFormat($this->shipment['shipment_date']); ?></td>
 							<td style="width:20%;"><label>Result Due Date</label></td>
-							<td><?php echo $this->dateFormat($this->shipment['lastdate_response']); ?> </td>
+							<td><?php echo $this->dateFormat($this->shipment['response_deadline'], true); ?> </td>
 						</tr>
 						<tr class="light">
 							<td><label>Test Receipt Date <span class='mandatory ptTestPerformed'>*</span></label></td>

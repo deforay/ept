@@ -34,7 +34,7 @@ class Application_Model_Eid
                 $createdOn = new DateTimeImmutable('1970-01-01');
             }
 
-            $lastDate = Pt_Commons_DateUtility::shipmentCutoff($shipment['lastdate_response']);
+            $lastDate = Pt_Commons_DateUtility::shipmentCutoff($shipment['response_deadline']);
 
             $results = $schemeService->getEidSamples($shipmentId, $shipment['participant_id']);
             $totalScore = 0;

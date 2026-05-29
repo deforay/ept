@@ -189,7 +189,7 @@ if (!empty($resultArray['shipment'])) {
         $labInfo = '<table cellpadding="4" style="font-size:12px;width:100%;">';
 
         $labInfo .= '<tr>';
-        $labInfo .= '	<td width="50%"><strong>PT Panel Name and Due Date:</strong><span style="font-weight: normal;">' . $result['distribution_code'] . '(' . Pt_Commons_DateUtility::humanReadableDateFormat($result['lastdate_response']) . ')</span></td>';
+        $labInfo .= '	<td width="50%"><strong>PT Panel Name and Due Date:</strong><span style="font-weight: normal;">' . $result['distribution_code'] . '(' . Pt_Commons_DateUtility::humanReadableDateFormat($result['response_deadline']) . ')</span></td>';
         $labInfo .= '	<td width="50%"><strong>Panel Received Date : </strong><span style="font-weight: normal;">' . $shipmentReceiptDate . '</span></td>';
         $labInfo .= '</tr>';
         $labInfo .= '<tr>';

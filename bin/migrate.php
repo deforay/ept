@@ -411,6 +411,23 @@ function handle_idempotent_ddl(Zend_Db_Adapter_Abstract $db, string $query): int
         return MIG_SKIPPED;
     }
 
+    // ALTER TABLE t CHANGE [COLUMN] `old` `new` <definition...>  (column rename)
+    // Idempotent: if the rename already happened (old column gone, new present), skip.
+    // If `old` still exists we fall through to raw exec to perform it; a same-name
+    // CHANGE (re-type, old == new) also falls through and runs normally.
+    if (preg_match('/^alter\s+table\s+`?([a-z0-9_]+)`?\s+change\s+(?:column\s+)?`?([a-z0-9_]+)`?\s+`?([a-z0-9_]+)`?\s+/i', $q, $m)) {
+        if (strcasecmp($m[2], $m[3]) !== 0 && !column_exists($db, $m[1], $m[2]) && column_exists($db, $m[1], $m[3])) {
+            return MIG_SKIPPED;
+        }
+    }
+
+    // ALTER TABLE t RENAME COLUMN `old` TO `new`  (MySQL 8.0+ syntax)
+    if (preg_match('/^alter\s+table\s+`?([a-z0-9_]+)`?\s+rename\s+column\s+`?([a-z0-9_]+)`?\s+to\s+`?([a-z0-9_]+)`?/i', $q, $m)) {
+        if (!column_exists($db, $m[1], $m[2]) && column_exists($db, $m[1], $m[3])) {
+            return MIG_SKIPPED;
+        }
+    }
+
     return MIG_NOT_HANDLED;
 }
 

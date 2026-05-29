@@ -56,7 +56,7 @@ class Application_Model_Vl
                 $createdOn = null;
             }
 
-            $lastDate = Pt_Commons_DateUtility::shipmentCutoff($shipment['lastdate_response']);
+            $lastDate = Pt_Commons_DateUtility::shipmentCutoff($shipment['response_deadline']);
 
             if (!empty($createdOn) && $createdOn <= $lastDate) {
                 $shipment['is_response_late'] = 'no';
@@ -1430,7 +1430,7 @@ class Application_Model_Vl
             ->join(['sp' => 'shipment_participant_map'], 's.shipment_id=sp.shipment_id', ['participant_id', 'assay' => new Zend_Db_Expr('sp.attributes->>"$.vl_assay"')])
             ->joinLeft(['res' => 'response_result_vl'], 'res.shipment_map_id = sp.map_id and res.sample_id = ref.sample_id', ['reported_viral_load', 'z_score', 'is_result_invalid'])
             ->where('sp.shipment_id = ? ', $shipmentId)
-            ->where('DATE(sp.shipment_test_report_date) <= s.lastdate_response')
+            ->where('sp.shipment_test_report_date <= s.response_deadline')
             //->where("(sp.is_excluded LIKE 'yes') IS NOT TRUE")
             ->where("(sp.is_pt_test_not_performed LIKE 'yes') IS NOT TRUE");
 

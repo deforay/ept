@@ -68,14 +68,31 @@ $rtriEnabled = $dtsConfig['rtriEnabled'] ?? 'no';
 						title="Please enter the Shipment Code" />
 				</div>
 			</div>
+			<?php
+			$deadlineRaw = $shipmentData['shipment']['response_deadline'] ?? '';
+			$deadlineDisplay = (!empty($deadlineRaw) && strpos((string) $deadlineRaw, '0000-00-00') !== 0)
+				? date('d-M-Y H:i', strtotime((string) $deadlineRaw)) : '';
+			?>
 			<div class="form-group">
-				<label class="col-lg-3 control-label"><?= $this->translate->_("Result Due Date"); ?></label>
+				<label for="lastDate" class="col-lg-3 control-label"><?= $this->translate->_("Result Due Date & Time"); ?></label>
 
 				<div class="col-lg-5">
 					<input type='text' readonly='readonly' name="lastDate" id="lastDate"
-						class='form-control datepicker isRequired'
-						value='<?php echo $this->dateFormat($shipmentData['shipment']['lastdate_response']); ?>'
-						title="Please choose the last response date" />
+						class='form-control deadlinepicker isRequired'
+						value='<?php echo $this->escape($deadlineDisplay); ?>'
+						placeholder="<?= $this->translate->_('Select date and time'); ?>"
+						title="<?= $this->translate->_('The response deadline. The time is the exact close time, interpreted in the application timezone.'); ?>" />
+					<small class="text-muted"><?= $this->translate->_("The time is the exact close time, in the application timezone."); ?></small>
+				</div>
+			</div>
+			<?php $autoClose = $shipmentData['shipment']['auto_close_at_deadline'] ?? 'yes'; ?>
+			<div class="form-group">
+				<label for="autoCloseAtDeadline" class="col-lg-3 control-label"><?= $this->translate->_("Auto-close at deadline"); ?></label>
+				<div class="col-lg-5">
+					<select id="autoCloseAtDeadline" name="autoCloseAtDeadline" class="form-control input-sm" title="<?= $this->translate->_('When Yes, the response switch turns off automatically once the deadline passes. Choose No to keep accepting late responses (they are still flagged as late).'); ?>">
+						<option value="yes" <?php echo ($autoClose !== 'no') ? 'selected="selected"' : ''; ?>><?= $this->translate->_("Yes — stop accepting responses at the deadline"); ?></option>
+						<option value="no" <?php echo ($autoClose === 'no') ? 'selected="selected"' : ''; ?>><?= $this->translate->_("No — keep accepting late responses (flagged)"); ?></option>
+					</select>
 				</div>
 			</div>
 			<div class="form-group">
@@ -198,6 +215,24 @@ $rtriEnabled = $dtsConfig['rtriEnabled'] ?? 'no';
 		$(".datepicker").datepicker({
 			dateFormat: '<?php echo $dtFormat; ?>'
 		});
+
+		// Response deadline: single date + time picker (exact close time).
+		if ($('#lastDate').length && $.fn.daterangepicker) {
+			$('#lastDate').daterangepicker({
+				singleDatePicker: true,
+				timePicker: true,
+				timePicker24Hour: true,
+				autoUpdateInput: false,
+				startDate: ($('#lastDate').val() ? moment($('#lastDate').val(), 'DD-MMM-YYYY HH:mm') : moment().hour(23).minute(59).second(0)),
+				locale: { format: 'DD-MMM-YYYY HH:mm', cancelLabel: 'Clear' }
+			});
+			$('#lastDate').on('apply.daterangepicker', function(ev, picker) {
+				$(this).val(picker.startDate.format('DD-MMM-YYYY HH:mm'));
+			});
+			$('#lastDate').on('cancel.daterangepicker', function() {
+				$(this).val('');
+			});
+		}
 
 		$('#shipmentCode').on('input', function(event) {
 			allowOnlyAlphaNumericAndHyphen('#shipmentCode');

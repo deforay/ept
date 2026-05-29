@@ -11,7 +11,7 @@ class Application_Model_DbTable_ScheduledJobs extends Zend_Db_Table_Abstract
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
 
         $query = $db->select()
-            ->from(['s' => 'shipment'], ['s.shipment_id', 's.shipment_code', 's.scheme_type', 's.shipment_date', 's.lastdate_response'])
+            ->from(['s' => 'shipment'], ['s.shipment_id', 's.shipment_code', 's.scheme_type', 's.shipment_date', 's.response_deadline'])
             ->where("s.status = 'finalized'");
 
         if (isset($params['shipmentId']) && !empty($params['shipmentId'])) {

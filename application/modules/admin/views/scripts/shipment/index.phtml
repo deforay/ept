@@ -101,9 +101,21 @@
                 </div>
             </div>
             <div class="form-group">
-                <label class="col-lg-3 control-label"><?= $this->translate->_("Result Due Date"); ?> <span class="mandatory">*</span></label>
+                <label for="lastDate" class="col-lg-3 control-label"><?= $this->translate->_("Result Due Date & Time"); ?> <span class="mandatory">*</span></label>
 
-                <div class="col-lg-5"><input type="text" id="lastDate" name="lastDate" size="50" maxlength="45" readonly="readonly" class="isRequired form-control input-sm datepicker" title="Please enter the last date here" placeholder="Please enter the last date here" /></div>
+                <div class="col-lg-5">
+                    <input type="text" id="lastDate" name="lastDate" size="50" maxlength="45" readonly="readonly" class="isRequired form-control input-sm deadlinepicker" title="<?= $this->translate->_('The response deadline. The time is the exact close time, interpreted in the application timezone.'); ?>" placeholder="<?= $this->translate->_('Select date and time'); ?>" />
+                    <small class="text-muted"><?= $this->translate->_("The time is the exact close time, in the application timezone."); ?></small>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="autoCloseAtDeadline" class="col-lg-3 control-label"><?= $this->translate->_("Auto-close at deadline"); ?></label>
+                <div class="col-lg-5">
+                    <select id="autoCloseAtDeadline" name="autoCloseAtDeadline" class="form-control input-sm" title="<?= $this->translate->_('When Yes, the response switch turns off automatically once the deadline passes. Choose No to keep accepting late responses (they are still flagged as late).'); ?>">
+                        <option value="yes" selected="selected"><?= $this->translate->_("Yes — stop accepting responses at the deadline"); ?></option>
+                        <option value="no"><?= $this->translate->_("No — keep accepting late responses (flagged)"); ?></option>
+                    </select>
+                </div>
             </div>
 
             <div class="form-group">
@@ -230,6 +242,24 @@
         $(".datepicker").datepicker({
             dateFormat: '<?php echo $this->defaultDateFormat(); ?>'
         });
+
+        // Response deadline: single date + time picker (exact close time).
+        if ($('#lastDate').length && $.fn.daterangepicker) {
+            $('#lastDate').daterangepicker({
+                singleDatePicker: true,
+                timePicker: true,
+                timePicker24Hour: true,
+                autoUpdateInput: false,
+                startDate: ($('#lastDate').val() ? moment($('#lastDate').val(), 'DD-MMM-YYYY HH:mm') : moment().hour(23).minute(59).second(0)),
+                locale: { format: 'DD-MMM-YYYY HH:mm', cancelLabel: 'Clear' }
+            });
+            $('#lastDate').on('apply.daterangepicker', function(ev, picker) {
+                $(this).val(picker.startDate.format('DD-MMM-YYYY HH:mm'));
+            });
+            $('#lastDate').on('cancel.daterangepicker', function() {
+                $(this).val('');
+            });
+        }
 
         $('#currentType1, #currentType2, #currentType3').click(function() {
             drawTable();

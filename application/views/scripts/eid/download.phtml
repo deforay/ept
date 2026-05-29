@@ -111,7 +111,7 @@ $labInfo .= '<tr style="background-color:#F7F7F7;">';
 $labInfo .= '<td style="font-weight:bold;width:25%">Proficiency Test Panel:</td>';
 $labInfo .= '<td style="width:25%">' . $this->shipment['shipment_code'] . '</td>';
 $labInfo .= '<td style="font-weight:bold;width:25%">Result Due Date <?php ?></td>';
-$labInfo .= '<td style="width:25%">' . $this->dateFormat($this->shipment["lastdate_response"]) . '</td>';
+$labInfo .= '<td style="width:25%">' . $this->dateFormat($this->shipment["response_deadline"], true) . '</td>';
 $labInfo .= '</tr>';
 
 $labInfo .= '</table><br/><br/>';

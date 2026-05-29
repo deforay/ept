@@ -2,6 +2,9 @@
 
 final class Pt_Commons_DateUtility
 {
+    // MySQL "zero date" sentinel — treated as no value throughout.
+    private const EMPTY_DATE = '0000-00-00';
+
     public static function isDateFormatValid($date, string $format = 'Y-m-d', $strict = true): bool
     {
         $date = trim((string) $date);
@@ -343,20 +346,56 @@ final class Pt_Commons_DateUtility
     }
 
     // Returns the cutoff moment for a shipment due date as an absolute instant.
-    // The due date is interpreted as 23:59:59 in the program's cutoff timezone,
-    // then converted to UTC for unambiguous comparison with response timestamps.
+    //
+    // `response_deadline` is a DATETIME: its time component is the exact close
+    // time (e.g. "2026-05-29 23:00:00"). A bare date with no time component
+    // defaults to 23:59:59 so the whole due-date day stays open (this also covers
+    // any legacy date-only value). The wall-clock value is interpreted in the
+    // program's cutoff timezone (global_config.cutoff_timezone, falling back to
+    // the server default), then converted to UTC for unambiguous comparison with
+    // response timestamps.
     public static function shipmentCutoff(?string $dueDate): ?DateTimeImmutable
     {
-        if (empty($dueDate) || trim((string) $dueDate) === '' || trim((string) $dueDate) === '0000-00-00') {
+        $value = trim((string) ($dueDate ?? ''));
+        if (!self::isDateValid($value)) {
             return null;
         }
+
+        // Split into date + optional time; a date-only value closes end-of-day.
+        $parts = explode(' ', $value, 2);
+        $dateOnly = $parts[0];
+        $time = (isset($parts[1]) && trim($parts[1]) !== '') ? trim($parts[1]) : '23:59:59';
+
         $tz = self::cutoffTimezone();
-        $dateOnly = explode(' ', trim((string) $dueDate))[0];
         try {
-            return (new DateTimeImmutable($dateOnly . ' 23:59:59', $tz))->setTimezone(new DateTimeZone('UTC'));
+            return (new DateTimeImmutable($dateOnly . ' ' . $time, $tz))->setTimezone(new DateTimeZone('UTC'));
         } catch (Throwable $e) {
             return null;
         }
+    }
+
+    // Builds the DATETIME value to store in shipment.response_deadline from the
+    // add/edit form. The deadline arrives from a single datetime picker as one
+    // value (e.g. "29-May-2026 23:00"); when its time component is present it is
+    // used verbatim, otherwise the deadline defaults to 23:59:59 (end of day). A
+    // separate $timeInput is still honoured for backward compatibility. Returns
+    // "Y-m-d H:i:s", or null when the date itself is empty/invalid.
+    public static function shipmentDeadlineValue($dateInput, $timeInput = null): ?string
+    {
+        $raw = trim((string) ($dateInput ?? ''));
+        $hasExplicitTime = !empty($timeInput) && preg_match('/^([01]?\d|2[0-3]):([0-5]\d)(?::([0-5]\d))?$/', trim((string) $timeInput), $m);
+
+        // Single datetime-picker value carrying its own time — keep full date+time.
+        if (!$hasExplicitTime && preg_match('/\d{1,2}:\d{2}/', $raw)) {
+            return self::isoDateFormat($raw, true) ?: null;
+        }
+
+        // Otherwise: date-only, with the explicit time if supplied else end of day.
+        $isoDate = self::isoDateFormat($raw);
+        $time = $hasExplicitTime
+            ? sprintf('%02d:%02d:%02d', (int) $m[1], (int) $m[2], isset($m[3]) ? (int) $m[3] : 0)
+            : '23:59:59';
+        return (empty($isoDate) || $isoDate === self::EMPTY_DATE) ? null : $isoDate . ' ' . $time;
     }
 
     // True if the response was submitted strictly after the shipment cutoff.
@@ -369,7 +408,7 @@ final class Pt_Commons_DateUtility
             return false;
         }
         $responseDateOnly = explode(' ', trim((string) $responseDate))[0];
-        if ($responseDateOnly === '' || $responseDateOnly === '0000-00-00') {
+        if ($responseDateOnly === '' || $responseDateOnly === self::EMPTY_DATE) {
             return false;
         }
         try {

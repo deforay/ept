@@ -105,8 +105,8 @@ if (!empty($resultArray['shipment'])) {
             ? Pt_Commons_DateUtility::humanReadableDateFormat($result['shipment_date'])
             : '';
 
-        $lastResponseDate = !empty(trim($result['lastdate_response']))
-            ? Pt_Commons_DateUtility::humanReadableDateFormat($result['lastdate_response'])
+        $lastResponseDate = !empty(trim($result['response_deadline']))
+            ? Pt_Commons_DateUtility::humanReadableDateFormat($result['response_deadline'])
             : '';
 
         // Format response date

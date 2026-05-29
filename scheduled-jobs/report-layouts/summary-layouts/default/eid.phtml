@@ -94,7 +94,7 @@ if ($resultArray['shipment'] != "") {
 
     $referenceRes = '<table style="text-align:center;width:100%" align="left">';
     $referenceRes .= '<tr>';
-    $referenceRes .= '<td style="font-weight:normal;width:100%;"><strong>PT Panel Name and Due Date : </strong><span style="font-weight:normal;">' . $resultArray['shipment']['distribution_code'] . ' (' . Pt_Commons_DateUtility::humanReadableDateFormat($resultArray['shipment']['lastdate_response']) . ')</span></td>';
+    $referenceRes .= '<td style="font-weight:normal;width:100%;"><strong>PT Panel Name and Due Date : </strong><span style="font-weight:normal;">' . $resultArray['shipment']['distribution_code'] . ' (' . Pt_Commons_DateUtility::humanReadableDateFormat($resultArray['shipment']['response_deadline']) . ')</span></td>';
     $referenceRes .= '</tr>';
     $referenceRes .= '</table>';
     $participantCount = '';

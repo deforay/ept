@@ -120,7 +120,7 @@ class Application_Model_CustomTest
                 $createdOn = new DateTimeImmutable('1970-01-01');
             }
 
-            $lastDate = Pt_Commons_DateUtility::shipmentCutoff($shipment['lastdate_response']);
+            $lastDate = Pt_Commons_DateUtility::shipmentCutoff($shipment['response_deadline']);
             $results = $this->getSamplesForParticipant($shipmentId, $shipment['participant_id']);
             $totalScore = 0;
             $calculatedScore = 0;
@@ -985,7 +985,7 @@ class Application_Model_CustomTest
             ->join(['sp' => 'shipment_participant_map'], 's.shipment_id=sp.shipment_id', ['participant_id'])
             ->joinLeft(['res' => 'response_result_generic_test'], 'res.shipment_map_id = sp.map_id and res.sample_id = ref.sample_id', ['reported_result', 'z_score', 'is_result_invalid'])
             ->where('sp.shipment_id = ? ', $shipmentId)
-            ->where('DATE(sp.shipment_test_report_date) <= s.lastdate_response')
+            ->where('sp.shipment_test_report_date <= s.response_deadline')
             //->where("(sp.is_excluded LIKE 'yes') IS NOT TRUE")
             ->where("(sp.is_pt_test_not_performed LIKE 'yes') IS NOT TRUE");
         $response = $db->fetchAll($sql);
@@ -1169,7 +1169,7 @@ class Application_Model_CustomTest
             ->join(['sp' => 'shipment_participant_map'], 's.shipment_id=sp.shipment_id', ['participant_id', 'kit_name' => new Zend_Db_Expr('sp.attributes->>"$.kit_name"')])
             ->joinLeft(['res' => 'response_result_generic_test'], 'res.shipment_map_id = sp.map_id and res.sample_id = ref.sample_id', ['reported_result', 'z_score', 'is_result_invalid'])
             ->where('sp.shipment_id = ? ', $shipmentId)
-            ->where('DATE(sp.shipment_test_report_date) <= s.lastdate_response')
+            ->where('sp.shipment_test_report_date <= s.response_deadline')
             //->where("(sp.is_excluded LIKE 'yes') IS NOT TRUE")
             ->where("(sp.is_pt_test_not_performed LIKE 'yes') IS NOT TRUE");
 

@@ -184,7 +184,7 @@ class Application_Service_Evaluation
             "shipment_id = {$shipmentId}"
         );
 
-        $sql = $db->select()->from(['s' => 'shipment'], ['s.shipment_id', 's.shipment_code', 's.shipment_attributes', 's.scheme_type', 's.shipment_date', 's.lastdate_response', 's.distribution_id', 's.number_of_samples', 's.response_switch', 's.max_score', 's.shipment_comment', 's.created_by_admin', 's.created_on_admin', 's.updated_by_admin', 's.updated_on_admin', 'shipment_status' => 's.status', 's.corrective_action_file'])
+        $sql = $db->select()->from(['s' => 'shipment'], ['s.shipment_id', 's.shipment_code', 's.shipment_attributes', 's.scheme_type', 's.shipment_date', 's.response_deadline', 's.distribution_id', 's.number_of_samples', 's.response_switch', 's.max_score', 's.shipment_comment', 's.created_by_admin', 's.created_on_admin', 's.updated_by_admin', 's.updated_on_admin', 'shipment_status' => 's.status', 's.corrective_action_file'])
             ->join(['d' => 'distributions'], 'd.distribution_id=s.distribution_id')
             ->join(['sp' => 'shipment_participant_map'], 'sp.shipment_id=s.shipment_id')
             ->join(['sl' => 'scheme_list'], 'sl.scheme_id=s.scheme_type')
@@ -269,7 +269,7 @@ class Application_Service_Evaluation
                     $createdOn = new DateTime('1970-01-01');
                 }
 
-                $lastDate = Pt_Commons_DateUtility::shipmentCutoff($shipment['lastdate_response']);
+                $lastDate = Pt_Commons_DateUtility::shipmentCutoff($shipment['response_deadline']);
                 if ($createdOn > $lastDate) {
 
                     $results = $schemeService->getDbsSamples($shipmentId, $shipment['participant_id']);
@@ -2604,7 +2604,7 @@ class Application_Service_Evaluation
         $pass = $dtsPasspercentage ?? 95;
 
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $sql = $db->select()->from(['s' => 'shipment'], ['s.shipment_id', 's.shipment_code', 's.scheme_type', 's.shipment_date', 's.lastdate_response', 's.max_score', 'shipment_attributes', 's.pt_co_ordinator_name', 's.pt_co_ordinator_phone', 's.pt_co_ordinator_email', 'shipment_comment', 's.issuing_authority'])
+        $sql = $db->select()->from(['s' => 'shipment'], ['s.shipment_id', 's.shipment_code', 's.scheme_type', 's.shipment_date', 's.response_deadline', 's.max_score', 'shipment_attributes', 's.pt_co_ordinator_name', 's.pt_co_ordinator_phone', 's.pt_co_ordinator_email', 'shipment_comment', 's.issuing_authority'])
             ->join(['sl' => 'scheme_list'], 'sl.scheme_id=s.scheme_type', ['sl.scheme_name', 'is_user_configured'])
             ->join(['d' => 'distributions'], 'd.distribution_id=s.distribution_id', ['d.distribution_code'])
             ->where('s.shipment_id = ?', $shipmentId);
@@ -2795,8 +2795,8 @@ class Application_Service_Evaluation
                     ->join(['rrd' => 'response_result_dts'], $testkitjoin, [''])
                     ->join(['spm' => 'shipment_participant_map'], 'rrd.shipment_map_id=spm.map_id', [
                         'number_responded' => new Zend_Db_Expr("SUM(CASE WHEN (spm.response_status is not null and spm.response_status = 'responded') THEN 1 ELSE 0 END)"),
-                        'number_failed' => new Zend_Db_Expr('SUM(CASE WHEN (spm.final_result = 2 AND spm.shipment_test_date <= s.lastdate_response) THEN 1 ELSE 0 END)'),
-                        'number_passed' => new Zend_Db_Expr('SUM(CASE WHEN (spm.final_result = 1 AND spm.shipment_test_date <= s.lastdate_response) THEN 1 ELSE 0 END)'),
+                        'number_failed' => new Zend_Db_Expr('SUM(CASE WHEN (spm.final_result = 2 AND spm.shipment_test_date <= DATE(s.response_deadline)) THEN 1 ELSE 0 END)'),
+                        'number_passed' => new Zend_Db_Expr('SUM(CASE WHEN (spm.final_result = 1 AND spm.shipment_test_date <= DATE(s.response_deadline)) THEN 1 ELSE 0 END)'),
                         'reported_count' => new Zend_Db_Expr("SUM(response_status is not null AND response_status like 'responded')"),
                     ])
                     ->join(['p' => 'participant'], 'p.participant_id=spm.participant_id', [''])
@@ -2855,8 +2855,8 @@ class Application_Service_Evaluation
                             'resdts.shipment_map_id=spm.map_id and refdts.shipment_id=spm.shipment_id',
                             [
                                 'number_responded' => new Zend_Db_Expr("SUM(CASE WHEN (spm.response_status is not null and spm.response_status = 'responded') THEN 1 ELSE 0 END)"),
-                                'number_failed' => new Zend_Db_Expr('SUM(CASE WHEN (spm.final_result = 2 AND spm.shipment_test_date <= s.lastdate_response) THEN 1 ELSE 0 END)'),
-                                'number_passed' => new Zend_Db_Expr('SUM(CASE WHEN (spm.final_result = 1 AND spm.shipment_test_date <= s.lastdate_response) THEN 1 ELSE 0 END)'),
+                                'number_failed' => new Zend_Db_Expr('SUM(CASE WHEN (spm.final_result = 2 AND spm.shipment_test_date <= DATE(s.response_deadline)) THEN 1 ELSE 0 END)'),
+                                'number_passed' => new Zend_Db_Expr('SUM(CASE WHEN (spm.final_result = 1 AND spm.shipment_test_date <= DATE(s.response_deadline)) THEN 1 ELSE 0 END)'),
                                 'reported_count' => new Zend_Db_Expr("SUM(response_status is not null AND response_status like 'responded')"),
                             ]
                         )
@@ -2954,8 +2954,8 @@ class Application_Service_Evaluation
                             'excluded' => new Zend_Db_Expr("SUM(CASE WHEN (sp. final_result is not null AND sp. final_result != 2 AND sp. is_excluded is not null AND sp. is_excluded not like '' AND sp. is_excluded like 'yes') THEN 1 ELSE 0 END)"),
                             'total_shipped' => new Zend_Db_Expr('count("sp.map_id")'),
                             'reported_count' => new Zend_Db_Expr("SUM(shipment_test_report_date not like  '0000-00-00' OR is_pt_test_not_performed !='yes')"),
-                            'beforeDueDate' => new Zend_Db_Expr('SUM(CASE WHEN (DATE(sp.shipment_test_report_date) <= DATE(s.lastdate_response)) THEN 1 ELSE 0 END)'),
-                            'afterDueDate' => new Zend_Db_Expr('SUM(CASE WHEN (DATE(sp.shipment_test_report_date) > DATE(s.lastdate_response)) THEN 1 ELSE 0 END)'),
+                            'beforeDueDate' => new Zend_Db_Expr('SUM(CASE WHEN (sp.shipment_test_report_date <= s.response_deadline) THEN 1 ELSE 0 END)'),
+                            'afterDueDate' => new Zend_Db_Expr('SUM(CASE WHEN (sp.shipment_test_report_date > s.response_deadline) THEN 1 ELSE 0 END)'),
                             'pass_percentage' => new Zend_Db_Expr('((SUM(final_result = 1))/(SUM(final_result = 1) + SUM(final_result = 2)))*100'),
                         ]
                     )->where('s.shipment_id = ?', $shipmentId);
@@ -3002,14 +3002,14 @@ class Application_Service_Evaluation
                             'number_responded' => new Zend_Db_Expr("SUM(CASE WHEN (sp.response_status is not null and sp.response_status = 'responded') THEN 1 ELSE 0 END)"),
                             'reported_count' => new Zend_Db_Expr("SUM(response_status is not null AND response_status like 'responded')"),
                             'departmentCount' => new Zend_Db_Expr('count("p.department_name")'),
-                            'beforeDueDate' => new Zend_Db_Expr('SUM(DATE(sp.shipment_test_report_date) <= DATE(s.lastdate_response))'),
-                            'afterDueDate' => new Zend_Db_Expr('SUM(DATE(sp.shipment_test_report_date) > DATE(s.lastdate_response))'),
+                            'beforeDueDate' => new Zend_Db_Expr('SUM(sp.shipment_test_report_date <= s.response_deadline)'),
+                            'afterDueDate' => new Zend_Db_Expr('SUM(sp.shipment_test_report_date > s.response_deadline)'),
                             'fail_percentage' => new Zend_Db_Expr('((SUM(final_result = 2))/(SUM(final_result = 2) + SUM(final_result = 1)))*100'),
                         ]
                     )
                     ->joinLeft(['p' => 'participant'], 'p.participant_id=sp.participant_id', ['participant_id', 'institute_name', 'region', 'department_name'])
                     ->where('final_result = 2')
-                    // ->where("sp.shipment_test_date <= s.lastdate_response")
+                    // ->where("sp.shipment_test_date <= DATE(s.response_deadline)")
                     ->where('s.shipment_id = ?', $shipmentId)
                     // ->group(array('p.network_tier'));
                     ->group(['p.department_name']);
@@ -3084,8 +3084,8 @@ class Application_Service_Evaluation
                         ->join(['resrecency' => 'response_result_recency'], 'resrecency.sample_id=refrecency.sample_id', ['correctRes' => new Zend_Db_Expr("SUM(CASE WHEN (resrecency.reported_result=refrecency.reference_result AND spm.is_excluded='no') THEN 1 ELSE 0 END)")])
                         ->join(['spm' => 'shipment_participant_map'], 'resrecency.shipment_map_id=spm.map_id and refrecency.shipment_id=spm.shipment_id', [
                             'number_responded' => new Zend_Db_Expr("SUM(CASE WHEN (spm.response_status is not null and spm.response_status = 'responded') THEN 1 ELSE 0 END)"),
-                            'number_failed' => new Zend_Db_Expr('SUM(CASE WHEN (spm.final_result = 2 AND spm.shipment_test_date <= s.lastdate_response) THEN 1 ELSE 0 END)'),
-                            'number_passed' => new Zend_Db_Expr('SUM(CASE WHEN (spm.final_result = 1 AND spm.shipment_test_date <= s.lastdate_response) THEN 1 ELSE 0 END)'),
+                            'number_failed' => new Zend_Db_Expr('SUM(CASE WHEN (spm.final_result = 2 AND spm.shipment_test_date <= DATE(s.response_deadline)) THEN 1 ELSE 0 END)'),
+                            'number_passed' => new Zend_Db_Expr('SUM(CASE WHEN (spm.final_result = 1 AND spm.shipment_test_date <= DATE(s.response_deadline)) THEN 1 ELSE 0 END)'),
                             'reported_count' => new Zend_Db_Expr("SUM(response_status is not null AND response_status like 'responded')"),
                         ])
                         ->join(['s' => 'shipment'], 'spm.shipment_id=s.shipment_id')
@@ -3506,7 +3506,7 @@ class Application_Service_Evaluation
                     'number_failed' => new Zend_Db_Expr("SUM(CASE WHEN (sp.final_result = 2 AND sp.is_excluded != 'yes') THEN 1 ELSE 0 END)"),
                     'number_passed' => new Zend_Db_Expr("SUM(CASE WHEN (sp.final_result = 1 AND sp.is_excluded != 'yes') THEN 1 ELSE 0 END)"),
                     'number_late' => new Zend_Db_Expr(
-                        'SUM(CASE WHEN (DATE(sp.shipment_test_report_date) > DATE(s.lastdate_response)) THEN 1 ELSE 0 END)'
+                        'SUM(CASE WHEN (sp.shipment_test_report_date > s.response_deadline) THEN 1 ELSE 0 END)'
                     ),
                 ]
             )

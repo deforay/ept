@@ -41,17 +41,20 @@ $dtFormat = $genderHelper->getDateFormat();
 		<tr>
 			<th scope="col" style="width: 17%;"><?= $this->translate->_("PT Survey Date:"); ?></th>
 			<td style="width: 33%;">
-				<?php echo Pt_Commons_DateUtility::humanReadableDateFormat($result['distribution_date']); ?></td>
+				<?php echo Pt_Commons_DateUtility::humanReadableDateFormat($result['distribution_date']); ?>
+			</td>
 			<th scope="col" style="width: 13%;"><?= $this->translate->_("Shipment Code:"); ?></th>
 			<td style="width: 37%;"><?php echo $result['shipment_code']; ?></td>
 		</tr>
 		<tr>
 			<th scope="col" style="width: 17%;"><?= $this->translate->_("Shipment Due Date:"); ?></th>
 			<td style="width: 33%;">
-				<?php echo Pt_Commons_DateUtility::humanReadableDateFormat($result['shipment_date']); ?></td>
-			<th scope="col" style="width: 13%;"><?= $this->translate->_("Result Due Date:"); ?></th>
+				<?php echo Pt_Commons_DateUtility::humanReadableDateFormat($result['shipment_date']); ?>
+			</td>
+			<th scope="col" style="width: 13%;"><?= $this->translate->_("Result Due Date"); ?>:</th>
 			<td style="width: 37%;">
-				<?php echo Pt_Commons_DateUtility::humanReadableDateFormat($result['lastdate_response']); ?></td>
+				<?php echo Pt_Commons_DateUtility::humanReadableDateFormat($result['response_deadline']); ?>
+			</td>
 		</tr>
 		<tr>
 			<th scope="col" style="width: 17%;"><?= $this->translate->_("Final Result:"); ?></th>
@@ -85,13 +88,15 @@ $dtFormat = $genderHelper->getDateFormat();
 							value="<?php echo $row['shipment_map_id']; ?>" /><?php echo $row['corrective_action']; ?><br><small
 							style=" color: gray; "><?php echo $row['description']; ?></small></td>
 					<td><textarea name="actionTaken[<?php echo $row['action_id']; ?>]"
-							id="actionTaken<?php echo ($key + 1); ?>" placeholder="<?= $this->htmlTranslate("Enter the action taken"); ?>"
+							id="actionTaken<?php echo ($key + 1); ?>"
+							placeholder="<?= $this->htmlTranslate("Enter the action taken"); ?>"
 							title="<?= $this->htmlTranslate("Please enter the action taken"); ?>"
 							class="form-control"><?php echo $row['action_taken'] ?? null; ?></textarea></td>
 					<td><input type="text"
 							value="<?php echo Pt_Commons_DateUtility::humanReadableDateFormat($row['action_date']) ?? null; ?>"
 							name="actionDate[<?php echo $row['action_id']; ?>]" id="actionDate<?php echo ($key + 1); ?>"
-							placeholder="<?= $this->htmlTranslate("Select the action date"); ?>" title="<?= $this->htmlTranslate("Please select the action date"); ?>"
+							placeholder="<?= $this->htmlTranslate("Select the action date"); ?>"
+							title="<?= $this->htmlTranslate("Please select the action date"); ?>"
 							class="form-control datepicker" readonly /></td>
 				</tr>
 			<?php } ?>

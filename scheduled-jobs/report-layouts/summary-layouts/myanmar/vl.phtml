@@ -130,7 +130,7 @@ if ($resultArray['shipment'] != "") {
 
             $referenceRes = '<br><br><br><table style="text-align:center;width:100%" align="left">';
             $referenceRes .= '<tr>';
-            $referenceRes .= '<td style="font-weight:bold;font-size:11px;">PT Panel Name and Results Due Date : <span style="font-weight:normal;">' . $resultArray['shipment']['distribution_code'] . ' (' . Pt_Commons_DateUtility::humanReadableDateFormat($resultArray['shipment']['lastdate_response']) . ')</span></td>';
+            $referenceRes .= '<td style="font-weight:bold;font-size:11px;">PT Panel Name and Results Due Date : <span style="font-weight:normal;">' . $resultArray['shipment']['distribution_code'] . ' (' . Pt_Commons_DateUtility::humanReadableDateFormat($resultArray['shipment']['response_deadline']) . ')</span></td>';
             $referenceRes .= '</tr>';
             $referenceRes .= '</table>';
             $pdf->writeHTML($referenceRes, true, false, true, false, '');

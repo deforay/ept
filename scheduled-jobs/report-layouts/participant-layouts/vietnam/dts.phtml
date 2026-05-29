@@ -91,7 +91,7 @@ if (!empty($resultArray['shipment'])) {
         }
         $shipmentDate  = trim((string) $result['shipment_date']) !== '' ? Pt_Commons_DateUtility::humanReadableDateFormat($result['shipment_date']) : '';
         $receiptDate   = !empty($result['responseResult'][0]['shipment_receipt_date']) ? Pt_Commons_DateUtility::humanReadableDateFormat($result['responseResult'][0]['shipment_receipt_date']) : '';
-        $deadlineDate  = trim((string) $result['lastdate_response']) !== '' ? Pt_Commons_DateUtility::humanReadableDateFormat($result['lastdate_response']) : '';
+        $deadlineDate  = trim((string) $result['response_deadline']) !== '' ? Pt_Commons_DateUtility::humanReadableDateFormat($result['response_deadline']) : '';
 
         // ---- Participant / Panel information ----
         $info  = '<table cellpadding="3" border="1" style="font-size:11px;">';
