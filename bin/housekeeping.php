@@ -92,35 +92,35 @@ try {
     $targets = [
         [
             'name'   => 'track_api_requests',
-            'count'  => "SELECT COUNT(*) FROM track_api_requests WHERE requested_on < NOW() - INTERVAL 90 DAY",
-            'delete' => "DELETE FROM track_api_requests WHERE requested_on < NOW() - INTERVAL 90 DAY",
+            'count'  => 'SELECT COUNT(*) FROM track_api_requests WHERE requested_on < NOW() - INTERVAL 90 DAY',
+            'delete' => 'DELETE FROM track_api_requests WHERE requested_on < NOW() - INTERVAL 90 DAY',
         ],
         [
             'name'   => 'temp_mail',
             'count'  => "SELECT COUNT(*) FROM temp_mail WHERE status IN ('sent','failed','failure','fail') "
-                      . "AND COALESCE(sent_at, updated_at, queued_on) < NOW() - INTERVAL 30 DAY",
+                      . 'AND COALESCE(sent_at, updated_at, queued_on) < NOW() - INTERVAL 30 DAY',
             'delete' => "DELETE FROM temp_mail WHERE status IN ('sent','failed','failure','fail') "
-                      . "AND COALESCE(sent_at, updated_at, queued_on) < NOW() - INTERVAL 30 DAY",
+                      . 'AND COALESCE(sent_at, updated_at, queued_on) < NOW() - INTERVAL 30 DAY',
         ],
         [
             // Only finished/failed jobs — never pending/processing rows the
             // worker may still pick up.
             'name'   => 'queue_report_generation',
-            'count'  => "SELECT COUNT(*) FROM queue_report_generation "
+            'count'  => 'SELECT COUNT(*) FROM queue_report_generation '
                       . "WHERE status NOT IN ('pending','processing') "
-                      . "AND last_updated_on < NOW() - INTERVAL 90 DAY",
-            'delete' => "DELETE FROM queue_report_generation "
+                      . 'AND last_updated_on < NOW() - INTERVAL 90 DAY',
+            'delete' => 'DELETE FROM queue_report_generation '
                       . "WHERE status NOT IN ('pending','processing') "
-                      . "AND last_updated_on < NOW() - INTERVAL 90 DAY",
+                      . 'AND last_updated_on < NOW() - INTERVAL 90 DAY',
         ],
         [
             'name'   => 'push_notification',
-            'count'  => "SELECT COUNT(*) FROM push_notification "
+            'count'  => 'SELECT COUNT(*) FROM push_notification '
                       . "WHERE (push_status IS NULL OR push_status <> 'pending') "
-                      . "AND created_on < NOW() - INTERVAL 90 DAY",
-            'delete' => "DELETE FROM push_notification "
+                      . 'AND created_on < NOW() - INTERVAL 90 DAY',
+            'delete' => 'DELETE FROM push_notification '
                       . "WHERE (push_status IS NULL OR push_status <> 'pending') "
-                      . "AND created_on < NOW() - INTERVAL 90 DAY",
+                      . 'AND created_on < NOW() - INTERVAL 90 DAY',
         ],
         // Audit-bearing tables — 2-year window anchored to the table's NEWEST
         // row, not NOW(). This keeps the last 2 years of *actual activity*: an
@@ -131,32 +131,32 @@ try {
         // the cutoff is stable across batches since we only delete older rows.
         [
             'name'   => 'audit_log',
-            'count'  => "SELECT COUNT(*) FROM audit_log WHERE created_on < "
-                      . "(SELECT cutoff FROM (SELECT DATE_SUB(MAX(created_on), INTERVAL 730 DAY) AS cutoff FROM audit_log) AS t)",
-            'delete' => "DELETE FROM audit_log WHERE created_on < "
-                      . "(SELECT cutoff FROM (SELECT DATE_SUB(MAX(created_on), INTERVAL 730 DAY) AS cutoff FROM audit_log) AS t)",
+            'count'  => 'SELECT COUNT(*) FROM audit_log WHERE created_on < '
+                      . '(SELECT cutoff FROM (SELECT DATE_SUB(MAX(created_on), INTERVAL 730 DAY) AS cutoff FROM audit_log) AS t)',
+            'delete' => 'DELETE FROM audit_log WHERE created_on < '
+                      . '(SELECT cutoff FROM (SELECT DATE_SUB(MAX(created_on), INTERVAL 730 DAY) AS cutoff FROM audit_log) AS t)',
         ],
         [
             'name'   => 'user_login_history',
-            'count'  => "SELECT COUNT(*) FROM user_login_history WHERE login_attempted_datetime < "
-                      . "(SELECT cutoff FROM (SELECT DATE_SUB(MAX(login_attempted_datetime), INTERVAL 730 DAY) AS cutoff FROM user_login_history) AS t)",
-            'delete' => "DELETE FROM user_login_history WHERE login_attempted_datetime < "
-                      . "(SELECT cutoff FROM (SELECT DATE_SUB(MAX(login_attempted_datetime), INTERVAL 730 DAY) AS cutoff FROM user_login_history) AS t)",
+            'count'  => 'SELECT COUNT(*) FROM user_login_history WHERE login_attempted_datetime < '
+                      . '(SELECT cutoff FROM (SELECT DATE_SUB(MAX(login_attempted_datetime), INTERVAL 730 DAY) AS cutoff FROM user_login_history) AS t)',
+            'delete' => 'DELETE FROM user_login_history WHERE login_attempted_datetime < '
+                      . '(SELECT cutoff FROM (SELECT DATE_SUB(MAX(login_attempted_datetime), INTERVAL 730 DAY) AS cutoff FROM user_login_history) AS t)',
         ],
     ];
 
     $fsTargets = [
         [
             'name' => 'logs',
-            'fn'   => fn(bool $dry) => pruneTopLevelByMtime("$rootDir/logs", days: 30, dryRun: $dry, pattern: '*.log'),
+            'fn'   => fn (bool $dry) => pruneTopLevelByMtime("$rootDir/logs", days: 30, dryRun: $dry, pattern: '*.log'),
         ],
         [
             'name' => 'downloads/reports',
-            'fn'   => fn(bool $dry) => pruneTopLevelByMtime("$rootDir/downloads/reports", days: 60, dryRun: $dry),
+            'fn'   => fn (bool $dry) => pruneTopLevelByMtime("$rootDir/downloads/reports", days: 60, dryRun: $dry),
         ],
         [
             'name' => 'public/temporary',
-            'fn'   => fn(bool $dry) => pruneTopLevelByMtime(TEMP_UPLOAD_PATH, days: 7, dryRun: $dry),
+            'fn'   => fn (bool $dry) => pruneTopLevelByMtime(TEMP_UPLOAD_PATH, days: 7, dryRun: $dry),
         ],
     ];
 

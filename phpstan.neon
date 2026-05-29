@@ -37,3 +37,12 @@ parameters:
             message: '#^Access to an undefined property Zend_View_Interface::#'
         -
             message: '#^Access to an undefined property Zend_Session_Namespace::#'
+        # Zend_Config_Ini exposes config sections (->resources->db, etc.) via
+        # __get; every CLI bin script that builds its own DB adapter hits this.
+        -
+            message: '#^Access to an undefined property Zend_Config_Ini::\$resources\.$#'
+        # ROOT_PATH (and the other constants.php globals) are defined at runtime
+        # via constants.php, which bin scripts pull in through cli-bootstrap.php;
+        # PHPStan does not follow that require chain.
+        -
+            message: '#^Constant ROOT_PATH not found\.$#'
