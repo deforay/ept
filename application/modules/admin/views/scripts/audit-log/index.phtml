@@ -351,6 +351,97 @@
     .session-pill:hover { background: #e2e8f0; color: #1e293b; }
     .session-pill i { margin-right: 3px; opacity: 0.65; }
 
+    .audit-item { cursor: pointer; }
+
+    .audit-modal-backdrop {
+        position: fixed; inset: 0;
+        background: rgba(15, 23, 42, 0.45);
+        display: none;
+        align-items: center; justify-content: center;
+        z-index: 9999;
+    }
+    .audit-modal-backdrop.is-open { display: flex; }
+    .audit-modal {
+        background: #fff;
+        width: min(640px, 92vw);
+        max-height: 86vh;
+        overflow-y: auto;
+        border-radius: 10px;
+        box-shadow: 0 12px 40px rgba(0,0,0,0.18);
+        padding: 22px 24px 20px;
+    }
+    .audit-modal .am-head {
+        display: flex; align-items: flex-start; justify-content: space-between;
+        gap: 12px; margin-bottom: 4px;
+    }
+    .audit-modal .am-title {
+        font-size: 16px; font-weight: 600; color: #0f172a;
+        margin: 0; line-height: 1.3;
+    }
+    .audit-modal .am-close {
+        background: none; border: none; font-size: 18px; color: #94a3b8;
+        cursor: pointer; padding: 0 4px; line-height: 1;
+    }
+    .audit-modal .am-close:hover { color: #475569; }
+    .audit-modal .am-time {
+        color: #64748b; font-size: 12.5px; margin-bottom: 16px;
+    }
+    .audit-modal .am-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+        margin-bottom: 14px;
+    }
+    .audit-modal .am-cell {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 6px;
+        padding: 8px 10px;
+    }
+    .audit-modal .am-label {
+        font-size: 10.5px; color: #94a3b8;
+        text-transform: uppercase; letter-spacing: 0.04em;
+        margin-bottom: 3px;
+    }
+    .audit-modal .am-value {
+        font-size: 13px; color: #1e293b; word-break: break-word;
+    }
+    .audit-modal .am-value.mono {
+        font-family: ui-monospace, "SF Mono", Menlo, monospace;
+        font-size: 12px;
+    }
+    .audit-modal .am-section-label {
+        font-size: 10.5px; color: #94a3b8;
+        text-transform: uppercase; letter-spacing: 0.04em;
+        margin: 14px 0 6px;
+    }
+    .audit-modal .am-statement {
+        background: #f1f5f9;
+        border-radius: 6px;
+        padding: 10px 12px;
+        font-size: 13px;
+        color: #1e293b;
+        line-height: 1.5;
+    }
+    .audit-modal .am-actions {
+        display: flex; gap: 8px; justify-content: flex-end;
+        margin-top: 18px;
+    }
+    .audit-modal .am-btn {
+        border: 1px solid #e2e8f0;
+        background: #fff;
+        color: #334155;
+        border-radius: 6px;
+        padding: 6px 14px;
+        font-size: 13px;
+        cursor: pointer;
+    }
+    .audit-modal .am-btn:hover { background: #f1f5f9; }
+    .audit-modal .am-btn.primary {
+        background: #2563eb; border-color: #2563eb; color: #fff;
+    }
+    .audit-modal .am-btn.primary:hover { background: #1d4ed8; }
+
     .audit-time {
         color: #a0aec0;
         font-size: 12px;
@@ -502,6 +593,50 @@
         </div>
     </div>
 
+    <div class="audit-modal-backdrop" id="auditModalBackdrop" aria-hidden="true">
+        <div class="audit-modal" role="dialog" aria-modal="true" aria-labelledby="amTitle">
+            <div class="am-head">
+                <h3 class="am-title" id="amTitle"></h3>
+                <button type="button" class="am-close" id="amClose" aria-label="<?= $this->translate->_('Close'); ?>">&times;</button>
+            </div>
+            <div class="am-time" id="amTime"></div>
+            <div class="am-grid">
+                <div class="am-cell">
+                    <div class="am-label"><?= $this->translate->_('User'); ?></div>
+                    <div class="am-value" id="amUser"></div>
+                </div>
+                <div class="am-cell">
+                    <div class="am-label"><?= $this->translate->_('Email'); ?></div>
+                    <div class="am-value mono" id="amEmail"></div>
+                </div>
+                <div class="am-cell">
+                    <div class="am-label"><?= $this->translate->_('Role'); ?></div>
+                    <div class="am-value" id="amRole"></div>
+                </div>
+                <div class="am-cell">
+                    <div class="am-label"><?= $this->translate->_('Context'); ?></div>
+                    <div class="am-value" id="amContext"></div>
+                </div>
+                <div class="am-cell">
+                    <div class="am-label"><?= $this->translate->_('IP address'); ?></div>
+                    <div class="am-value mono" id="amIp"></div>
+                </div>
+                <div class="am-cell">
+                    <div class="am-label"><?= $this->translate->_('Session hash'); ?></div>
+                    <div class="am-value mono" id="amSession"></div>
+                </div>
+            </div>
+            <div class="am-section-label"><?= $this->translate->_('Action'); ?></div>
+            <div class="am-statement" id="amAction"></div>
+            <div class="am-section-label" id="amUaLabel" style="display:none;"><?= $this->translate->_('Browser / Device'); ?></div>
+            <div class="am-statement" id="amUa" style="display:none;"></div>
+            <div class="am-actions">
+                <button type="button" class="am-btn primary" id="amFilterSession"><?= $this->translate->_('Filter by this session'); ?></button>
+                <button type="button" class="am-btn" id="amDismiss"><?= $this->translate->_('Close'); ?></button>
+            </div>
+        </div>
+    </div>
+
     <div class="audit-pagination" id="auditPagination" style="display:none;">
         <div class="page-info" id="pageInfo"></div>
         <div class="page-controls">
@@ -558,6 +693,7 @@
     var $next = $('#nextBtn');
     var fetchSeq = 0;
     var searchDebounce = null;
+    var currentItems = [];
 
     function escapeHtml(text) {
         if (text === null || text === undefined) return '';
@@ -609,7 +745,7 @@
         return r;
     }
 
-    function renderItem(item, term) {
+    function renderItem(item, term, idx) {
         var iconClass = actionIcons[item.actionType] || actionIcons.other;
         var contextHtml = item.context
             ? '<span class="audit-context">' + escapeHtml(item.context) + '</span>'
@@ -630,7 +766,7 @@
               + '</span>'
             : '';
         return ''
-            + '<div class="audit-item">'
+            + '<div class="audit-item" data-idx="' + idx + '" role="button" tabindex="0">'
             +   '<div class="audit-icon ' + escapeHtml(item.actionType) + '">'
             +     '<i class="fas ' + iconClass + '"></i>'
             +   '</div>'
@@ -653,7 +789,8 @@
     }
 
     function renderFeed(payload) {
-        if (!payload.items || payload.items.length === 0) {
+        currentItems = payload.items || [];
+        if (currentItems.length === 0) {
             $feed.html(''
                 + '<div class="empty-state">'
                 +   '<i class="far fa-folder-open"></i>'
@@ -664,9 +801,13 @@
             return;
         }
 
+        // Annotate each item with its flat index so the detail modal can
+        // look it up by data-idx on click.
+        currentItems.forEach(function(item, i) { item.__idx = i; });
+
         var groups = [];
         var current = null;
-        payload.items.forEach(function(item) {
+        currentItems.forEach(function(item) {
             if (!current || current.key !== item.dateKey) {
                 current = { key: item.dateKey, label: item.dateLabel, items: [] };
                 groups.push(current);
@@ -679,7 +820,7 @@
         groups.forEach(function(g) {
             html += '<div class="day-group">';
             html +=   '<div class="day-header">' + escapeHtml(g.label) + ' <span class="count">' + g.items.length + '</span></div>';
-            g.items.forEach(function(it) { html += renderItem(it, term); });
+            g.items.forEach(function(it) { html += renderItem(it, term, it.__idx); });
             html += '</div>';
         });
 
@@ -804,12 +945,69 @@
         });
 
         // Click any per-row session pill to scope the feed to that session.
-        $feed.on('click', '.session-pill', function() {
+        // Stop propagation so the row's click-to-open-detail handler doesn't fire.
+        $feed.on('click', '.session-pill', function(e) {
+            e.stopPropagation();
             var sh = $(this).data('session') || '';
             if (!sh) return;
             $('#sessionHash').val(sh);
             state.sessionHash = sh;
             state.page = 1;
+            fetchFeed();
+        });
+
+        // Click a row (or press Enter/Space when focused) to open the detail modal.
+        $feed.on('click', '.audit-item', function() {
+            var idx = parseInt($(this).data('idx'), 10);
+            if (isNaN(idx) || !currentItems[idx]) return;
+            openDetailModal(currentItems[idx]);
+        });
+        $feed.on('keydown', '.audit-item', function(e) {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                $(this).trigger('click');
+            }
+        });
+
+        var $modal = $('#auditModalBackdrop');
+        function openDetailModal(item) {
+            $('#amTitle').text(item.action || '');
+            $('#amTime').text(item.dateLabel + ' • ' + item.time);
+            $('#amUser').text(item.userName || '—');
+            $('#amEmail').text(item.userEmail || '—');
+            $('#amRole').text(item.userRole || '—');
+            $('#amContext').text(item.context || '—');
+            $('#amIp').text(item.ipAddress || '—');
+            $('#amSession').text(item.sessionHash || '—');
+            $('#amAction').text(item.action || '');
+            if (item.userAgent) {
+                $('#amUa').text(item.userAgent).show();
+                $('#amUaLabel').show();
+            } else {
+                $('#amUa').hide();
+                $('#amUaLabel').hide();
+            }
+            $('#amFilterSession').prop('disabled', !item.sessionHash)
+                .data('session', item.sessionHash || '');
+            $modal.addClass('is-open').attr('aria-hidden', 'false');
+        }
+        function closeDetailModal() {
+            $modal.removeClass('is-open').attr('aria-hidden', 'true');
+        }
+        $('#amClose, #amDismiss').on('click', closeDetailModal);
+        $modal.on('click', function(e) {
+            if (e.target === this) closeDetailModal();
+        });
+        $(document).on('keydown', function(e) {
+            if (e.key === 'Escape' && $modal.hasClass('is-open')) closeDetailModal();
+        });
+        $('#amFilterSession').on('click', function() {
+            var sh = $(this).data('session') || '';
+            if (!sh) return;
+            $('#sessionHash').val(sh);
+            state.sessionHash = sh;
+            state.page = 1;
+            closeDetailModal();
             fetchFeed();
         });
 
