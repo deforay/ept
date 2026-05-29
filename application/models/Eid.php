@@ -2,8 +2,6 @@
 
 use PhpOffice\PhpSpreadsheet\IOFactory;
 
-error_reporting(E_ALL ^ E_NOTICE);
-
 class Application_Model_Eid
 {
     private $common = null;
@@ -404,9 +402,9 @@ class Application_Model_Eid
             ->from(
                 ['da' => 'r_eid_detection_assay'],
                 [
-                    'assay_name'         => 'da.name',
+                    'assay_name' => 'da.name',
                     'total_participated' => new Zend_Db_Expr('COUNT(spm.map_id)'),
-                    'percentage'         => new Zend_Db_Expr(
+                    'percentage' => new Zend_Db_Expr(
                         "ROUND((COUNT(spm.map_id) * 100.0) / NULLIF(($totalSubquery), 0), 2)"
                     ),
                 ]
@@ -427,9 +425,9 @@ class Application_Model_Eid
             ->from(
                 ['ea' => 'r_eid_extraction_assay'],
                 [
-                    'assay_name'         => 'ea.name',
+                    'assay_name' => 'ea.name',
                     'total_participated' => new Zend_Db_Expr('COUNT(spm.map_id)'),
-                    'percentage'         => new Zend_Db_Expr(
+                    'percentage' => new Zend_Db_Expr(
                         "ROUND((COUNT(spm.map_id) * 100.0) / NULLIF(($totalSubquery), 0), 2)"
                     ),
                 ]
