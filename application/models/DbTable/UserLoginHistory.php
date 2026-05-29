@@ -356,10 +356,14 @@ class Application_Model_DbTable_UserLoginHistory extends Zend_Db_Table_Abstract
                 [$this->_name, 'session_hash']
             );
             $cached = !empty($rows);
+            return $cached;
         } catch (Exception $e) {
-            $cached = false;
+            // Do not poison the static cache on transient errors — a single
+            // failed lookup used to silently drop session_hash for the rest
+            // of the worker's life. Return false for this call only; retry next.
+            error_log('UserLoginHistory::hasSessionHashColumn lookup failed: ' . $e->getMessage());
+            return false;
         }
-        return $cached;
     }
 
     /**

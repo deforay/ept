@@ -3007,7 +3007,7 @@ CREATE TABLE IF NOT EXISTS `system_config` (
 
 INSERT INTO `system_config` (`config`, `value`, `display_name`) VALUES
 ('api_version', '2.0', 'API Version'),
-('app_version', '7.3.5', 'App Version');
+('app_version', '7.4.7', 'App Version');
 
 -- --------------------------------------------------------
 

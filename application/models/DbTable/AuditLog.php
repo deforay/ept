@@ -23,10 +23,16 @@ class Application_Model_DbTable_AuditLog extends Zend_Db_Table_Abstract
                 [$this->_name]
             );
             self::$columnsCache = array_flip(array_map('strtolower', $rows));
+            return self::$columnsCache;
         } catch (Exception $e) {
-            self::$columnsCache = [];
+            // Do NOT poison the cache on transient errors. A single failed
+            // information_schema query used to set the cache to [] for the
+            // life of the PHP-FPM worker, which then silently dropped
+            // ip_address / user_agent / session_hash on EVERY subsequent
+            // insert. Return empty for this call only; next call retries.
+            error_log('AuditLog::availableColumns lookup failed: ' . $e->getMessage());
+            return [];
         }
-        return self::$columnsCache;
     }
 
     private function hasColumn($name)
