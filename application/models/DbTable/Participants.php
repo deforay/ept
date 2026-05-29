@@ -2605,6 +2605,29 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         }
     }
 
+    /**
+     * Flat list of non-responding participants for a single shipment, shaped for
+     * the "No Response Report" Excel export. Deliberately avoids GROUP BY (one
+     * shipment_participant_map row per participant per shipment) so it stays
+     * valid under ONLY_FULL_GROUP_BY, and selects iso_name explicitly.
+     */
+    public function getNotRespondedParticipantsForExport($shipmentId)
+    {
+        $db = $this->getAdapter();
+        $sQuery = $db->select()
+            ->from(['sp' => 'shipment_participant_map'], [
+                'RESPONSE' => new Zend_Db_Expr("CASE WHEN (sp.is_excluded ='yes') THEN 'Excluded' WHEN (sp.shipment_test_date not like '' AND sp.shipment_test_date!='0000-00-00' AND sp.shipment_test_date not like 'NULL') THEN 'Responded' ELSE 'Not Responded' END"),
+            ])
+            ->join(['p' => 'participant'], 'p.participant_id = sp.participant_id', [
+                'p.unique_identifier', 'p.institute_name', 'p.department_name', 'p.city', 'p.state', 'p.district', 'p.mobile', 'p.phone', 'p.affiliation', 'p.email',
+                'participantName' => new Zend_Db_Expr(self::participantNameExpr('p')),
+            ])
+            ->joinLeft(['c' => 'countries'], 'c.id = p.country', ['iso_name'])
+            ->where("(sp.shipment_test_report_date IS NULL OR DATE(sp.shipment_test_report_date) = '0000-00-00' OR sp.response_status like 'noresponse')")
+            ->where('sp.shipment_id = ?', $shipmentId);
+        return $db->fetchAll($sQuery);
+    }
+
     public function notRespondedParticipants($shipmentId)
     {
         $sQuery = $this->getAdapter()->select()->from(['sp' => 'shipment_participant_map'], [new Zend_Db_Expr('SQL_CALC_FOUND_ROWS sp.map_id'), 'sp.participant_id', 'sp.shipment_test_date', 'shipment_id', 'RESPONSE' => new Zend_Db_Expr("CASE WHEN (sp.is_excluded ='yes') THEN 'Excluded'  WHEN (sp.shipment_test_date not like '' AND sp.shipment_test_date!='0000-00-00' AND sp.shipment_test_date not like 'NULL') THEN 'Responded' ELSE 'Not Responded' END")])

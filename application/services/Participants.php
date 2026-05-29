@@ -558,7 +558,7 @@ class Application_Service_Participants
             // for callers (e.g. manage-enroll) that still rely on it.
             if (!empty($params['shipmentId'])) {
                 $participantDb = new Application_Model_DbTable_Participants();
-                $rResult = $participantDb->notRespondedParticipants($params['shipmentId']);
+                $rResult = $participantDb->getNotRespondedParticipantsForExport($params['shipmentId']);
             } else {
                 $sQuerySession = new Zend_Session_Namespace('notRespondedParticipantsExcel');
                 $db = Zend_Db_Table_Abstract::getDefaultAdapter();
@@ -597,7 +597,7 @@ class Application_Service_Participants
                         ->getColumn();
                     $sheet->getStyle($cellName . $rRowCount)->applyFromArray($borderStyle, true);
                     $sheet->getDefaultRowDimension()->setRowHeight(18);
-                    $sheet->getColumnDimensionByColumn($colNo)->setWidth(22);
+                    $sheet->getColumnDimensionByColumn($colNo + 1)->setWidth(22);
                     $sheet->getStyle(Coordinate::stringFromColumnIndex($colNo + 1) . $rowNo + 5, null, null)->getAlignment()->setWrapText(true);
                     $colNo++;
                 }
@@ -610,12 +610,16 @@ class Application_Service_Participants
             $auditDb->addNewAuditLog("Downloaded non-respondents report{$detail} ({$rowCount} rows)", 'shipment');
 
             $writer = IOFactory::createWriter($excel, 'Xlsx');
-            $filename = $params['shipmentCode'] . '-not-responded-participant-report-' . date('d-M-Y-H-i-s') . '.xlsx';
+            $namePrefix = $shipmentCode !== '' ? $shipmentCode . '-' : '';
+            $filename = $namePrefix . 'Non-Respondents-Report-' . date('d-M-Y-H-i-s') . '.xlsx';
             $writer->save(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $filename);
             return $filename;
-        } catch (Exception $exc) {
-            error_log('GENERATE-SHIPMENT-NOT-RESPONDED-PARTICIPANT-REPORT-EXCEL--' . $exc->getMessage());
-            error_log($exc->getTraceAsString());
+        } catch (Throwable $exc) {
+            Pt_Commons_LoggerUtility::logError('Failed to generate Non-Respondents report: ' . $exc->getMessage(), [
+                'shipmentId' => $params['shipmentId'] ?? null,
+                'shipmentCode' => $params['shipmentCode'] ?? null,
+                'trace' => $exc->getTraceAsString(),
+            ]);
 
             return '';
         }
