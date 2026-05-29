@@ -214,43 +214,38 @@ class Application_Model_Eid
         $firstSheet->getCell('B1')->setValue(html_entity_decode('Lab Name', ENT_QUOTES, 'UTF-8'));
 
         $firstSheet->mergeCells('C1:C2');
-        $firstSheet->getCell('C1')->setValue(html_entity_decode('Institute', ENT_QUOTES, 'UTF-8'));
+        $firstSheet->getCell('C1')->setValue(html_entity_decode('Country', ENT_QUOTES, 'UTF-8'));
 
         $firstSheet->mergeCells('D1:D2');
-        $firstSheet->getCell('D1')->setValue(html_entity_decode('Department', ENT_QUOTES, 'UTF-8'));
+        $firstSheet->getCell('D1')->setValue(html_entity_decode('Institute', ENT_QUOTES, 'UTF-8'));
 
         $firstSheet->mergeCells('E1:E2');
-        $firstSheet->getCell('E1')->setValue(html_entity_decode('Region', ENT_QUOTES, 'UTF-8'));
+        $firstSheet->getCell('E1')->setValue(html_entity_decode('Department', ENT_QUOTES, 'UTF-8'));
 
         $firstSheet->mergeCells('F1:F2');
-        $firstSheet->getCell('F1')->setValue(html_entity_decode('Site Type', ENT_QUOTES, 'UTF-8'));
-
-        /* $firstSheet->mergeCells('G1:G2');
-        $firstSheet->getCell('G1')->setValue(html_entity_decode("Sample Rehydration Date", ENT_QUOTES, 'UTF-8'));
-         */
-
-        /*  $firstSheet->mergeCells('H1:H2');
-        $firstSheet->getCell('H1')->setValue(html_entity_decode("Extraction", ENT_QUOTES, 'UTF-8'));
-         */
+        $firstSheet->getCell('F1')->setValue(html_entity_decode('Region', ENT_QUOTES, 'UTF-8'));
 
         $firstSheet->mergeCells('G1:G2');
-        $firstSheet->getCell('G1')->setValue(html_entity_decode('Assay', ENT_QUOTES, 'UTF-8'));
+        $firstSheet->getCell('G1')->setValue(html_entity_decode('Site Type', ENT_QUOTES, 'UTF-8'));
 
         $firstSheet->mergeCells('H1:H2');
-        $firstSheet->getCell('H1')->setValue(html_entity_decode('Date Received', ENT_QUOTES, 'UTF-8'));
+        $firstSheet->getCell('H1')->setValue(html_entity_decode('Assay', ENT_QUOTES, 'UTF-8'));
 
         $firstSheet->mergeCells('I1:I2');
-        $firstSheet->getCell('I1')->setValue(html_entity_decode('Date Tested', ENT_QUOTES, 'UTF-8'));
+        $firstSheet->getCell('I1')->setValue(html_entity_decode('Date Received', ENT_QUOTES, 'UTF-8'));
 
         $firstSheet->mergeCells('J1:J2');
-        $firstSheet->getCell('J1')->setValue(html_entity_decode('Response Status', ENT_QUOTES, 'UTF-8'));
+        $firstSheet->getCell('J1')->setValue(html_entity_decode('Date Tested', ENT_QUOTES, 'UTF-8'));
 
         $firstSheet->mergeCells('K1:K2');
-        $firstSheet->getCell('K1')->setValue(html_entity_decode('Final Score', ENT_QUOTES, 'UTF-8'));
+        $firstSheet->getCell('K1')->setValue(html_entity_decode('Response Status', ENT_QUOTES, 'UTF-8'));
+
+        $firstSheet->mergeCells('L1:L2');
+        $firstSheet->getCell('L1')->setValue(html_entity_decode('Final Score', ENT_QUOTES, 'UTF-8'));
 
         $firstSheet->getDefaultRowDimension()->setRowHeight(15);
 
-        $colNameCount = 11;
+        $colNameCount = 12;
         $cellName1 = $firstSheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($colNameCount + 1) . '1')
             ->getColumn();
 
@@ -286,6 +281,7 @@ class Application_Model_Eid
         $queryOverAll = $db->select()->from(['s' => 'shipment'])
             ->joinLeft(['spm' => 'shipment_participant_map'], 'spm.shipment_id = s.shipment_id')
             ->joinLeft(['p' => 'participant'], 'p.participant_id = spm.participant_id')
+            ->joinLeft(['c' => 'countries'], 'c.id = p.country', ['country_name' => 'iso_name'])
             ->joinLeft(['st' => 'r_site_type'], 'st.r_stid=p.site_type')
             ->where('s.shipment_id = ?', $shipmentId);
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
@@ -321,17 +317,17 @@ class Application_Model_Eid
             $firstSheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(2) . $row)
                 ->setValueExplicit(html_entity_decode($rowOverAll['first_name'] . ' ' . $rowOverAll['last_name'], ENT_QUOTES, 'UTF-8'));
             $firstSheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(3) . $row)
-                ->setValueExplicit(html_entity_decode(ucwords($rowOverAll['institute_name']), ENT_QUOTES, 'UTF-8'));
+                ->setValueExplicit(html_entity_decode($rowOverAll['country_name'], ENT_QUOTES, 'UTF-8'));
             $firstSheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(4) . $row)
-                ->setValueExplicit(html_entity_decode(ucwords($rowOverAll['department_name']), ENT_QUOTES, 'UTF-8'));
+                ->setValueExplicit(html_entity_decode(ucwords($rowOverAll['institute_name']), ENT_QUOTES, 'UTF-8'));
             $firstSheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(5) . $row)
-                ->setValueExplicit(html_entity_decode($rowOverAll['region'], ENT_QUOTES, 'UTF-8'));
+                ->setValueExplicit(html_entity_decode(ucwords($rowOverAll['department_name']), ENT_QUOTES, 'UTF-8'));
             $firstSheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(6) . $row)
+                ->setValueExplicit(html_entity_decode($rowOverAll['region'], ENT_QUOTES, 'UTF-8'));
+            $firstSheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(7) . $row)
                 ->setValueExplicit(html_entity_decode($rowOverAll['site_type'], ENT_QUOTES, 'UTF-8'));
-            // $firstSheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(7) . $row)
-            //->setValueExplicit(html_entity_decode($sampleRehydrationDate, ENT_QUOTES, 'UTF-8'));
 
-            $col = 7;
+            $col = 8;
 
             $firstSheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($col++) . $row)
                 ->setValueExplicit(html_entity_decode($extraction, ENT_QUOTES, 'UTF-8'));
