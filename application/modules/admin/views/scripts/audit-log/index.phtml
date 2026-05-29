@@ -625,11 +625,17 @@
                     <div class="am-label"><?= $this->translate->_('Session hash'); ?></div>
                     <div class="am-value mono" id="amSession"></div>
                 </div>
+                <div class="am-cell">
+                    <div class="am-label"><?= $this->translate->_('Browser'); ?></div>
+                    <div class="am-value" id="amBrowser" title=""></div>
+                </div>
+                <div class="am-cell">
+                    <div class="am-label"><?= $this->translate->_('OS'); ?></div>
+                    <div class="am-value" id="amOs"></div>
+                </div>
             </div>
             <div class="am-section-label"><?= $this->translate->_('Action'); ?></div>
             <div class="am-statement" id="amAction"></div>
-            <div class="am-section-label" id="amUaLabel" style="display:none;"><?= $this->translate->_('Browser / Device'); ?></div>
-            <div class="am-statement" id="amUa" style="display:none;"></div>
             <div class="am-actions">
                 <button type="button" class="am-btn primary" id="amFilterSession"><?= $this->translate->_('Filter by this session'); ?></button>
                 <button type="button" class="am-btn" id="amDismiss"><?= $this->translate->_('Close'); ?></button>
@@ -718,8 +724,8 @@
         return safe.replace(re, '<mark>$1</mark>');
     }
 
-    function parseUserAgent(ua) {
-        if (!ua) return '';
+    function parseBrowserOS(ua) {
+        if (!ua) return { browser: '', os: '' };
         var browser = 'Unknown';
         var os = '';
         if (/Edg\//.test(ua)) browser = 'Edge';
@@ -735,7 +741,13 @@
         else if (/Android/.test(ua)) os = 'Android';
         else if (/iPhone|iPad|iOS/.test(ua)) os = 'iOS';
         else if (/Linux/.test(ua)) os = 'Linux';
-        return os ? browser + ' on ' + os : browser;
+        return { browser: browser, os: os };
+    }
+
+    function parseUserAgent(ua) {
+        var p = parseBrowserOS(ua);
+        if (!p.browser) return '';
+        return p.os ? p.browser + ' on ' + p.os : p.browser;
     }
 
     function roleSlug(role) {
@@ -980,15 +992,17 @@
             $('#amIp').text(item.ipAddress || '—');
             $('#amSession').text(item.sessionHash || '—');
             $('#amAction').text(item.action || '');
-            if (item.userAgent) {
-                $('#amUa').text(item.userAgent).show();
-                $('#amUaLabel').show();
+            var parsed = parseBrowserOS(item.userAgent || '');
+            $('#amBrowser').text(parsed.browser || '—')
+                .attr('title', item.userAgent || '');
+            $('#amOs').text(parsed.os || '—');
+            // Hide the Filter-by-session button entirely when the row has no
+            // session hash — disabling looked like a permission gate.
+            if (item.sessionHash) {
+                $('#amFilterSession').data('session', item.sessionHash).show();
             } else {
-                $('#amUa').hide();
-                $('#amUaLabel').hide();
+                $('#amFilterSession').hide();
             }
-            $('#amFilterSession').prop('disabled', !item.sessionHash)
-                .data('session', item.sessionHash || '');
             $modal.addClass('is-open').attr('aria-hidden', 'false');
         }
         function closeDetailModal() {
