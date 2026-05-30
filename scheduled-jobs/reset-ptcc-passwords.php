@@ -72,7 +72,7 @@ try {
 
             // Add to CSV data
             $csvData[] = [$primaryEmail, $tempPassword, $firstName, $lastName, $country, $state, $district, $status];
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             $status = 'Failed - ' . $e->getMessage();
             $errorCount++;
             error_log("Error resetting password for $primaryEmail: " . $e->getMessage());
@@ -113,7 +113,7 @@ try {
     echo "Failed resets: $errorCount\n";
     echo "CSV file created: $csvFilePath\n";
     echo str_repeat("=", 50) . "\n";
-} catch (Exception $e) {
+} catch (Throwable $e) {
     error_log("ERROR : {$e->getFile()}:{$e->getLine()} : {$e->getMessage()}");
     error_log($e->getTraceAsString());
     echo "Script failed with error: " . $e->getMessage() . "\n";

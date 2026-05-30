@@ -150,9 +150,12 @@ try {
 
     echo "\nDistribution completed successfully!\n";
 
-} catch (Exception $e) {
-    error_log("ERROR : {$e->getFile()}:{$e->getLine()} : {$e->getMessage()}");
-    error_log($e->getTraceAsString());
+} catch (Throwable $e) {
+    Pt_Commons_LoggerUtility::logError("ERROR : {$e->getFile()}:{$e->getLine()} : {$e->getMessage()}", [
+        'file' => $e->getFile(),
+        'line' => $e->getLine(),
+        'trace' => $e->getTraceAsString(),
+    ]);
 
     // Update batch status on failure (only for batch-tracked workflow)
     if ($batchId) {

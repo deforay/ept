@@ -23,7 +23,7 @@ $db = Zend_Db_Table_Abstract::getDefaultAdapter();
 
 try {
     $db->query('SELECT 1 FROM `run_once_scripts` LIMIT 1');
-} catch (Exception $e) {
+} catch (Throwable $e) {
     // Table doesn't exist - log warning and exit gracefully (don't block upgrade)
     $io->warning('Missing table run_once_scripts. Run-once scripts will be skipped. Run migrations (7.3.3+) to enable.');
     exit(0);
@@ -72,10 +72,13 @@ foreach ($scripts as $scriptPath) {
             [$scriptName]
         );
         $io->success("Completed run-once script: {$scriptName}");
-    } catch (Exception $e) {
+    } catch (Throwable $e) {
         Pt_Commons_LoggerUtility::logError('Failed to record run-once script execution', [
             'script' => $scriptName,
             'error' => $e->getMessage(),
+            'file' => $e->getFile(),
+            'line' => $e->getLine(),
+            'trace' => $e->getTraceAsString(),
         ]);
         $io->warning("Failed to record run-once script execution: {$scriptName}");
         $hadFailures = true;

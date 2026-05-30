@@ -18,7 +18,8 @@ const ALLOWED_JOB_SCRIPTS = [
  * @param string $jobsDir The directory containing job scripts
  * @return string|false The validated command or false if invalid
  */
-function validateJobCommand($job, $jobsDir) {
+function validateJobCommand($job, $jobsDir)
+{
     // Parse the job command - extract the script name and arguments
     // Expected format: "script-name.php -arg1 value1 -arg2 value2"
     if (!preg_match('/^([a-zA-Z0-9_-]+\.php)(\s+.*)?$/', $job, $matches)) {
@@ -87,7 +88,7 @@ try {
             $db->update('scheduled_jobs', ["completed_on" => new Zend_Db_Expr('now()'), "status" => "completed"], "job_id = " . $jobId);
         }
     }
-} catch (Exception $e) {
+} catch (Throwable $e) {
     error_log("ERROR : {$e->getFile()}:{$e->getLine()} : {$e->getMessage()}");
-	error_log($e->getTraceAsString());
+    error_log($e->getTraceAsString());
 }

@@ -51,7 +51,7 @@ try {
             $db->update('data_manager', $dmData, 'dm_id = ' . $db->quote($dm['dm_id']));
         }
     }
-} catch (Exception $e) {
+} catch (Throwable $e) {
     echo "An error occurred: " . $e->getMessage() . PHP_EOL;
     error_log($e->getFile() . ":" . $e->getLine() . ":" . $e->getMessage());
     error_log($e->getTraceAsString());

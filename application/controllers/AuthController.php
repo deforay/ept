@@ -139,9 +139,9 @@ class AuthController extends Zend_Controller_Action
 
             // Get configuration values
             $loginBan = $globalConfigDb->getValue('enable_login_attempt_ban');
-            $loginBanTime = (int)$globalConfigDb->getValue('temporary_login_ban_time');
-            $maxAttemptTempBan = (int)$globalConfigDb->getValue('max_attempts_for_temp_ban');
-            $maxAttemptPermBan = (int)$globalConfigDb->getValue('max_attempts_for_perm_ban');
+            $loginBanTime = (int) $globalConfigDb->getValue('temporary_login_ban_time');
+            $maxAttemptTempBan = (int) $globalConfigDb->getValue('max_attempts_for_temp_ban');
+            $maxAttemptPermBan = (int) $globalConfigDb->getValue('max_attempts_for_perm_ban');
 
             // Get user details and check permanent ban
             $userDetails = $dmDb->getUserDetails($username);
@@ -366,7 +366,7 @@ class AuthController extends Zend_Controller_Action
                 $sessionAlert->status = 'failure';
                 $this->redirect($this->loginUri);
             }
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             // Log the error for debugging
             error_log('Login error: ' . $e->getMessage());
 

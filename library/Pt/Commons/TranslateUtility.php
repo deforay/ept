@@ -19,7 +19,7 @@ final class Pt_Commons_TranslateUtility
         try {
             $translator = Zend_Registry::get('translate');
             return $translator->_($text);
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             return $text;
         }
     }

@@ -247,7 +247,7 @@ if (!empty($resultArray['shipment'])) {
         if (!empty($attributes['sample_rehydration_date'])) {
             try {
                 $srDate = new DateTime($attributes['sample_rehydration_date']);
-            } catch (Exception $e) {
+            } catch (Throwable $e) {
                 $srDate = new DateTime();
             }
         }
@@ -259,7 +259,7 @@ if (!empty($resultArray['shipment'])) {
         ) {
             try {
                 $testedOnDate = new DateTime($result['responseResult'][0]['shipment_test_date']);
-            } catch (Exception $e) {
+            } catch (Throwable $e) {
                 $testedOnDate = new DateTime();
             }
         }

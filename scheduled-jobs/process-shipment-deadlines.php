@@ -81,7 +81,7 @@ try {
             }
         }
     }
-} catch (Exception $e) {
+} catch (Throwable $e) {
     Pt_Commons_LoggerUtility::logError($e->getMessage(), [
         'line' => $e->getLine(),
         'file' => $e->getFile(),

@@ -69,7 +69,8 @@ $isWorker = isset($cliOptions['worker']);
 $workerOffset = isset($cliOptions['offset']) ? (int) $cliOptions['offset'] : 0;
 $workerLimit = isset($cliOptions['limit']) ? (int) $cliOptions['limit'] : 0;
 $procsCount = isset($cliOptions['procs']) ? (int) $cliOptions['procs'] : Pt_Commons_MiscUtility::getCpuCount();
-if ($procsCount < 1) $procsCount = 1;
+if ($procsCount < 1)
+	$procsCount = 1;
 
 // Check proc_open availability for parallel processing
 if (!$isWorker && $procsCount > 1) {
@@ -887,13 +888,19 @@ try {
 		for ($offset = 0; $offset < $totalParticipants; $offset += $batchSize) {
 			$limit = min($batchSize, $totalParticipants - $offset);
 			$cmd = [
-				$phpBinary, __FILE__,
+				$phpBinary,
+				__FILE__,
 				'--worker',
-				'-s', $shipmentsToGenerate,
-				'-c', $certificateName,
-				'-t', $templateMode,
-				'--offset', (string) $offset,
-				'--limit', (string) $limit,
+				'-s',
+				$shipmentsToGenerate,
+				'-c',
+				$certificateName,
+				'-t',
+				$templateMode,
+				'--offset',
+				(string) $offset,
+				'--limit',
+				(string) $limit,
 			];
 
 			try {
@@ -916,7 +923,7 @@ try {
 
 			$ext = ($templateMode === 'docx') ? 'docx' : 'pdf';
 			$genCount = count(glob($excellenceCertPath . "/*.{$ext}") ?: [])
-					  + count(glob($participationCertPath . "/*.{$ext}") ?: []);
+				+ count(glob($participationCertPath . "/*.{$ext}") ?: []);
 			echo "\r  [{$genCount}] Certificates generated...    ";
 
 			usleep(250000);
@@ -942,84 +949,84 @@ try {
 				echo "\r[{$currentParticipant}/{$totalParticipants}] Processing for Participant Code : {$participantUID}                    ";
 			}
 
-		foreach ($shipmentCodeArray as $shipmentType => $shipmentsList) {
-			if (!isset($arrayVal[$shipmentType]))
-				continue;
+			foreach ($shipmentCodeArray as $shipmentType => $shipmentsList) {
+				if (!isset($arrayVal[$shipmentType]))
+					continue;
 
-			$certificate = true;
-			$participated = true;
-			$assayName = '';
-			$attribs = $arrayVal['attribs'] ?? [];
+				$certificate = true;
+				$participated = true;
+				$assayName = '';
+				$attribs = $arrayVal['attribs'] ?? [];
 
-			foreach ($shipmentsList as $shipmentCode) {
-				// Determine assayName from participant/shipment attributes
-				if ($shipmentType === 'vl' && !empty($attribs['vl_assay'])) {
-					$assayName = $vlAssayArray[$attribs['vl_assay']] ?? '';
-				} elseif ($shipmentType === 'eid' && !empty($attribs['extraction_assay'])) {
-					$assayName = $eidAssayArray[$attribs['extraction_assay']] ?? '';
-				}
+				foreach ($shipmentsList as $shipmentCode) {
+					// Determine assayName from participant/shipment attributes
+					if ($shipmentType === 'vl' && !empty($attribs['vl_assay'])) {
+						$assayName = $vlAssayArray[$attribs['vl_assay']] ?? '';
+					} elseif ($shipmentType === 'eid' && !empty($attribs['extraction_assay'])) {
+						$assayName = $eidAssayArray[$attribs['extraction_assay']] ?? '';
+					}
 
-				// result/participation checks
-				if (
-					!empty($arrayVal[$shipmentType][$shipmentCode]['result']) &&
-					$arrayVal[$shipmentType][$shipmentCode]['result'] != 3
-				) {
-					if ($arrayVal[$shipmentType][$shipmentCode]['result'] != 1) {
+					// result/participation checks
+					if (
+						!empty($arrayVal[$shipmentType][$shipmentCode]['result']) &&
+						$arrayVal[$shipmentType][$shipmentCode]['result'] != 3
+					) {
+						if ($arrayVal[$shipmentType][$shipmentCode]['result'] != 1) {
+							$certificate = false;
+						}
+					} else {
 						$certificate = false;
 					}
-				} else {
-					$certificate = false;
+
+					if (empty($arrayVal[$shipmentType][$shipmentCode]['shipment_test_report_date'])) {
+						$participated = false;
+					}
 				}
 
-				if (empty($arrayVal[$shipmentType][$shipmentCode]['shipment_test_report_date'])) {
-					$participated = false;
+
+				$fields = [
+					'participant_name' => $arrayVal['labName'],
+					'participantname' => $arrayVal['labName'],
+					'labname' => $arrayVal['labName'],
+					'participant' => $arrayVal['labName'],
+					'city' => $arrayVal['city'],
+					'country' => $arrayVal['country'],
+					'assay' => $assayName,
+					'assayname' => $assayName,
+					'shipment_year' => $arrayVal['shipment_year'],
+					'shipmentyear' => $arrayVal['shipment_year'],
+				];
+
+				$attribs = $arrayVal['attribs'] ?? [];
+				if ($shipmentType === 'vl') {
+					if (($attribs['vl_assay'] ?? null) == 6) {
+						$assay = $attribs['other_assay'] ?? 'Other';
+					} else {
+						$assay = (isset($attribs['vl_assay']) && isset($vlAssayArray[$attribs['vl_assay']]))
+							? $vlAssayArray[$attribs['vl_assay']]
+							: ' Other ';
+					}
+					$fields['assay'] = $assay ?? '';
+				}
+
+				if ($certificate && $participated) {
+					$base = $excellenceCertPath . DIRECTORY_SEPARATOR . str_replace('/', '_', $participantUID) . "-" . strtoupper($shipmentType) . "-" . $certificateName;
+					if (generateCertificate($shipmentType, 'excellence', $fields, $base, $templateMode)) {
+						$stats['excellence']++;
+					} else {
+						$stats['template_errors']++;
+					}
+				} elseif ($participated) {
+					$base = $participationCertPath . DIRECTORY_SEPARATOR . str_replace('/', '_', $participantUID) . "-" . strtoupper($shipmentType) . "-" . $certificateName;
+					if (generateCertificate($shipmentType, 'participation', $fields, $base, $templateMode)) {
+						$stats['participation']++;
+					} else {
+						$stats['template_errors']++;
+					}
+				} else {
+					$stats['skipped']++;
 				}
 			}
-
-
-			$fields = [
-				'participant_name' => $arrayVal['labName'],
-				'participantname' => $arrayVal['labName'],
-				'labname' => $arrayVal['labName'],
-				'participant' => $arrayVal['labName'],
-				'city' => $arrayVal['city'],
-				'country' => $arrayVal['country'],
-				'assay' => $assayName,
-				'assayname' => $assayName,
-				'shipment_year' => $arrayVal['shipment_year'],
-				'shipmentyear' => $arrayVal['shipment_year'],
-			];
-
-			$attribs = $arrayVal['attribs'] ?? [];
-			if ($shipmentType === 'vl') {
-				if (($attribs['vl_assay'] ?? null) == 6) {
-					$assay = $attribs['other_assay'] ?? 'Other';
-				} else {
-					$assay = (isset($attribs['vl_assay']) && isset($vlAssayArray[$attribs['vl_assay']]))
-						? $vlAssayArray[$attribs['vl_assay']]
-						: ' Other ';
-				}
-				$fields['assay'] = $assay ?? '';
-			}
-
-			if ($certificate && $participated) {
-				$base = $excellenceCertPath . DIRECTORY_SEPARATOR . str_replace('/', '_', $participantUID) . "-" . strtoupper($shipmentType) . "-" . $certificateName;
-				if (generateCertificate($shipmentType, 'excellence', $fields, $base, $templateMode)) {
-					$stats['excellence']++;
-				} else {
-					$stats['template_errors']++;
-				}
-			} elseif ($participated) {
-				$base = $participationCertPath . DIRECTORY_SEPARATOR . str_replace('/', '_', $participantUID) . "-" . strtoupper($shipmentType) . "-" . $certificateName;
-				if (generateCertificate($shipmentType, 'participation', $fields, $base, $templateMode)) {
-					$stats['participation']++;
-				} else {
-					$stats['template_errors']++;
-				}
-			} else {
-				$stats['skipped']++;
-			}
-		}
 		}
 
 		// Workers exit after generating their chunk
@@ -1117,7 +1124,7 @@ try {
 			'error_message' => $errorMessage
 		]);
 	}
-} catch (Exception $e) {
+} catch (Throwable $e) {
 	error_log("ERROR : {$e->getFile()}:{$e->getLine()} : {$e->getMessage()}");
 	error_log($e->getTraceAsString());
 

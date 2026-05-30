@@ -111,7 +111,7 @@ try {
 			}
 		}
 	}
-} catch (Exception $e) {
+} catch (Throwable $e) {
 	$console->getErrorOutput()->writeln("<error> ERROR </error> {$e->getFile()}:{$e->getLine()} : {$e->getMessage()}");
 	$console->writeln("<fg=gray>{$e->getTraceAsString()}</>");
 }

@@ -49,7 +49,7 @@ try {
     if ($reportResetCount > 0) {
         error_log("Reset {$reportResetCount} stale report jobs");
     }
-} catch (Exception $e) {
+} catch (Throwable $e) {
     Pt_Commons_LoggerUtility::logError($e->getMessage(), [
         'line' => $e->getLine(),
         'file' => $e->getFile(),

@@ -48,7 +48,7 @@ class MYPDF extends TCPDF
 		$this->header = str_replace("<div", "<span", trim($this->header));
 		$this->header = str_replace("</div>", "</span><br/>", $this->header);
 
-		//error_log($this->header);
+
 		//$y = $this->getY();
 		$html = $this->header;
 

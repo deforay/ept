@@ -30,7 +30,7 @@ if (!empty($resultArray['shipment'])) {
         if (!file_exists($reportsPath . DIRECTORY_SEPARATOR . $result['shipment_code']) && !is_dir($reportsPath . DIRECTORY_SEPARATOR . $result['shipment_code'])) {
             mkdir($reportsPath . DIRECTORY_SEPARATOR . $result['shipment_code']);
         }
-        //error_log($i);
+
         // Extend the TCPDF class to create custom Header and Footer
 
         // create new PDF document
@@ -224,7 +224,7 @@ if (!empty($resultArray['shipment'])) {
         $instituteAddress = Pt_Commons_General::getConfig('institute_address');
         $instituteAdditionalDetails = Pt_Commons_General::getConfig('additional_institute_details');
 
-        $labInfo  = '<h4 style="text-align:center;">' . strtoupper($result['scheme_name']) . ' TESTING SCHEMES</h4>';
+        $labInfo = '<h4 style="text-align:center;">' . strtoupper($result['scheme_name']) . ' TESTING SCHEMES</h4>';
 
         $labInfo .= '<table cellpadding="4" style="font-size:11px; width:100%;">';
         $labInfo .= '<tr>';
@@ -335,7 +335,7 @@ if (!empty($resultArray['shipment'])) {
                 // survey-wide AVG(shipment_score + documentation_score) shown below.
                 $computedMean = round($totalScore, 2);
 
-                $wishes  = '<p style="font-size:11px;"><strong>Total score: </strong> ' . round($totalScore) . ' <strong>/100</strong><br>';
+                $wishes = '<p style="font-size:11px;"><strong>Total score: </strong> ' . round($totalScore) . ' <strong>/100</strong><br>';
                 $wishes .= '<strong>Your Percentage Score: </strong> ' . $accuracy . '%.<br>';
                 $wishes .= '<strong>Your Computed Mean Score: </strong> ' . $computedMean . '.<br>';
                 $wishes .= '<strong>Survey Mean Score: </strong> ' . round($resultArray['meanScore']['mean_score'], 2) . '.<br>';

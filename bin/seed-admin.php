@@ -105,21 +105,21 @@ $now = date('Y-m-d H:i:s');
 
 try {
     $db->insert('system_admin', [
-        'first_name'           => $firstName,
-        'last_name'            => $lastName,
-        'primary_email'        => $email,
-        'password'             => $hashedPassword,
-        'status'               => 'active',
-        'privileges'           => $allPrivileges,
+        'first_name' => $firstName,
+        'last_name' => $lastName,
+        'primary_email' => $email,
+        'password' => $hashedPassword,
+        'status' => 'active',
+        'privileges' => $allPrivileges,
         'force_password_reset' => 1,
-        'created_on'           => $now,
+        'created_on' => $now,
     ]);
 
     echo "\nAdmin account created successfully!\n";
     echo "  Name:  {$firstName} {$lastName}\n";
     echo "  Email: {$email}\n";
     echo "  Note:  You will be asked to change your password on first login.\n\n";
-} catch (Exception $e) {
+} catch (Throwable $e) {
     echo "\nFailed to create admin account: " . $e->getMessage() . "\n";
     exit(1);
 }

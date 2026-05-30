@@ -14,7 +14,7 @@ try {
     if ($id) {
         echo "Created ULID: " . $ulid . PHP_EOL;
     }
-} catch (Exception $e) {
+} catch (Throwable $e) {
     error_log("ERROR : {$e->getFile()}:{$e->getLine()} : {$e->getMessage()}");
     error_log($e->getTraceAsString());
 }

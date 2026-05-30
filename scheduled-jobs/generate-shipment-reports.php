@@ -828,7 +828,7 @@ class ReportGenerator
             }
 
             $context = $baseContext;
-            $context['resultArray']     = $resultArray;
+            $context['resultArray'] = $resultArray;
             $context['bulkfileNameVal'] = "{$offset}-" . ($offset + $fetchedRows - 1);
 
             self::debugLog(
@@ -1709,7 +1709,7 @@ try {
         $reportGenerator->summaryReport();                       // Generate summary PDF (single-threaded, one per shipment)
         $reportGenerator->completeShipmentReports();             // ZIP, notifications, release lock
     }
-} catch (Exception $e) {
+} catch (Throwable $e) {
     $isCli = php_sapi_name() === 'cli';
     ReportGenerator::error("{$e->getFile()}:{$e->getLine()} : {$e->getMessage()}", $isCli);
     ReportGenerator::log("<fg=gray>{$e->getTraceAsString()}</>", $isCli);

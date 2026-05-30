@@ -45,17 +45,17 @@ try {
             ->where("primary_email LIKE '$newLoginID'");
         $dmresult = $db->fetchRow($dmsql);
         $dataManagerData = [
-            'participant_ulid'  => $ulid,
-            'first_name'        => $pRow['first_name'],
-            'last_name'         => $pRow['last_name'],
-            'institute'         => $pRow['institute_name'],
-            'mobile'            => $pRow['mobile'],
-            'secondary_email'   => $pRow['additional_email'],
-            'password'          => 'ept1@)(*&^',
+            'participant_ulid' => $ulid,
+            'first_name' => $pRow['first_name'],
+            'last_name' => $pRow['last_name'],
+            'institute' => $pRow['institute_name'],
+            'mobile' => $pRow['mobile'],
+            'secondary_email' => $pRow['additional_email'],
+            'password' => 'ept1@)(*&^',
             'force_password_reset' => 1,
             'data_manager_type' => 'participant',
-            'created_on'        => new Zend_Db_Expr('now()'),
-            'status'            => 'active'
+            'created_on' => new Zend_Db_Expr('now()'),
+            'status' => 'active'
         ];
         $dmId = 0;
         if (isset($dmresult) && !empty($dmresult)) {
@@ -101,7 +101,7 @@ try {
         }
         echo '_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*' . PHP_EOL;
     }
-} catch (Exception $e) {
+} catch (Throwable $e) {
     error_log("ERROR : {$e->getFile()}:{$e->getLine()} : {$e->getMessage()}");
     error_log($e->getTraceAsString());
 }

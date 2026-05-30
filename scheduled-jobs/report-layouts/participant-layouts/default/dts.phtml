@@ -41,7 +41,7 @@ if (!empty($resultArray['shipment'])) {
         if (!file_exists($reportsPath . DIRECTORY_SEPARATOR . $result['shipment_code']) && !is_dir($reportsPath . DIRECTORY_SEPARATOR . $result['shipment_code'])) {
             mkdir($reportsPath . DIRECTORY_SEPARATOR . $result['shipment_code']);
         }
-        //error_log($i);
+
         // Extend the TCPDF class to create custom Header and Footer
 
         // create new PDF document

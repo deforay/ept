@@ -201,10 +201,11 @@ final class Pt_Commons_DateUtility
 
         try {
             return new DateTimeImmutable($dateStr);
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             Pt_Commons_LoggerUtility::logError("Invalid or unparseable date $dateStr : " . $e->getMessage(), [
                 'line' => $e->getLine(),
                 'file' => $e->getFile(),
+                'trace' => $e->getTraceAsString(),
             ]);
         }
 
@@ -292,8 +293,12 @@ final class Pt_Commons_DateUtility
                 } else {
                     $startDate = $start->format('Y-m-d');
                 }
-            } catch (Exception $e) {
-                Pt_Commons_LoggerUtility::logError('Failed to parse start date: ' . $dates[0] . ' - ' . $e->getMessage());
+            } catch (Throwable $e) {
+                Pt_Commons_LoggerUtility::logError('Failed to parse start date: ' . $dates[0] . ' - ' . $e->getMessage(), [
+                    'file' => $e->getFile(),
+                    'line' => $e->getLine(),
+                    'trace' => $e->getTraceAsString(),
+                ]);
             }
         }
 
@@ -307,8 +312,12 @@ final class Pt_Commons_DateUtility
                 } else {
                     $endDate = $end->format('Y-m-d');
                 }
-            } catch (Exception $e) {
-                Pt_Commons_LoggerUtility::logError('Failed to parse end date: ' . $dates[1] . ' - ' . $e->getMessage());
+            } catch (Throwable $e) {
+                Pt_Commons_LoggerUtility::logError('Failed to parse end date: ' . $dates[1] . ' - ' . $e->getMessage(), [
+                    'file' => $e->getFile(),
+                    'line' => $e->getLine(),
+                    'trace' => $e->getTraceAsString(),
+                ]);
             }
         }
 
@@ -430,7 +439,7 @@ final class Pt_Commons_DateUtility
 
     private static function filterValidDates(array $dates): array
     {
-        return array_filter($dates, fn ($date): bool => self::isDateValid($date));
+        return array_filter($dates, fn($date): bool => self::isDateValid($date));
     }
 
     public static function getLowestDate(...$dates): ?string

@@ -37,8 +37,8 @@ if (version_compare(APP_VERSION, '4.4.3', '<')) {
 $logsDir = ROOT_PATH . '/logs';
 
 const MIG_NOT_HANDLED = 0;
-const MIG_EXECUTED    = 1;
-const MIG_SKIPPED     = 2;
+const MIG_EXECUTED = 1;
+const MIG_SKIPPED = 2;
 
 $canLog = false;
 if (!file_exists($logsDir)) {
@@ -55,7 +55,7 @@ if (!file_exists($logsDir)) {
 try {
     $db = Zend_Db::factory($conf->resources->db);
     Zend_Db_Table::setDefaultAdapter($db);
-} catch (Exception $e) {
+} catch (Throwable $e) {
     echo 'Error: Failed to connect to database: ' . $e->getMessage() . "\n";
     exit(1);
 }
@@ -64,10 +64,10 @@ try {
 
 $options = getopt('yqdv:', ['status']);  // -y auto-continue on error, -q quiet, -d dry-run, -v version, --status preview pending
 $autoContinueOnError = isset($options['y']);
-$quietMode           = isset($options['q']);
-$DRY_RUN             = isset($options['d']); // global-ish flag (read inside helpers)
-$showStatus          = isset($options['status']);
-$showProgress        = !$quietMode;
+$quietMode = isset($options['q']);
+$DRY_RUN = isset($options['d']); // global-ish flag (read inside helpers)
+$showStatus = isset($options['status']);
+$showProgress = !$quietMode;
 
 if ($quietMode) {
     error_reporting(0);
@@ -79,7 +79,7 @@ function current_db(Zend_Db_Adapter_Abstract $db): string
 {
     static $dbName = null;
     if ($dbName === null) {
-        $dbName = (string)$db->fetchOne('SELECT DATABASE()');
+        $dbName = (string) $db->fetchOne('SELECT DATABASE()');
     }
     return $dbName;
 }
@@ -88,7 +88,7 @@ function table_exists(Zend_Db_Adapter_Abstract $db, string $table): bool
 {
     $sql = 'SELECT 1 FROM information_schema.TABLES
             WHERE TABLE_SCHEMA = ? AND TABLE_NAME = ? LIMIT 1';
-    return (bool)$db->fetchOne($sql, [current_db($db), $table]);
+    return (bool) $db->fetchOne($sql, [current_db($db), $table]);
 }
 
 /** Return ordered primary-key columns for a table (lowercased, no backticks) */
@@ -120,7 +120,7 @@ function inbound_foreign_keys(Zend_Db_Adapter_Abstract $db, string $table): arra
                 FROM information_schema.KEY_COLUMN_USAGE
                 WHERE REFERENCED_TABLE_SCHEMA = ?
                 AND REFERENCED_TABLE_NAME   = ?';
-    return (array)$db->fetchAll($sql, [current_db($db), $table]);
+    return (array) $db->fetchAll($sql, [current_db($db), $table]);
 }
 
 /** Does a foreign key with this name exist on the given table? */
@@ -129,7 +129,7 @@ function foreign_key_exists(Zend_Db_Adapter_Abstract $db, string $table, string 
     $sql = "SELECT 1 FROM information_schema.TABLE_CONSTRAINTS
             WHERE TABLE_SCHEMA = ? AND TABLE_NAME = ? AND CONSTRAINT_NAME = ?
               AND CONSTRAINT_TYPE = 'FOREIGN KEY' LIMIT 1";
-    return (bool)$db->fetchOne($sql, [current_db($db), $table, $name]);
+    return (bool) $db->fetchOne($sql, [current_db($db), $table, $name]);
 }
 
 /** Does an existing FK match the intended columns/reference? (case-insensitive) */
@@ -153,10 +153,10 @@ function foreign_key_matches(
         if (strtolower($r['COLUMN_NAME']) !== strtolower($cols[$i])) {
             return false;
         }
-        if (strtolower((string)$r['REFERENCED_TABLE_NAME']) !== strtolower($refTable)) {
+        if (strtolower((string) $r['REFERENCED_TABLE_NAME']) !== strtolower($refTable)) {
             return false;
         }
-        if (strtolower((string)$r['REFERENCED_COLUMN_NAME']) !== strtolower($refCols[$i])) {
+        if (strtolower((string) $r['REFERENCED_COLUMN_NAME']) !== strtolower($refCols[$i])) {
             return false;
         }
     }
@@ -182,7 +182,7 @@ function column_exists(Zend_Db_Adapter_Abstract $db, string $table, string $colu
 {
     $sql = 'SELECT 1 FROM information_schema.COLUMNS
             WHERE TABLE_SCHEMA = ? AND TABLE_NAME = ? AND COLUMN_NAME = ? LIMIT 1';
-    return (bool)$db->fetchOne($sql, [current_db($db), $table, $column]);
+    return (bool) $db->fetchOne($sql, [current_db($db), $table, $column]);
 }
 
 /** Index exists by name? */
@@ -190,7 +190,7 @@ function index_exists(Zend_Db_Adapter_Abstract $db, string $table, string $index
 {
     $sql = 'SELECT 1 FROM information_schema.STATISTICS
             WHERE TABLE_SCHEMA = ? AND TABLE_NAME = ? AND INDEX_NAME = ? LIMIT 1';
-    return (bool)$db->fetchOne($sql, [current_db($db), $table, $index]);
+    return (bool) $db->fetchOne($sql, [current_db($db), $table, $index]);
 }
 
 /** Execute or preview SQL based on --dry-run */
@@ -316,7 +316,7 @@ function drop_table_if_exists(Zend_Db_Adapter_Abstract $db, string $table): int
 function _apply_add_primary_key(Zend_Db_Adapter_Abstract $db, string $table, string $colsList, string $originalSql): int
 {
     $wantedCols = parse_cols_list($colsList);
-    $haveCols   = table_primary_key($db, $table);
+    $haveCols = table_primary_key($db, $table);
 
     if (empty($haveCols)) {
         run_sql($db, $originalSql);
@@ -334,7 +334,7 @@ function _apply_add_primary_key(Zend_Db_Adapter_Abstract $db, string $table, str
             return MIG_SKIPPED;
         }
         run_sql($db, "ALTER TABLE `{$table}` DROP PRIMARY KEY");
-        $colsSql = implode(',', array_map(fn ($c) => "`$c`", $wantedCols));
+        $colsSql = implode(',', array_map(fn($c) => "`$c`", $wantedCols));
         run_sql($db, "ALTER TABLE `{$table}` ADD PRIMARY KEY ($colsSql)");
         return MIG_EXECUTED;
     }
@@ -413,8 +413,8 @@ function handle_idempotent_ddl(Zend_Db_Adapter_Abstract $db, string $query): int
         $table = $m[1];
         $uniqueKw = !empty($m[2]) ? 'UNIQUE ' : '';
         $index = $m[3];
-        $cols  = trim($m[4]);
-        $ddl   = sprintf('CREATE %sINDEX `%s` ON `%s` (%s)', $uniqueKw, $index, $table, $cols);
+        $cols = trim($m[4]);
+        $ddl = sprintf('CREATE %sINDEX `%s` ON `%s` (%s)', $uniqueKw, $index, $table, $cols);
         return add_index_if_missing($db, $table, $index, $ddl);
     }
 
@@ -423,8 +423,8 @@ function handle_idempotent_ddl(Zend_Db_Adapter_Abstract $db, string $query): int
         $table = $m[1];
         $uniqueKw = !empty($m[2]) ? 'UNIQUE ' : '';
         $index = $m[3];
-        $cols  = trim($m[4]);
-        $ddl   = sprintf('CREATE %sINDEX `%s` ON `%s` (%s)', $uniqueKw, $index, $table, $cols);
+        $cols = trim($m[4]);
+        $ddl = sprintf('CREATE %sINDEX `%s` ON `%s` (%s)', $uniqueKw, $index, $table, $cols);
         return add_index_if_missing($db, $table, $index, $ddl);
     }
 
@@ -458,16 +458,18 @@ function handle_idempotent_ddl(Zend_Db_Adapter_Abstract $db, string $query): int
     // reference, skip. If the name exists but points elsewhere, drop and re-add so the
     // migration cannot silently leave a stale FK in place (root cause of the Malawi
     // participant_feedback_answer_ibfk_3 issue).
-    if (preg_match(
-        '/^alter\s+table\s+`?([a-z0-9_]+)`?\s+add\s+constraint\s+`?([a-z0-9_]+)`?\s+foreign\s+key\s*\(([^)]+)\)\s+references\s+`?([a-z0-9_]+)`?\s*\(([^)]+)\)/is',
-        $q,
-        $m
-    )) {
-        $table    = $m[1];
-        $fkName   = $m[2];
-        $cols     = parse_cols_list($m[3]);
+    if (
+        preg_match(
+            '/^alter\s+table\s+`?([a-z0-9_]+)`?\s+add\s+constraint\s+`?([a-z0-9_]+)`?\s+foreign\s+key\s*\(([^)]+)\)\s+references\s+`?([a-z0-9_]+)`?\s*\(([^)]+)\)/is',
+            $q,
+            $m
+        )
+    ) {
+        $table = $m[1];
+        $fkName = $m[2];
+        $cols = parse_cols_list($m[3]);
         $refTable = $m[4];
-        $refCols  = parse_cols_list($m[5]);
+        $refCols = parse_cols_list($m[5]);
 
         if (foreign_key_exists($db, $table, $fkName)) {
             if (foreign_key_matches($db, $table, $fkName, $cols, $refTable, $refCols)) {
@@ -518,12 +520,12 @@ function progress_bar(int $current, int $total, int $size = 30): void
 
     $elapsed = time() - $startTime;
     $pct = ($total > 0) ? $current / $total : 0;
-    $bar = (int)floor($pct * $size);
+    $bar = (int) floor($pct * $size);
     $line = sprintf(
         "\r[%s%s] %3d%% Complete (%d/%d) - %d sec elapsed",
         str_repeat('=', $bar),
         str_repeat(' ', max(0, $size - $bar)),
-        (int)round($pct * 100),
+        (int) round($pct * 100),
         $current,
         $total,
         $elapsed
@@ -540,7 +542,7 @@ function progress_bar(int $current, int $total, int $size = 30): void
 
 // read current app version from DB (handle missing table for fresh installs)
 if (table_exists($db, 'system_config')) {
-    $currentVersion = (string)$db->fetchOne(
+    $currentVersion = (string) $db->fetchOne(
         $db->select()->from('system_config', ['value'])
             ->where('config = ?', 'app_version')
     );
@@ -561,15 +563,15 @@ if (isset($options['v'])) {
 }
 
 // collect migrations
-$migrationFiles = (array)glob(DB_PATH . '/migrations/*.sql');
-$versions = array_map(fn ($file) => basename($file, '.sql'), $migrationFiles);
+$migrationFiles = (array) glob(DB_PATH . '/migrations/*.sql');
+$versions = array_map(fn($file) => basename($file, '.sql'), $migrationFiles);
 usort($versions, 'version_compare');
 
 // --status: report current version + pending migrations, then exit without touching the DB.
 // Pending uses the same `>=` rule as the runner, so the current version shows up as
 // pending too — by design, ept re-applies the current version idempotently on every run.
 if ($showStatus) {
-    $pending = array_values(array_filter($versions, fn ($v) => version_compare($v, $currentVersion, '>=')));
+    $pending = array_values(array_filter($versions, fn($v) => version_compare($v, $currentVersion, '>=')));
     echo 'Current DB version : ' . ($currentVersion ?: '(none)') . PHP_EOL;
     echo 'Pending migrations :' . PHP_EOL;
     if (empty($pending)) {
@@ -583,11 +585,11 @@ if ($showStatus) {
 }
 
 // counters
-$totalMigrations   = 0;
-$totalQueries      = 0;
+$totalMigrations = 0;
+$totalQueries = 0;
 $successfulQueries = 0;
-$skippedQueries    = 0;
-$totalErrors       = 0;
+$skippedQueries = 0;
+$totalErrors = 0;
 
 foreach ($versions as $version) {
     $file = DB_PATH . '/migrations/' . $version . '.sql';
@@ -654,7 +656,7 @@ foreach ($versions as $version) {
                         $db->query($query);
                     }
                     $successfulQueries++;
-                } catch (Exception $e) {
+                } catch (Throwable $e) {
                     $msg = $e->getMessage();
                     $qLower = strtolower($query);
                     // Prefer the stable numeric MySQL errno; fall back to English text
@@ -677,7 +679,7 @@ foreach ($versions as $version) {
                     $isOtherBenign =
                         in_array($errno, [1060, 1061, 1068, 1091, 1826], true) ||
                         stripos($msg, 'Duplicate column name') !== false ||
-                        stripos($msg, 'Duplicate key name') !== false   ||
+                        stripos($msg, 'Duplicate key name') !== false ||
                         (stripos($msg, "Can't DROP") !== false && stripos($msg, 'check that column/key exists') !== false) ||
                         stripos($msg, 'Multiple primary key defined') !== false; // MySQL #1068
 
@@ -723,7 +725,7 @@ foreach ($versions as $version) {
                 } else {
                     echo "[DRY-RUN] SET FOREIGN_KEY_CHECKS = 1;\n";
                 }
-            } catch (Exception $e) { /* ignore */
+            } catch (Throwable $e) { /* ignore */
             }
 
             if ($aborted) {
@@ -743,7 +745,7 @@ foreach ($versions as $version) {
                 if ($shouldBumpVersion) {
                     try {
                         $db->update('system_config', ['value' => $version], $db->quoteInto('config = ?', 'app_version'));
-                    } catch (Exception $e) {
+                    } catch (Throwable $e) {
                         if (!$quietMode) {
                             echo "Warning: failed to persist app_version to {$version}: " . $e->getMessage() . PHP_EOL;
                         }
@@ -763,7 +765,7 @@ foreach ($versions as $version) {
             if (!$DRY_RUN) {
                 try {
                     $db->commit();
-                } catch (Exception $e) {
+                } catch (Throwable $e) {
                     $db->rollBack();
                     throw $e;
                 }

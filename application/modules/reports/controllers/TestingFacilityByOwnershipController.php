@@ -58,7 +58,12 @@ class Reports_TestingFacilityByOwnershipController extends Zend_Controller_Actio
             try {
                 $fileName = $reportService->exportTestingFacilityByOwnership($params);
                 echo $fileName;
-            } catch (Exception $e) {
+            } catch (Throwable $e) {
+                Pt_Commons_LoggerUtility::logError('Failed to export testing facility by ownership report: ' . $e->getMessage(), [
+                    'file' => $e->getFile(),
+                    'line' => $e->getLine(),
+                    'trace' => $e->getTraceAsString(),
+                ]);
                 echo '';
             }
         }

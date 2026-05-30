@@ -34,7 +34,7 @@ class MYPDF extends TCPDF
 		$this->header = nl2br(trim($this->header));
 		$this->header = preg_replace('/<br>$/', "", $this->header);
 
-		//error_log($this->header);
+
 		//$y = $this->getY();
 		$html = $this->header;
 

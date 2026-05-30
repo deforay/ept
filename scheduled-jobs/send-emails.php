@@ -349,7 +349,7 @@ try {
                         try {
                             $email->addPart(new DataPart(new File($filePath)));
                             $total += $size;
-                        } catch (Exception $e) {
+                        } catch (Throwable $e) {
                             error_log("Attachment error (temp_id={$result['temp_id']} batch={$batchIndex}): " . $e->getMessage());
                         }
                     }

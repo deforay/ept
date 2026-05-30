@@ -40,7 +40,7 @@ if (!empty($resultArray['shipment'])) {
         if (!file_exists($reportsPath . DIRECTORY_SEPARATOR . $result['shipment_code']) && !is_dir($reportsPath . DIRECTORY_SEPARATOR . $result['shipment_code'])) {
             mkdir($reportsPath . DIRECTORY_SEPARATOR . $result['shipment_code']);
         }
-        //error_log($i);
+
         // Extend the TCPDF class to create custom Header and Footer
 
         // create new PDF document
@@ -197,7 +197,8 @@ if (!empty($resultArray['shipment'])) {
 
         // Testing should be done within 24*($sampleRehydrateDays) hours of rehydration.
         $rehydrateHours = $sampleRehydrateDays * 24;
-        $sampleConditionFields = Pt_Commons_SchemeConfig::get('dts.displaySampleConditionFields');;
+        $sampleConditionFields = Pt_Commons_SchemeConfig::get('dts.displaySampleConditionFields');
+        ;
 
         $shipmentReceiptDate = "";
         if (isset($result['responseResult'][0]['shipment_receipt_date']) && trim($result['responseResult'][0]['shipment_receipt_date']) != "") {
