@@ -53,6 +53,9 @@ try {
     }
 } catch (Throwable $e) {
     echo "An error occurred: " . $e->getMessage() . PHP_EOL;
-    error_log($e->getFile() . ":" . $e->getLine() . ":" . $e->getMessage());
-    error_log($e->getTraceAsString());
+    Pt_Commons_LoggerUtility::logError($e->getMessage(), [
+        'file' => $e->getFile(),
+        'line' => $e->getLine(),
+        'trace' => $e->getTraceAsString(),
+    ]);
 }
