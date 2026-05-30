@@ -40,7 +40,10 @@ final class Pt_Commons_SchemeConfig
                 }
             } catch (\Throwable $e) {
                 // Log error if needed
-                error_log('Error reading config.ini: ' . $e->getMessage());
+                Pt_Commons_LoggerUtility::logWarning('Error reading config.ini: ' . $e->getMessage(), [
+                    'file' => $e->getFile(),
+                    'line' => $e->getLine(),
+                ]);
             }
         }
 

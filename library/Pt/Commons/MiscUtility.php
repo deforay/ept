@@ -229,7 +229,7 @@ final class Pt_Commons_MiscUtility
         $timestamp = date('Y-m-d H:i:s');
         $output = "[{$timestamp}] " . $output;
 
-        error_log($output);
+        Pt_Commons_LoggerUtility::logInfo($output);
     }
 
     /**
@@ -726,7 +726,7 @@ final class Pt_Commons_MiscUtility
     {
         $profiler = Zend_Db_Table::getDefaultAdapter()->getProfiler();
         foreach ($profiler->getQueryProfiles() as $query) {
-            error_log(sprintf('[%.4fs] %s', $query->getElapsedSecs(), $query->getQuery()));
+            Pt_Commons_LoggerUtility::logInfo(sprintf('[%.4fs] %s', $query->getElapsedSecs(), $query->getQuery()));
         }
     }
 

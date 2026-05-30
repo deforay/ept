@@ -76,7 +76,7 @@ class Pt_Reports_ChartRenderer_ChartJsNode implements Pt_Reports_ChartRenderer_R
         $exitCode = proc_close($process);
 
         if ($exitCode !== 0) {
-            error_log('chart-render.js error: ' . $stderr);
+            Pt_Commons_LoggerUtility::logError('chart-render.js error: ' . $stderr);
             return false;
         }
 

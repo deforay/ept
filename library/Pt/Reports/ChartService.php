@@ -38,7 +38,10 @@ class Pt_Reports_ChartService
             return self::$renderer->render($config, $outputDir);
         } catch (RuntimeException $e) {
             if (self::$renderer instanceof Pt_Reports_ChartRenderer_ChartJsNode) {
-                error_log('ChartService: Node renderer failed, falling back to JPGraph: ' . $e->getMessage());
+                Pt_Commons_LoggerUtility::logWarning('ChartService: Node renderer failed, falling back to JPGraph: ' . $e->getMessage(), [
+                    'file' => $e->getFile(),
+                    'line' => $e->getLine(),
+                ]);
                 $fallback = new Pt_Reports_ChartRenderer_JpGraph();
                 return $fallback->render($config, $outputDir);
             }

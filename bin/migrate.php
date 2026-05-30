@@ -694,7 +694,7 @@ foreach ($versions as $version) {
                         if (!$quietMode) {
                             echo "Error executing query:\n{$query}\n{$msg}\n";
                             if ($canLog) {
-                                error_log('[migration:error] ' . $msg);
+                                Pt_Commons_LoggerUtility::logError('[migration:error] ' . $msg);
                             }
                         }
                         if (!$autoContinueOnError) {
