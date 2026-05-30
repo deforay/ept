@@ -49,15 +49,149 @@ final class Pt_Commons_LoggerUtility
         return $callerInfo;
     }
 
-    public static function log($level, $message, array $context = []): void
+    public static function log($level, $message, array $context = [], string $channel = self::APP_CHANNEL): void
     {
-        $logger = self::getLogger();
+        $logger = self::getLogger($channel);
 
-        $callerInfo = self::getCallerInfo(1);
+        // Auto-capture the real call site (file/line) and — for error-level and
+        // above — a stack trace, UNLESS the caller already supplied them (e.g. a
+        // caught exception's own getFile()/getLine()/getTraceAsString()).
+        if (!isset($context['file'], $context['line']) || !isset($context['trace'])) {
+            $caller = self::resolveCaller();
+            $context['file'] ??= $caller['file'];
+            $context['line'] ??= $caller['line'];
+            if (!isset($context['trace']) && self::isAtLeastError($level)) {
+                $context['trace'] = $caller['trace'];
+            }
+        }
 
-        $context['file'] ??= $callerInfo['file'] ?? '';
-        $context['line'] ??= $callerInfo['line'] ?? '';
+        // Opportunistically attach request/session context (session hash, client
+        // IP, request line, current user). Only filled when available and never
+        // overrides anything the caller passed.
+        foreach (self::ambientContext() as $key => $value) {
+            $context[$key] ??= $value;
+        }
+
         $logger->log($level, $message, $context);
+    }
+
+    /**
+     * Resolve the first stack frame outside this utility — i.e. the real call
+     * site — and build a trace string from there upward. Used to enrich records
+     * that did not pass explicit file/line/trace.
+     *
+     * @return array{file:string,line:int,trace:string}
+     */
+    private static function resolveCaller(): array
+    {
+        $bt = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 30);
+
+        $start = null;
+        foreach ($bt as $i => $frame) {
+            if (isset($frame['file']) && $frame['file'] !== __FILE__) {
+                $start = $i;
+                break;
+            }
+        }
+        if ($start === null) {
+            return ['file' => '', 'line' => 0, 'trace' => ''];
+        }
+
+        $lines = [];
+        $depth = 0;
+        for ($i = $start, $count = count($bt); $i < $count; $i++) {
+            $frame = $bt[$i];
+            $loc = isset($frame['file'])
+                ? $frame['file'] . '(' . ($frame['line'] ?? 0) . ')'
+                : '[internal function]';
+            $fn = (isset($frame['class']) ? $frame['class'] . ($frame['type'] ?? '::') : '')
+                . ($frame['function'] ?? '');
+            $lines[] = '#' . $depth++ . ' ' . $loc . ': ' . $fn . '()';
+        }
+
+        return [
+            'file'  => $bt[$start]['file'] ?? '',
+            'line'  => $bt[$start]['line'] ?? 0,
+            'trace' => implode("\n", $lines),
+        ];
+    }
+
+    private static function isAtLeastError($level): bool
+    {
+        if (is_int($level)) {
+            return $level >= Logger::ERROR;
+        }
+        return in_array(strtolower((string) $level), ['error', 'critical', 'alert', 'emergency'], true);
+    }
+
+    /**
+     * Best-effort request/session context. Returns [] in CLI or when nothing is
+     * available; any failure is swallowed so logging never breaks the caller.
+     *
+     * @return array<string,string>
+     */
+    private static function ambientContext(): array
+    {
+        $ctx = [];
+        try {
+            if (($ip = self::clientIp()) !== null) {
+                $ctx['ip'] = $ip;
+            }
+            if (class_exists('Pt_Commons_General')) {
+                $hash = Pt_Commons_General::sessionHash();
+                if (!empty($hash)) {
+                    $ctx['session'] = $hash;
+                }
+            }
+            if (!empty($_SERVER['REQUEST_METHOD']) && !empty($_SERVER['REQUEST_URI'])) {
+                $ctx['request'] = $_SERVER['REQUEST_METHOD'] . ' ' . $_SERVER['REQUEST_URI'];
+            }
+            if (($user = self::currentUser()) !== null) {
+                $ctx['user'] = $user;
+            }
+        } catch (Throwable $e) {
+            // enrichment is best-effort only — ignore
+        }
+        return $ctx;
+    }
+
+    private static function clientIp(): ?string
+    {
+        foreach (['HTTP_X_FORWARDED_FOR', 'HTTP_CLIENT_IP', 'REMOTE_ADDR'] as $key) {
+            if (!empty($_SERVER[$key])) {
+                $value = (string) $_SERVER[$key];
+                // X-Forwarded-For can be a comma-separated list; take the first hop.
+                if (strpos($value, ',') !== false) {
+                    $value = trim(explode(',', $value)[0]);
+                }
+                return $value;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Best-effort current user across the app's session namespaces. Only reads
+     * an already-active session so logging never starts or locks one.
+     */
+    private static function currentUser(): ?string
+    {
+        if (session_status() !== PHP_SESSION_ACTIVE || !class_exists('Zend_Session_Namespace')) {
+            return null;
+        }
+        try {
+            $admin = new Zend_Session_Namespace('administrators');
+            if (!empty($admin->admin_id)) {
+                return 'admin:' . $admin->admin_id;
+            }
+            $dm = new Zend_Session_Namespace('datamanagers');
+            if (!empty($dm->dm_id)) {
+                return 'dm:' . $dm->dm_id;
+            }
+        } catch (Throwable $e) {
+            // ignore — user context is optional
+        }
+        return null;
     }
 
     public static function logError($message, array $context = []): void
@@ -77,7 +211,7 @@ final class Pt_Commons_LoggerUtility
 
     public static function logClientError($message, array $context = []): void
     {
-        self::getLogger(self::CLIENT_CHANNEL)->error($message, $context);
+        self::log('error', $message, $context, self::CLIENT_CHANNEL);
     }
 
     /**
