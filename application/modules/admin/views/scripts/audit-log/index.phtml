@@ -248,6 +248,37 @@
     .audit-icon.download { background: #319795; }
     .audit-icon.message { background: #805ad5; }
     .audit-icon.other { background: #718096; }
+    .audit-icon.login { background: #2b6cb0; }
+    .audit-icon.login-fail { background: #c05621; }
+
+    /* Segmented source toggle (Actions / Logins / All) */
+    .audit-source {
+        display: flex;
+        width: 100%;
+        border: 1px solid #cbd5e0;
+        border-radius: 6px;
+        overflow: hidden;
+        background: #fff;
+    }
+    .audit-source .src-btn {
+        flex: 1 1 0;
+        text-align: center;
+        border: 0;
+        background: transparent;
+        padding: 7px 10px;
+        font-size: 13px;
+        font-weight: 500;
+        color: #4a5568;
+        cursor: pointer;
+        border-left: 1px solid #e2e8f0;
+        white-space: nowrap;
+    }
+    .audit-source .src-btn:first-child { border-left: 0; }
+    .audit-source .src-btn:hover { background: #f7fafc; }
+    .audit-source .src-btn.is-active {
+        background: #3182ce;
+        color: #fff;
+    }
 
     .audit-body {
         min-width: 0;
@@ -259,6 +290,12 @@
         font-weight: 500;
         line-height: 1.4;
         word-break: break-word;
+        /* Clamp long statements (e.g. multi-field config saves) to keep rows
+           uniform; the full text is one click away in the detail modal. */
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
     }
 
     .audit-meta {
@@ -536,6 +573,14 @@
 
     <div class="audit-toolbar">
         <div class="field">
+            <label><?= $this->translate->_("Show"); ?></label>
+            <div class="audit-source" id="auditSource" role="group" aria-label="<?= $this->translate->_("Feed source"); ?>">
+                <button type="button" class="src-btn is-active" data-source="actions"><?= $this->translate->_("Actions"); ?></button>
+                <button type="button" class="src-btn" data-source="logins"><?= $this->translate->_("Logins"); ?></button>
+                <button type="button" class="src-btn" data-source="all"><?= $this->translate->_("All"); ?></button>
+            </div>
+        </div>
+        <div class="field">
             <label><?= $this->translate->_("Date Range"); ?></label>
             <input type="text" id="dateRange" placeholder="<?= $this->translate->_("Any date"); ?>" readonly />
         </div>
@@ -671,6 +716,7 @@
     var state = {
         page: 1,
         pageSize: 25,
+        source: 'actions',
         startDate: '',
         endDate: '',
         type: '',
@@ -682,13 +728,15 @@
     };
 
     var actionIcons = {
-        create:   'fa-plus',
-        delete:   'fa-trash-alt',
-        update:   'fa-pencil-alt',
-        import:   'fa-file-import',
-        download: 'fa-download',
-        message:  'fa-paper-plane',
-        other:    'fa-circle'
+        create:       'fa-plus',
+        delete:       'fa-trash-alt',
+        update:       'fa-pencil-alt',
+        import:       'fa-file-import',
+        download:     'fa-download',
+        message:      'fa-paper-plane',
+        login:        'fa-sign-in-alt',
+        'login-fail': 'fa-user-lock',
+        other:        'fa-circle'
     };
 
     var $feed = $('#auditFeed');
@@ -750,6 +798,17 @@
         return p.os ? p.browser + ' on ' + p.os : p.browser;
     }
 
+    // Login rows ship pre-parsed browser/OS (user_login_history stores them
+    // split); action rows carry only a raw user agent. Prefer the explicit
+    // fields and fall back to parsing the UA string.
+    function deviceLabel(item) {
+        if (item.browser || item.os) {
+            if (item.browser && item.os) return item.browser + ' on ' + item.os;
+            return item.browser || item.os;
+        }
+        return parseUserAgent(item.userAgent);
+    }
+
     function roleSlug(role) {
         if (!role) return 'system';
         var r = String(role).toLowerCase();
@@ -768,9 +827,9 @@
         var ipHtml = item.ipAddress
             ? '<span class="audit-ip" title="IP address">' + escapeHtml(item.ipAddress) + '</span>'
             : '';
-        var uaShort = parseUserAgent(item.userAgent);
+        var uaShort = deviceLabel(item);
         var uaHtml = uaShort
-            ? '<span class="audit-ua" title="' + escapeHtml(item.userAgent) + '">' + escapeHtml(uaShort) + '</span>'
+            ? '<span class="audit-ua" title="' + escapeHtml(item.userAgent || uaShort) + '">' + escapeHtml(uaShort) + '</span>'
             : '';
         var sessHtml = item.sessionHash
             ? '<span class="session-pill" data-session="' + escapeHtml(item.sessionHash) + '" title="Click to filter by this session">'
@@ -857,6 +916,7 @@
             data: {
                 page: state.page,
                 pageSize: state.pageSize,
+                source: state.source,
                 startDate: state.startDate,
                 endDate: state.endDate,
                 type: state.type,
@@ -992,10 +1052,16 @@
             $('#amIp').text(item.ipAddress || '—');
             $('#amSession').text(item.sessionHash || '—');
             $('#amAction').text(item.action || '');
-            var parsed = parseBrowserOS(item.userAgent || '');
-            $('#amBrowser').text(parsed.browser || '—')
+            var amBrowser = item.browser || '';
+            var amOs = item.os || '';
+            if (!amBrowser && !amOs) {
+                var parsed = parseBrowserOS(item.userAgent || '');
+                amBrowser = parsed.browser;
+                amOs = parsed.os;
+            }
+            $('#amBrowser').text(amBrowser || '—')
                 .attr('title', item.userAgent || '');
-            $('#amOs').text(parsed.os || '—');
+            $('#amOs').text(amOs || '—');
             // Hide the Filter-by-session button entirely when the row has no
             // session hash — disabling looked like a permission gate.
             if (item.sessionHash) {
@@ -1044,6 +1110,16 @@
             fetchFeed();
         });
 
+        $('#auditSource').on('click', '.src-btn', function() {
+            var src = $(this).data('source');
+            if (src === state.source) return;
+            $('#auditSource .src-btn').removeClass('is-active');
+            $(this).addClass('is-active');
+            state.source = src;
+            state.page = 1;
+            fetchFeed();
+        });
+
         $('#pageSize').on('change', function() {
             state.pageSize = parseInt($(this).val(), 10) || 25;
             state.page = 1;
@@ -1073,7 +1149,9 @@
             $('#sessionHash').val('');
             $('#searchBox').val('');
             $('#searchWrap').removeClass('has-value');
-            state = { page: 1, pageSize: state.pageSize, startDate: '', endDate: '', type: '', createdBy: '', actorEmail: '', labId: '', sessionHash: '', search: '' };
+            $('#auditSource .src-btn').removeClass('is-active')
+                .filter('[data-source="actions"]').addClass('is-active');
+            state = { page: 1, pageSize: state.pageSize, source: 'actions', startDate: '', endDate: '', type: '', createdBy: '', actorEmail: '', labId: '', sessionHash: '', search: '' };
             fetchFeed();
         });
 

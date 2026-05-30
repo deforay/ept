@@ -256,22 +256,48 @@ class Application_Model_DbTable_AuditLog extends Zend_Db_Table_Abstract
         $startDate = isset($parameters['startDate']) ? trim($parameters['startDate']) : '';
         $endDate = isset($parameters['endDate']) ? trim($parameters['endDate']) : '';
 
+        // Which streams to show: 'actions' (audit_log only, the default and
+        // historical behaviour), 'logins' (user_login_history only), or 'all'
+        // (both, merged chronologically). The two tables remain separate; this
+        // is a read-time union, opted into from the feed's source toggle.
+        $source = isset($parameters['source']) ? trim($parameters['source']) : 'actions';
+        if (!in_array($source, ['actions', 'logins', 'all'], true)) {
+            $source = 'actions';
+        }
+
         $db = $this->getAdapter();
-        $alCols = ['statement', 'created_by', 'created_on', 'type'];
-        if ($this->hasColumn('created_by_role')) {
-            $alCols[] = 'created_by_role';
+
+        $hasRole = $this->hasColumn('created_by_role');
+        $hasIp   = $this->hasColumn('ip_address');
+        $hasUa   = $this->hasColumn('user_agent');
+        $hasSess = $this->hasColumn('session_hash');
+
+        // Source-aware FROM. The default ('actions') reads audit_log directly,
+        // leaving the long-standing behaviour byte-for-byte unchanged. When
+        // login history is opted in, both tables are normalised into one
+        // derived table (still aliased `al`), so every join/filter/search/count
+        // below keeps working verbatim against `al.<column>`.
+        if ($source === 'actions') {
+            $alCols = ['statement', 'created_by', 'created_on', 'type'];
+            if ($hasRole) {
+                $alCols[] = 'created_by_role';
+            }
+            if ($hasIp) {
+                $alCols[] = 'ip_address';
+            }
+            if ($hasUa) {
+                $alCols[] = 'user_agent';
+            }
+            if ($hasSess) {
+                $alCols[] = 'session_hash';
+            }
+            $fromSource = $this->_name;
+        } else {
+            [$fromSource, $alCols] = $this->buildUnifiedFeedSource($source, $hasRole, $hasIp, $hasUa, $hasSess);
         }
-        if ($this->hasColumn('ip_address')) {
-            $alCols[] = 'ip_address';
-        }
-        if ($this->hasColumn('user_agent')) {
-            $alCols[] = 'user_agent';
-        }
-        if ($this->hasColumn('session_hash')) {
-            $alCols[] = 'session_hash';
-        }
+
         $select = $db->select()
-            ->from(['al' => $this->_name], $alCols)
+            ->from(['al' => $fromSource], $alCols)
             ->joinLeft(
                 ['sa' => 'system_admin'],
                 'al.created_by = sa.primary_email',
@@ -383,16 +409,28 @@ class Application_Model_DbTable_AuditLog extends Zend_Db_Table_Abstract
             if ($name === '') {
                 $name = $row['created_by'] ?? 'Unattributed';
             }
+            // Login rows carry their own icon and, since user_login_history
+            // already stores parsed browser/OS, their own display strings.
+            $rowSource = $row['feed_source'] ?? 'action';
+            if ($rowSource === 'login') {
+                $loginStatus = strtolower((string)($row['login_status'] ?? ''));
+                $actionType = ($loginStatus === 'success') ? 'login' : 'login-fail';
+            } else {
+                $actionType = $this->classifyAction($row['statement']);
+            }
             $ts = strtotime($row['created_on']);
             $items[] = [
                 'action' => $row['statement'],
-                'actionType' => $this->classifyAction($row['statement']),
+                'actionType' => $actionType,
+                'source' => $rowSource,
                 'userName' => $name,
                 'userRole' => $role,
                 'userEmail' => $row['created_by'],
                 'userInitials' => $this->initials($name),
                 'ipAddress' => $row['ip_address'] ?? '',
                 'userAgent' => $row['user_agent'] ?? '',
+                'browser' => $row['browser'] ?? '',
+                'os' => $row['operating_system'] ?? '',
                 'sessionHash' => $row['session_hash'] ?? '',
                 'context' => $row['type'] ? ucwords(str_replace('-', ' ', $row['type'])) : '',
                 'contextSlug' => $row['type'],
@@ -409,6 +447,99 @@ class Application_Model_DbTable_AuditLog extends Zend_Db_Table_Abstract
             'total' => $total,
             'totalPages' => $pageSize > 0 ? (int)ceil($total / $pageSize) : 1,
             'items' => $items,
+        ];
+    }
+
+    /**
+     * Build the derived-table FROM source (and its column list) that merges
+     * audit_log and/or user_login_history for the unified feed. Both branches
+     * project an identical, aliased column set so a UNION ALL is legal and the
+     * caller's joins/filters can keep referencing `al.<column>` unchanged.
+     *
+     * @return array{0: Zend_Db_Expr, 1: string[]}
+     */
+    private function buildUnifiedFeedSource($source, $hasRole, $hasIp, $hasUa, $hasSess)
+    {
+        $includeActions = ($source !== 'logins');
+        $includeLogins  = ($source === 'logins' || $source === 'all');
+
+        // user_login_history.session_hash landed in the 7.4.7 migration; guard
+        // it so the union is safe on instances that have not migrated yet.
+        $loginHasSess = false;
+        try {
+            $loginMeta = $this->getAdapter()->describeTable('user_login_history');
+            $loginHasSess = isset($loginMeta['session_hash']);
+        } catch (Exception $e) {
+            $loginHasSess = false;
+        }
+
+        $loginStatusLabel = "CASE l.login_status "
+            . "WHEN 'success' THEN 'Logged in' "
+            . "WHEN 'failed' THEN 'Login failed' "
+            . "WHEN 'banned' THEN 'Login blocked' "
+            . "WHEN 'locked' THEN 'Account locked' "
+            . "ELSE CONCAT('Login attempt: ', COALESCE(l.login_status, 'unknown')) END";
+
+        // Matched column order for both branches; aliases come from the first.
+        $action = [
+            'statement'  => 'a.statement',
+            'created_by' => 'a.created_by',
+            'created_on' => 'a.created_on',
+            'type'       => 'a.type',
+        ];
+        $login = [
+            'statement'  => $loginStatusLabel,
+            'created_by' => 'l.login_id',
+            'created_on' => 'l.login_attempted_datetime',
+            'type'       => "'login'",
+        ];
+        if ($hasRole) {
+            $action['created_by_role'] = 'a.created_by_role';
+            $login['created_by_role']  = 'l.login_context';
+        }
+        if ($hasIp) {
+            $action['ip_address'] = 'a.ip_address';
+            $login['ip_address']  = 'l.ip_address';
+        }
+        if ($hasUa) {
+            $action['user_agent'] = 'a.user_agent';
+            $login['user_agent']  = 'NULL';
+        }
+        if ($hasSess) {
+            $action['session_hash'] = 'a.session_hash';
+            $login['session_hash']  = $loginHasSess ? 'l.session_hash' : 'NULL';
+        }
+        // Union-only columns: which stream a row came from, plus the login
+        // display bits (browser/OS are already split in user_login_history;
+        // audit rows derive them from user_agent client-side, so NULL here).
+        $action['feed_source'] = "'action'";
+        $login['feed_source']  = "'login'";
+        $action['login_status'] = 'NULL';
+        $login['login_status']  = 'l.login_status';
+        $action['browser'] = 'NULL';
+        $login['browser']  = 'l.browser';
+        $action['operating_system'] = 'NULL';
+        $login['operating_system']  = 'l.operating_system';
+
+        $compile = function (array $parts, $table, $alias) {
+            $cols = [];
+            foreach ($parts as $name => $expr) {
+                $cols[] = $expr . ' AS ' . $name;
+            }
+            return 'SELECT ' . implode(', ', $cols) . ' FROM ' . $table . ' ' . $alias;
+        };
+
+        $branches = [];
+        if ($includeActions) {
+            $branches[] = $compile($action, 'audit_log', 'a');
+        }
+        if ($includeLogins) {
+            $branches[] = $compile($login, 'user_login_history', 'l');
+        }
+
+        return [
+            new Zend_Db_Expr('(' . implode(' UNION ALL ', $branches) . ')'),
+            array_keys($action),
         ];
     }
 

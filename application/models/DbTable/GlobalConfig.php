@@ -116,6 +116,10 @@ class Application_Model_DbTable_GlobalConfig extends Zend_Db_Table_Abstract
             $changedSections[] = 'FAQs';
         }
 
+        // Request plumbing that leaks in from the POST form but is not a real
+        // global_config row — never persist or audit-log these.
+        $ignoreFields = ['module', 'controller', 'action', 'locale', 'csrf_token', 'submit'];
+
         $individualFields = [];
         foreach ($params as $fieldName => $fieldValue) {
             if ($fieldName == 'schemeId') {
@@ -125,13 +129,26 @@ class Application_Model_DbTable_GlobalConfig extends Zend_Db_Table_Abstract
                     $schemeDb->update(['status' => 'active'], "scheme_id='" . $schemeId . "'");
                 }
                 $changedSections[] = 'active schemes';
-            } else {
-                $this->update(['value' => $fieldValue], "name='" . $fieldName . "'");
-                $individualFields[] = $fieldName;
+                continue;
             }
+            // (A) Drop form plumbing so it never reaches the config table or log.
+            if (in_array($fieldName, $ignoreFields, true)) {
+                continue;
+            }
+            // (B) Only persist + log a field when its value actually changed, so
+            // a no-op Save no longer produces a wall of "changed" field names.
+            $currentValue = $this->getAdapter()->fetchOne(
+                $this->select()->from($this->_name, ['value'])->where('name = ?', $fieldName)
+            );
+            $newValue = is_array($fieldValue) ? json_encode($fieldValue) : (string) $fieldValue;
+            if ((string) $currentValue === $newValue) {
+                continue;
+            }
+            $this->update(['value' => $fieldValue], "name='" . $fieldName . "'");
+            $individualFields[] = $fieldName;
         }
         if (!empty($individualFields)) {
-            $changedSections[] = count($individualFields) . ' field' . (count($individualFields) === 1 ? '' : 's') . ' (' . implode(', ', $individualFields) . ')';
+            $changedSections[] = count($individualFields) . ' setting' . (count($individualFields) === 1 ? '' : 's') . ' (' . implode(', ', $individualFields) . ')';
         }
 
         $detail = empty($changedSections) ? '' : ' — ' . implode(', ', array_unique($changedSections));
