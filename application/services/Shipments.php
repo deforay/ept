@@ -3053,22 +3053,36 @@ class Application_Service_Shipments
             $shipmentAttributes['reportVersion'] = $params['reportVersion'] ?? null;
             $shipmentAttributes['effectiveDate'] = $params['effectiveDate'] ?? null;
 
+            $updateData = [
+                'number_of_samples' => $size - $controlCount,
+                'allow_editing_response' => $params['allowEditingResponse'],
+                'shipment_attributes' => empty($shipmentAttributes) ? null : json_encode($shipmentAttributes),
+                'number_of_controls' => $controlCount,
+                'shipment_code' => $params['shipmentCode'],
+                'issuing_authority' => $params['issuingAuthority'],
+                'pt_co_ordinator_name' => $params['PtCoOrdinatorName'],
+                'pt_co_ordinator_email' => $params['ptEmail'] ?? null,
+                'pt_co_ordinator_phone' => $params['ptPhone'] ?? null,
+                'collect_feedback' => $params['collectFeedBack'],
+                'response_deadline' => Pt_Commons_DateUtility::shipmentDeadlineValue($params['lastDate'], $params['lastTime'] ?? null),
+                'auto_close_at_deadline' => (isset($params['autoCloseAtDeadline']) && $params['autoCloseAtDeadline'] === 'no') ? 'no' : 'yes',
+            ];
+
+            // Re-open the response window when an admin extends the deadline of a shipment
+            // whose response switch was turned off (e.g. auto-closed at the old deadline).
+            // Gated by an explicit confirmation from the edit form so the switch is never
+            // silently flipped; finalized shipments are never reopened.
+            if (
+                (($params['reopenResponseSwitch'] ?? '') === 'yes')
+                && (($shipmentRow['response_switch'] ?? '') === 'off')
+                && (($shipmentRow['status'] ?? '') !== 'finalized')
+            ) {
+                $updateData['response_switch'] = 'on';
+            }
+
             $dbAdapter->update(
                 'shipment',
-                [
-                    'number_of_samples' => $size - $controlCount,
-                    'allow_editing_response' => $params['allowEditingResponse'],
-                    'shipment_attributes' => empty($shipmentAttributes) ? null : json_encode($shipmentAttributes),
-                    'number_of_controls' => $controlCount,
-                    'shipment_code' => $params['shipmentCode'],
-                    'issuing_authority' => $params['issuingAuthority'],
-                    'pt_co_ordinator_name' => $params['PtCoOrdinatorName'],
-                    'pt_co_ordinator_email' => $params['ptEmail'] ?? null,
-                    'pt_co_ordinator_phone' => $params['ptPhone'] ?? null,
-                    'collect_feedback' => $params['collectFeedBack'],
-                    'response_deadline' => Pt_Commons_DateUtility::shipmentDeadlineValue($params['lastDate'], $params['lastTime'] ?? null),
-                    'auto_close_at_deadline' => (isset($params['autoCloseAtDeadline']) && $params['autoCloseAtDeadline'] === 'no') ? 'no' : 'yes',
-                ],
+                $updateData,
                 'shipment_id = ' . $params['shipmentId']
             );
             $dbAdapter->commit();

@@ -58,6 +58,7 @@ $rtriEnabled = $dtsConfig['rtriEnabled'] ?? 'no';
 					title="Please choose a Scheme Type on the top of this page" />
 				<input type="hidden" name="selectedDistribution" id="selectedDistribution" class=""
 					value="<?php echo $this->selectedDistribution; ?>" />
+				<input type="hidden" name="reopenResponseSwitch" id="reopenResponseSwitch" value="" />
 
 			</div>
 			<div class="form-group">
@@ -72,6 +73,9 @@ $rtriEnabled = $dtsConfig['rtriEnabled'] ?? 'no';
 			$deadlineRaw = $shipmentData['shipment']['response_deadline'] ?? '';
 			$deadlineDisplay = (!empty($deadlineRaw) && strpos((string) $deadlineRaw, '0000-00-00') !== 0)
 				? date('d-M-Y H:i', strtotime((string) $deadlineRaw)) : '';
+			// Current response-window state — drives the "re-open on deadline extension" confirm below.
+			$currentSwitch = $shipmentData['shipment']['response_switch'] ?? 'on';
+			$currentStatus = $shipmentData['shipment']['status'] ?? '';
 			?>
 			<div class="form-group">
 				<label for="lastDate" class="col-lg-3 control-label"><?= $this->translate->_("Result Due Date & Time"); ?></label>
@@ -262,15 +266,47 @@ $rtriEnabled = $dtsConfig['rtriEnabled'] ?? 'no';
 
 
 
+	function submitShipmentForm() {
+		$.blockUI();
+		document.getElementById('shipmentForm').submit();
+	}
+
 	function validateNow() {
 		allowOnlyAlphaNumericAndHyphen('#shipmentCode');
 		//checkDuplicate('shipment', 'shipment_code', $("#shipmentCode"), '<?php echo "shipment_id##" . $shipmentData['shipment']['shipment_id']; ?>', 'This Code already exists for another Shipment. Please try something else.')
 		flag = deforayValidator.init({
 			formId: 'shipmentForm'
 		});
-		if (flag && !duplicated) {
-			$.blockUI();
-			document.getElementById('shipmentForm').submit();
+		if (!flag || duplicated) {
+			return;
 		}
+
+		// If the response window is currently closed (switch off) and the admin has
+		// pushed the deadline out, re-opening must be confirmed first. A still-open
+		// shipment, a finalized one, or a deadline that isn't extended just saves.
+		var currentSwitch = '<?php echo $currentSwitch; ?>';
+		var currentStatus = '<?php echo $currentStatus; ?>';
+		var fmt = 'DD-MMM-YYYY HH:mm';
+		var originalDeadline = '<?php echo $this->escape($deadlineDisplay); ?>';
+		var newDeadline = $('#lastDate').val();
+		var extendsDeadline = newDeadline && (!originalDeadline ||
+			moment(newDeadline, fmt).isAfter(moment(originalDeadline, fmt)));
+
+		if (currentSwitch === 'off' && currentStatus !== 'finalized' && extendsDeadline) {
+			bootbox.confirm(
+				"This shipment's response window is currently <strong>closed</strong>. " +
+				"Extending the deadline to <strong>" + newDeadline + "</strong> will re-open it so " +
+				"participants can submit responses until the new deadline.<br><br>Re-open and save?",
+				function(result) {
+					if (result) {
+						$('#reopenResponseSwitch').val('yes');
+						submitShipmentForm();
+					}
+				}
+			);
+			return;
+		}
+
+		submitShipmentForm();
 	}
 </script>
