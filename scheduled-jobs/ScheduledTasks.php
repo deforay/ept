@@ -81,14 +81,15 @@ $schedule->run($phpPath . " " . BIN_PATH . "/process-bounces.php --quiet")
     ->preventOverlapping()
     ->description('Processing email bounces');
 
-// Auto-close shipment response switches once the response deadline has passed.
-// Flips response_switch 'on' -> 'off' at the exact response_deadline instant
-// (interpreted in the cutoff timezone). Runs every minute so the switch closes
-// close to the set time. Skips finalized shipments. Idempotent.
-$schedule->run($phpPath . " " . SCHEDULED_JOBS_FOLDER . "/close-expired-response-switches.php")
+// Process shipment deadlines once the response deadline has passed: flip
+// response_switch 'on' -> 'off' at the exact response_deadline instant (interpreted
+// in the cutoff timezone) and queue an evaluation for each closed shipment so results
+// are ready for human review (reports + finalization stay manual). Runs every minute
+// so the switch closes close to the set time. Skips finalized shipments. Idempotent.
+$schedule->run($phpPath . " " . SCHEDULED_JOBS_FOLDER . "/process-shipment-deadlines.php")
     ->everyMinute()
     ->timezone($timezone)
     ->preventOverlapping()
-    ->description('Closing expired shipment response switches');
+    ->description('Processing shipment deadlines (close switch + queue evaluation)');
 
 return $schedule;

@@ -1,5 +1,5 @@
 <?php
-// close-expired-response-switches.php
+// process-shipment-deadlines.php
 //
 // Auto-flip shipment.response_switch from 'on' to 'off' once the response
 // deadline (response_deadline, a DATETIME) has passed — but ONLY for shipments
@@ -10,8 +10,15 @@
 // the cutoff timezone via Pt_Commons_DateUtility::shipmentCutoff() — the same
 // logic the evaluation late-check uses — so cron and reports agree. Finalized
 // shipments are left untouched. Idempotent — re-runs flip nothing already off.
+//
+// After closing a shipment, an evaluation is queued for it by default so results
+// are ready for human review (reports + finalization stay manual). Pass --skip-eval
+// to only flip the switch and not auto-evaluate.
 
 require_once __DIR__ . '/../cli-bootstrap.php';
+
+$options = getopt('', ['skip-eval']);
+$skipEval = isset($options['skip-eval']);
 
 $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
 $db = Zend_Db::factory($conf->resources->db);
@@ -57,7 +64,22 @@ try {
     );
 
     if ($closed > 0) {
-        error_log("close-expired-response-switches: turned off response_switch for {$closed} expired shipment(s): " . implode(',', $expiredIds));
+        error_log("process-shipment-deadlines: turned off response_switch for {$closed} expired shipment(s): " . implode(',', $expiredIds));
+
+        // Auto-evaluate each just-closed shipment (default; --skip-eval opts out) so results
+        // are ready for human review. Reports and finalization stay manual. Re-evaluation is
+        // intentional — it captures responses that landed before the deadline. System context:
+        // no admin session, so requested_by is null. execute-job-queue.php drains the eval job.
+        if (!$skipEval) {
+            $evalService = new Application_Service_Evaluation();
+            foreach ($expiredIds as $sid) {
+                try {
+                    $evalService->scheduleEvaluation($sid, null);
+                } catch (Exception $evalErr) {
+                    Pt_Commons_LoggerUtility::logError('auto-eval enqueue failed for shipment ' . $sid . ': ' . $evalErr->getMessage());
+                }
+            }
+        }
     }
 } catch (Exception $e) {
     Pt_Commons_LoggerUtility::logError($e->getMessage(), [

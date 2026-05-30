@@ -64,15 +64,22 @@ class Application_Model_DbTable_ScheduledJobs extends Zend_Db_Table_Abstract
         }
         return $resp;
     }
-    public function scheduleEvaluation($shipmentId)
+    public function scheduleEvaluation($shipmentId, $requestedBy = false)
     {
-        $authNameSpace = new Zend_Session_Namespace('administrators');
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
 
         // Sanitize shipmentId - ensure it's an integer
         $safeShipmentId = intval($shipmentId);
         if ($safeShipmentId <= 0) {
             return 0;
+        }
+
+        // UI callers omit $requestedBy -> resolve it from the admin session. System/cron
+        // callers (e.g. auto-close at deadline) pass an explicit id, or null for "system",
+        // so we never touch a non-existent CLI session. requested_by is nullable.
+        if ($requestedBy === false) {
+            $authNameSpace = new Zend_Session_Namespace('administrators');
+            $requestedBy = $authNameSpace->admin_id ?? null;
         }
 
         // Update status to 'queued', set previous_status to the original status value,
@@ -86,7 +93,7 @@ class Application_Model_DbTable_ScheduledJobs extends Zend_Db_Table_Abstract
         return $this->insert([
             'job' => 'evaluate-shipments.php -s ' . escapeshellarg($safeShipmentId),
             'requested_on' => new Zend_Db_Expr('now()'),
-            'requested_by' => $authNameSpace->admin_id,
+            'requested_by' => $requestedBy,
         ]);
     }
 

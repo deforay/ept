@@ -3592,10 +3592,10 @@ class Application_Service_Evaluation
         }
     }
 
-    public function scheduleEvaluation($shipmentId)
+    public function scheduleEvaluation($shipmentId, $requestedBy = false)
     {
         $scheduledDb = new Application_Model_DbTable_ScheduledJobs();
-        return $scheduledDb->scheduleEvaluation($shipmentId);
+        return $scheduledDb->scheduleEvaluation($shipmentId, $requestedBy);
     }
 
     public function getEvaluateReportsInPdf($shipmentId, $sLimit, $sOffset)
