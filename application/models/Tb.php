@@ -981,8 +981,6 @@ class Application_Model_Tb
             ->group(['res.sample_id', 'res.assay_id', 'mtb_detection_consensus_raw'])
             ->order(['res.sample_id', 'res.assay_id', 'mtb_occurrences DESC']);
 
-
-
         $mtbResults = $db->fetchAll($consensusResultsQueryMtb);
 
         foreach ($mtbResults as $mtb) {

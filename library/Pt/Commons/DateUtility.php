@@ -439,7 +439,7 @@ final class Pt_Commons_DateUtility
 
     private static function filterValidDates(array $dates): array
     {
-        return array_filter($dates, fn($date): bool => self::isDateValid($date));
+        return array_filter($dates, fn ($date): bool => self::isDateValid($date));
     }
 
     public static function getLowestDate(...$dates): ?string

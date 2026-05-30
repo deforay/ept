@@ -93,8 +93,6 @@ class Application_Model_DbTable_EidExtractionAssay extends Zend_Db_Table_Abstrac
             $sQuery = $sQuery->limit($sLimit, $sOffset);
         }
 
-
-
         $rResult = $this->getAdapter()->fetchAll($sQuery);
 
         /* Data set length after filtering */

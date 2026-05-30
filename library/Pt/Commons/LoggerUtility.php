@@ -105,7 +105,7 @@ final class Pt_Commons_LoggerUtility
                 ? $frame['file'] . '(' . ($frame['line'] ?? 0) . ')'
                 : '[internal function]';
             $fn = (isset($frame['class']) ? $frame['class'] . ($frame['type'] ?? '::') : '')
-                . ($frame['function'] ?? '');
+                . $frame['function'];
             $lines[] = '#' . $depth++ . ' ' . $loc . ': ' . $fn . '()';
         }
 
@@ -156,7 +156,7 @@ final class Pt_Commons_LoggerUtility
             if (!empty($_SERVER['HTTP_USER_AGENT'])) {
                 $ua = (string) $_SERVER['HTTP_USER_AGENT'];
                 $ctx['user_agent'] = $ua;
-                if (method_exists('Application_Service_Common', 'getOperatingSystem')) {
+                if (class_exists('Application_Service_Common')) {
                     $ctx['client_os'] = Application_Service_Common::getOperatingSystem($ua);
                 }
             }

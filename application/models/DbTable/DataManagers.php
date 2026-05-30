@@ -119,7 +119,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                 } else {
                     $sWhereSub .= ' AND (';
                 }
-                $searchableColumns = array_values(array_filter($aColumns, fn($c) => $c !== ''));
+                $searchableColumns = array_values(array_filter($aColumns, fn ($c) => $c !== ''));
                 $colSize = count($searchableColumns);
 
                 for ($i = 0; $i < $colSize; $i++) {
@@ -1306,10 +1306,10 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
 
     public function processBulkImport($fileName, $allFakeEmail = false, $params = null, $type = 'ptcc')
     {
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         try {
             $response = [];
             $alertMsg = new Zend_Session_Namespace('alertSpace');
-            $db = Zend_Db_Table_Abstract::getDefaultAdapter();
 
             $objPHPExcel = IOFactory::load($fileName);
             $sheetData = $objPHPExcel->getActiveSheet()->toArray(null, true, true, true);

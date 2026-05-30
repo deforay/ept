@@ -78,7 +78,6 @@ class Application_Service_Reports
             $sWhere .= $sWhereSub;
         }
 
-
         /* Individual column filtering */
         for ($i = 0; $i < count($searchColumns); $i++) {
             if (isset($parameters['bSearchable_' . $i]) && $parameters['bSearchable_' . $i] == 'true' && $parameters['sSearch_' . $i] != '') {
@@ -685,7 +684,6 @@ class Application_Service_Reports
             $sWhere .= $sWhereSub;
         }
 
-
         /* Individual column filtering */
         for ($i = 0; $i < count($searchColumns); $i++) {
             if (isset($parameters['bSearchable_' . $i]) && $parameters['bSearchable_' . $i] == 'true' && $parameters['sSearch_' . $i] != '') {
@@ -753,7 +751,6 @@ class Application_Service_Reports
         if (isset($sLimit) && isset($sOffset)) {
             $sQuery = $sQuery->limit($sLimit, $sOffset);
         }
-
 
         $rResult = $dbAdapter->fetchAll($sQuery);
 
@@ -906,7 +903,6 @@ class Application_Service_Reports
             $sWhere .= $sWhereSub;
         }
 
-
         /* Individual column filtering */
         for ($i = 0; $i < count($searchColumns); $i++) {
             if (isset($parameters['bSearchable_' . $i]) && $parameters['bSearchable_' . $i] == 'true' && $parameters['sSearch_' . $i] != '') {
@@ -976,7 +972,6 @@ class Application_Service_Reports
         if (isset($sLimit) && isset($sOffset)) {
             $sQuery = $sQuery->limit($sLimit, $sOffset);
         }
-
 
         $rResult = $dbAdapter->fetchAll($sQuery);
 
@@ -1155,7 +1150,6 @@ class Application_Service_Reports
             }
             $sWhere .= $sWhereSub;
         }
-
 
         /* Individual column filtering */
         for ($i = 0; $i < count($aColumns); $i++) {
@@ -1428,7 +1422,6 @@ class Application_Service_Reports
             }
             $sWhere .= $sWhereSub;
         }
-
 
         /* Individual column filtering */
         for ($i = 0; $i < count($searchColumns); $i++) {
@@ -1705,7 +1698,6 @@ class Application_Service_Reports
             }
             $sWhere .= $sWhereSub;
         }
-
 
         /* Individual column filtering */
         for ($i = 0; $i < count($searchColumns); $i++) {
@@ -2330,7 +2322,6 @@ class Application_Service_Reports
             $sWhere .= $sWhereSub;
         }
 
-
         /* Individual column filtering */
         for ($i = 0; $i < count($searchColumns); $i++) {
             if (isset($parameters['bSearchable_' . $i]) && $parameters['bSearchable_' . $i] == 'true' && $parameters['sSearch_' . $i] != '') {
@@ -2530,7 +2521,6 @@ class Application_Service_Reports
             }
             $sWhere .= $sWhereSub;
         }
-
 
         /* Individual column filtering */
         for ($i = 0; $i < count($searchColumns); $i++) {
@@ -3037,7 +3027,6 @@ class Application_Service_Reports
             $sWhere .= $sWhereSub;
         }
 
-
         /* Individual column filtering */
         for ($i = 0; $i < count($aColumns); $i++) {
             if (isset($parameters['bSearchable_' . $i]) && $parameters['bSearchable_' . $i] == 'true' && $parameters['sSearch_' . $i] != '') {
@@ -3302,7 +3291,6 @@ class Application_Service_Reports
             }
             $sWhere .= $sWhereSub;
         }
-
 
         /* Individual column filtering */
         for ($i = 0; $i < count($searchColumns); $i++) {
@@ -4381,7 +4369,6 @@ class Application_Service_Reports
             $sWhere .= $sWhereSub;
         }
 
-
         /* Individual column filtering */
         for ($i = 0; $i < count($searchColumns); $i++) {
             if (isset($parameters['bSearchable_' . $i]) && $parameters['bSearchable_' . $i] == 'true' && $parameters['sSearch_' . $i] != '') {
@@ -4582,7 +4569,6 @@ class Application_Service_Reports
             }
             $sWhere .= $sWhereSub;
         }
-
 
         /* Individual column filtering */
         for ($i = 0; $i < count($searchColumns); $i++) {

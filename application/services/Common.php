@@ -250,7 +250,7 @@ class Application_Service_Common
         $ns = new Zend_Session_Namespace($namespace);
         $used = is_array($ns->used ?? null) ? $ns->used : [];
         // Drop expired entries so this bucket can't grow unbounded.
-        $used = array_filter($used, static fn($ts) => $ts > time() - 3600);
+        $used = array_filter($used, static fn ($ts) => $ts > time() - 3600);
         if (isset($used[$hash])) {
             return false;
         }
@@ -738,7 +738,7 @@ class Application_Service_Common
         return $ipaddress;
     }
 
-    public function getOperatingSystem($userAgent = null)
+    public static function getOperatingSystem($userAgent = null)
     {
         $osPlatform = 'Unknown OS - ' . $userAgent;
 

@@ -334,7 +334,7 @@ function _apply_add_primary_key(Zend_Db_Adapter_Abstract $db, string $table, str
             return MIG_SKIPPED;
         }
         run_sql($db, "ALTER TABLE `{$table}` DROP PRIMARY KEY");
-        $colsSql = implode(',', array_map(fn($c) => "`$c`", $wantedCols));
+        $colsSql = implode(',', array_map(fn ($c) => "`$c`", $wantedCols));
         run_sql($db, "ALTER TABLE `{$table}` ADD PRIMARY KEY ($colsSql)");
         return MIG_EXECUTED;
     }
@@ -564,14 +564,14 @@ if (isset($options['v'])) {
 
 // collect migrations
 $migrationFiles = (array) glob(DB_PATH . '/migrations/*.sql');
-$versions = array_map(fn($file) => basename($file, '.sql'), $migrationFiles);
+$versions = array_map(fn ($file) => basename($file, '.sql'), $migrationFiles);
 usort($versions, 'version_compare');
 
 // --status: report current version + pending migrations, then exit without touching the DB.
 // Pending uses the same `>=` rule as the runner, so the current version shows up as
 // pending too — by design, ept re-applies the current version idempotently on every run.
 if ($showStatus) {
-    $pending = array_values(array_filter($versions, fn($v) => version_compare($v, $currentVersion, '>=')));
+    $pending = array_values(array_filter($versions, fn ($v) => version_compare($v, $currentVersion, '>=')));
     echo 'Current DB version : ' . ($currentVersion ?: '(none)') . PHP_EOL;
     echo 'Pending migrations :' . PHP_EOL;
     if (empty($pending)) {
