@@ -40,8 +40,11 @@ class Admin_VlSettingsController extends Zend_Controller_Action
             $this->view->vlConfig = Pt_Commons_SchemeConfig::get('vl');
         } catch (Exception $exc) {
 
-            error_log('VL-SETTINGS-' . $exc->getMessage());
-            error_log($exc->getTraceAsString());
+            Pt_Commons_LoggerUtility::logError('Failed to save VL settings: ' . $exc->getMessage(), [
+                'file'  => $exc->getFile(),
+                'line'  => $exc->getLine(),
+                'trace' => $exc->getTraceAsString(),
+            ]);
             return '';
         }
     }

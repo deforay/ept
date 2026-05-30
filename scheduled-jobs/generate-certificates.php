@@ -111,7 +111,7 @@ if (!$isWorker) {
 if (is_array($shipmentsToGenerate))
 	$shipmentsToGenerate = implode(",", $shipmentsToGenerate);
 if (empty($shipmentsToGenerate)) {
-	error_log("Please specify the shipment ids with -s");
+	Pt_Commons_LoggerUtility::logError("Please specify the shipment ids with -s");
 	if (isset($certificateBatchesModel)) {
 		$certificateBatchesModel->updateStatus($batchId, 'failed', [
 			'error_message' => 'No shipment IDs specified'
@@ -242,12 +242,12 @@ function createFDF(array $data): string
 function fillPdfTemplate(string $templateFile, array $fields, string $outputPdf): bool
 {
 	if (!file_exists($templateFile)) {
-		error_log("Template missing: $templateFile");
+		Pt_Commons_LoggerUtility::logError("Template missing: $templateFile");
 		return false;
 	}
 	$pdftk = findPdftk();
 	if (!$pdftk) {
-		error_log("pdftk not found");
+		Pt_Commons_LoggerUtility::logError("pdftk not found");
 		return false;
 	}
 
@@ -259,7 +259,7 @@ function fillPdfTemplate(string $templateFile, array $fields, string $outputPdf)
 	unlink($fdf);
 
 	if ($code !== 0 || !is_file($outputPdf) || filesize($outputPdf) === 0) {
-		error_log("pdftk failed (code=$code): " . implode("\n", $out));
+		Pt_Commons_LoggerUtility::logError("pdftk failed (code=$code): " . implode("\n", $out));
 		return false;
 	}
 	return true;
@@ -270,7 +270,7 @@ function fillPdfTemplate(string $templateFile, array $fields, string $outputPdf)
 function renderDocx(string $docxTemplate, array $fields, string $outDocx): bool
 {
 	if (!file_exists($docxTemplate)) {
-		error_log("Template missing: $docxTemplate");
+		Pt_Commons_LoggerUtility::logError("Template missing: $docxTemplate");
 		return false;
 	}
 
@@ -369,12 +369,12 @@ function docxToPdf(string $inDocx, string $outPdf, int $maxRetries = 2): ?string
 		}
 
 		if ($attempt < $maxRetries) {
-			error_log("LibreOffice attempt $attempt failed, retrying...");
+			Pt_Commons_LoggerUtility::logWarning("LibreOffice attempt $attempt failed, retrying...");
 			sleep(1); // Brief pause before retry
 		}
 	}
 
-	error_log("LibreOffice conversion failed after $maxRetries attempts (code=$code): " . implode("\n", $out));
+	Pt_Commons_LoggerUtility::logError("LibreOffice conversion failed after $maxRetries attempts (code=$code): " . implode("\n", $out));
 	return null;
 }
 
@@ -492,7 +492,7 @@ function createZipAndGetDownloadUrl(string $folderPath, string $certificateName,
 
 	$zip = new ZipArchive();
 	if ($zip->open($zipPath, ZipArchive::CREATE) !== TRUE) {
-		error_log("Cannot create ZIP file: $zipPath");
+		Pt_Commons_LoggerUtility::logError("Cannot create ZIP file: $zipPath");
 		return null;
 	}
 
@@ -1125,8 +1125,11 @@ try {
 		]);
 	}
 } catch (Throwable $e) {
-	error_log("ERROR : {$e->getFile()}:{$e->getLine()} : {$e->getMessage()}");
-	error_log($e->getTraceAsString());
+	Pt_Commons_LoggerUtility::logError($e->getMessage(), [
+	    'file'  => $e->getFile(),
+	    'line'  => $e->getLine(),
+	    'trace' => $e->getTraceAsString(),
+	]);
 
 	// Update batch status on failure
 	if (isset($certificateBatchesModel)) {

@@ -351,7 +351,7 @@ class ReportGenerator
         if ($isCli) {
             Pt_Commons_MiscUtility::console()->writeln($msg);
         } else {
-            error_log($msg);
+            Pt_Commons_LoggerUtility::logInfo($msg);
         }
     }
 
@@ -360,7 +360,7 @@ class ReportGenerator
         if ($isCli) {
             Pt_Commons_MiscUtility::console()->getErrorOutput()->writeln("<error> ERROR </error> {$msg}");
         } else {
-            error_log($msg);
+            Pt_Commons_LoggerUtility::logError($msg);
         }
     }
 
@@ -369,7 +369,7 @@ class ReportGenerator
         if ($isCli) {
             Pt_Commons_MiscUtility::console()->getErrorOutput()->writeln("<comment>WARNING:</comment> {$msg}");
         } else {
-            error_log($msg);
+            Pt_Commons_LoggerUtility::logWarning($msg);
         }
     }
 

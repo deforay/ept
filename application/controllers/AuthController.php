@@ -368,7 +368,11 @@ class AuthController extends Zend_Controller_Action
             }
         } catch (Throwable $e) {
             // Log the error for debugging
-            error_log('Login error: ' . $e->getMessage());
+            Pt_Commons_LoggerUtility::logError('Login error: ' . $e->getMessage(), [
+                'file'  => $e->getFile(),
+                'line'  => $e->getLine(),
+                'trace' => $e->getTraceAsString(),
+            ]);
 
             $sessionAlert->message = 'An unexpected error occurred. Please try again.';
             $sessionAlert->status = 'failure';

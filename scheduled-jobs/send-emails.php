@@ -119,7 +119,7 @@ try {
     if ($smtpJson === null || trim($smtpJson) === '') {
         // Not an error — expected on environments that haven't configured outbound mail yet.
         // Cron fires every minute; logging this at ERROR floods the log.
-        error_log('send-emails.php: SMTP not configured; skipping run.');
+        Pt_Commons_LoggerUtility::logWarning('send-emails.php: SMTP not configured; skipping run.');
         exit(0);
     }
     $smtpMailDetails = json_decode($smtpJson);
@@ -152,7 +152,7 @@ try {
         }
 
         $dsn = $devTrapDsn;
-        error_log("send-emails: routing via email.devTrapDsn (DB SMTP creds ignored)");
+        Pt_Commons_LoggerUtility::logInfo("send-emails: routing via email.devTrapDsn (DB SMTP creds ignored)");
     } else {
         $dsn = sprintf(
             'smtp://%s:%s@%s:%d',
@@ -205,7 +205,7 @@ try {
             );
 
             if (!empty($recips['invalid'])) {
-                error_log("Invalid emails (temp_id={$result['temp_id']}): " . implode(', ', $recips['invalid']));
+                Pt_Commons_LoggerUtility::logWarning("Invalid emails (temp_id={$result['temp_id']}): " . implode(', ', $recips['invalid']));
             }
 
             if (empty($recips['to']) && empty($recips['cc']) && empty($recips['bcc'])) {
@@ -268,7 +268,7 @@ try {
                 if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
                     $attachments = $decoded;
                 } else {
-                    error_log("Attachment JSON invalid for temp_id={$result['temp_id']}: " . json_last_error_msg());
+                    Pt_Commons_LoggerUtility::logWarning("Attachment JSON invalid for temp_id={$result['temp_id']}: " . json_last_error_msg());
                 }
             }
 
@@ -284,7 +284,7 @@ try {
                 if ($first !== '' && filter_var($first, FILTER_VALIDATE_EMAIL)) {
                     $replyTo = $first;
                 } else {
-                    error_log("Invalid reply_to for temp_id={$result['temp_id']}: {$replyToRaw}");
+                    Pt_Commons_LoggerUtility::logWarning("Invalid reply_to for temp_id={$result['temp_id']}: {$replyToRaw}");
                 }
             }
             if ($replyTo === null) {
@@ -338,7 +338,7 @@ try {
                     $total = 0;
                     foreach ($attachments as $filePath) {
                         if (!file_exists($filePath)) {
-                            error_log("Attachment missing (temp_id={$result['temp_id']} batch={$batchIndex}): $filePath");
+                            Pt_Commons_LoggerUtility::logWarning("Attachment missing (temp_id={$result['temp_id']} batch={$batchIndex}): $filePath");
                             continue;
                         }
                         $size = filesize($filePath);
@@ -350,7 +350,10 @@ try {
                             $email->addPart(new DataPart(new File($filePath)));
                             $total += $size;
                         } catch (Throwable $e) {
-                            error_log("Attachment error (temp_id={$result['temp_id']} batch={$batchIndex}): " . $e->getMessage());
+                            Pt_Commons_LoggerUtility::logWarning("Attachment error (temp_id={$result['temp_id']} batch={$batchIndex}): " . $e->getMessage(), [
+                                'file' => $e->getFile(),
+                                'line' => $e->getLine(),
+                            ]);
                         }
                     }
                 }
@@ -364,8 +367,11 @@ try {
                     $allOk = false;
                     $batchError = "Batch {$batchIndex} failed: {$e->getMessage()}";
                     $failureReason = $failureReason ?? $batchError;
-                    error_log("Batch send failed (temp_id={$result['temp_id']} batch={$batchIndex}): {$e->getMessage()}");
-                    error_log($e->getTraceAsString());
+                    Pt_Commons_LoggerUtility::logError("Batch send failed (temp_id={$result['temp_id']} batch={$batchIndex}): " . $e->getMessage(), [
+                        'file'  => $e->getFile(),
+                        'line'  => $e->getLine(),
+                        'trace' => $e->getTraceAsString(),
+                    ]);
                     // keep trying remaining batches; mark row 'not-sent' afterwards
                 }
                 unset($email);
@@ -402,8 +408,11 @@ try {
                 (int) $result['temp_id'],
                 $failureReason
             );
-            error_log("ERROR : {$e->getFile()}:{$e->getLine()} : {$e->getMessage()}");
-            error_log($e->getTraceAsString());
+            Pt_Commons_LoggerUtility::logError($e->getMessage(), [
+                'file'  => $e->getFile(),
+                'line'  => $e->getLine(),
+                'trace' => $e->getTraceAsString(),
+            ]);
             continue;
         } finally {
             // Refresh lock mtime to keep it from being considered stale during long runs
@@ -411,8 +420,7 @@ try {
         }
     }
 } catch (Throwable $e) {
-    error_log("Unable to send emails: {$e->getMessage()}");
-    Pt_Commons_LoggerUtility::logError($e->getFile() . ":" . $e->getLine() . " - " . $e->getMessage(), [
+    Pt_Commons_LoggerUtility::logError('Unable to send emails: ' . $e->getMessage(), [
         'line' => $e->getLine(),
         'file' => $e->getFile(),
         'trace' => $e->getTraceAsString()

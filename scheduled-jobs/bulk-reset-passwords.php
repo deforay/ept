@@ -52,7 +52,10 @@ try {
     @unlink($payloadPath);
     exit(0);
 } catch (Throwable $e) {
-    error_log('bulk-reset-passwords ERROR: ' . $e->getMessage());
-    error_log($e->getTraceAsString());
+    Pt_Commons_LoggerUtility::logError('bulk-reset-passwords failed: ' . $e->getMessage(), [
+        'file'  => $e->getFile(),
+        'line'  => $e->getLine(),
+        'trace' => $e->getTraceAsString(),
+    ]);
     exit(1);
 }

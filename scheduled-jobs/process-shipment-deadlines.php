@@ -64,7 +64,7 @@ try {
     );
 
     if ($closed > 0) {
-        error_log("process-shipment-deadlines: turned off response_switch for {$closed} expired shipment(s): " . implode(',', $expiredIds));
+        Pt_Commons_LoggerUtility::logInfo("process-shipment-deadlines: turned off response_switch for {$closed} expired shipment(s): " . implode(',', $expiredIds));
 
         // Auto-evaluate each just-closed shipment (default; --skip-eval opts out) so results
         // are ready for human review. Reports and finalization stay manual. Re-evaluation is

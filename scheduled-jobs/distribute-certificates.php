@@ -25,13 +25,13 @@ try {
         $batch = $certificateBatchesModel->getBatch($batchId);
 
         if (!$batch) {
-            error_log("Batch not found: $batchId");
+            Pt_Commons_LoggerUtility::logError("Batch not found: $batchId");
             exit(1);
         }
 
         // Verify status is 'approved'
         if ($batch['status'] !== 'approved') {
-            error_log("Batch status must be 'approved' to distribute. Current status: " . $batch['status']);
+            Pt_Commons_LoggerUtility::logWarning("Batch status must be 'approved' to distribute. Current status: " . $batch['status']);
             $certificateBatchesModel->updateStatus($batchId, 'failed', [
                 'error_message' => "Cannot distribute batch with status: " . $batch['status']
             ]);
@@ -42,7 +42,7 @@ try {
         $folderPath = $batch['folder_path'];
 
         if (empty($folderPath) || !is_dir($folderPath)) {
-            error_log("Invalid folder path: $folderPath");
+            Pt_Commons_LoggerUtility::logError("Invalid folder path: $folderPath");
             $certificateBatchesModel->updateStatus($batchId, 'failed', [
                 'error_message' => "Invalid or missing folder path: $folderPath"
             ]);
@@ -57,7 +57,7 @@ try {
     // Mode 2: Manual workflow (folder path specified directly)
     else {
         if (!is_dir($folderPath)) {
-            error_log("Invalid folder path: $folderPath");
+            Pt_Commons_LoggerUtility::logError("Invalid folder path: $folderPath");
             exit(1);
         }
 
@@ -104,7 +104,7 @@ try {
 
                 if (!is_dir($participantFolder)) {
                     if (!@mkdir($participantFolder, 0777, true)) {
-                        error_log("Failed to create directory: $participantFolder");
+                        Pt_Commons_LoggerUtility::logError("Failed to create directory: $participantFolder");
                         $stats['errors']++;
                         continue;
                     }
@@ -117,7 +117,7 @@ try {
                     $stats['distributed']++;
                     echo "Copied: $fileName -> $participantFolder\n";
                 } else {
-                    error_log("Failed to copy: $file -> $destPath");
+                    Pt_Commons_LoggerUtility::logError("Failed to copy: $file -> $destPath");
                     $stats['errors']++;
                 }
             } else {

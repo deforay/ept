@@ -23,7 +23,7 @@ function validateJobCommand($job, $jobsDir)
     // Parse the job command - extract the script name and arguments
     // Expected format: "script-name.php -arg1 value1 -arg2 value2"
     if (!preg_match('/^([a-zA-Z0-9_-]+\.php)(\s+.*)?$/', $job, $matches)) {
-        error_log("Invalid job format: " . $job);
+        Pt_Commons_LoggerUtility::logError("Invalid job format: " . $job);
         return false;
     }
 
@@ -32,14 +32,14 @@ function validateJobCommand($job, $jobsDir)
 
     // Verify the script is in the whitelist
     if (!in_array($scriptName, ALLOWED_JOB_SCRIPTS, true)) {
-        error_log("Script not in whitelist: " . $scriptName);
+        Pt_Commons_LoggerUtility::logError("Script not in whitelist: " . $scriptName);
         return false;
     }
 
     // Verify the script file exists
     $scriptPath = $jobsDir . DIRECTORY_SEPARATOR . $scriptName;
     if (!file_exists($scriptPath)) {
-        error_log("Script file does not exist: " . $scriptPath);
+        Pt_Commons_LoggerUtility::logError("Script file does not exist: " . $scriptPath);
         return false;
     }
 
@@ -48,7 +48,7 @@ function validateJobCommand($job, $jobsDir)
     // Pattern: optional whitespace, dash, letter(s), whitespace, single-quoted value or plain numbers
     if (!empty($arguments)) {
         if (!preg_match("/^(\s*-[a-z]+\s+'[^']*'|\s*-[a-z]+\s+[0-9,]+)+$/i", $arguments)) {
-            error_log("Invalid arguments format: " . $arguments);
+            Pt_Commons_LoggerUtility::logError("Invalid arguments format: " . $arguments);
             return false;
         }
     }
@@ -75,7 +75,7 @@ try {
             $validatedCommand = validateJobCommand($sj['job'], $jobsDir);
             if ($validatedCommand === false) {
                 $db->update('scheduled_jobs', ['status' => "failed"], "job_id = " . $jobId);
-                error_log("Skipping invalid job (ID: {$jobId}): " . $sj['job']);
+                Pt_Commons_LoggerUtility::logWarning("Skipping invalid job (ID: {$jobId}): " . $sj['job']);
                 continue;
             }
 
@@ -89,6 +89,9 @@ try {
         }
     }
 } catch (Throwable $e) {
-    error_log("ERROR : {$e->getFile()}:{$e->getLine()} : {$e->getMessage()}");
-    error_log($e->getTraceAsString());
+    Pt_Commons_LoggerUtility::logError($e->getMessage(), [
+        'file'  => $e->getFile(),
+        'line'  => $e->getLine(),
+        'trace' => $e->getTraceAsString(),
+    ]);
 }

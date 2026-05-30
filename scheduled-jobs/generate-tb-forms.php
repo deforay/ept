@@ -37,7 +37,7 @@ try {
     }
 
     if (empty($shipmentsToGenarateForm)) {
-        error_log("Please specify the shipment ids with the -s flag");
+        Pt_Commons_LoggerUtility::logError("Please specify the shipment ids with the -s flag");
         exit();
     }
 
@@ -75,7 +75,7 @@ try {
         $totalParticipants = count($participants);
 
         if ($totalParticipants === 0) {
-            error_log("No participants found for shipment $shipmentsToGenarateForm");
+            Pt_Commons_LoggerUtility::logWarning("No participants found for shipment $shipmentsToGenarateForm");
             exit();
         }
 
@@ -126,7 +126,7 @@ try {
                 if (!$process->isRunning()) {
                     // Process finished
                     if (!$process->isSuccessful()) {
-                        error_log("Worker failed: " . $process->getErrorOutput());
+                        Pt_Commons_LoggerUtility::logError("Worker failed: " . $process->getErrorOutput());
                     }
 
                     unset($processes[$key]);
@@ -201,6 +201,9 @@ try {
         }
     }
 } catch (Throwable $e) {
-    error_log("ERROR : {$e->getFile()}:{$e->getLine()} : {$e->getMessage()}");
-    error_log($e->getTraceAsString());
+    Pt_Commons_LoggerUtility::logError($e->getMessage(), [
+        'file'  => $e->getFile(),
+        'line'  => $e->getLine(),
+        'trace' => $e->getTraceAsString(),
+    ]);
 }

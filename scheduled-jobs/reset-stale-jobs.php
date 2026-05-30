@@ -27,7 +27,7 @@ try {
     );
 
     if ($resetCount > 0) {
-        error_log("Reset {$resetCount} stale shipment jobs");
+        Pt_Commons_LoggerUtility::logInfo("Reset {$resetCount} stale shipment jobs");
     }
 
     // Reset stale reports
@@ -47,7 +47,7 @@ try {
         )
     );
     if ($reportResetCount > 0) {
-        error_log("Reset {$reportResetCount} stale report jobs");
+        Pt_Commons_LoggerUtility::logInfo("Reset {$reportResetCount} stale report jobs");
     }
 } catch (Throwable $e) {
     Pt_Commons_LoggerUtility::logError($e->getMessage(), [

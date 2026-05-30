@@ -75,7 +75,10 @@ try {
         } catch (Throwable $e) {
             $status = 'Failed - ' . $e->getMessage();
             $errorCount++;
-            error_log("Error resetting password for $primaryEmail: " . $e->getMessage());
+            Pt_Commons_LoggerUtility::logError("Error resetting password for $primaryEmail: " . $e->getMessage(), [
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ]);
             echo "Error resetting password for $primaryEmail: " . $e->getMessage() . "\n";
 
             // Still add to CSV with error status
@@ -114,7 +117,10 @@ try {
     echo "CSV file created: $csvFilePath\n";
     echo str_repeat("=", 50) . "\n";
 } catch (Throwable $e) {
-    error_log("ERROR : {$e->getFile()}:{$e->getLine()} : {$e->getMessage()}");
-    error_log($e->getTraceAsString());
+    Pt_Commons_LoggerUtility::logError($e->getMessage(), [
+        'file'  => $e->getFile(),
+        'line'  => $e->getLine(),
+        'trace' => $e->getTraceAsString(),
+    ]);
     echo "Script failed with error: " . $e->getMessage() . "\n";
 }
