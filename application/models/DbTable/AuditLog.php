@@ -473,7 +473,7 @@ class Application_Model_DbTable_AuditLog extends Zend_Db_Table_Abstract
             $loginHasSess = false;
         }
 
-        $loginStatusLabel = "CASE l.login_status "
+        $loginStatusLabel = 'CASE l.login_status '
             . "WHEN 'success' THEN 'Logged in' "
             . "WHEN 'failed' THEN 'Login failed' "
             . "WHEN 'banned' THEN 'Login blocked' "

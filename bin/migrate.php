@@ -266,9 +266,9 @@ function drop_column_if_exists(Zend_Db_Adapter_Abstract $db, string $table, stri
     //    column is the referenced parent are left alone — auto-dropping those would
     //    silently break integrity elsewhere.)
     $fks = (array) $db->fetchCol(
-        "SELECT DISTINCT CONSTRAINT_NAME FROM information_schema.KEY_COLUMN_USAGE
+        'SELECT DISTINCT CONSTRAINT_NAME FROM information_schema.KEY_COLUMN_USAGE
             WHERE TABLE_SCHEMA = ? AND TABLE_NAME = ? AND COLUMN_NAME = ?
-              AND REFERENCED_TABLE_NAME IS NOT NULL",
+              AND REFERENCED_TABLE_NAME IS NOT NULL',
         [$dbName, $table, $column]
     );
     foreach ($fks as $fk) {
