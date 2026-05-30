@@ -144,20 +144,20 @@ class Application_Model_DbTable_ShipmentParticipantMap extends Zend_Db_Table_Abs
             );
 
             return true;
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             try {
                 $this->getAdapter()->rollBack();
-            } catch (Exception $ignored) {
+            } catch (Throwable $ignored) {
                 // best-effort rollback
             }
             $traceId = 'ship-' . bin2hex(random_bytes(4));
             Pt_Commons_LoggerUtility::logError('shipItNow failed', [
-                'trace_id'    => $traceId,
+                'trace_id' => $traceId,
                 'shipment_id' => $params['shipmentId'] ?? null,
-                'file'        => $e->getFile(),
-                'line'        => $e->getLine(),
-                'message'     => $e->getMessage(),
-                'trace'       => $e->getTraceAsString(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
             ]);
             $alertMsg = new Zend_Session_Namespace('alertSpace');
             $alertMsg->message = 'Shipping failed. Please try again.';
@@ -210,13 +210,16 @@ class Application_Model_DbTable_ShipmentParticipantMap extends Zend_Db_Table_Abs
             }
             $params['mode_of_response'] = 'web';
             return $this->update($params, 'map_id = ' . $shipmentMapId);
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             // If any of the queries failed and threw an exception,
             // we want to roll back the whole transaction, reversing
             // changes made in the transaction, even those that succeeded.
             // Thus all changes are committed together, or none are.
-            error_log("ERROR : {$e->getFile()}:{$e->getLine()} : {$e->getMessage()}");
-            error_log($e->getTraceAsString());
+            Pt_Commons_LoggerUtility::logError($e->getMessage(), [
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => $e->getTraceAsString(),
+            ]);
         }
     }
 
@@ -272,10 +275,13 @@ class Application_Model_DbTable_ShipmentParticipantMap extends Zend_Db_Table_Abs
             $this->getAdapter()->commit();
             $alertMsg = new Zend_Session_Namespace('alertSpace');
             $alertMsg->message = 'Participants added successfully';
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             $this->getAdapter()->rollBack();
-            error_log($e->getMessage());
-            error_log($e->getTraceAsString());
+            Pt_Commons_LoggerUtility::logError($e->getMessage(), [
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => $e->getTraceAsString(),
+            ]);
             return false;
         }
     }
@@ -300,10 +306,13 @@ class Application_Model_DbTable_ShipmentParticipantMap extends Zend_Db_Table_Abs
             }
             $this->getAdapter()->commit();
             return $insertCount;
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             $this->getAdapter()->rollBack();
-            error_log($e->getMessage());
-            error_log($e->getTraceAsString());
+            Pt_Commons_LoggerUtility::logError($e->getMessage(), [
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => $e->getTraceAsString(),
+            ]);
             return 0;
         }
     }
@@ -444,13 +453,16 @@ class Application_Model_DbTable_ShipmentParticipantMap extends Zend_Db_Table_Abs
             $data['synced_on'] = new Zend_Db_Expr('now()');
             $data['mode_of_response'] = 'app';
             return $this->update($data, 'map_id = ' . $params['mapId']);
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             // If any of the queries failed and threw an exception,
             // we want to roll back the whole transaction, reversing
             // changes made in the transaction, even those that succeeded.
             // Thus all changes are committed together, or none are.
-            error_log("ERROR : {$e->getFile()}:{$e->getLine()} : {$e->getMessage()}");
-            error_log($e->getTraceAsString());
+            Pt_Commons_LoggerUtility::logError($e->getMessage(), [
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => $e->getTraceAsString(),
+            ]);
         }
     }
 }

@@ -236,7 +236,7 @@ class Application_Service_ApiServices
                 $mandatoryFields = ['shipmentDate', 'testingDate', 'sampleRehydrationDate', 'algorithm'];
 
                 $mandatoryCheckErrors = $this->shipmentService->mandatoryFieldsCheck($param, $mandatoryFields);
-                if (count($mandatoryCheckErrors) > 0) {
+                if (!empty($mandatoryCheckErrors)) {
                     return ['status' => 'fail', 'message' => 'Please send the required Fields and sync the shipment data'];
                 }
                 $attributes['sample_rehydration_date'] = Pt_Commons_DateUtility::isoDateFormat($param['sampleRehydrationDate'] ?? '');
@@ -396,8 +396,8 @@ class Application_Service_ApiServices
             } catch (Throwable $ignore) { /* no active transaction */
             }
             Pt_Commons_LoggerUtility::logError('saveShipmentDetailsFromAPI rolled back: ' . $exc->getMessage(), [
-                'file'  => $exc->getFile(),
-                'line'  => $exc->getLine(),
+                'file' => $exc->getFile(),
+                'line' => $exc->getLine(),
                 'trace' => substr($exc->getTraceAsString(), 0, 8000),
             ]);
             return 0;

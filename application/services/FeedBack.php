@@ -300,8 +300,11 @@ class Application_Service_FeedBack
 
             return $filename;
         } catch (Exception $exc) {
-            error_log('GENERATE-FEEDBACK-RESPONSE-REPORT-EXCEL--' . $exc->getMessage());
-            error_log($exc->getTraceAsString());
+            Pt_Commons_LoggerUtility::logError('Failed to generate feedback response report (Excel): ' . $exc->getMessage(), [
+                'file'  => $exc->getFile(),
+                'line'  => $exc->getLine(),
+                'trace' => $exc->getTraceAsString(),
+            ]);
             return '';
         }
     }

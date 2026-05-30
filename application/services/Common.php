@@ -39,9 +39,12 @@ class Application_Service_Common
                 } else {
                     $response = true;
                 }
-            } catch (Exception $e) {
-                error_log("ERROR : {$e->getFile()}:{$e->getLine()} : {$e->getMessage()}");
-                error_log($e->getTraceAsString());
+            } catch (Throwable $e) {
+                Pt_Commons_LoggerUtility::logError($e->getMessage(), [
+                    'file'  => $e->getFile(),
+                    'line'  => $e->getLine(),
+                    'trace' => $e->getTraceAsString(),
+                ]);
                 $response = false;
             }
         }
@@ -152,10 +155,10 @@ class Application_Service_Common
         $recips = self::parseRecipients(trim($toStr), trim($ccStr) ?: null, trim($bccStr) ?: null);
 
         if (!empty($recips['invalid'])) {
-            error_log('Invalid emails in sendMail(): ' . implode(', ', $recips['invalid']));
+            Pt_Commons_LoggerUtility::logWarning('Invalid emails in sendMail(): ' . implode(', ', $recips['invalid']));
         }
         if (empty($recips['to'])) {
-            error_log("sendMail(): no valid 'To' recipients; aborting send.");
+            Pt_Commons_LoggerUtility::logWarning("sendMail(): no valid 'To' recipients; aborting send.");
             return false;
         }
 
@@ -183,7 +186,7 @@ class Application_Service_Common
                         $fileName
                     );
                 } else {
-                    error_log('Attachment file does not exist: ' . $filePath);
+                    Pt_Commons_LoggerUtility::logWarning('Attachment file does not exist: ' . $filePath);
                 }
             }
         }
@@ -192,10 +195,11 @@ class Application_Service_Common
             $systemMail->send($smtpTransportObj);
             return true;
         } catch (Exception $exc) {
-            error_log('===== MAIL SENDING FAILED - START =====');
-            error_log($exc->getMessage());
-            error_log($exc->getTraceAsString());
-            error_log('===== MAIL SENDING FAILED - END =====');
+            Pt_Commons_LoggerUtility::logError('Mail sending failed: ' . $exc->getMessage(), [
+                'file'  => $exc->getFile(),
+                'line'  => $exc->getLine(),
+                'trace' => $exc->getTraceAsString(),
+            ]);
             return false;
         }
     }
@@ -246,7 +250,7 @@ class Application_Service_Common
         $ns = new Zend_Session_Namespace($namespace);
         $used = is_array($ns->used ?? null) ? $ns->used : [];
         // Drop expired entries so this bucket can't grow unbounded.
-        $used = array_filter($used, static fn ($ts) => $ts > time() - 3600);
+        $used = array_filter($used, static fn($ts) => $ts > time() - 3600);
         if (isset($used[$hash])) {
             return false;
         }
@@ -524,8 +528,11 @@ class Application_Service_Common
                 $db->getAdapter()->commit();
             } catch (Exception $exc) {
                 $db->getAdapter()->rollBack();
-                error_log($exc->getMessage());
-                error_log($exc->getTraceAsString());
+                Pt_Commons_LoggerUtility::logError($exc->getMessage(), [
+                    'file'  => $exc->getFile(),
+                    'line'  => $exc->getLine(),
+                    'trace' => $exc->getTraceAsString(),
+                ]);
             }
         }
     }
@@ -562,8 +569,11 @@ class Application_Service_Common
                 $db->getAdapter()->commit();
             } catch (Exception $exc) {
                 $db->getAdapter()->rollBack();
-                error_log($exc->getMessage());
-                error_log($exc->getTraceAsString());
+                Pt_Commons_LoggerUtility::logError($exc->getMessage(), [
+                    'file'  => $exc->getFile(),
+                    'line'  => $exc->getLine(),
+                    'trace' => $exc->getTraceAsString(),
+                ]);
             }
         }
     }
@@ -625,10 +635,10 @@ class Application_Service_Common
             );
 
             if (!empty($recips['invalid'])) {
-                error_log("Invalid emails in sendTempMail(temp_id={$id}): " . implode(', ', $recips['invalid']));
+                Pt_Commons_LoggerUtility::logWarning("Invalid emails in sendTempMail(temp_id={$id}): " . implode(', ', $recips['invalid']));
             }
             if (empty($recips['to'])) {
-                error_log("sendTempMail(temp_id={$id}): no valid 'To' recipients; marking not-sent.");
+                Pt_Commons_LoggerUtility::logWarning("sendTempMail(temp_id={$id}): no valid 'To' recipients; marking not-sent.");
                 // revert status to not-sent and continue
                 self::markTempMailFailed(
                     (int) $id,
@@ -652,10 +662,11 @@ class Application_Service_Common
                 $tempMailDb->deleteTempMail($id);
                 // keep looping: do not return early so we can send up to $limit emails
             } catch (Exception $exc) {
-                error_log("===== MAIL SENDING FAILED (temp_id={$id}) - START =====");
-                error_log($exc->getMessage());
-                error_log($exc->getTraceAsString());
-                error_log('===== MAIL SENDING FAILED - END =====');
+                Pt_Commons_LoggerUtility::logError("Mail sending failed (temp_id={$id}): " . $exc->getMessage(), [
+                    'file'  => $exc->getFile(),
+                    'line'  => $exc->getLine(),
+                    'trace' => $exc->getTraceAsString(),
+                ]);
                 // mark not-sent and continue to next
                 self::markTempMailFailed(
                     (int) $id,
@@ -852,8 +863,11 @@ class Application_Service_Common
         try {
             return $db->query($sql);
         } catch (Zend_Db_Adapter_Exception $e) {
-            error_log("ERROR : {$e->getFile()}:{$e->getLine()} : {$e->getMessage()}");
-            error_log($e->getTraceAsString());
+            Pt_Commons_LoggerUtility::logError($e->getMessage(), [
+                'file'  => $e->getFile(),
+                'line'  => $e->getLine(),
+                'trace' => $e->getTraceAsString(),
+            ]);
             return false;
         }
     }
@@ -1008,7 +1022,7 @@ class Application_Service_Common
         $timestamp = date('Y-m-d H:i:s');
         $output = "[{$timestamp}] " . $output;
 
-        error_log($output);
+        Pt_Commons_LoggerUtility::logInfo($output);
     }
 
     public function getAllTestKitBySearch($text)
@@ -1276,9 +1290,12 @@ class Application_Service_Common
                     if ($ascii !== false) {
                         $domain = $ascii;
                     }
-                } catch (Exception $e) {
+                } catch (Throwable $e) {
                     // IDN conversion failed, continue with original domain
-                    error_log("IDN conversion failed for domain '{$domain}': " . $e->getMessage());
+                    Pt_Commons_LoggerUtility::logWarning("IDN conversion failed for domain '{$domain}': " . $e->getMessage(), [
+                        'file' => $e->getFile(),
+                        'line' => $e->getLine(),
+                    ]);
                 }
             }
 
@@ -1289,20 +1306,20 @@ class Application_Service_Common
             // This rejects emails like user@ept, user@localhost
             // This accepts emails like user@example.com, user@mail.ept.com
             if (strpos($domain, '.') === false) {
-                error_log("Email rejected - no TLD found: {$email}");
+                Pt_Commons_LoggerUtility::logWarning("Email rejected - no TLD found: {$email}");
                 return null;
             }
 
             // Validate domain has valid TLD (at least 2 characters after last dot)
             $lastDot = strrpos($domain, '.');
             if ($lastDot === false || $lastDot === strlen($domain) - 1) {
-                error_log("Email rejected - invalid TLD position: {$email}");
+                Pt_Commons_LoggerUtility::logWarning("Email rejected - invalid TLD position: {$email}");
                 return null;
             }
 
             $tld = substr($domain, $lastDot + 1);
             if (strlen($tld) < 2 || !preg_match('/^[a-z]{2,}$/', $tld)) {
-                error_log("Email rejected - invalid TLD '{$tld}': {$email}");
+                Pt_Commons_LoggerUtility::logWarning("Email rejected - invalid TLD '{$tld}': {$email}");
                 return null;
             }
 
@@ -1336,9 +1353,12 @@ class Application_Service_Common
             }
 
             return $cache[$key] ? $normalized : null;
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             // Log unexpected errors and return null
-            error_log("Error validating email '{$email}': " . $e->getMessage());
+            Pt_Commons_LoggerUtility::logWarning("Error validating email '{$email}': " . $e->getMessage(), [
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ]);
             return null;
         }
     }

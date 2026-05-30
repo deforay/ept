@@ -34,7 +34,7 @@ class Application_Model_DbTable_TempMail extends Zend_Db_Table_Abstract
         try {
             // Validate message content - reject empty messages
             if (trim((string) $message) === '') {
-                error_log('TempMail insert rejected: empty message body');
+                Pt_Commons_LoggerUtility::logWarning('TempMail insert rejected: empty message body');
                 return false;
             }
 
@@ -42,7 +42,10 @@ class Application_Model_DbTable_TempMail extends Zend_Db_Table_Abstract
             try {
                 $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
             } catch (Zend_Config_Exception $e) {
-                error_log('Failed to load application configuration: ' . $e->getMessage());
+                Pt_Commons_LoggerUtility::logError('Failed to load application configuration: ' . $e->getMessage(), [
+                    'file' => $e->getFile(),
+                    'line' => $e->getLine(),
+                ]);
                 throw new Exception('Configuration file could not be loaded');
             }
             // Load attachment size limits from configuration with fallback defaults
@@ -60,16 +63,20 @@ class Application_Model_DbTable_TempMail extends Zend_Db_Table_Abstract
                     $cc !== null ? (string) $cc : null,
                     $bcc !== null ? (string) $bcc : null
                 );
-            } catch (Exception $e) {
-                error_log('Failed to parse recipients: ' . $e->getMessage());
+            } catch (Throwable $e) {
+                Pt_Commons_LoggerUtility::logError('Failed to parse recipients: ' . $e->getMessage(), [
+                    'file' => $e->getFile(),
+                    'line' => $e->getLine(),
+                    'trace' => $e->getTraceAsString(),
+                ]);
                 return false;
             }
             // Ensure at least one valid TO recipient exists
             if (empty($recips['to'])) {
                 if (!empty($recips['invalid'])) {
-                    error_log('TempMail insert rejected: no valid TO. Invalid: ' . implode(', ', $recips['invalid']));
+                    Pt_Commons_LoggerUtility::logWarning('TempMail insert rejected: no valid TO. Invalid: ' . implode(', ', $recips['invalid']));
                 } else {
-                    error_log('TempMail insert rejected: no TO recipients provided');
+                    Pt_Commons_LoggerUtility::logWarning('TempMail insert rejected: no TO recipients provided');
                 }
                 return false;
             }
@@ -80,8 +87,12 @@ class Application_Model_DbTable_TempMail extends Zend_Db_Table_Abstract
                 $fromMail = (string) ($fromMail ?: $conf->email->config->username);
                 $fromMail = Application_Service_Common::validateEmail($fromMail) ?: $conf->email->config->username;
                 $fromName = $fromName ?: 'ePT Support';
-            } catch (Exception $e) {
-                error_log('Failed to set FROM address: ' . $e->getMessage());
+            } catch (Throwable $e) {
+                Pt_Commons_LoggerUtility::logWarning('Failed to set FROM address: ' . $e->getMessage(), [
+                    'file' => $e->getFile(),
+                    'line' => $e->getLine(),
+                    'trace' => $e->getTraceAsString(),
+                ]);
                 // Use configuration default as ultimate fallback
                 $fromMail = $conf->email->config->username;
                 $fromName = 'ePT Support';
@@ -95,8 +106,12 @@ class Application_Model_DbTable_TempMail extends Zend_Db_Table_Abstract
                 $replyToValid = $replyToFirst && Application_Service_Common::validateEmail($replyToFirst)
                     ? $replyToFirst
                     : $fromMail;
-            } catch (Exception $e) {
-                error_log('Failed to set REPLY-TO address: ' . $e->getMessage());
+            } catch (Throwable $e) {
+                Pt_Commons_LoggerUtility::logWarning('Failed to set REPLY-TO address: ' . $e->getMessage(), [
+                    'file' => $e->getFile(),
+                    'line' => $e->getLine(),
+                    'trace' => $e->getTraceAsString(),
+                ]);
                 $replyToValid = $fromMail;
             }
 
@@ -112,34 +127,38 @@ class Application_Model_DbTable_TempMail extends Zend_Db_Table_Abstract
                     try {
                         // Validate file path is a string and file exists
                         if (!is_string($path) || !file_exists($path)) {
-                            error_log('Attachment skipped (not found): ' . (string) $path);
+                            Pt_Commons_LoggerUtility::logWarning('Attachment skipped (not found): ' . (string) $path);
                             continue;
                         }
 
                         // Get file size with error suppression
                         $size = @filesize($path);
                         if ($size === false) {
-                            error_log('Attachment skipped (size unreadable): ' . (string) $path);
+                            Pt_Commons_LoggerUtility::logWarning('Attachment skipped (size unreadable): ' . (string) $path);
                             continue;
                         }
 
                         // Check per-file size limit
                         if ($size > $PER_BYTES) {
-                            error_log("Attachment skipped (per-file limit {$perAttachMb}MB): " . basename($path));
+                            Pt_Commons_LoggerUtility::logWarning("Attachment skipped (per-file limit {$perAttachMb}MB): " . basename($path));
                             continue;
                         }
 
                         // Check cumulative size limit
                         if ($total + $size > $TOTAL_BYTES) {
-                            error_log("Attachment skipped (total limit {$totalAttachMb}MB would be exceeded): " . basename($path));
+                            Pt_Commons_LoggerUtility::logWarning("Attachment skipped (total limit {$totalAttachMb}MB would be exceeded): " . basename($path));
                             continue;
                         }
 
                         // File passed all validations - add to list
                         $files[] = $path;
                         $total += $size;
-                    } catch (Exception $e) {
-                        error_log("Error processing attachment {$path}: " . $e->getMessage());
+                    } catch (Throwable $e) {
+                        Pt_Commons_LoggerUtility::logWarning("Error processing attachment {$path}: " . $e->getMessage(), [
+                            'file' => $e->getFile(),
+                            'line' => $e->getLine(),
+                            'trace' => $e->getTraceAsString(),
+                        ]);
                         continue;
                     }
                 }
@@ -163,20 +182,27 @@ class Application_Model_DbTable_TempMail extends Zend_Db_Table_Abstract
                 $insertId = $this->insert($row);
                 // Verify insert was successful
                 if (!$insertId) {
-                    error_log('Database insert failed for temp mail to: ' . implode(',', $recips['to']));
+                    Pt_Commons_LoggerUtility::logError('Database insert failed for temp mail to: ' . implode(',', $recips['to']));
                     return false;
                 }
 
                 return $insertId;
             } catch (Zend_Db_Exception $e) {
                 // Handle database-specific errors
-                error_log('Database error inserting temp mail: ' . $e->getMessage());
+                Pt_Commons_LoggerUtility::logError('Database error inserting temp mail: ' . $e->getMessage(), [
+                    'file' => $e->getFile(),
+                    'line' => $e->getLine(),
+                    'trace' => $e->getTraceAsString(),
+                ]);
                 return false;
             }
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             // Catch any unexpected errors not handled above
-            error_log('Unexpected error in insertTempMailDetails: ' . $e->getMessage());
-            error_log('Stack trace: ' . $e->getTraceAsString());
+            Pt_Commons_LoggerUtility::logError('Unexpected error in insertTempMailDetails: ' . $e->getMessage(), [
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => $e->getTraceAsString(),
+            ]);
             return false;
         }
     }
@@ -218,11 +244,11 @@ class Application_Model_DbTable_TempMail extends Zend_Db_Table_Abstract
         $out = [];
         foreach ($rows as $r) {
             $out[] = [
-                'when'       => $r['queued_on'] ?? $r['created_at'],
-                'actorName'  => '',
-                'actorRole'  => '',
+                'when' => $r['queued_on'] ?? $r['created_at'],
+                'actorName' => '',
+                'actorRole' => '',
                 'actorEmail' => '',
-                'source'     => 'temp_mail',
+                'source' => 'temp_mail',
                 'sentStatus' => $r['status'] ?? '',
             ];
         }

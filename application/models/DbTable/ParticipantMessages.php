@@ -198,7 +198,7 @@ class Application_Model_DbTable_ParticipantMessages extends Zend_Db_Table_Abstra
                 exit;
             }
             echo $json; // Send the JSON response to the client
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             // Handle unexpected exceptions
             echo json_encode(['error' => $e->getMessage()]);
         }

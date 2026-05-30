@@ -572,8 +572,11 @@ class Application_Service_Schemes
             $db->commit();
         } catch (Exception $e) {
             $db->rollBack();
-            error_log("ERROR : {$e->getFile()}:{$e->getLine()} : {$e->getMessage()}");
-            error_log($e->getTraceAsString());
+            Pt_Commons_LoggerUtility::logError($e->getMessage(), [
+                'file'  => $e->getFile(),
+                'line'  => $e->getLine(),
+                'trace' => $e->getTraceAsString(),
+            ]);
         }
     }
 
@@ -587,8 +590,11 @@ class Application_Service_Schemes
             $db->commit();
         } catch (Exception $e) {
             $db->rollBack();
-            error_log("ERROR : {$e->getFile()}:{$e->getLine()} : {$e->getMessage()}");
-            error_log($e->getTraceAsString());
+            Pt_Commons_LoggerUtility::logError($e->getMessage(), [
+                'file'  => $e->getFile(),
+                'line'  => $e->getLine(),
+                'trace' => $e->getTraceAsString(),
+            ]);
         }
     }
     public function addTestType($params)
@@ -601,8 +607,11 @@ class Application_Service_Schemes
             $db->commit();
         } catch (Exception $e) {
             $db->rollBack();
-            error_log("ERROR : {$e->getFile()}:{$e->getLine()} : {$e->getMessage()}");
-            error_log($e->getTraceAsString());
+            Pt_Commons_LoggerUtility::logError($e->getMessage(), [
+                'file'  => $e->getFile(),
+                'line'  => $e->getLine(),
+                'trace' => $e->getTraceAsString(),
+            ]);
         }
     }
 
@@ -616,8 +625,11 @@ class Application_Service_Schemes
             $db->commit();
         } catch (Exception $e) {
             $db->rollBack();
-            error_log("ERROR : {$e->getFile()}:{$e->getLine()} : {$e->getMessage()}");
-            error_log($e->getTraceAsString());
+            Pt_Commons_LoggerUtility::logError($e->getMessage(), [
+                'file'  => $e->getFile(),
+                'line'  => $e->getLine(),
+                'trace' => $e->getTraceAsString(),
+            ]);
         }
     }
 
@@ -634,8 +646,11 @@ class Application_Service_Schemes
             $db->commit();
         } catch (Exception $e) {
             $db->rollBack();
-            error_log("ERROR : {$e->getFile()}:{$e->getLine()} : {$e->getMessage()}");
-            error_log($e->getTraceAsString());
+            Pt_Commons_LoggerUtility::logError($e->getMessage(), [
+                'file'  => $e->getFile(),
+                'line'  => $e->getLine(),
+                'trace' => $e->getTraceAsString(),
+            ]);
         }
     }
 
@@ -649,8 +664,11 @@ class Application_Service_Schemes
             $db->commit();
         } catch (Exception $e) {
             $db->rollBack();
-            error_log("ERROR : {$e->getFile()}:{$e->getLine()} : {$e->getMessage()}");
-            error_log($e->getTraceAsString());
+            Pt_Commons_LoggerUtility::logError($e->getMessage(), [
+                'file'  => $e->getFile(),
+                'line'  => $e->getLine(),
+                'trace' => $e->getTraceAsString(),
+            ]);
         }
     }
 
@@ -742,8 +760,11 @@ class Application_Service_Schemes
             $db->commit();
         } catch (Exception $e) {
             $db->rollBack();
-            error_log("ERROR : {$e->getFile()}:{$e->getLine()} : {$e->getMessage()}");
-            error_log($e->getTraceAsString());
+            Pt_Commons_LoggerUtility::logError($e->getMessage(), [
+                'file'  => $e->getFile(),
+                'line'  => $e->getLine(),
+                'trace' => $e->getTraceAsString(),
+            ]);
         }
     }
 
@@ -757,8 +778,11 @@ class Application_Service_Schemes
             $db->commit();
         } catch (Exception $e) {
             $db->rollBack();
-            error_log("ERROR : {$e->getFile()}:{$e->getLine()} : {$e->getMessage()}");
-            error_log($e->getTraceAsString());
+            Pt_Commons_LoggerUtility::logError($e->getMessage(), [
+                'file'  => $e->getFile(),
+                'line'  => $e->getLine(),
+                'trace' => $e->getTraceAsString(),
+            ]);
         }
     }
 
@@ -772,8 +796,11 @@ class Application_Service_Schemes
             $db->commit();
         } catch (Exception $e) {
             $db->rollBack();
-            error_log("ERROR : {$e->getFile()}:{$e->getLine()} : {$e->getMessage()}");
-            error_log($e->getTraceAsString());
+            Pt_Commons_LoggerUtility::logError($e->getMessage(), [
+                'file'  => $e->getFile(),
+                'line'  => $e->getLine(),
+                'trace' => $e->getTraceAsString(),
+            ]);
         }
     }
 
@@ -829,8 +856,11 @@ class Application_Service_Schemes
             }
         } catch (Exception $e) {
             $db->rollBack();
-            error_log("ERROR : {$e->getFile()}:{$e->getLine()} : {$e->getMessage()}");
-            error_log($e->getTraceAsString());
+            Pt_Commons_LoggerUtility::logError($e->getMessage(), [
+                'file'  => $e->getFile(),
+                'line'  => $e->getLine(),
+                'trace' => $e->getTraceAsString(),
+            ]);
         }
     }
 

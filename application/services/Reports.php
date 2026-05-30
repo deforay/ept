@@ -78,7 +78,7 @@ class Application_Service_Reports
             $sWhere .= $sWhereSub;
         }
 
-        //error_log($sHaving);
+
         /* Individual column filtering */
         for ($i = 0; $i < count($searchColumns); $i++) {
             if (isset($parameters['bSearchable_' . $i]) && $parameters['bSearchable_' . $i] == 'true' && $parameters['sSearch_' . $i] != '') {
@@ -263,8 +263,11 @@ class Application_Service_Reports
                 return $result;
             } catch (Throwable $exc) {
                 $db->getAdapter()->rollBack();
-                error_log($exc->getMessage());
-                error_log($exc->getTraceAsString());
+                Pt_Commons_LoggerUtility::logError($exc->getMessage(), [
+                    'file' => $exc->getFile(),
+                    'line' => $exc->getLine(),
+                    'trace' => $exc->getTraceAsString(),
+                ]);
             }
         }
     }
@@ -289,7 +292,7 @@ class Application_Service_Reports
                 ->joinLeft(['sl' => 'scheme_list'], 's.scheme_type=sl.scheme_id', [])
                 ->joinLeft(['d' => 'distributions'], 'd.distribution_id=s.distribution_id', [])
                 ->joinLeft(['rr' => 'r_results'], 'sp.final_result=rr.result_id', [])
-                ->group('n.network_id')/* ->where("p.status = 'active'") */;
+                ->group('n.network_id')/* ->where("p.status = 'active'") */ ;
         }
 
         if (isset($params['reportType']) && $params['reportType'] == 'affiliation') {
@@ -302,7 +305,7 @@ class Application_Service_Reports
                 ->joinLeft(['sl' => 'scheme_list'], 's.scheme_type=sl.scheme_id', [])
                 ->joinLeft(['d' => 'distributions'], 'd.distribution_id=s.distribution_id', [])
                 ->joinLeft(['rr' => 'r_results'], 'sp.final_result=rr.result_id', [])
-                ->group('pa.aff_id')/* ->where("p.status = 'active'") */;
+                ->group('pa.aff_id')/* ->where("p.status = 'active'") */ ;
         }
         if (isset($params['reportType']) && $params['reportType'] == 'region') {
             $sQuery = $dbAdapter->select()->from(['p' => 'participant'], ['p.region'])
@@ -313,7 +316,7 @@ class Application_Service_Reports
                 ->joinLeft(['sl' => 'scheme_list'], 's.scheme_type=sl.scheme_id', [])
                 ->joinLeft(['d' => 'distributions'], 'd.distribution_id=s.distribution_id', [])
                 ->joinLeft(['rr' => 'r_results'], 'sp.final_result=rr.result_id', [])
-                ->group('p.region')->where('p.region IS NOT NULL')->where("p.region != ''")/* ->where("p.status = 'active'") */;
+                ->group('p.region')->where('p.region IS NOT NULL')->where("p.region != ''")/* ->where("p.status = 'active'") */ ;
         }
         if (isset($params['reportType']) && $params['reportType'] == 'enrolled-programs') {
             $sQuery = $dbAdapter->select()->from(['p' => 'participant'], [])
@@ -408,7 +411,7 @@ class Application_Service_Reports
                 ->joinLeft(['s' => 'shipment'], 's.shipment_id=shp.shipment_id', ['shipment_code', 'response_deadline'])
                 ->joinLeft(['sl' => 'scheme_list'], 's.scheme_type=sl.scheme_id', ['scheme_name'])
                 ->joinLeft(['d' => 'distributions'], 'd.distribution_id=s.distribution_id', ['distribution_code', 'distribution_date'])
-                ->group('n.network_id')->group('s.shipment_id')/* ->where("p.status = 'active'") */;
+                ->group('n.network_id')->group('s.shipment_id')/* ->where("p.status = 'active'") */ ;
         } elseif (isset($parameters['reportType']) && $parameters['reportType'] == 'affiliation') {
             $sQuery = $dbAdapter->select()->from(['pa' => 'r_participant_affiliates'])
                 ->joinLeft(['p' => 'participant'], 'p.affiliation=pa.affiliate', ['p.state', 'p.district'])
@@ -416,14 +419,14 @@ class Application_Service_Reports
                 ->joinLeft(['s' => 'shipment'], 's.shipment_id=shp.shipment_id', ['shipment_code', 'response_deadline'])
                 ->joinLeft(['sl' => 'scheme_list'], 's.scheme_type=sl.scheme_id', ['scheme_name'])
                 ->joinLeft(['d' => 'distributions'], 'd.distribution_id=s.distribution_id', ['distribution_code', 'distribution_date'])
-                ->group('pa.aff_id')->group('s.shipment_id')/* ->where("p.status = 'active'") */;
+                ->group('pa.aff_id')->group('s.shipment_id')/* ->where("p.status = 'active'") */ ;
         } elseif (isset($parameters['reportType']) && $parameters['reportType'] == 'region') {
             $sQuery = $dbAdapter->select()->from(['p' => 'participant'], ['p.region', 'p.state', 'p.district'])
                 ->joinLeft(['shp' => 'shipment_participant_map'], 'shp.participant_id=p.participant_id', [])
                 ->joinLeft(['s' => 'shipment'], 's.shipment_id=shp.shipment_id', ['shipment_code', 'response_deadline'])
                 ->joinLeft(['sl' => 'scheme_list'], 's.scheme_type=sl.scheme_id', ['scheme_name'])
                 ->joinLeft(['d' => 'distributions'], 'd.distribution_id=s.distribution_id', ['distribution_code', 'distribution_date'])
-                ->group('p.region')->where('p.region IS NOT NULL')->where("p.region != ''")->group('s.shipment_id')/* ->where("p.status = 'active'") */;
+                ->group('p.region')->where('p.region IS NOT NULL')->where("p.region != ''")->group('s.shipment_id')/* ->where("p.status = 'active'") */ ;
         } elseif (isset($parameters['reportType']) && $parameters['reportType'] == 'enrolled-programs') {
             $sQuery = $dbAdapter->select()->from(['p' => 'participant'], ['p.state', 'p.district'])
                 ->joinLeft(['pe' => 'participant_enrolled_programs_map'], 'pe.participant_id=p.participant_id', [])
@@ -432,7 +435,7 @@ class Application_Service_Reports
                 ->joinLeft(['s' => 'shipment'], 's.shipment_id=shp.shipment_id', ['shipment_code', 'response_deadline'])
                 ->joinLeft(['sl' => 'scheme_list'], 's.scheme_type=sl.scheme_id', ['scheme_name'])
                 ->joinLeft(['d' => 'distributions'], 'd.distribution_id=s.distribution_id', ['distribution_code', 'distribution_date'])
-                ->group('rep.r_epid')->group('s.shipment_id')/* ->where("p.status = 'active'") */;
+                ->group('rep.r_epid')->group('s.shipment_id')/* ->where("p.status = 'active'") */ ;
         }
         //        else{
         //          $sQuery = $dbAdapter->select()->from(array('s' => 'shipment'))
@@ -682,7 +685,7 @@ class Application_Service_Reports
             $sWhere .= $sWhereSub;
         }
 
-        //error_log($sHaving);
+
         /* Individual column filtering */
         for ($i = 0; $i < count($searchColumns); $i++) {
             if (isset($parameters['bSearchable_' . $i]) && $parameters['bSearchable_' . $i] == 'true' && $parameters['sSearch_' . $i] != '') {
@@ -751,7 +754,6 @@ class Application_Service_Reports
             $sQuery = $sQuery->limit($sLimit, $sOffset);
         }
 
-        //        error_log($sQuery);
 
         $rResult = $dbAdapter->fetchAll($sQuery);
 
@@ -904,7 +906,7 @@ class Application_Service_Reports
             $sWhere .= $sWhereSub;
         }
 
-        //error_log($sHaving);
+
         /* Individual column filtering */
         for ($i = 0; $i < count($searchColumns); $i++) {
             if (isset($parameters['bSearchable_' . $i]) && $parameters['bSearchable_' . $i] == 'true' && $parameters['sSearch_' . $i] != '') {
@@ -975,7 +977,6 @@ class Application_Service_Reports
             $sQuery = $sQuery->limit($sLimit, $sOffset);
         }
 
-        //        error_log($sQuery);
 
         $rResult = $dbAdapter->fetchAll($sQuery);
 
@@ -1155,7 +1156,7 @@ class Application_Service_Reports
             $sWhere .= $sWhereSub;
         }
 
-        //error_log($sHaving);
+
         /* Individual column filtering */
         for ($i = 0; $i < count($aColumns); $i++) {
             if (isset($parameters['bSearchable_' . $i]) && $parameters['bSearchable_' . $i] == 'true' && $parameters['sSearch_' . $i] != '') {
@@ -1428,7 +1429,7 @@ class Application_Service_Reports
             $sWhere .= $sWhereSub;
         }
 
-        //error_log($sHaving);
+
         /* Individual column filtering */
         for ($i = 0; $i < count($searchColumns); $i++) {
             if (isset($parameters['bSearchable_' . $i]) && $parameters['bSearchable_' . $i] == 'true' && $parameters['sSearch_' . $i] != '') {
@@ -1705,7 +1706,7 @@ class Application_Service_Reports
             $sWhere .= $sWhereSub;
         }
 
-        //error_log($sHaving);
+
         /* Individual column filtering */
         for ($i = 0; $i < count($searchColumns); $i++) {
             if (isset($parameters['bSearchable_' . $i]) && $parameters['bSearchable_' . $i] == 'true' && $parameters['sSearch_' . $i] != '') {
@@ -1950,8 +1951,11 @@ class Application_Service_Reports
             return $filename;
         } catch (Exception $exc) {
             $sQuerySession->participantQuery = '';
-            error_log('GENERATE-PARTICIPANT-TRENDS-REPORT-EXCEL--' . $exc->getMessage());
-            error_log($exc->getTraceAsString());
+            Pt_Commons_LoggerUtility::logError('Failed to generate participant trends report (Excel): ' . $exc->getMessage(), [
+                'file' => $exc->getFile(),
+                'line' => $exc->getLine(),
+                'trace' => $exc->getTraceAsString(),
+            ]);
 
             return '';
         }
@@ -2084,8 +2088,11 @@ class Application_Service_Reports
         } catch (Exception $exc) {
             $sQuerySession = new Zend_Session_Namespace('CorrectiveActionsExcel');
             $sQuerySession->correctiveActionsQuery = '';
-            error_log('GENERATE-PARTICIPANT-CORRECTIVE-ACTIONS--REPORT-EXCEL--' . $exc->getMessage());
-            error_log($exc->getTraceAsString());
+            Pt_Commons_LoggerUtility::logError('Failed to generate participant corrective actions report (Excel): ' . $exc->getMessage(), [
+                'file' => $exc->getFile(),
+                'line' => $exc->getLine(),
+                'trace' => $exc->getTraceAsString(),
+            ]);
 
             return '';
         }
@@ -2184,8 +2191,11 @@ class Application_Service_Reports
             $sQuerySession = new Zend_Session_Namespace('shipmentExportExcel');
 
             $sQuerySession->shipmentExportQuery = '';
-            error_log('GENERATE-SHIPMENT_RESPONSE-REPORT-EXCEL--' . $exc->getMessage());
-            error_log($exc->getTraceAsString());
+            Pt_Commons_LoggerUtility::logError('Failed to generate shipment response report (Excel): ' . $exc->getMessage(), [
+                'file' => $exc->getFile(),
+                'line' => $exc->getLine(),
+                'trace' => $exc->getTraceAsString(),
+            ]);
 
             return '';
         }
@@ -2320,7 +2330,7 @@ class Application_Service_Reports
             $sWhere .= $sWhereSub;
         }
 
-        //error_log($sHaving);
+
         /* Individual column filtering */
         for ($i = 0; $i < count($searchColumns); $i++) {
             if (isset($parameters['bSearchable_' . $i]) && $parameters['bSearchable_' . $i] == 'true' && $parameters['sSearch_' . $i] != '') {
@@ -2521,7 +2531,7 @@ class Application_Service_Reports
             $sWhere .= $sWhereSub;
         }
 
-        //error_log($sHaving);
+
         /* Individual column filtering */
         for ($i = 0; $i < count($searchColumns); $i++) {
             if (isset($parameters['bSearchable_' . $i]) && $parameters['bSearchable_' . $i] == 'true' && $parameters['sSearch_' . $i] != '') {
@@ -2858,8 +2868,11 @@ class Application_Service_Reports
             return $filename;
         } catch (Exception $exc) {
             $sQuerySession->participantRegionQuery = '';
-            error_log('GENERATE-PARTICIPANT-PERFORMANCE-REGION-WISE-REPORT-EXCEL--' . $exc->getMessage());
-            error_log($exc->getTraceAsString());
+            Pt_Commons_LoggerUtility::logError('Failed to generate region-wise participant performance report (Excel): ' . $exc->getMessage(), [
+                'file' => $exc->getFile(),
+                'line' => $exc->getLine(),
+                'trace' => $exc->getTraceAsString(),
+            ]);
 
             return '';
         }
@@ -2954,8 +2967,11 @@ class Application_Service_Reports
         } catch (Exception $exc) {
             return '';
             $sQuerySession->participantRegionQuery = '';
-            error_log('GENERATE-PARTICIPANT-PERFORMANCE-REGION-WISE-REPORT-EXCEL--' . $exc->getMessage());
-            error_log($exc->getTraceAsString());
+            Pt_Commons_LoggerUtility::logError('Failed to generate region-wise participant performance report (Excel): ' . $exc->getMessage(), [
+                'file' => $exc->getFile(),
+                'line' => $exc->getLine(),
+                'trace' => $exc->getTraceAsString(),
+            ]);
         }
     }
 
@@ -3021,7 +3037,7 @@ class Application_Service_Reports
             $sWhere .= $sWhereSub;
         }
 
-        //error_log($sHaving);
+
         /* Individual column filtering */
         for ($i = 0; $i < count($aColumns); $i++) {
             if (isset($parameters['bSearchable_' . $i]) && $parameters['bSearchable_' . $i] == 'true' && $parameters['sSearch_' . $i] != '') {
@@ -3287,7 +3303,7 @@ class Application_Service_Reports
             $sWhere .= $sWhereSub;
         }
 
-        //error_log($sHaving);
+
         /* Individual column filtering */
         for ($i = 0; $i < count($searchColumns); $i++) {
             if (isset($parameters['bSearchable_' . $i]) && $parameters['bSearchable_' . $i] == 'true' && $parameters['sSearch_' . $i] != '') {
@@ -3972,7 +3988,7 @@ class Application_Service_Reports
         $sOffset = 0;
         if (isset($parameters['iDisplayStart']) && $parameters['iDisplayLength'] != '-1') {
             $sOffset = $parameters['iDisplayStart'];
-            $sLimit  = $parameters['iDisplayLength'];
+            $sLimit = $parameters['iDisplayLength'];
         }
 
         $sOrder = '';
@@ -4063,14 +4079,14 @@ class Application_Service_Reports
         $iFilteredTotal = $iTotal = count($rResult);
 
         $output = [
-            'sEcho'                => intval($parameters['sEcho']),
-            'iTotalRecords'        => $iTotal,
+            'sEcho' => intval($parameters['sEcho']),
+            'iTotalRecords' => $iTotal,
             'iTotalDisplayRecords' => $iFilteredTotal,
-            'aaData'               => [],
+            'aaData' => [],
         ];
 
         foreach ($rResult as $aRow) {
-            $row   = [];
+            $row = [];
             $row[] = $aRow['noOfParticipants'];   // col 1: # of Participants
             $row[] = $aRow['noOfResponded'];      // col 2: # Responded
             $row[] = $aRow['noOfNotResponded'];   // col 3: # Not Responded
@@ -4365,7 +4381,7 @@ class Application_Service_Reports
             $sWhere .= $sWhereSub;
         }
 
-        //error_log($sHaving);
+
         /* Individual column filtering */
         for ($i = 0; $i < count($searchColumns); $i++) {
             if (isset($parameters['bSearchable_' . $i]) && $parameters['bSearchable_' . $i] == 'true' && $parameters['sSearch_' . $i] != '') {
@@ -4567,7 +4583,7 @@ class Application_Service_Reports
             $sWhere .= $sWhereSub;
         }
 
-        //error_log($sHaving);
+
         /* Individual column filtering */
         for ($i = 0; $i < count($searchColumns); $i++) {
             if (isset($parameters['bSearchable_' . $i]) && $parameters['bSearchable_' . $i] == 'true' && $parameters['sSearch_' . $i] != '') {
@@ -4817,8 +4833,11 @@ class Application_Service_Reports
                 return '';
             }
         } catch (Exception $exc) {
-            error_log($exc->getFile() . '|' . $exc->getLine() . '|' . $exc->getMessage());
-            error_log($exc->getTraceAsString());
+            Pt_Commons_LoggerUtility::logError($exc->getMessage(), [
+                'file' => $exc->getFile(),
+                'line' => $exc->getLine(),
+                'trace' => $exc->getTraceAsString(),
+            ]);
 
             return '';
         }
@@ -5027,8 +5046,11 @@ class Application_Service_Reports
             return $filename;
         } catch (Exception $exc) {
             $sQuerySession->participantQuery = '';
-            error_log('GENERATE-PARTICIPANT-PERFORMANCE-REPORT-EXCEL--' . $exc->getMessage());
-            error_log($exc->getTraceAsString());
+            Pt_Commons_LoggerUtility::logError('Failed to generate participant performance report (Excel): ' . $exc->getMessage(), [
+                'file' => $exc->getFile(),
+                'line' => $exc->getLine(),
+                'trace' => $exc->getTraceAsString(),
+            ]);
 
             return '';
         }
@@ -5316,8 +5338,12 @@ class Application_Service_Reports
             unset($spreadsheet);
 
             return $fileName;
-        } catch (Exception $e) {
-            error_log($e);
+        } catch (Throwable $e) {
+            Pt_Commons_LoggerUtility::logError($e->getMessage(), [
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => $e->getTraceAsString(),
+            ]);
             return false;
         }
     }

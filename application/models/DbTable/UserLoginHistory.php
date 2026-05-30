@@ -42,7 +42,11 @@ class Application_Model_DbTable_UserLoginHistory extends Zend_Db_Table_Abstract
 
             return $this->insert($data);
         } catch (Exception $e) {
-            error_log('Error adding login history: ' . $e->getMessage());
+            Pt_Commons_LoggerUtility::logError('Error adding login history: ' . $e->getMessage(), [
+                'file'  => $e->getFile(),
+                'line'  => $e->getLine(),
+                'trace' => $e->getTraceAsString(),
+            ]);
             return false;
         }
     }
@@ -63,7 +67,11 @@ class Application_Model_DbTable_UserLoginHistory extends Zend_Db_Table_Abstract
 
             return $this->fetchAll($select)->toArray();
         } catch (Exception $e) {
-            error_log('Error fetching login history: ' . $e->getMessage());
+            Pt_Commons_LoggerUtility::logError('Error fetching login history: ' . $e->getMessage(), [
+                'file'  => $e->getFile(),
+                'line'  => $e->getLine(),
+                'trace' => $e->getTraceAsString(),
+            ]);
             return [];
         }
     }
@@ -101,7 +109,11 @@ class Application_Model_DbTable_UserLoginHistory extends Zend_Db_Table_Abstract
             }
             return $out;
         } catch (Exception $e) {
-            error_log('Error fetching recent logins for email: ' . $e->getMessage());
+            Pt_Commons_LoggerUtility::logError('Error fetching recent logins for email: ' . $e->getMessage(), [
+                'file'  => $e->getFile(),
+                'line'  => $e->getLine(),
+                'trace' => $e->getTraceAsString(),
+            ]);
             return [];
         }
     }
@@ -122,7 +134,11 @@ class Application_Model_DbTable_UserLoginHistory extends Zend_Db_Table_Abstract
 
             return $this->fetchAll($select)->toArray();
         } catch (Exception $e) {
-            error_log('Error fetching login history by login ID: ' . $e->getMessage());
+            Pt_Commons_LoggerUtility::logError('Error fetching login history by login ID: ' . $e->getMessage(), [
+                'file'  => $e->getFile(),
+                'line'  => $e->getLine(),
+                'trace' => $e->getTraceAsString(),
+            ]);
             return [];
         }
     }
@@ -288,7 +304,11 @@ class Application_Model_DbTable_UserLoginHistory extends Zend_Db_Table_Abstract
 
             return $this->getAdapter()->fetchAll($select);
         } catch (Exception $e) {
-            error_log('Error fetching unique IP addresses: ' . $e->getMessage());
+            Pt_Commons_LoggerUtility::logError('Error fetching unique IP addresses: ' . $e->getMessage(), [
+                'file'  => $e->getFile(),
+                'line'  => $e->getLine(),
+                'trace' => $e->getTraceAsString(),
+            ]);
             return [];
         }
     }
@@ -317,7 +337,11 @@ class Application_Model_DbTable_UserLoginHistory extends Zend_Db_Table_Abstract
 
             return $this->getAdapter()->fetchAll($select);
         } catch (Exception $e) {
-            error_log('Error fetching daily login stats: ' . $e->getMessage());
+            Pt_Commons_LoggerUtility::logError('Error fetching daily login stats: ' . $e->getMessage(), [
+                'file'  => $e->getFile(),
+                'line'  => $e->getLine(),
+                'trace' => $e->getTraceAsString(),
+            ]);
             return [];
         }
     }
@@ -334,7 +358,11 @@ class Application_Model_DbTable_UserLoginHistory extends Zend_Db_Table_Abstract
             $where = $this->getAdapter()->quoteInto('login_attempted_datetime < ?', $cutoffDate);
             return $this->delete($where);
         } catch (Exception $e) {
-            error_log('Error cleaning old records: ' . $e->getMessage());
+            Pt_Commons_LoggerUtility::logError('Error cleaning old records: ' . $e->getMessage(), [
+                'file'  => $e->getFile(),
+                'line'  => $e->getLine(),
+                'trace' => $e->getTraceAsString(),
+            ]);
             return 0;
         }
     }
@@ -361,7 +389,10 @@ class Application_Model_DbTable_UserLoginHistory extends Zend_Db_Table_Abstract
             // Do not poison the static cache on transient errors — a single
             // failed lookup used to silently drop session_hash for the rest
             // of the worker's life. Return false for this call only; retry next.
-            error_log('UserLoginHistory::hasSessionHashColumn lookup failed: ' . $e->getMessage());
+            Pt_Commons_LoggerUtility::logWarning('UserLoginHistory::hasSessionHashColumn lookup failed: ' . $e->getMessage(), [
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ]);
             return false;
         }
     }

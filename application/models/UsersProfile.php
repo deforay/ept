@@ -70,8 +70,8 @@ class Application_Model_UsersProfile
 
             $stmt = $db->prepare('call PARTICIPANT_ONE_UPDATE(?,?,?,  ?,?,?,  ?,?,?, ?)');
 
-            $resp = $stmt->execute([$pSysId, $pid, $uSysId,  $fName, $lName, $pemail,   $phone, $cellPhone, $pAff,  $user]);
-        } catch (exception $e) {
+            $resp = $stmt->execute([$pSysId, $pid, $uSysId, $fName, $lName, $pemail, $phone, $cellPhone, $pAff, $user]);
+        } catch (Throwable $e) {
             $resp = 'Error';
             return false;
         }

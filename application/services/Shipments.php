@@ -372,15 +372,14 @@ class Application_Service_Shipments
         try {
 
             $mandatoryCheckErrors = $this->mandatoryFieldsCheck($params, $mandatoryFields);
-            if (count($mandatoryCheckErrors) > 0) {
+            if (!empty($mandatoryCheckErrors)) {
                 // $userAgent = $_SERVER['HTTP_USER_AGENT'];
                 // $commonService = new Application_Service_Common();
 
                 // $ipAddress = $commonService->getIPAddress();
                 // $operatingSystem = $commonService->getOperatingSystem($userAgent);
                 // $browser = $commonService->getBrowser($userAgent);
-                ////throw new Exception('Missed mandatory fields - ' . implode(",", $mandatoryCheckErrors));
-                //error_log(date('Y-m-d H:i:s') . '|FORMERROR|Missed mandatory fields - ' . implode(",", $mandatoryCheckErrors) . '|' . $params['schemeCode'] . '|' . $params['participantId'] . '|' . $ipAddress . '|' . $operatingSystem . '|' . $browser  . PHP_EOL, 3, DOWNLOADS_FOLDER . " /../errors.log");
+                //throw new Exception('Missed mandatory fields - ' . implode(",", $mandatoryCheckErrors));
                 throw new Exception('Missed mandatory fields on the form');
             }
 
@@ -550,8 +549,11 @@ class Application_Service_Shipments
             // Thus all changes are committed together, or none are.
             $db->rollBack();
             $alertMsg->message = 'Sorry we could not record your result. Please try again or contact the PT adminstrator';
-            error_log("ERROR : {$e->getFile()}:{$e->getLine()} : {$e->getMessage()}");
-            error_log($e->getTraceAsString());
+            Pt_Commons_LoggerUtility::logError($e->getMessage(), [
+                'file'  => $e->getFile(),
+                'line'  => $e->getLine(),
+                'trace' => $e->getTraceAsString(),
+            ]);
         }
     }
 
@@ -574,7 +576,7 @@ class Application_Service_Shipments
         try {
 
             $mandatoryCheckErrors = $this->mandatoryFieldsCheck($params, $mandatoryFields);
-            if (count($mandatoryCheckErrors) > 0) {
+            if (!empty($mandatoryCheckErrors)) {
                 $userAgent = $_SERVER['HTTP_USER_AGENT'];
                 $commonService = new Application_Service_Common();
 
@@ -582,7 +584,7 @@ class Application_Service_Shipments
                 // $operatingSystem = $commonService->getOperatingSystem($userAgent);
                 // $browser = $commonService->getBrowser($userAgent);
                 // //throw new Exception('Missed mandatory fields - ' . implode(",", $mandatoryCheckErrors));
-                // error_log(date('Y-m-d H:i:s') . '|FORMERROR|Missed mandatory fields - ' . implode(",", $mandatoryCheckErrors) . '|' . $params['schemeCode'] . '|' . $params['participantId'] . '|' . $ipAddress . '|' . $operatingSystem . '|' . $browser  . PHP_EOL, 3, DOWNLOADS_FOLDER . " /../errors.log");
+
                 throw new Exception('Missed mandatory fields on the form');
             }
 
@@ -687,8 +689,11 @@ class Application_Service_Shipments
             // Thus all changes are committed together, or none are.
             $db->rollBack();
             $alertMsg->message = 'Sorry we could not record your result. Please try again or contact the PT adminstrator';
-            error_log("ERROR : {$e->getFile()}:{$e->getLine()} : {$e->getMessage()}");
-            error_log($e->getTraceAsString());
+            Pt_Commons_LoggerUtility::logError($e->getMessage(), [
+                'file'  => $e->getFile(),
+                'line'  => $e->getLine(),
+                'trace' => $e->getTraceAsString(),
+            ]);
         }
     }
 
@@ -712,13 +717,12 @@ class Application_Service_Shipments
             }
 
             $mandatoryCheckErrors = $this->mandatoryFieldsCheck($params, $mandatoryFields);
-            if (count($mandatoryCheckErrors) > 0) {
+            if (!empty($mandatoryCheckErrors)) {
                 $userAgent = $_SERVER['HTTP_USER_AGENT'];
 
                 // $ipAddress = $commonService->getIPAddress();
                 // $operatingSystem = $commonService->getOperatingSystem($userAgent);
                 // $browser = $commonService->getBrowser($userAgent);
-                // error_log(date('Y-m-d H:i:s') . '|FORMERROR|Missed mandatory fields - ' . implode(",", $mandatoryCheckErrors) . '|' . $params['schemeCode'] . '|' . $params['participantId'] . '|' . $ipAddress . '|' . $operatingSystem . '|' . $browser  . PHP_EOL, 3, DOWNLOADS_FOLDER . " /../errors.log");
                 throw new Exception('Missed mandatory fields on the form');
             }
 
@@ -846,8 +850,11 @@ class Application_Service_Shipments
             // Thus all changes are committed together, or none are.
             $db->rollBack();
             $alertMsg->message = 'Sorry we could not record your result. Please try again or contact the PT adminstrator. \\n\\nReason: ' . $e->getMessage();
-            error_log("ERROR : {$e->getFile()}:{$e->getLine()} : {$e->getMessage()}");
-            error_log($e->getTraceAsString());
+            Pt_Commons_LoggerUtility::logError($e->getMessage(), [
+                'file'  => $e->getFile(),
+                'line'  => $e->getLine(),
+                'trace' => $e->getTraceAsString(),
+            ]);
         }
     }
 
@@ -959,8 +966,11 @@ class Application_Service_Shipments
             // Thus all changes are committed together, or none are.
             $db->rollBack();
             $alertMsg->message = 'Sorry we could not record your result. Please try again or contact the PT adminstrator';
-            error_log("ERROR : {$e->getFile()}:{$e->getLine()} : {$e->getMessage()}");
-            error_log($e->getTraceAsString());
+            Pt_Commons_LoggerUtility::logError($e->getMessage(), [
+                'file'  => $e->getFile(),
+                'line'  => $e->getLine(),
+                'trace' => $e->getTraceAsString(),
+            ]);
         }
     }
 
@@ -1020,8 +1030,8 @@ class Application_Service_Shipments
             }
             Pt_Commons_LoggerUtility::logError('removeDtsResults rolled back: ' . $e->getMessage(), [
                 'mapId' => $mapId,
-                'file'  => $e->getFile(),
-                'line'  => $e->getLine(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
                 'trace' => substr($e->getTraceAsString(), 0, 8000),
             ]);
             throw $e;
@@ -1084,8 +1094,8 @@ class Application_Service_Shipments
             }
             Pt_Commons_LoggerUtility::logError('removeCovid19Results rolled back: ' . $e->getMessage(), [
                 'mapId' => $mapId,
-                'file'  => $e->getFile(),
-                'line'  => $e->getLine(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
                 'trace' => substr($e->getTraceAsString(), 0, 8000),
             ]);
             throw $e;
@@ -1134,8 +1144,8 @@ class Application_Service_Shipments
             $dbAdapter->rollBack();
             Pt_Commons_LoggerUtility::logError('removeTbResults rolled back: ' . $e->getMessage(), [
                 'mapId' => $mapId,
-                'file'  => $e->getFile(),
-                'line'  => $e->getLine(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
                 'trace' => substr($e->getTraceAsString(), 0, 8000),
             ]);
             throw $e;
@@ -1184,8 +1194,8 @@ class Application_Service_Shipments
             $dbAdapter->rollBack();
             Pt_Commons_LoggerUtility::logError('removeGenericTestResults rolled back: ' . $e->getMessage(), [
                 'mapId' => $mapId,
-                'file'  => $e->getFile(),
-                'line'  => $e->getLine(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
                 'trace' => substr($e->getTraceAsString(), 0, 8000),
             ]);
             throw $e;
@@ -1244,8 +1254,8 @@ class Application_Service_Shipments
             }
             Pt_Commons_LoggerUtility::logError('removeDtsEidResults rolled back: ' . $e->getMessage(), [
                 'mapId' => $mapId,
-                'file'  => $e->getFile(),
-                'line'  => $e->getLine(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
                 'trace' => substr($e->getTraceAsString(), 0, 8000),
             ]);
             throw $e;
@@ -1303,8 +1313,8 @@ class Application_Service_Shipments
             }
             Pt_Commons_LoggerUtility::logError('removeRecencyResults rolled back: ' . $e->getMessage(), [
                 'mapId' => $mapId,
-                'file'  => $e->getFile(),
-                'line'  => $e->getLine(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
                 'trace' => substr($e->getTraceAsString(), 0, 8000),
             ]);
             throw $e;
@@ -1363,8 +1373,8 @@ class Application_Service_Shipments
             }
             Pt_Commons_LoggerUtility::logError('removeDtsVlResults rolled back: ' . $e->getMessage(), [
                 'mapId' => $mapId,
-                'file'  => $e->getFile(),
-                'line'  => $e->getLine(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
                 'trace' => substr($e->getTraceAsString(), 0, 8000),
             ]);
             throw $e;
@@ -1442,8 +1452,11 @@ class Application_Service_Shipments
             // changes made in the transaction, even those that succeeded.
             // Thus all changes are committed together, or none are.
             $db->rollBack();
-            error_log("ERROR : {$e->getFile()}:{$e->getLine()} : {$e->getMessage()}");
-            error_log($e->getTraceAsString());
+            Pt_Commons_LoggerUtility::logError($e->getMessage(), [
+                'file'  => $e->getFile(),
+                'line'  => $e->getLine(),
+                'trace' => $e->getTraceAsString(),
+            ]);
         }
     }
 
@@ -1573,8 +1586,11 @@ class Application_Service_Shipments
             // changes made in the transaction, even those that succeeded.
             // Thus all changes are committed together, or none are.
             $db->rollBack();
-            error_log("ERROR : {$e->getFile()}:{$e->getLine()} : {$e->getMessage()}");
-            error_log($e->getTraceAsString());
+            Pt_Commons_LoggerUtility::logError($e->getMessage(), [
+                'file'  => $e->getFile(),
+                'line'  => $e->getLine(),
+                'trace' => $e->getTraceAsString(),
+            ]);
         }
     }
 
@@ -1671,8 +1687,11 @@ class Application_Service_Shipments
             // changes made in the transaction, even those that succeeded.
             // Thus all changes are committed together, or none are.
             $db->rollBack();
-            error_log("ERROR : {$e->getFile()}:{$e->getLine()} : {$e->getMessage()}");
-            error_log($e->getTraceAsString());
+            Pt_Commons_LoggerUtility::logError($e->getMessage(), [
+                'file'  => $e->getFile(),
+                'line'  => $e->getLine(),
+                'trace' => $e->getTraceAsString(),
+            ]);
         }
     }
 
@@ -1703,7 +1722,7 @@ class Application_Service_Shipments
                 // $operatingSystem = $commonService->getOperatingSystem($userAgent);
                 // $browser = $commonService->getBrowser($userAgent);
                 // //throw new Exception('Missed mandatory fields - ' . implode(",", $mandatoryCheckErrors));
-                // error_log(date('Y-m-d H:i:s') . '|FORMERROR|Missed mandatory fields - ' . implode(",", $mandatoryCheckErrors) . '|' . $params['schemeCode'] . '|' . $params['participantId'] . '|' . $ipAddress . '|' . $operatingSystem . '|' . $browser  . PHP_EOL, 3, DOWNLOADS_FOLDER . " /../errors.log");
+
                 throw new Exception('Missed mandatory fields on the form');
             }
             $shipmentParticipantDb = new Application_Model_DbTable_ShipmentParticipantMap();
@@ -1846,8 +1865,11 @@ class Application_Service_Shipments
             // Thus all changes are committed together, or none are.
             $db->rollBack();
             $alertMsg->message = 'Sorry we could not record your result. Please try again or contact the PT adminstrator';
-            error_log("ERROR : {$e->getFile()}:{$e->getLine()} : {$e->getMessage()}");
-            error_log($e->getTraceAsString());
+            Pt_Commons_LoggerUtility::logError($e->getMessage(), [
+                'file'  => $e->getFile(),
+                'line'  => $e->getLine(),
+                'trace' => $e->getTraceAsString(),
+            ]);
         }
     }
 
@@ -2391,8 +2413,8 @@ class Application_Service_Shipments
             Pt_Commons_LoggerUtility::logError('addShipment rolled back: ' . $e->getMessage(), [
                 'scheme' => $params['schemeId'] ?? null,
                 'distribution' => $params['distribution'] ?? null,
-                'file'  => $e->getFile(),
-                'line'  => $e->getLine(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
                 'trace' => substr($e->getTraceAsString(), 0, 8000),
             ]);
             throw $e;
@@ -2441,9 +2463,9 @@ class Application_Service_Shipments
         } catch (Throwable $e) {
             $db->rollBack();
             Pt_Commons_LoggerUtility::logError('removeShipment rolled back: ' . $e->getMessage(), [
-                'sid'   => $sid,
-                'file'  => $e->getFile(),
-                'line'  => $e->getLine(),
+                'sid' => $sid,
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
                 'trace' => substr($e->getTraceAsString(), 0, 8000),
             ]);
             throw $e;
@@ -3090,9 +3112,9 @@ class Application_Service_Shipments
             $dbAdapter->rollBack();
             Pt_Commons_LoggerUtility::logError('updateShipment rolled back: ' . $e->getMessage(), [
                 'shipmentId' => $params['shipmentId'] ?? null,
-                'file'       => $e->getFile(),
-                'line'       => $e->getLine(),
-                'trace'      => substr($e->getTraceAsString(), 0, 8000),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => substr($e->getTraceAsString(), 0, 8000),
             ]);
             throw $e;
         }
@@ -3226,9 +3248,9 @@ class Application_Service_Shipments
             }
             Pt_Commons_LoggerUtility::logError('removeShipmentParticipant rolled back: ' . $e->getMessage(), [
                 'mapId' => $mapId,
-                'sId'   => $sId,
-                'file'  => $e->getFile(),
-                'line'  => $e->getLine(),
+                'sId' => $sId,
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
                 'trace' => substr($e->getTraceAsString(), 0, 8000),
             ]);
             throw $e;
@@ -3431,8 +3453,11 @@ class Application_Service_Shipments
             }
         } catch (Exception $e) {
             $db->rollBack();
-            error_log("ERROR : {$e->getFile()}:{$e->getLine()} : {$e->getMessage()}");
-            error_log($e->getTraceAsString());
+            Pt_Commons_LoggerUtility::logError($e->getMessage(), [
+                'file'  => $e->getFile(),
+                'line'  => $e->getLine(),
+                'trace' => $e->getTraceAsString(),
+            ]);
         }
     }
 
@@ -3753,9 +3778,9 @@ class Application_Service_Shipments
         } catch (Throwable $e) {
             $db->rollBack();
             Pt_Commons_LoggerUtility::logError('runTbFormCron rolled back: ' . $e->getMessage(), [
-                'sid'   => $sid,
-                'file'  => $e->getFile(),
-                'line'  => $e->getLine(),
+                'sid' => $sid,
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
                 'trace' => substr($e->getTraceAsString(), 0, 8000),
             ]);
             throw $e;
@@ -4090,8 +4115,11 @@ class Application_Service_Shipments
             }
             $alertMsg->message = 'Saved successfully';
         } catch (Exception $e) {
-            error_log("ERROR : {$e->getFile()}:{$e->getLine()} : {$e->getMessage()}");
-            error_log($e->getTraceAsString());
+            Pt_Commons_LoggerUtility::logError($e->getMessage(), [
+                'file'  => $e->getFile(),
+                'line'  => $e->getLine(),
+                'trace' => $e->getTraceAsString(),
+            ]);
         }
     }
 
@@ -4187,8 +4215,11 @@ class Application_Service_Shipments
             return $filename;
         } catch (Exception $exc) {
             $sQuerySession->participantQuery = '';
-            error_log('CAPA-REPORT-EXCEL--' . $exc->getMessage());
-            error_log($exc->getTraceAsString());
+            Pt_Commons_LoggerUtility::logError('Failed to generate CAPA report (Excel): ' . $exc->getMessage(), [
+                'file'  => $exc->getFile(),
+                'line'  => $exc->getLine(),
+                'trace' => $exc->getTraceAsString(),
+            ]);
 
             return '';
         }
@@ -4323,8 +4354,11 @@ class Application_Service_Shipments
             return $filename;
         } catch (Exception $exc) {
             $sQuerySession->participantQuery = '';
-            error_log('CAPA-VIEW-REPORT-EXCEL--' . $exc->getMessage());
-            error_log($exc->getTraceAsString());
+            Pt_Commons_LoggerUtility::logError('Failed to generate CAPA view report (Excel): ' . $exc->getMessage(), [
+                'file'  => $exc->getFile(),
+                'line'  => $exc->getLine(),
+                'trace' => $exc->getTraceAsString(),
+            ]);
 
             return '';
         }
@@ -4346,14 +4380,14 @@ class Application_Service_Shipments
                     if (!file_exists($tempUploadDirectory . DIRECTORY_SEPARATOR . 'replace-report')) {
                         if (!mkdir($tempUploadDirectory . DIRECTORY_SEPARATOR . 'replace-report', 0777, true)) {
                             $alertMsg->message = 'File not uploaded. Directory permission required for replacing the file.';
-                            error_log("ERROR: Could not create directory: {$tempUploadDirectory}/replace-report");
+                            Pt_Commons_LoggerUtility::logError("Could not create directory: {$tempUploadDirectory}/replace-report");
                             return false;
                         }
                     }
                     if (move_uploaded_file($_FILES['replaceSummaryReport']['tmp_name'], $tempUploadDirectory . DIRECTORY_SEPARATOR . 'replace-report' . DIRECTORY_SEPARATOR . $fileName)) {
                         return true;
                     } else {
-                        error_log("ERROR: Could not move uploaded file to: {$tempUploadDirectory}/replace-report/{$fileName}");
+                        Pt_Commons_LoggerUtility::logError("Could not move uploaded file to: {$tempUploadDirectory}/replace-report/{$fileName}");
                         $alertMsg->message = 'File not uploaded. Please try again.';
                         return false;
                     }
@@ -4366,8 +4400,11 @@ class Application_Service_Shipments
             // If any of the queries failed and threw an exception,
             // we want to roll back the whole transaction, reversing
             // changes made in the transaction, even those that succeeded.
-            error_log("ERROR : {$e->getFile()}:{$e->getLine()} : {$e->getMessage()}");
-            error_log($e->getTraceAsString());
+            Pt_Commons_LoggerUtility::logError($e->getMessage(), [
+                'file'  => $e->getFile(),
+                'line'  => $e->getLine(),
+                'trace' => $e->getTraceAsString(),
+            ]);
         }
     }
 
@@ -4386,7 +4423,7 @@ class Application_Service_Shipments
             // Ensure destination directory exists
             if (!file_exists($pathname)) {
                 if (!mkdir($pathname, 0777, true)) {
-                    error_log("ERROR: Could not create directory: {$pathname}");
+                    Pt_Commons_LoggerUtility::logError("Could not create directory: {$pathname}");
                     return 'permission-issue';
                 }
             }
@@ -4395,27 +4432,30 @@ class Application_Service_Shipments
                 if (is_file($from)) {
                     if (copy($from, $to)) {
                         if (!unlink($from)) {
-                            error_log("Warning: Could not remove temp file: {$from}");
+                            Pt_Commons_LoggerUtility::logWarning("Could not remove temp file: {$from}");
                         }
                         return 1;
                     } else {
-                        error_log("ERROR: File not copied from {$from} to {$to}");
+                        Pt_Commons_LoggerUtility::logError("File not copied from {$from} to {$to}");
                         return 'permission-issue';
                     }
                 } else {
-                    error_log("ERROR: {$from} is not a valid file");
+                    Pt_Commons_LoggerUtility::logError("{$from} is not a valid file");
                     return 'format-wrong';
                 }
             } else {
-                error_log("ERROR: File not found at {$from}");
+                Pt_Commons_LoggerUtility::logError("File not found at {$from}");
                 return 'file-not-found';
             }
         } catch (Exception $e) {
             // If any of the queries failed and threw an exception,
             // we want to roll back the whole transaction, reversing
             // changes made in the transaction, even those that succeeded.
-            error_log("ERROR : {$e->getFile()}:{$e->getLine()} : {$e->getMessage()}");
-            error_log($e->getTraceAsString());
+            Pt_Commons_LoggerUtility::logError($e->getMessage(), [
+                'file'  => $e->getFile(),
+                'line'  => $e->getLine(),
+                'trace' => $e->getTraceAsString(),
+            ]);
             return 'system-error';
         }
     }

@@ -24,12 +24,15 @@ class Application_Model_DbTable_AuditLog extends Zend_Db_Table_Abstract
             $cols = array_keys($meta);
             self::$columnsCache = array_flip(array_map('strtolower', $cols));
             return self::$columnsCache;
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             // Do NOT poison the cache on transient errors. A single failed
             // lookup used to set the cache to [] for the life of the
             // PHP-FPM worker, silently dropping ip_address / user_agent /
             // session_hash on every subsequent insert AND select.
-            error_log('AuditLog::availableColumns describeTable failed: ' . $e->getMessage());
+            Pt_Commons_LoggerUtility::logWarning('AuditLog::availableColumns describeTable failed: ' . $e->getMessage(), [
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ]);
             return [];
         }
     }
@@ -166,11 +169,11 @@ class Application_Model_DbTable_AuditLog extends Zend_Db_Table_Abstract
             ->from(['al' => $this->_name], $cols)
             ->joinLeft(['sa' => 'system_admin'], 'al.created_by = sa.primary_email', [
                 'sa_first_name' => 'sa.first_name',
-                'sa_last_name'  => 'sa.last_name',
+                'sa_last_name' => 'sa.last_name',
             ])
             ->joinLeft(['dm' => 'data_manager'], 'al.created_by = dm.primary_email', [
                 'dm_first_name' => 'dm.first_name',
-                'dm_last_name'  => 'dm.last_name',
+                'dm_last_name' => 'dm.last_name',
             ])
             ->where('al.type = ?', 'password-reset')
             ->where('al.statement LIKE ?', $needle)
@@ -193,12 +196,12 @@ class Application_Model_DbTable_AuditLog extends Zend_Db_Table_Abstract
                 $name = $row['created_by'] ?: 'System';
             }
             $out[] = [
-                'when'       => $row['created_on'],
-                'actorName'  => $name,
-                'actorRole'  => $role,
+                'when' => $row['created_on'],
+                'actorName' => $name,
+                'actorRole' => $role,
                 'actorEmail' => $row['created_by'],
-                'statement'  => $row['statement'],
-                'source'     => 'audit_log',
+                'statement' => $row['statement'],
+                'source' => 'audit_log',
             ];
         }
         return $out;
@@ -228,7 +231,7 @@ class Application_Model_DbTable_AuditLog extends Zend_Db_Table_Abstract
         $out = [];
         foreach ($rows as $row) {
             $out[] = [
-                'when'      => $row['created_on'],
+                'when' => $row['created_on'],
                 'statement' => $row['statement'],
             ];
         }
@@ -237,8 +240,8 @@ class Application_Model_DbTable_AuditLog extends Zend_Db_Table_Abstract
 
     public function fetchAuditLogFeed($parameters)
     {
-        $page = isset($parameters['page']) ? max(1, (int)$parameters['page']) : 1;
-        $pageSize = isset($parameters['pageSize']) ? (int)$parameters['pageSize'] : 25;
+        $page = isset($parameters['page']) ? max(1, (int) $parameters['page']) : 1;
+        $pageSize = isset($parameters['pageSize']) ? (int) $parameters['pageSize'] : 25;
         if ($pageSize < 5) {
             $pageSize = 5;
         }
@@ -268,8 +271,8 @@ class Application_Model_DbTable_AuditLog extends Zend_Db_Table_Abstract
         $db = $this->getAdapter();
 
         $hasRole = $this->hasColumn('created_by_role');
-        $hasIp   = $this->hasColumn('ip_address');
-        $hasUa   = $this->hasColumn('user_agent');
+        $hasIp = $this->hasColumn('ip_address');
+        $hasUa = $this->hasColumn('user_agent');
         $hasSess = $this->hasColumn('session_hash');
 
         // Source-aware FROM. The default ('actions') reads audit_log directly,
@@ -382,7 +385,7 @@ class Application_Model_DbTable_AuditLog extends Zend_Db_Table_Abstract
         $countSelect->reset(Zend_Db_Select::LIMIT_COUNT);
         $countSelect->reset(Zend_Db_Select::LIMIT_OFFSET);
         $countSelect->columns(new Zend_Db_Expr('COUNT(*)'));
-        $total = (int)$db->fetchOne($countSelect);
+        $total = (int) $db->fetchOne($countSelect);
 
         $select->order('al.created_on DESC')->limit($pageSize, $offset);
         $rows = $db->fetchAll($select);
@@ -413,7 +416,7 @@ class Application_Model_DbTable_AuditLog extends Zend_Db_Table_Abstract
             // already stores parsed browser/OS, their own display strings.
             $rowSource = $row['feed_source'] ?? 'action';
             if ($rowSource === 'login') {
-                $loginStatus = strtolower((string)($row['login_status'] ?? ''));
+                $loginStatus = strtolower((string) ($row['login_status'] ?? ''));
                 $actionType = ($loginStatus === 'success') ? 'login' : 'login-fail';
             } else {
                 $actionType = $this->classifyAction($row['statement']);
@@ -445,7 +448,7 @@ class Application_Model_DbTable_AuditLog extends Zend_Db_Table_Abstract
             'page' => $page,
             'pageSize' => $pageSize,
             'total' => $total,
-            'totalPages' => $pageSize > 0 ? (int)ceil($total / $pageSize) : 1,
+            'totalPages' => $pageSize > 0 ? (int) ceil($total / $pageSize) : 1,
             'items' => $items,
         ];
     }
@@ -461,7 +464,7 @@ class Application_Model_DbTable_AuditLog extends Zend_Db_Table_Abstract
     private function buildUnifiedFeedSource($source, $hasRole, $hasIp, $hasUa, $hasSess)
     {
         $includeActions = ($source !== 'logins');
-        $includeLogins  = ($source === 'logins' || $source === 'all');
+        $includeLogins = ($source === 'logins' || $source === 'all');
 
         // user_login_history.session_hash landed in the 7.4.7 migration; guard
         // it so the union is safe on instances that have not migrated yet.
@@ -469,7 +472,7 @@ class Application_Model_DbTable_AuditLog extends Zend_Db_Table_Abstract
         try {
             $loginMeta = $this->getAdapter()->describeTable('user_login_history');
             $loginHasSess = isset($loginMeta['session_hash']);
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             $loginHasSess = false;
         }
 
@@ -482,44 +485,44 @@ class Application_Model_DbTable_AuditLog extends Zend_Db_Table_Abstract
 
         // Matched column order for both branches; aliases come from the first.
         $action = [
-            'statement'  => 'a.statement',
+            'statement' => 'a.statement',
             'created_by' => 'a.created_by',
             'created_on' => 'a.created_on',
-            'type'       => 'a.type',
+            'type' => 'a.type',
         ];
         $login = [
-            'statement'  => $loginStatusLabel,
+            'statement' => $loginStatusLabel,
             'created_by' => 'l.login_id',
             'created_on' => 'l.login_attempted_datetime',
-            'type'       => "'login'",
+            'type' => "'login'",
         ];
         if ($hasRole) {
             $action['created_by_role'] = 'a.created_by_role';
-            $login['created_by_role']  = 'l.login_context';
+            $login['created_by_role'] = 'l.login_context';
         }
         if ($hasIp) {
             $action['ip_address'] = 'a.ip_address';
-            $login['ip_address']  = 'l.ip_address';
+            $login['ip_address'] = 'l.ip_address';
         }
         if ($hasUa) {
             $action['user_agent'] = 'a.user_agent';
-            $login['user_agent']  = 'NULL';
+            $login['user_agent'] = 'NULL';
         }
         if ($hasSess) {
             $action['session_hash'] = 'a.session_hash';
-            $login['session_hash']  = $loginHasSess ? 'l.session_hash' : 'NULL';
+            $login['session_hash'] = $loginHasSess ? 'l.session_hash' : 'NULL';
         }
         // Union-only columns: which stream a row came from, plus the login
         // display bits (browser/OS are already split in user_login_history;
         // audit rows derive them from user_agent client-side, so NULL here).
         $action['feed_source'] = "'action'";
-        $login['feed_source']  = "'login'";
+        $login['feed_source'] = "'login'";
         $action['login_status'] = 'NULL';
-        $login['login_status']  = 'l.login_status';
+        $login['login_status'] = 'l.login_status';
         $action['browser'] = 'NULL';
-        $login['browser']  = 'l.browser';
+        $login['browser'] = 'l.browser';
         $action['operating_system'] = 'NULL';
-        $login['operating_system']  = 'l.operating_system';
+        $login['operating_system'] = 'l.operating_system';
 
         $compile = function (array $parts, $table, $alias) {
             $cols = [];

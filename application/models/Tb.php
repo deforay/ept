@@ -152,7 +152,7 @@ class Application_Model_Tb
                                     if (0 == $result['control']) {
                                         $calculatedScore = $awardedScore * $result['sample_score'];
                                     }
-                                    error_log('Reference Result: ' . $result['reference_mtb_detected'] . ' - Reported Result: ' . $result['mtb_detected'] . ' - Awarded Score: ' . $calculatedScore);
+                                    Pt_Commons_LoggerUtility::logInfo('Reference Result: ' . $result['reference_mtb_detected'] . ' - Reported Result: ' . $result['mtb_detected'] . ' - Awarded Score: ' . $calculatedScore);
                                 } else {
                                     if ($result['sample_score'] > 0) {
                                         $calculatedScore = 0;
@@ -917,8 +917,11 @@ class Application_Model_Tb
             $writer->save(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $filename);
             return $filename;
         } catch (Exception $exc) {
-            error_log('GENERATE-PARTICIPANT-SHIPMENT-REPORT-EXCEL--' . $exc->getMessage());
-            error_log($exc->getTraceAsString());
+            Pt_Commons_LoggerUtility::logError('Failed to generate participant shipment report (Excel): ' . $exc->getMessage(), [
+                'file'  => $exc->getFile(),
+                'line'  => $exc->getLine(),
+                'trace' => $exc->getTraceAsString(),
+            ]);
             return '';
         }
     }
@@ -978,7 +981,7 @@ class Application_Model_Tb
             ->group(['res.sample_id', 'res.assay_id', 'mtb_detection_consensus_raw'])
             ->order(['res.sample_id', 'res.assay_id', 'mtb_occurrences DESC']);
 
-        // error_log($consensusResultsQueryMtb);
+
 
         $mtbResults = $db->fetchAll($consensusResultsQueryMtb);
 
@@ -1321,7 +1324,7 @@ class Application_Model_Tb
         AND (IFNULL(`spm`.is_pt_test_not_performed, 'no') != 'yes')
         GROUP BY `ref`.sample_label, tb_assay_id
         ORDER BY tb_assay_id, `ref`.sample_label";
-        // error_log($tQuery);
+
         $summaryPDFData['aggregateCounts'] = $this->db->fetchAll($tQuery);
 
         $mtbRifSummaryQuery = $this->db->select()
@@ -2107,8 +2110,11 @@ class Application_Model_Tb
                 'report-name' => $filename,
             ];
         } catch (Exception $exc) {
-            error_log('GENERATE-PARTICIPANT-PERFORMANCE-REPORT-EXCEL--' . $exc->getFile() . ':' . $exc->getLine() . ':' . $exc->getMessage());
-            error_log($exc->getTraceAsString());
+            Pt_Commons_LoggerUtility::logError('Failed to generate participant performance report (Excel): ' . $exc->getMessage(), [
+                'file'  => $exc->getFile(),
+                'line'  => $exc->getLine(),
+                'trace' => $exc->getTraceAsString(),
+            ]);
 
             return '';
         }

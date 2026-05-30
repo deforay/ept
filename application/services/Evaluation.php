@@ -887,7 +887,7 @@ class Application_Service_Evaluation
                     // $operatingSystem = $commonService->getOperatingSystem($userAgent);
                     // $browser = $commonService->getBrowser($userAgent);
                     //throw new Exception('Missed mandatory fields - ' . implode(",", $mandatoryCheckErrors));
-                    // error_log(date('Y-m-d H:i:s') . '|FORMERROR|PT ADMIN - Missed mandatory fields - ' . implode(",", $mandatoryCheckErrors) . '|' . $params['schemeCode'] . '|' . $params['participantId'] . '|' . $ipAddress . '|' . $operatingSystem . '|' . $browser . PHP_EOL, 3, DOWNLOADS_FOLDER . " /../errors.log");
+
                     return false;
                 }
 
@@ -1283,9 +1283,9 @@ class Application_Service_Evaluation
             $db->rollBack();
             Pt_Commons_LoggerUtility::logError('updateShipmentResults rolled back: ' . $e->getMessage(), [
                 'shipmentId' => $params['shipmentId'] ?? null,
-                'smid'  => $params['smid'] ?? null,
-                'file'  => $e->getFile(),
-                'line'  => $e->getLine(),
+                'smid' => $params['smid'] ?? null,
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
                 'trace' => substr($e->getTraceAsString(), 0, 8000),
             ]);
             throw $e;
@@ -2782,7 +2782,7 @@ class Application_Service_Evaluation
                 }
                 // $shipmentResult['testKit'] = $db->fetchAll($tksql);
                 $tksql->group($testkitGroup);
-                // error_log($tksql);
+                ;
                 $shipmentResult['testKitByTestNumber'] = $db->fetchAll($tksql);
 
                 // testkit chart
@@ -2808,7 +2808,7 @@ class Application_Service_Evaluation
                 if (isset($testType) && !empty($testType)) {
                     $tkcsql = $tkcsql->where("JSON_EXTRACT(spm.attributes, '$.dts_test_panel_type') = ?", $testType);
                 }
-                // error_log($tkcsql);
+
                 $shipmentResult['testKitChart'] = $db->fetchAll($tkcsql);
                 $sQuery = $db->select()->from(
                     ['spm' => 'shipment_participant_map'],
@@ -2959,7 +2959,7 @@ class Application_Service_Evaluation
                             'pass_percentage' => new Zend_Db_Expr('((SUM(final_result = 1))/(SUM(final_result = 1) + SUM(final_result = 2)))*100'),
                         ]
                     )->where('s.shipment_id = ?', $shipmentId);
-                //error_log($sQuery);
+
                 if (isset($testType) && !empty($testType)) {
                     $sQuery = $sQuery->where("JSON_EXTRACT(sp.attributes, '$.dts_test_panel_type') = ?", $testType);
                 }
@@ -3077,7 +3077,7 @@ class Application_Service_Evaluation
                     //->where("substring(spm.evaluation_status,4,1) != '0'")
                     ->group('spm.map_id');
                 $sQueryRes = $db->fetchAll($sQuery);
-                // error_log($sQuery);
+
                 if (!empty($sQueryRes)) {
 
                     $tQuery = $db->select()->from(['refrecency' => 'reference_result_recency'], ['refrecency.sample_id', 'refrecency.sample_label'])
@@ -3383,7 +3383,7 @@ class Application_Service_Evaluation
                         ->where("sp.is_excluded not like 'yes' OR sp.is_excluded like '' OR sp.is_excluded is null")
                         ->where('sp.final_result = 1 OR sp.final_result = 2')
                         ->group('refVl.sample_id');
-                    // error_log($vlQuery);
+
                     $vlCalRes = $db->fetchAll($vlQuery);
 
                     if ($vlAssayRow['id'] == 6) {
@@ -3435,7 +3435,7 @@ class Application_Service_Evaluation
                     //->where("substring(spm.evaluation_status,4,1) != '0'")
                     ->group('spm.map_id');
                 $sQueryRes = $db->fetchAll($sQuery);
-                //error_log($sQuery);
+
                 if (!empty($sQueryRes)) {
 
                     $tQuery = $db->select()->from(['refcovid19' => 'reference_result_covid19'], ['refcovid19.sample_id', 'refcovid19.sample_label'])
@@ -4048,7 +4048,7 @@ class Application_Service_Evaluation
             } else {
                 return ['success' => false, 'message' => 'Invalid queue type'];
             }
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             return ['success' => false, 'message' => 'Error cancelling job: ' . $e->getMessage()];
         }
     }

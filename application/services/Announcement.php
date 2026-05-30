@@ -10,7 +10,7 @@ class Application_Service_Announcement
         try {
 
             $announcmentdb = new Application_Model_DbTable_Announcement();
-            $lastId =  $announcmentdb->saveNewAnnouncement($params);
+            $lastId = $announcmentdb->saveNewAnnouncement($params);
             if ($lastId > 0) {
                 $commonServices = new Application_Service_Common();
                 $notParticipatedMailContent = $commonServices->getEmailTemplate('announcement');
@@ -25,13 +25,13 @@ class Application_Service_Announcement
                 $participantEmails = $db->fetchAll($sQuery);
                 foreach ($participantEmails as $participantDetails) {
                     if ($participantDetails['email'] != '') {
-                        $subject        = $params['subject'];
-                        $message        = $params['message'];
-                        $fromEmail      = $notParticipatedMailContent['mail_from'];
-                        $fromFullName   = $notParticipatedMailContent['from_name'];
-                        $toEmail        = $participantDetails['email'];
-                        $cc             = $notParticipatedMailContent['mail_cc'];
-                        $bcc            = $notParticipatedMailContent['mail_bcc'];
+                        $subject = $params['subject'];
+                        $message = $params['message'];
+                        $fromEmail = $notParticipatedMailContent['mail_from'];
+                        $fromFullName = $notParticipatedMailContent['from_name'];
+                        $toEmail = $participantDetails['email'];
+                        $cc = $notParticipatedMailContent['mail_cc'];
+                        $bcc = $notParticipatedMailContent['mail_bcc'];
                         $tempId = $commonServices->insertTempMail($toEmail, $cc, $bcc, $subject, $message, $fromEmail, $fromFullName);
                     }
                 }
@@ -53,8 +53,8 @@ class Application_Service_Announcement
                         $datamanagers[] = $dm['dm_id'];
                     }
                 }
-                $title      = $params['subject'];
-                $msgBody    = $params['message'];
+                $title = $params['subject'];
+                $msgBody = $params['message'];
                 if ($lastId > 0 && $tempId > 0) {
                     $db->commit();
                     $alertMsg->message = 'New announcement created successfully';
@@ -64,14 +64,17 @@ class Application_Service_Announcement
                 }
             }
             return $lastId;
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             // If any of the queries failed and threw an exception,
             // we want to roll back the whole transaction, reversing
             // changes made in the transaction, even those that succeeded.
             // Thus all changes are committed together, or none are.
             $db->rollBack();
-            error_log("ERROR : {$e->getFile()}:{$e->getLine()} : {$e->getMessage()}");
-            error_log($e->getTraceAsString());
+            Pt_Commons_LoggerUtility::logError($e->getMessage(), [
+                'file'  => $e->getFile(),
+                'line'  => $e->getLine(),
+                'trace' => $e->getTraceAsString(),
+            ]);
             $alertMsg->message = 'Something went wrong. Please try again later.';
             return null;
         }

@@ -120,8 +120,11 @@ class Application_Model_DbTable_ResponseVl extends Zend_Db_Table_Abstract
             }
             return $id;
         } catch (Throwable $exc) {
-            error_log($exc->getMessage());
-            Pt_Commons_LoggerUtility::log('error', $exc->getFile() . ':' . $exc->getLine() . ' - ' . $exc->getMessage());
+            Pt_Commons_LoggerUtility::logError($exc->getMessage(), [
+                'file'  => $exc->getFile(),
+                'line'  => $exc->getLine(),
+                'trace' => $exc->getTraceAsString(),
+            ]);
             return 0;
         }
     }

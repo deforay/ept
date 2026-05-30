@@ -81,10 +81,13 @@ class Application_Service_Distribution
             );
 
             return 'PT Event shipped!';
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             $db->rollBack();
-            error_log("ERROR : {$e->getFile()}:{$e->getLine()} : {$e->getMessage()}");
-            error_log($e->getTraceAsString());
+            Pt_Commons_LoggerUtility::logError($e->getMessage(), [
+                'file'  => $e->getFile(),
+                'line'  => $e->getLine(),
+                'trace' => $e->getTraceAsString(),
+            ]);
             return 'Unable to ship. Please try again later or contact system admin for help';
         }
     }
@@ -108,7 +111,7 @@ class Application_Service_Distribution
             ->where("DATE_FORMAT(distribution_date, '%Y-%m') = ?", $ptDate)
             ->order('distribution_id desc');
         $result = $db->fetchRow($sql);
-        $count = sprintf('%02d', ((int)($result['count'] ?? 0)) + 1);
+        $count = sprintf('%02d', ((int) ($result['count'] ?? 0)) + 1);
         return "PT-$ptDate-$count";
     }
 }

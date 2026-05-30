@@ -794,7 +794,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             $sQuery = $sQuery->limit($sLimit, $sOffset);
         }
 
-        //error_log($sQuery);
+
 
         $rResult = $this->getAdapter()->fetchAll($sQuery);
 
@@ -1092,10 +1092,10 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             $traceId = 'pmm-' . bin2hex(random_bytes(4));
             Pt_Commons_LoggerUtility::logError('addParticipantManager failed', [
                 'trace_id' => $traceId,
-                'file'     => $exc->getFile(),
-                'line'     => $exc->getLine(),
-                'message'  => $exc->getMessage(),
-                'trace'    => $exc->getTraceAsString(),
+                'file' => $exc->getFile(),
+                'line' => $exc->getLine(),
+                'message' => $exc->getMessage(),
+                'trace' => $exc->getTraceAsString(),
             ]);
             $alertMsg->message = 'File not uploaded. Something went wrong please try again later!';
             return ['ok' => false, 'count' => 0, 'error' => 'save_failed', 'trace_id' => $traceId];
@@ -1200,7 +1200,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             ->where('sp.shipment_id = ?', $parameters['shipmentId'])
             ->where("sp.response_status like 'responded'")
             ->group('sp.participant_id');
-        //  error_log($sQuery);
+
         if (isset($parameters['withStatus']) && $parameters['withStatus'] != '') {
             $sQuery = $sQuery->where('p.status = ? ', $parameters['withStatus']);
         }
@@ -1579,10 +1579,10 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         $db = $this->getAdapter();
         $sql = $sql->where(
             $db->quoteInto('first_name LIKE ?', $searchPattern) . ' OR ' .
-                $db->quoteInto('last_name LIKE ?', $searchPattern) . ' OR ' .
-                $db->quoteInto('unique_identifier LIKE ?', $searchPattern) . ' OR ' .
-                $db->quoteInto('institute_name LIKE ?', $searchPattern) . ' OR ' .
-                $db->quoteInto('region LIKE ?', $searchPattern)
+            $db->quoteInto('last_name LIKE ?', $searchPattern) . ' OR ' .
+            $db->quoteInto('unique_identifier LIKE ?', $searchPattern) . ' OR ' .
+            $db->quoteInto('institute_name LIKE ?', $searchPattern) . ' OR ' .
+            $db->quoteInto('region LIKE ?', $searchPattern)
         )
             ->where("status like 'active'");
         return $this->fetchAll($sql);
@@ -2038,8 +2038,12 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                         $dmId = $dataManagerExists['dm_id'];
                         $db->update('data_manager', $dataManagerData, $db->quoteInto('dm_id = ?', $dmId));
                     }
-                } catch (Exception $e) {
-                    error_log('Data Manager save error: ' . $e->getMessage());
+                } catch (Throwable $e) {
+                    Pt_Commons_LoggerUtility::logError('Data Manager save error: ' . $e->getMessage(), [
+                        'file' => $e->getFile(),
+                        'line' => $e->getLine(),
+                        'trace' => $e->getTraceAsString(),
+                    ]);
                     $emailHint = $emailWasSynthesized
                         ? "Auto-generated login email {$originalEmail} (derived from Unique ID)"
                         : "Email {$originalEmail}";
@@ -2077,8 +2081,12 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                         $db->update('participant', $participantData, $db->quoteInto('unique_identifier = ?', $participantExists['unique_identifier']));
                         $lastInsertedId = $participantExists['participant_id'];
                     }
-                } catch (Exception $e) {
-                    error_log('Participant save error: ' . $e->getMessage());
+                } catch (Throwable $e) {
+                    Pt_Commons_LoggerUtility::logError('Participant save error: ' . $e->getMessage(), [
+                        'file' => $e->getFile(),
+                        'line' => $e->getLine(),
+                        'trace' => $e->getTraceAsString(),
+                    ]);
                     continue;
                 }
 
@@ -2145,10 +2153,13 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             $auditDb->addNewAuditLog("Bulk imported {$importedCount} participants", 'participants');
 
             $alertMsg->message = 'Your file was imported successfully';
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             $db->rollBack();
-            error_log('BULK IMPORT ERROR: ' . $e->getFile() . ":{$e->getLine()} : {$e->getMessage()}");
-            error_log($e->getTraceAsString());
+            Pt_Commons_LoggerUtility::logError('Bulk participant import failed: ' . $e->getMessage(), [
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => $e->getTraceAsString(),
+            ]);
             $alertMsg->message = 'File not uploaded. Something went wrong please try again later!';
             return false;
         }
@@ -2319,10 +2330,12 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
 
                 return ($id);
             }
-        } catch (Exception $e) {
-            echo ($e->getMessage()) . PHP_EOL;
-            error_log("ERROR : {$e->getFile()}:{$e->getLine()} : {$e->getMessage()}");
-            error_log($e->getTraceAsString());
+        } catch (Throwable $e) {
+            Pt_Commons_LoggerUtility::logError($e->getMessage(), [
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => $e->getTraceAsString(),
+            ]);
         }
     }
 
@@ -2571,8 +2584,11 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             $writer->save($tempUploadDirectory . DIRECTORY_SEPARATOR . $filename);
             return $filename;
         } catch (Exception $exc) {
-            error_log('UNMAPPED-PARTICIPANT-LIST--REPORT-EXCEL--' . $exc->getMessage());
-            error_log($exc->getTraceAsString());
+            Pt_Commons_LoggerUtility::logError('Failed to generate unmapped participant list report (Excel): ' . $exc->getMessage(), [
+                'file' => $exc->getFile(),
+                'line' => $exc->getLine(),
+                'trace' => $exc->getTraceAsString(),
+            ]);
 
             return '';
         }
@@ -2599,8 +2615,11 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             }
             return false;
         } catch (Exception $exc) {
-            error_log('EXCLUDED-PARTICIPANT-ERROR-' . $exc->getMessage());
-            error_log($exc->getTraceAsString());
+            Pt_Commons_LoggerUtility::logError('Excluded participant operation failed: ' . $exc->getMessage(), [
+                'file' => $exc->getFile(),
+                'line' => $exc->getLine(),
+                'trace' => $exc->getTraceAsString(),
+            ]);
             return false;
         }
     }
@@ -2619,7 +2638,16 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                 'RESPONSE' => new Zend_Db_Expr("CASE WHEN (sp.is_excluded ='yes') THEN 'Excluded' WHEN (sp.shipment_test_date not like '' AND sp.shipment_test_date!='0000-00-00' AND sp.shipment_test_date not like 'NULL') THEN 'Responded' ELSE 'Not Responded' END"),
             ])
             ->join(['p' => 'participant'], 'p.participant_id = sp.participant_id', [
-                'p.unique_identifier', 'p.institute_name', 'p.department_name', 'p.city', 'p.state', 'p.district', 'p.mobile', 'p.phone', 'p.affiliation', 'p.email',
+                'p.unique_identifier',
+                'p.institute_name',
+                'p.department_name',
+                'p.city',
+                'p.state',
+                'p.district',
+                'p.mobile',
+                'p.phone',
+                'p.affiliation',
+                'p.email',
                 'participantName' => new Zend_Db_Expr(self::participantNameExpr('p')),
             ])
             ->joinLeft(['c' => 'countries'], 'c.id = p.country', ['iso_name'])

@@ -105,9 +105,12 @@ class Application_Model_DbTable_ResponseDts extends Zend_Db_Table_Abstract
                     $id = $this->update($data, 'shipment_map_id = ' . $params['smid'] . ' and sample_id = ' . $sampleId);
                 }
             }
-        } catch (Exception $e) {
-            error_log("ERROR : {$e->getFile()}:{$e->getLine()} : {$e->getMessage()}");
-            error_log($e->getTraceAsString());
+        } catch (Throwable $e) {
+            Pt_Commons_LoggerUtility::logError($e->getMessage(), [
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => $e->getTraceAsString(),
+            ]);
         }
     }
     public function removeShipmentResults($mapId)
@@ -270,9 +273,12 @@ class Application_Model_DbTable_ResponseDts extends Zend_Db_Table_Abstract
                 $key++;
             }
             return true;
-        } catch (Exception $e) {
-            error_log("ERROR : {$e->getFile()}:{$e->getLine()} : {$e->getMessage()}");
-            error_log($e->getTraceAsString());
+        } catch (Throwable $e) {
+            Pt_Commons_LoggerUtility::logError($e->getMessage(), [
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => $e->getTraceAsString(),
+            ]);
             return false;
         }
     }

@@ -50,13 +50,13 @@ class Application_Model_DbTable_CertificateTemplates extends Zend_Db_Table_Abstr
                     $id = base64_decode($params['ctId'][$key]);
                     if (isset($id) && $id > 0) {
                         $this->update([
-                            'updated_on'                => new Zend_Db_Expr('now()'),
+                            'updated_on' => new Zend_Db_Expr('now()'),
                         ], ['ct_id' => $id]);
                     } else {
                         $id = $this->insert([
-                            'scheme_type'               => $scheme,
-                            'created_by'                => $authNameSpace->admin_id,
-                            'updated_on'                => new Zend_Db_Expr('now()'),
+                            'scheme_type' => $scheme,
+                            'created_by' => $authNameSpace->admin_id,
+                            'updated_on' => new Zend_Db_Expr('now()'),
                         ]);
                     }
                     $appDirectory = realpath(APPLICATION_PATH);
@@ -89,9 +89,12 @@ class Application_Model_DbTable_CertificateTemplates extends Zend_Db_Table_Abstr
                     }
                 }
             }
-        } catch (Exception $e) {
-            error_log("ERROR : {$e->getFile()}:{$e->getLine()} : {$e->getMessage()}");
-            error_log($e->getTraceAsString());
+        } catch (Throwable $e) {
+            Pt_Commons_LoggerUtility::logError($e->getMessage(), [
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => $e->getTraceAsString(),
+            ]);
         }
     }
 
@@ -101,12 +104,12 @@ class Application_Model_DbTable_CertificateTemplates extends Zend_Db_Table_Abstr
         $result = $this->fetchAll();
         foreach ($result as $ct) {
             $certificateTemplate[$ct['scheme_type']] = [
-                'ct_id'                     => $ct['ct_id'],
-                'scheme_type'               => $ct['scheme_type'],
+                'ct_id' => $ct['ct_id'],
+                'scheme_type' => $ct['scheme_type'],
                 'participation_certificate' => $ct['participation_certificate'],
-                'excellence_certificate'    => $ct['excellence_certificate'],
-                'p_detected_fields'         => $ct['p_detected_fields'] ?? null,
-                'e_detected_fields'         => $ct['e_detected_fields'] ?? null,
+                'excellence_certificate' => $ct['excellence_certificate'],
+                'p_detected_fields' => $ct['p_detected_fields'] ?? null,
+                'e_detected_fields' => $ct['e_detected_fields'] ?? null,
             ];
         }
         return $certificateTemplate;
@@ -170,9 +173,12 @@ class Application_Model_DbTable_CertificateTemplates extends Zend_Db_Table_Abstr
             $result['filename'] = $fileName;
             $result['message'] = 'Template saved successfully';
 
-        } catch (Exception $e) {
-            error_log("ERROR saving template: {$e->getFile()}:{$e->getLine()} : {$e->getMessage()}");
-            error_log($e->getTraceAsString());
+        } catch (Throwable $e) {
+            Pt_Commons_LoggerUtility::logError('Failed to save certificate template: ' . $e->getMessage(), [
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => $e->getTraceAsString(),
+            ]);
             $result['message'] = 'Database error while saving template';
         }
 
@@ -215,9 +221,12 @@ class Application_Model_DbTable_CertificateTemplates extends Zend_Db_Table_Abstr
 
             return true;
 
-        } catch (Exception $e) {
-            error_log("ERROR removing template: {$e->getFile()}:{$e->getLine()} : {$e->getMessage()}");
-            error_log($e->getTraceAsString());
+        } catch (Throwable $e) {
+            Pt_Commons_LoggerUtility::logError('Failed to remove certificate template: ' . $e->getMessage(), [
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => $e->getTraceAsString(),
+            ]);
             return false;
         }
     }

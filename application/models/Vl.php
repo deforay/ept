@@ -1383,9 +1383,9 @@ class Application_Model_Vl
             ->from(
                 ['va' => 'r_vl_assay'],
                 [
-                    'assay_name'         => 'va.short_name',
+                    'assay_name' => 'va.short_name',
                     'total_participated' => new Zend_Db_Expr('COUNT(spm.map_id)'),
-                    'percentage'         => new Zend_Db_Expr(
+                    'percentage' => new Zend_Db_Expr(
                         "ROUND((COUNT(spm.map_id) * 100.0) / NULLIF(($totalSubquery), 0), 2)"
                     ),
                 ]
@@ -1819,10 +1819,13 @@ class Application_Model_Vl
                 $db->commit();
                 return $params['shipmentId'];
             }
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             $db->rollBack();
-            error_log("ERROR : {$e->getFile()}:{$e->getLine()} : {$e->getMessage()}");
-            error_log($e->getTraceAsString());
+            Pt_Commons_LoggerUtility::logError($e->getMessage(), [
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => $e->getTraceAsString(),
+            ]);
         }
     }
 

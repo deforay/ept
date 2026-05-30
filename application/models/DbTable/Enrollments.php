@@ -129,7 +129,7 @@ class Application_Model_DbTable_Enrollments extends Zend_Db_Table_Abstract
             $row[] = $aRow['scheme_name'];
             $row[] = Pt_Commons_DateUtility::humanReadableDateFormat($aRow['enrolled_on']);
             if (trim($aRow['scheme_name']) != '') {
-                $row[] = '<a href="/admin/enrollments/view/pid/' . (int)$aRow['participant_id'] . '" class="btn btn-info btn-xs" style="margin-right: 2px;"><i class="icon-eye-open"></i> Know More</a>';
+                $row[] = '<a href="/admin/enrollments/view/pid/' . (int) $aRow['participant_id'] . '" class="btn btn-info btn-xs" style="margin-right: 2px;"><i class="icon-eye-open"></i> Know More</a>';
             } else {
                 $row[] = '--';
             }
@@ -149,15 +149,15 @@ class Application_Model_DbTable_Enrollments extends Zend_Db_Table_Abstract
         $alertMsg = new Zend_Session_Namespace('alertSpace');
         try {
             return $this->doEnrollParticipants($params, $alertMsg);
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             $traceId = 'enr-' . bin2hex(random_bytes(4));
             Pt_Commons_LoggerUtility::logError('enrollParticipants failed', [
                 'trace_id' => $traceId,
-                'scheme'   => $params['schemeId'] ?? null,
-                'file'     => $e->getFile(),
-                'line'     => $e->getLine(),
-                'message'  => $e->getMessage(),
-                'trace'    => $e->getTraceAsString(),
+                'scheme' => $params['schemeId'] ?? null,
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
             ]);
             $alertMsg->message = 'Enrolment failed. Please try again.';
             return ['ok' => false, 'count' => 0, 'error' => 'save_failed', 'trace_id' => $traceId];
@@ -186,19 +186,19 @@ class Application_Model_DbTable_Enrollments extends Zend_Db_Table_Abstract
         try {
             foreach ($ids as $participant) {
                 $common->insertIgnore($this->_name, [
-                    'enrollment_id'  => $enrollmentListId,
-                    'list_name'      => $listName,
+                    'enrollment_id' => $enrollmentListId,
+                    'list_name' => $listName,
                     'participant_id' => $participant,
-                    'scheme_id'      => $params['schemeId'],
-                    'status'         => 'enrolled',
-                    'enrolled_on'    => new Zend_Db_Expr('now()'),
+                    'scheme_id' => $params['schemeId'],
+                    'status' => 'enrolled',
+                    'enrolled_on' => new Zend_Db_Expr('now()'),
                 ]);
             }
             $db->commit();
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             try {
                 $db->rollBack();
-            } catch (Exception $ignored) {
+            } catch (Throwable $ignored) {
                 // best-effort rollback
             }
             throw $e;
@@ -311,7 +311,7 @@ class Application_Model_DbTable_Enrollments extends Zend_Db_Table_Abstract
                 );
 
                 if (!$participantData) {
-                    error_log("Participant not found: {$uniqueIdentifier}");
+                    Pt_Commons_LoggerUtility::logWarning("Participant not found: {$uniqueIdentifier}");
                     continue;
                 }
 
@@ -367,8 +367,12 @@ class Application_Model_DbTable_Enrollments extends Zend_Db_Table_Abstract
             try {
                 $auditDb = new Application_Model_DbTable_AuditLog();
                 $auditDb->addNewAuditLog("Bulk imported {$processedCount} enrollments", 'enrollment');
-            } catch (Exception $e) {
-                error_log('Audit log failed: ' . $e->getMessage());
+            } catch (Throwable $e) {
+                Pt_Commons_LoggerUtility::logWarning('Audit log failed: ' . $e->getMessage(), [
+                    'file' => $e->getFile(),
+                    'line' => $e->getLine(),
+                    'trace' => $e->getTraceAsString(),
+                ]);
             }
 
             // Commit transaction
@@ -381,13 +385,17 @@ class Application_Model_DbTable_Enrollments extends Zend_Db_Table_Abstract
                 'message' => $alertMsg->message,
                 'processed_count' => $processedCount,
             ];
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             // Rollback transaction
             if ($db->getConnection()->inTransaction()) {
                 $db->rollback();
             }
 
-            error_log('BULK ENROLLMENT ERROR: ' . $e->getMessage());
+            Pt_Commons_LoggerUtility::logError('Bulk enrollment failed: ' . $e->getMessage(), [
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => $e->getTraceAsString(),
+            ]);
 
             $alertMsg->message = 'Error during import: ' . $e->getMessage();
 

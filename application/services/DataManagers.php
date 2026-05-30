@@ -1015,8 +1015,11 @@ class Application_Service_DataManagers
                 return false;
             }
         } catch (Exception $exc) {
-            error_log('IMPORT-PARTICIPANTS-DATA-EXCEL--' . $exc->getMessage());
-            error_log($exc->getTraceAsString());
+            Pt_Commons_LoggerUtility::logError('Failed to import participants data (Excel): ' . $exc->getMessage(), [
+                'file'  => $exc->getFile(),
+                'line'  => $exc->getLine(),
+                'trace' => $exc->getTraceAsString(),
+            ]);
             $alertMsg->message = 'File not uploaded. Something went wrong please try again later!';
             return false;
         }

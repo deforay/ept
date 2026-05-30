@@ -56,10 +56,10 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                 $alert = new Zend_Session_Namespace('alertSpace');
                 $alert->alertMsg = 'Data Manager was created, but participant mapping was not saved. Open the Data Manager and map participants from there.';
                 Pt_Commons_LoggerUtility::logError('addUser: participant mapping skipped', [
-                    'dm_id'             => $dmId,
+                    'dm_id' => $dmId,
                     'allparticipant_raw' => isset($params['allparticipant']) ? (is_string($params['allparticipant']) ? mb_substr($params['allparticipant'], 0, 200) : gettype($params['allparticipant'])) : 'missing',
                     'participants_count' => count($params['participantsList']),
-                    'map_error'         => $mapResult['error'] ?? 'unknown',
+                    'map_error' => $mapResult['error'] ?? 'unknown',
                 ]);
             }
 
@@ -119,7 +119,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                 } else {
                     $sWhereSub .= ' AND (';
                 }
-                $searchableColumns = array_values(array_filter($aColumns, fn ($c) => $c !== ''));
+                $searchableColumns = array_values(array_filter($aColumns, fn($c) => $c !== ''));
                 $colSize = count($searchableColumns);
 
                 for ($i = 0; $i < $colSize; $i++) {
@@ -231,7 +231,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                 ->where('dm_id IN (?)', $pageDmIds)
                 ->group('dm_id');
             foreach ($this->getAdapter()->fetchAll($countSelect) as $cntRow) {
-                $participantCountByDm[$cntRow['dm_id']] = (int)$cntRow['cnt'];
+                $participantCountByDm[$cntRow['dm_id']] = (int) $cntRow['cnt'];
             }
         }
 
@@ -251,8 +251,8 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             //}else{
             //$participantDetails='';
             //}
-            $row[] = '<input type="checkbox" class="dm-select" value="' . (int)$aRow['dm_id']
-                . '" data-email="' . htmlspecialchars((string)$aRow['primary_email'], ENT_QUOTES, 'UTF-8') . '" />';
+            $row[] = '<input type="checkbox" class="dm-select" value="' . (int) $aRow['dm_id']
+                . '" data-email="' . htmlspecialchars((string) $aRow['primary_email'], ENT_QUOTES, 'UTF-8') . '" />';
             $row[] = $aRow['first_name'];
             $row[] = $aRow['last_name'];
             if (!isset($parameters['ptcc']) || $parameters['ptcc'] != 1) {
@@ -276,15 +276,15 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                 $row[] = '<em class="text-muted' . $unmappedClass . '" style="font-size:11px;">' . $translator->_('None mapped') . '</em>';
             } else {
                 $pLabel = sprintf($translator->_('View (%d)'), $pCount);
-                $row[] = '<a href="javascript:void(0);" class="btn btn-primary btn-xs toggle-participant-row" data-dm-id="' . (int)$aRow['dm_id'] . '"><i class="icon-user"></i> ' . $pLabel . '</a>';
+                $row[] = '<a href="javascript:void(0);" class="btn btn-primary btn-xs toggle-participant-row" data-dm-id="' . (int) $aRow['dm_id'] . '"><i class="icon-user"></i> ' . $pLabel . '</a>';
             }
 
             $fromParticipant = isset($parameters['from']) && $parameters['from'] == 'participant';
             $isPtcc = isset($aRow['data_manager_type']) && $aRow['data_manager_type'] == 'ptcc';
             $urlPrefix = $fromParticipant ? '' : '/admin';
-            $editUrl = '/admin/data-managers/edit/id/' . (int)$aRow['dm_id'] . ($isPtcc ? '/ptcc/1' : '');
-            $resetUrl = $urlPrefix . '/data-managers/reset-password/id/' . (int)$aRow['dm_id'];
-            $changeEmailUrl = $urlPrefix . '/data-managers/change-primary-email/id/' . (int)$aRow['dm_id'];
+            $editUrl = '/admin/data-managers/edit/id/' . (int) $aRow['dm_id'] . ($isPtcc ? '/ptcc/1' : '');
+            $resetUrl = $urlPrefix . '/data-managers/reset-password/id/' . (int) $aRow['dm_id'];
+            $changeEmailUrl = $urlPrefix . '/data-managers/change-primary-email/id/' . (int) $aRow['dm_id'];
 
             $btnStyle = 'margin:1px;';
             $actions = '';
@@ -294,16 +294,16 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             $actions .= '<a href="javascript:void(0);" class="btn btn-info btn-xs" style="' . $btnStyle . '" onclick="layoutModal(\'' . $resetUrl . '\',\'980\',\'500\');"><i class="icon-key"></i> ' . $translator->_('Reset Password') . '</a>';
             $actions .= '<a href="javascript:void(0);" class="btn btn-default btn-xs" style="' . $btnStyle . '" onclick="layoutModal(\'' . $changeEmailUrl . '\',\'700\',\'520\');"><i class="icon-envelope"></i> ' . $translator->_('Change Email') . '</a>';
             if (!$fromParticipant && !$isPtcc) {
-                $actions .= '<a href="javascript:void(0);" class="btn btn-success btn-xs" style="' . $btnStyle . '" onclick="layoutModal(\'/admin/participants/participant-manager-map/id/' . (int)$aRow['dm_id'] . '/modal/1\',\'1150\',\'700\');"><i class="icon-user"></i> ' . $translator->_('Map Participants') . '</a>';
+                $actions .= '<a href="javascript:void(0);" class="btn btn-success btn-xs" style="' . $btnStyle . '" onclick="layoutModal(\'/admin/participants/participant-manager-map/id/' . (int) $aRow['dm_id'] . '/modal/1\',\'1150\',\'700\');"><i class="icon-user"></i> ' . $translator->_('Map Participants') . '</a>';
             }
             // "View as Participant" — only rendered for admins with the
             // view-as-participant privilege. Opens in a new tab so the
             // admin's current admin-side workflow isn't disrupted.
             if (!$fromParticipant) {
                 $adminSession = new Zend_Session_Namespace('administrators');
-                $adminPrivileges = array_map('trim', explode(',', (string)($adminSession->privileges ?? '')));
+                $adminPrivileges = array_map('trim', explode(',', (string) ($adminSession->privileges ?? '')));
                 if (in_array('view-as-participant', $adminPrivileges, true)) {
-                    $viewAsUrl = '/admin/impersonate/start?dm_id=' . (int)$aRow['dm_id'];
+                    $viewAsUrl = '/admin/impersonate/start?dm_id=' . (int) $aRow['dm_id'];
                     $actions .= '<a href="' . $viewAsUrl . '" target="_blank" rel="noopener" class="btn btn-danger btn-xs" style="' . $btnStyle . '" title="' . $translator->_('Opens the participant UI as this user. Audited.') . '"><i class="icon-eye-open"></i> ' . $translator->_('View as') . '</a>';
                 }
             }
@@ -1157,8 +1157,8 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
      */
     public function changePrimaryEmailById($dmId, $newEmail)
     {
-        $dmId = (int)$dmId;
-        $newEmail = strtolower(trim((string)$newEmail));
+        $dmId = (int) $dmId;
+        $newEmail = strtolower(trim((string) $newEmail));
         if ($dmId <= 0 || $newEmail === '') {
             return ['ok' => false, 'message' => 'Invalid request.', 'old' => null];
         }
@@ -1168,7 +1168,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             return ['ok' => false, 'message' => 'Data manager not found.', 'old' => null];
         }
         $oldEmail = $current['primary_email'];
-        if (strtolower((string)$oldEmail) === $newEmail) {
+        if (strtolower((string) $oldEmail) === $newEmail) {
             return ['ok' => false, 'message' => 'New email is the same as the current email.', 'old' => $oldEmail];
         }
 
@@ -1419,10 +1419,13 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
 
             // Commit the entire transaction at once
             $db->commit();
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             $db->rollBack();
-            error_log("ERROR : {$e->getFile()}:{$e->getLine()} : {$e->getMessage()}");
-            error_log($e->getTraceAsString());
+            Pt_Commons_LoggerUtility::logError($e->getMessage(), [
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => $e->getTraceAsString(),
+            ]);
             throw $e;
         }
 
@@ -1610,8 +1613,11 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             $writer->save($tempUploadFolder . DIRECTORY_SEPARATOR . $filename);
             return $filename;
         } catch (Exception $exc) {
-            error_log('PTCC-MANAGER-LIST--REPORT-EXCEL--' . $exc->getMessage());
-            error_log($exc->getTraceAsString());
+            Pt_Commons_LoggerUtility::logError('Failed to generate PTCC manager list report (Excel): ' . $exc->getMessage(), [
+                'file' => $exc->getFile(),
+                'line' => $exc->getLine(),
+                'trace' => $exc->getTraceAsString(),
+            ]);
 
             return '';
         }
@@ -1725,7 +1731,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                     }
                 }
             }
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             if ($inTx) {
                 try {
                     $db->rollBack();
@@ -1735,11 +1741,11 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             $traceId = 'pmm-' . bin2hex(random_bytes(4));
             Pt_Commons_LoggerUtility::logError('dmParticipantMap failed', [
                 'trace_id' => $traceId,
-                'dm_id'    => $dmId,
-                'file'     => $e->getFile(),
-                'line'     => $e->getLine(),
-                'message'  => $e->getMessage(),
-                'trace'    => $e->getTraceAsString(),
+                'dm_id' => $dmId,
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
             ]);
             return ['ok' => false, 'count' => 0, 'error' => 'save_failed', 'trace_id' => $traceId];
         }

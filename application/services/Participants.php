@@ -463,8 +463,11 @@ class Application_Service_Participants
         } catch (Exception $exc) {
 
             $sQuerySession->shipmentRespondedParticipantQuery = '';
-            error_log('PARTICIPANT-EXCEL-' . $exc->getMessage());
-            error_log($exc->getTraceAsString());
+            Pt_Commons_LoggerUtility::logError('Failed to generate participant report (Excel): ' . $exc->getMessage(), [
+                'file'  => $exc->getFile(),
+                'line'  => $exc->getLine(),
+                'trace' => $exc->getTraceAsString(),
+            ]);
             return '';
         }
     }
@@ -717,8 +720,11 @@ class Application_Service_Participants
                 return false;
             }
         } catch (Throwable $exc) {
-            error_log($exc->getFile() . ':' . $exc->getLine() . ':' . $exc->getMessage());
-            error_log($exc->getTraceAsString());
+            Pt_Commons_LoggerUtility::logError($exc->getMessage(), [
+                'file'  => $exc->getFile(),
+                'line'  => $exc->getLine(),
+                'trace' => $exc->getTraceAsString(),
+            ]);
             $alertMsg->message = $this->describeBulkImportFailure($exc);
             return false;
         }
@@ -849,8 +855,11 @@ class Application_Service_Participants
             echo $filename;
         } catch (Exception $exc) {
             $sQuerySession->shipmentRespondedParticipantQuery = '';
-            error_log('GENERATE-SHIPMENT-RESPONDED-PARTICIPANT-REPORT-EXCEL--' . $exc->getMessage());
-            error_log($exc->getTraceAsString());
+            Pt_Commons_LoggerUtility::logError('Failed to generate shipment-responded participant report (Excel): ' . $exc->getMessage(), [
+                'file'  => $exc->getFile(),
+                'line'  => $exc->getLine(),
+                'trace' => $exc->getTraceAsString(),
+            ]);
             echo '';
         }
     }

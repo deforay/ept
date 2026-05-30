@@ -112,7 +112,7 @@ class Application_Model_DbTable_Partners extends Zend_Db_Table_Abstract
             $sQuery = $sQuery->limit($sLimit, $sOffset);
         }
 
-        //error_log($sQuery);
+
 
         $rResult = $this->getAdapter()->fetchAll($sQuery);
 

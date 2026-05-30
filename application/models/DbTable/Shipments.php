@@ -213,7 +213,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         if (isset($sLimit) && isset($sOffset)) {
             $sQuery = $sQuery->limit($sLimit, $sOffset);
         }
-        //error_log($sQuery);
+
         $rResult = $this->getAdapter()->fetchAll($sQuery);
 
         $iTotal = $iFilteredTotal = $this->getAdapter()->fetchOne('SELECT FOUND_ROWS()');
@@ -349,7 +349,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             $sQuery = $sQuery->limit($sLimit, $sOffset);
         }
 
-        // error_log($sQuery);
+
         $rResult = $this->getAdapter()->fetchAll($sQuery);
         /* Data set length after filtering */
         $iTotal = $iFilteredTotal = $this->getAdapter()->fetchOne('SELECT FOUND_ROWS()');
@@ -516,7 +516,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         if (isset($sLimit) && isset($sOffset)) {
             $sQuery = $sQuery->limit($sLimit, $sOffset);
         }
-        //error_log($sQuery);
+
         $rResult = $this->getAdapter()->fetchAll($sQuery);
 
         $iTotal = $iFilteredTotal = $this->getAdapter()->fetchOne('SELECT FOUND_ROWS()');
@@ -665,7 +665,6 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             ->where('year(s.shipment_date)  + 5 > year(CURDATE())');
         //->order('s.shipment_date')
         //->order('spm.participant_id')
-        // error_log($this->_session->dm_id);
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
         if (!empty($authNameSpace->dm_id)) {
             $sQuery = $sQuery->joinLeft(['pmm' => 'participant_manager_map'], 'pmm.participant_id=p.participant_id', [])
@@ -895,7 +894,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         if (isset($sLimit) && isset($sOffset)) {
             $sQuery = $sQuery->limit($sLimit, $sOffset);
         }
-        //error_log($sQuery);
+
         $rResult = $this->getAdapter()->fetchAll($sQuery);
 
         $iTotal = $iFilteredTotal = $this->getAdapter()->fetchOne('SELECT FOUND_ROWS()');
@@ -4854,14 +4853,17 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                     return false;
                 }
             }
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             // If any of the queries failed and threw an exception,
             // we want to roll back the whole transaction, reversing
             // changes made in the transaction, even those that succeeded.
             // Thus all changes are committed together, or none are.
 
-            error_log("ERROR : {$e->getFile()}:{$e->getLine()} : {$e->getMessage()}");
-            error_log($e->getTraceAsString());
+            Pt_Commons_LoggerUtility::logError($e->getMessage(), [
+                'file'  => $e->getFile(),
+                'line'  => $e->getLine(),
+                'trace' => $e->getTraceAsString(),
+            ]);
             $db->rollBack();
             return false;
         }

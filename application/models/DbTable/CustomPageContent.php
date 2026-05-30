@@ -9,7 +9,7 @@ class Application_Model_DbTable_CustomPageContent extends Zend_Db_Table_Abstract
     {
         try {
             $authNameSpace = new Zend_Session_Namespace('administrators');
-            $templates  = $params['templates'] ?? 'home';
+            $templates = $params['templates'] ?? 'home';
             $data = [
                 'title' => $templates,
                 'content' => htmlspecialchars($params['message']),
@@ -27,12 +27,15 @@ class Application_Model_DbTable_CustomPageContent extends Zend_Db_Table_Abstract
             } else {
                 return $this->insert($data);
             }
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             // If any of the queries failed and threw an exception,
             // we want to roll back the whole transaction, reversing
             // changes made in the transaction, even those that succeeded.
-            error_log("ERROR : {$e->getFile()}:{$e->getLine()} : {$e->getMessage()}");
-            error_log($e->getTraceAsString());
+            Pt_Commons_LoggerUtility::logError($e->getMessage(), [
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => $e->getTraceAsString(),
+            ]);
         }
     }
 
