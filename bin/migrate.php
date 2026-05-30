@@ -1,6 +1,18 @@
 #!/usr/bin/env php
 <?php
 
+// bin/migrate.php — idempotent schema migrator.
+//
+// Usage:
+//   php bin/migrate.php              run pending migrations (re-applies the current version too)
+//   php bin/migrate.php -y           auto-continue on non-benign error (no prompt)
+//   php bin/migrate.php -q           quiet mode
+//   php bin/migrate.php -d           dry-run: print statements, touch nothing
+//   php bin/migrate.php -v 7.4.1     replay inclusively from a specific version (ignores DB version)
+//   php bin/migrate.php --status     show current version + pending files, then exit
+//
+// Env: MIG_VERBOSE=1 traces idempotent routing; MIG_REPLACE_PK=1 forces PK replacement.
+
 // only run from command line
 if (php_sapi_name() !== 'cli') {
     exit(0);
@@ -50,10 +62,11 @@ try {
 
 /* ---------------------- CLI flags ---------------------- */
 
-$options = getopt('yqdv:');  // -y auto-continue on error, -q quiet, -d dry-run, -v version
+$options = getopt('yqdv:', ['status']);  // -y auto-continue on error, -q quiet, -d dry-run, -v version, --status preview pending
 $autoContinueOnError = isset($options['y']);
 $quietMode           = isset($options['q']);
 $DRY_RUN             = isset($options['d']); // global-ish flag (read inside helpers)
+$showStatus          = isset($options['status']);
 $showProgress        = !$quietMode;
 
 if ($quietMode) {
@@ -235,14 +248,48 @@ function create_table_if_missing(Zend_Db_Adapter_Abstract $db, string $table, st
     return MIG_SKIPPED;
 }
 
-/** Drop column if exists */
+/**
+ * Drop a column if present. MySQL refuses the drop (errno 1072) while any index
+ * or foreign key still references it, and hand-rolled migrations don't always
+ * drop those first. Sweep referencing FKs and non-PRIMARY indexes before the
+ * drop so it always lands even on a drifted install. (Borrowed from vlsm.)
+ */
 function drop_column_if_exists(Zend_Db_Adapter_Abstract $db, string $table, string $column): int
 {
-    if (column_exists($db, $table, $column)) {
-        run_sql($db, "ALTER TABLE `{$table}` DROP `{$column}`");
-        return MIG_EXECUTED;
+    if (!column_exists($db, $table, $column)) {
+        return MIG_SKIPPED;
     }
-    return MIG_SKIPPED;
+
+    $dbName = current_db($db);
+
+    // 1. Drop source-side FK constraints that include this column. (FKs where this
+    //    column is the referenced parent are left alone — auto-dropping those would
+    //    silently break integrity elsewhere.)
+    $fks = (array) $db->fetchCol(
+        "SELECT DISTINCT CONSTRAINT_NAME FROM information_schema.KEY_COLUMN_USAGE
+            WHERE TABLE_SCHEMA = ? AND TABLE_NAME = ? AND COLUMN_NAME = ?
+              AND REFERENCED_TABLE_NAME IS NOT NULL",
+        [$dbName, $table, $column]
+    );
+    foreach ($fks as $fk) {
+        run_sql($db, "ALTER TABLE `{$table}` DROP FOREIGN KEY `{$fk}`");
+    }
+
+    // 2. Drop non-PRIMARY indexes that include this column. PRIMARY is left alone
+    //    so we don't silently remove the table's primary key.
+    $idx = (array) $db->fetchCol(
+        "SELECT DISTINCT INDEX_NAME FROM information_schema.STATISTICS
+            WHERE TABLE_SCHEMA = ? AND TABLE_NAME = ? AND COLUMN_NAME = ?
+              AND INDEX_NAME != 'PRIMARY'",
+        [$dbName, $table, $column]
+    );
+    foreach ($idx as $i) {
+        run_sql($db, "ALTER TABLE `{$table}` DROP INDEX `{$i}`");
+    }
+
+    // 3. Now the column drop will succeed.
+    run_sql($db, "ALTER TABLE `{$table}` DROP `{$column}`");
+    return MIG_EXECUTED;
 }
 
 /** Drop index if exists */
@@ -307,6 +354,27 @@ function mig_trace(string $tag, string $detail = ''): void
     if (getenv('MIG_VERBOSE')) {
         echo "[trace] {$tag}" . ($detail !== '' ? " :: {$detail}" : '') . PHP_EOL;
     }
+}
+
+/**
+ * Pull the MySQL driver errno out of a thrown DB exception. Zend_Db/PDO surface
+ * the SQLSTATE (e.g. '42S21') via getCode(), NOT the numeric MySQL errno — the
+ * real code (1060, 1062, …) lives in the chained PDOException's errorInfo[1], or
+ * embedded in the message as "SQLSTATE[..]: ...: <errno> ...". Returns 0 if none
+ * can be determined. Numeric codes are stable across MySQL/MariaDB versions and
+ * locales, so benign-idempotence checks key off this rather than English text.
+ */
+function mysql_errno_from_exception(Throwable $e): int
+{
+    for ($cur = $e; $cur !== null; $cur = $cur->getPrevious()) {
+        if ($cur instanceof PDOException && isset($cur->errorInfo[1])) {
+            return (int) $cur->errorInfo[1];
+        }
+    }
+    if (preg_match('/SQLSTATE\[[^\]]*\]:.*?:\s*(\d{3,4})\b/s', $e->getMessage(), $m)) {
+        return (int) $m[1];
+    }
+    return 0;
 }
 
 /**
@@ -497,6 +565,23 @@ $migrationFiles = (array)glob(DB_PATH . '/migrations/*.sql');
 $versions = array_map(fn ($file) => basename($file, '.sql'), $migrationFiles);
 usort($versions, 'version_compare');
 
+// --status: report current version + pending migrations, then exit without touching the DB.
+// Pending uses the same `>=` rule as the runner, so the current version shows up as
+// pending too — by design, ept re-applies the current version idempotently on every run.
+if ($showStatus) {
+    $pending = array_values(array_filter($versions, fn ($v) => version_compare($v, $currentVersion, '>=')));
+    echo 'Current DB version : ' . ($currentVersion ?: '(none)') . PHP_EOL;
+    echo 'Pending migrations :' . PHP_EOL;
+    if (empty($pending)) {
+        echo '  (none — database is up to date)' . PHP_EOL;
+    } else {
+        foreach ($pending as $v) {
+            echo "  {$v}.sql" . PHP_EOL;
+        }
+    }
+    exit(0);
+}
+
 // counters
 $totalMigrations   = 0;
 $totalQueries      = 0;
@@ -572,24 +657,29 @@ foreach ($versions as $version) {
                 } catch (Exception $e) {
                     $msg = $e->getMessage();
                     $qLower = strtolower($query);
+                    // Prefer the stable numeric MySQL errno; fall back to English text
+                    // matching below in case the driver doesn't surface a code.
+                    $errno = mysql_errno_from_exception($e);
 
                     // treat duplicate/absent as benign idempotence (context-aware)
                     $isCreateTableBenign = (strpos($qLower, 'create table') === 0) &&
-                        (strpos($msg, '1050') !== false || stripos($msg, 'already exists') !== false);
+                        ($errno === 1050 || stripos($msg, 'already exists') !== false);
                     $isDropTableBenign = (strpos($qLower, 'drop table') === 0) &&
-                        (strpos($msg, '1146') !== false || stripos($msg, "doesn't exist") !== false);
+                        ($errno === 1146 || stripos($msg, "doesn't exist") !== false);
 
                     // Seed-style INSERTs in migrations are re-runnable: a 1062 on a
                     // pre-existing PK/UNIQUE row means the seed already landed.
                     $isInsertDupBenign = (strpos($qLower, 'insert') === 0) &&
-                        (strpos($msg, '1062') !== false || stripos($msg, 'Duplicate entry') !== false);
+                        ($errno === 1062 || stripos($msg, 'Duplicate entry') !== false);
 
+                    // Context-free idempotence codes: 1060 dup column, 1061 dup key,
+                    // 1068 multi-PK, 1091 can't-drop-missing, 1826 dup FK name.
                     $isOtherBenign =
+                        in_array($errno, [1060, 1061, 1068, 1091, 1826], true) ||
                         stripos($msg, 'Duplicate column name') !== false ||
                         stripos($msg, 'Duplicate key name') !== false   ||
                         (stripos($msg, "Can't DROP") !== false && stripos($msg, 'check that column/key exists') !== false) ||
-                        stripos($msg, 'Multiple primary key defined') !== false || // MySQL #1068
-                        strpos($msg, '1068') !== false;
+                        stripos($msg, 'Multiple primary key defined') !== false; // MySQL #1068
 
                     if ($isCreateTableBenign || $isDropTableBenign || $isInsertDupBenign || $isOtherBenign) {
                         if (!$quietMode && getenv('MIG_VERBOSE')) {
