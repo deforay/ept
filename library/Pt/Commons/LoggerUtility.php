@@ -149,6 +149,17 @@ final class Pt_Commons_LoggerUtility
             if (($user = self::currentUser()) !== null) {
                 $ctx['user'] = $user;
             }
+            // Server OS where the failure occurred — some errors are OS-specific
+            // (paths, pdftk/LibreOffice, file perms). Always available.
+            $ctx['os'] = PHP_OS_FAMILY;
+            // Client user-agent and the OS parsed from it (web requests only).
+            if (!empty($_SERVER['HTTP_USER_AGENT'])) {
+                $ua = (string) $_SERVER['HTTP_USER_AGENT'];
+                $ctx['user_agent'] = $ua;
+                if (method_exists('Application_Service_Common', 'getOperatingSystem')) {
+                    $ctx['client_os'] = Application_Service_Common::getOperatingSystem($ua);
+                }
+            }
         } catch (Throwable $e) {
             // enrichment is best-effort only — ignore
         }

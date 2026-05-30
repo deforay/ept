@@ -146,7 +146,7 @@ try {
                 ["status = ?" => 'pending']
             );
             if ($skipped > 0) {
-                error_log("send-emails: email.devTrapDsn is not a valid smtp:// DSN; skipped {$skipped} pending mail(s).");
+                Pt_Commons_LoggerUtility::logWarning("send-emails: email.devTrapDsn is not a valid smtp:// DSN; skipped {$skipped} pending mail(s).");
             }
             return;
         }
