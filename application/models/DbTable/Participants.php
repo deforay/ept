@@ -141,8 +141,10 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         if (isset($parameters['iSortCol_0'])) {
             for ($i = 0; $i < intval($parameters['iSortingCols']); $i++) {
                 if ($parameters['bSortable_' . intval($parameters['iSortCol_' . $i])] == 'true') {
-                    $sortDir = strtolower($parameters['sSortDir_' . $i]) === 'desc' ? 'desc' : 'asc';
-                    $sOrder[] = new Zend_Db_Expr(((string) $aColumns[intval($parameters['iSortCol_' . $i])]) . ' ' . $sortDir);
+                    $sortDir = Pt_Commons_General::sanitizeSortDirection($parameters['sSortDir_' . $i]);
+                    $colIdx = intval($parameters['iSortCol_' . $i]);
+                    if (!isset($aColumns[$colIdx])) { continue; }
+                    $sOrder[] = new Zend_Db_Expr(((string) $aColumns[$colIdx]) . ' ' . $sortDir);
                 }
             }
         }
@@ -731,8 +733,10 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         if (isset($parameters['iSortCol_0'])) {
             for ($i = 0; $i < intval($parameters['iSortingCols']); $i++) {
                 if ($parameters['bSortable_' . intval($parameters['iSortCol_' . $i])] == 'true') {
-                    $sortDir = strtolower($parameters['sSortDir_' . $i]) === 'desc' ? 'desc' : 'asc';
-                    $sOrder[] = new Zend_Db_Expr(((string) $aColumns[intval($parameters['iSortCol_' . $i])]) . ' ' . $sortDir);
+                    $sortDir = Pt_Commons_General::sanitizeSortDirection($parameters['sSortDir_' . $i]);
+                    $colIdx = intval($parameters['iSortCol_' . $i]);
+                    if (!isset($aColumns[$colIdx])) { continue; }
+                    $sOrder[] = new Zend_Db_Expr(((string) $aColumns[$colIdx]) . ' ' . $sortDir);
                 }
             }
         }
@@ -849,8 +853,10 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         if (isset($parameters['iSortCol_0'])) {
             for ($i = 0; $i < intval($parameters['iSortingCols']); $i++) {
                 if ($parameters['bSortable_' . intval($parameters['iSortCol_' . $i])] == 'true') {
-                    $sortDir = strtolower($parameters['sSortDir_' . $i]) === 'desc' ? 'desc' : 'asc';
-                    $sOrder[] = new Zend_Db_Expr(((string) $aColumns[intval($parameters['iSortCol_' . $i])]) . ' ' . $sortDir);
+                    $sortDir = Pt_Commons_General::sanitizeSortDirection($parameters['sSortDir_' . $i]);
+                    $colIdx = intval($parameters['iSortCol_' . $i]);
+                    if (!isset($aColumns[$colIdx])) { continue; }
+                    $sOrder[] = new Zend_Db_Expr(((string) $aColumns[$colIdx]) . ' ' . $sortDir);
                 }
             }
         }
@@ -1118,8 +1124,10 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         if (isset($parameters['iSortCol_0'])) {
             for ($i = 0; $i < intval($parameters['iSortingCols']); $i++) {
                 if ($parameters['bSortable_' . intval($parameters['iSortCol_' . $i])] == 'true') {
-                    $sortDir = strtolower($parameters['sSortDir_' . $i]) === 'desc' ? 'desc' : 'asc';
-                    $sOrder[] = new Zend_Db_Expr(((string) $aColumns[intval($parameters['iSortCol_' . $i])]) . ' ' . $sortDir);
+                    $sortDir = Pt_Commons_General::sanitizeSortDirection($parameters['sSortDir_' . $i]);
+                    $colIdx = intval($parameters['iSortCol_' . $i]);
+                    if (!isset($aColumns[$colIdx])) { continue; }
+                    $sOrder[] = new Zend_Db_Expr(((string) $aColumns[$colIdx]) . ' ' . $sortDir);
                 }
             }
         }
@@ -1274,8 +1282,10 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         if (isset($parameters['iSortCol_0'])) {
             for ($i = 0; $i < intval($parameters['iSortingCols']); $i++) {
                 if ($parameters['bSortable_' . intval($parameters['iSortCol_' . $i])] == 'true') {
-                    $sortDir = strtolower($parameters['sSortDir_' . $i]) === 'desc' ? 'desc' : 'asc';
-                    $sOrder[] = new Zend_Db_Expr(((string) $aColumns[intval($parameters['iSortCol_' . $i])]) . ' ' . $sortDir);
+                    $sortDir = Pt_Commons_General::sanitizeSortDirection($parameters['sSortDir_' . $i]);
+                    $colIdx = intval($parameters['iSortCol_' . $i]);
+                    if (!isset($aColumns[$colIdx])) { continue; }
+                    $sOrder[] = new Zend_Db_Expr(((string) $aColumns[$colIdx]) . ' ' . $sortDir);
                 }
             }
         }
@@ -1396,8 +1406,10 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         if (isset($parameters['iSortCol_0'])) {
             for ($i = 0; $i < intval($parameters['iSortingCols']); $i++) {
                 if ($parameters['bSortable_' . intval($parameters['iSortCol_' . $i])] == 'true') {
-                    $sortDir = strtolower($parameters['sSortDir_' . $i]) === 'desc' ? 'desc' : 'asc';
-                    $sOrder[] = new Zend_Db_Expr(((string) $aColumns[intval($parameters['iSortCol_' . $i])]) . ' ' . $sortDir);
+                    $sortDir = Pt_Commons_General::sanitizeSortDirection($parameters['sSortDir_' . $i]);
+                    $colIdx = intval($parameters['iSortCol_' . $i]);
+                    if (!isset($aColumns[$colIdx])) { continue; }
+                    $sOrder[] = new Zend_Db_Expr(((string) $aColumns[$colIdx]) . ' ' . $sortDir);
                 }
             }
         }
@@ -2355,8 +2367,10 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         if (isset($parameters['iSortCol_0'])) {
             for ($i = 0; $i < intval($parameters['iSortingCols']); $i++) {
                 if ($parameters['bSortable_' . intval($parameters['iSortCol_' . $i])] == 'true') {
-                    $sortDir = strtolower($parameters['sSortDir_' . $i]) === 'desc' ? 'desc' : 'asc';
-                    $sOrder[] = new Zend_Db_Expr(((string) $aColumns[intval($parameters['iSortCol_' . $i])]) . ' ' . $sortDir);
+                    $sortDir = Pt_Commons_General::sanitizeSortDirection($parameters['sSortDir_' . $i]);
+                    $colIdx = intval($parameters['iSortCol_' . $i]);
+                    if (!isset($aColumns[$colIdx])) { continue; }
+                    $sOrder[] = new Zend_Db_Expr(((string) $aColumns[$colIdx]) . ' ' . $sortDir);
                 }
             }
         }

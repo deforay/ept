@@ -34,8 +34,10 @@ class Application_Service_Evaluation
             $sOrder = '';
             for ($i = 0; $i < intval($parameters['iSortingCols']); $i++) {
                 if ($parameters['bSortable_' . intval($parameters['iSortCol_' . $i])] == 'true') {
-                    $sOrder .= $orderColumns[intval($parameters['iSortCol_' . $i])] . '
-					' . ($parameters['sSortDir_' . $i]) . ', ';
+                    $colIdx = intval($parameters['iSortCol_' . $i]);
+                    if (!isset($orderColumns[$colIdx])) { continue; }
+                    $sOrder .= $orderColumns[$colIdx] . '
+					' . Pt_Commons_General::sanitizeSortDirection($parameters['sSortDir_' . $i]) . ', ';
                 }
             }
 
@@ -1500,7 +1502,7 @@ class Application_Service_Evaluation
                 if (!isset($orderColumns[$colIdx]) || $orderColumns[$colIdx] === null) {
                     continue;
                 }
-                $dir = (strtolower($parameters['sSortDir_' . $i] ?? 'asc') === 'desc') ? 'DESC' : 'ASC';
+                $dir = Pt_Commons_General::sanitizeSortDirection($parameters['sSortDir_' . $i] ?? 'asc');
                 $expr = ($orderColumns[$colIdx] instanceof Zend_Db_Expr) ? (string) $orderColumns[$colIdx] : $orderColumns[$colIdx];
                 $sortClauses[] = new Zend_Db_Expr($expr . ' ' . $dir);
             }
@@ -1742,7 +1744,7 @@ class Application_Service_Evaluation
                 if (!isset($orderColumns[$colIdx]) || $orderColumns[$colIdx] === null) {
                     continue;
                 }
-                $dir = (strtolower($parameters['sSortDir_' . $i] ?? 'asc') === 'desc') ? 'DESC' : 'ASC';
+                $dir = Pt_Commons_General::sanitizeSortDirection($parameters['sSortDir_' . $i] ?? 'asc');
                 $expr = ($orderColumns[$colIdx] instanceof Zend_Db_Expr) ? (string) $orderColumns[$colIdx] : $orderColumns[$colIdx];
                 $sortClauses[] = new Zend_Db_Expr($expr . ' ' . $dir);
             }
@@ -1954,7 +1956,7 @@ class Application_Service_Evaluation
                 if (!isset($orderColumns[$colIdx]) || $orderColumns[$colIdx] === null) {
                     continue;
                 }
-                $dir = (strtolower($parameters['sSortDir_' . $i] ?? 'asc') === 'desc') ? 'DESC' : 'ASC';
+                $dir = Pt_Commons_General::sanitizeSortDirection($parameters['sSortDir_' . $i] ?? 'asc');
                 $expr = ($orderColumns[$colIdx] instanceof Zend_Db_Expr) ? (string) $orderColumns[$colIdx] : $orderColumns[$colIdx];
                 $sortClauses[] = new Zend_Db_Expr($expr . ' ' . $dir);
             }
@@ -4088,7 +4090,7 @@ class Application_Service_Evaluation
                 $colIdx = intval($parameters['iSortCol_' . $i] ?? 0);
                 if (isset($parameters['bSortable_' . $colIdx]) && $parameters['bSortable_' . $colIdx] == 'true') {
                     if (isset($aColumns[$colIdx])) {
-                        $sortDir = strtolower($parameters['sSortDir_' . $i] ?? 'asc') === 'desc' ? 'desc' : 'asc';
+                        $sortDir = Pt_Commons_General::sanitizeSortDirection($parameters['sSortDir_' . $i] ?? 'asc');
                         $sOrder[] = new Zend_Db_Expr(((string) $aColumns[$colIdx]) . ' ' . $sortDir);
                     }
                 }

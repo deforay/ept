@@ -28,8 +28,10 @@ class Application_Model_DbTable_Enrollments extends Zend_Db_Table_Abstract
             $sOrder = '';
             for ($i = 0; $i < intval($parameters['iSortingCols']); $i++) {
                 if ($parameters['bSortable_' . intval($parameters['iSortCol_' . $i])] == 'true') {
-                    $sOrder .= $aSortColumns[intval($parameters['iSortCol_' . $i])] . '
-				 	' . ($parameters['sSortDir_' . $i]) . ', ';
+                    $colIdx = intval($parameters['iSortCol_' . $i]);
+                    if (!isset($aSortColumns[$colIdx])) { continue; }
+                    $sOrder .= $aSortColumns[$colIdx] . '
+				 	' . Pt_Commons_General::sanitizeSortDirection($parameters['sSortDir_' . $i]) . ', ';
                 }
             }
 

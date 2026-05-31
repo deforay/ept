@@ -137,10 +137,12 @@ class Application_Service_Shipments
         if (isset($parameters['iSortCol_0'])) {
             $sOrder = '';
             for ($i = 0; $i < intval($parameters['iSortingCols']); $i++) {
-                if (isset($orderColumns[intval($parameters['iSortCol_' . $i])]) && !empty($orderColumns[intval($parameters['iSortCol_' . $i])])) {
+                $colIdx = intval($parameters['iSortCol_' . $i]);
+                if (!isset($orderColumns[$colIdx])) { continue; }
+                if (!empty($orderColumns[$colIdx])) {
                     if ($parameters['bSortable_' . intval($parameters['iSortCol_' . $i])] == 'true') {
-                        $sOrder .= $orderColumns[intval($parameters['iSortCol_' . $i])] . '
-                            ' . ($parameters['sSortDir_' . $i]) . ', ';
+                        $sOrder .= $orderColumns[$colIdx] . '
+                            ' . Pt_Commons_General::sanitizeSortDirection($parameters['sSortDir_' . $i]) . ', ';
                     }
                 }
             }
@@ -3919,10 +3921,12 @@ class Application_Service_Shipments
         if (isset($parameters['iSortCol_0'])) {
             $sOrder = '';
             for ($i = 0; $i < intval($parameters['iSortingCols']); $i++) {
-                if (isset($orderColumns[intval($parameters['iSortCol_' . $i])]) && !empty($orderColumns[intval($parameters['iSortCol_' . $i])])) {
+                $colIdx = intval($parameters['iSortCol_' . $i]);
+                if (!isset($orderColumns[$colIdx])) { continue; }
+                if (!empty($orderColumns[$colIdx])) {
                     if ($parameters['bSortable_' . intval($parameters['iSortCol_' . $i])] == 'true') {
-                        $sOrder .= $orderColumns[intval($parameters['iSortCol_' . $i])] . '
-                            ' . ($parameters['sSortDir_' . $i]) . ', ';
+                        $sOrder .= $orderColumns[$colIdx] . '
+                            ' . Pt_Commons_General::sanitizeSortDirection($parameters['sSortDir_' . $i]) . ', ';
                     }
                 }
             }
