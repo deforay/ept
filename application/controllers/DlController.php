@@ -59,8 +59,10 @@ class DlController extends Zend_Controller_Action
 
         $this->view->filePath = $realPath;
         $this->_helper->layout()->disableLayout();
-        // Reuse the existing /d/ view template — same Content-Disposition logic.
-        $this->_helper->viewRenderer->setRender('index', 'download');
+        // Reuse the existing /d/ view template — same Content-Disposition streaming.
+        // setNoRender prevents Zend from auto-resolving dl/index.phtml.
+        $this->_helper->viewRenderer->setNoRender(true);
+        echo $this->view->render('download/index.phtml');
 
         $auditDb = new Application_Model_DbTable_AuditLog();
         $authTag = !empty($decoded['auth']) ? '[signed,auth]' : '[signed]';
