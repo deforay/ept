@@ -1369,19 +1369,40 @@ class Application_Service_Evaluation
 
     // Lightweight header (single row) for the page chrome — no participant join.
     /**
-     * Vietnam-only per-shipment listing filters. Applies extra WHERE clauses to the
-     * given DataTables base select when the request carries `vietnamTier` and/or
-     * `vietnamNonStandardKit`. The view only renders the filter dropdowns when the
-     * shipment is Vietnam, so the params won't reach this helper for other schemes.
+     * Per-shipment listing filters applied to the DataTables base select.
      *
-     * - vietnamTier ∈ {'screening','confirmatory'} → match shipment_participant_map.attributes.dts_test_panel_type
-     * - vietnamNonStandardKit = 'yes' → restrict to participants whose primary kit on at least one sample
-     *   isn't in the country-approved set for test_no=1.
+     * Universal (every scheme, every country):
+     *   - filterResponseStatus ∈ {'responded','noresponse','late','nottested'}
+     *     → sp.response_status = <value>
+     *   - filterResult ∈ {'pass','fail','excluded'}
+     *     → sp.final_result = 1 / 2 / 3
+     *
+     * Vietnam-specific (rendered + sent only when the shipment is Vietnam):
+     *   - vietnamTier ∈ {'screening','confirmatory'}
+     *     → match sp.attributes.dts_test_panel_type
+     *   - vietnamNonStandardKit = 'yes'
+     *     → at least one sample reported on a non-reference primary kit
+     *       (test_kit_name_1 NOT IN dts_recommended_testkits.testkit WHERE test_no = 1)
+     *
+     * Unknown / empty params are ignored — params absent in the request leave the
+     * base select untouched.
      */
-    private function applyVietnamShipmentFilters(Zend_Db_Select $baseSelect, array $parameters): void
+    private function applyShipmentListFilters(Zend_Db_Select $baseSelect, array $parameters): void
     {
-        $db = $baseSelect->getAdapter();
+        // Universal: response_status
+        $responseStatus = trim((string) ($parameters['filterResponseStatus'] ?? ''));
+        if (in_array($responseStatus, ['responded', 'noresponse', 'late', 'nottested'], true)) {
+            $baseSelect->where('sp.response_status = ?', $responseStatus);
+        }
 
+        // Universal: final_result (Pass / Fail / Excluded)
+        $resultMap = ['pass' => 1, 'fail' => 2, 'excluded' => 3];
+        $resultKey = strtolower(trim((string) ($parameters['filterResult'] ?? '')));
+        if (isset($resultMap[$resultKey])) {
+            $baseSelect->where('sp.final_result = ?', $resultMap[$resultKey]);
+        }
+
+        // Vietnam-specific: tier
         $tier = trim((string) ($parameters['vietnamTier'] ?? ''));
         if ($tier === 'screening' || $tier === 'confirmatory') {
             $baseSelect->where(
@@ -1390,6 +1411,7 @@ class Application_Service_Evaluation
             );
         }
 
+        // Vietnam-specific: primary kit not in the country-approved set
         $kitFlag = strtolower(trim((string) ($parameters['vietnamNonStandardKit'] ?? '')));
         if ($kitFlag === 'yes') {
             $baseSelect->where(
@@ -1488,7 +1510,7 @@ class Application_Service_Evaluation
             )
             ->where('s.shipment_id = ?', $shipmentId);
 
-        $this->applyVietnamShipmentFilters($baseSelect, $parameters);
+        $this->applyShipmentListFilters($baseSelect, $parameters);
 
         // Total before filtering.
         $countSelect = clone $baseSelect;
@@ -1736,7 +1758,7 @@ class Application_Service_Evaluation
             )
             ->where('s.shipment_id = ?', $shipmentId);
 
-        $this->applyVietnamShipmentFilters($baseSelect, $parameters);
+        $this->applyShipmentListFilters($baseSelect, $parameters);
 
         $countSelect = clone $baseSelect;
         $countSelect->reset(Zend_Db_Select::COLUMNS)->reset(Zend_Db_Select::ORDER)->reset(Zend_Db_Select::LIMIT_COUNT)->reset(Zend_Db_Select::LIMIT_OFFSET);
@@ -1950,7 +1972,7 @@ class Application_Service_Evaluation
             $baseSelect->where('sp.manual_override = ?', $override);
         }
 
-        $this->applyVietnamShipmentFilters($baseSelect, $parameters);
+        $this->applyShipmentListFilters($baseSelect, $parameters);
 
         $countSelect = clone $baseSelect;
         $countSelect->reset(Zend_Db_Select::COLUMNS)->reset(Zend_Db_Select::ORDER)->reset(Zend_Db_Select::LIMIT_COUNT)->reset(Zend_Db_Select::LIMIT_OFFSET);

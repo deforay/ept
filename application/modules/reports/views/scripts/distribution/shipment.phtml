@@ -207,27 +207,46 @@ if (!empty($this->shipment)) {
 
             </div>
         <?php } ?>
-        <?php if (($this->dtsSchemeType ?? '') === 'vietnam') { ?>
-            <div class="vietnam-filters" style="clear:both;margin:15px 0;padding:12px 14px;background:#f8f9fa;border:1px solid #e2e8f0;border-radius:4px;">
-                <div class="row" style="margin:0;">
-                    <div class="col-md-3" style="padding-left:0;">
+        <div class="shipment-filters" style="clear:both;margin:15px 0;padding:12px 14px;background:#f8f9fa;border:1px solid #e2e8f0;border-radius:4px;">
+            <div class="row" style="margin:0;">
+                <div class="col-md-3" style="padding-left:0;">
+                    <label for="filterResponseStatus" style="font-weight:600;font-size:13px;display:block;margin-bottom:4px;"><?= $this->htmlTranslate("Response status"); ?></label>
+                    <select id="filterResponseStatus" class="form-control input-sm" onchange="applyShipmentFilters()">
+                        <option value=""><?= $this->htmlTranslate("All"); ?></option>
+                        <option value="responded"><?= $this->htmlTranslate("Responded"); ?></option>
+                        <option value="noresponse"><?= $this->htmlTranslate("Not Responded"); ?></option>
+                        <option value="late"><?= $this->htmlTranslate("Late Response"); ?></option>
+                        <option value="nottested"><?= $this->htmlTranslate("Not Tested"); ?></option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label for="filterResult" style="font-weight:600;font-size:13px;display:block;margin-bottom:4px;"><?= $this->htmlTranslate("Result"); ?></label>
+                    <select id="filterResult" class="form-control input-sm" onchange="applyShipmentFilters()">
+                        <option value=""><?= $this->htmlTranslate("All"); ?></option>
+                        <option value="pass"><?= $this->htmlTranslate("Pass"); ?></option>
+                        <option value="fail"><?= $this->htmlTranslate("Fail"); ?></option>
+                        <option value="excluded"><?= $this->htmlTranslate("Excluded"); ?></option>
+                    </select>
+                </div>
+                <?php if (($this->dtsSchemeType ?? '') === 'vietnam') { ?>
+                    <div class="col-md-3">
                         <label for="vietnamTier" style="font-weight:600;font-size:13px;display:block;margin-bottom:4px;"><?= $this->htmlTranslate("Tier"); ?></label>
-                        <select id="vietnamTier" class="form-control input-sm" onchange="applyVietnamFilters()">
+                        <select id="vietnamTier" class="form-control input-sm" onchange="applyShipmentFilters()">
                             <option value=""><?= $this->htmlTranslate("All tiers"); ?></option>
                             <option value="screening"><?= $this->htmlTranslate("Screening"); ?></option>
                             <option value="confirmatory"><?= $this->htmlTranslate("Confirmatory"); ?></option>
                         </select>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <label for="vietnamNonStandardKit" style="font-weight:600;font-size:13px;display:block;margin-bottom:4px;"><?= $this->htmlTranslate("Primary kit"); ?></label>
-                        <select id="vietnamNonStandardKit" class="form-control input-sm" onchange="applyVietnamFilters()">
+                        <select id="vietnamNonStandardKit" class="form-control input-sm" onchange="applyShipmentFilters()">
                             <option value=""><?= $this->htmlTranslate("All kits"); ?></option>
                             <option value="yes"><?= $this->htmlTranslate("Non-reference kit only"); ?></option>
                         </select>
                     </div>
-                </div>
+                <?php } ?>
             </div>
-        <?php } ?>
+        </div>
         <br /><br />
         <table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered table-hover"
             id="shipmentEvaluation" style="margin:10px auto;">
@@ -358,6 +377,11 @@ if (!empty($this->shipment)) {
                     "bServerSide": true,
                     "sAjaxSource": "<?php echo $this->url(['module' => 'reports', 'controller' => 'distribution', 'action' => 'shipment', 'sid' => base64_encode($this->shipmentId), 'format' => 'html']); ?>",
                     "fnServerParams": function (aoData) {
+                        // Universal filters (all schemes / countries).
+                        var rs = $('#filterResponseStatus').val() || '';
+                        var rr = $('#filterResult').val() || '';
+                        if (rs) { aoData.push({ "name": "filterResponseStatus", "value": rs }); }
+                        if (rr) { aoData.push({ "name": "filterResult", "value": rr }); }
                         <?php if (($this->dtsSchemeType ?? '') === 'vietnam') { ?>
                             var tier = $('#vietnamTier').val() || '';
                             var kit  = $('#vietnamNonStandardKit').val() || '';
@@ -394,8 +418,8 @@ if (!empty($this->shipment)) {
                 });
             });
 
-            // Vietnam-only listing filters — redraw the DataTable; fnServerParams reads the dropdown values.
-            function applyVietnamFilters() {
+            // Universal + per-scheme listing filters — redraw the DataTable; fnServerParams reads the dropdown values.
+            function applyShipmentFilters() {
                 var $t = $('#shipmentEvaluation');
                 if ($t.length && $.fn.DataTable && $.fn.DataTable.isDataTable($t)) {
                     $t.dataTable().fnDraw();
