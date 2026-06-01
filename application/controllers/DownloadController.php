@@ -56,7 +56,8 @@ class DownloadController extends Zend_Controller_Action
         //$this->_helper->viewRenderer->setNoRender(true);
 
         $auditDb = new Application_Model_DbTable_AuditLog();
-        $signedTag = Pt_Commons_DownloadUrlSigner::hasSignature($exp, $sig) ? '[signed]' : '[unsigned]';
-        $auditDb->addNewAuditLog('Downloaded file ' . $signedTag . ' - ' . basename($realPath), 'download');
+        // Tagged [unsigned] so the audit log makes it easy to spot any remaining
+        // legacy callers — once this column is empty for a while, /d/ can be deleted.
+        $auditDb->addNewAuditLog('Downloaded file [unsigned] - ' . basename($realPath), 'download');
     }
 }
