@@ -53,10 +53,6 @@ class Admin_SchemesController extends Zend_Controller_Action
             }
         } elseif ($this->hasParam('id')) {
             $id = base64_decode($this->_getParam('id'));
-            if ($id == 'vl') {
-                $alertMsgInit->message = "Viral Load doesn't have the scheme results";
-                $this->redirect('/admin/schemes/test-results');
-            }
             $this->view->results = $commonServices->getPossibleResultById($id);
         }
     }

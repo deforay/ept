@@ -3,10 +3,10 @@
 if ($this->shipments == false && count($this->shipments) <= 0) {
 	echo "<br/><br/><br/><h4 style='text-align:center;'>" . $this->translate->_("Unable to fetch shipments. Please try again later or contact system admin for help") . "</h4>";
 } else {
-	// Initialize date checks for report generation
-	$currentDate = date('Y-m-d');
-	$distributionDate = $this->shipments[0]['distribution_date'];
-	$canGenerateIndividualReport = ($distributionDate < $currentDate) ? 1 : 0;
+	// Reports can be (re)generated once the shipment is evaluated. Previously
+	// gated on PT Survey Date < today; that gate has been removed.
+	$shipmentStatusForGate = strtolower((string) ($this->shipments[0]['status'] ?? ''));
+	$canGenerateIndividualReport = in_array($shipmentStatusForGate, ['evaluated', 'reports generated', 'finalized'], true) ? 1 : 0;
 	?>
 
 

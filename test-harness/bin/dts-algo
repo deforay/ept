@@ -1,0 +1,350 @@
+#!/usr/bin/env php
+<?php
+
+declare(strict_types=1);
+
+namespace EptTestHarness;
+
+// Plain require_once — the harness has no autoloader of its own and never touches
+// the app's autoloader. This is the whole point of "completely independent".
+$root = dirname(__DIR__);
+require_once $root . '/src/Config.php';
+require_once $root . '/src/Db.php';
+require_once $root . '/src/Variants.php';
+require_once $root . '/src/AppSettings.php';
+require_once $root . '/src/Aberrations/Vietnam.php';
+require_once $root . '/src/Provisioner.php';
+require_once $root . '/src/Evaluator.php';
+require_once $root . '/src/Asserter.php';
+require_once $root . '/src/Cleanup.php';
+
+$repoRoot = dirname($root); // test-harness/bin → test-harness → repo root
+
+$argv = $_SERVER['argv'] ?? [];
+$flag = $argv[1] ?? '';
+
+if ($flag === '--help' || $flag === '-h') {
+    print_help();
+    exit(0);
+}
+
+$config = Config::load($repoRoot);
+$db     = new Db($config);
+
+if ($flag === '--cleanup-all') {
+    fwrite(STDOUT, "Nuking ALL ATEST-* rows...\n");
+    $r = (new Cleanup($db))->nuke();
+    fwrite(STDOUT, "  shipments    : {$r['shipments']}\n");
+    fwrite(STDOUT, "  distributions: {$r['distributions']}\n");
+    fwrite(STDOUT, "  participants : {$r['participants']}\n");
+    if (!empty($r['restored'])) {
+        fwrite(STDOUT, "Global settings restored from oldest ATEST stash:\n");
+        foreach ($r['restored'] as $k => $v) {
+            $display = is_scalar($v) ? "'$v'" : '(' . count((array) $v) . ' entries)';
+            fwrite(STDOUT, "  $k = $display\n");
+        }
+    } elseif ($r['shipments'] > 0) {
+        fwrite(STDOUT, "(No prior-settings stash found — dtsSchemeType / report-layout may still be the harness's value. Flip back manually if needed.)\n");
+    }
+    exit(0);
+}
+
+if ($flag === '--cleanup-shipments') {
+    fwrite(STDOUT, "Wiping all ATEST-* shipments (keeping participants + scheme_config flipped)...\n");
+    $r = (new Cleanup($db))->nukeShipments();
+    fwrite(STDOUT, "  shipments    : {$r['shipments']}\n");
+    fwrite(STDOUT, "  distributions: {$r['distributions']}\n");
+    exit(0);
+}
+
+if ($flag === '--cleanup') {
+    $arg = $argv[2] ?? '';
+    if ($arg === '') {
+        fwrite(STDERR, "Usage: --cleanup <shipment_id-or-code>\n");
+        exit(2);
+    }
+    $row = ctype_digit($arg)
+        ? $db->one("SELECT shipment_id, shipment_code FROM shipment WHERE shipment_id = ?", [(int) $arg])
+        : $db->one("SELECT shipment_id, shipment_code FROM shipment WHERE shipment_code = ?", [$arg]);
+    if ($row === null) {
+        fwrite(STDERR, "No shipment found for '$arg'. (Already cleaned up? `--cleanup-all` to sweep everything.)\n");
+        exit(2);
+    }
+    $shipmentId = (int) $row['shipment_id'];
+    $code = (string) $row['shipment_code'];
+    if (!str_starts_with($code, 'ATEST-')) {
+        fwrite(STDERR, "Refusing to delete shipment '$code' (id=$shipmentId) — not an ATEST-* shipment.\n");
+        exit(2);
+    }
+    $result = (new Cleanup($db))->deleteShipment($shipmentId);
+    fwrite(STDOUT, "Deleted shipment $shipmentId ($code) and its responses, samples, participant maps, and distribution.\n");
+    if (!empty($result['restored'])) {
+        fwrite(STDOUT, "Global settings restored:\n");
+        foreach ($result['restored'] as $k => $v) {
+            fwrite(STDOUT, "  $k = '$v'\n");
+        }
+    }
+    exit(0);
+}
+
+run_interactive($config, $db);
+
+// ─────────────────────────────────────────────────────────────────────────────
+
+function print_help(): void
+{
+    $help = <<<TXT
+DTS Algorithm Test Harness — dev-only.
+
+Usage:
+  APPLICATION_ENV=development php test-harness/bin/dts-algo
+  APPLICATION_ENV=development php test-harness/bin/dts-algo --cleanup <id-or-code>
+  APPLICATION_ENV=development php test-harness/bin/dts-algo --cleanup-all
+  php test-harness/bin/dts-algo --help
+
+Refuses to run unless APPLICATION_ENV is 'development' or 'testing'.
+
+What it does:
+  1. Prompts for variant, participant count, per-aberration counts.
+  2. Provisions an ATEST-* shipment, samples, participant maps, and responses.
+  3. Runs scheduled-jobs/evaluate-shipments.php on that shipment as a subprocess.
+  4. Compares per-sample calculated_score against the independent expectations
+     from expectations/<variant>.php (declared from spec, NOT from the algorithm).
+  5. Prints PASS/FAIL summary and leaves the shipment in place for inspection.
+
+Cleanup options (run when you're done poking around):
+  --cleanup <shipment_id>  delete that ATEST-* shipment + its rows
+  --cleanup <ATEST-XXXXXX> same, by shipment_code
+  --cleanup-all            wipe every ATEST-* shipment, distribution, and participant
+TXT;
+    fwrite(STDOUT, $help . "\n");
+}
+
+function run_interactive(Config $config, Db $db): void
+{
+    fwrite(STDOUT, "DTS Algorithm Test Harness — env={$config->env}, db={$config->dbName}\n\n");
+
+    // 1. Variant
+    $variants = Variants::all();
+    $variantKeys = array_keys($variants);
+    if (count($variantKeys) === 1) {
+        $variantKey = $variantKeys[0];
+        fwrite(STDOUT, "Variant: {$variants[$variantKey]['label']} (only option in Phase 1)\n");
+    } else {
+        fwrite(STDOUT, "Variant:\n");
+        foreach ($variantKeys as $i => $k) {
+            fwrite(STDOUT, sprintf("  [%d] %s\n", $i + 1, $variants[$k]['label']));
+        }
+        $idx = (int) prompt("Pick a variant", '1');
+        $variantKey = $variantKeys[$idx - 1] ?? $variantKeys[0];
+    }
+    $variant = $variants[$variantKey];
+
+    // 2. Aberration catalogue from the variant's aberrations class
+    $abClass = $variant['aberrations'];
+    /** @var array $catalogue */
+    $catalogue = $abClass::catalogue();
+
+    fwrite(STDOUT, "\nAvailable aberrations for $variantKey:\n");
+    foreach ($catalogue as $key => $meta) {
+        $tiers = implode('+', $meta['allowed_tiers']);
+        fwrite(STDOUT, sprintf("  %-38s [%s]  %s\n", $key, $tiers, $meta['label']));
+    }
+
+    // 3. Auto-distribute OR per-aberration counts.
+    $auto = strtolower(trim(prompt("\nAuto-distribute aberrations across labs? [Y/n]", 'y')));
+    if ($auto === '' || $auto === 'y' || $auto === 'yes') {
+        $total = max(1, (int) prompt("Total labs", '100'));
+        $assignments = auto_distribute($catalogue, $total);
+    } else {
+        fwrite(STDOUT, "\nEnter number of participants to assign to each aberration. Blank or 0 = skip.\n");
+        $assignments = [];
+        foreach ($catalogue as $key => $meta) {
+            $count = (int) prompt("  $key", '0');
+            if ($count <= 0) {
+                continue;
+            }
+            $tiers = $meta['allowed_tiers'];
+            if (count($tiers) > 1) {
+                $confPct = (int) prompt("    of those, % confirmatory (rest screening)", '50');
+                $confPct = max(0, min(100, $confPct));
+                $confCount = (int) round($count * $confPct / 100);
+                $screenCount = $count - $confCount;
+                for ($i = 0; $i < $screenCount; $i++) {
+                    $assignments[] = ['aberration' => $key, 'tier' => 'screening'];
+                }
+                for ($i = 0; $i < $confCount; $i++) {
+                    $assignments[] = ['aberration' => $key, 'tier' => 'confirmatory'];
+                }
+            } else {
+                for ($i = 0; $i < $count; $i++) {
+                    $assignments[] = ['aberration' => $key, 'tier' => $tiers[0]];
+                }
+            }
+        }
+    }
+
+    if (empty($assignments)) {
+        fwrite(STDERR, "\nNo participants assigned. Nothing to do.\n");
+        exit(1);
+    }
+
+    $total = count($assignments);
+
+    // 4. Summary + confirm
+    $tierCounts = ['screening' => 0, 'confirmatory' => 0];
+    $abCounts = [];
+    foreach ($assignments as $a) {
+        $tierCounts[$a['tier']]++;
+        $abCounts[$a['aberration']] = ($abCounts[$a['aberration']] ?? 0) + 1;
+    }
+    fwrite(STDOUT, "\n─────────────────────────────────────────────\n");
+    fwrite(STDOUT, "Variant      : $variantKey ({$variant['label']})\n");
+    fwrite(STDOUT, "Total labs   : $total  (screening={$tierCounts['screening']}, confirmatory={$tierCounts['confirmatory']})\n");
+    fwrite(STDOUT, "Aberrations  :\n");
+    foreach ($abCounts as $k => $c) {
+        fwrite(STDOUT, sprintf("  %-38s %d\n", $k, $c));
+    }
+    fwrite(STDOUT, "─────────────────────────────────────────────\n");
+
+    $proceed = strtolower(trim(prompt("Proceed? [y/N]", 'n')));
+    if ($proceed !== 'y' && $proceed !== 'yes') {
+        fwrite(STDOUT, "Aborted.\n");
+        exit(0);
+    }
+
+    // 5. Run pipeline
+    fwrite(STDOUT, "\n[1/3] Provisioning shipment...\n");
+    $provision = (new Provisioner($db))->provision($variantKey, $assignments);
+    fwrite(STDOUT, "      shipment_id={$provision['shipment_id']}  code={$provision['shipment_code']}\n");
+    if (!empty($provision['settings_stash'])) {
+        fwrite(STDOUT, "      global settings flipped (prior values stashed; restored on --cleanup):\n");
+        $current = ['dtsSchemeType' => $variant['schemeType'], 'reportLayout' => $variant['reportLayout'] ?? null];
+        foreach ($provision['settings_stash'] as $k => $prev) {
+            if (!is_scalar($prev)) {
+                fwrite(STDOUT, "        $k: " . count((array) $prev) . " entries flipped (restored on cleanup)\n");
+                continue;
+            }
+            $now = is_scalar($current[$k] ?? null) ? $current[$k] : '?';
+            $prevDisplay = $prev === '' ? "''" : "'$prev'";
+            fwrite(STDOUT, "        $k: $prevDisplay → '$now'\n");
+        }
+    }
+
+    fwrite(STDOUT, "[2/3] Evaluating (subprocess)...\n");
+    (new Evaluator($config))->evaluate($provision['shipment_id']);
+
+    fwrite(STDOUT, "[3/3] Asserting against expectations...\n\n");
+    $result = (new Asserter($db))->assert($variantKey, $provision);
+    report_results($provision, $result);
+
+    fwrite(STDOUT, "\nShipment left in place. Inspect at your leisure.\n");
+    fwrite(STDOUT, "  shipment_id  = {$provision['shipment_id']}\n");
+    fwrite(STDOUT, "  shipment_code = {$provision['shipment_code']}\n\n");
+    fwrite(STDOUT, "When done, clean up with one of:\n");
+    fwrite(STDOUT, "  php test-harness/bin/dts-algo --cleanup {$provision['shipment_id']}\n");
+    fwrite(STDOUT, "  php test-harness/bin/dts-algo --cleanup {$provision['shipment_code']}\n");
+    fwrite(STDOUT, "  php test-harness/bin/dts-algo --cleanup-all       (wipes every ATEST-* row)\n");
+
+    exit($result['fails'] === 0 ? 0 : 1);
+}
+
+function report_results(array $provision, array $result): void
+{
+    $total = count($provision['assignments']);
+    fwrite(STDOUT, "─────────────────────────────────────────────\n");
+    fwrite(STDOUT, "Shipment: {$provision['shipment_code']} (id={$provision['shipment_id']})\n");
+    fwrite(STDOUT, "PASS  {$result['passes']}/$total participants — all sample verdicts match expectations\n");
+    fwrite(STDOUT, "FAIL  {$result['fails']}/$total participants\n");
+    if (!empty($result['mismatches'])) {
+        fwrite(STDOUT, "\nMismatches:\n");
+        foreach ($result['mismatches'] as $m) {
+            fwrite(STDOUT, sprintf(
+                "  map=%d  participant=%d  tier=%s  aberration=%s\n",
+                $m['map_id'],
+                $m['participant'],
+                $m['tier'],
+                $m['aberration']
+            ));
+            if (isset($m['samples'])) {
+                foreach ($m['samples'] as $s) {
+                    fwrite(STDOUT, "    $s\n");
+                }
+            }
+            if (isset($m['reason'])) {
+                fwrite(STDOUT, "    {$m['reason']}\n");
+            }
+        }
+    }
+    fwrite(STDOUT, "─────────────────────────────────────────────\n");
+}
+
+/**
+ * Heuristic default distribution: half the labs go to 'fully_correct' (if present),
+ * the rest are spread evenly across the remaining aberrations. Multi-tier aberrations
+ * split 50/50 between their allowed tiers. Tweak as needed; this is just a default.
+ *
+ * @param array $catalogue  Aberrations::catalogue() output
+ * @return array<int, array{aberration:string, tier:string}>
+ */
+function auto_distribute(array $catalogue, int $total): array
+{
+    $hasFullyCorrect = isset($catalogue['fully_correct']);
+    $otherKeys = array_values(array_filter(array_keys($catalogue), fn ($k) => $k !== 'fully_correct'));
+
+    $fcCount = $hasFullyCorrect ? (int) round($total * 0.5) : 0;
+    $remaining = $total - $fcCount;
+
+    // Spread the remainder across the "other" aberrations as evenly as possible.
+    $per = [];
+    $n = max(1, count($otherKeys));
+    $base = intdiv($remaining, $n);
+    $extra = $remaining - ($base * $n);
+    foreach ($otherKeys as $i => $k) {
+        $per[$k] = $base + ($i < $extra ? 1 : 0);
+    }
+
+    $assignments = [];
+
+    $emit = function (string $key, int $count, array $meta) use (&$assignments) {
+        if ($count <= 0) {
+            return;
+        }
+        $tiers = $meta['allowed_tiers'];
+        if (count($tiers) === 1) {
+            for ($i = 0; $i < $count; $i++) {
+                $assignments[] = ['aberration' => $key, 'tier' => $tiers[0]];
+            }
+            return;
+        }
+        // Multi-tier: 50/50 split, deterministic.
+        $half = intdiv($count, 2);
+        for ($i = 0; $i < $half; $i++) {
+            $assignments[] = ['aberration' => $key, 'tier' => $tiers[0]];
+        }
+        for ($i = $half; $i < $count; $i++) {
+            $assignments[] = ['aberration' => $key, 'tier' => $tiers[1]];
+        }
+    };
+
+    if ($hasFullyCorrect) {
+        $emit('fully_correct', $fcCount, $catalogue['fully_correct']);
+    }
+    foreach ($otherKeys as $k) {
+        $emit($k, $per[$k], $catalogue[$k]);
+    }
+
+    return $assignments;
+}
+
+function prompt(string $question, string $default = ''): string
+{
+    $suffix = $default !== '' ? " [$default]" : '';
+    fwrite(STDOUT, "$question$suffix: ");
+    $line = fgets(STDIN);
+    if ($line === false) {
+        return $default;
+    }
+    $line = trim($line);
+    return $line === '' ? $default : $line;
+}

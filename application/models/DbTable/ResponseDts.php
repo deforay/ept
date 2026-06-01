@@ -83,6 +83,7 @@ class Application_Model_DbTable_ResponseDts extends Zend_Db_Table_Abstract
                     'repeat_test_result_3' => $params['repeat_test_result_3'][$key] ?? null,
                     'kit_additional_info' => !empty($params['additionalInfoKit'][$sampleId]) ? json_encode($params['additionalInfoKit'][$sampleId], true) : null,
                     'reported_result' => (isset($params['reported_result'][$sampleId])) ? $params['reported_result'][$sampleId] : null,
+                    'lab_comment' => $params['lab_comment'][$sampleId] ?? null,
                     'syphilis_final' => (isset($params['syphilis_final'][$sampleId])) ? $params['syphilis_final'][$sampleId] : null,
                     'is_this_retest' => (isset($params['is_this_retest'][$sampleId])) ? $params['is_this_retest'][$sampleId] : null,
                 ];
@@ -143,6 +144,7 @@ class Application_Model_DbTable_ResponseDts extends Zend_Db_Table_Abstract
             'repeat_exp_date_2' => '',
             'repeat_exp_date_3' => '',
             'reported_result' => '',
+            'lab_comment' => null,
             'syphilis_final' => '',
             'is_this_retest' => '',
             'dts_rtri_control_line' => '',
@@ -259,6 +261,7 @@ class Application_Model_DbTable_ResponseDts extends Zend_Db_Table_Abstract
                     'repeat_test_result_2' => (isset($params['dtsData']->Section4->data->samples->repeatResult2[$key]->value) && $params['dtsData']->Section4->data->samples->repeatResult2[$key]->value != '') ? $params['dtsData']->Section4->data->samples->repeatResult2[$key]->value : '',
                     'repeat_test_result_3' => $repeatResult3,
                     'reported_result' => (isset($params['dtsData']->Section4->data->samples->finalResult[$key]->value) && $params['dtsData']->Section4->data->samples->finalResult[$key]->value != '') ? (string) $params['dtsData']->Section4->data->samples->finalResult[$key]->value : '',
+                    'lab_comment' => $params['dtsData']->Section4->data->samples->labComment[$key]->value ?? null,
                 ];
 
                 if (empty($res)) {
@@ -359,6 +362,7 @@ class Application_Model_DbTable_ResponseDts extends Zend_Db_Table_Abstract
                 'repeat_test_result_3' => $params['repeat_test_result_3']->$key ?? null,
                 'kit_additional_info' => !empty($params['additionalInfoKit']->$sampleId) ? json_encode($params['additionalInfoKit']->$sampleId, true) : null,
                 'reported_result' => (isset($params['reported_result']->$key)) ? $params['reported_result']->$key : null,
+                'lab_comment' => $params['lab_comment']->$key ?? null,
                 'syphilis_final' => (isset($params['syphilis_final']->$key)) ? $params['syphilis_final']->$key : null,
                 'is_this_retest' => (isset($params['is_this_retest']->$key)) ? $params['is_this_retest']->$key : null,
             ];

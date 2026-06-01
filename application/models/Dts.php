@@ -199,6 +199,7 @@ final class Application_Model_Dts
         $failureReason = [];
         $correctiveActionList = [];
         $algoResult = '';
+        $anyAlgoFail = false; // sticky: true if any per-sample algo verdict was Fail
         $lastDateResult = '';
         $controlTesKitFail = '';
 
@@ -540,6 +541,12 @@ final class Application_Model_Dts
                 );
 
                 $algoResult = $algo['algoResult'];
+                // Track participant-level "any sample failed" so the overall verdict
+                // reflects the worst sample, not just the last one. Used below for the
+                // Vietnam scheme (qualitative: any Unacceptable → participant Fail).
+                if ($algoResult === 'Fail') {
+                    $anyAlgoFail = true;
+                }
                 $scorePercentageForAlgorithm = $algo['scorePct'];            // 0 or 0.5 for Myanmar
                 $sypAlgoResult = $algo['sypAlgoResult'];
                 $rtriAlgoResult = $algo['rtriAlgoResult'];
@@ -638,9 +645,12 @@ final class Application_Model_Dts
                         }
                     }
 
-                    // Screening: Check if test result is consistent with reported interpretation (global rule)
+                    // Screening: Check if test result is consistent with reported interpretation (global rule).
+                    // Vietnam screening labs are tier-aware and intentionally report final = Inconclusive
+                    // even with a Reactive test result — algoVietnam handles that. Skip the generic
+                    // consistency rule for the Vietnam scheme so it doesn't double-flag.
                     $screeningConsistent = true;
-                    if ($isScreening) {
+                    if ($isScreening && $dtsSchemeType !== 'vietnam') {
                         $screeningConsistent = $this->isTestResultConsistentWithReported($result1, $reportedResultCode);
                         if (!$screeningConsistent) {
                             $failureReason[] = [
@@ -651,7 +661,18 @@ final class Application_Model_Dts
                         }
                     }
 
-                    if (!$screeningConsistent) {
+                    if ($dtsSchemeType === 'vietnam') {
+                        // Vietnam (NIHE) is qualitative and tier-aware: algoVietnam already
+                        // emitted the per-sample verdict + feedback text. A screening lab's
+                        // correct response for a P sample is INC (not P), so the generic
+                        // reference==reported comparison would mis-fire here — skip it.
+                        if ($algoResult !== 'Fail') {
+                            $totalScore += $scoreForSample + $scoreForAlgorithm;
+                            $correctResponse = true;
+                        } else {
+                            $correctResponse = false;
+                        }
+                    } elseif (!$screeningConsistent) {
                         // Screening: Test result inconsistent with reported → 0 score
                         $correctResponse = false;
                     } elseif ($result['reference_result'] == $result['reported_result']) {
@@ -725,7 +746,12 @@ final class Application_Model_Dts
             // Calculating the max score -- will be used in calculations later
             $maxScore += $scoreForSample + $scoreForAlgorithm;
 
-            $interpretationResult = ($result['reference_result'] == $result['reported_result']) ? 'Pass' : 'Fail';
+            // Vietnam (NIHE) is qualitative — INC for a P sample on a screening lab is
+            // the correct response, so the generic reference==reported test is wrong here.
+            // Trust algoVietnam's verdict instead.
+            $interpretationResult = ($dtsSchemeType === 'vietnam')
+                ? (($algoResult !== 'Fail') ? 'Pass' : 'Fail')
+                : (($result['reference_result'] == $result['reported_result']) ? 'Pass' : 'Fail');
 
             foreach ($testKitMeta as $kitIndex => $fields) {
                 $kitResultValue = $result[$fields['resultField']] ?? null;
@@ -848,7 +874,8 @@ final class Application_Model_Dts
         // D.1
         if (isset($results[0]['shipment_receipt_date']) && !empty($results[0]['shipment_receipt_date'])) {
             $documentationScore += $documentationScorePerItem;
-        } else {
+        } elseif ($dtsSchemeType !== 'vietnam') {
+            // Vietnam is qualitative; documentation warnings aren't part of the NIHE report.
             $failureReason[] = [
                 'warning' => 'Shipment Receipt Date not provided',
                 'correctiveAction' => $correctiveActions[16],
@@ -912,8 +939,9 @@ final class Application_Model_Dts
         }
 
         //D.8
-        // For Myanmar National Algorithm, they do not want to check for Supervisor Approval
-        if ($dtsSchemeType != 'myanmar' && $attributes['algorithm'] != 'myanmarNationalDtsAlgo') {
+        // Myanmar and Vietnam don't include Supervisor Approval in documentation scoring
+        // (Myanmar: explicit ask; Vietnam: qualitative report — no doc score at all).
+        if ($dtsSchemeType != 'myanmar' && $dtsSchemeType != 'vietnam' && $attributes['algorithm'] != 'myanmarNationalDtsAlgo') {
             if (isset($results[0]['supervisor_approval']) && strtolower($results[0]['supervisor_approval']) == 'yes' && trim($results[0]['participant_supervisor']) != '') {
                 $documentationScore += $documentationScorePerItem;
             } else {
@@ -993,8 +1021,13 @@ final class Application_Model_Dts
         } else {
             $shipment['is_excluded'] = 'no';
 
+            // For Vietnam (qualitative, per-sample Acceptable/Unacceptable), any one
+            // Unacceptable sample makes the participant Fail overall. For other schemes,
+            // preserve the legacy behavior of looking at the last-iteration $algoResult.
+            $participantAlgoFail = ($dtsSchemeType === 'vietnam') ? $anyAlgoFail : ($algoResult == 'Fail');
+
             // if any of the results have failed, then the final result is fail
-            if ($algoResult == 'Fail' || $scoreResult == 'Fail' || $lastDateResult == 'Fail' || $mandatoryResult == 'Fail' || $lotResult == 'Fail' || $testKitExpiryResult == 'Fail') {
+            if ($participantAlgoFail || $scoreResult == 'Fail' || $lastDateResult == 'Fail' || $mandatoryResult == 'Fail' || $lotResult == 'Fail' || $testKitExpiryResult == 'Fail') {
                 $finalResult = 2;
                 $shipmentResultEntry['is_followup'] = 'yes';
                 $shipment['is_followup'] = 'yes';
@@ -1145,6 +1178,7 @@ final class Application_Model_Dts
                 'repeat_test_result_2',
                 'repeat_test_result_3',
                 'reported_result',
+                'lab_comment',
                 'syphilis_final',
                 'dts_rtri_control_line',
                 'dts_rtri_diagnosis_line',
@@ -2673,6 +2707,9 @@ final class Application_Model_Dts
         $REVIEW_SAMPLE = 'Review testing procedures and sample handling';
         $REFER_CONF    = 'Sample should be referred to confirmation lab';
         $SCREEN_NO_POS = 'Screening labs must not conclude "HIV Positive." Samples should be reported as "Inconclusive" and referred for confirmatory testing';
+        $NEED_SENT_CONF = 'Inconclusive screening result must be marked "Sent for confirmation"';
+
+        $labComment = strtolower(trim((string) ($result['lab_comment'] ?? '')));
 
         if ($isScreening) {
             // 1. A screening lab must never conclude Positive.
@@ -2685,13 +2722,18 @@ final class Application_Model_Dts
                 $this->vietnamFeedback($out, $sampleLabel, $REVIEW_KIT, true);
                 return;
             }
-            // 3. Correctly-called Negative -> follow MOH; Inconclusive/Indeterminate -> refer.
+            // 3. Correctly-called Negative -> follow MOH; Inconclusive -> must be
+            //    marked "Sent for confirmation" (criterion #3 in the screening rules).
             if ($ref === 'N' && $final === 'N') {
                 $out['algoResult'] = 'Pass';
                 $this->vietnamFeedback($out, $sampleLabel, $FOLLOW_MOH);
                 return;
             }
             if (in_array($final, ['INC', 'I'], true)) {
+                if ($labComment !== 'sent_for_confirmation') {
+                    $this->vietnamFeedback($out, $sampleLabel, $NEED_SENT_CONF, true);
+                    return;
+                }
                 $out['algoResult'] = 'Pass';
                 $this->vietnamFeedback($out, $sampleLabel, $REFER_CONF);
                 return;
@@ -3161,12 +3203,17 @@ final class Application_Model_Dts
             (isset($shipmentAttributes['screeningTest']) && $shipmentAttributes['screeningTest'] == 'yes')
             || (isset($participantAttributes['dts_test_panel_type']) && $participantAttributes['dts_test_panel_type'] === 'screening')
         ) {
-            $testTwoHidden = true;
-            $testThreeHidden = true;
             $screeningTest = true;
-            $allowRepeatTests = $repeatTest1 = false;
-            if (isset($participantAttributes['algorithm']) && $participantAttributes['algorithm'] != 'myanmarNationalDtsAlgo') {
-                $allowedAlgorithms = ['screening'];
+            // Vietnam (NIHE) screening labs may still run up to three tests — they just
+            // can't conclude Positive on their own. Keep all three columns visible for
+            // them; the algorithm enforces the tier-specific rules.
+            if ($dtsSchemeType !== 'vietnam') {
+                $testTwoHidden = true;
+                $testThreeHidden = true;
+                $allowRepeatTests = $repeatTest1 = false;
+                if (isset($participantAttributes['algorithm']) && $participantAttributes['algorithm'] != 'myanmarNationalDtsAlgo') {
+                    $allowedAlgorithms = ['screening'];
+                }
             }
         }
 

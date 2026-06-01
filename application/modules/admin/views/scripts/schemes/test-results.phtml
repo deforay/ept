@@ -4,7 +4,8 @@ $adminSession = new Zend_Session_Namespace('administrators');
 <h4 style="width:100%;height:50px;border-bottom:1px solid #777;">
 
     <div style="font-size:22.5px;line-height:36px;color:#333;float:left;">
-        <?= $this->translate->_("List of All Schemes Results"); ?></div>
+        <?= $this->translate->_("Scheme Test Results"); ?>
+    </div>
 </h4>
 <table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered table-hover"
     id="possibleResultsTable">
@@ -25,7 +26,7 @@ $adminSession = new Zend_Session_Namespace('administrators');
 <script type="text/javascript" charset="utf-8">
     /* Table initialisation */
     var oTable = null;
-    $(document).ready(function() {
+    $(document).ready(function () {
         drawTable();
     });
 
@@ -50,18 +51,18 @@ $adminSession = new Zend_Session_Namespace('administrators');
             "bRetrieve": false,
             "bDestroy": true,
             "aoColumns": [{
-                    "sClass": "center"
-                },
-                {
-                    "sClass": "center"
-                },
-                {
-                    "sClass": "center"
-                },
-                {
-                    "sClass": "center",
-                    "bSortable": false
-                }
+                "sClass": "left"
+            },
+            {
+                "sClass": "center"
+            },
+            {
+                "sClass": "center"
+            },
+            {
+                "sClass": "center",
+                "bSortable": false
+            }
             ],
             "aaSorting": [
                 [0, "asc"]
@@ -79,14 +80,14 @@ $adminSession = new Zend_Session_Namespace('administrators');
             "bProcessing": true,
             "bServerSide": true,
             "sAjaxSource": "<?php echo $this->url(array('module' => 'admin', 'controller' => 'schemes', 'action' => 'test-results', 'format' => 'html')); ?>",
-            "fnServerParams": function(aoData) {
+            "fnServerParams": function (aoData) {
                 approvalStatus = $("#status").val();
                 aoData.push({
                     "name": "status",
                     "value": approvalStatus
                 });
             },
-            "fnServerData": function(sSource, aoData, fnCallback) {
+            "fnServerData": function (sSource, aoData, fnCallback) {
                 $.ajax({
                     "dataType": 'json',
                     "type": "POST",

@@ -17,7 +17,8 @@ function generateReports(sId, checkReportDate, surveyDate, _type) {
                     if (typeof getShipments === 'function') {
                         getShipments(currentHighlighted);
                     } else if (typeof getShipmentInReports === 'function') {
-                        getShipmentInReports(currentHighlighted);
+                        // forceRefresh = true: re-fetch without toggling the open row shut.
+                        getShipmentInReports(currentHighlighted, true);
                     } else {
                         location.reload();
                     }

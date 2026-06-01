@@ -1107,6 +1107,11 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
                                     <th scope="col" class="colwidth" style="width: <?php echo $width; ?>%;">
                                         <?php echo $resultText; ?>
                                     </th>
+                                    <?php if ($dtsSchemeType == 'vietnam') { ?>
+                                        <th scope="col" class="colwidth lab-comment-col" style="width: <?php echo $width; ?>%;">
+                                            <?= $this->translate->_("Lab Comment"); ?>
+                                        </th>
+                                    <?php } ?>
                                     <?php if ($adminAccess) { ?>
                                         <th scope="col" class="colwidth" style="width: <?php echo $width; ?>%;">
                                             <?= $this->translate->_("Reference Result"); ?>
@@ -1224,6 +1229,25 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
                                             </div>
                                         <?php } ?>
                                     </td>
+                                    <?php if ($dtsSchemeType == 'vietnam') {
+                                        $labComment = $sample['lab_comment'] ?? ''; ?>
+                                        <td style="width: <?php echo $width; ?>%;" class="colwidth lab-comment-col">
+                                            <select name="lab_comment[<?php echo $sample['sample_id']; ?>]"
+                                                id="lab_comment_<?php echo $count; ?>"
+                                                class="form-control result-section-input lab-comment-select"
+                                                data-saved="<?php echo htmlspecialchars($labComment, ENT_QUOTES); ?>">
+                                                <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
+                                                <option value="sent_for_confirmation" class="lab-comment-screening"
+                                                    <?php echo ($labComment === 'sent_for_confirmation') ? "selected='selected'" : ''; ?>>
+                                                    <?= $this->translate->_("Sent for confirmation"); ?>
+                                                </option>
+                                                <option value="retest_after_14_days" class="lab-comment-confirmatory"
+                                                    <?php echo ($labComment === 'retest_after_14_days') ? "selected='selected'" : ''; ?>>
+                                                    <?= $this->translate->_("Retest after 14 days"); ?>
+                                                </option>
+                                            </select>
+                                        </td>
+                                    <?php } ?>
                                     <?php if ($adminAccess) { ?>
                                         <td><?php $this->dropdownSelectedText($possibleFinalResults, $sample['reference_result'], true); ?>
                                         </td>
@@ -2074,7 +2098,40 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
         } else {
             $('.testTypePanel').addClass('hide');
         }
+        <?php if ($dtsSchemeType == 'vietnam') { ?>
+            filterLabCommentByTier(value);
+        <?php } ?>
     }
+
+    <?php if ($dtsSchemeType == 'vietnam') { ?>
+    // Tier-aware Lab Comment dropdown: only the matching tier's options remain
+    // selectable; the other tier's options are removed from each per-row select so
+    // a saved-but-wrong value doesn't survive a tier switch.
+    function filterLabCommentByTier(tier) {
+        $('.lab-comment-select').each(function () {
+            var $select = $(this);
+            var saved = $select.attr('data-saved') || '';
+            var keepClass = (tier === 'screening')    ? 'lab-comment-screening'
+                           : (tier === 'confirmatory') ? 'lab-comment-confirmatory'
+                           : null;
+            $select.find('option.lab-comment-screening, option.lab-comment-confirmatory').each(function () {
+                if (keepClass === null || $(this).hasClass(keepClass)) {
+                    $(this).prop('hidden', false).prop('disabled', false);
+                } else {
+                    $(this).prop('hidden', true).prop('disabled', true);
+                }
+            });
+            // If the saved value is for the OTHER tier (or no tier yet), reset to the blank option.
+            if (saved !== '' && $select.find('option[value="' + saved + '"]').prop('disabled')) {
+                $select.val('');
+            } else if (saved !== '') {
+                $select.val(saved);
+            }
+        });
+    }
+    $(function () { filterLabCommentByTier($('#dtsTestPanelType').val() || ''); });
+    <?php } ?>
+
     /* For test kit info */
     function testKitInfo(obj, row, no = 1) {
         $('.testKit' + row + 'Head, .testKit' + row + 'Input').remove();

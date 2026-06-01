@@ -154,7 +154,9 @@
 
 
 
-    function getShipmentInReports(did) {
+    // forceRefresh = true skips the toggle-shut behavior so callers (e.g. the
+    // post-generate-report callback) can re-fetch the open child row's contents.
+    function getShipmentInReports(did, forceRefresh) {
         currentHighlighted = did;
         setCookie('did', did);
 
@@ -167,9 +169,12 @@
 
         var $childTr = $tr.next('tr');
         var mineOpen = oTable.fnIsOpen(tr) && $childTr.find('.shipments-child-row').length > 0;
-        if (mineOpen) {
+        if (mineOpen && !forceRefresh) {
             oTable.fnClose(tr);
             return;
+        }
+        if (mineOpen && forceRefresh) {
+            oTable.fnClose(tr);
         }
         // Close any other open child row in the table — only one expanded at a time.
         $('#distroTable tbody tr').each(function () {

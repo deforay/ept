@@ -11,11 +11,14 @@ if (empty($this->shipments)) {
 	return;
 }
 
-// Initialize date checks
-$currentDate = date('Y-m-d');
-$distributionDate = $this->shipments[0]['distribution_date'];
-$canGenerateIndividualReport = ($distributionDate < $currentDate) ? 1 : 0;
-$canGenerateFinalReport = ($distributionDate <= $currentDate) ? 1 : 0;
+// Reports can be (re)generated and the shipment can be finalized once it has
+// been evaluated. Previously gated on PT Survey Date < today; that gate has been
+// removed — server-side endpoints still enforce their own status preconditions.
+$evaluatedShipmentStatuses = ['evaluated', 'reports generated', 'finalized'];
+$shipmentStatusForGate = strtolower((string) ($this->shipments[0]['status'] ?? ''));
+$isEvaluatedOrLater = in_array($shipmentStatusForGate, $evaluatedShipmentStatuses, true);
+$canGenerateIndividualReport = $isEvaluatedOrLater ? 1 : 0;
+$canGenerateFinalReport = $isEvaluatedOrLater ? 1 : 0;
 
 // Determine report button states
 $individualReportTitle = $this->translate->_('Generate Reports');

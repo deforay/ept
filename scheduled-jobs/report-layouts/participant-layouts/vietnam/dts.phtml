@@ -94,10 +94,23 @@ if (!empty($resultArray['shipment'])) {
         $deadlineDate  = trim((string) $result['response_deadline']) !== '' ? Pt_Commons_DateUtility::humanReadableDateFormat($result['response_deadline']) : '';
 
         // ---- Participant / Panel information ----
+        // Resolve the per-participant testing tier (screening/confirmatory) from the map
+        // attributes JSON. NIHE evaluates the two tiers under different rules, so showing
+        // it on the report is part of the recipient understanding their result.
+        $mapAttributes = Pt_Commons_JsonUtility::safeDecode($result['attributes'] ?? '');
+        $panelType = strtolower((string) ($mapAttributes['dts_test_panel_type'] ?? ''));
+        $panelTypeLabel = match ($panelType) {
+            'screening'    => 'Screening',
+            'confirmatory' => 'Confirmatory',
+            default        => '-',
+        };
+
         $info  = '<table cellpadding="3" border="1" style="font-size:11px;">';
         $info .= '<tr style="background-color:#b7dde7;"><td colspan="4"><strong>' . Pt_Commons_TranslateUtility::safeTranslate('Participant Information') . '</strong></td></tr>';
         $info .= '<tr><td><strong>' . Pt_Commons_TranslateUtility::safeTranslate('Laboratory ID') . '</strong></td><td>' . ($result['unique_identifier'] ?? '') . '</td>'
                . '<td><strong>' . Pt_Commons_TranslateUtility::safeTranslate('Laboratory') . '</strong></td><td>' . ($result['labName'] ?? '') . '</td></tr>';
+        $info .= '<tr><td><strong>' . Pt_Commons_TranslateUtility::safeTranslate('Testing tier') . '</strong></td><td>' . Pt_Commons_TranslateUtility::safeTranslate($panelTypeLabel) . '</td>'
+               . '<td colspan="2"></td></tr>';
         $info .= '<tr style="background-color:#b7dde7;"><td colspan="4"><strong>' . Pt_Commons_TranslateUtility::safeTranslate('Panel Information') . '</strong></td></tr>';
         $info .= '<tr><td><strong>' . Pt_Commons_TranslateUtility::safeTranslate('Panel ID') . '</strong></td><td>' . ($result['shipment_code'] ?? '') . '</td>'
                . '<td><strong>' . Pt_Commons_TranslateUtility::safeTranslate('Shipment date') . '</strong></td><td>' . $shipmentDate . '</td></tr>';
@@ -160,8 +173,15 @@ if (!empty($resultArray['shipment'])) {
                 }
             }
 
-            $ca  = '<br/><span style="font-weight:bold;font-size:12px;">' . Pt_Commons_TranslateUtility::safeTranslate('Recommendation for participant') . '</span>';
-            $ca .= '<table border="1" style="font-size:11px;"><tr style="background-color:#dbe4ee;font-weight:bold;">'
+            // Write the heading and the table in separate writeHTML calls. TCPDF's HTML
+            // renderer doesn't reliably break the line between an inline <span> and a
+            // following <table> — without this split the heading floats to the left of
+            // the table instead of sitting above it.
+            $heading = '<br/><span style="font-weight:bold;font-size:12px;">' . Pt_Commons_TranslateUtility::safeTranslate('Recommendation for participant') . '</span>';
+            $pdf->writeHTML($heading, true, false, true, false, '');
+            $pdf->Ln(2);
+
+            $ca  = '<table border="1" style="font-size:11px;"><tr style="background-color:#dbe4ee;font-weight:bold;">'
                  . '<td style="text-align:center;width:30%;">' . Pt_Commons_TranslateUtility::safeTranslate('Sample(s)') . '</td>'
                  . '<td style="text-align:center;width:70%;">' . Pt_Commons_TranslateUtility::safeTranslate('Recommendation') . '</td></tr>';
             foreach ($grouped as $g) {

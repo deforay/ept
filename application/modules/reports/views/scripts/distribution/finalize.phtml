@@ -114,11 +114,9 @@ if (!empty($this->shipment)) {
     if ($this->shipment[0]['report_generated'] == 'yes') {
         $reportTitle = 'Generate Reports and Finalize Shipment';
     }
-    $currentDate = date('Y-m-d');
-    $checkReportDate = 0;
-    if ($this->shipment[0]['distribution_date'] < $currentDate) {
-        $checkReportDate = 1;
-    }
+    // Allow finalize once the shipment is evaluated. Previously gated on
+    // PT Survey Date < today; that gate has been removed.
+    $checkReportDate = in_array(strtolower((string) ($this->shipment[0]['status'] ?? '')), ['evaluated', 'reports generated', 'finalized'], true) ? 1 : 0;
     ?>
     <?php if ($shipment['status'] != 'finalized') { ?>
         <div class="row" align="center">
