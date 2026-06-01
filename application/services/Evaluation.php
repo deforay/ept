@@ -1368,6 +1368,40 @@ class Application_Service_Evaluation
     }
 
     // Lightweight header (single row) for the page chrome — no participant join.
+    /**
+     * Vietnam-only per-shipment listing filters. Applies extra WHERE clauses to the
+     * given DataTables base select when the request carries `vietnamTier` and/or
+     * `vietnamNonStandardKit`. The view only renders the filter dropdowns when the
+     * shipment is Vietnam, so the params won't reach this helper for other schemes.
+     *
+     * - vietnamTier ∈ {'screening','confirmatory'} → match shipment_participant_map.attributes.dts_test_panel_type
+     * - vietnamNonStandardKit = 'yes' → restrict to participants whose primary kit on at least one sample
+     *   isn't in the country-approved set for test_no=1.
+     */
+    private function applyVietnamShipmentFilters(Zend_Db_Select $baseSelect, array $parameters): void
+    {
+        $db = $baseSelect->getAdapter();
+
+        $tier = trim((string) ($parameters['vietnamTier'] ?? ''));
+        if ($tier === 'screening' || $tier === 'confirmatory') {
+            $baseSelect->where(
+                "JSON_UNQUOTE(JSON_EXTRACT(sp.attributes, '$.dts_test_panel_type')) = ?",
+                $tier
+            );
+        }
+
+        $kitFlag = strtolower(trim((string) ($parameters['vietnamNonStandardKit'] ?? '')));
+        if ($kitFlag === 'yes') {
+            $baseSelect->where(
+                "EXISTS (SELECT 1 FROM response_result_dts rrd
+                          WHERE rrd.shipment_map_id = sp.map_id
+                            AND rrd.test_kit_name_1 IS NOT NULL
+                            AND rrd.test_kit_name_1 <> ''
+                            AND rrd.test_kit_name_1 NOT IN (SELECT testkit FROM dts_recommended_testkits WHERE test_no = 1))"
+            );
+        }
+    }
+
     public function getFinalizedShipmentHeader($shipmentId)
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
@@ -1453,6 +1487,8 @@ class Application_Service_Evaluation
                 ]
             )
             ->where('s.shipment_id = ?', $shipmentId);
+
+        $this->applyVietnamShipmentFilters($baseSelect, $parameters);
 
         // Total before filtering.
         $countSelect = clone $baseSelect;
@@ -1700,6 +1736,8 @@ class Application_Service_Evaluation
             )
             ->where('s.shipment_id = ?', $shipmentId);
 
+        $this->applyVietnamShipmentFilters($baseSelect, $parameters);
+
         $countSelect = clone $baseSelect;
         $countSelect->reset(Zend_Db_Select::COLUMNS)->reset(Zend_Db_Select::ORDER)->reset(Zend_Db_Select::LIMIT_COUNT)->reset(Zend_Db_Select::LIMIT_OFFSET);
         $countSelect->columns(new Zend_Db_Expr('COUNT(sp.map_id)'));
@@ -1911,6 +1949,8 @@ class Application_Service_Evaluation
         if ($override === 'yes' || $override === 'no') {
             $baseSelect->where('sp.manual_override = ?', $override);
         }
+
+        $this->applyVietnamShipmentFilters($baseSelect, $parameters);
 
         $countSelect = clone $baseSelect;
         $countSelect->reset(Zend_Db_Select::COLUMNS)->reset(Zend_Db_Select::ORDER)->reset(Zend_Db_Select::LIMIT_COUNT)->reset(Zend_Db_Select::LIMIT_OFFSET);

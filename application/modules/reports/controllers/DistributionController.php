@@ -84,11 +84,25 @@ class Reports_DistributionController extends Zend_Controller_Action
         $this->view->shipmentStatus = $evalService->getReportStatus($id, 'generateReport');
         $this->view->responseCount = $evalService->getResponseCount($id, $header['distribution_id']);
         $this->view->shipmentsUnderDistro = $shipmentService->getShipmentInReports($header['distribution_id']);
+        $this->view->dtsSchemeType = $this->dtsSchemeTypeFromShipment($header);
 
         $navUrls = $evalService->getFinalizedShipmentNavUrls($id);
         $evSession = new Zend_Session_Namespace('evalShipmentList');
         $evSession->editUrlList = $navUrls['editUrlList'];
         $evSession->viewUrlList = $navUrls['viewUrlList'];
+    }
+
+    /** Decode `shipment.shipment_attributes.dtsSchemeType` for view-side filter gating. */
+    private function dtsSchemeTypeFromShipment(array $shipmentRow): string
+    {
+        $attrs = $shipmentRow['shipment_attributes'] ?? null;
+        if (is_string($attrs) && $attrs !== '') {
+            $decoded = json_decode($attrs, true);
+            if (is_array($decoded) && isset($decoded['dtsSchemeType'])) {
+                return (string) $decoded['dtsSchemeType'];
+            }
+        }
+        return '';
     }
 
     public function finalizeAction()

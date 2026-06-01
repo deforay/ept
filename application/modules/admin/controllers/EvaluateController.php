@@ -118,6 +118,20 @@ class Admin_EvaluateController extends Zend_Controller_Action
         // scheme-specific scoring). Subsequent paged loads come from the AJAX endpoint.
         $shipment = $this->view->shipment = $evalService->getShipmentToEvaluate($id, $reEvaluate, $override);
         $this->view->shipmentsUnderDistro = $evalService->getShipments($shipment[0]['distribution_id']);
+        $this->view->dtsSchemeType = $this->dtsSchemeTypeFromShipment($shipment[0] ?? []);
+    }
+
+    /** Decode `shipment.shipment_attributes.dtsSchemeType` for view-side filter gating. */
+    private function dtsSchemeTypeFromShipment(array $shipmentRow): string
+    {
+        $attrs = $shipmentRow['shipment_attributes'] ?? null;
+        if (is_string($attrs) && $attrs !== '') {
+            $decoded = json_decode($attrs, true);
+            if (is_array($decoded) && isset($decoded['dtsSchemeType'])) {
+                return (string) $decoded['dtsSchemeType'];
+            }
+        }
+        return '';
     }
 
     public function editAction()

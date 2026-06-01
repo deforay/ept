@@ -207,6 +207,26 @@ if (!empty($this->shipment)) {
 
             </div>
         <?php } ?>
+        <?php if (($this->dtsSchemeType ?? '') === 'vietnam') { ?>
+            <table class="table table-borderless vietnam-filters" style="width:50%;float:left;margin-top:10px;">
+                <tr>
+                    <td><label for="vietnamTier"><?= $this->htmlTranslate("Filter by tier"); ?></label></td>
+                    <td><select id="vietnamTier" class="form-control" onchange="applyVietnamFilters()">
+                            <option value=""><?= $this->htmlTranslate("All tiers"); ?></option>
+                            <option value="screening"><?= $this->htmlTranslate("Screening"); ?></option>
+                            <option value="confirmatory"><?= $this->htmlTranslate("Confirmatory"); ?></option>
+                        </select></td>
+                </tr>
+                <tr>
+                    <td><label for="vietnamNonStandardKit"><?= $this->htmlTranslate("Filter by primary kit"); ?></label></td>
+                    <td><select id="vietnamNonStandardKit" class="form-control" onchange="applyVietnamFilters()">
+                            <option value=""><?= $this->htmlTranslate("All kits"); ?></option>
+                            <option value="yes"><?= $this->htmlTranslate("Non-reference kit only"); ?></option>
+                        </select></td>
+                </tr>
+            </table>
+            <div style="clear:both;"></div>
+        <?php } ?>
         <br /><br />
         <table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered table-hover"
             id="shipmentEvaluation" style="margin:10px auto;">
@@ -336,6 +356,14 @@ if (!empty($this->shipment)) {
                     "bProcessing": true,
                     "bServerSide": true,
                     "sAjaxSource": "<?php echo $this->url(['module' => 'reports', 'controller' => 'distribution', 'action' => 'shipment', 'sid' => base64_encode($this->shipmentId), 'format' => 'html']); ?>",
+                    "fnServerParams": function (aoData) {
+                        <?php if (($this->dtsSchemeType ?? '') === 'vietnam') { ?>
+                            var tier = $('#vietnamTier').val() || '';
+                            var kit  = $('#vietnamNonStandardKit').val() || '';
+                            if (tier) { aoData.push({ "name": "vietnamTier", "value": tier }); }
+                            if (kit)  { aoData.push({ "name": "vietnamNonStandardKit", "value": kit }); }
+                        <?php } ?>
+                    },
                     "fnServerData": function (sSource, aoData, fnCallback) {
                         $.ajax({
                             "dataType": "json",
@@ -365,7 +393,13 @@ if (!empty($this->shipment)) {
                 });
             });
 
-
+            // Vietnam-only listing filters — redraw the DataTable; fnServerParams reads the dropdown values.
+            function applyVietnamFilters() {
+                var $t = $('#shipmentEvaluation');
+                if ($t.length && $.fn.DataTable && $.fn.DataTable.isDataTable($t)) {
+                    $t.dataTable().fnDraw();
+                }
+            }
 
             function fnFormatDetails(oTable, nTr) {
                 var aData = oTable.fnGetData(nTr);

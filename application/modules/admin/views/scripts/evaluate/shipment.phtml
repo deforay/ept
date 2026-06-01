@@ -210,6 +210,23 @@ if ($shipmentAttributesRaw !== '') {
 						value="yes"><?= $this->htmlTranslate("Yes"); ?></option>
 				</select></td>
 		</tr>
+		<?php if (($this->dtsSchemeType ?? '') === 'vietnam') { ?>
+			<tr class="vietnam-filters">
+				<td><label for="vietnamTier"><?= $this->htmlTranslate("Filter by tier"); ?></label></td>
+				<td><select id="vietnamTier" class="form-control" onchange="applyVietnamFilters()">
+						<option value=""><?= $this->htmlTranslate("All tiers"); ?></option>
+						<option value="screening"><?= $this->htmlTranslate("Screening"); ?></option>
+						<option value="confirmatory"><?= $this->htmlTranslate("Confirmatory"); ?></option>
+					</select></td>
+			</tr>
+			<tr class="vietnam-filters">
+				<td><label for="vietnamNonStandardKit"><?= $this->htmlTranslate("Filter by primary kit"); ?></label></td>
+				<td><select id="vietnamNonStandardKit" class="form-control" onchange="applyVietnamFilters()">
+						<option value=""><?= $this->htmlTranslate("All kits"); ?></option>
+						<option value="yes"><?= $this->htmlTranslate("Non-reference kit only"); ?></option>
+					</select></td>
+			</tr>
+		<?php } ?>
 	</table>
 	<br /><br />
 	<table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered table-hover"
@@ -374,6 +391,12 @@ if ($shipmentAttributesRaw !== '') {
 					<?php if (!empty($this->override)) { ?>
 						aoData.push({ "name": "override", "value": "<?= $this->override; ?>" });
 					<?php } ?>
+					<?php if (($this->dtsSchemeType ?? '') === 'vietnam') { ?>
+						var tier = $('#vietnamTier').val() || '';
+						var kit  = $('#vietnamNonStandardKit').val() || '';
+						if (tier) { aoData.push({ "name": "vietnamTier", "value": tier }); }
+						if (kit)  { aoData.push({ "name": "vietnamNonStandardKit", "value": kit }); }
+					<?php } ?>
 				},
 				"fnServerData": function (sSource, aoData, fnCallback) {
 					$.ajax({
@@ -413,6 +436,14 @@ if ($shipmentAttributesRaw !== '') {
 					alert("<?= $this->jsTranslate('Shipment has been added to the queue. It will be evaluated shortly.'); ?>");
 					document.location.href = "/admin/evaluate";
 				});
+		}
+
+		// Vietnam-only listing filters — redraw the DataTable; fnServerParams reads the dropdown values.
+		function applyVietnamFilters() {
+			var $t = $('#shipmentEvaluation');
+			if ($t.length && $.fn.DataTable && $.fn.DataTable.isDataTable($t)) {
+				$t.dataTable().fnDraw();
+			}
 		}
 
 		function manualOverride(value) {
