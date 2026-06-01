@@ -829,6 +829,13 @@ upgrade_instance() {
     print info "Running database migrations..."
     sudo -u www-data composer post-update
 
+    # Ensure application.ini's security.salt is populated. Idempotent:
+    # leaves an existing strong salt untouched; only generates one if missing
+    # or too short. Required by Pt_Commons_SignedDownload and any other
+    # consumer of the salt.
+    print info "Checking application.ini security.salt..."
+    sudo -u www-data php "${ept_path}/bin/generate-salt.php"
+
     # Run run-once scripts
     print info "Running run-once scripts..."
     sudo -u www-data php "${ept_path}/bin/run-once.php"
