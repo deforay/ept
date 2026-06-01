@@ -218,7 +218,7 @@ if ($inConfirmStep) {
 									class="mandatory">*</span> :
 								<select id="ptNotTestedReason" name="ptNotTestedReason" class="form-control"
 									title="<?= $this->translate->_("Please select a reason"); ?>"
-									onchange="collectPanelReceiptDate(); checkComments(this.value);">
+									onchange="checkComments(this.value);">
 									<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
 									<?php
 									foreach ($this->allNotTestedReason as $reason) {

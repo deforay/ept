@@ -448,7 +448,7 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
 									class="mandatory">*</span> :
 								<select id="ptNotTestedReason" name="ptNotTestedReason" class="form-control"
 									title="<?= $this->htmlTranslate("Please select reason"); ?>" style="width:60%;"
-									onchange="showHideTest(this.value); checkComments(this.value);">
+									onchange="checkComments(this.value);">
 									<option value="">--Select--</option>
 									<?php foreach ($this->allNotTestedReason as $reason) { ?>
 										<option
