@@ -228,8 +228,8 @@ final class Provisioner
         );
         if (!$exists) {
             $this->db->exec(
-                "INSERT INTO r_testkitnames (TestKitName_ID, TestKit_Name, TestKit_Name_Short, Approval, attributes, Created_On)
-                 VALUES (?, ?, 'ATEST-ELISA', 1, ?, NOW())",
+                "INSERT INTO r_testkitnames (TestKitName_ID, TestKit_Name, TestKit_Name_Short, Approval, attributes, testkit_status, Created_On)
+                 VALUES (?, ?, 'ATEST-ELISA', 1, ?, 'active', NOW())",
                 [
                     self::ELISA_KIT_ID,
                     self::ELISA_KIT_NAME,
@@ -239,6 +239,13 @@ final class Provisioner
                         'additional_info_mandatory' => 'yes',
                     ]),
                 ]
+            );
+        } else {
+            // Heal any pre-existing rows whose status was left NULL — the kit-name dropdown
+            // filters by testkit_status='active', so a NULL row renders as "— Select Kit —".
+            $this->db->exec(
+                "UPDATE r_testkitnames SET testkit_status = 'active' WHERE TestKitName_ID = ? AND (testkit_status IS NULL OR testkit_status = '')",
+                [self::ELISA_KIT_ID]
             );
         }
         $inRec = $this->db->scalar(
@@ -384,6 +391,7 @@ final class Provisioner
             ]),
             'shipment_test_report_date' => $now,
             'shipment_test_date'        => date('Y-m-d'),
+            'shipment_receipt_date'     => date('Y-m-d'),
             'response_status'           => 'responded',
             'is_pt_test_not_performed'  => 'no',
             'created_on_admin'          => $now,
