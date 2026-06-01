@@ -214,6 +214,18 @@ if (!empty($resultArray['shipment'])) {
                                         <td style="background-color:#BDD6EE;"><br><br>Overall <br/>Grading</td>
                                     </tr>';
 
+                    // Overall grading is non-numeric for Zimbabwe: derive it from the per-sample
+                    // grades. Per the footnote rule below, an overall of "Un-Satisfactory" applies
+                    // when the participant has two or more "Unacceptable"/"Warning" results.
+                    $adverseCount = 0;
+                    foreach ($result['responseResult'] as $r) {
+                        if (isset($r['grade']) && in_array($r['grade'], ['Unacceptable', 'Warning'], true)) {
+                            $adverseCount++;
+                        }
+                    }
+                    $isUnsatisfactory = $result['is_excluded'] == 'yes' || $adverseCount >= 2;
+                    $overallColor = $isUnsatisfactory ? "red" : "black";
+
                     foreach ($result['responseResult'] as $key => $response) {
                         $yrResult = '';
                         if (isset($response['is_result_invalid']) && !empty($response['is_result_invalid'])) {
@@ -221,7 +233,6 @@ if (!empty($resultArray['shipment'])) {
                         } else {
                             $yrResult = $response['reported_viral_load'] ?? null;
                         }
-                        $color = (isset($passPercentage) && $passPercentage <= $response['shipment_score']) ? "black" : "red";
                         $txtcolor = (isset($response['grade']) && $response['grade'] == 'Unacceptable') ? "red" : "black";
 
                         if ($result['is_excluded'] == 'yes') {
@@ -229,7 +240,7 @@ if (!empty($resultArray['shipment'])) {
                             $response['shipment_score'] = " N.A.";
                             $overallGrade = "Un-<br/>Satisfactory";
                         } else {
-                            $overallGrade = "Satisfactory";
+                            $overallGrade = ($adverseCount >= 2) ? "Un-<br/>Satisfactory" : "Satisfactory";
                             $response['shipment_score'] = round($response['shipment_score'], 2) . "%";
                         }
 
@@ -242,7 +253,7 @@ if (!empty($resultArray['shipment'])) {
                                 <td style="font-weight:normal;">' . (null !== $response['zscore'] ? number_format(round($response['zscore'], 2), 2, '.', '') : '-') . '</td>
                                 <td style="font-weight:normal;color:' . $txtcolor . ';">' . $response['grade'] . '</td>';
                         if ($key == 0) {
-                            $labRes .= '<td style="color:' . $color . ';vertical-align: middle;" rowspan="' . $rowspan . '"><br><br><br>' . $overallGrade . '</td>';
+                            $labRes .= '<td style="color:' . $overallColor . ';vertical-align: middle;" rowspan="' . $rowspan . '"><br><br><br>' . $overallGrade . '</td>';
                         }
                         $labRes .= '</tr>';
                     }
@@ -328,12 +339,16 @@ if (!empty($resultArray['shipment'])) {
                         $equipmentTxt .= '<tr>
                                 <td style="text-align:left;width:40%;font-weight:normal;">' . $equipment['assay_name'] . '</td>
                                 <td style="text-align:left;width:40%;font-weight:normal;">' . $equipment['total_participated'] . '</td>
-                                <td style="text-align:left;width:20%;font-weight:normal;">' . $equipment['average_result'] . '</td>
+                                <td style="text-align:left;width:20%;font-weight:normal;">' . ($equipment['percentage'] ?? '0') . '%</td>
                             </tr>';
                     }
                     $equipmentTxt .= '</table><br/>';
                     $pdf->writeHTML($equipmentTxt, true, false, true, false, '');
                 }
+
+                // Keep the z-score interpretation key (and the notes/signatures that follow it)
+                // on a fresh page so it reads alongside, rather than split across, the results.
+                $pdf->AddPage('P', 'A4');
 
                 $zscorehtml = '<br><span style="font-weight:bold;font-size:12px;">Interpretation of Scores (Performance criteria):</span><br/>';
                 $zscorehtml .= '<table border="1" style="text-align:center;width:650px;font-size:11px;">   ';
