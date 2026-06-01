@@ -179,10 +179,11 @@ if (!empty($resultArray['shipment'])) {
 
         $labInfo .= '</table>';
         $pdf->writeHTML($labInfo, true, false, true, false, '');
-        if (count($result['responseResult']) > 0)
+        if (count($result['responseResult']) > 0) {
             $calculatedScore = round(100 / count($result['responseResult']));
-        else
+        } else {
             $calculatedScore = 'N/A';
+        }
         if (!empty($result['responseResult'])) {
             $n = count($result['responseResult']);
             $labRes = "";
