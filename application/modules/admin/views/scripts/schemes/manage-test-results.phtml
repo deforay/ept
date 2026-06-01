@@ -6,16 +6,14 @@ $schemeId = !empty($this->results[0]['scheme_id']) ? strtoupper(trim($this->resu
 <link href="<?php echo $this->baseUrl('css/select2.css'); ?>" rel="stylesheet" />
 
 <style>
-	/* ── Main container — mirrors .dts-settings-container ─────────────────── */
+	/* ── Single container card (no nested cards / wells) ───────────────────── */
 	.scheme-results-container {
 		background: #fff;
 		border-radius: 8px;
-		box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
-		padding: 0;
-		margin-bottom: 80px;
+		box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+		margin-bottom: 90px;
 	}
 
-	/* ── Legend/Header ─────────────────────────────────────────────────────── */
 	.scheme-results-container legend {
 		background: linear-gradient(135deg, #4a6fa5 0%, #3a5a8a 100%);
 		color: #fff;
@@ -31,50 +29,49 @@ $schemeId = !empty($this->results[0]['scheme_id']) ? strtoupper(trim($this->resu
 		margin-right: 8px;
 	}
 
-	/* ── Form content area ─────────────────────────────────────────────────── */
-	.scheme-results-container .form-content {
-		padding: 25px;
-		background-color: #f8fafc;
-		border: 1px solid #e2e8f0;
-		border-top: none;
-		border-radius: 0 0 8px 8px;
+	.form-content {
+		padding: 20px;
 	}
 
-	/* ── Inner config card — mirrors .config-section ──────────────────────── */
-	.results-card {
-		background: #fff;
+	/* ── Add bar (Cloudflare-style: enter at top, drops into the list) ─────── */
+	.add-bar {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: flex-end;
+		gap: 10px;
+		padding: 14px;
+		margin-bottom: 16px;
+		background: #f4f7fb;
 		border: 1px solid #e2e8f0;
 		border-radius: 6px;
-		padding: 20px;
-		margin-bottom: 20px;
 	}
 
-	.results-card:hover {
-		border-color: #4a6fa5;
-		box-shadow: 0 2px 8px rgba(74, 111, 165, 0.1);
+	.add-bar .field {
+		display: flex;
+		flex-direction: column;
 	}
 
-	.results-card h5 {
-		color: #4a6fa5;
+	.add-bar .field-type    { width: 150px; }
+	.add-bar .field-resp    { flex: 1 1 160px; min-width: 140px; }
+	.add-bar .field-code    { width: 170px; }
+	.add-bar .field-context { width: 130px; }
+	.add-bar .field-sort    { width: 80px; }
+
+	.add-bar label {
+		font-size: 11px;
 		font-weight: 600;
-		margin-top: 0;
-		margin-bottom: 16px;
-		padding-bottom: 10px;
-		border-bottom: 2px solid #4a6fa5;
-		font-size: 15px;
+		text-transform: uppercase;
+		letter-spacing: 0.03em;
+		color: #6b7280;
+		margin-bottom: 4px;
 	}
 
-	.results-card h5 i {
-		margin-right: 8px;
-	}
+	.add-bar .form-control { height: 34px; font-size: 13px; padding: 4px 8px; }
 
-	/* ── Table ─────────────────────────────────────────────────────────────── */
-	.results-table-wrap .table {
-		margin-bottom: 0;
-	}
+	/* ── Table — light, only row separators ─────────────────────────────────── */
+	.results-table-wrap .table { margin-bottom: 0; }
 
 	.results-table-wrap .table thead th {
-		background: #f8f9fa;
 		font-size: 12px;
 		font-weight: 600;
 		text-transform: uppercase;
@@ -84,55 +81,34 @@ $schemeId = !empty($this->results[0]['scheme_id']) ? strtoupper(trim($this->resu
 		vertical-align: middle;
 		white-space: nowrap;
 		padding: 10px 8px;
-	}
-
-	.results-table-wrap .table tbody tr:hover {
-		background: #f8fafc;
+		background: transparent;
 	}
 
 	.results-table-wrap .table td {
 		vertical-align: middle;
 		padding: 6px 8px;
+		border-top: 1px solid #eef1f5;
 	}
 
-	.results-table-wrap .form-control {
-		font-size: 13px;
-		height: 34px;
-		padding: 4px 8px;
-	}
+	.results-table-wrap .form-control { font-size: 13px; height: 34px; padding: 4px 8px; }
 
 	.results-table-wrap .form-control:focus {
 		border-color: #4a6fa5;
 		box-shadow: 0 0 0 3px rgba(74, 111, 165, 0.1);
 	}
 
-	/* ── Row number cell ───────────────────────────────────────────────────── */
-	.row-num {
-		font-size: 12px;
-		color: #adb5bd;
-		font-weight: 600;
-		text-align: center;
-	}
+	/* ── Group striping: Test Results vs Final Interpretations ─────────────── */
+	#resultsTable tbody tr.row-type-test  > td { background: #f8fbfe; }   /* faint blue  */
+	#resultsTable tbody tr.row-type-final > td { background: #fdfcf8; }   /* faint amber */
+	#resultsTable tbody tr.row-type-other > td { background: #fff; }
+	#resultsTable tbody tr:hover > td { background: #eef4fc; }
 
-	/* ── Add / Remove row buttons ──────────────────────────────────────────── */
-	.btn-row-add {
-		padding: 3px 8px;
-		font-size: 16px;
-		line-height: 1;
-		color: #28a745;
-		background: transparent;
-		border: 1px solid #28a745;
-		border-radius: 4px;
-		cursor: pointer;
-		transition: background 0.15s;
-	}
+	.row-num { font-size: 12px; color: #adb5bd; font-weight: 600; text-align: center; }
 
-	.btn-row-add:hover {
-		background: #e9f7ec;
-	}
+	.action-cell { white-space: nowrap; text-align: center; }
 
 	.btn-row-remove {
-		padding: 3px 8px;
+		padding: 3px 9px;
 		font-size: 16px;
 		line-height: 1;
 		color: #dc3545;
@@ -140,37 +116,64 @@ $schemeId = !empty($this->results[0]['scheme_id']) ? strtoupper(trim($this->resu
 		border: 1px solid #dc3545;
 		border-radius: 4px;
 		cursor: pointer;
-		transition: background 0.15s;
 	}
 
-	.btn-row-remove:hover {
-		background: #fdecea;
-	}
+	.btn-row-remove:hover { background: #fdecea; }
 
-	.action-cell {
+	.btn-add-result {
+		height: 34px;
+		padding: 0 16px;
+		font-size: 13px;
+		font-weight: 600;
 		white-space: nowrap;
-		text-align: center;
 	}
 
-	/* ── Mandatory marker ──────────────────────────────────────────────────── */
-	.mandatory {
-		color: #dc3545;
+	.locked-indicator { color: #adb5bd; font-size: 13px; }
+
+	/* Pre-defined sub-test marker (e.g. DTS_SYP_TEST) */
+	.subtest-tag {
+		display: inline-block;
+		margin-top: 5px;
+		padding: 1px 7px;
+		font-size: 10px;
+		font-weight: 600;
+		letter-spacing: 0.03em;
+		color: #6b7280;
+		background: #eef1f5;
+		border: 1px solid #dfe3e8;
+		border-radius: 10px;
 	}
 
-	/* ── Prefix addon (user-configured schemes) ────────────────────────────── */
-	.result-code-prefix-addon {
-		display: none;
-		padding: 6px 8px;
-	}
+	.mandatory { color: #dc3545; }
 
-	/* ── Input group addon — matches DTS theme ─────────────────────────────── */
 	.input-group-addon {
 		background: linear-gradient(135deg, #4a6fa5 0%, #3a5a8a 100%);
 		color: #fff;
 		border-color: #3a5a8a;
 	}
 
-	/* ── Floating save bar — mirrors .floating-buttons ─────────────────────── */
+	.result-code-prefix-addon { padding: 6px 8px; }
+
+	/* ── Unsaved-changes: make it impossible to miss ───────────────────────── */
+	.unsaved-banner {
+		display: none;
+		align-items: center;
+		gap: 10px;
+		background: #fff3cd;
+		border: 1px solid #ffe69c;
+		border-left: 5px solid #f0ad4e;
+		color: #8a6d3b;
+		font-weight: 600;
+		padding: 10px 16px;
+		border-radius: 6px;
+		margin: 0 0 16px 0;
+	}
+
+	.unsaved-banner.show { display: flex; }
+
+	.unsaved-banner i { font-size: 16px; }
+
+	/* Floating save bar */
 	.floating-buttons {
 		position: fixed;
 		bottom: 20px;
@@ -185,197 +188,257 @@ $schemeId = !empty($this->results[0]['scheme_id']) ? strtoupper(trim($this->resu
 		border: 1px solid #e2e8f0;
 	}
 
-	.floating-buttons .btn {
-		padding: 10px 25px;
-		font-size: 14px;
+	.floating-buttons .btn { padding: 10px 25px; font-size: 14px; }
+
+	/* When there are unsaved changes, the Update button screams for attention */
+	.floating-buttons.dirty { border-color: #f0ad4e; box-shadow: 0 4px 24px rgba(240, 173, 78, 0.5); }
+	.floating-buttons.dirty .btn-save { animation: savePulse 1.2s ease-in-out infinite; }
+
+	@keyframes savePulse {
+		0%, 100% { box-shadow: 0 0 0 0 rgba(240, 173, 78, 0.6); }
+		50%      { box-shadow: 0 0 0 8px rgba(240, 173, 78, 0); }
 	}
 
-	/* ── Inline action row ─────────────────────────────────────────────────── */
-	.form-actions-inline {
-		margin-top: 20px;
-		text-align: center;
+	.unsaved-dot {
+		display: none;
+		width: 9px;
+		height: 9px;
+		border-radius: 50%;
+		background: #f0ad4e;
+		margin-right: 6px;
 	}
 
-	.form-actions-inline .btn {
-		padding: 10px 28px;
-		font-size: 14px;
-	}
-
-	/* ── Label style ───────────────────────────────────────────────────────── */
-	.results-card label,
-	.scheme-results-container .form-content label {
-		color: #374151;
-		font-weight: 500;
-		margin-bottom: 6px;
-		display: block;
-	}
-
-	/* ── Muted helper text ─────────────────────────────────────────────────── */
-	.text-muted {
-		color: #6b7280;
-		font-size: 12px;
-		margin-top: 4px;
-	}
+	.floating-buttons.dirty .unsaved-dot { display: inline-block; }
 </style>
 
-<div class="well">
-	<div class="scheme-results-container">
-		<form name="updatePossibleResultsForm" id="updatePossibleResultsForm" method="post"
-			action="<?php echo $this->url(array("module" => "admin", "controller" => "schemes", "action" => "manage-test-results"), 'default', true); ?>"
-			class="form-horizontal" role="form" onsubmit="validateNow(); return false;">
+<div class="scheme-results-container">
+	<form name="updatePossibleResultsForm" id="updatePossibleResultsForm" method="post"
+		action="<?php echo $this->url(array("module" => "admin", "controller" => "schemes", "action" => "manage-test-results"), 'default', true); ?>"
+		onsubmit="validateNow(); return false;">
 
-			<input type="hidden" name="schemeId" id="schemeId"
-				value="<?php echo base64_encode($this->results[0]['scheme_id']); ?>" />
+		<input type="hidden" name="schemeId" id="schemeId"
+			value="<?php echo base64_encode($this->results[0]['scheme_id']); ?>" />
 
-			<fieldset>
-				<legend>
-					<i class="icon-beaker"></i>
-					<?= $this->translate->_("Add / Edit Possible Results For ") ?>
-					<strong><?= $this->results[0]['scheme_name']; ?></strong>
-				</legend>
+		<fieldset>
+			<legend>
+				<i class="icon-beaker"></i>
+				<?= $this->translate->_("Add / Edit Possible Results For ") ?>
+				<strong><?= $this->results[0]['scheme_name']; ?></strong>
+			</legend>
 
-				<div class="form-content">
-					<!-- Results table card -->
-					<div class="results-card">
-						<h5><i class="icon-list-alt"></i> <?= $this->translate->_("Result Entries"); ?></h5>
+			<div class="form-content">
 
-						<div class="results-table-wrap table-responsive">
-							<table class="table table-bordered" id="resultsTable">
-								<thead>
-									<tr>
-										<th style="width:36px;">#</th>
-										<th style="width:19%;">
-											<?= $this->translate->_("Result Type"); ?>
-											<span class="mandatory">*</span>
-										</th>
-										<th style="width:23%;">
-											<?= $this->translate->_("Response"); ?>
-											<span class="mandatory">*</span>
-										</th>
-										<th style="width:18%;">
-											<?= $this->translate->_("Result Code"); ?>
-											<span class="mandatory">*</span>
-										</th>
-										<th style="width:10%;"><?= $this->translate->_("Sort Order"); ?></th>
-										<th style="width:80px; text-align:center;"><?= $this->translate->_("Action"); ?></th>
-									</tr>
-								</thead>
-								<tbody id="rowsBody">
-									<?php if (!empty($this->results)) : ?>
-										<?php foreach ($this->results as $i => $row) :
-											$sg = explode("_", $row['scheme_sub_group']);
-											$sgLast = strtoupper(end($sg)); // Always gets last part e.g. TEST, FINAL, SYP
+				<!-- Unsaved-changes banner -->
+				<div class="unsaved-banner" id="unsavedBanner">
+					<i class="icon-warning-sign"></i>
+					<span><?= $this->translate->_("Your changes have not been saved yet. Click \"Update\" to save them."); ?></span>
+				</div>
 
-											if (in_array($sgLast, ['TEST', 'FINAL'])) {
-												$rowResultType = $sgLast; // Use TEST or FINAL
-											} else {
-												$rowResultType = null; // or handle other cases
-											}
-
-											$storedCode    = $row['result_code'];
-											$displaySuffix = $storedCode;
-											if ($isUserConfigured && $schemeId !== '') {
-												$prefixTest    = $schemeId . '-T-';
-												$prefixFinal   = $schemeId . '-F-';
-												$prefixGeneric = $schemeId . '-';
-												if (strpos($storedCode, $prefixTest) === 0) {
-													$displaySuffix = substr($storedCode, strlen($prefixTest));
-												} elseif (strpos($storedCode, $prefixFinal) === 0) {
-													$displaySuffix = substr($storedCode, strlen($prefixFinal));
-												} elseif (strpos($storedCode, $prefixGeneric) === 0) {
-													$displaySuffix = substr($storedCode, strlen($prefixGeneric));
-												}
-											}
-											$disable = (isset($row['shipment_status']) && !empty($row['shipment_status']) && $row['shipment_status'] != 'finalized') ? 'disabled' : '';
-										?>
-											<tr id="row-php-<?= $i; ?>">
-												<td class="row-num"><?= $i + 1; ?></td>
-												<td>
-													<input type="hidden" name="rId[<?php echo $i; ?>]"
-														value="<?php echo base64_encode($row['id']); ?>" />
-													<select name="resultType[<?php echo $i; ?>]" <?php echo $disable; ?>
-														class="form-control isRequired<?= $isUserConfigured ? ' js-result-type' : ''; ?>"
-														title="<?= $this->translate->_("Please select the result type"); ?>"
-														required>
-														<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
-														<option value="TEST" <?= ($rowResultType === 'TEST')  ? 'selected="selected"' : ''; ?>><?= $this->translate->_("Test Result"); ?></option>
-														<option value="FINAL" <?= ($rowResultType === 'FINAL') ? 'selected="selected"' : ''; ?>><?= $this->translate->_("Final Interpretation"); ?></option>
-													</select>
-												</td>
-												<td>
-													<input type="text" name="response[<?php echo $i; ?>]" <?php echo $disable; ?>
-														class="form-control isRequired"
-														value="<?= htmlspecialchars($row['response']); ?>"
-														placeholder="<?= $this->translate->_("Enter response"); ?>"
-														title="<?= $this->translate->_("Please enter the response"); ?>"
-														required />
-												</td>
-												<td>
-													<?php if ($isUserConfigured) : ?>
-														<div class="input-group input-group-sm" style="display:flex;">
-															<span class="input-group-addon result-code-prefix-addon js-code-prefix"
-																style="padding:6px 8px;display:inline-table;"></span>
-															<input type="text" <?php echo $disable; ?>
-																class="form-control isRequired js-code-suffix input-sm"
-																placeholder="<?= $this->translate->_("e.g. P"); ?>"
-																maxlength="20"
-																value="<?= htmlspecialchars($displaySuffix); ?>"
-																title="<?= $this->translate->_("Please enter the result code suffix"); ?>" />
-														</div>
-														<input type="hidden" name="resultCode[<?php echo $i; ?>]" class="js-code-hidden"
-															value="<?= htmlspecialchars($storedCode); ?>" />
-													<?php else : ?>
-														<input type="text" name="resultCode[<?php echo $i; ?>]" <?php echo $disable; ?>
-															class="form-control isRequired"
-															value="<?= htmlspecialchars($storedCode); ?>"
-															placeholder="<?= $this->translate->_("e.g. POS"); ?>"
-															title="<?= $this->translate->_("Please enter the short result code"); ?>"
-															onblur="checkDuplicate('r_possibleresult','result_code',this,null,'<?= $this->translate->_("This result code already exists. Please try something else."); ?>')"
-															required />
-													<?php endif; ?>
-												</td>
-												<td>
-													<input type="text" name="sortOrder[<?php echo $i; ?>]" class="form-control" <?php echo $disable; ?>
-														value="<?= htmlspecialchars($row['sort_order']); ?>"
-														placeholder="0" />
-												</td>
-												<td class="action-cell">
-													<button type="button" class="btn-row-add"
-														title="<?= $this->translate->_("Add row below"); ?>"
-														onclick="insertRowAfter(this)">+</button>
-													<button type="button" class="btn-row-remove"
-														title="<?= $this->translate->_("Remove row"); ?>"
-														onclick="removeRow(this)">&#8722;</button>
-												</td>
-											</tr>
-										<?php endforeach; ?>
-									<?php endif; ?>
-								</tbody>
-							</table>
-						</div>
-					</div><!-- /.results-card -->
-
-					<!-- Inline action buttons -->
-					<div class="form-actions-inline">
-						<button type="submit" name="submitbtn" class="btn btn-primary btn-lg" tabindex="7">
-							<i class="icon-ok"></i> <?= $this->translate->_("Update"); ?>
-						</button>
-						<a href="/admin/schemes/test-results" class="btn btn-danger btn-lg" tabindex="8">
-							<i class="icon-arrow-left"></i> <?= $this->translate->_("Cancel"); ?>
-						</a>
+				<!-- Add bar: enter a new result here; it drops into the list in its sorted position -->
+				<div class="add-bar">
+					<div class="field field-type">
+						<label><?= $this->translate->_("Result Type"); ?> <span class="mandatory">*</span></label>
+						<select id="addType" class="form-control">
+							<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
+							<option value="TEST"><?= $this->translate->_("Test Result"); ?></option>
+							<option value="FINAL"><?= $this->translate->_("Final Interpretation"); ?></option>
+						</select>
 					</div>
-				</div><!-- /.form-content -->
-			</fieldset>
-		</form>
-	</div><!-- /.scheme-results-container -->
-</div><!-- /.well -->
+					<div class="field field-resp">
+						<label><?= $this->translate->_("Response"); ?> <span class="mandatory">*</span></label>
+						<input type="text" id="addResponse" class="form-control"
+							placeholder="<?= $this->translate->_("Enter response"); ?>" />
+					</div>
+					<div class="field field-code">
+						<label><?= $this->translate->_("Result Code"); ?> <span class="mandatory">*</span></label>
+						<?php if ($isUserConfigured) : ?>
+							<div class="input-group input-group-sm" style="display:flex;">
+								<span class="input-group-addon result-code-prefix-addon" id="addCodePrefix" style="display:inline-table;"></span>
+								<input type="text" id="addCodeSuffix" class="form-control input-sm"
+									placeholder="<?= $this->translate->_("e.g. P"); ?>" maxlength="20" />
+							</div>
+						<?php else : ?>
+							<input type="text" id="addCode" class="form-control"
+								placeholder="<?= $this->translate->_("e.g. POS"); ?>" />
+						<?php endif; ?>
+					</div>
+					<div class="field field-context">
+						<label><?= $this->translate->_("Displayed To"); ?></label>
+						<select id="addDisplayContext" class="form-control">
+							<option value="all"><?= $this->translate->_("All"); ?></option>
+							<option value="participant"><?= $this->translate->_("Participant"); ?></option>
+							<option value="admin"><?= $this->translate->_("Admin"); ?></option>
+							<option value="none"><?= $this->translate->_("None"); ?></option>
+						</select>
+					</div>
+					<div class="field field-sort">
+						<label><?= $this->translate->_("Sort Order"); ?></label>
+						<input type="text" id="addSortOrder" class="form-control" placeholder="0" />
+					</div>
+					<div class="field">
+						<button type="button" class="btn btn-success btn-add-result" onclick="addNewResult();">
+							<i class="icon-plus"></i> <?= $this->translate->_("Add"); ?>
+						</button>
+					</div>
+				</div>
 
-<!-- Floating action bar (matches DTS settings) -->
-<div class="floating-buttons">
-	<button type="button" class="btn btn-primary" onclick="validateNow(); return false;">
-		<i class="icon-ok"></i> <?= $this->translate->_("Update"); ?>
+				<div class="results-table-wrap table-responsive">
+					<table class="table" id="resultsTable">
+						<thead>
+							<tr>
+								<th style="width:36px;">#</th>
+								<th style="width:18%;"><?= $this->translate->_("Result Type"); ?></th>
+								<th style="width:24%;"><?= $this->translate->_("Response"); ?></th>
+								<th style="width:16%;"><?= $this->translate->_("Result Code"); ?></th>
+								<th style="width:14%;"><?= $this->translate->_("Displayed To"); ?></th>
+								<th style="width:9%;"><?= $this->translate->_("Sort Order"); ?></th>
+								<th style="width:70px; text-align:center;"><?= $this->translate->_("Action"); ?></th>
+							</tr>
+						</thead>
+						<tbody id="rowsBody">
+							<?php if (!empty($this->results)) : ?>
+								<?php foreach ($this->results as $i => $row) :
+									// Detect the trailing TEST / FINAL token of scheme_sub_group. The save path
+									// joins with '-' (e.g. "HCV RDT-TEST") while legacy seed data used '_'
+									// (e.g. "DTS_TEST", "DTS_SYP_FINAL") -- so match either delimiter, otherwise
+									// a freshly-saved row would lose its Result Type on reload.
+									if (preg_match('/(?:^|[_-])(TEST|FINAL)$/i', (string) $row['scheme_sub_group'], $sgMatch)) {
+										$rowResultType = strtoupper($sgMatch[1]);
+									} else {
+										$rowResultType = null;
+									}
+									$rowTypeClass = 'row-type-' . strtolower($rowResultType ?: 'other');
+
+									$storedCode    = $row['result_code'];
+									$displaySuffix = $storedCode;
+									if ($isUserConfigured && $schemeId !== '') {
+										$prefixTest    = $schemeId . '-T-';
+										$prefixFinal   = $schemeId . '-F-';
+										$prefixGeneric = $schemeId . '-';
+										if (strpos($storedCode, $prefixTest) === 0) {
+											$displaySuffix = substr($storedCode, strlen($prefixTest));
+										} elseif (strpos($storedCode, $prefixFinal) === 0) {
+											$displaySuffix = substr($storedCode, strlen($prefixFinal));
+										} elseif (strpos($storedCode, $prefixGeneric) === 0) {
+											$displaySuffix = substr($storedCode, strlen($prefixGeneric));
+										}
+									}
+
+									// A row is LOCKED for two reasons. Locked rows can only have their sort order
+									// and "displayed to" edited; those post under separate locked* names so the save
+									// path updates just those two columns and never touches scheme_sub_group /
+									// response / result_code.
+									//
+									// 1. In-use  = belongs to a shipment that is not yet finalized.
+									// 2. Pre-defined sub-test = a scheme_sub_group richer than the plain
+									//    "{SCHEME}_TEST/FINAL" (built-in) or bare "TEST/FINAL" (user-configured)
+									//    forms -- e.g. DTS_SYP_TEST, RECENCY_FINAL, TB_MOLECULAR_FINAL. This flat
+									//    Test/Final form cannot represent those, so editing would flatten them and
+									//    destroy the sub-test grouping. Detection is structural (no hardcoded list),
+									//    so sub-tests added for other schemes in future are protected automatically.
+									$subGroup    = strtoupper(trim((string) $row['scheme_sub_group']));
+									$plainGroups = $isUserConfigured
+										? ['TEST', 'FINAL']
+										: [$schemeId . '_TEST', $schemeId . '_FINAL'];
+									$isSubTest   = ($subGroup !== '') && !in_array($subGroup, $plainGroups, true);
+
+									$inUse  = (isset($row['shipment_status']) && !empty($row['shipment_status']) && $row['shipment_status'] != 'finalized');
+									$locked = $inUse || $isSubTest;
+
+									$lockReason = $inUse
+										? $this->translate->_("In use by an open shipment — locked")
+										: $this->translate->_("Pre-defined sub-test — locked to protect its grouping");
+
+									$disable = $locked ? 'disabled' : '';
+									$encId   = base64_encode($row['id']);
+								?>
+									<tr class="<?= $rowTypeClass; ?>">
+										<td class="row-num"><?= $i + 1; ?></td>
+										<td>
+											<input type="hidden" name="rId[<?php echo $i; ?>]" value="<?php echo $encId; ?>" />
+											<select name="resultType[<?php echo $i; ?>]" <?php echo $disable; ?>
+												class="form-control isRequired js-type<?= $isUserConfigured ? ' js-result-type' : ''; ?>"
+												title="<?= $this->translate->_("Please select the result type"); ?>" required>
+												<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
+												<option value="TEST" <?= ($rowResultType === 'TEST')  ? 'selected="selected"' : ''; ?>><?= $this->translate->_("Test Result"); ?></option>
+												<option value="FINAL" <?= ($rowResultType === 'FINAL') ? 'selected="selected"' : ''; ?>><?= $this->translate->_("Final Interpretation"); ?></option>
+											</select>
+											<?php if ($isSubTest) : ?>
+												<span class="subtest-tag" title="<?= $this->translate->_("Pre-defined sub-test"); ?>"><?= htmlspecialchars((string) $row['scheme_sub_group']); ?></span>
+											<?php endif; ?>
+										</td>
+										<td>
+											<input type="text" name="response[<?php echo $i; ?>]" <?php echo $disable; ?>
+												class="form-control isRequired"
+												value="<?= htmlspecialchars((string) $row['response']); ?>"
+												placeholder="<?= $this->translate->_("Enter response"); ?>"
+												title="<?= $this->translate->_("Please enter the response"); ?>" required />
+										</td>
+										<td>
+											<?php if ($isUserConfigured) : ?>
+												<div class="input-group input-group-sm" style="display:flex;">
+													<span class="input-group-addon result-code-prefix-addon js-code-prefix" style="display:inline-table;"></span>
+													<input type="text" <?php echo $disable; ?>
+														class="form-control isRequired js-code-suffix input-sm"
+														placeholder="<?= $this->translate->_("e.g. P"); ?>" maxlength="20"
+														value="<?= htmlspecialchars((string) $displaySuffix); ?>"
+														title="<?= $this->translate->_("Please enter the result code suffix"); ?>" />
+												</div>
+												<input type="hidden" name="resultCode[<?php echo $i; ?>]" class="js-code-hidden"
+													value="<?= htmlspecialchars((string) $storedCode); ?>" />
+											<?php else : ?>
+												<input type="text" name="resultCode[<?php echo $i; ?>]" <?php echo $disable; ?>
+													class="form-control isRequired js-code-plain"
+													value="<?= htmlspecialchars((string) $storedCode); ?>"
+													placeholder="<?= $this->translate->_("e.g. POS"); ?>"
+													title="<?= $this->translate->_("Please enter the short result code"); ?>"
+													required />
+											<?php endif; ?>
+										</td>
+										<td>
+											<?php
+											$dc = !empty($row['display_context']) ? $row['display_context'] : 'all';
+											$dcName = $locked ? 'lockedDisplayContext[' . $encId . ']' : 'displayContext[' . $i . ']';
+											?>
+											<select name="<?= $dcName; ?>" class="form-control"
+												title="<?= $this->translate->_("Please select who this result is displayed to"); ?>">
+												<option value="all" <?= ($dc === 'all') ? 'selected="selected"' : ''; ?>><?= $this->translate->_("All"); ?></option>
+												<option value="participant" <?= ($dc === 'participant') ? 'selected="selected"' : ''; ?>><?= $this->translate->_("Participant"); ?></option>
+												<option value="admin" <?= ($dc === 'admin') ? 'selected="selected"' : ''; ?>><?= $this->translate->_("Admin"); ?></option>
+												<option value="none" <?= ($dc === 'none') ? 'selected="selected"' : ''; ?>><?= $this->translate->_("None"); ?></option>
+											</select>
+										</td>
+										<td>
+											<?php $soName = $locked ? 'lockedSortOrder[' . $encId . ']' : 'sortOrder[' . $i . ']'; ?>
+											<input type="text" name="<?= $soName; ?>" class="form-control js-sort"
+												value="<?= htmlspecialchars((string) ($row['sort_order'] ?? '')); ?>" placeholder="0" />
+										</td>
+										<td class="action-cell">
+											<?php if ($locked) : ?>
+												<i class="icon-lock locked-indicator" title="<?= htmlspecialchars($lockReason); ?>"></i>
+											<?php else : ?>
+												<button type="button" class="btn-row-remove"
+													title="<?= $this->translate->_("Remove row"); ?>"
+													onclick="removeRow(this)">&#8722;</button>
+											<?php endif; ?>
+										</td>
+									</tr>
+								<?php endforeach; ?>
+							<?php endif; ?>
+						</tbody>
+					</table>
+				</div>
+			</div><!-- /.form-content -->
+		</fieldset>
+	</form>
+</div><!-- /.scheme-results-container -->
+
+<!-- Floating action bar -->
+<div class="floating-buttons" id="floatingButtons">
+	<button type="button" class="btn btn-primary btn-save" onclick="validateNow(); return false;">
+		<span class="unsaved-dot"></span><i class="icon-ok"></i> <?= $this->translate->_("Update"); ?>
 	</button>
-	<a href="/admin/schemes/test-results" class="btn btn-danger">
+	<a href="/admin/schemes/test-results" class="btn btn-danger js-cancel">
 		<i class="icon-arrow-left"></i> <?= $this->translate->_("Cancel"); ?>
 	</a>
 </div>
@@ -384,12 +447,13 @@ $schemeId = !empty($this->results[0]['scheme_id']) ? strtoupper(trim($this->resu
 <script type="text/javascript" src="<?php echo $this->baseUrl('js/select2.min.js'); ?>"></script>
 
 <script type="text/javascript">
-	var duplicated = false;
+	var isDirty = false;
+	var isSubmitting = false;
 
 	var IS_USER_CONFIGURED = <?= $isUserConfigured ? 'true' : 'false'; ?>;
 	var SCHEME_CODE = <?= json_encode($schemeId); ?>;
 
-	/* ── Prefix helpers ──────────────────────────────────────────────────── */
+	/* ── Result-code prefix helpers (user-configured schemes) ──────────────── */
 
 	function getPrefix(resultTypeValue) {
 		if (!SCHEME_CODE) return '';
@@ -400,9 +464,8 @@ $schemeId = !empty($this->results[0]['scheme_id']) ? strtoupper(trim($this->resu
 
 	function updateResultCodeForRow(tr) {
 		if (!IS_USER_CONFIGURED) return;
-
 		var $tr = $(tr);
-		var type = $tr.find('.js-result-type').val();
+		var type = $tr.find('.js-type').val();
 		var prefix = getPrefix(type);
 		var $addon = $tr.find('.js-code-prefix');
 		var $suffix = $tr.find('.js-code-suffix');
@@ -411,38 +474,71 @@ $schemeId = !empty($this->results[0]['scheme_id']) ? strtoupper(trim($this->resu
 		var raw = ($suffix.val() || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
 		if ($suffix.val() !== raw) $suffix.val(raw);
 
-		if (prefix) {
-			$addon.text(prefix).show();
-		} else {
-			$addon.text('').hide();
-		}
-
+		if (prefix) { $addon.text(prefix).show(); } else { $addon.text('').hide(); }
 		$hidden.val(raw ? prefix + raw : '');
 	}
 
 	function initAllPrefixes() {
 		if (!IS_USER_CONFIGURED) return;
-		$('#rowsBody tr').each(function() {
-			updateResultCodeForRow(this);
-		});
+		$('#rowsBody tr').each(function () { updateResultCodeForRow(this); });
+		// keep the add-bar prefix addon in sync with the chosen type
+		updateAddPrefix();
 	}
 
-	/* ── Row building ────────────────────────────────────────────────────── */
+	function updateAddPrefix() {
+		if (!IS_USER_CONFIGURED) return;
+		var prefix = getPrefix($('#addType').val());
+		var $addon = $('#addCodePrefix');
+		if (prefix) { $addon.text(prefix).show(); } else { $addon.text('').hide(); }
+	}
+
+	/* ── Sorting: Test Results first, then Final Interpretations, by sort order ── */
+
+	function typeRank(t) { return t === 'TEST' ? 0 : (t === 'FINAL' ? 1 : 2); }
+
+	function rowKey(tr) {
+		var $tr = $(tr);
+		var so = parseInt($tr.find('.js-sort').val(), 10);
+		return { rank: typeRank($tr.find('.js-type').val()), so: isNaN(so) ? Number.POSITIVE_INFINITY : so };
+	}
+
+	// true when key a should sort strictly before key b
+	function keyLess(a, b) {
+		if (a.rank !== b.rank) return a.rank < b.rank;
+		return a.so < b.so;
+	}
+
+	function insertSorted(newTr) {
+		var rows = $('#rowsBody tr').not(newTr).toArray();
+		var nk = rowKey(newTr);
+		for (var i = 0; i < rows.length; i++) {
+			if (keyLess(nk, rowKey(rows[i]))) {
+				rows[i].parentNode.insertBefore(newTr, rows[i]);
+				reindex();
+				return;
+			}
+		}
+		document.getElementById('rowsBody').appendChild(newTr);
+		reindex();
+	}
+
+	function applyTypeClass(tr) {
+		var t = $(tr).find('.js-type').val();
+		var cls = t === 'TEST' ? 'row-type-test' : (t === 'FINAL' ? 'row-type-final' : 'row-type-other');
+		$(tr).removeClass('row-type-test row-type-final row-type-other').addClass(cls);
+	}
+
+	/* ── Row template (for client-added rows) ──────────────────────────────── */
 
 	function buildResultCodeCell() {
 		if (IS_USER_CONFIGURED) {
-			return '<div class="input-group input-group-sm">' +
-				'<span class="input-group-addon result-code-prefix-addon js-code-prefix" style="padding:6px 8px;"></span>' +
-				'<input type="text" class="form-control isRequired js-code-suffix input-sm"' +
-				'   placeholder="<?= $this->translate->_("e.g. P"); ?>" maxlength="20"' +
-				'   title="<?= $this->translate->_("Please enter the result code suffix"); ?>" />' +
+			return '<div class="input-group input-group-sm" style="display:flex;">' +
+				'<span class="input-group-addon result-code-prefix-addon js-code-prefix" style="display:inline-table;"></span>' +
+				'<input type="text" class="form-control isRequired js-code-suffix input-sm" placeholder="<?= $this->translate->_("e.g. P"); ?>" maxlength="20" />' +
 				'</div>' +
 				'<input type="hidden" name="resultCode[]" class="js-code-hidden" />';
-		} else {
-			return '<input type="text" name="resultCode[]" class="form-control isRequired"' +
-				'   placeholder="<?= $this->translate->_("e.g. POS"); ?>" required' +
-				'   onblur="checkDuplicate(\'r_possibleresult\',\'result_code\',this,null,\'<?= $this->translate->_("This result code already exists. Please try something else."); ?>\')" />';
 		}
+		return '<input type="text" name="resultCode[]" class="form-control isRequired js-code-plain" placeholder="<?= $this->translate->_("e.g. POS"); ?>" required />';
 	}
 
 	function buildRow() {
@@ -450,95 +546,220 @@ $schemeId = !empty($this->results[0]['scheme_id']) ? strtoupper(trim($this->resu
 		tr.innerHTML =
 			'<td class="row-num"></td>' +
 			'<td>' +
-			'<select name="resultType[]" class="form-control isRequired' + (IS_USER_CONFIGURED ? ' js-result-type' : '') + '" required>' +
+			'<select name="resultType[]" class="form-control isRequired js-type' + (IS_USER_CONFIGURED ? ' js-result-type' : '') + '" required>' +
 			'<option value="">-- <?= $this->translate->_("Select"); ?> --</option>' +
 			'<option value="TEST"><?= $this->translate->_("Test Result"); ?></option>' +
 			'<option value="FINAL"><?= $this->translate->_("Final Interpretation"); ?></option>' +
 			'</select>' +
 			'</td>' +
-			'<td>' +
-			'<input type="text" name="response[]" class="form-control isRequired"' +
-			'   placeholder="<?= $this->translate->_("Enter response"); ?>" required />' +
-			'</td>' +
+			'<td><input type="text" name="response[]" class="form-control isRequired" placeholder="<?= $this->translate->_("Enter response"); ?>" required /></td>' +
 			'<td>' + buildResultCodeCell() + '</td>' +
-			'<td><input type="text" name="sortOrder[]" class="form-control" placeholder="0" /></td>' +
+			'<td>' +
+			'<select name="displayContext[]" class="form-control">' +
+			'<option value="all"><?= $this->translate->_("All"); ?></option>' +
+			'<option value="participant"><?= $this->translate->_("Participant"); ?></option>' +
+			'<option value="admin"><?= $this->translate->_("Admin"); ?></option>' +
+			'<option value="none"><?= $this->translate->_("None"); ?></option>' +
+			'</select>' +
+			'</td>' +
+			'<td><input type="text" name="sortOrder[]" class="form-control js-sort" placeholder="0" /></td>' +
 			'<td class="action-cell">' +
-			'<button type="button" class="btn-row-add" title="<?= $this->translate->_("Add row below"); ?>" onclick="insertRowAfter(this)">+</button> ' +
 			'<button type="button" class="btn-row-remove" title="<?= $this->translate->_("Remove row"); ?>" onclick="removeRow(this)">&#8722;</button>' +
 			'</td>';
 		return tr;
 	}
 
-	/* ── Row management ──────────────────────────────────────────────────── */
+	/* ── Add a new result from the top bar ─────────────────────────────────── */
 
-	function appendNewRow() {
-		var tbody = document.getElementById('rowsBody');
-		var newRow = buildRow();
-		tbody.appendChild(newRow);
-		reindex();
-		if (IS_USER_CONFIGURED) updateResultCodeForRow(newRow);
+	function addNewResult() {
+		var type = $('#addType').val();
+		var response = $.trim($('#addResponse').val());
+		var dc = $('#addDisplayContext').val();
+		var sort = $.trim($('#addSortOrder').val());
+		var code, suffix;
+
+		if (IS_USER_CONFIGURED) {
+			suffix = ($('#addCodeSuffix').val() || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+			code = suffix;
+		} else {
+			code = $.trim($('#addCode').val());
+		}
+
+		if (!type) { alert('<?= $this->translate->_("Please select a result type."); ?>'); return; }
+		if (!response) { alert('<?= $this->translate->_("Please enter a response."); ?>'); return; }
+		if (!code) { alert('<?= $this->translate->_("Please enter a result code."); ?>'); return; }
+
+		var candidateCode = IS_USER_CONFIGURED ? normVal(getPrefix(type) + suffix) : normVal(code);
+		var addDup = findTypeDup(type, normVal(response), candidateCode, null);
+		if (addDup.response || addDup.code) { alert(dupMessage(addDup)); return; }
+
+		var tr = buildRow();
+		$(tr).find('.js-type').val(type);
+		$(tr).find('input[name="response[]"]').val(response);
+		$(tr).find('select[name="displayContext[]"]').val(dc);
+		$(tr).find('.js-sort').val(sort);
+
+		if (IS_USER_CONFIGURED) {
+			$(tr).find('.js-code-suffix').val(suffix);
+			updateResultCodeForRow(tr);
+		} else {
+			$(tr).find('input[name="resultCode[]"]').val(code);
+		}
+
+		applyTypeClass(tr);
+		insertSorted(tr);
+		markDirty();
+
+		// reset the add bar
+		$('#addType').val('');
+		$('#addResponse').val('');
+		$('#addDisplayContext').val('all');
+		$('#addSortOrder').val('');
+		if (IS_USER_CONFIGURED) { $('#addCodeSuffix').val(''); updateAddPrefix(); } else { $('#addCode').val(''); }
+		$('#addType').focus();
 	}
 
-	function insertRowAfter(btn) {
-		var currentRow = btn.closest('tr');
-		var newRow = buildRow();
-		currentRow.parentNode.insertBefore(newRow, currentRow.nextSibling);
-		reindex();
-		if (IS_USER_CONFIGURED) updateResultCodeForRow(newRow);
-	}
+	/* ── Row management ────────────────────────────────────────────────────── */
 
 	function removeRow(btn) {
-		var tbody = document.getElementById('rowsBody');
-		if (tbody.rows.length <= 1) {
-			alert('<?= $this->translate->_("At least one row is required."); ?>');
-			return;
-		}
-		btn.closest('tr').remove();
+		$(btn).closest('tr').remove();
 		reindex();
+		markDirty();
 	}
 
 	function reindex() {
-		document.querySelectorAll('#rowsBody tr').forEach(function(tr, i) {
-			tr.querySelector('.row-num').textContent = i + 1;
+		document.querySelectorAll('#rowsBody tr').forEach(function (tr, i) {
+			var cell = tr.querySelector('.row-num');
+			if (cell) cell.textContent = i + 1;
 		});
 	}
 
-	/* ── Event delegation ────────────────────────────────────────────────── */
+	/* ── Dirty tracking + unsaved warning ──────────────────────────────────── */
 
-	$(document).on('change', '#rowsBody .js-result-type', function() {
-		updateResultCodeForRow($(this).closest('tr')[0]);
-	});
-
-	$(document).on('input', '#rowsBody .js-code-suffix', function() {
-		updateResultCodeForRow($(this).closest('tr')[0]);
-	});
-
-	/* ── Duplicate check ─────────────────────────────────────────────────── */
-
-	function checkDuplicate(tableName, fieldName, obj, fnct, msg) {
-		$.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'common', 'action' => 'check-duplicate')); ?>", {
-			tableName: tableName,
-			fieldName: fieldName,
-			value: obj.value,
-			fnct: fnct,
-			format: 'html'
-		}, function(data) {
-			if (data > 0) {
-				alert(msg, 'err');
-				duplicated = true;
-				$(obj).val('');
-			} else {
-				duplicated = false;
-			}
-		});
+	function markDirty() {
+		if (isDirty) return;
+		isDirty = true;
+		$('#unsavedBanner').addClass('show');
+		$('#floatingButtons').addClass('dirty');
 	}
 
-	/* ── Validation & submit ─────────────────────────────────────────────── */
+	function clearDirty() {
+		isDirty = false;
+		$('#unsavedBanner').removeClass('show');
+		$('#floatingButtons').removeClass('dirty');
+	}
+
+	window.addEventListener('beforeunload', function (e) {
+		if (isDirty && !isSubmitting) {
+			e.preventDefault();
+			e.returnValue = '';
+			return '';
+		}
+	});
+
+	/* ── Event delegation ──────────────────────────────────────────────────── */
+
+	$(document).on('change input', '#rowsBody select, #rowsBody input', function () {
+		markDirty();
+	});
+
+	$(document).on('change', '#rowsBody .js-result-type', function () {
+		updateResultCodeForRow($(this).closest('tr')[0]);
+	});
+
+	$(document).on('input', '#rowsBody .js-code-suffix', function () {
+		updateResultCodeForRow($(this).closest('tr')[0]);
+	});
+
+	// When type or sort order of an existing row changes, re-stripe and re-position it.
+	$(document).on('change', '#rowsBody .js-type', function () {
+		var tr = $(this).closest('tr')[0];
+		applyTypeClass(tr);
+		insertSorted(tr);
+	});
+
+	$(document).on('change', '#rowsBody .js-sort', function () {
+		insertSorted($(this).closest('tr')[0]);
+	});
+
+	// Editing an existing row into a same-type duplicate is not allowed -> revert the field.
+	$(document).on('change', '#rowsBody input[name^="response"]', function () {
+		var tr = $(this).closest('tr')[0];
+		if (findTypeDup(rowTypeVal(tr), normVal(this.value), '', tr).response) {
+			alert(dupMessage({ response: true, code: false }));
+			$(this).val('').focus();
+		}
+	});
+
+	$(document).on('change', '#rowsBody .js-code-plain', function () {
+		var tr = $(this).closest('tr')[0];
+		if (findTypeDup(rowTypeVal(tr), '', normVal(this.value), tr).code) {
+			alert(dupMessage({ response: false, code: true }));
+			$(this).val('').focus();
+		}
+	});
+
+	$(document).on('change', '#rowsBody .js-code-suffix', function () {
+		var tr = $(this).closest('tr')[0];
+		// the 'input' handler above has already recomputed the hidden full code
+		if (findTypeDup(rowTypeVal(tr), '', rowCodeVal(tr), tr).code) {
+			alert(dupMessage({ response: false, code: true }));
+			$(this).val('').trigger('input').focus();
+		}
+	});
+
+	// Keep the add-bar prefix addon synced
+	$('#addType').on('change', updateAddPrefix);
+	$('#addCodeSuffix').on('input', function () {
+		this.value = (this.value || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+	});
+
+	// Cancel = intentional discard; don't double-prompt
+	$(document).on('click', '.js-cancel', function () { isDirty = false; });
+
+	/* ── Duplicate prevention (scoped to this scheme + result type) ─────────── */
+
+	function normVal(v) { return (v == null ? '' : String(v)).trim().toUpperCase(); }
+
+	function rowTypeVal(tr) { return $(tr).find('.js-type').val(); }
+	function rowRespVal(tr) { return normVal($(tr).find('input[name^="response"]').val()); }
+	function rowCodeVal(tr) {
+		if (IS_USER_CONFIGURED) return normVal($(tr).find('.js-code-hidden').val());
+		return normVal($(tr).find('.js-code-plain').val());
+	}
+
+	// Within the same result type, is this response / result code already taken?
+	function findTypeDup(type, response, code, excludeTr) {
+		var dup = { response: false, code: false };
+		$('#rowsBody tr').each(function () {
+			if (excludeTr && this === excludeTr) return;
+			if (rowTypeVal(this) !== type) return;
+			if (response && rowRespVal(this) === response) dup.response = true;
+			if (code && rowCodeVal(this) === code) dup.code = true;
+		});
+		return dup;
+	}
+
+	function dupMessage(dup) {
+		if (dup.response && dup.code) return '<?= $this->translate->_("Another result of this type already uses this response and result code."); ?>';
+		if (dup.response) return '<?= $this->translate->_("Another result of this type already uses this response."); ?>';
+		return '<?= $this->translate->_("Another result of this type already uses this result code."); ?>';
+	}
+
+	/* ── Validation & submit ───────────────────────────────────────────────── */
 
 	function validateNow() {
+		// Don't silently drop a half-entered result still sitting in the Add box.
+		var pendingResp = $.trim($('#addResponse').val());
+		var pendingCode = IS_USER_CONFIGURED ? $.trim($('#addCodeSuffix').val()) : $.trim($('#addCode').val());
+		if (pendingResp || pendingCode) {
+			alert('<?= $this->translate->_("You have a result in the Add box that has not been added yet. Click \"Add\" to include it, or clear it before saving."); ?>');
+			return false;
+		}
+
 		if (IS_USER_CONFIGURED) {
 			var valid = true;
-			$('#rowsBody .js-code-hidden').each(function() {
+			$('#rowsBody .js-code-hidden').each(function () {
 				if (!$(this).val()) {
 					alert('<?= $this->translate->_("Please enter a result code for all rows."); ?>');
 					valid = false;
@@ -548,20 +769,20 @@ $schemeId = !empty($this->results[0]['scheme_id']) ? strtoupper(trim($this->resu
 			if (!valid) return false;
 		}
 
-		var flag = deforayValidator.init({
-			formId: 'updatePossibleResultsForm'
-		});
-		if (flag && !duplicated) {
+		var flag = deforayValidator.init({ formId: 'updatePossibleResultsForm' });
+		if (flag) {
+			isSubmitting = true;
+			clearDirty();
 			$.blockUI();
 			document.getElementById('updatePossibleResultsForm').submit();
 		}
 	}
 
-	/* ── Init ────────────────────────────────────────────────────────────── */
+	/* ── Init ──────────────────────────────────────────────────────────────── */
 
-	$(document).ready(function() {
-		if ($('#rowsBody tr').length === 0) appendNewRow();
+	$(document).ready(function () {
 		reindex();
 		initAllPrefixes();
+		$('#rowsBody tr').each(function () { applyTypeClass(this); });
 	});
 </script>

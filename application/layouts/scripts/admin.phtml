@@ -209,6 +209,14 @@ if (!$pstatus && in_array('config-ept', $privileges)) {
 
 	// General config items
 	$spotlightItems[] = [
+		'id' => 'scheme-test-results',
+		'title' => $this->translate->_('Scheme Test Results'),
+		'category' => $this->translate->_('Configure'),
+		'icon' => 'icon-list-alt',
+		'url' => $this->url(['module' => 'admin', 'controller' => 'schemes', 'action' => 'test-results'], 'default', true),
+		'keywords' => ['scheme', 'test', 'results', 'possible', 'result', 'code']
+	];
+	$spotlightItems[] = [
 		'id' => 'global-settings',
 		'title' => $this->translate->_('ePT Global Settings'),
 		'category' => $this->translate->_('Configure'),
@@ -719,10 +727,10 @@ $helpPageKey = "$controllerName/$actionName";
 	<script src="<?php echo $this->baseUrl("js/jquery-3.7.1.min.js"); ?>"></script>
 	<script src="<?php echo $this->baseUrl("assets/plugins/jQueryUI/jquery-ui.min.js"); ?>"></script>
 	<!-- DataTables core + bootstrap integration + ext plugins. Loaded here (not
-	     at the foot of the page) so $.fn.dataTable / $.fn.dataTableExt / their
-	     .defaults / .oApi members are available to any per-page inline script —
-	     including AJAX-evaluated chunks that run before DOMContentLoaded — and
-	     not just to handlers inside $(document).ready(). -->
+		 at the foot of the page) so $.fn.dataTable / $.fn.dataTableExt / their
+		 .defaults / .oApi members are available to any per-page inline script —
+		 including AJAX-evaluated chunks that run before DOMContentLoaded — and
+		 not just to handlers inside $(document).ready(). -->
 	<script src="<?php echo $this->baseUrl("assets/plugins/datatables/jquery.dataTables.js"); ?>"
 		type="text/javascript"></script>
 	<script src="<?php echo $this->baseUrl("assets/plugins/datatables/dataTables.bootstrap.js"); ?>"
@@ -937,7 +945,7 @@ $helpPageKey = "$controllerName/$actionName";
 										</li>
 									<?php } ?>
 									<li id="testResults"><a
-											href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'schemes', 'action' => 'test-results'), 'default', true); ?>"><?= $this->translate->_("Schemes Results"); ?></a>
+											href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'schemes', 'action' => 'test-results'), 'default', true); ?>"><?= $this->translate->_("Scheme Test Results"); ?></a>
 									</li>
 									<?php if (in_array('dts', $adminSession->activeSchemes)) { ?>
 										<li id="TestKits"><a
@@ -1179,7 +1187,9 @@ $helpPageKey = "$controllerName/$actionName";
 					} ?>
 					<li id="Logout" style="position:relative;">
 						<button class="profile-btn" id="profileBtn" onclick="toggleProfileDropdown(event)"
-							style="display:inline-flex;align-items:center;gap:8px;height:50px;padding:0 15px;background:none;border:none;cursor:pointer;color:rgba(255,255,255,0.9);font-size:14px;line-height:20px;white-space:nowrap;transition:background-color 0.15s;" onmouseover="this.style.background='rgba(255,255,255,0.08)'" onmouseout="this.style.background='none'">
+							style="display:inline-flex;align-items:center;gap:8px;height:50px;padding:0 15px;background:none;border:none;cursor:pointer;color:rgba(255,255,255,0.9);font-size:14px;line-height:20px;white-space:nowrap;transition:background-color 0.15s;"
+							onmouseover="this.style.background='rgba(255,255,255,0.08)'"
+							onmouseout="this.style.background='none'">
 							<div
 								style="width:18px;height:18px;border-radius:50%;background:rgba(255,255,255,0.18);color:#fff;font-size:9px;font-weight:600;line-height:1;display:inline-flex;align-items:center;justify-content:center;border:1px solid rgba(255,255,255,0.35);flex-shrink:0;">
 								<?php
@@ -1190,7 +1200,8 @@ $helpPageKey = "$controllerName/$actionName";
 							</div>
 							<span><?php echo htmlspecialchars($adminSession->first_name ?? 'Admin'); ?></span>
 							<svg id="profileChevron" width="10" height="10" viewBox="0 0 16 16" fill="none"
-								stroke="currentColor" stroke-width="2" style="transition:transform 0.2s;opacity:0.7;flex-shrink:0;">
+								stroke="currentColor" stroke-width="2"
+								style="transition:transform 0.2s;opacity:0.7;flex-shrink:0;">
 								<path d="M4 6l4 4 4-4" />
 							</svg>
 						</button>
@@ -1300,15 +1311,15 @@ $helpPageKey = "$controllerName/$actionName";
 			quickActions: <?php echo json_encode($this->translate->_('Quick Actions')); ?>
 		};
 		window.spotlightCategoryOrder = <?php echo json_encode([
-											$this->translate->_('Recent'),
-											$this->translate->_('Recent Shipments'),
-											$this->translate->_('Quick Actions'),
-											$this->translate->_('Navigation'),
-											$this->translate->_('Configure'),
-											$this->translate->_('Manage'),
-											$this->translate->_('Analyze'),
-											$this->translate->_('Reports')
-										]); ?>;
+			$this->translate->_('Recent'),
+			$this->translate->_('Recent Shipments'),
+			$this->translate->_('Quick Actions'),
+			$this->translate->_('Navigation'),
+			$this->translate->_('Configure'),
+			$this->translate->_('Manage'),
+			$this->translate->_('Analyze'),
+			$this->translate->_('Reports')
+		]); ?>;
 	</script>
 
 	<script type="text/javascript">
@@ -1320,14 +1331,14 @@ $helpPageKey = "$controllerName/$actionName";
 			dd.style.display = isOpen ? 'none' : 'block';
 			ch.style.transform = isOpen ? '' : 'rotate(180deg)';
 		}
-		document.addEventListener('click', function() {
+		document.addEventListener('click', function () {
 			var dd = document.getElementById('profileDropdown');
 			if (dd) {
 				dd.style.display = 'none';
 				document.getElementById('profileChevron').style.transform = '';
 			}
 		});
-		$(function() {
+		$(function () {
 			str = $(location).attr('pathname');
 			splitsUrl = str.split("/", 6);
 			if (splitsUrl[2] == 'participants' && splitsUrl[3] == "participant-manager-map") {
@@ -1446,8 +1457,8 @@ $helpPageKey = "$controllerName/$actionName";
 				$('#HIVRecencyRTRISettings').addClass('active');
 			}
 
-			$('.autoSelectIfOnlyOneOption').each(function() {
-				var nonEmptyOptions = $(this).find('option').filter(function() {
+			$('.autoSelectIfOnlyOneOption').each(function () {
+				var nonEmptyOptions = $(this).find('option').filter(function () {
 					return this.value.trim() !== "";
 				});
 
@@ -1456,7 +1467,7 @@ $helpPageKey = "$controllerName/$actionName";
 				}
 			});
 
-			$(".checkNum").keydown(function(e) {
+			$(".checkNum").keydown(function (e) {
 				// Allow: backspace, delete, tab, escape, enter and .
 				if ($.inArray(e.keyCode, [46, 8, 9, 27, 13, 110, 190]) !== -1 ||
 					// Allow: Ctrl+A
@@ -1475,7 +1486,7 @@ $helpPageKey = "$controllerName/$actionName";
 			<?php $alertMsg = new Zend_Session_Namespace('alertSpace');
 			if (isset($alertMsg->message) && $alertMsg->message != "") { ?>
 				alert(<?php echo json_encode($alertMsg->message); ?>);
-			<?php $alertMsg->message = "";
+				<?php $alertMsg->message = "";
 				unset($alertMsg->message);
 			} ?>
 
@@ -1522,9 +1533,9 @@ $helpPageKey = "$controllerName/$actionName";
 
 		function notifyRead(id) {
 			$.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'common', 'action' => 'notify-status'), 'default', true); ?>", {
-					nid: id
-				},
-				function(data) {})
+				nid: id
+			},
+				function (data) { })
 		}
 
 		function allowOnlyAlphaNumericAndHyphen(inputId) {
@@ -1535,9 +1546,9 @@ $helpPageKey = "$controllerName/$actionName";
 
 		function markasRead() {
 			$.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'common', 'action' => 'notify-status'), 'default', true); ?>", {
-					nid: 'all'
-				},
-				function(data) {
+				nid: 'all'
+			},
+				function (data) {
 					if (data > 0) {
 						$('.readc').removeAttr('style');
 						$('.count-notify').html('');
@@ -1562,11 +1573,11 @@ $helpPageKey = "$controllerName/$actionName";
 			let formData = $('#' + formId).serialize();
 			$.blockUI();
 			$.post("<?php echo $this->url(['module' => 'reports', 'controller' => 'common', 'action' => 'export-config']); ?>", {
-					formPost: formData,
-					scheme: schemeId,
-					file: schemeId
-				},
-				function(data) {
+				formPost: formData,
+				scheme: schemeId,
+				file: schemeId
+			},
+				function (data) {
 					if (data) {
 						window.open('/d/' + data, '_blank');
 					}

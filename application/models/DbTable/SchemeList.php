@@ -331,6 +331,13 @@ class Application_Model_DbTable_SchemeList extends Zend_Db_Table_Abstract
 
         $sQuery = $this->getAdapter()->select()->from(['sl' => 'scheme_list']);
 
+        // Only qualitative schemes belong on this screen. Exclude explicit quantitative
+        // schemes (e.g. Viral Load); NULL/unclassified is treated as qualitative so newly
+        // added schemes still appear.
+        $sQuery->where("sl.test_format IS NULL OR sl.test_format != 'quantitative'");
+        // Only active schemes are shown.
+        $sQuery->where('sl.status = ?', 'active');
+
         if (isset($sWhere) && $sWhere != '') {
             $sQuery = $sQuery->where($sWhere);
         }
@@ -351,7 +358,9 @@ class Application_Model_DbTable_SchemeList extends Zend_Db_Table_Abstract
         $iFilteredTotal = count($aResultFilterTotal);
 
         /* Total data set length */
-        $sQuery = $this->getAdapter()->select()->from($this->_name, new Zend_Db_Expr("COUNT('*')"));
+        $sQuery = $this->getAdapter()->select()->from($this->_name, new Zend_Db_Expr("COUNT('*')"))
+            ->where("test_format IS NULL OR test_format != 'quantitative'")
+            ->where('status = ?', 'active');
         $aResultTotal = $this->getAdapter()->fetchCol($sQuery);
         $iTotal = $aResultTotal[0];
 
@@ -368,7 +377,7 @@ class Application_Model_DbTable_SchemeList extends Zend_Db_Table_Abstract
         foreach ($rResult as $aRow) {
             $row = [];
             $row[] = ucwords($aRow['scheme_name']);
-            $row[] = ucwords($aRow['scheme_id']);
+            $row[] = strtoupper($aRow['scheme_id']);
             $row[] = ucwords($aRow['status']);
             $row[] = '<a href="/admin/schemes/manage-test-results/id/' . base64_encode($aRow['scheme_id']) . '" class="btn btn-warning btn-xs" style="margin-right: 2px;"><i class="icon-pencil"></i> Test Results</a>';
             $output['aaData'][] = $row;
@@ -384,28 +393,95 @@ class Application_Model_DbTable_SchemeList extends Zend_Db_Table_Abstract
         }
 
         $schemeId = base64_decode($params['schemeId']);
-        // $count = count($params['resultType']);
 
-        foreach ($params['resultType'] as $key => $resultType) {
-            $resultTypeCode = $schemeId . '-' . $params['resultType'][$key];
+        // scheme_sub_group must round-trip and stay consistent with the rest of the system.
+        // The whole codebase keys off two conventions (never a hyphen):
+        //   * built-in schemes    -> "{SCHEME}_{TYPE}"  e.g. DTS_TEST, COVID19_FINAL (hardcoded
+        //                            evaluators in Shipments.php / response.phtml compare these)
+        //   * user-configured     -> bare "TEST" / "FINAL" (what custom-test add/edit writes for
+        //                            these very rows; the format lives in result_type instead)
+        $isUserConfigured = ((string) $this->getAdapter()->fetchOne(
+            'SELECT is_user_configured FROM scheme_list WHERE scheme_id = ?',
+            [$schemeId]
+        )) === 'yes';
+
+        $allowedContexts = ['participant', 'admin', 'all', 'none'];
+
+        // Pre-defined sub-tests (scheme_sub_group richer than the plain "{SCHEME}_TEST/FINAL" or
+        // bare "TEST/FINAL" forms -- e.g. DTS_SYP_TEST, RECENCY_FINAL) cannot be represented by
+        // this flat Test/Final form, so they must never be flattened here. The UI already locks
+        // them; this is server-side defense-in-depth in case a crafted POST slips one through.
+        // Detection is structural (no hardcoded list) so future sub-tests are protected too.
+        $plainGroups = $isUserConfigured
+            ? ['TEST', 'FINAL']
+            : [strtoupper($schemeId) . '_TEST', strtoupper($schemeId) . '_FINAL'];
+        $existingSubGroups = $this->getAdapter()->fetchPairs(
+            'SELECT id, scheme_sub_group FROM r_possibleresult WHERE scheme_id = ?',
+            [$schemeId]
+        );
+
+        foreach (($params['resultType'] ?? []) as $key => $resultType) {
+            $rowId = !empty($params['rId'][$key]) ? base64_decode($params['rId'][$key]) : null;
+
+            // Refuse to rewrite an existing pre-defined sub-test row through the flat form.
+            if ($rowId !== null && isset($existingSubGroups[$rowId])) {
+                $existing = strtoupper(trim((string) $existingSubGroups[$rowId]));
+                if ($existing !== '' && !in_array($existing, $plainGroups, true)) {
+                    continue;
+                }
+            }
+
+            $type = $params['resultType'][$key]; // TEST | FINAL
+            $resultTypeCode = $isUserConfigured ? $type : (strtoupper($schemeId) . '_' . $type);
+
+            $displayContext = $params['displayContext'][$key] ?? 'all';
+            if (!in_array($displayContext, $allowedContexts, true)) {
+                $displayContext = 'all';
+            }
 
             $data = [
                 'scheme_id'       => $schemeId,
                 'scheme_sub_group' => $resultTypeCode,
                 'response'        => $params['response'][$key],
                 'result_code'     => $params['resultCode'][$key],
-                'display_context' => 'all',
+                'display_context' => $displayContext,
                 'sort_order'      => $params['sortOrder'][$key],
             ];
 
-            if (!empty($params['rId'][$key])) {
-                $this->getAdapter()->update(
-                    'r_possibleresult',
-                    $data,
-                    ['id = ?' => base64_decode($params['rId'][$key])]
-                );
+            if ($rowId !== null) {
+                $this->getAdapter()->update('r_possibleresult', $data, ['id = ?' => $rowId]);
             } else {
                 $this->getAdapter()->insert('r_possibleresult', $data);
+            }
+        }
+
+        // In-use rows (results belonging to a not-yet-finalized shipment) are locked in the
+        // form except for sort order and "displayed to". They are submitted under separate
+        // `locked*` arrays keyed by the base64 row id, and ONLY those two columns are updated
+        // here -- never scheme_sub_group / response / result_code. Routing them through the
+        // main loop above would rebuild scheme_sub_group from the TEST/FINAL select and clobber
+        // multi-subgroup grouping (e.g. DTS_SYP_TEST -> dts-TEST).
+        $lockedSort = $params['lockedSortOrder'] ?? [];
+        $lockedCtx  = $params['lockedDisplayContext'] ?? [];
+        $lockedIds  = array_unique(array_merge(array_keys($lockedSort), array_keys($lockedCtx)));
+
+        foreach ($lockedIds as $encId) {
+            $rowId = base64_decode((string) $encId);
+            if (!ctype_digit((string) $rowId)) {
+                continue;
+            }
+
+            $update = [];
+            if (array_key_exists($encId, $lockedSort)) {
+                $update['sort_order'] = ($lockedSort[$encId] === '') ? null : $lockedSort[$encId];
+            }
+            if (array_key_exists($encId, $lockedCtx)) {
+                $ctx = $lockedCtx[$encId];
+                $update['display_context'] = in_array($ctx, $allowedContexts, true) ? $ctx : 'all';
+            }
+
+            if (!empty($update)) {
+                $this->getAdapter()->update('r_possibleresult', $update, ['id = ?' => $rowId]);
             }
         }
 
@@ -465,10 +541,16 @@ class Application_Model_DbTable_SchemeList extends Zend_Db_Table_Abstract
                 ->joinLeft(
                     ['rp' => 'r_possibleresult'],
                     'rp.scheme_id = sl.scheme_id',
-                    ['rp.id', 'rp.scheme_sub_group', 'rp.result_type', 'rp.response', 'rp.result_code', 'rp.sort_order']
+                    ['rp.id', 'rp.scheme_sub_group', 'rp.result_type', 'rp.response', 'rp.result_code', 'rp.display_context', 'rp.sort_order']
                 )
                 ->where('sl.scheme_id = ?', $id)
+                // Group Test Results first, then Final Interpretations; within each group order
+                // by sort_order asc (unset/NULL last). The type is the last '_'-delimited token
+                // of scheme_sub_group (e.g. DTS_TEST / DTS_SYP_FINAL).
+                ->order(new Zend_Db_Expr("CASE UPPER(SUBSTRING_INDEX(rp.scheme_sub_group, '_', -1)) WHEN 'TEST' THEN 0 WHEN 'FINAL' THEN 1 ELSE 2 END"))
+                ->order(new Zend_Db_Expr('rp.sort_order IS NULL'))
                 ->order('rp.sort_order ASC')
+                ->order('rp.id ASC')
         );
 
         if (empty($possibleResults) || $responseTable === null) {
