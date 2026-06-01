@@ -5,6 +5,11 @@ $schemeType = $resultArray['shipment'][0]['scheme_type'];
 $equipmentsReports = $reportService->getEidAssayByShipmentId($evalRow['shipment_id']);
 $eidPossibleResults = $schemeService->getPossibleResults('eid');
 $passPercentage = Pt_Commons_SchemeConfig::get('eid.passPercentage');
+// EID has no scheme_config row / admin setting, so the lookup is null on most
+// instances. Default to the program pass mark (80%) so grading is correct everywhere.
+if (empty($passPercentage)) {
+    $passPercentage = 80;
+}
 $approveTxt = $resultArray['shipment'][0]['pt_co_ordinator_name'] ?? $evalRow['saname'];
 
 $pdfNew = new Zend_Pdf();
@@ -190,12 +195,15 @@ if (!empty($resultArray['shipment'])) {
                         <td style="text-align:center;font-weight:bold;">Score</td>
                 </tr>';
             foreach ($result['responseResult'] as $key => $response) {
-                $calculatedScore = ($response['labResult'] == $response['referenceResult']) ? $calculatedScore : 0;
+                // Use a per-row variable: reusing $calculatedScore here permanently
+                // zeroed it after the first wrong sample, so later correct samples
+                // (e.g. sample 05) were shown as 0 even though they scored.
+                $rowScore = ($response['labResult'] == $response['referenceResult']) ? $calculatedScore : 0;
                 $labRes .= '<tr>
                         <td style="text-align:center;font-weight:bold;">' . $response['sample_label'] . '</td>';
                 $labRes .= '<td style="text-align:center;">' . ucwords($response['labResult'] ?? '') . '</td>
                     <td style="text-align:center;">' . ucwords($response['referenceResult'] ?? '') . '</td>';
-                $labRes .= '<td style="text-align:center;">' . round($calculatedScore, 2) . '</td>
+                $labRes .= '<td style="text-align:center;">' . round($rowScore, 2) . '</td>
                     </tr>';
             }
             $labRes .= '<tr>
@@ -301,49 +309,22 @@ if (!empty($resultArray['shipment'])) {
                     $equipmentTxt .= '<tr>
                                     <td style="text-align:left;width:40%;font-weight:normal;">' . $equipment['assay_name'] . '</td>
                                     <td style="text-align:left;width:40%;font-weight:normal;">' . $equipment['total_participated'] . '</td>
-                                    <td style="text-align:left;width:20%;font-weight:normal;">' . $equipment['average_result'] . '</td>
+                                    <td style="text-align:left;width:20%;font-weight:normal;">' . ($equipment['percentage'] ?? '0') . '%</td>
                                 </tr>';
                 }
                 $equipmentTxt .= '</table><br/>';
                 $pdf->writeHTML($equipmentTxt, true, false, true, false, '');
             }
 
-            $zscorehtml = '<br><span style="font-weight:bold;font-size:12px;">Interpretation of Scores (Performance criteria):</span><br/>';
-            $zscorehtml .= '<table border="1" style="text-align:center;width:650px;font-size:11px;">   ';
-            $zscorehtml .= '<tr>';
-            $zscorehtml .= '<th style="background-color:#BDD6EE;"><strong>z Score</strong></th>';
-            $zscorehtml .= '<th style="background-color:#BDD6EE;"><strong>Results Interpretation</strong></th>';
-            $zscorehtml .= '<th style="background-color:#BDD6EE;"><strong>Recommended Action</strong></th>';
-            $zscorehtml .= '</tr>';
-
-            $zscorehtml .= '<tr>';
-            $zscorehtml .= '<td>z ≤ ±2.0</td>';
-            $zscorehtml .= '<td>Acceptable</td>';
-            $zscorehtml .= '<td>No action required</td>';
-            $zscorehtml .= '</tr>';
-
-            $zscorehtml .= '<tr>';
-            $zscorehtml .= '<td>± 2.0 > z < ± 3.0</td>';
-            $zscorehtml .= '<td>Warning</td>';
-            $zscorehtml .= '<td>Closely monitor performance</td>';
-            $zscorehtml .= '</tr>';
-
-            $zscorehtml .= '<tr>';
-            $zscorehtml .= '<td>z ≥ ± 3.0</td>';
-            $zscorehtml .= '<td style="color:red;">Unacceptable</td>';
-            $zscorehtml .= '<td style="color:red;">Perform corrective action</td>';
-            $zscorehtml .= '</tr>';
-
-            $zscorehtml .= '</table>';
-            // $zscorehtml .= '<br/><span style="text-align:justify;font-size:8;"><i style="color:darkgreen;background-color:lightgreen;">NOTE: *Results due date was extended for ePT results validation from submitted participants to address discrepancies.</i></span>';
-            $pdf->writeHTML($zscorehtml, true, false, true, false, '');
-
-            $note = '<ul style="font-size:12px;">';
-            $note .= '<li style="text-align:justify;font-size:11px;font-weight:normal;">A testing score of 0 is awarded for any result that is incorrectly</li>';
-            $note .= '<li style="text-align:justify;font-size:11px;font-weight:normal;">reported A testing score of 20 is awarded for any result reported correctly</li>';
-            $note .= '<li style="text-align:justify;font-size:11px;font-weight:normal;">A grading of Satisfactory is assigned when the participant overall score</li>';
-            $note .= '<li style="text-align:justify;font-size:11px;font-weight:normal;">is >= ' . $passPercentage . '% A grading of Unsatisfactory is assigned when the participant overall score is < ' . $passPercentage . '%</li>';
-            $note .= '<li style="text-align:justify;font-size:11px;font-weight:normal;">A grading of Ungraded is assigned when the participant has not submitted PT results</li>';
+            // EID is a qualitative scheme: the z-score table is a Viral Load concept and
+            // does not apply here. Only the textual performance criteria are shown.
+            $note = '<br><span style="font-weight:bold;font-size:12px;">Interpretation of Scores (Performance criteria):</span>';
+            $note .= '<ul style="font-size:12px;">';
+            $note .= '<li style="text-align:justify;font-size:11px;font-weight:normal;">A testing score of 0 is awarded for any result that is incorrectly reported.</li>';
+            $note .= '<li style="text-align:justify;font-size:11px;font-weight:normal;">A testing score of 20 is awarded for any result reported correctly.</li>';
+            $note .= '<li style="text-align:justify;font-size:11px;font-weight:normal;">A grading of Satisfactory is assigned when the participant overall score is &gt;= ' . $passPercentage . '%.</li>';
+            $note .= '<li style="text-align:justify;font-size:11px;font-weight:normal;">A grading of Unsatisfactory is assigned when the participant overall score is &lt; ' . $passPercentage . '%.</li>';
+            $note .= '<li style="text-align:justify;font-size:11px;font-weight:normal;">A grading of Ungraded is assigned when the participant has not submitted PT results.</li>';
             $note .= '</ul>';
             $contentForReport = !empty($contentForIndividualVlReports) ? htmlspecialchars_decode($contentForIndividualVlReports) : null;
             $contentForReport = str_replace("'", '"', $contentForReport);
