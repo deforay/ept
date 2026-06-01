@@ -93,14 +93,14 @@ class Admin_SpotlightController extends Zend_Controller_Action
                     if (file_exists($summaryPath)) {
                         $actions[] = [
                             'label' => $this->view->translate->_('Download Summary'),
-                            'url' => '/d/' . base64_encode($summaryPath),
+                            'url' => Pt_Commons_SignedDownload::url($summaryPath),
                             'icon' => 'icon-download',
                         ];
                     }
                     if (file_exists($zipPath)) {
                         $actions[] = [
                             'label' => $this->view->translate->_('Download All'),
-                            'url' => '/d/' . base64_encode($zipPath),
+                            'url' => Pt_Commons_SignedDownload::url($zipPath),
                             'icon' => 'icon-download-alt',
                         ];
                     }

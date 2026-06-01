@@ -174,19 +174,20 @@ class Application_Service_Reports
             if ($isFinalized || $hasReportsGenerated) {
                 $summaryPath = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . '-summary.pdf';
                 if (file_exists($summaryPath)) {
-                    $filePath = base64_encode($summaryPath);
+                    $summaryHref = Pt_Commons_SignedDownload::url($summaryPath);
                     if ($isFinalized) {
-                        $summaryDownload = '<a target="_blank" href="/d/' . $filePath . '" class="btn btn-info btn-xs"><i class="icon-download"></i> ' . $this->translator->_('Summary Report') . '</a>';
+                        $summaryDownload = '<a target="_blank" href="' . $summaryHref . '" class="btn btn-info btn-xs"><i class="icon-download"></i> ' . $this->translator->_('Summary Report') . '</a>';
                     } else {
-                        $summaryDownload = '<a target="_blank" href="/d/' . $filePath . '" class="btn btn-warning btn-xs"><i class="icon-download"></i> ' . $this->translator->_('Summary Report (DRAFT)') . '</a>';
+                        $summaryDownload = '<a target="_blank" href="' . $summaryHref . '" class="btn btn-warning btn-xs"><i class="icon-download"></i> ' . $this->translator->_('Summary Report (DRAFT)') . '</a>';
                     }
                 }
                 $zipFilePath = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . '.zip';
                 if (file_exists($zipFilePath)) {
+                    $zipHref = Pt_Commons_SignedDownload::url($zipFilePath);
                     if ($isFinalized) {
-                        $allReportsDownload = "<a href='/d/" . base64_encode($zipFilePath) . "' class='btn btn-info btn-xs' target='_blank' style='float: none; margin-top: 5px;'><i class='icon-download'></i> " . $this->translator->_('All Reports') . '</a><br>';
+                        $allReportsDownload = "<a href='" . $zipHref . "' class='btn btn-info btn-xs' target='_blank' style='float: none; margin-top: 5px;'><i class='icon-download'></i> " . $this->translator->_('All Reports') . '</a><br>';
                     } else {
-                        $allReportsDownload = "<a href='/d/" . base64_encode($zipFilePath) . "' class='btn btn-warning btn-xs' target='_blank' style='float: none; margin-top: 5px;'><i class='icon-download'></i> " . $this->translator->_('All Reports (DRAFT)') . '</a><br>';
+                        $allReportsDownload = "<a href='" . $zipHref . "' class='btn btn-warning btn-xs' target='_blank' style='float: none; margin-top: 5px;'><i class='icon-download'></i> " . $this->translator->_('All Reports (DRAFT)') . '</a><br>';
                     }
                 }
             }

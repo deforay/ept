@@ -782,7 +782,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 $downloadReports = '';
                 $summaryFilePath = (DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . '-summary.pdf');
                 if (file_exists($summaryFilePath)) {
-                    $downloadReports .= '<a href="/d/' . base64_encode($summaryFilePath) . '" onclick="updateReportDownloadDateTime(' . $aRow['map_id'] . ', \'summary\');"  class="btn btn-primary" style="text-decoration : none;overflow:hidden;" target="_BLANK" download><i class="icon icon-download"></i> ' . Pt_Commons_TranslateUtility::htmlTranslate('Summary Report') . '</a>';
+                    $downloadReports .= '<a href="' . Pt_Commons_SignedDownload::url($summaryFilePath) . '" onclick="updateReportDownloadDateTime(' . $aRow['map_id'] . ', \'summary\');"  class="btn btn-primary" style="text-decoration : none;overflow:hidden;" target="_BLANK" download><i class="icon icon-download"></i> ' . Pt_Commons_TranslateUtility::htmlTranslate('Summary Report') . '</a>';
                 }
                 $invididualFilePath = (DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . '-' . $aRow['map_id'] . '.pdf');
                 if (!file_exists($invididualFilePath)) {
@@ -791,7 +791,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                     $invididualFilePath = isset($files[0]) ? $files[0] : '';
                 }
                 if (file_exists($invididualFilePath)) {
-                    $downloadReports .= '<br><a href="/d/' . base64_encode($invididualFilePath) . '" class="btn btn-primary" onclick="updateReportDownloadDateTime(' . $aRow['map_id'] . ', \'individual\');"   style="text-decoration : none;overflow:hidden;margin-top:4px;"  target="_BLANK" download><i class="icon icon-download"></i> ' . Pt_Commons_TranslateUtility::htmlTranslate('Individual Report') . '</a>';
+                    $downloadReports .= '<br><a href="' . Pt_Commons_SignedDownload::url($invididualFilePath) . '" class="btn btn-primary" onclick="updateReportDownloadDateTime(' . $aRow['map_id'] . ', \'individual\');"   style="text-decoration : none;overflow:hidden;margin-top:4px;"  target="_BLANK" download><i class="icon icon-download"></i> ' . Pt_Commons_TranslateUtility::htmlTranslate('Individual Report') . '</a>';
                 }
             }
             $row[] = $downloadReports;
@@ -1082,7 +1082,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                     $invididualFilePath = isset($files[0]) ? $files[0] : '';
                 }
                 if (file_exists($invididualFilePath)) {
-                    $download = '<a href="/d/' . base64_encode($invididualFilePath) . '" class="btn btn-primary" onclick="updateReportDownloadDateTime(' . $aRow['map_id'] . ', \'individual\');"   style="text-decoration : none;overflow:hidden;margin-top:4px;"  target="_BLANK" download><i class="icon icon-download"></i> ' . $aRow['REPORT'] . '</a>';
+                    $download = '<a href="' . Pt_Commons_SignedDownload::url($invididualFilePath) . '" class="btn btn-primary" onclick="updateReportDownloadDateTime(' . $aRow['map_id'] . ', \'individual\');"   style="text-decoration : none;overflow:hidden;margin-top:4px;"  target="_BLANK" download><i class="icon icon-download"></i> ' . $aRow['REPORT'] . '</a>';
                 }
             }
             if (($aRow['final_result'] == '2') && (isset($aRow['corrective_action_file']) && $aRow['corrective_action_file'] != '')) {
@@ -1370,8 +1370,8 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             $row[] = $aRow['shipment_code'];
             $row[] = Pt_Commons_DateUtility::humanReadableDateFormat($aRow['shipment_date']);
             if (file_exists(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . '-summary.pdf') && $aRow['status'] == 'finalized') {
-                $filePath = base64_encode(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . '-summary.pdf');
-                $row[] = '<a href="/d/' . $filePath . '" onclick="updateReportDownloadDateTime(' . $aRow['shipment_id'] . ', \'summary\');"  style="text-decoration : none;" download target="_BLANK">Download Report</a>';
+                $absPath = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . '-summary.pdf';
+                $row[] = '<a href="' . Pt_Commons_SignedDownload::url($absPath) . '" onclick="updateReportDownloadDateTime(' . $aRow['shipment_id'] . ', \'summary\');"  style="text-decoration : none;" download target="_BLANK">Download Report</a>';
             } else {
                 $row[] = $this->translator->_('Not Available');
             }

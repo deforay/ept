@@ -11,22 +11,30 @@ class ErrorController extends Zend_Controller_Action
             return;
         }
 
+        // Map exception type / action-exception code → HTTP code + user-friendly headline.
+        // Zend_Controller_Action_Exception carries an HTTP code in its ->getCode() that the
+        // legacy default branch ignored, so 401/410/etc. all showed up as a generic 500.
+        $exception = $errors->exception ?? null;
+        $actionCode = ($exception instanceof Zend_Controller_Action_Exception) ? (int) $exception->getCode() : 0;
+
         switch ($errors->type) {
             case Zend_Controller_Plugin_ErrorHandler::EXCEPTION_NO_ROUTE:
             case Zend_Controller_Plugin_ErrorHandler::EXCEPTION_NO_CONTROLLER:
             case Zend_Controller_Plugin_ErrorHandler::EXCEPTION_NO_ACTION:
-                // 404 error -- controller or action not found
-                $this->getResponse()->setHttpResponseCode(404);
+                $httpCode = 404;
                 $priority = Zend_Log::NOTICE;
                 $this->view->message = 'Page not found';
                 break;
             default:
-                // application error
-                $this->getResponse()->setHttpResponseCode(500);
-                $priority = Zend_Log::CRIT;
-                $this->view->message = 'Application error';
+                $httpCode = ($actionCode >= 400 && $actionCode < 600) ? $actionCode : 500;
+                $priority = $httpCode >= 500 ? Zend_Log::CRIT : Zend_Log::NOTICE;
+                $this->view->message = self::messageForCode($httpCode);
                 break;
         }
+        $this->getResponse()->setHttpResponseCode($httpCode);
+        $this->view->httpCode = $httpCode;
+        $this->view->codeLabel = self::labelForCode($httpCode);
+        $this->view->detail = self::detailForCode($httpCode);
 
         // Log exception, if logger available
         $log = $this->getLog();
@@ -69,6 +77,41 @@ class ErrorController extends Zend_Controller_Action
         }
 
         $this->view->request   = $errors->request;
+    }
+
+    private static function messageForCode(int $code): string
+    {
+        return match ($code) {
+            400 => 'Bad request',
+            401 => 'Authentication required',
+            403 => 'Access denied',
+            404 => 'Page not found',
+            410 => 'Link is invalid or has expired',
+            default => 'Application error',
+        };
+    }
+
+    private static function labelForCode(int $code): string
+    {
+        return match ($code) {
+            400 => '400 · Bad Request',
+            401 => '401 · Sign-in Required',
+            403 => '403 · Access Denied',
+            404 => '404 · Page Not Found',
+            410 => '410 · Link Expired',
+            default => $code . ' · Application Error',
+        };
+    }
+
+    private static function detailForCode(int $code): string
+    {
+        return match ($code) {
+            401 => 'You need to sign in to access this page.',
+            403 => 'Your account does not have permission to view this resource.',
+            404 => 'The page you are looking for does not exist.',
+            410 => 'This download link has expired or is no longer valid. Ask the original sender for a fresh link.',
+            default => 'An unexpected error occurred while processing your request. You can try again, or return to the homepage.',
+        };
     }
 
     public function getLog()

@@ -34,7 +34,7 @@
 							$filePath = $folderPath . $val['unique_identifier'] . DIRECTORY_SEPARATOR . 'certificates' . DIRECTORY_SEPARATOR . $val['unique_identifier'] . "-" . strtoupper($val['scheme_type']) . "-" . $val['batch_name'] . ".pdf";
 							if (file_exists($filePath)) {
 							?>
-								<a href="<?php echo $this->baseUrl("/d/" . base64_encode($filePath)); ?>" target="_BLANK"
+								<a href="<?php echo $this->baseUrl(Pt_Commons_SignedDownload::url($filePath)); ?>" target="_BLANK"
 									download><?php echo $fileName; ?></a>
 							<?php
 							}

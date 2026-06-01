@@ -31,9 +31,13 @@ class DlController extends Zend_Controller_Action
         }
 
         if (!empty($decoded['auth']) && !self::isLoggedIn()) {
-            // Auth-protected link, no session. Tell the caller; the front-end
-            // can choose to bounce the user through login and back.
-            throw new Zend_Controller_Action_Exception('Authentication required', 401);
+            // Auth-protected link opened without a session. Bounce through the
+            // participant login (admins arriving from inside the admin UI will
+            // already have a session, so this path matters mainly for emailed
+            // links). After login the user is redirected back via ?next=.
+            $next = $this->getRequest()->getRequestUri();
+            $this->redirect('/auth/index/next/' . base64_encode($next));
+            return;
         }
 
         $realPath = realpath($decoded['path']);

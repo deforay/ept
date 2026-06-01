@@ -73,21 +73,31 @@
     </style>
 </head>
 <body>
+    <?php
+    $httpCode  = (int) ($this->httpCode ?? 500);
+    $codeLabel = (string) ($this->codeLabel ?? '500 · Application Error');
+    $headline  = (string) ($this->message ?? 'Something went wrong');
+    $detail    = (string) ($this->detail ?? 'An unexpected error occurred while processing your request.');
+    $isAuth    = ($httpCode === 401);
+    $isGone    = ($httpCode === 410);
+    ?>
     <div class="ept-err">
         <div class="ept-err__card">
-            <div class="ept-err__badge">!</div>
-            <div class="ept-err__code">500 · Application Error</div>
-            <h1 class="ept-err__title"><?= $this->translate->_('Something went wrong'); ?></h1>
-            <p class="ept-err__sub">
-                <?= $this->translate->_('An unexpected error occurred while processing your request. You can try again, or return to the homepage.'); ?>
-            </p>
+            <div class="ept-err__badge"><?= $isAuth ? '🔒' : ($isGone ? '⌛' : '!'); ?></div>
+            <div class="ept-err__code"><?= $this->escape($codeLabel); ?></div>
+            <h1 class="ept-err__title"><?= $this->escape($this->translate->_($headline)); ?></h1>
+            <p class="ept-err__sub"><?= $this->escape($this->translate->_($detail)); ?></p>
             <div class="ept-err__actions">
-                <a class="ept-err__btn ept-err__btn--primary" href="/"><?= $this->translate->_('Back to Home'); ?></a>
+                <?php if ($isAuth): ?>
+                    <a class="ept-err__btn ept-err__btn--primary" href="/auth/index"><?= $this->translate->_('Sign in'); ?></a>
+                <?php else: ?>
+                    <a class="ept-err__btn ept-err__btn--primary" href="/"><?= $this->translate->_('Back to Home'); ?></a>
+                <?php endif; ?>
                 <a class="ept-err__btn ept-err__btn--ghost" href="javascript:history.back()"><?= $this->translate->_('Go Back'); ?></a>
             </div>
 
             <?php if (isset($this->exception) && $this->exception): ?>
-                <details class="ept-err__details" open>
+                <details class="ept-err__details">
                     <summary><?= $this->translate->_('Technical details'); ?></summary>
                     <div class="ept-err__msg"><?= $this->escape($this->exception->getMessage()); ?></div>
                     <pre><?= $this->escape($this->exception->getTraceAsString()); ?></pre>
