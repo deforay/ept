@@ -212,24 +212,25 @@ if ($shipmentAttributesRaw !== '') {
 		</tr>
 	</table>
 	<?php if (($this->dtsSchemeType ?? '') === 'vietnam') { ?>
-		<table class="table table-borderless vietnam-filters" style="width:50%;float:left;">
-			<tr>
-				<td><label for="vietnamTier"><?= $this->htmlTranslate("Filter by tier"); ?></label></td>
-				<td><select id="vietnamTier" class="form-control" onchange="applyVietnamFilters()">
+		<div class="vietnam-filters" style="clear:both;margin:15px 0;padding:12px 14px;background:#f8f9fa;border:1px solid #e2e8f0;border-radius:4px;">
+			<div class="row" style="margin:0;">
+				<div class="col-md-3" style="padding-left:0;">
+					<label for="vietnamTier" style="font-weight:600;font-size:13px;display:block;margin-bottom:4px;"><?= $this->htmlTranslate("Tier"); ?></label>
+					<select id="vietnamTier" class="form-control input-sm" onchange="applyVietnamFilters()">
 						<option value=""><?= $this->htmlTranslate("All tiers"); ?></option>
 						<option value="screening"><?= $this->htmlTranslate("Screening"); ?></option>
 						<option value="confirmatory"><?= $this->htmlTranslate("Confirmatory"); ?></option>
-					</select></td>
-			</tr>
-			<tr>
-				<td><label for="vietnamNonStandardKit"><?= $this->htmlTranslate("Filter by primary kit"); ?></label></td>
-				<td><select id="vietnamNonStandardKit" class="form-control" onchange="applyVietnamFilters()">
+					</select>
+				</div>
+				<div class="col-md-4">
+					<label for="vietnamNonStandardKit" style="font-weight:600;font-size:13px;display:block;margin-bottom:4px;"><?= $this->htmlTranslate("Primary kit"); ?></label>
+					<select id="vietnamNonStandardKit" class="form-control input-sm" onchange="applyVietnamFilters()">
 						<option value=""><?= $this->htmlTranslate("All kits"); ?></option>
 						<option value="yes"><?= $this->htmlTranslate("Non-reference kit only"); ?></option>
-					</select></td>
-			</tr>
-		</table>
-		<div style="clear:both;"></div>
+					</select>
+				</div>
+			</div>
+		</div>
 	<?php } ?>
 	<br /><br />
 	<table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered table-hover"
