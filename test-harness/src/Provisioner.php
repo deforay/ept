@@ -11,6 +11,14 @@ final class Provisioner
 {
     private const PREFIX = 'ATEST-';
 
+    // Synthetic ELISA-style kit injected by the harness so that the Peer Group
+    // Statistics section in the NIHE report has numeric Mean/SD/CV to display.
+    // Idempotent: created on first provision, never removed by per-shipment cleanup
+    // (so subsequent provisions reuse it). --cleanup-all wipes it.
+    public const ELISA_KIT_ID    = 'ATEST-ELISA-001';
+    public const ELISA_KIT_NAME  = 'ATEST ELISA Anti-HIV (S/CO)';
+    public const ELISA_KIT_LABEL = 'S/CO';
+
     public function __construct(private Db $db) {}
 
     /**
@@ -40,22 +48,42 @@ final class Provisioner
             [$shipmentId, $shipmentCode] = $this->createShipment($variantKey, $variant, $distributionId, $shortId, count($samples), $settingsStash);
             $this->createReferenceResults($shipmentId, $samples, $lookups);
 
+            // Per-shipment shuffle so the same input mix produces a different ordering of
+            // labs across runs. Deterministic from the shipment id + short id.
+            $shuffleSeed = crc32($shipmentId . ':' . $shortId);
+            $assignments = $this->shuffleStable($assignments, $shuffleSeed);
+
             $mappedAssignments = [];
             $minorityKitIndex = 0;
             foreach ($assignments as $i => $a) {
                 $participantId = $participantIds[$i];
                 $mapId = $this->createShipmentParticipantMap($shipmentId, $participantId, $variant['algoKey'], $a['tier']);
 
-                $spec = \EptTestHarness\Aberrations\Vietnam::generate($a['aberration'], $a['tier']);
+                // Deterministic per-(shipment, participant) seed: same inputs reproduce, but
+                // different shipments/labs vary the chosen valid response shape.
+                $variantSeed = (int) crc32($shipmentId . ':' . $i . ':' . $participantId);
+                $spec = \EptTestHarness\Aberrations\Vietnam::generate($a['aberration'], $a['tier'], $variantSeed);
                 foreach ($samples as $sampleId => $sampleMeta) {
                     $sampleSpec = $spec[$sampleId];
-                    $kit1 = $sampleSpec['kit1'] === 'minority_unique'
-                        ? $this->pickMinorityKit($kits, $minorityKitIndex++)
-                        : $kits['reference'][1];
+                    $kit1 = match ($sampleSpec['kit1']) {
+                        'minority_unique' => $this->pickMinorityKit($kits, $minorityKitIndex++),
+                        'minority_shared' => $kits['sharedNonRef'],
+                        default           => $kits['reference'][1],
+                    };
                     $kit2 = $kits['reference'][2];
                     $kit3 = $kits['reference'][3];
 
-                    $this->createResponseRow($mapId, $sampleId, $sampleSpec, $kit1, $kit2, $kit3, $lookups);
+                    // For each position whose kit has additional_info='yes', synthesize a
+                    // plausible numeric value seeded by (participant index, sample). Reactive
+                    // samples high, non-reactive low, diluted positive mid; small jitter.
+                    $kitNumeric = [
+                        1 => $kits['hasNumeric'][1] ?? false,
+                        2 => $kits['hasNumeric'][2] ?? false,
+                        3 => $kits['hasNumeric'][3] ?? false,
+                    ];
+                    $additionalInfo = $this->buildAdditionalInfo($i, $sampleMeta, $sampleSpec, $kitNumeric);
+
+                    $this->createResponseRow($mapId, $sampleId, $sampleSpec, $kit1, $kit2, $kit3, $lookups, $additionalInfo);
                 }
 
                 $mappedAssignments[] = [
@@ -103,12 +131,35 @@ final class Provisioner
     /** Pick one reference kit per test_no (1,2,3) and gather a pool of non-reference kits. */
     private function resolveKits(): array
     {
+        $this->ensureElisaKit();
+
         $reference = [];
         foreach ([1, 2, 3] as $testNo) {
-            $kit = $this->db->scalar(
-                "SELECT testkit FROM dts_recommended_testkits WHERE test_no = ? ORDER BY testkit LIMIT 1",
-                [$testNo]
-            );
+            // Prefer the ELISA-style kit (additional_info='yes') at position 2 so the
+            // Peer Group Statistics section in the NIHE report has numeric Mean/SD/CV
+            // to display. Other positions pick any recommended kit.
+            if ($testNo === 2) {
+                $kit = $this->db->scalar(
+                    "SELECT t.TestKitName_ID
+                       FROM dts_recommended_testkits dr
+                       JOIN r_testkitnames t ON t.TestKitName_ID = dr.testkit
+                      WHERE dr.test_no = 2
+                        AND JSON_UNQUOTE(JSON_EXTRACT(t.attributes, '$.additional_info')) = 'yes'
+                      ORDER BY (t.TestKitName_ID = ?) DESC, t.TestKitName_ID
+                      LIMIT 1",
+                    [self::ELISA_KIT_ID]
+                );
+                if (!$kit) {
+                    $kit = $this->db->scalar(
+                        "SELECT testkit FROM dts_recommended_testkits WHERE test_no = 2 ORDER BY testkit LIMIT 1"
+                    );
+                }
+            } else {
+                $kit = $this->db->scalar(
+                    "SELECT testkit FROM dts_recommended_testkits WHERE test_no = ? ORDER BY testkit LIMIT 1",
+                    [$testNo]
+                );
+            }
             if (!$kit) {
                 throw new \RuntimeException("No recommended test kit found for test_no=$testNo. Seed dts_recommended_testkits first.");
             }
@@ -121,14 +172,94 @@ final class Provisioner
               ORDER BY TestKitName_ID"
         );
 
-        return ['reference' => $reference, 'nonRefPool' => array_values($nonRef)];
+        $hasNumeric = [];
+        foreach ($reference as $pos => $kitId) {
+            $row = $this->db->one(
+                "SELECT JSON_UNQUOTE(JSON_EXTRACT(attributes, '$.additional_info')) AS ai
+                   FROM r_testkitnames WHERE TestKitName_ID = ?",
+                [$kitId]
+            );
+            $hasNumeric[$pos] = (($row['ai'] ?? '') === 'yes');
+        }
+
+        // One stable non-reference kit reused across every minority_shared participant in
+        // this shipment. Picking the FIRST in the pool keeps it deterministic; minority_unique
+        // participants skip past it (their loop advances $minorityKitIndex).
+        $sharedNonRef = $nonRef[0] ?? null;
+
+        return [
+            'reference'    => $reference,
+            'nonRefPool'   => array_values($nonRef),
+            'sharedNonRef' => $sharedNonRef,
+            'hasNumeric'   => $hasNumeric,
+        ];
+    }
+
+    /**
+     * Deterministic shuffle: same $seed always yields the same permutation. Used
+     * to vary which lab gets which aberration across shipments without losing
+     * reproducibility for a given (shipmentId, ts) pair.
+     */
+    private function shuffleStable(array $items, int $seed): array
+    {
+        $keys = array_keys($items);
+        usort($keys, static function ($a, $b) use ($seed) {
+            $ha = crc32($seed . ':' . $a);
+            $hb = crc32($seed . ':' . $b);
+            return $ha <=> $hb;
+        });
+        $out = [];
+        foreach ($keys as $k) {
+            $out[] = $items[$k];
+        }
+        return $out;
+    }
+
+    /**
+     * Idempotently ensure an ELISA-style kit exists (additional_info='yes') and is
+     * marked recommended at test_no=2. Sentinel id ATEST-ELISA-001 so cleanup can
+     * recognize it. Real kits remain untouched.
+     */
+    private function ensureElisaKit(): void
+    {
+        $exists = $this->db->scalar(
+            "SELECT 1 FROM r_testkitnames WHERE TestKitName_ID = ?",
+            [self::ELISA_KIT_ID]
+        );
+        if (!$exists) {
+            $this->db->exec(
+                "INSERT INTO r_testkitnames (TestKitName_ID, TestKit_Name, TestKit_Name_Short, Approval, attributes, Created_On)
+                 VALUES (?, ?, 'ATEST-ELISA', 1, ?, NOW())",
+                [
+                    self::ELISA_KIT_ID,
+                    self::ELISA_KIT_NAME,
+                    json_encode([
+                        'additional_info'           => 'yes',
+                        'additional_info_label'     => self::ELISA_KIT_LABEL,
+                        'additional_info_mandatory' => 'yes',
+                    ]),
+                ]
+            );
+        }
+        $inRec = $this->db->scalar(
+            "SELECT 1 FROM dts_recommended_testkits WHERE testkit = ? AND test_no = 2",
+            [self::ELISA_KIT_ID]
+        );
+        if (!$inRec) {
+            $this->db->exec(
+                "INSERT INTO dts_recommended_testkits (test_no, testkit, dts_test_mode) VALUES (2, ?, 'dts')",
+                [self::ELISA_KIT_ID]
+            );
+        }
     }
 
     private function pickMinorityKit(array $kits, int $index): string
     {
-        $pool = $kits['nonRefPool'];
+        // Skip pool[0] — that's reserved for minority_shared so the two consensus
+        // aberrations can coexist without polluting each other's peer group.
+        $pool = array_slice($kits['nonRefPool'], 1);
         if (empty($pool)) {
-            throw new \RuntimeException('No non-reference test kits available. Cannot run consensus_minority_kit aberration.');
+            throw new \RuntimeException('Need at least 2 non-reference test kits available (one for shared consensus group, one+ for unique minorities).');
         }
         return (string) $pool[$index % count($pool)];
     }
@@ -261,7 +392,7 @@ final class Provisioner
         ]);
     }
 
-    private function createResponseRow(int $mapId, int $sampleId, array $spec, string $kit1, string $kit2, string $kit3, array $lookups): void
+    private function createResponseRow(int $mapId, int $sampleId, array $spec, string $kit1, string $kit2, string $kit3, array $lookups, ?array $additionalInfo = null): void
     {
         $now = date('Y-m-d H:i:s');
         $expDate = date('Y-m-d', strtotime('+6 months'));
@@ -283,11 +414,62 @@ final class Provisioner
             'test_result_3'    => $this->resolveTestCode($spec['t3'], $lookups),
             'reported_result'  => $this->resolveFinalCode($spec['final'], $lookups),
             'lab_comment'      => $spec['comment'] ?? null,
+            'kit_additional_info' => !empty($additionalInfo) ? json_encode($additionalInfo) : null,
             'created_by'       => 'test-harness',
             'created_on'       => $now,
         ];
 
         $this->db->insert('response_result_dts', $row);
+    }
+
+    /**
+     * Build a kit_additional_info JSON object for one (participant, sample) — one entry
+     * per test position whose kit captures a numeric value. Sample-typed bands:
+     *   - Reactive (P, non-diluted)  → S/CO 80–140      (well above 1.0 cutoff)
+     *   - Reactive (P, diluted)      → S/CO  3–15       (weak positive band)
+     *   - Non-reactive (N)           → S/CO 0.05–0.6    (well below cutoff)
+     *   - This-lab reported NR/-     → low value regardless of reference (lab's read)
+     *   - This-lab reported R/WR     → above cutoff regardless of reference
+     * Deterministic jitter seeded by (participantIndex, sampleId, position) so re-runs
+     * with the same input produce the same numbers; different participants vary.
+     */
+    private function buildAdditionalInfo(int $participantIndex, array $sampleMeta, array $sampleSpec, array $kitHasNumeric): array
+    {
+        $out = [];
+        foreach ([1, 2, 3] as $position) {
+            if (empty($kitHasNumeric[$position])) {
+                continue;
+            }
+            $code = strtoupper((string) ($sampleSpec['t' . $position] ?? '-'));
+            if ($code === '-' || $code === '') {
+                continue; // didn't run this test
+            }
+
+            $ref = strtoupper((string) ($sampleMeta['ref'] ?? ''));
+            $diluted = (bool) ($sampleMeta['diluted'] ?? false);
+
+            // Hash seed for deterministic per-row jitter.
+            $seed = crc32($participantIndex . ':' . ($sampleMeta['label'] ?? '') . ':' . $position);
+            $jitter01 = (($seed % 1000) / 1000.0); // [0, 1)
+
+            if (in_array($code, ['R', 'WR'], true)) {
+                // Reactive read by the lab
+                if ($code === 'WR' || $diluted) {
+                    $val = 3.0 + $jitter01 * 12.0; // 3.0 .. 15.0
+                } else {
+                    $val = 80.0 + $jitter01 * 60.0; // 80 .. 140
+                }
+            } elseif ($code === 'NR') {
+                $val = 0.05 + $jitter01 * 0.55; // 0.05 .. 0.60
+            } elseif ($code === 'IND') {
+                $val = 0.7 + $jitter01 * 0.4;   // 0.7 .. 1.1 (around cutoff)
+            } else {
+                continue;
+            }
+            // Two decimals — matches how a lab tech would key it in.
+            $out['test' . $position] = (string) round($val, 2);
+        }
+        return $out;
     }
 
     private function resolveTestCode(string $code, array $lookups): ?string

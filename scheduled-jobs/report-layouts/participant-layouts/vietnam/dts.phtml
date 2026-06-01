@@ -45,10 +45,204 @@ $verdictText = static function ($score) {
     }
 };
 
+/**
+ * NIHE Peer Group Statistics — fetch every participant response in this shipment
+ * once, group by (test position, kit_id, sample_id), and compute counts, concordance
+ * with the reference result, and (for kits with `additional_info='yes'`) Mean/SD/CV
+ * of the reported numeric value. Returns:
+ *
+ *   $peer[$position][$kitId] = [
+ *       'kit_name'       => string,         // r_testkitnames.TestKit_Name
+ *       'has_numeric'    => bool,           // kit's attributes.additional_info='yes'
+ *       'numeric_label'  => string,         // attributes.additional_info_label (if any)
+ *       'samples'        => [
+ *           $sampleId => [
+ *               'sample_label'        => string,
+ *               'rr_code'             => 'R'|'NR'|'P'|'N'|'-',
+ *               'participants_n'      => int,    // n labs reporting on this kit/sample
+ *               'result_n'            => int,    // n with a non-empty qualitative result
+ *               'concordant_n'        => int,    // n whose result is concordant with the RR
+ *               'concordant_pct'      => float|null,
+ *               'statistical_n'      => int,    // n with a parseable numeric value
+ *               'mean'               => float|null,
+ *               'sd'                 => float|null,
+ *               'cv'                 => float|null,
+ *               'numeric_values'     => array<int,float>,  // map_id => value
+ *               'result_codes'       => array<int,string>, // map_id => code
+ *           ],
+ *       ],
+ *   ]
+ */
+$buildPeerStats = static function (int $shipmentId): array {
+    $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+
+    // One row per (participant, sample, test position). Pulls the kit id at each
+    // position, the qualitative result code, and the numeric value (if any).
+    $sql = "
+        SELECT
+            spm.map_id,
+            rrd.sample_id,
+            ref.sample_label,
+            refpr.result_code AS rr_code,
+            pos.position,
+            pos.kit_id,
+            pos.test_result_id,
+            pos.numeric_value
+        FROM shipment_participant_map spm
+        JOIN response_result_dts rrd ON rrd.shipment_map_id = spm.map_id
+        JOIN reference_result_dts ref
+          ON ref.shipment_id = spm.shipment_id AND ref.sample_id = rrd.sample_id
+        LEFT JOIN r_possibleresult refpr ON refpr.id = ref.reference_result
+        CROSS JOIN JSON_TABLE(
+            JSON_ARRAY(
+                JSON_OBJECT('p', 1, 'k', rrd.test_kit_name_1, 'r', rrd.test_result_1, 'n', JSON_UNQUOTE(JSON_EXTRACT(rrd.kit_additional_info, '$.test1'))),
+                JSON_OBJECT('p', 2, 'k', rrd.test_kit_name_2, 'r', rrd.test_result_2, 'n', JSON_UNQUOTE(JSON_EXTRACT(rrd.kit_additional_info, '$.test2'))),
+                JSON_OBJECT('p', 3, 'k', rrd.test_kit_name_3, 'r', rrd.test_result_3, 'n', JSON_UNQUOTE(JSON_EXTRACT(rrd.kit_additional_info, '$.test3')))
+            ),
+            '$[*]' COLUMNS (
+                position       INT          PATH '$.p',
+                kit_id         VARCHAR(50)  PATH '$.k',
+                test_result_id VARCHAR(45)  PATH '$.r',
+                numeric_value  VARCHAR(50)  PATH '$.n'
+            )
+        ) AS pos
+        WHERE spm.shipment_id = ?
+          AND pos.kit_id IS NOT NULL AND pos.kit_id <> ''
+    ";
+    $rows = $db->fetchAll($sql, [$shipmentId]);
+
+    // Pull every kit we touched, plus its attributes / display name.
+    $kitIds = [];
+    foreach ($rows as $r) {
+        $kitIds[$r['kit_id']] = true;
+    }
+    $kitMeta = [];
+    if (!empty($kitIds)) {
+        $kitRows = $db->fetchAll(
+            $db->select()->from('r_testkitnames', ['TestKitName_ID', 'TestKit_Name', 'attributes'])
+                ->where('TestKitName_ID IN (?)', array_keys($kitIds))
+        );
+        foreach ($kitRows as $kr) {
+            $attrs = Pt_Commons_JsonUtility::safeDecode($kr['attributes']);
+            $kitMeta[$kr['TestKitName_ID']] = [
+                'name'           => $kr['TestKit_Name'] ?: $kr['TestKitName_ID'],
+                'has_numeric'    => (($attrs['additional_info'] ?? '') === 'yes'),
+                'numeric_label'  => $attrs['additional_info_label'] ?? '',
+            ];
+        }
+    }
+
+    // Reactive set for HIV serology: a participant is "concordant with RR" if their
+    // result_code is in the reactive set when RR is reactive, or in the non-reactive
+    // set when RR is non-reactive. P/REACTIVE/R/WR all read as "positive cluster".
+    $isReactive = static fn (string $c) => in_array(strtoupper($c), ['R', 'WR', 'P'], true);
+    $isNonReactive = static fn (string $c) => in_array(strtoupper($c), ['NR', 'N'], true);
+
+    // Build the aggregate. result_code lookup keyed by id.
+    $codeById = [];
+    $allCodes = $db->fetchAll($db->select()->from('r_possibleresult', ['id', 'result_code']));
+    foreach ($allCodes as $c) {
+        $codeById[(string) $c['id']] = (string) $c['result_code'];
+    }
+
+    $peer = [];
+    foreach ($rows as $r) {
+        $pos = (int) $r['position'];
+        $kid = (string) $r['kit_id'];
+        $sid = (int) $r['sample_id'];
+
+        if (!isset($peer[$pos][$kid])) {
+            $peer[$pos][$kid] = [
+                'kit_name'      => $kitMeta[$kid]['name'] ?? $kid,
+                'has_numeric'   => $kitMeta[$kid]['has_numeric'] ?? false,
+                'numeric_label' => $kitMeta[$kid]['numeric_label'] ?? '',
+                'samples'       => [],
+            ];
+        }
+        if (!isset($peer[$pos][$kid]['samples'][$sid])) {
+            $peer[$pos][$kid]['samples'][$sid] = [
+                'sample_label'    => $r['sample_label'] ?? '',
+                'rr_code'         => strtoupper((string) ($r['rr_code'] ?? '')),
+                'participants_n'  => 0,
+                'result_n'        => 0,
+                'concordant_n'    => 0,
+                'statistical_n'   => 0,
+                'numeric_values'  => [],
+                'result_codes'    => [],
+            ];
+        }
+        $bucket = &$peer[$pos][$kid]['samples'][$sid];
+        $bucket['participants_n']++;
+
+        $resCode = isset($r['test_result_id']) ? ($codeById[(string) $r['test_result_id']] ?? '') : '';
+        if ($resCode !== '' && $resCode !== '-') {
+            $bucket['result_n']++;
+            $bucket['result_codes'][(int) $r['map_id']] = $resCode;
+
+            $rrUp = $bucket['rr_code'];
+            $concordant = false;
+            if (in_array($rrUp, ['P', 'R', 'WR'], true)) {
+                $concordant = $isReactive($resCode);
+            } elseif (in_array($rrUp, ['N', 'NR'], true)) {
+                $concordant = $isNonReactive($resCode);
+            }
+            if ($concordant) {
+                $bucket['concordant_n']++;
+            }
+        }
+
+        $num = is_numeric($r['numeric_value']) ? (float) $r['numeric_value'] : null;
+        if ($num !== null) {
+            $bucket['statistical_n']++;
+            $bucket['numeric_values'][(int) $r['map_id']] = $num;
+        }
+        unset($bucket);
+    }
+
+    // Finalize stats per (position, kit, sample).
+    foreach ($peer as $pos => &$kitMap) {
+        foreach ($kitMap as $kid => &$kitBlock) {
+            foreach ($kitBlock['samples'] as $sid => &$s) {
+                $s['concordant_pct'] = $s['result_n'] > 0
+                    ? round(($s['concordant_n'] / $s['result_n']) * 100, 1)
+                    : null;
+                if ($kitBlock['has_numeric'] && $s['statistical_n'] >= 2) {
+                    $vals = array_values($s['numeric_values']);
+                    $mean = array_sum($vals) / count($vals);
+                    $variance = 0.0;
+                    foreach ($vals as $v) {
+                        $variance += ($v - $mean) ** 2;
+                    }
+                    $sd = sqrt($variance / (count($vals) - 1)); // sample SD
+                    $cv = $mean != 0.0 ? round(($sd / $mean) * 100, 1) : null;
+                    $s['mean'] = round($mean, 3);
+                    $s['sd']   = round($sd, 3);
+                    $s['cv']   = $cv;
+                } else {
+                    $s['mean'] = $s['sd'] = $s['cv'] = null;
+                }
+                ksort($s['result_codes']);
+                ksort($s['numeric_values']);
+            }
+            unset($s);
+            ksort($kitBlock['samples']);
+        }
+        unset($kitBlock);
+    }
+    unset($kitMap);
+    ksort($peer);
+
+    return $peer;
+};
+
 if (!empty($resultArray['shipment'])) {
 
     $totalPages = count($resultArray['shipment']);
     $j = 1;
+
+    // NIHE Peer Group Statistics — computed once per shipment and reused
+    // across every participant rendered below. Keyed by (position, kit_id, sample_id).
+    $peerStatsByShipment = [];
 
     foreach ($resultArray['shipment'] as $result) {
 
@@ -153,6 +347,118 @@ if (!empty($resultArray['shipment'])) {
             $tbl .= '<span style="font-size:9px;">' . Pt_Commons_TranslateUtility::safeTranslate('R = Reactive, WR = Weak Reactive, NR = Non-reactive, Ind = Indeterminate') . '</span><br/>';
             $pdf->SetLeftMargin(15);
             $pdf->writeHTML($tbl, true, false, true, false, '');
+        }
+
+        // ---- Peer Group Statistics (NIHE template) ----
+        // Per kit used in the panel, show n participants, concordance with the
+        // reference result, and (for kits flagged with `additional_info='yes'`)
+        // Mean / SD / CV of the reported numeric value.
+        $shipmentId = (int) ($result['shipment_id'] ?? 0);
+        if ($shipmentId > 0 && !empty($result['responseResult'])) {
+            if (!isset($peerStatsByShipment[$shipmentId])) {
+                $peerStatsByShipment[$shipmentId] = $buildPeerStats($shipmentId);
+            }
+            $peerStats = $peerStatsByShipment[$shipmentId];
+
+            // Index this participant's response rows by (position, sample_id) so the
+            // table can show what THIS lab reported alongside the peer aggregate.
+            $myResp = [];
+            $myKitsByPosition = [1 => [], 2 => [], 3 => []];
+            foreach ($result['responseResult'] as $r) {
+                $sid = (int) ($r['sample_id'] ?? 0);
+                $myResp[1][$sid] = ['kit' => $r['test_kit_name_1'] ?? '', 'result_id' => $r['test_result_1'] ?? ''];
+                $myResp[2][$sid] = ['kit' => $r['test_kit_name_2'] ?? '', 'result_id' => $r['test_result_2'] ?? ''];
+                $myResp[3][$sid] = ['kit' => $r['test_kit_name_3'] ?? '', 'result_id' => $r['test_result_3'] ?? ''];
+                $infoJson = !empty($r['kit_additional_info']) ? json_decode((string) $r['kit_additional_info'], true) : [];
+                $myResp[1][$sid]['numeric'] = is_numeric($infoJson['test1'] ?? null) ? (float) $infoJson['test1'] : null;
+                $myResp[2][$sid]['numeric'] = is_numeric($infoJson['test2'] ?? null) ? (float) $infoJson['test2'] : null;
+                $myResp[3][$sid]['numeric'] = is_numeric($infoJson['test3'] ?? null) ? (float) $infoJson['test3'] : null;
+                foreach ([1, 2, 3] as $p) {
+                    $k = $myResp[$p][$sid]['kit'];
+                    if ($k !== '' && !in_array($k, $myKitsByPosition[$p], true)) {
+                        $myKitsByPosition[$p][] = $k;
+                    }
+                }
+            }
+
+            $hasAnyKit = !empty($myKitsByPosition[1]) || !empty($myKitsByPosition[2]) || !empty($myKitsByPosition[3]);
+            if ($hasAnyKit) {
+                $pdf->writeHTML('<br/><span style="font-weight:bold;font-size:12px;">' . Pt_Commons_TranslateUtility::safeTranslate('Peer Group Statistics') . '</span>', true, false, true, false, '');
+                $pdf->Ln(2);
+
+                foreach ([1, 2, 3] as $position) {
+                    foreach ($myKitsByPosition[$position] as $kid) {
+                        if (!isset($peerStats[$position][$kid])) {
+                            continue;
+                        }
+                        $block = $peerStats[$position][$kid];
+                        $kitDisplay = htmlspecialchars($block['kit_name'], ENT_QUOTES, 'UTF-8');
+                        $hasNum = $block['has_numeric'];
+                        $numLbl = $block['numeric_label'] !== '' ? $block['numeric_label'] : 'Value';
+
+                        $pdf->writeHTML(
+                            '<br/><span style="font-size:11px;"><strong>'
+                            . Pt_Commons_TranslateUtility::safeTranslate('Assay') . ':</strong> ' . $kitDisplay
+                            . ' &nbsp;<em>(' . Pt_Commons_TranslateUtility::safeTranslate('Test ' . $position) . ')</em></span>',
+                            true,
+                            false,
+                            true,
+                            false,
+                            ''
+                        );
+
+                        $tbl  = '<table border="1" cellpadding="3" style="font-size:10px;border-color:#b7dde7;">';
+                        $tbl .= '<tr style="background-color:#b7dde7;font-weight:bold;text-align:center;">'
+                              . '<td>' . Pt_Commons_TranslateUtility::safeTranslate('Sample') . '</td>'
+                              . '<td>' . Pt_Commons_TranslateUtility::safeTranslate('Your result') . '</td>';
+                        if ($hasNum) {
+                            $tbl .= '<td>' . Pt_Commons_TranslateUtility::safeTranslate('Your ' . $numLbl) . '</td>';
+                        }
+                        $tbl .= '<td>' . Pt_Commons_TranslateUtility::safeTranslate('Participants (n)') . '</td>'
+                              . '<td>' . Pt_Commons_TranslateUtility::safeTranslate('Result (n)') . '</td>';
+                        if ($hasNum) {
+                            $tbl .= '<td>' . Pt_Commons_TranslateUtility::safeTranslate('Statistical (n)') . '</td>'
+                                  . '<td>' . Pt_Commons_TranslateUtility::safeTranslate('Mean') . '</td>'
+                                  . '<td>' . Pt_Commons_TranslateUtility::safeTranslate('SD') . '</td>'
+                                  . '<td>' . Pt_Commons_TranslateUtility::safeTranslate('CV (%)') . '</td>';
+                        }
+                        $tbl .= '<td>' . Pt_Commons_TranslateUtility::safeTranslate('Concordant with RR (%)') . '</td>'
+                              . '<td>' . Pt_Commons_TranslateUtility::safeTranslate('Reference result') . '</td>'
+                              . '</tr>';
+
+                        foreach ($block['samples'] as $sid => $s) {
+                            $mine = $myResp[$position][$sid] ?? null;
+                            $myResultCode = '';
+                            if (!empty($mine['result_id']) && isset($dtsResults[$mine['result_id']])) {
+                                $myResultCode = (string) $dtsResults[$mine['result_id']];
+                            }
+                            $myNumericDisplay = ($hasNum && isset($mine['numeric']) && $mine['numeric'] !== null) ? (string) $mine['numeric'] : '-';
+                            $rrDisplay = $pretty($dtsCodeToLabel[$s['rr_code']] ?? $s['rr_code']);
+                            $concordant = $s['concordant_pct'] !== null ? $s['concordant_pct'] . '%' : '-';
+
+                            $tbl .= '<tr style="text-align:center;">'
+                                  . '<td>' . htmlspecialchars($s['sample_label'], ENT_QUOTES, 'UTF-8') . '</td>'
+                                  . '<td>' . ($myResultCode !== '' ? $pretty($myResultCode) : '-') . '</td>';
+                            if ($hasNum) {
+                                $tbl .= '<td>' . $myNumericDisplay . '</td>';
+                            }
+                            $tbl .= '<td>' . $s['participants_n'] . '</td>'
+                                  . '<td>' . $s['result_n'] . '</td>';
+                            if ($hasNum) {
+                                $tbl .= '<td>' . $s['statistical_n'] . '</td>'
+                                      . '<td>' . ($s['mean'] !== null ? $s['mean'] : '-') . '</td>'
+                                      . '<td>' . ($s['sd']   !== null ? $s['sd']   : '-') . '</td>'
+                                      . '<td>' . ($s['cv']   !== null ? $s['cv']   : '-') . '</td>';
+                            }
+                            $tbl .= '<td>' . $concordant . '</td>'
+                                  . '<td>' . $rrDisplay . '</td>'
+                                  . '</tr>';
+                        }
+                        $tbl .= '</table>';
+                        $pdf->writeHTML($tbl, true, false, true, false, '');
+                    }
+                }
+            }
         }
 
         // ---- Recommendation for participant ----

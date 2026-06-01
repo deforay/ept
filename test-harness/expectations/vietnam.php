@@ -72,5 +72,16 @@ return [
                 'confirmatory' => [1 => 'NotEval', 2 => 'Acc', 3 => 'Acc', 4 => 'Acc', 5 => 'Acc'],
             ],
         ],
+
+        'consensus_group_passes' => [
+            'label'         => 'S1 reported on a shared non-reference kit by 10+ labs (consensus passes)',
+            'allowed_tiers' => ['screening', 'confirmatory'],
+            'expected'      => [
+                // Consensus passes → algoVietnam evaluates normally on the baseline-reactive
+                // S1 responses, which are Acceptable for both tiers.
+                'screening'    => [1 => 'Acc', 2 => 'Acc', 3 => 'Acc', 4 => 'Acc', 5 => 'Acc'],
+                'confirmatory' => [1 => 'Acc', 2 => 'Acc', 3 => 'Acc', 4 => 'Acc', 5 => 'Acc'],
+            ],
+        ],
     ],
 ];
