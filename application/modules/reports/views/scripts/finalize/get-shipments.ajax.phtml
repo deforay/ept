@@ -67,9 +67,9 @@ if ($this->shipments == false && count($this->shipments) <= 0) {
 									</a>
 									<?php if ($shipment['report_generated'] == 'yes'):
 										if (file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $shipment['shipment_code'] . DIRECTORY_SEPARATOR . $shipment['shipment_code'] . "-summary.pdf")):
-											$filePath = base64_encode(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $shipment['shipment_code'] . DIRECTORY_SEPARATOR . $shipment['shipment_code'] . "-summary.pdf");
+											$summaryAbsPath = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $shipment['shipment_code'] . DIRECTORY_SEPARATOR . $shipment['shipment_code'] . "-summary.pdf";
 											?>
-											<a class="btn btn-success btn-xs" href="/d/<?= $filePath; ?>" target="_blank">
+											<a class="btn btn-success btn-xs" href="<?= Pt_Commons_SignedDownload::url($summaryAbsPath); ?>" target="_blank">
 												<i class="icon-check"></i> <?= $this->translate->_("Download Summary Report"); ?>
 											</a>
 										<?php endif;
@@ -88,9 +88,8 @@ if ($this->shipments == false && count($this->shipments) <= 0) {
 											endif;
 											$participantReportPath = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $shipment['shipment_code'] . DIRECTORY_SEPARATOR . $shipment['shipment_code'] . "-" . $start . "-" . $end . "-bulk-participant-report.pdf";
 											if (file_exists($participantReportPath)):
-												$filePath = base64_encode($participantReportPath);
 												?>
-												<a class="btn btn-info btn-xs" href="/d/<?= $filePath; ?>" target="_blank">
+												<a class="btn btn-info btn-xs" href="<?= Pt_Commons_SignedDownload::url($participantReportPath); ?>" target="_blank">
 													<i class="icon-check"></i> <?= $this->translate->_("Download"); ?> <?= $start; ?> - <?= $end; ?> <?= $this->translate->_("Participants Report"); ?>
 												</a>
 											<?php endif;

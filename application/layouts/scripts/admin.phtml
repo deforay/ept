@@ -1579,7 +1579,8 @@ $helpPageKey = "$controllerName/$actionName";
 			},
 				function (data) {
 					if (data) {
-						window.open('/d/' + data, '_blank');
+						// data is the fully-built signed /dl/ URL returned by exportConfigAction.
+						window.open(data, '_blank');
 					}
 					$.unblockUI();
 				});

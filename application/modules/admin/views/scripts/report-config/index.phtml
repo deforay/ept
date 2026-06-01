@@ -366,7 +366,7 @@
 								<div class="btn-actions" style="margin-top: 15px;">
 									<a href="javascript:void(0);" class="btn btn-sm btn-primary"
 										title="<?= $this->translate->_('View Full Size'); ?>"
-										onclick="layoutModal('/d/<?php echo base64_encode($filePath); ?>', 800, 700);">
+										onclick="layoutModal('<?php echo Pt_Commons_SignedDownload::url($filePath); ?>', 800, 700);">
 										<i class="icon-fullscreen"></i> <?= $this->translate->_("View Full Size"); ?>
 									</a>
 									<a href="javascript:void(0);" class="btn btn-sm btn-default"

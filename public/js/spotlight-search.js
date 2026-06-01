@@ -542,8 +542,9 @@
         },
 
         navigateToUrl: function(url) {
-            // Open download links in new tab, navigate others normally
-            if (url && url.indexOf('/d/') === 0) {
+            // Open download links in new tab, navigate others normally.
+            // Accept both /d/ (legacy) and /dl/ (signed) prefixes.
+            if (url && (url.indexOf('/dl/') === 0 || url.indexOf('/d/') === 0)) {
                 window.open(url, '_blank');
             } else {
                 window.location.href = url;

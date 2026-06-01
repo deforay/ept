@@ -37,7 +37,7 @@ $shipment = $this->shipment[0];
                         type="application/pdf">
                     <a href="javascript:void(0);" class="btn btn-sm btn-primary"
                         title="<?= $this->htmlTranslate("View / Expand Current File"); ?>"
-                        onclick="layoutModal('/d/<?php echo base64_encode($summaryFilePath); ?>', 800, 700);"
+                        onclick="layoutModal('<?php echo Pt_Commons_SignedDownload::url($summaryFilePath); ?>', 800, 700);"
                         style=" position: absolute; margin-left: -35px; "><i class="icon-fullscreen" aria-hidden="true"></i></a>
                 </div>
                 <a href="javascript:void(0);" class="btn btn-sm btn-success"
