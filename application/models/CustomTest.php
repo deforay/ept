@@ -122,6 +122,10 @@ class Application_Model_CustomTest
 
             $lastDate = Pt_Commons_DateUtility::shipmentCutoff($shipment['response_deadline']);
             $results = $this->getSamplesForParticipant($shipmentId, $shipment['participant_id']);
+            // Human-readable scheme label for corrective-action text (e.g. "Hepatitis B
+            // Serology", "Syphilis Serology", "Malaria Serology"). Falls back to the scheme
+            // code. Avoids the previously hardcoded "Hepatitis-B" reference on every scheme.
+            $schemeLabel = !empty($shipment['scheme_name']) ? $shipment['scheme_name'] : $shipment['scheme_type'];
             $totalScore = 0;
             $calculatedScore = 0;
             $maxScore = 0;
@@ -225,8 +229,8 @@ class Application_Model_CustomTest
                             } else {
                                 if ($result['sample_score'] > 0) {
                                     $failureReason[] = [
-                                        'warning' => 'Control/Sample <strong>' . $result['sample_label'] . '</strong> was reported wrongly',
-                                        'correctiveAction' => 'Review and refer to Hepatitis-B HIV Testing Algorithms for result interpretation as final result interpretation does not match the expected result.',
+                                        'warning' => 'Sample <strong>' . $result['sample_label'] . '</strong> was reported wrongly',
+                                        'correctiveAction' => 'Review and refer to the ' . $schemeLabel . ' testing algorithm for result interpretation as the final result interpretation does not match the expected result.',
                                     ];
                                 }
                             }
@@ -242,7 +246,7 @@ class Application_Model_CustomTest
                         $totalScore = 0;
                         $failureReason[] = [
                             'warning' => 'Testing is not performed with country approved test kit.',
-                            'correctiveAction' => 'Please test ' . $shipment['scheme_type'] . ' sample as per Hepatitis-B Testing algorithm. Review and refer to SOP for testing',
+                            'correctiveAction' => 'Please test the sample as per the ' . $schemeLabel . ' testing algorithm. Review and refer to SOP for testing',
                         ];
                     }
                 }
