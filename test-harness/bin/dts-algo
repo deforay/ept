@@ -231,12 +231,18 @@ function run_interactive(Config $config, Db $db): void
         }
     }
 
-    fwrite(STDOUT, "[2/3] Evaluating (subprocess)...\n");
-    (new Evaluator($config))->evaluate($provision['shipment_id']);
+    $evaluator = new Evaluator($config);
 
-    fwrite(STDOUT, "[3/3] Asserting against expectations...\n\n");
+    fwrite(STDOUT, "[2/4] Evaluating (subprocess)...\n");
+    $evaluator->evaluate($provision['shipment_id']);
+
+    fwrite(STDOUT, "[3/4] Asserting against expectations...\n\n");
     $result = (new Asserter($db))->assert($variantKey, $provision);
     report_results($provision, $result);
+
+    fwrite(STDOUT, "\n[4/4] Generating participant + summary reports (subprocess)...\n");
+    $evaluator->generateReports($provision['shipment_id']);
+    fwrite(STDOUT, "  ✓ reports written to downloads/reports/{$provision['shipment_code']}/\n");
 
     fwrite(STDOUT, "\nShipment left in place. Inspect at your leisure.\n");
     fwrite(STDOUT, "  shipment_id  = {$provision['shipment_id']}\n");

@@ -5,7 +5,8 @@ declare(strict_types=1);
 namespace EptTestHarness;
 
 /**
- * Runs scheduled-jobs/evaluate-shipments.php as a subprocess. Never loads any app class.
+ * Runs scheduled-jobs/evaluate-shipments.php and generate-shipment-reports.php
+ * as subprocesses. Never loads any app class.
  */
 final class Evaluator
 {
@@ -13,14 +14,39 @@ final class Evaluator
 
     public function evaluate(int $shipmentId): void
     {
+        $this->run(
+            'scheduled-jobs/evaluate-shipments.php',
+            ['-s', (string) $shipmentId],
+            'evaluate-shipments.php'
+        );
+    }
+
+    /**
+     * Run scheduled-jobs/generate-shipment-reports.php for the given shipment.
+     * --force regenerates even if a report already exists; no -p/-s flag, so the
+     * script produces participant PDFs AND the summary in one pass.
+     */
+    public function generateReports(int $shipmentId): void
+    {
+        $this->run(
+            'scheduled-jobs/generate-shipment-reports.php',
+            ['--shipment=' . $shipmentId, '--force'],
+            'generate-shipment-reports.php'
+        );
+    }
+
+    /** @param string[] $args */
+    private function run(string $relativeScript, array $args, string $label): void
+    {
         $php = $this->config->phpBinary;
-        $script = $this->config->repoRoot . '/scheduled-jobs/evaluate-shipments.php';
+        $script = $this->config->repoRoot . '/' . $relativeScript;
+        $argStr = implode(' ', array_map('escapeshellarg', $args));
         $cmd = sprintf(
-            'APPLICATION_ENV=%s %s %s -s %d 2>&1',
+            'APPLICATION_ENV=%s %s %s %s 2>&1',
             escapeshellarg($this->config->env),
             escapeshellarg($php),
             escapeshellarg($script),
-            $shipmentId
+            $argStr
         );
 
         $output = [];
@@ -29,7 +55,7 @@ final class Evaluator
 
         if ($exit !== 0) {
             $tail = implode("\n", array_slice($output, -25));
-            throw new \RuntimeException("evaluate-shipments.php failed (exit $exit). Tail:\n$tail");
+            throw new \RuntimeException("$label failed (exit $exit). Tail:\n$tail");
         }
     }
 }
