@@ -82,7 +82,7 @@ $dtFormat = $genderHelper->getDateFormat();
     /* Label styling */
     .config-section label,
     .form-content label {
-        color: #374151;
+        /* color: #374151; */
         font-weight: 500;
         margin-bottom: 8px;
         display: block;
@@ -562,7 +562,7 @@ $dtFormat = $genderHelper->getDateFormat();
                                                 <option value="<?php echo $testkit['TESTKITNAMEID'] ?>" <?php echo (isset($this->dtsRecommendedTestkits[1]) && in_array($testkit['TESTKITNAMEID'], $this->dtsRecommendedTestkits[1])) ? 'selected' : ''; ?>>
                                                     <?php echo $testkit['TESTKITNAME'] ?>
                                                 </option>
-                                            <?php }
+                                        <?php }
                                         } ?>
                                     </select>
                                 </div>
@@ -584,7 +584,7 @@ $dtFormat = $genderHelper->getDateFormat();
                                                 <option value="<?php echo $testkit['TESTKITNAMEID'] ?>" <?php echo (isset($this->dtsRecommendedTestkits[2]) && in_array($testkit['TESTKITNAMEID'], $this->dtsRecommendedTestkits[2])) ? 'selected' : ''; ?>>
                                                     <?php echo $testkit['TESTKITNAME'] ?>
                                                 </option>
-                                            <?php }
+                                        <?php }
                                         } ?>
                                     </select>
                                 </div>
@@ -606,7 +606,7 @@ $dtFormat = $genderHelper->getDateFormat();
                                                 <option value="<?php echo $testkit['TESTKITNAMEID'] ?>" <?php echo (isset($this->dtsRecommendedTestkits[3]) && in_array($testkit['TESTKITNAMEID'], $this->dtsRecommendedTestkits[3])) ? 'selected' : ''; ?>>
                                                     <?php echo $testkit['TESTKITNAME'] ?>
                                                 </option>
-                                            <?php }
+                                        <?php }
                                         } ?>
                                     </select>
                                 </div>
@@ -635,7 +635,7 @@ $dtFormat = $genderHelper->getDateFormat();
                                                 <option value="<?php echo $testkit['TESTKITNAMEID'] ?>" <?php echo (isset($this->dtsSyphilisRecommendedTestkits[1]) && in_array($testkit['TESTKITNAMEID'], $this->dtsSyphilisRecommendedTestkits[1])) ? 'selected' : ''; ?>>
                                                     <?php echo $testkit['TESTKITNAME'] ?>
                                                 </option>
-                                            <?php }
+                                        <?php }
                                         } ?>
                                     </select>
                                 </div>
@@ -658,7 +658,7 @@ $dtFormat = $genderHelper->getDateFormat();
                                                 <option value="<?php echo $testkit['TESTKITNAMEID'] ?>" <?php echo (isset($this->dtsSyphilisRecommendedTestkits[2]) && in_array($testkit['TESTKITNAMEID'], $this->dtsSyphilisRecommendedTestkits[2])) ? 'selected' : ''; ?>>
                                                     <?php echo $testkit['TESTKITNAME'] ?>
                                                 </option>
-                                            <?php }
+                                        <?php }
                                         } ?>
                                     </select>
                                 </div>
@@ -681,7 +681,7 @@ $dtFormat = $genderHelper->getDateFormat();
                                                 <option value="<?php echo $testkit['TESTKITNAMEID'] ?>" <?php echo (isset($this->dtsSyphilisRecommendedTestkits[3]) && in_array($testkit['TESTKITNAMEID'], $this->dtsSyphilisRecommendedTestkits[3])) ? 'selected' : ''; ?>>
                                                     <?php echo $testkit['TESTKITNAME'] ?>
                                                 </option>
-                                            <?php }
+                                        <?php }
                                         } ?>
                                     </select>
                                 </div>
@@ -709,7 +709,7 @@ $dtFormat = $genderHelper->getDateFormat();
                                                 <option value="<?php echo $testkit['TESTKITNAMEID'] ?>" <?php echo (isset($this->dtsRtriRecommendedTestkits[1]) && in_array($testkit['TESTKITNAMEID'], $this->dtsRtriRecommendedTestkits[1])) ? 'selected' : ''; ?>>
                                                     <?php echo $testkit['TESTKITNAME'] ?>
                                                 </option>
-                                            <?php }
+                                        <?php }
                                         } ?>
                                     </select>
                                 </div>
@@ -732,7 +732,7 @@ $dtFormat = $genderHelper->getDateFormat();
                                                 <option value="<?php echo $testkit['TESTKITNAMEID'] ?>" <?php echo (isset($this->dtsRtriRecommendedTestkits[2]) && in_array($testkit['TESTKITNAMEID'], $this->dtsRtriRecommendedTestkits[2])) ? 'selected' : ''; ?>>
                                                     <?php echo $testkit['TESTKITNAME'] ?>
                                                 </option>
-                                            <?php }
+                                        <?php }
                                         } ?>
                                     </select>
                                 </div>
@@ -755,7 +755,7 @@ $dtFormat = $genderHelper->getDateFormat();
                                                 <option value="<?php echo $testkit['TESTKITNAMEID'] ?>" <?php echo (isset($this->dtsRtriRecommendedTestkits[3]) && in_array($testkit['TESTKITNAMEID'], $this->dtsRtriRecommendedTestkits[3])) ? 'selected' : ''; ?>>
                                                     <?php echo $testkit['TESTKITNAME'] ?>
                                                 </option>
-                                            <?php }
+                                        <?php }
                                         } ?>
                                     </select>
                                 </div>
@@ -854,7 +854,7 @@ $dtFormat = $genderHelper->getDateFormat();
         }
     }
 
-    $(document).ready(function () {
+    $(document).ready(function() {
         $('.multipleSelect').multiselect({
             includeSelectAllOption: false
         });
@@ -863,7 +863,7 @@ $dtFormat = $genderHelper->getDateFormat();
         $('#allowedAlgorithms').trigger('change');
     });
 
-    $('#allowedAlgorithms').on("change", function () {
+    $('#allowedAlgorithms').on("change", function() {
         var _val = $(this).val();
 
         if (_val.indexOf("malawiNationalDtsAlgo") > -1) {
@@ -885,7 +885,7 @@ $dtFormat = $genderHelper->getDateFormat();
         $('#dtsSchemeType').trigger('change');
     });
 
-    $('#dtsSchemeType').on("change", function () {
+    $('#dtsSchemeType').on("change", function() {
         $('#allowedAlgorithms').addClass('isRequired');
         $('#allowedAlgorithmsDiv').show();
         $('#dtsSyphilisDiv').hide();
