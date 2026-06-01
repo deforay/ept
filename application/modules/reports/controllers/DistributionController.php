@@ -116,6 +116,7 @@ class Reports_DistributionController extends Zend_Controller_Action
             $this->view->shipmentStatus = $evalService->getReportStatus($id, 'finalized');
             $this->view->shipmentsUnderDistro = $shipmentService->getShipmentInReports($shipment[0]['distribution_id']);
             $this->view->responseCount = $evalService->getResponseCount($id, $shipment[0]['distribution_id']);
+            $this->view->dtsSchemeType = $this->dtsSchemeTypeFromShipment($shipment[0] ?? []);
         } else {
             $this->redirect('/reports/finalize/');
         }

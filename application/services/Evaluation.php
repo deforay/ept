@@ -1361,6 +1361,18 @@ class Application_Service_Evaluation
                 [
                     'updatedByName' => new Zend_Db_Expr("TRIM(CONCAT(COALESCE(dmu.first_name,''), ' ', COALESCE(dmu.last_name,'')))"),
                     'updatedByEmail' => 'dmu.primary_email',
+                    // Vietnam-only flag exposed for client-side row filtering on the
+                    // /reports/distribution/finalize page. 'yes' = at least one sample's
+                    // primary kit isn't in the country-approved test_no=1 set.
+                    'has_non_ref_kit' => new Zend_Db_Expr(
+                        "(CASE WHEN EXISTS (
+                            SELECT 1 FROM response_result_dts rrd
+                             WHERE rrd.shipment_map_id = sp.map_id
+                               AND rrd.test_kit_name_1 IS NOT NULL
+                               AND rrd.test_kit_name_1 <> ''
+                               AND rrd.test_kit_name_1 NOT IN (SELECT testkit FROM dts_recommended_testkits WHERE test_no = 1)
+                         ) THEN 'yes' ELSE 'no' END)"
+                    ),
                 ]
             )
             ->where('s.shipment_id = ?', $shipmentId);
