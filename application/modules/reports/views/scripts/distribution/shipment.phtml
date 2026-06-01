@@ -180,18 +180,18 @@ if (!empty($this->shipment)) {
                 $summaryFilePath = (DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $this->shipment[0]['shipment_code'] . DIRECTORY_SEPARATOR . $this->shipment[0]['shipment_code'] . "-summary.pdf");
                 if (file_exists($summaryFilePath)) {
                     ?>
-                    <a href="<?= '/d/' . base64_encode($summaryFilePath); ?>" class='btn btn-success btn-sm col-md-3'
+                    <a href="<?= Pt_Commons_SignedDownload::url($summaryFilePath); ?>" class='btn btn-success btn-sm col-md-3'
                         target='_blank' style=' float: none; margin-top: 20px; '><i class='icon-file-text'></i> &nbsp
                         <?= $this->htmlTranslate("Download Summary Report"); ?></a>
                 <?php } else {
                     $testTypePath = (DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $this->shipment[0]['shipment_code'] . DIRECTORY_SEPARATOR . $this->shipment[0]['shipment_code']);
                     if (file_exists($testTypePath . "-screening-summary.pdf")) { ?>
-                        <a href="<?= '/d/' . base64_encode($testTypePath . "-screening-summary.pdf"); ?>"
+                        <a href="<?= Pt_Commons_SignedDownload::url($testTypePath . "-screening-summary.pdf"); ?>"
                             class='btn btn-success btn-sm col-md-3' target='_blank' style=' float: none; margin-top: 20px; '><i
                                 class='icon-file-text'></i> &nbsp <?= $this->htmlTranslate("Download Screening Summary Report"); ?></a>
                     <?php }
                     if (file_exists($testTypePath . "-confirmatory-summary.pdf")) { ?>
-                        <a href="<?= '/d/' . base64_encode($testTypePath . "-confirmatory-summary.pdf"); ?>"
+                        <a href="<?= Pt_Commons_SignedDownload::url($testTypePath . "-confirmatory-summary.pdf"); ?>"
                             class='btn btn-success btn-sm col-md-3' target='_blank' style=' float: none; margin-top: 20px; '><i
                                 class='icon-file-text'></i> &nbsp
                             <?= $this->htmlTranslate("Download Confirmatory Summary Report"); ?></a>
@@ -200,7 +200,7 @@ if (!empty($this->shipment)) {
                 $zipFilePath = (DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $this->shipment[0]['shipment_code'] . ".zip");
                 if (file_exists($zipFilePath)) {
                     ?>
-                    <br><a href="<?= '/d/' . base64_encode($zipFilePath); ?>" class='btn btn-success btn-sm col-md-3'
+                    <br><a href="<?= Pt_Commons_SignedDownload::url($zipFilePath); ?>" class='btn btn-success btn-sm col-md-3'
                         target='_blank' style=' float: none; margin-top: 20px; '><i class='icon-archive'></i> &nbsp
                         <?= $this->htmlTranslate("Download All Reports"); ?></a><br>
                 <?php } ?>

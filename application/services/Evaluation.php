@@ -1879,7 +1879,7 @@ class Application_Service_Evaluation
                 $invididualFilePath = $files[0] ?? '';
             }
             if ($invididualFilePath !== '' && file_exists($invididualFilePath) && $reportQueue !== 'disabled') {
-                $individualReports = '<a href="/d/' . base64_encode($invididualFilePath) . '" class="btn btn-sm btn-primary" style="text-decoration:none;overflow:hidden;margin-top:4px;width:100%;" target="_blank"><i class="icon icon-download"></i> ' . $translator->_('Download Report') . '</a>';
+                $individualReports = '<a href="' . Pt_Commons_SignedDownload::url($invididualFilePath) . '" class="btn btn-sm btn-primary" style="text-decoration:none;overflow:hidden;margin-top:4px;width:100%;" target="_blank"><i class="icon icon-download"></i> ' . $translator->_('Download Report') . '</a>';
             }
         }
 
