@@ -31,7 +31,7 @@ if (isset($this->type) && $this->type != "xpert-mtb-rif-ultra") {
 	unset($possibleResults['trace']);
 }
 $notPerformedStyle = 'display:none;';
-if (isset($this->shipment['vl_not_tested_reason']) && ($this->shipment['vl_not_tested_reason'] == 9999)) {
+if (isset($this->shipment['pt_not_tested_reason']) && ($this->shipment['pt_not_tested_reason'] == 9999)) {
 	$notPerformedStyle = '';
 }
 ?>
@@ -197,7 +197,7 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
 							<td colspan="2">
 								<label><?= $this->translate->_("Reason for not testing the PT Panel"); ?></label> <span
 									class="mandatory">*</span> :
-								<select id="vlNotTestedReason" name="vlNotTestedReason" class="form-control"
+								<select id="ptNotTestedReason" name="ptNotTestedReason" class="form-control"
 									title="<?= $this->htmlTranslate("Please select reason"); ?>" onchange="checkComments(this.value);">
 									<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
 									<?php
@@ -205,10 +205,10 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
 									?>
 										<option
 											data-collect-panel-receipt-date="<?= $reason['collect_panel_receipt_date']; ?>"
-											value="<?= $reason['ntr_id']; ?>" <?php echo ($this->shipment['vl_not_tested_reason'] == $reason['ntr_id']) ? 'selected="selected"' : ''; ?>><?php echo ($reason['ntr_reason']); ?></option>
+											value="<?= $reason['ntr_id']; ?>" <?php echo ($this->shipment['pt_not_tested_reason'] == $reason['ntr_id']) ? 'selected="selected"' : ''; ?>><?php echo ($reason['ntr_reason']); ?></option>
 									<?php } ?>
 									<?php
-									$ntrVal = $this->shipment['vl_not_tested_reason'] ?? '';
+									$ntrVal = $this->shipment['pt_not_tested_reason'] ?? '';
 									$isOther = in_array((string)$ntrVal, ['other', '9999', '0'], true)
 										&& !empty($this->shipment['is_pt_test_not_performed'])
 										&& $this->shipment['is_pt_test_not_performed'] == 'yes';
@@ -728,7 +728,7 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
 
 
 		testNotPerformed($('#isPtTestNotPerformed').val());
-		// checkComments($('#vlNotTestedReason').val());
+		// checkComments($('#ptNotTestedReason').val());
 		$('#supervisorApproval,#attestation,#isPtTestNotPerformed').change();
 		$('#supervisorApproval').change(function() {
 			if ($('#supervisorApproval').val() == 'yes') {
@@ -924,14 +924,14 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
 			$('.ptNotPerformedSection').show();
 			$('.vlResultMandatory').css('visibility', 'hidden');
 			$('#shipmentTestDate,#receiptDate,#sampleRehydrationDate,#supervisorApproval,.vlResultValues,#supervisorApproval').removeClass('isRequired');
-			$('#vlNotTestedReason').addClass('isRequired');
+			$('#ptNotTestedReason').addClass('isRequired');
 			$('#participantSupervisor').removeClass('isRequired');
 
 		} else {
 			$('.tbPTTestingRelatedFields,.ptTestPerformed,.vlResultValuesAsterisk,.vlResultValuesTable').show();
 			$('.ptNotPerformedSection').hide();
 			$('.vlResultMandatory').css('visibility', 'visible');
-			$('#vlNotTestedReason').removeClass('isRequired');
+			$('#ptNotTestedReason').removeClass('isRequired');
 			$('#shipmentTestDate,#receiptDate,#sampleRehydrationDate,#supervisorApproval,.vlResultValues,#supervisorApproval').addClass('isRequired');
 		}
 	}

@@ -300,12 +300,12 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
 						<tr class="ptNotPerformedSection" style="<?php echo (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes') ? '' : 'display:none;'; ?>background:none;">
 							<td colspan="3">
 								<label>Reason for not testing the PT Panel</label> <span class="mandatory">*</span> :
-								<select id="vlNotTestedReason" name="vlNotTestedReason" class="form-control" title="<?= $this->htmlTranslate("Please select reason"); ?>" style="width:60%;">
+								<select id="ptNotTestedReason" name="ptNotTestedReason" class="form-control" title="<?= $this->htmlTranslate("Please select reason"); ?>" style="width:60%;">
 									<option value="">--Select--</option>
 									<?php
 									foreach ($this->allNotTestedReason as $reason) {
 									?>
-										<option value="<?php echo $reason['ntr_id']; ?>" <?php echo ($this->shipment['vl_not_tested_reason'] == $reason['ntr_id']) ? 'selected="selected"' : ''; ?>><?php echo ucwords($reason['ntr_reason']); ?></option>
+										<option value="<?php echo $reason['ntr_id']; ?>" <?php echo ($this->shipment['pt_not_tested_reason'] == $reason['ntr_id']) ? 'selected="selected"' : ''; ?>><?php echo ucwords($reason['ntr_reason']); ?></option>
 									<?php } ?>
 								</select>
 							</td>
@@ -543,7 +543,7 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
 			$('.ptNotPerformedSection').show();
 			$('.vlResultMandatory').css('visibility', 'hidden');
 			$('.vlResultValues').removeClass('isRequired');
-			$('#vlNotTestedReason').addClass('isRequired');
+			$('#ptNotTestedReason').addClass('isRequired');
 			$('#ptNotTestedComments').addClass('isRequired');
 			$('#testDate').removeClass('isRequired');
 			$('#receiptDate').removeClass('isRequired');
@@ -556,7 +556,7 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
 			$('.ptNotPerformedSection').hide();
 			$('.vlResultMandatory').css('visibility', 'visible');
 			$('.vlResultValues').addClass('isRequired');
-			$('#vlNotTestedReason').removeClass('isRequired');
+			$('#ptNotTestedReason').removeClass('isRequired');
 			$('#ptNotTestedComments').removeClass('isRequired');
 			$('#receiptDate').addClass('isRequired');
 			$('#testDate').addClass('isRequired');

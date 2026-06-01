@@ -318,7 +318,7 @@ class Application_Service_ApiServices
                 }
 
                 $data['is_pt_test_not_performed'] = null;
-                $data['vl_not_tested_reason'] = null;
+                $data['pt_not_tested_reason'] = null;
                 $data['pt_test_not_performed_comments'] = null;
                 $data['pt_support_comments'] = null;
                 $data['shipment_test_date'] = Pt_Commons_DateUtility::isoDateFormat($param['testingDate']);
@@ -326,7 +326,7 @@ class Application_Service_ApiServices
                 if (!empty($param['isPtTestNotPerformed']) && $param['isPtTestNotPerformed'] === 'yes') {
                     $data['is_pt_test_not_performed'] = 'yes';
                     $data['shipment_test_date'] = null;
-                    $data['vl_not_tested_reason'] = $param['notTestedReason'] ?? null;
+                    $data['pt_not_tested_reason'] = $param['notTestedReason'] ?? null;
                     $data['pt_test_not_performed_comments'] = $param['ptNotTestedComments'] ?? null;
                     $data['pt_support_comments'] = $param['ptSupportComment'] ?? null;
                 }

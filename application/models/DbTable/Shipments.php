@@ -22,8 +22,8 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             ->joinLeft(['p' => 'participant'], 'sp.participant_id=p.participant_id', ['participant_id', 'unique_identifier', 'institute_name', 'anc'])
             ->joinLeft(['c' => 'countries'], 'p.country=c.id', ['c.iso_name'])
             ->joinLeft(['dm' => 'data_manager'], 'dm.dm_id=sp.updated_by_user', ['last_updated_by' => new Zend_Db_Expr("CONCAT(COALESCE(dm.first_name,''),' ', COALESCE(dm.last_name,''))")])
-            // ->joinLeft(array('r_vl_r' => 'r_response_vl_not_tested_reason'), 'r_vl_r.vl_not_tested_reason_id=sp.vl_not_tested_reason', array('vlNotTestedReason' => 'vl_not_tested_reason'))
-            ->joinLeft(['ntr' => 'r_response_not_tested_reasons'], 'ntr.ntr_id=sp.vl_not_tested_reason', ['notTestedReason' => 'ntr_reason'])
+            // ->joinLeft(array('r_vl_r' => 'r_response_vl_not_tested_reason'), 'r_vl_r.vl_not_tested_reason_id=sp.pt_not_tested_reason', array('vlNotTestedReason' => 'pt_not_tested_reason'))
+            ->joinLeft(['ntr' => 'r_response_not_tested_reasons'], 'ntr.ntr_id=sp.pt_not_tested_reason', ['notTestedReason' => 'ntr_reason'])
             ->where('s.shipment_id = ?', $sId)
             ->where('sp.participant_id = ?', $pId);
         return $this->getAdapter()->fetchRow($sql);
@@ -1913,7 +1913,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             ->join(['p' => 'participant'], 'p.participant_id=spm.participant_id', ['p.unique_identifier', 'p.first_name', 'p.last_name', 'p.state', 'p.affiliation', 'p.phone', 'p.mobile'])
             ->joinLeft(['c' => 'countries'], 'p.country=c.id', ['c.iso_name'])
             ->joinLeft(['dm' => 'data_manager'], 'dm.dm_id=spm.updated_by_user', ['last_updated_by' => new Zend_Db_Expr("CONCAT(COALESCE(dm.first_name,''),' ', COALESCE(dm.last_name,''))")])
-            ->joinLeft(['ntr' => 'r_response_not_tested_reasons'], 'ntr.ntr_id=spm.vl_not_tested_reason', ['notTestedReason' => 'ntr_reason'])
+            ->joinLeft(['ntr' => 'r_response_not_tested_reasons'], 'ntr.ntr_id=spm.pt_not_tested_reason', ['notTestedReason' => 'ntr_reason'])
             ->where("(s.status='shipped' OR s.status='evaluated' OR s.status='finalized')")
             ->order('spm.created_on_admin DESC')
             ->order('spm.created_on_user DESC');
@@ -2102,7 +2102,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             $data[$key]['qcDoneBy'] = $row['qc_done_by'] ?? null;
             $data[$key]['isPtTestNotPerformed'] = $row['is_pt_test_not_performed'] ?? 'no';
             $data[$key]['collectShipmentReceiptDate'] = $row['collect_panel_receipt_date'] ?? 'yes';
-            $data[$key]['notTestedReason'] = $row['vl_not_tested_reason'] ?? null;
+            $data[$key]['notTestedReason'] = $row['pt_not_tested_reason'] ?? null;
             $data[$key]['ptNotTestedComments'] = $row['pt_test_not_performed_comments'] ?? null;
             $data[$key]['ptSupportComment'] = $row['pt_support_comments'] ?? null;
             if (isset($allSamples) && !empty($allSamples)) {
@@ -2442,7 +2442,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 $allNotTestedArray[] = [
                     'value' => (string) $reason['ntr_id'],
                     'show' => ucwords($reason['ntr_reason']),
-                    'selected' => ($shipment['vl_not_tested_reason'] == $reason['ntr_id']) ? 'selected' : '',
+                    'selected' => ($shipment['pt_not_tested_reason'] == $reason['ntr_id']) ? 'selected' : '',
                 ];
             }
             if ((!isset($shipment['is_pt_test_not_performed']) || isset($shipment['is_pt_test_not_performed'])) && ($shipment['is_pt_test_not_performed'] == 'no' || $shipment['is_pt_test_not_performed'] == '')) {
@@ -2458,7 +2458,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             $dtsPtNotTested['collectShipmentReceiptDate'] = (isset($shipment['collect_panel_receipt_date']) && $shipment['collect_panel_receipt_date'] != '') ? $shipment['collect_panel_receipt_date'] : 'yes';
             $dtsPtNotTested['notTestedReasonText'] = 'Reason for not testing the PT Panel';
             $dtsPtNotTested['notTestedReasons'] = $allNotTestedArray;
-            $dtsPtNotTested['notTestedReasonSelected'] = (isset($shipment['vl_not_tested_reason']) && $shipment['vl_not_tested_reason'] != '') ? $shipment['vl_not_tested_reason'] : '';
+            $dtsPtNotTested['notTestedReasonSelected'] = (isset($shipment['pt_not_tested_reason']) && $shipment['pt_not_tested_reason'] != '') ? $shipment['pt_not_tested_reason'] : '';
             $dtsPtNotTested['ptNotTestedCommentsText'] = 'Your comments';
             $dtsPtNotTested['ptNotTestedComments'] = (isset($shipment['pt_test_not_performed_comments']) && $shipment['pt_test_not_performed_comments'] != '') ? $shipment['pt_test_not_performed_comments'] : '';
             $dtsPtNotTested['ptSupportCommentsText'] = 'Do you need any support from the PT Provider ?';
@@ -3238,12 +3238,12 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 $allNotTestedArray[] = [
                     'value' => (string) $reason['ntr_id'],
                     'show' => ucwords($reason['ntr_reason']),
-                    'selected' => ($shipment['vl_not_tested_reason'] == $reason['ntr_id']) ? 'selected' : '',
+                    'selected' => ($shipment['pt_not_tested_reason'] == $reason['ntr_id']) ? 'selected' : '',
                 ];
             }
             $section3['data']['yes']['vlNotTestedReasonText'] = 'Reason for not testing the PT Panel';
             $section3['data']['yes']['vlNotTestedReasonSelect'] = $allNotTestedArray;
-            $section3['data']['yes']['vlNotTestedReasonSelected'] = (isset($shipment['vl_not_tested_reason']) && $shipment['vl_not_tested_reason'] != '') ? $shipment['vl_not_tested_reason'] : '';
+            $section3['data']['yes']['vlNotTestedReasonSelected'] = (isset($shipment['pt_not_tested_reason']) && $shipment['pt_not_tested_reason'] != '') ? $shipment['pt_not_tested_reason'] : '';
             $section3['data']['yes']['commentsText'] = 'Your comments';
             $section3['data']['yes']['commentsTextArea'] = $shipment['pt_test_not_performed_comments'];
             $section3['data']['yes']['supportText'] = 'Do you need any support from the PT Provider ?';
@@ -3481,7 +3481,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                     'value' => (string) $reason['ntr_id'],
                     'show' => ucwords($reason['ntr_reason']),
                     'receivedPtPanel' => (string) $reason['collect_panel_receipt_date'],
-                    'selected' => ($shipment['vl_not_tested_reason'] == $reason['ntr_id']) ? 'selected' : '',
+                    'selected' => ($shipment['pt_not_tested_reason'] == $reason['ntr_id']) ? 'selected' : '',
                 ];
             }
 
@@ -3503,7 +3503,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             ];
             $eid['Section3']['data']['vlNotTestedReasonText'] = 'Reason for not testing the PT Panel';
             $eid['Section3']['data']['vlNotTestedReason'] = $allNotTestedArray;
-            $eid['Section3']['data']['vlNotTestedReasonSelected'] = (isset($shipment['vl_not_tested_reason']) && $shipment['vl_not_tested_reason'] != '') ? $shipment['vl_not_tested_reason'] : '';
+            $eid['Section3']['data']['vlNotTestedReasonSelected'] = (isset($shipment['pt_not_tested_reason']) && $shipment['pt_not_tested_reason'] != '') ? $shipment['pt_not_tested_reason'] : '';
             $eid['Section3']['data']['ptNotTestedCommentsText'] = 'Your comments';
             $eid['Section3']['data']['ptNotTestedComments'] = (isset($shipment['pt_test_not_performed_comments']) && $shipment['pt_test_not_performed_comments'] != '') ? $shipment['pt_test_not_performed_comments'] : '';
             $eid['Section3']['data']['ptSupportCommentsText'] = 'Do you need any support from the PT Provider ?';
@@ -3709,7 +3709,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 $allNotTestedArray[] = [
                     'value' => (string) $reason['ntr_id'],
                     'show' => ucwords($reason['ntr_reason']),
-                    'selected' => ($shipment['vl_not_tested_reason'] == $reason['ntr_id']) ? 'selected' : '',
+                    'selected' => ($shipment['pt_not_tested_reason'] == $reason['ntr_id']) ? 'selected' : '',
                 ];
             }
 
@@ -3726,7 +3726,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             }
             $recency['Section3']['data']['vlNotTestedReasonText'] = 'Reason for not testing the PT Panel';
             $recency['Section3']['data']['vlNotTestedReason'] = $allNotTestedArray;
-            $recency['Section3']['data']['vlNotTestedReasonSelected'] = (isset($shipment['vl_not_tested_reason']) && $shipment['vl_not_tested_reason'] != '') ? $shipment['vl_not_tested_reason'] : '';
+            $recency['Section3']['data']['vlNotTestedReasonSelected'] = (isset($shipment['pt_not_tested_reason']) && $shipment['pt_not_tested_reason'] != '') ? $shipment['pt_not_tested_reason'] : '';
             $recency['Section3']['data']['ptNotTestedCommentsText'] = 'Your comments';
             $recency['Section3']['data']['ptNotTestedComments'] = (isset($shipment['pt_test_not_performed_comments']) && $shipment['pt_test_not_performed_comments'] != '') ? $shipment['pt_test_not_performed_comments'] : '';
             $recency['Section3']['data']['ptSupportCommentsText'] = 'Do you need any support from the PT Provider ?';
@@ -3912,13 +3912,13 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 $allNotTestedArray[] = [
                     'value' => (string) $reason['ntr_id'],
                     'show' => ucwords($reason['ntr_reason']),
-                    'selected' => ($shipment['vl_not_tested_reason'] == $reason['ntr_id']) ? 'selected' : '',
+                    'selected' => ($shipment['pt_not_tested_reason'] == $reason['ntr_id']) ? 'selected' : '',
                 ];
             }
 
             $covid19['Section3']['data']['vlNotTestedReasonText'] = 'Reason for not testing the PT Panel';
             $covid19['Section3']['data']['vlNotTestedReason'] = $allNotTestedArray;
-            $covid19['Section3']['data']['vlNotTestedReasonSelected'] = (isset($shipment['vl_not_tested_reason']) && $shipment['vl_not_tested_reason'] != '') ? $shipment['vl_not_tested_reason'] : '';
+            $covid19['Section3']['data']['vlNotTestedReasonSelected'] = (isset($shipment['pt_not_tested_reason']) && $shipment['pt_not_tested_reason'] != '') ? $shipment['pt_not_tested_reason'] : '';
             $covid19['Section3']['data']['ptNotTestedCommentsText'] = 'Your comments';
             $covid19['Section3']['data']['ptNotTestedComments'] = (isset($shipment['pt_test_not_performed_comments']) && $shipment['pt_test_not_performed_comments'] != '') ? $shipment['pt_test_not_performed_comments'] : '';
             $covid19['Section3']['data']['ptSupportCommentsText'] = 'Do you need any support from the PT Provider ?';
@@ -4479,11 +4479,11 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 }
                 $data['is_pt_test_not_performed'] = (isset($params['vlData']->Section3->data->isPtTestNotPerformedRadio) && $params['vlData']->Section3->data->isPtTestNotPerformedRadio == 'yes') ? 'yes' : 'no';
                 if ($data['is_pt_test_not_performed'] == 'yes') {
-                    $data['vl_not_tested_reason'] = $params['vlData']->Section3->data->yes->vlNotTestedReasonSelected;
+                    $data['pt_not_tested_reason'] = $params['vlData']->Section3->data->yes->vlNotTestedReasonSelected;
                     $data['pt_test_not_performed_comments'] = $params['vlData']->Section3->data->yes->commentsTextArea;
                     $data['pt_support_comments'] = $params['vlData']->Section3->data->yes->supportTextArea;
                 } else {
-                    $data['vl_not_tested_reason'] = '';
+                    $data['pt_not_tested_reason'] = '';
                     $data['pt_test_not_performed_comments'] = '';
                     $data['pt_support_comments'] = '';
                 }
@@ -4572,11 +4572,11 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 $data['is_pt_test_not_performed'] = (isset($params['dtsData']->Section3->data->isPtTestNotPerformedRadio) && $params['dtsData']->Section3->data->isPtTestNotPerformedRadio == 'yes') ? 'yes' : 'no';
                 if ($data['is_pt_test_not_performed'] == 'yes') {
                     $data['received_pt_panel'] = $params['dtsData']->Section3->data->receivedPtPanel;
-                    $data['vl_not_tested_reason'] = $params['dtsData']->Section3->data->notTestedReasonSelected;
+                    $data['pt_not_tested_reason'] = $params['dtsData']->Section3->data->notTestedReasonSelected;
                     $data['pt_test_not_performed_comments'] = $params['dtsData']->Section3->data->ptNotTestedComments;
                     $data['pt_support_comments'] = $params['dtsData']->Section3->data->ptSupportComments;
                 } else {
-                    $data['vl_not_tested_reason'] = '';
+                    $data['pt_not_tested_reason'] = '';
                     $data['pt_test_not_performed_comments'] = '';
                     $data['pt_support_comments'] = '';
                 }
@@ -4664,11 +4664,11 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
 
                 $data['is_pt_test_not_performed'] = $params['eidData']->Section3->data->isPtTestNotPerformedRadio;
                 if ($data['is_pt_test_not_performed'] == 'yes') {
-                    $data['vl_not_tested_reason'] = $params['eidData']->Section3->data->vlNotTestedReasonSelected;
+                    $data['pt_not_tested_reason'] = $params['eidData']->Section3->data->vlNotTestedReasonSelected;
                     $data['pt_test_not_performed_comments'] = $params['eidData']->Section3->data->ptNotTestedComments;
                     $data['pt_support_comments'] = $params['eidData']->Section3->data->ptSupportComments;
                 } else {
-                    $data['vl_not_tested_reason'] = '';
+                    $data['pt_not_tested_reason'] = '';
                     $data['pt_test_not_performed_comments'] = '';
                     $data['pt_support_comments'] = '';
                 }
@@ -4758,11 +4758,11 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
 
                 $data['is_pt_test_not_performed'] = $params['recencyData']->Section3->data->isPtTestNotPerformedRadio;
                 if ($data['is_pt_test_not_performed'] == 'yes') {
-                    $data['vl_not_tested_reason'] = $params['recencyData']->Section3->data->vlNotTestedReasonSelected;
+                    $data['pt_not_tested_reason'] = $params['recencyData']->Section3->data->vlNotTestedReasonSelected;
                     $data['pt_test_not_performed_comments'] = $params['recencyData']->Section3->data->ptNotTestedComments;
                     $data['pt_support_comments'] = $params['recencyData']->Section3->data->ptSupportComments;
                 } else {
-                    $data['vl_not_tested_reason'] = '';
+                    $data['pt_not_tested_reason'] = '';
                     $data['pt_test_not_performed_comments'] = '';
                     $data['pt_support_comments'] = '';
                 }
@@ -4818,11 +4818,11 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 }
                 $data['is_pt_test_not_performed'] = $params['covid19Data']->Section3->data->isPtTestNotPerformedRadio;
                 if ($data['is_pt_test_not_performed'] == 'yes') {
-                    $data['vl_not_tested_reason'] = $params['covid19Data']->Section3->data->vlNotTestedReasonSelected;
+                    $data['pt_not_tested_reason'] = $params['covid19Data']->Section3->data->vlNotTestedReasonSelected;
                     $data['pt_test_not_performed_comments'] = $params['covid19Data']->Section3->data->ptNotTestedComments;
                     $data['pt_support_comments'] = $params['covid19Data']->Section3->data->ptSupportComments;
                 } else {
-                    $data['vl_not_tested_reason'] = '';
+                    $data['pt_not_tested_reason'] = '';
                     $data['pt_test_not_performed_comments'] = '';
                     $data['pt_support_comments'] = '';
                 }

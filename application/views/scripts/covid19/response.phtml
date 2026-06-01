@@ -734,23 +734,31 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
                             <td colspan="3">
                                 <label><?= $this->translate->_("Reason for not testing the PT Panel"); ?></label> <span
                                     class="mandatory">*</span> :
-                                <select id="vlNotTestedReason" name="vlNotTestedReason" class="form-control"
+                                <select id="ptNotTestedReason" name="ptNotTestedReason" class="form-control"
                                     title="<?= $this->htmlTranslate("Please select reason"); ?>" style="width:60%;"
-                                    onchange="collectPanelReceiptDate();">
+                                    onchange="collectPanelReceiptDate(); checkComments(this.value);">
                                     <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
                                     <?php foreach ($this->allNotTestedReason as $reason) { ?>
                                         <option
                                             data-collect-panel-receipt-date="<?= $reason['collect_panel_receipt_date']; ?>"
-                                            value="<?php echo $reason['ntr_id']; ?>" <?php echo ($this->shipment['vl_not_tested_reason'] == $reason['ntr_id']) ? 'selected="selected"' : ''; ?>><?php echo ucwords($reason['ntr_reason']); ?>
+                                            value="<?php echo $reason['ntr_id']; ?>" <?php echo ($this->shipment['pt_not_tested_reason'] == $reason['ntr_id']) ? 'selected="selected"' : ''; ?>><?php echo ucwords($reason['ntr_reason']); ?>
                                         </option>
                                     <?php } ?>
-                                </select>
+                                
+						<?php
+						$ntrVal = $this->shipment['pt_not_tested_reason'] ?? '';
+						$isOther = in_array((string)$ntrVal, ['other', '9999', '0'], true)
+							&& !empty($this->shipment['is_pt_test_not_performed'])
+							&& $this->shipment['is_pt_test_not_performed'] == 'yes';
+						?>
+						<option value="9999" <?= $isOther ? 'selected="selected"' : ''; ?>><?= $this->translate->_("Other (please explain in comment box below)"); ?></option>
+					</select>
                             </td>
                         </tr>
-                        <tr class="ptNotPerformedSection"
+                        <tr class="ptNotPerformedSection ptNotTestedComment"
                             style="<?php echo (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes') ? '' : 'display:none;'; ?>background:none;">
                             <td colspan="3"><label><?= $this->translate->_("Your comments"); ?></label> <span
-                                    class="mandatory">*</span> : <textarea id="ptNotTestedComments"
+                                    class="mandatory ptNotTestedCommentsAsterisk" style="display: none;">*</span> : <textarea id="ptNotTestedComments"
                                     name="ptNotTestedComments" class="form-control"
                                     title="<?= $this->htmlTranslate("Please enter comments"); ?>"><?php echo $this->shipment['pt_test_not_performed_comments']; ?></textarea>
                             </td>
@@ -1169,8 +1177,8 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
             $('.ptNotPerformedSection').show();
             $('.vlResultMandatory').css('visibility', 'hidden');
             $('.vlResultValues').removeClass('isRequired');
-            $('#vlNotTestedReason').addClass('isRequired');
-            $('#ptNotTestedComments').addClass('isRequired');
+            $('#ptNotTestedReason').addClass('isRequired');
+            checkComments($('#ptNotTestedReason').val());
             $('#testDate,#receiptDate,#sampleRehydrationDate,#specimenVolume,#supervisorApproval').removeClass('isRequired');
             $('.ptTestPerformed').hide();
         } else {
@@ -1178,7 +1186,7 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
             $('.ptNotPerformedSection').hide();
             $('.vlResultMandatory').css('visibility', 'visible');
             $('.vlResultValues').addClass('isRequired');
-            $('#vlNotTestedReason').removeClass('isRequired');
+            $('#ptNotTestedReason').removeClass('isRequired');
             $('#ptNotTestedComments').removeClass('isRequired');
             $('#testDate,#receiptDate,#sampleRehydrationDate,#specimenVolume,#supervisorApproval').addClass('isRequired');
             $('.ptTestPerformed').show();
@@ -1443,11 +1451,26 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
     }
 
     function collectPanelReceiptDate() {
-        let collectReceiptDate = ($("#vlNotTestedReason").find(':selected').attr('data-collect-panel-receipt-date'));
+        let collectReceiptDate = ($("#ptNotTestedReason").find(':selected').attr('data-collect-panel-receipt-date'));
         if (collectReceiptDate == 'no') {
             $("#receivedPtPanel").val('no');
         } else {
             $("#receivedPtPanel").val('');
         }
     }
+</script>
+<script>
+// 'Other' (sentinel 9999) reveals the comments box and makes it mandatory; the typed
+// reason is stored in the existing pt_test_not_performed_comments column. Same as the
+// TB scheme. For the standard not-tested reasons the comments box is hidden/optional.
+function checkComments(val) {
+    if (val == '9999') {
+        $('#ptNotTestedComments').addClass('isRequired');
+        $('.ptNotTestedCommentsAsterisk, .ptNotTestedComment').show();
+    } else {
+        $('.ptNotTestedCommentsAsterisk, .ptNotTestedComment').hide();
+        $('#ptNotTestedComments').removeClass('isRequired');
+    }
+}
+$(document).ready(function () { checkComments($('#ptNotTestedReason').val()); });
 </script>

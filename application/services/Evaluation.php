@@ -2129,7 +2129,7 @@ class Application_Service_Evaluation
         $schemeService = new Application_Service_Schemes();
         $sql = $db->select()->from(['s' => 'shipment'], ['s.*'])
             ->join(['d' => 'distributions'], 'd.distribution_id=s.distribution_id', ['d.distribution_id', 'd.distribution_code', 'd.distribution_date'])
-            ->joinLeft(['sp' => 'shipment_participant_map'], 'sp.shipment_id=s.shipment_id', ['sp.map_id', 'sp.participant_id', 'sp.shipment_test_date', 'sp.shipment_receipt_date', 'sp.shipment_test_report_date', 'sp.supervisor_approval', 'sp.final_result', 'sp.failure_reason', 'sp.shipment_score', 'sp.final_result', 'sp.attributes', 'sp.is_followup', 'sp.is_excluded', 'sp.optional_eval_comment', 'sp.evaluation_comment', 'sp.documentation_score', 'sp.participant_supervisor', 'sp.custom_field_1', 'sp.custom_field_2', 'sp.specimen_volume', 'sp.manual_override', 'sp.user_comment', 'sp.shipment_test_report_date', 'sp.response_status', 'sp.is_pt_test_not_performed', 'sp.shipment_test_date', 'sp.vl_not_tested_reason', 'sp.pt_test_not_performed_comments', 'sp.pt_support_comments'])
+            ->joinLeft(['sp' => 'shipment_participant_map'], 'sp.shipment_id=s.shipment_id', ['sp.map_id', 'sp.participant_id', 'sp.shipment_test_date', 'sp.shipment_receipt_date', 'sp.shipment_test_report_date', 'sp.supervisor_approval', 'sp.final_result', 'sp.failure_reason', 'sp.shipment_score', 'sp.final_result', 'sp.attributes', 'sp.is_followup', 'sp.is_excluded', 'sp.optional_eval_comment', 'sp.evaluation_comment', 'sp.documentation_score', 'sp.participant_supervisor', 'sp.custom_field_1', 'sp.custom_field_2', 'sp.specimen_volume', 'sp.manual_override', 'sp.user_comment', 'sp.shipment_test_report_date', 'sp.response_status', 'sp.is_pt_test_not_performed', 'sp.shipment_test_date', 'sp.pt_not_tested_reason', 'sp.pt_test_not_performed_comments', 'sp.pt_support_comments'])
             ->join(['sl' => 'scheme_list'], 'sl.scheme_id=s.scheme_type', ['sl.scheme_id', 'sl.scheme_name', 'is_user_configured', 'user_test_config'])
             ->join(
                 ['p' => 'participant'],
@@ -2173,7 +2173,7 @@ class Application_Service_Evaluation
                 )
             )', ['assayName' => 'name', 'assayShortName' => 'short_name'])
             ->joinLeft(['c' => 'countries'], 'p.country=c.id', ['iso_name'])
-            ->joinLeft(['rnt' => 'r_response_not_tested_reasons'], 'rnt.ntr_id=sp.vl_not_tested_reason', ['ntr_reason', 'reason_code'])
+            ->joinLeft(['rnt' => 'r_response_not_tested_reasons'], 'rnt.ntr_id=sp.pt_not_tested_reason', ['ntr_reason', 'reason_code'])
             ->joinLeft(['res' => 'r_results'], 'res.result_id=sp.final_result', ['result_name'])
             ->joinLeft(['ec' => 'r_evaluation_comments'], 'ec.comment_id=sp.evaluation_comment', ['evaluationComments' => 'comment'])
             ->where('s.shipment_id = ?', $shipmentId)

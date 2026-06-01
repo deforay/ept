@@ -551,7 +551,7 @@ class Application_Model_Tb
                 ->joinLeft(['st' => 'r_site_type'], 'st.r_stid=p.site_type', ['st.site_type'])
                 ->joinLeft(['en' => 'enrollments'], 'en.participant_id=p.participant_id', ['en.enrolled_on'])
                 ->joinLeft(['rtb' => 'r_tb_assay'], 'spm.attributes->>"$.assay_name" =rtb.id', ['short_name', 'assayName' => 'name'])
-                ->joinLeft(['ntr' => 'r_response_not_tested_reasons'], 'spm.vl_not_tested_reason = ntr.ntr_id', ['ntTestedReason' => 'ntr_reason'])
+                ->joinLeft(['ntr' => 'r_response_not_tested_reasons'], 'spm.pt_not_tested_reason = ntr.ntr_id', ['ntTestedReason' => 'ntr_reason'])
                 ->where('s.shipment_id = ?', $shipmentId)
                 ->group(['spm.map_id']);
             $authNameSpace = new Zend_Session_Namespace('datamanagers');
@@ -1726,7 +1726,7 @@ class Application_Model_Tb
             if (!empty($authNameSpace->dm_id)) {
                 $nonParticipatingCountriesQuery .= ' JOIN participant_manager_map AS pmm ON p.participant_id = pmm.participant_id ';
             }
-            $nonParticipatingCountriesQuery .= ' LEFT JOIN r_response_not_tested_reasons AS rntr ON rntr.ntr_id = spm.vl_not_tested_reason
+            $nonParticipatingCountriesQuery .= ' LEFT JOIN r_response_not_tested_reasons AS rntr ON rntr.ntr_id = spm.pt_not_tested_reason
                 WHERE spm.shipment_id = ?';
             if (!empty($authNameSpace->dm_id)) {
                 $nonParticipatingCountriesQuery .= " AND pmm.dm_id IN({$authNameSpace->dm_id}) ";

@@ -431,7 +431,7 @@ FROM
             JOIN shipment_participant_map ON shipment_participant_map.shipment_id = shipment.shipment_id
             JOIN participant ON participant.participant_id = shipment_participant_map.participant_id
             JOIN countries ON countries.id = participant.country
-            LEFT JOIN r_response_not_tested_reasons ON r_response_not_tested_reasons.ntr_id = shipment_participant_map.vl_not_tested_reason
+            LEFT JOIN r_response_not_tested_reasons ON r_response_not_tested_reasons.ntr_id = shipment_participant_map.pt_not_tested_reason
             LEFT JOIN r_evaluation_comments ON r_evaluation_comments.comment_id = shipment_participant_map.evaluation_comment
             LEFT JOIN r_results ON r_results.result_id = shipment_participant_map.final_result
             LEFT JOIN r_tb_assay ON r_tb_assay.id = json_unquote(

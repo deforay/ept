@@ -473,7 +473,7 @@ class Application_Service_Shipments
             }
 
             $data['is_pt_test_not_performed'] = null;
-            $data['vl_not_tested_reason'] = null;
+            $data['pt_not_tested_reason'] = null;
             $data['shipment_test_date'] = Pt_Commons_DateUtility::isoDateFormat($params['testDate']);
             $data['pt_test_not_performed_comments'] = null;
             $data['pt_support_comments'] = null;
@@ -481,7 +481,7 @@ class Application_Service_Shipments
             if (!empty($params['isPtTestNotPerformed']) && $params['isPtTestNotPerformed'] === 'yes') {
                 $data['is_pt_test_not_performed'] = 'yes';
                 $data['shipment_test_date'] = null;
-                $data['vl_not_tested_reason'] = $params['vlNotTestedReason'];
+                $data['pt_not_tested_reason'] = $params['ptNotTestedReason'];
                 $data['pt_test_not_performed_comments'] = $params['ptNotTestedComments'];
                 $data['pt_support_comments'] = $params['ptSupportComments'];
             }
@@ -644,7 +644,7 @@ class Application_Service_Shipments
             }
 
             $data['is_pt_test_not_performed'] = null;
-            $data['vl_not_tested_reason'] = null;
+            $data['pt_not_tested_reason'] = null;
             $data['shipment_test_date'] = Pt_Commons_DateUtility::isoDateFormat($params['testDate']);
             $data['pt_test_not_performed_comments'] = null;
             $data['pt_support_comments'] = null;
@@ -652,7 +652,7 @@ class Application_Service_Shipments
             if (!empty($params['isPtTestNotPerformed']) && $params['isPtTestNotPerformed'] === 'yes') {
                 $data['is_pt_test_not_performed'] = 'yes';
                 $data['shipment_test_date'] = null;
-                $data['vl_not_tested_reason'] = $params['vlNotTestedReason'];
+                $data['pt_not_tested_reason'] = $params['ptNotTestedReason'];
                 $data['pt_test_not_performed_comments'] = $params['ptNotTestedComments'];
                 $data['pt_support_comments'] = $params['ptSupportComments'];
             }
@@ -781,7 +781,7 @@ class Application_Service_Shipments
             }
 
             $data['is_pt_test_not_performed'] = null;
-            $data['vl_not_tested_reason'] = null;
+            $data['pt_not_tested_reason'] = null;
             $data['pt_test_not_performed_comments'] = null;
             $data['pt_support_comments'] = null;
             $data['shipment_test_date'] = Pt_Commons_DateUtility::isoDateFormat($params['testDate']);
@@ -789,7 +789,7 @@ class Application_Service_Shipments
             if (!empty($params['isPtTestNotPerformed']) && $params['isPtTestNotPerformed'] === 'yes') {
                 $data['is_pt_test_not_performed'] = 'yes';
                 $data['shipment_test_date'] = null;
-                $data['vl_not_tested_reason'] = $params['vlNotTestedReason'] ?? null;
+                $data['pt_not_tested_reason'] = $params['ptNotTestedReason'] ?? null;
                 $data['pt_test_not_performed_comments'] = $params['ptNotTestedComments'] ?? null;
                 $data['pt_support_comments'] = $params['ptSupportComments'] ?? null;
             }
@@ -923,14 +923,14 @@ class Application_Service_Shipments
             }
 
             $data['is_pt_test_not_performed'] = null;
-            $data['vl_not_tested_reason'] = null;
+            $data['pt_not_tested_reason'] = null;
             $data['shipment_test_date'] = Pt_Commons_DateUtility::isoDateFormat($params['testDate']);
             $data['pt_test_not_performed_comments'] = null;
             $data['pt_support_comments'] = null;
             if (!empty($params['isPtTestNotPerformed']) && $params['isPtTestNotPerformed'] === 'yes') {
                 $data['is_pt_test_not_performed'] = 'yes';
                 $data['shipment_test_date'] = null;
-                $data['vl_not_tested_reason'] = $params['vlNotTestedReason'];
+                $data['pt_not_tested_reason'] = $params['ptNotTestedReason'];
                 $data['pt_test_not_performed_comments'] = $params['ptNotTestedComments'];
                 $data['pt_support_comments'] = $params['ptSupportComments'];
             }
@@ -1002,7 +1002,7 @@ class Application_Service_Shipments
                 'is_followup' => 'no',
                 'is_excluded' => null,
                 'is_pt_test_not_performed' => null,
-                'vl_not_tested_reason' => null,
+                'pt_not_tested_reason' => null,
                 'pt_test_not_performed_comments' => null,
                 'pt_support_comments' => null,
                 'updated_on_user' => null,
@@ -1063,7 +1063,7 @@ class Application_Service_Shipments
                 'is_followup' => 'no',
                 'is_excluded' => null,
                 'is_pt_test_not_performed' => null,
-                'vl_not_tested_reason' => null,
+                'pt_not_tested_reason' => null,
                 'pt_test_not_performed_comments' => null,
                 'pt_support_comments' => null,
                 'updated_on_user' => null,
@@ -1124,7 +1124,7 @@ class Application_Service_Shipments
                 'is_followup' => 'no',
                 'is_excluded' => null,
                 'is_pt_test_not_performed' => null,
-                'vl_not_tested_reason' => null,
+                'pt_not_tested_reason' => null,
                 'pt_test_not_performed_comments' => null,
                 'pt_support_comments' => null,
                 'updated_on_user' => null,
@@ -1174,7 +1174,7 @@ class Application_Service_Shipments
                 'is_followup' => 'no',
                 'is_excluded' => null,
                 'is_pt_test_not_performed' => null,
-                'vl_not_tested_reason' => null,
+                'pt_not_tested_reason' => null,
                 'pt_test_not_performed_comments' => null,
                 'pt_support_comments' => null,
                 'updated_on_user' => null,
@@ -1226,7 +1226,7 @@ class Application_Service_Shipments
                 'evaluation_comment' => null,
                 'is_excluded' => null,
                 'is_pt_test_not_performed' => null,
-                'vl_not_tested_reason' => null,
+                'pt_not_tested_reason' => null,
                 'pt_test_not_performed_comments' => null,
                 'pt_support_comments' => null,
                 'updated_on_user' => null,
@@ -1285,7 +1285,7 @@ class Application_Service_Shipments
                 'evaluation_comment' => null,
                 'is_excluded' => null,
                 'is_pt_test_not_performed' => null,
-                'vl_not_tested_reason' => null,
+                'pt_not_tested_reason' => null,
                 'pt_test_not_performed_comments' => null,
                 'pt_support_comments' => null,
                 'updated_on_user' => null,
@@ -1345,7 +1345,7 @@ class Application_Service_Shipments
                 'is_followup' => 'no',
                 'is_excluded' => null,
                 'is_pt_test_not_performed' => null,
-                'vl_not_tested_reason' => null,
+                'pt_not_tested_reason' => null,
                 'pt_test_not_performed_comments' => null,
                 'pt_support_comments' => null,
                 'updated_on_user' => null,
@@ -1515,14 +1515,14 @@ class Application_Service_Shipments
             }
 
             $data['is_pt_test_not_performed'] = null;
-            $data['vl_not_tested_reason'] = null;
+            $data['pt_not_tested_reason'] = null;
             $data['shipment_test_date'] = Pt_Commons_DateUtility::isoDateFormat($params['testDate']);
             $data['pt_test_not_performed_comments'] = null;
             $data['pt_support_comments'] = null;
             if (!empty($params['isPtTestNotPerformed']) && $params['isPtTestNotPerformed'] === 'yes') {
                 $data['is_pt_test_not_performed'] = 'yes';
                 $data['shipment_test_date'] = null;
-                $data['vl_not_tested_reason'] = $params['vlNotTestedReason'];
+                $data['pt_not_tested_reason'] = $params['ptNotTestedReason'];
                 $data['pt_test_not_performed_comments'] = $params['ptNotTestedComments'];
                 $data['pt_support_comments'] = $params['ptSupportComments'];
             }
@@ -1636,14 +1636,14 @@ class Application_Service_Shipments
                 'user_comment' => $params['userComments'],
                 'response_status' => $responseStatus,
                 'is_pt_test_not_performed' => null,
-                'vl_not_tested_reason' => null,
+                'pt_not_tested_reason' => null,
                 'pt_test_not_performed_comments' => null,
             ];
 
             if (!empty($params['isPtTestNotPerformed']) && $params['isPtTestNotPerformed'] === 'yes') {
                 $data['is_pt_test_not_performed'] = 'yes';
                 $data['shipment_test_date'] = null;
-                $data['vl_not_tested_reason'] = $params['vlNotTestedReason'] ?? null;
+                $data['pt_not_tested_reason'] = $params['ptNotTestedReason'] ?? null;
                 $data['pt_test_not_performed_comments'] = $params['ptNotTestedComments'] ?? null;
             }
 
@@ -1791,7 +1791,7 @@ class Application_Service_Shipments
             }
 
             $data['is_pt_test_not_performed'] = null;
-            $data['vl_not_tested_reason'] = null;
+            $data['pt_not_tested_reason'] = null;
             $data['pt_test_not_performed_comments'] = null;
             $data['pt_support_comments'] = null;
             $data['shipment_test_date'] = Pt_Commons_DateUtility::isoDateFormat($params['testDate']);
@@ -1799,7 +1799,7 @@ class Application_Service_Shipments
             if (!empty($params['isPtTestNotPerformed']) && $params['isPtTestNotPerformed'] === 'yes') {
                 $data['is_pt_test_not_performed'] = 'yes';
                 $data['shipment_test_date'] = null;
-                $data['vl_not_tested_reason'] = $params['vlNotTestedReason'] ?? null;
+                $data['pt_not_tested_reason'] = $params['ptNotTestedReason'] ?? null;
                 $data['pt_test_not_performed_comments'] = $params['ptNotTestedComments'] ?? null;
                 $data['pt_support_comments'] = $params['ptSupportComments'] ?? null;
             }
