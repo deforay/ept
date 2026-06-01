@@ -117,8 +117,13 @@ class Admin_EvaluateController extends Zend_Controller_Action
         // Initial GET still runs the existing evaluation flow (so first-load triggers
         // scheme-specific scoring). Subsequent paged loads come from the AJAX endpoint.
         $shipment = $this->view->shipment = $evalService->getShipmentToEvaluate($id, $reEvaluate, $override);
+        if (empty($shipment[0]['distribution_id'])) {
+            // Stale link (shipment deleted) or a shipment with no participants — bail out.
+            $this->redirect('/admin/evaluate/');
+            return;
+        }
         $this->view->shipmentsUnderDistro = $evalService->getShipments($shipment[0]['distribution_id']);
-        $this->view->dtsSchemeType = $this->dtsSchemeTypeFromShipment($shipment[0] ?? []);
+        $this->view->dtsSchemeType = $this->dtsSchemeTypeFromShipment($shipment[0]);
     }
 
     /** Decode `shipment.shipment_attributes.dtsSchemeType` for view-side filter gating. */
