@@ -24,6 +24,8 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
 
         $router->addRoute('captchaRoute', new Zend_Controller_Router_Route('captcha/:r', ['controller' => 'captcha', 'action' => 'index', 'r' => '']));
         $router->addRoute('downloadRoute', new Zend_Controller_Router_Route('d/:filepath', ['controller' => 'download', 'action' => 'index', 'filepath' => '']));
+        // /dl/ — new encrypted-token download route; see Pt_Commons_SignedDownload.
+        $router->addRoute('signedDownloadRoute', new Zend_Controller_Router_Route('dl/:token', ['controller' => 'dl', 'action' => 'index', 'token' => '']));
         $router->addRoute('checkCaptchaRoute', new Zend_Controller_Router_Route_Static('captcha/check-captcha', ['controller' => 'captcha', 'action' => 'check-captcha']));
 
         //Database Cache

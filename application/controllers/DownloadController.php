@@ -12,21 +12,11 @@ class DownloadController extends Zend_Controller_Action
 
     public function indexAction()
     {
-        $rawFilepath = (string) $this->_getParam('filepath');
-        $exp = $this->_getParam('exp');
-        $sig = $this->_getParam('sig');
-
-        // Backward-compat: if the link carries exp + sig, validate them. Links
-        // without either continue to work for now so existing emailed/cached
-        // URLs keep functioning — flip the policy to require signatures once
-        // every caller is migrated to Pt_Commons_DownloadUrlSigner::sign().
-        if (Pt_Commons_DownloadUrlSigner::hasSignature($exp, $sig)) {
-            if (!Pt_Commons_DownloadUrlSigner::verify($rawFilepath, $exp, $sig)) {
-                throw new Zend_Controller_Action_Exception('Download link is invalid or has expired', 410);
-            }
-        }
-
-        $filePath = base64_decode($rawFilepath);
+        // /d/ is the legacy download route — base64-encoded path, no expiry, no
+        // signature. New code should use /dl/ via Pt_Commons_SignedDownload::url()
+        // (encrypted payload with built-in expiry). This route remains for the
+        // existing call sites until they're all migrated.
+        $filePath = base64_decode($this->_getParam('filepath'));
 
         // Resolve the real path to prevent directory traversal attacks
         $realPath = realpath($filePath);
