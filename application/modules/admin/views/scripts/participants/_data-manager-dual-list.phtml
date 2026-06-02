@@ -25,9 +25,15 @@ if (!empty($this->dataManagers)) {
         $email = (string)($dm['primary_email'] ?? '');
         $parts = [];
         $name = trim($first . ' ' . $last);
-        if ($name !== '') $parts[] = $name;
-        if ($institute !== '') $parts[] = $institute;
-        if ($email !== '') $parts[] = $email;
+        if ($name !== '') {
+            $parts[] = $name;
+        }
+        if ($institute !== '') {
+            $parts[] = $institute;
+        }
+        if ($email !== '') {
+            $parts[] = $email;
+        }
         $dmItems[] = [
             'id'       => (int)$dm['dm_id'],
             'label'    => implode(', ', $parts),

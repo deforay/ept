@@ -153,22 +153,7 @@ function writeHelpTranslationFile(string $outputFile, array $entries): void
     ];
 
     // Collect unique strings with their sources for nicer comments.
-    $stringSources = [];
-    foreach ($entries as $audience => $topics) {
-        foreach ($topics as $slug => $meta) {
-            $tagFor = "{$audience}/{$slug}";
-            if ($meta['title'] !== '') {
-                $stringSources[$meta['title']]["{$tagFor}#title"] = true;
-            }
-            if ($meta['summary'] !== '') {
-                $stringSources[$meta['summary']]["{$tagFor}#summary"] = true;
-            }
-            foreach ($meta['tags'] as $tag) {
-                $stringSources[$tag]["{$tagFor}#tags"] = true;
-            }
-        }
-    }
-
+    $stringSources = collectHelpStringSources($entries);
     ksort($stringSources, SORT_NATURAL | SORT_FLAG_CASE);
 
     foreach ($stringSources as $string => $sources) {
@@ -185,23 +170,37 @@ function writeHelpTranslationFile(string $outputFile, array $entries): void
 }
 
 /**
+ * Map each unique translatable help string to the set of "audience/slug#field"
+ * sources it appears in. Shared by the file writer (for source comments) and the
+ * unique-string counter so the frontmatter traversal lives in exactly one place.
+ *
+ * @param array<string, array<string, array{title:string, summary:string, tags:list<string>}>> $entries
+ * @return array<string, array<string, true>>
+ */
+function collectHelpStringSources(array $entries): array
+{
+    $stringSources = [];
+    foreach ($entries as $audience => $topics) {
+        foreach ($topics as $slug => $meta) {
+            $tagFor = "{$audience}/{$slug}";
+            if ($meta['title'] !== '') {
+                $stringSources[$meta['title']]["{$tagFor}#title"] = true;
+            }
+            if ($meta['summary'] !== '') {
+                $stringSources[$meta['summary']]["{$tagFor}#summary"] = true;
+            }
+            foreach ($meta['tags'] as $tag) {
+                $stringSources[$tag]["{$tagFor}#tags"] = true;
+            }
+        }
+    }
+    return $stringSources;
+}
+
+/**
  * @param array<string, array<string, array{title:string, summary:string, tags:list<string>}>> $entries
  */
 function countUniqueHelpStrings(array $entries): int
 {
-    $unique = [];
-    foreach ($entries as $topics) {
-        foreach ($topics as $meta) {
-            if ($meta['title'] !== '') {
-                $unique[$meta['title']] = true;
-            }
-            if ($meta['summary'] !== '') {
-                $unique[$meta['summary']] = true;
-            }
-            foreach ($meta['tags'] as $tag) {
-                $unique[$tag] = true;
-            }
-        }
-    }
-    return count($unique);
+    return count(collectHelpStringSources($entries));
 }

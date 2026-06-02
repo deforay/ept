@@ -43,7 +43,7 @@ class Admin_ErrorController extends Zend_Controller_Action
                 'message' => $this->view->message,
             ];
 
-            if ($this->getInvokeArg('displayExceptions') == true && isset($errors->exception)) {
+            if ($this->getInvokeArg('displayExceptions') && isset($errors->exception)) {
                 $response['exception'] = [
                     'message' => $errors->exception->getMessage(),
                     'file' => $errors->exception->getFile(),
@@ -58,7 +58,7 @@ class Admin_ErrorController extends Zend_Controller_Action
             return;
         }
 
-        if ($this->getInvokeArg('displayExceptions') == true) {
+        if ($this->getInvokeArg('displayExceptions')) {
             $this->view->exception = $errors->exception;
         }
 
