@@ -391,6 +391,13 @@ class Application_Model_DbTable_SchemeList extends Zend_Db_Table_Abstract
         if (empty($params['schemeId'])) {
             return false;
         }
+        $db = $this->getAdapter();
+        // Remove results
+        if (isset($params['removedRow']) && !empty($params['removedRow'])) {
+            foreach (explode(",", $params['removedRow']) as $id) {
+                $db->delete('r_possibleresult', 'id = "' . base64_decode($id) . '"');
+            }
+        }
 
         $schemeId = base64_decode($params['schemeId']);
 
@@ -400,7 +407,7 @@ class Application_Model_DbTable_SchemeList extends Zend_Db_Table_Abstract
         //                            evaluators in Shipments.php / response.phtml compare these)
         //   * user-configured     -> bare "TEST" / "FINAL" (what custom-test add/edit writes for
         //                            these very rows; the format lives in result_type instead)
-        $isUserConfigured = ((string) $this->getAdapter()->fetchOne(
+        $isUserConfigured = ((string) $db->fetchOne(
             'SELECT is_user_configured FROM scheme_list WHERE scheme_id = ?',
             [$schemeId]
         )) === 'yes';
@@ -415,7 +422,7 @@ class Application_Model_DbTable_SchemeList extends Zend_Db_Table_Abstract
         $plainGroups = $isUserConfigured
             ? ['TEST', 'FINAL']
             : [strtoupper($schemeId) . '_TEST', strtoupper($schemeId) . '_FINAL'];
-        $existingSubGroups = $this->getAdapter()->fetchPairs(
+        $existingSubGroups = $db->fetchPairs(
             'SELECT id, scheme_sub_group FROM r_possibleresult WHERE scheme_id = ?',
             [$schemeId]
         );
@@ -449,9 +456,9 @@ class Application_Model_DbTable_SchemeList extends Zend_Db_Table_Abstract
             ];
 
             if ($rowId !== null) {
-                $this->getAdapter()->update('r_possibleresult', $data, ['id = ?' => $rowId]);
+                $db->update('r_possibleresult', $data, ['id = ?' => $rowId]);
             } else {
-                $this->getAdapter()->insert('r_possibleresult', $data);
+                $db->insert('r_possibleresult', $data);
             }
         }
 
@@ -481,7 +488,7 @@ class Application_Model_DbTable_SchemeList extends Zend_Db_Table_Abstract
             }
 
             if (!empty($update)) {
-                $this->getAdapter()->update('r_possibleresult', $update, ['id = ?' => $rowId]);
+                $db->update('r_possibleresult', $update, ['id = ?' => $rowId]);
             }
         }
 

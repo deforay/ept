@@ -51,11 +51,26 @@ $schemeId = !empty($this->results[0]['scheme_id']) ? strtoupper(trim($this->resu
 		flex-direction: column;
 	}
 
-	.add-bar .field-type    { width: 150px; }
-	.add-bar .field-resp    { flex: 1 1 160px; min-width: 140px; }
-	.add-bar .field-code    { width: 170px; }
-	.add-bar .field-context { width: 130px; }
-	.add-bar .field-sort    { width: 80px; }
+	.add-bar .field-type {
+		width: 150px;
+	}
+
+	.add-bar .field-resp {
+		flex: 1 1 160px;
+		min-width: 140px;
+	}
+
+	.add-bar .field-code {
+		width: 170px;
+	}
+
+	.add-bar .field-context {
+		width: 130px;
+	}
+
+	.add-bar .field-sort {
+		width: 80px;
+	}
 
 	.add-bar label {
 		font-size: 11px;
@@ -66,10 +81,16 @@ $schemeId = !empty($this->results[0]['scheme_id']) ? strtoupper(trim($this->resu
 		margin-bottom: 4px;
 	}
 
-	.add-bar .form-control { height: 34px; font-size: 13px; padding: 4px 8px; }
+	.add-bar .form-control {
+		height: 34px;
+		font-size: 13px;
+		padding: 4px 8px;
+	}
 
 	/* ── Table — light, only row separators ─────────────────────────────────── */
-	.results-table-wrap .table { margin-bottom: 0; }
+	.results-table-wrap .table {
+		margin-bottom: 0;
+	}
 
 	.results-table-wrap .table thead th {
 		font-size: 12px;
@@ -90,7 +111,11 @@ $schemeId = !empty($this->results[0]['scheme_id']) ? strtoupper(trim($this->resu
 		border-top: 1px solid #eef1f5;
 	}
 
-	.results-table-wrap .form-control { font-size: 13px; height: 34px; padding: 4px 8px; }
+	.results-table-wrap .form-control {
+		font-size: 13px;
+		height: 34px;
+		padding: 4px 8px;
+	}
 
 	.results-table-wrap .form-control:focus {
 		border-color: #4a6fa5;
@@ -98,14 +123,35 @@ $schemeId = !empty($this->results[0]['scheme_id']) ? strtoupper(trim($this->resu
 	}
 
 	/* ── Group striping: Test Results vs Final Interpretations ─────────────── */
-	#resultsTable tbody tr.row-type-test  > td { background: #f8fbfe; }   /* faint blue  */
-	#resultsTable tbody tr.row-type-final > td { background: #fdfcf8; }   /* faint amber */
-	#resultsTable tbody tr.row-type-other > td { background: #fff; }
-	#resultsTable tbody tr:hover > td { background: #eef4fc; }
+	#resultsTable tbody tr.row-type-test>td {
+		background: #f8fbfe;
+	}
 
-	.row-num { font-size: 12px; color: #adb5bd; font-weight: 600; text-align: center; }
+	/* faint blue  */
+	#resultsTable tbody tr.row-type-final>td {
+		background: #fdfcf8;
+	}
 
-	.action-cell { white-space: nowrap; text-align: center; }
+	/* faint amber */
+	#resultsTable tbody tr.row-type-other>td {
+		background: #fff;
+	}
+
+	#resultsTable tbody tr:hover>td {
+		background: #eef4fc;
+	}
+
+	.row-num {
+		font-size: 12px;
+		color: #adb5bd;
+		font-weight: 600;
+		text-align: center;
+	}
+
+	.action-cell {
+		white-space: nowrap;
+		text-align: center;
+	}
 
 	.btn-row-remove {
 		padding: 3px 9px;
@@ -118,7 +164,9 @@ $schemeId = !empty($this->results[0]['scheme_id']) ? strtoupper(trim($this->resu
 		cursor: pointer;
 	}
 
-	.btn-row-remove:hover { background: #fdecea; }
+	.btn-row-remove:hover {
+		background: #fdecea;
+	}
 
 	.btn-add-result {
 		height: 34px;
@@ -128,7 +176,10 @@ $schemeId = !empty($this->results[0]['scheme_id']) ? strtoupper(trim($this->resu
 		white-space: nowrap;
 	}
 
-	.locked-indicator { color: #adb5bd; font-size: 13px; }
+	.locked-indicator {
+		color: #adb5bd;
+		font-size: 13px;
+	}
 
 	/* Pre-defined sub-test marker (e.g. DTS_SYP_TEST) */
 	.subtest-tag {
@@ -144,7 +195,9 @@ $schemeId = !empty($this->results[0]['scheme_id']) ? strtoupper(trim($this->resu
 		border-radius: 10px;
 	}
 
-	.mandatory { color: #dc3545; }
+	.mandatory {
+		color: #dc3545;
+	}
 
 	.input-group-addon {
 		background: linear-gradient(135deg, #4a6fa5 0%, #3a5a8a 100%);
@@ -152,7 +205,9 @@ $schemeId = !empty($this->results[0]['scheme_id']) ? strtoupper(trim($this->resu
 		border-color: #3a5a8a;
 	}
 
-	.result-code-prefix-addon { padding: 6px 8px; }
+	.result-code-prefix-addon {
+		padding: 6px 8px;
+	}
 
 	/* ── Unsaved-changes: make it impossible to miss ───────────────────────── */
 	.unsaved-banner {
@@ -169,9 +224,13 @@ $schemeId = !empty($this->results[0]['scheme_id']) ? strtoupper(trim($this->resu
 		margin: 0 0 16px 0;
 	}
 
-	.unsaved-banner.show { display: flex; }
+	.unsaved-banner.show {
+		display: flex;
+	}
 
-	.unsaved-banner i { font-size: 16px; }
+	.unsaved-banner i {
+		font-size: 16px;
+	}
 
 	/* Floating save bar */
 	.floating-buttons {
@@ -188,15 +247,31 @@ $schemeId = !empty($this->results[0]['scheme_id']) ? strtoupper(trim($this->resu
 		border: 1px solid #e2e8f0;
 	}
 
-	.floating-buttons .btn { padding: 10px 25px; font-size: 14px; }
+	.floating-buttons .btn {
+		padding: 10px 25px;
+		font-size: 14px;
+	}
 
 	/* When there are unsaved changes, the Update button screams for attention */
-	.floating-buttons.dirty { border-color: #f0ad4e; box-shadow: 0 4px 24px rgba(240, 173, 78, 0.5); }
-	.floating-buttons.dirty .btn-save { animation: savePulse 1.2s ease-in-out infinite; }
+	.floating-buttons.dirty {
+		border-color: #f0ad4e;
+		box-shadow: 0 4px 24px rgba(240, 173, 78, 0.5);
+	}
+
+	.floating-buttons.dirty .btn-save {
+		animation: savePulse 1.2s ease-in-out infinite;
+	}
 
 	@keyframes savePulse {
-		0%, 100% { box-shadow: 0 0 0 0 rgba(240, 173, 78, 0.6); }
-		50%      { box-shadow: 0 0 0 8px rgba(240, 173, 78, 0); }
+
+		0%,
+		100% {
+			box-shadow: 0 0 0 0 rgba(240, 173, 78, 0.6);
+		}
+
+		50% {
+			box-shadow: 0 0 0 8px rgba(240, 173, 78, 0);
+		}
 	}
 
 	.unsaved-dot {
@@ -208,7 +283,9 @@ $schemeId = !empty($this->results[0]['scheme_id']) ? strtoupper(trim($this->resu
 		margin-right: 6px;
 	}
 
-	.floating-buttons.dirty .unsaved-dot { display: inline-block; }
+	.floating-buttons.dirty .unsaved-dot {
+		display: inline-block;
+	}
 </style>
 
 <div class="scheme-results-container">
@@ -355,7 +432,7 @@ $schemeId = !empty($this->results[0]['scheme_id']) ? strtoupper(trim($this->resu
 									<tr class="<?= $rowTypeClass; ?>">
 										<td class="row-num"><?= $i + 1; ?></td>
 										<td>
-											<input type="hidden" name="rId[<?php echo $i; ?>]" value="<?php echo $encId; ?>" />
+											<input type="hidden" name="rId[<?php echo $i; ?>]" value="<?php echo $encId; ?>" <?php echo $disable; ?> />
 											<select name="resultType[<?php echo $i; ?>]" <?php echo $disable; ?>
 												class="form-control isRequired js-type<?= $isUserConfigured ? ' js-result-type' : ''; ?>"
 												title="<?= $this->translate->_("Please select the result type"); ?>" required>
@@ -400,7 +477,7 @@ $schemeId = !empty($this->results[0]['scheme_id']) ? strtoupper(trim($this->resu
 											$dc = !empty($row['display_context']) ? $row['display_context'] : 'all';
 											$dcName = $locked ? 'lockedDisplayContext[' . $encId . ']' : 'displayContext[' . $i . ']';
 											?>
-											<select name="<?= $dcName; ?>" class="form-control"
+											<select name="<?= $dcName; ?>" class="form-control" <?php echo $disable; ?>
 												title="<?= $this->translate->_("Please select who this result is displayed to"); ?>">
 												<option value="all" <?= ($dc === 'all') ? 'selected="selected"' : ''; ?>><?= $this->translate->_("All"); ?></option>
 												<option value="participant" <?= ($dc === 'participant') ? 'selected="selected"' : ''; ?>><?= $this->translate->_("Participant"); ?></option>
@@ -410,7 +487,7 @@ $schemeId = !empty($this->results[0]['scheme_id']) ? strtoupper(trim($this->resu
 										</td>
 										<td>
 											<?php $soName = $locked ? 'lockedSortOrder[' . $encId . ']' : 'sortOrder[' . $i . ']'; ?>
-											<input type="text" name="<?= $soName; ?>" class="form-control js-sort"
+											<input type="text" name="<?= $soName; ?>" class="form-control js-sort" <?php echo $disable; ?>
 												value="<?= htmlspecialchars((string) ($row['sort_order'] ?? '')); ?>" placeholder="0" />
 										</td>
 										<td class="action-cell">
@@ -419,7 +496,7 @@ $schemeId = !empty($this->results[0]['scheme_id']) ? strtoupper(trim($this->resu
 											<?php else : ?>
 												<button type="button" class="btn-row-remove"
 													title="<?= $this->translate->_("Remove row"); ?>"
-													onclick="removeRow(this)">&#8722;</button>
+													onclick="removeRow(this, '<?php echo $encId; ?>')">&#8722;</button>
 											<?php endif; ?>
 										</td>
 									</tr>
@@ -430,6 +507,7 @@ $schemeId = !empty($this->results[0]['scheme_id']) ? strtoupper(trim($this->resu
 				</div>
 			</div><!-- /.form-content -->
 		</fieldset>
+		<input type="hidden" name="removedRow" id="removedRow" />
 	</form>
 </div><!-- /.scheme-results-container -->
 
@@ -449,6 +527,7 @@ $schemeId = !empty($this->results[0]['scheme_id']) ? strtoupper(trim($this->resu
 <script type="text/javascript">
 	var isDirty = false;
 	var isSubmitting = false;
+	var removedRow = [];
 
 	var IS_USER_CONFIGURED = <?= $isUserConfigured ? 'true' : 'false'; ?>;
 	var SCHEME_CODE = <?= json_encode($schemeId); ?>;
@@ -474,13 +553,19 @@ $schemeId = !empty($this->results[0]['scheme_id']) ? strtoupper(trim($this->resu
 		var raw = ($suffix.val() || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
 		if ($suffix.val() !== raw) $suffix.val(raw);
 
-		if (prefix) { $addon.text(prefix).show(); } else { $addon.text('').hide(); }
+		if (prefix) {
+			$addon.text(prefix).show();
+		} else {
+			$addon.text('').hide();
+		}
 		$hidden.val(raw ? prefix + raw : '');
 	}
 
 	function initAllPrefixes() {
 		if (!IS_USER_CONFIGURED) return;
-		$('#rowsBody tr').each(function () { updateResultCodeForRow(this); });
+		$('#rowsBody tr').each(function() {
+			updateResultCodeForRow(this);
+		});
 		// keep the add-bar prefix addon in sync with the chosen type
 		updateAddPrefix();
 	}
@@ -489,17 +574,26 @@ $schemeId = !empty($this->results[0]['scheme_id']) ? strtoupper(trim($this->resu
 		if (!IS_USER_CONFIGURED) return;
 		var prefix = getPrefix($('#addType').val());
 		var $addon = $('#addCodePrefix');
-		if (prefix) { $addon.text(prefix).show(); } else { $addon.text('').hide(); }
+		if (prefix) {
+			$addon.text(prefix).show();
+		} else {
+			$addon.text('').hide();
+		}
 	}
 
 	/* ── Sorting: Test Results first, then Final Interpretations, by sort order ── */
 
-	function typeRank(t) { return t === 'TEST' ? 0 : (t === 'FINAL' ? 1 : 2); }
+	function typeRank(t) {
+		return t === 'TEST' ? 0 : (t === 'FINAL' ? 1 : 2);
+	}
 
 	function rowKey(tr) {
 		var $tr = $(tr);
 		var so = parseInt($tr.find('.js-sort').val(), 10);
-		return { rank: typeRank($tr.find('.js-type').val()), so: isNaN(so) ? Number.POSITIVE_INFINITY : so };
+		return {
+			rank: typeRank($tr.find('.js-type').val()),
+			so: isNaN(so) ? Number.POSITIVE_INFINITY : so
+		};
 	}
 
 	// true when key a should sort strictly before key b
@@ -585,13 +679,25 @@ $schemeId = !empty($this->results[0]['scheme_id']) ? strtoupper(trim($this->resu
 			code = $.trim($('#addCode').val());
 		}
 
-		if (!type) { alert('<?= $this->translate->_("Please select a result type."); ?>'); return; }
-		if (!response) { alert('<?= $this->translate->_("Please enter a response."); ?>'); return; }
-		if (!code) { alert('<?= $this->translate->_("Please enter a result code."); ?>'); return; }
+		if (!type) {
+			alert('<?= $this->translate->_("Please select a result type."); ?>');
+			return;
+		}
+		if (!response) {
+			alert('<?= $this->translate->_("Please enter a response."); ?>');
+			return;
+		}
+		if (!code) {
+			alert('<?= $this->translate->_("Please enter a result code."); ?>');
+			return;
+		}
 
 		var candidateCode = IS_USER_CONFIGURED ? normVal(getPrefix(type) + suffix) : normVal(code);
 		var addDup = findTypeDup(type, normVal(response), candidateCode, null);
-		if (addDup.response || addDup.code) { alert(dupMessage(addDup)); return; }
+		if (addDup.response || addDup.code) {
+			alert(dupMessage(addDup));
+			return;
+		}
 
 		var tr = buildRow();
 		$(tr).find('.js-type').val(type);
@@ -615,20 +721,27 @@ $schemeId = !empty($this->results[0]['scheme_id']) ? strtoupper(trim($this->resu
 		$('#addResponse').val('');
 		$('#addDisplayContext').val('all');
 		$('#addSortOrder').val('');
-		if (IS_USER_CONFIGURED) { $('#addCodeSuffix').val(''); updateAddPrefix(); } else { $('#addCode').val(''); }
+		if (IS_USER_CONFIGURED) {
+			$('#addCodeSuffix').val('');
+			updateAddPrefix();
+		} else {
+			$('#addCode').val('');
+		}
 		$('#addType').focus();
 	}
 
 	/* ── Row management ────────────────────────────────────────────────────── */
 
-	function removeRow(btn) {
+	function removeRow(btn, id = null) {
+		if (id !== null || id !== undefined)
+			removedRow.push(id);
 		$(btn).closest('tr').remove();
 		reindex();
 		markDirty();
 	}
 
 	function reindex() {
-		document.querySelectorAll('#rowsBody tr').forEach(function (tr, i) {
+		document.querySelectorAll('#rowsBody tr').forEach(function(tr, i) {
 			var cell = tr.querySelector('.row-num');
 			if (cell) cell.textContent = i + 1;
 		});
@@ -649,7 +762,7 @@ $schemeId = !empty($this->results[0]['scheme_id']) ? strtoupper(trim($this->resu
 		$('#floatingButtons').removeClass('dirty');
 	}
 
-	window.addEventListener('beforeunload', function (e) {
+	window.addEventListener('beforeunload', function(e) {
 		if (isDirty && !isSubmitting) {
 			e.preventDefault();
 			e.returnValue = '';
@@ -659,70 +772,89 @@ $schemeId = !empty($this->results[0]['scheme_id']) ? strtoupper(trim($this->resu
 
 	/* ── Event delegation ──────────────────────────────────────────────────── */
 
-	$(document).on('change input', '#rowsBody select, #rowsBody input', function () {
+	$(document).on('change input', '#rowsBody select, #rowsBody input', function() {
 		markDirty();
 	});
 
-	$(document).on('change', '#rowsBody .js-result-type', function () {
+	$(document).on('change', '#rowsBody .js-result-type', function() {
 		updateResultCodeForRow($(this).closest('tr')[0]);
 	});
 
-	$(document).on('input', '#rowsBody .js-code-suffix', function () {
+	$(document).on('input', '#rowsBody .js-code-suffix', function() {
 		updateResultCodeForRow($(this).closest('tr')[0]);
 	});
 
 	// When type or sort order of an existing row changes, re-stripe and re-position it.
-	$(document).on('change', '#rowsBody .js-type', function () {
+	$(document).on('change', '#rowsBody .js-type', function() {
 		var tr = $(this).closest('tr')[0];
 		applyTypeClass(tr);
 		insertSorted(tr);
 	});
 
-	$(document).on('change', '#rowsBody .js-sort', function () {
+	$(document).on('change', '#rowsBody .js-sort', function() {
 		insertSorted($(this).closest('tr')[0]);
 	});
 
 	// Editing an existing row into a same-type duplicate is not allowed -> revert the field.
-	$(document).on('change', '#rowsBody input[name^="response"]', function () {
+	$(document).on('change', '#rowsBody input[name^="response"]', function() {
 		var tr = $(this).closest('tr')[0];
 		if (findTypeDup(rowTypeVal(tr), normVal(this.value), '', tr).response) {
-			alert(dupMessage({ response: true, code: false }));
+			alert(dupMessage({
+				response: true,
+				code: false
+			}));
 			$(this).val('').focus();
 		}
 	});
 
-	$(document).on('change', '#rowsBody .js-code-plain', function () {
+	$(document).on('change', '#rowsBody .js-code-plain', function() {
 		var tr = $(this).closest('tr')[0];
 		if (findTypeDup(rowTypeVal(tr), '', normVal(this.value), tr).code) {
-			alert(dupMessage({ response: false, code: true }));
+			alert(dupMessage({
+				response: false,
+				code: true
+			}));
 			$(this).val('').focus();
 		}
 	});
 
-	$(document).on('change', '#rowsBody .js-code-suffix', function () {
+	$(document).on('change', '#rowsBody .js-code-suffix', function() {
 		var tr = $(this).closest('tr')[0];
 		// the 'input' handler above has already recomputed the hidden full code
 		if (findTypeDup(rowTypeVal(tr), '', rowCodeVal(tr), tr).code) {
-			alert(dupMessage({ response: false, code: true }));
+			alert(dupMessage({
+				response: false,
+				code: true
+			}));
 			$(this).val('').trigger('input').focus();
 		}
 	});
 
 	// Keep the add-bar prefix addon synced
 	$('#addType').on('change', updateAddPrefix);
-	$('#addCodeSuffix').on('input', function () {
+	$('#addCodeSuffix').on('input', function() {
 		this.value = (this.value || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
 	});
 
 	// Cancel = intentional discard; don't double-prompt
-	$(document).on('click', '.js-cancel', function () { isDirty = false; });
+	$(document).on('click', '.js-cancel', function() {
+		isDirty = false;
+	});
 
 	/* ── Duplicate prevention (scoped to this scheme + result type) ─────────── */
 
-	function normVal(v) { return (v == null ? '' : String(v)).trim().toUpperCase(); }
+	function normVal(v) {
+		return (v == null ? '' : String(v)).trim().toUpperCase();
+	}
 
-	function rowTypeVal(tr) { return $(tr).find('.js-type').val(); }
-	function rowRespVal(tr) { return normVal($(tr).find('input[name^="response"]').val()); }
+	function rowTypeVal(tr) {
+		return $(tr).find('.js-type').val();
+	}
+
+	function rowRespVal(tr) {
+		return normVal($(tr).find('input[name^="response"]').val());
+	}
+
 	function rowCodeVal(tr) {
 		if (IS_USER_CONFIGURED) return normVal($(tr).find('.js-code-hidden').val());
 		return normVal($(tr).find('.js-code-plain').val());
@@ -730,8 +862,11 @@ $schemeId = !empty($this->results[0]['scheme_id']) ? strtoupper(trim($this->resu
 
 	// Within the same result type, is this response / result code already taken?
 	function findTypeDup(type, response, code, excludeTr) {
-		var dup = { response: false, code: false };
-		$('#rowsBody tr').each(function () {
+		var dup = {
+			response: false,
+			code: false
+		};
+		$('#rowsBody tr').each(function() {
 			if (excludeTr && this === excludeTr) return;
 			if (rowTypeVal(this) !== type) return;
 			if (response && rowRespVal(this) === response) dup.response = true;
@@ -750,6 +885,7 @@ $schemeId = !empty($this->results[0]['scheme_id']) ? strtoupper(trim($this->resu
 
 	function validateNow() {
 		// Don't silently drop a half-entered result still sitting in the Add box.
+		$('#removedRow').val(removedRow.join(','));
 		var pendingResp = $.trim($('#addResponse').val());
 		var pendingCode = IS_USER_CONFIGURED ? $.trim($('#addCodeSuffix').val()) : $.trim($('#addCode').val());
 		if (pendingResp || pendingCode) {
@@ -759,7 +895,7 @@ $schemeId = !empty($this->results[0]['scheme_id']) ? strtoupper(trim($this->resu
 
 		if (IS_USER_CONFIGURED) {
 			var valid = true;
-			$('#rowsBody .js-code-hidden').each(function () {
+			$('#rowsBody .js-code-hidden').each(function() {
 				if (!$(this).val()) {
 					alert('<?= $this->translate->_("Please enter a result code for all rows."); ?>');
 					valid = false;
@@ -769,7 +905,9 @@ $schemeId = !empty($this->results[0]['scheme_id']) ? strtoupper(trim($this->resu
 			if (!valid) return false;
 		}
 
-		var flag = deforayValidator.init({ formId: 'updatePossibleResultsForm' });
+		var flag = deforayValidator.init({
+			formId: 'updatePossibleResultsForm'
+		});
 		if (flag) {
 			isSubmitting = true;
 			clearDirty();
@@ -780,9 +918,11 @@ $schemeId = !empty($this->results[0]['scheme_id']) ? strtoupper(trim($this->resu
 
 	/* ── Init ──────────────────────────────────────────────────────────────── */
 
-	$(document).ready(function () {
+	$(document).ready(function() {
 		reindex();
 		initAllPrefixes();
-		$('#rowsBody tr').each(function () { applyTypeClass(this); });
+		$('#rowsBody tr').each(function() {
+			applyTypeClass(this);
+		});
 	});
 </script>
