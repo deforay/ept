@@ -377,8 +377,12 @@ final class Provisioner
         $code = self::PREFIX . $shortId;
         $now = date('Y-m-d H:i:s');
         $today = date('Y-m-d');
-        // response_deadline well in the future, so test reports submitted "now" are on time
-        $deadline = date('Y-m-d H:i:s', strtotime('+30 days'));
+        // Mirror what a real admin would set when creating a shipment today:
+        //   - response_deadline 30-60 days out (jittered so harness shipments
+        //     don't all share the same deadline if multiple are provisioned).
+        //   - shipment_date = today (same as survey creation date).
+        $deadlineDays = mt_rand(30, 60);
+        $deadline = date('Y-m-d H:i:s', strtotime("+{$deadlineDays} days"));
 
         $shipmentId = $this->db->insert('shipment', [
             'shipment_code'        => $code,
@@ -406,21 +410,27 @@ final class Provisioner
     private function createReferenceResults(int $shipmentId, array $samples, array $lookups): void
     {
         $perSampleScore = (int) (100 / count($samples));
+        // sample_preparation_date — real admins prep samples up to a week before the
+        // shipment goes out. Today / -1 / -3 / -7 days deterministically by sample_id.
+        $prepOffsetCycle = [0, -1, -3, -7];
         foreach ($samples as $sampleId => $meta) {
             $refCode = $meta['ref']; // 'P' or 'N'
             $refId = $lookups['final'][$refCode] ?? null;
             if ($refId === null) {
                 throw new \RuntimeException("No r_possibleresult id for final code '$refCode'");
             }
+            $offset = $prepOffsetCycle[((int) $sampleId - 1) % count($prepOffsetCycle)];
+            $prepDate = $offset === 0 ? date('Y-m-d') : date('Y-m-d', strtotime("$offset days"));
             $this->db->insert('reference_result_dts', [
-                'shipment_id'        => $shipmentId,
-                'sample_id'          => $sampleId,
-                'sample_label'       => $meta['label'],
-                'reference_result'   => (string) $refId,
-                'is_sample_diluted'  => $meta['diluted'] ? 'yes' : 'no',
-                'control'            => 0,
-                'mandatory'          => 1,
-                'sample_score'       => $perSampleScore,
+                'shipment_id'             => $shipmentId,
+                'sample_id'               => $sampleId,
+                'sample_label'            => $meta['label'],
+                'sample_preparation_date' => $prepDate,
+                'reference_result'        => (string) $refId,
+                'is_sample_diluted'       => $meta['diluted'] ? 'yes' : 'no',
+                'control'                 => 0,
+                'mandatory'               => 1,
+                'sample_score'            => $perSampleScore,
             ]);
         }
     }
