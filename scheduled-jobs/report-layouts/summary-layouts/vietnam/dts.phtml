@@ -559,67 +559,174 @@ if ($resultArray['shipment'] != "") {
         // ============================================================
         // 3. APPENDIX — Table A1: Characterisation of Panel
         // ============================================================
-        // Data source: shipment_attributes.panel_characterisation, a JSON blob set
-        // via the admin Panel Characterisation form. Shape:
-        //   { "kit_columns": [{"name": "Elecsys HIV Combi PT", "unit": "COI value"}, ...],
-        //     "samples":     [{"sample_label": "NIHE-HIV-2301-01", "sample_type": "Pooled plasma",
-        //                       "results":     ["360", "15.31", "+", "+", "+", "+", "+"],
-        //                       "conclusion":  "Positive"}, ...] }
-        // If unset, fall back to a simplified table built from reference_result_dts —
-        // so the appendix is never empty but obviously thinner than the NIHE-curated
-        // version.
+        // Reads from the existing DTS reference-result modal tables on the shipment
+        // edit page:
+        //   reference_dts_eia          — EIA assays (one kit + OD/cutoff per row)
+        //   reference_dts_wb           — Western Blot (one row per sample, banded)
+        //   reference_dts_rapid_hiv    — Rapid HIV kits (one kit + result per row)
+        //   reference_dts_geenius      — Geenius supplemental assay (one row per sample)
+        // Conclusion comes from reference_result_dts.reference_result.
+        // Columns rendered are the distinct kits actually used in this shipment, so
+        // a shipment characterised on Elecsys + 3 rapid kits + WB produces 5 result
+        // columns. Samples with no entries against a kit show '-'.
         $pdf->AddPage();
         $pdf->writeHTML('<span style="font-weight:bold;font-size:13px;">3. ' . Pt_Commons_TranslateUtility::safeTranslate('Appendix') . '</span>', true, false, true, false, '');
         $pdf->writeHTML('<span style="font-weight:bold;font-size:12px;">' . Pt_Commons_TranslateUtility::safeTranslate('Table A1: Characterisation of Panel') . ' ' . htmlspecialchars($resultArray['shipment']['shipment_code'], ENT_QUOTES) . ' ' . Pt_Commons_TranslateUtility::safeTranslate('when testing for HIV serology') . '</span>', true, false, true, false, '');
         $pdf->Ln(2);
 
-        $shipAttrJson = $resultArray['shipment']['shipment_attributes'] ?? '';
-        $shipAttr = Pt_Commons_JsonUtility::safeDecode((string) $shipAttrJson);
-        $panelChar = is_array($shipAttr['panel_characterisation'] ?? null) ? $shipAttr['panel_characterisation'] : null;
+        $kitNameLookup = [];
+        foreach ($db->fetchAll($db->select()->from('r_testkitnames', ['TestKitName_ID', 'TestKit_Name'])) as $kr) {
+            $kitNameLookup[(string) $kr['TestKitName_ID']] = $kr['TestKit_Name'];
+        }
+        $resultCodeLookup = [];
+        foreach ($db->fetchAll($db->select()->from('r_possibleresult', ['id', 'response', 'result_code'])) as $pr) {
+            $resultCodeLookup[(string) $pr['id']] = [
+                'response' => $pr['response'],
+                'code'     => strtoupper((string) $pr['result_code']),
+            ];
+        }
+        $rapidSymbol = static function (string $rid) use ($resultCodeLookup): string {
+            if ($rid === '' || !isset($resultCodeLookup[$rid])) {
+                return '-';
+            }
+            $code = $resultCodeLookup[$rid]['code'];
+            return match (true) {
+                in_array($code, ['R', 'WR', 'P'], true)  => '+',
+                in_array($code, ['NR', 'N'], true)       => '-',
+                default                                  => ucfirst(strtolower($resultCodeLookup[$rid]['response'])),
+            };
+        };
+        $finalLabel = static function (string $rid) use ($resultCodeLookup): string {
+            if ($rid === '' || !isset($resultCodeLookup[$rid])) {
+                return '-';
+            }
+            return ucfirst(strtolower($resultCodeLookup[$rid]['response']));
+        };
 
-        if (is_array($panelChar) && !empty($panelChar['kit_columns']) && !empty($panelChar['samples'])) {
-            // Admin-entered matrix
-            $kitCols = $panelChar['kit_columns'];
-            $kitCount = count($kitCols);
-            $nameColW = 14;
-            $typeColW = 12;
-            $conclW   = 14;
-            $kitColW  = max(6, (int) floor((100 - $nameColW - $typeColW - $conclW) / max(1, $kitCount)));
+        $eiaRows = $db->fetchAll(
+            "SELECT sample_id, eia, od, cutoff, result FROM reference_dts_eia
+             WHERE shipment_id = ? ORDER BY sample_id, id",
+            $shipmentId
+        );
+        $rapidRows = $db->fetchAll(
+            "SELECT sample_id, testkit, result FROM reference_dts_rapid_hiv
+             WHERE shipment_id = ? ORDER BY sample_id, id",
+            $shipmentId
+        );
+        $wbRows = $db->fetchAll(
+            "SELECT sample_id, result FROM reference_dts_wb
+             WHERE shipment_id = ? ORDER BY sample_id, id",
+            $shipmentId
+        );
+        $geeniusRows = $db->fetchAll(
+            "SELECT sample_id, result FROM reference_dts_geenius
+             WHERE shipment_id = ? ORDER BY sample_id, id",
+            $shipmentId
+        );
 
-            $tbl  = '<table border="1" cellpadding="3" style="width:100%;font-size:10px;">';
+        // Discover the distinct columns actually used in this shipment.
+        $eiaKitIds = [];
+        foreach ($eiaRows as $r) { $eiaKitIds[(string) $r['eia']] = true; }
+        $eiaKitIds = array_keys($eiaKitIds);
+        $rapidKitIds = [];
+        foreach ($rapidRows as $r) { $rapidKitIds[(string) $r['testkit']] = true; }
+        $rapidKitIds = array_keys($rapidKitIds);
+        $hasWb      = !empty($wbRows);
+        $hasGeenius = !empty($geeniusRows);
+
+        // Index per-sample for fast row assembly.
+        $eiaBySample = [];
+        foreach ($eiaRows as $r) {
+            $eiaBySample[(int) $r['sample_id']][(string) $r['eia']] = $r;
+        }
+        $rapidBySample = [];
+        foreach ($rapidRows as $r) {
+            $rapidBySample[(int) $r['sample_id']][(string) $r['testkit']] = $r;
+        }
+        $wbBySample = [];
+        foreach ($wbRows as $r) {
+            $wbBySample[(int) $r['sample_id']] = $r;
+        }
+        $geeniusBySample = [];
+        foreach ($geeniusRows as $r) {
+            $geeniusBySample[(int) $r['sample_id']] = $r;
+        }
+
+        $haveCharacterisation = !empty($eiaRows) || !empty($rapidRows) || !empty($wbRows) || !empty($geeniusRows);
+
+        if ($haveCharacterisation) {
+            // Build header. Total non-conclusion result columns = #EIA + #Rapid + WB + Geenius.
+            $resultColCount = count($eiaKitIds) + count($rapidKitIds) + ($hasWb ? 1 : 0) + ($hasGeenius ? 1 : 0);
+            $nameW = 14;
+            $typeW = 12;
+            $conclW = 12;
+            $colW = max(6, (int) floor((100 - $nameW - $typeW - $conclW - 4) / max(1, $resultColCount)));
+
+            $tbl  = '<table border="1" cellpadding="2" style="width:100%;font-size:9px;">';
             $tbl .= '<tr style="background-color:#dbe4ee;text-align:center;font-weight:bold;">';
             $tbl .= '<td rowspan="2" style="width:4%;">' . Pt_Commons_TranslateUtility::safeTranslate('No') . '</td>';
-            $tbl .= '<td rowspan="2" style="width:' . $nameColW . '%;">' . Pt_Commons_TranslateUtility::safeTranslate('Sample ID') . '</td>';
-            $tbl .= '<td rowspan="2" style="width:' . $typeColW . '%;">' . Pt_Commons_TranslateUtility::safeTranslate('Sample Type') . '</td>';
-            $tbl .= '<td colspan="' . $kitCount . '">' . Pt_Commons_TranslateUtility::safeTranslate('Test result') . '</td>';
+            $tbl .= '<td rowspan="2" style="width:' . $nameW . '%;">' . Pt_Commons_TranslateUtility::safeTranslate('Sample ID') . '</td>';
+            $tbl .= '<td rowspan="2" style="width:' . $typeW . '%;">' . Pt_Commons_TranslateUtility::safeTranslate('Sample Type') . '</td>';
+            $tbl .= '<td colspan="' . max(1, $resultColCount) . '">' . Pt_Commons_TranslateUtility::safeTranslate('Test result') . '</td>';
             $tbl .= '<td rowspan="2" style="width:' . $conclW . '%;">' . Pt_Commons_TranslateUtility::safeTranslate('Conclusion') . '</td>';
             $tbl .= '</tr><tr style="background-color:#dbe4ee;text-align:center;font-weight:bold;">';
-            foreach ($kitCols as $kc) {
-                $label = htmlspecialchars((string) ($kc['name'] ?? ''), ENT_QUOTES);
-                $unit  = isset($kc['unit']) ? '<br/><span style="font-size:9px;">(' . htmlspecialchars((string) $kc['unit'], ENT_QUOTES) . ')</span>' : '';
-                $tbl .= '<td style="width:' . $kitColW . '%;">' . $label . $unit . '</td>';
+            foreach ($eiaKitIds as $kid) {
+                $label = htmlspecialchars((string) ($kitNameLookup[$kid] ?? $kid), ENT_QUOTES);
+                $tbl .= '<td style="width:' . $colW . '%;">' . $label . '<br/><span style="font-size:8px;">(OD/CO)</span></td>';
+            }
+            foreach ($rapidKitIds as $kid) {
+                $label = htmlspecialchars((string) ($kitNameLookup[$kid] ?? $kid), ENT_QUOTES);
+                $tbl .= '<td style="width:' . $colW . '%;">' . $label . '</td>';
+            }
+            if ($hasWb) {
+                $tbl .= '<td style="width:' . $colW . '%;">' . Pt_Commons_TranslateUtility::safeTranslate('Western Blot') . '</td>';
+            }
+            if ($hasGeenius) {
+                $tbl .= '<td style="width:' . $colW . '%;">' . Pt_Commons_TranslateUtility::safeTranslate('Geenius') . '</td>';
             }
             $tbl .= '</tr>';
 
             $no = 1;
-            foreach ($panelChar['samples'] as $s) {
+            foreach ($resultArray['shipment']['referenceResult'] ?? [] as $refRes) {
+                $sid = (int) ($refRes['sample_id'] ?? 0);
+                $sampleType = (!empty($refRes['is_sample_diluted']) && strtolower((string) $refRes['is_sample_diluted']) === 'yes')
+                    ? Pt_Commons_TranslateUtility::safeTranslate('Pooled diluted plasma')
+                    : Pt_Commons_TranslateUtility::safeTranslate('Pooled plasma');
                 $tbl .= '<tr style="text-align:center;">';
                 $tbl .= '<td>' . $no++ . '</td>';
-                $tbl .= '<td style="background-color:#f4f7fa;">' . htmlspecialchars((string) ($s['sample_label'] ?? ''), ENT_QUOTES) . '</td>';
-                $tbl .= '<td>' . htmlspecialchars((string) ($s['sample_type'] ?? ''), ENT_QUOTES) . '</td>';
-                $sampleResults = is_array($s['results'] ?? null) ? $s['results'] : [];
-                for ($i = 0; $i < $kitCount; $i++) {
-                    $tbl .= '<td>' . htmlspecialchars((string) ($sampleResults[$i] ?? ''), ENT_QUOTES) . '</td>';
+                $tbl .= '<td style="background-color:#f4f7fa;">' . htmlspecialchars((string) ($refRes['sample_label'] ?? ''), ENT_QUOTES) . '</td>';
+                $tbl .= '<td>' . $sampleType . '</td>';
+                foreach ($eiaKitIds as $kid) {
+                    $row = $eiaBySample[$sid][$kid] ?? null;
+                    if ($row === null) {
+                        $tbl .= '<td>-</td>';
+                    } else {
+                        $od = trim((string) ($row['od'] ?? ''));
+                        $co = trim((string) ($row['cutoff'] ?? ''));
+                        $cell = $od !== '' ? $od : '-';
+                        if ($od !== '' && $co !== '' && is_numeric($od) && is_numeric($co) && (float) $co > 0) {
+                            $cell .= '<br/><span style="font-size:8px;">(' . round((float) $od / (float) $co, 2) . ')</span>';
+                        }
+                        $tbl .= '<td>' . $cell . '</td>';
+                    }
                 }
-                $tbl .= '<td>' . htmlspecialchars((string) ($s['conclusion'] ?? ''), ENT_QUOTES) . '</td>';
+                foreach ($rapidKitIds as $kid) {
+                    $row = $rapidBySample[$sid][$kid] ?? null;
+                    $tbl .= '<td>' . ($row === null ? '-' : $rapidSymbol((string) ($row['result'] ?? ''))) . '</td>';
+                }
+                if ($hasWb) {
+                    $tbl .= '<td>' . ($wbBySample[$sid] === null || !isset($wbBySample[$sid]) ? '-' : $finalLabel((string) ($wbBySample[$sid]['result'] ?? ''))) . '</td>';
+                }
+                if ($hasGeenius) {
+                    $tbl .= '<td>' . (!isset($geeniusBySample[$sid]) ? '-' : $finalLabel((string) ($geeniusBySample[$sid]['result'] ?? ''))) . '</td>';
+                }
+                $tbl .= '<td><strong>' . ucfirst(strtolower((string) ($refRes['referenceResult'] ?? ''))) . '</strong></td>';
                 $tbl .= '</tr>';
             }
             $tbl .= '</table><br/>';
             $pdf->writeHTML($tbl, true, false, true, false, '');
         } else {
-            // Fallback: simplified table using just the per-sample reference result.
-            // Once an admin enters the panel characterisation matrix via the shipment
-            // admin form, this branch is bypassed.
+            // Fallback when no DTS reference modal data has been entered yet.
             $tbl  = '<table border="1" cellpadding="3" style="width:100%;font-size:11px;">';
             $tbl .= '<tr style="background-color:#dbe4ee;text-align:center;font-weight:bold;">';
             $tbl .= '<td style="width:8%;">' . Pt_Commons_TranslateUtility::safeTranslate('No') . '</td>';
@@ -637,7 +744,7 @@ if ($resultArray['shipment'] != "") {
                 $tbl .= '</tr>';
             }
             $tbl .= '</table>';
-            $tbl .= '<br/><span style="font-size:10px;font-style:italic;">' . Pt_Commons_TranslateUtility::safeTranslate('Panel characterisation matrix not configured for this shipment. Admin can populate the per-kit reference values via the shipment Panel Characterisation form.') . '</span><br/>';
+            $tbl .= '<br/><span style="font-size:10px;font-style:italic;">' . Pt_Commons_TranslateUtility::safeTranslate('Panel characterisation not entered for this shipment. Use the per-sample Reference Results modal on the shipment edit page to record EIA / WB / Rapid HIV / Geenius results.') . '</span><br/>';
             $pdf->writeHTML($tbl, true, false, true, false, '');
         }
 
