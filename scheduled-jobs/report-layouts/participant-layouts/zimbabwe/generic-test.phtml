@@ -327,6 +327,9 @@ if (!empty($resultArray['shipment'])) {
                             : ($attributes['other_assay'] ?? $attributes['kit_name']);
                     }
                 }
+                else{
+                    $testkitName = "Not Reported";
+                }
                 $expDate = Pt_Commons_DateUtility::humanReadableDateFormat($attributes['kit_expiry_date']);
                 $labRes = '<span style="font-weight: bold;font-size:11px;">Your Dried Tube Specimen - ' . $result['scheme_name'] . ' Proficiency results : <br/></span>';
                 $labRes .= '<table border="1" style="text-align:center;font-weight:bold;width:650px;font-size:11px;">
