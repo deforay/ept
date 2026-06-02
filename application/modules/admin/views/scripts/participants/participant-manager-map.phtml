@@ -67,7 +67,7 @@
                 <?php if ((isset($this->countries) && count($this->countries) > 0) || (isset($this->province) && count($this->province) > 0)) { ?>
                     <div class="row">
                         <?php if (isset($this->countries) && count($this->countries) > 0) { ?>
-                            <label class="col-lg-2 control-label" style="height: 40px;"><?= $this->translate->_("Country"); ?></label>
+                            <label class="col-lg-2 control-label" style="height: 40px;" for="country"><?= $this->translate->_("Country"); ?></label>
                             <div class="col-lg-4">
                                 <select class="select2" style="width:100%;" name="country" id="country" placeholder="Choose country" title="Please choose a country" onchange="getDataManager();getStats(this.value);">
                                     <option value=""></option>
@@ -78,7 +78,7 @@
                             </div>
                         <?php }
                         if (isset($this->province) && count($this->province) > 0) { ?>
-                            <label class="col-lg-2 control-label" style="height: 40px;"><?= $this->translate->_("Province"); ?></label>
+                            <label class="col-lg-2 control-label" style="height: 40px;" for="province"><?= $this->translate->_("Province"); ?></label>
                             <div class="col-lg-4">
                                 <select class="select2" style="width:100%;" name="province" id="province" placeholder="Choose province" title="Please choose a province" onchange="getDataManager();getDistricts(this.value);">
                                     <option value=""></option>
@@ -93,7 +93,7 @@
                 if ((isset($this->district) && count($this->district) > 0) || (isset($this->networksTier) && count($this->networksTier) > 0)) { ?>
                     <div class="row">
                         <?php if (isset($this->district) && count($this->district) > 0) { ?>
-                            <label class="col-lg-2 control-label" style="height: 40px;"><?= $this->translate->_("District"); ?></label>
+                            <label class="col-lg-2 control-label" style="height: 40px;" for="district"><?= $this->translate->_("District"); ?></label>
                             <div class="col-lg-4">
                                 <select class="select2" style="width:100%;" name="district" id="district" placeholder="Choose district" title="Please choose a district" onchange="getDataManager();getInstitutes();">
                                     <option value=""></option>
@@ -104,7 +104,7 @@
                             </div>
                         <?php }
                         if (isset($this->institutes) && count($this->institutes) > 0) { ?>
-                            <label class="col-lg-2 control-label" style="height: 40px;"><?= $this->translate->_("Institute"); ?></label>
+                            <label class="col-lg-2 control-label" style="height: 40px;" for="institute"><?= $this->translate->_("Institute"); ?></label>
                             <div class="col-lg-4">
                                 <select class="select2" style="width:100%;" name="institute" id="institute" placeholder="Choose institute" title="Please choose a institute" onchange="getDataManager()">
                                     <option value=""></option>
@@ -119,7 +119,7 @@
                 if ((isset($this->afflication) && count($this->afflication) > 0) || (isset($this->institutes) && count($this->institutes) > 0)) { ?>
                     <div class="row">
                         <?php if (isset($this->networksTier) && count($this->networksTier) > 0) { ?>
-                            <label class="col-lg-2 control-label" style="height: 40px;"><?= $this->translate->_("Network Tier"); ?></label>
+                            <label class="col-lg-2 control-label" style="height: 40px;" for="networkTier"><?= $this->translate->_("Network Tier"); ?></label>
                             <div class="col-lg-4">
                                 <select class="select2" style="width:100%;" name="networkTier" id="networkTier" placeholder="Choose network tier" title="Please choose a network tier" onchange="getDataManager()">
                                     <option value=""></option>
@@ -130,7 +130,7 @@
                             </div>
                         <?php }
                         if (isset($this->affiliation) && count($this->affiliation) > 0) { ?>
-                            <label class="col-lg-2 control-label" style="height: 40px;"><?= $this->translate->_("Affiliation"); ?></label>
+                            <label class="col-lg-2 control-label" style="height: 40px;" for="affiliation"><?= $this->translate->_("Affiliation"); ?></label>
                             <div class="col-lg-4">
                                 <select class="select2" style="width:100%;" name="affiliation" id="affiliation" placeholder="Choose affiliation" title="Please choose a affiliation" onchange="getDataManager()">
                                     <option value=""></option>

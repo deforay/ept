@@ -86,14 +86,14 @@ foreach ($savedSettings as $key => $savedValue) {
 <?php if (!$isEditMode && isset($this->reportType) && !empty($this->reportType) && $this->reportType == 'malawi'): ?>
     <!-- Malawi-specific fields (ADD mode only) -->
     <div class="form-group">
-        <label class="col-lg-3 control-label"><?= $this->translate->_("PT Co-ordinator Email"); ?></label>
+        <label class="col-lg-3 control-label" for="ptEmail"><?= $this->translate->_("PT Co-ordinator Email"); ?></label>
         <div class="col-lg-5">
             <input type="text" name="ptEmail" id="ptEmail" placeholder="Enter PT Co-ordinator email"
                 title="Please enter the PT Co-ordinator email" class="form-control input-sm isEmail" />
         </div>
     </div>
     <div class="form-group">
-        <label class="col-lg-3 control-label"><?= $this->translate->_("PT Co-ordinator Phone Number"); ?></label>
+        <label class="col-lg-3 control-label" for="ptPhone"><?= $this->translate->_("PT Co-ordinator Phone Number"); ?></label>
         <div class="col-lg-5">
             <input type="text" name="ptPhone" id="ptPhone" placeholder="Enter PT Co-ordinator phone number"
                 title="Please enter the PT Co-ordinator phone number" class="form-control input-sm isNumeric" />

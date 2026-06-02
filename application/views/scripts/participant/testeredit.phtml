@@ -38,23 +38,23 @@ $authNameSpace = new Zend_Session_Namespace('datamanagers');
 
                             <th id="lastNameLable"><?= $this->translate->_("Participant Last Name (optional)"); ?></th>
                             <td style="width:285px;" id="lastNameLableTd"><input type="text" <?php echo (isset($this->participantEditName) && !empty($this->participantEditName) && $this->participantEditName == 'no') ? 'readonly' : ''; ?> id="plname" name="plname" size="25" maxlength="45" title="<?= $this->htmlTranslate("Please enter the participant's last name"); ?>" placeholder="<?= $this->htmlTranslate("Last name"); ?>" class="form-control" value="<?php echo $this->rsParticipant['last_name']; ?>" /></td>
-                            <th scope="col"><label><?= $this->translate->_("Institute Name"); ?> <span class="mandatory">*</span></label></th>
+                            <th scope="col"><label for="instituteName"><?= $this->translate->_("Institute Name"); ?> <span class="mandatory">*</span></label></th>
                             <td><input type="text" id="instituteName" name="instituteName" size="25" maxlength="45" class="form-control isRequired" title="<?= $this->htmlTranslate("Please enter the institute name"); ?>" placeholder="<?= $this->htmlTranslate("Institute name"); ?>" value="<?php echo $this->rsParticipant['institute_name']; ?>" /></td>
                         </tr>
                         <tr>
 
-                            <th scope="col"><label><?= $this->translate->_("Department Name"); ?> <span class="mandatory">*</span></label></th>
+                            <th scope="col"><label for="departmentName"><?= $this->translate->_("Department Name"); ?> <span class="mandatory">*</span></label></th>
                             <td colspan="3"><input type="text" id="departmentName" name="departmentName" size="25" maxlength="45" class="form-control isRequired" title="<?= $this->htmlTranslate("Please enter the department name"); ?>" placeholder="<?= $this->htmlTranslate("Department name"); ?>" style="width:285px;" value="<?php echo $this->rsParticipant['department_name']; ?>" /></td>
                         </tr>
                         <tr>
-                            <th scope="col"><label><?= $this->translate->_("Physical Address"); ?> <span class="mandatory">*</span></label></th>
+                            <th scope="col"><label for="address"><?= $this->translate->_("Physical Address"); ?> <span class="mandatory">*</span></label></th>
                             <td colspan="3"><textarea id="address" name="address" class="isRequired form-control" title="<?= $this->htmlTranslate("Please enter the physical address"); ?>" placeholder="<?= $this->htmlTranslate("Physical address"); ?>"><?php echo $this->rsParticipant['address']; ?></textarea></td>
                         </tr>
                         <tr>
-                            <th scope="col"><label><?= $this->translate->_("City"); ?> <span class="mandatory">*</span></label></th>
+                            <th scope="col"><label for="city"><?= $this->translate->_("City"); ?> <span class="mandatory">*</span></label></th>
                             <td><input type="text" id="city" name="city" size="25" maxlength="45" class="form-control isRequired" title="<?= $this->htmlTranslate("Please enter the city"); ?>" placeholder="<?= $this->htmlTranslate("City"); ?>" value="<?php echo $this->rsParticipant['city']; ?>" /></td>
 
-                            <th scope="col"><label><?= $this->translate->_("State (if applicable)"); ?></label></th>
+                            <th scope="col"><label for="state"><?= $this->translate->_("State (if applicable)"); ?></label></th>
                             <td><input type="text" id="state" name="state" size="25" maxlength="45" class="form-control" title="<?= $this->htmlTranslate("Please enter the state"); ?>" placeholder="<?= $this->htmlTranslate("State"); ?>" value="<?php echo $this->rsParticipant['state']; ?>" /></td>
                         </tr>
                         <tr>
@@ -79,12 +79,12 @@ $authNameSpace = new Zend_Session_Namespace('datamanagers');
                         </tr>
                         <tr>
                             <th scope="col">
-                                <label><?= $this->translate->_("Longitude"); ?> </label>
+                                <label for="long"><?= $this->translate->_("Longitude"); ?> </label>
                             </th>
 
                             <td><input type="text" id="long" name="long" size="25" maxlength="45" class="form-control" title="<?= $this->htmlTranslate("Please enter the longitude"); ?>" placeholder="<?= $this->htmlTranslate("Longitude"); ?>" value="<?php echo $this->rsParticipant['long']; ?>" /></td>
                             <th scope="col">
-                                <label><?= $this->translate->_("Latitude"); ?> </label>
+                                <label for="lat"><?= $this->translate->_("Latitude"); ?> </label>
                             </th>
 
                             <td><input type="text" id="lat" name="lat" size="25" maxlength="45" class="form-control" title="<?= $this->htmlTranslate("Please enter the latitude"); ?>" placeholder="<?= $this->htmlTranslate("Latitude"); ?>" value="<?php echo $this->rsParticipant['lat']; ?>" />
@@ -92,12 +92,12 @@ $authNameSpace = new Zend_Session_Namespace('datamanagers');
                         </tr>
                         <tr>
                             <th scope="col">
-                                <label><?= $this->translate->_("Funding Source"); ?> </label>
+                                <label for="fundingSource"><?= $this->translate->_("Funding Source"); ?> </label>
                             </th>
 
                             <td><input type="text" id="fundingSource" name="fundingSource" size="25" maxlength="45" class="form-control" title="<?= $this->htmlTranslate("Please enter the funding source"); ?>" placeholder="<?= $this->htmlTranslate("Funding source"); ?>" value="<?php echo $this->rsParticipant['funding_source']; ?>" /></td>
                             <th scope="col">
-                                <label><?= $this->translate->_("Testing Volume"); ?> </label>
+                                <label for="testingVolume"><?= $this->translate->_("Testing Volume"); ?> </label>
                             </th>
 
                             <td><input type="text" id="testingVolume" name="testingVolume" size="25" maxlength="45" class="form-control" title="<?= $this->htmlTranslate("Please enter the testing volume"); ?>" placeholder="<?= $this->htmlTranslate("Testing volume"); ?>" value="<?php echo $this->rsParticipant['testing_volume']; ?>" />
@@ -105,7 +105,7 @@ $authNameSpace = new Zend_Session_Namespace('datamanagers');
                         </tr>
 
                         <tr>
-                            <th scope="col"><label><?= $this->translate->_("Enrolled Programs"); ?> </label></th>
+                            <th scope="col"><label for="enrolledProgram"><?= $this->translate->_("Enrolled Programs"); ?> </label></th>
                             <td>
                                 <select name="enrolledProgram[]" id="enrolledProgram" multiple="multiple" style="width:285px;">
                                     <?php

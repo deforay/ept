@@ -96,7 +96,7 @@ if (!empty($this->shipment)) {
     <div class="row">
         <div class="col-md-12">
             <label
-                class="form-control-label"><?= $this->translate->_("Comment for all Participants of this shipment"); ?></label>
+                class="form-control-label" for="shipmentComment"><?= $this->translate->_("Comment for all Participants of this shipment"); ?></label>
             <textarea rows="10" cols="20" class="form-control" placeholder="Comment for all Participants of this shipment"
                 title="Comment for all Participants of this shipment" name="shipmentComment"
                 id="shipmentComment"><?php echo $this->shipment[0]['shipment_comment']; ?></textarea>

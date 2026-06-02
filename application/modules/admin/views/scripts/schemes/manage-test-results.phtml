@@ -237,7 +237,7 @@ $schemeId = !empty($this->results[0]['scheme_id']) ? strtoupper(trim($this->resu
 				<!-- Add bar: enter a new result here; it drops into the list in its sorted position -->
 				<div class="add-bar">
 					<div class="field field-type">
-						<label><?= $this->translate->_("Result Type"); ?> <span class="mandatory">*</span></label>
+						<label for="addType"><?= $this->translate->_("Result Type"); ?> <span class="mandatory">*</span></label>
 						<select id="addType" class="form-control">
 							<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
 							<option value="TEST"><?= $this->translate->_("Test Result"); ?></option>
@@ -245,7 +245,7 @@ $schemeId = !empty($this->results[0]['scheme_id']) ? strtoupper(trim($this->resu
 						</select>
 					</div>
 					<div class="field field-resp">
-						<label><?= $this->translate->_("Response"); ?> <span class="mandatory">*</span></label>
+						<label for="addResponse"><?= $this->translate->_("Response"); ?> <span class="mandatory">*</span></label>
 						<input type="text" id="addResponse" class="form-control"
 							placeholder="<?= $this->translate->_("Enter response"); ?>" />
 					</div>
@@ -263,7 +263,7 @@ $schemeId = !empty($this->results[0]['scheme_id']) ? strtoupper(trim($this->resu
 						<?php endif; ?>
 					</div>
 					<div class="field field-context">
-						<label><?= $this->translate->_("Displayed To"); ?></label>
+						<label for="addDisplayContext"><?= $this->translate->_("Displayed To"); ?></label>
 						<select id="addDisplayContext" class="form-control">
 							<option value="all"><?= $this->translate->_("All"); ?></option>
 							<option value="participant"><?= $this->translate->_("Participant"); ?></option>

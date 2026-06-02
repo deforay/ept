@@ -214,7 +214,7 @@ if ($inConfirmStep) {
 						style="<?php echo (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes') ? '' : 'display:none;'; ?>background:none;width:100%;margin:10px auto;">
 						<tr class="ptNotPerformedSection">
 							<td colspan="2">
-								<label><?= $this->translate->_("Reason for not testing the PT Panel"); ?></label> <span
+								<label for="ptNotTestedReason"><?= $this->translate->_("Reason for not testing the PT Panel"); ?></label> <span
 									class="mandatory">*</span> :
 								<select id="ptNotTestedReason" name="ptNotTestedReason" class="form-control"
 									title="<?= $this->translate->_("Please select a reason"); ?>"
@@ -240,7 +240,7 @@ if ($inConfirmStep) {
 						</tr>
 						<tr class="ptNotPerformedSection ptNotTestedComment"
 							style="<?php echo (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes') ? '' : 'display:none;'; ?>background:none;">
-							<td colspan="4"><label><?= $this->translate->_("Comments"); ?><span class="mandatory ptNotTestedCommentsAsterisk" style="display: none;">*</span></label> : <textarea
+							<td colspan="4"><label for="ptNotTestedComments"><?= $this->translate->_("Comments"); ?><span class="mandatory ptNotTestedCommentsAsterisk" style="display: none;">*</span></label> : <textarea
 									id="ptNotTestedComments" name="ptNotTestedComments" class="form-control"
 									title="<?= $this->translate->_("Please enter comments"); ?>"><?php echo $this->shipment['pt_test_not_performed_comments']; ?></textarea>
 							</td>

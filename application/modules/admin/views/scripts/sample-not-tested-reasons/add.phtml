@@ -7,20 +7,20 @@
 			<legend><?= $this->translate->_("Add New Not Teasted Reason"); ?></legend>
 
 			<div class="form-group col-lg-6">
-				<label class="col-lg-4 control-label"><?= $this->translate->_("Not Tested Reason"); ?> <span class="mandatory">*</span></label>
+				<label class="col-lg-4 control-label" for="ntReason"><?= $this->translate->_("Not Tested Reason"); ?> <span class="mandatory">*</span></label>
 				<div class="col-lg-8">
 					<input type="text" id="ntReason" name="ntReason" maxlength="255" class="isRequired form-control" title="Please enter the Testkit Name here" placeholder="Please enter the Testkit Name here" onblur="checkDuplicate('r_response_not_tested_reasons', 'ntr_reason', this, null, 'This not tested reason already exists for another reason. Please try something else.')" />
 				</div>
 			</div>
 			<div class="form-group col-lg-6">
-				<label class="col-lg-4 control-label"><?= $this->translate->_("Reason Code"); ?> <span class="mandatory">*</span></label>
+				<label class="col-lg-4 control-label" for="ntReasonCode"><?= $this->translate->_("Reason Code"); ?> <span class="mandatory">*</span></label>
 				<div class="col-lg-8">
 					<input type="text" id="ntReasonCode" name="ntReasonCode" maxlength="255" class="isRequired form-control" title="Please enter the Testkit Name here" placeholder="Please enter the Testkit Name here" onblur="checkDuplicate('r_response_not_tested_reasons', 'reason_code', this, null, 'This reason code already exists for another code. Please try something else.')" />
 				</div>
 			</div>
 
 			<div class="form-group col-lg-6">
-				<label class="col-lg-4 control-label"><?= $this->translate->_("Scheme Name"); ?></label>
+				<label class="col-lg-4 control-label" for="testType"><?= $this->translate->_("Scheme Name"); ?></label>
 				<div class="col-lg-8">
 					<select class="form-control" id="testType" name="testType[]" data-selected-text-format="count>3" multiple="multiple" title="Please select scheme here">
 						<?php foreach ($this->allSchemes as $schemes) { ?>
@@ -30,7 +30,7 @@
 				</div>
 			</div>
 			<div class="form-group col-lg-6">
-				<label class="col-lg-4 control-label"><?= $this->translate->_("Collect Panel Receipt Date?"); ?> <span class="mandatory">*</span></label>
+				<label class="col-lg-4 control-label" for="collectPanelReceiptDate"><?= $this->translate->_("Collect Panel Receipt Date?"); ?> <span class="mandatory">*</span></label>
 				<div class="col-lg-8">
 					<select class="form-control isRequired" name="collectPanelReceiptDate" id="collectPanelReceiptDate" title="Please choose the country adapted here">
 						<option value="">-- <?= $this->translate->_("Select"); ?> --</option>

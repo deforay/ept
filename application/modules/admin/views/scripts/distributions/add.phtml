@@ -12,7 +12,7 @@ if (isset($this->autogeneratePtCode) && !empty($this->autogeneratePtCode) && $th
 
 
             <div class="form-group">
-                <label class="col-lg-3 control-label"><?= $this->translate->_("PT Survey Date"); ?> <span class="mandatory">*</span></label>
+                <label class="col-lg-3 control-label" for="distributionDate"><?= $this->translate->_("PT Survey Date"); ?> <span class="mandatory">*</span></label>
 
                 <div class="col-lg-6">
                     <input type="text" id="distributionDate" name="distributionDate" size="50" maxlength="45" class="isRequired form-control datepicker" readonly title="<?= $this->htmlTranslate("Please enter the PT Survey date here"); ?>" placeholder="<?= $this->htmlTranslate("Please enter the PT Survey date here"); ?>" onchange="generateSurveyCode(this.value)" />

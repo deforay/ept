@@ -118,7 +118,7 @@ $testResultsJs = str_replace(array("\n", "\r", "'"), array('', '', "\\'"), $test
 
 <?php if (!empty($reportType) && $reportType == 'malawi'): ?>
     <div class="form-group">
-        <label class="col-lg-3 control-label"><?= $this->translate->_("PT Co-ordinator Email"); ?></label>
+        <label class="col-lg-3 control-label" for="ptEmail"><?= $this->translate->_("PT Co-ordinator Email"); ?></label>
         <div class="col-lg-5">
             <input type="text" name="ptEmail" id="ptEmail" placeholder="Enter PT Co-ordinator email"
                 title="Please enter the PT Co-ordinator email" class="form-control input-sm isEmail" />

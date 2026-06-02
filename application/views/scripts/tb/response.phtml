@@ -195,7 +195,7 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
 						style="<?php echo (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes') ? '' : 'display:none;'; ?>background:none;width:100%;margin:10px auto;">
 						<tr class="ptNotPerformedSection">
 							<td colspan="2">
-								<label><?= $this->translate->_("Reason for not testing the PT Panel"); ?></label> <span
+								<label for="ptNotTestedReason"><?= $this->translate->_("Reason for not testing the PT Panel"); ?></label> <span
 									class="mandatory">*</span> :
 								<select id="ptNotTestedReason" name="ptNotTestedReason" class="form-control"
 									title="<?= $this->htmlTranslate("Please select reason"); ?>" onchange="checkComments(this.value);">
@@ -246,7 +246,7 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
 									style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="<?= $this->htmlTranslate("Clear Date"); ?>"
 									title="<?= $this->htmlTranslate("Clear Date"); ?>" onclick="clearDate('receiptDate')"> Clear</i>
 							</td>
-							<td><label><?= $this->translate->_("Submission Date"); ?> <span
+							<td><label for="shipmentTestDate"><?= $this->translate->_("Submission Date"); ?> <span
 										class='mandatory vlResultValuesAsterisk'>*</span></label></td>
 							<td>
 								<input type="text" id="shipmentTestDate" name="shipmentTestDate" size="11"
@@ -335,7 +335,7 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
 						$canEnterResponseDate = (isset($authNameSpace->enable_adding_test_response_date) && $authNameSpace->enable_adding_test_response_date != null && $authNameSpace->enable_adding_test_response_date != '' && $authNameSpace->enable_adding_test_response_date == 'yes') || $isLoggedInAsAdmin;
 						if ($canEnterResponseDate) { ?>
 							<tr>
-								<td><label><?= $this->translate->_("Response Date"); ?> <span
+								<td><label for="responseDate"><?= $this->translate->_("Response Date"); ?> <span
 											class='mandatory vlResultValuesAsterisk'>*</span></label></td>
 								<td>
 									<input type="text" id="responseDate" name="responseDate" size="11" maxlength="11"

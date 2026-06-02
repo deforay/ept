@@ -581,11 +581,11 @@
             </div>
         </div>
         <div class="field">
-            <label><?= $this->translate->_("Date Range"); ?></label>
+            <label for="dateRange"><?= $this->translate->_("Date Range"); ?></label>
             <input type="text" id="dateRange" placeholder="<?= $this->translate->_("Any date"); ?>" readonly />
         </div>
         <div class="field">
-            <label><?= $this->translate->_("Context"); ?></label>
+            <label for="type"><?= $this->translate->_("Context"); ?></label>
             <select id="type">
                 <option value=""><?= $this->translate->_("All contexts"); ?></option>
                 <?php if (!empty($this->contextTypes)): ?>
@@ -598,7 +598,7 @@
             </select>
         </div>
         <div class="field">
-            <label><?= $this->translate->_("User"); ?></label>
+            <label for="createdBy"><?= $this->translate->_("User"); ?></label>
             <select id="createdBy">
                 <option value=""><?= $this->translate->_("All users"); ?></option>
                 <?php foreach ($this->systemAdmin as $admin): ?>
@@ -609,11 +609,11 @@
             </select>
         </div>
         <div class="field">
-            <label><?= $this->translate->_("Actor email"); ?></label>
+            <label for="actorEmail"><?= $this->translate->_("Actor email"); ?></label>
             <input type="search" id="actorEmail" placeholder="<?= $this->translate->_("e.g. dm@lab.org"); ?>" autocomplete="off" />
         </div>
         <div class="field">
-            <label><?= $this->translate->_("Lab ID"); ?></label>
+            <label for="labId"><?= $this->translate->_("Lab ID"); ?></label>
             <input type="search" id="labId" placeholder="<?= $this->translate->_("participant unique ID"); ?>" autocomplete="off" />
         </div>
         <div class="field">

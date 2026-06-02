@@ -137,23 +137,23 @@ if ($dmlPassLen <= 0) {
             </div>
             <div class="modal-body">
                 <div class="form-group">
-                    <label><?= $this->translate->_("E-mail"); ?> <span class="mandatory">*</span></label>
+                    <label for="dmlNewEmail"><?= $this->translate->_("E-mail"); ?> <span class="mandatory">*</span></label>
                     <input type="email" id="dmlNewEmail" class="form-control" placeholder="<?= $this->htmlTranslate('Please enter the email address here'); ?>" />
                 </div>
                 <div class="form-group">
-                    <label><?= $this->translate->_("Password"); ?> <span class="mandatory">*</span></label>
+                    <label for="dmlNewPassword"><?= $this->translate->_("Password"); ?> <span class="mandatory">*</span></label>
                     <input type="password" id="dmlNewPassword" class="form-control" pattern=".{<?= $dmlPassLen; ?>,}" title="<?= $this->htmlTranslate('Please enter a valid password with a minimum length of') . ' ' . $dmlPassLen; ?>" placeholder="<?= $this->htmlTranslate('Please enter a password'); ?>" autocomplete="new-password" />
                 </div>
                 <div class="form-group">
-                    <label><?= $this->translate->_("First Name / Lab Name"); ?></label>
+                    <label for="dmlNewFirstName"><?= $this->translate->_("First Name / Lab Name"); ?></label>
                     <input type="text" id="dmlNewFirstName" class="form-control" placeholder="<?= $this->htmlTranslate('Optional — defaults to participant first/lab name'); ?>" />
                 </div>
                 <div class="form-group">
-                    <label><?= $this->translate->_("Last Name"); ?></label>
+                    <label for="dmlNewLastName"><?= $this->translate->_("Last Name"); ?></label>
                     <input type="text" id="dmlNewLastName" class="form-control" placeholder="<?= $this->htmlTranslate('Optional — defaults to participant last name'); ?>" />
                 </div>
                 <div class="form-group">
-                    <label><?= $this->translate->_("Institute"); ?></label>
+                    <label for="dmlNewInstitute"><?= $this->translate->_("Institute"); ?></label>
                     <input type="text" id="dmlNewInstitute" class="form-control" placeholder="<?= $this->htmlTranslate('Optional — defaults to participant institute'); ?>" />
                 </div>
                 <div id="dmlCreateError" class="alert alert-danger" style="display:none;"></div>
