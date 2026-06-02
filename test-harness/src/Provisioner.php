@@ -54,11 +54,47 @@ final class Provisioner
             $shuffleSeed = crc32($shipmentId . ':' . $shortId);
             $assignments = $this->shuffleStable($assignments, $shuffleSeed);
 
+            // Pre-resolve "response state" markers from the variant catalogue. Entries
+            // with response_state='noresponse' or 'nottested' are non-response cases —
+            // we still create the participant map but skip the response_result_dts rows
+            // and stamp the appropriate flags so the report's "no response" / "PT test
+            // not performed" code paths get exercised on every harness run.
+            $catalogue = \EptTestHarness\Aberrations\Vietnam::catalogue();
+            $notTestedReasonIds = $this->db->col(
+                "SELECT ntr_id FROM r_response_not_tested_reasons
+                  WHERE ntr_status='active' AND ntr_id <> 9999
+                    AND JSON_CONTAINS(ntr_test_type, '\"dts\"')
+                  ORDER BY ntr_id"
+            );
+            $notTestedReasonIds = array_map('intval', $notTestedReasonIds);
+
             $mappedAssignments = [];
             $minorityKitIndex = 0;
             foreach ($assignments as $i => $a) {
                 $participantId = $participantIds[$i];
-                $mapId = $this->createShipmentParticipantMap($shipmentId, $participantId, $variant['algoKey'], $a['tier'], $i);
+                $responseState = $catalogue[$a['aberration']]['response_state'] ?? null;
+                $mapId = $this->createShipmentParticipantMap(
+                    $shipmentId,
+                    $participantId,
+                    $variant['algoKey'],
+                    $a['tier'],
+                    $i,
+                    $responseState,
+                    $responseState === 'nottested' && !empty($notTestedReasonIds)
+                        ? $notTestedReasonIds[$i % count($notTestedReasonIds)]
+                        : null
+                );
+
+                if ($responseState !== null) {
+                    // No response data to write — record the assignment and continue.
+                    $mappedAssignments[] = [
+                        'map_id'         => $mapId,
+                        'participant_id' => $participantId,
+                        'aberration'     => $a['aberration'],
+                        'tier'           => $a['tier'],
+                    ];
+                    continue;
+                }
 
                 // Deterministic per-(shipment, participant) seed: same inputs reproduce, but
                 // different shipments/labs vary the chosen valid response shape.
@@ -520,7 +556,7 @@ final class Provisioner
         }
     }
 
-    private function createShipmentParticipantMap(int $shipmentId, int $participantId, string $algoKey, string $tier, int $mapIndex = 0): int
+    private function createShipmentParticipantMap(int $shipmentId, int $participantId, string $algoKey, string $tier, int $mapIndex = 0, ?string $responseState = null, ?int $notTestedReasonId = null): int
     {
         $now = date('Y-m-d H:i:s');
         // Pull this shipment's own shipment_date so test-day offsets are meaningful
@@ -533,22 +569,39 @@ final class Provisioner
         $testDate = date('Y-m-d', strtotime("$shipDate +$offset days"));
         $receiptDate = date('Y-m-d', strtotime("$shipDate +1 day"));
 
-        return $this->db->insert('shipment_participant_map', [
-            'shipment_id'              => $shipmentId,
-            'participant_id'           => $participantId,
-            'attributes'               => json_encode([
+        // Default = regular responded state. Two non-response paths:
+        //  - noresponse: lab never submitted anything — leave shipment_test_date NULL,
+        //    leave is_pt_test_not_performed NULL, response_status='noresponse'.
+        //  - nottested:  lab submitted "PT test not performed" with a reason — keeps
+        //    response_status='responded', flips is_pt_test_not_performed='yes', stamps
+        //    pt_not_tested_reason. Lab still received the panel so receipt_date stays.
+        $row = [
+            'shipment_id'               => $shipmentId,
+            'participant_id'            => $participantId,
+            'attributes'                => json_encode([
                 'algorithm'             => $algoKey,
                 'dts_test_panel_type'   => $tier,
             ]),
-            'shipment_test_report_date' => $now,
-            'shipment_test_date'        => $testDate,
             'shipment_receipt_date'     => $receiptDate,
-            'response_status'           => 'responded',
-            'is_pt_test_not_performed'  => 'no',
             'created_on_admin'          => $now,
             'created_on_user'           => $now,
             'created_by_admin'          => 'test-harness',
-        ]);
+        ];
+        if ($responseState === 'noresponse') {
+            $row['response_status']          = 'noresponse';
+        } elseif ($responseState === 'nottested') {
+            $row['response_status']            = 'responded';
+            $row['shipment_test_date']         = $testDate;
+            $row['shipment_test_report_date']  = $now;
+            $row['is_pt_test_not_performed']   = 'yes';
+            $row['pt_not_tested_reason']       = $notTestedReasonId;
+        } else {
+            $row['response_status']            = 'responded';
+            $row['shipment_test_date']         = $testDate;
+            $row['shipment_test_report_date']  = $now;
+            $row['is_pt_test_not_performed']   = 'no';
+        }
+        return $this->db->insert('shipment_participant_map', $row);
     }
 
     private function createResponseRow(int $mapId, int $sampleId, array $spec, string $kit1, string $kit2, string $kit3, array $lookups, ?array $additionalInfo = null): void

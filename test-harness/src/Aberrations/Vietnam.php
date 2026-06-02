@@ -58,6 +58,22 @@ final class Vietnam
                 'allowed_tiers' => ['screening', 'confirmatory'],
                 'requires_min'  => 10, // need at least this many labs to clear MIN_PEER_LABS
             ],
+
+            // ---------- Non-response states ----------
+            // These aren't "aberrations" in the algorithm sense — they're real-world
+            // response states (lab never submitted; lab submitted "PT test not
+            // performed" with a reason). They DO show up on every real shipment, so the
+            // harness allocates a small fraction of labs to them by default.
+            'no_response' => [
+                'label'         => 'Lab never submitted any response',
+                'allowed_tiers' => ['screening', 'confirmatory'],
+                'response_state' => 'noresponse',
+            ],
+            'not_tested' => [
+                'label'         => 'Lab submitted "PT test not performed" with a reason',
+                'allowed_tiers' => ['screening', 'confirmatory'],
+                'response_state' => 'nottested',
+            ],
         ];
     }
 

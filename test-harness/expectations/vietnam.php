@@ -83,5 +83,28 @@ return [
                 'confirmatory' => [1 => 'Acc', 2 => 'Acc', 3 => 'Acc', 4 => 'Acc', 5 => 'Acc'],
             ],
         ],
+
+        // No response_result_dts rows exist for these labs, so no per-sample
+        // calculated_score is produced. Expectations are empty — the asserter's
+        // per-sample comparison loop iterates over zero entries and the lab
+        // counts as a Pass (nothing to verify against). The harness still wants
+        // these in the catalogue so allocations are tracked and the report
+        // sections that handle "did not respond" can be exercised.
+        'no_response' => [
+            'label'         => 'Lab never submitted any response',
+            'allowed_tiers' => ['screening', 'confirmatory'],
+            'expected'      => [
+                'screening'    => [],
+                'confirmatory' => [],
+            ],
+        ],
+        'not_tested' => [
+            'label'         => 'Lab submitted "PT test not performed" with a reason',
+            'allowed_tiers' => ['screening', 'confirmatory'],
+            'expected'      => [
+                'screening'    => [],
+                'confirmatory' => [],
+            ],
+        ],
     ],
 ];

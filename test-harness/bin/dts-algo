@@ -295,11 +295,33 @@ function report_results(array $provision, array $result): void
  */
 function auto_distribute(array $catalogue, int $total): array
 {
-    $hasFullyCorrect = isset($catalogue['fully_correct']);
-    $otherKeys = array_values(array_filter(array_keys($catalogue), fn ($k) => $k !== 'fully_correct'));
+    // Reserve a small slice for the non-response states (no_response / not_tested)
+    // before distributing the remainder across the real aberrations. Real shipments
+    // always have a handful of these; the harness keeps the rate small so the bulk
+    // of test coverage still goes to algorithm aberrations.
+    //   ~2% no_response, ~1% not_tested. For very small panels both round to 0.
+    $responseStateKeys = array_values(array_filter(
+        array_keys($catalogue),
+        static fn ($k) => isset($catalogue[$k]['response_state'])
+    ));
+    $reserved = [];
+    if (isset($catalogue['no_response'])) {
+        $reserved['no_response'] = (int) floor($total * 0.02);
+    }
+    if (isset($catalogue['not_tested'])) {
+        $reserved['not_tested'] = (int) floor($total * 0.01);
+    }
+    $reservedTotal = array_sum($reserved);
+    $remainingTotal = max(0, $total - $reservedTotal);
 
-    $fcCount = $hasFullyCorrect ? (int) round($total * 0.5) : 0;
-    $remaining = $total - $fcCount;
+    $hasFullyCorrect = isset($catalogue['fully_correct']);
+    $otherKeys = array_values(array_filter(
+        array_keys($catalogue),
+        static fn ($k) => $k !== 'fully_correct' && !in_array($k, $responseStateKeys, true)
+    ));
+
+    $fcCount = $hasFullyCorrect ? (int) round($remainingTotal * 0.5) : 0;
+    $remaining = $remainingTotal - $fcCount;
 
     // Spread the remainder across the "other" aberrations as evenly as possible.
     $per = [];
@@ -338,6 +360,11 @@ function auto_distribute(array $catalogue, int $total): array
     }
     foreach ($otherKeys as $k) {
         $emit($k, $per[$k], $catalogue[$k]);
+    }
+    // Emit the reserved non-response allocations last so they're concentrated at
+    // the tail of $assignments (cosmetic — keeps response labs grouped together).
+    foreach ($reserved as $k => $count) {
+        $emit($k, $count, $catalogue[$k]);
     }
 
     return $assignments;
