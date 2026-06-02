@@ -1,0 +1,402 @@
+<?php
+
+/**
+ * Vietnam (NIHE) DTS HIV serology — SUMMARY report (one per panel tier).
+ *
+ * Structure mirrors the NIHE template
+ * (~/Downloads/VIETNAM/1. HIV Serology _Summary _ NIHE template_09 Apr 2026.docx)
+ * minus the cover page (signature block). Sections:
+ *
+ *   1. Participant performance overview
+ *      1.1 Number of participants
+ *      1.2 Participants with incorrect results (counts + IDs + per-sample concordance)
+ *      1.3 [skipped — non-MOH-approved reagent list, ePT has no MOH-approved flag]
+ *   2. Result
+ *      2.1-2.3 [skipped — participant function / reporting time / testing method,
+ *               none of these are captured in ePT response data]
+ *      2.4 Test kit used for PT survey (sorted desc by usage)
+ *      2.5 List of participants with discordant results, grouped by sample
+ *   3. [appendix skipped — panel characterisation grid is reference-only data
+ *      that doesn't belong in the per-shipment summary]
+ *
+ * Qualitative: no numeric score thresholds, no "Scoring >= 95" overview.
+ * Top margin pinned to clear FpdiReport.Header()'s "All Participants Results Report"
+ * line (default template-top-margin from DB collides with body otherwise).
+ */
+
+if ($resultArray['shipment'] != "") {
+
+    if (!file_exists($reportsPath . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code']) && !is_dir($reportsPath . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'])) {
+        mkdir($reportsPath . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'], 0777, true);
+    }
+
+    $reportFormat = $reportService->getReportConfigValue('report-format');
+    if (isset($reportFormat) && !empty($reportFormat)) {
+        $pdf = new Pt_Reports_FpdiReport(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+        $pdf->setParams($resultStatus, $evalRow['date_finalised'], "", $watermark, "SUMMARY", $layout, $resultArray['shipment']['scheme_name']);
+    } else {
+        $pdf = new Pt_Reports_SummaryPdf(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+        $pdf->setSchemeName($header, $resultArray['shipment']['scheme_name'], $logo, $logoRight, $resultStatus, $resultArray['shipment']['scheme_type'], $evalRow['date_finalised'], "", $watermark, "", $instituteAddressPosition, "", "", $panelTestType);
+    }
+
+    $pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE, PDF_HEADER_STRING);
+    $pdf->setHeaderFont(['freesans', '', PDF_FONT_SIZE_MAIN]);
+    $pdf->setFooterFont(['freesans', '', PDF_FONT_SIZE_DATA]);
+    $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
+
+    // FpdiReport.Header() writes "All Participants Results Report" at
+    // y = templateTopMargin; SummaryPdf.Header() draws the title block down to
+    // ~y=35. Body must clear either, so we pin a fixed value Vietnam-wide.
+    $mt = !empty($reportFormat) ? max(60, (int) ($templateTopMargin ?? 0) + 15) : 50;
+    $pdf->SetMargins(PDF_MARGIN_LEFT, $mt, PDF_MARGIN_RIGHT);
+    $pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
+    $pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
+    $pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
+    $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
+
+    $pdf->AddPage('P', 'A4');
+    $pdf->SetFont('freesans', '', 12);
+
+    $shipmentId = (int) $resultArray['shipment']['shipment_id'];
+    $tierLabel = !empty($panelTestType) ? ucwords($panelTestType) : '';
+    $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+    $tierClause = !empty($panelTestType)
+        ? " AND JSON_EXTRACT(spm.attributes, '$.dts_test_panel_type') = " . $db->quote($panelTestType)
+        : '';
+
+    // -------- Title block (replaces NIHE cover page) --------
+    $title = '<div style="text-align:center;">';
+    $title .= '<span style="font-weight:bold;font-size:14px;">' . Pt_Commons_TranslateUtility::safeTranslate('PROFICIENCY TESTING PROGRAM – HIV SEROLOGY') . '</span><br/>';
+    $title .= '<span style="font-weight:bold;font-size:12px;">' . Pt_Commons_TranslateUtility::safeTranslate('FINAL SUMMARY REPORT');
+    if ($tierLabel !== '') {
+        $title .= ' — ' . Pt_Commons_TranslateUtility::safeTranslate($tierLabel);
+    }
+    $title .= '</span></div><br/>';
+    $pdf->writeHTML($title, true, false, true, false, '');
+
+    if (!empty($resultArray['shipment']['referenceResult'])) {
+        $panelInfo = '<table border="1" style="text-align:center;width:100%;font-size:12px;" align="center"><tr>';
+        $panelInfo .= '<td style="background-color:#dbe4ee;font-weight:bold;width:34%;">' . Pt_Commons_TranslateUtility::safeTranslate('Panel ID') . '</td>';
+        $panelInfo .= '<td style="background-color:#dbe4ee;font-weight:bold;width:33%;">' . Pt_Commons_TranslateUtility::safeTranslate('Shipment Date') . '</td>';
+        $panelInfo .= '<td style="background-color:#dbe4ee;font-weight:bold;width:33%;">' . Pt_Commons_TranslateUtility::safeTranslate('Result Due Date') . '</td>';
+        $panelInfo .= '</tr><tr>';
+        $panelInfo .= '<td>' . $resultArray['shipment']['shipment_code'] . '</td>';
+        $panelInfo .= '<td>' . Pt_Commons_DateUtility::humanReadableDateFormat($resultArray['shipment']['shipment_date']) . '</td>';
+        $panelInfo .= '<td>' . Pt_Commons_DateUtility::humanReadableDateFormat($resultArray['shipment']['response_deadline']) . '</td>';
+        $panelInfo .= '</tr></table><br/>';
+        $pdf->writeHTML($panelInfo, true, false, true, false, '');
+    }
+
+    if (isset($resultArray['shipment']['summaryResult']) && count($resultArray['shipment']['summaryResult']) > 0) {
+        $result = end($resultArray['shipment']['summaryResult']);
+        reset($resultArray['shipment']['summaryResult']);
+
+        $totalShipped = (int) ($participantPerformance['total_shipped'] ?? 0);
+        $totalResponses = (int) ($participantPerformance['total_responses'] ?? 0);
+        $notRespondedN = max(0, $totalShipped - $totalResponses);
+        $acceptableCount = (int) ($participantPerformance['number_passed'] ?? 0);
+        $unacceptableCount = (int) ($participantPerformance['number_failed'] ?? 0);
+        $notEvaluatedCount = max(0, $totalResponses - $acceptableCount - $unacceptableCount);
+
+        $pct = static function (int $n, int $total): string {
+            return $total > 0 ? round(($n / $total) * 100, 2) . '%' : '-';
+        };
+
+        // ============================================================
+        // 1. PARTICIPANT PERFORMANCE OVERVIEW
+        // ============================================================
+        $pdf->writeHTML('<span style="font-weight:bold;font-size:13px;">1. ' . Pt_Commons_TranslateUtility::safeTranslate('Participant Performance Overview') . '</span>', true, false, true, false, '');
+
+        // -- 1.1 Number of participants --
+        $pdf->writeHTML('<span style="font-weight:bold;font-size:12px;">1.1 ' . Pt_Commons_TranslateUtility::safeTranslate('Number of Participants') . '</span>', true, false, true, false, '');
+        $numPart = '<table border="1" style="text-align:center;width:100%;font-size:12px;"><tr>';
+        $numPart .= '<td style="background-color:#dbe4ee;font-weight:bold;">' . Pt_Commons_TranslateUtility::safeTranslate('# of Participants') . '</td>';
+        $numPart .= '<td style="background-color:#dbe4ee;font-weight:bold;">' . Pt_Commons_TranslateUtility::safeTranslate('# of Responses') . '</td>';
+        $numPart .= '<td style="background-color:#dbe4ee;font-weight:bold;">' . Pt_Commons_TranslateUtility::safeTranslate('# of Not Responded') . '</td>';
+        $numPart .= '<td style="background-color:#dbe4ee;font-weight:bold;">' . Pt_Commons_TranslateUtility::safeTranslate('Acceptable') . ' / ' . Pt_Commons_TranslateUtility::safeTranslate('Unacceptable') . '</td>';
+        $numPart .= '</tr><tr>';
+        $numPart .= '<td>' . $totalShipped . '</td>';
+        $numPart .= '<td>' . $totalResponses . '</td>';
+        $numPart .= '<td>' . $notRespondedN . '</td>';
+        $numPart .= '<td>' . $acceptableCount . ' / ' . $unacceptableCount . '</td>';
+        $numPart .= '</tr></table><br/>';
+        $pdf->writeHTML($numPart, true, false, true, false, '');
+
+        // -- 1.2 Participants with incorrect results --
+        $pdf->writeHTML('<span style="font-weight:bold;font-size:12px;">1.2 ' . Pt_Commons_TranslateUtility::safeTranslate('List of Participants with Incorrect Results') . '</span>', true, false, true, false, '');
+
+        $incorrectIdsRows = $db->fetchAll(
+            "SELECT p.unique_identifier
+             FROM shipment_participant_map spm
+             JOIN participant p ON p.participant_id = spm.participant_id
+             WHERE spm.shipment_id = ?
+               AND spm.final_result = 2
+               AND spm.is_excluded != 'yes'
+               $tierClause
+             ORDER BY p.unique_identifier",
+            $shipmentId
+        );
+        $incorrectIds = array_column($incorrectIdsRows, 'unique_identifier');
+        $incorrectIdList = !empty($incorrectIds) ? implode(', ', $incorrectIds) : '—';
+
+        $incTbl = '<table border="1" style="text-align:center;width:100%;font-size:12px;"><tr>';
+        $incTbl .= '<td style="background-color:#dbe4ee;font-weight:bold;width:14%;">' . Pt_Commons_TranslateUtility::safeTranslate('# of Participants') . '</td>';
+        $incTbl .= '<td style="background-color:#dbe4ee;font-weight:bold;width:18%;">' . Pt_Commons_TranslateUtility::safeTranslate('# had correct results (n / %)') . '</td>';
+        $incTbl .= '<td style="background-color:#dbe4ee;font-weight:bold;width:18%;">' . Pt_Commons_TranslateUtility::safeTranslate('# had incorrect results (n / %)') . '</td>';
+        $incTbl .= '<td style="background-color:#dbe4ee;font-weight:bold;width:50%;">' . Pt_Commons_TranslateUtility::safeTranslate('Participants with Incorrect Results') . '</td>';
+        $incTbl .= '</tr><tr>';
+        $incTbl .= '<td>' . $totalResponses . '</td>';
+        $incTbl .= '<td>' . $acceptableCount . ' (' . $pct($acceptableCount, $totalResponses) . ')</td>';
+        $incTbl .= '<td>' . $unacceptableCount . ' (' . $pct($unacceptableCount, $totalResponses) . ')</td>';
+        $incTbl .= '<td style="text-align:left;font-size:11px;">' . $incorrectIdList . '</td>';
+        $incTbl .= '</tr></table><br/>';
+        $pdf->writeHTML($incTbl, true, false, true, false, '');
+
+        // Per-sample concordance with reference
+        $sampleCount = count($result['correctCount']);
+        $sampleCode = '<table border="1" style="text-align:center;width:100%;font-size:12px;">';
+        $sampleCode .= '<tr><td rowspan="2" style="background-color:#dbe4ee;"></td>';
+        $sampleCode .= '<td colspan="' . $sampleCount . '" style="background-color:#dbe4ee;font-weight:bold;">' . Pt_Commons_TranslateUtility::safeTranslate('Sample ID') . '</td>';
+        $sampleCode .= '<td rowspan="2" style="background-color:#dbe4ee;font-weight:bold;">' . Pt_Commons_TranslateUtility::safeTranslate('Average') . '</td></tr>';
+        $sampleCode .= '<tr>';
+        foreach ($result['correctCount'] as $sample) {
+            $sampleCode .= '<td style="background-color:#dbe4ee;font-weight:bold;">' . $sample['sample_label'] . '</td>';
+        }
+        $sampleCode .= '</tr>';
+        $sampleCode .= '<tr><td style="background-color:#dbe4ee;font-weight:bold;">' . Pt_Commons_TranslateUtility::safeTranslate('Reference Result') . '</td>';
+
+        $nonMandatorySamples = [];
+        foreach ($resultArray['shipment']['referenceResult'] as $refRes) {
+            if ($refRes['mandatory'] == 0) {
+                $nonMandatorySamples[] = $refRes['sample_label'];
+            }
+            $sampleCode .= '<td>' . ucfirst(strtolower($refRes['referenceResult'])) . '</td>';
+        }
+        $sampleCode .= '<td></td></tr>';
+        $sampleCode .= '<tr><td style="background-color:#BCD7EC;font-weight:bold;">' . Pt_Commons_TranslateUtility::safeTranslate('Correctly Reported') . '</td>';
+        $sampAvg = 0;
+        $sampPerAvg = 0;
+        foreach ($result['correctCount'] as $sample) {
+            $denom = (int) ($sample['number_responded'] ?? 0);
+            $correct = (int) $sample['correctRes'];
+            $rowPct = $denom > 0 ? round(($correct / $denom) * 100, 2) : 0;
+            $sampAvg += $correct;
+            $sampPerAvg += $rowPct;
+            $sampleCode .= '<td>' . $correct . '<br/>(' . $rowPct . '%)</td>';
+        }
+        $sampleCode .= '<td>' . round($sampAvg / $sampleCount, 2) . '<br/>(' . round($sampPerAvg / $sampleCount, 2) . '%)</td>';
+        $sampleCode .= '</tr></table><br/>';
+        $pdf->writeHTML($sampleCode, true, false, true, false, '');
+
+        if (!empty($nonMandatorySamples)) {
+            $nmsTable = '<span style="font-size:11px;font-style:italic;">' . Pt_Commons_TranslateUtility::safeTranslate("The following samples have been excluded from this evaluation") . ': ' . implode(', ', $nonMandatorySamples) . '</span><br/><br/>';
+            $pdf->writeHTML($nmsTable, true, false, true, false, '');
+        }
+
+        // ============================================================
+        // 2. RESULT
+        // ============================================================
+        $pdf->AddPage();
+        $pdf->writeHTML('<span style="font-weight:bold;font-size:13px;">2. ' . Pt_Commons_TranslateUtility::safeTranslate('Result') . '</span>', true, false, true, false, '');
+
+        // -- 2.1 Test kit used for PT survey (NIHE 2.4) --
+        $pdf->writeHTML('<span style="font-weight:bold;font-size:12px;">2.1 ' . Pt_Commons_TranslateUtility::safeTranslate('Test Kit used for PT Survey') . '</span>', true, false, true, false, '');
+
+        $kitUsage = [];
+        foreach (['pieChart', 'pieChart2', 'pieChart3'] as $key) {
+            if (!empty($resultArray['shipment'][$key])) {
+                $countKey = ['pieChart' => 'testkit1Total', 'pieChart2' => 'testkit2Total', 'pieChart3' => 'testkit3Total'][$key];
+                foreach ($resultArray['shipment'][$key] as $row) {
+                    $name = trim((string) ($row['TestKit_Name'] ?? ''));
+                    if ($name === '') {
+                        continue;
+                    }
+                    $kitUsage[$name] = ($kitUsage[$name] ?? 0) + (int) ($row[$countKey] ?? 0);
+                }
+            }
+        }
+        arsort($kitUsage);
+        $kitUsageTotal = array_sum($kitUsage);
+
+        if (!empty($kitUsage)) {
+            $kitTbl = '<table border="1" style="width:100%;font-size:12px;"><tr style="text-align:center;background-color:#dbe4ee;font-weight:bold;">';
+            $kitTbl .= '<td style="width:8%;">' . Pt_Commons_TranslateUtility::safeTranslate('No') . '</td>';
+            $kitTbl .= '<td style="width:62%;">' . Pt_Commons_TranslateUtility::safeTranslate('Reagent Name') . '</td>';
+            $kitTbl .= '<td style="width:15%;">' . Pt_Commons_TranslateUtility::safeTranslate('# of Participants Using') . '</td>';
+            $kitTbl .= '<td style="width:15%;">' . Pt_Commons_TranslateUtility::safeTranslate('%') . '</td>';
+            $kitTbl .= '</tr>';
+            $no = 1;
+            foreach ($kitUsage as $kitName => $count) {
+                $pctVal = $kitUsageTotal > 0 ? round(($count / $kitUsageTotal) * 100, 2) : 0;
+                $kitTbl .= '<tr>';
+                $kitTbl .= '<td style="text-align:center;">' . $no++ . '</td>';
+                $kitTbl .= '<td style="text-align:left;">' . htmlspecialchars($kitName, ENT_QUOTES) . '</td>';
+                $kitTbl .= '<td style="text-align:center;">' . $count . '</td>';
+                $kitTbl .= '<td style="text-align:center;">' . $pctVal . '%</td>';
+                $kitTbl .= '</tr>';
+            }
+            $kitTbl .= '<tr style="font-weight:bold;background-color:#f6f6f6;">';
+            $kitTbl .= '<td colspan="2" style="text-align:right;">' . Pt_Commons_TranslateUtility::safeTranslate('Total') . '</td>';
+            $kitTbl .= '<td style="text-align:center;">' . $kitUsageTotal . '</td>';
+            $kitTbl .= '<td style="text-align:center;">100%</td>';
+            $kitTbl .= '</tr></table><br/>';
+            $pdf->writeHTML($kitTbl, true, false, true, false, '');
+        } else {
+            $pdf->writeHTML('<span style="font-size:11px;font-style:italic;">' . Pt_Commons_TranslateUtility::safeTranslate('No test kit usage data') . '</span><br/><br/>', true, false, true, false, '');
+        }
+
+        // -- 2.2 Discordant results grouped by sample (NIHE 2.5) --
+        $pdf->writeHTML('<span style="font-weight:bold;font-size:12px;">2.2 ' . Pt_Commons_TranslateUtility::safeTranslate('List of Participants with Discordant Results') . '</span>', true, false, true, false, '');
+
+        $resultLabels = [];
+        foreach ($db->fetchAll("SELECT id, response FROM r_possibleresult WHERE scheme_sub_group IN ('DTS_TEST','DTS_FINAL')") as $r) {
+            $resultLabels[(int) $r['id']] = ucfirst(strtolower($r['response']));
+        }
+
+        $discordantRows = $db->fetchAll(
+            "SELECT rs.sample_label, rs.sample_id, rs.reference_result, rrd.reported_result, p.unique_identifier
+             FROM shipment_participant_map spm
+             JOIN response_result_dts rrd ON rrd.shipment_map_id = spm.map_id
+             JOIN reference_result_dts rs ON rs.shipment_id = spm.shipment_id AND rs.sample_id = rrd.sample_id
+             JOIN participant p ON p.participant_id = spm.participant_id
+             WHERE spm.shipment_id = ?
+               AND rrd.calculated_score = 'Fail'
+               AND spm.is_excluded != 'yes'
+               $tierClause
+             ORDER BY rs.sample_id, rrd.reported_result, p.unique_identifier",
+            $shipmentId
+        );
+
+        if (!empty($discordantRows)) {
+            $grouped = [];
+            foreach ($discordantRows as $r) {
+                $key = $r['sample_id'] . '|' . $r['reported_result'] . '|' . $r['reference_result'];
+                if (!isset($grouped[$key])) {
+                    $grouped[$key] = [
+                        'sample_label' => $r['sample_label'],
+                        'reference' => $resultLabels[(int) $r['reference_result']] ?? '-',
+                        'reported' => $resultLabels[(int) $r['reported_result']] ?? '-',
+                        'participants' => [],
+                    ];
+                }
+                $grouped[$key]['participants'][] = $r['unique_identifier'];
+            }
+
+            $discTbl = '<table border="1" style="width:100%;font-size:12px;"><tr style="text-align:center;background-color:#dbe4ee;font-weight:bold;">';
+            $discTbl .= '<td style="width:6%;">' . Pt_Commons_TranslateUtility::safeTranslate('No') . '</td>';
+            $discTbl .= '<td style="width:18%;">' . Pt_Commons_TranslateUtility::safeTranslate('Sample ID') . '</td>';
+            $discTbl .= '<td style="width:16%;">' . Pt_Commons_TranslateUtility::safeTranslate('Reference Result') . '</td>';
+            $discTbl .= '<td style="width:16%;">' . Pt_Commons_TranslateUtility::safeTranslate('Reported Result') . '</td>';
+            $discTbl .= '<td style="width:44%;">' . Pt_Commons_TranslateUtility::safeTranslate('Participant IDs') . '</td>';
+            $discTbl .= '</tr>';
+            $no = 1;
+            foreach ($grouped as $row) {
+                $discTbl .= '<tr>';
+                $discTbl .= '<td style="text-align:center;">' . $no++ . '</td>';
+                $discTbl .= '<td style="text-align:center;">' . htmlspecialchars($row['sample_label'], ENT_QUOTES) . '</td>';
+                $discTbl .= '<td style="text-align:center;">' . htmlspecialchars($row['reference'], ENT_QUOTES) . '</td>';
+                $discTbl .= '<td style="text-align:center;">' . htmlspecialchars($row['reported'], ENT_QUOTES) . '</td>';
+                $discTbl .= '<td style="text-align:left;font-size:11px;">' . htmlspecialchars(implode(', ', $row['participants']), ENT_QUOTES) . '</td>';
+                $discTbl .= '</tr>';
+            }
+            $discTbl .= '</table><br/>';
+            $pdf->writeHTML($discTbl, true, false, true, false, '');
+        } else {
+            $pdf->writeHTML('<span style="font-size:11px;font-style:italic;">' . Pt_Commons_TranslateUtility::safeTranslate('No discordant results') . '</span><br/><br/>', true, false, true, false, '');
+        }
+
+        // -------- Corrective Action overview (carries NIHE feedback texts) --------
+        if (!empty($correctivenessArray)) {
+            $pdf->writeHTML('<span style="font-weight:bold;font-size:12px;">2.3 ' . Pt_Commons_TranslateUtility::safeTranslate('Corrective Action Overview') . '</span>', true, false, true, false, '');
+            $ca = '<table border="1" style="width:100%;font-size:12px;"><tr style="text-align:center;background-color:#dbe4ee;font-weight:bold;">';
+            $ca .= '<td style="width:75%;">' . Pt_Commons_TranslateUtility::safeTranslate('Corrective Action') . '</td>';
+            $ca .= '<td style="width:25%;">' . Pt_Commons_TranslateUtility::safeTranslate('Responses having Corrective Action') . '</td></tr>';
+            foreach ($correctivenessArray as $correctiveness) {
+                $ca .= '<tr>';
+                $ca .= '<td style="text-align:left;">' . Pt_Commons_TranslateUtility::safeTranslate($correctiveness['corrective_action']) . '</td>';
+                $ca .= '<td style="text-align:center;">' . $correctiveness['total_corrective'] . '</td>';
+                $ca .= '</tr>';
+            }
+            $ca .= '</table><br/>';
+            $pdf->writeHTML($ca, true, false, true, false, '');
+        }
+
+        // -------- Verdict pie chart --------
+        if (isset($responseResult) && count($responseResult) > 0 && $responseResult != '') {
+            $total = (int) ($responseResult["total_shipped"] ?? 0);
+            $passedN = max(0, (int) ($responseResult["number_passed"] ?? 0));
+            $failedN = max(0, (int) ($responseResult["number_failed"] ?? 0));
+            $notRespondedChart = (int) ($responseResult["not_responded"] ?? 0);
+            $excludedChart = abs(((int) ($responseResult["excluded"] ?? 0)) - $notRespondedChart);
+
+            if ($total > 0 && ($passedN > 0 || $failedN > 0 || $notRespondedChart > 0 || $excludedChart > 0)) {
+                $outputDir = $reportsPath . DIRECTORY_SEPARATOR . $responseResult["shipment_code"];
+                $chartW = $pdf->getPageWidth() - PDF_MARGIN_LEFT - PDF_MARGIN_RIGHT;
+                $pieChartTitle = Pt_Commons_TranslateUtility::safeTranslate("Shipment Participant Result Report") . ' (N=' . $total . ')';
+                if ($tierLabel !== '') {
+                    $pieChartTitle .= ' — ' . Pt_Commons_TranslateUtility::safeTranslate($tierLabel);
+                }
+                $performancePiechart = Pt_Reports_ChartService::render([
+                    'type' => 'pie',
+                    'width' => 700, 'height' => 400,
+                    'filename' => 'performanceChart',
+                    'title' => $pieChartTitle,
+                    'slices' => [
+                        'data' => [
+                            number_format($passedN / $total * 100, 2),
+                            number_format($failedN / $total * 100, 2),
+                            number_format($notRespondedChart / $total * 100, 2),
+                            number_format($excludedChart / $total * 100, 2),
+                        ],
+                        'labels' => [
+                            Pt_Commons_TranslateUtility::safeTranslate('Acceptable') . ' (N=' . $passedN . ')',
+                            Pt_Commons_TranslateUtility::safeTranslate('Unacceptable') . ' (N=' . $failedN . ')',
+                            Pt_Commons_TranslateUtility::safeTranslate('Not Responded') . ' (N=' . $notRespondedChart . ')',
+                            Pt_Commons_TranslateUtility::safeTranslate('Excluded') . ' (N=' . $excludedChart . ')',
+                        ],
+                        'colors' => ['#22C55E', '#DC3545', '#F59E0B', '#94A3B8'],
+                    ],
+                    'legend' => ['position' => 'bottom'],
+                ], $outputDir);
+
+                $pieW = $chartW * 0.5;
+                $pieX = PDF_MARGIN_LEFT + ($chartW - $pieW) / 2;
+                $pieY = $pdf->getY() + 3;
+                [$pngW, $pngH] = getimagesize($performancePiechart);
+                $pieDisplayH = ($pngH / $pngW) * $pieW;
+                $pdf->Image($performancePiechart, $pieX, $pieY, $pieW, 0, '', '', '', false, 300);
+                $pdf->SetY($pieY + $pieDisplayH + 4);
+                if (file_exists($performancePiechart)) {
+                    unlink($performancePiechart);
+                }
+            }
+        }
+
+        // Keep the EOR caption on the chart's page. TCPDF auto-page-breaks the
+        // writeHTML line if the cursor is anywhere near the bottom margin (the
+        // centered line gets pessimistically measured), even when it would visually
+        // fit. Disable auto-break and clamp the cursor into safe territory before
+        // emitting the line.
+        $pdf->SetAutoPageBreak(false);
+        $maxY = $pdf->getPageHeight() - PDF_MARGIN_BOTTOM - 8;
+        if ($pdf->getY() > $maxY) {
+            $pdf->SetY($maxY);
+        } else {
+            $pdf->Ln(3);
+        }
+        $pdf->writeHTML('<span style="text-align:center;font-weight:bold;font-size:11px;">-- ' . Pt_Commons_TranslateUtility::safeTranslate('END OF REPORT') . ' --</span>', true, false, true, false, '');
+        $pdf->SetAutoPageBreak(true, PDF_MARGIN_BOTTOM);
+    } else {
+        $pdf->writeHTML('<br><br><br><span style="font-weight:bold;text-align:center;">' . Pt_Commons_TranslateUtility::safeTranslate('No participants') . '</span>', true, false, true, false, '');
+    }
+
+    if (!empty($panelTestType) && $panelTestType != '') {
+        $panelTestType = "-" . $panelTestType;
+    }
+    $fileName = $resultArray['shipment']['shipment_code'] . $panelTestType . "-summary.pdf";
+    $filePath = $reportsPath . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'] . DIRECTORY_SEPARATOR . $fileName;
+    $pdf->Output($filePath, "F");
+    if ($trainingInstance == "yes") {
+        $pdf = new Pt_Reports_PdfRotate();
+    }
+}

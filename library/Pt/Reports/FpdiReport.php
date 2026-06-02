@@ -69,7 +69,10 @@ class Pt_Reports_FpdiReport extends Fpdi
                 $this->SetFont('freesans', 'B', 10);
             }
         }
-        if ($this->layout != 'malawi' && $this->layout != 'zimbabwe' && $this->layout != 'default') {
+        // Vietnam layouts carry their own NIHE-style title block in the body, so the
+        // generic "All Participants Results Report" / "Individual Participant Results
+        // Report" header line is skipped to avoid stacking two titles.
+        if ($this->layout != 'malawi' && $this->layout != 'zimbabwe' && $this->layout != 'default' && $this->layout != 'vietnam') {
             if (isset($this->reportType) && !empty($this->reportType) && strtolower($this->reportType) == 'summary' && $this->PageNo() == 1) {
                 $this->writeHTML('<br>All Participants Results Report', true, false, true, false, 'C');
             } elseif (strtolower($this->reportType) == 'individual' && $this->PageNo() == 1 && $this->schemeType != 'dts') {

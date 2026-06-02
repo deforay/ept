@@ -21,6 +21,7 @@ class Pt_Reports_ChartRenderer_ChartJsNode implements Pt_Reports_ChartRenderer_R
             'stackedBar' => $this->buildStackedBarConfig($config),
             'pie'        => $this->buildPieConfig($config),
             'bar+line'   => $this->buildBarLineConfig($config),
+            'boxRange'   => $this->buildBoxRangeConfig($config),
             default      => throw new InvalidArgumentException("Unknown chart type: $type"),
         };
 
@@ -284,6 +285,170 @@ class Pt_Reports_ChartRenderer_ChartJsNode implements Pt_Reports_ChartRenderer_R
                         'grid' => ['display' => false],
                     ],
                 ],
+            ],
+        ];
+    }
+
+    /**
+     * Per-sample distribution chart used by Vietnam (NIHE) numeric-kit Peer Group Statistics.
+     * Renders one "box" per sample showing the peer Mean ± SD (floating bar) with whiskers from
+     * the peer min..max range, and overlays the participant's own reported value as a coloured
+     * point (Acceptable / Unacceptable / Not Evaluated). Stays within Chart.js's built-in bar
+     * and line controllers so it works with the existing chart-render.js without plugins.
+     *
+     * Expected $config:
+     *   labels: ['NIHE-HIV-2301-01', ...]
+     *   datasets: [
+     *     ['type'=>'whisker', 'data'=>[[min,max], ...]],
+     *     ['type'=>'box',     'data'=>[[mean-sd, mean+sd], ...]],
+     *     ['type'=>'mean',    'data'=>[mean, ...]],
+     *     ['type'=>'point',   'data'=>[participantValue|null, ...], 'pointColors'=>[...], 'label'=>'Acceptable'],
+     *     // ... one 'point' dataset per concordance category so the legend reads correctly
+     *   ]
+     */
+    private function buildBoxRangeConfig(array $config): array
+    {
+        $labels = $config['xAxis']['labels'] ?? [];
+        $datasets = $config['datasets'] ?? [];
+
+        $chartDatasets = [];
+        foreach ($datasets as $ds) {
+            $kind = $ds['type'] ?? 'box';
+            switch ($kind) {
+                case 'whisker':
+                    $chartDatasets[] = [
+                        'type'               => 'bar',
+                        'data'               => $ds['data'] ?? [],
+                        'backgroundColor'    => $this->mapColor($ds['color'] ?? '#7e7e7e'),
+                        'borderColor'        => $this->mapColor($ds['color'] ?? '#7e7e7e'),
+                        'borderWidth'        => 0,
+                        'barPercentage'      => 0.08,
+                        'categoryPercentage' => 0.9,
+                        'grouped'            => false,
+                        'order'              => 3,
+                    ];
+                    break;
+                case 'box':
+                    $chartDatasets[] = [
+                        'type'               => 'bar',
+                        'data'               => $ds['data'] ?? [],
+                        'backgroundColor'    => $this->mapColor($ds['color'] ?? '#ffffff'),
+                        'borderColor'        => $this->mapColor($ds['borderColor'] ?? '#222'),
+                        'borderWidth'        => 2,
+                        'barPercentage'      => 0.55,
+                        'categoryPercentage' => 0.9,
+                        'grouped'            => false,
+                        'order'              => 2,
+                    ];
+                    break;
+                case 'mean':
+                    // A thin horizontal floating bar at [mean-eps, mean+eps] visualises the
+                    // median/mean line inside the box. Computed in PHP so the chart payload
+                    // is plain JSON.
+                    $chartDatasets[] = [
+                        'type'               => 'bar',
+                        'data'               => $ds['data'] ?? [],
+                        'backgroundColor'    => $this->mapColor($ds['color'] ?? '#222'),
+                        'borderColor'        => $this->mapColor($ds['color'] ?? '#222'),
+                        'borderWidth'        => 0,
+                        'barPercentage'      => 0.55,
+                        'categoryPercentage' => 0.9,
+                        'grouped'            => false,
+                        'order'              => 1,
+                    ];
+                    break;
+                case 'point':
+                default:
+                    $pointColor = $this->mapColor($ds['color'] ?? '#ff8c00');
+                    $chartDatasets[] = [
+                        'type'                 => 'line',
+                        'data'                 => $ds['data'] ?? [],
+                        'label'                => $ds['label'] ?? '',
+                        'showLine'             => false,
+                        'borderColor'          => $pointColor,
+                        'backgroundColor'      => $pointColor,
+                        'pointBackgroundColor' => $pointColor,
+                        'pointBorderColor'     => $pointColor,
+                        'pointRadius'          => 9,
+                        'pointHoverRadius'     => 9,
+                        'pointStyle'           => $ds['pointStyle'] ?? 'circle',
+                        'spanGaps'             => false,
+                        'order'                => 0,
+                    ];
+                    break;
+            }
+        }
+
+        $yAxis = $config['yAxis'] ?? [];
+        $yScale = [
+            'beginAtZero' => false,
+            'title' => [
+                'display' => !empty($yAxis['title']),
+                'text'    => $yAxis['title'] ?? '',
+                'font'    => ['size' => 24, 'weight' => 'bold'],
+            ],
+            'ticks' => ['font' => ['size' => 22]],
+            'grid'  => ['color' => 'rgba(0,0,0,0.06)'],
+        ];
+        if (isset($yAxis['min'])) {
+            $yScale['min'] = $yAxis['min'];
+        }
+        if (isset($yAxis['max'])) {
+            $yScale['max'] = $yAxis['max'];
+        }
+
+        return [
+            'type' => 'bar',
+            'data' => ['labels' => $labels, 'datasets' => $chartDatasets],
+            'options' => [
+                'plugins' => [
+                    'title'  => $this->buildTitlePlugin($config),
+                    'legend' => $this->buildBoxRangeLegend($config, $datasets),
+                ],
+                'scales' => [
+                    'x' => [
+                        'grid'  => ['display' => false],
+                        'title' => [
+                            'display' => !empty($config['xAxis']['title']),
+                            'text'    => $config['xAxis']['title'] ?? '',
+                            'font'    => ['size' => 22, 'weight' => 'bold'],
+                        ],
+                        'ticks' => array_merge(['font' => ['size' => 20]], (($config['xAxis']['labelAngle'] ?? 0) > 0
+                            ? ['maxRotation' => $config['xAxis']['labelAngle'], 'minRotation' => $config['xAxis']['labelAngle']]
+                            : [])),
+                    ],
+                    'y' => $yScale,
+                ],
+            ],
+        ];
+    }
+
+    private function buildBoxRangeLegend(array $config, array $datasets): array
+    {
+        // Hide bar-only legend entries (whisker/box/mean); show only the labelled point datasets.
+        // Chart.js's default legend would emit grey rectangles for the box/whisker which read
+        // as noise — explicit filter keeps the legend focused on concordance categories.
+        $hasLabelledPoint = false;
+        foreach ($datasets as $ds) {
+            if (($ds['type'] ?? '') === 'point' && !empty($ds['label'])) {
+                $hasLabelledPoint = true;
+                break;
+            }
+        }
+        if (!$hasLabelledPoint) {
+            return ['display' => false];
+        }
+        return [
+            'display'  => true,
+            'position' => $config['legend']['position'] ?? 'bottom',
+            'labels'   => [
+                'padding'       => 16,
+                'usePointStyle' => true,
+                'font'          => ['size' => 20],
+                // Sentinel honoured by chart-render.js: installs a runtime filter that hides
+                // legend items whose dataset has no label, so the bar-only whisker/box/mean
+                // datasets don't appear alongside the labelled concordance categories.
+                'filterEmpty'   => true,
             ],
         ];
     }

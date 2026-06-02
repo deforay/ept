@@ -68,6 +68,15 @@ process.stdin.on('end', async () => {
     try {
         const { width, height, chart: chartConfig } = JSON.parse(inputData);
 
+        // Honor a sentinel on plugins.legend.labels.filterEmpty=true: install a filter that
+        // suppresses legend items whose dataset has no label (used by the boxRange chart so
+        // the auxiliary whisker/box/mean bar datasets don't pollute the legend).
+        const legendLabels = chartConfig?.options?.plugins?.legend?.labels;
+        if (legendLabels && legendLabels.filterEmpty === true) {
+            legendLabels.filter = (item, _data) => !!item.text && item.text.trim() !== '';
+            delete legendLabels.filterEmpty;
+        }
+
         const canvas = new Canvas(width, height);
 
         // Fill background white

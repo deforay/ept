@@ -269,7 +269,9 @@ if (!empty($resultArray['shipment'])) {
         $pdf->setFooterFont(['freesans', '', PDF_FONT_SIZE_DATA]);
         $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
 
-        $mt = (isset($templateTopMargin) && !empty($templateTopMargin)) ? $templateTopMargin : 45;
+        // Push the body below FpdiReport.Header()'s "Individual Participant Results Report"
+        // line (which renders at y = templateTopMargin). Same pattern as the Vietnam summary.
+        $mt = !empty($reportFormat) ? max(60, (int) ($templateTopMargin ?? 0) + 15) : 45;
         $pdf->SetMargins(PDF_MARGIN_LEFT, $mt, PDF_MARGIN_RIGHT);
         $pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
         $pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
@@ -299,13 +301,22 @@ if (!empty($resultArray['shipment'])) {
             default        => '-',
         };
 
+        // Title block — mirrors the NIHE template (cover page intentionally skipped;
+        // the FpdiReport template carries the institute letterhead).
+        $titleHtml = '<div style="text-align:center;">'
+            . '<span style="font-weight:bold;font-size:13px;">' . Pt_Commons_TranslateUtility::safeTranslate('PROFICIENCY TESTING PROGRAM – HIV SEROLOGY') . '</span><br/>'
+            . '<span style="font-weight:bold;font-size:11px;">' . Pt_Commons_TranslateUtility::safeTranslate('INDIVIDUAL REPORT')
+            . ($panelTypeLabel !== '-' ? ' — ' . Pt_Commons_TranslateUtility::safeTranslate($panelTypeLabel) : '')
+            . '</span></div><br/>';
+        $pdf->writeHTML($titleHtml, true, false, true, false, '');
+
         $info  = '<table cellpadding="3" border="1" style="font-size:11px;">';
-        $info .= '<tr style="background-color:#b7dde7;"><td colspan="4"><strong>' . Pt_Commons_TranslateUtility::safeTranslate('Participant Information') . '</strong></td></tr>';
+        $info .= '<tr style="background-color:#dbe4ee;"><td colspan="4"><strong>' . Pt_Commons_TranslateUtility::safeTranslate('Participant Information') . '</strong></td></tr>';
         $info .= '<tr><td><strong>' . Pt_Commons_TranslateUtility::safeTranslate('Laboratory ID') . '</strong></td><td>' . ($result['unique_identifier'] ?? '') . '</td>'
                . '<td><strong>' . Pt_Commons_TranslateUtility::safeTranslate('Laboratory') . '</strong></td><td>' . ($result['labName'] ?? '') . '</td></tr>';
         $info .= '<tr><td><strong>' . Pt_Commons_TranslateUtility::safeTranslate('Testing tier') . '</strong></td><td>' . Pt_Commons_TranslateUtility::safeTranslate($panelTypeLabel) . '</td>'
                . '<td colspan="2"></td></tr>';
-        $info .= '<tr style="background-color:#b7dde7;"><td colspan="4"><strong>' . Pt_Commons_TranslateUtility::safeTranslate('Panel Information') . '</strong></td></tr>';
+        $info .= '<tr style="background-color:#dbe4ee;"><td colspan="4"><strong>' . Pt_Commons_TranslateUtility::safeTranslate('Panel Information') . '</strong></td></tr>';
         $info .= '<tr><td><strong>' . Pt_Commons_TranslateUtility::safeTranslate('Panel ID') . '</strong></td><td>' . ($result['shipment_code'] ?? '') . '</td>'
                . '<td><strong>' . Pt_Commons_TranslateUtility::safeTranslate('Shipment date') . '</strong></td><td>' . $shipmentDate . '</td></tr>';
         $info .= '<tr><td><strong>' . Pt_Commons_TranslateUtility::safeTranslate('Received date') . '</strong></td><td>' . $receiptDate . '</td>'
@@ -314,17 +325,39 @@ if (!empty($resultArray['shipment'])) {
         $pdf->writeHTML($info, true, false, true, false, '');
 
         // ---- HIV proficiency results (per-sample test breakdown) ----
+        // NIHE column-header style: each test position carries its kit name + Lot No + Exp date.
+        // The kit set is constant across samples for a given participant, so we read it off the
+        // first response row that supplies non-empty values for each position.
         if (!empty($result['responseResult'])) {
+            $firstRow = $result['responseResult'][0];
+            $kitHeader = static function (string $name, ?string $lot, ?string $exp, int $position) {
+                $name = trim((string) $name);
+                if ($name === '') {
+                    return '<strong>' . Pt_Commons_TranslateUtility::safeTranslate('Test ' . $position) . '</strong>';
+                }
+                $h = '<strong>' . htmlspecialchars($name, ENT_QUOTES, 'UTF-8') . '</strong>';
+                if (!empty($lot)) {
+                    $h .= '<br/><span style="font-size:9px;">' . Pt_Commons_TranslateUtility::safeTranslate('Lot No') . ': ' . htmlspecialchars((string) $lot, ENT_QUOTES, 'UTF-8') . '</span>';
+                }
+                if (!empty($exp)) {
+                    $h .= '<br/><span style="font-size:9px;">' . Pt_Commons_TranslateUtility::safeTranslate('Exp') . ': ' . Pt_Commons_DateUtility::humanReadableDateFormat($exp) . '</span>';
+                }
+                return $h;
+            };
+
             $tbl  = '<span style="font-weight:bold;font-size:13px;">' . Pt_Commons_TranslateUtility::safeTranslate('HIV proficiency results') . '</span><br/>';
-            $tbl .= '<table border="1" cellpadding="3" style="font-size:11px;border-color:#b7dde7;">';
-            $tbl .= '<tr style="background-color:#b7dde7;font-weight:bold;text-align:center;">'
-                  . '<td>' . Pt_Commons_TranslateUtility::safeTranslate('Sample') . '</td>'
-                  . '<td>' . Pt_Commons_TranslateUtility::safeTranslate('Test 1') . '</td>'
-                  . '<td>' . Pt_Commons_TranslateUtility::safeTranslate('Test 2') . '</td>'
-                  . '<td>' . Pt_Commons_TranslateUtility::safeTranslate('Test 3') . '</td>'
-                  . '<td>' . Pt_Commons_TranslateUtility::safeTranslate('Conclusion') . '</td>'
-                  . '<td>' . Pt_Commons_TranslateUtility::safeTranslate('Reference result') . '</td>'
-                  . '<td>' . Pt_Commons_TranslateUtility::safeTranslate('Result evaluation') . '</td>'
+            $tbl .= '<table border="1" cellpadding="3" style="font-size:11px;border-color:#dbe4ee;">';
+            $tbl .= '<tr style="background-color:#dbe4ee;text-align:center;vertical-align:middle;">'
+                  . '<td rowspan="2"><strong>' . Pt_Commons_TranslateUtility::safeTranslate('Sample') . '</strong></td>'
+                  . '<td colspan="4"><strong>' . Pt_Commons_TranslateUtility::safeTranslate('Result') . '</strong></td>'
+                  . '<td rowspan="2"><strong>' . Pt_Commons_TranslateUtility::safeTranslate('Reference result (RR)') . '</strong></td>'
+                  . '<td rowspan="2"><strong>' . Pt_Commons_TranslateUtility::safeTranslate('Result evaluation') . '</strong></td>'
+                  . '</tr>';
+            $tbl .= '<tr style="background-color:#dbe4ee;text-align:center;vertical-align:middle;">'
+                  . '<td>' . $kitHeader($firstRow['testkit1'] ?? '', $firstRow['lot_no_1'] ?? '', $firstRow['exp_date_1'] ?? '', 1) . '</td>'
+                  . '<td>' . $kitHeader($firstRow['testkit2'] ?? '', $firstRow['lot_no_2'] ?? '', $firstRow['exp_date_2'] ?? '', 2) . '</td>'
+                  . '<td>' . $kitHeader($firstRow['testkit3'] ?? '', $firstRow['lot_no_3'] ?? '', $firstRow['exp_date_3'] ?? '', 3) . '</td>'
+                  . '<td><strong>' . Pt_Commons_TranslateUtility::safeTranslate('Conclusion') . '</strong></td>'
                   . '</tr>';
 
             foreach ($result['responseResult'] as $response) {
@@ -407,8 +440,17 @@ if (!empty($resultArray['shipment'])) {
                             ''
                         );
 
-                        $tbl  = '<table border="1" cellpadding="3" style="font-size:10px;border-color:#b7dde7;">';
-                        $tbl .= '<tr style="background-color:#b7dde7;font-weight:bold;text-align:center;">'
+                        // Per-sample verdict from this participant's response, for the Concordance
+                        // column. The verdict is shipment-level (per sample, not per kit position),
+                        // but NIHE renders it on each kit's Peer Group Stats block so the reader
+                        // sees the verdict alongside the kit-level numbers.
+                        $verdictPerSample = [];
+                        foreach ($result['responseResult'] as $rr) {
+                            $verdictPerSample[(int) $rr['sample_id']] = $verdictText($rr['calculated_score'] ?? '');
+                        }
+
+                        $tbl  = '<table border="1" cellpadding="3" style="font-size:10px;border-color:#dbe4ee;">';
+                        $tbl .= '<tr style="background-color:#dbe4ee;font-weight:bold;text-align:center;">'
                               . '<td>' . Pt_Commons_TranslateUtility::safeTranslate('Sample') . '</td>'
                               . '<td>' . Pt_Commons_TranslateUtility::safeTranslate('Your result') . '</td>';
                         if ($hasNum) {
@@ -422,8 +464,9 @@ if (!empty($resultArray['shipment'])) {
                                   . '<td>' . Pt_Commons_TranslateUtility::safeTranslate('SD') . '</td>'
                                   . '<td>' . Pt_Commons_TranslateUtility::safeTranslate('CV (%)') . '</td>';
                         }
-                        $tbl .= '<td>' . Pt_Commons_TranslateUtility::safeTranslate('Concordant with RR (%)') . '</td>'
-                              . '<td>' . Pt_Commons_TranslateUtility::safeTranslate('Reference result') . '</td>'
+                        $tbl .= '<td>' . Pt_Commons_TranslateUtility::safeTranslate('Concordant with RR n (%)') . '</td>'
+                              . '<td>' . Pt_Commons_TranslateUtility::safeTranslate('Reference result (RR)') . '</td>'
+                              . '<td>' . Pt_Commons_TranslateUtility::safeTranslate('Concordance') . '</td>'
                               . '</tr>';
 
                         foreach ($block['samples'] as $sid => $s) {
@@ -434,7 +477,10 @@ if (!empty($resultArray['shipment'])) {
                             }
                             $myNumericDisplay = ($hasNum && isset($mine['numeric']) && $mine['numeric'] !== null) ? (string) $mine['numeric'] : '-';
                             $rrDisplay = $pretty($dtsCodeToLabel[$s['rr_code']] ?? $s['rr_code']);
-                            $concordant = $s['concordant_pct'] !== null ? $s['concordant_pct'] . '%' : '-';
+                            $concordantCombined = $s['concordant_pct'] !== null
+                                ? $s['concordant_n'] . ' (' . $s['concordant_pct'] . '%)'
+                                : '-';
+                            $verdict = $verdictPerSample[(int) $sid] ?? 'Not Evaluated';
 
                             $tbl .= '<tr style="text-align:center;">'
                                   . '<td>' . htmlspecialchars($s['sample_label'], ENT_QUOTES, 'UTF-8') . '</td>'
@@ -450,12 +496,120 @@ if (!empty($resultArray['shipment'])) {
                                       . '<td>' . ($s['sd']   !== null ? $s['sd']   : '-') . '</td>'
                                       . '<td>' . ($s['cv']   !== null ? $s['cv']   : '-') . '</td>';
                             }
-                            $tbl .= '<td>' . $concordant . '</td>'
+                            $tbl .= '<td>' . $concordantCombined . '</td>'
                                   . '<td>' . $rrDisplay . '</td>'
+                                  . '<td>' . Pt_Commons_TranslateUtility::safeTranslate($verdict) . '</td>'
                                   . '</tr>';
                         }
                         $tbl .= '</table>';
                         $pdf->writeHTML($tbl, true, false, true, false, '');
+
+                        // NIHE box chart — per-sample distribution of the peer Mean ± SD
+                        // with the participant's reported value plotted on top, coloured by
+                        // concordance. Only emitted for numeric kits (CLIA/ELISA with
+                        // additional_info=yes) since qualitative-only kits have nothing to
+                        // distribute.
+                        if ($hasNum) {
+                            $boxLabels = [];
+                            $whiskerData = [];
+                            $boxData = [];
+                            $meanData = [];
+                            $pointSeries = [
+                                'Acceptable'    => ['data' => [], 'color' => '#f39c12', 'pointStyle' => 'circle', 'label' => Pt_Commons_TranslateUtility::safeTranslate('Acceptable')],
+                                'Unacceptable'  => ['data' => [], 'color' => '#c0392b', 'pointStyle' => 'rect',   'label' => Pt_Commons_TranslateUtility::safeTranslate('Discordant')],
+                                'Not Evaluated' => ['data' => [], 'color' => '#7f8c8d', 'pointStyle' => 'triangle', 'label' => Pt_Commons_TranslateUtility::safeTranslate('Not evaluated')],
+                            ];
+                            $sampleIdx = 0;
+                            foreach ($block['samples'] as $sid => $s) {
+                                if ($s['mean'] === null || $s['sd'] === null) {
+                                    continue;
+                                }
+                                $vals = array_values($s['numeric_values']);
+                                if (count($vals) < 2) {
+                                    continue;
+                                }
+                                $min = min($vals);
+                                $max = max($vals);
+                                $sdBoxLow  = $s['mean'] - $s['sd'];
+                                $sdBoxHigh = $s['mean'] + $s['sd'];
+                                // Tiny vertical span so the mean shows as a thin line inside the box.
+                                $eps = max(($s['sd'] * 0.04), abs($s['mean']) * 0.002, 0.001);
+
+                                $boxLabels[] = $s['sample_label'] ?: ('S' . ($sampleIdx + 1));
+                                $whiskerData[] = [$min, $max];
+                                $boxData[] = [$sdBoxLow, $sdBoxHigh];
+                                $meanData[] = [$s['mean'] - $eps, $s['mean'] + $eps];
+
+                                foreach ($pointSeries as $key => &$series) {
+                                    $series['data'][] = null;
+                                }
+                                unset($series);
+
+                                $mine = $myResp[$position][$sid] ?? null;
+                                $myNumeric = ($mine && isset($mine['numeric']) && $mine['numeric'] !== null) ? (float) $mine['numeric'] : null;
+                                if ($myNumeric !== null) {
+                                    $verdict = $verdictPerSample[(int) $sid] ?? 'Not Evaluated';
+                                    $bucket = isset($pointSeries[$verdict]) ? $verdict : 'Not Evaluated';
+                                    $pointSeries[$bucket]['data'][$sampleIdx] = $myNumeric;
+                                }
+                                $sampleIdx++;
+                            }
+
+                            if (!empty($boxLabels)) {
+                                $datasets = [
+                                    ['type' => 'whisker', 'data' => $whiskerData, 'color' => '#7e7e7e'],
+                                    ['type' => 'box',     'data' => $boxData,     'color' => '#ffffff', 'borderColor' => '#222'],
+                                    ['type' => 'mean',    'data' => $meanData,    'color' => '#222'],
+                                ];
+                                foreach ($pointSeries as $series) {
+                                    // Only include the series if it has any non-null point — keeps the
+                                    // legend free of categories that don't apply to this participant.
+                                    $hasAny = false;
+                                    foreach ($series['data'] as $v) {
+                                        if ($v !== null) {
+                                            $hasAny = true;
+                                            break;
+                                        }
+                                    }
+                                    if ($hasAny) {
+                                        $datasets[] = [
+                                            'type'       => 'point',
+                                            'data'       => $series['data'],
+                                            'color'      => $series['color'],
+                                            'pointStyle' => $series['pointStyle'],
+                                            'label'      => $series['label'],
+                                        ];
+                                    }
+                                }
+
+                                try {
+                                    $chartFile = Pt_Reports_ChartService::render([
+                                        'type'     => 'boxRange',
+                                        'width'    => 1400,
+                                        'height'   => 520,
+                                        'filename' => 'box_p' . $position . '_k' . preg_replace('/[^A-Za-z0-9_-]/', '_', (string) $kid) . '_m' . $result['map_id'],
+                                        'xAxis'    => ['labels' => $boxLabels, 'title' => Pt_Commons_TranslateUtility::safeTranslate('Sample')],
+                                        'yAxis'    => ['title'  => $numLbl !== '' ? $numLbl : Pt_Commons_TranslateUtility::safeTranslate('Value')],
+                                        'legend'   => ['position' => 'bottom'],
+                                        'datasets' => $datasets,
+                                    ], $shipmentDir);
+
+                                    if (!empty($chartFile) && file_exists($chartFile)) {
+                                        $chartW = 165;  // mm — fits A4 portrait body width with side margins
+                                        $pdf->Ln(2);
+                                        // 'N' for $palign advances the cursor to AFTER the image. Without
+                                        // this the next writeHTML draws on top of the chart.
+                                        $pdf->Image($chartFile, '', '', $chartW, 0, '', '', 'N', false, 300, 'C');
+                                        $pdf->Ln(3);
+                                    }
+                                } catch (\Throwable $e) {
+                                    // Chart failures shouldn't abort the report — log and continue.
+                                    if (class_exists('Pt_Commons_LoggerUtility')) {
+                                        Pt_Commons_LoggerUtility::logWarning('Vietnam DTS box chart skipped: ' . $e->getMessage());
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
             }
