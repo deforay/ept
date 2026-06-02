@@ -200,9 +200,11 @@ if ($resultArray['shipment'] != "") {
         }
 
         // -- 1.3 List of Test Reagents Not Approved by the Ministry of Health --
-        // Lists kits used in this shipment whose `attributes.moh_approved` is set to
-        // anything other than 'yes' (default = approved, so existing kits don't
-        // suddenly appear here). The flag is set via the admin Test Kits page.
+        // Lists kits used in this shipment whose r_testkitnames.CountryAdapted is not
+        // '1' (Yes). The CountryAdapted column is already the canonical "approved by
+        // the country/MoH" flag, edited from Admin → Test Kits → Edit. Values:
+        // 1 = Yes (approved), 0 = No, NULL = unset (treated as unapproved here so the
+        // section flags kits whose status hasn't been declared).
         $pdf->writeHTML('<span style="font-weight:bold;font-size:12px;">1.3 ' . Pt_Commons_TranslateUtility::safeTranslate('List of Test Reagents Not Approved by the Ministry of Health') . '</span>', true, false, true, false, '');
 
         $unapprovedRows = $db->fetchAll(
@@ -217,7 +219,7 @@ if ($resultArray['shipment'] != "") {
              WHERE spm.shipment_id = ?
                AND spm.is_excluded != 'yes'
                $tierClause
-               AND COALESCE(JSON_UNQUOTE(JSON_EXTRACT(rtk.attributes, '$.moh_approved')), 'yes') <> 'yes'
+               AND (rtk.CountryAdapted IS NULL OR rtk.CountryAdapted <> 1)
              GROUP BY rtk.TestKitName_ID, p.unique_identifier
              ORDER BY rtk.TestKit_Name, p.unique_identifier",
             $shipmentId
