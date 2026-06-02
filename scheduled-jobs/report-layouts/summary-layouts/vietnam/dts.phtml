@@ -5,19 +5,25 @@
  *
  * Structure mirrors the NIHE template
  * (~/Downloads/VIETNAM/1. HIV Serology _Summary _ NIHE template_09 Apr 2026.docx)
- * minus the cover page (signature block). Sections:
+ * minus the cover page. Sections:
  *
  *   1. Participant performance overview
  *      1.1 Number of participants
  *      1.2 Participants with incorrect results (counts + IDs + per-sample concordance)
- *      1.3 [skipped — non-MOH-approved reagent list, ePT has no MOH-approved flag]
+ *      1.3 List of test reagents not approved by MoH
+ *          (r_testkitnames.attributes.moh_approved != 'yes')
  *   2. Result
- *      2.1-2.3 [skipped — participant function / reporting time / testing method,
- *               none of these are captured in ePT response data]
- *      2.4 Test kit used for PT survey (sorted desc by usage)
- *      2.5 List of participants with discordant results, grouped by sample
- *   3. [appendix skipped — panel characterisation grid is reference-only data
- *      that doesn't belong in the per-shipment summary]
+ *      2.1 Proportion of participants by function    (group by r_network_tiers)
+ *      2.2 Reporting time of participants            (<7d / 7-14d / >14d / no report)
+ *      2.3 Proportion of testing method              (Rapid / ELISA / CLIA / Other)
+ *      2.4 Test kit used for PT survey               (sorted desc by usage + Total)
+ *      2.5 List of participants with discordant results (grouped by sample)
+ *      2.6 Corrective Action overview                 (NIHE-catalogue feedback texts)
+ *   3. Appendix Table A1 — Characterisation of Panel
+ *          (shipment_attributes.panel_characterisation OR simplified fallback)
+ *
+ * Signature block (Scheme Coordinator / Director of program / static PhD names)
+ * sits between the verdict pie and the EOR caption.
  *
  * Qualitative: no numeric score thresholds, no "Scoring >= 95" overview.
  * Top margin pinned to clear FpdiReport.Header()'s "All Participants Results Report"
@@ -193,14 +199,241 @@ if ($resultArray['shipment'] != "") {
             $pdf->writeHTML($nmsTable, true, false, true, false, '');
         }
 
+        // -- 1.3 List of Test Reagents Not Approved by the Ministry of Health --
+        // Lists kits used in this shipment whose `attributes.moh_approved` is set to
+        // anything other than 'yes' (default = approved, so existing kits don't
+        // suddenly appear here). The flag is set via the admin Test Kits page.
+        $pdf->writeHTML('<span style="font-weight:bold;font-size:12px;">1.3 ' . Pt_Commons_TranslateUtility::safeTranslate('List of Test Reagents Not Approved by the Ministry of Health') . '</span>', true, false, true, false, '');
+
+        $unapprovedRows = $db->fetchAll(
+            "SELECT rtk.TestKit_Name AS kit_name,
+                    JSON_UNQUOTE(JSON_EXTRACT(rtk.attributes, '$.method')) AS method,
+                    p.unique_identifier
+             FROM shipment_participant_map spm
+             JOIN response_result_dts rrd ON rrd.shipment_map_id = spm.map_id
+             JOIN participant p ON p.participant_id = spm.participant_id
+             JOIN r_testkitnames rtk
+               ON rtk.TestKitName_ID IN (rrd.test_kit_name_1, rrd.test_kit_name_2, rrd.test_kit_name_3)
+             WHERE spm.shipment_id = ?
+               AND spm.is_excluded != 'yes'
+               $tierClause
+               AND COALESCE(JSON_UNQUOTE(JSON_EXTRACT(rtk.attributes, '$.moh_approved')), 'yes') <> 'yes'
+             GROUP BY rtk.TestKitName_ID, p.unique_identifier
+             ORDER BY rtk.TestKit_Name, p.unique_identifier",
+            $shipmentId
+        );
+
+        if (!empty($unapprovedRows)) {
+            $byKit = [];
+            foreach ($unapprovedRows as $r) {
+                $name = $r['kit_name'];
+                if (!isset($byKit[$name])) {
+                    $byKit[$name] = ['method' => $r['method'] ?? '', 'pids' => []];
+                }
+                if (!in_array($r['unique_identifier'], $byKit[$name]['pids'], true)) {
+                    $byKit[$name]['pids'][] = $r['unique_identifier'];
+                }
+            }
+            $uTbl  = '<table border="1" style="width:100%;font-size:12px;"><tr style="text-align:center;background-color:#dbe4ee;font-weight:bold;">';
+            $uTbl .= '<td style="width:6%;">' . Pt_Commons_TranslateUtility::safeTranslate('No') . '</td>';
+            $uTbl .= '<td style="width:48%;">' . Pt_Commons_TranslateUtility::safeTranslate('Reagent Name') . '</td>';
+            $uTbl .= '<td style="width:14%;">' . Pt_Commons_TranslateUtility::safeTranslate('Reagent Type') . '</td>';
+            $uTbl .= '<td style="width:32%;">' . Pt_Commons_TranslateUtility::safeTranslate('Participant ID') . '</td>';
+            $uTbl .= '</tr>';
+            $no = 1;
+            foreach ($byKit as $kitName => $info) {
+                $uTbl .= '<tr>';
+                $uTbl .= '<td style="text-align:center;">' . $no++ . '</td>';
+                $uTbl .= '<td style="text-align:left;">' . htmlspecialchars($kitName, ENT_QUOTES) . '</td>';
+                $uTbl .= '<td style="text-align:center;">' . htmlspecialchars((string) $info['method'], ENT_QUOTES) . '</td>';
+                $uTbl .= '<td style="text-align:left;font-size:11px;">' . htmlspecialchars(implode(', ', $info['pids']), ENT_QUOTES) . '</td>';
+                $uTbl .= '</tr>';
+            }
+            $uTbl .= '</table><br/>';
+            $pdf->writeHTML($uTbl, true, false, true, false, '');
+        } else {
+            $pdf->writeHTML('<span style="font-size:11px;font-style:italic;">' . Pt_Commons_TranslateUtility::safeTranslate('All reagents used by participants are approved.') . '</span><br/><br/>', true, false, true, false, '');
+        }
+
         // ============================================================
         // 2. RESULT
         // ============================================================
         $pdf->AddPage();
         $pdf->writeHTML('<span style="font-weight:bold;font-size:13px;">2. ' . Pt_Commons_TranslateUtility::safeTranslate('Result') . '</span>', true, false, true, false, '');
 
-        // -- 2.1 Test kit used for PT survey (NIHE 2.4) --
-        $pdf->writeHTML('<span style="font-weight:bold;font-size:12px;">2.1 ' . Pt_Commons_TranslateUtility::safeTranslate('Test Kit used for PT Survey') . '</span>', true, false, true, false, '');
+        // -- 2.1 Proportion of participants by function --
+        // Uses participant.network_tier (FK to r_network_tiers.network_name). For
+        // Vietnam installs, the r_network_tiers rows are reseeded with NIHE's
+        // function categories (National hospital / CDC / Military / Research / etc.)
+        $functionRows = $db->fetchAll(
+            "SELECT COALESCE(NULLIF(TRIM(nt.network_name), ''), 'Other') AS fn,
+                    COUNT(DISTINCT spm.participant_id) AS n
+             FROM shipment_participant_map spm
+             JOIN participant p ON p.participant_id = spm.participant_id
+             LEFT JOIN r_network_tiers nt ON nt.network_id = p.network_tier
+             WHERE spm.shipment_id = ? AND spm.is_excluded != 'yes' $tierClause
+             GROUP BY fn ORDER BY n DESC",
+            $shipmentId
+        );
+        $totalForFunction = 0;
+        foreach ($functionRows as $r) {
+            $totalForFunction += (int) $r['n'];
+        }
+        if ($totalForFunction > 0) {
+            $pdf->writeHTML('<span style="font-weight:bold;font-size:12px;">2.1 ' . Pt_Commons_TranslateUtility::safeTranslate('Proportion of Participants by Function') . '</span>', true, false, true, false, '');
+            $palette = ['#3B82F6', '#F97316', '#10B981', '#F59E0B', '#8B5CF6', '#EC4899', '#14B8A6', '#EF4444', '#A3A3A3'];
+            $sliceData = $sliceLabels = $sliceColors = [];
+            foreach ($functionRows as $i => $r) {
+                $n = (int) $r['n'];
+                $sliceData[]   = number_format(($n / $totalForFunction) * 100, 2);
+                $sliceLabels[] = $r['fn'] . ' (n=' . $n . ')';
+                $sliceColors[] = $palette[$i % count($palette)];
+            }
+            $outputDir = $reportsPath . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'];
+            $fnChartPath = Pt_Reports_ChartService::render([
+                'type'   => 'pie',
+                'width'  => 700, 'height' => 420,
+                'filename' => 'functionPie',
+                'title'  => Pt_Commons_TranslateUtility::safeTranslate('The proportion of participants by their function'),
+                'slices' => ['data' => $sliceData, 'labels' => $sliceLabels, 'colors' => $sliceColors],
+                'legend' => ['position' => 'right'],
+            ], $outputDir);
+            $chartW = $pdf->getPageWidth() - PDF_MARGIN_LEFT - PDF_MARGIN_RIGHT;
+            $imgW = $chartW * 0.7;
+            $imgX = PDF_MARGIN_LEFT + ($chartW - $imgW) / 2;
+            $imgY = $pdf->getY() + 2;
+            [$pw, $ph] = getimagesize($fnChartPath);
+            $imgH = ($ph / $pw) * $imgW;
+            $pdf->Image($fnChartPath, $imgX, $imgY, $imgW, 0, '', '', '', false, 300);
+            $pdf->SetY($imgY + $imgH + 4);
+            if (file_exists($fnChartPath)) { unlink($fnChartPath); }
+        }
+
+        // -- 2.2 Reporting time of participants --
+        // Bucket the gap between shipment_date and the participant's responseDate.
+        // shipment_test_date is on shipment_participant_map (the day the lab tested
+        // the panel). DATEDIFF(test_date - shipment_date) — null when the lab never
+        // submitted a response.
+        $reportingRows = $db->fetchAll(
+            "SELECT spm.map_id,
+                    DATEDIFF(DATE(spm.shipment_test_date), DATE(s.shipment_date)) AS days
+             FROM shipment_participant_map spm
+             JOIN shipment s ON s.shipment_id = spm.shipment_id
+             WHERE spm.shipment_id = ? AND spm.is_excluded != 'yes' $tierClause",
+            $shipmentId
+        );
+        if (!empty($reportingRows)) {
+            $buckets = ['<7 days' => 0, '7-14 days' => 0, '>14 days' => 0, 'No sent report' => 0];
+            foreach ($reportingRows as $r) {
+                $d = $r['days'];
+                if ($d === null || $d === '') {
+                    $buckets['No sent report']++;
+                } elseif ((int) $d < 7) {
+                    $buckets['<7 days']++;
+                } elseif ((int) $d <= 14) {
+                    $buckets['7-14 days']++;
+                } else {
+                    $buckets['>14 days']++;
+                }
+            }
+            $totalRT = array_sum($buckets);
+            if ($totalRT > 0) {
+                $pdf->writeHTML('<span style="font-weight:bold;font-size:12px;">2.2 ' . Pt_Commons_TranslateUtility::safeTranslate('Reporting Time of Participants') . '</span>', true, false, true, false, '');
+                $rtData = $rtLabels = [];
+                foreach ($buckets as $label => $n) {
+                    $rtData[]   = $totalRT > 0 ? round(($n / $totalRT) * 100, 2) : 0;
+                    $rtLabels[] = Pt_Commons_TranslateUtility::safeTranslate($label);
+                }
+                $outputDir = $reportsPath . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'];
+                $rtChartPath = Pt_Reports_ChartService::render([
+                    'type'  => 'bar',
+                    'width' => 700, 'height' => 380,
+                    'filename' => 'reportingTime',
+                    'title' => Pt_Commons_TranslateUtility::safeTranslate('The reporting time of participant'),
+                    'xAxis' => ['labels' => $rtLabels],
+                    'yAxis' => ['title'  => '%'],
+                    'datasets' => [['data' => $rtData, 'colors' => ['#F97316', '#3B82F6', '#FBBF24', '#10B981']]],
+                ], $outputDir);
+                $chartW = $pdf->getPageWidth() - PDF_MARGIN_LEFT - PDF_MARGIN_RIGHT;
+                $imgW = $chartW * 0.7;
+                $imgX = PDF_MARGIN_LEFT + ($chartW - $imgW) / 2;
+                $imgY = $pdf->getY() + 2;
+                [$pw, $ph] = getimagesize($rtChartPath);
+                $imgH = ($ph / $pw) * $imgW;
+                $pdf->Image($rtChartPath, $imgX, $imgY, $imgW, 0, '', '', '', false, 300);
+                $pdf->SetY($imgY + $imgH + 4);
+                if (file_exists($rtChartPath)) { unlink($rtChartPath); }
+            }
+        }
+
+        // -- 2.3 Proportion of Testing Method --
+        // Derives method from kit attributes: additional_info=yes → ELISA/CLIA bucket,
+        // additional_info!=yes → Rapid. If attributes.method is explicitly set on the
+        // kit (e.g. 'CLIA', 'ELISA'), that label is used instead so CLIA and ELISA can
+        // be distinguished.
+        $methodRows = $db->fetchAll(
+            "SELECT rtk.TestKitName_ID AS kit_id,
+                    JSON_UNQUOTE(JSON_EXTRACT(rtk.attributes, '$.method')) AS method_attr,
+                    JSON_UNQUOTE(JSON_EXTRACT(rtk.attributes, '$.additional_info')) AS additional_info,
+                    COUNT(DISTINCT spm.map_id) AS n
+             FROM shipment_participant_map spm
+             JOIN response_result_dts rrd ON rrd.shipment_map_id = spm.map_id
+             JOIN r_testkitnames rtk
+               ON rtk.TestKitName_ID IN (rrd.test_kit_name_1, rrd.test_kit_name_2, rrd.test_kit_name_3)
+             WHERE spm.shipment_id = ? AND spm.is_excluded != 'yes' $tierClause
+             GROUP BY rtk.TestKitName_ID",
+            $shipmentId
+        );
+        $methodBuckets = ['Rapid test' => 0, 'ELISA' => 0, 'CLIA' => 0, 'Other' => 0];
+        foreach ($methodRows as $r) {
+            $attr = strtolower(trim((string) ($r['method_attr'] ?? '')));
+            $hasNumeric = (strtolower((string) ($r['additional_info'] ?? '')) === 'yes');
+            if ($attr === 'rapid' || $attr === 'rapid test') {
+                $bucket = 'Rapid test';
+            } elseif ($attr === 'elisa') {
+                $bucket = 'ELISA';
+            } elseif ($attr === 'clia' || $attr === 'eclia') {
+                $bucket = 'CLIA';
+            } elseif ($hasNumeric) {
+                $bucket = 'ELISA';
+            } else {
+                $bucket = 'Rapid test';
+            }
+            $methodBuckets[$bucket] += (int) $r['n'];
+        }
+        $totalMethod = array_sum($methodBuckets);
+        if ($totalMethod > 0) {
+            $pdf->writeHTML('<span style="font-weight:bold;font-size:12px;">2.3 ' . Pt_Commons_TranslateUtility::safeTranslate('Proportion of Testing Method') . '</span>', true, false, true, false, '');
+            $mData = $mLabels = $mColors = [];
+            $mPalette = ['Rapid test' => '#3B82F6', 'ELISA' => '#F97316', 'CLIA' => '#10B981', 'Other' => '#FBBF24'];
+            foreach ($methodBuckets as $label => $n) {
+                if ($n <= 0) { continue; }
+                $mData[]   = round(($n / $totalMethod) * 100, 2);
+                $mLabels[] = Pt_Commons_TranslateUtility::safeTranslate($label) . ' (' . round(($n / $totalMethod) * 100, 1) . '%)';
+                $mColors[] = $mPalette[$label];
+            }
+            $outputDir = $reportsPath . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'];
+            $methodChartPath = Pt_Reports_ChartService::render([
+                'type'   => 'pie',
+                'width'  => 700, 'height' => 420,
+                'filename' => 'methodPie',
+                'title'  => Pt_Commons_TranslateUtility::safeTranslate('The Proportion of participant by different methods'),
+                'slices' => ['data' => $mData, 'labels' => $mLabels, 'colors' => $mColors],
+                'legend' => ['position' => 'left'],
+            ], $outputDir);
+            $chartW = $pdf->getPageWidth() - PDF_MARGIN_LEFT - PDF_MARGIN_RIGHT;
+            $imgW = $chartW * 0.7;
+            $imgX = PDF_MARGIN_LEFT + ($chartW - $imgW) / 2;
+            $imgY = $pdf->getY() + 2;
+            [$pw, $ph] = getimagesize($methodChartPath);
+            $imgH = ($ph / $pw) * $imgW;
+            $pdf->Image($methodChartPath, $imgX, $imgY, $imgW, 0, '', '', '', false, 300);
+            $pdf->SetY($imgY + $imgH + 4);
+            if (file_exists($methodChartPath)) { unlink($methodChartPath); }
+        }
+
+        // -- 2.4 Test kit used for PT survey (NIHE 2.4) --
+        $pdf->writeHTML('<span style="font-weight:bold;font-size:12px;">2.4 ' . Pt_Commons_TranslateUtility::safeTranslate('Test Kit used for PT Survey') . '</span>', true, false, true, false, '');
 
         $kitUsage = [];
         foreach (['pieChart', 'pieChart2', 'pieChart3'] as $key) {
@@ -245,8 +478,8 @@ if ($resultArray['shipment'] != "") {
             $pdf->writeHTML('<span style="font-size:11px;font-style:italic;">' . Pt_Commons_TranslateUtility::safeTranslate('No test kit usage data') . '</span><br/><br/>', true, false, true, false, '');
         }
 
-        // -- 2.2 Discordant results grouped by sample (NIHE 2.5) --
-        $pdf->writeHTML('<span style="font-weight:bold;font-size:12px;">2.2 ' . Pt_Commons_TranslateUtility::safeTranslate('List of Participants with Discordant Results') . '</span>', true, false, true, false, '');
+        // -- 2.5 Discordant results grouped by sample (NIHE 2.5) --
+        $pdf->writeHTML('<span style="font-weight:bold;font-size:12px;">2.5 ' . Pt_Commons_TranslateUtility::safeTranslate('List of Participants with Discordant Results') . '</span>', true, false, true, false, '');
 
         $resultLabels = [];
         foreach ($db->fetchAll("SELECT id, response FROM r_possibleresult WHERE scheme_sub_group IN ('DTS_TEST','DTS_FINAL')") as $r) {
@@ -307,7 +540,7 @@ if ($resultArray['shipment'] != "") {
 
         // -------- Corrective Action overview (carries NIHE feedback texts) --------
         if (!empty($correctivenessArray)) {
-            $pdf->writeHTML('<span style="font-weight:bold;font-size:12px;">2.3 ' . Pt_Commons_TranslateUtility::safeTranslate('Corrective Action Overview') . '</span>', true, false, true, false, '');
+            $pdf->writeHTML('<span style="font-weight:bold;font-size:12px;">2.6 ' . Pt_Commons_TranslateUtility::safeTranslate('Corrective Action Overview') . '</span>', true, false, true, false, '');
             $ca = '<table border="1" style="width:100%;font-size:12px;"><tr style="text-align:center;background-color:#dbe4ee;font-weight:bold;">';
             $ca .= '<td style="width:75%;">' . Pt_Commons_TranslateUtility::safeTranslate('Corrective Action') . '</td>';
             $ca .= '<td style="width:25%;">' . Pt_Commons_TranslateUtility::safeTranslate('Responses having Corrective Action') . '</td></tr>';
@@ -319,6 +552,91 @@ if ($resultArray['shipment'] != "") {
             }
             $ca .= '</table><br/>';
             $pdf->writeHTML($ca, true, false, true, false, '');
+        }
+
+        // ============================================================
+        // 3. APPENDIX — Table A1: Characterisation of Panel
+        // ============================================================
+        // Data source: shipment_attributes.panel_characterisation, a JSON blob set
+        // via the admin Panel Characterisation form. Shape:
+        //   { "kit_columns": [{"name": "Elecsys HIV Combi PT", "unit": "COI value"}, ...],
+        //     "samples":     [{"sample_label": "NIHE-HIV-2301-01", "sample_type": "Pooled plasma",
+        //                       "results":     ["360", "15.31", "+", "+", "+", "+", "+"],
+        //                       "conclusion":  "Positive"}, ...] }
+        // If unset, fall back to a simplified table built from reference_result_dts —
+        // so the appendix is never empty but obviously thinner than the NIHE-curated
+        // version.
+        $pdf->AddPage();
+        $pdf->writeHTML('<span style="font-weight:bold;font-size:13px;">3. ' . Pt_Commons_TranslateUtility::safeTranslate('Appendix') . '</span>', true, false, true, false, '');
+        $pdf->writeHTML('<span style="font-weight:bold;font-size:12px;">' . Pt_Commons_TranslateUtility::safeTranslate('Table A1: Characterisation of Panel') . ' ' . htmlspecialchars($resultArray['shipment']['shipment_code'], ENT_QUOTES) . ' ' . Pt_Commons_TranslateUtility::safeTranslate('when testing for HIV serology') . '</span>', true, false, true, false, '');
+        $pdf->Ln(2);
+
+        $shipAttrJson = $resultArray['shipment']['shipment_attributes'] ?? '';
+        $shipAttr = Pt_Commons_JsonUtility::safeDecode((string) $shipAttrJson);
+        $panelChar = is_array($shipAttr['panel_characterisation'] ?? null) ? $shipAttr['panel_characterisation'] : null;
+
+        if (is_array($panelChar) && !empty($panelChar['kit_columns']) && !empty($panelChar['samples'])) {
+            // Admin-entered matrix
+            $kitCols = $panelChar['kit_columns'];
+            $kitCount = count($kitCols);
+            $nameColW = 14;
+            $typeColW = 12;
+            $conclW   = 14;
+            $kitColW  = max(6, (int) floor((100 - $nameColW - $typeColW - $conclW) / max(1, $kitCount)));
+
+            $tbl  = '<table border="1" cellpadding="3" style="width:100%;font-size:10px;">';
+            $tbl .= '<tr style="background-color:#dbe4ee;text-align:center;font-weight:bold;">';
+            $tbl .= '<td rowspan="2" style="width:4%;">' . Pt_Commons_TranslateUtility::safeTranslate('No') . '</td>';
+            $tbl .= '<td rowspan="2" style="width:' . $nameColW . '%;">' . Pt_Commons_TranslateUtility::safeTranslate('Sample ID') . '</td>';
+            $tbl .= '<td rowspan="2" style="width:' . $typeColW . '%;">' . Pt_Commons_TranslateUtility::safeTranslate('Sample Type') . '</td>';
+            $tbl .= '<td colspan="' . $kitCount . '">' . Pt_Commons_TranslateUtility::safeTranslate('Test result') . '</td>';
+            $tbl .= '<td rowspan="2" style="width:' . $conclW . '%;">' . Pt_Commons_TranslateUtility::safeTranslate('Conclusion') . '</td>';
+            $tbl .= '</tr><tr style="background-color:#dbe4ee;text-align:center;font-weight:bold;">';
+            foreach ($kitCols as $kc) {
+                $label = htmlspecialchars((string) ($kc['name'] ?? ''), ENT_QUOTES);
+                $unit  = isset($kc['unit']) ? '<br/><span style="font-size:9px;">(' . htmlspecialchars((string) $kc['unit'], ENT_QUOTES) . ')</span>' : '';
+                $tbl .= '<td style="width:' . $kitColW . '%;">' . $label . $unit . '</td>';
+            }
+            $tbl .= '</tr>';
+
+            $no = 1;
+            foreach ($panelChar['samples'] as $s) {
+                $tbl .= '<tr style="text-align:center;">';
+                $tbl .= '<td>' . $no++ . '</td>';
+                $tbl .= '<td style="background-color:#f4f7fa;">' . htmlspecialchars((string) ($s['sample_label'] ?? ''), ENT_QUOTES) . '</td>';
+                $tbl .= '<td>' . htmlspecialchars((string) ($s['sample_type'] ?? ''), ENT_QUOTES) . '</td>';
+                $sampleResults = is_array($s['results'] ?? null) ? $s['results'] : [];
+                for ($i = 0; $i < $kitCount; $i++) {
+                    $tbl .= '<td>' . htmlspecialchars((string) ($sampleResults[$i] ?? ''), ENT_QUOTES) . '</td>';
+                }
+                $tbl .= '<td>' . htmlspecialchars((string) ($s['conclusion'] ?? ''), ENT_QUOTES) . '</td>';
+                $tbl .= '</tr>';
+            }
+            $tbl .= '</table><br/>';
+            $pdf->writeHTML($tbl, true, false, true, false, '');
+        } else {
+            // Fallback: simplified table using just the per-sample reference result.
+            // Once an admin enters the panel characterisation matrix via the shipment
+            // admin form, this branch is bypassed.
+            $tbl  = '<table border="1" cellpadding="3" style="width:100%;font-size:11px;">';
+            $tbl .= '<tr style="background-color:#dbe4ee;text-align:center;font-weight:bold;">';
+            $tbl .= '<td style="width:8%;">' . Pt_Commons_TranslateUtility::safeTranslate('No') . '</td>';
+            $tbl .= '<td style="width:32%;">' . Pt_Commons_TranslateUtility::safeTranslate('Sample ID') . '</td>';
+            $tbl .= '<td style="width:30%;">' . Pt_Commons_TranslateUtility::safeTranslate('Reference Result') . '</td>';
+            $tbl .= '<td style="width:30%;">' . Pt_Commons_TranslateUtility::safeTranslate('Mandatory') . '</td>';
+            $tbl .= '</tr>';
+            $no = 1;
+            foreach ($resultArray['shipment']['referenceResult'] ?? [] as $refRes) {
+                $tbl .= '<tr style="text-align:center;">';
+                $tbl .= '<td>' . $no++ . '</td>';
+                $tbl .= '<td>' . htmlspecialchars((string) ($refRes['sample_label'] ?? ''), ENT_QUOTES) . '</td>';
+                $tbl .= '<td>' . ucfirst(strtolower((string) ($refRes['referenceResult'] ?? ''))) . '</td>';
+                $tbl .= '<td>' . ((int) ($refRes['mandatory'] ?? 0) === 1 ? Pt_Commons_TranslateUtility::safeTranslate('Yes') : Pt_Commons_TranslateUtility::safeTranslate('No')) . '</td>';
+                $tbl .= '</tr>';
+            }
+            $tbl .= '</table>';
+            $tbl .= '<br/><span style="font-size:10px;font-style:italic;">' . Pt_Commons_TranslateUtility::safeTranslate('Panel characterisation matrix not configured for this shipment. Admin can populate the per-kit reference values via the shipment Panel Characterisation form.') . '</span><br/>';
+            $pdf->writeHTML($tbl, true, false, true, false, '');
         }
 
         // -------- Verdict pie chart --------
@@ -371,6 +689,25 @@ if ($resultArray['shipment'] != "") {
                 }
             }
         }
+
+        // ---- NIHE signature block ----
+        // Mirrors the cover-page signatories from the NIHE Word template. Names are
+        // static here; move to a configurable signature key when other Vietnam
+        // institutions need to override.
+        $pdf->Ln(10);
+        $sig  = '<table cellpadding="4" style="width:100%;font-size:11px;">';
+        $sig .= '<tr>'
+              . '<td style="text-align:center;width:50%;font-weight:bold;">' . Pt_Commons_TranslateUtility::safeTranslate('Scheme Coordinator') . '</td>'
+              . '<td style="text-align:center;width:50%;font-weight:bold;">' . Pt_Commons_TranslateUtility::safeTranslate('Director of program') . '</td>'
+              . '</tr>'
+              . '<tr><td>&nbsp;</td><td>&nbsp;</td></tr>'
+              . '<tr><td>&nbsp;</td><td>&nbsp;</td></tr>'
+              . '<tr><td>&nbsp;</td><td>&nbsp;</td></tr>'
+              . '<tr>'
+              . '<td style="text-align:center;font-weight:bold;">PhD. Hoang Thi Thanh Ha</td>'
+              . '<td style="text-align:center;font-weight:bold;">Prof. PhD. Tran Nhu Duong</td>'
+              . '</tr></table>';
+        $pdf->writeHTML($sig, true, false, true, false, '');
 
         // Keep the EOR caption on the chart's page. TCPDF auto-page-breaks the
         // writeHTML line if the cursor is anywhere near the bottom margin (the

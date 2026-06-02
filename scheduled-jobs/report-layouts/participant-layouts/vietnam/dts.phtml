@@ -561,25 +561,19 @@ if (!empty($resultArray['shipment'])) {
                                     ['type' => 'box',     'data' => $boxData,     'color' => '#ffffff', 'borderColor' => '#222'],
                                     ['type' => 'mean',    'data' => $meanData,    'color' => '#222'],
                                 ];
+                                // NIHE template always shows the 3 grade swatches in the legend
+                                // (Acceptable / Discordant / Not evaluated) even if a participant only
+                                // has values in one bucket — so emit all three series, even when all
+                                // points are null. Chart.js skips null points but still renders the
+                                // legend entry.
                                 foreach ($pointSeries as $series) {
-                                    // Only include the series if it has any non-null point — keeps the
-                                    // legend free of categories that don't apply to this participant.
-                                    $hasAny = false;
-                                    foreach ($series['data'] as $v) {
-                                        if ($v !== null) {
-                                            $hasAny = true;
-                                            break;
-                                        }
-                                    }
-                                    if ($hasAny) {
-                                        $datasets[] = [
-                                            'type'       => 'point',
-                                            'data'       => $series['data'],
-                                            'color'      => $series['color'],
-                                            'pointStyle' => $series['pointStyle'],
-                                            'label'      => $series['label'],
-                                        ];
-                                    }
+                                    $datasets[] = [
+                                        'type'       => 'point',
+                                        'data'       => $series['data'],
+                                        'color'      => $series['color'],
+                                        'pointStyle' => $series['pointStyle'],
+                                        'label'      => $series['label'],
+                                    ];
                                 }
 
                                 try {
@@ -615,16 +609,21 @@ if (!empty($resultArray['shipment'])) {
             }
         }
 
-        // ---- Recommendation for participant ----
-        // Group the NIHE feedback by recommendation text and list the samples it applies to,
-        // so identical guidance isn't repeated per sample. Text is translated at render.
+        // ---- Recommendation for participant + Suggested corrective actions ----
+        // NIHE template structure: two separate sections under the test results.
+        //  - "Recommendation for participant"   — per-sample NIHE-catalogue text emitted
+        //    by algoVietnam (deduplicated by recommendation text).
+        //  - "Suggested corrective actions"     — same content but framed as actions to
+        //    take. The algorithm currently emits a single text per outcome; until NIHE
+        //    distinguishes the two, we render the same deduped recommendation here so
+        //    the lab gets actionable guidance instead of an empty placeholder.
         $warnings = Pt_Commons_JsonUtility::safeDecode($result['failure_reason']);
+        $grouped = [];
         if (!empty($warnings)) {
-            $grouped = [];
             foreach ($warnings as $warning) {
                 $obs = is_array($warning) ? ($warning['warning'] ?? '') : (string) $warning;
                 $rec = is_array($warning) ? ($warning['correctiveAction'] ?? '') : '';
-                $key = $rec !== '' ? $rec : $obs; // entries without recommendation text key on the observation
+                $key = $rec !== '' ? $rec : $obs;
                 if (!isset($grouped[$key])) {
                     $grouped[$key] = ['rec' => $rec, 'obs' => []];
                 }
@@ -632,25 +631,48 @@ if (!empty($resultArray['shipment'])) {
                     $grouped[$key]['obs'][] = $obs;
                 }
             }
+        }
 
-            // Write the heading and the table in separate writeHTML calls. TCPDF's HTML
-            // renderer doesn't reliably break the line between an inline <span> and a
-            // following <table> — without this split the heading floats to the left of
-            // the table instead of sitting above it.
-            $heading = '<br/><span style="font-weight:bold;font-size:12px;">' . Pt_Commons_TranslateUtility::safeTranslate('Recommendation for participant') . '</span>';
-            $pdf->writeHTML($heading, true, false, true, false, '');
+        $renderFeedbackBlock = static function (string $heading, array $grouped, $pdf) {
+            $pdf->writeHTML('<br/><span style="font-weight:bold;font-size:12px;">' . Pt_Commons_TranslateUtility::safeTranslate($heading) . '</span>', true, false, true, false, '');
             $pdf->Ln(2);
 
-            $ca  = '<table border="1" style="font-size:11px;"><tr style="background-color:#dbe4ee;font-weight:bold;">'
-                 . '<td style="text-align:center;width:30%;">' . Pt_Commons_TranslateUtility::safeTranslate('Sample(s)') . '</td>'
-                 . '<td style="text-align:center;width:70%;">' . Pt_Commons_TranslateUtility::safeTranslate('Recommendation') . '</td></tr>';
-            foreach ($grouped as $g) {
-                $recText = $g['rec'] !== '' ? Pt_Commons_TranslateUtility::safeTranslate($g['rec']) : '';
-                $ca .= '<tr><td>' . implode(', ', $g['obs']) . '</td><td>' . $recText . '</td></tr>';
+            $tbl  = '<table border="1" style="font-size:11px;"><tr style="background-color:#dbe4ee;font-weight:bold;">'
+                  . '<td style="text-align:center;width:30%;">' . Pt_Commons_TranslateUtility::safeTranslate('Sample(s)') . '</td>'
+                  . '<td style="text-align:center;width:70%;">' . Pt_Commons_TranslateUtility::safeTranslate($heading) . '</td></tr>';
+            if (empty($grouped)) {
+                $tbl .= '<tr><td colspan="2" style="text-align:center;">-</td></tr>';
+            } else {
+                foreach ($grouped as $g) {
+                    $recText = $g['rec'] !== '' ? Pt_Commons_TranslateUtility::safeTranslate($g['rec']) : '';
+                    $tbl .= '<tr><td>' . implode(', ', $g['obs']) . '</td><td>' . $recText . '</td></tr>';
+                }
             }
-            $ca .= '</table>';
-            $pdf->writeHTML($ca, true, false, true, false, '');
-        }
+            $tbl .= '</table>';
+            $pdf->writeHTML($tbl, true, false, true, false, '');
+        };
+
+        $renderFeedbackBlock('Recommendation for participant', $grouped, $pdf);
+        $renderFeedbackBlock('Suggested corrective actions', $grouped, $pdf);
+
+        // ---- NIHE signature block ----
+        // Static names per the NIHE Word templates. If the institute later needs
+        // configurable signatories, the names can move to a `signatures` config key.
+        $pdf->Ln(8);
+        $sig = '<table cellpadding="4" style="font-size:11px;width:100%;">'
+             . '<tr>'
+             . '<td style="text-align:center;width:50%;font-weight:bold;">' . Pt_Commons_TranslateUtility::safeTranslate('Scheme Coordinator') . '</td>'
+             . '<td style="text-align:center;width:50%;font-weight:bold;">' . Pt_Commons_TranslateUtility::safeTranslate('Director of program') . '</td>'
+             . '</tr>'
+             . '<tr><td>&nbsp;</td><td>&nbsp;</td></tr>'
+             . '<tr><td>&nbsp;</td><td>&nbsp;</td></tr>'
+             . '<tr><td>&nbsp;</td><td>&nbsp;</td></tr>'
+             . '<tr>'
+             . '<td style="text-align:center;font-weight:bold;">PhD. Hoang Thi Thanh Ha</td>'
+             . '<td style="text-align:center;font-weight:bold;">Prof. PhD. Tran Nhu Duong</td>'
+             . '</tr>'
+             . '</table>';
+        $pdf->writeHTML($sig, true, false, true, false, '');
 
         if (ob_get_contents()) {
             ob_end_clean();

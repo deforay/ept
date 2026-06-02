@@ -174,6 +174,32 @@ class Pt_Reports_FpdiReport extends Fpdi
             $completeFooterHtml .= '</table>';
 
             // -------------------------------------------------------------------
+            // VIETNAM (NIHE)
+            // 2 rows. Row 1: www.nihe.vn (left) | (centre) | Hotline (right).
+            // Row 2: HIV Serology + Panel ID (left)         | Page X of Y (right).
+            // Mirrors the NIHE Word templates so the rendered PDF matches
+            // their letterhead-style footer.
+            // -------------------------------------------------------------------
+        } elseif ($this->layout == 'vietnam') {
+
+            $panelId = $attrs['shipment_code'] ?? '';
+            if (empty($panelId) && !empty($shipmentId)) {
+                $panelRow = $shipmentService->getShipmentDetails($shipmentId);
+                $panelId  = $panelRow['shipment_code'] ?? '';
+            }
+
+            $completeFooterHtml  = '<table style="width:100%; border-collapse:collapse;">';
+            $completeFooterHtml .= '<tr>';
+            $completeFooterHtml .= '<td style="width:33%; ' . $td . ' text-align:left; font-weight:bold;">www.nihe.vn</td>';
+            $completeFooterHtml .= '<td style="width:34%; ' . $td . ' text-align:center; font-weight:bold;">Hotline: 0982.802.638</td>';
+            $completeFooterHtml .= '<td style="width:33%; ' . $td . ' text-align:right;"></td>';
+            $completeFooterHtml .= '</tr><tr>';
+            $completeFooterHtml .= '<td style="width:67%; ' . $td . ' text-align:left; font-weight:bold;" colspan="2">HIV Serology' . ($panelId !== '' ? ' &nbsp;&nbsp;Panel ID ' . htmlspecialchars($panelId, ENT_QUOTES, 'UTF-8') : '') . '</td>';
+            $completeFooterHtml .= '<td style="width:33%; ' . $td . ' text-align:right; font-weight:bold;">' . $pageNumber . '</td>';
+            $completeFooterHtml .= '</tr>';
+            $completeFooterHtml .= '</table>';
+
+            // -------------------------------------------------------------------
             // ZIMBABWE
             // 3 columns: Effective Date (left) | Report Version (center) | Page (right)
             // -------------------------------------------------------------------
@@ -219,8 +245,14 @@ class Pt_Reports_FpdiReport extends Fpdi
             $completeFooterHtml = $this->staticFooterHtml . $completeFooterHtml;
         }
 
-        // Malawi is a single line so needs less room at the bottom
-        $this->SetY(($this->layout != 'default') ? -5 : -10);
+        // Malawi/Zimbabwe are single-line footers; Vietnam is two-row and needs a bit
+        // more vertical room. Default footer has the "Report generated on …" line and
+        // sits a touch higher.
+        if ($this->layout == 'vietnam') {
+            $this->SetY(-10);
+        } else {
+            $this->SetY(($this->layout != 'default') ? -5 : -10);
+        }
         $this->SetFont('freesans', '', 7, '', true);
         $this->writeHTML($completeFooterHtml, true, false, false, false, '');
     }
