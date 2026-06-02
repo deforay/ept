@@ -578,6 +578,12 @@ if ($resultArray['shipment'] != "") {
         foreach ($db->fetchAll($db->select()->from('r_testkitnames', ['TestKitName_ID', 'TestKit_Name'])) as $kr) {
             $kitNameLookup[(string) $kr['TestKitName_ID']] = $kr['TestKit_Name'];
         }
+        // reference_dts_eia.eia is FK to r_dbs_eia.eia_id (the admin EIA dropdown
+        // lists r_dbs_eia, NOT r_testkitnames). Resolve EIA names from there.
+        $eiaNameLookup = [];
+        foreach ($db->fetchAll($db->select()->from('r_dbs_eia', ['eia_id', 'eia_name'])) as $er) {
+            $eiaNameLookup[(string) $er['eia_id']] = $er['eia_name'];
+        }
         $resultCodeLookup = [];
         foreach ($db->fetchAll($db->select()->from('r_possibleresult', ['id', 'response', 'result_code'])) as $pr) {
             $resultCodeLookup[(string) $pr['id']] = [
@@ -652,6 +658,19 @@ if ($resultArray['shipment'] != "") {
             $geeniusBySample[(int) $r['sample_id']] = $r;
         }
 
+        // The summary's $resultArray['shipment']['referenceResult'] is shaped for the
+        // sample concordance table and omits sample_id + is_sample_diluted (see the
+        // DTS branch of Application_Service_Evaluation::summaryReport). Re-fetch the
+        // full sample row set so we can index the modal data per sample_id.
+        $sampleRows = $db->fetchAll(
+            "SELECT rrd.sample_id, rrd.sample_label, rrd.is_sample_diluted,
+                    refpr.response AS reference_result
+             FROM reference_result_dts rrd
+             LEFT JOIN r_possibleresult refpr ON refpr.id = rrd.reference_result
+             WHERE rrd.shipment_id = ? ORDER BY rrd.sample_id",
+            $shipmentId
+        );
+
         $haveCharacterisation = !empty($eiaRows) || !empty($rapidRows) || !empty($wbRows) || !empty($geeniusRows);
 
         if ($haveCharacterisation) {
@@ -671,7 +690,7 @@ if ($resultArray['shipment'] != "") {
             $tbl .= '<td rowspan="2" style="width:' . $conclW . '%;">' . Pt_Commons_TranslateUtility::safeTranslate('Conclusion') . '</td>';
             $tbl .= '</tr><tr style="background-color:#dbe4ee;text-align:center;font-weight:bold;">';
             foreach ($eiaKitIds as $kid) {
-                $label = htmlspecialchars((string) ($kitNameLookup[$kid] ?? $kid), ENT_QUOTES);
+                $label = htmlspecialchars((string) ($eiaNameLookup[$kid] ?? $kid), ENT_QUOTES);
                 $tbl .= '<td style="width:' . $colW . '%;">' . $label . '<br/><span style="font-size:8px;">(OD/CO)</span></td>';
             }
             foreach ($rapidKitIds as $kid) {
@@ -687,7 +706,7 @@ if ($resultArray['shipment'] != "") {
             $tbl .= '</tr>';
 
             $no = 1;
-            foreach ($resultArray['shipment']['referenceResult'] ?? [] as $refRes) {
+            foreach ($sampleRows as $refRes) {
                 $sid = (int) ($refRes['sample_id'] ?? 0);
                 $sampleType = (!empty($refRes['is_sample_diluted']) && strtolower((string) $refRes['is_sample_diluted']) === 'yes')
                     ? Pt_Commons_TranslateUtility::safeTranslate('Pooled diluted plasma')
@@ -720,7 +739,7 @@ if ($resultArray['shipment'] != "") {
                 if ($hasGeenius) {
                     $tbl .= '<td>' . (!isset($geeniusBySample[$sid]) ? '-' : $finalLabel((string) ($geeniusBySample[$sid]['result'] ?? ''))) . '</td>';
                 }
-                $tbl .= '<td><strong>' . ucfirst(strtolower((string) ($refRes['referenceResult'] ?? ''))) . '</strong></td>';
+                $tbl .= '<td><strong>' . ucfirst(strtolower((string) ($refRes['reference_result'] ?? ''))) . '</strong></td>';
                 $tbl .= '</tr>';
             }
             $tbl .= '</table><br/>';

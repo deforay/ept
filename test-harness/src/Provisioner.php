@@ -47,6 +47,7 @@ final class Provisioner
             $distributionId = $this->createDistribution($shortId);
             [$shipmentId, $shipmentCode] = $this->createShipment($variantKey, $variant, $distributionId, $shortId, count($samples), $settingsStash);
             $this->createReferenceResults($shipmentId, $samples, $lookups);
+            $this->createReferenceModalData($shipmentId, $samples, $lookups, $kits);
 
             // Per-shipment shuffle so the same input mix produces a different ordering of
             // labs across runs. Deterministic from the shipment id + short id.
@@ -57,7 +58,7 @@ final class Provisioner
             $minorityKitIndex = 0;
             foreach ($assignments as $i => $a) {
                 $participantId = $participantIds[$i];
-                $mapId = $this->createShipmentParticipantMap($shipmentId, $participantId, $variant['algoKey'], $a['tier']);
+                $mapId = $this->createShipmentParticipantMap($shipmentId, $participantId, $variant['algoKey'], $a['tier'], $i);
 
                 // Deterministic per-(shipment, participant) seed: same inputs reproduce, but
                 // different shipments/labs vary the chosen valid response shape.
@@ -271,6 +272,30 @@ final class Provisioner
         return (string) $pool[$index % count($pool)];
     }
 
+    /**
+     * Returns the list of network_id values to distribute harness participants across.
+     * Prefers the NIHE function categories seeded by migration 7.5.3 (so Summary §2.1
+     * "Proportion of Participants by Function" renders with multiple slices). Falls back
+     * to whatever tiers exist in the install, so non-Vietnam dev DBs still get coverage.
+     */
+    private function networkTierIds(): array
+    {
+        $nihe = [
+            'National hospital', 'Provincial general hospital', 'Cottage hospital',
+            'Private hospital', 'Military hospital', 'Centers for Disease Control and Prevention',
+            'Local Health center', 'Research Institute', 'Other',
+        ];
+        $rows = $this->db->all(
+            "SELECT network_id FROM r_network_tiers WHERE network_name IN (" . implode(',', array_fill(0, count($nihe), '?')) . ") ORDER BY network_id",
+            $nihe
+        );
+        if (!empty($rows)) {
+            return array_map(static fn ($r) => (int) $r['network_id'], $rows);
+        }
+        $all = $this->db->all("SELECT network_id FROM r_network_tiers ORDER BY network_id");
+        return array_map(static fn ($r) => (int) $r['network_id'], $all);
+    }
+
     private function allocateParticipants(int $needed): array
     {
         $existing = $this->db->col(
@@ -280,6 +305,25 @@ final class Provisioner
             [self::PREFIX . 'p%']
         );
         $existing = array_map('intval', $existing);
+
+        // Make sure even pre-existing harness participants have a network_tier so the
+        // Vietnam Summary §2.1 function pie has variety. round-robin across the tier
+        // set keyed on participant_id so the assignment is stable across runs.
+        $tierIds = $this->networkTierIds();
+        if (!empty($tierIds) && !empty($existing)) {
+            $nullParticipants = $this->db->col(
+                "SELECT participant_id FROM participant WHERE participant_id IN (" . implode(',', array_fill(0, count($existing), '?')) . ") AND (network_tier IS NULL OR network_tier = 0)",
+                $existing
+            );
+            foreach ($nullParticipants as $idx => $pidStr) {
+                $pid = (int) $pidStr;
+                $this->db->exec(
+                    "UPDATE participant SET network_tier = ? WHERE participant_id = ?",
+                    [$tierIds[$idx % count($tierIds)], $pid]
+                );
+            }
+        }
+
         $shortfall = $needed - count($existing);
         if ($shortfall <= 0) {
             return array_slice($existing, 0, $needed);
@@ -296,6 +340,7 @@ final class Provisioner
         for ($i = 1; $i <= $shortfall; $i++) {
             $serial = $maxSerial + $i;
             $uid = sprintf('%sp%03d', self::PREFIX, $serial);
+            $tier = !empty($tierIds) ? $tierIds[($serial - 1) % count($tierIds)] : null;
             $pid = $this->db->insert('participant', [
                 'unique_identifier' => $uid,
                 'first_name'        => 'AutoTest',
@@ -304,6 +349,7 @@ final class Provisioner
                 'institute_name'    => 'AutoTest Institute',
                 'email'             => sprintf('autotest+p%03d@example.invalid', $serial),
                 'country'           => 1,
+                'network_tier'      => $tier,
                 'status'            => 'active',
                 'created_on'        => $now,
                 'created_by'        => 'test-harness',
@@ -379,9 +425,104 @@ final class Provisioner
         }
     }
 
-    private function createShipmentParticipantMap(int $shipmentId, int $participantId, string $algoKey, string $tier): int
+    /**
+     * Seed per-shipment reference characterisation rows (the data normally entered
+     * through the per-sample "Reference Results" modal on the admin shipment-edit
+     * page). Populates reference_dts_eia + reference_dts_rapid_hiv for every sample
+     * so the Vietnam Summary §3 Appendix A1 table renders with real numeric / +-
+     * values instead of falling back to the simplified reference-only table.
+     *
+     * Values aren't medically meaningful — they're plausible synthetic numbers that
+     * match the sample's expected reference result (Positive samples emit reactive
+     * EIA OD values + '+' rapids; Negative samples emit non-reactive ODs + '-' rapids).
+     * WB / Geenius are intentionally skipped to keep the table compact.
+     */
+    private function createReferenceModalData(int $shipmentId, array $samples, array $lookups, array $kits): void
+    {
+        // The reference_dts_eia.eia column is FK to r_dbs_eia.eia_id (integer), NOT a
+        // TestKitName_ID — the admin EIA dropdown lists r_dbs_eia entries. Pick the
+        // lowest-numbered entry so the harness has a real, valid reference. If the
+        // r_dbs_eia table is empty, skip the EIA seed.
+        $eiaRefId = $this->db->scalar("SELECT eia_id FROM r_dbs_eia ORDER BY eia_id LIMIT 1");
+        if (!$eiaRefId) {
+            $eiaRefId = null;
+        }
+        // Rapid kits at positions 1 and 3 are the reference rapids — these are real
+        // TestKitName_IDs (varchar) matching reference_dts_rapid_hiv.testkit.
+        $refKits = $kits['reference'] ?? [];
+        $rapid1 = $refKits[1] ?? null;
+        $rapid3 = $refKits[3] ?? null;
+
+        $rTestRows = $this->db->all(
+            "SELECT id, result_code FROM r_possibleresult
+             WHERE scheme_id='dts' AND scheme_sub_group='DTS_TEST' AND result_code IN ('R','NR')"
+        );
+        $testIdByCode = [];
+        foreach ($rTestRows as $r) {
+            $testIdByCode[$r['result_code']] = (int) $r['id'];
+        }
+        if (empty($testIdByCode['R']) || empty($testIdByCode['NR'])) {
+            return;
+        }
+
+        $today = date('Y-m-d');
+        foreach ($samples as $sampleId => $meta) {
+            $isPositive = ($meta['ref'] ?? '') === 'P';
+            $isDiluted  = !empty($meta['diluted']);
+
+            // Plausible OD / cutoff numbers — positive ~ above-cutoff, negative ~ below
+            $cutoff = '0.300';
+            if ($isPositive && !$isDiluted) {
+                $od = number_format(mt_rand(15000, 25000) / 1000, 3);   // 15-25
+            } elseif ($isPositive && $isDiluted) {
+                $od = number_format(mt_rand(400, 900) / 1000, 3);        // 0.4-0.9 (weak)
+            } else {
+                $od = number_format(mt_rand(80, 240) / 1000, 3);         // 0.08-0.24
+            }
+            $eiaResultId = $isPositive ? $testIdByCode['R'] : $testIdByCode['NR'];
+
+            if ($eiaRefId !== null) {
+                $this->db->insert('reference_dts_eia', [
+                    'shipment_id' => $shipmentId,
+                    'sample_id'   => $sampleId,
+                    'eia'         => $eiaRefId,
+                    'lot'         => 'REF-EIA-LOT',
+                    'test_date'   => $today,
+                    'exp_date'    => date('Y-m-d', strtotime('+1 year')),
+                    'od'          => $od,
+                    'cutoff'      => $cutoff,
+                    'result'      => (string) $eiaResultId,
+                ]);
+            }
+
+            $rapidResultId = $isPositive ? $testIdByCode['R'] : $testIdByCode['NR'];
+            foreach (array_filter([$rapid1, $rapid3]) as $rkit) {
+                $this->db->insert('reference_dts_rapid_hiv', [
+                    'shipment_id' => $shipmentId,
+                    'sample_id'   => $sampleId,
+                    'testkit'     => $rkit,
+                    'lot_no'      => 'REF-RAPID-LOT',
+                    'test_date'   => $today,
+                    'expiry_date' => date('Y-m-d', strtotime('+1 year')),
+                    'result'      => (string) $rapidResultId,
+                ]);
+            }
+        }
+    }
+
+    private function createShipmentParticipantMap(int $shipmentId, int $participantId, string $algoKey, string $tier, int $mapIndex = 0): int
     {
         $now = date('Y-m-d H:i:s');
+        // Pull this shipment's own shipment_date so test-day offsets are meaningful
+        // (the Summary §2.2 reporting-time bar buckets DATEDIFF(test_date, shipment_date)).
+        // Spread across <7 / 7-14 / >14 buckets using a deterministic modulo on map index.
+        $shipDate = $this->db->scalar("SELECT shipment_date FROM shipment WHERE shipment_id = ?", [$shipmentId]);
+        $shipDate = $shipDate ?: date('Y-m-d');
+        $offsetCycle = [3, 5, 6, 10, 12, 14, 18, 22];   // mostly mid-range with tails
+        $offset = $offsetCycle[$mapIndex % count($offsetCycle)];
+        $testDate = date('Y-m-d', strtotime("$shipDate +$offset days"));
+        $receiptDate = date('Y-m-d', strtotime("$shipDate +1 day"));
+
         return $this->db->insert('shipment_participant_map', [
             'shipment_id'              => $shipmentId,
             'participant_id'           => $participantId,
@@ -390,8 +531,8 @@ final class Provisioner
                 'dts_test_panel_type'   => $tier,
             ]),
             'shipment_test_report_date' => $now,
-            'shipment_test_date'        => date('Y-m-d'),
-            'shipment_receipt_date'     => date('Y-m-d'),
+            'shipment_test_date'        => $testDate,
+            'shipment_receipt_date'     => $receiptDate,
             'response_status'           => 'responded',
             'is_pt_test_not_performed'  => 'no',
             'created_on_admin'          => $now,

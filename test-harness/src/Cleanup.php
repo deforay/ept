@@ -42,6 +42,12 @@ final class Cleanup
             );
             $this->db->exec("DELETE FROM shipment_participant_map WHERE shipment_id = ?", [$shipmentId]);
             $this->db->exec("DELETE FROM reference_result_dts    WHERE shipment_id = ?", [$shipmentId]);
+            // DTS reference modal rows (entered via the per-sample Reference Results modal
+            // on the shipment-edit page; populated by Provisioner::createReferenceModalData).
+            $this->db->exec("DELETE FROM reference_dts_eia        WHERE shipment_id = ?", [$shipmentId]);
+            $this->db->exec("DELETE FROM reference_dts_wb         WHERE shipment_id = ?", [$shipmentId]);
+            $this->db->exec("DELETE FROM reference_dts_rapid_hiv  WHERE shipment_id = ?", [$shipmentId]);
+            $this->db->exec("DELETE FROM reference_dts_geenius    WHERE shipment_id = ?", [$shipmentId]);
             // FK-referencing tables that the app may have populated post-provision
             // (queue_report_generation populated by report generation; others usually
             // empty for ATEST shipments but cleared defensively).
@@ -99,6 +105,10 @@ final class Cleanup
                 );
                 $this->db->exec("DELETE FROM shipment_participant_map WHERE shipment_id = ?", [$sid]);
                 $this->db->exec("DELETE FROM reference_result_dts    WHERE shipment_id = ?", [$sid]);
+                $this->db->exec("DELETE FROM reference_dts_eia        WHERE shipment_id = ?", [$sid]);
+                $this->db->exec("DELETE FROM reference_dts_wb         WHERE shipment_id = ?", [$sid]);
+                $this->db->exec("DELETE FROM reference_dts_rapid_hiv  WHERE shipment_id = ?", [$sid]);
+                $this->db->exec("DELETE FROM reference_dts_geenius    WHERE shipment_id = ?", [$sid]);
                 $this->db->exec("DELETE FROM queue_report_generation WHERE shipment_id = ?", [$sid]);
                 $this->db->exec("DELETE FROM participant_testkit_map WHERE shipment_id = ?", [$sid]);
                 $this->db->exec("DELETE FROM participant_feedback_answer WHERE shipment_id = ?", [$sid]);
@@ -147,6 +157,10 @@ final class Cleanup
                 );
                 $this->db->exec("DELETE FROM shipment_participant_map WHERE shipment_id = ?", [$sid]);
                 $this->db->exec("DELETE FROM reference_result_dts    WHERE shipment_id = ?", [$sid]);
+                $this->db->exec("DELETE FROM reference_dts_eia        WHERE shipment_id = ?", [$sid]);
+                $this->db->exec("DELETE FROM reference_dts_wb         WHERE shipment_id = ?", [$sid]);
+                $this->db->exec("DELETE FROM reference_dts_rapid_hiv  WHERE shipment_id = ?", [$sid]);
+                $this->db->exec("DELETE FROM reference_dts_geenius    WHERE shipment_id = ?", [$sid]);
                 $this->db->exec("DELETE FROM queue_report_generation WHERE shipment_id = ?", [$sid]);
                 $this->db->exec("DELETE FROM participant_testkit_map WHERE shipment_id = ?", [$sid]);
                 $this->db->exec("DELETE FROM participant_feedback_answer WHERE shipment_id = ?", [$sid]);
