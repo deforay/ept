@@ -42,7 +42,7 @@ Day-to-day rules and report details.
 - **Report Effective Date** — date printed in the report footer
   to show when the current methodology took effect.
 - **DTS Scheme Type** *(required)* — pick the scheme:
-  - **Standard Types**: *Standard*, *Updated 3-Tests*
+  - **Standard Types**: *Standard*, *Standard 3-Tests*
   - **Country Specific**: Ghana, Malawi, Myanmar, Sierra Leone,
     Côte d'Ivoire, DRC, Vietnam
   - Your choice changes which algorithms are available below
@@ -56,9 +56,9 @@ Day-to-day rules and report details.
   kit dropdown, so they must pick one of the kits you have set
   up.
 
-### Malawi / Updated 3-Tests only
+### Malawi / Standard 3-Tests only
 
-When **DTS Scheme Type** is *Malawi* or *Updated 3-Tests*, two
+When **DTS Scheme Type** is *Malawi* or *Standard 3-Tests*, two
 extra toggles appear:
 
 - **Display Sample Condition Fields** *(Yes/No)* — show sample
