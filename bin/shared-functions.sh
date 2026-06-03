@@ -1137,7 +1137,15 @@ install_npm_packages() {
 
     print info "Installing npm packages in ${app_path}..."
     cd "${app_path}"
-    sudo -u www-data npm install --omit=dev 2>/dev/null || npm install --omit=dev
+    # Prefer `npm ci` for reproducible, lockfile-pinned installs: it installs the
+    # exact vetted versions and refuses to drift onto a newer (or compromised)
+    # release within the package.json caret ranges. Fall back to `npm install`
+    # only when no lockfile is present.
+    local npm_cmd="install"
+    if [ -f "package-lock.json" ] || [ -f "npm-shrinkwrap.json" ]; then
+        npm_cmd="ci"
+    fi
+    sudo -u www-data npm "${npm_cmd}" --omit=dev 2>/dev/null || npm "${npm_cmd}" --omit=dev
     print success "npm packages installed."
     log_action "npm packages installed in ${app_path}."
 }
