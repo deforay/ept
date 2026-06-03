@@ -66,7 +66,7 @@ if (is_file($autoload)) {
 
 // Idempotent path: a strong salt is already configured → nothing to do.
 if ($existing !== null && $existing !== '' && strlen($existing) >= 32 && !$opts['force']) {
-    fwrite(STDOUT, "security.salt is already set (length=" . strlen($existing) . "). No change. Pass --force to rotate.\n");
+    fwrite(STDOUT, 'security.salt is already set (length=' . strlen($existing) . "). No change. Pass --force to rotate.\n");
     exit(0);
 }
 

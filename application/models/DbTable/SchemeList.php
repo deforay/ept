@@ -394,7 +394,7 @@ class Application_Model_DbTable_SchemeList extends Zend_Db_Table_Abstract
         $db = $this->getAdapter();
         // Remove results
         if (isset($params['removedRow']) && !empty($params['removedRow'])) {
-            foreach (explode(",", $params['removedRow']) as $id) {
+            foreach (explode(',', $params['removedRow']) as $id) {
                 $db->delete('r_possibleresult', $db->quoteInto('id = ?', (int) base64_decode($id)));
             }
         }

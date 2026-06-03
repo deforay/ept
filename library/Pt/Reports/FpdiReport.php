@@ -184,7 +184,7 @@ class Pt_Reports_FpdiReport extends Fpdi
 
             $panelId = $attrs['shipment_code'] ?? '';
             if (empty($panelId) && !empty($shipmentId)) {
-                $panelRow = $shipmentService->getShipmentDetails($shipmentId);
+                $panelRow = $shipmentService->getShipment($shipmentId);
                 $panelId  = $panelRow['shipment_code'] ?? '';
             }
 

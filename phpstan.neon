@@ -33,6 +33,11 @@ parameters:
     ignoreErrors:
         -
             message: '#^(Call to an undefined method|Access to an undefined property) Zend_Controller_Action_HelperBroker::#'
+        # getRequest() is typed as Zend_Controller_Request_Abstract, but the runtime
+        # object is Zend_Controller_Request_Http (getRequestUri/getPost/isPost/...).
+        # Suppress the whole pattern globally instead of baselining each call site.
+        -
+            message: '#^Call to an undefined method Zend_Controller_Request_Abstract::#'
         -
             message: '#^Access to an undefined property Zend_View_Interface::#'
         -
