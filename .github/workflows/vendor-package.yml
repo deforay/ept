@@ -39,7 +39,7 @@ jobs:
         uses: shivammathur/setup-php@accd6127cb78bee3e8082180cb391013d204ef9f  # v2
         with:
           php-version: ${{ env.PHP_VERSION }}
-          extensions: gd, zip, pdo, json, curl, gettext, openssl, fileinfo, sodium, zlib, intl, bcmath
+          extensions: gd, zip, pdo, json, curl, gettext, openssl, fileinfo, sodium, zlib, intl, bcmath, mbstring, dom, xml, simplexml, ctype, iconv
           tools: composer:v2
           coverage: none
 
