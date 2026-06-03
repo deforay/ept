@@ -195,7 +195,7 @@ elif [ -n "$ept_path" ]; then
 else
     # Interactive prompt for path (existing behavior)
     echo "Enter the EPT installation path [press enter for /var/www/ept]: "
-    if read -t 60 ept_path && [ -n "$ept_path" ]; then
+    if read -t 60 ept_path < /dev/tty && [ -n "$ept_path" ]; then
         : # user provided a value
     else
         ept_path=""
@@ -430,23 +430,23 @@ elif [ -f "${first_ept_path}/application/configs/application.ini" ]; then
     ini_user="$(sanitize_ini_secret "$ini_user")"
     if [ "$ini_user" != "root" ]; then
         print warning "application.ini contains DB user '${ini_user:-<empty>}', not 'root'. Prompting for MySQL root password..."
-        read -r -sp "MySQL root password: " mysql_pw; echo
+        read -r -sp "MySQL root password: " mysql_pw < /dev/tty; echo
     elif [ -n "$mysql_pw" ]; then
         print info "Extracted MySQL root password from application.ini"
     else
         print warning "Could not extract a MySQL password from application.ini. Prompting for password..."
-        read -r -sp "MySQL root password: " mysql_pw; echo
+        read -r -sp "MySQL root password: " mysql_pw < /dev/tty; echo
     fi
 else
     print error "Could not find application.ini to extract MySQL password. Please provide the MySQL root password."
-    read -r -sp "MySQL root password: " mysql_pw; echo
+    read -r -sp "MySQL root password: " mysql_pw < /dev/tty; echo
 fi
 
 # Preflight root auth; prompt if wrong
 mysql_pw="$(sanitize_ini_secret "$mysql_pw")"
 if ! MYSQL_PWD="${mysql_pw}" mysql -u root -e "SELECT 1" >/dev/null 2>&1; then
     print warning "Root authentication failed. Prompting for password..."
-    read -r -sp "MySQL root password: " mysql_pw; echo
+    read -r -sp "MySQL root password: " mysql_pw < /dev/tty; echo
 fi
 
 persist_result=$(MYSQL_PWD="${mysql_pw}" mysql -u root -e "SET PERSIST sql_mode = '';" 2>&1)
@@ -612,8 +612,8 @@ backup_database() {
 if [ "$skip_backup" = false ]; then
     if ask_yes_no "Do you want to backup the database" "no"; then
         echo "Please enter your MySQL root password:"
-        read -r -s mysql_root_password
-        read -r -p "Enter the backup location [press enter to select /var/ept-backup/db/]: " backup_location
+        read -r -s mysql_root_password < /dev/tty
+        read -r -p "Enter the backup location [press enter to select /var/ept-backup/db/]: " backup_location < /dev/tty
         backup_location="${backup_location:-/var/ept-backup/db/}"
         if [ ! -d "$backup_location" ]; then
             print info "Backup directory does not exist. Creating it now..."
@@ -622,7 +622,7 @@ if [ "$skip_backup" = false ]; then
         cd "$backup_location" || exit
         get_databases
         echo "Enter the numbers of the databases you want to backup, separated by space or comma, or type 'all' for all databases:"
-        read -r input_selections
+        read -r input_selections < /dev/tty
         selected_indexes=()
         if [[ "$input_selections" == "all" ]]; then
             selected_indexes=("${!databases[@]}")
