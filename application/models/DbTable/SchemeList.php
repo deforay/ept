@@ -190,7 +190,7 @@ class Application_Model_DbTable_SchemeList extends Zend_Db_Table_Abstract
             'status' => $params['status'],
         ];
         if (isset($params['schemeId']) && !empty($params['schemeId'])) {
-            $this->update($data, 'scheme_id = "' . base64_decode($params['schemeId']) . '"');
+            $this->update($data, $this->getAdapter()->quoteInto('scheme_id = ?', base64_decode($params['schemeId'])));
             $this->getAdapter()->delete('r_possibleresult', $this->getAdapter()->quoteInto('scheme_id = ?', base64_decode($params['schemeId'])));
         } else {
             $this->insert($data);
@@ -395,7 +395,7 @@ class Application_Model_DbTable_SchemeList extends Zend_Db_Table_Abstract
         // Remove results
         if (isset($params['removedRow']) && !empty($params['removedRow'])) {
             foreach (explode(",", $params['removedRow']) as $id) {
-                $db->delete('r_possibleresult', 'id = "' . base64_decode($id) . '"');
+                $db->delete('r_possibleresult', $db->quoteInto('id = ?', (int) base64_decode($id)));
             }
         }
 
