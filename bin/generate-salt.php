@@ -45,16 +45,23 @@ if (!is_file($iniPath)) {
     exit(2);
 }
 
-$content = file_get_contents($iniPath);
-if ($content === false) {
-    fwrite(STDERR, "ERROR: read failed for $iniPath\n");
-    exit(2);
-}
-
-$pattern = '/^[ \t]*;?[ \t]*security\.salt[ \t]*=[ \t]*([\'"]?)([^\'"\r\n;]*)\1[ \t]*;?.*$/m';
+// Detect an existing strong salt by PARSING the file with the same engine the
+// app uses -- not a hand-rolled regex. Zend_Config_Ini understands section
+// inheritance, `key[]` array syntax and APPLICATION_PATH constants, so it can't
+// be fooled the way string matching can. Loaded standalone via the Composer
+// autoloader (psr-0 maps Zend_ -> the zf1-future library).
 $existing = null;
-if (preg_match($pattern, $content, $m)) {
-    $existing = trim($m[2]);
+$autoload = __DIR__ . '/../vendor/autoload.php';
+if (is_file($autoload)) {
+    require_once $autoload;
+    try {
+        $cfg = new Zend_Config_Ini($iniPath, 'production');
+        $existing = isset($cfg->security->salt) ? trim((string) $cfg->security->salt) : null;
+    } catch (Throwable $e) {
+        // Unparseable (e.g. a previously corrupted file). Leave $existing null so
+        // a salt gets (re)written below; the targeted writer can't damage the file.
+        $existing = null;
+    }
 }
 
 // Idempotent path: a strong salt is already configured → nothing to do.
@@ -68,21 +75,41 @@ if (!is_writable($iniPath)) {
     exit(2);
 }
 
-$salt = bin2hex(random_bytes(32));
+$content = file_get_contents($iniPath);
+if ($content === false) {
+    fwrite(STDERR, "ERROR: read failed for $iniPath\n");
+    exit(2);
+}
 
-if ($existing !== null) {
-    $replacement = "security.salt = '" . $salt . "'";
-    $content = preg_replace($pattern, $replacement, $content, 1);
-    $action = $opts['force'] ? 'Rotated security.salt' : 'Filled empty/short security.salt';
+$salt = bin2hex(random_bytes(32));
+$saltLine = "security.salt = '" . $salt . "'";
+
+// Writing is a TARGETED text edit so comments and APPLICATION_PATH constants
+// survive untouched. preg_replace_callback (not preg_replace) so a '$' or '\'
+// can never be interpreted in the replacement.
+//
+// Crucially we anchor an insert on the [production] *header line*, never the
+// section body: ZF array keys like `resources.view[] =` contain '[', and the
+// old "insert before the next [" logic split that line in two and corrupted the
+// file (orphaned `[] =` -> "syntax error, unexpected '='").
+$saltLinePattern = '/^[ \t]*;?[ \t]*security\.salt[ \t]*=.*$/m';
+$headerPattern   = '/^\[production\][^\r\n]*\R/m';
+
+if (preg_match($saltLinePattern, $content)) {
+    // Replace an existing (possibly empty/short/commented) salt line in place.
+    $content = preg_replace_callback($saltLinePattern, static fn () => $saltLine, $content, 1);
+    $action  = $opts['force'] ? 'Rotated security.salt' : 'Filled empty/short security.salt';
+} elseif (preg_match($headerPattern, $content)) {
+    $content = preg_replace_callback(
+        $headerPattern,
+        static fn (array $m) => $m[0] . $saltLine . "\n",
+        $content,
+        1
+    );
+    $action = 'Inserted new security.salt under [production]';
 } else {
-    $append = "\nsecurity.salt = '" . $salt . "'\n";
-    if (preg_match('/^\[production\][^\[]*/m', $content)) {
-        $content = preg_replace('/(\[production\][^\[]*)/m', '$1' . $append, $content, 1);
-        $action = 'Inserted new security.salt under [production]';
-    } else {
-        $content .= $append;
-        $action = 'Appended new security.salt to end of file';
-    }
+    $content = rtrim($content, "\r\n") . "\n" . $saltLine . "\n";
+    $action  = 'Appended new security.salt to end of file';
 }
 
 if (file_put_contents($iniPath, $content) === false) {
