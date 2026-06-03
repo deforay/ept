@@ -771,44 +771,39 @@ upgrade_instance() {
     # Download and install vendor if needed
     if [ "$NEED_FULL_INSTALL" = true ]; then
         print info "Installing dependencies..."
-        if curl --output /dev/null --silent --head --fail "https://github.com/deforay/ept/releases/download/vendor-latest/vendor.tar.gz"; then
-            # Check if vendor.tar.gz already downloaded (shared across instances)
-            if [ ! -f "/tmp/ept-vendor.tar.gz" ]; then
-                download_file "/tmp/ept-vendor.tar.gz" "https://github.com/deforay/ept/releases/download/vendor-latest/vendor.tar.gz" "Downloading vendor packages..."
-                download_file "/tmp/ept-vendor.tar.gz.sha256" "https://github.com/deforay/ept/releases/download/vendor-latest/vendor.tar.gz.sha256" "Downloading checksum..." 2>/dev/null || \
-                    download_file "/tmp/ept-vendor.tar.gz.md5" "https://github.com/deforay/ept/releases/download/vendor-latest/vendor.tar.gz.md5" "Downloading checksum..."
+        local vendor_url="https://github.com/deforay/ept/releases/download/vendor-latest/vendor.tar.gz"
+        local vendor_tar="/tmp/ept-vendor.tar.gz"
+        if curl --output /dev/null --silent --head --fail "$vendor_url"; then
+            # Download once; the /tmp copy is reused across instances in this run.
+            if [ ! -f "$vendor_tar" ]; then
+                download_file "$vendor_tar" "$vendor_url" "Downloading vendor packages..."
+                download_file "${vendor_tar}.sha256" "${vendor_url}.sha256" "Downloading checksum..." 2>/dev/null || \
+                    download_file "${vendor_tar}.md5" "${vendor_url}.md5" "Downloading checksum..."
             fi
 
-            # Verify checksum
-            if [ -f "/tmp/ept-vendor.tar.gz.sha256" ]; then
-                if (cd /tmp && sha256sum -c ept-vendor.tar.gz.sha256 2>/dev/null); then
-                    tar -xzf /tmp/ept-vendor.tar.gz -C "${ept_path}" &
-                    local vendor_tar_pid=$!
-                    spinner "${vendor_tar_pid}"
-                    wait ${vendor_tar_pid}
+            # Prefer sha256, fall back to md5. Verify by hash value (verify_checksum),
+            # not `sum -c` -- the release checksum bakes in the name "vendor.tar.gz",
+            # which never matches our /tmp/ept-vendor.tar.gz and silently forced a slow
+            # full composer install on every upgrade.
+            local vendor_checksum=""
+            if [ -f "${vendor_tar}.sha256" ]; then
+                vendor_checksum="${vendor_tar}.sha256"
+            elif [ -f "${vendor_tar}.md5" ]; then
+                vendor_checksum="${vendor_tar}.md5"
+            fi
 
-                    chown -R www-data:www-data "${ept_path}/vendor" 2>/dev/null || true
-                    chmod -R 755 "${ept_path}/vendor" 2>/dev/null || true
+            if [ -n "$vendor_checksum" ] && verify_checksum "$vendor_tar" "$vendor_checksum"; then
+                tar -xzf "$vendor_tar" -C "${ept_path}" &
+                local vendor_tar_pid=$!
+                spinner "${vendor_tar_pid}"
+                wait ${vendor_tar_pid}
 
-                    sudo -u www-data composer install --no-scripts --no-autoloader --prefer-dist --no-dev --no-interaction
-                else
-                    sudo -u www-data composer install --prefer-dist --no-dev --no-interaction
-                fi
-            elif [ -f "/tmp/ept-vendor.tar.gz.md5" ]; then
-                if (cd /tmp && md5sum -c ept-vendor.tar.gz.md5 2>/dev/null); then
-                    tar -xzf /tmp/ept-vendor.tar.gz -C "${ept_path}" &
-                    local vendor_tar_pid=$!
-                    spinner "${vendor_tar_pid}"
-                    wait ${vendor_tar_pid}
+                chown -R www-data:www-data "${ept_path}/vendor" 2>/dev/null || true
+                chmod -R 755 "${ept_path}/vendor" 2>/dev/null || true
 
-                    chown -R www-data:www-data "${ept_path}/vendor" 2>/dev/null || true
-                    chmod -R 755 "${ept_path}/vendor" 2>/dev/null || true
-
-                    sudo -u www-data composer install --no-scripts --no-autoloader --prefer-dist --no-dev --no-interaction
-                else
-                    sudo -u www-data composer install --prefer-dist --no-dev --no-interaction
-                fi
+                sudo -u www-data composer install --no-scripts --no-autoloader --prefer-dist --no-dev --no-interaction
             else
+                print warning "Vendor checksum unavailable or mismatched; running full composer install."
                 sudo -u www-data composer install --prefer-dist --no-dev --no-interaction
             fi
         else

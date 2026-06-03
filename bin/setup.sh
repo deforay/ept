@@ -336,6 +336,26 @@ if [ -f "${ept_path}/composer.lock" ]; then
     echo "Current composer.lock checksum: ${CURRENT_COMPOSER_LOCK_CHECKSUM}"
 fi
 
+# A fresh install (no vendor/ yet) always needs the vendor package, and that's
+# knowable up front -- so kick its download off in the BACKGROUND now and let it
+# run concurrently with the master download + extract below. The verified tarball
+# lands in /tmp for the vendor step to consume. When vendor/ already exists we skip
+# the prefetch and let the conditional path further down decide (download only if
+# composer.lock actually changed), so no bandwidth is wasted on no-op re-runs.
+VENDOR_URL="https://github.com/deforay/ept/releases/download/vendor-latest/vendor.tar.gz"
+VENDOR_TAR="/tmp/ept-vendor.tar.gz"
+VENDOR_PREFETCH_PID=""
+if [ ! -d "${ept_path}/vendor" ] && curl --output /dev/null --silent --head --fail "$VENDOR_URL"; then
+    print info "Prefetching vendor packages in parallel with ePT download..."
+    rm -f "$VENDOR_TAR" "${VENDOR_TAR}.sha256" "${VENDOR_TAR}.md5"
+    (
+        download_file "$VENDOR_TAR" "$VENDOR_URL" "Downloading vendor packages..."
+        download_file "${VENDOR_TAR}.sha256" "${VENDOR_URL}.sha256" "Downloading checksum..." 2>/dev/null || \
+            download_file "${VENDOR_TAR}.md5" "${VENDOR_URL}.md5" "Downloading checksum..."
+    ) >/tmp/ept-vendor-prefetch.log 2>&1 &
+    VENDOR_PREFETCH_PID=$!
+fi
+
 print header "Downloading ePT"
 
 download_file "master.tar.gz" "https://codeload.github.com/deforay/ept/tar.gz/refs/heads/master" "Downloading ePT package..." || {
@@ -435,49 +455,54 @@ fi
 if [ "$NEED_FULL_INSTALL" = true ]; then
     print info "Dependency update needed. Checking for vendor packages..."
 
-    if curl --output /dev/null --silent --head --fail "https://github.com/deforay/ept/releases/download/vendor-latest/vendor.tar.gz"; then
-        download_file "vendor.tar.gz" "https://github.com/deforay/ept/releases/download/vendor-latest/vendor.tar.gz" "Downloading vendor packages..."
+    # Consume the background prefetch if one was started (fresh install); otherwise
+    # vendor/ already existed, so download now -- the conditional case.
+    if [ -n "$VENDOR_PREFETCH_PID" ]; then
+        print info "Waiting for vendor prefetch to finish..."
+        wait "$VENDOR_PREFETCH_PID" 2>/dev/null || true
+        VENDOR_PREFETCH_PID=""
+    elif curl --output /dev/null --silent --head --fail "$VENDOR_URL"; then
+        rm -f "$VENDOR_TAR" "${VENDOR_TAR}.sha256" "${VENDOR_TAR}.md5"
+        download_file "$VENDOR_TAR" "$VENDOR_URL" "Downloading vendor packages..."
+        download_file "${VENDOR_TAR}.sha256" "${VENDOR_URL}.sha256" "Downloading checksum..." 2>/dev/null || \
+            download_file "${VENDOR_TAR}.md5" "${VENDOR_URL}.md5" "Downloading checksum..."
+    fi
 
-        # Download checksum
-        download_file "vendor.tar.gz.sha256" "https://github.com/deforay/ept/releases/download/vendor-latest/vendor.tar.gz.sha256" "Downloading checksum..." 2>/dev/null || \
-            download_file "vendor.tar.gz.md5" "https://github.com/deforay/ept/releases/download/vendor-latest/vendor.tar.gz.md5" "Downloading checksum..."
+    # Prefer sha256, fall back to md5; verify by hash value (verify_checksum), not
+    # `sum -c` -- the release checksum bakes in the name "vendor.tar.gz", which won't
+    # match our /tmp/ept-vendor.tar.gz and would wrongly force a full composer install.
+    vendor_checksum=""
+    if [ -f "${VENDOR_TAR}.sha256" ]; then
+        vendor_checksum="${VENDOR_TAR}.sha256"
+    elif [ -f "${VENDOR_TAR}.md5" ]; then
+        vendor_checksum="${VENDOR_TAR}.md5"
+    fi
 
-        # Verify checksum
-        checksum_ok=false
-        if [ -f "vendor.tar.gz.sha256" ]; then
-            if sha256sum -c vendor.tar.gz.sha256 2>/dev/null; then
-                checksum_ok=true
-            fi
-        elif [ -f "vendor.tar.gz.md5" ]; then
-            if md5sum -c vendor.tar.gz.md5 2>/dev/null; then
-                checksum_ok=true
-            fi
-        fi
+    if [ -f "$VENDOR_TAR" ] && [ -n "$vendor_checksum" ] && verify_checksum "$VENDOR_TAR" "$vendor_checksum"; then
+        print success "Checksum verification passed"
 
-        if [ "$checksum_ok" = true ]; then
-            print success "Checksum verification passed"
+        tar -xzf "$VENDOR_TAR" -C "${ept_path}" &
+        vendor_tar_pid=$!
+        spinner "${vendor_tar_pid}" "Extracting vendor files..."
+        wait ${vendor_tar_pid}
 
-            tar -xzf vendor.tar.gz -C "${ept_path}" &
-            vendor_tar_pid=$!
-            spinner "${vendor_tar_pid}" "Extracting vendor files..."
-            wait ${vendor_tar_pid}
+        chown -R www-data:www-data "${ept_path}/vendor" 2>/dev/null || true
+        chmod -R 755 "${ept_path}/vendor" 2>/dev/null || true
 
-            chown -R www-data:www-data "${ept_path}/vendor" 2>/dev/null || true
-            chmod -R 755 "${ept_path}/vendor" 2>/dev/null || true
-
-            sudo -u www-data composer install --no-scripts --no-autoloader --prefer-dist --no-dev --no-interaction
-        else
-            print warning "Checksum verification failed. Running full composer install..."
-            sudo -u www-data composer install --prefer-dist --no-dev --no-interaction
-        fi
-
-        rm -f vendor.tar.gz vendor.tar.gz.sha256 vendor.tar.gz.md5
+        sudo -u www-data composer install --no-scripts --no-autoloader --prefer-dist --no-dev --no-interaction
     else
-        print warning "Vendor package not found in GitHub releases. Running full composer install..."
+        print warning "Vendor package/checksum unavailable or mismatched. Running full composer install..."
         sudo -u www-data composer install --prefer-dist --no-dev --no-interaction
     fi
+
+    rm -f "$VENDOR_TAR" "${VENDOR_TAR}.sha256" "${VENDOR_TAR}.md5"
 else
     print info "Dependencies are up to date. Skipping vendor download."
+    # Defensive: if we prefetched but deps turned out current, reap + discard it.
+    if [ -n "$VENDOR_PREFETCH_PID" ]; then
+        wait "$VENDOR_PREFETCH_PID" 2>/dev/null || true
+        rm -f "$VENDOR_TAR" "${VENDOR_TAR}.sha256" "${VENDOR_TAR}.md5"
+    fi
 fi
 
 sudo -u www-data composer dump-autoload -o --no-interaction

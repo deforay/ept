@@ -291,6 +291,34 @@ download_file() {
 }
 
 
+# verify_checksum <file> <checksum_file> -- returns 0 if the file's hash matches.
+#
+# Filename-independent on purpose. The release checksum files bake in the original
+# artifact name ("<hash>  vendor.tar.gz"), so `sha256sum -c file.sha256` looks for a
+# literal "vendor.tar.gz" in the cwd. When we download the tarball under a different
+# name (e.g. /tmp/ept-vendor.tar.gz), that check fails with "vendor.tar.gz: FAILED
+# open or read" and the caller wrongly falls back to a slow full composer install.
+# Compare the hash *value* directly to avoid that. Algorithm is picked from the
+# checksum file's extension (.sha256 -> sha256sum, anything else -> md5sum).
+verify_checksum() {
+    local file="$1"
+    local checksum_file="$2"
+    [ -f "$file" ] && [ -f "$checksum_file" ] || return 1
+
+    local expected
+    expected=$(awk 'NR==1{print $1}' "$checksum_file")
+    [ -n "$expected" ] || return 1
+
+    local actual
+    case "$checksum_file" in
+        *.sha256) actual=$(sha256sum "$file" | awk '{print $1}') ;;
+        *)        actual=$(md5sum "$file" | awk '{print $1}') ;;
+    esac
+
+    [ "$expected" = "$actual" ]
+}
+
+
 # Download a file only if the remote version has changed
 download_if_changed() {
     local output_file="$1"
