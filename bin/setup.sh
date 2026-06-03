@@ -399,7 +399,7 @@ fi
 rsync -a --info=progress2 "$temp_dir/ept-master/" "$ept_path/"
 
 # Clean up
-rm -rf "$temp_dir/ept-master/"
+rm -rf "$temp_dir"
 rm -f master.tar.gz
 
 log_action "ePT copied to ${ept_path}."
@@ -504,6 +504,9 @@ else
         rm -f "$VENDOR_TAR" "${VENDOR_TAR}.sha256" "${VENDOR_TAR}.md5"
     fi
 fi
+
+# Remove the background prefetch log (best-effort; only exists on fresh installs).
+rm -f /tmp/ept-vendor-prefetch.log
 
 sudo -u www-data composer dump-autoload -o --no-interaction
 print success "Composer operations completed."
