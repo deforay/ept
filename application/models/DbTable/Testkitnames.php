@@ -135,7 +135,7 @@ class Application_Model_DbTable_Testkitnames extends Zend_Db_Table_Abstract
          * you want to insert a non-database field (for example a counter or static image)
          */
 
-        $aColumns = ['TestKit_Name', 'scheme_name', 'TestKit_Manufacturer', 'moh_approved', 'Approval', 'DATE_FORMAT(Created_On,"%d-%b-%Y %T")'];
+        $aColumns = ['TestKit_Name', 'scheme_name', 'TestKit_Manufacturer', 'moh_approved', 'pt_provider_validated', 'Approval', 'DATE_FORMAT(Created_On,"%d-%b-%Y %T")'];
 
         /* Indexed column (used for fast and accurate table cardinality) */
         $sIndexColumn = $this->_primary;
@@ -208,6 +208,15 @@ class Application_Model_DbTable_Testkitnames extends Zend_Db_Table_Abstract
         if (isset($parameters['status']) && $parameters['status'] == 'pending') {
             $sQuery = $sQuery->where("testkit_status = 'pending' ");
         }
+        if (isset($parameters['scheme']) && $parameters['scheme'] != '') {
+            $sQuery = $sQuery->where('stm.scheme_type = ?', $parameters['scheme']);
+        }
+        if (isset($parameters['mohApproved']) && $parameters['mohApproved'] != '') {
+            $sQuery = $sQuery->where('a.moh_approved = ?', $parameters['mohApproved']);
+        }
+        if (isset($parameters['ptValidated']) && $parameters['ptValidated'] != '') {
+            $sQuery = $sQuery->where('a.pt_provider_validated = ?', $parameters['ptValidated']);
+        }
 
         if (!empty($sOrder)) {
             $sQuery = $sQuery->order($sOrder);
@@ -248,6 +257,10 @@ class Application_Model_DbTable_Testkitnames extends Zend_Db_Table_Abstract
             if (trim($aRow['Approval']) == 1) {
                 $approved = 'Yes';
             }
+            $ptValidated = '';
+            if (isset($aRow['pt_provider_validated']) && $aRow['pt_provider_validated'] !== null && $aRow['pt_provider_validated'] !== '') {
+                $ptValidated = ((int) $aRow['pt_provider_validated'] === 1) ? 'Yes' : 'No';
+            }
             $createdDate = explode(' ', $aRow['Created_On']);
             if (isset($aRow['testkit_status']) && !empty($aRow['testkit_status']) && $aRow['testkit_status'] == 'pending') {
                 $kitChkbox = '<input type="checkbox" class="checkTablePending" name="subchk[]" id="' . $aRow['TestKitName_ID'] . '"  value="' . $aRow['TestKitName_ID'] . '" onclick="addKit(\'' . $aRow['TestKitName_ID'] . '\',this);"  />';
@@ -258,6 +271,7 @@ class Application_Model_DbTable_Testkitnames extends Zend_Db_Table_Abstract
             $row[] = $aRow['scheme_name'];
             $row[] = $aRow['TestKit_Manufacturer'];
             $row[] = $aRow['moh_approved'];
+            $row[] = $ptValidated;
             $row[] = $approved;
             $row[] = Pt_Commons_DateUtility::humanReadableDateFormat($createdDate[0]) . ' ' . $createdDate[1];
             $row[] = '<a href="/admin/testkit/edit/53s5k85_8d/' . base64_encode($aRow['TestKitName_ID']) . '" class="btn btn-warning btn-xs" style="margin-right: 2px;"><i class="icon-pencil"></i> Edit</a>';

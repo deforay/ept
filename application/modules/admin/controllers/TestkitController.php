@@ -36,6 +36,9 @@ class Admin_TestkitController extends Zend_Controller_Action
             $params = $this->getAllParams();
             $schemeService = new Application_Service_Schemes();
             $schemeService->getAllDtsTestKitInGrid($params);
+        } else {
+            $schemeDb = new Application_Model_DbTable_SchemeList();
+            $this->view->schemeList = $schemeDb->getFullSchemeList(true);
         }
     }
 

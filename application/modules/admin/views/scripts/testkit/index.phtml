@@ -17,22 +17,53 @@ $adminSession = new Zend_Session_Namespace('administrators');
     </div>
 </h4>
 
-<span class="col-md-3 col-xs-12" style="padding:10px 0;">
-    <select id="status" name="status" onchange="getApproval(this.value);" class="form-control input-sm">
-        <option value=""><?= $this->translate->_("Show All"); ?></option>
-        <option value="1"><?= $this->translate->_("Show Approved"); ?></option>
-        <option value="0"><?= $this->translate->_("Show UnApproved"); ?></option>
-        <option value="pending"><?= $this->translate->_("Show Pending"); ?></option>
-    </select>
-    <input type="hidden" id="testkitId" name="testkitId" />
-</span>
-<span class="col-md-3 col-xs-12 status-field hide" style="padding:10px 10px;">
+<div class="testkit-filters" style="clear:both;margin:15px 0;padding:12px 14px;background:#f8f9fa;border:1px solid #e2e8f0;border-radius:4px;">
+    <div class="row" style="margin:0;">
+        <div class="col-md-3" style="padding-left:0;">
+            <label for="status" style="font-weight:600;font-size:13px;display:block;margin-bottom:4px;"><?= $this->htmlTranslate("Approval status"); ?></label>
+            <select id="status" name="status" onchange="getApproval(this.value);" class="form-control input-sm">
+                <option value=""><?= $this->htmlTranslate("All"); ?></option>
+                <option value="1"><?= $this->htmlTranslate("Approved"); ?></option>
+                <option value="0"><?= $this->htmlTranslate("Unapproved"); ?></option>
+                <option value="pending"><?= $this->htmlTranslate("Pending"); ?></option>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <label for="schemeFilter" style="font-weight:600;font-size:13px;display:block;margin-bottom:4px;"><?= $this->htmlTranslate("Scheme name"); ?></label>
+            <select id="schemeFilter" onchange="drawTable();" class="form-control input-sm">
+                <option value=""><?= $this->htmlTranslate("All Schemes"); ?></option>
+                <?php foreach ((array) $this->schemeList as $schemeId => $schemeName) { ?>
+                    <option value="<?= $this->escape($schemeId); ?>"><?= $this->escape($schemeName); ?></option>
+                <?php } ?>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <label for="mohFilter" style="font-weight:600;font-size:13px;display:block;margin-bottom:4px;"><?= $this->htmlTranslate("Is MoH Approved?"); ?></label>
+            <select id="mohFilter" onchange="drawTable();" class="form-control input-sm">
+                <option value=""><?= $this->htmlTranslate("All"); ?></option>
+                <option value="Yes"><?= $this->htmlTranslate("Yes"); ?></option>
+                <option value="No"><?= $this->htmlTranslate("No"); ?></option>
+            </select>
+        </div>
+        <div class="col-md-3" style="padding-right:0;">
+            <label for="ptFilter" style="font-weight:600;font-size:13px;display:block;margin-bottom:4px;"><?= $this->htmlTranslate("Is PT Provider Validated?"); ?></label>
+            <select id="ptFilter" onchange="drawTable();" class="form-control input-sm">
+                <option value=""><?= $this->htmlTranslate("All"); ?></option>
+                <option value="1"><?= $this->htmlTranslate("Yes"); ?></option>
+                <option value="0"><?= $this->htmlTranslate("No"); ?></option>
+            </select>
+        </div>
+    </div>
+</div>
+<input type="hidden" id="testkitId" name="testkitId" />
+<span class="col-md-3 col-xs-12 status-field hide" style="padding:10px 0;">
     <select id="updateStatus" name="updateStatus" onchange="updateAll(this.value);" class="form-control input-sm">
         <option value=""><?= $this->translate->_("Change Status"); ?></option>
         <option value="approve"><?= $this->translate->_("Approve All"); ?></option>
         <option value="pending"><?= $this->translate->_("Pending All"); ?></option>
     </select>
 </span>
+<div style="clear:both;"></div>
 <table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered table-hover"
     id="testkitTable">
     <thead>
@@ -40,7 +71,8 @@ $adminSession = new Zend_Session_Namespace('administrators');
             <th scope="col"><?= $this->translate->_("Test Kit Name"); ?></th>
             <th scope="col"><?= $this->translate->_("Scheme Name"); ?></th>
             <th scope="col"><?= $this->translate->_("Test Kit Manufacturer"); ?></th>
-            <th scope="col"><?= $this->translate->_("Approval Agency"); ?></th>
+            <th scope="col"><?= $this->translate->_("Is MoH Approved?"); ?></th>
+            <th scope="col"><?= $this->translate->_("Is PT Provider Validated?"); ?></th>
             <th scope="col"><?= $this->translate->_("Approved"); ?></th>
             <th scope="col"><?= $this->translate->_("Created On"); ?></th>
             <th scope="col"><?= $this->translate->_("Action"); ?></th>
@@ -48,7 +80,7 @@ $adminSession = new Zend_Session_Namespace('administrators');
     </thead>
     <tbody>
         <tr>
-            <td colspan="7" class="dataTables_empty"><?= $this->translate->_("Loading data from server"); ?></td>
+            <td colspan="8" class="dataTables_empty"><?= $this->translate->_("Loading data from server"); ?></td>
         </tr>
     </tbody>
 </table>
@@ -98,6 +130,9 @@ $adminSession = new Zend_Session_Namespace('administrators');
                 "sClass": "center"
             },
             {
+                "sClass": "center"
+            },
+            {
                 "sClass": "center",
                 "bSortable": false
             }
@@ -119,11 +154,10 @@ $adminSession = new Zend_Session_Namespace('administrators');
             "bServerSide": true,
             "sAjaxSource": "<?php echo $this->url(array('module' => 'admin', 'controller' => 'testkit', 'action' => 'index', 'format' => 'html')); ?>",
             "fnServerParams": function (aoData) {
-                approvalStatus = $("#status").val();
-                aoData.push({
-                    "name": "status",
-                    "value": approvalStatus
-                });
+                aoData.push({ "name": "status", "value": $("#status").val() });
+                aoData.push({ "name": "scheme", "value": $("#schemeFilter").val() });
+                aoData.push({ "name": "mohApproved", "value": $("#mohFilter").val() });
+                aoData.push({ "name": "ptValidated", "value": $("#ptFilter").val() });
             },
             "fnServerData": function (sSource, aoData, fnCallback) {
                 $.ajax({
