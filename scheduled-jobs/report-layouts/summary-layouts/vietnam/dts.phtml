@@ -36,24 +36,23 @@ if ($resultArray['shipment'] != "") {
         mkdir($reportsPath . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'], 0777, true);
     }
 
+    // Always use FpdiReport for Vietnam: that class carries the NIHE Header()
+    // (logo + "NATIONAL HIV REFERENCE LABORATORY" block) and Footer()
+    // (www.nihe.vn / Hotline / Panel ID / Page X of Y). When a report-format
+    // letterhead PDF is configured AND on disk, Header() stamps it instead.
     $reportFormat = $reportService->getReportConfigValue('report-format');
-    if (isset($reportFormat) && !empty($reportFormat)) {
-        $pdf = new Pt_Reports_FpdiReport(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
-        $pdf->setParams($resultStatus, $evalRow['date_finalised'], "", $watermark, "SUMMARY", $layout, $resultArray['shipment']['scheme_name']);
-    } else {
-        $pdf = new Pt_Reports_SummaryPdf(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
-        $pdf->setSchemeName($header, $resultArray['shipment']['scheme_name'], $logo, $logoRight, $resultStatus, $resultArray['shipment']['scheme_type'], $evalRow['date_finalised'], "", $watermark, "", $instituteAddressPosition, "", "", $panelTestType);
-    }
+    $pdf = new Pt_Reports_FpdiReport(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+    $pdf->setParams($resultStatus, $evalRow['date_finalised'], "", $watermark, "SUMMARY", $layout, $resultArray['shipment']['scheme_name']);
 
     $pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE, PDF_HEADER_STRING);
     $pdf->setHeaderFont(['freesans', '', PDF_FONT_SIZE_MAIN]);
     $pdf->setFooterFont(['freesans', '', PDF_FONT_SIZE_DATA]);
     $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
 
-    // FpdiReport.Header() writes "All Participants Results Report" at
-    // y = templateTopMargin; SummaryPdf.Header() draws the title block down to
-    // ~y=35. Body must clear either, so we pin a fixed value Vietnam-wide.
-    $mt = !empty($reportFormat) ? max(60, (int) ($templateTopMargin ?? 0) + 15) : 50;
+    // Top margin clears either the stamped letterhead PDF (when configured) or the
+    // in-code NIHE header (~26mm: 18mm logo + ~6mm address text + a small gap).
+    $hasTemplate = !empty($reportFormat) && file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'report-formats' . DIRECTORY_SEPARATOR . $reportFormat);
+    $mt = $hasTemplate ? max(60, (int) ($templateTopMargin ?? 0) + 15) : 32;
     $pdf->SetMargins(PDF_MARGIN_LEFT, $mt, PDF_MARGIN_RIGHT);
     $pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
     $pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
@@ -82,13 +81,13 @@ if ($resultArray['shipment'] != "") {
 
     if (!empty($resultArray['shipment']['referenceResult'])) {
         $panelInfo = '<table border="1" style="text-align:center;width:100%;font-size:12px;" align="center"><tr>';
-        $panelInfo .= '<td style="background-color:#dbe4ee;font-weight:bold;width:34%;">' . Pt_Commons_TranslateUtility::safeTranslate('Panel ID') . '</td>';
-        $panelInfo .= '<td style="background-color:#dbe4ee;font-weight:bold;width:33%;">' . Pt_Commons_TranslateUtility::safeTranslate('Shipment Date') . '</td>';
-        $panelInfo .= '<td style="background-color:#dbe4ee;font-weight:bold;width:33%;">' . Pt_Commons_TranslateUtility::safeTranslate('Result Due Date') . '</td>';
+        $panelInfo .= '<td style="vertical-align:middle;background-color:#dbe4ee;font-weight:bold;width:34%;">' . Pt_Commons_TranslateUtility::safeTranslate('Panel ID') . '</td>';
+        $panelInfo .= '<td style="vertical-align:middle;background-color:#dbe4ee;font-weight:bold;width:33%;">' . Pt_Commons_TranslateUtility::safeTranslate('Shipment Date') . '</td>';
+        $panelInfo .= '<td style="vertical-align:middle;background-color:#dbe4ee;font-weight:bold;width:33%;">' . Pt_Commons_TranslateUtility::safeTranslate('Result Due Date') . '</td>';
         $panelInfo .= '</tr><tr>';
-        $panelInfo .= '<td>' . $resultArray['shipment']['shipment_code'] . '</td>';
-        $panelInfo .= '<td>' . Pt_Commons_DateUtility::humanReadableDateFormat($resultArray['shipment']['shipment_date']) . '</td>';
-        $panelInfo .= '<td>' . Pt_Commons_DateUtility::humanReadableDateFormat($resultArray['shipment']['response_deadline']) . '</td>';
+        $panelInfo .= '<td style="vertical-align:middle;">' . $resultArray['shipment']['shipment_code'] . '</td>';
+        $panelInfo .= '<td style="vertical-align:middle;">' . Pt_Commons_DateUtility::humanReadableDateFormat($resultArray['shipment']['shipment_date']) . '</td>';
+        $panelInfo .= '<td style="vertical-align:middle;">' . Pt_Commons_DateUtility::humanReadableDateFormat($resultArray['shipment']['response_deadline']) . '</td>';
         $panelInfo .= '</tr></table><br/>';
         $pdf->writeHTML($panelInfo, true, false, true, false, '');
     }
@@ -116,15 +115,15 @@ if ($resultArray['shipment'] != "") {
         // -- 1.1 Number of participants --
         $pdf->writeHTML('<span style="font-weight:bold;font-size:12px;">1.1 ' . Pt_Commons_TranslateUtility::safeTranslate('Number of Participants') . '</span>', true, false, true, false, '');
         $numPart = '<table border="1" style="text-align:center;width:100%;font-size:12px;"><tr>';
-        $numPart .= '<td style="background-color:#dbe4ee;font-weight:bold;">' . Pt_Commons_TranslateUtility::safeTranslate('# of Participants') . '</td>';
-        $numPart .= '<td style="background-color:#dbe4ee;font-weight:bold;">' . Pt_Commons_TranslateUtility::safeTranslate('# of Responses') . '</td>';
-        $numPart .= '<td style="background-color:#dbe4ee;font-weight:bold;">' . Pt_Commons_TranslateUtility::safeTranslate('# of Not Responded') . '</td>';
-        $numPart .= '<td style="background-color:#dbe4ee;font-weight:bold;">' . Pt_Commons_TranslateUtility::safeTranslate('Acceptable') . ' / ' . Pt_Commons_TranslateUtility::safeTranslate('Unacceptable') . '</td>';
+        $numPart .= '<td style="vertical-align:middle;background-color:#dbe4ee;font-weight:bold;">' . Pt_Commons_TranslateUtility::safeTranslate('# of Participants') . '</td>';
+        $numPart .= '<td style="vertical-align:middle;background-color:#dbe4ee;font-weight:bold;">' . Pt_Commons_TranslateUtility::safeTranslate('# of Responses') . '</td>';
+        $numPart .= '<td style="vertical-align:middle;background-color:#dbe4ee;font-weight:bold;">' . Pt_Commons_TranslateUtility::safeTranslate('# of Not Responded') . '</td>';
+        $numPart .= '<td style="vertical-align:middle;background-color:#dbe4ee;font-weight:bold;">' . Pt_Commons_TranslateUtility::safeTranslate('Acceptable') . ' / ' . Pt_Commons_TranslateUtility::safeTranslate('Unacceptable') . '</td>';
         $numPart .= '</tr><tr>';
-        $numPart .= '<td>' . $totalShipped . '</td>';
-        $numPart .= '<td>' . $totalResponses . '</td>';
-        $numPart .= '<td>' . $notRespondedN . '</td>';
-        $numPart .= '<td>' . $acceptableCount . ' / ' . $unacceptableCount . '</td>';
+        $numPart .= '<td style="vertical-align:middle;">' . $totalShipped . '</td>';
+        $numPart .= '<td style="vertical-align:middle;">' . $totalResponses . '</td>';
+        $numPart .= '<td style="vertical-align:middle;">' . $notRespondedN . '</td>';
+        $numPart .= '<td style="vertical-align:middle;">' . $acceptableCount . ' / ' . $unacceptableCount . '</td>';
         $numPart .= '</tr></table><br/>';
         $pdf->writeHTML($numPart, true, false, true, false, '');
 
@@ -146,40 +145,40 @@ if ($resultArray['shipment'] != "") {
         $incorrectIdList = !empty($incorrectIds) ? implode(', ', $incorrectIds) : '—';
 
         $incTbl = '<table border="1" style="text-align:center;width:100%;font-size:12px;"><tr>';
-        $incTbl .= '<td style="background-color:#dbe4ee;font-weight:bold;width:14%;">' . Pt_Commons_TranslateUtility::safeTranslate('# of Participants') . '</td>';
-        $incTbl .= '<td style="background-color:#dbe4ee;font-weight:bold;width:18%;">' . Pt_Commons_TranslateUtility::safeTranslate('# had correct results (n / %)') . '</td>';
-        $incTbl .= '<td style="background-color:#dbe4ee;font-weight:bold;width:18%;">' . Pt_Commons_TranslateUtility::safeTranslate('# had incorrect results (n / %)') . '</td>';
-        $incTbl .= '<td style="background-color:#dbe4ee;font-weight:bold;width:50%;">' . Pt_Commons_TranslateUtility::safeTranslate('Participants with Incorrect Results') . '</td>';
+        $incTbl .= '<td style="vertical-align:middle;background-color:#dbe4ee;font-weight:bold;width:14%;">' . Pt_Commons_TranslateUtility::safeTranslate('# of Participants') . '</td>';
+        $incTbl .= '<td style="vertical-align:middle;background-color:#dbe4ee;font-weight:bold;width:18%;">' . Pt_Commons_TranslateUtility::safeTranslate('# had correct results (n / %)') . '</td>';
+        $incTbl .= '<td style="vertical-align:middle;background-color:#dbe4ee;font-weight:bold;width:18%;">' . Pt_Commons_TranslateUtility::safeTranslate('# had incorrect results (n / %)') . '</td>';
+        $incTbl .= '<td style="vertical-align:middle;background-color:#dbe4ee;font-weight:bold;width:50%;">' . Pt_Commons_TranslateUtility::safeTranslate('Participants with Incorrect Results') . '</td>';
         $incTbl .= '</tr><tr>';
-        $incTbl .= '<td>' . $totalResponses . '</td>';
-        $incTbl .= '<td>' . $acceptableCount . ' (' . $pct($acceptableCount, $totalResponses) . ')</td>';
-        $incTbl .= '<td>' . $unacceptableCount . ' (' . $pct($unacceptableCount, $totalResponses) . ')</td>';
-        $incTbl .= '<td style="text-align:left;font-size:11px;">' . $incorrectIdList . '</td>';
+        $incTbl .= '<td style="vertical-align:middle;">' . $totalResponses . '</td>';
+        $incTbl .= '<td style="vertical-align:middle;">' . $acceptableCount . ' (' . $pct($acceptableCount, $totalResponses) . ')</td>';
+        $incTbl .= '<td style="vertical-align:middle;">' . $unacceptableCount . ' (' . $pct($unacceptableCount, $totalResponses) . ')</td>';
+        $incTbl .= '<td style="vertical-align:middle;text-align:left;font-size:11px;">' . $incorrectIdList . '</td>';
         $incTbl .= '</tr></table><br/>';
         $pdf->writeHTML($incTbl, true, false, true, false, '');
 
         // Per-sample concordance with reference
         $sampleCount = count($result['correctCount']);
         $sampleCode = '<table border="1" style="text-align:center;width:100%;font-size:12px;">';
-        $sampleCode .= '<tr><td rowspan="2" style="background-color:#dbe4ee;"></td>';
-        $sampleCode .= '<td colspan="' . $sampleCount . '" style="background-color:#dbe4ee;font-weight:bold;">' . Pt_Commons_TranslateUtility::safeTranslate('Sample ID') . '</td>';
-        $sampleCode .= '<td rowspan="2" style="background-color:#dbe4ee;font-weight:bold;">' . Pt_Commons_TranslateUtility::safeTranslate('Average') . '</td></tr>';
+        $sampleCode .= '<tr><td rowspan="2" style="vertical-align:middle;background-color:#dbe4ee;"></td>';
+        $sampleCode .= '<td colspan="' . $sampleCount . '" style="vertical-align:middle;background-color:#dbe4ee;font-weight:bold;">' . Pt_Commons_TranslateUtility::safeTranslate('Sample ID') . '</td>';
+        $sampleCode .= '<td rowspan="2" style="vertical-align:middle;background-color:#dbe4ee;font-weight:bold;">' . Pt_Commons_TranslateUtility::safeTranslate('Average') . '</td></tr>';
         $sampleCode .= '<tr>';
         foreach ($result['correctCount'] as $sample) {
-            $sampleCode .= '<td style="background-color:#dbe4ee;font-weight:bold;">' . $sample['sample_label'] . '</td>';
+            $sampleCode .= '<td style="vertical-align:middle;background-color:#dbe4ee;font-weight:bold;">' . $sample['sample_label'] . '</td>';
         }
         $sampleCode .= '</tr>';
-        $sampleCode .= '<tr><td style="background-color:#dbe4ee;font-weight:bold;">' . Pt_Commons_TranslateUtility::safeTranslate('Reference Result') . '</td>';
+        $sampleCode .= '<tr><td style="vertical-align:middle;background-color:#dbe4ee;font-weight:bold;">' . Pt_Commons_TranslateUtility::safeTranslate('Reference Result') . '</td>';
 
         $nonMandatorySamples = [];
         foreach ($resultArray['shipment']['referenceResult'] as $refRes) {
             if ($refRes['mandatory'] == 0) {
                 $nonMandatorySamples[] = $refRes['sample_label'];
             }
-            $sampleCode .= '<td>' . ucfirst(strtolower($refRes['referenceResult'])) . '</td>';
+            $sampleCode .= '<td style="vertical-align:middle;">' . ucfirst(strtolower($refRes['referenceResult'])) . '</td>';
         }
-        $sampleCode .= '<td></td></tr>';
-        $sampleCode .= '<tr><td style="background-color:#BCD7EC;font-weight:bold;">' . Pt_Commons_TranslateUtility::safeTranslate('Correctly Reported') . '</td>';
+        $sampleCode .= '<td style="vertical-align:middle;"></td></tr>';
+        $sampleCode .= '<tr><td style="vertical-align:middle;background-color:#BCD7EC;font-weight:bold;">' . Pt_Commons_TranslateUtility::safeTranslate('Correctly Reported') . '</td>';
         $sampAvg = 0;
         $sampPerAvg = 0;
         foreach ($result['correctCount'] as $sample) {
@@ -188,9 +187,9 @@ if ($resultArray['shipment'] != "") {
             $rowPct = $denom > 0 ? round(($correct / $denom) * 100, 2) : 0;
             $sampAvg += $correct;
             $sampPerAvg += $rowPct;
-            $sampleCode .= '<td>' . $correct . '<br/>(' . $rowPct . '%)</td>';
+            $sampleCode .= '<td style="vertical-align:middle;">' . $correct . '<br/>(' . $rowPct . '%)</td>';
         }
-        $sampleCode .= '<td>' . round($sampAvg / $sampleCount, 2) . '<br/>(' . round($sampPerAvg / $sampleCount, 2) . '%)</td>';
+        $sampleCode .= '<td style="vertical-align:middle;">' . round($sampAvg / $sampleCount, 2) . '<br/>(' . round($sampPerAvg / $sampleCount, 2) . '%)</td>';
         $sampleCode .= '</tr></table><br/>';
         $pdf->writeHTML($sampleCode, true, false, true, false, '');
 
@@ -237,18 +236,18 @@ if ($resultArray['shipment'] != "") {
                 }
             }
             $uTbl  = '<table border="1" style="width:100%;font-size:12px;"><tr style="text-align:center;background-color:#dbe4ee;font-weight:bold;">';
-            $uTbl .= '<td style="width:6%;">' . Pt_Commons_TranslateUtility::safeTranslate('No') . '</td>';
-            $uTbl .= '<td style="width:48%;">' . Pt_Commons_TranslateUtility::safeTranslate('Reagent Name') . '</td>';
-            $uTbl .= '<td style="width:14%;">' . Pt_Commons_TranslateUtility::safeTranslate('Reagent Type') . '</td>';
-            $uTbl .= '<td style="width:32%;">' . Pt_Commons_TranslateUtility::safeTranslate('Participant ID') . '</td>';
+            $uTbl .= '<td style="vertical-align:middle;width:6%;">' . Pt_Commons_TranslateUtility::safeTranslate('No') . '</td>';
+            $uTbl .= '<td style="vertical-align:middle;width:48%;">' . Pt_Commons_TranslateUtility::safeTranslate('Reagent Name') . '</td>';
+            $uTbl .= '<td style="vertical-align:middle;width:14%;">' . Pt_Commons_TranslateUtility::safeTranslate('Reagent Type') . '</td>';
+            $uTbl .= '<td style="vertical-align:middle;width:32%;">' . Pt_Commons_TranslateUtility::safeTranslate('Participant ID') . '</td>';
             $uTbl .= '</tr>';
             $no = 1;
             foreach ($byKit as $kitName => $info) {
                 $uTbl .= '<tr>';
-                $uTbl .= '<td style="text-align:center;">' . $no++ . '</td>';
-                $uTbl .= '<td style="text-align:left;">' . htmlspecialchars($kitName, ENT_QUOTES) . '</td>';
-                $uTbl .= '<td style="text-align:center;">' . htmlspecialchars((string) $info['method'], ENT_QUOTES) . '</td>';
-                $uTbl .= '<td style="text-align:left;font-size:11px;">' . htmlspecialchars(implode(', ', $info['pids']), ENT_QUOTES) . '</td>';
+                $uTbl .= '<td style="vertical-align:middle;text-align:center;">' . $no++ . '</td>';
+                $uTbl .= '<td style="vertical-align:middle;text-align:left;">' . htmlspecialchars($kitName, ENT_QUOTES) . '</td>';
+                $uTbl .= '<td style="vertical-align:middle;text-align:center;">' . htmlspecialchars((string) $info['method'], ENT_QUOTES) . '</td>';
+                $uTbl .= '<td style="vertical-align:middle;text-align:left;font-size:11px;">' . htmlspecialchars(implode(', ', $info['pids']), ENT_QUOTES) . '</td>';
                 $uTbl .= '</tr>';
             }
             $uTbl .= '</table><br/>';
@@ -455,25 +454,25 @@ if ($resultArray['shipment'] != "") {
 
         if (!empty($kitUsage)) {
             $kitTbl = '<table border="1" style="width:100%;font-size:12px;"><tr style="text-align:center;background-color:#dbe4ee;font-weight:bold;">';
-            $kitTbl .= '<td style="width:8%;">' . Pt_Commons_TranslateUtility::safeTranslate('No') . '</td>';
-            $kitTbl .= '<td style="width:62%;">' . Pt_Commons_TranslateUtility::safeTranslate('Reagent Name') . '</td>';
-            $kitTbl .= '<td style="width:15%;">' . Pt_Commons_TranslateUtility::safeTranslate('# of Participants Using') . '</td>';
-            $kitTbl .= '<td style="width:15%;">' . Pt_Commons_TranslateUtility::safeTranslate('%') . '</td>';
+            $kitTbl .= '<td style="vertical-align:middle;width:8%;">' . Pt_Commons_TranslateUtility::safeTranslate('No') . '</td>';
+            $kitTbl .= '<td style="vertical-align:middle;width:62%;">' . Pt_Commons_TranslateUtility::safeTranslate('Reagent Name') . '</td>';
+            $kitTbl .= '<td style="vertical-align:middle;width:15%;">' . Pt_Commons_TranslateUtility::safeTranslate('# of Participants Using') . '</td>';
+            $kitTbl .= '<td style="vertical-align:middle;width:15%;">' . Pt_Commons_TranslateUtility::safeTranslate('%') . '</td>';
             $kitTbl .= '</tr>';
             $no = 1;
             foreach ($kitUsage as $kitName => $count) {
                 $pctVal = $kitUsageTotal > 0 ? round(($count / $kitUsageTotal) * 100, 2) : 0;
                 $kitTbl .= '<tr>';
-                $kitTbl .= '<td style="text-align:center;">' . $no++ . '</td>';
-                $kitTbl .= '<td style="text-align:left;">' . htmlspecialchars($kitName, ENT_QUOTES) . '</td>';
-                $kitTbl .= '<td style="text-align:center;">' . $count . '</td>';
-                $kitTbl .= '<td style="text-align:center;">' . $pctVal . '%</td>';
+                $kitTbl .= '<td style="vertical-align:middle;text-align:center;">' . $no++ . '</td>';
+                $kitTbl .= '<td style="vertical-align:middle;text-align:left;">' . htmlspecialchars($kitName, ENT_QUOTES) . '</td>';
+                $kitTbl .= '<td style="vertical-align:middle;text-align:center;">' . $count . '</td>';
+                $kitTbl .= '<td style="vertical-align:middle;text-align:center;">' . $pctVal . '%</td>';
                 $kitTbl .= '</tr>';
             }
             $kitTbl .= '<tr style="font-weight:bold;background-color:#f6f6f6;">';
-            $kitTbl .= '<td colspan="2" style="text-align:right;">' . Pt_Commons_TranslateUtility::safeTranslate('Total') . '</td>';
-            $kitTbl .= '<td style="text-align:center;">' . $kitUsageTotal . '</td>';
-            $kitTbl .= '<td style="text-align:center;">100%</td>';
+            $kitTbl .= '<td colspan="2" style="vertical-align:middle;text-align:right;">' . Pt_Commons_TranslateUtility::safeTranslate('Total') . '</td>';
+            $kitTbl .= '<td style="vertical-align:middle;text-align:center;">' . $kitUsageTotal . '</td>';
+            $kitTbl .= '<td style="vertical-align:middle;text-align:center;">100%</td>';
             $kitTbl .= '</tr></table><br/>';
             $pdf->writeHTML($kitTbl, true, false, true, false, '');
         } else {
@@ -518,20 +517,20 @@ if ($resultArray['shipment'] != "") {
             }
 
             $discTbl = '<table border="1" style="width:100%;font-size:12px;"><tr style="text-align:center;background-color:#dbe4ee;font-weight:bold;">';
-            $discTbl .= '<td style="width:6%;">' . Pt_Commons_TranslateUtility::safeTranslate('No') . '</td>';
-            $discTbl .= '<td style="width:18%;">' . Pt_Commons_TranslateUtility::safeTranslate('Sample ID') . '</td>';
-            $discTbl .= '<td style="width:16%;">' . Pt_Commons_TranslateUtility::safeTranslate('Reference Result') . '</td>';
-            $discTbl .= '<td style="width:16%;">' . Pt_Commons_TranslateUtility::safeTranslate('Reported Result') . '</td>';
-            $discTbl .= '<td style="width:44%;">' . Pt_Commons_TranslateUtility::safeTranslate('Participant IDs') . '</td>';
+            $discTbl .= '<td style="vertical-align:middle;width:6%;">' . Pt_Commons_TranslateUtility::safeTranslate('No') . '</td>';
+            $discTbl .= '<td style="vertical-align:middle;width:18%;">' . Pt_Commons_TranslateUtility::safeTranslate('Sample ID') . '</td>';
+            $discTbl .= '<td style="vertical-align:middle;width:16%;">' . Pt_Commons_TranslateUtility::safeTranslate('Reference Result') . '</td>';
+            $discTbl .= '<td style="vertical-align:middle;width:16%;">' . Pt_Commons_TranslateUtility::safeTranslate('Reported Result') . '</td>';
+            $discTbl .= '<td style="vertical-align:middle;width:44%;">' . Pt_Commons_TranslateUtility::safeTranslate('Participant IDs') . '</td>';
             $discTbl .= '</tr>';
             $no = 1;
             foreach ($grouped as $row) {
                 $discTbl .= '<tr>';
-                $discTbl .= '<td style="text-align:center;">' . $no++ . '</td>';
-                $discTbl .= '<td style="text-align:center;">' . htmlspecialchars($row['sample_label'], ENT_QUOTES) . '</td>';
-                $discTbl .= '<td style="text-align:center;">' . htmlspecialchars($row['reference'], ENT_QUOTES) . '</td>';
-                $discTbl .= '<td style="text-align:center;">' . htmlspecialchars($row['reported'], ENT_QUOTES) . '</td>';
-                $discTbl .= '<td style="text-align:left;font-size:11px;">' . htmlspecialchars(implode(', ', $row['participants']), ENT_QUOTES) . '</td>';
+                $discTbl .= '<td style="vertical-align:middle;text-align:center;">' . $no++ . '</td>';
+                $discTbl .= '<td style="vertical-align:middle;text-align:center;">' . htmlspecialchars($row['sample_label'], ENT_QUOTES) . '</td>';
+                $discTbl .= '<td style="vertical-align:middle;text-align:center;">' . htmlspecialchars($row['reference'], ENT_QUOTES) . '</td>';
+                $discTbl .= '<td style="vertical-align:middle;text-align:center;">' . htmlspecialchars($row['reported'], ENT_QUOTES) . '</td>';
+                $discTbl .= '<td style="vertical-align:middle;text-align:left;font-size:11px;">' . htmlspecialchars(implode(', ', $row['participants']), ENT_QUOTES) . '</td>';
                 $discTbl .= '</tr>';
             }
             $discTbl .= '</table><br/>';
@@ -544,12 +543,12 @@ if ($resultArray['shipment'] != "") {
         if (!empty($correctivenessArray)) {
             $pdf->writeHTML('<span style="font-weight:bold;font-size:12px;">2.6 ' . Pt_Commons_TranslateUtility::safeTranslate('Corrective Action Overview') . '</span>', true, false, true, false, '');
             $ca = '<table border="1" style="width:100%;font-size:12px;"><tr style="text-align:center;background-color:#dbe4ee;font-weight:bold;">';
-            $ca .= '<td style="width:75%;">' . Pt_Commons_TranslateUtility::safeTranslate('Corrective Action') . '</td>';
-            $ca .= '<td style="width:25%;">' . Pt_Commons_TranslateUtility::safeTranslate('Responses having Corrective Action') . '</td></tr>';
+            $ca .= '<td style="vertical-align:middle;width:75%;">' . Pt_Commons_TranslateUtility::safeTranslate('Corrective Action') . '</td>';
+            $ca .= '<td style="vertical-align:middle;width:25%;">' . Pt_Commons_TranslateUtility::safeTranslate('Responses having Corrective Action') . '</td></tr>';
             foreach ($correctivenessArray as $correctiveness) {
                 $ca .= '<tr>';
-                $ca .= '<td style="text-align:left;">' . Pt_Commons_TranslateUtility::safeTranslate($correctiveness['corrective_action']) . '</td>';
-                $ca .= '<td style="text-align:center;">' . $correctiveness['total_corrective'] . '</td>';
+                $ca .= '<td style="vertical-align:middle;text-align:left;">' . Pt_Commons_TranslateUtility::safeTranslate($correctiveness['corrective_action']) . '</td>';
+                $ca .= '<td style="vertical-align:middle;text-align:center;">' . $correctiveness['total_corrective'] . '</td>';
                 $ca .= '</tr>';
             }
             $ca .= '</table><br/>';
@@ -683,25 +682,25 @@ if ($resultArray['shipment'] != "") {
 
             $tbl  = '<table border="1" cellpadding="2" style="width:100%;font-size:9px;">';
             $tbl .= '<tr style="background-color:#dbe4ee;text-align:center;font-weight:bold;">';
-            $tbl .= '<td rowspan="2" style="width:4%;">' . Pt_Commons_TranslateUtility::safeTranslate('No') . '</td>';
-            $tbl .= '<td rowspan="2" style="width:' . $nameW . '%;">' . Pt_Commons_TranslateUtility::safeTranslate('Sample ID') . '</td>';
-            $tbl .= '<td rowspan="2" style="width:' . $typeW . '%;">' . Pt_Commons_TranslateUtility::safeTranslate('Sample Type') . '</td>';
-            $tbl .= '<td colspan="' . max(1, $resultColCount) . '">' . Pt_Commons_TranslateUtility::safeTranslate('Test result') . '</td>';
-            $tbl .= '<td rowspan="2" style="width:' . $conclW . '%;">' . Pt_Commons_TranslateUtility::safeTranslate('Conclusion') . '</td>';
+            $tbl .= '<td rowspan="2" style="vertical-align:middle;width:4%;">' . Pt_Commons_TranslateUtility::safeTranslate('No') . '</td>';
+            $tbl .= '<td rowspan="2" style="vertical-align:middle;width:' . $nameW . '%;">' . Pt_Commons_TranslateUtility::safeTranslate('Sample ID') . '</td>';
+            $tbl .= '<td rowspan="2" style="vertical-align:middle;width:' . $typeW . '%;">' . Pt_Commons_TranslateUtility::safeTranslate('Sample Type') . '</td>';
+            $tbl .= '<td colspan="' . max(1, $resultColCount) . '" style="vertical-align:middle;">' . Pt_Commons_TranslateUtility::safeTranslate('Test result') . '</td>';
+            $tbl .= '<td rowspan="2" style="vertical-align:middle;width:' . $conclW . '%;">' . Pt_Commons_TranslateUtility::safeTranslate('Conclusion') . '</td>';
             $tbl .= '</tr><tr style="background-color:#dbe4ee;text-align:center;font-weight:bold;">';
             foreach ($eiaKitIds as $kid) {
                 $label = htmlspecialchars((string) ($eiaNameLookup[$kid] ?? $kid), ENT_QUOTES);
-                $tbl .= '<td style="width:' . $colW . '%;">' . $label . '<br/><span style="font-size:8px;">(OD/CO)</span></td>';
+                $tbl .= '<td style="vertical-align:middle;width:' . $colW . '%;">' . $label . '<br/><span style="font-size:8px;">(OD/CO)</span></td>';
             }
             foreach ($rapidKitIds as $kid) {
                 $label = htmlspecialchars((string) ($kitNameLookup[$kid] ?? $kid), ENT_QUOTES);
-                $tbl .= '<td style="width:' . $colW . '%;">' . $label . '</td>';
+                $tbl .= '<td style="vertical-align:middle;width:' . $colW . '%;">' . $label . '</td>';
             }
             if ($hasWb) {
-                $tbl .= '<td style="width:' . $colW . '%;">' . Pt_Commons_TranslateUtility::safeTranslate('Western Blot') . '</td>';
+                $tbl .= '<td style="vertical-align:middle;width:' . $colW . '%;">' . Pt_Commons_TranslateUtility::safeTranslate('Western Blot') . '</td>';
             }
             if ($hasGeenius) {
-                $tbl .= '<td style="width:' . $colW . '%;">' . Pt_Commons_TranslateUtility::safeTranslate('Geenius') . '</td>';
+                $tbl .= '<td style="vertical-align:middle;width:' . $colW . '%;">' . Pt_Commons_TranslateUtility::safeTranslate('Geenius') . '</td>';
             }
             $tbl .= '</tr>';
 
@@ -712,13 +711,13 @@ if ($resultArray['shipment'] != "") {
                     ? Pt_Commons_TranslateUtility::safeTranslate('Pooled diluted plasma')
                     : Pt_Commons_TranslateUtility::safeTranslate('Pooled plasma');
                 $tbl .= '<tr style="text-align:center;">';
-                $tbl .= '<td>' . $no++ . '</td>';
-                $tbl .= '<td style="background-color:#f4f7fa;">' . htmlspecialchars((string) ($refRes['sample_label'] ?? ''), ENT_QUOTES) . '</td>';
-                $tbl .= '<td>' . $sampleType . '</td>';
+                $tbl .= '<td style="vertical-align:middle;">' . $no++ . '</td>';
+                $tbl .= '<td style="vertical-align:middle;background-color:#f4f7fa;">' . htmlspecialchars((string) ($refRes['sample_label'] ?? ''), ENT_QUOTES) . '</td>';
+                $tbl .= '<td style="vertical-align:middle;">' . $sampleType . '</td>';
                 foreach ($eiaKitIds as $kid) {
                     $row = $eiaBySample[$sid][$kid] ?? null;
                     if ($row === null) {
-                        $tbl .= '<td>-</td>';
+                        $tbl .= '<td style="vertical-align:middle;">-</td>';
                     } else {
                         $od = trim((string) ($row['od'] ?? ''));
                         $co = trim((string) ($row['cutoff'] ?? ''));
@@ -726,20 +725,20 @@ if ($resultArray['shipment'] != "") {
                         if ($od !== '' && $co !== '' && is_numeric($od) && is_numeric($co) && (float) $co > 0) {
                             $cell .= '<br/><span style="font-size:8px;">(' . round((float) $od / (float) $co, 2) . ')</span>';
                         }
-                        $tbl .= '<td>' . $cell . '</td>';
+                        $tbl .= '<td style="vertical-align:middle;">' . $cell . '</td>';
                     }
                 }
                 foreach ($rapidKitIds as $kid) {
                     $row = $rapidBySample[$sid][$kid] ?? null;
-                    $tbl .= '<td>' . ($row === null ? '-' : $rapidSymbol((string) ($row['result'] ?? ''))) . '</td>';
+                    $tbl .= '<td style="vertical-align:middle;">' . ($row === null ? '-' : $rapidSymbol((string) ($row['result'] ?? ''))) . '</td>';
                 }
                 if ($hasWb) {
-                    $tbl .= '<td>' . ($wbBySample[$sid] === null || !isset($wbBySample[$sid]) ? '-' : $finalLabel((string) ($wbBySample[$sid]['result'] ?? ''))) . '</td>';
+                    $tbl .= '<td style="vertical-align:middle;">' . ($wbBySample[$sid] === null || !isset($wbBySample[$sid]) ? '-' : $finalLabel((string) ($wbBySample[$sid]['result'] ?? ''))) . '</td>';
                 }
                 if ($hasGeenius) {
-                    $tbl .= '<td>' . (!isset($geeniusBySample[$sid]) ? '-' : $finalLabel((string) ($geeniusBySample[$sid]['result'] ?? ''))) . '</td>';
+                    $tbl .= '<td style="vertical-align:middle;">' . (!isset($geeniusBySample[$sid]) ? '-' : $finalLabel((string) ($geeniusBySample[$sid]['result'] ?? ''))) . '</td>';
                 }
-                $tbl .= '<td><strong>' . ucfirst(strtolower((string) ($refRes['reference_result'] ?? ''))) . '</strong></td>';
+                $tbl .= '<td style="vertical-align:middle;"><strong>' . ucfirst(strtolower((string) ($refRes['reference_result'] ?? ''))) . '</strong></td>';
                 $tbl .= '</tr>';
             }
             $tbl .= '</table><br/>';
@@ -748,18 +747,18 @@ if ($resultArray['shipment'] != "") {
             // Fallback when no DTS reference modal data has been entered yet.
             $tbl  = '<table border="1" cellpadding="3" style="width:100%;font-size:11px;">';
             $tbl .= '<tr style="background-color:#dbe4ee;text-align:center;font-weight:bold;">';
-            $tbl .= '<td style="width:8%;">' . Pt_Commons_TranslateUtility::safeTranslate('No') . '</td>';
-            $tbl .= '<td style="width:32%;">' . Pt_Commons_TranslateUtility::safeTranslate('Sample ID') . '</td>';
-            $tbl .= '<td style="width:30%;">' . Pt_Commons_TranslateUtility::safeTranslate('Reference Result') . '</td>';
-            $tbl .= '<td style="width:30%;">' . Pt_Commons_TranslateUtility::safeTranslate('Mandatory') . '</td>';
+            $tbl .= '<td style="vertical-align:middle;width:8%;">' . Pt_Commons_TranslateUtility::safeTranslate('No') . '</td>';
+            $tbl .= '<td style="vertical-align:middle;width:32%;">' . Pt_Commons_TranslateUtility::safeTranslate('Sample ID') . '</td>';
+            $tbl .= '<td style="vertical-align:middle;width:30%;">' . Pt_Commons_TranslateUtility::safeTranslate('Reference Result') . '</td>';
+            $tbl .= '<td style="vertical-align:middle;width:30%;">' . Pt_Commons_TranslateUtility::safeTranslate('Mandatory') . '</td>';
             $tbl .= '</tr>';
             $no = 1;
             foreach ($resultArray['shipment']['referenceResult'] ?? [] as $refRes) {
                 $tbl .= '<tr style="text-align:center;">';
-                $tbl .= '<td>' . $no++ . '</td>';
-                $tbl .= '<td>' . htmlspecialchars((string) ($refRes['sample_label'] ?? ''), ENT_QUOTES) . '</td>';
-                $tbl .= '<td>' . ucfirst(strtolower((string) ($refRes['referenceResult'] ?? ''))) . '</td>';
-                $tbl .= '<td>' . ((int) ($refRes['mandatory'] ?? 0) === 1 ? Pt_Commons_TranslateUtility::safeTranslate('Yes') : Pt_Commons_TranslateUtility::safeTranslate('No')) . '</td>';
+                $tbl .= '<td style="vertical-align:middle;">' . $no++ . '</td>';
+                $tbl .= '<td style="vertical-align:middle;">' . htmlspecialchars((string) ($refRes['sample_label'] ?? ''), ENT_QUOTES) . '</td>';
+                $tbl .= '<td style="vertical-align:middle;">' . ucfirst(strtolower((string) ($refRes['referenceResult'] ?? ''))) . '</td>';
+                $tbl .= '<td style="vertical-align:middle;">' . ((int) ($refRes['mandatory'] ?? 0) === 1 ? Pt_Commons_TranslateUtility::safeTranslate('Yes') : Pt_Commons_TranslateUtility::safeTranslate('No')) . '</td>';
                 $tbl .= '</tr>';
             }
             $tbl .= '</table>';
@@ -825,15 +824,15 @@ if ($resultArray['shipment'] != "") {
         $pdf->Ln(10);
         $sig  = '<table cellpadding="4" style="width:100%;font-size:11px;">';
         $sig .= '<tr>'
-              . '<td style="text-align:center;width:50%;font-weight:bold;">' . Pt_Commons_TranslateUtility::safeTranslate('Scheme Coordinator') . '</td>'
-              . '<td style="text-align:center;width:50%;font-weight:bold;">' . Pt_Commons_TranslateUtility::safeTranslate('Director of program') . '</td>'
+              . '<td style="vertical-align:middle;text-align:center;width:50%;font-weight:bold;">' . Pt_Commons_TranslateUtility::safeTranslate('Scheme Coordinator') . '</td>'
+              . '<td style="vertical-align:middle;text-align:center;width:50%;font-weight:bold;">' . Pt_Commons_TranslateUtility::safeTranslate('Director of program') . '</td>'
               . '</tr>'
-              . '<tr><td>&nbsp;</td><td>&nbsp;</td></tr>'
-              . '<tr><td>&nbsp;</td><td>&nbsp;</td></tr>'
-              . '<tr><td>&nbsp;</td><td>&nbsp;</td></tr>'
+              . '<tr><td style="vertical-align:middle;">&nbsp;</td><td style="vertical-align:middle;">&nbsp;</td></tr>'
+              . '<tr><td style="vertical-align:middle;">&nbsp;</td><td style="vertical-align:middle;">&nbsp;</td></tr>'
+              . '<tr><td style="vertical-align:middle;">&nbsp;</td><td style="vertical-align:middle;">&nbsp;</td></tr>'
               . '<tr>'
-              . '<td style="text-align:center;font-weight:bold;">PhD. Hoang Thi Thanh Ha</td>'
-              . '<td style="text-align:center;font-weight:bold;">Prof. PhD. Tran Nhu Duong</td>'
+              . '<td style="vertical-align:middle;text-align:center;font-weight:bold;">PhD. Hoang Thi Thanh Ha</td>'
+              . '<td style="vertical-align:middle;text-align:center;font-weight:bold;">Prof. PhD. Tran Nhu Duong</td>'
               . '</tr></table>';
         $pdf->writeHTML($sig, true, false, true, false, '');
 

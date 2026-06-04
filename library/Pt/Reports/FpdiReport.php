@@ -20,6 +20,7 @@ class Pt_Reports_FpdiReport extends Fpdi
     public $instance = '';
     public $staticFooterHtml = '';
     public $shipmentAttributes = '';
+    public $logo = '';
 
     public function __construct($orientation = 'P', $unit = 'mm', $format = 'A4', $unicode = true, $encoding = 'UTF-8', $diskcache = false, $pdfa = false)
     {
@@ -50,6 +51,16 @@ class Pt_Reports_FpdiReport extends Fpdi
         if (!empty($reportFormat) && file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'report-formats' . DIRECTORY_SEPARATOR . $reportFormat)) {
             $this->template = UPLOAD_PATH . DIRECTORY_SEPARATOR . 'report-formats' . DIRECTORY_SEPARATOR . $reportFormat;
         }
+        // Admin-uploaded logo (Report Configuration → Logo). Cached so Header()
+        // doesn't re-query per page. Falls back to a bundled image inside Header()
+        // if the admin upload is missing.
+        $logoName = $reportService->getReportConfigValue('logo');
+        if (!empty($logoName)) {
+            $candidate = UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logo' . DIRECTORY_SEPARATOR . $logoName;
+            if (file_exists($candidate)) {
+                $this->logo = $candidate;
+            }
+        }
     }
 
     public function Header()
@@ -69,10 +80,28 @@ class Pt_Reports_FpdiReport extends Fpdi
                 $this->SetFont('freesans', 'B', 10);
             }
         }
-        // Vietnam layouts carry their own NIHE-style title block in the body, so the
-        // generic "All Participants Results Report" / "Individual Participant Results
-        // Report" header line is skipped to avoid stacking two titles.
-        if ($this->layout != 'malawi' && $this->layout != 'zimbabwe' && $this->layout != 'default' && $this->layout != 'vietnam') {
+        // Vietnam (NIHE): draw the institute letterhead inline — NIHE logo on the left
+        // and "NATIONAL HIV REFERENCE LABORATORY" + address on every page. The body's
+        // "PROFICIENCY TESTING PROGRAM – HIV SEROLOGY" title block stays in the phtml
+        // since it carries the per-report Screening/Confirmatory suffix.
+        if ($this->layout == 'vietnam' && empty($this->template)) {
+            // Prefer admin-uploaded logo (Report Configuration → Logo); fall back to
+            // the bundled NIHE crest so the header still works on a fresh install.
+            $logoPath = !empty($this->logo)
+                ? $this->logo
+                : WEB_ROOT . DIRECTORY_SEPARATOR . 'images' . DIRECTORY_SEPARATOR . 'vietnam-nihe-logo.jpg';
+            if (file_exists($logoPath)) {
+                // h=0 lets TCPDF auto-compute the height from the source aspect
+                // ratio. Forcing both dimensions squashes non-square logos.
+                $this->Image($logoPath, PDF_MARGIN_LEFT, 6, 22, 0, '', '', '', false, 300);
+            }
+            $this->SetY(10);
+            $nihe  = '<div style="text-align:center;">';
+            $nihe .= '<span style="font-weight:bold;font-size:15px;">NATIONAL HIV REFERENCE LABORATORY</span><br/>';
+            $nihe .= '<span style="font-size:11px;">No 1 Yersin, Hai Ba Tr&#432;ng, Ha Noi, Viet Nam</span>';
+            $nihe .= '</div>';
+            $this->writeHTML($nihe, true, false, false, false, '');
+        } elseif ($this->layout != 'malawi' && $this->layout != 'zimbabwe' && $this->layout != 'default') {
             if (isset($this->reportType) && !empty($this->reportType) && strtolower($this->reportType) == 'summary' && $this->PageNo() == 1) {
                 $this->writeHTML('<br>All Participants Results Report', true, false, true, false, 'C');
             } elseif (strtolower($this->reportType) == 'individual' && $this->PageNo() == 1 && $this->schemeType != 'dts') {

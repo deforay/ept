@@ -191,6 +191,90 @@ $faqResults = json_decode($this->faqs);
 		background: transparent;
 	}
 
+	/* Active Schemes picker: a compact dropdown that summarises "X of Y active"
+	   and opens a searchable checkbox list. Custom-built so it doesn't depend on
+	   the admin layout's TomSelect version. */
+	.scheme-picker {
+		position: relative;
+	}
+
+	.scheme-picker-toggle {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		width: 100%;
+		text-align: left;
+		cursor: pointer;
+	}
+
+	.scheme-picker-caret {
+		margin-left: 8px;
+		color: #6b7280;
+		font-size: 10px;
+	}
+
+	.scheme-picker-panel {
+		position: absolute;
+		z-index: 1000;
+		top: calc(100% + 2px);
+		left: 0;
+		right: 0;
+		background: #fff;
+		border: 1px solid #cbd5e0;
+		border-radius: 4px;
+		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+		padding: 8px;
+	}
+
+	.scheme-picker-search {
+		margin-bottom: 6px;
+	}
+
+	.scheme-picker-actions {
+		font-size: 12px;
+		padding: 2px 2px 8px;
+		border-bottom: 1px solid #edf2f7;
+		margin-bottom: 6px;
+	}
+
+	.scheme-picker-actions a {
+		color: #4a6fa5;
+		cursor: pointer;
+	}
+
+	.scheme-picker-actions a:hover {
+		text-decoration: underline;
+	}
+
+	.scheme-bulk-sep {
+		color: #cbd5e0;
+		margin: 0 4px;
+	}
+
+	.scheme-picker-list {
+		max-height: 220px;
+		overflow-y: auto;
+	}
+
+	.scheme-option {
+		display: flex;
+		align-items: flex-start;
+		gap: 8px;
+		font-weight: normal;
+		margin: 0;
+		padding: 6px 4px;
+		border-radius: 4px;
+		cursor: pointer;
+	}
+
+	.scheme-option:hover {
+		background-color: #f0f7ff;
+	}
+
+	.scheme-option input {
+		margin-top: 3px;
+	}
+
 	/* TomSelect dropdown */
 	.ts-dropdown {
 		border: 1px solid #cbd5e0;
@@ -582,17 +666,33 @@ $faqResults = json_decode($this->faqs);
 						</select>
 					</div>
 					<div class="col-md-6">
-						<label for="schemeId" class="control-label"><?= $this->translate->_("Active Schemes"); ?> <span
+						<label class="control-label"><?= $this->translate->_("Active Schemes"); ?> <span
 								class="mandatory">*</span></label>
-						<select id="schemeId" name="schemeId[]" multiple>
-							<?php foreach ($this->allSchemes as $schemes) { ?>
-								<option value="<?php echo $schemes["scheme_id"] ?>" <?php echo ($schemes['status'] == "active") ? "selected" : ""; ?>>
-									<?php echo ucwords($schemes["scheme_name"]); ?>
-								</option>
-							<?php } ?>
-						</select>
-						<small
-							class="text-muted"><?= $this->translate->_("Select at least one scheme to enable"); ?></small>
+						<div class="scheme-picker" id="schemePicker">
+							<button type="button" class="form-control scheme-picker-toggle" id="schemePickerToggle"
+								aria-haspopup="listbox" aria-expanded="false">
+								<span id="schemeSummary"></span>
+								<span class="scheme-picker-caret">&#9662;</span>
+							</button>
+							<div class="scheme-picker-panel" id="schemePickerPanel" hidden>
+								<input type="text" class="form-control scheme-picker-search" id="schemeSearch"
+									placeholder="<?= $this->translate->_("Search schemes..."); ?>" autocomplete="off">
+								<div class="scheme-picker-actions">
+									<a href="javascript:void(0);" id="schemeSelectAll"><?= $this->translate->_("Select all"); ?></a>
+									<span class="scheme-bulk-sep">|</span>
+									<a href="javascript:void(0);" id="schemeClearAll"><?= $this->translate->_("Clear all"); ?></a>
+								</div>
+								<div class="scheme-picker-list" id="schemeList">
+									<?php foreach ($this->allSchemes as $schemes) { ?>
+										<label class="scheme-option">
+											<input type="checkbox" name="schemeId[]" value="<?php echo $schemes["scheme_id"]; ?>" <?php echo ($schemes['status'] == "active") ? "checked" : ""; ?>>
+											<span><?php echo ucwords($schemes["scheme_name"]); ?></span>
+										</label>
+									<?php } ?>
+								</div>
+							</div>
+						</div>
+						<small class="text-muted"><?= $this->translate->_("Select at least one scheme to enable"); ?></small>
 					</div>
 				</div>
 				<div class="row">
@@ -1400,7 +1500,7 @@ id="faqTable">
 			}
 		}
 		// Validate at least one scheme is selected
-		if ($("#schemeId").val() == null || $("#schemeId").val().length == 0) {
+		if ($('#schemeList input[type="checkbox"]:checked').length === 0) {
 			alert('<?= $this->translate->_("Please select at least one Active Scheme"); ?>');
 			return false;
 		}
@@ -1491,13 +1591,79 @@ id="faqTable">
 			});
 		});
 
-		// Initialize tom-select for scheme selection
-		new TomSelect('#schemeId', {
-			plugins: ['remove_button'],
-			maxItems: null,
-			placeholder: '<?= $this->translate->_("Select schemes..."); ?>',
-			allowEmptyOption: false
-		});
+		// Active Schemes: compact dropdown-summary picker. Built custom (rather than
+		// TomSelect) so it shows a "X of Y active" summary instead of a pill wall and
+		// works on the admin layout's TomSelect 1.4.0. The checkboxes post as
+		// schemeId[] directly, so there is no hidden select to keep in sync.
+		(function () {
+			var picker = document.getElementById('schemePicker');
+			if (!picker) {
+				return;
+			}
+			var toggle = document.getElementById('schemePickerToggle');
+			var panel = document.getElementById('schemePickerPanel');
+			var list = document.getElementById('schemeList');
+			var search = document.getElementById('schemeSearch');
+			var summary = document.getElementById('schemeSummary');
+			var summaryTpl = <?= json_encode($this->translate->_("%active of %total schemes active")); ?>;
+
+			function boxes() {
+				return Array.prototype.slice.call(list.querySelectorAll('input[type="checkbox"]'));
+			}
+			function visibleBoxes() {
+				return boxes().filter(function (c) {
+					return c.closest('.scheme-option').style.display !== 'none';
+				});
+			}
+			function updateSummary() {
+				var all = boxes();
+				var active = all.filter(function (c) { return c.checked; }).length;
+				summary.textContent = summaryTpl.replace('%active', active).replace('%total', all.length);
+			}
+			function setOpen(open) {
+				panel.hidden = !open;
+				toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+				if (open) {
+					search.focus();
+				}
+			}
+
+			toggle.addEventListener('click', function (e) {
+				e.stopPropagation();
+				setOpen(panel.hidden);
+			});
+			document.addEventListener('click', function (e) {
+				if (!picker.contains(e.target)) {
+					setOpen(false);
+				}
+			});
+			document.addEventListener('keydown', function (e) {
+				if (e.key === 'Escape') {
+					setOpen(false);
+				}
+			});
+
+			search.addEventListener('input', function () {
+				var q = this.value.toLowerCase();
+				boxes().forEach(function (c) {
+					var opt = c.closest('.scheme-option');
+					opt.style.display = opt.textContent.toLowerCase().indexOf(q) > -1 ? '' : 'none';
+				});
+			});
+
+			// Bulk actions apply to rows currently visible, so they respect the search.
+			document.getElementById('schemeSelectAll').addEventListener('click', function () {
+				visibleBoxes().forEach(function (c) { c.checked = true; });
+				updateSummary();
+			});
+			document.getElementById('schemeClearAll').addEventListener('click', function () {
+				visibleBoxes().forEach(function (c) { c.checked = false; });
+				updateSummary();
+			});
+
+			list.addEventListener('change', updateSummary);
+			updateSummary();
+		})();
 
 		// Searchable Application Timezone picker — pick a valid IANA zone, no typos.
 		new TomSelect('#app_timezone', {

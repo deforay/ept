@@ -12,7 +12,14 @@ class Pt_Reports_ChartRenderer_ChartJsNode implements Pt_Reports_ChartRenderer_R
     public function render(array $config, string $outputDir): string
     {
         $type = $config['type'] ?? 'bar';
-        $filename = ($config['filename'] ?? 'chart') . '.png';
+        // SVG keeps fine lines crisp regardless of how small the chart renders on
+        // the PDF — TCPDF ImageSVG() embeds vectors, no raster downscaling. PNG
+        // remains the default for charts whose callers haven't migrated yet.
+        $format = strtolower($config['format'] ?? 'png');
+        if (!in_array($format, ['png', 'svg'], true)) {
+            throw new InvalidArgumentException("Unsupported chart format: $format");
+        }
+        $filename = ($config['filename'] ?? 'chart') . '.' . $format;
         $outputPath = rtrim($outputDir, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . $filename;
 
         $chartJsConfig = match ($type) {
@@ -22,34 +29,40 @@ class Pt_Reports_ChartRenderer_ChartJsNode implements Pt_Reports_ChartRenderer_R
             'pie'        => $this->buildPieConfig($config),
             'bar+line'   => $this->buildBarLineConfig($config),
             'boxRange'   => $this->buildBoxRangeConfig($config),
+            'boxplot'    => $this->buildBoxplotConfig($config),
             default      => throw new InvalidArgumentException("Unknown chart type: $type"),
         };
 
         $reqWidth = $config['width'] ?? 700;
         $reqHeight = $config['height'] ?? 400;
 
-        // Ensure minimum 1400px render width for crisp text at PDF display sizes.
-        // Font sizes (28px title, 26px ticks, etc.) are calibrated for 1400px.
-        $minWidth = 1400;
-        if ($reqWidth < $minWidth) {
-            $scale = $minWidth / $reqWidth;
-            $reqHeight = (int) round($reqHeight * $scale);
-            $reqWidth = $minWidth;
+        // Default: ensure minimum 1400px render width for crisp text at PDF display
+        // sizes — fonts in builders are calibrated for 1400px wide. Charts that
+        // intentionally render small (e.g. mini-charts in a strip) can opt out via
+        // skipMinWidth so TCPDF embeds the natural-size PNG without downscaling.
+        if ($format === 'png' && empty($config['skipMinWidth'])) {
+            $minWidth = 1400;
+            if ($reqWidth < $minWidth) {
+                $scale = $minWidth / $reqWidth;
+                $reqHeight = (int) round($reqHeight * $scale);
+                $reqWidth = $minWidth;
+            }
         }
 
         $payload = json_encode([
             'width'  => $reqWidth,
             'height' => $reqHeight,
+            'format' => $format,
             'chart'  => $chartJsConfig,
         ]);
 
-        $png = $this->callNodeScript($payload);
+        $output = $this->callNodeScript($payload);
 
-        if ($png === false || strlen($png) === 0) {
+        if ($output === false || strlen($output) === 0) {
             throw new RuntimeException('chart-render.js produced no output');
         }
 
-        file_put_contents($outputPath, $png);
+        file_put_contents($outputPath, $output);
         return $outputPath;
     }
 
@@ -306,6 +319,109 @@ class Pt_Reports_ChartRenderer_ChartJsNode implements Pt_Reports_ChartRenderer_R
      *     // ... one 'point' dataset per concordance category so the legend reads correctly
      *   ]
      */
+    /**
+     * Native box-and-whisker chart using the @sgratzl/chartjs-chart-boxplot plugin.
+     * Replaces the stacked-bar fake in buildBoxRangeConfig — the plugin renders proper
+     * Tukey-style whiskers with caps natively. Caller passes raw peer values; the
+     * plugin computes Q1/median/Q3 and min/max.
+     *
+     * Expected $config:
+     *   xAxis.labels: ['Sample 1', ...]
+     *   datasets: [
+     *     ['type'=>'box', 'data'=>[[v1,v2,v3,...], ...], 'color'=>'#1f3a68', 'mean'=>true],
+     *     ['type'=>'point', 'data'=>[participantValue|null, ...], 'color'=>'#f39c12', 'pointStyle'=>'circle', 'label'=>'Acceptable'],
+     *   ]
+     */
+    private function buildBoxplotConfig(array $config): array
+    {
+        $labels = $config['xAxis']['labels'] ?? [];
+        $datasets = $config['datasets'] ?? [];
+
+        $chartDatasets = [];
+        foreach ($datasets as $ds) {
+            $kind = $ds['type'] ?? 'box';
+            if ($kind === 'box') {
+                $color = $this->mapColor($ds['color'] ?? '#1f3a68');
+                $chartDatasets[] = [
+                    'type'             => 'boxplot',
+                    'label'            => $ds['label'] ?? '',
+                    'data'             => $ds['data'] ?? [],
+                    'backgroundColor'  => 'rgba(255,255,255,1)',
+                    'borderColor'      => $color,
+                    'borderWidth'      => 12,
+                    'outlierStyle'     => 'circle',
+                    'outlierRadius'    => 10,
+                    'outlierBackgroundColor' => $color,
+                    'outlierBorderColor' => $color,
+                    'meanRadius'       => 0,
+                    'itemRadius'       => 0,
+                    'coef'             => 1.5,
+                ];
+            } elseif ($kind === 'point') {
+                $pointColor = $this->mapColor($ds['color'] ?? '#ff8c00');
+                $pointRadius = $ds['pointRadius'] ?? 36;
+                $chartDatasets[] = [
+                    'type'                 => 'line',
+                    'label'                => $ds['label'] ?? '',
+                    'data'                 => $ds['data'] ?? [],
+                    'showLine'             => false,
+                    'borderColor'          => $pointColor,
+                    'backgroundColor'      => $pointColor,
+                    'pointBackgroundColor' => $pointColor,
+                    'pointBorderColor'     => $pointColor,
+                    'pointRadius'          => $pointRadius,
+                    'pointHoverRadius'     => $pointRadius,
+                    'pointStyle'           => $ds['pointStyle'] ?? 'circle',
+                    'spanGaps'             => false,
+                    'order'                => 0,
+                    'clip'                 => false,
+                ];
+            }
+        }
+
+        $yAxis = $config['yAxis'] ?? [];
+        $effectiveMin = $yAxis['min'] ?? null;
+        $tickFont  = $yAxis['tickFontSize']  ?? 60;
+        $titleFont = $yAxis['titleFontSize'] ?? 70;
+        $yScale = [
+            'beginAtZero' => false,
+            'title' => [
+                'display' => !empty($yAxis['title']),
+                'text'    => $yAxis['title'] ?? '',
+                'font'    => ['size' => $titleFont, 'weight' => 'bold'],
+            ],
+            'ticks' => ['font' => ['size' => $tickFont], 'hideNegative' => true, 'maxTicksLimit' => 6],
+            'grid'  => ['color' => 'rgba(0,0,0,0.06)'],
+            'grace' => $yAxis['grace'] ?? '10%',
+        ];
+        if ($effectiveMin !== null) {
+            $yScale['min'] = $effectiveMin;
+        }
+
+        return [
+            'type' => 'boxplot',
+            'data' => ['labels' => $labels, 'datasets' => $chartDatasets],
+            'options' => [
+                'plugins' => [
+                    'title'  => $this->buildTitlePlugin($config),
+                    'legend' => ['display' => false],
+                ],
+                'scales' => [
+                    'x' => [
+                        'grid'  => ['display' => false],
+                        'title' => [
+                            'display' => !empty($config['xAxis']['title']),
+                            'text'    => $config['xAxis']['title'] ?? '',
+                            'font'    => ['size' => $config['xAxis']['titleFontSize'] ?? 70, 'weight' => 'bold'],
+                        ],
+                        'ticks' => ['font' => ['size' => $config['xAxis']['tickFontSize'] ?? 60]],
+                    ],
+                    'y' => $yScale,
+                ],
+            ],
+        ];
+    }
+
     private function buildBoxRangeConfig(array $config): array
     {
         $labels = $config['xAxis']['labels'] ?? [];
@@ -322,7 +438,23 @@ class Pt_Reports_ChartRenderer_ChartJsNode implements Pt_Reports_ChartRenderer_R
                         'backgroundColor'    => $this->mapColor($ds['color'] ?? '#7e7e7e'),
                         'borderColor'        => $this->mapColor($ds['color'] ?? '#7e7e7e'),
                         'borderWidth'        => 0,
-                        'barPercentage'      => 0.08,
+                        'barPercentage'      => 0.06,
+                        'categoryPercentage' => 0.9,
+                        'grouped'            => false,
+                        'order'              => 3,
+                    ];
+                    break;
+                case 'whiskerCap':
+                    // Tukey cap — a short horizontal bar drawn at the whisker
+                    // extremity (min or max). Wider than the whisker stem so it
+                    // reads as a "T" against the thin stem line.
+                    $chartDatasets[] = [
+                        'type'               => 'bar',
+                        'data'               => $ds['data'] ?? [],
+                        'backgroundColor'    => $this->mapColor($ds['color'] ?? '#1f3a68'),
+                        'borderColor'        => $this->mapColor($ds['color'] ?? '#1f3a68'),
+                        'borderWidth'        => 0,
+                        'barPercentage'      => 0.32,
                         'categoryPercentage' => 0.9,
                         'grouped'            => false,
                         'order'              => 3,
@@ -360,6 +492,10 @@ class Pt_Reports_ChartRenderer_ChartJsNode implements Pt_Reports_ChartRenderer_R
                 case 'point':
                 default:
                     $pointColor = $this->mapColor($ds['color'] ?? '#ff8c00');
+                    // pointRadius is in CANVAS pixels — since boxRange charts render at
+                    // 1400px+ wide and display at 30–165mm, calibrate big enough that even
+                    // the narrowest mini-chart shows a visible dot. Caller may override.
+                    $pointRadius = $ds['pointRadius'] ?? 36;
                     $chartDatasets[] = [
                         'type'                 => 'line',
                         'data'                 => $ds['data'] ?? [],
@@ -369,29 +505,44 @@ class Pt_Reports_ChartRenderer_ChartJsNode implements Pt_Reports_ChartRenderer_R
                         'backgroundColor'      => $pointColor,
                         'pointBackgroundColor' => $pointColor,
                         'pointBorderColor'     => $pointColor,
-                        'pointRadius'          => 9,
-                        'pointHoverRadius'     => 9,
+                        'pointRadius'          => $pointRadius,
+                        'pointHoverRadius'     => $pointRadius,
                         'pointStyle'           => $ds['pointStyle'] ?? 'circle',
                         'spanGaps'             => false,
                         'order'                => 0,
+                        // Render dots fully even when sitting on a clamped axis
+                        // boundary (e.g. y=0 for negative-reference samples).
+                        'clip'                 => false,
                     ];
                     break;
             }
         }
 
         $yAxis = $config['yAxis'] ?? [];
+        // boxRange anchors at 0 by default (S/CO-style ratios cannot be negative) but
+        // extends slightly below so dots at y=0 aren't bisected. Negative tick labels
+        // are hidden via the hideNegative sentinel honoured in chart-render.js.
+        $effectiveMin = $yAxis['min'] ?? null;
+        // Font sizes need to be ~3x larger than a regular chart because mini-charts
+        // display at 30mm wide (vs 165mm for the old single chart) — at 1400px canvas,
+        // that's roughly 47px per mm, so 60px font reads as ~1.3mm on the PDF.
+        $tickFont  = $yAxis['tickFontSize']  ?? 60;
+        $titleFont = $yAxis['titleFontSize'] ?? 70;
         $yScale = [
             'beginAtZero' => false,
             'title' => [
                 'display' => !empty($yAxis['title']),
                 'text'    => $yAxis['title'] ?? '',
-                'font'    => ['size' => 24, 'weight' => 'bold'],
+                'font'    => ['size' => $titleFont, 'weight' => 'bold'],
             ],
-            'ticks' => ['font' => ['size' => 22]],
+            'ticks' => ['font' => ['size' => $tickFont], 'hideNegative' => ($effectiveMin === 0), 'maxTicksLimit' => 6],
             'grid'  => ['color' => 'rgba(0,0,0,0.06)'],
+            'grace' => $yAxis['grace'] ?? '10%',
         ];
-        if (isset($yAxis['min'])) {
-            $yScale['min'] = $yAxis['min'];
+        if ($effectiveMin === 0) {
+            $yScale['min'] = -8;
+        } elseif ($effectiveMin !== null) {
+            $yScale['min'] = $effectiveMin;
         }
         if (isset($yAxis['max'])) {
             $yScale['max'] = $yAxis['max'];
@@ -411,9 +562,9 @@ class Pt_Reports_ChartRenderer_ChartJsNode implements Pt_Reports_ChartRenderer_R
                         'title' => [
                             'display' => !empty($config['xAxis']['title']),
                             'text'    => $config['xAxis']['title'] ?? '',
-                            'font'    => ['size' => 22, 'weight' => 'bold'],
+                            'font'    => ['size' => $config['xAxis']['titleFontSize'] ?? 70, 'weight' => 'bold'],
                         ],
-                        'ticks' => array_merge(['font' => ['size' => 20]], (($config['xAxis']['labelAngle'] ?? 0) > 0
+                        'ticks' => array_merge(['font' => ['size' => $config['xAxis']['tickFontSize'] ?? 60]], (($config['xAxis']['labelAngle'] ?? 0) > 0
                             ? ['maxRotation' => $config['xAxis']['labelAngle'], 'minRotation' => $config['xAxis']['labelAngle']]
                             : [])),
                     ],

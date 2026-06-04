@@ -23,13 +23,18 @@ final class Provisioner
 
     /**
      * @param array<int, array{aberration:string, tier:string}> $assignments
+     * @param int|null $sampleCount Cap samples per panel — keeps IDs 1..N from the expectations
+     *                              file. null = use the full set declared. Vietnam ships 10 by default.
      * @return array{shipment_id:int, shipment_code:string, distribution_id:int, samples:array<int,array>, assignments:array<int,array{map_id:int, participant_id:int, aberration:string, tier:string}>}
      */
-    public function provision(string $variantKey, array $assignments): array
+    public function provision(string $variantKey, array $assignments, ?int $sampleCount = null): array
     {
         $variant = Variants::get($variantKey);
         $expectations = require $variant['expectations'];
         $samples = $expectations['samples'];
+        if ($sampleCount !== null && $sampleCount > 0 && $sampleCount < count($samples)) {
+            $samples = array_filter($samples, static fn ($v, $sid) => $sid <= $sampleCount, ARRAY_FILTER_USE_BOTH);
+        }
 
         $lookups = $this->resolveLookups();
         $kits    = $this->resolveKits();

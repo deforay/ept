@@ -23,11 +23,25 @@ final class Asserter
      * @param array $provision Output of Provisioner::provision()
      * @return array{passes:int, fails:int, mismatches:array<int,array>}
      */
-    public function assert(string $variantKey, array $provision): array
+    public function assert(string $variantKey, array $provision, ?int $sampleCount = null): array
     {
         $variant = Variants::get($variantKey);
         $expectations = require $variant['expectations'];
         $expectedByAberration = $expectations['aberrations'];
+        // Mirror Provisioner's sample cap so the asserter only checks IDs the harness
+        // actually provisioned. Without this we'd flag every dropped sample as a fail
+        // because actualPerSample[$sid] doesn't exist for IDs > $sampleCount.
+        if ($sampleCount !== null && $sampleCount > 0) {
+            foreach ($expectedByAberration as $k => $meta) {
+                foreach (($meta['expected'] ?? []) as $tier => $perSample) {
+                    $expectedByAberration[$k]['expected'][$tier] = array_filter(
+                        $perSample,
+                        static fn ($v, $sid) => $sid <= $sampleCount,
+                        ARRAY_FILTER_USE_BOTH
+                    );
+                }
+            }
+        }
 
         $shipmentId = $provision['shipment_id'];
         $rows = $this->db->all(

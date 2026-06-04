@@ -151,6 +151,15 @@ function run_interactive(Config $config, Db $db): void
         fwrite(STDOUT, sprintf("  %-38s [%s]  %s\n", $key, $tiers, $meta['label']));
     }
 
+    // 2b. Sample count — caps the variant's full sample set at the first N IDs.
+    //     Vietnam's default is 10 (matches NIHE template panel size). Smaller numbers
+    //     are useful for quick smoke runs; bigger than what the expectations file
+    //     declares is silently capped at the file's maximum.
+    $expectationsPeek = require $variant['expectations'];
+    $defaultSampleCount = count($expectationsPeek['samples']);
+    $sampleCountInput = trim(prompt("Number of samples per panel [$defaultSampleCount]", (string) $defaultSampleCount));
+    $sampleCount = max(1, min($defaultSampleCount, (int) $sampleCountInput));
+
     // 3. Auto-distribute OR per-aberration counts.
     $auto = strtolower(trim(prompt("\nAuto-distribute aberrations across labs? [Y/n]", 'y')));
     if ($auto === '' || $auto === 'y' || $auto === 'yes') {
@@ -200,6 +209,7 @@ function run_interactive(Config $config, Db $db): void
     }
     fwrite(STDOUT, "\n─────────────────────────────────────────────\n");
     fwrite(STDOUT, "Variant      : $variantKey ({$variant['label']})\n");
+    fwrite(STDOUT, "Samples      : $sampleCount per panel\n");
     fwrite(STDOUT, "Total labs   : $total  (screening={$tierCounts['screening']}, confirmatory={$tierCounts['confirmatory']})\n");
     fwrite(STDOUT, "Aberrations  :\n");
     foreach ($abCounts as $k => $c) {
@@ -215,7 +225,7 @@ function run_interactive(Config $config, Db $db): void
 
     // 5. Run pipeline
     fwrite(STDOUT, "\n[1/3] Provisioning shipment...\n");
-    $provision = (new Provisioner($db))->provision($variantKey, $assignments);
+    $provision = (new Provisioner($db))->provision($variantKey, $assignments, $sampleCount);
     fwrite(STDOUT, "      shipment_id={$provision['shipment_id']}  code={$provision['shipment_code']}\n");
     if (!empty($provision['settings_stash'])) {
         fwrite(STDOUT, "      global settings flipped (prior values stashed; restored on --cleanup):\n");
@@ -237,7 +247,7 @@ function run_interactive(Config $config, Db $db): void
     $evaluator->evaluate($provision['shipment_id']);
 
     fwrite(STDOUT, "[3/4] Asserting against expectations...\n\n");
-    $result = (new Asserter($db))->assert($variantKey, $provision);
+    $result = (new Asserter($db))->assert($variantKey, $provision, $sampleCount);
     report_results($provision, $result);
 
     fwrite(STDOUT, "\n[4/4] Generating participant + summary reports (subprocess)...\n");

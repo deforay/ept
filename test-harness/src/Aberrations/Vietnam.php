@@ -120,12 +120,19 @@ final class Vietnam
         $neg = static fn (int $sid) => self::pick($negVariants, $seed, $sid);
 
         $kitsRef = ['kit1' => 'reference', 'kit2' => 'reference', 'kit3' => 'reference'];
+        // Sample layout mirrors expectations/vietnam.php: S1/S2/S6/S7/S9 are positive
+        // (S1, S7 diluted/weak), S3/S4/S5/S8/S10 are negative.
         return [
-            1 => ['comment' => 'sent_for_confirmation'] + $pos(1) + $kitsRef,
-            2 => ['comment' => 'sent_for_confirmation'] + $pos(2) + $kitsRef,
-            3 => ['comment' => null]                   + $neg(3) + $kitsRef,
-            4 => ['comment' => null]                   + $neg(4) + $kitsRef,
-            5 => ['comment' => null]                   + $neg(5) + $kitsRef,
+            1  => ['comment' => 'sent_for_confirmation'] + $pos(1) + $kitsRef,
+            2  => ['comment' => 'sent_for_confirmation'] + $pos(2) + $kitsRef,
+            3  => ['comment' => null]                    + $neg(3) + $kitsRef,
+            4  => ['comment' => null]                    + $neg(4) + $kitsRef,
+            5  => ['comment' => null]                    + $neg(5) + $kitsRef,
+            6  => ['comment' => 'sent_for_confirmation'] + $pos(6) + $kitsRef,
+            7  => ['comment' => 'sent_for_confirmation'] + $pos(7) + $kitsRef,
+            8  => ['comment' => null]                    + $neg(8) + $kitsRef,
+            9  => ['comment' => 'sent_for_confirmation'] + $pos(9) + $kitsRef,
+            10 => ['comment' => null]                    + $neg(10) + $kitsRef,
         ];
     }
 
@@ -155,11 +162,16 @@ final class Vietnam
 
         $kitsRef = ['kit1' => 'reference', 'kit2' => 'reference', 'kit3' => 'reference'];
         return [
-            1 => ['comment' => null] + self::pick($dilutedPosVariants, $seed, 1) + $kitsRef,
-            2 => ['comment' => null] + self::pick($strongPosVariants,  $seed, 2) + $kitsRef,
-            3 => ['comment' => null] + self::pick($negVariants,        $seed, 3) + $kitsRef,
-            4 => ['comment' => null] + self::pick($negVariants,        $seed, 4) + $kitsRef,
-            5 => ['comment' => null] + self::pick($negVariants,        $seed, 5) + $kitsRef,
+            1  => ['comment' => null] + self::pick($dilutedPosVariants, $seed, 1)  + $kitsRef,
+            2  => ['comment' => null] + self::pick($strongPosVariants,  $seed, 2)  + $kitsRef,
+            3  => ['comment' => null] + self::pick($negVariants,        $seed, 3)  + $kitsRef,
+            4  => ['comment' => null] + self::pick($negVariants,        $seed, 4)  + $kitsRef,
+            5  => ['comment' => null] + self::pick($negVariants,        $seed, 5)  + $kitsRef,
+            6  => ['comment' => null] + self::pick($strongPosVariants,  $seed, 6)  + $kitsRef,
+            7  => ['comment' => null] + self::pick($dilutedPosVariants, $seed, 7)  + $kitsRef,
+            8  => ['comment' => null] + self::pick($negVariants,        $seed, 8)  + $kitsRef,
+            9  => ['comment' => null] + self::pick($strongPosVariants,  $seed, 9)  + $kitsRef,
+            10 => ['comment' => null] + self::pick($negVariants,        $seed, 10) + $kitsRef,
         ];
     }
 

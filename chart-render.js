@@ -28,6 +28,11 @@ import {
     DoughnutController,
 } from 'chart.js';
 
+import {
+    BoxPlotController,
+    BoxAndWiskers,
+} from '@sgratzl/chartjs-chart-boxplot';
+
 import { Canvas } from 'skia-canvas';
 
 // PNG CRC32 implementation
@@ -57,7 +62,9 @@ Chart.register(
     LineController,
     BarController,
     PieController,
-    DoughnutController
+    DoughnutController,
+    BoxPlotController,
+    BoxAndWiskers
 );
 
 // Read full stdin
@@ -66,7 +73,7 @@ process.stdin.setEncoding('utf8');
 process.stdin.on('data', chunk => { inputData += chunk; });
 process.stdin.on('end', async () => {
     try {
-        const { width, height, chart: chartConfig } = JSON.parse(inputData);
+        const { width, height, format = 'png', chart: chartConfig } = JSON.parse(inputData);
 
         // Honor a sentinel on plugins.legend.labels.filterEmpty=true: install a filter that
         // suppresses legend items whose dataset has no label (used by the boxRange chart so
@@ -77,6 +84,15 @@ process.stdin.on('end', async () => {
             delete legendLabels.filterEmpty;
         }
 
+        // Honor a sentinel on scales.y.ticks.hideNegative=true: install a tick callback that
+        // hides negative tick labels. Lets callers extend the axis slightly below 0 (so dots
+        // sitting at y=0 don't get bisected by the baseline) without exposing -10/-20 ticks.
+        const yTicks = chartConfig?.options?.scales?.y?.ticks;
+        if (yTicks && yTicks.hideNegative === true) {
+            yTicks.callback = function (value) { return value < 0 ? '' : value; };
+            delete yTicks.hideNegative;
+        }
+
         const canvas = new Canvas(width, height);
 
         // Fill background white
@@ -85,6 +101,23 @@ process.stdin.on('end', async () => {
         ctx.fillRect(0, 0, width, height);
 
         const chart = new Chart(canvas, chartConfig);
+
+        if (format === 'svg') {
+            // Vector output — no pHYs DPI hack needed. TCPDF embeds SVG via
+            // ImageSVG() which renders at the caller's chosen mm size with no
+            // raster downscaling, so fine lines stay crisp at any chart size.
+            let svgText = (await canvas.toBuffer('svg')).toString();
+            // skia-canvas wraps every text element in <clipPath> + <g clip-path>
+            // for canvas-bounds clipping. TCPDF's ImageSVG parser doesn't handle
+            // clip-path refs and silently drops the clipped content — we lose the
+            // entire chart. Strip the clipPath defs and the clip-path attributes;
+            // the chart is bounded by the SVG viewport anyway so unclipping is safe.
+            svgText = svgText.replace(/<clipPath\b[^>]*>[\s\S]*?<\/clipPath>/g, '');
+            svgText = svgText.replace(/\sclip-path="url\(#[^"]+\)"/g, '');
+            process.stdout.write(svgText);
+            chart.destroy();
+            return;
+        }
 
         const buffer = await canvas.toBuffer('png');
 

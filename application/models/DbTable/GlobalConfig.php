@@ -69,39 +69,39 @@ class Application_Model_DbTable_GlobalConfig extends Zend_Db_Table_Abstract
                 $extension = strtolower(pathinfo($pathPrefix . DIRECTORY_SEPARATOR . $fileNameSanitized, PATHINFO_EXTENSION));
                 $fileName = Pt_Commons_MiscUtility::generateRandomString(4) . '.' . $extension;
                 if (move_uploaded_file($_FILES[$field]['tmp_name'], $pathPrefix . DIRECTORY_SEPARATOR . $fileName)) {
-                    $this->update(['value' => $fileName], "name = '" . $field . "'");
+                    $this->saveConfigByName($fileName, $field);
                     $changedSections[] = str_replace('_', ' ', $field);
                 }
             }
         }
 
         if (isset($params['emailConfig']) && !empty($params['emailConfig'])) {
-            $this->update(['value' => json_encode($params['emailConfig'], true)], "name = 'mail'");
+            $this->saveConfigByName(json_encode($params['emailConfig'], true), 'mail');
             unset($params['emailConfig']);
             $changedSections[] = 'email config';
         }
         if (isset($params['covid19']) && !empty($params['covid19'])) {
-            $this->update(['value' => json_encode($params['covid19'], true)], "name = 'covid19'");
+            $this->saveConfigByName(json_encode($params['covid19'], true), 'covid19');
             unset($params['covid19']);
             $changedSections[] = 'COVID-19 config';
         }
         if (isset($params['vl']) && !empty($params['vl'])) {
-            $this->update(['value' => json_encode($params['vl'], true)], "name = 'vl'");
+            $this->saveConfigByName(json_encode($params['vl'], true), 'vl');
             unset($params['vl']);
             $changedSections[] = 'VL config';
         }
         if (isset($params['recency']) && !empty($params['recency'])) {
-            $this->update(['value' => json_encode($params['recency'], true)], "name = 'recency'");
+            $this->saveConfigByName(json_encode($params['recency'], true), 'recency');
             unset($params['recency']);
             $changedSections[] = 'Recency config';
         }
         if (isset($params['tb']) && !empty($params['tb'])) {
-            $this->update(['value' => json_encode($params['tb'], true)], "name = 'tb'");
+            $this->saveConfigByName(json_encode($params['tb'], true), 'tb');
             unset($params['tb']);
             $changedSections[] = 'TB config';
         }
         if (isset($params['home']) && !empty($params['home'])) {
-            $this->update(['value' => json_encode($params['home'], true)], "name = 'home'");
+            $this->saveConfigByName(json_encode($params['home'], true), 'home');
             unset($params['home']);
             $changedSections[] = 'home page';
         }
@@ -110,7 +110,7 @@ class Application_Model_DbTable_GlobalConfig extends Zend_Db_Table_Abstract
             foreach ($params['faqQuestions'] as $key => $faq) {
                 $faqResponse[$faq] = $params['faqAnswers'][$key];
             }
-            $this->update(['value' => json_encode($faqResponse, true)], "name = 'faqs'");
+            $this->saveConfigByName(json_encode($faqResponse, true), 'faqs');
             unset($params['faqQuestions']);
             unset($params['faqAnswers']);
             $changedSections[] = 'FAQs';
@@ -144,7 +144,7 @@ class Application_Model_DbTable_GlobalConfig extends Zend_Db_Table_Abstract
             if ((string) $currentValue === $newValue) {
                 continue;
             }
-            $this->update(['value' => $fieldValue], "name='" . $fieldName . "'");
+            $this->saveConfigByName(is_array($fieldValue) ? json_encode($fieldValue) : $fieldValue, $fieldName);
             $individualFields[] = $fieldName;
         }
         if (!empty($individualFields)) {
