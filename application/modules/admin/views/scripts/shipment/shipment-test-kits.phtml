@@ -1,13 +1,14 @@
 <?php
 
 /**
- * Test Kit Multiselect — uses jquery.multi-select.js + jquery.quicksearch.js
- * Drop inside your existing <div class="form-content"> block.
- * Requires: $this->testKits
+ * Test Kit dual-list — uses the shared VirtualDualList widget
+ * (partials/virtual-dual-list.phtml), the same dual-list used on Participant /
+ * Data Manager add-edit, Shipment Enrollments and ship-it.
+ * Requires: $this->testKits, $this->shipmentKitPositions, $this->shipmentId
  */
 ?>
 
-<link rel="stylesheet" type="text/css" href="<?php echo $this->baseUrl('css/multi-select.css'); ?>" />
+<?php echo $this->render('partials/virtual-dual-list.phtml'); ?>
 
 <style>
     .ms-summary-card {
@@ -93,31 +94,6 @@
         font-style: italic;
     }
 
-    .ms-badge-dts {
-        display: inline-block;
-        padding: 1px 7px;
-        border-radius: 10px;
-        font-size: 11px;
-        font-weight: 600;
-        background: #fef3c7;
-        color: #92400e;
-        border: 1px solid #fde68a;
-    }
-
-    /* keep the multi-select widget full-width inside the card */
-    #testKitMultiSelect {
-        display: none;
-    }
-
-    .ms-container {
-        width: 100% !important;
-    }
-
-    .ms-container .ms-selectable,
-    .ms-container .ms-selection {
-        width: 46% !important;
-    }
-
     .testkit-container {
         background: #fff;
         border-radius: 8px;
@@ -196,7 +172,7 @@
             </div>
         </div>
 
-        <!-- ── Multiselect Panel (hidden until position chosen) ───────── -->
+        <!-- ── Dual-list Panel (hidden until position chosen) ─────────── -->
         <div class="form-content" id="msSection" style="display:none">
             <h5>
                 <i class="icon-list"></i>
@@ -218,14 +194,11 @@
             </div>
             <br>
 
-            <!-- The underlying <select> that jquery.multi-select.js transforms -->
-            <select id="testKitMultiSelect" name="testKitAssigned[]" multiple="multiple"
+            <!-- Native <select> the VirtualDualList widget mirrors + keeps in sync -->
+            <select id="testKitMultiSelect" name="testKitAssigned[]" multiple="multiple" style="display:none;"
                 title="<?= $this->translate->_("Please select test kits to assign"); ?>">
             </select>
-
-            <small class="text-muted" style="margin-top:10px;display:block">
-                <span class="ms-badge-dts">DTS</span> = <?= $this->translate->_("DTS scheme type."); ?>
-            </small>
+            <div id="testKitWidget"></div>
         </div>
 
         <!-- ── Summary Panel ──────────────────────────────────────────── -->
@@ -247,17 +220,14 @@
                 </a>
             </div>
         </div>
-        <!-- ── Hidden inputs submitted with parent form ───────────────── -->
+        <!-- All three positions are submitted together (comma-joined ids), so one save
+             persists the whole shipment map shown in the summary. -->
         <input type="hidden" name="testkit_1_ids" id="msHidden1">
         <input type="hidden" name="testkit_2_ids" id="msHidden2">
         <input type="hidden" name="testkit_3_ids" id="msHidden3">
         <input type="hidden" name="shipmentId" id="shipmentId" value="<?php echo $this->shipmentId ?? null; ?>">
     </form>
 </div>
-
-
-<script type="text/javascript" src="<?php echo $this->baseUrl("js/jquery.multi-select.js"); ?>"></script>
-<script type="text/javascript" src="<?php echo $this->baseUrl("js/jquery.quicksearch.js"); ?>"></script>
 
 <script type="text/javascript">
     (function() {
@@ -284,15 +254,23 @@
             testkit_3: []
         };
 
-        // Pre-populate from existing testkit_1/2/3 flags
-        testKits.forEach(function(k) {
-            if (k.testkit_1 === '1') assignments.testkit_1.push(k.TESTKITNAMEID);
-            if (k.testkit_2 === '1') assignments.testkit_2.push(k.TESTKITNAMEID);
-            if (k.testkit_3 === '1') assignments.testkit_3.push(k.TESTKITNAMEID);
+        // Pre-populate per position from the shipment-specific override if it exists,
+        // otherwise seed from the global catalog flags (global = catalog + fallback).
+        var shipmentKitPos = <?php echo json_encode((object) ($this->shipmentKitPositions ?? []), JSON_UNESCAPED_UNICODE); ?>;
+        ['testkit_1', 'testkit_2', 'testkit_3'].forEach(function(pos) {
+            if (shipmentKitPos[pos] && shipmentKitPos[pos].length) {
+                assignments[pos] = shipmentKitPos[pos].slice();
+            } else {
+                assignments[pos] = testKits.filter(function(k) {
+                    return k[pos] === '1';
+                }).map(function(k) {
+                    return k.TESTKITNAMEID;
+                });
+            }
         });
 
         var currentPos = null;
-        var msInstance = false; // track if multiSelect has been init'd
+        var vdlBound = false; // VirtualDualList bound yet?
 
         /* ── Helpers ───────────────────────────────────────────────── */
         function getKit(id) {
@@ -302,7 +280,8 @@
         }
 
         function displayName(k) {
-            return k.scheme_type === 'dts' ? k.TESTKITNAME + ' [DTS]' : k.TESTKITNAME;
+            // Whole page is a DTS shipment, so no need to tag each kit as [DTS].
+            return k.TESTKITNAME;
         }
 
         function posLabel(pos) {
@@ -313,102 +292,33 @@
             } [pos] || pos;
         }
 
-        /* ── Rebuild <option> list for current position ────────────── */
+        /* ── Rebuild the native <select> options for the current position ── */
         function rebuildOptions() {
             var assigned = assignments[currentPos] || [];
             var $sel = $('#testKitMultiSelect');
             $sel.empty();
             testKits.forEach(function(k) {
-                var isSelected = assigned.indexOf(k.TESTKITNAMEID) !== -1;
                 $sel.append(
                     $('<option>', {
                         value: k.TESTKITNAMEID,
                         text: displayName(k),
-                        selected: isSelected
+                        selected: assigned.indexOf(k.TESTKITNAMEID) !== -1
                     })
                 );
             });
         }
 
-        /* ── Init / re-init jquery.multi-select ────────────────────── */
-        function initMultiSelect() {
-            var $sel = $('#testKitMultiSelect');
-
-            // Destroy previous instance if any
-            if (msInstance) {
-                $sel.multiSelect('destroy');
-                msInstance = false;
-            }
-
-            $sel.multiSelect({
-                selectableFooter: "<div class='custom-header'>" + i18n.unselHdr + " (<span id='msUnselCount'></span>)</div>",
-                selectionFooter: "<div class='custom-header'>" + i18n.selHdr + " (<span id='msSelCount'></span>)</div>",
-                selectableHeader: "<input type='text' class='search-input form-control' autocomplete='off' placeholder='" + i18n.searchPh + "'>",
-                selectionHeader: "<input type='text' class='search-input form-control' autocomplete='off' placeholder='" + i18n.searchPh + "'>",
-                afterInit: function(ms) {
-                    var that = this;
-                    var $selectableSearch = that.$selectableUl.prev();
-                    var $selectionSearch = that.$selectionUl.prev();
-                    var selectableStr = '#' + that.$container.attr('id') + ' .ms-elem-selectable:not(.ms-selected)';
-                    var selectionStr = '#' + that.$container.attr('id') + ' .ms-elem-selection.ms-selected';
-
-                    that.qs1 = $selectableSearch.quicksearch(selectableStr).on('keydown', function(e) {
-                        if (e.which === 40) {
-                            that.$selectableUl.focus();
-                            return false;
-                        }
-                    });
-                    that.qs2 = $selectionSearch.quicksearch(selectionStr).on('keydown', function(e) {
-                        if (e.which === 40) {
-                            that.$selectionUl.focus();
-                            return false;
-                        }
-                    });
-                    updateCountBadges();
-                },
-                afterSelect: function() {
-                    this.qs1.cache();
-                    this.qs2.cache();
-                    syncAssignments();
-                    updateCountBadges();
-                    updateSummary();
-                },
-                afterDeselect: function() {
-                    this.qs1.cache();
-                    this.qs2.cache();
-                    syncAssignments();
-                    updateCountBadges();
-                    updateSummary();
-                }
-            });
-
-            msInstance = true;
-
-            // Wire Select All / Deselect All buttons
-            $('#msSelectAll').off('click').on('click', function() {
-                $sel.multiSelect('select_all');
-                return false;
-            });
-            $('#msDeselectAll').off('click').on('click', function() {
-                $sel.multiSelect('deselect_all');
-                return false;
-            });
-
-            updateCountBadges();
-        }
-
-        /* ── Keep assignments[] in sync with what multiSelect shows ── */
+        /* ── Keep assignments[] in sync with the widget's selection ── */
         function syncAssignments() {
             if (!currentPos) return;
-            assignments[currentPos] = $('#testKitMultiSelect').val() || [];
+            var inst = VirtualDualList.get('#testKitMultiSelect');
+            assignments[currentPos] = inst ? inst.getSelectedIds() : ($('#testKitMultiSelect').val() || []);
         }
 
-        /* ── Update count badges in the multiSelect footers ───────── */
-        function updateCountBadges() {
-            var total = testKits.length;
-            var assigned = ($('#testKitMultiSelect').val() || []).length;
-            $('#msUnselCount').text(total - assigned);
-            $('#msSelCount').text(assigned);
+        /* ── Fired by the widget on every move / select-all / deselect-all ── */
+        function onWidgetChange() {
+            syncAssignments();
+            updateSummary();
         }
 
         /* ── Position dropdown change ──────────────────────────────── */
@@ -427,7 +337,18 @@
             document.getElementById('msSection').style.display = 'block';
 
             rebuildOptions();
-            initMultiSelect();
+            if (!vdlBound) {
+                VirtualDualList.bind('#testKitMultiSelect', {
+                    container: '#testKitWidget',
+                    unselectedLabel: i18n.unselHdr,
+                    selectedLabel: i18n.selHdr,
+                    filterPlaceholder: i18n.searchPh,
+                    onChange: onWidgetChange
+                });
+                vdlBound = true;
+            } else {
+                VirtualDualList.get('#testKitMultiSelect').reload();
+            }
             updateSummary();
         };
 
@@ -468,12 +389,6 @@
                         var row = document.createElement('div');
                         row.className = 'ms-summary-row';
                         row.textContent = k.TESTKITNAME;
-                        if (k.scheme_type === 'dts') {
-                            var b = document.createElement('span');
-                            b.className = 'ms-badge-dts';
-                            b.textContent = 'DTS';
-                            row.appendChild(b);
-                        }
                         rowsContainer.appendChild(row);
                     });
                 }
@@ -483,12 +398,20 @@
             });
         }
 
-        /* ── Populate hidden inputs before form submit ─────────────── 
-           Call msPopulateHiddenInputs() inside validateProfileForm()
-           just before document.getElementById('testKitsForm').submit()
-        ──────────────────────────────────────────────────────────────── */
+        /* ── Select All / Deselect All (resolve widget at click time) ── */
+        $('#msSelectAll').off('click').on('click', function() {
+            var inst = VirtualDualList.get('#testKitMultiSelect');
+            if (inst) inst.selectAll();
+            return false;
+        });
+        $('#msDeselectAll').off('click').on('click', function() {
+            var inst = VirtualDualList.get('#testKitMultiSelect');
+            if (inst) inst.deselectAll();
+            return false;
+        });
+
+        /* ── Populate the all-position hidden inputs just before submit ── */
         window.msPopulateHiddenInputs = function() {
-            // Sync latest state first
             syncAssignments();
             document.getElementById('msHidden1').value = assignments.testkit_1.join(',');
             document.getElementById('msHidden2').value = assignments.testkit_2.join(',');
@@ -505,6 +428,9 @@
             formId: 'testKitsForm'
         });
         if (flag) {
+            if (window.msPopulateHiddenInputs) {
+                window.msPopulateHiddenInputs();
+            }
             $.blockUI();
             document.getElementById('testKitsForm').submit();
         }

@@ -53,6 +53,7 @@ final class Cleanup
             // empty for ATEST shipments but cleared defensively).
             $this->db->exec("DELETE FROM queue_report_generation  WHERE shipment_id = ?", [$shipmentId]);
             $this->db->exec("DELETE FROM participant_testkit_map  WHERE shipment_id = ?", [$shipmentId]);
+            $this->db->exec("DELETE FROM shipment_testkit_map    WHERE shipment_id = ?", [$shipmentId]);
             $this->db->exec("DELETE FROM participant_feedback_answer WHERE shipment_id = ?", [$shipmentId]);
             $distributionId = $this->db->scalar("SELECT distribution_id FROM shipment WHERE shipment_id = ?", [$shipmentId]);
             $this->db->exec("DELETE FROM shipment WHERE shipment_id = ?", [$shipmentId]);
@@ -111,6 +112,7 @@ final class Cleanup
                 $this->db->exec("DELETE FROM reference_dts_geenius    WHERE shipment_id = ?", [$sid]);
                 $this->db->exec("DELETE FROM queue_report_generation WHERE shipment_id = ?", [$sid]);
                 $this->db->exec("DELETE FROM participant_testkit_map WHERE shipment_id = ?", [$sid]);
+                $this->db->exec("DELETE FROM shipment_testkit_map WHERE shipment_id = ?", [$sid]);
                 $this->db->exec("DELETE FROM participant_feedback_answer WHERE shipment_id = ?", [$sid]);
             }
             if (!empty($shipmentIds)) {
@@ -163,6 +165,7 @@ final class Cleanup
                 $this->db->exec("DELETE FROM reference_dts_geenius    WHERE shipment_id = ?", [$sid]);
                 $this->db->exec("DELETE FROM queue_report_generation WHERE shipment_id = ?", [$sid]);
                 $this->db->exec("DELETE FROM participant_testkit_map WHERE shipment_id = ?", [$sid]);
+                $this->db->exec("DELETE FROM shipment_testkit_map WHERE shipment_id = ?", [$sid]);
                 $this->db->exec("DELETE FROM participant_feedback_answer WHERE shipment_id = ?", [$sid]);
             }
             if (!empty($shipmentIds)) {

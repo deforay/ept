@@ -2472,6 +2472,19 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             $testKitKey = 0;
 
             $allTestKits = $dtsModel->getAllDtsTestKitList(true);
+            // Apply the optional shipment-specific testkit->position override: for any
+            // position that has shipment-specific rows, a kit's flag is 1 only if it's in
+            // that shipment's list; positions without shipment rows keep the global flag
+            // (global catalog = final fallback). Downstream dropdown logic is unchanged.
+            $shipmentKitPos = $dtsModel->getShipmentTestkitPositions($params['shipment_id']);
+            foreach ($allTestKits as &$effectiveKit) {
+                foreach (['testkit_1', 'testkit_2', 'testkit_3'] as $kitPos) {
+                    if (isset($shipmentKitPos[$kitPos])) {
+                        $effectiveKit[$kitPos] = in_array((string) $effectiveKit['TESTKITNAMEID'], $shipmentKitPos[$kitPos], true) ? '1' : '0';
+                    }
+                }
+            }
+            unset($effectiveKit);
             foreach ($allTestKits as $testKitKey => $testkit) {
                 if ($testkit['testkit_1'] == '1') {
                     $teskitArray['kitNameDropdown']['Test-1']['status'] = true;

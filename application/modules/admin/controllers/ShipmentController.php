@@ -503,12 +503,20 @@ class Admin_ShipmentController extends Zend_Controller_Action
         $kitDb = new Application_Model_DbTable_Testkitnames();
         if ($request->isPost()) {
             $params = $this->getAllParams();
-            $result = $kitDb->testKitsMapping($params);
-            if ($result) {
-                $this->redirect('/admin/shipment');
+            $kitDb->testKitsMapping($params);
+            // Stay on the testkit-map page (shows the saved state + success message)
+            // instead of bouncing back to the shipment list.
+            $sid = $params['shipmentId'] ?? $this->_getParam('sid');
+            if (!empty($sid)) {
+                $this->redirect('/admin/shipment/shipment-test-kits/sid/' . $sid);
             }
+            $this->redirect('/admin/shipment');
         }
         $this->view->shipmentId = $this->_getParam('sid');
         $this->view->testKits = $kitDb->getAllTestKitList('dts', 0);
+        // Shipment-specific overrides (optional intermediate layer); the view seeds the
+        // picker from these per position, falling back to the global flags when absent.
+        $dtsModel = new Application_Model_Dts();
+        $this->view->shipmentKitPositions = $dtsModel->getShipmentTestkitPositions(base64_decode((string) $this->_getParam('sid')));
     }
 }

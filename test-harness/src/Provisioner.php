@@ -75,6 +75,9 @@ final class Provisioner
 
             $mappedAssignments = [];
             $minorityKitIndex = 0;
+            // Track the kits actually used per position so we can provision the
+            // shipment-specific testkit map (the new intermediate layer) afterwards.
+            $usedKits = [1 => [], 2 => [], 3 => []];
             foreach ($assignments as $i => $a) {
                 $participantId = $participantIds[$i];
                 $responseState = $catalogue[$a['aberration']]['response_state'] ?? null;
@@ -115,6 +118,16 @@ final class Provisioner
                     $kit2 = $kits['reference'][2];
                     $kit3 = $kits['reference'][3];
 
+                    if ($kit1) {
+                        $usedKits[1][(string) $kit1] = true;
+                    }
+                    if ($kit2) {
+                        $usedKits[2][(string) $kit2] = true;
+                    }
+                    if ($kit3) {
+                        $usedKits[3][(string) $kit3] = true;
+                    }
+
                     // For each position whose kit has additional_info='yes', synthesize a
                     // plausible numeric value seeded by (participant index, sample). Reactive
                     // samples high, non-reactive low, diluted positive mid; small jitter.
@@ -136,6 +149,8 @@ final class Provisioner
                 ];
             }
 
+            $this->createShipmentTestkitMap($shipmentId, $usedKits);
+
             return [
                 'shipment_id'     => $shipmentId,
                 'shipment_code'   => $shipmentCode,
@@ -145,6 +160,34 @@ final class Provisioner
                 'settings_stash'  => $settingsStash,
             ];
         });
+    }
+
+    /**
+     * Provision the per-shipment testkit->position overrides (shipment_testkit_map)
+     * for the kits this shipment actually uses, mirroring the admin "Testkit Map" step:
+     * global catalog (dts_recommended_testkits) -> shipment-specific layer -> used here.
+     * Shipment-scoped, so Cleanup removes it with the shipment.
+     *
+     * @param array<int,array<string,bool>> $usedKits [position(1..3) => [kitId => true]]
+     */
+    private function createShipmentTestkitMap(int $shipmentId, array $usedKits): void
+    {
+        $flags = []; // kitId => [1 => 0/1, 2 => 0/1, 3 => 0/1]
+        foreach ([1, 2, 3] as $pos) {
+            foreach (array_keys($usedKits[$pos] ?? []) as $kitId) {
+                $flags[(string) $kitId][$pos] = 1;
+            }
+        }
+        foreach ($flags as $kitId => $posFlags) {
+            $this->db->insert('shipment_testkit_map', [
+                'shipment_id' => $shipmentId,
+                'scheme_type' => 'dts',
+                'testkit_id'  => $kitId,
+                'testkit_1'   => $posFlags[1] ?? 0,
+                'testkit_2'   => $posFlags[2] ?? 0,
+                'testkit_3'   => $posFlags[3] ?? 0,
+            ]);
+        }
     }
 
     /** Resolve r_possibleresult IDs for the DTS codes the harness writes. */

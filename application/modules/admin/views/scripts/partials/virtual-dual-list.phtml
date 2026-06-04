@@ -228,6 +228,9 @@
         this.$select.find('option').each(function() {
             this.selected = !!sel[String($(this).val())];
         });
+        // Optional callback fired after every selection change (move / select-all /
+        // deselect-all / setSelectedIds). Backward-compatible: no-op unless provided.
+        if (typeof this.opts.onChange === 'function') this.opts.onChange(this);
     };
 
     Instance.prototype.reload = function() {

@@ -1334,6 +1334,31 @@ final class Application_Model_Dts
         return $stmt;
     }
 
+    /**
+     * Shipment-specific test-kit -> position overrides from shipment_testkit_map.
+     * Returns only positions that actually have rows for this shipment, e.g.
+     * ['testkit_1' => ['tkAbc', 'tkDef'], 'testkit_3' => ['tkXyz']]. A position that
+     * is absent here has NO shipment-specific mapping, so the caller falls back to the
+     * global scheme_testkit_map flags for that position.
+     */
+    public function getShipmentTestkitPositions($shipmentId): array
+    {
+        $rows = $this->db->fetchAll(
+            $this->db->select()
+                ->from('shipment_testkit_map', ['testkit_id', 'testkit_1', 'testkit_2', 'testkit_3'])
+                ->where('shipment_id = ?', (int) $shipmentId)
+        );
+        $out = [];
+        foreach ($rows as $r) {
+            foreach (['testkit_1', 'testkit_2', 'testkit_3'] as $pos) {
+                if ((int) $r[$pos] === 1) {
+                    $out[$pos][] = (string) $r['testkit_id'];
+                }
+            }
+        }
+        return $out;
+    }
+
     public function updateTestKitStatus($params)
     {
         return $this->db->update('r_testkitnames', ['testkit_status' => $params['status']], "testkit_status = 'pending'");

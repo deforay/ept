@@ -435,13 +435,55 @@ class Application_Model_DbTable_Testkitnames extends Zend_Db_Table_Abstract
     {
         $alertMsg = new Zend_Session_Namespace('alertSpace');
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        foreach ($params['testKitAssigned'] as $row) {
-            $result = $db->update('scheme_testkit_map', [$params['testPosition'] => 1, 'shipment_id' => base64_decode($params['shipmentId'])], 'testkit_id = "' . $row . '"');
-        }
-        if ($result) {
-            $alertMsg->message = 'Testkits updated successfully.';
+
+        $shipmentId = (int) base64_decode((string) ($params['shipmentId'] ?? ''));
+        if ($shipmentId <= 0) {
+            return false;
         }
 
-        return $result;
+        // The form submits all three positions as comma-joined id lists, so one save
+        // replaces the entire shipment-specific OVERRIDE (shipment_testkit_map) — the
+        // optional intermediate layer Vietnam uses to tweak validated kits for one
+        // shipment. The global scheme_testkit_map is left untouched (catalog + fallback);
+        // a position left empty here simply falls back to the global flags.
+        $flags = []; // kitId => ['testkit_1' => 0/1, 'testkit_2' => ..., 'testkit_3' => ...]
+        foreach (['testkit_1', 'testkit_2', 'testkit_3'] as $pos) {
+            foreach ($this->splitCsvIds($params[$pos . '_ids'] ?? '') as $kitId) {
+                $flags[$kitId][$pos] = 1;
+            }
+        }
+
+        $db->delete('shipment_testkit_map', $db->quoteInto('shipment_id = ?', $shipmentId));
+        foreach ($flags as $kitId => $posFlags) {
+            $db->insert('shipment_testkit_map', [
+                'shipment_id' => $shipmentId,
+                'scheme_type' => 'dts',
+                'testkit_id'  => (string) $kitId,
+                'testkit_1'   => $posFlags['testkit_1'] ?? 0,
+                'testkit_2'   => $posFlags['testkit_2'] ?? 0,
+                'testkit_3'   => $posFlags['testkit_3'] ?? 0,
+            ]);
+        }
+
+        // Assigning a kit to a shipment implicitly marks it PT-provider-validated
+        // (pt_provider_validated = 1 is what the Vietnam report treats as "validated").
+        $allIds = array_keys($flags);
+        if (!empty($allIds)) {
+            $this->update(['pt_provider_validated' => 1], $db->quoteInto('TestKitName_ID IN (?)', $allIds));
+        }
+
+        $alertMsg->message = 'Test kits updated successfully.';
+
+        return true;
+    }
+
+    /** Split a comma-joined id list (from a hidden input) into a clean array. */
+    private function splitCsvIds($csv): array
+    {
+        $csv = trim((string) $csv);
+        if ($csv === '') {
+            return [];
+        }
+        return array_values(array_filter(array_map('trim', explode(',', $csv)), static fn ($v) => $v !== ''));
     }
 }
