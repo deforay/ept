@@ -8,8 +8,8 @@
 			<legend><?= $this->translate->_("Add New Test Kit"); ?></legend>
 
 			<div class="form-group col-lg-6">
-				<label class="col-lg-4 control-label" for="testKitName"><?= $this->translate->_("Test Kit Name"); ?> <span
-						class="mandatory">*</span></label>
+				<label class="col-lg-4 control-label" for="testKitName"><?= $this->translate->_("Test Kit Name"); ?>
+					<span class="mandatory">*</span></label>
 				<div class="col-lg-8">
 					<input type="text" id="testKitName" name="testKitName" size="50" maxlength="255"
 						class="isRequired form-control" title="Please enter the Testkit Name here"
@@ -19,7 +19,8 @@
 			</div>
 
 			<div class="form-group col-lg-6">
-				<label class="col-lg-4 control-label" for="shortTestKitName"><?= $this->translate->_("Short Test Kit Name"); ?></label>
+				<label class="col-lg-4 control-label"
+					for="shortTestKitName"><?= $this->translate->_("Short Test Kit Name"); ?></label>
 				<div class="col-lg-8">
 					<input type="text" id="shortTestKitName" name="shortTestKitName" size="50" maxlength="255"
 						class="form-control" title="Please enter the Short Testkit Name here"
@@ -28,16 +29,21 @@
 			</div>
 
 			<div class="form-group col-lg-6">
-				<label class="col-lg-4 control-label" for="approvalAgency"><?= $this->translate->_("Approval Agency"); ?> <span
+				<label class="col-lg-4 control-label"
+					for="approvalAgency"><?= $this->translate->_("Is Ministry of Health Approved?"); ?> <span
 						class="mandatory">*</span></label>
 				<div class="col-lg-8">
-					<input type="text" id="approvalAgency" name="approvalAgency" size="50" maxlength="255"
-						class="isRequired form-control" title="Please enter the Approval Agency here"
-						placeholder="Please enter the Approval Agency here" />
+					<select class="form-control isRequired" name="approvalAgency" id="approvalAgency"
+						title="<?= $this->translate->_('Is this kit approved by the Ministry of Health?'); ?>">
+						<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
+						<option value="Yes"><?= $this->translate->_("Yes"); ?></option>
+						<option value="No"><?= $this->translate->_("No"); ?></option>
+					</select>
 				</div>
 			</div>
 			<div class="form-group col-lg-6">
-				<label class="col-lg-4 control-label" for="countryAdapted"><?= $this->translate->_("Country Approved/Validated"); ?> <span
+				<label class="col-lg-4 control-label"
+					for="countryAdapted"><?= $this->translate->_("Is PT Provider Validated?"); ?> <span
 						class="mandatory">*</span></label>
 				<div class="col-lg-8">
 					<select class="form-control isRequired" name="countryAdapted" id="countryAdapted"
@@ -49,7 +55,8 @@
 				</div>
 			</div>
 			<div class="form-group col-lg-6">
-				<label class="col-lg-4 control-label" for="sourceReference"><?= $this->translate->_("Source Reference"); ?></label>
+				<label class="col-lg-4 control-label"
+					for="sourceReference"><?= $this->translate->_("Source Reference"); ?></label>
 
 				<div class="col-lg-8">
 					<input type="text" id="sourceReference" name="sourceReference" size="50" maxlength="255"
@@ -59,7 +66,8 @@
 			</div>
 
 			<div class="form-group col-lg-6">
-				<label class="col-lg-4 control-label" for="manufacturer"><?= $this->translate->_("Test Kit Manufacturer"); ?></label>
+				<label class="col-lg-4 control-label"
+					for="manufacturer"><?= $this->translate->_("Test Kit Manufacturer"); ?></label>
 				<div class="col-lg-8">
 					<input type="text" id="manufacturer" name="manufacturer" size="50" maxlength="255"
 						class="form-control" title="Please enter the testkit manufacturer here"
@@ -149,7 +157,7 @@
 <script type="text/javascript">
 	var duplicated = false;
 
-	$(document).ready(function() {
+	$(document).ready(function () {
 		$(".multiselect").select2({
 			placeholder: "<?= $this->translate->_("Choose one or more options"); ?>",
 			width: '100%'
@@ -158,13 +166,13 @@
 
 	function checkDuplicate(tableName, fieldName, obj, fnct, msg) {
 		$.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'common', 'action' => 'check-duplicate')); ?>", {
-				tableName: tableName,
-				fieldName: fieldName,
-				value: obj.value,
-				fnct: fnct,
-				format: "html"
-			},
-			function(data) {
+			tableName: tableName,
+			fieldName: fieldName,
+			value: obj.value,
+			fnct: fnct,
+			format: "html"
+		},
+			function (data) {
 				if (data > 0) {
 					alert(msg, "err");
 					duplicated = true;
@@ -195,7 +203,7 @@
 
 	function selectStages() {
 		let list = $('[name="scheme[]"]').val();
-		$(list).each(function(i, data) {
+		$(list).each(function (i, data) {
 			if (data == 'dts') {
 				console.log(data);
 				$('.testStages').removeClass('hide');

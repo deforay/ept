@@ -819,7 +819,7 @@ class Application_Service_Shipments
                         'TestKit_Name' => $kit,
                         'scheme_type' => 'dts',
                         'Approval' => '0',
-                        'CountryAdapted' => '0',
+                        'pt_provider_validated' => '0',
                         'testkit_status' => 'pending',
                         'Created_On' => new Zend_Db_Expr('now()'),
                     ]);

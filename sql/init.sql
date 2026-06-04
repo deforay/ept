@@ -1,21 +1,15 @@
 -- phpMyAdmin SQL Dump
--- version 5.2.1
+-- version 5.2.2
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Mar 02, 2026 at 06:42 AM
--- Server version: 8.0.45-0ubuntu0.24.04.1
--- PHP Version: 8.4.18
+-- Generation Time: Jun 04, 2026 at 12:57 PM
+-- Server version: 8.4.9
+-- PHP Version: 8.4.21
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
 SET time_zone = "+00:00";
-
-
-/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
-/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
-/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40101 SET NAMES utf8mb4 */;
 
 --
 -- Database: `ept`
@@ -29,14 +23,12 @@ USE `ept`;
 -- Table structure for table `announcements`
 --
 
-DROP TABLE IF EXISTS `announcements`;
-CREATE TABLE IF NOT EXISTS `announcements` (
-  `announcement_id` int NOT NULL AUTO_INCREMENT,
+CREATE TABLE `announcements` (
+  `announcement_id` int NOT NULL,
   `announcement_msg` mediumtext CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
   `start_date` date NOT NULL,
   `end_date` date NOT NULL,
-  `status` varchar(45) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT 'active',
-  PRIMARY KEY (`announcement_id`)
+  `status` varchar(45) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT 'active'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
@@ -45,15 +37,13 @@ CREATE TABLE IF NOT EXISTS `announcements` (
 -- Table structure for table `announcements_notification`
 --
 
-DROP TABLE IF EXISTS `announcements_notification`;
-CREATE TABLE IF NOT EXISTS `announcements_notification` (
-  `id` int NOT NULL AUTO_INCREMENT,
+CREATE TABLE `announcements_notification` (
+  `id` int NOT NULL,
   `subject` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `message` mediumtext CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
   `participants` mediumtext CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
   `created_on` datetime DEFAULT NULL,
-  `created_by` int DEFAULT NULL,
-  PRIMARY KEY (`id`)
+  `created_by` int DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
@@ -62,9 +52,8 @@ CREATE TABLE IF NOT EXISTS `announcements_notification` (
 -- Table structure for table `audit_log`
 --
 
-DROP TABLE IF EXISTS `audit_log`;
-CREATE TABLE IF NOT EXISTS `audit_log` (
-  `audit_log_id` int NOT NULL AUTO_INCREMENT,
+CREATE TABLE `audit_log` (
+  `audit_log_id` int NOT NULL,
   `statement` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
   `created_by` varchar(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `created_by_role` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
@@ -72,12 +61,7 @@ CREATE TABLE IF NOT EXISTS `audit_log` (
   `type` varchar(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `ip_address` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `user_agent` varchar(512) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-  `session_hash` varchar(16) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-  PRIMARY KEY (`audit_log_id`),
-  KEY `idx_audit_log_created_by` (`created_by`),
-  KEY `idx_audit_log_created_on` (`created_on`),
-  KEY `idx_audit_log_type` (`type`),
-  KEY `idx_audit_log_session_hash` (`session_hash`)
+  `session_hash` varchar(16) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
@@ -86,9 +70,8 @@ CREATE TABLE IF NOT EXISTS `audit_log` (
 -- Table structure for table `certificate_batches`
 --
 
-DROP TABLE IF EXISTS `certificate_batches`;
-CREATE TABLE IF NOT EXISTS `certificate_batches` (
-  `batch_id` int NOT NULL AUTO_INCREMENT,
+CREATE TABLE `certificate_batches` (
+  `batch_id` int NOT NULL,
   `batch_name` varchar(100) NOT NULL,
   `shipment_ids` text NOT NULL,
   `status` enum('pending','generating','generated','approved','distributed','failed') DEFAULT 'pending',
@@ -102,9 +85,7 @@ CREATE TABLE IF NOT EXISTS `certificate_batches` (
   `created_on` datetime DEFAULT CURRENT_TIMESTAMP,
   `approved_by` int DEFAULT NULL,
   `approved_on` datetime DEFAULT NULL,
-  `distributed_on` datetime DEFAULT NULL,
-  PRIMARY KEY (`batch_id`),
-  KEY `idx_status` (`status`)
+  `distributed_on` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
@@ -113,15 +94,13 @@ CREATE TABLE IF NOT EXISTS `certificate_batches` (
 -- Table structure for table `certificate_templates`
 --
 
-DROP TABLE IF EXISTS `certificate_templates`;
-CREATE TABLE IF NOT EXISTS `certificate_templates` (
-  `ct_id` int NOT NULL AUTO_INCREMENT,
+CREATE TABLE `certificate_templates` (
+  `ct_id` int NOT NULL,
   `scheme_type` varchar(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `participation_certificate` varchar(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `excellence_certificate` varchar(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `created_by` varchar(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-  `updated_on` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`ct_id`)
+  `updated_on` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
@@ -130,9 +109,8 @@ CREATE TABLE IF NOT EXISTS `certificate_templates` (
 -- Table structure for table `contact_us`
 --
 
-DROP TABLE IF EXISTS `contact_us`;
-CREATE TABLE IF NOT EXISTS `contact_us` (
-  `contact_id` int NOT NULL AUTO_INCREMENT,
+CREATE TABLE `contact_us` (
+  `contact_id` int NOT NULL,
   `first_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `last_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `email` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
@@ -145,8 +123,7 @@ CREATE TABLE IF NOT EXISTS `contact_us` (
   `country` varchar(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `message` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
   `contacted_on` datetime DEFAULT NULL,
-  `ip_address` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-  PRIMARY KEY (`contact_id`)
+  `ip_address` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
@@ -155,16 +132,13 @@ CREATE TABLE IF NOT EXISTS `contact_us` (
 -- Table structure for table `countries`
 --
 
-DROP TABLE IF EXISTS `countries`;
-CREATE TABLE IF NOT EXISTS `countries` (
-  `id` int UNSIGNED NOT NULL AUTO_INCREMENT,
+CREATE TABLE `countries` (
+  `id` int UNSIGNED NOT NULL,
   `iso_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `iso2` varchar(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `iso3` varchar(3) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  `numeric_code` smallint NOT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `id` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=250 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  `numeric_code` smallint NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Dumping data for table `countries`
@@ -427,19 +401,14 @@ INSERT INTO `countries` (`id`, `iso_name`, `iso2`, `iso3`, `numeric_code`) VALUE
 -- Table structure for table `covid19_identified_genes`
 --
 
-DROP TABLE IF EXISTS `covid19_identified_genes`;
-CREATE TABLE IF NOT EXISTS `covid19_identified_genes` (
-  `gene_map_id` int NOT NULL AUTO_INCREMENT,
+CREATE TABLE `covid19_identified_genes` (
+  `gene_map_id` int NOT NULL,
   `map_id` int NOT NULL,
   `shipment_id` int NOT NULL,
   `sample_id` int NOT NULL,
   `gene_id` int DEFAULT NULL,
   `ct_value` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-  `remarks` mediumtext CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
-  PRIMARY KEY (`gene_map_id`),
-  KEY `map_id` (`map_id`),
-  KEY `shipment_id` (`shipment_id`),
-  KEY `gene_id` (`gene_id`)
+  `remarks` mediumtext CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
@@ -448,11 +417,9 @@ CREATE TABLE IF NOT EXISTS `covid19_identified_genes` (
 -- Table structure for table `covid19_recommended_test_types`
 --
 
-DROP TABLE IF EXISTS `covid19_recommended_test_types`;
-CREATE TABLE IF NOT EXISTS `covid19_recommended_test_types` (
+CREATE TABLE `covid19_recommended_test_types` (
   `test_no` int NOT NULL,
-  `test_type` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  PRIMARY KEY (`test_no`,`test_type`)
+  `test_type` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
@@ -461,15 +428,13 @@ CREATE TABLE IF NOT EXISTS `covid19_recommended_test_types` (
 -- Table structure for table `custom_page_content`
 --
 
-DROP TABLE IF EXISTS `custom_page_content`;
-CREATE TABLE IF NOT EXISTS `custom_page_content` (
-  `id` int NOT NULL AUTO_INCREMENT,
+CREATE TABLE `custom_page_content` (
+  `id` int NOT NULL,
   `title` varchar(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `content` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
   `modified_by` varchar(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `status` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-  `modified_date_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`)
+  `modified_date_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
@@ -478,9 +443,8 @@ CREATE TABLE IF NOT EXISTS `custom_page_content` (
 -- Table structure for table `data_manager`
 --
 
-DROP TABLE IF EXISTS `data_manager`;
-CREATE TABLE IF NOT EXISTS `data_manager` (
-  `dm_id` int NOT NULL AUTO_INCREMENT,
+CREATE TABLE `data_manager` (
+  `dm_id` int NOT NULL,
   `participant_ulid` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
   `primary_email` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `password` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
@@ -514,9 +478,7 @@ CREATE TABLE IF NOT EXISTS `data_manager` (
   `download_link` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `new_email` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `last_date_for_email_reset` date DEFAULT NULL,
-  `language` varchar(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT 'en_US',
-  PRIMARY KEY (`dm_id`),
-  UNIQUE KEY `primary_email` (`primary_email`)
+  `language` varchar(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT 'en_US'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='A PT user Table for Data entry or report printing';
 
 -- --------------------------------------------------------
@@ -525,17 +487,15 @@ CREATE TABLE IF NOT EXISTS `data_manager` (
 -- Table structure for table `distributions`
 --
 
-DROP TABLE IF EXISTS `distributions`;
-CREATE TABLE IF NOT EXISTS `distributions` (
-  `distribution_id` int NOT NULL AUTO_INCREMENT,
+CREATE TABLE `distributions` (
+  `distribution_id` int NOT NULL,
   `distribution_code` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `distribution_date` date NOT NULL,
   `status` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `created_on` datetime DEFAULT NULL,
   `created_by` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `updated_on` datetime DEFAULT NULL,
-  `updated_by` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-  PRIMARY KEY (`distribution_id`)
+  `updated_by` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
@@ -544,12 +504,10 @@ CREATE TABLE IF NOT EXISTS `distributions` (
 -- Table structure for table `dts_recommended_testkits`
 --
 
-DROP TABLE IF EXISTS `dts_recommended_testkits`;
-CREATE TABLE IF NOT EXISTS `dts_recommended_testkits` (
+CREATE TABLE `dts_recommended_testkits` (
   `test_no` int NOT NULL,
   `testkit` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  `dts_test_mode` varchar(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT 'dts',
-  PRIMARY KEY (`test_no`,`testkit`,`dts_test_mode`)
+  `dts_test_mode` varchar(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT 'dts'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
@@ -558,8 +516,7 @@ CREATE TABLE IF NOT EXISTS `dts_recommended_testkits` (
 -- Table structure for table `dts_shipment_corrective_action_map`
 --
 
-DROP TABLE IF EXISTS `dts_shipment_corrective_action_map`;
-CREATE TABLE IF NOT EXISTS `dts_shipment_corrective_action_map` (
+CREATE TABLE `dts_shipment_corrective_action_map` (
   `shipment_map_id` int NOT NULL,
   `corrective_action_id` int NOT NULL,
   `action_taken` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
@@ -572,16 +529,14 @@ CREATE TABLE IF NOT EXISTS `dts_shipment_corrective_action_map` (
 -- Table structure for table `email_participants`
 --
 
-DROP TABLE IF EXISTS `email_participants`;
-CREATE TABLE IF NOT EXISTS `email_participants` (
-  `id` int NOT NULL AUTO_INCREMENT,
+CREATE TABLE `email_participants` (
+  `id` int NOT NULL,
   `subject` varchar(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `content` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
   `receivers` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
   `shipment_code` varchar(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `date_initiated` datetime DEFAULT CURRENT_TIMESTAMP,
-  `initiated_by` varchar(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-  PRIMARY KEY (`id`)
+  `initiated_by` varchar(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
@@ -590,16 +545,13 @@ CREATE TABLE IF NOT EXISTS `email_participants` (
 -- Table structure for table `enrollments`
 --
 
-DROP TABLE IF EXISTS `enrollments`;
-CREATE TABLE IF NOT EXISTS `enrollments` (
+CREATE TABLE `enrollments` (
   `enrollment_id` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `list_name` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT 'default',
   `scheme_id` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `participant_id` int NOT NULL,
   `enrolled_on` datetime DEFAULT CURRENT_TIMESTAMP,
-  `status` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  PRIMARY KEY (`list_name`,`participant_id`),
-  KEY `participant_id` (`participant_id`)
+  `status` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
@@ -608,8 +560,7 @@ CREATE TABLE IF NOT EXISTS `enrollments` (
 -- Table structure for table `generic_recommended_test_types`
 --
 
-DROP TABLE IF EXISTS `generic_recommended_test_types`;
-CREATE TABLE IF NOT EXISTS `generic_recommended_test_types` (
+CREATE TABLE `generic_recommended_test_types` (
   `scheme_id` varchar(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `testkit` varchar(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
@@ -620,11 +571,9 @@ CREATE TABLE IF NOT EXISTS `generic_recommended_test_types` (
 -- Table structure for table `global_config`
 --
 
-DROP TABLE IF EXISTS `global_config`;
-CREATE TABLE IF NOT EXISTS `global_config` (
+CREATE TABLE `global_config` (
   `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  `value` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
-  PRIMARY KEY (`name`)
+  `value` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
@@ -683,7 +632,6 @@ INSERT INTO `global_config` (`name`, `value`) VALUES
 ('pt_program_name', 'EQA Proficiency Testing'),
 ('pt_program_short_name', 'EQA PT'),
 ('qc_access', 'yes'),
-('response_after_evaluate', 'yes'),
 ('temporary_login_ban_time', NULL),
 ('theme_color', 'blue'),
 ('training_instance', 'no'),
@@ -695,12 +643,10 @@ INSERT INTO `global_config` (`name`, `value`) VALUES
 -- Table structure for table `home_banner`
 --
 
-DROP TABLE IF EXISTS `home_banner`;
-CREATE TABLE IF NOT EXISTS `home_banner` (
-  `banner_id` int NOT NULL AUTO_INCREMENT,
-  `image` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-  PRIMARY KEY (`banner_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+CREATE TABLE `home_banner` (
+  `banner_id` int NOT NULL,
+  `image` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Dumping data for table `home_banner`
@@ -715,9 +661,8 @@ INSERT INTO `home_banner` (`banner_id`, `image`) VALUES
 -- Table structure for table `home_sections`
 --
 
-DROP TABLE IF EXISTS `home_sections`;
-CREATE TABLE IF NOT EXISTS `home_sections` (
-  `id` int NOT NULL AUTO_INCREMENT,
+CREATE TABLE `home_sections` (
+  `id` int NOT NULL,
   `section` varchar(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `link` varchar(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `type` varchar(255) DEFAULT NULL,
@@ -727,8 +672,7 @@ CREATE TABLE IF NOT EXISTS `home_sections` (
   `display_order` int DEFAULT NULL,
   `status` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `modified_by` varchar(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-  `modified_date_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`)
+  `modified_date_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
@@ -737,9 +681,8 @@ CREATE TABLE IF NOT EXISTS `home_sections` (
 -- Table structure for table `mail_template`
 --
 
-DROP TABLE IF EXISTS `mail_template`;
-CREATE TABLE IF NOT EXISTS `mail_template` (
-  `mail_temp_id` int NOT NULL AUTO_INCREMENT,
+CREATE TABLE `mail_template` (
+  `mail_temp_id` int NOT NULL,
   `mail_purpose` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `from_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `mail_from` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
@@ -747,8 +690,7 @@ CREATE TABLE IF NOT EXISTS `mail_template` (
   `mail_bcc` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `mail_subject` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `mail_content` mediumtext CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
-  `mail_footer` mediumtext CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
-  PRIMARY KEY (`mail_temp_id`)
+  `mail_footer` mediumtext CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
@@ -757,15 +699,13 @@ CREATE TABLE IF NOT EXISTS `mail_template` (
 -- Table structure for table `notify`
 --
 
-DROP TABLE IF EXISTS `notify`;
-CREATE TABLE IF NOT EXISTS `notify` (
-  `id` int NOT NULL AUTO_INCREMENT COMMENT 'auto id',
+CREATE TABLE `notify` (
+  `id` int NOT NULL COMMENT 'auto id',
   `title` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT 'notify title',
   `description` mediumtext CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci COMMENT 'notify description',
   `link` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT 'link for corresponding page',
   `status` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT 'unread' COMMENT 'read, readed for notify status',
-  `created_on` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'current insertion date time',
-  PRIMARY KEY (`id`)
+  `created_on` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'current insertion date time'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
@@ -774,9 +714,8 @@ CREATE TABLE IF NOT EXISTS `notify` (
 -- Table structure for table `participant`
 --
 
-DROP TABLE IF EXISTS `participant`;
-CREATE TABLE IF NOT EXISTS `participant` (
-  `participant_id` int NOT NULL AUTO_INCREMENT,
+CREATE TABLE `participant` (
+  `participant_id` int NOT NULL,
   `ulid` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
   `unique_identifier` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `individual` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
@@ -818,9 +757,7 @@ CREATE TABLE IF NOT EXISTS `participant` (
   `updated_on` datetime DEFAULT NULL,
   `updated_by` varchar(45) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `force_profile_updation` int NOT NULL DEFAULT '0',
-  `status` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT 'inactive',
-  PRIMARY KEY (`participant_id`),
-  UNIQUE KEY `unique_identifier` (`unique_identifier`)
+  `status` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT 'inactive'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
@@ -829,9 +766,8 @@ CREATE TABLE IF NOT EXISTS `participant` (
 -- Table structure for table `participants_not_uploaded`
 --
 
-DROP TABLE IF EXISTS `participants_not_uploaded`;
-CREATE TABLE IF NOT EXISTS `participants_not_uploaded` (
-  `id` int NOT NULL AUTO_INCREMENT,
+CREATE TABLE `participants_not_uploaded` (
+  `id` int NOT NULL,
   `s_no` mediumtext CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
   `participant_id` mediumtext CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
   `individual` mediumtext CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
@@ -852,8 +788,7 @@ CREATE TABLE IF NOT EXISTS `participants_not_uploaded` (
   `additional_email` mediumtext CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
   `filename` mediumtext CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
   `error` mediumtext CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
-  `updated_datetime` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`)
+  `updated_datetime` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
@@ -862,11 +797,9 @@ CREATE TABLE IF NOT EXISTS `participants_not_uploaded` (
 -- Table structure for table `participant_enrolled_programs_map`
 --
 
-DROP TABLE IF EXISTS `participant_enrolled_programs_map`;
-CREATE TABLE IF NOT EXISTS `participant_enrolled_programs_map` (
+CREATE TABLE `participant_enrolled_programs_map` (
   `participant_id` int NOT NULL,
-  `ep_id` int NOT NULL,
-  PRIMARY KEY (`participant_id`,`ep_id`)
+  `ep_id` int NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
@@ -875,8 +808,7 @@ CREATE TABLE IF NOT EXISTS `participant_enrolled_programs_map` (
 -- Table structure for table `participant_feedback_answer`
 --
 
-DROP TABLE IF EXISTS `participant_feedback_answer`;
-CREATE TABLE IF NOT EXISTS `participant_feedback_answer` (
+CREATE TABLE `participant_feedback_answer` (
   `answer_id` int NOT NULL,
   `shipment_id` int NOT NULL,
   `participant_id` int DEFAULT NULL,
@@ -884,12 +816,7 @@ CREATE TABLE IF NOT EXISTS `participant_feedback_answer` (
   `map_id` int NOT NULL,
   `answer` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
   `updated_datetime` datetime DEFAULT NULL,
-  `modified_by` int DEFAULT NULL,
-  PRIMARY KEY (`answer_id`),
-  KEY `map_id` (`map_id`),
-  KEY `shipment_id` (`shipment_id`),
-  KEY `participant_id` (`participant_id`),
-  KEY `question_id` (`question_id`)
+  `modified_by` int DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
@@ -898,11 +825,9 @@ CREATE TABLE IF NOT EXISTS `participant_feedback_answer` (
 -- Table structure for table `participant_manager_map`
 --
 
-DROP TABLE IF EXISTS `participant_manager_map`;
-CREATE TABLE IF NOT EXISTS `participant_manager_map` (
+CREATE TABLE `participant_manager_map` (
   `participant_id` int NOT NULL,
-  `dm_id` int NOT NULL,
-  PRIMARY KEY (`participant_id`,`dm_id`)
+  `dm_id` int NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
@@ -911,17 +836,15 @@ CREATE TABLE IF NOT EXISTS `participant_manager_map` (
 -- Table structure for table `participant_messages`
 --
 
-DROP TABLE IF EXISTS `participant_messages`;
-CREATE TABLE IF NOT EXISTS `participant_messages` (
-  `id` int NOT NULL AUTO_INCREMENT,
+CREATE TABLE `participant_messages` (
+  `id` int NOT NULL,
   `participant_id` varchar(255) NOT NULL,
   `subject` varchar(255) DEFAULT NULL,
   `attached_file` varchar(255) DEFAULT NULL,
   `message` text NOT NULL,
   `status` enum('pending','sent','failed') DEFAULT 'pending',
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
-  `sent_at` datetime DEFAULT NULL,
-  PRIMARY KEY (`id`)
+  `sent_at` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
@@ -930,14 +853,10 @@ CREATE TABLE IF NOT EXISTS `participant_messages` (
 -- Table structure for table `participant_testkit_map`
 --
 
-DROP TABLE IF EXISTS `participant_testkit_map`;
-CREATE TABLE IF NOT EXISTS `participant_testkit_map` (
+CREATE TABLE `participant_testkit_map` (
   `participant_id` int NOT NULL,
   `shipment_id` int NOT NULL,
-  `testkit_id` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  KEY `participant_id` (`participant_id`),
-  KEY `testkit_id` (`testkit_id`),
-  KEY `shipment_id` (`shipment_id`)
+  `testkit_id` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
@@ -946,18 +865,16 @@ CREATE TABLE IF NOT EXISTS `participant_testkit_map` (
 -- Table structure for table `partners`
 --
 
-DROP TABLE IF EXISTS `partners`;
-CREATE TABLE IF NOT EXISTS `partners` (
-  `partner_id` int NOT NULL AUTO_INCREMENT,
+CREATE TABLE `partners` (
+  `partner_id` int NOT NULL,
   `partner_name` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `link` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
   `sort_order` int DEFAULT NULL,
   `added_by` int NOT NULL,
   `added_on` datetime NOT NULL,
   `status` varchar(45) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-  `logo_image` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
-  PRIMARY KEY (`partner_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  `logo_image` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Dumping data for table `partners`
@@ -972,15 +889,12 @@ INSERT INTO `partners` (`partner_id`, `partner_name`, `link`, `sort_order`, `add
 -- Table structure for table `ptcc_countries_map`
 --
 
-DROP TABLE IF EXISTS `ptcc_countries_map`;
-CREATE TABLE IF NOT EXISTS `ptcc_countries_map` (
+CREATE TABLE `ptcc_countries_map` (
   `ptcc_id` int NOT NULL,
   `country_id` int NOT NULL,
   `state` varchar(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `district` varchar(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-  `mapped_on` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  UNIQUE KEY `ptcc_id_2` (`ptcc_id`,`country_id`,`state`,`district`),
-  KEY `ptcc_id` (`ptcc_id`)
+  `mapped_on` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
@@ -989,9 +903,8 @@ CREATE TABLE IF NOT EXISTS `ptcc_countries_map` (
 -- Table structure for table `push_notification`
 --
 
-DROP TABLE IF EXISTS `push_notification`;
-CREATE TABLE IF NOT EXISTS `push_notification` (
-  `id` int NOT NULL AUTO_INCREMENT,
+CREATE TABLE `push_notification` (
+  `id` int NOT NULL,
   `notification_json` mediumtext CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci COMMENT 'create notify message (title body and icon) and convert into json and store here',
   `data_json` mediumtext CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci COMMENT 'create notify data message and convert into Json then store here',
   `push_status` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT 'refuse, pending, send, not-send',
@@ -999,8 +912,7 @@ CREATE TABLE IF NOT EXISTS `push_notification` (
   `token_identify_id` mediumtext CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci COMMENT 'Set which mobile to send push notify. Here id come either shipment or DM',
   `identify_type` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT 'Type of identify id either shipment, people(DM), General and not-responded people.',
   `notification_type` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT 'Reports, Shipment, General',
-  `announcement_id` int DEFAULT NULL,
-  PRIMARY KEY (`id`)
+  `announcement_id` int DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
@@ -1009,16 +921,14 @@ CREATE TABLE IF NOT EXISTS `push_notification` (
 -- Table structure for table `push_notification_template`
 --
 
-DROP TABLE IF EXISTS `push_notification_template`;
-CREATE TABLE IF NOT EXISTS `push_notification_template` (
-  `id` int NOT NULL AUTO_INCREMENT,
+CREATE TABLE `push_notification_template` (
+  `id` int NOT NULL,
   `purpose` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `notify_title` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `notify_body` mediumtext CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
   `data_msg` mediumtext CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
-  `icon` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  `icon` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Dumping data for table `push_notification_template`
@@ -1036,9 +946,8 @@ INSERT INTO `push_notification_template` (`id`, `purpose`, `notify_title`, `noti
 -- Table structure for table `queue_report_generation`
 --
 
-DROP TABLE IF EXISTS `queue_report_generation`;
-CREATE TABLE IF NOT EXISTS `queue_report_generation` (
-  `id` int NOT NULL AUTO_INCREMENT,
+CREATE TABLE `queue_report_generation` (
+  `id` int NOT NULL,
   `shipment_id` int NOT NULL,
   `report_type` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `requested_by` int NOT NULL,
@@ -1049,9 +958,7 @@ CREATE TABLE IF NOT EXISTS `queue_report_generation` (
   `previous_status` varchar(256) DEFAULT NULL,
   `processing_started_at` datetime DEFAULT NULL,
   `last_heartbeat` datetime DEFAULT NULL,
-  `initated_by` int DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  KEY `shipment_id` (`shipment_id`)
+  `initated_by` int DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
@@ -1060,16 +967,14 @@ CREATE TABLE IF NOT EXISTS `queue_report_generation` (
 -- Table structure for table `reference_covid19_test_type`
 --
 
-DROP TABLE IF EXISTS `reference_covid19_test_type`;
-CREATE TABLE IF NOT EXISTS `reference_covid19_test_type` (
-  `id` int NOT NULL AUTO_INCREMENT,
+CREATE TABLE `reference_covid19_test_type` (
+  `id` int NOT NULL,
   `shipment_id` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `sample_id` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `test_type` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `lot_no` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `expiry_date` date NOT NULL,
-  `result` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  PRIMARY KEY (`id`)
+  `result` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
@@ -1078,17 +983,15 @@ CREATE TABLE IF NOT EXISTS `reference_covid19_test_type` (
 -- Table structure for table `reference_dbs_eia`
 --
 
-DROP TABLE IF EXISTS `reference_dbs_eia`;
-CREATE TABLE IF NOT EXISTS `reference_dbs_eia` (
-  `id` int NOT NULL AUTO_INCREMENT,
+CREATE TABLE `reference_dbs_eia` (
+  `id` int NOT NULL,
   `shipment_id` int NOT NULL,
   `sample_id` int NOT NULL,
   `eia` int NOT NULL,
   `lot` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `exp_date` date DEFAULT NULL,
   `od` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-  `cutoff` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-  PRIMARY KEY (`id`)
+  `cutoff` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
@@ -1097,9 +1000,8 @@ CREATE TABLE IF NOT EXISTS `reference_dbs_eia` (
 -- Table structure for table `reference_dbs_wb`
 --
 
-DROP TABLE IF EXISTS `reference_dbs_wb`;
-CREATE TABLE IF NOT EXISTS `reference_dbs_wb` (
-  `id` int NOT NULL AUTO_INCREMENT,
+CREATE TABLE `reference_dbs_wb` (
+  `id` int NOT NULL,
   `shipment_id` int NOT NULL,
   `sample_id` int NOT NULL,
   `wb` int NOT NULL,
@@ -1113,8 +1015,7 @@ CREATE TABLE IF NOT EXISTS `reference_dbs_wb` (
   `41` int DEFAULT NULL,
   `31` int DEFAULT NULL,
   `24` int DEFAULT NULL,
-  `17` int DEFAULT NULL,
-  PRIMARY KEY (`id`)
+  `17` int DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
@@ -1123,9 +1024,8 @@ CREATE TABLE IF NOT EXISTS `reference_dbs_wb` (
 -- Table structure for table `reference_dts_eia`
 --
 
-DROP TABLE IF EXISTS `reference_dts_eia`;
-CREATE TABLE IF NOT EXISTS `reference_dts_eia` (
-  `id` int NOT NULL AUTO_INCREMENT,
+CREATE TABLE `reference_dts_eia` (
+  `id` int NOT NULL,
   `shipment_id` int NOT NULL,
   `sample_id` int NOT NULL,
   `eia` int NOT NULL,
@@ -1133,8 +1033,7 @@ CREATE TABLE IF NOT EXISTS `reference_dts_eia` (
   `exp_date` date DEFAULT NULL,
   `od` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `cutoff` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-  `result` varchar(556) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-  PRIMARY KEY (`id`)
+  `result` varchar(556) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
@@ -1143,15 +1042,13 @@ CREATE TABLE IF NOT EXISTS `reference_dts_eia` (
 -- Table structure for table `reference_dts_geenius`
 --
 
-DROP TABLE IF EXISTS `reference_dts_geenius`;
-CREATE TABLE IF NOT EXISTS `reference_dts_geenius` (
-  `id` int NOT NULL AUTO_INCREMENT,
+CREATE TABLE `reference_dts_geenius` (
+  `id` int NOT NULL,
   `shipment_id` int DEFAULT NULL,
   `sample_id` varchar(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `lot_no` varchar(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `expiry_date` date DEFAULT NULL,
-  `result` varchar(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-  PRIMARY KEY (`id`)
+  `result` varchar(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
@@ -1160,16 +1057,14 @@ CREATE TABLE IF NOT EXISTS `reference_dts_geenius` (
 -- Table structure for table `reference_dts_rapid_hiv`
 --
 
-DROP TABLE IF EXISTS `reference_dts_rapid_hiv`;
-CREATE TABLE IF NOT EXISTS `reference_dts_rapid_hiv` (
-  `id` int NOT NULL AUTO_INCREMENT,
+CREATE TABLE `reference_dts_rapid_hiv` (
+  `id` int NOT NULL,
   `shipment_id` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `sample_id` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `testkit` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `lot_no` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `expiry_date` date NOT NULL,
-  `result` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  PRIMARY KEY (`id`)
+  `result` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
@@ -1178,9 +1073,8 @@ CREATE TABLE IF NOT EXISTS `reference_dts_rapid_hiv` (
 -- Table structure for table `reference_dts_wb`
 --
 
-DROP TABLE IF EXISTS `reference_dts_wb`;
-CREATE TABLE IF NOT EXISTS `reference_dts_wb` (
-  `id` int NOT NULL AUTO_INCREMENT,
+CREATE TABLE `reference_dts_wb` (
+  `id` int NOT NULL,
   `shipment_id` int NOT NULL,
   `sample_id` int NOT NULL,
   `wb` int NOT NULL,
@@ -1195,8 +1089,7 @@ CREATE TABLE IF NOT EXISTS `reference_dts_wb` (
   `31` int DEFAULT NULL,
   `24` int DEFAULT NULL,
   `17` int DEFAULT NULL,
-  `result` varchar(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-  PRIMARY KEY (`id`)
+  `result` varchar(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
@@ -1205,8 +1098,7 @@ CREATE TABLE IF NOT EXISTS `reference_dts_wb` (
 -- Table structure for table `reference_generic_test_calculations`
 --
 
-DROP TABLE IF EXISTS `reference_generic_test_calculations`;
-CREATE TABLE IF NOT EXISTS `reference_generic_test_calculations` (
+CREATE TABLE `reference_generic_test_calculations` (
   `shipment_id` int NOT NULL,
   `testkit_id` varchar(256) DEFAULT NULL,
   `sample_id` int NOT NULL,
@@ -1244,8 +1136,7 @@ CREATE TABLE IF NOT EXISTS `reference_generic_test_calculations` (
   `comment` varchar(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `updated_on` datetime DEFAULT NULL,
   `updated_by` int DEFAULT NULL,
-  `use_range` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT 'calculated',
-  PRIMARY KEY (`shipment_id`,`sample_id`)
+  `use_range` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT 'calculated'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
@@ -1254,16 +1145,14 @@ CREATE TABLE IF NOT EXISTS `reference_generic_test_calculations` (
 -- Table structure for table `reference_recency_assay`
 --
 
-DROP TABLE IF EXISTS `reference_recency_assay`;
-CREATE TABLE IF NOT EXISTS `reference_recency_assay` (
-  `id` int NOT NULL AUTO_INCREMENT,
+CREATE TABLE `reference_recency_assay` (
+  `id` int NOT NULL,
   `shipment_id` int DEFAULT NULL,
   `sample_id` varchar(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `assay` varchar(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `lot_no` varchar(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `expiry_date` date DEFAULT NULL,
-  `result` varchar(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-  PRIMARY KEY (`id`)
+  `result` varchar(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
@@ -1272,8 +1161,7 @@ CREATE TABLE IF NOT EXISTS `reference_recency_assay` (
 -- Table structure for table `reference_result_covid19`
 --
 
-DROP TABLE IF EXISTS `reference_result_covid19`;
-CREATE TABLE IF NOT EXISTS `reference_result_covid19` (
+CREATE TABLE `reference_result_covid19` (
   `shipment_id` int NOT NULL,
   `sample_id` int NOT NULL,
   `sample_label` varchar(45) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
@@ -1281,8 +1169,7 @@ CREATE TABLE IF NOT EXISTS `reference_result_covid19` (
   `reference_result` varchar(45) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `control` int DEFAULT NULL,
   `mandatory` int NOT NULL DEFAULT '0',
-  `sample_score` decimal(10,4) NOT NULL DEFAULT '0.0000',
-  PRIMARY KEY (`shipment_id`,`sample_id`)
+  `sample_score` decimal(10,4) NOT NULL DEFAULT '0.0000'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='Referance Result for Covid19 Shipment';
 
 -- --------------------------------------------------------
@@ -1291,8 +1178,7 @@ CREATE TABLE IF NOT EXISTS `reference_result_covid19` (
 -- Table structure for table `reference_result_dbs`
 --
 
-DROP TABLE IF EXISTS `reference_result_dbs`;
-CREATE TABLE IF NOT EXISTS `reference_result_dbs` (
+CREATE TABLE `reference_result_dbs` (
   `shipment_id` int NOT NULL,
   `sample_id` int NOT NULL,
   `sample_label` varchar(45) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
@@ -1300,8 +1186,7 @@ CREATE TABLE IF NOT EXISTS `reference_result_dbs` (
   `reference_result` varchar(45) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `control` int DEFAULT NULL,
   `mandatory` int NOT NULL DEFAULT '0',
-  `sample_score` int NOT NULL DEFAULT '1',
-  PRIMARY KEY (`shipment_id`,`sample_id`)
+  `sample_score` int NOT NULL DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='Referance Result for DBS Shipment';
 
 -- --------------------------------------------------------
@@ -1310,8 +1195,7 @@ CREATE TABLE IF NOT EXISTS `reference_result_dbs` (
 -- Table structure for table `reference_result_dts`
 --
 
-DROP TABLE IF EXISTS `reference_result_dts`;
-CREATE TABLE IF NOT EXISTS `reference_result_dts` (
+CREATE TABLE `reference_result_dts` (
   `shipment_id` int NOT NULL,
   `sample_id` int NOT NULL,
   `sample_label` varchar(45) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
@@ -1321,8 +1205,7 @@ CREATE TABLE IF NOT EXISTS `reference_result_dts` (
   `dts_rtri_reference_result` varchar(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `control` int DEFAULT NULL,
   `mandatory` int NOT NULL DEFAULT '0',
-  `sample_score` decimal(10,4) NOT NULL DEFAULT '0.0000',
-  PRIMARY KEY (`shipment_id`,`sample_id`)
+  `sample_score` decimal(10,4) NOT NULL DEFAULT '0.0000'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='Referance Result for DTS Shipment';
 
 -- --------------------------------------------------------
@@ -1331,8 +1214,7 @@ CREATE TABLE IF NOT EXISTS `reference_result_dts` (
 -- Table structure for table `reference_result_eid`
 --
 
-DROP TABLE IF EXISTS `reference_result_eid`;
-CREATE TABLE IF NOT EXISTS `reference_result_eid` (
+CREATE TABLE `reference_result_eid` (
   `shipment_id` int NOT NULL,
   `sample_id` int NOT NULL,
   `sample_label` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
@@ -1342,8 +1224,7 @@ CREATE TABLE IF NOT EXISTS `reference_result_eid` (
   `reference_hiv_ct_od` varchar(45) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `reference_ic_qs` varchar(45) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `mandatory` int NOT NULL DEFAULT '0',
-  `sample_score` decimal(10,4) NOT NULL DEFAULT '0.0000',
-  PRIMARY KEY (`shipment_id`,`sample_id`)
+  `sample_score` decimal(10,4) NOT NULL DEFAULT '0.0000'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
@@ -1352,8 +1233,7 @@ CREATE TABLE IF NOT EXISTS `reference_result_eid` (
 -- Table structure for table `reference_result_generic_test`
 --
 
-DROP TABLE IF EXISTS `reference_result_generic_test`;
-CREATE TABLE IF NOT EXISTS `reference_result_generic_test` (
+CREATE TABLE `reference_result_generic_test` (
   `shipment_id` int NOT NULL,
   `sample_id` int NOT NULL,
   `sample_label` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
@@ -1361,8 +1241,7 @@ CREATE TABLE IF NOT EXISTS `reference_result_generic_test` (
   `reference_result` varchar(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `control` int DEFAULT NULL,
   `mandatory` int NOT NULL DEFAULT '0',
-  `sample_score` decimal(10,4) NOT NULL DEFAULT '0.0000',
-  PRIMARY KEY (`shipment_id`,`sample_id`)
+  `sample_score` decimal(10,4) NOT NULL DEFAULT '0.0000'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
@@ -1371,8 +1250,7 @@ CREATE TABLE IF NOT EXISTS `reference_result_generic_test` (
 -- Table structure for table `reference_result_recency`
 --
 
-DROP TABLE IF EXISTS `reference_result_recency`;
-CREATE TABLE IF NOT EXISTS `reference_result_recency` (
+CREATE TABLE `reference_result_recency` (
   `shipment_id` int NOT NULL,
   `dts_id` int DEFAULT NULL,
   `sample_id` int NOT NULL,
@@ -1384,8 +1262,7 @@ CREATE TABLE IF NOT EXISTS `reference_result_recency` (
   `reference_diagnosis_line` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `reference_longterm_line` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `mandatory` int NOT NULL DEFAULT '0',
-  `sample_score` int NOT NULL DEFAULT '1',
-  PRIMARY KEY (`shipment_id`,`sample_id`)
+  `sample_score` int NOT NULL DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
@@ -1394,8 +1271,7 @@ CREATE TABLE IF NOT EXISTS `reference_result_recency` (
 -- Table structure for table `reference_result_tb`
 --
 
-DROP TABLE IF EXISTS `reference_result_tb`;
-CREATE TABLE IF NOT EXISTS `reference_result_tb` (
+CREATE TABLE `reference_result_tb` (
   `shipment_id` int NOT NULL,
   `sample_id` int NOT NULL,
   `sample_preparation_date` date DEFAULT NULL,
@@ -1426,9 +1302,7 @@ CREATE TABLE IF NOT EXISTS `reference_result_tb` (
   `rif_resistance_consensus` varchar(3) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `mtb_ultra_detection_consensus` varchar(3) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `rif_ultra_resistance_consensus` varchar(3) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-  `sample_score` decimal(10,4) NOT NULL DEFAULT '0.0000',
-  PRIMARY KEY (`shipment_id`,`sample_id`),
-  KEY `idx_reference_result_tb_ship_sample` (`shipment_id`,`sample_id`)
+  `sample_score` decimal(10,4) NOT NULL DEFAULT '0.0000'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
@@ -1437,8 +1311,7 @@ CREATE TABLE IF NOT EXISTS `reference_result_tb` (
 -- Table structure for table `reference_result_vl`
 --
 
-DROP TABLE IF EXISTS `reference_result_vl`;
-CREATE TABLE IF NOT EXISTS `reference_result_vl` (
+CREATE TABLE `reference_result_vl` (
   `shipment_id` int NOT NULL,
   `sample_id` int NOT NULL,
   `sample_label` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
@@ -1446,8 +1319,7 @@ CREATE TABLE IF NOT EXISTS `reference_result_vl` (
   `reference_result` varchar(45) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `control` int DEFAULT NULL,
   `mandatory` int NOT NULL DEFAULT '0',
-  `sample_score` decimal(10,4) NOT NULL DEFAULT '0.0000',
-  PRIMARY KEY (`shipment_id`,`sample_id`)
+  `sample_score` decimal(10,4) NOT NULL DEFAULT '0.0000'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
@@ -1456,8 +1328,7 @@ CREATE TABLE IF NOT EXISTS `reference_result_vl` (
 -- Table structure for table `reference_vl_calculation`
 --
 
-DROP TABLE IF EXISTS `reference_vl_calculation`;
-CREATE TABLE IF NOT EXISTS `reference_vl_calculation` (
+CREATE TABLE `reference_vl_calculation` (
   `shipment_id` int NOT NULL,
   `sample_id` int NOT NULL,
   `vl_assay` int NOT NULL,
@@ -1491,8 +1362,7 @@ CREATE TABLE IF NOT EXISTS `reference_vl_calculation` (
   `manual_high_limit` double(10,2) NOT NULL DEFAULT '0.00',
   `updated_on` datetime DEFAULT NULL,
   `updated_by` int DEFAULT NULL,
-  `use_range` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT 'calculated',
-  PRIMARY KEY (`shipment_id`,`sample_id`,`vl_assay`)
+  `use_range` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT 'calculated'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
@@ -1501,13 +1371,11 @@ CREATE TABLE IF NOT EXISTS `reference_vl_calculation` (
 -- Table structure for table `reference_vl_methods`
 --
 
-DROP TABLE IF EXISTS `reference_vl_methods`;
-CREATE TABLE IF NOT EXISTS `reference_vl_methods` (
+CREATE TABLE `reference_vl_methods` (
   `shipment_id` int NOT NULL,
   `sample_id` int NOT NULL,
   `assay` int NOT NULL,
-  `value` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  PRIMARY KEY (`shipment_id`,`sample_id`,`assay`)
+  `value` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
@@ -1516,11 +1384,9 @@ CREATE TABLE IF NOT EXISTS `reference_vl_methods` (
 -- Table structure for table `report_config`
 --
 
-DROP TABLE IF EXISTS `report_config`;
-CREATE TABLE IF NOT EXISTS `report_config` (
+CREATE TABLE `report_config` (
   `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '',
-  `value` mediumtext CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
-  PRIMARY KEY (`name`)
+  `value` mediumtext CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
@@ -1543,12 +1409,10 @@ INSERT INTO `report_config` (`name`, `value`) VALUES
 -- Table structure for table `response_covid19_not_tested_reason`
 --
 
-DROP TABLE IF EXISTS `response_covid19_not_tested_reason`;
-CREATE TABLE IF NOT EXISTS `response_covid19_not_tested_reason` (
-  `covid19_not_tested_reason_id` int NOT NULL AUTO_INCREMENT,
+CREATE TABLE `response_covid19_not_tested_reason` (
+  `covid19_not_tested_reason_id` int NOT NULL,
   `covid19_not_tested_reason` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-  `status` varchar(45) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT 'active',
-  PRIMARY KEY (`covid19_not_tested_reason_id`)
+  `status` varchar(45) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT 'active'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
@@ -1557,8 +1421,7 @@ CREATE TABLE IF NOT EXISTS `response_covid19_not_tested_reason` (
 -- Table structure for table `response_result_covid19`
 --
 
-DROP TABLE IF EXISTS `response_result_covid19`;
-CREATE TABLE IF NOT EXISTS `response_result_covid19` (
+CREATE TABLE `response_result_covid19` (
   `shipment_map_id` int NOT NULL,
   `sample_id` int NOT NULL,
   `test_type_1` varchar(45) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
@@ -1587,8 +1450,7 @@ CREATE TABLE IF NOT EXISTS `response_result_covid19` (
   `created_by` varchar(45) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `created_on` datetime DEFAULT NULL,
   `updated_by` varchar(45) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-  `updated_on` datetime DEFAULT NULL,
-  PRIMARY KEY (`shipment_map_id`,`sample_id`)
+  `updated_on` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
@@ -1597,8 +1459,7 @@ CREATE TABLE IF NOT EXISTS `response_result_covid19` (
 -- Table structure for table `response_result_dbs`
 --
 
-DROP TABLE IF EXISTS `response_result_dbs`;
-CREATE TABLE IF NOT EXISTS `response_result_dbs` (
+CREATE TABLE `response_result_dbs` (
   `shipment_map_id` int NOT NULL,
   `sample_id` int NOT NULL,
   `eia_1` int DEFAULT NULL,
@@ -1633,8 +1494,7 @@ CREATE TABLE IF NOT EXISTS `response_result_dbs` (
   `created_by` varchar(45) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `created_on` datetime DEFAULT NULL,
   `updated_by` varchar(45) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-  `updated_on` datetime DEFAULT NULL,
-  PRIMARY KEY (`shipment_map_id`,`sample_id`)
+  `updated_on` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
@@ -1643,8 +1503,7 @@ CREATE TABLE IF NOT EXISTS `response_result_dbs` (
 -- Table structure for table `response_result_dts`
 --
 
-DROP TABLE IF EXISTS `response_result_dts`;
-CREATE TABLE IF NOT EXISTS `response_result_dts` (
+CREATE TABLE `response_result_dts` (
   `shipment_map_id` int NOT NULL,
   `sample_id` int NOT NULL,
   `test_kit_name_1` varchar(45) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
@@ -1685,6 +1544,7 @@ CREATE TABLE IF NOT EXISTS `response_result_dts` (
   `qc_date_3` date DEFAULT NULL,
   `repeat_qc_date_3` date DEFAULT NULL,
   `reported_result` varchar(45) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `lab_comment` varchar(50) DEFAULT NULL,
   `syphilis_final` varchar(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `is_this_retest` varchar(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `dts_rtri_control_line` varchar(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
@@ -1699,8 +1559,7 @@ CREATE TABLE IF NOT EXISTS `response_result_dts` (
   `created_by` varchar(45) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `created_on` datetime DEFAULT NULL,
   `updated_by` varchar(45) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-  `updated_on` datetime DEFAULT NULL,
-  PRIMARY KEY (`shipment_map_id`,`sample_id`)
+  `updated_on` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
@@ -1709,8 +1568,7 @@ CREATE TABLE IF NOT EXISTS `response_result_dts` (
 -- Table structure for table `response_result_eid`
 --
 
-DROP TABLE IF EXISTS `response_result_eid`;
-CREATE TABLE IF NOT EXISTS `response_result_eid` (
+CREATE TABLE `response_result_eid` (
   `shipment_map_id` int NOT NULL,
   `sample_id` varchar(45) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `reported_result` varchar(45) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
@@ -1720,8 +1578,7 @@ CREATE TABLE IF NOT EXISTS `response_result_eid` (
   `created_by` varchar(45) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `created_on` datetime DEFAULT NULL,
   `updated_by` varchar(45) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-  `updated_on` datetime DEFAULT NULL,
-  PRIMARY KEY (`shipment_map_id`,`sample_id`)
+  `updated_on` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
@@ -1730,8 +1587,7 @@ CREATE TABLE IF NOT EXISTS `response_result_eid` (
 -- Table structure for table `response_result_generic_test`
 --
 
-DROP TABLE IF EXISTS `response_result_generic_test`;
-CREATE TABLE IF NOT EXISTS `response_result_generic_test` (
+CREATE TABLE `response_result_generic_test` (
   `shipment_map_id` int NOT NULL,
   `sample_id` varchar(45) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `result_1` varchar(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
@@ -1747,8 +1603,7 @@ CREATE TABLE IF NOT EXISTS `response_result_generic_test` (
   `created_by` varchar(45) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `created_on` datetime DEFAULT NULL,
   `updated_by` varchar(45) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-  `updated_on` datetime DEFAULT NULL,
-  PRIMARY KEY (`shipment_map_id`,`sample_id`)
+  `updated_on` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
@@ -1757,8 +1612,7 @@ CREATE TABLE IF NOT EXISTS `response_result_generic_test` (
 -- Table structure for table `response_result_recency`
 --
 
-DROP TABLE IF EXISTS `response_result_recency`;
-CREATE TABLE IF NOT EXISTS `response_result_recency` (
+CREATE TABLE `response_result_recency` (
   `shipment_map_id` int NOT NULL,
   `dts_id` int DEFAULT NULL,
   `sample_id` varchar(45) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
@@ -1770,8 +1624,7 @@ CREATE TABLE IF NOT EXISTS `response_result_recency` (
   `created_by` varchar(45) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `created_on` datetime DEFAULT NULL,
   `updated_by` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-  `updated_on` datetime DEFAULT NULL,
-  PRIMARY KEY (`shipment_map_id`,`sample_id`)
+  `updated_on` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
@@ -1780,8 +1633,7 @@ CREATE TABLE IF NOT EXISTS `response_result_recency` (
 -- Table structure for table `response_result_tb`
 --
 
-DROP TABLE IF EXISTS `response_result_tb`;
-CREATE TABLE IF NOT EXISTS `response_result_tb` (
+CREATE TABLE `response_result_tb` (
   `shipment_map_id` int NOT NULL,
   `sample_id` varchar(45) NOT NULL,
   `response_attributes` json DEFAULT NULL,
@@ -1809,12 +1661,7 @@ CREATE TABLE IF NOT EXISTS `response_result_tb` (
   `created_by` varchar(45) DEFAULT NULL,
   `created_on` datetime DEFAULT NULL,
   `updated_by` varchar(45) DEFAULT NULL,
-  `updated_on` datetime DEFAULT NULL,
-  PRIMARY KEY (`shipment_map_id`,`sample_id`,`assay_id`),
-  KEY `idx_response_result_tb_map_sample` (`shipment_map_id`,`sample_id`),
-  KEY `idx_response_result_tb_sample_assay` (`sample_id`,`assay_id`),
-  KEY `idx_response_result_tb_assay` (`assay_id`),
-  KEY `idx_response_result_tb_rif` (`rif_resistance`)
+  `updated_on` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
@@ -1823,8 +1670,7 @@ CREATE TABLE IF NOT EXISTS `response_result_tb` (
 -- Table structure for table `response_result_vl`
 --
 
-DROP TABLE IF EXISTS `response_result_vl`;
-CREATE TABLE IF NOT EXISTS `response_result_vl` (
+CREATE TABLE `response_result_vl` (
   `shipment_map_id` int NOT NULL,
   `sample_id` varchar(45) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `reported_viral_load` double(10,2) DEFAULT NULL,
@@ -1839,8 +1685,7 @@ CREATE TABLE IF NOT EXISTS `response_result_vl` (
   `created_by` varchar(45) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `created_on` datetime DEFAULT NULL,
   `updated_by` varchar(45) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-  `updated_on` datetime DEFAULT NULL,
-  PRIMARY KEY (`shipment_map_id`,`sample_id`)
+  `updated_on` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
@@ -1849,12 +1694,10 @@ CREATE TABLE IF NOT EXISTS `response_result_vl` (
 -- Table structure for table `response_vl_not_tested_reason`
 --
 
-DROP TABLE IF EXISTS `response_vl_not_tested_reason`;
-CREATE TABLE IF NOT EXISTS `response_vl_not_tested_reason` (
-  `vl_not_tested_reason_id` int NOT NULL AUTO_INCREMENT,
+CREATE TABLE `response_vl_not_tested_reason` (
+  `vl_not_tested_reason_id` int NOT NULL,
   `vl_not_tested_reason` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-  `status` varchar(45) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT 'active',
-  PRIMARY KEY (`vl_not_tested_reason_id`)
+  `status` varchar(45) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT 'active'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
@@ -1863,11 +1706,9 @@ CREATE TABLE IF NOT EXISTS `response_vl_not_tested_reason` (
 -- Table structure for table `run_once_scripts`
 --
 
-DROP TABLE IF EXISTS `run_once_scripts`;
-CREATE TABLE IF NOT EXISTS `run_once_scripts` (
+CREATE TABLE `run_once_scripts` (
   `script_name` varchar(255) NOT NULL,
-  `executed_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`script_name`)
+  `executed_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
@@ -1876,14 +1717,12 @@ CREATE TABLE IF NOT EXISTS `run_once_scripts` (
 -- Table structure for table `r_control`
 --
 
-DROP TABLE IF EXISTS `r_control`;
-CREATE TABLE IF NOT EXISTS `r_control` (
-  `control_id` int NOT NULL AUTO_INCREMENT,
+CREATE TABLE `r_control` (
+  `control_id` int NOT NULL,
   `control_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `for_scheme` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-  `is_active` varchar(45) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-  PRIMARY KEY (`control_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  `is_active` varchar(45) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Dumping data for table `r_control`
@@ -1906,13 +1745,11 @@ INSERT INTO `r_control` (`control_id`, `control_name`, `for_scheme`, `is_active`
 -- Table structure for table `r_covid19_corrective_actions`
 --
 
-DROP TABLE IF EXISTS `r_covid19_corrective_actions`;
-CREATE TABLE IF NOT EXISTS `r_covid19_corrective_actions` (
-  `action_id` int NOT NULL AUTO_INCREMENT,
+CREATE TABLE `r_covid19_corrective_actions` (
+  `action_id` int NOT NULL,
   `corrective_action` mediumtext CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  `description` mediumtext CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  PRIMARY KEY (`action_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  `description` mediumtext CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Dumping data for table `r_covid19_corrective_actions`
@@ -1943,16 +1780,14 @@ INSERT INTO `r_covid19_corrective_actions` (`action_id`, `corrective_action`, `d
 -- Table structure for table `r_covid19_gene_types`
 --
 
-DROP TABLE IF EXISTS `r_covid19_gene_types`;
-CREATE TABLE IF NOT EXISTS `r_covid19_gene_types` (
-  `gene_id` int NOT NULL AUTO_INCREMENT,
+CREATE TABLE `r_covid19_gene_types` (
+  `gene_id` int NOT NULL,
   `gene_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `scheme_type` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `gene_status` varchar(55) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `created_by` int DEFAULT NULL,
-  `created_on` datetime DEFAULT NULL,
-  PRIMARY KEY (`gene_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  `created_on` datetime DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Dumping data for table `r_covid19_gene_types`
@@ -1982,12 +1817,10 @@ INSERT INTO `r_covid19_gene_types` (`gene_id`, `gene_name`, `scheme_type`, `gene
 -- Table structure for table `r_dbs_eia`
 --
 
-DROP TABLE IF EXISTS `r_dbs_eia`;
-CREATE TABLE IF NOT EXISTS `r_dbs_eia` (
-  `eia_id` int NOT NULL AUTO_INCREMENT,
-  `eia_name` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  PRIMARY KEY (`eia_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+CREATE TABLE `r_dbs_eia` (
+  `eia_id` int NOT NULL,
+  `eia_name` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Dumping data for table `r_dbs_eia`
@@ -2005,12 +1838,10 @@ INSERT INTO `r_dbs_eia` (`eia_id`, `eia_name`) VALUES
 -- Table structure for table `r_dbs_wb`
 --
 
-DROP TABLE IF EXISTS `r_dbs_wb`;
-CREATE TABLE IF NOT EXISTS `r_dbs_wb` (
-  `wb_id` int NOT NULL AUTO_INCREMENT,
-  `wb_name` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  PRIMARY KEY (`wb_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+CREATE TABLE `r_dbs_wb` (
+  `wb_id` int NOT NULL,
+  `wb_name` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Dumping data for table `r_dbs_wb`
@@ -2028,13 +1859,11 @@ INSERT INTO `r_dbs_wb` (`wb_id`, `wb_name`) VALUES
 -- Table structure for table `r_dts_corrective_actions`
 --
 
-DROP TABLE IF EXISTS `r_dts_corrective_actions`;
-CREATE TABLE IF NOT EXISTS `r_dts_corrective_actions` (
-  `action_id` int NOT NULL AUTO_INCREMENT,
+CREATE TABLE `r_dts_corrective_actions` (
+  `action_id` int NOT NULL,
   `corrective_action` mediumtext CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  `description` mediumtext CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  PRIMARY KEY (`action_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  `description` mediumtext CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Dumping data for table `r_dts_corrective_actions`
@@ -2069,14 +1898,12 @@ INSERT INTO `r_dts_corrective_actions` (`action_id`, `corrective_action`, `descr
 -- Table structure for table `r_eid_detection_assay`
 --
 
-DROP TABLE IF EXISTS `r_eid_detection_assay`;
-CREATE TABLE IF NOT EXISTS `r_eid_detection_assay` (
-  `id` int NOT NULL AUTO_INCREMENT,
+CREATE TABLE `r_eid_detection_assay` (
+  `id` int NOT NULL,
   `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `sort_order` int DEFAULT '0',
-  `status` varchar(45) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT 'active',
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  `status` varchar(45) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT 'active'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Dumping data for table `r_eid_detection_assay`
@@ -2099,14 +1926,12 @@ INSERT INTO `r_eid_detection_assay` (`id`, `name`, `sort_order`, `status`) VALUE
 -- Table structure for table `r_eid_extraction_assay`
 --
 
-DROP TABLE IF EXISTS `r_eid_extraction_assay`;
-CREATE TABLE IF NOT EXISTS `r_eid_extraction_assay` (
-  `id` int NOT NULL AUTO_INCREMENT,
+CREATE TABLE `r_eid_extraction_assay` (
+  `id` int NOT NULL,
   `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `sort_order` int DEFAULT '0',
-  `status` varchar(45) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT 'active',
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  `status` varchar(45) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT 'active'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Dumping data for table `r_eid_extraction_assay`
@@ -2129,12 +1954,10 @@ INSERT INTO `r_eid_extraction_assay` (`id`, `name`, `sort_order`, `status`) VALU
 -- Table structure for table `r_enrolled_programs`
 --
 
-DROP TABLE IF EXISTS `r_enrolled_programs`;
-CREATE TABLE IF NOT EXISTS `r_enrolled_programs` (
-  `r_epid` int NOT NULL AUTO_INCREMENT,
-  `enrolled_programs` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-  PRIMARY KEY (`r_epid`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+CREATE TABLE `r_enrolled_programs` (
+  `r_epid` int NOT NULL,
+  `enrolled_programs` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Dumping data for table `r_enrolled_programs`
@@ -2150,13 +1973,11 @@ INSERT INTO `r_enrolled_programs` (`r_epid`, `enrolled_programs`) VALUES
 -- Table structure for table `r_evaluation_comments`
 --
 
-DROP TABLE IF EXISTS `r_evaluation_comments`;
-CREATE TABLE IF NOT EXISTS `r_evaluation_comments` (
-  `comment_id` int NOT NULL AUTO_INCREMENT,
+CREATE TABLE `r_evaluation_comments` (
+  `comment_id` int NOT NULL,
   `scheme` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  `comment` mediumtext CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  PRIMARY KEY (`comment_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  `comment` mediumtext CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Dumping data for table `r_evaluation_comments`
@@ -2178,9 +1999,8 @@ INSERT INTO `r_evaluation_comments` (`comment_id`, `scheme`, `comment`) VALUES
 -- Table structure for table `r_feedback_questions`
 --
 
-DROP TABLE IF EXISTS `r_feedback_questions`;
-CREATE TABLE IF NOT EXISTS `r_feedback_questions` (
-  `question_id` int NOT NULL AUTO_INCREMENT,
+CREATE TABLE `r_feedback_questions` (
+  `question_id` int NOT NULL,
   `question_text` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
   `question_code` varchar(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `question_type` enum('text','datetime','dropdown','numeric') CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
@@ -2188,8 +2008,7 @@ CREATE TABLE IF NOT EXISTS `r_feedback_questions` (
   `question_status` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `response_attributes` json DEFAULT NULL,
   `updated_datetime` datetime DEFAULT NULL,
-  `modified_by` varchar(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-  PRIMARY KEY (`question_id`)
+  `modified_by` varchar(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
@@ -2198,12 +2017,10 @@ CREATE TABLE IF NOT EXISTS `r_feedback_questions` (
 -- Table structure for table `r_modes_of_receipt`
 --
 
-DROP TABLE IF EXISTS `r_modes_of_receipt`;
-CREATE TABLE IF NOT EXISTS `r_modes_of_receipt` (
-  `mode_id` int NOT NULL AUTO_INCREMENT,
-  `mode_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-  PRIMARY KEY (`mode_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+CREATE TABLE `r_modes_of_receipt` (
+  `mode_id` int NOT NULL,
+  `mode_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Dumping data for table `r_modes_of_receipt`
@@ -2222,12 +2039,10 @@ INSERT INTO `r_modes_of_receipt` (`mode_id`, `mode_name`) VALUES
 -- Table structure for table `r_network_tiers`
 --
 
-DROP TABLE IF EXISTS `r_network_tiers`;
-CREATE TABLE IF NOT EXISTS `r_network_tiers` (
-  `network_id` int NOT NULL AUTO_INCREMENT,
-  `network_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-  PRIMARY KEY (`network_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+CREATE TABLE `r_network_tiers` (
+  `network_id` int NOT NULL,
+  `network_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Dumping data for table `r_network_tiers`
@@ -2244,12 +2059,10 @@ INSERT INTO `r_network_tiers` (`network_id`, `network_name`) VALUES
 -- Table structure for table `r_participant_affiliates`
 --
 
-DROP TABLE IF EXISTS `r_participant_affiliates`;
-CREATE TABLE IF NOT EXISTS `r_participant_affiliates` (
-  `aff_id` int NOT NULL AUTO_INCREMENT,
-  `affiliate` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  PRIMARY KEY (`aff_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+CREATE TABLE `r_participant_affiliates` (
+  `aff_id` int NOT NULL,
+  `affiliate` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Dumping data for table `r_participant_affiliates`
@@ -2267,15 +2080,12 @@ INSERT INTO `r_participant_affiliates` (`aff_id`, `affiliate`) VALUES
 -- Table structure for table `r_participant_feedback_form`
 --
 
-DROP TABLE IF EXISTS `r_participant_feedback_form`;
-CREATE TABLE IF NOT EXISTS `r_participant_feedback_form` (
-  `rpff_id` int NOT NULL AUTO_INCREMENT,
+CREATE TABLE `r_participant_feedback_form` (
+  `rpff_id` int NOT NULL,
   `shipment_id` int NOT NULL,
-  `scheme_type` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `form_content` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
-  PRIMARY KEY (`rpff_id`),
-  KEY `shipment_id` (`shipment_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  `scheme_type` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `form_content` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
 
@@ -2283,18 +2093,15 @@ CREATE TABLE IF NOT EXISTS `r_participant_feedback_form` (
 -- Table structure for table `r_participant_feedback_form_files_map`
 --
 
-DROP TABLE IF EXISTS `r_participant_feedback_form_files_map`;
-CREATE TABLE IF NOT EXISTS `r_participant_feedback_form_files_map` (
-  `rpf_id` int NOT NULL AUTO_INCREMENT,
+CREATE TABLE `r_participant_feedback_form_files_map` (
+  `rpf_id` int NOT NULL,
   `rpff_id` int DEFAULT NULL,
   `shipment_id` int NOT NULL,
   `scheme_type` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `feedback_file` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `file_name` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `files_show_to` varchar(255) DEFAULT NULL,
-  `sort_order` int DEFAULT NULL,
-  PRIMARY KEY (`rpf_id`),
-  KEY `shipment_id` (`shipment_id`)
+  `sort_order` int DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
@@ -2303,20 +2110,14 @@ CREATE TABLE IF NOT EXISTS `r_participant_feedback_form_files_map` (
 -- Table structure for table `r_participant_feedback_form_question_map`
 --
 
-DROP TABLE IF EXISTS `r_participant_feedback_form_question_map`;
-CREATE TABLE IF NOT EXISTS `r_participant_feedback_form_question_map` (
-  `fqm_id` int NOT NULL AUTO_INCREMENT,
+CREATE TABLE `r_participant_feedback_form_question_map` (
+  `fqm_id` int NOT NULL,
   `rpff_id` int NOT NULL,
   `shipment_id` int NOT NULL,
   `scheme_type` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `question_id` int NOT NULL,
   `is_response_mandatory` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-  `sort_order` int DEFAULT NULL,
-  PRIMARY KEY (`fqm_id`),
-  KEY `shipment_id` (`shipment_id`),
-  KEY `question_id` (`question_id`),
-  KEY `scheme_type` (`scheme_type`),
-  KEY `rpff_id` (`rpff_id`)
+  `sort_order` int DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
@@ -2325,9 +2126,8 @@ CREATE TABLE IF NOT EXISTS `r_participant_feedback_form_question_map` (
 -- Table structure for table `r_possibleresult`
 --
 
-DROP TABLE IF EXISTS `r_possibleresult`;
-CREATE TABLE IF NOT EXISTS `r_possibleresult` (
-  `id` int NOT NULL AUTO_INCREMENT,
+CREATE TABLE `r_possibleresult` (
+  `id` int NOT NULL,
   `scheme_id` varchar(45) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `scheme_sub_group` varchar(45) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `sub_scheme` varchar(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
@@ -2342,10 +2142,8 @@ CREATE TABLE IF NOT EXISTS `r_possibleresult` (
   `uncertainy_scaling_factor` varchar(256) DEFAULT NULL,
   `uncertainy_threshold` varchar(256) DEFAULT NULL,
   `minimum_number_of_responses` int DEFAULT NULL,
-  `sort_order` int DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `scheme_sub_group` (`scheme_sub_group`,`result_code`)
-) ENGINE=InnoDB AUTO_INCREMENT=49 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  `sort_order` int DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Dumping data for table `r_possibleresult`
@@ -2404,12 +2202,10 @@ INSERT INTO `r_possibleresult` (`id`, `scheme_id`, `scheme_sub_group`, `sub_sche
 -- Table structure for table `r_recency_assay`
 --
 
-DROP TABLE IF EXISTS `r_recency_assay`;
-CREATE TABLE IF NOT EXISTS `r_recency_assay` (
-  `id` int NOT NULL AUTO_INCREMENT,
+CREATE TABLE `r_recency_assay` (
+  `id` int NOT NULL,
   `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  `sort_order` int DEFAULT '0',
-  PRIMARY KEY (`id`)
+  `sort_order` int DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
@@ -2418,16 +2214,14 @@ CREATE TABLE IF NOT EXISTS `r_recency_assay` (
 -- Table structure for table `r_response_not_tested_reasons`
 --
 
-DROP TABLE IF EXISTS `r_response_not_tested_reasons`;
-CREATE TABLE IF NOT EXISTS `r_response_not_tested_reasons` (
-  `ntr_id` int NOT NULL AUTO_INCREMENT,
+CREATE TABLE `r_response_not_tested_reasons` (
+  `ntr_id` int NOT NULL,
   `ntr_reason` varchar(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `ntr_test_type` json DEFAULT NULL,
   `collect_panel_receipt_date` varchar(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT 'no',
   `reason_code` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-  `ntr_status` varchar(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-  PRIMARY KEY (`ntr_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  `ntr_status` varchar(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Dumping data for table `r_response_not_tested_reasons`
@@ -2445,7 +2239,8 @@ INSERT INTO `r_response_not_tested_reasons` (`ntr_id`, `ntr_reason`, `ntr_test_t
 (9, 'Not received PT panel shipment due to country custom clearance issue', '[\"vl\", \"eid\", \"dts\", \"covid19\", \"recency\"]', 'no', 'I', 'active'),
 (10, 'Not received PT panel shipment due to incorrect contact info on the shipment package', '[\"vl\", \"eid\", \"dts\", \"covid19\", \"recency\"]', 'no', 'J', 'active'),
 (11, 'Issue with Sample', '[\"vl\", \"eid\", \"dts\", \"covid19\", \"recency\"]', 'no', 'K', 'active'),
-(12, 'Machine not working', '[\"vl\", \"eid\", \"dts\", \"covid19\", \"recency\"]', 'no', 'L', 'active');
+(12, 'Machine not working', '[\"vl\", \"eid\", \"dts\", \"covid19\", \"recency\"]', 'no', 'L', 'active'),
+(9999, 'Other', NULL, 'no', 'other', 'active');
 
 -- --------------------------------------------------------
 
@@ -2453,14 +2248,12 @@ INSERT INTO `r_response_not_tested_reasons` (`ntr_id`, `ntr_reason`, `ntr_test_t
 -- Table structure for table `r_response_vl_not_tested_reason`
 --
 
-DROP TABLE IF EXISTS `r_response_vl_not_tested_reason`;
-CREATE TABLE IF NOT EXISTS `r_response_vl_not_tested_reason` (
-  `vl_not_tested_reason_id` int NOT NULL AUTO_INCREMENT,
+CREATE TABLE `r_response_vl_not_tested_reason` (
+  `vl_not_tested_reason_id` int NOT NULL,
   `vl_not_tested_reason` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `collect_panel_receipt_date` varchar(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT 'yes',
-  `status` varchar(45) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT 'active',
-  PRIMARY KEY (`vl_not_tested_reason_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  `status` varchar(45) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT 'active'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Dumping data for table `r_response_vl_not_tested_reason`
@@ -2485,12 +2278,10 @@ INSERT INTO `r_response_vl_not_tested_reason` (`vl_not_tested_reason_id`, `vl_no
 -- Table structure for table `r_results`
 --
 
-DROP TABLE IF EXISTS `r_results`;
-CREATE TABLE IF NOT EXISTS `r_results` (
-  `result_id` int NOT NULL AUTO_INCREMENT,
-  `result_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  PRIMARY KEY (`result_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+CREATE TABLE `r_results` (
+  `result_id` int NOT NULL,
+  `result_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Dumping data for table `r_results`
@@ -2508,12 +2299,10 @@ INSERT INTO `r_results` (`result_id`, `result_name`) VALUES
 -- Table structure for table `r_site_type`
 --
 
-DROP TABLE IF EXISTS `r_site_type`;
-CREATE TABLE IF NOT EXISTS `r_site_type` (
-  `r_stid` int NOT NULL AUTO_INCREMENT,
-  `site_type` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-  PRIMARY KEY (`r_stid`)
-) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+CREATE TABLE `r_site_type` (
+  `r_stid` int NOT NULL,
+  `site_type` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Dumping data for table `r_site_type`
@@ -2539,16 +2328,14 @@ INSERT INTO `r_site_type` (`r_stid`, `site_type`) VALUES
 -- Table structure for table `r_tb_assay`
 --
 
-DROP TABLE IF EXISTS `r_tb_assay`;
-CREATE TABLE IF NOT EXISTS `r_tb_assay` (
-  `id` int NOT NULL AUTO_INCREMENT,
+CREATE TABLE `r_tb_assay` (
+  `id` int NOT NULL,
   `name` varchar(255) NOT NULL,
   `short_name` varchar(255) NOT NULL,
   `assay_type` varchar(255) NOT NULL DEFAULT 'specific',
   `drug_resistance_test` varchar(255) NOT NULL DEFAULT 'yes',
-  `status` varchar(256) DEFAULT 'active',
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  `status` varchar(256) DEFAULT 'active'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Dumping data for table `r_tb_assay`
@@ -2569,8 +2356,7 @@ INSERT INTO `r_tb_assay` (`id`, `name`, `short_name`, `assay_type`, `drug_resist
 -- Table structure for table `r_testkitnames`
 --
 
-DROP TABLE IF EXISTS `r_testkitnames`;
-CREATE TABLE IF NOT EXISTS `r_testkitnames` (
+CREATE TABLE `r_testkitnames` (
   `TestKitName_ID` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `TestKit_Name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `TestKit_Name_Short` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
@@ -2582,70 +2368,69 @@ CREATE TABLE IF NOT EXISTS `r_testkitnames` (
   `Created_On` datetime DEFAULT NULL,
   `Created_By` int DEFAULT NULL,
   `Approval` int DEFAULT '1' COMMENT '1 = Approved , 0 not approved.',
-  `TestKit_ApprovalAgency` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT 'USAID, FDA, LOCAL',
+  `moh_approved` varchar(20) DEFAULT NULL,
   `source_reference` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-  `CountryAdapted` int DEFAULT NULL COMMENT '0= Not allowed in the country 1 = approved in country ',
+  `pt_provider_validated` int DEFAULT NULL,
   `attributes` json DEFAULT NULL,
-  `testkit_status` varchar(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-  PRIMARY KEY (`TestKitName_ID`)
+  `testkit_status` varchar(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Dumping data for table `r_testkitnames`
 --
 
-INSERT INTO `r_testkitnames` (`TestKitName_ID`, `TestKit_Name`, `TestKit_Name_Short`, `TestKit_Comments`, `Updated_On`, `Updated_By`, `Installation_id`, `TestKit_Manufacturer`, `Created_On`, `Created_By`, `Approval`, `TestKit_ApprovalAgency`, `source_reference`, `CountryAdapted`, `attributes`, `testkit_status`) VALUES
+INSERT INTO `r_testkitnames` (`TestKitName_ID`, `TestKit_Name`, `TestKit_Name_Short`, `TestKit_Comments`, `Updated_On`, `Updated_By`, `Installation_id`, `TestKit_Manufacturer`, `Created_On`, `Created_By`, `Approval`, `moh_approved`, `source_reference`, `pt_provider_validated`, `attributes`, `testkit_status`) VALUES
 ('tk1G3JtOqAxJxts', 'DETERMINE', NULL, NULL, NULL, NULL, NULL, NULL, '2017-01-10 03:13:49', NULL, 0, NULL, NULL, NULL, NULL, NULL),
 ('tk3umfy04vTVydu', 'NOMDOS1', NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-15 23:34:26', NULL, 0, NULL, NULL, 1, NULL, NULL),
-('tk50f41f66a2388', 'ACON HIV 1/2/0 Tri-line', 'ACON HIV 1/2/0 Tri', NULL, '2013-01-14 10:09:21', 0, '0', ' Alere', '2012-06-06 11:53:26', 0, 1, 'USAID', 'USAID Approval List March 30, 2012', 1, NULL, NULL),
-('tk50f41f66a238f', 'Alere Determine HIV-1/2', 'Alere Determine HIV-1/2', NULL, '2013-01-14 10:09:21', 0, '0', ' Alere/Abbott Laboratories', '2012-06-06 11:53:26', 0, 1, 'USAID', 'USAID Approval List March 30, 2012', 1, NULL, NULL),
-('tk50f41f66a2399', 'Aware HIV-1/2 BSP', 'Aware HIV-1/2 BSP', NULL, '2013-01-14 10:09:21', 0, '0', ' Calypte Biomedical ', '2012-06-06 11:53:26', 0, 1, 'USAID', 'USAID Approval List March 30, 2012', 1, NULL, NULL),
-('tk50f41f66a239e', 'Bionor HIV-1&2', 'Bionor HIV-1&2', NULL, '2013-01-14 10:09:21', 0, '0', ' Bionor A/S ', '2012-06-06 11:53:26', 0, 1, 'USAID', 'USAID Approval List March 30, 2012', 1, NULL, NULL),
-('tk50f41f66a23a7', 'Calypte Aware HIV-1/2 OMT ', 'Calypte Aware HIV-', NULL, '2013-01-14 10:09:21', 0, '0', ' Calypte Biomedical Corp.', '2012-06-06 11:53:26', 0, 1, 'USAID', 'USAID Approval List March 30, 2012', 1, NULL, NULL),
-('tk50f41f66a23b1', 'Care Start HIV 1-2-O', 'Care Start HIV 1-2', NULL, '2013-01-14 10:09:21', 0, '0', ' Access Bio, Inc.', '2012-06-06 11:53:26', 0, 1, 'USAID', 'USAID Approval List March 30, 2012', 1, NULL, NULL),
-('tk50f41f66a23b5', 'ClearviewÃ‚Â® COMPLETE HIV1/2 (formerly SURE) CHECKÃ‚Â® HIV1/2)', 'ClearviewÃ‚Â® COMPLETE HIV1/2 Non - US Labeling', NULL, '2013-01-14 10:09:21', 0, '0', ' Alere', '2012-06-06 11:53:26', 0, 1, 'USAID', 'USAID Approval List March 30, 2012', 1, NULL, NULL),
-('tk50f41f66a23ba', 'ClearviewÃ‚Â® COMPLETE HIV1/2 - US labeling** (formerly SURE CHECKÃ‚Â® HIV1/2)', 'ClearviewÃ‚Â® COMPLETE HIV1/2 - US labeling ', NULL, '2013-01-14 10:09:21', 0, '0', ' Alere', '2012-06-06 11:53:26', 0, 1, 'FDA', 'USAID Approval List March 30, 2012', 1, NULL, NULL),
-('tk50f41f66a23bf', 'Clearview  HIV 1/2 STAT-PAK Assay', 'Clearview  HIV 1/2', NULL, '2013-01-14 10:09:21', 0, '0', ' Alere', '2012-06-06 11:53:26', 0, 1, 'FDA', 'USAID Approval List March 30, 2012', 1, NULL, NULL),
-('tk50f41f66a23c4', 'Combaids RS Advantage', 'Combaids RS Advant', NULL, '2013-01-14 10:09:21', 0, '0', ' Span Diagnostics Ltd.', '2012-06-06 11:53:26', 0, 1, 'USAID', 'USAID Approval List March 30, 2012', 1, NULL, NULL),
-('tk50f41f66a23c8', 'DPP HIV 1/2 Screen ', 'DPP HIV 1/2 Screen', NULL, '2013-01-14 10:09:21', 0, '0', ' Chembio Diagnostic Systems, Inc', '2012-06-06 11:53:26', 0, 1, 'USAID', 'USAID Approval List March 30, 2012', 1, NULL, NULL),
-('tk50f41f66a23cd', 'DPP HIV 1 / 2 Screen Assay  Oral Fluid, Whole Blood,Serum & Plasma', 'DPP HIV 1 / 2 Scre', NULL, '2013-01-14 10:09:21', 0, '0', ' Chembio Diagnostic Systems, Inc', '2012-06-06 11:53:26', 0, 1, 'USAID', 'USAID Approval List March 30, 2012', 1, NULL, NULL),
-('tk50f41f66a23d1', 'Double Check HIV 1&2', 'Double Check HIV 1', NULL, '2013-01-14 10:09:21', 0, '0', ' Alere/ Orgenics, Ltd', '2012-06-06 11:53:26', 0, 1, 'USAID', 'USAID Approval List March 30, 2012', 1, NULL, NULL),
-('tk50f41f66a23d6', 'Double Check Gold HIV1&2', 'Double Check Gold ', NULL, '2013-01-14 10:09:21', 0, '0', ' Alere/ Orgenics, Ltd', '2012-06-06 11:53:26', 0, 1, 'USAID', 'USAID Approval List March 30, 2012', 1, NULL, NULL),
-('tk50f41f66a23db', 'EZ-TRUST Rapid Anti-HIV (1&2) Test', 'EZ-TRUST Rapid Ant', NULL, '2013-01-14 10:09:21', 0, '0', ' CS Innovation', '2012-06-06 11:53:26', 0, 1, 'USAID', 'USAID Approval List March 30, 2012', 1, NULL, NULL),
-('tk50f41f66a23df', 'First Response HIV 1-2.0', 'First Response HIV', NULL, '2013-01-14 10:09:21', 0, '0', ' Premier Medical Corporation', '2012-06-06 11:53:26', 0, 1, 'USAID', 'USAID Approval List March 30, 2012', 1, NULL, NULL),
-('tk50f41f66a23e3', 'Genie Fast HIV 1/2 ', 'Genie Fast HIV 1/2', NULL, '2013-01-14 10:09:21', 0, '0', ' Bio-Rad Laboratories', '2012-06-06 11:53:26', 0, 1, 'USAID', 'USAID Approval List March 30, 2012', 1, NULL, NULL),
-('tk50f41f66a23e8', 'HIV 1/2 Gold Rapid Screen Test ', 'HIV 1/2 Gold Rapid', NULL, '2013-01-14 10:09:21', 0, '0', ' Medinostics IntÃ¢â‚¬â„¢l', '2012-06-06 11:53:26', 0, 1, 'USAID', 'USAID Approval List March 30, 2012', 1, NULL, NULL),
-('tk50f41f66a23ed', 'HIV 1/2 Rapid Test Kit', 'HIV 1/2 Rapid Test', NULL, '2013-01-14 10:09:21', 0, '0', ' Medinostics IntÃ¢â‚¬â„¢l', '2012-06-06 11:53:26', 0, 1, 'USAID', 'USAID Approval List March 30, 2012', 1, NULL, NULL),
-('tk50f41f66a23f1', 'HIV 1/ 2 STAT-PAK Assay', 'HIV 1/ 2 STAT-PAK ', NULL, '2013-01-14 10:09:21', 0, '0', ' Chembio Diagnostic Systems, Inc', '2012-06-06 11:53:26', 0, 1, 'USAID', 'USAID Approval List March 30, 2012', 1, NULL, NULL),
-('tk50f41f66a23f6', 'HIV 1/2 STAT-PAK Dipstick Assay', 'HIV 1/2 STAT-PAK D', NULL, '2013-01-14 10:09:21', 0, '0', ' Chembio Diagnostic Systems, Inc', '2012-06-06 11:53:26', 0, 1, 'USAID', 'USAID Approval List March 30, 2012', 1, NULL, NULL),
-('tk50f41f66a23fa', 'HIV(1+2) Rapid Test Strip', 'HIV(1+2) Rapid Tes', NULL, '2013-01-14 10:09:21', 0, '0', ' Shanghai Kehua Bio-engineering Co., Ltd (KHB)', '2012-06-06 11:53:26', 0, 1, 'USAID', 'USAID Approval List March 30, 2012', 1, NULL, NULL),
-('tk50f41f66a23ff', 'HIVSav 1&2 Rapid SeroTest', 'HIVSav 1&2 Rapid S', NULL, '2013-01-14 10:09:21', 0, '0', ' Savyvon Diagnostics Ltd.', '2012-06-06 11:53:26', 0, 1, 'USAID', 'USAID Approval List March 30, 2012', 1, NULL, NULL),
-('tk50f41f66a2404', 'iCARE Rapid Anti-HIV (1&2) ', 'iCARE Rapid Anti-H', NULL, '2013-01-14 10:09:21', 0, '0', ' JAL Innovation', '2012-06-06 11:53:26', 0, 1, 'USAID', 'USAID Approval List March 30, 2012', 1, NULL, NULL),
-('tk50f41f66a2408', 'ImmunoComb HIV 1&2', 'ImmunoComb HIV 1&2', NULL, '2013-01-14 10:09:21', 0, '0', ' Alere/ Orgenics, Ltd', '2012-06-06 11:53:26', 0, 1, 'USAID', 'USAID Approval List March 30, 2012', 1, NULL, NULL),
-('tk50f41f66a240d', 'InstantCHEK HIV1+2', 'InstantCHEK HIV1+2', NULL, '2013-01-14 10:09:21', 0, '0', ' EY Laboratories', '2012-06-06 11:53:26', 0, 1, 'USAID', 'USAID Approval List March 30, 2012', 1, NULL, NULL),
-('tk50f41f66a2411', 'KSII  HIV 1/2 Rapid Diagnostic Test Kit ', 'KSII  HIV 1/2 Rapi', NULL, '2013-01-14 10:09:21', 0, '0', ' K. Shorehill Int\'l, Inc.', '2012-06-06 11:53:26', 0, 1, 'USAID', 'USAID Approval List March 30, 2012', 1, NULL, NULL),
-('tk50f41f66a2415', 'MPI Diagnostics Anti-HIV (1&2) Test ', 'MPI Diagnostics An', NULL, '2013-01-14 10:09:21', 0, '0', ' MPI Diagnostics', '2012-06-06 11:53:26', 0, 1, 'USAID', 'USAID Approval List March 30, 2012', 1, NULL, NULL),
-('tk50f41f66a241a', 'INSTI HIV Antibody', 'INSTI HIV Antibody', NULL, '2013-01-14 10:09:21', 0, '0', ' Biolytical Laboratories', '2012-06-06 11:53:26', 0, 1, 'USAID', 'USAID Approval List March 30, 2012', 1, NULL, NULL),
-('tk50f41f66a241f', 'Multispot HIV-1/HIV-2', 'Multispot HIV-1/HI', NULL, '2013-01-14 10:09:21', 0, '0', ' Bio-Rad laboratories', '2012-06-06 11:53:26', 0, 1, 'FDA', 'USAID Approval List March 30, 2012', 1, NULL, NULL),
-('tk50f41f66a2423', 'OraQuick ADVANCE Rapid HIV-1/2', 'OraQuick ADVANCE R', NULL, '2013-01-14 10:09:21', 0, '0', ' OraSure Technologies', '2012-06-06 11:53:26', 0, 1, 'FDA', 'USAID Approval List March 30, 2012', 1, NULL, NULL),
-('tk50f41f66a2428', 'OraQuick HIV-1/2 Rapid Antibody Test', 'OraQuick HIV-1/2 R', NULL, '2013-01-14 10:09:21', 0, '0', ' OraSure Technologies', '2012-06-06 11:53:26', 0, 1, 'USAID', 'USAID Approval List March 30, 2012', 1, NULL, NULL),
-('tk50f41f66a242c', 'RAPID 1-2-3 HEMA Dipstick', 'RAPID 1-2-3 HEMA D', NULL, '2013-01-14 10:09:21', 0, '0', ' Hema Diagnostics Systems', '2012-06-06 11:53:26', 0, 1, 'USAID', 'USAID Approval List March 30, 2012', 1, NULL, NULL),
-('tk50f41f66a2430', 'RAPID 1-2-3 HEMA EZ ', 'RAPID 1-2-3 HEMA E', NULL, '2013-01-14 10:09:21', 0, '0', ' Hema Diagnostics Systems', '2012-06-06 11:53:26', 0, 1, 'USAID', 'USAID Approval List March 30, 2012', 1, NULL, NULL),
-('tk50f41f66a2435', 'RAPID 1-2-3 HEMA EXPRESS', 'RAPID 1-2-3 HEMA E', NULL, '2013-01-14 10:09:21', 0, '0', ' Hema Diagnostics Systems', '2012-06-06 11:53:26', 0, 1, 'USAID', 'USAID Approval List March 30, 2012', 1, NULL, NULL),
-('tk50f41f66a2439', 'Reveal Rapid HIV Test', 'Reveal Rapid HIV T', NULL, '2013-01-14 10:09:21', 0, '0', ' MedMira', '2012-06-06 11:53:26', 0, 1, 'USAID', 'USAID Approval List March 30, 2012', 1, NULL, NULL),
-('tk50f41f66a243e', 'Reveal G3 Rapid HIV-1 Antibody Test', 'Reveal G3 Rapid HI', NULL, '2013-01-14 10:09:21', 0, '0', ' MedMira', '2012-06-06 11:53:26', 0, 1, 'FDA', 'USAID Approval List March 30, 2012', 1, NULL, NULL),
-('tk50f41f66a2443', 'SD Bioline HIV 1/2 3.0', 'SD Bioline', '', '2013-01-14 10:09:21', 0, '0', 'Abbott', '2012-06-06 11:53:26', 0, 1, 'USAID', 'USAID Approval List March 30, 2012', 1, NULL, NULL),
-('tk50f41f66a2447', 'Uni-Gold HIV - USAID', 'Uni-Gold HIV -USAID', NULL, '2013-01-14 10:09:21', 0, '0', ' Trinity Biotech', '2012-06-06 11:53:26', 0, 1, 'USAID', 'USAID Approval List March 30, 2012', 1, NULL, NULL),
-('tk50f41f66a244b', 'Uni-Gold Recombigen HIV - FDA', 'Uni-Gold Recombige - FDA', NULL, '2013-01-14 10:09:21', 0, '0', ' Trinity Biotech', '2012-06-06 11:53:26', 0, 1, 'FDA', 'USAID Approval List March 30, 2012', 1, NULL, NULL),
-('tk5136b425387a4', 'First Response HIV 1+2/Syphilis Combo', 'Frist Response HIV 1+2/Syphilis Combo', 'Comments', NULL, NULL, 'LOG4fabc8babf6eb', 'Premier Medical Cooporation', '2013-03-06 04:12:37', 0, 1, 'WHO and National', 'Yes', 1, NULL, NULL),
-('tk5137b608ac1d9', 'Hexagon HIVI II', 'Hexagon', 'rwer', NULL, NULL, 'LOG4fabc8babf6eb', 'rewr', '2013-03-06 22:32:56', 0, 0, 'NA', 'Yes', 1, NULL, NULL),
-('tk51435b69f3b7e', 'gdfg', 'gfdg', 'gfdg', NULL, NULL, '5132ceba8fafa', 'gfdg', '2013-03-15 18:33:29', 0, 1, 'NA', 'NA', 1, NULL, NULL),
-('tk514b50a81832c', 'Test Kit New ', 'New ', 'dasd', NULL, NULL, '5132ceba8fafa', 'dsad', '2013-03-21 19:25:44', 0, 1, 'Other', 'Yes', 1, NULL, NULL),
+('tk50f41f66a2388', 'ACON HIV 1/2/0 Tri-line', 'ACON HIV 1/2/0 Tri', NULL, '2013-01-14 10:09:21', 0, '0', ' Alere', '2012-06-06 11:53:26', 0, 1, 'Yes', 'USAID Approval List March 30, 2012', 1, NULL, NULL),
+('tk50f41f66a238f', 'Alere Determine HIV-1/2', 'Alere Determine HIV-1/2', NULL, '2013-01-14 10:09:21', 0, '0', ' Alere/Abbott Laboratories', '2012-06-06 11:53:26', 0, 1, 'Yes', 'USAID Approval List March 30, 2012', 1, NULL, NULL),
+('tk50f41f66a2399', 'Aware HIV-1/2 BSP', 'Aware HIV-1/2 BSP', NULL, '2013-01-14 10:09:21', 0, '0', ' Calypte Biomedical ', '2012-06-06 11:53:26', 0, 1, 'Yes', 'USAID Approval List March 30, 2012', 1, NULL, NULL),
+('tk50f41f66a239e', 'Bionor HIV-1&2', 'Bionor HIV-1&2', NULL, '2013-01-14 10:09:21', 0, '0', ' Bionor A/S ', '2012-06-06 11:53:26', 0, 1, 'Yes', 'USAID Approval List March 30, 2012', 1, NULL, NULL),
+('tk50f41f66a23a7', 'Calypte Aware HIV-1/2 OMT ', 'Calypte Aware HIV-', NULL, '2013-01-14 10:09:21', 0, '0', ' Calypte Biomedical Corp.', '2012-06-06 11:53:26', 0, 1, 'Yes', 'USAID Approval List March 30, 2012', 1, NULL, NULL),
+('tk50f41f66a23b1', 'Care Start HIV 1-2-O', 'Care Start HIV 1-2', NULL, '2013-01-14 10:09:21', 0, '0', ' Access Bio, Inc.', '2012-06-06 11:53:26', 0, 1, 'Yes', 'USAID Approval List March 30, 2012', 1, NULL, NULL),
+('tk50f41f66a23b5', 'ClearviewÃ‚Â® COMPLETE HIV1/2 (formerly SURE) CHECKÃ‚Â® HIV1/2)', 'ClearviewÃ‚Â® COMPLETE HIV1/2 Non - US Labeling', NULL, '2013-01-14 10:09:21', 0, '0', ' Alere', '2012-06-06 11:53:26', 0, 1, 'Yes', 'USAID Approval List March 30, 2012', 1, NULL, NULL),
+('tk50f41f66a23ba', 'ClearviewÃ‚Â® COMPLETE HIV1/2 - US labeling** (formerly SURE CHECKÃ‚Â® HIV1/2)', 'ClearviewÃ‚Â® COMPLETE HIV1/2 - US labeling ', NULL, '2013-01-14 10:09:21', 0, '0', ' Alere', '2012-06-06 11:53:26', 0, 1, 'Yes', 'USAID Approval List March 30, 2012', 1, NULL, NULL),
+('tk50f41f66a23bf', 'Clearview  HIV 1/2 STAT-PAK Assay', 'Clearview  HIV 1/2', NULL, '2013-01-14 10:09:21', 0, '0', ' Alere', '2012-06-06 11:53:26', 0, 1, 'Yes', 'USAID Approval List March 30, 2012', 1, NULL, NULL),
+('tk50f41f66a23c4', 'Combaids RS Advantage', 'Combaids RS Advant', NULL, '2013-01-14 10:09:21', 0, '0', ' Span Diagnostics Ltd.', '2012-06-06 11:53:26', 0, 1, 'Yes', 'USAID Approval List March 30, 2012', 1, NULL, NULL),
+('tk50f41f66a23c8', 'DPP HIV 1/2 Screen ', 'DPP HIV 1/2 Screen', NULL, '2013-01-14 10:09:21', 0, '0', ' Chembio Diagnostic Systems, Inc', '2012-06-06 11:53:26', 0, 1, 'Yes', 'USAID Approval List March 30, 2012', 1, NULL, NULL),
+('tk50f41f66a23cd', 'DPP HIV 1 / 2 Screen Assay  Oral Fluid, Whole Blood,Serum & Plasma', 'DPP HIV 1 / 2 Scre', NULL, '2013-01-14 10:09:21', 0, '0', ' Chembio Diagnostic Systems, Inc', '2012-06-06 11:53:26', 0, 1, 'Yes', 'USAID Approval List March 30, 2012', 1, NULL, NULL),
+('tk50f41f66a23d1', 'Double Check HIV 1&2', 'Double Check HIV 1', NULL, '2013-01-14 10:09:21', 0, '0', ' Alere/ Orgenics, Ltd', '2012-06-06 11:53:26', 0, 1, 'Yes', 'USAID Approval List March 30, 2012', 1, NULL, NULL),
+('tk50f41f66a23d6', 'Double Check Gold HIV1&2', 'Double Check Gold ', NULL, '2013-01-14 10:09:21', 0, '0', ' Alere/ Orgenics, Ltd', '2012-06-06 11:53:26', 0, 1, 'Yes', 'USAID Approval List March 30, 2012', 1, NULL, NULL),
+('tk50f41f66a23db', 'EZ-TRUST Rapid Anti-HIV (1&2) Test', 'EZ-TRUST Rapid Ant', NULL, '2013-01-14 10:09:21', 0, '0', ' CS Innovation', '2012-06-06 11:53:26', 0, 1, 'Yes', 'USAID Approval List March 30, 2012', 1, NULL, NULL),
+('tk50f41f66a23df', 'First Response HIV 1-2.0', 'First Response HIV', NULL, '2013-01-14 10:09:21', 0, '0', ' Premier Medical Corporation', '2012-06-06 11:53:26', 0, 1, 'Yes', 'USAID Approval List March 30, 2012', 1, NULL, NULL),
+('tk50f41f66a23e3', 'Genie Fast HIV 1/2 ', 'Genie Fast HIV 1/2', NULL, '2013-01-14 10:09:21', 0, '0', ' Bio-Rad Laboratories', '2012-06-06 11:53:26', 0, 1, 'Yes', 'USAID Approval List March 30, 2012', 1, NULL, NULL),
+('tk50f41f66a23e8', 'HIV 1/2 Gold Rapid Screen Test ', 'HIV 1/2 Gold Rapid', NULL, '2013-01-14 10:09:21', 0, '0', ' Medinostics IntÃ¢â‚¬â„¢l', '2012-06-06 11:53:26', 0, 1, 'Yes', 'USAID Approval List March 30, 2012', 1, NULL, NULL),
+('tk50f41f66a23ed', 'HIV 1/2 Rapid Test Kit', 'HIV 1/2 Rapid Test', NULL, '2013-01-14 10:09:21', 0, '0', ' Medinostics IntÃ¢â‚¬â„¢l', '2012-06-06 11:53:26', 0, 1, 'Yes', 'USAID Approval List March 30, 2012', 1, NULL, NULL),
+('tk50f41f66a23f1', 'HIV 1/ 2 STAT-PAK Assay', 'HIV 1/ 2 STAT-PAK ', NULL, '2013-01-14 10:09:21', 0, '0', ' Chembio Diagnostic Systems, Inc', '2012-06-06 11:53:26', 0, 1, 'Yes', 'USAID Approval List March 30, 2012', 1, NULL, NULL),
+('tk50f41f66a23f6', 'HIV 1/2 STAT-PAK Dipstick Assay', 'HIV 1/2 STAT-PAK D', NULL, '2013-01-14 10:09:21', 0, '0', ' Chembio Diagnostic Systems, Inc', '2012-06-06 11:53:26', 0, 1, 'Yes', 'USAID Approval List March 30, 2012', 1, NULL, NULL),
+('tk50f41f66a23fa', 'HIV(1+2) Rapid Test Strip', 'HIV(1+2) Rapid Tes', NULL, '2013-01-14 10:09:21', 0, '0', ' Shanghai Kehua Bio-engineering Co., Ltd (KHB)', '2012-06-06 11:53:26', 0, 1, 'Yes', 'USAID Approval List March 30, 2012', 1, NULL, NULL),
+('tk50f41f66a23ff', 'HIVSav 1&2 Rapid SeroTest', 'HIVSav 1&2 Rapid S', NULL, '2013-01-14 10:09:21', 0, '0', ' Savyvon Diagnostics Ltd.', '2012-06-06 11:53:26', 0, 1, 'Yes', 'USAID Approval List March 30, 2012', 1, NULL, NULL),
+('tk50f41f66a2404', 'iCARE Rapid Anti-HIV (1&2) ', 'iCARE Rapid Anti-H', NULL, '2013-01-14 10:09:21', 0, '0', ' JAL Innovation', '2012-06-06 11:53:26', 0, 1, 'Yes', 'USAID Approval List March 30, 2012', 1, NULL, NULL),
+('tk50f41f66a2408', 'ImmunoComb HIV 1&2', 'ImmunoComb HIV 1&2', NULL, '2013-01-14 10:09:21', 0, '0', ' Alere/ Orgenics, Ltd', '2012-06-06 11:53:26', 0, 1, 'Yes', 'USAID Approval List March 30, 2012', 1, NULL, NULL),
+('tk50f41f66a240d', 'InstantCHEK HIV1+2', 'InstantCHEK HIV1+2', NULL, '2013-01-14 10:09:21', 0, '0', ' EY Laboratories', '2012-06-06 11:53:26', 0, 1, 'Yes', 'USAID Approval List March 30, 2012', 1, NULL, NULL),
+('tk50f41f66a2411', 'KSII  HIV 1/2 Rapid Diagnostic Test Kit ', 'KSII  HIV 1/2 Rapi', NULL, '2013-01-14 10:09:21', 0, '0', ' K. Shorehill Int\'l, Inc.', '2012-06-06 11:53:26', 0, 1, 'Yes', 'USAID Approval List March 30, 2012', 1, NULL, NULL),
+('tk50f41f66a2415', 'MPI Diagnostics Anti-HIV (1&2) Test ', 'MPI Diagnostics An', NULL, '2013-01-14 10:09:21', 0, '0', ' MPI Diagnostics', '2012-06-06 11:53:26', 0, 1, 'Yes', 'USAID Approval List March 30, 2012', 1, NULL, NULL),
+('tk50f41f66a241a', 'INSTI HIV Antibody', 'INSTI HIV Antibody', NULL, '2013-01-14 10:09:21', 0, '0', ' Biolytical Laboratories', '2012-06-06 11:53:26', 0, 1, 'Yes', 'USAID Approval List March 30, 2012', 1, NULL, NULL),
+('tk50f41f66a241f', 'Multispot HIV-1/HIV-2', 'Multispot HIV-1/HI', NULL, '2013-01-14 10:09:21', 0, '0', ' Bio-Rad laboratories', '2012-06-06 11:53:26', 0, 1, 'Yes', 'USAID Approval List March 30, 2012', 1, NULL, NULL),
+('tk50f41f66a2423', 'OraQuick ADVANCE Rapid HIV-1/2', 'OraQuick ADVANCE R', NULL, '2013-01-14 10:09:21', 0, '0', ' OraSure Technologies', '2012-06-06 11:53:26', 0, 1, 'Yes', 'USAID Approval List March 30, 2012', 1, NULL, NULL),
+('tk50f41f66a2428', 'OraQuick HIV-1/2 Rapid Antibody Test', 'OraQuick HIV-1/2 R', NULL, '2013-01-14 10:09:21', 0, '0', ' OraSure Technologies', '2012-06-06 11:53:26', 0, 1, 'Yes', 'USAID Approval List March 30, 2012', 1, NULL, NULL),
+('tk50f41f66a242c', 'RAPID 1-2-3 HEMA Dipstick', 'RAPID 1-2-3 HEMA D', NULL, '2013-01-14 10:09:21', 0, '0', ' Hema Diagnostics Systems', '2012-06-06 11:53:26', 0, 1, 'Yes', 'USAID Approval List March 30, 2012', 1, NULL, NULL),
+('tk50f41f66a2430', 'RAPID 1-2-3 HEMA EZ ', 'RAPID 1-2-3 HEMA E', NULL, '2013-01-14 10:09:21', 0, '0', ' Hema Diagnostics Systems', '2012-06-06 11:53:26', 0, 1, 'Yes', 'USAID Approval List March 30, 2012', 1, NULL, NULL),
+('tk50f41f66a2435', 'RAPID 1-2-3 HEMA EXPRESS', 'RAPID 1-2-3 HEMA E', NULL, '2013-01-14 10:09:21', 0, '0', ' Hema Diagnostics Systems', '2012-06-06 11:53:26', 0, 1, 'Yes', 'USAID Approval List March 30, 2012', 1, NULL, NULL),
+('tk50f41f66a2439', 'Reveal Rapid HIV Test', 'Reveal Rapid HIV T', NULL, '2013-01-14 10:09:21', 0, '0', ' MedMira', '2012-06-06 11:53:26', 0, 1, 'Yes', 'USAID Approval List March 30, 2012', 1, NULL, NULL),
+('tk50f41f66a243e', 'Reveal G3 Rapid HIV-1 Antibody Test', 'Reveal G3 Rapid HI', NULL, '2013-01-14 10:09:21', 0, '0', ' MedMira', '2012-06-06 11:53:26', 0, 1, 'Yes', 'USAID Approval List March 30, 2012', 1, NULL, NULL),
+('tk50f41f66a2443', 'SD Bioline HIV 1/2 3.0', 'SD Bioline', '', '2013-01-14 10:09:21', 0, '0', 'Abbott', '2012-06-06 11:53:26', 0, 1, 'Yes', 'USAID Approval List March 30, 2012', 1, NULL, NULL),
+('tk50f41f66a2447', 'Uni-Gold HIV - USAID', 'Uni-Gold HIV -USAID', NULL, '2013-01-14 10:09:21', 0, '0', ' Trinity Biotech', '2012-06-06 11:53:26', 0, 1, 'Yes', 'USAID Approval List March 30, 2012', 1, NULL, NULL),
+('tk50f41f66a244b', 'Uni-Gold Recombigen HIV - FDA', 'Uni-Gold Recombige - FDA', NULL, '2013-01-14 10:09:21', 0, '0', ' Trinity Biotech', '2012-06-06 11:53:26', 0, 1, 'Yes', 'USAID Approval List March 30, 2012', 1, NULL, NULL),
+('tk5136b425387a4', 'First Response HIV 1+2/Syphilis Combo', 'Frist Response HIV 1+2/Syphilis Combo', 'Comments', NULL, NULL, 'LOG4fabc8babf6eb', 'Premier Medical Cooporation', '2013-03-06 04:12:37', 0, 1, 'Yes', 'Yes', 1, NULL, NULL),
+('tk5137b608ac1d9', 'Hexagon HIVI II', 'Hexagon', 'rwer', NULL, NULL, 'LOG4fabc8babf6eb', 'rewr', '2013-03-06 22:32:56', 0, 0, 'Yes', 'Yes', 1, NULL, NULL),
+('tk51435b69f3b7e', 'gdfg', 'gfdg', 'gfdg', NULL, NULL, '5132ceba8fafa', 'gfdg', '2013-03-15 18:33:29', 0, 1, 'Yes', 'NA', 1, NULL, NULL),
+('tk514b50a81832c', 'Test Kit New ', 'New ', 'dasd', NULL, NULL, '5132ceba8fafa', 'dsad', '2013-03-21 19:25:44', 0, 1, 'Yes', 'Yes', 1, NULL, NULL),
 ('tk5IedjgZ4X1Bbw', 'ADVANCED QUALITY', NULL, NULL, NULL, NULL, NULL, NULL, '2015-12-16 08:29:33', NULL, 0, NULL, NULL, NULL, NULL, NULL),
 ('tkAXhaWjcYQRLDK', 'ALERE DETERMINE', NULL, NULL, NULL, NULL, NULL, NULL, '2017-01-10 07:00:16', NULL, 0, NULL, NULL, NULL, NULL, NULL),
 ('tkfdutAep5J1oio', 'WOND FOREPID ONE STEP TEST', NULL, NULL, NULL, NULL, NULL, NULL, '2018-07-27 07:10:56', NULL, 0, NULL, NULL, NULL, NULL, NULL),
 ('tkftR0U24gQULr5', 'RAPID TEST', NULL, NULL, NULL, NULL, NULL, NULL, '2015-12-16 08:41:06', NULL, 0, NULL, NULL, NULL, NULL, NULL),
-('tkKwqRgnnMO4wkb', 'Wantai HIV Antibody Rapid Test (Colloidal Gold)', 'Colloidal Gold', '', NULL, NULL, NULL, '', '2025-04-29 14:24:50', NULL, 1, 'WHO', '', 1, '{\"additional_info\": \"\", \"additional_info_label\": \"\", \"additional_info_mandatory\": \"\"}', NULL),
+('tkKwqRgnnMO4wkb', 'Wantai HIV Antibody Rapid Test (Colloidal Gold)', 'Colloidal Gold', '', NULL, NULL, NULL, '', '2025-04-29 14:24:50', NULL, 1, 'Yes', '', 1, '{\"additional_info\": \"\", \"additional_info_label\": \"\", \"additional_info_mandatory\": \"\"}', NULL),
 ('tkrlglmlFO8n27E', 'DETERMINE ALERE', NULL, NULL, NULL, NULL, NULL, NULL, '2018-08-15 06:40:45', NULL, 0, NULL, NULL, NULL, NULL, NULL),
 ('tkRqEZsgulUtwC6', 'DETERMINE HIV -1/2', NULL, NULL, NULL, NULL, NULL, NULL, '2017-01-10 05:07:55', NULL, 0, NULL, NULL, NULL, NULL, NULL),
 ('tkYH06BNjJRZXXl', 'HIVC0-7316', NULL, NULL, NULL, NULL, NULL, NULL, '2019-07-26 14:27:42', NULL, 0, NULL, NULL, NULL, NULL, NULL);
@@ -2656,9 +2441,8 @@ INSERT INTO `r_testkitnames` (`TestKitName_ID`, `TestKit_Name`, `TestKit_Name_Sh
 -- Table structure for table `r_test_type_covid19`
 --
 
-DROP TABLE IF EXISTS `r_test_type_covid19`;
-CREATE TABLE IF NOT EXISTS `r_test_type_covid19` (
-  `test_type_id` int NOT NULL AUTO_INCREMENT,
+CREATE TABLE `r_test_type_covid19` (
+  `test_type_id` int NOT NULL,
   `scheme_type` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `test_type_name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `test_type_short_name` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
@@ -2675,9 +2459,8 @@ CREATE TABLE IF NOT EXISTS `r_test_type_covid19` (
   `country_adapted` int DEFAULT NULL COMMENT '0= Not allowed in the country 1 = approved in country ',
   `test_type_1` int NOT NULL DEFAULT '0',
   `test_type_2` int NOT NULL DEFAULT '0',
-  `test_type_3` int NOT NULL DEFAULT '0',
-  PRIMARY KEY (`test_type_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=35 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  `test_type_3` int NOT NULL DEFAULT '0'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Dumping data for table `r_test_type_covid19`
@@ -2725,15 +2508,13 @@ INSERT INTO `r_test_type_covid19` (`test_type_id`, `scheme_type`, `test_type_nam
 -- Table structure for table `r_vl_assay`
 --
 
-DROP TABLE IF EXISTS `r_vl_assay`;
-CREATE TABLE IF NOT EXISTS `r_vl_assay` (
-  `id` int NOT NULL AUTO_INCREMENT,
+CREATE TABLE `r_vl_assay` (
+  `id` int NOT NULL,
   `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `short_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `allow_invalid` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT 'no',
-  `status` varchar(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT 'active',
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  `status` varchar(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT 'active'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Dumping data for table `r_vl_assay`
@@ -2753,16 +2534,14 @@ INSERT INTO `r_vl_assay` (`id`, `name`, `short_name`, `allow_invalid`, `status`)
 -- Table structure for table `scheduled_jobs`
 --
 
-DROP TABLE IF EXISTS `scheduled_jobs`;
-CREATE TABLE IF NOT EXISTS `scheduled_jobs` (
-  `job_id` int NOT NULL AUTO_INCREMENT,
+CREATE TABLE `scheduled_jobs` (
+  `job_id` int NOT NULL,
   `job` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
   `requested_on` datetime DEFAULT NULL,
   `requested_by` varchar(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `completed_on` datetime DEFAULT NULL,
   `status` varchar(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT 'pending',
-  `initated_by` int DEFAULT NULL,
-  PRIMARY KEY (`job_id`)
+  `initated_by` int DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
@@ -2771,11 +2550,9 @@ CREATE TABLE IF NOT EXISTS `scheduled_jobs` (
 -- Table structure for table `scheme_config`
 --
 
-DROP TABLE IF EXISTS `scheme_config`;
-CREATE TABLE IF NOT EXISTS `scheme_config` (
+CREATE TABLE `scheme_config` (
   `scheme_config_name` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  `scheme_config_value` json DEFAULT NULL,
-  PRIMARY KEY (`scheme_config_name`)
+  `scheme_config_value` json DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
@@ -2795,32 +2572,30 @@ INSERT INTO `scheme_config` (`scheme_config_name`, `scheme_config_value`) VALUES
 -- Table structure for table `scheme_list`
 --
 
-DROP TABLE IF EXISTS `scheme_list`;
-CREATE TABLE IF NOT EXISTS `scheme_list` (
+CREATE TABLE `scheme_list` (
   `scheme_id` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `scheme_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `response_table` varchar(45) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `reference_result_table` varchar(45) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `is_user_configured` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT 'no',
+  `test_format` varchar(20) DEFAULT NULL,
   `user_test_config` json DEFAULT NULL,
   `attribute_list` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-  `status` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-  PRIMARY KEY (`scheme_id`),
-  UNIQUE KEY `scheme_name` (`scheme_name`)
+  `status` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Dumping data for table `scheme_list`
 --
 
-INSERT INTO `scheme_list` (`scheme_id`, `scheme_name`, `response_table`, `reference_result_table`, `is_user_configured`, `user_test_config`, `attribute_list`, `status`) VALUES
-('covid19', 'SARS-CoV-2', 'response_result_covid19', 'reference_result_covid19', 'no', NULL, NULL, 'active'),
-('dbs', 'Dried Blood Spot - HIV Serology', 'response_result_dbs', 'reference_result_dbs', 'no', NULL, NULL, 'active'),
-('dts', 'Dried Tube Specimen - HIV Serology', 'response_result_dts', 'reference_result_dts', 'no', NULL, NULL, 'active'),
-('eid', 'Dried Blood Spot - Early Infant Diagnosis', 'response_result_eid', 'reference_result_eid', 'no', NULL, NULL, 'active'),
-('recency', 'Rapid Test for Recent Infection (RTRI)', 'response_result_recency', 'reference_result_recency', 'no', NULL, NULL, 'active'),
-('tb', 'Dried Tube Specimen - Tuberculosis', 'response_result_tb', 'reference_result_tb', 'no', NULL, NULL, 'active'),
-('vl', 'Dried Tube Specimen - HIV Viral Load', 'response_result_vl', 'reference_result_vl', 'no', NULL, NULL, 'active');
+INSERT INTO `scheme_list` (`scheme_id`, `scheme_name`, `response_table`, `reference_result_table`, `is_user_configured`, `test_format`, `user_test_config`, `attribute_list`, `status`) VALUES
+('covid19', 'SARS-CoV-2', 'response_result_covid19', 'reference_result_covid19', 'no', 'qualitative', NULL, NULL, 'active'),
+('dbs', 'Dried Blood Spot - HIV Serology', 'response_result_dbs', 'reference_result_dbs', 'no', 'qualitative', NULL, NULL, 'active'),
+('dts', 'Dried Tube Specimen - HIV Serology', 'response_result_dts', 'reference_result_dts', 'no', 'qualitative', NULL, NULL, 'active'),
+('eid', 'Dried Blood Spot - Early Infant Diagnosis', 'response_result_eid', 'reference_result_eid', 'no', 'qualitative', NULL, NULL, 'active'),
+('recency', 'Rapid Test for Recent Infection (RTRI)', 'response_result_recency', 'reference_result_recency', 'no', 'qualitative', NULL, NULL, 'active'),
+('tb', 'Dried Tube Specimen - Tuberculosis', 'response_result_tb', 'reference_result_tb', 'no', 'qualitative', NULL, NULL, 'active'),
+('vl', 'Dried Tube Specimen - HIV Viral Load', 'response_result_vl', 'reference_result_vl', 'no', 'quantitative', NULL, NULL, 'active');
 
 -- --------------------------------------------------------
 
@@ -2828,14 +2603,12 @@ INSERT INTO `scheme_list` (`scheme_id`, `scheme_name`, `response_table`, `refere
 -- Table structure for table `scheme_testkit_map`
 --
 
-DROP TABLE IF EXISTS `scheme_testkit_map`;
-CREATE TABLE IF NOT EXISTS `scheme_testkit_map` (
+CREATE TABLE `scheme_testkit_map` (
   `scheme_type` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `testkit_id` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `testkit_1` int NOT NULL DEFAULT '0',
   `testkit_2` int NOT NULL DEFAULT '0',
-  `testkit_3` int NOT NULL DEFAULT '0',
-  PRIMARY KEY (`scheme_type`,`testkit_id`)
+  `testkit_3` int NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
@@ -2844,13 +2617,13 @@ CREATE TABLE IF NOT EXISTS `scheme_testkit_map` (
 -- Table structure for table `shipment`
 --
 
-DROP TABLE IF EXISTS `shipment`;
-CREATE TABLE IF NOT EXISTS `shipment` (
-  `shipment_id` int NOT NULL AUTO_INCREMENT,
+CREATE TABLE `shipment` (
+  `shipment_id` int NOT NULL,
   `shipment_code` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `scheme_type` varchar(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `shipment_date` date DEFAULT NULL,
-  `lastdate_response` date DEFAULT NULL,
+  `response_deadline` datetime DEFAULT NULL,
+  `auto_close_at_deadline` enum('yes','no') NOT NULL DEFAULT 'yes',
   `distribution_id` int NOT NULL,
   `number_of_samples` int DEFAULT NULL,
   `number_of_controls` int NOT NULL,
@@ -2879,10 +2652,7 @@ CREATE TABLE IF NOT EXISTS `shipment` (
   `feedback_expiry_date` date DEFAULT NULL,
   `previous_status` varchar(256) DEFAULT NULL,
   `processing_started_at` datetime DEFAULT NULL,
-  `last_heartbeat` datetime DEFAULT NULL,
-  PRIMARY KEY (`shipment_id`),
-  KEY `scheme_type` (`scheme_type`),
-  KEY `distribution_id` (`distribution_id`)
+  `last_heartbeat` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
@@ -2891,9 +2661,8 @@ CREATE TABLE IF NOT EXISTS `shipment` (
 -- Table structure for table `shipment_participant_map`
 --
 
-DROP TABLE IF EXISTS `shipment_participant_map`;
-CREATE TABLE IF NOT EXISTS `shipment_participant_map` (
-  `map_id` int NOT NULL AUTO_INCREMENT,
+CREATE TABLE `shipment_participant_map` (
+  `map_id` int NOT NULL,
   `shipment_id` int NOT NULL,
   `participant_id` int NOT NULL,
   `lab_director_name` varchar(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
@@ -2909,7 +2678,7 @@ CREATE TABLE IF NOT EXISTS `shipment_participant_map` (
   `number_of_tests` int DEFAULT NULL,
   `specimen_volume` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `is_pt_test_not_performed` varchar(45) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-  `vl_not_tested_reason` int DEFAULT NULL,
+  `pt_not_tested_reason` int DEFAULT NULL,
   `received_pt_panel` varchar(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `pt_test_not_performed_comments` mediumtext CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
   `pt_support_comments` mediumtext CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
@@ -2953,12 +2722,7 @@ CREATE TABLE IF NOT EXISTS `shipment_participant_map` (
   `user_client_info` json DEFAULT NULL,
   `response_status` varchar(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT 'noresponse',
   `report_download_metadata` json DEFAULT NULL,
-  `individual_report_downloaded_on` datetime DEFAULT NULL,
-  PRIMARY KEY (`map_id`),
-  UNIQUE KEY `shipment_id_2` (`shipment_id`,`participant_id`),
-  KEY `shipment_id` (`shipment_id`),
-  KEY `participant_id` (`participant_id`),
-  KEY `idx_spm_ship_resp_excl_map` (`shipment_id`,`response_status`,`is_excluded`,`map_id`)
+  `individual_report_downloaded_on` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='Shipment for DTS Samples';
 
 -- --------------------------------------------------------
@@ -2967,9 +2731,8 @@ CREATE TABLE IF NOT EXISTS `shipment_participant_map` (
 -- Table structure for table `system_admin`
 --
 
-DROP TABLE IF EXISTS `system_admin`;
-CREATE TABLE IF NOT EXISTS `system_admin` (
-  `admin_id` int NOT NULL AUTO_INCREMENT,
+CREATE TABLE `system_admin` (
+  `admin_id` int NOT NULL,
   `first_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `last_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `primary_email` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
@@ -2983,8 +2746,7 @@ CREATE TABLE IF NOT EXISTS `system_admin` (
   `created_on` datetime DEFAULT NULL,
   `created_by` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `updated_on` datetime DEFAULT NULL,
-  `updated_by` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-  PRIMARY KEY (`admin_id`)
+  `updated_by` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
@@ -2993,12 +2755,10 @@ CREATE TABLE IF NOT EXISTS `system_admin` (
 -- Table structure for table `system_config`
 --
 
-DROP TABLE IF EXISTS `system_config`;
-CREATE TABLE IF NOT EXISTS `system_config` (
+CREATE TABLE `system_config` (
   `config` varchar(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `value` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
-  `display_name` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
-  PRIMARY KEY (`config`)
+  `display_name` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
@@ -3007,7 +2767,7 @@ CREATE TABLE IF NOT EXISTS `system_config` (
 
 INSERT INTO `system_config` (`config`, `value`, `display_name`) VALUES
 ('api_version', '2.0', 'API Version'),
-('app_version', '7.4.7', 'App Version');
+('app_version', '7.6.1', 'App Version');
 
 -- --------------------------------------------------------
 
@@ -3015,11 +2775,9 @@ INSERT INTO `system_config` (`config`, `value`, `display_name`) VALUES
 -- Table structure for table `system_metadata`
 --
 
-DROP TABLE IF EXISTS `system_metadata`;
-CREATE TABLE IF NOT EXISTS `system_metadata` (
+CREATE TABLE `system_metadata` (
   `metadata_id` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  `metadata_value` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
-  PRIMARY KEY (`metadata_id`)
+  `metadata_value` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
@@ -3035,9 +2793,8 @@ INSERT INTO `system_metadata` (`metadata_id`, `metadata_value`) VALUES
 -- Table structure for table `tb_instruments`
 --
 
-DROP TABLE IF EXISTS `tb_instruments`;
-CREATE TABLE IF NOT EXISTS `tb_instruments` (
-  `instrument_id` int NOT NULL AUTO_INCREMENT,
+CREATE TABLE `tb_instruments` (
+  `instrument_id` int NOT NULL,
   `map_id` int DEFAULT NULL,
   `participant_id` int NOT NULL,
   `instrument_serial` varchar(45) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
@@ -3046,9 +2803,7 @@ CREATE TABLE IF NOT EXISTS `tb_instruments` (
   `created_by` varchar(45) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `created_on` datetime DEFAULT NULL,
   `updated_by` varchar(45) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-  `updated_on` datetime DEFAULT NULL,
-  PRIMARY KEY (`instrument_id`),
-  KEY `participant_id` (`participant_id`)
+  `updated_on` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
@@ -3057,9 +2812,8 @@ CREATE TABLE IF NOT EXISTS `tb_instruments` (
 -- Table structure for table `temp_mail`
 --
 
-DROP TABLE IF EXISTS `temp_mail`;
-CREATE TABLE IF NOT EXISTS `temp_mail` (
-  `temp_id` int NOT NULL AUTO_INCREMENT,
+CREATE TABLE `temp_mail` (
+  `temp_id` int NOT NULL,
   `message` mediumtext CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
   `from_mail` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `reply_to` varchar(128) DEFAULT NULL,
@@ -3075,8 +2829,7 @@ CREATE TABLE IF NOT EXISTS `temp_mail` (
   `failure_type` varchar(64) DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `sent_at` datetime DEFAULT NULL,
-  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`temp_id`)
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
@@ -3085,9 +2838,8 @@ CREATE TABLE IF NOT EXISTS `temp_mail` (
 -- Table structure for table `track_api_requests`
 --
 
-DROP TABLE IF EXISTS `track_api_requests`;
-CREATE TABLE IF NOT EXISTS `track_api_requests` (
-  `api_track_id` int NOT NULL AUTO_INCREMENT,
+CREATE TABLE `track_api_requests` (
+  `api_track_id` int NOT NULL,
   `transaction_id` varchar(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `requested_by` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `requested_on` datetime DEFAULT NULL,
@@ -3098,9 +2850,7 @@ CREATE TABLE IF NOT EXISTS `track_api_requests` (
   `api_params` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
   `request_data` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
   `response_data` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
-  `data_format` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-  PRIMARY KEY (`api_track_id`),
-  KEY `requested_on` (`requested_on`)
+  `data_format` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
@@ -3109,9 +2859,8 @@ CREATE TABLE IF NOT EXISTS `track_api_requests` (
 -- Table structure for table `user_login_history`
 --
 
-DROP TABLE IF EXISTS `user_login_history`;
-CREATE TABLE IF NOT EXISTS `user_login_history` (
-  `history_id` int NOT NULL AUTO_INCREMENT,
+CREATE TABLE `user_login_history` (
+  `history_id` int NOT NULL,
   `login_context` enum('participant','admin','','') CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT 'participant',
   `user_id` varchar(1000) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `login_id` varchar(1000) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
@@ -3120,11 +2869,1079 @@ CREATE TABLE IF NOT EXISTS `user_login_history` (
   `ip_address` varchar(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `browser` varchar(1000) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `operating_system` varchar(1000) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-  `session_hash` varchar(16) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-  PRIMARY KEY (`history_id`),
-  KEY `login_status_attempted_datetime_idx` (`login_status`,`login_attempted_datetime`),
-  KEY `idx_user_login_history_session_hash` (`session_hash`)
+  `session_hash` varchar(16) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Indexes for dumped tables
+--
+
+--
+-- Indexes for table `announcements`
+--
+ALTER TABLE `announcements`
+  ADD PRIMARY KEY (`announcement_id`);
+
+--
+-- Indexes for table `announcements_notification`
+--
+ALTER TABLE `announcements_notification`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `audit_log`
+--
+ALTER TABLE `audit_log`
+  ADD PRIMARY KEY (`audit_log_id`),
+  ADD KEY `idx_audit_log_created_by` (`created_by`),
+  ADD KEY `idx_audit_log_created_on` (`created_on`),
+  ADD KEY `idx_audit_log_type` (`type`),
+  ADD KEY `idx_audit_log_session_hash` (`session_hash`);
+
+--
+-- Indexes for table `certificate_batches`
+--
+ALTER TABLE `certificate_batches`
+  ADD PRIMARY KEY (`batch_id`),
+  ADD KEY `idx_status` (`status`);
+
+--
+-- Indexes for table `certificate_templates`
+--
+ALTER TABLE `certificate_templates`
+  ADD PRIMARY KEY (`ct_id`);
+
+--
+-- Indexes for table `contact_us`
+--
+ALTER TABLE `contact_us`
+  ADD PRIMARY KEY (`contact_id`);
+
+--
+-- Indexes for table `countries`
+--
+ALTER TABLE `countries`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `id` (`id`);
+
+--
+-- Indexes for table `covid19_identified_genes`
+--
+ALTER TABLE `covid19_identified_genes`
+  ADD PRIMARY KEY (`gene_map_id`),
+  ADD KEY `map_id` (`map_id`),
+  ADD KEY `shipment_id` (`shipment_id`),
+  ADD KEY `gene_id` (`gene_id`);
+
+--
+-- Indexes for table `covid19_recommended_test_types`
+--
+ALTER TABLE `covid19_recommended_test_types`
+  ADD PRIMARY KEY (`test_no`,`test_type`);
+
+--
+-- Indexes for table `custom_page_content`
+--
+ALTER TABLE `custom_page_content`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `data_manager`
+--
+ALTER TABLE `data_manager`
+  ADD PRIMARY KEY (`dm_id`),
+  ADD UNIQUE KEY `primary_email` (`primary_email`);
+
+--
+-- Indexes for table `distributions`
+--
+ALTER TABLE `distributions`
+  ADD PRIMARY KEY (`distribution_id`);
+
+--
+-- Indexes for table `dts_recommended_testkits`
+--
+ALTER TABLE `dts_recommended_testkits`
+  ADD PRIMARY KEY (`test_no`,`testkit`,`dts_test_mode`);
+
+--
+-- Indexes for table `email_participants`
+--
+ALTER TABLE `email_participants`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `enrollments`
+--
+ALTER TABLE `enrollments`
+  ADD PRIMARY KEY (`list_name`,`participant_id`),
+  ADD KEY `participant_id` (`participant_id`);
+
+--
+-- Indexes for table `global_config`
+--
+ALTER TABLE `global_config`
+  ADD PRIMARY KEY (`name`);
+
+--
+-- Indexes for table `home_banner`
+--
+ALTER TABLE `home_banner`
+  ADD PRIMARY KEY (`banner_id`);
+
+--
+-- Indexes for table `home_sections`
+--
+ALTER TABLE `home_sections`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `mail_template`
+--
+ALTER TABLE `mail_template`
+  ADD PRIMARY KEY (`mail_temp_id`);
+
+--
+-- Indexes for table `notify`
+--
+ALTER TABLE `notify`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `participant`
+--
+ALTER TABLE `participant`
+  ADD PRIMARY KEY (`participant_id`),
+  ADD UNIQUE KEY `unique_identifier` (`unique_identifier`);
+
+--
+-- Indexes for table `participants_not_uploaded`
+--
+ALTER TABLE `participants_not_uploaded`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `participant_enrolled_programs_map`
+--
+ALTER TABLE `participant_enrolled_programs_map`
+  ADD PRIMARY KEY (`participant_id`,`ep_id`);
+
+--
+-- Indexes for table `participant_feedback_answer`
+--
+ALTER TABLE `participant_feedback_answer`
+  ADD PRIMARY KEY (`answer_id`),
+  ADD KEY `map_id` (`map_id`),
+  ADD KEY `shipment_id` (`shipment_id`),
+  ADD KEY `participant_id` (`participant_id`),
+  ADD KEY `question_id` (`question_id`);
+
+--
+-- Indexes for table `participant_manager_map`
+--
+ALTER TABLE `participant_manager_map`
+  ADD PRIMARY KEY (`participant_id`,`dm_id`);
+
+--
+-- Indexes for table `participant_messages`
+--
+ALTER TABLE `participant_messages`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `participant_testkit_map`
+--
+ALTER TABLE `participant_testkit_map`
+  ADD KEY `participant_id` (`participant_id`),
+  ADD KEY `testkit_id` (`testkit_id`),
+  ADD KEY `shipment_id` (`shipment_id`);
+
+--
+-- Indexes for table `partners`
+--
+ALTER TABLE `partners`
+  ADD PRIMARY KEY (`partner_id`);
+
+--
+-- Indexes for table `ptcc_countries_map`
+--
+ALTER TABLE `ptcc_countries_map`
+  ADD UNIQUE KEY `ptcc_id_2` (`ptcc_id`,`country_id`,`state`,`district`),
+  ADD KEY `ptcc_id` (`ptcc_id`);
+
+--
+-- Indexes for table `push_notification`
+--
+ALTER TABLE `push_notification`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `push_notification_template`
+--
+ALTER TABLE `push_notification_template`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `queue_report_generation`
+--
+ALTER TABLE `queue_report_generation`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `shipment_id` (`shipment_id`);
+
+--
+-- Indexes for table `reference_covid19_test_type`
+--
+ALTER TABLE `reference_covid19_test_type`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `reference_dbs_eia`
+--
+ALTER TABLE `reference_dbs_eia`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `reference_dbs_wb`
+--
+ALTER TABLE `reference_dbs_wb`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `reference_dts_eia`
+--
+ALTER TABLE `reference_dts_eia`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `reference_dts_geenius`
+--
+ALTER TABLE `reference_dts_geenius`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `reference_dts_rapid_hiv`
+--
+ALTER TABLE `reference_dts_rapid_hiv`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `reference_dts_wb`
+--
+ALTER TABLE `reference_dts_wb`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `reference_generic_test_calculations`
+--
+ALTER TABLE `reference_generic_test_calculations`
+  ADD PRIMARY KEY (`shipment_id`,`sample_id`);
+
+--
+-- Indexes for table `reference_recency_assay`
+--
+ALTER TABLE `reference_recency_assay`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `reference_result_covid19`
+--
+ALTER TABLE `reference_result_covid19`
+  ADD PRIMARY KEY (`shipment_id`,`sample_id`);
+
+--
+-- Indexes for table `reference_result_dbs`
+--
+ALTER TABLE `reference_result_dbs`
+  ADD PRIMARY KEY (`shipment_id`,`sample_id`);
+
+--
+-- Indexes for table `reference_result_dts`
+--
+ALTER TABLE `reference_result_dts`
+  ADD PRIMARY KEY (`shipment_id`,`sample_id`);
+
+--
+-- Indexes for table `reference_result_eid`
+--
+ALTER TABLE `reference_result_eid`
+  ADD PRIMARY KEY (`shipment_id`,`sample_id`);
+
+--
+-- Indexes for table `reference_result_generic_test`
+--
+ALTER TABLE `reference_result_generic_test`
+  ADD PRIMARY KEY (`shipment_id`,`sample_id`);
+
+--
+-- Indexes for table `reference_result_recency`
+--
+ALTER TABLE `reference_result_recency`
+  ADD PRIMARY KEY (`shipment_id`,`sample_id`);
+
+--
+-- Indexes for table `reference_result_tb`
+--
+ALTER TABLE `reference_result_tb`
+  ADD PRIMARY KEY (`shipment_id`,`sample_id`),
+  ADD KEY `idx_reference_result_tb_ship_sample` (`shipment_id`,`sample_id`);
+
+--
+-- Indexes for table `reference_result_vl`
+--
+ALTER TABLE `reference_result_vl`
+  ADD PRIMARY KEY (`shipment_id`,`sample_id`);
+
+--
+-- Indexes for table `reference_vl_calculation`
+--
+ALTER TABLE `reference_vl_calculation`
+  ADD PRIMARY KEY (`shipment_id`,`sample_id`,`vl_assay`);
+
+--
+-- Indexes for table `reference_vl_methods`
+--
+ALTER TABLE `reference_vl_methods`
+  ADD PRIMARY KEY (`shipment_id`,`sample_id`,`assay`);
+
+--
+-- Indexes for table `report_config`
+--
+ALTER TABLE `report_config`
+  ADD PRIMARY KEY (`name`);
+
+--
+-- Indexes for table `response_covid19_not_tested_reason`
+--
+ALTER TABLE `response_covid19_not_tested_reason`
+  ADD PRIMARY KEY (`covid19_not_tested_reason_id`);
+
+--
+-- Indexes for table `response_result_covid19`
+--
+ALTER TABLE `response_result_covid19`
+  ADD PRIMARY KEY (`shipment_map_id`,`sample_id`);
+
+--
+-- Indexes for table `response_result_dbs`
+--
+ALTER TABLE `response_result_dbs`
+  ADD PRIMARY KEY (`shipment_map_id`,`sample_id`);
+
+--
+-- Indexes for table `response_result_dts`
+--
+ALTER TABLE `response_result_dts`
+  ADD PRIMARY KEY (`shipment_map_id`,`sample_id`);
+
+--
+-- Indexes for table `response_result_eid`
+--
+ALTER TABLE `response_result_eid`
+  ADD PRIMARY KEY (`shipment_map_id`,`sample_id`);
+
+--
+-- Indexes for table `response_result_generic_test`
+--
+ALTER TABLE `response_result_generic_test`
+  ADD PRIMARY KEY (`shipment_map_id`,`sample_id`);
+
+--
+-- Indexes for table `response_result_recency`
+--
+ALTER TABLE `response_result_recency`
+  ADD PRIMARY KEY (`shipment_map_id`,`sample_id`);
+
+--
+-- Indexes for table `response_result_tb`
+--
+ALTER TABLE `response_result_tb`
+  ADD PRIMARY KEY (`shipment_map_id`,`sample_id`,`assay_id`),
+  ADD KEY `idx_response_result_tb_map_sample` (`shipment_map_id`,`sample_id`),
+  ADD KEY `idx_response_result_tb_sample_assay` (`sample_id`,`assay_id`),
+  ADD KEY `idx_response_result_tb_assay` (`assay_id`),
+  ADD KEY `idx_response_result_tb_rif` (`rif_resistance`);
+
+--
+-- Indexes for table `response_result_vl`
+--
+ALTER TABLE `response_result_vl`
+  ADD PRIMARY KEY (`shipment_map_id`,`sample_id`);
+
+--
+-- Indexes for table `response_vl_not_tested_reason`
+--
+ALTER TABLE `response_vl_not_tested_reason`
+  ADD PRIMARY KEY (`vl_not_tested_reason_id`);
+
+--
+-- Indexes for table `run_once_scripts`
+--
+ALTER TABLE `run_once_scripts`
+  ADD PRIMARY KEY (`script_name`);
+
+--
+-- Indexes for table `r_control`
+--
+ALTER TABLE `r_control`
+  ADD PRIMARY KEY (`control_id`);
+
+--
+-- Indexes for table `r_covid19_corrective_actions`
+--
+ALTER TABLE `r_covid19_corrective_actions`
+  ADD PRIMARY KEY (`action_id`);
+
+--
+-- Indexes for table `r_covid19_gene_types`
+--
+ALTER TABLE `r_covid19_gene_types`
+  ADD PRIMARY KEY (`gene_id`);
+
+--
+-- Indexes for table `r_dbs_eia`
+--
+ALTER TABLE `r_dbs_eia`
+  ADD PRIMARY KEY (`eia_id`);
+
+--
+-- Indexes for table `r_dbs_wb`
+--
+ALTER TABLE `r_dbs_wb`
+  ADD PRIMARY KEY (`wb_id`);
+
+--
+-- Indexes for table `r_dts_corrective_actions`
+--
+ALTER TABLE `r_dts_corrective_actions`
+  ADD PRIMARY KEY (`action_id`);
+
+--
+-- Indexes for table `r_eid_detection_assay`
+--
+ALTER TABLE `r_eid_detection_assay`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `r_eid_extraction_assay`
+--
+ALTER TABLE `r_eid_extraction_assay`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `r_enrolled_programs`
+--
+ALTER TABLE `r_enrolled_programs`
+  ADD PRIMARY KEY (`r_epid`);
+
+--
+-- Indexes for table `r_evaluation_comments`
+--
+ALTER TABLE `r_evaluation_comments`
+  ADD PRIMARY KEY (`comment_id`);
+
+--
+-- Indexes for table `r_feedback_questions`
+--
+ALTER TABLE `r_feedback_questions`
+  ADD PRIMARY KEY (`question_id`);
+
+--
+-- Indexes for table `r_modes_of_receipt`
+--
+ALTER TABLE `r_modes_of_receipt`
+  ADD PRIMARY KEY (`mode_id`);
+
+--
+-- Indexes for table `r_network_tiers`
+--
+ALTER TABLE `r_network_tiers`
+  ADD PRIMARY KEY (`network_id`);
+
+--
+-- Indexes for table `r_participant_affiliates`
+--
+ALTER TABLE `r_participant_affiliates`
+  ADD PRIMARY KEY (`aff_id`);
+
+--
+-- Indexes for table `r_participant_feedback_form`
+--
+ALTER TABLE `r_participant_feedback_form`
+  ADD PRIMARY KEY (`rpff_id`),
+  ADD KEY `shipment_id` (`shipment_id`);
+
+--
+-- Indexes for table `r_participant_feedback_form_files_map`
+--
+ALTER TABLE `r_participant_feedback_form_files_map`
+  ADD PRIMARY KEY (`rpf_id`),
+  ADD KEY `shipment_id` (`shipment_id`);
+
+--
+-- Indexes for table `r_participant_feedback_form_question_map`
+--
+ALTER TABLE `r_participant_feedback_form_question_map`
+  ADD PRIMARY KEY (`fqm_id`),
+  ADD KEY `shipment_id` (`shipment_id`),
+  ADD KEY `question_id` (`question_id`),
+  ADD KEY `scheme_type` (`scheme_type`),
+  ADD KEY `rpff_id` (`rpff_id`);
+
+--
+-- Indexes for table `r_possibleresult`
+--
+ALTER TABLE `r_possibleresult`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `scheme_sub_group` (`scheme_sub_group`,`result_code`);
+
+--
+-- Indexes for table `r_recency_assay`
+--
+ALTER TABLE `r_recency_assay`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `r_response_not_tested_reasons`
+--
+ALTER TABLE `r_response_not_tested_reasons`
+  ADD PRIMARY KEY (`ntr_id`);
+
+--
+-- Indexes for table `r_response_vl_not_tested_reason`
+--
+ALTER TABLE `r_response_vl_not_tested_reason`
+  ADD PRIMARY KEY (`vl_not_tested_reason_id`);
+
+--
+-- Indexes for table `r_results`
+--
+ALTER TABLE `r_results`
+  ADD PRIMARY KEY (`result_id`);
+
+--
+-- Indexes for table `r_site_type`
+--
+ALTER TABLE `r_site_type`
+  ADD PRIMARY KEY (`r_stid`);
+
+--
+-- Indexes for table `r_tb_assay`
+--
+ALTER TABLE `r_tb_assay`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `r_testkitnames`
+--
+ALTER TABLE `r_testkitnames`
+  ADD PRIMARY KEY (`TestKitName_ID`);
+
+--
+-- Indexes for table `r_test_type_covid19`
+--
+ALTER TABLE `r_test_type_covid19`
+  ADD PRIMARY KEY (`test_type_id`);
+
+--
+-- Indexes for table `r_vl_assay`
+--
+ALTER TABLE `r_vl_assay`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `scheduled_jobs`
+--
+ALTER TABLE `scheduled_jobs`
+  ADD PRIMARY KEY (`job_id`);
+
+--
+-- Indexes for table `scheme_config`
+--
+ALTER TABLE `scheme_config`
+  ADD PRIMARY KEY (`scheme_config_name`);
+
+--
+-- Indexes for table `scheme_list`
+--
+ALTER TABLE `scheme_list`
+  ADD PRIMARY KEY (`scheme_id`),
+  ADD UNIQUE KEY `scheme_name` (`scheme_name`);
+
+--
+-- Indexes for table `scheme_testkit_map`
+--
+ALTER TABLE `scheme_testkit_map`
+  ADD PRIMARY KEY (`scheme_type`,`testkit_id`);
+
+--
+-- Indexes for table `shipment`
+--
+ALTER TABLE `shipment`
+  ADD PRIMARY KEY (`shipment_id`),
+  ADD KEY `scheme_type` (`scheme_type`),
+  ADD KEY `distribution_id` (`distribution_id`);
+
+--
+-- Indexes for table `shipment_participant_map`
+--
+ALTER TABLE `shipment_participant_map`
+  ADD PRIMARY KEY (`map_id`),
+  ADD UNIQUE KEY `shipment_id_2` (`shipment_id`,`participant_id`),
+  ADD KEY `shipment_id` (`shipment_id`),
+  ADD KEY `participant_id` (`participant_id`),
+  ADD KEY `idx_spm_ship_resp_excl_map` (`shipment_id`,`response_status`,`is_excluded`,`map_id`);
+
+--
+-- Indexes for table `system_admin`
+--
+ALTER TABLE `system_admin`
+  ADD PRIMARY KEY (`admin_id`);
+
+--
+-- Indexes for table `system_config`
+--
+ALTER TABLE `system_config`
+  ADD PRIMARY KEY (`config`);
+
+--
+-- Indexes for table `system_metadata`
+--
+ALTER TABLE `system_metadata`
+  ADD PRIMARY KEY (`metadata_id`);
+
+--
+-- Indexes for table `tb_instruments`
+--
+ALTER TABLE `tb_instruments`
+  ADD PRIMARY KEY (`instrument_id`),
+  ADD KEY `participant_id` (`participant_id`);
+
+--
+-- Indexes for table `temp_mail`
+--
+ALTER TABLE `temp_mail`
+  ADD PRIMARY KEY (`temp_id`);
+
+--
+-- Indexes for table `track_api_requests`
+--
+ALTER TABLE `track_api_requests`
+  ADD PRIMARY KEY (`api_track_id`),
+  ADD KEY `requested_on` (`requested_on`);
+
+--
+-- Indexes for table `user_login_history`
+--
+ALTER TABLE `user_login_history`
+  ADD PRIMARY KEY (`history_id`),
+  ADD KEY `login_status_attempted_datetime_idx` (`login_status`,`login_attempted_datetime`),
+  ADD KEY `idx_user_login_history_session_hash` (`session_hash`);
+
+--
+-- AUTO_INCREMENT for dumped tables
+--
+
+--
+-- AUTO_INCREMENT for table `announcements`
+--
+ALTER TABLE `announcements`
+  MODIFY `announcement_id` int NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `announcements_notification`
+--
+ALTER TABLE `announcements_notification`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `audit_log`
+--
+ALTER TABLE `audit_log`
+  MODIFY `audit_log_id` int NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `certificate_batches`
+--
+ALTER TABLE `certificate_batches`
+  MODIFY `batch_id` int NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `certificate_templates`
+--
+ALTER TABLE `certificate_templates`
+  MODIFY `ct_id` int NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `contact_us`
+--
+ALTER TABLE `contact_us`
+  MODIFY `contact_id` int NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `countries`
+--
+ALTER TABLE `countries`
+  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=250;
+
+--
+-- AUTO_INCREMENT for table `covid19_identified_genes`
+--
+ALTER TABLE `covid19_identified_genes`
+  MODIFY `gene_map_id` int NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `custom_page_content`
+--
+ALTER TABLE `custom_page_content`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `data_manager`
+--
+ALTER TABLE `data_manager`
+  MODIFY `dm_id` int NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `distributions`
+--
+ALTER TABLE `distributions`
+  MODIFY `distribution_id` int NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `email_participants`
+--
+ALTER TABLE `email_participants`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `home_banner`
+--
+ALTER TABLE `home_banner`
+  MODIFY `banner_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT for table `home_sections`
+--
+ALTER TABLE `home_sections`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `mail_template`
+--
+ALTER TABLE `mail_template`
+  MODIFY `mail_temp_id` int NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `notify`
+--
+ALTER TABLE `notify`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT COMMENT 'auto id';
+
+--
+-- AUTO_INCREMENT for table `participant`
+--
+ALTER TABLE `participant`
+  MODIFY `participant_id` int NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `participants_not_uploaded`
+--
+ALTER TABLE `participants_not_uploaded`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `participant_messages`
+--
+ALTER TABLE `participant_messages`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `partners`
+--
+ALTER TABLE `partners`
+  MODIFY `partner_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT for table `push_notification`
+--
+ALTER TABLE `push_notification`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `push_notification_template`
+--
+ALTER TABLE `push_notification_template`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+
+--
+-- AUTO_INCREMENT for table `queue_report_generation`
+--
+ALTER TABLE `queue_report_generation`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `reference_covid19_test_type`
+--
+ALTER TABLE `reference_covid19_test_type`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `reference_dbs_eia`
+--
+ALTER TABLE `reference_dbs_eia`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `reference_dbs_wb`
+--
+ALTER TABLE `reference_dbs_wb`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `reference_dts_eia`
+--
+ALTER TABLE `reference_dts_eia`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `reference_dts_geenius`
+--
+ALTER TABLE `reference_dts_geenius`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `reference_dts_rapid_hiv`
+--
+ALTER TABLE `reference_dts_rapid_hiv`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `reference_dts_wb`
+--
+ALTER TABLE `reference_dts_wb`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `reference_recency_assay`
+--
+ALTER TABLE `reference_recency_assay`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `response_covid19_not_tested_reason`
+--
+ALTER TABLE `response_covid19_not_tested_reason`
+  MODIFY `covid19_not_tested_reason_id` int NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `response_vl_not_tested_reason`
+--
+ALTER TABLE `response_vl_not_tested_reason`
+  MODIFY `vl_not_tested_reason_id` int NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `r_control`
+--
+ALTER TABLE `r_control`
+  MODIFY `control_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+
+--
+-- AUTO_INCREMENT for table `r_covid19_corrective_actions`
+--
+ALTER TABLE `r_covid19_corrective_actions`
+  MODIFY `action_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
+
+--
+-- AUTO_INCREMENT for table `r_covid19_gene_types`
+--
+ALTER TABLE `r_covid19_gene_types`
+  MODIFY `gene_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+
+--
+-- AUTO_INCREMENT for table `r_dbs_eia`
+--
+ALTER TABLE `r_dbs_eia`
+  MODIFY `eia_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+
+--
+-- AUTO_INCREMENT for table `r_dbs_wb`
+--
+ALTER TABLE `r_dbs_wb`
+  MODIFY `wb_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+
+--
+-- AUTO_INCREMENT for table `r_dts_corrective_actions`
+--
+ALTER TABLE `r_dts_corrective_actions`
+  MODIFY `action_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
+
+--
+-- AUTO_INCREMENT for table `r_eid_detection_assay`
+--
+ALTER TABLE `r_eid_detection_assay`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+
+--
+-- AUTO_INCREMENT for table `r_eid_extraction_assay`
+--
+ALTER TABLE `r_eid_extraction_assay`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+
+--
+-- AUTO_INCREMENT for table `r_enrolled_programs`
+--
+ALTER TABLE `r_enrolled_programs`
+  MODIFY `r_epid` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT for table `r_evaluation_comments`
+--
+ALTER TABLE `r_evaluation_comments`
+  MODIFY `comment_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+
+--
+-- AUTO_INCREMENT for table `r_feedback_questions`
+--
+ALTER TABLE `r_feedback_questions`
+  MODIFY `question_id` int NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `r_modes_of_receipt`
+--
+ALTER TABLE `r_modes_of_receipt`
+  MODIFY `mode_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+
+--
+-- AUTO_INCREMENT for table `r_network_tiers`
+--
+ALTER TABLE `r_network_tiers`
+  MODIFY `network_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- AUTO_INCREMENT for table `r_participant_affiliates`
+--
+ALTER TABLE `r_participant_affiliates`
+  MODIFY `aff_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+
+--
+-- AUTO_INCREMENT for table `r_participant_feedback_form`
+--
+ALTER TABLE `r_participant_feedback_form`
+  MODIFY `rpff_id` int NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `r_participant_feedback_form_files_map`
+--
+ALTER TABLE `r_participant_feedback_form_files_map`
+  MODIFY `rpf_id` int NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `r_participant_feedback_form_question_map`
+--
+ALTER TABLE `r_participant_feedback_form_question_map`
+  MODIFY `fqm_id` int NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `r_possibleresult`
+--
+ALTER TABLE `r_possibleresult`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=49;
+
+--
+-- AUTO_INCREMENT for table `r_recency_assay`
+--
+ALTER TABLE `r_recency_assay`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `r_response_not_tested_reasons`
+--
+ALTER TABLE `r_response_not_tested_reasons`
+  MODIFY `ntr_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10000;
+
+--
+-- AUTO_INCREMENT for table `r_response_vl_not_tested_reason`
+--
+ALTER TABLE `r_response_vl_not_tested_reason`
+  MODIFY `vl_not_tested_reason_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+
+--
+-- AUTO_INCREMENT for table `r_results`
+--
+ALTER TABLE `r_results`
+  MODIFY `result_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+
+--
+-- AUTO_INCREMENT for table `r_site_type`
+--
+ALTER TABLE `r_site_type`
+  MODIFY `r_stid` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+
+--
+-- AUTO_INCREMENT for table `r_tb_assay`
+--
+ALTER TABLE `r_tb_assay`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+
+--
+-- AUTO_INCREMENT for table `r_test_type_covid19`
+--
+ALTER TABLE `r_test_type_covid19`
+  MODIFY `test_type_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=35;
+
+--
+-- AUTO_INCREMENT for table `r_vl_assay`
+--
+ALTER TABLE `r_vl_assay`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+
+--
+-- AUTO_INCREMENT for table `scheduled_jobs`
+--
+ALTER TABLE `scheduled_jobs`
+  MODIFY `job_id` int NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `shipment`
+--
+ALTER TABLE `shipment`
+  MODIFY `shipment_id` int NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `shipment_participant_map`
+--
+ALTER TABLE `shipment_participant_map`
+  MODIFY `map_id` int NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `system_admin`
+--
+ALTER TABLE `system_admin`
+  MODIFY `admin_id` int NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `tb_instruments`
+--
+ALTER TABLE `tb_instruments`
+  MODIFY `instrument_id` int NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `temp_mail`
+--
+ALTER TABLE `temp_mail`
+  MODIFY `temp_id` int NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `track_api_requests`
+--
+ALTER TABLE `track_api_requests`
+  MODIFY `api_track_id` int NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `user_login_history`
+--
+ALTER TABLE `user_login_history`
+  MODIFY `history_id` int NOT NULL AUTO_INCREMENT;
 
 --
 -- Constraints for dumped tables
@@ -3256,7 +4073,3 @@ ALTER TABLE `shipment_participant_map`
 ALTER TABLE `tb_instruments`
   ADD CONSTRAINT `tb_instruments_ibfk_1` FOREIGN KEY (`participant_id`) REFERENCES `participant` (`participant_id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
 COMMIT;
-
-/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
-/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;

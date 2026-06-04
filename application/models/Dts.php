@@ -1327,7 +1327,7 @@ final class Application_Model_Dts
             $sql = $sql->where('scheme_type = ?', 'dts');
         }
         if ($countryAdapted) {
-            $sql = $sql->where('COUNTRYADAPTED = 1');
+            $sql = $sql->where('pt_provider_validated = 1');
         }
         $stmt = $this->db->fetchAll($sql);
 

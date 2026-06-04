@@ -34,13 +34,15 @@
 			</div>
 			<div class="row">
 				<div class="form-group col-lg-6">
-					<label class="col-lg-4 control-label" for="approvalAgency"><?= $this->translate->_("Approval Agency"); ?> <span
+					<label class="col-lg-4 control-label" for="approvalAgency"><?= $this->translate->_("Is Ministry of Health Approved?"); ?> <span
 							class="mandatory">*</span></label>
 					<div class="col-lg-8">
-						<input type="text" id="approvalAgency" name="approvalAgency" size="50" maxlength="255"
-							class="isRequired form-control" title="Please enter the Approval Agency here"
-							placeholder="Please enter the Approval Agency here"
-							value="<?php echo $this->result['TestKit_ApprovalAgency']; ?>" />
+						<select class="form-control isRequired" name="approvalAgency" id="approvalAgency"
+							title="<?= $this->translate->_('Is this kit approved by the Ministry of Health?'); ?>">
+							<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
+							<option value="Yes" <?php echo (($this->result['moh_approved'] == 'Yes') ? "selected='selected'" : "") ?>><?= $this->translate->_("Yes"); ?></option>
+							<option value="No" <?php echo (($this->result['moh_approved'] == 'No') ? "selected='selected'" : "") ?>><?= $this->translate->_("No"); ?></option>
+						</select>
 					</div>
 				</div>
 				<div class="form-group col-lg-6">
@@ -107,14 +109,14 @@
 				</div>
 			</div>
 			<div class="form-group col-lg-6">
-				<label class="col-lg-4 control-label" for="countryAdapted"><?= $this->translate->_("Country Approved/Validated"); ?> <span
+				<label class="col-lg-4 control-label" for="countryAdapted"><?= $this->translate->_("Is PT Provider Validated?"); ?> <span
 						class="mandatory">*</span></label>
 				<div class="col-lg-8">
 					<select class="form-control isRequired" name="countryAdapted" id="countryAdapted"
 						title="Please choose the country adapted here">
 						<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
-						<option value="1" <?php echo (($this->result["CountryAdapted"] == '1') ? "selected='selected'" : "") ?>><?= $this->translate->_("Yes"); ?></option>
-						<option value="0" <?php echo (($this->result["CountryAdapted"] == '0') ? "selected='selected'" : "") ?>><?= $this->translate->_("No"); ?></option>
+						<option value="1" <?php echo (($this->result["pt_provider_validated"] == '1') ? "selected='selected'" : "") ?>><?= $this->translate->_("Yes"); ?></option>
+						<option value="0" <?php echo (($this->result["pt_provider_validated"] == '0') ? "selected='selected'" : "") ?>><?= $this->translate->_("No"); ?></option>
 					</select>
 				</div>
 			</div>

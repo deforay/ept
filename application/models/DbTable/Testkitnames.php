@@ -18,7 +18,7 @@ class Application_Model_DbTable_Testkitnames extends Zend_Db_Table_Abstract
             ->where("scheme_type = '$scheme'");
 
         if ($countryAdapted) {
-            $sql = $sql->where('COUNTRYADAPTED = 1');
+            $sql = $sql->where('pt_provider_validated = 1');
         }
 
         $stmt = $this->getAdapter()->fetchAll($sql);
@@ -40,9 +40,9 @@ class Application_Model_DbTable_Testkitnames extends Zend_Db_Table_Abstract
             'TestKit_Name_Short' => $params['shortTestKitName'],
             'TestKit_Comments' => $params['comments'],
             'TestKit_Manufacturer' => $params['manufacturer'],
-            'TestKit_ApprovalAgency' => $params['approvalAgency'],
+            'moh_approved' => $params['approvalAgency'],
             'source_reference' => $params['sourceReference'],
-            'CountryAdapted' => $params['countryAdapted'],
+            'pt_provider_validated' => $params['countryAdapted'],
             'attributes' => json_encode($params['attributes'], true),
             'Approval' => '1',
             'Created_On' => new Zend_Db_Expr('now()'),
@@ -72,9 +72,9 @@ class Application_Model_DbTable_Testkitnames extends Zend_Db_Table_Abstract
                 'TestKit_Name_Short' => $params['shortTestKitName'],
                 'TestKit_Comments' => $params['comments'],
                 'TestKit_Manufacturer' => $params['manufacturer'],
-                'TestKit_ApprovalAgency' => $params['approvalAgency'],
+                'moh_approved' => $params['approvalAgency'],
                 'source_reference' => $params['sourceReference'],
-                'CountryAdapted' => $params['countryAdapted'],
+                'pt_provider_validated' => $params['countryAdapted'],
                 'attributes' => json_encode($params['attributes'], true),
                 'Approval' => $params['approved'],
             ];
@@ -135,7 +135,7 @@ class Application_Model_DbTable_Testkitnames extends Zend_Db_Table_Abstract
          * you want to insert a non-database field (for example a counter or static image)
          */
 
-        $aColumns = ['TestKit_Name', 'scheme_name', 'TestKit_Manufacturer', 'TestKit_ApprovalAgency', 'Approval', 'DATE_FORMAT(Created_On,"%d-%b-%Y %T")'];
+        $aColumns = ['TestKit_Name', 'scheme_name', 'TestKit_Manufacturer', 'moh_approved', 'Approval', 'DATE_FORMAT(Created_On,"%d-%b-%Y %T")'];
 
         /* Indexed column (used for fast and accurate table cardinality) */
         $sIndexColumn = $this->_primary;
@@ -257,7 +257,7 @@ class Application_Model_DbTable_Testkitnames extends Zend_Db_Table_Abstract
             $row[] = ucwords($aRow['TestKit_Name']);
             $row[] = $aRow['scheme_name'];
             $row[] = $aRow['TestKit_Manufacturer'];
-            $row[] = $aRow['TestKit_ApprovalAgency'];
+            $row[] = $aRow['moh_approved'];
             $row[] = $approved;
             $row[] = Pt_Commons_DateUtility::humanReadableDateFormat($createdDate[0]) . ' ' . $createdDate[1];
             $row[] = '<a href="/admin/testkit/edit/53s5k85_8d/' . base64_encode($aRow['TestKitName_ID']) . '" class="btn btn-warning btn-xs" style="margin-right: 2px;"><i class="icon-pencil"></i> Edit</a>';
@@ -289,7 +289,7 @@ class Application_Model_DbTable_Testkitnames extends Zend_Db_Table_Abstract
                 $data = [
                     'TestKitName_ID' => $tkId,
                     'TestKit_Name' => trim($testkitName),
-                    'COUNTRYADAPTED' => '1',
+                    'pt_provider_validated' => '1',
                     'Approval' => '0',
                     'Created_On' => new Zend_Db_Expr('now()'),
                 ];
@@ -334,7 +334,7 @@ class Application_Model_DbTable_Testkitnames extends Zend_Db_Table_Abstract
                     'TestKitName_ID' => $tkId,
                     'TestKit_Name' => trim($testkitName),
                     'Approval' => '0',
-                    'COUNTRYADAPTED' => '1',
+                    'pt_provider_validated' => '1',
                     'Created_On' => new Zend_Db_Expr('now()'),
                 ];
                 $this->insert($data);
@@ -357,7 +357,7 @@ class Application_Model_DbTable_Testkitnames extends Zend_Db_Table_Abstract
                     $data = [
                         'TestKit_Name' => trim($testkitName),
                         'TestKit_Name' => trim($testkitName),
-                        'COUNTRYADAPTED' => '1',
+                        'pt_provider_validated' => '1',
                     ];
                     $this->update($data, "TestKitName_ID='" . $result['TestKitName_ID'] . "'");
                     if (isset($scheme) && !empty($scheme)) {
@@ -401,7 +401,7 @@ class Application_Model_DbTable_Testkitnames extends Zend_Db_Table_Abstract
             $sql = $sql->where("scheme_type = '$scheme'");
         }
         if ($countryAdapted) {
-            $sql = $sql->where('COUNTRYADAPTED = 1');
+            $sql = $sql->where('pt_provider_validated = 1');
         }
         $stmt = $db->fetchAll($sql);
         $response = [];
