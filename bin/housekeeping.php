@@ -26,7 +26,6 @@ declare(strict_types=1);
  * Filesystem targets:
  *   - logs/*.log               30 days  (mtime; Monolog already rotates the
  *                                        app/client logs — this catches orphans)
- *   - downloads/reports/*       60 days  (mtime; report bundles are regenerable)
  *   - public/temporary/*         7 days  (mtime; transient upload scratch)
  *
  * Usage:
@@ -149,10 +148,6 @@ try {
         [
             'name' => 'logs',
             'fn'   => fn (bool $dry) => pruneTopLevelByMtime("$rootDir/logs", days: 30, dryRun: $dry, pattern: '*.log'),
-        ],
-        [
-            'name' => 'downloads/reports',
-            'fn'   => fn (bool $dry) => pruneTopLevelByMtime("$rootDir/downloads/reports", days: 60, dryRun: $dry),
         ],
         [
             'name' => 'public/temporary',
