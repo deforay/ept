@@ -20,8 +20,8 @@ return [
         'port' => isset($config['port']) ? (int) $config['port'] : null,
         'user' => $config['username'] ?? null,
         'password' => $config['password'] ?? null,
-        'label' => 'mtbept',
+        'label' => 'ept',
         'output_dir' => __DIR__ . '/backups',
-        'retention' => 7,
+        'retention' => 15,
     ],
 ];
