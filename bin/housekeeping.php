@@ -12,7 +12,6 @@ declare(strict_types=1);
  * DB targets covered:
  *   - track_api_requests       90 days  (API request log, by requested_on)
  *   - temp_mail                30 days  (terminal rows: sent/failed)
- *   - queue_report_generation  90 days  (finished/failed report jobs)
  *   - push_notification        90 days  (non-pending rows, by created_on)
  *   - audit_log               730 days  (statement-level audit trail)
  *   - user_login_history      730 days  (login audit; same window as audit_log
@@ -100,17 +99,6 @@ try {
                       . 'AND COALESCE(sent_at, updated_at, queued_on) < NOW() - INTERVAL 30 DAY',
             'delete' => "DELETE FROM temp_mail WHERE status IN ('sent','failed','failure','fail') "
                       . 'AND COALESCE(sent_at, updated_at, queued_on) < NOW() - INTERVAL 30 DAY',
-        ],
-        [
-            // Only finished/failed jobs — never pending/processing rows the
-            // worker may still pick up.
-            'name'   => 'queue_report_generation',
-            'count'  => 'SELECT COUNT(*) FROM queue_report_generation '
-                      . "WHERE status NOT IN ('pending','processing') "
-                      . 'AND last_updated_on < NOW() - INTERVAL 90 DAY',
-            'delete' => 'DELETE FROM queue_report_generation '
-                      . "WHERE status NOT IN ('pending','processing') "
-                      . 'AND last_updated_on < NOW() - INTERVAL 90 DAY',
         ],
         [
             'name'   => 'push_notification',
