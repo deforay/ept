@@ -72,7 +72,16 @@ final class Pt_Commons_LoggerUtility
             $context[$key] ??= $value;
         }
 
-        $logger->log($level, $message, $context);
+        // A logging failure (e.g. the day's rotating file not yet writable by
+        // this user) must never propagate — many callers log from inside catch
+        // blocks specifically so they DON'T crash. Fall back to PHP's own
+        // error_log so the message is not lost entirely.
+        try {
+            $logger->log($level, $message, $context);
+        } catch (Throwable $e) {
+            error_log('[ePT logger] ' . strtoupper((string) $level) . ': ' . $message
+                . ' | logging failed: ' . $e->getMessage());
+        }
     }
 
     /**

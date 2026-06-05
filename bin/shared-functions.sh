@@ -435,6 +435,11 @@ set_permissions() {
         print warning "setfacl not found. Falling back to chown/chmod..."
         chown -R "$who":www-data "$path"
         chmod -R u+rwX,g+rwX "$path"
+        # setgid on dirs so files created later (e.g. the daily rotating log,
+        # first written by root's cron) inherit the www-data group instead of
+        # root's — without it the ACL-less fallback hits the same Permission
+        # denied on each new day's logfile.
+        find "$path" -type d -exec chmod g+s {} +
         return
     fi
 
@@ -450,6 +455,16 @@ set_permissions() {
 
     # Export env so subshells (xargs sh -c) can use them
     export ACL_TIMEOUT_SEC CPU_NICE IO_NICE who
+
+    # Default-ACL entries (the "d:" prefix) applied to directories so that
+    # files created LATER inherit the same access. Without these, only files
+    # that exist at run time get the www-data ACL; anything created afterwards
+    # (e.g. Monolog's daily {date}-logfile.log, written first by root's cron)
+    # is owned root:root 0644 and Apache can no longer append to it — the cause
+    # of the recurring "could not be opened in append mode: Permission denied"
+    # fatal. setfacl auto-fills the base default entries + mask from these.
+    local DIR_ACL="u:${who}:rwx,u:www-data:rwx,d:u:${who}:rwx,d:u:www-data:rwx"
+    export DIR_ACL
 
     # Helper executed in subshell (sh -c), single file per invocation
     _acl_apply_cmd='
@@ -467,9 +482,9 @@ set_permissions() {
 
     case "$mode" in
         full)
-            # Directories: rwx to user + www-data
+            # Directories: rwx to user + www-data, plus default ACLs so new files inherit it
             find "$path" -type d -not -path "*/.git*" -not -path "*/node_modules*" -print0 \
-            | xargs -0 -P "$PARALLEL" -I{} sh -c "$_acl_apply_cmd" _ {} "u:${who}:rwx,u:www-data:rwx" &
+            | xargs -0 -P "$PARALLEL" -I{} sh -c "$_acl_apply_cmd" _ {} "$DIR_ACL" &
             pids+=($!)
 
             # Files: rw to user + www-data
@@ -479,7 +494,7 @@ set_permissions() {
         ;;
         quick)
             find "$path" -type d -print0 \
-            | xargs -0 -P "$PARALLEL" -I{} sh -c "$_acl_apply_cmd" _ {} "u:${who}:rwx,u:www-data:rwx" &
+            | xargs -0 -P "$PARALLEL" -I{} sh -c "$_acl_apply_cmd" _ {} "$DIR_ACL" &
             pids+=($!)
 
             find "$path" -type f -name "*.php" -print0 \
@@ -488,7 +503,7 @@ set_permissions() {
         ;;
         minimal)
             find "$path" -type d -print0 \
-            | xargs -0 -P "$PARALLEL" -I{} sh -c "$_acl_apply_cmd" _ {} "u:${who}:rwx,u:www-data:rwx" &
+            | xargs -0 -P "$PARALLEL" -I{} sh -c "$_acl_apply_cmd" _ {} "$DIR_ACL" &
             pids+=($!)
         ;;
       *)
