@@ -253,24 +253,34 @@ function run_interactive(Config $config, Db $db): void
     fwrite(STDOUT, "\n[4/4] Generating participant + summary reports (subprocess)...\n");
     $reportOutput = $evaluator->generateReports($provision['shipment_id']);
     $reportDir = $config->repoRoot . '/downloads/reports/' . $provision['shipment_code'];
-    $pdfCount = is_dir($reportDir) ? count(glob($reportDir . '/*.pdf') ?: []) : 0;
-    $respondedLabs = 0;
-    foreach ($provision['assignments'] as $a) {
-        $rs = \EptTestHarness\Aberrations\Vietnam::catalogue()[$a['aberration']]['response_state'] ?? null;
-        if ($rs !== 'noresponse') {
-            $respondedLabs++;
-        }
+    $allPdfs = is_dir($reportDir) ? (glob($reportDir . '/*.pdf') ?: []) : [];
+    $summaryPdfs = array_filter($allPdfs, static fn ($p) => str_contains(basename($p), '-summary.pdf'));
+    $participantPdfs = array_diff($allPdfs, $summaryPdfs);
+    $shipmentStatus = (string) $db->scalar("SELECT status FROM shipment WHERE shipment_id = ?", [$provision['shipment_id']]);
+
+    $issues = [];
+    if (empty($summaryPdfs)) {
+        $issues[] = 'no summary PDF (screening/confirmatory-summary.pdf) was written';
     }
-    // Expect 1 PDF per responding lab + 1 summary. Tolerate small variance.
-    $expected = $respondedLabs + 1;
-    if ($pdfCount < max(1, (int) round($expected * 0.5))) {
-        fwrite(STDOUT, "  ✗ reports look wrong: $pdfCount PDFs in $reportDir (expected ~$expected)\n");
-        fwrite(STDOUT, "    last 25 lines from subprocess:\n");
-        foreach (array_slice($reportOutput, -25) as $line) {
+    if ($shipmentStatus !== 'reports generated' && $shipmentStatus !== 'finalized') {
+        $issues[] = "shipment.status is '$shipmentStatus' — pipeline didn't reach completeShipmentReports() (a fatal in the summary phtml typically causes this)";
+    }
+
+    fwrite(STDOUT, sprintf(
+        "  %d participant PDFs, %d summary PDFs in downloads/reports/%s/\n",
+        count($participantPdfs),
+        count($summaryPdfs),
+        $provision['shipment_code']
+    ));
+
+    if (!empty($issues)) {
+        foreach ($issues as $msg) {
+            fwrite(STDOUT, "  ✗ $msg\n");
+        }
+        fwrite(STDOUT, "    last 40 lines from generate-shipment-reports.php:\n");
+        foreach (array_slice($reportOutput, -40) as $line) {
             fwrite(STDOUT, "      $line\n");
         }
-    } else {
-        fwrite(STDOUT, "  ✓ $pdfCount PDFs in downloads/reports/{$provision['shipment_code']}/\n");
     }
 
     fwrite(STDOUT, "\nShipment left in place. Inspect at your leisure.\n");
