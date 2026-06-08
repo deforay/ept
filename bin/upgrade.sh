@@ -905,6 +905,9 @@ if command -v git &>/dev/null && [ -d "$EPT_SRC_DIR/.git" ]; then
     if run_git -C "$EPT_SRC_DIR" fetch --depth 1 origin master >"$git_log" 2>&1 &&
         git -c safe.directory='*' -C "$EPT_SRC_DIR" reset --hard FETCH_HEAD >>"$git_log" 2>&1 &&
         git -c safe.directory='*' -C "$EPT_SRC_DIR" clean -fd >>"$git_log" 2>&1; then
+        # Shallow fetch/reset orphans the previous tip's objects; --prune=now
+        # sweeps them now so the mirror doesn't bloat over many upgrade runs.
+        git -c safe.directory='*' -C "$EPT_SRC_DIR" gc --prune=now --quiet >>"$git_log" 2>&1 || true
         ept_src_dir="$EPT_SRC_DIR"
         print success "EPT source mirror updated."
     else
