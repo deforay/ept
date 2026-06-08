@@ -209,6 +209,16 @@ download_file() {
         timeout_cmd="timeout --kill-after=10 ${dl_timeout}"
     fi
 
+    # aria2c is the fast path; give it a much shorter leash. Some endpoints
+    # (e.g. codeload's dynamically generated tarballs) don't support the
+    # parallel range requests aria2c issues and it stalls -- bail quickly to
+    # wget/curl instead of burning the full budget. Override with ARIA2_TIMEOUT.
+    local aria_timeout="${ARIA2_TIMEOUT:-$([ "$slow_mode" = true ] && printf '300' || printf '120')}"
+    local aria_timeout_cmd=""
+    if command -v timeout &>/dev/null; then
+        aria_timeout_cmd="timeout --kill-after=10 ${aria_timeout}"
+    fi
+
     # Get output directory and filename
     local output_dir
     output_dir=$(dirname "$output_file")
@@ -239,7 +249,7 @@ download_file() {
 
     # Try aria2c first
     if command -v aria2c &>/dev/null; then
-        $timeout_cmd aria2c \
+        $aria_timeout_cmd aria2c \
             --max-connection-per-server="$aria_conns" \
             --split="$aria_conns" \
             --min-split-size=1M \
