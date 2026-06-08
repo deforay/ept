@@ -251,8 +251,27 @@ function run_interactive(Config $config, Db $db): void
     report_results($provision, $result);
 
     fwrite(STDOUT, "\n[4/4] Generating participant + summary reports (subprocess)...\n");
-    $evaluator->generateReports($provision['shipment_id']);
-    fwrite(STDOUT, "  ✓ reports written to downloads/reports/{$provision['shipment_code']}/\n");
+    $reportOutput = $evaluator->generateReports($provision['shipment_id']);
+    $reportDir = $config->repoRoot . '/downloads/reports/' . $provision['shipment_code'];
+    $pdfCount = is_dir($reportDir) ? count(glob($reportDir . '/*.pdf') ?: []) : 0;
+    $respondedLabs = 0;
+    foreach ($provision['assignments'] as $a) {
+        $rs = \EptTestHarness\Aberrations\Vietnam::catalogue()[$a['aberration']]['response_state'] ?? null;
+        if ($rs !== 'noresponse') {
+            $respondedLabs++;
+        }
+    }
+    // Expect 1 PDF per responding lab + 1 summary. Tolerate small variance.
+    $expected = $respondedLabs + 1;
+    if ($pdfCount < max(1, (int) round($expected * 0.5))) {
+        fwrite(STDOUT, "  ✗ reports look wrong: $pdfCount PDFs in $reportDir (expected ~$expected)\n");
+        fwrite(STDOUT, "    last 25 lines from subprocess:\n");
+        foreach (array_slice($reportOutput, -25) as $line) {
+            fwrite(STDOUT, "      $line\n");
+        }
+    } else {
+        fwrite(STDOUT, "  ✓ $pdfCount PDFs in downloads/reports/{$provision['shipment_code']}/\n");
+    }
 
     fwrite(STDOUT, "\nShipment left in place. Inspect at your leisure.\n");
     fwrite(STDOUT, "  shipment_id  = {$provision['shipment_id']}\n");

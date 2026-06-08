@@ -12,9 +12,9 @@ final class Evaluator
 {
     public function __construct(private Config $config) {}
 
-    public function evaluate(int $shipmentId): void
+    public function evaluate(int $shipmentId): array
     {
-        $this->run(
+        return $this->run(
             'scheduled-jobs/evaluate-shipments.php',
             ['-s', (string) $shipmentId],
             'evaluate-shipments.php'
@@ -25,18 +25,23 @@ final class Evaluator
      * Run scheduled-jobs/generate-shipment-reports.php for the given shipment.
      * --force regenerates even if a report already exists; no -p/-s flag, so the
      * script produces participant PDFs AND the summary in one pass.
+     *
+     * @return string[] subprocess stdout/stderr lines (so the caller can verify outcome).
      */
-    public function generateReports(int $shipmentId): void
+    public function generateReports(int $shipmentId): array
     {
-        $this->run(
+        return $this->run(
             'scheduled-jobs/generate-shipment-reports.php',
             ['--shipment=' . $shipmentId, '--force'],
             'generate-shipment-reports.php'
         );
     }
 
-    /** @param string[] $args */
-    private function run(string $relativeScript, array $args, string $label): void
+    /**
+     * @param string[] $args
+     * @return string[] subprocess output (returned for callers that need to inspect it).
+     */
+    private function run(string $relativeScript, array $args, string $label): array
     {
         $php = $this->config->phpBinary;
         $script = $this->config->repoRoot . '/' . $relativeScript;
@@ -57,5 +62,6 @@ final class Evaluator
             $tail = implode("\n", array_slice($output, -25));
             throw new \RuntimeException("$label failed (exit $exit). Tail:\n$tail");
         }
+        return $output;
     }
 }
