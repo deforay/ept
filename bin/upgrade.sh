@@ -892,16 +892,41 @@ fi
 if [ "$ept_src_ready" != true ]; then
     if command -v git &>/dev/null; then
         print info "Cloning EPT master via git (shallow)..."
-        rm -rf "$temp_dir/ept-master"
-        if git clone --depth 1 --single-branch --branch master \
-            "$REPO_GIT_URL" "$temp_dir/ept-master" >/dev/null 2>&1; then
-            # Drop .git metadata so it never rsyncs into instances.
-            rm -rf "$temp_dir/ept-master/.git"
-            ept_src_ready=true
-            print success "EPT source obtained via git clone."
+
+        # Slow-network aware: longer leash + resume tolerance when flagged.
+        git_mode_lower="$(printf '%s' "${DOWNLOAD_MODE:-}" | awk '{print tolower($0)}')"
+        if [ "$git_mode_lower" = "slow" ] || [ "${SLOW_NETWORK:-0}" = "1" ]; then
+            git_timeout=2400
         else
-            print error "git clone fallback failed."
+            git_timeout=900
         fi
+        git_timeout_cmd=""
+        command -v timeout &>/dev/null && git_timeout_cmd="timeout --kill-after=15 ${git_timeout}"
+
+        git_log=$(mktemp)
+        for attempt in 1 2 3; do
+            rm -rf "$temp_dir/ept-master"
+            # http.lowSpeed* aborts a connection stuck under 1 KB/s for 60s so a
+            # dead link fails instead of hanging; the outer timeout is a backstop.
+            if $git_timeout_cmd git \
+                -c http.lowSpeedLimit=1000 -c http.lowSpeedTime=60 \
+                clone --depth 1 --single-branch --branch master \
+                "$REPO_GIT_URL" "$temp_dir/ept-master" >"$git_log" 2>&1; then
+                # Drop .git metadata so it never rsyncs into instances.
+                rm -rf "$temp_dir/ept-master/.git"
+                ept_src_ready=true
+                print success "EPT source obtained via git clone (attempt ${attempt})."
+                break
+            fi
+            print warning "git clone attempt ${attempt}/3 failed."
+            sleep 3
+        done
+
+        if [ "$ept_src_ready" != true ]; then
+            print error "git clone fallback failed after 3 attempts. Last output:"
+            tail -n 20 "$git_log"
+        fi
+        rm -f "$git_log"
     else
         print error "git not available for fallback download."
     fi

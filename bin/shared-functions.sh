@@ -203,7 +203,7 @@ download_file() {
     # `spinner` blocks on `wait` until the downloader exits). On timeout the
     # tool is killed, spinner returns non-zero, and we fall through to the next
     # method. Override with DOWNLOAD_TIMEOUT (seconds).
-    local dl_timeout="${DOWNLOAD_TIMEOUT:-$([ "$slow_mode" = true ] && printf '1200' || printf '300')}"
+    local dl_timeout="${DOWNLOAD_TIMEOUT:-$([ "$slow_mode" = true ] && printf '2400' || printf '900')}"
     local timeout_cmd=""
     if command -v timeout &>/dev/null; then
         timeout_cmd="timeout --kill-after=10 ${dl_timeout}"
@@ -321,7 +321,7 @@ download_file() {
             --retry $([ "$slow_mode" = true ] && printf '8' || printf '5') \
             --retry-delay $([ "$slow_mode" = true ] && printf '5' || printf '2') \
             --connect-timeout $([ "$slow_mode" = true ] && printf '30' || printf '15') \
-            --max-time $([ "$slow_mode" = true ] && printf '900' || printf '300') \
+            --max-time $([ "$slow_mode" = true ] && printf '1800' || printf '600') \
             ${slow_mode:+--continue-at -} \
             -o "$output_file" "$url" >"$log_file" 2>&1 &
 
