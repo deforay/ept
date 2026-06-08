@@ -737,7 +737,12 @@ upgrade_instance() {
     print info "Running composer operations..."
     cd "${ept_path}" || return 1
 
-    sudo -u www-data composer config process-timeout 30000 --no-interaction
+    # --global so it writes www-data's own composer config, not ./composer.json.
+    # The rsync'd tree is root-owned and the async "quick" ACL pass only covers
+    # dirs + *.php, so a project-level write here fails ("composer.json is not
+    # writable") on a fresh mirror deploy. process-timeout is a tooling setting,
+    # not a project one, so global is the correct home for it anyway.
+    sudo -u www-data composer config --global process-timeout 30000 --no-interaction
     sudo -u www-data composer clear-cache --no-interaction
 
     local NEED_FULL_INSTALL=false
