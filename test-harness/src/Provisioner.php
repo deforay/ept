@@ -46,6 +46,7 @@ final class Provisioner
 
         $lookups = $this->resolveLookups();
         $kits    = $this->resolveKits();
+        $this->sweepOrphans();
 
         // Flip global DTS/report settings to match the variant BEFORE creating the
         // shipment, so the stash we attach to shipment_attributes reflects the
@@ -390,6 +391,23 @@ final class Provisioner
                 [$pos, $kit['id']]
             );
         }
+    }
+
+    /**
+     * Clear orphan rows whose parent shipment_participant_map row was already deleted.
+     * Prior cleanup paths (or aborted provisions) can leave response_result_dts /
+     * reference_* rows pointing at map_ids that no longer exist; when auto_increment
+     * eventually re-hands those IDs (e.g. after a manual TRUNCATE / counter reset),
+     * fresh INSERTs collide on the composite PK (shipment_map_id, sample_id).
+     * Self-healing here keeps the harness usable on any DB state.
+     */
+    private function sweepOrphans(): void
+    {
+        $this->db->exec(
+            "DELETE rrd FROM response_result_dts rrd
+              LEFT JOIN shipment_participant_map spm ON spm.map_id = rrd.shipment_map_id
+              WHERE spm.map_id IS NULL"
+        );
     }
 
     private function pickMinorityKit(array $kits, int $index): string
