@@ -798,6 +798,17 @@ upgrade_instance() {
         local vendor_tar="/tmp/ept-vendor.tar.gz"
         if [ "$vendor_done" = true ]; then
             : # already handled via peer seed
+        elif [ -n "${EPT_VENDOR_TARBALL:-}" ] && [ -f "${EPT_VENDOR_TARBALL}" ] && gzip -t "${EPT_VENDOR_TARBALL}" 2>/dev/null; then
+            # Pre-staged vendor tarball (USB/wormhole/scp/internal HTTP) -- no network.
+            print info "Using pre-staged vendor tarball: ${EPT_VENDOR_TARBALL}"
+            tar -xzf "${EPT_VENDOR_TARBALL}" -C "${ept_path}" &
+            local vendor_tar_pid=$!
+            spinner "${vendor_tar_pid}"
+            wait ${vendor_tar_pid}
+            chown -R www-data:www-data "${ept_path}/vendor" 2>/dev/null || true
+            chmod -R 755 "${ept_path}/vendor" 2>/dev/null || true
+            sudo -u www-data composer install --no-scripts --no-autoloader --prefer-dist --no-dev --no-interaction
+            vendor_done=true
         elif curl --output /dev/null --silent --head --fail "$vendor_url"; then
             # Download once; the /tmp copy is reused across instances in this run.
             if [ ! -f "$vendor_tar" ]; then
@@ -913,8 +924,29 @@ run_git() {
 temp_dir=$(mktemp -d)
 ept_src_dir="" # the tree we deploy from, set once acquired
 
+# --- Attempt 0: explicit pre-staged local tarball (no network at all) ---------
+# For boxes with no usable internet and no SSH to a peer: stage master.tar.gz on
+# the machine by ANY transport (USB, `wormhole receive`, scp from your laptop,
+# curl from an internal HTTP server) and point EPT_SOURCE_TARBALL at it.
+if [ -n "${EPT_SOURCE_TARBALL:-}" ]; then
+    print info "Using pre-staged source tarball: ${EPT_SOURCE_TARBALL}"
+    if [ -f "$EPT_SOURCE_TARBALL" ] && gzip -t "$EPT_SOURCE_TARBALL" 2>/dev/null &&
+        tar -xzf "$EPT_SOURCE_TARBALL" -C "$temp_dir" 2>/dev/null; then
+        # codeload tarballs unpack to a single top dir (e.g. ept-master).
+        if [ -d "$temp_dir/ept-master" ]; then
+            ept_src_dir="$temp_dir/ept-master"
+        else
+            ept_src_dir="$(find "$temp_dir" -maxdepth 1 -mindepth 1 -type d | head -n1)"
+            [ -z "$ept_src_dir" ] && ept_src_dir="$temp_dir" # files at root
+        fi
+        print success "Using pre-staged source tarball."
+    else
+        print warning "Pre-staged tarball missing/corrupt; falling through to other methods."
+    fi
+fi
+
 # --- Attempt 1: update the persistent git mirror via delta fetch -------------
-if command -v git &>/dev/null && [ -d "$EPT_SRC_DIR/.git" ]; then
+if [ -z "$ept_src_dir" ] && command -v git &>/dev/null && [ -d "$EPT_SRC_DIR/.git" ]; then
     print info "Updating EPT source mirror (delta fetch -- only changed files)..."
     git_log=$(mktemp)
     if run_git -C "$EPT_SRC_DIR" fetch --depth 1 origin master >"$git_log" 2>&1 &&
