@@ -135,7 +135,7 @@ if (!empty($resultArray['shipment'])) {
         $titleFinal = ($evalRow['report_type'] == 'finalized') ? "FINAL " : "";
         // if (empty($reportFormat) && !isset($reportFormat) && $reportFormat == '') {
         $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:10;">' . $titleFinal . ' Individual Participant Report</span><br>';
-        $htmlTitle .= '<span style="font-weight: bold;text-align:center;font-size:10;">Proficiency Testing Scheme - Dried Tube Specimen - ' . $result['scheme_name'] . '</span><br>';
+        $htmlTitle .= '<span style="font-weight: bold;text-align:center;font-size:10;">Proficiency Testing Scheme - ' . $result['scheme_name'] . '</span><br>';
         $pdf->writeHTML($htmlTitle, true, false, true, false, '');
 
         // Build laboratory information table
@@ -331,7 +331,7 @@ if (!empty($resultArray['shipment'])) {
                     $testkitName = "Not Reported";
                 }
                 $expDate = Pt_Commons_DateUtility::humanReadableDateFormat($attributes['kit_expiry_date']);
-                $labRes = '<span style="font-weight: bold;font-size:11px;">Your Dried Tube Specimen - ' . $result['scheme_name'] . ' Proficiency results : <br/></span>';
+                $labRes = '<span style="font-weight: bold;font-size:11px;">Your ' . $result['scheme_name'] . ' Proficiency results : <br/></span>';
                 $labRes .= '<table border="1" style="text-align:center;font-weight:bold;width:650px;font-size:11px;">
                     <tr>
                         <td style="background-color:#8ECF64;">Test Kit Name</td>
@@ -487,8 +487,9 @@ if (!empty($resultArray['shipment'])) {
             $pdf->writeHTML($summaryCount, true, false, true, false, '');
         }
 
-        // Add new page and performance criteria
-        $pdf->AddPage();
+        // Performance criteria — let it flow directly after the results instead of forcing a
+        // new page (the forced AddPage left a large blank gap at the bottom of the prior page).
+        // TCPDF still auto page-breaks if there isn't enough room left on the current page.
         $overallScore = ((int) $passPercentage == 100) ? " = $passPercentage" : "&gt;= $passPercentage";
         $unsatisfactoryScore = "&lt; $passPercentage";
         if (count($result['responseResult']) > 0) {
