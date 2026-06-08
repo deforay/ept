@@ -19,6 +19,14 @@ final class Provisioner
     public const ELISA_KIT_NAME  = 'ATEST ELISA Anti-HIV (S/CO)';
     public const ELISA_KIT_LABEL = 'S/CO';
 
+    // Synthetic rapid kits for positions 1 and 3 — names mirror what NIHE actually
+    // uses in their templates (Bioline / Determine). Created only if no recommended
+    // kit exists for the position yet, so the harness is self-sufficient on a fresh DB.
+    private const RAPID_KITS = [
+        1 => ['id' => 'ATEST-RAPID-001', 'name' => 'ATEST Bioline HIV 1/2 3.0',  'short' => 'ATEST-BIO'],
+        3 => ['id' => 'ATEST-RAPID-003', 'name' => 'ATEST Determine HIV 1/2',    'short' => 'ATEST-DET'],
+    ];
+
     public function __construct(private Db $db) {}
 
     /**
@@ -217,6 +225,7 @@ final class Provisioner
     private function resolveKits(): array
     {
         $this->ensureElisaKit();
+        $this->ensureRapidKits();
 
         $reference = [];
         foreach ([1, 2, 3] as $testNo) {
@@ -341,6 +350,44 @@ final class Provisioner
             $this->db->exec(
                 "INSERT INTO dts_recommended_testkits (test_no, testkit, dts_test_mode) VALUES (2, ?, 'dts')",
                 [self::ELISA_KIT_ID]
+            );
+        }
+    }
+
+    /**
+     * Idempotently ensure rapid kits exist at positions 1 and 3 of dts_recommended_testkits.
+     * Only acts if the position has no recommendations yet — never overrides real seeded data.
+     * Mirrors ensureElisaKit() so the harness can run on a clean DB without manual seeding.
+     */
+    private function ensureRapidKits(): void
+    {
+        foreach (self::RAPID_KITS as $pos => $kit) {
+            $hasAny = $this->db->scalar(
+                "SELECT 1 FROM dts_recommended_testkits WHERE test_no = ? LIMIT 1",
+                [$pos]
+            );
+            if ($hasAny) {
+                continue; // real recommendation already present — leave alone
+            }
+            $exists = $this->db->scalar(
+                "SELECT 1 FROM r_testkitnames WHERE TestKitName_ID = ?",
+                [$kit['id']]
+            );
+            if (!$exists) {
+                $this->db->exec(
+                    "INSERT INTO r_testkitnames (TestKitName_ID, TestKit_Name, TestKit_Name_Short, Approval, testkit_status, Created_On)
+                     VALUES (?, ?, ?, 1, 'active', NOW())",
+                    [$kit['id'], $kit['name'], $kit['short']]
+                );
+            } else {
+                $this->db->exec(
+                    "UPDATE r_testkitnames SET testkit_status = 'active' WHERE TestKitName_ID = ? AND (testkit_status IS NULL OR testkit_status = '')",
+                    [$kit['id']]
+                );
+            }
+            $this->db->exec(
+                "INSERT INTO dts_recommended_testkits (test_no, testkit, dts_test_mode) VALUES (?, ?, 'dts')",
+                [$pos, $kit['id']]
             );
         }
     }
