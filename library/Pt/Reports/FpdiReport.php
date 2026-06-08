@@ -93,7 +93,7 @@ class Pt_Reports_FpdiReport extends Fpdi
             if (file_exists($logoPath)) {
                 // h=0 lets TCPDF auto-compute the height from the source aspect
                 // ratio. Forcing both dimensions squashes non-square logos.
-                $this->Image($logoPath, PDF_MARGIN_LEFT, 6, 22, 0, '', '', '', false, 300);
+                $this->Image($logoPath, $this->lMargin, 6, 22, 0, '', '', '', false, 300);
             }
             $this->SetY(10);
             $nihe  = '<div style="text-align:center;">';

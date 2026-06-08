@@ -258,7 +258,7 @@ class Application_Model_DbTable_Testkitnames extends Zend_Db_Table_Abstract
                 $approved = 'Yes';
             }
             $ptValidated = '';
-            if (isset($aRow['pt_provider_validated']) && $aRow['pt_provider_validated'] !== null && $aRow['pt_provider_validated'] !== '') {
+            if (isset($aRow['pt_provider_validated']) && $aRow['pt_provider_validated'] !== '') {
                 $ptValidated = ((int) $aRow['pt_provider_validated'] === 1) ? 'Yes' : 'No';
             }
             $createdDate = explode(' ', $aRow['Created_On']);
