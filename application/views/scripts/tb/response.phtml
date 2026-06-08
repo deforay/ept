@@ -15,8 +15,12 @@ $isLoggedInAsAdmin = false;
 if ($this->reqFrom == "admin") {
 	$isLoggedInAsAdmin = true;
 }
-$downloadLink = base64_encode(TEMP_UPLOAD_PATH . '/' . $this->shipment['shipment_code'] . '/TB-FORM-' . $this->shipment['shipment_code'] . '-' . $this->shipment['unique_identifier'] . '.pdf');
-$download = "<a tabindex='7' href='/participant/download-tb/sid/" . $this->shipment['shipment_id'] . "/pid/" . $this->shipment['participant_id'] . "/file/" . $downloadLink . "' class='btn btn-info' style='margin:3px 0;float: right;' target='_BLANK'> <i class='icon icon-download'></i> Download Form</a>";
+$download = "";
+// TB forms are an MTBEPT-only feature.
+if (Application_Service_Common::getConfig('instance') === 'mtbept') {
+	$downloadLink = base64_encode(TEMP_UPLOAD_PATH . '/' . $this->shipment['shipment_code'] . '/TB-FORM-' . $this->shipment['shipment_code'] . '-' . $this->shipment['unique_identifier'] . '.pdf');
+	$download = "<a tabindex='7' href='/participant/download-tb/sid/" . $this->shipment['shipment_id'] . "/pid/" . $this->shipment['participant_id'] . "/file/" . $downloadLink . "' class='btn btn-info' style='margin:3px 0;float: right;' target='_BLANK'> <i class='icon icon-download'></i> Download Form</a>";
+}
 
 $possibleMicrosopeResults = $possibleResults = [];
 foreach ($this->tbPossibleResults as $pr) {

@@ -244,6 +244,8 @@ class Application_Service_Shipments
             'aaData' => [],
         ];
         $dtsSchemeType = Pt_Commons_SchemeConfig::get('dts.dtsSchemeType');
+        // TB form generation/download is only offered on the MTBEPT deployment.
+        $isMtbeptInstance = (Application_Service_Common::getConfig('instance') === 'mtbept');
 
         foreach ($rResult as $aRow) {
             $mailedOn = '';
@@ -304,9 +306,9 @@ class Application_Service_Shipments
                 $manageEnroll = '<br>&nbsp;<a class="btn btn-info btn-xs" href="/admin/shipment/manage-enroll/sid/' . base64_encode($aRow['shipment_id']) . '/sctype/' . base64_encode($aRow['scheme_type']) . '"><span><i class="icon-gear"></i> Enrollment </span></a>';
             }
             $tbFormPath = $this->tempUploadDirectory . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . '-TB-FORMS.zip';
-            if (file_exists($tbFormPath) && $aRow['scheme_type'] == 'tb') {
+            if ($isMtbeptInstance && file_exists($tbFormPath) && $aRow['scheme_type'] == 'tb') {
                 $downloadAllTBForms = '<br/><a href="/admin/shipment/download-tb/sid/' . $aRow['shipment_id'] . '/file/' . base64_encode($tbFormPath) . '" class="btn btn-success btn-xs" style="margin:3px 0;" target="_BLANK"> <i class="icon icon-download"></i> ' . $this->translator->_('Download TB Forms') . '</a>';
-            } elseif ($aRow['scheme_type'] == 'tb' && ($aRow['status'] == 'shipped' || $aRow['status'] == 'evaluated')) {
+            } elseif ($isMtbeptInstance && $aRow['scheme_type'] == 'tb' && ($aRow['status'] == 'shipped' || $aRow['status'] == 'evaluated')) {
                 if (isset($aRow['tb_form_generated']) && $aRow['tb_form_generated'] == 'queued') {
                     $txt = $this->translator->_('Generating TB Forms...');
                     $disabled = 'disabled';
@@ -3746,7 +3748,9 @@ class Application_Service_Shipments
     {
         $authNameSpace = new Zend_Session_Namespace('administrators');
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        if (empty($sid)) {
+        // TB forms are an MTBEPT-only feature; don't queue generation elsewhere
+        // even if the request reaches this method directly.
+        if (empty($sid) || Application_Service_Common::getConfig('instance') !== 'mtbept') {
             return null;
         }
         $db->beginTransaction();
