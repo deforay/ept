@@ -15,7 +15,8 @@ function generateReports(sId, checkReportDate, surveyDate, _type) {
                 // detail pages have no loader — fall back to a reload there.
                 if (typeof currentHighlighted !== 'undefined' && currentHighlighted) {
                     if (typeof getShipments === 'function') {
-                        getShipments(currentHighlighted);
+                        // forceRefresh = true: re-fetch without toggling the open row shut.
+                        getShipments(currentHighlighted, null, true);
                     } else if (typeof getShipmentInReports === 'function') {
                         // forceRefresh = true: re-fetch without toggling the open row shut.
                         getShipmentInReports(currentHighlighted, true);

@@ -170,7 +170,7 @@
     });
 
 
-    function getShipments(did, userConfiguration) {
+    function getShipments(did, userConfiguration, forceRefresh) {
         currentHighlighted = did;
         setCookie('did', did);
 
@@ -181,12 +181,17 @@
         $("#distroTable tr td").removeClass("highliter");
         $tr.find('td').addClass("highliter");
 
-        // If this row's shipments child is already open, collapse it.
+        // If this row's shipments child is already open, collapse it — unless
+        // forceRefresh is set (e.g. after queuing reports), in which case close
+        // and re-fetch so the row's status updates without staying shut.
         var $childTr = $tr.next('tr');
         var mineOpen = oTable.fnIsOpen(tr) && $childTr.find('.shipments-child-row').length > 0;
-        if (mineOpen) {
+        if (mineOpen && !forceRefresh) {
             oTable.fnClose(tr);
             return;
+        }
+        if (mineOpen && forceRefresh) {
+            oTable.fnClose(tr);
         }
         // Close any other open child row in the table — only one expanded at a time.
         $('#distroTable tbody tr').each(function () {
