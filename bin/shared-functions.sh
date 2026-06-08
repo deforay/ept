@@ -198,6 +198,17 @@ download_file() {
         aria_conns="${ARIA2_CONNECTIONS:-12}"
     fi
 
+    # Hard wall-clock cap so a stalled connection can never hang the script
+    # forever (the per-connection timeouts below don't bound total runtime, and
+    # `spinner` blocks on `wait` until the downloader exits). On timeout the
+    # tool is killed, spinner returns non-zero, and we fall through to the next
+    # method. Override with DOWNLOAD_TIMEOUT (seconds).
+    local dl_timeout="${DOWNLOAD_TIMEOUT:-$([ "$slow_mode" = true ] && printf '1200' || printf '300')}"
+    local timeout_cmd=""
+    if command -v timeout &>/dev/null; then
+        timeout_cmd="timeout --kill-after=10 ${dl_timeout}"
+    fi
+
     # Get output directory and filename
     local output_dir
     output_dir=$(dirname "$output_file")
@@ -228,7 +239,7 @@ download_file() {
 
     # Try aria2c first
     if command -v aria2c &>/dev/null; then
-        aria2c \
+        $timeout_cmd aria2c \
             --max-connection-per-server="$aria_conns" \
             --split="$aria_conns" \
             --min-split-size=1M \
@@ -269,7 +280,7 @@ download_file() {
 
     # Fallback to wget
     if command -v wget &>/dev/null; then
-        wget --progress=bar:force \
+        $timeout_cmd wget --progress=bar:force \
             --tries=$([ "$slow_mode" = true ] && printf '8' || printf '5') \
             --waitretry=$([ "$slow_mode" = true ] && printf '5' || printf '2') \
             --timeout=$([ "$slow_mode" = true ] && printf '60' || printf '30') \
@@ -296,7 +307,7 @@ download_file() {
 
     # Fallback to curl if wget unavailable or failed
     if command -v curl &>/dev/null; then
-        curl -L --fail \
+        $timeout_cmd curl -L --fail \
             --retry $([ "$slow_mode" = true ] && printf '8' || printf '5') \
             --retry-delay $([ "$slow_mode" = true ] && printf '5' || printf '2') \
             --connect-timeout $([ "$slow_mode" = true ] && printf '30' || printf '15') \
