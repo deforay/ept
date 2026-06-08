@@ -87,7 +87,11 @@ class Pt_Reports_ChartService
             return false;
         }
 
+        // Drain stdout/stderr BEFORE closing — otherwise `which` SIGPIPEs writing
+        // to a closed pipe and exits non-zero, making us mis-detect node as absent.
         fclose($pipes[0]);
+        stream_get_contents($pipes[1]);
+        stream_get_contents($pipes[2]);
         fclose($pipes[1]);
         fclose($pipes[2]);
         return proc_close($process) === 0;
