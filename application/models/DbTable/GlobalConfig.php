@@ -118,7 +118,7 @@ class Application_Model_DbTable_GlobalConfig extends Zend_Db_Table_Abstract
 
         // Request plumbing that leaks in from the POST form but is not a real
         // global_config row — never persist or audit-log these.
-        $ignoreFields = ['module', 'controller', 'action', 'locale', 'csrf_token', 'submit'];
+        $ignoreFields = ['module', 'controller', 'action', 'csrf_token', 'submit'];
 
         $individualFields = [];
         foreach ($params as $fieldName => $fieldValue) {
