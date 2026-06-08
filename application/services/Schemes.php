@@ -535,16 +535,43 @@ class Application_Service_Schemes
         return $db->fetchAll($db->select()->from('r_evaluation_comments')->where("scheme='$schemeId'"));
     }
 
-    public function getPossibleResults($schemeId, $context = null)
+    /**
+     * Fetch the possible result options for a scheme.
+     *
+     * @param string      $schemeId    Scheme code.
+     * @param string|null $context     display_context filter ('participant', 'admin', ...).
+     * @param string|null $resultGroup Restrict to one TEST/FINAL namespace. Schemes can define two
+     *                                 parallel option families via r_possibleresult.scheme_sub_group
+     *                                 that share the same labels (e.g. mRDT MAL-T-* test vs MAL-F-*
+     *                                 final). Pass 'TEST' or 'FINAL' to get only that set; null/empty
+     *                                 (or 'BOTH') returns every option. Older schemes define only one
+     *                                 namespace (or none) — if the requested group is empty we fall
+     *                                 back to the full list so callers never get an empty dropdown.
+     */
+    public function getPossibleResults($schemeId, $context = null, $resultGroup = null)
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $sql = $db->select()->from('r_possibleresult')
-            ->where("scheme_id='$schemeId'")
-            ->order('sort_order ASC');
-        if (isset($context) && !empty($context)) {
-            $sql = $sql->where("display_context IN ('all', '$context')");
+
+        $fetch = function ($group) use ($db, $schemeId, $context) {
+            $sql = $db->select()->from('r_possibleresult')
+                ->where('scheme_id = ?', $schemeId)
+                ->order('sort_order ASC');
+            if (isset($context) && !empty($context)) {
+                $sql->where("display_context IN ('all', ?)", $context);
+            }
+            if (!empty($group)) {
+                $sql->where('UPPER(TRIM(scheme_sub_group)) = ?', $group);
+            }
+            return $db->fetchAll($sql);
+        };
+
+        $group = is_string($resultGroup) ? strtoupper(trim($resultGroup)) : '';
+        if ($group !== 'TEST' && $group !== 'FINAL') {
+            return $fetch(null);
         }
-        return $db->fetchAll($sql);
+
+        $rows = $fetch($group);
+        return !empty($rows) ? $rows : $fetch(null);
     }
 
     public function countEnrollmentSchemes()

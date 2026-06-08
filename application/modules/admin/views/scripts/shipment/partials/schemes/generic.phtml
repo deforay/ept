@@ -31,7 +31,8 @@ if (isset($this->schemeDetails['user_test_config']) && !empty($this->schemeDetai
 // Determine if this is a quantitative test (hides final result column)
 $isQuantitative = isset($jsonConfig['testType']) && !empty($jsonConfig['testType']) && $jsonConfig['testType'] == 'quantitative';
 
-// Normalize possible results
+// Normalize possible results. The controller already restricts these to the FINAL namespace
+// (shipment add/edit only configures the expected/final result) via getPossibleResults('FINAL').
 $possibleResults = $this->otherTestsPossibleResults ?? [];
 
 // Normalize samples/controls - in ADD mode, start with empty array (will show one empty row)

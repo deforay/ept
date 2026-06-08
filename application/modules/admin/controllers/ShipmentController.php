@@ -129,7 +129,10 @@ class Admin_ShipmentController extends Zend_Controller_Action
                 $tbModel = new Application_Model_Tb();
                 $this->view->assay = $tbModel->getAllTbAssays();
             } elseif ($userconfig == 'yes') {
-                $this->view->otherTestsPossibleResults = $scheme->getPossibleResults($sid, 'admin');
+                // Shipment add/edit only configures the expected (final) result, so request the
+                // FINAL namespace; getPossibleResults falls back to all options for single-namespace
+                // or legacy schemes.
+                $this->view->otherTestsPossibleResults = $scheme->getPossibleResults($sid, 'admin', 'FINAL');
             }
         }
     }
@@ -226,7 +229,8 @@ class Admin_ShipmentController extends Zend_Controller_Action
                     $tbModel = new Application_Model_Tb();
                     $this->view->assay = $tbModel->getAllTbAssays();
                 } elseif ($userConfig == 'yes') {
-                    $this->view->otherTestsPossibleResults = $schemeService->getPossibleResults($response['shipment']['scheme_type'], 'admin');
+                    // Shipment add/edit only configures the expected (final) result — see editAction.
+                    $this->view->otherTestsPossibleResults = $schemeService->getPossibleResults($response['shipment']['scheme_type'], 'admin', 'FINAL');
                 }
                 $common = new Application_Service_Common();
                 $this->view->feedbackOption = $common->getConfig('participant_feedback');
