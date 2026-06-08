@@ -855,23 +855,64 @@ upgrade_instance() {
     return 0
 }
 
-# Download EPT package ONCE (shared across all instances)
+# Download EPT source ONCE (shared across all instances).
+#
+# Strategy: try the GitHub tarball first (fast), but trust it only after an
+# integrity check; if anything about it fails, fall back to a shallow git clone.
+# A git clone is integrity-checked end-to-end by git and never hands back a
+# silently truncated tree -- a broken transfer makes the clone fail loudly
+# instead of leaving corrupt files behind.
 print header "Downloading EPT"
 
-download_file "master.tar.gz" "https://codeload.github.com/deforay/ept/tar.gz/refs/heads/master" "Downloading EPT package..." || {
-    print error "EPT download failed - cannot continue with update"
-    log_action "EPT download failed - update aborted"
-    exit 1
-}
-
-# Extract the tar.gz file into temporary directory ONCE
 temp_dir=$(mktemp -d)
-print info "Extracting files from master.tar.gz..."
+ept_src_ready=false
 
-tar -xzf master.tar.gz -C "$temp_dir" &
-tar_pid=$!
-spinner "${tar_pid}"
-wait ${tar_pid}
+REPO_TARBALL_URL="https://codeload.github.com/deforay/ept/tar.gz/refs/heads/master"
+REPO_GIT_URL="https://github.com/deforay/ept.git"
+
+# --- Attempt 1: tarball -------------------------------------------------------
+if download_file "master.tar.gz" "$REPO_TARBALL_URL" "Downloading EPT package..."; then
+    print info "Verifying archive integrity..."
+    if gzip -t master.tar.gz 2>/dev/null; then
+        print info "Extracting files from master.tar.gz..."
+        if tar -xzf master.tar.gz -C "$temp_dir" 2>/dev/null && [ -d "$temp_dir/ept-master" ]; then
+            ept_src_ready=true
+        else
+            print warning "Extraction failed; will fall back to a git clone."
+        fi
+    else
+        print warning "Downloaded archive is corrupt or truncated; will fall back to a git clone."
+    fi
+    rm -f master.tar.gz
+else
+    print warning "Tarball download failed; will fall back to a git clone."
+fi
+
+# --- Attempt 2: shallow git clone --------------------------------------------
+if [ "$ept_src_ready" != true ]; then
+    if command -v git &>/dev/null; then
+        print info "Cloning EPT master via git (shallow)..."
+        rm -rf "$temp_dir/ept-master"
+        if git clone --depth 1 --single-branch --branch master \
+            "$REPO_GIT_URL" "$temp_dir/ept-master" >/dev/null 2>&1; then
+            # Drop .git metadata so it never rsyncs into instances.
+            rm -rf "$temp_dir/ept-master/.git"
+            ept_src_ready=true
+            print success "EPT source obtained via git clone."
+        else
+            print error "git clone fallback failed."
+        fi
+    else
+        print error "git not available for fallback download."
+    fi
+fi
+
+if [ "$ept_src_ready" != true ]; then
+    print error "EPT download failed (tarball and git clone) - cannot continue with update"
+    log_action "EPT download failed via all methods - update aborted"
+    rm -rf "$temp_dir"
+    exit 1
+fi
 
 print success "EPT package ready for deployment to ${#ept_paths[@]} instance(s)."
 

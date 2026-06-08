@@ -153,6 +153,31 @@ spinner() {
 }
 
 
+# verify_archive_integrity <file> -- returns 0 if the file passes a structural
+# integrity check for its type, or if it isn't a recognized archive (nothing to
+# verify). Catches the silent-corruption failure mode: a broken/aborted download
+# leaves a non-empty but truncated file on disk that passes a bare `-s` test yet
+# explodes later with "unexpected end of file" at extraction time.
+verify_archive_integrity() {
+    local file="$1"
+    [ -f "$file" ] || return 1
+    case "$file" in
+        *.tar.gz | *.tgz | *.gz)
+            gzip -t "$file" 2>/dev/null
+            ;;
+        *.zip)
+            if command -v unzip &>/dev/null; then
+                unzip -tqq "$file" >/dev/null 2>&1
+            else
+                return 0 # can't verify, don't reject
+            fi
+            ;;
+        *)
+            return 0 # not an archive we know how to check
+            ;;
+    esac
+}
+
 download_file() {
     local output_file="$1"
     local url="$2"
@@ -226,16 +251,19 @@ download_file() {
         
         local download_pid=$!
         spinner "$download_pid" "$message"
-        
-        # Check if file downloaded successfully
-        if [ -f "$output_file" ] && [ -s "$output_file" ]; then
+        local dl_status=$?
+
+        # Accept only a clean exit AND a structurally valid file. A non-empty
+        # file alone is not enough -- a broken transfer leaves a truncated
+        # archive on disk that later blows up at extraction time.
+        if [ "$dl_status" -eq 0 ] && [ -f "$output_file" ] && [ -s "$output_file" ] && verify_archive_integrity "$output_file"; then
             print success "Download completed: $filename"
             rm -f "$log_file"
             return 0
         fi
-        
-        # aria2c failed, try wget
-        print warning "aria2c failed, trying wget..."
+
+        # aria2c failed or produced a corrupt/partial file, try wget
+        print warning "aria2c download failed or incomplete, trying wget..."
         rm -f "$output_file"
     fi
 
@@ -253,13 +281,17 @@ download_file() {
         
         local download_pid=$!
         spinner "$download_pid" "$message"
-        
-        # Check if wget succeeded
-        if [ -f "$output_file" ] && [ -s "$output_file" ]; then
+        local dl_status=$?
+
+        # Check wget exit code and archive integrity (see note above)
+        if [ "$dl_status" -eq 0 ] && [ -f "$output_file" ] && [ -s "$output_file" ] && verify_archive_integrity "$output_file"; then
             print success "Download completed: $filename"
             rm -f "$log_file"
             return 0
         fi
+
+        print warning "wget download failed or incomplete, trying curl..."
+        rm -f "$output_file"
     fi
 
     # Fallback to curl if wget unavailable or failed
@@ -274,12 +306,14 @@ download_file() {
 
         local download_pid=$!
         spinner "$download_pid" "$message"
+        local dl_status=$?
 
-        if [ -f "$output_file" ] && [ -s "$output_file" ]; then
+        if [ "$dl_status" -eq 0 ] && [ -f "$output_file" ] && [ -s "$output_file" ] && verify_archive_integrity "$output_file"; then
             print success "Download completed: $filename"
             rm -f "$log_file"
             return 0
         fi
+        rm -f "$output_file"
     fi
 
     # Both failed
