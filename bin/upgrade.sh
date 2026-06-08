@@ -877,13 +877,9 @@ REPO_TARBALL_URL="https://codeload.github.com/deforay/ept/tar.gz/refs/heads/mast
 REPO_GIT_URL="https://github.com/deforay/ept.git"
 EPT_SRC_DIR="${EPT_SRC_DIR:-/usr/local/lib/ept/src}"
 
-# Slow-network aware git wall-clock cap (seconds)
-src_mode_lower="$(printf '%s' "${DOWNLOAD_MODE:-}" | awk '{print tolower($0)}')"
-if [ "$src_mode_lower" = "slow" ] || [ "${SLOW_NETWORK:-0}" = "1" ]; then
-    git_timeout=2400
-else
-    git_timeout=900
-fi
+# git wall-clock cap (seconds). Generous so a one-time clone survives a slow
+# link; git's own low-speed abort kills a truly dead connection sooner.
+git_timeout=1800
 git_timeout_cmd=""
 command -v timeout &>/dev/null && git_timeout_cmd="timeout --kill-after=15 ${git_timeout}"
 

@@ -183,27 +183,15 @@ download_file() {
     local url="$2"
     local default_msg="Downloading $(basename "$output_file")..."
     local message="${3:-$default_msg}"
-    # Slow network toggle: export DOWNLOAD_MODE=slow or SLOW_NETWORK=1
-    local slow_mode=false
-    local mode_lower
-    mode_lower="$(printf '%s' "${DOWNLOAD_MODE:-}" | awk '{print tolower($0)}')"
-    if [ "$mode_lower" = "slow" ] || [ "${SLOW_NETWORK:-0}" = "1" ]; then
-        slow_mode=true
-    fi
-
-    local aria_conns
-    if [ "$slow_mode" = true ]; then
-        aria_conns="${ARIA2_CONNECTIONS:-4}"
-    else
-        aria_conns="${ARIA2_CONNECTIONS:-12}"
-    fi
+    local aria_conns="${ARIA2_CONNECTIONS:-8}"
 
     # Hard wall-clock cap so a stalled connection can never hang the script
     # forever (the per-connection timeouts below don't bound total runtime, and
-    # `spinner` blocks on `wait` until the downloader exits). On timeout the
-    # tool is killed, spinner returns non-zero, and we fall through to the next
-    # method. Override with DOWNLOAD_TIMEOUT (seconds).
-    local dl_timeout="${DOWNLOAD_TIMEOUT:-$([ "$slow_mode" = true ] && printf '2400' || printf '900')}"
+    # `spinner` blocks on `wait` until the downloader exits). On timeout the tool
+    # is killed, spinner returns non-zero, and we fall through to the next method.
+    # Generous by default so it works on slow/contended links with no flag; a
+    # fast link finishes long before the cap. Override with DOWNLOAD_TIMEOUT.
+    local dl_timeout="${DOWNLOAD_TIMEOUT:-1800}"
     local timeout_cmd=""
     if command -v timeout &>/dev/null; then
         timeout_cmd="timeout --kill-after=10 ${dl_timeout}"
@@ -213,7 +201,7 @@ download_file() {
     # (e.g. codeload's dynamically generated tarballs) don't support the
     # parallel range requests aria2c issues and it stalls -- bail quickly to
     # wget/curl instead of burning the full budget. Override with ARIA2_TIMEOUT.
-    local aria_timeout="${ARIA2_TIMEOUT:-$([ "$slow_mode" = true ] && printf '300' || printf '120')}"
+    local aria_timeout="${ARIA2_TIMEOUT:-120}"
     local aria_timeout_cmd=""
     if command -v timeout &>/dev/null; then
         aria_timeout_cmd="timeout --kill-after=10 ${aria_timeout}"
@@ -233,14 +221,10 @@ download_file() {
         }
     fi
 
-    # For slow/resume mode, keep existing partial to allow resume; otherwise start clean
-    if [ "$slow_mode" = true ]; then
-        if [ -f "$output_file" ]; then
-            print info "Resuming existing download for ${filename} (slow mode)."
-        fi
-    else
-        [ -f "$output_file" ] && rm -f "$output_file"
-    fi
+    # Start clean -- drop any leftover partial so a stale/mismatched file can't
+    # corrupt a resumed download. Each tool still resumes its own partial across
+    # its internal retries.
+    [ -f "$output_file" ] && rm -f "$output_file"
 
     print info "$message"
 
@@ -257,10 +241,10 @@ download_file() {
             --auto-file-renaming=false \
             --allow-overwrite=true \
             --continue=true \
-            --max-tries=$([ "$slow_mode" = true ] && printf '12' || printf '5') \
-            --retry-wait=$([ "$slow_mode" = true ] && printf '5' || printf '2') \
-            --timeout=$([ "$slow_mode" = true ] && printf '60' || printf '30') \
-            --connect-timeout=$([ "$slow_mode" = true ] && printf '30' || printf '15') \
+            --max-tries=8 \
+            --retry-wait=3 \
+            --timeout=60 \
+            --connect-timeout=20 \
             --summary-interval=0 \
             --console-log-level=error \
             --no-conf \
@@ -291,12 +275,12 @@ download_file() {
     # Fallback to wget
     if command -v wget &>/dev/null; then
         $timeout_cmd wget --progress=bar:force \
-            --tries=$([ "$slow_mode" = true ] && printf '8' || printf '5') \
-            --waitretry=$([ "$slow_mode" = true ] && printf '5' || printf '2') \
-            --timeout=$([ "$slow_mode" = true ] && printf '60' || printf '30') \
-            --read-timeout=$([ "$slow_mode" = true ] && printf '60' || printf '30') \
+            --tries=8 \
+            --waitretry=3 \
+            --timeout=60 \
+            --read-timeout=60 \
             --retry-connrefused \
-            ${slow_mode:+--continue} \
+            --continue \
             -O "$output_file" \
             "$url" >"$log_file" 2>&1 &
         
@@ -318,11 +302,11 @@ download_file() {
     # Fallback to curl if wget unavailable or failed
     if command -v curl &>/dev/null; then
         $timeout_cmd curl -L --fail \
-            --retry $([ "$slow_mode" = true ] && printf '8' || printf '5') \
-            --retry-delay $([ "$slow_mode" = true ] && printf '5' || printf '2') \
-            --connect-timeout $([ "$slow_mode" = true ] && printf '30' || printf '15') \
-            --max-time $([ "$slow_mode" = true ] && printf '1800' || printf '600') \
-            ${slow_mode:+--continue-at -} \
+            --retry 8 \
+            --retry-delay 3 \
+            --connect-timeout 20 \
+            --max-time 1200 \
+            --continue-at - \
             -o "$output_file" "$url" >"$log_file" 2>&1 &
 
         local download_pid=$!
