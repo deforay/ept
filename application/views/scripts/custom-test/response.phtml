@@ -19,9 +19,37 @@ if ($this->reqFrom == "admin") {
 	$adminAccess = true;
 }
 $userTestConfig = Zend_Json_Decoder::decode($this->shipment['user_test_config'], true);
-$otherTestPossibleResults = [];
+// Possible results can be split into TEST vs FINAL option sets via the
+// r_possibleresult.scheme_sub_group column (e.g. mRDT has MAL-T-* test codes and
+// MAL-F-* final codes that share the same labels). The "Test Result" dropdowns must
+// only offer TEST options and the "Final/Reported Result" dropdown only FINAL options,
+// otherwise both columns list every option twice and a participant can pick the wrong
+// namespace. Schemes that don't use the split leave scheme_sub_group empty, in which
+// case every option belongs to both sets (unchanged legacy behaviour). The combined
+// $allResultOptions map is kept for read-only lookups (the Expected Result text) so any
+// stored code resolves regardless of its namespace.
+$testResultOptions = [];
+$finalResultOptions = [];
+$allResultOptions = [];
 foreach ($this->otherTestsPossibleResults as $row) {
-	$otherTestPossibleResults[$row['result_code']] = $row['response'];
+	$subGroup = strtoupper(trim((string) ($row['scheme_sub_group'] ?? '')));
+	$allResultOptions[$row['result_code']] = $row['response'];
+	if ($subGroup === 'TEST' || $subGroup === '') {
+		$testResultOptions[$row['result_code']] = $row['response'];
+	}
+	if ($subGroup === 'FINAL' || $subGroup === '') {
+		$finalResultOptions[$row['result_code']] = $row['response'];
+	}
+}
+// A scheme only has a genuine TEST/FINAL split when both groups are populated (e.g. mRDT).
+// Schemes that define only one namespace (HCV RDT has only TEST codes, SYPH RDT only FINAL)
+// would otherwise leave the opposite dropdown empty, so fall both dropdowns back to the full
+// option list in that case — same as legacy schemes that don't use sub-groups at all.
+if (empty($testResultOptions)) {
+	$testResultOptions = $allResultOptions;
+}
+if (empty($finalResultOptions)) {
+	$finalResultOptions = $allResultOptions;
 }
 ?>
 <style>
@@ -447,7 +475,7 @@ if ($inConfirmStep) {
 												class="<?php echo ($sample['mandatory'] == 1) ? "vlResultValues isRequired" : ""; ?> form-control input-sm"
 												title="<?= $this->translate->_("Please select Test 1 result"); ?>"
 												placeholder="<?= $this->translate->_("Test 1 Result"); ?>">
-												<?php $this->dropdownSelection($otherTestPossibleResults, $sample['result_1'], true); ?>
+												<?php $this->dropdownSelection($testResultOptions, $sample['result_1'], true); ?>
 											</select>
 										</td>
 										<?php if (isset($userTestConfig['numberOfTests']) && $userTestConfig['numberOfTests'] >= 2) { ?>
@@ -455,7 +483,7 @@ if ($inConfirmStep) {
 												<select name="result2[]" class="form-control input-sm"
 													title="<?= $this->translate->_("Please select Test 2 result"); ?>"
 													placeholder="<?= $this->translate->_("Test 2 Result"); ?>">
-													<?php $this->dropdownSelection($otherTestPossibleResults, $sample['result_2'], true); ?>
+													<?php $this->dropdownSelection($testResultOptions, $sample['result_2'], true); ?>
 												</select>
 											</td>
 										<?php }
@@ -464,7 +492,7 @@ if ($inConfirmStep) {
 												<select name="result3[]" class="form-control input-sm"
 													title="<?= $this->translate->_("Please select Test 3 result"); ?>"
 													placeholder="<?= $this->translate->_("Test 3 Result"); ?>">
-													<?php $this->dropdownSelection($otherTestPossibleResults, $sample['result_3'], true); ?>
+													<?php $this->dropdownSelection($testResultOptions, $sample['result_3'], true); ?>
 												</select>
 											</td>
 										<?php } ?>
@@ -473,11 +501,11 @@ if ($inConfirmStep) {
 												class="<?php echo ($sample['mandatory'] == 1) ? "vlResultValues isRequired" : ""; ?> form-control input-sm "
 												title="<?= $this->translate->_("Please select the final result"); ?>"
 												placeholder="<?= $this->translate->_("Please choose final result for this sample"); ?>">
-												<?php $this->dropdownSelection($otherTestPossibleResults, $sample['reported_result'], true); ?>
+												<?php $this->dropdownSelection($finalResultOptions, $sample['reported_result'], true); ?>
 											</select>
 										</td>
 										<?php if ($adminAccess) { ?>
-											<td><?php $this->dropdownSelectedText($otherTestPossibleResults, $sample['reference_result'], true); ?>
+											<td><?php $this->dropdownSelectedText($allResultOptions, $sample['reference_result'], true); ?>
 											</td>
 										<?php }
 										if (isset($userTestConfig['captureAdditionalDetails']) && $userTestConfig['captureAdditionalDetails'] == 'yes') { ?>
