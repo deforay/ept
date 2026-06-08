@@ -54,21 +54,16 @@ class Pt_Plugins_PreSetter extends Zend_Controller_Plugin_Abstract
         if (isset($adminAuthNameSpace->admin_id)) {
             $loggedInAsAdmin = true;
 
-            $currentURI = $request->getRequestUri();
-            $adminAllowedURI = [
-                '/dts/response',
-                '/eid/response',
-                '/vl/response',
-                '/tb/response',
-                '/recency/response',
-                '/generic-test/response',
-                '/tb/assay-formats',
-            ];
-            foreach ($adminAllowedURI as $uri) {
-                if (strpos($currentURI, $uri) === 0) {
-                    $adminAllowedOnFrontend = true;
-                    break;
-                }
+            // Admins may open any test type's participant-facing pages reached
+            // from /admin/evaluate: the `response` page ("Edit" link) and the
+            // `assay-formats` page (where the bulk of the TB form is built).
+            // Rather than maintain a per-controller allowlist that silently
+            // breaks every time a new test module is added (custom-test, dbs,
+            // covid19 were all missing), allow these shared actions across every
+            // front-end test controller.
+            $adminAllowedActions = ['response', 'assay-formats'];
+            if (in_array($request->getActionName(), $adminAllowedActions, true)) {
+                $adminAllowedOnFrontend = true;
             }
         }
 
