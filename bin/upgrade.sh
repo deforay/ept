@@ -676,7 +676,7 @@ upgrade_instance() {
     local ept_path="$1"
     local instance_num="$2"
     local total_instances="$3"
-    local temp_dir="$4"
+    local src_dir="$4"
 
     print header "Upgrading instance ${instance_num}/${total_instances}: ${ept_path}"
     log_action "Starting upgrade for instance: ${ept_path}"
@@ -708,10 +708,12 @@ upgrade_instance() {
         print info "Preserving $symlinks_found symlinks."
     fi
 
-    # Rsync from temp to this instance
+    # Rsync source tree into this instance. Exclude .git so the mirror's git
+    # metadata is never copied into a deployed instance.
     rsync -a --inplace --whole-file --info=progress2 \
+        --exclude='.git' --exclude='.git/' \
         --exclude-from="$exclude_file" \
-        "$temp_dir/ept-master/" "$ept_path/" &
+        "$src_dir/" "$ept_path/" &
     local rsync_pid=$!
     spinner "${rsync_pid}"
     wait ${rsync_pid}
@@ -771,9 +773,32 @@ upgrade_instance() {
     # Download and install vendor if needed
     if [ "$NEED_FULL_INSTALL" = true ]; then
         print info "Installing dependencies..."
+        local vendor_done=false
+
+        # Slow-link escape hatch: pull the already-built vendor tree from a LAN
+        # peer with a delta rsync (only changed package files cross the wire),
+        # avoiding the large vendor.tar.gz download from GitHub on bandwidth-
+        # starved sites. The peer must be on the same master/lock.
+        #   e.g. EPT_VENDOR_SEED_FROM=user@peer:/var/www/ept/vendor/
+        if [ -n "${EPT_VENDOR_SEED_FROM:-}" ]; then
+            print info "Seeding vendor from ${EPT_VENDOR_SEED_FROM} ..."
+            if rsync -a --delete "${EPT_VENDOR_SEED_FROM}" "${ept_path}/vendor/"; then
+                chown -R www-data:www-data "${ept_path}/vendor" 2>/dev/null || true
+                chmod -R 755 "${ept_path}/vendor" 2>/dev/null || true
+                # Reconcile against the lock (near no-op if the peer matches).
+                sudo -u www-data composer install --no-scripts --no-autoloader --prefer-dist --no-dev --no-interaction
+                vendor_done=true
+                print success "Vendor seeded from peer."
+            else
+                print warning "Vendor seed from peer failed; falling back to GitHub vendor download."
+            fi
+        fi
+
         local vendor_url="https://github.com/deforay/ept/releases/download/vendor-latest/vendor.tar.gz"
         local vendor_tar="/tmp/ept-vendor.tar.gz"
-        if curl --output /dev/null --silent --head --fail "$vendor_url"; then
+        if [ "$vendor_done" = true ]; then
+            : # already handled via peer seed
+        elif curl --output /dev/null --silent --head --fail "$vendor_url"; then
             # Download once; the /tmp copy is reused across instances in this run.
             if [ ! -f "$vendor_tar" ]; then
                 download_file "$vendor_tar" "$vendor_url" "Downloading vendor packages..."
@@ -855,86 +880,109 @@ upgrade_instance() {
     return 0
 }
 
-# Download EPT source ONCE (shared across all instances).
+# Acquire EPT source ONCE (shared across all instances).
 #
-# Strategy: try the GitHub tarball first (fast), but trust it only after an
-# integrity check; if anything about it fails, fall back to a shallow git clone.
-# A git clone is integrity-checked end-to-end by git and never hands back a
-# silently truncated tree -- a broken transfer makes the clone fail loudly
-# instead of leaving corrupt files behind.
+# Primary path is a persistent shallow git mirror updated with DELTA fetches:
+# after the first seed, each run transfers only the changed objects (usually
+# tens of KB) instead of a ~20 MB tarball every time -- the difference between
+# seconds and half an hour on a slow link. Fallbacks, in order: seed from a LAN
+# peer, a fresh shallow clone, then the tarball. The .git dir is never rsynced
+# into instances.
 print header "Downloading EPT"
-
-temp_dir=$(mktemp -d)
-ept_src_ready=false
 
 REPO_TARBALL_URL="https://codeload.github.com/deforay/ept/tar.gz/refs/heads/master"
 REPO_GIT_URL="https://github.com/deforay/ept.git"
+EPT_SRC_DIR="${EPT_SRC_DIR:-/usr/local/lib/ept/src}"
 
-# --- Attempt 1: tarball -------------------------------------------------------
-if download_file "master.tar.gz" "$REPO_TARBALL_URL" "Downloading EPT package..."; then
-    print info "Verifying archive integrity..."
-    if gzip -t master.tar.gz 2>/dev/null; then
-        print info "Extracting files from master.tar.gz..."
-        if tar -xzf master.tar.gz -C "$temp_dir" 2>/dev/null && [ -d "$temp_dir/ept-master" ]; then
-            ept_src_ready=true
-        else
-            print warning "Extraction failed; will fall back to a git clone."
-        fi
+# Slow-network aware git wall-clock cap (seconds)
+src_mode_lower="$(printf '%s' "${DOWNLOAD_MODE:-}" | awk '{print tolower($0)}')"
+if [ "$src_mode_lower" = "slow" ] || [ "${SLOW_NETWORK:-0}" = "1" ]; then
+    git_timeout=2400
+else
+    git_timeout=900
+fi
+git_timeout_cmd=""
+command -v timeout &>/dev/null && git_timeout_cmd="timeout --kill-after=15 ${git_timeout}"
+
+# git with a wall-clock cap and a low-speed abort so a dead link fails fast
+# instead of hanging the whole upgrade.
+run_git() {
+    $git_timeout_cmd git -c http.lowSpeedLimit=1000 -c http.lowSpeedTime=60 "$@"
+}
+
+temp_dir=$(mktemp -d)
+ept_src_dir="" # the tree we deploy from, set once acquired
+
+# --- Attempt 1: update the persistent git mirror via delta fetch -------------
+if command -v git &>/dev/null && [ -d "$EPT_SRC_DIR/.git" ]; then
+    print info "Updating EPT source mirror (delta fetch -- only changed files)..."
+    git_log=$(mktemp)
+    if run_git -C "$EPT_SRC_DIR" fetch --depth 1 origin master >"$git_log" 2>&1 &&
+        git -C "$EPT_SRC_DIR" reset --hard FETCH_HEAD >>"$git_log" 2>&1 &&
+        git -C "$EPT_SRC_DIR" clean -fd >>"$git_log" 2>&1; then
+        ept_src_dir="$EPT_SRC_DIR"
+        print success "EPT source mirror updated."
     else
-        print warning "Downloaded archive is corrupt or truncated; will fall back to a git clone."
+        print warning "Delta fetch failed; will re-seed the mirror. Last output:"
+        tail -n 15 "$git_log"
+        rm -rf "$EPT_SRC_DIR"
+    fi
+    rm -f "$git_log"
+fi
+
+# --- Attempt 2: seed the mirror from a LAN peer (EPT_SEED_FROM) ---------------
+# e.g. EPT_SEED_FROM=user@peer:/usr/local/lib/ept/src/  -- include .git so later
+# runs can do delta fetches. LAN speed avoids the one-time slow clone entirely.
+if [ -z "$ept_src_dir" ] && [ -n "${EPT_SEED_FROM:-}" ]; then
+    print info "Seeding EPT source mirror from ${EPT_SEED_FROM} ..."
+    mkdir -p "$EPT_SRC_DIR"
+    if rsync -a --delete "$EPT_SEED_FROM" "$EPT_SRC_DIR/"; then
+        ept_src_dir="$EPT_SRC_DIR"
+        print success "EPT source mirror seeded from peer."
+    else
+        print warning "Seeding from peer failed; will try a direct clone."
+    fi
+fi
+
+# --- Attempt 3: fresh shallow clone into the mirror --------------------------
+if [ -z "$ept_src_dir" ] && command -v git &>/dev/null; then
+    print info "Cloning EPT master into source mirror (shallow)..."
+    git_log=$(mktemp)
+    for attempt in 1 2 3; do
+        rm -rf "$EPT_SRC_DIR"
+        if run_git clone --depth 1 --single-branch --branch master \
+            "$REPO_GIT_URL" "$EPT_SRC_DIR" >"$git_log" 2>&1; then
+            ept_src_dir="$EPT_SRC_DIR"
+            print success "EPT source cloned (attempt ${attempt}). Future updates will be delta-only."
+            break
+        fi
+        print warning "git clone attempt ${attempt}/3 failed."
+        sleep 3
+    done
+    if [ -z "$ept_src_dir" ]; then
+        print warning "git clone failed. Last output:"
+        tail -n 20 "$git_log"
+    fi
+    rm -f "$git_log"
+fi
+
+# --- Attempt 4: tarball (last resort; no mirror, so no future deltas) ---------
+if [ -z "$ept_src_dir" ]; then
+    print info "Falling back to tarball download..."
+    if download_file "master.tar.gz" "$REPO_TARBALL_URL" "Downloading EPT package..." &&
+        gzip -t master.tar.gz 2>/dev/null &&
+        tar -xzf master.tar.gz -C "$temp_dir" 2>/dev/null && [ -d "$temp_dir/ept-master" ]; then
+        ept_src_dir="$temp_dir/ept-master"
+        print success "EPT source obtained via tarball."
+    else
+        print warning "Tarball fallback failed."
     fi
     rm -f master.tar.gz
-else
-    print warning "Tarball download failed; will fall back to a git clone."
 fi
 
-# --- Attempt 2: shallow git clone --------------------------------------------
-if [ "$ept_src_ready" != true ]; then
-    if command -v git &>/dev/null; then
-        print info "Cloning EPT master via git (shallow)..."
-
-        # Slow-network aware: longer leash + resume tolerance when flagged.
-        git_mode_lower="$(printf '%s' "${DOWNLOAD_MODE:-}" | awk '{print tolower($0)}')"
-        if [ "$git_mode_lower" = "slow" ] || [ "${SLOW_NETWORK:-0}" = "1" ]; then
-            git_timeout=2400
-        else
-            git_timeout=900
-        fi
-        git_timeout_cmd=""
-        command -v timeout &>/dev/null && git_timeout_cmd="timeout --kill-after=15 ${git_timeout}"
-
-        git_log=$(mktemp)
-        for attempt in 1 2 3; do
-            rm -rf "$temp_dir/ept-master"
-            # http.lowSpeed* aborts a connection stuck under 1 KB/s for 60s so a
-            # dead link fails instead of hanging; the outer timeout is a backstop.
-            if $git_timeout_cmd git \
-                -c http.lowSpeedLimit=1000 -c http.lowSpeedTime=60 \
-                clone --depth 1 --single-branch --branch master \
-                "$REPO_GIT_URL" "$temp_dir/ept-master" >"$git_log" 2>&1; then
-                # Drop .git metadata so it never rsyncs into instances.
-                rm -rf "$temp_dir/ept-master/.git"
-                ept_src_ready=true
-                print success "EPT source obtained via git clone (attempt ${attempt})."
-                break
-            fi
-            print warning "git clone attempt ${attempt}/3 failed."
-            sleep 3
-        done
-
-        if [ "$ept_src_ready" != true ]; then
-            print error "git clone fallback failed after 3 attempts. Last output:"
-            tail -n 20 "$git_log"
-        fi
-        rm -f "$git_log"
-    else
-        print error "git not available for fallback download."
-    fi
-fi
-
-if [ "$ept_src_ready" != true ]; then
-    print error "EPT download failed (tarball and git clone) - cannot continue with update"
-    log_action "EPT download failed via all methods - update aborted"
+if [ -z "$ept_src_dir" ]; then
+    print error "EPT source could not be obtained (mirror, peer, clone, tarball all failed) - aborting"
+    log_action "EPT source acquisition failed via all methods - update aborted"
     rm -rf "$temp_dir"
     exit 1
 fi
@@ -944,7 +992,7 @@ print success "EPT package ready for deployment to ${#ept_paths[@]} instance(s).
 # Process each instance
 total_instances=${#ept_paths[@]}
 for i in "${!ept_paths[@]}"; do
-    if upgrade_instance "${ept_paths[$i]}" "$((i+1))" "$total_instances" "$temp_dir"; then
+    if upgrade_instance "${ept_paths[$i]}" "$((i+1))" "$total_instances" "$ept_src_dir"; then
         updated_instances+=("${ept_paths[$i]}")
     else
         failed_instances+=("${ept_paths[$i]}")
