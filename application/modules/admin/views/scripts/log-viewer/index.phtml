@@ -198,7 +198,7 @@
             q: qInput.value || '',
             limit: limitIn.value || '500'
         });
-        fetch(feedUrl + '?' + params.toString(), { credentials: 'same-origin' })
+        fetch(feedUrl + '?' + params.toString(), { credentials: 'same-origin', headers: { 'X-Requested-With': 'XMLHttpRequest' } })
             .then(function (r) { return r.json(); })
             .then(render)
             .catch(function () {
@@ -213,7 +213,7 @@
         var body = new URLSearchParams(params).toString();
         fetch(deleteUrl, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-Requested-With': 'XMLHttpRequest' },
             credentials: 'same-origin',
             body: body
         }).then(function (r) { return r.json().then(function (j) { return { ok: r.ok, json: j }; }); })
