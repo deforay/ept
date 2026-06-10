@@ -2,6 +2,9 @@
 
 $authNameSpace = new Zend_Session_Namespace('datamanagers');
 
+// Capture the confirm-step state before the session flag is consumed further below.
+$inConfirmStep = isset($_SESSION['confirmForm']) && $_SESSION['confirmForm'] === 'yes';
+
 if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment["shipment_test_report_date"]) != "") {
     $expTestReceiptDate = explode(" ", $this->shipment["shipment_test_report_date"]);
     $testReceiptDate = $this->dateFormat($expTestReceiptDate[0]);
@@ -683,7 +686,7 @@ if ($this->reqFrom == "admin") {
             }
         });
 
-        <?php if ((isset($this->isEditable) && !empty($this->isEditable) && !$this->isEditable) || (isset($this->shipment['allow_editing_response']) && !empty($this->shipment['allow_editing_response']) && $this->shipment['allow_editing_response'] == 'no' && !empty($this->shipment['RESPONSEDATE']))) { ?>
+        <?php if (empty($inConfirmStep) && ((isset($this->isEditable) && !empty($this->isEditable) && !$this->isEditable) || (isset($this->shipment['allow_editing_response']) && !empty($this->shipment['allow_editing_response']) && $this->shipment['allow_editing_response'] == 'no' && !empty($this->shipment['RESPONSEDATE'])))) { ?>
             $('input, select, textarea, radio').attr('disabled', true);
         <?php } ?>
     });
