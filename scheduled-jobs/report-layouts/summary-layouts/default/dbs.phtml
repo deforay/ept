@@ -45,6 +45,11 @@ if ($resultArray['shipment'] != "") {
     // ---------------------------------------------------------
 
     $pdf->AddPage('P', 'A4');
+
+    // Printable chart width (page minus L/R margins). Defined once so every chart
+    // below embeds with an explicit width; without it TCPDF auto-sizes the
+    // Chart.js 1400px PNGs to ~395mm and blows them off the right edge of the page.
+    $chartW = $pdf->getPageWidth() - PDF_MARGIN_LEFT - PDF_MARGIN_RIGHT;
     $pdf->SetFont('helvetica', '', 12);
     if (!empty($resultArray['shipment']['referenceResult'])) {
 
@@ -259,7 +264,7 @@ if ($resultArray['shipment'] != "") {
         //$image_file = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'logo'. DIRECTORY_SEPARATOR.'logo_example.jpg';
         //$mask = $pdf->Image('images/alpha.png', 50, 140, 100, '', '', '', '', false, 300, '', true);
         $y = $pdf->getY() + 5;
-        $pdf->Image($image_file, 5, $pdf->getY(), '', '', '', '', '', false, 300);
+        $pdf->Image($image_file, 5, $pdf->getY(), $chartW, 0, '', '', '', false, 300);
         if (file_exists($image_file)) {
             unlink($image_file);
         }
@@ -312,7 +317,7 @@ if ($resultArray['shipment'] != "") {
             'legend' => ['position' => 'bottom', 'columns' => 3],
         ], $outputDir);
 
-        $pdf->Image($piechart, 5, $y, '', '', '', '', '', false, 300);
+        $pdf->Image($piechart, 5, $y, $chartW, 0, '', '', '', false, 300);
         if (file_exists($piechart)) {
             unlink($piechart);
         }

@@ -49,6 +49,12 @@ if ($resultArray['shipment'] != "") {
     //
     // ---------------------------------------------------------
     $pdf->AddPage('P', 'A4');
+
+    // Printable chart width, defined once up front. Previously this lived inside
+    // the summaryResult block but was used by the pieChart/performance blocks too;
+    // a shipment with pieChart data but no summaryResult left it undefined, and
+    // TCPDF auto-width then blew the chart off the page.
+    $chartW = $pdf->getPageWidth() - PDF_MARGIN_LEFT - PDF_MARGIN_RIGHT;
     $pdf->SetFont('freesans', '', 12);
     if (!empty($resultArray['shipment']['referenceResult'])) {
 
@@ -246,7 +252,6 @@ if ($resultArray['shipment'] != "") {
         $image_file = $reportsPath . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'] . DIRECTORY_SEPARATOR . 'bar_chart.png';
         //$image_file = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'logo'. DIRECTORY_SEPARATOR.'logo_example.jpg';
         //$mask = $pdf->Image('images/alpha.png', 50, 140, 100, '', '', '', '', false, 300, '', true);
-        $chartW = $pdf->getPageWidth() - PDF_MARGIN_LEFT - PDF_MARGIN_RIGHT;
         $y = $pdf->getY() + 5;
         $pdf->Image($image_file, PDF_MARGIN_LEFT, $pdf->getY(), $chartW, 0, '', '', '', false, 300);
         if (file_exists($image_file)) {
