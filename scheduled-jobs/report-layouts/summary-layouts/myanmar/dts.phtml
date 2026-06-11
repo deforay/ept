@@ -243,6 +243,12 @@ if (!empty($resultArray['shipment'])) {
 
         $pdf->AddPage('P', 'A4');
 
+        // Printable chart width (page minus L/R margins = 180mm on A4). Defined
+        // unconditionally here because every chart below embeds with explicit
+        // $chartW; if it were left undefined (e.g. no site chart) TCPDF would
+        // fall back to pixel-based auto-width and blow the chart past the page.
+        $chartW = $pdf->getPageWidth() - PDF_MARGIN_LEFT - PDF_MARGIN_RIGHT;
+
         if ($resultArray['shipment']['siteChart'] && count($resultArray['shipment']['siteChart']) > 0) {
             $lab = 0;
             $dataX = [];
@@ -266,7 +272,6 @@ if (!empty($resultArray['shipment'])) {
                 ],
             ], $outputDir);
 
-            $chartW = $pdf->getPageWidth() - PDF_MARGIN_LEFT - PDF_MARGIN_RIGHT;
             $pdf->Image($sitefile, PDF_MARGIN_LEFT, $pdf->getY(), $chartW, 0, '', '', 'C', false, 300);
             if (file_exists($sitefile)) {
                 unlink($sitefile);

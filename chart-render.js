@@ -48,6 +48,27 @@ function pngCrc32(buf) {
     return (crc ^ -1) | 0;
 }
 
+// Word-wrap a string to fit within maxWidth (in px) using the ctx's current font.
+// Returns an array of lines. A single word that overflows is kept on its own line
+// (Chart.js will still render it; we never split mid-word).
+function wrapTextToWidth(ctx, text, maxWidth) {
+    const words = String(text).split(/\s+/).filter(Boolean);
+    if (words.length <= 1) return [String(text)];
+    const lines = [];
+    let cur = words[0];
+    for (let i = 1; i < words.length; i++) {
+        const test = cur + ' ' + words[i];
+        if (ctx.measureText(test).width <= maxWidth) {
+            cur = test;
+        } else {
+            lines.push(cur);
+            cur = words[i];
+        }
+    }
+    lines.push(cur);
+    return lines;
+}
+
 Chart.register(
     CategoryScale,
     LinearScale,
@@ -99,6 +120,34 @@ process.stdin.on('end', async () => {
         const ctx = canvas.getContext('2d');
         ctx.fillStyle = '#ffffff';
         ctx.fillRect(0, 0, width, height);
+
+        // Defense-in-depth against the #1 chart-embedding bug: Chart.js draws a
+        // single-string title centered and does NOT shrink or wrap it — if the
+        // string is wider than the canvas it overflows and is clipped on BOTH
+        // sides (the classic "ating laboratories…" cut-off title). Pre-measure
+        // the title and, if it won't fit, word-wrap it into multiple lines.
+        // Chart.js renders an array of strings as stacked title lines, so this
+        // makes title clipping structurally impossible at any canvas size or
+        // title length — no per-template font tuning required.
+        const titleCfg = chartConfig?.options?.plugins?.title;
+        if (titleCfg && titleCfg.display !== false
+            && typeof titleCfg.text === 'string' && titleCfg.text.trim() !== '') {
+            const fsize = titleCfg.font?.size ?? 28;
+            const fweight = titleCfg.font?.weight ?? 'normal';
+            ctx.font = `${fweight} ${fsize}px sans-serif`;
+            const budget = width * 0.92; // leave a small margin for measurement error
+            if (ctx.measureText(titleCfg.text).width > budget) {
+                titleCfg.text = wrapTextToWidth(ctx, titleCfg.text, budget);
+            }
+        }
+
+        // Give rotated axis labels and the title breathing room so they can't
+        // clip against the canvas edge. Chart.js sizes the plot area but long
+        // rotated tick labels can still overflow the bottom-left past x=0.
+        chartConfig.options = chartConfig.options || {};
+        if (chartConfig.options.layout === undefined) {
+            chartConfig.options.layout = { padding: Math.max(8, Math.round(width * 0.012)) };
+        }
 
         const chart = new Chart(canvas, chartConfig);
 
