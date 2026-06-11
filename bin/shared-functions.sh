@@ -1217,17 +1217,47 @@ install_npm_packages() {
         return 0
     fi
 
-    print info "Installing npm packages in ${app_path}..."
     cd "${app_path}"
+
     # Prefer `npm ci` for reproducible, lockfile-pinned installs: it installs the
     # exact vetted versions and refuses to drift onto a newer (or compromised)
     # release within the package.json caret ranges. Fall back to `npm install`
     # only when no lockfile is present.
     local npm_cmd="install"
-    if [ -f "package-lock.json" ] || [ -f "npm-shrinkwrap.json" ]; then
+    local lockfile="package.json"
+    if [ -f "package-lock.json" ]; then
         npm_cmd="ci"
+        lockfile="package-lock.json"
+    elif [ -f "npm-shrinkwrap.json" ]; then
+        npm_cmd="ci"
+        lockfile="npm-shrinkwrap.json"
     fi
+
+    # Skip the install entirely when node_modules already reflects the current
+    # lockfile. `npm ci` wipes and rebuilds node_modules from scratch on EVERY
+    # run, so without this guard every upgrade pays a full reinstall even when
+    # nothing changed. We stamp the lockfile's checksum after a successful
+    # install and short-circuit while it still matches.
+    local stamp="node_modules/.ept-npm-stamp"
+    local current_sum=""
+    if command -v sha256sum &>/dev/null; then
+        current_sum="$(sha256sum "${lockfile}" 2>/dev/null | awk '{print $1}')"
+    fi
+    if [ -d "node_modules" ] && [ -n "${current_sum}" ] && [ -f "${stamp}" ] \
+        && [ "${current_sum}" = "$(cat "${stamp}" 2>/dev/null)" ]; then
+        print info "npm packages already up to date (${lockfile} unchanged). Skipping install."
+        return 0
+    fi
+
+    print info "Installing npm packages in ${app_path}..."
     sudo -u www-data npm "${npm_cmd}" --omit=dev 2>/dev/null || npm "${npm_cmd}" --omit=dev
+
+    # Record the lockfile checksum so the next upgrade can skip a no-op install.
+    if [ -n "${current_sum}" ] && [ -d "node_modules" ]; then
+        echo "${current_sum}" > "${stamp}"
+        chown www-data:www-data "${stamp}" 2>/dev/null || true
+    fi
+
     print success "npm packages installed."
     log_action "npm packages installed in ${app_path}."
 }
