@@ -79,101 +79,109 @@
 					</div>
 				</div>
 			</div>
-			<div class="form-group col-lg-6">
-				<label class="col-lg-4 control-label" for="scheme"><?= $this->translate->_("Scheme"); ?> <span
-						class="mandatory">*</span></label>
-				<div class="col-lg-8">
-					<select id="scheme" name="scheme[]" multiple="multiple" class="form-control multiselect isRequired"
-						title="Please select the Scheme" onchange="selectStages();">
-						<option value="">--<?= $this->translate->_("Select Scheme"); ?>--</option>
-						<?php foreach ($this->schemeList as $scheme) { ?>
-							<option value="<?php echo $scheme['scheme_id']; ?>" <?php echo (isset($this->result['scheme_type']) && $this->result['scheme_type'] == $scheme['scheme_id']) ? " selected='selected'" : ""; ?>><?php echo $scheme['scheme_name']; ?></option>
-						<?php } ?>
-					</select>
-				</div>
-			</div>
-			<div class="form-group col-lg-6 testStages hide">
-				<label class="col-lg-4 control-label"
-					for="testStages"><?= $this->translate->_("Choose a Test Number to map test kit"); ?></label>
-				<div class="col-lg-8">
-					<select class="form-control multiselect" multiple="multiple" name="testStages[]" id="testStages"
-						title="Please choose a test stage" onchange="getTestKit(this.value)">
-						<option value=""> -- <?= $this->translate->_("Select"); ?> -- </option>
-						<option value="testkit_1" <?php echo ((isset($this->result["testkit_1"]) && $this->result["testkit_1"] == '1') ? "selected='selected'" : "") ?>>
-							<?= $this->translate->_("Test 1"); ?></option>
-						<option value="testkit_2" <?php echo ((isset($this->result["testkit_2"]) && $this->result["testkit_2"] == '1') ? "selected='selected'" : "") ?>>
-							<?= $this->translate->_("Test 2"); ?></option>
-						<option value="testkit_3" <?php echo ((isset($this->result["testkit_3"]) && $this->result["testkit_3"] == '1') ? "selected='selected'" : "") ?>>
-							<?= $this->translate->_("Test 3"); ?></option>
-					</select>
-				</div>
-			</div>
-			<div class="form-group col-lg-6">
-				<label class="col-lg-4 control-label" for="countryAdapted"><?= $this->translate->_("Is PT Provider Validated?"); ?> <span
-						class="mandatory">*</span></label>
-				<div class="col-lg-8">
-					<select class="form-control isRequired" name="countryAdapted" id="countryAdapted"
-						title="Please choose the country adapted here">
-						<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
-						<option value="1" <?php echo (($this->result["pt_provider_validated"] == '1') ? "selected='selected'" : "") ?>><?= $this->translate->_("Yes"); ?></option>
-						<option value="0" <?php echo (($this->result["pt_provider_validated"] == '0') ? "selected='selected'" : "") ?>><?= $this->translate->_("No"); ?></option>
-					</select>
-				</div>
-			</div>
-			<div class="form-group col-lg-6">
-				<label class="col-lg-4 control-label"
-					for="additionalInfo"><?= $this->translate->_("Allow Additional Information"); ?></label>
-				<div class="col-lg-8">
-					<select class="form-control" name="attributes[additional_info]" id="additionalInfo"
-						title="Please select allowing additional information" onchange="additionalInfoFun(this.value);">
-						<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
-						<option value="1" <?php echo ((isset($attributes["additional_info"]) && $attributes["additional_info"] == '1') ? "selected='selected'" : "") ?>>
-							<?= $this->translate->_("Yes"); ?></option>
-						<option value="0" <?php echo ((isset($attributes["additional_info"]) && $attributes["additional_info"] == '0') ? "selected='selected'" : "") ?>>
-							<?= $this->translate->_("No"); ?></option>
-					</select>
-				</div>
-			</div>
-			<div
-				class="row additionalInfo <?php echo (isset($attributes["additional_info"]) && $attributes["additional_info"] == '1') ? '' : 'hide'; ?>">
-				<div
-					class="form-group col-lg-6 additionalInfo <?php echo (isset($attributes["additional_info"]) && $attributes["additional_info"] == '1') ? '' : 'hide'; ?>">
-					<label class="col-lg-4 control-label"
-						for="additionalInfoLabel"><?= $this->translate->_("Additional Information Label"); ?></label>
+			<div class="row">
+				<div class="form-group col-lg-6">
+					<label class="col-lg-4 control-label" for="scheme"><?= $this->translate->_("Scheme"); ?> <span
+							class="mandatory">*</span></label>
 					<div class="col-lg-8">
-						<input type="text" class="form-control"
-							value="<?php echo $attributes['additional_info_label'] ?? ''; ?>"
-							name="attributes[additional_info_label]" id="additionalInfoLabel"
-							title="Please select additional information label"
-							placeholder="Enter the additional information label">
+						<select id="scheme" name="scheme[]" multiple="multiple" class="form-control multiselect isRequired"
+							title="Please select the Scheme" onchange="selectStages();">
+							<option value="">--<?= $this->translate->_("Select Scheme"); ?>--</option>
+							<?php foreach ($this->schemeList as $scheme) { ?>
+								<option value="<?php echo $scheme['scheme_id']; ?>" <?php echo (isset($this->result['scheme_type']) && $this->result['scheme_type'] == $scheme['scheme_id']) ? " selected='selected'" : ""; ?>><?php echo $scheme['scheme_name']; ?></option>
+							<?php } ?>
+						</select>
 					</div>
 				</div>
-
-				<div
-					class="form-group col-lg-6 additionalInfo <?php echo (isset($attributes["additional_info"]) && $attributes["additional_info"] == '1') ? '' : 'hide'; ?>">
-					<label class="col-lg-4 control-label"
-						for="additionalInfoMandatory"><?= $this->translate->_("Is Additional Information Mandatory?"); ?></label>
+				<div class="form-group col-lg-6">
+					<label class="col-lg-4 control-label" for="countryAdapted"><?= $this->translate->_("Is PT Provider Validated?"); ?> <span
+							class="mandatory">*</span></label>
 					<div class="col-lg-8">
-						<select class="form-control" name="attributes[additional_info_mandatory]"
-							id="additionalInfoMandatory"
-							title="Please select if additional information mandatory or not?">
+						<select class="form-control isRequired" name="countryAdapted" id="countryAdapted"
+							title="Please choose the country adapted here">
 							<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
-							<option value="1" <?php echo ((isset($attributes["additional_info_mandatory"]) && $attributes["additional_info_mandatory"] == '1') ? "selected='selected'" : "") ?>>
-								<?= $this->translate->_("Yes"); ?></option>
-							<option value="0" <?php echo ((isset($attributes["additional_info_mandatory"]) && $attributes["additional_info_mandatory"] == '0') ? "selected='selected'" : "") ?>>
-								<?= $this->translate->_("No"); ?></option>
+							<option value="1" <?php echo (($this->result["pt_provider_validated"] == '1') ? "selected='selected'" : "") ?>><?= $this->translate->_("Yes"); ?></option>
+							<option value="0" <?php echo (($this->result["pt_provider_validated"] == '0') ? "selected='selected'" : "") ?>><?= $this->translate->_("No"); ?></option>
 						</select>
 					</div>
 				</div>
 			</div>
-			<div class="form-group col-lg-6">
-				<label class="col-lg-4 control-label"><?= $this->translate->_("Comments"); ?></label>
-				<div class="col-lg-8">
-					<textarea class="form-control" name="comments"
-						id="comments"><?php echo $this->result['TestKit_Comments']; ?></textarea>
+			<div class="row">
+				<div class="form-group col-lg-6">
+					<label class="col-lg-4 control-label"
+						for="additionalInfo"><?= $this->translate->_("Allow Additional Information"); ?></label>
+					<div class="col-lg-8">
+						<select class="form-control" name="attributes[additional_info]" id="additionalInfo"
+							title="Please select allowing additional information" onchange="additionalInfoFun(this.value);">
+							<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
+							<option value="1" <?php echo ((isset($attributes["additional_info"]) && $attributes["additional_info"] == '1') ? "selected='selected'" : "") ?>>
+								<?= $this->translate->_("Yes"); ?></option>
+							<option value="0" <?php echo ((isset($attributes["additional_info"]) && $attributes["additional_info"] == '0') ? "selected='selected'" : "") ?>>
+								<?= $this->translate->_("No"); ?></option>
+						</select>
+					</div>
+				</div>
+				<div class="form-group col-lg-6">
+					<label class="col-lg-4 control-label"><?= $this->translate->_("Comments"); ?></label>
+					<div class="col-lg-8">
+						<textarea class="form-control" name="comments"
+							id="comments"><?php echo $this->result['TestKit_Comments']; ?></textarea>
+					</div>
+				</div>
+			</div>
+			<div class="row">
+				<div
+					class="row additionalInfo <?php echo (isset($attributes["additional_info"]) && $attributes["additional_info"] == '1') ? '' : 'hide'; ?>">
+					<div
+						class="form-group col-lg-6 additionalInfo <?php echo (isset($attributes["additional_info"]) && $attributes["additional_info"] == '1') ? '' : 'hide'; ?>">
+						<label class="col-lg-4 control-label"
+							for="additionalInfoLabel"><?= $this->translate->_("Additional Information Label"); ?></label>
+						<div class="col-lg-8">
+							<input type="text" class="form-control"
+								value="<?php echo $attributes['additional_info_label'] ?? ''; ?>"
+								name="attributes[additional_info_label]" id="additionalInfoLabel"
+								title="Please select additional information label"
+								placeholder="Enter the additional information label">
+						</div>
+					</div>
+
+					<div
+						class="form-group col-lg-6 additionalInfo <?php echo (isset($attributes["additional_info"]) && $attributes["additional_info"] == '1') ? '' : 'hide'; ?>">
+						<label class="col-lg-4 control-label"
+							for="additionalInfoMandatory"><?= $this->translate->_("Is Additional Information Mandatory?"); ?></label>
+						<div class="col-lg-8">
+							<select class="form-control" name="attributes[additional_info_mandatory]"
+								id="additionalInfoMandatory"
+								title="Please select if additional information mandatory or not?">
+								<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
+								<option value="1" <?php echo ((isset($attributes["additional_info_mandatory"]) && $attributes["additional_info_mandatory"] == '1') ? "selected='selected'" : "") ?>>
+									<?= $this->translate->_("Yes"); ?></option>
+								<option value="0" <?php echo ((isset($attributes["additional_info_mandatory"]) && $attributes["additional_info_mandatory"] == '0') ? "selected='selected'" : "") ?>>
+									<?= $this->translate->_("No"); ?></option>
+							</select>
+						</div>
+					</div>
 				</div>
 			</div>
 
+			<div class="row">
+				<div class="form-group col-lg-6 testStages hide">
+					<label class="col-lg-4 control-label"
+						for="testStages"><?= $this->translate->_("Choose a Test Number to map test kit"); ?></label>
+					<div class="col-lg-8">
+						<select class="form-control multiselect" multiple="multiple" name="testStages[]" id="testStages"
+							title="Please choose a test stage" onchange="getTestKit(this.value)">
+							<option value=""> -- <?= $this->translate->_("Select"); ?> -- </option>
+							<option value="testkit_1" <?php echo ((isset($this->result["testkit_1"]) && $this->result["testkit_1"] == '1') ? "selected='selected'" : "") ?>>
+								<?= $this->translate->_("Test 1"); ?></option>
+							<option value="testkit_2" <?php echo ((isset($this->result["testkit_2"]) && $this->result["testkit_2"] == '1') ? "selected='selected'" : "") ?>>
+								<?= $this->translate->_("Test 2"); ?></option>
+							<option value="testkit_3" <?php echo ((isset($this->result["testkit_3"]) && $this->result["testkit_3"] == '1') ? "selected='selected'" : "") ?>>
+								<?= $this->translate->_("Test 3"); ?></option>
+						</select>
+					</div>
+				</div>
+			</div>
 			<div id="respond" style="margin: 0px auto 0px auto; text-align: center;" class="form-group col-lg-11"
 				align="center">
 				<input name="submitbtn" class="btn btn-primary" type="submit" tabindex="7"
@@ -188,7 +196,7 @@
 <script type="text/javascript" src="<?php echo $this->baseUrl('js/select2.min.js'); ?>"></script>
 <script type="text/javascript">
 	var duplicated = false;
-	$(document).ready(function () {
+	$(document).ready(function() {
 		$(".multiselect").select2({
 			placeholder: "<?= $this->translate->_("Choose one or more options"); ?>",
 			width: '100%'
@@ -199,13 +207,13 @@
 
 	function checkDuplicate(tableName, fieldName, obj, fnct, msg) {
 		$.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'common', 'action' => 'check-duplicate')); ?>", {
-			tableName: tableName,
-			fieldName: fieldName,
-			value: obj.value,
-			fnct: fnct,
-			format: "html"
-		},
-			function (data) {
+				tableName: tableName,
+				fieldName: fieldName,
+				value: obj.value,
+				fnct: fnct,
+				format: "html"
+			},
+			function(data) {
 				if (data > 0) {
 					alert(msg, "err");
 					duplicated = true;
@@ -236,15 +244,45 @@
 
 	function selectStages() {
 		let list = $('[name="scheme[]"]').val();
-		$(list).each(function (i, data) {
+
+		const multiStageSchemes = ['covid19', 'dbs', 'eid', 'recency', 'tb', 'vl'];
+
+		let showStages = false;
+		let isDts = false;
+
+		$(list).each(function(i, data) {
 			if (data == 'dts') {
-				console.log(data);
-				$('.testStages').removeClass('hide');
-				$('#testStages').addClass('isRequired');
-			} else {
-				$('#testStages').removeClass('isRequired');
-				$('.testStages').addClass('hide');
+				showStages = true;
+				isDts = true;
+			} else if (!$.inArray(data, multiStageSchemes) !== -1) {
+				showStages = true;
 			}
 		});
+
+		if (showStages) {
+			$('.testStages').removeClass('hide');
+			$('#testStages').addClass('isRequired');
+
+			if (isDts) {
+				// DTS — show all 3 options
+				$('#testStages').html(`
+                <option value=""> -- <?= $this->translate->_("Select"); ?> -- </option>
+                <option value="testkit_1"><?= $this->translate->_("Test 1"); ?></option>
+                <option value="testkit_2"><?= $this->translate->_("Test 2"); ?></option>
+                <option value="testkit_3"><?= $this->translate->_("Test 3"); ?></option>
+            `);
+			} else {
+				// Other schemes — show only Test 1
+				$('#testStages').html(`
+                <option value=""> -- <?= $this->translate->_("Select"); ?> -- </option>
+                <option value="testkit_1"><?= $this->translate->_("Test 1"); ?></option>
+            `);
+				$('#testStages').val('').trigger('change');
+			}
+		} else {
+			// Hide stages if no matching scheme
+			$('#testStages').removeClass('isRequired');
+			$('.testStages').addClass('hide');
+		}
 	}
 </script>
