@@ -13,12 +13,9 @@ if (empty($this->shipments)) {
 
 // Reports can be (re)generated and the shipment can be finalized once it has
 // been evaluated. Previously gated on PT Survey Date < today; that gate has been
-// removed — server-side endpoints still enforce their own status preconditions.
-$evaluatedShipmentStatuses = ['evaluated', 'reports generated', 'finalized'];
-$shipmentStatusForGate = strtolower((string) ($this->shipments[0]['status'] ?? ''));
-$isEvaluatedOrLater = in_array($shipmentStatusForGate, $evaluatedShipmentStatuses, true);
-$canGenerateIndividualReport = $isEvaluatedOrLater ? 1 : 0;
-$canGenerateFinalReport = $isEvaluatedOrLater ? 1 : 0;
+// removed. The per-shipment generateReportsEnabled / finalizeEnabled flags from
+// getShipmentButtonStates() (computed in the row loop below) are the source of
+// truth — server-side endpoints still enforce their own status preconditions.
 
 // Determine report button states
 $individualReportTitle = $this->translate->_('Generate Reports');
@@ -151,13 +148,13 @@ if (isset($this->shipmentStatus['finalized']['status'])) {
 										<?php endif; ?>
 										<a href="javascript:void(0)"
 											class="btn btn-xs btn-warning <?= $generateReportsClass; ?>"
-											onclick="generateReports('<?= $encodedShipmentId; ?>', <?= $canGenerateIndividualReport; ?>, '<?= $this->dateFormat($shipment['distribution_date']); ?>', 'generateReport')">
+											onclick="generateReports('<?= $encodedShipmentId; ?>', <?= (int) $generateReportsEnabled; ?>, '<?= $this->dateFormat($shipment['distribution_date']); ?>', 'generateReport')">
 											<i class="icon-refresh"></i> <?= $this->translate->_("Regenerate Reports"); ?>
 										</a>
 									<?php else: ?>
 										<a href="javascript:void(0)"
 											class="btn btn-xs btn-primary <?= $generateReportsClass; ?>"
-											onclick="generateReports('<?= $encodedShipmentId; ?>', <?= $canGenerateIndividualReport; ?>, '<?= $this->dateFormat($shipment['distribution_date']); ?>', 'generateReport')">
+											onclick="generateReports('<?= $encodedShipmentId; ?>', <?= (int) $generateReportsEnabled; ?>, '<?= $this->dateFormat($shipment['distribution_date']); ?>', 'generateReport')">
 											<i class="icon-ok"></i> <?= $this->translate->_("Generate Reports"); ?>
 										</a>
 									<?php endif; ?>
@@ -165,7 +162,7 @@ if (isset($this->shipmentStatus['finalized']['status'])) {
 									<a href="<?= $finalizeEnabled ? 'javascript:void(0)' : 'javascript:void(0)'; ?>"
 										class="btn btn-xs btn-primary <?= $finalizeClass; ?>"
 										<?php if ($finalizeEnabled): ?>
-										onclick="generateReports('<?= $encodedShipmentId; ?>', <?= $canGenerateFinalReport; ?>, '<?= $this->dateFormat($shipment['distribution_date']); ?>', 'finalized')"
+										onclick="generateReports('<?= $encodedShipmentId; ?>', <?= (int) $finalizeEnabled; ?>, '<?= $this->dateFormat($shipment['distribution_date']); ?>', 'finalized')"
 										<?php endif; ?>>
 										<i class="icon-ok"></i> <?= $finalReportTitle; ?>
 									</a>

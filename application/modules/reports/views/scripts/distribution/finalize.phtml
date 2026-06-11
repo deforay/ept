@@ -114,9 +114,13 @@ if (!empty($this->shipment)) {
     if ($this->shipment[0]['report_generated'] == 'yes') {
         $reportTitle = 'Generate Reports and Finalize Shipment';
     }
-    // Allow finalize once the shipment is evaluated. Previously gated on
-    // PT Survey Date < today; that gate has been removed.
-    $checkReportDate = in_array(strtolower((string) ($this->shipment[0]['status'] ?? '')), ['evaluated', 'reports generated', 'finalized'], true) ? 1 : 0;
+    // Allow this combined "generate reports and finalize" action once the shipment
+    // is evaluated. Previously gated on PT Survey Date < today; that gate has been
+    // removed. Derive from milestone timestamps (evaluated_at/...) via the shared
+    // helper rather than a raw status string. generateReportsEnabled (evaluated or
+    // later, not finalized) is the correct flag here — finalizeEnabled would wrongly
+    // require reports to already exist before this generate-and-finalize button works.
+    $checkReportDate = (int) Application_Service_Shipments::getShipmentButtonStates($this->shipment[0])['generateReportsEnabled'];
     ?>
     <?php if ($shipment['status'] != 'finalized') { ?>
         <div class="row" align="center">

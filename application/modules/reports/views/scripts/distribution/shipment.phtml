@@ -165,8 +165,10 @@ if (!empty($this->shipment)) {
             $reportTitle = 'Generate Reports';
         }
         // Allow report generation once the shipment is evaluated. Previously
-        // gated on PT Survey Date < today; that gate has been removed.
-        $checkReportDate = in_array(strtolower((string) ($this->shipment[0]['status'] ?? '')), ['evaluated', 'reports generated', 'finalized'], true) ? 1 : 0; ?>
+        // gated on PT Survey Date < today; that gate has been removed. Derive the
+        // gate from the milestone timestamps (evaluated_at/...) via the shared
+        // helper rather than a raw status string, which isn't a reliable source.
+        $checkReportDate = (int) Application_Service_Shipments::getShipmentButtonStates($this->shipment[0])['generateReportsEnabled']; ?>
         <div class="row" align="center">
             <a href="javascript:void(0)" class="btn btn-sm generate-btn btn-info <?php echo $reportQueue; ?>"
                 style="margin-top:10px;clear:both !important;padding: 10px;box-shadow: 0px 1px 5px grey;"

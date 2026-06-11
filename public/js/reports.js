@@ -33,7 +33,7 @@ function generateReports(sId, checkReportDate, surveyDate, _type) {
             });
     } else {
         $.unblockUI();
-        alert("You cannot generate reports on or before PT Survey Date (" + surveyDate + ").\n\n\nYou can change the PT Survey Date and retry.");
+        alert("You cannot generate reports for this shipment yet.\n\n\nReports can only be generated once the shipment has been evaluated.");
     }
 }
 
