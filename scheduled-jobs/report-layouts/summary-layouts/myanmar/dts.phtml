@@ -52,8 +52,14 @@ if (!empty($resultArray['shipment'])) {
     $pdf->SetFont('freesans', '', 12);
     $shipmentAttributes = isset($resultArray['shipment']['shipment_attributes']) ? Pt_Commons_JsonUtility::safeDecode($resultArray['shipment']['shipment_attributes']) : array();
 
-    $htmlTitle = '<span style="font-weight: bold; font-size:10;text-align:center;">Summary Report</span>';
-    $pdf->writeHTML($htmlTitle, true, false, true, false, '');
+    // In the FPDI path the header already prints "All Participants Results Report"
+    // on page 1, so drawing "Summary Report" here too stacks the two titles on
+    // top of each other. Only emit it for the non-FPDI (SummaryPdf) header, which
+    // does not carry that title.
+    if (empty($reportFormat)) {
+        $htmlTitle = '<span style="font-weight: bold; font-size:10;text-align:center;">Summary Report</span>';
+        $pdf->writeHTML($htmlTitle, true, false, true, false, '');
+    }
 
     if (!empty($resultArray['shipment']['referenceResult'])) {
 
@@ -455,6 +461,11 @@ if (!empty($resultArray['shipment'])) {
         $pdf->AddPage('P', 'A4');
     }
 
+    // Tracks whether the aberrant pie was drawn on the current page, so the
+    // dept bar below knows to start a fresh page instead of colliding with it
+    // (both charts plus the y=240mm footer cannot share one page).
+    $aberrantPieOnPage = false;
+
     if (isset($resultArray['shipment']['participantAberrantChart']) && count($resultArray['shipment']['participantAberrantChart']) > 0 && $resultArray['shipment']['participantAberrantChart'] != '') {
         $val = $resultArray['shipment']['participantAberrantChart'];
         if (($val['number_passed'] + $val['number_failed']) > 0) {
@@ -478,10 +489,17 @@ if (!empty($resultArray['shipment'])) {
             if (file_exists($aberrantPiechart)) {
                 unlink($aberrantPiechart);
             }
+            $aberrantPieOnPage = true;
         }
     }
 
     if (isset($resultArray['shipment']['participantAberrantDepartmentChart']['department_name']) && count($resultArray['shipment']['participantAberrantDepartmentChart']['department_name']) > 0 && $resultArray['shipment']['participantAberrantDepartmentChart']['department_name'] != '') {
+        // The pie above plus this bar plus the y=240mm footer cannot co-exist on
+        // one page; if the pie was drawn, give this bar its own page so the
+        // clamp below has room instead of sliding the bar up into the pie.
+        if ($aberrantPieOnPage) {
+            $pdf->AddPage('P', 'A4');
+        }
         $val = $resultArray['shipment']['participantAberrantDepartmentChart'];
         $y = $pdf->getY() + 5;
         $outputDir = $reportsPath . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'];
@@ -497,7 +515,18 @@ if (!empty($resultArray['shipment'])) {
             ],
         ], $outputDir);
 
-        $pdf->Image($aberrantResultChart, PDF_MARGIN_LEFT, ($y + 120), $chartW, 0, '', '', '', false, 300);
+        // Clamp the chart's vertical position so its bottom never runs into the
+        // fixed footer block at y=240mm ("Report approved by … End of report").
+        // Displayed height is derived from the real PNG aspect at the explicit
+        // $chartW, so this holds regardless of the rendered pixel size.
+        [$pngW, $pngH] = getimagesize($aberrantResultChart);
+        $dispH = ($pngW > 0) ? ($chartW * $pngH / $pngW) : 0;
+        $footerY = 240;
+        $chartY = $y + 120;
+        if ($chartY + $dispH > $footerY - 6) {
+            $chartY = max($y, $footerY - 6 - $dispH);
+        }
+        $pdf->Image($aberrantResultChart, PDF_MARGIN_LEFT, $chartY, $chartW, 0, '', '', '', false, 300);
         if (file_exists($aberrantResultChart)) {
             unlink($aberrantResultChart);
         }
