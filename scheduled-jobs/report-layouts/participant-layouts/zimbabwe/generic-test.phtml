@@ -332,11 +332,11 @@ if (!empty($resultArray['shipment'])) {
                 }
                 $expDate = Pt_Commons_DateUtility::humanReadableDateFormat($attributes['kit_expiry_date']);
                 $labRes = '<span style="font-weight: bold;font-size:11px;">Your ' . $result['scheme_name'] . ' Proficiency results : <br/></span>';
-                $labRes .= '<table border="1" style="text-align:center;font-weight:bold;width:650px;font-size:11px;">
+                $labRes .= '<table border="1" style="text-align:center;font-weight:bold;width:100%;font-size:11px;">
                     <tr>
-                        <td style="background-color:#8ECF64;">Test Kit Name</td>
-                        <td style="background-color:#8ECF64;">Test Kit Expiry</td>
-                        <td style="background-color:#8ECF64;">Test Kit Lot No</td>
+                        <td style="background-color:#dbe4ee;">Test Kit Name</td>
+                        <td style="background-color:#dbe4ee;">Test Kit Expiry</td>
+                        <td style="background-color:#dbe4ee;">Test Kit Lot No</td>
                     </tr>
                     <tr>
                         <td style="background-color:white;font-weight: normal;">' . $testkitName . '</td>
