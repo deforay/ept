@@ -48,6 +48,13 @@ if (!empty($resultArray['shipment'])) {
     // add a page
     $pdf->AddPage('P', 'A4');
 
+    // Printable chart width (page minus L/R margins = 180mm on A4). Defined once,
+    // up front, because every chart block below (site, perf, testkit, pie,
+    // timeliness, aberrant) embeds with this explicit width. Leaving it undefined
+    // for any block makes TCPDF fall back to pixel-based auto-width and blow the
+    // chart past the page.
+    $chartW = $pdf->getPageWidth() - PDF_MARGIN_LEFT - PDF_MARGIN_RIGHT;
+
     /* Set Font */
     $pdf->SetFont('freesans', '', 12);
     $shipmentAttributes = isset($resultArray['shipment']['shipment_attributes']) ? Pt_Commons_JsonUtility::safeDecode($resultArray['shipment']['shipment_attributes']) : array();
@@ -249,12 +256,6 @@ if (!empty($resultArray['shipment'])) {
 
         $pdf->AddPage('P', 'A4');
 
-        // Printable chart width (page minus L/R margins = 180mm on A4). Defined
-        // unconditionally here because every chart below embeds with explicit
-        // $chartW; if it were left undefined (e.g. no site chart) TCPDF would
-        // fall back to pixel-based auto-width and blow the chart past the page.
-        $chartW = $pdf->getPageWidth() - PDF_MARGIN_LEFT - PDF_MARGIN_RIGHT;
-
         if ($resultArray['shipment']['siteChart'] && count($resultArray['shipment']['siteChart']) > 0) {
             $lab = 0;
             $dataX = [];
@@ -278,13 +279,23 @@ if (!empty($resultArray['shipment'])) {
                 ],
             ], $outputDir);
 
-            $pdf->Image($sitefile, PDF_MARGIN_LEFT, $pdf->getY(), $chartW, 0, '', '', 'C', false, 300);
+            // Place the site chart, then advance the cursor by its real on-page
+            // height (PNG aspect at $chartW) so the perf chart below flows right
+            // under it instead of guessing a +105mm offset past it.
+            $siteY = $pdf->getY();
+            $pdf->Image($sitefile, PDF_MARGIN_LEFT, $siteY, $chartW, 0, '', '', 'C', false, 300);
+            [$siteW, $siteH] = getimagesize($sitefile);
+            if ($siteW > 0) {
+                $pdf->SetY($siteY + ($chartW * $siteH / $siteW) + 8);
+            }
             if (file_exists($sitefile)) {
                 unlink($sitefile);
             }
         }
 
-        $pdf->Image($image_file, PDF_MARGIN_LEFT, $pdf->getY() + 105, $chartW, 0, '', '', 'C', false, 300);
+        // Flows directly below the site chart, or sits at the top of the page
+        // when there is no site chart — no hardcoded vertical offset.
+        $pdf->Image($image_file, PDF_MARGIN_LEFT, $pdf->getY(), $chartW, 0, '', '', 'C', false, 300);
         if (file_exists($image_file)) {
             unlink($image_file);
         }
@@ -317,7 +328,10 @@ if (!empty($resultArray['shipment'])) {
             ],
         ], $outputDir);
 
-        $pdf->Image($piechart, PDF_MARGIN_LEFT, ($pdf->getY() + 200), $chartW, 0, '', '', 'C', false, 200);
+        // The testkit chart is ~210mm tall (effectively a full page), so give it
+        // its own page and place it at the top rather than shoving it down +200mm.
+        $pdf->AddPage('P', 'A4');
+        $pdf->Image($piechart, PDF_MARGIN_LEFT, $pdf->getY(), $chartW, 0, '', '', 'C', false, 200);
         if (file_exists($piechart)) {
             unlink($piechart);
         }
@@ -346,7 +360,8 @@ if (!empty($resultArray['shipment'])) {
                 ],
             ], $outputDir);
 
-            $pdf->Image($piechart2, PDF_MARGIN_LEFT, ($pdf->getY() + 200), $chartW, 0, '', '', 'C', false, 200);
+            $pdf->AddPage('P', 'A4');
+            $pdf->Image($piechart2, PDF_MARGIN_LEFT, $pdf->getY(), $chartW, 0, '', '', 'C', false, 200);
             if (file_exists($piechart2)) {
                 unlink($piechart2);
             }
@@ -373,7 +388,8 @@ if (!empty($resultArray['shipment'])) {
                 ],
             ], $outputDir);
 
-            $pdf->Image($piechart3, PDF_MARGIN_LEFT, ($pdf->getY() + 200), $chartW, 0, '', '', 'C', false, 200);
+            $pdf->AddPage('P', 'A4');
+            $pdf->Image($piechart3, PDF_MARGIN_LEFT, $pdf->getY(), $chartW, 0, '', '', 'C', false, 200);
             if (file_exists($piechart3)) {
                 unlink($piechart3);
             }
