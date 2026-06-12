@@ -80,18 +80,6 @@
 			</div>
 			<div class="row">
 				<div class="form-group col-lg-6">
-					<label class="col-lg-4 control-label" for="approved"><?= $this->translate->_("Approved"); ?> <span
-							class="mandatory">*</span></label>
-					<div class="col-lg-8">
-						<select class="form-control isRequired" name="approved" id="approved"
-							title="Please choose the testkit approved here">
-							<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
-							<option value="1" <?php echo (($this->result["Approval"] == '1') ? "selected='selected'" : "") ?>><?= $this->translate->_("Yes"); ?></option>
-							<option value="0" <?php echo (($this->result["Approval"] == '0') ? "selected='selected'" : "") ?>><?= $this->translate->_("No"); ?></option>
-						</select>
-					</div>
-				</div>
-				<div class="form-group col-lg-6">
 					<label class="col-lg-4 control-label" for="scheme"><?= $this->translate->_("Scheme"); ?> <span
 							class="mandatory">*</span></label>
 					<div class="col-lg-8">
@@ -106,8 +94,23 @@
 						</select>
 					</div>
 				</div>
-			</div>
-			<div class="row">
+				<div class="form-group col-lg-6 testStages hide">
+					<label class="col-lg-4 control-label"
+						for="testStages"><?= $this->translate->_("Choose a Test Number to map test kit"); ?></label>
+					<div class="col-lg-8">
+						<select class="form-control multiselect" multiple="multiple" name="testStages[]" id="testStages"
+							title="Please choose a test stage" onchange="getTestKit(this.value)">
+							<option value=""> -- <?= $this->translate->_("Select"); ?> -- </option>
+							<option value="testkit_1" <?php echo ((isset($this->result["testkit_1"]) && $this->result["testkit_1"] == '1') ? "selected='selected'" : "") ?>>
+								<?= $this->translate->_("Test 1"); ?></option>
+							<option value="testkit_2" <?php echo ((isset($this->result["testkit_2"]) && $this->result["testkit_2"] == '1') ? "selected='selected'" : "") ?>>
+								<?= $this->translate->_("Test 2"); ?></option>
+							<option value="testkit_3" <?php echo ((isset($this->result["testkit_3"]) && $this->result["testkit_3"] == '1') ? "selected='selected'" : "") ?>>
+								<?= $this->translate->_("Test 3"); ?></option>
+						</select>
+						<small class="showDtsHint hide mandatory">(Applicable only for HIV SEROLOGY)</small>
+					</div>
+				</div>
 				<div class="form-group col-lg-6">
 					<label class="col-lg-4 control-label"
 						for="additionalInfo"><?= $this->translate->_("Allow Additional Information"); ?></label>
@@ -122,17 +125,7 @@
 						</select>
 					</div>
 				</div>
-				<div class="form-group col-lg-6">
-					<label class="col-lg-4 control-label"><?= $this->translate->_("Comments"); ?></label>
-					<div class="col-lg-8">
-						<textarea class="form-control" name="comments"
-							id="comments"><?php echo $this->result['TestKit_Comments']; ?></textarea>
-					</div>
-				</div>
-			</div>
-			<div class="row">
-				<div
-					class="row additionalInfo <?php echo (isset($attributes["additional_info"]) && $attributes["additional_info"] == '1') ? '' : 'hide'; ?>">
+				<div class="row additionalInfo <?php echo (isset($attributes["additional_info"]) && $attributes["additional_info"] == '1') ? '' : 'hide'; ?>">
 					<div
 						class="form-group col-lg-6 additionalInfo <?php echo (isset($attributes["additional_info"]) && $attributes["additional_info"] == '1') ? '' : 'hide'; ?>">
 						<label class="col-lg-4 control-label"
@@ -163,24 +156,23 @@
 						</div>
 					</div>
 				</div>
-			</div>
-
-			<div class="row">
-				<div class="form-group col-lg-6 testStages hide">
-					<label class="col-lg-4 control-label"
-						for="testStages"><?= $this->translate->_("Choose a Test Number to map test kit"); ?></label>
+				<div class="form-group col-lg-6">
+					<label class="col-lg-4 control-label"><?= $this->translate->_("Comments"); ?></label>
 					<div class="col-lg-8">
-						<select class="form-control multiselect" multiple="multiple" name="testStages[]" id="testStages"
-							title="Please choose a test stage" onchange="getTestKit(this.value)">
-							<option value=""> -- <?= $this->translate->_("Select"); ?> -- </option>
-							<option value="testkit_1" <?php echo ((isset($this->result["testkit_1"]) && $this->result["testkit_1"] == '1') ? "selected='selected'" : "") ?>>
-								<?= $this->translate->_("Test 1"); ?></option>
-							<option value="testkit_2" <?php echo ((isset($this->result["testkit_2"]) && $this->result["testkit_2"] == '1') ? "selected='selected'" : "") ?>>
-								<?= $this->translate->_("Test 2"); ?></option>
-							<option value="testkit_3" <?php echo ((isset($this->result["testkit_3"]) && $this->result["testkit_3"] == '1') ? "selected='selected'" : "") ?>>
-								<?= $this->translate->_("Test 3"); ?></option>
+						<textarea class="form-control" name="comments"
+							id="comments"><?php echo $this->result['TestKit_Comments']; ?></textarea>
+					</div>
+				</div>
+				<div class="form-group col-lg-6">
+					<label class="col-lg-4 control-label" for="approved"><?= $this->translate->_("Active"); ?> <span
+							class="mandatory">*</span></label>
+					<div class="col-lg-8">
+						<select class="form-control isRequired" name="approved" id="approved"
+							title="Please choose the testkit approved here">
+							<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
+							<option value="1" <?php echo (($this->result["Approval"] == '1') ? "selected='selected'" : "") ?>><?= $this->translate->_("Yes"); ?></option>
+							<option value="0" <?php echo (($this->result["Approval"] == '0') ? "selected='selected'" : "") ?>><?= $this->translate->_("No"); ?></option>
 						</select>
-						<small class="showDtsHint hide mandatory">(Applicable only for HIV SEROLOGY)</small>
 					</div>
 				</div>
 			</div>

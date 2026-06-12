@@ -81,18 +81,6 @@
 			</div>
 			<div class="row">
 				<div class="form-group col-lg-6">
-					<label class="col-lg-4 control-label" for="approved"><?= $this->translate->_("Approved"); ?> <span
-							class="mandatory">*</span></label>
-					<div class="col-lg-8">
-						<select class="form-control isRequired" name="approved" id="approved"
-							title="Please choose the testkit approved here">
-							<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
-							<option value="1"><?= $this->translate->_("Yes"); ?></option>
-							<option value="0"><?= $this->translate->_("No"); ?></option>
-						</select>
-					</div>
-				</div>
-				<div class="form-group col-lg-6">
 					<label class="col-lg-4 control-label" for="scheme"><?= $this->translate->_("Scheme"); ?> <span
 							class="mandatory">*</span></label>
 					<div class="col-lg-8">
@@ -107,8 +95,21 @@
 						</select>
 					</div>
 				</div>
-			</div>
-			<div class="row">
+
+				<div class="form-group col-lg-6 testStages hide">
+					<label class="col-lg-4 control-label"
+						for="testStages"><?= $this->translate->_("Choose a Test Number to map test kit"); ?> <span
+							class="mandatory">*</span></label>
+					<div class="col-lg-8">
+						<select class="form-control multiselect" multiple="multiple" name="testStages[]" id="testStages"
+							title="Please choose a test stage" onchange="getTestKit(this.value)">
+							<option value="testkit_1"><?= $this->translate->_("Test 1"); ?></option>
+							<option value="testkit_2"><?= $this->translate->_("Test 2"); ?></option>
+							<option value="testkit_3"><?= $this->translate->_("Test 3"); ?></option>
+						</select>
+						<small class="showDtsHint hide mandatory">(Applicable only for HIV SEROLOGY)</small>
+					</div>
+				</div>
 				<div class="form-group col-lg-6">
 					<label class="col-lg-4 control-label"
 						for="additionalInfo"><?= $this->translate->_("Allow Additional Information"); ?></label>
@@ -121,14 +122,6 @@
 						</select>
 					</div>
 				</div>
-				<div class="form-group col-lg-6">
-					<label class="col-lg-4 control-label"><?= $this->translate->_("Comments"); ?></label>
-					<div class="col-lg-8">
-						<textarea class="form-control" name="comments" id="comments"></textarea>
-					</div>
-				</div>
-			</div>
-			<div class="row">
 				<div class="form-group col-lg-6 additionalInfo hide">
 					<label class="col-lg-4 control-label"
 						for="additionalInfoLabel"><?= $this->translate->_("Additional Information Label"); ?></label>
@@ -150,20 +143,22 @@
 						</select>
 					</div>
 				</div>
-			</div>
-			<div class="row">
-				<div class="form-group col-lg-6 testStages hide">
-					<label class="col-lg-4 control-label"
-						for="testStages"><?= $this->translate->_("Choose a Test Number to map test kit"); ?> <span
+				<div class="form-group col-lg-6">
+					<label class="col-lg-4 control-label"><?= $this->translate->_("Comments"); ?></label>
+					<div class="col-lg-8">
+						<textarea class="form-control" name="comments" id="comments"></textarea>
+					</div>
+				</div>
+				<div class="form-group col-lg-6">
+					<label class="col-lg-4 control-label" for="approved"><?= $this->translate->_("Active"); ?> <span
 							class="mandatory">*</span></label>
 					<div class="col-lg-8">
-						<select class="form-control multiselect" multiple="multiple" name="testStages[]" id="testStages"
-							title="Please choose a test stage" onchange="getTestKit(this.value)">
-							<option value="testkit_1"><?= $this->translate->_("Test 1"); ?></option>
-							<option value="testkit_2"><?= $this->translate->_("Test 2"); ?></option>
-							<option value="testkit_3"><?= $this->translate->_("Test 3"); ?></option>
+						<select class="form-control isRequired" name="approved" id="approved"
+							title="Please choose the testkit approved here">
+							<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
+							<option value="1"><?= $this->translate->_("Yes"); ?></option>
+							<option value="0"><?= $this->translate->_("No"); ?></option>
 						</select>
-						<small class="showDtsHint hide mandatory">(Applicable only for HIV SEROLOGY)</small>
 					</div>
 				</div>
 			</div>
