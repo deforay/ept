@@ -81,19 +81,6 @@
 			</div>
 			<div class="row">
 				<div class="form-group col-lg-6">
-					<label class="col-lg-4 control-label" for="scheme"><?= $this->translate->_("Scheme"); ?> <span
-							class="mandatory">*</span></label>
-					<div class="col-lg-8">
-						<select id="scheme" name="scheme[]" multiple="multiple" class="form-control multiselect isRequired"
-							title="Please select the Scheme" onchange="selectStages();">
-							<option value="">--<?= $this->translate->_("Select Scheme"); ?>--</option>
-							<?php foreach ($this->schemeList as $scheme) { ?>
-								<option value="<?php echo $scheme['scheme_id']; ?>" <?php echo (isset($this->result['scheme_type']) && $this->result['scheme_type'] == $scheme['scheme_id']) ? " selected='selected'" : ""; ?>><?php echo $scheme['scheme_name']; ?></option>
-							<?php } ?>
-						</select>
-					</div>
-				</div>
-				<div class="form-group col-lg-6">
 					<label class="col-lg-4 control-label" for="countryAdapted"><?= $this->translate->_("Is PT Provider Validated?"); ?> <span
 							class="mandatory">*</span></label>
 					<div class="col-lg-8">
@@ -102,6 +89,21 @@
 							<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
 							<option value="1" <?php echo (($this->result["pt_provider_validated"] == '1') ? "selected='selected'" : "") ?>><?= $this->translate->_("Yes"); ?></option>
 							<option value="0" <?php echo (($this->result["pt_provider_validated"] == '0') ? "selected='selected'" : "") ?>><?= $this->translate->_("No"); ?></option>
+						</select>
+					</div>
+				</div>
+				<div class="form-group col-lg-6">
+					<label class="col-lg-4 control-label" for="scheme"><?= $this->translate->_("Scheme"); ?> <span
+							class="mandatory">*</span></label>
+					<div class="col-lg-8">
+						<select id="scheme" name="scheme[]" multiple="multiple" class="form-control multiselect isRequired"
+							title="Please select the Scheme" onchange="selectStages();">
+							<option value="">--<?= $this->translate->_("Select Scheme"); ?>--</option>
+							<?php foreach ($this->schemeList as $scheme) {
+								if (!in_array($scheme['scheme_id'], ['covid19', 'dbs', 'eid', 'recency', 'tb', 'vl'])) { ?>
+									<option value="<?php echo $scheme['scheme_id']; ?>" <?php echo (isset($this->result['scheme_type']) && $this->result['scheme_type'] == $scheme['scheme_id']) ? " selected='selected'" : ""; ?>><?php echo $scheme['scheme_name']; ?></option>
+							<?php }
+							} ?>
 						</select>
 					</div>
 				</div>
@@ -179,6 +181,7 @@
 							<option value="testkit_3" <?php echo ((isset($this->result["testkit_3"]) && $this->result["testkit_3"] == '1') ? "selected='selected'" : "") ?>>
 								<?= $this->translate->_("Test 3"); ?></option>
 						</select>
+						<small class="showDtsHint hide mandatory">(Applicable only for HIV SEROLOGY)</small>
 					</div>
 				</div>
 			</div>
@@ -235,7 +238,7 @@
 	}
 
 	function additionalInfoFun(value) {
-		if (value) {
+		if (value == '1') {
 			$('.additionalInfo').removeClass('hide');
 		} else {
 			$('.additionalInfo').addClass('hide');
@@ -265,6 +268,7 @@
 
 			if (isDts) {
 				// DTS — show all 3 options
+				$('.showDtsHint').removeClass('hide');
 				$('#testStages').html(`
                 <option value=""> -- <?= $this->translate->_("Select"); ?> -- </option>
                 <option value="testkit_1"><?= $this->translate->_("Test 1"); ?></option>
@@ -272,6 +276,7 @@
                 <option value="testkit_3"><?= $this->translate->_("Test 3"); ?></option>
             `);
 			} else {
+				$('.showDtsHint').addClass('hide');
 				// Other schemes — show only Test 1
 				$('#testStages').html(`
                 <option value=""> -- <?= $this->translate->_("Select"); ?> -- </option>
