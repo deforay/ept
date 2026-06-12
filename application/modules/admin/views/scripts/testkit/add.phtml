@@ -46,33 +46,11 @@
 				</div>
 				<div class="form-group col-lg-6">
 					<label class="col-lg-4 control-label"
-						for="sourceReference"><?= $this->translate->_("Source Reference"); ?></label>
-
-					<div class="col-lg-8">
-						<input type="text" id="sourceReference" name="sourceReference" size="50" maxlength="255"
-							class="form-control" title="Please enter the Source Reference here"
-							placeholder="Please enter the Source Reference here" />
-					</div>
-				</div>
-			</div>
-			<div class="row">
-
-				<div class="form-group col-lg-6">
-					<label class="col-lg-4 control-label"
-						for="manufacturer"><?= $this->translate->_("Test Kit Manufacturer"); ?></label>
-					<div class="col-lg-8">
-						<input type="text" id="manufacturer" name="manufacturer" size="50" maxlength="255"
-							class="form-control" title="Please enter the testkit manufacturer here"
-							placeholder="Please enter the testkit manufacturer here" />
-					</div>
-				</div>
-
-				<div class="form-group col-lg-6">
-					<label class="col-lg-4 control-label" for="approved"><?= $this->translate->_("Approved"); ?> <span
+						for="countryAdapted"><?= $this->translate->_("Is PT Provider Validated?"); ?> <span
 							class="mandatory">*</span></label>
 					<div class="col-lg-8">
-						<select class="form-control isRequired" name="approved" id="approved"
-							title="Please choose the testkit approved here">
+						<select class="form-control isRequired" name="countryAdapted" id="countryAdapted"
+							title="Please choose the country adapted here">
 							<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
 							<option value="1"><?= $this->translate->_("Yes"); ?></option>
 							<option value="0"><?= $this->translate->_("No"); ?></option>
@@ -83,11 +61,31 @@
 			<div class="row">
 				<div class="form-group col-lg-6">
 					<label class="col-lg-4 control-label"
-						for="countryAdapted"><?= $this->translate->_("Is PT Provider Validated?"); ?> <span
+						for="sourceReference"><?= $this->translate->_("Source Reference"); ?></label>
+
+					<div class="col-lg-8">
+						<input type="text" id="sourceReference" name="sourceReference" size="50" maxlength="255"
+							class="form-control" title="Please enter the Source Reference here"
+							placeholder="Please enter the Source Reference here" />
+					</div>
+				</div>
+				<div class="form-group col-lg-6">
+					<label class="col-lg-4 control-label"
+						for="manufacturer"><?= $this->translate->_("Test Kit Manufacturer"); ?></label>
+					<div class="col-lg-8">
+						<input type="text" id="manufacturer" name="manufacturer" size="50" maxlength="255"
+							class="form-control" title="Please enter the testkit manufacturer here"
+							placeholder="Please enter the testkit manufacturer here" />
+					</div>
+				</div>
+			</div>
+			<div class="row">
+				<div class="form-group col-lg-6">
+					<label class="col-lg-4 control-label" for="approved"><?= $this->translate->_("Approved"); ?> <span
 							class="mandatory">*</span></label>
 					<div class="col-lg-8">
-						<select class="form-control isRequired" name="countryAdapted" id="countryAdapted"
-							title="Please choose the country adapted here">
+						<select class="form-control isRequired" name="approved" id="approved"
+							title="Please choose the testkit approved here">
 							<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
 							<option value="1"><?= $this->translate->_("Yes"); ?></option>
 							<option value="0"><?= $this->translate->_("No"); ?></option>

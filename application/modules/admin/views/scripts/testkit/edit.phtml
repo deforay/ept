@@ -19,7 +19,6 @@
 							value="<?php echo $this->result['TestKit_Name']; ?>" />
 					</div>
 				</div>
-
 				<div class="form-group col-lg-6">
 					<label class="col-lg-4 control-label" for="shortTestKitName"><?= $this->translate->_("Short Test Kit Name"); ?></label>
 					<div class="col-lg-8">
@@ -46,6 +45,20 @@
 					</div>
 				</div>
 				<div class="form-group col-lg-6">
+					<label class="col-lg-4 control-label" for="countryAdapted"><?= $this->translate->_("Is PT Provider Validated?"); ?> <span
+							class="mandatory">*</span></label>
+					<div class="col-lg-8">
+						<select class="form-control isRequired" name="countryAdapted" id="countryAdapted"
+							title="Please choose the country adapted here">
+							<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
+							<option value="1" <?php echo (($this->result["pt_provider_validated"] == '1') ? "selected='selected'" : "") ?>><?= $this->translate->_("Yes"); ?></option>
+							<option value="0" <?php echo (($this->result["pt_provider_validated"] == '0') ? "selected='selected'" : "") ?>><?= $this->translate->_("No"); ?></option>
+						</select>
+					</div>
+				</div>
+			</div>
+			<div class="row">
+				<div class="form-group col-lg-6">
 					<label class="col-lg-4 control-label" for="sourceReference"><?= $this->translate->_("Source Reference"); ?></label>
 
 					<div class="col-lg-8">
@@ -55,8 +68,6 @@
 							value="<?php echo $this->result['source_reference']; ?>" />
 					</div>
 				</div>
-			</div>
-			<div class="row">
 				<div class="form-group col-lg-6">
 					<label class="col-lg-4 control-label" for="manufacturer"><?= $this->translate->_("Test Kit Manufacturer"); ?></label>
 					<div class="col-lg-8">
@@ -66,6 +77,8 @@
 							value="<?php echo $this->result['TestKit_Manufacturer']; ?>" />
 					</div>
 				</div>
+			</div>
+			<div class="row">
 				<div class="form-group col-lg-6">
 					<label class="col-lg-4 control-label" for="approved"><?= $this->translate->_("Approved"); ?> <span
 							class="mandatory">*</span></label>
@@ -75,20 +88,6 @@
 							<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
 							<option value="1" <?php echo (($this->result["Approval"] == '1') ? "selected='selected'" : "") ?>><?= $this->translate->_("Yes"); ?></option>
 							<option value="0" <?php echo (($this->result["Approval"] == '0') ? "selected='selected'" : "") ?>><?= $this->translate->_("No"); ?></option>
-						</select>
-					</div>
-				</div>
-			</div>
-			<div class="row">
-				<div class="form-group col-lg-6">
-					<label class="col-lg-4 control-label" for="countryAdapted"><?= $this->translate->_("Is PT Provider Validated?"); ?> <span
-							class="mandatory">*</span></label>
-					<div class="col-lg-8">
-						<select class="form-control isRequired" name="countryAdapted" id="countryAdapted"
-							title="Please choose the country adapted here">
-							<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
-							<option value="1" <?php echo (($this->result["pt_provider_validated"] == '1') ? "selected='selected'" : "") ?>><?= $this->translate->_("Yes"); ?></option>
-							<option value="0" <?php echo (($this->result["pt_provider_validated"] == '0') ? "selected='selected'" : "") ?>><?= $this->translate->_("No"); ?></option>
 						</select>
 					</div>
 				</div>
