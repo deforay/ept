@@ -403,8 +403,11 @@ class Application_Model_CustomTest
             ->where('shipment_id = ?', $shipmentId);
         $result = $db->fetchRow($query);
 
+        // Ordered by sample_id so the reference result for "A1" (index 0) lines up
+        // with the "A1" sample column, "A2" (index 1) with the "A2" column, etc.
         $refQuery = $db->select()->from(['reference_result_generic_test'], ['sample_label', 'sample_id', 'sample_score', 'reference_result'])
-            ->where('shipment_id = ?', $shipmentId);
+            ->where('shipment_id = ?', $shipmentId)
+            ->order('sample_id ASC');
         $refResult = $db->fetchAll($refQuery);
 
         $sql = $db->select()->from(['s' => 'shipment'], ['s.shipment_id', 's.shipment_code', 's.number_of_samples'])
@@ -442,8 +445,11 @@ class Application_Model_CustomTest
         if (isset($shipmentResult) && count($shipmentResult) > 0) {
 
             foreach ($shipmentResult as $key => $aRow) {
+                // Ordered by sample_id so this aligns with $refResult and with the
+                // A1..An sample columns when writing the data rows below.
                 $resQuery = $db->select()->from('response_result_generic_test')
-                    ->where('shipment_map_id = ?', $aRow['map_id']);
+                    ->where('shipment_map_id = ?', $aRow['map_id'])
+                    ->order('sample_id ASC');
                 $shipmentResult[$key]['response'] = $db->fetchAll($resQuery);
 
                 $participantRow = [];
@@ -482,13 +488,8 @@ class Application_Model_CustomTest
             $reportHeadings = $this->addGenericTestSampleNameInArray($shipmentId, $reportHeadings);
         }
         // For final Results
-        $additionalDetails = false;
         $jsonConfig = Zend_Json_Decoder::decode($shipmentResult[0]['user_test_config'], true);
         $reportHeadings = $this->addGenericTestSampleNameInArray($shipmentId, $reportHeadings);
-        if (isset($jsonConfig['captureAdditionalDetails']) && !empty($jsonConfig['captureAdditionalDetails'])) {
-            $additionalDetails = true;
-            $reportHeadings = $this->addGenericTestSampleNameInArray($shipmentId, $reportHeadings);
-        }
         array_push($reportHeadings, 'Comments');
         $resultReportSheet = new Worksheet($excel, 'Results Reported');
         $excel->addSheet($resultReportSheet, 1);
@@ -500,39 +501,21 @@ class Application_Model_CustomTest
         $currentRow = 2;
         $n = count($reportHeadings);
         /* To get the first column for label */
-        if ($additionalDetails) {
-            $finalResColoumn = $n - (($result['number_of_samples'] * 2) + 1);
-            $additionalColoumn = $n - ($result['number_of_samples'] + 1);
-        } else {
-            $finalResColoumn = $n - ($result['number_of_samples'] + 1);
-        }
+        $finalResColoumn = $n - ($result['number_of_samples'] + 1);
 
-        $c = $additionRow = 1;
+        $c = 1;
         /* To get the end colum cell */
         $endMergeCell = ($finalResColoumn + $result['number_of_samples']) - 1;
-        if ($additionalDetails) {
-            $endAdditionalMergeCell = ($additionalColoumn + $result['number_of_samples']) - 1;
-        }
+
         /* Final Result Merge options */
         $firstCellName = $resultReportSheet->getCell(Coordinate::stringFromColumnIndex($finalResColoumn + 1) . 1)->getColumn();
         $secondCellName = $resultReportSheet->getCell(Coordinate::stringFromColumnIndex($endMergeCell + 1) . 1)->getColumn();
-        if ($additionalDetails) {
-            /* Additional Result Merge options */
-            $additionalFirstCellName = $resultReportSheet->getCell(Coordinate::stringFromColumnIndex($additionalColoumn + 1) . 1)->getColumn();
-            $additionalSecondCellName = $resultReportSheet->getCell(Coordinate::stringFromColumnIndex($endAdditionalMergeCell + 1) . 1)->getColumn();
-        }
+
         /* Merge the final result lable cell */
         $resultReportSheet->mergeCells($firstCellName . '1:' . $secondCellName . '1');
         $resultReportSheet->getStyle($firstCellName . '1')->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
         $resultReportSheet->getStyle($firstCellName . '1')->applyFromArray($borderStyle, true);
         $resultReportSheet->getStyle($secondCellName . '1')->applyFromArray($borderStyle, true);
-        if ($additionalDetails) {
-            /* Merge the Additional lable cell */
-            $resultReportSheet->mergeCells($additionalFirstCellName . '1:' . $additionalSecondCellName . '1');
-            $resultReportSheet->getStyle($additionalFirstCellName . '1')->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
-            $resultReportSheet->getStyle($additionalFirstCellName . '1')->applyFromArray($borderStyle, true);
-            $resultReportSheet->getStyle($additionalSecondCellName . '1')->applyFromArray($borderStyle, true);
-        }
 
         foreach ($reportHeadings as $field => $value) {
 
@@ -541,33 +524,31 @@ class Application_Model_CustomTest
             $cellName = $resultReportSheet->getCell(Coordinate::stringFromColumnIndex($colNo + 1) . $currentRow)->getColumn();
             $resultReportSheet->getStyle($cellName . $currentRow)->applyFromArray($borderStyle, true);
 
-            $cellName = $resultReportSheet->getCell(Coordinate::stringFromColumnIndex($colNo + 1) . 3)->getColumn();
-            $resultReportSheet->getStyle($cellName . '3')->applyFromArray($borderStyle, true);
-            if ($additionalDetails) {
-                if ($colNo >= $additionalColoumn) {
-                    if ($additionRow <= $result['number_of_samples']) {
-                        $resultReportSheet->getCell(Coordinate::stringFromColumnIndex($colNo + 1) . 1)->setValueExplicit(html_entity_decode($jsonConfig['additionalDetailLabel'], ENT_QUOTES, 'UTF-8'));
-                        $resultReportSheet->getStyle(Coordinate::stringFromColumnIndex($colNo + 1) . 1)->getFont()->setBold(true);
-                        $cellName = $resultReportSheet->getCell(Coordinate::stringFromColumnIndex($colNo + 1) . $currentRow)->getColumn();
-                        $resultReportSheet->getStyle($cellName . $currentRow)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
-                    }
-                    $additionRow++;
-                }
-            }
+            /* Final Results columns: header highlight + reference-result row (row 3) */
             if ($colNo >= $finalResColoumn) {
                 if ($c <= $result['number_of_samples']) {
 
                     $resultReportSheet->getCell(Coordinate::stringFromColumnIndex($colNo + 1) . 1)->setValueExplicit(html_entity_decode('Final Results', ENT_QUOTES, 'UTF-8'));
                     $resultReportSheet->getStyle(Coordinate::stringFromColumnIndex($colNo + 1) . 1)->getFont()->setBold(true);
-                    $cellName = $resultReportSheet->getCell(Coordinate::stringFromColumnIndex($colNo + 1) . $currentRow)->getColumn();
-                    $resultReportSheet->getStyle($cellName . $currentRow)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
+                    $finalCellName = $resultReportSheet->getCell(Coordinate::stringFromColumnIndex($colNo + 1) . $currentRow)->getColumn();
+                    $resultReportSheet->getStyle($finalCellName . $currentRow)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
+
                     $l = $c - 1;
-                    $resultReportSheet->getCell(Coordinate::stringFromColumnIndex($colNo + 1) . 3)->setValueExplicit(html_entity_decode(str_replace('-', ' ', ucwords($otherTestPossibleResults[$refResult[$l]['reference_result']])), ENT_QUOTES, 'UTF-8'));
+
+                    // Write the expected/reference result for this sample into row 3,
+                    // directly under its "Final Results" column.
+                    $resultReportSheet->getCell(Coordinate::stringFromColumnIndex($colNo + 1) . 3)->setValueExplicit(
+                        html_entity_decode(str_replace('-', ' ', ucwords($otherTestPossibleResults[$refResult[$l]['reference_result']] ?? '')), ENT_QUOTES, 'UTF-8')
+                    );
+
+                    // Row 3 ("reference result" row) styling — confined to the
+                    // Final Results columns only.
+                    $resultReportSheet->getStyle($finalCellName . '3')->applyFromArray($borderStyle, true);
+                    $resultReportSheet->getStyle($finalCellName . '3')->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFA0A0A0');
+                    $resultReportSheet->getStyle($finalCellName . '3')->getFont()->getColor()->setARGB('FFFFFF00');
                 }
                 $c++;
             }
-            $resultReportSheet->getStyle($cellName . '3')->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFA0A0A0');
-            $resultReportSheet->getStyle($cellName . '3')->getFont()->getColor()->setARGB('FFFFFF00');
 
             $colNo++;
         }
@@ -699,11 +680,6 @@ class Application_Model_CustomTest
                         $panelScoreSheet->getCell(Coordinate::stringFromColumnIndex($sheetThreeCol++) . $sheetThreeRow)->setValueExplicit($aRow['response'][$f]['calculated_score']);
                         if (isset($aRow['response'][$f]['calculated_score']) && $aRow['response'][$f]['calculated_score'] == 20 && $aRow['response'][$f]['sample_id'] == $refResult[$f]['sample_id']) {
                             $countCorrectResult++;
-                        }
-                    }
-                    if ($additionalDetails) {
-                        for ($k = 0; $k < $aRow['number_of_samples']; $k++) {
-                            $resultReportSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($aRow['response'][$k]['additional_detail']);
                         }
                     }
                     $resultReportSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($aRow['user_comment']);
