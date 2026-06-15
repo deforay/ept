@@ -417,7 +417,9 @@ function parsePoEntry(string $block): array
             $field = $matches[1];
             $value = decodePoString($matches[3]);
             $currentField = $field;
-            $currentIndex = $matches[2] ?? '';
+            // $matches[2] is an interior optional group (group 3 always follows), so
+            // PHP always populates it — '' when the msgstr[n] index is absent.
+            $currentIndex = $matches[2];
 
             if ($field === 'msgctxt') {
                 $entry['msgctxt'] = $value;

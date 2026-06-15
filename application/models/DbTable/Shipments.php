@@ -2794,6 +2794,9 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             }
             $allSamplesResult = [];
             foreach ($allSamples as $sample) {
+                if (!is_array($sample)) {
+                    continue;
+                }
                 if (isset($shipment['is_pt_test_not_performed']) && $shipment['is_pt_test_not_performed'] == 'yes') {
                     $sample['mandatory'] = 0;
                 }
@@ -3470,6 +3473,9 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
 
             $allSamplesResult = [];
             foreach ($allSamples as $sample) {
+                if (!is_array($sample)) {
+                    continue;
+                }
                 if (isset($shipment['is_pt_test_not_performed']) && $shipment['is_pt_test_not_performed'] == 'yes') {
                     $sample['mandatory'] = 0;
                 }
@@ -3680,6 +3686,9 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
 
             $allSamplesResult = [];
             foreach ($allSamples as $sample) {
+                if (!is_array($sample)) {
+                    continue;
+                }
                 if (isset($shipment['is_pt_test_not_performed']) && $shipment['is_pt_test_not_performed'] == 'yes') {
                     $sample['mandatory'] = 0;
                 }
@@ -4071,6 +4080,9 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
 
             $allSamplesResult = [];
             foreach ($allSamples as $sample) {
+                if (!is_array($sample)) {
+                    continue;
+                }
                 $allSamplesResult['samples']['label'][] = $sample['sample_label'];
                 $allSamplesResult['samples']['id'][] = $sample['sample_id'];
 
