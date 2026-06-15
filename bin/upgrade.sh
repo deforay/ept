@@ -45,6 +45,19 @@ fi
 # shellcheck disable=SC1090
 source "$SHARED_FN_PATH"
 
+# Belt-and-suspenders: whatever happens — normal completion, an ERR-trap abort, or
+# an explicit early exit — make sure MySQL is running before we leave. The MySQL
+# config rewrite restarts the server and can occasionally leave it down (a bad/
+# removed option, OOM, or a package upgrade restarting it badly), and ePT is
+# useless without the DB. ensure_mysql_running is a no-op when MySQL is already up.
+on_exit_restore_mysql() {
+    local rc=$?
+    trap - EXIT ERR
+    ensure_mysql_running "/etc/mysql/mysql.conf.d/mysqld.cnf" || true
+    exit "$rc"
+}
+trap on_exit_restore_mysql EXIT
+
 prepare_system
 
 DEFAULT_EPT_PATH="/var/www/ept"
@@ -233,15 +246,26 @@ total_mem_kb=$(grep MemTotal /proc/meminfo | awk '{print $2}')
 total_mem_mb=$((total_mem_kb / 1024))
 total_mem_gb=$((total_mem_mb / 1024))
 
-# Calculate buffer pool size (70% of total RAM)
-buffer_pool_size_gb=$((total_mem_gb * 70 / 100))
+# Calculate InnoDB buffer pool size.
+# These are NOT dedicated DB servers — Apache/PHP (and sometimes multiple ePT
+# instances) share the box — so we deliberately avoid innodb_dedicated_server
+# (which grabs ~75% of RAM) and size the pool conservatively ourselves, in MB for
+# accuracy on small boxes.
+buffer_pool_mb=$((total_mem_mb * 50 / 100))
 
-# Safety check for small RAM systems
-if [ "$buffer_pool_size_gb" -lt 1 ]; then
-    buffer_pool_size="512M"
-else
-    buffer_pool_size="${buffer_pool_size_gb}G"
-fi
+# Always leave headroom for the OS, the web stack, and MySQL's own per-connection
+# and global buffers: keep at least max(1024MB, 35% of RAM) free.
+reserve_mb=$((total_mem_mb * 35 / 100))
+[ "$reserve_mb" -lt 1024 ] && reserve_mb=1024
+max_pool_mb=$((total_mem_mb - reserve_mb))
+[ "$max_pool_mb" -lt 0 ] && max_pool_mb=0
+[ "$buffer_pool_mb" -gt "$max_pool_mb" ] && buffer_pool_mb=$max_pool_mb
+
+# Floor so the pool is never uselessly small (also covers tiny/heavily-capped boxes,
+# where this lands on MySQL's 128M default).
+[ "$buffer_pool_mb" -lt 128 ] && buffer_pool_mb=128
+
+buffer_pool_size="${buffer_pool_mb}M"
 
 # Calculate other memory-related settings
 if [ $total_mem_gb -lt 8 ]; then
@@ -335,7 +359,6 @@ declare -A mysql_settings=(
     ["innodb_strict_mode"]="0"
     ["character-set-server"]="utf8mb4"
     ["collation-server"]="${mysql_collation}"
-    ["default_authentication_plugin"]="mysql_native_password"
     ["max_connect_errors"]="10000"
     ["innodb_buffer_pool_size"]="${buffer_pool_size}"
     ["innodb_file_per_table"]="1"
@@ -357,6 +380,20 @@ declare -A mysql_settings=(
     ["long_query_time"]="2"
 )
 
+# default_authentication_plugin was deprecated in MySQL 8.0.34 and REMOVED in 8.4.
+# Leaving it in the config makes mysqld on 8.4+ refuse to start ("unknown variable"),
+# a common reason MySQL "goes away" after an upgrade. This is a MySQL-only variable,
+# so we only manage it on MySQL: set it on < 8.4, and on 8.4+ scrub any stale entry
+# left by an earlier run so it can't keep mysqld down. MariaDB is left untouched.
+if ! $is_mariadb && version_ge "$mysql_version" "8.4"; then
+    if grep -qE "^[[:space:]]*default_authentication_plugin[[:space:]]*=" "$MYSQL_CONFIG_FILE"; then
+        sed -i "/^[[:space:]]*default_authentication_plugin[[:space:]]*=.*/s/^/#/" "$MYSQL_CONFIG_FILE"
+        print info "Commented out removed option 'default_authentication_plugin' (MySQL ${mysql_version})"
+    fi
+else
+    mysql_settings["default_authentication_plugin"]="mysql_native_password"
+fi
+
 # Version-specific
 if $is_mariadb || ! version_ge "$mysql_version" "8.0"; then
     mysql_settings["query_cache_type"]="0"
@@ -365,7 +402,15 @@ if $is_mariadb || ! version_ge "$mysql_version" "8.0"; then
     mysql_settings["innodb_read_io_threads"]="8"
     mysql_settings["innodb_write_io_threads"]="8"
 else
-    mysql_settings["innodb_dedicated_server"]="1"
+    # Do NOT enable innodb_dedicated_server: it assumes the whole box is the DB
+    # server and sizes the buffer pool to ~75% of RAM, which OOM-kills mysqld on
+    # these shared LAMP boxes. We size innodb_buffer_pool_size explicitly instead,
+    # so scrub any innodb_dedicated_server left by an earlier run (otherwise it
+    # overrides our explicit sizing and keeps over-allocating).
+    if grep -qE "^[[:space:]]*innodb_dedicated_server[[:space:]]*=" "$MYSQL_CONFIG_FILE"; then
+        sed -i "/^[[:space:]]*innodb_dedicated_server[[:space:]]*=.*/s/^/#/" "$MYSQL_CONFIG_FILE"
+        print info "Disabled innodb_dedicated_server (sizing buffer pool explicitly to avoid OOM)"
+    fi
     mysql_settings["innodb_buffer_pool_instances"]="16"
     mysql_settings["innodb_read_io_threads"]="16"
     mysql_settings["innodb_write_io_threads"]="16"
@@ -410,9 +455,20 @@ else
     print success "MySQL configuration already correct. No changes needed."
 fi
 
-# --- Always clean up old .bak files ---
-find "$(dirname "$MYSQL_CONFIG_FILE")" -maxdepth 1 -type f -name "$(basename "$MYSQL_CONFIG_FILE").bak.*" -exec rm -f {} \;
-print info "Removed all MySQL backup files matching *.bak.*"
+# --- Prune old MySQL config backups, but KEEP the most recent one ---
+# The newest backup is retained so the end-of-run recovery (ensure_mysql_running)
+# can restore a known-good config if MySQL disappears later in the run (e.g. an
+# apt upgrade restarts it into a bad state).
+mysql_cnf_dir="$(dirname "$MYSQL_CONFIG_FILE")"
+mysql_cnf_base="$(basename "$MYSQL_CONFIG_FILE")"
+newest_cnf_bak="$(ls -1t "${mysql_cnf_dir}/${mysql_cnf_base}".bak.* 2>/dev/null | head -1)"
+if [ -n "$newest_cnf_bak" ]; then
+    find "$mysql_cnf_dir" -maxdepth 1 -type f -name "${mysql_cnf_base}.bak.*" \
+        ! -name "$(basename "$newest_cnf_bak")" -exec rm -f {} \;
+    print info "Pruned old MySQL config backups; kept newest for recovery: $(basename "$newest_cnf_bak")"
+else
+    print info "No MySQL config backups to prune."
+fi
 
 print info "Applying SET PERSIST sql_mode='' to override MySQL defaults..."
 
