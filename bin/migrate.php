@@ -507,6 +507,26 @@ function handle_idempotent_ddl(Zend_Db_Adapter_Abstract $db, string $query): int
         }
     }
 
+    // RENAME TABLE `old` TO `new`  /  ALTER TABLE `old` RENAME [TO] `new`
+    // Idempotent: if the source is already gone, the rename has happened (or the
+    // source never existed) — skip rather than blow up with 1050 (dest exists) or
+    // 1146 (source missing). Only run when source exists and dest is absent.
+    if (
+        preg_match('/^rename\s+table\s+`?([a-z0-9_]+)`?\s+to\s+`?([a-z0-9_]+)`?\s*;?$/i', $q, $m) ||
+        preg_match('/^alter\s+table\s+`?([a-z0-9_]+)`?\s+rename\s+(?:to\s+)?`?([a-z0-9_]+)`?\s*;?$/i', $q, $m)
+    ) {
+        $from = $m[1];
+        $to = $m[2];
+        $fromExists = table_exists($db, $from);
+        $toExists = table_exists($db, $to);
+        // already renamed (dest present) or nothing to rename (source absent)
+        if (!$fromExists || $toExists) {
+            return MIG_SKIPPED;
+        }
+        run_sql($db, $q);
+        return MIG_EXECUTED;
+    }
+
     return MIG_NOT_HANDLED;
 }
 
@@ -669,6 +689,14 @@ foreach ($versions as $version) {
                     $isDropTableBenign = (strpos($qLower, 'drop table') === 0) &&
                         ($errno === 1146 || stripos($msg, "doesn't exist") !== false);
 
+                    // RENAME TABLE old->new: dest already exists (1050) or source
+                    // already gone (1146) both mean the rename effectively happened.
+                    $isRenameTableBenign = (strpos($qLower, 'rename table') === 0 ||
+                        preg_match('/^alter\s+table\s+`?[a-z0-9_]+`?\s+rename\b/', $qLower) === 1) &&
+                        ($errno === 1050 || $errno === 1146 ||
+                            stripos($msg, 'already exists') !== false ||
+                            stripos($msg, "doesn't exist") !== false);
+
                     // Seed-style INSERTs in migrations are re-runnable: a 1062 on a
                     // pre-existing PK/UNIQUE row means the seed already landed.
                     $isInsertDupBenign = (strpos($qLower, 'insert') === 0) &&
@@ -683,7 +711,7 @@ foreach ($versions as $version) {
                         (stripos($msg, "Can't DROP") !== false && stripos($msg, 'check that column/key exists') !== false) ||
                         stripos($msg, 'Multiple primary key defined') !== false; // MySQL #1068
 
-                    if ($isCreateTableBenign || $isDropTableBenign || $isInsertDupBenign || $isOtherBenign) {
+                    if ($isCreateTableBenign || $isDropTableBenign || $isRenameTableBenign || $isInsertDupBenign || $isOtherBenign) {
                         if (!$quietMode && getenv('MIG_VERBOSE')) {
                             echo "Benign idempotence:\n{$query}\n{$msg}\n";
                         }
