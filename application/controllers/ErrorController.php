@@ -17,6 +17,11 @@ class ErrorController extends Zend_Controller_Action
         $exception = $errors->exception ?? null;
         $actionCode = ($exception instanceof Zend_Controller_Action_Exception) ? (int) $exception->getCode() : 0;
 
+        // Dead-route 404s (no route/controller/action) are almost entirely automated
+        // vulnerability scanners probing for /.git/config, /wp-login.php, etc. They are
+        // handled correctly and carry no diagnostic value, so we suppress logging for them.
+        $isDeadRoute = false;
+
         switch ($errors->type) {
             case Zend_Controller_Plugin_ErrorHandler::EXCEPTION_NO_ROUTE:
             case Zend_Controller_Plugin_ErrorHandler::EXCEPTION_NO_CONTROLLER:
@@ -24,6 +29,7 @@ class ErrorController extends Zend_Controller_Action
                 $httpCode = 404;
                 $priority = Zend_Log::NOTICE;
                 $this->view->message = 'Page not found';
+                $isDeadRoute = true;
                 break;
             default:
                 $httpCode = ($actionCode >= 400 && $actionCode < 600) ? $actionCode : 500;
@@ -36,14 +42,16 @@ class ErrorController extends Zend_Controller_Action
         $this->view->codeLabel = self::labelForCode($httpCode);
         $this->view->detail = self::detailForCode($httpCode);
 
-        // Log exception, if logger available
+        // Log exception, if logger available (skip scanner-driven dead-route 404s).
         $log = $this->getLog();
-        if (false !== $log) {
+        if (!$isDeadRoute && false !== $log) {
             $log->log($this->view->message, $priority, $errors->exception);
             $log->log('Request Parameters', $priority, $errors->request->getParams());
         }
 
-        $this->logToMonolog($errors, $priority);
+        if (!$isDeadRoute) {
+            $this->logToMonolog($errors, $priority);
+        }
 
         // Return JSON for AJAX requests
         if ($this->getRequest()->isXmlHttpRequest()) {
