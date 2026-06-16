@@ -73,7 +73,9 @@ class Admin_EnrollmentsController extends Zend_Controller_Action
         $participantService = new Application_Service_Participants();
         if ($request->isPost()) {
             $params = $request->getPost();
-            $this->view->response = $participantService->uploadBulkEnrollment($params);
+            // Result is surfaced via the alertSpace session message; the redirect
+            // (PRG pattern) discards the view, so we don't assign it to $this->view.
+            $participantService->uploadBulkEnrollment($params);
             $this->redirect('/admin/enrollments/bulk-enrollment');
         } else {
             $scheme = new Application_Service_Schemes();

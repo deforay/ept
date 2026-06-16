@@ -5,7 +5,7 @@ use PhpOffice\PhpSpreadsheet\IOFactory;
 class Application_Model_DbTable_Enrollments extends Zend_Db_Table_Abstract
 {
     protected $_name = 'enrollments';
-    protected $_primary = ['scheme_id', 'participant_id'];
+    protected $_primary = ['list_name', 'participant_id'];
 
     public function getAllEnrollments($parameters)
     {
@@ -290,6 +290,11 @@ class Application_Model_DbTable_Enrollments extends Zend_Db_Table_Abstract
             // Process enrollments
             $enrollmentListId = uniqid('enroll_', true);
             $processedCount = 0;
+            // Dedup within the file by participant: the (list_name, participant_id)
+            // primary key only allows one row per participant per list, so a repeated
+            // identifier would otherwise be counted twice (the INSERT itself is safe via
+            // ON DUPLICATE KEY UPDATE).
+            $seenParticipantIds = [];
 
             for ($i = 2; $i <= count($sheetData); $i++) {
                 if (empty($sheetData[$i]['A'])) {
@@ -314,6 +319,11 @@ class Application_Model_DbTable_Enrollments extends Zend_Db_Table_Abstract
                     Pt_Commons_LoggerUtility::logWarning("Participant not found: {$uniqueIdentifier}");
                     continue;
                 }
+
+                if (isset($seenParticipantIds[$participantData['participant_id']])) {
+                    continue;
+                }
+                $seenParticipantIds[$participantData['participant_id']] = true;
 
                 // Insert or update enrollment using ON DUPLICATE KEY UPDATE
                 $insertData = [
@@ -342,25 +352,16 @@ class Application_Model_DbTable_Enrollments extends Zend_Db_Table_Abstract
                         unset($values[$idx]);
                     }
                 }
-                $exist = $this->fetchRow(
-                    $this->select()
-                        ->where('enrollment_id', $enrollmentListId)
-                        ->where('list_name', $listName)
-                        ->where('scheme_id', $schemeId)
-                        ->where('participant_id', $participantData['participant_id'])
-                );
-                if (!$exist) {
-                    $sql = 'INSERT INTO enrollments (' . implode(', ', $columns) . ') 
-                        VALUES (' . implode(', ', $placeholders) . ')
-                        ON DUPLICATE KEY UPDATE 
-                            enrollment_id = VALUES(enrollment_id),
-                            scheme_id = VALUES(scheme_id),
-                            status = VALUES(status),
-                            enrolled_on = VALUES(enrolled_on)';
+                $sql = 'INSERT INTO enrollments (' . implode(', ', $columns) . ')
+                    VALUES (' . implode(', ', $placeholders) . ')
+                    ON DUPLICATE KEY UPDATE
+                        enrollment_id = VALUES(enrollment_id),
+                        scheme_id = VALUES(scheme_id),
+                        status = VALUES(status),
+                        enrolled_on = VALUES(enrolled_on)';
 
-                    $db->query($sql, array_values($values));
-                    $processedCount++;
-                }
+                $db->query($sql, array_values($values));
+                $processedCount++;
             }
 
             // Log audit trail
