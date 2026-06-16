@@ -9,7 +9,7 @@ class Application_Model_DbTable_GlobalConfig extends Zend_Db_Table_Abstract
     {
         $res = $this->getAdapter()->fetchCol($this->select()
             ->from($this->_name, ['value'])
-            ->where("name='$name'"));
+            ->where('name = ?', $name));
 
         $value = !empty($res[0]) ? $res[0] : null;
 

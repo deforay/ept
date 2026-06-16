@@ -1692,7 +1692,10 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
 
     public function processBulkImport($fileName, $allFakeEmail = false, $params = null)
     {
-        $response = ['data' => [], 'error-data' => []];
+        // One id per import run: tags the failure rows written to participants_not_uploaded
+        // and names the re-importable error export, so a run's failures stay separable.
+        $importRunId = MiscUtility::generateULID();
+        $response = ['data' => [], 'error-data' => [], 'error-rows-full' => [], 'import_run_id' => $importRunId];
         $alertMsg = new Zend_Session_Namespace('alertSpace');
         $common = new Application_Service_Common();
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
@@ -1723,7 +1726,8 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
 
         // Build cache for performance
         $countryCache = $this->buildCountryCache();
-        $duplicateChecks = $this->batchCheckDuplicates($sheetData);
+        $countryNames = $this->getCountryNames();
+        $duplicateChecks = $this->batchCheckDuplicates($sheetData, $prefix, $directParticipantLogin == 'yes');
         $duplicateChecks['fileParticipants'] = [];
         $duplicateChecks['fileDataManagers'] = [];
 
@@ -1886,27 +1890,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                         }
                     }
 
-                    $response['data'][] = [
-                        's_no' => $sheetData[$i]['A'] ?: ($i - 1),
-                        'participant_id' => $sheetData[$i]['B'],
-                        'individual' => $sheetData[$i]['C'] ?? 'no',
-                        'participant_lab_name' => $sheetData[$i]['D'],
-                        'participant_last_name' => $sheetData[$i]['E'],
-                        'institute_name' => $sheetData[$i]['F'] ?? null,
-                        'department' => $sheetData[$i]['G'] ?? null,
-                        'address' => $sheetData[$i]['H'] ?? null,
-                        'district' => $sheetData[$i]['J'] ?? null,
-                        'country' => $sheetData[$i]['M'],
-                        'zip' => $sheetData[$i]['N'] ?? null,
-                        'longitude' => $sheetData[$i]['O'] ?? null,
-                        'latitude' => $sheetData[$i]['P'] ?? null,
-                        'mobile_number' => $sheetData[$i]['Q'] ?? null,
-                        'participant_email' => $originalEmail,
-                        'participant_password' => $sheetData[$i]['S'],
-                        'additional_email' => $sheetData[$i]['T'] ?? null,
-                        'filename' => $tempUploadDirectory . DIRECTORY_SEPARATOR . $fileName,
-                        'updated_datetime' => Pt_Commons_DateUtility::getCurrentDateTime(),
-                    ];
+                    $response['data'][] = $this->buildImportSuccessRow($sheetData[$i], $i, $originalEmail, $tempUploadDirectory . DIRECTORY_SEPARATOR . $fileName);
 
                     $duplicateChecks['fileParticipants'][$row['B']] = true;
                     $duplicateChecks['fileDataManagers'][$originalEmail] = true;
@@ -1975,7 +1959,12 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                 $countryId = $this->getCountryIdFromCache($row['M'] ?? '', $countryCache);
 
                 if ($countryId == null || $countryId == 0) {
-                    $this->addError($response, $row, $i, "Invalid country: {$row['M']}");
+                    $countryMsg = "Invalid country: {$row['M']}";
+                    $suggestion = $this->suggestClosestCountry((string) ($row['M'] ?? ''), $countryNames);
+                    if ($suggestion !== null) {
+                        $countryMsg .= " — did you mean '{$suggestion}'?";
+                    }
+                    $this->addError($response, $row, $i, $countryMsg);
                     continue;
                 }
 
@@ -2154,27 +2143,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                         $common->insertIgnore('participant_manager_map', ['dm_id' => $dmId, 'participant_id' => $lastInsertedId]);
 
                         // Success - add to response
-                        $response['data'][] = [
-                            's_no' => $sheetData[$i]['A'] ?: ($i - 1),
-                            'participant_id' => $sheetData[$i]['B'],
-                            'individual' => $sheetData[$i]['C'] ?? 'no',
-                            'participant_lab_name' => $sheetData[$i]['D'],
-                            'participant_last_name' => $sheetData[$i]['E'],
-                            'institute_name' => $sheetData[$i]['F'] ?? null,
-                            'department' => $sheetData[$i]['G'] ?? null,
-                            'address' => $sheetData[$i]['H'] ?? null,
-                            'district' => $sheetData[$i]['J'] ?? null,
-                            'country' => $sheetData[$i]['M'],
-                            'zip' => $sheetData[$i]['N'] ?? null,
-                            'longitude' => $sheetData[$i]['O'] ?? null,
-                            'latitude' => $sheetData[$i]['P'] ?? null,
-                            'mobile_number' => $sheetData[$i]['Q'] ?? null,
-                            'participant_email' => $originalEmail,
-                            'participant_password' => $sheetData[$i]['S'],
-                            'additional_email' => $sheetData[$i]['T'] ?? null,
-                            'filename' => $tempUploadDirectory . DIRECTORY_SEPARATOR . $fileName,
-                            'updated_datetime' => Pt_Commons_DateUtility::getCurrentDateTime(),
-                        ];
+                        $response['data'][] = $this->buildImportSuccessRow($sheetData[$i], $i, $originalEmail, $tempUploadDirectory . DIRECTORY_SEPARATOR . $fileName);
                     } else {
                         $this->addError($response, $row, $i, 'Could not add Participant Login');
                     }
@@ -2198,10 +2167,19 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
 
             $db->commit();
 
+            // Persist the failure log outside the transaction so a late rollback can't erase
+            // it; each row carries the run-id + full columns.
+            $this->persistImportErrors($response['error-data'], $importRunId, $tempUploadDirectory . DIRECTORY_SEPARATOR . $fileName);
+
+            // Build a re-importable template .xlsx of just the failed rows (full columns +
+            // the failure reason as a cell comment), so the admin fixes and re-uploads it.
+            $response['error_file'] = $this->buildErrorExportFile($response['error-rows-full'], $importRunId);
+
             // Log audit
             $importedCount = count($response['data'] ?? []);
+            $errorCount = count($response['error-data'] ?? []);
             $auditDb = new Application_Model_DbTable_AuditLog();
-            $auditDb->addNewAuditLog("Bulk imported {$importedCount} participants", 'participants');
+            $auditDb->addNewAuditLog("Bulk imported {$importedCount} participants (run {$importRunId}, {$errorCount} error(s))", 'participants');
 
             $alertMsg->message = 'Your file was imported successfully';
         } catch (Throwable $e) {
@@ -2218,16 +2196,115 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         return $response;
     }
 
+    /**
+     * Build the per-row success payload returned to the import view. Extracted so the
+     * two success paths (regular insert/update and update-email-only) stay in sync.
+     */
+    private function buildImportSuccessRow(array $sheetRow, int $rowIndex, string $email, string $fileFullPath): array
+    {
+        return [
+            's_no' => $sheetRow['A'] ?: ($rowIndex - 1),
+            'participant_id' => $sheetRow['B'],
+            'individual' => $sheetRow['C'] ?? 'no',
+            'participant_lab_name' => $sheetRow['D'],
+            'participant_last_name' => $sheetRow['E'],
+            'institute_name' => $sheetRow['F'] ?? null,
+            'department' => $sheetRow['G'] ?? null,
+            'address' => $sheetRow['H'] ?? null,
+            'district' => $sheetRow['J'] ?? null,
+            'country' => $sheetRow['M'],
+            'zip' => $sheetRow['N'] ?? null,
+            'longitude' => $sheetRow['O'] ?? null,
+            'latitude' => $sheetRow['P'] ?? null,
+            'mobile_number' => $sheetRow['Q'] ?? null,
+            'participant_email' => $email,
+            'participant_password' => $sheetRow['S'],
+            'additional_email' => $sheetRow['T'] ?? null,
+            'filename' => $fileFullPath,
+            'updated_datetime' => Pt_Commons_DateUtility::getCurrentDateTime(),
+        ];
+    }
+
+    /**
+     * Rebuild a re-importable copy of the bulk-import template containing only the failed
+     * rows (their full A–T cells), with each row's failure reason attached as a cell comment
+     * and the Country cell flagged when the country was the problem. Saved to TEMP as
+     * participant-import-errors-<runId>.xlsx; returns the basename, or null on nothing-to-do
+     * / failure (the import already succeeded — this must never throw to the caller).
+     */
+    private function buildErrorExportFile(array $errorRowsFull, string $runId): ?string
+    {
+        if ($errorRowsFull === []) {
+            return null;
+        }
+        try {
+            $templatePath = realpath(WEB_ROOT) . '/files/Participant-Bulk-Import-Excel-Format-v2.xlsx';
+            if (!is_file($templatePath)) {
+                return null;
+            }
+            $ss = IOFactory::load($templatePath);
+            $sheet = $ss->getSheet(0);
+
+            // Drop the template's sample rows (everything below the header) so only the
+            // admin's failed rows remain.
+            $highest = $sheet->getHighestRow();
+            if ($highest >= 2) {
+                $sheet->removeRow(2, $highest - 1);
+            }
+
+            $columns = range('A', 'T');
+            $r = 2;
+            foreach ($errorRowsFull as $entry) {
+                $cells = $entry['cells'] ?? [];
+                foreach ($columns as $col) {
+                    if (isset($cells[$col]) && $cells[$col] !== '') {
+                        $sheet->setCellValueExplicit(
+                            "{$col}{$r}",
+                            (string) $cells[$col],
+                            \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING
+                        );
+                    }
+                }
+                $reason = (string) ($entry['reason'] ?? '');
+                if ($reason !== '') {
+                    $sheet->getComment("A{$r}")->getText()->createText($reason);
+                    // If the country is what failed, tint that cell so it's obvious.
+                    if (stripos($reason, 'country') !== false) {
+                        $sheet->getStyle("M{$r}")->getFill()
+                            ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+                            ->getStartColor()->setRGB('FFF2CC');
+                    }
+                }
+                $r++;
+            }
+
+            if (!is_dir(TEMP_UPLOAD_PATH)) {
+                @mkdir(TEMP_UPLOAD_PATH, 0775, true);
+            }
+            $fileName = 'participant-import-errors-' . $runId . '.xlsx';
+            $writer = IOFactory::createWriter($ss, 'Xlsx');
+            $writer->save(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $fileName);
+            return $fileName;
+        } catch (Throwable $e) {
+            Pt_Commons_LoggerUtility::logError('Failed to build bulk-import error export: ' . $e->getMessage(), [
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'run' => $runId,
+            ]);
+            return null;
+        }
+    }
+
     private function addError(&$response, $row, $rowIndex, $errorMessage)
     {
+        // Build the in-memory error record only. The DB write to participants_not_uploaded
+        // is deferred to persistImportErrors() AFTER commit, so a full-batch rollback can't
+        // erase the failure log (and the rows get the run-id + full columns there).
         $dbData = [
             'participant_id' => $row['B'] ?? 'Unknown',
             'error' => $errorMessage,
             'updated_datetime' => Pt_Commons_DateUtility::getCurrentDateTime(),
         ];
-
-        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $db->insert('participants_not_uploaded', $dbData);
 
         $response['error-data'][] = $dbData + [
             's_no' => $row['A'] ?: ($rowIndex - 1),
@@ -2239,6 +2316,47 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             'country' => $row['M'] ?? '',
             'participant_email' => $row['R'] ?? '',
         ];
+
+        // Keep the full A–T cells so item-6 can rebuild a re-importable template row.
+        $response['error-rows-full'][] = ['cells' => $row, 'reason' => $errorMessage];
+    }
+
+    /**
+     * Persist the run's failures to participants_not_uploaded after commit. Runs in its own
+     * try/catch so a logging hiccup never disturbs the already-committed import. Each row gets
+     * the import run-id and the source filename so a run's failures stay separable.
+     */
+    private function persistImportErrors(array $errorData, string $runId, string $fileFullPath): void
+    {
+        if ($errorData === []) {
+            return;
+        }
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        try {
+            foreach ($errorData as $e) {
+                $db->insert('participants_not_uploaded', [
+                    's_no' => $e['s_no'] ?? null,
+                    'participant_id' => $e['participant_id'] ?? null,
+                    'participant_lab_name' => $e['participant_lab_name'] ?? null,
+                    'participant_last_name' => $e['participant_last_name'] ?? null,
+                    'institute_name' => $e['institute_name'] ?? null,
+                    'district' => $e['district'] ?? null,
+                    'country' => $e['country'] ?? null,
+                    'mobile_number' => $e['mobile_number'] ?? null,
+                    'participant_email' => $e['participant_email'] ?? null,
+                    'error' => $e['error'] ?? null,
+                    'filename' => $fileFullPath,
+                    'import_run_id' => $runId,
+                    'updated_datetime' => $e['updated_datetime'] ?? Pt_Commons_DateUtility::getCurrentDateTime(),
+                ]);
+            }
+        } catch (Throwable $e) {
+            Pt_Commons_LoggerUtility::logError('Failed to persist bulk-import error log: ' . $e->getMessage(), [
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'run' => $runId,
+            ]);
+        }
     }
     // Helper methods for optimization
     private function buildCountryCache()
@@ -2258,15 +2376,139 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             }
         }
 
+        // Resolve common renames / informal names / accent-stripped spellings / typos to
+        // the canonical country. Aliases target the ISO3 code (always ASCII and already a
+        // cache key), so they're immune to how iso_name is cased/accented and don't depend
+        // on the names-refresh migration having run. Each alias is one-to-one and only
+        // added when its ISO3 target is present, so it never points at a wrong/missing row.
+        foreach ($this->countryAliasMap() as $alias => $iso3) {
+            if (isset($cache[$iso3]) && !isset($cache[$alias])) {
+                $cache[$alias] = $cache[$iso3];
+            }
+        }
+
         return $cache;
     }
 
-    private function batchCheckDuplicates($sheetData)
+    /**
+     * Lowercased alias => ISO3 code (lowercased) for resilient country matching. Covers
+     * renamed countries, colloquial names ISO doesn't carry (Ivory Coast, DRC, UK...), and
+     * accent-stripped spellings users type. An alias whose ISO3 isn't in this DB is skipped.
+     */
+    private function countryAliasMap(): array
+    {
+        return [
+            // Renamed / modernised
+            'swaziland' => 'swz',
+            'cabo verde' => 'cpv',
+            'cape verde' => 'cpv',
+            'czechia' => 'cze',
+            'czech republic' => 'cze',
+            'turkey' => 'tur',
+            'turkiye' => 'tur',
+            'north macedonia' => 'mkd',
+            'macedonia' => 'mkd',
+            'burma' => 'mmr',
+            // Colloquial / abbreviations not in ISO names
+            'ivory coast' => 'civ',
+            'russia' => 'rus',
+            'south korea' => 'kor',
+            'north korea' => 'prk',
+            'laos' => 'lao',
+            'syria' => 'syr',
+            'iran' => 'irn',
+            'tanzania' => 'tza',
+            'bolivia' => 'bol',
+            'venezuela' => 'ven',
+            'moldova' => 'mda',
+            'vietnam' => 'vnm',
+            'viet nam' => 'vnm',
+            'uae' => 'are',
+            'uk' => 'gbr',
+            'great britain' => 'gbr',
+            'usa' => 'usa',
+            'u.s.a.' => 'usa',
+            'united states of america' => 'usa',
+            'drc' => 'cod',
+            'dr congo' => 'cod',
+            'democratic republic of the congo' => 'cod',
+            'congo-kinshasa' => 'cod',
+            'republic of the congo' => 'cog',
+            'congo-brazzaville' => 'cog',
+            'palestine' => 'pse',
+            'brunei' => 'brn',
+            // Accent-stripped spellings
+            "cote d'ivoire" => 'civ',
+            'curacao' => 'cuw',
+            'reunion' => 'reu',
+            'aland islands' => 'ala',
+            'saint barthelemy' => 'blm',
+            // Pre-ISO-refresh names ("X, Y of"), so spreadsheets built before the
+            // countries table was modernised still resolve.
+            'bolivia, plurinational state of' => 'bol',
+            'congo, the democratic republic of the' => 'cod',
+            'holy see (vatican city state)' => 'vat',
+            'iran, islamic republic of' => 'irn',
+            "korea, democratic people's republic of" => 'prk',
+            'korea, republic of' => 'kor',
+            'macedonia, the former yugoslav republic of' => 'mkd',
+            'micronesia, federated states of' => 'fsm',
+            'moldova, republic of' => 'mda',
+            'taiwan, province of china' => 'twn',
+            'us pacific islands' => 'umi',
+            'venezuela, bolivarian republic of' => 'ven',
+            'virgin islands, british' => 'vgb',
+            'virgin islands, u.s.' => 'vir',
+        ];
+    }
+
+    /**
+     * Canonical country display names (iso_name), used only to suggest the closest match
+     * in an "Invalid country" error. Fetched once per import (countries is a small table).
+     */
+    private function getCountryNames(): array
+    {
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        return $db->fetchCol($db->select()->from('countries', ['iso_name']));
+    }
+
+    /**
+     * Best fuzzy match for an invalid country value, or null if nothing is close enough.
+     * Only suggests (never auto-applies), so a genuine non-country like "USAPI" returns
+     * null and produces no misleading hint.
+     */
+    private function suggestClosestCountry(string $input, array $names): ?string
+    {
+        $input = trim($input);
+        if ($input === '') {
+            return null;
+        }
+        $best = null;
+        $bestPct = 0.0;
+        foreach ($names as $name) {
+            similar_text(strtolower($input), strtolower((string) $name), $pct);
+            if ($pct > $bestPct) {
+                $bestPct = $pct;
+                $best = $name;
+            }
+        }
+        // 75% cleanly separates genuine typos (e.g. "Zimbabe"→Zimbabwe ~93%) from
+        // coincidental letter overlap (e.g. "USAPI" vs "Spain" ~60%), so non-countries
+        // get no misleading hint.
+        return $bestPct >= 75.0 ? $best : null;
+    }
+
+    private function batchCheckDuplicates($sheetData, ?string $prefix = null, bool $directLoginOn = false)
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
 
         $uniqueIds = [];
         $emails = [];
+
+        // Only pre-cache the direct-login pseudo-emails when direct login is on and a
+        // prefix exists. The prefix is passed in from processBulkImport (fetched once)
+        // so we don't hit GlobalConfig per row.
+        $buildDirectLoginKeys = $directLoginOn && !empty($prefix);
 
         for ($i = 2; $i <= count($sheetData); $i++) {
             if (!empty($sheetData[$i]['B'])) {
@@ -2297,9 +2539,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             }
 
             // Also check for direct participant login emails
-            $configDb = new Application_Model_DbTable_GlobalConfig();
-            $prefix = $configDb->getValue('participant_login_prefix');
-            if ($prefix && !empty($sheetData[$i]['B'])) {
+            if ($buildDirectLoginKeys && !empty($sheetData[$i]['B'])) {
                 $directEmail = $prefix . MiscUtility::slugify($sheetData[$i]['B']);
                 if ($directEmail) {
                     $emails[] = $directEmail;

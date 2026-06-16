@@ -128,7 +128,15 @@ $totalCount = count($mergedRows);
             <a class="btn btn-default" href="/admin/participants/bulk-import">
                 <i class="icon-upload"></i> <?= $this->translate->_("Import another file"); ?>
             </a>
-            <?php if ($errorCount > 0): ?>
+            <?php
+            $errorFile = $this->response['error_file'] ?? null;
+            $errorFilePath = $errorFile ? realpath(TEMP_UPLOAD_PATH) . DIRECTORY_SEPARATOR . $errorFile : null;
+            ?>
+            <?php if ($errorCount > 0 && $errorFilePath && is_file($errorFilePath)): ?>
+                <a class="btn btn-warning" href="<?= htmlspecialchars(Pt_Commons_SignedDownload::url($errorFilePath)); ?>" download>
+                    <i class="icon-download"></i> <?= $this->translate->_("Export problematic rows (Excel)"); ?>
+                </a>
+            <?php elseif ($errorCount > 0): ?>
                 <button type="button" class="btn btn-warning" id="biExportErrors">
                     <i class="icon-download"></i> <?= $this->translate->_("Export problematic rows"); ?>
                 </button>
