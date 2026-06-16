@@ -1973,7 +1973,21 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                     continue;
                 }
 
-                $ulid = ($directParticipantLogin == 'yes') ? MiscUtility::generateULID() : null;
+                // Reuse the participant's existing ULID on re-import so its direct-login
+                // link stays stable; only mint a fresh one for new (or ULID-less) rows.
+                $ulid = null;
+                if ($directParticipantLogin == 'yes') {
+                    if (!empty($participantExists)) {
+                        $existingUlid = $db->fetchOne(
+                            $db->select()
+                                ->from('participant', 'ulid')
+                                ->where('participant_id = ?', $participantExists['participant_id'])
+                        );
+                        $ulid = !empty($existingUlid) ? $existingUlid : MiscUtility::generateULID();
+                    } else {
+                        $ulid = MiscUtility::generateULID();
+                    }
+                }
 
                 $participantData = [
                     'unique_identifier' => MiscUtility::cleanString($row['B']),
@@ -2062,10 +2076,43 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                         $dataManagerData2['password'] = ($password == $this->_defaultPassword) ? $this->_defaultPasswordHash : Common::passwordHash($password);
                     }
 
-                    $dmExists2 = $duplicateChecks['dataManagers'][$dataManagerData2['primary_email']] ?? null;
+                    // The login pseudo-email is derived from the Unique ID, so on re-import
+                    // of an existing participant it already exists. Cache keys are stored
+                    // lowercased (batchCheckDuplicates), so look up with a lowercased key and
+                    // fall back to a direct DB read on a cache miss — otherwise the blind
+                    // INSERT below collides on the primary_email unique key and aborts the
+                    // whole batch. Wrap the write so a stray collision is a per-row error.
+                    $loginEmailKey = strtolower(trim((string) $dataManagerData2['primary_email']));
+                    $dmExists2 = $duplicateChecks['dataManagers'][$loginEmailKey] ?? null;
                     if (empty($dmExists2)) {
-                        $db->insert('data_manager', $dataManagerData2);
-                        $dmId2 = $db->lastInsertId();
+                        $dbDmId2 = $db->fetchOne(
+                            $db->select()
+                                ->from('data_manager', 'dm_id')
+                                ->where('LOWER(TRIM(primary_email)) = ?', $loginEmailKey)
+                        );
+                        if ($dbDmId2) {
+                            $dmExists2 = ['dm_id' => (int) $dbDmId2];
+                        }
+                    }
+
+                    try {
+                        if (empty($dmExists2)) {
+                            $db->insert('data_manager', $dataManagerData2);
+                            $dmId2 = $db->lastInsertId();
+                        } else {
+                            $dmId2 = (int) $dmExists2['dm_id'];
+                            $db->update('data_manager', $dataManagerData2, $db->quoteInto('dm_id = ?', $dmId2));
+                        }
+                        $duplicateChecks['dataManagers'][$loginEmailKey] = ['dm_id' => $dmId2];
+                    } catch (Throwable $e) {
+                        Pt_Commons_LoggerUtility::logError('Participant login save error: ' . $e->getMessage(), [
+                            'file' => $e->getFile(),
+                            'line' => $e->getLine(),
+                            'trace' => $e->getTraceAsString(),
+                        ]);
+                        $this->addError($response, $row, $i, "Could not save participant login for {$row['B']}.");
+                        $dmId2 = 0;
+                        continue;
                     }
                 }
 
