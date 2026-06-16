@@ -1914,8 +1914,14 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                     continue;
                 }
 
-                // Check data manager email duplicates
-                if (isset($duplicateChecks['fileDataManagers'][$originalEmail])) {
+                $allowEmailReuse = isset($params['bulkUploadAllowEmailRepeat'])
+                    && $params['bulkUploadAllowEmailRepeat'] == 'allow-existing-email';
+
+                // Check data manager email duplicates within the upload file. When the admin
+                // chose "Allow — reuse existing DM / PT login email", a repeated email is not
+                // an error: this row reuses the DM the earlier row created (cached in
+                // dataManagers) and just maps it to this participant too.
+                if (!$allowEmailReuse && isset($duplicateChecks['fileDataManagers'][$originalEmail])) {
                     $this->addError($response, $row, $i, "Data Manager email $originalEmail is duplicated in the upload file.");
                     continue;
                 }
