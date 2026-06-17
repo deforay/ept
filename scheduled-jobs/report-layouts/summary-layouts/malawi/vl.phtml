@@ -114,7 +114,7 @@ if ($resultArray['shipment'] != "") {
                     $calRes .= '<table border="1" style="text-align:center;font-weight:bold;width:650px;font-size:11px;height:500px;">
                         <tr>
                             <!-- <td style="background-color:#8ECF64;text-align:center;"><br><br>Platform </td> -->
-                            <td style="background-color:#8ECF64;text-align:center;"><br><br>Specimen ID </td>
+                            <td style="background-color:#8ECF64;text-align:center;width:16%;"><br><br>Specimen ID </td>
                             <td style="background-color:#8ECF64;text-align:center;width:100px;"><br><br>Mean<br/>(log<sub>10</sub> copies/mL)</td>
                             <td style="background-color:#8ECF64;text-align:center;"><br><br>S.D.</td>
                             <td style="background-color:#8ECF64;text-align:center;">Lowest Acceptable Limit</td>
@@ -193,7 +193,7 @@ if ($resultArray['shipment'] != "") {
                                         <th colspan="8" cellpadding="8" style="font-size:12px;padding-top:5px;padding-bottom:5px;"><strong>Platform/Assay Name: </strong><span style="font-weight:normal;">' . $vlCal['vlAssay'] . '</span></th>
                                     </tr>
                                     <tr>
-                                        <th style="background-color:#8ECF64;text-align:center;font-size:12px;"><br/><br/>Specimen ID </th>
+                                        <th style="background-color:#8ECF64;text-align:center;font-size:12px;width:16%;"><br/><br/>Specimen ID </th>
                                         <th style="background-color:#8ECF64;text-align:center;font-size:12px;"><br/><br/>Number of Participants </th>
                                         <th style="background-color:#8ECF64;text-align:center;font-size:12px;">Assigned Value<br/>(log<sub>10</sub> copies/mL)</th>
                                         <th style="background-color:#8ECF64;text-align:center;font-size:12px;"><br/><br/>Lower limit <br/>(Q1)</th>
@@ -207,7 +207,7 @@ if ($resultArray['shipment'] != "") {
 
                             $calRes .= '<tr>';
                             $calRes .= '
-                                    <td style="font-weight:normal;text-align:center;">' . $val['sample_label'] . '</td>
+                                    <td style="font-weight:normal;text-align:center;width:16%;">' . $val['sample_label'] . '</td>
                                     <td style="font-weight:normal;text-align:center;">' . $val['no_of_responses'] . '</td>
                                     <td style="font-weight:normal;text-align:center;">' . Pt_Commons_NumberUtility::decimal($val['median']) . '</td>
                                     <td style="font-weight:normal;text-align:center;">' . Pt_Commons_NumberUtility::decimal($val['low_limit']) . '</td>
@@ -235,7 +235,7 @@ if ($resultArray['shipment'] != "") {
                                         <th colspan="8" cellpadding="8" style="font-size:12px;font-weight:normal;padding-top:5px;padding-bottom:5px;"><strong>Platform/Assay Name: </strong>VL platforms with < 18 participants</th>
                                     </tr>
                                     <tr>
-                                        <th style="background-color:#8ECF64;text-align:center;font-size:12px;"><br/><br/>Specimen ID </th>
+                                        <th style="background-color:#8ECF64;text-align:center;font-size:12px;width:16%;"><br/><br/>Specimen ID </th>
                                         <th style="background-color:#8ECF64;text-align:center;font-size:12px;"><br/><br/>Number of Participants </th>
                                         <th style="background-color:#8ECF64;text-align:center;font-size:12px;">Assigned Value<br/>(log<sub>10</sub> copies/mL)</th>
                                         <th style="background-color:#8ECF64;text-align:center;font-size:12px;"><br/><br/>Lower limit <br/>(Q1)</th>
@@ -247,7 +247,7 @@ if ($resultArray['shipment'] != "") {
                     $score = round((($label['NumberPassed'] / $label['response']) * 100));
                     $calRes .= '<tr>';
                     $calRes .= '
-                            <td style="font-weight:normal;text-align:center;">' . $label['label'] . '</td>
+                            <td style="font-weight:normal;text-align:center;width:16%;">' . $label['label'] . '</td>
                             <td style="font-weight:normal;text-align:center;">' . $label['response'] . '</td>
                             <td style="font-weight:normal;text-align:center;">' . Pt_Commons_NumberUtility::decimal($label['median']) . '</td>
                             <td style="font-weight:normal;text-align:center;">' . Pt_Commons_NumberUtility::decimal($label['lowLimit']) . '</td>

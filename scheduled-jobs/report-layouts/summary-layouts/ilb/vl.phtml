@@ -215,10 +215,10 @@ if ($resultArray['shipment'] != "") {
                                         <th style="background-color:#BDD6EE;text-align:center;font-size:12px;width:16%;"><br/><br/>Sample ID </th>
                                         <th style="background-color:#BDD6EE;text-align:center;font-size:12px;"><br/><br/>Number of Participants </th>
                                         <th style="background-color:#BDD6EE;text-align:center;font-size:12px;">Assigned Value<br/>(log<sub>10</sub> copies/mL)</th>
-                                        <th style="background-color:#BDD6EE;text-align:center;font-size:12px;"><br/><br/>Lower limit <br/>(Q1)</th>
-                                        <th style="background-color:#BDD6EE;text-align:center;font-size:12px;"><br/><br/>Upper limit <br/>(Q3)</th>
+                                        <th style="background-color:#BDD6EE;text-align:center;font-size:12px;">Acceptable <br/>Lower Limit</th>
+                                        <th style="background-color:#BDD6EE;text-align:center;font-size:12px;">Acceptable <br/>Upper Limit</th>
                                         <th style="background-color:#BDD6EE;text-align:center;font-size:12px;"><br/><br/>Robust <br/>SD</th>
-                                        <th style="background-color:#BDD6EE;text-align:center;font-size:12px;" colspan="2">Participants with <br/>Passing Results <br/>(|z| < 3.0)</th>
+                                        <th style="background-color:#BDD6EE;text-align:center;font-size:12px;" colspan="2">Participants with <br/>Passing Result <br/>(z &lt; &plusmn;3.0)</th>
                                     </tr>';
                     foreach ($vlCal as $key => $val) {
                         if (isset($val['median'])) {
@@ -257,10 +257,10 @@ if ($resultArray['shipment'] != "") {
                                         <th style="background-color:#BDD6EE;text-align:center;font-size:12px;width:16%;"><br/><br/>Sample ID </th>
                                         <th style="background-color:#BDD6EE;text-align:center;font-size:12px;"><br/><br/>Number of Participants </th>
                                         <th style="background-color:#BDD6EE;text-align:center;font-size:12px;">Assigned Value<br/>(log<sub>10</sub> copies/mL)</th>
-                                        <th style="background-color:#BDD6EE;text-align:center;font-size:12px;"><br/><br/>Lower limit <br/>(Q1)</th>
-                                        <th style="background-color:#BDD6EE;text-align:center;font-size:12px;"><br/><br/>Upper limit <br/>(Q3)</th>
+                                        <th style="background-color:#BDD6EE;text-align:center;font-size:12px;">Acceptable <br/>Lower Limit</th>
+                                        <th style="background-color:#BDD6EE;text-align:center;font-size:12px;">Acceptable <br/>Upper Limit</th>
                                         <th style="background-color:#BDD6EE;text-align:center;font-size:12px;"><br/><br/>Robust <br/>SD</th>
-                                        <th style="background-color:#BDD6EE;text-align:center;font-size:12px;" colspan="2">Participants with <br/>Passing Results <br/>(|z| < 3.0)</th>
+                                        <th style="background-color:#BDD6EE;text-align:center;font-size:12px;" colspan="2">Participants with <br/>Passing Result <br/>(z &lt; &plusmn;3.0)</th>
                                     </tr>';
                 foreach ($sample as $point => $label) {
                     $score = $label['response'] > 0 ? round(($label['NumberPassed'] / $label['response']) * 100) : 0;
@@ -487,13 +487,19 @@ if ($resultArray['shipment'] != "") {
         //$pdf->AddPage();
         /* JPGraph end */
 
-        $note = '<h4>Information with respect to compliance with standards ISO 13528:2015(E) </h4>';
+        $note = '<h4>Information with respect to compliance with standards ISO 13528:2022(E) </h4>';
 
         $note .= '<h5>Preparation of Proficiency Test items:</h5>';
-        $note .= '<span style="text-align:justify;font-size:11px;font-weight:normal;">The proficiency test items were prepared by trained staff using inactivated cultured HIV-1, following institutional SOPs. The PT samples were issued with instructions to report on detection using routine methods. The PT samples were tested for homogeneity prior to shipment and met program requirements.</span>';
+        $note .= '<span style="text-align:justify;font-size:11px;font-weight:normal;">The proficiency test items were prepared by the trained staff of CDC-ILB using inactivated, cultured HIV-1, following institutional SOPs. The PT samples were issued with instructions to report on detection using routine methods. The PT samples were tested for homogeneity prior to shipment and met program requirements.</span>';
 
         $note .= '<h5>Procedures used to establish the assigned value:</h5>';
-        $note .= '<span style="text-align:justify;font-size:11px;font-weight:normal;">The results of participating laboratories using the same VL platform were grouped together and analyzed for peer-comparison using the Normalized interquartile range (nIQR) method. Assigned value, Robust Standard Deviation, Standard Uncertainty of assigned value, z score and performance score were derived as per the Standard ISO13528: 2015(E). A VL platform with the most participants was used as a reference value to evaluate results for VL platforms with less than eighteen participants in this PT round.</span>';
+        $note .= '<span style="text-align:justify;font-size:11px;font-weight:normal;">The results of participating laboratories using the same VL platform were grouped together and analyzed for peer-comparison using the normalized InterQuartile Range (nIQR) method. The nIQR method uses the median as the assigned value because it is a robust estimator of central tendency that is less influenced by outliers. This approach ensures that the assigned value remains representative of the central distribution of participant results, even when a proportion of results may be extreme or atypical. Assigned value, Robust Standard Deviation, Standard Uncertainty of assigned value, z score and performance score were derived as per the Standard ISO13528: 2022(E). A VL platform with the most participants was used as a reference value to evaluate results for VL platforms with less than eighteen participants in this PT round.</span>';
+
+        $note .= '<h5>Acceptable Performance Criteria</h5>';
+        $note .= '<span style="text-align:justify;font-size:11px;font-weight:normal;">Acceptable performance is defined as achieving a z-score with an absolute value less than 3.0 (|z| &lt; 3.0), where the z-score is calculated as:<br/>z = (Participant Result &ndash; Assigned Value) / Robust SD</span>';
+
+        $note .= '<h5>Acceptable Result Interval</h5>';
+        $note .= '<span style="text-align:justify;font-size:11px;font-weight:normal;">For each sample, an Acceptable Result Interval is calculated and reported as:<br/>Assigned Value &plusmn; (3 &times; Robust SD)<br/>Results falling within this interval are considered acceptable performance (|z| &lt; 3.0).<br/><br/>(Robust Standard Deviation (SD) in the nIQR method is a dispersion estimate calculated as 0.7413 &times; (Q3 &minus; Q1), where Q1 and Q3 are the 25th and 75th percentiles of participant results. It provides a resistant estimate of variability that is less influenced by outliers than the classical standard deviation.)</span>';
 
         /* $note .= '<h5>Subcontracting:</h5>';
         $note .= '<span style="text-align:justify;font-size:11px;font-weight:normal;">Only the transport of PT items and the ePT site administration are subcontracted.</span>'; */
