@@ -243,15 +243,14 @@
 
     }
 
-    function closeVlModal(sId, sampleId, vlAssay, mLowLimit, mHighLimit) {
+    // Called by the per-assay bulk manual-range modal after a successful save
+    function closeVlBulkModal(sId) {
         if (sId != '') {
             closeLayoutModal();
-            alert("Manual Ranges for selected sample updated successfully");
-            $("#manualRange" + vlAssay.toString() + sampleId.toString()).val(mHighLimit);
-            $("#mLowLimitCol" + vlAssay.toString() + sampleId.toString()).html(mLowLimit);
-            $("#mHighLimitCol" + vlAssay.toString() + sampleId.toString()).html(mHighLimit);
-            $(".manualRange" + vlAssay.toString() + sampleId.toString()).css("background-color", "");
-            //getVLReferenceScores(sId);
+            alert("Manual ranges updated for all samples of the selected assay.");
+            if (typeof getVLReferenceScores === 'function') {
+                getVLReferenceScores(sId);
+            }
         }
     }
 </script>

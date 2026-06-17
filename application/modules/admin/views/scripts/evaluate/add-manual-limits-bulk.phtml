@@ -1,0 +1,148 @@
+<?php
+// POST result: just hand control back to the parent window and refresh the table.
+if (isset($this->updatedResult)) {
+    require_once WEB_ROOT . '/js/main.js.php';
+    if (trim((string) $this->updatedResult) != "") {
+        echo '<script type="text/javascript">parent.closeVlBulkModal("' . htmlspecialchars($this->updatedResult, ENT_QUOTES) . '");</script>';
+    } else {
+        echo '<div class="alert alert-danger" style="margin:12px;">' . $this->translate->_("Unable to save manual ranges. Please try again or contact the system admin.") . '</div>';
+        echo '<div style="margin:12px;"><input type="button" value="Close" class="btn btn-danger" onclick="window.parent.closeLayoutModal()"></div>';
+    }
+    return;
+}
+
+$method = $this->result['method'] ?? 'standard';
+$samples = $this->result['samples'] ?? [];
+
+// Manual field columns per evaluation method: label, POST key, stored value column, system counterpart (for the hint)
+if ($method == 'iso17043') {
+    $cols = [
+        ['label' => 'Lower Limit',     'key' => 'manualLowLimit',            'val' => 'manual_low_limit',            'sys' => 'low_limit'],
+        ['label' => 'Upper Limit',     'key' => 'manualHighLimit',           'val' => 'manual_high_limit',           'sys' => 'high_limit'],
+        ['label' => 'Median',          'key' => 'manualMedian',              'val' => 'manual_median',               'sys' => 'median'],
+        ['label' => 'Robust SD',       'key' => 'manualSd',                  'val' => 'manual_sd',                   'sys' => 'sd'],
+        ['label' => 'Std Uncertainty', 'key' => 'manualStandardUncertainty', 'val' => 'manual_standard_uncertainty', 'sys' => null],
+    ];
+} else {
+    $cols = [
+        ['label' => 'Mean',          'key' => 'manualMean',         'val' => 'manual_mean',           'sys' => 'mean'],
+        ['label' => 'SD',            'key' => 'manualSd',           'val' => 'manual_sd',             'sys' => 'sd'],
+        ['label' => 'CV',            'key' => 'manualCv',           'val' => 'manual_cv',             'sys' => null],
+        ['label' => 'Q1',            'key' => 'manualQ1',           'val' => 'manual_q1',             'sys' => null],
+        ['label' => 'Q3',            'key' => 'manualQ3',           'val' => 'manual_q3',             'sys' => null],
+        ['label' => 'IQR',           'key' => 'manualIqr',          'val' => 'manual_iqr',            'sys' => null],
+        ['label' => 'Quartile Low',  'key' => 'manualQuartileLow',  'val' => 'manual_quartile_low',   'sys' => null],
+        ['label' => 'Quartile High', 'key' => 'manualQuartileHigh', 'val' => 'manual_quartile_high',  'sys' => null],
+        ['label' => 'Low Limit',     'key' => 'manualLowLimit',     'val' => 'manual_low_limit',      'sys' => 'low_limit'],
+        ['label' => 'High Limit',    'key' => 'manualHighLimit',    'val' => 'manual_high_limit',     'sys' => 'high_limit'],
+    ];
+}
+
+$fmt = static function ($v) {
+    return ($v === null || $v === '') ? '' : round((float) $v, 4);
+};
+?>
+<style>
+    #bulkManualForm td,
+    #bulkManualForm th {
+        vertical-align: middle !important;
+        text-align: center;
+        padding: 6px 8px !important;
+    }
+
+    #bulkManualForm input.manualInput {
+        width: 90px;
+        margin: 0 auto;
+        text-align: center;
+    }
+
+    #bulkManualForm .sysHint {
+        font-size: 11px;
+        color: #999;
+        display: block;
+    }
+</style>
+
+<form name="bulkManualForm" id="bulkManualForm" method="post"
+    action="<?php echo $this->url(['module' => 'admin', 'controller' => 'evaluate', 'action' => 'add-manual-limits-bulk'], 'default', true); ?>"
+    onsubmit="submitBulk();return false;">
+
+    <div style="margin:10px 12px;">
+        <strong><?= $this->translate->_("VL Assay"); ?>:</strong> <?php echo htmlspecialchars($this->result['assay_name'] ?? ''); ?>
+        <span style="color:#888;margin-left:10px;">
+            (<?= $this->translate->_("Enter manual ranges for any sample. Filled rows switch to Manual; rows left blank stay on the System range."); ?>)
+        </span>
+        <button type="button" class="btn btn-default btn-xs" style="float:right;" onclick="prefillFromSystem()">
+            <i class="icon-download"></i> <?= $this->translate->_("Prefill from System"); ?>
+        </button>
+    </div>
+    <?php if ($method == 'iso17043'): ?>
+        <div class="alert alert-info" style="margin:0 12px 10px 12px;padding:8px 12px;">
+            <i class="icon-info-sign"></i>
+            <?= $this->translate->_("Grading uses Median and Robust SD (z-score). Lower/Upper limits are shown on the report but do not affect pass/fail."); ?>
+        </div>
+    <?php endif; ?>
+
+    <table class="table table-bordered table-striped table-hover table-condensed" style="width:98%;margin:0 auto;">
+        <thead>
+            <tr>
+                <th scope="col"><?= $this->translate->_("Sample"); ?></th>
+                <?php foreach ($cols as $col): ?>
+                    <th scope="col"><?= $this->translate->_($col['label']); ?></th>
+                <?php endforeach; ?>
+            </tr>
+        </thead>
+        <tbody>
+            <?php foreach ($samples as $row): ?>
+                <?php $sampleId = (int) $row['sample_id']; ?>
+                <tr>
+                    <td style="text-align:left;font-weight:bold;">
+                        <?php echo htmlspecialchars($row['sample_label']); ?>
+                        <input type="hidden" name="sampleIds[]" value="<?php echo $sampleId; ?>">
+                    </td>
+                    <?php foreach ($cols as $col):
+                        $sysVal = ($col['sys'] !== null) ? $fmt($row[$col['sys']] ?? null) : '';
+                    ?>
+                        <td>
+                            <input type="text" class="form-control manualInput" autocomplete="off"
+                                name="<?php echo $col['key']; ?>[<?php echo $sampleId; ?>]"
+                                value="<?php echo $fmt($row[$col['val']] ?? null); ?>"
+                                data-sys="<?php echo $sysVal; ?>"
+                                <?php if ($sysVal !== ''): ?>placeholder="<?php echo $sysVal; ?>" title="System: <?php echo $sysVal; ?>"<?php endif; ?>>
+                        </td>
+                    <?php endforeach; ?>
+                </tr>
+            <?php endforeach; ?>
+            <?php if (empty($samples)): ?>
+                <tr>
+                    <td colspan="<?php echo count($cols) + 1; ?>"><?= $this->translate->_("No samples found for this shipment."); ?></td>
+                </tr>
+            <?php endif; ?>
+        </tbody>
+    </table>
+
+    <input type="hidden" name="shipmentId" value="<?php echo base64_encode($this->result['shipment_id']); ?>">
+    <input type="hidden" name="vlAssay" value="<?php echo base64_encode($this->result['vl_assay']); ?>">
+
+    <div style="margin:12px;">
+        <input type="submit" value="<?= $this->translate->_("Save All Samples"); ?>" class="btn btn-primary">
+        <input type="button" value="<?= $this->translate->_("Close"); ?>" class="btn btn-danger" onclick="window.parent.closeLayoutModal()">
+    </div>
+</form>
+
+<?php require_once WEB_ROOT . '/js/main.js.php'; ?>
+<script type="text/javascript">
+    function prefillFromSystem() {
+        $("#bulkManualForm input.manualInput").each(function () {
+            var sys = $(this).attr("data-sys");
+            if ((this.value === "" || this.value === null) && sys !== "" && typeof sys !== "undefined") {
+                this.value = sys;
+            }
+        });
+    }
+
+    function submitBulk() {
+        $.blockUI();
+        document.getElementById('bulkManualForm').submit();
+    }
+</script>

@@ -1,183 +1,234 @@
-<style>
-	td {
-		vertical-align: middle !important;
-	}
-</style>
-
 <?php
 
 $csrfNamespace = new Zend_Session_Namespace('csrf');
 $methodOfEvaluation = $this->result['method_of_evaluation'];
-
 unset($this->result['method_of_evaluation']);
 
-
-$updatedOn = "Manually Entered";
-$calculatedOn = "System Calculated";
-$useRange = 'calculated';
-if (isset($this->result['updated_on']) && $this->result['updated_on'] != "") {
-	$updatedOnArray = explode(" ", $this->result['updated_on']);
-	$updatedOn = "Updated manually on<br>" . $this->dateFormat($updatedOnArray[0]) . " " . $updatedOnArray[1];
-}
+$calculatedOn = "System calculated";
+$manualEditedOn = null;
 if (isset($this->result['calculated_on']) && $this->result['calculated_on'] != "") {
-	$calculatedOnArray = explode(" ", $this->result['calculated_on']);
-	$calculatedOn = "System Generated on " . $this->dateFormat($calculatedOnArray[0]) . " " . $calculatedOnArray[1];
+    $calculatedOnArray = explode(" ", $this->result['calculated_on']);
+    $calculatedOn = "System generated on " . $this->dateFormat($calculatedOnArray[0]) . " " . ($calculatedOnArray[1] ?? '');
 }
-if (isset($this->result['use_range']) && $this->result['use_range'] != "") {
-	$useRange = $this->result['use_range'];
+if (isset($this->result['updated_on']) && $this->result['updated_on'] != "") {
+    $updatedOnArray = explode(" ", $this->result['updated_on']);
+    $manualEditedOn = "Last manual edit on " . $this->dateFormat($updatedOnArray[0]) . " " . ($updatedOnArray[1] ?? '');
+}
+unset($this->result['updated_on'], $this->result['calculated_on'], $this->result['use_range']);
+
+// Pivot the sample-major data into an assay-major grid (samples become columns)
+$assays = [];        // vl_assay => assay_name
+$sampleLabels = [];  // sample_id => sample_label (ordered)
+$grid = [];          // [vl_assay][sample_id] => row
+foreach ($this->result as $sampleRows) {
+    if (!is_array($sampleRows)) {
+        continue;
+    }
+    foreach ($sampleRows as $vlAssay => $row) {
+        if (!is_array($row)) {
+            continue;
+        }
+        $assays[$vlAssay] = $row['assay_name'];
+        $sampleLabels[$row['sample_id']] = $row['sample_label'];
+        $grid[$vlAssay][$row['sample_id']] = $row;
+    }
 }
 
-unset($this->result['updated_on']);
-unset($this->result['calculated_on']);
-unset($this->result['use_range']);
+$numSamples = count($sampleLabels);
+$isIso = ($methodOfEvaluation == 'iso17043');
+$centerLabel = $isIso ? 'Median' : 'Mean';
+$sdLabel     = $isIso ? 'Robust SD' : 'SD';
 
+// System values: 0 is a legitimate value (e.g. negative-control sample), only null/'' is "no data"
+$disp = static function ($v) {
+    return ($v === null || $v === '') ? '—' : round((float) $v, 4);
+};
+$rangeCell = static function ($low, $high) use ($disp) {
+    return $disp($low) . ' &ndash; ' . $disp($high);
+};
+// Manual values: getVlRangeInformation() coerces unset manual fields to 0, so treat empty/0 as "not entered"
+$dispM = static function ($v) {
+    return empty($v) ? '—' : round((float) $v, 4);
+};
 ?>
-<form class="form" name="vlRangeForm" id="vlRangeForm" method="post" action="/admin/evaluate/vl-range" onsubmit="validateVlRangeForm();return false;">
-	<table class="table table-bordered table-striped table-hover table-condensed" style="width:100%;margin:0 auto;">
-		<thead>
-			<tr>
-				<th scope="col"></th>
-				<th scope="col" style="width:120px;"></th>
-				<th scope="col" style="text-align: center;" colspan="4"><?php echo $calculatedOn; ?></th>
-				<th scope="col" style="text-align: center;" colspan="4"><?php echo $updatedOn; ?></th>
-				<th scope="col" style="text-align: center;" colspan="2"></th>
+<style>
+    #vlRangeWrap table td,
+    #vlRangeWrap table th {
+        vertical-align: middle !important;
+        text-align: center;
+    }
 
-			</tr>
-			<tr>
-				<th scope="col" style="text-align: center;"><?= $this->translate->_("Sample ID"); ?></th>
-				<th scope="col" style="text-align: center;"><?= $this->translate->_("VL Assay"); ?></th>
-				<?php if ($methodOfEvaluation == 'standard') { ?>
-					<th scope="col" style="text-align: center;"><?= $this->translate->_("Mean"); ?></th>
-				<?php } elseif ($methodOfEvaluation == 'iso17043') { ?>
-					<th scope="col" style="text-align: center;"><?= $this->translate->_("Median"); ?></th>
-				<?php } ?>
-				<?php if ($methodOfEvaluation == 'standard') { ?>
-					<th scope="col" style="text-align: center;"><?= $this->translate->_("SD"); ?></th>
-				<?php } elseif ($methodOfEvaluation == 'iso17043') { ?>
-					<th scope="col" style="text-align: center;"><?= $this->translate->_("Robust SD"); ?></th>
-				<?php } ?>
-				<th scope="col" style="text-align: center;"><?= $this->translate->_("Low Limit"); ?></th>
-				<th scope="col" style="text-align: center;"><?= $this->translate->_("High Limit"); ?></th>
-				<?php if ($methodOfEvaluation == 'standard') { ?>
-					<th scope="col" style="text-align: center;"><?= $this->translate->_("Mean"); ?></th>
-				<?php } elseif ($methodOfEvaluation == 'iso17043') { ?>
-					<th scope="col" style="text-align: center;"><?= $this->translate->_("Median"); ?></th>
-				<?php } ?>
-				<?php if ($methodOfEvaluation == 'standard') { ?>
-					<th scope="col" style="text-align: center;"><?= $this->translate->_("SD"); ?></th>
-				<?php } elseif ($methodOfEvaluation == 'iso17043') { ?>
-					<th scope="col" style="text-align: center;"><?= $this->translate->_("Robust SD"); ?></th>
-				<?php } ?>
-				<th scope="col" style="text-align: center;"><?= $this->translate->_("Low Limit"); ?></th>
-				<th scope="col" style="text-align: center;"><?= $this->translate->_("High Limit"); ?></th>
-				<th scope="col" style="text-align: center;"><?= $this->translate->_("Use Range"); ?></th>
-				<th scope="col" style="text-align: center;"><?= $this->translate->_("Action"); ?></th>
+    #vlRangeWrap .vlAssayBlock {
+        margin-bottom: 20px;
+    }
 
-			</tr>
-		</thead>
-		<tbody>
-			<?php
-			$counter = 0;
-			foreach ($this->result as $sampleId => $result) {
+    #vlRangeWrap .assayTitle {
+        text-align: left !important;
+        font-size: 14px;
+        font-weight: bold;
+        background: #eef3f8;
+    }
 
-				$numberOfAssays = count($result);
-				$sampleAddedToTableAlready = [];
-				foreach ($result as $assay => $row) {
-			?>
-					<tr class="assayRow">
-						<?php if (!in_array($sampleId, $sampleAddedToTableAlready)) {
-							$sampleAddedToTableAlready[] = $sampleId;
-						?>
-							<td style="text-align: center;border-bottom:2px solid #999 !important;" rowspan="<?php echo $numberOfAssays; ?>">
-								<a href="/admin/evaluate/vl-sample-plot/shipment/<?php echo $row['shipment_id']; ?>/sample/<?php echo $row['sample_id']; ?>" style="text-decoration:underline;" class="btn btn-primary"><?php echo $row['sample_label']; ?></a>
-							</td>
-						<?php } ?>
-						<td class="manualRange<?php echo $row['vl_assay'] . $row['sample_id']; ?>"><?php echo $row['assay_name']; ?></td>
-						<td class="manualRange<?php echo $row['vl_assay'] . $row['sample_id']; ?>">
+    #vlRangeWrap .metricLabel {
+        text-align: left !important;
+        white-space: nowrap;
+        background: #fafafa;
+        font-weight: 600;
+    }
 
+    #vlRangeWrap .activeRange {
+        background: #e8f5e9 !important;
+        font-weight: bold;
+    }
 
-							<?php if ($methodOfEvaluation == 'standard') {
-								echo round($row['mean'], 4);
-							} elseif ($methodOfEvaluation == 'iso17043') {
-								echo round($row['median'], 4);
-							} ?>
-							<input type="hidden" class="form-control" name="sampleId[<?php echo $row['vl_assay']; ?>][<?php echo $row['sample_id']; ?>]" value="<?php echo $row['sample_id']; ?>" style="width:100px;margin:0 auto;">
-							<input type="hidden" id="csrf_token" name="csrf_token" value="<?php echo $csrfNamespace->token; ?>" />
-							<input type="hidden" class="form-control" name="assayId[<?php echo $row['vl_assay']; ?>][<?php echo $row['sample_id']; ?>]" value="<?php echo $row['vl_assay']; ?>" style="width:100px;margin:0 auto;">
-							<input type="hidden" name="manualRange[]" id="manualRange<?php echo $row['vl_assay'] . $row['sample_id']; ?>" title="Please enter the manual data for <?php echo $row['sample_label']; ?> sample and <?php echo $row['assay_name']; ?> assay" value="<?php echo isset($row['manual_low_limit']) ? round($row['manual_low_limit'], 4) : ''; ?>">
-						</td>
-						<td class="manualRange<?php echo $row['vl_assay'] . $row['sample_id']; ?>"><?php echo round($row['sd'], 4); ?></td>
-						<td class="manualRange<?php echo $row['vl_assay'] . $row['sample_id']; ?>"><?php echo round($row['low'], 4); ?></td>
-						<td class="manualRange<?php echo $row['vl_assay'] . $row['sample_id']; ?>"><?php echo round($row['high'], 4); ?></td>
-						<td class="manualRange<?php echo $row['vl_assay'] . $row['sample_id']; ?>" id="mMedianCol<?php echo $row['vl_assay'] . $row['sample_id']; ?>">
-							<?php if ($methodOfEvaluation == 'standard') {
-								echo !empty($row['manual_mean']) ? round($row['manual_mean'], 4) : 0;
-							} elseif ($methodOfEvaluation == 'iso17043') {
-								echo !empty($row['manual_median']) ? round($row['manual_median'], 4) : 0;
-							} ?>
-						</td>
-						<td>
-							<?php
-							echo !empty($row['manual_sd']) ? round($row['manual_sd'], 4) : 0;
-							?>
-						</td>
-						<td class="manualRange<?php echo $row['vl_assay'] . $row['sample_id']; ?>" id="mLowLimitCol<?php echo $row['vl_assay'] . $row['sample_id']; ?>">
-							<?php echo isset($row['manual_low_limit']) ? round($row['manual_low_limit'], 4) : ""; ?>
-						</td>
-						<td class="manualRange<?php echo $row['vl_assay'] . $row['sample_id']; ?>" id="mHighLimitCol<?php echo $row['vl_assay'] . $row['sample_id']; ?>">
-							<?php echo isset($row['manual_high_limit']) ? round($row['manual_high_limit'], 4) : ""; ?>
-						</td>
-						<td class="manualRange<?php echo $row['vl_assay'] . $row['sample_id']; ?>">
-							<select name="useRange[<?php echo $row['vl_assay']; ?>][<?php echo $row['sample_id']; ?>]" id="<?php echo $row['vl_assay'] . $row['sample_id']; ?>" class="form-control" onchange="checkManualRes(this)">
-								<option value="calculated" <?php echo ($row['use_range'] == 'calculated') ? " selected='selected' " : "" ?>><?= $this->translate->_("System"); ?></option>
-								<option value="manual" <?php echo ($row['use_range'] == 'manual') ? " selected='selected' " : "" ?>><?= $this->translate->_("Manual"); ?></option>
-							</select>
-						</td>
-						<td>
-							<a class="btn btn-primary btn-xs" href="javascript:void(0)" onclick="layoutModal('<?php echo $this->url(array('module' => 'admin', 'controller' => 'evaluate', 'action' => 'add-manual-limits'), 'default', true); ?><?php echo '/id/' . base64_encode($row['shipment_id'] . '#' . $row['sample_id'] . '#' . $row['vl_assay']); ?>','700','440')"><span><i class="icon-edit"></i> <?= $this->translate->_("Manual"); ?></span></a>
-						</td>
-					</tr>
-			<?php }
-				$counter++;
-			} ?>
-		</tbody>
-		<tfoot>
-			<tr>
-				<td colspan="10" style="text-align: center;">
-					<input type="hidden" name="sid" value="<?php echo base64_encode($this->shipmentId); ?>">
-					<input type="submit" value="Update Changes" class="btn btn-primary">
-					<input type="button" value="Re-Calculate" class="btn btn-danger" onclick="recalculate(<?php echo (int) $this->shipmentId; ?>, '<?php echo $methodOfEvaluation; ?>');">
-				</td>
-				<td></td>
-			</tr>
-		</tfoot>
-	</table>
-</form>
+    #vlRangeWrap .inactiveRange {
+        color: #aaa;
+    }
+</style>
+
+<div id="vlRangeWrap">
+    <div style="margin:6px 0 14px 0;color:#555;">
+        <span style="margin-right:18px;"><i class="icon-info-sign"></i> <?php echo $calculatedOn; ?></span>
+        <?php if (!empty($manualEditedOn)): ?>
+            <span><i class="icon-edit"></i> <?php echo $manualEditedOn; ?></span>
+        <?php endif; ?>
+        <span style="float:right;"><span style="display:inline-block;width:12px;height:12px;background:#e8f5e9;border:1px solid #cfe8d2;"></span> <?= $this->translate->_("= range currently in use"); ?></span>
+    </div>
+
+    <form class="form" name="vlRangeForm" id="vlRangeForm" method="post" action="/admin/evaluate/vl-range" onsubmit="submitVlRangeForm();return false;">
+        <input type="hidden" name="manualRange" value="1">
+        <input type="hidden" name="csrf_token" value="<?php echo $csrfNamespace->token; ?>" />
+        <input type="hidden" name="sid" value="<?php echo base64_encode($this->shipmentId); ?>">
+
+        <?php foreach ($assays as $vlAssay => $assayName): ?>
+            <div class="vlAssayBlock">
+                <table class="table table-bordered table-striped table-condensed" style="width:100%;margin:0 auto;">
+                    <thead>
+                        <tr>
+                            <th class="assayTitle" colspan="2"><?php echo htmlspecialchars($assayName); ?></th>
+                            <th colspan="<?php echo max(1, $numSamples - 1); ?>" style="text-align:right;">
+                                <a class="btn btn-success btn-xs" href="javascript:void(0);" onclick="bulkEditAssay(<?php echo (int) $vlAssay; ?>)">
+                                    <i class="icon-edit"></i> <?= $this->translate->_("Edit all samples"); ?>
+                                </a>
+                            </th>
+                        </tr>
+                        <tr>
+                            <th style="width:200px;"></th>
+                            <?php foreach ($sampleLabels as $sampleId => $label): ?>
+                                <th>
+                                    <a href="/admin/evaluate/vl-sample-plot/shipment/<?php echo (int) $this->shipmentId; ?>/sample/<?php echo (int) $sampleId; ?>"
+                                        style="text-decoration:underline;"><?php echo htmlspecialchars($label); ?></a>
+                                </th>
+                            <?php endforeach; ?>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php
+                        // precompute which samples are on manual for this assay
+                        $useManual = [];
+                        foreach ($sampleLabels as $sampleId => $label) {
+                            $r = $grid[$vlAssay][$sampleId] ?? null;
+                            $useManual[$sampleId] = ($r && ($r['use_range'] ?? '') === 'manual');
+                        }
+                        ?>
+                        <tr>
+                            <td class="metricLabel"><?= $this->translate->_("System Range (Lo – Hi)"); ?></td>
+                            <?php foreach ($sampleLabels as $sampleId => $label):
+                                $r = $grid[$vlAssay][$sampleId] ?? null; ?>
+                                <td class="<?php echo $useManual[$sampleId] ? 'inactiveRange' : 'activeRange'; ?>">
+                                    <?php echo $r ? $rangeCell($r['low'] ?? null, $r['high'] ?? null) : '—'; ?>
+                                </td>
+                            <?php endforeach; ?>
+                        </tr>
+                        <tr>
+                            <td class="metricLabel"><?= $this->translate->_("System") . " " . $this->translate->_($centerLabel) . " / " . $this->translate->_($sdLabel); ?></td>
+                            <?php foreach ($sampleLabels as $sampleId => $label):
+                                $r = $grid[$vlAssay][$sampleId] ?? null;
+                                $center = $r ? ($isIso ? ($r['median'] ?? null) : ($r['mean'] ?? null)) : null; ?>
+                                <td class="<?php echo $useManual[$sampleId] ? 'inactiveRange' : ''; ?>">
+                                    <?php echo $r ? ($disp($center) . ' / ' . $disp($r['sd'] ?? null)) : '—'; ?>
+                                </td>
+                            <?php endforeach; ?>
+                        </tr>
+                        <tr>
+                            <td class="metricLabel"><?= $this->translate->_("Manual Range (Lo – Hi)"); ?></td>
+                            <?php foreach ($sampleLabels as $sampleId => $label):
+                                $r = $grid[$vlAssay][$sampleId] ?? null;
+                                $hasManual = $r && (!empty($r['manual_low_limit']) || !empty($r['manual_high_limit'])); ?>
+                                <td class="<?php echo $useManual[$sampleId] ? 'activeRange' : ''; ?>">
+                                    <?php echo $hasManual ? ($dispM($r['manual_low_limit'] ?? null) . ' &ndash; ' . $dispM($r['manual_high_limit'] ?? null)) : '—'; ?>
+                                </td>
+                            <?php endforeach; ?>
+                        </tr>
+                        <tr>
+                            <td class="metricLabel"><?= $this->translate->_("Manual") . " " . $this->translate->_($centerLabel) . " / " . $this->translate->_($sdLabel); ?></td>
+                            <?php foreach ($sampleLabels as $sampleId => $label):
+                                $r = $grid[$vlAssay][$sampleId] ?? null;
+                                $mCenter = $r ? ($isIso ? ($r['manual_median'] ?? null) : ($r['manual_mean'] ?? null)) : null;
+                                $mSd = $r['manual_sd'] ?? null;
+                                $hasManual = (!empty($mCenter) || !empty($mSd)); ?>
+                                <td class="<?php echo $useManual[$sampleId] ? 'activeRange' : ''; ?>">
+                                    <?php echo $hasManual ? ($dispM($mCenter) . ' / ' . $dispM($mSd)) : '—'; ?>
+                                </td>
+                            <?php endforeach; ?>
+                        </tr>
+                        <tr>
+                            <td class="metricLabel"><?= $this->translate->_("Use Range"); ?></td>
+                            <?php foreach ($sampleLabels as $sampleId => $label):
+                                $r = $grid[$vlAssay][$sampleId] ?? null;
+                                if (!$r) {
+                                    echo '<td>—</td>';
+                                    continue;
+                                } ?>
+                                <td>
+                                    <input type="hidden" name="sampleId[<?php echo $vlAssay; ?>][<?php echo $sampleId; ?>]" value="<?php echo $sampleId; ?>">
+                                    <select name="useRange[<?php echo $vlAssay; ?>][<?php echo $sampleId; ?>]"
+                                        class="form-control" style="min-width:90px;margin:0 auto;"
+                                        onchange="toggleUseRange(<?php echo (int) $vlAssay; ?>, <?php echo (int) $sampleId; ?>, this.value)">
+                                        <option value="calculated" <?php echo $useManual[$sampleId] ? '' : "selected='selected'"; ?>><?= $this->translate->_("System"); ?></option>
+                                        <option value="manual" <?php echo $useManual[$sampleId] ? "selected='selected'" : ''; ?>><?= $this->translate->_("Manual"); ?></option>
+                                    </select>
+                                </td>
+                            <?php endforeach; ?>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        <?php endforeach; ?>
+
+        <?php if (empty($assays)): ?>
+            <div class="alert alert-warning"><?= $this->translate->_("No reference ranges are available for this shipment yet."); ?></div>
+        <?php endif; ?>
+
+        <div style="text-align:center;margin:16px 0;">
+            <input type="submit" value="<?= $this->translate->_("Update Changes"); ?>" class="btn btn-primary">
+            <input type="button" value="<?= $this->translate->_("Re-Calculate"); ?>" class="btn btn-danger"
+                onclick="recalculate(<?php echo (int) $this->shipmentId; ?>, '<?php echo $methodOfEvaluation; ?>');">
+        </div>
+    </form>
+</div>
 
 <script>
-	function recalculate(sid, method) {
-		document.location.href = "/admin/evaluate/recalculate-vl-range/sid/" + sid + "/method/" + method;
-	}
+    var vlBulkBaseUrl = "<?php echo $this->url(['module' => 'admin', 'controller' => 'evaluate', 'action' => 'add-manual-limits-bulk'], 'default', true); ?>";
+    var vlBulkModalWidth = <?php echo $isIso ? 900 : 1180; ?>;
+    var vlShipmentId = <?php echo (int) $this->shipmentId; ?>;
 
-	function checkManualRes(obj) {
-		if (obj.value == 'manual') {
-			$("#manualRange" + obj.id).addClass("isRequired");
-			if ($("#manualRange" + obj.id).val() == "") {
-				$(".manualRange" + obj.id).css("background-color", "#ffb3b3");
-			}
-		} else {
-			$("#manualRange" + obj.id).removeClass("isRequired");
-			$(".manualRange" + obj.id).css("background-color", "");
-		}
-	}
+    function bulkEditAssay(assayId) {
+        var id = btoa(vlShipmentId + '#' + assayId);
+        layoutModal(vlBulkBaseUrl + '/id/' + id, vlBulkModalWidth, 540);
+    }
 
-	function validateVlRangeForm() {
-		flag = deforayValidator.init({
-			formId: 'vlRangeForm'
-		});
-		if (flag) {
-			$.blockUI();
-			document.getElementById('vlRangeForm').submit();
-		}
-	}
+    function recalculate(sid, method) {
+        document.location.href = "/admin/evaluate/recalculate-vl-range/sid/" + sid + "/method/" + method;
+    }
+
+    // visually flip the active highlight when the System/Manual toggle changes (saved on Update Changes)
+    function toggleUseRange(assayId, sampleId, value) {
+        // no-op placeholder for inline feedback; full highlight refreshes after save
+    }
+
+    function submitVlRangeForm() {
+        $.blockUI();
+        document.getElementById('vlRangeForm').submit();
+    }
 </script>

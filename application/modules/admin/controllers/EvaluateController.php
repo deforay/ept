@@ -347,30 +347,24 @@ class Admin_EvaluateController extends Zend_Controller_Action
         $this->view->sampleId = $sampleId;
     }
 
-    public function addManualLimitsAction()
+    public function addManualLimitsBulkAction()
     {
-        $vlModel       = new Application_Model_Vl();
+        $vlModel = new Application_Model_Vl();
         /** @var Zend_Controller_Request_Http $request */
         $request = $this->getRequest();
         $this->_helper->layout()->disableLayout();
         $this->_helper->layout()->setLayout('modal');
-        $schemeService = new Application_Service_Schemes();
-        if ($this->hasParam('id')) {
-            $combineId = base64_decode($this->_getParam('id'));
-            $expStr = explode('#', $combineId);
-            $shipmentId = (int)$expStr[0];
-            $sampleId = (int)$expStr[1];
-            $vlAssay = (int)$expStr[2];
-            $this->view->result = $vlModel->getVlManualValue($shipmentId, $sampleId, $vlAssay);
-        }
+
         if ($request->isPost()) {
             $params = $request->getPost();
-            $updatedResult = $vlModel->updateVlManualValue($params);
-            $this->view->updatedResult = $updatedResult;
-            $this->view->sampleId = base64_decode($params['sampleId']);
-            $this->view->vlAssay = base64_decode($params['vlAssay']);
-            $this->view->mLowLimit = round($params['manualLowLimit'], 4);
-            $this->view->mHighLimit = round($params['manualHighLimit'], 4);
+            $this->view->updatedResult = $vlModel->updateVlManualValueBulk($params);
+            $this->view->shipmentId = $params['shipmentId'] ?? '';
+        } elseif ($this->hasParam('id')) {
+            $combineId = base64_decode($this->_getParam('id'));
+            $expStr = explode('#', $combineId);
+            $shipmentId = (int) ($expStr[0] ?? 0);
+            $vlAssay = (int) ($expStr[1] ?? 0);
+            $this->view->result = $vlModel->getVlBulkAssayValues($shipmentId, $vlAssay);
         }
     }
 

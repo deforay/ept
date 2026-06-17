@@ -1791,34 +1791,119 @@ class Application_Model_Vl
         }
     }
 
-    public function updateVlManualValue($params)
+    /**
+     * Fetch the manual/system range values for ALL samples of a single assay in a
+     * shipment. Powers the per-assay bulk manual-range editor.
+     */
+    public function getVlBulkAssayValues($shipmentId, $vlAssay)
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $shipmentId = (int) $shipmentId;
+        $vlAssay = (int) $vlAssay;
+
+        $shipment = $db->fetchRow($db->select()->from('shipment', ['shipment_attributes'])->where('shipment_id = ?', $shipmentId));
+        $shipmentAttributes = !empty($shipment['shipment_attributes']) ? Pt_Commons_JsonUtility::safeDecode($shipment['shipment_attributes']) : null;
+        $method = $shipmentAttributes['methodOfEvaluation'] ?? 'standard';
+
+        $assayName = $db->fetchOne($db->select()->from('r_vl_assay', ['name'])->where('id = ?', $vlAssay));
+
+        // every sample for the shipment, left-joined to any existing calc row for this assay
+        $sql = $db->select()
+            ->from(['ref' => 'reference_result_vl'], ['sample_id', 'sample_label'])
+            ->joinLeft(
+                ['rvc' => 'reference_vl_calculation'],
+                'rvc.sample_id = ref.sample_id AND rvc.shipment_id = ref.shipment_id AND ' . $db->quoteInto('rvc.vl_assay = ?', $vlAssay),
+                ['low_limit', 'high_limit', 'mean', 'median', 'sd', 'use_range', 'manual_q1', 'manual_q3', 'manual_iqr', 'manual_quartile_low', 'manual_quartile_high', 'manual_mean', 'manual_median', 'manual_sd', 'manual_cv', 'manual_standard_uncertainty', 'manual_low_limit', 'manual_high_limit']
+            )
+            ->where('ref.shipment_id = ?', $shipmentId)
+            ->order(['ref.sample_label', 'ref.sample_id']);
+
+        return [
+            'method'      => $method,
+            'assay_name'  => $assayName,
+            'vl_assay'    => $vlAssay,
+            'shipment_id' => $shipmentId,
+            'samples'     => $db->fetchAll($sql),
+        ];
+    }
+
+    /**
+     * Save manual ranges for every sample of a single assay in one go. A sample with
+     * at least one manual value entered is flipped to use_range='manual'; a sample left
+     * entirely blank reverts to use_range='calculated' (manual columns cleared).
+     */
+    public function updateVlManualValueBulk($params)
+    {
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $shipmentId = (int) base64_decode($params['shipmentId'] ?? '');
+        $vlAssay = (int) base64_decode($params['vlAssay'] ?? '');
+
+        if (empty($shipmentId) || empty($vlAssay) || empty($params['sampleIds']) || !is_array($params['sampleIds'])) {
+            return null;
+        }
+
+        // POST array key => DB column
+        $fieldMap = [
+            'manualQ1'                  => 'manual_q1',
+            'manualQ3'                  => 'manual_q3',
+            'manualIqr'                 => 'manual_iqr',
+            'manualQuartileLow'         => 'manual_quartile_low',
+            'manualQuartileHigh'        => 'manual_quartile_high',
+            'manualMean'                => 'manual_mean',
+            'manualMedian'              => 'manual_median',
+            'manualSd'                  => 'manual_sd',
+            'manualCv'                  => 'manual_cv',
+            'manualStandardUncertainty' => 'manual_standard_uncertainty',
+            'manualLowLimit'            => 'manual_low_limit',
+            'manualHighLimit'           => 'manual_high_limit',
+        ];
+
         $db->beginTransaction();
         try {
-            $shipmentId = base64_decode($params['shipmentId']);
-            $sampleId = base64_decode($params['sampleId']);
-            $vlAssay = base64_decode($params['vlAssay']);
-            if (trim($shipmentId) != '' && trim($sampleId) != '' && trim($vlAssay) != '') {
-                $data['manual_q1'] = !empty($params['manualQ1']) ? $params['manualQ1'] : null;
-                $data['manual_q3'] = !empty($params['manualQ3']) ? $params['manualQ3'] : null;
-                $data['manual_iqr'] = !empty($params['manualIqr']) ? $params['manualIqr'] : null;
-                $data['manual_quartile_low'] = !empty($params['manualQuartileLow']) ? $params['manualQuartileLow'] : null;
-                $data['manual_quartile_high'] = !empty($params['manualQuartileHigh']) ? $params['manualQuartileHigh'] : null;
-                $data['low_limit'] = !empty($params['lowLimit']) ? $params['lowLimit'] : null;
-                $data['high_limit'] = !empty($params['highLimit']) ? $params['highLimit'] : null;
-                $data['manual_mean'] = !empty($params['manualMean']) ? $params['manualMean'] : null;
-                $data['manual_median'] = !empty($params['manualMedian']) ? $params['manualMedian'] : null;
-                $data['manual_sd'] = !empty($params['manualSd']) ? $params['manualSd'] : null;
-                $data['manual_standard_uncertainty'] = !empty($params['manualStandardUncertainty']) ? $params['manualStandardUncertainty'] : null;
-                $data['manual_is_uncertainty_acceptable'] = !empty($params['manualIsUncertaintyAcceptable']) ? $params['manualIsUncertaintyAcceptable'] : null;
-                $data['manual_cv'] = !empty($params['manualCv']) ? $params['manualCv'] : null;
-                $data['manual_low_limit'] = !empty($params['manualLowLimit']) ? $params['manualLowLimit'] : null;
-                $data['manual_high_limit'] = !empty($params['manualHighLimit']) ? $params['manualHighLimit'] : null;
-                $db->update('reference_vl_calculation', $data, 'shipment_id = ' . $shipmentId . ' and sample_id = ' . $sampleId . ' and ' . ' vl_assay = ' . $vlAssay);
-                $db->commit();
-                return $params['shipmentId'];
+            foreach ($params['sampleIds'] as $sampleId) {
+                $sampleId = (int) $sampleId;
+                if (empty($sampleId)) {
+                    continue;
+                }
+
+                $data = [];
+                $hasAnyValue = false;
+                foreach ($fieldMap as $postKey => $col) {
+                    $val = isset($params[$postKey][$sampleId]) ? trim((string) $params[$postKey][$sampleId]) : '';
+                    $data[$col] = ($val === '') ? null : $val;
+                    if ($val !== '') {
+                        $hasAnyValue = true;
+                    }
+                }
+
+                if ($hasAnyValue) {
+                    $data['use_range'] = 'manual';
+                    $data['updated_on'] = new Zend_Db_Expr('now()');
+                } else {
+                    $data['use_range'] = 'calculated';
+                }
+
+                $where = $db->quoteInto('shipment_id = ?', $shipmentId)
+                    . $db->quoteInto(' AND sample_id = ?', $sampleId)
+                    . $db->quoteInto(' AND vl_assay = ?', $vlAssay);
+
+                // a calc row may not exist yet (e.g. sub-threshold assay) - insert if missing
+                $exists = $db->fetchOne($db->select()->from('reference_vl_calculation', ['shipment_id'])
+                    ->where('shipment_id = ?', $shipmentId)
+                    ->where('sample_id = ?', $sampleId)
+                    ->where('vl_assay = ?', $vlAssay));
+
+                if ($exists !== false && $exists !== null) {
+                    $db->update('reference_vl_calculation', $data, $where);
+                } else {
+                    $data['shipment_id'] = $shipmentId;
+                    $data['sample_id'] = $sampleId;
+                    $data['vl_assay'] = $vlAssay;
+                    $db->insert('reference_vl_calculation', $data);
+                }
             }
+            $db->commit();
+            return $params['shipmentId'];
         } catch (Throwable $e) {
             $db->rollBack();
             Pt_Commons_LoggerUtility::logError($e->getMessage(), [
@@ -1826,21 +1911,7 @@ class Application_Model_Vl
                 'line' => $e->getLine(),
                 'trace' => $e->getTraceAsString(),
             ]);
-        }
-    }
-
-    public function getVlManualValue($shipmentId, $sampleId, $vlAssay)
-    {
-        if (trim($shipmentId) != '' && trim($sampleId) != '' && trim($vlAssay) != '') {
-            $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-            $sql = $db->select()->from(['rvc' => 'reference_vl_calculation'], ['shipment_id', 'sample_id', 'low_limit', 'high_limit', 'vl_assay', 'manual_q1', 'manual_q3', 'manual_iqr', 'manual_quartile_low', 'manual_quartile_high', 'manual_mean', 'manual_sd', 'manual_cv', 'manual_high_limit', 'manual_low_limit', 'manual_standard_uncertainty', 'manual_is_uncertainty_acceptable', 'manual_median', 'use_range'])
-                ->join(['ref' => 'reference_result_vl'], 'rvc.sample_id = ref.sample_id AND ref.shipment_id=' . $shipmentId, ['sample_label'])
-                ->join(['a' => 'r_vl_assay'], 'a.id = rvc.vl_assay', ['assay_name' => 'name'])
-                ->join(['s' => 'shipment'], 'rvc.shipment_id = s.shipment_id')
-                ->where('rvc.shipment_id = ?', $shipmentId)
-                ->where('rvc.sample_id = ?', $sampleId)
-                ->where('rvc.vl_assay = ?', $vlAssay);
-            return $db->fetchRow($sql);
+            return null;
         }
     }
 }
