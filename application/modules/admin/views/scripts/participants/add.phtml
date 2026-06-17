@@ -385,6 +385,12 @@ if ((isset($this->directParticipantLogin) && !empty($this->directParticipantLogi
         }
         $(".bootstrap-select").removeClass('isRequired');
 
+        if (($('#pid').val() || '').replace(/[^a-zA-Z0-9]/g, '').length < 3) {
+            alert("<?= Pt_Commons_TranslateUtility::jsTranslate("Participant ID must contain at least 3 letters or numbers."); ?>");
+            $('#pid').focus();
+            return false;
+        }
+
         flag = deforayValidator.init({
             formId: 'addParticipantForm'
         });
