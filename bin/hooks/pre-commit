@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+#
+# pre-commit: run PHP-CS-Fixer (dry-run) on staged PHP files, mirroring CI's
+# `composer cs-check`, and block the commit on any style violation so it can't
+# reach CI. Scoped to staged files for speed; the repo .php-cs-fixer.dist.php
+# config (and its path scope) is respected via --path-mode=intersection.
+#
+# Tracked here; .git/hooks/pre-commit is a symlink to this file (installed via
+# `composer install-hooks` / bin/install-hooks.sh). The user's global hooksPath
+# dispatcher exec()s the repo-local hook after its own checks.
+#
+# Bypass once with:  git commit --no-verify
+set -uo pipefail
+
+root="$(git rev-parse --show-toplevel 2>/dev/null)" || exit 0
+cd "$root" || exit 0
+
+fixer="vendor/bin/php-cs-fixer"
+if [ ! -x "$fixer" ]; then
+    echo "ℹ pre-commit: $fixer not found — skipping CS check (run 'composer install')." >&2
+    exit 0
+fi
+
+# Collect staged, still-present PHP files (added/copied/modified). NUL-safe and
+# bash 3.2 compatible (macOS ships 3.2, so no mapfile).
+files=()
+while IFS= read -r -d '' f; do
+    files+=("$f")
+done < <(git diff --cached --name-only --diff-filter=ACM -z -- '*.php')
+
+[ "${#files[@]}" -eq 0 ] && exit 0
+
+# PHP_CS_FIXER_IGNORE_ENV: don't abort if the local PHP differs from what the
+# fixer pins — the rules still apply, which is all we care about pre-commit.
+if ! PHP_CS_FIXER_IGNORE_ENV=1 "$fixer" fix --dry-run --diff --path-mode=intersection -- "${files[@]}"; then
+    printf '\n\033[31m✋ commit blocked\033[0m — PHP-CS-Fixer found style issues (diff above).\n  Fix:    \033[36mcomposer cs-fix\033[0m   then re-stage and commit\n  Bypass: git commit --no-verify\n\n' >&2
+    exit 1
+fi
+exit 0
