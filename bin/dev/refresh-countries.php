@@ -135,17 +135,25 @@ if ($emitSql) {
     foreach ($updates as $u) {
         // Guard on the old value so a re-run is a no-op and admin edits are never clobbered.
         $lines[] = sprintf(
-            "UPDATE `countries` SET `iso_name` = %s, `iso2` = %s, `numeric_code` = %d WHERE `iso3` = %s AND `iso_name` = %s;",
-            $q($u['newName']), $q($u['newIso2']), $u['newNum'], $q($u['iso3']), $q($u['oldName'])
+            'UPDATE `countries` SET `iso_name` = %s, `iso2` = %s, `numeric_code` = %d WHERE `iso3` = %s AND `iso_name` = %s;',
+            $q($u['newName']),
+            $q($u['newIso2']),
+            $u['newNum'],
+            $q($u['iso3']),
+            $q($u['oldName'])
         );
     }
     if ($insertMissing) {
         foreach ($missing as $c) {
             $lines[] = sprintf(
-                "INSERT INTO `countries` (`id`, `iso_name`, `iso2`, `iso3`, `numeric_code`) " .
-                "SELECT (SELECT MAX(id) + 1 FROM `countries`), %s, %s, %s, %d FROM DUAL " .
-                "WHERE NOT EXISTS (SELECT 1 FROM `countries` WHERE `iso3` = %s);",
-                $q($c['name']), $q(strtoupper($c['alpha2'])), $q(strtoupper($c['alpha3'])), (int) $c['numeric'], $q(strtoupper($c['alpha3']))
+                'INSERT INTO `countries` (`id`, `iso_name`, `iso2`, `iso3`, `numeric_code`) ' .
+                'SELECT (SELECT MAX(id) + 1 FROM `countries`), %s, %s, %s, %d FROM DUAL ' .
+                'WHERE NOT EXISTS (SELECT 1 FROM `countries` WHERE `iso3` = %s);',
+                $q($c['name']),
+                $q(strtoupper($c['alpha2'])),
+                $q(strtoupper($c['alpha3'])),
+                (int) $c['numeric'],
+                $q(strtoupper($c['alpha3']))
             );
         }
     }
