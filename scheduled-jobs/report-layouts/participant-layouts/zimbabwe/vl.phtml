@@ -248,9 +248,9 @@ if (!empty($resultArray['shipment'])) {
                                 <td style="text-align:center;font-weight:normal;">' . $response['sample_label'] . '</td>
                                 <td style="font-weight:normal;">' . $yrResult . '</td>
                                 <td style="font-weight:normal;">' . $response['no_of_participants'] . '</td>
-                                <td style="font-weight:normal;">' . number_format(round($response['median'], 2), 2, '.', '') . '</td>
-                                <td style="font-weight:normal;">' . number_format(round($response['sd'], 2), 2, '.', '') . '</td>
-                                <td style="font-weight:normal;">' . (null !== $response['zscore'] ? number_format(round($response['zscore'], 2), 2, '.', '') : '-') . '</td>
+                                <td style="font-weight:normal;">' . (isset($response['median']) ? number_format(round($response['median'], 2), 2, '.', '') : '-') . '</td>
+                                <td style="font-weight:normal;">' . (isset($response['sd']) ? number_format(round($response['sd'], 2), 2, '.', '') : '-') . '</td>
+                                <td style="font-weight:normal;">' . (isset($response['zscore']) ? number_format(round($response['zscore'], 2), 2, '.', '') : '-') . '</td>
                                 <td style="font-weight:normal;color:' . $txtcolor . ';">' . $response['grade'] . '</td>';
                         if ($key == 0) {
                             $labRes .= '<td style="color:' . $overallColor . ';vertical-align: middle;" rowspan="' . $rowspan . '"><br><br><br>' . $overallGrade . '</td>';
@@ -510,11 +510,11 @@ if (!empty($resultArray['shipment'])) {
                             $labRes .= '<tr>
                                             <td style="text-align:center;">' . $response['sample_label'] . '</td>
                                             <td>' . $response['reported_viral_load'] . '</td>
-                                            <td>' . number_format(round($response['mean'], 2), 2, '.', '') . '</td>
-                                            <td>' . number_format(round($response['sd'], 2), 2, '.', '') . '</td>
+                                            <td>' . (isset($response['mean']) ? number_format(round($response['mean'], 2), 2, '.', '') : '-') . '</td>
+                                            <td>' . (isset($response['sd']) ? number_format(round($response['sd'], 2), 2, '.', '') : '-') . '</td>
                                             <td>' . $response['no_of_participants'] . '</td>
-                                            <td>' . number_format(round($response['low'], 2), 2, '.', '') . '</td>
-                                            <td>' . number_format(round($response['high'], 2), 2, '.', '') . '</td>
+                                            <td>' . (isset($response['low']) ? number_format(round($response['low'], 2), 2, '.', '') : '-') . '</td>
+                                            <td>' . (isset($response['high']) ? number_format(round($response['high'], 2), 2, '.', '') : '-') . '</td>
                                             <td>Not Evaluated</td>
                                         </tr>';
                         }
@@ -523,11 +523,11 @@ if (!empty($resultArray['shipment'])) {
                             $labRes .= '<tr>
                                             <td style="text-align:center;">' . $response['sample_label'] . '</td>
                                             <td>' . ((isset($response['reported_viral_load']) && !empty($response['reported_viral_load']) ? $response['reported_viral_load'] : "")) . '</td>
-                                            <td>' . number_format(round($response['mean'], 2), 2, '.', '') . '</td>
-                                            <td>' . number_format(round($response['sd'], 2), 2, '.', '') . '</td>
+                                            <td>' . (isset($response['mean']) ? number_format(round($response['mean'], 2), 2, '.', '') : '-') . '</td>
+                                            <td>' . (isset($response['sd']) ? number_format(round($response['sd'], 2), 2, '.', '') : '-') . '</td>
                                             <td>' . $response['no_of_participants'] . '</td>
-                                            <td>' . number_format(round($response['low'], 2), 2, '.', '') . '</td>
-                                            <td>' . number_format(round($response['high'], 2), 2, '.', '') . '</td>
+                                            <td>' . (isset($response['low']) ? number_format(round($response['low'], 2), 2, '.', '') : '-') . '</td>
+                                            <td>' . (isset($response['high']) ? number_format(round($response['high'], 2), 2, '.', '') : '-') . '</td>
                                             <td>' . $response['grade'] . '</td>
                                         </tr>';
                         }

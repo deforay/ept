@@ -105,11 +105,11 @@ if ($resultArray['shipment'] != "") {
                         if (isset($vlCal[$c]['mean'])) {
                             $calRes .= '<tr>';
                             $calRes .= '<td>' . $vlCal[$c]['sample_label'] . '</td>
-                                    <td style="text-align:center;">' . number_format(round($vlCal[$c]['mean'], 2), 2, '.', '') . '</td>
-                                    <td style="text-align:center;">' . number_format(round($vlCal[$c]['sd'], 2), 2, '.', '') . '</td>
-                                    <td style="text-align:center;">' . number_format(round($vlCal[$c]['low_limit'], 2), 2, '.', '') . '</td>
-                                    <td style="text-align:center;">' . number_format(round($vlCal[$c]['high_limit'], 2), 2, '.', '') . '</td>
-                                    <td style="text-align:center;">' . number_format(round($vlCal[$c]['cv'], 2), 2, '.', '') . '</td>
+                                    <td style="text-align:center;">' . (isset($vlCal[$c]['mean']) ? number_format(round($vlCal[$c]['mean'], 2), 2, '.', '') : '-') . '</td>
+                                    <td style="text-align:center;">' . (isset($vlCal[$c]['sd']) ? number_format(round($vlCal[$c]['sd'], 2), 2, '.', '') : '-') . '</td>
+                                    <td style="text-align:center;">' . (isset($vlCal[$c]['low_limit']) ? number_format(round($vlCal[$c]['low_limit'], 2), 2, '.', '') : '-') . '</td>
+                                    <td style="text-align:center;">' . (isset($vlCal[$c]['high_limit']) ? number_format(round($vlCal[$c]['high_limit'], 2), 2, '.', '') : '-') . '</td>
+                                    <td style="text-align:center;">' . (isset($vlCal[$c]['cv']) ? number_format(round($vlCal[$c]['cv'], 2), 2, '.', '') : '-') . '</td>
                                 </tr>';
                         }
                     }
@@ -212,7 +212,7 @@ if ($resultArray['shipment'] != "") {
                             $calRes .= '
                                     <td style="font-weight:normal;text-align:center;width:20%;">' . $val['sample_label'] . '</td>
                                     <td style="font-weight:normal;text-align:center;width:20%;">' . $val['no_of_responses'] . '</td>
-                                    <td style="font-weight:normal;text-align:center;">' . number_format(round($val['median'], 2), 2, '.', '') . '</td>';
+                                    <td style="font-weight:normal;text-align:center;">' . (isset($val['median']) ? number_format(round($val['median'], 2), 2, '.', '') : '-') . '</td>';
                             $calRes .= '<td style="font-weight:normal;text-align:center;width:20%;">' . $val['NumberPassed'] . '</td>
                                     <td style="font-weight:normal;text-align:center;width:20%;">' . $score . '%</td>
                                 </tr>';
@@ -249,9 +249,9 @@ if ($resultArray['shipment'] != "") {
                             <td style="font-weight:normal;text-align:center;width:20%;">' . ($label['label'] ?? '') . '</td>
                             <td style="font-weight:normal;text-align:center;width:20%;">' . ($label['response'] ?? '') . '</td>
                             <td style="font-weight:normal;text-align:center;">' . number_format(round($label['median'] ?? 0, 2), 2, '.', '') . '</td>';
-                    // $calRes .= '<td style="font-weight:normal;text-align:center;">' . number_format(round($label['lowLimit'], 2), 2, '.', '') . '</td>
-                    // <td style="font-weight:normal;text-align:center;">' . number_format(round($label['highLimit'], 2), 2, '.', '') . '</td>
-                    // <td style="font-weight:normal;text-align:center;">' . number_format(round($label['sd'], 2), 2, '.', '') . '</td>
+                    // $calRes .= '<td style="font-weight:normal;text-align:center;">' . (isset($label['lowLimit']) ? number_format(round($label['lowLimit'], 2), 2, '.', '') : '-') . '</td>
+                    // <td style="font-weight:normal;text-align:center;">' . (isset($label['highLimit']) ? number_format(round($label['highLimit'], 2), 2, '.', '') : '-') . '</td>
+                    // <td style="font-weight:normal;text-align:center;">' . (isset($label['sd']) ? number_format(round($label['sd'], 2), 2, '.', '') : '-') . '</td>
                     $calRes .= '<td style="font-weight:normal;text-align:center;width:20%;">' . ($label['NumberPassed'] ?? '') . '</td>
                             <td style="font-weight:normal;text-align:center;width:20%;">' . $score . '%</td>
                         </tr>';
