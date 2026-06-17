@@ -26,6 +26,15 @@ $schedule->run($phpPath . " " . VENDOR_BIN . "/db-tools backup")
     ->preventOverlapping()
     ->description('Backing Up Database');
 
+// Weekly config backup: snapshot application.ini (not under VCS; carries DB
+// creds + mail DSNs) into backups/config/. Skips when unchanged, prunes old
+// copies. Runs Sundays 01:00, just after the nightly DB backup.
+$schedule->run($phpPath . " " . BIN_PATH . "/backup-config.php --quiet")
+    ->cron('0 1 * * 0') // 01:00 every Sunday
+    ->timezone($timezone)
+    ->preventOverlapping()
+    ->description('Backing up application.ini config');
+
 // Daily binlog purge
 $schedule->run($phpPath . " " . VENDOR_BIN . "/db-tools purge-binlogs --days=7")
     ->cron('5 4 * * *') // 04:05 am daily
