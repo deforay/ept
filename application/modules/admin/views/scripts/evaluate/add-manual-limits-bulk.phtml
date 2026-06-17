@@ -79,7 +79,9 @@ $fmt = static function ($v) {
     <?php if ($method == 'iso17043'): ?>
         <div class="alert alert-info" style="margin:0 12px 10px 12px;padding:8px 12px;">
             <i class="icon-info-sign"></i>
-            <?= $this->translate->_("Grading uses Median and Robust SD (z-score). Lower/Upper limits are shown on the report but do not affect pass/fail."); ?>
+            <?= $this->translate->_("Grading uses Median and Robust SD (z-score); Lower/Upper limits are report-only."); ?>
+            <strong><?= $this->translate->_("Enter just the limits and Median / Robust SD are auto-filled"); ?></strong>
+            <?= $this->translate->_("(limits are treated as mean ± 2 SD, so Median = (Lower + Upper) / 2 and Robust SD = (Upper − Lower) / 4). You can still override them."); ?>
         </div>
     <?php endif; ?>
 
@@ -108,6 +110,8 @@ $fmt = static function ($v) {
                                 name="<?php echo $col['key']; ?>[<?php echo $sampleId; ?>]"
                                 value="<?php echo $fmt($row[$col['val']] ?? null); ?>"
                                 data-sys="<?php echo $sysVal; ?>"
+                                data-sample="<?php echo $sampleId; ?>"
+                                data-role="<?php echo $col['key']; ?>"
                                 <?php if ($sysVal !== ''): ?>placeholder="<?php echo $sysVal; ?>" title="System: <?php echo $sysVal; ?>"<?php endif; ?>>
                         </td>
                     <?php endforeach; ?>
@@ -132,6 +136,58 @@ $fmt = static function ($v) {
 
 <?php require_once WEB_ROOT . '/js/main.js.php'; ?>
 <script type="text/javascript">
+    var vlBulkMethod = "<?php echo $method; ?>";
+
+    function round4(v) {
+        return Math.round(v * 10000) / 10000;
+    }
+
+    function bulkInput(sampleId, role) {
+        return $('#bulkManualForm input[data-sample="' + sampleId + '"][data-role="' + role + '"]');
+    }
+
+    // if someone enters Lower > Upper, offer to swap them (applies to all methods)
+    function flipLimitsIfNeeded(sampleId) {
+        var $low = bulkInput(sampleId, 'manualLowLimit');
+        var $high = bulkInput(sampleId, 'manualHighLimit');
+        var low = parseFloat($low.val());
+        var high = parseFloat($high.val());
+        if (!isNaN(low) && !isNaN(high) && low > high) {
+            if (window.confirm("Lower Limit (" + $low.val() + ") is greater than Upper Limit (" + $high.val() + "). Swap them?")) {
+                var tmp = $low.val();
+                $low.val($high.val());
+                $high.val(tmp);
+            }
+        }
+    }
+
+    // iso17043: limits are mean ± 2 SD, so Median = (Lo+Hi)/2 and Robust SD = (Hi-Lo)/4
+    function deriveRow(sampleId, onlyIfEmpty) {
+        if (vlBulkMethod !== 'iso17043') {
+            return;
+        }
+        var low = parseFloat(bulkInput(sampleId, 'manualLowLimit').val());
+        var high = parseFloat(bulkInput(sampleId, 'manualHighLimit').val());
+        if (isNaN(low) || isNaN(high) || high <= low) {
+            return;
+        }
+        var $median = bulkInput(sampleId, 'manualMedian');
+        var $sd = bulkInput(sampleId, 'manualSd');
+        if (!onlyIfEmpty || $median.val() === '') {
+            $median.val(round4((low + high) / 2));
+        }
+        if (!onlyIfEmpty || $sd.val() === '') {
+            $sd.val(round4((high - low) / 4));
+        }
+    }
+
+    // re-check order + re-derive whenever a limit is edited
+    $(document).on('blur', '#bulkManualForm input[data-role="manualLowLimit"], #bulkManualForm input[data-role="manualHighLimit"]', function () {
+        var sampleId = $(this).data('sample');
+        flipLimitsIfNeeded(sampleId);
+        deriveRow(sampleId, false);
+    });
+
     function prefillFromSystem() {
         $("#bulkManualForm input.manualInput").each(function () {
             var sys = $(this).attr("data-sys");
@@ -142,6 +198,12 @@ $fmt = static function ($v) {
     }
 
     function submitBulk() {
+        // safety net: check limit order + fill any missing Median / Robust SD before saving
+        $('#bulkManualForm input[data-role="manualLowLimit"]').each(function () {
+            var sampleId = $(this).data('sample');
+            flipLimitsIfNeeded(sampleId);
+            deriveRow(sampleId, true);
+        });
         $.blockUI();
         document.getElementById('bulkManualForm').submit();
     }
