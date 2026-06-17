@@ -212,13 +212,13 @@ if ($resultArray['shipment'] != "") {
                                         <th colspan="8" cellpadding="8" style="font-size:12px;padding-top:5px;padding-bottom:5px;"><strong>Platform/Assay Name: </strong><span style="font-weight:normal;">' . $vlCal['vlAssay'] . '</span></th>
                                     </tr>
                                     <tr>
-                                        <th style="background-color:#BDD6EE;text-align:center;font-size:12px;width:16%;"><br/><br/>Sample ID </th>
-                                        <th style="background-color:#BDD6EE;text-align:center;font-size:12px;"><br/><br/>Number of Participants </th>
-                                        <th style="background-color:#BDD6EE;text-align:center;font-size:12px;">Assigned Value<br/>(log<sub>10</sub> copies/mL)</th>
-                                        <th style="background-color:#BDD6EE;text-align:center;font-size:12px;">Acceptable <br/>Lower Limit</th>
-                                        <th style="background-color:#BDD6EE;text-align:center;font-size:12px;">Acceptable <br/>Upper Limit</th>
-                                        <th style="background-color:#BDD6EE;text-align:center;font-size:12px;"><br/><br/>Robust <br/>SD</th>
-                                        <th style="background-color:#BDD6EE;text-align:center;font-size:12px;" colspan="2">Participants with <br/>Passing Result <br/>(z &lt; &plusmn;3.0)</th>
+                                        <th style="background-color:#BDD6EE;text-align:center;font-size:12px;width:15%;"><br/><br/>Sample ID </th>
+                                        <th style="background-color:#BDD6EE;text-align:center;font-size:12px;width:13%;"><br/><br/>Number of Participants </th>
+                                        <th style="background-color:#BDD6EE;text-align:center;font-size:12px;width:14%;">Assigned Value<br/>(log<sub>10</sub> copies/mL)</th>
+                                        <th style="background-color:#BDD6EE;text-align:center;font-size:12px;width:13%;">Acceptable <br/>Lower Limit</th>
+                                        <th style="background-color:#BDD6EE;text-align:center;font-size:12px;width:13%;">Acceptable <br/>Upper Limit</th>
+                                        <th style="background-color:#BDD6EE;text-align:center;font-size:12px;width:10%;"><br/><br/>Robust <br/>SD</th>
+                                        <th style="background-color:#BDD6EE;text-align:center;font-size:12px;width:22%;" colspan="2">Participants with <br/>Passing Result <br/>(z &lt; &plusmn;3.0)</th>
                                     </tr>';
                     foreach ($vlCal as $key => $val) {
                         if (isset($val['median'])) {
@@ -226,14 +226,14 @@ if ($resultArray['shipment'] != "") {
 
                             $calRes .= '<tr>';
                             $calRes .= '
-                                    <td style="font-weight:normal;text-align:center;width:16%;">' . $val['sample_label'] . '</td>
-                                    <td style="font-weight:normal;text-align:center;">' . $val['no_of_responses'] . '</td>
-                                    <td style="font-weight:normal;text-align:center;">' . Pt_Commons_NumberUtility::decimal($val['median']) . '</td>
-                                    <td style="font-weight:normal;text-align:center;">' . Pt_Commons_NumberUtility::decimal($val['low_limit']) . '</td>
-                                    <td style="font-weight:normal;text-align:center;">' . Pt_Commons_NumberUtility::decimal($val['high_limit']) . '</td>
-                                    <td style="font-weight:normal;text-align:center;">' . Pt_Commons_NumberUtility::decimal($val['sd']) . '</td>
-                                    <td style="font-weight:normal;text-align:center;">' . $val['NumberPassed'] . '</td>
-                                    <td style="font-weight:normal;text-align:center;">' . $score . '%</td>
+                                    <td style="font-weight:normal;text-align:center;width:15%;">' . $val['sample_label'] . '</td>
+                                    <td style="font-weight:normal;text-align:center;width:13%;">' . $val['no_of_responses'] . '</td>
+                                    <td style="font-weight:normal;text-align:center;width:14%;">' . Pt_Commons_NumberUtility::decimal($val['median']) . '</td>
+                                    <td style="font-weight:normal;text-align:center;width:13%;">' . Pt_Commons_NumberUtility::decimal($val['low_limit']) . '</td>
+                                    <td style="font-weight:normal;text-align:center;width:13%;">' . Pt_Commons_NumberUtility::decimal($val['high_limit']) . '</td>
+                                    <td style="font-weight:normal;text-align:center;width:10%;">' . Pt_Commons_NumberUtility::decimal($val['sd']) . '</td>
+                                    <td style="font-weight:normal;text-align:center;width:11%;">' . $val['NumberPassed'] . '</td>
+                                    <td style="font-weight:normal;text-align:center;width:11%;">' . $score . '%</td>
                                 </tr>';
                             /*  $chart[$vlCal['vlAssay']]['response'] =  $val['no_of_responses'];
                             $chart[$vlCal['vlAssay']]['NumberPassed'] =  $score;
@@ -254,26 +254,26 @@ if ($resultArray['shipment'] != "") {
                                         <th colspan="8" cellpadding="8" style="font-size:12px;font-weight:normal;padding-top:5px;padding-bottom:5px;"><strong>Platform/Assay Name: </strong>VL platforms with < 18 participants</th>
                                     </tr>
                                     <tr>
-                                        <th style="background-color:#BDD6EE;text-align:center;font-size:12px;width:16%;"><br/><br/>Sample ID </th>
-                                        <th style="background-color:#BDD6EE;text-align:center;font-size:12px;"><br/><br/>Number of Participants </th>
-                                        <th style="background-color:#BDD6EE;text-align:center;font-size:12px;">Assigned Value<br/>(log<sub>10</sub> copies/mL)</th>
-                                        <th style="background-color:#BDD6EE;text-align:center;font-size:12px;">Acceptable <br/>Lower Limit</th>
-                                        <th style="background-color:#BDD6EE;text-align:center;font-size:12px;">Acceptable <br/>Upper Limit</th>
-                                        <th style="background-color:#BDD6EE;text-align:center;font-size:12px;"><br/><br/>Robust <br/>SD</th>
-                                        <th style="background-color:#BDD6EE;text-align:center;font-size:12px;" colspan="2">Participants with <br/>Passing Result <br/>(z &lt; &plusmn;3.0)</th>
+                                        <th style="background-color:#BDD6EE;text-align:center;font-size:12px;width:15%;"><br/><br/>Sample ID </th>
+                                        <th style="background-color:#BDD6EE;text-align:center;font-size:12px;width:13%;"><br/><br/>Number of Participants </th>
+                                        <th style="background-color:#BDD6EE;text-align:center;font-size:12px;width:14%;">Assigned Value<br/>(log<sub>10</sub> copies/mL)</th>
+                                        <th style="background-color:#BDD6EE;text-align:center;font-size:12px;width:13%;">Acceptable <br/>Lower Limit</th>
+                                        <th style="background-color:#BDD6EE;text-align:center;font-size:12px;width:13%;">Acceptable <br/>Upper Limit</th>
+                                        <th style="background-color:#BDD6EE;text-align:center;font-size:12px;width:10%;"><br/><br/>Robust <br/>SD</th>
+                                        <th style="background-color:#BDD6EE;text-align:center;font-size:12px;width:22%;" colspan="2">Participants with <br/>Passing Result <br/>(z &lt; &plusmn;3.0)</th>
                                     </tr>';
                 foreach ($sample as $point => $label) {
                     $score = $label['response'] > 0 ? round(($label['NumberPassed'] / $label['response']) * 100) : 0;
                     $calRes .= '<tr>';
                     $calRes .= '
-                            <td style="font-weight:normal;text-align:center;width:16%;">' . $label['label'] . '</td>
-                            <td style="font-weight:normal;text-align:center;">' . $label['response'] . '</td>
-                            <td style="font-weight:normal;text-align:center;">' . Pt_Commons_NumberUtility::decimal($label['median']) . '</td>
-                            <td style="font-weight:normal;text-align:center;">' . Pt_Commons_NumberUtility::decimal($label['lowLimit']) . '</td>
-                            <td style="font-weight:normal;text-align:center;">' . Pt_Commons_NumberUtility::decimal($label['highLimit']) . '</td>
-                            <td style="font-weight:normal;text-align:center;">' . Pt_Commons_NumberUtility::decimal($label['sd']) . '</td>
-                            <td style="font-weight:normal;text-align:center;">' . $label['NumberPassed'] . '</td>
-                            <td style="font-weight:normal;text-align:center;">' . $score . '%</td>
+                            <td style="font-weight:normal;text-align:center;width:15%;">' . $label['label'] . '</td>
+                            <td style="font-weight:normal;text-align:center;width:13%;">' . $label['response'] . '</td>
+                            <td style="font-weight:normal;text-align:center;width:14%;">' . Pt_Commons_NumberUtility::decimal($label['median']) . '</td>
+                            <td style="font-weight:normal;text-align:center;width:13%;">' . Pt_Commons_NumberUtility::decimal($label['lowLimit']) . '</td>
+                            <td style="font-weight:normal;text-align:center;width:13%;">' . Pt_Commons_NumberUtility::decimal($label['highLimit']) . '</td>
+                            <td style="font-weight:normal;text-align:center;width:10%;">' . Pt_Commons_NumberUtility::decimal($label['sd']) . '</td>
+                            <td style="font-weight:normal;text-align:center;width:11%;">' . $label['NumberPassed'] . '</td>
+                            <td style="font-weight:normal;text-align:center;width:11%;">' . $score . '%</td>
                         </tr>';
                     $noOfPaResponseTxt = $label['response'];
                     /* $chart[$platform]['response'] =  $label['response'];

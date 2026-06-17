@@ -211,24 +211,24 @@ if (!empty($resultArray['shipment'])) {
                 $rowspan = count($result['responseResult']);
                 //if($result['responseResult'][0]['no_of_participants'] > 6 && $attributes['vl_assay']!=6) {
                 if ($result['responseResult'][0]['no_of_participants'] > 0) {
-                    $labRes .= '<table border="1" style="text-align:center;font-weight:bold;width:650px;font-size:11px;">
+                    $labRes .= '<table border="1" style="text-align:center;font-weight:bold;width:650px;font-size:9px;">
                                     <tr>
                                         <td style="background-color:white;" colspan="2"></td>
                                         <td style="background-color:#BDD6EE;" colspan="6">All Participants Results Summary</td>
                                         <td style="background-color:#BDD6EE;" colspan="3">Your Lab Performance</td>
                                     </tr>
                                     <tr>
-                                        <td style="background-color:#BDD6EE;width:12%;"><br><br>Sample ID </td>
-                                        <td style="background-color:#BDD6EE;">Your Results<br/>(log<sub>10</sub> copies/mL)</td>
-                                        <td style="background-color:#BDD6EE;"><br><br>Number of <br/>Participants</td>
-                                        <td style="background-color:#BDD6EE;">Assigned <br/>Value<br/>(log<sub>10</sub> copies/mL)</td>
-                                        <td style="background-color:#BDD6EE;"><br><br>Lower Limit <br/>(Q1)</td>
-                                        <td style="background-color:#BDD6EE;"><br><br>Upper Limit <br/>(Q3)</td>
-                                        <td style="background-color:#BDD6EE;"><br>Robust <br/>Standard <br/>Deviation</td>
-                                        <td style="background-color:#BDD6EE;">Acceptable <br/>Result <br/>Interval</td>
-                                        <td style="background-color:#BDD6EE;"><br><br>z Score</td>
-                                        <td style="background-color:#BDD6EE;"><br><br>Grade</td>
-                                        <td style="background-color:#BDD6EE;"><br><br>Score</td>
+                                        <td style="background-color:#BDD6EE;width:10%;"><br><br>Sample ID </td>
+                                        <td style="background-color:#BDD6EE;width:9%;">Your Results<br/>(log<sub>10</sub> copies/mL)</td>
+                                        <td style="background-color:#BDD6EE;width:10%;"><br><br>Number of <br/>Participants</td>
+                                        <td style="background-color:#BDD6EE;width:9%;">Assigned <br/>Value<br/>(log<sub>10</sub> copies/mL)</td>
+                                        <td style="background-color:#BDD6EE;width:8%;"><br><br>Lower Limit <br/>(Q1)</td>
+                                        <td style="background-color:#BDD6EE;width:8%;"><br><br>Upper Limit <br/>(Q3)</td>
+                                        <td style="background-color:#BDD6EE;width:9%;"><br>Robust <br/>Standard <br/>Deviation</td>
+                                        <td style="background-color:#BDD6EE;width:12%;">Acceptable <br/>Result <br/>Interval</td>
+                                        <td style="background-color:#BDD6EE;width:7%;"><br><br>z Score</td>
+                                        <td style="background-color:#BDD6EE;width:10%;"><br><br>Grade</td>
+                                        <td style="background-color:#BDD6EE;width:8%;"><br><br>Score</td>
                                     </tr>';
 
                     foreach ($result['responseResult'] as $key => $response) {
@@ -257,18 +257,18 @@ if (!empty($resultArray['shipment'])) {
                         }
 
                         $labRes .= '<tr>
-                                <td style="text-align:center;width:12%;">' . $response['sample_label'] . '</td>
-                                <td>' . $yrResult . '</td>
-                                <td>' . $response['no_of_participants'] . '</td>
-                                <td>' . Pt_Commons_NumberUtility::decimal($response['median']) . '</td>
-                                <td>' . Pt_Commons_NumberUtility::decimal($response['low']) . '</td>
-                                <td>' . Pt_Commons_NumberUtility::decimal($response['high']) . '</td>
-                                <td>' . Pt_Commons_NumberUtility::decimal($response['sd']) . '</td>
-                                <td>' . $acceptInterval . '</td>
-                                <td>' . Pt_Commons_NumberUtility::decimal($response['zscore']) . '</td>
-                                <td style="color:' . $txtcolor . ';">' . $response['grade'] . '</td>';
+                                <td style="text-align:center;width:10%;">' . $response['sample_label'] . '</td>
+                                <td style="width:9%;">' . $yrResult . '</td>
+                                <td style="width:10%;">' . $response['no_of_participants'] . '</td>
+                                <td style="width:9%;">' . Pt_Commons_NumberUtility::decimal($response['median']) . '</td>
+                                <td style="width:8%;">' . Pt_Commons_NumberUtility::decimal($response['low']) . '</td>
+                                <td style="width:8%;">' . Pt_Commons_NumberUtility::decimal($response['high']) . '</td>
+                                <td style="width:9%;">' . Pt_Commons_NumberUtility::decimal($response['sd']) . '</td>
+                                <td style="width:12%;">' . $acceptInterval . '</td>
+                                <td style="width:7%;">' . Pt_Commons_NumberUtility::decimal($response['zscore']) . '</td>
+                                <td style="color:' . $txtcolor . ';width:10%;">' . $response['grade'] . '</td>';
                         if ($key == 0) {
-                            $labRes .= '<td style="color:' . $color . ';vertical-align: middle;" rowspan="' . $rowspan . '"><br><br>' . $response['shipment_score'] . '</td>';
+                            $labRes .= '<td style="color:' . $color . ';vertical-align: middle;width:8%;" rowspan="' . $rowspan . '"><br><br>' . $response['shipment_score'] . '</td>';
                         }
                         $labRes .= '</tr>';
                     }
