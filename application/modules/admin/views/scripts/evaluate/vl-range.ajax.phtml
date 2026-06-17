@@ -145,7 +145,7 @@ $dispM = static function ($v) {
                             <?php foreach ($sampleLabels as $sampleId => $label):
                                 $r = $grid[$vlAssay][$sampleId] ?? null;
                                 $center = $r ? ($isIso ? ($r['median'] ?? null) : ($r['mean'] ?? null)) : null; ?>
-                                <td class="<?php echo $useManual[$sampleId] ? 'inactiveRange' : ''; ?>">
+                                <td class="<?php echo $useManual[$sampleId] ? 'inactiveRange' : 'activeRange'; ?>">
                                     <?php echo $r ? ($disp($center) . ' / ' . $disp($r['sd'] ?? null)) : '—'; ?>
                                 </td>
                             <?php endforeach; ?>
