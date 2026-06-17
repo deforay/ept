@@ -129,11 +129,11 @@ if ($resultArray['shipment'] != "") {
                         if (isset($vlCal[$c]['mean'])) {
                             $calRes .= '<tr>';
                             $calRes .= '<td>' . $vlCal[$c]['sample_label'] . '</td>
-                                    <td style="text-align:center;">' . (isset($vlCal[$c]['mean']) ? number_format(round($vlCal[$c]['mean'], 2), 2, '.', '') : '-') . '</td>
-                                    <td style="text-align:center;">' . (isset($vlCal[$c]['sd']) ? number_format(round($vlCal[$c]['sd'], 2), 2, '.', '') : '-') . '</td>
-                                    <td style="text-align:center;">' . (isset($vlCal[$c]['low_limit']) ? number_format(round($vlCal[$c]['low_limit'], 2), 2, '.', '') : '-') . '</td>
-                                    <td style="text-align:center;">' . (isset($vlCal[$c]['high_limit']) ? number_format(round($vlCal[$c]['high_limit'], 2), 2, '.', '') : '-') . '</td>
-                                    <td style="text-align:center;">' . (isset($vlCal[$c]['cv']) ? number_format(round($vlCal[$c]['cv'], 2), 2, '.', '') : '-') . '</td>
+                                    <td style="text-align:center;">' . Pt_Commons_NumberUtility::decimal($vlCal[$c]['mean']) . '</td>
+                                    <td style="text-align:center;">' . Pt_Commons_NumberUtility::decimal($vlCal[$c]['sd']) . '</td>
+                                    <td style="text-align:center;">' . Pt_Commons_NumberUtility::decimal($vlCal[$c]['low_limit']) . '</td>
+                                    <td style="text-align:center;">' . Pt_Commons_NumberUtility::decimal($vlCal[$c]['high_limit']) . '</td>
+                                    <td style="text-align:center;">' . Pt_Commons_NumberUtility::decimal($vlCal[$c]['cv']) . '</td>
                                 </tr>';
                         }
                     }
@@ -209,10 +209,10 @@ if ($resultArray['shipment'] != "") {
                             $calRes .= '
                                     <td style="font-weight:normal;text-align:center;">' . $val['sample_label'] . '</td>
                                     <td style="font-weight:normal;text-align:center;">' . $val['no_of_responses'] . '</td>
-                                    <td style="font-weight:normal;text-align:center;">' . (isset($val['median']) ? number_format(round($val['median'], 2), 2, '.', '') : '-') . '</td>
-                                    <td style="font-weight:normal;text-align:center;">' . (isset($val['low_limit']) ? number_format(round($val['low_limit'], 2), 2, '.', '') : '-') . '</td>
-                                    <td style="font-weight:normal;text-align:center;">' . (isset($val['high_limit']) ? number_format(round($val['high_limit'], 2), 2, '.', '') : '-') . '</td>
-                                    <td style="font-weight:normal;text-align:center;">' . (isset($val['sd']) ? number_format(round($val['sd'], 2), 2, '.', '') : '-') . '</td>
+                                    <td style="font-weight:normal;text-align:center;">' . Pt_Commons_NumberUtility::decimal($val['median']) . '</td>
+                                    <td style="font-weight:normal;text-align:center;">' . Pt_Commons_NumberUtility::decimal($val['low_limit']) . '</td>
+                                    <td style="font-weight:normal;text-align:center;">' . Pt_Commons_NumberUtility::decimal($val['high_limit']) . '</td>
+                                    <td style="font-weight:normal;text-align:center;">' . Pt_Commons_NumberUtility::decimal($val['sd']) . '</td>
                                     <td style="font-weight:normal;text-align:center;">' . $val['NumberPassed'] . '</td>
                                     <td style="font-weight:normal;text-align:center;">' . $score . '%</td>
                                 </tr>';
@@ -249,10 +249,10 @@ if ($resultArray['shipment'] != "") {
                     $calRes .= '
                             <td style="font-weight:normal;text-align:center;">' . $label['label'] . '</td>
                             <td style="font-weight:normal;text-align:center;">' . $label['response'] . '</td>
-                            <td style="font-weight:normal;text-align:center;">' . (isset($label['median']) ? number_format(round($label['median'], 2), 2, '.', '') : '-') . '</td>
-                            <td style="font-weight:normal;text-align:center;">' . (isset($label['lowLimit']) ? number_format(round($label['lowLimit'], 2), 2, '.', '') : '-') . '</td>
-                            <td style="font-weight:normal;text-align:center;">' . (isset($label['highLimit']) ? number_format(round($label['highLimit'], 2), 2, '.', '') : '-') . '</td>
-                            <td style="font-weight:normal;text-align:center;">' . (isset($label['sd']) ? number_format(round($label['sd'], 2), 2, '.', '') : '-') . '</td>
+                            <td style="font-weight:normal;text-align:center;">' . Pt_Commons_NumberUtility::decimal($label['median']) . '</td>
+                            <td style="font-weight:normal;text-align:center;">' . Pt_Commons_NumberUtility::decimal($label['lowLimit']) . '</td>
+                            <td style="font-weight:normal;text-align:center;">' . Pt_Commons_NumberUtility::decimal($label['highLimit']) . '</td>
+                            <td style="font-weight:normal;text-align:center;">' . Pt_Commons_NumberUtility::decimal($label['sd']) . '</td>
                             <td style="font-weight:normal;text-align:center;">' . $label['NumberPassed'] . '</td>
                             <td style="font-weight:normal;text-align:center;">' . $score . '%</td>
                         </tr>';

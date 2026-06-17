@@ -241,16 +241,16 @@ if (!empty($resultArray['shipment'])) {
                             $overallGrade = "Un-<br/>Satisfactory";
                         } else {
                             $overallGrade = ($adverseCount >= 2) ? "Un-<br/>Satisfactory" : "Satisfactory";
-                            $response['shipment_score'] = round($response['shipment_score'], 2) . "%";
+                            $response['shipment_score'] = Pt_Commons_NumberUtility::safeRound($response['shipment_score'], 2, $response['shipment_score']) . "%";
                         }
 
                         $labRes .= '<tr>
                                 <td style="text-align:center;font-weight:normal;">' . $response['sample_label'] . '</td>
                                 <td style="font-weight:normal;">' . $yrResult . '</td>
                                 <td style="font-weight:normal;">' . $response['no_of_participants'] . '</td>
-                                <td style="font-weight:normal;">' . (isset($response['median']) ? number_format(round($response['median'], 2), 2, '.', '') : '-') . '</td>
-                                <td style="font-weight:normal;">' . (isset($response['sd']) ? number_format(round($response['sd'], 2), 2, '.', '') : '-') . '</td>
-                                <td style="font-weight:normal;">' . (isset($response['zscore']) ? number_format(round($response['zscore'], 2), 2, '.', '') : '-') . '</td>
+                                <td style="font-weight:normal;">' . Pt_Commons_NumberUtility::decimal($response['median']) . '</td>
+                                <td style="font-weight:normal;">' . Pt_Commons_NumberUtility::decimal($response['sd']) . '</td>
+                                <td style="font-weight:normal;">' . Pt_Commons_NumberUtility::decimal($response['zscore']) . '</td>
                                 <td style="font-weight:normal;color:' . $txtcolor . ';">' . $response['grade'] . '</td>';
                         if ($key == 0) {
                             $labRes .= '<td style="color:' . $overallColor . ';vertical-align: middle;" rowspan="' . $rowspan . '"><br><br><br>' . $overallGrade . '</td>';
@@ -273,7 +273,7 @@ if (!empty($resultArray['shipment'])) {
                         if (isset($response['is_result_invalid']) && !empty($response['is_result_invalid'])) {
                             $yrResult = (isset($response['is_result_invalid']) && !empty($response['is_result_invalid']) && !empty($response['error_code'])) ? ucwords($response['is_result_invalid']) . ', ' . $response['error_code'] : ucwords($response['is_result_invalid']);
                         } else {
-                            $yrResult = round($response['reported_viral_load'], 2) ?? null;
+                            $yrResult = Pt_Commons_NumberUtility::safeRound($response['reported_viral_load'], 2) ?? null;
                         }
                         $labRes .= '<tr>
                                         <td style="text-align:center;">' . $response['sample_label'] . '</td>
@@ -510,11 +510,11 @@ if (!empty($resultArray['shipment'])) {
                             $labRes .= '<tr>
                                             <td style="text-align:center;">' . $response['sample_label'] . '</td>
                                             <td>' . $response['reported_viral_load'] . '</td>
-                                            <td>' . (isset($response['mean']) ? number_format(round($response['mean'], 2), 2, '.', '') : '-') . '</td>
-                                            <td>' . (isset($response['sd']) ? number_format(round($response['sd'], 2), 2, '.', '') : '-') . '</td>
+                                            <td>' . Pt_Commons_NumberUtility::decimal($response['mean']) . '</td>
+                                            <td>' . Pt_Commons_NumberUtility::decimal($response['sd']) . '</td>
                                             <td>' . $response['no_of_participants'] . '</td>
-                                            <td>' . (isset($response['low']) ? number_format(round($response['low'], 2), 2, '.', '') : '-') . '</td>
-                                            <td>' . (isset($response['high']) ? number_format(round($response['high'], 2), 2, '.', '') : '-') . '</td>
+                                            <td>' . Pt_Commons_NumberUtility::decimal($response['low']) . '</td>
+                                            <td>' . Pt_Commons_NumberUtility::decimal($response['high']) . '</td>
                                             <td>Not Evaluated</td>
                                         </tr>';
                         }
@@ -523,11 +523,11 @@ if (!empty($resultArray['shipment'])) {
                             $labRes .= '<tr>
                                             <td style="text-align:center;">' . $response['sample_label'] . '</td>
                                             <td>' . ((isset($response['reported_viral_load']) && !empty($response['reported_viral_load']) ? $response['reported_viral_load'] : "")) . '</td>
-                                            <td>' . (isset($response['mean']) ? number_format(round($response['mean'], 2), 2, '.', '') : '-') . '</td>
-                                            <td>' . (isset($response['sd']) ? number_format(round($response['sd'], 2), 2, '.', '') : '-') . '</td>
+                                            <td>' . Pt_Commons_NumberUtility::decimal($response['mean']) . '</td>
+                                            <td>' . Pt_Commons_NumberUtility::decimal($response['sd']) . '</td>
                                             <td>' . $response['no_of_participants'] . '</td>
-                                            <td>' . (isset($response['low']) ? number_format(round($response['low'], 2), 2, '.', '') : '-') . '</td>
-                                            <td>' . (isset($response['high']) ? number_format(round($response['high'], 2), 2, '.', '') : '-') . '</td>
+                                            <td>' . Pt_Commons_NumberUtility::decimal($response['low']) . '</td>
+                                            <td>' . Pt_Commons_NumberUtility::decimal($response['high']) . '</td>
                                             <td>' . $response['grade'] . '</td>
                                         </tr>';
                         }
@@ -547,7 +547,7 @@ if (!empty($resultArray['shipment'])) {
 
                         $labRes .= '<tr>
                                         <td style="text-align:center;">' . $response['sample_label'] . '</td>
-                                        <td>' . round($response['reported_viral_load'], 2) . '</td>
+                                        <td>' . Pt_Commons_NumberUtility::safeRound($response['reported_viral_load'], 2) . '</td>
                                         <!-- <td>' . $response['no_of_participants'] . '</td> -->
                                         <td>Not Graded</td>
                                     </tr>';
