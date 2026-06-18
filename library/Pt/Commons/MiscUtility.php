@@ -138,15 +138,22 @@ final class Pt_Commons_MiscUtility
     }
 
     /**
-     * Normalize a participant unique ID. Returns the slugified ID if it
-     * contains at least $minAlphanumeric letter/digit characters, else null.
+     * Normalize a participant unique ID. Only letters, digits and hyphens are
+     * allowed (no spaces or other special characters). Returns the trimmed ID
+     * if it contains at least $minAlphanumeric letter/digit characters, else null.
      */
-    public static function normalizeUniqueId(?string $input, int $minAlphanumeric = 3): ?string
+    public static function normalizeUniqueId(?string $input, int $minAlphanumeric = 1): ?string
     {
         if ($input === null || trim($input) === '') {
             return null;
         }
-        $slug = self::slugify($input);
+        $trimmed = trim($input);
+        // Reject anything other than letters, digits and hyphens (e.g. spaces, underscores)
+        if (preg_match('/[^a-zA-Z0-9-]/', $trimmed)) {
+            return null;
+        }
+        // Collapse repeated hyphens and trim leading/trailing ones
+        $slug = trim(preg_replace('/-+/', '-', $trimmed), '-');
         if (strlen(preg_replace('/[^a-zA-Z0-9]/', '', $slug)) < $minAlphanumeric) {
             return null;
         }

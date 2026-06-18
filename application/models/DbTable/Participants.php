@@ -372,7 +372,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
     {
         $normalizedPid = MiscUtility::normalizeUniqueId($params['pid'] ?? null);
         if ($normalizedPid === null) {
-            throw new InvalidArgumentException("Participant ID '" . ($params['pid'] ?? '') . "' is invalid — must contain at least 3 letters or numbers.");
+            throw new InvalidArgumentException("Participant ID '" . ($params['pid'] ?? '') . "' is invalid — use only letters, numbers and hyphens (no spaces or other special characters).");
         }
         $currentParticipantId = (int) ($params['participantId'] ?? 0);
         $existing = $this->fetchRow(
@@ -512,7 +512,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
 
         $normalizedPid = MiscUtility::normalizeUniqueId($params['pid'] ?? null);
         if ($normalizedPid === null) {
-            throw new InvalidArgumentException("Participant ID '" . ($params['pid'] ?? '') . "' is invalid — must contain at least 3 letters or numbers.");
+            throw new InvalidArgumentException("Participant ID '" . ($params['pid'] ?? '') . "' is invalid — use only letters, numbers and hyphens (no spaces or other special characters).");
         }
         $existing = $this->fetchRow($this->select()->where('unique_identifier = ?', $normalizedPid));
         if ($existing) {
@@ -1753,7 +1753,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                     $rawUniqueId = $row['B'];
                     $normalized = MiscUtility::normalizeUniqueId($rawUniqueId);
                     if ($normalized === null) {
-                        $this->addError($response, $row, $i, "Unique ID '{$rawUniqueId}' is invalid — must contain at least 3 letters or numbers.");
+                        $this->addError($response, $row, $i, "Unique ID '{$rawUniqueId}' is invalid — use only letters, numbers and hyphens (no spaces or other special characters).");
                         continue;
                     }
                     $row['B'] = $normalized;
