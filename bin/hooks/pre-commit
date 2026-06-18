@@ -32,7 +32,11 @@ done < <(git diff --cached --name-only --diff-filter=ACM -z -- '*.php')
 
 # PHP_CS_FIXER_IGNORE_ENV: don't abort if the local PHP differs from what the
 # fixer pins — the rules still apply, which is all we care about pre-commit.
-if ! PHP_CS_FIXER_IGNORE_ENV=1 "$fixer" fix --dry-run --diff --path-mode=intersection -- "${files[@]}"; then
+# --config is passed explicitly because php-cs-fixer refuses to auto-discover
+# .php-cs-fixer.dist.php when more than one path is given on the command line
+# ("For multiple paths config parameter is required"), which fires on any commit
+# touching 2+ PHP files.
+if ! PHP_CS_FIXER_IGNORE_ENV=1 "$fixer" fix --dry-run --diff --config=.php-cs-fixer.dist.php --path-mode=intersection -- "${files[@]}"; then
     printf '\n\033[31m✋ commit blocked\033[0m — PHP-CS-Fixer found style issues (diff above).\n  Fix:    \033[36mcomposer cs-fix\033[0m   then re-stage and commit\n  Bypass: git commit --no-verify\n\n' >&2
     exit 1
 fi
