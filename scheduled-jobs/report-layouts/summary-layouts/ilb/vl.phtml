@@ -184,9 +184,12 @@ if ($resultArray['shipment'] != "") {
                     $t = 0;
 
                     foreach ($vlCal as $k => $val) {
-                        $sample[$k]['NumberPassed'] ??= 0;
-                        $sample[$k]['response'] ??= 0;
+                        // Only build a row for actual samples (which carry a median);
+                        // skip meta keys like vlAssay/otherAssayName so they don't
+                        // produce empty "0 | - | - ..." phantom rows.
                         if (isset($val['median'])) {
+                            $sample[$k]['NumberPassed'] ??= 0;
+                            $sample[$k]['response'] ??= 0;
 
                             $sample[$k]['response'] += $val['no_of_responses'];
                             $sample[$k]['median'] = $val['median'];
@@ -263,6 +266,9 @@ if ($resultArray['shipment'] != "") {
                                         <th style="background-color:#BDD6EE;text-align:center;font-size:12px;width:22%;" colspan="2">Participants with <br/>Passing Result <br/>(z &lt; &plusmn;3.0)</th>
                                     </tr>';
                 foreach ($sample as $point => $label) {
+                    if (!isset($label['median'])) {
+                        continue;
+                    }
                     $score = $label['response'] > 0 ? round(($label['NumberPassed'] / $label['response']) * 100) : 0;
                     $calRes .= '<tr>';
                     $calRes .= '

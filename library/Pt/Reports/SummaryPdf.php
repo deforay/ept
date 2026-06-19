@@ -328,9 +328,9 @@ class Pt_Reports_SummaryPdf extends Fpdi
         } else {
             $effectiveDateToShow = date('Y-m-d H:i:s');
         }
-        // Position at 15 mm from bottom
-
-        $this->SetY(-18);
+        // Position from bottom. The ilb layout's footer (hr + report line)
+        // needs extra clearance or it clips at the page edge.
+        $this->SetY(($this->layout == 'ilb') ? -24 : -18);
         // Set font
 
         $this->SetFont('freesans', '', 7, '', true);
