@@ -308,8 +308,8 @@
     function formatStatusBadge(status) {
         var statusConfig = {
             'pending': { cls: 'job-status-pending', icon: 'icon-clock', label: 'Pending' },
-            'not-evaluated': { cls: 'job-status-processing', icon: 'icon-spinner icon-spin', label: 'Generating' },
-            'not-finalized': { cls: 'job-status-processing', icon: 'icon-spinner icon-spin', label: 'Finalizing' },
+            'generating': { cls: 'job-status-processing', icon: 'icon-spinner icon-spin', label: 'Generating' },
+            'finalizing': { cls: 'job-status-processing', icon: 'icon-spinner icon-spin', label: 'Finalizing' },
             'processing': { cls: 'job-status-processing', icon: 'icon-spinner icon-spin', label: 'Processing' },
             'evaluated': { cls: 'job-status-completed', icon: 'icon-ok', label: 'Completed' },
             'finalized': { cls: 'job-status-completed', icon: 'icon-ok', label: 'Finalized' },
@@ -329,7 +329,7 @@
         }
 
         // Only show cancel button for cancellable statuses
-        var cancellableStatuses = ['pending', 'not-evaluated', 'not-finalized', 'processing'];
+        var cancellableStatuses = ['pending', 'generating', 'finalizing', 'processing'];
         if (cancellableStatuses.indexOf(row.status) === -1) {
             return '<span class="text-muted">-</span>';
         }

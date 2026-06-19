@@ -3718,7 +3718,7 @@ class Application_Service_Evaluation
         $percentage = $total > 0 ? round(($completed / $total) * 100, 1) : 0;
 
         // Determine overall status
-        $inProgress = in_array($queueRow['status'], ['pending', 'not-evaluated', 'not-finalized']);
+        $inProgress = in_array($queueRow['status'], ['pending', 'generating', 'finalizing']);
 
         // Get shipment info for summary status
         $shipmentRow = $db->fetchRow(
@@ -3831,7 +3831,7 @@ class Application_Service_Evaluation
             // Apply status filter
             if (!empty($filterStatus)) {
                 if ($filterStatus === 'processing') {
-                    $reportJobsQuery->where("qrg.status IN ('not-evaluated', 'not-finalized')");
+                    $reportJobsQuery->where("qrg.status IN ('generating', 'finalizing')");
                 } elseif ($filterStatus === 'completed') {
                     $reportJobsQuery->where("qrg.status IN ('evaluated', 'finalized')");
                 } else {
@@ -4059,7 +4059,7 @@ class Application_Service_Evaluation
                 }
 
                 // Check if job can be cancelled (only pending or processing jobs)
-                $cancellableStatuses = ['pending', 'not-evaluated', 'not-finalized'];
+                $cancellableStatuses = ['pending', 'generating', 'finalizing'];
                 if (!in_array($job['status'], $cancellableStatuses)) {
                     return ['success' => false, 'message' => 'Job cannot be cancelled - already completed or not in progress'];
                 }

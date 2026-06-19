@@ -167,7 +167,7 @@ class Reports_DistributionController extends Zend_Controller_Action
                 $db->select()
                     ->from('queue_report_generation', ['id'])
                     ->where('shipment_id = ?', $shipmentId)
-                    ->where("status IN ('pending', 'not-evaluated', 'not-finalized')")
+                    ->where("status IN ('pending', 'generating', 'finalizing')")
                     ->order('id DESC')
                     ->limit(1)
             );

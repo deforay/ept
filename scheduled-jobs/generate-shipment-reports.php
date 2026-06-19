@@ -1435,11 +1435,11 @@ class ReportGenerator
      */
     private function updateQueueStatus(array $evalRow, string $phase): void
     {
-        $reportTypeStatus = 'not-evaluated';
+        $reportTypeStatus = 'generating';
         if ($evalRow['report_type'] == 'generateReport') {
-            $reportTypeStatus = 'not-evaluated';
+            $reportTypeStatus = 'generating';
         } elseif ($evalRow['report_type'] == 'finalized') {
-            $reportTypeStatus = 'not-finalized';
+            $reportTypeStatus = 'finalizing';
         }
 
         if (!empty($evalRow['id'])) {

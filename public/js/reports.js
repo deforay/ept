@@ -174,8 +174,8 @@ var JobProgressTracker = (function () {
     function getStatusClass(status) {
         var statusMap = {
             'pending': 'pending',
-            'not-evaluated': 'processing',
-            'not-finalized': 'processing',
+            'generating': 'processing',
+            'finalizing': 'processing',
             'evaluated': 'completed',
             'finalized': 'completed',
             'processing': 'processing',
@@ -187,8 +187,8 @@ var JobProgressTracker = (function () {
     function formatStatus(status) {
         var statusLabels = {
             'pending': 'Queued',
-            'not-evaluated': 'Generating...',
-            'not-finalized': 'Finalizing...',
+            'generating': 'Generating...',
+            'finalizing': 'Finalizing...',
             'evaluated': 'Completed',
             'finalized': 'Finalized',
             'processing': 'Processing...',

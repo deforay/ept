@@ -40,7 +40,7 @@ try {
             'last_heartbeat' => null
         ],
         $db->quoteInto(
-            "status IN ('not-evaluated', 'not-finalized') 
+            "status IN ('generating', 'finalizing') 
                 AND previous_status IS NOT NULL
                 AND last_heartbeat < DATE_SUB(NOW(), INTERVAL ? SECOND)",
             $staleThresholdSeconds
