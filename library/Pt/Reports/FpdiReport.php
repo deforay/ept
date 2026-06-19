@@ -275,12 +275,12 @@ class Pt_Reports_FpdiReport extends Fpdi
         }
 
         // Malawi/Zimbabwe are single-line footers; Vietnam is two-row and needs a bit
-        // more vertical room. Default footer has the "Report generated on …" line and
-        // sits a touch higher.
+        // more vertical room. Default and ilb use the multi-column "Report generated
+        // on …" footer, which clips at -5 and needs the extra room.
         if ($this->layout == 'vietnam') {
             $this->SetY(-10);
         } else {
-            $this->SetY(($this->layout != 'default') ? -5 : -10);
+            $this->SetY(in_array($this->layout, ['default', 'ilb'], true) ? -10 : -5);
         }
         $this->SetFont('freesans', '', 7, '', true);
         $this->writeHTML($completeFooterHtml, true, false, false, false, '');
