@@ -244,6 +244,11 @@ if ($resultArray['shipment'] != "") {
                                         <th style="background-color:#8ECF64;text-align:center;font-size:12px;" colspan="2">Participants with <br/>Passing Results <br/>(|z| < 3.0)</th>
                                     </tr>';
                 foreach ($sample as $point => $label) {
+                    // Skip non-sample entries (meta keys like vlAssay/otherAssayName)
+                    // that carry no median, so they don't print empty "0 | - | -" rows.
+                    if (!isset($label['median'])) {
+                        continue;
+                    }
                     $score = round((($label['NumberPassed'] / $label['response']) * 100));
                     $calRes .= '<tr>';
                     $calRes .= '
