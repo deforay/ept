@@ -3936,7 +3936,7 @@ class Application_Service_Evaluation
                     'total_emails' => new Zend_Db_Expr('COUNT(*)'),
                     'sent_count' => new Zend_Db_Expr("SUM(CASE WHEN tm.status = 'sent' THEN 1 ELSE 0 END)"),
                     'pending_count' => new Zend_Db_Expr("SUM(CASE WHEN tm.status IN ('pending', 'picked-to-process') THEN 1 ELSE 0 END)"),
-                    'failed_count' => new Zend_Db_Expr("SUM(CASE WHEN tm.status = 'not-sent' THEN 1 ELSE 0 END)"),
+                    'failed_count' => new Zend_Db_Expr("SUM(CASE WHEN tm.status IN ('failed', 'not-sent') THEN 1 ELSE 0 END)"),
                     'first_queued' => new Zend_Db_Expr('MIN(tm.queued_on)'),
                     'last_activity' => new Zend_Db_Expr('MAX(COALESCE(tm.sent_at, tm.updated_at, tm.queued_on))'),
                 ])

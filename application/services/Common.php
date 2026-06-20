@@ -638,8 +638,8 @@ class Application_Service_Common
                 Pt_Commons_LoggerUtility::logWarning("Invalid emails in sendTempMail(temp_id={$id}): " . implode(', ', $recips['invalid']));
             }
             if (empty($recips['to'])) {
-                Pt_Commons_LoggerUtility::logWarning("sendTempMail(temp_id={$id}): no valid 'To' recipients; marking not-sent.");
-                // revert status to not-sent and continue
+                Pt_Commons_LoggerUtility::logWarning("sendTempMail(temp_id={$id}): no valid 'To' recipients; marking failed.");
+                // mark failed and continue
                 self::markTempMailFailed(
                     (int) $id,
                     'No valid To recipients'
@@ -667,7 +667,7 @@ class Application_Service_Common
                     'line'  => $exc->getLine(),
                     'trace' => $exc->getTraceAsString(),
                 ]);
-                // mark not-sent and continue to next
+                // mark failed and continue to next
                 self::markTempMailFailed(
                     (int) $id,
                     $exc->getMessage()
@@ -1181,7 +1181,8 @@ class Application_Service_Common
     }
 
     /**
-     * Mark a temp_mail row as not-sent with an optional failure reason.
+     * Classify a mail failure reason into a coarse failure type
+     * (smtp-auth, connectivity, bad-recipient, rate-limit, content, other).
      */
     public static function classifyMailFailure(string $reason): string
     {

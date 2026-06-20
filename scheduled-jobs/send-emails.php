@@ -372,7 +372,7 @@ try {
                         'line'  => $e->getLine(),
                         'trace' => $e->getTraceAsString(),
                     ]);
-                    // keep trying remaining batches; mark row 'not-sent' afterwards
+                    // keep trying remaining batches; mark row 'failed' afterwards
                 }
                 unset($email);
                 if (function_exists('gc_collect_cycles'))
