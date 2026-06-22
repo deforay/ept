@@ -1,0 +1,280 @@
+#!/usr/bin/env php
+<?php
+
+declare(strict_types=1);
+
+namespace EptTestHarness;
+
+// Plain require_once — no autoloader, never touches the app's. Reuses the DTS
+// harness's Config/Db/Evaluator; custom-test logic lives under src/CustomTest/.
+$root = dirname(__DIR__);
+require_once $root . '/src/Config.php';
+require_once $root . '/src/Db.php';
+require_once $root . '/src/Evaluator.php';
+require_once $root . '/src/CustomTest/Provisioner.php';
+require_once $root . '/src/CustomTest/Asserter.php';
+require_once $root . '/src/CustomTest/Cleanup.php';
+
+use EptTestHarness\CustomTest\Provisioner;
+use EptTestHarness\CustomTest\Asserter;
+use EptTestHarness\CustomTest\Cleanup;
+
+$repoRoot = dirname($root);
+$expectations = require $root . '/expectations/custom-test.php';
+
+$argv = $_SERVER['argv'] ?? [];
+$flag = $argv[1] ?? '';
+
+if ($flag === '--help' || $flag === '-h') {
+    print_help();
+    exit(0);
+}
+
+$config = Config::load($repoRoot);
+$db     = new Db($config);
+
+if ($flag === '--cleanup-all') {
+    fwrite(STDOUT, "Nuking ALL custom-test ATEST-CT-* shipments...\n");
+    $r = (new Cleanup($db))->nuke();
+    fwrite(STDOUT, "  shipments    : {$r['shipments']}\n");
+    fwrite(STDOUT, "  distributions: {$r['distributions']}\n");
+    fwrite(STDOUT, "  (real schemes and shared ATEST participants left untouched)\n");
+    exit(0);
+}
+
+if ($flag === '--cleanup') {
+    $arg = $argv[2] ?? '';
+    if ($arg === '') {
+        fwrite(STDERR, "Usage: --cleanup <shipment_id-or-code>\n");
+        exit(2);
+    }
+    $row = ctype_digit($arg)
+        ? $db->one("SELECT shipment_id, shipment_code FROM shipment WHERE shipment_id = ?", [(int) $arg])
+        : $db->one("SELECT shipment_id, shipment_code FROM shipment WHERE shipment_code = ?", [$arg]);
+    if ($row === null) {
+        fwrite(STDERR, "No shipment found for '$arg'. (--cleanup-all to sweep everything.)\n");
+        exit(2);
+    }
+    $code = (string) $row['shipment_code'];
+    if (!str_starts_with($code, 'ATEST-CT-')) {
+        fwrite(STDERR, "Refusing to delete '$code' — not a custom-test ATEST-CT-* shipment.\n");
+        exit(2);
+    }
+    (new Cleanup($db))->deleteShipment((int) $row['shipment_id']);
+    fwrite(STDOUT, "Deleted shipment {$row['shipment_id']} ($code) and its responses, samples, and participant maps.\n");
+    exit(0);
+}
+
+run_interactive($config, $db, $expectations);
+
+// ─────────────────────────────────────────────────────────────────────────────
+
+function print_help(): void
+{
+    $help = <<<TXT
+Custom (user-configured) Test Harness — dev-only.
+
+Runs against an EXISTING qualitative custom scheme you pick at startup (HBV, HCV,
+SYP, ...). Provisions a shipment for that scheme using its own FINAL result codes,
+fills bulk responses (correct + incorrect), runs the real evaluator as a subprocess,
+and asserts each participant's per-sample verdict against the flip-set declared in
+expectations/custom-test.php.
+
+Usage:
+  APPLICATION_ENV=development php test-harness/bin/custom-test
+  APPLICATION_ENV=development php test-harness/bin/custom-test --cleanup <id-or-code>
+  APPLICATION_ENV=development php test-harness/bin/custom-test --cleanup-all
+  php test-harness/bin/custom-test --help
+
+Refuses to run unless APPLICATION_ENV is 'development' or 'testing'.
+
+Only QUALITATIVE user-configured schemes (with >=2 FINAL result codes) are offered.
+Cleanup removes only ATEST-CT-* shipments; it never alters the real schemes.
+TXT;
+    fwrite(STDOUT, $help . "\n");
+}
+
+function run_interactive(Config $config, Db $db, array $expectations): void
+{
+    fwrite(STDOUT, "Custom Test Harness — env={$config->env}, db={$config->dbName}\n\n");
+
+    // 1. Pick an existing qualitative custom scheme.
+    $schemes = Provisioner::discoverSchemes($db);
+    if (empty($schemes)) {
+        fwrite(STDERR, "No qualitative user-configured schemes with >=2 FINAL result codes found.\n");
+        exit(1);
+    }
+    fwrite(STDOUT, "Select a Custom Test:\n");
+    foreach ($schemes as $i => $s) {
+        fwrite(STDOUT, sprintf("  [%d] %-28s (%s)  pos=%s neg=%s\n", $i + 1, $s['scheme_name'], $s['scheme_id'], $s['pos'], $s['neg']));
+    }
+    $idx = (int) prompt("Pick a scheme", '1');
+    $scheme = $schemes[$idx - 1] ?? $schemes[0];
+
+    // 2. Aberration catalogue (from expectations).
+    $aberrations = $expectations['aberrations'];
+    fwrite(STDOUT, "\nAberrations:\n");
+    foreach ($aberrations as $key => $meta) {
+        fwrite(STDOUT, sprintf("  %-16s %s\n", $key, $meta['label']));
+    }
+    fwrite(STDOUT, "Samples: {$expectations['sample_count']} per panel (pattern "
+        . implode(',', $expectations['pattern']) . ")\n");
+
+    // 3. Distribute.
+    $auto = strtolower(trim(prompt("\nAuto-distribute aberrations across labs? [Y/n]", 'y')));
+    if ($auto === '' || $auto === 'y' || $auto === 'yes') {
+        $total = max(1, (int) prompt("Total labs", '60'));
+        $assignments = auto_distribute($aberrations, $total);
+    } else {
+        $assignments = [];
+        foreach ($aberrations as $key => $meta) {
+            $count = (int) prompt("  $key", '0');
+            for ($i = 0; $i < $count; $i++) {
+                $assignments[] = ['aberration' => $key];
+            }
+        }
+    }
+    if (empty($assignments)) {
+        fwrite(STDERR, "\nNo participants assigned. Nothing to do.\n");
+        exit(1);
+    }
+
+    $abCounts = [];
+    foreach ($assignments as $a) {
+        $abCounts[$a['aberration']] = ($abCounts[$a['aberration']] ?? 0) + 1;
+    }
+    fwrite(STDOUT, "\n─────────────────────────────────────────────\n");
+    fwrite(STDOUT, "Scheme     : {$scheme['scheme_id']} ({$scheme['scheme_name']})\n");
+    fwrite(STDOUT, "Total labs : " . count($assignments) . "\n");
+    fwrite(STDOUT, "Aberrations:\n");
+    foreach ($abCounts as $k => $c) {
+        fwrite(STDOUT, sprintf("  %-16s %d\n", $k, $c));
+    }
+    fwrite(STDOUT, "─────────────────────────────────────────────\n");
+
+    $proceed = strtolower(trim(prompt("Proceed? [y/N]", 'n')));
+    if ($proceed !== 'y' && $proceed !== 'yes') {
+        fwrite(STDOUT, "Aborted.\n");
+        exit(0);
+    }
+
+    fwrite(STDOUT, "\n[1/4] Provisioning shipment...\n");
+    $provision = (new Provisioner($db))->provision($scheme, $expectations, $assignments);
+    fwrite(STDOUT, "      shipment_id={$provision['shipment_id']}  code={$provision['shipment_code']}\n");
+
+    $evaluator = new Evaluator($config);
+    fwrite(STDOUT, "[2/4] Evaluating (subprocess)...\n");
+    $evaluator->evaluate($provision['shipment_id']);
+
+    fwrite(STDOUT, "[3/4] Asserting against expectations...\n\n");
+    $result = (new Asserter($db))->assert($provision);
+    report_results($provision, $result);
+
+    fwrite(STDOUT, "\n[4/4] Generating participant + summary reports (subprocess)...\n");
+    $evaluator->generateReports($provision['shipment_id']);
+    $reportDir = $config->repoRoot . '/downloads/reports/' . $provision['shipment_code'];
+    $allPdfs = is_dir($reportDir) ? (glob($reportDir . '/*.pdf') ?: []) : [];
+    $summaryPdfs = array_filter($allPdfs, static fn ($p) => str_contains(basename($p), '-summary.pdf'));
+    $participantPdfs = array_diff($allPdfs, $summaryPdfs);
+    fwrite(STDOUT, sprintf(
+        "  %d participant PDFs, %d summary PDFs in downloads/reports/%s/\n",
+        count($participantPdfs),
+        count($summaryPdfs),
+        $provision['shipment_code']
+    ));
+
+    fwrite(STDOUT, "\nShipment left in place. Inspect at your leisure.\n");
+    fwrite(STDOUT, "  shipment_id   = {$provision['shipment_id']}\n");
+    fwrite(STDOUT, "  shipment_code = {$provision['shipment_code']}\n\n");
+    fwrite(STDOUT, "Clean up with:\n");
+    fwrite(STDOUT, "  php test-harness/bin/custom-test --cleanup {$provision['shipment_id']}\n");
+    fwrite(STDOUT, "  php test-harness/bin/custom-test --cleanup-all\n");
+
+    exit($result['fails'] === 0 ? 0 : 1);
+}
+
+function report_results(array $provision, array $result): void
+{
+    $total = count($provision['assignments']);
+    fwrite(STDOUT, "─────────────────────────────────────────────\n");
+    fwrite(STDOUT, "Shipment: {$provision['shipment_code']} (id={$provision['shipment_id']})\n");
+    fwrite(STDOUT, "PASS  {$result['passes']}/$total participants — all sample verdicts match expectations\n");
+    fwrite(STDOUT, "FAIL  {$result['fails']}/$total participants\n");
+    if (!empty($result['mismatches'])) {
+        fwrite(STDOUT, "\nMismatches:\n");
+        foreach ($result['mismatches'] as $m) {
+            fwrite(STDOUT, sprintf("  map=%d  participant=%d  aberration=%s\n", $m['map_id'], $m['participant'], $m['aberration']));
+            foreach (($m['samples'] ?? []) as $s) {
+                fwrite(STDOUT, "    $s\n");
+            }
+            if (isset($m['reason'])) {
+                fwrite(STDOUT, "    {$m['reason']}\n");
+            }
+        }
+    }
+    fwrite(STDOUT, "─────────────────────────────────────────────\n");
+}
+
+/**
+ * Default distribution: half the labs to fully_correct, the rest spread across the
+ * remaining aberrations, with a small reserved slice for the non-response states.
+ *
+ * @return array<int,array{aberration:string}>
+ */
+function auto_distribute(array $aberrations, int $total): array
+{
+    $reserved = [];
+    if (isset($aberrations['no_response'])) {
+        $reserved['no_response'] = (int) floor($total * 0.02);
+    }
+    if (isset($aberrations['not_tested'])) {
+        $reserved['not_tested'] = (int) floor($total * 0.01);
+    }
+    $remainingTotal = max(0, $total - array_sum($reserved));
+
+    $responseStateKeys = array_keys(array_filter($aberrations, static fn ($m) => isset($m['response_state'])));
+    $otherKeys = array_values(array_filter(
+        array_keys($aberrations),
+        static fn ($k) => $k !== 'fully_correct' && !in_array($k, $responseStateKeys, true)
+    ));
+
+    $fcCount = isset($aberrations['fully_correct']) ? (int) round($remainingTotal * 0.5) : 0;
+    $remaining = $remainingTotal - $fcCount;
+
+    $per = [];
+    $n = max(1, count($otherKeys));
+    $base = intdiv($remaining, $n);
+    $extra = $remaining - ($base * $n);
+    foreach ($otherKeys as $i => $k) {
+        $per[$k] = $base + ($i < $extra ? 1 : 0);
+    }
+
+    $assignments = [];
+    $emit = static function (string $key, int $count) use (&$assignments) {
+        for ($i = 0; $i < $count; $i++) {
+            $assignments[] = ['aberration' => $key];
+        }
+    };
+    if (isset($aberrations['fully_correct'])) {
+        $emit('fully_correct', $fcCount);
+    }
+    foreach ($otherKeys as $k) {
+        $emit($k, $per[$k]);
+    }
+    foreach ($reserved as $k => $count) {
+        $emit($k, $count);
+    }
+    return $assignments;
+}
+
+function prompt(string $question, string $default = ''): string
+{
+    $suffix = $default !== '' ? " [$default]" : '';
+    fwrite(STDOUT, "$question$suffix: ");
+    $line = fgets(STDIN);
+    if ($line === false) {
+        return $default;
+    }
+    $line = trim($line);
+    return $line === '' ? $default : $line;
+}

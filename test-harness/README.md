@@ -1,16 +1,24 @@
-# DTS Algorithm Test Harness
+# EPT Test Harnesses
 
-Dev-only tool. Provisions a synthetic DTS shipment, fills bulk responses (correct + aberrant), runs the real evaluator as a subprocess, and asserts each participant's verdict against an independent expected verdict declared up-front.
+Dev-only tools. Each provisions a synthetic shipment, fills bulk responses (correct + aberrant), runs the real evaluator as a subprocess, and asserts each participant's verdict against an independent expected verdict declared up-front.
 
 Lives in `test-harness/` at the repo root and is **architecturally independent** of the app: it does not load any class from `application/` or `library/`. It reads `application/configs/application.ini` as plain text, opens its own PDO connection, writes synthetic rows by raw SQL, and shells out to `scheduled-jobs/evaluate-shipments.php` for evaluation.
+
+Two entry points:
+
+- `bin/dts-algo` — DTS schemes (algorithm-driven; Vietnam + updated-3-tests).
+- `bin/custom-test` — qualitative custom (user-configured) tests. You pick an **existing** scheme at startup (HBV, HCV, SYP, …); it provisions a shipment against that scheme using its own FINAL result codes, fills correct/incorrect responses, and asserts per-sample correctness from `response_result_generic_test.calculated_score`. It never creates or alters a scheme.
 
 ## Run
 
 ```bash
 APPLICATION_ENV=development php test-harness/bin/dts-algo
+APPLICATION_ENV=development php test-harness/bin/custom-test
 ```
 
-The harness refuses to run unless `APPLICATION_ENV` is `development` or `testing`. There is no override.
+Both refuse to run unless `APPLICATION_ENV` is `development` or `testing`. There is no override.
+
+The custom-test harness writes ATEST-CT-* rows the same way; clean up with `--cleanup <id|code>` or `--cleanup-all`. It only removes its own shipments — never the real schemes — and leaves the shared ATEST participants in place.
 
 ## What it writes
 
@@ -53,10 +61,17 @@ test-harness/
 │   ├── Evaluator.php            — subprocess to evaluate-shipments.php
 │   ├── Asserter.php             — compare to expectations
 │   ├── Cleanup.php              — DELETE cascade
-│   └── Aberrations/
-│       ├── Vietnam.php          — seven apply_* response generators
-│       └── UpdatedThreeTests.php — apply_* generators for the 3-test algorithm
+│   ├── Aberrations/
+│   │   ├── Vietnam.php          — seven apply_* response generators
+│   │   └── UpdatedThreeTests.php — apply_* generators for the 3-test algorithm
+│   └── CustomTest/             — qualitative custom-test harness (own Provisioner/Asserter/Cleanup)
+│       ├── Aberrations.php
+│       ├── Provisioner.php
+│       ├── Asserter.php
+│       └── Cleanup.php
+├── bin/custom-test             — entry point for the custom-test harness
 └── expectations/
     ├── vietnam.php              — independent expected verdicts (from NIHE workbook)
-    └── updated-3-tests.php      — independent expected verdicts (from the algorithm spec)
+    ├── updated-3-tests.php      — independent expected verdicts (from the algorithm spec)
+    └── custom-test.php          — scheme-agnostic panel pattern + aberration flip-sets
 ```
