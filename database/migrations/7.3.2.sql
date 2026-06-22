@@ -76,7 +76,10 @@ INSERT INTO `global_config` (`name`, `value`) VALUES
 ('home_configuration', '');
 
 -- Thana 30-Dec-2025
-INSERT INTO `global_config` (`name`, `value`) VALUES ('faq_configurations', '');
+-- Idempotent: don't recreate the source if it was already renamed to 'faqs' on a prior run.
+INSERT INTO `global_config` (`name`, `value`)
+SELECT 'faq_configurations', '' FROM DUAL
+WHERE NOT EXISTS (SELECT 1 FROM `global_config` WHERE `name` IN ('faq_configurations', 'faqs'));
 
 -- Thana 02-Jan-2026
 INSERT INTO `global_config` (`name`, `value`) VALUES ('dts_configuration', '');
@@ -94,6 +97,11 @@ DELETE FROM global_config WHERE `global_config`.`name` = 'recency_configuration'
 DELETE FROM global_config WHERE `global_config`.`name` = 'tb_configuration';
 UPDATE `global_config` SET `name` = 'home' WHERE `global_config`.`name` = 'home_configuration';
 UPDATE `global_config` SET `name` = 'mail' WHERE `global_config`.`name` = 'mail_configuration';
+-- Idempotent: drop a stray source left by an interrupted replay before renaming, so the
+-- rename can't collide with an already-present 'faqs' PK.
+DELETE FROM `global_config`
+WHERE `name` = 'faq_configurations'
+  AND EXISTS (SELECT 1 FROM (SELECT 1 FROM `global_config` WHERE `name` = 'faqs' LIMIT 1) t);
 UPDATE `global_config` SET `name` = 'faqs' WHERE `global_config`.`name` = 'faq_configurations';
 INSERT INTO `global_config` (`name`, `value`) VALUES ('domain', 'http://ept/');
 -- Thana 08-Jan-2026

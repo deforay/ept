@@ -711,7 +711,28 @@ foreach ($versions as $version) {
                         (stripos($msg, "Can't DROP") !== false && stripos($msg, 'check that column/key exists') !== false) ||
                         stripos($msg, 'Multiple primary key defined') !== false; // MySQL #1068
 
-                    if ($isCreateTableBenign || $isDropTableBenign || $isRenameTableBenign || $isInsertDupBenign || $isOtherBenign) {
+                    // Replay tolerance: an old data-fix UPDATE/DELETE may reference a
+                    // column/table that a LATER migration renamed or dropped. When the
+                    // full history is replayed onto an already-newer schema, such a
+                    // statement is a no-op that effectively already happened. Treat 1054
+                    // (unknown column) and 1146 (table missing) on UPDATE/DELETE as
+                    // benign — but always surface it (not just under MIG_VERBOSE) so a
+                    // genuine typo in a fresh migration isn't silently swallowed.
+                    $isDataDml = (strpos($qLower, 'update') === 0 || strpos($qLower, 'delete') === 0);
+                    $isStaleRefBenign = $isDataDml &&
+                        ($errno === 1054 || $errno === 1146 ||
+                            stripos($msg, 'Unknown column') !== false ||
+                            stripos($msg, "doesn't exist") !== false);
+
+                    if ($isStaleRefBenign) {
+                        if (!$quietMode) {
+                            echo "Skipping data fix (stale column/table ref on replay):\n{$query}\n{$msg}\n";
+                        }
+                        if ($canLog) {
+                            Pt_Commons_LoggerUtility::logWarning('[migration:skip] stale column/table ref on replay: ' . $msg);
+                        }
+                        $skippedQueries++;
+                    } elseif ($isCreateTableBenign || $isDropTableBenign || $isRenameTableBenign || $isInsertDupBenign || $isOtherBenign) {
                         if (!$quietMode && getenv('MIG_VERBOSE')) {
                             echo "Benign idempotence:\n{$query}\n{$msg}\n";
                         }
