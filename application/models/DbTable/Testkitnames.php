@@ -109,7 +109,11 @@ class Application_Model_DbTable_Testkitnames extends Zend_Db_Table_Abstract
                     if (in_array($params['testKitStage'], ['testkit_1', 'testkit_2', 'testkit_3'])) {
                         $db->update('scheme_testkit_map', [$params['testKitStage'] => '1'], "testkit_id='" . $data . "'");
                     } else {
-                        $this->update(['scheme_type' => $params['testKitStage']], "TestKitName_ID='" . $data . "'");
+                        $db->delete('scheme_testkit_map', ['scheme_type = ?' => $params['testKitStage'], 'testkit_id = ?' => $data]);
+                        $db->insert('scheme_testkit_map', [
+                            'scheme_type' => $params['testKitStage'],
+                            'testkit_id' => $data,
+                        ]);
                     }
                 }
             }
