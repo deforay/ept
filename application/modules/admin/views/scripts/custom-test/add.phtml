@@ -156,11 +156,10 @@
 												</td>
 												<td>
 													<select id="displayContext11" name="qualitative[displayContext][1][1]" class="form-control qualitative-input-11 input-sm" title="Please select the displayed context">
-														<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
-														<option value="all"><?= $this->translate->_("All"); ?></option>
+														<option value=""> -- <?= $this->translate->_("Select"); ?> -- </option>
 														<option value="participant"><?= $this->translate->_("Participant"); ?></option>
 														<option value="admin"><?= $this->translate->_("Admin"); ?></option>
-
+														<option value="all"><?= $this->translate->_("All"); ?></option>
 													</select>
 												</td>
 												<td>
@@ -377,10 +376,10 @@
 			</td>\
 			<td>\
 				<select id="displayContext' + row1 + row2 + '" name="qualitative[displayContext][' + row1 + '][' + row2 + ']" class="form-control qualitative-input-' + row1 + row2 + ' input-sm" title="Please select the displayed context">\
-					<option value="">-- <?= $this->translate->_("Select"); ?> --</option>\
-					<option value="all"><?= $this->translate->_("All"); ?></option>\
+					<option value=""> -- <?= $this->translate->_("Select"); ?> -- </option>\
 					<option value="participant"><?= $this->translate->_("Participant"); ?></option>\
 					<option value="admin"><?= $this->translate->_("Admin"); ?></option>\
+					<option value="all"><?= $this->translate->_("All"); ?></option>\
 				</select>\
 			</td>\
 			<td>\
@@ -418,7 +417,7 @@
 									<tr>\
 										<th scope="col"><?= $this->translate->_("Expected Result"); ?></th>\
 										<th scope="col"><?= $this->translate->_("Result Code"); ?></th>\
-										<th scope="col"><?= $this->translate->_("Test Type"); ?></th>\
+										<th scope="col"><?= $this->translate->_("Result Type"); ?></th>\
 										<th scope="col"><?= $this->translate->_("Displayed To"); ?></th>\
 										<th scope="col"><?= $this->translate->_("Sort Order"); ?></th>\
 										<th scope="col"><?= $this->translate->_("Action"); ?></th>\
@@ -535,10 +534,7 @@
 	});
 
 	function removeQualitativeRow(obj, row1, row2) {
-		if (row2 <= 2) {
-			$('.qualitative-insrow-' + row1 + row2).attr('disabled', false);
-		}
-
+		$('.qualitative-insrow-' + row1 + row2).attr('disabled', false);
 		$(obj.parentNode.parentNode).fadeOut("normal", function() {
 			$(this).remove();
 		});

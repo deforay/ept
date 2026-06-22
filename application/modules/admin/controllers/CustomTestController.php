@@ -116,4 +116,28 @@ class Admin_CustomTestController extends Zend_Controller_Action
         $this->view->reportVersion = Pt_Commons_SchemeConfig::get($schemeCode . '.reportVersion');
         $this->view->effectiveDate = Pt_Commons_SchemeConfig::get($schemeCode . '.effectiveDate');
     }
+
+    public function cloneAction()
+    {
+        $schemeService = new Application_Service_Schemes();
+        if (!$this->hasParam('id')) {
+            $this->redirect('/admin/custom-test');
+            return;
+        }
+        $id = base64_decode($this->_getParam('id'));
+        $this->view->result = $result = $schemeService->getGenericTest($id);
+        $schemeCode = $result['schemeResult']['scheme_id'];
+        $dtsModel = new Application_Model_Dts();
+        $db = new Application_Model_CustomTest();
+        $this->view->allTestKits = $dtsModel->getAllDtsTestKitList(false, 'custom-tests');
+        $this->view->customTestsRecommendedTestkits = $db->getRecommededGenericTestkits($schemeCode);
+        $this->view->disableOtherTestkit = Pt_Commons_SchemeConfig::get($schemeCode . '.disableOtherTestkit');
+        $this->view->passingScore = Pt_Commons_SchemeConfig::get($schemeCode . '.passingScore');
+        $this->view->reportVersion = Pt_Commons_SchemeConfig::get($schemeCode . '.reportVersion');
+        $this->view->effectiveDate = Pt_Commons_SchemeConfig::get($schemeCode . '.effectiveDate');
+        // Reuse the edit form, but in "clone" mode: test name & code are blanked and the
+        // form posts to add (a fresh insert) instead of edit.
+        $this->view->isClone = true;
+        $this->_helper->viewRenderer->setScriptAction('edit');
+    }
 }

@@ -136,8 +136,9 @@ class Application_Model_DbTable_SchemeList extends Zend_Db_Table_Abstract
         $aResultFilterTotal = $this->getAdapter()->fetchAll($sQuery);
         $iFilteredTotal = count($aResultFilterTotal);
 
-        /* Total data set length */
-        $sQuery = $this->getAdapter()->select()->from($this->_name, new Zend_Db_Expr("COUNT('*')"));
+        /* Total data set length (custom tests only) */
+        $sQuery = $this->getAdapter()->select()->from($this->_name, new Zend_Db_Expr("COUNT('*')"))
+            ->where('is_user_configured = "yes"');
         $aResultTotal = $this->getAdapter()->fetchCol($sQuery);
         $iTotal = $aResultTotal[0];
 
@@ -156,7 +157,8 @@ class Application_Model_DbTable_SchemeList extends Zend_Db_Table_Abstract
             $row[] = ucwords($aRow['scheme_name']);
             $row[] = $aRow['scheme_id'];
             $row[] = ucwords($aRow['status']);
-            $row[] = '<a href="/admin/custom-test/edit/id/' . base64_encode($aRow['scheme_id']) . '" class="btn btn-warning btn-xs" style="margin-right: 2px;"><i class="icon-pencil"></i> Edit</a>';
+            $row[] = '<a href="/admin/custom-test/edit/id/' . base64_encode($aRow['scheme_id']) . '" class="btn btn-warning btn-xs" style="margin-right: 2px;"><i class="icon-pencil"></i> Edit</a>'
+                . '<a href="/admin/custom-test/clone/id/' . base64_encode($aRow['scheme_id']) . '" class="btn btn-info btn-xs" style="margin-right: 2px;"><i class="icon-copy"></i> Clone</a>';
             $output['aaData'][] = $row;
         }
 

@@ -18,6 +18,15 @@ foreach ($qualitativeRows as $subScheme => &$rows) {
 	});
 }
 unset($rows);
+
+// Clone mode reuses this edit form, but blanks the test name & code and posts to
+// the add action so it inserts a brand-new custom test instead of updating.
+$isClone = !empty($this->isClone);
+$sourceSchemeCode = $this->result['schemeResult']['scheme_id'] ?? '';
+$schemeNameValue = $isClone ? '' : ($this->result['schemeResult']['scheme_name'] ?? null);
+$schemeCodeValue = $isClone ? '' : ($sourceSchemeCode ?: null);
+$dupExclude = $isClone ? '' : ('scheme_id##' . $sourceSchemeCode);
+$formAction = $this->url(array("module" => "admin", "controller" => "custom-test", "action" => ($isClone ? "add" : "edit")), 'default', true);
 ?>
 <style>
 	.result-type {
@@ -31,18 +40,18 @@ unset($rows);
 <link rel="stylesheet" type="text/css" href="<?php echo $this->baseUrl('css/multi-select.css'); ?>" />
 <link href="<?php echo $this->baseUrl('css/select2.css'); ?>" rel="stylesheet" />
 <div class="well">
-	<form name="editGenericTestForm" id="editGenericTestForm" method="post" action="<?php echo $this->url(array("module" => "admin", "controller" => "custom-test", "action" => "edit"), 'default', true) ?>" class="form-horizontal bs-example" role="form" onsubmit="validateNow();return false;">
+	<form name="editGenericTestForm" id="editGenericTestForm" method="post" action="<?php echo $formAction; ?>" class="form-horizontal bs-example" role="form" onsubmit="validateNow();return false;">
 		<fieldset>
-			<legend><?= $this->translate->_("Update Custom Test"); ?></legend>
+			<legend><?= $isClone ? $this->translate->_("Clone Custom Test") : $this->translate->_("Update Custom Test"); ?></legend>
 			<div class="row">
 				<div class="col-lg-6">
 					<label class="control-label" for="schemeName"><?= $this->translate->_("Custom Test Name"); ?> <span class="mandatory">*</span></label>
-					<input type="text" value="<?php echo $this->result['schemeResult']['scheme_name'] ?? null; ?>" id="schemeName" name="schemeName" size="50" maxlength="255" class="isRequired form-control" title="Please enter the custom test name" placeholder="Enter the custom test name" onblur="checkDuplicate('scheme_list', 'scheme_name', this, '<?php echo "scheme_id##" . $this->result['schemeResult']['scheme_id']; ?>'', 'This name already exists. Please try something else.')" />
+					<input type="text" value="<?php echo $schemeNameValue; ?>" id="schemeName" name="schemeName" size="50" maxlength="255" class="isRequired form-control" title="Please enter the custom test name" placeholder="Enter the custom test name" onblur="checkDuplicate('scheme_list', 'scheme_name', this, '<?php echo $dupExclude; ?>', 'This name already exists. Please try something else.')" />
 				</div>
 
 				<div class="col-lg-6">
 					<label class="control-label" for="schemeCode"><?= $this->translate->_("Custom Test Code"); ?> <span class="mandatory">*</span></label>
-					<input type="text" value="<?php echo $this->result['schemeResult']['scheme_id'] ?? null; ?>" id="schemeCode" name="schemeCode" size="50" maxlength="255" class="form-control isRequired" title="Please enter the custom test code" placeholder="Enter the custom test code" onblur="checkDuplicate('scheme_list', 'scheme_id', this, '<?php echo "scheme_id##" . $this->result['schemeResult']['scheme_id']; ?>'', 'This code already exists. Please try something else.')" />
+					<input type="text" value="<?php echo $schemeCodeValue; ?>" id="schemeCode" name="schemeCode" size="50" maxlength="255" class="form-control isRequired" title="Please enter the custom test code" placeholder="Enter the custom test code" onblur="checkDuplicate('scheme_list', 'scheme_id', this, '<?php echo $dupExclude; ?>', 'This code already exists. Please try something else.')" />
 				</div>
 			</div>
 			<div class="row">
@@ -374,8 +383,10 @@ unset($rows);
 </tbody>
 </table>
 <div id="respond" style="margin: 0px auto 0px auto; text-align: center;" class="form-group col-lg-11" align="center">
+	<?php if (!$isClone) { ?>
 	<input name="schemeId" class="btn btn-primary" type="hidden" value="<?php echo base64_encode($this->result['schemeResult']['scheme_id']); ?>" />
-	<input name="submitbtn" class="btn btn-primary" type="submit" tabindex="7" value="<?= $this->translate->_("Update"); ?>" />
+	<?php } ?>
+	<input name="submitbtn" class="btn btn-primary" type="submit" tabindex="7" value="<?= $isClone ? $this->translate->_("Save") : $this->translate->_("Update"); ?>" />
 	<input class="btn btn-danger" type="button" onclick="window.location.href = '/admin/custom-test';" tabindex="8" value="<?= $this->translate->_("Cancel"); ?>" />
 </div>
 		</fieldset>
@@ -386,6 +397,9 @@ unset($rows);
 <script type="text/javascript" src="<?php echo $this->baseUrl("js/jquery.multi-select.js"); ?>"></script>
 <script type="text/javascript">
 	var duplicated = false;
+	// On clone the visible scheme code starts blank, so keep the source code around to
+	// strip the old prefix off existing result codes before the new code is typed.
+	var cloneSourceCode = '<?php echo $isClone ? strtoupper((string) $sourceSchemeCode) : ''; ?>';
 	var sampleCounter = <?php echo (isset($this->result['possibleResult']) && sizeof($this->result['possibleResult']) > 0) ? sizeof($this->result['possibleResult']) : 1 ?>;
 
 	function checkDuplicate(tableName, fieldName, obj, fnct, msg) {
@@ -680,7 +694,7 @@ unset($rows);
 	});
 
 	function removeQualitativeRow(obj, row1, row2) {
-		$('.qualitative-insrow-' + row1 + (row2 - 2)).attr('disabled', false);
+		$('.qualitative-insrow-' + row1 + row2).attr('disabled', false);
 		$(obj.parentNode.parentNode).fadeOut("normal", function() {
 			$(this).remove();
 		});
@@ -740,7 +754,7 @@ unset($rows);
 		if (prefix && raw.indexOf(prefix) === 0) {
 			$suffix.val(raw.substring(prefix.length));
 		} else {
-			var schemeCode = ($('#schemeCode').val() || '').toUpperCase().trim();
+			var schemeCode = ($('#schemeCode').val() || '').toUpperCase().trim() || cloneSourceCode;
 			if (schemeCode && raw.indexOf(schemeCode + '-') === 0) {
 				var rest = raw.substring(schemeCode.length + 1).replace(/^[TF]-/, '');
 				$suffix.val(rest);
