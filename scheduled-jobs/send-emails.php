@@ -169,10 +169,9 @@ try {
         }
     }
 
-    $transport = Transport::fromDsn($dsn);
-    $mailer = new Mailer($transport);
-
     // === Pull up to N pending rows this minute ===
+    // Do this BEFORE building the transport: if there's nothing to send, an
+    // invalid/misconfigured DSN must not throw and flood the log every minute.
     $sQuery = $db->select()->from(['tm' => 'temp_mail'])
         ->where("tm.status = ?", 'pending')
         ->order('tm.temp_id ASC')
@@ -183,6 +182,30 @@ try {
     if (empty($mailResult)) {
         return; // nothing to do
     }
+
+    // Build the transport only when there's actually mail to send. A malformed
+    // DSN (bad/empty host, stray creds, etc.) would otherwise bubble to the outer
+    // catch and log at ERROR on every cron tick. Mirror the devTrapDsn handling:
+    // park pending mail as skipped and log a single WARNING instead of flooding.
+    try {
+        $transport = Transport::fromDsn($dsn);
+    } catch (Throwable $e) {
+        $skipped = $db->update(
+            'temp_mail',
+            [
+                'status' => 'skipped',
+                'failure_type' => 'invalid_dsn',
+                'failure_reason' => 'SMTP configuration produced an invalid mailer DSN: ' . $e->getMessage(),
+                'updated_at' => new Zend_Db_Expr('NOW()'),
+            ],
+            ["status = ?" => 'pending']
+        );
+        Pt_Commons_LoggerUtility::logWarning(
+            "send-emails: SMTP configuration produced an invalid mailer DSN; skipped {$skipped} pending mail(s). Fix the mail settings in admin. (" . $e->getMessage() . ")"
+        );
+        return;
+    }
+    $mailer = new Mailer($transport);
 
     foreach ($mailResult as $result) {
         $failureReason = null;
