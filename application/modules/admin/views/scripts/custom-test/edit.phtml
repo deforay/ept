@@ -35,6 +35,11 @@ $formAction = $this->url(array("module" => "admin", "controller" => "custom-test
 		display: table;
 		width: 100%;
 	}
+
+	.input-dup-error {
+		border-color: #a94442 !important;
+		box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075), 0 0 6px rgba(169, 68, 66, .4) !important;
+	}
 </style>
 <link rel="stylesheet" type="text/css" href="<?php echo $this->baseUrl('css/bootstrap-select.min.css'); ?>" />
 <link rel="stylesheet" type="text/css" href="<?php echo $this->baseUrl('css/multi-select.css'); ?>" />
@@ -51,7 +56,8 @@ $formAction = $this->url(array("module" => "admin", "controller" => "custom-test
 
 				<div class="col-lg-6">
 					<label class="control-label" for="schemeCode"><?= $this->translate->_("Custom Test Code"); ?> <span class="mandatory">*</span></label>
-					<input type="text" value="<?php echo $schemeCodeValue; ?>" id="schemeCode" name="schemeCode" size="50" maxlength="255" class="form-control isRequired" title="Please enter the custom test code" placeholder="Enter the custom test code" onblur="checkDuplicate('scheme_list', 'scheme_id', this, '<?php echo $dupExclude; ?>', 'This code already exists. Please try something else.')" />
+					<input type="text" value="<?php echo $schemeCodeValue; ?>" id="schemeCode" name="schemeCode" size="50" maxlength="255" class="form-control isRequired" title="Please enter the custom test code" placeholder="Enter the custom test code" autocomplete="off" />
+						<div id="schemeCodeFeedback" class="help-block" style="display:none;margin-top:4px;"></div>
 				</div>
 			</div>
 			<div class="row">
@@ -399,6 +405,11 @@ $formAction = $this->url(array("module" => "admin", "controller" => "custom-test
 <script type="text/javascript" src="<?php echo $this->baseUrl("js/jquery.multi-select.js"); ?>"></script>
 <script type="text/javascript">
 	var duplicated = false;
+	// Live duplicate-code check state. schemeCodeExclude carries the current code on edit so
+	// the test does not flag itself; it is empty on add/clone.
+	var codeDuplicated = false;
+	var schemeCodeCheckTimer = null;
+	var schemeCodeExclude = '<?php echo $dupExclude; ?>';
 	// On clone the visible scheme code starts blank, so keep the source code around to
 	// strip the old prefix off existing result codes before the new code is typed.
 	var cloneSourceCode = '<?php echo $isClone ? strtoupper((string) $sourceSchemeCode) : ''; ?>';
@@ -491,6 +502,11 @@ $formAction = $this->url(array("module" => "admin", "controller" => "custom-test
 		flag = deforayValidator.init({
 			formId: 'editGenericTestForm'
 		});
+		if (codeDuplicated) {
+			alert('This code is already in use. Please choose a different one.', 'err');
+			$('#schemeCode').focus();
+			return false;
+		}
 		if (flag && !duplicated) {
 			if (!validateQualitativeResults()) {
 				return false;
@@ -684,9 +700,15 @@ $formAction = $this->url(array("module" => "admin", "controller" => "custom-test
 		});
 		$('#schemeCode').on('input', function() {
 			toggleTestsSection();
+			clearTimeout(schemeCodeCheckTimer);
+			schemeCodeCheckTimer = setTimeout(checkSchemeCodeDuplicate, 400);
 			$('.resultCodeSuffix').each(function() {
 				updateResultCode($(this).closest('tr'));
 			});
+		});
+		$('#schemeCode').on('blur', function() {
+			clearTimeout(schemeCodeCheckTimer);
+			checkSchemeCodeDuplicate();
 		});
 		toggleTestsSection();
 		$('.resultCodeSuffix').each(function() {
@@ -724,6 +746,39 @@ $formAction = $this->url(array("module" => "admin", "controller" => "custom-test
 			$('#qualitativeRow' + row).addClass('hide');
 			$('#quantitativeWarning' + row).removeClass('hide');
 		}
+	}
+
+	// Live check that the Test Code is not already used by another custom test, shown inline
+	// under the field as the user types (debounced) rather than via a blocking alert on blur.
+	function checkSchemeCodeDuplicate() {
+		var $code = $('#schemeCode');
+		var $fb = $('#schemeCodeFeedback');
+		var value = ($code.val() || '').trim();
+		if (value === '') {
+			codeDuplicated = false;
+			$code.removeClass('input-dup-error');
+			$fb.hide().text('');
+			return;
+		}
+		$.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'common', 'action' => 'check-duplicate')); ?>", {
+			tableName: 'scheme_list',
+			fieldName: 'scheme_id',
+			value: value,
+			fnct: schemeCodeExclude,
+			format: "html"
+		}, function(data) {
+			if (parseInt(data, 10) > 0) {
+				codeDuplicated = true;
+				$code.addClass('input-dup-error');
+				$fb.removeClass('text-success').addClass('text-danger')
+					.html('<i class="icon-warning-sign"></i> This code is already in use. Please choose a different one.').show();
+			} else {
+				codeDuplicated = false;
+				$code.removeClass('input-dup-error');
+				$fb.removeClass('text-danger').addClass('text-success')
+					.html('<i class="icon-ok"></i> This code is available.').show();
+			}
+		});
 	}
 
 	// The test-configuration section is meaningless until a Test Code exists (result codes
