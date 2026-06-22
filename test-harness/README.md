@@ -6,16 +6,19 @@ Lives in `test-harness/` at the repo root and is **architecturally independent**
 
 Two entry points:
 
-- `bin/dts-algo` — DTS schemes (algorithm-driven; Vietnam + updated-3-tests). Provisions its own synthetic shipment + asserts against declared expectations.
+- `bin/dts` — DTS schemes (algorithm-driven; Vietnam + updated-3-tests). Provisions its own synthetic shipment + asserts against declared expectations.
 - `bin/custom-test` — qualitative custom (user-configured) tests. You pick an **existing** scheme at startup (HBV, HCV, SYP, …); it provisions a shipment against that scheme using its own FINAL result codes, fills correct/incorrect responses, and asserts per-sample correctness from `response_result_generic_test.calculated_score`. It never creates or alters a scheme.
-- `bin/fill-shipment <id|code>` — attach to a shipment **you already created** and do the rest: enroll participants if none, fill responses against the shipment's own reference results (mostly pass, some fail), evaluate, and generate reports. Only participants without a response are filled — existing responses are never touched. Supports custom qualitative schemes and DTS `updated-3-tests`.
+
+Both bins also accept **`--shipment <id|code>`** (attach mode): instead of provisioning a synthetic shipment, attach to one **you already created** and do the rest — enroll participants if none, fill responses against the shipment's own reference results (mostly pass, some fail), evaluate, and generate reports. Only participants without a response are filled (existing responses are never touched), and no assertions/cleanup run since it's your shipment. `bin/dts --shipment` handles DTS `updated-3-tests`; `bin/custom-test --shipment` handles custom qualitative. Pass the wrong kind and it points you at the other bin.
 
 ## Run
 
 ```bash
-APPLICATION_ENV=development php test-harness/bin/dts-algo
+APPLICATION_ENV=development php test-harness/bin/dts
 APPLICATION_ENV=development php test-harness/bin/custom-test
-APPLICATION_ENV=development php test-harness/bin/fill-shipment <shipment_id|code>
+# attach mode — fill a shipment you already created:
+APPLICATION_ENV=development php test-harness/bin/dts --shipment <id|code>
+APPLICATION_ENV=development php test-harness/bin/custom-test --shipment <id|code>
 ```
 
 Both refuse to run unless `APPLICATION_ENV` is `development` or `testing`. There is no override.
@@ -37,7 +40,7 @@ All synthetic rows are namespaced with the prefix `AUTOTEST-` so cleanup is safe
 - **Fail** → left in place for inspection (shipment_id printed).
 - Manual sweep:
   ```bash
-  php test-harness/bin/dts-algo --cleanup-all
+  php test-harness/bin/dts --cleanup-all
   ```
 
 ## Supported algorithms
@@ -54,7 +57,7 @@ Adding a new variant = drop one file in `src/Aberrations/` + one file in `expect
 ```
 test-harness/
 ├── README.md
-├── bin/dts-algo                 — entry point
+├── bin/dts                      — entry point (synthetic mode + --shipment attach mode)
 ├── src/
 │   ├── Config.php               — application.ini parser, env gate
 │   ├── Db.php                   — PDO wrapper
@@ -70,10 +73,10 @@ test-harness/
 │   │   ├── Provisioner.php
 │   │   ├── Asserter.php
 │   │   └── Cleanup.php
-│   └── Filler/
-│       └── ShipmentFiller.php  — attach-to-existing-shipment logic (enroll + fill responses)
+│   └── Filler/                 — shared attach mode (used by both bins via --shipment)
+│       ├── ShipmentFiller.php  — enroll + fill responses against an existing shipment
+│       └── ExistingShipment.php — interactive orchestration (fill → evaluate → reports)
 ├── bin/custom-test             — entry point for the custom-test harness
-├── bin/fill-shipment           — entry point for the attach-to-existing-shipment workflow
 └── expectations/
     ├── vietnam.php              — independent expected verdicts (from NIHE workbook)
     ├── updated-3-tests.php      — independent expected verdicts (from the algorithm spec)

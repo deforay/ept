@@ -14,10 +14,13 @@ require_once $root . '/src/Evaluator.php';
 require_once $root . '/src/CustomTest/Provisioner.php';
 require_once $root . '/src/CustomTest/Asserter.php';
 require_once $root . '/src/CustomTest/Cleanup.php';
+require_once $root . '/src/Filler/ShipmentFiller.php';
+require_once $root . '/src/Filler/ExistingShipment.php';
 
 use EptTestHarness\CustomTest\Provisioner;
 use EptTestHarness\CustomTest\Asserter;
 use EptTestHarness\CustomTest\Cleanup;
+use EptTestHarness\Filler\ExistingShipment;
 
 $repoRoot = dirname($root);
 $expectations = require $root . '/expectations/custom-test.php';
@@ -32,6 +35,17 @@ if ($flag === '--help' || $flag === '-h') {
 
 $config = Config::load($repoRoot);
 $db     = new Db($config);
+
+// Attach mode: fill responses for a custom-test shipment that already exists
+// (enroll if needed → fill → evaluate → reports). No synthetic provisioning, no assertions.
+if ($flag === '--shipment') {
+    $arg = $argv[2] ?? '';
+    if ($arg === '') {
+        fwrite(STDERR, "Usage: --shipment <shipment_id-or-code>\n");
+        exit(2);
+    }
+    exit(ExistingShipment::run($config, $db, $arg, 'generic', 'dts'));
+}
 
 if ($flag === '--cleanup-all') {
     fwrite(STDOUT, "Nuking ALL custom-test ATEST-CT-* shipments...\n");
@@ -82,14 +96,21 @@ expectations/custom-test.php.
 
 Usage:
   APPLICATION_ENV=development php test-harness/bin/custom-test
+  APPLICATION_ENV=development php test-harness/bin/custom-test --shipment <id-or-code>
   APPLICATION_ENV=development php test-harness/bin/custom-test --cleanup <id-or-code>
   APPLICATION_ENV=development php test-harness/bin/custom-test --cleanup-all
   php test-harness/bin/custom-test --help
 
 Refuses to run unless APPLICATION_ENV is 'development' or 'testing'.
 
-Only QUALITATIVE user-configured schemes (with >=2 FINAL result codes) are offered.
-Cleanup removes only ATEST-CT-* shipments; it never alters the real schemes.
+Attach mode (--shipment <id-or-code>):
+  Fill responses for a qualitative custom shipment you already created: enroll
+  participants if none, fill responses against its own reference results, evaluate,
+  and generate reports. No assertions; no cleanup (it's your shipment).
+
+Only QUALITATIVE user-configured schemes (with >=2 FINAL result codes) are offered
+in the default synthetic mode. Cleanup removes only ATEST-CT-* shipments; it never
+alters the real schemes.
 TXT;
     fwrite(STDOUT, $help . "\n");
 }

@@ -18,6 +18,10 @@ require_once $root . '/src/Provisioner.php';
 require_once $root . '/src/Evaluator.php';
 require_once $root . '/src/Asserter.php';
 require_once $root . '/src/Cleanup.php';
+require_once $root . '/src/Filler/ShipmentFiller.php';
+require_once $root . '/src/Filler/ExistingShipment.php';
+
+use EptTestHarness\Filler\ExistingShipment;
 
 $repoRoot = dirname($root); // test-harness/bin → test-harness → repo root
 
@@ -31,6 +35,17 @@ if ($flag === '--help' || $flag === '-h') {
 
 $config = Config::load($repoRoot);
 $db     = new Db($config);
+
+// Attach mode: fill responses for a DTS shipment that already exists (enroll if
+// needed → fill → evaluate → reports). No synthetic provisioning, no assertions.
+if ($flag === '--shipment') {
+    $arg = $argv[2] ?? '';
+    if ($arg === '') {
+        fwrite(STDERR, "Usage: --shipment <shipment_id-or-code>\n");
+        exit(2);
+    }
+    exit(ExistingShipment::run($config, $db, $arg, 'dts', 'custom-test'));
+}
 
 if ($flag === '--cleanup-all') {
     fwrite(STDOUT, "Nuking ALL ATEST-* rows...\n");
@@ -98,20 +113,26 @@ function print_help(): void
 DTS Algorithm Test Harness — dev-only.
 
 Usage:
-  APPLICATION_ENV=development php test-harness/bin/dts-algo
-  APPLICATION_ENV=development php test-harness/bin/dts-algo --cleanup <id-or-code>
-  APPLICATION_ENV=development php test-harness/bin/dts-algo --cleanup-all
-  php test-harness/bin/dts-algo --help
+  APPLICATION_ENV=development php test-harness/bin/dts
+  APPLICATION_ENV=development php test-harness/bin/dts --shipment <id-or-code>
+  APPLICATION_ENV=development php test-harness/bin/dts --cleanup <id-or-code>
+  APPLICATION_ENV=development php test-harness/bin/dts --cleanup-all
+  php test-harness/bin/dts --help
 
 Refuses to run unless APPLICATION_ENV is 'development' or 'testing'.
 
-What it does:
+What it does (default, synthetic mode):
   1. Prompts for variant, participant count, per-aberration counts.
   2. Provisions an ATEST-* shipment, samples, participant maps, and responses.
   3. Runs scheduled-jobs/evaluate-shipments.php on that shipment as a subprocess.
   4. Compares per-sample calculated_score against the independent expectations
      from expectations/<variant>.php (declared from spec, NOT from the algorithm).
   5. Prints PASS/FAIL summary and leaves the shipment in place for inspection.
+
+Attach mode (--shipment <id-or-code>):
+  Fill responses for a DTS shipment you already created (dtsSchemeType
+  'updated-3-tests'): enroll participants if none, fill responses against its own
+  reference results, evaluate, and generate reports. No assertions; no cleanup.
 
 Cleanup options (run when you're done poking around):
   --cleanup <shipment_id>  delete that ATEST-* shipment + its rows
@@ -295,9 +316,9 @@ function run_interactive(Config $config, Db $db): void
     fwrite(STDOUT, "  shipment_id  = {$provision['shipment_id']}\n");
     fwrite(STDOUT, "  shipment_code = {$provision['shipment_code']}\n\n");
     fwrite(STDOUT, "When done, clean up with one of:\n");
-    fwrite(STDOUT, "  php test-harness/bin/dts-algo --cleanup {$provision['shipment_id']}\n");
-    fwrite(STDOUT, "  php test-harness/bin/dts-algo --cleanup {$provision['shipment_code']}\n");
-    fwrite(STDOUT, "  php test-harness/bin/dts-algo --cleanup-all       (wipes every ATEST-* row)\n");
+    fwrite(STDOUT, "  php test-harness/bin/dts --cleanup {$provision['shipment_id']}\n");
+    fwrite(STDOUT, "  php test-harness/bin/dts --cleanup {$provision['shipment_code']}\n");
+    fwrite(STDOUT, "  php test-harness/bin/dts --cleanup-all       (wipes every ATEST-* row)\n");
 
     exit($result['fails'] === 0 ? 0 : 1);
 }

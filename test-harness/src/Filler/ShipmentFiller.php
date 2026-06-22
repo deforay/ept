@@ -11,8 +11,8 @@ use EptTestHarness\Db;
  * remaining busywork: enroll participants if none, fill in participant responses
  * against the shipment's own reference results, and leave it ready to evaluate.
  *
- * Raw SQL only; no app classes. The caller (bin/fill-shipment) runs the real
- * evaluator + report generator as subprocesses afterward.
+ * Raw SQL only; no app classes. The caller (bin/dts or bin/custom-test via their
+ * --shipment flag) runs the real evaluator + report generator afterward.
  *
  * Supported families:
  *   - Custom (user-configured) QUALITATIVE schemes  → response_result_generic_test
@@ -133,7 +133,7 @@ final class ShipmentFiller
             $willPass = (($idx + 1) % $failEvery) !== 0;
             $idx++;
 
-            $this->stampResponseMeta($mapId, $family, $shipment);
+            $this->stampResponseMeta($mapId, $family);
 
             if ($family === 'dts') {
                 $this->fillDtsResponses($mapId, $samples, $willPass);
@@ -279,7 +279,7 @@ final class ShipmentFiller
      * status, and family-specific attributes), merging into any existing attributes so
      * an admin's enrollment data (e.g. dts_test_panel_type) is preserved.
      */
-    private function stampResponseMeta(int $mapId, string $family, array $shipment): void
+    private function stampResponseMeta(int $mapId, string $family): void
     {
         $now = date('Y-m-d H:i:s');
         $testDate    = date('Y-m-d', strtotime('-3 days'));
