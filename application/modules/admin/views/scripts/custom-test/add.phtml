@@ -101,6 +101,7 @@
 					<input type="text" id="additionalDetailLabel" name="genericConfig[additionalDetailLabel]" class="form-control" title="Please enter the label for additional details" placeholder="Enter the label for additional details" />
 				</div>
 			</div>
+			<div id="testsSection" style="display:none;">
 			<hr>
 			<table style="width: 100%;margin: 0 auto;" border="1" class="table table-bordered table-striped clearfix" id="vlSampleTable">
 				<tbody>
@@ -226,6 +227,7 @@
 					</tr>
 				</tbody>
 			</table>
+			</div>
 			<div id="respond" style="margin: 0px auto 0px auto; text-align: center;" class="form-group col-lg-11" align="center">
 				<input name="submitbtn" class="btn btn-primary" type="submit" tabindex="7" value="<?= $this->translate->_("Add"); ?>" />
 				<input class="btn btn-danger" type="button" onclick="window.location.href = '/admin/custom-test';" tabindex="8" value="<?= $this->translate->_("Cancel"); ?>" />
@@ -524,10 +526,12 @@
 			updateResultCode($(this).closest('tr'));
 		});
 		$('#schemeCode').on('input', function() {
+			toggleTestsSection();
 			$('.resultCodeSuffix').each(function() {
 				updateResultCode($(this).closest('tr'));
 			});
 		});
+		toggleTestsSection();
 		$('.resultCodeSuffix').each(function() {
 			initResultCodeRow($(this).closest('tr'));
 		});
@@ -559,6 +563,16 @@
 			$('#quantitativeWarning' + row).removeClass('hide');
 			$('.quantitative-input' + row).addClass('isRequired');
 			$('#qualitativeRow' + row).addClass('hide');
+		}
+	}
+
+	// The test-configuration section is meaningless until a Test Code exists (result codes
+	// are prefixed from it), so keep it hidden until the code field has a value.
+	function toggleTestsSection() {
+		if (($('#schemeCode').val() || '').trim() !== '') {
+			$('#testsSection').show();
+		} else {
+			$('#testsSection').hide();
 		}
 	}
 

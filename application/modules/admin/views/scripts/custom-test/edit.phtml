@@ -119,6 +119,7 @@ $formAction = $this->url(array("module" => "admin", "controller" => "custom-test
 					<input type="text" value="<?php echo $jsonConfig['additionalDetailLabel'] ?? null; ?>" id="additionalDetailLabel" name="genericConfig[additionalDetailLabel]" class="form-control <?php echo (isset($jsonConfig['captureAdditionalDetails']) && $jsonConfig['captureAdditionalDetails'] == 'yes') ? 'isRequired' : ''; ?>" title="Please enter the label for additional details" placeholder="Enter the label for additional details" />
 				</div>
 			</div>
+			<div id="testsSection" style="<?php echo !empty($schemeCodeValue) ? '' : 'display:none;'; ?>">
 			<hr>
 			<table style="width: 100%;margin: 0 auto;" border="1" class="table table-bordered table-striped clearfix" id="vlSampleTable">
 				<tbody>
@@ -382,6 +383,7 @@ $formAction = $this->url(array("module" => "admin", "controller" => "custom-test
 <?php } ?>
 </tbody>
 </table>
+</div>
 <div id="respond" style="margin: 0px auto 0px auto; text-align: center;" class="form-group col-lg-11" align="center">
 	<?php if (!$isClone) { ?>
 	<input name="schemeId" class="btn btn-primary" type="hidden" value="<?php echo base64_encode($this->result['schemeResult']['scheme_id']); ?>" />
@@ -681,10 +683,12 @@ $formAction = $this->url(array("module" => "admin", "controller" => "custom-test
 			updateResultCode($(this).closest('tr'));
 		});
 		$('#schemeCode').on('input', function() {
+			toggleTestsSection();
 			$('.resultCodeSuffix').each(function() {
 				updateResultCode($(this).closest('tr'));
 			});
 		});
+		toggleTestsSection();
 		$('.resultCodeSuffix').each(function() {
 			initResultCodeRow($(this).closest('tr'));
 		});
@@ -719,6 +723,16 @@ $formAction = $this->url(array("module" => "admin", "controller" => "custom-test
 			$('.quantitative-input' + row).addClass('isRequired');
 			$('#qualitativeRow' + row).addClass('hide');
 			$('#quantitativeWarning' + row).removeClass('hide');
+		}
+	}
+
+	// The test-configuration section is meaningless until a Test Code exists (result codes
+	// are prefixed from it), so keep it hidden until the code field has a value.
+	function toggleTestsSection() {
+		if (($('#schemeCode').val() || '').trim() !== '') {
+			$('#testsSection').show();
+		} else {
+			$('#testsSection').hide();
 		}
 	}
 
