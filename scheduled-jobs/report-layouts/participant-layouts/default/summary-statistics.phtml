@@ -1,0 +1,117 @@
+<?php
+//----------------Summary Statistics for this survey + performance charts----------------
+// Charts are rendered with Pt_Reports_ChartService (Chart.js / Node), the renderer this
+// project uses; the legacy JPGraph charts (malawi) fail to produce PNGs in this environment.
+if (isset($result['statistics']) && !empty($result['statistics'])) {
+    $statScore = $passPercentage ?? (Pt_Commons_SchemeConfig::get('dts.passPercentage') ?? '80');
+    $ppOverview = '<span style="font-size:12px;font-weight:bold;">Summary Statistics for this survey</span><br/>';
+    $ppOverview .= '<table border="1" style="font-size:11px;" cellpadding="3">';
+    $ppOverview .= '<tr style="background-color:#dbe4ee;">';
+    $ppOverview .= '    <td style="text-align:center;font-weight:bold;"># of Providers that responded</td>';
+    $ppOverview .= '    <td style="text-align:center;font-weight:bold;">Providers with 100%</td>';
+    $ppOverview .= '    <td style="text-align:center;font-weight:bold;">Providers with &gt;= ' . $statScore . '%</td>';
+    $ppOverview .= '    <td style="text-align:center;font-weight:bold;">Providers with &lt; ' . $statScore . '%</td>';
+    $ppOverview .= '    <td style="text-align:center;font-weight:bold;">Providers that did not Respond</td>';
+    $ppOverview .= '</tr>';
+    $ppOverview .= '<tr>';
+    $ppOverview .= '    <td style="text-align:center;font-weight:normal;">' . ($result['statistics']['number_responded'] ?? '') . '</td>';
+    $ppOverview .= '    <td style="text-align:center;font-weight:normal;">' . ($result['statistics']['providersWith100'] ?? '') . '</td>';
+    $ppOverview .= '    <td style="text-align:center;font-weight:normal;">' . ($result['statistics']['providers>80'] ?? '') . '</td>';
+    $ppOverview .= '    <td style="text-align:center;font-weight:normal;">' . ($result['statistics']['providers<80'] ?? '') . '</td>';
+    $ppOverview .= '    <td style="text-align:center;font-weight:normal;">' . ($result['statistics']['number_not_responded'] ?? '') . '</td>';
+    $ppOverview .= '</tr>';
+    $ppOverview .= '</table><br>';
+    $pdf->writeHTML($ppOverview, true, false, true, false, '');
+}
+
+$chartDir = $reportsPath . DIRECTORY_SEPARATOR . $result['shipment_code'];
+$chartW = $pdf->getPageWidth() - PDF_MARGIN_LEFT - PDF_MARGIN_RIGHT;
+// Unique-per-participant filename suffix so parallel workers don't clobber each other's PNGs.
+$chartUniq = (string) ($result['participant_id'] ?? ($result['map_id'] ?? ''));
+
+// Render a ChartService chart and place it; failures are swallowed so a chart can never
+// blank the report.
+$renderPerfChart = function (array $config) use ($chartDir, $chartW, $pdf) {
+    try {
+        $img = Pt_Reports_ChartService::render($config, $chartDir);
+        if (!empty($img) && file_exists($img)) {
+            $size = getimagesize($img);
+            if ($size && $size[0] > 0) {
+                // Use (almost) the full text width; bars are capped via maxBarThickness so they
+                // stay a sensible width rather than stretching.
+                $dispW = $chartW * 0.98;
+                $dispX = PDF_MARGIN_LEFT + ($chartW - $dispW) / 2;
+                $displayH = ($size[1] / $size[0]) * $dispW;
+                $pdf->Image($img, $dispX, $pdf->getY(), $dispW, 0, '', '', '', false, 300);
+                $pdf->SetY($pdf->getY() + $displayH + 4);
+            }
+            unlink($img);
+        }
+    } catch (\Throwable $e) {
+        // non-critical
+    }
+};
+
+// Chart 1 - Your performance for the last 5 surveys (% score per survey)
+if (!empty($result['performance1'])) {
+    $labels = $data = [];
+    foreach ($result['performance1'] as $row) {
+        $labels[] = $row['distribution_code'];
+        $data[] = ($row['scored'] > 0) ? round($row['scored']) : 0;
+    }
+    $renderPerfChart([
+        'type' => 'bar',
+        'width' => 900, 'height' => 300, 'maxBarThickness' => 120,
+        'filename' => 'perf_last5_' . $chartUniq,
+        'title' => 'Your Performance for the last 5 surveys',
+        'xAxis' => ['labels' => $labels, 'title' => 'PT Surveys'],
+        'yAxis' => ['title' => 'Percentage of Performance'],
+        'datasets' => [['data' => $data, 'colors' => ['#4F81BD']]],
+    ]);
+}
+
+// Chart 2 - Participants performance for the last 5 surveys (passed / failed)
+if (!empty($result['performance2'])) {
+    $labels = $passed = $failed = [];
+    foreach ($result['performance2'] as $row) {
+        $labels[] = $row['distribution_code'];
+        $passed[] = (int) ($row['passed'] ?? 0);
+        $failed[] = (int) ($row['failed'] ?? 0);
+    }
+    $renderPerfChart([
+        'type' => 'stackedBar',
+        'width' => 900, 'height' => 300, 'maxBarThickness' => 120,
+        'filename' => 'perf_passfail5_' . $chartUniq,
+        'title' => 'Participants performance for the last 5 surveys',
+        'xAxis' => ['labels' => $labels, 'title' => 'PT Surveys'],
+        'yAxis' => ['title' => 'Number of Participants'],
+        'datasets' => [
+            ['data' => $passed, 'label' => 'Passed', 'colors' => ['#4F81BD']],
+            ['data' => $failed, 'label' => 'Failed', 'colors' => ['#C0504D']],
+        ],
+        'legend' => ['position' => 'bottom'],
+    ]);
+}
+
+// Chart 3 - Participants performance for the current survey panels (passed / failed per sample)
+if (!empty($result['performance3'])) {
+    $labels = $passed = $failed = [];
+    foreach ($result['performance3'] as $row) {
+        $labels[] = $row['sample_label'];
+        $passed[] = (int) ($row['passed'] ?? 0);
+        $failed[] = (int) ($row['failed'] ?? 0);
+    }
+    $renderPerfChart([
+        'type' => 'stackedBar',
+        'width' => 900, 'height' => 300, 'maxBarThickness' => 120,
+        'filename' => 'perf_panels_' . $chartUniq,
+        'title' => 'Participants performance for the current survey panels',
+        'xAxis' => ['labels' => $labels, 'title' => 'Samples'],
+        'yAxis' => ['title' => 'Number of Participants'],
+        'datasets' => [
+            ['data' => $passed, 'label' => 'Passed', 'colors' => ['#4F81BD']],
+            ['data' => $failed, 'label' => 'Failed', 'colors' => ['#C0504D']],
+        ],
+        'legend' => ['position' => 'bottom'],
+    ]);
+}

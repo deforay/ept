@@ -2611,6 +2611,7 @@ class Application_Service_Evaluation
                     ->join(['s' => 'shipment'], 'd.distribution_id=s.distribution_id', [''])
                     ->join(['spm' => 'shipment_participant_map'], 's.shipment_id=spm.shipment_id', ['scored' => new Zend_Db_Expr('(spm.shipment_score + spm.documentation_score)')])
                     ->where('spm.participant_id = ?', $res['participant_id'])
+                    ->where('s.scheme_type = ?', $res['scheme_type'])
                     ->where('DATE(d.distribution_date) < ?', $res['distribution_date'])
                     ->limit(4);
                 $noSurvey = $db->fetchAll($noSurveySql);
@@ -2625,6 +2626,7 @@ class Application_Service_Evaluation
                     ->join(['s' => 'shipment'], 'd.distribution_id=s.distribution_id', [''])
                     ->join(['spm' => 'shipment_participant_map'], 's.shipment_id=spm.shipment_id', ['is_excluded', 'scored' => new Zend_Db_Expr('(spm.shipment_score + spm.documentation_score)')])
                     ->where('spm.participant_id = ?', $res['participant_id'])
+                    ->where('s.scheme_type = ?', $res['scheme_type'])
                     ->where("d.distribution_code IN('" . implode("','", $surveysList) . "')")
                     ->where('DATE(d.distribution_date) <= ?', $res['distribution_date'])
                     ->order('d.distribution_date ASC')
@@ -2638,6 +2640,7 @@ class Application_Service_Evaluation
                         'passed' => new Zend_Db_Expr('SUM(CASE WHEN (spm.final_result = 1) THEN 1 ELSE 0 END)'),
                         'failed' => new Zend_Db_Expr('SUM(CASE WHEN (spm.final_result = 2) THEN 1 ELSE 0 END)'),
                     ])
+                    ->where('s.scheme_type = ?', $res['scheme_type'])
                     ->where("d.distribution_code IN('" . implode("','", $surveysList) . "')")
                     ->where('DATE(d.distribution_date) <= ?', $res['distribution_date'])
                     ->order('d.distribution_date ASC')

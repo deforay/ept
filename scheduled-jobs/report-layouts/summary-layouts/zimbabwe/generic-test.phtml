@@ -20,7 +20,7 @@ if (!empty($resultArray['shipment']) && $resultArray['shipment'] != "") {
         $pdf->setParams($resultStatus, $evalRow['date_finalised'], "", $watermark, "SUMMARY", $layout, $panelName);
     } else {
         $pdf = new Pt_Reports_SummaryPdf(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
-        $pdf->setSchemeName($header, $panelName, $logo, $logoRight, $resultStatus, 'generic-test', $evalRow['date_finalised'], "", $watermark, "", $instituteAddressPosition, $layout);
+        $pdf->setSchemeName($header, $panelName, $logo, $logoRight, $resultStatus, 'generic-test', $evalRow['date_finalised'], "", $watermark, "", $instituteAddressPosition, 'generic-test');
     }
 
     // set default header data
@@ -51,33 +51,19 @@ if (!empty($resultArray['shipment']) && $resultArray['shipment'] != "") {
     $pdf->AddPage('P', 'A4');
     $pdf->SetFont('helvetica', '', 11);
     if (!isset($reportFormat) && empty($reportFormat)) {
-        $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:13px;">Proficiency Testing Program for ' . $panelName . '</span><br>';
-        $htmlTitle .= '<span style="font-weight: bold;text-align:center;font-size:11px;">All Participants Summary Report</span><br>';
+        $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:11;">Proficiency Testing Program for ' . $panelName . '</span><br>';
         $pdf->writeHTML($htmlTitle, true, false, true, false, '');
     }
 
 
-    // Shipment overview (dts pattern): PT Panel, Report No. (= shipment code), dates.
-    $dueDate = !empty($resultArray['shipment']['response_deadline'])
-        ? Pt_Commons_DateUtility::humanReadableDateFormat($resultArray['shipment']['response_deadline'])
-        : '';
-    $referenceRes = '<br><table border="1" cellpadding="4" style="text-align:center;width:100%;font-size:11px;" align="center">';
-    $referenceRes .= '<tr style="background-color:#D9E0F2;">';
-    $referenceRes .= '<td style="font-weight:bold;width:25%;">PT Panel</td>';
-    $referenceRes .= '<td style="font-weight:bold;width:25%;">Report No.</td>';
-    $referenceRes .= '<td style="font-weight:bold;width:25%;">Shipment Date</td>';
-    $referenceRes .= '<td style="font-weight:bold;width:25%;">Due Date</td>';
-    $referenceRes .= '</tr><tr>';
-    $referenceRes .= '<td style="font-weight:normal;">' . $resultArray['shipment']['distribution_code'] . '</td>';
-    $referenceRes .= '<td style="font-weight:normal;">' . $resultArray['shipment']['shipment_code'] . '</td>';
-    $referenceRes .= '<td style="font-weight:normal;">' . Pt_Commons_DateUtility::humanReadableDateFormat($resultArray['shipment']['shipment_date']) . '</td>';
-    $referenceRes .= '<td style="font-weight:normal;">' . $dueDate . '</td>';
-    $referenceRes .= '</tr></table>';
-    // Authorizer / PT scheme manager (malawi pattern) - shown only when configured.
-    $approveTxt = $resultArray['shipment']['pt_co_ordinator_name'] ?? ($evalRow['saname'] ?? '');
-    if (!empty($approveTxt)) {
-        $referenceRes .= '<p style="text-align:right;font-size:10px;"><b>Report authorized by:</b> ' . $approveTxt . '</p>';
-    }
+    $referenceRes = '<br><br><table style="text-align:center;width:100%" align="left">';
+    $referenceRes .= '<tr>';
+    $referenceRes .= '<td style="font-weight:normal;width:20%;">PT Panel</td><td style="font-weight:normal;width:30%;">' . $resultArray['shipment']['distribution_code'] . '</td>';
+    $referenceRes .= '</tr>';
+    $referenceRes .= '<tr>';
+    $referenceRes .= '<td style="font-weight:normal;width:20%;">Shipment Date</td><td style="font-weight:normal;width:30%;">' . Pt_Commons_DateUtility::humanReadableDateFormat($resultArray['shipment']['shipment_date']) . '</td>';
+    $referenceRes .= '</tr>';
+    $referenceRes .= '</table>';
     $pdf->writeHTML($referenceRes, true, false, true, false, '');
 
     $participantCount = '';
@@ -163,96 +149,6 @@ if (!empty($resultArray['shipment']) && $resultArray['shipment'] != "") {
             $pdf->writeHTML($overAllCorrectRes, true, false, true, false, '');
         }
     }
-
-    // Participant Performance Overview (ported from default DTS summary). Shown when the
-    // participant-performance data is available.
-    if (isset($participantPerformance) && !empty($participantPerformance)) {
-        $ppTotalShipped = (int) ($participantPerformance['total_shipped'] ?? 0);
-        $ppTotalResponses = (int) ($participantPerformance['total_responses'] ?? 0);
-        // valid_responses keys off shipment_test_date, which custom tests don't populate, so it
-        // comes back NULL - fall back to the response count.
-        $ppValidResponses = ($participantPerformance['valid_responses'] ?? null) !== null && $participantPerformance['valid_responses'] !== ''
-            ? (int) $participantPerformance['valid_responses']
-            : $ppTotalResponses;
-        // The query returns the summed score (shipment + documentation), not an average; derive
-        // the mean over responders here.
-        $ppAvgScore = $ppTotalResponses > 0
-            ? round(((float) ($participantPerformance['score'] ?? 0)) / $ppTotalResponses, 2)
-            : 0;
-        $ppOverview = '<span style="font-size:12px;font-weight:bold;">Participant Performance Overview</span><br/>';
-        $ppOverview .= '<table border="1" style="font-size:11px;" cellpadding="3"><tr style="background-color:#dbe4ee;">';
-        $ppOverview .= '<td style="text-align:center;font-weight:bold;"># of Participants</td>';
-        $ppOverview .= '<td style="text-align:center;font-weight:bold;"># of Responses</td>';
-        $ppOverview .= '<td style="text-align:center;font-weight:bold;"># of Valid Responses</td>';
-        $ppOverview .= '<td style="text-align:center;font-weight:bold;">Average Score</td></tr>';
-        $ppOverview .= '<tr>';
-        $ppOverview .= '<td style="text-align:center;">' . $ppTotalShipped . '</td>';
-        $ppOverview .= '<td style="text-align:center;">' . $ppTotalResponses . '</td>';
-        $ppOverview .= '<td style="text-align:center;">' . $ppValidResponses . '</td>';
-        $ppOverview .= '<td style="text-align:center;">' . $ppAvgScore . '</td>';
-        $ppOverview .= '</tr></table><br>';
-        $pdf->writeHTML($ppOverview, true, false, true, false, '');
-    }
-
-    // Corrective Action Overview (ported from default DTS summary).
-    if (!empty($correctivenessArray)) {
-        $caStuff = '<span style="font-size:12px;font-weight:bold;">Corrective Action Overview</span><br/>';
-        $caStuff .= '<table border="1" style="font-size:11px;" cellpadding="3"><tr style="background-color:#dbe4ee;">';
-        $caStuff .= '<td style="text-align:center;font-weight:bold;width:75%;">Corrective Action</td>';
-        $caStuff .= '<td style="text-align:center;font-weight:bold;width:25%;">Responses having Corrective Action</td></tr>';
-        foreach ($correctivenessArray as $corrective) {
-            $caStuff .= '<tr><td>' . $corrective['corrective_action'] . '</td><td style="text-align:center;">' . $corrective['total_corrective'] . '</td></tr>';
-        }
-        $caStuff .= '</table><br>';
-        $pdf->writeHTML($caStuff, true, false, true, false, '');
-    }
-
-    // Result-breakdown pie chart (ChartService / Chart.js, ported from default DTS summary).
-    // Guarded so a chart failure can never break the report.
-    if (isset($responseResult) && !empty($responseResult) && !empty($responseResult['total_shipped'])) {
-        $total = (int) $responseResult['total_shipped'];
-        $passedN = max(0, (int) ($responseResult['number_passed'] ?? 0));
-        $failedN = max(0, (int) ($responseResult['number_failed'] ?? 0));
-        $notRespondedN = (int) ($responseResult['not_responded'] ?? 0);
-        $excludedN = abs((int) ($responseResult['excluded'] ?? 0) - $notRespondedN);
-        if (($passedN + $failedN + $notRespondedN + $excludedN) > 0) {
-            try {
-                $pieOutputDir = $reportsPath . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'];
-                $pieImg = Pt_Reports_ChartService::render([
-                    'type' => 'pie',
-                    'width' => 700, 'height' => 400,
-                    'filename' => 'summary_result_pie',
-                    'title' => 'Shipment Participant Result Report (N=' . $total . ')',
-                    'slices' => [
-                        'data' => [$passedN, $failedN, $notRespondedN, $excludedN],
-                        'labels' => [
-                            'Passed (N=' . $passedN . ')',
-                            'Failed (N=' . $failedN . ')',
-                            'Not Responded (N=' . $notRespondedN . ')',
-                            'Excluded (N=' . $excludedN . ')',
-                        ],
-                        'colors' => ['#22C55E', '#DC3545', '#F59E0B', '#94A3B8'],
-                    ],
-                    'legend' => ['position' => 'bottom'],
-                ], $pieOutputDir);
-                if (!empty($pieImg) && file_exists($pieImg)) {
-                    $pieFullW = $pdf->getPageWidth() - PDF_MARGIN_LEFT - PDF_MARGIN_RIGHT;
-                    $pieW = $pieFullW * 0.6;
-                    $pieX = PDF_MARGIN_LEFT + ($pieFullW - $pieW) / 2;
-                    $pieSize = getimagesize($pieImg);
-                    if ($pieSize && $pieSize[0] > 0) {
-                        $pieH = ($pieSize[1] / $pieSize[0]) * $pieW;
-                        $pdf->Image($pieImg, $pieX, $pdf->getY(), $pieW, 0, '', '', '', false, 300);
-                        $pdf->SetY($pdf->getY() + $pieH + 4);
-                    }
-                    unlink($pieImg);
-                }
-            } catch (\Throwable $e) {
-                // non-critical
-            }
-        }
-    }
-
     $sample = [];
     $assayNameTxt = "";
     $noOfPaResponseTxt = "";
@@ -575,12 +471,25 @@ if (!empty($resultArray['shipment']) && $resultArray['shipment'] != "") {
             unlink($image_file);
         }
     }
-    // End-of-report note (malawi pattern) - generic and layout-neutral.
-    $eodReportText = (isset($evalRow['report_type']) && $evalRow['report_type'] == 'finalized') ? 'End of final report' : 'End of report';
-    $html = '<br/><hr>';
-    $html .= '<span style="text-align:center;font-weight:normal;"><small>This is a system generated report. No signature required.</small></span>';
-    $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>- ' . $eodReportText . ' -</small></span>';
-    $pdf->writeHTML($html, true, false, true, false, '');
+    if (isset($resultArray['shipment']['scheme_type']) && $resultArray['shipment']['scheme_type'] == 'zimbabwe') {
+        $html = "";
+        if (isset($resultArray['shipment']['pt_co_ordinator_name']) && $resultArray['shipment']['pt_co_ordinator_name'] != "") {
+            $html .= '<hr>';
+            if ($layout == 'zimbabwe') {
+                $html .= '<span style="text-align:center;font-weight:normal;"><small>All PT material is produced in line with the standard ISO17043:2023</small></span><br/>';
+            }
+            $html .= '<span style="text-align:center;font-weight:normal;"><small>Report approved by ' . $resultArray['shipment']['pt_co_ordinator_name'] . '</small></span>';
+            $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>Date of approval: ' . (isset($pdf->dateTime) ? Pt_Commons_DateUtility::humanReadableDateFormat($pdf->dateTime) : date('d M Y')) . '</small></span>';
+        }
+
+        $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>This is a system generated report. No signature required</small></span>';
+        $eodReportText = "End of report";
+        if ($evalRow['report_type'] == 'finalized') {
+            $eodReportText = "End of final report";
+        }
+        $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>- ' . $eodReportText . ' -</small></span>';
+        $pdf->writeHTML($html, true, false, true, false, '');
+    }
 
     //Close and output PDF document
     $fileName = $resultArray['shipment']['shipment_code'] . "-summary.pdf";

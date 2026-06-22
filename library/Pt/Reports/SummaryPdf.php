@@ -235,6 +235,20 @@ class Pt_Reports_SummaryPdf extends Fpdi
                 $html = '<hr/>';
                 $this->writeHTMLCell(0, 0, 10, 50, $html, 0, 0, 0, true, 'J', true);
             }
+        } elseif ($this->schemeType == 'generic-test' && $this->layout !== 'generic-test') {
+            // Custom (user-configured) tests: render only the institute header here, offset to
+            // clear the logo. The program title is written in the report body so each country
+            // layout (default/<layout>/generic-test.phtml) can word it without hardcoding a
+            // scheme-specific title (e.g. the legacy "Anti-HIV Antibodies Diagnostics" wording).
+            // Legacy layouts (zimbabwe/malawi) pass the literal 'generic-test' as the layout
+            // arg and fall through to the else below, preserving their existing Anti-HIV header.
+            $this->SetFont('freesans', '', 10);
+            $html = '<span style="font-weight: bold;text-align:center;">' . $this->header . '</span>';
+            if ($this->instituteAddressPosition == 'header' && isset($instituteAddress) && $instituteAddress != '') {
+                $html .= '<br/><span style="font-weight: normal;text-align:center;font-size:11;">' . nl2br(stripcslashes(trim($instituteAddress))) . '</span>';
+            }
+            $this->writeHTMLCell(0, 0, 27, 20, $html, 0, 0, 0, true, 'J', true);
+            $this->writeHTMLCell(0, 0, 10, 40, '<hr/>', 0, 0, 0, true, 'J', true);
         } else {
             //$html='<span style="font-weight: bold;text-align:center;">Proficiency Testing Program for Anti-HIV Antibodies Diagnostics using '.$this->scheme_name.'</span><br><span style="font-weight: bold;text-align:center;">All Participants Summary Report</span><br><small  style="text-align:center;">'.$this->header.'</small>';
 

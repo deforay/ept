@@ -124,6 +124,10 @@ class Pt_Reports_ChartRenderer_ChartJsNode implements Pt_Reports_ChartRenderer_R
         if (!empty($ds['label'])) {
             $chartDataset['label'] = $ds['label'];
         }
+        // Cap bar width so a chart with few categories doesn't render giant stretched bars.
+        if (!empty($config['maxBarThickness'])) {
+            $chartDataset['maxBarThickness'] = (int) $config['maxBarThickness'];
+        }
 
         return [
             'type' => 'bar',
@@ -146,6 +150,9 @@ class Pt_Reports_ChartRenderer_ChartJsNode implements Pt_Reports_ChartRenderer_R
             ];
             if (!empty($ds['label'])) {
                 $chartDataset['label'] = $ds['label'];
+            }
+            if (!empty($config['maxBarThickness'])) {
+                $chartDataset['maxBarThickness'] = (int) $config['maxBarThickness'];
             }
             $chartDatasets[] = $chartDataset;
         }
@@ -170,6 +177,9 @@ class Pt_Reports_ChartRenderer_ChartJsNode implements Pt_Reports_ChartRenderer_R
             ];
             if (!empty($ds['label'])) {
                 $chartDataset['label'] = $ds['label'];
+            }
+            if (!empty($config['maxBarThickness'])) {
+                $chartDataset['maxBarThickness'] = (int) $config['maxBarThickness'];
             }
             $chartDatasets[] = $chartDataset;
         }
