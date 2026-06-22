@@ -508,7 +508,12 @@ if (!empty($resultArray['shipment'])) {
             if ($eodReportText) {
                 $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>- ' . $eodReportText . ' -</small></span>';
             }
+        }
 
+        // Footer + PDF save must run for EVERY participant, not only when an approval
+        // block was added above. (Previously everything below sat inside the
+        // coordinator/saname `if`, so shipments with no PT coordinator name wrote
+        // zero participant PDFs.)
             $pdf->writeHTML($html, true, false, true, false, '');
 
             // Clear output buffer if exists
@@ -550,6 +555,5 @@ if (!empty($resultArray['shipment'])) {
 
             $shipmentCode = $result['shipment_code'];
             $pageCounter++;
-        }
     }
 }

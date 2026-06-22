@@ -1309,6 +1309,16 @@ final class Application_Model_Dts
     public function getAllDtsTestKitList($countryAdapted = false, $stage = null)
     {
 
+        $isSchemeStage = isset($stage) && !empty($stage)
+            && !in_array($stage, ['testkit_1', 'testkit_2', 'testkit_3', 'custom-tests']);
+
+        // For a scheme picker, scope the join to that scheme so each kit appears
+        // once and stm.scheme_type is set only when the kit is mapped to it.
+        $joinCond = 't.TestKitName_ID = stm.testkit_id';
+        if ($isSchemeStage) {
+            $joinCond .= ' AND stm.scheme_type = ' . $this->db->quote($stage);
+        }
+
         $sql = $this->db->select()
             ->from(
                 ['t' => 'r_testkitnames'],
@@ -1318,11 +1328,11 @@ final class Application_Model_Dts
                     'attributes',
                 ]
             )
-            ->joinLeft(['stm' => 'scheme_testkit_map'], 't.TestKitName_ID = stm.testkit_id', ['scheme_type', 'testkit_1', 'testkit_2', 'testkit_3'])
+            ->joinLeft(['stm' => 'scheme_testkit_map'], $joinCond, ['scheme_type', 'testkit_1', 'testkit_2', 'testkit_3'])
             ->order('TESTKITNAME ASC');
-        if ($stage == 'custom-tests') {
-        } elseif (isset($stage) && !empty($stage) && !in_array($stage, ['testkit_1', 'testkit_2', 'testkit_3'])) {
-            $sql = $sql->where('scheme_type != ?', $stage);
+        if ($stage == 'custom-tests' || $isSchemeStage) {
+            // custom-tests: list all kits; scheme picker: list all kits, selection
+            // comes from stm.scheme_type populated by the scoped join above.
         } else {
             $sql = $sql->where('scheme_type = ?', 'dts');
         }

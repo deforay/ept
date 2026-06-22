@@ -99,19 +99,23 @@ class Application_Model_DbTable_Testkitnames extends Zend_Db_Table_Abstract
     public function updateTestkitStageDetails($params)
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        if (trim($params['testKitStage']) != '') {
-            if (in_array($params['testKitStage'], ['testkit_1', 'testkit_2', 'testkit_3'])) {
+        $stage = trim($params['testKitStage'] ?? '');
+        if ($stage != '') {
+            $isPosition = in_array($stage, ['testkit_1', 'testkit_2', 'testkit_3']);
+            if ($isPosition) {
                 // First reset all testkits for this stage to 0
-                $db->update('scheme_testkit_map', [$params['testKitStage'] => '0'], '1=1');
+                $db->update('scheme_testkit_map', [$stage => '0'], '1=1');
+            } else {
+                // Clear this scheme's mappings so deselected test kits are removed
+                $db->delete('scheme_testkit_map', ['scheme_type = ?' => $stage]);
             }
             if (isset($params['testKitData']) && $params['testKitData'] != '' && count($params['testKitData']) > 0) {
                 foreach ($params['testKitData'] as $data) {
-                    if (in_array($params['testKitStage'], ['testkit_1', 'testkit_2', 'testkit_3'])) {
-                        $db->update('scheme_testkit_map', [$params['testKitStage'] => '1'], "testkit_id='" . $data . "'");
+                    if ($isPosition) {
+                        $db->update('scheme_testkit_map', [$stage => '1'], ['testkit_id = ?' => $data]);
                     } else {
-                        $db->delete('scheme_testkit_map', ['scheme_type = ?' => $params['testKitStage'], 'testkit_id = ?' => $data]);
                         $db->insert('scheme_testkit_map', [
-                            'scheme_type' => $params['testKitStage'],
+                            'scheme_type' => $stage,
                             'testkit_id' => $data,
                         ]);
                     }

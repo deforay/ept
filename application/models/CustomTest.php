@@ -793,7 +793,10 @@ class Application_Model_CustomTest
             ->joinLeft(['resGenTest' => 'response_result_generic_test'], 'resGenTest.shipment_map_id = spm.map_id and resGenTest.sample_id = refGenTest.sample_id', ['reported_result'])
             ->where('spm.shipment_id = ? ', $shipmentId)
             ->where("spm.shipment_test_date IS NOT NULL AND spm.shipment_test_date not like '' AND spm.shipment_test_date not like '0000-00-00' OR IFNULL(spm.is_pt_test_not_performed, 'no') ='yes'")
-            ->where("spm.is_excluded!='yes'")
+            // NULL-safe: custom-test evaluation leaves is_excluded NULL (it sets 'no' only
+            // in PHP, never in the DB), and `is_excluded != 'yes'` drops NULL rows in MySQL,
+            // which emptied correctRes and produced a blank All-Participants summary report.
+            ->where("IFNULL(spm.is_excluded, 'no') != 'yes'")
             ->where('refGenTest.control = 0');
         $cResult = $db->fetchAll($cQuery);
         $correctResult = [];
@@ -903,7 +906,7 @@ class Application_Model_CustomTest
 
                 if ($vlAssayRow['id'] == 6) {
                     $cQuery = $db->select()->from(['sp' => 'shipment_participant_map'], ['sp.map_id', 'sp.attributes'])
-                        ->where("sp.is_excluded not like 'yes'")
+                        ->where("sp.is_excluded not like 'yes' OR sp.is_excluded like '' OR sp.is_excluded is null")
                         ->where('sp.attributes->>"$.kit_name" = 6')
                         ->where('sp.shipment_id = ? ', $shipmentId);
                     $cResult = $db->fetchAll($cQuery);
