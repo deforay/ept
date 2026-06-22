@@ -91,7 +91,12 @@ detect_ept_installations() {
         fi
     done
 
-    printf '%s\n' "${found_paths[@]}"
+    # Guard against the empty-array case: `printf '%s\n'` with no arguments
+    # still emits a single blank line, which mapfile would read as one empty
+    # path — making the caller think it found 1 installation when there are 0.
+    if [ ${#found_paths[@]} -gt 0 ]; then
+        printf '%s\n' "${found_paths[@]}"
+    fi
 }
 
 # Strip surrounding quotes from secrets copied from INI files.
