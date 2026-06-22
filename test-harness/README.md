@@ -6,14 +6,16 @@ Lives in `test-harness/` at the repo root and is **architecturally independent**
 
 Two entry points:
 
-- `bin/dts-algo` — DTS schemes (algorithm-driven; Vietnam + updated-3-tests).
+- `bin/dts-algo` — DTS schemes (algorithm-driven; Vietnam + updated-3-tests). Provisions its own synthetic shipment + asserts against declared expectations.
 - `bin/custom-test` — qualitative custom (user-configured) tests. You pick an **existing** scheme at startup (HBV, HCV, SYP, …); it provisions a shipment against that scheme using its own FINAL result codes, fills correct/incorrect responses, and asserts per-sample correctness from `response_result_generic_test.calculated_score`. It never creates or alters a scheme.
+- `bin/fill-shipment <id|code>` — attach to a shipment **you already created** and do the rest: enroll participants if none, fill responses against the shipment's own reference results (mostly pass, some fail), evaluate, and generate reports. Only participants without a response are filled — existing responses are never touched. Supports custom qualitative schemes and DTS `updated-3-tests`.
 
 ## Run
 
 ```bash
 APPLICATION_ENV=development php test-harness/bin/dts-algo
 APPLICATION_ENV=development php test-harness/bin/custom-test
+APPLICATION_ENV=development php test-harness/bin/fill-shipment <shipment_id|code>
 ```
 
 Both refuse to run unless `APPLICATION_ENV` is `development` or `testing`. There is no override.
@@ -64,12 +66,14 @@ test-harness/
 │   ├── Aberrations/
 │   │   ├── Vietnam.php          — seven apply_* response generators
 │   │   └── UpdatedThreeTests.php — apply_* generators for the 3-test algorithm
-│   └── CustomTest/             — qualitative custom-test harness (own Provisioner/Asserter/Cleanup)
-│       ├── Aberrations.php
-│       ├── Provisioner.php
-│       ├── Asserter.php
-│       └── Cleanup.php
+│   ├── CustomTest/             — custom-test harness over existing schemes (Provisioner/Asserter/Cleanup)
+│   │   ├── Provisioner.php
+│   │   ├── Asserter.php
+│   │   └── Cleanup.php
+│   └── Filler/
+│       └── ShipmentFiller.php  — attach-to-existing-shipment logic (enroll + fill responses)
 ├── bin/custom-test             — entry point for the custom-test harness
+├── bin/fill-shipment           — entry point for the attach-to-existing-shipment workflow
 └── expectations/
     ├── vietnam.php              — independent expected verdicts (from NIHE workbook)
     ├── updated-3-tests.php      — independent expected verdicts (from the algorithm spec)

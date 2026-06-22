@@ -1,0 +1,150 @@
+#!/usr/bin/env php
+<?php
+
+declare(strict_types=1);
+
+namespace EptTestHarness;
+
+// Plain require_once — no autoloader. Reuses Config/Db/Evaluator.
+$root = dirname(__DIR__);
+require_once $root . '/src/Config.php';
+require_once $root . '/src/Db.php';
+require_once $root . '/src/Evaluator.php';
+require_once $root . '/src/Filler/ShipmentFiller.php';
+
+use EptTestHarness\Filler\ShipmentFiller;
+
+$repoRoot = dirname($root);
+$argv = $_SERVER['argv'] ?? [];
+$flag = $argv[1] ?? '';
+
+if ($flag === '' || $flag === '--help' || $flag === '-h') {
+    print_help();
+    exit($flag === '' ? 2 : 0);
+}
+
+$config = Config::load($repoRoot);
+$db     = new Db($config);
+$filler = new ShipmentFiller($db);
+
+$shipment = $filler->resolveShipment($flag);
+if ($shipment === null) {
+    fwrite(STDERR, "No shipment found for '$flag'.\n");
+    exit(2);
+}
+$class = $filler->classify($shipment);
+if ($class['family'] === 'unsupported') {
+    fwrite(STDERR, "Cannot fill shipment {$shipment['shipment_code']}: {$class['reason']}.\n");
+    exit(2);
+}
+
+$enrolled = (int) $db->scalar("SELECT COUNT(*) FROM shipment_participant_map WHERE shipment_id = ?", [(int) $shipment['shipment_id']]);
+
+fwrite(STDOUT, "Fill Shipment — env={$config->env}, db={$config->dbName}\n\n");
+fwrite(STDOUT, "  shipment      : {$shipment['shipment_code']} (id={$shipment['shipment_id']})\n");
+fwrite(STDOUT, "  scheme        : {$shipment['scheme_name']} ({$shipment['scheme_type']})\n");
+fwrite(STDOUT, "  fill strategy : {$class['family']}\n");
+fwrite(STDOUT, "  enrolled      : $enrolled participant(s)\n\n");
+
+$enrollCount = 0;
+if ($enrolled === 0) {
+    $enrollCount = max(1, (int) prompt("No participants enrolled — how many ATEST labs to enroll", '20'));
+} else {
+    fwrite(STDOUT, "Using the {$enrolled} already-enrolled participant(s); only those without a response will be filled.\n");
+}
+$passPctInput = (int) prompt("Approx % that should PASS", '80');
+$passPct = max(0, min(100, $passPctInput)) / 100;
+
+$proceed = strtolower(trim(prompt("\nProceed (fill → evaluate → generate reports)? [y/N]", 'n')));
+if ($proceed !== 'y' && $proceed !== 'yes') {
+    fwrite(STDOUT, "Aborted.\n");
+    exit(0);
+}
+
+fwrite(STDOUT, "\n[1/3] Filling responses...\n");
+$r = $filler->fill($shipment, $class['family'], ['enrollCount' => $enrollCount, 'passPct' => $passPct]);
+fwrite(STDOUT, sprintf(
+    "      enrolled now: %d (newly %d)  filled: %d  (intended pass %d / fail %d)  skipped(existing): %d\n",
+    $r['already_enrolled'] + $r['newly_enrolled'],
+    $r['newly_enrolled'],
+    $r['filled'],
+    $r['pass'],
+    $r['fail'],
+    $r['skipped']
+));
+if ($r['late']) {
+    fwrite(STDOUT, "      WARNING: response_deadline is in the past — evaluation may flag responses as late. Extend the deadline if you want them scored.\n");
+}
+if ($r['filled'] === 0) {
+    fwrite(STDOUT, "\nNothing to fill (all enrolled participants already have responses). Re-evaluating anyway.\n");
+}
+
+$evaluator = new Evaluator($config);
+fwrite(STDOUT, "[2/3] Evaluating (subprocess)...\n");
+$evaluator->evaluate((int) $shipment['shipment_id']);
+
+fwrite(STDOUT, "[3/3] Generating participant + summary reports (subprocess)...\n");
+$evaluator->generateReports((int) $shipment['shipment_id']);
+
+// Post-eval verdict counts among responders.
+$counts = $db->one(
+    "SELECT SUM(response_status='responded') responded,
+            SUM(response_status='responded' AND final_result=1) pass,
+            SUM(response_status='responded' AND final_result=2) fail,
+            SUM(response_status='responded' AND final_result=3) excluded
+       FROM shipment_participant_map WHERE shipment_id = ?",
+    [(int) $shipment['shipment_id']]
+);
+$reportDir = $config->repoRoot . '/downloads/reports/' . $shipment['shipment_code'];
+$allPdfs = is_dir($reportDir) ? (glob($reportDir . '/*.pdf') ?: []) : [];
+$summaryPdfs = array_filter($allPdfs, static fn ($p) => str_contains(basename($p), '-summary.pdf'));
+
+fwrite(STDOUT, "\n─────────────────────────────────────────────\n");
+fwrite(STDOUT, "Done: {$shipment['shipment_code']} (id={$shipment['shipment_id']})\n");
+fwrite(STDOUT, sprintf(
+    "Responders: %d   Pass: %d   Fail: %d   Excluded: %d\n",
+    (int) $counts['responded'],
+    (int) $counts['pass'],
+    (int) $counts['fail'],
+    (int) $counts['excluded']
+));
+fwrite(STDOUT, sprintf("Reports: %d participant + %d summary PDFs in downloads/reports/%s/\n", count($allPdfs) - count($summaryPdfs), count($summaryPdfs), $shipment['shipment_code']));
+fwrite(STDOUT, "─────────────────────────────────────────────\n");
+
+function print_help(): void
+{
+    $help = <<<TXT
+Fill Shipment — dev-only.
+
+Attaches to an EXISTING shipment you already created and does the rest: enrolls
+participants (if none), fills participant responses against the shipment's own
+reference results, evaluates, and generates reports. Only participants without a
+response are filled — existing responses are never overwritten.
+
+Usage:
+  APPLICATION_ENV=development php test-harness/bin/fill-shipment <shipment_id|code>
+
+Refuses to run unless APPLICATION_ENV is 'development' or 'testing'.
+
+Supported:
+  - Custom (user-configured) QUALITATIVE schemes (HBV, HCV, SYP, ...)
+  - DTS shipments with dtsSchemeType = 'updated-3-tests'
+Other scheme types are reported as unsupported.
+
+This targets a shipment YOU created, so there is no --cleanup here: manage the
+shipment (and any harness-enrolled ATEST labs) via the admin UI when you're done.
+TXT;
+    fwrite(STDOUT, $help . "\n");
+}
+
+function prompt(string $question, string $default = ''): string
+{
+    $suffix = $default !== '' ? " [$default]" : '';
+    fwrite(STDOUT, "$question$suffix: ");
+    $line = fgets(STDIN);
+    if ($line === false) {
+        return $default;
+    }
+    $line = trim($line);
+    return $line === '' ? $default : $line;
+}
