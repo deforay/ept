@@ -158,7 +158,8 @@ class Application_Model_DbTable_SchemeList extends Zend_Db_Table_Abstract
             $row[] = $aRow['scheme_id'];
             $row[] = ucwords($aRow['status']);
             $row[] = '<a href="/admin/custom-test/edit/id/' . base64_encode($aRow['scheme_id']) . '" class="btn btn-warning btn-xs" style="margin-right: 2px;"><i class="icon-pencil"></i> Edit</a>'
-                . '<a href="/admin/custom-test/clone/id/' . base64_encode($aRow['scheme_id']) . '" class="btn btn-info btn-xs" style="margin-right: 2px;"><i class="icon-copy"></i> Clone</a>';
+                . '<a href="/admin/custom-test/clone/id/' . base64_encode($aRow['scheme_id']) . '" class="btn btn-info btn-xs" style="margin-right: 2px;"><i class="icon-copy"></i> Clone</a>'
+                . '<a href="/admin/custom-test/export/id/' . base64_encode($aRow['scheme_id']) . '" class="btn btn-success btn-xs" style="margin-right: 2px;"><i class="icon-download-alt"></i> Export</a>';
             $output['aaData'][] = $row;
         }
 

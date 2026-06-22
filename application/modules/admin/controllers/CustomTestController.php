@@ -140,4 +140,68 @@ class Admin_CustomTestController extends Zend_Controller_Action
         $this->view->isClone = true;
         $this->_helper->viewRenderer->setScriptAction('edit');
     }
+
+    public function exportAction()
+    {
+        $this->_helper->layout()->disableLayout();
+        $this->_helper->viewRenderer->setNoRender(true);
+
+        if (!$this->hasParam('id')) {
+            $this->redirect('/admin/custom-test');
+            return;
+        }
+
+        $id = base64_decode($this->_getParam('id'));
+        $schemeService = new Application_Service_Schemes();
+        $export = $schemeService->exportGenericTests([$id]);
+        if (empty($export['tests'])) {
+            $this->getResponse()->setHttpResponseCode(404);
+            echo 'Custom test not found.';
+            return;
+        }
+
+        $filename = 'custom-test-' . trim(preg_replace('/[^A-Za-z0-9]+/', '-', $id), '-');
+        $json = json_encode($export, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+
+        $auditDb = new Application_Model_DbTable_AuditLog();
+        $auditDb->addNewAuditLog('Exported custom test - ' . $id, 'config');
+
+        $this->getResponse()
+            ->setHeader('Content-Type', 'application/json; charset=utf-8')
+            ->setHeader('Content-Disposition', 'attachment; filename="' . $filename . '.json"')
+            ->setHeader('Content-Length', strlen($json))
+            ->setHeader('Cache-Control', 'private, max-age=0, must-revalidate')
+            ->setHeader('Pragma', 'public');
+
+        echo $json;
+    }
+
+    public function importAction()
+    {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
+        $schemeService = new Application_Service_Schemes();
+
+        if ($request->isPost()) {
+            $overwrite = $request->getPost('overwrite') === 'yes';
+
+            if (empty($_FILES['importFile']['tmp_name']) || !is_uploaded_file($_FILES['importFile']['tmp_name'])) {
+                $this->view->error = 'Please choose a custom test export file (.json) to import.';
+                return;
+            }
+
+            $raw = file_get_contents($_FILES['importFile']['tmp_name']);
+            $payload = json_decode($raw, true);
+            if (json_last_error() !== JSON_ERROR_NONE || !is_array($payload)) {
+                $this->view->error = 'The selected file is not valid JSON.';
+                return;
+            }
+
+            $summary = $schemeService->importGenericTests($payload, $overwrite);
+            $this->view->summary = $summary;
+
+            $auditDb = new Application_Model_DbTable_AuditLog();
+            $auditDb->addNewAuditLog('Imported ' . count($summary['imported']) . ' custom test(s)', 'config');
+        }
+    }
 }

@@ -813,6 +813,186 @@ class Application_Service_Schemes
         }
     }
 
+    /**
+     * Build a portable representation of one or more custom (user-configured) tests so
+     * they can be carried to another ePT instance. Test kits are exported by NAME (not
+     * the local TestKitName_ID, which differs between instances) so they can be re-mapped
+     * on import. Pass an array of scheme_ids to export specific tests, or null for all.
+     */
+    public function exportGenericTests($schemeIds = null)
+    {
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+
+        $select = $db->select()
+            ->from('scheme_list', ['scheme_id', 'scheme_name', 'test_format', 'user_test_config', 'status'])
+            ->where('is_user_configured = ?', 'yes')
+            ->order('scheme_name');
+        if (!empty($schemeIds)) {
+            $select->where('scheme_id IN (?)', $schemeIds);
+        }
+        $schemes = $db->fetchAll($select);
+
+        $tests = [];
+        foreach ($schemes as $scheme) {
+            $schemeId = $scheme['scheme_id'];
+
+            $possibleResults = $db->fetchAll(
+                $db->select()->from('r_possibleresult', [
+                    'scheme_sub_group', 'sub_scheme', 'result_type', 'response', 'result_code',
+                    'display_context', 'high_range', 'threshold_range', 'low_range',
+                    'sd_scaling_factor', 'uncertainy_scaling_factor', 'uncertainy_threshold',
+                    'minimum_number_of_responses', 'sort_order',
+                ])->where('scheme_id = ?', $schemeId)->order('sort_order asc')
+            );
+
+            $configRaw = $db->fetchOne(
+                $db->select()->from('scheme_config', ['scheme_config_value'])
+                    ->where('scheme_config_name = ?', $schemeId)
+            );
+            $config = $configRaw ? json_decode($configRaw, true) : null;
+
+            $testkitNames = $db->fetchCol(
+                $db->select()->from(['g' => 'generic_recommended_test_types'], [])
+                    ->join(['t' => 'r_testkitnames'], 't.TestKitName_ID = g.testkit', ['TestKit_Name'])
+                    ->where('g.scheme_id = ?', $schemeId)
+            );
+
+            $tests[] = [
+                'scheme' => [
+                    'scheme_id'        => $scheme['scheme_id'],
+                    'scheme_name'      => $scheme['scheme_name'],
+                    'test_format'      => $scheme['test_format'],
+                    'user_test_config' => $scheme['user_test_config'] !== null ? json_decode($scheme['user_test_config'], true) : null,
+                    'status'           => $scheme['status'],
+                ],
+                'possibleResults'     => $possibleResults,
+                'config'              => $config,
+                'recommendedTestkits' => $testkitNames,
+            ];
+        }
+
+        return [
+            'format'     => 'ept-custom-test',
+            'version'    => 1,
+            'appVersion' => defined('APP_VERSION') ? APP_VERSION : null,
+            'exportedAt' => date('Y-m-d H:i:s'),
+            'tests'      => $tests,
+        ];
+    }
+
+    /**
+     * Import custom tests produced by exportGenericTests(). Each test writes to scheme_list,
+     * r_possibleresult, scheme_config and generic_recommended_test_types in one transaction.
+     * A test whose code already exists is skipped unless $overwrite is true; built-in (non
+     * user-configured) schemes are never touched. Returns a per-test summary for the UI.
+     */
+    public function importGenericTests($payload, $overwrite = false)
+    {
+        $summary = ['imported' => [], 'skipped' => [], 'warnings' => [], 'errors' => []];
+
+        if (empty($payload['format']) || $payload['format'] !== 'ept-custom-test' || empty($payload['tests']) || !is_array($payload['tests'])) {
+            $summary['errors'][] = 'Unrecognized file — this does not look like an ePT custom test export.';
+            return $summary;
+        }
+
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+
+        foreach ($payload['tests'] as $test) {
+            $scheme = $test['scheme'] ?? [];
+            $schemeId = trim((string) ($scheme['scheme_id'] ?? ''));
+            $schemeName = trim((string) ($scheme['scheme_name'] ?? ''));
+            if ($schemeId === '' || $schemeName === '') {
+                $summary['errors'][] = 'A test entry was missing its code or name and was skipped.';
+                continue;
+            }
+
+            $db->beginTransaction();
+            try {
+                $existing = $db->fetchRow('SELECT is_user_configured FROM scheme_list WHERE scheme_id = ?', [$schemeId]);
+                if ($existing) {
+                    if ($existing['is_user_configured'] !== 'yes') {
+                        $db->rollBack();
+                        $summary['skipped'][] = $schemeId . ' — conflicts with a built-in scheme';
+                        continue;
+                    }
+                    if (!$overwrite) {
+                        $db->rollBack();
+                        $summary['skipped'][] = $schemeId . ' — already exists (enable overwrite to replace)';
+                        continue;
+                    }
+                }
+
+                $schemeData = [
+                    'scheme_name'        => $schemeName,
+                    'is_user_configured' => 'yes',
+                    'test_format'        => $scheme['test_format'] ?? null,
+                    'user_test_config'   => isset($scheme['user_test_config']) && $scheme['user_test_config'] !== null ? json_encode($scheme['user_test_config']) : null,
+                    'status'             => $scheme['status'] ?? 'active',
+                ];
+
+                if ($existing) {
+                    $db->update('scheme_list', $schemeData, $db->quoteInto('scheme_id = ?', $schemeId));
+                    $db->delete('r_possibleresult', $db->quoteInto('scheme_id = ?', $schemeId));
+                    $db->delete('generic_recommended_test_types', $db->quoteInto('scheme_id = ?', $schemeId));
+                    $db->delete('scheme_config', $db->quoteInto('scheme_config_name = ?', $schemeId));
+                } else {
+                    $schemeData['scheme_id'] = $schemeId;
+                    $db->insert('scheme_list', $schemeData);
+                }
+
+                foreach (($test['possibleResults'] ?? []) as $pr) {
+                    $db->insert('r_possibleresult', [
+                        'scheme_id'                   => $schemeId,
+                        'scheme_sub_group'            => $pr['scheme_sub_group'] ?? null,
+                        'sub_scheme'                  => $pr['sub_scheme'] ?? null,
+                        'result_type'                 => $pr['result_type'] ?? null,
+                        'response'                    => $pr['response'] ?? null,
+                        'result_code'                 => $pr['result_code'] ?? null,
+                        'display_context'             => $pr['display_context'] ?? 'all',
+                        'high_range'                  => $pr['high_range'] ?? null,
+                        'threshold_range'             => $pr['threshold_range'] ?? null,
+                        'low_range'                   => $pr['low_range'] ?? null,
+                        'sd_scaling_factor'           => $pr['sd_scaling_factor'] ?? null,
+                        'uncertainy_scaling_factor'   => $pr['uncertainy_scaling_factor'] ?? null,
+                        'uncertainy_threshold'        => $pr['uncertainy_threshold'] ?? null,
+                        'minimum_number_of_responses' => $pr['minimum_number_of_responses'] ?? null,
+                        'sort_order'                  => $pr['sort_order'] ?? null,
+                    ]);
+                }
+
+                if (!empty($test['config']) && is_array($test['config'])) {
+                    $db->insert('scheme_config', [
+                        'scheme_config_name'  => $schemeId,
+                        'scheme_config_value' => json_encode($test['config']),
+                    ]);
+                }
+
+                foreach (($test['recommendedTestkits'] ?? []) as $kitName) {
+                    $kitId = $db->fetchOne('SELECT TestKitName_ID FROM r_testkitnames WHERE TestKit_Name = ? LIMIT 1', [$kitName]);
+                    if ($kitId) {
+                        $db->insert('generic_recommended_test_types', ['scheme_id' => $schemeId, 'testkit' => $kitId]);
+                    } else {
+                        $summary['warnings'][] = $schemeId . ': test kit "' . $kitName . '" not found on this instance — enforcement skipped';
+                    }
+                }
+
+                $db->commit();
+                $summary['imported'][] = $schemeId . ($existing ? ' (updated)' : ' (new)');
+            } catch (Throwable $e) {
+                $db->rollBack();
+                Pt_Commons_LoggerUtility::logError('importGenericTests failed: ' . $e->getMessage(), [
+                    'schemeId' => $schemeId,
+                    'file'     => $e->getFile(),
+                    'line'     => $e->getLine(),
+                    'trace'    => substr($e->getTraceAsString(), 0, 8000),
+                ]);
+                $summary['errors'][] = $schemeId . ' — ' . $e->getMessage();
+            }
+        }
+
+        return $summary;
+    }
+
     public function updateCovid19GeneType($params)
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();

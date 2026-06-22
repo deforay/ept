@@ -1,0 +1,80 @@
+<h4 style="width:100%;height:50px;border-bottom:1px solid #777;">
+	<div style="font-size:22.5px;line-height:36px;color:#333;float:left;">
+		<?= $this->translate->_("Import Custom Tests"); ?></div>
+	<div style="margin-top:10px;">
+		<a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'custom-test', 'action' => 'index'), 'default', true); ?>"
+			class="btn btn-default" style="float:right;"><i class="icon-arrow-left"></i>&nbsp;&nbsp;<?= $this->translate->_("Back to Custom Tests"); ?></a>
+	</div>
+</h4>
+
+<?php if (!empty($this->error)) { ?>
+	<div class="alert alert-danger"><i class="icon-warning-sign"></i> <?php echo $this->escape($this->error); ?></div>
+<?php } ?>
+
+<?php if (!empty($this->summary)) {
+	$summary = $this->summary; ?>
+	<?php if (!empty($summary['imported'])) { ?>
+		<div class="alert alert-success">
+			<strong><i class="icon-ok"></i> <?= $this->translate->_("Imported"); ?>:</strong>
+			<ul style="margin:5px 0 0 18px;">
+				<?php foreach ($summary['imported'] as $line) { ?><li><?php echo $this->escape($line); ?></li><?php } ?>
+			</ul>
+		</div>
+	<?php } ?>
+	<?php if (!empty($summary['skipped'])) { ?>
+		<div class="alert alert-warning">
+			<strong><?= $this->translate->_("Skipped"); ?>:</strong>
+			<ul style="margin:5px 0 0 18px;">
+				<?php foreach ($summary['skipped'] as $line) { ?><li><?php echo $this->escape($line); ?></li><?php } ?>
+			</ul>
+		</div>
+	<?php } ?>
+	<?php if (!empty($summary['warnings'])) { ?>
+		<div class="alert alert-warning">
+			<strong><?= $this->translate->_("Warnings"); ?>:</strong>
+			<ul style="margin:5px 0 0 18px;">
+				<?php foreach ($summary['warnings'] as $line) { ?><li><?php echo $this->escape($line); ?></li><?php } ?>
+			</ul>
+		</div>
+	<?php } ?>
+	<?php if (!empty($summary['errors'])) { ?>
+		<div class="alert alert-danger">
+			<strong><?= $this->translate->_("Errors"); ?>:</strong>
+			<ul style="margin:5px 0 0 18px;">
+				<?php foreach ($summary['errors'] as $line) { ?><li><?php echo $this->escape($line); ?></li><?php } ?>
+			</ul>
+		</div>
+	<?php } ?>
+<?php } ?>
+
+<div class="well">
+	<form name="importCustomTestForm" id="importCustomTestForm" method="post" enctype="multipart/form-data"
+		action="<?php echo $this->url(array('module' => 'admin', 'controller' => 'custom-test', 'action' => 'import'), 'default', true); ?>"
+		class="form-horizontal" role="form">
+		<fieldset>
+			<legend><?= $this->translate->_("Import Custom Tests"); ?></legend>
+			<p class="text-muted">
+				<?= $this->translate->_("Upload a custom test export file (.json) created from this screen on another ePT instance. Test kit enforcement is matched by test kit name; any kit not present on this instance is skipped with a warning."); ?>
+			</p>
+			<div class="row">
+				<div class="col-lg-8">
+					<label class="control-label" for="importFile"><?= $this->translate->_("Export File"); ?> <span class="mandatory">*</span></label>
+					<input type="file" id="importFile" name="importFile" accept=".json,application/json" class="form-control isRequired" title="Please choose a .json export file" />
+				</div>
+			</div>
+			<div class="row" style="margin-top:12px;">
+				<div class="col-lg-8">
+					<label class="checkbox">
+						<input type="checkbox" name="overwrite" value="yes" />
+						<?= $this->translate->_("Overwrite a custom test if one with the same code already exists"); ?>
+					</label>
+					<small class="text-muted"><?= $this->translate->_("Leave unchecked to skip tests whose code already exists on this instance."); ?></small>
+				</div>
+			</div>
+			<div id="respond" style="margin: 15px auto 0 auto; text-align: center;" class="form-group col-lg-11" align="center">
+				<input name="submitbtn" class="btn btn-primary" type="submit" value="<?= $this->translate->_("Import"); ?>" />
+				<input class="btn btn-danger" type="button" onclick="window.location.href = '/admin/custom-test';" value="<?= $this->translate->_("Cancel"); ?>" />
+			</div>
+		</fieldset>
+	</form>
+</div>
