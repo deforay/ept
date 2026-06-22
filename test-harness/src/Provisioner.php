@@ -54,7 +54,11 @@ final class Provisioner
         // visible to the evaluator subprocess even if the tx is still open.
         $settingsStash = (new AppSettings($this->db))->applyVariant($variant);
 
-        return $this->db->tx(function () use ($variant, $variantKey, $assignments, $samples, $lookups, $kits, $settingsStash) {
+        // Aberration generator for this variant (class-string from the registry).
+        // Everything below dispatches through it, so the Provisioner stays variant-agnostic.
+        $abClass = $variant['aberrations'];
+
+        return $this->db->tx(function () use ($variant, $variantKey, $assignments, $samples, $lookups, $kits, $settingsStash, $abClass) {
             $shortId = strtoupper(base_convert((string) time(), 10, 36));
 
             $participantIds = $this->allocateParticipants(count($assignments));
@@ -73,7 +77,7 @@ final class Provisioner
             // we still create the participant map but skip the response_result_dts rows
             // and stamp the appropriate flags so the report's "no response" / "PT test
             // not performed" code paths get exercised on every harness run.
-            $catalogue = \EptTestHarness\Aberrations\Vietnam::catalogue();
+            $catalogue = $abClass::catalogue();
             $notTestedReasonIds = $this->db->col(
                 "SELECT ntr_id FROM r_response_not_tested_reasons
                   WHERE ntr_status='active' AND ntr_id <> 9999
@@ -116,7 +120,7 @@ final class Provisioner
                 // Deterministic per-(shipment, participant) seed: same inputs reproduce, but
                 // different shipments/labs vary the chosen valid response shape.
                 $variantSeed = (int) crc32($shipmentId . ':' . $i . ':' . $participantId);
-                $spec = \EptTestHarness\Aberrations\Vietnam::generate($a['aberration'], $a['tier'], $variantSeed);
+                $spec = $abClass::generate($a['aberration'], $a['tier'], $variantSeed);
                 foreach ($samples as $sampleId => $sampleMeta) {
                     $sampleSpec = $spec[$sampleId];
                     $kit1 = match ($sampleSpec['kit1']) {

@@ -32,7 +32,12 @@ All synthetic rows are namespaced with the prefix `AUTOTEST-` so cleanup is safe
 
 ## Supported algorithms
 
-Phase 1: **Vietnam (NIHE)** DTS. Adding a new variant = drop one file in `src/Aberrations/` + one file in `expectations/` + one entry in `src/Variants.php`. No changes outside `test-harness/`.
+- **Vietnam (NIHE)** — tier-aware (screening/confirmatory), qualitative, consensus-driven. The `consensus_group_passes` aberration needs ≥10 labs to clear the peer threshold, so run it with ~100+ labs.
+- **Updated 3-tests** — single-tier serial confirmatory algorithm (`dtsSchemeType=updated-3-tests`, `algorithm=dts-3-tests`). Scored (95% pass, 10% documentation); a sample is Unacceptable if the final result is wrong OR the 3-test algorithm is violated.
+
+When more than one variant exists the harness prompts you to pick one at startup.
+
+Adding a new variant = drop one file in `src/Aberrations/` + one file in `expectations/` + one entry in `src/Variants.php`. No changes outside `test-harness/`. The `Provisioner` dispatches through the variant's registered aberrations class, so it stays variant-agnostic.
 
 ## Files
 
@@ -49,7 +54,9 @@ test-harness/
 │   ├── Asserter.php             — compare to expectations
 │   ├── Cleanup.php              — DELETE cascade
 │   └── Aberrations/
-│       └── Vietnam.php          — seven apply_* response generators
+│       ├── Vietnam.php          — seven apply_* response generators
+│       └── UpdatedThreeTests.php — apply_* generators for the 3-test algorithm
 └── expectations/
-    └── vietnam.php              — independent expected verdicts (from NIHE workbook)
+    ├── vietnam.php              — independent expected verdicts (from NIHE workbook)
+    └── updated-3-tests.php      — independent expected verdicts (from the algorithm spec)
 ```

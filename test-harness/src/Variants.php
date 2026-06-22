@@ -50,6 +50,34 @@ final class Variants
                     'documentationScore'  => '0',
                 ],
             ],
+
+            'updated-3-tests' => [
+                'label'        => 'Updated 3-tests (serial confirmatory)',
+                'algoKey'      => 'dts-3-tests',
+                'schemeType'   => 'updated-3-tests',
+                // Default report layout (no country-specific phtml) — leave report-layout
+                // untouched so the generic DTS layout renders.
+                'reportLayout' => null,
+                'tierAware'    => false,
+                'aberrations'  => \EptTestHarness\Aberrations\UpdatedThreeTests::class,
+                'expectations' => $base . '/expectations/updated-3-tests.php',
+                // Shipment-level flags: 3-test panel, not screening, no screening/confirmatory
+                // tier picker — matches a plain updated-3-tests survey.
+                'shipmentAttributes' => [
+                    'screeningTest'    => 'no',
+                    'noOfTestsInPanel' => 3,
+                    'dtsTestPanelType' => 'no',
+                ],
+                // Global scheme_config.dts overrides applied on provision and restored
+                // on cleanup: restrict the algorithm dropdown to dts-3-tests and use the
+                // updated-3-tests scoring (95% pass, 10% documentation, no algo score).
+                'dtsConfig' => [
+                    'allowedAlgorithms'  => 'dts-3-tests',
+                    'passPercentage'     => '95',
+                    'documentationScore' => '10',
+                    'dtsAlgorithmScore'  => '0',
+                ],
+            ],
         ];
     }
 

@@ -13,6 +13,7 @@ require_once $root . '/src/Db.php';
 require_once $root . '/src/Variants.php';
 require_once $root . '/src/AppSettings.php';
 require_once $root . '/src/Aberrations/Vietnam.php';
+require_once $root . '/src/Aberrations/UpdatedThreeTests.php';
 require_once $root . '/src/Provisioner.php';
 require_once $root . '/src/Evaluator.php';
 require_once $root . '/src/Asserter.php';
@@ -201,16 +202,23 @@ function run_interactive(Config $config, Db $db): void
     $total = count($assignments);
 
     // 4. Summary + confirm
-    $tierCounts = ['screening' => 0, 'confirmatory' => 0];
+    // Tier counts are tallied dynamically so single-tier variants (e.g. updated-3-tests,
+    // whose only tier is 'standard') don't trip an undefined-key warning.
+    $tierCounts = [];
     $abCounts = [];
     foreach ($assignments as $a) {
-        $tierCounts[$a['tier']]++;
+        $tierCounts[$a['tier']] = ($tierCounts[$a['tier']] ?? 0) + 1;
         $abCounts[$a['aberration']] = ($abCounts[$a['aberration']] ?? 0) + 1;
     }
+    $tierSummary = implode(', ', array_map(
+        static fn ($tier, $count) => "$tier=$count",
+        array_keys($tierCounts),
+        array_values($tierCounts)
+    ));
     fwrite(STDOUT, "\n─────────────────────────────────────────────\n");
     fwrite(STDOUT, "Variant      : $variantKey ({$variant['label']})\n");
     fwrite(STDOUT, "Samples      : $sampleCount per panel\n");
-    fwrite(STDOUT, "Total labs   : $total  (screening={$tierCounts['screening']}, confirmatory={$tierCounts['confirmatory']})\n");
+    fwrite(STDOUT, "Total labs   : $total  ($tierSummary)\n");
     fwrite(STDOUT, "Aberrations  :\n");
     foreach ($abCounts as $k => $c) {
         fwrite(STDOUT, sprintf("  %-38s %d\n", $k, $c));
