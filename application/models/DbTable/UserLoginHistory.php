@@ -176,8 +176,10 @@ class Application_Model_DbTable_UserLoginHistory extends Zend_Db_Table_Abstract
             $sOrder = '';
             for ($i = 0; $i < intval($parameters['iSortingCols']); $i++) {
                 if ($parameters['bSortable_' . intval($parameters['iSortCol_' . $i])] == 'true') {
-                    $sOrder .= $aColumns[intval($parameters['iSortCol_' . $i])] . '
-                     ' . ($parameters['sSortDir_' . $i]) . ', ';
+                    $colIdx = intval($parameters['iSortCol_' . $i]);
+                    if (!isset($aColumns[$colIdx])) { continue; }
+                    $sOrder .= $aColumns[$colIdx] . '
+                     ' . Pt_Commons_General::sanitizeSortDirection($parameters['sSortDir_' . $i]) . ', ';
                 }
             }
             $sOrder = substr_replace($sOrder, '', -2);
