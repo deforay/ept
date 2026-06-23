@@ -42,6 +42,23 @@ class ErrorController extends Zend_Controller_Action
         $this->view->codeLabel = self::labelForCode($httpCode);
         $this->view->detail = self::detailForCode($httpCode);
 
+        // Mint a short, human-quotable error ID for the genuine errors we log, so
+        // the user can read it off the page and an admin can paste it straight
+        // into the Log Viewer search to find this exact event. Dead-route 404s
+        // are not logged, so they get no ID.
+        $errorId = $isDeadRoute ? null : self::generateErrorId();
+        $this->view->errorId   = $errorId;
+        $this->view->errorTime = date('Y-m-d H:i:s');
+
+        // Show the "View Logs" shortcut only to a signed-in admin who actually
+        // holds the Log Viewer privilege — same gate as Admin_LogViewerController.
+        $this->view->canViewLogs = self::canViewLogs();
+
+        // Any signed-in admin can use Spotlight to navigate off the error page.
+        // The shared spotlight partial renders itself only for an admin session,
+        // so this flag just gates the button + hint that drive it.
+        $this->view->canSearch = self::hasAdminSession();
+
         // Log exception, if logger available (skip scanner-driven dead-route 404s).
         $log = $this->getLog();
         if (!$isDeadRoute && false !== $log) {
@@ -50,7 +67,7 @@ class ErrorController extends Zend_Controller_Action
         }
 
         if (!$isDeadRoute) {
-            $this->logToMonolog($errors, $priority);
+            $this->logToMonolog($errors, $priority, $errorId);
         }
 
         // Return JSON for AJAX requests
@@ -62,6 +79,9 @@ class ErrorController extends Zend_Controller_Action
                 'status' => 'error',
                 'message' => $this->view->message,
             ];
+            if (!empty($errorId)) {
+                $response['error_id'] = $errorId;
+            }
 
             // Include exception details in development
             if ($this->getInvokeArg('displayExceptions') == true && isset($errors->exception)) {
@@ -132,7 +152,45 @@ class ErrorController extends Zend_Controller_Action
         return $log;
     }
 
-    private function logToMonolog(ArrayObject $errors, int $priority): void
+    /**
+     * Short, human-quotable identifier for a logged error. Embedded in the log
+     * line (so it is searchable in the Log Viewer) and shown on the error page.
+     */
+    private static function generateErrorId(): string
+    {
+        return 'ERR-' . date('Ymd-His') . '-' . substr(uniqid(), -6);
+    }
+
+    /**
+     * True only for a signed-in admin who holds the Log Viewer privilege.
+     * Mirrors the gate in Admin_LogViewerController::init(). Never throws — a
+     * permission/session hiccup must not blow up the error page itself.
+     */
+    private static function canViewLogs(): bool
+    {
+        try {
+            $adminSession = new Zend_Session_Namespace('administrators');
+            if (empty($adminSession->admin_id)) {
+                return false;
+            }
+            $privileges = explode(',', (string) ($adminSession->privileges ?? ''));
+            return in_array('analyze-generate-reports', $privileges, true);
+        } catch (\Throwable $e) {
+            return false;
+        }
+    }
+
+    /** True when an admin is signed in (drives the Spotlight search affordance). */
+    private static function hasAdminSession(): bool
+    {
+        try {
+            return !empty((new Zend_Session_Namespace('administrators'))->admin_id);
+        } catch (\Throwable $e) {
+            return false;
+        }
+    }
+
+    private function logToMonolog(ArrayObject $errors, int $priority, ?string $errorId = null): void
     {
         if (!class_exists('Pt_Commons_LoggerUtility')) {
             return;
@@ -140,6 +198,7 @@ class ErrorController extends Zend_Controller_Action
         $exception = $errors->exception ?? null;
         $request   = $errors->request   ?? null;
         $context = [
+            'error_id'   => $errorId,
             'type'       => (string) ($errors->type ?? ''),
             'url'        => $request ? (string) $request->getRequestUri() : '',
             'method'     => $request ? strtoupper((string) $request->getMethod()) : '',
@@ -155,6 +214,12 @@ class ErrorController extends Zend_Controller_Action
             $context['trace'] = substr($exception->getTraceAsString(), 0, 8000);
         } else {
             $message = (string) ($this->view->message ?? 'Application error');
+        }
+
+        // Lead with the ID so it stands out in the log and the Log Viewer
+        // "?q=<id>" deep-link from the error page lands on this exact line.
+        if (!empty($errorId)) {
+            $message = '[' . $errorId . '] ' . $message;
         }
 
         if ($priority <= Zend_Log::ERR) {

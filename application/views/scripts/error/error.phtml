@@ -70,6 +70,24 @@
             font-size: 13px; background: #fffaf0; border-left: 3px solid #dd6b20;
             padding: 8px 12px; border-radius: 4px; margin-top: 8px;
         }
+        .ept-err__meta {
+            display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin: 0 0 22px;
+        }
+        .ept-err__chip {
+            display: inline-flex; align-items: center; gap: 6px;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+            font-size: 12px; color: #2d3748; background: #f7fafc;
+            border: 1px solid #e2e8f0; border-radius: 8px; padding: 6px 11px;
+        }
+        .ept-err__chip b { font-weight: 600; }
+        .ept-err__chip span { color: #718096; font-family: inherit; }
+        .ept-err__btn--logs { background: #fffaf0; color: #b7791f; border-color: #f6e05e; }
+        .ept-err__hint { margin: 18px 0 0; font-size: 12.5px; color: #718096; }
+        .ept-err__hint kbd {
+            font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 11px;
+            background: #fff; border: 1px solid #e2e8f0; border-bottom-width: 2px;
+            border-radius: 5px; padding: 1px 6px; color: #2d3748;
+        }
     </style>
 </head>
 <body>
@@ -80,6 +98,8 @@
     $detail    = (string) ($this->detail ?? 'An unexpected error occurred while processing your request.');
     $isAuth    = ($httpCode === 401);
     $isGone    = ($httpCode === 410);
+    $errorId   = (string) ($this->errorId ?? '');
+    $errorTime = (string) ($this->errorTime ?? '');
     ?>
     <div class="ept-err">
         <div class="ept-err__card">
@@ -87,6 +107,18 @@
             <div class="ept-err__code"><?= $this->escape($codeLabel); ?></div>
             <h1 class="ept-err__title"><?= $this->escape($this->translate->_($headline)); ?></h1>
             <p class="ept-err__sub"><?= $this->escape($this->translate->_($detail)); ?></p>
+
+            <?php if ($errorId !== '' || $errorTime !== ''): ?>
+                <div class="ept-err__meta">
+                    <?php if ($errorId !== ''): ?>
+                        <span class="ept-err__chip"><span><?= $this->translate->_('Error ID'); ?></span> <b><?= $this->escape($errorId); ?></b></span>
+                    <?php endif; ?>
+                    <?php if ($errorTime !== ''): ?>
+                        <span class="ept-err__chip"><span><?= $this->translate->_('Time'); ?></span> <b><?= $this->escape($errorTime); ?></b></span>
+                    <?php endif; ?>
+                </div>
+            <?php endif; ?>
+
             <div class="ept-err__actions">
                 <?php if ($isAuth): ?>
                     <a class="ept-err__btn ept-err__btn--primary" href="/auth/index"><?= $this->translate->_('Sign in'); ?></a>
@@ -94,7 +126,31 @@
                     <a class="ept-err__btn ept-err__btn--primary" href="/"><?= $this->translate->_('Back to Home'); ?></a>
                 <?php endif; ?>
                 <a class="ept-err__btn ept-err__btn--ghost" href="javascript:history.back()"><?= $this->translate->_('Go Back'); ?></a>
+
+                <?php if (!empty($this->canViewLogs)):
+                    // Deep-link to the Log Viewer, prefiltered by this error ID so
+                    // an authorized admin lands directly on the offending log line.
+                    $logUrl = $this->url(['module' => 'admin', 'controller' => 'log-viewer', 'action' => 'index'], 'default', true)
+                        . '?channel=app';
+                    if ($errorId !== '') {
+                        $logUrl .= '&q=' . rawurlencode($errorId);
+                    }
+                    ?>
+                    <a class="ept-err__btn ept-err__btn--logs" href="<?= $this->escape($logUrl); ?>"><?= $this->translate->_('View Logs'); ?></a>
+                <?php endif; ?>
+
+                <?php if (!empty($this->canSearch)): ?>
+                    <button type="button" id="spotlightTrigger" class="ept-err__btn ept-err__btn--ghost"><?= $this->translate->_('Search pages'); ?></button>
+                <?php endif; ?>
             </div>
+
+            <?php if (!empty($this->canSearch)): ?>
+                <p class="ept-err__hint">
+                    <?= $this->translate->_('Tip: press'); ?>
+                    <kbd>Ctrl</kbd> + <kbd>K</kbd> <span style="opacity:.6">/</span> <kbd>&#8984;</kbd> + <kbd>K</kbd>
+                    <?= $this->translate->_('to search anywhere.'); ?>
+                </p>
+            <?php endif; ?>
 
             <?php if (isset($this->exception) && $this->exception): ?>
                 <details class="ept-err__details">
@@ -108,5 +164,10 @@
             <?php endif; ?>
         </div>
     </div>
+
+    <?php if (!empty($this->canSearch)): ?>
+        <script src="<?= $this->baseUrl('js/jquery.min.js'); ?>"></script>
+        <?php include APPLICATION_PATH . '/views/partials/spotlight.phtml'; ?>
+    <?php endif; ?>
 </body>
 </html>

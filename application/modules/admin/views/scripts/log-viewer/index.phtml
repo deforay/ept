@@ -227,6 +227,18 @@
           .catch(function () { alert('Delete failed (network).'); });
     }
 
+    // Honour a deep-link like ?q=ERR-... (e.g. the "View Logs" button on the
+    // error page) by pre-filling the search box before the first load.
+    (function preFillFromUrl() {
+        try {
+            var sp = new URLSearchParams(window.location.search);
+            var q = sp.get('q');
+            if (q) { qInput.value = q; }
+            var lvl = sp.get('level');
+            if (lvl) { levelSel.value = lvl.toUpperCase(); }
+        } catch (e) { /* no-op */ }
+    })();
+
     document.getElementById('logvRefresh').addEventListener('click', load);
     document.getElementById('logvClear').addEventListener('click', function () {
         levelSel.value = '';
