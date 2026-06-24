@@ -143,6 +143,12 @@ PREPARE stmt FROM @sql;
 EXECUTE stmt;
 DEALLOCATE PREPARE stmt;
 
+-- r_testkitnames was created in 7.2.2 via `CREATE TABLE ... AS SELECT`, which copies
+-- columns/data but NOT the primary key. Without a key on `TestKitName_ID` the FK below
+-- fails with 1822 (missing index in referenced table). Add the PK first; migrate.php's
+-- ADD PRIMARY KEY handler is idempotent (skips if a PK already exists).
+ALTER TABLE `r_testkitnames` ADD PRIMARY KEY (`TestKitName_ID`);
+
 -- Re-add FKs with correct references
 ALTER TABLE `participant_testkit_map`
   ADD CONSTRAINT `participant_testkit_map_ibfk_1` FOREIGN KEY (`participant_id`) REFERENCES `participant` (`participant_id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
