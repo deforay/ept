@@ -2512,6 +2512,15 @@ class Application_Service_Shipments
                 'cancelled_by'        => $authNameSpace->primary_email ?? null,
                 'cancellation_reason' => $reason,
                 'response_switch'     => 'off',
+                'report_in_queue'     => 'no',
+            ], $db->quoteInto('shipment_id = ?', $shipmentId));
+
+            // No use keeping (possibly draft) reports for a cancelled shipment: drop
+            // any queued generation and clear the per-participant report/download state.
+            $db->delete('queue_report_generation', $db->quoteInto('shipment_id = ?', $shipmentId));
+            $db->update('shipment_participant_map', [
+                'report_generated'         => 'no',
+                'report_download_metadata' => null,
             ], $db->quoteInto('shipment_id = ?', $shipmentId));
 
             $auditDb = new Application_Model_DbTable_AuditLog();
@@ -2522,6 +2531,22 @@ class Application_Service_Shipments
             $db->rollBack();
             error_log('cancelShipment failed: ' . $e->getMessage());
             return ['success' => false, 'message' => 'Could not cancel the shipment. Please try again or contact the system admin.'];
+        }
+
+        // Delete the generated report files/zip from disk (post-commit; not
+        // transactional). Failure here doesn't undo the cancellation.
+        try {
+            $reportsPath = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports';
+            $shipmentReportDir = $reportsPath . DIRECTORY_SEPARATOR . $shipment['shipment_code'];
+            if (is_dir($shipmentReportDir)) {
+                Pt_Commons_General::rmdirRecursive($shipmentReportDir);
+            }
+            $shipmentReportZip = $reportsPath . DIRECTORY_SEPARATOR . $shipment['shipment_code'] . '.zip';
+            if (is_file($shipmentReportZip)) {
+                unlink($shipmentReportZip);
+            }
+        } catch (Exception $e) {
+            error_log('cancelShipment report cleanup failed for ' . $shipment['shipment_code'] . ': ' . $e->getMessage());
         }
 
         return ['success' => true, 'message' => 'Shipment ' . $shipment['shipment_code'] . ' has been cancelled.'];

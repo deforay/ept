@@ -313,7 +313,8 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             ->join(['spm' => 'shipment_participant_map'], 'spm.shipment_id=s.shipment_id', ['spm.map_id', 'spm.evaluation_status', 'spm.response_status', 'spm.participant_id', 'RESPONSEDATE' => "DATE_FORMAT(spm.shipment_test_report_date,'%Y-%m-%d')"])
             ->join(['p' => 'participant'], 'p.participant_id=spm.participant_id', ['p.unique_identifier', 'p.first_name', 'p.last_name', 'p.state', 'p.institute_name', 'p.country'])
             ->joinLeft(['c' => 'countries'], 'p.country=c.id', ['c.iso_name'])
-            ->where("s.status='shipped' OR s.status='evaluated'");
+            ->where("s.status='shipped' OR s.status='evaluated'")
+            ->where('s.cancelled_at IS NULL');
 
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
         if (!empty($authNameSpace->dm_id)) {
@@ -500,6 +501,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             ->where('year(s.shipment_date)  + 5 > year(CURDATE())')
             ->where('s.response_deadline < NOW()')
             ->where("substr(spm.evaluation_status,3,1) <> '1'")
+            ->where('s.cancelled_at IS NULL')
             ->order('s.shipment_date')
             ->order('spm.participant_id');
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
@@ -669,7 +671,8 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             ->join(['p' => 'participant'], 'p.participant_id=spm.participant_id', ['p.unique_identifier', 'p.first_name', 'p.last_name', 'p.participant_id'])
 
             ->where("s.status='shipped' OR s.status='evaluated'OR s.status='finalized'")
-            ->where('year(s.shipment_date)  + 5 > year(CURDATE())');
+            ->where('year(s.shipment_date)  + 5 > year(CURDATE())')
+            ->where('s.cancelled_at IS NULL');
         //->order('s.shipment_date')
         //->order('spm.participant_id')
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
@@ -883,6 +886,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             // ->where("pmm.dm_id=?", $this->_session->dm_id)
             ->where("s.status='shipped' OR s.status='evaluated' OR s.status='finalized'")
             ->where('year(s.shipment_date)  + 5 > year(CURDATE())')
+            ->where('s.cancelled_at IS NULL')
             ->group('s.shipment_id');
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
         if (!empty($authNameSpace->dm_id)) {
@@ -1012,7 +1016,8 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             ->join(['spm' => 'shipment_participant_map'], 'spm.shipment_id=s.shipment_id', ['spm.map_id', 'final_result', 'spm.evaluation_status', 'spm.participant_id', 'shipment_score', 'documentation_score', 'is_excluded', 'is_pt_test_not_performed', 'RESPONSEDATE' => "DATE_FORMAT(spm.shipment_test_report_date,'%Y-%m-%d')", 'RESPONSE' => new Zend_Db_Expr("CASE substr(spm.evaluation_status,3,1) WHEN 1 THEN 'View' WHEN '9' THEN 'Enter Result' END"), 'response_status', 'REPORT' => new Zend_Db_Expr("CASE  WHEN spm.report_generated='yes' AND s.status='finalized' THEN 'Report' END")])
             ->join(['p' => 'participant'], 'p.participant_id=spm.participant_id', ['p.unique_identifier', 'p.first_name', 'p.last_name'])
             ->joinLeft(['rpff' => 'r_participant_feedback_form'], 'rpff.shipment_id=s.shipment_id', ['form_show_to'])
-            ->where("s.status='finalized'");
+            ->where("s.status='finalized'")
+            ->where('s.cancelled_at IS NULL');
 
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
         if (!empty($authNameSpace->dm_id)) {

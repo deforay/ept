@@ -351,6 +351,7 @@ class Application_Model_DbTable_ShipmentParticipantMap extends Zend_Db_Table_Abs
             ->where('sp.participant_id = ?', $pId)
             // ->where("s.scheme_type ='vl' OR s.scheme_type='eid'")
             ->where("sp.shipment_test_date!='0000-00-00'")
+            ->where('s.cancelled_at IS NULL')
             ->group('year')
             ->group('s.scheme_type');
         $authNameSpace = new Zend_Session_Namespace('datamanagers');

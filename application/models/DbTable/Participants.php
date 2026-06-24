@@ -2693,6 +2693,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             ->joinLeft(['c' => 'countries'], 'c.id=p.country')
             ->joinLeft(['sp' => 'shipment_participant_map'], 'p.participant_id=sp.participant_id', ['shipment_test_report_date', 'final_result', 'RESPONSE' => new Zend_Db_Expr("CASE WHEN (sp.is_excluded ='yes') THEN 'Excluded'  WHEN (sp.shipment_test_date not like '' AND sp.shipment_test_date!='0000-00-00' AND sp.shipment_test_date not like 'NULL') THEN 'Responded' ELSE 'Not Responded' END")])
             ->joinLeft(['s' => 'shipment'], 's.shipment_id=sp.shipment_id', ['shipment_code', 'scheme_type', 'response_deadline', 'status'])
+            ->where('s.cancelled_at IS NULL')
             ->group('p.participant_id');
 
         if (isset($parameters['scheme']) && $parameters['scheme'] != '') {
@@ -2963,7 +2964,9 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         $sQuery = $this->getAdapter()->select()->from(['sp' => 'shipment_participant_map'], [new Zend_Db_Expr('SQL_CALC_FOUND_ROWS sp.map_id'), 'sp.participant_id', 'sp.shipment_test_date', 'shipment_id', 'RESPONSE' => new Zend_Db_Expr("CASE WHEN (sp.is_excluded ='yes') THEN 'Excluded'  WHEN (sp.shipment_test_date not like '' AND sp.shipment_test_date!='0000-00-00' AND sp.shipment_test_date not like 'NULL') THEN 'Responded' ELSE 'Not Responded' END")])
             ->join(['p' => 'participant'], 'p.participant_id=sp.participant_id', ['p.participant_id', 'p.unique_identifier', 'p.institute_name', 'p.department_name', 'p.city', 'p.state', 'p.district', 'p.country', 'p.mobile', 'p.state', 'p.phone', 'p.affiliation', 'p.email', 'p.phone', 'p.status', 'participantName' => new Zend_Db_Expr(self::participantNameGroupConcatExpr('p'))])
             ->join(['pmm' => 'participant_manager_map'], 'p.participant_id=pmm.participant_id', [])
+            ->join(['s' => 'shipment'], 's.shipment_id=sp.shipment_id', [])
             ->where("(sp.shipment_test_report_date IS NULL OR DATE(sp.shipment_test_report_date) = '0000-00-00' OR response_status like 'noresponse')")
+            ->where('s.cancelled_at IS NULL')
             ->where('pmm.dm_id = ?', $dmId)
             ->group('sp.participant_id');
         return $this->getAdapter()->fetchRow($sQuery);
