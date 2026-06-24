@@ -1,0 +1,175 @@
+<?php
+$summary = $this->assaySummary ?? [];
+$byYear = !empty($summary) && isset($summary[0]['year']);
+
+$totParticipants = 0;
+$totValid = 0;
+$totPassed = 0;
+$totFailed = 0;
+$totExcluded = 0;
+$totPending = 0;
+foreach ($summary as $row) {
+    $totParticipants += (int) $row['participants'];
+    $totValid += (int) $row['validResponses'];
+    $totPassed += (int) $row['passed'];
+    $totFailed += (int) $row['failed'];
+    $totExcluded += (int) $row['excluded'];
+    $totPending += (int) $row['pending'];
+}
+?>
+<?php if (empty($summary)) { ?>
+    <div class="alert alert-info">No VL assay data found for the selected scope.</div>
+<?php } else { ?>
+    <div id="assaySummaryChart" style="min-width: 320px; height: 460px; margin: 0 auto;"></div>
+    <div class="dontPrint" style="text-align:right;margin-top:20px;">
+        <button type="button" class="btn btn-info btn-sm" onclick="exportAssaySummaryCsv()">
+            <i class="icon-download"></i> Export to Excel
+        </button>
+    </div>
+    <table class="table table-striped table-bordered table-hover" style="margin-top:8px;" id="assaySummaryTable">
+        <thead>
+            <tr>
+                <?php if ($byYear) { ?><th style="text-align:center;">Year</th><?php } ?>
+                <th>Assay</th>
+                <th style="text-align:center;">No. of Participants Enrolled</th>
+                <th style="text-align:center;">No. of Valid Responses<br /><small>(responded on time &amp; tested)</small></th>
+                <th style="text-align:center;">Passed</th>
+                <th style="text-align:center;">Failed</th>
+                <th style="text-align:center;">Excluded</th>
+                <th style="text-align:center;">Not Evaluated</th>
+                <th style="text-align:center;">Pass Rate<br /><small>(of evaluated)</small></th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php foreach ($summary as $row) {
+                $passed = (int) $row['passed'];
+                $failed = (int) $row['failed'];
+                $evaluated = $passed + $failed;
+                $passRate = $evaluated > 0 ? round(($passed / $evaluated) * 100, 1) : null;
+            ?>
+                <tr>
+                    <?php if ($byYear) { ?><td style="text-align:center;"><?php echo (int) $row['year']; ?></td><?php } ?>
+                    <td title="<?php echo $this->escape($row['fullName']); ?>"><?php echo $this->escape($row['name']); ?></td>
+                    <td style="text-align:center;"><?php echo (int) $row['participants']; ?></td>
+                    <td style="text-align:center;"><?php echo (int) $row['validResponses']; ?></td>
+                    <td style="text-align:center;"><?php echo $passed; ?></td>
+                    <td style="text-align:center;"><?php echo $failed; ?></td>
+                    <td style="text-align:center;"><?php echo (int) $row['excluded']; ?></td>
+                    <td style="text-align:center;"><?php echo (int) $row['pending']; ?></td>
+                    <td style="text-align:center;"><?php echo $passRate === null ? '&ndash;' : $passRate . '%'; ?></td>
+                </tr>
+            <?php } ?>
+        </tbody>
+        <tfoot>
+            <tr style="font-weight:bold;background:#f5f5f5;">
+                <td<?php echo $byYear ? ' colspan="2"' : ''; ?>>Total</td>
+                <td style="text-align:center;"><?php echo $totParticipants; ?></td>
+                <td style="text-align:center;"><?php echo $totValid; ?></td>
+                <td style="text-align:center;"><?php echo $totPassed; ?></td>
+                <td style="text-align:center;"><?php echo $totFailed; ?></td>
+                <td style="text-align:center;"><?php echo $totExcluded; ?></td>
+                <td style="text-align:center;"><?php echo $totPending; ?></td>
+                <td style="text-align:center;"><?php echo ($totPassed + $totFailed) > 0 ? round(($totPassed / ($totPassed + $totFailed)) * 100, 1) . '%' : '&ndash;'; ?></td>
+            </tr>
+        </tfoot>
+    </table>
+
+    <div class="well well-sm" style="margin-top:10px;font-size:12px;line-height:1.7;">
+        <strong>How to read this table</strong>
+        <ul style="margin:6px 0 0;padding-left:18px;">
+            <li><strong>No. of Participants Enrolled</strong> &ndash; everyone assigned this assay for the selected shipment(s).
+                Passed + Failed + Excluded + Not Evaluated always adds up to this number.</li>
+            <li><strong>No. of Valid Responses</strong> &ndash; participants who responded on time and actually tested the
+                panel. Excludes non-responders, late responses, &ldquo;PT panel not tested&rdquo;, and excluded participants.</li>
+            <li><strong>Passed</strong> / <strong>Failed</strong> &ndash; participants with a final evaluated result of pass /
+                fail (excluded participants are not counted here).</li>
+            <li><strong>Excluded</strong> &ndash; results removed from evaluation &mdash; either deliberately excluded by an
+                administrator, or where the participant reported the PT panel was not tested (these are excluded automatically).</li>
+            <li><strong>Not Evaluated</strong> &ndash; participants with no pass/fail result and not excluded
+                (e.g. did not respond, or a response that was never scored).</li>
+            <li><strong>Pass Rate</strong> &ndash; Passed &divide; (Passed + Failed) &times; 100. Excluded and Not Evaluated
+                are left out of both the numerator and the denominator.</li>
+        </ul>
+    </div>
+
+    <script type="text/javascript">
+        // Export the rendered summary table to a CSV (opens directly in Excel). Self-contained, no server round-trip.
+        window.exportAssaySummaryCsv = function () {
+            var table = document.getElementById('assaySummaryTable');
+            if (!table) {
+                return;
+            }
+            var clone = table.cloneNode(true);
+            Array.prototype.forEach.call(clone.querySelectorAll('small'), function (el) { el.parentNode.removeChild(el); });
+            var lines = [];
+            Array.prototype.forEach.call(clone.querySelectorAll('tr'), function (tr) {
+                var cols = [];
+                Array.prototype.forEach.call(tr.querySelectorAll('th,td'), function (cell) {
+                    var text = (cell.textContent || '').replace(/\s+/g, ' ').trim();
+                    cols.push('"' + text.replace(/"/g, '""') + '"');
+                    var span = parseInt(cell.getAttribute('colspan') || '1', 10);
+                    for (var i = 1; i < span; i++) {
+                        cols.push('""');
+                    }
+                });
+                lines.push(cols.join(','));
+            });
+            var blob = new Blob(["﻿" + lines.join('\r\n')], { type: 'text/csv;charset=utf-8;' });
+            var url = URL.createObjectURL(blob);
+            var a = document.createElement('a');
+            a.href = url;
+            a.download = 'vl-assay-distribution.csv';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        };
+    </script>
+
+    <script type="text/javascript">
+        (function () {
+            if (typeof Highcharts === 'undefined') {
+                return;
+            }
+            var rows = <?php echo json_encode($summary, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT); ?>;
+            var byYear = <?php echo $byYear ? 'true' : 'false'; ?>;
+            var categories = rows.map(function (r) {
+                return byYear ? (r.name + ' (' + r.year + ')') : r.name;
+            });
+
+            Highcharts.chart('assaySummaryChart', {
+                chart: { type: 'column' },
+                title: { text: 'VL Assay Distribution &ndash; Participants & Outcomes', useHTML: true },
+                xAxis: {
+                    categories: categories,
+                    title: { text: byYear ? 'Assay (Year)' : 'Assay' },
+                    labels: { rotation: -45, style: { fontSize: '11px' } }
+                },
+                yAxis: {
+                    min: 0,
+                    allowDecimals: false,
+                    title: { text: 'No. of Participants' },
+                    stackLabels: { enabled: true, style: { fontWeight: 'bold' } }
+                },
+                tooltip: {
+                    shared: true,
+                    headerFormat: '<b>{point.x}</b><br/>',
+                    pointFormat: '{series.name}: <b>{point.y}</b><br/>'
+                },
+                plotOptions: {
+                    column: {
+                        stacking: 'normal',
+                        dataLabels: { enabled: true, allowOverlap: false }
+                    }
+                },
+                credits: { enabled: false },
+                series: [
+                    { name: 'Passed', color: '#2e7d32', data: rows.map(function (r) { return parseInt(r.passed, 10) || 0; }) },
+                    { name: 'Failed', color: '#c62828', data: rows.map(function (r) { return parseInt(r.failed, 10) || 0; }) },
+                    { name: 'Excluded', color: '#9e9e9e', data: rows.map(function (r) { return parseInt(r.excluded, 10) || 0; }) },
+                    { name: 'Not Evaluated', color: '#f9a825', data: rows.map(function (r) { return parseInt(r.pending, 10) || 0; }) }
+                ]
+            });
+        })();
+    </script>
+<?php } ?>

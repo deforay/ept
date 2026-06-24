@@ -3424,6 +3424,69 @@ class Application_Service_Reports
         }
         return $vlParticipantCount;
     }
+
+    /**
+     * Per-assay summary: how many participants used each VL assay and how many
+     * passed / failed / were excluded. Scope is, in order of precedence:
+     *   - a single shipment (shipmentId), else
+     *   - a date range on shipment_date (startDate/endDate), else
+     *   - all VL shipments (when allTime is set or no range is given).
+     */
+    public function getVlAssaySummary($params)
+    {
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $assayExpr = new Zend_Db_Expr("JSON_UNQUOTE(JSON_EXTRACT(sp.attributes, '$.vl_assay'))");
+        $byYear = !empty($params['groupBy']) && $params['groupBy'] === 'yearAssay';
+
+        // A participant who responded "PT panel not tested" is treated as excluded during VL
+        // evaluation (see Application_Model_Vl), so fold that flag into the excluded test here too.
+        $isExcluded = "(IFNULL(sp.is_excluded, 'no') = 'yes' OR IFNULL(sp.is_pt_test_not_performed, 'no') = 'yes')";
+
+        $columns = [
+            'participants'   => new Zend_Db_Expr('COUNT(sp.map_id)'),
+            // Valid = responded on time ('responded' already excludes 'late'/'nottested'/'noresponse') and not excluded.
+            'validResponses' => new Zend_Db_Expr("SUM(sp.response_status = 'responded' AND NOT $isExcluded)"),
+            'passed'         => new Zend_Db_Expr("SUM(sp.final_result = 1 AND NOT $isExcluded)"),
+            'failed'         => new Zend_Db_Expr("SUM(sp.final_result = 2 AND NOT $isExcluded)"),
+            'excluded'       => new Zend_Db_Expr("SUM($isExcluded)"),
+            'pending'        => new Zend_Db_Expr("SUM(COALESCE(sp.final_result, 0) NOT IN (1, 2) AND NOT $isExcluded)"),
+        ];
+        if ($byYear) {
+            $columns['year'] = new Zend_Db_Expr('YEAR(s.shipment_date)');
+        }
+
+        $select = $db->select()
+            ->from(['sp' => 'shipment_participant_map'], $columns)
+            ->join(['s' => 'shipment'], 's.shipment_id = sp.shipment_id', [])
+            ->join(['va' => 'r_vl_assay'], "va.id = $assayExpr", ['assayId' => 'va.id', 'name' => 'va.short_name', 'fullName' => 'va.name'])
+            ->where("s.scheme_type = 'vl'")
+            ->where("s.status = 'finalized'");
+
+        if ($byYear) {
+            $select->group([new Zend_Db_Expr('YEAR(s.shipment_date)'), 'va.id'])
+                ->order(new Zend_Db_Expr('YEAR(s.shipment_date) DESC'))
+                ->order(new Zend_Db_Expr('participants DESC'));
+        } else {
+            $select->group('va.id')
+                ->order(new Zend_Db_Expr('participants DESC'));
+        }
+
+        $shipmentIds = [];
+        if (!empty($params['shipmentId'])) {
+            $shipmentIds = is_array($params['shipmentId']) ? $params['shipmentId'] : [$params['shipmentId']];
+            $shipmentIds = array_values(array_filter($shipmentIds, static fn ($v) => $v !== '' && $v !== null));
+        }
+
+        if (!empty($shipmentIds)) {
+            $select->where('sp.shipment_id IN (?)', $shipmentIds);
+        } elseif (empty($params['allTime']) && !empty($params['startDate']) && !empty($params['endDate'])) {
+            $select->where('DATE(s.shipment_date) >= ?', $this->common->isoDateFormat($params['startDate']));
+            $select->where('DATE(s.shipment_date) <= ?', $this->common->isoDateFormat($params['endDate']));
+        }
+
+        return $db->fetchAll($select);
+    }
+
     public function getAllVlSampleResult($params)
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();

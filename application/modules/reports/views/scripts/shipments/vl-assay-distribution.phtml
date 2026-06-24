@@ -2,6 +2,7 @@
 //Zend_Debug::dump($this->vlAssayCount);
 ?>
 <link rel="stylesheet" href="<?php echo $this->baseUrl('css/daterangepicker.css'); ?>" type="text/css" media="all">
+<link rel="stylesheet" href="<?php echo $this->baseUrl('css/select2.css'); ?>" type="text/css" media="all">
 <style>
     @media print {
 
@@ -18,12 +19,13 @@
 </legend>
 <table style="margin:20px 0;" class="table table-bordered">
     <tr>
-        <td style="width:150px;text-align: center;font-weight:bold;">
+        <td style="width:230px;text-align: center;font-weight:bold;">
             Pick a Date Range
         </td>
         <td style="width:200px;text-align: center;font-weight:bold;">
-            Select Shipment
+            Select Shipment <small style="font-weight:normal;">(optional)</small>
         </td>
+        <td style="width:150px;text-align: center;font-weight:bold;">Group by</td>
         <td class="dontPrint" style="width:115px;text-align: center;font-weight:bold;">Action</td>
     </tr>
     <tr>
@@ -32,11 +34,17 @@
                 style="background: #fff" placeholder="Click here to pick a Date Range" />
         </td>
         <td>
-            <select id="shipmentId" name="shipmentId" class="form-control input-sm">
-                <option value=''>-- Select Date Range to populate this list --</option>
+            <select id="shipmentId" name="shipmentId[]" class="form-control input-sm" multiple style="width:100%;">
             </select>
         </td>
-        <td class="dontPrint"><button class="btn btn-success btn-sm"
+        <td>
+            <select id="groupBy" name="groupBy" class="form-control input-sm">
+                <option value="assay">Assay</option>
+                <option value="yearAssay">Year and assay</option>
+            </select>
+        </td>
+        <td class="dontPrint">
+            <button class="btn btn-success btn-sm"
                 onclick="drawTable()"><span><?= $this->translate->_("Get Report"); ?></span></button> <button
                 class="btn btn-danger btn-sm"
                 onclick="document.location.href = document.location"><span><?= $this->translate->_("Reset"); ?></span></button>
@@ -67,12 +75,24 @@
 <div id="shipmentchart"></div>
 <script type="text/javascript" src="<?php echo $this->baseUrl('js/moment.min.js'); ?>"></script>
 <script type="text/javascript" src="<?php echo $this->baseUrl('js/daterangepicker.js'); ?>"></script>
+<script type="text/javascript" src="<?php echo $this->baseUrl('js/select2.min.js'); ?>"></script>
 
 <script type="text/javascript">
     var startDate = "";
     var endDate = "";
+    var allTime = false;
     var paginate = true;
+
+    function initShipmentSelect() {
+        $("#shipmentId").select2({
+            width: '100%',
+            placeholder: '-- All shipments in range --',
+            allowClear: true
+        });
+    }
+
     $(document).ready(function () {
+        initShipmentSelect();
         $('#dateRange').daterangepicker({
             locale: {
                 cancelLabel: 'Clear',
@@ -84,6 +104,7 @@
             alwaysShowCalendars: true,
             autoUpdateInput: true,
             ranges: {
+                'All Time': [moment('2000-01-01'), moment()],
                 'This Month': [moment().startOf('month'), moment().endOf('month')],
                 'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
                 'Last 60 Days': [moment().subtract(59, 'days'), moment()],
@@ -93,7 +114,8 @@
                 'Last 18 Months': [moment().subtract(18, 'month'), moment()],
             }
         },
-            function (start, end) {
+            function (start, end, label) {
+                allTime = (label === 'All Time');
                 startDate = start.format('DD-MMM-YYYY');
                 endDate = end.format('DD-MMM-YYYY');
                 getShipmentCodes();
@@ -115,16 +137,23 @@
             format: "html"
         },
             function (data) {
+                // Tear down Select2 before swapping the underlying <option> set, then re-init.
+                $("#shipmentId").select2('destroy');
                 if (data != 0) {
                     $("#shipmentId").html(data);
+                    // Drop the "All shipments" placeholder option; multiselect uses an empty selection for that.
+                    $("#shipmentId option[value='']").remove();
+                } else {
+                    $("#shipmentId").html('');
                 }
+                initShipmentSelect();
                 $.unblockUI();
             });
     }
 
     function drawTable() {
         if ($("#dateRange").val() == "") {
-            alert("Please pick date range to proceed");
+            alert("Please pick a date range (or 'All Time') to proceed");
             return false;
         }
         var dateRange = $("#dateRange").val();
@@ -169,12 +198,17 @@
         //        $.unblockUI;
         //    },
         //});
-        showPieChart($("#shipmentId").val());
+        showSummary();
     }
 
-    function showPieChart(shipmentId) {
-        $.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'shipments', 'action' => 'vl-participant-count')); ?>", {
-            shipmentId: shipmentId,
+    function showSummary() {
+        $.blockUI();
+        $.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'shipments', 'action' => 'vl-assay-summary')); ?>", {
+            shipmentId: $("#shipmentId").val(),
+            allTime: allTime ? 1 : 0,
+            groupBy: $("#groupBy").val(),
+            startDate: startDate,
+            endDate: endDate,
             format: "html"
         },
             function (data) {
