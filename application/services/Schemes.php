@@ -838,10 +838,20 @@ class Application_Service_Schemes
 
             $possibleResults = $db->fetchAll(
                 $db->select()->from('r_possibleresult', [
-                    'scheme_sub_group', 'sub_scheme', 'result_type', 'response', 'result_code',
-                    'display_context', 'high_range', 'threshold_range', 'low_range',
-                    'sd_scaling_factor', 'uncertainy_scaling_factor', 'uncertainy_threshold',
-                    'minimum_number_of_responses', 'sort_order',
+                    'scheme_sub_group',
+                    'sub_scheme',
+                    'result_type',
+                    'response',
+                    'result_code',
+                    'display_context',
+                    'high_range',
+                    'threshold_range',
+                    'low_range',
+                    'sd_scaling_factor',
+                    'uncertainy_scaling_factor',
+                    'uncertainy_threshold',
+                    'minimum_number_of_responses',
+                    'sort_order',
                 ])->where('scheme_id = ?', $schemeId)->order('sort_order asc')
             );
 
@@ -961,6 +971,9 @@ class Application_Service_Schemes
                 }
 
                 if (!empty($test['config']) && is_array($test['config'])) {
+                    if ($overwrite) {
+                        $db->delete('scheme_config', 'scheme_config_name = "' . $schemeId . '"');
+                    }
                     $db->insert('scheme_config', [
                         'scheme_config_name'  => $schemeId,
                         'scheme_config_value' => json_encode($test['config']),
