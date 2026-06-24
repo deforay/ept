@@ -718,13 +718,27 @@ foreach ($versions as $version) {
                     // (unknown column) and 1146 (table missing) on UPDATE/DELETE as
                     // benign — but always surface it (not just under MIG_VERBOSE) so a
                     // genuine typo in a fresh migration isn't silently swallowed.
+                    //
+                    // INSERT ... SELECT backfills are the same one-time-migration shape:
+                    // on replay the source table/column that a later migration dropped is
+                    // gone (1146/1054), and the rows they would have copied are already in
+                    // place. Cover them too (a plain INSERT ... VALUES can't hit 1054/1146,
+                    // so this only ever matches genuine SELECT-from-source backfills).
                     $isDataDml = (strpos($qLower, 'update') === 0 || strpos($qLower, 'delete') === 0);
-                    $isStaleRefBenign = $isDataDml &&
+                    $isInsertSelect = (strpos($qLower, 'insert') === 0 && strpos($qLower, ' select ') !== false);
+                    $isStaleRefBenign = ($isDataDml || $isInsertSelect) &&
                         ($errno === 1054 || $errno === 1146 ||
                             stripos($msg, 'Unknown column') !== false ||
                             stripos($msg, "doesn't exist") !== false);
 
-                    if ($isStaleRefBenign) {
+                    // A data-fix UPDATE that renames a PK/UNIQUE value collides (1062) on
+                    // replay because the rename already happened — the destination row
+                    // already carries the new key. No-op, benign (e.g. global_config
+                    // feed_back_option -> participant_feedback re-run).
+                    $isRenameDmlBenign = $isDataDml &&
+                        ($errno === 1062 || stripos($msg, 'Duplicate entry') !== false);
+
+                    if ($isStaleRefBenign || $isRenameDmlBenign) {
                         if (!$quietMode) {
                             echo "Skipping data fix (stale column/table ref on replay):\n{$query}\n{$msg}\n";
                         }
