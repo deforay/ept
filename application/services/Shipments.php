@@ -296,6 +296,10 @@ class Application_Service_Shipments
                 $edit = '<br>&nbsp;<a class="btn btn-danger btn-xs disabled" href="javascript:void(0);"><span><i class="icon-check"></i> Finalized</span></a>';
             }
 
+            // Clone is offered for every shipment (including finalized) so the sample
+            // panel and config can be re-used for a new PT Survey.
+            $clone = '<br>&nbsp;<a class="btn btn-warning btn-xs" href="/admin/shipment/clone/sid/' . base64_encode($aRow['shipment_id']) . '/userConfig/' . base64_encode($aRow['is_user_configured']) . '"><span><i class="icon-copy"></i> Clone</span></a>';
+
             if ($aRow['status'] != 'shipped' && $aRow['status'] != 'evaluated' && $aRow['status'] != 'finalized') {
                 $enrolled = '<br>&nbsp;<a class="btn ' . $btn . ' btn-xs" href="/admin/shipment/ship-it/sid/' . base64_encode($aRow['shipment_id']) . '"><span><i class="icon-user"></i> Enroll</span></a>';
             } elseif ($aRow['status'] == 'shipped') {
@@ -330,7 +334,7 @@ class Application_Service_Shipments
                 $testkitbtn .= '<br>&nbsp;<a class="btn btn-primary btn-xs" href="/admin/shipment/shipment-test-kits/sid/' . base64_encode(trim($aRow['shipment_id'])) . '"><i class="icon-medkit"></i> Testkit Map</span></a>';
             }
 
-            $row[] = $edit . $enrolled . $delete . $announcementMail . $manageEnroll . $informMail . $downloadAllTBForms . $testkitbtn;
+            $row[] = $edit . $clone . $enrolled . $delete . $announcementMail . $manageEnroll . $informMail . $downloadAllTBForms . $testkitbtn;
             $output['aaData'][] = $row;
         }
 
@@ -2433,6 +2437,28 @@ class Application_Service_Shipments
     {
         $db = new Application_Model_DbTable_ShipmentParticipantMap();
         return $db->shipItNow($params);
+    }
+
+    /**
+     * Shipments that already have participants enrolled — used on the ship-it page
+     * to copy an existing shipment's participant set into another. Returns every
+     * scheme (the view groups the current scheme on top); latest shipment first.
+     * Excludes the shipment currently being enrolled.
+     */
+    public function getShipmentsWithParticipantsForCopy($excludeShipmentId = null)
+    {
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $sql = $db->select()
+            ->from(['s' => 'shipment'], ['shipment_id', 'shipment_code', 'shipment_date', 'scheme_type'])
+            ->join(['sp' => 'shipment_participant_map'], 'sp.shipment_id = s.shipment_id', ['participantCount' => new Zend_Db_Expr('COUNT(DISTINCT sp.participant_id)')])
+            ->joinLeft(['sl' => 'scheme_list'], 'sl.scheme_id = s.scheme_type', ['scheme_name'])
+            ->group('s.shipment_id')
+            ->having('participantCount > 0')
+            ->order('s.shipment_date DESC');
+        if (!empty($excludeShipmentId)) {
+            $sql->where('s.shipment_id != ?', (int) $excludeShipmentId);
+        }
+        return $db->fetchAll($sql);
     }
 
     public function removeShipment($sid)

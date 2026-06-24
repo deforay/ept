@@ -5,6 +5,10 @@ $shipmentAttribute = Pt_Commons_JsonUtility::safeDecode($shipmentData['shipment'
 $vHelper = $this->getHelper('DateFormat');
 $dtFormat = $vHelper->getDateFormat();
 
+// Clone mode: same form, but pre-fills from a source shipment and saves as a new
+// shipment (posts to the add action) instead of updating the source.
+$cloneMode = !empty($this->cloneMode);
+
 
 $style = '';
 if ($shipmentData['shipment']['scheme_type'] == 'tb') {
@@ -39,39 +43,62 @@ $rtriEnabled = $dtsConfig['rtriEnabled'] ?? 'no';
 </style>
 <div class="well" <?php echo $style; ?>>
 	<fieldset class="container">
-		<legend><?= $this->translate->_("Update Shipment Sample Details"); ?> -
-			<?php echo $shipmentData['shipment']['shipment_code']; ?>
+		<legend>
+			<?= $cloneMode ? $this->translate->_("Clone Shipment — review and save as a new shipment") : $this->translate->_("Update Shipment Sample Details"); ?>
+			- <?php echo $shipmentData['shipment']['shipment_code']; ?>
 		</legend>
 		<form class="form-horizontal" name="shipmentForm" id="shipmentForm" method="post"
-			action="<?php echo $this->url(array('module' => 'admin', 'controller' => 'shipment', 'action' => 'edit')); ?>"
+			action="<?php echo $this->url(array('module' => 'admin', 'controller' => 'shipment', 'action' => ($cloneMode ? 'add' : 'edit'))); ?>"
 			autocomplete="off">
-			<div class="form-group">
-				<label class="col-lg-3 control-label"><?= $this->translate->_("Distribution Code"); ?> </label>
+			<?php if ($cloneMode): ?>
+				<div class="form-group">
+					<label class="col-lg-3 control-label" for="distribution"><?= $this->translate->_("PT Survey (Unshipped)"); ?> <span class="mandatory">*</span></label>
 
-				<div class="col-lg-5">
-					<input type='text' disabled='disabled' class='form-control'
-						value='<?php echo $shipmentData['shipment']['distribution_code']; ?>' />
+					<div class="col-lg-5">
+						<select id="distribution" name="distribution" class="isRequired form-control input-sm"
+							title="<?= $this->translate->_('Please select a PT Survey'); ?>">
+							<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
+							<?php foreach ($this->unshippedDistro as $dist): ?>
+								<option value="<?php echo $dist['distribution_id']; ?>"><?php echo $dist['distribution_code'] . "   (" . $this->dateFormat($dist['distribution_date']) . ")"; ?></option>
+							<?php endforeach; ?>
+						</select>
+					</div>
+
+					<input type="hidden" name="schemeId" id="schemeId" value="<?php echo $this->escape($this->cloneSchemeId); ?>" />
+					<input type="hidden" name="userConfig" id="userConfig" value="<?php echo $this->escape($this->cloneUserConfig); ?>" />
+					<input type="hidden" name="selectedDistribution" id="selectedDistribution" value="" />
 				</div>
+			<?php else: ?>
+				<div class="form-group">
+					<label class="col-lg-3 control-label"><?= $this->translate->_("Distribution Code"); ?> </label>
 
-				<input type="hidden" name="shipmentId" id="shipmentId"
-					value="<?php echo $shipmentData['shipment']['shipment_id']; ?>" class="isRequired"
-					title="Please choose a Scheme Type on the top of this page" />
-				<input type="hidden" name="selectedDistribution" id="selectedDistribution" class=""
-					value="<?php echo $this->selectedDistribution; ?>" />
-				<input type="hidden" name="reopenResponseSwitch" id="reopenResponseSwitch" value="" />
+					<div class="col-lg-5">
+						<input type='text' disabled='disabled' class='form-control'
+							value='<?php echo $shipmentData['shipment']['distribution_code']; ?>' />
+					</div>
 
-			</div>
+					<input type="hidden" name="shipmentId" id="shipmentId"
+						value="<?php echo $shipmentData['shipment']['shipment_id']; ?>" class="isRequired"
+						title="Please choose a Scheme Type on the top of this page" />
+					<input type="hidden" name="selectedDistribution" id="selectedDistribution" class=""
+						value="<?php echo $this->selectedDistribution; ?>" />
+					<input type="hidden" name="reopenResponseSwitch" id="reopenResponseSwitch" value="" />
+
+				</div>
+			<?php endif; ?>
 			<div class="form-group">
 				<label class="col-lg-3 control-label" for="shipmentCode"><?= $this->translate->_("Shipment Code"); ?> </label>
 				<div class="col-lg-5">
 					<input type='text' name="shipmentCode" id="shipmentCode" class='form-control isRequired'
-						value='<?php echo $shipmentData['shipment']['shipment_code']; ?>'
+						value='<?php echo $cloneMode ? $this->escape($this->newShipmentCode) : $shipmentData['shipment']['shipment_code']; ?>'
 						title="Please enter the Shipment Code" />
 				</div>
 			</div>
 			<?php
 			$deadlineRaw = $shipmentData['shipment']['response_deadline'] ?? '';
-			$deadlineDisplay = (!empty($deadlineRaw) && strpos((string) $deadlineRaw, '0000-00-00') !== 0)
+			// A clone is for a new PT Survey, so don't carry the (likely past) source
+			// deadline — force the admin to pick a fresh one.
+			$deadlineDisplay = (!$cloneMode && !empty($deadlineRaw) && strpos((string) $deadlineRaw, '0000-00-00') !== 0)
 				? date('d-M-Y H:i', strtotime((string) $deadlineRaw)) : '';
 			// Current response-window state — drives the "re-open on deadline extension" confirm below.
 			$currentSwitch = $shipmentData['shipment']['response_switch'] ?? 'on';
@@ -178,7 +205,8 @@ $rtriEnabled = $dtsConfig['rtriEnabled'] ?? 'no';
 
 			<div style="margin: 0px auto 0px auto; text-align: center;" align="center">
 				<input name="submitbtn" class="btn btn-primary btn-sm" type="button"
-					onclick="validateNow();return false;" tabindex="7" value="Update Shipment" />
+					onclick="validateNow();return false;" tabindex="7"
+					value="<?= $cloneMode ? $this->translate->_('Create Cloned Shipment') : $this->translate->_('Update Shipment'); ?>" />
 				<input class="btn btn-danger btn-sm" type="button" onclick="window.history.go(-1);" tabindex="8"
 					value="<?= $this->translate->_("Cancel"); ?>" />
 			</div>
@@ -278,6 +306,13 @@ $rtriEnabled = $dtsConfig['rtriEnabled'] ?? 'no';
 			formId: 'shipmentForm'
 		});
 		if (!flag || duplicated) {
+			return;
+		}
+
+		// Cloning creates a brand-new shipment, so the source's response-window state
+		// is irrelevant — skip the re-open confirm entirely.
+		if (<?php echo $cloneMode ? 'true' : 'false'; ?>) {
+			submitShipmentForm();
 			return;
 		}
 

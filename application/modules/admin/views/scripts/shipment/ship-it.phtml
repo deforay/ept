@@ -2,6 +2,48 @@
 <link rel="stylesheet" type="text/css" href="<?php echo $this->baseUrl('css/bootstrap-select.min.css'); ?>" />
 <?php echo $this->render('partials/virtual-dual-list.phtml'); ?>
 
+<style>
+	.autoselect-tools {
+		margin: 10px 0 20px;
+	}
+
+	/* Dropdowns grow to fill the row; the Apply button sits at their baseline. */
+	.autoselect-grid {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: flex-end;
+		gap: 12px;
+	}
+
+	.autoselect-grid .autoselect-col {
+		flex: 1 1 280px;
+		min-width: 0;
+	}
+
+	.autoselect-grid .autoselect-col .control-label {
+		display: block;
+		margin-bottom: 5px;
+	}
+
+	.autoselect-grid .autoselect-apply {
+		flex: 0 0 auto;
+	}
+
+	.autoselect-tools .select2-container {
+		width: 100% !important;
+	}
+
+	.autoselect-help {
+		margin-top: 8px;
+		color: #777;
+	}
+
+	/* Keep the select2 dropdown above the participant widget below it. */
+	.select2-container--open {
+		z-index: 10000;
+	}
+</style>
+
 <fieldset>
 	<legend><?php echo strtoupper($this->shipment->scheme_type); ?> <?= $this->translate->_("Shipment"); ?> : <?php echo $this->shipment->shipment_code . "(" . $this->dateFormat($this->shipment->shipment_date) . ") "; ?></legend>
 	<form method="post" action="<?php echo $this->url(array("module" => "admin", "controller" => "shipment", "action" => "ship-it"), 'default', true); ?>" id="shipForm" role="form" onsubmit="validateNow();return false;" autocomplete="off" enctype="multipart/form-data">
@@ -60,26 +102,77 @@
 			</div>
 			<hr>
 		</div>
-		<p><?php if (isset($this->participantListsName) && count($this->participantListsName) > 0) { ?>
-		<div class="row">
-			<div class="col-lg-7">
-				<div class="form-group">
-					<div class="col-lg-10">
-						<label class="control-label"><?= $this->translate->_("Preset Participant List"); ?></label>
-						<select name="participantList[]" class="form-control" multiple="multiple" id="participantList" title="Please choose the list to autoselect the participants">
+		<?php
+		$hasPresetLists = isset($this->participantListsName) && count($this->participantListsName) > 0;
+		$hasExistingShipments = isset($this->existingShipments) && count($this->existingShipments) > 0;
+		?>
+		<?php if ($hasPresetLists || $hasExistingShipments) { ?>
+			<div class="autoselect-tools">
+				<div class="autoselect-grid">
+				<?php if ($hasPresetLists) { ?>
+					<div class="autoselect-col">
+						<label class="control-label" for="participantList"><?= $this->translate->_("Preset Participant List"); ?></label>
+						<select name="participantList[]" class="form-control autoselect-input" multiple="multiple" id="participantList" style="width:100%" title="<?= $this->translate->_('Choose a saved list to auto-select its participants'); ?>">
 							<?php foreach ($this->participantListsName as $names) { ?>
 								<option value="<?php echo base64_encode($names['list_name']); ?>"><?php echo ucwords($names['list_name']); ?></option>
 							<?php } ?>
 						</select>
 					</div>
-					<div class="col-lg-2" style=" top: 28px; vertical-align: middle; ">
-						<a class="btn btn-warning btn-sm" onclick="getEnrollmentParticipantsList()">Search</a>
+				<?php } ?>
+				<?php if ($hasExistingShipments) { ?>
+					<div class="autoselect-col">
+						<label class="control-label" for="copyFromShipment"><?= $this->translate->_("Copy from an Existing Shipment"); ?></label>
+						<?php
+						// Group the current scheme's shipments on top, every other scheme below.
+						// Each group stays latest-first (the query already ordered by date DESC).
+						$currentScheme = $this->shipment->scheme_type;
+						$sameScheme = $otherScheme = [];
+						foreach ($this->existingShipments as $existing) {
+							if ($existing['scheme_type'] === $currentScheme) {
+								$sameScheme[] = $existing;
+							} else {
+								$otherScheme[] = $existing;
+							}
+						}
+						$renderOption = function ($existing) {
+							$label = $existing['shipment_code'] . ' (' . $this->dateFormat($existing['shipment_date']) . ') — ' . (int) $existing['participantCount'] . ' ' . $this->translate->_('participants');
+							return '<option value="' . (int) $existing['shipment_id'] . '">' . htmlspecialchars($label) . '</option>';
+						};
+						?>
+						<select class="form-control autoselect-input" id="copyFromShipment" style="width:100%" title="<?= $this->translate->_('Choose a previous shipment to copy its participants'); ?>">
+							<option value="">-- <?= $this->translate->_("Select a shipment"); ?> --</option>
+							<?php if (!empty($sameScheme)) { ?>
+								<optgroup label="<?php echo htmlspecialchars(strtoupper($currentScheme) . ' — ' . $this->translate->_('this scheme')); ?>">
+									<?php foreach ($sameScheme as $existing) {
+										echo $renderOption($existing);
+									} ?>
+								</optgroup>
+							<?php } ?>
+							<?php if (!empty($otherScheme)) { ?>
+								<optgroup label="<?php echo htmlspecialchars($this->translate->_('Other schemes')); ?>">
+									<?php foreach ($otherScheme as $existing) {
+										echo $renderOption($existing);
+									} ?>
+								</optgroup>
+							<?php } ?>
+						</select>
+					</div>
+				<?php } ?>
+					<div class="autoselect-apply">
+						<button type="button" class="btn btn-warning btn-sm" onclick="applyParticipantSources()"><i class="icon-ok"></i> <?= $this->translate->_("Apply to selection"); ?></button>
 					</div>
 				</div>
+				<div class="autoselect-help"><small>
+						<?php if ($hasPresetLists && $hasExistingShipments) { ?>
+							<?= $this->translate->_("A preset list replaces the current selection; an existing shipment adds its participants to it."); ?>
+						<?php } elseif ($hasPresetLists) { ?>
+							<?= $this->translate->_("Replaces the current selection with participants from the saved preset list."); ?>
+						<?php } else { ?>
+							<?= $this->translate->_("Adds the selected shipment's participants to the current selection."); ?>
+						<?php } ?>
+					</small></div>
 			</div>
-		</div>
-	<?php } ?>
-	</p>
+		<?php } ?>
 	<input type="hidden" id="selectedForEnrollment" name="selectedForEnrollment" value="" />
 	<input type="hidden" id="shipmentId" name="shipmentId" value="<?php echo $this->shipment->shipment_id; ?>" />
 	<input type="hidden" id="schemeId" name="schemeId" value="<?php echo $this->shipment->scheme_type; ?>" />
@@ -160,7 +253,14 @@
 			else
 				$("#listNameField").hide();
 		});
-		$('#participantList').selectpicker();
+		$('#participantList').select2({
+			placeholder: "<?= $this->translate->_('Choose a saved list to auto-select its participants'); ?>",
+			allowClear: true
+		});
+		$('#copyFromShipment').select2({
+			placeholder: "<?= $this->translate->_('Choose a previous shipment to copy its participants'); ?>",
+			allowClear: true
+		});
 		$("#city").select2({
 			placeholder: "<?= $this->translate->_("Select one or more cities"); ?>",
 			allowClear: true
@@ -344,7 +444,30 @@
 		}
 	}
 
-	function getEnrollmentParticipantsList() {
+	// Single entry point for both auto-select tools. A preset list replaces the
+	// current selection; copying an existing shipment then merges its participants
+	// in. When both are chosen, the preset is applied first, then the shipment.
+	function applyParticipantSources() {
+		let presetVal = $('#participantList').val();
+		let shipmentVal = $('#copyFromShipment').val();
+		let hasPreset = presetVal && presetVal.length;
+		let hasShipment = shipmentVal && $.trim(shipmentVal) != '';
+		if (!hasPreset && !hasShipment) {
+			alert("<?= $this->translate->_('Choose a preset list or an existing shipment first.'); ?>");
+			return;
+		}
+		if (hasPreset && hasShipment) {
+			getEnrollmentParticipantsList(function() {
+				getParticipantsFromShipment();
+			});
+		} else if (hasPreset) {
+			getEnrollmentParticipantsList();
+		} else {
+			getParticipantsFromShipment();
+		}
+	}
+
+	function getEnrollmentParticipantsList(onDone) {
 		$.blockUI();
 		let shipId = $("#shipmentId").val();
 		let presetList = $('#participantList').val();
@@ -364,10 +487,37 @@
 					if (data != "" && data != undefined) {
 						VirtualDualList.get('#participants').setSelectedIds(data.split(","));
 					}
+					if (typeof onDone === 'function') onDone();
 				});
 			clearFilters();
 			$.unblockUI();
+		} else {
+			$.unblockUI();
+			if (typeof onDone === 'function') onDone();
 		}
+	}
+
+	// Copy participants from an existing shipment, merging them into the current
+	// selection (non-destructive) so it composes with preset lists and manual picks.
+	function getParticipantsFromShipment() {
+		let sourceId = $('#copyFromShipment').val();
+		if ($.trim(sourceId) == '') {
+			return;
+		}
+		$.blockUI();
+		$.post("<?php echo $this->url(['module' => 'admin', 'controller' => 'shipment', 'action' => 'get-shipment-participants'], 'default', true); ?>", {
+				sourceId: sourceId,
+				format: "html"
+			},
+			function(data) {
+				if (data != "" && data != undefined) {
+					VirtualDualList.get('#participants').addSelectedIds(data.split(","));
+				} else {
+					alert("<?= $this->translate->_('That shipment has no participants to copy.'); ?>");
+				}
+				$.unblockUI();
+			});
+		clearFilters();
 	}
 
 	function clearFilters() {

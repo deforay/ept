@@ -34,6 +34,7 @@ class Admin_ShipmentController extends Zend_Controller_Action
             ->addActionContext('export-shipment-not-responded-participants', 'html')
             ->addActionContext('get-participants', 'html')
             ->addActionContext('get-enrollment-list', 'html')
+            ->addActionContext('get-shipment-participants', 'html')
             ->addActionContext('generate-tb-form', 'html')
             ->initContext();
         $this->_helper->layout()->pageName = 'manageMenu';
@@ -154,6 +155,8 @@ class Admin_ShipmentController extends Zend_Controller_Action
                 $this->view->previouslySelected = $previouslySelected = $participantService->getEnrolledByShipmentId($sid);
 
                 $this->view->participantListsName  = $participantService->getParticipantsListNames();
+                // Other shipments whose participants can be copied in (current scheme on top).
+                $this->view->existingShipments = $shipmentService->getShipmentsWithParticipantsForCopy($sid);
                 if ($previouslySelected == '' || $previouslySelected == null) {
                     $this->view->enrolledParticipants = $participantService->getEnrolledBySchemeCode($shipmentDetails['scheme_type']);
                     $this->view->unEnrolledParticipants = $participantService->getUnEnrolled($shipmentDetails['scheme_type']);
@@ -172,6 +175,22 @@ class Admin_ShipmentController extends Zend_Controller_Action
             $params = $this->getAllParams();
             $participantService = new Application_Service_Participants();
             $this->view->participantListsName  = $participantService->getParticipantsListNamesByUniqueId($params['unique']);
+        }
+    }
+
+    // Returns the (active) participants enrolled in a source shipment as a CSV of
+    // participant ids, so ship-it can pre-select the same set on another shipment.
+    public function getShipmentParticipantsAction()
+    {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
+        $this->view->participants = [];
+        if ($request->isPost() && $this->hasParam('sourceId')) {
+            $sourceId = (int) $this->_getParam('sourceId');
+            if ($sourceId > 0) {
+                $participantService = new Application_Service_Participants();
+                $this->view->participants = $participantService->getEnrolledByShipmentId($sourceId);
+            }
         }
     }
 
@@ -201,39 +220,7 @@ class Admin_ShipmentController extends Zend_Controller_Action
             if ($this->hasParam('sid')) {
                 $sid = (int) base64_decode($this->_getParam('sid'));
                 $userConfig = base64_decode($this->_getParam('userConfig'));
-                $schemeService = new Application_Service_Schemes();
-                $shipmentService = new Application_Service_Shipments();
-                $reportService = new Application_Service_Reports();
-                $this->view->reportType = $reportService->getReportConfigValue('report-layout');
-                $this->view->tbPossibleResults = $schemeService->getPossibleResults('tb', 'admin');
-                $this->view->shipmentData = $response = $shipmentService->getShipmentForEdit($sid);
-                //  echo "<pre>"; print_r($response); die;
-                $this->view->schemeDetails = $schemeService->getSchemeById($response['shipment']['scheme_type']);
-                $this->view->config = Pt_Commons_SchemeConfig::get($response['shipment']['scheme_type']);
-                if ($response['shipment']['scheme_type'] == 'dts') {
-                    $this->view->wb = $schemeService->getDbsWb();
-                    $this->view->eia = $schemeService->getDbsEia();
-                    $this->view->dtsPossibleResults = $schemeService->getPossibleResults('dts', 'admin');
-                    $this->view->rtriPossibleResults = $schemeService->getPossibleResults('recency', 'admin');
-                    $this->view->allTestKits = $schemeService->getAllDtsTestKit();
-                } elseif ($response['shipment']['scheme_type'] == 'covid19') {
-                    $this->view->covid19PossibleResults = $schemeService->getPossibleResults('covid19', 'admin');
-                    $this->view->allTestTypes = $schemeService->getAllCovid19TestType();
-                } elseif ($response['shipment']['scheme_type'] == 'vl') {
-                    $vlModel       = new Application_Model_Vl();
-                    $this->view->vlAssay = $vlModel->getVlAssay();
-                } elseif ($response['shipment']['scheme_type'] == 'recency') {
-                    $this->view->recencyPossibleResults = $schemeService->getPossibleResults('recency', 'admin');
-                    $this->view->recencyAssay = $schemeService->getRecencyAssay();
-                } elseif ($response['shipment']['scheme_type'] == 'tb') {
-                    $tbModel = new Application_Model_Tb();
-                    $this->view->assay = $tbModel->getAllTbAssays();
-                } elseif ($userConfig == 'yes') {
-                    // Shipment add/edit only configures the expected (final) result — see editAction.
-                    $this->view->otherTestsPossibleResults = $schemeService->getPossibleResults($response['shipment']['scheme_type'], 'admin', 'FINAL');
-                }
-                $common = new Application_Service_Common();
-                $this->view->feedbackOption = $common->getConfig('participant_feedback');
+                $response = $this->prepareShipmentFormView($sid, $userConfig);
                 // Oops !! Nothing to edit....
                 if ($response == null || $response == '' || $response === false) {
                     $this->redirect('/admin/shipment');
@@ -242,6 +229,81 @@ class Admin_ShipmentController extends Zend_Controller_Action
                 $this->redirect('/admin/shipment');
             }
         }
+    }
+
+    /**
+     * Clone an existing shipment: pre-fill the shipment form (sample panel,
+     * expected results, config) from a source shipment and let the admin save it
+     * as a brand-new shipment. The form reuses the edit view but posts to the add
+     * action, so nothing is created until the admin picks a PT Survey and saves.
+     */
+    public function cloneAction()
+    {
+        if (!$this->hasParam('sid')) {
+            $this->redirect('/admin/shipment');
+        }
+        $sid = (int) base64_decode($this->_getParam('sid'));
+        $userConfig = base64_decode($this->_getParam('userConfig'));
+        $response = $this->prepareShipmentFormView($sid, $userConfig);
+        if ($response == null || $response == '' || $response === false) {
+            $this->redirect('/admin/shipment');
+        }
+        $shipmentService = new Application_Service_Shipments();
+        $distro = new Application_Service_Distribution();
+        $this->view->cloneMode = true;
+        $this->view->unshippedDistro = $distro->getUnshippedDistributions();
+        $this->view->selectedDistribution = '';
+        $this->view->cloneSchemeId = $response['shipment']['scheme_type'];
+        $this->view->cloneUserConfig = ($userConfig == 'yes') ? 'yes' : 'no';
+        // Fresh, collision-free code so the clone never duplicates the source code.
+        $this->view->newShipmentCode = $shipmentService->getShipmentCode($response['shipment']['scheme_type'], null, $this->view->cloneUserConfig);
+        // Reuse the edit view in clone mode.
+        $this->_helper->viewRenderer->setRender('edit');
+    }
+
+    /**
+     * Populate the view variables the shipment edit/clone form needs for a given
+     * source shipment. Shared by editAction and cloneAction. Returns the
+     * getShipmentForEdit() payload (or a falsey value when the shipment is gone).
+     */
+    private function prepareShipmentFormView($sid, $userConfig)
+    {
+        $schemeService = new Application_Service_Schemes();
+        $shipmentService = new Application_Service_Shipments();
+        $reportService = new Application_Service_Reports();
+        $this->view->reportType = $reportService->getReportConfigValue('report-layout');
+        $this->view->tbPossibleResults = $schemeService->getPossibleResults('tb', 'admin');
+        $this->view->shipmentData = $response = $shipmentService->getShipmentForEdit($sid);
+        if ($response == null || $response == '' || $response === false) {
+            return $response;
+        }
+        $this->view->schemeDetails = $schemeService->getSchemeById($response['shipment']['scheme_type']);
+        $this->view->config = Pt_Commons_SchemeConfig::get($response['shipment']['scheme_type']);
+        if ($response['shipment']['scheme_type'] == 'dts') {
+            $this->view->wb = $schemeService->getDbsWb();
+            $this->view->eia = $schemeService->getDbsEia();
+            $this->view->dtsPossibleResults = $schemeService->getPossibleResults('dts', 'admin');
+            $this->view->rtriPossibleResults = $schemeService->getPossibleResults('recency', 'admin');
+            $this->view->allTestKits = $schemeService->getAllDtsTestKit();
+        } elseif ($response['shipment']['scheme_type'] == 'covid19') {
+            $this->view->covid19PossibleResults = $schemeService->getPossibleResults('covid19', 'admin');
+            $this->view->allTestTypes = $schemeService->getAllCovid19TestType();
+        } elseif ($response['shipment']['scheme_type'] == 'vl') {
+            $vlModel       = new Application_Model_Vl();
+            $this->view->vlAssay = $vlModel->getVlAssay();
+        } elseif ($response['shipment']['scheme_type'] == 'recency') {
+            $this->view->recencyPossibleResults = $schemeService->getPossibleResults('recency', 'admin');
+            $this->view->recencyAssay = $schemeService->getRecencyAssay();
+        } elseif ($response['shipment']['scheme_type'] == 'tb') {
+            $tbModel = new Application_Model_Tb();
+            $this->view->assay = $tbModel->getAllTbAssays();
+        } elseif ($userConfig == 'yes') {
+            // Shipment add/edit only configures the expected (final) result — see editAction.
+            $this->view->otherTestsPossibleResults = $schemeService->getPossibleResults($response['shipment']['scheme_type'], 'admin', 'FINAL');
+        }
+        $common = new Application_Service_Common();
+        $this->view->feedbackOption = $common->getConfig('participant_feedback');
+        return $response;
     }
 
     public function viewEnrollmentsAction()

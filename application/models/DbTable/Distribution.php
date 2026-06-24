@@ -237,7 +237,7 @@ class Application_Model_DbTable_Distribution extends Zend_Db_Table_Abstract
     }
     public function getUnshippedDistributions()
     {
-        return $this->fetchAll($this->select()->where("status != 'shipped'"));
+        return $this->fetchAll($this->select()->where("status != 'shipped'")->order('distribution_date DESC'));
     }
 
     public function updateDistributionStatus($distributionId, $status)

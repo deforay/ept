@@ -1,0 +1,11 @@
+<?php
+$participants = [];
+if (isset($this->participants) && is_array($this->participants)) {
+    foreach ($this->participants as $p) {
+        if (isset($p['participant_id'])) {
+            $participants[] = (int) $p['participant_id'];
+        }
+    }
+}
+$participants = array_values(array_unique($participants));
+echo implode(",", $participants);
