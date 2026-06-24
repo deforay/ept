@@ -1,6 +1,15 @@
 <link rel="stylesheet" href="<?php echo $this->baseUrl("css/jquery.dataTables.css"); ?>" type="text/css" media="all">
 <style>
+    /* This page loads several bootstrap CSS files with conflicting modal/backdrop
+       z-index values, and the DataTables action buttons end up above the default
+       backdrop. Force the cancel modal + backdrop above everything on this page. */
+    #cancelShipmentModal {
+        z-index: 100060 !important;
+    }
 
+    .modal-backdrop {
+        z-index: 100050 !important;
+    }
 </style>
 <h4 style="width:100%;height:50px;border-bottom:1px solid #777;">
     <div style="font-size:22.5px;line-height:36px;color:#333;float:left;"><?= $this->translate->_("Shipments"); ?></div>
@@ -181,10 +190,74 @@
 </div>
 
 
+<!-- Cancel / Expire shipment confirmation -->
+<div class="modal fade" id="cancelShipmentModal" tabindex="-1" role="dialog" aria-labelledby="cancelShipmentLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="cancelShipmentLabel"><i class="icon-ban-circle"></i> <?= $this->htmlTranslate("Cancel / Expire Shipment"); ?> <span id="cancelShipmentCode"></span></h4>
+            </div>
+            <div class="modal-body">
+                <p class="text-muted"><?= $this->htmlTranslate("Cancelling permanently locks this shipment. Participants can no longer submit or edit results, and no further admin actions are possible on it. This cannot be undone."); ?></p>
+                <div class="form-group">
+                    <label for="cancelReason"><?= $this->htmlTranslate("Reason for cancelling"); ?> <span class="mandatory">*</span></label>
+                    <textarea id="cancelReason" class="form-control" rows="3" placeholder="<?= $this->htmlTranslate('e.g. Created in error, or replaced by a corrected shipment'); ?>"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="cancelConfirm"><?= $this->htmlTranslate("Type"); ?> <code>CANCEL</code> <?= $this->htmlTranslate("to confirm"); ?></label>
+                    <input type="text" id="cancelConfirm" class="form-control" autocomplete="off" placeholder="CANCEL" />
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal"><?= $this->htmlTranslate("Close"); ?></button>
+                <button type="button" class="btn btn-danger" id="cancelShipmentConfirmBtn" disabled onclick="submitCancelShipment();"><i class="icon-ban-circle"></i> <?= $this->htmlTranslate("Cancel Shipment"); ?></button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script type="text/javascript" charset="utf-8">
     /* Table initialisation */
     var oTable = null;
     var duplicated = false;
+    var cancelShipmentSid = null;
+
+    function cancelShipment(sid, code) {
+        cancelShipmentSid = sid;
+        $('#cancelShipmentCode').text(code ? '(' + code + ')' : '');
+        $('#cancelReason').val('');
+        $('#cancelConfirm').val('');
+        $('#cancelShipmentConfirmBtn').prop('disabled', true);
+        // Reparent to <body> so the modal isn't trapped under the DataTables/column
+        // stacking context (otherwise the table overlay renders on top of it).
+        $('#cancelShipmentModal').appendTo('body').modal('show');
+    }
+
+    function validateCancelShipment() {
+        var reasonOk = $.trim($('#cancelReason').val()) !== '';
+        var tokenOk = $.trim($('#cancelConfirm').val()).toUpperCase() === 'CANCEL';
+        $('#cancelShipmentConfirmBtn').prop('disabled', !(reasonOk && tokenOk));
+    }
+
+    function submitCancelShipment() {
+        if (cancelShipmentSid == null) {
+            return;
+        }
+        $.blockUI();
+        $.post("<?php echo $this->url(['module' => 'admin', 'controller' => 'shipment', 'action' => 'cancel'], 'default', true); ?>", {
+                sid: cancelShipmentSid,
+                reason: $('#cancelReason').val(),
+                confirmToken: $('#cancelConfirm').val(),
+                format: "html"
+            },
+            function(data) {
+                $.unblockUI();
+                $('#cancelShipmentModal').modal('hide');
+                alert(data);
+                drawTable();
+            });
+    }
 
     function checkDuplicate(tableName, fieldName, obj, fnct, msg) {
         if (obj.val() == "" || obj.val() == null) {
@@ -236,6 +309,8 @@
         $('#shipmentCode').on('input', function(event) {
             allowOnlyAlphaNumericAndHyphen('#shipmentCode');
         });
+
+        $('#cancelReason, #cancelConfirm').on('input', validateCancelShipment);
 
         //drawTable();
         schemeSelected($("#scheme").val());

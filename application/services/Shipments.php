@@ -250,6 +250,7 @@ class Application_Service_Shipments
         foreach ($rResult as $aRow) {
             $mailedOn = '';
             $row = [];
+            $isCancelled = !empty($aRow['cancelled_at']);
             if ($aRow['status'] == 'ready') {
                 $btn = 'btn-success';
             } elseif ($aRow['status'] == 'pending') {
@@ -261,7 +262,7 @@ class Application_Service_Shipments
                 $mailedOn = explode(' ', $aRow['last_new_shipment_mailed_on']);
                 $mailedOn = Pt_Commons_DateUtility::humanReadableDateFormat($mailedOn[0]) . ' ' . $mailedOn[1];
             }
-            if ($aRow['status'] != 'finalized' && $aRow['status'] != 'ready' && $aRow['status'] != 'pending') {
+            if (!$isCancelled && $aRow['status'] != 'finalized' && $aRow['status'] != 'ready' && $aRow['status'] != 'pending') {
                 $responseSwitch = "<select onchange='responseSwitch(this.value," . $aRow['shipment_id'] . ")'>";
                 $responseSwitch .= "<option value='on'" . (isset($aRow['response_switch']) && $aRow['response_switch'] == 'on' ? " selected='selected' " : '') . '>On</option>';
                 $responseSwitch .= "<option value='off'" . (isset($aRow['response_switch']) && $aRow['response_switch'] == 'off' ? " selected='selected' " : '') . '>Off</option>';
@@ -279,7 +280,9 @@ class Application_Service_Shipments
             $row[] = $aRow['number_of_samples'];
             $row[] = $aRow['total_participants'];
             $row[] = $responseSwitch;
-            $row[] = ucfirst($aRow['status']);
+            $row[] = $isCancelled
+                ? '<span class="label label-danger">' . Pt_Commons_TranslateUtility::htmlTranslate('Cancelled') . '</span>'
+                : ucfirst($aRow['status']);
             //             $row[] = $mailedOn;
             //             $row[] = $aRow['new_shipment_mail_count'];
             $edit = '';
@@ -334,7 +337,23 @@ class Application_Service_Shipments
                 $testkitbtn .= '<br>&nbsp;<a class="btn btn-primary btn-xs" href="/admin/shipment/shipment-test-kits/sid/' . base64_encode(trim($aRow['shipment_id'])) . '"><i class="icon-medkit"></i> Testkit Map</span></a>';
             }
 
-            $row[] = $edit . $clone . $enrolled . $delete . $announcementMail . $manageEnroll . $informMail . $downloadAllTBForms . $testkitbtn;
+            if ($isCancelled) {
+                // Cancelled shipments are permanently locked — no actions at all.
+                $cancelledOn = Pt_Commons_DateUtility::humanReadableDateFormat($aRow['cancelled_at'], true);
+                $reasonAttr = htmlspecialchars((string) ($aRow['cancellation_reason'] ?? ''), ENT_QUOTES);
+                $row[] = '<span class="label label-danger" title="' . $reasonAttr . '"><i class="icon-ban-circle"></i> '
+                    . Pt_Commons_TranslateUtility::htmlTranslate('Cancelled') . '</span><br><small class="text-muted">' . $cancelledOn . '</small>';
+            } else {
+                $cancel = '';
+                if ($aRow['status'] != 'finalized') {
+                    // Layered encoding: json_encode for the JS-string context, then
+                    // htmlspecialchars for the surrounding HTML attribute.
+                    $jsId = htmlspecialchars(json_encode(base64_encode($aRow['shipment_id'])), ENT_QUOTES);
+                    $jsCode = htmlspecialchars(json_encode((string) $aRow['shipment_code']), ENT_QUOTES);
+                    $cancel = '<br>&nbsp;<a class="btn btn-danger btn-xs" href="javascript:void(0);" onclick="cancelShipment(' . $jsId . ', ' . $jsCode . ')"><span><i class="icon-ban-circle"></i> ' . Pt_Commons_TranslateUtility::htmlTranslate('Cancel') . '</span></a>';
+                }
+                $row[] = $edit . $clone . $enrolled . $delete . $announcementMail . $manageEnroll . $informMail . $downloadAllTBForms . $testkitbtn . $cancel;
+            }
             $output['aaData'][] = $row;
         }
 
@@ -2437,6 +2456,75 @@ class Application_Service_Shipments
     {
         $db = new Application_Model_DbTable_ShipmentParticipantMap();
         return $db->shipItNow($params);
+    }
+
+    /** True if the shipment has been cancelled (permanently locked). */
+    public function isShipmentCancelled($shipmentId)
+    {
+        if (empty($shipmentId)) {
+            return false;
+        }
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $cancelledAt = $db->fetchOne($db->select()->from('shipment', ['cancelled_at'])->where('shipment_id = ?', (int) $shipmentId));
+        return !empty($cancelledAt);
+    }
+
+    /**
+     * Cancel / expire a shipment. This is permanent: a cancelled shipment is
+     * locked exactly like a finalized one (no admin actions, no participant
+     * responses) and can never be un-cancelled. Only non-finalized, not-already
+     * -cancelled shipments can be cancelled. The caller must type "CANCEL" to
+     * confirm and supply a reason; both are validated server-side and audited.
+     *
+     * @return array{success:bool,message:string}
+     */
+    public function cancelShipment($shipmentId, $reason, $confirmToken)
+    {
+        $shipmentId = (int) $shipmentId;
+        if ($shipmentId <= 0) {
+            return ['success' => false, 'message' => 'Invalid shipment.'];
+        }
+        if (strtoupper(trim((string) $confirmToken)) !== 'CANCEL') {
+            return ['success' => false, 'message' => 'Please type CANCEL to confirm.'];
+        }
+        $reason = trim((string) $reason);
+        if ($reason === '') {
+            return ['success' => false, 'message' => 'A reason for cancelling is required.'];
+        }
+
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $shipment = $db->fetchRow($db->select()->from('shipment')->where('shipment_id = ?', $shipmentId));
+        if (empty($shipment)) {
+            return ['success' => false, 'message' => 'Shipment not found.'];
+        }
+        if (!empty($shipment['cancelled_at'])) {
+            return ['success' => false, 'message' => 'This shipment is already cancelled.'];
+        }
+        if (isset($shipment['status']) && $shipment['status'] == 'finalized') {
+            return ['success' => false, 'message' => 'A finalized shipment cannot be cancelled.'];
+        }
+
+        $authNameSpace = new Zend_Session_Namespace('administrators');
+        $db->beginTransaction();
+        try {
+            $db->update('shipment', [
+                'cancelled_at'        => new Zend_Db_Expr('now()'),
+                'cancelled_by'        => $authNameSpace->primary_email ?? null,
+                'cancellation_reason' => $reason,
+                'response_switch'     => 'off',
+            ], $db->quoteInto('shipment_id = ?', $shipmentId));
+
+            $auditDb = new Application_Model_DbTable_AuditLog();
+            $auditDb->addNewAuditLog('Cancelled shipment - ' . $shipment['shipment_code'] . ' (reason: ' . $reason . ')', 'shipment');
+
+            $db->commit();
+        } catch (Exception $e) {
+            $db->rollBack();
+            error_log('cancelShipment failed: ' . $e->getMessage());
+            return ['success' => false, 'message' => 'Could not cancel the shipment. Please try again or contact the system admin.'];
+        }
+
+        return ['success' => true, 'message' => 'Shipment ' . $shipment['shipment_code'] . ' has been cancelled.'];
     }
 
     /**

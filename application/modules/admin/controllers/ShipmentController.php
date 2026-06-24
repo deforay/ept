@@ -36,6 +36,7 @@ class Admin_ShipmentController extends Zend_Controller_Action
             ->addActionContext('get-enrollment-list', 'html')
             ->addActionContext('get-shipment-participants', 'html')
             ->addActionContext('generate-tb-form', 'html')
+            ->addActionContext('cancel', 'html')
             ->initContext();
         $this->_helper->layout()->pageName = 'manageMenu';
     }
@@ -145,12 +146,18 @@ class Admin_ShipmentController extends Zend_Controller_Action
         $shipmentService = new Application_Service_Shipments();
         if ($request->isPost()) {
             $params = $request->getPost();
+            if (!empty($params['shipmentId']) && $shipmentService->isShipmentCancelled((int) $params['shipmentId'])) {
+                $this->redirect('/admin/shipment');
+            }
             $shipmentService->shipItNow($params);
             $this->redirect('/admin/shipment');
         } else {
             if ($this->hasParam('sid')) {
                 $participantService = new Application_Service_Participants();
                 $sid = (int) base64_decode($this->_getParam('sid'));
+                if ($shipmentService->isShipmentCancelled($sid)) {
+                    $this->redirect('/admin/shipment');
+                }
                 $this->view->shipment = $shipmentDetails = $shipmentService->getShipment($sid);
                 $this->view->previouslySelected = $previouslySelected = $participantService->getEnrolledByShipmentId($sid);
 
@@ -199,10 +206,32 @@ class Admin_ShipmentController extends Zend_Controller_Action
         if ($this->hasParam('sid')) {
             $sid = (int) base64_decode($this->_getParam('sid'));
             $shipmentService = new Application_Service_Shipments();
+            if ($shipmentService->isShipmentCancelled($sid)) {
+                $this->view->message = 'This shipment is cancelled and can no longer be changed.';
+                return;
+            }
             $this->view->message = $shipmentService->removeShipment($sid);
         } else {
             $this->view->message = 'Unable to delete. Please try again later or contact system admin for help';
         }
+    }
+
+    // Cancel / expire a shipment. Permanent and irreversible — see cancelShipment().
+    // The admin must type CANCEL and supply a reason (both validated server-side).
+    public function cancelAction()
+    {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
+        if (!$request->isPost() || !$this->hasParam('sid')) {
+            $this->view->message = 'Invalid request.';
+            return;
+        }
+        $sid = (int) base64_decode($this->_getParam('sid'));
+        $reason = (string) $this->_getParam('reason');
+        $confirmToken = (string) $this->_getParam('confirmToken');
+        $shipmentService = new Application_Service_Shipments();
+        $result = $shipmentService->cancelShipment($sid, $reason, $confirmToken);
+        $this->view->message = $result['message'];
     }
 
     public function editAction()
@@ -214,12 +243,18 @@ class Admin_ShipmentController extends Zend_Controller_Action
             $shipmentService = new Application_Service_Shipments();
             $params = $request->getPost();
             //echo "<pre>"; print_r($params); die;
+            if (!empty($params['shipmentId']) && $shipmentService->isShipmentCancelled((int) $params['shipmentId'])) {
+                $this->redirect('/admin/shipment');
+            }
             $shipmentService->updateShipment($params);
             $this->redirect('/admin/shipment');
         } else {
             if ($this->hasParam('sid')) {
                 $sid = (int) base64_decode($this->_getParam('sid'));
                 $userConfig = base64_decode($this->_getParam('userConfig'));
+                if ((new Application_Service_Shipments())->isShipmentCancelled($sid)) {
+                    $this->redirect('/admin/shipment');
+                }
                 $response = $this->prepareShipmentFormView($sid, $userConfig);
                 // Oops !! Nothing to edit....
                 if ($response == null || $response == '' || $response === false) {
@@ -384,6 +419,10 @@ class Admin_ShipmentController extends Zend_Controller_Action
         if ($request->isPost()) {
             $sid = strtolower(base64_decode($this->_getParam('sid')));
             $shipmentService = new Application_Service_Shipments();
+            if ($shipmentService->isShipmentCancelled((int) $sid)) {
+                $this->view->pcount = 0;
+                return;
+            }
             $this->view->pcount = $shipmentService->sendShipmentMailAlertToParticipants($sid);
         }
     }
@@ -470,6 +509,10 @@ class Admin_ShipmentController extends Zend_Controller_Action
                 $shipmentId = (int) ($this->_getParam('sid'));
                 $switchStatus = strtolower($this->_getParam('switchStatus'));
                 $shipmentService = new Application_Service_Shipments();
+                if ($shipmentService->isShipmentCancelled($shipmentId)) {
+                    $this->view->message = 'This shipment is cancelled and can no longer be changed.';
+                    return;
+                }
                 $this->view->message = $shipmentService->responseSwitch($shipmentId, $switchStatus);
             }
         } else {

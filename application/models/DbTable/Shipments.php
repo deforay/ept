@@ -1592,6 +1592,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         $sQuery = $dbAdapter->select()->from(['d' => 'distributions'], [new Zend_Db_Expr('SQL_CALC_FOUND_ROWS *')])
             ->joinLeft(['s' => 'shipment'], 's.distribution_id=d.distribution_id', ['shipments' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT s.shipment_code SEPARATOR ', ')"), 'shipment_id'])
             ->where("s.status='finalized'")
+            ->where('s.cancelled_at IS NULL')
             ->group('d.distribution_id');
 
         if (isset($sWhere) && $sWhere != '') {

@@ -86,6 +86,7 @@ class Application_Service_Evaluation
             ->joinLeft(['s' => 'shipment'], 's.distribution_id=d.distribution_id', ['shipments' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT s.shipment_code SEPARATOR ', ')"), 'not_finalized_count' => new Zend_Db_Expr("SUM(IF(s.status!='finalized',1,0))")])
             ->joinLeft(['sl' => 'scheme_list'], 's.scheme_type=sl.scheme_id', ['is_user_configured'])
             ->where("s.status!='finalized'")
+            ->where('s.cancelled_at IS NULL')
             ->group('s.distribution_id');
 
         if (isset($sWhere) && $sWhere != '') {

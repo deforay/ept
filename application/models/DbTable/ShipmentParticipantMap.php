@@ -249,6 +249,10 @@ class Application_Model_DbTable_ShipmentParticipantMap extends Zend_Db_Table_Abs
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $shipment = $db->fetchRow($db->select()->from(['s' => 'shipment'])
             ->where('s.shipment_id = ?', $shipmentId));
+        // A cancelled shipment is locked exactly like a finalized one — no responses.
+        if (!empty($shipment['cancelled_at'])) {
+            return false;
+        }
         if ((isset($shipment['status']) && $shipment['status'] == 'finalized') || (isset($shipment['response_switch']) && $shipment['response_switch'] == 'off')) {
             return false;
         } else {
