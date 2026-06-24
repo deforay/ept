@@ -24,9 +24,21 @@ $db = Zend_Db_Table_Abstract::getDefaultAdapter();
 try {
     $db->query('SELECT 1 FROM `run_once_scripts` LIMIT 1');
 } catch (Throwable $e) {
-    // Table doesn't exist - log warning and exit gracefully (don't block upgrade)
-    $io->warning('Missing table run_once_scripts. Run-once scripts will be skipped. Run migrations (7.3.3+) to enable.');
-    exit(0);
+    // Table missing — create it ourselves. It's this runner's own bookkeeping
+    // table (mirrors database/migrations/7.3.3.sql), so there's no need to wait
+    // for a migration. If creation fails (e.g. no DDL grant), warn and exit
+    // without blocking the upgrade.
+    try {
+        $db->query('CREATE TABLE IF NOT EXISTS `run_once_scripts` (
+  `script_name` VARCHAR(255) NOT NULL,
+  `executed_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`script_name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci');
+        $io->text('Created missing run_once_scripts table.');
+    } catch (Throwable $createError) {
+        $io->warning('Missing table run_once_scripts and could not create it (' . $createError->getMessage() . '). Run-once scripts will be skipped. Run migrations (7.3.3+) to enable.');
+        exit(0);
+    }
 }
 
 $scripts = glob($runOnceDir . '/*.php') ?: [];
