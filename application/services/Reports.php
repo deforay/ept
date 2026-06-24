@@ -166,6 +166,7 @@ class Application_Service_Reports
             $btnStates = Application_Service_Shipments::getShipmentButtonStates($aRow);
             $isFinalized = $btnStates['isFinalized'];
             $hasReportsGenerated = $btnStates['hasReportsGenerated'];
+            $isCancelled = !empty($aRow['cancelled_at']);
 
             $summaryDownload = $this->translator->_('Unavailable');
             $allReportsDownload = '';
@@ -220,15 +221,22 @@ class Application_Service_Reports
             $reportedCount = $aRow['reported_count'] ?? 0;
             $row[] = $reportedCount . '<br>(<a href="/reports/shipments/response-chart/id/' . base64_encode($aRow['shipment_id']) . '/shipmentDate/' . base64_encode($aRow['distribution_date']) . '/shipmentCode/' . base64_encode($aRow['distribution_code']) . '" target="_blank" style="text-decoration:underline">' . $responsePercentage . '%</a>)';
             $row[] = $aRow['number_passed'];
-            $row[] = $this->translator->_(ucwords($aRow['status']));
+            if ($isCancelled) {
+                $row[] = '<span class="label label-danger">' . $this->translator->_('Cancelled') . '</span>';
+            } else {
+                $row[] = $this->translator->_(ucwords($aRow['status']));
+            }
 
             $row[] = trim("$summaryDownload $allReportsDownload $viewFinalizedReports");
             if ($aRow['status'] != 'pending') {
 
-                $exportReport = "<a href='javascript:void(0);' class='btn btn-success btn-xs' style='display:inline-block;margin:2px;' onclick='generateShipmentParticipantList(\"" . base64_encode($aRow['shipment_id']) . '","' . $aRow['scheme_type'] . "\")'><i class='icon-download'></i> " . $this->translator->_('Overview Report') . '</a>';
+                $exportReport = '';
                 $notResponded = '';
-                if ($aRow['status'] != 'finalized') {
-                    $notResponded = "<a href='javascript:void(0);' class='btn btn-danger btn-xs' style='display:inline-block;margin:2px;' onclick='exportNotRespondedShipment(\"" . base64_encode($aRow['shipment_id']) . '","' . base64_encode((string) $aRow['shipment_code']) . '","' . base64_encode(Pt_Commons_DateUtility::humanReadableDateFormat($aRow['distribution_date'])) . "\")'><i class='icon icon-download'></i> " . $this->translator->_('No Response Report') . '</a>';
+                if (!$isCancelled) {
+                    $exportReport = "<a href='javascript:void(0);' class='btn btn-success btn-xs' style='display:inline-block;margin:2px;' onclick='generateShipmentParticipantList(\"" . base64_encode($aRow['shipment_id']) . '","' . $aRow['scheme_type'] . "\")'><i class='icon-download'></i> " . $this->translator->_('Overview Report') . '</a>';
+                    if ($aRow['status'] != 'finalized') {
+                        $notResponded = "<a href='javascript:void(0);' class='btn btn-danger btn-xs' style='display:inline-block;margin:2px;' onclick='exportNotRespondedShipment(\"" . base64_encode($aRow['shipment_id']) . '","' . base64_encode((string) $aRow['shipment_code']) . '","' . base64_encode(Pt_Commons_DateUtility::humanReadableDateFormat($aRow['distribution_date'])) . "\")'><i class='icon icon-download'></i> " . $this->translator->_('No Response Report') . '</a>';
+                    }
                 }
 
                 $feedbackDownload = '';
