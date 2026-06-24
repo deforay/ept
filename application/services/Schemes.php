@@ -971,13 +971,16 @@ class Application_Service_Schemes
                 }
 
                 if (!empty($test['config']) && is_array($test['config'])) {
-                    if ($overwrite) {
-                        $db->delete('scheme_config', $db->quoteInto('scheme_config_name = ?', $schemeId));
+                    $schemeExist = $db->fetchOne('SELECT scheme_config_name FROM scheme_config WHERE scheme_config_name = ? LIMIT 1', [$schemeId]);
+                    if ($schemeExist) {
+                        $db->insert('scheme_config', [
+                            'scheme_config_name'  => $schemeId,
+                            'scheme_config_value' => json_encode($test['config']),
+                        ]);
+                    } else {
+                        $summary['errors'][] = "Scheme name already exist. Kindly use differen scheme name to import.";
+                        return $summary;
                     }
-                    $db->insert('scheme_config', [
-                        'scheme_config_name'  => $schemeId,
-                        'scheme_config_value' => json_encode($test['config']),
-                    ]);
                 }
 
                 foreach (($test['recommendedTestkits'] ?? []) as $kitName) {

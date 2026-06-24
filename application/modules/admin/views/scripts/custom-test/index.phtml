@@ -10,9 +10,9 @@ $adminSession = new Zend_Session_Namespace('administrators');
             class="btn btn-primary" style="float:right;margin-left:6px;"><i
                 class="icon-user"></i>&nbsp;&nbsp;<?= $this->translate->_("Add New Custom Test"); ?></a>
         <a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'custom-test', 'action' => 'import'), 'default', true); ?>"
-            class="btn btn-default" style="float:right;margin-left:6px;"><i
+            class="btn btn-success" style="float:right;margin-left:6px;"><i
                 class="icon-upload-alt"></i>&nbsp;&nbsp;<?= $this->translate->_("Import"); ?></a>
-        <select id="status" onchange="getApproval(this.value);" class="form-control input-sm"
+        <select id="status" onchange="getApproval(this.value);" class="form-control"
             style="float:right;width:auto;display:inline-block;">
             <option value="active"><?= $this->translate->_("Active"); ?></option>
             <option value="inactive"><?= $this->translate->_("Inactive"); ?></option>
@@ -39,7 +39,7 @@ $adminSession = new Zend_Session_Namespace('administrators');
 <script type="text/javascript" charset="utf-8">
     /* Table initialisation */
     var oTable = null;
-    $(document).ready(function () {
+    $(document).ready(function() {
         drawTable();
     });
 
@@ -59,18 +59,18 @@ $adminSession = new Zend_Session_Namespace('administrators');
             "bRetrieve": false,
             "bDestroy": true,
             "aoColumns": [{
-                "sClass": "center"
-            },
-            {
-                "sClass": "center"
-            },
-            {
-                "sClass": "center"
-            },
-            {
-                "sClass": "center",
-                "bSortable": false
-            }
+                    "sClass": "center"
+                },
+                {
+                    "sClass": "center"
+                },
+                {
+                    "sClass": "center"
+                },
+                {
+                    "sClass": "center",
+                    "bSortable": false
+                }
             ],
             "aaSorting": [
                 [0, "asc"]
@@ -78,14 +78,14 @@ $adminSession = new Zend_Session_Namespace('administrators');
             "bProcessing": true,
             "bServerSide": true,
             "sAjaxSource": "<?php echo $this->url(array('module' => 'admin', 'controller' => 'custom-test', 'action' => 'index', 'format' => 'html')); ?>",
-            "fnServerParams": function (aoData) {
+            "fnServerParams": function(aoData) {
                 approvalStatus = $("#status").val();
                 aoData.push({
                     "name": "status",
                     "value": approvalStatus
                 });
             },
-            "fnServerData": function (sSource, aoData, fnCallback) {
+            "fnServerData": function(sSource, aoData, fnCallback) {
                 $.ajax({
                     "dataType": 'json',
                     "type": "POST",
