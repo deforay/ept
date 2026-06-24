@@ -972,7 +972,7 @@ class Application_Service_Schemes
 
                 if (!empty($test['config']) && is_array($test['config'])) {
                     if ($overwrite) {
-                        $db->delete('scheme_config', 'scheme_config_name = "' . $schemeId . '"');
+                        $db->delete('scheme_config', $db->quoteInto('scheme_config_name = ?', $schemeId));
                     }
                     $db->insert('scheme_config', [
                         'scheme_config_name'  => $schemeId,
