@@ -116,6 +116,11 @@ class Application_Model_DbTable_SchemeList extends Zend_Db_Table_Abstract
         $sQuery = $this->getAdapter()->select()->from(['s' => $this->_name])
             ->where('is_user_configured = "yes"')->group('scheme_id');
 
+        /* Status filter: active / inactive / all (empty = all) */
+        if (isset($parameters['status']) && in_array($parameters['status'], ['active', 'inactive'], true)) {
+            $sQuery = $sQuery->where('status = ?', $parameters['status']);
+        }
+
         if (isset($sWhere) && $sWhere != '') {
             $sQuery = $sQuery->where($sWhere);
         }
