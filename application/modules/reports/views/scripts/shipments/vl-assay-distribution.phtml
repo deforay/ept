@@ -120,6 +120,17 @@
                 endDate = end.format('DD-MMM-YYYY');
                 getShipmentCodes();
             });
+
+        // Auto-load the full "All Time" report on first paint.
+        var drp = $('#dateRange').data('daterangepicker');
+        drp.setStartDate(moment('2000-01-01'));
+        drp.setEndDate(moment());
+        allTime = true;
+        startDate = drp.startDate.format('DD-MMM-YYYY');
+        endDate = drp.endDate.format('DD-MMM-YYYY');
+        $('#dateRange').val(startDate + ' to ' + endDate);
+        getShipmentCodes();
+        showSummary();
     });
 
     function getShipmentCodes() {
