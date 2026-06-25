@@ -1403,7 +1403,7 @@ class Application_Service_Evaluation
     private function applyShipmentListFilters(Zend_Db_Select $baseSelect, array $parameters): void
     {
         // Universal: response_status
-        $responseStatus = trim((string) ($parameters['filterResponseStatus'] ?? ''));
+      /*  $responseStatus = trim((string) ($parameters['filterResponseStatus'] ?? ''));
         if (in_array($responseStatus, ['responded', 'noresponse', 'late', 'nottested'], true)) {
             $baseSelect->where('sp.response_status = ?', $responseStatus);
         }
@@ -1413,7 +1413,32 @@ class Application_Service_Evaluation
         $resultKey = strtolower(trim((string) ($parameters['filterResult'] ?? '')));
         if (isset($resultMap[$resultKey])) {
             $baseSelect->where('sp.final_result = ?', $resultMap[$resultKey]);
+        }*/
+        $statusArr = explode(',', $parameters['filterResponseStatus']);
+        if (isset($parameters['filterResponseStatus']) && $parameters['filterResponseStatus'] != '') {
+            $baseSelect = $baseSelect->where('sp.response_status IN (?)', $statusArr);
         }
+        $result = explode(',', $parameters['filterResult']);
+        if (isset($parameters['filterResult']) && $parameters['filterResult'] != '') {
+            $baseSelect = $baseSelect->where('sp.final_result IN (?)', $result);
+        }
+
+        if (isset($parameters['region']) && $parameters['region'] != '') {
+            $baseSelect = $baseSelect->where('p.region = ?', $parameters['region']);
+        }
+        if (isset($parameters['state']) && $parameters['state'] != '') {  
+            $baseSelect = $baseSelect->where('p.state = ?', $parameters['state']);
+        }
+        if (isset($parameters['district']) && $parameters['district'] != '') {
+            $baseSelect = $baseSelect->where('p.district = ?', $parameters['district']);
+        }
+
+
+        if (isset($parameters['startDate']) && $parameters['startDate'] != '' && isset($parameters['endDate']) && $parameters['endDate'] != '') {
+            $baseSelect = $baseSelect->where('DATE(sp.shipment_test_report_date) >= ?', Pt_Commons_DateUtility::isoDateFormat($parameters['startDate']));
+            $baseSelect = $baseSelect->where('DATE(sp.shipment_test_report_date) <= ?', Pt_Commons_DateUtility::isoDateFormat($parameters['endDate']));
+        }
+
 
         // Vietnam-specific: tier
         $tier = trim((string) ($parameters['vietnamTier'] ?? ''));

@@ -112,7 +112,16 @@ class Admin_EvaluateController extends Zend_Controller_Action
 
         $this->view->override = $override;
         $this->view->id = $this->_getParam('sid');
+        $participants = new Application_Service_Participants();
+        $shipmentParticipantMap = new Application_Model_DbTable_ShipmentParticipantMap();
+
         $this->view->shipmentId = $id;
+        $this->view->countries = $participants->getParticipantCountriesList();
+        $this->view->regions = $participants->getUniqueRegion();
+        $this->view->states = $participants->getUniqueState();
+        $this->view->districts = $participants->getUniqueDistrict();
+        $this->view->results = $shipmentParticipantMap->fetchAllFinalResults();
+
 
         // Initial GET still runs the existing evaluation flow (so first-load triggers
         // scheme-specific scoring). Subsequent paged loads come from the AJAX endpoint.

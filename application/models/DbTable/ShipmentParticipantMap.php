@@ -470,4 +470,11 @@ class Application_Model_DbTable_ShipmentParticipantMap extends Zend_Db_Table_Abs
             ]);
         }
     }
+
+    public function fetchAllFinalResults()
+    {
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $sql = $db->select()->from('r_results');
+        return $db->fetchAll($sql);
+    }
 }
