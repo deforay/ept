@@ -121,6 +121,20 @@
 	#shipmentTable .btn {
 		white-space: normal;
 	}
+
+	/* Checkbox column */
+	#shipmentTable th:nth-child(1),
+	#shipmentTable td:nth-child(1) {
+		width: 2%;
+	}
+
+	/* PT Survey Code — was nth-child(1), now nth-child(2) */
+	#shipmentTable th:nth-child(2),
+	#shipmentTable td:nth-child(2) {
+		width: 10%;
+	}
+
+	/* ... continue shifting all existing nth-child values +1 */
 </style>
 <link rel="stylesheet" href="<?php echo $this->baseUrl('css/daterangepicker.css'); ?>" type="text/css" media="all">
 <script type="text/javascript" src="<?php echo $this->baseUrl('js/moment.min.js'); ?>"></script>
@@ -142,11 +156,21 @@
 				<input type="text" id="dateRange" name="dateRange" class="form-control input-sm" readonly="readonly"
 					style="background: #fff" placeholder="Click here to pick a Date Range" />
 			</td>
-			<td>
+			<td style=" display: ruby; ">
 				<button style=" margin-right: 10px; " class="btn btn-success btn-sm"
 					onclick="getDrawable()"><span><?= $this->htmlTranslate("Search"); ?></span></button> <button
 					class="btn btn-danger btn-sm"
 					onclick="document.location.href=document.location"><span><?= $this->htmlTranslate("Reset"); ?></span></button>
+				<!-- BULK DOWNLOAD TOOLBAR -->
+				<div id="bulkShipmentToolbar" style="margin:10px 0;">
+					<button class="btn btn-success btn-sm" id="bulkShipmentBtn"
+						onclick="bulkDownloadShipments()" disabled>
+						<i class="icon-download"></i>
+						<?= $this->htmlTranslate("Download Bulk Overview Reports - Selected"); ?> (<span id="bulkShipmentCount">0</span>)
+					</button>
+					<button class="btn btn-default btn-sm" onclick="clearShipmentSelection()"
+						style="margin-left:5px;"><?= $this->htmlTranslate("Clear"); ?></button>
+				</div>
 			</td>
 		</tr>
 	</table>
@@ -154,6 +178,9 @@
 		id="shipmentTable">
 		<thead>
 			<tr>
+				<th scope="col" style="text-align:center; width:2%;">
+					<input type="checkbox" id="masterShipmentCb" onclick="toggleAllShipments()" />
+				</th>
 				<th scope="col" style="text-align: center;"><?= $this->htmlTranslate("PT Survey Code"); ?></th>
 				<th scope="col" style="text-align: center;"><?= $this->htmlTranslate("PT Survey Date"); ?></th>
 				<th scope="col" style="text-align: center;"><?= $this->htmlTranslate("Shipment Code"); ?></th>
@@ -168,6 +195,7 @@
 				<th scope="col" style="text-align: center;"><?= $this->htmlTranslate("Reports for PT Admin"); ?></th>
 			</tr>
 			<tr class="column-search-row">
+				<th scope="col"></th>
 				<th scope="col"><input type="text" class="form-control input-sm col-search" data-col="0"
 						placeholder="<?= $this->htmlTranslate('Search PT Survey Code'); ?>" /></th>
 				<th scope="col"></th>
@@ -205,38 +233,137 @@
 <script type="text/javascript">
 	var startDate = "";
 	var endDate = "";
-	$(document).ready(function () {
+	var selectedShipments = []; // now stores [{id:'NTU=', scheme:'SYPH RDT'}, ...]
+
+	function toggleShipmentSelect(obj) {
+		var sid = obj.value;
+		var scheme = $(obj).data('scheme');
+
+		if ($(obj).is(':checked')) {
+			if (!selectedShipments.find(function(s) {
+					return s.id === sid;
+				})) {
+				selectedShipments.push({
+					id: sid,
+					scheme: scheme
+				});
+			}
+		} else {
+			selectedShipments = selectedShipments.filter(function(s) {
+				return s.id !== sid;
+			});
+		}
+		updateShipmentBulkUI();
+	}
+
+	function toggleAllShipments() {
+		if ($("#masterShipmentCb").is(':checked')) {
+			$(".checkShipment").each(function() {
+				var sid = this.value;
+				var scheme = $(this).data('scheme');
+				$(this).prop('checked', true);
+				if (!selectedShipments.find(function(s) {
+						return s.id === sid;
+					})) {
+					selectedShipments.push({
+						id: sid,
+						scheme: scheme
+					});
+				}
+			});
+		} else {
+			$(".checkShipment").each(function() {
+				var sid = this.value;
+				$(this).prop('checked', false);
+				selectedShipments = selectedShipments.filter(function(s) {
+					return s.id !== sid;
+				});
+			});
+		}
+		updateShipmentBulkUI();
+	}
+
+	function clearShipmentSelection() {
+		selectedShipments = [];
+		$(".checkShipment").prop('checked', false);
+		$("#masterShipmentCb").prop('checked', false);
+		updateShipmentBulkUI();
+	}
+
+	function updateShipmentBulkUI() {
+		var count = selectedShipments.length;
+		$("#bulkShipmentCount").text(count);
+		$("#bulkShipmentBtn").prop('disabled', count === 0);
+	}
+
+	// fnDrawCallback: restore checked state on page change
+	// (same as before but check by id field)
+	function restoreShipmentCheckboxes() {
+		$(".checkShipment").each(function() {
+			var sid = this.value;
+			var isSelected = selectedShipments.find(function(s) {
+				return s.id === sid;
+			});
+			$(this).prop('checked', !!isSelected);
+		});
+		var total = $(".checkShipment").length;
+		var checked = $(".checkShipment:checked").length;
+		$("#masterShipmentCb")
+			.prop('indeterminate', checked > 0 && checked < total)
+			.prop('checked', total > 0 && checked === total);
+		updateShipmentBulkUI();
+	}
+
+	function bulkDownloadShipments() {
+		if (selectedShipments.length === 0) return;
+		$.blockUI();
+		$.post(
+			"<?php echo $this->url(array('module' => 'reports', 'controller' => 'shipments', 'action' => 'bulk-download-shipment-report-excel')); ?>", {
+				shipments: selectedShipments, // [{id, scheme}, ...]
+				format: 'html'
+			},
+			function(data) {
+				if (data && data !== '') {
+					document.location.href = '/temporary/' + data;
+				} else {
+					alert("<?= $this->jsTranslate('Unable to generate bulk download'); ?>");
+				}
+				$.unblockUI();
+			}
+		);
+	}
+	$(document).ready(function() {
 		$("#dataManager").select2({
 			placeholder: "Select PT participant login",
 			allowClear: true
 		});
 
 		$('#dateRange').daterangepicker({
-			locale: {
-				cancelLabel: 'Clear',
-				format: 'DD-MMM-YYYY',
-				separator: ' to ',
+				locale: {
+					cancelLabel: 'Clear',
+					format: 'DD-MMM-YYYY',
+					separator: ' to ',
+				},
+				autoApply: true,
+				showDropdowns: true,
+				alwaysShowCalendars: true,
+				autoUpdateInput: false,
+				// startDate: moment().subtract(366, 'days'),
+				// endDate: moment(),
+				// maxDate: moment(),
+				ranges: {
+					'This Month': [moment().startOf('month'), moment().endOf('month')],
+					'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
+					'Last 60 Days': [moment().subtract(59, 'days'), moment()],
+					'Last 90 Days': [moment().subtract(89, 'days'), moment()],
+					'Last 180 Days': [moment().subtract(179, 'days'), moment()],
+					'Last 12 Months': [moment().subtract(12, 'month'), moment()],
+					'Last 18 Months': [moment().subtract(18, 'month'), moment()],
+					'Previous Year': [moment().subtract(1, 'year').startOf('year'), moment().subtract(1, 'year').endOf('year')],
+					'Current Year To Date': [moment().startOf('year'), moment()]
+				}
 			},
-			autoApply: true,
-			showDropdowns: true,
-			alwaysShowCalendars: true,
-			autoUpdateInput: false,
-			// startDate: moment().subtract(366, 'days'),
-			// endDate: moment(),
-			// maxDate: moment(),
-			ranges: {
-				'This Month': [moment().startOf('month'), moment().endOf('month')],
-				'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
-				'Last 60 Days': [moment().subtract(59, 'days'), moment()],
-				'Last 90 Days': [moment().subtract(89, 'days'), moment()],
-				'Last 180 Days': [moment().subtract(179, 'days'), moment()],
-				'Last 12 Months': [moment().subtract(12, 'month'), moment()],
-				'Last 18 Months': [moment().subtract(18, 'month'), moment()],
-				'Previous Year': [moment().subtract(1, 'year').startOf('year'), moment().subtract(1, 'year').endOf('year')],
-				'Current Year To Date': [moment().startOf('year'), moment()]
-			}
-		},
-			function (start, end) {
+			function(start, end) {
 				startDate = start.format('DD-MMM-YYYY');
 				endDate = end.format('DD-MMM-YYYY');
 			});
@@ -273,40 +400,44 @@
 			"bDestroy": true,
 			"bSortCellsTop": true,
 			"aoColumns": [{
-				"sClass": "center"
-			},
-			{
-				"sClass": "center"
-			},
-			{
-				"sClass": "center"
-			},
-			{
-				"sClass": "center"
-			},
-			{
-				"sClass": "center"
-			},
-			{
-				"sClass": "center"
-			},
-			{
-				"sClass": "center"
-			},
-			{
-				"sClass": "center"
-			},
-			{
-				"sClass": "center"
-			},
-			{
-				"sClass": "center",
-				"bSortable": false
-			},
-			{
-				"sClass": "center",
-				"bSortable": false
-			}
+					"sClass": "center",
+					"bSortable": false
+				}, // NEW: checkbox col
+				{
+					"sClass": "center"
+				}, // PT Survey Code
+				{
+					"sClass": "center"
+				}, // PT Survey Date
+				{
+					"sClass": "center"
+				}, // Shipment Code
+				{
+					"sClass": "center"
+				}, // Result Due Date
+				{
+					"sClass": "center"
+				}, // Scheme
+				{
+					"sClass": "center"
+				}, // Participants
+				{
+					"sClass": "center"
+				}, // Responses
+				{
+					"sClass": "center"
+				}, // Passed
+				{
+					"sClass": "center"
+				}, // Status
+				{
+					"sClass": "center",
+					"bSortable": false
+				}, // Reports for Participants
+				{
+					"sClass": "center",
+					"bSortable": false
+				}, // Reports for PT Admin
 			],
 			"aaSorting": [
 				[1, "desc"]
@@ -314,7 +445,7 @@
 			"bProcessing": true,
 			"bServerSide": true,
 			"sAjaxSource": "<?php echo $this->url(array('module' => 'reports', 'controller' => 'shipments', 'action' => 'index', 'format' => 'html')); ?>",
-			"fnServerParams": function (aoData) {
+			"fnServerParams": function(aoData) {
 				dateRange = $("#dateRange").val();
 				dataManager = $("#dataManager").val();
 				aoData.push({
@@ -334,7 +465,7 @@
 					"value": dataManager
 				});
 			},
-			"fnServerData": function (sSource, aoData, fnCallback) {
+			"fnServerData": function(sSource, aoData, fnCallback) {
 				$.ajax({
 					"dataType": 'json',
 					"type": "POST",
@@ -343,12 +474,23 @@
 					"success": fnCallback
 				});
 			},
-			"fnRowCallback": function (nRow, aData, iDisplayIndex) {
+			"fnRowCallback": function(nRow, aData, iDisplayIndex) {
+				$(".checkShipment").each(function() {
+					if ($.inArray(this.value, selectedShipments) !== -1) {
+						$(this).prop('checked', true);
+					}
+				});
+				// Update master checkbox indeterminate state
+				var total = $(".checkShipment").length;
+				var checked = $(".checkShipment:checked").length;
+				$("#masterShipmentCb").prop('indeterminate', checked > 0 && checked < total);
+				$("#masterShipmentCb").prop('checked', total > 0 && checked === total);
+				updateShipmentBulkUI();
 				$.unblockUI;
 			},
 		});
 
-		bindColSearch('#shipmentTable', function (value, colIdx) {
+		bindColSearch('#shipmentTable', function(value, colIdx) {
 			if (oTable) {
 				oTable.fnFilter(value, colIdx);
 			}
@@ -358,11 +500,11 @@
 	function generateShipmentParticipantList(shipmentId, schemeType) {
 		$.blockUI();
 		$.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'shipments', 'action' => 'get-shipment-participant-list')); ?>", {
-			shipmentId: shipmentId,
-			schemeType: schemeType,
-			format: "html"
-		},
-			function (data) {
+				shipmentId: shipmentId,
+				schemeType: schemeType,
+				format: "html"
+			},
+			function(data) {
 				if (data != "") {
 					//alert(data);$.unblockUI();return;
 					document.location.href = '/temporary/' + data;
@@ -374,10 +516,10 @@
 	function downloadFeedbackReport(shipmentId) {
 		$.blockUI();
 		$.post("/admin/feedback-responses/get-feedback-response-report", {
-			sid: shipmentId,
-			format: "html"
-		},
-			function (data) {
+				sid: shipmentId,
+				format: "html"
+			},
+			function(data) {
 				if (data != "") {
 					document.location.href = '/temporary/' + data;
 				} else {
@@ -390,12 +532,12 @@
 	function exportNotRespondedShipment(_shipmentId, _shipmentCode, _shipmentDate) {
 		$.blockUI();
 		$.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'shipment', 'action' => 'export-shipment-not-responded-participants')); ?>", {
-			shipmentId: atob(_shipmentId),
-			shipmentCode: atob(_shipmentCode),
-			shipmentDate: atob(_shipmentDate),
-			format: "html"
-		},
-			function (data) {
+				shipmentId: atob(_shipmentId),
+				shipmentCode: atob(_shipmentCode),
+				shipmentDate: atob(_shipmentDate),
+				format: "html"
+			},
+			function(data) {
 				if (data == "" || data == null || data == undefined) {
 					alert("<?= $this->jsTranslate("Unable to generate download"); ?>");
 				} else {

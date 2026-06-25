@@ -26,6 +26,7 @@ class Reports_ShipmentsController extends Zend_Controller_Action
             ->addActionContext('vl-assay-distribution', 'html')
             ->addActionContext('vl-participant-count', 'html')
             ->addActionContext('vl-assay-summary', 'html')
+            ->addActionContext('bulk-download-shipment-report-excel', 'html')
             ->initContext();
         $this->_helper->layout()->pageName = 'report';
     }
@@ -153,5 +154,16 @@ class Reports_ShipmentsController extends Zend_Controller_Action
             $reportService = new Application_Service_Reports();
             $this->view->assaySummary = $reportService->getVlAssaySummary($params);
         }
+    }
+
+    public function bulkDownloadShipmentReportExcelAction()
+    {
+        $shipments = $this->getRequest()->getPost('shipments', []);
+        if (empty($shipments)) {
+            echo '';
+            return;
+        }
+        $reportService = new Application_Service_Reports();
+        $reportService->bulkDownloadExcel($shipments);
     }
 }

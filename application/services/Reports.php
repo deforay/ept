@@ -211,6 +211,11 @@ class Application_Service_Reports
             $responsePercentage = ($aRow['reported_percentage'] != '') ? $aRow['reported_percentage'] : '0';
 
             $row = [];
+            $row[] = '<input type="checkbox" class="checkShipment" '
+                . 'data-scheme="' . htmlspecialchars($aRow['scheme_type'], ENT_QUOTES) . '" '
+                . 'value="' . base64_encode($aRow['shipment_id']) . '" '
+                . 'onclick="toggleShipmentSelect(this);" />';
+
             $row[] = $aRow['distribution_code'];
             $row[] = Pt_Commons_DateUtility::humanReadableDateFormat($aRow['distribution_date']);
             $row[] = $aRow['shipment_code'];
@@ -300,7 +305,7 @@ class Application_Service_Reports
                 ->joinLeft(['sl' => 'scheme_list'], 's.scheme_type=sl.scheme_id', [])
                 ->joinLeft(['d' => 'distributions'], 'd.distribution_id=s.distribution_id', [])
                 ->joinLeft(['rr' => 'r_results'], 'sp.final_result=rr.result_id', [])
-                ->group('n.network_id')/* ->where("p.status = 'active'") */ ;
+                ->group('n.network_id')/* ->where("p.status = 'active'") */;
         }
 
         if (isset($params['reportType']) && $params['reportType'] == 'affiliation') {
@@ -313,7 +318,7 @@ class Application_Service_Reports
                 ->joinLeft(['sl' => 'scheme_list'], 's.scheme_type=sl.scheme_id', [])
                 ->joinLeft(['d' => 'distributions'], 'd.distribution_id=s.distribution_id', [])
                 ->joinLeft(['rr' => 'r_results'], 'sp.final_result=rr.result_id', [])
-                ->group('pa.aff_id')/* ->where("p.status = 'active'") */ ;
+                ->group('pa.aff_id')/* ->where("p.status = 'active'") */;
         }
         if (isset($params['reportType']) && $params['reportType'] == 'region') {
             $sQuery = $dbAdapter->select()->from(['p' => 'participant'], ['p.region'])
@@ -324,7 +329,7 @@ class Application_Service_Reports
                 ->joinLeft(['sl' => 'scheme_list'], 's.scheme_type=sl.scheme_id', [])
                 ->joinLeft(['d' => 'distributions'], 'd.distribution_id=s.distribution_id', [])
                 ->joinLeft(['rr' => 'r_results'], 'sp.final_result=rr.result_id', [])
-                ->group('p.region')->where('p.region IS NOT NULL')->where("p.region != ''")/* ->where("p.status = 'active'") */ ;
+                ->group('p.region')->where('p.region IS NOT NULL')->where("p.region != ''")/* ->where("p.status = 'active'") */;
         }
         if (isset($params['reportType']) && $params['reportType'] == 'enrolled-programs') {
             $sQuery = $dbAdapter->select()->from(['p' => 'participant'], [])
@@ -419,7 +424,7 @@ class Application_Service_Reports
                 ->joinLeft(['s' => 'shipment'], 's.shipment_id=shp.shipment_id', ['shipment_code', 'response_deadline'])
                 ->joinLeft(['sl' => 'scheme_list'], 's.scheme_type=sl.scheme_id', ['scheme_name'])
                 ->joinLeft(['d' => 'distributions'], 'd.distribution_id=s.distribution_id', ['distribution_code', 'distribution_date'])
-                ->group('n.network_id')->group('s.shipment_id')/* ->where("p.status = 'active'") */ ;
+                ->group('n.network_id')->group('s.shipment_id')/* ->where("p.status = 'active'") */;
         } elseif (isset($parameters['reportType']) && $parameters['reportType'] == 'affiliation') {
             $sQuery = $dbAdapter->select()->from(['pa' => 'r_participant_affiliates'])
                 ->joinLeft(['p' => 'participant'], 'p.affiliation=pa.affiliate', ['p.state', 'p.district'])
@@ -427,14 +432,14 @@ class Application_Service_Reports
                 ->joinLeft(['s' => 'shipment'], 's.shipment_id=shp.shipment_id', ['shipment_code', 'response_deadline'])
                 ->joinLeft(['sl' => 'scheme_list'], 's.scheme_type=sl.scheme_id', ['scheme_name'])
                 ->joinLeft(['d' => 'distributions'], 'd.distribution_id=s.distribution_id', ['distribution_code', 'distribution_date'])
-                ->group('pa.aff_id')->group('s.shipment_id')/* ->where("p.status = 'active'") */ ;
+                ->group('pa.aff_id')->group('s.shipment_id')/* ->where("p.status = 'active'") */;
         } elseif (isset($parameters['reportType']) && $parameters['reportType'] == 'region') {
             $sQuery = $dbAdapter->select()->from(['p' => 'participant'], ['p.region', 'p.state', 'p.district'])
                 ->joinLeft(['shp' => 'shipment_participant_map'], 'shp.participant_id=p.participant_id', [])
                 ->joinLeft(['s' => 'shipment'], 's.shipment_id=shp.shipment_id', ['shipment_code', 'response_deadline'])
                 ->joinLeft(['sl' => 'scheme_list'], 's.scheme_type=sl.scheme_id', ['scheme_name'])
                 ->joinLeft(['d' => 'distributions'], 'd.distribution_id=s.distribution_id', ['distribution_code', 'distribution_date'])
-                ->group('p.region')->where('p.region IS NOT NULL')->where("p.region != ''")->group('s.shipment_id')/* ->where("p.status = 'active'") */ ;
+                ->group('p.region')->where('p.region IS NOT NULL')->where("p.region != ''")->group('s.shipment_id')/* ->where("p.status = 'active'") */;
         } elseif (isset($parameters['reportType']) && $parameters['reportType'] == 'enrolled-programs') {
             $sQuery = $dbAdapter->select()->from(['p' => 'participant'], ['p.state', 'p.district'])
                 ->joinLeft(['pe' => 'participant_enrolled_programs_map'], 'pe.participant_id=p.participant_id', [])
@@ -443,7 +448,7 @@ class Application_Service_Reports
                 ->joinLeft(['s' => 'shipment'], 's.shipment_id=shp.shipment_id', ['shipment_code', 'response_deadline'])
                 ->joinLeft(['sl' => 'scheme_list'], 's.scheme_type=sl.scheme_id', ['scheme_name'])
                 ->joinLeft(['d' => 'distributions'], 'd.distribution_id=s.distribution_id', ['distribution_code', 'distribution_date'])
-                ->group('rep.r_epid')->group('s.shipment_id')/* ->where("p.status = 'active'") */ ;
+                ->group('rep.r_epid')->group('s.shipment_id')/* ->where("p.status = 'active'") */;
         }
         //        else{
         //          $sQuery = $dbAdapter->select()->from(array('s' => 'shipment'))
@@ -3482,7 +3487,7 @@ class Application_Service_Reports
         $shipmentIds = [];
         if (!empty($params['shipmentId'])) {
             $shipmentIds = is_array($params['shipmentId']) ? $params['shipmentId'] : [$params['shipmentId']];
-            $shipmentIds = array_values(array_filter($shipmentIds, static fn ($v) => $v !== '' && $v !== null));
+            $shipmentIds = array_values(array_filter($shipmentIds, static fn($v) => $v !== '' && $v !== null));
         }
 
         if (!empty($shipmentIds)) {
@@ -5517,5 +5522,52 @@ class Application_Service_Reports
     {
         $eidObj = new Application_Model_Eid();
         return $eidObj->fetchEidAssayByShipmentId($sid);
+    }
+
+    public function bulkDownloadExcel($shipments)
+    {
+        foreach ($shipments as $item) {
+            $shipmentId  = base64_decode($item['id']);
+            $schemeType  = $item['scheme'];
+
+            // Call the exact same service your existing generateShipmentParticipantList uses
+            $filename = $this->getShipmentParticipant(
+                $shipmentId,
+                $schemeType
+            );
+
+            if (!empty($filename)) {
+                $filePath = TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $filename;
+                if (file_exists($filePath)) {
+                    $generatedFiles[] = $filePath;
+                }
+            }
+        }
+
+        if (empty($generatedFiles)) {
+            echo '';
+            return;
+        }
+
+        // If only one file, return it directly (no zip needed)
+        if (count($generatedFiles) === 1) {
+            echo basename($generatedFiles[0]);
+            return;
+        }
+
+        // Zip all generated files together
+        $zipFilename = 'bulk-overview-' . date('Ymd-His') . '.zip';
+        $zipPath     = TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $zipFilename;
+
+        $zip = new ZipArchive();
+        if ($zip->open($zipPath, ZipArchive::CREATE) === true) {
+            foreach ($generatedFiles as $file) {
+                $zip->addFile($file, basename($file));
+            }
+            $zip->close();
+            echo $zipFilename;
+        } else {
+            echo '';
+        }
     }
 }
