@@ -116,7 +116,7 @@ class Admin_EvaluateController extends Zend_Controller_Action
         $shipmentParticipantMap = new Application_Model_DbTable_ShipmentParticipantMap();
 
         $this->view->shipmentId = $id;
-        $this->view->countries = $participants->getParticipantCountriesList();
+        $this->view->countries = $participants->getUniqueCountry();
         $this->view->regions = $participants->getUniqueRegion();
         $this->view->states = $participants->getUniqueState();
         $this->view->districts = $participants->getUniqueDistrict();

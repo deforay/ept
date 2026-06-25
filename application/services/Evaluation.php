@@ -1422,15 +1422,20 @@ class Application_Service_Evaluation
         if (isset($parameters['filterResult']) && $parameters['filterResult'] != '') {
             $baseSelect = $baseSelect->where('sp.final_result IN (?)', $result);
         }
-
+        if (isset($parameters['country']) && $parameters['country'] != '') {  
+            $country = explode(',', $parameters['country']);
+            $baseSelect = $baseSelect->where('p.country IN (?)', $country);
+        }
         if (isset($parameters['region']) && $parameters['region'] != '') {
             $baseSelect = $baseSelect->where('p.region = ?', $parameters['region']);
         }
         if (isset($parameters['state']) && $parameters['state'] != '') {  
-            $baseSelect = $baseSelect->where('p.state = ?', $parameters['state']);
+            $state = explode(',', $parameters['state']);
+            $baseSelect = $baseSelect->where('p.state IN (?)', $state);
         }
         if (isset($parameters['district']) && $parameters['district'] != '') {
-            $baseSelect = $baseSelect->where('p.district = ?', $parameters['district']);
+            $district = explode(',', $parameters['district']);
+            $baseSelect = $baseSelect->where('p.district IN (?)', $district);
         }
 
 

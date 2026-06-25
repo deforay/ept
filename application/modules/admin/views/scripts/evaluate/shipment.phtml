@@ -265,6 +265,20 @@ if ($shipmentAttributesRaw !== '') {
 <br>
 		<div class="row">
 
+			<?php if (isset($this->countries) && !empty($this->countries)) { ?>
+			<div class="col-md-3">
+					<label for="region" style="font-weight:600;font-size:13px;display:block;margin-bottom:4px;"><?= $this->htmlTranslate("Country"); ?></label>
+					<select class="form-control select2" id="country" name="country" title="<?= $this->htmlTranslate("Please select the country to filter"); ?>"
+					onchange="getOptions('participant', 'country', 'region', this.value, 'region'); applyShipmentFilters();" multiple>
+					<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
+					<?php foreach ($this->countries as $country) { ?>
+						<option value="<?php echo $country['id']; ?>"><?php echo ucwords($country['iso_name']); ?></option>
+					<?php } ?>
+				</select>
+			</div>
+			<?php } ?>
+		
+
 			<?php if (isset($this->regions) && !empty($this->regions)) { ?>
 			<div class="col-md-3">
 					<label for="region" style="font-weight:600;font-size:13px;display:block;margin-bottom:4px;"><?= $this->htmlTranslate("Region"); ?></label>
@@ -281,9 +295,9 @@ if ($shipmentAttributesRaw !== '') {
 			<?php } ?>
 			<?php if (isset($this->states) && !empty($this->states)) { ?>
 			<div class="col-md-3">
-					<label for="state" style="font-weight:600;font-size:13px;display:block;margin-bottom:4px;"><?= $this->htmlTranslate("province"); ?></label>
+					<label for="state" style="font-weight:600;font-size:13px;display:block;margin-bottom:4px;"><?= $this->htmlTranslate("Province"); ?></label>
 					<select class="form-control select2" id="state" name="state" title="<?= $this->htmlTranslate("Please select the province to filter"); ?>"
-						onchange="getOptions('participant', 'state', 'district', this.value, 'district'); applyShipmentFilters();">
+						onchange="getOptions('participant', 'state', 'district', this.value, 'district'); applyShipmentFilters();" multiple>
 						<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
 						<?php
 						foreach($this->states as $st){
@@ -297,7 +311,7 @@ if ($shipmentAttributesRaw !== '') {
 			<div class="col-md-3">
 					<label for="district" style="font-weight:600;font-size:13px;display:block;margin-bottom:4px;"><?= $this->htmlTranslate("District"); ?></label>
 					<select class="form-control select2" id="district" name="district" onchange="applyShipmentFilters();"
-						title="<?= $this->htmlTranslate("Please select the district to filter"); ?>" >
+						title="<?= $this->htmlTranslate("Please select the district to filter"); ?>" multiple>
 						<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
 					
 					<?php
@@ -440,7 +454,18 @@ if ($shipmentAttributesRaw !== '') {
 			placeholder: "<?= $this->translate->_("Select one or more results"); ?>",
 			allowClear: true
 		});
-		
+		$("#country").select2({
+			placeholder: "<?= $this->translate->_("Select one or more countries"); ?>",
+			allowClear: true
+		});
+		$("#state").select2({
+			placeholder: "<?= $this->translate->_("Select one or more states"); ?>",
+			allowClear: true
+		});
+		$("#district").select2({
+			placeholder: "<?= $this->translate->_("Select one or more districts"); ?>",
+			allowClear: true
+		});
 		$(document).ready(function () {
 			let overrideStatus = '<?php echo (isset($overrideStatus) && $overrideStatus != "") ? $overrideStatus : true; ?>';
 			if (overrideStatus != 'yes') {
@@ -520,6 +545,7 @@ if ($shipmentAttributesRaw !== '') {
 					var reg = $('#region').val() || '';
 					var st = $('#state').val() || '';
 					var dis = $('#district').val() || '';
+					var con = $('#country').val() || '';
 
 					var dateRange = $("#dateRange").val();
 					var _dateRange = dateRange.split(" to ");
@@ -534,6 +560,8 @@ if ($shipmentAttributesRaw !== '') {
 					if (reg) { aoData.push({ "name": "region", "value": reg }); }
 					if (st) { aoData.push({ "name": "state", "value": st }); }
 					if (dis) { aoData.push({ "name": "district", "value": dis }); }
+					if (con) { aoData.push({ "name": "country", "value": con }); }
+
 
 					<?php if (($this->dtsSchemeType ?? '') === 'vietnam') { ?>
 						var tier = $('#vietnamTier').val() || '';
