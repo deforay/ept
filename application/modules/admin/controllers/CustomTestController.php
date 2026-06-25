@@ -204,4 +204,37 @@ class Admin_CustomTestController extends Zend_Controller_Action
             $auditDb->addNewAuditLog('Imported ' . count($summary['imported']) . ' custom test(s)', 'config');
         }
     }
+
+    public function importDetailsAction()
+    {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
+        $schemeService = new Application_Service_Schemes();
+        if ($request->isPost()) {
+            $overwrite = $request->getPost('overwrite') === 'yes';
+
+            if (empty($_FILES['importFile']['tmp_name']) || !is_uploaded_file($_FILES['importFile']['tmp_name'])) {
+                $this->view->error = 'Please choose a custom test export file (.json) to import.';
+                return;
+            }
+
+            $raw = file_get_contents($_FILES['importFile']['tmp_name']);
+            $payload = json_decode($raw, true);
+            if (json_last_error() !== JSON_ERROR_NONE || !is_array($payload)) {
+                $this->view->error = 'The selected file is not valid JSON.';
+                return;
+            }
+            $test = $payload['tests'][0];
+
+            $this->view->result = [
+                'schemeResult' => [
+                    'scheme_id'        => $test['scheme']['scheme_id'],
+                    'scheme_name'      => $test['scheme']['scheme_name'],
+                    'status'           => $test['scheme']['status'],
+                    'user_test_config' => json_encode($test['scheme']['user_test_config']),
+                ],
+                'possibleResult' => $test['possibleResults'],
+            ];
+        }
+    }
 }

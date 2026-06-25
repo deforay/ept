@@ -173,77 +173,86 @@ class Application_Model_DbTable_SchemeList extends Zend_Db_Table_Abstract
 
     public function saveGenericTestDetails($params)
     {
-        // Set default values if not provided
-        if (!isset($params['genericConfig']['numberOfTests']) || empty($params['genericConfig']['numberOfTests'])) {
-            $params['genericConfig']['numberOfTests'] = '1';
-        }
-        if (!isset($params['genericConfig']['captureAdditionalDetails']) || empty($params['genericConfig']['captureAdditionalDetails'])) {
-            $params['genericConfig']['captureAdditionalDetails'] = 'no';
-        }
-        if (!isset($params['genericConfig']['passingScore']) || $params['genericConfig']['passingScore'] === '') {
-            $params['genericConfig']['passingScore'] = '100';
-        }
+        try {
 
-        if (isset($params['testType']) && !empty($params['testType'])) {
-            $params['genericConfig']['testType'] = reset($params['testType']);
-        }
-        if (isset($params['quantitative']['minNumberOfResponses']) && !empty($params['quantitative']['minNumberOfResponses'])) {
-            $params['genericConfig']['minNumberOfResponses'] = reset($params['quantitative']['minNumberOfResponses']);
-        }
-        $data = [
-            'scheme_id' => $params['schemeCode'],
-            'scheme_name' => $params['schemeName'],
-            'is_user_configured' => 'yes',
-            'user_test_config' => Zend_Json_Encoder::encode($params['genericConfig']),
-            'status' => $params['status'],
-        ];
-        if (isset($params['schemeId']) && !empty($params['schemeId'])) {
-            $this->update($data, $this->getAdapter()->quoteInto('scheme_id = ?', base64_decode($params['schemeId'])));
-            $this->getAdapter()->delete('r_possibleresult', $this->getAdapter()->quoteInto('scheme_id = ?', base64_decode($params['schemeId'])));
-        } else {
-            $this->insert($data);
-        }
-        if (isset($params['testType']) && !empty($params['testType'])) {
-            $sortOrder = 1;
-            foreach ($params['testType'] as $key => $test) {
-                if (isset($params[$test]['expectedResult']) && isset($params[$test]['expectedResult'][$key][1]) && $test == 'qualitative' && count($params[$test]['expectedResult'][$key]) > 0) {
-                    foreach ($params[$test]['expectedResult'][$key] as $ikey => $val) {
-                        if (isset($val) && !empty($val)) {
-                            if (isset($params[$test]['resultType'][$key][$ikey]) && !empty($params[$test]['resultType'][$key][$ikey])) {
-                                $subGrp = ($params[$test]['resultType'][$key][$ikey] == 'test-result') ? 'TEST' : 'FINAL';
-                            } else {
-                                $subGrp = null;
+            // Set default values if not provided
+            if (!isset($params['genericConfig']['numberOfTests']) || empty($params['genericConfig']['numberOfTests'])) {
+                $params['genericConfig']['numberOfTests'] = '1';
+            }
+            if (!isset($params['genericConfig']['captureAdditionalDetails']) || empty($params['genericConfig']['captureAdditionalDetails'])) {
+                $params['genericConfig']['captureAdditionalDetails'] = 'no';
+            }
+            if (!isset($params['genericConfig']['passingScore']) || $params['genericConfig']['passingScore'] === '') {
+                $params['genericConfig']['passingScore'] = '100';
+            }
+
+            if (isset($params['testType']) && !empty($params['testType'])) {
+                $params['genericConfig']['testType'] = reset($params['testType']);
+            }
+            if (isset($params['quantitative']['minNumberOfResponses']) && !empty($params['quantitative']['minNumberOfResponses'])) {
+                $params['genericConfig']['minNumberOfResponses'] = reset($params['quantitative']['minNumberOfResponses']);
+            }
+            $data = [
+                'scheme_id' => $params['schemeCode'],
+                'scheme_name' => $params['schemeName'],
+                'is_user_configured' => 'yes',
+                'user_test_config' => Zend_Json_Encoder::encode($params['genericConfig']),
+                'status' => $params['status'],
+            ];
+            if (isset($params['schemeId']) && !empty($params['schemeId'])) {
+                $this->update($data, $this->getAdapter()->quoteInto('scheme_id = ?', base64_decode($params['schemeId'])));
+                $this->getAdapter()->delete('r_possibleresult', $this->getAdapter()->quoteInto('scheme_id = ?', base64_decode($params['schemeId'])));
+            } else {
+                $this->insert($data);
+            }
+            if (isset($params['testType']) && !empty($params['testType'])) {
+                $sortOrder = 1;
+                foreach ($params['testType'] as $key => $test) {
+                    if (isset($params[$test]['expectedResult']) && isset($params[$test]['expectedResult'][$key][1]) && $test == 'qualitative' && count($params[$test]['expectedResult'][$key]) > 0) {
+                        foreach ($params[$test]['expectedResult'][$key] as $ikey => $val) {
+                            if (isset($val) && !empty($val)) {
+                                if (isset($params[$test]['resultType'][$key][$ikey]) && !empty($params[$test]['resultType'][$key][$ikey])) {
+                                    $subGrp = ($params[$test]['resultType'][$key][$ikey] == 'test-result') ? 'TEST' : 'FINAL';
+                                } else {
+                                    $subGrp = null;
+                                }
+                                $this->getAdapter()->insert('r_possibleresult', [
+                                    'scheme_id'         => $params['schemeCode'],
+                                    'sub_scheme'        => $params['resultSubGroup'][$key],
+                                    'scheme_sub_group'  => $subGrp,
+                                    'result_type'       => $test,
+                                    'response'          => $params[$test]['expectedResult'][$key][$ikey],
+                                    'result_code'       => $params[$test]['resultCode'][$key][$ikey],
+                                    'display_context'   => $params[$test]['displayContext'][$key][$ikey],
+                                    'sort_order'        => $params[$test]['sortOrder'][$key][$ikey],
+                                ]);
                             }
-                            $this->getAdapter()->insert('r_possibleresult', [
-                                'scheme_id'         => $params['schemeCode'],
-                                'sub_scheme'        => $params['resultSubGroup'][$key],
-                                'scheme_sub_group'  => $subGrp,
-                                'result_type'       => $test,
-                                'response'          => $params[$test]['expectedResult'][$key][$ikey],
-                                'result_code'       => $params[$test]['resultCode'][$key][$ikey],
-                                'display_context'   => $params[$test]['displayContext'][$key][$ikey],
-                                'sort_order'        => $params[$test]['sortOrder'][$key][$ikey],
-                            ]);
+                            $sortOrder = $params[$test]['sortOrder'][$key][$ikey];
                         }
-                        $sortOrder = $params[$test]['sortOrder'][$key][$ikey];
+                    } elseif ($test == 'quantitative') {
+                        $sortOrder++;
+                        $this->getAdapter()->insert('r_possibleresult', [
+                            'scheme_id'         => $params['schemeCode'],
+                            'sub_scheme'        => $params['resultSubGroup'][$key],
+                            'result_type'       => $test,
+                            'high_range'        => $params[$test]['highValue'][$key],
+                            'threshold_range'   => $params[$test]['thresholdValue'][$key],
+                            'low_range'         => $params[$test]['lowValue'][$key],
+                            'sd_scaling_factor'         => $params[$test]['SDScalingFactor'][$key],
+                            'uncertainy_scaling_factor' => $params[$test]['uncertainyScalingFactor'][$key],
+                            'uncertainy_threshold'      => $params[$test]['uncertainyThreshold'][$key],
+                            'minimum_number_of_responses' => $params[$test]['minNumberOfResponses'][$key],
+                            'sort_order'        => $sortOrder,
+                        ]);
                     }
-                } elseif ($test == 'quantitative') {
-                    $sortOrder++;
-                    $this->getAdapter()->insert('r_possibleresult', [
-                        'scheme_id'         => $params['schemeCode'],
-                        'sub_scheme'        => $params['resultSubGroup'][$key],
-                        'result_type'       => $test,
-                        'high_range'        => $params[$test]['highValue'][$key],
-                        'threshold_range'   => $params[$test]['thresholdValue'][$key],
-                        'low_range'         => $params[$test]['lowValue'][$key],
-                        'sd_scaling_factor'         => $params[$test]['SDScalingFactor'][$key],
-                        'uncertainy_scaling_factor' => $params[$test]['uncertainyScalingFactor'][$key],
-                        'uncertainy_threshold'      => $params[$test]['uncertainyThreshold'][$key],
-                        'minimum_number_of_responses' => $params[$test]['minNumberOfResponses'][$key],
-                        'sort_order'        => $sortOrder,
-                    ]);
                 }
             }
+        } catch (Exception $e) {
+            Pt_Commons_LoggerUtility::logError($e->getMessage(), [
+                'file'  => $e->getFile(),
+                'line'  => $e->getLine(),
+                'trace' => $e->getTraceAsString(),
+            ]);
         }
     }
 

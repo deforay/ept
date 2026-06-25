@@ -1,0 +1,759 @@
+<?php
+
+/**
+ * Import Custom Test Page
+ * -----------------------
+ * $this->result is the decoded JSON export (tests[0]) normalised by the controller
+ * into the same shape the edit page uses:
+ *
+ *   $this->result['schemeResult']   — mirrors scheme_list row
+ *   $this->result['possibleResult'] — mirrors r_possibleresult rows
+ *
+ * Controller should do:
+ *   $json = json_decode(file_get_contents($uploadedFile), true);
+ *   $test = $json['tests'][0];
+ *   $userConfig = $test['scheme']['user_test_config'];   // already array
+ *
+ *   $this->view->result = [
+ *       'schemeResult' => [
+ *           'scheme_id'        => $test['scheme']['scheme_id'],
+ *           'scheme_name'      => $test['scheme']['scheme_name'],
+ *           'status'           => $test['scheme']['status'],
+ *           'user_test_config' => json_encode($userConfig),   // keep as JSON string
+ *       ],
+ *       'possibleResult' => $test['possibleResults'],   // array of rows as-is
+ *   ];
+ */
+
+// ── Decode user_test_config (same as edit.phtml) ──────────────────────────────
+$jsonConfig = [];
+if (!empty($this->result['schemeResult']['user_test_config'])) {
+    $jsonConfig = Zend_Json_Decoder::decode($this->result['schemeResult']['user_test_config'], true);
+}
+
+// ── Group & sort possibleResult by sub_scheme (same as edit.phtml) ────────────
+$qualitativeRows = [];
+if (!empty($this->result['possibleResult'])) {
+    foreach ($this->result['possibleResult'] as $row) {
+        $qualitativeRows[$row['sub_scheme']][] = $row;
+    }
+    foreach ($qualitativeRows as $subScheme => &$rows) {
+        usort($rows, function ($a, $b) {
+            $order  = ['TEST' => 0, 'FINAL' => 1];
+            $aOrder = $order[$a['scheme_sub_group']] ?? 2;
+            $bOrder = $order[$b['scheme_sub_group']] ?? 2;
+            if ($aOrder !== $bOrder) return $aOrder - $bOrder;
+            return ($a['sort_order'] ?? 0) - ($b['sort_order'] ?? 0);
+        });
+    }
+    unset($rows);
+}
+
+$schemeCodeValue = $this->result['schemeResult']['scheme_id']   ?? '';
+$schemeNameValue = $this->result['schemeResult']['scheme_name'] ?? '';
+?>
+<style>
+    .result-type {
+        background-color: #f9f9f9;
+        margin-bottom: 30px !important;
+        display: table;
+        width: 100%;
+    }
+
+    .input-dup-error {
+        border-color: #a94442 !important;
+        box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075), 0 0 6px rgba(169, 68, 66, .4) !important;
+    }
+</style>
+<link rel="stylesheet" type="text/css" href="<?php echo $this->baseUrl('css/bootstrap-select.min.css'); ?>" />
+<link rel="stylesheet" type="text/css" href="<?php echo $this->baseUrl('css/multi-select.css'); ?>" />
+<link href="<?php echo $this->baseUrl('css/select2.css'); ?>" rel="stylesheet" />
+
+<div class="well">
+    <form name="importGenericTestForm" id="importGenericTestForm" method="post"
+        action="<?php echo $this->url(['module' => 'admin', 'controller' => 'custom-test', 'action' => 'add'], 'default', true); ?>"
+        class="form-horizontal bs-example" role="form" onsubmit="validateNow();return false;">
+        <fieldset>
+            <legend><?= $this->translate->_("Import Custom Test"); ?></legend>
+
+            <div class="row">
+                <div class="col-lg-6">
+                    <label class="control-label" for="schemeName"><?= $this->translate->_("Custom Test Name"); ?> <span class="mandatory">*</span></label>
+                    <input type="text"
+                        value="<?php echo $schemeNameValue; ?>"
+                        id="schemeName" name="schemeName"
+                        size="50" maxlength="255"
+                        class="isRequired form-control"
+                        title="Please enter the custom test name"
+                        placeholder="Enter the custom test name"
+                        onblur="checkDuplicate('scheme_list','scheme_name',this,null,'This name already exists. Please try something else.')" />
+                </div>
+                <div class="col-lg-6">
+                    <label class="control-label" for="schemeCode"><?= $this->translate->_("Custom Test Code"); ?> <span class="mandatory">*</span></label>
+                    <input type="text"
+                        value="<?php echo $schemeCodeValue; ?>"
+                        id="schemeCode" name="schemeCode"
+                        size="50" maxlength="255"
+                        class="form-control isRequired"
+                        title="Please enter the custom test code"
+                        placeholder="Enter the custom test code"
+                        autocomplete="off" onblur="checkDuplicate('scheme_list', 'scheme_id', this, null, 'This code already exists. Please try something else.')" />
+                    <div id="schemeCodeFeedback" class="help-block" style="display:none;margin-top:4px;"></div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-6">
+                    <label class="control-label" for="numberOfTests"><?= $this->translate->_("Number of Tests"); ?></label>
+                    <select id="numberOfTests" name="genericConfig[numberOfTests]" class="form-control" title="Please select the number of tests">
+                        <option value="1" <?php echo (($jsonConfig['numberOfTests'] ?? '') == 1) ? 'selected="selected"' : ''; ?>>1</option>
+                        <option value="2" <?php echo (($jsonConfig['numberOfTests'] ?? '') == 2) ? 'selected="selected"' : ''; ?>>2</option>
+                        <option value="3" <?php echo (($jsonConfig['numberOfTests'] ?? '') == 3) ? 'selected="selected"' : ''; ?>>3</option>
+                    </select>
+                </div>
+                <div class="col-lg-6">
+                    <label class="control-label" for="status"><?= $this->translate->_("Status"); ?></label>
+                    <select id="status" name="status" class="form-control" title="Please select the status">
+                        <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
+                        <option value="active" <?php echo (($this->result['schemeResult']['status'] ?? '') == 'active')   ? 'selected="selected"' : ''; ?>>Active</option>
+                        <option value="inactive" <?php echo (($this->result['schemeResult']['status'] ?? '') == 'inactive') ? 'selected="selected"' : ''; ?>>Inactive</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-6">
+                    <label class="control-label" for="passingScore"><?= $this->translate->_("Passing Score"); ?></label>
+                    <input type="text"
+                        value="<?php echo $jsonConfig['passingScore'] ?? '100'; ?>"
+                        id="passingScore" name="genericConfig[passingScore]"
+                        class="form-control"
+                        title="Please enter the passing score"
+                        placeholder="Enter the passing score" />
+                </div>
+                <div class="col-lg-6">
+                    <label for="disableOtherTestkit" class="control-label"><?= $this->translate->_("Disable Other Test Kit"); ?> <span class="mandatory">*</span></label>
+                    <input type="radio" name="genericConfig[disableOtherTestkit]" id="disableOtherTestkitYes"
+                        value="yes" <?php echo (($jsonConfig['disableOtherTestkit'] ?? '') == 'yes') ? 'checked="checked"' : ''; ?>
+                        title="Please select whether to disable other test kits" /> <?= $this->translate->_("Yes"); ?>
+                    &nbsp;
+                    <input type="radio" name="genericConfig[disableOtherTestkit]" id="disableOtherTestkitNo"
+                        value="no" class="isRequired"
+                        <?php echo (($jsonConfig['disableOtherTestkit'] ?? 'no') == 'no') ? 'checked="checked"' : ''; ?>
+                        title="Please select whether to disable other test kits" /> <?= $this->translate->_("No"); ?>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-6">
+                    <label for="testkit1" class="control-label"><?= $this->translate->_("Enforce these Test kits"); ?></label>
+                    <select name="customTestkit[]" id="customTestkit" class="form-control" multiple="multiple" title="Please Choose Test Kit" style="width:100%;">
+                    </select>
+                </div>
+                <div class="col-lg-6">
+                    <label for="reportVersion" class="control-label"><?= $this->translate->_("Report Version"); ?></label>
+                    <input type="text"
+                        value="<?php echo $jsonConfig['reportVersion'] ?? ''; ?>"
+                        name="genericConfig[reportVersion]" id="reportVersion"
+                        class="form-control"
+                        placeholder="Enter the report version"
+                        title="Please enter the report version" />
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <label for="effectiveDate" class="control-label"><?= $this->translate->_("Report Effective Date"); ?></label>
+                    <input type="text"
+                        value="<?php echo $jsonConfig['effectiveDate'] ?? ''; ?>"
+                        id="effectiveDate" name="genericConfig[effectiveDate]"
+                        class="form-control datepicker"
+                        placeholder="Select the report effective date"
+                        title="<?= $this->translate->_('Please select the report effective date'); ?>" />
+                    <small class="text-muted"><?= $this->translate->_("Please select the report effective date that shows in the report PDF footer."); ?></small>
+                </div>
+                <div class="col-lg-6">
+                    <label class="control-label" for="captureAdditionalDetails"><?= $this->translate->_("Capture Additional Detail"); ?></label>
+                    <select id="captureAdditionalDetails" name="genericConfig[captureAdditionalDetails]" class="form-control" title="Please select whether to capture additional details">
+                        <option value="yes" <?php echo (($jsonConfig['captureAdditionalDetails'] ?? '') == 'yes') ? 'selected="selected"' : ''; ?>>Yes</option>
+                        <option value="no" <?php echo (($jsonConfig['captureAdditionalDetails'] ?? 'no') == 'no') ? 'selected="selected"' : ''; ?>>No</option>
+                    </select>
+                </div>
+                <div class="col-lg-6" id="additionalDetailLabelGroup"
+                    style="<?php echo (($jsonConfig['captureAdditionalDetails'] ?? '') == 'yes') ? '' : 'display:none;'; ?>">
+                    <label class="control-label" for="additionalDetailLabel"><?= $this->translate->_("Additional Detail Label"); ?></label>
+                    <input type="text"
+                        value="<?php echo $jsonConfig['additionalDetailLabel'] ?? ''; ?>"
+                        id="additionalDetailLabel" name="genericConfig[additionalDetailLabel]"
+                        class="form-control <?php echo (($jsonConfig['captureAdditionalDetails'] ?? '') == 'yes') ? 'isRequired' : ''; ?>"
+                        title="Please enter the label for additional details"
+                        placeholder="Enter the label for additional details" />
+                </div>
+            </div>
+
+            <!-- ── Results table ─────────────────────────────────────────── -->
+            <div id="testsSection" style="<?php echo !empty($schemeCodeValue) ? '' : 'display:none;'; ?>">
+                <hr>
+                <table style="width:100%;margin:0 auto;" border="1" class="table table-bordered table-striped clearfix" id="vlSampleTable">
+                    <tbody>
+
+                        <?php if (!empty($this->result['possibleResult'])) :
+                            $label    = [];
+                            $rowCount = 0;
+                            foreach ($this->result['possibleResult'] as $key => $row) :
+                                if (in_array($row['sub_scheme'], $label)) continue;
+                                $label[]   = $row['sub_scheme'];
+                                $rowCount++;
+                        ?>
+                                <tr class="result-type">
+                                    <td>
+                                        <table style="width:100%;margin:0 auto;" border="1" class="table table-bordered table-striped clearfix">
+                                            <tr>
+                                                <td class="<?php echo (!empty($row['sub_scheme'])) ? '' : 'hide'; ?> firstSubTest" style="width:20%;">
+                                                    <label for="resultSubGroup<?php echo $rowCount; ?>" class="form-label-control"><?= $this->translate->_("Enter the test name"); ?></label>
+                                                </td>
+                                                <td class="<?php echo (!empty($row['sub_scheme'])) ? '' : 'hide'; ?> firstSubTest" style="width:30%;">
+                                                    <input type="text"
+                                                        name="resultSubGroup[<?php echo $rowCount; ?>]"
+                                                        id="resultSubGroup<?php echo $rowCount; ?>"
+                                                        value="<?php echo $row['sub_scheme'] ?? ''; ?>"
+                                                        class="form-control input-sm"
+                                                        placeholder="Enter the sub test name"
+                                                        title="Please enter the sub test name for <?php echo $rowCount; ?> row" />
+                                                </td>
+                                                <td style="width:20%;">
+                                                    <label for="testType<?php echo $rowCount; ?>" class="form-label-control"><?= $this->translate->_("Select Test Format"); ?></label>
+                                                </td>
+                                                <td style="width:30%;">
+                                                    <select name="testType[<?php echo $rowCount; ?>]"
+                                                        id="testType<?php echo $rowCount; ?>"
+                                                        class="form-control test-type input-sm"
+                                                        title="Please select the test format"
+                                                        onchange="setTestFormatType(this.value, <?php echo $rowCount; ?>)">
+                                                        <option value=""> -- <?= $this->translate->_("Select"); ?> -- </option>
+                                                        <option value="qualitative" <?php echo ($row['result_type'] == 'qualitative')  ? 'selected="selected"' : ''; ?>><?= $this->translate->_("Qualitative"); ?></option>
+                                                        <option value="quantitative" <?php echo ($row['result_type'] == 'quantitative') ? 'selected="selected"' : ''; ?>><?= $this->translate->_("Quantitative"); ?></option>
+                                                    </select>
+                                                </td>
+                                            </tr>
+
+                                            <!-- Qualitative rows -->
+                                            <tr class="qualitative-div <?php echo ($row['result_type'] == 'qualitative') ? '' : 'hide'; ?>" id="qualitativeRow<?php echo $rowCount; ?>">
+                                                <td colspan="4">
+                                                    <table style="width:100%;">
+                                                        <tr>
+                                                            <th><?= $this->translate->_("Expected Result"); ?></th>
+                                                            <th><?= $this->translate->_("Result Code"); ?></th>
+                                                            <th><?= $this->translate->_("Result Type"); ?></th>
+                                                            <th><?= $this->translate->_("Displayed To"); ?></th>
+                                                            <th><?= $this->translate->_("Sort Order"); ?></th>
+                                                            <th><?= $this->translate->_("Action"); ?></th>
+                                                        </tr>
+                                                        <?php if (!empty($qualitativeRows[$row['sub_scheme']])) :
+                                                            $n = count($qualitativeRows[$row['sub_scheme']]);
+                                                            foreach ($qualitativeRows[$row['sub_scheme']] as $ikey => $value) :
+                                                                $innerCount = $ikey + 1;
+                                                        ?>
+                                                                <tr>
+                                                                    <td>
+                                                                        <input type="text"
+                                                                            value="<?php echo $value['response'] ?? ''; ?>"
+                                                                            name="qualitative[expectedResult][<?php echo $rowCount; ?>][<?php echo $innerCount; ?>]"
+                                                                            class="form-control qualitative-input-<?php echo $rowCount . $innerCount; ?> input-sm"
+                                                                            placeholder="Enter the expected result"
+                                                                            title="Please enter the expected result" />
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="input-group input-group-sm">
+                                                                            <span class="input-group-addon resultCodePrefix" style="display:none;padding:6px 8px;"></span>
+                                                                            <input type="text"
+                                                                                value="<?php echo $value['result_code'] ?? ''; ?>"
+                                                                                class="form-control qualitative-input-<?php echo $rowCount . $innerCount; ?> input-sm resultCodeSuffix"
+                                                                                placeholder="<?= $this->translate->_("Code"); ?>"
+                                                                                maxlength="20"
+                                                                                title="<?= $this->translate->_("Please enter the result code"); ?>" />
+                                                                        </div>
+                                                                        <input type="hidden"
+                                                                            name="qualitative[resultCode][<?php echo $rowCount; ?>][<?php echo $innerCount; ?>]"
+                                                                            class="resultCodeHidden"
+                                                                            value="<?php echo $value['result_code'] ?? ''; ?>" />
+                                                                    </td>
+                                                                    <td>
+                                                                        <select id="resultType<?php echo $rowCount . $innerCount; ?>"
+                                                                            name="qualitative[resultType][<?php echo $rowCount; ?>][<?php echo $innerCount; ?>]"
+                                                                            class="form-control qualitative-input-<?php echo $rowCount . $innerCount; ?> input-sm resultTypeInput"
+                                                                            title="Please select the result type"
+                                                                            onchange="resultTypeChange(<?php echo $rowCount; ?>, <?php echo $innerCount; ?>)">
+                                                                            <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
+                                                                            <option value="test-result" <?php echo (($value['scheme_sub_group'] ?? '') == 'TEST')  ? 'selected="selected"' : ''; ?>><?= $this->translate->_("Test Result"); ?></option>
+                                                                            <option value="final-interpretation" <?php echo (($value['scheme_sub_group'] ?? '') == 'FINAL') ? 'selected="selected"' : ''; ?>><?= $this->translate->_("Final Interpretation"); ?></option>
+                                                                        </select>
+                                                                    </td>
+                                                                    <td>
+                                                                        <select id="displayContext<?php echo $rowCount . $innerCount; ?>"
+                                                                            name="qualitative[displayContext][<?php echo $rowCount; ?>][<?php echo $innerCount; ?>]"
+                                                                            class="form-control qualitative-input-<?php echo $rowCount . $innerCount; ?> input-sm"
+                                                                            title="Please select the displayed context">
+                                                                            <option value=""> -- <?= $this->translate->_("Select"); ?> -- </option>
+                                                                            <option value="participant" <?php echo (($value['display_context'] ?? '') == 'participant') ? 'selected="selected"' : ''; ?>><?= $this->translate->_("Participant"); ?></option>
+                                                                            <option value="admin" <?php echo (($value['display_context'] ?? '') == 'admin')       ? 'selected="selected"' : ''; ?>><?= $this->translate->_("Admin"); ?></option>
+                                                                            <option value="all" <?php echo (($value['display_context'] ?? '') == 'all')         ? 'selected="selected"' : ''; ?>><?= $this->translate->_("All"); ?></option>
+                                                                        </select>
+                                                                    </td>
+                                                                    <td>
+                                                                        <input type="text"
+                                                                            value="<?php echo $value['sort_order'] ?? ''; ?>"
+                                                                            name="qualitative[sortOrder][<?php echo $rowCount; ?>][<?php echo $innerCount; ?>]"
+                                                                            class="form-control qualitative-input-<?php echo $rowCount . $innerCount; ?> input-sm"
+                                                                            placeholder="Enter the sort order"
+                                                                            title="Please enter the sort order" />
+                                                                    </td>
+                                                                    <td style="text-align:center;">
+                                                                        <a href="javascript:void(0);"
+                                                                            onclick="addQualitativeRow(this, <?php echo $rowCount; ?>, <?php echo $innerCount + 1; ?>);"
+                                                                            <?php echo ($innerCount == $n) ? '' : 'disabled="disabled"'; ?>
+                                                                            class="btn btn-xs btn-info qualitative-insrow-<?php echo $rowCount . $innerCount; ?>">
+                                                                            <i class="icon-plus"></i>
+                                                                        </a>
+                                                                        &nbsp;&nbsp;
+                                                                        <a href="javascript:void(0);"
+                                                                            onclick="removeQualitativeRow(this, <?php echo $rowCount; ?>, <?php echo $innerCount - 1; ?>)"
+                                                                            class="btn btn-xs btn-danger"
+                                                                            title="Remove this row completely">
+                                                                            <i class="icon-minus"></i>
+                                                                        </a>
+                                                                    </td>
+                                                                </tr>
+                                                        <?php endforeach;
+                                                        endif; ?>
+                                                    </table>
+                                                </td>
+                                            </tr>
+
+                                            <!-- Quantitative row -->
+                                            <tr class="quantitative-div <?php echo ($row['result_type'] == 'quantitative') ? '' : 'hide'; ?>" id="quantitativeRow<?php echo $rowCount; ?>">
+                                                <td colspan="4">
+                                                    <table style="width:100%;">
+                                                        <tr>
+                                                            <th><?= $this->translate->_("High Range"); ?></th>
+                                                            <th><?= $this->translate->_("Threshold Range"); ?></th>
+                                                            <th><?= $this->translate->_("Low Range"); ?></th>
+                                                            <th><?= $this->translate->_("SD Scaling Factor"); ?></th>
+                                                            <th><?= $this->translate->_("Uncertainty Scaling Factor"); ?></th>
+                                                            <th><?= $this->translate->_("Uncertainty Threshold"); ?></th>
+                                                            <th><?= $this->translate->_("Minimum Number of Responses"); ?></th>
+                                                        </tr>
+                                                        <tr>
+                                                            <td><input type="text" value="<?php echo $row['high_range'] ?? ''; ?>" name="quantitative[highValue][<?php echo $rowCount; ?>]" class="form-control quantitative-input-<?php echo $rowCount; ?>1 input-sm" placeholder="Enter the high value" title="Please enter the high value" /></td>
+                                                            <td><input type="text" value="<?php echo $row['threshold_range'] ?? ''; ?>" name="quantitative[thresholdValue][<?php echo $rowCount; ?>]" class="form-control quantitative-input-<?php echo $rowCount; ?>1 input-sm" placeholder="Enter the threshold value" title="Please enter the threshold value" /></td>
+                                                            <td><input type="text" value="<?php echo $row['low_range'] ?? ''; ?>" name="quantitative[lowValue][<?php echo $rowCount; ?>]" class="form-control quantitative-input-<?php echo $rowCount; ?>1 input-sm" placeholder="Enter the low value" title="Please enter the low value" /></td>
+                                                            <td><input type="text" value="<?php echo $row['sd_scaling_factor'] ?? ''; ?>" name="quantitative[SDScalingFactor][<?php echo $rowCount; ?>]" class="form-control quantitative-input-<?php echo $rowCount; ?>1 input-sm" placeholder="Enter the SD scaling factor" title="Please enter the SD scaling factor" /></td>
+                                                            <td><input type="text" value="<?php echo $row['uncertainy_scaling_factor'] ?? ''; ?>" name="quantitative[uncertainyScalingFactor][<?php echo $rowCount; ?>]" class="form-control quantitative-input-<?php echo $rowCount; ?>1 input-sm" placeholder="Enter the uncertainy scaling factor" title="Please enter the uncertainy scaling factor" /></td>
+                                                            <td><input type="text" value="<?php echo $row['uncertainy_threshold'] ?? ''; ?>" name="quantitative[uncertainyThreshold][<?php echo $rowCount; ?>]" class="form-control quantitative-input-<?php echo $rowCount; ?>1 input-sm" placeholder="Enter the uncertainty threshold" title="Please enter the uncertainty threshold" /></td>
+                                                            <td><input type="text" value="<?php echo $row['minimum_number_of_responses'] ?? ''; ?>" name="quantitative[minNumberOfResponses][<?php echo $rowCount; ?>]" class="form-control quantitative-input-<?php echo $rowCount; ?>1 input-sm" placeholder="Enter the minimum number of response" title="Please enter the minimum number of response" /></td>
+                                                        </tr>
+                                                    </table>
+                                                </td>
+                                            </tr>
+
+                                            <tr class="quantitative-warning <?php echo ($row['result_type'] == 'quantitative') ? '' : 'hide'; ?>" id="quantitativeWarning<?php echo $rowCount; ?>">
+                                                <td colspan="4">
+                                                    <div class="alert alert-warning" style="margin-top:10px;">
+                                                        <i class="icon-warning-sign"></i> <strong><?= $this->translate->_("Note:"); ?></strong> <?= $this->translate->_("Quantitative is under active development and may have limited functionality."); ?>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                    <!-- TODO: Multiple sub-tests feature hidden until evaluation logic supports it -->
+                                    <td style="text-align:center;vertical-align:middle;display:none;" class="add-subtest-btn">
+                                        <a href="javascript:void(0);" onclick="addNewRow(this);" class="btn btn-xs btn-info"><i class="icon-plus"></i></a>
+                                        &nbsp;&nbsp;
+                                        <a href="javascript:void(0);" onclick="removeRow(this)" class="btn btn-xs btn-danger" title="Remove this row completely"><i class="icon-minus"></i></a>
+                                    </td>
+                                </tr>
+
+                            <?php endforeach;
+                        else : ?>
+
+                            <!-- Empty state: no possibleResult in JSON -->
+                            <tr class="result-type">
+                                <td>
+                                    <table style="width:100%;margin:0 auto;" border="1" class="table table-bordered table-striped clearfix">
+                                        <tr>
+                                            <td class="hide firstSubTest" style="width:20%;">
+                                                <label for="resultSubGroup1" class="form-label-control"><?= $this->translate->_("Enter the test name"); ?></label>
+                                            </td>
+                                            <td class="hide firstSubTest" style="width:30%;">
+                                                <input type="text" name="resultSubGroup[1]" id="resultSubGroup1" class="form-control input-sm" placeholder="Enter the sub test name" title="Please enter the sub test name for 1st row" />
+                                            </td>
+                                            <td style="width:20%;">
+                                                <label for="testType1" class="form-label-control"><?= $this->translate->_("Select Test Format"); ?></label>
+                                            </td>
+                                            <td style="width:30%;">
+                                                <select name="testType[1]" id="testType1" class="form-control test-type input-sm" title="Please select the test format" onchange="setTestFormatType(this.value,1)">
+                                                    <option value=""> -- <?= $this->translate->_("Select"); ?> -- </option>
+                                                    <option value="qualitative"><?= $this->translate->_("Qualitative"); ?></option>
+                                                    <option value="quantitative"><?= $this->translate->_("Quantitative"); ?></option>
+                                                </select>
+                                            </td>
+                                        </tr>
+                                        <tr class="qualitative-div hide" id="qualitativeRow1">
+                                            <td colspan="4">
+                                                <table style="width:100%;">
+                                                    <tr>
+                                                        <th><?= $this->translate->_("Expected Result"); ?></th>
+                                                        <th><?= $this->translate->_("Result Code"); ?></th>
+                                                        <th><?= $this->translate->_("Result Type"); ?></th>
+                                                        <th><?= $this->translate->_("Displayed To"); ?></th>
+                                                        <th><?= $this->translate->_("Sort Order"); ?></th>
+                                                        <th><?= $this->translate->_("Action"); ?></th>
+                                                    </tr>
+                                                    <tr>
+                                                        <td><input type="text" name="qualitative[expectedResult][1][1]" class="form-control qualitative-input-11 input-sm" placeholder="Enter the expected result" title="Please enter the expected result" /></td>
+                                                        <td>
+                                                            <div class="input-group input-group-sm">
+                                                                <span class="input-group-addon resultCodePrefix" style="display:none;padding:6px 8px;"></span>
+                                                                <input type="text" class="form-control qualitative-input-11 input-sm resultCodeSuffix" placeholder="<?= $this->translate->_("Code"); ?>" maxlength="20" title="<?= $this->translate->_("Please enter the result code"); ?>" />
+                                                            </div>
+                                                            <input type="hidden" name="qualitative[resultCode][1][1]" class="resultCodeHidden" />
+                                                        </td>
+                                                        <td>
+                                                            <select id="resultType11" name="qualitative[resultType][1][1]" class="form-control qualitative-input-11 input-sm resultTypeInput" title="Please select the result type" onchange="resultTypeChange(1,1)">
+                                                                <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
+                                                                <option value="test-result"><?= $this->translate->_("Test Result"); ?></option>
+                                                                <option value="final-interpretation"><?= $this->translate->_("Final Interpretation"); ?></option>
+                                                            </select>
+                                                        </td>
+                                                        <td>
+                                                            <select id="displayContext11" name="qualitative[displayContext][1][1]" class="form-control qualitative-input-11 input-sm" title="Please select the displayed context">
+                                                                <option value=""> -- <?= $this->translate->_("Select"); ?> -- </option>
+                                                                <option value="participant"><?= $this->translate->_("Participant"); ?></option>
+                                                                <option value="admin"><?= $this->translate->_("Admin"); ?></option>
+                                                                <option value="all"><?= $this->translate->_("All"); ?></option>
+                                                            </select>
+                                                        </td>
+                                                        <td><input type="text" name="qualitative[sortOrder][1][1]" class="form-control qualitative-input-11 input-sm" placeholder="Enter the sort order" title="Please enter the sort order" /></td>
+                                                        <td style="text-align:center;"><a href="javascript:void(0);" onclick="addQualitativeRow(this,1,2);" class="btn btn-xs btn-info qualitative-insrow-11"><i class="icon-plus"></i></a></td>
+                                                    </tr>
+                                                </table>
+                                            </td>
+                                        </tr>
+                                        <tr class="quantitative-div hide" id="quantitativeRow1">
+                                            <td colspan="4"></td>
+                                        </tr>
+                                        <tr class="quantitative-warning hide" id="quantitativeWarning1">
+                                            <td colspan="4"></td>
+                                        </tr>
+                                    </table>
+                                </td>
+                                <td style="text-align:center;vertical-align:middle;display:none;" class="add-subtest-btn">
+                                    <a href="javascript:void(0);" onclick="addNewRow(this);" class="btn btn-xs btn-info"><i class="icon-plus"></i></a>
+                                </td>
+                            </tr>
+
+                        <?php endif; ?>
+                    </tbody>
+                </table>
+            </div>
+
+            <div id="respond" style="margin:0 auto;text-align:center;" class="form-group col-lg-11" align="center">
+                <input name="submitbtn" class="btn btn-primary" type="submit" tabindex="7" value="<?= $this->translate->_("Add"); ?>" />
+                <input class="btn btn-danger" type="button" onclick="window.location.href='/admin/custom-test';" tabindex="8" value="<?= $this->translate->_("Cancel"); ?>" />
+            </div>
+
+        </fieldset>
+    </form>
+</div>
+
+<script type="text/javascript" src="<?php echo $this->baseUrl('js/select2.min.js'); ?>"></script>
+<script type="text/javascript" src="<?php echo $this->baseUrl('js/bootstrap-select.min.js'); ?>"></script>
+<script type="text/javascript" src="<?php echo $this->baseUrl('js/jquery.multi-select.js'); ?>"></script>
+<script type="text/javascript">
+    var duplicated = false;
+    var codeDuplicated = false;
+    var schemeCodeCheckTimer = null;
+    var schemeCodeExclude = '';
+    var cloneSourceCode = '';
+    var sampleCounter = <?php echo !empty($this->result['possibleResult']) ? count($this->result['possibleResult']) : 1; ?>;
+
+    function checkDuplicate(tableName, fieldName, obj, fnct, msg) {
+        $.post("<?php echo $this->url(['module' => 'default', 'controller' => 'common', 'action' => 'check-duplicate']); ?>", {
+            tableName: tableName,
+            fieldName: fieldName,
+            value: obj.value,
+            fnct: fnct,
+            format: 'html'
+        }, function(data) {
+            if (data > 0) {
+                alert(msg, 'err');
+                duplicated = true;
+                $(obj).val('');
+            } else {
+                duplicated = false;
+            }
+        });
+    }
+
+    function validateQualitativeResults() {
+        var qualitativeVisible = false;
+        $('.qualitative-div').each(function() {
+            if (!$(this).hasClass('hide')) qualitativeVisible = true;
+        });
+        if (!qualitativeVisible) return true;
+
+        var resultsByType = {
+            'test-result': [],
+            'final-interpretation': []
+        };
+        var allResultCodes = [];
+        var valid = true;
+
+        $('.resultTypeInput').each(function() {
+            if (!valid) return false;
+            var resultType = $(this).val();
+            if (!resultType) return;
+            var row = $(this).closest('tr');
+            var expectedResult = row.find('input[name*="[expectedResult]"]').val();
+            if (expectedResult && expectedResult.trim() !== '') {
+                var norm = expectedResult.trim().toLowerCase();
+                if (resultsByType[resultType] && resultsByType[resultType].includes(norm)) {
+                    alert('Duplicate expected result "' + expectedResult + '" found for Result Type "' + (resultType === 'test-result' ? 'Test Result' : 'Final Interpretation') + '". Each expected result must be unique within a result type.');
+                    valid = false;
+                    return false;
+                }
+                if (resultsByType[resultType]) resultsByType[resultType].push(norm);
+            }
+            var resultCode = row.find('input[name*="[resultCode]"]').val();
+            if (resultCode && resultCode.trim() !== '') {
+                var normCode = resultCode.trim().toUpperCase();
+                if (allResultCodes.includes(normCode)) {
+                    alert('Duplicate Result Code "' + resultCode + '" found. Each result code must be unique.');
+                    valid = false;
+                    return false;
+                }
+                allResultCodes.push(normCode);
+            }
+        });
+        return valid;
+    }
+
+    function validateNow() {
+        var flag = deforayValidator.init({
+            formId: 'importGenericTestForm'
+        });
+        if (flag && !duplicated && !codeDuplicated) {
+            if (!validateQualitativeResults()) return false;
+            $.blockUI();
+            document.getElementById('importGenericTestForm').submit();
+        }
+    }
+
+    function addQualitativeRow(obj, row1, row2) {
+        $(obj).attr('disabled', true);
+        var html = '<tr align="center">' +
+            '<td><input type="text" name="qualitative[expectedResult][' + row1 + '][' + row2 + ']" class="form-control qualitative-input-' + row1 + row2 + ' input-sm" placeholder="Enter the expected result" title="Please enter the expected result" /></td>' +
+            '<td><div class="input-group input-group-sm"><span class="input-group-addon resultCodePrefix" style="display:none;padding:6px 8px;"></span><input type="text" class="form-control isRequired qualitative-input-' + row1 + row2 + ' input-sm resultCodeSuffix" placeholder="Code" maxlength="20" title="Please enter the result code"/></div><input type="hidden" name="qualitative[resultCode][' + row1 + '][' + row2 + ']" class="resultCodeHidden" /></td>' +
+            '<td><select id="resultType' + row1 + row2 + '" name="qualitative[resultType][' + row1 + '][' + row2 + ']" class="form-control isRequired qualitative-input-' + row1 + row2 + ' input-sm resultTypeInput" title="Please select the result type" onchange="resultTypeChange(' + row1 + ',' + row2 + ')"><option value="">-- <?= $this->translate->_("Select"); ?> --</option><option value="test-result"><?= $this->translate->_("Test Result"); ?></option><option value="final-interpretation"><?= $this->translate->_("Final Interpretation"); ?></option></select></td>' +
+            '<td><select id="displayContext' + row1 + row2 + '" name="qualitative[displayContext][' + row1 + '][' + row2 + ']" class="form-control qualitative-input-' + row1 + row2 + ' input-sm" title="Please select the displayed context"><option value=""> -- <?= $this->translate->_("Select"); ?> -- </option><option value="participant"><?= $this->translate->_("Participant"); ?></option><option value="admin"><?= $this->translate->_("Admin"); ?></option><option value="all"><?= $this->translate->_("All"); ?></option></select></td>' +
+            '<td><input type="text" name="qualitative[sortOrder][' + row1 + '][' + row2 + ']" class="form-control qualitative-input-' + row1 + row2 + ' input-sm" placeholder="Enter the sort order" title="Please enter the sort order" /></td>' +
+            '<td><a href="javascript:void(0);" onclick="addQualitativeRow(this,' + row1 + ',' + (row2 + 1) + ');" class="btn btn-xs btn-info qualitative-insrow-' + row1 + row2 + '"><i class="icon-plus"></i></a>&nbsp;&nbsp;<a href="javascript:void(0);" onclick="removeQualitativeRow(this,' + row1 + ',' + (row2 - 1) + ')" class="btn btn-xs btn-danger" title="Remove this row completely"><i class="icon-minus"></i></a></td>' +
+            '</tr>';
+        $(obj.parentNode.parentNode).after(html);
+    }
+
+    function addNewRow(obj) {
+        $('.firstSubTest').removeClass('hide');
+        $('#resultSubGroup1').addClass('isRequired');
+        sampleCounter++;
+        // (same addNewRow html as original add.phtml — omitted for brevity, copy from original)
+        $(obj.parentNode.parentNode).after('<!-- addNewRow html here -->');
+        $(".datepicker").datepicker({
+            dateFormat: '<?php echo $this->defaultDateFormat(); ?>'
+        });
+    }
+
+    $(document).ready(function() {
+        $(".datepicker").datepicker({
+            dateFormat: '<?php echo $this->defaultDateFormat(); ?>'
+        });
+
+        $('#captureAdditionalDetails').on('change', function() {
+            if ($(this).val() == 'yes') {
+                $('#additionalDetailLabelGroup').show();
+                $('#additionalDetailLabel').addClass('isRequired');
+            } else {
+                $('#additionalDetailLabelGroup').hide();
+                $('#additionalDetailLabel').removeClass('isRequired');
+            }
+        });
+
+        $(document).on('input', '.resultCodeSuffix', function() {
+            updateResultCode($(this).closest('tr'));
+        });
+
+        $('#schemeCode').on('input', function() {
+            toggleTestsSection();
+            clearTimeout(schemeCodeCheckTimer);
+            schemeCodeCheckTimer = setTimeout(checkSchemeCodeDuplicate, 400);
+            $('.resultCodeSuffix').each(function() {
+                updateResultCode($(this).closest('tr'));
+            });
+        });
+        $('#schemeCode').on('blur', function() {
+            clearTimeout(schemeCodeCheckTimer);
+            checkSchemeCodeDuplicate();
+        });
+
+        toggleTestsSection();
+
+        // Init result-code rows (strips prefix from pre-filled full codes)
+        $('.resultCodeSuffix').each(function() {
+            initResultCodeRow($(this).closest('tr'));
+        });
+
+        // Show/hide qualitative vs quantitative for each pre-filled sub-group
+        $('.test-type').each(function(index) {
+            setTestFormatType($(this).val(), index + 1);
+        });
+    });
+
+    function removeQualitativeRow(obj, row1, row2) {
+        $('.qualitative-insrow-' + row1 + row2).attr('disabled', false);
+        $(obj.parentNode.parentNode).fadeOut('normal', function() {
+            $(this).remove();
+        });
+    }
+
+    function removeRow(obj) {
+        $(obj.parentNode.parentNode).fadeOut('normal', function() {
+            $(this).remove();
+        });
+    }
+
+    function setTestFormatType(id, row) {
+        if (id == 'qualitative') {
+            $('.quantitative-input' + row).removeClass('isRequired');
+            $('#qualitativeRow' + row).removeClass('hide');
+            $('.qualitative-input' + row).addClass('isRequired');
+            $('#quantitativeRow' + row).addClass('hide');
+            $('#quantitativeWarning' + row).addClass('hide');
+        } else if (id == 'quantitative') {
+            $('.qualitative-input' + row).removeClass('isRequired');
+            $('#quantitativeRow' + row).removeClass('hide');
+            $('#quantitativeWarning' + row).removeClass('hide');
+            $('.quantitative-input' + row).addClass('isRequired');
+            $('#qualitativeRow' + row).addClass('hide');
+        }
+    }
+
+    function checkSchemeCodeDuplicate() {
+        var $code = $('#schemeCode'),
+            $fb = $('#schemeCodeFeedback');
+        var value = ($code.val() || '').trim();
+        if (value === '') {
+            codeDuplicated = false;
+            $code.removeClass('input-dup-error');
+            $fb.hide().text('');
+            return;
+        }
+        $.post("<?php echo $this->url(['module' => 'default', 'controller' => 'common', 'action' => 'check-duplicate']); ?>", {
+            tableName: 'scheme_list',
+            fieldName: 'scheme_id',
+            value: value,
+            fnct: schemeCodeExclude,
+            format: 'html'
+        }, function(data) {
+            if (parseInt(data, 10) > 0) {
+                codeDuplicated = true;
+                $code.addClass('input-dup-error');
+                $fb.removeClass('text-success').addClass('text-danger').html('<i class="icon-warning-sign"></i> This code is already in use. Please choose a different one.').show();
+            } else {
+                codeDuplicated = false;
+                $code.removeClass('input-dup-error');
+                $fb.removeClass('text-danger').addClass('text-success').html('<i class="icon-ok"></i> This code is available.').show();
+            }
+        });
+    }
+
+    function toggleTestsSection() {
+        ($('#schemeCode').val() || '').trim() !== '' ? $('#testsSection').show() : $('#testsSection').hide();
+    }
+
+    function getResultCodePrefix(row) {
+        var schemeCode = ($('#schemeCode').val() || '').toUpperCase().trim();
+        var resultType = row.find('.resultTypeInput').val();
+        if (!schemeCode) return '';
+        if (resultType === 'test-result') return schemeCode + '-T-';
+        if (resultType === 'final-interpretation') return schemeCode + '-F-';
+        return schemeCode + '-';
+    }
+
+    function updateResultCode(row) {
+        var prefix = getResultCodePrefix(row);
+        var $suffix = row.find('.resultCodeSuffix');
+        var raw = ($suffix.val() || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+        if ($suffix.val() !== raw) $suffix.val(raw);
+        var $addon = row.find('.resultCodePrefix');
+        if (prefix) {
+            $addon.text(prefix).show();
+        } else {
+            $addon.text('').hide();
+        }
+        row.find('.resultCodeHidden').val(raw ? prefix + raw : '');
+    }
+
+    function initResultCodeRow(row) {
+        var $suffix = row.find('.resultCodeSuffix');
+        var raw = ($suffix.val() || '').toUpperCase();
+        var prefix = getResultCodePrefix(row);
+        if (prefix && raw.indexOf(prefix) === 0) {
+            $suffix.val(raw.substring(prefix.length));
+        } else {
+            var schemeCode = ($('#schemeCode').val() || '').toUpperCase().trim() || cloneSourceCode;
+            if (schemeCode && raw.indexOf(schemeCode + '-') === 0) {
+                var rest = raw.substring(schemeCode.length + 1).replace(/^[TF]-/, '');
+                $suffix.val(rest);
+            }
+        }
+        updateResultCode(row);
+    }
+
+    function resultTypeChange(rrow, srow) {
+        var resultType = $('#resultType' + rrow + srow).val();
+        if (resultType == 'test-result') $('#displayContext' + rrow + srow).val('participant');
+        updateResultCode($('#resultType' + rrow + srow).closest('tr'));
+    }
+
+    $(function() {
+        $("#customTestkit").select2({
+            placeholder: 'Please Choose Test Kit',
+            minimumInputLength: 0,
+            width: '100%',
+            allowClear: true,
+            ajax: {
+                url: "<?php echo $this->url(['module' => 'reports', 'controller' => 'common', 'action' => 'testkit-list'], 'default', true); ?>",
+                dataType: 'json',
+                delay: 250,
+                data: function(p) {
+                    return {
+                        q: p.term,
+                        page: p.page
+                    };
+                },
+                processResults: function(data, p) {
+                    p.page = p.page || 1;
+                    return {
+                        results: data.result,
+                        pagination: {
+                            more: (p.page * 30) < data.total_count
+                        }
+                    };
+                }
+            },
+            escapeMarkup: function(m) {
+                return m;
+            }
+        });
+    });
+</script>
