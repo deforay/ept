@@ -5,6 +5,17 @@
 
 UPDATE `system_config` SET `value` = '7.4.1' WHERE `config` = 'app_version';
 
+CREATE TABLE IF NOT EXISTS `audit_log` (
+  `audit_log_id` int NOT NULL AUTO_INCREMENT,
+  `statement` text,
+  `created_by` varchar(256) DEFAULT NULL,
+  `created_on` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `type` varchar(256) DEFAULT NULL,
+  `session_hash` varchar(16) DEFAULT NULL,
+  PRIMARY KEY (`audit_log_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3578 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+
 ALTER TABLE `audit_log`
     ADD COLUMN `created_by_role` VARCHAR(32) NULL DEFAULT NULL AFTER `created_by`;
 

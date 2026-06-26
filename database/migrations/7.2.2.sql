@@ -1,5 +1,6 @@
 -- Thana 16-May-2024
 ALTER TABLE `r_possibleresult` ADD `sub_scheme` VARCHAR(256) NULL DEFAULT NULL AFTER `scheme_sub_group`;
+
 -- Thana 17-May-2024
 ALTER TABLE `reference_result_generic_test` CHANGE `sample_score` `sample_score` DECIMAL NOT NULL DEFAULT '1';
 -- UPDATE reference_result_generic_test AS rrg SET reference_result = (SELECT result_code FROM r_possibleresult AS rp WHERE rp.id=rrg.reference_result);
@@ -346,7 +347,7 @@ MODIFY sample_score DECIMAL(10,4) NOT NULL DEFAULT 0;
 
 
 -- Amit 05-May-202
-UPDATE `global_config` SET `name` = 'participant_feedback' WHERE `global_config`.`name` = 'feed_back_option';
+UPDATE `global_config` SET `name` = 'participant_feedback' WHERE `name` = 'feed_back_option';
 
 -- Amit 22-May-2025
 -- Clean up emails step by step
@@ -418,6 +419,26 @@ ALTER TABLE temp_mail
   ADD COLUMN updated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   ADD COLUMN created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP;
 
+-- Amit 26-Jun-2026
+CREATE TABLE IF NOT EXISTS `response_result_generic_test` (
+  `shipment_map_id` int NOT NULL,
+  `sample_id` varchar(45) NOT NULL,
+  `result_1` varchar(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `result_2` varchar(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `result_3` varchar(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `reported_result` varchar(256) DEFAULT NULL,
+  `additional_detail` varchar(256) DEFAULT NULL,
+  `z_score` double(20,10) DEFAULT NULL,
+  `is_result_invalid` varchar(256) DEFAULT NULL,
+  `error_code` varchar(256) DEFAULT NULL,
+  `comments` varchar(256) DEFAULT NULL,
+  `calculated_score` varchar(45) DEFAULT NULL,
+  `created_by` varchar(45) DEFAULT NULL,
+  `created_on` datetime DEFAULT NULL,
+  `updated_by` varchar(45) DEFAULT NULL,
+  `updated_on` datetime DEFAULT NULL,
+  PRIMARY KEY (`shipment_map_id`,`sample_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- Amit 25-Aug-2025
 ALTER TABLE `response_result_generic_test` CHANGE `result` `result_1` VARCHAR(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL;

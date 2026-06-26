@@ -9,6 +9,7 @@
 
 UPDATE `system_config` SET `value` = '7.4.6' WHERE `config` = 'app_version';
 
+
 INSERT INTO `r_possibleresult` (`scheme_id`, `scheme_sub_group`, `response`, `result_code`, `display_context`) VALUES
 ('dts', 'DTS_TEST', 'WEAK REACTIVE', 'WR', 'none'),
 ('dts', 'DTS_TEST', 'INDETERMINATE', 'IND', 'none'),

@@ -34,6 +34,21 @@ ALTER TABLE temp_mail
     ADD COLUMN sent_at       DATETIME NULL AFTER updated_at,
     ADD COLUMN failure_type  VARCHAR(64) NULL AFTER failure_reason;
 
+-- Amit 26-Jun-2026
+
+CREATE TABLE `scheduled_jobs` (
+  `job_id` int NOT NULL AUTO_INCREMENT,
+  `job` text,
+  `requested_on` datetime DEFAULT NULL,
+  `requested_by` varchar(256) DEFAULT NULL,
+  `completed_on` datetime DEFAULT NULL,
+  `status` varchar(256) NOT NULL DEFAULT 'pending',
+  `initated_by` int DEFAULT NULL,
+  PRIMARY KEY (`job_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=94 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+
+
 -- Thana 17-Dec-2025
 ALTER TABLE `scheduled_jobs` ADD `initated_by` INT NULL DEFAULT NULL AFTER `status`;
 ALTER TABLE `queue_report_generation` ADD `initated_by` INT NULL DEFAULT NULL AFTER `last_heartbeat`;
