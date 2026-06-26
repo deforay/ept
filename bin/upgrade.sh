@@ -893,6 +893,18 @@ upgrade_instance() {
     print info "Running database migrations..."
     sudo -u www-data composer post-update
 
+    # Verify migrations actually brought the DB up to the code's version. Migrations
+    # can silently fail to fully apply (a bad statement, an aborted run, a drifted
+    # schema), leaving the DB behind the code with no obvious signal. Make it loud.
+    print info "Verifying database schema version..."
+    if version_output=$(sudo -u www-data php "${ept_path}/bin/check-version-sync.php" 2>&1); then
+        print success "${version_output}"
+    else
+        print warning "${version_output}"
+        print warning "Database is NOT fully migrated for ${ept_path}. Re-run: (cd ${ept_path} && sudo -u www-data composer migrate) and review the output."
+        log_action "Version mismatch after migration for ${ept_path}: ${version_output}"
+    fi
+
     # Run run-once scripts
     print info "Running run-once scripts..."
     sudo -u www-data php "${ept_path}/bin/run-once.php"

@@ -707,6 +707,22 @@ $helpPageKey = "$controllerName/$actionName";
 			<?= $footerText . $this->translate->_(" This project is supported by the U.S. President's Emergency Plan for AIDS Relief (PEPFAR) through the U.S. Centers for Disease Control and Prevention (CDC)."); ?>
 			<div class="pull-right hidden-xs">
 				<span>ver. <?php echo APP_VERSION; ?></span>
+				<?php
+				// Flag a partially-applied upgrade: the code's APP_VERSION is ahead of (or
+				// differs from) the DB's recorded schema version, which means migrations did
+				// not fully run. Shown post-login in the admin area so it doesn't go unnoticed.
+				$dbVersion = $this->getDbVersion();
+				if ($dbVersion !== null && version_compare(APP_VERSION, $dbVersion, '!=')) {
+					$migrationsPending = version_compare(APP_VERSION, $dbVersion, '>');
+					$mismatchNote = $migrationsPending
+						? $this->translate->_('database not fully migrated')
+						: $this->translate->_('code older than database');
+					?>
+					<span style="color:#b94a48;font-weight:bold;margin-left:8px;"
+						title="<?= $this->translate->_('App version') ?>: <?php echo APP_VERSION; ?> &middot; <?= $this->translate->_('DB version') ?>: <?php echo $this->escape($dbVersion); ?>">
+						&#9888; <?= $this->translate->_('DB ver.') ?> <?php echo $this->escape($dbVersion); ?> (<?php echo $mismatchNote; ?>)
+					</span>
+				<?php } ?>
 			</div>
 		</div>
 	</footer>
