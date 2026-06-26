@@ -118,22 +118,23 @@
 	/* Download Excel */
 
 	/* Allow button text to wrap */
-	#shipmentTable .btn {
+	/* #shipmentTable .btn {
 		white-space: normal;
 	}
 
 	/* Checkbox column */
 	#shipmentTable th:nth-child(1),
 	#shipmentTable td:nth-child(1) {
-		width: 2%;
+		/* width: 2%; */
 	}
 
 	/* PT Survey Code — was nth-child(1), now nth-child(2) */
 	#shipmentTable th:nth-child(2),
 	#shipmentTable td:nth-child(2) {
-		width: 10%;
+		/* width: 10%; */
 	}
 
+	*/
 	/* ... continue shifting all existing nth-child values +1 */
 </style>
 <link rel="stylesheet" href="<?php echo $this->baseUrl('css/daterangepicker.css'); ?>" type="text/css" media="all">
@@ -174,58 +175,60 @@
 		<button class="btn btn-default btn-sm" onclick="clearShipmentSelection()"
 			style="margin-left:5px;"><?= $this->htmlTranslate("Clear"); ?></button>
 	</div>
-	<table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered table-hover hide"
-		id="shipmentTable">
-		<thead>
-			<tr>
-				<th scope="col" style="text-align:center; width:2%;">
-					<input type="checkbox" id="masterShipmentCb" onclick="toggleAllShipments()" />
-				</th>
-				<th scope="col" style="text-align: center;"><?= $this->htmlTranslate("PT Survey Code"); ?></th>
-				<th scope="col" style="text-align: center;"><?= $this->htmlTranslate("PT Survey Date"); ?></th>
-				<th scope="col" style="text-align: center;"><?= $this->htmlTranslate("Shipment Code"); ?></th>
-				<th scope="col" style="text-align: center;"><?= $this->htmlTranslate("Result Due Date"); ?></th>
-				<th scope="col" style="text-align: center;"><?= $this->htmlTranslate("Scheme"); ?></th>
-				<!-- <th scope="col" style="text-align: center;">No. of Samples</th> -->
-				<th scope="col" style="text-align: center;"><?= $this->htmlTranslate("Participants"); ?></th>
-				<th scope="col" style="text-align: center;"><?= $this->htmlTranslate("Responses"); ?></th>
-				<th scope="col" style="text-align: center;"><?= $this->htmlTranslate("Passed"); ?></th>
-				<th scope="col" style="text-align: center;"><?= $this->htmlTranslate("Status"); ?></th>
-				<th scope="col" style="text-align: center;"><?= $this->htmlTranslate("Reports for Participants"); ?></th>
-				<th scope="col" style="text-align: center;"><?= $this->htmlTranslate("Reports for PT Admin"); ?></th>
-			</tr>
-			<tr class="column-search-row">
-				<th scope="col"></th>
-				<th scope="col"><input type="text" class="form-control input-sm col-search" data-col="0"
-						placeholder="<?= $this->htmlTranslate('Search PT Survey Code'); ?>" /></th>
-				<th scope="col"></th>
-				<th scope="col"><input type="text" class="form-control input-sm col-search" data-col="2"
-						placeholder="<?= $this->htmlTranslate('Search Shipment Code'); ?>" /></th>
-				<th scope="col"></th>
-				<th scope="col">
-					<select class="form-control input-sm col-search" data-col="4">
-						<option value=""><?= $this->htmlTranslate("All"); ?></option>
-						<?php foreach ($this->schemes as $scheme) { ?>
-							<option value="<?php echo htmlspecialchars($scheme['scheme_name'], ENT_QUOTES); ?>">
-								<?php echo $scheme['scheme_name']; ?>
-							</option>
-						<?php } ?>
-					</select>
-				</th>
-				<th scope="col"></th>
-				<th scope="col"></th>
-				<th scope="col"></th>
-				<th scope="col"></th>
-				<th scope="col"></th>
-				<th scope="col"></th>
-			</tr>
-		</thead>
-		<tbody>
-			<tr>
-				<td colspan="10" class="dataTables_empty"><?= $this->htmlTranslate("Loading data from server"); ?></td>
-			</tr>
-		</tbody>
-	</table>
+	<div class="table-responsive">
+		<table cellpadding="0" cellspacing="0" border="0" class="table table-responsive table-striped table-bordered table-hover hide"
+			id="shipmentTable">
+			<thead>
+				<tr>
+					<!-- <th scope="col" style="text-align:center; width:2%;">
+						<input type="checkbox" id="masterShipmentCb" onclick="toggleAllShipments()" />
+					</th> -->
+					<th scope="col" style="text-align: center;"><?= $this->htmlTranslate("PT Survey Code"); ?></th>
+					<th scope="col" style="text-align: center;"><?= $this->htmlTranslate("PT Survey Date"); ?></th>
+					<th scope="col" style="text-align: center;"><?= $this->htmlTranslate("Shipment Code"); ?></th>
+					<th scope="col" style="text-align: center;"><?= $this->htmlTranslate("Result Due Date"); ?></th>
+					<th scope="col" style="text-align: center;"><?= $this->htmlTranslate("Scheme"); ?></th>
+					<!-- <th scope="col" style="text-align: center;">No. of Samples</th> -->
+					<th scope="col" style="text-align: center;"><?= $this->htmlTranslate("Participants"); ?></th>
+					<th scope="col" style="text-align: center;"><?= $this->htmlTranslate("Responses"); ?></th>
+					<th scope="col" style="text-align: center;"><?= $this->htmlTranslate("Passed"); ?></th>
+					<th scope="col" style="text-align: center;"><?= $this->htmlTranslate("Status"); ?></th>
+					<th scope="col" style="text-align: center;"><?= $this->htmlTranslate("Reports for Participants"); ?></th>
+					<th scope="col" style="text-align: center;"><?= $this->htmlTranslate("Reports for PT Admin"); ?></th>
+				</tr>
+				<tr class="column-search-row">
+					<!-- <th scope="col"></th> -->
+					<th scope="col"><input type="text" class="form-control input-sm col-search" data-col="0"
+							placeholder="<?= $this->htmlTranslate('Search PT Survey Code'); ?>" /></th>
+					<th scope="col"></th>
+					<th scope="col"><input type="text" class="form-control input-sm col-search" data-col="2"
+							placeholder="<?= $this->htmlTranslate('Search Shipment Code'); ?>" /></th>
+					<th scope="col"></th>
+					<th scope="col">
+						<select class="form-control input-sm col-search" data-col="4">
+							<option value=""><?= $this->htmlTranslate("All"); ?></option>
+							<?php foreach ($this->schemes as $scheme) { ?>
+								<option value="<?php echo htmlspecialchars($scheme['scheme_name'], ENT_QUOTES); ?>">
+									<?php echo $scheme['scheme_name']; ?>
+								</option>
+							<?php } ?>
+						</select>
+					</th>
+					<th scope="col"></th>
+					<th scope="col"></th>
+					<th scope="col"></th>
+					<th scope="col"></th>
+					<th scope="col"></th>
+					<th scope="col"></th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td colspan="10" class="dataTables_empty"><?= $this->htmlTranslate("Loading data from server"); ?></td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
 </div>
 
 <script type="text/javascript" src="<?php echo $this->baseUrl('js/daterangepicker.js'); ?>"></script>
@@ -404,10 +407,11 @@
 			"bRetrieve": false,
 			"bDestroy": true,
 			"bSortCellsTop": true,
-			"aoColumns": [{
-					"sClass": "center",
-					"bSortable": false
-				}, // NEW: checkbox col
+			"aoColumns": [
+				// {
+				// 	"sClass": "center",
+				// 	"bSortable": false
+				// }, // NEW: checkbox col
 				{
 					"sClass": "center"
 				}, // PT Survey Code

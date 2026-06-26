@@ -211,10 +211,10 @@ class Application_Service_Reports
             $responsePercentage = ($aRow['reported_percentage'] != '') ? $aRow['reported_percentage'] : '0';
 
             $row = [];
-            $row[] = '<input type="checkbox" class="checkShipment" '
-                . 'data-scheme="' . htmlspecialchars($aRow['scheme_type'], ENT_QUOTES) . '" '
-                . 'value="' . base64_encode($aRow['shipment_id']) . '" '
-                . 'onclick="toggleShipmentSelect(this);" />';
+            // $row[] = '<input type="checkbox" class="checkShipment" '
+            //     . 'data-scheme="' . htmlspecialchars($aRow['scheme_type'], ENT_QUOTES) . '" '
+            //     . 'value="' . base64_encode($aRow['shipment_id']) . '" '
+            //     . 'onclick="toggleShipmentSelect(this);" />';
 
             $row[] = $aRow['distribution_code'];
             $row[] = Pt_Commons_DateUtility::humanReadableDateFormat($aRow['distribution_date']);
