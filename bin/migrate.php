@@ -315,6 +315,15 @@ function drop_table_if_exists(Zend_Db_Adapter_Abstract $db, string $table): int
 /** Common handler for both ADD PRIMARY KEY syntaxes (with/without CONSTRAINT, optional USING BTREE). */
 function _apply_add_primary_key(Zend_Db_Adapter_Abstract $db, string $table, string $colsList, string $originalSql): int
 {
+    // Schema drift: the table may not exist on this install (e.g. a feature whose
+    // tables were never created here). There's nothing to add a PK to, so skip
+    // rather than fail with 1146 "Base table or view not found". The PK-heal only
+    // matters where the table actually exists.
+    if (!table_exists($db, $table)) {
+        mig_trace('_apply_add_primary_key', "{$table} missing; skip");
+        return MIG_SKIPPED;
+    }
+
     $wantedCols = parse_cols_list($colsList);
     $haveCols = table_primary_key($db, $table);
 
@@ -470,6 +479,14 @@ function handle_idempotent_ddl(Zend_Db_Adapter_Abstract $db, string $query): int
         $cols = parse_cols_list($m[3]);
         $refTable = $m[4];
         $refCols = parse_cols_list($m[5]);
+
+        // Schema drift: on an install where either the child or the referenced
+        // parent table was never created, the FK is moot — skip rather than fail
+        // with 1146. (Same rationale as the ADD PRIMARY KEY guard above.)
+        if (!table_exists($db, $table) || !table_exists($db, $refTable)) {
+            mig_trace('add_constraint_fk', "{$table} -> {$refTable}: missing table; skip");
+            return MIG_SKIPPED;
+        }
 
         if (foreign_key_exists($db, $table, $fkName)) {
             if (foreign_key_matches($db, $table, $fkName, $cols, $refTable, $refCols)) {
