@@ -35,6 +35,10 @@ class Admin_TbSettingsController extends Zend_Controller_Action
             }
             $auditDb = new Application_Model_DbTable_AuditLog();
             $auditDb->addNewAuditLog('Updated TB settings', 'config');
+
+            // Settings changed: offer to re-evaluate shipments scored under the old config.
+            $this->view->reEvalScheme = 'tb';
+            $this->view->reEvalShipmentIds = (new Application_Service_Evaluation())->getReEvaluatableShipmentIds('tb');
         }
         $this->view->tbConfig = Pt_Commons_SchemeConfig::get('tb');
     }

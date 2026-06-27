@@ -32,6 +32,15 @@ class Admin_CustomTestController extends Zend_Controller_Action
             $parameters = $this->getAllParams();
             $service = new Application_Service_Schemes();
             $service->getAllGenericTestInGrid($parameters);
+        } else {
+            // Pick up the post-save re-evaluation nudge stashed by editAction (which
+            // redirects here). Consumed once, then cleared.
+            $reEvalNs = new Zend_Session_Namespace('schemeReEval');
+            if (!empty($reEvalNs->ids)) {
+                $this->view->reEvalScheme = $reEvalNs->scheme;
+                $this->view->reEvalShipmentIds = $reEvalNs->ids;
+                $reEvalNs->unsetAll();
+            }
         }
     }
 
@@ -100,6 +109,15 @@ class Admin_CustomTestController extends Zend_Controller_Action
 
             $auditDb = new Application_Model_DbTable_AuditLog();
             $auditDb->addNewAuditLog("Updated generic test - {$schemeCode}", 'config');
+
+            // Config changed: stash any shipments scored under the old config so the
+            // index page (we redirect there) can nudge the admin to re-evaluate.
+            $reEvalIds = (new Application_Service_Evaluation())->getReEvaluatableShipmentIds($schemeCode);
+            if (!empty($reEvalIds)) {
+                $reEvalNs = new Zend_Session_Namespace('schemeReEval');
+                $reEvalNs->scheme = $schemeCode;
+                $reEvalNs->ids = $reEvalIds;
+            }
 
             $this->redirect('/admin/custom-test');
         } elseif ($this->hasParam('id')) {

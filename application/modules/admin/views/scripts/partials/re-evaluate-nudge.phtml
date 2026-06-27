@@ -1,0 +1,77 @@
+<?php
+// Post-save re-evaluation nudge, shared by the scheme settings pages.
+// Expects two view vars (set by the controller only on the request right after a save):
+//   $this->reEvalScheme        - scheme_type string (e.g. 'dts', 'vl', custom-test code)
+//   $this->reEvalShipmentIds   - int[] of shipment ids scored under the old settings
+$reEvalScheme = $this->reEvalScheme ?? '';
+$reEvalIds = $this->reEvalShipmentIds ?? [];
+?>
+<script type="text/javascript">
+    (function () {
+        var reEvalScheme = <?php echo json_encode($reEvalScheme); ?>;
+        var reEvalIds = <?php echo json_encode($reEvalIds); ?>;
+        var reEvalUrl = '<?php echo $this->url(array("module" => "admin", "controller" => "scheme-re-evaluate", "action" => "re-evaluate"), "default", true) ?>';
+
+        if (!reEvalScheme || !reEvalIds || reEvalIds.length === 0) {
+            return;
+        }
+
+        $(document).ready(function () {
+            var total = reEvalIds.length;
+            bootbox.confirm(
+                "Settings saved. <strong>" + total + "</strong> already-evaluated shipment" +
+                (total > 1 ? "s were" : " was") + " scored using the previous settings.<br><br>" +
+                "Re-evaluate " + (total > 1 ? "them" : "it") + " now so the scores reflect the new settings?" +
+                "<br><br><small class='text-muted'>Finalized shipments are left untouched. " +
+                "Shipments whose reports were already generated will return to the &quot;evaluated&quot; " +
+                "state and will need their reports regenerated.</small>",
+                function (result) {
+                    if (result) {
+                        runReEvaluation();
+                    }
+                }
+            );
+        });
+
+        function runReEvaluation() {
+            var ids = reEvalIds.slice();
+            var total = ids.length;
+            var done = 0;
+            var failed = 0;
+
+            function progressHtml() {
+                return "<h4 style='margin:0;color:#fff;'><?= $this->translate->_("Re-evaluating shipments"); ?>&hellip;</h4>" +
+                    "<p style='margin:8px 0 0;color:#fff;'>" + done + " / " + total +
+                    (failed > 0 ? " (" + failed + " failed)" : "") + "</p>";
+            }
+
+            $.blockUI({ message: progressHtml() });
+
+            function next() {
+                if (ids.length === 0) {
+                    $.unblockUI();
+                    bootbox.alert(
+                        "<?= $this->translate->_("Re-evaluation complete."); ?> " +
+                        (done - failed) + " / " + total + " re-evaluated" +
+                        (failed > 0 ? ", " + failed + " could not be processed." : ".")
+                    );
+                    return;
+                }
+                var sid = ids.shift();
+                $.post(reEvalUrl, { shipmentId: sid, scheme: reEvalScheme }, function (resp) {
+                    if (!resp || resp.status === 'error') {
+                        failed++;
+                    }
+                }, 'json').fail(function () {
+                    failed++;
+                }).always(function () {
+                    done++;
+                    $.blockUI({ message: progressHtml() });
+                    next();
+                });
+            }
+
+            next();
+        }
+    })();
+</script>

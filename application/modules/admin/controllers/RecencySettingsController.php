@@ -29,6 +29,10 @@ class Admin_RecencySettingsController extends Zend_Controller_Action
                 $recency = json_encode($params['recency']);
                 $common->saveSchemeConfigByName($recency, 'recency');
             }
+
+            // Settings changed: offer to re-evaluate shipments scored under the old config.
+            $this->view->reEvalScheme = 'recency';
+            $this->view->reEvalShipmentIds = (new Application_Service_Evaluation())->getReEvaluatableShipmentIds('recency');
         }
         $this->view->recencyConfig = Pt_Commons_SchemeConfig::get('recency');
     }

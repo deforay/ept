@@ -2,6 +2,30 @@
 
 class Application_Service_Evaluation
 {
+    /**
+     * Shipments of a scheme whose stored scores were computed under the previous
+     * settings, i.e. already evaluated (or had reports generated) but not finalized.
+     * Used by the settings pages to nudge an admin to re-evaluate after a config change.
+     *
+     * @param string $schemeType scheme_type as stored on the shipment row
+     *                           (e.g. 'dts', 'vl', 'covid19', or a custom-test code)
+     * @return int[]
+     */
+    public function getReEvaluatableShipmentIds(string $schemeType): array
+    {
+        if ($schemeType === '') {
+            return [];
+        }
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $select = $db->select()
+            ->from('shipment', ['shipment_id'])
+            ->where('scheme_type = ?', $schemeType)
+            ->where('status IN (?)', ['evaluated', 'reports generated'])
+            ->order('shipment_id ASC');
+
+        return array_map('intval', $db->fetchCol($select));
+    }
+
     protected function setShipmentProcessingState($db, $shipmentId, array $shipmentResult)
     {
         $previousStatus = $shipmentResult[0]['shipment_status'];
@@ -1403,17 +1427,17 @@ class Application_Service_Evaluation
     private function applyShipmentListFilters(Zend_Db_Select $baseSelect, array $parameters): void
     {
         // Universal: response_status
-      /*  $responseStatus = trim((string) ($parameters['filterResponseStatus'] ?? ''));
-        if (in_array($responseStatus, ['responded', 'noresponse', 'late', 'nottested'], true)) {
-            $baseSelect->where('sp.response_status = ?', $responseStatus);
-        }
+        /*  $responseStatus = trim((string) ($parameters['filterResponseStatus'] ?? ''));
+          if (in_array($responseStatus, ['responded', 'noresponse', 'late', 'nottested'], true)) {
+              $baseSelect->where('sp.response_status = ?', $responseStatus);
+          }
 
-        // Universal: final_result (Pass / Fail / Excluded)
-        $resultMap = ['pass' => 1, 'fail' => 2, 'excluded' => 3];
-        $resultKey = strtolower(trim((string) ($parameters['filterResult'] ?? '')));
-        if (isset($resultMap[$resultKey])) {
-            $baseSelect->where('sp.final_result = ?', $resultMap[$resultKey]);
-        }*/
+          // Universal: final_result (Pass / Fail / Excluded)
+          $resultMap = ['pass' => 1, 'fail' => 2, 'excluded' => 3];
+          $resultKey = strtolower(trim((string) ($parameters['filterResult'] ?? '')));
+          if (isset($resultMap[$resultKey])) {
+              $baseSelect->where('sp.final_result = ?', $resultMap[$resultKey]);
+          }*/
         $statusArr = explode(',', $parameters['filterResponseStatus']);
         if (isset($parameters['filterResponseStatus']) && $parameters['filterResponseStatus'] != '') {
             $baseSelect = $baseSelect->where('sp.response_status IN (?)', $statusArr);
@@ -1422,14 +1446,14 @@ class Application_Service_Evaluation
         if (isset($parameters['filterResult']) && $parameters['filterResult'] != '') {
             $baseSelect = $baseSelect->where('sp.final_result IN (?)', $result);
         }
-        if (isset($parameters['country']) && $parameters['country'] != '') {  
+        if (isset($parameters['country']) && $parameters['country'] != '') {
             $country = explode(',', $parameters['country']);
             $baseSelect = $baseSelect->where('p.country IN (?)', $country);
         }
         if (isset($parameters['region']) && $parameters['region'] != '') {
             $baseSelect = $baseSelect->where('p.region = ?', $parameters['region']);
         }
-        if (isset($parameters['state']) && $parameters['state'] != '') {  
+        if (isset($parameters['state']) && $parameters['state'] != '') {
             $state = explode(',', $parameters['state']);
             $baseSelect = $baseSelect->where('p.state IN (?)', $state);
         }
@@ -1438,12 +1462,10 @@ class Application_Service_Evaluation
             $baseSelect = $baseSelect->where('p.district IN (?)', $district);
         }
 
-
         if (isset($parameters['startDate']) && $parameters['startDate'] != '' && isset($parameters['endDate']) && $parameters['endDate'] != '') {
             $baseSelect = $baseSelect->where('DATE(sp.shipment_test_report_date) >= ?', Pt_Commons_DateUtility::isoDateFormat($parameters['startDate']));
             $baseSelect = $baseSelect->where('DATE(sp.shipment_test_report_date) <= ?', Pt_Commons_DateUtility::isoDateFormat($parameters['endDate']));
         }
-
 
         // Vietnam-specific: tier
         $tier = trim((string) ($parameters['vietnamTier'] ?? ''));

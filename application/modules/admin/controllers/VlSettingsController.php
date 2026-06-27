@@ -36,6 +36,10 @@ class Admin_VlSettingsController extends Zend_Controller_Action
                 }
                 $auditDb = new Application_Model_DbTable_AuditLog();
                 $auditDb->addNewAuditLog('Updated VL settings', 'config');
+
+                // Settings changed: offer to re-evaluate shipments scored under the old config.
+                $this->view->reEvalScheme = 'vl';
+                $this->view->reEvalShipmentIds = (new Application_Service_Evaluation())->getReEvaluatableShipmentIds('vl');
             }
             $this->view->vlConfig = Pt_Commons_SchemeConfig::get('vl');
         } catch (Exception $exc) {

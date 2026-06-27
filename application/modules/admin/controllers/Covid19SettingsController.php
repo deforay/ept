@@ -36,6 +36,10 @@ class Admin_Covid19SettingsController extends Zend_Controller_Action
                 $covid19 = json_encode($params['covid19']);
                 $common->saveSchemeConfigByName($covid19, 'covid19');
             }
+
+            // Settings changed: offer to re-evaluate shipments scored under the old config.
+            $this->view->reEvalScheme = 'covid19';
+            $this->view->reEvalShipmentIds = (new Application_Service_Evaluation())->getReEvaluatableShipmentIds('covid19');
         }
         $this->view->covid19Config = Pt_Commons_SchemeConfig::get('covid19');
         $this->view->allTestTypes = $schemeService->getAllCovid19TestTypeResponseWise(true);
