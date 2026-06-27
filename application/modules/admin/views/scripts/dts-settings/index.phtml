@@ -940,4 +940,71 @@ $dtFormat = $genderHelper->getDateFormat();
         $('a[data-toggle="' + tog + '"]').not('[data-title="' + sel + '"]').removeClass('active').addClass('notActive');
         $('a[data-toggle="' + tog + '"][data-title="' + sel + '"]').removeClass('notActive').addClass('active');
     }
+
+    // ---- Post-save re-evaluation nudge --------------------------------------
+    // Populated only on the request right after a save; empty otherwise.
+    var dtsReEvalShipmentIds = <?php echo json_encode($this->reEvalShipmentIds ?? []); ?>;
+    var dtsReEvalUrl = '<?php echo $this->url(array("module" => "admin", "controller" => "dts-settings", "action" => "re-evaluate"), "default", true) ?>';
+
+    $(document).ready(function () {
+        if (!dtsReEvalShipmentIds || dtsReEvalShipmentIds.length === 0) {
+            return;
+        }
+
+        var total = dtsReEvalShipmentIds.length;
+        bootbox.confirm(
+            "Settings saved. <strong>" + total + "</strong> already-evaluated DTS shipment" +
+            (total > 1 ? "s were" : " was") + " scored using the previous settings.<br><br>" +
+            "Re-evaluate " + (total > 1 ? "them" : "it") + " now so the scores reflect the new settings?" +
+            "<br><br><small class='text-muted'>Finalized shipments are left untouched. " +
+            "Shipments whose reports were already generated will return to the &quot;evaluated&quot; " +
+            "state and will need their reports regenerated.</small>",
+            function (result) {
+                if (result) {
+                    runDtsReEvaluation();
+                }
+            }
+        );
+    });
+
+    function runDtsReEvaluation() {
+        var ids = dtsReEvalShipmentIds.slice();
+        var total = ids.length;
+        var done = 0;
+        var failed = 0;
+
+        function progressHtml() {
+            return "<h4 style='margin:0;color:#fff;'><?= $this->translate->_("Re-evaluating shipments"); ?>&hellip;</h4>" +
+                "<p style='margin:8px 0 0;color:#fff;'>" + done + " / " + total +
+                (failed > 0 ? " (" + failed + " failed)" : "") + "</p>";
+        }
+
+        $.blockUI({ message: progressHtml() });
+
+        function next() {
+            if (ids.length === 0) {
+                $.unblockUI();
+                bootbox.alert(
+                    "<?= $this->translate->_("Re-evaluation complete."); ?> " +
+                    (done - failed) + " / " + total + " re-evaluated" +
+                    (failed > 0 ? ", " + failed + " could not be processed." : ".")
+                );
+                return;
+            }
+            var sid = ids.shift();
+            $.post(dtsReEvalUrl, { shipmentId: sid }, function (resp) {
+                if (!resp || resp.status === 'error') {
+                    failed++;
+                }
+            }, 'json').fail(function () {
+                failed++;
+            }).always(function () {
+                done++;
+                $.blockUI({ message: progressHtml() });
+                next();
+            });
+        }
+
+        next();
+    }
 </script>
