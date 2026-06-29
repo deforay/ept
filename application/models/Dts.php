@@ -460,6 +460,14 @@ final class Application_Model_Dts
             // Default per-iteration; only the non-control branch reassigns it from the algo dispatcher.
             $scorePercentageForAlgorithm = 0;
 
+            // Default the result codes to '' here (before the control split) so control samples
+            // — which skip the non-control branch below where these are normally derived — still
+            // pass a string to the typed screening-consistency check. Without this, a reported
+            // control sample on a screening panel passes null to isTestResultConsistentWithReported()
+            // and throws a TypeError that aborts the whole shipment evaluation (status never reaches
+            // 'evaluated', max_score stays NULL).
+            $syphilisResult = $result1 = $result2 = $result3 = '';
+
             // Checking algorithm Pass/Fail only if it is NOT a control.
             if (0 == $result['control']) {
                 $syphilisResult = $result1 = $result2 = $result3 = '';
