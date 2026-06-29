@@ -200,23 +200,20 @@ if ($shipmentAttributesRaw !== '') {
 		</div>
 		<hr>
 	</form>
-	<table class="table table-borderless" style="width:50%;float:left;" id="overrideTable">
-		<tr>
-			<td><label for="manuelOverride"><?= $this->htmlTranslate("Show only manually overridden results"); ?></label>
-			</td>
-			<td><select name="manuelOverride" id="manuelOverride" class="form-control"
+	<div class="shipment-filters" style="clear:both;margin:15px 0;padding:12px 14px;background:#f8f9fa;border:1px solid #e2e8f0;border-radius:4px;">
+		<div class="row" style="margin:0;">
+			<div class="col-md-3" style="padding-left:0;">
+				<label for="manuelOverride" style="font-weight:600;font-size:13px;display:block;margin-bottom:4px;"><?= $this->htmlTranslate("Manually overridden only"); ?></label>
+				<select name="manuelOverride" id="manuelOverride" class="form-control input-sm"
 					title="Please choose manual override yes or no" onchange="manualOverride(this.value)">
 					<option value="">-- <?= $this->htmlTranslate("Select"); ?> --</option>
 					<option <?php echo (isset($this->override) && $this->override == "no") ? " selected='selected' " : ""; ?>
 						value="no"><?= $this->htmlTranslate("No"); ?></option>
 					<option <?php echo (isset($this->override) && $this->override == "yes") ? " selected='selected' " : ""; ?>
 						value="yes"><?= $this->htmlTranslate("Yes"); ?></option>
-				</select></td>
-		</tr>
-	</table>
-	<div class="shipment-filters" style="clear:both;margin:15px 0;padding:12px 14px;background:#f8f9fa;border:1px solid #e2e8f0;border-radius:4px;">
-		<div class="row" style="margin:0;">
-			<div class="col-md-3" style="padding-left:0;">
+				</select>
+			</div>
+			<div class="col-md-3">
 				<label for="filterResponseStatus" style="font-weight:600;font-size:13px;display:block;margin-bottom:4px;"><?= $this->htmlTranslate("Response status"); ?></label>
 				<select id="filterResponseStatus" class="form-control input-sm" multiple onchange="applyShipmentFilters()">
 					<option value=""><?= $this->htmlTranslate("All"); ?></option>
