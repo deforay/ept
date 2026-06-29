@@ -83,9 +83,21 @@ try {
 
             // Build the full command with escaped PHP path and validated job command
             $fullCommand = escapeshellarg($phpPath) . " " . $jobsDir . DIRECTORY_SEPARATOR . $validatedCommand;
-            exec($fullCommand);
+            $output = [];
+            $returnCode = 0;
+            exec($fullCommand . ' 2>&1', $output, $returnCode);
 
-            $db->update('scheduled_jobs', ["completed_on" => new Zend_Db_Expr('now()'), "status" => "completed"], "job_id = " . $jobId);
+            // Honor the child's exit code: a non-zero status means the job script failed
+            // (e.g. an exception during evaluation). Marking it 'completed' regardless hid
+            // real failures, so mark it 'failed' and log the captured output for diagnosis.
+            if ($returnCode !== 0) {
+                $db->update('scheduled_jobs', ["completed_on" => new Zend_Db_Expr('now()'), "status" => "failed"], "job_id = " . $jobId);
+                Pt_Commons_LoggerUtility::logError("Scheduled job {$jobId} failed (exit {$returnCode}): {$validatedCommand}", [
+                    'output' => implode("\n", $output),
+                ]);
+            } else {
+                $db->update('scheduled_jobs', ["completed_on" => new Zend_Db_Expr('now()'), "status" => "completed"], "job_id = " . $jobId);
+            }
         }
     }
 } catch (Throwable $e) {

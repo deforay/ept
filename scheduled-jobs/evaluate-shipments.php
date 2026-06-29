@@ -114,4 +114,14 @@ try {
 } catch (Throwable $e) {
 	$console->getErrorOutput()->writeln("<error> ERROR </error> {$e->getFile()}:{$e->getLine()} : {$e->getMessage()}");
 	$console->writeln("<fg=gray>{$e->getTraceAsString()}</>");
+	Pt_Commons_LoggerUtility::logError('evaluate-shipments failed: ' . $e->getMessage(), [
+		'file'  => $e->getFile(),
+		'line'  => $e->getLine(),
+		'shipments' => $shipmentsToEvaluate,
+		'trace' => $e->getTraceAsString(),
+	]);
+	// Exit non-zero so execute-job-queue.php marks the scheduled job 'failed' instead of
+	// silently 'completed'. The shipment is left in 'processing' and reset-stale-jobs.php
+	// reverts it to 'shipped' so the admin can retry.
+	exit(1);
 }
