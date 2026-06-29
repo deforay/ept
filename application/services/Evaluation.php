@@ -223,15 +223,23 @@ class Application_Service_Evaluation
 
         $schemeService = new Application_Service_Schemes();
 
+        // Each scheme branch below dispatches the heavy scoring only when $reEvaluate is true.
+        // Evaluation is queue-driven: the worker (evaluate-shipments.php / generate-shipment-reports.php)
+        // and the explicit Re-Evaluate action all pass $reEvaluate = true. The admin GET page load
+        // passes false and is display-only — it must NOT trigger a synchronous re-score on every view.
+        // (Historically this also OR-ed on $shipmentResult[0]['status'] == 'shipped', but the SELECT
+        // aliases the shipment status as 'shipment_status'; the joined 'status' key actually resolves
+        // to participant.status, so that term was always false and silently dead. Dropped to make the
+        // queue-driven intent explicit.)
         if ($shipmentResult[0]['scheme_type'] == 'eid') {
-            if ($shipmentResult[0]['status'] == 'shipped' || $reEvaluate == true) {
+            if ($reEvaluate == true) {
                 // Set processing state
                 $this->setShipmentProcessingState($db, $shipmentId, $shipmentResult);
                 $eidModel = new Application_Model_Eid();
                 $shipmentResult = $eidModel->evaluate($shipmentResult, $shipmentId);
             }
         } elseif ($shipmentResult[0]['scheme_type'] == 'recency') {
-            if ($shipmentResult[0]['status'] == 'shipped' || $reEvaluate == true) {
+            if ($reEvaluate == true) {
                 // Set processing state
                 $this->setShipmentProcessingState($db, $shipmentId, $shipmentResult);
                 $recencyModel = new Application_Model_Recency($db);
@@ -463,35 +471,35 @@ class Application_Service_Evaluation
             }
             $db->update('shipment', ['max_score' => $maxScore], 'shipment_id = ' . $shipmentId);
         } elseif ($shipmentResult[0]['scheme_type'] == 'dts') {
-            if ($shipmentResult[0]['status'] == 'shipped' || $reEvaluate == true) {
+            if ($reEvaluate == true) {
                 // Set processing state
                 $this->setShipmentProcessingState($db, $shipmentId, $shipmentResult);
                 $dtsModel = new Application_Model_Dts();
                 $shipmentResult = $dtsModel->evaluate($shipmentResult, $shipmentId, $reEvaluate);
             }
         } elseif ($shipmentResult[0]['scheme_type'] == 'vl') {
-            if ($shipmentResult[0]['status'] == 'shipped' || $reEvaluate == true) {
+            if ($reEvaluate == true) {
                 // Set processing state
                 $this->setShipmentProcessingState($db, $shipmentId, $shipmentResult);
                 $vlModel = new Application_Model_Vl();
                 $shipmentResult = $vlModel->evaluate($shipmentResult, $shipmentId, $reEvaluate);
             }
         } elseif ($shipmentResult[0]['scheme_type'] == 'covid19') {
-            if ($shipmentResult[0]['status'] == 'shipped' || $reEvaluate == true) {
+            if ($reEvaluate == true) {
                 // Set processing state
                 $this->setShipmentProcessingState($db, $shipmentId, $shipmentResult);
                 $covid19Model = new Application_Model_Covid19();
                 $shipmentResult = $covid19Model->evaluate($shipmentResult, $shipmentId);
             }
         } elseif ($shipmentResult[0]['scheme_type'] == 'tb') {
-            if ($shipmentResult[0]['status'] == 'shipped' || $reEvaluate == true) {
+            if ($reEvaluate == true) {
                 // Set processing state
                 $this->setShipmentProcessingState($db, $shipmentId, $shipmentResult);
                 $tbModel = new Application_Model_Tb();
                 $shipmentResult = $tbModel->evaluate($shipmentResult, $shipmentId);
             }
         } elseif ($shipmentResult[0]['scheme_type'] == 'generic-test' || $shipmentResult[0]['is_user_configured'] == 'yes') {
-            if ($shipmentResult[0]['status'] == 'shipped' || $reEvaluate == true) {
+            if ($reEvaluate == true) {
                 // Set processing state
                 $this->setShipmentProcessingState($db, $shipmentId, $shipmentResult);
                 $genericTestModel = new Application_Model_CustomTest();
