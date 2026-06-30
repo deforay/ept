@@ -26,7 +26,8 @@ if (!empty($staleShipments) && !isset($_COOKIE['reeval_nudge_dismissed'])):
     #reEvalStaleBanner .rsb-title { font-size: 14px; font-weight: 600; color: #6b4e0f; }
     #reEvalStaleBanner .rsb-detail { margin-top: 2px; font-size: 13px; color: #8a7340; }
     #reEvalStaleBanner .rsb-chips { margin-top: 7px; display: flex; flex-wrap: wrap; gap: 8px; }
-    #reEvalStaleBanner .rsb-chip { display: inline-flex; align-items: center; gap: 6px; background: #fff; border: 1px solid #ead9b0; border-radius: 14px; padding: 3px 11px 3px 9px; font-size: 13px; font-weight: 600; color: #6b4e0f; cursor: pointer; user-select: none; }
+    #reEvalStaleBanner .rsb-chip { display: inline-flex; align-items: center; gap: 6px; background: #fff; border: 1px solid #ead9b0; border-radius: 14px; padding: 3px 11px 3px 9px; font-size: 13px; font-weight: 600; color: #6b4e0f; cursor: default; user-select: none; }
+    #reEvalStaleBanner label.rsb-chip { cursor: pointer; }
     #reEvalStaleBanner .rsb-chip input { margin: 0; cursor: pointer; }
     #reEvalStaleBanner .rsb-chip.unchecked { opacity: 0.5; font-weight: 400; }
     #reEvalStaleBanner .rsb-note { margin-top: 6px; font-size: 12px; color: #a78a52; }
@@ -51,16 +52,22 @@ if (!empty($staleShipments) && !isset($_COOKIE['reeval_nudge_dismissed'])):
                 <?php endif; ?>
             </div>
             <div class="rsb-detail">
-                <?= $this->htmlTranslate("New responses arrived after they were last evaluated. Pick which ones to re-evaluate:"); ?>
+                <?php if ($total > 1): ?>
+                    <?= $this->htmlTranslate("New responses arrived after they were last evaluated. Pick which ones to re-evaluate:"); ?>
+                <?php else: ?>
+                    <?= $this->htmlTranslate("New responses arrived after it was last evaluated:"); ?>
+                <?php endif; ?>
             </div>
             <div class="rsb-chips">
                 <?php foreach ($staleShipments as $s): ?>
-                    <label class="rsb-chip">
-                        <input type="checkbox" class="rsb-check" checked
-                               data-id="<?= (int) $s['shipment_id']; ?>"
-                               data-scheme="<?= htmlspecialchars($s['scheme_type']); ?>">
-                        <span><?= htmlspecialchars($s['shipment_code']); ?></span>
-                    </label>
+                    <?php if ($total > 1): ?>
+                        <label class="rsb-chip" data-id="<?= (int) $s['shipment_id']; ?>" data-scheme="<?= htmlspecialchars($s['scheme_type']); ?>">
+                            <input type="checkbox" class="rsb-check" checked>
+                            <span><?= htmlspecialchars($s['shipment_code']); ?></span>
+                        </label>
+                    <?php else: ?>
+                        <span class="rsb-chip" data-id="<?= (int) $s['shipment_id']; ?>" data-scheme="<?= htmlspecialchars($s['scheme_type']); ?>"><?= htmlspecialchars($s['shipment_code']); ?></span>
+                    <?php endif; ?>
                 <?php endforeach; ?>
             </div>
             <?php if ($anyReports): ?>
@@ -70,7 +77,7 @@ if (!empty($staleShipments) && !isset($_COOKIE['reeval_nudge_dismissed'])):
             <?php endif; ?>
         </div>
         <div class="rsb-actions">
-            <button type="button" class="rsb-btn" id="reEvalStaleRun"><?= $this->htmlTranslate("Re-evaluate selected"); ?></button>
+            <button type="button" class="rsb-btn" id="reEvalStaleRun"><?= $total > 1 ? $this->htmlTranslate("Re-evaluate selected") : $this->htmlTranslate("Re-evaluate"); ?></button>
             <button type="button" class="rsb-link" id="reEvalStaleNotNow"><?= $this->htmlTranslate("Not now"); ?></button>
         </div>
     </div>
@@ -91,15 +98,23 @@ if (!empty($staleShipments) && !isset($_COOKIE['reeval_nudge_dismissed'])):
         };
         var overlayCss = { backgroundColor: '#1b2430', opacity: 0.55 };
 
+        // Multi-shipment banners get per-shipment checkboxes; a single shipment is just a
+        // plain chip with a static "Re-evaluate" button (nothing to pick from).
+        var multi = $banner.find('.rsb-check').length > 0;
+
         function checkedItems() {
             var items = [];
-            $banner.find('.rsb-check:checked').each(function () {
-                items.push({ id: parseInt($(this).data('id'), 10), scheme: String($(this).data('scheme')) });
+            $banner.find('.rsb-chip').each(function () {
+                var $chip = $(this);
+                var $cb = $chip.find('.rsb-check');
+                if ($cb.length && !$cb.prop('checked')) { return; }
+                items.push({ id: parseInt($chip.data('id'), 10), scheme: String($chip.data('scheme')) });
             });
             return items;
         }
 
         function updateSelection() {
+            if (!multi) { return; }
             var n = $banner.find('.rsb-check:checked').length;
             $('#reEvalStaleRun').prop('disabled', n === 0).text(selTpl.replace('%d', n));
         }
