@@ -1,0 +1,37 @@
+<?php
+$eid = $this->eidConfig ?? [];
+$passPercentage = (isset($eid['passPercentage']) && $eid['passPercentage'] !== '') ? $eid['passPercentage'] : '';
+?>
+<div class="well">
+    <form name="eidSettingsForm" id="eidSettingsForm" method="post" action="<?php echo $this->url(array("module" => "admin", "controller" => "eid-settings", "action" => "index"), 'default', true) ?>" class="form-horizontal" role="form">
+        <fieldset>
+            <legend><?= $this->translate->_("EID Settings"); ?></legend>
+            <div class="row">
+                <div class="col-md-6">
+                    <label for="eidPassPercentage" class="control-label"><?= $this->translate->_("Passing Score"); ?></label>
+                    <input type="number" id="eidPassPercentage" name="eid[passPercentage]" min="1" max="100" step="1" class="form-control" placeholder="100" value="<?php echo htmlspecialchars((string) $passPercentage, ENT_QUOTES); ?>" />
+                    <small class="text-muted"><?= $this->translate->_("Minimum score a participant must reach to pass. Must be a whole number between 1 and 100. Leave blank to use the default of 100."); ?></small>
+                </div>
+            </div>
+            <div id="respond" style="margin: 20px auto 0 auto; text-align: center;" align="center">
+                <input name="submitbtn" class="btn btn-primary" type="button" onclick="validateNow();return false;" tabindex="2" value="<?= $this->translate->_("Update"); ?>" />
+                <input class="btn btn-danger" type="button" onclick="window.location.href='/admin/index';" tabindex="3" value="<?= $this->translate->_("Back"); ?>" />
+            </div>
+        </fieldset>
+    </form>
+</div>
+<script type="text/javascript">
+    function validateNow() {
+        var raw = ($('#eidPassPercentage').val() || '').trim();
+        if (raw !== '') {
+            var ps = Number(raw);
+            if (!Number.isInteger(ps) || ps < 1 || ps > 100) {
+                bootbox.alert(<?php echo json_encode($this->translate->_("Passing Score must be a whole number between 1 and 100. Leave it blank to use the default of 100.")); ?>);
+                return;
+            }
+        }
+        $.blockUI();
+        document.getElementById('eidSettingsForm').submit();
+    }
+</script>
+<?php echo $this->render('partials/re-evaluate-nudge.phtml'); ?>

@@ -7819,3 +7819,22 @@ td.center {
 	background-color: DodgerBlue !important;
 	color: #ffffff;
 }
+
+/* Modal stacking fix --------------------------------------------------------
+ * The jschr bootstrap-modal plugin (bootstrap-modalmanager.js) assigns modal
+ * and backdrop z-indexes inline at show-time. Its two assignments can tie the
+ * backdrop with the dialog; since the backdrop is appended later in the DOM it
+ * then paints ON TOP of the modal and traps clicks (affects every bootbox /
+ * bootstrap modal: vl-settings, dts-settings, etc.). These !important rules
+ * beat the plugin's inline z-index and permanently keep the dialog above the
+ * backdrop. */
+.modal-backdrop,
+.modal-backdrop.fade.in {
+	z-index: 1040 !important;
+}
+.modal {
+	z-index: 1050 !important;
+}
+.modal-dialog {
+	z-index: 1060 !important;
+}

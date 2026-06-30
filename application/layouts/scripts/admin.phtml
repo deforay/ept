@@ -118,6 +118,7 @@ $helpSlugMap = [
 	'home-config/index' => 'home-config',
 	'dts-settings/index' => 'dts-settings',
 	'vl-settings/index' => 'vl-settings',
+	'eid-settings/index' => 'eid-settings',
 	'tb-settings/index' => 'tb-settings',
 
 	// Test kits
@@ -402,6 +403,9 @@ $helpPageKey = "$controllerName/$actionName";
 									<?php if (in_array('eid', $adminSession->activeSchemes)) { ?>
 										<li id="EIDAssay"><a
 												href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'eid-assay'), 'default', true); ?>"><?= $this->translate->_("EID Assay/Platforms"); ?></a>
+										</li>
+										<li id="EIDSettings"><a
+											href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'eid-settings'), 'default', true); ?>"><?= $this->translate->_("EID Settings"); ?></a>
 										</li>
 									<?php } ?>
 									<?php if (in_array('dts', $adminSession->activeSchemes) || in_array('tb', $adminSession->activeSchemes)) { ?>
@@ -805,6 +809,8 @@ $helpPageKey = "$controllerName/$actionName";
 				$('#HIVSerologySettings').addClass('active');
 			} else if (splitsUrl[2] == 'vl-settings') {
 				$('#VLSettings').addClass('active');
+			} else if (splitsUrl[2] == 'eid-settings') {
+				$('#EIDSettings').addClass('active');
 			} else if (splitsUrl[2] == 'tb-settings') {
 				$('#TBSettings').addClass('active');
 			} else if (splitsUrl[2] == 'custom-test') {

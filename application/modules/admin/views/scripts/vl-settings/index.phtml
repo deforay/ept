@@ -217,10 +217,6 @@ $dtFormat =  $genderHelper->getDateFormat();
                     <input type="number" id="vlPassPercentage" name="vl[passPercentage]" max="100" class="isRequired isNumeric form-control" placeholder="95" value="<?php echo $vl['passPercentage'] ?? 95; ?>" />
                 </div>
                 <div class="col-md-6">
-                    <label for="vlDocumentationScore" class="control-label"><?= $this->translate->_("Documentation Score"); ?> <span class="mandatory">*</span></label>
-                    <input type="number" id="vlDocumentationScore" name="vl[documentationScore]" max="100" class="isRequired isNumeric form-control" placeholder="95" value="<?php echo $vl['documentationScore'] ?? 95; ?>" />
-                </div>
-                <div class="col-md-6">
                     <label for="reportVersion" class="control-label"><?= $this->translate->_("Report Version"); ?></label>
                     <input type="text" id="reportVersion" name="vl[reportVersion]" class="form-control" placeholder="Enter the report version" value="<?php echo $vl['reportVersion'] ?? null; ?>" title="Please enter the report version" />
                     <small class="text-muted"><?= $this->translate->_("Please enter the report version that shows in the report PDF footer."); ?></small>

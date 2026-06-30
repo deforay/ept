@@ -15,7 +15,13 @@ class Application_Model_Eid
         $counter = 0;
         $maxScore = 0;
 
-        $passingScore = 100;
+        // Configurable via /admin/eid-settings. Blank/unset or out-of-range falls back to 100.
+        $passingScore = Pt_Commons_SchemeConfig::get('eid.passPercentage');
+        if ($passingScore === null || $passingScore === '' || !is_numeric($passingScore) || (int) $passingScore < 1 || (int) $passingScore > 100) {
+            $passingScore = 100;
+        } else {
+            $passingScore = (int) $passingScore;
+        }
 
         $scoreHolder = [];
         $finalResult = null;
