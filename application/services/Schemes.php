@@ -978,7 +978,7 @@ class Application_Service_Schemes
                             'scheme_config_value' => json_encode($test['config']),
                         ]);
                     } else {
-                        $summary['errors'][] = "Scheme name already exist. Kindly use differen scheme name to import.";
+                        $summary['errors'][] = 'Scheme name already exist. Kindly use differen scheme name to import.';
                         return $summary;
                     }
                 }

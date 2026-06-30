@@ -1,0 +1,103 @@
+<?php
+// Ambient "needs re-evaluation" nudge for the Evaluate landing page.
+// Lists shipments whose scores are out of date because responses arrived after they
+// were evaluated (see Application_Service_Evaluation::getShipmentsNeedingReEvaluation).
+// Reuses the shared scheme-re-evaluate/re-evaluate AJAX endpoint, one shipment at a time.
+// Expects: $this->staleShipments - array of {shipment_id, shipment_code, scheme_type, reports_generated}
+$staleShipments = $this->staleShipments ?? [];
+if (!empty($staleShipments)):
+    $total = count($staleShipments);
+    $codes = array_map(static function ($s) {
+        return $s['shipment_code'];
+    }, $staleShipments);
+    $anyReports = false;
+    foreach ($staleShipments as $s) {
+        if (!empty($s['reports_generated'])) {
+            $anyReports = true;
+            break;
+        }
+    }
+    $jsList = array_map(static function ($s) {
+        return ['id' => (int) $s['shipment_id'], 'scheme' => $s['scheme_type']];
+    }, $staleShipments);
+?>
+<div id="reEvalStaleBanner" class="alert alert-warning" role="alert"
+    style="margin:0 0 15px;border-left:4px solid #f0ad4e;">
+    <button type="button" class="close" id="reEvalStaleDismiss" aria-label="Close"
+        style="margin-left:10px;"><span aria-hidden="true">&times;</span></button>
+    <p style="margin:0 0 8px;">
+        <?php if ($total > 1): ?>
+            <?= $this->htmlTranslate("These shipments got new responses after they were evaluated. Re-evaluate them to update the scores:"); ?>
+        <?php else: ?>
+            <?= $this->htmlTranslate("This shipment got new responses after it was evaluated. Re-evaluate it to update the scores:"); ?>
+        <?php endif; ?>
+        <strong><?= htmlspecialchars(implode(', ', $codes)); ?></strong>
+    </p>
+    <?php if ($anyReports): ?>
+        <p style="margin:0 0 8px;font-size:12px;">
+            <?= $this->htmlTranslate("Shipments that already have reports will go back to the evaluated state, so you will need to make their reports again."); ?>
+        </p>
+    <?php endif; ?>
+    <button type="button" class="btn btn-sm btn-warning" id="reEvalStaleRun">
+        <?= $total > 1 ? $this->htmlTranslate("Re-evaluate all") : $this->htmlTranslate("Re-evaluate"); ?>
+    </button>
+    <button type="button" class="btn btn-sm btn-link" id="reEvalStaleNotNow"><?= $this->htmlTranslate("Not now"); ?></button>
+</div>
+<script type="text/javascript">
+    (function () {
+        var staleList = <?php echo json_encode($jsList); ?>;
+        var reEvalUrl = '<?php echo $this->url(array("module" => "admin", "controller" => "scheme-re-evaluate", "action" => "re-evaluate"), "default", true); ?>';
+        if (!staleList || staleList.length === 0) {
+            return;
+        }
+
+        $(function () {
+            $('#reEvalStaleDismiss, #reEvalStaleNotNow').on('click', function () {
+                $('#reEvalStaleBanner').slideUp(150);
+            });
+            $('#reEvalStaleRun').on('click', function () {
+                runReEval(staleList.slice());
+            });
+        });
+
+        function runReEval(items) {
+            var total = items.length;
+            var done = 0;
+            var failed = 0;
+
+            function progressHtml() {
+                return "<h4 style='margin:0;color:#fff;'><?= Pt_Commons_TranslateUtility::jsTranslate("Re-evaluating shipments"); ?>&hellip;</h4>" +
+                    "<p style='margin:8px 0 0;color:#fff;'>" + done + " / " + total +
+                    (failed > 0 ? " (" + failed + " <?= Pt_Commons_TranslateUtility::jsTranslate("failed"); ?>)" : "") + "</p>";
+            }
+
+            $.blockUI({ message: progressHtml() });
+
+            function next() {
+                if (items.length === 0) {
+                    $.unblockUI();
+                    bootbox.alert(
+                        "<?= Pt_Commons_TranslateUtility::jsTranslate("Re-evaluation finished."); ?> " + (done - failed) + " / " + total,
+                        function () { window.location.reload(); }
+                    );
+                    return;
+                }
+                var item = items.shift();
+                $.post(reEvalUrl, { shipmentId: item.id, scheme: item.scheme }, function (resp) {
+                    if (!resp || resp.status === 'error') {
+                        failed++;
+                    }
+                }, 'json').fail(function () {
+                    failed++;
+                }).always(function () {
+                    done++;
+                    $.blockUI({ message: progressHtml() });
+                    next();
+                });
+            }
+
+            next();
+        }
+    })();
+</script>
+<?php endif; ?>

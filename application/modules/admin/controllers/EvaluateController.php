@@ -44,6 +44,17 @@ class Admin_EvaluateController extends Zend_Controller_Action
             $this->view->showcalc = ($this->_getParam('showcalc'));
             $this->view->scheme = $this->_getParam('scheme');
         }
+        // On normal page load (not the DataTables AJAX POST), surface shipments whose
+        // scores are out of date because responses arrived after they were evaluated.
+        // Only for admins with 'config-ept' — the re-evaluate endpoint enforces that
+        // privilege, so there's no point nudging someone who can't act on it.
+        if (!$request->isPost()) {
+            $adminSession = new Zend_Session_Namespace('administrators');
+            $privileges = $adminSession->privileges ? explode(',', $adminSession->privileges) : [];
+            if (in_array('config-ept', $privileges, true)) {
+                $this->view->staleShipments = (new Application_Service_Evaluation())->getShipmentsNeedingReEvaluation();
+            }
+        }
     }
 
     public function getShipmentsAction()
@@ -121,7 +132,6 @@ class Admin_EvaluateController extends Zend_Controller_Action
         $this->view->states = $participants->getUniqueState();
         $this->view->districts = $participants->getUniqueDistrict();
         $this->view->results = $shipmentParticipantMap->fetchAllFinalResults();
-
 
         // Initial GET still runs the existing evaluation flow (so first-load triggers
         // scheme-specific scoring). Subsequent paged loads come from the AJAX endpoint.

@@ -3487,7 +3487,7 @@ class Application_Service_Reports
         $shipmentIds = [];
         if (!empty($params['shipmentId'])) {
             $shipmentIds = is_array($params['shipmentId']) ? $params['shipmentId'] : [$params['shipmentId']];
-            $shipmentIds = array_values(array_filter($shipmentIds, static fn($v) => $v !== '' && $v !== null));
+            $shipmentIds = array_values(array_filter($shipmentIds, static fn ($v) => $v !== '' && $v !== null));
         }
 
         if (!empty($shipmentIds)) {

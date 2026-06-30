@@ -26,6 +26,43 @@ class Application_Service_Evaluation
         return array_map('intval', $db->fetchCol($select));
     }
 
+    /**
+     * Shipments whose stored scores are out of date because a response was submitted
+     * (created or edited) AFTER the shipment was last evaluated. Drives the "needs
+     * re-evaluation" nudge on the Evaluate landing page. Finalized and cancelled
+     * shipments are excluded; 'reports generated' shipments are included (re-evaluating
+     * sends them back to 'evaluated'), and flagged via reports_generated so the view can
+     * warn that their reports will need regenerating.
+     *
+     * @return array<int,array{shipment_id:int,shipment_code:string,scheme_type:string,reports_generated:bool}>
+     */
+    public function getShipmentsNeedingReEvaluation(): array
+    {
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $rows = $db->fetchAll(
+            "SELECT s.shipment_id, s.shipment_code, s.scheme_type,
+                    (s.reports_generated_at IS NOT NULL) AS reports_generated
+               FROM shipment s
+              WHERE s.evaluated_at IS NOT NULL
+                AND s.finalized_at IS NULL
+                AND s.cancelled_at IS NULL
+                AND s.status IN ('evaluated', 'reports generated')
+                AND EXISTS (
+                    SELECT 1 FROM shipment_participant_map sp
+                     WHERE sp.shipment_id = s.shipment_id
+                       AND sp.response_status = 'responded'
+                       AND (sp.updated_on_user > s.evaluated_at
+                            OR sp.created_on_user > s.evaluated_at)
+                )
+              ORDER BY s.shipment_code"
+        );
+        foreach ($rows as &$r) {
+            $r['shipment_id'] = (int) $r['shipment_id'];
+            $r['reports_generated'] = (bool) $r['reports_generated'];
+        }
+        return $rows;
+    }
+
     protected function setShipmentProcessingState($db, $shipmentId, array $shipmentResult)
     {
         $previousStatus = $shipmentResult[0]['shipment_status'];

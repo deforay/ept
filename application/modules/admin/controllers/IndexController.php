@@ -40,6 +40,15 @@ class Admin_IndexController extends Zend_Controller_Action
         // For a big red banner only on real trouble:
         $this->view->showEmailCriticalAlert = ($health['severity'] === 'critical');
         $this->view->showEmailWarningAlert  = ($health['severity'] === 'warning');
+
+        // Nudge: shipments whose scores are out of date because responses arrived after
+        // they were evaluated. Only for admins with 'config-ept' — the re-evaluate endpoint
+        // enforces that privilege, so there's no point nudging someone who can't act on it.
+        $adminSession = new Zend_Session_Namespace('administrators');
+        $privileges = $adminSession->privileges ? explode(',', $adminSession->privileges) : [];
+        if (in_array('config-ept', $privileges, true)) {
+            $this->view->staleShipments = (new Application_Service_Evaluation())->getShipmentsNeedingReEvaluation();
+        }
     }
 
     public function getSchemeParticipantsAction()
