@@ -4,8 +4,10 @@
 // were evaluated (see Application_Service_Evaluation::getShipmentsNeedingReEvaluation).
 // Reuses the shared scheme-re-evaluate/re-evaluate AJAX endpoint, one shipment at a time.
 // Expects: $this->staleShipments - array of {shipment_id, shipment_code, scheme_type, reports_generated}
+// 'Not now' sets the reeval_nudge_dismissed cookie (see JS below) to mute the banner
+// for a day, mirroring the dashboard email-health alert's dismiss behaviour.
 $staleShipments = $this->staleShipments ?? [];
-if (!empty($staleShipments)):
+if (!empty($staleShipments) && !isset($_COOKIE['reeval_nudge_dismissed'])):
     $total = count($staleShipments);
     $codes = array_map(static function ($s) {
         return $s['shipment_code'];
@@ -78,6 +80,9 @@ if (!empty($staleShipments)):
 
         $(function () {
             $('#reEvalStaleNotNow').on('click', function () {
+                var expires = new Date();
+                expires.setTime(expires.getTime() + (24 * 60 * 60 * 1000)); // 1 day
+                document.cookie = "reeval_nudge_dismissed=1; expires=" + expires.toUTCString() + "; path=/; SameSite=Strict";
                 $('#reEvalStaleBanner').slideUp(150);
             });
             $('#reEvalStaleRun').on('click', function () {
