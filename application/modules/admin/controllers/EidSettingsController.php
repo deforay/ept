@@ -12,11 +12,14 @@ class Admin_EidSettingsController extends Zend_Controller_Action
         $adminSession = new Zend_Session_Namespace('administrators');
         $privileges = explode(',', $adminSession->privileges);
         if (!in_array('config-ept', $privileges)) {
+            // init() returning does not abort dispatch in ZF1, so we must stop
+            // here explicitly or indexAction() would still run for XHR callers.
             if ($request->isXmlHttpRequest()) {
-                return null;
-            } else {
-                $this->redirect('/admin');
+                $this->getResponse()->setHttpResponseCode(403)->sendResponse();
+                exit;
             }
+            $this->redirect('/admin'); // redirector exits by default
+            return;
         }
     }
 
