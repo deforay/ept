@@ -9,9 +9,6 @@
 $staleShipments = $this->staleShipments ?? [];
 if (!empty($staleShipments) && !isset($_COOKIE['reeval_nudge_dismissed'])):
     $total = count($staleShipments);
-    $codes = array_map(static function ($s) {
-        return $s['shipment_code'];
-    }, $staleShipments);
     $anyReports = false;
     foreach ($staleShipments as $s) {
         if (!empty($s['reports_generated'])) {
@@ -19,9 +16,6 @@ if (!empty($staleShipments) && !isset($_COOKIE['reeval_nudge_dismissed'])):
             break;
         }
     }
-    $jsList = array_map(static function ($s) {
-        return ['id' => (int) $s['shipment_id'], 'scheme' => $s['scheme_type']];
-    }, $staleShipments);
 ?>
 <style>
     #reEvalStaleBanner { margin: 0 0 18px; background: #fffbf2; border: 1px solid #f0e2c4; border-left: 4px solid #e6a23c; border-radius: 6px; }
@@ -31,11 +25,15 @@ if (!empty($staleShipments) && !isset($_COOKIE['reeval_nudge_dismissed'])):
     #reEvalStaleBanner .rsb-text { flex: 1 1 260px; min-width: 0; }
     #reEvalStaleBanner .rsb-title { font-size: 14px; font-weight: 600; color: #6b4e0f; }
     #reEvalStaleBanner .rsb-detail { margin-top: 2px; font-size: 13px; color: #8a7340; }
-    #reEvalStaleBanner .rsb-codes { font-weight: 600; color: #6b4e0f; }
-    #reEvalStaleBanner .rsb-note { margin-top: 4px; font-size: 12px; color: #a78a52; }
+    #reEvalStaleBanner .rsb-chips { margin-top: 7px; display: flex; flex-wrap: wrap; gap: 8px; }
+    #reEvalStaleBanner .rsb-chip { display: inline-flex; align-items: center; gap: 6px; background: #fff; border: 1px solid #ead9b0; border-radius: 14px; padding: 3px 11px 3px 9px; font-size: 13px; font-weight: 600; color: #6b4e0f; cursor: pointer; user-select: none; }
+    #reEvalStaleBanner .rsb-chip input { margin: 0; cursor: pointer; }
+    #reEvalStaleBanner .rsb-chip.unchecked { opacity: 0.5; font-weight: 400; }
+    #reEvalStaleBanner .rsb-note { margin-top: 6px; font-size: 12px; color: #a78a52; }
     #reEvalStaleBanner .rsb-actions { flex: 0 0 auto; display: flex; align-items: center; gap: 12px; }
     #reEvalStaleBanner .rsb-btn { background: #e6952c; border: 0; color: #fff; font-weight: 600; font-size: 13px; padding: 8px 18px; border-radius: 4px; cursor: pointer; white-space: nowrap; }
     #reEvalStaleBanner .rsb-btn:hover { background: #cf8420; }
+    #reEvalStaleBanner .rsb-btn:disabled { background: #e7d6b3; cursor: not-allowed; }
     #reEvalStaleBanner .rsb-link { background: none; border: 0; color: #9a814a; font-size: 13px; cursor: pointer; white-space: nowrap; }
     #reEvalStaleBanner .rsb-link:hover { color: #6b4e0f; text-decoration: underline; }
 </style>
@@ -53,8 +51,17 @@ if (!empty($staleShipments) && !isset($_COOKIE['reeval_nudge_dismissed'])):
                 <?php endif; ?>
             </div>
             <div class="rsb-detail">
-                <?= $this->htmlTranslate("New responses arrived after they were last evaluated:"); ?>
-                <span class="rsb-codes"><?= htmlspecialchars(implode(', ', $codes)); ?></span>
+                <?= $this->htmlTranslate("New responses arrived after they were last evaluated. Pick which ones to re-evaluate:"); ?>
+            </div>
+            <div class="rsb-chips">
+                <?php foreach ($staleShipments as $s): ?>
+                    <label class="rsb-chip">
+                        <input type="checkbox" class="rsb-check" checked
+                               data-id="<?= (int) $s['shipment_id']; ?>"
+                               data-scheme="<?= htmlspecialchars($s['scheme_type']); ?>">
+                        <span><?= htmlspecialchars($s['shipment_code']); ?></span>
+                    </label>
+                <?php endforeach; ?>
             </div>
             <?php if ($anyReports): ?>
                 <div class="rsb-note">
@@ -63,30 +70,59 @@ if (!empty($staleShipments) && !isset($_COOKIE['reeval_nudge_dismissed'])):
             <?php endif; ?>
         </div>
         <div class="rsb-actions">
-            <button type="button" class="rsb-btn" id="reEvalStaleRun">
-                <?= $total > 1 ? $this->htmlTranslate("Re-evaluate all") : $this->htmlTranslate("Re-evaluate"); ?>
-            </button>
+            <button type="button" class="rsb-btn" id="reEvalStaleRun"><?= $this->htmlTranslate("Re-evaluate selected"); ?></button>
             <button type="button" class="rsb-link" id="reEvalStaleNotNow"><?= $this->htmlTranslate("Not now"); ?></button>
         </div>
     </div>
 </div>
 <script type="text/javascript">
     (function () {
-        var staleList = <?php echo json_encode($jsList); ?>;
+        var $banner = $('#reEvalStaleBanner');
+        if (!$banner.length) { return; }
         var reEvalUrl = '<?php echo $this->url(array("module" => "admin", "controller" => "scheme-re-evaluate", "action" => "re-evaluate"), "default", true); ?>';
-        if (!staleList || staleList.length === 0) {
-            return;
+        var selTpl = "<?= Pt_Commons_TranslateUtility::jsTranslate("Re-evaluate selected (%d)"); ?>";
+
+        // Style the blockUI box into a compact centered card (its default is a wide bare slab).
+        var blockCss = {
+            width: '340px', top: '40%', left: '50%', marginLeft: '-170px',
+            padding: '26px 28px', border: 'none', borderRadius: '10px',
+            boxShadow: '0 14px 44px rgba(0,0,0,0.25)', backgroundColor: '#fff',
+            textAlign: 'center', cursor: 'default'
+        };
+        var overlayCss = { backgroundColor: '#1b2430', opacity: 0.55 };
+
+        function checkedItems() {
+            var items = [];
+            $banner.find('.rsb-check:checked').each(function () {
+                items.push({ id: parseInt($(this).data('id'), 10), scheme: String($(this).data('scheme')) });
+            });
+            return items;
+        }
+
+        function updateSelection() {
+            var n = $banner.find('.rsb-check:checked').length;
+            $('#reEvalStaleRun').prop('disabled', n === 0).text(selTpl.replace('%d', n));
         }
 
         $(function () {
+            updateSelection();
+
+            $banner.on('change', '.rsb-check', function () {
+                $(this).closest('.rsb-chip').toggleClass('unchecked', !this.checked);
+                updateSelection();
+            });
+
             $('#reEvalStaleNotNow').on('click', function () {
                 var expires = new Date();
                 expires.setTime(expires.getTime() + (24 * 60 * 60 * 1000)); // 1 day
                 document.cookie = "reeval_nudge_dismissed=1; expires=" + expires.toUTCString() + "; path=/; SameSite=Strict";
-                $('#reEvalStaleBanner').slideUp(150);
+                $banner.slideUp(150);
             });
+
             $('#reEvalStaleRun').on('click', function () {
-                runReEval(staleList.slice());
+                var items = checkedItems();
+                if (items.length === 0) { return; }
+                runReEval(items);
             });
         });
 
@@ -96,28 +132,30 @@ if (!empty($staleShipments) && !isset($_COOKIE['reeval_nudge_dismissed'])):
             var failed = 0;
 
             function progressHtml() {
-                // Dark text: the blockUI message box has a default white background.
-                return "<h4 style='margin:0;color:#2c3e50;'><?= Pt_Commons_TranslateUtility::jsTranslate("Queuing shipments for re-evaluation"); ?>&hellip;</h4>" +
-                    "<p style='margin:8px 0 0;color:#555;'>" + done + " / " + total +
+                return "<h4 style='margin:0;font-size:16px;color:#2c3e50;font-weight:600;'><?= Pt_Commons_TranslateUtility::jsTranslate("Queuing shipments for re-evaluation"); ?>&hellip;</h4>" +
+                    "<p style='margin:10px 0 0;font-size:14px;color:#555;'>" + done + " / " + total +
                     (failed > 0 ? " (" + failed + " <?= Pt_Commons_TranslateUtility::jsTranslate("failed"); ?>)" : "") + "</p>";
             }
 
             function next() {
                 if (items.length === 0) {
-                    // Show the result inside the blockUI box (the topmost layer) instead of a
-                    // bootbox modal: this theme stacks a .modal-backdrop on top of the dialog,
-                    // trapping the OK button. blockUI has no backdrop, so its OK can't be hidden.
-                    // Dark text because the blockUI box is white by default.
-                    var doneMsg = "<h4 style='margin:0;color:#2c3e50;'><?= Pt_Commons_TranslateUtility::jsTranslate("Re-evaluation queued."); ?></h4>" +
-                        "<p style='margin:8px 0 0;color:#555;'>" + (done - failed) + " / " + total +
+                    // Render the result inside the blockUI box (topmost layer, no backdrop):
+                    // bootbox's .modal-backdrop is stacked above its dialog in this theme and
+                    // traps the OK button.
+                    var doneMsg =
+                        "<div style='margin:0 auto 14px;width:48px;height:48px;border-radius:50%;background:#eef8f1;line-height:48px;'>" +
+                            "<svg width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='#36a45c' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round' style='vertical-align:middle;'><polyline points='20 6 9 17 4 12'></polyline></svg>" +
+                        "</div>" +
+                        "<h4 style='margin:0;font-size:17px;color:#2c3e50;font-weight:600;'><?= Pt_Commons_TranslateUtility::jsTranslate("Re-evaluation queued."); ?></h4>" +
+                        "<p style='margin:8px 0 0;font-size:14px;color:#555;'>" + (done - failed) + " / " + total +
                         (failed > 0 ? " (" + failed + " <?= Pt_Commons_TranslateUtility::jsTranslate("failed"); ?>)" : "") + "</p>" +
-                        "<p style='margin:8px 0 0;color:#888;font-size:12px;'><?= Pt_Commons_TranslateUtility::jsTranslate("They will be processed in the background shortly."); ?></p>" +
-                        "<button type='button' id='reEvalStaleOk' style='margin-top:14px;background:#e6952c;color:#fff;border:0;padding:8px 26px;border-radius:4px;font-weight:600;cursor:pointer;'><?= Pt_Commons_TranslateUtility::jsTranslate("OK"); ?></button>";
-                    $.blockUI({ message: doneMsg });
+                        "<p style='margin:8px 0 0;font-size:12px;color:#999;'><?= Pt_Commons_TranslateUtility::jsTranslate("They will be processed in the background shortly."); ?></p>" +
+                        "<button type='button' id='reEvalStaleOk' style='margin-top:18px;background:#e6952c;color:#fff;border:0;padding:9px 30px;border-radius:5px;font-weight:600;font-size:14px;cursor:pointer;'><?= Pt_Commons_TranslateUtility::jsTranslate("OK"); ?></button>";
+                    $.blockUI({ message: doneMsg, css: blockCss, overlayCSS: overlayCss });
                     $('#reEvalStaleOk').on('click', function () { window.location.reload(); });
                     return;
                 }
-                $.blockUI({ message: progressHtml() });
+                $.blockUI({ message: progressHtml(), css: blockCss, overlayCSS: overlayCss });
                 var item = items.shift();
                 $.post(reEvalUrl, { shipmentId: item.id, scheme: item.scheme }, function (resp) {
                     if (!resp || resp.status === 'error') {
