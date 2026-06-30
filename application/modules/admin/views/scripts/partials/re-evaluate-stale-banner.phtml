@@ -101,17 +101,21 @@ if (!empty($staleShipments) && !isset($_COOKIE['reeval_nudge_dismissed'])):
                     (failed > 0 ? " (" + failed + " <?= Pt_Commons_TranslateUtility::jsTranslate("failed"); ?>)" : "") + "</p>";
             }
 
-            $.blockUI({ message: progressHtml() });
-
             function next() {
                 if (items.length === 0) {
-                    $.unblockUI();
+                    // fadeOut:0 so the overlay is removed synchronously before bootbox
+                    // renders. Otherwise a still-animating blockUI overlay lingers on top
+                    // of the alert (higher z-index) and the OK button can't be clicked.
+                    $.unblockUI({ fadeOut: 0 });
                     bootbox.alert(
                         "<?= Pt_Commons_TranslateUtility::jsTranslate("Re-evaluation finished."); ?> " + (done - failed) + " / " + total,
                         function () { window.location.reload(); }
                     );
                     return;
                 }
+                // Block once per iteration. Never block-then-unblock in the same tick:
+                // that races blockUI's fade-in and orphans the overlay.
+                $.blockUI({ message: progressHtml() });
                 var item = items.shift();
                 $.post(reEvalUrl, { shipmentId: item.id, scheme: item.scheme }, function (resp) {
                     if (!resp || resp.status === 'error') {
@@ -121,7 +125,6 @@ if (!empty($staleShipments) && !isset($_COOKIE['reeval_nudge_dismissed'])):
                     failed++;
                 }).always(function () {
                     done++;
-                    $.blockUI({ message: progressHtml() });
                     next();
                 });
             }
