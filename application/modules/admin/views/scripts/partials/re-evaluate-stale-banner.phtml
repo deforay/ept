@@ -96,8 +96,9 @@ if (!empty($staleShipments) && !isset($_COOKIE['reeval_nudge_dismissed'])):
             var failed = 0;
 
             function progressHtml() {
-                return "<h4 style='margin:0;color:#fff;'><?= Pt_Commons_TranslateUtility::jsTranslate("Queuing shipments for re-evaluation"); ?>&hellip;</h4>" +
-                    "<p style='margin:8px 0 0;color:#fff;'>" + done + " / " + total +
+                // Dark text: the blockUI message box has a default white background.
+                return "<h4 style='margin:0;color:#2c3e50;'><?= Pt_Commons_TranslateUtility::jsTranslate("Queuing shipments for re-evaluation"); ?>&hellip;</h4>" +
+                    "<p style='margin:8px 0 0;color:#555;'>" + done + " / " + total +
                     (failed > 0 ? " (" + failed + " <?= Pt_Commons_TranslateUtility::jsTranslate("failed"); ?>)" : "") + "</p>";
             }
 
@@ -106,11 +107,12 @@ if (!empty($staleShipments) && !isset($_COOKIE['reeval_nudge_dismissed'])):
                     // Show the result inside the blockUI box (the topmost layer) instead of a
                     // bootbox modal: this theme stacks a .modal-backdrop on top of the dialog,
                     // trapping the OK button. blockUI has no backdrop, so its OK can't be hidden.
-                    var doneMsg = "<h4 style='margin:0;color:#fff;'><?= Pt_Commons_TranslateUtility::jsTranslate("Re-evaluation queued."); ?></h4>" +
-                        "<p style='margin:8px 0 0;color:#fff;'>" + (done - failed) + " / " + total +
+                    // Dark text because the blockUI box is white by default.
+                    var doneMsg = "<h4 style='margin:0;color:#2c3e50;'><?= Pt_Commons_TranslateUtility::jsTranslate("Re-evaluation queued."); ?></h4>" +
+                        "<p style='margin:8px 0 0;color:#555;'>" + (done - failed) + " / " + total +
                         (failed > 0 ? " (" + failed + " <?= Pt_Commons_TranslateUtility::jsTranslate("failed"); ?>)" : "") + "</p>" +
-                        "<p style='margin:8px 0 0;color:#fff;font-size:12px;'><?= Pt_Commons_TranslateUtility::jsTranslate("They will be processed in the background shortly."); ?></p>" +
-                        "<button type='button' id='reEvalStaleOk' style='margin-top:14px;background:#fff;color:#333;border:0;padding:7px 24px;border-radius:4px;font-weight:600;cursor:pointer;'><?= Pt_Commons_TranslateUtility::jsTranslate("OK"); ?></button>";
+                        "<p style='margin:8px 0 0;color:#888;font-size:12px;'><?= Pt_Commons_TranslateUtility::jsTranslate("They will be processed in the background shortly."); ?></p>" +
+                        "<button type='button' id='reEvalStaleOk' style='margin-top:14px;background:#e6952c;color:#fff;border:0;padding:8px 26px;border-radius:4px;font-weight:600;cursor:pointer;'><?= Pt_Commons_TranslateUtility::jsTranslate("OK"); ?></button>";
                     $.blockUI({ message: doneMsg });
                     $('#reEvalStaleOk').on('click', function () { window.location.reload(); });
                     return;
