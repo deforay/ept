@@ -72,6 +72,14 @@ class Admin_LoginController extends Zend_Controller_Action
                     $authNameSpace->$key = $value;
                 }
 
+                // Clear the "Not now" mute on the re-evaluation nudge so a fresh login
+                // always re-surfaces any shipments needing re-evaluation (see
+                // partials/re-evaluate-stale-banner.phtml).
+                if (isset($_COOKIE['reeval_nudge_dismissed'])) {
+                    setcookie('reeval_nudge_dismissed', '', time() - 3600, '/');
+                    unset($_COOKIE['reeval_nudge_dismissed']);
+                }
+
                 // Insert login history
                 $userId = $row['admin_id'] ?? null;
 
