@@ -20,7 +20,7 @@ class Admin_SchemeReEvaluateController extends Zend_Controller_Action
         $privileges = explode(',', $adminSession->privileges);
         if (!in_array('config-ept', $privileges)) {
             if ($request->isXmlHttpRequest()) {
-                return null;
+                return;
             } else {
                 $this->redirect('/admin');
             }
