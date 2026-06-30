@@ -103,18 +103,18 @@ if (!empty($staleShipments) && !isset($_COOKIE['reeval_nudge_dismissed'])):
 
             function next() {
                 if (items.length === 0) {
-                    // fadeOut:0 so the overlay is removed synchronously before bootbox
-                    // renders. Otherwise a still-animating blockUI overlay lingers on top
-                    // of the alert (higher z-index) and the OK button can't be clicked.
-                    $.unblockUI({ fadeOut: 0 });
-                    var msg = "<?= Pt_Commons_TranslateUtility::jsTranslate("Re-evaluation queued."); ?> " +
-                        (done - failed) + " / " + total +
-                        "<br><small><?= Pt_Commons_TranslateUtility::jsTranslate("They will be processed in the background shortly."); ?></small>";
-                    bootbox.alert(msg, function () { window.location.reload(); });
+                    // Show the result inside the blockUI box (the topmost layer) instead of a
+                    // bootbox modal: this theme stacks a .modal-backdrop on top of the dialog,
+                    // trapping the OK button. blockUI has no backdrop, so its OK can't be hidden.
+                    var doneMsg = "<h4 style='margin:0;color:#fff;'><?= Pt_Commons_TranslateUtility::jsTranslate("Re-evaluation queued."); ?></h4>" +
+                        "<p style='margin:8px 0 0;color:#fff;'>" + (done - failed) + " / " + total +
+                        (failed > 0 ? " (" + failed + " <?= Pt_Commons_TranslateUtility::jsTranslate("failed"); ?>)" : "") + "</p>" +
+                        "<p style='margin:8px 0 0;color:#fff;font-size:12px;'><?= Pt_Commons_TranslateUtility::jsTranslate("They will be processed in the background shortly."); ?></p>" +
+                        "<button type='button' id='reEvalStaleOk' style='margin-top:14px;background:#fff;color:#333;border:0;padding:7px 24px;border-radius:4px;font-weight:600;cursor:pointer;'><?= Pt_Commons_TranslateUtility::jsTranslate("OK"); ?></button>";
+                    $.blockUI({ message: doneMsg });
+                    $('#reEvalStaleOk').on('click', function () { window.location.reload(); });
                     return;
                 }
-                // Block once per iteration. Never block-then-unblock in the same tick:
-                // that races blockUI's fade-in and orphans the overlay.
                 $.blockUI({ message: progressHtml() });
                 var item = items.shift();
                 $.post(reEvalUrl, { shipmentId: item.id, scheme: item.scheme }, function (resp) {
