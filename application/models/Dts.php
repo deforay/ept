@@ -2461,7 +2461,12 @@ final class Application_Model_Dts
     // ]
     private function evaluateAlgorithm(
         array $attributes,
-        string $dtsSchemeType,
+        // Nullable: a plain DTS shipment with no national algorithm has dtsSchemeType = null
+        // (see evaluateSingleShipment, line ~45). null falls through every scheme-specific
+        // branch below to the standard path, exactly like 'standard'. Without ?, a standard
+        // shipment throws a TypeError here and the whole evaluation aborts (job marked failed,
+        // shipment stuck in 'processing').
+        ?string $dtsSchemeType,
         array $result,                            // full $result row (for sample_label + RTRI fields)
         ?string $result1,
         ?string $result2,

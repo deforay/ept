@@ -99,7 +99,11 @@ try {
 			$queueResults = $db->fetchRow($db->select()
 				->from('queue_report_generation')
 				->where("shipment_id = ?", $shipmentId));
-			$adminDetails = $adminService->getSystemAdminDetails($queueResults['initated_by']);
+			// A shipment re-evaluated from the queue/nudge has no queue_report_generation
+			// row, so fetchRow returns false here — guard before reading initated_by.
+			$adminDetails = (!empty($queueResults) && !empty($queueResults['initated_by']))
+				? $adminService->getSystemAdminDetails($queueResults['initated_by'])
+				: null;
 			if (isset($adminDetails) && !empty($adminDetails) && $adminDetails['primary_email'] != "") {
 				$link = $conf->domain . '/admin/evaluate/shipment/sid/' . base64_encode($shipmentId);
 				$subject = 'Shipment for ' . $shipmentResult[0]['shipment_code'] . ' has been evalated';
