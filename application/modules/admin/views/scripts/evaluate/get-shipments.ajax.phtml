@@ -108,7 +108,16 @@ if (isset($this->shipmentStatus['finalized']['status'])) {
 						<td style="text-align: center;"><?= (int) $reported; ?></td>
 						<td style="text-align: center;"><?= $responsePercentage; ?>%</td>
 						<td style="text-align: center;"><?= (int) $passed; ?></td>
-						<td style="text-align: center;"><?= ucfirst($shipment['shipment_status']); ?></td>
+						<td style="text-align: center;">
+							<?= ucfirst($shipment['shipment_status']); ?>
+							<?php if (!empty($this->needsReEval[(int) $shipment['shipment_id']])): ?>
+								<br>
+								<span title="<?= $this->translate->_('New responses arrived after this shipment was last evaluated'); ?>"
+									style="display:inline-block;margin-top:4px;font-size:11px;font-weight:600;color:#b06f12;background:#fff3df;border:1px solid #f0d9ad;border-radius:10px;padding:1px 8px;white-space:nowrap;">
+									<i class="icon-refresh"></i> <?= $this->translate->_('Needs re-evaluation'); ?>
+								</span>
+							<?php endif; ?>
+						</td>
 						<td style="text-align: center; line-height: 30px;">
 							<?php if ($reported > 0): ?>
 

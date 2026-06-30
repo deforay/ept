@@ -67,6 +67,13 @@ class Admin_EvaluateController extends Zend_Controller_Action
             if (isset($shipment) && !empty($shipment)) {
                 $this->view->shipmentStatus = $evalService->getReportStatus($shipment[0]['shipment_id'], 'generateReport', true);
             }
+            // Per-shipment "needs re-evaluation" flags — the same set the page banner uses —
+            // so each row can show a subtle badge when its scores are out of date.
+            $needsReEval = [];
+            foreach ($evalService->getShipmentsNeedingReEvaluation() as $r) {
+                $needsReEval[(int) $r['shipment_id']] = true;
+            }
+            $this->view->needsReEval = $needsReEval;
         } else {
             $this->view->shipments = false;
         }
