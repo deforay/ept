@@ -2,8 +2,10 @@
 
 /**
  * Shared AJAX endpoint for the post-save "re-evaluate" nudge on the scheme settings
- * pages (DTS, VL, COVID-19, Recency, TB, custom tests). Re-evaluates ONE shipment per
- * call so the client can show progress and we avoid a single long-running request.
+ * pages (DTS, VL, COVID-19, Recency, TB, custom tests) and the dashboard/evaluate
+ * "needs re-evaluation" banner. QUEUES ONE shipment per call (evaluate-shipments.php
+ * via scheduled_jobs) so the heavy scoring runs on the job worker, not inline in the
+ * request; the client loops one shipment at a time only to show progress.
  *
  * Gated on 'config-ept' to match the settings pages that invoke it.
  */
@@ -75,10 +77,13 @@ class Admin_SchemeReEvaluateController extends Zend_Controller_Action
                 return;
             }
 
+            // Queue it (status -> 'queued', scheduled_jobs row for evaluate-shipments.php)
+            // rather than scoring inline here: the worker does the heavy lifting and honors
+            // exit codes, so a bad eval surfaces as a failed job instead of a stuck request.
             $evalService = new Application_Service_Evaluation();
-            $evalService->getShipmentToEvaluate($shipmentId, true);
+            $evalService->scheduleEvaluation($shipmentId);
 
-            echo json_encode(['status' => 'success']);
+            echo json_encode(['status' => 'queued']);
         } catch (\Throwable $e) {
             Pt_Commons_LoggerUtility::logError('Scheme re-evaluation failed for shipment ' . $shipmentId . ': ' . $e->getMessage(), [
                 'file' => $e->getFile(),

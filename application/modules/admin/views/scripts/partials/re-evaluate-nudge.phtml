@@ -40,23 +40,28 @@ $reEvalIds = $this->reEvalShipmentIds ?? [];
             var failed = 0;
 
             function progressHtml() {
-                return "<h4 style='margin:0;color:#fff;'><?= $this->translate->_("Re-evaluating shipments"); ?>&hellip;</h4>" +
+                return "<h4 style='margin:0;color:#fff;'><?= $this->translate->_("Queuing shipments for re-evaluation"); ?>&hellip;</h4>" +
                     "<p style='margin:8px 0 0;color:#fff;'>" + done + " / " + total +
                     (failed > 0 ? " (" + failed + " failed)" : "") + "</p>";
             }
 
-            $.blockUI({ message: progressHtml() });
-
             function next() {
                 if (ids.length === 0) {
-                    $.unblockUI();
+                    // fadeOut:0 so the overlay is gone before bootbox renders; otherwise a
+                    // still-animating blockUI overlay can sit on top of the alert and make
+                    // its OK button unclickable.
+                    $.unblockUI({ fadeOut: 0 });
                     bootbox.alert(
-                        "<?= $this->translate->_("Re-evaluation complete."); ?> " +
-                        (done - failed) + " / " + total + " re-evaluated" +
-                        (failed > 0 ? ", " + failed + " could not be processed." : ".")
+                        "<?= $this->translate->_("Re-evaluation queued."); ?> " +
+                        (done - failed) + " / " + total + " <?= $this->translate->_("queued"); ?>" +
+                        (failed > 0 ? ", " + failed + " <?= $this->translate->_("could not be queued"); ?>." : ".") +
+                        "<br><small><?= $this->translate->_("They will be processed in the background shortly."); ?></small>"
                     );
                     return;
                 }
+                // Block once per iteration. Never block-then-unblock in the same tick: that
+                // races blockUI's fade-in and orphans the overlay.
+                $.blockUI({ message: progressHtml() });
                 var sid = ids.shift();
                 $.post(reEvalUrl, { shipmentId: sid, scheme: reEvalScheme }, function (resp) {
                     if (!resp || resp.status === 'error') {
@@ -66,7 +71,6 @@ $reEvalIds = $this->reEvalShipmentIds ?? [];
                     failed++;
                 }).always(function () {
                     done++;
-                    $.blockUI({ message: progressHtml() });
                     next();
                 });
             }

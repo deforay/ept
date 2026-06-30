@@ -96,7 +96,7 @@ if (!empty($staleShipments) && !isset($_COOKIE['reeval_nudge_dismissed'])):
             var failed = 0;
 
             function progressHtml() {
-                return "<h4 style='margin:0;color:#fff;'><?= Pt_Commons_TranslateUtility::jsTranslate("Re-evaluating shipments"); ?>&hellip;</h4>" +
+                return "<h4 style='margin:0;color:#fff;'><?= Pt_Commons_TranslateUtility::jsTranslate("Queuing shipments for re-evaluation"); ?>&hellip;</h4>" +
                     "<p style='margin:8px 0 0;color:#fff;'>" + done + " / " + total +
                     (failed > 0 ? " (" + failed + " <?= Pt_Commons_TranslateUtility::jsTranslate("failed"); ?>)" : "") + "</p>";
             }
@@ -107,10 +107,10 @@ if (!empty($staleShipments) && !isset($_COOKIE['reeval_nudge_dismissed'])):
                     // renders. Otherwise a still-animating blockUI overlay lingers on top
                     // of the alert (higher z-index) and the OK button can't be clicked.
                     $.unblockUI({ fadeOut: 0 });
-                    bootbox.alert(
-                        "<?= Pt_Commons_TranslateUtility::jsTranslate("Re-evaluation finished."); ?> " + (done - failed) + " / " + total,
-                        function () { window.location.reload(); }
-                    );
+                    var msg = "<?= Pt_Commons_TranslateUtility::jsTranslate("Re-evaluation queued."); ?> " +
+                        (done - failed) + " / " + total +
+                        "<br><small><?= Pt_Commons_TranslateUtility::jsTranslate("They will be processed in the background shortly."); ?></small>";
+                    bootbox.alert(msg, function () { window.location.reload(); });
                     return;
                 }
                 // Block once per iteration. Never block-then-unblock in the same tick:
