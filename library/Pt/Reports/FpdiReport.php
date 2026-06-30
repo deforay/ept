@@ -21,6 +21,7 @@ class Pt_Reports_FpdiReport extends Fpdi
     public $staticFooterHtml = '';
     public $shipmentAttributes = '';
     public $logo = '';
+    public $distributionCode = '';
 
     public function __construct($orientation = 'P', $unit = 'mm', $format = 'A4', $unicode = true, $encoding = 'UTF-8', $diskcache = false, $pdfa = false)
     {
@@ -28,7 +29,7 @@ class Pt_Reports_FpdiReport extends Fpdi
         $this->generalModel = new Pt_Commons_General();
     }
 
-    public function setParams($resultStatus, $dateTime, $config = '', $watermark, $reportType, $layout, $scheme = '', $schemeType = '', $approveTxt = '', $staticFooterHtml = '', $shipmentAttributes = '')
+    public function setParams($resultStatus, $dateTime, $config = '', $watermark, $reportType, $layout, $scheme = '', $schemeType = '', $approveTxt = '', $staticFooterHtml = '', $shipmentAttributes = '', $distributionCode = '')
     {
         $this->resultStatus       = $resultStatus;
         $this->dateTime           = $dateTime;
@@ -41,6 +42,7 @@ class Pt_Reports_FpdiReport extends Fpdi
         $this->approveTxt         = $approveTxt;
         $this->staticFooterHtml   = $staticFooterHtml;
         $this->shipmentAttributes = $shipmentAttributes;
+        $this->distributionCode = $distributionCode;
 
         $reportService     = new Application_Service_Reports();
         $commonService     = new Application_Service_Common();
@@ -197,7 +199,7 @@ class Pt_Reports_FpdiReport extends Fpdi
             $completeFooterHtml .= '<td style="width:20%; ' . $td . ' text-align:left;   border-right:0px solid #fff;">' . htmlspecialchars($reportVersion  ?? '') . '</td>';
             $completeFooterHtml .= '<td style="width:20%; ' . $td . ' text-align:center; border-right:0px solid #fff;">Serology report form V.1</td>';
             $completeFooterHtml .= '<td style="width:20%; ' . $td . ' text-align:center; border-right:0px solid #fff;">' . htmlspecialchars($effectiveDate ?? '') . '</td>';
-            $completeFooterHtml .= '<td style="width:20%; ' . $td . ' text-align:center; border-right:0px solid #fff;">Survey number 0124</td>';
+            $completeFooterHtml .= '<td style="width:20%; ' . $td . ' text-align:center; border-right:0px solid #fff;">Survey number ' . $this->distributionCode . '</td>';
             $completeFooterHtml .= '<td style="width:20%; ' . $td . ' text-align:right;">' . $pageNumber . '</td>';
             $completeFooterHtml .= '</tr>';
             $completeFooterHtml .= '</table>';
@@ -280,7 +282,7 @@ class Pt_Reports_FpdiReport extends Fpdi
         if ($this->layout == 'vietnam') {
             $this->SetY(-10);
         } else {
-            $this->SetY(in_array($this->layout, ['default', 'ilb'], true) ? -10 : -5);
+            $this->SetY(in_array($this->layout, ['default', 'ilb', 'malawi'], true) ? -10 : -5);
         }
         $this->SetFont('freesans', '', 7, '', true);
         $this->writeHTML($completeFooterHtml, true, false, false, false, '');

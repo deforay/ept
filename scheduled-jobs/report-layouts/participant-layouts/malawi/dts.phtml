@@ -93,7 +93,7 @@ if (!empty($resultArray['shipment'])) {
         $reportFormat = $reportService->getReportConfigValue('report-format');
         if (isset($reportFormat) && !empty($reportFormat)) {
             $pdf = new Pt_Reports_FpdiReport(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
-            $pdf->setParams($resultStatus, $evalRow['date_finalised'], "", $watermark, "INDIVIDUAL", $layout, $result['scheme_name'], $schemeType, "", "", $shipmentAttributes);
+            $pdf->setParams($resultStatus, $evalRow['date_finalised'], "", $watermark, "INDIVIDUAL", $layout, $result['scheme_name'], $schemeType, "", "", $shipmentAttributes, $result['distribution_code']);
         } else {
             $pdf = new Pt_Reports_IndividualPdf(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
             $pdf->setSchemeName($header, $result['scheme_name'], $logo, $logoRight, $resultStatus, $schemeType, $layout, $evalRow['date_finalised'], "", $watermark, "", $instituteAddressPosition);
@@ -637,7 +637,7 @@ if (!empty($resultArray['shipment'])) {
             $maxDocumentationPoints = (isset($documentationScore) && $documentationScore > 0) ? $documentationScore : 0;
             $maximumResponseScore = 100 - $maxDocumentationPoints;
             $scorePerCorrectSample = ($mandatorySampleCount > 0)
-                ? round($maximumResponseScore / $mandatorySampleCount, 2)
+                ? round($maximumResponseScore / $mandatorySampleCount)
                 : 0;
             $meanScore = [];
 
@@ -782,17 +782,17 @@ if (!empty($resultArray['shipment'])) {
                 $evaluationResult = ($result['final_result'] == 1) ? 'Acceptable' : 'Unacceptable';
 
                 $accuracy = ($mandatorySampleCount > 0)
-                    ? round(($successRate / $mandatorySampleCount) * 100, 2)
+                    ? round(($successRate / $mandatorySampleCount) * 100)
                     : 0;
 
                 // Participant's total score (shipment + documentation) — same units as the
                 // survey-wide AVG(shipment_score + documentation_score) shown below.
-                $computedMean = round($totalScore, 2);
+                $computedMean = round($totalScore);
 
                 $wishes = '<p style="font-size:11px;"><strong>Total score: </strong> ' . round($totalScore) . ' <strong>/100</strong><br>';
                 $wishes .= '<strong>Your Percentage Score: </strong> ' . $accuracy . '%.<br>';
                 $wishes .= '<strong>Your Computed Mean Score: </strong> ' . $computedMean . '.<br>';
-                $wishes .= '<strong>Survey Mean Score: </strong> ' . round($resultArray['meanScore']['mean_score'], 2) . '.<br>';
+                $wishes .= '<strong>Survey Mean Score: </strong> ' . round($resultArray['meanScore']['mean_score']) . '.<br>';
                 $wishes .= '<strong>Performance Comment:</strong> ' . $evaluationResult . '</p>';
                 $pdf->SetLeftMargin(15);
                 $pdf->writeHTML($wishes, true, false, true, false, '');
@@ -813,7 +813,7 @@ if (!empty($resultArray['shipment'])) {
             }
 
             $documentationScorePerItem = ($totalDocumentationItems > 0)
-                ? round(($documentationScore / $totalDocumentationItems), 2)
+                ? round(($documentationScore / $totalDocumentationItems))
                 : 0;
 
             // FIX #3b: $attributes is already decoded — no second json_decode needed
@@ -830,28 +830,28 @@ if (!empty($resultArray['shipment'])) {
             // Receipt date
             $img = !empty($result['responseResult'][0]['shipment_receipt_date']) ? $imgPass : $imgFail;
             $docRes .= '<tr>';
-            $docRes .= '<td style="text-align:left;font-weight:bold;">Panel/Shipment Receipt Date Specified</td>';
+            $docRes .= '<td style="text-align:left;">Panel/Shipment Receipt Date Specified</td>';
             $docRes .= '<td style="text-align:center;"><img style="width:9px;" src="' . $img . '" /></td>';
             $docRes .= '</tr>';
 
             // Rehydration date (dried samples only)
             $img = (!empty($attributes['sample_rehydration_date']) && $shipmentAttributesSampleTypeDisplay == "") ? $imgPass : $imgFail;
             $docRes .= '<tr style="' . $shipmentAttributesSampleTypeDisplay . '">';
-            $docRes .= '<td style="text-align:left;font-weight:bold;">Reporting of the Sample Rehydration Date</td>';
+            $docRes .= '<td style="text-align:left;">Reporting of the Sample Rehydration Date</td>';
             $docRes .= '<td style="text-align:center;"><img style="width:9px;" src="' . $img . '" /></td>';
             $docRes .= '</tr>';
 
             // Test date
             $img = !empty($result['responseResult'][0]['shipment_test_date']) ? $imgPass : $imgFail;
             $docRes .= '<tr>';
-            $docRes .= '<td style="text-align:left;font-weight:bold;">Reporting of the Shipment Test Date</td>';
+            $docRes .= '<td style="text-align:left;">Reporting of the Shipment Test Date</td>';
             $docRes .= '<td style="text-align:center;"><img style="width:9px;" src="' . $img . '" /></td>';
             $docRes .= '</tr>';
 
             // Rehydration timing
             $img = ($interval->days < $sampleRehydrateDays || $interval->days > ($sampleRehydrateDays + 1)) ? $imgFail : $imgPass;
             $docRes .= '<tr style="' . $shipmentAttributesSampleTypeDisplay . '">';
-            $docRes .= '<td style="text-align:left;font-weight:bold;">Testing to be done within ' . $rehydrateHours . ' hours of rehydration.</td>';
+            $docRes .= '<td style="text-align:left;">Testing to be done within ' . $rehydrateHours . ' hours of rehydration.</td>';
             $docRes .= '<td style="text-align:center;"><img style="width:11px;" src="' . $img . '" /></td>';
             $docRes .= '</tr>';
 
@@ -862,7 +862,7 @@ if (!empty($resultArray['shipment'])) {
                     && trim($result['responseResult'][0]['participant_supervisor'] ?? '') != ""
                 ) ? $imgPass : $imgFail;
                 $docRes .= '<tr>';
-                $docRes .= '<td style="text-align:left;font-weight:bold;">Supervisor Approval</td>';
+                $docRes .= '<td style="text-align:left;">Supervisor Approval</td>';
                 $docRes .= '<td style="text-align:center;"><img style="width:9px;" src="' . $img . '" /></td>';
                 $docRes .= '</tr>';
             }
@@ -877,7 +877,7 @@ if (!empty($resultArray['shipment'])) {
                 foreach ($malawiItems as $item) {
                     $img = !empty($attributes[$item['key']]) ? $imgPass : $imgFail;
                     $docRes .= '<tr>';
-                    $docRes .= '<td style="text-align:left;font-weight:bold;">' . $item['label'] . '</td>';
+                    $docRes .= '<td style="text-align:left;">' . $item['label'] . '</td>';
                     $docRes .= '<td style="text-align:center;"><img style="width:9px;" src="' . $img . '" /></td>';
                     $docRes .= '</tr>';
                 }
