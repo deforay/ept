@@ -21,27 +21,52 @@ if (!empty($staleShipments)):
         return ['id' => (int) $s['shipment_id'], 'scheme' => $s['scheme_type']];
     }, $staleShipments);
 ?>
-<div id="reEvalStaleBanner" class="alert alert-warning" role="alert"
-    style="margin:0 0 15px;border-left:4px solid #f0ad4e;">
-    <button type="button" class="close" id="reEvalStaleDismiss" aria-label="Close"
-        style="margin-left:10px;"><span aria-hidden="true">&times;</span></button>
-    <p style="margin:0 0 8px;">
-        <?php if ($total > 1): ?>
-            <?= $this->htmlTranslate("These shipments got new responses after they were evaluated. Re-evaluate them to update the scores:"); ?>
-        <?php else: ?>
-            <?= $this->htmlTranslate("This shipment got new responses after it was evaluated. Re-evaluate it to update the scores:"); ?>
-        <?php endif; ?>
-        <strong><?= htmlspecialchars(implode(', ', $codes)); ?></strong>
-    </p>
-    <?php if ($anyReports): ?>
-        <p style="margin:0 0 8px;font-size:12px;">
-            <?= $this->htmlTranslate("Shipments that already have reports will go back to the evaluated state, so you will need to make their reports again."); ?>
-        </p>
-    <?php endif; ?>
-    <button type="button" class="btn btn-sm btn-warning" id="reEvalStaleRun">
-        <?= $total > 1 ? $this->htmlTranslate("Re-evaluate all") : $this->htmlTranslate("Re-evaluate"); ?>
-    </button>
-    <button type="button" class="btn btn-sm btn-link" id="reEvalStaleNotNow"><?= $this->htmlTranslate("Not now"); ?></button>
+<style>
+    #reEvalStaleBanner { margin: 0 0 18px; background: #fffbf2; border: 1px solid #f0e2c4; border-left: 4px solid #e6a23c; border-radius: 6px; }
+    #reEvalStaleBanner .rsb-row { display: flex; align-items: center; gap: 16px; padding: 14px 18px; flex-wrap: wrap; }
+    #reEvalStaleBanner .rsb-icon { flex: 0 0 auto; width: 34px; height: 34px; border-radius: 50%; background: #fbeccd; color: #c77c12; display: flex; align-items: center; justify-content: center; }
+    #reEvalStaleBanner .rsb-icon svg { width: 18px; height: 18px; display: block; }
+    #reEvalStaleBanner .rsb-text { flex: 1 1 260px; min-width: 0; }
+    #reEvalStaleBanner .rsb-title { font-size: 14px; font-weight: 600; color: #6b4e0f; }
+    #reEvalStaleBanner .rsb-detail { margin-top: 2px; font-size: 13px; color: #8a7340; }
+    #reEvalStaleBanner .rsb-codes { font-weight: 600; color: #6b4e0f; }
+    #reEvalStaleBanner .rsb-note { margin-top: 4px; font-size: 12px; color: #a78a52; }
+    #reEvalStaleBanner .rsb-actions { flex: 0 0 auto; display: flex; align-items: center; gap: 12px; }
+    #reEvalStaleBanner .rsb-btn { background: #e6952c; border: 0; color: #fff; font-weight: 600; font-size: 13px; padding: 8px 18px; border-radius: 4px; cursor: pointer; white-space: nowrap; }
+    #reEvalStaleBanner .rsb-btn:hover { background: #cf8420; }
+    #reEvalStaleBanner .rsb-link { background: none; border: 0; color: #9a814a; font-size: 13px; cursor: pointer; white-space: nowrap; }
+    #reEvalStaleBanner .rsb-link:hover { color: #6b4e0f; text-decoration: underline; }
+</style>
+<div id="reEvalStaleBanner" role="alert">
+    <div class="rsb-row">
+        <div class="rsb-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>
+        </div>
+        <div class="rsb-text">
+            <div class="rsb-title">
+                <?php if ($total > 1): ?>
+                    <?= sprintf($this->htmlTranslate("%d shipments need re-evaluation"), $total); ?>
+                <?php else: ?>
+                    <?= $this->htmlTranslate("1 shipment needs re-evaluation"); ?>
+                <?php endif; ?>
+            </div>
+            <div class="rsb-detail">
+                <?= $this->htmlTranslate("New responses arrived after they were last evaluated:"); ?>
+                <span class="rsb-codes"><?= htmlspecialchars(implode(', ', $codes)); ?></span>
+            </div>
+            <?php if ($anyReports): ?>
+                <div class="rsb-note">
+                    <?= $this->htmlTranslate("Shipments that already have reports will go back to the evaluated state, so you will need to make their reports again."); ?>
+                </div>
+            <?php endif; ?>
+        </div>
+        <div class="rsb-actions">
+            <button type="button" class="rsb-btn" id="reEvalStaleRun">
+                <?= $total > 1 ? $this->htmlTranslate("Re-evaluate all") : $this->htmlTranslate("Re-evaluate"); ?>
+            </button>
+            <button type="button" class="rsb-link" id="reEvalStaleNotNow"><?= $this->htmlTranslate("Not now"); ?></button>
+        </div>
+    </div>
 </div>
 <script type="text/javascript">
     (function () {
@@ -52,7 +77,7 @@ if (!empty($staleShipments)):
         }
 
         $(function () {
-            $('#reEvalStaleDismiss, #reEvalStaleNotNow').on('click', function () {
+            $('#reEvalStaleNotNow').on('click', function () {
                 $('#reEvalStaleBanner').slideUp(150);
             });
             $('#reEvalStaleRun').on('click', function () {
