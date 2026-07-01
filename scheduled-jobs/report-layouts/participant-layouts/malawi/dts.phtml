@@ -943,9 +943,8 @@ if (!empty($resultArray['shipment'])) {
         $performance1 = $performance2 = $performance3 = false;
         include('summary-statistics.phtml');
 
-        $br = '';
         if ($performance1 || $performance2 || $performance3) {
-            $br = str_repeat('<br>', 36);
+            $br = str_repeat('<br>', 15);
         }
         $eodReportText = "End of report";
         if ($evalRow['report_type'] == 'finalized') {
