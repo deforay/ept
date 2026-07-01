@@ -199,19 +199,20 @@ if (!empty($resultArray['shipment'])) {
                 if ((isset($result['responseResult'][0]['no_of_participants']) && $result['responseResult'][0]['no_of_participants'] > 0)) {
                     $labRes .= '<table border="1" style="text-align:center;font-weight:bold;width:650px;font-size:11px;">
                                     <tr>
-                                        <td style="background-color:white;" colspan="2"></td>
-                                        <td style="background-color:#BDD6EE;" colspan="3">All Participants Results Summary</td>
-                                        <td style="background-color:#BDD6EE;" colspan="3">Your Lab Performance</td>
+                                        <td style="background-color:white;width:148px;" colspan="2"></td>
+                                        <td style="background-color:#BDD6EE;width:272px;" colspan="4">All Participants Results Summary</td>
+                                        <td style="background-color:#BDD6EE;width:230px;" colspan="3">Your Lab Performance</td>
                                     </tr>
                                     <tr>
-                                        <td style="background-color:#BDD6EE;width:12%;"><br><br>Sample ID </td>
-                                        <td style="background-color:#BDD6EE;">Your Results<br/>(log<sub>10</sub> copies/mL)</td>
-                                        <td style="background-color:#BDD6EE;"><br><br>Number of <br/>Participants</td>
-                                        <td style="background-color:#BDD6EE;">Assigned <br/>Value<br/>(log<sub>10</sub> copies/mL)</td>
-                                        <td style="background-color:#BDD6EE;"><br>Robust <br/>Standard <br/>Deviation</td>
-                                        <td style="background-color:#BDD6EE;"><br><br>z Score</td>
-                                        <td style="background-color:#BDD6EE;"><br><br>Grade</td>
-                                        <td style="background-color:#BDD6EE;"><br><br>Overall <br/>Grading</td>
+                                        <td style="background-color:#BDD6EE;width:74px;"><br><br>Sample ID </td>
+                                        <td style="background-color:#BDD6EE;width:74px;">Your Results<br/>(log<sub>10</sub> copies/mL)</td>
+                                        <td style="background-color:#BDD6EE;width:78px;"><br><br>Number of <br/>Participants</td>
+                                        <td style="background-color:#BDD6EE;width:68px;">Assigned <br/>Value<br/>(log<sub>10</sub> copies/mL)</td>
+                                        <td style="background-color:#BDD6EE;width:62px;"><br>Robust <br/>Standard <br/>Deviation</td>
+                                        <td style="background-color:#BDD6EE;width:64px;">MU<br/>(log<sub>10</sub> copies/mL)</td>
+                                        <td style="background-color:#BDD6EE;width:58px;"><br><br>z Score</td>
+                                        <td style="background-color:#BDD6EE;width:78px;"><br><br>Grade</td>
+                                        <td style="background-color:#BDD6EE;width:94px;"><br><br>Overall <br/>Grading</td>
                                     </tr>';
 
                     // Overall grading is non-numeric for Zimbabwe: derive it from the per-sample
@@ -245,15 +246,16 @@ if (!empty($resultArray['shipment'])) {
                         }
 
                         $labRes .= '<tr>
-                                <td style="text-align:center;font-weight:normal;width:12%;">' . $response['sample_label'] . '</td>
-                                <td style="font-weight:normal;">' . $yrResult . '</td>
-                                <td style="font-weight:normal;">' . $response['no_of_participants'] . '</td>
-                                <td style="font-weight:normal;">' . Pt_Commons_NumberUtility::decimal($response['median']) . '</td>
-                                <td style="font-weight:normal;">' . Pt_Commons_NumberUtility::decimal($response['sd']) . '</td>
-                                <td style="font-weight:normal;">' . Pt_Commons_NumberUtility::decimal($response['zscore']) . '</td>
-                                <td style="font-weight:normal;color:' . $txtcolor . ';">' . $response['grade'] . '</td>';
+                                <td style="text-align:center;font-weight:normal;width:74px;">' . $response['sample_label'] . '</td>
+                                <td style="font-weight:normal;width:74px;">' . $yrResult . '</td>
+                                <td style="font-weight:normal;width:78px;">' . $response['no_of_participants'] . '</td>
+                                <td style="font-weight:normal;width:68px;">' . Pt_Commons_NumberUtility::decimal($response['median']) . '</td>
+                                <td style="font-weight:normal;width:62px;">' . Pt_Commons_NumberUtility::decimal($response['sd']) . '</td>
+                                <td style="font-weight:normal;width:64px;">' . Pt_Commons_NumberUtility::decimal($response['standard_uncertainty'] ?? null, 3) . '</td>
+                                <td style="font-weight:normal;width:58px;">' . Pt_Commons_NumberUtility::decimal($response['zscore']) . '</td>
+                                <td style="font-weight:normal;width:78px;color:' . $txtcolor . ';">' . $response['grade'] . '</td>';
                         if ($key == 0) {
-                            $labRes .= '<td style="color:' . $overallColor . ';vertical-align: middle;" rowspan="' . $rowspan . '"><br><br><br>' . $overallGrade . '</td>';
+                            $labRes .= '<td style="color:' . $overallColor . ';width:94px;font-size:10px;vertical-align: middle;" rowspan="' . $rowspan . '"><br><br><br>' . $overallGrade . '</td>';
                         }
                         $labRes .= '</tr>';
                     }
@@ -296,6 +298,7 @@ if (!empty($resultArray['shipment'])) {
                 //}
 
                 // $labRes .= '<br><small>0.00 indicated Target Not Detected (TND) results and NA for Not Applicable</small>';
+                $labRes .= '<br><small style="font-weight:normal;">MU = Standard uncertainty of the assigned value, u(x<sub>pt</sub>) = 1.25 &times; s* / &radic;p, derived per ISO 13528.</small>';
                 $pdf->SetLeftMargin(15);
                 $pdf->writeHTML($labRes, true, false, true, false, '');
 
@@ -336,6 +339,10 @@ if (!empty($resultArray['shipment'])) {
                             <th style="background-color:#dbe4ee;text-align:center;font-weight:bold;width:20%;">Percentage</th>
                         </tr>';
                     foreach ($equipmentsReports as $equipment) {
+                        // Skip platforms that no lab used this round; a zero-count row adds no value.
+                        if ((int) ($equipment['total_participated'] ?? 0) <= 0) {
+                            continue;
+                        }
                         $equipmentTxt .= '<tr>
                                 <td style="text-align:left;width:40%;font-weight:normal;">' . $equipment['assay_name'] . '</td>
                                 <td style="text-align:left;width:40%;font-weight:normal;">' . $equipment['total_participated'] . '</td>
