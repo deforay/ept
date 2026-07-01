@@ -145,18 +145,29 @@ if (!empty($staleShipments) && !isset($_COOKIE['reeval_nudge_dismissed'])):
             var total = items.length;
             var done = 0;
             var failed = 0;
+            var failedLabel = "<?= Pt_Commons_TranslateUtility::jsTranslate("failed"); ?>";
 
-            function progressHtml() {
-                return "<h4 style='margin:0;font-size:16px;color:#2c3e50;font-weight:600;'><?= Pt_Commons_TranslateUtility::jsTranslate("Queuing shipments for re-evaluation"); ?>&hellip;</h4>" +
-                    "<p style='margin:10px 0 0;font-size:14px;color:#555;'>" + done + " / " + total +
-                    (failed > 0 ? " (" + failed + " <?= Pt_Commons_TranslateUtility::jsTranslate("failed"); ?>)" : "") + "</p>";
+            // Block the UI ONCE, then mutate only the counter text in place. Re-blocking
+            // per shipment tore down and rebuilt the box, making it flicker/"reload".
+            $.blockUI({
+                message: "<div id='reEvalStaleBox'>" +
+                    "<h4 style='margin:0;font-size:16px;color:#2c3e50;font-weight:600;'><?= Pt_Commons_TranslateUtility::jsTranslate("Queuing shipments for re-evaluation"); ?>&hellip;</h4>" +
+                    "<p id='reEvalStaleProgress' style='margin:10px 0 0;font-size:14px;color:#555;'></p>" +
+                    "</div>",
+                css: blockCss,
+                overlayCSS: overlayCss
+            });
+
+            function renderProgress() {
+                $('#reEvalStaleProgress').text(done + " / " + total + (failed > 0 ? " (" + failed + " " + failedLabel + ")" : ""));
             }
 
             function next() {
                 if (items.length === 0) {
-                    // Render the result inside the blockUI box (topmost layer, no backdrop):
-                    // bootbox's .modal-backdrop is stacked above its dialog in this theme and
-                    // traps the OK button.
+                    // Swap the box contents in place (no unblock/re-block) so it does not
+                    // flicker. Rendered inside the blockUI box (topmost layer, no backdrop)
+                    // because bootbox's .modal-backdrop is stacked above its dialog in this
+                    // theme and traps the OK button.
                     var doneMsg =
                         "<div style='margin:0 auto 14px;width:48px;height:48px;border-radius:50%;background:#eef8f1;line-height:48px;'>" +
                             "<svg width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='#36a45c' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round' style='vertical-align:middle;'><polyline points='20 6 9 17 4 12'></polyline></svg>" +
@@ -166,11 +177,10 @@ if (!empty($staleShipments) && !isset($_COOKIE['reeval_nudge_dismissed'])):
                         (failed > 0 ? " (" + failed + " <?= Pt_Commons_TranslateUtility::jsTranslate("failed"); ?>)" : "") + "</p>" +
                         "<p style='margin:8px 0 0;font-size:12px;color:#999;'><?= Pt_Commons_TranslateUtility::jsTranslate("They will be processed in the background shortly."); ?></p>" +
                         "<button type='button' id='reEvalStaleOk' style='margin-top:18px;background:#e6952c;color:#fff;border:0;padding:9px 30px;border-radius:5px;font-weight:600;font-size:14px;cursor:pointer;'><?= Pt_Commons_TranslateUtility::jsTranslate("OK"); ?></button>";
-                    $.blockUI({ message: doneMsg, css: blockCss, overlayCSS: overlayCss });
+                    $('#reEvalStaleBox').html(doneMsg);
                     $('#reEvalStaleOk').on('click', function () { window.location.reload(); });
                     return;
                 }
-                $.blockUI({ message: progressHtml(), css: blockCss, overlayCSS: overlayCss });
                 var item = items.shift();
                 $.post(reEvalUrl, { shipmentId: item.id, scheme: item.scheme }, function (resp) {
                     if (!resp || resp.status === 'error') {
@@ -180,10 +190,12 @@ if (!empty($staleShipments) && !isset($_COOKIE['reeval_nudge_dismissed'])):
                     failed++;
                 }).always(function () {
                     done++;
+                    renderProgress();
                     next();
                 });
             }
 
+            renderProgress();
             next();
         }
     })();
