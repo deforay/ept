@@ -48,17 +48,26 @@ $reEvalIds = $this->reEvalShipmentIds ?? [];
             var done = 0;
             var failed = 0;
 
-            function progressHtml() {
-                return "<h4 style='margin:0;font-size:16px;color:#2c3e50;font-weight:600;'><?= $this->translate->_("Queuing shipments for re-evaluation"); ?>&hellip;</h4>" +
-                    "<p style='margin:10px 0 0;font-size:14px;color:#555;'>" + done + " / " + total +
-                    (failed > 0 ? " (" + failed + " failed)" : "") + "</p>";
+            // Block the UI ONCE, then mutate the counter text in place. Re-blocking
+            // per shipment tore down and rebuilt the box, making it flicker/"reload".
+            $.blockUI({
+                message: "<div id='reEvalBox'>" +
+                    "<h4 style='margin:0;font-size:16px;color:#2c3e50;font-weight:600;'><?= $this->translate->_("Queuing shipments for re-evaluation"); ?>&hellip;</h4>" +
+                    "<p id='reEvalProgress' style='margin:10px 0 0;font-size:14px;color:#555;'></p>" +
+                    "</div>",
+                css: blockCss,
+                overlayCSS: overlayCss
+            });
+
+            function renderProgress() {
+                $('#reEvalProgress').text(done + " / " + total + (failed > 0 ? " (" + failed + " failed)" : ""));
             }
 
             function next() {
                 if (ids.length === 0) {
-                    // Render the result inside the blockUI box (topmost layer, no backdrop):
-                    // bootbox's .modal-backdrop is stacked above its dialog in this theme and
-                    // traps the OK button.
+                    // Swap the box contents in place (no unblock/re-block) so it does
+                    // not flicker. Rendered inside the blockUI box rather than a bootbox
+                    // modal because that modal's backdrop traps the OK button in this theme.
                     var doneMsg =
                         "<div style='margin:0 auto 14px;width:48px;height:48px;border-radius:50%;background:#eef8f1;line-height:48px;'>" +
                             "<svg width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='#36a45c' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round' style='vertical-align:middle;'><polyline points='20 6 9 17 4 12'></polyline></svg>" +
@@ -68,11 +77,10 @@ $reEvalIds = $this->reEvalShipmentIds ?? [];
                         (failed > 0 ? ", " + failed + " <?= $this->translate->_("could not be queued"); ?>" : "") + "</p>" +
                         "<p style='margin:8px 0 0;font-size:12px;color:#999;'><?= $this->translate->_("They will be processed in the background shortly."); ?></p>" +
                         "<button type='button' id='reEvalNudgeOk' style='margin-top:18px;background:#e6952c;color:#fff;border:0;padding:9px 30px;border-radius:5px;font-weight:600;font-size:14px;cursor:pointer;'><?= $this->translate->_("OK"); ?></button>";
-                    $.blockUI({ message: doneMsg, css: blockCss, overlayCSS: overlayCss });
+                    $('#reEvalBox').html(doneMsg);
                     $('#reEvalNudgeOk').on('click', function () { $.unblockUI(); });
                     return;
                 }
-                $.blockUI({ message: progressHtml(), css: blockCss, overlayCSS: overlayCss });
                 var sid = ids.shift();
                 $.post(reEvalUrl, { shipmentId: sid, scheme: reEvalScheme }, function (resp) {
                     if (!resp || resp.status === 'error') {
@@ -82,10 +90,12 @@ $reEvalIds = $this->reEvalShipmentIds ?? [];
                     failed++;
                 }).always(function () {
                     done++;
+                    renderProgress();
                     next();
                 });
             }
 
+            renderProgress();
             next();
         }
     })();
