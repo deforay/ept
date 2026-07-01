@@ -10,10 +10,13 @@ class Admin_DistributionsController extends Zend_Controller_Action
         $request = $this->getRequest();
         if (!in_array('manage-shipments', $privileges)) {
             if ($request->isXmlHttpRequest()) {
-                return null;
-            } else {
-                $this->redirect('/admin');
+                // init() returning does not abort ZF1 dispatch; halt so the
+                // action never runs for unauthorized XHR callers.
+                $this->getResponse()->setHttpResponseCode(403)->sendResponse();
+                exit;
             }
+            $this->redirect('/admin');
+            return;
         }
         /** @var Zend_Controller_Action_Helper_AjaxContext $ajaxContext */
         $ajaxContext = $this->_helper->getHelper('AjaxContext');

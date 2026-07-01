@@ -38,8 +38,8 @@ class Admin_ImpersonateController extends Zend_Controller_Action
                 'auth'
             );
             if ($request->isXmlHttpRequest()) {
-                $this->getResponse()->setHttpResponseCode(403);
-                return null;
+                $this->getResponse()->setHttpResponseCode(403)->sendResponse();
+                exit;
             }
             $this->redirect('/admin');
             return;
