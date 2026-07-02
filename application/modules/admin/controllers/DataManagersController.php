@@ -452,8 +452,7 @@ class Admin_DataManagersController extends Zend_Controller_Action
                 $this->view->response = $result;
                 $this->_helper->viewRenderer->setScriptAction('bulk-import-ptcc-statistics');
             }
-        } else {
-            $this->redirect('/admin/data-managers/bulk-import-ptcc');
         }
+        // GET falls through and renders the upload form (bulk-import-ptcc.phtml).
     }
 }
