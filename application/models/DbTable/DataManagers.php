@@ -1308,7 +1308,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         try {
-            $response = [];
+            $response = ['data' => [], 'error-data' => []];
             $alertMsg = new Zend_Session_Namespace('alertSpace');
 
             $objPHPExcel = IOFactory::load($fileName);
@@ -1380,18 +1380,30 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                 // Use cached duplicate check instead of individual query
                 $dmresult = $duplicateChecks['dataManagers'][$originalEmail] ?? null;
 
+                // Per-row summary base for the post-import statistics page.
+                $summaryRow = [
+                    's_no'          => $sheetData[$i]['A'] ?: ($i - 1),
+                    'primary_email' => $dataManagerData['primary_email'],
+                    'name'          => trim($sheetData[$i]['C'] . ' ' . $sheetData[$i]['D']),
+                    'institute'     => $sheetData[$i]['E'],
+                    'country'       => $sheetData[$i]['J'],
+                ];
+
                 if (empty($dmresult)) {
                     $db->insert('data_manager', $dataManagerData);
                     $lastInsertedId = $db->lastInsertId();
                     if ($lastInsertedId > 0) {
                         $importedCount++;
+                        $response['data'][] = $summaryRow + ['action' => 'inserted'];
                     }
                 } elseif (isset($params['bulkUploadDuplicateSkip']) && $params['bulkUploadDuplicateSkip'] == 'update-on-primary-email-match') {
                     $db->update('data_manager', $dataManagerData, "primary_email = '$originalEmail'");
                     $lastInsertedId = $dmresult['dm_id'];
                     $importedCount++;
+                    $response['data'][] = $summaryRow + ['action' => 'updated'];
                 } else {
                     $lastInsertedId = $dmresult['dm_id'];
+                    $response['error-data'][] = $summaryRow + ['error' => 'Skipped — a PTCC with this primary email already exists'];
                 }
 
                 // PTCC manager location wise mapping

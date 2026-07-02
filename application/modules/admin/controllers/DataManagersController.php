@@ -443,8 +443,17 @@ class Admin_DataManagersController extends Zend_Controller_Action
         $userService = new Application_Service_DataManagers();
         if ($request->isPost()) {
             $params = $request->getPost();
-            $this->view->response = $userService->uploadBulkDatamanager($params);
-            $this->redirect('/admin/data-managers/index/ptcc/1');
+            $result = $userService->uploadBulkDatamanager($params);
+            if (!$result) {
+                // Hard failure (bad file / format) — the flash message carries the reason.
+                $this->redirect('/admin/data-managers/index/ptcc/1');
+            } else {
+                // Render the post-import summary instead of the upload form.
+                $this->view->response = $result;
+                $this->_helper->viewRenderer->setScriptAction('bulk-import-ptcc-statistics');
+            }
+        } else {
+            $this->redirect('/admin/data-managers/bulk-import-ptcc');
         }
     }
 }
