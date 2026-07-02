@@ -13,7 +13,8 @@
 //   --apply            write the changes to this database
 //   --sql[=FILE]       emit guarded, idempotent UPDATE SQL (for a migration) to FILE or stdout
 //   --insert-missing   also add ISO countries absent from the table (new ids = MAX(id)+1)
-//   --template[=FILE]  rebuild the import template's "Country List" sheet + dropdown from the DB
+//   --template[=FILE]  rebuild the import templates' "Country List" sheet + country dropdown
+//                      from the DB (both the participant and PTCC templates; or just =FILE)
 
 declare(strict_types=1);
 
@@ -44,7 +45,15 @@ $insertMissing = in_array('--insert-missing', $argv, true);
 $emitSql = false;
 $sqlFile = null;
 $doTemplate = false;
-$templateFile = ROOT_PATH . '/public/files/Participant-Bulk-Import-Excel-Format-v2.xlsx';
+$templateFileOverride = null;
+
+// Import templates whose hidden "Country List" sheet + country-column dropdown mirror the
+// countries table. Each entry: the workbook path and the letter of its country-name column
+// on sheet 0 (participants keep it in M; PTCC keeps it in J).
+$templateTargets = [
+    ['file' => ROOT_PATH . '/public/files/Participant-Bulk-Import-Excel-Format-v2.xlsx', 'col' => 'M'],
+    ['file' => ROOT_PATH . '/public/files/PTCC_Bulk_Import_Excel_Format.xlsx', 'col' => 'J'],
+];
 foreach ($argv as $a) {
     if ($a === '--sql') {
         $emitSql = true;
@@ -55,7 +64,7 @@ foreach ($argv as $a) {
         $doTemplate = true;
     } elseif (str_starts_with($a, '--template=')) {
         $doTemplate = true;
-        $templateFile = substr($a, 11);
+        $templateFileOverride = substr($a, 11);
     }
 }
 
@@ -211,17 +220,33 @@ if ($apply && ($updates !== [] || ($insertMissing && $missing !== []))) {
 
 // --- rebuild the import template's Country List + dropdown ---------------------
 if ($doTemplate) {
-    $io->section('Import template');
-    if (!is_file($templateFile)) {
-        $io->error("Template not found: {$templateFile}");
-        exit(1);
+    $io->section('Import templates');
+
+    $targets = $templateTargets;
+    if ($templateFileOverride !== null) {
+        // Explicit file: reuse its known country column if we recognise it, else default to M.
+        $col = 'M';
+        foreach ($templateTargets as $t) {
+            if (basename($t['file']) === basename($templateFileOverride)) {
+                $col = $t['col'];
+                break;
+            }
+        }
+        $targets = [['file' => $templateFileOverride, 'col' => $col]];
     }
-    try {
-        refreshImportTemplate($db, $templateFile, $io);
-        $io->success("Template Country List + dropdown refreshed: {$templateFile}");
-    } catch (Throwable $e) {
-        $io->error('Template refresh failed: ' . $e->getMessage());
-        exit(1);
+
+    foreach ($targets as $t) {
+        if (!is_file($t['file'])) {
+            $io->error("Template not found: {$t['file']}");
+            exit(1);
+        }
+        try {
+            refreshImportTemplate($db, $t['file'], $t['col'], $io);
+            $io->success("Country List + dropdown ({$t['col']}) refreshed: " . basename($t['file']));
+        } catch (Throwable $e) {
+            $io->error('Template refresh failed for ' . basename($t['file']) . ': ' . $e->getMessage());
+            exit(1);
+        }
     }
 }
 
@@ -229,10 +254,11 @@ exit(0);
 
 /**
  * Rewrite the hidden "Country List" sheet (a mirror of the countries table) from the DB
- * and point/extend the Country-column (M) dropdown at the full list. The sheet-0 header
- * row is never touched, so uploads still pass validateUploadedFile().
+ * and point/extend the country-column dropdown ($col, e.g. M for participants, J for PTCC)
+ * at the full list. The sheet-0 header row is never touched, so uploads still pass
+ * validateUploadedFile().
  */
-function refreshImportTemplate($db, string $path, SymfonyStyle $io): void
+function refreshImportTemplate($db, string $path, string $col, SymfonyStyle $io): void
 {
     $rows = $db->fetchAll(
         $db->select()->from('countries', ['id', 'iso_name', 'iso2', 'iso3', 'numeric_code'])
@@ -261,9 +287,11 @@ function refreshImportTemplate($db, string $path, SymfonyStyle $io): void
     }
     $lastRow = $r - 1;
 
-    // Re-point + widen the Country (M) dropdown. Clone the existing M validation so its
-    // show/allow flags are preserved exactly, then swap the collection via reflection
-    // (PhpSpreadsheet exposes no public remove for ranged validations).
+    // Re-point + widen the country ($col) dropdown. Clone the existing validation on that
+    // column so its show/allow flags are preserved exactly; if the template has none yet
+    // (e.g. PTCC), build one with the same defaults the participant template ships with.
+    // Swap the collection via reflection (PhpSpreadsheet exposes no public remove for
+    // ranged validations).
     $sheet = $ss->getSheet(0);
     $prop = new ReflectionProperty(\PhpOffice\PhpSpreadsheet\Worksheet\Worksheet::class, 'dataValidationCollection');
     $prop->setAccessible(true);
@@ -272,21 +300,30 @@ function refreshImportTemplate($db, string $path, SymfonyStyle $io): void
 
     $template = null;
     foreach ($coll as $key => $dv) {
-        if (preg_match('/^M\d/', $key)) {
+        if (preg_match('/^' . $col . '\d/', $key)) {
             $template = $dv;
             unset($coll[$key]);
         }
     }
-    $dv = $template ? clone $template : new \PhpOffice\PhpSpreadsheet\Cell\DataValidation();
+    if ($template) {
+        $dv = clone $template;
+    } else {
+        $dv = new \PhpOffice\PhpSpreadsheet\Cell\DataValidation();
+        $dv->setAllowBlank(true);
+        $dv->setShowDropDown(true);   // writes showDropDown="0" — the in-cell arrow is visible
+        $dv->setShowInputMessage(true);
+        $dv->setShowErrorMessage(true);
+    }
     $dv->setType(\PhpOffice\PhpSpreadsheet\Cell\DataValidation::TYPE_LIST);
     $dv->setFormula1("'Country List'!\$B\$2:\$B\${$lastRow}");
-    $dv->setSqref('M2:M1000');
-    $coll['M2:M1000'] = $dv;
+    $sqref = "{$col}2:{$col}1000";
+    $dv->setSqref($sqref);
+    $coll[$sqref] = $dv;
     $prop->setValue($sheet, $coll);
 
     $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($ss, 'Xlsx');
     $writer->save($path);
-    $io->writeln('  wrote ' . count($rows) . " countries; dropdown M2:M1000 -> 'Country List'!\$B\$2:\$B\${$lastRow}");
+    $io->writeln('  wrote ' . count($rows) . " countries; dropdown {$sqref} -> 'Country List'!\$B\$2:\$B\${$lastRow}");
 }
 
 /*
