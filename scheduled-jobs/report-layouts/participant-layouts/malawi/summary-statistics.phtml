@@ -5,7 +5,6 @@
 $performance1 = false;
 $performance2 = false;
 $performance3 = false;
-
 if (isset($result['statistics']) && !empty($result['statistics'])) {
     $dtsPasspercentage = Pt_Commons_SchemeConfig::get('dts.passPercentage');
     $score = $dtsPasspercentage ?? '80';
@@ -36,8 +35,9 @@ if (isset($result['statistics']) && !empty($result['statistics'])) {
 
     $pdf->writeHTML($ppOverview, true, false, true, false, '');
 }
-
-$pdf->AddPage();
+if (!$correctiveActions) {
+    $pdf->AddPage();
+}
 $pdf->writeHTML('<span style="text-align:center;font-weight:bold;font-size:12px;">Qualitative Evaluation</span>', true, false, true, false, '');
 
 if (isset($result['performance1']) && !empty($result['performance1'])) {
@@ -254,4 +254,21 @@ if (isset($result['performance3']) && !empty($result['performance3'])) {
         unlink($performance_of_current_survey_anels);
     }
 }
+$br = '';
+if ($performance1 || $performance2 || $performance3) {
+    $br = str_repeat('<br>', 15);
+}
+$eodReportText = "End of report";
+if ($evalRow['report_type'] == 'finalized') {
+    $eodReportText = "End of final report";
+}
+$html = $br . '<span style="font-size:11px;font-weight:bold;">PT Scheme Manager Comments:</span><br>';
+$html .= '<span style="font-size:11px;">This is a confidential report that summarizes your performance. The National Public Health Quality Assurance Program recommends that the results of this Proficiency Testing Scheme comparison not be used as the sole criterion for judging the performance of any individual testing facility/laboratory.</span><br>';
+if (trim($result['shipment_comment'] ?? '') != "") {
+    $html .= '<span style="font-size:11px;"><b>Scheme Manager\'s Comments:</b> ' . $result['shipment_comment'] . '</span><br>';
+}
+// $html .= '<span style="font-size:11px;font-weight:bold;">Report Print Date: ' . $commonService->humanReadableDateFormat(date('d-m-Y')) . '</span>';
+$html .= '<br><span style="font-size:11px;text-align:center;font-weight:bold;"><u>' . $eodReportText . '</u>.</span><br>';
+$pdf->writeHTML($html, true, false, true, false, '');
+
 //----------------Summary Statistics for this survey  Ends----------------
