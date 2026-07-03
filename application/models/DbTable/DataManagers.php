@@ -1321,6 +1321,12 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             $countryCache = $this->buildCountryCache();
             $duplicateChecks = $this->batchCheckDataManagerDuplicates($sheetData);
 
+            //If deactivate existing PTCC
+            if(isset($params['deactivateExistingPTCC']) && $params['deactivateExistingPTCC'] == 'yes')
+            {
+                $db->update('data_manager', array('status'=>'inactive'), "data_manager_type = 'ptcc'");
+            }
+
             // Single transaction for entire operation
             $db->beginTransaction();
 

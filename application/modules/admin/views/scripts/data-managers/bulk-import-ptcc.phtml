@@ -106,6 +106,16 @@
                         </div>
                     </div>
 
+                    <div class="bi-options">
+                        <div>
+                            <label for="deactivateExistingPTCC"><?= $this->translate->_("Deactivate Existing PTCC Before Import"); ?></label>
+                            <select name="deactivateExistingPTCC" id="deactivateExistingPTCC" class="isRequired" title="Please choose the upload options">
+                                <option value="no"><?= $this->translate->_("No"); ?></option>
+                                <option value="yes"><?= $this->translate->_("Yes"); ?></option>
+                            </select>
+                        </div>
+                    </div>
+
                     <div class="bi-drop" id="biDrop">
                         <div class="bi-drop-icon"><i class="icon-upload"></i></div>
                         <div class="bi-drop-title"><?= $this->translate->_("Drop your file here"); ?></div>
