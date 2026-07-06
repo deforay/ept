@@ -9,6 +9,15 @@
 <h4 style="width:100%;height:50px;border-bottom:1px solid #777;">
     <div style="font-size:22.5px;line-height:36px;color:#333;float:left;">
         <?= $this->translate->_("PT Survey - Finalize Reports"); ?></div>
+    <div style="float:right;line-height:36px;">
+        <select id="schemeTypeFilter" class="form-control input-sm" style="width:auto;display:inline-block;">
+            <option value=""><?= $this->translate->_('All Scheme Types'); ?></option>
+            <?php if (!empty($this->schemeList)) : foreach ($this->schemeList as $sch) : ?>
+                <option value="<?= $this->escape($sch['scheme_id']); ?>"><?= $this->escape(ucwords($sch['scheme_name'])); ?></option>
+            <?php endforeach;
+            endif; ?>
+        </select>
+    </div>
 </h4>
 
 <table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered table-hover"
@@ -71,6 +80,7 @@
             "bServerSide": true,
             "sAjaxSource": "<?php echo $this->url(array('module' => 'reports', 'controller' => 'finalize', 'action' => 'index', 'format' => 'html')); ?>",
             "fnServerData": function (sSource, aoData, fnCallback) {
+                aoData.push({ "name": "schemeType", "value": $("#schemeTypeFilter").val() || "" });
                 $.ajax({
                     "dataType": 'json',
                     "type": "POST",
@@ -99,6 +109,10 @@
         });
 
         $("#mappingFilter").change(function () {
+        oTable.fnDraw();
+    });
+
+    $("#schemeTypeFilter").change(function () {
         oTable.fnDraw();
     });
 

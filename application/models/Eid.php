@@ -28,6 +28,11 @@ class Application_Model_Eid
         $schemeService = new Application_Service_Schemes();
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
 
+        // Corrective-action text paired with each failure/warning surfaced on the participant report.
+        $caReportedWrongly = 'Review your testing procedure and SOPs for this sample, verify instrument performance and calibration, and repeat testing where appropriate.';
+        $caScoreCriteria = 'Review your testing and reporting procedures, refer to your SOPs, and implement corrective measures to improve performance.';
+        $caLateResponse = 'Ensure proficiency testing results are tested and submitted within the stipulated timeframe. Review your result submission workflow.';
+
         foreach ($shipmentResult as $shipment) {
             Pt_Commons_MiscUtility::updateHeartbeat('shipment', 'shipment_id', $shipmentId);
 
@@ -55,7 +60,7 @@ class Application_Model_Eid
                     'warning' => 'Response was submitted after the last response date.',
                 ];
                 $shipment['is_excluded'] = 'yes';
-                $failureReason = ['warning' => 'Response was submitted after the last response date.'];
+                $failureReason = [['warning' => 'Response was submitted after the last response date.', 'correctiveAction' => $caLateResponse]];
                 $db->update('shipment_participant_map', [
                     'failure_reason' => json_encode($failureReason),
                     'is_response_late' => 'yes',
@@ -74,7 +79,7 @@ class Application_Model_Eid
                         }
                     } else {
                         if ($result['sample_score'] > 0) {
-                            $failureReason[]['warning'] = 'Control/Sample <strong>' . $result['sample_label'] . '</strong> was reported wrongly';
+                            $failureReason[] = ['warning' => 'Control/Sample <strong>' . $result['sample_label'] . '</strong> was reported wrongly', 'correctiveAction' => $caReportedWrongly];
                         }
                     }
                 }
@@ -119,7 +124,7 @@ class Application_Model_Eid
                     $scoreResult = 'Pass';
                 } else {
                     $scoreResult = 'Fail';
-                    $failureReason[]['warning'] = "Participant did not meet the score criteria (Participant Score - <strong>$totalScore</strong> and Required Score - <strong>$passingScore</strong>)";
+                    $failureReason[] = ['warning' => "Participant did not meet the score criteria (Participant Score - <strong>$totalScore</strong> and Required Score - <strong>$passingScore</strong>)", 'correctiveAction' => $caScoreCriteria];
                 }
 
                 // if any of the results have failed, then the final result is fail

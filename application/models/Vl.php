@@ -27,6 +27,11 @@ class Application_Model_Vl
 
         $passPercentage = Pt_Commons_SchemeConfig::get('vl.passPercentage') ?? 100;
 
+        // Corrective-action text paired with each failure/warning surfaced on the participant report.
+        $caReportedWrongly = 'Review your testing procedure and SOPs for this sample, verify instrument performance and calibration, and repeat testing where appropriate.';
+        $caScoreCriteria = 'Review your testing and reporting procedures, refer to your SOPs, and implement corrective measures to improve performance.';
+        $caLateResponse = 'Ensure proficiency testing results are tested and submitted within the stipulated timeframe. Review your result submission workflow.';
+
         if ($reEvaluate) {
             //$beforeSetVlRange = $db->fetchAll($db->select()->from('reference_vl_calculation', array('*'))->where('shipment_id = ' . $shipmentId)->where('use_range = "manual"'));
             // when re-evaluating we will set the reset the range
@@ -91,7 +96,7 @@ class Application_Model_Vl
                                     $calcResult = 'pass';
                                 } else {
                                     if ($result['sample_score'] > 0) {
-                                        $failureReason[]['warning'] = 'Sample <strong>' . $result['sample_label'] . '</strong> was reported wrongly';
+                                        $failureReason[] = ['warning' => 'Sample <strong>' . $result['sample_label'] . '</strong> was reported wrongly', 'correctiveAction' => $caReportedWrongly];
                                     }
                                     $calcResult = 'fail';
                                 }
@@ -100,7 +105,7 @@ class Application_Model_Vl
                             // matching reported and low/high limits
                             if (!empty($result['is_result_invalid']) && in_array($result['is_result_invalid'], ['invalid', 'error'])) {
                                 if ($result['sample_score'] > 0) {
-                                    $failureReason[]['warning'] = 'Sample <strong>' . $result['sample_label'] . '</strong> was reported wrongly';
+                                    $failureReason[] = ['warning' => 'Sample <strong>' . $result['sample_label'] . '</strong> was reported wrongly', 'correctiveAction' => $caReportedWrongly];
                                 }
                                 $calcResult = 'fail';
                                 $zScore = null;
@@ -121,7 +126,7 @@ class Application_Model_Vl
                                         } elseif ($result['reported_viral_load'] > 0) {
                                             //failed
                                             if ($result['sample_score'] > 0) {
-                                                $failureReason[]['warning'] = 'Sample <strong>' . $result['sample_label'] . '</strong> was reported wrongly';
+                                                $failureReason[] = ['warning' => 'Sample <strong>' . $result['sample_label'] . '</strong> was reported wrongly', 'correctiveAction' => $caReportedWrongly];
                                             }
                                             $calcResult = 'fail';
                                         }
@@ -138,14 +143,14 @@ class Application_Model_Vl
                                         } elseif ($absZScore > 3) {
                                             //failed
                                             if ($result['sample_score'] > 0) {
-                                                $failureReason[]['warning'] = 'Sample <strong>' . $result['sample_label'] . '</strong> was reported wrongly';
+                                                $failureReason[] = ['warning' => 'Sample <strong>' . $result['sample_label'] . '</strong> was reported wrongly', 'correctiveAction' => $caReportedWrongly];
                                             }
                                             $calcResult = 'fail';
                                         }
                                     }
                                 } else {
                                     if ($result['sample_score'] > 0) {
-                                        $failureReason[]['warning'] = 'Sample <strong>' . $result['sample_label'] . '</strong> was reported wrongly';
+                                        $failureReason[] = ['warning' => 'Sample <strong>' . $result['sample_label'] . '</strong> was reported wrongly', 'correctiveAction' => $caReportedWrongly];
                                     }
                                     $calcResult = 'fail';
                                 }
@@ -202,7 +207,7 @@ class Application_Model_Vl
                         if ($maxScore != 0) {
                             $totalScore = ($totalScore / $maxScore) * 100;
                         }
-                        $failureReason[]['warning'] = "Participant did not meet the score criteria (Participant Score - <strong>$totalScore</strong> and Required Score - <strong>$passPercentage</strong>)";
+                        $failureReason[] = ['warning' => "Participant did not meet the score criteria (Participant Score - <strong>$totalScore</strong> and Required Score - <strong>$passPercentage</strong>)", 'correctiveAction' => $caScoreCriteria];
                     } else {
                         if ($maxScore != 0) {
                             $totalScore = ($totalScore / $maxScore) * 100;
@@ -268,7 +273,7 @@ class Application_Model_Vl
                 }
             } else {
                 $shipment['is_response_late'] = 'yes';
-                $failureReason[] = ['warning' => 'Response was submitted after the last response date.'];
+                $failureReason[] = ['warning' => 'Response was submitted after the last response date.', 'correctiveAction' => $caLateResponse];
                 $shipment['is_excluded'] = 'yes';
 
                 $db->update('shipment_participant_map', [
@@ -1283,6 +1288,7 @@ class Application_Model_Vl
                 $toReturn[$counter]['shipment_test_report_date'] = $sample['shipment_test_report_date'];
                 $toReturn[$counter]['user_comment'] = $sample['user_comment'];
                 $toReturn[$counter]['is_excluded'] = $sample['is_excluded'];
+                $toReturn[$counter]['failure_reason'] = $sample['failure_reason'] ?? '';
                 $toReturn[$counter]['is_pt_test_not_performed'] = $sample['is_pt_test_not_performed'];
                 $toReturn[$counter]['shipment_receipt_date'] = $sample['shipment_receipt_date'];
                 $toReturn[$counter]['max_score'] = $sample['max_score'] ?? null;

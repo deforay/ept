@@ -154,6 +154,14 @@ class Application_Service_Evaluation
             $sQuery = $sQuery->where($sWhere);
         }
 
+        // Scheme-type filter (dropdown above the table). Narrows the listing to
+        // distributions that contain a shipment of this scheme, and narrows the
+        // GROUP_CONCAT of shipment codes to that scheme.
+        $schemeType = isset($parameters['schemeType']) ? trim((string) $parameters['schemeType']) : '';
+        if ($schemeType !== '') {
+            $sQuery = $sQuery->where('s.scheme_type = ?', $schemeType);
+        }
+
         if (!empty($sOrder)) {
             $sQuery = $sQuery->order($sOrder);
         }
@@ -2542,7 +2550,7 @@ class Application_Service_Evaluation
             // Batch fetch all EID response results
             $eidQuery = $db->select()->from(['reseid' => 'response_result_eid'], ['reseid.shipment_map_id', 'reseid.sample_id', 'reseid.reported_result'])
                 ->join(['respr' => 'r_possibleresult'], 'respr.id=reseid.reported_result', ['labResult' => 'respr.response'])
-                ->join(['sp' => 'shipment_participant_map'], 'sp.map_id=reseid.shipment_map_id', ['sp.shipment_id', 'sp.participant_id', 'sp.shipment_receipt_date', 'sp.shipment_test_date', 'sp.attributes', 'responseDate' => 'sp.shipment_test_report_date'])
+                ->join(['sp' => 'shipment_participant_map'], 'sp.map_id=reseid.shipment_map_id', ['sp.shipment_id', 'sp.participant_id', 'sp.shipment_receipt_date', 'sp.shipment_test_date', 'sp.attributes', 'responseDate' => 'sp.shipment_test_report_date', 'sp.failure_reason'])
                 ->join(['refeid' => 'reference_result_eid'], 'refeid.shipment_id=sp.shipment_id and refeid.sample_id=reseid.sample_id', ['refeid.reference_result', 'refeid.sample_label', 'refeid.mandatory'])
                 ->join(['refpr' => 'r_possibleresult'], 'refpr.id=refeid.reference_result', ['referenceResult' => 'refpr.response'])
                 ->where('refeid.control = 0')

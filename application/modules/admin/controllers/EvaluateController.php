@@ -57,6 +57,7 @@ class Admin_EvaluateController extends Zend_Controller_Action
             if (in_array('config-ept', $privileges, true)) {
                 $this->view->staleShipments = (new Application_Service_Evaluation())->getShipmentsNeedingReEvaluation();
             }
+            $this->view->schemeList = (new Application_Service_Schemes())->getAllSchemes();
         }
     }
 

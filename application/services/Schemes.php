@@ -440,7 +440,7 @@ class Application_Service_Schemes
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $sql = $db->select()->from(['ref' => 'reference_result_vl'])
             ->join(['s' => 'shipment'], 's.shipment_id=ref.shipment_id')
-            ->join(['sp' => 'shipment_participant_map'], 's.shipment_id=sp.shipment_id', ['sp.map_id', 'sp.participant_id', 'sp.attributes', 'sp.shipment_receipt_date', 'sp.shipment_test_date', 'sp.is_pt_test_not_performed', 'sp.is_excluded', 'sp.shipment_test_report_date', 'sp.user_comment', 'sp.shipment_score'])
+            ->join(['sp' => 'shipment_participant_map'], 's.shipment_id=sp.shipment_id', ['sp.map_id', 'sp.participant_id', 'sp.attributes', 'sp.shipment_receipt_date', 'sp.shipment_test_date', 'sp.is_pt_test_not_performed', 'sp.is_excluded', 'sp.shipment_test_report_date', 'sp.user_comment', 'sp.shipment_score', 'sp.failure_reason'])
             ->join(['p' => 'participant'], 'p.participant_id=sp.participant_id', ['unique_identifier'])
             ->joinLeft(['res' => 'response_result_vl'], 'res.shipment_map_id = sp.map_id and res.sample_id = ref.sample_id', ['reported_viral_load', 'is_tnd', 'responseDate' => 'res.created_on', 'is_result_invalid', 'error_code', 'module_number', 'comment', 'z_score', 'calculated_score'])
             ->where('sp.shipment_id = ? ', $shipmentId)

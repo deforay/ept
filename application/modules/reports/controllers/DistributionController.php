@@ -37,6 +37,8 @@ class Reports_DistributionController extends Zend_Controller_Action
             $params = $this->getAllParams();
             $distributionService = new Application_Service_Distribution();
             $distributionService->getAllDistributionReports($params);
+        } else {
+            $this->view->schemeList = (new Application_Service_Schemes())->getAllSchemes();
         }
     }
 

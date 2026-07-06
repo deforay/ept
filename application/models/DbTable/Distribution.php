@@ -329,6 +329,14 @@ class Application_Model_DbTable_Distribution extends Zend_Db_Table_Abstract
             $sQuery = $sQuery->where($sWhere);
         }
 
+        // Scheme-type filter (dropdown above the table). Narrows the listing to
+        // distributions that contain a shipment of this scheme, and narrows the
+        // GROUP_CONCAT of shipment codes to that scheme.
+        $schemeType = isset($parameters['schemeType']) ? trim((string) $parameters['schemeType']) : '';
+        if ($schemeType !== '') {
+            $sQuery = $sQuery->where('s.scheme_type = ?', $schemeType);
+        }
+
         if (!empty($sOrder)) {
             $sQuery = $sQuery->order($sOrder);
         }
