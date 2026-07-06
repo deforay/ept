@@ -307,6 +307,10 @@ if (!empty($resultArray['shipment'])) {
                                 <th style="background-color:#dbe4ee;text-align:center;font-weight:bold;width:20%;">Percentage</th>
                             </tr>';
                 foreach ($equipmentsReports as $equipment) {
+                    // Skip platforms that no lab used this round; a zero-count row adds no value.
+                    if ((int) ($equipment['total_participated'] ?? 0) <= 0) {
+                        continue;
+                    }
                     $equipmentTxt .= '<tr>
                                     <td style="text-align:left;width:40%;font-weight:normal;">' . $equipment['assay_name'] . '</td>
                                     <td style="text-align:left;width:40%;font-weight:normal;">' . $equipment['total_participated'] . '</td>
