@@ -550,7 +550,10 @@ class Application_Service_DataManagers
        a.k.a. "Lab ID") into the set of DMs to reset. A single Lab ID can map to
        multiple DMs via participant_manager_map; emails resolve to one DM.
        Returns ['matched' => [dm rows], 'unresolved' => [original input lines]]. */
-    public function resolveDmIdentifiers(array $lines): array
+    // $dmType, when 'ptcc' or 'manager', restricts matching to that kind of
+    // login. The PTCC and regular data-manager pages share one data_manager
+    // table, so a pasted list on the PTCC page must only resolve PTCC rows.
+    public function resolveDmIdentifiers(array $lines, ?string $dmType = null): array
     {
         // Strip ALL internal whitespace + zero-width / BOM / control chars.
         // Excel pastes often include NBSP (U+00A0), ZWSP (U+200B), BOM (U+FEFF),
@@ -589,11 +592,13 @@ class Application_Service_DataManagers
         $matchedInputs = [];
 
         if (!empty($emails)) {
-            $rows = $db->fetchAll(
-                $db->select()
-                    ->from('data_manager', ['dm_id', 'first_name', 'last_name', 'institute', 'primary_email', 'status'])
-                    ->where('LOWER(primary_email) IN (?)', array_keys($emails))
-            );
+            $emailSelect = $db->select()
+                ->from('data_manager', ['dm_id', 'first_name', 'last_name', 'institute', 'primary_email', 'status'])
+                ->where('LOWER(primary_email) IN (?)', array_keys($emails));
+            if ($dmType !== null) {
+                $emailSelect->where('data_manager_type = ?', $dmType);
+            }
+            $rows = $db->fetchAll($emailSelect);
             foreach ($rows as $row) {
                 $key = (int) $row['dm_id'];
                 if (!isset($matchedDmIds[$key])) {
@@ -610,6 +615,9 @@ class Application_Service_DataManagers
                 ->join(['pmm' => 'participant_manager_map'], 'pmm.participant_id = p.participant_id', [])
                 ->join(['dm' => 'data_manager'], 'dm.dm_id = pmm.dm_id', ['dm_id', 'first_name', 'last_name', 'institute', 'primary_email', 'status'])
                 ->where('p.unique_identifier IN (?)', array_values($labIds));
+            if ($dmType !== null) {
+                $select->where('dm.data_manager_type = ?', $dmType);
+            }
             $rows = $db->fetchAll($select);
             foreach ($rows as $row) {
                 $key = (int) $row['dm_id'];

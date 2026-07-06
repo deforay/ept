@@ -301,6 +301,12 @@ class Admin_DataManagersController extends Zend_Controller_Action
         $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
         $loginUrl = rtrim((string) $conf->domain, '/') . '/auth/login';
 
+        // PTCC and regular data managers share the data_manager table; scope the
+        // pasted-list match to the kind of login this page manages.
+        $ptcc = (int) $this->_getParam('ptcc', 0) === 1;
+        $this->view->ptcc = $ptcc ? 1 : 0;
+        $dmType = $ptcc ? 'ptcc' : 'manager';
+
         $this->view->loginUrl = $loginUrl;
         $this->view->step = 'paste';
         $this->view->pastedText = '';
@@ -316,7 +322,7 @@ class Admin_DataManagersController extends Zend_Controller_Action
         $pasted = (string) ($params['identifiers'] ?? '');
         $this->view->pastedText = $pasted;
 
-        $resolved = $userService->resolveDmIdentifiers($this->tokenizePastedIdentifiers($pasted));
+        $resolved = $userService->resolveDmIdentifiers($this->tokenizePastedIdentifiers($pasted), $dmType);
         $this->view->matched = $resolved['matched'];
         $this->view->unresolved = $resolved['unresolved'];
 

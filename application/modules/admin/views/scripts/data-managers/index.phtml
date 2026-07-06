@@ -118,7 +118,16 @@ if (isset($this->ptcc) && !empty($this->ptcc) && $this->ptcc == 1) {
             </select>
         </div>
     <?php } ?>
-    <div class="col-md-5" style="margin-top: 22px;">
+</div>
+
+<!-- Bulk-action toolbar for the table below. Kept in its own full-width row
+     (rather than a column in the filter row) so its placement stays stable
+     whether or not the "Mapping" filter column is present. -->
+<div class="row" style="margin-bottom:15px;">
+    <div class="col-md-12" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+        <button type="button" id="bulkByListBtn" class="btn btn-default">
+            <i class="icon-paste"></i>&nbsp;<?= $this->translate->_("Reset by Pasted List"); ?>
+        </button>
         <span id="bulkActionBar" style="display:none;">
             <button type="button" id="bulkResetBtn" class="btn btn-info">
                 <i class="icon-key"></i>&nbsp;<?= $this->translate->_("Queue Reset &amp; Email"); ?>
@@ -128,9 +137,6 @@ if (isset($this->ptcc) && !empty($this->ptcc) && $this->ptcc == 1) {
                 <?= $this->translate->_("Clear selection"); ?>
             </a>
         </span>
-        <button type="button" id="bulkByListBtn" class="btn btn-default">
-            <i class="icon-paste"></i>&nbsp;<?= $this->translate->_("Reset by Pasted List"); ?>
-        </button>
     </div>
 </div>
 <style>
@@ -422,7 +428,7 @@ if (isset($this->ptcc) && !empty($this->ptcc) && $this->ptcc == 1) {
         });
 
         $('#bulkByListBtn').on('click', function() {
-            layoutModal('/admin/data-managers/bulk-reset-by-list', '720', '640');
+            layoutModal('/admin/data-managers/bulk-reset-by-list<?php echo (isset($ptcc) && $ptcc == 1) ? '/ptcc/1' : ''; ?>', '720', '640');
         });
 
         // Inline filter for the expanded participants list (only present when > 5 mapped)
