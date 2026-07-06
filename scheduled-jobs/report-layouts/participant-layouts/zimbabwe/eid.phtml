@@ -240,32 +240,6 @@ if (!empty($resultArray['shipment'])) {
             $pdf->writeHTML($totalScoreTxt, true, false, true, false, '');
 
 
-            // Add failure reasons if available
-            if (
-                isset($result['responseResult'][0]['failure_reason']) &&
-                $result['responseResult'][0]['failure_reason'] != "" &&
-                $result['responseResult'][0]['failure_reason'] != "[]" &&
-                $result['responseResult'][0]['failure_reason'] != null
-            ) {
-
-                $failRes = '<span style="font-weight:bold;font-size:12px;">Suggested Corrective actions for your response :</span> <br/>';
-                $failRes .= '<table border="1" style="font-size:11px;">
-                        <tr style="background-color:#dbe4ee;">
-                            <td style="text-align:center;font-weight:bold;">Failure Reasons (or) Warnings</td>
-                            <td style="text-align:center;font-weight:bold;">Corrective Actions (if any)</td>
-                        </tr>';
-
-                $warnings = Pt_Commons_JsonUtility::safeDecode($result['responseResult'][0]['failure_reason']);
-                foreach ($warnings as $warning) {
-                    $failRes .= '<tr>
-                            <td>' . (isset($warning['warning']) ? $warning['warning'] : "") . '</td>
-                            <td>' . (isset($warning['correctiveAction']) ? $warning['correctiveAction'] : "") . '</td>
-                        </tr>';
-                }
-                $failRes .= '</table>';
-                $pdf->writeHTML($failRes, true, false, true, false, '');
-            }
-
             // Summary count if provided
             if (isset($shipmentsUnderDistro) && !empty($shipmentsUnderDistro)) {
                 $responseRate = round(($shipmentsUnderDistro['reported_count'] / $shipmentsUnderDistro['participant_count']) * 100);
@@ -321,6 +295,32 @@ if (!empty($resultArray['shipment'])) {
                 $pdf->writeHTML($equipmentTxt, true, false, true, false, '');
             }
 
+            // Add failure reasons if available
+            if (
+                isset($result['responseResult'][0]['failure_reason']) &&
+                $result['responseResult'][0]['failure_reason'] != "" &&
+                $result['responseResult'][0]['failure_reason'] != "[]" &&
+                $result['responseResult'][0]['failure_reason'] != null
+            ) {
+
+                $failRes = '<span style="font-weight:bold;font-size:12px;">Suggested Corrective actions for your response :</span> <br/>';
+                $failRes .= '<table border="1" style="font-size:11px;">
+                        <tr style="background-color:#dbe4ee;">
+                            <td style="text-align:center;font-weight:bold;">Failure Reasons (or) Warnings</td>
+                            <td style="text-align:center;font-weight:bold;">Corrective Actions (if any)</td>
+                        </tr>';
+
+                $warnings = Pt_Commons_JsonUtility::safeDecode($result['responseResult'][0]['failure_reason']);
+                foreach ($warnings as $warning) {
+                    $failRes .= '<tr>
+                            <td>' . (isset($warning['warning']) ? $warning['warning'] : "") . '</td>
+                            <td>' . (isset($warning['correctiveAction']) ? $warning['correctiveAction'] : "") . '</td>
+                        </tr>';
+                }
+                $failRes .= '</table>';
+                $pdf->writeHTML($failRes, true, false, true, false, '');
+            }
+            
             // EID is a qualitative scheme: the z-score table is a Viral Load concept and
             // does not apply here. Only the textual performance criteria are shown.
             $note = '<br><span style="font-weight:bold;font-size:12px;">Interpretation of Scores (Performance criteria):</span>';
