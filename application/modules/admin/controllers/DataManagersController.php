@@ -447,10 +447,22 @@ class Admin_DataManagersController extends Zend_Controller_Action
         /** @var Zend_Controller_Request_Http $request */
         $request = $this->getRequest();
         $userService = new Application_Service_DataManagers();
+
+        // Surface header-mismatch feedback from a previous rejected upload on the form.
+        $bulkImportSession = new Zend_Session_Namespace('bulkImportFeedback');
+        if (!empty($bulkImportSession->mismatches)) {
+            $this->view->validationMismatches = $bulkImportSession->mismatches;
+            unset($bulkImportSession->mismatches);
+        }
+
         if ($request->isPost()) {
             $params = $request->getPost();
             $result = $userService->uploadBulkDatamanager($params);
-            if (!$result) {
+            if (is_array($result) && !empty($result['validation_error'])) {
+                // Uploaded file headers don't match the template — bounce back to the form with the details.
+                $bulkImportSession->mismatches = $result['mismatches'];
+                $this->redirect('/admin/data-managers/bulk-import-ptcc');
+            } elseif (!$result) {
                 // Hard failure (bad file / format) — the flash message carries the reason.
                 $this->redirect('/admin/data-managers/index/ptcc/1');
             } else {

@@ -1304,12 +1304,58 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         }
     }
 
+    private function validateUploadedFile($fileName, $templateFilePath)
+    {
+        $uploadedSpreadsheet = IOFactory::load($fileName);
+        $templateSpreadsheet = IOFactory::load($templateFilePath);
+
+        $uploadedHeaders = $uploadedSpreadsheet->getSheet(0)->rangeToArray('A1:Z1')[0];
+        $templateHeaders = $templateSpreadsheet->getSheet(0)->rangeToArray('A1:Z1')[0];
+
+        $normalize = function ($header) {
+            return strtolower(preg_replace('/\s+/', '', (string) $header));
+        };
+
+        $mismatches = [];
+        foreach ($templateHeaders as $idx => $expected) {
+            $actual = $uploadedHeaders[$idx] ?? null;
+            if ($normalize($expected) === $normalize($actual)) {
+                continue;
+            }
+            $colLetter = chr(ord('A') + $idx);
+            $expectedLabel = trim(preg_replace('/\s+/', ' ', (string) $expected));
+            $actualLabel = trim(preg_replace('/\s+/', ' ', (string) $actual));
+            if ($expectedLabel === '' && $actualLabel === '') {
+                continue;
+            }
+            $mismatches[] = [
+                'column' => $colLetter,
+                'expected' => $expectedLabel,
+                'actual' => $actualLabel,
+            ];
+        }
+
+        return $mismatches;
+    }
+
     public function processBulkImport($fileName, $allFakeEmail = false, $params = null, $type = 'ptcc')
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         try {
             $response = ['data' => [], 'error-data' => []];
             $alertMsg = new Zend_Session_Namespace('alertSpace');
+
+            // Reject the upload up front if its column headers don't match the template.
+            $templateFilePath = realpath(WEB_ROOT) . '/files/PTCC_Bulk_Import_Excel_Format.xlsx';
+            $mismatches = $this->validateUploadedFile($fileName, $templateFilePath);
+            if (!empty($mismatches)) {
+                return [
+                    'data' => [],
+                    'error-data' => [],
+                    'validation_error' => true,
+                    'mismatches' => $mismatches,
+                ];
+            }
 
             $objPHPExcel = IOFactory::load($fileName);
             $sheetData = $objPHPExcel->getActiveSheet()->toArray(null, true, true, true);
@@ -1322,9 +1368,8 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             $duplicateChecks = $this->batchCheckDataManagerDuplicates($sheetData);
 
             //If deactivate existing PTCC
-            if(isset($params['deactivateExistingPTCC']) && $params['deactivateExistingPTCC'] == 'yes')
-            {
-                $db->update('data_manager', array('status'=>'inactive'), "data_manager_type = 'ptcc'");
+            if (isset($params['deactivateExistingPTCC']) && $params['deactivateExistingPTCC'] == 'yes') {
+                $db->update('data_manager', ['status' => 'inactive'], "data_manager_type = 'ptcc'");
             }
 
             // Single transaction for entire operation
