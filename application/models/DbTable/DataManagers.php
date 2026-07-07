@@ -1449,18 +1449,21 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                 // Use cached country lookup instead of individual query
                 $countryId = $this->getCountryIdFromCache($sheetData[$i]['J'], $countryCache);
 
-                // A country was supplied but matches no known country or alias. Importing
-                // anyway would create a PTCC with country_id = NULL and map zero participants
-                // while still reporting "saved" — a silent failure. Skip the row and surface
-                // it so the admin can fix the spreadsheet.
-                if (!empty($sheetData[$i]['J']) && empty($countryId)) {
+                // A PTCC is a country coordinator — the single-add form requires a country,
+                // so bulk import must too. A blank or unrecognised country would otherwise
+                // insert a PTCC with country_id = NULL that maps zero participants while still
+                // reporting "saved" — a silent failure. Skip the row and surface the reason.
+                if (empty($countryId)) {
+                    $rawCountry = trim((string) $sheetData[$i]['J']);
                     $response['error-data'][] = [
                         's_no'          => $sheetData[$i]['A'] ?: ($i - 1),
                         'primary_email' => $originalEmail,
                         'name'          => trim($sheetData[$i]['C'] . ' ' . $sheetData[$i]['D']),
                         'institute'     => $sheetData[$i]['E'],
-                        'country'       => $sheetData[$i]['J'],
-                        'error'         => 'Skipped — country "' . $sheetData[$i]['J'] . '" was not recognised',
+                        'country'       => $rawCountry,
+                        'error'         => $rawCountry === ''
+                            ? 'Skipped — country is required but was blank'
+                            : 'Skipped — country "' . $rawCountry . '" was not recognised',
                     ];
                     continue;
                 }
