@@ -165,6 +165,7 @@ $formAction = $this->url(array("module" => "admin", "controller" => "custom-test
 															<th scope="col"><?= $this->translate->_("Result Type"); ?></th>
 															<th scope="col"><?= $this->translate->_("Displayed To"); ?></th>
 															<th scope="col"><?= $this->translate->_("Sort Order"); ?></th>
+															<th scope="col"><?= $this->translate->_("Status"); ?></th>
 															<th scope="col"><?= $this->translate->_("Action"); ?></th>
 														</tr>
 														<?php if (isset($qualitativeRows[$row['sub_scheme']]) && !empty($qualitativeRows[$row['sub_scheme']])) {
@@ -203,6 +204,12 @@ $formAction = $this->url(array("module" => "admin", "controller" => "custom-test
 																	</td>
 																	<td>
 																		<input type="text" value="<?php echo $value['sort_order'] ?? null; ?>" name="qualitative[sortOrder][<?php echo $rowCount; ?>][<?php echo $innerCount; ?>]" class="form-control qualitative-input-<?php echo $rowCount; ?><?php echo $innerCount; ?> input-sm" placeholder="Enter the sort order" title="Please enter the sort order" />
+																	</td>
+																	<td>
+																		<select name="qualitative[status][<?php echo $rowCount; ?>][<?php echo $innerCount; ?>]" class="form-control input-sm">
+																			<option value="active" <?php echo (($value['status'] ?? 'active') !== 'inactive') ? 'selected="selected"' : ''; ?>><?= $this->translate->_("Active"); ?></option>
+																			<option value="inactive" <?php echo (($value['status'] ?? 'active') === 'inactive') ? 'selected="selected"' : ''; ?>><?= $this->translate->_("Inactive"); ?></option>
+																		</select>
 																	</td>
 																	<td style="text-align:center;">
 																		<a href="javascript:void(0);" onclick="addQualitativeRow(this, <?php echo $rowCount; ?>,<?php echo ($innerCount + 1); ?>);" <?php echo ($innerCount == $n) ? '' : 'disabled="disabled"'; ?> class="btn btn-xs btn-info qualitative-insrow-<?php echo $rowCount; ?><?php echo $innerCount; ?>"><i class="icon-plus"></i></a>&nbsp;&nbsp;<?php if ($locked) : ?><i class="icon-lock" title="<?= $this->translate->_("In use by a shipment — code and label are locked (sort order and displayed-to can still change)"); ?>"></i><?php else : ?><a href="javascript:void(0);" onclick="removeQualitativeRow(this, <?php echo $rowCount; ?>, <?php echo ($innerCount + 1); ?>)" class="btn btn-xs btn-danger" title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a><?php endif; ?>
@@ -300,6 +307,7 @@ $formAction = $this->url(array("module" => "admin", "controller" => "custom-test
 								<th scope="col"><?= $this->translate->_("Result Type"); ?></th>
 								<th scope="col"><?= $this->translate->_("Displayed To"); ?></th>
 								<th scope="col"><?= $this->translate->_("Sort Order"); ?></th>
+								<th scope="col"><?= $this->translate->_("Status"); ?></th>
 								<th scope="col"><?= $this->translate->_("Action"); ?></th>
 							</tr>
 							<tr>
@@ -330,6 +338,12 @@ $formAction = $this->url(array("module" => "admin", "controller" => "custom-test
 								</td>
 								<td>
 									<input type="text" name="qualitative[sortOrder][1][1]" class="form-control qualitative-input-11 input-sm" placeholder="Enter the sort order" title="Please enter the sort order" />
+								</td>
+								<td>
+									<select name="qualitative[status][1][1]" class="form-control input-sm">
+										<option value="active" selected="selected"><?= $this->translate->_("Active"); ?></option>
+										<option value="inactive"><?= $this->translate->_("Inactive"); ?></option>
+									</select>
 								</td>
 								<td style="text-align:center;">
 									<a href="javascript:void(0);" onclick="addQualitativeRow(this, 1,2);" class="btn btn-xs btn-info qualitative-insrow-11"><i class="icon-plus"></i></a>
@@ -551,6 +565,12 @@ $formAction = $this->url(array("module" => "admin", "controller" => "custom-test
 			<td>\
 				<input type="text" name="qualitative[sortOrder][' + row1 + '][' + row2 + ']" class="form-control qualitative-input-' + row1 + row2 + ' input-sm" placeholder="Enter the sort order" title="Please enter the sort order" />\
 			</td>\
+			<td>\
+				<select name="qualitative[status][' + row1 + '][' + row2 + ']" class="form-control input-sm">\
+					<option value="active" selected="selected">Active</option>\
+					<option value="inactive">Inactive</option>\
+				</select>\
+			</td>\
 			<td><a href="javascript:void(0);" onclick="addQualitativeRow(this, ' + row1 + ',' + (row2 + 1) + ');" class="btn btn-xs btn-info qualitative-insrow-' + row1 + row2 + '"><i class="icon-plus"></i></a>&nbsp;&nbsp;<a  href="javascript:void(0);" onclick="removeQualitativeRow(this, ' + row1 + ', ' + (row2 - 1) + ')" class="btn btn-xs btn-danger"  title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a></td> \
 		</tr>'
 		$(obj.parentNode.parentNode).after(html);
@@ -586,6 +606,7 @@ $formAction = $this->url(array("module" => "admin", "controller" => "custom-test
 										<th scope="col"><?= $this->translate->_("Result Type"); ?></th>\
 										<th scope="col"><?= $this->translate->_("Displayed To"); ?></th>\
 										<th scope="col"><?= $this->translate->_("Sort Order"); ?></th>\
+										<th scope="col"><?= $this->translate->_("Status"); ?></th>\
 										<th scope="col"><?= $this->translate->_("Action"); ?></th>\
 									</tr>\
 									<tr>\
@@ -616,6 +637,12 @@ $formAction = $this->url(array("module" => "admin", "controller" => "custom-test
 										</td>\
 										<td>\
 											<input type="text" name="qualitative[sortOrder][' + sampleCounter + '][1]" class="form-control qualitative-input-' + sampleCounter + '1 input-sm" placeholder="Enter the sort order" title="Please enter the sort order" />\
+										</td>\
+										<td>\
+											<select name="qualitative[status][' + sampleCounter + '][1]" class="form-control input-sm">\
+												<option value="active" selected="selected">Active</option>\
+												<option value="inactive">Inactive</option>\
+											</select>\
 										</td>\
 										<td style="text-align:center;">\
 											<a href="javascript:void(0);" onclick="addQualitativeRow(this, ' + sampleCounter + ', 2);" class="btn btn-xs btn-info qualitative-insrow-' + sampleCounter + '1"><i class="icon-plus"></i></a>\

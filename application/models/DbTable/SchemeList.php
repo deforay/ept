@@ -248,8 +248,13 @@ class Application_Model_DbTable_SchemeList extends Zend_Db_Table_Abstract
                                 // label / grouping stay frozen, but sort order and "displayed to"
                                 // may still be edited. Anything else is a fresh insert.
                                 $code = (string) ($params[$test]['resultCode'][$key][$ikey] ?? '');
+                                $status = (($params[$test]['status'][$key][$ikey] ?? '') === 'inactive') ? 'inactive' : 'active';
                                 if ($code !== '' && isset($inUseCodeSet[$code])) {
+                                    // Frozen code/label/grouping, but sort order, "displayed to"
+                                    // and active/inactive may still change (retiring an in-use
+                                    // result just hides it from new entry; history keeps it).
                                     $upd = [
+                                        'status'     => $status,
                                         'sort_order' => (($params[$test]['sortOrder'][$key][$ikey] ?? '') === '')
                                             ? null : $params[$test]['sortOrder'][$key][$ikey],
                                     ];
@@ -271,6 +276,7 @@ class Application_Model_DbTable_SchemeList extends Zend_Db_Table_Abstract
                                         'result_code'       => $params[$test]['resultCode'][$key][$ikey],
                                         'display_context'   => $params[$test]['displayContext'][$key][$ikey],
                                         'sort_order'        => $params[$test]['sortOrder'][$key][$ikey],
+                                        'status'            => $status,
                                     ]);
                                 }
                             }

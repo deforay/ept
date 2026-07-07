@@ -35,6 +35,13 @@ $isQuantitative = isset($jsonConfig['testType']) && !empty($jsonConfig['testType
 // (shipment add/edit only configures the expected/final result) via getPossibleResults('FINAL').
 $possibleResults = $this->otherTestsPossibleResults ?? [];
 
+// Retired (status='inactive') results are hidden from the expected-result picker for NEW
+// shipments; an existing shipment that already references a now-retired code still shows it
+// (handled per-row below). $activePossibleResults drives brand-new rows.
+$activePossibleResults = array_filter($possibleResults, static function ($pr) {
+    return (($pr['status'] ?? 'active') !== 'inactive');
+});
+
 // Normalize samples/controls - in ADD mode, start with empty array (will show one empty row)
 $samples = $isEditMode
     ? ($this->shipmentData['reference'] ?? [])
@@ -52,7 +59,7 @@ if ($isEditMode) {
 }
 // Build possible results dropdown HTML for JavaScript row addition
 $possibleResultsHtml = '<select name="finalResult[]" class="isRequired form-control input-sm" title="Please choose one" placeholder="Please choose final result for this sample"><option value="">--Select--</option>';
-foreach ($possibleResults as $pr) {
+foreach ($activePossibleResults as $pr) {
     $resultCode = isset($pr['result_code']) ? $pr['result_code'] : '';
     $response = isset($pr['response']) ? $pr['response'] : '';
     $possibleResultsHtml .= '<option value="' . htmlspecialchars($resultCode) . '">' . htmlspecialchars($response) . '</option>';
@@ -171,6 +178,10 @@ foreach ($savedSettings as $key => $savedValue) {
                                     $resultCode = isset($pr['result_code']) ? $pr['result_code'] : '';
                                     $response = isset($pr['response']) ? $pr['response'] : '';
                                     $selected = ($resultCode == $referenceResult) ? 'selected="selected"' : '';
+                                    // Skip retired results, but keep this row's already-selected one.
+                                    if (($pr['status'] ?? 'active') === 'inactive' && $resultCode != $referenceResult) {
+                                        continue;
+                                    }
                                 ?>
                                     <option value="<?php echo htmlspecialchars($resultCode); ?>" <?php echo $selected; ?>>
                                         <?php echo htmlspecialchars($response); ?>

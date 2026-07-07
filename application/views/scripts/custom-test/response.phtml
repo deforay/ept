@@ -34,12 +34,29 @@ $userTestConfig = Zend_Json_Decoder::decode($this->shipment['user_test_config'],
 // case every option belongs to both sets (unchanged legacy behaviour). The combined
 // $allResultOptions map is kept for read-only lookups (the Expected Result text) so any
 // stored code resolves regardless of its namespace.
+// Codes this participant already has stored -> keep them selectable even if the result was
+// later retired (status='inactive'), so an existing response still renders. New picks exclude
+// inactive. The reference (expected) result resolves via $allResultOptions, which keeps every
+// code regardless of status.
+$storedResultCodes = [];
+foreach (($this->allSamples ?? []) as $s) {
+	foreach (['result_1', 'result_2', 'result_3', 'reported_result'] as $c) {
+		if (!empty($s[$c])) {
+			$storedResultCodes[$s[$c]] = true;
+		}
+	}
+}
+
 $testResultOptions = [];
 $finalResultOptions = [];
 $allResultOptions = [];
 foreach ($this->otherTestsPossibleResults as $row) {
 	$subGroup = strtoupper(trim((string) ($row['scheme_sub_group'] ?? '')));
 	$allResultOptions[$row['result_code']] = $row['response'];
+	// Hide retired results from new entry, unless this response already uses the code.
+	if (($row['status'] ?? 'active') === 'inactive' && !isset($storedResultCodes[$row['result_code']])) {
+		continue;
+	}
 	if ($subGroup === 'TEST' || $subGroup === '') {
 		$testResultOptions[$row['result_code']] = $row['response'];
 	}
