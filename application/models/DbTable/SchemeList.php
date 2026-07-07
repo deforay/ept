@@ -409,12 +409,6 @@ class Application_Model_DbTable_SchemeList extends Zend_Db_Table_Abstract
             return false;
         }
         $db = $this->getAdapter();
-        // Remove results
-        if (isset($params['removedRow']) && !empty($params['removedRow'])) {
-            foreach (explode(',', $params['removedRow']) as $id) {
-                $db->delete('r_possibleresult', $db->quoteInto('id = ?', (int) base64_decode($id)));
-            }
-        }
 
         $schemeId = base64_decode($params['schemeId']);
 
@@ -428,6 +422,24 @@ class Application_Model_DbTable_SchemeList extends Zend_Db_Table_Abstract
             'SELECT is_user_configured FROM scheme_list WHERE scheme_id = ?',
             [$schemeId]
         )) === 'yes';
+
+        // Results already referenced by a shipment are FROZEN: their code / response / grouping
+        // must never change, and the row must never be deleted, else historical results orphan.
+        // This is the server-side counterpart to the editor's lock (manage-test-results.phtml)
+        // and holds even against a stale or crafted POST that routes an in-use row through the
+        // editable fields (disabled inputs don't post, so a well-behaved form never hits this).
+        $usedIds = array_flip($this->usedPossibleResultIds($schemeId, $isUserConfigured));
+
+        // Remove results (never an in-use one)
+        if (isset($params['removedRow']) && !empty($params['removedRow'])) {
+            foreach (explode(',', $params['removedRow']) as $id) {
+                $rid = (int) base64_decode($id);
+                if (isset($usedIds[$rid])) {
+                    continue;
+                }
+                $db->delete('r_possibleresult', $db->quoteInto('id = ?', $rid));
+            }
+        }
 
         $allowedContexts = ['participant', 'admin', 'all', 'none'];
 
@@ -453,6 +465,23 @@ class Application_Model_DbTable_SchemeList extends Zend_Db_Table_Abstract
                 if ($existing !== '' && !in_array($existing, $plainGroups, true)) {
                     continue;
                 }
+            }
+
+            // Refuse to rewrite an in-use row's code / response / grouping. Only its sort order
+            // and display context may change (same two columns the locked* path below allows).
+            if ($rowId !== null && isset($usedIds[(int) $rowId])) {
+                $frozen = [];
+                if (array_key_exists($key, $params['sortOrder'] ?? [])) {
+                    $frozen['sort_order'] = ($params['sortOrder'][$key] === '') ? null : $params['sortOrder'][$key];
+                }
+                if (isset($params['displayContext'][$key])) {
+                    $ctx = $params['displayContext'][$key];
+                    $frozen['display_context'] = in_array($ctx, $allowedContexts, true) ? $ctx : 'all';
+                }
+                if (!empty($frozen)) {
+                    $db->update('r_possibleresult', $frozen, ['id = ?' => $rowId]);
+                }
+                continue;
             }
 
             $type = $params['resultType'][$key]; // TEST | FINAL
@@ -516,47 +545,17 @@ class Application_Model_DbTable_SchemeList extends Zend_Db_Table_Abstract
     {
         $db = $this->getAdapter();
 
-        // Determine which table and result columns to use based on scheme $id
-        $schemeList = $db->fetchAll(
+        $scheme = $db->fetchRow(
             $db->select()
-                ->from(['sl' => 'scheme_list'], ['sl.scheme_id', 'scheme_name', 'is_user_configured'])
+                ->from(['sl' => 'scheme_list'], ['scheme_id', 'scheme_name', 'is_user_configured'])
                 ->where('sl.scheme_id = ?', $id)
         );
 
-        if (empty($schemeList)) {
+        if (empty($scheme)) {
             return [];
         }
 
-        $scheme = $schemeList[0];
-        $isUserConfigured = strtolower($scheme['is_user_configured']) === 'yes';
-
-        // Map scheme to response_result table and its result columns
-        if ($isUserConfigured) {
-            $responseTable  = 'response_result_generic_test';
-            $resultColumns  = ['reported_result'];
-        } elseif ($id === 'covid19') {
-            $responseTable  = 'response_result_covid19';
-            $resultColumns  = ['test_result_1', 'test_result_2', 'test_result_3', 'reported_result'];
-        } elseif ($id === 'dts') {
-            $responseTable  = 'response_result_dts';
-            $resultColumns  = ['test_result_1', 'test_result_2', 'test_result_3', 'syphilis_result', 'syphilis_final', 'reported_result'];
-        } elseif ($id === 'dbs') {
-            $responseTable  = 'response_result_dbs';
-            $resultColumns  = ['reported_result'];
-        } elseif ($id === 'eid') {
-            $responseTable  = 'response_result_eid';
-            $resultColumns  = ['reported_result'];
-        } elseif ($id === 'recency') {
-            $responseTable  = 'response_result_recency';
-            $resultColumns  = ['reported_result'];
-        } elseif ($id === 'tb') {
-            $responseTable  = 'response_result_tb';
-            $resultColumns  = ['mtb_detected', 'rif_resistance'];
-        } else {
-            // Fallback — no known response table for this scheme
-            $responseTable  = null;
-            $resultColumns  = [];
-        }
+        $isUserConfigured = strtolower((string) $scheme['is_user_configured']) === 'yes';
 
         // Fetch all possible results for this scheme
         $possibleResults = $db->fetchAll(
@@ -577,58 +576,131 @@ class Application_Model_DbTable_SchemeList extends Zend_Db_Table_Abstract
                 ->order('rp.id ASC')
         );
 
-        if (empty($possibleResults) || $responseTable === null) {
-            // Return as-is with defaults if no response table found
-            return array_map(function ($row) {
-                $row['is_matched']       = 0;
-                $row['shipment_status']  = null;
-                return $row;
-            }, $possibleResults);
+        if (empty($possibleResults)) {
+            return [];
         }
 
-        // Build match check: fetch all response rows for this scheme via shipment_participant_map
-        // Join: response_result_* -> shipment_participant_map -> shipment
-        $responseSelect = $db->select()
-            ->from(['rr' => $responseTable], $resultColumns)
-            ->join(
-                ['spm' => 'shipment_participant_map'],
-                'spm.map_id = rr.shipment_map_id',
-                []
-            )
-            ->join(
-                ['s' => 'shipment'],
-                's.shipment_id = spm.shipment_id',
-                ['s.status']
-            )
-            ->where('s.scheme_type = ?', $id);
-
-        $responseRows = $db->fetchAll($responseSelect);
-
-        // Build a lookup: rp.id => shipment status (last matched wins)
-        // Collect all result values used across all result columns
-        $matchedResults = []; // [ rp_id => shipment_status ]
-
-        foreach ($responseRows as $row) {
-            foreach ($resultColumns as $col) {
-                if (!empty($row[$col])) {
-                    $matchedResults[$row[$col]] = $row['status'];
-                }
-            }
-        }
-
-        // Attach is_matched and shipment status to each possible result row
+        // Flag every result that ANY shipment has used, so the editor can lock its code /
+        // response (see manage-test-results.phtml). This intentionally ignores shipment
+        // status: a finalized shipment's stored results still render from these codes forever,
+        // so an in-use code must stay frozen even after finalization. `shipment_status` is
+        // retained (null) only for backward compatibility with the view.
+        //
+        // NOTE: this replaces an older check that compared the response table's stored value
+        // against rp.id for EVERY scheme. Built-in schemes store the id, but user-configured
+        // schemes store the result_code -- so that check never matched a generic result and
+        // every generic code read as "not in use", which is exactly what let in-use custom
+        // codes be renamed and orphan historical results. usedPossibleResultIds() resolves
+        // per-scheme.
+        $usedSet = array_flip($this->usedPossibleResultIds($id, $isUserConfigured));
         foreach ($possibleResults as &$row) {
-            $rpId = $row['id'];
-            if (isset($matchedResults[$rpId])) {
-                $row['is_matched']      = 1;
-                $row['shipment_status'] = $matchedResults[$rpId];
-            } else {
-                $row['is_matched']      = 0;
-                $row['shipment_status'] = null;
-            }
+            $row['is_matched']      = isset($usedSet[(int) $row['id']]) ? 1 : 0;
+            $row['shipment_status'] = null;
         }
         unset($row);
 
         return $possibleResults;
+    }
+
+    /**
+     * The response_result_* table and the columns within it that hold r_possibleresult
+     * references, for a given scheme. User-configured (generic) schemes store the
+     * result_code in these columns; built-in schemes store the r_possibleresult.id.
+     *
+     * @return array{0: ?string, 1: string[]} [table, columns]; [null, []] when unknown.
+     */
+    private function responseTableAndColumns($schemeId, $isUserConfigured)
+    {
+        if ($isUserConfigured) {
+            return ['response_result_generic_test', ['reported_result', 'result_1', 'result_2', 'result_3']];
+        }
+        switch ($schemeId) {
+            case 'covid19':
+                return ['response_result_covid19', ['test_result_1', 'test_result_2', 'test_result_3', 'reported_result']];
+            case 'dts':
+                return ['response_result_dts', ['test_result_1', 'test_result_2', 'test_result_3', 'syphilis_result', 'syphilis_final', 'reported_result']];
+            case 'dbs':
+                return ['response_result_dbs', ['reported_result']];
+            case 'eid':
+                return ['response_result_eid', ['reported_result']];
+            case 'recency':
+                return ['response_result_recency', ['reported_result']];
+            case 'tb':
+                return ['response_result_tb', ['mtb_detected', 'rif_resistance']];
+            default:
+                return [null, []];
+        }
+    }
+
+    /**
+     * Set of r_possibleresult.id values that any shipment's response has referenced for this
+     * scheme (across every result-bearing column, regardless of shipment status). Used to lock
+     * a result's code/response in the editor and, server-side, to refuse edits/deletes of an
+     * in-use result -- which is what keeps a rename from orphaning historical results.
+     *
+     * Generic schemes store the result_code in the response columns, so matched codes are
+     * resolved back to ids within the scheme; built-in schemes already store the id.
+     *
+     * @return int[]
+     */
+    private function usedPossibleResultIds($schemeId, $isUserConfigured)
+    {
+        $db = $this->getAdapter();
+        [$table, $columns] = $this->responseTableAndColumns($schemeId, $isUserConfigured);
+        if ($table === null || empty($columns)) {
+            return [];
+        }
+
+        $values = [];
+
+        // Participant responses.
+        $rows = $db->fetchAll(
+            $db->select()
+                ->from(['rr' => $table], $columns)
+                ->join(['spm' => 'shipment_participant_map'], 'spm.map_id = rr.shipment_map_id', [])
+                ->join(['s' => 'shipment'], 's.shipment_id = spm.shipment_id', [])
+                ->where('s.scheme_type = ?', $schemeId)
+        );
+        foreach ($rows as $row) {
+            foreach ($columns as $col) {
+                if (isset($row[$col]) && $row[$col] !== '') {
+                    $values[(string) $row[$col]] = true;
+                }
+            }
+        }
+
+        // Reference (expected) results for user-configured schemes: a code used only as an
+        // expected answer -- never reported by anyone -- must still lock, else renaming it
+        // orphans the reference row. reference_result_generic_test holds the Final code.
+        if ($isUserConfigured) {
+            $refRows = $db->fetchCol(
+                $db->select()
+                    ->from(['ref' => 'reference_result_generic_test'], ['reference_result'])
+                    ->join(['s' => 'shipment'], 's.shipment_id = ref.shipment_id', [])
+                    ->where('s.scheme_type = ?', $schemeId)
+                    ->where("ref.reference_result <> ''")
+            );
+            foreach ($refRows as $code) {
+                $values[(string) $code] = true;
+            }
+        }
+
+        if (empty($values)) {
+            return [];
+        }
+
+        if ($isUserConfigured) {
+            // Stored values are result_codes -> resolve to ids within this scheme.
+            $ids = $db->fetchCol(
+                $db->select()
+                    ->from('r_possibleresult', ['id'])
+                    ->where('scheme_id = ?', $schemeId)
+                    ->where('result_code IN (?)', array_keys($values))
+            );
+            return array_map('intval', $ids);
+        }
+
+        // Stored values are already r_possibleresult ids.
+        return array_values(array_filter(array_map('intval', array_keys($values))));
     }
 }

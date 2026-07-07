@@ -406,7 +406,10 @@ $schemeId = !empty($this->results[0]['scheme_id']) ? strtoupper(trim($this->resu
 									// path updates just those two columns and never touches scheme_sub_group /
 									// response / result_code.
 									//
-									// 1. In-use  = belongs to a shipment that is not yet finalized.
+									// 1. In-use  = referenced by ANY shipment (finalized or not). A finalized
+									//    shipment's stored results render from this code forever, so the code
+									//    must stay frozen after finalization too -- releasing the lock on
+									//    finalize is what previously let codes be renamed and orphaned history.
 									// 2. Pre-defined sub-test = a scheme_sub_group richer than the plain
 									//    "{SCHEME}_TEST/FINAL" (built-in) or bare "TEST/FINAL" (user-configured)
 									//    forms -- e.g. DTS_SYP_TEST, RECENCY_FINAL, TB_MOLECULAR_FINAL. This flat
@@ -419,11 +422,11 @@ $schemeId = !empty($this->results[0]['scheme_id']) ? strtoupper(trim($this->resu
 										: [$schemeId . '_TEST', $schemeId . '_FINAL'];
 									$isSubTest   = ($subGroup !== '') && !in_array($subGroup, $plainGroups, true);
 
-									$inUse  = (isset($row['shipment_status']) && !empty($row['shipment_status']) && $row['shipment_status'] != 'finalized');
+									$inUse  = !empty($row['is_matched']);
 									$locked = $inUse || $isSubTest;
 
 									$lockReason = $inUse
-										? $this->translate->_("In use by an open shipment — locked")
+										? $this->translate->_("In use by a shipment — locked")
 										: $this->translate->_("Pre-defined sub-test — locked to protect its grouping");
 
 									$disable = $locked ? 'disabled' : '';
