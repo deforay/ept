@@ -1503,18 +1503,19 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                     'country'       => $sheetData[$i]['J'],
                 ];
 
+                $action = null;
                 if (empty($dmresult)) {
                     $db->insert('data_manager', $dataManagerData);
                     $lastInsertedId = $db->lastInsertId();
                     if ($lastInsertedId > 0) {
                         $importedCount++;
-                        $response['data'][] = $summaryRow + ['action' => 'inserted'];
+                        $action = 'inserted';
                     }
                 } elseif (isset($params['bulkUploadDuplicateSkip']) && $params['bulkUploadDuplicateSkip'] == 'update-on-primary-email-match') {
                     $db->update('data_manager', $dataManagerData, "primary_email = '$originalEmail'");
                     $lastInsertedId = $dmresult['dm_id'];
                     $importedCount++;
-                    $response['data'][] = $summaryRow + ['action' => 'updated'];
+                    $action = 'updated';
                 } else {
                     $response['error-data'][] = $summaryRow + ['error' => 'Skipped — a PTCC with this primary email already exists'];
                     // Leave the existing PTCC untouched. Do NOT fall through to the mapping
@@ -1527,6 +1528,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                 // already split into arrays at the top of the loop; re-exploding them here
                 // ran explode() on an array — a TypeError under PHP 8 that aborted the whole
                 // import for any row carrying province/district data.
+                $mappedCount = null;
                 if (
                     (isset($sheetData[$i]['J']) && !empty($sheetData[$i]['J'])) ||
                     (isset($sheetData[$i]['K']) && count($sheetData[$i]['K']) > 0) ||
@@ -1537,8 +1539,28 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                         $params['district'] = $sheetData[$i]['L'];
                         $params['province'] = $sheetData[$i]['K'];
                         $params['country'] = $countryId;
-                        $this->dmParticipantMap($params, $lastInsertedId, true);
+                        $mapResult = $this->dmParticipantMap($params, $lastInsertedId, true);
+                        // dmParticipantMap swallows DB errors and returns ok=false. Left
+                        // unchecked, the outer transaction would still commit this PTCC and the
+                        // row would be reported "saved" with broken/no mappings. Escalate so the
+                        // whole batch rolls back — consistent with other hard import errors.
+                        if (is_array($mapResult) && ($mapResult['ok'] ?? false) === false) {
+                            throw new RuntimeException('PTCC participant mapping failed for ' . $originalEmail
+                                . ' (trace ' . ($mapResult['trace_id'] ?? 'n/a') . ')');
+                        }
+                        $mappedCount = is_array($mapResult) ? (int) ($mapResult['count'] ?? 0) : null;
                     }
+                }
+
+                // Record the row only after mapping succeeded, carrying the participant count
+                // so the results page can show what actually mapped — this path used to report
+                // "saved" while silently mapping nothing.
+                if ($action !== null) {
+                    $summaryRow['action'] = $action;
+                    if ($mappedCount !== null) {
+                        $summaryRow['mapped'] = $mappedCount;
+                    }
+                    $response['data'][] = $summaryRow;
                 }
             }
 
@@ -1853,6 +1875,9 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                         $common->insertMultiple('participant_manager_map', $pmmData, true); // Inserting the mulitiple pmm data at one go
                     }
                 }
+                // Report how many participants this PTCC was mapped to so callers can surface
+                // it (0 is legitimate — a valid location with no participants yet — not an error).
+                return ['ok' => true, 'count' => count($pmmData)];
             }
         } catch (Throwable $e) {
             if ($inTx) {

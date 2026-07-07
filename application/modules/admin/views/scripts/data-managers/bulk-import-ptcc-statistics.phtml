@@ -60,6 +60,7 @@ foreach ($this->response['data'] as $row) {
         'name' => trim($row['name'] ?? ''),
         'institute' => $row['institute'] ?? '',
         'country' => $row['country'] ?? '',
+        'mapped' => array_key_exists('mapped', $row) ? (string)(int)$row['mapped'] : '',
         'reason' => '',
     ];
 }
@@ -73,6 +74,7 @@ foreach ($this->response['error-data'] as $row) {
         'name' => trim($row['name'] ?? ''),
         'institute' => $row['institute'] ?? '',
         'country' => $row['country'] ?? '',
+        'mapped' => '',
         'reason' => (string)($row['error'] ?? ''),
     ];
 }
@@ -143,6 +145,7 @@ $totalCount = count($mergedRows);
                         <td><?= $this->translate->_("Name"); ?></td>
                         <td><?= $this->translate->_("Institute"); ?></td>
                         <td><?= $this->translate->_("Country"); ?></td>
+                        <td><?= $this->translate->_("Mapped"); ?></td>
                         <td><?= $this->translate->_("Reason"); ?></td>
                     </tr>
                 </thead>
@@ -158,6 +161,7 @@ $totalCount = count($mergedRows);
                             <td><?= $this->escape($r['name']) ?></td>
                             <td><?= $this->escape($r['institute']) ?></td>
                             <td><?= $this->escape($r['country']) ?></td>
+                            <td<?= ($r['mapped'] !== '' && (int)$r['mapped'] === 0) ? ' style="color:#a94442;font-weight:600;"' : '' ?>><?= $this->escape($r['mapped']) ?></td>
                             <td class="<?= $r['status'] === 'dup' ? 'reason' : '' ?>"><?= $this->escape($r['reason']) ?></td>
                         </tr>
                     <?php endforeach; ?>
