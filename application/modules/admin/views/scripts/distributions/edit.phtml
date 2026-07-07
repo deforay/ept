@@ -11,8 +11,19 @@ $this->distributionDates = array_diff($this->distributionDates, array($ptEveDate
                 <label class="col-lg-3 control-label" for="distributionCode"><?= $this->translate->_("PT Survey Code"); ?> <span class="mandatory">*</span></label>
 
                 <div class="col-lg-6">
-                    <input type="text" id="distributionCode" name="distributionCode" size="50" class="isRequired form-control" readonly title="Please enter a Unique PT Survey Code here" placeholder="Please enter a Unique PT Survey Code here" onblur="checkDuplicate('distributions', 'distribution_code',this,'<?php echo "distribution_id##" . $this->result['distribution_id']; ?>', 'This Code already exists for another PT Survey. Please try something else.')" value="<?php echo $this->result['distribution_code']; ?>" />
+                    <input type="text" id="distributionCode" name="distributionCode" size="50" class="isRequired form-control" <?php echo !empty($this->codeLocked) ? 'readonly' : ''; ?> title="Please enter a Unique PT Survey Code here" placeholder="Please enter a Unique PT Survey Code here" onblur="checkDuplicate('distributions', 'distribution_code',this,'<?php echo "distribution_id##" . $this->result['distribution_id']; ?>', 'This Code already exists for another PT Survey. Please try something else.')" value="<?php echo $this->result['distribution_code']; ?>" />
                     <input type="hidden" name="distributionId" id="distributionId " value="<?php echo base64_encode($this->result['distribution_id']); ?>" />
+                    <?php if (!empty($this->codeLocked)): ?>
+                        <?php $finalizedShipments = array_filter((array) $this->finalizedShipments); ?>
+                        <span class="help-block">
+                            <?php if (count($finalizedShipments) === 1): ?>
+                                <?= sprintf($this->translate->_("The code is locked because shipment %s under this PT Survey has been finalized."), '<strong>' . $this->escape($finalizedShipments[array_key_first($finalizedShipments)]) . '</strong>'); ?>
+                            <?php else: ?>
+                                <?= $this->translate->_("The code is locked because the following shipments under this PT Survey have been finalized:"); ?>
+                                <strong><?= $this->escape(implode(', ', $finalizedShipments)); ?></strong>
+                            <?php endif; ?>
+                        </span>
+                    <?php endif; ?>
                 </div>
             </div>
 

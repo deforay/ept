@@ -2523,6 +2523,21 @@ class Application_Service_Shipments
                 'report_download_metadata' => null,
             ], $db->quoteInto('shipment_id = ?', $shipmentId));
 
+            // If this was the last active shipment under its PT Survey, mark the
+            // survey cancelled too. The current shipment's cancelled_at was just set
+            // above (same transaction), so it's already excluded by the NULL filter.
+            $distributionId = (int) ($shipment['distribution_id'] ?? 0);
+            if ($distributionId > 0) {
+                $activeLeft = (int) $db->fetchOne(
+                    $db->select()->from('shipment', new Zend_Db_Expr('COUNT(*)'))
+                        ->where('distribution_id = ?', $distributionId)
+                        ->where('cancelled_at IS NULL')
+                );
+                if ($activeLeft === 0) {
+                    $db->update('distributions', ['status' => 'cancelled'], $db->quoteInto('distribution_id = ?', $distributionId));
+                }
+            }
+
             $auditDb = new Application_Model_DbTable_AuditLog();
             $auditDb->addNewAuditLog('Cancelled shipment - ' . $shipment['shipment_code'] . ' (reason: ' . $reason . ')', 'shipment');
 

@@ -118,16 +118,22 @@ class Application_Model_DbTable_Distribution extends Zend_Db_Table_Abstract
         foreach ($rResult as $aRow) {
             $shipNowStatus = false;
             $shipNowStatus = $this->checkShipmentStatus($aRow['distribution_id']);
+            $shipmentCounts = $this->getShipmentStateCounts($aRow['distribution_id']);
             $row = [];
             $row[] = '<a class="btn btn-primary btn-xs" data-toggle="modal" data-target="#myModal" href="/admin/distributions/view-shipment/id/' . $aRow['distribution_id'] . '"><span><i class="icon-search"></i></span></a>';
             $row[] = ($aRow['scheme_name'] ?: '<span style="color:#ccc;">' . Pt_Commons_TranslateUtility::htmlTranslate('No Shipment/Panel Added') . '</span>');
             $row[] = Pt_Commons_DateUtility::humanReadableDateFormat($aRow['distribution_date']);
             $row[] = '<a href="/admin/shipment/index/searchString/' . $aRow['distribution_code'] . '">' . $aRow['distribution_code'] . '</a>';
             $row[] = $aRow['shipments'] ?: '<span style="color:#ccc;">' . Pt_Commons_TranslateUtility::htmlTranslate('No Shipment/Panel Added') . '</span>';
-            $row[] = ucwords($aRow['status']);
+            $row[] = $this->getDisplayStatus($aRow['distribution_id'], $aRow['status'], $shipmentCounts);
             $edit = '<a class="btn btn-primary btn-xs" href="/admin/distributions/edit/d8s5_8d/' . base64_encode($aRow['distribution_id']) . '"><span><i class="icon-pencil"></i> ' . Pt_Commons_TranslateUtility::htmlTranslate('Edit') . '</span></a>';
+            // A survey is cancelled when its status says so, or every shipment under it is cancelled.
+            $isSurveyCancelled = (isset($aRow['status']) && $aRow['status'] == 'cancelled')
+                || ($shipmentCounts['total'] > 0 && $shipmentCounts['cancelled'] === $shipmentCounts['total']);
             $actionHtml = '';
-            if (isset($aRow['status']) && $aRow['status'] == 'configured') {
+            if ($isSurveyCancelled) {
+                $actionHtml = '<a class="btn btn-danger btn-xs disabled" href="javascript:void(0);"><span><i class="icon-ban-circle"></i> ' . Pt_Commons_TranslateUtility::htmlTranslate('Cancelled') . '</span></a>';
+            } elseif (isset($aRow['status']) && $aRow['status'] == 'configured') {
                 if ($shipNowStatus) {
                     $actionHtml = $edit . ' ' . '<a class="btn btn-primary btn-xs" href="javascript:void(0);" onclick="shipDistribution(\'' . base64_encode($aRow['distribution_id']) . '\')"><span><i class="icon-ambulance"></i> ' . Pt_Commons_TranslateUtility::htmlTranslate('Ship Now') . '</span></a> &nbsp;&nbsp;';
                 } else {
@@ -138,6 +144,13 @@ class Application_Model_DbTable_Distribution extends Zend_Db_Table_Abstract
                 <a class="btn btn-warning btn-xs" href="/admin/email-participants/index/id/' . base64_encode($aRow['distribution_id']) . '"><span><i class="icon-envelope"></i> ' . Pt_Commons_TranslateUtility::htmlTranslate('Send Email to Participants') . '</span></a>';
             } else {
                 $actionHtml = $edit . ' ' . '<a class="btn btn-primary btn-xs" href="/admin/shipment/index/did/' . base64_encode($aRow['distribution_id']) . '"><span><i class="icon-plus"></i> ' . Pt_Commons_TranslateUtility::htmlTranslate('Add Shipment') . '</span></a>';
+            }
+            // Survey-level cancel: only offered when there are active shipments and NONE is
+            // finalized (a finalized shipment can never be cancelled, so neither can its survey).
+            if (!$isSurveyCancelled && $shipmentCounts['active'] > 0 && $shipmentCounts['finalized'] === 0) {
+                $codeAttr = htmlspecialchars((string) $aRow['distribution_code'], ENT_QUOTES);
+                $jsCodes = htmlspecialchars(json_encode(array_values($this->getCancellableShipmentCodes($aRow['distribution_id']))), ENT_QUOTES);
+                $actionHtml .= ' <a class="btn btn-danger btn-xs" href="javascript:void(0);" onclick="cancelDistribution(\'' . base64_encode($aRow['distribution_id']) . '\', \'' . $codeAttr . '\', ' . $jsCodes . ')"><span><i class="icon-ban-circle"></i> ' . Pt_Commons_TranslateUtility::htmlTranslate('Cancel PT Survey') . '</span></a>';
             }
             // Delete only allowed when there are no shipments under this PT survey.
             if (empty($aRow['shipments']) && (!isset($aRow['status']) || $aRow['status'] !== 'shipped')) {
@@ -219,21 +232,148 @@ class Application_Model_DbTable_Distribution extends Zend_Db_Table_Abstract
         return 'OK';
     }
 
+    /**
+     * True if any shipment under this PT Survey has been finalized. Once that
+     * happens the survey code is frozen: participants already hold reports/emails
+     * referencing it, so a rename would desync what they have from the system.
+     */
+    public function hasFinalizedShipment($distributionId)
+    {
+        $db = $this->getAdapter();
+        return (int) $db->fetchOne(
+            $db->select()
+                ->from('shipment', new Zend_Db_Expr('COUNT(*)'))
+                ->where('distribution_id = ?', (int) $distributionId)
+                ->where("status = 'finalized'")
+        ) > 0;
+    }
+
+    /**
+     * Shipment tallies for a survey, used for both the display status and the
+     * cancel-eligibility check. 'active' = not-cancelled; 'finalized' counts only
+     * active shipments (a finalized shipment can never be cancelled).
+     *
+     * @return array{total:int,cancelled:int,finalized:int,active:int}
+     */
+    public function getShipmentStateCounts($distributionId)
+    {
+        $db = $this->getAdapter();
+        $counts = $db->fetchRow(
+            $db->select()
+                ->from('shipment', [
+                    'total' => new Zend_Db_Expr('COUNT(*)'),
+                    'cancelled' => new Zend_Db_Expr('SUM(cancelled_at IS NOT NULL)'),
+                    'finalized' => new Zend_Db_Expr("SUM(cancelled_at IS NULL AND status = 'finalized')"),
+                ])
+                ->where('distribution_id = ?', (int) $distributionId)
+        );
+        $total = (int) $counts['total'];
+        $cancelled = (int) $counts['cancelled'];
+        return [
+            'total' => $total,
+            'cancelled' => $cancelled,
+            'finalized' => (int) $counts['finalized'],
+            'active' => $total - $cancelled,
+        ];
+    }
+
+    /**
+     * Finalization-aware display status for a survey. `distributions.status` never
+     * advances past 'shipped', so we derive the label from the shipments underneath.
+     * Cancelled shipments (cancelled_at set) are "dead" and dropped from the count;
+     * finalization is judged against the surviving/active shipments:
+     *   - every shipment cancelled          => 'Cancelled'
+     *   - all active shipments finalized      => 'Finalized'
+     *   - some active shipments finalized      => 'Partially Finalized'
+     *   - otherwise                            => the stored status, title-cased.
+     * Finalization only applies once shipped; cancellation overrides any status.
+     */
+    public function getDisplayStatus($distributionId, $storedStatus, ?array $counts = null)
+    {
+        $counts = $counts ?? $this->getShipmentStateCounts($distributionId);
+
+        if ($counts['total'] > 0 && $counts['cancelled'] === $counts['total']) {
+            return 'Cancelled';
+        }
+        if ($storedStatus === 'shipped' && $counts['active'] > 0) {
+            if ($counts['finalized'] === $counts['active']) {
+                return 'Finalized';
+            }
+            if ($counts['finalized'] > 0) {
+                return 'Partially Finalized';
+            }
+        }
+        return ucwords((string) $storedStatus);
+    }
+
+    /** Codes of the shipments a survey-level cancel would actually cancel (active, non-finalized). */
+    public function getCancellableShipmentCodes($distributionId)
+    {
+        $db = $this->getAdapter();
+        return $db->fetchCol(
+            $db->select()
+                ->from('shipment', ['shipment_code'])
+                ->where('distribution_id = ?', (int) $distributionId)
+                ->where('cancelled_at IS NULL')
+                ->where("status != 'finalized'")
+                ->order('shipment_code')
+        );
+    }
+
+    /** Codes of the finalized shipments under this survey — used to explain the code lock. */
+    public function getFinalizedShipmentCodes($distributionId)
+    {
+        $db = $this->getAdapter();
+        return $db->fetchCol(
+            $db->select()
+                ->from('shipment', ['shipment_code'])
+                ->where('distribution_id = ?', (int) $distributionId)
+                ->where("status = 'finalized'")
+                ->order('shipment_code')
+        );
+    }
+
+    /** Case-insensitive: is this survey code already used by a different PT Survey? */
+    public function isCodeTaken($code, $excludeDistributionId)
+    {
+        $db = $this->getAdapter();
+        return (int) $db->fetchOne(
+            $db->select()
+                ->from($this->_name, new Zend_Db_Expr('COUNT(*)'))
+                ->where('LOWER(distribution_code) = ?', strtolower(trim((string) $code)))
+                ->where('distribution_id != ?', (int) $excludeDistributionId)
+        ) > 0;
+    }
+
     public function updateDistribution($params)
     {
         $authNameSpace = new Zend_Session_Namespace('administrators');
+        $distributionId = (int) base64_decode($params['distributionId']);
+
         $data = [
-            'distribution_code' => $params['distributionCode'],
             'distribution_date' => Pt_Commons_DateUtility::isoDateFormat($params['distributionDate']),
             'updated_by' => $authNameSpace->admin_id,
             'updated_on' => new Zend_Db_Expr('now()'),
         ];
-        $distributionId = $this->update($data, 'distribution_id=' . base64_decode($params['distributionId']));
-        if ($distributionId > 0) {
-            $auditDb = new Application_Model_DbTable_AuditLog();
-            $auditDb->addNewAuditLog('Updated PT Survey - ' . $params['distributionCode'], 'shipment');
+
+        // The survey code may only change while NO shipment under it is finalized,
+        // and only to a value not already used by another survey. Both guards are
+        // re-checked here; the form's readonly attribute and JS dup-check are advisory.
+        $newCode = trim((string) ($params['distributionCode'] ?? ''));
+        if (
+            $newCode !== ''
+            && !$this->hasFinalizedShipment($distributionId)
+            && !$this->isCodeTaken($newCode, $distributionId)
+        ) {
+            $data['distribution_code'] = $newCode;
         }
-        return $distributionId;
+
+        $affected = $this->update($data, 'distribution_id=' . $distributionId);
+        if ($affected > 0 && isset($data['distribution_code'])) {
+            $auditDb = new Application_Model_DbTable_AuditLog();
+            $auditDb->addNewAuditLog('Updated PT Survey - ' . $data['distribution_code'], 'shipment');
+        }
+        return $affected;
     }
     public function getUnshippedDistributions()
     {

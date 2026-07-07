@@ -93,6 +93,46 @@ $status = [
     </div>
 </div>
 
+<!-- Cancel / Expire PT Survey confirmation -->
+<style>
+    #cancelDistributionModal { z-index: 10600; }
+    .modal-backdrop.cancel-distribution-backdrop { z-index: 10500; }
+</style>
+<div class="modal fade" id="cancelDistributionModal" tabindex="-1" role="dialog"
+    aria-labelledby="cancelDistributionLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="cancelDistributionLabel">
+                    <i class="icon-ban-circle text-danger"></i>
+                    <?= $this->htmlTranslate('Cancel PT Survey'); ?> <span id="cancelDistributionCode"></span>
+                </h4>
+            </div>
+            <div class="modal-body">
+                <p class="text-muted"><?= $this->htmlTranslate("Cancelling permanently locks every shipment below. Participants can no longer submit or edit results, no further admin actions are possible, and the PT Survey is marked cancelled. This cannot be undone."); ?></p>
+                <div class="form-group">
+                    <label><?= $this->htmlTranslate("The following shipment(s) will be cancelled:"); ?></label>
+                    <ul id="cancelDistributionShipmentList" style="max-height:160px;overflow:auto;padding-left:20px;margin-bottom:0;"></ul>
+                </div>
+                <div class="form-group">
+                    <label for="cancelDistributionReason"><?= $this->htmlTranslate("Reason for cancelling"); ?> <span class="mandatory">*</span></label>
+                    <textarea id="cancelDistributionReason" class="form-control" rows="3" placeholder="<?= $this->htmlTranslate('e.g. Created in error, or replaced by a corrected survey'); ?>"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="cancelDistributionConfirm"><?= $this->htmlTranslate("Type"); ?> <code>CANCEL</code> <?= $this->htmlTranslate("to confirm"); ?></label>
+                    <input type="text" id="cancelDistributionConfirm" class="form-control" autocomplete="off" placeholder="CANCEL" />
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal"><?= $this->htmlTranslate("Close"); ?></button>
+                <button type="button" class="btn btn-danger" id="cancelDistributionConfirmBtn" disabled onclick="submitCancelDistribution();"><i class="icon-ban-circle"></i> <?= $this->htmlTranslate("Cancel PT Survey"); ?></button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script type="text/javascript" charset="utf-8">
     $('#myModal').on('hidden.bs.modal', function () {
         $(this).removeData('bs.modal');
@@ -239,4 +279,53 @@ $status = [
             .data('expectedCode', distributionCode);
         $('#deleteDistributionConfirmModal').modal('show');
     }
+
+    // Cancel an entire PT Survey (cancels every shipment under it). Mirrors the
+    // single-shipment cancel: reason + type-CANCEL confirmation, validated server-side.
+    var cancelDistributionDid = null;
+
+    function cancelDistribution(did, distributionCode, shipmentCodes) {
+        cancelDistributionDid = did;
+        $('#cancelDistributionCode').text(distributionCode ? '(' + distributionCode + ')' : '');
+        var $list = $('#cancelDistributionShipmentList').empty();
+        (shipmentCodes || []).forEach(function (code) {
+            $list.append($('<li>').text(code));
+        });
+        $('#cancelDistributionReason').val('');
+        $('#cancelDistributionConfirm').val('');
+        $('#cancelDistributionConfirmBtn').prop('disabled', true);
+        $('#cancelDistributionModal').appendTo('body').modal('show');
+    }
+
+    function validateCancelDistribution() {
+        var reasonOk = $.trim($('#cancelDistributionReason').val()) !== '';
+        var tokenOk = $.trim($('#cancelDistributionConfirm').val()).toUpperCase() === 'CANCEL';
+        $('#cancelDistributionConfirmBtn').prop('disabled', !(reasonOk && tokenOk));
+    }
+
+    function submitCancelDistribution() {
+        if (cancelDistributionDid == null) {
+            return;
+        }
+        $.blockUI();
+        $.post("<?php echo $this->url(['module' => 'admin', 'controller' => 'distributions', 'action' => 'cancel'], 'default', true); ?>", {
+            did: cancelDistributionDid,
+            reason: $('#cancelDistributionReason').val(),
+            confirmToken: $('#cancelDistributionConfirm').val(),
+            format: "html"
+        },
+            function (data) {
+                $.unblockUI();
+                $('#cancelDistributionModal').modal('hide');
+                alert(data);
+                oTable.fnDraw();
+            });
+    }
+
+    $(function () {
+        $('#cancelDistributionReason, #cancelDistributionConfirm').on('input', validateCancelDistribution);
+        $('#cancelDistributionModal').on('shown.bs.modal', function () {
+            $('.modal-backdrop').last().addClass('cancel-distribution-backdrop');
+        });
+    });
 </script>
