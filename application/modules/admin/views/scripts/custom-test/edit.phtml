@@ -173,10 +173,11 @@ $formAction = $this->url(array("module" => "admin", "controller" => "custom-test
 																$innerCount = ($ikey + 1);
 																// In use by a shipment -> code/label frozen (else historical results orphan).
 																$locked = !empty($value['is_matched']);
-																$dis = $locked ? 'disabled="disabled"' : ''; ?>
+																$dis = $locked ? 'disabled="disabled"' : '';   // frozen: code + grouping
+																$ro  = $locked ? 'readonly="readonly"' : '';   // frozen label (still posts) ?>
 																<tr>
 																	<td>
-																		<input type="text" value="<?php echo $value['response'] ?? null; ?>" name="qualitative[expectedResult][<?php echo $rowCount; ?>][<?php echo $innerCount; ?>]" class="form-control qualitative-input-<?php echo $rowCount; ?><?php echo $innerCount; ?> input-sm" placeholder="Enter the expected result" title="Please enter the expected result" <?php echo $dis; ?> />
+																		<input type="text" value="<?php echo $value['response'] ?? null; ?>" name="qualitative[expectedResult][<?php echo $rowCount; ?>][<?php echo $innerCount; ?>]" class="form-control qualitative-input-<?php echo $rowCount; ?><?php echo $innerCount; ?> input-sm" placeholder="Enter the expected result" title="Please enter the expected result" <?php echo $ro; ?> />
 																	</td>
 																	<td>
 																		<div class="input-group input-group-sm">
@@ -193,7 +194,7 @@ $formAction = $this->url(array("module" => "admin", "controller" => "custom-test
 																		</select>
 																	</td>
 																	<td>
-																		<select id="displayContext<?php echo $rowCount . $innerCount; ?>" name="qualitative[displayContext][<?php echo $rowCount; ?>][<?php echo $innerCount; ?>]" class="form-control qualitative-input-11 input-sm" title="Please select the displayed context" <?php echo $dis; ?>>
+																		<select id="displayContext<?php echo $rowCount . $innerCount; ?>" name="qualitative[displayContext][<?php echo $rowCount; ?>][<?php echo $innerCount; ?>]" class="form-control qualitative-input-11 input-sm" title="Please select the displayed context">
 																			<option value=""> -- <?= $this->translate->_("Select"); ?> -- </option>
 																			<option value="participant" <?php echo (isset($value['display_context']) && !empty($value['display_context']) && $value['display_context'] == 'participant') ? 'selected="selected"' : ''; ?>><?= $this->translate->_("Participant"); ?></option>
 																			<option value="admin" <?php echo (isset($value['display_context']) && !empty($value['display_context']) && $value['display_context'] == 'admin') ? 'selected="selected"' : ''; ?>><?= $this->translate->_("Admin"); ?></option>
@@ -201,10 +202,10 @@ $formAction = $this->url(array("module" => "admin", "controller" => "custom-test
 																		</select>
 																	</td>
 																	<td>
-																		<input type="text" value="<?php echo $value['sort_order'] ?? null; ?>" name="qualitative[sortOrder][<?php echo $rowCount; ?>][<?php echo $innerCount; ?>]" class="form-control qualitative-input-<?php echo $rowCount; ?><?php echo $innerCount; ?> input-sm" placeholder="Enter the sort order" title="Please enter the sort order" <?php echo $dis; ?> />
+																		<input type="text" value="<?php echo $value['sort_order'] ?? null; ?>" name="qualitative[sortOrder][<?php echo $rowCount; ?>][<?php echo $innerCount; ?>]" class="form-control qualitative-input-<?php echo $rowCount; ?><?php echo $innerCount; ?> input-sm" placeholder="Enter the sort order" title="Please enter the sort order" />
 																	</td>
 																	<td style="text-align:center;">
-																		<?php if ($locked) : ?><i class="icon-lock" title="<?= $this->translate->_("In use by a shipment — code and label are locked"); ?>"></i><?php else : ?><a href="javascript:void(0);" onclick="addQualitativeRow(this, <?php echo $rowCount; ?>,<?php echo ($innerCount + 1); ?>);" <?php echo ($innerCount == $n) ? '' : 'disabled="disabled"'; ?> class="btn btn-xs btn-info qualitative-insrow-<?php echo $rowCount; ?><?php echo $innerCount; ?>"><i class="icon-plus"></i></a>&nbsp;&nbsp;<a href="javascript:void(0);" onclick="removeQualitativeRow(this, <?php echo $rowCount; ?>, <?php echo ($innerCount + 1); ?>)" class="btn btn-xs btn-danger" title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a><?php endif; ?>
+																		<a href="javascript:void(0);" onclick="addQualitativeRow(this, <?php echo $rowCount; ?>,<?php echo ($innerCount + 1); ?>);" <?php echo ($innerCount == $n) ? '' : 'disabled="disabled"'; ?> class="btn btn-xs btn-info qualitative-insrow-<?php echo $rowCount; ?><?php echo $innerCount; ?>"><i class="icon-plus"></i></a>&nbsp;&nbsp;<?php if ($locked) : ?><i class="icon-lock" title="<?= $this->translate->_("In use by a shipment — code and label are locked (sort order and displayed-to can still change)"); ?>"></i><?php else : ?><a href="javascript:void(0);" onclick="removeQualitativeRow(this, <?php echo $rowCount; ?>, <?php echo ($innerCount + 1); ?>)" class="btn btn-xs btn-danger" title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a><?php endif; ?>
 																	</td>
 												</td>
 											</tr>

@@ -244,9 +244,24 @@ class Application_Model_DbTable_SchemeList extends Zend_Db_Table_Abstract
                                 } else {
                                     $subGrp = null;
                                 }
-                                // In-use codes were preserved above; don't re-insert (dupes them).
+                                // In-use codes were preserved above (not deleted). Their code /
+                                // label / grouping stay frozen, but sort order and "displayed to"
+                                // may still be edited. Anything else is a fresh insert.
                                 $code = (string) ($params[$test]['resultCode'][$key][$ikey] ?? '');
-                                if ($code === '' || !isset($inUseCodeSet[$code])) {
+                                if ($code !== '' && isset($inUseCodeSet[$code])) {
+                                    $upd = [
+                                        'sort_order' => (($params[$test]['sortOrder'][$key][$ikey] ?? '') === '')
+                                            ? null : $params[$test]['sortOrder'][$key][$ikey],
+                                    ];
+                                    $ctx = $params[$test]['displayContext'][$key][$ikey] ?? '';
+                                    if (in_array($ctx, ['participant', 'admin', 'all', 'none'], true)) {
+                                        $upd['display_context'] = $ctx;
+                                    }
+                                    $this->getAdapter()->update('r_possibleresult', $upd, [
+                                        'scheme_id = ?'   => $params['schemeCode'],
+                                        'result_code = ?' => $code,
+                                    ]);
+                                } else {
                                     $this->getAdapter()->insert('r_possibleresult', [
                                         'scheme_id'         => $params['schemeCode'],
                                         'sub_scheme'        => $params['resultSubGroup'][$key],
