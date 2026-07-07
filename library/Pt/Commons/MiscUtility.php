@@ -960,4 +960,116 @@ final class Pt_Commons_MiscUtility
             self::$heartbeatCounter[$key] = 0;
         }
     }
+
+    /**
+     * Build a lowercased lookup of country name / iso2 / iso3 => country id, then overlay
+     * the alias map so renamed, colloquial, accent-stripped or lab-specific country strings
+     * resolve too. Shared by the participant and PTCC bulk importers so both agree on what a
+     * country cell means — historically they diverged, which let "USAPI" resolve in one and
+     * silently map nothing in the other.
+     */
+    public static function buildCountryCache($db = null): array
+    {
+        $db ??= Zend_Db_Table_Abstract::getDefaultAdapter();
+        $results = $db->fetchAll($db->select()->from('countries', ['iso_name', 'iso2', 'iso3', 'id']));
+
+        $cache = [];
+        foreach ($results as $row) {
+            $cache[strtolower($row['iso_name'])] = $row['id'];
+            if (!empty($row['iso2'])) {
+                $cache[strtolower($row['iso2'])] = $row['id'];
+            }
+            if (!empty($row['iso3'])) {
+                $cache[strtolower($row['iso3'])] = $row['id'];
+            }
+        }
+
+        // Overlay aliases. Each targets an ISO3 code (always an ASCII cache key), so it's
+        // immune to how iso_name is cased/accented and doesn't depend on the names-refresh
+        // migration having run. Only added when its ISO3 target exists and the alias key
+        // isn't already a real country, so it never points at a wrong/missing row.
+        foreach (self::countryAliasMap() as $alias => $iso3) {
+            if (isset($cache[$iso3]) && !isset($cache[$alias])) {
+                $cache[$alias] = $cache[$iso3];
+            }
+        }
+
+        return $cache;
+    }
+
+    /**
+     * Lowercased alias => ISO3 code (lowercased) for resilient country matching. Covers
+     * renamed countries, colloquial names ISO doesn't carry (Ivory Coast, DRC, UK...),
+     * accent-stripped spellings, and lab-specific labels (USAPI). An alias whose ISO3 isn't
+     * in this DB is skipped. Shared by both bulk importers via buildCountryCache().
+     */
+    public static function countryAliasMap(): array
+    {
+        return [
+            // Renamed / modernised
+            'swaziland' => 'swz',
+            'cabo verde' => 'cpv',
+            'cape verde' => 'cpv',
+            'czechia' => 'cze',
+            'czech republic' => 'cze',
+            'turkey' => 'tur',
+            'turkiye' => 'tur',
+            'north macedonia' => 'mkd',
+            'macedonia' => 'mkd',
+            'burma' => 'mmr',
+            // Colloquial / abbreviations not in ISO names
+            'ivory coast' => 'civ',
+            'russia' => 'rus',
+            'south korea' => 'kor',
+            'north korea' => 'prk',
+            'laos' => 'lao',
+            'syria' => 'syr',
+            'iran' => 'irn',
+            'tanzania' => 'tza',
+            'bolivia' => 'bol',
+            'venezuela' => 'ven',
+            'moldova' => 'mda',
+            'vietnam' => 'vnm',
+            'viet nam' => 'vnm',
+            'uae' => 'are',
+            'uk' => 'gbr',
+            'great britain' => 'gbr',
+            'usa' => 'usa',
+            'u.s.a.' => 'usa',
+            'united states of america' => 'usa',
+            'drc' => 'cod',
+            'dr congo' => 'cod',
+            'democratic republic of the congo' => 'cod',
+            'congo-kinshasa' => 'cod',
+            'republic of the congo' => 'cog',
+            'congo-brazzaville' => 'cog',
+            'palestine' => 'pse',
+            'brunei' => 'brn',
+            // Accent-stripped spellings
+            "cote d'ivoire" => 'civ',
+            'curacao' => 'cuw',
+            'reunion' => 'reu',
+            'aland islands' => 'ala',
+            'saint barthelemy' => 'blm',
+            // Pre-ISO-refresh names ("X, Y of"), so spreadsheets built before the
+            // countries table was modernised still resolve.
+            'bolivia, plurinational state of' => 'bol',
+            'congo, the democratic republic of the' => 'cod',
+            'holy see (vatican city state)' => 'vat',
+            'iran, islamic republic of' => 'irn',
+            "korea, democratic people's republic of" => 'prk',
+            'korea, republic of' => 'kor',
+            'macedonia, the former yugoslav republic of' => 'mkd',
+            'micronesia, federated states of' => 'fsm',
+            'moldova, republic of' => 'mda',
+            'taiwan, province of china' => 'twn',
+            // US-Affiliated Pacific Islands: labs label it "USAPI" / "US Pacific Islands";
+            // their participants live under United States Minor Outlying Islands (UMI).
+            'usapi' => 'umi',
+            'us pacific islands' => 'umi',
+            'venezuela, bolivarian republic of' => 'ven',
+            'virgin islands, british' => 'vgb',
+            'virgin islands, u.s.' => 'vir',
+        ];
+    }
 }

@@ -2361,105 +2361,9 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
     // Helper methods for optimization
     private function buildCountryCache()
     {
-        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $sql = $db->select()->from('countries', ['iso_name', 'iso2', 'iso3', 'id']);
-        $results = $db->fetchAll($sql);
-
-        $cache = [];
-        foreach ($results as $row) {
-            $cache[strtolower($row['iso_name'])] = $row['id'];
-            if (!empty($row['iso2'])) {
-                $cache[strtolower($row['iso2'])] = $row['id'];
-            }
-            if (!empty($row['iso3'])) {
-                $cache[strtolower($row['iso3'])] = $row['id'];
-            }
-        }
-
-        // Resolve common renames / informal names / accent-stripped spellings / typos to
-        // the canonical country. Aliases target the ISO3 code (always ASCII and already a
-        // cache key), so they're immune to how iso_name is cased/accented and don't depend
-        // on the names-refresh migration having run. Each alias is one-to-one and only
-        // added when its ISO3 target is present, so it never points at a wrong/missing row.
-        foreach ($this->countryAliasMap() as $alias => $iso3) {
-            if (isset($cache[$iso3]) && !isset($cache[$alias])) {
-                $cache[$alias] = $cache[$iso3];
-            }
-        }
-
-        return $cache;
-    }
-
-    /**
-     * Lowercased alias => ISO3 code (lowercased) for resilient country matching. Covers
-     * renamed countries, colloquial names ISO doesn't carry (Ivory Coast, DRC, UK...), and
-     * accent-stripped spellings users type. An alias whose ISO3 isn't in this DB is skipped.
-     */
-    private function countryAliasMap(): array
-    {
-        return [
-            // Renamed / modernised
-            'swaziland' => 'swz',
-            'cabo verde' => 'cpv',
-            'cape verde' => 'cpv',
-            'czechia' => 'cze',
-            'czech republic' => 'cze',
-            'turkey' => 'tur',
-            'turkiye' => 'tur',
-            'north macedonia' => 'mkd',
-            'macedonia' => 'mkd',
-            'burma' => 'mmr',
-            // Colloquial / abbreviations not in ISO names
-            'ivory coast' => 'civ',
-            'russia' => 'rus',
-            'south korea' => 'kor',
-            'north korea' => 'prk',
-            'laos' => 'lao',
-            'syria' => 'syr',
-            'iran' => 'irn',
-            'tanzania' => 'tza',
-            'bolivia' => 'bol',
-            'venezuela' => 'ven',
-            'moldova' => 'mda',
-            'vietnam' => 'vnm',
-            'viet nam' => 'vnm',
-            'uae' => 'are',
-            'uk' => 'gbr',
-            'great britain' => 'gbr',
-            'usa' => 'usa',
-            'u.s.a.' => 'usa',
-            'united states of america' => 'usa',
-            'drc' => 'cod',
-            'dr congo' => 'cod',
-            'democratic republic of the congo' => 'cod',
-            'congo-kinshasa' => 'cod',
-            'republic of the congo' => 'cog',
-            'congo-brazzaville' => 'cog',
-            'palestine' => 'pse',
-            'brunei' => 'brn',
-            // Accent-stripped spellings
-            "cote d'ivoire" => 'civ',
-            'curacao' => 'cuw',
-            'reunion' => 'reu',
-            'aland islands' => 'ala',
-            'saint barthelemy' => 'blm',
-            // Pre-ISO-refresh names ("X, Y of"), so spreadsheets built before the
-            // countries table was modernised still resolve.
-            'bolivia, plurinational state of' => 'bol',
-            'congo, the democratic republic of the' => 'cod',
-            'holy see (vatican city state)' => 'vat',
-            'iran, islamic republic of' => 'irn',
-            "korea, democratic people's republic of" => 'prk',
-            'korea, republic of' => 'kor',
-            'macedonia, the former yugoslav republic of' => 'mkd',
-            'micronesia, federated states of' => 'fsm',
-            'moldova, republic of' => 'mda',
-            'taiwan, province of china' => 'twn',
-            'us pacific islands' => 'umi',
-            'venezuela, bolivarian republic of' => 'ven',
-            'virgin islands, british' => 'vgb',
-            'virgin islands, u.s.' => 'vir',
-        ];
+        // Country name/alias resolution is shared with the PTCC importer via MiscUtility so
+        // both agree on what a country cell means (e.g. "USAPI").
+        return MiscUtility::buildCountryCache();
     }
 
     /**
@@ -2474,7 +2378,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
 
     /**
      * Best fuzzy match for an invalid country value, or null if nothing is close enough.
-     * Only suggests (never auto-applies), so a genuine non-country like "USAPI" returns
+     * Only suggests (never auto-applies), so a genuine non-country (e.g. "Wakanda") returns
      * null and produces no misleading hint.
      */
     private function suggestClosestCountry(string $input, array $names): ?string
@@ -2493,7 +2397,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             }
         }
         // 75% cleanly separates genuine typos (e.g. "Zimbabe"→Zimbabwe ~93%) from
-        // coincidental letter overlap (e.g. "USAPI" vs "Spain" ~60%), so non-countries
+        // coincidental letter overlap (e.g. "Wakanda" vs "Rwanda" ~62%), so non-countries
         // get no misleading hint.
         return $bestPct >= 75.0 ? $best : null;
     }

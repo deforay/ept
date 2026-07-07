@@ -1449,6 +1449,22 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                 // Use cached country lookup instead of individual query
                 $countryId = $this->getCountryIdFromCache($sheetData[$i]['J'], $countryCache);
 
+                // A country was supplied but matches no known country or alias. Importing
+                // anyway would create a PTCC with country_id = NULL and map zero participants
+                // while still reporting "saved" — a silent failure. Skip the row and surface
+                // it so the admin can fix the spreadsheet.
+                if (!empty($sheetData[$i]['J']) && empty($countryId)) {
+                    $response['error-data'][] = [
+                        's_no'          => $sheetData[$i]['A'] ?: ($i - 1),
+                        'primary_email' => $originalEmail,
+                        'name'          => trim($sheetData[$i]['C'] . ' ' . $sheetData[$i]['D']),
+                        'institute'     => $sheetData[$i]['E'],
+                        'country'       => $sheetData[$i]['J'],
+                        'error'         => 'Skipped — country "' . $sheetData[$i]['J'] . '" was not recognised',
+                    ];
+                    continue;
+                }
+
                 $plainPassword = (!isset($sheetData[$i]['M']) || empty($sheetData[$i]['M'])) ? 'ept1@)(*&^' : trim($sheetData[$i]['M']);
                 if (!isset($passwordHashCache[$plainPassword])) {
                     $passwordHashCache[$plainPassword] = Common::passwordHash($plainPassword);
@@ -1547,22 +1563,10 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
     // Helper methods for optimization
     private function buildCountryCache()
     {
-        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $sql = $db->select()->from('countries', ['iso_name', 'iso2', 'iso3', 'id']);
-        $results = $db->fetchAll($sql);
-
-        $cache = [];
-        foreach ($results as $row) {
-            $cache[strtolower($row['iso_name'])] = $row['id'];
-            if (!empty($row['iso2'])) {
-                $cache[strtolower($row['iso2'])] = $row['id'];
-            }
-            if (!empty($row['iso3'])) {
-                $cache[strtolower($row['iso3'])] = $row['id'];
-            }
-        }
-
-        return $cache;
+        // Country name/alias resolution is shared with the participant importer via
+        // MiscUtility so both agree on what a country cell means (e.g. "USAPI"). Previously
+        // this cache had no alias pass, so colloquial/lab names silently resolved to null.
+        return MiscUtility::buildCountryCache();
     }
 
     private function batchCheckDataManagerDuplicates($sheetData)
