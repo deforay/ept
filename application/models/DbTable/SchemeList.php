@@ -199,9 +199,37 @@ class Application_Model_DbTable_SchemeList extends Zend_Db_Table_Abstract
                 'user_test_config' => Zend_Json_Encoder::encode($params['genericConfig']),
                 'status' => $params['status'],
             ];
+            $inUseCodeSet = [];
             if (isset($params['schemeId']) && !empty($params['schemeId'])) {
-                $this->update($data, $this->getAdapter()->quoteInto('scheme_id = ?', base64_decode($params['schemeId'])));
-                $this->getAdapter()->delete('r_possibleresult', $this->getAdapter()->quoteInto('scheme_id = ?', base64_decode($params['schemeId'])));
+                $db = $this->getAdapter();
+                $schemeCode = base64_decode($params['schemeId']);
+                $this->update($data, $db->quoteInto('scheme_id = ?', $schemeCode));
+
+                // The custom-test form rebuilds r_possibleresult from scratch on every save. Any
+                // result already referenced by a shipment must survive that rebuild UNCHANGED --
+                // deleting or renaming its code orphans historical results (their code vanishes
+                // from r_possibleresult). So: preserve the in-use rows (never delete them) and
+                // skip re-inserting them below (would duplicate). Non-in-use rows are rebuilt as
+                // before. With no in-use rows this behaves exactly like the old delete-all.
+                $usedIds = $this->usedPossibleResultIds($schemeCode, true);
+                if (!empty($usedIds)) {
+                    $inUseCodes = $db->fetchCol(
+                        $db->select()->from('r_possibleresult', ['result_code'])
+                            ->where('id IN (?)', $usedIds)
+                            ->where('result_code IS NOT NULL')
+                            ->where("result_code <> ''")
+                    );
+                    $inUseCodeSet = array_flip(array_map('strval', $inUseCodes));
+                }
+
+                if (!empty($inUseCodeSet)) {
+                    $db->delete('r_possibleresult', [
+                        $db->quoteInto('scheme_id = ?', $schemeCode),
+                        $db->quoteInto('(result_code IS NULL OR result_code NOT IN (?))', array_keys($inUseCodeSet)),
+                    ]);
+                } else {
+                    $db->delete('r_possibleresult', $db->quoteInto('scheme_id = ?', $schemeCode));
+                }
             } else {
                 $this->insert($data);
             }
@@ -216,16 +244,20 @@ class Application_Model_DbTable_SchemeList extends Zend_Db_Table_Abstract
                                 } else {
                                     $subGrp = null;
                                 }
-                                $this->getAdapter()->insert('r_possibleresult', [
-                                    'scheme_id'         => $params['schemeCode'],
-                                    'sub_scheme'        => $params['resultSubGroup'][$key],
-                                    'scheme_sub_group'  => $subGrp,
-                                    'result_type'       => $test,
-                                    'response'          => $params[$test]['expectedResult'][$key][$ikey],
-                                    'result_code'       => $params[$test]['resultCode'][$key][$ikey],
-                                    'display_context'   => $params[$test]['displayContext'][$key][$ikey],
-                                    'sort_order'        => $params[$test]['sortOrder'][$key][$ikey],
-                                ]);
+                                // In-use codes were preserved above; don't re-insert (dupes them).
+                                $code = (string) ($params[$test]['resultCode'][$key][$ikey] ?? '');
+                                if ($code === '' || !isset($inUseCodeSet[$code])) {
+                                    $this->getAdapter()->insert('r_possibleresult', [
+                                        'scheme_id'         => $params['schemeCode'],
+                                        'sub_scheme'        => $params['resultSubGroup'][$key],
+                                        'scheme_sub_group'  => $subGrp,
+                                        'result_type'       => $test,
+                                        'response'          => $params[$test]['expectedResult'][$key][$ikey],
+                                        'result_code'       => $params[$test]['resultCode'][$key][$ikey],
+                                        'display_context'   => $params[$test]['displayContext'][$key][$ikey],
+                                        'sort_order'        => $params[$test]['sortOrder'][$key][$ikey],
+                                    ]);
+                                }
                             }
                             $sortOrder = $params[$test]['sortOrder'][$key][$ikey];
                         }
@@ -261,7 +293,18 @@ class Application_Model_DbTable_SchemeList extends Zend_Db_Table_Abstract
         $response = [];
         if (!empty($id)) {
             $response['schemeResult'] = $this->fetchRow($this->select()->where('scheme_id = "' . $id . '"'))->toArray();
-            $response['possibleResult'] = $this->getAdapter()->fetchAll($this->getAdapter()->select()->from('r_possibleresult', ['*'])->where('scheme_id = "' . $id . '"')->order('sort_order asc'));
+            $possibleResults = $this->getAdapter()->fetchAll($this->getAdapter()->select()->from('r_possibleresult', ['*'])->where('scheme_id = "' . $id . '"')->order('sort_order asc'));
+
+            // Flag results already referenced by a shipment so the editor can lock them: their
+            // code / label must not change or be removed, else historical results orphan (the
+            // custom-test save rebuilds r_possibleresult from the form -- see saveGenericTestDetails).
+            $usedSet = array_flip($this->usedPossibleResultIds($id, true));
+            foreach ($possibleResults as &$pr) {
+                $pr['is_matched'] = isset($usedSet[(int) $pr['id']]) ? 1 : 0;
+            }
+            unset($pr);
+
+            $response['possibleResult'] = $possibleResults;
         }
         return $response;
     }
