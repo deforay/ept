@@ -13,6 +13,16 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
     protected $_name = 'data_manager';
     protected $_primary = ['dm_id'];
 
+    /**
+     * Request-scoped memo caches for the PTCC bulk import. The participant table
+     * is never mutated during an import, so these location lookups return the
+     * same result for every row that shares a country/state/location and can be
+     * safely reused instead of re-running the same DISTINCT/GROUP BY scans per row.
+     */
+    private array $ptccProvinceListCache = [];
+    private array $ptccDistrictListCache = [];
+    private array $ptccLocationParticipantsCache = [];
+
     public function addUser($params)
     {
         $db = Zend_Db_Table_Abstract::getAdapter();
@@ -436,18 +446,43 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         return $dmId;
     }
 
+    /**
+     * Memoized wrapper around Common::getParticipantsProvinceList. The province
+     * list for a country is identical for every PTCC row in a bulk import, so we
+     * cache it to avoid re-running the DISTINCT/GROUP BY scan per row.
+     */
+    private function getProvinceListCached($country)
+    {
+        $key = (string) $country;
+        if (!array_key_exists($key, $this->ptccProvinceListCache)) {
+            $common = new Application_Service_Common();
+            $this->ptccProvinceListCache[$key] = $common->getParticipantsProvinceList($country, 'list');
+        }
+        return $this->ptccProvinceListCache[$key];
+    }
+
+    /** Memoized wrapper around Common::getParticipantsDistrictList; see getProvinceListCached. */
+    private function getDistrictListCached($state)
+    {
+        $key = (string) $state;
+        if (!array_key_exists($key, $this->ptccDistrictListCache)) {
+            $common = new Application_Service_Common();
+            $this->ptccDistrictListCache[$key] = $common->getParticipantsDistrictList($state, 'list');
+        }
+        return $this->ptccDistrictListCache[$key];
+    }
+
     public function mapPtccLocations($params, $dmId)
     {
-        $common = new Application_Service_Common();
         $db = Zend_Db_Table_Abstract::getAdapter();
         foreach ($params['country'] as $country) {
             $countryDuplicate = true;
             if (isset($params['province'][0]) && sizeof($params['province']) > 0) {
-                $provinceList = $common->getParticipantsProvinceList($country, 'list');
+                $provinceList = $this->getProvinceListCached($country);
                 foreach ($params['province'] as $state) {
                     if (isset($provinceList) && count($provinceList) > 0 && in_array($state, $provinceList)) {
                         if (isset($params['district'][0]) && sizeof($params['district']) > 0) {
-                            $districtList = $common->getParticipantsDistrictList($state, 'list');
+                            $districtList = $this->getDistrictListCached($state);
                             foreach ($params['district'] as $district) {
                                 $_districtData = ['ptcc_id' => $dmId, 'country_id' => $country];
                                 $_districtData['state'] = $state;
@@ -1367,6 +1402,11 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             $countryCache = $this->buildCountryCache();
             $duplicateChecks = $this->batchCheckDataManagerDuplicates($sheetData);
 
+            // bcrypt (cost 14) costs ~0.3-0.8s per call; nearly every row uses the
+            // same default password, so memoize by plaintext to hash each distinct
+            // password only once instead of once per row.
+            $passwordHashCache = [];
+
             //If deactivate existing PTCC
             if (isset($params['deactivateExistingPTCC']) && $params['deactivateExistingPTCC'] == 'yes') {
                 $db->update('data_manager', ['status' => 'inactive'], "data_manager_type = 'ptcc'");
@@ -1409,8 +1449,11 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                 // Use cached country lookup instead of individual query
                 $countryId = $this->getCountryIdFromCache($sheetData[$i]['J'], $countryCache);
 
-                $password = (!isset($sheetData[$i]['M']) || empty($sheetData[$i]['M'])) ? 'ept1@)(*&^' : trim($sheetData[$i]['M']);
-                $password = Common::passwordHash($password);
+                $plainPassword = (!isset($sheetData[$i]['M']) || empty($sheetData[$i]['M'])) ? 'ept1@)(*&^' : trim($sheetData[$i]['M']);
+                if (!isset($passwordHashCache[$plainPassword])) {
+                    $passwordHashCache[$plainPassword] = Common::passwordHash($plainPassword);
+                }
+                $password = $passwordHashCache[$plainPassword];
 
                 $dataManagerData = [
                     'first_name' => ($sheetData[$i]['C']),
@@ -1766,8 +1809,15 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
 
                 $pmmData = []; // Declare the participant manager mapping variable
                 if ($locationWiseSwitch) { // Check the status activated or not
-                    // Fetch list of participants from location wise
-                    $locationwiseparticipants = $db->fetchAll($sql);
+                    // Fetch list of participants for this location. Identical across every
+                    // PTCC row that targets the same location, so memoize by signature.
+                    $locationSignature = 'c=' . implode(',', (array) $params['country'])
+                        . '|s=' . implode(',', (array) $params['province'])
+                        . '|d=' . implode(',', (array) $params['district']);
+                    if (!array_key_exists($locationSignature, $this->ptccLocationParticipantsCache)) {
+                        $this->ptccLocationParticipantsCache[$locationSignature] = $db->fetchAll($sql);
+                    }
+                    $locationwiseparticipants = $this->ptccLocationParticipantsCache[$locationSignature];
                     foreach ($locationwiseparticipants as $value) {
                         $pmmData[] = ['dm_id' => $dmId, 'participant_id' => $value['participant_id']]; // Create the inserting data
                         $params['participantsList'][] = $value['participant_id'];
