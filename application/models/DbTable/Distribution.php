@@ -377,7 +377,8 @@ class Application_Model_DbTable_Distribution extends Zend_Db_Table_Abstract
     }
     public function getUnshippedDistributions()
     {
-        return $this->fetchAll($this->select()->where("status != 'shipped'")->order('distribution_date DESC'));
+        // Exclude shipped and cancelled surveys — you can't add shipments to either.
+        return $this->fetchAll($this->select()->where("status NOT IN ('shipped', 'cancelled')")->order('distribution_date DESC'));
     }
 
     public function updateDistributionStatus($distributionId, $status)
