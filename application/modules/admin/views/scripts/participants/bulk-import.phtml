@@ -74,6 +74,8 @@
         .bi-layout { flex-direction: column; }
         .bi-layout .bi-side { flex: 1 1 auto; width: 100%; }
     }
+
+    @keyframes bi-spin { to { transform: rotate(360deg); } }
 </style>
 
 <div class="bulk-import-wrap">
@@ -212,11 +214,38 @@
 </div>
 
 <script type="text/javascript">
+    // No async duplicate-id check on this page (unlike add/edit), so it never blocks submit.
+    var duplicated = false;
+
+    var biBlockMessage = <?= json_encode(
+        '<div style="padding:10px 6px;">'
+        . '<div class="bi-spinner" style="width:38px;height:38px;margin:0 auto 14px;border:4px solid #e6e9ee;border-top-color:#337ab7;border-radius:50%;animation:bi-spin 0.8s linear infinite;"></div>'
+        . '<h4 style="margin:0 0 6px;font-weight:600;">' . $this->htmlTranslate("Importing your participant file…") . '</h4>'
+        . '<div style="color:#8a93a0;font-size:13px;line-height:1.5;">' . $this->htmlTranslate("This can take up to a minute for larger files.") . '<br>' . $this->htmlTranslate("Please keep this window open — do not refresh or close it.") . '</div>'
+        . '</div>'
+    ); ?>;
+
     function validateNow() {
         $(".bootstrap-select").removeClass('isRequired');
         var flag = deforayValidator.init({ formId: 'bulkParticipantForm' });
         if (flag && !duplicated) {
-            $.blockUI();
+            var $btn = $('#biImportBtn');
+            $btn.prop('disabled', true).html('<i class="icon-refresh"></i> <?= $this->jsTranslate("Importing…"); ?>');
+            $.blockUI({
+                message: biBlockMessage,
+                css: {
+                    border: 'none',
+                    padding: '20px 26px',
+                    borderRadius: '8px',
+                    backgroundColor: '#fff',
+                    color: '#333',
+                    width: '340px',
+                    left: '50%',
+                    marginLeft: '-170px',
+                    boxShadow: '0 4px 18px rgba(0,0,0,0.18)'
+                },
+                overlayCSS: { backgroundColor: '#000', opacity: 0.45 }
+            });
             document.getElementById('bulkParticipantForm').submit();
         }
     }
