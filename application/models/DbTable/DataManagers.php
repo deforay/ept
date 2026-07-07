@@ -1487,8 +1487,9 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                     'status' => 'active',
                 ];
 
-                // Use cached duplicate check instead of individual query
-                $dmresult = $duplicateChecks['dataManagers'][$originalEmail] ?? null;
+                // Use cached duplicate check instead of individual query. Lowercase the key to
+                // match how the cache is built (see batchCheckDataManagerDuplicates).
+                $dmresult = $duplicateChecks['dataManagers'][strtolower(trim((string) $originalEmail))] ?? null;
 
                 // Per-row summary base for the post-import statistics page.
                 $summaryRow = [
@@ -1512,18 +1513,17 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                     $importedCount++;
                     $response['data'][] = $summaryRow + ['action' => 'updated'];
                 } else {
-                    $lastInsertedId = $dmresult['dm_id'];
                     $response['error-data'][] = $summaryRow + ['error' => 'Skipped — a PTCC with this primary email already exists'];
+                    // Leave the existing PTCC untouched. Do NOT fall through to the mapping
+                    // block below — it would delete and rewrite this PTCC's participant and
+                    // location maps from the sheet even though we just reported it "skipped".
+                    continue;
                 }
 
-                // PTCC manager location wise mapping
-                if (isset($sheetData[$i]['K']) && !empty($sheetData[$i]['K'])) {
-                    $sheetData[$i]['K'] = Common::removeEmpty(explode(',', $sheetData[$i]['K'])) ?? [];
-                }
-                if (isset($sheetData[$i]['L']) && !empty($sheetData[$i]['L'])) {
-                    $sheetData[$i]['L'] = Common::removeEmpty(explode(',', $sheetData[$i]['L'])) ?? [];
-                }
-
+                // PTCC manager location-wise mapping. K (province) and L (district) were
+                // already split into arrays at the top of the loop; re-exploding them here
+                // ran explode() on an array — a TypeError under PHP 8 that aborted the whole
+                // import for any row carrying province/district data.
                 if (
                     (isset($sheetData[$i]['J']) && !empty($sheetData[$i]['J'])) ||
                     (isset($sheetData[$i]['K']) && count($sheetData[$i]['K']) > 0) ||
@@ -1597,7 +1597,10 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                 ->where('primary_email IN (?)', $emails);
             $results = $db->fetchAll($sql);
             foreach ($results as $row) {
-                $existingDataManagers[$row['primary_email']] = $row;
+                // Key on the lowercased email: inserts store primary_email lowercased, but a
+                // fake/mixed-case sheet value looks up lowercased too — keying on the raw DB
+                // value made those rows miss, take the insert path, and hit the unique key.
+                $existingDataManagers[strtolower(trim((string) $row['primary_email']))] = $row;
             }
         }
 
