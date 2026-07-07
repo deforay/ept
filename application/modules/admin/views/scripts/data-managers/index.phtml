@@ -99,8 +99,12 @@ if (isset($this->ptcc) && !empty($this->ptcc) && $this->ptcc == 1) {
 </h4>
 
 
-<div class="row" style="margin-bottom:15px;">
-    <div class="col-md-3">
+<!-- Filters + bulk-action toolbar share one bottom-aligned flex row to avoid
+     wasting a whole stacked row on the toolbar. The toolbar is pushed to the
+     right with margin-left:auto so its placement stays stable whether or not
+     the "Mapping" filter column is present. -->
+<div style="display:flex;align-items:flex-end;gap:16px;flex-wrap:wrap;margin-bottom:15px;">
+    <div style="min-width:200px;">
         <label for="statusFilter"><?= $this->translate->_("Status"); ?></label>
         <select id="statusFilter" class="form-control">
             <option value="active"><?= $this->translate->_("Active"); ?></option>
@@ -109,7 +113,7 @@ if (isset($this->ptcc) && !empty($this->ptcc) && $this->ptcc == 1) {
         </select>
     </div>
     <?php if (!empty($this->unmappedDmCount)) { ?>
-        <div class="col-md-4">
+        <div style="min-width:260px;">
             <label><?= $this->translate->_("Mapping"); ?></label>
             <select id="mappingFilter" class="form-control">
                 <option value=""><?= $this->translate->_("All"); ?></option>
@@ -118,13 +122,7 @@ if (isset($this->ptcc) && !empty($this->ptcc) && $this->ptcc == 1) {
             </select>
         </div>
     <?php } ?>
-</div>
-
-<!-- Bulk-action toolbar for the table below. Kept in its own full-width row
-     (rather than a column in the filter row) so its placement stays stable
-     whether or not the "Mapping" filter column is present. -->
-<div class="row" style="margin-bottom:15px;">
-    <div class="col-md-12" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-left:auto;">
         <button type="button" id="bulkByListBtn" class="btn btn-default">
             <i class="icon-paste"></i>&nbsp;<?= $this->translate->_("Reset by Pasted List"); ?>
         </button>
@@ -369,6 +367,9 @@ if (isset($this->ptcc) && !empty($this->ptcc) && $this->ptcc == 1) {
             $('#bulkResetCount').text(count);
             // Show the bulk action bar only when at least one row is selected.
             $('#bulkActionBar').toggle(count > 0);
+            // "Reset by Pasted List" and reset-by-selection are alternative paths;
+            // hide the pasted-list button while a selection is active to avoid clutter.
+            $('#bulkByListBtn').toggle(count === 0);
             // Sync the header "select all" checkbox state with this page.
             var $pageBoxes = $('#usersTable tbody input.dm-select');
             var visible = $pageBoxes.length;
