@@ -3927,8 +3927,11 @@ class Application_Service_Evaluation
                     'job_type' => new Zend_Db_Expr("'Report Generation'"),
                     'status',
                     'report_type',
+                    'error_message',
                     'started_at' => 'processing_started_at',
+                    'completed_at',
                     'last_heartbeat',
+                    'last_updated_on',
                     'requested_on',
                 ])
                 ->joinLeft(['s' => 'shipment'], 'qrg.shipment_id = s.shipment_id', ['shipment_code', 'shipment_id'])

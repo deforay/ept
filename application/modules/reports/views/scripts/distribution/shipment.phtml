@@ -159,9 +159,24 @@ if (!empty($this->shipment)) {
         </div>
         <hr>
 
-        <?php $reportQueue = (isset($this->shipmentStatus['status']) && $this->shipmentStatus['status'] == 'pending') ? 'disabled' : '';
-        $reportTitle = (isset($this->shipmentStatus['status']) && $this->shipmentStatus['status'] == 'pending') ? 'Generating Participant Reports ...' : 'Generate Participant Reports';
-        if ($this->shipment[0]['report_generated'] == 'yes') {
+        <?php
+        $queueStatus = $this->shipmentStatus['status'] ?? '';
+        // In-progress covers the whole async window: 'pending' (queued, waiting for the
+        // worker) through 'generating'/'finalizing' (worker actively producing PDFs).
+        // The button must stay disabled across ALL of them — previously only 'pending'
+        // was caught, so it re-enabled the moment the worker started, letting an admin
+        // re-trigger a run that was still going.
+        $reportInProgress = in_array($queueStatus, ['pending', 'generating', 'finalizing'], true);
+        $reportFailed = ($queueStatus === 'failed');
+        $reportQueue = $reportInProgress ? 'disabled' : '';
+        if ($queueStatus === 'finalizing') {
+            $reportTitle = 'Finalizing Reports ...';
+        } elseif ($reportInProgress) {
+            $reportTitle = 'Generating Participant Reports ...';
+        } else {
+            $reportTitle = 'Generate Participant Reports';
+        }
+        if (!$reportInProgress && $this->shipment[0]['report_generated'] == 'yes') {
             $reportTitle = 'Generate Reports';
         }
         // Allow report generation once the shipment is evaluated. Previously
@@ -175,6 +190,18 @@ if (!empty($this->shipment)) {
                 onclick="generateReports('<?php echo base64_encode($this->shipment[0]['shipment_id']); ?>', <?php echo $checkReportDate; ?>, '<?php echo $this->dateFormat($this->shipment[0]['distribution_date']); ?>', 'generateReport')"><i
                     class="icon-ok"></i>&nbsp&nbsp <?php echo $reportTitle; ?></a>
         </div>
+        <?php if ($reportFailed) { ?>
+            <div class="row" align="center">
+                <div class="alert alert-danger"
+                    style="display:inline-block;text-align:left;max-width:720px;margin-top:12px;">
+                    <strong><i class="icon-warning-sign"></i>&nbsp;<?= $this->htmlTranslate('The last report generation failed'); ?></strong>
+                    <?php if (!empty($this->shipmentStatus['error_message'])) { ?>
+                        <br><span style="font-size:12px;"><?= htmlspecialchars($this->shipmentStatus['error_message']); ?></span>
+                    <?php } ?>
+                    <br><small><?= $this->htmlTranslate('You can try again using the button above. If it keeps failing, please contact support.'); ?></small>
+                </div>
+            </div>
+        <?php } ?>
         <?php if ($reportQueue != 'disabled') { ?>
             <div class="summaryDivTop row" align="center">
 

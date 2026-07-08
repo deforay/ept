@@ -598,6 +598,67 @@ class ReportGenerator
         $this->currentShipmentLock = null;
     }
 
+    /**
+     * Record that report generation for a shipment failed.
+     *
+     * Marks the queue row 'failed' with a short reason so the UI can surface it,
+     * reverts the shipment to a usable resting state so the admin can retry, and
+     * releases the lock + clears current-shipment state so the outer loop can move
+     * on to the next shipment instead of aborting the whole batch.
+     */
+    public function markShipmentFailed(array $evalRow, Throwable $e): void
+    {
+        $shipmentId = isset($evalRow['shipment_id']) ? (int) $evalRow['shipment_id'] : 0;
+        $queueId = isset($evalRow['id']) ? (int) $evalRow['id'] : 0;
+        $reportType = $evalRow['report_type'] ?? 'generateReport';
+
+        // A finalize failure leaves the previously-generated reports intact, so the
+        // shipment rests at 'reports generated'; a plain generation failure rests at
+        // 'evaluated'. Both are non-ephemeral, so the retry buttons re-enable.
+        $restingStatus = ($reportType === 'finalized') ? 'reports generated' : 'evaluated';
+
+        // Keep the stored reason short and human-readable; the full trace is already logged.
+        $message = basename($e->getFile()) . ':' . $e->getLine() . ' — ' . $e->getMessage();
+        if (mb_strlen($message) > 1000) {
+            $message = mb_substr($message, 0, 1000) . '…';
+        }
+
+        try {
+            if ($queueId > 0) {
+                $this->db->update('queue_report_generation', [
+                    'status' => 'failed',
+                    'error_message' => $message,
+                    'last_updated_on' => new Zend_Db_Expr('now()'),
+                    'completed_at' => new Zend_Db_Expr('now()'),
+                    'last_heartbeat' => null,
+                    'previous_status' => null,
+                ], 'id=' . $queueId);
+            }
+            if ($shipmentId > 0) {
+                $this->db->update('shipment', [
+                    'status' => $restingStatus,
+                    'report_in_queue' => 'no',
+                    'processing_started_at' => null,
+                    'last_heartbeat' => null,
+                    'previous_status' => null,
+                    'updated_on_admin' => new Zend_Db_Expr('now()'),
+                ], 'shipment_id=' . $shipmentId);
+            }
+        } catch (Throwable $inner) {
+            self::error('Could not record report failure for shipment ' . $shipmentId . ': ' . $inner->getMessage(), $this->opts->isCli);
+        }
+
+        // Release the lock and clear state so the batch continues cleanly.
+        if (is_resource($this->currentShipmentLock)) {
+            flock($this->currentShipmentLock, LOCK_UN);
+            fclose($this->currentShipmentLock);
+        }
+        $this->currentShipment = null;
+        $this->currentParticipantCounts = null;
+        $this->currentGeneTypes = null;
+        $this->currentShipmentLock = null;
+    }
+
     // -------------------------------------------------------------------------
     // SUBPROCESS MODE (for parallel participant report generation)
     // -------------------------------------------------------------------------
@@ -1526,11 +1587,12 @@ class ReportGenerator
             $this->config->commonService->insertTempMail($this->config->jobCompletionAlertMails, null, null, $emailSubject, $emailContent);
         }
 
-        // Update queue record
+        // Update queue record. Keep processing_started_at (the real run start) and stamp
+        // completed_at so the job-tracking page can show start, end and duration.
         $update = [
             'status' => $reportCompletedStatus,
             'last_updated_on' => new Zend_Db_Expr('now()'),
-            'processing_started_at' => null,
+            'completed_at' => new Zend_Db_Expr('now()'),
             'last_heartbeat' => null,
             'previous_status' => null
         ];
@@ -1704,10 +1766,21 @@ try {
     }
 
     foreach ($shipments as $shipment) {
-        $reportGenerator->setupShipment($shipment);     // Lock, evaluate, prepare directories
-        $reportGenerator->participantReports();                  // Generate individual PDFs (uses subprocesses when --procs > 1)
-        $reportGenerator->summaryReport();                       // Generate summary PDF (single-threaded, one per shipment)
-        $reportGenerator->completeShipmentReports();             // ZIP, notifications, release lock
+        // Isolate each shipment: a failure in one must neither abort the rest of the
+        // batch nor leave its queue row stuck in 'generating'. On error we record the
+        // reason so the UI can surface it, then continue with the next shipment.
+        try {
+            if (!$reportGenerator->setupShipment($shipment)) {
+                continue;                                        // Couldn't lock it (another worker owns it) — not a failure
+            }
+            $reportGenerator->participantReports();              // Generate individual PDFs (uses subprocesses when --procs > 1)
+            $reportGenerator->summaryReport();                   // Generate summary PDF (single-threaded, one per shipment)
+            $reportGenerator->completeShipmentReports();         // ZIP, notifications, release lock
+        } catch (Throwable $shipmentError) {
+            ReportGenerator::error("{$shipmentError->getFile()}:{$shipmentError->getLine()} : {$shipmentError->getMessage()}", $cliOpts->isCli);
+            ReportGenerator::log("<fg=gray>{$shipmentError->getTraceAsString()}</>", $cliOpts->isCli);
+            $reportGenerator->markShipmentFailed($shipment, $shipmentError);
+        }
     }
 } catch (Throwable $e) {
     $isCli = php_sapi_name() === 'cli';

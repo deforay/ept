@@ -107,6 +107,7 @@
                 <option value="pending">Pending</option>
                 <option value="processing">Processing</option>
                 <option value="completed">Completed</option>
+                <option value="failed">Failed</option>
             </select>
         </td>
         <td>
@@ -131,13 +132,14 @@
             <th scope="col"><?= $this->translate->_("Progress"); ?></th>
             <th scope="col"><?= $this->translate->_("Requested By"); ?></th>
             <th scope="col"><?= $this->translate->_("Started At"); ?></th>
-            <th scope="col"><?= $this->translate->_("Last Activity"); ?></th>
+            <th scope="col"><?= $this->translate->_("Ended At"); ?></th>
+            <th scope="col"><?= $this->translate->_("Duration"); ?></th>
             <th scope="col"><?= $this->translate->_("Actions"); ?></th>
         </tr>
     </thead>
     <tbody>
         <tr>
-            <td colspan="8" class="dataTables_empty"><?= $this->translate->_("Loading data from server"); ?></td>
+            <td colspan="9" class="dataTables_empty"><?= $this->translate->_("Loading data from server"); ?></td>
         </tr>
     </tbody>
 </table>
@@ -217,6 +219,7 @@
                 { "sClass": "center" },
                 { "sClass": "center" },
                 { "sClass": "center" },
+                { "sClass": "center", "bSortable": false },
                 { "sClass": "center", "bSortable": false }
             ],
             "aaSorting": [[5, "desc"]],
@@ -242,11 +245,12 @@
                                 return [
                                     formatJobType(row),
                                     formatReference(row),
-                                    formatStatusBadge(row.status),
+                                    formatStatusBadge(row),
                                     formatProgress(row),
                                     row.requested_by_name || 'System',
-                                    formatDateTime(row.started_at || row.requested_on),
-                                    formatDateTime(row.last_heartbeat),
+                                    formatDateTime(resolveStart(row)),
+                                    formatEndedAt(row),
+                                    formatDuration(row),
                                     formatActions(row)
                                 ];
                             });
@@ -305,7 +309,8 @@
         return '<span class="text-muted">-</span>';
     }
 
-    function formatStatusBadge(status) {
+    function formatStatusBadge(row) {
+        var status = (typeof row === 'object' && row !== null) ? row.status : row;
         var statusConfig = {
             'pending': { cls: 'job-status-pending', icon: 'icon-clock', label: 'Pending' },
             'generating': { cls: 'job-status-processing', icon: 'icon-spinner icon-spin', label: 'Generating' },
@@ -315,10 +320,19 @@
             'finalized': { cls: 'job-status-completed', icon: 'icon-ok', label: 'Finalized' },
             'completed': { cls: 'job-status-completed', icon: 'icon-ok', label: 'Completed' },
             'reports generated': { cls: 'job-status-completed', icon: 'icon-ok', label: 'Reports Generated' },
+            'failed': { cls: 'job-status-cancelled', icon: 'icon-warning-sign', label: 'Failed' },
             'cancelled': { cls: 'job-status-cancelled', icon: 'icon-ban-circle', label: 'Cancelled' }
         };
 
         var config = statusConfig[status] || { cls: 'job-status-pending', icon: 'icon-question', label: status };
+
+        // Surface the failure reason (from queue_report_generation.error_message) as a
+        // hover tooltip so admins can see *why* a run failed without leaving the page.
+        var reason = (typeof row === 'object' && row !== null) ? row.error_message : '';
+        if (status === 'failed' && reason) {
+            return '<span class="' + config.cls + '" title="' + escapeHtml(reason) + '" style="cursor: help;">' +
+                '<i class="' + config.icon + '"></i> ' + config.label + '</span>';
+        }
         return '<span class="' + config.cls + '"><i class="' + config.icon + '"></i> ' + config.label + '</span>';
     }
 
@@ -401,6 +415,69 @@
 
         html += '</div>';
         return html;
+    }
+
+    // Terminal states — the run is over, so an end time is expected.
+    var TERMINAL_STATUSES = ['reports generated', 'finalized', 'evaluated', 'completed', 'failed', 'cancelled'];
+    var RUNNING_STATUSES = ['pending', 'generating', 'finalizing', 'processing'];
+
+    function parseDbDate(dateStr) {
+        if (!dateStr) return null;
+        var d = new Date(String(dateStr).replace(' ', 'T'));
+        return isNaN(d.getTime()) ? null : d;
+    }
+
+    // Start of the run: durable processing_started_at, falling back to the request time
+    // for historical rows recorded before that column was kept.
+    function resolveStart(row) {
+        return row.started_at || row.requested_on || null;
+    }
+
+    // End of the run: durable completed_at, falling back to last_updated_on for historical
+    // terminal rows. Null while the job is still running.
+    function resolveEnd(row) {
+        if (row.completed_at) return row.completed_at;
+        if (TERMINAL_STATUSES.indexOf(row.status) !== -1) return row.last_updated_on || null;
+        return null;
+    }
+
+    function formatEndedAt(row) {
+        var end = resolveEnd(row);
+        if (end) return formatDateTime(end);
+        if (RUNNING_STATUSES.indexOf(row.status) !== -1) {
+            return '<span class="job-status-processing"><i class="icon-spinner icon-spin"></i> running</span>';
+        }
+        return '<span class="text-muted">-</span>';
+    }
+
+    function humanizeDuration(secs) {
+        if (secs < 60) return secs + 's';
+        var m = Math.floor(secs / 60), s = secs % 60;
+        if (m < 60) return s ? (m + 'm ' + s + 's') : (m + 'm');
+        var h = Math.floor(m / 60); m = m % 60;
+        if (h < 24) return m ? (h + 'h ' + m + 'm') : (h + 'h');
+        var d = Math.floor(h / 24); h = h % 24;
+        return h ? (d + 'd ' + h + 'h') : (d + 'd');
+    }
+
+    // How long the run took. end - start is timezone-safe (both are server-time strings
+    // parsed the same way), so this is reliable even if the browser clock differs.
+    function formatDuration(row) {
+        var startDate = parseDbDate(resolveStart(row));
+        if (!startDate) return '<span class="text-muted">-</span>';
+
+        var endStr = resolveEnd(row);
+        var endDate = parseDbDate(endStr);
+        var secs = Math.max(0, Math.floor(((endDate ? endDate.getTime() : Date.now()) - startDate.getTime()) / 1000));
+        var human = humanizeDuration(secs);
+
+        if (endDate) {
+            return '<span title="' + escapeHtml('Ended: ' + endStr) + '">' + human + '</span>';
+        }
+        if (RUNNING_STATUSES.indexOf(row.status) !== -1) {
+            return '<span class="text-muted">' + human + ' &hellip;</span>';
+        }
+        return '<span class="text-muted">-</span>';
     }
 
     function formatDateTime(dateStr) {
