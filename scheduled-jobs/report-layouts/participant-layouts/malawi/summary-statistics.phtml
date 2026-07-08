@@ -5,6 +5,13 @@
 $performance1 = false;
 $performance2 = false;
 $performance3 = false;
+
+// Charts are written to temp PNGs and unlinked right after. Report generation runs many
+// worker subprocesses over the same shipment in parallel, so a filename keyed only on
+// shipment_code collides across workers (JpGraph 25111 on unlink; TCPDF "Unable to get
+// the size of the image" when another worker deletes mid-render). Make the path unique
+// per participant + worker so the temp files never overlap.
+$chartUid = preg_replace('/[^A-Za-z0-9_-]/', '', (string)($result['unique_identifier'] ?? '')) . '_' . getmypid();
 if (isset($result['statistics']) && !empty($result['statistics'])) {
     $dtsPasspercentage = Pt_Commons_SchemeConfig::get('dts.passPercentage');
     $score = $dtsPasspercentage ?? '80';
@@ -88,7 +95,7 @@ if (isset($result['performance1']) && !empty($result['performance1'])) {
     $graph->xaxis->SetTickSide(SIDE_DOWN);
     $graph->yaxis->SetTickSide(SIDE_LEFT);
 
-    $image_file = $reportsPath . DIRECTORY_SEPARATOR . $result['shipment_code'] . DIRECTORY_SEPARATOR . 'bar_chart.png';
+    $image_file = $reportsPath . DIRECTORY_SEPARATOR . $result['shipment_code'] . DIRECTORY_SEPARATOR . 'bar_chart_' . $chartUid . '.png';
     $graph->img->SetImgFormat('png');
     $graph->img->SetQuality(100);
     $graph->Stroke($image_file);
@@ -161,7 +168,7 @@ if (isset($result['performance2']) && !empty($result['performance2'])) {
     $graph->xaxis->SetTickSide(SIDE_DOWN);
     $graph->yaxis->SetTickSide(SIDE_LEFT);
 
-    $performance_of_surveys = $reportsPath . DIRECTORY_SEPARATOR . $result['shipment_code'] . DIRECTORY_SEPARATOR . 'performance_of_surveys.png';
+    $performance_of_surveys = $reportsPath . DIRECTORY_SEPARATOR . $result['shipment_code'] . DIRECTORY_SEPARATOR . 'performance_of_surveys_' . $chartUid . '.png';
     $graph->img->SetImgFormat('png');
     $graph->img->SetQuality(100);
     $graph->Stroke($performance_of_surveys);
@@ -234,7 +241,7 @@ if (isset($result['performance3']) && !empty($result['performance3'])) {
     $graph->xaxis->SetTickSide(SIDE_DOWN);
     $graph->yaxis->SetTickSide(SIDE_LEFT);
 
-    $performance_of_current_survey_anels = $reportsPath . DIRECTORY_SEPARATOR . $result['shipment_code'] . DIRECTORY_SEPARATOR . 'performance_of_current_survey_anels.png';
+    $performance_of_current_survey_anels = $reportsPath . DIRECTORY_SEPARATOR . $result['shipment_code'] . DIRECTORY_SEPARATOR . 'performance_of_current_survey_anels_' . $chartUid . '.png';
     $graph->img->SetImgFormat('png');
     $graph->img->SetQuality(100);
     $graph->Stroke($performance_of_current_survey_anels);

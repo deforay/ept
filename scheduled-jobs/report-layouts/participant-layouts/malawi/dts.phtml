@@ -324,10 +324,11 @@ if (!empty($resultArray['shipment'])) {
         $labInfo .= '<tr>';
 
         // Left column - Institute info (left-aligned, ~35% width)
+        // nl2br so newlines entered in the config become real <br> — plain HTML collapses them.
         $labInfo .= '<td style="width:35%; vertical-align:top; text-align:justify;">'
             . $instituteName . '<br>'
-            . $instituteAddress . '<br>'
-            . $instituteAdditionalDetails
+            . nl2br($instituteAddress) . '<br>'
+            . nl2br($instituteAdditionalDetails)
             . '</td>';
 
         $approveTxt = $result['issuing_authority'] ?? ($resultArray['shipment'][0]['issuing_authority'] ?? ($evalRow['saname'] ?? null));
