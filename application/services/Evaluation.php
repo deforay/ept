@@ -2445,8 +2445,8 @@ class Application_Service_Evaluation
                 'distribution_code' => new Zend_Db_Expr("'" . $shipmentResult[0]['distribution_code'] . "'"),
                 'ref.sample_label',
                 'rrd.sample_id',
-                'passed' => new Zend_Db_Expr("COUNT(DISTINCT CASE WHEN (rrd.calculated_score = '" . $scoreType . "') THEN rrd.shipment_map_id ELSE NULL END)"),
-                'failed' => new Zend_Db_Expr("COUNT(DISTINCT CASE WHEN (rrd.calculated_score != '" . $scoreType . "') THEN rrd.shipment_map_id ELSE NULL END)"),
+                'passed' => new Zend_Db_Expr("COUNT(DISTINCT CASE WHEN (ROUND(rrd.calculated_score) = '" . $scoreType . "') THEN rrd.shipment_map_id ELSE NULL END)"),
+                'failed' => new Zend_Db_Expr("COUNT(DISTINCT CASE WHEN (ROUND(rrd.calculated_score) != '" . $scoreType . "') THEN rrd.shipment_map_id ELSE NULL END)"),
             ])
                 ->join(['rrd' => $unionQuery], 'rrd.sample_id=ref.sample_id', [])
                 ->group(['rrd.sample_id'])

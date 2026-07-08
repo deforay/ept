@@ -376,19 +376,6 @@ if (!empty($resultArray['shipment'])) {
             //$pdf->SetTopMargin(13);
             $pdf->writeHTML($comment, true, false, true, false, '');
         }
-        // $pdf->AddPage('P', 'A4');
-        $br = '';
-        if ($performance1 || $performance2 || $performance3) {
-            $br = '<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>';
-        }
-        $html = $br . '<span style="font-size:11px;font-weight:bold;">PT Scheme Manager Comments:</span><br>';
-        $html .= '<span style="font-size:11px;">This is a confidential report that summarizes your performance. The National Public Health Quality Assurance Program recommends that the results of this Proficiency Testing Scheme comparison not be used as the sole criterion for judging the performance of any individual testing facility/laboratory.</span><br>';
-        // $html = '<p style="font-size:11px;">Thank you for participating in proficiency testing program for ' . $panelName . '.</p>';
-        if (!empty($reportComment)) {
-            $html .= '<br>' . $reportComment;
-        }
-        $pdf->writeHTML($html, true, false, true, false, '');
-
         if (!empty(trim($result['shipment_comment']))) {
             $comment = '<table border="1" style="width:100%;" cellpadding="3">';
 
@@ -400,18 +387,26 @@ if (!empty($resultArray['shipment'])) {
             //$pdf->SetTopMargin(13);
             $pdf->writeHTML($comment, true, false, true, false, '');
         }
-
+        $br = '';
+        if ($performance1 || $performance2 || $performance3) {
+            $br = str_repeat('<br>', 13);
+        }
         $eodReportText = "End of report";
         if ($evalRow['report_type'] == 'finalized') {
             $eodReportText = "End of final report";
         }
-        $html = '<p style="font-size:11px;font-weight:bold;"><i>This is the confidential report that summarizes your performance.</i></p>';
-        if (trim($result['shipment_comment']) != "") {
-            $html .= '<p style="font-size:11px;"><b>Scheme Manager`s Comments:</b> ' . $result['shipment_comment'] . '</p>';
+        $html = $br . '<span style="font-size:11px;font-weight:bold;">PT Scheme Manager Comments:</span><br>';
+        $html .= '<span style="font-size:11px;">This is a confidential report that summarizes your performance. The National Public Health Quality Assurance Program recommends that the results of this Proficiency Testing Scheme comparison not be used as the sole criterion for judging the performance of any individual testing facility/laboratory.</span><br>';
+        if (trim($result['shipment_comment'] ?? '') != "") {
+            $html .= '<span style="font-size:11px;"><b>Scheme Manager\'s Comments:</b> ' . $result['shipment_comment'] . '</span><br>';
         }
-        // $html .= '<p style="font-size:11px;font-weight:bold;text-align:center;"><i>NPH PT all rights reserved.</i></p>';
-        $html .= '<p style="font-size:11px;font-weight:bold;">Report Print Date: ' . $commonService->humanReadableDateFormat(date('d-m-Y')) . '</p>';
-        $html .= '<p style="font-size:11px;text-align:center;font-weight:bold;"><u>' . $eodReportText . '</u>.</p>';
+        $html .= '<span style="font-size:11px;font-weight:bold;"><i>This is the confidential report that summarizes your performance.</i></span><br>';
+        if (trim($result['shipment_comment']) != "") {
+            $html .= '<span style="font-size:11px;"><b>Scheme Manager`s Comments:</b> ' . $result['shipment_comment'] . '</span><br>';
+        }
+        // $html .= '<span style="font-size:11px;font-weight:bold;text-align:center;"><i>NPH PT all rights reserved.</i></span>'<br>;
+        $html .= '<span style="font-size:11px;font-weight:bold;">Report Print Date: ' . $commonService->humanReadableDateFormat(date('d-m-Y')) . '</span><br>';
+        $html .= '<span style="font-size:11px;text-align:center;font-weight:bold;"><u>' . $eodReportText . '</u></span>';
         $pdf->writeHTML($html, true, false, true, false, '');
 
         if (ob_get_contents()) {
