@@ -468,6 +468,14 @@ if ($shipmentAttributesRaw !== '') {
 			if (overrideStatus != 'yes') {
 				$('#overrideTable').hide();
 			}
+
+			// NOTE: autoUpdateInput is false on purpose — with it true, the plugin writes a
+			// default "last 180 days" range into #dateRange on init, before the admin ever
+			// touches it. fnServerParams then sends that as a real filter on the very first
+			// DataTables draw, silently excluding any participant whose response date is NULL
+			// (i.e. anyone who hasn't responded yet) and zeroing out the whole table.
+			// With autoUpdateInput false, we control exactly when the field gets a value and
+			// when the table is told to redraw (see the apply/cancel handlers below).
 			$('#dateRange').daterangepicker({
 				locale: {
 					cancelLabel: 'Clear',
@@ -477,7 +485,7 @@ if ($shipmentAttributesRaw !== '') {
 				autoApply: true,
 				showDropdowns: true,
 				alwaysShowCalendars: true,
-				autoUpdateInput: true,
+				autoUpdateInput: false,
 				startDate: moment().subtract(179, 'days'),
 				endDate: moment(),
 				maxDate: moment(),
@@ -492,9 +500,21 @@ if ($shipmentAttributesRaw !== '') {
 				}
 			},
 			function(start, end) {
+				// Only now, when the admin actually applies a range, do we write it into the
+				// field and ask the table to redraw with it.
 				startDate = start.format('DD-MMM-YYYY');
 				endDate = end.format('DD-MMM-YYYY');
+				$('#dateRange').val(startDate + ' to ' + endDate);
+				applyShipmentFilters();
 			});
+
+			// The "Clear" button (cancelLabel above) fires this event, not the apply callback.
+			// Blank the field and redraw so the date filter is fully removed again.
+			$('#dateRange').on('cancel.daterangepicker', function () {
+				$(this).val('');
+				applyShipmentFilters();
+			});
+
 			$('#shipmentEvaluation').on('click', ".clicker", function () {
 				nTr = $(this).parents('tr')[0];
 				aData = oTable.fnGetData(nTr);
@@ -545,9 +565,13 @@ if ($shipmentAttributesRaw !== '') {
 					var con = $('#country').val() || '';
 
 					var dateRange = $("#dateRange").val();
-					var _dateRange = dateRange.split(" to ");
-					sd = _dateRange[0];
-					ed = _dateRange[1];
+					var sd = '';
+					var ed = '';
+					if (dateRange) {
+						var _dateRange = dateRange.split(" to ");
+						sd = _dateRange[0];
+						ed = _dateRange[1];
+					}
 
 					
 					if (rs) { aoData.push({ "name": "filterResponseStatus", "value": rs }); }
@@ -573,7 +597,11 @@ if ($shipmentAttributesRaw !== '') {
 						"type": "POST",
 						"url": sSource,
 						"data": aoData,
-						"success": fnCallback
+						"success": fnCallback,
+						"error": function (xhr, status, error) {
+							$.unblockUI();
+							console.error('DataTables AJAX error:', status, error, xhr.responseText);
+						}
 					});
 				},
 				"aoColumns": [

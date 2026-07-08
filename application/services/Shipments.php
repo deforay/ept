@@ -220,7 +220,6 @@ class Application_Service_Shipments
         if (isset($sLimit) && isset($sOffset)) {
             $sQuery = $sQuery->limit($sLimit, $sOffset);
         }
-
         $rResult = $db->fetchAll($sQuery);
 
         /* Data set length after filtering */

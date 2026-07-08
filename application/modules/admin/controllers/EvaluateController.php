@@ -96,7 +96,7 @@ class Admin_EvaluateController extends Zend_Controller_Action
         }
     }
 
-    public function shipmentAction()
+   public function shipmentAction()
     {
         /** @var Zend_Controller_Request_Http $request */
         $request = $this->getRequest();
@@ -118,6 +118,13 @@ class Admin_EvaluateController extends Zend_Controller_Action
 
         if ($request->isPost()) {
             // DataTables AJAX call — read-only, paginated; echoes JSON and returns.
+            // IMPORTANT: disable layout + view render BEFORE anything else runs here.
+            // Without this, Zend still renders shipment.phtml (this same view) and the
+            // admin layout after the JSON is echoed, appending a huge HTML blob to the
+            // response body and breaking $.ajax({ dataType: "json" }) parsing on the client.
+            $this->_helper->layout()->disableLayout();
+            $this->_helper->viewRenderer->setNoRender();
+
             $adminSession = new Zend_Session_Namespace('administrators');
             $privileges = $adminSession->privileges ? explode(',', $adminSession->privileges) : [];
             $params = $this->getAllParams();
