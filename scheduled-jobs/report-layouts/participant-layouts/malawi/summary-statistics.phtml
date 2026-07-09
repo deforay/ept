@@ -13,8 +13,8 @@ $performance3 = false;
 // per participant + worker so the temp files never overlap.
 $chartUid = preg_replace('/[^A-Za-z0-9_-]/', '', (string)($result['unique_identifier'] ?? '')) . '_' . getmypid();
 if (isset($result['statistics']) && !empty($result['statistics'])) {
-    $dtsPasspercentage = Pt_Commons_SchemeConfig::get('dts.passPercentage');
-    $score = $dtsPasspercentage ?? '80';
+    $passpercentage = Pt_Commons_SchemeConfig::get($schemeType . '.passPercentage');
+    $score = $passpercentage ?? '100';
 
     $ppOverview = '<br><table border="1" cellpadding="4" cellspacing="0" style="width:100%;font-size:12px;">';
 
