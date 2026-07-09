@@ -13,8 +13,10 @@ $performance3 = false;
 // per participant + worker so the temp files never overlap.
 $chartUid = preg_replace('/[^A-Za-z0-9_-]/', '', (string)($result['unique_identifier'] ?? '')) . '_' . getmypid();
 if (isset($result['statistics']) && !empty($result['statistics'])) {
-    $passpercentage = Pt_Commons_SchemeConfig::get($schemeType . '.passPercentage');
-    $score = $passpercentage ?? '100';
+    // Passing score is per-scheme (custom tests carry their own; built-ins read
+    // SchemeConfig). Use the shared resolver so this label matches the score
+    // buckets computed in Evaluation::getIndividualReportsDataForPDF().
+    $score = Application_Service_Evaluation::getPassingScore($result);
 
     $ppOverview = '<br><table border="1" cellpadding="4" cellspacing="0" style="width:100%;font-size:12px;">';
 

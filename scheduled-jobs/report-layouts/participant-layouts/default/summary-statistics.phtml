@@ -3,7 +3,10 @@
 // Charts are rendered with Pt_Reports_ChartService (Chart.js / Node), the renderer this
 // project uses; the legacy JPGraph charts (malawi) fail to produce PNGs in this environment.
 if (isset($result['statistics']) && !empty($result['statistics'])) {
-    $statScore = $passPercentage ?? (Pt_Commons_SchemeConfig::get('dts.passPercentage') ?? '80');
+    // Passing score is per-scheme (custom tests carry their own; built-ins read
+    // SchemeConfig). Use the shared resolver so this label matches the score
+    // buckets computed in Evaluation::getIndividualReportsDataForPDF().
+    $statScore = Application_Service_Evaluation::getPassingScore($result);
     $ppOverview = '<span style="font-size:12px;font-weight:bold;">Summary Statistics for this survey</span><br/>';
     $ppOverview .= '<table border="1" style="font-size:11px;" cellpadding="3">';
     $ppOverview .= '<tr style="background-color:#dbe4ee;">';

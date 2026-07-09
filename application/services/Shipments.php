@@ -4761,6 +4761,8 @@ class Application_Service_Shipments
                     AND (is_pt_test_not_performed IS NULL OR is_pt_test_not_performed <> 'yes')) AS tested,
                 SUM(final_result = 1) AS passed,
                 SUM(final_result = 2 AND response_status IN ('responded','late')) AS failed,
+                SUM((shipment_score + documentation_score) = 100
+                    AND response_status IN ('responded','late')) AS scored_full,
                 SUM(is_excluded = 'yes') AS excluded,
                 SUM(response_status = 'late' OR is_response_late = 'yes') AS late_responses,
                 SUM(individual_report_downloaded_on IS NOT NULL) AS reports_downloaded
@@ -4775,6 +4777,7 @@ class Application_Service_Shipments
         $tested         = (int) ($row['tested'] ?? 0);
         $passed         = (int) ($row['passed'] ?? 0);
         $failed         = (int) ($row['failed'] ?? 0);
+        $scoredFull     = (int) ($row['scored_full'] ?? 0);
         $excluded       = (int) ($row['excluded'] ?? 0);
         $lateResponses  = (int) ($row['late_responses'] ?? 0);
         $reportsDownloaded = (int) ($row['reports_downloaded'] ?? 0);
@@ -4794,6 +4797,7 @@ class Application_Service_Shipments
             'tested'            => $tested,
             'passed'            => $passed,
             'failed'            => $failed,
+            'scored_full'       => $scoredFull,
             'pending_eval'      => $pendingEval,
             'excluded'          => $excluded,
             'late_responses'    => $lateResponses,

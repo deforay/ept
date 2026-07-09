@@ -96,6 +96,43 @@ class Application_Service_Evaluation
     }
 
     /**
+     * Passing score (as a percentage) for a shipment's scheme.
+     *
+     * Different schemes carry it in different places:
+     *  - User-configured ("custom") tests store their own passing score in
+     *    user_test_config.passingScore — it varies per test, so it always wins.
+     *  - Built-in schemes read <scheme>.passPercentage from SchemeConfig
+     *    (DB overlay first, then config.ini).
+     * Falls back to 100 when neither is set.
+     *
+     * @param array $shipment shipment row carrying is_user_configured,
+     *                        user_test_config and scheme_type
+     */
+    public static function getPassingScore(array $shipment): float
+    {
+        // Custom test: per-test passing score takes precedence.
+        if (($shipment['is_user_configured'] ?? 'no') === 'yes' && !empty($shipment['user_test_config'])) {
+            $cfg = is_array($shipment['user_test_config'])
+                ? $shipment['user_test_config']
+                : Pt_Commons_JsonUtility::safeDecode($shipment['user_test_config']);
+            if (isset($cfg['passingScore']) && is_numeric($cfg['passingScore']) && $cfg['passingScore'] > 0) {
+                return (float) $cfg['passingScore'];
+            }
+        }
+
+        // Built-in scheme: <scheme>.passPercentage from SchemeConfig.
+        $schemeType = trim((string) ($shipment['scheme_type'] ?? ''));
+        if ($schemeType !== '') {
+            $configured = Pt_Commons_SchemeConfig::get($schemeType . '.passPercentage');
+            if (is_numeric($configured) && $configured > 0) {
+                return (float) $configured;
+            }
+        }
+
+        return 100.0;
+    }
+
+    /**
      * Shipments of a scheme whose stored scores were computed under the previous
      * settings, i.e. already evaluated (or had reports generated) but not finalized.
      * Used by the settings pages to nudge an admin to re-evaluate after a config change.
@@ -2471,8 +2508,6 @@ class Application_Service_Evaluation
         $testType = $shipmentResult[0]['scheme_type'];
         $tableType = ($shipmentResult[0]['is_user_configured'] == 'yes') ? 'generic_test' : $shipmentResult[0]['scheme_type'];
 
-        $passPercentage = Pt_Commons_SchemeConfig::get($testType . '.passPercentage') ?? 100;
-        $score = (isset($passPercentage) && !empty($passPercentage) && $passPercentage > 0) ? $passPercentage : '100';
         if (isset($layout) && !empty($layout) && $layout == 'malawi') {
             $q = $db->select()->from(['spm' => 'shipment_participant_map'], [
                 'mean_score' => new Zend_Db_Expr('AVG(spm.shipment_score + spm.documentation_score)'),
@@ -2516,27 +2551,19 @@ class Application_Service_Evaluation
         $shipmentStatistics = [];
         $shipmentPerformance3 = [];
         if ($includeAnalytics) {
-            // Queries below are constant per shipment; compute once and reuse for each participant.
-            $statisticsSql = $db->select()->from(['spm' => 'shipment_participant_map'], [
-                    'number_not_responded' => new Zend_Db_Expr(
-                        "SUM(CASE WHEN (spm.response_status = 'noresponse') THEN 1 ELSE 0 END)"
-                    ),
-                    'number_responded' => new Zend_Db_Expr(
-                        "SUM(CASE WHEN (spm.response_status = 'responded') THEN 1 ELSE 0 END)"
-                    ),
-                    'providersWith100' => new Zend_Db_Expr(
-                        "SUM(CASE WHEN (spm.response_status = 'responded' AND (spm.shipment_score + spm.documentation_score) = 100) THEN 1 ELSE 0 END)"
-                    ),
-                    'providers>80' => new Zend_Db_Expr(
-                        "SUM(CASE WHEN (spm.response_status = 'responded' AND (spm.shipment_score + spm.documentation_score) >= $score) THEN 1 ELSE 0 END)"
-                    ),
-                    'providers<80' => new Zend_Db_Expr(
-                        "SUM(CASE WHEN (spm.response_status = 'responded' AND (spm.shipment_score + spm.documentation_score) < $score) THEN 1 ELSE 0 END)"
-                    ),
-                ])
-                ->where('spm.shipment_id = ?', $shipmentId)
-                ->group(['spm.shipment_id']);
-            $shipmentStatistics = $db->fetchRow($statisticsSql);
+            // Survey-wide participation counts, constant per shipment. Sourced from the
+            // canonical participation-stats helper so the report's "STATISTICS FOR THIS
+            // SURVEY" table matches the shipment dashboard exactly. Pass/Fail come from
+            // final_result there, so non-responders and "unable to test" participants are
+            // never miscounted as sub-threshold failures.
+            $participation = Application_Service_Shipments::getShipmentParticipationStats($shipmentId);
+            $shipmentStatistics = [
+                'number_responded'     => $participation['responded'],
+                'number_not_responded' => $participation['not_responded'],
+                'providersWith100'     => $participation['scored_full'],
+                'providers>80'         => $participation['passed'],
+                'providers<80'         => $participation['failed'],
+            ];
 
             $unionQuery = $db->select()->from('response_result_' . $tableType, ['sample_id', 'shipment_map_id', 'calculated_score'])
                 ->where('shipment_map_id IN (
