@@ -71,6 +71,11 @@ class Application_Model_Tb
 
             $results = $this->getTbSamplesForParticipant($shipmentId, $shipment['participant_id']);
 
+            // No response / could not test / late → EXCLUDED, never failed (shared rule).
+            if (Application_Service_Evaluation::excludeNonResponder($db, $shipment, $results)) {
+                $shipment['is_excluded'] = 'yes';
+            }
+
             if ($createdOn > $lastDate) {
                 $failureReason[] = [
                     'warning' => 'Response was submitted after the last response date.',

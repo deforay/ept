@@ -27,6 +27,7 @@ class Reports_ShipmentsController extends Zend_Controller_Action
             ->addActionContext('vl-participant-count', 'html')
             ->addActionContext('vl-assay-summary', 'html')
             ->addActionContext('bulk-download-shipment-report-excel', 'html')
+            ->addActionContext('participation-stats', 'html')
             ->initContext();
         $this->_helper->layout()->pageName = 'report';
     }
@@ -46,6 +47,14 @@ class Reports_ShipmentsController extends Zend_Controller_Action
 
         $dataManagerService = new Application_Service_DataManagers();
         $this->view->dataManagers = $dataManagerService->getDataManagerList();
+    }
+
+    public function participationStatsAction()
+    {
+        $sid = (int) base64_decode((string) $this->_getParam('sid'));
+        $this->view->stats = $sid > 0
+            ? Application_Service_Shipments::getShipmentParticipationStats($sid)
+            : [];
     }
 
     public function responseChartAction()

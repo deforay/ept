@@ -48,6 +48,12 @@ class Application_Model_Eid
             $lastDate = Pt_Commons_DateUtility::shipmentCutoff($shipment['response_deadline']);
 
             $results = $schemeService->getEidSamples($shipmentId, $shipment['participant_id']);
+
+            // A participant who did not respond (or could not test) is EXCLUDED, never failed.
+            if (Application_Service_Evaluation::excludeNonResponder($db, $shipment, $results)) {
+                $shipment['is_excluded'] = 'yes';
+            }
+
             $totalScore = 0;
             $maxScore = 0;
             $failureReason = [];

@@ -35,6 +35,11 @@ class Application_Model_Covid19
 
             $results = $schemeService->getCovid19Samples($shipmentId, $shipment['participant_id']);
 
+            // A participant who did not respond (or could not test) is EXCLUDED, never failed.
+            if (Application_Service_Evaluation::excludeNonResponder($db, $shipment, $results)) {
+                $shipment['is_excluded'] = 'yes';
+            }
+
             $totalScore = 0;
             $maxScore = 0;
             $mandatoryResult = '';

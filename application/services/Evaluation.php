@@ -3,6 +3,99 @@
 class Application_Service_Evaluation
 {
     /**
+     * Common "not a valid scored response" guard for scheme evaluate() loops.
+     *
+     * A participant who did not produce an on-time, testable response cannot pass or
+     * fail — they are simply EXCLUDED from evaluation (final_result = 3). This is a
+     * single rule shared by every scheme so they all behave identically. It covers:
+     *
+     *   - No response: response_status 'noresponse' / 'draft' / empty, or an empty
+     *     result set (nothing to score).
+     *   - Could not test: is_pt_test_not_performed = 'yes'.
+     *   - Late response: submitted after the shipment cut-off — treated exactly like a
+     *     non-response (excluded), and tagged response_status = 'late'. Skipped when the
+     *     shipment's response window is explicitly switched on (response_switch = 'on').
+     *
+     * Historically only DTS excluded these; the other schemes fell through to scoring
+     * and stamped final_result = 2 (Fail) on people who never validly tested, which
+     * badly inflated the failed count and skewed pass rates. Centralising it here keeps
+     * "late" and "no response" handled the same way across DTS/EID/VL/Covid19/TB/Recency
+     * and custom tests.
+     *
+     * Call it at the top of each per-participant iteration. When it returns true it has
+     * already written the exclusion (is_excluded = 'yes', final_result = 3, score 0, plus
+     * response_status = 'late' for a late response) to the DB; the caller should then set
+     * $shipment['is_excluded'] = 'yes' so its own in-memory bookkeeping (the
+     * $shipmentResult entry used for report generation) takes the excluded path.
+     *
+     * This only ever runs during (re-)evaluation, so already-finalized shipments are
+     * left untouched — the fix applies to ongoing and future evaluations only.
+     *
+     * @param Zend_Db_Adapter_Abstract $db       the scheme model's DB adapter
+     * @param array                    $shipment  one shipment_participant_map row
+     * @param array|null               $results   the participant's fetched sample results;
+     *                                            pass null when the caller hasn't fetched
+     *                                            them yet (then only response_status decides)
+     * @return bool true if the participant was excluded (caller should treat as excluded)
+     */
+    public static function excludeNonResponder($db, array $shipment, ?array $results = null): bool
+    {
+        $responseStatus = strtolower(trim((string) ($shipment['response_status'] ?? '')));
+        $notTested = strtolower(trim((string) ($shipment['is_pt_test_not_performed'] ?? ''))) === 'yes';
+
+        $didNotParticipate = $responseStatus === ''
+            || $responseStatus === 'noresponse'
+            || $responseStatus === 'draft'
+            // Empty result set only counts as non-participation when the caller
+            // actually fetched and passed the results (null = "not fetched yet").
+            || ($results !== null && count($results) === 0);
+
+        // Late response = submitted after the cut-off. Excluded just like a non-response,
+        // unless the response window is explicitly switched on for this shipment.
+        $isLate = false;
+        $responseSwitchOn = strtolower(trim((string) ($shipment['response_switch'] ?? ''))) === 'on';
+        if (!$didNotParticipate && !$notTested && !$responseSwitchOn) {
+            $reportDate = trim((string) ($shipment['shipment_test_report_date'] ?? ''));
+            if ($reportDate !== '' && strncmp($reportDate, '0000', 4) !== 0) {
+                $cutoff = Pt_Commons_DateUtility::shipmentCutoff($shipment['response_deadline'] ?? null);
+                if ($cutoff !== null) {
+                    try {
+                        if (new DateTimeImmutable($reportDate) > $cutoff) {
+                            $isLate = true;
+                        }
+                    } catch (Throwable $e) {
+                        // Unparseable report date — leave scoring to the scheme.
+                    }
+                }
+            }
+        }
+
+        if (!$didNotParticipate && !$notTested && !$isLate) {
+            return false;
+        }
+
+        if (!empty($shipment['map_id'])) {
+            $update = [
+                'is_excluded'    => 'yes',
+                'is_followup'    => 'yes',
+                'final_result'   => 3, // Excluded — never Fail for a non-valid response
+                'shipment_score' => 0,
+            ];
+            if ($isLate) {
+                $update['is_response_late'] = 'yes';
+                $update['response_status'] = 'late';
+            }
+            $db->update(
+                'shipment_participant_map',
+                $update,
+                $db->quoteInto('map_id = ?', $shipment['map_id'])
+            );
+        }
+
+        return true;
+    }
+
+    /**
      * Shipments of a scheme whose stored scores were computed under the previous
      * settings, i.e. already evaluated (or had reports generated) but not finalized.
      * Used by the settings pages to nudge an admin to re-evaluate after a config change.

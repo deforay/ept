@@ -1,0 +1,121 @@
+<?php
+/** @var array $stats */
+$s = $this->stats ?? [];
+if (empty($s)) {
+    echo '<div style="padding:16px;color:#a94442;">' . $this->htmlTranslate('No participation data available for this shipment.') . '</div>';
+    return;
+}
+
+$enrolled = max(0, (int) $s['enrolled']);
+$pct = static function ($n) use ($enrolled) {
+    return $enrolled > 0 ? round(($n / $enrolled) * 100, 1) : 0;
+};
+
+// Segments that partition "enrolled" (excluded is shown separately as an overlay).
+$segments = [
+    ['key' => 'passed',         'label' => $this->htmlTranslate('Passed'),          'val' => (int) $s['passed'],         'color' => '#1f9d63'],
+    ['key' => 'failed',         'label' => $this->htmlTranslate('Failed'),          'val' => (int) $s['failed'],         'color' => '#d64550'],
+    ['key' => 'pending',        'label' => $this->htmlTranslate('Pending eval'),    'val' => (int) $s['pending_eval'],   'color' => '#e08a1e'],
+    ['key' => 'unable',         'label' => $this->htmlTranslate('Unable to test'),  'val' => (int) $s['unable_to_test'], 'color' => '#c9a227'],
+    ['key' => 'noresponse',     'label' => $this->htmlTranslate('No response'),     'val' => (int) $s['not_responded'],  'color' => '#9aa0a6'],
+];
+?>
+<div class="pstats">
+    <style>
+        /* Scoped, self-contained — this renders inside a fixed-layout DataTables cell,
+           so everything here is explicitly sized and must not rely on the outer table. */
+        .pstats { box-sizing: border-box; width: 100%; padding: 18px 20px; background: #fbfcfd;
+                  border: 1px solid #e6e9ee; border-radius: 8px; color: #2b3038;
+                  font-size: 13px; line-height: 1.4; }
+        .pstats * { box-sizing: border-box; }
+        .pstats .ps-kpis { display: flex; flex-wrap: wrap; gap: 28px; margin-bottom: 16px; }
+        .pstats .ps-kpi .n { font-size: 26px; font-weight: 700; line-height: 1; letter-spacing: -.5px; }
+        .pstats .ps-kpi .l { font-size: 11px; color: #7a828e; text-transform: uppercase;
+                             letter-spacing: .6px; margin-top: 4px; }
+        .pstats .ps-bar { display: flex; width: 100%; height: 16px; border-radius: 8px;
+                          overflow: hidden; background: #eceef1; margin-bottom: 10px; }
+        .pstats .ps-bar span { display: block; height: 100%; }
+        .pstats .ps-legend { display: flex; flex-wrap: wrap; gap: 6px 18px; margin-bottom: 18px; }
+        .pstats .ps-legend .li { display: flex; align-items: center; gap: 6px; font-size: 12px; color: #56606d; }
+        .pstats .ps-legend .dot { width: 10px; height: 10px; border-radius: 3px; flex: 0 0 auto; }
+        .pstats .ps-legend b { color: #2b3038; }
+        .pstats .ps-tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+                            gap: 10px; margin-bottom: 6px; }
+        .pstats .ps-tile { background: #fff; border: 1px solid #e6e9ee; border-left-width: 3px;
+                           border-radius: 6px; padding: 9px 12px; }
+        .pstats .ps-tile .n { font-size: 19px; font-weight: 700; line-height: 1; }
+        .pstats .ps-tile .l { font-size: 11px; color: #7a828e; margin-top: 3px; }
+        .pstats .ps-tile .sub { font-size: 11px; color: #aab0b8; }
+        .pstats .ps-meta { display: flex; flex-wrap: wrap; gap: 8px 22px; margin-top: 14px;
+                           padding-top: 12px; border-top: 1px solid #e6e9ee; font-size: 12px; color: #56606d; }
+        .pstats .ps-meta b { color: #2b3038; }
+    </style>
+
+    <!-- Headline KPIs -->
+    <div class="ps-kpis">
+        <div class="ps-kpi">
+            <div class="n"><?= $s['response_rate'] ?>%</div>
+            <div class="l"><?= $this->htmlTranslate('Response rate') ?></div>
+        </div>
+        <div class="ps-kpi">
+            <div class="n" style="color:#1f9d63;"><?= $s['pass_rate'] ?>%</div>
+            <div class="l"><?= $this->htmlTranslate('Pass rate') ?> · <?= $this->htmlTranslate('of tested') ?></div>
+        </div>
+        <div class="ps-kpi">
+            <div class="n"><?= $enrolled ?></div>
+            <div class="l"><?= $this->htmlTranslate('Enrolled') ?></div>
+        </div>
+    </div>
+
+    <!-- Segmented funnel bar (proportion of enrolled) -->
+    <div class="ps-bar">
+        <?php foreach ($segments as $seg) {
+            if ($seg['val'] <= 0) {
+                continue;
+            }
+            $w = $pct($seg['val']);
+            echo '<span title="' . $seg['label'] . ': ' . $seg['val'] . '" style="width:' . $w . '%;background:' . $seg['color'] . ';"></span>';
+        } ?>
+    </div>
+    <div class="ps-legend">
+        <?php foreach ($segments as $seg) { ?>
+            <span class="li"><span class="dot" style="background:<?= $seg['color'] ?>;"></span>
+                <?= $seg['label'] ?> <b><?= $seg['val'] ?></b> <span style="color:#aab0b8;">(<?= $pct($seg['val']) ?>%)</span></span>
+        <?php } ?>
+    </div>
+
+    <!-- Stat tiles -->
+    <div class="ps-tiles">
+        <div class="ps-tile" style="border-left-color:#6b7684;">
+            <div class="n"><?= $s['responded'] ?></div>
+            <div class="l"><?= $this->htmlTranslate('Responded') ?></div>
+        </div>
+        <div class="ps-tile" style="border-left-color:#3f6fb0;">
+            <div class="n"><?= $s['tested'] ?></div>
+            <div class="l"><?= $this->htmlTranslate('Actually tested') ?></div>
+        </div>
+        <div class="ps-tile" style="border-left-color:#1f9d63;">
+            <div class="n" style="color:#1f9d63;"><?= $s['passed'] ?></div>
+            <div class="l"><?= $this->htmlTranslate('Passed') ?></div>
+        </div>
+        <div class="ps-tile" style="border-left-color:#d64550;">
+            <div class="n" style="color:#d64550;"><?= $s['failed'] ?></div>
+            <div class="l"><?= $this->htmlTranslate('Failed') ?></div>
+        </div>
+        <div class="ps-tile" style="border-left-color:#9aa0a6;">
+            <div class="n"><?= $s['not_responded'] ?></div>
+            <div class="l"><?= $this->htmlTranslate('Did not respond') ?></div>
+        </div>
+        <div class="ps-tile" style="border-left-color:#c9a227;">
+            <div class="n"><?= $s['excluded'] ?></div>
+            <div class="l"><?= $this->htmlTranslate('Excluded from scoring') ?></div>
+        </div>
+    </div>
+
+    <!-- Secondary metrics -->
+    <div class="ps-meta">
+        <span><i class="icon-time"></i> <?= $this->htmlTranslate('Late responses') ?>: <b><?= $s['late_responses'] ?></b></span>
+        <span><i class="icon-download"></i> <?= $this->htmlTranslate('Reports downloaded') ?>: <b><?= $s['reports_downloaded'] ?></b></span>
+        <span><?= $this->htmlTranslate('Unable to test') ?>: <b><?= $s['unable_to_test'] ?></b></span>
+    </div>
+</div>

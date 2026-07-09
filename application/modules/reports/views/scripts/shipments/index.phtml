@@ -167,17 +167,17 @@
 	</table>
 	<!-- BULK DOWNLOAD TOOLBAR -->
 	<div id="bulkShipmentToolbar" style="margin:10px 0;display:none;">
-		<button class="btn btn-success btn-sm" id="bulkShipmentBtn"
-			onclick="bulkDownloadShipments()" disabled>
+		<button class="btn btn-success btn-sm" id="bulkShipmentBtn" onclick="bulkDownloadShipments()" disabled>
 			<i class="icon-download"></i>
-			<?= $this->htmlTranslate("Download Bulk Overview Reports - Selected"); ?> (<span id="bulkShipmentCount">0</span>)
+			<?= $this->htmlTranslate("Download Bulk Overview Reports - Selected"); ?> (<span
+				id="bulkShipmentCount">0</span>)
 		</button>
 		<button class="btn btn-default btn-sm" onclick="clearShipmentSelection()"
 			style="margin-left:5px;"><?= $this->htmlTranslate("Clear"); ?></button>
 	</div>
 	<div class="table-responsive">
-		<table cellpadding="0" cellspacing="0" border="0" class="table table-responsive table-striped table-bordered table-hover hide"
-			id="shipmentTable">
+		<table cellpadding="0" cellspacing="0" border="0"
+			class="table table-responsive table-striped table-bordered table-hover hide" id="shipmentTable">
 			<thead>
 				<tr>
 					<!-- <th scope="col" style="text-align:center; width:2%;">
@@ -193,8 +193,10 @@
 					<th scope="col" style="text-align: center;"><?= $this->htmlTranslate("Responses"); ?></th>
 					<th scope="col" style="text-align: center;"><?= $this->htmlTranslate("Passed"); ?></th>
 					<th scope="col" style="text-align: center;"><?= $this->htmlTranslate("Status"); ?></th>
-					<th scope="col" style="text-align: center;"><?= $this->htmlTranslate("Reports for Participants"); ?></th>
-					<th scope="col" style="text-align: center;"><?= $this->htmlTranslate("Reports for PT Admin"); ?></th>
+					<th scope="col" style="text-align: center;">
+						<?= $this->htmlTranslate("Reports for Participants"); ?></th>
+					<th scope="col" style="text-align: center;">
+						<?= $this->htmlTranslate("Reports for PT Admin"); ?></th>
 				</tr>
 				<tr class="column-search-row">
 					<!-- <th scope="col"></th> -->
@@ -224,7 +226,8 @@
 			</thead>
 			<tbody>
 				<tr>
-					<td colspan="10" class="dataTables_empty"><?= $this->htmlTranslate("Loading data from server"); ?></td>
+					<td colspan="10" class="dataTables_empty">
+						<?= $this->htmlTranslate("Loading data from server"); ?></td>
 				</tr>
 			</tbody>
 		</table>
@@ -243,16 +246,16 @@
 		var scheme = $(obj).data('scheme');
 
 		if ($(obj).is(':checked')) {
-			if (!selectedShipments.find(function(s) {
-					return s.id === sid;
-				})) {
+			if (!selectedShipments.find(function (s) {
+				return s.id === sid;
+			})) {
 				selectedShipments.push({
 					id: sid,
 					scheme: scheme
 				});
 			}
 		} else {
-			selectedShipments = selectedShipments.filter(function(s) {
+			selectedShipments = selectedShipments.filter(function (s) {
 				return s.id !== sid;
 			});
 		}
@@ -261,13 +264,13 @@
 
 	function toggleAllShipments() {
 		if ($("#masterShipmentCb").is(':checked')) {
-			$(".checkShipment").each(function() {
+			$(".checkShipment").each(function () {
 				var sid = this.value;
 				var scheme = $(this).data('scheme');
 				$(this).prop('checked', true);
-				if (!selectedShipments.find(function(s) {
-						return s.id === sid;
-					})) {
+				if (!selectedShipments.find(function (s) {
+					return s.id === sid;
+				})) {
 					selectedShipments.push({
 						id: sid,
 						scheme: scheme
@@ -275,10 +278,10 @@
 				}
 			});
 		} else {
-			$(".checkShipment").each(function() {
+			$(".checkShipment").each(function () {
 				var sid = this.value;
 				$(this).prop('checked', false);
-				selectedShipments = selectedShipments.filter(function(s) {
+				selectedShipments = selectedShipments.filter(function (s) {
 					return s.id !== sid;
 				});
 			});
@@ -307,9 +310,9 @@
 	// fnDrawCallback: restore checked state on page change
 	// (same as before but check by id field)
 	function restoreShipmentCheckboxes() {
-		$(".checkShipment").each(function() {
+		$(".checkShipment").each(function () {
 			var sid = this.value;
-			var isSelected = selectedShipments.find(function(s) {
+			var isSelected = selectedShipments.find(function (s) {
 				return s.id === sid;
 			});
 			$(this).prop('checked', !!isSelected);
@@ -327,10 +330,10 @@
 		$.blockUI();
 		$.post(
 			"<?php echo $this->url(array('module' => 'reports', 'controller' => 'shipments', 'action' => 'bulk-download-shipment-report-excel')); ?>", {
-				shipments: selectedShipments, // [{id, scheme}, ...]
-				format: 'html'
-			},
-			function(data) {
+			shipments: selectedShipments, // [{id, scheme}, ...]
+			format: 'html'
+		},
+			function (data) {
 				if (data && data !== '') {
 					document.location.href = '/temporary/' + data;
 				} else {
@@ -340,43 +343,69 @@
 			}
 		);
 	}
-	$(document).ready(function() {
+	$(document).ready(function () {
 		$("#dataManager").select2({
 			placeholder: "Select PT participant login",
 			allowClear: true
 		});
 
 		$('#dateRange').daterangepicker({
-				locale: {
-					cancelLabel: 'Clear',
-					format: 'DD-MMM-YYYY',
-					separator: ' to ',
-				},
-				autoApply: true,
-				showDropdowns: true,
-				alwaysShowCalendars: true,
-				autoUpdateInput: false,
-				// startDate: moment().subtract(366, 'days'),
-				// endDate: moment(),
-				// maxDate: moment(),
-				ranges: {
-					'This Month': [moment().startOf('month'), moment().endOf('month')],
-					'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
-					'Last 60 Days': [moment().subtract(59, 'days'), moment()],
-					'Last 90 Days': [moment().subtract(89, 'days'), moment()],
-					'Last 180 Days': [moment().subtract(179, 'days'), moment()],
-					'Last 12 Months': [moment().subtract(12, 'month'), moment()],
-					'Last 18 Months': [moment().subtract(18, 'month'), moment()],
-					'Previous Year': [moment().subtract(1, 'year').startOf('year'), moment().subtract(1, 'year').endOf('year')],
-					'Current Year To Date': [moment().startOf('year'), moment()]
-				}
+			locale: {
+				cancelLabel: 'Clear',
+				format: 'DD-MMM-YYYY',
+				separator: ' to ',
 			},
-			function(start, end) {
+			autoApply: true,
+			showDropdowns: true,
+			alwaysShowCalendars: true,
+			autoUpdateInput: false,
+			// startDate: moment().subtract(366, 'days'),
+			// endDate: moment(),
+			// maxDate: moment(),
+			ranges: {
+				'This Month': [moment().startOf('month'), moment().endOf('month')],
+				'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
+				'Last 60 Days': [moment().subtract(59, 'days'), moment()],
+				'Last 90 Days': [moment().subtract(89, 'days'), moment()],
+				'Last 180 Days': [moment().subtract(179, 'days'), moment()],
+				'Last 12 Months': [moment().subtract(12, 'month'), moment()],
+				'Last 18 Months': [moment().subtract(18, 'month'), moment()],
+				'Previous Year': [moment().subtract(1, 'year').startOf('year'), moment().subtract(1, 'year').endOf('year')],
+				'Current Year To Date': [moment().startOf('year'), moment()]
+			}
+		},
+			function (start, end) {
 				startDate = start.format('DD-MMM-YYYY');
 				endDate = end.format('DD-MMM-YYYY');
 			});
 
 		getDrawable();
+
+		// Participants column — expand/collapse child row with the participation
+		// breakdown (enrolled → responded → tested → passed/failed …), fetched on demand.
+		$('#shipmentTable tbody').on('click', 'a.toggle-stats-row', function (e) {
+			e.preventDefault();
+			var $btn = $(this);
+			var sid = $btn.data('sid');
+			var tr = $btn.closest('tr')[0];
+			if (oTable.fnIsOpen(tr)) {
+				oTable.fnClose(tr);
+				$btn.removeClass('btn-success').addClass('btn-default');
+				return;
+			}
+			var placeholder = '<div style="padding:12px;color:#888;"><i class="icon-refresh"></i> <?= $this->jsTranslate("Loading breakdown…"); ?></div>';
+			oTable.fnOpen(tr, placeholder, 'stats-child-container');
+			$btn.removeClass('btn-default').addClass('btn-success');
+			$.post(
+				"<?php echo $this->url(array('module' => 'reports', 'controller' => 'shipments', 'action' => 'participation-stats', 'format' => 'html')); ?>",
+				{ sid: sid },
+				function (html) {
+					$(tr).next('tr').find('td').first().html(html);
+				}
+			).fail(function () {
+				$(tr).next('tr').find('td').first().html('<div style="padding:12px;color:#a94442;"><?= $this->jsTranslate("Failed to load breakdown. Please try again."); ?></div>');
+			});
+		});
 	});
 
 	function getDrawable() {
@@ -454,7 +483,7 @@
 			"bProcessing": true,
 			"bServerSide": true,
 			"sAjaxSource": "<?php echo $this->url(array('module' => 'reports', 'controller' => 'shipments', 'action' => 'index', 'format' => 'html')); ?>",
-			"fnServerParams": function(aoData) {
+			"fnServerParams": function (aoData) {
 				dateRange = $("#dateRange").val();
 				dataManager = $("#dataManager").val();
 				aoData.push({
@@ -474,7 +503,7 @@
 					"value": dataManager
 				});
 			},
-			"fnServerData": function(sSource, aoData, fnCallback) {
+			"fnServerData": function (sSource, aoData, fnCallback) {
 				$.ajax({
 					"dataType": 'json',
 					"type": "POST",
@@ -483,8 +512,8 @@
 					"success": fnCallback
 				});
 			},
-			"fnRowCallback": function(nRow, aData, iDisplayIndex) {
-				$(".checkShipment").each(function() {
+			"fnRowCallback": function (nRow, aData, iDisplayIndex) {
+				$(".checkShipment").each(function () {
 					if ($.inArray(this.value, selectedShipments) !== -1) {
 						$(this).prop('checked', true);
 					}
@@ -499,7 +528,7 @@
 			},
 		});
 
-		bindColSearch('#shipmentTable', function(value, colIdx) {
+		bindColSearch('#shipmentTable', function (value, colIdx) {
 			if (oTable) {
 				oTable.fnFilter(value, colIdx);
 			}
@@ -509,11 +538,11 @@
 	function generateShipmentParticipantList(shipmentId, schemeType) {
 		$.blockUI();
 		$.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'shipments', 'action' => 'get-shipment-participant-list')); ?>", {
-				shipmentId: shipmentId,
-				schemeType: schemeType,
-				format: "html"
-			},
-			function(data) {
+			shipmentId: shipmentId,
+			schemeType: schemeType,
+			format: "html"
+		},
+			function (data) {
 				if (data != "") {
 					//alert(data);$.unblockUI();return;
 					document.location.href = '/temporary/' + data;
@@ -525,10 +554,10 @@
 	function downloadFeedbackReport(shipmentId) {
 		$.blockUI();
 		$.post("/admin/feedback-responses/get-feedback-response-report", {
-				sid: shipmentId,
-				format: "html"
-			},
-			function(data) {
+			sid: shipmentId,
+			format: "html"
+		},
+			function (data) {
 				if (data != "") {
 					document.location.href = '/temporary/' + data;
 				} else {
@@ -541,12 +570,12 @@
 	function exportNotRespondedShipment(_shipmentId, _shipmentCode, _shipmentDate) {
 		$.blockUI();
 		$.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'shipment', 'action' => 'export-shipment-not-responded-participants')); ?>", {
-				shipmentId: atob(_shipmentId),
-				shipmentCode: atob(_shipmentCode),
-				shipmentDate: atob(_shipmentDate),
-				format: "html"
-			},
-			function(data) {
+			shipmentId: atob(_shipmentId),
+			shipmentCode: atob(_shipmentCode),
+			shipmentDate: atob(_shipmentDate),
+			format: "html"
+		},
+			function (data) {
 				if (data == "" || data == null || data == undefined) {
 					alert("<?= $this->jsTranslate("Unable to generate download"); ?>");
 				} else {

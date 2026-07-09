@@ -4725,6 +4725,84 @@ class Application_Service_Shipments
         ];
     }
 
+    /**
+     * Participation & outcome breakdown for a single shipment.
+     *
+     * Returns a flat associative array of counts (plus derived rates and the
+     * not-tested reason breakdown) suitable for a stats popup / expand row.
+     *
+     * NOTE on semantics — the raw columns are misleading and must NOT be used
+     * directly:
+     *   - final_result = 2 ("Fail") is auto-stamped on non-responders too, so
+     *     "failed" is scoped to participants who actually responded & tested.
+     *   - final_result = 3 ("Excluded") likewise covers auto-excluded
+     *     non-responders; "excluded" here uses the explicit is_excluded flag.
+     *   - response_status is the reliable signal of what the participant did:
+     *     responded / late / nottested / noresponse / draft.
+     *
+     * The participation funnel is a clean partition:
+     *   enrolled = responded + not_responded
+     *   responded = tested + unable_to_test
+     *   tested   ⊇ passed + failed + pending_eval
+     *
+     * @param int $shipmentId
+     * @return array
+     */
+    public static function getShipmentParticipationStats($shipmentId): array
+    {
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $shipmentId = (int) $shipmentId;
+
+        $sql = "SELECT
+                COUNT(*) AS enrolled,
+                SUM(response_status IN ('responded','late','nottested')) AS responded,
+                SUM(response_status = 'nottested' OR is_pt_test_not_performed = 'yes') AS unable_to_test,
+                SUM(response_status IN ('responded','late')
+                    AND (is_pt_test_not_performed IS NULL OR is_pt_test_not_performed <> 'yes')) AS tested,
+                SUM(final_result = 1) AS passed,
+                SUM(final_result = 2 AND response_status IN ('responded','late')) AS failed,
+                SUM(is_excluded = 'yes') AS excluded,
+                SUM(response_status = 'late' OR is_response_late = 'yes') AS late_responses,
+                SUM(individual_report_downloaded_on IS NOT NULL) AS reports_downloaded
+            FROM shipment_participant_map
+            WHERE shipment_id = ?";
+
+        $row = $db->fetchRow($sql, [$shipmentId]) ?: [];
+
+        $enrolled       = (int) ($row['enrolled'] ?? 0);
+        $responded      = (int) ($row['responded'] ?? 0);
+        $unableToTest   = (int) ($row['unable_to_test'] ?? 0);
+        $tested         = (int) ($row['tested'] ?? 0);
+        $passed         = (int) ($row['passed'] ?? 0);
+        $failed         = (int) ($row['failed'] ?? 0);
+        $excluded       = (int) ($row['excluded'] ?? 0);
+        $lateResponses  = (int) ($row['late_responses'] ?? 0);
+        $reportsDownloaded = (int) ($row['reports_downloaded'] ?? 0);
+
+        $notResponded = max(0, $enrolled - $responded);
+        // Responders who tested but haven't been scored Pass/Fail yet.
+        $pendingEval  = max(0, $tested - $passed - $failed);
+
+        $responseRate = $enrolled > 0 ? round(($responded / $enrolled) * 100, 1) : 0.0;
+        $passRate     = $tested > 0 ? round(($passed / $tested) * 100, 1) : 0.0;
+
+        return [
+            'enrolled'          => $enrolled,
+            'responded'         => $responded,
+            'not_responded'     => $notResponded,
+            'unable_to_test'    => $unableToTest,
+            'tested'            => $tested,
+            'passed'            => $passed,
+            'failed'            => $failed,
+            'pending_eval'      => $pendingEval,
+            'excluded'          => $excluded,
+            'late_responses'    => $lateResponses,
+            'reports_downloaded' => $reportsDownloaded,
+            'response_rate'     => $responseRate,
+            'pass_rate'         => $passRate,
+        ];
+    }
+
     public static function getShipmentAttributes($sid, $value = '')
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();

@@ -49,6 +49,19 @@ class Application_Model_Vl
         foreach ($shipmentResult as $shipment) {
             Pt_Commons_MiscUtility::updateHeartbeat('shipment', 'shipment_id', $shipmentId);
             $shipment['is_excluded'] = 'no'; // setting it as no by default. It will become 'yes' if some condition matches.
+
+            // No response / could not test / late → EXCLUDED, never failed (shared rule).
+            // VL's own late/no-response else-branch would otherwise mis-tag non-responders
+            // as 'late' and never set final_result, so short-circuit here (same as DTS).
+            if (Application_Service_Evaluation::excludeNonResponder($db, $shipment)) {
+                $shipmentResult[$counter]['final_result'] = 3;
+                $shipmentResult[$counter]['is_excluded'] = 'yes';
+                $shipmentResult[$counter]['display_result'] = 'Excluded';
+                $shipmentResult[$counter]['shipment_score'] = 0;
+                $counter++;
+                continue;
+            }
+
             $attributes = Pt_Commons_JsonUtility::safeDecode($shipment['attributes']);
             $shipmentAttributes = Pt_Commons_JsonUtility::safeDecode($shipment['shipment_attributes']);
 

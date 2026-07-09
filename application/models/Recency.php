@@ -39,6 +39,12 @@ class Application_Model_Recency
             Pt_Commons_MiscUtility::updateHeartbeat('shipment', 'shipment_id', $shipmentId);
             $shipment['is_excluded'] = 'no'; // setting it as no by default. It will become 'yes' if some condition matches.
 
+            // No response / could not test / late → EXCLUDED, never failed (shared rule).
+            // Recency fetches results only inside the on-time block, so guard at the top.
+            if (Application_Service_Evaluation::excludeNonResponder(Zend_Db_Table_Abstract::getDefaultAdapter(), $shipment)) {
+                $shipment['is_excluded'] = 'yes';
+            }
+
             $createdOnUser = explode(' ', $shipment['shipment_test_report_date'] ?? '');
             if (trim($createdOnUser[0]) != '' && $createdOnUser[0] != null && trim($createdOnUser[0]) != '0000-00-00') {
                 $createdOn = new DateTime($createdOnUser[0]);

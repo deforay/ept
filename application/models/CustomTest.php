@@ -122,6 +122,11 @@ class Application_Model_CustomTest
 
             $lastDate = Pt_Commons_DateUtility::shipmentCutoff($shipment['response_deadline']);
             $results = $this->getSamplesForParticipant($shipmentId, $shipment['participant_id']);
+
+            // No response / could not test / late → EXCLUDED, never failed (shared rule).
+            if (Application_Service_Evaluation::excludeNonResponder($this->db, $shipment, $results)) {
+                $shipment['is_excluded'] = 'yes';
+            }
             // Human-readable scheme label for corrective-action text (e.g. "Hepatitis B
             // Serology", "Syphilis Serology", "Malaria Serology"). Falls back to the scheme
             // code. Avoids the previously hardcoded "Hepatitis-B" reference on every scheme.
