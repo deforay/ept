@@ -2452,6 +2452,7 @@ class Application_Service_Evaluation
             ->where('s.shipment_id = ?', $shipmentId)
             // ->where(new Zend_Db_Expr("IFNULL(sp.is_excluded, 'no') = 'no'"))
             // ->where("sp.is_excluded not like 'yes'")
+            // ->where("p.unique_identifier like 'PT-Y2M0D'")
             ->where("sp.response_status is not null AND sp.response_status like 'responded'");
         if (isset($sLimit) && isset($sOffset)) {
             $sql = $sql->limit($sLimit, $sOffset);
@@ -2517,14 +2518,25 @@ class Application_Service_Evaluation
         if ($includeAnalytics) {
             // Queries below are constant per shipment; compute once and reuse for each participant.
             $statisticsSql = $db->select()->from(['spm' => 'shipment_participant_map'], [
-                'number_not_responded' => new Zend_Db_Expr("SUM(CASE WHEN (spm.response_status is null OR spm.response_status != 'responded') THEN 1 ELSE 0 END)"),
-                'number_responded' => new Zend_Db_Expr("SUM(CASE WHEN (spm.response_status is not null and spm.response_status = 'responded') THEN 1 ELSE 0 END)"),
-                'providersWith100' => new Zend_Db_Expr('SUM(CASE WHEN (spm.shipment_score + spm.documentation_score) = 100 THEN 1 ELSE 0 END)'),
-                'providers>80' => new Zend_Db_Expr("SUM(CASE WHEN ((spm.shipment_score + spm.documentation_score) >= $score) THEN 1 ELSE 0 END)"),
-                'providers<80' => new Zend_Db_Expr("SUM(CASE WHEN ((spm.shipment_score + spm.documentation_score) < $score) THEN 1 ELSE 0 END)"),
-            ])
+                    'number_not_responded' => new Zend_Db_Expr(
+                        "SUM(CASE WHEN (spm.response_status = 'noresponse') THEN 1 ELSE 0 END)"
+                    ),
+                    'number_responded' => new Zend_Db_Expr(
+                        "SUM(CASE WHEN (spm.response_status = 'responded') THEN 1 ELSE 0 END)"
+                    ),
+                    'providersWith100' => new Zend_Db_Expr(
+                        "SUM(CASE WHEN (spm.response_status = 'responded' AND (spm.shipment_score + spm.documentation_score) = 100) THEN 1 ELSE 0 END)"
+                    ),
+                    'providers>80' => new Zend_Db_Expr(
+                        "SUM(CASE WHEN (spm.response_status = 'responded' AND (spm.shipment_score + spm.documentation_score) >= $score) THEN 1 ELSE 0 END)"
+                    ),
+                    'providers<80' => new Zend_Db_Expr(
+                        "SUM(CASE WHEN (spm.response_status = 'responded' AND (spm.shipment_score + spm.documentation_score) < $score) THEN 1 ELSE 0 END)"
+                    ),
+                ])
                 ->where('spm.shipment_id = ?', $shipmentId)
                 ->group(['spm.shipment_id']);
+                die($statisticsSql);
             $shipmentStatistics = $db->fetchRow($statisticsSql);
 
             $unionQuery = $db->select()->from('response_result_' . $tableType, ['sample_id', 'shipment_map_id', 'calculated_score'])
@@ -2836,8 +2848,8 @@ class Application_Service_Evaluation
                 $performancePassFaile2Sql = $db->select()->from(['d' => 'distributions'], ['distribution_code'])
                     ->join(['s' => 'shipment'], 'd.distribution_id=s.distribution_id', [''])
                     ->join(['spm' => 'shipment_participant_map'], 's.shipment_id=spm.shipment_id', [
-                        'passed' => new Zend_Db_Expr('SUM(CASE WHEN (spm.final_result = 1) THEN 1 ELSE 0 END)'),
-                        'failed' => new Zend_Db_Expr('SUM(CASE WHEN (spm.final_result = 2) THEN 1 ELSE 0 END)'),
+                        'passed' => new Zend_Db_Expr('SUM(CASE WHEN (spm.response_status = \'responded\' AND spm.final_result = 1) THEN 1 ELSE 0 END)'),
+                        'failed' => new Zend_Db_Expr('SUM(CASE WHEN (spm.response_status = \'responded\' AND spm.final_result = 2) THEN 1 ELSE 0 END)'),
                     ])
                     ->where('s.scheme_type = ?', $res['scheme_type'])
                     ->where("d.distribution_code IN('" . implode("','", $surveysList) . "')")

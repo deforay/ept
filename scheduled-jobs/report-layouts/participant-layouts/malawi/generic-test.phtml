@@ -389,7 +389,7 @@ if (!empty($resultArray['shipment'])) {
         }
         $br = '';
         if ($performance1 || $performance2 || $performance3) {
-            $br = str_repeat('<br>', 13);
+            $br = str_repeat('<br>', 14);
         }
         $eodReportText = "End of report";
         if ($evalRow['report_type'] == 'finalized') {
@@ -400,12 +400,12 @@ if (!empty($resultArray['shipment'])) {
         if (trim($result['shipment_comment'] ?? '') != "") {
             $html .= '<span style="font-size:11px;"><b>Scheme Manager\'s Comments:</b> ' . $result['shipment_comment'] . '</span><br>';
         }
-        $html .= '<span style="font-size:11px;font-weight:bold;"><i>This is the confidential report that summarizes your performance.</i></span><br>';
-        if (trim($result['shipment_comment']) != "") {
-            $html .= '<span style="font-size:11px;"><b>Scheme Manager`s Comments:</b> ' . $result['shipment_comment'] . '</span><br>';
-        }
+        // $html .= '<span style="font-size:11px;font-weight:bold;"><i>This is the confidential report that summarizes your performance.</i></span><br>';
+        // if (trim($result['shipment_comment']) != "") {
+        //     $html .= '<span style="font-size:11px;"><b>Scheme Manager`s Comments:</b> ' . $result['shipment_comment'] . '</span><br>';
+        // }
         // $html .= '<span style="font-size:11px;font-weight:bold;text-align:center;"><i>NPH PT all rights reserved.</i></span>'<br>;
-        $html .= '<span style="font-size:11px;font-weight:bold;">Report Print Date: ' . $commonService->humanReadableDateFormat(date('d-m-Y')) . '</span><br>';
+        // $html .= '<span style="font-size:11px;font-weight:bold;">Report Print Date: ' . $commonService->humanReadableDateFormat(date('d-m-Y')) . '</span><br>';
         $html .= '<span style="font-size:11px;text-align:center;font-weight:bold;"><u>' . $eodReportText . '</u></span>';
         $pdf->writeHTML($html, true, false, true, false, '');
 
