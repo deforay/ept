@@ -117,25 +117,23 @@
 
 	/* Download Excel */
 
-	/* Allow button text to wrap */
-	/* #shipmentTable .btn {
-		white-space: normal;
+	/* Keep the report action buttons inside their own column instead of
+	   overflowing into the neighbouring one (Bootstrap .btn is white-space:nowrap,
+	   so long labels like "Summary Report (DRAFT)" spill past the fixed cell width). */
+	#shipmentTable td:nth-child(10),
+	#shipmentTable td:nth-child(11) {
+		overflow: hidden;
 	}
 
-	/* Checkbox column */
-	#shipmentTable th:nth-child(1),
-	#shipmentTable td:nth-child(1) {
-		/* width: 2%; */
+	#shipmentTable td:nth-child(10) .btn,
+	#shipmentTable td:nth-child(11) .btn {
+		display: inline-block;
+		white-space: normal !important;
+		word-break: break-word;
+		overflow-wrap: anywhere;
+		max-width: 100%;
+		box-sizing: border-box;
 	}
-
-	/* PT Survey Code — was nth-child(1), now nth-child(2) */
-	#shipmentTable th:nth-child(2),
-	#shipmentTable td:nth-child(2) {
-		/* width: 10%; */
-	}
-
-	*/
-	/* ... continue shifting all existing nth-child values +1 */
 </style>
 <link rel="stylesheet" href="<?php echo $this->baseUrl('css/daterangepicker.css'); ?>" type="text/css" media="all">
 <script type="text/javascript" src="<?php echo $this->baseUrl('js/moment.min.js'); ?>"></script>
