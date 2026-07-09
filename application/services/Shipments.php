@@ -4748,10 +4748,18 @@ class Application_Service_Shipments
      * @param int $shipmentId
      * @return array
      */
-    public static function getShipmentParticipationStats($shipmentId): array
+    public static function getShipmentParticipationStats($shipmentId, bool $useCache = true): array
     {
-        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        // The counts are constant for a shipment within a single request/run (report
+        // generation is read-only and runs after evaluation is frozen), so memoize by
+        // shipment id. Pass $useCache = false to force a re-read after a mutation.
+        static $cache = [];
         $shipmentId = (int) $shipmentId;
+        if ($useCache && isset($cache[$shipmentId])) {
+            return $cache[$shipmentId];
+        }
+
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
 
         $sql = "SELECT
                 COUNT(*) AS enrolled,
@@ -4789,7 +4797,7 @@ class Application_Service_Shipments
         $responseRate = $enrolled > 0 ? round(($responded / $enrolled) * 100, 1) : 0.0;
         $passRate     = $tested > 0 ? round(($passed / $tested) * 100, 1) : 0.0;
 
-        return [
+        $cache[$shipmentId] = [
             'enrolled'          => $enrolled,
             'responded'         => $responded,
             'not_responded'     => $notResponded,
@@ -4805,6 +4813,8 @@ class Application_Service_Shipments
             'response_rate'     => $responseRate,
             'pass_rate'         => $passRate,
         ];
+
+        return $cache[$shipmentId];
     }
 
     public static function getShipmentAttributes($sid, $value = '')
