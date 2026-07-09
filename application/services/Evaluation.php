@@ -2536,7 +2536,6 @@ class Application_Service_Evaluation
                 ])
                 ->where('spm.shipment_id = ?', $shipmentId)
                 ->group(['spm.shipment_id']);
-                die($statisticsSql);
             $shipmentStatistics = $db->fetchRow($statisticsSql);
 
             $unionQuery = $db->select()->from('response_result_' . $tableType, ['sample_id', 'shipment_map_id', 'calculated_score'])
