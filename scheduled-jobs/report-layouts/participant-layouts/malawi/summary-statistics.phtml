@@ -14,10 +14,8 @@ $performance3 = false;
 $chartUid = preg_replace('/[^A-Za-z0-9_-]/', '', (string)($result['unique_identifier'] ?? '')) . '_' . getmypid();
 
 if (isset($result['statistics']) && !empty($result['statistics'])) {
-    // Passing score is per-scheme (custom tests carry their own; built-ins read
-    // SchemeConfig). Use the shared resolver so this label matches the score
-    // buckets computed in Evaluation::getIndividualReportsDataForPDF().
-    $score = Application_Service_Evaluation::getPassingScore($result);
+    $passpercentage = Pt_Commons_SchemeConfig::get($schemeType . '.passPercentage');
+    $score = $passpercentage ?? '100';
 
     $ppOverview = '<br><table border="1" cellpadding="4" cellspacing="0" style="width:100%;font-size:12px;">';
 
@@ -46,11 +44,25 @@ if (isset($result['statistics']) && !empty($result['statistics'])) {
     $pdf->writeHTML($ppOverview, true, false, true, false, '');
 }
 
+// Track whether this section is starting on a page TCPDF just freshly broke to. If so,
+// there is no "current page" content to weigh against — we're already as fresh as it
+// gets, so the up-front fits-or-breaks check further below must be skipped. Running it
+// anyway was the bug: it re-measured against the small amount of space already eaten by
+// the header/margin on the new page, found the group didn't fit THAT tightly, and fired
+// a second AddPage() — leaving the page we just broke to sitting completely blank.
+$justForcedFreshPage = false;
 if (!$correctiveActions) {
     $pdf->AddPage();
+    $justForcedFreshPage = true;
 }
 
-$pdf->writeHTML('<span style="text-align:center;font-weight:bold;font-size:12px;">Qualitative Evaluation</span>', true, false, true, false, '');
+// Build (but don't write yet) the "Qualitative Evaluation" heading. Writing it before
+// the page-break decision below is what stranded it alone on its own page previously:
+// the heading got printed, THEN charts+comments were measured and didn't fit in what
+// was left, so a second AddPage() fired — leaving the heading orphaned. Now the heading's
+// own height is folded into the same up-front decision as the charts and comments, so
+// the whole section (heading + charts + comments) moves together as one unit.
+$qualEvalHtml = '<span style="text-align:center;font-weight:bold;font-size:12px;">Qualitative Evaluation</span>';
 
 // All three charts are drawn at the same Graph canvas size (680x200), so lock every
 // rendered image to the same width and derive its height from that fixed aspect ratio.
@@ -76,9 +88,18 @@ This is the confidential report that summarizes your performance. The National P
 // }
 // $commentsHtml .= '<p style="font-size:11px;font-weight:bold;text-align:center;"><i>NPH PT all rights reserved.</i></p>';
 // $commentsHtml .= '<p style="font-size:11px;font-weight:bold;">Report Print Date: ' . $commonService->humanReadableDateFormat(date('d-m-Y')) . '</p>';
-$commentsHtml .= '<p style="font-size:11px;text-align:center;font-weight:bold;"><u>' . $eodReportText . '</u>.</p>';
+$commentsHtml .= '<br><span style="font-size:11px;text-align:center;font-weight:bold;"><u>' . $eodReportText . '</u>.</span>';
 
-// Measure the comments block's real rendered height without committing it to the PDF yet.
+// Measure the heading's and the comments block's real rendered height without
+// committing either to the PDF yet — same transaction/rollback trick for both, so
+// neither one gets written until AFTER the page-break decision below is made.
+$pdf->startTransaction();
+$measureStartY = $pdf->getY();
+$pdf->writeHTML($qualEvalHtml, true, false, true, false, '');
+$measureEndY = $pdf->getY();
+$pdf = $pdf->rollbackTransaction();
+$qualEvalHeight = $measureEndY - $measureStartY;
+
 $pdf->startTransaction();
 $measureStartY = $pdf->getY();
 $pdf->writeHTML($commentsHtml, true, false, true, false, '');
@@ -86,11 +107,13 @@ $measureEndY = $pdf->getY();
 $pdf = $pdf->rollbackTransaction();
 $commentsHeight = $measureEndY - $measureStartY;
 
-// Work out how much vertical space ALL requested charts plus the comments block will
-// need together, so we can decide up front whether to break to a new page. Doing this
-// once here — rather than per-chart or after the charts — is what keeps performance1/2/3
-// AND the comments text printed together on a single page.
-$neededHeight = 0;
+// Work out how much vertical space the heading, ALL requested charts, and the comments
+// block will need together, so we can decide up front whether to break to a new page.
+// Doing this once here — before ANY of the three are written — is what keeps the
+// "Qualitative Evaluation" heading, performance1/2/3, AND the comments text printed
+// together on a single page instead of the heading getting stranded alone on a page
+// while the charts spill onto the next one.
+$neededHeight = $qualEvalHeight;
 if (isset($result['performance1']) && !empty($result['performance1'])) {
     $neededHeight += $chartHeightMM + $chartSpacing;
 }
@@ -102,9 +125,19 @@ if (isset($result['performance3']) && !empty($result['performance3'])) {
 }
 $neededHeight += $commentsHeight;
 
-if ($neededHeight > 0 && ($pdf->getY() + $neededHeight) > ($pdf->getPageHeight() - $pdf->getBreakMargin())) {
+// Only apply this measurement-based break when we're continuing on a page that already
+// has other content on it (i.e. $correctiveActions was true, so we're still on page 1
+// beneath the corrective-actions table). If we just forced a fresh page above, skip this
+// entirely — TCPDF's native auto page break (already enabled via SetAutoPageBreak) will
+// still protect any individual chart or the comments block from being cut off mid-render
+// if the group genuinely runs long on rare oversized content; we simply don't pre-empt
+// that by breaking again before anything's even been drawn.
+if (!$justForcedFreshPage && $neededHeight > 0 && ($pdf->getY() + $neededHeight) > ($pdf->getPageHeight() - $pdf->getBreakMargin())) {
     $pdf->AddPage();
 }
+
+// Now that the page-break decision is finalized, actually write the heading.
+$pdf->writeHTML($qualEvalHtml, true, false, true, false, '');
 
 if (isset($result['performance1']) && !empty($result['performance1'])) {
     $performance1 = true;
