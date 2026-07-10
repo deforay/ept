@@ -2489,7 +2489,7 @@ class Application_Service_Evaluation
             ->where('s.shipment_id = ?', $shipmentId)
             // ->where(new Zend_Db_Expr("IFNULL(sp.is_excluded, 'no') = 'no'"))
             // ->where("sp.is_excluded not like 'yes'")
-            // ->where("p.unique_identifier like 'PT-Y2M0D'")
+            // ->where("p.unique_identifier like '8CNX'")
             ->where("sp.response_status is not null AND sp.response_status like 'responded'");
         if (isset($sLimit) && isset($sOffset)) {
             $sql = $sql->limit($sLimit, $sOffset);
@@ -2567,21 +2567,47 @@ class Application_Service_Evaluation
 
             $unionQuery = $db->select()->from('response_result_' . $tableType, ['sample_id', 'shipment_map_id', 'calculated_score'])
                 ->where('shipment_map_id IN (
-						SELECT shipment_participant_map.map_id
-						FROM shipment_participant_map
-						where shipment_participant_map.shipment_id = ' . (int) $shipmentId . ')');
+                            SELECT shipment_participant_map.map_id
+                            FROM shipment_participant_map
+                            where shipment_participant_map.shipment_id = ' . (int) $shipmentId . ')');
 
-            $scoreType = ($tableType != 'generic_test') ? 'Pass' : 20;
+            // Get sample count for this shipment from reference_result_dts
+            $sampleCountRow = $db->fetchRow(
+                $db->select()
+                    ->from('reference_result_dts', [
+                        'sample_count' => new Zend_Db_Expr('COUNT(sample_id)')
+                    ])
+                    ->where('shipment_id = ?', (int) $shipmentId)
+            );
+
+            $sampleCount = (!empty($sampleCountRow['sample_count'])) ? (int) $sampleCountRow['sample_count'] : 0;
+
+            // Avoid division by zero — fall back to a sane default if no samples found
+            $dynamicScoreValue = ($sampleCount > 0) ? (100 / $sampleCount) : 20;
+
+            $scoreType = ($tableType != 'generic_test') ? 'Pass' : $dynamicScoreValue;
+
+            // When scoreType is 'Pass', rounding doesn't make sense, so only compare the raw value.
+            // When scoreType is numeric, compare both the rounded and raw value (as before).
+            if ($scoreType === 'Pass') {
+                $passedCondition = "(rrd.calculated_score = '" . $scoreType . "')";
+                $failedCondition = "(rrd.calculated_score != '" . $scoreType . "')";
+            } else {
+                $passedCondition = "(ROUND(rrd.calculated_score) = '" . $scoreType . "')";
+                $failedCondition = "(ROUND(rrd.calculated_score) != '" . $scoreType . "')";
+            }
+
             $performance3Sql = $db->select()->from(['ref' => 'reference_result_' . $tableType], [
                 'distribution_code' => new Zend_Db_Expr("'" . $shipmentResult[0]['distribution_code'] . "'"),
                 'ref.sample_label',
                 'rrd.sample_id',
-                'passed' => new Zend_Db_Expr("COUNT(DISTINCT CASE WHEN (ROUND(rrd.calculated_score) = '" . $scoreType . "') THEN rrd.shipment_map_id ELSE NULL END)"),
-                'failed' => new Zend_Db_Expr("COUNT(DISTINCT CASE WHEN (ROUND(rrd.calculated_score) != '" . $scoreType . "') THEN rrd.shipment_map_id ELSE NULL END)"),
+                'passed' => new Zend_Db_Expr("COUNT(DISTINCT CASE WHEN " . $passedCondition . " THEN rrd.shipment_map_id ELSE NULL END)"),
+                'failed' => new Zend_Db_Expr("COUNT(DISTINCT CASE WHEN " . $failedCondition . " THEN rrd.shipment_map_id ELSE NULL END)"),
             ])
                 ->join(['rrd' => $unionQuery], 'rrd.sample_id=ref.sample_id', [])
                 ->group(['rrd.sample_id'])
                 ->order('rrd.sample_id ASC');
+
             $shipmentPerformance3 = $db->fetchAll($performance3Sql);
         }
 

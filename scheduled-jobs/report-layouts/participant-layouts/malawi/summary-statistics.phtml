@@ -12,6 +12,7 @@ $performance3 = false;
 // the size of the image" when another worker deletes mid-render). Make the path unique
 // per participant + worker so the temp files never overlap.
 $chartUid = preg_replace('/[^A-Za-z0-9_-]/', '', (string)($result['unique_identifier'] ?? '')) . '_' . getmypid();
+
 if (isset($result['statistics']) && !empty($result['statistics'])) {
     // Passing score is per-scheme (custom tests carry their own; built-ins read
     // SchemeConfig). Use the shared resolver so this label matches the score
@@ -44,10 +45,66 @@ if (isset($result['statistics']) && !empty($result['statistics'])) {
 
     $pdf->writeHTML($ppOverview, true, false, true, false, '');
 }
+
 if (!$correctiveActions) {
     $pdf->AddPage();
 }
+
 $pdf->writeHTML('<span style="text-align:center;font-weight:bold;font-size:12px;">Qualitative Evaluation</span>', true, false, true, false, '');
+
+// All three charts are drawn at the same Graph canvas size (680x200), so lock every
+// rendered image to the same width and derive its height from that fixed aspect ratio.
+// This keeps our height math and the actual TCPDF-rendered size in sync.
+$chartWidthMM  = 200;
+$chartHeightMM = ($chartWidthMM / 680) * 200;
+$chartSpacing  = 5;
+
+// Build the PT Scheme Manager Comments HTML now (before the page-break decision) so its
+// height can be measured and included in the same up-front check as the charts. This is
+// what keeps charts + comments together on one page instead of the comments spilling
+// onto whichever page the charts happened to end on.
+$eodReportText = "End of report";
+if ($evalRow['report_type'] == 'finalized') {
+    $eodReportText = "End of final report";
+}
+
+$commentsHtml = '<span style="font-size:11px;font-weight:bold;">PT Scheme Manager Comments:</span><br>';
+$commentsHtml .= '<span style="font-size:11px;text">More information can be obtained from PT Participant manual: NPHQAP-PTS-MAN-003 or contact PT Scheme manager.<br>
+This is the confidential report that summarizes your performance. The National Public Health Quality Assurance Program recommends that the results of this proficiency testing scheme comparison not be used as a sole criterion for judging the performance of any individual testing facility/Laboratory.</span><br>';
+// if (trim($result['shipment_comment'] ?? '') != "") {
+//     $commentsHtml .= '<span style="font-size:11px;"><b>Scheme Manager\'s Comments:</b> ' . $result['shipment_comment'] . '</span><br>';
+// }
+// $commentsHtml .= '<p style="font-size:11px;font-weight:bold;text-align:center;"><i>NPH PT all rights reserved.</i></p>';
+// $commentsHtml .= '<p style="font-size:11px;font-weight:bold;">Report Print Date: ' . $commonService->humanReadableDateFormat(date('d-m-Y')) . '</p>';
+$commentsHtml .= '<p style="font-size:11px;text-align:center;font-weight:bold;"><u>' . $eodReportText . '</u>.</p>';
+
+// Measure the comments block's real rendered height without committing it to the PDF yet.
+$pdf->startTransaction();
+$measureStartY = $pdf->getY();
+$pdf->writeHTML($commentsHtml, true, false, true, false, '');
+$measureEndY = $pdf->getY();
+$pdf = $pdf->rollbackTransaction();
+$commentsHeight = $measureEndY - $measureStartY;
+
+// Work out how much vertical space ALL requested charts plus the comments block will
+// need together, so we can decide up front whether to break to a new page. Doing this
+// once here — rather than per-chart or after the charts — is what keeps performance1/2/3
+// AND the comments text printed together on a single page.
+$neededHeight = 0;
+if (isset($result['performance1']) && !empty($result['performance1'])) {
+    $neededHeight += $chartHeightMM + $chartSpacing;
+}
+if (isset($result['performance2']) && !empty($result['performance2'])) {
+    $neededHeight += $chartHeightMM + $chartSpacing;
+}
+if (isset($result['performance3']) && !empty($result['performance3'])) {
+    $neededHeight += $chartHeightMM + $chartSpacing;
+}
+$neededHeight += $commentsHeight;
+
+if ($neededHeight > 0 && ($pdf->getY() + $neededHeight) > ($pdf->getPageHeight() - $pdf->getBreakMargin())) {
+    $pdf->AddPage();
+}
 
 if (isset($result['performance1']) && !empty($result['performance1'])) {
     $performance1 = true;
@@ -103,12 +160,8 @@ if (isset($result['performance1']) && !empty($result['performance1'])) {
     $graph->Stroke($image_file);
 
     $currentY = $pdf->getY();
-    $imgWidth = 200; // mm, matches the width passed to Image()
-    $pdf->Image($image_file, 5, $currentY, '', '', '', '', '', false, 600);
-
-    // Move cursor down based on the actual rendered image height (width 680x200 ratio)
-    $imgHeight = ($imgWidth / 680) * 200;
-    $pdf->SetY($currentY + $imgHeight + 5);
+    $pdf->Image($image_file, 5, $currentY, $chartWidthMM, '', '', '', '', false, 300);
+    $pdf->SetY($currentY + $chartHeightMM + $chartSpacing);
 
     if (file_exists($image_file)) {
         unlink($image_file);
@@ -176,11 +229,8 @@ if (isset($result['performance2']) && !empty($result['performance2'])) {
     $graph->Stroke($performance_of_surveys);
 
     $currentY = $pdf->getY();
-    $imgWidth = 200;
-    $pdf->Image($performance_of_surveys, 5, $currentY, '', '', '', '', 'C', false, 200);
-
-    $imgHeight = ($imgWidth / 680) * 200;
-    $pdf->SetY($currentY + $imgHeight + 5);
+    $pdf->Image($performance_of_surveys, 5, $currentY, $chartWidthMM, '', '', '', 'C', false, 300);
+    $pdf->SetY($currentY + $chartHeightMM + $chartSpacing);
 
     if (file_exists($performance_of_surveys)) {
         unlink($performance_of_surveys);
@@ -248,18 +298,17 @@ if (isset($result['performance3']) && !empty($result['performance3'])) {
     $graph->Stroke($performance_of_current_survey_anels);
 
     $currentY = $pdf->getY();
-    $imgWidth = 200;
-
-    // Check if there's enough room on the page; if not, start a new page
-    if (($currentY + (($imgWidth / 680) * 200)) > ($pdf->getPageHeight() - $pdf->getBreakMargin())) {
-        $pdf->AddPage();
-        $currentY = $pdf->getY();
-    }
-
-    $pdf->Image($performance_of_current_survey_anels, 5, $currentY, '', '', '', '', '', false, 600);
+    // Page-break decision for charts + comments already happened above, so just draw here.
+    $pdf->Image($performance_of_current_survey_anels, 5, $currentY, $chartWidthMM, '', '', '', '', false, 300);
+    $pdf->SetY($currentY + $chartHeightMM + $chartSpacing);
 
     if (file_exists($performance_of_current_survey_anels)) {
         unlink($performance_of_current_survey_anels);
     }
 }
+
+// PT Scheme Manager Comments — written directly after the charts, no separate page-break
+// check needed here since $commentsHeight was already folded into the up-front decision.
+$pdf->writeHTML($commentsHtml, true, false, true, false, '');
+
 //----------------Summary Statistics for this survey  Ends----------------
