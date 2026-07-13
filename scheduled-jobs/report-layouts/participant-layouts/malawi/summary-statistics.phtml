@@ -14,7 +14,7 @@ $performance3 = false;
 $chartUid = preg_replace('/[^A-Za-z0-9_-]/', '', (string)($result['unique_identifier'] ?? '')) . '_' . getmypid();
 
 if (isset($result['statistics']) && !empty($result['statistics'])) {
-    $passpercentage = Pt_Commons_SchemeConfig::get($schemeType . '.passPercentage');
+    $passpercentage = Pt_Commons_SchemeConfig::get($schemeType . '.passPercentage') ?? Pt_Commons_SchemeConfig::get($schemeType . '.passingScore');
     $score = $passpercentage ?? '100';
 
     $ppOverview = '<br><table border="1" cellpadding="4" cellspacing="0" style="width:100%;font-size:12px;">';
@@ -80,8 +80,8 @@ if ($evalRow['report_type'] == 'finalized') {
     $eodReportText = "End of final report";
 }
 
-$commentsHtml = '<span style="font-size:11px;font-weight:bold;">PT Scheme Manager Comments:</span><br>';
-$commentsHtml .= '<span style="font-size:11px;text">More information can be obtained from PT Participant manual: NPHQAP-PTS-MAN-003 or contact PT Scheme manager.<br>
+// $commentsHtml = '<span style="font-size:11px;font-weight:bold;">PT Scheme Manager Comments:</span><br>';
+$commentsHtml = '<span style="font-size:11px;text">More information can be obtained from PT Participant manual: NPHQAP-PTS-MAN-003 or contact PT Scheme manager.<br>
 This is the confidential report that summarizes your performance. The National Public Health Quality Assurance Program recommends that the results of this proficiency testing scheme comparison not be used as a sole criterion for judging the performance of any individual testing facility/Laboratory.</span><br>';
 // if (trim($result['shipment_comment'] ?? '') != "") {
 //     $commentsHtml .= '<span style="font-size:11px;"><b>Scheme Manager\'s Comments:</b> ' . $result['shipment_comment'] . '</span><br>';
