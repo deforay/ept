@@ -43,8 +43,12 @@ class Application_Service_Reports
             $sOrder = '';
             for ($i = 0; $i < intval($parameters['iSortingCols']); $i++) {
                 if ($parameters['bSortable_' . intval($parameters['iSortCol_' . $i])] == 'true') {
-                    $sOrder .= $orderColumns[intval($parameters['iSortCol_' . $i])] . '
-					' . ($parameters['sSortDir_' . $i]) . ', ';
+                    $colIdx = intval($parameters['iSortCol_' . $i]);
+                    if (!isset($orderColumns[$colIdx])) {
+                        continue;
+                    }
+                    $sOrder .= $orderColumns[$colIdx] . '
+					' . Pt_Commons_General::sanitizeSortDirection($parameters['sSortDir_' . $i]) . ', ';
                 }
             }
 
@@ -667,8 +671,12 @@ class Application_Service_Reports
             $sOrder = '';
             for ($i = 0; $i < intval($parameters['iSortingCols']); $i++) {
                 if ($parameters['bSortable_' . intval($parameters['iSortCol_' . $i])] == 'true') {
-                    $sOrder .= $orderColumns[intval($parameters['iSortCol_' . $i])] . '
-					    ' . ($parameters['sSortDir_' . $i]) . ', ';
+                    $colIdx = intval($parameters['iSortCol_' . $i]);
+                    if (!isset($orderColumns[$colIdx])) {
+                        continue;
+                    }
+                    $sOrder .= $orderColumns[$colIdx] . '
+					    ' . Pt_Commons_General::sanitizeSortDirection($parameters['sSortDir_' . $i]) . ', ';
                 }
             }
 
@@ -886,8 +894,12 @@ class Application_Service_Reports
             $sOrder = '';
             for ($i = 0; $i < intval($parameters['iSortingCols']); $i++) {
                 if ($parameters['bSortable_' . intval($parameters['iSortCol_' . $i])] == 'true') {
-                    $sOrder .= $orderColumns[intval($parameters['iSortCol_' . $i])] . '
-					    ' . ($parameters['sSortDir_' . $i]) . ', ';
+                    $colIdx = intval($parameters['iSortCol_' . $i]);
+                    if (!isset($orderColumns[$colIdx])) {
+                        continue;
+                    }
+                    $sOrder .= $orderColumns[$colIdx] . '
+					    ' . Pt_Commons_General::sanitizeSortDirection($parameters['sSortDir_' . $i]) . ', ';
                 }
             }
 
@@ -1134,8 +1146,12 @@ class Application_Service_Reports
             $sOrder = '';
             for ($i = 0; $i < intval($parameters['iSortingCols']); $i++) {
                 if ($parameters['bSortable_' . intval($parameters['iSortCol_' . $i])] == 'true') {
-                    $sOrder .= $orderColumns[intval($parameters['iSortCol_' . $i])] . '
-					    ' . ($parameters['sSortDir_' . $i]) . ', ';
+                    $colIdx = intval($parameters['iSortCol_' . $i]);
+                    if (!isset($orderColumns[$colIdx])) {
+                        continue;
+                    }
+                    $sOrder .= $orderColumns[$colIdx] . '
+					    ' . Pt_Commons_General::sanitizeSortDirection($parameters['sSortDir_' . $i]) . ', ';
                 }
             }
 
@@ -1406,8 +1422,12 @@ class Application_Service_Reports
             $sOrder = '';
             for ($i = 0; $i < intval($parameters['iSortingCols']); $i++) {
                 if ($parameters['bSortable_' . intval($parameters['iSortCol_' . $i])] == 'true') {
-                    $sOrder .= $orderColumns[intval($parameters['iSortCol_' . $i])] . '
-					    ' . ($parameters['sSortDir_' . $i]) . ', ';
+                    $colIdx = intval($parameters['iSortCol_' . $i]);
+                    if (!isset($orderColumns[$colIdx])) {
+                        continue;
+                    }
+                    $sOrder .= $orderColumns[$colIdx] . '
+					    ' . Pt_Commons_General::sanitizeSortDirection($parameters['sSortDir_' . $i]) . ', ';
                 }
             }
 
@@ -1682,8 +1702,12 @@ class Application_Service_Reports
             $sOrder = '';
             for ($i = 0; $i < intval($parameters['iSortingCols']); $i++) {
                 if ($parameters['bSortable_' . intval($parameters['iSortCol_' . $i])] == 'true') {
-                    $sOrder .= $orderColumns[intval($parameters['iSortCol_' . $i])] . '
-					    ' . ($parameters['sSortDir_' . $i]) . ', ';
+                    $colIdx = intval($parameters['iSortCol_' . $i]);
+                    if (!isset($orderColumns[$colIdx])) {
+                        continue;
+                    }
+                    $sOrder .= $orderColumns[$colIdx] . '
+					    ' . Pt_Commons_General::sanitizeSortDirection($parameters['sSortDir_' . $i]) . ', ';
                 }
             }
 
@@ -2305,8 +2329,12 @@ class Application_Service_Reports
             $sOrder = '';
             for ($i = 0; $i < intval($parameters['iSortingCols']); $i++) {
                 if ($parameters['bSortable_' . intval($parameters['iSortCol_' . $i])] == 'true') {
-                    $sOrder .= $orderColumns[intval($parameters['iSortCol_' . $i])] . '
-					    ' . ($parameters['sSortDir_' . $i]) . ', ';
+                    $colIdx = intval($parameters['iSortCol_' . $i]);
+                    if (!isset($orderColumns[$colIdx])) {
+                        continue;
+                    }
+                    $sOrder .= $orderColumns[$colIdx] . '
+					    ' . Pt_Commons_General::sanitizeSortDirection($parameters['sSortDir_' . $i]) . ', ';
                 }
             }
 
@@ -2505,8 +2533,12 @@ class Application_Service_Reports
             $sOrder = '';
             for ($i = 0; $i < intval($parameters['iSortingCols']); $i++) {
                 if ($parameters['bSortable_' . intval($parameters['iSortCol_' . $i])] == 'true') {
-                    $sOrder .= $orderColumns[intval($parameters['iSortCol_' . $i])] . '
-					    ' . ($parameters['sSortDir_' . $i]) . ', ';
+                    $colIdx = intval($parameters['iSortCol_' . $i]);
+                    if (!isset($orderColumns[$colIdx])) {
+                        continue;
+                    }
+                    $sOrder .= $orderColumns[$colIdx] . '
+					    ' . Pt_Commons_General::sanitizeSortDirection($parameters['sSortDir_' . $i]) . ', ';
                 }
             }
 
@@ -3010,8 +3042,12 @@ class Application_Service_Reports
             $sOrder = '';
             for ($i = 0; $i < intval($parameters['iSortingCols']); $i++) {
                 if ($parameters['bSortable_' . intval($parameters['iSortCol_' . $i])] == 'true') {
-                    $sOrder .= $aColumns[intval($parameters['iSortCol_' . $i])] . '
-					    ' . ($parameters['sSortDir_' . $i]) . ', ';
+                    $colIdx = intval($parameters['iSortCol_' . $i]);
+                    if (!isset($aColumns[$colIdx])) {
+                        continue;
+                    }
+                    $sOrder .= $aColumns[$colIdx] . '
+					    ' . Pt_Commons_General::sanitizeSortDirection($parameters['sSortDir_' . $i]) . ', ';
                 }
             }
 
@@ -3275,8 +3311,12 @@ class Application_Service_Reports
             $sOrder = '';
             for ($i = 0; $i < intval($parameters['iSortingCols']); $i++) {
                 if ($parameters['bSortable_' . intval($parameters['iSortCol_' . $i])] == 'true') {
-                    $sOrder .= $orderColumns[intval($parameters['iSortCol_' . $i])] . '
-					    ' . ($parameters['sSortDir_' . $i]) . ', ';
+                    $colIdx = intval($parameters['iSortCol_' . $i]);
+                    if (!isset($orderColumns[$colIdx])) {
+                        continue;
+                    }
+                    $sOrder .= $orderColumns[$colIdx] . '
+					    ' . Pt_Commons_General::sanitizeSortDirection($parameters['sSortDir_' . $i]) . ', ';
                 }
             }
 
@@ -4064,8 +4104,12 @@ class Application_Service_Reports
         if (isset($parameters['iSortCol_0'])) {
             for ($i = 0; $i < intval($parameters['iSortingCols']); $i++) {
                 if ($parameters['bSortable_' . intval($parameters['iSortCol_' . $i])] == 'true') {
-                    $sOrder .= $orderColumns[intval($parameters['iSortCol_' . $i])] . ' '
-                        . ($parameters['sSortDir_' . $i]) . ', ';
+                    $colIdx = intval($parameters['iSortCol_' . $i]);
+                    if (!isset($orderColumns[$colIdx])) {
+                        continue;
+                    }
+                    $sOrder .= $orderColumns[$colIdx] . ' '
+                        . Pt_Commons_General::sanitizeSortDirection($parameters['sSortDir_' . $i]) . ', ';
                 }
             }
             $sOrder = substr_replace($sOrder, '', -2);
@@ -4415,8 +4459,12 @@ class Application_Service_Reports
             $sOrder = '';
             for ($i = 0; $i < intval($parameters['iSortingCols']); $i++) {
                 if ($parameters['bSortable_' . intval($parameters['iSortCol_' . $i])] == 'true') {
-                    $sOrder .= $searchColumns[intval($parameters['iSortCol_' . $i])] . '
-					    ' . ($parameters['sSortDir_' . $i]) . ', ';
+                    $colIdx = intval($parameters['iSortCol_' . $i]);
+                    if (!isset($searchColumns[$colIdx])) {
+                        continue;
+                    }
+                    $sOrder .= $searchColumns[$colIdx] . '
+					    ' . Pt_Commons_General::sanitizeSortDirection($parameters['sSortDir_' . $i]) . ', ';
                 }
             }
 
@@ -4616,8 +4664,12 @@ class Application_Service_Reports
             $sOrder = '';
             for ($i = 0; $i < intval($parameters['iSortingCols']); $i++) {
                 if ($parameters['bSortable_' . intval($parameters['iSortCol_' . $i])] == 'true') {
-                    $sOrder .= $searchColumns[intval($parameters['iSortCol_' . $i])] . '
-					    ' . ($parameters['sSortDir_' . $i]) . ', ';
+                    $colIdx = intval($parameters['iSortCol_' . $i]);
+                    if (!isset($searchColumns[$colIdx])) {
+                        continue;
+                    }
+                    $sOrder .= $searchColumns[$colIdx] . '
+					    ' . Pt_Commons_General::sanitizeSortDirection($parameters['sSortDir_' . $i]) . ', ';
                 }
             }
 
