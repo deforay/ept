@@ -1,9 +1,15 @@
 #!/usr/bin/env bash
 #
-# pre-commit: run PHP-CS-Fixer (dry-run) on staged PHP files, mirroring CI's
-# `composer cs-check`, and block the commit on any style violation so it can't
-# reach CI. Scoped to staged files for speed; the repo .php-cs-fixer.dist.php
-# config (and its path scope) is respected via --path-mode=intersection.
+# pre-commit: two guards on staged PHP files, both scoped to the staged changes
+# for speed. Blocks the commit (exit 1) on either failure.
+#
+#   1. Debug-leftover guard — scans ONLY newly-added lines for stray debug
+#      statements (die / var_dump / dd / dump) so a forgotten `die($x)` can't be
+#      committed. Deliberately does NOT flag `exit` (200+ legit redirect/CLI uses),
+#      commented-out lines, or the legacy `... or die("msg")` fallback idiom.
+#   2. PHP-CS-Fixer (dry-run), mirroring CI's `composer cs-check`, so style
+#      violations can't reach CI. Respects .php-cs-fixer.dist.php via
+#      --path-mode=intersection.
 #
 # Tracked here; .git/hooks/pre-commit is a symlink to this file (installed via
 # `composer install-hooks` / bin/install-hooks.sh). The user's global hooksPath
@@ -15,12 +21,6 @@ set -uo pipefail
 root="$(git rev-parse --show-toplevel 2>/dev/null)" || exit 0
 cd "$root" || exit 0
 
-fixer="vendor/bin/php-cs-fixer"
-if [ ! -x "$fixer" ]; then
-    echo "ℹ pre-commit: $fixer not found — skipping CS check (run 'composer install')." >&2
-    exit 0
-fi
-
 # Collect staged, still-present PHP files (added/copied/modified). NUL-safe and
 # bash 3.2 compatible (macOS ships 3.2, so no mapfile).
 files=()
@@ -29,6 +29,43 @@ while IFS= read -r -d '' f; do
 done < <(git diff --cached --name-only --diff-filter=ACM -z -- '*.php')
 
 [ "${#files[@]}" -eq 0 ] && exit 0
+
+# --- guard 1: debug leftovers ---------------------------------------------
+# Only ADDED lines (git diff -U0, '+' but not the '+++' header) are inspected,
+# so existing legit die()/exit stays untouched — you can only trip this on debug
+# you're introducing in THIS commit. Matches a bare-ish call to one of the debug
+# tokens; the leading [^>_:a-zA-Z] rejects method/member calls (->dump, ::dump)
+# and identifiers that merely end in the token (mydump, $died).
+debug_re='(^|[^>_:a-zA-Z])(die[[:space:]]*[(;]|var_dump[[:space:]]*\(|dd[[:space:]]*\(|dump[[:space:]]*\()'
+debug_hits=""
+for f in "${files[@]}"; do
+    while IFS= read -r line; do
+        content="${line#+}"                                   # strip the leading '+'
+        trimmed="${content#"${content%%[![:space:]]*}"}"      # left-trim for comment test
+        case "$trimmed" in
+            //*|'#'*|'*'*|/\**) continue ;;                   # skip comment lines
+        esac
+        case "$content" in
+            *'or die'*) continue ;;                           # legacy `... or die("msg")` idiom
+        esac
+        if printf '%s\n' "$content" | grep -qE "$debug_re"; then
+            [ -z "$debug_hits" ] && printf '\n\033[31m✋ commit blocked\033[0m — debug leftovers in staged changes:\n' >&2
+            printf '  \033[33m%s\033[0m: %s\n' "$f" "$trimmed" >&2
+            debug_hits="1"
+        fi
+    done < <(git diff --cached -U0 --diff-filter=ACM -- "$f" | grep -E '^\+[^+]')
+done
+if [ -n "$debug_hits" ]; then
+    printf '\n  Remove them, or bypass once: \033[36mgit commit --no-verify\033[0m\n\n' >&2
+    exit 1
+fi
+
+# --- guard 2: PHP-CS-Fixer -------------------------------------------------
+fixer="vendor/bin/php-cs-fixer"
+if [ ! -x "$fixer" ]; then
+    echo "ℹ pre-commit: $fixer not found — skipping CS check (run 'composer install')." >&2
+    exit 0
+fi
 
 # PHP_CS_FIXER_IGNORE_ENV: don't abort if the local PHP differs from what the
 # fixer pins — the rules still apply, which is all we care about pre-commit.
