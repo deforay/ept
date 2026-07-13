@@ -1529,27 +1529,24 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                 // ran explode() on an array — a TypeError under PHP 8 that aborted the whole
                 // import for any row carrying province/district data.
                 $mappedCount = null;
-                if (
-                    (isset($sheetData[$i]['J']) && !empty($sheetData[$i]['J'])) ||
-                    (isset($sheetData[$i]['K']) && count($sheetData[$i]['K']) > 0) ||
-                    (isset($countryId) && !empty($countryId))
-                ) {
-
-                    if (isset($lastInsertedId) && !empty($lastInsertedId)) {
-                        $params['district'] = $sheetData[$i]['L'];
-                        $params['province'] = $sheetData[$i]['K'];
-                        $params['country'] = $countryId;
-                        $mapResult = $this->dmParticipantMap($params, $lastInsertedId, true);
-                        // dmParticipantMap swallows DB errors and returns ok=false. Left
-                        // unchecked, the outer transaction would still commit this PTCC and the
-                        // row would be reported "saved" with broken/no mappings. Escalate so the
-                        // whole batch rolls back — consistent with other hard import errors.
-                        if (is_array($mapResult) && ($mapResult['ok'] ?? false) === false) {
-                            throw new RuntimeException('PTCC participant mapping failed for ' . $originalEmail
-                                . ' (trace ' . ($mapResult['trace_id'] ?? 'n/a') . ')');
-                        }
-                        $mappedCount = is_array($mapResult) ? (int) ($mapResult['count'] ?? 0) : null;
+                // A PTCC always resolves to a valid country by this point — rows with a
+                // blank/unrecognised country were skipped above — so the mapping block always
+                // runs. (The former guard on J/K/$countryId was always true: $countryId is
+                // guaranteed non-empty here, which made the whole || condition constant.)
+                if (isset($lastInsertedId) && !empty($lastInsertedId)) {
+                    $params['district'] = $sheetData[$i]['L'];
+                    $params['province'] = $sheetData[$i]['K'];
+                    $params['country'] = $countryId;
+                    $mapResult = $this->dmParticipantMap($params, $lastInsertedId, true);
+                    // dmParticipantMap swallows DB errors and returns ok=false. Left
+                    // unchecked, the outer transaction would still commit this PTCC and the
+                    // row would be reported "saved" with broken/no mappings. Escalate so the
+                    // whole batch rolls back — consistent with other hard import errors.
+                    if (is_array($mapResult) && ($mapResult['ok'] ?? false) === false) {
+                        throw new RuntimeException('PTCC participant mapping failed for ' . $originalEmail
+                            . ' (trace ' . ($mapResult['trace_id'] ?? 'n/a') . ')');
                     }
+                    $mappedCount = is_array($mapResult) ? (int) ($mapResult['count'] ?? 0) : null;
                 }
 
                 // Record the row only after mapping succeeded, carrying the participant count

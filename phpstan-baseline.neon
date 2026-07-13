@@ -924,11 +924,6 @@ parameters:
 			count: 1
 			path: application/models/DbTable/VlAssay.php
 
-		-
-			message: '#^Call to an undefined method Zend_Translate\:\:_\(\)\.$#'
-			identifier: method.notFound
-			count: 83
-			path: application/models/Dts.php
 
 		-
 			message: '#^Loose comparison using \!\= between true and '''' will always evaluate to true\.$#'
@@ -1830,11 +1825,6 @@ parameters:
 			count: 2
 			path: application/services/Common.php
 
-		-
-			message: '#^Call to an undefined method Zend_Translate\:\:_\(\)\.$#'
-			identifier: method.notFound
-			count: 9
-			path: application/services/Common.php
 
 		-
 			message: '#^Call to function is_string\(\) with non\-falsy\-string will always evaluate to true\.$#'
@@ -2058,11 +2048,6 @@ parameters:
 			count: 1
 			path: application/services/Reports.php
 
-		-
-			message: '#^Call to an undefined method Zend_Translate\:\:_\(\)\.$#'
-			identifier: method.notFound
-			count: 44
-			path: application/services/Reports.php
 
 		-
 			message: '#^Call to function is_numeric\(\) with float will always evaluate to true\.$#'

@@ -42,6 +42,11 @@ parameters:
             message: '#^Access to an undefined property Zend_View_Interface::#'
         -
             message: '#^Access to an undefined property Zend_Session_Namespace::#'
+        # $this->translator is registry-fetched and typed as the base Zend_Translate;
+        # ->_() is the translate shortcut resolved via __call at runtime. Global-ignore
+        # so adding another translated string doesn't drift the per-file baseline.
+        -
+            message: '#^Call to an undefined method Zend_Translate\:\:_\(\)\.$#'
         # Zend_Config_Ini exposes config sections (->resources->db, etc.) via
         # __get; every CLI bin script that builds its own DB adapter hits this.
         -
