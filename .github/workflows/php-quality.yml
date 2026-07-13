@@ -16,6 +16,42 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  hygiene:
+    name: Hygiene (conflict markers, debug leftovers)
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10  # v6.0.3
+        with:
+          fetch-depth: 0   # need history to diff against the base ref
+
+      - name: Determine diff base
+        id: base
+        env:
+          EVENT: ${{ github.event_name }}
+          PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          PUSH_BEFORE: ${{ github.event.before }}
+        run: |
+          zero=0000000000000000000000000000000000000000
+          if [ "$EVENT" = "pull_request" ]; then
+            ref="$PR_BASE_SHA"
+          elif [ -n "$PUSH_BEFORE" ] && [ "$PUSH_BEFORE" != "$zero" ] \
+               && git cat-file -e "${PUSH_BEFORE}^{commit}" 2>/dev/null; then
+            ref="$PUSH_BEFORE"
+          else
+            # new branch / force push / shallow: fall back to the previous commit
+            ref="$(git rev-parse HEAD^ 2>/dev/null || git rev-parse HEAD)"
+          fi
+          echo "ref=$ref" >> "$GITHUB_OUTPUT"
+          echo "Diffing against: $ref"
+
+      - name: Scan introduced changes
+        env:
+          BASE_REF: ${{ steps.base.outputs.ref }}
+        run: bash bin/ci/hygiene.sh "$BASE_REF" HEAD
+
   quality:
     name: PHPStan, CS-Fixer, Composer Audit
     runs-on: ubuntu-latest
