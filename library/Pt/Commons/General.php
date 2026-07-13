@@ -202,6 +202,11 @@ class Pt_Commons_General
         return $files;
     }
 
+    public static function sanitizeSortDirection($raw): string
+    {
+        return strtoupper((string) $raw) === 'DESC' ? 'DESC' : 'ASC';
+    }
+
     // Generate a ULID
     public static function generateULID($attachExtraString = true): string
     {
