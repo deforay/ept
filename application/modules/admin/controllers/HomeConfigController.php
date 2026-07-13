@@ -115,12 +115,12 @@ class Admin_HomeConfigController extends Zend_Controller_Action
             $this->view->banner = $common->getHomeBannerDetails();
 
             $this->view->sections = $homeSection->getAllHomeSection();
-            // echo "<pre>"; print_r($this->view->sections); die;
+
             $this->view->htmlHomePage = $homeSection->getActiveHtmlHomePage();
         } catch (\Throwable $exc) {
             Pt_Commons_LoggerUtility::logError('Failed to save home config: ' . $exc->getMessage(), [
-                'file'  => $exc->getFile(),
-                'line'  => $exc->getLine(),
+                'file' => $exc->getFile(),
+                'line' => $exc->getLine(),
                 'trace' => $exc->getTraceAsString(),
             ]);
         }

@@ -72,8 +72,10 @@ class Admin_ShipmentController extends Zend_Controller_Action
         $request = $this->getRequest();
         if ($request->isPost()) {
             $params = $request->getPost();
-            if (empty($params['sampleName']) || !is_array($params['sampleName'])
-                || empty($params['control']) || !is_array($params['control'])) {
+            if (
+                empty($params['sampleName']) || !is_array($params['sampleName'])
+                || empty($params['control']) || !is_array($params['control'])
+            ) {
                 $this->redirect('/admin/shipment');
             }
             $shipmentService = new Application_Service_Shipments();
@@ -99,7 +101,7 @@ class Admin_ShipmentController extends Zend_Controller_Action
             $this->view->userconfig = $userconfig = strtolower($this->_getParam('userconfig'));
             $this->view->config = Pt_Commons_SchemeConfig::get($sid);
             if ($sid == 'vl') {
-                $vlModel       = new Application_Model_Vl();
+                $vlModel = new Application_Model_Vl();
                 $this->view->vlControls = $scheme->getSchemeControls($sid);
                 $this->view->vlAssay = $vlModel->getVlAssay();
             } elseif ($sid == 'eid') {
@@ -164,7 +166,7 @@ class Admin_ShipmentController extends Zend_Controller_Action
                 $this->view->shipment = $shipmentDetails = $shipmentService->getShipment($sid);
                 $this->view->previouslySelected = $previouslySelected = $participantService->getEnrolledByShipmentId($sid);
 
-                $this->view->participantListsName  = $participantService->getParticipantsListNames();
+                $this->view->participantListsName = $participantService->getParticipantsListNames();
                 // Other shipments whose participants can be copied in (current scheme on top).
                 $this->view->existingShipments = $shipmentService->getShipmentsWithParticipantsForCopy($sid);
                 if ($previouslySelected == '' || $previouslySelected == null) {
@@ -184,7 +186,7 @@ class Admin_ShipmentController extends Zend_Controller_Action
         if ($request->isPost()) {
             $params = $this->getAllParams();
             $participantService = new Application_Service_Participants();
-            $this->view->participantListsName  = $participantService->getParticipantsListNamesByUniqueId($params['unique']);
+            $this->view->participantListsName = $participantService->getParticipantsListNamesByUniqueId($params['unique']);
         }
     }
 
@@ -245,7 +247,7 @@ class Admin_ShipmentController extends Zend_Controller_Action
         if ($request->isPost()) {
             $shipmentService = new Application_Service_Shipments();
             $params = $request->getPost();
-            //echo "<pre>"; print_r($params); die;
+
             if (!empty($params['shipmentId']) && $shipmentService->isShipmentCancelled((int) $params['shipmentId'])) {
                 $this->redirect('/admin/shipment');
             }
@@ -327,7 +329,7 @@ class Admin_ShipmentController extends Zend_Controller_Action
             $this->view->covid19PossibleResults = $schemeService->getPossibleResults('covid19', 'admin');
             $this->view->allTestTypes = $schemeService->getAllCovid19TestType();
         } elseif ($response['shipment']['scheme_type'] == 'vl') {
-            $vlModel       = new Application_Model_Vl();
+            $vlModel = new Application_Model_Vl();
             $this->view->vlAssay = $vlModel->getVlAssay();
         } elseif ($response['shipment']['scheme_type'] == 'recency') {
             $this->view->recencyPossibleResults = $schemeService->getPossibleResults('recency', 'admin');
