@@ -1,13 +1,17 @@
 #!/usr/bin/env bash
 #
-# pre-commit: two guards on staged PHP files, both scoped to the staged changes
-# for speed. Blocks the commit (exit 1) on either failure.
+# pre-commit: three guards on the staged changes, scoped for speed. Blocks the
+# commit (exit 1) on any failure.
 #
-#   1. Debug-leftover guard — scans ONLY newly-added lines for stray debug
-#      statements (die / var_dump / dd / dump) so a forgotten `die($x)` can't be
-#      committed. Deliberately does NOT flag `exit` (200+ legit redirect/CLI uses),
-#      commented-out lines, or the legacy `... or die("msg")` fallback idiom.
-#   2. PHP-CS-Fixer (dry-run), mirroring CI's `composer cs-check`, so style
+#   1. Merge-conflict markers — all staged files, any type. Uses git's own
+#      detector (`git diff --cached --check`) so a half-resolved conflict can't
+#      be committed.
+#   2. Debug-leftover guard — scans ONLY newly-added lines of staged PHP for
+#      stray debug statements (die / var_dump / dd / dump) so a forgotten
+#      `die($x)` can't be committed. Deliberately does NOT flag `exit` (200+
+#      legit redirect/CLI uses), commented-out lines, or the legacy
+#      `... or die("msg")` fallback idiom.
+#   3. PHP-CS-Fixer (dry-run), mirroring CI's `composer cs-check`, so style
 #      violations can't reach CI. Respects .php-cs-fixer.dist.php via
 #      --path-mode=intersection.
 #
@@ -21,6 +25,19 @@ set -uo pipefail
 root="$(git rev-parse --show-toplevel 2>/dev/null)" || exit 0
 cd "$root" || exit 0
 
+# --- guard 1: merge-conflict markers --------------------------------------
+# git's own detector, language-agnostic and covering EVERY staged file (not just
+# PHP). Runs before the PHP-only early-exit so a conflicted .neon/.phtml/.json/md
+# is caught even when no PHP is staged. `--check` also reports whitespace errors;
+# grep isolates the conflict-marker lines so those are all we block on here.
+conflicts="$(git diff --cached --check 2>/dev/null | grep -i 'conflict marker' || true)"
+if [ -n "$conflicts" ]; then
+    printf '\n\033[31m✋ commit blocked\033[0m — merge-conflict markers in staged changes:\n' >&2
+    printf '%s\n' "$conflicts" | sed 's/^/  /' >&2
+    printf '\n  Resolve the conflict, then re-stage — or bypass once: \033[36mgit commit --no-verify\033[0m\n\n' >&2
+    exit 1
+fi
+
 # Collect staged, still-present PHP files (added/copied/modified). NUL-safe and
 # bash 3.2 compatible (macOS ships 3.2, so no mapfile).
 files=()
@@ -30,7 +47,7 @@ done < <(git diff --cached --name-only --diff-filter=ACM -z -- '*.php')
 
 [ "${#files[@]}" -eq 0 ] && exit 0
 
-# --- guard 1: debug leftovers ---------------------------------------------
+# --- guard 2: debug leftovers ---------------------------------------------
 # Only ADDED lines (git diff -U0, '+' but not the '+++' header) are inspected,
 # so existing legit die()/exit stays untouched — you can only trip this on debug
 # you're introducing in THIS commit. Matches a bare-ish call to one of the debug
@@ -60,7 +77,7 @@ if [ -n "$debug_hits" ]; then
     exit 1
 fi
 
-# --- guard 2: PHP-CS-Fixer -------------------------------------------------
+# --- guard 3: PHP-CS-Fixer -------------------------------------------------
 fixer="vendor/bin/php-cs-fixer"
 if [ ! -x "$fixer" ]; then
     echo "ℹ pre-commit: $fixer not found — skipping CS check (run 'composer install')." >&2
