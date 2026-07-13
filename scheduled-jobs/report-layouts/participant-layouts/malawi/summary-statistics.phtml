@@ -80,14 +80,8 @@ if ($evalRow['report_type'] == 'finalized') {
     $eodReportText = "End of final report";
 }
 
-// $commentsHtml = '<span style="font-size:11px;font-weight:bold;">PT Scheme Manager Comments:</span><br>';
 $commentsHtml = '<span style="font-size:11px;text">More information can be obtained from PT Participant manual: NPHQAP-PTS-MAN-003 or contact PT Scheme manager.<br>
 This is the confidential report that summarizes your performance. The National Public Health Quality Assurance Program recommends that the results of this proficiency testing scheme comparison not be used as a sole criterion for judging the performance of any individual testing facility/Laboratory.</span><br>';
-// if (trim($result['shipment_comment'] ?? '') != "") {
-//     $commentsHtml .= '<span style="font-size:11px;"><b>Scheme Manager\'s Comments:</b> ' . $result['shipment_comment'] . '</span><br>';
-// }
-// $commentsHtml .= '<p style="font-size:11px;font-weight:bold;text-align:center;"><i>NPH PT all rights reserved.</i></p>';
-// $commentsHtml .= '<p style="font-size:11px;font-weight:bold;">Report Print Date: ' . $commonService->humanReadableDateFormat(date('d-m-Y')) . '</p>';
 $commentsHtml .= '<br><span style="font-size:11px;text-align:center;font-weight:bold;"><u>' . $eodReportText . '</u>.</span>';
 
 // Measure the heading's and the comments block's real rendered height without
@@ -109,10 +103,6 @@ $commentsHeight = $measureEndY - $measureStartY;
 
 // Work out how much vertical space the heading, ALL requested charts, and the comments
 // block will need together, so we can decide up front whether to break to a new page.
-// Doing this once here — before ANY of the three are written — is what keeps the
-// "Qualitative Evaluation" heading, performance1/2/3, AND the comments text printed
-// together on a single page instead of the heading getting stranded alone on a page
-// while the charts spill onto the next one.
 $neededHeight = $qualEvalHeight;
 if (isset($result['performance1']) && !empty($result['performance1'])) {
     $neededHeight += $chartHeightMM + $chartSpacing;
@@ -173,6 +163,13 @@ if (isset($result['performance1']) && !empty($result['performance1'])) {
 
     $b1plot->SetFillColor('#4F81BD');
     $b1plot->SetColor("white");
+
+    // ---- FIX: constant bar width regardless of number of data points ----
+    $numPoints = count($dataY);
+    $maxBarWidth = 30; // px, tweak to taste
+    $barWidth = ($numPoints > 0) ? min($maxBarWidth, 300 / $numPoints) : $maxBarWidth;
+    $b1plot->SetAbsWidth($barWidth);
+    // -----------------------------------------------------------------------
 
     $graph->title->Set("Your Performance for the last 5 surveys");
     $graph->subtitle->Set('.');
@@ -243,6 +240,15 @@ if (isset($result['performance2']) && !empty($result['performance2'])) {
     $b2plot->SetFillColor("red");
     $b2plot->SetColor("white");
 
+    // ---- FIX: constant bar width regardless of number of data points ----
+    $numPoints = count($label);
+    $maxBarWidth = 30; // px, tweak to taste
+    $barWidth = ($numPoints > 0) ? min($maxBarWidth, 300 / $numPoints) : $maxBarWidth;
+
+    $b1plot->SetAbsWidth($barWidth);
+    $b2plot->SetAbsWidth($barWidth);
+    // -----------------------------------------------------------------------
+
     $b1plot->SetLegend('Passed');
     $b2plot->SetLegend('Failed');
     $graph->legend->SetShadow('gray@0.4', 5);
@@ -312,6 +318,15 @@ if (isset($result['performance3']) && !empty($result['performance3'])) {
 
     $b2plot->SetFillColor("red");
     $b2plot->SetColor("white");
+
+    // ---- FIX: constant bar width regardless of number of data points ----
+    $numPoints = count($label);
+    $maxBarWidth = 30; // px, tweak to taste
+    $barWidth = ($numPoints > 0) ? min($maxBarWidth, 300 / $numPoints) : $maxBarWidth;
+
+    $b1plot->SetAbsWidth($barWidth);
+    $b2plot->SetAbsWidth($barWidth);
+    // -----------------------------------------------------------------------
 
     $graph->legend->SetShadow('gray@0.4', 5);
     $graph->legend->SetPos(0.5, 0.2, 'center', 'bottom');
