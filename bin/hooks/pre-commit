@@ -77,21 +77,45 @@ if [ -n "$debug_hits" ]; then
     exit 1
 fi
 
-# --- guard 3: PHP-CS-Fixer -------------------------------------------------
+# --- guard 3: PHP-CS-Fixer (auto-fix + re-stage) --------------------------
+# Rather than block on style, fix the staged PHP in place and re-stage it, so the
+# commit is always clean without a manual `composer cs-fix` round-trip. The one
+# case we won't silently touch is a partially-staged file (git add -p): fixing
+# rewrites the whole file, and re-staging would sweep the unstaged remainder into
+# the commit — so those we fix on disk but block on, for you to review.
 fixer="vendor/bin/php-cs-fixer"
 if [ ! -x "$fixer" ]; then
-    echo "ℹ pre-commit: $fixer not found — skipping CS check (run 'composer install')." >&2
+    echo "ℹ pre-commit: $fixer not found — skipping CS auto-fix (run 'composer install')." >&2
     exit 0
 fi
 
+# Snapshot files that already had UNSTAGED changes before we touch anything —
+# those are the partially-staged ones we must not auto-restage. NUL-safe.
+partially_staged=$'\n'
+while IFS= read -r -d '' f; do
+    partially_staged="${partially_staged}${f}"$'\n'
+done < <(git diff --name-only -z -- "${files[@]}")
+
 # PHP_CS_FIXER_IGNORE_ENV: don't abort if the local PHP differs from what the
-# fixer pins — the rules still apply, which is all we care about pre-commit.
-# --config is passed explicitly because php-cs-fixer refuses to auto-discover
-# .php-cs-fixer.dist.php when more than one path is given on the command line
-# ("For multiple paths config parameter is required"), which fires on any commit
-# touching 2+ PHP files.
-if ! PHP_CS_FIXER_IGNORE_ENV=1 "$fixer" fix --dry-run --diff --config=.php-cs-fixer.dist.php --path-mode=intersection -- "${files[@]}"; then
-    printf '\n\033[31m✋ commit blocked\033[0m — PHP-CS-Fixer found style issues (diff above).\n  Fix:    \033[36mcomposer cs-fix\033[0m   then re-stage and commit\n  Bypass: git commit --no-verify\n\n' >&2
-    exit 1
-fi
+# fixer pins — the rules still apply. --config is explicit because php-cs-fixer
+# refuses to auto-discover the config when >1 path is passed. No --dry-run: fix.
+PHP_CS_FIXER_IGNORE_ENV=1 "$fixer" fix --config=.php-cs-fixer.dist.php --path-mode=intersection -- "${files[@]}" >/dev/null 2>&1 || true
+
+blocked=0
+for f in "${files[@]}"; do
+    git diff --quiet -- "$f" && continue          # fixer left this file unchanged
+    case "$partially_staged" in
+        *$'\n'"$f"$'\n'*)
+            # partially staged — can't safely re-stage; surface it for review
+            [ "$blocked" -eq 0 ] && printf '\n\033[31m✋ commit blocked\033[0m — CS fixes need review in partially-staged files:\n' >&2
+            printf '  \033[33m%s\033[0m — fixed on disk; re-stage it (or run \033[36mcomposer cs-fix\033[0m)\n' "$f" >&2
+            blocked=1
+            ;;
+        *)
+            git add -- "$f"                        # fully staged — safe to re-stage the fix
+            printf '  \033[36m✓ auto-fixed & re-staged\033[0m %s\n' "$f" >&2
+            ;;
+    esac
+done
+[ "$blocked" -ne 0 ] && exit 1
 exit 0
