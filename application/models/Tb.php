@@ -1450,8 +1450,15 @@ class Application_Model_Tb
         $organizationName = $GLOBALS['organizationName'] ?? '';
         $formTitle = $GLOBALS['formTitle'] ?? '';
 
+        // Attach our header/footer to the DEFAULT (unnamed) @page rather than a
+        // named page. PhpSpreadsheet tiles the sheet into `<div style='page: page0'>`
+        // blocks; when page0 is a *named* page that differs from mpdf's default first
+        // page (as it did once we added header/footer names), mpdf switches pages at
+        // the first content block and leaves the default page blank — that was the
+        // spurious blank leading page. Making the default page carry the header/footer
+        // and dropping the named-page references removes the page switch entirely.
         $pagerepl = <<<EOF
-    @page page0 {
+    @page {
         margin-top: 25mm;
         margin-bottom: 20mm;
         margin-left: 15mm;
@@ -1464,6 +1471,11 @@ class Application_Model_Tb
     EOF;
 
         $html = preg_replace('/@page page0 {[^}]*}/', $pagerepl, $html);
+
+        // Drop the per-tile named-page references so mpdf never switches pages
+        // (which is what emitted the blank pages). Genuine breaks between tiles are
+        // still driven by the .scrpgbrk class PhpSpreadsheet adds.
+        $html = str_replace('page: page0', '', $html);
 
         $bodystring = '/<body>/';
         $bodyrepl = <<<EOF
@@ -1637,6 +1649,17 @@ class Application_Model_Tb
 
         $writer = new Mpdf($reader);
         $writer->setEditHtmlCallback([$this, 'addHeadersFooters']);
+        // Give mpdf a per-process scratch directory. Its default temp path is a
+        // single shared dir (sys-temp/phpsppdf/mpdf); when many workers generate
+        // forms in parallel they race on it and mpdf intermittently throws
+        // "temp files directory is not writable", which aborts the form (leaving a
+        // 0-byte PDF) and, in bulk runs, kills the whole worker. Isolating by PID
+        // removes the contention.
+        $mpdfTempDir = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'ept-mpdf-' . getmypid();
+        if (!is_dir($mpdfTempDir)) {
+            mkdir($mpdfTempDir, 0777, true);
+        }
+        $writer->setTempDir($mpdfTempDir);
         $schemeCode = preg_replace('/[^a-zA-Z0-9-_]/', '', $result[0]['shipment_code']);
         $tempUploadFolder = realpath(TEMP_UPLOAD_PATH);
         if (!file_exists($tempUploadFolder . DIRECTORY_SEPARATOR . $schemeCode)) {

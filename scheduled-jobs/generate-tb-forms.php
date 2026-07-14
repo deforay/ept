@@ -9,9 +9,40 @@ require_once __DIR__ . '/../cli-bootstrap.php';
 use setasign\Fpdi\Fpdi;
 
 
-$shortopts = "s:";
-$longopts = ["worker", "offset:", "limit:", "procs:", "files-only"];
+$shortopts = "s:h";
+$longopts = ["worker", "offset:", "limit:", "procs:", "files-only", "help"];
 $cliOptions = getopt($shortopts, $longopts);
+
+if (isset($cliOptions['h']) || isset($cliOptions['help'])) {
+    echo <<<HELP
+Generate TB participant forms (PDF) for a shipment.
+
+Usage:
+  php scheduled-jobs/generate-tb-forms.php [options]
+
+Options:
+  -s <shipmentId>   Shipment to generate forms for.
+                    Defaults to the latest TB shipment if omitted.
+  --files-only      Generate the PDFs with credentials, but do NOT reset
+                    participant passwords in the DB. Passwords are deterministic,
+                    so the printed values stay valid; this also skips the
+                    per-run password-reset audit log entries. Safe for re-prints.
+  --procs <n>       Number of parallel worker processes (default: CPU count).
+  -h, --help        Show this help and exit.
+
+Internal (used when the master spawns workers — not for manual use):
+  --worker          Run in worker mode.
+  --offset <n>      Participant offset for this worker's batch.
+  --limit <n>       Participant count for this worker's batch.
+
+Examples:
+  php scheduled-jobs/generate-tb-forms.php -s 123
+  php scheduled-jobs/generate-tb-forms.php -s 123 --files-only
+  php scheduled-jobs/generate-tb-forms.php -s 123 --procs 4
+
+HELP;
+    exit(0);
+}
 
 $shipmentsToGenarateForm = $cliOptions['s'] ?? null;
 $isWorker = isset($cliOptions['worker']);
@@ -31,18 +62,46 @@ try {
     $db = Zend_Db::factory($dbConf->resources->db);
     Zend_Db_Table::setDefaultAdapter($db);
 
-    // Fallback logic for shipment ID (only needed if not passed, but workers must receive it)
-    if (empty($shipmentsToGenarateForm)) {
-        $sQuery = $db->select()->from(['s' => 'shipment'], ['shipment_id'])
-            ->where("s.scheme_type = 'tb'")
-            ->order("s.shipment_id DESC")
-            ->limit(1);
-        $shipmentsToGenarateForm = $db->fetchOne($sQuery);
+    // Resolve the shipment to work on. Workers always receive -s from the master,
+    // so this interactive/fallback logic only runs in master mode.
+    if (empty($shipmentsToGenarateForm) && !$isWorker) {
+        // Pull the most recent TB shipments so the user can pick one (or accept
+        // the latest as the default).
+        $recentShipments = $db->fetchAll(
+            $db->select()->from(['s' => 'shipment'], ['shipment_id', 'shipment_code'])
+                ->where("s.scheme_type = 'tb'")
+                ->order("s.shipment_id DESC")
+                ->limit(10)
+        );
+
+        if (empty($recentShipments)) {
+            fwrite(STDERR, "No TB shipments found in the database.\n");
+            exit(1);
+        }
+
+        $latestId = $recentShipments[0]['shipment_id'];
+
+        if (stream_isatty(STDIN)) {
+            // Interactive terminal: list recent shipments and prompt, default latest.
+            echo "Recent TB shipments:\n";
+            foreach ($recentShipments as $s) {
+                $marker = ($s['shipment_id'] == $latestId) ? '  (latest)' : '';
+                echo "  {$s['shipment_id']}\t{$s['shipment_code']}$marker\n";
+            }
+            echo "\nEnter shipment ID to generate TB forms [default: $latestId]: ";
+            $input = trim((string) fgets(STDIN));
+            $shipmentsToGenarateForm = ($input === '') ? $latestId : $input;
+        } else {
+            // Non-interactive (cron/pipe): keep prior behaviour — latest TB shipment.
+            $shipmentsToGenarateForm = $latestId;
+        }
     }
 
     if (empty($shipmentsToGenarateForm)) {
-        Pt_Commons_LoggerUtility::logError("Please specify the shipment ids with the -s flag");
-        exit();
+        $msg = "Please specify the shipment id with the -s flag";
+        Pt_Commons_LoggerUtility::logError($msg);
+        fwrite(STDERR, $msg . "\n");
+        exit(1);
     }
 
     if ($isWorker) {
@@ -59,9 +118,18 @@ try {
         $tbResult = $db->fetchAll($sQuery);
         $tbDb = new Application_Model_Tb();
 
-        // No progress bar in worker to avoid cluttering stdout/stderr
+        // No progress bar in worker to avoid cluttering stdout/stderr.
+        // Each participant is isolated in its own try/catch so a single failed form
+        // (e.g. a transient PDF error) doesn't abandon the rest of this worker's
+        // batch — previously one throw here silently dropped 100+ participants.
         foreach ($tbResult as $row) {
-            $tbDb->generateFormPDF($row['shipment_id'], $row['participant_id'], true, true, !$filesOnly);
+            try {
+                $tbDb->generateFormPDF($row['shipment_id'], $row['participant_id'], true, true, !$filesOnly);
+            } catch (Throwable $e) {
+                Pt_Commons_LoggerUtility::logError(
+                    "TB form generation failed for participant {$row['participant_id']} (shipment {$row['shipment_id']}): " . $e->getMessage()
+                );
+            }
             echo "[PROGRESS]" . PHP_EOL;
         }
         exit(0);
@@ -79,8 +147,10 @@ try {
         $totalParticipants = count($participants);
 
         if ($totalParticipants === 0) {
-            Pt_Commons_LoggerUtility::logWarning("No participants found for shipment $shipmentsToGenarateForm");
-            exit();
+            $msg = "No participants found for shipment $shipmentsToGenarateForm";
+            Pt_Commons_LoggerUtility::logWarning($msg);
+            fwrite(STDERR, $msg . "\n");
+            exit(1);
         }
 
         $shipmentCode = $participants[0]['shipment_code'];
@@ -144,7 +214,22 @@ try {
         Pt_Commons_MiscUtility::spinnerFinish($spinner);
 
         // 5. Merge PDFs
-        $pdfsToMerge = glob($folderPath . DIRECTORY_SEPARATOR . "*.pdf");
+        // Drop any 0-byte/empty files (a form whose generation aborted mid-write)
+        // so a corrupt entry can't break the whole merge with Fpdi.
+        $pdfsToMerge = array_values(array_filter(
+            glob($folderPath . DIRECTORY_SEPARATOR . "*.pdf"),
+            static fn($f) => filesize($f) > 0
+        ));
+
+        // Surface a shortfall instead of silently producing an incomplete booklet:
+        // one generated form per participant is expected.
+        $generatedCount = count($pdfsToMerge);
+        if ($generatedCount < $totalParticipants) {
+            $missing = $totalParticipants - $generatedCount;
+            $warn = "Only $generatedCount of $totalParticipants participant forms were generated ($missing missing/empty). See the error log for per-participant failures.";
+            Pt_Commons_LoggerUtility::logWarning($warn);
+            fwrite(STDERR, "WARNING: $warn\n");
+        }
 
         if (!empty($pdfsToMerge)) {
             // Update DB status
