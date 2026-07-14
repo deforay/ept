@@ -10,10 +10,10 @@ $dtFormat = $vHelper->getDateFormat();
 $cloneMode = !empty($this->cloneMode);
 
 
-$style = '';
-if ($shipmentData['shipment']['scheme_type'] == 'tb') {
-	$style = 'style=" width: 1550px; margin-left: -208px; "';
-}
+// TB forms use a wide, multi-column sample table, so break the well out of the
+// fixed-width container and let it span the full viewport (see .tb-form-fullwidth
+// in the TB partial). Other schemes keep the standard container width.
+$isTbForm = ($shipmentData['shipment']['scheme_type'] == 'tb');
 
 $allowedAlgorithms = $dtsConfig['allowedAlgorithms'];
 if (!is_array($allowedAlgorithms))
@@ -41,7 +41,7 @@ $rtriEnabled = $dtsConfig['rtriEnabled'] ?? 'no';
 		text-align: center;
 	}
 </style>
-<div class="well" <?php echo $style; ?>>
+<div class="well<?php echo $isTbForm ? ' tb-form-fullwidth' : ''; ?>">
 	<fieldset class="container">
 		<legend>
 			<?= $cloneMode ? $this->translate->_("Clone Shipment — review and save as a new shipment") : $this->translate->_("Update Shipment Sample Details"); ?>
