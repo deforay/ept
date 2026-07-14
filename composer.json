@@ -80,6 +80,11 @@
         ],
         "post-update-cmd": [
             "@install-hooks"
+        ],
+        "refresh": [
+            "git refresh",
+            "@composer install",
+            "@composer post-update"
         ]
     }
 }
