@@ -127,6 +127,14 @@ class Reports_FinalizeController extends Zend_Controller_Action
             $this->redirect('/reports/finalize/');
             return;
         }
+        $participants = new Application_Service_Participants();
+        $shipmentParticipantMap = new Application_Model_DbTable_ShipmentParticipantMap();
+        
+        $this->view->countries = $participants->getUniqueCountry();
+        $this->view->regions = $participants->getUniqueRegion();
+        $this->view->states = $participants->getUniqueState();
+        $this->view->districts = $participants->getUniqueDistrict();
+        $this->view->results = $shipmentParticipantMap->fetchAllFinalResults();
         $this->view->shipment = [$header];
         $this->view->shipmentId = $id;
         $this->view->responseCount = $evalService->getResponseCount($id, $header['distribution_id']);

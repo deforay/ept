@@ -26,6 +26,9 @@ if (!empty($this->shipment)) {
             vertical-align: middle;
         }
     </style>
+    <link rel="stylesheet" href="<?php echo $this->baseUrl('css/daterangepicker.css'); ?>" type="text/css" media="all">
+    <script type="text/javascript" src="<?php echo $this->baseUrl('js/moment.min.js'); ?>"></script>
+    <link href="<?php echo $this->baseUrl('css/select2.css'); ?>" rel="stylesheet" />
     <div class="distribution-shipment-wide">
         <div class="well" style="clear: both;">
             <a href="javascript:void(0);" onclick="$('#allShipmentList').fadeToggle()"
@@ -236,7 +239,7 @@ if (!empty($this->shipment)) {
 
             </div>
         <?php } ?>
-        <div class="shipment-filters" style="clear:both;margin:15px 0;padding:12px 14px;background:#f8f9fa;border:1px solid #e2e8f0;border-radius:4px;">
+        <!-- <div class="shipment-filters" style="clear:both;margin:15px 0;padding:12px 14px;background:#f8f9fa;border:1px solid #e2e8f0;border-radius:4px;">
             <div class="row" style="margin:0;">
                 <div class="col-md-3" style="padding-left:0;">
                     <label for="filterResponseStatus" style="font-weight:600;font-size:13px;display:block;margin-bottom:4px;"><?= $this->htmlTranslate("Response status"); ?></label>
@@ -275,7 +278,130 @@ if (!empty($this->shipment)) {
                     </div>
                 <?php } ?>
             </div>
-        </div>
+        </div> -->
+        <div class="shipment-filters" style="clear:both;margin:15px 0;padding:12px 14px;background:#f8f9fa;border:1px solid #e2e8f0;border-radius:4px;">
+		<div class="row" style="margin:0;">
+			<div class="col-md-3" style="padding-left:0;">
+				<label for="manuelOverride" style="font-weight:600;font-size:13px;display:block;margin-bottom:4px;"><?= $this->htmlTranslate("Manually overridden only"); ?></label>
+				<select name="manuelOverride" id="manuelOverride" class="form-control input-sm"
+					title="Please choose manual override yes or no" onchange="manualOverride(this.value)">
+					<option value="">-- <?= $this->htmlTranslate("Select"); ?> --</option>
+					<option <?php echo (isset($this->override) && $this->override == "no") ? " selected='selected' " : ""; ?>
+						value="no"><?= $this->htmlTranslate("No"); ?></option>
+					<option <?php echo (isset($this->override) && $this->override == "yes") ? " selected='selected' " : ""; ?>
+						value="yes"><?= $this->htmlTranslate("Yes"); ?></option>
+				</select>
+			</div>
+			<div class="col-md-3">
+				<label for="filterResponseStatus" style="font-weight:600;font-size:13px;display:block;margin-bottom:4px;"><?= $this->htmlTranslate("Response status"); ?></label>
+				<select id="filterResponseStatus" class="form-control input-sm" multiple onchange="applyShipmentFilters()">
+					<option value=""><?= $this->htmlTranslate("All"); ?></option>
+					<option value="responded"><?= $this->htmlTranslate("Responded"); ?></option>
+					<option value="noresponse"><?= $this->htmlTranslate("Not Responded"); ?></option>
+					<option value="late"><?= $this->htmlTranslate("Late Response"); ?></option>
+					<option value="nottested"><?= $this->htmlTranslate("Not Tested"); ?></option>
+				</select>
+			</div>
+			<div class="col-md-3">
+				<label for="filterResult" style="font-weight:600;font-size:13px;display:block;margin-bottom:4px;"><?= $this->htmlTranslate("Result"); ?></label>
+				<select id="filterResult" class="form-control input-sm" multiple onchange="applyShipmentFilters()">
+					<option value=""><?= $this->htmlTranslate("All"); ?></option>
+					<?php
+					foreach($this->results as $res){
+					?>
+					<option value="<?php echo $res['result_id'] ?>"><?php echo $res['result_name']; ?></option>
+					<?php } ?>
+				</select>
+			</div>
+			<div class="col-md-3">
+				<label for="dateRange" style="font-weight:600;font-size:13px;display:block;margin-bottom:4px;"><?= $this->htmlTranslate("Date Range"); ?></label>
+				<input type="text" id="dateRange" name="dateRange" class="form-control input-sm" onchange="applyShipmentFilters()" readonly="readonly"
+				style="background: #fff" placeholder="<?= $this->htmlTranslate("Click here to pick a Date Range"); ?>" />
+
+			</div>
+			<br>
+			<?php if (($this->dtsSchemeType ?? '') === 'vietnam') { ?>
+				<div class="col-md-3">
+					<label for="vietnamTier" style="font-weight:600;font-size:13px;display:block;margin-bottom:4px;"><?= $this->htmlTranslate("Tier"); ?></label>
+					<select id="vietnamTier" class="form-control input-sm" onchange="applyShipmentFilters()">
+						<option value=""><?= $this->htmlTranslate("All tiers"); ?></option>
+						<option value="screening"><?= $this->htmlTranslate("Screening"); ?></option>
+						<option value="confirmatory"><?= $this->htmlTranslate("Confirmatory"); ?></option>
+					</select>
+				</div>
+				<div class="col-md-3">
+					<label for="vietnamNonStandardKit" style="font-weight:600;font-size:13px;display:block;margin-bottom:4px;"><?= $this->htmlTranslate("Primary kit"); ?></label>
+					<select id="vietnamNonStandardKit" class="form-control input-sm" onchange="applyShipmentFilters()">
+						<option value=""><?= $this->htmlTranslate("All kits"); ?></option>
+						<option value="yes"><?= $this->htmlTranslate("Non-reference kit only"); ?></option>
+					</select>
+				</div>
+			<?php } ?>
+		</div>
+<br>
+		<div class="row">
+
+			<?php if (isset($this->countries) && !empty($this->countries)) { ?>
+			<div class="col-md-3">
+					<label for="region" style="font-weight:600;font-size:13px;display:block;margin-bottom:4px;"><?= $this->htmlTranslate("Country"); ?></label>
+					<select class="form-control select2" id="country" name="country" title="<?= $this->htmlTranslate("Please select the country to filter"); ?>"
+					onchange="getOptions('participant', 'country', 'region', this.value, 'region'); applyShipmentFilters();" multiple>
+					<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
+					<?php foreach ($this->countries as $country) { ?>
+						<option value="<?php echo $country['id']; ?>"><?php echo ucwords($country['iso_name']); ?></option>
+					<?php } ?>
+				</select>
+			</div>
+			<?php } ?>
+		
+
+			<?php if (isset($this->regions) && !empty($this->regions)) { ?>
+			<div class="col-md-3">
+					<label for="region" style="font-weight:600;font-size:13px;display:block;margin-bottom:4px;"><?= $this->htmlTranslate("Region"); ?></label>
+					<select class="form-control select2" id="region" name="region" title="<?= $this->htmlTranslate("Please select the region to filter"); ?>"
+						onchange="getOptions('participant', 'region', 'state', this.value, 'state'); applyShipmentFilters();">
+						<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
+						<?php
+						foreach($this->regions as $reg){
+						?>
+						<option value="<?php echo $reg['region'] ?>"><?php echo $reg['region']; ?></option>
+						<?php } ?>
+					</select>
+			</div>
+			<?php } ?>
+			<?php if (isset($this->states) && !empty($this->states)) { ?>
+			<div class="col-md-3">
+					<label for="state" style="font-weight:600;font-size:13px;display:block;margin-bottom:4px;"><?= $this->htmlTranslate("Province"); ?></label>
+					<select class="form-control select2" id="state" name="state" title="<?= $this->htmlTranslate("Please select the province to filter"); ?>"
+						onchange="getOptions('participant', 'state', 'district', this.value, 'district'); applyShipmentFilters();" multiple>
+						<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
+						<?php
+						foreach($this->states as $st){
+						?>
+						<option value="<?php echo $st['state'] ?>"><?php echo $st['state']; ?></option>
+						<?php } ?>
+					</select>
+			</div>
+			<?php } ?>
+			<?php if (isset($this->districts) && !empty($this->districts)) { ?>
+			<div class="col-md-3">
+					<label for="district" style="font-weight:600;font-size:13px;display:block;margin-bottom:4px;"><?= $this->htmlTranslate("District"); ?></label>
+					<select class="form-control select2" id="district" name="district" onchange="applyShipmentFilters();"
+						title="<?= $this->htmlTranslate("Please select the district to filter"); ?>" multiple>
+						<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
+					
+					<?php
+						foreach($this->districts as $dt){
+						?>
+						<option value="<?php echo $dt['district'] ?>"><?php echo $dt['district']; ?></option>
+						<?php } ?>					
+					</select>
+			</div>
+			<?php } ?>
+		</div>
+
+
+	</div>
         <br /><br />
         <table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered table-hover"
             id="shipmentEvaluation" style="margin:10px auto;">
@@ -359,11 +485,71 @@ if (!empty($this->shipment)) {
             <?php } ?>
         </div>
         <script src="<?= $this->assetUrl('js/reports.js'); ?>"></script>
+        <script type="text/javascript" src="<?php echo $this->baseUrl('js/daterangepicker.js'); ?>"></script>
+	    <script type="text/javascript" src="<?php echo $this->baseUrl('js/select2.min.js'); ?>"></script>
+
         <script type="text/javascript" charset="utf-8">
             var oTable = null;
             var nTr = null;
+            $("#filterResponseStatus").select2({
+                placeholder: "<?= $this->translate->_("Select one or more response status"); ?>",
+                allowClear: true
+            });
+            $("#filterResult").select2({
+                placeholder: "<?= $this->translate->_("Select one or more results"); ?>",
+                allowClear: true
+            });
+            $("#country").select2({
+                placeholder: "<?= $this->translate->_("Select one or more countries"); ?>",
+                allowClear: true
+            });
+            $("#state").select2({
+                placeholder: "<?= $this->translate->_("Select one or more states"); ?>",
+                allowClear: true
+            });
+            $("#district").select2({
+                placeholder: "<?= $this->translate->_("Select one or more districts"); ?>",
+                allowClear: true
+            });
             $(document).ready(function () {
+                $('#dateRange').daterangepicker({
+                    locale: {
+                        cancelLabel: 'Clear',
+                        format: 'DD-MMM-YYYY',
+                        separator: ' to ',
+                    },
+                    autoApply: true,
+                    showDropdowns: true,
+                    alwaysShowCalendars: true,
+                    autoUpdateInput: false,
+                    startDate: moment().subtract(179, 'days'),
+                    endDate: moment(),
+                    maxDate: moment(),
+                    ranges: {
+                        'This Month': [moment().startOf('month'), moment().endOf('month')],
+                        'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
+                        'Last 60 Days': [moment().subtract(59, 'days'), moment()],
+                        'Last 90 Days': [moment().subtract(89, 'days'), moment()],
+                        'Last 180 Days': [moment().subtract(179, 'days'), moment()],
+                        'Last 12 Months': [moment().subtract(12, 'month'), moment()],
+                        'Last 18 Months': [moment().subtract(18, 'month'), moment()],
+                    }
+                },
+                function(start, end) {
+                    // Only now, when the admin actually applies a range, do we write it into the
+                    // field and ask the table to redraw with it.
+                    startDate = start.format('DD-MMM-YYYY');
+                    endDate = end.format('DD-MMM-YYYY');
+                    $('#dateRange').val(startDate + ' to ' + endDate);
+                    applyShipmentFilters();
+                });
 
+                // The "Clear" button (cancelLabel above) fires this event, not the apply callback.
+                // Blank the field and redraw so the date filter is fully removed again.
+                $('#dateRange').on('cancel.daterangepicker', function () {
+                    $(this).val('');
+                    applyShipmentFilters();
+                });
 
                 $('#shipmentEvaluation').on('click', ".clicker", function () {
                     nTr = $(this).parents('tr')[0];
@@ -409,8 +595,28 @@ if (!empty($this->shipment)) {
                         // Universal filters (all schemes / countries).
                         var rs = $('#filterResponseStatus').val() || '';
                         var rr = $('#filterResult').val() || '';
+                        var reg = $('#region').val() || '';
+                        var st = $('#state').val() || '';
+                        var dis = $('#district').val() || '';
+                        var con = $('#country').val() || '';
+
+                        var dateRange = $("#dateRange").val();
+                        var sd = '';
+                        var ed = '';
+                        if (dateRange) {
+                            var _dateRange = dateRange.split(" to ");
+                            sd = _dateRange[0];
+                            ed = _dateRange[1];
+                        }
+
                         if (rs) { aoData.push({ "name": "filterResponseStatus", "value": rs }); }
                         if (rr) { aoData.push({ "name": "filterResult", "value": rr }); }
+                        if (sd) { aoData.push({ "name": "startDate", "value": sd }); }
+					    if (ed) { aoData.push({ "name": "endDate", "value": ed }); }
+                        if (reg) { aoData.push({ "name": "region", "value": reg }); }
+                        if (st) { aoData.push({ "name": "state", "value": st }); }
+                        if (dis) { aoData.push({ "name": "district", "value": dis }); }
+                        if (con) { aoData.push({ "name": "country", "value": con }); }
                         <?php if (($this->dtsSchemeType ?? '') === 'vietnam') { ?>
                             var tier = $('#vietnamTier').val() || '';
                             var kit  = $('#vietnamNonStandardKit').val() || '';
@@ -455,6 +661,23 @@ if (!empty($this->shipment)) {
                 }
             }
 
+            function manualOverride(value) {
+                $.blockUI();
+                var url = '/admin/evaluate/shipment/sid/<?php echo $this->id; ?>';
+                val = '';
+                if (value == 'yes') {
+                    val = "eWVz";
+                }
+                if (value == 'no') {
+                    val = "bm8=";
+                }
+                if (val != '') {
+                    window.location.href = url + "/override/" + val;
+                } else {
+                    window.location.href = url;
+                }
+                $.unblockUI();
+            }
             function fnFormatDetails(oTable, nTr) {
                 var aData = oTable.fnGetData(nTr);
                 var sOut = '<div class="text-center"><i class="icon-spinner icon-spin"></i> Loading...</div>';
@@ -488,6 +711,22 @@ if (!empty($this->shipment)) {
                 },
                     function (data) {
                         alert(data);
+                        $.unblockUI();
+                    });
+            }
+            function getOptions(table, searchfield, returnfield, searchvalue, returnid) {
+                $.blockUI();
+                $.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'common', 'action' => 'get-options-by-value')); ?>", {
+                        table: table,
+                        searchfield: searchfield,
+                        returnfield: returnfield,
+                        searchvalue: searchvalue,
+                        format: "html"
+                    },
+                    function(data) {
+                        if (data != 0 && data != '' && data != undefined) {
+                            $("#" + returnid).html(data);
+                        }
                         $.unblockUI();
                     });
             }
