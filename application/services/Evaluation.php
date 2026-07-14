@@ -1587,7 +1587,14 @@ class Application_Service_Evaluation
                     ),
                 ]
             )
-            ->where('s.shipment_id = ?', $shipmentId);
+            ->where('s.shipment_id = ?', $shipmentId)
+            // Responders first (responded, then late), non-responders and not-tested
+            // below; participant/tester ID orders within each group. Consumed as-is by
+            // the client-side tables (their DataTables init keeps this server order).
+            ->order([
+                new Zend_Db_Expr("CASE WHEN sp.response_status = 'responded' THEN 0 WHEN sp.response_status = 'late' THEN 1 ELSE 2 END"),
+                'p.unique_identifier',
+            ]);
         return $db->fetchAll($sql);
     }
 
@@ -1799,8 +1806,10 @@ class Application_Service_Evaluation
         }
 
         // Sorting.
+        // Float responders to the top (responded, then late), leaving non-responders
+        // and not-tested below; the user's chosen column then sorts within each group.
+        $sortClauses = [new Zend_Db_Expr("CASE WHEN sp.response_status = 'responded' THEN 0 WHEN sp.response_status = 'late' THEN 1 ELSE 2 END")];
         if (isset($parameters['iSortCol_0'])) {
-            $sortClauses = [];
             $sortingCols = (int) ($parameters['iSortingCols'] ?? 1);
             for ($i = 0; $i < $sortingCols; $i++) {
                 $colIdx = (int) $parameters['iSortCol_' . $i];
@@ -1814,10 +1823,8 @@ class Application_Service_Evaluation
                 $expr = ($orderColumns[$colIdx] instanceof Zend_Db_Expr) ? (string) $orderColumns[$colIdx] : $orderColumns[$colIdx];
                 $sortClauses[] = new Zend_Db_Expr($expr . ' ' . $dir);
             }
-            if (!empty($sortClauses)) {
-                $filtered->order($sortClauses);
-            }
         }
+        $filtered->order($sortClauses);
 
         // Filtered total (post-where, pre-limit).
         $filteredCountSelect = clone $filtered;
@@ -2043,8 +2050,10 @@ class Application_Service_Evaluation
             $filtered->where($expr . ' LIKE ?', '%' . $parameters['sSearch_' . $i] . '%');
         }
 
+        // Float responders to the top (responded, then late), leaving non-responders
+        // and not-tested below; the user's chosen column then sorts within each group.
+        $sortClauses = [new Zend_Db_Expr("CASE WHEN sp.response_status = 'responded' THEN 0 WHEN sp.response_status = 'late' THEN 1 ELSE 2 END")];
         if (isset($parameters['iSortCol_0'])) {
-            $sortClauses = [];
             $sortingCols = (int) ($parameters['iSortingCols'] ?? 1);
             for ($i = 0; $i < $sortingCols; $i++) {
                 $colIdx = (int) $parameters['iSortCol_' . $i];
@@ -2058,10 +2067,8 @@ class Application_Service_Evaluation
                 $expr = ($orderColumns[$colIdx] instanceof Zend_Db_Expr) ? (string) $orderColumns[$colIdx] : $orderColumns[$colIdx];
                 $sortClauses[] = new Zend_Db_Expr($expr . ' ' . $dir);
             }
-            if (!empty($sortClauses)) {
-                $filtered->order($sortClauses);
-            }
         }
+        $filtered->order($sortClauses);
 
         $filteredCountSelect = clone $filtered;
         $filteredCountSelect->reset(Zend_Db_Select::COLUMNS)->reset(Zend_Db_Select::ORDER)->reset(Zend_Db_Select::LIMIT_COUNT)->reset(Zend_Db_Select::LIMIT_OFFSET);
@@ -2257,8 +2264,10 @@ class Application_Service_Evaluation
             $filtered->where($expr . ' LIKE ?', '%' . $parameters['sSearch_' . $i] . '%');
         }
 
+        // Float responders to the top (responded, then late), leaving non-responders
+        // and not-tested below; the user's chosen column then sorts within each group.
+        $sortClauses = [new Zend_Db_Expr("CASE WHEN sp.response_status = 'responded' THEN 0 WHEN sp.response_status = 'late' THEN 1 ELSE 2 END")];
         if (isset($parameters['iSortCol_0'])) {
-            $sortClauses = [];
             $sortingCols = (int) ($parameters['iSortingCols'] ?? 1);
             for ($i = 0; $i < $sortingCols; $i++) {
                 $colIdx = (int) $parameters['iSortCol_' . $i];
@@ -2272,10 +2281,8 @@ class Application_Service_Evaluation
                 $expr = ($orderColumns[$colIdx] instanceof Zend_Db_Expr) ? (string) $orderColumns[$colIdx] : $orderColumns[$colIdx];
                 $sortClauses[] = new Zend_Db_Expr($expr . ' ' . $dir);
             }
-            if (!empty($sortClauses)) {
-                $filtered->order($sortClauses);
-            }
         }
+        $filtered->order($sortClauses);
 
         $filteredCountSelect = clone $filtered;
         $filteredCountSelect->reset(Zend_Db_Select::COLUMNS)->reset(Zend_Db_Select::ORDER)->reset(Zend_Db_Select::LIMIT_COUNT)->reset(Zend_Db_Select::LIMIT_OFFSET);

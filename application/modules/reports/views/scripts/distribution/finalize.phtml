@@ -488,9 +488,9 @@ if (!empty($this->shipment)) {
                     "bVisible": false
                 }
                 ],
-                "aaSorting": [
-                    [1, "asc"]
-                ],
+                // Empty: keep the server order (responders first, then by ID); the user
+                // can still click any column header to re-sort.
+                "aaSorting": [],
                 "bProcessing": true,
             });
         });
