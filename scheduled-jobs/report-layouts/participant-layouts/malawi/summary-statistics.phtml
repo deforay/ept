@@ -240,14 +240,11 @@ if (isset($result['performance2']) && !empty($result['performance2'])) {
     $b2plot->SetFillColor("red");
     $b2plot->SetColor("white");
 
-    // ---- FIX: constant bar width regardless of number of data points ----
-    $numPoints = count($label);
-    $maxBarWidth = 30; // px, tweak to taste
-    $barWidth = ($numPoints > 0) ? min($maxBarWidth, 300 / $numPoints) : $maxBarWidth;
-
-    $b1plot->SetAbsWidth($barWidth);
-    $b2plot->SetAbsWidth($barWidth);
-    // -----------------------------------------------------------------------
+    // Let JpGraph's native grouped layout size and place the Passed/Failed pair. The group
+    // fills 0.7 of each category slot, split evenly between the two bars, so they sit right
+    // next to each other (touching). Forcing a fixed 30px SetAbsWidth here used to leave the
+    // bars thin while their positions stayed 0.35-category apart — stranding them far apart.
+    $gbplot->SetWidth(0.7);
 
     $b1plot->SetLegend('Passed');
     $b2plot->SetLegend('Failed');
@@ -319,14 +316,11 @@ if (isset($result['performance3']) && !empty($result['performance3'])) {
     $b2plot->SetFillColor("red");
     $b2plot->SetColor("white");
 
-    // ---- FIX: constant bar width regardless of number of data points ----
-    $numPoints = count($label);
-    $maxBarWidth = 30; // px, tweak to taste
-    $barWidth = ($numPoints > 0) ? min($maxBarWidth, 300 / $numPoints) : $maxBarWidth;
-
-    $b1plot->SetAbsWidth($barWidth);
-    $b2plot->SetAbsWidth($barWidth);
-    // -----------------------------------------------------------------------
+    // Let JpGraph's native grouped layout size and place the Passed/Failed pair. The group
+    // fills 0.7 of each category slot, split evenly between the two bars, so they sit right
+    // next to each other (touching). Forcing a fixed 30px SetAbsWidth here used to leave the
+    // bars thin while their positions stayed 0.35-category apart — stranding them far apart.
+    $gbplot->SetWidth(0.7);
 
     $graph->legend->SetShadow('gray@0.4', 5);
     $graph->legend->SetPos(0.5, 0.2, 'center', 'bottom');
