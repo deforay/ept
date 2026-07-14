@@ -33,10 +33,10 @@ $dtFormat = $vHelper->getDateFormat();
 $schemeType = $isEditMode
     ? ($shipment['scheme_type'] ?? '')
     : ($this->scheme ?? '');
-$style = '';
-if ($schemeType == 'tb') {
-    $style = 'style="width: 1550px; margin-left: -208px;"';
-}
+// TB forms use a wide, multi-column sample table, so break the well out of the
+// fixed-width container and let it span the full viewport (see .tb-form-fullwidth
+// in the TB partial). Other schemes keep the standard container width.
+$isTbForm = ($schemeType == 'tb');
 
 // Form action URL
 $formAction = $isEditMode
@@ -44,7 +44,7 @@ $formAction = $isEditMode
     : $this->url(array('module' => 'admin', 'controller' => 'shipment', 'action' => 'add'));
 ?>
 
-<div class="well" <?php echo $style; ?>>
+<div class="well<?php echo $isTbForm ? ' tb-form-fullwidth' : ''; ?>">
     <fieldset class="container">
         <legend>
             <?php if ($isEditMode): ?>

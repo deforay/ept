@@ -84,6 +84,37 @@ foreach ($savedSettings as $key => $savedValue) {
 $currentTbTestType = $shipmentAttribute['tb_test_type'] ?? '';
 ?>
 
+<style>
+    /* ------------------------------------------------------------------
+       TB shipment form — full-width layout.
+       The TB sample table is far wider than other schemes (13+ columns
+       across the MTB/Rif and MTB Ultra rows), so we break the surrounding
+       .well out of the fixed-width Bootstrap container and let it span the
+       full viewport. .tb-form-fullwidth is set on the .well by both the
+       edit/clone and add form headers; the rule lives here so it ships
+       wherever this TB partial is included. */
+    .tb-form-fullwidth {
+        width: auto;
+        margin-left: calc(50% - 50vw);
+        margin-right: calc(50% - 50vw);
+        padding-left: 25px;
+        padding-right: 25px;
+        box-sizing: border-box;
+    }
+
+    /* Let the inner container fill the full-bleed well instead of capping
+       at its responsive fixed width. */
+    .tb-form-fullwidth > .container {
+        width: 100%;
+        max-width: 100%;
+    }
+
+    /* Spread the sample tables across the available width. */
+    .tb-form-fullwidth #molecular td > table {
+        width: 100%;
+    }
+</style>
+
 <div class="form-group">
     <label class="col-lg-3 control-label" for="scorePerSample"><?= $this->translate->_("Score Per Sample"); ?></label>
     <div class="col-lg-5">
@@ -147,7 +178,7 @@ $currentTbTestType = $shipmentAttribute['tb_test_type'] ?? '';
     </div>
 </div>
 <!-- Microscopy Table -->
-<table style="width: <?php echo $isEditMode ? '1050px' : '100%'; ?>; margin: 0 auto;" border="1"
+<table style="width: 100%; margin: 0 auto;" border="1"
     class="hide table table-bordered table-striped reftable clearfix" id="microscopy">
     <thead>
         <tr>
