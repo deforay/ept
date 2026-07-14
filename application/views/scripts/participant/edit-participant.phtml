@@ -1,3 +1,4 @@
+<?php $nameReadonly = (isset($this->participantEditName) && !empty($this->participantEditName) && $this->participantEditName == 'no') ? 'readonly' : ''; ?>
 <link rel="stylesheet" type="text/css" href="<?php echo $this->baseUrl('css/bootstrap-select.min.css'); ?>" />
 <link href="<?php echo $this->baseUrl('css/select2.css'); ?>" rel="stylesheet" />
 <div class="well">
@@ -25,12 +26,12 @@
             <div class="form-group col-lg-6" id="firstNameDiv">
                 <label class="col-lg-4 control-label"><?= $this->translate->_("First Name"); ?><span class="mandatory">*</span></label>
                 <div class="col-lg-8">
-                    <input type="text" <?php echo (isset($this->participantEditName) && !empty($this->participantEditName) && $this->participantEditName == 'no') ? 'readonly' : ''; ?> id="pfname" name="pfname" size="50" maxlength="255" class="form-control" title="<?= $this->htmlTranslate("Please enter the lab name or first name"); ?>" placeholder="<?= $this->htmlTranslate("Lab name or first name"); ?>" value="<?php echo $this->participant['first_name']; ?>" />
+                    <input type="text" <?php echo $nameReadonly; ?> id="pfname" name="pfname" size="50" maxlength="255" class="form-control" title="<?= $this->htmlTranslate("Please enter the lab name or first name"); ?>" placeholder="<?= $this->htmlTranslate("Lab name or first name"); ?>" value="<?php echo $this->participant['first_name']; ?>" />
                 </div>
             </div>
             <div class="form-group col-lg-6" id="lastNameDiv">
                 <label class="col-lg-4 control-label" for="plname"><?= $this->translate->_("Last Name"); ?></label>
-                <div class="col-lg-8"><input type="text" id="plname" name="plname" <?php echo (isset($this->participantEditName) && !empty($this->participantEditName) && $this->participantEditName == 'no') ? 'readonly' : ''; ?> size="50" maxlength="255" class="form-control" title="<?= $this->htmlTranslate("Please enter the last name"); ?>" placeholder="<?= $this->htmlTranslate("Last name"); ?>" value="<?php echo $this->participant['last_name']; ?>" /></div>
+                <div class="col-lg-8"><input type="text" id="plname" name="plname" <?php echo $nameReadonly; ?> size="50" maxlength="255" class="form-control" title="<?= $this->htmlTranslate("Please enter the last name"); ?>" placeholder="<?= $this->htmlTranslate("Last name"); ?>" value="<?php echo $this->participant['last_name']; ?>" /></div>
             </div>
             <div class="form-group col-lg-6">
                 <label class="col-lg-4 control-label" for="instituteName"><?= $this->translate->_("Institute Name"); ?> <span class="mandatory">*</span></label>
@@ -376,11 +377,11 @@
 
     function checkIndividualParticipant(obj) {
         if (obj.checked) {
-            tag = '<label class="col-lg-4 control-label"><?= $this->jsTranslate("First Name"); ?><span class="mandatory">*</span></label><div class="col-lg-8"><input type="text" id="pfname" name="pfname" size="50" maxlength="255" class="isRequired form-control" title="<?= $this->jsTranslate("Please enter the first name"); ?>" placeholder="<?= $this->jsTranslate("First name"); ?>"/></div>';
+            tag = '<label class="col-lg-4 control-label"><?= $this->jsTranslate("First Name"); ?><span class="mandatory">*</span></label><div class="col-lg-8"><input type="text" <?php echo $nameReadonly; ?> id="pfname" name="pfname" size="50" maxlength="255" class="isRequired form-control" title="<?= $this->jsTranslate("Please enter the first name"); ?>" placeholder="<?= $this->jsTranslate("First name"); ?>"/></div>';
             $("#lastNameDiv, #firstNameDiv").show();
             $("#lastNameDiv, #firstNameDiv").removeClass('hide');
         } else {
-            tag = '<label class="col-lg-4 control-label"><?= $this->jsTranslate("Lab Name"); ?><span class="mandatory">*</span></label><div class="col-lg-8"><input type="text" id="pfname" name="pfname" size="50" maxlength="255" class="isRequired form-control" title="<?= $this->jsTranslate("Please enter the lab name"); ?>" placeholder="<?= $this->jsTranslate("Lab name"); ?>"/></div>';
+            tag = '<label class="col-lg-4 control-label"><?= $this->jsTranslate("Lab Name"); ?><span class="mandatory">*</span></label><div class="col-lg-8"><input type="text" <?php echo $nameReadonly; ?> id="pfname" name="pfname" size="50" maxlength="255" class="isRequired form-control" title="<?= $this->jsTranslate("Please enter the lab name"); ?>" placeholder="<?= $this->jsTranslate("Lab name"); ?>"/></div>';
             $("#lastNameDiv, #firstNameDiv").hide();
             $("#lastNameDiv, #firstNameDiv").addClass('hide');
             $("#plname").val('');
@@ -392,7 +393,7 @@
     if (isset($this->participant['individual']) && trim($this->participant['individual']) == 'no') {
     ?>
         document.getElementById("individualParticipant").checked = false;
-        tag = '<label class="col-lg-4 control-label"><?= $this->jsTranslate("Lab Name"); ?><span class="mandatory">*</span></label><div class="col-lg-8"><input type="text" id="pfname" name="pfname" size="50" maxlength="255" class="isRequired form-control" title="<?= $this->jsTranslate("Please enter the lab name"); ?>" placeholder="<?= $this->jsTranslate("Lab name"); ?>" value="<?php echo $this->participant['first_name']; ?>"/></div>';
+        tag = '<label class="col-lg-4 control-label"><?= $this->jsTranslate("Lab Name"); ?><span class="mandatory">*</span></label><div class="col-lg-8"><input type="text" <?php echo $nameReadonly; ?> id="pfname" name="pfname" size="50" maxlength="255" class="isRequired form-control" title="<?= $this->jsTranslate("Please enter the lab name"); ?>" placeholder="<?= $this->jsTranslate("Lab name"); ?>" value="<?php echo $this->participant['first_name']; ?>"/></div>';
         $("#lastNameDiv, #firstNameDiv").hide();
         $("#lastNameDiv, #firstNameDiv").addClass('hide');
         $("#plname").val('');

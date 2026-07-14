@@ -392,6 +392,9 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         $firstName = isset($params['pfname']) && $params['pfname'] != '' ? $params['pfname'] : null;
         $lastName = isset($params['plname']) && $params['plname'] != '' ? $params['plname'] : null;
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
+        // Capture PTCC status before $authNameSpace may be reassigned below;
+        // PTCC coordinators are not allowed to rename sites.
+        $isPtcc = isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1;
 
         $data = [
             'unique_identifier' => $params['pid'],
@@ -447,6 +450,12 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         }
         /* get previous unique id for changes */
         $exist = $this->fetchRow($this->select()->where('participant_id = ?', $params['participantId']));
+        // PTCC coordinators may edit a site but must not rename it; ignore any
+        // posted name and retain the stored values (defends against a crafted POST).
+        if ($exist && $isPtcc) {
+            $data['first_name'] = $exist['first_name'];
+            $data['last_name'] = $exist['last_name'];
+        }
         $noOfRows = $this->update($data, $this->getAdapter()->quoteInto('participant_id = ?', $params['participantId']));
         //Check profile update
         if (isset($authNameSpace->force_profile_updation) && trim($authNameSpace->force_profile_updation) > 0) {

@@ -592,6 +592,9 @@ class ParticipantController extends Zend_Controller_Action
             $this->view->dataManagers = $dataManagerService->getDataManagerList();
             $this->view->countriesList = $commonService->getcountriesList();
         }
+        // PTCC coordinators may manage their sites but must not rename them.
+        $authNameSpace = new Zend_Session_Namespace('datamanagers');
+        $this->view->participantEditName = (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1) ? 'no' : 'yes';
         $scheme = new Application_Service_Schemes();
         $this->view->schemes = $scheme->getAllSchemes();
         $this->view->participantSchemes = $participantService->getSchemesByParticipantId($partSysId);
