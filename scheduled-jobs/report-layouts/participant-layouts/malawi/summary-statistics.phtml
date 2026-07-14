@@ -41,6 +41,16 @@ if (isset($result['statistics']) && !empty($result['statistics'])) {
 
     $ppOverview .= '</table><br>';
 
+    // Keep the whole statistics table on one page. When the corrective-actions table above runs
+    // long, this table can start too low and TCPDF splits it mid-table — stranding the blue
+    // "STATISTICS FOR THIS SURVEY" caption at the foot of one page and the data on the next.
+    // It's a fixed 3-row block (caption + a header row that wraps to ~3 lines + one data row),
+    // so estimate its height and break BEFORE writing if it won't fit — same cheap fit-check the
+    // charts use below, no TCPDF transaction/object-clone per participant.
+    $statsTableHeight = 40; // mm, generous estimate for the 3-row block incl. wrapped header
+    if (($pdf->getY() + $statsTableHeight) > ($pdf->getPageHeight() - $pdf->getBreakMargin())) {
+        $pdf->AddPage();
+    }
     $pdf->writeHTML($ppOverview, true, false, true, false, '');
 }
 
