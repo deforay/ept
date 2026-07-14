@@ -1518,7 +1518,7 @@ class Application_Model_Tb
         return $config;
     }
 
-    public function generateFormPDF($shipmentId, $participantId = null, $showCredentials = false, $bulkGeneration = false)
+    public function generateFormPDF($shipmentId, $participantId = null, $showCredentials = false, $bulkGeneration = false, $resetPasswordInDb = true)
     {
 
         ini_set('memory_limit', -1);
@@ -1579,10 +1579,16 @@ class Application_Model_Tb
                 $sheet->setCellValue('C10', $prefix . $result[0]['unique_identifier']);
                 $tempPassword = Pt_Commons_MiscUtility::generateTempPassword($prefix . $result[0]['unique_identifier']);
                 $sheet->setCellValue('C12', $tempPassword);
-                $dataManagerService->resetPasswordFromAdmin([
-                    'primaryMail' => $prefix . $result[0]['unique_identifier'],
-                    'password' => $tempPassword,
-                ], true);
+                // In files-only mode we skip writing the (deterministic) password
+                // back to the DB. The credential printed on the form is the same
+                // HMAC value already stored, so it stays valid; skipping the write
+                // also avoids a redundant password-reset audit log row per run.
+                if ($resetPasswordInDb === true) {
+                    $dataManagerService->resetPasswordFromAdmin([
+                        'primaryMail' => $prefix . $result[0]['unique_identifier'],
+                        'password' => $tempPassword,
+                    ], true);
+                }
             }
         }
 
