@@ -10,7 +10,7 @@ use setasign\Fpdi\Fpdi;
 
 
 $shortopts = "s:";
-$longopts = ["worker", "offset:", "limit:", "procs:"];
+$longopts = ["worker", "offset:", "limit:", "procs:", "files-only"];
 $cliOptions = getopt($shortopts, $longopts);
 
 $shipmentsToGenarateForm = $cliOptions['s'] ?? null;
@@ -18,6 +18,10 @@ $isWorker = isset($cliOptions['worker']);
 $offset = $cliOptions['offset'] ?? 0;
 $limit = $cliOptions['limit'] ?? 0;
 $procs = $cliOptions['procs'] ?? Pt_Commons_MiscUtility::getCpuCount();
+// --files-only: generate the PDFs with credentials, but do NOT reset participant
+// passwords in the DB (passwords are deterministic, so the printed value stays
+// valid) and skip the per-run password-reset audit log entries.
+$filesOnly = isset($cliOptions['files-only']);
 
 $generalModel = new Pt_Commons_General();
 
@@ -57,7 +61,7 @@ try {
 
         // No progress bar in worker to avoid cluttering stdout/stderr
         foreach ($tbResult as $row) {
-            $tbDb->generateFormPDF($row['shipment_id'], $row['participant_id'], true, true);
+            $tbDb->generateFormPDF($row['shipment_id'], $row['participant_id'], true, true, !$filesOnly);
             echo "[PROGRESS]" . PHP_EOL;
         }
         exit(0);
@@ -103,6 +107,9 @@ try {
                 break;
 
             $cmd = ["php", __FILE__, "-s", $shipmentsToGenarateForm, "--worker", "--offset", $currentOffset, "--limit", $batchSize];
+            if ($filesOnly) {
+                $cmd[] = "--files-only";
+            }
 
             $process = new \Symfony\Component\Process\Process($cmd);
             $process->setTimeout(null); // Disable timeout
