@@ -56,12 +56,9 @@ if (!$correctiveActions) {
     $justForcedFreshPage = true;
 }
 
-// Build (but don't write yet) the "Qualitative Evaluation" heading. Writing it before
-// the page-break decision below is what stranded it alone on its own page previously:
-// the heading got printed, THEN charts+comments were measured and didn't fit in what
-// was left, so a second AddPage() fired — leaving the heading orphaned. Now the heading's
-// own height is folded into the same up-front decision as the charts and comments, so
-// the whole section (heading + charts + comments) moves together as one unit.
+// Build (but don't write yet) the "Qualitative Evaluation" heading, so the page-break
+// decision below can run before it lands on the page — otherwise the heading prints first
+// and then gets stranded when the charts break to the next page.
 $qualEvalHtml = '<span style="text-align:center;font-weight:bold;font-size:12px;">Qualitative Evaluation</span>';
 
 // All three charts are drawn at the same Graph canvas size (680x200), so lock every
@@ -71,10 +68,8 @@ $chartWidthMM  = 200;
 $chartHeightMM = ($chartWidthMM / 680) * 200;
 $chartSpacing  = 5;
 
-// Build the PT Scheme Manager Comments HTML now (before the page-break decision) so its
-// height can be measured and included in the same up-front check as the charts. This is
-// what keeps charts + comments together on one page instead of the comments spilling
-// onto whichever page the charts happened to end on.
+// Build the PT Scheme Manager Comments HTML now; it's written right after the charts and
+// relies on TCPDF's native auto page break if it runs past the bottom of the last chart page.
 $eodReportText = "End of report";
 if ($evalRow['report_type'] == 'finalized') {
     $eodReportText = "End of final report";
@@ -84,46 +79,30 @@ $commentsHtml = '<span style="font-size:11px;text">More information can be obtai
 This is the confidential report that summarizes your performance. The National Public Health Quality Assurance Program recommends that the results of this proficiency testing scheme comparison not be used as a sole criterion for judging the performance of any individual testing facility/Laboratory.</span><br>';
 $commentsHtml .= '<br><span style="font-size:11px;text-align:center;font-weight:bold;"><u>' . $eodReportText . '</u>.</span>';
 
-// Measure the heading's and the comments block's real rendered height without
-// committing either to the PDF yet — same transaction/rollback trick for both, so
-// neither one gets written until AFTER the page-break decision below is made.
-$pdf->startTransaction();
-$measureStartY = $pdf->getY();
-$pdf->writeHTML($qualEvalHtml, true, false, true, false, '');
-$measureEndY = $pdf->getY();
-$pdf = $pdf->rollbackTransaction();
-$qualEvalHeight = $measureEndY - $measureStartY;
-
-$pdf->startTransaction();
-$measureStartY = $pdf->getY();
-$pdf->writeHTML($commentsHtml, true, false, true, false, '');
-$measureEndY = $pdf->getY();
-$pdf = $pdf->rollbackTransaction();
-$commentsHeight = $measureEndY - $measureStartY;
-
-// Work out how much vertical space the heading, ALL requested charts, and the comments
-// block will need together, so we can decide up front whether to break to a new page.
-$neededHeight = $qualEvalHeight;
-if (isset($result['performance1']) && !empty($result['performance1'])) {
-    $neededHeight += $chartHeightMM + $chartSpacing;
-}
-if (isset($result['performance2']) && !empty($result['performance2'])) {
-    $neededHeight += $chartHeightMM + $chartSpacing;
-}
-if (isset($result['performance3']) && !empty($result['performance3'])) {
-    $neededHeight += $chartHeightMM + $chartSpacing;
-}
-$neededHeight += $commentsHeight;
-
-// Only apply this measurement-based break when we're continuing on a page that already
-// has other content on it (i.e. $correctiveActions was true, so we're still on page 1
-// beneath the corrective-actions table). If we just forced a fresh page above, skip this
-// entirely — TCPDF's native auto page break (already enabled via SetAutoPageBreak) will
-// still protect any individual chart or the comments block from being cut off mid-render
-// if the group genuinely runs long on rare oversized content; we simply don't pre-empt
-// that by breaking again before anything's even been drawn.
-if (!$justForcedFreshPage && $neededHeight > 0 && ($pdf->getY() + $neededHeight) > ($pdf->getPageHeight() - $pdf->getBreakMargin())) {
-    $pdf->AddPage();
+// Keep the "Qualitative Evaluation" heading attached to at least the first chart: if we're
+// continuing mid-page (corrective actions sit above us) and the heading + one chart won't fit
+// in what's left of the page, break first so the heading never strands alone at the bottom.
+// Each chart below also fit-checks itself, so the remaining charts pack on and flow naturally.
+//
+// Heights here are deliberately small constants rather than measured. The old approach wrote
+// the heading and comments into a transaction and diffed getY() to size them — but when that
+// measurement runs near the bottom of a full page, writeHTML auto-breaks mid-measurement,
+// getY() jumps to the top of the next page, and the computed height comes back NEGATIVE. That
+// negative fed $neededHeight, tripped the `> 0` guard, so the up-front break never fired and
+// the heading was left orphaned at the foot of the page (with each chart then cascading onto
+// its own page via the stale-Y bug below). A constant can't page-break, so it can't lie.
+$qualEvalHeight = 10; // a single bold line, in mm
+if (!$justForcedFreshPage) {
+    $firstChartHeight = 0;
+    if ((isset($result['performance1']) && !empty($result['performance1']))
+        || (isset($result['performance2']) && !empty($result['performance2']))
+        || (isset($result['performance3']) && !empty($result['performance3']))
+    ) {
+        $firstChartHeight = $chartHeightMM + $chartSpacing;
+    }
+    if (($pdf->getY() + $qualEvalHeight + $firstChartHeight) > ($pdf->getPageHeight() - $pdf->getBreakMargin())) {
+        $pdf->AddPage();
+    }
 }
 
 // Now that the page-break decision is finalized, actually write the heading.
@@ -190,7 +169,16 @@ if (isset($result['performance1']) && !empty($result['performance1'])) {
     $graph->Stroke($image_file);
 
     $currentY = $pdf->getY();
-    $pdf->Image($image_file, 5, $currentY, $chartWidthMM, '', '', '', '', false, 300);
+    // Break before drawing if this chart won't fit in what's left of the page, and pass the
+    // image an explicit height. Otherwise Image() auto-breaks under us and the SetY() below
+    // advances from a stale $currentY on the wrong page — which is what pushed every chart
+    // onto its own page. With the fit-check + explicit height, Image() never auto-breaks, so
+    // $currentY and the page always agree.
+    if (($currentY + $chartHeightMM) > ($pdf->getPageHeight() - $pdf->getBreakMargin())) {
+        $pdf->AddPage();
+        $currentY = $pdf->getY();
+    }
+    $pdf->Image($image_file, 5, $currentY, $chartWidthMM, $chartHeightMM, '', '', '', false, 300);
     $pdf->SetY($currentY + $chartHeightMM + $chartSpacing);
 
     if (file_exists($image_file)) {
@@ -265,7 +253,11 @@ if (isset($result['performance2']) && !empty($result['performance2'])) {
     $graph->Stroke($performance_of_surveys);
 
     $currentY = $pdf->getY();
-    $pdf->Image($performance_of_surveys, 5, $currentY, $chartWidthMM, '', '', '', 'C', false, 300);
+    if (($currentY + $chartHeightMM) > ($pdf->getPageHeight() - $pdf->getBreakMargin())) {
+        $pdf->AddPage();
+        $currentY = $pdf->getY();
+    }
+    $pdf->Image($performance_of_surveys, 5, $currentY, $chartWidthMM, $chartHeightMM, '', '', '', false, 300);
     $pdf->SetY($currentY + $chartHeightMM + $chartSpacing);
 
     if (file_exists($performance_of_surveys)) {
@@ -340,8 +332,11 @@ if (isset($result['performance3']) && !empty($result['performance3'])) {
     $graph->Stroke($performance_of_current_survey_anels);
 
     $currentY = $pdf->getY();
-    // Page-break decision for charts + comments already happened above, so just draw here.
-    $pdf->Image($performance_of_current_survey_anels, 5, $currentY, $chartWidthMM, '', '', '', '', false, 300);
+    if (($currentY + $chartHeightMM) > ($pdf->getPageHeight() - $pdf->getBreakMargin())) {
+        $pdf->AddPage();
+        $currentY = $pdf->getY();
+    }
+    $pdf->Image($performance_of_current_survey_anels, 5, $currentY, $chartWidthMM, $chartHeightMM, '', '', '', false, 300);
     $pdf->SetY($currentY + $chartHeightMM + $chartSpacing);
 
     if (file_exists($performance_of_current_survey_anels)) {
@@ -349,8 +344,9 @@ if (isset($result['performance3']) && !empty($result['performance3'])) {
     }
 }
 
-// PT Scheme Manager Comments — written directly after the charts, no separate page-break
-// check needed here since $commentsHeight was already folded into the up-front decision.
+// PT Scheme Manager Comments — written straight after the charts. TCPDF's native auto page
+// break (SetAutoPageBreak) protects this text block if it runs past the bottom, so no manual
+// measurement or pre-break is needed here.
 $pdf->writeHTML($commentsHtml, true, false, true, false, '');
 
 //----------------Summary Statistics for this survey  Ends----------------
