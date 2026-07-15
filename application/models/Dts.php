@@ -205,6 +205,13 @@ final class Application_Model_Dts
 
         $attributes = Pt_Commons_JsonUtility::safeDecode($shipment['attributes']);
 
+        // Malawi treats a missing test-kit expiry date as a scored FAILURE (zero panel
+        // score) rather than excluding the participant from evaluation — so they still
+        // receive a report marked FAILED. Other schemes keep excluding. (An actually
+        // expired kit already fails everywhere via $testKitExpiryResult.)
+        $isMalawi = ($dtsSchemeType === 'malawi') || (($attributes['algorithm'] ?? '') === 'malawiNationalDtsAlgo');
+        $malawiExpiryFail = false;
+
         $attributes['algorithm'] ??= null;
         //$attributes['sample_rehydration_date'] = $attributes['sample_rehydration_date'] ?: null;
 
@@ -325,6 +332,14 @@ final class Application_Model_Dts
                     } else {
                         $testKitExpired[$kitIndex] = false;
                     }
+                } elseif ($isMalawi) {
+                    // Malawi: fail (zero score) instead of excluding, so a report is still produced.
+                    $failureReason[] = [
+                        'warning' => "Test kit {$kitIndex} expiry date is not reported with PT response.",
+                        'correctiveAction' => $correctiveActions[6],
+                    ];
+                    $correctiveActionList[] = 6;
+                    $malawiExpiryFail = true;
                 } else {
                     $failureReason[] = [
                         'warning' => "Result not evaluated : Test kit {$kitIndex} expiry date is not reported with PT response.",
@@ -841,7 +856,7 @@ final class Application_Model_Dts
         $configuredDocScore = (isset($config['documentationScore']) && (int) $config['documentationScore'] > 0) ? $config['documentationScore'] : 0;
 
         // Response Score
-        if ($maxScore == 0 || $totalScore == 0) {
+        if ($maxScore == 0 || $totalScore == 0 || $malawiExpiryFail) {
             $responseScore = 0;
         } else {
             $responseScore = round(($totalScore / $maxScore) * 100 * (100 - $configuredDocScore) / 100, 2);
@@ -1035,7 +1050,7 @@ final class Application_Model_Dts
             $participantAlgoFail = ($dtsSchemeType === 'vietnam') ? $anyAlgoFail : ($algoResult == 'Fail');
 
             // if any of the results have failed, then the final result is fail
-            if ($participantAlgoFail || $scoreResult == 'Fail' || $lastDateResult == 'Fail' || $mandatoryResult == 'Fail' || $lotResult == 'Fail' || $testKitExpiryResult == 'Fail') {
+            if ($participantAlgoFail || $scoreResult == 'Fail' || $lastDateResult == 'Fail' || $mandatoryResult == 'Fail' || $lotResult == 'Fail' || $testKitExpiryResult == 'Fail' || $malawiExpiryFail) {
                 $finalResult = 2;
                 $shipmentResultEntry['is_followup'] = 'yes';
                 $shipment['is_followup'] = 'yes';
@@ -1043,6 +1058,11 @@ final class Application_Model_Dts
                 $shipment['is_excluded'] = 'no';
                 $shipment['is_followup'] = 'no';
                 $finalResult = 1;
+            }
+            if ($malawiExpiryFail) {
+                // Malawi expiry-date failure earns no score at all: the panel score is already
+                // zeroed above, so zero the documentation score too and the total becomes 0.
+                $documentationScore = 0;
             }
             $shipmentResultEntry['shipment_score'] = $responseScore;
             $shipmentResultEntry['documentation_score'] = $documentationScore;
