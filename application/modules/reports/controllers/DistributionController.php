@@ -123,6 +123,15 @@ class Reports_DistributionController extends Zend_Controller_Action
             $id = (int) base64_decode($this->_getParam('sid'));
             $reEvaluate = true;
             $evalService = new Application_Service_Evaluation();
+            $participants = new Application_Service_Participants();
+            $shipmentParticipantMap = new Application_Model_DbTable_ShipmentParticipantMap();
+            
+            $this->view->countries = $participants->getUniqueCountry();
+            $this->view->regions = $participants->getUniqueRegion();
+            $this->view->states = $participants->getUniqueState();
+            $this->view->districts = $participants->getUniqueDistrict();
+            $this->view->results = $shipmentParticipantMap->fetchAllFinalResults();
+
             $shipment = $this->view->shipment = $evalService->getShipmentToEvaluateReports($id, $reEvaluate);
             $this->view->shipmentStatus = $evalService->getReportStatus($id, 'finalized');
             $this->view->shipmentsUnderDistro = $shipmentService->getShipmentInReports($shipment[0]['distribution_id']);

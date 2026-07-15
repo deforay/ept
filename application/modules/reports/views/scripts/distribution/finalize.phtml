@@ -1,380 +1,558 @@
 <?php
 if (!empty($this->shipment)) {
     ?>
-    <div class="well" style="clear: both;">
-        <a href="javascript:void(0);" onclick="$('#allShipmentList').fadeToggle()" class="btn btn-warning btn-xs pull-right"
-            style="margin-top:-10px;"><?= $this->translate->_("Show/Hide Shipment List"); ?></a>
-        <div id="allShipmentList">
+    <style>
+        /* Break out of the fixed-width .container in admin.phtml so the wide tables fit comfortably. */
+        .finalized-shipment-wide {
+            width: 100vw;
+            position: relative;
+            left: 50%;
+            right: 50%;
+            margin-left: -50vw;
+            margin-right: -50vw;
+            padding: 0 30px;
+            box-sizing: border-box;
+        }
 
-            <legend>
-                <h4><?= $this->translate->_("All Shipments Under PT Survey"); ?>
-                    <?php echo $this->shipment[0]['distribution_code']; ?>
-                    (<?php echo $this->dateFormat($this->shipment[0]['distribution_date']); ?>)
-                </h4>
-            </legend>
+        /* DataTables renders rows from JSON in some views; keep cell vertical alignment consistent everywhere. */
+        #shipmentEvaluation tbody td {
+            vertical-align: middle;
+        }
 
-            <table class="table table-bordered table-striped table-hover">
-                <tr>
-                    <th scope="col" style="text-align: center;"><?= $this->translate->_("Shipment Code"); ?></th>
-                    <th scope="col" style="text-align: center;"><?= $this->translate->_("Scheme"); ?></th>
-                    <th scope="col" style="text-align: center;"><?= $this->translate->_("No. of Samples"); ?></th>
-                    <th scope="col" style="text-align: center;"><?= $this->translate->_("No. of Participants"); ?></th>
-                    <th scope="col" style="text-align: center;"><?= $this->translate->_("No. of Responses"); ?></th>
-                    <th scope="col" style="text-align: center;"><?= $this->translate->_("Response"); ?> %</th>
-                    <th scope="col" style="text-align: center;"><?= $this->translate->_("Number Passed"); ?></th>
-                    <th scope="col" style="text-align: center;"><?= $this->translate->_("Shipment Status"); ?></th>
-                    <th scope="col" style="text-align: center;"><?= $this->translate->_("Action"); ?></th>
-                </tr>
-                <?php
-                if (count($this->shipmentsUnderDistro) > 0) {
-                    foreach ($this->shipmentsUnderDistro as $shipment) {
-                        $reported = (isset($shipment['reported_count']) && $shipment['reported_count'] > 0) ? $shipment['reported_count'] : 0;
+        /* select2 boxes were rendering like flat text inputs — force proper sizing/arrow. */
+        .shipment-filters .select2-container {
+            width: 100% !important;
+        }
+        .shipment-filters .select2-container .select2-choices,
+        .shipment-filters .select2-container .select2-choice {
+            min-height: 30px;
+        }
+    </style>
+    <link rel="stylesheet" href="<?php echo $this->baseUrl('css/daterangepicker.css'); ?>" type="text/css" media="all">
+    <script type="text/javascript" src="<?php echo $this->baseUrl('js/moment.min.js'); ?>"></script>
+    <link href="<?php echo $this->baseUrl('css/select2.css'); ?>" rel="stylesheet" />
+
+    <div class="finalized-shipment-wide">
+
+        <div class="well" style="clear: both;">
+            <a href="javascript:void(0);" onclick="$('#allShipmentList').fadeToggle()" class="btn btn-warning btn-xs pull-right"
+                style="margin-top:-10px;"><?= $this->translate->_("Show/Hide Shipment List"); ?></a>
+            <div id="allShipmentList">
+
+                <legend>
+                    <h4><?= $this->translate->_("All Shipments Under PT Survey"); ?>
+                        <?php echo $this->shipment[0]['distribution_code']; ?>
+                        (<?php echo $this->dateFormat($this->shipment[0]['distribution_date']); ?>)
+                    </h4>
+                </legend>
+
+                <table class="table table-bordered table-striped table-hover">
+                    <tr>
+                        <th scope="col" style="text-align: center;"><?= $this->translate->_("Shipment Code"); ?></th>
+                        <th scope="col" style="text-align: center;"><?= $this->translate->_("Scheme"); ?></th>
+                        <th scope="col" style="text-align: center;"><?= $this->translate->_("No. of Samples"); ?></th>
+                        <th scope="col" style="text-align: center;"><?= $this->translate->_("No. of Participants"); ?></th>
+                        <th scope="col" style="text-align: center;"><?= $this->translate->_("No. of Responses"); ?></th>
+                        <th scope="col" style="text-align: center;"><?= $this->translate->_("Response"); ?> %</th>
+                        <th scope="col" style="text-align: center;"><?= $this->translate->_("Number Passed"); ?></th>
+                        <th scope="col" style="text-align: center;"><?= $this->translate->_("Shipment Status"); ?></th>
+                        <th scope="col" style="text-align: center;"><?= $this->translate->_("Action"); ?></th>
+                    </tr>
+                    <?php
+                    if (count($this->shipmentsUnderDistro) > 0) {
+                        foreach ($this->shipmentsUnderDistro as $shipment) {
+                            $reported = (isset($shipment['reported_count']) && $shipment['reported_count'] > 0) ? $shipment['reported_count'] : 0;
+                            ?>
+                            <tr>
+                                <td style="text-align: center;"><?php echo $shipment['shipment_code'] ?></td>
+                                <td style="text-align: center;"><?php echo $shipment['scheme_name'] ?></td>
+                                <td style="text-align: center;"><?php echo $shipment['number_of_samples'] ?></td>
+                                <td style="text-align: center;"><?php echo $shipment['participant_count'] ?></td>
+                                <td style="text-align: center;"><?php echo $reported ?></td>
+                                <td style="text-align: center;">
+                                    <?php echo (isset($shipment['participant_count']) && $shipment['participant_count'] > 0) ? round(($reported / $shipment['participant_count']) * 100, 2) : 0; ?>
+                                </td>
+                                <td style="text-align: center;">
+                                    <?php echo (isset($shipment['number_passed']) && $shipment['number_passed'] >= 0) ? $shipment['number_passed'] : 0; ?>
+                                </td>
+                                <td style="text-align: center;"><?php echo ucfirst($shipment['status']) ?></td>
+                                <td style="text-align: center;">
+                                    <?php if (isset($shipment['status']) && $shipment['status'] == 'evaluated') { ?>
+                                        <a class="btn btn-success btn-xs"
+                                            href="/reports/distribution/finalize/sid/<?php echo base64_encode($shipment['shipment_id']); ?>"><span><i
+                                                    class="icon-check"></i> <?= $this->translate->_("Finalize"); ?></span></a>
+                                    <?php } elseif (isset($shipment['status']) && $shipment['status'] == 'finalized') { ?>
+                                        <a class="btn btn-danger btn-xs disabled" href="javascript:void(0)"><span><i class="icon-check"></i>
+                                                <?= $this->translate->_("Finalized"); ?></span></a>
+                                    <?php } elseif (isset($shipment['status']) && $shipment['status'] == 'shipped') { ?>
+                                        <a class="btn btn-primary btn-xs disabled" href="javascript:void(0)"><span><i
+                                                    class="icon-ambulance"></i> <?= $this->translate->_("Shipped"); ?></span></a>
+                                    <?php } ?>
+                                </td>
+                            </tr>
+                            <?php
+                        }
+                    } else {
                         ?>
                         <tr>
-                            <td style="text-align: center;"><?php echo $shipment['shipment_code'] ?></td>
-                            <td style="text-align: center;"><?php echo $shipment['scheme_name'] ?></td>
-                            <td style="text-align: center;"><?php echo $shipment['number_of_samples'] ?></td>
-                            <td style="text-align: center;"><?php echo $shipment['participant_count'] ?></td>
-                            <td style="text-align: center;"><?php echo $reported ?></td>
-                            <td style="text-align: center;">
-                                <?php echo (isset($shipment['participant_count']) && $shipment['participant_count'] > 0) ? round(($reported / $shipment['participant_count']) * 100, 2) : 0; ?>
-                            </td>
-                            <td style="text-align: center;">
-                                <?php echo (isset($shipment['number_passed']) && $shipment['number_passed'] >= 0) ? $shipment['number_passed'] : 0; ?>
-                            </td>
-                            <td style="text-align: center;"><?php echo ucfirst($shipment['status']) ?></td>
-                            <td style="text-align: center;">
-                                <?php if (isset($shipment['status']) && $shipment['status'] == 'evaluated') { ?>
-                                    <a class="btn btn-success btn-xs"
-                                        href="/reports/distribution/finalize/sid/<?php echo base64_encode($shipment['shipment_id']); ?>"><span><i
-                                                class="icon-check"></i> <?= $this->translate->_("Finalize"); ?></span></a>
-                                <?php } elseif (isset($shipment['status']) && $shipment['status'] == 'finalized') { ?>
-                                    <a class="btn btn-danger btn-xs disabled" href="javascript:void(0)"><span><i class="icon-check"></i>
-                                            <?= $this->translate->_("Finalized"); ?></span></a>
-                                <?php } elseif (isset($shipment['status']) && $shipment['status'] == 'shipped') { ?>
-                                    <a class="btn btn-primary btn-xs disabled" href="javascript:void(0)"><span><i
-                                                class="icon-ambulance"></i> <?= $this->translate->_("Shipped"); ?></span></a>
-                                <?php } ?>
+                            <td colspan="5" align="center" style="text-align:center">
+                                <?= $this->translate->_("No shipments for this distribution yet"); ?>
                             </td>
                         </tr>
                         <?php
                     }
-                } else {
                     ?>
-                    <tr>
-                        <td colspan="5" align="center" style="text-align:center">
-                            <?= $this->translate->_("No shipments for this distribution yet"); ?>
+                </table>
+            </div><!-- /.modal-dialog -->
+        </div>
+        <h4 style="width:100%;height:50px;border-bottom:1px solid #777;">
+            <div style="font-size:22.5px;line-height:36px;color:#333;float:left;">
+                <?= $this->translate->_("You are currently finalizing reports for"); ?>&nbsp;
+                <strong><?php echo $this->shipment[0]['shipment_code']; ?></strong>
+            </div>
+            <div style="margin-top:10px;">
+                <a href="<?php echo $this->url(array('module' => 'reports', 'controller' => 'finalize', 'action' => 'index'), 'default', true); ?>"
+                    class="btn btn-primary" style="float:right;"><i class="icon-chevron-left"></i>&nbsp;&nbsp;Back</a>
+            </div>
+        </h4>
+        <table class="table table-bordered" style="margin:0 auto;">
+            <tr>
+                <th scope="col" style="text-align: right"><?= $this->translate->_("Scheme Type"); ?></th>
+                <td><?php echo $this->shipment[0]['scheme_name']; ?></td>
+                <th scope="col" style="text-align: right"><?= $this->translate->_("PT Survey Code"); ?></th>
+                <td><?php echo $this->shipment[0]['distribution_code']; ?> </td>
+                <th scope="col" style="text-align: right"><?= $this->translate->_("PT Survey/Shipment Date"); ?></th>
+                <td><?php echo $this->dateFormat($this->shipment[0]['distribution_date']); ?></td>
+            </tr>
+        </table>
+        <br />
+        <div class="row">
+            <div class="col-md-12">
+                <label
+                    class="form-control-label" for="shipmentComment"><?= $this->translate->_("Comment for all Participants of this shipment"); ?></label>
+                <textarea rows="10" cols="20" class="form-control" placeholder="Comment for all Participants of this shipment"
+                    title="Comment for all Participants of this shipment" name="shipmentComment"
+                    id="shipmentComment"><?php echo $this->shipment[0]['shipment_comment']; ?></textarea>
+                <br>
+                <input type="hidden" value="<?php echo base64_encode($this->shipment[0]['shipment_id']) ?>" name="shipmentId"
+                    id="shipmentId">
+                <button class="btn btn-primary"
+                    onclick="updateComment('<?php echo base64_encode($this->shipment[0]['shipment_id']) ?>');return false;"><span><?= $this->translate->_("Update Comment"); ?></span></button>
+            </div>
+        </div>
+        <hr>
+        <?php
+        $reportQueue = (isset($this->shipmentStatus['status']) && $this->shipmentStatus['status'] == 'pending') ? 'disabled' : '';
+        $reportTitle = (isset($this->shipmentStatus['status']) && $this->shipmentStatus['status'] != 'finalized') ? 'Generating Reports and Finalizing Shipment ...' : 'Generate Reports and Finalize Shipment';
+        if ($this->shipment[0]['report_generated'] == 'yes') {
+            $reportTitle = 'Generate Reports and Finalize Shipment';
+        }
+        $checkReportDate = (int) Application_Service_Shipments::getShipmentButtonStates($this->shipment[0])['generateReportsEnabled'];
+        ?>
+        <?php if ($shipment['status'] != 'finalized') { ?>
+            <div class="row" align="center">
+                <a href="javascript:void(0)" class="btn btn-sm generate-btn btn-info <?php echo $reportQueue; ?>"
+                    style="margin-top:10px;clear:both !important;padding: 10px;box-shadow: 0px 1px 5px grey;"
+                    onclick="generateReports('<?php echo base64_encode($this->shipment[0]['shipment_id']); ?>', <?php echo $checkReportDate; ?>, '<?php echo $this->dateFormat($this->shipment[0]['distribution_date']); ?>', 'finalized')"><i
+                        class="icon-ok"></i>&nbsp&nbsp <?php echo $reportTitle; ?></a>
+            </div>
+        <?php }
+        ?>
+        <?php if ($reportQueue != 'disabled') { ?>
+            <div class="summaryDivTop row" align="center">
+
+
+
+            </div>
+        <?php } ?>
+
+        <!--
+            ==========================================================================
+            FILTER PANEL
+            Adds: Manually overridden only, Response status, Result, Date Range,
+                  Country, Region, Province, District (+ Vietnam-only tier/kit filters)
+            This table is NOT server-side paginated, so applyShipmentFilters() below
+            toggles row visibility client-side based on the data-* attributes on
+            each <tr>, rather than sending a request back to the server.
+            ==========================================================================
+        -->
+        <div class="shipment-filters" style="clear:both;margin:15px 0;padding:12px 14px;background:#f8f9fa;border:1px solid #e2e8f0;border-radius:4px;">
+            <div class="row">
+                <div class="col-md-3">
+                    <label for="manuelOverride" style="font-weight:600;font-size:13px;display:block;margin-bottom:4px;"><?= $this->translate->_("Manually overridden only"); ?></label>
+                    <select id="manuelOverride" class="form-control input-sm" onchange="applyShipmentFilters()">
+                        <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
+                        <option value="no"><?= $this->translate->_("No"); ?></option>
+                        <option value="yes"><?= $this->translate->_("Yes"); ?></option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label for="filterResponseStatus" style="font-weight:600;font-size:13px;display:block;margin-bottom:4px;"><?= $this->translate->_("Response status"); ?></label>
+                    <select id="filterResponseStatus" class="form-control input-sm" multiple>
+                        <option value="responded"><?= $this->translate->_("Responded"); ?></option>
+                        <option value="noresponse"><?= $this->translate->_("Not Responded"); ?></option>
+                        <option value="late"><?= $this->translate->_("Late Response"); ?></option>
+                        <option value="nottested"><?= $this->translate->_("Not Tested"); ?></option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label for="filterResult" style="font-weight:600;font-size:13px;display:block;margin-bottom:4px;"><?= $this->translate->_("Result"); ?></label>
+                    <select id="filterResult" class="form-control input-sm" multiple>
+                        <option value="pass"><?= $this->translate->_("Pass"); ?></option>
+                        <option value="fail"><?= $this->translate->_("Fail"); ?></option>
+                        <option value="excluded"><?= $this->translate->_("Excluded"); ?></option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label for="dateRange" style="font-weight:600;font-size:13px;display:block;margin-bottom:4px;"><?= $this->translate->_("Date Range"); ?></label>
+                    <input type="text" id="dateRange" name="dateRange" class="form-control input-sm" readonly="readonly"
+                        style="background: #fff" placeholder="<?= $this->translate->_("Click here to pick a Date Range"); ?>" />
+                </div>
+            </div>
+            <br>
+            <div class="row">
+                <div class="col-md-3">
+                    <label for="country" style="font-weight:600;font-size:13px;display:block;margin-bottom:4px;"><?= $this->translate->_("Country"); ?></label>
+                    <select class="form-control select2" id="country" name="country" title="<?= $this->translate->_("Please select the country to filter"); ?>" multiple>
+                        <?php if (!empty($this->countries)) { foreach ($this->countries as $country) { ?>
+                            <option value="<?php echo $country['id']; ?>"><?php echo ucwords($country['iso_name']); ?></option>
+                        <?php } } ?>
+                    </select>
+                </div>
+
+                <div class="col-md-3">
+                    <label for="region" style="font-weight:600;font-size:13px;display:block;margin-bottom:4px;"><?= $this->translate->_("Region"); ?></label>
+                    <select class="form-control" id="region" name="region" title="<?= $this->translate->_("Please select the region to filter"); ?>">
+                        <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
+                        <?php if (!empty($this->regions)) { foreach ($this->regions as $reg) { ?>
+                            <option value="<?php echo $reg['region'] ?>"><?php echo $reg['region']; ?></option>
+                        <?php } } ?>
+                    </select>
+                </div>
+
+                <div class="col-md-3">
+                    <label for="state" style="font-weight:600;font-size:13px;display:block;margin-bottom:4px;"><?= $this->translate->_("Province"); ?></label>
+                    <select class="form-control select2" id="state" name="state" title="<?= $this->translate->_("Please select the province to filter"); ?>" multiple>
+                        <?php if (!empty($this->states)) { foreach ($this->states as $st) { ?>
+                            <option value="<?php echo $st['state'] ?>"><?php echo $st['state']; ?></option>
+                        <?php } } ?>
+                    </select>
+                </div>
+
+                <div class="col-md-3">
+                    <label for="district" style="font-weight:600;font-size:13px;display:block;margin-bottom:4px;"><?= $this->translate->_("District"); ?></label>
+                    <select class="form-control select2" id="district" name="district"
+                        title="<?= $this->translate->_("Please select the district to filter"); ?>" multiple>
+                        <?php if (!empty($this->districts)) { foreach ($this->districts as $dt) { ?>
+                            <option value="<?php echo $dt['district'] ?>"><?php echo $dt['district']; ?></option>
+                        <?php } } ?>
+                    </select>
+                </div>
+
+                <?php if (($this->dtsSchemeType ?? '') === 'vietnam') { ?>
+                    <div class="col-md-3">
+                        <label for="vietnamTier" style="font-weight:600;font-size:13px;display:block;margin-bottom:4px;"><?= $this->translate->_("Tier"); ?></label>
+                        <select id="vietnamTier" class="form-control input-sm" onchange="applyShipmentFilters()">
+                            <option value=""><?= $this->translate->_("All tiers"); ?></option>
+                            <option value="screening"><?= $this->translate->_("Screening"); ?></option>
+                            <option value="confirmatory"><?= $this->translate->_("Confirmatory"); ?></option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="vietnamNonStandardKit" style="font-weight:600;font-size:13px;display:block;margin-bottom:4px;"><?= $this->translate->_("Primary kit"); ?></label>
+                        <select id="vietnamNonStandardKit" class="form-control input-sm" onchange="applyShipmentFilters()">
+                            <option value=""><?= $this->translate->_("All kits"); ?></option>
+                            <option value="yes"><?= $this->translate->_("Non-reference kit only"); ?></option>
+                        </select>
+                    </div>
+                <?php } ?>
+            </div>
+        </div>
+
+        <table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered table-hover"
+            id="shipmentEvaluation" style="width:100%;margin:10px 0;">
+            <thead>
+                <tr>
+                    <th scope="col" style="width:40px;"></th>
+                    <th scope="col"><?= $this->translate->_("Participant/Tester ID"); ?></th>
+                    <th scope="col"><?= $this->translate->_("Participant/Tester"); ?></th>
+                    <th scope="col"><?= $this->translate->_("Province"); ?></th>
+                    <th scope="col"><?= $this->translate->_("District"); ?></th>
+                    <th scope="col"><?= $this->translate->_("Response Score"); ?></th>
+                    <th scope="col"><?= $this->translate->_("Documentation Score"); ?></th>
+                    <th scope="col"><?= $this->translate->_("Result"); ?></th>
+                    <th scope="col"><?= $this->translate->_("Response Status"); ?></th>
+                    <th scope="col"><?= $this->translate->_("Responded On"); ?></th>
+                    <th scope="col"><?= $this->translate->_("Report"); ?></th>
+                    <th scope="col" style="display:none;">Map ID</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php
+                $editList = [];
+                $viewList = [];
+
+                foreach ($this->shipment as $shipment) {
+                    $btnClassName = "btn-success";
+                    $editUrl = "/" . $this->shipment[0]['scheme_type'] . "/response/sid/" . $shipment['shipment_id'] . "/pid/" . $shipment['participant_id'] . "/eid/" . $shipment['evaluation_status'] . "/from/admin";
+                    $editList[] = "/" . $this->shipment[0]['scheme_type'] . "/response/sid/" . $shipment['shipment_id'] . "/pid/" . $shipment['participant_id'] . "/eid/" . $shipment['evaluation_status'] . "/from/admin";
+                    $viewList[] = "/admin/evaluate/view/sid/" . base64_encode($shipment['shipment_id']) . "/pid/" . base64_encode($shipment['participant_id']) . "/scheme/" . base64_encode($shipment['scheme_type']);
+                    $warnings = Pt_Commons_JsonUtility::safeDecode($shipment['failure_reason']);
+
+                    $finalResult = (isset($shipment['final_result']) && $shipment['final_result'] != "" && $shipment['final_result'] != 0) ? $shipment['result_name'] : 'Not Evaluated';
+
+                    if ((isset($shipment['display_result']) && $shipment['display_result'] == "Fail") || $finalResult === "Fail") {
+                        $btnClassName = "btn-danger";
+                    } elseif ((isset($shipment['final_result']) && $shipment['final_result'] == 3) || $finalResult === 'Excluded') {
+                        $btnClassName = "btn-default";
+                        $finalResult = 'Excluded';
+                    } elseif ($finalResult === 'Not Evaluated') {
+                        $btnClassName = "btn-default";
+                    } elseif (isset($warnings) && count($warnings) > 0) {
+                        $btnClassName = "btn-warning";
+                    }
+                    $shipment['shipment_score'] = (isset($shipment['shipment_score']) && $shipment['shipment_score'] != "") ? $shipment['shipment_score'] : '0';
+                    $shipment['documentation_score'] = (isset($shipment['documentation_score']) && $shipment['documentation_score'] != "") ? $shipment['documentation_score'] : '0';
+                    $individualReports = "";
+                    if ($shipment['status'] == 'finalized') {
+                        $invididualFilePath = (DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $shipment['shipment_code'] . DIRECTORY_SEPARATOR . $shipment['shipment_code'] . "-" . $shipment['map_id'] . ".pdf");
+                        if (!file_exists($invididualFilePath)) {
+                            $files = glob(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $shipment['shipment_code'] . DIRECTORY_SEPARATOR . "*" . "-" . $shipment['map_id'] . ".pdf");
+                            $invididualFilePath = isset($files[0]) ? $files[0] : '';
+                        }
+                        if (file_exists($invididualFilePath) && $reportQueue != 'disabled') {
+                            $individualReports = '<a href="' . Pt_Commons_SignedDownload::url($invididualFilePath) . '" class="btn btn-sm btn-primary"   style="text-decoration : none;overflow:hidden;margin-top:4px;width:100%;"  target="_BLANK"><i class="icon icon-download"></i> Download Report</a>';
+                        }
+                    }
+                    if (empty($shipment['response_status']) || $shipment['response_status'] == "noresponse") {
+                        $responseStatus = "Not Responded";
+                    } elseif ($shipment['response_status'] == "responded") {
+                        $responseStatus = "Responded";
+                    } elseif ($shipment['response_status'] == "late") {
+                        $responseStatus = "Late Response";
+                    } else {
+                        $responseStatus = "Not Tested";
+                    }
+
+                    $rowResponseStatus = !empty($shipment['response_status']) ? $shipment['response_status'] : 'noresponse';
+                    $rowResultMap = [1 => 'pass', 2 => 'fail', 3 => 'excluded'];
+                    $rowResult = $rowResultMap[(int) ($shipment['final_result'] ?? 0)] ?? '';
+                    $rowAttrs = Pt_Commons_JsonUtility::safeDecode($shipment['attributes'] ?? '') ?: [];
+                    $rowTier = $rowAttrs['dts_test_panel_type'] ?? '';
+                    $rowNonRef = $shipment['has_non_ref_kit'] ?? 'no';
+                    $rowManualOverride = (!empty($shipment['manually_overridden']) && $shipment['manually_overridden'] == 1) ? 'yes' : 'no';
+                    $rowCountry  = $shipment['country_id'] ?? '';
+                    $rowRegion   = $shipment['region'] ?? '';
+                    $rowState    = $shipment['state'] ?? '';
+                    $rowDistrict = $shipment['district'] ?? '';
+                    $rowRespondedOn = !empty($shipment['shipment_test_report_date']) ? date('Y-m-d', strtotime($shipment['shipment_test_report_date'])) : '';
+                    ?>
+                    <tr data-response-status="<?= $this->escape($rowResponseStatus); ?>"
+                        data-result="<?= $this->escape($rowResult); ?>"
+                        data-tier="<?= $this->escape($rowTier); ?>"
+                        data-nonref-kit="<?= $this->escape($rowNonRef); ?>"
+                        data-manual-override="<?= $this->escape($rowManualOverride); ?>"
+                        data-country="<?= $this->escape($rowCountry); ?>"
+                        data-region="<?= $this->escape($rowRegion); ?>"
+                        data-state="<?= $this->escape($rowState); ?>"
+                        data-district="<?= $this->escape($rowDistrict); ?>"
+                        data-responded-on="<?= $this->escape($rowRespondedOn); ?>">
+                        <td class="center "><a href="javascript:void(0);" class="btn btn-xs clicker <?php echo $btnClassName; ?>"
+                                data-btn-class="<?php echo $btnClassName; ?>"><i class="icon-plus"></i></a></td>
+                        <td style="text-align:center;vertical-align:middle;"><?php echo $shipment['unique_identifier'] ?></td>
+                        <td style="text-align:center;vertical-align:middle;">
+                            <?php echo $shipment['first_name'] . " " . $shipment['last_name'] ?>
                         </td>
+                        <td style="text-align:center;vertical-align:middle;"><?php echo $shipment['state'] ?></td>
+                        <td style="text-align:center;vertical-align:middle;"><?php echo $shipment['district'] ?></td>
+                        <td style="text-align:center;vertical-align:middle;"><?php echo $shipment['shipment_score'] ?></td>
+                        <td style="text-align:center;vertical-align:middle;"><?php echo $shipment['documentation_score'] ?></td>
+                        <td style="text-align:center;vertical-align:middle;">
+                            <?php echo $finalResult; ?>
+                        </td>
+                        <td style="text-align:left;vertical-align:middle;"><?php echo $responseStatus ?></td>
+                        <td style="text-align:left;vertical-align:middle;">
+                            <?php echo $this->dateFormat($shipment['shipment_test_report_date']); ?>
+                        </td>
+                        <td style="text-align:left;vertical-align:middle;"><?php echo $individualReports; ?></td>
+                        <td style="display:none;"><?php echo $shipment['map_id']; ?></td>
+
                     </tr>
                     <?php
                 }
+                $evSession = new Zend_Session_Namespace('evalShipmentList');
+                $evSession->editUrlList = $editList;
+                $evSession->viewUrlList = $viewList;
                 ?>
-            </table>
-        </div><!-- /.modal-dialog -->
-    </div>
-    <h4 style="width:100%;height:50px;border-bottom:1px solid #777;">
-        <div style="font-size:22.5px;line-height:36px;color:#333;float:left;">
-            <?= $this->translate->_("You are currently finalizing reports for"); ?>&nbsp;
-            <strong><?php echo $this->shipment[0]['shipment_code']; ?></strong>
-        </div>
-        <div style="margin-top:10px;">
-            <a href="<?php echo $this->url(array('module' => 'reports', 'controller' => 'finalize', 'action' => 'index'), 'default', true); ?>"
-                class="btn btn-primary" style="float:right;"><i class="icon-chevron-left"></i>&nbsp;&nbsp;Back</a>
-        </div>
-    </h4>
-    <table class="table table-bordered" style="margin:0 auto;">
-        <tr>
-            <th scope="col" style="text-align: right"><?= $this->translate->_("Scheme Type"); ?></th>
-            <td><?php echo $this->shipment[0]['scheme_name']; ?></td>
-            <th scope="col" style="text-align: right"><?= $this->translate->_("PT Survey Code"); ?></th>
-            <td><?php echo $this->shipment[0]['distribution_code']; ?> </td>
-            <th scope="col" style="text-align: right"><?= $this->translate->_("PT Survey/Shipment Date"); ?></th>
-            <td><?php echo $this->dateFormat($this->shipment[0]['distribution_date']); ?></td>
-        </tr>
-    </table>
-    <br />
-    <div class="row">
-        <div class="col-md-12">
-            <label
-                class="form-control-label" for="shipmentComment"><?= $this->translate->_("Comment for all Participants of this shipment"); ?></label>
-            <textarea rows="10" cols="20" class="form-control" placeholder="Comment for all Participants of this shipment"
-                title="Comment for all Participants of this shipment" name="shipmentComment"
-                id="shipmentComment"><?php echo $this->shipment[0]['shipment_comment']; ?></textarea>
-            <br>
-            <input type="hidden" value="<?php echo base64_encode($this->shipment[0]['shipment_id']) ?>" name="shipmentId"
-                id="shipmentId">
-            <button class="btn btn-primary"
-                onclick="updateComment('<?php echo base64_encode($this->shipment[0]['shipment_id']) ?>');return false;"><span><?= $this->translate->_("Update Comment"); ?></span></button>
-        </div>
-    </div>
-    <hr>
-    <?php
-    $reportQueue = (isset($this->shipmentStatus['status']) && $this->shipmentStatus['status'] == 'pending') ? 'disabled' : '';
-    $reportTitle = (isset($this->shipmentStatus['status']) && $this->shipmentStatus['status'] != 'finalized') ? 'Generating Reports and Finalizing Shipment ...' : 'Generate Reports and Finalize Shipment';
-    if ($this->shipment[0]['report_generated'] == 'yes') {
-        $reportTitle = 'Generate Reports and Finalize Shipment';
-    }
-    // Allow this combined "generate reports and finalize" action once the shipment
-    // is evaluated. Previously gated on PT Survey Date < today; that gate has been
-    // removed. Derive from milestone timestamps (evaluated_at/...) via the shared
-    // helper rather than a raw status string. generateReportsEnabled (evaluated or
-    // later, not finalized) is the correct flag here — finalizeEnabled would wrongly
-    // require reports to already exist before this generate-and-finalize button works.
-    $checkReportDate = (int) Application_Service_Shipments::getShipmentButtonStates($this->shipment[0])['generateReportsEnabled'];
-    ?>
-    <?php if ($shipment['status'] != 'finalized') { ?>
-        <div class="row" align="center">
-            <a href="javascript:void(0)" class="btn btn-sm generate-btn btn-info <?php echo $reportQueue; ?>"
-                style="margin-top:10px;clear:both !important;padding: 10px;box-shadow: 0px 1px 5px grey;"
-                onclick="generateReports('<?php echo base64_encode($this->shipment[0]['shipment_id']); ?>', <?php echo $checkReportDate; ?>, '<?php echo $this->dateFormat($this->shipment[0]['distribution_date']); ?>', 'finalized')"><i
-                    class="icon-ok"></i>&nbsp&nbsp <?php echo $reportTitle; ?></a>
-        </div>
-    <?php }
-    ?>
-    <?php if ($reportQueue != 'disabled') { ?>
-        <div class="summaryDivTop row" align="center">
 
-
-
-        </div>
-    <?php } ?>
-    <div class="shipment-filters" style="clear:both;margin:15px 0;padding:12px 14px;background:#f8f9fa;border:1px solid #e2e8f0;border-radius:4px;">
-        <div class="row" style="margin:0;">
-            <div class="col-md-3" style="padding-left:0;">
-                <label for="filterResponseStatus" style="font-weight:600;font-size:13px;display:block;margin-bottom:4px;"><?= $this->translate->_("Response status"); ?></label>
-                <select id="filterResponseStatus" class="form-control input-sm" onchange="applyShipmentFilters()">
-                    <option value=""><?= $this->translate->_("All"); ?></option>
-                    <option value="responded"><?= $this->translate->_("Responded"); ?></option>
-                    <option value="noresponse"><?= $this->translate->_("Not Responded"); ?></option>
-                    <option value="late"><?= $this->translate->_("Late Response"); ?></option>
-                    <option value="nottested"><?= $this->translate->_("Not Tested"); ?></option>
-                </select>
-            </div>
-            <div class="col-md-3">
-                <label for="filterResult" style="font-weight:600;font-size:13px;display:block;margin-bottom:4px;"><?= $this->translate->_("Result"); ?></label>
-                <select id="filterResult" class="form-control input-sm" onchange="applyShipmentFilters()">
-                    <option value=""><?= $this->translate->_("All"); ?></option>
-                    <option value="pass"><?= $this->translate->_("Pass"); ?></option>
-                    <option value="fail"><?= $this->translate->_("Fail"); ?></option>
-                    <option value="excluded"><?= $this->translate->_("Excluded"); ?></option>
-                </select>
-            </div>
-            <?php if (($this->dtsSchemeType ?? '') === 'vietnam') { ?>
-                <div class="col-md-3">
-                    <label for="vietnamTier" style="font-weight:600;font-size:13px;display:block;margin-bottom:4px;"><?= $this->translate->_("Tier"); ?></label>
-                    <select id="vietnamTier" class="form-control input-sm" onchange="applyShipmentFilters()">
-                        <option value=""><?= $this->translate->_("All tiers"); ?></option>
-                        <option value="screening"><?= $this->translate->_("Screening"); ?></option>
-                        <option value="confirmatory"><?= $this->translate->_("Confirmatory"); ?></option>
-                    </select>
-                </div>
-                <div class="col-md-3">
-                    <label for="vietnamNonStandardKit" style="font-weight:600;font-size:13px;display:block;margin-bottom:4px;"><?= $this->translate->_("Primary kit"); ?></label>
-                    <select id="vietnamNonStandardKit" class="form-control input-sm" onchange="applyShipmentFilters()">
-                        <option value=""><?= $this->translate->_("All kits"); ?></option>
-                        <option value="yes"><?= $this->translate->_("Non-reference kit only"); ?></option>
-                    </select>
-                </div>
-            <?php } ?>
-        </div>
-    </div>
-    <table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered table-hover"
-        id="shipmentEvaluation" style="width:100%;margin:10px 0;">
-        <thead>
-            <tr>
-                <th scope="col" style="width:40px;"></th>
-                <th scope="col"><?= $this->translate->_("Participant/Tester ID"); ?></th>
-                <th scope="col"><?= $this->translate->_("Participant/Tester"); ?></th>
-                <th scope="col"><?= $this->translate->_("Province"); ?></th>
-                <th scope="col"><?= $this->translate->_("District"); ?></th>
-                <th scope="col"><?= $this->translate->_("Response Score"); ?></th>
-                <th scope="col"><?= $this->translate->_("Documentation Score"); ?></th>
-                <th scope="col"><?= $this->translate->_("Result"); ?></th>
-                <th scope="col"><?= $this->translate->_("Response Status"); ?></th>
-                <th scope="col"><?= $this->translate->_("Responded On"); ?></th>
-                <th scope="col"><?= $this->translate->_("Report"); ?></th>
-                <th scope="col" style="display:none;">Map ID</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php
-            $editList = [];
-            $viewList = [];
-
-            foreach ($this->shipment as $shipment) {
-                $btnClassName = "btn-success";
-                $editUrl = "/" . $this->shipment[0]['scheme_type'] . "/response/sid/" . $shipment['shipment_id'] . "/pid/" . $shipment['participant_id'] . "/eid/" . $shipment['evaluation_status'] . "/from/admin";
-                $editList[] = "/" . $this->shipment[0]['scheme_type'] . "/response/sid/" . $shipment['shipment_id'] . "/pid/" . $shipment['participant_id'] . "/eid/" . $shipment['evaluation_status'] . "/from/admin";
-                // $editList[] = "/admin/evaluate/edit/sid/" . base64_encode($shipment['shipment_id']) . "/pid/" . base64_encode($shipment['participant_id']) . "/scheme/" . base64_encode($shipment['scheme_type']);
-                $viewList[] = "/admin/evaluate/view/sid/" . base64_encode($shipment['shipment_id']) . "/pid/" . base64_encode($shipment['participant_id']) . "/scheme/" . base64_encode($shipment['scheme_type']);
-                // Store map_id for AJAX loading of corrective actions (loaded on-demand)
-                $warnings = Pt_Commons_JsonUtility::safeDecode($shipment['failure_reason']);
-
-                $finalResult = (isset($shipment['final_result']) && $shipment['final_result'] != "" && $shipment['final_result'] != 0) ? $shipment['result_name'] : 'Not Evaluated';
-
-                if ((isset($shipment['display_result']) && $shipment['display_result'] == "Fail") || $finalResult === "Fail") {
-                    $btnClassName = "btn-danger";
-                } elseif ((isset($shipment['final_result']) && $shipment['final_result'] == 3) || $finalResult === 'Excluded') {
-                    $btnClassName = "btn-default";
-                    $finalResult = 'Excluded';
-                } elseif ($finalResult === 'Not Evaluated') {
-                    $btnClassName = "btn-default";
-                } elseif (isset($warnings) && count($warnings) > 0) {
-                    $btnClassName = "btn-warning";
-                }
-                $shipment['shipment_score'] = (isset($shipment['shipment_score']) && $shipment['shipment_score'] != "") ? $shipment['shipment_score'] : '0';
-                $shipment['documentation_score'] = (isset($shipment['documentation_score']) && $shipment['documentation_score'] != "") ? $shipment['documentation_score'] : '0';
-                $individualReports = "";
-                if ($shipment['status'] == 'finalized') {
-                    $invididualFilePath = (DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $shipment['shipment_code'] . DIRECTORY_SEPARATOR . $shipment['shipment_code'] . "-" . $shipment['map_id'] . ".pdf");
-                    if (!file_exists($invididualFilePath)) {
-                        // Search this file name using the map id
-                        $files = glob(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $shipment['shipment_code'] . DIRECTORY_SEPARATOR . "*" . "-" . $shipment['map_id'] . ".pdf");
-                        $invididualFilePath = isset($files[0]) ? $files[0] : '';
-                    }
-                    if (file_exists($invididualFilePath) && $reportQueue != 'disabled') {
-                        $individualReports = '<a href="' . Pt_Commons_SignedDownload::url($invididualFilePath) . '" class="btn btn-sm btn-primary"   style="text-decoration : none;overflow:hidden;margin-top:4px;width:100%;"  target="_BLANK"><i class="icon icon-download"></i> Download Report</a>';
-                    }
-                }
-                if (empty($shipment['response_status']) || $shipment['response_status'] == "noresponse") {
-                    $responseStatus = "Not Responded";
-                } elseif ($shipment['response_status'] == "responded") {
-                    $responseStatus = "Responded";
-                } elseif ($shipment['response_status'] == "late") {
-                    $responseStatus = "Late Response";
-                } else {
-                    $responseStatus = "Not Tested";
-                }
-
-                // Data-attrs feed the client-side filter card above the table.
-                $rowResponseStatus = !empty($shipment['response_status']) ? $shipment['response_status'] : 'noresponse';
-                $rowResultMap = [1 => 'pass', 2 => 'fail', 3 => 'excluded'];
-                $rowResult = $rowResultMap[(int) ($shipment['final_result'] ?? 0)] ?? '';
-                $rowAttrs = Pt_Commons_JsonUtility::safeDecode($shipment['attributes'] ?? '') ?: [];
-                $rowTier = $rowAttrs['dts_test_panel_type'] ?? '';
-                $rowNonRef = $shipment['has_non_ref_kit'] ?? 'no';
-                ?>
-                <tr data-response-status="<?= $this->escape($rowResponseStatus); ?>"
-                    data-result="<?= $this->escape($rowResult); ?>"
-                    data-tier="<?= $this->escape($rowTier); ?>"
-                    data-nonref-kit="<?= $this->escape($rowNonRef); ?>">
-                    <td class="center "><a href="javascript:void(0);" class="btn btn-xs clicker <?php echo $btnClassName; ?>"
-                            data-btn-class="<?php echo $btnClassName; ?>"><i class="icon-plus"></i></a></td>
-                    <td style="text-align:center;vertical-align:middle;"><?php echo $shipment['unique_identifier'] ?></td>
-                    <td style="text-align:center;vertical-align:middle;">
-                        <?php echo $shipment['first_name'] . " " . $shipment['last_name'] ?>
-                    </td>
-                    <td style="text-align:center;vertical-align:middle;"><?php echo $shipment['state'] ?></td>
-                    <td style="text-align:center;vertical-align:middle;"><?php echo $shipment['district'] ?></td>
-                    <td style="text-align:center;vertical-align:middle;"><?php echo $shipment['shipment_score'] ?></td>
-                    <td style="text-align:center;vertical-align:middle;"><?php echo $shipment['documentation_score'] ?></td>
-                    <td style="text-align:center;vertical-align:middle;">
-                        <?php echo $finalResult; ?>
-                    </td>
-                    <td style="text-align:left;vertical-align:middle;"><?php echo $responseStatus ?></td>
-                    <td style="text-align:left;vertical-align:middle;">
-                        <?php echo $this->dateFormat($shipment['shipment_test_report_date']); ?>
-                    </td>
-                    <td style="text-align:left;vertical-align:middle;"><?php echo $individualReports; ?></td>
-                    <td style="display:none;"><?php echo $shipment['map_id']; ?></td>
-
-                </tr>
-                <?php
-            }
-            $evSession = new Zend_Session_Namespace('evalShipmentList');
-            $evSession->editUrlList = $editList;
-            $evSession->viewUrlList = $viewList;
-            ?>
-
-        </tbody>
-    </table>
-    <br />
-    <br />
-    <?php
-    $m = 0;
-    if (isset($this->shipment[0]['status']) && $this->shipment[0]['status'] != 'finalized') {
-        ?>
-        <!-- <div align="right" class="col-lg-6">
-            <a href="javascript:void(0)" class="btn btn-sm  btn-warning" style="margin-top:10px;" onclick="generateSummaryReport('<?php echo base64_encode($this->shipment[0]['shipment_id']); ?>')"><i class="icon-ok"></i>&nbsp&nbsp Generate Summary Report for this Shipment</a>
-            <?php
-            $buttonCount = (int) ceil($this->responseCount["reported_count"] / 50);
-            $responseCnt = $this->responseCount["reported_count"];
-            $start = 1;
-            if ($this->responseCount["reported_count"] >= 50) {
-                $lastEnd = 50;
-            } else {
-                $lastEnd = $this->responseCount["reported_count"];
-            }
-            $m = 0;
-            for ($i = 1; $i <= $buttonCount; $i++) {
-                if ($this->responseCount["reported_count"] >= 50) {
-                    $end = $i * 50;
-                } else {
-                    $end = $this->responseCount["reported_count"];
-                }
-                if ($end > $this->responseCount["reported_count"]) {
-                    $sub = $this->responseCount["reported_count"] - $lastEnd;
-                    $start = $lastEnd + 1;
-                    $end = $lastEnd + $sub;
-                } else {
-                    if ($i != 1) {
-                        $start = $lastEnd + 1;
-                        $lastEnd = $end;
-                    }
-                }
-                $m++;
-            } ?>
-        </div> -->
+            </tbody>
+        </table>
+        <br />
+        <br />
         <?php
-    }
-    ?>
-    <?php
-    $summaryFile = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $shipment['shipment_code'] . DIRECTORY_SEPARATOR . $shipment['shipment_code'] . "-summary.pdf";
-    if ($reportQueue != 'disabled' && file_exists($summaryFile)) { ?>
-        <div class="row">
-            <div id="summaryDiv" class="col-md-12">
-                <?php
-                ?>
-                <a href="<?php echo $this->baseUrl(Pt_Commons_SignedDownload::url($summaryFile)); ?>"><?= $this->translate->_("Download"); ?></a>
-
+        $summaryFile = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $shipment['shipment_code'] . DIRECTORY_SEPARATOR . $shipment['shipment_code'] . "-summary.pdf";
+        if ($reportQueue != 'disabled' && file_exists($summaryFile)) { ?>
+            <div class="row">
+                <div id="summaryDiv" class="col-md-12">
+                    <a href="<?php echo $this->baseUrl(Pt_Commons_SignedDownload::url($summaryFile)); ?>"><?= $this->translate->_("Download"); ?></a>
+                </div>
             </div>
-        </div>
-    <?php } ?>
+        <?php } ?>
+    </div><!-- /.finalized-shipment-wide -->
+
     <script src="<?= $this->assetUrl('js/reports.js'); ?>"></script>
+    <script type="text/javascript" src="<?php echo $this->baseUrl('js/daterangepicker.js'); ?>"></script>
+    <script type="text/javascript" src="<?php echo $this->baseUrl('js/select2.min.js'); ?>"></script>
     <script type="text/javascript" charset="utf-8">
         var oTable = null;
         var nTr = null;
 
-        // Client-side filter for this server-rendered table. Hides any row whose
-        // data-* attributes don't match the active dropdown values; empty dropdown = pass-through.
         function applyShipmentFilters() {
-            var rs = ($('#filterResponseStatus').val() || '').toLowerCase();
-            var rr = ($('#filterResult').val() || '').toLowerCase();
+            var mo   = ($('#manuelOverride').val() || '').toLowerCase();
+            var rs   = $('#filterResponseStatus').val() || [];
+            var rr   = $('#filterResult').val() || [];
+            var con  = $('#country').val() || [];
+            var reg  = ($('#region').val() || '').toLowerCase();
+            var st   = $('#state').val() || [];
+            var dis  = $('#district').val() || [];
             var tier = ($('#vietnamTier').val() || '').toLowerCase();
             var kit  = ($('#vietnamNonStandardKit').val() || '').toLowerCase();
+
+            var dateRange = $('#dateRange').val();
+            var sd = null, ed = null;
+            if (dateRange) {
+                var parts = dateRange.split(' to ');
+                sd = moment(parts[0], 'DD-MMM-YYYY');
+                ed = moment(parts[1], 'DD-MMM-YYYY');
+            }
+
             $('#shipmentEvaluation tbody > tr').each(function () {
                 var $tr = $(this);
-                // Skip expanded child rows / non-data rows (no data-response-status attr).
                 if (!$tr.is('[data-response-status]')) {
                     return;
                 }
                 var ok = true;
-                if (rs && $tr.data('response-status') !== rs) { ok = false; }
-                if (ok && rr && $tr.data('result') !== rr) { ok = false; }
+                if (rs.length && rs.indexOf($tr.data('response-status')) === -1) { ok = false; }
+                if (ok && rr.length && rr.indexOf(String($tr.data('result'))) === -1) { ok = false; }
+                if (ok && mo && $tr.data('manual-override') !== mo) { ok = false; }
+                if (ok && con.length && con.indexOf(String($tr.data('country'))) === -1) { ok = false; }
+                if (ok && reg && ($tr.data('region') || '').toLowerCase() !== reg) { ok = false; }
+                if (ok && st.length && st.indexOf($tr.data('state')) === -1) { ok = false; }
+                if (ok && dis.length && dis.indexOf($tr.data('district')) === -1) { ok = false; }
                 if (ok && tier && $tr.data('tier') !== tier) { ok = false; }
                 if (ok && kit && $tr.data('nonref-kit') !== kit) { ok = false; }
+                if (ok && sd && ed) {
+                    var rowDate = moment($tr.data('responded-on'), 'YYYY-MM-DD');
+                    if (!rowDate.isValid() || rowDate.isBefore(sd, 'day') || rowDate.isAfter(ed, 'day')) { ok = false; }
+                }
                 $tr.toggle(ok);
             });
         }
 
+        function getOptions(table, searchfield, returnfield, searchvalue, returnid) {
+            $.blockUI();
+            if(searchvalue == null || searchvalue == undefined || searchvalue == '') {
+                $("#" + returnid).html('<option value="">-- <?= $this->translate->_("Select"); ?> --</option>');
+                $.unblockUI();
+                return false;
+            }
+            $.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'common', 'action' => 'get-options-by-value')); ?>", {
+                    table: table,
+                    searchfield: searchfield,
+                    returnfield: returnfield,
+                    searchvalue: searchvalue,
+                    format: "html"
+                },
+                function (data) {
+                    if (data != 0 && data != '' && data != undefined) {
+                        $("#" + returnid).html(data);
+                    }
+                    $.unblockUI();
+                });
+        }
+
         $(document).ready(function () {
 
+            // ---- select2 init (must run inside ready, AFTER select2.css/js are loaded) ----
+            $("#filterResponseStatus").select2({
+                placeholder: "<?= $this->translate->_("Select one or more response status"); ?>",
+                allowClear: true,
+                width: '100%'
+            }).on('change', applyShipmentFilters);
+
+            $("#filterResult").select2({
+                placeholder: "<?= $this->translate->_("Select one or more results"); ?>",
+                allowClear: true,
+                width: '100%'
+            }).on('change', applyShipmentFilters);
+
+            $("#country").select2({
+                placeholder: "<?= $this->translate->_("Select one or more countries"); ?>",
+                allowClear: true,
+                width: '100%'
+            }).on('change', function () {
+                getOptions('participant', 'country', 'region', $(this).val(), 'region');
+                applyShipmentFilters();
+            });
+
+            $("#state").select2({
+                placeholder: "<?= $this->translate->_("Select one or more states"); ?>",
+                allowClear: true,
+                width: '100%'
+            }).on('change', function () {
+                getOptions('participant', 'state', 'district', $(this).val(), 'district');
+                applyShipmentFilters();
+            });
+
+            $("#district").select2({
+                placeholder: "<?= $this->translate->_("Select one or more districts"); ?>",
+                allowClear: true,
+                width: '100%'
+            }).on('change', applyShipmentFilters);
+
+            $("#region").on('change', function () {
+                getOptions('participant', 'region', 'state', $(this).val(), 'state');
+                applyShipmentFilters();
+            });
+
+            // ---- Date Range picker ----
+            $('#dateRange').daterangepicker({
+                locale: {
+                    cancelLabel: 'Clear',
+                    format: 'DD-MMM-YYYY',
+                    separator: ' to ',
+                },
+                autoApply: true,
+                showDropdowns: true,
+                alwaysShowCalendars: true,
+                autoUpdateInput: false,
+                startDate: moment().subtract(179, 'days'),
+                endDate: moment(),
+                maxDate: moment(),
+                ranges: {
+                    'This Month': [moment().startOf('month'), moment().endOf('month')],
+                    'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
+                    'Last 60 Days': [moment().subtract(59, 'days'), moment()],
+                    'Last 90 Days': [moment().subtract(89, 'days'), moment()],
+                    'Last 180 Days': [moment().subtract(179, 'days'), moment()],
+                    'Last 12 Months': [moment().subtract(12, 'month'), moment()],
+                    'Last 18 Months': [moment().subtract(18, 'month'), moment()],
+                }
+            },
+            function (start, end) {
+                $('#dateRange').val(start.format('DD-MMM-YYYY') + ' to ' + end.format('DD-MMM-YYYY'));
+                applyShipmentFilters();
+            });
+
+            $('#dateRange').on('cancel.daterangepicker', function () {
+                $(this).val('');
+                applyShipmentFilters();
+            });
+
+            $('#manuelOverride, #vietnamTier, #vietnamNonStandardKit').on('change', applyShipmentFilters);
+
             if (getCookie('<?php echo $this->shipment[0]['shipment_id']; ?>summaryReportTab')) {
-                <?php
-
-
-
-                ?>
+                <?php ?>
             }
 
             <?php if ($this->shipment[0]['report_generated'] == 'yes') {
@@ -412,84 +590,44 @@ if (!empty($this->shipment)) {
                 }
             } ?>
 
-
             $('#shipmentEvaluation').on('click', ".clicker", function () {
                 nTr = $(this).parents('tr')[0];
                 aData = oTable.fnGetData(nTr);
                 if (oTable.fnIsOpen(nTr)) {
-                    //console.log(aData[6]);
-                    /* This row is already open - close it */
                     $(this).find('i').addClass("icon-plus");
                     $(this).find('i').removeClass("icon-minus");
-                    //$(this).removeClass('btn-danger');
-                    // Preserve the original state color so excluded / not evaluated rows stay neutral.
                     $(this)
                         .removeClass('btn-success btn-danger btn-warning btn-default')
                         .addClass($(this).data('btn-class'));
-
                     oTable.fnClose(nTr);
                 } else {
-                    /* Open this row */
                     $(this).find('i').addClass("icon-minus");
                     $(this).find('i').removeClass("icon-add");
-                    //$(this).removeClass('btn-success');
-                    //$(this).addClass('btn-danger');
                     oTable.fnOpen(nTr, fnFormatDetails(oTable, nTr), 'details');
                 }
             });
 
-
-
             oTable = $("#shipmentEvaluation").dataTable({
-
                 "bJQueryUI": false,
                 "bAutoWidth": false,
                 "bInfo": true,
                 "bScrollCollapse": true,
                 "sPaginationType": "bootstrap",
                 "bRetrieve": true,
-                "aoColumns": [{
-                    "bSortable": false,
-                    "aTargets": [0]
-                },
-                {
-                    "sClass": "center"
-                },
-                {
-                    "sClass": "center"
-                },
-                {
-                    "sClass": "center"
-                },
-                {
-                    "sClass": "center"
-                },
-                {
-                    "sClass": "center"
-                },
-                {
-                    "sClass": "center"
-                },
-                {
-                    "sClass": "center"
-                },
-                {
-                    "sClass": "center"
-                },
-                {
-                    "sClass": "center"
-                },
-                {
-                    "bSearchable": false,
-                    "bSortable": false
-                },
-                {
-                    "bSearchable": false,
-                    "bVisible": false
-                }
+                "aoColumns": [
+                    { "bSortable": false, "aTargets": [0] },
+                    { "sClass": "center" },
+                    { "sClass": "center" },
+                    { "sClass": "center" },
+                    { "sClass": "center" },
+                    { "sClass": "center" },
+                    { "sClass": "center" },
+                    { "sClass": "center" },
+                    { "sClass": "center" },
+                    { "sClass": "center" },
+                    { "bSearchable": false, "bSortable": false },
+                    { "bSearchable": false, "bVisible": false }
                 ],
-                // Empty: keep the server order (responders first, then by ID); the user
-                // can still click any column header to re-sort.
                 "aaSorting": [],
                 "bProcessing": true,
             });
@@ -498,8 +636,7 @@ if (!empty($this->shipment)) {
         function fnFormatDetails(oTable, nTr) {
             var aData = oTable.fnGetData(nTr);
             var sOut = '<div class="text-center"><i class="icon-spinner icon-spin"></i> Loading...</div>';
-            var mapId = aData[11]; // map_id is in the hidden column
-            // Load corrective actions via AJAX
+            var mapId = aData[11];
             $.ajax({
                 url: '/common/get-corrective-actions/mid/' + mapId,
                 data: { format: 'html' },
@@ -515,10 +652,6 @@ if (!empty($this->shipment)) {
         }
 
         function updateComment(sid) {
-            // if ($.trim($("#shipmentComment").val()) == "") {
-            //     alert("Please enter comment to proceed");
-            //     return;
-            // }
             $.blockUI();
             $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'evaluate', 'action' => 'update-shipment-comment'), 'default', true); ?>", {
                 sid: sid,
@@ -535,7 +668,7 @@ if (!empty($this->shipment)) {
 <?php } else { ?>
 
     <br /><br /><br />
-    <h3 style="text-align: center">No Shipment to evaluate. <a
+    <h3 style="text-align: center">No Shipment to evaluate. 
             href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'evaluate', 'action' => 'index'), 'default', true); ?>">Click
             here to go back</a></h3>
 

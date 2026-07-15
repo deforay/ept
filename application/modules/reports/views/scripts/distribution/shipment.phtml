@@ -716,6 +716,11 @@ if (!empty($this->shipment)) {
             }
             function getOptions(table, searchfield, returnfield, searchvalue, returnid) {
                 $.blockUI();
+                if(searchvalue == null || searchvalue == undefined || searchvalue == '') {
+                    $("#" + returnid).html('<option value="">-- <?= $this->translate->_("Select"); ?> --</option>');
+                    $.unblockUI();
+                    return false;
+                }
                 $.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'common', 'action' => 'get-options-by-value')); ?>", {
                         table: table,
                         searchfield: searchfield,
