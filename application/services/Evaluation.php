@@ -1634,7 +1634,13 @@ class Application_Service_Evaluation
           }*/
         $statusArr = explode(',', $parameters['filterResponseStatus']);
         if (isset($parameters['filterResponseStatus']) && $parameters['filterResponseStatus'] != '') {
-            $baseSelect = $baseSelect->where('sp.response_status IN (?)', $statusArr);
+            if(in_array('nottested', $statusArr)) {
+                $key = array_search('nottested', $statusArr);
+                unset($statusArr[$key]);
+                $baseSelect = $baseSelect->where('(sp.response_status IN ("nottested") OR sp.is_pt_test_not_performed = "yes")');
+            } else {
+                $baseSelect = $baseSelect->where('sp.response_status IN (?)', $statusArr);
+            }
         }
         $result = explode(',', $parameters['filterResult']);
         if (isset($parameters['filterResult']) && $parameters['filterResult'] != '') {
@@ -2078,7 +2084,6 @@ class Application_Service_Evaluation
         if (isset($parameters['iDisplayStart']) && isset($parameters['iDisplayLength']) && $parameters['iDisplayLength'] != '-1') {
             $filtered->limit((int) $parameters['iDisplayLength'], (int) $parameters['iDisplayStart']);
         }
-
         $rResult = $db->fetchAll($filtered);
 
         $output = [
@@ -2133,7 +2138,11 @@ class Application_Service_Evaluation
         if (empty($shipment['response_status']) || $shipment['response_status'] === 'noresponse') {
             $responseStatus = $translator->_('Not Responded');
         } elseif ($shipment['response_status'] === 'responded') {
-            $responseStatus = $translator->_('Responded');
+            if($shipment['is_pt_test_not_performed'] === 'yes') {
+                $responseStatus = $translator->_('PT Not Tested');
+            } else {
+                $responseStatus = $translator->_('Responded');
+            }
         } elseif ($shipment['response_status'] === 'late') {
             $responseStatus = $translator->_('Late Response');
         } else {
