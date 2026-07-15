@@ -123,6 +123,7 @@ class ReportConfig
     public ?string $passPercentage;
     public ?string $trainingInstance;
     public ?string $watermark;
+    public ?string $generateReportsForExcluded;
 
     // Custom fields
     public ?string $customField1;
@@ -184,6 +185,8 @@ class ReportConfig
         // Instance settings
         $reportsConfig->instance = $reportsConfig->commonService->getConfig('instance');
         $reportsConfig->passPercentage = $reportsConfig->commonService->getConfig('pass_percentage');
+        // Absent key = OFF. Controls whether excluded submissions get individual reports.
+        $reportsConfig->generateReportsForExcluded = $reportsConfig->commonService->getConfig('generate_reports_for_excluded');
         $reportsConfig->trainingInstance = $reportsConfig->commonService->getConfig('training_instance');
         $reportsConfig->watermark = null;
         if (isset($reportsConfig->trainingInstance) && $reportsConfig->trainingInstance === 'yes') {
@@ -1254,6 +1257,15 @@ class ReportGenerator
      */
     private function fetchParticipantCounts(int $shipmentId): ?array
     {
+        // reported_count is the upper bound the parallel chunker uses to dispatch
+        // workers, so it must cover exactly the set getIndividualReportsDataForPDF()
+        // will return. When excluded submissions are included, widen it to match that
+        // query's submission-signal predicate; otherwise keep the historical count.
+        $includeExcluded = strtolower((string) $this->config->generateReportsForExcluded) === 'yes';
+        $reportedCountExpr = $includeExcluded
+            ? "SUM(spm.response_status LIKE 'responded' OR spm.response_status LIKE 'late' OR spm.shipment_test_date > '1970-01-01' OR IFNULL(spm.is_pt_test_not_performed, 'no') = 'yes')"
+            : "SUM(shipment_test_date > '1970-01-01' OR IFNULL(is_pt_test_not_performed, 'no') not like 'yes')";
+
         return $this->db->fetchRow(
             $this->db->select()->from(
                 ['spm' => 'shipment_participant_map'],
@@ -1261,7 +1273,7 @@ class ReportGenerator
                     'custom_field_1',
                     'custom_field_2',
                     'participant_count' => new Zend_Db_Expr('count("participant_id")'),
-                    'reported_count' => new Zend_Db_Expr("SUM(shipment_test_date > '1970-01-01' OR IFNULL(is_pt_test_not_performed, 'no') not like 'yes')")
+                    'reported_count' => new Zend_Db_Expr($reportedCountExpr)
                 ]
             )
                 ->joinLeft(['res' => 'r_results'], 'res.result_id=spm.final_result', [])

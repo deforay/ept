@@ -740,6 +740,23 @@ $faqResults = json_decode($this->faqs);
 								value="<?php echo $this->evaluate_before_generating_reports ?? "no"; ?>">
 						</div>
 					</div>
+					<div class="col-md-6">
+						<label for="generate_reports_for_excluded"
+							class="control-label"><?= $this->translate->_("Generate Reports for Excluded Submissions"); ?></label>
+						<div class="input-group">
+							<div class="btn-group radioBtn">
+								<a class="btn btn-primary btn-sm <?php echo (isset($this->generate_reports_for_excluded) && $this->generate_reports_for_excluded == "yes") ? " active " : "notActive"; ?>"
+									data-toggle="generate_reports_for_excluded" data-title="yes"
+									onclick="toggleRadios(this);"><?= $this->translate->_("YES"); ?></a>
+								<a class="btn btn-primary btn-sm <?php echo (!isset($this->generate_reports_for_excluded) || $this->generate_reports_for_excluded == "no") ? " active " : "notActive"; ?>"
+									data-toggle="generate_reports_for_excluded" data-title="no"
+									onclick="toggleRadios(this);"><?= $this->translate->_("NO"); ?></a>
+							</div>
+							<input type="hidden" name="generate_reports_for_excluded"
+								id="generate_reports_for_excluded"
+								value="<?php echo $this->generate_reports_for_excluded ?? "no"; ?>">
+						</div>
+					</div>
 				</div>
 				<div class="row">
 					<div class="col-md-6">
