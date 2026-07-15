@@ -43,6 +43,9 @@ final class Application_Model_Dts
         $schemeService = new Application_Service_Schemes();
         $shipmentAttributes = Pt_Commons_JsonUtility::safeDecode($shipmentResult[0]['shipment_attributes']);
         $dtsSchemeType = (isset($shipmentAttributes['dtsSchemeType']) && $shipmentAttributes['dtsSchemeType'] != '') ? $shipmentAttributes['dtsSchemeType'] : null;
+        // Deployment instance (global_config) drives country-specific evaluation behaviour.
+        // Malawi is identified by the instance, NOT dtsSchemeType (Malawi runs updated-3-tests).
+        $instance = Common::getConfig('instance');
         $syphilisEnabled = (isset($shipmentAttributes['enableSyphilis']) && $shipmentAttributes['enableSyphilis'] == 'yes') ? true : false;
         $rtriEnabled = (isset($shipmentAttributes['enableRtri']) && $shipmentAttributes['enableRtri'] == 'yes') ? true : false;
 
@@ -109,6 +112,7 @@ final class Application_Model_Dts
                     'finalResultArray' => $finalResultArray,
                     'shipmentAttributes' => $shipmentAttributes,
                     'dtsSchemeType' => $dtsSchemeType,
+                    'instance' => $instance,
                     'syphilisEnabled' => $syphilisEnabled,
                     'rtriEnabled' => $rtriEnabled,
                     'possibleRecencyResults' => $possibleRecencyResults ?? [],
@@ -207,9 +211,10 @@ final class Application_Model_Dts
 
         // Malawi treats a missing test-kit expiry date as a scored FAILURE (zero panel
         // score) rather than excluding the participant from evaluation — so they still
-        // receive a report marked FAILED. Other schemes keep excluding. (An actually
+        // receive a report marked FAILED. Other instances keep excluding. (An actually
         // expired kit already fails everywhere via $testKitExpiryResult.)
-        $isMalawi = ($dtsSchemeType === 'malawi') || (($attributes['algorithm'] ?? '') === 'malawiNationalDtsAlgo');
+        // Keyed on the deployment instance, NOT dtsSchemeType: Malawi now runs updated-3-tests.
+        $isMalawi = (($context['instance'] ?? '') === 'malawi');
         $malawiExpiryFail = false;
 
         $attributes['algorithm'] ??= null;
