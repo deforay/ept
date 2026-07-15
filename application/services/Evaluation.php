@@ -1634,7 +1634,7 @@ class Application_Service_Evaluation
           }*/
         $statusArr = explode(',', $parameters['filterResponseStatus']);
         if (isset($parameters['filterResponseStatus']) && $parameters['filterResponseStatus'] != '') {
-            if(in_array('nottested', $statusArr)) {
+            if (in_array('nottested', $statusArr)) {
                 $key = array_search('nottested', $statusArr);
                 unset($statusArr[$key]);
                 $baseSelect = $baseSelect->where('(sp.response_status IN ("nottested") OR sp.is_pt_test_not_performed = "yes")');
@@ -2138,7 +2138,7 @@ class Application_Service_Evaluation
         if (empty($shipment['response_status']) || $shipment['response_status'] === 'noresponse') {
             $responseStatus = $translator->_('Not Responded');
         } elseif ($shipment['response_status'] === 'responded') {
-            if($shipment['is_pt_test_not_performed'] === 'yes') {
+            if ($shipment['is_pt_test_not_performed'] === 'yes') {
                 $responseStatus = $translator->_('PT Not Tested');
             } else {
                 $responseStatus = $translator->_('Responded');
@@ -2506,11 +2506,25 @@ class Application_Service_Evaluation
             ->joinLeft(['rnt' => 'r_response_not_tested_reasons'], 'rnt.ntr_id=sp.pt_not_tested_reason', ['ntr_reason', 'reason_code'])
             ->joinLeft(['res' => 'r_results'], 'res.result_id=sp.final_result', ['result_name'])
             ->joinLeft(['ec' => 'r_evaluation_comments'], 'ec.comment_id=sp.evaluation_comment', ['evaluationComments' => 'comment'])
-            ->where('s.shipment_id = ?', $shipmentId)
-            // ->where(new Zend_Db_Expr("IFNULL(sp.is_excluded, 'no') = 'no'"))
-            // ->where("sp.is_excluded not like 'yes'")
-            // ->where("p.unique_identifier like '8CNX'")
-            ->where("sp.response_status is not null AND sp.response_status like 'responded'");
+            ->where('s.shipment_id = ?', $shipmentId);
+
+        // Which participants get an individual report.
+        //
+        // Default (flag OFF / absent): only those whose response_status = 'responded'.
+        // Excluded submissions (is_excluded = 'yes', final_result = 3) are left out.
+        //
+        // Flag ON ('generate_reports_for_excluded' = 'yes'): report on every participant
+        // who actually submitted something — responded, late, entered a test date, or
+        // marked the PT test as not performed — even if their submission was later
+        // excluded from evaluation. Bare non-responders (excluded by excludeNonResponder
+        // with no submission of their own) still get no report.
+        $includeExcluded = strtolower((string) Application_Service_Common::getConfig('generate_reports_for_excluded')) === 'yes';
+        if ($includeExcluded) {
+            $sql->where("(sp.response_status LIKE 'responded' OR sp.response_status LIKE 'late' OR sp.shipment_test_date > '1970-01-01' OR IFNULL(sp.is_pt_test_not_performed, 'no') = 'yes')");
+        } else {
+            $sql->where("sp.response_status IS NOT NULL AND sp.response_status LIKE 'responded'");
+        }
+
         if (isset($sLimit) && isset($sOffset)) {
             $sql = $sql->limit($sLimit, $sOffset);
         }

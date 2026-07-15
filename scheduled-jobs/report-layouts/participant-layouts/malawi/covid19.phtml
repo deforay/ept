@@ -338,7 +338,20 @@ if (!empty($resultArray['shipment'])) {
 
         $totalScore = $result['shipment_score'] + $result['documentation_score'];
         if ($result['is_excluded'] == 'yes') {
-            $wishes = '<p>Your response was not considered for evaluation</p>';
+            $wishes = '<p style="font-size:14px;"><strong>This submission was excluded from evaluation.</strong></p>';
+            $exclusionReasons = [];
+            foreach (['ntr_reason', 'pt_test_not_performed_comments', 'pt_support_comments'] as $reasonField) {
+                $reasonText = trim((string) ($result[$reasonField] ?? ''));
+                if ($reasonText !== '') {
+                    $exclusionReasons[] = $reasonText;
+                }
+            }
+            if (strtolower(trim((string) ($result['response_status'] ?? ''))) === 'late') {
+                $exclusionReasons[] = 'Response was submitted after the deadline';
+            }
+            if (!empty($exclusionReasons)) {
+                $wishes .= '<p style="font-size:13px;">Reason: ' . implode('; ', array_map('htmlspecialchars', $exclusionReasons)) . '</p>';
+            }
             $pdf->SetLeftMargin(15);
             $pdf->writeHTML($wishes, true, false, true, false, '');
         } elseif ($schemeType == 'covid19' && $result['is_excluded'] != 'yes') {
