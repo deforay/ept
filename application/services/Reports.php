@@ -5471,8 +5471,21 @@ class Application_Service_Reports
     {
 
         $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $globalConfig = new Application_Model_DbTable_GlobalConfig();
-        $passingScore = $globalConfig->getGlobalConfig('pass_percentage');
+
+        // Passing score comes from the selected scheme's config (e.g. dts.passPercentage).
+        // Falls back to the global pass_percentage when no scheme is selected, then to 100.
+        $scheme = (isset($parameters['scheme']) && $parameters['scheme'] != '') ? $parameters['scheme'] : '';
+        $passingScore = null;
+        if ($scheme !== '') {
+            $passingScore = Pt_Commons_SchemeConfig::get($scheme . '.passPercentage');
+        }
+        if ($passingScore === null || $passingScore === '') {
+            $globalConfig = new Application_Model_DbTable_GlobalConfig();
+            $passingScore = $globalConfig->getGlobalConfig('pass_percentage');
+        }
+        $passingScore = (is_numeric($passingScore) && (int) $passingScore >= 1 && (int) $passingScore <= 100)
+            ? (int) $passingScore
+            : 100;
 
         $columns = [
             's.shipment_id',
@@ -5482,10 +5495,7 @@ class Application_Service_Reports
                             (COALESCE(spm.shipment_score,0) + COALESCE(spm.documentation_score,0)) = 100
                             AND spm.final_result = 1
                         )'),
-            'unsatisfactory' => new Zend_Db_Expr($dbAdapter->quoteInto(
-                'SUM((COALESCE(spm.shipment_score,0) + COALESCE(spm.documentation_score,0)) < ?)',
-                $passingScore
-            )),
+            'unsatisfactory' => new Zend_Db_Expr('SUM(spm.final_result = 2)'),
         ];
 
         // only add satisfactory column if passingScore < 100
@@ -5518,54 +5528,116 @@ class Application_Service_Reports
             $sQuery = $sQuery->where('DATE(s.shipment_date) >= ?', $this->common->isoDateFormat($parameters['startDate']));
             $sQuery = $sQuery->where('DATE(s.shipment_date) <= ?', $this->common->isoDateFormat($parameters['endDate']));
         }
-        $results = $dbAdapter->fetchAll($sQuery);
+        // Each row already carries the per-shipment aggregates the lab-performance
+        // report view consumes directly: shipment_code, total_participants, excellent,
+        // unsatisfactory, and (when passingScore < 100) satisfactory.
+        return $dbAdapter->fetchAll($sQuery);
+    }
 
-        // Group results by shipment_code and performance
-        $shipmentResults = [];
-        foreach ($results as $row) {
-            $shipmentCode = $row['shipment_code'];
-            if (!isset($shipmentResults[$shipmentCode])) {
-                if ($passingScore == 100) {
-                    $shipmentResults[$shipmentCode] = [
-                        'Excellent' => 0,
-                        'Unsatisfactory' => 0,
-                        'Total' => 0,
-                    ];
-                } elseif ($passingScore < 100) {
-                    $shipmentResults[$shipmentCode] = [
-                        'Excellent' => 0,
-                        'Satisfactory' => 0,
-                        'Unsatisfactory' => 0,
-                        'Total' => 0,
-                    ];
+    /**
+     * Server-side Excel export for the "Laboratory Performance per Shipment" report.
+     * Mirrors the on-screen matrix: shipments across columns (No. / %), ratings down rows.
+     * Returns the generated filename (served from /temporary/) or '' on failure/no data.
+     */
+    public function exportLabPerformanceReportDetails($params)
+    {
+        try {
+            $labPerform = $this->getLabPerformanceReportWithScore($params);
+            if (empty($labPerform)) {
+                return 'not-found';
+            }
+
+            // Re-index so we can iterate shipments in order.
+            $shipments = array_values($labPerform);
+
+            // Satisfactory column only exists when passing score < 100 (see report query).
+            $hasSatisfactory = array_key_exists('satisfactory', $shipments[0]);
+
+            $ratings = [
+                ['label' => 'EXCELLENT', 'key' => 'excellent'],
+            ];
+            if ($hasSatisfactory) {
+                $ratings[] = ['label' => 'SATISFACTORY', 'key' => 'satisfactory'];
+            }
+            $ratings[] = ['label' => 'UNSATISFACTORY', 'key' => 'unsatisfactory'];
+
+            $excel = new Spreadsheet();
+            $sheet = $excel->getActiveSheet();
+
+            // Each shipment spans two columns (No., %); column 1 holds the rating labels.
+            $totalCols = 1 + (count($shipments) * 2);
+
+            // Title row.
+            $sheet->mergeCells('A1:' . Coordinate::stringFromColumnIndex($totalCols) . '1');
+            $sheet->getCell('A1')->setValueExplicit(
+                html_entity_decode($this->translator->_('Laboratory Performance per Shipment'), ENT_QUOTES, 'UTF-8')
+            );
+            $sheet->getStyle('A1')->getFont()->setBold(true);
+
+            // Header rows 3-4. Column A label spans both header rows.
+            $sheet->mergeCells('A3:A4');
+            $sheet->getCell('A3')->setValueExplicit(
+                html_entity_decode($this->translator->_('RATING PER SHIPMENT'), ENT_QUOTES, 'UTF-8')
+            );
+            $sheet->getStyle('A3')->getFont()->setBold(true);
+
+            foreach ($shipments as $i => $shipment) {
+                $startCol = 2 + ($i * 2);
+                $startLetter = Coordinate::stringFromColumnIndex($startCol);
+                $endLetter = Coordinate::stringFromColumnIndex($startCol + 1);
+
+                $sheet->mergeCells($startLetter . '3:' . $endLetter . '3');
+                $sheet->getCell($startLetter . '3')->setValueExplicit(html_entity_decode(
+                    $shipment['shipment_code'] . ' (' . $this->translator->_('Total Participants') . ': ' . $shipment['total_participants'] . ')',
+                    ENT_QUOTES,
+                    'UTF-8'
+                ));
+                $sheet->getStyle($startLetter . '3')->getFont()->setBold(true);
+
+                $sheet->getCell($startLetter . '4')->setValueExplicit(html_entity_decode($this->translator->_('No.'), ENT_QUOTES, 'UTF-8'));
+                $sheet->getCell($endLetter . '4')->setValueExplicit(html_entity_decode('%', ENT_QUOTES, 'UTF-8'));
+                $sheet->getStyle($startLetter . '4:' . $endLetter . '4')->getFont()->setBold(true);
+            }
+
+            // Rating rows start at row 5.
+            foreach ($ratings as $r => $rating) {
+                $rowNo = 5 + $r;
+                $sheet->getCell('A' . $rowNo)->setValueExplicit(
+                    html_entity_decode($this->translator->_($rating['label']), ENT_QUOTES, 'UTF-8')
+                );
+
+                foreach ($shipments as $i => $shipment) {
+                    $startCol = 2 + ($i * 2);
+                    $count = (int) ($shipment[$rating['key']] ?? 0);
+                    $total = (int) $shipment['total_participants'];
+                    $pct = $total > 0 ? number_format(($count / $total) * 100, 2, '.', '') : '0.00';
+
+                    $sheet->getCell(Coordinate::stringFromColumnIndex($startCol) . $rowNo)
+                        ->setValueExplicit((string) $count);
+                    $sheet->getCell(Coordinate::stringFromColumnIndex($startCol + 1) . $rowNo)
+                        ->setValueExplicit((string) $pct);
                 }
             }
-            if ($row['final_result'] == 1 && $row['score'] == 100) {
-                $shipmentResults[$shipmentCode]['Excellent']++;
-            } elseif ($row['final_result'] == 1 && $row['score'] < 100 && $row['score'] >= $passingScore) {
-                $shipmentResults[$shipmentCode]['Satisfactory']++;
-            } elseif ($row['final_result'] == 2) {
-                $shipmentResults[$shipmentCode]['Unsatisfactory']++;
-            }
-            $shipmentResults[$shipmentCode]['Total']++;
-        }
 
-        if ($passingScore == 100) {
-            // Calculate percentage for each category
-            foreach ($shipmentResults as $shipmentCode => &$data) {
-                $data['Excellent_Percentage'] = $data['Total'] > 0 ? round(($data['Excellent'] / $data['Total']) * 100, 2) : 0;
-                $data['Unsatisfactory_Percentage'] = $data['Total'] > 0 ? round(($data['Unsatisfactory'] / $data['Total']) * 100, 2) : 0;
-            }
-        } elseif ($passingScore < 100) {
-            // Calculate percentage for each category
-            foreach ($shipmentResults as $shipmentCode => &$data) {
-                $data['Excellent_Percentage'] = $data['Total'] > 0 ? round(($data['Excellent'] / $data['Total']) * 100, 2) : 0;
-                $data['Satisfactory_Percentage'] = $data['Total'] > 0 ? round(($data['Satisfactory'] / $data['Total']) * 100, 2) : 0;
-                $data['Unsatisfactory_Percentage'] = $data['Total'] > 0 ? round(($data['Unsatisfactory'] / $data['Total']) * 100, 2) : 0;
-            }
-        }
+            $sheet->getColumnDimension('A')->setWidth(20);
 
-        return $shipmentResults;
+            if (!file_exists($this->tempUploadDirectory) && !is_dir($this->tempUploadDirectory)) {
+                mkdir($this->tempUploadDirectory);
+            }
+
+            $writer = IOFactory::createWriter($excel, 'Xlsx');
+            $filename = 'lab-performance-report-' . date('d-M-Y-H-i-s') . '.xlsx';
+            $writer->save($this->tempUploadDirectory . DIRECTORY_SEPARATOR . $filename);
+            return $filename;
+        } catch (Exception $exc) {
+            Pt_Commons_LoggerUtility::logError('Failed to generate lab performance report (Excel): ' . $exc->getMessage(), [
+                'file' => $exc->getFile(),
+                'line' => $exc->getLine(),
+                'trace' => $exc->getTraceAsString(),
+            ]);
+
+            return '';
+        }
     }
 
     public function getVlAssayByShipmentId($sid)
