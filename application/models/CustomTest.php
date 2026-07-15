@@ -90,9 +90,9 @@ class Application_Model_CustomTest
 
         // Malawi treats a missing or expired test-kit expiry date as a scored FAILURE
         // (zero score) instead of passing the participant on incomplete/expired-kit data,
-        // so they are still evaluated and receive a report marked FAILED.
-        $reportLayout = (new Application_Service_Reports())->getReportConfigValue('report-layout');
-        $isMalawi = ($reportLayout === 'malawi');
+        // so they are still evaluated and receive a report marked FAILED. Keyed on the
+        // deployment instance (global_config), set at /admin/global-config.
+        $isMalawi = (Application_Service_Common::getConfig('instance') === 'malawi');
 
         $this->updateEqualSampleScores($shipmentId);
 
