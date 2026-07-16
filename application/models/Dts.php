@@ -382,12 +382,22 @@ final class Application_Model_Dts
             return $name !== '';
         });
         if (empty($nonEmptyTestKits)) {
-            $failureReason[] = [
-                'warning' => 'No Test Kit reported. Result not evaluated',
-                'correctiveAction' => $correctiveActions[7],
-            ];
-            $correctiveActionList[] = 7;
-            $shipment['is_excluded'] = 'yes';
+            if ($isMalawi) {
+                // Malawi: fail (zero score) instead of excluding, so a report is still produced.
+                $failureReason[] = [
+                    'warning' => 'No Test Kit reported.',
+                    'correctiveAction' => $correctiveActions[7],
+                ];
+                $correctiveActionList[] = 7;
+                $malawiDataFail = true;
+            } else {
+                $failureReason[] = [
+                    'warning' => 'No Test Kit reported. Result not evaluated',
+                    'correctiveAction' => $correctiveActions[7],
+                ];
+                $correctiveActionList[] = 7;
+                $shipment['is_excluded'] = 'yes';
+            }
         } elseif (count($nonEmptyTestKits) === 3 && count(array_unique($nonEmptyTestKits)) === 1) {
 
             //Myanmar does not mind if all three test kits are same. Vietnam compares kit SETS
