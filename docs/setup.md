@@ -118,7 +118,7 @@ Available environment variables:
 
 The Docker setup runs everything in two containers:
 
-- **ept** — PHP 8.2, Apache, Node.js (for chart rendering), Composer dependencies, and a cron job for the task scheduler
+- **ept** — PHP 8.4, Apache, Node.js (for chart rendering), Composer dependencies, and a cron job for the task scheduler
 - **ept-db** — MySQL 8.0, seeded from `sql/init.sql`
 
 On first startup, the entrypoint script automatically:
