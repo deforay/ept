@@ -99,11 +99,14 @@ if (isset($this->shipmentStatus['finalized']['status'])) {
 					$finalizeClass = $finalizeEnabled ? '' : 'disabled';
 					$encodedShipmentId = base64_encode($shipment['shipment_id']);
 
-					// The "Mail Not Responded Participants" button is only meaningful while
-					// the submission window is open. Hide it once the submission due date
-					// (response deadline) has passed. No deadline set => always open.
+					// The "Mail Not Responded Participants" button reminds participants to
+					// respond, so it only makes sense while the shipment is still open for
+					// responses. Hide it when finalized, cancelled, or past the submission
+					// due date (response deadline). No deadline set => still open.
+					$isCancelled = !empty($shipment['cancelled_at']);
 					$submissionCutoff = Pt_Commons_DateUtility::shipmentCutoff($shipment['response_deadline'] ?? null);
 					$submissionOpen = ($submissionCutoff === null) || (new DateTimeImmutable('now') <= $submissionCutoff);
+					$showMailNonResponders = ($nonResponse > 0 && !$isFinalized && !$isCancelled && $submissionOpen);
 					?>
 
 					<tr>
@@ -184,8 +187,8 @@ if (isset($this->shipmentStatus['finalized']['status'])) {
 								</div>
 								<?php endif; ?>
 
-								<!-- Email Non-Respondents Button (not shown when finalized or after the submission due date) -->
-								<?php if ($nonResponse > 0 && !$isFinalized && $submissionOpen): ?>
+								<!-- Email Non-Respondents Button (hidden when finalized, cancelled, or past the submission due date) -->
+								<?php if ($showMailNonResponders): ?>
 									<a class="btn btn-warning btn-xs <?= $evaluateButtonClass; ?>" href="javascript:void(0);"
 										onclick="mailNonParticipants('<?= $encodedShipmentId; ?>');">
 										<i class="icon-envelope"></i> Mail <?= (int) $nonResponse; ?>
