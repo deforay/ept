@@ -133,6 +133,25 @@ class Application_Model_CustomTest
             $lastDate = Pt_Commons_DateUtility::shipmentCutoff($shipment['response_deadline']);
             $results = $this->getSamplesForParticipant($shipmentId, $shipment['participant_id']);
 
+            // Malawi: a true non-responder is "No response", not Excluded — mirror DTS, which
+            // leaves such rows is_excluded='no'/final_result=0 (not final_result=3). Reset any
+            // prior exclusion stamp and skip: they must NOT be scored, or a 0 score would flip
+            // them to Fail. Could-not-test and late still fall through to the shared rule below.
+            if ($isMalawi) {
+                $responseStatus = strtolower(trim((string) ($shipment['response_status'] ?? '')));
+                $notTested = strtolower(trim((string) ($shipment['is_pt_test_not_performed'] ?? ''))) === 'yes';
+                $didNotParticipate = in_array($responseStatus, ['', 'noresponse', 'draft'], true) || empty($results);
+                if ($didNotParticipate && !$notTested) {
+                    $db->update(
+                        'shipment_participant_map',
+                        ['is_excluded' => 'no', 'final_result' => 0, 'is_followup' => 'no', 'shipment_score' => 0, 'failure_reason' => null],
+                        'map_id = ' . (int) $shipment['map_id']
+                    );
+                    $counter++;
+                    continue;
+                }
+            }
+
             // No response / could not test / late → EXCLUDED, never failed (shared rule).
             if (Application_Service_Evaluation::excludeNonResponder($this->db, $shipment, $results)) {
                 $shipment['is_excluded'] = 'yes';
