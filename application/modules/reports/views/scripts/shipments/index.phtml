@@ -134,6 +134,33 @@
 		max-width: 100%;
 		box-sizing: border-box;
 	}
+
+	/* Breakdown slideout — detach the participation-stats child row from the
+	   sibling data rows so it reads as a detail drawer of the row above it.
+	   fnOpen() tags the inserted <td> with .stats-child-container. */
+	#shipmentTable td.stats-child-container {
+		background: #eef2f7 !important;
+		/* override .table-striped zebra */
+		border-left: 4px solid #3f6fb0;
+		box-shadow: inset 0 7px 9px -9px rgba(0, 0, 0, .45), inset 0 -7px 9px -9px rgba(0, 0, 0, .3);
+		padding: 14px 18px;
+	}
+
+	/* Don't let table-hover wash out the tinted drawer band. */
+	#shipmentTable.table-hover tbody tr:hover>td.stats-child-container {
+		background: #eef2f7 !important;
+	}
+
+	/* Lift the stats panel to a white card so it stands out on the tinted band. */
+	#shipmentTable td.stats-child-container .pstats {
+		background: #fff;
+		box-shadow: 0 1px 3px rgba(0, 0, 0, .1);
+	}
+
+	/* Keep the parent row visually connected to its open drawer. */
+	#shipmentTable tbody tr.stats-parent-open>td {
+		background: #eef2f7 !important;
+	}
 </style>
 <link rel="stylesheet" href="<?php echo $this->baseUrl('css/daterangepicker.css'); ?>" type="text/css" media="all">
 <script type="text/javascript" src="<?php echo $this->baseUrl('js/moment.min.js'); ?>"></script>
@@ -203,7 +230,8 @@
 					<th scope="col"></th>
 					<th scope="col"><input type="text" class="form-control input-sm col-search" data-col="2"
 							placeholder="<?= $this->htmlTranslate('Search Shipment Code'); ?>" /></th>
-					<th scope="col"></th>
+					<th scope="col"><input type="text" class="form-control input-sm col-search" data-col="3"
+						placeholder="<?= $this->htmlTranslate('Search Result Due Date'); ?>" /></th>
 					<th scope="col">
 						<select class="form-control input-sm col-search" data-col="4">
 							<option value=""><?= $this->htmlTranslate("All"); ?></option>
@@ -217,7 +245,16 @@
 					<th scope="col"></th>
 					<th scope="col"></th>
 					<th scope="col"></th>
-					<th scope="col"></th>
+					<th scope="col">
+						<select class="form-control input-sm col-search" data-col="8">
+							<option value=""><?= $this->htmlTranslate("All"); ?></option>
+							<option value="pending"><?= $this->htmlTranslate("Pending"); ?></option>
+							<option value="active"><?= $this->htmlTranslate("Active"); ?></option>
+							<option value="evaluated"><?= $this->htmlTranslate("Evaluated"); ?></option>
+							<option value="reports generated"><?= $this->htmlTranslate("Reports Generated"); ?></option>
+							<option value="finalized"><?= $this->htmlTranslate("Finalized"); ?></option>
+						</select>
+					</th>
 					<th scope="col"></th>
 					<th scope="col"></th>
 				</tr>
@@ -388,11 +425,13 @@
 			var tr = $btn.closest('tr')[0];
 			if (oTable.fnIsOpen(tr)) {
 				oTable.fnClose(tr);
+				$(tr).removeClass('stats-parent-open');
 				$btn.removeClass('btn-success').addClass('btn-default');
 				return;
 			}
 			var placeholder = '<div style="padding:12px;color:#888;"><i class="icon-refresh"></i> <?= $this->jsTranslate("Loading breakdown…"); ?></div>';
 			oTable.fnOpen(tr, placeholder, 'stats-child-container');
+			$(tr).addClass('stats-parent-open');
 			$btn.removeClass('btn-default').addClass('btn-success');
 			$.post(
 				"<?php echo $this->url(array('module' => 'reports', 'controller' => 'shipments', 'action' => 'participation-stats', 'format' => 'html')); ?>",
