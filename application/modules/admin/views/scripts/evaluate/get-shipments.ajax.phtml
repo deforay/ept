@@ -98,6 +98,12 @@ if (isset($this->shipmentStatus['finalized']['status'])) {
 					$generateReportsClass = $generateReportsEnabled ? '' : 'disabled';
 					$finalizeClass = $finalizeEnabled ? '' : 'disabled';
 					$encodedShipmentId = base64_encode($shipment['shipment_id']);
+
+					// The "Mail Not Responded Participants" button is only meaningful while
+					// the submission window is open. Hide it once the submission due date
+					// (response deadline) has passed. No deadline set => always open.
+					$submissionCutoff = Pt_Commons_DateUtility::shipmentCutoff($shipment['response_deadline'] ?? null);
+					$submissionOpen = ($submissionCutoff === null) || (new DateTimeImmutable('now') <= $submissionCutoff);
 					?>
 
 					<tr>
@@ -178,8 +184,8 @@ if (isset($this->shipmentStatus['finalized']['status'])) {
 								</div>
 								<?php endif; ?>
 
-								<!-- Email Non-Respondents Button (not shown when finalized) -->
-								<?php if ($nonResponse > 0 && !$isFinalized): ?>
+								<!-- Email Non-Respondents Button (not shown when finalized or after the submission due date) -->
+								<?php if ($nonResponse > 0 && !$isFinalized && $submissionOpen): ?>
 									<a class="btn btn-warning btn-xs <?= $evaluateButtonClass; ?>" href="javascript:void(0);"
 										onclick="mailNonParticipants('<?= $encodedShipmentId; ?>');">
 										<i class="icon-envelope"></i> Mail <?= (int) $nonResponse; ?>
