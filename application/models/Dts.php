@@ -639,9 +639,14 @@ final class Application_Model_Dts
             // If final HIV result was not reported then the participant is failed
             if (!isset($result['reported_result']) || empty(trim($result['reported_result']))) {
                 $mandatoryResult = 'Fail';
-                $shipment['is_excluded'] = 'yes';
+                // Malawi: fail (keeping any score earned on the samples they did report)
+                // rather than excluding, so the participant is still evaluated and gets a
+                // report marked FAILED. Other instances keep excluding.
+                if (!$isMalawi) {
+                    $shipment['is_excluded'] = 'yes';
+                }
                 $failureReason[] = [
-                    'warning' => 'Sample <strong>' . $result['sample_label'] . '</strong> was not reported. Result not evaluated.',
+                    'warning' => 'Sample <strong>' . $result['sample_label'] . '</strong> was not reported.' . ($isMalawi ? '' : ' Result not evaluated.'),
                     'correctiveAction' => $correctiveActions[4],
                 ];
                 $correctiveActionList[] = 4;
