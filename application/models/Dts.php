@@ -233,7 +233,13 @@ final class Application_Model_Dts
                 'correctiveAction' => $correctiveActions[1],
             ];
             $correctiveActionList[] = 1;
-            $shipment['is_excluded'] = 'yes';
+            if ($isMalawi) {
+                // Malawi: fail with a zero overall score but still evaluate (report produced),
+                // rather than excluding the late response.
+                $malawiDataFail = true;
+            } else {
+                $shipment['is_excluded'] = 'yes';
+            }
             $shipment['is_response_late'] = 'yes';
         } else {
             $shipment['is_response_late'] = 'no';
@@ -242,6 +248,8 @@ final class Application_Model_Dts
             $lastDateResult = '';
             $shipment['is_response_late'] = 'no';
             $shipment['is_excluded'] = 'no';
+            // Response window is open, so it's on-time — drop the Malawi late penalty too.
+            $malawiDataFail = false;
         }
 
         // CORRECT SERIAL RESPONSES 'NXX','PNN','PPX','PNP';
