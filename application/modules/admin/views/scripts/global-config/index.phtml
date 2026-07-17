@@ -1670,9 +1670,10 @@ id="faqTable">
 			var searchTerm = $(this).val().toLowerCase();
 
 			if (searchTerm === '') {
-				// Reset: hide all highlights and close sections
-				$('.collapse-content').slideUp();
-				$('.collapsible').removeClass('active');
+				// Reset to the page's default state — every section open. Collapsing
+				// them here instead left a cleared search box looking like an empty page.
+				$('.collapse-content').slideDown();
+				$('.collapsible').addClass('active');
 				$('.search-highlight').removeClass('search-highlight');
 				return;
 			}
