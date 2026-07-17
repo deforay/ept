@@ -51,9 +51,11 @@ $faqResults = json_decode($this->faqs);
 	}
 
 	/* Row spacing within sections */
+	/* Compact rhythm: font sizes stay put (11px labels / 13px controls are already
+	   at the readable floor) — the savings come from the gap between rows. */
 	.collapse-content .row {
-		margin-bottom: 15px;
-		padding-bottom: 15px;
+		margin-bottom: 10px;
+		padding-bottom: 10px;
 		border-bottom: 1px solid #eef2f7;
 	}
 
@@ -252,47 +254,10 @@ $faqResults = json_decode($this->faqs);
 		color: #2c5282;
 	}
 
-	/* Style TomSelect wrapper to match form controls */
-	.ts-wrapper {
-		width: 100%;
-	}
-
-	.ts-wrapper .ts-control {
-		border: 1px solid #cbd5e0;
-		border-radius: 4px;
-		padding: 6px 12px;
-		min-height: 38px;
-		background-color: #fff;
-	}
-
-	.ts-wrapper .ts-control:focus,
-	.ts-wrapper.focus .ts-control {
-		border-color: #4a6fa5;
-		box-shadow: 0 0 0 3px rgba(74, 111, 165, 0.1);
-	}
-
-	/* TomSelect selected items (tags) */
-	.ts-wrapper.multi .ts-control>div {
-		background: linear-gradient(135deg, #4a6fa5 0%, #3a5a8a 100%);
-		color: #fff;
-		border: none;
-		border-radius: 4px;
-		padding: 4px 10px;
-		margin: 2px 4px 2px 0;
-		font-size: 13px;
-	}
-
-	.ts-wrapper.multi .ts-control>div .remove {
-		color: rgba(255, 255, 255, 0.7);
-		border-left: 1px solid rgba(255, 255, 255, 0.3);
-		margin-left: 6px;
-		padding-left: 6px;
-	}
-
-	.ts-wrapper.multi .ts-control>div .remove:hover {
-		color: #fff;
-		background: transparent;
-	}
+	/* NOTE: don't add .ts-wrapper rules here. The admin layout loads TomSelect
+	   1.4.0, whose DOM is .ts-control / .ts-input / .ts-dropdown — it never emits
+	   .ts-wrapper (that's 2.x), so such rules silently do nothing. The pickers get
+	   their look from the CDN tom-select.bootstrap3 theme. */
 
 	/* Active Schemes picker: a compact dropdown that summarises "X of Y active"
 	   and opens a searchable checkbox list. Custom-built so it doesn't depend on
@@ -402,10 +367,9 @@ $faqResults = json_decode($this->faqs);
 		color: #fff;
 	}
 
-	/* Ensure TomSelect properly hides the original select (any tom-selected select, not just #schemeId) */
-	.ts-wrapper~select,
-	select.tomselected,
-	select.ts-hidden-accessible {
+	/* Keep the original <select> out of the way once TomSelect takes over.
+	   .tomselected is the class 1.4.0 actually puts on it. */
+	select.tomselected {
 		position: absolute !important;
 		left: -9999px !important;
 		visibility: hidden !important;
@@ -717,15 +681,48 @@ $faqResults = json_decode($this->faqs);
 					</div>
 				</div>
 				<!-- Rest of general config fields... -->
+				<?php /* Aggregate Insights URL — hidden for now; Active Schemes took this
+				   slot. Nothing reads global_config.aggregate_insights_url, and an unposted
+				   field is simply not updated, so the saved value stays put in the DB.
+				<div class="col-md-6">
+					<label for="aggregate_insights_url"
+						class="control-label"><?= $this->translate->_("Aggregate Insights URL"); ?></label>
+					<input type="text" class="form-control" id="aggregate_insights_url"
+						name="aggregate_insights_url"
+						placeholder="<?= $this->translate->_('Enter aggregate insights URL'); ?>"
+						title="<?= $this->translate->_('Enter the URL for aggregate insights dashboard'); ?>"
+						value="<?php echo $this->aggregate_insights_url; ?>" />
+				</div>
+				*/ ?>
 				<div class="row">
 					<div class="col-md-6">
-						<label for="aggregate_insights_url"
-							class="control-label"><?= $this->translate->_("Aggregate Insights URL"); ?></label>
-						<input type="text" class="form-control" id="aggregate_insights_url"
-							name="aggregate_insights_url"
-							placeholder="<?= $this->translate->_('Enter aggregate insights URL'); ?>"
-							title="<?= $this->translate->_('Enter the URL for aggregate insights dashboard'); ?>"
-							value="<?php echo $this->aggregate_insights_url; ?>" />
+						<label class="control-label"><?= $this->translate->_("Active Schemes"); ?> <span
+								class="mandatory">*</span></label>
+						<div class="scheme-picker" id="schemePicker">
+							<button type="button" class="form-control scheme-picker-toggle" id="schemePickerToggle"
+								aria-haspopup="listbox" aria-expanded="false">
+								<span id="schemeSummary"></span>
+								<span class="scheme-picker-caret">&#9662;</span>
+							</button>
+							<div class="scheme-picker-panel" id="schemePickerPanel" hidden>
+								<input type="text" class="form-control scheme-picker-search" id="schemeSearch"
+									placeholder="<?= $this->translate->_("Search schemes..."); ?>" autocomplete="off">
+								<div class="scheme-picker-actions">
+									<a href="javascript:void(0);" id="schemeSelectAll"><?= $this->translate->_("Select all"); ?></a>
+									<span class="scheme-bulk-sep">|</span>
+									<a href="javascript:void(0);" id="schemeClearAll"><?= $this->translate->_("Clear all"); ?></a>
+								</div>
+								<div class="scheme-picker-list" id="schemeList">
+									<?php foreach ($this->allSchemes as $schemes) { ?>
+										<label class="scheme-option">
+											<input type="checkbox" name="schemeId[]" value="<?php echo $schemes["scheme_id"]; ?>" <?php echo ($schemes['status'] == "active") ? "checked" : ""; ?>>
+											<span><?php echo ucwords($schemes["scheme_name"]); ?></span>
+										</label>
+									<?php } ?>
+								</div>
+							</div>
+						</div>
+						<small class="text-muted"><?= $this->translate->_("Select at least one scheme to enable"); ?></small>
 					</div>
 					<div class="col-md-6">
 						<label for="admin_email"
@@ -764,37 +761,8 @@ $faqResults = json_decode($this->faqs);
 							<option value="yes" <?php echo ($this->training_instance == "yes") ? "selected='selected'" : ""; ?>><?= $this->translate->_("Yes"); ?></option>
 						</select>
 					</div>
-					<div class="col-md-6">
-						<label class="control-label"><?= $this->translate->_("Active Schemes"); ?> <span
-								class="mandatory">*</span></label>
-						<div class="scheme-picker" id="schemePicker">
-							<button type="button" class="form-control scheme-picker-toggle" id="schemePickerToggle"
-								aria-haspopup="listbox" aria-expanded="false">
-								<span id="schemeSummary"></span>
-								<span class="scheme-picker-caret">&#9662;</span>
-							</button>
-							<div class="scheme-picker-panel" id="schemePickerPanel" hidden>
-								<input type="text" class="form-control scheme-picker-search" id="schemeSearch"
-									placeholder="<?= $this->translate->_("Search schemes..."); ?>" autocomplete="off">
-								<div class="scheme-picker-actions">
-									<a href="javascript:void(0);" id="schemeSelectAll"><?= $this->translate->_("Select all"); ?></a>
-									<span class="scheme-bulk-sep">|</span>
-									<a href="javascript:void(0);" id="schemeClearAll"><?= $this->translate->_("Clear all"); ?></a>
-								</div>
-								<div class="scheme-picker-list" id="schemeList">
-									<?php foreach ($this->allSchemes as $schemes) { ?>
-										<label class="scheme-option">
-											<input type="checkbox" name="schemeId[]" value="<?php echo $schemes["scheme_id"]; ?>" <?php echo ($schemes['status'] == "active") ? "checked" : ""; ?>>
-											<span><?php echo ucwords($schemes["scheme_name"]); ?></span>
-										</label>
-									<?php } ?>
-								</div>
-							</div>
-						</div>
-						<small class="text-muted"><?= $this->translate->_("Select at least one scheme to enable"); ?></small>
-					</div>
-				</div>
-				<div class="row">
+					<!-- Watermark only applies when Training Instance is on, so it sits
+					     beside it. .trainingText is what the JS shows/hides. -->
 					<div class="col-md-6 trainingText">
 						<label for="training_instance_text"
 							class="control-label"><?= $this->translate->_("Report Watermark"); ?></label>
@@ -1820,6 +1788,15 @@ id="faqTable">
 		new TomSelect('#cutoff_timezone', {
 			create: false,
 			allowEmptyOption: true
+		});
+
+		// Deployment instance: a fixed list, searchable like the pickers above.
+		// allowEmptyOption keeps the "-- Select --" choice reachable, since
+		// instance is legitimately unset on some deployments.
+		new TomSelect('#instance', {
+			create: false,
+			allowEmptyOption: true,
+			placeholder: '<?= $this->translate->_("Search instance..."); ?>'
 		});
 
 		$('#training_instance').on('change', function () {
