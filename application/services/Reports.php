@@ -273,7 +273,7 @@ class Application_Service_Reports
         $filter = new Zend_Filter_Input($filterRules, null, $params);
         if ($filter->isValid()) {
             //$params = $filter->getEscaped();
-            $db = new Application_Model_DbTable_ReportConfig();
+            $db = new Application_Model_DbTable_GlobalConfig();
             $db->getAdapter()->beginTransaction();
             try {
                 $result = $db->updateReportDetails($params);
@@ -293,10 +293,10 @@ class Application_Service_Reports
         }
     }
 
+    /** Report-context settings; the report-scoped counterpart of Common::getConfig(). */
     public function getReportConfigValue($name)
     {
-        $db = new Application_Model_DbTable_ReportConfig();
-        return $db->getValue($name);
+        return Application_Service_Common::getSetting($name, Application_Model_DbTable_GlobalConfig::CONTEXT_REPORT);
     }
 
     public function getParticipantDetailedReport($params)

@@ -13,7 +13,7 @@
 
 	/* Legend/Header styling */
 	.report-config-container legend {
-		background: linear-gradient(135deg, #4a6fa5 0%, #3a5a8a 100%);
+		background: #4a6fa5;
 		color: #fff;
 		font-weight: 500;
 		font-size: 16px;
@@ -116,7 +116,7 @@
 	}
 
 	.file-upload-section .btn-file {
-		background: linear-gradient(135deg, #4a6fa5 0%, #3a5a8a 100%);
+		background: #4a6fa5;
 		color: #fff;
 		border: none;
 		border-radius: 4px;
@@ -125,7 +125,30 @@
 	}
 
 	.file-upload-section .btn-file:hover {
-		background: linear-gradient(135deg, #5a7fb5 0%, #4a6a9a 100%);
+		background: #5a7fb5;
+	}
+
+	/* YES/NO toggle — flat fills, matching the global-config page.
+	   This page also loads editor.css (Bootstrap 2) for the WYSIWYG, whose
+	   .btn-primary sets a background-image gradient plus a text-shadow. A
+	   background-image paints over background-color, so those have to be cleared
+	   explicitly or the buttons render as blue-on-blue gradients. */
+	.radioBtn .btn-primary {
+		background-image: none;
+		text-shadow: none;
+		box-shadow: none;
+	}
+
+	.radioBtn .notActive {
+		color: #4a6fa5;
+		background-color: #fff;
+		border-color: #4a6fa5;
+	}
+
+	.radioBtn .active {
+		color: #fff;
+		background-color: #4a6fa5;
+		border-color: #3a5a8a;
 	}
 
 	/* Template preview styling */
@@ -409,16 +432,19 @@
 						<label for="generate_reports_for_excluded">
 							<?= $this->translate->_("Generate Reports for Excluded Submissions"); ?>
 						</label>
-						<select name="generate_reports_for_excluded" id="generate_reports_for_excluded"
-							class="form-control"
-							title="<?= $this->translate->_('Generate individual reports for submissions excluded from evaluation'); ?>">
-							<option value="no" <?php echo (!isset($this->generateReportsForExcluded) || $this->generateReportsForExcluded != "yes") ? "selected='selected'" : ""; ?>>
-								<?= $this->translate->_("NO"); ?>
-							</option>
-							<option value="yes" <?php echo (isset($this->generateReportsForExcluded) && $this->generateReportsForExcluded == "yes") ? "selected='selected'" : ""; ?>>
-								<?= $this->translate->_("YES"); ?>
-							</option>
-						</select>
+						<div class="input-group">
+							<div class="btn-group radioBtn">
+								<a class="btn btn-primary btn-sm <?php echo (isset($this->generateReportsForExcluded) && $this->generateReportsForExcluded == "yes") ? " active " : "notActive"; ?>"
+									data-toggle="generate_reports_for_excluded" data-title="yes"
+									onclick="toggleRadios(this);"><?= $this->translate->_("YES"); ?></a>
+								<a class="btn btn-primary btn-sm <?php echo (!isset($this->generateReportsForExcluded) || $this->generateReportsForExcluded != "yes") ? " active " : "notActive"; ?>"
+									data-toggle="generate_reports_for_excluded" data-title="no"
+									onclick="toggleRadios(this);"><?= $this->translate->_("NO"); ?></a>
+							</div>
+							<input type="hidden" name="generate_reports_for_excluded"
+								id="generate_reports_for_excluded"
+								value="<?php echo (isset($this->generateReportsForExcluded) && $this->generateReportsForExcluded == "yes") ? "yes" : "no"; ?>">
+						</div>
 						<small class="text-muted"><?= $this->translate->_("When enabled, participants whose submission was excluded from evaluation still receive an individual report. Participants who never responded are not included either way."); ?></small>
 					</div>
 				</div>
@@ -457,6 +483,17 @@
 
 <script type="text/javascript">
 	duplicateName = true;
+
+	// Drives the YES/NO toggles: mirrors the selection into the hidden input the
+	// form posts. Same helper the global-config page defines.
+	function toggleRadios(obj) {
+		var sel = $(obj).data('title');
+		var tog = $(obj).data('toggle');
+		$('#' + tog).prop('value', sel);
+
+		$('a[data-toggle="' + tog + '"]').not('[data-title="' + sel + '"]').removeClass('active').addClass('notActive');
+		$('a[data-toggle="' + tog + '"][data-title="' + sel + '"]').removeClass('notActive').addClass('active');
+	}
 
 	function validateNow() {
 		desc = $("#editor").html();

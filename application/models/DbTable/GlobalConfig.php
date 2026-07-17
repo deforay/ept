@@ -1,9 +1,37 @@
 <?php
 
+/**
+ * Gateway for global_config — every application setting. Since 7.6.14 the
+ * report_config table is merged in here and `context` names the admin page that
+ * owns a row: 'global' for /admin/global-config, 'report' for /admin/report-config.
+ * Names are unique across contexts, so context scopes writes and the admin pages
+ * rather than forming part of a row's identity.
+ */
 class Application_Model_DbTable_GlobalConfig extends Zend_Db_Table_Abstract
 {
     protected $_name = 'global_config';
     protected $_primary = 'name';
+
+    public const CONTEXT_GLOBAL = 'global';
+    public const CONTEXT_REPORT = 'report';
+
+    /**
+     * Per-process memo. Settings are read far more often than the query count
+     * suggests — report layouts re-read the same key once per participant, so a
+     * 6000-participant run repeated one identical query 6000 times. Config only
+     * changes through the admin pages, which redirect afterwards, and a batch job
+     * wants a fixed view of config for the length of its run either way.
+     *
+     * Every write in this class must call clearCache().
+     */
+    private static $valueCache = [];
+    private static $allCache = null;
+
+    public static function clearCache()
+    {
+        self::$valueCache = [];
+        self::$allCache = null;
+    }
 
     /**
      * $context ('global' | 'report') is optional: names are unique across contexts,
@@ -12,6 +40,11 @@ class Application_Model_DbTable_GlobalConfig extends Zend_Db_Table_Abstract
      */
     public function getValue($name, $context = null)
     {
+        $cacheKey = $name . '|' . ($context ?? '*');
+        if (array_key_exists($cacheKey, self::$valueCache)) {
+            return self::$valueCache[$cacheKey];
+        }
+
         $select = $this->select()
             ->from($this->_name, ['value'])
             ->where('name = ?', $name);
@@ -32,6 +65,7 @@ class Application_Model_DbTable_GlobalConfig extends Zend_Db_Table_Abstract
             }
         }
 
+        self::$valueCache[$cacheKey] = $value;
         return $value;
     }
 
@@ -42,16 +76,21 @@ class Application_Model_DbTable_GlobalConfig extends Zend_Db_Table_Abstract
             return $row ? $row->value : null;
         }
 
+        if (self::$allCache !== null) {
+            return self::$allCache;
+        }
+
         // Scoped to the global context: this runs on every page render, and since
         // 7.6.14 the table also holds report-config rows (report-header is a
         // mediumtext HTML blob) that no caller here has ever seen.
-        $configValues = $this->fetchAll(['context = ?' => 'global'])->toArray();
+        $configValues = $this->fetchAll(['context = ?' => self::CONTEXT_GLOBAL])->toArray();
 
         $arr = [];
         foreach ($configValues as $config) {
             $arr[$config['name']] = $config['value'];
         }
 
+        self::$allCache = $arr;
         return $arr;
     }
 
@@ -163,9 +202,103 @@ class Application_Model_DbTable_GlobalConfig extends Zend_Db_Table_Abstract
             $changedSections[] = count($individualFields) . ' setting' . (count($individualFields) === 1 ? '' : 's') . ' (' . implode(', ', $individualFields) . ')';
         }
 
+        // Covers the direct update()s above (logos) alongside saveConfigByName().
+        self::clearCache();
+
         $detail = empty($changedSections) ? '' : ' — ' . implode(', ', array_unique($changedSections));
         $auditDb = new Application_Model_DbTable_AuditLog();
         $auditDb->addNewAuditLog('Updated global config' . $detail, 'config');
+    }
+
+    /** WHERE fragment pinning a statement to a single report-context row. */
+    private function reportRow(string $name): string
+    {
+        $db = $this->getAdapter();
+        return $db->quoteInto('name = ?', $name) . ' AND ' . $db->quoteInto('context = ?', self::CONTEXT_REPORT);
+    }
+
+    /** Saves the /admin/report-config form, the report-context counterpart of updateConfigDetails(). */
+    public function updateReportDetails($params)
+    {
+        $data = ['value' => $params['content']];
+        $changedSections = ['report header'];
+
+        if (isset($_FILES['logo_image']['tmp_name']) && file_exists($_FILES['logo_image']['tmp_name']) && is_uploaded_file($_FILES['logo_image']['tmp_name'])) {
+
+            $uploadDirectory = realpath(UPLOAD_PATH);
+            $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif'];
+            $fileNameSanitized = preg_replace('/[^A-Za-z0-9.]/', '-', $_FILES['logo_image']['name']);
+            $fileNameSanitized = str_replace(' ', '-', $fileNameSanitized);
+            $extension = strtolower(pathinfo($uploadDirectory . DIRECTORY_SEPARATOR . $fileNameSanitized, PATHINFO_EXTENSION));
+            $imageName = 'logo_example.' . $extension;
+            if (in_array($extension, $allowedExtensions)) {
+                if (!file_exists($uploadDirectory . DIRECTORY_SEPARATOR . 'logo') && !is_dir($uploadDirectory . DIRECTORY_SEPARATOR . 'logo')) {
+                    mkdir($uploadDirectory . DIRECTORY_SEPARATOR . 'logo');
+                }
+                if (move_uploaded_file($_FILES['logo_image']['tmp_name'], $uploadDirectory . DIRECTORY_SEPARATOR . 'logo' . DIRECTORY_SEPARATOR . $imageName)) {
+                    $resizeObj = new Pt_Commons_ImageResize($uploadDirectory . DIRECTORY_SEPARATOR . 'logo' . DIRECTORY_SEPARATOR . $imageName);
+                    $resizeObj->resizeImage(300, 300, 'auto');
+                    $resizeObj->saveImage($uploadDirectory . DIRECTORY_SEPARATOR . 'logo' . DIRECTORY_SEPARATOR . $imageName, 100);
+                }
+                $this->update(['value' => $imageName], $this->reportRow('logo'));
+                $changedSections[] = 'logo';
+            }
+        }
+        if (isset($params['reportLayout']) && !empty($params['reportLayout'])) {
+            $this->update(['value' => $params['reportLayout']], $this->reportRow('report-layout'));
+            $changedSections[] = 'layout';
+        }
+
+        if (isset($params['instituteAddressPosition'])) {
+            $this->update(['value' => $params['instituteAddressPosition']], $this->reportRow('institute-address-postition'));
+            $changedSections[] = 'institute address position';
+        }
+        if (isset($params['templateTopMargin'])) {
+            $this->update(['value' => $params['templateTopMargin']], $this->reportRow('template-top-margin'));
+            $changedSections[] = 'top margin';
+        }
+        if (isset($params['generate_reports_for_excluded'])) {
+            $value = $params['generate_reports_for_excluded'] === 'yes' ? 'yes' : 'no';
+            $this->update(['value' => $value], $this->reportRow('generate_reports_for_excluded'));
+            $changedSections[] = 'reports for excluded submissions';
+        }
+
+        //$imageName ="logo_example.jpg";
+        $alertMsg = new Zend_Session_Namespace('alertSpace');
+
+        $pdfFormatAllowedExtensions = ['pdf'];
+        $fileName = preg_replace('/[^A-Za-z0-9.]/', '-', $_FILES['reportTemplate']['name']);
+        $fileName = str_replace(' ', '-', $fileName);
+        $random = Pt_Commons_MiscUtility::generateRandomString(6);
+        $extension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
+        $fileName = $random . '-' . $fileName;
+        $uploadDirectory = realpath(UPLOAD_PATH);
+        mkdir($uploadDirectory . DIRECTORY_SEPARATOR . 'report-formats', 0777, true);
+        if (isset($params['deleteTemplate']) && !empty($params['deleteTemplate']) && $params['deleteTemplate'] == 'yes') {
+            $this->update(['value' => null], $this->reportRow('report-format'));
+            $changedSections[] = 'PDF template removed';
+        }
+        if (isset($_FILES['reportTemplate']['name']) && !empty($_FILES['reportTemplate']['name'])) {
+            if (in_array($extension, $pdfFormatAllowedExtensions)) {
+                if (move_uploaded_file($_FILES['reportTemplate']['tmp_name'], $uploadDirectory . DIRECTORY_SEPARATOR . 'report-formats' . DIRECTORY_SEPARATOR . $fileName)) {
+                    $this->update(['value' => $fileName], $this->reportRow('report-format'));
+                    $changedSections[] = 'PDF template';
+                }
+            } else {
+                $alertMsg->message = 'Unable to upload file. Please upload only PDF files';
+                return false;
+            }
+        }
+
+        $alertMsg->message = 'PDF Config Updated';
+
+        $detail = ' — ' . implode(', ', array_unique($changedSections));
+        $auditDb = new Application_Model_DbTable_AuditLog();
+        $auditDb->addNewAuditLog('Updated report config' . $detail, 'config');
+        $result = $this->update($data, $this->reportRow('report-header'));
+
+        self::clearCache();
+        return $result;
     }
 
     public function getPTProgramName()
@@ -180,6 +313,7 @@ class Application_Model_DbTable_GlobalConfig extends Zend_Db_Table_Abstract
 
     public function saveConfigByName($value, $name)
     {
+        self::clearCache();
         $row = $this->fetchRow(['name = ?' => $name]);
         if ($row) {
             return $this->update(['value' => $value], ['name = ?' => $name]);
