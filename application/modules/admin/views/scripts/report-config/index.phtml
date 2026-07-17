@@ -52,9 +52,11 @@
 		}
 	}
 
+	/* 60px clears the fixed navbar (.navbar min-height) + 16px breathing room —
+	   at top:20px the nav slid underneath it. */
 	.config-nav {
 		position: sticky;
-		top: 20px;
+		top: 76px;
 		background: #fff;
 		border: 1px solid #e2e8f0;
 		border-radius: 6px;
@@ -629,7 +631,8 @@
 			if (!$section.length) {
 				return;
 			}
-			$('html, body').animate({ scrollTop: $section.offset().top - 20 }, 400);
+			// -76 keeps the section heading clear of the fixed navbar.
+			$('html, body').animate({ scrollTop: $section.offset().top - 76 }, 400);
 		});
 
 		// Light up whichever section currently owns the top of the viewport.
