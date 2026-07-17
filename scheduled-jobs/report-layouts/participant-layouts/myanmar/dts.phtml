@@ -459,7 +459,26 @@ if ($totalPages > 0) {
             // $scorePerCorrectSample = round($maximumResponseScore / (count($allSamples) - count($nonMandatorySamples) - count($controlSamples)), 2);
             // $scorePerCorrectSample = round($maximumResponseScore / (count($numberOfMandatorySamples)), 2);
             $scorePerCorrectSample = round($maximumResponseScore / $mandatorySampleCount, 2);
+
+            // Some panels report results using different terminology for an equivalent finding
+            // (screening kits use Reactive/Non-Reactive, confirmatory kits use Positive/Negative).
+            // When the participant's reported result is the terminology-equivalent of the expected
+            // result rather than an exact match (e.g. reported "Reactive" where "Positive" was
+            // expected), this is a wording mismatch, not a true wrong answer, so it should earn
+            // half credit instead of the 0 it currently gets.
+            $equivalentResultCodes = [
+                'R'  => 'P',
+                'P'  => 'R',
+                'NR' => 'N',
+                'N'  => 'NR',
+            ];
+
             foreach ($result['responseResult'] as $response) {
+
+                $expectedCode = $response['referenceResultCode'];
+                $reportedCode = isset($response['labResult']) ? ($dtsResultsMap[$response['labResult']] ?? null) : null;
+                $isEquivalentMismatch = isset($equivalentResultCodes[$expectedCode])
+                    && $reportedCode === $equivalentResultCodes[$expectedCode];
 
                 if ($response['calculated_score'] == 'Pass') {
                     $img = WEB_ROOT . '/images/check.jpg';
@@ -467,7 +486,13 @@ if ($totalPages > 0) {
                     $score = ($response['control'] == 0) ? $scorePerCorrectSample : "N.A.";
                 } elseif ($response['calculated_score'] == 'Fail') {
                     $img = WEB_ROOT . '/images/cross.jpg';
-                    $score = ($response['control'] == 0) ? 0 : "N.A.";
+                    if ($response['control'] == 0) {
+                        // Half credit for a terminology-equivalent mismatch (e.g. Reactive vs
+                        // Positive); a genuine wrong result (e.g. Negative vs Positive) still gets 0.
+                        $score = $isEquivalentMismatch ? round($scorePerCorrectSample / 2, 2) : 0;
+                    } else {
+                        $score = "N.A.";
+                    }
                 } else {
                     $img = UPLOAD_PATH . '/../images/minus.jpg';
                     $score = "N.A.";

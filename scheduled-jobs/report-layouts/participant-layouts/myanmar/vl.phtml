@@ -176,7 +176,11 @@ if (!empty($resultArray['shipment'])) {
                 $labRes = "";
                 $rowspan = count($result['responseResult']);
                 //if($result['responseResult'][0]['no_of_participants'] > 6 && $attributes['vl_assay']!=6) {
-                $width = 12.5;
+                // With the "Number of Participants" column shown, there are 8 columns and 12.5%
+                // each sums to 100%. Without it, there are only 7 columns, so 12.5% each left a
+                // 12.5%-wide gap unaccounted for (the cause of the table misalignment) — use
+                // 100/7 instead so the 7-column layout also fills the table width exactly.
+                $width = $responseGreater ? 12.5 : (100 / 7);
                 if ($result['responseResult'][0]['no_of_participants'] > 0) {
                     $labRes .= '<table border="1" style="text-align:center;width:650px;font-size:10;">';
 
@@ -197,7 +201,7 @@ if (!empty($resultArray['shipment'])) {
                     if ($responseGreater) {
                         $labRes .= '    <th style="background-color:#8ECF64;width: ' . $width . '%;">Number of Participants</th>';
                     }
-                    $labRes .= '    <td style="background-color:#8ECF64;width: ' . $width . '%;">Assigned <br/>Value<br/>(log<sub>10</sub> copies/mL)</td>
+                    $labRes .= '    <th style="background-color:#8ECF64;width: ' . $width . '%;">Assigned <br/>Value<br/>(log<sub>10</sub> copies/mL)</th>
                                     <th style="background-color:#8ECF64;width: ' . $width . '%;"><br>Robust <br/>Standard <br/>Deviation</th>
                                     <th style="background-color:#8ECF64;width: ' . ($width - 5) . '%;"><br><br>z Score</th>
                                     <th style="background-color:#8ECF64;width: ' . ($width + 5) . '%;"><br><br>Your Grade</th>
@@ -229,7 +233,7 @@ if (!empty($resultArray['shipment'])) {
                         }
 
                         $labRes .= '<tr>
-                                                <td style="text-align:center;font-weight:normal;width:12%;">' . $response['sample_label'] . '</td>
+                                                <td style="text-align:center;font-weight:normal;">' . $response['sample_label'] . '</td>
                                                 <td style="font-weight:normal;">' . $yrResult . '</td>';
                         if ($responseGreater) {
                             $labRes .= '<td style="font-weight:normal;">' . $response['no_of_participants'] . '</td>';
