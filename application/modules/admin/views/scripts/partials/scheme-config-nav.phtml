@@ -1,0 +1,235 @@
+<?php
+// Sidebar for the Scheme Config hub.
+//
+// Self-contained on purpose: it is rendered by SchemeConfigController AND by the
+// assay / test-kit / platform controllers, which have no scheme context of their
+// own. It reads the active schemes from the session and works out the current
+// page from the request, so a page only has to render it — no view vars needed.
+//
+// Groups collapse; the one you are on is open. Every scheme name is always
+// visible, so a glance still shows every scheme the instance runs — you just
+// expand to see that scheme's pages.
+//
+// (This started out fully expanded, on the theory that nothing should be hidden.
+// It did not survive the real list: eight groups ran past the bottom of the
+// viewport, so the last group — Custom Tests — was invisible on its own page.
+// A group behind a caret you can see beats one you have to scroll to find.)
+//
+// Gating mirrors the Configure menu it replaced: VL Assay is vl-gated, EID Assay
+// eid-gated, Platforms/Gene Types covid19-gated.
+//
+// Test Kits is the exception. r_testkitnames is a SHARED catalogue: the DTS
+// picker filters it to scheme_type='dts', but custom tests pass the
+// 'custom-tests' stage to getAllDtsTestKitList(), which lists every kit. So it
+// is not a DTS page and does not belong under HIV Serology — it lives in its own
+// Shared group, reachable whenever DTS *or* custom tests are on. The old menu
+// gated it on dts alone, which left a custom-tests-only instance unable to reach
+// it at all.
+
+$adminSession = new Zend_Session_Namespace('administrators');
+$activeSchemes = (array) ($adminSession->activeSchemes ?? []);
+$configData = (array) $this->getGlobalConfig();
+$customTestsOn = isset($configData['generic_test_config']) && $configData['generic_test_config'] == 'yes';
+
+$request = Zend_Controller_Front::getInstance()->getRequest();
+$currentController = $request->getControllerName();
+$currentScheme = (string) $request->getParam('scheme', '');
+
+// Labels reuse the old Configure-menu wording, so someone who knew the entry as
+// "HIV Serology Settings" or "VL Assay/Platforms" still recognises it.
+// Keep the scheme keys in sync with Admin_SchemeConfigController::SCHEME_LABELS.
+//
+// 'show' decides whether a group renders. Most groups are one scheme, but Custom
+// Tests and Shared are not scheme-keyed at all, which is why visibility is a
+// per-group flag rather than a lookup on the array key.
+$tree = [
+    [
+        // Deliberately first, and deliberately not inside a scheme group.
+        // r_testkitnames is a catalogue shared by DTS and custom tests (see the
+        // note above), so it belongs to neither — and at the bottom of the list
+        // it was effectively hidden.
+        'label' => $this->translate->_('Shared'),
+        'show'  => in_array('dts', $activeSchemes) || $customTestsOn,
+        'pages' => [
+            ['label' => $this->translate->_('Test Kits'), 'controller' => 'testkit'],
+        ],
+    ],
+    [
+        'label' => $this->translate->_('HIV Serology'),
+        'show'  => in_array('dts', $activeSchemes),
+        'pages' => [
+            ['label' => $this->translate->_('Settings'), 'scheme' => 'dts'],
+        ],
+    ],
+    [
+        'label' => $this->translate->_('VL'),
+        'show'  => in_array('vl', $activeSchemes),
+        'pages' => [
+            ['label' => $this->translate->_('Settings'), 'scheme' => 'vl'],
+            ['label' => $this->translate->_('Assays / Platforms'), 'controller' => 'vl-assay'],
+        ],
+    ],
+    [
+        'label' => $this->translate->_('EID'),
+        'show'  => in_array('eid', $activeSchemes),
+        'pages' => [
+            ['label' => $this->translate->_('Settings'), 'scheme' => 'eid'],
+            ['label' => $this->translate->_('Assays / Platforms'), 'controller' => 'eid-assay'],
+        ],
+    ],
+    [
+        'label' => $this->translate->_('TB'),
+        'show'  => in_array('tb', $activeSchemes),
+        'pages' => [
+            ['label' => $this->translate->_('Settings'), 'scheme' => 'tb'],
+        ],
+    ],
+    [
+        'label' => $this->translate->_('SARS-CoV-2'),
+        'show'  => in_array('covid19', $activeSchemes),
+        'pages' => [
+            ['label' => $this->translate->_('Settings'), 'scheme' => 'covid19'],
+            ['label' => $this->translate->_('Test Platforms'), 'controller' => 'test-platform'],
+            ['label' => $this->translate->_('Gene Types'), 'controller' => 'covid19-gene-type'],
+        ],
+    ],
+    [
+        'label' => $this->translate->_('HIV Recency (RTRI)'),
+        'show'  => in_array('recency', $activeSchemes),
+        'pages' => [
+            ['label' => $this->translate->_('Settings'), 'scheme' => 'recency'],
+        ],
+    ],
+    [
+        'label' => $this->translate->_('Custom Tests'),
+        'show'  => $customTestsOn,
+        'pages' => [
+            ['label' => $this->translate->_('Manage Custom Tests'), 'controller' => 'custom-test'],
+        ],
+    ],
+];
+
+/**
+ * A page is current when its controller matches. Settings pages all share the
+ * scheme-config controller, so those disambiguate on the scheme param too.
+ */
+$isCurrent = function (array $page) use ($currentController, $currentScheme) {
+    if (isset($page['scheme'])) {
+        return $currentController === 'scheme-config' && $currentScheme === $page['scheme'];
+    }
+    return $currentController === $page['controller'];
+};
+?>
+<div class="config-nav">
+    <div class="nav-search">
+        <div class="input-group input-group-sm">
+            <span class="input-group-addon"><i class="icon-search"></i></span>
+            <input type="text" class="form-control" id="searchSchemes"
+                placeholder="<?= $this->translate->_('Search'); ?>" />
+        </div>
+    </div>
+
+    <ul id="schemeNavList">
+        <?php foreach ($tree as $group) {
+            if (!$group['show']) {
+                continue;
+            }
+            // The group holding the current page opens; the rest start collapsed.
+            $groupIsCurrent = false;
+            foreach ($group['pages'] as $page) {
+                if ($isCurrent($page)) {
+                    $groupIsCurrent = true;
+                    break;
+                }
+            } ?>
+            <li class="nav-group<?php echo $groupIsCurrent ? '' : ' collapsed'; ?>"
+                data-group-label="<?php echo htmlspecialchars(strtolower($group['label']), ENT_QUOTES); ?>">
+                <div class="nav-group-title" role="button" tabindex="0"
+                    aria-expanded="<?php echo $groupIsCurrent ? 'true' : 'false'; ?>">
+                    <span><?php echo $group['label']; ?></span>
+                    <b class="caret"></b>
+                </div>
+                <ul>
+                    <?php foreach ($group['pages'] as $page) {
+                        $href = isset($page['scheme'])
+                            ? $this->url(['scheme' => $page['scheme']], 'schemeConfigRoute', true)
+                            : $this->url(['module' => 'admin', 'controller' => $page['controller']], 'default', true); ?>
+                        <li>
+                            <a href="<?php echo $href; ?>" class="<?php echo $isCurrent($page) ? 'current' : ''; ?>"
+                                data-page-label="<?php echo htmlspecialchars(strtolower($group['label'] . ' ' . $page['label']), ENT_QUOTES); ?>">
+                                <?php echo $page['label']; ?>
+                            </a>
+                        </li>
+                    <?php } ?>
+                </ul>
+            </li>
+        <?php } ?>
+    </ul>
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        var $list = $('#schemeNavList');
+
+        // Toggle a group. Collapsed by default except the one you are on, so the
+        // nav stays short enough to never need scrolling in the common case.
+        function toggleGroup($group) {
+            var collapsed = $group.toggleClass('collapsed').hasClass('collapsed');
+            $group.children('.nav-group-title').attr('aria-expanded', collapsed ? 'false' : 'true');
+        }
+
+        $list.on('click', '.nav-group-title', function () {
+            toggleGroup($(this).parent());
+        });
+
+        // Keyboard parity: the header is a role=button, so it must answer to
+        // Enter and Space like one.
+        $list.on('keydown', '.nav-group-title', function (e) {
+            if (e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar') {
+                e.preventDefault();
+                toggleGroup($(this).parent());
+            }
+        });
+
+        // Search across every group, open or shut — a collapsed group must still
+        // be findable, otherwise collapsing would hide things for real. Groups
+        // with a hit expand; the rest hide entirely. A group whose own name
+        // matches shows all its pages, so "vl" gives you the whole VL group.
+        var $search = $('#searchSchemes');
+
+        $search.on('keyup', function () {
+            var term = $(this).val().toLowerCase().trim();
+
+            if (term === '') {
+                // Restore the default: only the current group open.
+                $list.children('li.nav-group').each(function () {
+                    var $group = $(this);
+                    $group.show();
+                    $group.find('ul > li').show();
+                    var isCurrent = $group.find('a.current').length > 0;
+                    $group.toggleClass('collapsed', !isCurrent);
+                    $group.children('.nav-group-title').attr('aria-expanded', isCurrent ? 'true' : 'false');
+                });
+                return;
+            }
+
+            $list.children('li.nav-group').each(function () {
+                var $group = $(this);
+                var groupMatches = String($group.data('group-label') || '').indexOf(term) !== -1;
+                var anyPageShown = false;
+
+                $group.find('ul > li').each(function () {
+                    var label = String($(this).find('a').data('page-label') || '');
+                    var show = groupMatches || label.indexOf(term) !== -1;
+                    $(this).toggle(show);
+                    anyPageShown = anyPageShown || show;
+                });
+
+                $group.toggle(anyPageShown);
+                // Expand hits so the match is actually on screen.
+                $group.toggleClass('collapsed', !anyPageShown);
+                $group.children('.nav-group-title').attr('aria-expanded', anyPageShown ? 'true' : 'false');
+            });
+        });
+    });
+</script>

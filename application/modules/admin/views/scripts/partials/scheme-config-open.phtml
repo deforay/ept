@@ -1,0 +1,33 @@
+<?php
+/*
+ * Opens the Scheme Config hub frame around a page that is not the hub's own
+ * view — the assay / test-kit / platform list pages, which keep their own
+ * controllers and URLs but belong inside the hub.
+ *
+ * Pair with partials/scheme-config-close.phtml: render this one, then the page
+ * content, then the close partial.
+ *
+ * $this->schemeConfigTitle - optional heading shown after "Scheme Config".
+ *
+ * NOTE: this is a block comment on purpose. A "?>" inside a // comment closes
+ * PHP mode, so a usage example written with // would dump the rest of this file
+ * onto the page as text.
+ */
+$schemeConfigTitle = $this->schemeConfigTitle ?? '';
+?>
+<link href="<?php echo $this->assetUrl('css/config-pages.css'); ?>" rel="stylesheet">
+
+<div class="well">
+    <fieldset>
+        <legend><?= $this->translate->_("Scheme Config"); ?>
+            <?php if ($schemeConfigTitle !== '') { ?>
+                <small style="color: #6b7280;">&mdash; <?php echo $schemeConfigTitle; ?></small>
+            <?php } ?>
+        </legend>
+
+        <div class="row config-layout">
+            <div class="col-md-3">
+                <?php echo $this->render('partials/scheme-config-nav.phtml'); ?>
+            </div>
+
+            <div class="col-md-9 config-content">

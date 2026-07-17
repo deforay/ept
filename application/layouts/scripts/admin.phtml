@@ -116,10 +116,8 @@ $helpSlugMap = [
 	'global-config/index' => 'global-config',
 	'report-config/index' => 'report-config',
 	'home-config/index' => 'home-config',
-	'dts-settings/index' => 'dts-settings',
-	'vl-settings/index' => 'vl-settings',
-	'eid-settings/index' => 'eid-settings',
-	'tb-settings/index' => 'tb-settings',
+	// Scheme Config is one controller serving every scheme, so its help topic is
+	// resolved from the scheme param below rather than from this map.
 
 	// Test kits
 	'testkit/index' => 'testkit',
@@ -141,6 +139,13 @@ $helpSlugMap = [
 $resolvedHelpSlug = $helpSlugMap["$controllerName/$actionName"]
 	?? $helpSlugMap["$controllerName/index"]
 	?? '';
+// Scheme Config keeps the per-scheme help topics (docs/help/admin/*/dts-settings.md
+// and friends) — one controller, but the help still follows the scheme you're on.
+// Schemes without a topic file resolve to nothing, same as any unmapped page.
+if ($controllerName === 'scheme-config') {
+	$helpScheme = (string) Zend_Controller_Front::getInstance()->getRequest()->getParam('scheme', '');
+	$resolvedHelpSlug = $helpScheme !== '' ? $helpScheme . '-settings' : '';
+}
 // Used by guide mode to match a step's `target_pages` against the
 // current screen. Always set, even when there's no slug match — guides
 // rely on this for the "✓ You're here" marker.
@@ -153,14 +158,14 @@ $helpPageKey = "$controllerName/$actionName";
 	<title>ePT Admin</title>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width">
-	<link rel="stylesheet" href="<?php echo $this->baseUrl("css/jquery_ui_min.css"); ?>" type="text/css" media="all">
-	<link rel="stylesheet" href="<?php echo $this->baseUrl("css/admin.css"); ?>" type="text/css" media="all">
+	<link rel="stylesheet" href="<?php echo $this->assetUrl("css/jquery_ui_min.css"); ?>" type="text/css" media="all">
+	<link rel="stylesheet" href="<?php echo $this->assetUrl("css/admin.css"); ?>" type="text/css" media="all">
 	<link rel="stylesheet" href="<?php echo $this->assetUrl("css/common.css"); ?>" type="text/css" media="all">
-	<link rel="stylesheet" href="<?php echo $this->baseUrl("css/DT_bootstrap.css"); ?>" type="text/css" media="all">
-	<link rel="stylesheet" href="<?php echo $this->baseUrl("css/deforayModal.css"); ?>" type="text/css" media="all">
-	<link rel="stylesheet" href="<?php echo $this->baseUrl("css/font_awesome.css"); ?>" type="text/css" media="all">
-	<link rel="stylesheet" href="<?php echo $this->baseUrl("css/helpDrawer.css"); ?>" type="text/css" media="all">
-	<link rel="stylesheet" href="<?php echo $this->baseUrl("css/daterangepicker.css"); ?>" type="text/css" media="all">
+	<link rel="stylesheet" href="<?php echo $this->assetUrl("css/DT_bootstrap.css"); ?>" type="text/css" media="all">
+	<link rel="stylesheet" href="<?php echo $this->assetUrl("css/deforayModal.css"); ?>" type="text/css" media="all">
+	<link rel="stylesheet" href="<?php echo $this->assetUrl("css/font_awesome.css"); ?>" type="text/css" media="all">
+	<link rel="stylesheet" href="<?php echo $this->assetUrl("css/helpDrawer.css"); ?>" type="text/css" media="all">
+	<link rel="stylesheet" href="<?php echo $this->assetUrl("css/daterangepicker.css"); ?>" type="text/css" media="all">
 	<link rel="stylesheet"
 		href="https://cdnjs.cloudflare.com/ajax/libs/tom-select/1.4.0/css/tom-select.bootstrap3.min.css"
 		integrity="sha512-+lPxmafk1K1gkBbXYid5MlLLg5T+oHynkrG/zr6a01ZcZ8FZtuffnAsWkcpygRgWzbLgR8fofRJexXEUGygfYg=="
@@ -387,67 +392,28 @@ $helpPageKey = "$controllerName/$actionName";
 												href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'feedback-responses', 'action' => 'shipment-questions'), 'default', true); ?>"><?= $this->translate->_("Enable Feedback"); ?></a>
 										</li>
 									<?php } ?>
+									<?php
+									// One entry for every scheme's settings — the per-scheme pages live
+									// behind the hub's sidebar. Shown when the instance runs at least one
+									// scheme the hub covers.
+									//
+									// The scheme list is repeated here rather than read from
+									// Admin_SchemeConfigController::SCHEME_LABELS: module controllers are
+									// loaded by the dispatcher, not the autoloader, so that class does not
+									// exist while rendering any other admin page — referencing it here
+									// fatals the whole layout. Keep this list in sync with that constant.
+									$schemeConfigSchemes = array_intersect(
+										['dts', 'vl', 'eid', 'tb', 'covid19', 'recency'],
+										(array) $adminSession->activeSchemes
+									);
+									if (!empty($schemeConfigSchemes)) { ?>
+										<li id="SchemeConfig"><a
+												href="<?php echo $this->url(['scheme' => reset($schemeConfigSchemes)], 'schemeConfigRoute', true); ?>"><?= $this->translate->_("Scheme Config"); ?></a>
+										</li>
+									<?php } ?>
 									<li id="testResults"><a
 											href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'schemes', 'action' => 'test-results'), 'default', true); ?>"><?= $this->translate->_("Scheme Test Results"); ?></a>
 									</li>
-									<?php if (in_array('dts', $adminSession->activeSchemes)) { ?>
-										<li id="TestKits"><a
-												href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'testkit'), 'default', true); ?>"><?= $this->translate->_("Test Kits"); ?></a>
-										</li>
-									<?php } ?>
-									<?php if (in_array('vl', $adminSession->activeSchemes)) { ?>
-										<li id="VLAssay"><a
-												href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'vl-assay'), 'default', true); ?>"><?= $this->translate->_("VL Assay/Platforms"); ?></a>
-										</li>
-									<?php } ?>
-									<?php if (in_array('eid', $adminSession->activeSchemes)) { ?>
-										<li id="EIDAssay"><a
-												href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'eid-assay'), 'default', true); ?>"><?= $this->translate->_("EID Assay/Platforms"); ?></a>
-										</li>
-										<li id="EIDSettings"><a
-											href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'eid-settings'), 'default', true); ?>"><?= $this->translate->_("EID Settings"); ?></a>
-										</li>
-									<?php } ?>
-									<?php if (in_array('dts', $adminSession->activeSchemes) || in_array('tb', $adminSession->activeSchemes)) { ?>
-									<?php }
-									if (in_array('dts', $adminSession->activeSchemes)) { ?>
-										<li id="HIVSerologySettings"><a
-												href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'dts-settings'), 'default', true); ?>"><?= $this->translate->_("HIV Serology Settings"); ?></a>
-										</li>
-									<?php }
-									if (in_array('vl', $adminSession->activeSchemes)) { ?>
-										<li id="VLSettings"><a
-												href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'vl-settings'), 'default', true); ?>"><?= $this->translate->_("VL Settings"); ?></a>
-										</li>
-									<?php }
-									if (in_array('tb', $adminSession->activeSchemes)) { ?>
-										<li id="TBSettings"><a
-												href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'tb-settings'), 'default', true); ?>"><?= $this->translate->_("TB Settings"); ?></a>
-										</li>
-									<?php }
-									if (isset($configData['generic_test_config']) && $configData['generic_test_config'] == 'yes') { ?>
-										<li id="ManageCustomTests"><a
-												href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'custom-test'), 'default', true); ?>"><?= $this->translate->_("Manage Custom Tests"); ?></a>
-										</li>
-									<?php }
-									if (in_array('covid19', $adminSession->activeSchemes)) { ?>
-										<li class="divider"></li>
-										<li id="SARS-CoV-2TestPlatforms"><a
-												href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'test-platform'), 'default', true); ?>"><?= $this->translate->_("SARS-CoV-2 Test Platforms"); ?></a>
-										</li>
-										<li id="SARS-CoV-2GeneTypes"><a
-												href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'covid19-gene-type'), 'default', true); ?>"><?= $this->translate->_("SARS-CoV-2 Gene Types"); ?></a>
-										</li>
-										<li id="SARS-CoV-2Settings"><a
-												href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'covid19-settings'), 'default', true); ?>"><?= $this->translate->_("SARS-CoV-2 Settings"); ?></a>
-										</li>
-									<?php }
-									if (in_array('recency', $adminSession->activeSchemes)) { ?>
-										<li class="divider"></li>
-										<li id="HIVRecencyRTRISettings"><a
-												href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'recency-settings'), 'default', true); ?>"><?= $this->translate->_("HIV Recency (RTRI) Settings"); ?></a>
-										</li>
-									<?php } ?>
 									<li class="divider"></li>
 									<li id="ePTGlobalSettings"><a
 											href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'global-config'), 'default', true); ?>"><?= $this->translate->_("ePT Global Settings"); ?></a>
@@ -690,7 +656,26 @@ $helpPageKey = "$controllerName/$actionName";
 		</div>
 	</div>
 
-	<div class="container">
+	<?php
+	// Bootstrap caps .container at 1170px (admin.css, @media min-width:1200px).
+	// The Scheme Config hub spends 240px of that on its sidebar and still has to
+	// fit wide tables (Test Kits has 9 columns), so those pages opt into a wider
+	// shell. Only the content container widens — the navbar keeps its 1170px
+	// container so the header does not shift as you navigate.
+	$wideShellControllers = [
+		'scheme-config',
+		'testkit',
+		'vl-assay',
+		'eid-assay',
+		'test-platform',
+		'covid19-gene-type',
+		'custom-test',
+	];
+	$contentShell = in_array($controllerName, $wideShellControllers)
+		? 'container container-wide'
+		: 'container';
+	?>
+	<div class="<?php echo $contentShell; ?>">
 		<?php echo $this->layout()->content; ?>
 	</div> <!-- /container -->
 	<div id="dDiv" class="dialog">
@@ -743,7 +728,7 @@ $helpPageKey = "$controllerName/$actionName";
 	<script type="text/javascript" src="<?php echo $this->baseUrl('js/daterangepicker.js'); ?>"></script>
 	<script type="text/javascript" src="<?php echo $this->baseUrl("js/bootbox.min.js"); ?>"></script>
 	<script type="text/javascript" src="<?php echo $this->baseUrl("js/bootstrap-typeahead.js"); ?>"></script>
-	<link rel="stylesheet" href="<?php echo $this->baseUrl("css/bootstrap-multiselect.css"); ?>" type="text/css"
+	<link rel="stylesheet" href="<?php echo $this->assetUrl("css/bootstrap-multiselect.css"); ?>" type="text/css"
 		media="all">
 	<script type="text/javascript" src="<?php echo $this->baseUrl("js/bootstrap-multiselect.js"); ?>"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/tom-select/1.4.0/js/tom-select.complete.min.js"
@@ -798,23 +783,17 @@ $helpPageKey = "$controllerName/$actionName";
 			} else if (splitsUrl[1] == 'reports' && splitsUrl[2] == 'testkit') {
 				$('#TestKitReportForHIVSerology').addClass('active');
 			} else if (splitsUrl[2] == 'testkit') {
-				$('#TestKits').addClass('active');
+				$('#SchemeConfig').addClass('active');
 			} else if (splitsUrl[2] == 'schemes' && splitsUrl[3] == 'test-results') {
 				$('#testResults').addClass('active');
 			} else if (splitsUrl[2] == 'vl-assay') {
-				$('#VLAssay').addClass('active');
+				$('#SchemeConfig').addClass('active');
 			} else if (splitsUrl[2] == 'eid-assay') {
-				$('#EIDAssay').addClass('active');
-			} else if (splitsUrl[2] == 'dts-settings') {
-				$('#HIVSerologySettings').addClass('active');
-			} else if (splitsUrl[2] == 'vl-settings') {
-				$('#VLSettings').addClass('active');
-			} else if (splitsUrl[2] == 'eid-settings') {
-				$('#EIDSettings').addClass('active');
-			} else if (splitsUrl[2] == 'tb-settings') {
-				$('#TBSettings').addClass('active');
+				$('#SchemeConfig').addClass('active');
+			} else if (splitsUrl[2] == 'scheme-config') {
+				$('#SchemeConfig').addClass('active');
 			} else if (splitsUrl[2] == 'custom-test') {
-				$('#ManageCustomTests').addClass('active');
+				$('#SchemeConfig').addClass('active');
 			} else if (splitsUrl[2] == 'global-config') {
 				$('#ePTGlobalSettings').addClass('active');
 			} else if (splitsUrl[2] == 'home-config') {
@@ -887,14 +866,8 @@ $helpPageKey = "$controllerName/$actionName";
 				$('#FeedbackQuestions').addClass('active');
 			} else if (splitsUrl[2] == 'feedback-responses' && splitsUrl[3] == 'shipment-questions') {
 				$('#ShipmentQustionsMap').addClass('active');
-			} else if (splitsUrl[2] == 'test-platform') {
-				$('#SARS-CoV-2TestPlatforms').addClass('active');
-			} else if (splitsUrl[2] == 'covid19-gene-type') {
-				$('#SARS-CoV-2GeneTypes').addClass('active');
-			} else if (splitsUrl[2] == 'covid19-settings') {
-				$('#SARS-CoV-2Settings').addClass('active');
-			} else if (splitsUrl[2] == 'recency-settings') {
-				$('#HIVRecencyRTRISettings').addClass('active');
+			} else if (splitsUrl[2] == 'test-platform' || splitsUrl[2] == 'covid19-gene-type') {
+				$('#SchemeConfig').addClass('active');
 			}
 
 			$('.autoSelectIfOnlyOneOption').each(function () {

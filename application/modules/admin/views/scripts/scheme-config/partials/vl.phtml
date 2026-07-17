@@ -1,0 +1,108 @@
+<?php
+// VL scheme config. Rendered inside scheme-config/index.phtml, which supplies
+// the .well/fieldset/legend, sidebar and re-evaluation nudge.
+//
+// The .datepicker field is initialised by the admin layout's global
+// $(".datepicker").datepicker() — no local init needed.
+$vl = $this->vlConfig ?? [];
+?>
+<form name="schemeConfigForm" id="schemeConfigForm" method="post"
+    action="<?php echo $this->url(['scheme' => 'vl'], 'schemeConfigRoute', true); ?>"
+    class="form-horizontal" role="form">
+
+    <div class="config-section">
+        <button type="button" class="collapsible active" data-toggle="collapse" data-target="#vlScoring">
+            <?= $this->translate->_("Scoring"); ?> <b class="caret pull-right"></b>
+        </button>
+        <div class="collapse-content" id="vlScoring">
+            <div class="row">
+                <div class="col-md-6">
+                    <label for="vlPassPercentage" class="control-label"><?= $this->translate->_("Passing Score"); ?>
+                        <span class="mandatory">*</span></label>
+                    <input type="number" id="vlPassPercentage" name="vl[passPercentage]" max="100"
+                        class="isRequired isNumeric form-control" placeholder="95"
+                        value="<?php echo $vl['passPercentage'] ?? 95; ?>" />
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="config-section">
+        <button type="button" class="collapsible active" data-toggle="collapse" data-target="#vlReport">
+            <?= $this->translate->_("Report Metadata"); ?> <b class="caret pull-right"></b>
+        </button>
+        <div class="collapse-content" id="vlReport">
+            <div class="row">
+                <div class="col-md-6">
+                    <label for="reportVersion" class="control-label"><?= $this->translate->_("Report Version"); ?></label>
+                    <input type="text" id="reportVersion" name="vl[reportVersion]" class="form-control"
+                        placeholder="<?= $this->translate->_('Enter the report version'); ?>"
+                        value="<?php echo $vl['reportVersion'] ?? null; ?>"
+                        title="<?= $this->translate->_('Please enter the report version'); ?>" />
+                    <small class="text-muted"><?= $this->translate->_("Shows in the report PDF footer."); ?></small>
+                </div>
+                <div class="col-md-6">
+                    <label for="effectiveDate" class="control-label"><?= $this->translate->_("Report Effective Date"); ?></label>
+                    <input type="text" id="effectiveDate" name="vl[effectiveDate]" class="form-control datepicker"
+                        placeholder="<?= $this->translate->_('Select the report effective date'); ?>"
+                        title="<?= $this->translate->_('Please select the report effective date'); ?>"
+                        value="<?php echo $vl['effectiveDate'] ?? null; ?>" />
+                    <small class="text-muted"><?= $this->translate->_("Shows in the report PDF footer."); ?></small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="config-section">
+        <button type="button" class="collapsible active" data-toggle="collapse" data-target="#vlContent">
+            <?= $this->translate->_("Report Content"); ?> <b class="caret pull-right"></b>
+        </button>
+        <div class="collapse-content" id="vlContent">
+            <div class="row">
+                <div class="col-md-12">
+                    <label for="vlContentEditor" class="control-label"><?= $this->translate->_("Contact Information Content"); ?>
+                        <span class="mandatory">*</span></label>
+                    <div id="vlContentEditor" class="richtextarea form-control"
+                        title="<?= $this->translate->_('Please enter content for individual VL reports'); ?>"
+                        placeholder="<?= $this->translate->_('Enter content for individual VL reports'); ?>"><?php echo htmlspecialchars_decode($vl['contentForIndividualVlReports'] ?? ''); ?></div>
+                    <textarea style="display: none;" id="contentForIndividualVlReports" class="form-control"
+                        name="vl[contentForIndividualVlReports]"></textarea>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="floating-buttons">
+        <button type="button" class="btn btn-primary" onclick="validateNow();return false;">
+            <i class="icon-ok"></i> <?= $this->translate->_("Update"); ?>
+        </button>
+        <button type="button" class="btn btn-danger" onclick="window.location.href='/admin/index';">
+            <i class="icon-arrow-left"></i> <?= $this->translate->_("Back"); ?>
+        </button>
+    </div>
+</form>
+
+<link rel="stylesheet" type="text/css" href="<?php echo $this->baseUrl('css/summernote.min.css'); ?>">
+<script type="text/javascript" src="<?php echo $this->baseUrl('js/summernote.min.js'); ?>"></script>
+
+<script type="text/javascript">
+    function validateNow() {
+        // The editor's HTML only reaches the POST via this hidden textarea.
+        $("#contentForIndividualVlReports").val($("#vlContentEditor").summernote('code'));
+        var flag = deforayValidator.init({
+            formId: 'schemeConfigForm'
+        });
+        if (flag) {
+            $.blockUI();
+            document.getElementById('schemeConfigForm').submit();
+        }
+    }
+
+    $(document).ready(function () {
+        $('#vlContentEditor').summernote({
+            placeholder: <?php echo json_encode($this->translate->_("Please enter content for individual VL reports")); ?>,
+            tabsize: 2,
+            height: 200
+        });
+    });
+</script>

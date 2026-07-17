@@ -1,0 +1,15 @@
+<?php
+// Scheme Config hub. Renders exactly one scheme's partial inside the shared hub
+// frame — see Admin_SchemeConfigController for why one scheme at a time.
+$currentScheme = $this->currentScheme ?? '';
+$schemeLabels = (array) ($this->schemeLabels ?? []);
+$this->schemeConfigTitle = $this->translate->_($schemeLabels[$currentScheme] ?? $currentScheme)
+    . ' ' . $this->translate->_('Settings');
+?>
+<?php echo $this->render('partials/scheme-config-open.phtml'); ?>
+
+<?php echo $this->render('scheme-config/partials/' . $currentScheme . '.phtml'); ?>
+
+<?php echo $this->render('partials/scheme-config-close.phtml'); ?>
+
+<?php echo $this->render('partials/re-evaluate-nudge.phtml'); ?>

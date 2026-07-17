@@ -1441,6 +1441,16 @@ pre code {
 		max-width: 1170px
 	}
 
+	/* Opt-out of the 1170px cap for pages that need the room — currently the
+	   Scheme Config hub, which spends 240px on its sidebar and still has to fit
+	   9-column tables. The layout adds this class to the content container only
+	   (see admin.phtml), so the navbar keeps its 1170px container and the header
+	   does not shift as you navigate. */
+	.container.container-wide {
+		width: 90%;
+		max-width: 90%;
+	}
+
 	.col-lg-1,
 	.col-lg-2,
 	.col-lg-3,
