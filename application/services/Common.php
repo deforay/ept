@@ -204,10 +204,21 @@ class Application_Service_Common
         }
     }
 
-    public static function getConfig($name)
+    /**
+     * Single front door for settings. Since 7.6.14 report_config is merged into
+     * global_config, with `context` naming the admin page that owns a row
+     * ('global' or 'report'). Names are unique across contexts, so $context is
+     * optional — pass it only to assert which page a setting belongs to.
+     */
+    public static function getSetting($name, $context = null)
     {
         $gc = new Application_Model_DbTable_GlobalConfig();
-        return $gc->getValue($name);
+        return $gc->getValue($name, $context);
+    }
+
+    public static function getConfig($name)
+    {
+        return self::getSetting($name);
     }
 
     // Returns true iff the session holds a passed captcha, then clears it so

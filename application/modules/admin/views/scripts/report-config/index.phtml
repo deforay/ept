@@ -400,6 +400,30 @@
 				</div>
 			</div>
 
+			<!-- Report Generation Section -->
+			<div class="config-section">
+				<h5><i class="icon-file-text"></i> <?= $this->translate->_("Report Generation"); ?></h5>
+
+				<div class="row">
+					<div class="col-md-6">
+						<label for="generate_reports_for_excluded">
+							<?= $this->translate->_("Generate Reports for Excluded Submissions"); ?>
+						</label>
+						<select name="generate_reports_for_excluded" id="generate_reports_for_excluded"
+							class="form-control"
+							title="<?= $this->translate->_('Generate individual reports for submissions excluded from evaluation'); ?>">
+							<option value="no" <?php echo (!isset($this->generateReportsForExcluded) || $this->generateReportsForExcluded != "yes") ? "selected='selected'" : ""; ?>>
+								<?= $this->translate->_("NO"); ?>
+							</option>
+							<option value="yes" <?php echo (isset($this->generateReportsForExcluded) && $this->generateReportsForExcluded == "yes") ? "selected='selected'" : ""; ?>>
+								<?= $this->translate->_("YES"); ?>
+							</option>
+						</select>
+						<small class="text-muted"><?= $this->translate->_("When enabled, participants whose submission was excluded from evaluation still receive an individual report. Participants who never responded are not included either way."); ?></small>
+					</div>
+				</div>
+			</div>
+
 			<!-- Action Buttons (inline) -->
 			<div class="row" style="margin-top: 20px;">
 				<div class="col-md-12 text-center">
