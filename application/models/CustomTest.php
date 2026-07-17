@@ -88,12 +88,6 @@ class Application_Model_CustomTest
 
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
 
-        // Malawi treats a missing or expired test-kit expiry date as a scored FAILURE
-        // (zero score) instead of passing the participant on incomplete/expired-kit data,
-        // so they are still evaluated and receive a report marked FAILED. Keyed on the
-        // deployment instance (global_config), set at /admin/global-config.
-        $isMalawi = (Application_Service_Common::getConfig('instance') === 'malawi');
-
         $this->updateEqualSampleScores($shipmentId);
 
         foreach ($shipmentResult as $shipment) {
@@ -112,10 +106,6 @@ class Application_Model_CustomTest
                 $kitResult = false;
                 $updatedTestKitId = false;
             }
-            // Captured now because the quantitative loop below reassigns $attributes to
-            // per-sample data; the kit name/expiry are participant-level.
-            $participantKitName = (isset($attributes['kit_name']) && trim((string) $attributes['kit_name']) !== '') ? trim((string) $attributes['kit_name']) : '';
-            $participantKitExpiry = isset($attributes['kit_expiry_date']) ? trim((string) $attributes['kit_expiry_date']) : '';
             $schemeService = new Application_Service_Schemes();
             $possibleResults = $schemeService->getPossibleResults($shipment['scheme_type'])[0];
             $jsonConfig = Zend_Json_Decoder::decode($shipment['user_test_config'], true);
@@ -132,25 +122,6 @@ class Application_Model_CustomTest
 
             $lastDate = Pt_Commons_DateUtility::shipmentCutoff($shipment['response_deadline']);
             $results = $this->getSamplesForParticipant($shipmentId, $shipment['participant_id']);
-
-            // Malawi: a true non-responder is "No response", not Excluded — mirror DTS, which
-            // leaves such rows is_excluded='no'/final_result=0 (not final_result=3). Reset any
-            // prior exclusion stamp and skip: they must NOT be scored, or a 0 score would flip
-            // them to Fail. Could-not-test and late still fall through to the shared rule below.
-            if ($isMalawi) {
-                $responseStatus = strtolower(trim((string) ($shipment['response_status'] ?? '')));
-                $notTested = strtolower(trim((string) ($shipment['is_pt_test_not_performed'] ?? ''))) === 'yes';
-                $didNotParticipate = in_array($responseStatus, ['', 'noresponse', 'draft'], true) || empty($results);
-                if ($didNotParticipate && !$notTested) {
-                    $db->update(
-                        'shipment_participant_map',
-                        ['is_excluded' => 'no', 'final_result' => 0, 'is_followup' => 'no', 'shipment_score' => 0, 'failure_reason' => null],
-                        'map_id = ' . (int) $shipment['map_id']
-                    );
-                    $counter++;
-                    continue;
-                }
-            }
 
             // No response / could not test / late → EXCLUDED, never failed (shared rule).
             if (Application_Service_Evaluation::excludeNonResponder($this->db, $shipment, $results)) {
@@ -292,30 +263,6 @@ class Application_Model_CustomTest
                         'correctiveAction' => "Please test " . $shipment['scheme_type'] . " sample(s) as per Hepatitis-B Testing algorithm. Review and refer to SOP for testing"
                     ];
                 } */
-
-                // Malawi: a missing or expired kit expiry date is a scored failure — zero the
-                // score so the participant is evaluated as FAILED (report produced) rather than
-                // passing. Only applies when a test kit was actually reported.
-                if ($isMalawi && $participantKitName !== '') {
-                    if (!Application_Service_Common::isDateValid($participantKitExpiry)) {
-                        $totalScore = 0;
-                        $failureReason[] = [
-                            'warning' => 'Test kit expiry date is not reported with PT response.',
-                            'correctiveAction' => 'Report the test kit expiry date with the PT response.',
-                        ];
-                    } else {
-                        $testedOnRaw = $shipment['shipment_test_date'] ?? ($shipment['shipment_test_report_date'] ?? '');
-                        $expiryDate = new DateTimeImmutable($participantKitExpiry);
-                        $testedOn = Application_Service_Common::isDateValid($testedOnRaw) ? new DateTimeImmutable($testedOnRaw) : new DateTimeImmutable('now');
-                        if ($testedOn > $expiryDate) {
-                            $totalScore = 0;
-                            $failureReason[] = [
-                                'warning' => 'Test kit expired before the testing date.',
-                                'correctiveAction' => 'Do not use expired test kits; check kit expiry before testing.',
-                            ];
-                        }
-                    }
-                }
 
                 if ($maxScore > 100) {
                     $maxScore = 100;
