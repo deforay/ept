@@ -14,49 +14,54 @@ $faqResults = $this->faq;
 <link href="<?php echo $this->baseUrl('css/fileupload_style.css'); ?>" rel="stylesheet">
 
 <style>
-	.collapsible {
-		background: linear-gradient(135deg, #4a6fa5 0%, #3a5a8a 100%);
-		color: #fff;
-		cursor: pointer;
-		padding: 14px 18px;
-		width: 100%;
-		border: none;
-		text-align: left;
-		outline: none;
-		font-size: 15px;
-		font-weight: 500;
-		border-radius: 4px 4px 0 0;
-		margin-top: 10px;
-		transition: all 0.2s ease;
+	/* ── Section cards: tinted header band + hairline frame, matching the
+	   global-config and report-config pages. ───────────────────────────────── */
+	.config-section {
+		border: 1px solid #e2e8f0;
+		border-radius: 6px;
+		margin-bottom: 18px;
+		overflow: hidden;
+		background: #fff;
 	}
 
-	.collapsible.active {
-		background: linear-gradient(135deg, #4a6fa5 0%, #3a5a8a 100%);
-		border-radius: 4px 4px 0 0;
+	/* The collapsible header doubles as the section band. */
+	.collapsible {
+		background: #f4f7fb;
+		color: #3a5a8a;
+		cursor: pointer;
+		padding: 10px 16px;
+		width: 100%;
+		border: none;
+		border-bottom: 1px solid #e2e8f0;
+		text-align: left;
+		outline: none;
+		font-size: 12px;
+		font-weight: 600;
+		text-transform: uppercase;
+		letter-spacing: 0.04em;
+		transition: background 0.2s ease;
 	}
 
 	.collapsible:hover {
-		background: linear-gradient(135deg, #5a7fb5 0%, #4a6a9a 100%);
+		background: #e9eff7;
 	}
 
 	.collapsible .caret {
-		border-top-color: #fff;
+		border-top-color: #3a5a8a;
+		margin-top: 6px;
 	}
 
+	/* Style the collapsible content. Note: shown by default */
 	.collapse-content {
-		padding: 20px;
+		padding: 16px;
 		display: block;
 		overflow: hidden;
-		background-color: #f8fafc;
-		border: 1px solid #e2e8f0;
-		border-top: none;
-		border-radius: 0 0 4px 4px;
-		margin-bottom: 5px;
+		background-color: #fff;
 	}
 
 	.collapse-content .row {
-		margin-bottom: 15px;
-		padding-bottom: 15px;
+		margin-bottom: 10px;
+		padding-bottom: 10px;
 		border-bottom: 1px solid #eef2f7;
 	}
 
@@ -66,16 +71,131 @@ $faqResults = $this->faq;
 		padding-bottom: 0;
 	}
 
+	/* Label styling — left-aligned (the form carries .form-horizontal, which
+	   right-aligns .control-label by default) and sized to the shared tokens. */
 	.collapse-content .control-label {
-		color: #374151;
-		font-weight: 500;
-		margin-bottom: 6px;
+		font-size: 11px;
+		font-weight: 600;
+		text-transform: uppercase;
+		letter-spacing: 0.03em;
+		color: #6b7280;
+		text-align: left;
+		margin-bottom: 4px;
 		display: block;
+	}
+
+	.collapse-content .form-control {
+		font-size: 13px;
+	}
+
+	.collapse-content input[type="text"].form-control {
+		height: 34px;
+		padding: 4px 8px;
+	}
+
+	.collapse-content small.text-muted {
+		font-size: 12px;
+	}
+
+	/* Card titles ("Resource Section 1", "Logo 1 (Left)") sit one level above the
+	   field labels — without this they inherit the 11px label token and the card
+	   name reads as just another field caption. */
+	.collapse-content .card-title {
+		font-size: 13px;
+		font-weight: 600;
+		text-transform: none;
+		letter-spacing: 0;
+		color: #3a5a8a;
+		margin-bottom: 10px;
 	}
 
 	.collapse-content .form-control:focus {
 		border-color: #4a6fa5;
 		box-shadow: 0 0 0 3px rgba(74, 111, 165, 0.1);
+	}
+
+	/* ── Sticky sidebar nav: the page is long, so the section list and search
+	   follow the scroll instead of disappearing at the top. ────────────────── */
+	/* Bootstrap 3 rows are float-based, so .col-md-3 would only be as tall as the
+	   nav itself and position:sticky would have no range to travel in. Flex makes
+	   the columns stretch to the full row height (align-items defaults to
+	   stretch), which is what gives the sticky nav somewhere to go. */
+	@media (min-width: 992px) {
+		.config-layout {
+			display: flex;
+		}
+	}
+
+	/* 60px clears the fixed navbar (.navbar min-height) + 16px breathing room —
+	   at top:20px the nav slid underneath it. */
+	.config-nav {
+		position: sticky;
+		top: 76px;
+		background: #fff;
+		border: 1px solid #e2e8f0;
+		border-radius: 6px;
+		overflow: hidden;
+	}
+
+	.config-nav .nav-search {
+		padding: 12px;
+		background: #f4f7fb;
+		border-bottom: 1px solid #e2e8f0;
+	}
+
+	/* Sizing comes from Bootstrap's .input-group-sm, which sets addon + input
+	   together — don't hand-size them here or the two drift apart. */
+
+	.config-nav ul {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+	}
+
+	.config-nav li a {
+		display: block;
+		padding: 10px 14px;
+		font-size: 13px;
+		color: #4a5568;
+		text-decoration: none;
+		border-left: 3px solid transparent;
+		border-bottom: 1px solid #eef1f5;
+		transition: background 0.15s ease;
+	}
+
+	.config-nav li a:hover {
+		background: #f7f9fc;
+		color: #3a5a8a;
+	}
+
+	/* Set by the scrollspy as each section passes the top of the viewport. */
+	.config-nav li a.current {
+		background: #eef3f9;
+		border-left-color: #4a6fa5;
+		color: #3a5a8a;
+		font-weight: 600;
+	}
+
+	.config-nav .nav-actions {
+		display: flex;
+		gap: 6px;
+		padding: 10px 12px;
+		background: #fafbfd;
+		border-top: 1px solid #eef1f5;
+	}
+
+	.config-nav .nav-actions .btn {
+		flex: 1;
+		font-size: 11px;
+		padding: 5px 6px;
+	}
+
+	/* Mobile / narrow: nav stops sticking and sits above the form. */
+	@media (max-width: 991px) {
+		.config-nav {
+			position: static;
+			margin-bottom: 20px;
+		}
 	}
 
 	.collapse-content h5 {
@@ -102,12 +222,18 @@ $faqResults = $this->faq;
 		overflow: hidden;
 	}
 
+	/* Flat band, same token as the section headers — the gradient version read as
+	   a second, competing header level inside an already-framed card. */
 	.collapse-content .table thead th {
-		background: linear-gradient(135deg, #4a6fa5 0%, #3a5a8a 100%);
-		color: #fff;
-		font-weight: 500;
+		background: #f4f7fb;
+		color: #3a5a8a;
+		font-size: 11px;
+		font-weight: 600;
+		text-transform: uppercase;
+		letter-spacing: 0.03em;
 		border: none;
-		padding: 12px;
+		border-bottom: 1px solid #e2e8f0;
+		padding: 10px 12px;
 	}
 
 	.collapse-content .table tbody tr:hover {
@@ -191,17 +317,17 @@ $faqResults = $this->faq;
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		background: linear-gradient(135deg, #4a6fa5 0%, #3a5a8a 100%);
+		background: #4a6fa5;
 		color: #fff;
 		border: 1px solid #3a5a8a;
 		border-left: none;
 		border-radius: 0 4px 4px 0;
 		cursor: pointer;
-		transition: all 0.2s ease;
+		transition: background 0.2s ease;
 	}
 
 	.icon-picker-btn:hover {
-		background: linear-gradient(135deg, #5a7fb5 0%, #4a6a9a 100%);
+		background: #3a5a8a;
 		color: #fff;
 	}
 
@@ -224,13 +350,14 @@ $faqResults = $this->faq;
 	}
 
 	#iconPickerModal .modal-header {
-		background: linear-gradient(135deg, #4a6fa5 0%, #3a5a8a 100%);
-		color: #fff;
+		background: #f4f7fb;
+		color: #3a5a8a;
+		border-bottom: 1px solid #e2e8f0;
 		border-radius: 4px 4px 0 0;
 	}
 
 	#iconPickerModal .modal-header .close {
-		color: #fff;
+		color: #3a5a8a;
 		opacity: 0.8;
 	}
 
@@ -352,6 +479,41 @@ $faqResults = $this->faq;
 		<fieldset>
 			<legend><?= $this->translate->_("Home Page Settings"); ?></legend>
 
+			<div class="row config-layout">
+				<!-- Sticky nav: this page is long, so the section list and search
+				     follow the scroll instead of scrolling away at the top. -->
+				<div class="col-md-3">
+					<div class="config-nav">
+						<div class="nav-search">
+							<div class="input-group input-group-sm">
+								<span class="input-group-addon"><i class="icon-search"></i></span>
+								<input type="text" class="form-control" id="searchSettings"
+									placeholder="<?= $this->translate->_('Search settings'); ?>" />
+							</div>
+						</div>
+
+						<ul id="configNavList">
+							<li><a href="#heroSection" data-section="heroSection"><?= $this->translate->_("Hero Content"); ?></a></li>
+							<li><a href="#homeBannerSection" data-section="homeBannerSection"><?= $this->translate->_("Home Banner Image"); ?></a></li>
+							<li><a href="#resourceSections" data-section="resourceSections"><?= $this->translate->_("Resource Sections"); ?></a></li>
+							<li><a href="#homeLogos" data-section="homeLogos"><?= $this->translate->_("Home Page Logos"); ?></a></li>
+							<li><a href="#faqSection" data-section="faqSection"><?= $this->translate->_("FAQ"); ?></a></li>
+						</ul>
+
+						<div class="nav-actions">
+							<button type="button" class="btn btn-sm btn-default" id="expandAll">
+								<i class="icon-resize-full"></i> <?= $this->translate->_("Expand All"); ?>
+							</button>
+							<button type="button" class="btn btn-sm btn-default" id="collapseAll">
+								<i class="icon-resize-small"></i> <?= $this->translate->_("Collapse All"); ?>
+							</button>
+						</div>
+					</div>
+				</div>
+
+				<div class="col-md-9 config-content">
+
+			<div class="config-section">
 			<button type="button" class="collapsible active" data-toggle="collapse" data-target="#heroSection">
 				<?= $this->translate->_("Hero Content"); ?> <b class="caret pull-right"></b>
 			</button>
@@ -424,8 +586,10 @@ $faqResults = $this->faq;
 							title="<?= $this->translate->_('Enter the text for the additional link button'); ?>" />
 					</div>
 				</div>
-			</div><br>
+			</div>
+			</div><!-- /.config-section -->
 
+			<div class="config-section">
 			<button type="button" class="collapsible active" data-toggle="collapse" data-target="#homeBannerSection">
 				<?= $this->translate->_("Home Banner Image"); ?> <b class="caret pull-right"></b>
 			</button>
@@ -455,8 +619,10 @@ $faqResults = $this->faq;
 						<small class="text-muted"><?= $this->translate->_("Recommended size: 1301x531 pixels. Supported formats: JPG, PNG, GIF"); ?></small>
 					</div>
 				</div>
-			</div><br>
+			</div>
+			</div><!-- /.config-section -->
 
+			<div class="config-section">
 			<button type="button" class="collapsible active" data-toggle="collapse" data-target="#resourceSections">
 				<?= $this->translate->_("Resource Sections"); ?> <b class="caret pull-right"></b>
 			</button>
@@ -474,8 +640,7 @@ $faqResults = $this->faq;
 				<!-- Resource Section 1 -->
 				<div class="row feature-card-row">
 					<div class="col-md-12">
-						<label class="control-label"
-							style="font-weight: 600; color: #4a6fa5;"><?= $this->translate->_("Resource Section 1"); ?></label>
+						<label class="control-label card-title"><?= $this->translate->_("Resource Section 1"); ?></label>
 					</div>
 					<div class="col-md-4">
 						<label for="homeIcon1" class="control-label"><?= $this->translate->_("Icon"); ?></label>
@@ -505,8 +670,7 @@ $faqResults = $this->faq;
 				<!-- Resource Section 2 -->
 				<div class="row feature-card-row">
 					<div class="col-md-12">
-						<label class="control-label"
-							style="font-weight: 600; color: #4a6fa5;"><?= $this->translate->_("Resource Section 2"); ?></label>
+						<label class="control-label card-title"><?= $this->translate->_("Resource Section 2"); ?></label>
 					</div>
 					<div class="col-md-4">
 						<label for="homeIcon2" class="control-label"><?= $this->translate->_("Icon"); ?></label>
@@ -536,8 +700,7 @@ $faqResults = $this->faq;
 				<!-- Resource Section 3 -->
 				<div class="row feature-card-row">
 					<div class="col-md-12">
-						<label class="control-label"
-							style="font-weight: 600; color: #4a6fa5;"><?= $this->translate->_("Resource Section 3"); ?></label>
+						<label class="control-label card-title"><?= $this->translate->_("Resource Section 3"); ?></label>
 					</div>
 					<div class="col-md-4">
 						<label for="homeIcon3" class="control-label"><?= $this->translate->_("Icon"); ?></label>
@@ -563,8 +726,10 @@ $faqResults = $this->faq;
 							placeholder="<?= $this->translate->_('e.g., PROGRESS/IMPROVEMENTS'); ?>" />
 					</div>
 				</div>
-			</div><br>
+			</div>
+			</div><!-- /.config-section -->
 
+			<div class="config-section">
 			<button type="button" class="collapsible active" data-toggle="collapse" data-target="#homeLogos">
 				<?= $this->translate->_("Home Page Logos"); ?> <b class="caret pull-right"></b>
 			</button>
@@ -573,7 +738,7 @@ $faqResults = $this->faq;
 				<div class="row">
 					<div class="col-md-6">
 						<div class="logo-card">
-							<label class="control-label" style="font-weight: 600; color: #4a6fa5; margin-bottom: 15px; display: block;" for="home_left_logo"><?= $this->translate->_("Logo 1 (Left)"); ?></label>
+							<label class="control-label card-title" for="home_left_logo"><?= $this->translate->_("Logo 1 (Left)"); ?></label>
 							<input type="hidden" name="delete_home_left_logo" id="delete_home_left_logo" value="">
 							<div class="fileupload fileupload-new" data-provides="fileupload">
 								<div class="fileupload-new thumbnail" style="width: 120px; height: 120px; display: flex; align-items: center; justify-content: center; background: #fff; border: 2px dashed #e2e8f0; margin: 0 auto;">
@@ -601,7 +766,7 @@ $faqResults = $this->faq;
 					</div>
 					<div class="col-md-6">
 						<div class="logo-card">
-							<label class="control-label" style="font-weight: 600; color: #4a6fa5; margin-bottom: 15px; display: block;"><?= $this->translate->_("Logo 2 (Right)"); ?></label>
+							<label class="control-label card-title"><?= $this->translate->_("Logo 2 (Right)"); ?></label>
 							<input type="hidden" name="delete_home_right_logo" id="delete_home_right_logo" value="">
 							<div class="fileupload fileupload-new" data-provides="fileupload">
 								<div class="fileupload-new thumbnail" style="width: 120px; height: 120px; display: flex; align-items: center; justify-content: center; background: #fff; border: 2px dashed #e2e8f0; margin: 0 auto;">
@@ -628,8 +793,10 @@ $faqResults = $this->faq;
 						</div>
 					</div>
 				</div>
-			</div><br>
+			</div>
+			</div><!-- /.config-section -->
 
+			<div class="config-section">
 			<button type="button" class="collapsible active" data-toggle="collapse" data-target="#faqSection">
 				<?= $this->translate->_("Frequently Asked Questions (FAQ)"); ?> <b class="caret pull-right"></b>
 			</button>
@@ -693,17 +860,12 @@ $faqResults = $this->faq;
 						</tbody>
 					</table>
 				</div>
-			</div><br>
-		</fieldset>
+			</div>
+			</div><!-- /.config-section -->
 
-		<br>
-		<br>
-		<div id="respond" style="margin: 0px auto 0px auto; text-align: center;" align="center">
-			<input name="submitbtn" class="btn btn-primary" type="button" onclick="validateNow();return false;"
-				tabindex="7" value="<?= $this->translate->_("Update"); ?>" />
-			<input class="btn btn-danger" type="button" onclick="window.location.href='/admin/index';" tabindex="8"
-				value="<?= $this->translate->_("Back"); ?>" />
-		</div>
+				</div><!-- /.config-content -->
+			</div><!-- /.config-layout -->
+		</fieldset>
 
 		<div class="floating-buttons">
 			<button type="button" class="btn btn-primary" onclick="validateNow();return false;">
@@ -795,8 +957,8 @@ $faqResults = $this->faq;
 		});
 	}
 
-	// Collapsible functionality
 	$(document).ready(function() {
+		// Collapsible functionality
 		$('.collapsible').on('click', function() {
 			$(this).toggleClass('active');
 			var content = $(this).next('.collapse-content');
@@ -806,7 +968,109 @@ $faqResults = $this->faq;
 				content.slideDown();
 			}
 		});
+
+		$('#expandAll').on('click', function() {
+			$('.collapse-content').slideDown();
+			$('.collapsible').addClass('active');
+		});
+
+		$('#collapseAll').on('click', function() {
+			$('.collapse-content').slideUp();
+			$('.collapsible').removeClass('active');
+		});
+
+		// Sidebar nav: open the target section (it may be collapsed) and scroll to it.
+		var navLinks = $('#configNavList a');
+
+		navLinks.on('click', function(e) {
+			e.preventDefault();
+			var sectionId = $(this).data('section');
+			var $section = $('#' + sectionId);
+			if (!$section.length) {
+				return;
+			}
+			$section.slideDown();
+			$('.collapsible[data-target="#' + sectionId + '"]').addClass('active');
+			$('html, body').animate({
+				// -76 keeps the section heading clear of the fixed navbar.
+				scrollTop: $section.closest('.config-section').offset().top - 76
+			}, 400);
+		});
+
+		// Scrollspy: light up whichever section currently owns the top of the
+		// viewport, so the nav says where you are without being clicked.
+		function syncActiveNavLink() {
+			var probe = $(window).scrollTop() + 100;
+			var currentId = null;
+
+			navLinks.each(function() {
+				var $wrap = $('#' + $(this).data('section')).closest('.config-section');
+				if ($wrap.length && $wrap.offset().top <= probe) {
+					currentId = $(this).data('section');
+				}
+			});
+
+			// Above the first section: fall back to it so something is always lit.
+			if (!currentId && navLinks.length) {
+				currentId = navLinks.first().data('section');
+			}
+
+			navLinks.removeClass('current')
+				.filter('[data-section="' + currentId + '"]').addClass('current');
+		}
+
+		// rAF-throttled: scroll fires far more often than we need to repaint.
+		var spyQueued = false;
+		$(window).on('scroll resize', function() {
+			if (spyQueued) {
+				return;
+			}
+			spyQueued = true;
+			window.requestAnimationFrame(function() {
+				syncActiveNavLink();
+				spyQueued = false;
+			});
+		});
+		syncActiveNavLink();
+
+		// Search: show only the sections carrying a match, and highlight the hits.
+		$('#searchSettings').on('keyup', function() {
+			var searchTerm = $(this).val().toLowerCase();
+
+			if (searchTerm === '') {
+				$('.collapse-content').slideDown();
+				$('.collapsible').addClass('active');
+				$('.search-highlight').removeClass('search-highlight');
+				return;
+			}
+
+			$('.collapse-content').each(function() {
+				var section = $(this);
+				var hasMatch = false;
+
+				section.find('label, input, textarea, select').each(function() {
+					var text = $(this).text().toLowerCase() || $(this).attr('placeholder')?.toLowerCase() || '';
+
+					if (text.includes(searchTerm)) {
+						hasMatch = true;
+						$(this).addClass('search-highlight');
+					} else {
+						$(this).removeClass('search-highlight');
+					}
+				});
+
+				if (hasMatch) {
+					section.slideDown();
+					section.prev('.collapsible').addClass('active');
+				} else {
+					section.slideUp();
+					section.prev('.collapsible').removeClass('active');
+				}
+			});
+		});
 	});
+
+	$('<style>.search-highlight { background-color: yellow !important; }</style>').appendTo('head');
 
 	// Icon Picker functionality
 	var iconPickerTargetInput = null;
