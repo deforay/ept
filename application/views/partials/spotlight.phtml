@@ -83,7 +83,7 @@ if (!$pstatus && in_array('config-ept', $privileges)) {
 			'title' => $this->translate->_('HIV Serology Settings'),
 			'category' => $this->translate->_('Configure'),
 			'icon' => 'icon-cogs',
-			'url' => $this->url(['module' => 'admin', 'controller' => 'dts-settings'], 'default', true),
+			'url' => $this->url(['scheme' => 'dts'], 'schemeConfigRoute', true),
 			'keywords' => ['hiv', 'serology', 'dts', 'settings']
 		];
 	}
@@ -101,7 +101,7 @@ if (!$pstatus && in_array('config-ept', $privileges)) {
 			'title' => $this->translate->_('VL Settings'),
 			'category' => $this->translate->_('Configure'),
 			'icon' => 'icon-cogs',
-			'url' => $this->url(['module' => 'admin', 'controller' => 'vl-settings'], 'default', true),
+			'url' => $this->url(['scheme' => 'vl'], 'schemeConfigRoute', true),
 			'keywords' => ['vl', 'viral', 'load', 'settings']
 		];
 	}
@@ -114,6 +114,14 @@ if (!$pstatus && in_array('config-ept', $privileges)) {
 			'url' => $this->url(['module' => 'admin', 'controller' => 'eid-assay'], 'default', true),
 			'keywords' => ['eid', 'early', 'infant', 'diagnosis', 'assay']
 		];
+		$spotlightItems[] = [
+			'id' => 'eid-settings',
+			'title' => $this->translate->_('EID Settings'),
+			'category' => $this->translate->_('Configure'),
+			'icon' => 'icon-cogs',
+			'url' => $this->url(['scheme' => 'eid'], 'schemeConfigRoute', true),
+			'keywords' => ['eid', 'early', 'infant', 'diagnosis', 'settings']
+		];
 	}
 	if (isset($adminSession->activeSchemes) && in_array('tb', $adminSession->activeSchemes)) {
 		$spotlightItems[] = [
@@ -121,7 +129,7 @@ if (!$pstatus && in_array('config-ept', $privileges)) {
 			'title' => $this->translate->_('TB Settings'),
 			'category' => $this->translate->_('Configure'),
 			'icon' => 'icon-cogs',
-			'url' => $this->url(['module' => 'admin', 'controller' => 'tb-settings'], 'default', true),
+			'url' => $this->url(['scheme' => 'tb'], 'schemeConfigRoute', true),
 			'keywords' => ['tb', 'tuberculosis', 'settings']
 		];
 	}
@@ -157,7 +165,7 @@ if (!$pstatus && in_array('config-ept', $privileges)) {
 			'title' => $this->translate->_('SARS-CoV-2 Settings'),
 			'category' => $this->translate->_('Configure'),
 			'icon' => 'icon-cogs',
-			'url' => $this->url(['module' => 'admin', 'controller' => 'covid19-settings'], 'default', true),
+			'url' => $this->url(['scheme' => 'covid19'], 'schemeConfigRoute', true),
 			'keywords' => ['covid', 'sars', 'cov', 'settings']
 		];
 	}
@@ -167,7 +175,7 @@ if (!$pstatus && in_array('config-ept', $privileges)) {
 			'title' => $this->translate->_('HIV Recency (RTRI) Settings'),
 			'category' => $this->translate->_('Configure'),
 			'icon' => 'icon-cogs',
-			'url' => $this->url(['module' => 'admin', 'controller' => 'recency-settings'], 'default', true),
+			'url' => $this->url(['scheme' => 'recency'], 'schemeConfigRoute', true),
 			'keywords' => ['hiv', 'recency', 'rtri', 'settings']
 		];
 	}

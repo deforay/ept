@@ -1,0 +1,175 @@
+<?php
+// SARS-CoV-2 scheme config. Rendered inside scheme-config/index.phtml, which
+// supplies the .well/fieldset/legend, sidebar and re-evaluation nudge.
+//
+// The .datepicker field is initialised by the admin layout's global
+// $(".datepicker").datepicker(); the flash message is likewise rendered by the
+// layout — neither needs a local copy.
+$covid19Config = $this->covid19Config ?? [];
+
+// Stored as a comma-joined string, but tolerate an array. The old view had this
+// inverted (explode() on an array), which was a TypeError whenever the setting
+// was unset — see git history for scheme-config/partials/covid19.phtml.
+$allowedAlgorithms = $covid19Config['allowedAlgorithms'] ?? '';
+if (is_array($allowedAlgorithms)) {
+    $allowedAlgorithms = implode(',', $allowedAlgorithms);
+}
+?>
+<form name="schemeConfigForm" id="schemeConfigForm" method="post"
+    action="<?php echo $this->url(['scheme' => 'covid19'], 'schemeConfigRoute', true); ?>"
+    class="form-horizontal" role="form">
+
+    <div class="config-section">
+        <button type="button" class="collapsible active" data-toggle="collapse" data-target="#covid19Scoring">
+            <?= $this->translate->_("Scoring"); ?> <b class="caret pull-right"></b>
+        </button>
+        <div class="collapse-content" id="covid19Scoring">
+            <div class="row">
+                <div class="col-md-6">
+                    <label for="covid19PassPercentage" class="control-label"><?= $this->translate->_("Minimum Passing Percentage"); ?>
+                        <span class="mandatory">*</span></label>
+                    <div class="input-group">
+                        <input type="text" id="covid19PassPercentage" name="covid19[passPercentage]" size="50"
+                            maxlength="45" class="isRequired isNumeric form-control"
+                            placeholder="<?= $this->translate->_('Please enter the Pass Percentage'); ?>"
+                            value="<?php echo (isset($covid19Config['passPercentage']) && $covid19Config['passPercentage'] != "") ? $covid19Config['passPercentage'] : 0; ?>" />
+                        <span class="input-group-addon">%</span>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <label for="covid19AllowedAlgorithms" class="control-label"><?= $this->translate->_("Allowed Algorithms"); ?></label>
+                    <textarea id="covid19AllowedAlgorithms" name="covid19[allowedAlgorithms]" class="form-control"
+                        title="<?= $this->translate->_('Comma-separated list of allowed algorithms'); ?>"><?php echo htmlspecialchars((string) $allowedAlgorithms, ENT_QUOTES); ?></textarea>
+                    <small class="text-muted"><?= $this->translate->_("Comma-separated."); ?></small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="config-section">
+        <button type="button" class="collapsible active" data-toggle="collapse" data-target="#covid19Testing">
+            <?= $this->translate->_("Testing Options"); ?> <b class="caret pull-right"></b>
+        </button>
+        <div class="collapse-content" id="covid19Testing">
+            <div class="row">
+                <div class="col-md-6 covid19MaximumTestAllowedDiv">
+                    <label for="covid19MaximumTestAllowed" class="control-label"><?= $this->translate->_("Maximum Tests Allowed"); ?>
+                        <span class="mandatory">*</span></label>
+                    <select class="form-control isRequired" id="covid19MaximumTestAllowed"
+                        name="covid19[covid19MaximumTestAllowed]"
+                        title="<?= $this->translate->_('Please select the maximum tests allowed'); ?>">
+                        <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
+                        <option value="1" <?php echo (isset($covid19Config['covid19MaximumTestAllowed']) && $covid19Config['covid19MaximumTestAllowed'] == "1") ? " selected='selected' " : ""; ?>>1</option>
+                        <option value="2" <?php echo (isset($covid19Config['covid19MaximumTestAllowed']) && $covid19Config['covid19MaximumTestAllowed'] == "2") ? " selected='selected' " : ""; ?>>2</option>
+                        <option value="3" <?php echo (isset($covid19Config['covid19MaximumTestAllowed']) && $covid19Config['covid19MaximumTestAllowed'] == "3") ? " selected='selected' " : ""; ?>>3</option>
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label for="sampleRehydrateDays" class="control-label"><?= $this->translate->_("No. of Days for Sample Rehydration"); ?>
+                        <span class="mandatory">*</span></label>
+                    <select class="form-control isRequired" id="sampleRehydrateDays" name="covid19[sampleRehydrateDays]"
+                        title="<?= $this->translate->_('Please select no. of days for sample rehydration'); ?>">
+                        <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
+                        <option value="0" <?php echo (isset($covid19Config['sampleRehydrateDays']) && $covid19Config['sampleRehydrateDays'] == "0") ? " selected='selected' " : ""; ?>>0 -
+                            <?= $this->translate->_("Allow Same Day Testing"); ?></option>
+                        <option value="1" <?php echo (isset($covid19Config['sampleRehydrateDays']) && $covid19Config['sampleRehydrateDays'] == "1") ? " selected='selected' " : ""; ?>>1 -
+                            <?= $this->translate->_("Testing after 1 day only"); ?></option>
+                        <option value="2" <?php echo (isset($covid19Config['sampleRehydrateDays']) && $covid19Config['sampleRehydrateDays'] == "2") ? " selected='selected' " : ""; ?>>2 -
+                            <?= $this->translate->_("Testing after 2 days only"); ?></option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="config-section">
+        <button type="button" class="collapsible active" data-toggle="collapse" data-target="#covid19Report">
+            <?= $this->translate->_("Report Metadata"); ?> <b class="caret pull-right"></b>
+        </button>
+        <div class="collapse-content" id="covid19Report">
+            <div class="row">
+                <div class="col-md-6">
+                    <label for="reportVersion" class="control-label"><?= $this->translate->_("Report Version"); ?></label>
+                    <input type="text" id="reportVersion" name="covid19[reportVersion]" class="form-control"
+                        placeholder="<?= $this->translate->_('Enter the report version'); ?>"
+                        value="<?php echo $covid19Config['reportVersion'] ?? null; ?>"
+                        title="<?= $this->translate->_('Please enter the report version'); ?>" />
+                </div>
+                <div class="col-md-6">
+                    <label for="effectiveDate" class="control-label"><?= $this->translate->_("Report Effective Date"); ?></label>
+                    <input type="text" id="effectiveDate" name="covid19[effectiveDate]" class="form-control datepicker"
+                        placeholder="<?= $this->translate->_('Select the report effective date'); ?>"
+                        title="<?= $this->translate->_('Please select the report effective date'); ?>"
+                        value="<?php echo $covid19Config['effectiveDate'] ?? null; ?>" />
+                    <small class="text-muted"><?= $this->translate->_("Shows in the report PDF footer."); ?></small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="config-section">
+        <button type="button" class="collapsible active" data-toggle="collapse" data-target="#covid19Platforms">
+            <?= $this->translate->_("Recommended Test Platforms"); ?> <b class="caret pull-right"></b>
+        </button>
+        <div class="collapse-content" id="covid19Platforms">
+            <div class="alert alert-info">
+                <ul style="margin-bottom: 0; padding-left: 20px;">
+                    <li><?= $this->translate->_("If a response does not contain the following recommended Test Platforms, participants will not pass for the respective samples."); ?></li>
+                    <li><?= $this->translate->_("If you don't want to enforce the test type check, please leave the following 3 options blank"); ?></li>
+                    <li><?= $this->translate->_("Please set the"); ?>
+                        <a href="/admin/test-platform/standard-type"><?= $this->translate->_("SARS-CoV-2 Standard Test Platforms"); ?></a>
+                        <?= $this->translate->_("before you do the below"); ?></li>
+                </ul>
+            </div>
+
+            <div class="row">
+                <?php foreach ([1, 2, 3] as $slot) { ?>
+                    <div class="col-md-6">
+                        <label for="testPlatform<?php echo $slot; ?>" class="control-label">
+                            <?= $this->translate->_("Recommended TestType"); ?> <?php echo $slot; ?>
+                        </label>
+                        <select name="testPlatform<?php echo $slot; ?>[]" id="testPlatform<?php echo $slot; ?>"
+                            class="multipleSelect form-control" multiple="multiple"
+                            title="<?= $this->translate->_('Please choose the recommended test platforms'); ?>">
+                            <?php foreach ($this->allTestTypes as $testPlatform) {
+                                if ($testPlatform['test_type_' . $slot] != '1') {
+                                    continue;
+                                } ?>
+                                <option value="<?php echo $testPlatform['test_type_id']; ?>" <?php echo (isset($this->recommendedTesttypes[$slot]) && in_array($testPlatform['test_type_id'], $this->recommendedTesttypes[$slot])) ? 'selected' : ''; ?>>
+                                    <?php echo $testPlatform['test_type_name']; ?>
+                                </option>
+                            <?php } ?>
+                        </select>
+                    </div>
+                <?php } ?>
+            </div>
+        </div>
+    </div>
+
+    <div class="floating-buttons">
+        <button type="button" class="btn btn-primary" onclick="validateNow();return false;">
+            <i class="icon-ok"></i> <?= $this->translate->_("Update"); ?>
+        </button>
+        <button type="button" class="btn btn-danger" onclick="window.location.href='/admin/index';">
+            <i class="icon-arrow-left"></i> <?= $this->translate->_("Back"); ?>
+        </button>
+    </div>
+</form>
+
+<script type="text/javascript">
+    function validateNow() {
+        var flag = deforayValidator.init({
+            formId: 'schemeConfigForm'
+        });
+        if (flag) {
+            $.blockUI();
+            document.getElementById('schemeConfigForm').submit();
+        }
+    }
+
+    $(document).ready(function () {
+        $('.multipleSelect').multiselect({
+            includeSelectAllOption: true
+        });
+    });
+</script>

@@ -1,0 +1,51 @@
+<?php
+// EID scheme config. Rendered inside scheme-config/index.phtml, which supplies
+// the .well/fieldset/legend, the sidebar and the re-evaluation nudge.
+$eid = $this->eidConfig ?? [];
+$passPercentage = (isset($eid['passPercentage']) && $eid['passPercentage'] !== '') ? $eid['passPercentage'] : '';
+?>
+<form name="schemeConfigForm" id="schemeConfigForm" method="post"
+    action="<?php echo $this->url(['scheme' => 'eid'], 'schemeConfigRoute', true); ?>"
+    class="form-horizontal" role="form">
+
+    <div class="config-section">
+        <button type="button" class="collapsible active" data-toggle="collapse" data-target="#eidScoring">
+            <?= $this->translate->_("Scoring"); ?> <b class="caret pull-right"></b>
+        </button>
+        <div class="collapse-content" id="eidScoring">
+            <div class="row">
+                <div class="col-md-6">
+                    <label for="eidPassPercentage" class="control-label"><?= $this->translate->_("Passing Score"); ?></label>
+                    <input type="number" id="eidPassPercentage" name="eid[passPercentage]" min="1" max="100" step="1"
+                        class="form-control" placeholder="100"
+                        value="<?php echo htmlspecialchars((string) $passPercentage, ENT_QUOTES); ?>" />
+                    <small class="text-muted"><?= $this->translate->_("Minimum score a participant must reach to pass. Must be a whole number between 1 and 100. Leave blank to use the default of 100."); ?></small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="floating-buttons">
+        <button type="button" class="btn btn-primary" onclick="validateNow();return false;">
+            <i class="icon-ok"></i> <?= $this->translate->_("Update"); ?>
+        </button>
+        <button type="button" class="btn btn-danger" onclick="window.location.href='/admin/index';">
+            <i class="icon-arrow-left"></i> <?= $this->translate->_("Back"); ?>
+        </button>
+    </div>
+</form>
+
+<script type="text/javascript">
+    function validateNow() {
+        var raw = ($('#eidPassPercentage').val() || '').trim();
+        if (raw !== '') {
+            var ps = Number(raw);
+            if (!Number.isInteger(ps) || ps < 1 || ps > 100) {
+                bootbox.alert(<?php echo json_encode($this->translate->_("Passing Score must be a whole number between 1 and 100. Leave it blank to use the default of 100.")); ?>);
+                return;
+            }
+        }
+        $.blockUI();
+        document.getElementById('schemeConfigForm').submit();
+    }
+</script>

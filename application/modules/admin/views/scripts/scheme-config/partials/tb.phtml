@@ -1,0 +1,103 @@
+<?php
+// TB scheme config. Rendered inside scheme-config/index.phtml, which supplies
+// the .well/fieldset/legend, sidebar and re-evaluation nudge.
+$tb = $this->tbConfig ?? [];
+?>
+<form name="schemeConfigForm" id="schemeConfigForm" method="post"
+    action="<?php echo $this->url(['scheme' => 'tb'], 'schemeConfigRoute', true); ?>"
+    class="form-horizontal" role="form">
+
+    <div class="config-section">
+        <button type="button" class="collapsible active" data-toggle="collapse" data-target="#tbScoring">
+            <?= $this->translate->_("Scoring"); ?> <b class="caret pull-right"></b>
+        </button>
+        <div class="collapse-content" id="tbScoring">
+            <div class="row">
+                <div class="col-md-6">
+                    <label for="tbPassPercentage" class="control-label"><?= $this->translate->_("Passing Score"); ?>
+                        <span class="mandatory">*</span></label>
+                    <input type="number" id="tbPassPercentage" name="tb[passPercentage]" max="100"
+                        class="isRequired isNumeric form-control" placeholder="95"
+                        value="<?php echo $tb['passPercentage'] ?? 95; ?>" />
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="config-section">
+        <button type="button" class="collapsible active" data-toggle="collapse" data-target="#tbReport">
+            <?= $this->translate->_("Report Metadata"); ?> <b class="caret pull-right"></b>
+        </button>
+        <div class="collapse-content" id="tbReport">
+            <div class="row">
+                <div class="col-md-6">
+                    <label for="reportVersion" class="control-label"><?= $this->translate->_("Report Version"); ?></label>
+                    <input type="text" id="reportVersion" name="tb[reportVersion]" class="form-control"
+                        placeholder="<?= $this->translate->_('Enter the report version'); ?>"
+                        value="<?php echo $tb['reportVersion'] ?? null; ?>"
+                        title="<?= $this->translate->_('Please enter the report version'); ?>" />
+                </div>
+                <div class="col-md-6">
+                    <label for="effectiveDate" class="control-label"><?= $this->translate->_("Report Effective Date"); ?></label>
+                    <input type="text" id="effectiveDate" name="tb[effectiveDate]" class="form-control datepicker"
+                        placeholder="<?= $this->translate->_('Select the report effective date'); ?>"
+                        title="<?= $this->translate->_('Please select the report effective date'); ?>"
+                        value="<?php echo $tb['effectiveDate'] ?? null; ?>" />
+                    <small class="text-muted"><?= $this->translate->_("Shows in the report PDF footer."); ?></small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="config-section">
+        <button type="button" class="collapsible active" data-toggle="collapse" data-target="#tbContent">
+            <?= $this->translate->_("Report Content"); ?> <b class="caret pull-right"></b>
+        </button>
+        <div class="collapse-content" id="tbContent">
+            <div class="row">
+                <div class="col-md-12">
+                    <label for="contactInfoEditor" class="control-label"><?= $this->translate->_("Contact Information Content"); ?>
+                        <span class="mandatory">*</span></label>
+                    <div id="contactInfoEditor" name="contactInfoEditor" class="richtextarea form-control"
+                        title="<?= $this->translate->_('Please enter a Contact Information Content'); ?>"
+                        placeholder="<?= $this->translate->_('Enter the Contact Information Content'); ?>"><?php echo htmlspecialchars_decode($tb['contactInfo'] ?? ''); ?></div>
+                    <textarea style="display:none;" id="contactInfo" name="tb[contactInfo]"></textarea>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="floating-buttons">
+        <button type="button" class="btn btn-primary" onclick="validateNow();return false;">
+            <i class="icon-ok"></i> <?= $this->translate->_("Update"); ?>
+        </button>
+        <button type="button" class="btn btn-danger" onclick="window.location.href='/admin/index';">
+            <i class="icon-arrow-left"></i> <?= $this->translate->_("Back"); ?>
+        </button>
+    </div>
+</form>
+
+<link rel="stylesheet" type="text/css" href="<?php echo $this->baseUrl('css/summernote.min.css'); ?>">
+<script type="text/javascript" src="<?php echo $this->baseUrl('js/summernote.min.js'); ?>"></script>
+
+<script type="text/javascript">
+    function validateNow() {
+        // The editor's HTML only reaches the POST via this hidden textarea.
+        $("#contactInfo").val($("#contactInfoEditor").summernote('code'));
+        var flag = deforayValidator.init({
+            formId: 'schemeConfigForm'
+        });
+        if (flag) {
+            $.blockUI();
+            document.getElementById('schemeConfigForm').submit();
+        }
+    }
+
+    $(document).ready(function () {
+        $('#contactInfoEditor').summernote({
+            placeholder: <?php echo json_encode($this->translate->_("Please enter the Contact Information here")); ?>,
+            tabsize: 2,
+            height: 200
+        });
+    });
+</script>

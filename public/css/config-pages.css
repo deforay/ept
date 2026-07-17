@@ -1,0 +1,452 @@
+/* ─────────────────────────────────────────────────────────────────────────────
+   Shared look for the admin config pages (global-config, report-config,
+   home-config, scheme-config).
+
+   This file exists because the same ~350 lines had been copy-pasted into each
+   page's inline <style>. Page-specific rules still belong inline; anything a
+   second page would want belongs here.
+   ───────────────────────────────────────────────────────────────────────────── */
+
+/* NOTE: the wide shell (.container-wide) is NOT defined here. This file is
+   linked from the body, so a container rule would land after first paint and the
+   page would visibly jump from 1170px to full width. It lives in admin.css,
+   beside the .container caps it overrides. */
+
+/* ── Section cards: tinted header band + hairline frame. ──────────────────── */
+.config-section {
+	border: 1px solid #e2e8f0;
+	border-radius: 6px;
+	margin-bottom: 18px;
+	overflow: hidden;
+	background: #fff;
+}
+
+/* The collapsible header doubles as the section band. */
+.collapsible {
+	background: #f4f7fb;
+	color: #3a5a8a;
+	cursor: pointer;
+	padding: 10px 16px;
+	width: 100%;
+	border: none;
+	border-bottom: 1px solid #e2e8f0;
+	text-align: left;
+	outline: none;
+	font-size: 12px;
+	font-weight: 600;
+	text-transform: uppercase;
+	letter-spacing: 0.04em;
+	transition: background 0.2s ease;
+}
+
+.collapsible:hover {
+	background: #e9eff7;
+}
+
+.collapsible .caret {
+	border-top-color: #3a5a8a;
+	margin-top: 6px;
+}
+
+/* Shown by default — the collapse is opt-in, not the initial state. */
+.collapse-content {
+	padding: 16px;
+	display: block;
+	overflow: hidden;
+	background-color: #fff;
+}
+
+.collapse-content .row {
+	margin-bottom: 10px;
+	padding-bottom: 10px;
+	border-bottom: 1px solid #eef2f7;
+}
+
+.collapse-content .row:last-child {
+	border-bottom: none;
+	margin-bottom: 0;
+	padding-bottom: 0;
+}
+
+/* Left-aligned: the forms carry .form-horizontal, which right-aligns
+   .control-label by default. */
+.collapse-content .control-label {
+	font-size: 11px;
+	font-weight: 600;
+	text-transform: uppercase;
+	letter-spacing: 0.03em;
+	color: #6b7280;
+	text-align: left;
+	margin-bottom: 4px;
+	display: block;
+}
+
+/* Card titles sit one level above the field labels — without this they inherit
+   the 11px label token and a card name reads as just another field caption. */
+.collapse-content .card-title {
+	font-size: 13px;
+	font-weight: 600;
+	text-transform: none;
+	letter-spacing: 0;
+	color: #3a5a8a;
+	margin-bottom: 10px;
+}
+
+.collapse-content .form-control {
+	font-size: 13px;
+}
+
+.collapse-content select.form-control,
+.collapse-content input[type="text"].form-control,
+.collapse-content input[type="password"].form-control,
+.collapse-content input[type="number"].form-control {
+	height: 34px;
+	padding: 4px 8px;
+}
+
+.collapse-content small.text-muted {
+	font-size: 12px;
+}
+
+.collapse-content .text-muted {
+	color: #6b7280;
+}
+
+.collapse-content .form-control:focus {
+	border-color: #4a6fa5;
+	box-shadow: 0 0 0 3px rgba(74, 111, 165, 0.1);
+}
+
+/* Sub-section headings */
+.collapse-content h5 {
+	color: #4a6fa5;
+	font-weight: 600;
+	margin-top: 20px;
+	border-bottom: 2px solid #4a6fa5 !important;
+	padding-bottom: 8px !important;
+}
+
+.collapse-content h5 i {
+	margin-right: 8px;
+}
+
+.collapse-content .alert-info {
+	background-color: #e8f4fd;
+	border-color: #bee3f8;
+	color: #2c5282;
+}
+
+.collapse-content .table {
+	background-color: #fff;
+	border-radius: 4px;
+	overflow: hidden;
+}
+
+/* Flat band, same token as the section headers — a gradient here reads as a
+   second, competing header level inside an already-framed card. */
+.collapse-content .table thead th {
+	background: #f4f7fb;
+	color: #3a5a8a;
+	font-size: 11px;
+	font-weight: 600;
+	text-transform: uppercase;
+	letter-spacing: 0.03em;
+	border: none;
+	border-bottom: 1px solid #e2e8f0;
+	padding: 10px 12px;
+}
+
+.collapse-content .table tbody tr:hover {
+	background-color: #f0f7ff;
+}
+
+/* ── Yes/No toggles ───────────────────────────────────────────────────────── */
+/* The unselected side must read as OFF: grey, not blue — blue means "active"
+   everywhere else in this UI, so a blue outline made both sides look live. */
+.radioBtn .notActive {
+	color: #aab3c0;
+	background-color: #eef1f5;
+	border-color: #dfe4ea;
+	font-weight: 400;
+}
+
+/* Hover lifts it back toward "live" so it still reads as clickable. */
+.radioBtn .notActive:hover {
+	color: #4a6fa5;
+	background-color: #e4ebf4;
+	border-color: #c3d0e0;
+}
+
+.radioBtn .active {
+	color: #fff;
+	background-color: #4a6fa5;
+	border-color: #3a5a8a;
+	font-weight: 700;
+}
+
+/* ── Sticky sidebar nav ───────────────────────────────────────────────────── */
+/* Bootstrap 3 rows are float-based, so .col-md-3 would only be as tall as the
+   nav itself and position:sticky would have no range to travel in. Flex makes
+   the columns stretch to the full row height (align-items defaults to
+   stretch), which is what gives the sticky nav somewhere to go. */
+@media (min-width: 992px) {
+	.config-layout {
+		display: flex;
+	}
+
+	/* The nav holds short labels ("Settings", "Test Kits"), so it wants a fixed
+	   width, not a percentage. col-md-3 would keep taking a quarter of the page
+	   no matter how wide the monitor — 640px of empty column at 2560px — while
+	   the wide tables (Test Kits has 9 columns) go short. Pinning the nav hands
+	   every extra pixel to the content instead.
+
+	   Overriding Bootstrap's float grid needs both: flex-basis to size it and
+	   max-width to cancel the .col-md-* percentage. */
+	.config-layout > .col-md-3 {
+		flex: 0 0 240px;
+		max-width: 240px;
+	}
+
+	.config-layout > .config-content {
+		flex: 1 1 auto;
+		max-width: none;
+		width: auto;
+	}
+}
+
+/* top:76px clears the fixed navbar (.navbar min-height 60px) + breathing room —
+   at top:20px the nav slid underneath it. */
+.config-nav {
+	position: sticky;
+	top: 76px;
+	background: #fff;
+	border: 1px solid #e2e8f0;
+	border-radius: 6px;
+	overflow: hidden;
+}
+
+/* With every scheme listed the nav can be taller than the screen, and sticky
+   cannot rescue a box that does not fit — on a short page (e.g. Custom Tests
+   with no rows) the entry for the page you are ON sat below the fold. Cap it to
+   the viewport and let the nav scroll inside itself instead of relying on the
+   page to scroll. 96px = the 76px offset + a little bottom breathing room. */
+/* Only the list scrolls — the search box stays pinned at the top of the card.
+   Scrolling the whole .config-nav also carried the search field out of view,
+   which is the one control you want while hunting a long list. */
+@media (min-width: 992px) {
+	.config-nav {
+		display: flex;
+		flex-direction: column;
+	}
+
+	.config-nav .nav-search {
+		flex: 0 0 auto;
+	}
+
+	/* Collapsed groups keep the nav short, so this is a safety net for the case
+	   where someone expands several at once — not the normal state.
+
+	   The cap is deliberately conservative. A calc(100vh - 76px) would assume the
+	   card is stuck to the navbar, but sticky only engages once you scroll: at the
+	   top of the page the card sits ~200px down inside the well, so a full
+	   viewport-height cap left the bottom of the list below the fold. 220px
+	   approximates that offset.
+
+	   min-height:0 is required — a flex item defaults to min-height:auto, which
+	   refuses to shrink below its content and would ignore the cap entirely. */
+	.config-nav > ul {
+		flex: 1 1 auto;
+		overflow-y: auto;
+		min-height: 0;
+		max-height: calc(100vh - 220px);
+	}
+
+	.config-nav .nav-actions {
+		flex: 0 0 auto;
+	}
+}
+
+/* Slim, quiet scrollbar — a default OS scrollbar is a heavy grey slab against a
+   240px card.
+   Done in CSS rather than with slimScroll: that plugin wraps its target in a
+   div with overflow:hidden, and an overflow:hidden ancestor disables
+   position:sticky — it would kill the sticky nav outright. It also wants a pixel
+   height recomputed on resize, which calc() handles for free.
+   scrollbar-width/color covers Firefox and Chrome 121+; the ::-webkit- rules
+   cover older Chrome/Safari/Edge. Anything that understands neither just gets
+   its normal scrollbar. */
+.config-nav > ul {
+	scrollbar-width: thin;
+	scrollbar-color: #cbd5e0 transparent;
+}
+
+.config-nav > ul::-webkit-scrollbar {
+	width: 8px;
+}
+
+.config-nav > ul::-webkit-scrollbar-track {
+	background: transparent;
+}
+
+.config-nav > ul::-webkit-scrollbar-thumb {
+	background-color: #cbd5e0;
+	border-radius: 4px;
+	/* Inset the thumb from the card edge without needing a wrapper. */
+	border: 2px solid #fff;
+}
+
+.config-nav > ul:hover::-webkit-scrollbar-thumb {
+	background-color: #94a3b8;
+}
+
+.config-nav .nav-search {
+	padding: 12px;
+	background: #f4f7fb;
+	border-bottom: 1px solid #e2e8f0;
+}
+
+/* Sizing comes from Bootstrap's .input-group-sm, which sets addon + input
+   together — don't hand-size them here or the two drift apart. */
+
+.config-nav ul {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+.config-nav li a {
+	display: block;
+	padding: 10px 14px;
+	font-size: 13px;
+	color: #4a5568;
+	text-decoration: none;
+	border-left: 3px solid transparent;
+	border-bottom: 1px solid #eef1f5;
+	transition: background 0.15s ease;
+}
+
+.config-nav li a:hover {
+	background: #f7f9fc;
+	color: #3a5a8a;
+}
+
+/* Set by the scrollspy as each section passes the top of the viewport, and by
+   the server on cross-page navs (scheme-config). */
+.config-nav li a.current {
+	background: #eef3f9;
+	border-left-color: #4a6fa5;
+	color: #3a5a8a;
+	font-weight: 600;
+}
+
+.config-nav .nav-actions {
+	display: flex;
+	gap: 6px;
+	padding: 10px 12px;
+	background: #fafbfd;
+	border-top: 1px solid #eef1f5;
+}
+
+.config-nav .nav-actions .btn {
+	flex: 1;
+	font-size: 11px;
+	padding: 5px 6px;
+}
+
+/* Mobile / narrow: nav stops sticking and sits above the form. */
+@media (max-width: 991px) {
+	.config-nav {
+		position: static;
+		margin-bottom: 20px;
+	}
+}
+
+/* ── Grouped nav (scheme-config): scheme heading + its pages beneath. ─────── */
+/* Groups collapse; the current one is open (see scheme-config-nav.phtml). Every
+   scheme name stays visible — only that scheme's pages fold away. */
+.config-nav .nav-group-title {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 9px 14px;
+	font-size: 10px;
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: 0.06em;
+	color: #94a3b8;
+	background: #fafbfd;
+	border-bottom: 1px solid #eef1f5;
+	border-top: 1px solid #eef1f5;
+	cursor: pointer;
+	user-select: none;
+}
+
+.config-nav .nav-group-title:hover {
+	background: #f2f5fa;
+	color: #6b7c93;
+}
+
+.config-nav .nav-group-title:focus {
+	outline: 2px solid #bcd0e8;
+	outline-offset: -2px;
+}
+
+.config-nav li:first-child .nav-group-title {
+	border-top: none;
+}
+
+/* Caret points down when open, right when collapsed. */
+.config-nav .nav-group-title .caret {
+	border-top-color: #94a3b8;
+	transition: transform 0.15s ease;
+}
+
+.config-nav .nav-group.collapsed .nav-group-title .caret {
+	transform: rotate(-90deg);
+}
+
+.config-nav .nav-group.collapsed > ul {
+	display: none;
+}
+
+/* The open group's own header reads as active, so you can see where you are even
+   with its pages scrolled past. */
+.config-nav .nav-group:not(.collapsed) > .nav-group-title {
+	color: #3a5a8a;
+	background: #f4f7fb;
+}
+
+.config-nav .nav-group li a {
+	padding-left: 26px;
+}
+
+/* ── Floating save bar ────────────────────────────────────────────────────── */
+.floating-buttons {
+	position: fixed;
+	bottom: 20px;
+	right: 30px;
+	z-index: 1000;
+	display: flex;
+	gap: 10px;
+	background: #fff;
+	padding: 15px 20px;
+	border-radius: 8px;
+	box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+	border: 1px solid #e2e8f0;
+}
+
+.floating-buttons .btn {
+	padding: 10px 25px;
+	font-size: 14px;
+}
+
+legend {
+	color: #1f2937;
+	font-weight: 600;
+	border-bottom: 2px solid #4a6fa5;
+	padding-bottom: 10px;
+}
+
+.search-highlight {
+	background-color: yellow !important;
+}

@@ -1,0 +1,105 @@
+<?php
+// HIV Recency (RTRI) scheme config. Rendered inside scheme-config/index.phtml,
+// which supplies the .well/fieldset/legend, sidebar and re-evaluation nudge.
+$recency = $this->recencyConfig ?? [];
+?>
+<form name="schemeConfigForm" id="schemeConfigForm" method="post"
+    action="<?php echo $this->url(['scheme' => 'recency'], 'schemeConfigRoute', true); ?>"
+    class="form-horizontal" role="form">
+
+    <div class="config-section">
+        <button type="button" class="collapsible active" data-toggle="collapse" data-target="#recencyScoring">
+            <?= $this->translate->_("Scoring"); ?> <b class="caret pull-right"></b>
+        </button>
+        <div class="collapse-content" id="recencyScoring">
+            <div class="row">
+                <div class="col-md-6">
+                    <label for="recencyPassPercentage" class="control-label"><?= $this->translate->_("Minimum Passing Score"); ?>
+                        <span class="mandatory">*</span></label>
+                    <input type="number" id="recencyPassPercentage" name="recency[passPercentage]" max="100"
+                        class="isRequired isNumeric form-control" placeholder="95"
+                        value="<?php echo $recency['passPercentage'] ?? null; ?>" />
+                </div>
+                <div class="col-md-6">
+                    <label for="recencyPanelScore" class="control-label"><?= $this->translate->_("Panel/Shipment Score"); ?>
+                        <span class="mandatory">*</span></label>
+                    <input type="number" id="recencyPanelScore" name="recency[panelScore]"
+                        class="isRequired isNumeric form-control" placeholder="0"
+                        title="<?= $this->translate->_('Please enter the Panel Score breakup'); ?>"
+                        value="<?php echo $recency['panelScore'] ?? null; ?>"
+                        oninput="$('#recencyDocumentationScore').val(100 - $(this).val());">
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <label for="recencyDocumentationScore" class="control-label"><?= $this->translate->_("Documentation Score"); ?>
+                        <span class="mandatory">*</span></label>
+                    <input type="number" id="recencyDocumentationScore" name="recency[documentationScore]" size="50"
+                        maxlength="45" class="isRequired isNumeric form-control" placeholder="0"
+                        title="<?= $this->translate->_('Please enter the Documentation Score breakup'); ?>"
+                        value="<?php echo $recency['documentationScore'] ?? null; ?>"
+                        oninput="$('#recencyPanelScore').val(100 - $(this).val());">
+                </div>
+                <div class="col-md-6">
+                    <label for="sampleRehydrateDays" class="control-label"><?= $this->translate->_("No. of Days for Sample Rehydration"); ?>
+                        <span class="mandatory">*</span></label>
+                    <select class="form-control isRequired" id="sampleRehydrateDays" name="recency[sampleRehydrateDays]"
+                        title="<?= $this->translate->_('Please select no. of days for sample rehydration'); ?>">
+                        <option value="0" <?php echo (isset($recency['sampleRehydrateDays']) && $recency['sampleRehydrateDays'] == "0") ? " selected='selected' " : ""; ?>>0 -
+                            <?= $this->translate->_("Allow Same Day Testing"); ?></option>
+                        <option value="1" <?php echo (isset($recency['sampleRehydrateDays']) && $recency['sampleRehydrateDays'] == "1") ? " selected='selected' " : ""; ?>>1 -
+                            <?= $this->translate->_("Testing after 1 day only"); ?></option>
+                        <option value="2" <?php echo (isset($recency['sampleRehydrateDays']) && $recency['sampleRehydrateDays'] == "2") ? " selected='selected' " : ""; ?>>2 -
+                            <?= $this->translate->_("Testing after 2 days only"); ?></option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="config-section">
+        <button type="button" class="collapsible active" data-toggle="collapse" data-target="#recencyReport">
+            <?= $this->translate->_("Report Metadata"); ?> <b class="caret pull-right"></b>
+        </button>
+        <div class="collapse-content" id="recencyReport">
+            <div class="row">
+                <div class="col-md-6">
+                    <label for="reportVersion" class="control-label"><?= $this->translate->_("Report Version"); ?></label>
+                    <input type="text" id="reportVersion" name="recency[reportVersion]" class="form-control"
+                        placeholder="<?= $this->translate->_('Enter the report version'); ?>"
+                        value="<?php echo $recency['reportVersion'] ?? null; ?>"
+                        title="<?= $this->translate->_('Please enter the report version'); ?>" />
+                </div>
+                <div class="col-md-6">
+                    <label for="effectiveDate" class="control-label"><?= $this->translate->_("Report Effective Date"); ?></label>
+                    <input type="text" id="effectiveDate" name="recency[effectiveDate]" class="form-control datepicker"
+                        placeholder="<?= $this->translate->_('Select the report effective date'); ?>"
+                        title="<?= $this->translate->_('Please select the report effective date'); ?>"
+                        value="<?php echo $recency['effectiveDate'] ?? null; ?>" />
+                    <small class="text-muted"><?= $this->translate->_("Shows in the report PDF footer."); ?></small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="floating-buttons">
+        <button type="button" class="btn btn-primary" onclick="validateNow();return false;">
+            <i class="icon-ok"></i> <?= $this->translate->_("Update"); ?>
+        </button>
+        <button type="button" class="btn btn-danger" onclick="window.location.href='/admin/index';">
+            <i class="icon-arrow-left"></i> <?= $this->translate->_("Back"); ?>
+        </button>
+    </div>
+</form>
+
+<script type="text/javascript">
+    function validateNow() {
+        var flag = deforayValidator.init({
+            formId: 'schemeConfigForm'
+        });
+        if (flag) {
+            $.blockUI();
+            document.getElementById('schemeConfigForm').submit();
+        }
+    }
+</script>

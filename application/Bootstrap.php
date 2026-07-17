@@ -27,6 +27,13 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
         // /dl/ — new encrypted-token download route; see Pt_Commons_SignedDownload.
         $router->addRoute('signedDownloadRoute', new Zend_Controller_Router_Route('dl/:token', ['controller' => 'dl', 'action' => 'index', 'token' => '']));
         $router->addRoute('checkCaptchaRoute', new Zend_Controller_Router_Route_Static('captcha/check-captcha', ['controller' => 'captcha', 'action' => 'check-captcha']));
+        // /admin/scheme-config/dts — the Scheme Config hub. Without this the
+        // default route would need /admin/scheme-config/index/scheme/dts.
+        $router->addRoute('schemeConfigRoute', new Zend_Controller_Router_Route(
+            'admin/scheme-config/:scheme',
+            ['module' => 'admin', 'controller' => 'scheme-config', 'action' => 'index', 'scheme' => ''],
+            ['scheme' => '[a-z0-9]*']
+        ));
 
         //Database Cache
         $appDirectory = realpath(APPLICATION_PATH);

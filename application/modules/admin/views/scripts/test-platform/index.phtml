@@ -1,4 +1,12 @@
 <?php
+// Rendered inside the Scheme Config hub frame: this page keeps its own
+// controller and URL, but belongs with the rest of the scheme's config.
+// No schemeConfigTitle — this page's own <h4> already names it, and the
+// sidebar shows which scheme it belongs to.
+?>
+<?php echo $this->render('partials/scheme-config-open.phtml'); ?>
+
+<?php
 $adminSession = new Zend_Session_Namespace('administrators');
 ?>
 <h4 style="width:100%;height:50px;border-bottom:1px solid #777;">
@@ -112,3 +120,4 @@ $adminSession = new Zend_Session_Namespace('administrators');
         });
     }
 </script>
+<?php echo $this->render('partials/scheme-config-close.phtml'); ?>

@@ -1,3 +1,11 @@
+<?php
+// Rendered inside the Scheme Config hub frame: this page keeps its own
+// controller and URL, but belongs with the rest of the scheme's config.
+// No schemeConfigTitle — this page's own <h4> already names it, and the
+// sidebar shows which scheme it belongs to.
+?>
+<?php echo $this->render('partials/scheme-config-open.phtml'); ?>
+
 <style>
     .tabContainer {
         width: 100%;
@@ -211,3 +219,4 @@
         }
     }
 </script>
+<?php echo $this->render('partials/scheme-config-close.phtml'); ?>
