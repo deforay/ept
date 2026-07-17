@@ -5,47 +5,49 @@ $home = json_decode($this->home);
 $faqResults = json_decode($this->faqs);
 ?>
 <style>
-	/* Style the button that is used to open and close the collapsible content */
-	.collapsible {
-		background: linear-gradient(135deg, #4a6fa5 0%, #3a5a8a 100%);
-		color: #fff;
-		cursor: pointer;
-		padding: 14px 18px;
-		width: 100%;
-		border: none;
-		text-align: left;
-		outline: none;
-		font-size: 15px;
-		font-weight: 500;
-		border-radius: 4px 4px 0 0;
-		margin-top: 10px;
-		transition: all 0.2s ease;
+	/* ── Section cards: tinted header band + hairline frame, matching the
+	   report-config and manage-test-results pages. ─────────────────────────── */
+	.config-section {
+		border: 1px solid #e2e8f0;
+		border-radius: 6px;
+		margin-bottom: 18px;
+		overflow: hidden;
+		background: #fff;
 	}
 
-	/* Add a background color to the button if it is clicked on (add the .active class with JS), and when you move the mouse over it (hover) */
-	.collapsible.active {
-		background: linear-gradient(135deg, #4a6fa5 0%, #3a5a8a 100%);
-		border-radius: 4px 4px 0 0;
+	/* The collapsible header doubles as the section band. */
+	.collapsible {
+		background: #f4f7fb;
+		color: #3a5a8a;
+		cursor: pointer;
+		padding: 10px 16px;
+		width: 100%;
+		border: none;
+		border-bottom: 1px solid #e2e8f0;
+		text-align: left;
+		outline: none;
+		font-size: 12px;
+		font-weight: 600;
+		text-transform: uppercase;
+		letter-spacing: 0.04em;
+		transition: background 0.2s ease;
 	}
 
 	.collapsible:hover {
-		background: linear-gradient(135deg, #5a7fb5 0%, #4a6a9a 100%);
+		background: #e9eff7;
 	}
 
 	.collapsible .caret {
-		border-top-color: #fff;
+		border-top-color: #3a5a8a;
+		margin-top: 6px;
 	}
 
 	/* Style the collapsible content. Note: shown by default */
 	.collapse-content {
-		padding: 20px;
+		padding: 16px;
 		display: block;
 		overflow: hidden;
-		background-color: #f8fafc;
-		border: 1px solid #e2e8f0;
-		border-top: none;
-		border-radius: 0 0 4px 4px;
-		margin-bottom: 5px;
+		background-color: #fff;
 	}
 
 	/* Row spacing within sections */
@@ -61,12 +63,33 @@ $faqResults = json_decode($this->faqs);
 		padding-bottom: 0;
 	}
 
-	/* Label styling */
+	/* Label styling — left-aligned (the form carries .form-horizontal, which
+	   right-aligns .control-label by default) and sized to the shared tokens. */
 	.collapse-content .control-label {
-		color: #374151;
-		font-weight: 500;
-		margin-bottom: 6px;
+		font-size: 11px;
+		font-weight: 600;
+		text-transform: uppercase;
+		letter-spacing: 0.03em;
+		color: #6b7280;
+		text-align: left;
+		margin-bottom: 4px;
 		display: block;
+	}
+
+	.collapse-content .form-control {
+		font-size: 13px;
+	}
+
+	.collapse-content select.form-control,
+	.collapse-content input[type="text"].form-control,
+	.collapse-content input[type="password"].form-control,
+	.collapse-content input[type="number"].form-control {
+		height: 34px;
+		padding: 4px 8px;
+	}
+
+	.collapse-content small.text-muted {
+		font-size: 12px;
 	}
 
 	/* Form control focus state */
@@ -75,33 +98,111 @@ $faqResults = json_decode($this->faqs);
 		box-shadow: 0 0 0 3px rgba(74, 111, 165, 0.1);
 	}
 
+	/* The unselected side must read as OFF: grey, not blue — blue means "active"
+	   everywhere else in this UI, so a blue outline made both sides look live. */
 	.radioBtn .notActive {
+		color: #aab3c0;
+		background-color: #eef1f5;
+		border-color: #dfe4ea;
+		font-weight: 400;
+	}
+
+	/* Hover lifts it back toward "live" so it still reads as clickable. */
+	.radioBtn .notActive:hover {
 		color: #4a6fa5;
-		background-color: #fff;
-		border-color: #4a6fa5;
+		background-color: #e4ebf4;
+		border-color: #c3d0e0;
 	}
 
 	.radioBtn .active {
+		color: #fff;
 		background-color: #4a6fa5;
 		border-color: #3a5a8a;
+		font-weight: 700;
 	}
 
-	.search-jump-container {
-		background: linear-gradient(135deg, #f0f7ff 0%, #e8f4fd 100%);
-		padding: 20px;
-		margin-bottom: 20px;
-		border-radius: 8px;
-		border: 1px solid #c5ddf8;
+	/* ── Sticky sidebar nav: the page is long, so the section list and search
+	   follow the scroll instead of disappearing at the top. ────────────────── */
+	/* Bootstrap 3 rows are float-based, so .col-md-3 would only be as tall as the
+	   nav itself and position:sticky would have no range to travel in. Flex makes
+	   the columns stretch to the full row height (align-items defaults to
+	   stretch), which is what gives the sticky nav somewhere to go. */
+	@media (min-width: 992px) {
+		.config-layout {
+			display: flex;
+		}
 	}
 
-	.search-jump-container .control-label {
-		color: #374151;
-		font-weight: 500;
+	/* One card, so search + section list + actions read as a single unit rather
+	   than three loose boxes floating on the grey .well background. */
+	.config-nav {
+		position: sticky;
+		top: 20px;
+		background: #fff;
+		border: 1px solid #e2e8f0;
+		border-radius: 6px;
+		overflow: hidden;
 	}
 
-	.control-buttons {
-		text-align: right;
-		margin-bottom: 15px;
+	.config-nav .nav-search {
+		padding: 12px;
+		background: #f4f7fb;
+		border-bottom: 1px solid #e2e8f0;
+	}
+
+	/* Sizing comes from Bootstrap's .input-group-sm, which sets addon + input
+	   together — don't hand-size them here or the two drift apart. */
+
+	.config-nav ul {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+	}
+
+	.config-nav li a {
+		display: block;
+		padding: 10px 14px;
+		font-size: 13px;
+		color: #4a5568;
+		text-decoration: none;
+		border-left: 3px solid transparent;
+		border-bottom: 1px solid #eef1f5;
+		transition: background 0.15s ease;
+	}
+
+	.config-nav li a:hover {
+		background: #f7f9fc;
+		color: #3a5a8a;
+	}
+
+	/* Set by the scrollspy as each section passes the top of the viewport. */
+	.config-nav li a.current {
+		background: #eef3f9;
+		border-left-color: #4a6fa5;
+		color: #3a5a8a;
+		font-weight: 600;
+	}
+
+	.config-nav .nav-actions {
+		display: flex;
+		gap: 6px;
+		padding: 10px 12px;
+		background: #fafbfd;
+		border-top: 1px solid #eef1f5;
+	}
+
+	.config-nav .nav-actions .btn {
+		flex: 1;
+		font-size: 11px;
+		padding: 5px 6px;
+	}
+
+	/* Mobile / narrow: nav stops sticking and sits above the form. */
+	@media (max-width: 991px) {
+		.config-nav {
+			position: static;
+			margin-bottom: 20px;
+		}
 	}
 
 	/* Floating action buttons */
@@ -550,43 +651,39 @@ $faqResults = json_decode($this->faqs);
 		<fieldset>
 			<legend><?= $this->translate->_("ePT Global Settings"); ?></legend>
 
-			<!-- Search and Jump Section -->
-			<div class="search-jump-container">
-				<div class="row">
-					<div class="col-md-6">
-						<label for="searchSettings"
-							class="control-label"><?= $this->translate->_("Search settings by keyword"); ?></label>
-						<div class="input-group">
-							<span class="input-group-addon"><i class="icon-search"></i></span>
-							<input type="text" class="form-control" id="searchSettings"
-								placeholder="<?= $this->translate->_('Search settings by keyword'); ?>" />
+			<div class="row config-layout">
+				<!-- Sticky nav: this page is long, so the section list and search
+				     follow the scroll instead of scrolling away at the top. -->
+				<div class="col-md-3">
+					<div class="config-nav">
+						<div class="nav-search">
+							<div class="input-group input-group-sm">
+								<span class="input-group-addon"><i class="icon-search"></i></span>
+								<input type="text" class="form-control" id="searchSettings"
+									placeholder="<?= $this->translate->_('Search settings'); ?>" />
+							</div>
+						</div>
+
+						<ul id="configNavList">
+							<li><a href="#generalConfig" data-section="generalConfig"><?= $this->translate->_("General Settings"); ?></a></li>
+							<li><a href="#participantConfig" data-section="participantConfig"><?= $this->translate->_("Participant Settings"); ?></a></li>
+							<li><a href="#emailConfig" data-section="emailConfig"><?= $this->translate->_("Email Settings"); ?></a></li>
+						</ul>
+
+						<div class="nav-actions">
+							<button type="button" class="btn btn-sm btn-default" id="expandAll">
+								<i class="icon-resize-full"></i> <?= $this->translate->_("Expand All"); ?>
+							</button>
+							<button type="button" class="btn btn-sm btn-default" id="collapseAll">
+								<i class="icon-resize-small"></i> <?= $this->translate->_("Collapse All"); ?>
+							</button>
 						</div>
 					</div>
-					<div class="col-md-6">
-						<label for="jumpToSection"
-							class="control-label"><?= $this->translate->_("Jump to Section"); ?></label>
-						<select class="form-control" id="jumpToSection">
-							<option value="">-- <?= $this->translate->_("Select Section"); ?> --</option>
-							<option value="generalConfig"><?= $this->translate->_("General Settings"); ?></option>
-							<option value="participantConfig"><?= $this->translate->_("Participant Settings"); ?>
-							</option>
-							<option value="emailConfig"><?= $this->translate->_("Email Settings"); ?></option>
-							<?php /* <option value="homeConfig"><?= $this->translate->_("Home Page Settings"); ?></option> */ ?>
-						</select>
-					</div>
 				</div>
-			</div>
 
-			<!-- Control Buttons -->
-			<div class="control-buttons">
-				<button type="button" class="btn btn-sm btn-info" id="expandAll">
-					<i class="icon-resize-full"></i> <?= $this->translate->_("Expand All"); ?>
-				</button>
-				<button type="button" class="btn btn-sm btn-warning" id="collapseAll">
-					<i class="icon-resize-small"></i> <?= $this->translate->_("Collapse All"); ?>
-				</button>
-			</div>
+				<div class="col-md-9 config-content">
 
+			<div class="config-section">
 			<button type="button" class="collapsible active" data-toggle="collapse" data-target="#generalConfig"
 				aria-expanded="true" aria-controls="collapseExample"><?= $this->translate->_("General Settings"); ?> <b
 					class="caret pull-right" style="text-align:right;"></b></button>
@@ -930,8 +1027,10 @@ $faqResults = json_decode($this->faqs);
 							title="<?= $this->translate->_('Enter the email address for certificate notifications'); ?>">
 					</div>
 				</div>
-			</div><br>
+			</div>
+			</div>
 
+			<div class="config-section">
 			<button type="button" class="collapsible active" data-toggle="collapse" data-target="#participantConfig"
 				aria-expanded="true" aria-controls="collapseExample"><?= $this->translate->_("Participant Settings"); ?>
 				<b class="caret pull-right" style="text-align:right;"></b></button>
@@ -1053,8 +1152,10 @@ $faqResults = json_decode($this->faqs);
 							value="<?php echo $this->max_attempts_for_perm_ban ?? 10; ?>" />
 					</div>
 				</div>
-			</div><br>
+			</div>
+			</div>
 
+			<div class="config-section">
 			<button type="button" class="collapsible active" data-toggle="collapse" data-target="#emailConfig"
 				aria-expanded="true" aria-controls="collapseExample"><?= $this->translate->_("Email Settings"); ?> <b
 					class="caret pull-right" style="text-align:right;"></b></button>
@@ -1146,7 +1247,8 @@ $faqResults = json_decode($this->faqs);
 						</select>
 					</div>
 				</div>
-			</div><br>
+			</div>
+			</div>
 
 			<?php /* Home Page Settings section - commented out, managed at /admin/home-section-links instead
 <button type="button" class="collapsible active" data-toggle="collapse" data-target="#homeConfig"
@@ -1407,15 +1509,14 @@ id="faqTable">
 </div>
 </div><br>
 */ ?>
+				</div><!-- /.config-content -->
+			</div><!-- /.config-layout -->
 		</fieldset>
 
-		<div id="respond" style="margin: 0px auto 0px auto; text-align: center;" align="center">
+		<!-- Save lives in the floating bar; these hidden inputs are still posted. -->
+		<div id="respond">
 			<input type="hidden" name="delete_home_right_logo" id="delete_home_right_logo">
 			<input type="hidden" name="delete_home_left_logo" id="delete_home_left_logo">
-			<input name="submitbtn" class="btn btn-primary" type="button" onclick="validateNow();return false;"
-				tabindex="7" value="<?= $this->translate->_("Update"); ?>" />
-			<input class="btn btn-danger" type="button" onclick="window.location.href='/admin/index';" tabindex="8"
-				value="<?= $this->translate->_("Back"); ?>" />
 		</div>
 
 		<!-- Floating Action Buttons -->
@@ -1540,20 +1641,58 @@ id="faqTable">
 			$('.collapsible').removeClass('active');
 		});
 
-		// Jump to section functionality
-		$('#jumpToSection').on('change', function () {
-			var sectionId = $(this).val();
-			if (sectionId) {
-				// Open the selected section
-				$('#' + sectionId).slideDown();
-				$('.collapsible[data-target="#' + sectionId + '"]').addClass('active');
+		// Sidebar nav: open the target section (it may be collapsed) and scroll to it.
+		var navLinks = $('#configNavList a');
 
-				// Scroll to section
-				$('html, body').animate({
-					scrollTop: $('#' + sectionId).offset().top - 100
-				}, 500);
+		navLinks.on('click', function (e) {
+			e.preventDefault();
+			var sectionId = $(this).data('section');
+			var $section = $('#' + sectionId);
+			if (!$section.length) {
+				return;
 			}
+			$section.slideDown();
+			$('.collapsible[data-target="#' + sectionId + '"]').addClass('active');
+			$('html, body').animate({
+				scrollTop: $section.closest('.config-section').offset().top - 20
+			}, 400);
 		});
+
+		// Scrollspy: light up whichever section currently owns the top of the
+		// viewport, so the nav says where you are without being clicked.
+		function syncActiveNavLink() {
+			var probe = $(window).scrollTop() + 100;
+			var currentId = null;
+
+			navLinks.each(function () {
+				var $wrap = $('#' + $(this).data('section')).closest('.config-section');
+				if ($wrap.length && $wrap.offset().top <= probe) {
+					currentId = $(this).data('section');
+				}
+			});
+
+			// Above the first section: fall back to it so something is always lit.
+			if (!currentId && navLinks.length) {
+				currentId = navLinks.first().data('section');
+			}
+
+			navLinks.removeClass('current')
+				.filter('[data-section="' + currentId + '"]').addClass('current');
+		}
+
+		// rAF-throttled: scroll fires far more often than we need to repaint.
+		var spyQueued = false;
+		$(window).on('scroll resize', function () {
+			if (spyQueued) {
+				return;
+			}
+			spyQueued = true;
+			window.requestAnimationFrame(function () {
+				syncActiveNavLink();
+				spyQueued = false;
+			});
+		});
+		syncActiveNavLink();
 
 		// Search functionality
 		$('#searchSettings').on('keyup', function () {
