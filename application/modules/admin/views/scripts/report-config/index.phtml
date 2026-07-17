@@ -2,18 +2,19 @@
 <link href="<?php echo $this->baseUrl('css/fileupload_style.css'); ?>" rel="stylesheet">
 
 <style>
-	/* Main container styling */
+	/* ── Single container card (no nested cards / wells), matching the
+	   manage-test-results page. margin-bottom clears the floating save bar. ─── */
 	.report-config-container {
 		background: #fff;
 		border-radius: 8px;
-		box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+		box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
 		padding: 0;
-		margin-bottom: 80px;
+		margin-bottom: 90px;
 	}
 
 	/* Legend/Header styling */
 	.report-config-container legend {
-		background: #4a6fa5;
+		background: linear-gradient(135deg, #4a6fa5 0%, #3a5a8a 100%);
 		color: #fff;
 		font-weight: 500;
 		font-size: 16px;
@@ -21,6 +22,10 @@
 		margin: 0;
 		border: none;
 		border-radius: 8px 8px 0 0;
+	}
+
+	.report-config-container legend i {
+		margin-right: 8px;
 	}
 
 	.report-config-container legend .muted {
@@ -34,38 +39,111 @@
 
 	/* Form content area */
 	.form-content {
-		padding: 25px;
-		background-color: #f8fafc;
-		border: 1px solid #e2e8f0;
-		border-top: none;
-		border-radius: 0 0 8px 8px;
+		padding: 20px;
 	}
 
-	/* Section styling */
-	.config-section {
+	/* ── Sticky section nav, identical to global-config so the settings pages
+	   share one way of getting around. Bootstrap 3 rows are float-based, so
+	   .col-md-3 would only be as tall as the nav itself and position:sticky would
+	   have no range to travel in; flex stretches the columns to the row height. */
+	@media (min-width: 992px) {
+		.config-layout {
+			display: flex;
+		}
+	}
+
+	.config-nav {
+		position: sticky;
+		top: 20px;
 		background: #fff;
 		border: 1px solid #e2e8f0;
 		border-radius: 6px;
-		padding: 20px;
-		margin-bottom: 20px;
+		overflow: hidden;
 	}
 
-	.config-section:hover {
-		border-color: #4a6fa5;
-		box-shadow: 0 2px 8px rgba(74, 111, 165, 0.1);
+	.config-nav ul {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+	}
+
+	.config-nav li a {
+		display: block;
+		padding: 10px 14px;
+		font-size: 13px;
+		color: #4a5568;
+		text-decoration: none;
+		border-left: 3px solid transparent;
+		border-bottom: 1px solid #eef1f5;
+		transition: background 0.15s ease;
+	}
+
+	.config-nav li:last-child a {
+		border-bottom: none;
+	}
+
+	.config-nav li a:hover {
+		background: #f7f9fc;
+		color: #3a5a8a;
+	}
+
+	/* Set by the scrollspy as each section passes the top of the viewport. */
+	.config-nav li a.current {
+		background: #eef3f9;
+		border-left-color: #4a6fa5;
+		color: #3a5a8a;
+		font-weight: 600;
+	}
+
+	/* Narrow: nav stops sticking and sits above the form. */
+	@media (max-width: 991px) {
+		.config-nav {
+			position: static;
+			margin-bottom: 20px;
+		}
+	}
+
+	/* ── Sections: one card, but each block clearly bounded by a tinted header
+	   band and a hairline frame — defined without stacking nested cards. ────── */
+	.config-section {
+		border: 1px solid #e2e8f0;
+		border-radius: 6px;
+		margin-bottom: 18px;
+		overflow: hidden;
+	}
+
+	.config-section:last-of-type {
+		margin-bottom: 0;
 	}
 
 	.config-section h5 {
-		color: #4a6fa5;
+		color: #3a5a8a;
 		font-weight: 600;
-		margin-top: 0;
-		margin-bottom: 20px;
-		padding-bottom: 10px;
-		border-bottom: 2px solid #4a6fa5;
+		font-size: 12px;
+		text-transform: uppercase;
+		letter-spacing: 0.04em;
+		margin: 0;
+		padding: 10px 16px;
+		background: #f4f7fb;
+		border-bottom: 1px solid #e2e8f0;
 	}
 
 	.config-section h5 i {
 		margin-right: 8px;
+		color: #4a6fa5;
+	}
+
+	.config-section .section-body {
+		padding: 16px;
+	}
+
+	/* Explains how a section relates to the others (e.g. template vs letterhead). */
+	.config-section .section-note {
+		font-size: 12px;
+		color: #6b7280;
+		margin: 0 0 14px 0;
+		padding-left: 10px;
+		border-left: 3px solid #cbd5e0;
 	}
 
 	/* Row spacing */
@@ -80,16 +158,43 @@
 	/* Label styling */
 	.config-section label,
 	.form-content label {
-		color: #374151;
-		font-weight: 500;
-		margin-bottom: 8px;
+		font-size: 11px;
+		font-weight: 600;
+		text-transform: uppercase;
+		letter-spacing: 0.03em;
+		color: #6b7280;
+		margin-bottom: 4px;
 		display: block;
+	}
+
+	.config-section .form-control {
+		font-size: 13px;
+		padding: 4px 8px;
+	}
+
+	.config-section select.form-control,
+	.config-section input[type="text"].form-control {
+		height: 34px;
+	}
+
+	/* Inside an input group, Bootstrap's .input-group-sm sizes the control and its
+	   addon together. The rule above is more specific and would hit only the input,
+	   leaving the addon behind — hand sizing back to Bootstrap here. */
+	.config-section .input-group-sm>input[type="text"].form-control {
+		height: 33px;
 	}
 
 	/* Form control styling */
 	.config-section .form-control:focus {
 		border-color: #4a6fa5;
 		box-shadow: 0 0 0 3px rgba(74, 111, 165, 0.1);
+	}
+
+	/* Block, so helper text sits under its field rather than wrapping around an
+	   inline-block control like the YES/NO toggle. */
+	.config-section small.text-muted {
+		display: block;
+		font-size: 12px;
 	}
 
 	/* File upload styling */
@@ -128,27 +233,65 @@
 		background: #5a7fb5;
 	}
 
-	/* YES/NO toggle — flat fills, matching the global-config page.
-	   This page also loads editor.css (Bootstrap 2) for the WYSIWYG, whose
-	   .btn-primary sets a background-image gradient plus a text-shadow. A
-	   background-image paints over background-color, so those have to be cleared
-	   explicitly or the buttons render as blue-on-blue gradients. */
-	.radioBtn .btn-primary {
+	/* This page loads editor.css (Bootstrap 2) for the WYSIWYG, which clobbers the
+	   admin theme's flat buttons with Bootstrap-2 gradients + text shadows — every
+	   other admin page is flat. A background-image paints over background-color, so
+	   it must be cleared explicitly. Restores the theme's own values (admin.css). */
+	.btn {
 		background-image: none;
 		text-shadow: none;
 		box-shadow: none;
 	}
 
+	.btn-primary {
+		background-color: #2c3e50;
+		border-color: #2c3e50;
+	}
+
+	.btn-primary:hover,
+	.btn-primary:focus,
+	.btn-primary:active {
+		background-color: #1e2a36;
+		border-color: #161f29;
+	}
+
+	.btn-danger {
+		background-color: #e74c3c;
+		border-color: #e74c3c;
+	}
+
+	.btn-danger:hover,
+	.btn-danger:focus,
+	.btn-danger:active {
+		background-color: #df2e1b;
+		border-color: #cd2a19;
+	}
+
+	/* The unselected side must read as OFF: grey, not blue — blue means "active"
+	   everywhere else in this UI, so a blue outline made both sides look live. */
 	.radioBtn .notActive {
+		color: #aab3c0;
+		background-color: #eef1f5;
+		border-color: #dfe4ea;
+		font-weight: 400;
+	}
+
+	/* Hover lifts it back toward "live" so it still reads as clickable. */
+	.radioBtn .notActive:hover {
 		color: #4a6fa5;
-		background-color: #fff;
-		border-color: #4a6fa5;
+		background-color: #e4ebf4;
+		border-color: #c3d0e0;
 	}
 
 	.radioBtn .active {
 		color: #fff;
 		background-color: #4a6fa5;
 		border-color: #3a5a8a;
+		font-weight: 700;
+	}
+
+	.radioBtn {
+		margin-bottom: 6px;
 	}
 
 	/* Template preview styling */
@@ -233,10 +376,29 @@
 		</legend>
 
 		<div class="form-content">
-			<!-- Header Text Section -->
-			<div class="config-section">
-				<h5><i class="icon-edit"></i> <?= $this->translate->_("Report Header Configuration"); ?></h5>
+			<div class="row config-layout">
+				<!-- Sticky nav: same pattern as global-config, so the settings pages
+				     share one way of getting around. -->
+				<div class="col-md-3">
+					<div class="config-nav">
+						<ul id="configNavList">
+							<li><a href="#letterheadSection" data-section="letterheadSection"><?= $this->translate->_("Letterhead"); ?></a></li>
+							<li><a href="#templateSection" data-section="templateSection"><?= $this->translate->_("PDF Template"); ?></a></li>
+							<li><a href="#outputSection" data-section="outputSection"><?= $this->translate->_("Layout & Output"); ?></a></li>
+						</ul>
+					</div>
+				</div>
 
+				<div class="col-md-9 config-content">
+			<!-- Letterhead: header text, address position and logo are drawn by
+			     SummaryPdf/IndividualPdf, and only when no PDF template is uploaded. -->
+			<div class="config-section" id="letterheadSection">
+				<h5><i class="icon-edit"></i> <?= $this->translate->_("Letterhead"); ?></h5>
+
+				<div class="section-body">
+				<p class="section-note">
+					<?= $this->translate->_("Used to build the letterhead on generated reports. If a PDF template is uploaded below, that template provides the letterhead instead and these settings are not applied."); ?>
+				</p>
 				<div class="row">
 					<div class="col-md-8">
 						<label for="content">
@@ -247,35 +409,29 @@
 							placeholder="<?= $this->translate->_('Enter the text that will appear in the report header (1-2 lines recommended)'); ?>"
 							title="<?= $this->translate->_('Enter report header text'); ?>"><?php echo $this->result; ?></textarea>
 						<small class="text-muted"><?= $this->translate->_("This text appears at the top of generated PDF reports. Keep it concise."); ?></small>
+
+						<div style="margin-top: 14px;">
+							<label for="instituteAddressPosition">
+								<?= $this->translate->_("Institute Address Position"); ?>
+							</label>
+							<select name="instituteAddressPosition" id="instituteAddressPosition" class="form-control"
+								title="<?= $this->translate->_('Select where to display the institute address'); ?>">
+								<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
+								<option value="dont-show" <?php echo (isset($this->instituteAddressPosition) && $this->instituteAddressPosition == "dont-show") ? "selected='selected'" : ""; ?>>
+									<?= $this->translate->_("Don't Show"); ?>
+								</option>
+								<option value="header" <?php echo (isset($this->instituteAddressPosition) && $this->instituteAddressPosition == "header") ? "selected='selected'" : ""; ?>>
+									<?= $this->translate->_("Header"); ?>
+								</option>
+								<option value="footer" <?php echo (isset($this->instituteAddressPosition) && $this->instituteAddressPosition == "footer") ? "selected='selected'" : ""; ?>>
+									<?= $this->translate->_("Footer"); ?>
+								</option>
+							</select>
+							<small class="text-muted"><?= $this->translate->_("Where the institute address (set in Global Config) appears on reports."); ?></small>
+						</div>
 					</div>
 					<div class="col-md-4">
-						<label for="instituteAddressPosition">
-							<?= $this->translate->_("Institute Address Position"); ?>
-						</label>
-						<select name="instituteAddressPosition" id="instituteAddressPosition" class="form-control"
-							title="<?= $this->translate->_('Select where to display the institute address'); ?>">
-							<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
-							<option value="dont-show" <?php echo (isset($this->instituteAddressPosition) && $this->instituteAddressPosition == "dont-show") ? "selected='selected'" : ""; ?>>
-								<?= $this->translate->_("Don't Show"); ?>
-							</option>
-							<option value="header" <?php echo (isset($this->instituteAddressPosition) && $this->instituteAddressPosition == "header") ? "selected='selected'" : ""; ?>>
-								<?= $this->translate->_("Header"); ?>
-							</option>
-							<option value="footer" <?php echo (isset($this->instituteAddressPosition) && $this->instituteAddressPosition == "footer") ? "selected='selected'" : ""; ?>>
-								<?= $this->translate->_("Footer"); ?>
-							</option>
-						</select>
-						<small class="text-muted"><?= $this->translate->_("Choose where to display your institute address on reports."); ?></small>
-					</div>
-				</div>
-			</div>
-
-			<!-- Logo Section -->
-			<div class="config-section">
-				<h5><i class="icon-picture"></i> <?= $this->translate->_("Report Logo"); ?></h5>
-
-				<div class="row">
-					<div class="col-md-6">
+						<label for="logo_image"><?= $this->translate->_("Report Logo"); ?></label>
 						<input type="hidden" name="existImage" value="<?php echo $this->logo; ?>" />
 						<div class="file-upload-section">
 							<div class="fileupload fileupload-new" data-provides="fileupload">
@@ -316,68 +472,21 @@
 						</small>
 					</div>
 				</div>
+				</div>
 			</div>
 
-			<!-- Layout & Template Section -->
-			<div class="config-section">
-				<h5><i class="icon-cogs"></i> <?= $this->translate->_("Layout & Template Settings"); ?></h5>
+			<!-- PDF Template: when uploaded, FpdiReport imports it as the page
+			     background and the letterhead settings above are not passed in. -->
+			<div class="config-section" id="templateSection">
+				<h5><i class="icon-file"></i> <?= $this->translate->_("PDF Template"); ?></h5>
 
-				<?php if (isset($this->reportLayouts) && !empty($this->reportLayouts)) { ?>
-					<div class="row">
-						<div class="col-md-6">
-							<label for="reportLayout">
-								<?= $this->translate->_("Report Layout"); ?>
-							</label>
-							<select class="form-control" name="reportLayout" id="reportLayout"
-								title="<?= $this->translate->_('Select the report layout template'); ?>">
-								<?php
-								foreach ($this->reportLayouts as $folder) {
-									if ($folder != '.' && $folder != '..') {
-										$selected = (isset($this->reportLayoutsResult) && $this->reportLayoutsResult == str_replace('.phtml', '', $folder)) ? 'selected="selected"' : "";
-										echo '<option value=' . str_replace('.phtml', '', $folder) . ' ' . $selected . '>' . ucwords(str_replace('.phtml', '', $folder)) . '</option>';
-									}
-								}
-								?>
-							</select>
-							<small class="text-muted"><?= $this->translate->_("Select a predefined layout for your reports."); ?></small>
-						</div>
-						<div class="col-md-6">
-							<label for="templateTopMargin">
-								<?= $this->translate->_("Template Top Margin"); ?>
-							</label>
-							<div class="input-group">
-								<input type="text" name="templateTopMargin" value="<?php echo $this->templateTopMargin ?? ''; ?>"
-									id="templateTopMargin" class="form-control"
-									placeholder="<?= $this->translate->_('e.g., 40'); ?>"
-									title="<?= $this->translate->_('Enter template top margin in pixels'); ?>" />
-								<span class="input-group-addon">px</span>
-							</div>
-							<small class="text-muted"><?= $this->translate->_("Adjust the top margin of the report content."); ?></small>
-						</div>
-					</div>
-				<?php } else { ?>
-					<div class="row">
-						<div class="col-md-6">
-							<label for="templateTopMargin">
-								<?= $this->translate->_("Template Top Margin"); ?>
-							</label>
-							<div class="input-group">
-								<input type="text" name="templateTopMargin" value="<?php echo $this->templateTopMargin ?? ''; ?>"
-									id="templateTopMargin" class="form-control"
-									placeholder="<?= $this->translate->_('e.g., 40'); ?>"
-									title="<?= $this->translate->_('Enter template top margin in pixels'); ?>" />
-								<span class="input-group-addon">px</span>
-							</div>
-							<small class="text-muted"><?= $this->translate->_("Adjust the top margin of the report content."); ?></small>
-						</div>
-					</div>
-				<?php } ?>
-
-				<hr>
-
+				<div class="section-body">
+				<p class="section-note">
+					<?= $this->translate->_("Optional. A PDF uploaded here is used as the page background of every report, and replaces the letterhead built from the settings above. Leave empty to use those settings instead."); ?>
+				</p>
 				<div class="row">
 					<div class="col-md-8">
-						<label for="reportTemplate"><?= $this->translate->_("Upload Report Template"); ?></label>
+						<label for="reportTemplate"><?= $this->translate->_("Report Template"); ?></label>
 
 						<?php
 						$reportFormatStatus = false;
@@ -420,48 +529,71 @@
 						<input type="hidden" name="deleteTemplate" id="deleteTemplate" value="" />
 						<small class="text-muted"><?= $this->translate->_("Upload a PDF file to use as a background template for reports."); ?></small>
 					</div>
-				</div>
-			</div>
-
-			<!-- Report Generation Section -->
-			<div class="config-section">
-				<h5><i class="icon-file-text"></i> <?= $this->translate->_("Report Generation"); ?></h5>
-
-				<div class="row">
-					<div class="col-md-6">
-						<label for="generate_reports_for_excluded">
-							<?= $this->translate->_("Generate Reports for Excluded Submissions"); ?>
+					<div class="col-md-4">
+						<label for="templateTopMargin">
+							<?= $this->translate->_("Template Top Margin"); ?>
 						</label>
-						<div class="input-group">
-							<div class="btn-group radioBtn">
-								<a class="btn btn-primary btn-sm <?php echo (isset($this->generateReportsForExcluded) && $this->generateReportsForExcluded == "yes") ? " active " : "notActive"; ?>"
-									data-toggle="generate_reports_for_excluded" data-title="yes"
-									onclick="toggleRadios(this);"><?= $this->translate->_("YES"); ?></a>
-								<a class="btn btn-primary btn-sm <?php echo (!isset($this->generateReportsForExcluded) || $this->generateReportsForExcluded != "yes") ? " active " : "notActive"; ?>"
-									data-toggle="generate_reports_for_excluded" data-title="no"
-									onclick="toggleRadios(this);"><?= $this->translate->_("NO"); ?></a>
-							</div>
-							<input type="hidden" name="generate_reports_for_excluded"
-								id="generate_reports_for_excluded"
-								value="<?php echo (isset($this->generateReportsForExcluded) && $this->generateReportsForExcluded == "yes") ? "yes" : "no"; ?>">
+						<div class="input-group input-group-sm">
+							<input type="text" name="templateTopMargin" value="<?php echo $this->templateTopMargin ?? ''; ?>"
+								id="templateTopMargin" class="form-control"
+								placeholder="<?= $this->translate->_('e.g., 40'); ?>"
+								title="<?= $this->translate->_('Enter template top margin in pixels'); ?>" />
+							<span class="input-group-addon">px</span>
 						</div>
-						<small class="text-muted"><?= $this->translate->_("When enabled, participants whose submission was excluded from evaluation still receive an individual report. Participants who never responded are not included either way."); ?></small>
+						<small class="text-muted"><?= $this->translate->_("How far down the page report content starts, so it clears the template letterhead."); ?></small>
 					</div>
 				</div>
-			</div>
-
-			<!-- Action Buttons (inline) -->
-			<div class="row" style="margin-top: 20px;">
-				<div class="col-md-12 text-center">
-					<button type="button" class="btn btn-primary btn-lg" onclick="validateNow();return false;">
-						<i class="icon-ok"></i> <?= $this->translate->_("Update"); ?>
-					</button>
-					<a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'index', 'action' => 'index'), 'default', true); ?>"
-						class="btn btn-danger btn-lg">
-						<i class="icon-arrow-left"></i> <?= $this->translate->_("Cancel"); ?>
-					</a>
 				</div>
 			</div>
+
+			<!-- Layout & Output Section -->
+			<div class="config-section" id="outputSection">
+				<h5><i class="icon-cogs"></i> <?= $this->translate->_("Layout & Output"); ?></h5>
+
+				<div class="section-body">
+				<div class="row">
+					<?php if (isset($this->reportLayouts) && !empty($this->reportLayouts)) { ?>
+						<div class="col-md-6">
+							<label for="reportLayout">
+								<?= $this->translate->_("Report Layout"); ?>
+							</label>
+							<select class="form-control" name="reportLayout" id="reportLayout"
+								title="<?= $this->translate->_('Select the report layout template'); ?>">
+								<?php
+								foreach ($this->reportLayouts as $folder) {
+									if ($folder != '.' && $folder != '..') {
+										$selected = (isset($this->reportLayoutsResult) && $this->reportLayoutsResult == str_replace('.phtml', '', $folder)) ? 'selected="selected"' : "";
+										echo '<option value=' . str_replace('.phtml', '', $folder) . ' ' . $selected . '>' . ucwords(str_replace('.phtml', '', $folder)) . '</option>';
+									}
+								}
+								?>
+							</select>
+							<small class="text-muted"><?= $this->translate->_("Select a predefined layout for your reports."); ?></small>
+						</div>
+					<?php } ?>
+					<div class="col-md-6">
+						<label for="generate_reports_for_excluded">
+							<?= $this->translate->_("Reports for Excluded Submissions"); ?>
+						</label>
+						<div class="btn-group radioBtn">
+							<a class="btn btn-primary btn-sm <?php echo (isset($this->generateReportsForExcluded) && $this->generateReportsForExcluded == "yes") ? " active " : "notActive"; ?>"
+								data-toggle="generate_reports_for_excluded" data-title="yes"
+								onclick="toggleRadios(this);"><?= $this->translate->_("YES"); ?></a>
+							<a class="btn btn-primary btn-sm <?php echo (!isset($this->generateReportsForExcluded) || $this->generateReportsForExcluded != "yes") ? " active " : "notActive"; ?>"
+								data-toggle="generate_reports_for_excluded" data-title="no"
+								onclick="toggleRadios(this);"><?= $this->translate->_("NO"); ?></a>
+						</div>
+						<input type="hidden" name="generate_reports_for_excluded"
+							id="generate_reports_for_excluded"
+							value="<?php echo (isset($this->generateReportsForExcluded) && $this->generateReportsForExcluded == "yes") ? "yes" : "no"; ?>">
+						<small class="text-muted"><?= $this->translate->_("Include participants whose submission was excluded from evaluation. Non-responders are never included."); ?></small>
+					</div>
+				</div>
+				</div>
+			</div>
+
+				</div><!-- /.config-content -->
+			</div><!-- /.config-layout -->
 		</div>
 	</form>
 </div>
@@ -483,6 +615,58 @@
 
 <script type="text/javascript">
 	duplicateName = true;
+
+	// Sidebar nav + scrollspy — same behaviour as global-config.
+	$(function () {
+		var navLinks = $('#configNavList a');
+		if (!navLinks.length) {
+			return;
+		}
+
+		navLinks.on('click', function (e) {
+			e.preventDefault();
+			var $section = $('#' + $(this).data('section'));
+			if (!$section.length) {
+				return;
+			}
+			$('html, body').animate({ scrollTop: $section.offset().top - 20 }, 400);
+		});
+
+		// Light up whichever section currently owns the top of the viewport.
+		function syncActiveNavLink() {
+			var probe = $(window).scrollTop() + 100;
+			var currentId = null;
+
+			navLinks.each(function () {
+				var $section = $('#' + $(this).data('section'));
+				if ($section.length && $section.offset().top <= probe) {
+					currentId = $(this).data('section');
+				}
+			});
+
+			// Above the first section: fall back to it so something is always lit.
+			if (!currentId) {
+				currentId = navLinks.first().data('section');
+			}
+
+			navLinks.removeClass('current')
+				.filter('[data-section="' + currentId + '"]').addClass('current');
+		}
+
+		// rAF-throttled: scroll fires far more often than we need to repaint.
+		var spyQueued = false;
+		$(window).on('scroll resize', function () {
+			if (spyQueued) {
+				return;
+			}
+			spyQueued = true;
+			window.requestAnimationFrame(function () {
+				syncActiveNavLink();
+				spyQueued = false;
+			});
+		});
+		syncActiveNavLink();
+	});
 
 	// Drives the YES/NO toggles: mirrors the selection into the hidden input the
 	// form posts. Same helper the global-config page defines.
