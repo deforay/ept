@@ -5,11 +5,20 @@ class Application_Model_DbTable_GlobalConfig extends Zend_Db_Table_Abstract
     protected $_name = 'global_config';
     protected $_primary = 'name';
 
-    public function getValue($name)
+    /**
+     * $context ('global' | 'report') is optional: names are unique across contexts,
+     * so a bare name resolves on its own. Pass it to scope the lookup to one
+     * admin page's settings.
+     */
+    public function getValue($name, $context = null)
     {
-        $res = $this->getAdapter()->fetchCol($this->select()
+        $select = $this->select()
             ->from($this->_name, ['value'])
-            ->where('name = ?', $name));
+            ->where('name = ?', $name);
+        if ($context !== null) {
+            $select->where('context = ?', $context);
+        }
+        $res = $this->getAdapter()->fetchCol($select);
 
         $value = !empty($res[0]) ? $res[0] : null;
 
@@ -33,7 +42,10 @@ class Application_Model_DbTable_GlobalConfig extends Zend_Db_Table_Abstract
             return $row ? $row->value : null;
         }
 
-        $configValues = $this->fetchAll()->toArray();
+        // Scoped to the global context: this runs on every page render, and since
+        // 7.6.14 the table also holds report-config rows (report-header is a
+        // mediumtext HTML blob) that no caller here has ever seen.
+        $configValues = $this->fetchAll(['context = ?' => 'global'])->toArray();
 
         $arr = [];
         foreach ($configValues as $config) {

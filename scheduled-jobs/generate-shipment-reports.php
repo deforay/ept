@@ -186,7 +186,8 @@ class ReportConfig
         $reportsConfig->instance = $reportsConfig->commonService->getConfig('instance');
         $reportsConfig->passPercentage = $reportsConfig->commonService->getConfig('pass_percentage');
         // Absent key = OFF. Controls whether excluded submissions get individual reports.
-        $reportsConfig->generateReportsForExcluded = $reportsConfig->commonService->getConfig('generate_reports_for_excluded');
+        // Set on /admin/report-config (context='report').
+        $reportsConfig->generateReportsForExcluded = Application_Service_Common::getSetting('generate_reports_for_excluded', 'report');
         $reportsConfig->trainingInstance = $reportsConfig->commonService->getConfig('training_instance');
         $reportsConfig->watermark = null;
         if (isset($reportsConfig->trainingInstance) && $reportsConfig->trainingInstance === 'yes') {
