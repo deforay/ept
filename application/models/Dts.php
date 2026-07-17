@@ -43,9 +43,6 @@ final class Application_Model_Dts
         $schemeService = new Application_Service_Schemes();
         $shipmentAttributes = Pt_Commons_JsonUtility::safeDecode($shipmentResult[0]['shipment_attributes']);
         $dtsSchemeType = (isset($shipmentAttributes['dtsSchemeType']) && $shipmentAttributes['dtsSchemeType'] != '') ? $shipmentAttributes['dtsSchemeType'] : null;
-        // Deployment instance (global_config) drives country-specific evaluation behaviour.
-        // Malawi is identified by the instance, NOT dtsSchemeType (Malawi runs updated-3-tests).
-        $instance = Common::getConfig('instance');
         $syphilisEnabled = (isset($shipmentAttributes['enableSyphilis']) && $shipmentAttributes['enableSyphilis'] == 'yes') ? true : false;
         $rtriEnabled = (isset($shipmentAttributes['enableRtri']) && $shipmentAttributes['enableRtri'] == 'yes') ? true : false;
 
@@ -112,7 +109,6 @@ final class Application_Model_Dts
                     'finalResultArray' => $finalResultArray,
                     'shipmentAttributes' => $shipmentAttributes,
                     'dtsSchemeType' => $dtsSchemeType,
-                    'instance' => $instance,
                     'syphilisEnabled' => $syphilisEnabled,
                     'rtriEnabled' => $rtriEnabled,
                     'possibleRecencyResults' => $possibleRecencyResults ?? [],
@@ -209,15 +205,6 @@ final class Application_Model_Dts
 
         $attributes = Pt_Commons_JsonUtility::safeDecode($shipment['attributes']);
 
-        // Malawi treats certain data-quality problems — a missing test-kit expiry date,
-        // a missing test-kit name, or a missing lot number — as a scored FAILURE (zero
-        // score) rather than excluding the participant from evaluation, so they still
-        // receive a report marked FAILED. Other instances keep excluding. (An actually
-        // expired kit already fails everywhere via $testKitExpiryResult.)
-        // Keyed on the deployment instance, NOT dtsSchemeType: Malawi now runs updated-3-tests.
-        $isMalawi = (($context['instance'] ?? '') === 'malawi');
-        $malawiDataFail = false;
-
         $attributes['algorithm'] ??= null;
         //$attributes['sample_rehydration_date'] = $attributes['sample_rehydration_date'] ?: null;
 
@@ -233,13 +220,7 @@ final class Application_Model_Dts
                 'correctiveAction' => $correctiveActions[1],
             ];
             $correctiveActionList[] = 1;
-            if ($isMalawi) {
-                // Malawi: fail with a zero overall score but still evaluate (report produced),
-                // rather than excluding the late response.
-                $malawiDataFail = true;
-            } else {
-                $shipment['is_excluded'] = 'yes';
-            }
+            $shipment['is_excluded'] = 'yes';
             $shipment['is_response_late'] = 'yes';
         } else {
             $shipment['is_response_late'] = 'no';
@@ -248,8 +229,6 @@ final class Application_Model_Dts
             $lastDateResult = '';
             $shipment['is_response_late'] = 'no';
             $shipment['is_excluded'] = 'no';
-            // Response window is open, so it's on-time — drop the Malawi late penalty too.
-            $malawiDataFail = false;
         }
 
         // CORRECT SERIAL RESPONSES 'NXX','PNN','PPX','PNP';
@@ -346,14 +325,6 @@ final class Application_Model_Dts
                     } else {
                         $testKitExpired[$kitIndex] = false;
                     }
-                } elseif ($isMalawi) {
-                    // Malawi: fail (zero score) instead of excluding, so a report is still produced.
-                    $failureReason[] = [
-                        'warning' => "Test kit {$kitIndex} expiry date is not reported with PT response.",
-                        'correctiveAction' => $correctiveActions[6],
-                    ];
-                    $correctiveActionList[] = 6;
-                    $malawiDataFail = true;
                 } else {
                     $failureReason[] = [
                         'warning' => "Result not evaluated : Test kit {$kitIndex} expiry date is not reported with PT response.",
@@ -390,22 +361,12 @@ final class Application_Model_Dts
             return $name !== '';
         });
         if (empty($nonEmptyTestKits)) {
-            if ($isMalawi) {
-                // Malawi: fail (zero score) instead of excluding, so a report is still produced.
-                $failureReason[] = [
-                    'warning' => 'No Test Kit reported.',
-                    'correctiveAction' => $correctiveActions[7],
-                ];
-                $correctiveActionList[] = 7;
-                $malawiDataFail = true;
-            } else {
-                $failureReason[] = [
-                    'warning' => 'No Test Kit reported. Result not evaluated',
-                    'correctiveAction' => $correctiveActions[7],
-                ];
-                $correctiveActionList[] = 7;
-                $shipment['is_excluded'] = 'yes';
-            }
+            $failureReason[] = [
+                'warning' => 'No Test Kit reported. Result not evaluated',
+                'correctiveAction' => $correctiveActions[7],
+            ];
+            $correctiveActionList[] = 7;
+            $shipment['is_excluded'] = 'yes';
         } elseif (count($nonEmptyTestKits) === 3 && count(array_unique($nonEmptyTestKits)) === 1) {
 
             //Myanmar does not mind if all three test kits are same. Vietnam compares kit SETS
@@ -445,22 +406,12 @@ final class Application_Model_Dts
             if ($testKitNames[$kitIndex] !== '' && (!isset($results[0][$fields['lotField']]) || $results[0][$fields['lotField']] == '' || $results[0][$fields['lotField']] == null)) {
                 if (isset($results[0][$fields['resultField']]) && $results[0][$fields['resultField']] != '' && $results[0][$fields['resultField']] != null) {
                     $lotResult = 'Fail';
-                    if ($isMalawi) {
-                        // Malawi: fail (zero score) instead of excluding, so a report is still produced.
-                        $failureReason[] = [
-                            'warning' => "Test Kit lot number {$kitIndex} is not reported.",
-                            'correctiveAction' => $correctiveActions[10],
-                        ];
-                        $correctiveActionList[] = 10;
-                        $malawiDataFail = true;
-                    } else {
-                        $failureReason[] = [
-                            'warning' => "Result not evaluated : Test Kit lot number {$kitIndex} is not reported.",
-                            'correctiveAction' => $correctiveActions[10],
-                        ];
-                        $correctiveActionList[] = 10;
-                        $shipment['is_excluded'] = 'yes';
-                    }
+                    $failureReason[] = [
+                        'warning' => "Result not evaluated : Test Kit lot number {$kitIndex} is not reported.",
+                        'correctiveAction' => $correctiveActions[10],
+                    ];
+                    $correctiveActionList[] = 10;
+                    $shipment['is_excluded'] = 'yes';
                 }
             }
         }
@@ -647,14 +598,9 @@ final class Application_Model_Dts
             // If final HIV result was not reported then the participant is failed
             if (!isset($result['reported_result']) || empty(trim($result['reported_result']))) {
                 $mandatoryResult = 'Fail';
-                // Malawi: fail (keeping any score earned on the samples they did report)
-                // rather than excluding, so the participant is still evaluated and gets a
-                // report marked FAILED. Other instances keep excluding.
-                if (!$isMalawi) {
-                    $shipment['is_excluded'] = 'yes';
-                }
+                $shipment['is_excluded'] = 'yes';
                 $failureReason[] = [
-                    'warning' => 'Sample <strong>' . $result['sample_label'] . '</strong> was not reported.' . ($isMalawi ? '' : ' Result not evaluated.'),
+                    'warning' => 'Sample <strong>' . $result['sample_label'] . '</strong> was not reported. Result not evaluated.',
                     'correctiveAction' => $correctiveActions[4],
                 ];
                 $correctiveActionList[] = 4;
@@ -820,22 +766,12 @@ final class Application_Model_Dts
                 if (isset($kitResultValue) && !empty($kitResultValue) && trim((string) $kitResultValue) != false && trim((string) $kitResultValue) != '24') {
                     //T.1 Ensure test kit name is reported for all performed tests.
                     if ($testKitNames[$kitIndex] === '') {
-                        if ($isMalawi) {
-                            // Malawi: fail (zero score) instead of excluding, so a report is still produced.
-                            $failureReason[] = [
-                                'warning' => "Name of Test kit {$kitIndex} not reported.",
-                                'correctiveAction' => $correctiveActions[7],
-                            ];
-                            $correctiveActionList[] = 7;
-                            $malawiDataFail = true;
-                        } else {
-                            $failureReason[] = [
-                                'warning' => "Result not evaluated : name of Test kit {$kitIndex} not reported.",
-                                'correctiveAction' => $correctiveActions[7],
-                            ];
-                            $correctiveActionList[] = 7;
-                            $shipment['is_excluded'] = 'yes';
-                        }
+                        $failureReason[] = [
+                            'warning' => "Result not evaluated : name of Test kit {$kitIndex} not reported.",
+                            'correctiveAction' => $correctiveActions[7],
+                        ];
+                        $correctiveActionList[] = 7;
+                        $shipment['is_excluded'] = 'yes';
                     }
                     //T.5 Ensure expiry date information is submitted for all performed tests.
                     //T.15 Testing performed with a test kit that is not recommended by MOH
@@ -905,7 +841,7 @@ final class Application_Model_Dts
         $configuredDocScore = (isset($config['documentationScore']) && (int) $config['documentationScore'] > 0) ? $config['documentationScore'] : 0;
 
         // Response Score
-        if ($maxScore == 0 || $totalScore == 0 || $malawiDataFail) {
+        if ($maxScore == 0 || $totalScore == 0) {
             $responseScore = 0;
         } else {
             $responseScore = round(($totalScore / $maxScore) * 100 * (100 - $configuredDocScore) / 100, 2);
@@ -1099,7 +1035,7 @@ final class Application_Model_Dts
             $participantAlgoFail = ($dtsSchemeType === 'vietnam') ? $anyAlgoFail : ($algoResult == 'Fail');
 
             // if any of the results have failed, then the final result is fail
-            if ($participantAlgoFail || $scoreResult == 'Fail' || $lastDateResult == 'Fail' || $mandatoryResult == 'Fail' || $lotResult == 'Fail' || $testKitExpiryResult == 'Fail' || $malawiDataFail) {
+            if ($participantAlgoFail || $scoreResult == 'Fail' || $lastDateResult == 'Fail' || $mandatoryResult == 'Fail' || $lotResult == 'Fail' || $testKitExpiryResult == 'Fail') {
                 $finalResult = 2;
                 $shipmentResultEntry['is_followup'] = 'yes';
                 $shipment['is_followup'] = 'yes';
@@ -1107,11 +1043,6 @@ final class Application_Model_Dts
                 $shipment['is_excluded'] = 'no';
                 $shipment['is_followup'] = 'no';
                 $finalResult = 1;
-            }
-            if ($malawiDataFail) {
-                // Malawi expiry-date failure earns no score at all: the panel score is already
-                // zeroed above, so zero the documentation score too and the total becomes 0.
-                $documentationScore = 0;
             }
             $shipmentResultEntry['shipment_score'] = $responseScore;
             $shipmentResultEntry['documentation_score'] = $documentationScore;
