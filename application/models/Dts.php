@@ -710,31 +710,47 @@ final class Application_Model_Dts
                             $correctResponse = false;
                         }
                     } elseif (
-                        $isScreening && $dtsSchemeType === 'myanmar' &&
-                        $this->areResultsEquivalent($result['reference_result'], $result['reported_result'])
+                        $dtsSchemeType === 'myanmar' &&
+                        (($expectedResultCode === 'P' && $reportedResultCode === 'R')
+                            || ($expectedResultCode === 'R' && $reportedResultCode === 'P'))
                     ) {
-                        // Myanmar Screening: half score for equivalent results (R↔P, NR↔N)
-                        $halfSampleScore = $scoreForSample / 2;
-                        if ($correctRTRIResponse && $correctSyphilisResponse && $algoResult != 'Fail') {
-                            $totalScore += ($halfSampleScore + $scoreForAlgorithm);
-                            $correctResponse = true;
-                        } elseif ($correctRTRIResponse && $correctSyphilisResponse && ($scorePercentageForAlgorithm > 0 && $algoResult == 'Fail')) {
-                            $totalScore += $halfSampleScore;
-                            $correctResponse = false;
-                        } else {
-                            $correctResponse = false;
-                        }
+                        // Myanmar REACTIVE/POSITIVE mix-up on the final interpretation: confirmation
+                        // panels expect POSITIVE and the lab reports REACTIVE; screening panels expect
+                        // REACTIVE and the lab reports POSITIVE. The final interpretation is still
+                        // wrong, so the sample stays a Fail, but NHL asked for half the sample score
+                        // as partial credit.
+                        //
+                        // Flat 50% of sample_score, deliberately ignoring the algorithm share:
+                        // on confirmation algoMyanmar can never pass here (it requires reported == P
+                        // for a P sample), and on screening the algorithm check is skipped and always
+                        // passes — so folding that share in either way would not yield the 50% asked
+                        // for. Anything else wrong falls through and scores 0.
+                        //
+                        // R/P only, deliberately: NONREACTIVE-for-NEGATIVE is the same shape of
+                        // mix-up, but NHL reviewed Panel 42 Confirmation and did NOT ask for credit
+                        // on it (lab 584 scored 0 on those samples and was not on their list), so it
+                        // stays a 0 until they say otherwise.
+                        $totalScore += $result['sample_score'] / 2;
+                        $correctResponse = false;
                         $failureReason[] = [
-                            'warning' => '<strong>' . $result['sample_label'] . '</strong> - Equivalent result reported (half score awarded)',
+                            'warning' => '<strong>' . $result['sample_label'] . '</strong> - Reported ' . $reportedResultCode . ' for a sample expected as ' . $expectedResultCode . ' (half score awarded)',
                             'correctiveAction' => $correctiveActions[3],
                         ];
+                        $correctiveActionList[] = 3;
                     } else {
                         if ($result['sample_score'] > 0) {
 
                             // In some countries, they allow partial score for algorithms
                             // So even if the participant got the final result wrong,
-                            // they still get some points for the Algorithm
-                            if ($dtsSchemeType != 'drc' && $algoResult != 'Fail') {
+                            // they still get some points for the Algorithm.
+                            //
+                            // Myanmar Screening is the exception: there is no algorithm to get
+                            // right (evaluateAlgorithm short-circuits screening to an automatic
+                            // 'Pass'), so this share is unearned — it handed a flatly wrong final
+                            // result half the sample score. NHL asked that a wrong screening result
+                            // score 0, so the whole sample rides on the reported result alone.
+                            $unearnedScreeningAlgoCredit = ($isScreening && $dtsSchemeType === 'myanmar');
+                            if ($dtsSchemeType != 'drc' && $algoResult != 'Fail' && !$unearnedScreeningAlgoCredit) {
                                 $totalScore += $scoreForAlgorithm;
                             }
 
@@ -2380,28 +2396,6 @@ final class Application_Model_Dts
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $query = $db->select()->from('r_possibleresult', ['result_code'])->where('id = ?', $resultId);
         return $db->fetchOne($query) ?? '-';
-    }
-
-    /**
-     * Check if two result IDs are equivalent (for Myanmar Screening half-score rule).
-     * Equivalent pairs: REACTIVE(1) ↔ POSITIVE(4), NONREACTIVE(2) ↔ NEGATIVE(5)
-     */
-    private function areResultsEquivalent($resultId1, $resultId2): bool
-    {
-        $equivalentPairs = [
-            [1, 4], // REACTIVE ↔ POSITIVE
-            [2, 5], // NONREACTIVE ↔ NEGATIVE
-        ];
-
-        foreach ($equivalentPairs as $pair) {
-            if (
-                ($resultId1 == $pair[0] && $resultId2 == $pair[1]) ||
-                ($resultId1 == $pair[1] && $resultId2 == $pair[0])
-            ) {
-                return true;
-            }
-        }
-        return false;
     }
 
     /**
