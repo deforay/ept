@@ -83,7 +83,7 @@ class Reports_DistributionController extends Zend_Controller_Action
         }
         $participants = new Application_Service_Participants();
         $shipmentParticipantMap = new Application_Model_DbTable_ShipmentParticipantMap();
-        
+
         $this->view->countries = $participants->getUniqueCountry();
         $this->view->regions = $participants->getUniqueRegion();
         $this->view->states = $participants->getUniqueState();
@@ -125,7 +125,7 @@ class Reports_DistributionController extends Zend_Controller_Action
             $evalService = new Application_Service_Evaluation();
             $participants = new Application_Service_Participants();
             $shipmentParticipantMap = new Application_Model_DbTable_ShipmentParticipantMap();
-            
+
             $this->view->countries = $participants->getUniqueCountry();
             $this->view->regions = $participants->getUniqueRegion();
             $this->view->states = $participants->getUniqueState();
