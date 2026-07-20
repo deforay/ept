@@ -106,7 +106,10 @@ class Application_Model_Eid
             }
 
             if ($maxScore > 0 && $totalScore > 0) {
-                $totalScore = ($totalScore / $maxScore) * 100;
+                // Round here rather than further down: the failure-reason text below embeds
+                // this value and is persisted to shipment_participant_map.failure_reason, so
+                // rounding late printed "Participant Score - 66.666666666667" on the report.
+                $totalScore = round(($totalScore / $maxScore) * 100, 2);
             }
 
             // if we are excluding this result, then let us not give pass/fail

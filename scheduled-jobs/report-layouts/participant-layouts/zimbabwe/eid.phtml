@@ -217,7 +217,7 @@ if (!empty($resultArray['shipment'])) {
                 } else {
                     $rowScore = 'N/A';
                 }
-                $labRes .= '<tr>
+                $labRes .= '<tr nobr="true">
                         <td style="text-align:center;font-weight:bold;">' . $response['sample_label'] . '</td>';
                 $labRes .= '<td style="text-align:center;">' . ucwords($response['labResult'] ?? '') . '</td>
                     <td style="text-align:center;">' . ucwords($response['referenceResult'] ?? '') . '</td>';
@@ -329,7 +329,11 @@ if (!empty($resultArray['shipment'])) {
 
                 $warnings = Pt_Commons_JsonUtility::safeDecode($result['responseResult'][0]['failure_reason']);
                 foreach ($warnings as $warning) {
-                    $failRes .= '<tr>
+                    // nobr: corrective-action text is the longest, most variable content in
+                    // the report, so a row landing near the page foot used to split and the
+                    // remainder collided with the tall Zimbabwe letterhead on the next page.
+                    // TCPDF moves a nobr row to the next page whole instead of breaking it.
+                    $failRes .= '<tr nobr="true">
                             <td>' . (isset($warning['warning']) ? $warning['warning'] : "") . '</td>
                             <td>' . (isset($warning['correctiveAction']) ? $warning['correctiveAction'] : "") . '</td>
                         </tr>';
