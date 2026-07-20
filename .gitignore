@@ -75,3 +75,6 @@ cypress.config.js
 chart-render-test.json
 rector.php
 .php-cs-fixer.cache
+
+# Commit SHA stamped by setup.sh / upgrade.sh at deploy time
+VERSION.txt

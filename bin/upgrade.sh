@@ -1023,6 +1023,10 @@ if [ -z "$ept_src_dir" ]; then
     exit 1
 fi
 
+# Stamp the commit SHA into the tree before deployment; .git is excluded from the
+# rsync, so VERSION.txt is how a deployed instance knows which commit it is on.
+capture_commit_sha "$ept_src_dir"
+
 # Own the source tree as www-data so the deploy rsync (-a preserves owner) lands
 # instance files writable by the web user. The mirror is cloned as root, and a
 # root-owned composer.json is unwritable by www-data (the composer config error).

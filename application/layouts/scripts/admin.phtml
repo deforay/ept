@@ -696,6 +696,10 @@ $helpPageKey = "$controllerName/$actionName";
 			<?= $footerText . $this->translate->_(" This project is supported by the U.S. President's Emergency Plan for AIDS Relief (PEPFAR) through the U.S. Centers for Disease Control and Prevention (CDC)."); ?>
 			<div class="pull-right hidden-xs">
 				<span>ver. <?php echo APP_VERSION; ?></span>
+				<?php $commitSha = $this->getCommitSha();
+				if ($commitSha) { ?>
+					<span class="text-muted" title="<?= $this->translate->_('Deployed commit'); ?>">(<?php echo $this->escape($commitSha); ?>)</span>
+				<?php } ?>
 				<?php
 				// Flag a partially-applied upgrade: the code's APP_VERSION is ahead of (or
 				// differs from) the DB's recorded schema version, which means migrations did

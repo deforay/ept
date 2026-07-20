@@ -176,7 +176,10 @@ $eptLogo = implode('', $logos);
                 } ?>
                 <div class="credits <?= !empty($partners) ? "col-lg-6 col-md-6" : "col-lg-12 col-md-12" ?>">
                     <span><?= $this->translate->_($footerText . " This project is supported by the U.S. President's Emergency Plan for AIDS Relief (PEPFAR) through the U.S. Centers for Disease Control and Prevention (CDC)."); ?>
-                        | <span>v<?php echo APP_VERSION; ?></span></span>
+                        | <span>v<?php echo APP_VERSION; ?></span><?php $commitSha = $this->getCommitSha();
+                                                                    if ($commitSha) { ?>
+                            <span class="text-muted" title="<?= $this->translate->_('Deployed commit'); ?>">(<?php echo $this->escape($commitSha); ?>)</span>
+                        <?php } ?></span>
                 </div>
             </div>
 

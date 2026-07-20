@@ -395,6 +395,10 @@ elif [ -n "$(ls -A "${ept_path}" 2>/dev/null)" ]; then
     log_action "Selective backup created: ${backup_dir}"
 fi
 
+# Stamp the commit SHA so the app footer can show which commit this install is on.
+# The tarball carries no git metadata, so this resolves via the GitHub API.
+capture_commit_sha "$temp_dir/ept-master"
+
 # Copy the extracted content to the ePT path
 rsync -a --info=progress2 "$temp_dir/ept-master/" "$ept_path/"
 
