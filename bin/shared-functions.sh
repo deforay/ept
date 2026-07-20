@@ -100,6 +100,160 @@ prepare_system() {
 
     print success "System preparation complete with non-interactive restarts configured."
 }
+# capture_commit_sha <src_dir> -- record the deployed commit in <src_dir>/VERSION.txt
+#
+# The app footer shows this next to the version so a deployed instance can be
+# pinned to an exact commit, not just a semver. .git is never rsynced into an
+# instance, so the SHA has to be baked into a plain file at deploy time. Reads it
+# from the source tree's git metadata when we have it (mirror/clone path), and
+# falls back to a best-effort GitHub API lookup for the tarball path. Never fatal:
+# an unknown SHA just means the footer shows the version alone.
+capture_commit_sha() {
+    local src_dir="$1"
+    local sha=""
+
+    if [ ! -d "$src_dir" ]; then
+        return 0
+    fi
+
+    if command -v git &>/dev/null && [ -d "$src_dir/.git" ]; then
+        sha=$(git -c safe.directory='*' -C "$src_dir" rev-parse HEAD 2>/dev/null || true)
+    fi
+
+    if [ -z "$sha" ] && command -v curl &>/dev/null; then
+        sha=$(curl -sS --max-time 15 \
+            "https://api.github.com/repos/deforay/ept/commits/master" 2>/dev/null |
+            grep -oE '"sha"[[:space:]]*:[[:space:]]*"[0-9a-f]{40}"' |
+            head -1 | grep -oE '[0-9a-f]{40}' || true)
+    fi
+
+    if [ -n "$sha" ]; then
+        printf '%s\n' "$sha" >"$src_dir/VERSION.txt" 2>/dev/null &&
+            print info "Deployed commit: ${sha:0:7}"
+    else
+        print warning "Commit SHA unavailable (no git metadata and no network) - footer will show version only."
+    fi
+    return 0
+}
+
+# human_bytes <bytes> -- compact size string for progress output.
+human_bytes() {
+    local b="${1:-0}"
+    if [ "$b" -ge 1073741824 ]; then
+        printf "%d.%01dG" $((b / 1073741824)) $((b % 1073741824 * 10 / 1073741824))
+    elif [ "$b" -ge 1048576 ]; then
+        printf "%d.%01dM" $((b / 1048576)) $((b % 1048576 * 10 / 1048576))
+    elif [ "$b" -ge 1024 ]; then
+        printf "%dK" $((b / 1024))
+    else
+        printf "%dB" "$b"
+    fi
+}
+
+# wait_with_progress <pid> <message> [watch_file] [stall_timeout] [max_timeout]
+#
+# Waits on a background child while showing a live activity indicator, and --
+# crucially for slow links -- enforces a *stall* timeout instead of a wall-clock
+# one. As long as watch_file keeps growing the transfer is considered healthy and
+# is given as much time as it needs; only genuine silence (no bytes for
+# stall_timeout seconds) gets killed. A wall-clock cap still exists as a last
+# resort but is deliberately generous.
+#
+# Returns the child's exit status, or 124 if we killed it for stalling/timeout.
+wait_with_progress() {
+    local pid="${1:-}"
+    local message="${2:-Working...}"
+    local watch_file="${3:-}"
+    local stall_timeout="${4:-60}"
+    local max_timeout="${5:-0}"
+
+    [[ "$pid" =~ ^[0-9]+$ ]] || {
+        print error "$message (invalid pid)"
+        return 1
+    }
+
+    local is_tty=0
+    [ -t 1 ] && is_tty=1
+
+    local frames='|/-\'
+    local i=0
+    local start=$SECONDS
+    local last_size=0 last_change=$SECONDS last_tick=$SECONDS
+    local size=0 killed=0
+
+    (( is_tty )) && printf "\033[?25l" # hide cursor
+
+    while kill -0 "$pid" 2>/dev/null; do
+        size=0
+        if [ -n "$watch_file" ] && [ -f "$watch_file" ]; then
+            size=$(wc -c <"$watch_file" 2>/dev/null || echo 0)
+            size=${size//[!0-9]/}
+            : "${size:=0}"
+        fi
+        if [ "$size" -gt "$last_size" ]; then
+            last_size=$size
+            last_change=$SECONDS
+        fi
+
+        local elapsed=$((SECONDS - start))
+        local idle=$((SECONDS - last_change))
+
+        if (( is_tty )); then
+            local detail=""
+            if [ -n "$watch_file" ]; then
+                local rate=0
+                (( elapsed > 0 )) && rate=$((last_size / elapsed))
+                detail=" $(human_bytes "$last_size") at $(human_bytes "$rate")/s"
+                (( idle >= 10 )) && detail+=" (idle ${idle}s)"
+            fi
+            printf "\r\033[2K\033[1;96m%s\033[0m %s [%dm%02ds]%s" \
+                "${frames:i++%4:1}" "$message" $((elapsed / 60)) $((elapsed % 60)) "$detail"
+        elif (( SECONDS - last_tick >= 30 )); then
+            # Non-interactive (cron/CI): a heartbeat line every 30s so the log
+            # shows the script is alive rather than looking hung.
+            last_tick=$SECONDS
+            if [ -n "$watch_file" ]; then
+                printf "   ... still downloading: %s after %dm%02ds\n" \
+                    "$(human_bytes "$last_size")" $((elapsed / 60)) $((elapsed % 60))
+            else
+                printf "   ... still working, %dm%02ds elapsed\n" $((elapsed / 60)) $((elapsed % 60))
+            fi
+        fi
+
+        if (( stall_timeout > 0 && idle >= stall_timeout )); then
+            killed=1
+            break
+        fi
+        if (( max_timeout > 0 && elapsed >= max_timeout )); then
+            killed=1
+            break
+        fi
+
+        sleep 1
+    done
+
+    (( is_tty )) && printf "\r\033[2K\033[?25h"
+
+    if (( killed )); then
+        # Drop the job from the table *before* signalling it: bash otherwise
+        # prints a "Terminated" job notice for a child we killed on purpose,
+        # which reads like a crash in the log.
+        disown "$pid" 2>/dev/null || true
+        kill -TERM "$pid" 2>/dev/null
+        local grace=0
+        while kill -0 "$pid" 2>/dev/null && (( grace < 5 )); do
+            sleep 1
+            ((grace++))
+        done
+        kill -KILL "$pid" 2>/dev/null
+        return 124
+    fi
+
+    local rc=0
+    wait "$pid" 2>/dev/null || rc=$?
+    return "$rc"
+}
+
 spinner() {
     # BC signature: spinner <pid> [message]
     local pid="${1:-}"
@@ -185,27 +339,20 @@ download_file() {
     local message="${3:-$default_msg}"
     local aria_conns="${ARIA2_CONNECTIONS:-8}"
 
-    # Hard wall-clock cap so a stalled connection can never hang the script
-    # forever (the per-connection timeouts below don't bound total runtime, and
-    # `spinner` blocks on `wait` until the downloader exits). On timeout the tool
-    # is killed, spinner returns non-zero, and we fall through to the next method.
-    # Generous by default so it works on slow/contended links with no flag; a
-    # fast link finishes long before the cap. Override with DOWNLOAD_TIMEOUT.
-    local dl_timeout="${DOWNLOAD_TIMEOUT:-1800}"
-    local timeout_cmd=""
-    if command -v timeout &>/dev/null; then
-        timeout_cmd="timeout --kill-after=10 ${dl_timeout}"
-    fi
+    # Progress-based timeouts. A slow link is not a broken link: what matters is
+    # whether bytes are still arriving, not how long the transfer has taken. So
+    # the primary limit is a *stall* timeout (no new bytes on disk for N seconds)
+    # enforced by wait_with_progress, and the wall-clock cap is only a last-resort
+    # backstop. This is what lets a 100MB vendor tarball finish on a 200kbit link
+    # instead of being killed mid-flight with exit 124.
+    local dl_stall="${DOWNLOAD_STALL_TIMEOUT:-90}"
+    local dl_timeout="${DOWNLOAD_TIMEOUT:-7200}"
 
-    # aria2c is the fast path; give it a much shorter leash. Some endpoints
-    # (e.g. codeload's dynamically generated tarballs) don't support the
-    # parallel range requests aria2c issues and it stalls -- bail quickly to
-    # wget/curl instead of burning the full budget. Override with ARIA2_TIMEOUT.
-    local aria_timeout="${ARIA2_TIMEOUT:-120}"
-    local aria_timeout_cmd=""
-    if command -v timeout &>/dev/null; then
-        aria_timeout_cmd="timeout --kill-after=10 ${aria_timeout}"
-    fi
+    # aria2c is the fast path but some endpoints (e.g. codeload's dynamically
+    # generated tarballs) don't support the parallel range requests it issues and
+    # it stalls outright. Shorter stall leash so we bail to wget/curl quickly in
+    # that case -- but still only on real silence, never on slowness.
+    local aria_stall="${ARIA2_STALL_TIMEOUT:-45}"
 
     # Get output directory and filename
     local output_dir
@@ -233,7 +380,7 @@ download_file() {
 
     # Try aria2c first
     if command -v aria2c &>/dev/null; then
-        $aria_timeout_cmd aria2c \
+        aria2c \
             --max-connection-per-server="$aria_conns" \
             --split="$aria_conns" \
             --min-split-size=1M \
@@ -255,45 +402,71 @@ download_file() {
             "$url" >"$log_file" 2>&1 &
         
         local download_pid=$!
-        spinner "$download_pid" "$message"
+        wait_with_progress "$download_pid" "$message (aria2c)" "$output_file" "$aria_stall" "$dl_timeout"
         local dl_status=$?
 
         # Accept only a clean exit AND a structurally valid file. A non-empty
         # file alone is not enough -- a broken transfer leaves a truncated
         # archive on disk that later blows up at extraction time.
         if [ "$dl_status" -eq 0 ] && [ -f "$output_file" ] && [ -s "$output_file" ] && verify_archive_integrity "$output_file"; then
-            print success "Download completed: $filename"
+            print success "Download completed: $filename ($(human_bytes "$(wc -c <"$output_file")"))"
             rm -f "$log_file"
             return 0
         fi
 
         # aria2c failed or produced a corrupt/partial file, try wget
-        print warning "aria2c download failed or incomplete, trying wget..."
-        rm -f "$output_file"
+        if [ "$dl_status" -eq 124 ]; then
+            print warning "aria2c stalled (no data for ${aria_stall}s), retrying with wget..."
+        else
+            print warning "aria2c download failed or incomplete, retrying with wget..."
+        fi
+        rm -f "$output_file" "${output_file}.aria2"
     fi
 
     # Fallback to wget
     if command -v wget &>/dev/null; then
-        $timeout_cmd wget --progress=bar:force \
-            --tries=8 \
-            --waitretry=3 \
-            --timeout=60 \
-            --read-timeout=60 \
-            --retry-connrefused \
-            --continue \
-            -O "$output_file" \
-            "$url" >"$log_file" 2>&1 &
-        
-        local download_pid=$!
-        spinner "$download_pid" "$message"
-        local dl_status=$?
+        # Single connection, aggressive in-process retries with resume. On a flaky
+        # link wget reconnects and continues from the byte it reached rather than
+        # starting over, so progress is never thrown away.
+        local wget_attempt=1
+        local wget_max_attempts="${DOWNLOAD_ATTEMPTS:-3}"
+        while [ "$wget_attempt" -le "$wget_max_attempts" ]; do
+            local attempt_msg="$message (wget)"
+            [ "$wget_attempt" -gt 1 ] && attempt_msg="$message (wget, attempt $wget_attempt/$wget_max_attempts)"
 
-        # Check wget exit code and archive integrity (see note above)
-        if [ "$dl_status" -eq 0 ] && [ -f "$output_file" ] && [ -s "$output_file" ] && verify_archive_integrity "$output_file"; then
-            print success "Download completed: $filename"
-            rm -f "$log_file"
-            return 0
-        fi
+            wget --progress=dot:giga \
+                --tries=20 \
+                --waitretry=5 \
+                --timeout=60 \
+                --read-timeout=60 \
+                --retry-connrefused \
+                --continue \
+                -O "$output_file" \
+                "$url" >"$log_file" 2>&1 &
+
+            local download_pid=$!
+            wait_with_progress "$download_pid" "$attempt_msg" "$output_file" "$dl_stall" "$dl_timeout"
+            local dl_status=$?
+
+            # Check wget exit code and archive integrity (see note above)
+            if [ "$dl_status" -eq 0 ] && [ -f "$output_file" ] && [ -s "$output_file" ] && verify_archive_integrity "$output_file"; then
+                print success "Download completed: $filename ($(human_bytes "$(wc -c <"$output_file")"))"
+                rm -f "$log_file"
+                return 0
+            fi
+
+            # Keep the partial file: the next wget attempt resumes from it with
+            # --continue. Only drop it if it is structurally hopeless (empty).
+            [ -f "$output_file" ] && [ ! -s "$output_file" ] && rm -f "$output_file"
+
+            if [ "$wget_attempt" -lt "$wget_max_attempts" ]; then
+                local got=0
+                [ -f "$output_file" ] && got=$(wc -c <"$output_file")
+                print warning "wget interrupted at $(human_bytes "$got"), resuming in 5s..."
+                sleep 5
+            fi
+            ((wget_attempt++))
+        done
 
         print warning "wget download failed or incomplete, trying curl..."
         rm -f "$output_file"
@@ -301,30 +474,55 @@ download_file() {
 
     # Fallback to curl if wget unavailable or failed
     if command -v curl &>/dev/null; then
-        $timeout_cmd curl -L --fail \
-            --retry 8 \
-            --retry-delay 3 \
-            --connect-timeout 20 \
-            --max-time 1200 \
-            --continue-at - \
-            -o "$output_file" "$url" >"$log_file" 2>&1 &
+        # No --max-time: the stall detector in wait_with_progress decides when a
+        # transfer is dead. --speed-limit/--speed-time is curl's own equivalent
+        # backstop for a connection that trickles without ever fully stopping.
+        local curl_attempt=1
+        local curl_max_attempts="${DOWNLOAD_ATTEMPTS:-3}"
+        while [ "$curl_attempt" -le "$curl_max_attempts" ]; do
+            local attempt_msg="$message (curl)"
+            [ "$curl_attempt" -gt 1 ] && attempt_msg="$message (curl, attempt $curl_attempt/$curl_max_attempts)"
 
-        local download_pid=$!
-        spinner "$download_pid" "$message"
-        local dl_status=$?
+            # -sS: we render our own progress; curl's meter would otherwise fill
+            # the log with thousands of unusable lines.
+            curl -L --fail -sS \
+                --retry 20 \
+                --retry-delay 5 \
+                --connect-timeout 20 \
+                --speed-limit 1024 \
+                --speed-time 120 \
+                --continue-at - \
+                -o "$output_file" "$url" >"$log_file" 2>&1 &
 
-        if [ "$dl_status" -eq 0 ] && [ -f "$output_file" ] && [ -s "$output_file" ] && verify_archive_integrity "$output_file"; then
-            print success "Download completed: $filename"
-            rm -f "$log_file"
-            return 0
-        fi
+            local download_pid=$!
+            wait_with_progress "$download_pid" "$attempt_msg" "$output_file" "$dl_stall" "$dl_timeout"
+            local dl_status=$?
+
+            if [ "$dl_status" -eq 0 ] && [ -f "$output_file" ] && [ -s "$output_file" ] && verify_archive_integrity "$output_file"; then
+                print success "Download completed: $filename ($(human_bytes "$(wc -c <"$output_file")"))"
+                rm -f "$log_file"
+                return 0
+            fi
+
+            # As with wget: keep the partial so --continue-at resumes from it.
+            [ -f "$output_file" ] && [ ! -s "$output_file" ] && rm -f "$output_file"
+
+            if [ "$curl_attempt" -lt "$curl_max_attempts" ]; then
+                local got=0
+                [ -f "$output_file" ] && got=$(wc -c <"$output_file")
+                print warning "curl interrupted at $(human_bytes "$got"), resuming in 5s..."
+                sleep 5
+            fi
+            ((curl_attempt++))
+        done
         rm -f "$output_file"
     fi
 
-    # Both failed
+    # Every method exhausted
     print error "Download failed for: $filename"
-    print info "Detailed download logs:"
-    cat "$log_file"
+    print info "URL: $url"
+    print info "Last downloader output (tail):"
+    tail -n 20 "$log_file"
     rm -f "$log_file"
     return 1
 }
