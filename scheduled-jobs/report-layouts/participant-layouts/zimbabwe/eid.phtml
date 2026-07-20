@@ -179,10 +179,14 @@ if (!empty($resultArray['shipment'])) {
 
         $labInfo .= '</table>';
         $pdf->writeHTML($labInfo, true, false, true, false, '');
-        if (count($result['responseResult']) > 0) {
-            $calculatedScore = round(100 / count($result['responseResult']));
-        } else {
-            $calculatedScore = 'N/A';
+        // Per-sample score must mirror Application_Model_Eid::evaluate(), which awards
+        // reference_result_eid.sample_score for a correct non-control sample and divides
+        // by the panel's total available score. Deriving it as 100/sample-count instead
+        // invented a flat weight (e.g. 20 on a 5-sample panel) that neither matched the
+        // panel's real weights nor summed to the TESTING SCORE printed below.
+        $maxSampleScore = 0;
+        foreach ($result['responseResult'] as $response) {
+            $maxSampleScore += (float) ($response['sample_score'] ?? 0);
         }
         if (!empty($result['responseResult'])) {
             $n = count($result['responseResult']);
@@ -196,15 +200,25 @@ if (!empty($resultArray['shipment'])) {
                         <td style="text-align:center;font-weight:bold;">Score</td>
                 </tr>';
             foreach ($result['responseResult'] as $key => $response) {
-                // Use a per-row variable: reusing $calculatedScore here permanently
-                // zeroed it after the first wrong sample, so later correct samples
-                // (e.g. sample 05) were shown as 0 even though they scored.
-                $rowScore = ($response['labResult'] == $response['referenceResult']) ? $calculatedScore : 0;
+                // Samples carrying no score weight are not part of the grade at all;
+                // printing 0 for them read as "you got this wrong". Say so explicitly.
+                $sampleScore = (float) ($response['sample_score'] ?? 0);
+                if ($sampleScore <= 0) {
+                    $rowScore = 'Not Scored';
+                } elseif ($maxSampleScore > 0) {
+                    // Normalise to the 100-point scale the TESTING SCORE is reported on,
+                    // so the rows add up to it exactly.
+                    $rowScore = ($response['labResult'] == $response['referenceResult'])
+                        ? round(($sampleScore / $maxSampleScore) * 100, 2)
+                        : 0;
+                } else {
+                    $rowScore = 'N/A';
+                }
                 $labRes .= '<tr>
                         <td style="text-align:center;font-weight:bold;">' . $response['sample_label'] . '</td>';
                 $labRes .= '<td style="text-align:center;">' . ucwords($response['labResult'] ?? '') . '</td>
                     <td style="text-align:center;">' . ucwords($response['referenceResult'] ?? '') . '</td>';
-                $labRes .= '<td style="text-align:center;">' . round($rowScore, 2) . '</td>
+                $labRes .= '<td style="text-align:center;">' . (is_string($rowScore) ? $rowScore : round($rowScore, 2)) . '</td>
                     </tr>';
             }
             $labRes .= '<tr>
@@ -325,8 +339,25 @@ if (!empty($resultArray['shipment'])) {
             // does not apply here. Only the textual performance criteria are shown.
             $note = '<br><span style="font-weight:bold;font-size:12px;">Interpretation of Scores (Performance criteria):</span>';
             $note .= '<ul style="font-size:12px;">';
-            $note .= '<li style="text-align:justify;font-size:11px;font-weight:normal;">A testing score of 0 is awarded for any result that is incorrectly reported.</li>';
-            $note .= '<li style="text-align:justify;font-size:11px;font-weight:normal;">A testing score of 20 is awarded for any result reported correctly.</li>';
+            $note .= '<li style="text-align:justify;font-size:11px;font-weight:normal;">A testing score of 0 is awarded for any scored result that is incorrectly reported.</li>';
+            // The award per correct sample follows the panel's configured weights, so state
+            // the actual figure when every scored sample carries the same weight, and stay
+            // generic when the panel mixes weights. Hardcoding 20 here contradicted panels
+            // where only some samples are scored.
+            $scoredWeights = [];
+            foreach ($result['responseResult'] as $response) {
+                $sampleScore = (float) ($response['sample_score'] ?? 0);
+                if ($sampleScore > 0 && $maxSampleScore > 0) {
+                    $scoredWeights[] = round(($sampleScore / $maxSampleScore) * 100, 2);
+                }
+            }
+            $uniqueWeights = array_unique($scoredWeights);
+            $note .= '<li style="text-align:justify;font-size:11px;font-weight:normal;">'
+                . (count($uniqueWeights) === 1
+                    ? 'A testing score of ' . reset($uniqueWeights) . ' is awarded for any result reported correctly.'
+                    : 'A testing score is awarded for each result reported correctly, in proportion to that sample&rsquo;s weight in the panel.')
+                . '</li>';
+            $note .= '<li style="text-align:justify;font-size:11px;font-weight:normal;">Samples marked &ldquo;Not Scored&rdquo; do not contribute to the testing score.</li>';
             $note .= '<li style="text-align:justify;font-size:11px;font-weight:normal;">A grading of Satisfactory is assigned when the participant overall score is &gt;= ' . $passPercentage . '%.</li>';
             $note .= '<li style="text-align:justify;font-size:11px;font-weight:normal;">A grading of Unsatisfactory is assigned when the participant overall score is &lt; ' . $passPercentage . '%.</li>';
             $note .= '<li style="text-align:justify;font-size:11px;font-weight:normal;">A grading of Ungraded is assigned when the participant has not submitted PT results.</li>';
