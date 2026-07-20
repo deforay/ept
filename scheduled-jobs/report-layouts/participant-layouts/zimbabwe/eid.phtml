@@ -339,6 +339,35 @@ if (!empty($resultArray['shipment'])) {
                         </tr>';
                 }
                 $failRes .= '</table>';
+
+                // Keep the table off a page boundary. nobr (above) stops a row splitting
+                // mid-text, but TCPDF still opens the row at the foot of the page before
+                // moving it, leaving an empty stub row and a stray rule behind. TCPDF's
+                // transaction/rollback idiom is no help here either: rollbackTransaction()
+                // does not restore the page pointer through this FPDI subclass, so the
+                // retry lands a page late and leaves a blank page. So measure the table up
+                // front and start a new page only when it genuinely will not fit.
+                $margins = $pdf->getMargins();
+                $colWidth = ($pdf->getPageWidth() - $margins['left'] - $margins['right']) / 2;
+                // Header row, plus the taller of the two cells in each body row.
+                $tableHeight = $pdf->getStringHeight($colWidth, 'Failure Reasons (or) Warnings');
+                foreach ($warnings as $warning) {
+                    $tableHeight += max(
+                        $pdf->getStringHeight($colWidth, strip_tags($warning['warning'] ?? '')),
+                        $pdf->getStringHeight($colWidth, strip_tags($warning['correctiveAction'] ?? ''))
+                    );
+                }
+                // Slack for the section heading above the table and per-row cell padding.
+                $tableHeight += 10 + (count($warnings) * 2);
+
+                $spaceLeft = $pdf->getPageHeight() - $pdf->GetY() - $pdf->getBreakMargin();
+                $usableHeight = $pdf->getPageHeight() - $pdf->getBreakMargin() - $margins['top'];
+                // Only pre-break when the table can actually fit on a page of its own;
+                // a table taller than a full page has to flow, and forcing a break would
+                // just waste a page without fixing anything.
+                if ($tableHeight > $spaceLeft && $tableHeight <= $usableHeight) {
+                    $pdf->AddPage();
+                }
                 $pdf->writeHTML($failRes, true, false, true, false, '');
             }
             
