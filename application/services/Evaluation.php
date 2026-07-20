@@ -2742,7 +2742,7 @@ class Application_Service_Evaluation
             $eidQuery = $db->select()->from(['reseid' => 'response_result_eid'], ['reseid.shipment_map_id', 'reseid.sample_id', 'reseid.reported_result'])
                 ->join(['respr' => 'r_possibleresult'], 'respr.id=reseid.reported_result', ['labResult' => 'respr.response'])
                 ->join(['sp' => 'shipment_participant_map'], 'sp.map_id=reseid.shipment_map_id', ['sp.shipment_id', 'sp.participant_id', 'sp.shipment_receipt_date', 'sp.shipment_test_date', 'sp.attributes', 'responseDate' => 'sp.shipment_test_report_date', 'sp.failure_reason'])
-                ->join(['refeid' => 'reference_result_eid'], 'refeid.shipment_id=sp.shipment_id and refeid.sample_id=reseid.sample_id', ['refeid.reference_result', 'refeid.sample_label', 'refeid.mandatory'])
+                ->join(['refeid' => 'reference_result_eid'], 'refeid.shipment_id=sp.shipment_id and refeid.sample_id=reseid.sample_id', ['refeid.reference_result', 'refeid.sample_label', 'refeid.mandatory', 'refeid.sample_score'])
                 ->join(['refpr' => 'r_possibleresult'], 'refpr.id=refeid.reference_result', ['referenceResult' => 'refpr.response'])
                 ->where('refeid.control = 0')
                 ->where(new Zend_Db_Expr("IFNULL(sp.is_excluded, 'no') = 'no'"))
