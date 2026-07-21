@@ -304,24 +304,23 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             // their own lines instead: the two that change the record (Edit, Map) above
             // the two that change credentials (Password, Email). Nothing is hidden —
             // shorter labels and a clearer icon per action do the compacting.
-            // The four everyday actions share the generic button colours so the card
-            // treatment can quieten them together — a cell of four differently
-            // coloured buttons read as four unrelated things. "View as" stays red
-            // because it is the one that leaves the admin UI.
+            // Each action keeps its own colour so the cell can be read at a glance:
+            // amber edits the record, green opens the mapping modal, blue touches
+            // credentials, red leaves the admin UI.
             $recordLine = '';
             $credentialLine = '';
             $extraLine = '';
 
             if (!$fromParticipant) {
-                $recordLine .= '<a href="' . $editUrl . '" class="btn btn-primary btn-xs" title="' . $translator->_('Edit this data manager') . '"><i class="icon-pencil"></i> ' . $translator->_('Edit') . '</a>';
+                $recordLine .= '<a href="' . $editUrl . '" class="btn btn-warning btn-xs" title="' . $translator->_('Edit this data manager') . '"><i class="icon-pencil"></i> ' . $translator->_('Edit') . '</a>';
             }
             if (!$fromParticipant && !$isPtcc) {
                 // icon-link, not icon-user: this associates participants with the
                 // manager, and a person icon already means "the participant list".
-                $recordLine .= '<a href="javascript:void(0);" class="btn btn-primary btn-xs" title="' . $translator->_('Map participants to this data manager') . '" onclick="layoutModal(\'/admin/participants/participant-manager-map/id/' . (int) $aRow['dm_id'] . '/modal/1\',\'1150\',\'700\');"><i class="icon-link"></i> ' . $translator->_('Map') . '</a>';
+                $recordLine .= '<a href="javascript:void(0);" class="btn btn-success btn-xs" title="' . $translator->_('Map participants to this data manager') . '" onclick="layoutModal(\'/admin/participants/participant-manager-map/id/' . (int) $aRow['dm_id'] . '/modal/1\',\'1150\',\'700\');"><i class="icon-link"></i> ' . $translator->_('Map') . '</a>';
             }
 
-            $credentialLine .= '<a href="javascript:void(0);" class="btn btn-default btn-xs" title="' . $translator->_('Reset this user\'s password') . '" onclick="layoutModal(\'' . $resetUrl . '\',\'980\',\'500\');"><i class="icon-key"></i> ' . $translator->_('Password') . '</a>';
+            $credentialLine .= '<a href="javascript:void(0);" class="btn btn-info btn-xs" title="' . $translator->_('Reset this user\'s password') . '" onclick="layoutModal(\'' . $resetUrl . '\',\'980\',\'500\');"><i class="icon-key"></i> ' . $translator->_('Password') . '</a>';
             $credentialLine .= '<a href="javascript:void(0);" class="btn btn-default btn-xs" title="' . $translator->_('Change the primary email address') . '" onclick="layoutModal(\'' . $changeEmailUrl . '\',\'700\',\'520\');"><i class="icon-envelope"></i> ' . $translator->_('Email') . '</a>';
 
             // "View as Participant" — only rendered for admins with the
@@ -343,7 +342,9 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                     $actions .= '<div class="row-action-line">' . $line . '</div>';
                 }
             }
-            $row[] = '<div class="row-action-lines">' . $actions . '</div>';
+            // is-colored: these five actions are colour-coded, so this cell opts out
+            // of the card treatment's quietening of the generic button colours.
+            $row[] = '<div class="row-action-lines is-colored">' . $actions . '</div>';
 
             $output['aaData'][] = $row;
         }

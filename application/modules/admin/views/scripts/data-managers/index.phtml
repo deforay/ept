@@ -15,12 +15,14 @@ if (isset($this->ptcc) && !empty($this->ptcc) && $this->ptcc == 1) {
         background: transparent;
     }
 
+    /* Amber inset, the same one every other expanded row in the admin uses — an
+       expanded row is an expanded row, wherever you open it. */
     .participant-child-row {
         padding: 10px 16px 12px;
-        background: linear-gradient(to right, #e6f0fa 0%, #f4f9fd 70%, #f9fcfe 100%);
-        border-left: 4px solid #337ab7;
-        border-top: 1px solid #cfe1f2;
-        border-bottom: 1px solid #cfe1f2;
+        background: #fff8e1;
+        border-left: 4px solid #f0ad4e;
+        border-top: 1px solid #ead9b8;
+        border-bottom: 1px solid #ead9b8;
     }
 
     .participant-child-row .child-row-header {
@@ -31,7 +33,7 @@ if (isset($this->ptcc) && !empty($this->ptcc) && $this->ptcc == 1) {
         font-size: 13px;
         font-weight: 600;
         letter-spacing: 0.2px;
-        color: #1f4f82;
+        color: #8a6116;
     }
 
     .participant-child-row .child-row-header i {
@@ -50,7 +52,7 @@ if (isset($this->ptcc) && !empty($this->ptcc) && $this->ptcc == 1) {
 
     .participant-child-row .participant-list-wrap {
         background: #fff;
-        border: 1px solid #cfe1f2;
+        border: 1px solid #ead9b8;
         border-radius: 4px;
         box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
     }
