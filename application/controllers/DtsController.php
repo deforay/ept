@@ -65,7 +65,13 @@ class DtsController extends Zend_Controller_Action
             $this->view->shipment = $shipment;
 
             //Zend_Debug::dump($this->view->shipment);
-            $this->view->allTestKits = $dtsModel->getAllDtsTestKitList();
+            // Honour this shipment's testkit->position map (falls back to the global catalog
+            // per position), keeping any kit already saved on the response selectable.
+            $this->view->allTestKits = $dtsModel->getEffectiveTestKitList(
+                $sID,
+                false,
+                $dtsModel->savedTestKitsByPosition($response)
+            );
             $this->view->dtsPossibleResults = $schemeService->getPossibleResults('dts', 'participant');
             $shipmentAttributes = isset($shipment['shipment_attributes']) ? Pt_Commons_JsonUtility::safeDecode($shipment['shipment_attributes']) : [];
             if (isset($shipmentAttributes['enableRtri']) && $shipmentAttributes['enableRtri'] == 'yes') {

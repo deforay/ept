@@ -1417,6 +1417,67 @@ final class Application_Model_Dts
         return $out;
     }
 
+    /**
+     * The test-kit list that applies to ONE shipment, as the response form should offer it.
+     *
+     * Starts from the global catalog (scheme_testkit_map flags) and applies the optional
+     * shipment-specific override from shipment_testkit_map: for any position that has
+     * shipment rows, a kit's flag is 1 only if it is in that shipment's list; a position
+     * with no shipment rows keeps its global flag. Same shape as getAllDtsTestKitList(),
+     * so the existing `$kit['testkit_N'] == '1'` dropdown filters work unchanged.
+     *
+     * $keepSelectable (see savedTestKitsByPosition) forces kits the participant has ALREADY
+     * saved to stay in the list even when they fall outside the shipment's selection —
+     * narrowing the options must never silently drop a kit off an existing response.
+     *
+     * @param array<string, array<string>> $keepSelectable ['testkit_1' => ['tkAbc'], ...]
+     */
+    public function getEffectiveTestKitList($shipmentId, bool $countryAdapted = false, array $keepSelectable = []): array
+    {
+        $kits = $this->getAllDtsTestKitList($countryAdapted);
+        $shipmentKitPos = $this->getShipmentTestkitPositions($shipmentId);
+        if (empty($shipmentKitPos)) {
+            return $kits;
+        }
+        foreach ($kits as &$kit) {
+            foreach (['testkit_1', 'testkit_2', 'testkit_3'] as $pos) {
+                if (!isset($shipmentKitPos[$pos])) {
+                    continue;
+                }
+                $kitId = (string) $kit['TESTKITNAMEID'];
+                $allowed = in_array($kitId, $shipmentKitPos[$pos], true)
+                    || in_array($kitId, $keepSelectable[$pos] ?? [], true);
+                $kit[$pos] = $allowed ? '1' : '0';
+            }
+        }
+        unset($kit);
+        return $kits;
+    }
+
+    /**
+     * Kit IDs already stored on a participant's response rows, grouped by dropdown position.
+     * Repeat-test kits share their position's dropdown, so they are folded in. Feed this to
+     * getEffectiveTestKitList() so a narrowed shipment list never drops a saved selection.
+     *
+     * @param array<int, array<string, mixed>> $samples getDtsSamples() rows
+     * @return array<string, array<string>>
+     */
+    public function savedTestKitsByPosition(array $samples): array
+    {
+        $out = [];
+        foreach ($samples as $sample) {
+            foreach ([1, 2, 3] as $position) {
+                foreach (["test_kit_name_$position", "repeat_test_kit_name_$position"] as $field) {
+                    $kitId = trim((string) ($sample[$field] ?? ''));
+                    if ($kitId !== '' && !in_array($kitId, $out["testkit_$position"] ?? [], true)) {
+                        $out["testkit_$position"][] = $kitId;
+                    }
+                }
+            }
+        }
+        return $out;
+    }
+
     public function updateTestKitStatus($params)
     {
         return $this->db->update('r_testkitnames', ['testkit_status' => $params['status']], "testkit_status = 'pending'");
