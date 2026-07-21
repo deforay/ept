@@ -440,303 +440,327 @@ if (!empty($resultArray['shipment'])) {
                 }
             }
 
-            $hasAnyKit = !empty($myKitsByPosition[1]) || !empty($myKitsByPosition[2]) || !empty($myKitsByPosition[3]);
-            if ($hasAnyKit) {
+            // Resolve the kit blocks worth printing BEFORE emitting the section heading.
+            // A sample the participant did not test on this kit has no result to compare
+            // against the peer group, so NIHE drops the row entirely rather than printing
+            // a '-' line; a kit left with no rows drops its whole Assay block, and a
+            // participant with nothing to show drops the heading too.
+            $peerBlocks = [];
+            foreach ([1, 2, 3] as $position) {
+                foreach ($myKitsByPosition[$position] as $kid) {
+                    if (!isset($peerStats[$position][$kid])) {
+                        continue;
+                    }
+                    $block = $peerStats[$position][$kid];
+                    $reported = [];
+                    foreach ($block['samples'] as $sid => $s) {
+                        $mine = $myResp[$position][$sid] ?? null;
+                        // Same test the 'Your result' cell uses to decide it must print '-'.
+                        if (empty($mine['result_id']) || !isset($dtsResults[$mine['result_id']])) {
+                            continue;
+                        }
+                        $reported[$sid] = $s;
+                    }
+                    if (empty($reported)) {
+                        continue;
+                    }
+                    $block['samples'] = $reported;
+                    $peerBlocks[] = ['position' => $position, 'block' => $block];
+                }
+            }
+
+            if (!empty($peerBlocks)) {
                 $pdf->writeHTML('<br/><span style="font-weight:bold;font-size:12px;">' . Pt_Commons_TranslateUtility::safeTranslate('Peer Group Statistics') . '</span>', true, false, true, false, '');
                 $pdf->Ln(2);
 
-                foreach ([1, 2, 3] as $position) {
-                    foreach ($myKitsByPosition[$position] as $kid) {
-                        if (!isset($peerStats[$position][$kid])) {
-                            continue;
+                foreach ($peerBlocks as $peerBlock) {
+                    $position = $peerBlock['position'];
+                    $block = $peerBlock['block'];
+                    $kitDisplay = htmlspecialchars($block['kit_name'], ENT_QUOTES, 'UTF-8');
+                    $hasNum = $block['has_numeric'];
+                    $numLbl = $block['numeric_label'] !== '' ? $block['numeric_label'] : 'Value';
+
+                    $pdf->writeHTML(
+                        '<br/><span style="font-size:11px;"><strong>'
+                        . Pt_Commons_TranslateUtility::safeTranslate('Assay') . ':</strong> ' . $kitDisplay
+                        . ' &nbsp;<em>(' . Pt_Commons_TranslateUtility::safeTranslate('Test ' . $position) . ')</em></span>',
+                        true,
+                        false,
+                        true,
+                        false,
+                        ''
+                    );
+
+                    // Per-sample verdict from this participant's response, for the Concordance
+                    // column. The verdict is shipment-level (per sample, not per kit position),
+                    // but NIHE renders it on each kit's Peer Group Stats block so the reader
+                    // sees the verdict alongside the kit-level numbers.
+                    $verdictPerSample = [];
+                    foreach ($result['responseResult'] as $rr) {
+                        $verdictPerSample[(int) $rr['sample_id']] = $verdictText($rr['calculated_score'] ?? '');
+                    }
+
+                    $tbl  = '<table border="1" cellpadding="3" style="font-size:10px;border-color:#dbe4ee;">';
+                    $tbl .= '<tr style="background-color:#dbe4ee;font-weight:bold;text-align:center;">'
+                          . '<td style="vertical-align:middle;">' . Pt_Commons_TranslateUtility::safeTranslate('Sample') . '</td>'
+                          . '<td style="vertical-align:middle;">' . Pt_Commons_TranslateUtility::safeTranslate('Your result') . '</td>';
+                    if ($hasNum) {
+                        $tbl .= '<td style="vertical-align:middle;">' . Pt_Commons_TranslateUtility::safeTranslate('Your ' . $numLbl) . '</td>';
+                    }
+                    $tbl .= '<td style="vertical-align:middle;">' . Pt_Commons_TranslateUtility::safeTranslate('Participants (n)') . '</td>'
+                          . '<td style="vertical-align:middle;">' . Pt_Commons_TranslateUtility::safeTranslate('Result (n)') . '</td>';
+                    if ($hasNum) {
+                        $tbl .= '<td style="vertical-align:middle;">' . Pt_Commons_TranslateUtility::safeTranslate('Statistical (n)') . '</td>'
+                              . '<td style="vertical-align:middle;">' . Pt_Commons_TranslateUtility::safeTranslate('Mean') . '</td>'
+                              . '<td style="vertical-align:middle;">' . Pt_Commons_TranslateUtility::safeTranslate('SD') . '</td>'
+                              . '<td style="vertical-align:middle;">' . Pt_Commons_TranslateUtility::safeTranslate('CV (%)') . '</td>';
+                    }
+                    $tbl .= '<td style="vertical-align:middle;">' . Pt_Commons_TranslateUtility::safeTranslate('Concordant with RR n (%)') . '</td>'
+                          . '<td style="vertical-align:middle;">' . Pt_Commons_TranslateUtility::safeTranslate('Reference result (RR)') . '</td>'
+                          . '<td style="vertical-align:middle;">' . Pt_Commons_TranslateUtility::safeTranslate('Concordance') . '</td>'
+                          . '</tr>';
+
+                    foreach ($block['samples'] as $sid => $s) {
+                        $mine = $myResp[$position][$sid] ?? null;
+                        $myResultCode = '';
+                        if (!empty($mine['result_id']) && isset($dtsResults[$mine['result_id']])) {
+                            $myResultCode = (string) $dtsResults[$mine['result_id']];
                         }
-                        $block = $peerStats[$position][$kid];
-                        $kitDisplay = htmlspecialchars($block['kit_name'], ENT_QUOTES, 'UTF-8');
-                        $hasNum = $block['has_numeric'];
-                        $numLbl = $block['numeric_label'] !== '' ? $block['numeric_label'] : 'Value';
+                        $myNumericDisplay = ($hasNum && isset($mine['numeric']) && $mine['numeric'] !== null) ? (string) $mine['numeric'] : '-';
+                        $rrDisplay = $pretty($dtsCodeToLabel[$s['rr_code']] ?? $s['rr_code']);
+                        $concordantCombined = $s['concordant_pct'] !== null
+                            ? $s['concordant_n'] . ' (' . $s['concordant_pct'] . '%)'
+                            : '-';
+                        $verdict = $verdictPerSample[(int) $sid] ?? 'Not Evaluated';
 
-                        $pdf->writeHTML(
-                            '<br/><span style="font-size:11px;"><strong>'
-                            . Pt_Commons_TranslateUtility::safeTranslate('Assay') . ':</strong> ' . $kitDisplay
-                            . ' &nbsp;<em>(' . Pt_Commons_TranslateUtility::safeTranslate('Test ' . $position) . ')</em></span>',
-                            true,
-                            false,
-                            true,
-                            false,
-                            ''
-                        );
-
-                        // Per-sample verdict from this participant's response, for the Concordance
-                        // column. The verdict is shipment-level (per sample, not per kit position),
-                        // but NIHE renders it on each kit's Peer Group Stats block so the reader
-                        // sees the verdict alongside the kit-level numbers.
-                        $verdictPerSample = [];
-                        foreach ($result['responseResult'] as $rr) {
-                            $verdictPerSample[(int) $rr['sample_id']] = $verdictText($rr['calculated_score'] ?? '');
-                        }
-
-                        $tbl  = '<table border="1" cellpadding="3" style="font-size:10px;border-color:#dbe4ee;">';
-                        $tbl .= '<tr style="background-color:#dbe4ee;font-weight:bold;text-align:center;">'
-                              . '<td style="vertical-align:middle;">' . Pt_Commons_TranslateUtility::safeTranslate('Sample') . '</td>'
-                              . '<td style="vertical-align:middle;">' . Pt_Commons_TranslateUtility::safeTranslate('Your result') . '</td>';
+                        $tbl .= '<tr style="text-align:center;">'
+                              . '<td style="vertical-align:middle;">' . htmlspecialchars($s['sample_label'], ENT_QUOTES, 'UTF-8') . '</td>'
+                              . '<td style="vertical-align:middle;">' . ($myResultCode !== '' ? $pretty($myResultCode) : '-') . '</td>';
                         if ($hasNum) {
-                            $tbl .= '<td style="vertical-align:middle;">' . Pt_Commons_TranslateUtility::safeTranslate('Your ' . $numLbl) . '</td>';
+                            $tbl .= '<td style="vertical-align:middle;">' . $myNumericDisplay . '</td>';
                         }
-                        $tbl .= '<td style="vertical-align:middle;">' . Pt_Commons_TranslateUtility::safeTranslate('Participants (n)') . '</td>'
-                              . '<td style="vertical-align:middle;">' . Pt_Commons_TranslateUtility::safeTranslate('Result (n)') . '</td>';
+                        $tbl .= '<td style="vertical-align:middle;">' . $s['participants_n'] . '</td>'
+                              . '<td style="vertical-align:middle;">' . $s['result_n'] . '</td>';
                         if ($hasNum) {
-                            $tbl .= '<td style="vertical-align:middle;">' . Pt_Commons_TranslateUtility::safeTranslate('Statistical (n)') . '</td>'
-                                  . '<td style="vertical-align:middle;">' . Pt_Commons_TranslateUtility::safeTranslate('Mean') . '</td>'
-                                  . '<td style="vertical-align:middle;">' . Pt_Commons_TranslateUtility::safeTranslate('SD') . '</td>'
-                                  . '<td style="vertical-align:middle;">' . Pt_Commons_TranslateUtility::safeTranslate('CV (%)') . '</td>';
+                            $tbl .= '<td style="vertical-align:middle;">' . $s['statistical_n'] . '</td>'
+                                  . '<td style="vertical-align:middle;">' . ($s['mean'] !== null ? $s['mean'] : '-') . '</td>'
+                                  . '<td style="vertical-align:middle;">' . ($s['sd']   !== null ? $s['sd']   : '-') . '</td>'
+                                  . '<td style="vertical-align:middle;">' . ($s['cv']   !== null ? $s['cv']   : '-') . '</td>';
                         }
-                        $tbl .= '<td style="vertical-align:middle;">' . Pt_Commons_TranslateUtility::safeTranslate('Concordant with RR n (%)') . '</td>'
-                              . '<td style="vertical-align:middle;">' . Pt_Commons_TranslateUtility::safeTranslate('Reference result (RR)') . '</td>'
-                              . '<td style="vertical-align:middle;">' . Pt_Commons_TranslateUtility::safeTranslate('Concordance') . '</td>'
+                        $tbl .= '<td style="vertical-align:middle;">' . $concordantCombined . '</td>'
+                              . '<td style="vertical-align:middle;">' . $rrDisplay . '</td>'
+                              . '<td style="vertical-align:middle;">' . Pt_Commons_TranslateUtility::safeTranslate($verdict) . '</td>'
                               . '</tr>';
+                    }
+                    $tbl .= '</table>';
+                    $pdf->writeHTML($tbl, true, false, true, false, '');
 
-                        foreach ($block['samples'] as $sid => $s) {
-                            $mine = $myResp[$position][$sid] ?? null;
-                            $myResultCode = '';
-                            if (!empty($mine['result_id']) && isset($dtsResults[$mine['result_id']])) {
-                                $myResultCode = (string) $dtsResults[$mine['result_id']];
+                    // NIHE box chart STRIP — one mini box-plot per sample, each with
+                    // its own auto-scaled Y axis so a wide-variance sample doesn't crush
+                    // narrow ones. Matches the NIHE Word template's horizontal panel of
+                    // small per-sample charts. Only emitted for numeric kits (CLIA/ELISA
+                    // with additional_info=yes) since qualitative kits have nothing to
+                    // distribute.
+                    if ($hasNum) {
+                        // NIHE colour convention (from the NIHE summary template):
+                        //   Acceptable    = teal circle with ✓
+                        //   Unacceptable  = red circle with ✗
+                        //   Not evaluated = orange circle with –
+                        // We track the glyph alongside the colour so the SVG builder
+                        // can stamp the icon onto the participant dot.
+                        $pointSeriesMeta = [
+                            'Acceptable'    => ['color' => '#1b9e8a', 'glyph' => "\u{2713}", 'label' => Pt_Commons_TranslateUtility::safeTranslate('Acceptable')],
+                            'Unacceptable'  => ['color' => '#c0392b', 'glyph' => "\u{2717}", 'label' => Pt_Commons_TranslateUtility::safeTranslate('Unacceptable')],
+                            'Not Evaluated' => ['color' => '#e67e22', 'glyph' => "\u{2013}", 'label' => Pt_Commons_TranslateUtility::safeTranslate('Not evaluated')],
+                        ];
+
+                        // Inline SVG built from peer stats — TCPDF's ImageSVG renders
+                        // simple <rect>/<line>/<text>/<circle> reliably (see mtbept
+                        // tb.phtml for the established pattern). No Node call per chart,
+                        // no Chart.js complexity, output is true vector in the PDF.
+                        $svgBox = static function (array $vals, ?float $partVal, ?string $partColor, ?string $partGlyph, string $label, int $w = 300, int $h = 380): string {
+                            sort($vals);
+                            $n = count($vals);
+                            $pct = static function (array $a, float $p) {
+                                $idx = ($p / 100) * (count($a) - 1);
+                                $lo = (int) floor($idx); $hi = (int) ceil($idx);
+                                return $a[$lo] + ($a[$hi] - $a[$lo]) * ($idx - $lo);
+                            };
+                            $q1 = $pct($vals, 25);
+                            $q2 = $pct($vals, 50);
+                            $q3 = $pct($vals, 75);
+                            $iqr = $q3 - $q1;
+                            // Tukey whisker bounds clamped to actual data.
+                            $loFence = $q1 - 1.5 * $iqr;
+                            $hiFence = $q3 + 1.5 * $iqr;
+                            $whiskerLo = $vals[0];
+                            $whiskerHi = $vals[$n - 1];
+                            foreach ($vals as $v) {
+                                if ($v >= $loFence) { $whiskerLo = $v; break; }
                             }
-                            $myNumericDisplay = ($hasNum && isset($mine['numeric']) && $mine['numeric'] !== null) ? (string) $mine['numeric'] : '-';
-                            $rrDisplay = $pretty($dtsCodeToLabel[$s['rr_code']] ?? $s['rr_code']);
-                            $concordantCombined = $s['concordant_pct'] !== null
-                                ? $s['concordant_n'] . ' (' . $s['concordant_pct'] . '%)'
-                                : '-';
-                            $verdict = $verdictPerSample[(int) $sid] ?? 'Not Evaluated';
-
-                            $tbl .= '<tr style="text-align:center;">'
-                                  . '<td style="vertical-align:middle;">' . htmlspecialchars($s['sample_label'], ENT_QUOTES, 'UTF-8') . '</td>'
-                                  . '<td style="vertical-align:middle;">' . ($myResultCode !== '' ? $pretty($myResultCode) : '-') . '</td>';
-                            if ($hasNum) {
-                                $tbl .= '<td style="vertical-align:middle;">' . $myNumericDisplay . '</td>';
+                            for ($i = $n - 1; $i >= 0; $i--) {
+                                if ($vals[$i] <= $hiFence) { $whiskerHi = $vals[$i]; break; }
                             }
-                            $tbl .= '<td style="vertical-align:middle;">' . $s['participants_n'] . '</td>'
-                                  . '<td style="vertical-align:middle;">' . $s['result_n'] . '</td>';
-                            if ($hasNum) {
-                                $tbl .= '<td style="vertical-align:middle;">' . $s['statistical_n'] . '</td>'
-                                      . '<td style="vertical-align:middle;">' . ($s['mean'] !== null ? $s['mean'] : '-') . '</td>'
-                                      . '<td style="vertical-align:middle;">' . ($s['sd']   !== null ? $s['sd']   : '-') . '</td>'
-                                      . '<td style="vertical-align:middle;">' . ($s['cv']   !== null ? $s['cv']   : '-') . '</td>';
-                            }
-                            $tbl .= '<td style="vertical-align:middle;">' . $concordantCombined . '</td>'
-                                  . '<td style="vertical-align:middle;">' . $rrDisplay . '</td>'
-                                  . '<td style="vertical-align:middle;">' . Pt_Commons_TranslateUtility::safeTranslate($verdict) . '</td>'
-                                  . '</tr>';
-                        }
-                        $tbl .= '</table>';
-                        $pdf->writeHTML($tbl, true, false, true, false, '');
+                            $outliers = array_filter($vals, static fn ($v) => $v < $loFence || $v > $hiFence);
 
-                        // NIHE box chart STRIP — one mini box-plot per sample, each with
-                        // its own auto-scaled Y axis so a wide-variance sample doesn't crush
-                        // narrow ones. Matches the NIHE Word template's horizontal panel of
-                        // small per-sample charts. Only emitted for numeric kits (CLIA/ELISA
-                        // with additional_info=yes) since qualitative kits have nothing to
-                        // distribute.
-                        if ($hasNum) {
-                            // NIHE colour convention (from the NIHE summary template):
-                            //   Acceptable    = teal circle with ✓
-                            //   Unacceptable  = red circle with ✗
-                            //   Not evaluated = orange circle with –
-                            // We track the glyph alongside the colour so the SVG builder
-                            // can stamp the icon onto the participant dot.
-                            $pointSeriesMeta = [
-                                'Acceptable'    => ['color' => '#1b9e8a', 'glyph' => "\u{2713}", 'label' => Pt_Commons_TranslateUtility::safeTranslate('Acceptable')],
-                                'Unacceptable'  => ['color' => '#c0392b', 'glyph' => "\u{2717}", 'label' => Pt_Commons_TranslateUtility::safeTranslate('Unacceptable')],
-                                'Not Evaluated' => ['color' => '#e67e22', 'glyph' => "\u{2013}", 'label' => Pt_Commons_TranslateUtility::safeTranslate('Not evaluated')],
-                            ];
+                            // Y axis scaling
+                            $extents = array_merge([$whiskerLo, $whiskerHi, $q1, $q3, $q2], $outliers);
+                            if ($partVal !== null) { $extents[] = $partVal; }
+                            $dataMin = min($extents);
+                            $dataMax = max($extents);
+                            if ($dataMin === $dataMax) { $dataMin -= 1; $dataMax += 1; }
+                            $pad = ($dataMax - $dataMin) * 0.12;
+                            $axisMin = $dataMin - $pad;
+                            $axisMax = $dataMax + $pad;
+                            // Clamp axis bottom to 0 for S/CO-like ratios (negative is meaningless).
+                            if ($dataMin >= 0) { $axisMin = max(0, $axisMin); }
+                            $axisRange = max($axisMax - $axisMin, 1e-9);
 
-                            // Inline SVG built from peer stats — TCPDF's ImageSVG renders
-                            // simple <rect>/<line>/<text>/<circle> reliably (see mtbept
-                            // tb.phtml for the established pattern). No Node call per chart,
-                            // no Chart.js complexity, output is true vector in the PDF.
-                            $svgBox = static function (array $vals, ?float $partVal, ?string $partColor, ?string $partGlyph, string $label, int $w = 300, int $h = 380): string {
-                                sort($vals);
-                                $n = count($vals);
-                                $pct = static function (array $a, float $p) {
-                                    $idx = ($p / 100) * (count($a) - 1);
-                                    $lo = (int) floor($idx); $hi = (int) ceil($idx);
-                                    return $a[$lo] + ($a[$hi] - $a[$lo]) * ($idx - $lo);
-                                };
-                                $q1 = $pct($vals, 25);
-                                $q2 = $pct($vals, 50);
-                                $q3 = $pct($vals, 75);
-                                $iqr = $q3 - $q1;
-                                // Tukey whisker bounds clamped to actual data.
-                                $loFence = $q1 - 1.5 * $iqr;
-                                $hiFence = $q3 + 1.5 * $iqr;
-                                $whiskerLo = $vals[0];
-                                $whiskerHi = $vals[$n - 1];
-                                foreach ($vals as $v) {
-                                    if ($v >= $loFence) { $whiskerLo = $v; break; }
-                                }
-                                for ($i = $n - 1; $i >= 0; $i--) {
-                                    if ($vals[$i] <= $hiFence) { $whiskerHi = $vals[$i]; break; }
-                                }
-                                $outliers = array_filter($vals, static fn ($v) => $v < $loFence || $v > $hiFence);
+                            $padTop = 14; $padBottom = 38; $padLeft = 56; $padRight = 14;
+                            $plotTop = $padTop; $plotBottom = $h - $padBottom;
+                            $plotLeft = $padLeft; $plotRight = $w - $padRight;
+                            $plotW = $plotRight - $plotLeft; $plotH = $plotBottom - $plotTop;
+                            $cx = $plotLeft + $plotW / 2;
+                            $boxW = $plotW * 0.6;
+                            $capW = $plotW * 0.42;
 
-                                // Y axis scaling
-                                $extents = array_merge([$whiskerLo, $whiskerHi, $q1, $q3, $q2], $outliers);
-                                if ($partVal !== null) { $extents[] = $partVal; }
-                                $dataMin = min($extents);
-                                $dataMax = max($extents);
-                                if ($dataMin === $dataMax) { $dataMin -= 1; $dataMax += 1; }
-                                $pad = ($dataMax - $dataMin) * 0.12;
-                                $axisMin = $dataMin - $pad;
-                                $axisMax = $dataMax + $pad;
-                                // Clamp axis bottom to 0 for S/CO-like ratios (negative is meaningless).
-                                if ($dataMin >= 0) { $axisMin = max(0, $axisMin); }
-                                $axisRange = max($axisMax - $axisMin, 1e-9);
-
-                                $padTop = 14; $padBottom = 38; $padLeft = 56; $padRight = 14;
-                                $plotTop = $padTop; $plotBottom = $h - $padBottom;
-                                $plotLeft = $padLeft; $plotRight = $w - $padRight;
-                                $plotW = $plotRight - $plotLeft; $plotH = $plotBottom - $plotTop;
-                                $cx = $plotLeft + $plotW / 2;
-                                $boxW = $plotW * 0.6;
-                                $capW = $plotW * 0.42;
-
-                                $toY = static fn (float $v) => $plotBottom - (($v - $axisMin) / $axisRange) * $plotH;
-                                $fmt = static function (float $v): string {
-                                    if (abs($v) >= 100) { return (string) (int) round($v); }
-                                    if (abs($v) >= 10)  { return rtrim(rtrim(number_format($v, 1, '.', ''), '0'), '.'); }
-                                    return rtrim(rtrim(number_format($v, 2, '.', ''), '0'), '.');
-                                };
-
-                                // Pick 4–5 round-ish tick values across the axis range.
-                                $tickCount = 5;
-                                $step = ($axisMax - $axisMin) / ($tickCount - 1);
-                                $magnitude = pow(10, (int) floor(log10(max($step, 1e-9))));
-                                $nice = $magnitude;
-                                foreach ([1, 2, 2.5, 5, 10] as $f) {
-                                    if ($f * $magnitude >= $step) { $nice = $f * $magnitude; break; }
-                                }
-                                $tickStart = $nice * floor($axisMin / $nice);
-                                $ticks = [];
-                                for ($t = $tickStart; $t <= $axisMax + $nice / 2; $t += $nice) {
-                                    if ($t < $axisMin - $nice / 2) { continue; }
-                                    $ticks[] = $t;
-                                }
-
-                                $svg  = '<?xml version="1.0" encoding="UTF-8"?>';
-                                $svg .= '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ' . $w . ' ' . $h . '">';
-                                // Background
-                                $svg .= '<rect x="0" y="0" width="' . $w . '" height="' . $h . '" fill="white"/>';
-                                // Y-axis ticks + gridlines (label text in black for contrast)
-                                foreach ($ticks as $t) {
-                                    if ($t < $axisMin || $t > $axisMax) { continue; }
-                                    $ty = $toY($t);
-                                    $svg .= '<line x1="' . $plotLeft . '" y1="' . $ty . '" x2="' . $plotRight . '" y2="' . $ty . '" stroke="#eee" stroke-width="0.6"/>';
-                                    $svg .= '<text x="' . ($plotLeft - 6) . '" y="' . $ty . '" dominant-baseline="middle" text-anchor="end" style="fill:#222;font-family:helvetica;font-size:14pt">' . $fmt($t) . '</text>';
-                                }
-                                // Y axis line
-                                $svg .= '<line x1="' . $plotLeft . '" y1="' . $plotTop . '" x2="' . $plotLeft . '" y2="' . $plotBottom . '" stroke="#888" stroke-width="1.2"/>';
-                                // Upper whisker stem + cap
-                                if ($whiskerHi > $q3) {
-                                    $svg .= '<line x1="' . $cx . '" y1="' . $toY($q3) . '" x2="' . $cx . '" y2="' . $toY($whiskerHi) . '" stroke="#1f3a68" stroke-width="3"/>';
-                                    $svg .= '<line x1="' . ($cx - $capW / 2) . '" y1="' . $toY($whiskerHi) . '" x2="' . ($cx + $capW / 2) . '" y2="' . $toY($whiskerHi) . '" stroke="#1f3a68" stroke-width="3"/>';
-                                }
-                                // Lower whisker stem + cap
-                                if ($whiskerLo < $q1) {
-                                    $svg .= '<line x1="' . $cx . '" y1="' . $toY($q1) . '" x2="' . $cx . '" y2="' . $toY($whiskerLo) . '" stroke="#1f3a68" stroke-width="3"/>';
-                                    $svg .= '<line x1="' . ($cx - $capW / 2) . '" y1="' . $toY($whiskerLo) . '" x2="' . ($cx + $capW / 2) . '" y2="' . $toY($whiskerLo) . '" stroke="#1f3a68" stroke-width="3"/>';
-                                }
-                                // Box (Q1..Q3) — thicker border so the column reads bolder
-                                // at the strip's narrow per-chart width (~16mm with 10 samples).
-                                $boxTop = $toY($q3); $boxBot = $toY($q1);
-                                $boxH = max($boxBot - $boxTop, 1);
-                                $svg .= '<rect x="' . ($cx - $boxW / 2) . '" y="' . $boxTop . '" width="' . $boxW . '" height="' . $boxH . '" fill="white" stroke="#1f3a68" stroke-width="3.2"/>';
-                                // Median line
-                                $svg .= '<line x1="' . ($cx - $boxW / 2) . '" y1="' . $toY($q2) . '" x2="' . ($cx + $boxW / 2) . '" y2="' . $toY($q2) . '" stroke="#1f3a68" stroke-width="3.5"/>';
-                                // Outliers — filled navy for stronger contrast against the page;
-                                // open circles disappear at small chart widths.
-                                foreach ($outliers as $o) {
-                                    $svg .= '<circle cx="' . $cx . '" cy="' . $toY($o) . '" r="3" fill="#1f3a68" stroke="#1f3a68" stroke-width="1"/>';
-                                }
-                                // Participant dot — NIHE-style: solid coloured circle with
-                                // the concordance glyph (✓ / ✗ / –) overlaid in white.
-                                if ($partVal !== null && $partColor !== null) {
-                                    $py = $toY($partVal);
-                                    $r = 9;
-                                    $svg .= '<circle cx="' . $cx . '" cy="' . $py . '" r="' . $r . '" fill="' . $partColor . '" stroke="' . $partColor . '" stroke-width="1"/>';
-                                    if ($partGlyph !== null && $partGlyph !== '') {
-                                        $svg .= '<text x="' . $cx . '" y="' . $py . '" dominant-baseline="central" text-anchor="middle" style="fill:#fff;font-family:helvetica;font-size:14pt;font-weight:bold">' . htmlspecialchars($partGlyph, ENT_QUOTES, 'UTF-8') . '</text>';
-                                    }
-                                }
-                                // Sample label — solid black + bold for stronger legibility at strip scale
-                                $svg .= '<text x="' . $cx . '" y="' . ($h - 14) . '" dominant-baseline="middle" text-anchor="middle" style="fill:#000;font-family:helvetica;font-size:16pt;font-weight:bold">' . htmlspecialchars($label, ENT_QUOTES) . '</text>';
-                                $svg .= '</svg>';
-                                return $svg;
+                            $toY = static fn (float $v) => $plotBottom - (($v - $axisMin) / $axisRange) * $plotH;
+                            $fmt = static function (float $v): string {
+                                if (abs($v) >= 100) { return (string) (int) round($v); }
+                                if (abs($v) >= 10)  { return rtrim(rtrim(number_format($v, 1, '.', ''), '0'), '.'); }
+                                return rtrim(rtrim(number_format($v, 2, '.', ''), '0'), '.');
                             };
 
-                            $miniCharts = [];
-                            $sampleIdx = 0;
-                            foreach ($block['samples'] as $sid => $s) {
-                                $vals = array_values(array_map('floatval', $s['numeric_values']));
-                                if (count($vals) < 2) {
-                                    continue;
-                                }
-                                $sampleLabel = $s['sample_label'] ?: ('S' . ($sampleIdx + 1));
-
-                                $mine = $myResp[$position][$sid] ?? null;
-                                $myNumeric = ($mine && isset($mine['numeric']) && $mine['numeric'] !== null) ? (float) $mine['numeric'] : null;
-                                $verdict = $verdictPerSample[(int) $sid] ?? 'Not Evaluated';
-                                $bucket = isset($pointSeriesMeta[$verdict]) ? $verdict : 'Not Evaluated';
-                                $partColor = $myNumeric !== null ? $pointSeriesMeta[$bucket]['color'] : null;
-
-                                $partGlyph = $myNumeric !== null ? $pointSeriesMeta[$bucket]['glyph'] : null;
-                                $miniCharts[] = [
-                                    'svg'   => $svgBox($vals, $myNumeric, $partColor, $partGlyph, $sampleLabel),
-                                    'label' => $sampleLabel,
-                                ];
-                                $sampleIdx++;
+                            // Pick 4–5 round-ish tick values across the axis range.
+                            $tickCount = 5;
+                            $step = ($axisMax - $axisMin) / ($tickCount - 1);
+                            $magnitude = pow(10, (int) floor(log10(max($step, 1e-9))));
+                            $nice = $magnitude;
+                            foreach ([1, 2, 2.5, 5, 10] as $f) {
+                                if ($f * $magnitude >= $step) { $nice = $f * $magnitude; break; }
+                            }
+                            $tickStart = $nice * floor($axisMin / $nice);
+                            $ticks = [];
+                            for ($t = $tickStart; $t <= $axisMax + $nice / 2; $t += $nice) {
+                                if ($t < $axisMin - $nice / 2) { continue; }
+                                $ticks[] = $t;
                             }
 
-                            // Render strip: N mini-charts side by side, then a shared legend row.
-                            if (!empty($miniCharts)) {
-                                $n = count($miniCharts);
-                                $bodyW = $pdf->getPageWidth() - PDF_MARGIN_LEFT - PDF_MARGIN_RIGHT;
-                                // Tighter gap when there are more samples in the strip — gives
-                                // each chart ~1mm more breathing room at the 10-sample layout.
-                                $gap = $n >= 8 ? 0.8 : 1.5;  // mm
-                                $perW = ($bodyW - ($gap * ($n - 1))) / $n;
-                                // Source SVG aspect ratio 300:380 (set in $svgBox defaults).
-                                $imgH = $perW * (380 / 300);
-
-                                // Page-break BEFORE the strip if it won't fit on the current page.
-                                $stripTopY = $pdf->getY() + 2;
-                                $pageH = $pdf->getPageHeight() - PDF_MARGIN_BOTTOM;
-                                if ($stripTopY + $imgH + 10 > $pageH) {
-                                    $pdf->AddPage();
-                                    $stripTopY = $pdf->getY();
-                                }
-
-                                $xCursor = PDF_MARGIN_LEFT;
-                                foreach ($miniCharts as $mc) {
-                                    // '@' prefix tells TCPDF the source is a raw SVG string,
-                                    // not a file path — matches the mtbept tb.phtml pattern.
-                                    $pdf->ImageSVG('@' . $mc['svg'], $xCursor, $stripTopY, $perW, $imgH, '', '', '', 0, false);
-                                    $xCursor += $perW + $gap;
-                                }
-                                $pdf->SetY($stripTopY + $imgH + 1);
-
-                                // Shared NIHE-style legend — coloured filled circle (●) per
-                                // category. Clustered in a single centred cell so the items
-                                // read as one legend rather than evenly-spaced column captions
-                                // under the chart strip above.
-                                $legendItems = [];
-                                foreach ($pointSeriesMeta as $meta) {
-                                    $legendItems[] = '<span style="color:' . $meta['color'] . ';font-size:14px;">&#9679;</span>&nbsp;' . htmlspecialchars($meta['label'], ENT_QUOTES);
-                                }
-                                $legendHtml  = '<table cellpadding="0" style="width:100%;font-size:10px;"><tr><td style="vertical-align:middle;text-align:center;">';
-                                $legendHtml .= implode('&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;', $legendItems);
-                                $legendHtml .= '</td></tr></table>';
-                                $pdf->writeHTML($legendHtml, true, false, true, false, '');
-                                $pdf->Ln(2);
+                            $svg  = '<?xml version="1.0" encoding="UTF-8"?>';
+                            $svg .= '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ' . $w . ' ' . $h . '">';
+                            // Background
+                            $svg .= '<rect x="0" y="0" width="' . $w . '" height="' . $h . '" fill="white"/>';
+                            // Y-axis ticks + gridlines (label text in black for contrast)
+                            foreach ($ticks as $t) {
+                                if ($t < $axisMin || $t > $axisMax) { continue; }
+                                $ty = $toY($t);
+                                $svg .= '<line x1="' . $plotLeft . '" y1="' . $ty . '" x2="' . $plotRight . '" y2="' . $ty . '" stroke="#eee" stroke-width="0.6"/>';
+                                $svg .= '<text x="' . ($plotLeft - 6) . '" y="' . $ty . '" dominant-baseline="middle" text-anchor="end" style="fill:#222;font-family:helvetica;font-size:14pt">' . $fmt($t) . '</text>';
                             }
+                            // Y axis line
+                            $svg .= '<line x1="' . $plotLeft . '" y1="' . $plotTop . '" x2="' . $plotLeft . '" y2="' . $plotBottom . '" stroke="#888" stroke-width="1.2"/>';
+                            // Upper whisker stem + cap
+                            if ($whiskerHi > $q3) {
+                                $svg .= '<line x1="' . $cx . '" y1="' . $toY($q3) . '" x2="' . $cx . '" y2="' . $toY($whiskerHi) . '" stroke="#1f3a68" stroke-width="3"/>';
+                                $svg .= '<line x1="' . ($cx - $capW / 2) . '" y1="' . $toY($whiskerHi) . '" x2="' . ($cx + $capW / 2) . '" y2="' . $toY($whiskerHi) . '" stroke="#1f3a68" stroke-width="3"/>';
+                            }
+                            // Lower whisker stem + cap
+                            if ($whiskerLo < $q1) {
+                                $svg .= '<line x1="' . $cx . '" y1="' . $toY($q1) . '" x2="' . $cx . '" y2="' . $toY($whiskerLo) . '" stroke="#1f3a68" stroke-width="3"/>';
+                                $svg .= '<line x1="' . ($cx - $capW / 2) . '" y1="' . $toY($whiskerLo) . '" x2="' . ($cx + $capW / 2) . '" y2="' . $toY($whiskerLo) . '" stroke="#1f3a68" stroke-width="3"/>';
+                            }
+                            // Box (Q1..Q3) — thicker border so the column reads bolder
+                            // at the strip's narrow per-chart width (~16mm with 10 samples).
+                            $boxTop = $toY($q3); $boxBot = $toY($q1);
+                            $boxH = max($boxBot - $boxTop, 1);
+                            $svg .= '<rect x="' . ($cx - $boxW / 2) . '" y="' . $boxTop . '" width="' . $boxW . '" height="' . $boxH . '" fill="white" stroke="#1f3a68" stroke-width="3.2"/>';
+                            // Median line
+                            $svg .= '<line x1="' . ($cx - $boxW / 2) . '" y1="' . $toY($q2) . '" x2="' . ($cx + $boxW / 2) . '" y2="' . $toY($q2) . '" stroke="#1f3a68" stroke-width="3.5"/>';
+                            // Outliers — filled navy for stronger contrast against the page;
+                            // open circles disappear at small chart widths.
+                            foreach ($outliers as $o) {
+                                $svg .= '<circle cx="' . $cx . '" cy="' . $toY($o) . '" r="3" fill="#1f3a68" stroke="#1f3a68" stroke-width="1"/>';
+                            }
+                            // Participant dot — NIHE-style: solid coloured circle with
+                            // the concordance glyph (✓ / ✗ / –) overlaid in white.
+                            if ($partVal !== null && $partColor !== null) {
+                                $py = $toY($partVal);
+                                $r = 9;
+                                $svg .= '<circle cx="' . $cx . '" cy="' . $py . '" r="' . $r . '" fill="' . $partColor . '" stroke="' . $partColor . '" stroke-width="1"/>';
+                                if ($partGlyph !== null && $partGlyph !== '') {
+                                    $svg .= '<text x="' . $cx . '" y="' . $py . '" dominant-baseline="central" text-anchor="middle" style="fill:#fff;font-family:helvetica;font-size:14pt;font-weight:bold">' . htmlspecialchars($partGlyph, ENT_QUOTES, 'UTF-8') . '</text>';
+                                }
+                            }
+                            // Sample label — solid black + bold for stronger legibility at strip scale
+                            $svg .= '<text x="' . $cx . '" y="' . ($h - 14) . '" dominant-baseline="middle" text-anchor="middle" style="fill:#000;font-family:helvetica;font-size:16pt;font-weight:bold">' . htmlspecialchars($label, ENT_QUOTES) . '</text>';
+                            $svg .= '</svg>';
+                            return $svg;
+                        };
+
+                        $miniCharts = [];
+                        $sampleIdx = 0;
+                        foreach ($block['samples'] as $sid => $s) {
+                            $vals = array_values(array_map('floatval', $s['numeric_values']));
+                            if (count($vals) < 2) {
+                                continue;
+                            }
+                            $sampleLabel = $s['sample_label'] ?: ('S' . ($sampleIdx + 1));
+
+                            $mine = $myResp[$position][$sid] ?? null;
+                            $myNumeric = ($mine && isset($mine['numeric']) && $mine['numeric'] !== null) ? (float) $mine['numeric'] : null;
+                            $verdict = $verdictPerSample[(int) $sid] ?? 'Not Evaluated';
+                            $bucket = isset($pointSeriesMeta[$verdict]) ? $verdict : 'Not Evaluated';
+                            $partColor = $myNumeric !== null ? $pointSeriesMeta[$bucket]['color'] : null;
+
+                            $partGlyph = $myNumeric !== null ? $pointSeriesMeta[$bucket]['glyph'] : null;
+                            $miniCharts[] = [
+                                'svg'   => $svgBox($vals, $myNumeric, $partColor, $partGlyph, $sampleLabel),
+                                'label' => $sampleLabel,
+                            ];
+                            $sampleIdx++;
+                        }
+
+                        // Render strip: N mini-charts side by side, then a shared legend row.
+                        if (!empty($miniCharts)) {
+                            $n = count($miniCharts);
+                            $bodyW = $pdf->getPageWidth() - PDF_MARGIN_LEFT - PDF_MARGIN_RIGHT;
+                            // Tighter gap when there are more samples in the strip — gives
+                            // each chart ~1mm more breathing room at the 10-sample layout.
+                            $gap = $n >= 8 ? 0.8 : 1.5;  // mm
+                            $perW = ($bodyW - ($gap * ($n - 1))) / $n;
+                            // Source SVG aspect ratio 300:380 (set in $svgBox defaults).
+                            $imgH = $perW * (380 / 300);
+
+                            // Page-break BEFORE the strip if it won't fit on the current page.
+                            $stripTopY = $pdf->getY() + 2;
+                            $pageH = $pdf->getPageHeight() - PDF_MARGIN_BOTTOM;
+                            if ($stripTopY + $imgH + 10 > $pageH) {
+                                $pdf->AddPage();
+                                $stripTopY = $pdf->getY();
+                            }
+
+                            $xCursor = PDF_MARGIN_LEFT;
+                            foreach ($miniCharts as $mc) {
+                                // '@' prefix tells TCPDF the source is a raw SVG string,
+                                // not a file path — matches the mtbept tb.phtml pattern.
+                                $pdf->ImageSVG('@' . $mc['svg'], $xCursor, $stripTopY, $perW, $imgH, '', '', '', 0, false);
+                                $xCursor += $perW + $gap;
+                            }
+                            $pdf->SetY($stripTopY + $imgH + 1);
+
+                            // Shared NIHE-style legend — coloured filled circle (●) per
+                            // category. Clustered in a single centred cell so the items
+                            // read as one legend rather than evenly-spaced column captions
+                            // under the chart strip above.
+                            $legendItems = [];
+                            foreach ($pointSeriesMeta as $meta) {
+                                $legendItems[] = '<span style="color:' . $meta['color'] . ';font-size:14px;">&#9679;</span>&nbsp;' . htmlspecialchars($meta['label'], ENT_QUOTES);
+                            }
+                            $legendHtml  = '<table cellpadding="0" style="width:100%;font-size:10px;"><tr><td style="vertical-align:middle;text-align:center;">';
+                            $legendHtml .= implode('&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;', $legendItems);
+                            $legendHtml .= '</td></tr></table>';
+                            $pdf->writeHTML($legendHtml, true, false, true, false, '');
+                            $pdf->Ln(2);
                         }
                     }
                 }
