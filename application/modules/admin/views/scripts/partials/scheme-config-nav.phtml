@@ -81,7 +81,7 @@ $testResultsPage = function (string $scheme) {
         'label'      => $this->translate->_('Test Results'),
         'controller' => 'schemes',
         'action'     => 'manage-test-results',
-        'params'     => ['id' => base64_encode($scheme)],
+        'params'     => ['id' => Pt_Commons_MiscUtility::encodeId($scheme)],
     ];
 };
 
@@ -103,7 +103,7 @@ foreach ($schemeRows as $row) {
             'label'      => $this->translate->_('Settings'),
             'controller' => 'custom-test',
             'action'     => 'edit',
-            'params'     => ['id' => base64_encode($schemeId)],
+            'params'     => ['id' => Pt_Commons_MiscUtility::encodeId($schemeId)],
         ];
     }
 

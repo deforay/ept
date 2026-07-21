@@ -160,6 +160,39 @@ final class Pt_Commons_MiscUtility
         return $slug;
     }
 
+    /**
+     * Encode an identifier for use in a URL path segment.
+     *
+     * The app has always passed ids around base64-encoded (/id/ZHRz). Plain
+     * base64 is not URL-safe: its alphabet includes '+' and '/', and a '/' in a
+     * path segment silently splits the route. No scheme id in use today can
+     * produce one — that needs punctuation outside [A-Za-z0-9 _.-] — but the ids
+     * are free text (`HBV RDT`, `Dried Tube Specimen - Malaria Serology`), so
+     * the guarantee is worth having rather than assuming.
+     *
+     * This is base64url (RFC 4648 §5): same encoding, '+/' swapped for '-_' and
+     * padding dropped. Obfuscation only — never a security boundary.
+     */
+    public static function encodeId($id): string
+    {
+        return rtrim(strtr(base64_encode((string) $id), '+/', '-_'), '=');
+    }
+
+    /**
+     * Reverse of encodeId(). Also accepts standard base64, with or without
+     * padding, so links and bookmarks minted before the switch keep working.
+     */
+    public static function decodeId($encoded): string
+    {
+        $value = strtr((string) $encoded, '-_', '+/');
+        // base64_decode needs the padding back; strlen%4 is never 1 for valid input.
+        $remainder = strlen($value) % 4;
+        if ($remainder > 0) {
+            $value .= str_repeat('=', 4 - $remainder);
+        }
+        return (string) base64_decode($value);
+    }
+
     public static function generateFakeEmailId($uniqueId, $participantName)
     {
         $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);

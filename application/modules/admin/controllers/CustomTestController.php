@@ -124,7 +124,7 @@ class Admin_CustomTestController extends Zend_Controller_Action
 
             $this->redirect('/admin/custom-test');
         } elseif ($this->hasParam('id')) {
-            $id = base64_decode($this->_getParam('id'));
+            $id = Pt_Commons_MiscUtility::decodeId($this->_getParam('id'));
             $this->view->result = $result =  $schemeService->getGenericTest($id);
             $schemeCode = $result['schemeResult']['scheme_id'];
             $dtsModel = new Application_Model_Dts();
@@ -145,7 +145,7 @@ class Admin_CustomTestController extends Zend_Controller_Action
             $this->redirect('/admin/custom-test');
             return;
         }
-        $id = base64_decode($this->_getParam('id'));
+        $id = Pt_Commons_MiscUtility::decodeId($this->_getParam('id'));
         $this->view->result = $result = $schemeService->getGenericTest($id);
         $schemeCode = $result['schemeResult']['scheme_id'];
         $dtsModel = new Application_Model_Dts();
@@ -172,7 +172,7 @@ class Admin_CustomTestController extends Zend_Controller_Action
             return;
         }
 
-        $id = base64_decode($this->_getParam('id'));
+        $id = Pt_Commons_MiscUtility::decodeId($this->_getParam('id'));
         $schemeService = new Application_Service_Schemes();
         $export = $schemeService->exportGenericTests([$id]);
         if (empty($export['tests'])) {

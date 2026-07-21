@@ -166,9 +166,9 @@ class Application_Model_DbTable_SchemeList extends Zend_Db_Table_Abstract
             $row[] = ucwords($aRow['scheme_name']);
             $row[] = $aRow['scheme_id'];
             $row[] = ucwords($aRow['status']);
-            $row[] = '<a href="/admin/custom-test/edit/id/' . base64_encode($aRow['scheme_id']) . '" class="btn btn-warning btn-xs" style="margin-right: 2px;"><i class="icon-pencil"></i> Edit</a>'
-                . '<a href="/admin/custom-test/clone/id/' . base64_encode($aRow['scheme_id']) . '" class="btn btn-info btn-xs" style="margin-right: 2px;"><i class="icon-copy"></i> Clone</a>'
-                . '<a href="/admin/custom-test/export/id/' . base64_encode($aRow['scheme_id']) . '" class="btn btn-success btn-xs" style="margin-right: 2px;"><i class="icon-download-alt"></i> Export</a>';
+            $row[] = '<a href="/admin/custom-test/edit/id/' . Pt_Commons_MiscUtility::encodeId($aRow['scheme_id']) . '" class="btn btn-warning btn-xs" style="margin-right: 2px;"><i class="icon-pencil"></i> Edit</a>'
+                . '<a href="/admin/custom-test/clone/id/' . Pt_Commons_MiscUtility::encodeId($aRow['scheme_id']) . '" class="btn btn-info btn-xs" style="margin-right: 2px;"><i class="icon-copy"></i> Clone</a>'
+                . '<a href="/admin/custom-test/export/id/' . Pt_Commons_MiscUtility::encodeId($aRow['scheme_id']) . '" class="btn btn-success btn-xs" style="margin-right: 2px;"><i class="icon-download-alt"></i> Export</a>';
             $output['aaData'][] = $row;
         }
 
@@ -206,7 +206,7 @@ class Application_Model_DbTable_SchemeList extends Zend_Db_Table_Abstract
             $inUseCodeSet = [];
             if (isset($params['schemeId']) && !empty($params['schemeId'])) {
                 $db = $this->getAdapter();
-                $schemeCode = base64_decode($params['schemeId']);
+                $schemeCode = Pt_Commons_MiscUtility::decodeId($params['schemeId']);
                 $this->update($data, $db->quoteInto('scheme_id = ?', $schemeCode));
 
                 // The custom-test form rebuilds r_possibleresult from scratch on every save. Any
@@ -468,7 +468,7 @@ class Application_Model_DbTable_SchemeList extends Zend_Db_Table_Abstract
             $row[] = ucwords($aRow['scheme_name']);
             $row[] = strtoupper($aRow['scheme_id']);
             $row[] = ucwords($aRow['status']);
-            $row[] = '<a href="/admin/schemes/manage-test-results/id/' . base64_encode($aRow['scheme_id']) . '" class="btn btn-warning btn-xs" style="margin-right: 2px;"><i class="icon-pencil"></i> Test Results</a>';
+            $row[] = '<a href="/admin/schemes/manage-test-results/id/' . Pt_Commons_MiscUtility::encodeId($aRow['scheme_id']) . '" class="btn btn-warning btn-xs" style="margin-right: 2px;"><i class="icon-pencil"></i> Test Results</a>';
             $output['aaData'][] = $row;
         }
 
@@ -482,7 +482,7 @@ class Application_Model_DbTable_SchemeList extends Zend_Db_Table_Abstract
         }
         $db = $this->getAdapter();
 
-        $schemeId = base64_decode($params['schemeId']);
+        $schemeId = Pt_Commons_MiscUtility::decodeId($params['schemeId']);
 
         // scheme_sub_group must round-trip and stay consistent with the rest of the system.
         // The whole codebase keys off two conventions (never a hyphen):

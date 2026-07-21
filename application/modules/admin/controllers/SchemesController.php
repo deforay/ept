@@ -52,7 +52,7 @@ class Admin_SchemesController extends Zend_Controller_Action
                 $alertMsgInit->message = 'Seomthing went wrong please try again later.';
             }
         } elseif ($this->hasParam('id')) {
-            $id = base64_decode($this->_getParam('id'));
+            $id = Pt_Commons_MiscUtility::decodeId($this->_getParam('id'));
             $this->view->results = $commonServices->getPossibleResultById($id);
         }
     }

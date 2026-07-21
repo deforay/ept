@@ -299,7 +299,7 @@ $schemeId = !empty($this->results[0]['scheme_id']) ? strtoupper(trim($this->resu
 		onsubmit="validateNow(); return false;">
 
 		<input type="hidden" name="schemeId" id="schemeId"
-			value="<?php echo base64_encode($this->results[0]['scheme_id']); ?>" />
+			value="<?php echo Pt_Commons_MiscUtility::encodeId($this->results[0]['scheme_id']); ?>" />
 
 		<fieldset>
 			<legend>
