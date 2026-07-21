@@ -667,10 +667,11 @@ $helpPageKey = "$controllerName/$actionName";
 
 	<?php
 	// Bootstrap caps .container at 1170px (admin.css, @media min-width:1200px).
-	// The Scheme Config hub spends 240px of that on its sidebar and still has to
-	// fit wide tables (Test Kits has 9 columns), so those pages opt into a wider
-	// shell. Only the content container widens — the navbar keeps its 1170px
-	// container so the header does not shift as you navigate.
+	// Two kinds of page outgrow that and opt into a wider shell: the Scheme Config
+	// hub, which spends 240px on its sidebar before it starts on a 9-column table,
+	// and the wide admin grids (Shipments carries ten columns). Only the content
+	// container widens — the navbar keeps its 1170px container so the header does
+	// not shift as you navigate.
 	$wideShellControllers = [
 		'scheme-config',
 		'testkit',
@@ -680,11 +681,18 @@ $helpPageKey = "$controllerName/$actionName";
 		'covid19-gene-type',
 		'custom-test',
 	];
+	// Individual wide pages, as controller/action — the rest of their controller
+	// stays at the normal width. Shipments' listing carries ten columns; its edit
+	// and add screens are forms and read better at the standard measure.
+	$wideShellPages = [
+		'shipment/index',
+	];
 	// schemes/manage-test-results renders the same hub frame but shares its controller
 	// with the standalone Scheme Test Results grid, which stays a normal-width page.
-	$isHubPage = in_array($controllerName, $wideShellControllers)
+	$isWideShell = in_array($controllerName, $wideShellControllers)
+		|| in_array($controllerName . '/' . $actionName, $wideShellPages)
 		|| ($controllerName === 'schemes' && $actionName === 'manage-test-results');
-	$contentShell = $isHubPage
+	$contentShell = $isWideShell
 		? 'container container-wide'
 		: 'container';
 	?>
