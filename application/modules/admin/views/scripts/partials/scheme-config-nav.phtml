@@ -37,20 +37,45 @@ $currentAction = $request->getActionName();
 $currentScheme = (string) $request->getParam('scheme', '');
 $currentId = (string) $request->getParam('id', '');
 
-// Labels reuse the old Configure-menu wording, so someone who knew the entry as
-// "HIV Serology Settings" or "VL Assay/Platforms" still recognises it.
-// Keep the scheme keys in sync with Admin_SchemeConfigController::SCHEME_LABELS.
+// The sidebar is built from scheme_list, not a hand-written list, so every scheme
+// the instance actually runs shows up — including DBS and user-configured custom
+// tests, which own scheme_list rows but have no hub settings partial.
 //
-// 'show' decides whether a group renders. Most groups are one scheme, but Custom
-// Tests and Shared are not scheme-keyed at all, which is why visibility is a
-// per-group flag rather than a lookup on the array key.
-// Per-scheme possible-result editor (/admin/schemes/manage-test-results). Qualitative
-// schemes only: the standalone Scheme Test Results grid filters out quantitative ones,
-// so VL has no result list to edit and gets no entry here.
+// getAllSchemes() returns the active schemes this admin is assigned to, which is
+// the same source the session's activeSchemes came from.
+$schemeRows = (new Application_Service_Schemes())->getAllSchemes();
+
+// Curated short labels for the schemes the hub has a settings partial for. These
+// reuse the old Configure-menu wording minus "Settings", so someone who knew the
+// entry as "HIV Serology Settings" still recognises it, and their order sets the
+// order of the sidebar. Membership of this map is also what decides whether a
+// scheme gets a Settings page at all — a scheme with no partial would 404.
 //
-// The standalone grid stays in the Configure menu on purpose — it is the only route to
-// schemes the hub cannot enumerate (DBS, and user-configured custom tests, which own
-// scheme_list rows but are not in SchemeConfigController::SCHEME_LABELS).
+// Kept here rather than read from Admin_SchemeConfigController::SCHEME_LABELS:
+// module controllers are loaded by the dispatcher, not the autoloader, so that
+// class does not exist while this partial renders on any other page.
+$hubSchemes = [
+    'dts'     => $this->translate->_('HIV Serology'),
+    'vl'      => $this->translate->_('VL'),
+    'eid'     => $this->translate->_('EID'),
+    'tb'      => $this->translate->_('TB'),
+    'covid19' => $this->translate->_('SARS-CoV-2'),
+    'recency' => $this->translate->_('HIV Recency (RTRI)'),
+];
+
+// Pages that belong to one specific scheme and nothing else.
+$schemeExtraPages = [
+    'vl'      => [['label' => $this->translate->_('Assays / Platforms'), 'controller' => 'vl-assay']],
+    'eid'     => [['label' => $this->translate->_('Assays / Platforms'), 'controller' => 'eid-assay']],
+    'covid19' => [
+        ['label' => $this->translate->_('Test Platforms'), 'controller' => 'test-platform'],
+        ['label' => $this->translate->_('Gene Types'), 'controller' => 'covid19-gene-type'],
+    ],
+];
+
+// Per-scheme possible-result editor. Qualitative schemes only — the standalone
+// Scheme Test Results grid filters quantitative ones out, so VL has no result
+// list to edit and gets no entry here either.
 $testResultsPage = function (string $scheme) {
     return [
         'label'      => $this->translate->_('Test Results'),
@@ -60,8 +85,56 @@ $testResultsPage = function (string $scheme) {
     ];
 };
 
-$tree = [
-    [
+$schemeOrder = array_flip(array_keys($hubSchemes));
+$schemeGroups = [];
+foreach ($schemeRows as $row) {
+    $schemeId = (string) ($row['scheme_id'] ?? '');
+    if ($schemeId === '') {
+        continue;
+    }
+    $isCustom = (($row['is_user_configured'] ?? '') === 'yes');
+    $pages = [];
+
+    if (isset($hubSchemes[$schemeId])) {
+        $pages[] = ['label' => $this->translate->_('Settings'), 'scheme' => $schemeId];
+    } elseif ($isCustom) {
+        // Custom tests keep their own editor; it is this scheme's settings page.
+        $pages[] = [
+            'label'      => $this->translate->_('Settings'),
+            'controller' => 'custom-test',
+            'action'     => 'edit',
+            'params'     => ['id' => base64_encode($schemeId)],
+        ];
+    }
+
+    foreach ($schemeExtraPages[$schemeId] ?? [] as $extra) {
+        $pages[] = $extra;
+    }
+
+    if (strtolower((string) ($row['test_format'] ?? '')) !== 'quantitative') {
+        $pages[] = $testResultsPage($schemeId);
+    }
+
+    if (empty($pages)) {
+        continue;
+    }
+
+    $schemeGroups[] = [
+        'label' => $hubSchemes[$schemeId] ?? ucwords((string) ($row['scheme_name'] ?? $schemeId)),
+        'show'  => true,
+        'pages' => $pages,
+        // Schemes the hub knows lead, in the curated order above; everything else
+        // follows alphabetically so a long custom-test list stays predictable.
+        'sort'  => [$schemeOrder[$schemeId] ?? PHP_INT_MAX, strtolower((string) ($row['scheme_name'] ?? $schemeId))],
+    ];
+}
+usort($schemeGroups, static fn ($a, $b) => $a['sort'] <=> $b['sort']);
+
+// 'show' decides whether a group renders. The scheme groups are already filtered
+// by the query, but Shared and Custom Tests are not scheme-keyed at all, which is
+// why visibility is a per-group flag rather than a lookup on the array key.
+$tree = array_merge(
+    [[
         // Deliberately first, and deliberately not inside a scheme group.
         // r_testkitnames is a catalogue shared by DTS and custom tests (see the
         // note above), so it belongs to neither — and at the bottom of the list
@@ -71,66 +144,16 @@ $tree = [
         'pages' => [
             ['label' => $this->translate->_('Test Kits'), 'controller' => 'testkit'],
         ],
-    ],
-    [
-        'label' => $this->translate->_('HIV Serology'),
-        'show'  => in_array('dts', $activeSchemes),
-        'pages' => [
-            ['label' => $this->translate->_('Settings'), 'scheme' => 'dts'],
-            $testResultsPage('dts'),
-        ],
-    ],
-    [
-        'label' => $this->translate->_('VL'),
-        'show'  => in_array('vl', $activeSchemes),
-        'pages' => [
-            ['label' => $this->translate->_('Settings'), 'scheme' => 'vl'],
-            ['label' => $this->translate->_('Assays / Platforms'), 'controller' => 'vl-assay'],
-        ],
-    ],
-    [
-        'label' => $this->translate->_('EID'),
-        'show'  => in_array('eid', $activeSchemes),
-        'pages' => [
-            ['label' => $this->translate->_('Settings'), 'scheme' => 'eid'],
-            ['label' => $this->translate->_('Assays / Platforms'), 'controller' => 'eid-assay'],
-            $testResultsPage('eid'),
-        ],
-    ],
-    [
-        'label' => $this->translate->_('TB'),
-        'show'  => in_array('tb', $activeSchemes),
-        'pages' => [
-            ['label' => $this->translate->_('Settings'), 'scheme' => 'tb'],
-            $testResultsPage('tb'),
-        ],
-    ],
-    [
-        'label' => $this->translate->_('SARS-CoV-2'),
-        'show'  => in_array('covid19', $activeSchemes),
-        'pages' => [
-            ['label' => $this->translate->_('Settings'), 'scheme' => 'covid19'],
-            ['label' => $this->translate->_('Test Platforms'), 'controller' => 'test-platform'],
-            ['label' => $this->translate->_('Gene Types'), 'controller' => 'covid19-gene-type'],
-            $testResultsPage('covid19'),
-        ],
-    ],
-    [
-        'label' => $this->translate->_('HIV Recency (RTRI)'),
-        'show'  => in_array('recency', $activeSchemes),
-        'pages' => [
-            ['label' => $this->translate->_('Settings'), 'scheme' => 'recency'],
-            $testResultsPage('recency'),
-        ],
-    ],
-    [
+    ]],
+    $schemeGroups,
+    [[
         'label' => $this->translate->_('Custom Tests'),
         'show'  => $customTestsOn,
         'pages' => [
-            ['label' => $this->translate->_('Manage Custom Tests'), 'controller' => 'custom-test'],
+            ['label' => $this->translate->_('Manage Custom Tests'), 'controller' => 'custom-test', 'action' => 'index'],
         ],
-    ],
-];
+    ]]
+);
 
 /**
  * A page is current when its controller matches. Settings pages all share the
