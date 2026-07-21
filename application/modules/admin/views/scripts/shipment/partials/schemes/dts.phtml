@@ -542,7 +542,7 @@ if ($renderTestPanelTypeSection) { ?>
                             <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
                             <?php foreach ($editPossibleResults as $pr):
                                 if ($pr['scheme_sub_group'] == 'DTS_FINAL'): ?>
-                                    <option value="<?php echo htmlspecialchars($pr['id']); ?>" <?php echo ($referenceResult == $pr['result_code']) ? "selected='selected'" : ""; ?>>
+                                    <option value="<?php echo htmlspecialchars($pr['id']); ?>" <?php echo ($referenceResult == $pr['id']) ? "selected='selected'" : ""; ?>>
                                         <?php echo htmlspecialchars($pr['response']); ?>
                                     </option>
                                 <?php endif;
