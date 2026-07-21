@@ -75,9 +75,23 @@ return [
         ],
 
         'consensus_minority_kit' => [
-            'label'         => 'S1 reported on a non-reference kit with no peer group (consensus fails)',
+            'label'         => 'S1 detected correctly on a non-reference kit with no peer group',
             'allowed_tiers' => ['screening', 'confirmatory'],
             'expected'      => [
+                // The peer group never reaches consensus, but this lab DETECTED the weak
+                // positive — the exemption is a rescue for labs that missed it, so it must
+                // not touch a correct response. Baseline S1 is reactive → Acceptable.
+                'screening'    => [1 => 'Acc', 2 => 'Acc', 3 => 'Acc', 4 => 'Acc', 5 => 'Acc', 6 => 'Acc', 7 => 'Acc', 8 => 'Acc', 9 => 'Acc', 10 => 'Acc'],
+                'confirmatory' => [1 => 'Acc', 2 => 'Acc', 3 => 'Acc', 4 => 'Acc', 5 => 'Acc', 6 => 'Acc', 7 => 'Acc', 8 => 'Acc', 9 => 'Acc', 10 => 'Acc'],
+            ],
+        ],
+
+        'consensus_minority_kit_missed' => [
+            'label'         => 'S1 missed (non-reactive) on a non-reference kit with no peer group',
+            'allowed_tiers' => ['screening', 'confirmatory'],
+            'expected'      => [
+                // NIHE EQA_HIV_Rule row 14: fewer than 10 labs on the kit, so a missed weak
+                // positive is withheld from evaluation rather than marked Unacceptable.
                 'screening'    => [1 => 'NotEval', 2 => 'Acc', 3 => 'Acc', 4 => 'Acc', 5 => 'Acc', 6 => 'Acc', 7 => 'Acc', 8 => 'Acc', 9 => 'Acc', 10 => 'Acc'],
                 'confirmatory' => [1 => 'NotEval', 2 => 'Acc', 3 => 'Acc', 4 => 'Acc', 5 => 'Acc', 6 => 'Acc', 7 => 'Acc', 8 => 'Acc', 9 => 'Acc', 10 => 'Acc'],
             ],

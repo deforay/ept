@@ -50,7 +50,11 @@ final class Vietnam
                 'allowed_tiers' => ['confirmatory'],
             ],
             'consensus_minority_kit' => [
-                'label'         => 'S1 reported on a minority non-reference kit (consensus fails)',
+                'label'         => 'S1 detected on a minority non-reference kit (no peer group)',
+                'allowed_tiers' => ['screening', 'confirmatory'],
+            ],
+            'consensus_minority_kit_missed' => [
+                'label'         => 'S1 missed on a minority non-reference kit (no peer group)',
                 'allowed_tiers' => ['screening', 'confirmatory'],
             ],
             'consensus_group_passes' => [
@@ -227,6 +231,21 @@ final class Vietnam
         // S1 reported on a non-reference primary kit, unique to this participant.
         // Consensus check is keyed by (sample_id, test_kit_name_1); peer count = 1 < 10.
         $r[1]['kit1'] = 'minority_unique';
+        return $r;
+    }
+
+    private static function apply_consensus_minority_kit_missed(string $tier, int $seed): array
+    {
+        $r = self::baseline($tier, $seed);
+        // Same unique non-reference kit as consensus_minority_kit, but this lab fails to
+        // detect the weak positive: non-reactive throughout, concluded Negative. With no
+        // peer group to establish a reactive consensus, NIHE withholds evaluation.
+        $r[1]['kit1'] = 'minority_unique';
+        $r[1]['t1'] = 'NR';
+        $r[1]['t2'] = '-';
+        $r[1]['t3'] = '-';
+        $r[1]['final'] = 'N';
+        $r[1]['comment'] = null;
         return $r;
     }
 

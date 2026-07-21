@@ -431,26 +431,13 @@ final class Application_Model_Dts
             }
 
             // Vietnam: diluted sample on a non-reference kit whose peer group failed the
-            // consensus thresholds (computed up front in evaluate()) is Not Evaluated.
-            if (isset($vietnamConsensusExclusions[$result['map_id'] . ':' . $result['sample_id']])) {
-                $this->db->update(
-                    'response_result_dts',
-                    [
-                        'calculated_score' => 'Not Evaluated',
-                        'algorithm_result' => 'Not Evaluated',
-                        'interpretation_result' => 'Not Evaluated',
-                    ],
-                    [
-                        $this->db->quoteInto('shipment_map_id = ?', $result['map_id']),
-                        $this->db->quoteInto('sample_id = ?', $result['sample_id']),
-                    ]
-                );
-                $failureReason[] = [
-                    'warning' => $result['sample_label'] ?? '',
-                    'correctiveAction' => 'Not evaluated: peer-group consensus not reached for the test kit used',
-                ];
-                continue;
-            }
+            // consensus thresholds (computed up front in evaluate()). This only EXEMPTS a
+            // participant that missed the weak positive — it is applied after algoVietnam has
+            // ruled, so it can never demote a participant that detected the sample correctly.
+            // NIHE rule rows 12-14 all describe a Non Reactive participant result; there is no
+            // rule that withholds evaluation from a reactive one. See vietnamConsensusExclusions().
+            $consensusExemptEligible = isset($vietnamConsensusExclusions[$result['map_id'] . ':' . $result['sample_id']]);
+            $vietnamNotEvaluated = false;
 
             $reportedResultCode = $result['result_code'] ?? null;
             $reportedSyphilisResultCode = $result['syp_result_code'] ?? null;
@@ -549,6 +536,25 @@ final class Application_Model_Dts
                 );
 
                 $algoResult = $algo['algoResult'];
+
+                // Vietnam peer-consensus exemption, applied only as a rescue: a participant
+                // whose non-reference kit failed to detect the weak positive is withheld from
+                // evaluation when its peer group never established a reactive consensus. A
+                // participant that DID detect the sample keeps the verdict algoVietnam gave it.
+                if (
+                    $consensusExemptEligible
+                    && $algoResult === 'Fail'
+                    && $this->vietnamMissedWeakPositive($result1, $result2, $result3)
+                ) {
+                    $vietnamNotEvaluated = true;
+                    $algoResult = 'Not Evaluated';
+                    $algo['failureReason'] = [[
+                        'warning' => $result['sample_label'] ?? '',
+                        'correctiveAction' => 'Not evaluated: peer-group consensus not reached for the test kit used',
+                    ]];
+                    $algo['correctiveActionList'] = [];
+                }
+
                 // Track participant-level "any sample failed" so the overall verdict
                 // reflects the worst sample, not just the last one. Used below for the
                 // Vietnam scheme (qualitative: any Unacceptable → participant Fail).
@@ -674,7 +680,10 @@ final class Application_Model_Dts
                         // emitted the per-sample verdict + feedback text. A screening lab's
                         // correct response for a P sample is INC (not P), so the generic
                         // reference==reported comparison would mis-fire here — skip it.
-                        if ($algoResult !== 'Fail') {
+                        if ($vietnamNotEvaluated) {
+                            // Withheld from evaluation: contributes neither credit nor a failure.
+                            $correctResponse = false;
+                        } elseif ($algoResult !== 'Fail') {
                             $totalScore += $scoreForSample + $scoreForAlgorithm;
                             $correctResponse = true;
                         } else {
@@ -768,14 +777,21 @@ final class Application_Model_Dts
             }
 
             // Calculating the max score -- will be used in calculations later
-            $maxScore += $scoreForSample + $scoreForAlgorithm;
+            // A sample withheld from evaluation is out of the denominator too.
+            if (!$vietnamNotEvaluated) {
+                $maxScore += $scoreForSample + $scoreForAlgorithm;
+            }
 
             // Vietnam (NIHE) is qualitative — INC for a P sample on a screening lab is
             // the correct response, so the generic reference==reported test is wrong here.
             // Trust algoVietnam's verdict instead.
-            $interpretationResult = ($dtsSchemeType === 'vietnam')
-                ? (($algoResult !== 'Fail') ? 'Pass' : 'Fail')
-                : (($result['reference_result'] == $result['reported_result']) ? 'Pass' : 'Fail');
+            if ($vietnamNotEvaluated) {
+                $interpretationResult = 'Not Evaluated';
+            } else {
+                $interpretationResult = ($dtsSchemeType === 'vietnam')
+                    ? (($algoResult !== 'Fail') ? 'Pass' : 'Fail')
+                    : (($result['reference_result'] == $result['reported_result']) ? 'Pass' : 'Fail');
+            }
 
             foreach ($testKitMeta as $kitIndex => $fields) {
                 $kitResultValue = $result[$fields['resultField']] ?? null;
@@ -841,9 +857,11 @@ final class Application_Model_Dts
                     // (tier, sample type, accepted Indeterminate/Inconclusive finals that do NOT
                     // equal the reference), so its verdict IS the score. Other schemes keep the
                     // generic "reference == reported" interpretation match.
-                    'calculated_score' => ($dtsSchemeType === 'vietnam')
-                        ? ($algoResult === 'Fail' ? 'Fail' : 'Pass')
-                        : (($correctResponse && $algoResult != 'Fail' && $mandatoryResult != 'Fail' && $result['reference_result'] == $result['reported_result']) ? 'Pass' : 'Fail'),
+                    'calculated_score' => $vietnamNotEvaluated
+                        ? 'Not Evaluated'
+                        : (($dtsSchemeType === 'vietnam')
+                            ? ($algoResult === 'Fail' ? 'Fail' : 'Pass')
+                            : (($correctResponse && $algoResult != 'Fail' && $mandatoryResult != 'Fail' && $result['reference_result'] == $result['reported_result']) ? 'Pass' : 'Fail')),
                     'algorithm_result' => $algoResult,
                     'interpretation_result' => $interpretationResult,
                 ],
@@ -1265,9 +1283,15 @@ final class Application_Model_Dts
      * For a diluted, positive-reference sample reported on a NON-reference test kit, NIHE
      * evaluates the participant against the peer group of labs using that same kit — but only
      * if the group is large enough (>= MIN_PEER_LABS) and shows consensus reactivity
-     * (>= MIN_REACTIVE_PCT of the group reactive). Otherwise the sample is "Not Evaluated".
+     * (>= MIN_REACTIVE_PCT of the group reactive). Otherwise the sample is "Not Evaluated"
+     * (NIHE EQA_HIV_Rule rows 13 and 14: consensus non-reactive, or fewer than 10 peer labs).
      * Samples that PASS consensus need no special handling: they flow through the normal
      * diluted path (reference = P), which algoVietnam already scores correctly.
+     *
+     * Membership here only makes a sample ELIGIBLE for the exemption. The caller applies it
+     * after algoVietnam has ruled, and only to a participant that missed the weak positive —
+     * every NIHE rule row in this area (11-14) describes a Non Reactive participant result, so
+     * a participant that detected the sample must keep its Acceptable verdict.
      *
      * Reactive is test-level: a lab counts as reactive if ANY of its tests is R or WR.
      * Peer group = primary kit (test_kit_name_1). Reference kit = primary kit present in the
@@ -2645,6 +2669,20 @@ final class Application_Model_Dts
             'warning' => $sampleLabel,
             'correctiveAction' => $text,
         ];
+    }
+
+    /**
+     * True when none of the performed tests came out Reactive or Weak Reactive — i.e. the
+     * participant missed the sample entirely. Gates the Vietnam peer-consensus exemption,
+     * which NIHE defines only for a participant reporting Non Reactive on a diluted sample.
+     */
+    private function vietnamMissedWeakPositive(?string ...$testResults): bool
+    {
+        $codes = array_map(
+            static fn ($r) => strtoupper(trim((string) $r)),
+            $testResults
+        );
+        return empty(array_intersect(['R', 'WR'], $codes));
     }
 
     private function normalizeAlgoResult(?string $result): string
