@@ -238,7 +238,7 @@ final class Application_Model_Dts
         //$threeTestCorrectResponses = ['NXX','PPP'];
 
         if (empty($results[0]['shipment_test_date'])) {
-            echo 'Shipment Test Date is missing for shipment map id: ' . $shipment['map_id'] . ". Cannot evaluate DTS results.\n";
+            Pt_Commons_LoggerUtility::logWarning('Shipment Test Date is missing for shipment map id: ' . $shipment['map_id'] . '. Cannot evaluate DTS results.');
         }
 
         $testedOn = new DateTimeImmutable($results[0]['shipment_test_date'] ?? $shipment['shipment_test_report_date'] ?? 'now');
