@@ -416,8 +416,56 @@
 	background: #f4f7fb;
 }
 
+/* A group's pages have to READ as pages of that group. Indentation alone did not
+   carry it: the 13px page links outweighed the 10px uppercase group titles, so
+   "Settings" and "Test Results" scanned as top-level rows and people missed that
+   they belonged to the scheme above them.
+   Three cues together fix it — the pages are inset behind a continuous rail, sit
+   on a tinted panel that visually belongs to the open group, and lose the
+   full-width dividers that made each one look like its own section. */
+.config-nav .nav-group > ul {
+	margin-left: 18px;
+	border-left: 2px solid #cfdae8;
+	background: #fbfcfe;
+}
+
+.config-nav .nav-group > ul > li {
+	position: relative;
+}
+
 .config-nav .nav-group li a {
-	padding-left: 26px;
+	padding-left: 24px;
+	border-bottom: none;
+}
+
+/* Short connector from the rail to each page name — the tree elbow is what makes
+   the relationship unmissable at a glance, rather than merely inferable. */
+.config-nav .nav-group > ul > li > a::before {
+	content: '';
+	position: absolute;
+	left: 0;
+	top: 50%;
+	width: 11px;
+	height: 2px;
+	background: #cfdae8;
+}
+
+/* Close the tinted panel off from the next group without reinstating a divider
+   between the pages themselves. */
+.config-nav .nav-group > ul > li:last-child > a {
+	border-bottom: 1px solid #eef1f5;
+}
+
+/* Inside a group the rail already draws a vertical line, so the page link's own
+   accent bar would sit right next to it and read as a doubled stripe. Mark the
+   current page by lighting up its connector instead — same colour, no doubling. */
+.config-nav .nav-group > ul > li > a.current {
+	border-left-color: transparent;
+}
+
+.config-nav .nav-group > ul > li > a.current::before {
+	background: #4a6fa5;
+	height: 3px;
 }
 
 /* ── Floating save bar ────────────────────────────────────────────────────── */
