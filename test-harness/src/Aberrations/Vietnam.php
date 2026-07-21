@@ -17,7 +17,8 @@ namespace EptTestHarness\Aberrations;
  *     't1'    => 'R'|'WR'|'NR'|'-',
  *     't2'    => 'R'|'WR'|'NR'|'-',
  *     't3'    => 'R'|'WR'|'NR'|'-',
- *     'final' => 'P'|'N'|'INC'|null,           (null = leave blank)
+ *     'final' => 'P'|'N'|'INC'|'I'|null,       (null = leave blank; INC and I are
+ *                                               interchangeable for Vietnam)
  *     'kit1'  => 'reference'|'minority_unique', (test_kit_name_1)
  *     'kit2'  => 'reference',
  *     'kit3'  => 'reference',
@@ -106,13 +107,15 @@ final class Vietnam
     private static function correctScreening(int $seed): array
     {
         // Variants for a positive sample (S1, S2): screening lab can do 1, 2 or 3 tests.
-        // All are reactive (R or WR), final = INC with 'sent_for_confirmation' comment.
+        // All are reactive (R or WR) with a 'sent_for_confirmation' comment. NIHE treats
+        // Inconclusive and Indeterminate as interchangeable finals, so variants use both —
+        // any variant scoring differently would be a regression in that equivalence.
         $posVariants = [
             ['t1' => 'R',  't2' => '-',  't3' => '-', 'final' => 'INC'],
             ['t1' => 'R',  't2' => 'R',  't3' => '-', 'final' => 'INC'],
             ['t1' => 'R',  't2' => 'R',  't3' => 'R', 'final' => 'INC'],
-            ['t1' => 'R',  't2' => 'WR', 't3' => '-', 'final' => 'INC'],
-            ['t1' => 'WR', 't2' => 'R',  't3' => '-', 'final' => 'INC'],
+            ['t1' => 'R',  't2' => 'WR', 't3' => '-', 'final' => 'I'],
+            ['t1' => 'WR', 't2' => 'R',  't3' => '-', 'final' => 'I'],
         ];
         // Variants for a negative sample (S3-5): always NR final = N, may do 1 or 2 tests.
         $negVariants = [
@@ -153,6 +156,10 @@ final class Vietnam
             ['t1' => 'WR', 't2' => 'R',  't3' => 'R',  'final' => 'P'],
             ['t1' => 'R',  't2' => 'R',  't3' => 'WR', 'final' => 'P'],
             ['t1' => 'R',  't2' => 'R',  't3' => 'R',  'final' => 'P'],
+            // With a weak reactive present, under-calling to Indeterminate is acceptable —
+            // and Inconclusive must score identically to it.
+            ['t1' => 'R',  't2' => 'WR', 't3' => 'R',  'final' => 'I'],
+            ['t1' => 'WR', 't2' => 'R',  't3' => 'R',  'final' => 'INC'],
         ];
         // S2 (non-diluted P): all three R, final P.
         $strongPosVariants = [

@@ -210,14 +210,16 @@ final class Provisioner
             "SELECT id, scheme_sub_group, result_code FROM r_possibleresult
              WHERE scheme_id='dts'
                AND ((scheme_sub_group='DTS_TEST'  AND result_code IN ('R','WR','NR'))
-                 OR (scheme_sub_group='DTS_FINAL' AND result_code IN ('P','N','INC')))"
+                 OR (scheme_sub_group='DTS_FINAL' AND result_code IN ('P','N','INC','I')))"
         );
         $out = ['test' => [], 'final' => []];
         foreach ($rows as $r) {
             $bucket = $r['scheme_sub_group'] === 'DTS_TEST' ? 'test' : 'final';
             $out[$bucket][$r['result_code']] = (int) $r['id'];
         }
-        $required = [['test', 'R'], ['test', 'WR'], ['test', 'NR'], ['final', 'P'], ['final', 'N'], ['final', 'INC']];
+        // 'I' (Indeterminate) is interchangeable with 'INC' (Inconclusive) for Vietnam, so the
+        // response builders use both — the harness needs an id for each.
+        $required = [['test', 'R'], ['test', 'WR'], ['test', 'NR'], ['final', 'P'], ['final', 'N'], ['final', 'INC'], ['final', 'I']];
         foreach ($required as [$b, $c]) {
             if (!isset($out[$b][$c])) {
                 throw new \RuntimeException("Missing r_possibleresult row for $b:$c. Did migration 7.4.6 run? Did you flip display_context away from 'none' so the codes are usable?");

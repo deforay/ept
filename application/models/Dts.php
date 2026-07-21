@@ -2765,6 +2765,14 @@ final class Application_Model_Dts
         // Indeterminate, DTS_TEST id 52, which appears in $t1/$t2/$t3, never here).
         $final = strtoupper(trim((string) $reportedResultCode)); // N / P / I (Indeterminate) / INC
         $ref   = strtoupper(trim((string) $expectedResultCode)); // N / P
+
+        // NIHE treats Inconclusive and Indeterminate as interchangeable final interpretations —
+        // both mean "cannot conclude, refer onward". They stay two separate options for the
+        // participant to pick from, but every rule below must accept either, so canonicalise
+        // INC to I here and compare against I alone from this point on.
+        if ($final === 'INC') {
+            $final = 'I';
+        }
         $diluted = in_array(
             strtolower(trim((string) ($result['is_sample_diluted'] ?? ''))),
             ['yes', '1', 'true'],
@@ -2802,14 +2810,14 @@ final class Application_Model_Dts
                 $this->vietnamFeedback($out, $sampleLabel, $REVIEW_KIT, true);
                 return;
             }
-            // 3. Correctly-called Negative -> follow MOH; Inconclusive -> must be
+            // 3. Correctly-called Negative -> follow MOH; Inconclusive/Indeterminate -> must be
             //    marked "Sent for confirmation" (criterion #3 in the screening rules).
             if ($ref === 'N' && $final === 'N') {
                 $out['algoResult'] = 'Pass';
                 $this->vietnamFeedback($out, $sampleLabel, $FOLLOW_MOH);
                 return;
             }
-            if (in_array($final, ['INC', 'I'], true)) {
+            if ($final === 'I') {
                 if ($labComment !== 'sent_for_confirmation') {
                     $this->vietnamFeedback($out, $sampleLabel, $NEED_SENT_CONF, true);
                     return;
@@ -2860,8 +2868,8 @@ final class Application_Model_Dts
         // Diluted positive (weak positive expected). Participant assumed on the reference kit;
         // non-reference-kit peer-consensus is evaluated post-deadline.
         if ($testsDone >= 3) {
-            // With a weak-reactive present, both Positive and Indeterminate are acceptable;
-            // when all three are strongly reactive, Indeterminate is under-calling.
+            // With a weak-reactive present, both Positive and Indeterminate/Inconclusive are
+            // acceptable; when all three are strongly reactive, that is an under-call.
             if (in_array($final, $hasWeak ? ['P', 'I'] : ['P'], true)) {
                 $out['algoResult'] = 'Pass';
                 $note = ($final === 'P') ? $INTERPRET_WP : $FOLLOW_MOH;
@@ -2872,7 +2880,7 @@ final class Application_Model_Dts
             return;
         }
 
-        // Fewer than three tests on a diluted positive: only Indeterminate is acceptable.
+        // Fewer than three tests on a diluted positive: only Indeterminate/Inconclusive works.
         if ($final === 'I') {
             $out['algoResult'] = 'Pass';
             $this->vietnamFeedback($out, $sampleLabel, $FOLLOW_MOH);
