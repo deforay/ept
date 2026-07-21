@@ -51,16 +51,17 @@
 
     <div id="tab-1"
         class="tab-content <?php echo ($this->source == "" || $this->source == "extraction") ? 'current' : ''; ?>">
-        <h4 style="width:100%;height:50px;border-bottom:1px solid #777;">
-            <div style="font-size:22.5px;line-height:36px;color:#333;float:left;">
-                <?= $this->translate->_("List of all EID Extraction Assay/Platforms"); ?>
-            </div>
-            <div style="margin-top:10px;"><a
+        <div class="config-list">
+            <div class="config-list-head">
+                <h2><?= $this->translate->_("List of all EID Extraction Assay/Platforms"); ?></h2>
+                <div class="config-list-actions">
+                    <a
                     href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'eid-assay', 'action' => 'add', 'source' => 'extraction'), 'default', true); ?>"
-                    class="btn btn-primary" style="float:right;"><i
+                    class="btn btn-primary"><i
                         class="icon-plus"></i>&nbsp;&nbsp;<?= $this->translate->_("Add New EID Assay/Platform"); ?></a>
+                </div>
             </div>
-        </h4>
+            <div class="config-list-body">
         <table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered table-hover"
             id="eidExtractionAssayTable">
             <thead>
@@ -76,18 +77,21 @@
                 </tr>
             </tbody>
         </table>
+            </div><!-- /.config-list-body -->
+        </div><!-- /.config-list -->
     </div>
     <div id="tab-2" class="tab-content <?php echo ($this->source == "detection") ? 'current' : ''; ?>">
-        <h4 style="width:100%;height:50px;border-bottom:1px solid #777;">
-            <div style="font-size:22.5px;line-height:36px;color:#333;float:left;">
-                <?= $this->translate->_("List of All Eid Detection Assay/Platforms"); ?>
-            </div>
-            <div style="margin-top:10px;"><a
+        <div class="config-list">
+            <div class="config-list-head">
+                <h2><?= $this->translate->_("List of All Eid Detection Assay/Platforms"); ?></h2>
+                <div class="config-list-actions">
+                    <a
                     href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'eid-assay', 'action' => 'add', 'source' => 'detection'), 'default', true); ?>"
-                    class="btn btn-primary" style="float:right;"><i
+                    class="btn btn-primary"><i
                         class="icon-plus"></i>&nbsp;&nbsp;<?= $this->translate->_("Add New EID Assay/Platform"); ?></a>
+                </div>
             </div>
-        </h4>
+            <div class="config-list-body">
         <table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered table-hover"
             id="eidDetectionAssayTable">
             <thead>
@@ -103,6 +107,8 @@
                 </tr>
             </tbody>
         </table>
+            </div><!-- /.config-list-body -->
+        </div><!-- /.config-list -->
     </div>
 </div>
 <script charset="utf-8">
