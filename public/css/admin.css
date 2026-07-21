@@ -8129,6 +8129,22 @@ td.center {
 	padding: 3px 8px;
 }
 
+/* Row actions grouped onto lines by what they do (see the shipments grid). The
+   gaps are the whole point — a stack of touching buttons reads as one block. */
+.data-list table.dataTable .row-action-lines {
+	display: inline-flex;
+	flex-direction: column;
+	gap: 5px;
+	align-items: center;
+}
+
+.data-list table.dataTable .row-action-line {
+	display: flex;
+	gap: 5px;
+	flex-wrap: nowrap;
+	justify-content: center;
+}
+
 .data-list table.dataTable .btn-primary,
 .data-list table.dataTable .btn-warning,
 .data-list table.dataTable .btn-default {

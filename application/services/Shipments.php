@@ -297,27 +297,27 @@ class Application_Service_Shipments
             $download = '';
 
             if ($aRow['status'] != 'finalized') {
-                $edit = '<br>&nbsp;<a class="btn btn-primary btn-xs" href="/admin/shipment/edit/sid/' . base64_encode($aRow['shipment_id']) . '/userConfig/' . base64_encode($aRow['is_user_configured']) . '"><span><i class="icon-edit"></i> Edit</span></a>';
+                $edit = '<a class="btn btn-primary btn-xs" href="/admin/shipment/edit/sid/' . base64_encode($aRow['shipment_id']) . '/userConfig/' . base64_encode($aRow['is_user_configured']) . '"><span><i class="icon-edit"></i> Edit</span></a>';
             } else {
-                $edit = '<br>&nbsp;<a class="btn btn-danger btn-xs disabled" href="javascript:void(0);"><span><i class="icon-check"></i> Finalized</span></a>';
+                $edit = '<a class="btn btn-danger btn-xs disabled" href="javascript:void(0);"><span><i class="icon-check"></i> Finalized</span></a>';
             }
 
             // Clone is offered for every shipment (including finalized) so the sample
             // panel and config can be re-used for a new PT Survey.
-            $clone = '<br>&nbsp;<a class="btn btn-warning btn-xs" href="/admin/shipment/clone/sid/' . base64_encode($aRow['shipment_id']) . '/userConfig/' . base64_encode($aRow['is_user_configured']) . '"><span><i class="icon-copy"></i> Clone</span></a>';
+            $clone = '<a class="btn btn-warning btn-xs" href="/admin/shipment/clone/sid/' . base64_encode($aRow['shipment_id']) . '/userConfig/' . base64_encode($aRow['is_user_configured']) . '"><span><i class="icon-copy"></i> Clone</span></a>';
 
             if ($aRow['status'] != 'shipped' && $aRow['status'] != 'evaluated' && $aRow['status'] != 'finalized') {
-                $enrolled = '<br>&nbsp;<a class="btn ' . $btn . ' btn-xs" href="/admin/shipment/ship-it/sid/' . base64_encode($aRow['shipment_id']) . '"><span><i class="icon-user"></i> Enroll</span></a>';
+                $enrolled = '<a class="btn ' . $btn . ' btn-xs" href="/admin/shipment/ship-it/sid/' . base64_encode($aRow['shipment_id']) . '"><span><i class="icon-user"></i> Enroll</span></a>';
             } elseif ($aRow['status'] == 'shipped') {
-                $enrolled = '<br>&nbsp;<a class="btn btn-primary btn-xs disabled" href="javascript:void(0);"><span><i class="icon-ambulance"></i> Shipped</span></a>';
-                $announcementMail = '<br>&nbsp;<a class="btn btn-warning btn-xs" href="javascript:void(0);" onclick="mailShipment(\'' . base64_encode($aRow['shipment_id']) . '\')"><span><i class="icon-bullhorn"></i> New Shipment Mail</span></a>';
+                $enrolled = '<a class="btn btn-primary btn-xs disabled" href="javascript:void(0);"><span><i class="icon-ambulance"></i> Shipped</span></a>';
+                $announcementMail = '<a class="btn btn-warning btn-xs" href="javascript:void(0);" title="Send the new shipment mail to participants" onclick="mailShipment(\'' . base64_encode($aRow['shipment_id']) . '\')"><span><i class="icon-bullhorn"></i> Notify</span></a>';
             }
             if ($aRow['status'] == 'shipped' || $aRow['status'] == 'evaluated') {
-                $manageEnroll = '<br>&nbsp;<a class="btn btn-info btn-xs" href="/admin/shipment/manage-enroll/sid/' . base64_encode($aRow['shipment_id']) . '/sctype/' . base64_encode($aRow['scheme_type']) . '"><span><i class="icon-gear"></i> Enrollment </span></a>';
+                $manageEnroll = '<a class="btn btn-info btn-xs" href="/admin/shipment/manage-enroll/sid/' . base64_encode($aRow['shipment_id']) . '/sctype/' . base64_encode($aRow['scheme_type']) . '"><span><i class="icon-gear"></i> Enrollment</span></a>';
             }
             $tbFormPath = $this->tempUploadDirectory . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . '-TB-FORMS.zip';
             if ($isMtbeptInstance && file_exists($tbFormPath) && $aRow['scheme_type'] == 'tb') {
-                $downloadAllTBForms = '<br/><a href="/admin/shipment/download-tb/sid/' . $aRow['shipment_id'] . '/file/' . base64_encode($tbFormPath) . '" class="btn btn-success btn-xs" style="margin:3px 0;" target="_BLANK"> <i class="icon icon-download"></i> ' . $this->translator->_('Download TB Forms') . '</a>';
+                $downloadAllTBForms = '<a href="/admin/shipment/download-tb/sid/' . $aRow['shipment_id'] . '/file/' . base64_encode($tbFormPath) . '" class="btn btn-success btn-xs" style="margin:3px 0;" target="_BLANK"> <i class="icon icon-download"></i> ' . $this->translator->_('Download TB Forms') . '</a>';
             } elseif ($isMtbeptInstance && $aRow['scheme_type'] == 'tb' && ($aRow['status'] == 'shipped' || $aRow['status'] == 'evaluated')) {
                 if (isset($aRow['tb_form_generated']) && $aRow['tb_form_generated'] == 'queued') {
                     $txt = $this->translator->_('Generating TB Forms...');
@@ -327,17 +327,17 @@ class Application_Service_Shipments
                     $disabled = '';
                 }
 
-                $downloadAllTBForms = '<br>&nbsp;<a class="btn btn-success btn-xs" href="javascript:void(0);" onclick="generateTBFormsPDF(\'' . base64_encode($aRow['shipment_id']) . '\');" ' . $disabled . '><span><i class="icon-refresh"></i> ' . $txt . ' </span></a>';
+                $downloadAllTBForms = '<a class="btn btn-success btn-xs" href="javascript:void(0);" onclick="generateTBFormsPDF(\'' . base64_encode($aRow['shipment_id']) . '\');" ' . $disabled . '><span><i class="icon-refresh"></i> ' . $txt . ' </span></a>';
             }
             if ($aRow['status'] != 'finalized' && ($aRow['reported_count'] == 0)) {
-                $delete = '<br>&nbsp;<a class="btn btn-primary btn-xs" href="javascript:void(0);" onclick="removeShipment(\'' . base64_encode($aRow['shipment_id']) . '\')"><span><i class="icon-remove"></i> Delete</span></a>';
+                $delete = '<a class="btn btn-primary btn-xs" href="javascript:void(0);" onclick="removeShipment(\'' . base64_encode($aRow['shipment_id']) . '\')"><span><i class="icon-remove"></i> Delete</span></a>';
             }
             if (($aRow['status'] == 'shipped' || $aRow['status'] == 'evaluated') && isset($aRow['notResponded']) && !empty($aRow['notResponded']) && $aRow['notResponded'] > 0) {
-                $informMail = '<br>&nbsp;<a class="btn btn-warning btn-xs" href="/admin/email-participants/index/sid/' . base64_encode($aRow['shipment_id']) . '"><span><i class="icon-bullhorn"></i> Remind Non-Responders</span></a>';
+                $informMail = '<a class="btn btn-warning btn-xs" href="/admin/email-participants/index/sid/' . base64_encode($aRow['shipment_id']) . '" title="Remind participants who have not responded"><span><i class="icon-bullhorn"></i> Remind</span></a>';
             }
             $testkitbtn = '';
             if ((!empty($aRow['shipment_id']) && $dtsSchemeType == 'vietnam' && $aRow['scheme_type'] == 'dts') && $aRow['status'] != 'finalized') {
-                $testkitbtn .= '<br>&nbsp;<a class="btn btn-primary btn-xs" href="/admin/shipment/shipment-test-kits/sid/' . base64_encode(trim($aRow['shipment_id'])) . '"><i class="icon-medkit"></i> Testkit Map</span></a>';
+                $testkitbtn .= '<a class="btn btn-primary btn-xs" href="/admin/shipment/shipment-test-kits/sid/' . base64_encode(trim($aRow['shipment_id'])) . '"><span><i class="icon-medkit"></i> Testkit Map</span></a>';
             }
 
             if ($isCancelled) {
@@ -353,9 +353,27 @@ class Application_Service_Shipments
                     // htmlspecialchars for the surrounding HTML attribute.
                     $jsId = htmlspecialchars(json_encode(base64_encode($aRow['shipment_id'])), ENT_QUOTES);
                     $jsCode = htmlspecialchars(json_encode((string) $aRow['shipment_code']), ENT_QUOTES);
-                    $cancel = '<br>&nbsp;<a class="btn btn-danger btn-xs" href="javascript:void(0);" onclick="cancelShipment(' . $jsId . ', ' . $jsCode . ')"><span><i class="icon-ban-circle"></i> ' . Pt_Commons_TranslateUtility::htmlTranslate('Cancel') . '</span></a>';
+                    $cancel = '<a class="btn btn-danger btn-xs" href="javascript:void(0);" onclick="cancelShipment(' . $jsId . ', ' . $jsCode . ')"><span><i class="icon-ban-circle"></i> ' . Pt_Commons_TranslateUtility::htmlTranslate('Cancel') . '</span></a>';
                 }
-                $row[] = $edit . $clone . $enrolled . $delete . $announcementMail . $manageEnroll . $informMail . $downloadAllTBForms . $testkitbtn . $cancel;
+                // Grouped by what the action does rather than emitted one per line:
+                // the record itself, then participant handling, then the things that
+                // send mail or produce a file, then the destructive one on its own.
+                // Each line is nowrap so a group never breaks mid-way.
+                $actionLines = [
+                    [$edit, $clone],
+                    [$enrolled, $manageEnroll, $testkitbtn, $delete],
+                    [$announcementMail, $informMail, $downloadAllTBForms],
+                    [$cancel],
+                ];
+                $actions = '';
+                foreach ($actionLines as $line) {
+                    $line = array_filter($line);
+                    if (empty($line)) {
+                        continue;
+                    }
+                    $actions .= '<div class="row-action-line">' . implode('', $line) . '</div>';
+                }
+                $row[] = '<div class="row-action-lines">' . $actions . '</div>';
             }
             $output['aaData'][] = $row;
         }
