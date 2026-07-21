@@ -8116,6 +8116,54 @@ td.center {
 	background-color: #f7f9fc;
 }
 
+/* The per-participant grids expand a row into a warnings / corrective-actions
+   table (DataTables' fnOpen stamps the cell `details`). Left to itself it renders
+   as another band of white with the same borders as the row above it, so the two
+   read as one table. The inset ground and the accent rail say "this belongs to
+   the row above". */
+.data-list table.dataTable > tbody > tr > td.details,
+.data-list table.dataTable > tbody > tr:hover > td.details {
+	/* Same amber inset the listing pages give their expanded shipment rows, so an
+	   expanded row looks the same wherever you open one. A blue-grey tint sat
+	   between the grid's two stripe colours and read as just another row. */
+	background: #fff8e1;
+	border-left: 4px solid #f0ad4e;
+	padding: 12px 16px;
+}
+
+.data-list table.dataTable td.details table.table {
+	background: #fff;
+	border: 1px solid #ead9b8;
+	box-shadow: 0 1px 2px rgba(150, 110, 40, 0.08);
+}
+
+.data-list table.dataTable td.details table.table > thead > tr > th {
+	background: #eef3f9;
+	color: #3a5a8a;
+	font-size: 11.5px;
+	font-weight: 600;
+	text-transform: uppercase;
+	letter-spacing: 0.03em;
+	padding: 6px 10px;
+	text-align: left;
+}
+
+.data-list table.dataTable td.details table.table > tbody > tr > td {
+	font-size: 13px;
+	padding: 6px 10px;
+}
+
+/* Expanded child rows sit two boxes deep — the card body, then the child row's
+   own inset — and carry a nine-column table with an action stack. Tighter cells
+   here are what keeps that last column inside the card. */
+.data-list .shipments-child-row table.table > thead > tr > th,
+.data-list .shipments-child-row table.table > tbody > tr > td,
+.data-list .dm-child-row table.table > thead > tr > th,
+.data-list .dm-child-row table.table > tbody > tr > td {
+	padding: 6px 5px;
+	font-size: 13px;
+}
+
 /* Row actions. Sizing is uniform, but the quiet treatment only replaces the
    generic action colours (btn-primary / btn-warning / btn-default, which the
    grids use interchangeably for Edit and toggles). A red Delete or a green
@@ -8130,19 +8178,41 @@ td.center {
 }
 
 /* Row actions grouped onto lines by what they do (see the shipments grid). The
-   gaps are the whole point — a stack of touching buttons reads as one block. */
-.data-list table.dataTable .row-action-lines {
+   gaps are the whole point — a stack of touching buttons reads as one block.
+   Not scoped to table.dataTable: the expanded child rows on the Analyze pages
+   are plain tables rendered into a DataTables child row, and carry the same
+   action stacks. */
+.data-list .row-action-lines {
 	display: inline-flex;
 	flex-direction: column;
 	gap: 5px;
 	align-items: center;
 }
 
-.data-list table.dataTable .row-action-line {
+.data-list .row-action-line {
 	display: flex;
 	gap: 5px;
 	flex-wrap: nowrap;
 	justify-content: center;
+}
+
+/* One line per download is wasteful when a finalized shipment offers a summary
+   plus a download button per 50 participants — that line is allowed to wrap. */
+.data-list .row-action-line.is-wrapping {
+	flex-wrap: wrap;
+}
+
+/* The child-row tables are not .dataTable, so they miss the row-button sizing
+   above; match it here so a row button looks the same wherever it appears —
+   scoped to the child rows themselves, not just to grouped action stacks, since
+   a row often carries a single lone button. */
+.data-list .shipments-child-row table.table .btn-xs,
+.data-list .shipments-child-row table.table .btn-sm,
+.data-list .dm-child-row table.table .btn-xs,
+.data-list .dm-child-row table.table .btn-sm {
+	font-size: 11.5px;
+	line-height: 1.5;
+	padding: 3px 8px;
 }
 
 .data-list table.dataTable .btn-primary,

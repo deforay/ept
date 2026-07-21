@@ -19,6 +19,7 @@ if ($this->shipments == false && count($this->shipments) <= 0) {
 		</div>
 		<div class="modal-body">
 			<table class="table table-bordered table-striped table-hover">
+				<thead>
 				<tr>
 					<th scope="col" style="text-align: center;"><?= $this->translate->_("Shipment Code"); ?></th>
 					<th scope="col" style="text-align: center;"><?= $this->translate->_("Scheme"); ?></th>
@@ -30,6 +31,8 @@ if ($this->shipments == false && count($this->shipments) <= 0) {
 					<th scope="col" style="text-align: center;"><?= $this->translate->_("Shipment Status"); ?></th>
 					<th scope="col" style="text-align: center;"><?= $this->translate->_("Action"); ?></th>
 				</tr>
+				</thead>
+				<tbody>
 				<?php
 				if (count($this->shipments) > 0) {
 					foreach ($this->shipments as $shipment) {
@@ -62,28 +65,36 @@ if ($this->shipments == false && count($this->shipments) <= 0) {
 							<td style="text-align: center;"><?= ucfirst($shipment['status']); ?></td>
 							<td style="text-align: center;">
 								<?php if ($reported > 0 && !$isFinalized): ?>
-									<?php if ($hasReportsGenerated): ?>
-										<a class="btn btn-info btn-xs" href="/reports/distribution/shipment/sid/<?= $encodedShipmentId; ?>">
-											<i class="icon-eye-open"></i> <?= $this->translate->_("View Reports"); ?>
-										</a>
-										<a href="javascript:void(0)" class="btn btn-xs btn-warning <?= $generateReportsClass; ?>"
-											onclick="generateReports('<?= $encodedShipmentId; ?>', <?= (int) $generateReportsEnabled; ?>, '<?= $this->dateFormat($shipment['distribution_date']); ?>', 'generateReport')">
-											<i class="icon-refresh"></i> <?= $this->translate->_("Regenerate Reports"); ?>
-										</a>
-									<?php else: ?>
-										<a class="btn btn-primary btn-xs <?= $generateReportsClass; ?>" href="javascript:void(0)"
-											<?php if ($generateReportsEnabled): ?>
-											onclick="generateReports('<?= $encodedShipmentId; ?>', <?= (int) $generateReportsEnabled; ?>, '<?= $this->dateFormat($shipment['distribution_date']); ?>', 'generateReport')"
-											<?php endif; ?>>
-											<i class="icon-edit"></i> <?= $this->translate->_("Generate Reports"); ?>
-										</a>
-									<?php endif; ?>
-									<a class="btn btn-primary btn-xs <?= $finalizeClass; ?>" href="javascript:void(0)"
-										<?php if ($finalizeEnabled): ?>
-										onclick="generateReports('<?= $encodedShipmentId; ?>', <?= (int) $finalizeEnabled; ?>, '<?= $this->dateFormat($shipment['distribution_date']); ?>', 'finalized')"
-										<?php endif; ?>>
-										<i class="icon-check"></i> <?= $this->translate->_("Finalize"); ?>
-									</a>
+									<!-- Producing the reports on one line, finalizing on the next:
+									     finalizing is the step you cannot walk back. -->
+									<div class="row-action-lines">
+										<div class="row-action-line">
+											<?php if ($hasReportsGenerated): ?>
+												<a class="btn btn-info btn-xs" href="/reports/distribution/shipment/sid/<?= $encodedShipmentId; ?>">
+													<i class="icon-eye-open"></i> <?= $this->translate->_("View Reports"); ?>
+												</a>
+												<a href="javascript:void(0)" class="btn btn-xs btn-warning <?= $generateReportsClass; ?>"
+													onclick="generateReports('<?= $encodedShipmentId; ?>', <?= (int) $generateReportsEnabled; ?>, '<?= $this->dateFormat($shipment['distribution_date']); ?>', 'generateReport')">
+													<i class="icon-refresh"></i> <?= $this->translate->_("Regenerate Reports"); ?>
+												</a>
+											<?php else: ?>
+												<a class="btn btn-primary btn-xs <?= $generateReportsClass; ?>" href="javascript:void(0)"
+													<?php if ($generateReportsEnabled): ?>
+													onclick="generateReports('<?= $encodedShipmentId; ?>', <?= (int) $generateReportsEnabled; ?>, '<?= $this->dateFormat($shipment['distribution_date']); ?>', 'generateReport')"
+													<?php endif; ?>>
+													<i class="icon-edit"></i> <?= $this->translate->_("Generate Reports"); ?>
+												</a>
+											<?php endif; ?>
+										</div>
+										<div class="row-action-line">
+											<a class="btn btn-primary btn-xs <?= $finalizeClass; ?>" href="javascript:void(0)"
+												<?php if ($finalizeEnabled): ?>
+												onclick="generateReports('<?= $encodedShipmentId; ?>', <?= (int) $finalizeEnabled; ?>, '<?= $this->dateFormat($shipment['distribution_date']); ?>', 'finalized')"
+												<?php endif; ?>>
+												<i class="icon-check"></i> <?= $this->translate->_("Finalize"); ?>
+											</a>
+										</div>
+									</div>
 								<?php elseif ($isFinalized): ?>
 									<a class="btn btn-info btn-xs" href="/reports/distribution/finalize/sid/<?= $encodedShipmentId; ?>">
 										<i class="icon-eye-open"></i> <?= $this->translate->_("View"); ?>
@@ -107,6 +118,7 @@ if ($this->shipments == false && count($this->shipments) <= 0) {
 					<?php
 				}
 				?>
+			</tbody>
 			</table>
 		</div>
 	</div><!-- /.modal-dialog -->

@@ -1900,7 +1900,9 @@ class Application_Service_Evaluation
                 $invididualFilePath = $files[0] ?? '';
             }
             if ($invididualFilePath !== '' && file_exists($invididualFilePath)) {
-                $finalResult = '<a href="' . Pt_Commons_SignedDownload::url($invididualFilePath) . '" class="btn btn-sm btn-primary" style="text-decoration:none;overflow:hidden;margin-top:4px;width:100%;" target="_blank"><i class="icon icon-download"></i> ' . htmlspecialchars($finalResult) . '</a>';
+                // btn-info, as on the other grids: the card treatment quietens the
+                // generic colours, and this cell is the participant's report download.
+                $finalResult = '<a href="' . Pt_Commons_SignedDownload::url($invididualFilePath) . '" class="btn btn-sm btn-info" style="text-decoration:none;overflow:hidden;margin-top:4px;width:100%;" target="_blank"><i class="icon icon-download"></i> ' . htmlspecialchars($finalResult) . '</a>';
             } else {
                 $finalResult = htmlspecialchars($finalResult);
             }
@@ -2131,7 +2133,10 @@ class Application_Service_Evaluation
                 $invididualFilePath = $files[0] ?? '';
             }
             if ($invididualFilePath !== '' && file_exists($invididualFilePath) && $reportQueue !== 'disabled') {
-                $individualReports = '<a href="' . Pt_Commons_SignedDownload::url($invididualFilePath) . '" class="btn btn-sm btn-primary" style="text-decoration:none;overflow:hidden;margin-top:4px;width:100%;" target="_blank"><i class="icon icon-download"></i> ' . $translator->_('Download Report') . '</a>';
+                // btn-info rather than btn-primary: the card treatment quietens the
+                // generic button colours, and a download is what people come to this
+                // column to do — it keeps its own colour like the other exports.
+                $individualReports = '<a href="' . Pt_Commons_SignedDownload::url($invididualFilePath) . '" class="btn btn-sm btn-info" style="text-decoration:none;overflow:hidden;margin-top:4px;width:100%;" target="_blank"><i class="icon icon-download"></i> ' . $translator->_('Download Report') . '</a>';
             }
         }
 
@@ -2414,7 +2419,7 @@ class Application_Service_Evaluation
             $actionParts[] = '<a class="btn btn-primary btn-xs" href="javascript:void(0);" onclick=\'' . $onclick . '\'><span><i class="icon-remove"></i> ' . $translator->_('Delete') . '</span></a>';
         }
         if ($displayResult === $translator->_('Fail') && !empty($shipment['corrective_action_file'])) {
-            $actionParts[] = '<br><a class="btn btn-primary btn-xs" href="/uploads/corrective-action-files/' . htmlspecialchars($shipment['corrective_action_file']) . '" download=""><span><i class="icon-download"></i> ' . $translator->_('Download Corrective Action') . '</span></a>';
+            $actionParts[] = '<br><a class="btn btn-info btn-xs" href="/uploads/corrective-action-files/' . htmlspecialchars($shipment['corrective_action_file']) . '" download=""><span><i class="icon-download"></i> ' . $translator->_('Download Corrective Action') . '</span></a>';
         }
         $actionCell = '<div style="white-space:nowrap;">' . implode(' ', $actionParts) . '</div>';
 

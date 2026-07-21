@@ -6,22 +6,22 @@
     .shipments-child-row .modal-body { padding: 6px 0 0; background: transparent; }
     .shipments-child-row .modal-body > .table { margin-bottom: 0; background: transparent; }
 </style>
-<h4 style="width:100%;height:50px;border-bottom:1px solid #777;">
-    <div style="font-size:22.5px;line-height:36px;color:#333;float:left;">
-        <?= $this->translate->_("Evaluate PT Survey"); ?>
-    </div>
-    <div style="float:right;line-height:36px;">
-        <select id="schemeTypeFilter" class="form-control input-sm" style="width:auto;display:inline-block;">
-            <option value=""><?= $this->translate->_('All Scheme Types'); ?></option>
-            <?php if (!empty($this->schemeList)) : foreach ($this->schemeList as $sch) : ?>
-                <option value="<?= $this->escape($sch['scheme_id']); ?>"><?= $this->escape(ucwords($sch['scheme_name'])); ?></option>
-            <?php endforeach;
-            endif; ?>
-        </select>
-    </div>
-</h4>
-
 <?php echo $this->render('partials/re-evaluate-stale-banner.phtml'); ?>
+
+<div class="data-list">
+    <div class="data-list-head">
+        <h2><?= $this->translate->_("Evaluate PT Survey"); ?></h2>
+        <div class="data-list-actions">
+            <select id="schemeTypeFilter" class="form-control input-sm">
+                <option value=""><?= $this->translate->_('All Scheme Types'); ?></option>
+                <?php if (!empty($this->schemeList)) : foreach ($this->schemeList as $sch) : ?>
+                    <option value="<?= $this->escape($sch['scheme_id']); ?>"><?= $this->escape(ucwords($sch['scheme_name'])); ?></option>
+                <?php endforeach;
+                endif; ?>
+            </select>
+        </div>
+    </div>
+    <div class="data-list-body">
 
 <table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered table-hover"
     id="distroTable">
@@ -48,6 +48,8 @@
     </tbody>
 </table>
 
+    </div><!-- /.data-list-body -->
+</div><!-- /.data-list -->
 
 <script src="<?= $this->assetUrl('js/reports.js'); ?>"></script>
 <script>
@@ -222,7 +224,7 @@
             }
         });
 
-        var childStyle = 'padding:6px 12px;background:#fff8e1;border-left:4px solid #f0ad4e;';
+        var childStyle = 'padding:6px 8px;background:#fff8e1;border-left:4px solid #f0ad4e;';
         var placeholder = '<div class="shipments-child-row" style="' + childStyle + 'color:#888;"><i class="icon-refresh"></i> <?= $this->translate->_("Loading shipments…"); ?></div>';
         oTable.fnOpen(tr, placeholder, 'shipments-child-container');
         $.blockUI();

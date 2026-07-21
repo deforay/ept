@@ -127,75 +127,71 @@ if (isset($this->shipmentStatus['finalized']['status'])) {
 								</span>
 							<?php endif; ?>
 						</td>
-						<td style="text-align: center; line-height: 30px;">
+						<td style="text-align: center;">
 							<?php if ($reported > 0): ?>
+								<?php
+								// Grouped by what the action does rather than run together on one
+								// line: looking at the shipment, then producing reports from it,
+								// then the one that sends mail. See .row-action-lines in admin.css.
+								$evaluationLine = [];
+								$reportLine = [];
+								$mailLine = [];
 
-								<!-- View Button (enabled when evaluated) -->
-								<?php if ($viewEnabled): ?>
-									<a class="btn btn-success btn-xs"
-										href="/admin/evaluate/shipment/sid/<?= $encodedShipmentId; ?>">
-										<i class="icon-eye-open"></i> <?= $this->translate->_("View"); ?>
-									</a>
-								<?php endif; ?>
+								if ($viewEnabled) {
+									$evaluationLine[] = '<a class="btn btn-success btn-xs" href="/admin/evaluate/shipment/sid/' . $encodedShipmentId . '">'
+										. '<i class="icon-eye-open"></i> ' . $this->translate->_("View") . '</a>';
+								}
+								if (!$isFinalized) {
+									$evaluationLine[] = '<a class="btn btn-success btn-xs ' . $evaluateButtonClass . '"'
+										. ' href="javascript:scheduleShipmentEvaluation(\'' . $encodedShipmentId . '\');">'
+										. '<i class="icon-edit"></i> ' . $buttonText . '</a>';
+								}
+								if ($shipment['scheme_type'] === 'vl' && !$isFinalized) {
+									$evaluationLine[] = '<a class="btn btn-success btn-xs ' . $evaluateButtonClass . '" href="javascript:void(0);"'
+										. ' onclick="getVLReferenceScores(\'' . $encodedShipmentId . '\')">'
+										. '<i class="icon-edit"></i> ' . $this->translate->_("VL Range") . '</a>';
+								}
 
-								<!-- Evaluate/Re-Evaluate Button -->
-								<?php if (!$isFinalized): ?>
-									<a class="btn btn-success btn-xs <?= $evaluateButtonClass; ?>"
-										href="javascript:scheduleShipmentEvaluation('<?= $encodedShipmentId; ?>');">
-										<i class="icon-edit"></i> <?= $buttonText; ?>
-									</a>
-								<?php endif; ?>
+								if (!$isFinalized) {
+									$generateOnClick = 'generateReports(\'' . $encodedShipmentId . '\', ' . (int) $generateReportsEnabled
+										. ', \'' . $this->dateFormat($shipment['distribution_date']) . '\', \'generateReport\')';
+									if ($hasReportsGenerated) {
+										if (!$isEphemeral) {
+											$reportLine[] = '<a class="btn btn-info btn-xs" href="/reports/distribution/shipment/sid/' . $encodedShipmentId . '">'
+												. '<i class="icon-eye-open"></i> ' . $this->translate->_("View Reports") . '</a>';
+										}
+										$reportLine[] = '<a href="javascript:void(0)" class="btn btn-xs btn-warning ' . $generateReportsClass . '"'
+											. ' onclick="' . $generateOnClick . '">'
+											. '<i class="icon-refresh"></i> ' . $this->translate->_("Regenerate Reports") . '</a>';
+									} else {
+										$reportLine[] = '<a href="javascript:void(0)" class="btn btn-xs btn-primary ' . $generateReportsClass . '"'
+											. ' onclick="' . $generateOnClick . '">'
+											. '<i class="icon-ok"></i> ' . $this->translate->_("Generate Reports") . '</a>';
+									}
+									$finalizeOnClick = $finalizeEnabled
+										? ' onclick="generateReports(\'' . $encodedShipmentId . '\', ' . (int) $finalizeEnabled
+											. ', \'' . $this->dateFormat($shipment['distribution_date']) . '\', \'finalized\')"'
+										: '';
+									$reportLine[] = '<a href="javascript:void(0)" class="btn btn-xs btn-primary ' . $finalizeClass . '"' . $finalizeOnClick . '>'
+										. '<i class="icon-ok"></i> ' . $finalReportTitle . '</a>';
+								}
 
-								<!-- VL Range Button (only for VL scheme type, not finalized) -->
-								<?php if ($shipment['scheme_type'] === 'vl' && !$isFinalized): ?>
-									<a class="btn btn-success btn-xs <?= $evaluateButtonClass; ?>" href="javascript:void(0);"
-										onclick="getVLReferenceScores('<?= $encodedShipmentId; ?>')">
-										<i class="icon-edit"></i> <?= $this->translate->_("VL Range"); ?>
-									</a>
-								<?php endif; ?>
+								if ($showMailNonResponders) {
+									$mailLine[] = '<a class="btn btn-warning btn-xs ' . $evaluateButtonClass . '" href="javascript:void(0);"'
+										. ' title="' . $this->translate->_("Email the participants who have not responded") . '"'
+										. ' onclick="mailNonParticipants(\'' . $encodedShipmentId . '\');">'
+										. '<i class="icon-envelope"></i> ' . $this->translate->_("Remind") . ' ' . (int) $nonResponse . '</a>';
+								}
 
-								<!-- Report Generation Buttons (not shown when finalized) -->
-								<?php if (!$isFinalized): ?>
-								<div style="display: inline;">
-									<?php if ($hasReportsGenerated): ?>
-										<?php if (!$isEphemeral): ?>
-										<a class="btn btn-info btn-xs"
-											href="/reports/distribution/shipment/sid/<?= $encodedShipmentId; ?>">
-											<i class="icon-eye-open"></i> <?= $this->translate->_("View Reports"); ?>
-										</a>
-										<?php endif; ?>
-										<a href="javascript:void(0)"
-											class="btn btn-xs btn-warning <?= $generateReportsClass; ?>"
-											onclick="generateReports('<?= $encodedShipmentId; ?>', <?= (int) $generateReportsEnabled; ?>, '<?= $this->dateFormat($shipment['distribution_date']); ?>', 'generateReport')">
-											<i class="icon-refresh"></i> <?= $this->translate->_("Regenerate Reports"); ?>
-										</a>
-									<?php else: ?>
-										<a href="javascript:void(0)"
-											class="btn btn-xs btn-primary <?= $generateReportsClass; ?>"
-											onclick="generateReports('<?= $encodedShipmentId; ?>', <?= (int) $generateReportsEnabled; ?>, '<?= $this->dateFormat($shipment['distribution_date']); ?>', 'generateReport')">
-											<i class="icon-ok"></i> <?= $this->translate->_("Generate Reports"); ?>
-										</a>
-									<?php endif; ?>
-
-									<a href="<?= $finalizeEnabled ? 'javascript:void(0)' : 'javascript:void(0)'; ?>"
-										class="btn btn-xs btn-primary <?= $finalizeClass; ?>"
-										<?php if ($finalizeEnabled): ?>
-										onclick="generateReports('<?= $encodedShipmentId; ?>', <?= (int) $finalizeEnabled; ?>, '<?= $this->dateFormat($shipment['distribution_date']); ?>', 'finalized')"
-										<?php endif; ?>>
-										<i class="icon-ok"></i> <?= $finalReportTitle; ?>
-									</a>
-								</div>
-								<?php endif; ?>
-
-								<!-- Email Non-Respondents Button (hidden when finalized, cancelled, or past the submission due date) -->
-								<?php if ($showMailNonResponders): ?>
-									<a class="btn btn-warning btn-xs <?= $evaluateButtonClass; ?>" href="javascript:void(0);"
-										onclick="mailNonParticipants('<?= $encodedShipmentId; ?>');">
-										<i class="icon-envelope"></i> Mail <?= (int) $nonResponse; ?>
-										<?= $this->translate->_("Not Responded Participants"); ?>
-									</a>
-								<?php endif; ?>
-
+								$actionHtml = '';
+								foreach ([$evaluationLine, $reportLine, $mailLine] as $line) {
+									if (empty($line)) {
+										continue;
+									}
+									$actionHtml .= '<div class="row-action-line">' . implode('', $line) . '</div>';
+								}
+								echo '<div class="row-action-lines">' . $actionHtml . '</div>';
+								?>
 							<?php else: ?>
 								<a class="btn btn-primary btn-xs disabled" href="javascript:void(0)">
 									<i class="icon-eye-open"></i> <?= $this->translate->_("View"); ?>
