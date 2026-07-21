@@ -134,34 +134,51 @@ class Application_Model_DbTable_Distribution extends Zend_Db_Table_Abstract
             // A survey is cancelled when its status says so, or every shipment under it is cancelled.
             $isSurveyCancelled = (isset($aRow['status']) && $aRow['status'] == 'cancelled')
                 || ($shipmentCounts['total'] > 0 && $shipmentCounts['cancelled'] === $shipmentCounts['total']);
-            $actionHtml = '';
+            // Row actions are grouped onto lines: what you do to the survey itself, then
+            // mail, then the destructive ones. See .row-action-lines in admin.css.
+            $primaryLine = [];
+            $mailLine = [];
+            $destructiveLine = [];
+
             if ($isSurveyCancelled) {
-                $actionHtml = '<a class="btn btn-danger btn-xs disabled" href="javascript:void(0);"><span><i class="icon-ban-circle"></i> ' . Pt_Commons_TranslateUtility::htmlTranslate('Cancelled') . '</span></a>';
+                $primaryLine[] = '<a class="btn btn-danger btn-xs disabled" href="javascript:void(0);"><span><i class="icon-ban-circle"></i> ' . Pt_Commons_TranslateUtility::htmlTranslate('Cancelled') . '</span></a>';
             } elseif (isset($aRow['status']) && $aRow['status'] == 'configured') {
+                $primaryLine[] = $edit;
                 if ($shipNowStatus) {
-                    $actionHtml = $edit . ' ' . '<a class="btn btn-primary btn-xs" href="javascript:void(0);" onclick="shipDistribution(\'' . base64_encode($aRow['distribution_id']) . '\')"><span><i class="icon-ambulance"></i> ' . Pt_Commons_TranslateUtility::htmlTranslate('Ship Now') . '</span></a> &nbsp;&nbsp;';
+                    $primaryLine[] = '<a class="btn btn-primary btn-xs" href="javascript:void(0);" onclick="shipDistribution(\'' . base64_encode($aRow['distribution_id']) . '\')"><span><i class="icon-ambulance"></i> ' . Pt_Commons_TranslateUtility::htmlTranslate('Ship Now') . '</span></a>';
                 } else {
-                    $actionHtml = $edit . ' ' . '<a class="btn btn-primary btn-xs" href="/admin/shipment/index/did/' . base64_encode($aRow['distribution_id']) . '"><span><i class="icon-user"></i> ' . Pt_Commons_TranslateUtility::htmlTranslate('Add Participants') . '</span></a>';
+                    $primaryLine[] = '<a class="btn btn-primary btn-xs" href="/admin/shipment/index/did/' . base64_encode($aRow['distribution_id']) . '"><span><i class="icon-user"></i> ' . Pt_Commons_TranslateUtility::htmlTranslate('Add Participants') . '</span></a>';
                 }
             } elseif (isset($aRow['status']) && $aRow['status'] == 'shipped') {
-                $actionHtml = '<a class="btn btn-primary btn-xs" href="/admin/distributions/edit/d8s5_8d/' . base64_encode($aRow['distribution_id']) . '/5h8pp3t/shipped"><span><i class="icon-pencil"></i> ' . Pt_Commons_TranslateUtility::htmlTranslate('Edit') . '</span></a>' . ' ' . '<a class="btn btn-primary btn-xs disabled" href="javascript:void(0);"><span><i class="icon-ambulance"></i> ' . Pt_Commons_TranslateUtility::htmlTranslate('Shipped') . '</span></a>
-                <a class="btn btn-warning btn-xs" href="/admin/email-participants/index/id/' . base64_encode($aRow['distribution_id']) . '"><span><i class="icon-envelope"></i> ' . Pt_Commons_TranslateUtility::htmlTranslate('Send Email to Participants') . '</span></a>';
+                $primaryLine[] = '<a class="btn btn-primary btn-xs" href="/admin/distributions/edit/d8s5_8d/' . base64_encode($aRow['distribution_id']) . '/5h8pp3t/shipped"><span><i class="icon-pencil"></i> ' . Pt_Commons_TranslateUtility::htmlTranslate('Edit') . '</span></a>';
+                $primaryLine[] = '<a class="btn btn-primary btn-xs disabled" href="javascript:void(0);"><span><i class="icon-ambulance"></i> ' . Pt_Commons_TranslateUtility::htmlTranslate('Shipped') . '</span></a>';
+                // Shortened from "Send Email to Participants" — the full wording is the tooltip.
+                $mailLine[] = '<a class="btn btn-warning btn-xs" href="/admin/email-participants/index/id/' . base64_encode($aRow['distribution_id']) . '" title="' . Pt_Commons_TranslateUtility::htmlTranslate('Send Email to Participants') . '"><span><i class="icon-envelope"></i> ' . Pt_Commons_TranslateUtility::htmlTranslate('Email') . '</span></a>';
             } else {
-                $actionHtml = $edit . ' ' . '<a class="btn btn-primary btn-xs" href="/admin/shipment/index/did/' . base64_encode($aRow['distribution_id']) . '"><span><i class="icon-plus"></i> ' . Pt_Commons_TranslateUtility::htmlTranslate('Add Shipment') . '</span></a>';
+                $primaryLine[] = $edit;
+                $primaryLine[] = '<a class="btn btn-primary btn-xs" href="/admin/shipment/index/did/' . base64_encode($aRow['distribution_id']) . '"><span><i class="icon-plus"></i> ' . Pt_Commons_TranslateUtility::htmlTranslate('Add Shipment') . '</span></a>';
             }
             // Survey-level cancel: only offered when there are active shipments and NONE is
             // finalized (a finalized shipment can never be cancelled, so neither can its survey).
             if (!$isSurveyCancelled && $shipmentCounts['active'] > 0 && $shipmentCounts['finalized'] === 0) {
                 $codeAttr = htmlspecialchars((string) $aRow['distribution_code'], ENT_QUOTES);
                 $jsCodes = htmlspecialchars(json_encode(array_values($this->getCancellableShipmentCodes($aRow['distribution_id']))), ENT_QUOTES);
-                $actionHtml .= ' <a class="btn btn-danger btn-xs" href="javascript:void(0);" onclick="cancelDistribution(\'' . base64_encode($aRow['distribution_id']) . '\', \'' . $codeAttr . '\', ' . $jsCodes . ')"><span><i class="icon-ban-circle"></i> ' . Pt_Commons_TranslateUtility::htmlTranslate('Cancel PT Survey') . '</span></a>';
+                $destructiveLine[] = '<a class="btn btn-danger btn-xs" href="javascript:void(0);" title="' . Pt_Commons_TranslateUtility::htmlTranslate('Cancel PT Survey') . '" onclick="cancelDistribution(\'' . base64_encode($aRow['distribution_id']) . '\', \'' . $codeAttr . '\', ' . $jsCodes . ')"><span><i class="icon-ban-circle"></i> ' . Pt_Commons_TranslateUtility::htmlTranslate('Cancel') . '</span></a>';
             }
             // Delete only allowed when there are no shipments under this PT survey.
             if (empty($aRow['shipments']) && (!isset($aRow['status']) || $aRow['status'] !== 'shipped')) {
                 $codeAttr = htmlspecialchars((string) $aRow['distribution_code'], ENT_QUOTES);
-                $actionHtml .= ' <a class="btn btn-danger btn-xs" href="javascript:void(0);" onclick="confirmDeleteDistribution(\'' . base64_encode($aRow['distribution_id']) . '\', \'' . $codeAttr . '\')"><span><i class="icon-trash"></i> ' . Pt_Commons_TranslateUtility::htmlTranslate('Delete') . '</span></a>';
+                $destructiveLine[] = '<a class="btn btn-danger btn-xs" href="javascript:void(0);" onclick="confirmDeleteDistribution(\'' . base64_encode($aRow['distribution_id']) . '\', \'' . $codeAttr . '\')"><span><i class="icon-trash"></i> ' . Pt_Commons_TranslateUtility::htmlTranslate('Delete') . '</span></a>';
             }
-            $row[] = $actionHtml;
+
+            $actionHtml = '';
+            foreach ([$primaryLine, $mailLine, $destructiveLine] as $line) {
+                if (empty($line)) {
+                    continue;
+                }
+                $actionHtml .= '<div class="row-action-line">' . implode('', $line) . '</div>';
+            }
+            $row[] = '<div class="row-action-lines">' . $actionHtml . '</div>';
             $output['aaData'][] = $row;
         }
 
