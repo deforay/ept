@@ -412,21 +412,22 @@
 /* The open group's own header reads as active, so you can see where you are even
    with its pages scrolled past. */
 .config-nav .nav-group:not(.collapsed) > .nav-group-title {
-	color: #3a5a8a;
-	background: #f4f7fb;
+	color: #35507a;
+	background: #eef3f9;
 }
 
 /* A group's pages have to READ as pages of that group. Indentation alone did not
-   carry it: the 13px page links outweighed the 10px uppercase group titles, so
-   "Settings" and "Test Results" scanned as top-level rows and people missed that
-   they belonged to the scheme above them.
-   Three cues together fix it — the pages are inset behind a continuous rail, sit
-   on a tinted panel that visually belongs to the open group, and lose the
-   full-width dividers that made each one look like its own section. */
+   carry it: at 13px near-black the page links outweighed the 10px uppercase
+   group titles, so "Settings" and "Test Results" scanned as top-level rows and
+   people missed that they belonged to the scheme above them.
+
+   The fix is mostly subtraction — the pages go quiet (smaller, muted, no
+   dividers, tighter rhythm) so the heading is the loudest thing in its block
+   again. A chevron and the tinted header then say which heading they belong to
+   without drawing a rail down the card. */
 .config-nav .nav-group > ul {
-	margin-left: 18px;
-	border-left: 2px solid #cfdae8;
-	background: #fbfcfe;
+	background: #fff;
+	padding: 3px 0 5px;
 }
 
 .config-nav .nav-group > ul > li {
@@ -434,38 +435,43 @@
 }
 
 .config-nav .nav-group li a {
-	padding-left: 24px;
+	padding: 7px 14px 7px 34px;
+	font-size: 12.5px;
+	color: #7c8ca0;
 	border-bottom: none;
 }
 
-/* Short connector from the rail to each page name — the tree elbow is what makes
-   the relationship unmissable at a glance, rather than merely inferable. */
+/* Points back at the heading above. Cheaper than a rail and reads at a glance. */
 .config-nav .nav-group > ul > li > a::before {
-	content: '';
+	content: '\203A';
 	position: absolute;
-	left: 0;
+	left: 20px;
 	top: 50%;
-	width: 11px;
-	height: 2px;
-	background: #cfdae8;
+	transform: translateY(-52%);
+	font-size: 14px;
+	line-height: 1;
+	color: #b3c1d1;
 }
 
-/* Close the tinted panel off from the next group without reinstating a divider
-   between the pages themselves. */
-.config-nav .nav-group > ul > li:last-child > a {
-	border-bottom: 1px solid #eef1f5;
+.config-nav .nav-group li a:hover {
+	color: #3a5a8a;
 }
 
-/* Inside a group the rail already draws a vertical line, so the page link's own
-   accent bar would sit right next to it and read as a doubled stripe. Mark the
-   current page by lighting up its connector instead — same colour, no doubling. */
+/* The current page is the only dark text in the group, so it stands out without
+   the accent bar — which at this indent would float unattached to anything. */
 .config-nav .nav-group > ul > li > a.current {
+	background: transparent;
 	border-left-color: transparent;
+	color: #3a5a8a;
+	font-weight: 600;
 }
 
 .config-nav .nav-group > ul > li > a.current::before {
-	background: #4a6fa5;
-	height: 3px;
+	color: #4a6fa5;
+}
+
+.config-nav .nav-group > ul > li:last-child > a {
+	border-bottom: 1px solid #eef1f5;
 }
 
 /* ── Floating save bar ────────────────────────────────────────────────────── */
