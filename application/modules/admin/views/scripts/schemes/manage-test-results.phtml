@@ -1,7 +1,12 @@
 <?php
+// Rendered inside the Scheme Config hub frame: the hub's sidebar links straight
+// here per scheme, and the standalone Scheme Test Results grid still links here
+// for schemes the hub cannot enumerate (DBS, custom tests). Either way the frame
+// gives a way back into the hub.
 $isUserConfigured = !empty($this->results[0]['is_user_configured']) && $this->results[0]['is_user_configured'] === 'yes';
 $schemeId = !empty($this->results[0]['scheme_id']) ? strtoupper(trim($this->results[0]['scheme_id'])) : '';
 ?>
+<?php echo $this->render('partials/scheme-config-open.phtml'); ?>
 <link rel="stylesheet" type="text/css" href="<?php echo $this->baseUrl('css/bootstrap-select.min.css'); ?>" />
 <link href="<?php echo $this->baseUrl('css/select2.css'); ?>" rel="stylesheet" />
 
@@ -929,3 +934,4 @@ $schemeId = !empty($this->results[0]['scheme_id']) ? strtoupper(trim($this->resu
 		});
 	});
 </script>
+<?php echo $this->render('partials/scheme-config-close.phtml'); ?>

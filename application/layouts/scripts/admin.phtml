@@ -680,7 +680,11 @@ $helpPageKey = "$controllerName/$actionName";
 		'covid19-gene-type',
 		'custom-test',
 	];
-	$contentShell = in_array($controllerName, $wideShellControllers)
+	// schemes/manage-test-results renders the same hub frame but shares its controller
+	// with the standalone Scheme Test Results grid, which stays a normal-width page.
+	$isHubPage = in_array($controllerName, $wideShellControllers)
+		|| ($controllerName === 'schemes' && $actionName === 'manage-test-results');
+	$contentShell = $isHubPage
 		? 'container container-wide'
 		: 'container';
 	?>
@@ -797,6 +801,8 @@ $helpPageKey = "$controllerName/$actionName";
 				$('#TestKitReportForHIVSerology').addClass('active');
 			} else if (splitsUrl[2] == 'testkit') {
 				$('#TestKits').addClass('active');
+			} else if (splitsUrl[2] == 'schemes' && splitsUrl[3] == 'manage-test-results') {
+				$('#SchemeConfig').addClass('active');
 			} else if (splitsUrl[2] == 'schemes' && splitsUrl[3] == 'test-results') {
 				$('#testResults').addClass('active');
 			} else if (splitsUrl[2] == 'vl-assay') {
