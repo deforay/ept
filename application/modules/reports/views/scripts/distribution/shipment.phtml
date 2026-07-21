@@ -485,6 +485,13 @@ if (!empty($this->shipment)) {
             <?php } ?>
         </div>
         <script src="<?= $this->assetUrl('js/reports.js'); ?>"></script>
+        <script>
+            window.REPORTS_I18N = {
+                cannotGenerate: "<?= $this->jsTranslate("Reports cannot be generated for this shipment yet."); ?>\n\n<?= $this->jsTranslate("Please evaluate the shipment first and then generate the reports."); ?>",
+                cannotFinalize: "<?= $this->jsTranslate("This shipment cannot be finalized yet."); ?>\n\n<?= $this->jsTranslate("Please generate the reports first, review them, and then finalize the shipment."); ?>",
+                queueFailed: "<?= $this->jsTranslate("Failed to queue report generation. Please try again."); ?>"
+            };
+        </script>
         <script type="text/javascript" src="<?php echo $this->baseUrl('js/daterangepicker.js'); ?>"></script>
 	    <script type="text/javascript" src="<?php echo $this->baseUrl('js/select2.min.js'); ?>"></script>
 

@@ -1,5 +1,8 @@
 // To generate participant individual reports
 function generateReports(sId, checkReportDate, surveyDate, _type) {
+    // Translated strings injected by the host page (window.REPORTS_I18N);
+    // English fallbacks keep the alerts working if the page skips injection.
+    var i18n = window.REPORTS_I18N || {};
     if (checkReportDate == 1 || checkReportDate == true) {
         $.blockUI();
 
@@ -29,11 +32,15 @@ function generateReports(sId, checkReportDate, surveyDate, _type) {
             })
             .fail(function () {
                 $.unblockUI();
-                alert("Failed to queue report generation. Please try again.");
+                alert(i18n.queueFailed || "Failed to queue report generation. Please try again.");
             });
     } else {
         $.unblockUI();
-        alert("You cannot generate reports for this shipment yet.\n\n\nReports can only be generated once the shipment has been evaluated.");
+        if (_type === 'finalized') {
+            alert(i18n.cannotFinalize || "This shipment cannot be finalized yet.\n\nPlease generate the reports first, review them, and then finalize the shipment.");
+        } else {
+            alert(i18n.cannotGenerate || "Reports cannot be generated for this shipment yet.\n\nPlease evaluate the shipment first and then generate the reports.");
+        }
     }
 }
 

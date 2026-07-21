@@ -7,6 +7,13 @@
     .shipments-child-row .modal-body > .table { margin-bottom: 0; background: transparent; }
 </style>
 <script src="<?= $this->assetUrl('js/reports.js'); ?>"></script>
+<script>
+    window.REPORTS_I18N = {
+        cannotGenerate: "<?= $this->jsTranslate("Reports cannot be generated for this shipment yet."); ?>\n\n<?= $this->jsTranslate("Please evaluate the shipment first and then generate the reports."); ?>",
+        cannotFinalize: "<?= $this->jsTranslate("This shipment cannot be finalized yet."); ?>\n\n<?= $this->jsTranslate("Please generate the reports first, review them, and then finalize the shipment."); ?>",
+        queueFailed: "<?= $this->jsTranslate("Failed to queue report generation. Please try again."); ?>"
+    };
+</script>
 <h4 style="width:100%;height:50px;border-bottom:1px solid #777;">
     <div style="font-size:22.5px;line-height:36px;color:#333;float:left;">
         <?= $this->translate->_("PT Survey - Generate Reports"); ?></div>
