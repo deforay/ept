@@ -12,6 +12,17 @@
    page would visibly jump from 1170px to full width. It lives in admin.css,
    beside the .container caps it overrides. */
 
+/* ── Hub frame ────────────────────────────────────────────────────────────── */
+/* The admin's global .well is #ecf0f1, which is heavy behind a page that is
+   mostly white cards — the ground competed with the content instead of setting
+   it off. Lightened here rather than on .well itself, which every other admin
+   page also uses. */
+.config-well {
+	background-color: #f6f8fb;
+	border: 1px solid #e6ecf3;
+	box-shadow: none;
+}
+
 /* ── Section cards: tinted header band + hairline frame. ──────────────────── */
 .config-section {
 	border: 1px solid #e2e8f0;
