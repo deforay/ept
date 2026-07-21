@@ -239,7 +239,13 @@ if (isset($this->shipmentStatus['finalized']['status'])) {
 			function (data) {
 				$.unblockUI();
 				alert("<?= Pt_Commons_TranslateUtility::jsTranslate("Shipment has been added to the queue. It will be evaluated shortly."); ?>");
-				window.location.href = "/admin/evaluate";
+				// Refresh only the expanded child row so DataTables filters,
+				// search and paging survive; the host page defines getShipments.
+				if (typeof getShipments === 'function' && typeof currentHighlighted !== 'undefined' && currentHighlighted) {
+					getShipments(currentHighlighted, null, true);
+				} else {
+					window.location.href = "/admin/evaluate";
+				}
 			}
 		).fail(function () {
 			$.unblockUI();
