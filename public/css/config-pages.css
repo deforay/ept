@@ -470,10 +470,6 @@
 	color: #4a6fa5;
 }
 
-.config-nav .nav-group > ul > li:last-child > a {
-	border-bottom: 1px solid #eef1f5;
-}
-
 /* ── Floating save bar ────────────────────────────────────────────────────── */
 .floating-buttons {
 	position: fixed;
