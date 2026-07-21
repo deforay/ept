@@ -45,6 +45,17 @@ $verdictText = static function ($score) {
     }
 };
 
+// Lab comment stored against a sample. NIHE weighs this in the assessment (an
+// Inconclusive screening result is only acceptable when marked "Sent for confirmation"),
+// so the participant report shows it beside the conclusion.
+$commentText = static function ($comment) {
+    switch (trim((string) $comment)) {
+        case 'sent_for_confirmation': return 'Sent for confirmation';
+        case 'retest_after_14_days':  return 'Retest after 14 days';
+        default:                      return '';
+    }
+};
+
 /**
  * NIHE Peer Group Statistics — fetch every participant response in this shipment
  * once, group by (test position, kit_id, sample_id), and compute counts, concordance
@@ -346,18 +357,28 @@ if (!empty($resultArray['shipment'])) {
             };
 
             $tbl  = '<span style="font-weight:bold;font-size:13px;">' . Pt_Commons_TranslateUtility::safeTranslate('HIV proficiency results') . '</span><br/>';
-            $tbl .= '<table border="1" cellpadding="3" style="font-size:11px;border-color:#dbe4ee;">';
+            // Explicit column widths: with Lab Comments added the table is 8 columns wide, and
+            // TCPDF's auto-sizing would otherwise squeeze the kit header (name + lot + expiry)
+            // into a very tall cell. These sum to 100%.
+            $w = [
+                'sample' => 13, 'test1' => 13, 'test2' => 10, 'test3' => 10,
+                'conclusion' => 12, 'comment' => 15, 'reference' => 12, 'evaluation' => 15,
+            ];
+            $wResult = $w['test1'] + $w['test2'] + $w['test3'] + $w['conclusion'] + $w['comment'];
+
+            $tbl .= '<table border="1" cellpadding="3" width="100%" style="font-size:11px;border-color:#dbe4ee;">';
             $tbl .= '<tr style="background-color:#dbe4ee;text-align:center;vertical-align:middle;">'
-                  . '<td rowspan="2" style="vertical-align:middle;"><strong>' . Pt_Commons_TranslateUtility::safeTranslate('Sample') . '</strong></td>'
-                  . '<td colspan="4" style="vertical-align:middle;"><strong>' . Pt_Commons_TranslateUtility::safeTranslate('Result') . '</strong></td>'
-                  . '<td rowspan="2" style="vertical-align:middle;"><strong>' . Pt_Commons_TranslateUtility::safeTranslate('Reference result (RR)') . '</strong></td>'
-                  . '<td rowspan="2" style="vertical-align:middle;"><strong>' . Pt_Commons_TranslateUtility::safeTranslate('Result evaluation') . '</strong></td>'
+                  . '<td rowspan="2" width="' . $w['sample'] . '%" style="vertical-align:middle;"><strong>' . Pt_Commons_TranslateUtility::safeTranslate('Sample') . '</strong></td>'
+                  . '<td colspan="5" width="' . $wResult . '%" style="vertical-align:middle;"><strong>' . Pt_Commons_TranslateUtility::safeTranslate('Result') . '</strong></td>'
+                  . '<td rowspan="2" width="' . $w['reference'] . '%" style="vertical-align:middle;"><strong>' . Pt_Commons_TranslateUtility::safeTranslate('Reference result (RR)') . '</strong></td>'
+                  . '<td rowspan="2" width="' . $w['evaluation'] . '%" style="vertical-align:middle;"><strong>' . Pt_Commons_TranslateUtility::safeTranslate('Result evaluation') . '</strong></td>'
                   . '</tr>';
             $tbl .= '<tr style="background-color:#dbe4ee;text-align:center;vertical-align:middle;">'
-                  . '<td style="vertical-align:middle;">' . $kitHeader($firstRow['testkit1'] ?? '', $firstRow['lot_no_1'] ?? '', $firstRow['exp_date_1'] ?? '', 1) . '</td>'
-                  . '<td style="vertical-align:middle;">' . $kitHeader($firstRow['testkit2'] ?? '', $firstRow['lot_no_2'] ?? '', $firstRow['exp_date_2'] ?? '', 2) . '</td>'
-                  . '<td style="vertical-align:middle;">' . $kitHeader($firstRow['testkit3'] ?? '', $firstRow['lot_no_3'] ?? '', $firstRow['exp_date_3'] ?? '', 3) . '</td>'
-                  . '<td style="vertical-align:middle;"><strong>' . Pt_Commons_TranslateUtility::safeTranslate('Conclusion') . '</strong></td>'
+                  . '<td width="' . $w['test1'] . '%" style="vertical-align:middle;">' . $kitHeader($firstRow['testkit1'] ?? '', $firstRow['lot_no_1'] ?? '', $firstRow['exp_date_1'] ?? '', 1) . '</td>'
+                  . '<td width="' . $w['test2'] . '%" style="vertical-align:middle;">' . $kitHeader($firstRow['testkit2'] ?? '', $firstRow['lot_no_2'] ?? '', $firstRow['exp_date_2'] ?? '', 2) . '</td>'
+                  . '<td width="' . $w['test3'] . '%" style="vertical-align:middle;">' . $kitHeader($firstRow['testkit3'] ?? '', $firstRow['lot_no_3'] ?? '', $firstRow['exp_date_3'] ?? '', 3) . '</td>'
+                  . '<td width="' . $w['conclusion'] . '%" style="vertical-align:middle;"><strong>' . Pt_Commons_TranslateUtility::safeTranslate('Conclusion') . '</strong></td>'
+                  . '<td width="' . $w['comment'] . '%" style="vertical-align:middle;"><strong>' . Pt_Commons_TranslateUtility::safeTranslate('Lab Comments') . '</strong></td>'
                   . '</tr>';
 
             foreach ($result['responseResult'] as $response) {
@@ -367,13 +388,18 @@ if (!empty($resultArray['shipment'])) {
                 $conclusion = $pretty($response['labResult'] ?? '');
                 $reference  = $pretty($dtsCodeToLabel[$response['referenceResultCode'] ?? ''] ?? ($response['referenceResultCode'] ?? ''));
                 $evaluation = $verdictText($response['calculated_score'] ?? '');
+                $comment    = $commentText($response['lab_comment'] ?? '');
+                $comment    = $comment === '' ? '-' : Pt_Commons_TranslateUtility::safeTranslate($comment);
 
                 $tbl .= '<tr style="text-align:center;">'
-                      . '<td style="vertical-align:middle;">' . ($response['sample_label'] ?? '') . '</td>'
-                      . '<td style="vertical-align:middle;">' . $t1 . '</td><td style="vertical-align:middle;">' . $t2 . '</td><td style="vertical-align:middle;">' . $t3 . '</td>'
-                      . '<td style="vertical-align:middle;">' . $conclusion . '</td>'
-                      . '<td style="vertical-align:middle;">' . $reference . '</td>'
-                      . '<td style="vertical-align:middle;">' . Pt_Commons_TranslateUtility::safeTranslate($evaluation) . '</td>'
+                      . '<td width="' . $w['sample'] . '%" style="vertical-align:middle;">' . ($response['sample_label'] ?? '') . '</td>'
+                      . '<td width="' . $w['test1'] . '%" style="vertical-align:middle;">' . $t1 . '</td>'
+                      . '<td width="' . $w['test2'] . '%" style="vertical-align:middle;">' . $t2 . '</td>'
+                      . '<td width="' . $w['test3'] . '%" style="vertical-align:middle;">' . $t3 . '</td>'
+                      . '<td width="' . $w['conclusion'] . '%" style="vertical-align:middle;">' . $conclusion . '</td>'
+                      . '<td width="' . $w['comment'] . '%" style="vertical-align:middle;font-size:10px;">' . $comment . '</td>'
+                      . '<td width="' . $w['reference'] . '%" style="vertical-align:middle;">' . $reference . '</td>'
+                      . '<td width="' . $w['evaluation'] . '%" style="vertical-align:middle;">' . Pt_Commons_TranslateUtility::safeTranslate($evaluation) . '</td>'
                       . '</tr>';
             }
             $tbl .= '</table>';

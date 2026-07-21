@@ -2685,6 +2685,10 @@ class Application_Service_Evaluation
                     'dts_rtri_reported_result',
                     'dts_rtri_is_editable',
                     'kit_additional_info',
+                    // Vietnam (NIHE) carries assessment weight on the lab's comment
+                    // ("Sent for confirmation" / "Retest after 14 days") — the participant
+                    // report renders it beside the conclusion.
+                    'lab_comment',
                 ]
             )
                 ->joinLeft(['respr' => 'r_possibleresult'], 'respr.id=resdts.reported_result', ['labResult' => 'respr.response'])
