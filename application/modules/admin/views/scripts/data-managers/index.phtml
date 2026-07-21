@@ -99,12 +99,12 @@ if (isset($this->ptcc) && !empty($this->ptcc) && $this->ptcc == 1) {
     <div class="config-list-body">
 
 
-<!-- Filters + bulk-action toolbar share one bottom-aligned flex row to avoid
-     wasting a whole stacked row on the toolbar. The toolbar is pushed to the
-     right with margin-left:auto so its placement stays stable whether or not
-     the "Mapping" filter column is present. -->
-<div style="display:flex;align-items:flex-end;gap:16px;flex-wrap:wrap;margin-bottom:15px;">
-    <div style="min-width:200px;">
+<!-- Filters + bulk-action toolbar share one bottom-aligned row (.config-toolbar)
+     to avoid wasting a whole stacked row on the toolbar. The actions are pushed
+     right by the stylesheet so their placement stays stable whether or not the
+     "Mapping" filter column is present. -->
+<div class="config-toolbar">
+    <div>
         <label for="statusFilter"><?= $this->translate->_("Status"); ?></label>
         <select id="statusFilter" class="form-control">
             <option value="active"><?= $this->translate->_("Active"); ?></option>
@@ -113,8 +113,8 @@ if (isset($this->ptcc) && !empty($this->ptcc) && $this->ptcc == 1) {
         </select>
     </div>
     <?php if (!empty($this->unmappedDmCount)) { ?>
-        <div style="min-width:260px;">
-            <label><?= $this->translate->_("Mapping"); ?></label>
+        <div>
+            <label for="mappingFilter"><?= $this->translate->_("Mapping"); ?></label>
             <select id="mappingFilter" class="form-control">
                 <option value=""><?= $this->translate->_("All"); ?></option>
                 <option value="mapped"><?= $this->translate->_("Mapped to a Participant"); ?></option>
@@ -122,7 +122,7 @@ if (isset($this->ptcc) && !empty($this->ptcc) && $this->ptcc == 1) {
             </select>
         </div>
     <?php } ?>
-    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-left:auto;">
+    <div class="config-toolbar-actions">
         <button type="button" id="bulkByListBtn" class="btn btn-default">
             <i class="icon-paste"></i>&nbsp;<?= $this->translate->_("Reset by Pasted List"); ?>
         </button>
