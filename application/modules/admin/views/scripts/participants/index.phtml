@@ -109,21 +109,19 @@
         vertical-align: middle;
     }
 </style>
-<h4 style="width:100%;height:50px;border-bottom:1px solid #777;">
-    <div style="font-size:22.5px;line-height:36px;color:#333;float:left;">
-        <?= $this->translate->_("List of All PT Participants"); ?></div>
-    <div style="margin-top:10px;">
-        <a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'participants', 'action' => 'add'), 'default', true); ?>"
-            class="btn btn-primary" style="float:right;"><i
-                class="icon-user"></i>&nbsp;&nbsp;<?= $this->translate->_("Add New Participant"); ?></a>
-        <a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'participants', 'action' => 'bulk-import'), 'default', true); ?>"
-            class="btn btn-primary" style="float:right;margin-right: 10px;"><i
-                class="icon-plus"></i>&nbsp;&nbsp;<?= $this->translate->_("Bulk Import Participants"); ?></a>
-        <a href="javascript:void(0)" onclick="downloadParticipantDetails();" class="btn btn-success pull-right"
-            style="margin-right: 12px;"><i class="icon-download"></i>&nbsp;
-            <?= $this->translate->_("Download as Excel"); ?></a>
+<div class="config-list">
+    <div class="config-list-head">
+        <h2><?= $this->translate->_("List of All PT Participants"); ?></h2>
+        <div class="config-list-actions">
+            <a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'participants', 'action' => 'bulk-import'), 'default', true); ?>"
+                class="btn btn-primary"><i class="icon-plus"></i>&nbsp;&nbsp;<?= $this->translate->_("Bulk Import Participants"); ?></a>
+            <a href="javascript:void(0)" onclick="downloadParticipantDetails();" class="btn btn-primary"><i
+                    class="icon-download"></i>&nbsp;&nbsp;<?= $this->translate->_("Download as Excel"); ?></a>
+            <a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'participants', 'action' => 'add'), 'default', true); ?>"
+                class="btn btn-primary"><i class="icon-user"></i>&nbsp;&nbsp;<?= $this->translate->_("Add New Participant"); ?></a>
+        </div>
     </div>
-</h4>
+    <div class="config-list-body">
 <table style="margin:20px 0;" class="table table-bordered hide">
     <tr>
         <td style="width:30%;text-align: center;font-weight:bold;">
@@ -163,29 +161,34 @@
         </td>
     </tr>
 </table>
-<?php if (!empty($this->pendingCount)) { ?>
-    <a href="/admin/participants/pending"
-        class="btn btn-warning"><?= $this->translate->_("Show only Pending Participants"); ?>
-        (<?= (int)$this->pendingCount; ?>)</a>
-<?php } ?>
-<div style="display:inline-block;margin-left:15px;">
-    <label style="margin:0 6px 0 0;font-weight:bold;" for="statusFilter"><?= $this->translate->_("Status:"); ?></label>
-    <select id="statusFilter" class="form-control input-sm" style="display:inline-block;width:auto;vertical-align:middle;">
-        <option value="active"><?= $this->translate->_("Active"); ?></option>
-        <option value="inactive"><?= $this->translate->_("Inactive"); ?></option>
-        <option value=""><?= $this->translate->_("All"); ?></option>
-    </select>
-</div>
-<?php if (!empty($this->unmappedParticipantCount)) { ?>
-    <div style="display:inline-block;margin-left:15px;">
-        <label style="margin:0 6px 0 0;font-weight:bold;"><?= $this->translate->_("Mapping:"); ?></label>
-        <select id="mappingFilter" class="form-control input-sm" style="display:inline-block;width:auto;vertical-align:middle;">
+<div class="config-filters">
+    <?php if (!empty($this->pendingCount)) { ?>
+        <div>
+            <label><?= $this->translate->_("Pending"); ?></label>
+            <a href="/admin/participants/pending"
+                class="btn btn-warning btn-sm"><?= $this->translate->_("Show only Pending Participants"); ?>
+                (<?= (int)$this->pendingCount; ?>)</a>
+        </div>
+    <?php } ?>
+    <div>
+        <label for="statusFilter"><?= $this->translate->_("Status"); ?></label>
+        <select id="statusFilter" class="form-control input-sm">
+            <option value="active"><?= $this->translate->_("Active"); ?></option>
+            <option value="inactive"><?= $this->translate->_("Inactive"); ?></option>
             <option value=""><?= $this->translate->_("All"); ?></option>
-            <option value="mapped"><?= $this->translate->_("Mapped to a Data Manager"); ?></option>
-            <option value="unmapped"><?= $this->translate->_("Not mapped to any Data Manager"); ?></option>
         </select>
     </div>
-<?php } ?>
+    <?php if (!empty($this->unmappedParticipantCount)) { ?>
+        <div>
+            <label for="mappingFilter"><?= $this->translate->_("Mapping"); ?></label>
+            <select id="mappingFilter" class="form-control input-sm">
+                <option value=""><?= $this->translate->_("All"); ?></option>
+                <option value="mapped"><?= $this->translate->_("Mapped to a Data Manager"); ?></option>
+                <option value="unmapped"><?= $this->translate->_("Not mapped to any Data Manager"); ?></option>
+            </select>
+        </div>
+    <?php } ?>
+</div>
 <style>
     #participantsTable>tbody>tr>td {
         vertical-align: middle;
@@ -199,8 +202,6 @@
         background-color: #faf2cc !important;
     }
 </style>
-<br />
-<br />
 <table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered table-hover"
     id="participantsTable">
     <thead>
@@ -235,6 +236,8 @@
         </tr>
     </tbody>
 </table>
+    </div><!-- /.config-list-body -->
+</div><!-- /.config-list -->
 <script type="text/javascript" src="<?php echo $this->baseUrl('js/bootstrap-select.min.js'); ?>"></script>
 <script type="text/javascript" src="<?php echo $this->baseUrl('js/select2.min.js'); ?>"></script>
 <script type="text/javascript" charset="utf-8">
