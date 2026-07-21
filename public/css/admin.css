@@ -8043,8 +8043,11 @@ td.center {
    export still reads as what it is — flattening those loses real meaning. */
 .config-list table.table .btn-xs,
 .config-list table.table .btn-sm {
-	font-size: 11px;
-	padding: 3px 9px;
+	/* Deliberately smaller than Bootstrap's btn-xs: a row can carry five actions,
+	   and at the default size they dominate the data they act on. */
+	font-size: 10.5px;
+	line-height: 1.5;
+	padding: 2px 7px;
 }
 
 .config-list table.table .btn-primary,

@@ -300,25 +300,45 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             $resetUrl = $urlPrefix . '/data-managers/reset-password/id/' . (int) $aRow['dm_id'];
             $changeEmailUrl = $urlPrefix . '/data-managers/change-primary-email/id/' . (int) $aRow['dm_id'];
 
+            // Six actions in one cell sprawled across the row. Grouped into pairs on
+            // their own lines instead: the two that change the record (Edit, Map) above
+            // the two that change credentials (Password, Email). Nothing is hidden —
+            // shorter labels and a clearer icon per action do the compacting.
             $btnStyle = 'margin:1px;';
-            $actions = '';
+            $lineStyle = 'white-space:nowrap;';
+            $recordLine = '';
+            $credentialLine = '';
+            $extraLine = '';
+
             if (!$fromParticipant) {
-                $actions .= '<a href="' . $editUrl . '" class="btn btn-warning btn-xs" style="' . $btnStyle . '"><i class="icon-pencil"></i> ' . $translator->_('Edit') . '</a>';
+                $recordLine .= '<a href="' . $editUrl . '" class="btn btn-warning btn-xs" style="' . $btnStyle . '" title="' . $translator->_('Edit this data manager') . '"><i class="icon-pencil"></i> ' . $translator->_('Edit') . '</a>';
             }
-            $actions .= '<a href="javascript:void(0);" class="btn btn-info btn-xs" style="' . $btnStyle . '" onclick="layoutModal(\'' . $resetUrl . '\',\'980\',\'500\');"><i class="icon-key"></i> ' . $translator->_('Reset Password') . '</a>';
-            $actions .= '<a href="javascript:void(0);" class="btn btn-default btn-xs" style="' . $btnStyle . '" onclick="layoutModal(\'' . $changeEmailUrl . '\',\'700\',\'520\');"><i class="icon-envelope"></i> ' . $translator->_('Change Email') . '</a>';
             if (!$fromParticipant && !$isPtcc) {
-                $actions .= '<a href="javascript:void(0);" class="btn btn-success btn-xs" style="' . $btnStyle . '" onclick="layoutModal(\'/admin/participants/participant-manager-map/id/' . (int) $aRow['dm_id'] . '/modal/1\',\'1150\',\'700\');"><i class="icon-user"></i> ' . $translator->_('Map Participants') . '</a>';
+                // icon-link, not icon-user: this associates participants with the
+                // manager, and a person icon already means "the participant list".
+                $recordLine .= '<a href="javascript:void(0);" class="btn btn-success btn-xs" style="' . $btnStyle . '" title="' . $translator->_('Map participants to this data manager') . '" onclick="layoutModal(\'/admin/participants/participant-manager-map/id/' . (int) $aRow['dm_id'] . '/modal/1\',\'1150\',\'700\');"><i class="icon-link"></i> ' . $translator->_('Map') . '</a>';
             }
+
+            $credentialLine .= '<a href="javascript:void(0);" class="btn btn-info btn-xs" style="' . $btnStyle . '" title="' . $translator->_('Reset this user\'s password') . '" onclick="layoutModal(\'' . $resetUrl . '\',\'980\',\'500\');"><i class="icon-key"></i> ' . $translator->_('Password') . '</a>';
+            $credentialLine .= '<a href="javascript:void(0);" class="btn btn-default btn-xs" style="' . $btnStyle . '" title="' . $translator->_('Change the primary email address') . '" onclick="layoutModal(\'' . $changeEmailUrl . '\',\'700\',\'520\');"><i class="icon-envelope"></i> ' . $translator->_('Email') . '</a>';
+
             // "View as Participant" — only rendered for admins with the
             // view-as-participant privilege. Opens in a new tab so the
-            // admin's current admin-side workflow isn't disrupted.
+            // admin's current admin-side workflow isn't disrupted. Kept on its own
+            // line: it leaves the admin UI entirely and is audited.
             if (!$fromParticipant) {
                 $adminSession = new Zend_Session_Namespace('administrators');
                 $adminPrivileges = array_map('trim', explode(',', (string) ($adminSession->privileges ?? '')));
                 if (in_array('view-as-participant', $adminPrivileges, true)) {
                     $viewAsUrl = '/admin/impersonate/start?dm_id=' . (int) $aRow['dm_id'];
-                    $actions .= '<a href="' . $viewAsUrl . '" target="_blank" rel="noopener" class="btn btn-danger btn-xs" style="' . $btnStyle . '" title="' . $translator->_('Opens the participant UI as this user. Audited.') . '"><i class="icon-eye-open"></i> ' . $translator->_('View as') . '</a>';
+                    $extraLine .= '<a href="' . $viewAsUrl . '" target="_blank" rel="noopener" class="btn btn-danger btn-xs" style="' . $btnStyle . '" title="' . $translator->_('Opens the participant UI as this user. Audited.') . '"><i class="icon-eye-open"></i> ' . $translator->_('View as') . '</a>';
+                }
+            }
+
+            $actions = '';
+            foreach ([$recordLine, $credentialLine, $extraLine] as $line) {
+                if ($line !== '') {
+                    $actions .= '<div style="' . $lineStyle . '">' . $line . '</div>';
                 }
             }
             $row[] = $actions;
