@@ -7851,7 +7851,7 @@ td.center {
 
 
 /* ─────────────────────────────────────────────────────────────────────────────
-   .config-list — opt-in card + DataTables treatment for admin list pages.
+   .data-list — opt-in card + DataTables treatment for admin list pages.
 
    Lives here rather than in config-pages.css so ANY admin page can adopt it by
    wrapping its table, not just the Scheme Config hub pages that load that file.
@@ -7859,13 +7859,13 @@ td.center {
    than for a data grid, and a global restyle would catch those too.
 
    To adopt it on a page:
-       <div class="config-list">
-         <div class="config-list-head">
+       <div class="data-list">
+         <div class="data-list-head">
            <h2>Title</h2>
-           <div class="config-list-actions"> … buttons … </div>
+           <div class="data-list-actions"> … buttons … </div>
          </div>
-         <div class="config-list-body">
-           <div class="config-filters"> … labelled selects … </div>
+         <div class="data-list-body">
+           <div class="data-list-filters"> … labelled selects … </div>
            … table + DataTables …
          </div>
        </div>
@@ -7876,7 +7876,7 @@ td.center {
    chrome. Six pages, six slightly different looks. The rules below give them the
    same card, toolbar and table treatment the settings pages already use, so a
    page only has to supply the markup structure — not its own styling. */
-.config-list {
+.data-list {
 	border: 1px solid #e2e8f0;
 	border-radius: 6px;
 	background: #fff;
@@ -7885,7 +7885,7 @@ td.center {
 
 /* Title left, page actions right — same band as .collapsible, so a list page and
    a settings card read as the same kind of object. */
-.config-list > .config-list-head {
+.data-list > .data-list-head {
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
@@ -7896,7 +7896,7 @@ td.center {
 	padding: 10px 16px;
 }
 
-.config-list > .config-list-head h2 {
+.data-list > .data-list-head h2 {
 	margin: 0;
 	font-size: 14px;
 	font-weight: 600;
@@ -7904,7 +7904,7 @@ td.center {
 	letter-spacing: 0.01em;
 }
 
-.config-list-actions {
+.data-list-actions {
 	display: flex;
 	gap: 8px;
 	flex-wrap: wrap;
@@ -7914,7 +7914,7 @@ td.center {
    and outweighed the table they sat above. */
 /* A filter dropdown occasionally rides in the actions area (Custom Tests); stop
    Bootstrap's full-width .form-control from stretching it across the band. */
-.config-list-actions .form-control {
+.data-list-actions .form-control {
 	width: auto;
 	display: inline-block;
 	height: 30px;
@@ -7926,33 +7926,33 @@ td.center {
    btn-danger / btn-success / btn-info carry meaning (destructive, export,
    secondary flow) and keep their own colour — only the generic "this is a
    button" colours are quietened. */
-.config-list-actions .btn {
+.data-list-actions .btn {
 	font-size: 12px;
 	padding: 6px 12px;
 }
 
-.config-list-actions .btn-primary,
-.config-list-actions .btn-default {
+.data-list-actions .btn-primary,
+.data-list-actions .btn-default {
 	background: #4a6fa5;
 	border-color: #3a5a8a;
 	color: #fff;
 }
 
-.config-list-actions .btn-primary:hover,
-.config-list-actions .btn-primary:focus,
-.config-list-actions .btn-default:hover,
-.config-list-actions .btn-default:focus {
+.data-list-actions .btn-primary:hover,
+.data-list-actions .btn-primary:focus,
+.data-list-actions .btn-default:hover,
+.data-list-actions .btn-default:focus {
 	background: #3a5a8a;
 	border-color: #2f4a73;
 	color: #fff;
 }
 
-.config-list > .config-list-body {
+.data-list > .data-list-body {
 	padding: 14px 16px 16px;
 }
 
 /* Filters: one row of labelled selects, replacing each page's inline strip. */
-.config-filters {
+.data-list-filters {
 	display: grid;
 	grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
 	gap: 12px;
@@ -7961,7 +7961,7 @@ td.center {
 	border-bottom: 1px solid #eef1f5;
 }
 
-.config-filters label {
+.data-list-filters label {
 	display: block;
 	margin-bottom: 4px;
 	font-size: 11px;
@@ -7972,10 +7972,10 @@ td.center {
 }
 
 /* Filters plus a right-aligned action cluster, for pages whose toolbar carries
-   bulk operations (Data Managers). Same labels and rhythm as .config-filters;
+   bulk operations (Data Managers). Same labels and rhythm as .data-list-filters;
    flex rather than grid because the actions must hold the right edge whether or
    not an optional filter column renders. */
-.config-toolbar {
+.data-list-toolbar {
 	display: flex;
 	align-items: flex-end;
 	gap: 16px;
@@ -7985,12 +7985,12 @@ td.center {
 	border-bottom: 1px solid #eef1f5;
 }
 
-.config-toolbar > div {
+.data-list-toolbar > div {
 	min-width: 190px;
 }
 
-.config-toolbar label,
-.config-filters label {
+.data-list-toolbar label,
+.data-list-filters label {
 	display: block;
 	margin-bottom: 4px;
 	font-size: 11px;
@@ -8000,7 +8000,7 @@ td.center {
 	color: #6b7280;
 }
 
-.config-toolbar-actions {
+.data-list-toolbar-actions {
 	display: flex;
 	align-items: center;
 	gap: 8px;
@@ -8011,40 +8011,40 @@ td.center {
 
 /* Buttons living among filters — or in the advanced-search panel, which is a
    layout table rather than a data grid — are secondary to the grid below them. */
-.config-toolbar .btn,
-.config-filters .btn,
-.config-list table.table:not(.dataTable) .btn {
+.data-list-toolbar .btn,
+.data-list-filters .btn,
+.data-list table.table:not(.dataTable) .btn {
 	font-size: 12px;
 	padding: 5px 11px;
 }
 
-.config-toolbar .btn-primary,
-.config-filters .btn-primary,
-.config-list table.table:not(.dataTable) .btn-primary {
+.data-list-toolbar .btn-primary,
+.data-list-filters .btn-primary,
+.data-list table.table:not(.dataTable) .btn-primary {
 	background: #4a6fa5;
 	border-color: #3a5a8a;
 	color: #fff;
 }
 
-.config-toolbar .btn-primary:hover,
-.config-filters .btn-primary:hover,
-.config-list table.table:not(.dataTable) .btn-primary:hover {
+.data-list-toolbar .btn-primary:hover,
+.data-list-filters .btn-primary:hover,
+.data-list table.table:not(.dataTable) .btn-primary:hover {
 	background: #3a5a8a;
 	border-color: #2f4a73;
 	color: #fff;
 }
 
-.config-toolbar .btn-default,
-.config-filters .btn-default,
-.config-list table.table:not(.dataTable) .btn-default {
+.data-list-toolbar .btn-default,
+.data-list-filters .btn-default,
+.data-list table.table:not(.dataTable) .btn-default {
 	background: #eef3f9;
 	border: 1px solid #cfdae8;
 	color: #3a5a8a;
 }
 
-.config-toolbar .btn-default:hover,
-.config-filters .btn-default:hover,
-.config-list table.table:not(.dataTable) .btn-default:hover {
+.data-list-toolbar .btn-default:hover,
+.data-list-filters .btn-default:hover,
+.data-list table.table:not(.dataTable) .btn-default:hover {
 	background: #4a6fa5;
 	border-color: #3a5a8a;
 	color: #fff;
@@ -8052,19 +8052,19 @@ td.center {
 
 /* ── DataTables chrome ────────────────────────────────────────────────────── */
 /* Scoped to the hub so the plugin defaults elsewhere in the admin are untouched. */
-.config-list .dataTables_wrapper {
+.data-list .dataTables_wrapper {
 	font-size: 13px;
 }
 
-.config-list .dataTables_length,
-.config-list .dataTables_filter {
+.data-list .dataTables_length,
+.data-list .dataTables_filter {
 	font-size: 12px;
 	color: #6b7280;
 	margin-bottom: 10px;
 }
 
-.config-list .dataTables_length select,
-.config-list .dataTables_filter input {
+.data-list .dataTables_length select,
+.data-list .dataTables_filter input {
 	height: 30px;
 	padding: 3px 8px;
 	font-size: 12px;
@@ -8072,26 +8072,26 @@ td.center {
 	border-radius: 4px;
 }
 
-.config-list .dataTables_filter input:focus,
-.config-list .dataTables_length select:focus {
+.data-list .dataTables_filter input:focus,
+.data-list .dataTables_length select:focus {
 	border-color: #4a6fa5;
 	box-shadow: 0 0 0 3px rgba(74, 111, 165, 0.1);
 	outline: none;
 }
 
-.config-list .dataTables_info {
+.data-list .dataTables_info {
 	font-size: 12px;
 	color: #8fa0b5;
 	padding-top: 12px;
 }
 
 /* Table: same header band as the config cards, quiet hairline rows. */
-.config-list table.table {
+.data-list table.table {
 	margin-bottom: 0;
 	border: 1px solid #e2e8f0;
 }
 
-.config-list table.table > thead > tr > th {
+.data-list table.table > thead > tr > th {
 	/* Centred, matching the global `.dataTable th` rule — stated explicitly so a
 	   plain .table inside a card lines up with a DataTables-driven one. */
 	text-align: center;
@@ -8106,13 +8106,13 @@ td.center {
 	vertical-align: middle;
 }
 
-.config-list table.table > tbody > tr > td {
+.data-list table.table > tbody > tr > td {
 	font-size: 13px;
 	vertical-align: middle;
 	border-top: 1px solid #eef1f5;
 }
 
-.config-list table.table > tbody > tr:hover > td {
+.data-list table.table > tbody > tr:hover > td {
 	background-color: #f7f9fc;
 }
 
@@ -8120,8 +8120,8 @@ td.center {
    generic action colours (btn-primary / btn-warning / btn-default, which the
    grids use interchangeably for Edit and toggles). A red Delete or a green
    export still reads as what it is — flattening those loses real meaning. */
-.config-list table.dataTable .btn-xs,
-.config-list table.dataTable .btn-sm {
+.data-list table.dataTable .btn-xs,
+.data-list table.dataTable .btn-sm {
 	/* Deliberately smaller than Bootstrap's btn-xs: a row can carry five actions,
 	   and at the default size they dominate the data they act on. */
 	font-size: 10.5px;
@@ -8129,17 +8129,17 @@ td.center {
 	padding: 2px 7px;
 }
 
-.config-list table.dataTable .btn-primary,
-.config-list table.dataTable .btn-warning,
-.config-list table.dataTable .btn-default {
+.data-list table.dataTable .btn-primary,
+.data-list table.dataTable .btn-warning,
+.data-list table.dataTable .btn-default {
 	background: #eef3f9;
 	border: 1px solid #cfdae8;
 	color: #3a5a8a;
 }
 
-.config-list table.dataTable .btn-primary:hover,
-.config-list table.dataTable .btn-warning:hover,
-.config-list table.dataTable .btn-default:hover {
+.data-list table.dataTable .btn-primary:hover,
+.data-list table.dataTable .btn-warning:hover,
+.data-list table.dataTable .btn-default:hover {
 	background: #4a6fa5;
 	border-color: #3a5a8a;
 	color: #fff;
@@ -8147,26 +8147,26 @@ td.center {
 
 /* Pagination: the stock plugin buttons are wider and heavier than anything else
    on the page. */
-.config-list .dataTables_paginate {
+.data-list .dataTables_paginate {
 	padding-top: 10px;
 }
 
-.config-list .dataTables_paginate .pagination > li > a,
-.config-list .dataTables_paginate .pagination > li > span {
+.data-list .dataTables_paginate .pagination > li > a,
+.data-list .dataTables_paginate .pagination > li > span {
 	font-size: 12px;
 	padding: 5px 11px;
 	color: #4a5568;
 	border-color: #e2e8f0;
 }
 
-.config-list .dataTables_paginate .pagination > .active > a,
-.config-list .dataTables_paginate .pagination > .active > span {
+.data-list .dataTables_paginate .pagination > .active > a,
+.data-list .dataTables_paginate .pagination > .active > span {
 	background: #4a6fa5;
 	border-color: #3a5a8a;
 	color: #fff;
 }
 
-.config-list .dataTables_paginate .pagination > .disabled > a,
-.config-list .dataTables_paginate .pagination > .disabled > span {
+.data-list .dataTables_paginate .pagination > .disabled > a,
+.data-list .dataTables_paginate .pagination > .disabled > span {
 	color: #b3c1d1;
 }

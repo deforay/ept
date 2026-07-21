@@ -6,17 +6,17 @@
 ?>
 <?php echo $this->render('partials/scheme-config-open.phtml'); ?>
 
-<div class="config-list">
-    <div class="config-list-head">
+<div class="data-list">
+    <div class="data-list-head">
         <h2><?= $this->translate->_("List of all VL Assays or Platforms"); ?></h2>
-        <div class="config-list-actions">
+        <div class="data-list-actions">
             <a
             href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'vl-assay', 'action' => 'add'), 'default', true); ?>"
             class="btn btn-primary"><i
                 class="icon-plus"></i>&nbsp;&nbsp;<?= $this->translate->_("Add New VL Assay/Platform"); ?></a>
         </div>
     </div>
-    <div class="config-list-body">
+    <div class="data-list-body">
 <table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered table-hover"
     id="vlAssayTable">
     <thead>
@@ -32,8 +32,8 @@
         </tr>
     </tbody>
 </table>
-    </div><!-- /.config-list-body -->
-</div><!-- /.config-list -->
+    </div><!-- /.data-list-body -->
+</div><!-- /.data-list -->
 
 <script type="text/javascript" charset="utf-8">
     /* Table initialisation */

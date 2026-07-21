@@ -74,10 +74,10 @@ if (isset($this->ptcc) && !empty($this->ptcc) && $this->ptcc == 1) {
         vertical-align: middle;
     }
 </style>
-<div class="config-list">
-    <div class="config-list-head">
+<div class="data-list">
+    <div class="data-list-head">
         <h2><?= $this->translate->_($title); ?></h2>
-        <div class="config-list-actions">
+        <div class="data-list-actions">
             <?php if (isset($ptcc) && !empty($ptcc) && $ptcc == 1) { ?>
             <a href="javascript:void(0);" onclick="generatePtccExport('mapped');" id="exportExcel" class="btn btn-primary"><i
                     class="icon-download"></i>&nbsp;&nbsp;<?= $this->translate->_("PTCC Mapped Participants"); ?></a>
@@ -96,14 +96,14 @@ if (isset($this->ptcc) && !empty($this->ptcc) && $this->ptcc == 1) {
         <?php } ?>
         </div>
     </div>
-    <div class="config-list-body">
+    <div class="data-list-body">
 
 
-<!-- Filters + bulk-action toolbar share one bottom-aligned row (.config-toolbar)
+<!-- Filters + bulk-action toolbar share one bottom-aligned row (.data-list-toolbar)
      to avoid wasting a whole stacked row on the toolbar. The actions are pushed
      right by the stylesheet so their placement stays stable whether or not the
      "Mapping" filter column is present. -->
-<div class="config-toolbar">
+<div class="data-list-toolbar">
     <div>
         <label for="statusFilter"><?= $this->translate->_("Status"); ?></label>
         <select id="statusFilter" class="form-control">
@@ -122,7 +122,7 @@ if (isset($this->ptcc) && !empty($this->ptcc) && $this->ptcc == 1) {
             </select>
         </div>
     <?php } ?>
-    <div class="config-toolbar-actions">
+    <div class="data-list-toolbar-actions">
         <button type="button" id="bulkByListBtn" class="btn btn-default">
             <i class="icon-paste"></i>&nbsp;<?= $this->translate->_("Reset by Pasted List"); ?>
         </button>
@@ -198,8 +198,8 @@ if (isset($this->ptcc) && !empty($this->ptcc) && $this->ptcc == 1) {
         </tr>
     </tbody>
 </table>
-    </div><!-- /.config-list-body -->
-</div><!-- /.config-list -->
+    </div><!-- /.data-list-body -->
+</div><!-- /.data-list -->
 <!-- Modal -->
 <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
 

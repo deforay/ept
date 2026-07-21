@@ -109,10 +109,10 @@
         vertical-align: middle;
     }
 </style>
-<div class="config-list">
-    <div class="config-list-head">
+<div class="data-list">
+    <div class="data-list-head">
         <h2><?= $this->translate->_("List of All PT Participants"); ?></h2>
-        <div class="config-list-actions">
+        <div class="data-list-actions">
             <a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'participants', 'action' => 'bulk-import'), 'default', true); ?>"
                 class="btn btn-primary"><i class="icon-plus"></i>&nbsp;&nbsp;<?= $this->translate->_("Bulk Import Participants"); ?></a>
             <a href="javascript:void(0)" onclick="downloadParticipantDetails();" class="btn btn-primary"><i
@@ -121,7 +121,7 @@
                 class="btn btn-primary"><i class="icon-user"></i>&nbsp;&nbsp;<?= $this->translate->_("Add New Participant"); ?></a>
         </div>
     </div>
-    <div class="config-list-body">
+    <div class="data-list-body">
 <table style="margin:20px 0;" class="table table-bordered hide">
     <tr>
         <td style="width:30%;text-align: center;font-weight:bold;">
@@ -161,7 +161,7 @@
         </td>
     </tr>
 </table>
-<div class="config-filters">
+<div class="data-list-filters">
     <?php if (!empty($this->pendingCount)) { ?>
         <div>
             <label><?= $this->translate->_("Pending"); ?></label>
@@ -236,8 +236,8 @@
         </tr>
     </tbody>
 </table>
-    </div><!-- /.config-list-body -->
-</div><!-- /.config-list -->
+    </div><!-- /.data-list-body -->
+</div><!-- /.data-list -->
 <script type="text/javascript" src="<?php echo $this->baseUrl('js/bootstrap-select.min.js'); ?>"></script>
 <script type="text/javascript" src="<?php echo $this->baseUrl('js/select2.min.js'); ?>"></script>
 <script type="text/javascript" charset="utf-8">

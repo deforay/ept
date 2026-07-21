@@ -172,7 +172,7 @@
 }
 
 /* ── List pages ───────────────────────────────────────────────────────────── */
-/* The .config-list treatment used to live here. It moved to admin.css so any
+/* The .data-list treatment used to live here. It moved to admin.css so any
    admin page can opt into it, not just the ones that load this file. */
 
 /* ── Yes/No toggles ───────────────────────────────────────────────────────── */

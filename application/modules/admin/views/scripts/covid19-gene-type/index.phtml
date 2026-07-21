@@ -9,17 +9,17 @@
 <?php
 $adminSession = new Zend_Session_Namespace('administrators');
 ?>
-<div class="config-list">
-    <div class="config-list-head">
+<div class="data-list">
+    <div class="data-list-head">
         <h2><?= $this->translate->_("List of All Gene Types"); ?></h2>
-        <div class="config-list-actions">
+        <div class="data-list-actions">
             <a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'covid19-gene-type', 'action' => 'add'), 'default', true); ?>"
             class="btn btn-primary"><i class="icon-user"></i>&nbsp;&nbsp;Add New Gene Type</a>
         </div>
     </div>
-    <div class="config-list-body">
+    <div class="data-list-body">
 
-<div class="config-filters">
+<div class="data-list-filters">
     <div>
         <label for="status"><?= $this->htmlTranslate("Approval status"); ?></label>
         <select id="status" name="status" onchange="getApproval(this.value);" class="form-control input-sm">
@@ -45,8 +45,8 @@ $adminSession = new Zend_Session_Namespace('administrators');
         </tr>
     </tbody>
 </table>
-    </div><!-- /.config-list-body -->
-</div><!-- /.config-list -->
+    </div><!-- /.data-list-body -->
+</div><!-- /.data-list -->
 <script type="text/javascript" charset="utf-8">
     /* Table initialisation */
     var oTable = null;

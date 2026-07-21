@@ -9,10 +9,10 @@
 <?php
 $adminSession = new Zend_Session_Namespace('administrators');
 ?>
-<div class="config-list">
-    <div class="config-list-head">
+<div class="data-list">
+    <div class="data-list-head">
         <h2><?= $this->translate->_("List of All Custom Tests"); ?></h2>
-        <div class="config-list-actions">
+        <div class="data-list-actions">
             <a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'custom-test', 'action' => 'add'), 'default', true); ?>"
             class="btn btn-primary"><i
                 class="icon-user"></i>&nbsp;&nbsp;<?= $this->translate->_("Add New Custom Test"); ?></a>
@@ -26,7 +26,7 @@ $adminSession = new Zend_Session_Namespace('administrators');
         </select>
         </div>
     </div>
-    <div class="config-list-body">
+    <div class="data-list-body">
 <table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered table-hover"
     id="genericTestTable">
     <thead>
@@ -43,8 +43,8 @@ $adminSession = new Zend_Session_Namespace('administrators');
         </tr>
     </tbody>
 </table>
-    </div><!-- /.config-list-body -->
-</div><!-- /.config-list -->
+    </div><!-- /.data-list-body -->
+</div><!-- /.data-list -->
 <script type="text/javascript" charset="utf-8">
     /* Table initialisation */
     var oTable = null;
