@@ -406,7 +406,16 @@ $helpPageKey = "$controllerName/$actionName";
 										['dts', 'vl', 'eid', 'tb', 'covid19', 'recency'],
 										(array) $adminSession->activeSchemes
 									);
-									if (!empty($schemeConfigSchemes)) { ?>
+									// Test Kits also lives in the Scheme Config hub, but r_testkitnames is a
+									// catalogue shared by DTS and custom tests rather than one scheme's setting,
+									// so it keeps a top-level entry here where people expect to find it. Gating
+									// matches the hub's Shared group (DTS or custom tests), not DTS alone.
+									if (in_array('dts', (array) $adminSession->activeSchemes) || (isset($configData['generic_test_config']) && $configData['generic_test_config'] == 'yes')) { ?>
+										<li id="TestKits"><a
+												href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'testkit'), 'default', true); ?>"><?= $this->translate->_("Test Kits"); ?></a>
+										</li>
+									<?php } ?>
+									<?php if (!empty($schemeConfigSchemes)) { ?>
 										<li id="SchemeConfig"><a
 												href="<?php echo $this->url(['scheme' => reset($schemeConfigSchemes)], 'schemeConfigRoute', true); ?>"><?= $this->translate->_("Scheme Config"); ?></a>
 										</li>
@@ -787,7 +796,7 @@ $helpPageKey = "$controllerName/$actionName";
 			} else if (splitsUrl[1] == 'reports' && splitsUrl[2] == 'testkit') {
 				$('#TestKitReportForHIVSerology').addClass('active');
 			} else if (splitsUrl[2] == 'testkit') {
-				$('#SchemeConfig').addClass('active');
+				$('#TestKits').addClass('active');
 			} else if (splitsUrl[2] == 'schemes' && splitsUrl[3] == 'test-results') {
 				$('#testResults').addClass('active');
 			} else if (splitsUrl[2] == 'vl-assay') {
