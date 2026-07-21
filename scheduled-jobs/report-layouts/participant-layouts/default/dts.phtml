@@ -802,7 +802,7 @@ if (!empty($resultArray['shipment'])) {
         //    $result['distribution_date']=Pt_Commons_DateUtility::humanReadableDateFormat($result['distribution_date']);
         //}
         if (trim($result['shipment_comment']) != "" || trim($result['evaluationComments']) != "" || trim($result['optional_eval_comment']) != "") {
-            $comment = '<br><br><table border="1" style="width:100%;font-size:12px;" cellpadding="3">';
+            $comment = '<br><table border="1" style="width:100%;font-size:12px;" cellpadding="3">';
 
             if (trim($result['evaluationComments']) != "") {
                 $comment .= '<tr>';
