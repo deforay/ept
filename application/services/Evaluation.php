@@ -2127,7 +2127,10 @@ class Application_Service_Evaluation
         $documentationScore = (isset($shipment['documentation_score']) && $shipment['documentation_score'] !== '') ? $shipment['documentation_score'] : '0';
 
         $individualReports = '';
-        if (($shipment['status'] ?? '') === 'reports generated' && (int) ($shipment['final_result'] ?? 0) !== 3) {
+        // Excluded participants (final_result 3) get their report link too when a
+        // PDF was actually produced for them — the file_exists check below is the
+        // only availability gate.
+        if (($shipment['status'] ?? '') === 'reports generated') {
             $invididualFilePath = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $shipment['shipment_code'] . DIRECTORY_SEPARATOR . $shipment['shipment_code'] . '-' . $shipment['map_id'] . '.pdf';
             if (!file_exists($invididualFilePath)) {
                 $files = glob(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $shipment['shipment_code'] . DIRECTORY_SEPARATOR . '*-' . $shipment['map_id'] . '.pdf');
