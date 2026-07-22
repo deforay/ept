@@ -117,11 +117,17 @@ $tbCountFilled = function (array $ref, array $keys): int {
         box-sizing: border-box;
     }
 
-    /* Let the inner container fill the full-bleed well instead of capping
-       at its responsive fixed width. */
+    /* The well breaks out to the full viewport (above), but we re-cap the
+       inner content to one comfortable centered width so the metadata form
+       and the sample cards share the same width and sit centred on the page
+       instead of sprawling edge-to-edge on wide monitors. The cap is wider
+       than the default Bootstrap container (1170px) so the 7 inline card-head
+       fields still fit on a single row. */
     .tb-form-fullwidth > .container {
         width: 100%;
-        max-width: 100%;
+        max-width: 1360px;
+        margin-left: auto;
+        margin-right: auto;
     }
 
     /* Spread the sample tables across the available width. */
