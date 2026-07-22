@@ -8009,6 +8009,69 @@ td.center {
 	min-width: 0;
 }
 
+/* Select2 (4.x) widgets riding in the filter band — stretch to the grid cell
+   and mirror the admin form-control look (2px #ccc border, 34px band) so
+   native selects, date inputs and select2 boxes sit flush in one row. */
+.data-list-filters .select2-container {
+	width: 100% !important;
+	display: block;
+}
+
+.data-list-filters .select2-container--default .select2-selection--single,
+.data-list-filters .select2-container--default .select2-selection--multiple {
+	border: 2px solid #ccc;
+	border-radius: 4px;
+	min-height: 34px;
+}
+
+.data-list-filters .select2-container--default .select2-selection--single {
+	height: 34px;
+}
+
+.data-list-filters .select2-container--default .select2-selection--single .select2-selection__rendered {
+	line-height: 30px;
+}
+
+.data-list-filters .select2-container--default .select2-selection--single .select2-selection__arrow {
+	height: 30px;
+}
+
+/* Default theme flips to a 1px black border on focus — jarring next to the 2px
+   Bootstrap controls, and the border-width change makes the box jump a pixel. */
+.data-list-filters .select2-container--default.select2-container--focus .select2-selection--multiple,
+.data-list-filters .select2-container--default.select2-container--open .select2-selection--multiple,
+.data-list-filters .select2-container--default.select2-container--open .select2-selection--single {
+	border: 2px solid #66afe9;
+}
+
+/* The "Select one or more …" placeholders are long; clip them with an ellipsis
+   instead of cutting mid-letter when the cell is narrower than the text. */
+.data-list-filters .select2-container--default .select2-selection--multiple .select2-selection__placeholder {
+	max-width: calc(100% - 12px);
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+/* Bands with many filters (the shipment listing pages carry 8–10): auto-fit
+   packs seven across and orphans the rest on a ragged second row. .four-up pins
+   the old col-md-3 rhythm — balanced rows, cells wide enough for the labels. */
+.data-list-filters.four-up {
+	grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+@media (max-width: 1199px) {
+	.data-list-filters.four-up {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+}
+
+@media (max-width: 575px) {
+	.data-list-filters.four-up {
+		grid-template-columns: minmax(0, 1fr);
+	}
+}
+
 /* Buttons living among filters — or in the advanced-search panel, which is a
    layout table rather than a data grid — are secondary to the grid below them. */
 .data-list-toolbar .btn,

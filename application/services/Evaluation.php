@@ -1651,7 +1651,8 @@ class Application_Service_Evaluation
             $baseSelect = $baseSelect->where('p.country IN (?)', $country);
         }
         if (isset($parameters['region']) && $parameters['region'] != '') {
-            $baseSelect = $baseSelect->where('p.region = ?', $parameters['region']);
+            $region = explode(',', $parameters['region']);
+            $baseSelect = $baseSelect->where('p.region IN (?)', $region);
         }
         if (isset($parameters['state']) && $parameters['state'] != '') {
             $state = explode(',', $parameters['state']);

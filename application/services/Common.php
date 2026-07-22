@@ -885,13 +885,25 @@ class Application_Service_Common
 
     public function getOptionsByValue($params)
     {
+        // Cascading location filters may send one parent value or several
+        // (multi-select country/region/state), as an array or a comma-joined
+        // string depending on how jQuery serialised it.
+        $searchValues = is_array($params['searchvalue'])
+            ? $params['searchvalue']
+            : explode(',', (string) $params['searchvalue']);
+        $searchValues = array_values(array_filter(array_map('trim', $searchValues), function ($v) {
+            return $v !== '';
+        }));
+        if (empty($searchValues)) {
+            return [];
+        }
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $sql = $db->select()->from([$params['table']], [$params['returnfield']])
             ->where($params['returnfield'] . ' IS NOT NULL')
             ->where($params['returnfield'] . " not like ''")
             ->where($params['searchfield'] . ' IS NOT NULL')
             ->where($params['searchfield'] . " not like ''")
-            ->where($params['searchfield'] . ' LIKE ?', $params['searchvalue'])
+            ->where($params['searchfield'] . ' IN (?)', $searchValues)
             ->group($params['returnfield'])
             ->order($params['returnfield']);
         return $db->fetchAll($sql);

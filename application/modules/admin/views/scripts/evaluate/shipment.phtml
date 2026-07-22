@@ -201,130 +201,112 @@ if ($shipmentAttributesRaw !== '') {
 		</div>
 		<hr>
 	</form>
-	<div class="shipment-filters" style="clear:both;margin:15px 0;padding:12px 14px;background:#f8f9fa;border:1px solid #e2e8f0;border-radius:4px;">
-		<div class="row" style="margin:0;">
-			<div class="col-md-3" style="padding-left:0;">
-				<label for="manuelOverride" style="font-weight:600;font-size:13px;display:block;margin-bottom:4px;"><?= $this->htmlTranslate("Manually overridden only"); ?></label>
-				<select name="manuelOverride" id="manuelOverride" class="form-control input-sm"
-					title="Please choose manual override yes or no" onchange="manualOverride(this.value)">
-					<option value="">-- <?= $this->htmlTranslate("Select"); ?> --</option>
-					<option <?php echo (isset($this->override) && $this->override == "no") ? " selected='selected' " : ""; ?>
-						value="no"><?= $this->htmlTranslate("No"); ?></option>
-					<option <?php echo (isset($this->override) && $this->override == "yes") ? " selected='selected' " : ""; ?>
-						value="yes"><?= $this->htmlTranslate("Yes"); ?></option>
-				</select>
-			</div>
-			<div class="col-md-3">
-				<label for="filterResponseStatus" style="font-weight:600;font-size:13px;display:block;margin-bottom:4px;"><?= $this->htmlTranslate("Response status"); ?></label>
-				<select id="filterResponseStatus" class="form-control input-sm" multiple onchange="applyShipmentFilters()">
-					<option value=""><?= $this->htmlTranslate("All"); ?></option>
-					<option value="responded"><?= $this->htmlTranslate("Responded"); ?></option>
-					<option value="noresponse"><?= $this->htmlTranslate("Not Responded"); ?></option>
-					<option value="late"><?= $this->htmlTranslate("Late Response"); ?></option>
-					<option value="nottested"><?= $this->htmlTranslate("Not Tested"); ?></option>
-				</select>
-			</div>
-			<div class="col-md-3">
-				<label for="filterResult" style="font-weight:600;font-size:13px;display:block;margin-bottom:4px;"><?= $this->htmlTranslate("Result"); ?></label>
-				<select id="filterResult" class="form-control input-sm" multiple onchange="applyShipmentFilters()">
-					<option value=""><?= $this->htmlTranslate("All"); ?></option>
-					<?php
-					foreach($this->results as $res){
-					?>
-					<option value="<?php echo $res['result_id'] ?>"><?php echo $res['result_name']; ?></option>
-					<?php } ?>
-				</select>
-			</div>
-			<div class="col-md-3">
-				<label for="dateRange" style="font-weight:600;font-size:13px;display:block;margin-bottom:4px;"><?= $this->htmlTranslate("Date Range"); ?></label>
-				<input type="text" id="dateRange" name="dateRange" class="form-control input-sm" onchange="applyShipmentFilters()" readonly="readonly"
-				style="background: #fff" placeholder="<?= $this->htmlTranslate("Click here to pick a Date Range"); ?>" />
-
-			</div>
-			<br>
-			<?php if (($this->dtsSchemeType ?? '') === 'vietnam') { ?>
-				<div class="col-md-3">
-					<label for="vietnamTier" style="font-weight:600;font-size:13px;display:block;margin-bottom:4px;"><?= $this->htmlTranslate("Tier"); ?></label>
-					<select id="vietnamTier" class="form-control input-sm" onchange="applyShipmentFilters()">
-						<option value=""><?= $this->htmlTranslate("All tiers"); ?></option>
-						<option value="screening"><?= $this->htmlTranslate("Screening"); ?></option>
-						<option value="confirmatory"><?= $this->htmlTranslate("Confirmatory"); ?></option>
-					</select>
-				</div>
-				<div class="col-md-3">
-					<label for="vietnamNonStandardKit" style="font-weight:600;font-size:13px;display:block;margin-bottom:4px;"><?= $this->htmlTranslate("Primary kit"); ?></label>
-					<select id="vietnamNonStandardKit" class="form-control input-sm" onchange="applyShipmentFilters()">
-						<option value=""><?= $this->htmlTranslate("All kits"); ?></option>
-						<option value="yes"><?= $this->htmlTranslate("Non-reference kit only"); ?></option>
-					</select>
-				</div>
-			<?php } ?>
+	<div class="data-list-filters four-up" style="clear:both;margin-top:15px;">
+		<div>
+			<label for="manuelOverride"><?= $this->htmlTranslate("Manually overridden only"); ?></label>
+			<select name="manuelOverride" id="manuelOverride" class="form-control"
+				title="Please choose manual override yes or no" onchange="manualOverride(this.value)">
+				<option value="">-- <?= $this->htmlTranslate("Select"); ?> --</option>
+				<option <?php echo (isset($this->override) && $this->override == "no") ? " selected='selected' " : ""; ?>
+					value="no"><?= $this->htmlTranslate("No"); ?></option>
+				<option <?php echo (isset($this->override) && $this->override == "yes") ? " selected='selected' " : ""; ?>
+					value="yes"><?= $this->htmlTranslate("Yes"); ?></option>
+			</select>
 		</div>
-<br>
-		<div class="row">
-
-			<?php if (isset($this->countries) && !empty($this->countries)) { ?>
-			<div class="col-md-3">
-					<label for="region" style="font-weight:600;font-size:13px;display:block;margin-bottom:4px;"><?= $this->htmlTranslate("Country"); ?></label>
-					<select class="form-control select2" id="country" name="country" title="<?= $this->htmlTranslate("Please select the country to filter"); ?>"
-					onchange="getOptions('participant', 'country', 'region', this.value, 'region'); applyShipmentFilters();" multiple>
+		<div>
+			<label for="filterResponseStatus"><?= $this->htmlTranslate("Response status"); ?></label>
+			<select id="filterResponseStatus" class="form-control" multiple onchange="applyShipmentFilters()">
+				<option value=""><?= $this->htmlTranslate("All"); ?></option>
+				<option value="responded"><?= $this->htmlTranslate("Responded"); ?></option>
+				<option value="noresponse"><?= $this->htmlTranslate("Not Responded"); ?></option>
+				<option value="late"><?= $this->htmlTranslate("Late Response"); ?></option>
+				<option value="nottested"><?= $this->htmlTranslate("Not Tested"); ?></option>
+			</select>
+		</div>
+		<div>
+			<label for="filterResult"><?= $this->htmlTranslate("Result"); ?></label>
+			<select id="filterResult" class="form-control" multiple onchange="applyShipmentFilters()">
+				<option value=""><?= $this->htmlTranslate("All"); ?></option>
+				<?php foreach ($this->results as $res) { ?>
+					<option value="<?php echo $res['result_id'] ?>"><?php echo $res['result_name']; ?></option>
+				<?php } ?>
+			</select>
+		</div>
+		<div>
+			<label for="dateRange"><?= $this->htmlTranslate("Date Range"); ?></label>
+			<input type="text" id="dateRange" name="dateRange" class="form-control" onchange="applyShipmentFilters()"
+				readonly="readonly" style="background: #fff"
+				placeholder="<?= $this->htmlTranslate("Click here to pick a Date Range"); ?>" />
+		</div>
+		<?php if (($this->dtsSchemeType ?? '') === 'vietnam') { ?>
+			<div>
+				<label for="vietnamTier"><?= $this->htmlTranslate("Tier"); ?></label>
+				<select id="vietnamTier" class="form-control" onchange="applyShipmentFilters()">
+					<option value=""><?= $this->htmlTranslate("All tiers"); ?></option>
+					<option value="screening"><?= $this->htmlTranslate("Screening"); ?></option>
+					<option value="confirmatory"><?= $this->htmlTranslate("Confirmatory"); ?></option>
+				</select>
+			</div>
+			<div>
+				<label for="vietnamNonStandardKit"><?= $this->htmlTranslate("Primary kit"); ?></label>
+				<select id="vietnamNonStandardKit" class="form-control" onchange="applyShipmentFilters()">
+					<option value=""><?= $this->htmlTranslate("All kits"); ?></option>
+					<option value="yes"><?= $this->htmlTranslate("Non-reference kit only"); ?></option>
+				</select>
+			</div>
+		<?php } ?>
+		<?php if (isset($this->countries) && !empty($this->countries)) { ?>
+			<div>
+				<label for="country"><?= $this->htmlTranslate("Country"); ?></label>
+				<select class="form-control select2" id="country" name="country"
+					title="<?= $this->htmlTranslate("Please select the country to filter"); ?>"
+					onchange="getOptions('participant', 'country', 'region', $(this).val(), 'region'); applyShipmentFilters();" multiple>
 					<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
 					<?php foreach ($this->countries as $country) { ?>
 						<option value="<?php echo $country['id']; ?>"><?php echo ucwords($country['iso_name']); ?></option>
 					<?php } ?>
 				</select>
 			</div>
-			<?php } ?>
-		
-
-			<?php if (isset($this->regions) && !empty($this->regions)) { ?>
-			<div class="col-md-3">
-					<label for="region" style="font-weight:600;font-size:13px;display:block;margin-bottom:4px;"><?= $this->htmlTranslate("Region"); ?></label>
-					<select class="form-control select2" id="region" name="region" title="<?= $this->htmlTranslate("Please select the region to filter"); ?>"
-						onchange="getOptions('participant', 'region', 'state', this.value, 'state'); applyShipmentFilters();">
-						<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
-						<?php
-						foreach($this->regions as $reg){
-						?>
+		<?php } ?>
+		<?php if (isset($this->regions) && !empty($this->regions)) { ?>
+			<div>
+				<label for="region"><?= $this->htmlTranslate("Region"); ?></label>
+				<select class="form-control select2" id="region" name="region"
+					title="<?= $this->htmlTranslate("Please select the region to filter"); ?>"
+					onchange="getOptions('participant', 'region', 'state', $(this).val(), 'state'); applyShipmentFilters();" multiple>
+					<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
+					<?php foreach ($this->regions as $reg) { ?>
 						<option value="<?php echo $reg['region'] ?>"><?php echo $reg['region']; ?></option>
-						<?php } ?>
-					</select>
+					<?php } ?>
+				</select>
 			</div>
-			<?php } ?>
-			<?php if (isset($this->states) && !empty($this->states)) { ?>
-			<div class="col-md-3">
-					<label for="state" style="font-weight:600;font-size:13px;display:block;margin-bottom:4px;"><?= $this->htmlTranslate("Province"); ?></label>
-					<select class="form-control select2" id="state" name="state" title="<?= $this->htmlTranslate("Please select the province to filter"); ?>"
-						onchange="getOptions('participant', 'state', 'district', this.value, 'district'); applyShipmentFilters();" multiple>
-						<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
-						<?php
-						foreach($this->states as $st){
-						?>
+		<?php } ?>
+		<?php if (isset($this->states) && !empty($this->states)) { ?>
+			<div>
+				<label for="state"><?= $this->htmlTranslate("Province"); ?></label>
+				<select class="form-control select2" id="state" name="state"
+					title="<?= $this->htmlTranslate("Please select the province to filter"); ?>"
+					onchange="getOptions('participant', 'state', 'district', $(this).val(), 'district'); applyShipmentFilters();" multiple>
+					<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
+					<?php foreach ($this->states as $st) { ?>
 						<option value="<?php echo $st['state'] ?>"><?php echo $st['state']; ?></option>
-						<?php } ?>
-					</select>
+					<?php } ?>
+				</select>
 			</div>
-			<?php } ?>
-			<?php if (isset($this->districts) && !empty($this->districts)) { ?>
-			<div class="col-md-3">
-					<label for="district" style="font-weight:600;font-size:13px;display:block;margin-bottom:4px;"><?= $this->htmlTranslate("District"); ?></label>
-					<select class="form-control select2" id="district" name="district" onchange="applyShipmentFilters();"
-						title="<?= $this->htmlTranslate("Please select the district to filter"); ?>" multiple>
-						<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
-					
-					<?php
-						foreach($this->districts as $dt){
-						?>
+		<?php } ?>
+		<?php if (isset($this->districts) && !empty($this->districts)) { ?>
+			<div>
+				<label for="district"><?= $this->htmlTranslate("District"); ?></label>
+				<select class="form-control select2" id="district" name="district" onchange="applyShipmentFilters();"
+					title="<?= $this->htmlTranslate("Please select the district to filter"); ?>" multiple>
+					<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
+					<?php foreach ($this->districts as $dt) { ?>
 						<option value="<?php echo $dt['district'] ?>"><?php echo $dt['district']; ?></option>
-						<?php } ?>					
-					</select>
+					<?php } ?>
+				</select>
 			</div>
-			<?php } ?>
-		</div>
-
-
+		<?php } ?>
 	</div>
-	<br /><br />
 	<table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered table-hover"
 		id="shipmentEvaluation" style="margin:10px auto;">
 		<thead>
@@ -448,23 +430,33 @@ if ($shipmentAttributesRaw !== '') {
 		var nTr = null;
 		$("#filterResponseStatus").select2({
 			placeholder: "<?= $this->translate->_("Select one or more response status"); ?>",
-			allowClear: true
+			allowClear: true,
+			width: '100%'
 		});
 		$("#filterResult").select2({
 			placeholder: "<?= $this->translate->_("Select one or more results"); ?>",
-			allowClear: true
+			allowClear: true,
+			width: '100%'
 		});
 		$("#country").select2({
 			placeholder: "<?= $this->translate->_("Select one or more countries"); ?>",
-			allowClear: true
+			allowClear: true,
+			width: '100%'
+		});
+		$("#region").select2({
+			placeholder: "<?= $this->translate->_("Select one or more regions"); ?>",
+			allowClear: true,
+			width: '100%'
 		});
 		$("#state").select2({
 			placeholder: "<?= $this->translate->_("Select one or more states"); ?>",
-			allowClear: true
+			allowClear: true,
+			width: '100%'
 		});
 		$("#district").select2({
 			placeholder: "<?= $this->translate->_("Select one or more districts"); ?>",
-			allowClear: true
+			allowClear: true,
+			width: '100%'
 		});
 		$(document).ready(function () {
 			let overrideStatus = '<?php echo (isset($overrideStatus) && $overrideStatus != "") ? $overrideStatus : true; ?>';
