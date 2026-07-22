@@ -634,8 +634,8 @@ if ($totalPages > 0) {
                 $warnings = Pt_Commons_JsonUtility::safeDecode($result['responseResult'][0]['failure_reason']);
                 foreach ($warnings as $warning) {
                     $failRes .= '<tr>';
-                    $failRes .= '<td> ' . (isset($warning['warning']) ? $warning['warning'] : "") . ' </td>';
-                    $failRes .= '<td> ' . (isset($warning['correctiveAction']) ? $warning['correctiveAction'] : "") . ' </td>';
+                    $failRes .= '<td>' . (isset($warning['warning']) ? $warning['warning'] : "") . '</td>';
+                    $failRes .= '<td>' . (isset($warning['correctiveAction']) ? $warning['correctiveAction'] : "") . '</td>';
                     $failRes .= '</tr>';
                 }
                 $failRes .= '</table>';
