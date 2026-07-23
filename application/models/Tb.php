@@ -1642,7 +1642,16 @@ class Application_Model_Tb
 
         $fileName .= '.pdf';
 
-        $maxRow = 50;
+        // The template carries an explicit page break at A22. Combined with the
+        // .scrpgbrk forced-break CSS PhpSpreadsheet emits, that stranded the
+        // "records only" box alone on page 2 and pushed the attestation to
+        // page 3. Let the content flow instead: page 1 fills naturally with the
+        // results grid, and the records box + attestation share page 2.
+        $sheet->setBreak('A22', Worksheet::BREAK_NONE);
+
+        // Trim trailing empty template rows — their default heights add dead
+        // space that can push the attestation block onto a third page.
+        $maxRow = 33;
         if ($sheet->getHighestRow() > $maxRow) {
             $sheet->removeRow($maxRow + 1, $sheet->getHighestRow() - $maxRow);
         }
