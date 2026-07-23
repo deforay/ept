@@ -324,7 +324,7 @@ class Application_Service_Shipments
                 if (isset($aRow['tb_form_generated']) && $aRow['tb_form_generated'] == 'queued') {
                     $downloadAllTBForms = '<a class="btn btn-success btn-xs" href="javascript:void(0);" disabled><span><i class="icon-refresh"></i> ' . $this->translator->_('Generating TB Forms...') . ' </span></a>';
                 } elseif (file_exists($tbFormPath)) {
-                    $downloadAllTBForms = '<a href="/admin/shipment/download-tb/sid/' . $aRow['shipment_id'] . '/file/' . base64_encode($tbFormPath) . '" class="btn btn-success btn-xs" style="margin:3px 0;" target="_BLANK"> <i class="icon icon-download"></i> ' . $this->translator->_('Download TB Forms') . '</a>';
+                    $downloadAllTBForms = '<a href="/admin/shipment/download-tb/sid/' . $aRow['shipment_id'] . '/file/' . base64_encode($tbFormPath) . '" class="btn btn-success btn-xs" style="margin:3px 0;" target="_BLANK"> <i class="icon icon-download"></i> ' . $this->translator->_('TB Forms') . '</a>';
                 } elseif ($aRow['status'] == 'shipped' || $aRow['status'] == 'evaluated') {
                     $downloadAllTBForms = '<a class="btn btn-success btn-xs" href="javascript:void(0);" onclick="generateTBFormsPDF(\'' . base64_encode($aRow['shipment_id']) . '\');"><span><i class="icon-refresh"></i> ' . $this->translator->_('Generate TB Forms') . ' </span></a>';
                 }
