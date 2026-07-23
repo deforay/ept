@@ -296,10 +296,10 @@ class Application_Service_Shipments
             $manageEnroll = '';
             $download = '';
 
+            // Finalized shipments get no Edit button (and no disabled "Finalized"
+            // placeholder — the Status column already says it).
             if ($aRow['status'] != 'finalized') {
                 $edit = '<a class="btn btn-primary btn-xs" href="/admin/shipment/edit/sid/' . base64_encode($aRow['shipment_id']) . '/userConfig/' . base64_encode($aRow['is_user_configured']) . '"><span><i class="icon-edit"></i> Edit</span></a>';
-            } else {
-                $edit = '<a class="btn btn-danger btn-xs disabled" href="javascript:void(0);"><span><i class="icon-check"></i> Finalized</span></a>';
             }
 
             // Clone is offered for every shipment (including finalized) so the sample
@@ -308,10 +308,12 @@ class Application_Service_Shipments
 
             if ($aRow['status'] != 'shipped' && $aRow['status'] != 'evaluated' && $aRow['status'] != 'finalized') {
                 $enrolled = '<a class="btn ' . $btn . ' btn-xs" href="/admin/shipment/ship-it/sid/' . base64_encode($aRow['shipment_id']) . '"><span><i class="icon-user"></i> Enroll</span></a>';
-            } elseif ($aRow['status'] == 'shipped') {
-                $enrolled = '<a class="btn btn-primary btn-xs disabled" href="javascript:void(0);"><span><i class="icon-ambulance"></i> Shipped</span></a>';
-                $announcementMail = '<a class="btn btn-warning btn-xs" href="javascript:void(0);" title="Send the new shipment mail to participants" onclick="mailShipment(\'' . base64_encode($aRow['shipment_id']) . '\')"><span><i class="icon-bullhorn"></i> Notify</span></a>';
             }
+            // The disabled "Shipped" placeholder button is gone — the Status column
+            // already carries that information. Notify is parked, not removed:
+            // } elseif ($aRow['status'] == 'shipped') {
+            //     $announcementMail = '<a class="btn btn-warning btn-xs" href="javascript:void(0);" title="Send the new shipment mail to participants" onclick="mailShipment(\'' . base64_encode($aRow['shipment_id']) . '\')"><span><i class="icon-bullhorn"></i> Notify</span></a>';
+            // }
             if ($aRow['status'] == 'shipped' || $aRow['status'] == 'evaluated') {
                 $manageEnroll = '<a class="btn btn-info btn-xs" href="/admin/shipment/manage-enroll/sid/' . base64_encode($aRow['shipment_id']) . '/sctype/' . base64_encode($aRow['scheme_type']) . '"><span><i class="icon-gear"></i> Enrollment</span></a>';
             }
