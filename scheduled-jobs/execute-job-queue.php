@@ -8,6 +8,8 @@ const ALLOWED_JOB_SCRIPTS = [
     'evaluate-shipments.php',
     'distribute-certificates.php',
     'bulk-reset-passwords.php',
+    'send-reports-mail.php',
+    'generate-tb-forms.php',
 ];
 
 /**
