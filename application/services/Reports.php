@@ -165,6 +165,7 @@ class Application_Service_Reports
         //$aColumns = array('distribution_code', "DATE_FORMAT(distribution_date,'%d-%b-%Y')",
         //'s.shipment_code' ,'sl.scheme_name' ,'s.number_of_samples' ,
         //'sp.participant_count','sp.reported_count','sp.number_passed','s.status');
+        $isMtbeptInstance = (Application_Service_Common::getConfig('instance') === 'mtbept');
         foreach ($rResult as $aRow) {
             // Get button states early for use in download logic
             $btnStates = Application_Service_Shipments::getShipmentButtonStates($aRow);
@@ -199,9 +200,9 @@ class Application_Service_Reports
 
             $tbFormPath = TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . '-TB-FORMS.zip';
             $downloadAllTBForms = '';
-            // if (file_exists($tbFormPath) && $aRow['scheme_type'] == 'tb') {
-            //     $downloadAllTBForms = '<br/><a href="/admin/shipment/download-tb/sid/' . $aRow['shipment_id'] . '/file/' . base64_encode($tbFormPath) . '" class="btn btn-success btn-xs" style="margin:3px 0;" target="_BLANK"> <i class="icon icon-download"></i> ' . $this->translator->_("Download TB Forms") . '</a>';
-            // }
+            if ($isMtbeptInstance && $aRow['scheme_type'] == 'tb' && file_exists($tbFormPath)) {
+                $downloadAllTBForms = '<a href="/admin/shipment/download-tb/sid/' . $aRow['shipment_id'] . '/file/' . base64_encode($tbFormPath) . '" class="btn btn-success btn-xs" style="display:inline-block;margin:2px;" target="_BLANK"><i class="icon icon-download"></i> ' . $this->translator->_('TB Forms') . '</a>';
+            }
 
             $viewFinalizedReports = '';
 
@@ -246,7 +247,7 @@ class Application_Service_Reports
                 $exportReport = '';
                 $notResponded = '';
                 if (!$isCancelled) {
-                    $exportReport = "<a href='javascript:void(0);' class='btn btn-success btn-xs' style='display:inline-block;margin:2px;' onclick='generateShipmentParticipantList(\"" . base64_encode($aRow['shipment_id']) . '","' . $aRow['scheme_type'] . "\")'><i class='icon-download'></i> " . $this->translator->_('Overview Report') . '</a>';
+                    $exportReport = "<a href='javascript:void(0);' class='btn btn-success btn-xs' style='display:inline-block;margin:2px;' onclick='generateShipmentParticipantList(\"" . base64_encode($aRow['shipment_id']) . '","' . $aRow['scheme_type'] . "\")'><i class='icon-download'></i> " . $this->translator->_('Overview') . '</a>';
                     if ($aRow['status'] != 'finalized') {
                         $notResponded = "<a href='javascript:void(0);' class='btn btn-danger btn-xs' style='display:inline-block;margin:2px;' onclick='exportNotRespondedShipment(\"" . base64_encode($aRow['shipment_id']) . '","' . base64_encode((string) $aRow['shipment_code']) . '","' . base64_encode(Pt_Commons_DateUtility::humanReadableDateFormat($aRow['distribution_date'])) . "\")'><i class='icon icon-download'></i> " . $this->translator->_('No Response Report') . '</a>';
                     }
@@ -254,7 +255,7 @@ class Application_Service_Reports
 
                 $feedbackDownload = '';
                 if (!empty($aRow['feedback_count']) && $aRow['feedback_count'] > 0) {
-                    $feedbackDownload = "<a href='javascript:void(0);' class='btn btn-info btn-xs' style='display:inline-block;margin:2px;' onclick='downloadFeedbackReport(" . $aRow['shipment_id'] . ")'><i class='icon-download'></i> " . $this->translator->_('Participant Feedback') . '</a>';
+                    $feedbackDownload = "<a href='javascript:void(0);' class='btn btn-info btn-xs' style='display:inline-block;margin:2px;' onclick='downloadFeedbackReport(" . $aRow['shipment_id'] . ")'><i class='icon-download'></i> " . $this->translator->_('Feedback') . '</a>';
                 }
 
                 $row[] = "$exportReport $notResponded $feedbackDownload $downloadAllTBForms";
