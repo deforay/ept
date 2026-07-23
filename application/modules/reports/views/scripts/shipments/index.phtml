@@ -9,18 +9,6 @@
 		}
 	}
 
-	/* Break out of the fixed-width .container in admin.phtml so the wide table fits comfortably. */
-	.shipments-wide {
-		width: 100vw;
-		position: relative;
-		left: 50%;
-		right: 50%;
-		margin-left: -50vw;
-		margin-right: -50vw;
-		padding: 0 30px;
-		box-sizing: border-box;
-	}
-
 	#shipmentTable {
 		table-layout: fixed;
 		width: 100%;
@@ -161,48 +149,72 @@
 	#shipmentTable tbody tr.stats-parent-open>td {
 		background: #eef2f7 !important;
 	}
+
+	/* The .data-list quiet-button treatment flattens btn-warning / btn-default,
+	   but this page's report buttons are colour-coded — green Overview, red
+	   No Response, orange DRAFT downloads, blue finalized — so restore the two
+	   colours it claims (theme values, same as .row-action-lines.is-colored). */
+	#shipmentTable.dataTable .btn-warning {
+		background: #efb73e;
+		border: 1px solid #efb73e;
+		color: #fff;
+	}
+
+	#shipmentTable.dataTable .btn-warning:hover,
+	#shipmentTable.dataTable .btn-warning:focus {
+		background: #e7a413;
+		border-color: #dd9d12;
+		color: #fff;
+	}
+
+	#shipmentTable.dataTable .btn-default {
+		background: #aea79f;
+		border: 1px solid #aea79f;
+		color: #fff;
+	}
+
+	#shipmentTable.dataTable .btn-default:hover,
+	#shipmentTable.dataTable .btn-default:focus {
+		background: #978e83;
+		border-color: #92897e;
+		color: #fff;
+	}
 </style>
 <link rel="stylesheet" href="<?php echo $this->baseUrl('css/daterangepicker.css'); ?>" type="text/css" media="all">
 <script type="text/javascript" src="<?php echo $this->baseUrl('js/moment.min.js'); ?>"></script>
 <link rel="stylesheet" href="<?php echo $this->baseUrl("css/jquery.dataTables.css"); ?>" type="text/css" media="all">
 <link href="<?php echo $this->baseUrl('css/select2.css'); ?>" rel="stylesheet" />
-<div class="shipments-wide">
-	<legend>
-		<h3><?= $this->htmlTranslate("Shipments Report"); ?></h3>
-	</legend>
-	<table style="margin:20px 0;" class="table table-bordered">
-		<tr>
-			<td style="width:50%;text-align: center;font-weight:bold;">
-				<?= $this->htmlTranslate("Pick a Date Range (Optional)"); ?>
-			</td>
-			<td style="width:50%;text-align: center;font-weight:bold;"></td>
-		</tr>
-		<tr>
-			<td>
-				<input type="text" id="dateRange" name="dateRange" class="form-control input-sm" readonly="readonly"
-					style="background: #fff" placeholder="Click here to pick a Date Range" />
-			</td>
-			<td>
-				<button style=" margin-right: 10px; " class="btn btn-success btn-sm"
-					onclick="getDrawable()"><span><?= $this->htmlTranslate("Search"); ?></span></button> <button
-					class="btn btn-danger btn-sm"
-					onclick="document.location.href=document.location"><span><?= $this->htmlTranslate("Reset"); ?></span></button>
-			</td>
-		</tr>
-	</table>
-	<!-- BULK DOWNLOAD TOOLBAR -->
-	<div id="bulkShipmentToolbar" style="margin:10px 0;display:none;">
-		<button class="btn btn-success btn-sm" id="bulkShipmentBtn" onclick="bulkDownloadShipments()" disabled>
-			<i class="icon-download"></i>
-			<?= $this->htmlTranslate("Download Bulk Overview Reports - Selected"); ?> (<span
-				id="bulkShipmentCount">0</span>)
-		</button>
-		<button class="btn btn-default btn-sm" onclick="clearShipmentSelection()"
-			style="margin-left:5px;"><?= $this->htmlTranslate("Clear"); ?></button>
+<div class="data-list">
+	<div class="data-list-head">
+		<h2><?= $this->htmlTranslate("Shipments Report"); ?></h2>
 	</div>
-	<div class="table-responsive">
+	<div class="data-list-body">
+		<div class="data-list-toolbar">
+			<div style="min-width:280px;">
+				<label for="dateRange"><?= $this->htmlTranslate("Pick a Date Range (Optional)"); ?></label>
+				<input type="text" id="dateRange" name="dateRange" class="form-control input-sm" readonly="readonly"
+					style="background: #fff"
+					placeholder="<?= $this->htmlTranslate('Click here to pick a Date Range'); ?>" />
+			</div>
+			<div style="min-width:0;">
+				<button class="btn btn-success btn-sm"
+					onclick="getDrawable()"><span><?= $this->htmlTranslate("Search"); ?></span></button>
+				<button class="btn btn-danger btn-sm" style="margin-left:6px;"
+					onclick="document.location.href=document.location"><span><?= $this->htmlTranslate("Reset"); ?></span></button>
+			</div>
+		</div>
+		<!-- BULK DOWNLOAD TOOLBAR -->
+		<div id="bulkShipmentToolbar" style="margin:10px 0;display:none;">
+			<button class="btn btn-success btn-sm" id="bulkShipmentBtn" onclick="bulkDownloadShipments()" disabled>
+				<i class="icon-download"></i>
+				<?= $this->htmlTranslate("Download Bulk Overview Reports - Selected"); ?> (<span
+					id="bulkShipmentCount">0</span>)
+			</button>
+			<button class="btn btn-default btn-sm" onclick="clearShipmentSelection()"
+				style="margin-left:5px;"><?= $this->htmlTranslate("Clear"); ?></button>
+		</div>
 		<table cellpadding="0" cellspacing="0" border="0"
-			class="table table-responsive table-striped table-bordered table-hover hide" id="shipmentTable">
+			class="table table-striped table-bordered table-hover hide" id="shipmentTable">
 			<thead>
 				<tr>
 					<!-- <th scope="col" style="text-align:center; width:2%;">
@@ -266,8 +278,8 @@
 				</tr>
 			</tbody>
 		</table>
-	</div>
-</div>
+	</div><!-- /.data-list-body -->
+</div><!-- /.data-list -->
 
 <script type="text/javascript" src="<?php echo $this->baseUrl('js/daterangepicker.js'); ?>"></script>
 <script type="text/javascript" src="<?php echo $this->baseUrl('js/select2.min.js'); ?>"></script>
