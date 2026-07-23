@@ -241,16 +241,6 @@ try {
         }
 
         if (!empty($pdfsToMerge)) {
-            // Update DB status
-            $db->update(
-                'shipment',
-                [
-                    'tb_form_generated' => 'yes',
-                    'updated_on_admin' => new Zend_Db_Expr('now()'),
-                ],
-                "shipment_id = $shipmentsToGenarateForm"
-            );
-
             echo "Merging " . count($pdfsToMerge) . " PDFs...\n";
 
             $batchSize = 50;
@@ -297,7 +287,33 @@ try {
             $finalPdfPath = $folderPath . DIRECTORY_SEPARATOR . $shipmentCode . '-TB-Participant-Forms.pdf';
             $finalPdf->Output($finalPdfPath, "F");
 
-            $generalModel->zipFolder($folderPath, $folderPath . "-TB-FORMS.zip");
+            // Build the bundle at a temp name and rename into place only once it
+            // is complete: the shipment page offers a download purely on
+            // file_exists(<code>-TB-FORMS.zip), so that path must never hold a
+            // half-written archive.
+            $zipTarget = $folderPath . "-TB-FORMS.zip";
+            $zipTemp = $zipTarget . ".part";
+            if (file_exists($zipTemp)) {
+                unlink($zipTemp);
+            }
+            if (!$generalModel->zipFolder($folderPath, $zipTemp) || !rename($zipTemp, $zipTarget)) {
+                if (file_exists($zipTemp)) {
+                    unlink($zipTemp);
+                }
+                $db->update('shipment', ['tb_form_generated' => 'no'], "shipment_id = " . (int) $shipmentsToGenarateForm . " AND tb_form_generated = 'queued'");
+                fwrite(STDERR, "Failed to build the TB forms zip bundle.\n");
+                exit(1);
+            }
+
+            // Only now is the download really available.
+            $db->update(
+                'shipment',
+                [
+                    'tb_form_generated' => 'yes',
+                    'updated_on_admin' => new Zend_Db_Expr('now()'),
+                ],
+                "shipment_id = " . (int) $shipmentsToGenarateForm
+            );
             echo "Done. File generated at: $finalPdfPath\n";
         } else {
             // Nothing to merge: release the queued-flag so the shipment page
