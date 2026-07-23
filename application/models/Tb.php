@@ -1450,23 +1450,24 @@ class Application_Model_Tb
         $organizationName = $GLOBALS['organizationName'] ?? '';
         $formTitle = $GLOBALS['formTitle'] ?? '';
 
-        // Attach our header/footer to the DEFAULT (unnamed) @page rather than a
-        // named page. PhpSpreadsheet tiles the sheet into `<div style='page: page0'>`
-        // blocks; when page0 is a *named* page that differs from mpdf's default first
-        // page (as it did once we added header/footer names), mpdf switches pages at
+        // Give the default (unnamed) @page just its margins. PhpSpreadsheet tiles
+        // the sheet into `<div style='page: page0'>` blocks; when page0 is a *named*
+        // page that differs from mpdf's default first page, mpdf switches pages at
         // the first content block and leaves the default page blank — that was the
-        // spurious blank leading page. Making the default page carry the header/footer
-        // and dropping the named-page references removes the page switch entirely.
+        // spurious blank leading page. So we drop the named page entirely.
+        //
+        // The header/footer are activated below with mpdf's <sethtmlpageheader>/
+        // <sethtmlpagefooter> tags rather than CSS `odd-header-name`/`odd-footer-name`
+        // on @page. That CSS association only bound reliably to a *named* page; on the
+        // unnamed default page mpdf ignored it and rendered both blocks inline at the
+        // top of the page (title left-aligned, footer stacked under it) instead of in
+        // the margins. The activation tags bind them to the margins regardless.
         $pagerepl = <<<EOF
     @page {
         margin-top: 25mm;
         margin-bottom: 20mm;
         margin-left: 15mm;
         margin-right: 15mm;
-        odd-header-name: html_myHeader1;
-        even-header-name: html_myHeader1;
-        odd-footer-name: html_myFooter2;
-        even-footer-name: html_myFooter2;
     }
     EOF;
 
@@ -1477,16 +1478,25 @@ class Application_Model_Tb
         // still driven by the .scrpgbrk class PhpSpreadsheet adds.
         $html = str_replace('page: page0', '', $html);
 
+        // The header/footer definitions MUST reach mpdf inside a single WriteHTML
+        // call. PhpSpreadsheet's Mpdf writer feeds everything up to the split point
+        // in one WriteHTML call and then streams the remaining body line-by-line;
+        // a multi-line <htmlpageheader>…</htmlpageheader> split across those per-line
+        // calls is never recognised as a page tag and gets rendered inline at the
+        // top of the page (the bug this fixes). The writer splits at the
+        // "simulated body start" marker when present (falling back to <body>), so we
+        // append that marker AFTER our tags — the whole block then lands in the
+        // first chunk and mpdf binds the header/footer to the page margins.
         $bodystring = '/<body>/';
         $bodyrepl = <<<EOF
     <body>
-        <htmlpageheader name="myHeader1" style="display:none">
+        <htmlpageheader name="myHeader1">
             <div style="text-align: center; font-weight: bold; font-size: 12pt; border-bottom: 2px solid black; padding-bottom: 5px;">
                 $organizationName<br/>$formTitle
             </div>
         </htmlpageheader>
 
-        <htmlpagefooter name="myFooter2" style="display:none">
+        <htmlpagefooter name="myFooter2">
             <table width="100%" style="font-size: 10pt; padding-top: 5px;">
                 <tr>
                     <td width="33%" style="vertical-align: bottom; text-align: left;">$formVersion</td>
@@ -1500,6 +1510,10 @@ class Application_Model_Tb
                 </tr>
             </table>
         </htmlpagefooter>
+
+        <sethtmlpageheader name="myHeader1" value="on" show-this-page="1" />
+        <sethtmlpagefooter name="myFooter2" value="on" />
+        <!-- simulated body start -->
     EOF;
 
         return preg_replace($bodystring, $bodyrepl, $html);
@@ -1636,7 +1650,9 @@ class Application_Model_Tb
         if (isset($result[0]['shipment_attributes']) && !empty($result[0]['shipment_attributes'])) {
             $shipmentAttribute = Pt_Commons_JsonUtility::safeDecode($result[0]['shipment_attributes']);
             $GLOBALS['formVersion'] = $shipmentAttribute['form_version'] ?? '';
-            $GLOBALS['effectiveDate'] = $shipmentAttribute['effectiveDate'] ?? '';
+            // Shipments store this as snake_case effective_date; older/other forms
+            // used camelCase effectiveDate — accept either so the footer isn't blank.
+            $GLOBALS['effectiveDate'] = $shipmentAttribute['effective_date'] ?? $shipmentAttribute['effectiveDate'] ?? '';
             $GLOBALS['formTitle'] = $shipmentAttribute['form_title'] ?? '';
         }
 
@@ -1655,6 +1671,12 @@ class Application_Model_Tb
         if ($sheet->getHighestRow() > $maxRow) {
             $sheet->removeRow($maxRow + 1, $sheet->getHighestRow() - $maxRow);
         }
+
+        // PhpSpreadsheet's Mpdf writer starts the page with AddPageByArray() using
+        // THESE sheet margins (not the @page CSS), so the running header/footer live
+        // inside them. Give the top/bottom enough room that the title header and the
+        // issuing-authority footer don't overlap the grid. Units are inches.
+        $sheet->getPageMargins()->setTop(1.0)->setBottom(0.85)->setLeft(0.35)->setRight(0.35);
 
         $writer = new Mpdf($reader);
         $writer->setEditHtmlCallback([$this, 'addHeadersFooters']);
