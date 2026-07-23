@@ -210,6 +210,9 @@
     }
 
     function sendReportsInMail(sid) {
+        if (!confirm("<?= $this->jsTranslate("This will email the individual and summary report links to ALL participants of this shipment. Are you sure you want to continue?"); ?>")) {
+            return;
+        }
         $.blockUI();
         $.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'finalize', 'action' => 'send-report-mail')); ?>", { sid: sid, format: "html" },
             function (data) {
