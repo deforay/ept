@@ -849,9 +849,11 @@ $faqResults = json_decode($this->faqs);
 							class="control-label"><?= $this->translate->_("Application Timezone"); ?></label>
 						<select class="form-control" id="app_timezone" name="app_timezone"
 							title="<?= $this->translate->_('The timezone the whole application runs in. Response deadline times are entered and judged in this zone. Changing it shifts how existing deadlines are interpreted, so set it once and avoid changing it mid-programme.'); ?>">
-							<?php foreach (DateTimeZone::listIdentifiers() as $tzId): ?>
+							<?php $tzNow = new DateTimeImmutable('now');
+							foreach (DateTimeZone::listIdentifiers() as $tzId):
+								$tzOffset = $tzNow->setTimezone(new DateTimeZone($tzId))->format('P'); ?>
 								<option value="<?= $this->escape($tzId); ?>" <?php echo (isset($this->app_timezone) && $this->app_timezone === $tzId) ? 'selected="selected"' : ''; ?>>
-									<?= $this->escape($tzId); ?>
+									<?= $this->escape($tzId); ?> (UTC<?= $tzOffset; ?>)
 								</option>
 							<?php endforeach; ?>
 						</select>
