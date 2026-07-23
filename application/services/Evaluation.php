@@ -4453,6 +4453,17 @@ class Application_Service_Evaluation
                     'job_id = ' . (int) $jobId
                 );
 
+                // Release the shipment's queued-flag so the "Generating TB Forms..."
+                // button doesn't stay disabled forever (mirrors the report_in_queue
+                // reset in the report_generation branch above).
+                if (preg_match('/generate-tb-forms\.php\s+-s\s+\'?(\d+)/', $job['job'] ?? '', $m)) {
+                    $db->update(
+                        'shipment',
+                        ['tb_form_generated' => 'no'],
+                        'shipment_id = ' . (int) $m[1] . " AND tb_form_generated = 'queued'"
+                    );
+                }
+
                 return ['success' => true, 'message' => 'Job cancelled successfully'];
             } else {
                 return ['success' => false, 'message' => 'Invalid queue type'];

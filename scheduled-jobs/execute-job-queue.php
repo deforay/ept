@@ -92,13 +92,16 @@ try {
             // Honor the child's exit code: a non-zero status means the job script failed
             // (e.g. an exception during evaluation). Marking it 'completed' regardless hid
             // real failures, so mark it 'failed' and log the captured output for diagnosis.
+            // Only rows still 'processing' get a terminal status: an admin may have
+            // cancelled the job from job-tracking while it ran, and that verdict
+            // must not be overwritten here.
             if ($returnCode !== 0) {
-                $db->update('scheduled_jobs', ["completed_on" => new Zend_Db_Expr('now()'), "status" => "failed"], "job_id = " . $jobId);
+                $db->update('scheduled_jobs', ["completed_on" => new Zend_Db_Expr('now()'), "status" => "failed"], "job_id = " . $jobId . " AND status = 'processing'");
                 Pt_Commons_LoggerUtility::logError("Scheduled job {$jobId} failed (exit {$returnCode}): {$validatedCommand}", [
                     'output' => implode("\n", $output),
                 ]);
             } else {
-                $db->update('scheduled_jobs', ["completed_on" => new Zend_Db_Expr('now()'), "status" => "completed"], "job_id = " . $jobId);
+                $db->update('scheduled_jobs', ["completed_on" => new Zend_Db_Expr('now()'), "status" => "completed"], "job_id = " . $jobId . " AND status = 'processing'");
             }
         }
     }

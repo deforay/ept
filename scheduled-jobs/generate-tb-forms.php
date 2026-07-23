@@ -150,6 +150,9 @@ try {
             $msg = "No participants found for shipment $shipmentsToGenarateForm";
             Pt_Commons_LoggerUtility::logWarning($msg);
             fwrite(STDERR, $msg . "\n");
+            // Release the queued-flag so the shipment page doesn't show
+            // "Generating TB Forms..." for a run that produced nothing.
+            $db->update('shipment', ['tb_form_generated' => 'no'], "shipment_id = " . (int) $shipmentsToGenarateForm . " AND tb_form_generated = 'queued'");
             exit(1);
         }
 
@@ -290,6 +293,12 @@ try {
 
             $generalModel->zipFolder($folderPath, $folderPath . "-TB-FORMS.zip");
             echo "Done. File generated at: $finalPdfPath\n";
+        } else {
+            // Nothing to merge: release the queued-flag so the shipment page
+            // offers "Generate TB Forms" again instead of a stuck spinner.
+            $db->update('shipment', ['tb_form_generated' => 'no'], "shipment_id = " . (int) $shipmentsToGenarateForm . " AND tb_form_generated = 'queued'");
+            fwrite(STDERR, "No participant forms were generated; nothing to merge.\n");
+            exit(1);
         }
     }
 } catch (Throwable $e) {
@@ -298,4 +307,14 @@ try {
         'line'  => $e->getLine(),
         'trace' => $e->getTraceAsString(),
     ]);
+    // Master-mode crash: release the queued-flag (workers never own it). Guarded —
+    // the DB adapter itself may be what failed.
+    try {
+        if (!$isWorker && !empty($shipmentsToGenarateForm) && isset($db)) {
+            $db->update('shipment', ['tb_form_generated' => 'no'], "shipment_id = " . (int) $shipmentsToGenarateForm . " AND tb_form_generated = 'queued'");
+        }
+    } catch (Throwable $ignored) {
+        // Flag stays queued; the migration-era heal or a re-queue clears it.
+    }
+    exit(1);
 }
