@@ -171,13 +171,25 @@ try {
         // Forms..." — also for manual CLI runs, which never pass runTbFormCron.
         $db->update('shipment', ['tb_form_generated' => 'queued'], "shipment_id = " . (int) $shipmentsToGenarateForm);
 
+        // The bundle lives under downloads/ (retained indefinitely); the staging
+        // folder stays in public/temporary, which housekeeping prunes at 7 days.
+        $bundleDir = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'tb-forms';
+        if (!is_dir($bundleDir)) {
+            mkdir($bundleDir, 0777, true);
+        }
+        $zipTarget = $bundleDir . DIRECTORY_SEPARATOR . $shipmentCode . "-TB-FORMS.zip";
+
         // 2. Prepare Directory
         if (is_dir($folderPath)) {
             Pt_Commons_General::rmdirRecursive($folderPath);
         }
         mkdir($folderPath, 0777, true);
         // Remove the previous run's bundle so a stale download isn't served
-        // while this run regenerates it.
+        // while this run regenerates it — including a copy at the legacy
+        // public/temporary location.
+        if (file_exists($zipTarget)) {
+            unlink($zipTarget);
+        }
         if (file_exists($folderPath . "-TB-FORMS.zip")) {
             unlink($folderPath . "-TB-FORMS.zip");
         }
@@ -299,7 +311,6 @@ try {
             // is complete: the shipment page offers a download purely on
             // file_exists(<code>-TB-FORMS.zip), so that path must never hold a
             // half-written archive.
-            $zipTarget = $folderPath . "-TB-FORMS.zip";
             $zipTemp = $zipTarget . ".part";
             if (file_exists($zipTemp)) {
                 unlink($zipTemp);

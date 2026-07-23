@@ -198,9 +198,9 @@ class Application_Service_Reports
                 }
             }
 
-            $tbFormPath = TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . '-TB-FORMS.zip';
+            $tbFormPath = Application_Service_Shipments::resolveTbFormsZip($aRow['shipment_code']);
             $downloadAllTBForms = '';
-            if ($isMtbeptInstance && $aRow['scheme_type'] == 'tb' && file_exists($tbFormPath)) {
+            if ($isMtbeptInstance && $aRow['scheme_type'] == 'tb' && $tbFormPath !== null) {
                 $downloadAllTBForms = '<a href="/admin/shipment/download-tb/sid/' . $aRow['shipment_id'] . '/file/' . base64_encode($tbFormPath) . '" class="btn btn-success btn-xs" style="display:inline-block;margin:2px;" target="_BLANK"><i class="icon icon-download"></i> ' . $this->translator->_('TB Forms') . '</a>';
             }
 

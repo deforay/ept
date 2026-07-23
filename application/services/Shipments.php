@@ -17,6 +17,33 @@ class Application_Service_Shipments
         $this->translator = Zend_Registry::get('translate');
     }
 
+    /**
+     * Canonical home of a shipment's TB-forms bundle: downloads/tb-forms/, which
+     * nothing prunes. It used to live in public/temporary, which housekeeping
+     * clears at 7 days — a leftover copy found there is migrated in.
+     *
+     * @return string|null Path to the zip, or null when no bundle exists.
+     */
+    public static function resolveTbFormsZip(string $shipmentCode): ?string
+    {
+        $zipName = $shipmentCode . '-TB-FORMS.zip';
+        $canonical = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'tb-forms' . DIRECTORY_SEPARATOR . $zipName;
+        if (file_exists($canonical)) {
+            return $canonical;
+        }
+        $legacy = TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $zipName;
+        if (file_exists($legacy)) {
+            if (!is_dir(dirname($canonical))) {
+                @mkdir(dirname($canonical), 0777, true);
+            }
+            if (@rename($legacy, $canonical)) {
+                return $canonical;
+            }
+            return $legacy; // move failed — keep serving the copy we have
+        }
+        return null;
+    }
+
     private function logResponseSave($scheme, $params)
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
@@ -317,13 +344,13 @@ class Application_Service_Shipments
             if ($aRow['status'] == 'shipped' || $aRow['status'] == 'evaluated') {
                 $manageEnroll = '<a class="btn btn-info btn-xs" href="/admin/shipment/manage-enroll/sid/' . base64_encode($aRow['shipment_id']) . '/sctype/' . base64_encode($aRow['scheme_type']) . '"><span><i class="icon-gear"></i> Enrollment</span></a>';
             }
-            $tbFormPath = $this->tempUploadDirectory . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . '-TB-FORMS.zip';
+            $tbFormPath = self::resolveTbFormsZip($aRow['shipment_code']);
             if ($isMtbeptInstance && $aRow['scheme_type'] == 'tb') {
                 // A run in flight always wins over a leftover zip from an earlier
                 // run — never offer a download that is about to be superseded.
                 if (isset($aRow['tb_form_generated']) && $aRow['tb_form_generated'] == 'queued') {
                     $downloadAllTBForms = '<a class="btn btn-success btn-xs" href="javascript:void(0);" disabled><span><i class="icon-refresh"></i> ' . $this->translator->_('Generating TB Forms...') . ' </span></a>';
-                } elseif (file_exists($tbFormPath)) {
+                } elseif ($tbFormPath !== null) {
                     $downloadAllTBForms = '<a href="/admin/shipment/download-tb/sid/' . $aRow['shipment_id'] . '/file/' . base64_encode($tbFormPath) . '" class="btn btn-success btn-xs" style="margin:3px 0;" target="_BLANK"> <i class="icon icon-download"></i> ' . $this->translator->_('TB Forms') . '</a>';
                 } elseif ($aRow['status'] == 'shipped' || $aRow['status'] == 'evaluated') {
                     $downloadAllTBForms = '<a class="btn btn-success btn-xs" href="javascript:void(0);" onclick="generateTBFormsPDF(\'' . base64_encode($aRow['shipment_id']) . '\');"><span><i class="icon-refresh"></i> ' . $this->translator->_('Generate TB Forms') . ' </span></a>';
