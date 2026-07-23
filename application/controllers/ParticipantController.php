@@ -89,6 +89,10 @@ class ParticipantController extends Zend_Controller_Action
         }
         $scheme = new Application_Service_Schemes();
         $this->view->schemes = $scheme->getAllSchemes();
+        $participants = new Application_Service_Participants();
+        $this->view->countries = $participants->getParticipantCountriesList();
+        $this->view->regions = $participants->getAllParticipantRegion();
+        $this->view->districts = $participants->getAllParticipantDistricts();
     }
 
     public function correctiveAction()

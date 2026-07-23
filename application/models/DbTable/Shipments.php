@@ -1058,6 +1058,24 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             $sQuery = $sQuery->where('DATE(s.shipment_date) <= ?', Pt_Commons_DateUtility::isoDateFormat($parameters['endDate']));
         }
 
+        if (!empty($parameters['country'])) {
+            $sQuery = $sQuery->where('p.country = ?', $parameters['country']);
+        }
+        if (!empty($parameters['region'])) {
+            $sQuery = $sQuery->where('p.region = ?', $parameters['region']);
+        }
+        if (!empty($parameters['district'])) {
+            $sQuery = $sQuery->where('p.district = ?', $parameters['district']);
+        }
+        if (!empty($parameters['finalResult'])) {
+            if ($parameters['finalResult'] == '3') {
+                // Excluded rows may carry final_result=3 or only the is_excluded flag
+                $sQuery = $sQuery->where("(spm.final_result = 3 OR spm.is_excluded = 'yes')");
+            } else {
+                $sQuery = $sQuery->where('spm.final_result = ?', $parameters['finalResult']);
+            }
+        }
+
         if (isset($sWhere) && $sWhere != '') {
             $sQuery = $sQuery->where($sWhere);
         }
