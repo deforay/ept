@@ -4966,85 +4966,58 @@ class Application_Service_Reports
     {
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
         $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $participantId = null;
-        // Build WHERE clause based on type
-        if ($type == 'summary') {
-            // Fetch mapped participants ID's
-            $sql = $dbAdapter->select()->from(['dm' => 'data_manager'], [''])
-                ->join(['pmm' => 'participant_manager_map'], 'pmm.dm_id=dm.dm_id')
-                ->join(['p' => 'participant'], 'p.participant_id=pmm.participant_id', ['participant_id'])
-                ->where('dm.dm_id = ?', $authNameSpace->dm_id);
-            $mappedParticipants = $dbAdapter->fetchAll($sql);
-            $participantIds = array_column($mappedParticipants, 'participant_id');
-            $participantIdsString = implode(',', $participantIds);
+        $dmId = !empty($authNameSpace->dm_id) ? (int) $authNameSpace->dm_id : null;
+        $id = (int) $id;
 
-            $where = " participant_id IN($participantIdsString) AND shipment_id = $id";
-            $currentUserId = $id;
+        // Build WHERE clause based on type. For 'summary' $id is the shipment id
+        // and the update touches every row mapped to this data manager; for
+        // 'individual' $id is the map id of a single row.
+        if ($type == 'summary') {
+            if (empty($dmId)) {
+                return 0;
+            }
+            $participantIds = $dbAdapter->fetchCol(
+                $dbAdapter->select()
+                    ->from(['pmm' => 'participant_manager_map'], ['participant_id'])
+                    ->where('pmm.dm_id = ?', $dmId)
+            );
+            if (empty($participantIds)) {
+                return 0;
+            }
+            $where = 'participant_id IN(' . implode(',', array_map('intval', $participantIds)) . ") AND shipment_id = $id";
+            $prefix = 'summary';
         } else {
             $where = "map_id = $id";
-            $participantId = $dbAdapter->fetchOne($dbAdapter->select()
-                ->from('shipment_participant_map', ['participant_id'])
-                ->where($where));
-            $currentUserId = $participantId;
-        }
-        // Fetch existing report_download_metadata
-        $select = $dbAdapter->select()
-            ->from('shipment_participant_map', ['report_download_metadata'])
-            ->where($where);
-
-        $existingData = $dbAdapter->fetchOne($select);
-
-        // Parse existing JSON data
-        $reportData = [];
-        if (!empty($existingData)) {
-            $reportData = Pt_Commons_JsonUtility::safeDecode($existingData);
-            if (!is_array($reportData)) {
-                $reportData = [];
-            }
+            $prefix = 'individual';
         }
 
-        // Get current datetime
-        $currentDateTime = Pt_Commons_DateUtility::getCurrentDateTime();
+        $now = $dbAdapter->quote(Pt_Commons_DateUtility::getCurrentDateTime());
+        $meta = 'report_download_metadata';
 
-        // Update based on report type
-        if ($type == 'individual') {
-            // Check if first time download
-            if (
-                !isset($reportData['first_individual_report_on']) ||
-                empty($reportData['first_individual_report_on'])
-            ) {
-                // First time download - set both first and last
-                $reportData['first_individual_report_on'] = $currentDateTime;
-                $reportData['first_individual_report_by'] = $currentUserId;
-            }
-            // Always update last time (for first and subsequent downloads)
-            $reportData['latest_individual_report_on'] = $currentDateTime;
-            $reportData['latest_individual_report_by'] = $currentUserId;
-        }
-        if ($type == 'summary') {
-            // Check if first time download
-            if (
-                !isset($reportData['first_summary_report_on']) ||
-                empty($reportData['first_summary_report_on'])
-            ) {
-                // First time download - set both first and last
-                $reportData['first_summary_report_on'] = $currentDateTime;
-                $reportData['first_summary_report_by'] = $currentUserId;
-            }
-            // Always update last time (for first and subsequent downloads)
-            $reportData['latest_summary_report_on'] = $currentDateTime;
-            $reportData['latest_summary_report_by'] = $currentUserId;
-        }
-        /* To track whether the report gets downloaded or not during login redirection. */
-        $reportData['report_downloaded'] = 'yes';
-
-        Pt_Commons_JsonUtility::jsonToSetString(json_encode($reportData), 'report_download_metadata');
-        // Prepare data for update
-        $data = [
-            'report_download_metadata' => json_encode($reportData),
+        // JSON_SET merges into each row's own metadata, so a multi-row summary
+        // update cannot clobber another row's individual-download history.
+        $sets = [
+            "'$.first_{$prefix}_report_on', COALESCE(JSON_UNQUOTE(JSON_EXTRACT($meta, '$.first_{$prefix}_report_on')), $now)",
+            "'$.latest_{$prefix}_report_on', $now",
+            // Legacy key: the participant (lab) the download belongs to
+            "'$.first_{$prefix}_report_by', COALESCE(JSON_UNQUOTE(JSON_EXTRACT($meta, '$.first_{$prefix}_report_by')), participant_id)",
+            "'$.latest_{$prefix}_report_by', participant_id",
+            /* To track whether the report gets downloaded or not during login redirection. */
+            "'$.report_downloaded', 'yes'",
         ];
+        // The logged-in data manager who actually downloaded the report
+        if (!empty($dmId)) {
+            $sets[] = "'$.first_{$prefix}_report_by_dm', COALESCE(JSON_UNQUOTE(JSON_EXTRACT($meta, '$.first_{$prefix}_report_by_dm')), $dmId)";
+            $sets[] = "'$.latest_{$prefix}_report_by_dm', $dmId";
+        }
 
-        return $dbAdapter->update('shipment_participant_map', $data, $where);
+        $expr = "JSON_SET(COALESCE($meta, JSON_OBJECT()), " . implode(', ', $sets) . ')';
+
+        return $dbAdapter->update(
+            'shipment_participant_map',
+            ['report_download_metadata' => new Zend_Db_Expr($expr)],
+            $where
+        );
     }
 
     public function getParticipantShipmentPerformanceReport($parameters)

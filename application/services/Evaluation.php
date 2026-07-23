@@ -1560,12 +1560,17 @@ class Application_Service_Evaluation
             ->joinLeft(
                 ['p1' => 'participant'],
                 "p1.participant_id = JSON_UNQUOTE(COALESCE(JSON_EXTRACT(sp.report_download_metadata, '$.first_individual_report_by'), JSON_EXTRACT(sp.report_download_metadata, '$.latest_individual_report_by')))",
-                ['individualParticipantName' => new Zend_Db_Expr("CONCAT(COALESCE(p1.first_name,''), ' ', COALESCE(p1.last_name,''))")]
+                []
             )
             ->joinLeft(
-                ['p2' => 'participant'],
-                "p2.participant_id = JSON_UNQUOTE(COALESCE(JSON_EXTRACT(sp.report_download_metadata, '$.first_summary_report_by'), JSON_EXTRACT(sp.report_download_metadata, '$.latest_summary_report_by')))",
-                ['summaryParticipantName' => new Zend_Db_Expr("CONCAT(COALESCE(p2.first_name,''), ' ', COALESCE(p2.last_name,''))")]
+                ['dm1' => 'data_manager'],
+                "dm1.dm_id = JSON_UNQUOTE(COALESCE(JSON_EXTRACT(sp.report_download_metadata, '$.first_individual_report_by_dm'), JSON_EXTRACT(sp.report_download_metadata, '$.latest_individual_report_by_dm')))",
+                ['individualParticipantName' => new Zend_Db_Expr("COALESCE(NULLIF(TRIM(CONCAT(COALESCE(dm1.first_name,''), ' ', COALESCE(dm1.last_name,''))), ''), TRIM(CONCAT(COALESCE(p1.first_name,''), ' ', COALESCE(p1.last_name,''))))")]
+            )
+            ->joinLeft(
+                ['dm2' => 'data_manager'],
+                "dm2.dm_id = JSON_UNQUOTE(COALESCE(JSON_EXTRACT(sp.report_download_metadata, '$.first_summary_report_by_dm'), JSON_EXTRACT(sp.report_download_metadata, '$.latest_summary_report_by_dm')))",
+                ['summaryParticipantName' => new Zend_Db_Expr("TRIM(CONCAT(COALESCE(dm2.first_name,''), ' ', COALESCE(dm2.last_name,'')))")]
             )
             ->joinLeft(
                 ['dmu' => 'data_manager'],
@@ -1759,12 +1764,17 @@ class Application_Service_Evaluation
             ->joinLeft(
                 ['p1' => 'participant'],
                 "p1.participant_id = JSON_UNQUOTE(COALESCE(JSON_EXTRACT(sp.report_download_metadata, '$.first_individual_report_by'), JSON_EXTRACT(sp.report_download_metadata, '$.latest_individual_report_by')))",
-                ['individualParticipantName' => new Zend_Db_Expr("CONCAT(COALESCE(p1.first_name,''), ' ', COALESCE(p1.last_name,''))")]
+                []
             )
             ->joinLeft(
-                ['p2' => 'participant'],
-                "p2.participant_id = JSON_UNQUOTE(COALESCE(JSON_EXTRACT(sp.report_download_metadata, '$.first_summary_report_by'), JSON_EXTRACT(sp.report_download_metadata, '$.latest_summary_report_by')))",
-                ['summaryParticipantName' => new Zend_Db_Expr("CONCAT(COALESCE(p2.first_name,''), ' ', COALESCE(p2.last_name,''))")]
+                ['dm1' => 'data_manager'],
+                "dm1.dm_id = JSON_UNQUOTE(COALESCE(JSON_EXTRACT(sp.report_download_metadata, '$.first_individual_report_by_dm'), JSON_EXTRACT(sp.report_download_metadata, '$.latest_individual_report_by_dm')))",
+                ['individualParticipantName' => new Zend_Db_Expr("COALESCE(NULLIF(TRIM(CONCAT(COALESCE(dm1.first_name,''), ' ', COALESCE(dm1.last_name,''))), ''), TRIM(CONCAT(COALESCE(p1.first_name,''), ' ', COALESCE(p1.last_name,''))))")]
+            )
+            ->joinLeft(
+                ['dm2' => 'data_manager'],
+                "dm2.dm_id = JSON_UNQUOTE(COALESCE(JSON_EXTRACT(sp.report_download_metadata, '$.first_summary_report_by_dm'), JSON_EXTRACT(sp.report_download_metadata, '$.latest_summary_report_by_dm')))",
+                ['summaryParticipantName' => new Zend_Db_Expr("TRIM(CONCAT(COALESCE(dm2.first_name,''), ' ', COALESCE(dm2.last_name,'')))")]
             )
             ->joinLeft(
                 ['dmu' => 'data_manager'],
