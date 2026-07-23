@@ -159,13 +159,19 @@ try {
         $shipmentCode = $participants[0]['shipment_code'];
         $folderPath = TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $shipmentCode;
 
+        // Mark the run in flight so the shipment page shows "Generating TB
+        // Forms..." — also for manual CLI runs, which never pass runTbFormCron.
+        $db->update('shipment', ['tb_form_generated' => 'queued'], "shipment_id = " . (int) $shipmentsToGenarateForm);
+
         // 2. Prepare Directory
         if (is_dir($folderPath)) {
             Pt_Commons_General::rmdirRecursive($folderPath);
         }
         mkdir($folderPath, 0777, true);
-        if (file_exists("$folderPath.zip")) {
-            unlink("$folderPath.zip");
+        // Remove the previous run's bundle so a stale download isn't served
+        // while this run regenerates it.
+        if (file_exists($folderPath . "-TB-FORMS.zip")) {
+            unlink($folderPath . "-TB-FORMS.zip");
         }
 
         // 3. Spawn Workers
