@@ -62,6 +62,14 @@ try {
     $db = Zend_Db::factory($dbConf->resources->db);
     Zend_Db_Table::setDefaultAdapter($db);
 
+    // TB forms are an MTBEPT-only feature (and a default run resets participant
+    // passwords) — refuse to run on any other instance, mirroring the gate in
+    // Application_Service_Shipments::runTbFormCron().
+    if (Application_Service_Common::getConfig('instance') !== 'mtbept') {
+        fwrite(STDERR, "generate-tb-forms.php only runs on the mtbept instance.\n");
+        exit(1);
+    }
+
     // Resolve the shipment to work on. Workers always receive -s from the master,
     // so this interactive/fallback logic only runs in master mode.
     if (empty($shipmentsToGenarateForm) && !$isWorker) {
