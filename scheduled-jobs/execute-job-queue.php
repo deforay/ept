@@ -81,7 +81,7 @@ try {
                 continue;
             }
 
-            $db->update('scheduled_jobs', ['status' => "processing"], "job_id = " . $jobId);
+            $db->update('scheduled_jobs', ['status' => "processing", 'started_on' => new Zend_Db_Expr('now()')], "job_id = " . $jobId);
 
             // Build the full command with escaped PHP path and validated job command
             $fullCommand = escapeshellarg($phpPath) . " " . $jobsDir . DIRECTORY_SEPARATOR . $validatedCommand;

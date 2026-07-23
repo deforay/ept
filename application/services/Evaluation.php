@@ -4200,11 +4200,14 @@ class Application_Service_Evaluation
 						WHEN sj.job LIKE '%certificate%' THEN 'Certificate Generation'
 						WHEN sj.job LIKE '%send-reports-mail%' THEN 'Email Reports'
 						WHEN sj.job LIKE '%send-emails%' THEN 'Send Emails'
+						WHEN sj.job LIKE '%generate-tb-forms%' THEN 'TB Forms Generation'
+						WHEN sj.job LIKE '%bulk-reset-passwords%' THEN 'Bulk Password Reset'
 						ELSE 'Scheduled Job'
 					END"),
                     'status',
                     'report_type' => new Zend_Db_Expr('NULL'),
-                    'started_at' => 'requested_on',
+                    'started_at' => 'started_on',
+                    'completed_at' => 'completed_on',
                     'last_heartbeat' => new Zend_Db_Expr('NULL'),
                     'requested_on',
                     'job',
@@ -4227,6 +4230,12 @@ class Application_Service_Evaluation
                         break;
                     case 'Email Reports':
                         $scheduledJobsQuery->where("sj.job LIKE '%send-reports-mail%'");
+                        break;
+                    case 'TB Forms Generation':
+                        $scheduledJobsQuery->where("sj.job LIKE '%generate-tb-forms%'");
+                        break;
+                    case 'Bulk Password Reset':
+                        $scheduledJobsQuery->where("sj.job LIKE '%bulk-reset-passwords%'");
                         break;
                 }
             }
