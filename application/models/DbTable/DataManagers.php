@@ -1673,13 +1673,13 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
     public function exportPTCCDetails($params)
     {
 
-        $headings = ['PTCC Name', 'Cell/Mobile', 'Primary Email', 'Status', 'Country', 'State', 'District'];
-        if ($params['type'] == 'mapped') {
-            $headings[] = 'Participant ID';
-            $headings[] = 'Lab Name/Participant Name';
-            $headings[] = 'Cell/Mobile';
-            $headings[] = 'Email';
-        }
+        $type = $params['type'] ?? 'normal';
+        // active_list      = active PTCC only, no credentials
+        // active_credentials = active PTCC only, with a deterministic password reset
+        $activeOnly = in_array($type, ['active_list', 'active_credentials'], true);
+        $withPassword = ($type === 'active_credentials');
+        $resetCount = 0;
+
         try {
             $excel = new Spreadsheet();
 
@@ -1711,11 +1711,48 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                 ->joinLeft(['pmm' => 'participant_manager_map'], 'pmm.dm_id=u.dm_id', [])
                 ->where("data_manager_type = 'ptcc'")
                 ->group('u.dm_id');
-            if ($params['type'] == 'mapped') {
+            if ($activeOnly) {
+                $ptccQuery = $ptccQuery->where("u.status = 'active'");
+            }
+            if ($type == 'mapped') {
                 $ptccQuery = $ptccQuery->joinLeft(['p' => 'participant'], 'pmm.participant_id=p.participant_id', ['unique_identifier', 'labName' => 'lab_name', 'pmobile' => 'mobile', 'email']);
                 $ptccQuery = $ptccQuery->group('p.participant_id');
             }
             $totalResult = $db->fetchAll($ptccQuery);
+
+            // Assemble headings after the query so State / District are dropped
+            // entirely when no PTCC has any value for them (no dead columns).
+            $hasState = false;
+            $hasDistrict = false;
+            foreach ($totalResult as $r) {
+                if (trim((string) ($r['state'] ?? '')) !== '') {
+                    $hasState = true;
+                }
+                if (trim((string) ($r['district'] ?? '')) !== '') {
+                    $hasDistrict = true;
+                }
+                if ($hasState && $hasDistrict) {
+                    break;
+                }
+            }
+
+            $headings = ['PTCC Name', 'Cell/Mobile', 'Primary Email', 'Status', 'Country'];
+            if ($hasState) {
+                $headings[] = 'State';
+            }
+            if ($hasDistrict) {
+                $headings[] = 'District';
+            }
+            if ($type == 'mapped') {
+                $headings[] = 'Participant ID';
+                $headings[] = 'Lab Name/Participant Name';
+                $headings[] = 'Cell/Mobile';
+                $headings[] = 'Email';
+            }
+            if ($withPassword) {
+                $headings[] = 'Login';
+                $headings[] = 'Password';
+            }
 
             foreach ($headings as $field => $value) {
                 $sheet->getCell(Coordinate::stringFromColumnIndex($colNo + 1) . 1)
@@ -1731,13 +1768,32 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                     $row[] = $aRow['primary_email'] ?? null;
                     $row[] = ucwords($aRow['status']) ?? null;
                     $row[] = ucwords($aRow['iso_name']) ?? null;
-                    $row[] = ucwords($aRow['state']) ?? null;
-                    $row[] = ucwords($aRow['district']) ?? null;
-                    if ($params['type'] == 'mapped') {
+                    if ($hasState) {
+                        $row[] = ucwords($aRow['state']) ?? null;
+                    }
+                    if ($hasDistrict) {
+                        $row[] = ucwords($aRow['district']) ?? null;
+                    }
+                    if ($type == 'mapped') {
                         $row[] = $aRow['unique_identifier'] ?? null;
                         $row[] = ucwords($aRow['labName']) ?? null;
                         $row[] = $aRow['pmobile'] ?? null;
                         $row[] = $aRow['email'] ?? null;
+                    }
+                    if ($withPassword) {
+                        // Login is the PTCC's primary email; the password is the same
+                        // deterministic HMAC value the TB forms use, written back to the
+                        // DB so the exported credential is the one that actually works.
+                        $login = trim((string) ($aRow['primary_email'] ?? ''));
+                        $password = '';
+                        if ($login !== '') {
+                            $password = MiscUtility::generateTempPassword($login);
+                            if ($this->updatePasswordFromAdmin($login, $password, true)) {
+                                $resetCount++;
+                            }
+                        }
+                        $row[] = $login;
+                        $row[] = $password;
                     }
                     $output[] = $row;
                 }
@@ -1770,8 +1826,21 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                 mkdir($tempUploadFolder);
             }
 
+            // One audit entry for the whole bulk reset, not one per PTCC. Passwords
+            // are already reset by this point, so a non-critical audit hiccup must
+            // never sink the export — keep it isolated.
+            if ($withPassword && $resetCount > 0) {
+                try {
+                    (new Application_Model_DbTable_AuditLog())
+                        ->addNewAuditLog("Bulk deterministic password reset for {$resetCount} active PTCC via credentials export", 'password-reset');
+                } catch (Throwable $auditEx) {
+                    Pt_Commons_LoggerUtility::logError('PTCC credentials export: audit log failed: ' . $auditEx->getMessage());
+                }
+            }
+
             $writer = IOFactory::createWriter($excel, 'Xlsx');
-            $filename = 'PTCC-MANAGER-LIST-' . date('d-M-Y-H-i-s') . '.xlsx';
+            $namePart = $withPassword ? 'ACTIVE-CREDENTIALS' : ($activeOnly ? 'ACTIVE-LIST' : 'MANAGER-LIST');
+            $filename = 'PTCC-' . $namePart . '-' . date('d-M-Y-H-i-s') . '.xlsx';
             $writer->save($tempUploadFolder . DIRECTORY_SEPARATOR . $filename);
             return $filename;
         } catch (Exception $exc) {
