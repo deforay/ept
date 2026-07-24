@@ -1642,8 +1642,24 @@ class Application_Model_Tb
         }
 
         $GLOBALS['issuingAuthority'] = $result[0]['issuing_authority'] ?? '';
-        $GLOBALS['formVersion'] = '';
-        $GLOBALS['effectiveDate'] = '';
+
+        // Footer form version + effective date are edited under Scheme Config → TB →
+        // "Report Metadata" (Report Version / Report Effective Date, whose helper text
+        // reads "Shows in the report PDF footer"). Those save to scheme_config as
+        // tb.reportVersion / tb.effectiveDate — so that is the authoritative source.
+        // Previously the footer read shipment_attributes.form_version/effective_date
+        // instead, so admin edits never reached it. Keep shipment_attributes only as a
+        // fallback for legacy shipments that carried their own values.
+        $schemeMeta = $config;
+        if ($schemeMeta instanceof Zend_Config) {
+            $schemeMeta = $schemeMeta->toArray();
+        }
+        if (!is_array($schemeMeta)) {
+            $schemeMeta = [];
+        }
+        $GLOBALS['formVersion'] = (string) ($schemeMeta['reportVersion'] ?? '');
+        $GLOBALS['effectiveDate'] = (string) ($schemeMeta['effectiveDate'] ?? '');
+
         // Organization name is the top line of the running header (e.g.
         // "GHC/DGHT-International Laboratory Branch, Atlanta, GA"). It comes from the
         // global "Institute Name" setting (global_config.institute_name) — the same
@@ -1655,10 +1671,15 @@ class Application_Model_Tb
 
         if (isset($result[0]['shipment_attributes']) && !empty($result[0]['shipment_attributes'])) {
             $shipmentAttribute = Pt_Commons_JsonUtility::safeDecode($result[0]['shipment_attributes']);
-            $GLOBALS['formVersion'] = $shipmentAttribute['form_version'] ?? '';
-            // Shipments store this as snake_case effective_date; older/other forms
-            // used camelCase effectiveDate — accept either so the footer isn't blank.
-            $GLOBALS['effectiveDate'] = $shipmentAttribute['effective_date'] ?? $shipmentAttribute['effectiveDate'] ?? '';
+            // Legacy fallback only — Report Metadata (scheme_config) wins when set.
+            if ($GLOBALS['formVersion'] === '') {
+                $GLOBALS['formVersion'] = $shipmentAttribute['form_version'] ?? '';
+            }
+            if ($GLOBALS['effectiveDate'] === '') {
+                // Older/other forms stored this as snake_case effective_date or
+                // camelCase effectiveDate — accept either.
+                $GLOBALS['effectiveDate'] = $shipmentAttribute['effective_date'] ?? $shipmentAttribute['effectiveDate'] ?? '';
+            }
             $GLOBALS['formTitle'] = $shipmentAttribute['form_title'] ?? '';
         }
 
