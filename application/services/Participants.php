@@ -1017,6 +1017,84 @@ class Application_Service_Participants
         return $result;
     }
 
+    /**
+     * Email lists for the Manage Enrollment copy-to-clipboard buttons:
+     * participant.email and data_manager.primary_email for a shipment audience.
+     *
+     * $scope mirrors the three tabs on that page:
+     *   'enrolled'      — everyone in shipment_participant_map for the shipment
+     *   'not-responded' — enrolled but without a submitted response (same test
+     *                     as getShipmentNotRespondedParticipants)
+     *   'not-enrolled'  — active participants NOT in the shipment
+     *
+     * Same deliverability convention as getAllPTDetails() — 'valid' and
+     * 'unknown' stay eligible, flagged-bad statuses are dropped — then each
+     * cell is split, syntax-checked and de-duplicated in PHP.
+     */
+    public function getShipmentEmailsByScope($shipmentId, $scope = 'enrolled')
+    {
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $shipmentId = (int) $shipmentId;
+        $badStatuses = ['hard_bounce', 'invalid_domain', 'invalid_syntax'];
+
+        $participantSql = $db->select()->distinct()->from(['p' => 'participant'], ['p.email'])
+            ->where("p.email IS NOT NULL AND p.email <> ''")
+            ->where('p.email_status NOT IN (?)', $badStatuses);
+
+        $dataManagerSql = $db->select()->distinct()->from(['dm' => 'data_manager'], ['dm.primary_email'])
+            ->join(['pmm' => 'participant_manager_map'], 'dm.dm_id = pmm.dm_id', [])
+            ->join(['p' => 'participant'], 'p.participant_id = pmm.participant_id', [])
+            ->where('dm.data_manager_type LIKE ?', 'manager')
+            ->where("dm.primary_email IS NOT NULL AND dm.primary_email <> ''")
+            ->where('dm.primary_email_status NOT IN (?)', $badStatuses);
+
+        if ($scope === 'not-enrolled') {
+            $enrolledSub = $db->select()
+                ->from(['spm' => 'shipment_participant_map'], ['spm.participant_id'])
+                ->where('spm.shipment_id = ?', $shipmentId);
+            foreach ([$participantSql, $dataManagerSql] as $sql) {
+                $sql->where('p.participant_id NOT IN ?', $enrolledSub)
+                    ->where("p.status = 'active'");
+            }
+        } else {
+            foreach ([$participantSql, $dataManagerSql] as $sql) {
+                $sql->join(['spm' => 'shipment_participant_map'], 'spm.participant_id = p.participant_id', [])
+                    ->where('spm.shipment_id = ?', $shipmentId);
+                if ($scope === 'not-responded') {
+                    $sql->where("(spm.shipment_test_report_date IS NULL OR DATE(spm.shipment_test_report_date) = '0000-00-00' OR spm.response_status LIKE 'noresponse')");
+                }
+            }
+        }
+
+        return [
+            'participantEmails' => $this->extractValidEmails($db->fetchCol($participantSql)),
+            'dataManagerEmails' => $this->extractValidEmails($db->fetchCol($dataManagerSql)),
+        ];
+    }
+
+    /**
+     * A single email column sometimes carries several addresses separated by
+     * commas/semicolons; split those out, keep only syntactically valid
+     * addresses and de-duplicate case-insensitively.
+     */
+    private function extractValidEmails(array $rawValues): array
+    {
+        $unique = [];
+        foreach ($rawValues as $raw) {
+            foreach (preg_split('/[,;\s]+/', (string) $raw, -1, PREG_SPLIT_NO_EMPTY) as $email) {
+                if (filter_var($email, FILTER_VALIDATE_EMAIL) === false) {
+                    continue;
+                }
+                $key = strtolower($email);
+                if (!isset($unique[$key])) {
+                    $unique[$key] = $email;
+                }
+            }
+        }
+        ksort($unique);
+        return array_values($unique);
+    }
+
     public function sendParticipantEmail($data)
     {
         $commonServices = new Application_Service_Common();

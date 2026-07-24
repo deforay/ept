@@ -456,6 +456,32 @@ class Admin_ShipmentController extends Zend_Controller_Action
         }
     }
 
+    /**
+     * AJAX endpoint for the Manage Enrollment copy-email buttons.
+     * Returns unique, deliverable participant and data-manager emails
+     * for the requested audience (enrolled / not-responded / not-enrolled).
+     */
+    public function manageEnrollEmailsAction()
+    {
+        $this->_helper->layout()->disableLayout();
+        $this->_helper->viewRenderer->setNoRender(true);
+
+        header('Content-Type: application/json');
+
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
+        $response = ['participantEmails' => [], 'dataManagerEmails' => []];
+        $scope = $this->_getParam('scope', 'enrolled');
+        if (
+            $request->isPost() && $this->hasParam('shipmentId')
+            && in_array($scope, ['enrolled', 'not-responded', 'not-enrolled'], true)
+        ) {
+            $participantService = new Application_Service_Participants();
+            $response = $participantService->getShipmentEmailsByScope((int) $this->_getParam('shipmentId'), $scope);
+        }
+        echo json_encode($response);
+    }
+
     public function shipmentRespondedParticipantsAction()
     {
         /** @var Zend_Controller_Request_Http $request */

@@ -1,49 +1,70 @@
-<h4 style="width:100%;height:50px;border-bottom:1px solid #777;">
-    <div style="font-size:22.5px;line-height:36px;color:#333;float:left;">Manage Enrollment</div>
-</h4>
+<style>
+    /* Long or comma-separated addresses were forcing the Email column wide
+       enough to squash everything else; break them within the cell instead. */
+    #respondedTable td.email-cell,
+    #notRespondedTable td.email-cell,
+    #notEnrolledTable td.email-cell {
+        min-width: 180px;
+        max-width: 220px;
+        overflow-wrap: anywhere;
+        word-break: break-all;
+    }
+</style>
+<div class="data-list">
+    <div class="data-list-head">
+        <h2><?= $this->translate->_("Manage Enrollment"); ?> &mdash;
+            <?php echo $this->shipment['shipment']['shipment_code']; ?></h2>
+        <div class="data-list-actions">
+            <button class="btn btn-default" type="button" onclick="copyShipmentEmails('enrolled');"
+                title="<?= $this->translate->_("Participant + data manager emails of everyone enrolled in this shipment"); ?>">
+                <i class="icon-copy"></i>&nbsp;<?= $this->translate->_("Copy Emails : Enrolled"); ?>
+            </button>
+            <button class="btn btn-default" type="button" onclick="copyShipmentEmails('not-responded');"
+                title="<?= $this->translate->_("Participant + data manager emails of enrolled participants who have not responded"); ?>">
+                <i class="icon-copy"></i>&nbsp;<?= $this->translate->_("Copy Emails : Not Responded"); ?>
+            </button>
+            <button class="btn btn-default" type="button" onclick="copyShipmentEmails('not-enrolled');"
+                title="<?= $this->translate->_("Participant + data manager emails of active participants not enrolled in this shipment"); ?>">
+                <i class="icon-copy"></i>&nbsp;<?= $this->translate->_("Copy Emails : Not Enrolled"); ?>
+            </button>
+        </div>
+    </div>
+    <div class="data-list-body">
 
-<!-- Shipment Information Table -->
-<table class="table table-bordered table-striped" style="width:100%;margin:0 auto 10px auto;">
-    <tr>
-        <th scope="col"><?= $this->translate->_("Shipment Code"); ?></th>
-        <td><?php echo $this->shipment['shipment']['shipment_code']; ?></td>
-        <th scope="col"><?= $this->translate->_("Scheme Type"); ?></th>
-        <td><?php echo strtoupper($this->shipment['shipment']['scheme_name']); ?></td>
-    </tr>
-    <tr>
-        <th scope="col"><?= $this->translate->_("PT Survey Code"); ?></th>
-        <td><?php echo strtoupper($this->shipment['shipment']['distribution_code']); ?></td>
-        <th scope="col"><?= $this->translate->_("PT Survey Date"); ?></th>
-        <td><?php echo $this->dateFormat($this->shipment['shipment']['distribution_date']); ?></td>
-    </tr>
-    <tr>
-        <th scope="col"><?= $this->translate->_("Shipment Date"); ?></th>
-        <td><?php echo $this->dateFormat($this->shipment['shipment']['shipment_date']); ?></td>
-        <th scope="col"><?= $this->translate->_("Result Due Date"); ?></th>
-        <td><?php echo $this->dateFormat($this->shipment['shipment']['response_deadline'], true); ?></td>
-    </tr>
-</table>
+        <!-- Shipment Information Table -->
+        <table class="table table-bordered table-striped" style="width:100%;margin:0 auto 10px auto;">
+            <tr>
+                <th scope="col"><?= $this->translate->_("Shipment Code"); ?></th>
+                <td><?php echo $this->shipment['shipment']['shipment_code']; ?></td>
+                <th scope="col"><?= $this->translate->_("Scheme Type"); ?></th>
+                <td><?php echo strtoupper($this->shipment['shipment']['scheme_name']); ?></td>
+            </tr>
+            <tr>
+                <th scope="col"><?= $this->translate->_("PT Survey Code"); ?></th>
+                <td><?php echo strtoupper($this->shipment['shipment']['distribution_code']); ?></td>
+                <th scope="col"><?= $this->translate->_("PT Survey Date"); ?></th>
+                <td><?php echo $this->dateFormat($this->shipment['shipment']['distribution_date']); ?></td>
+            </tr>
+            <tr>
+                <th scope="col"><?= $this->translate->_("Shipment Date"); ?></th>
+                <td><?php echo $this->dateFormat($this->shipment['shipment']['shipment_date']); ?></td>
+                <th scope="col"><?= $this->translate->_("Result Due Date"); ?></th>
+                <td><?php echo $this->dateFormat($this->shipment['shipment']['response_deadline'], true); ?></td>
+            </tr>
+        </table>
 
-<section class="content">
-    <div class="row">
-        <div class="col-xs-12">
-            <div class="box">
-                <div class="box-body table-responsive">
-                    <div class="widget" style="padding-top:20px;">
-                        <div class="widget-content">
-                            <div class="bs-example bs-example-tabs">
-                                <!-- Tab Navigation -->
-                                <ul id="myTab" class="nav nav-tabs">
-                                    <li class="active"><a href="#listOfResponded"
-                                            data-toggle="tab"><?= $this->translate->_("Responded"); ?></a></li>
-                                    <li><a href="#listOfNotResponded"
-                                            data-toggle="tab"><?= $this->translate->_("Not Responded"); ?> </a></li>
-                                    <li><a href="#notEnrolled"
-                                            data-toggle="tab"><?= $this->translate->_("Not Enrolled in this Shipment"); ?>
-                                        </a></li>
-                                </ul>
+        <!-- Tab Navigation -->
+        <ul id="myTab" class="nav nav-tabs">
+            <li class="active"><a href="#listOfResponded"
+                    data-toggle="tab"><?= $this->translate->_("Responded"); ?></a></li>
+            <li><a href="#listOfNotResponded"
+                    data-toggle="tab"><?= $this->translate->_("Not Responded"); ?> </a></li>
+            <li><a href="#notEnrolled"
+                    data-toggle="tab"><?= $this->translate->_("Not Enrolled in this Shipment"); ?>
+                </a></li>
+        </ul>
 
-                                <div id="myTabContent" class="tab-content">
+        <div id="myTabContent" class="tab-content">
                                     <!-- Tab 1: Responded Participants -->
                                     <div class="tab-pane fade in active" id="listOfResponded">
                                         <div style="padding-top:10px;float:right;margin-bottom:10px;">
@@ -149,17 +170,13 @@
                                             </tbody>
                                         </table>
                                     </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div><!-- /.box-body -->
-            </div><!-- /.box -->
-        </div>
-    </div>
-    <!-- Hidden field to store selected participant IDs -->
-    <input type="hidden" name="enrollParticipants" id="enrollParticipants" />
-</section><!-- /.content -->
+        </div><!-- /#myTabContent -->
+
+    </div><!-- /.data-list-body -->
+</div><!-- /.data-list -->
+
+<!-- Hidden field to store selected participant IDs -->
+<input type="hidden" name="enrollParticipants" id="enrollParticipants" />
 
 <script type="text/javascript" charset="utf-8">
     // ==========================================
@@ -252,7 +269,7 @@
                 "sClass": "center"
             }, // Affiliation
             {
-                "sClass": ""
+                "sClass": "email-cell"
             }, // Email
             {
                 "sClass": ""
@@ -328,7 +345,7 @@
                 "sClass": "center"
             }, // Affiliation
             {
-                "sClass": ""
+                "sClass": "email-cell"
             }, // Email
             {
                 "sClass": "center",
@@ -409,7 +426,7 @@
                 "sClass": "center"
             }, // Affiliation
             {
-                "sClass": ""
+                "sClass": "email-cell"
             }, // Email
             {
                 "sClass": "center",
@@ -667,5 +684,97 @@
                 }
                 $.unblockUI(); // Hide loading overlay
             });
+    }
+
+    // ==========================================
+    // COPY EMAIL FUNCTIONS
+    // ==========================================
+
+    /**
+     * Fetch unique, deliverable participant + data manager emails for the
+     * requested audience and copy them to the clipboard as one merged,
+     * de-duplicated list.
+     * @param {string} scope - 'enrolled', 'not-responded' or 'not-enrolled'
+     */
+    function copyShipmentEmails(scope) {
+        $.blockUI(); // Show loading overlay
+
+        $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'shipment', 'action' => 'manage-enroll-emails')); ?>", {
+            shipmentId: "<?php echo $this->shipmentId; ?>",
+            scope: scope
+        },
+            function (data) {
+                $.unblockUI(); // Hide loading overlay
+
+                var participantEmails = data.participantEmails || [];
+                var dataManagerEmails = data.dataManagerEmails || [];
+
+                // Merge the two lists, de-duplicating case-insensitively
+                var seen = {};
+                var emails = [];
+                $.each(participantEmails.concat(dataManagerEmails), function (i, email) {
+                    var key = email.toLowerCase();
+                    if (!seen[key]) {
+                        seen[key] = true;
+                        emails.push(email);
+                    }
+                });
+
+                if (emails.length === 0) {
+                    alert("<?= $this->translate->_("No valid email addresses found for this selection"); ?>");
+                    return;
+                }
+
+                copyTextToClipboard(emails.join(", "), function (copied) {
+                    if (copied) {
+                        alert(emails.length + " <?= $this->translate->_("unique email address(es) copied to clipboard"); ?> (" +
+                            participantEmails.length + " <?= $this->translate->_("participant"); ?>, " +
+                            dataManagerEmails.length + " <?= $this->translate->_("data manager"); ?>)");
+                    } else {
+                        // Clipboard access denied - let the user copy manually
+                        window.prompt("<?= $this->translate->_("Press Ctrl+C / Cmd+C to copy"); ?>", emails.join(", "));
+                    }
+                });
+            }, "json")
+            .fail(function () {
+                $.unblockUI();
+                alert("<?= $this->translate->_("Unable to fetch email addresses. Please try again later or contact system admin for help"); ?>");
+            });
+    }
+
+    /**
+     * Copy text to clipboard using the async Clipboard API when available,
+     * falling back to a hidden textarea + execCommand for HTTP contexts.
+     * @param {string} text - Text to copy
+     * @param {function} done - Callback receiving true/false for success
+     */
+    function copyTextToClipboard(text, done) {
+        if (navigator.clipboard && window.isSecureContext) {
+            navigator.clipboard.writeText(text).then(
+                function () { done(true); },
+                function () { done(legacyCopyToClipboard(text)); }
+            );
+        } else {
+            done(legacyCopyToClipboard(text));
+        }
+    }
+
+    function legacyCopyToClipboard(text) {
+        var textarea = document.createElement('textarea');
+        textarea.value = text;
+        textarea.setAttribute('readonly', '');
+        textarea.style.position = 'fixed';
+        textarea.style.opacity = '0';
+        document.body.appendChild(textarea);
+        textarea.focus();
+        textarea.select();
+        var copied = false;
+        try {
+            copied = document.execCommand('copy');
+        } catch (err) {
+            copied = false;
+        }
+        document.body.removeChild(textarea);
+        return copied;
     }
 </script>
