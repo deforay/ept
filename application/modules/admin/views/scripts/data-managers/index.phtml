@@ -85,8 +85,6 @@ if (isset($this->ptcc) && !empty($this->ptcc) && $this->ptcc == 1) {
                     class="icon-download"></i>&nbsp;&nbsp;<?= $this->translate->_("PTCC Mapped Participants"); ?></a>
             <a href="javascript:void(0);" onclick="generatePtccExport('normal');" id="exportExcel" class="btn btn-primary"><i
                     class="icon-download"></i>&nbsp;&nbsp;<?= $this->translate->_("PTCC"); ?></a>
-            <a href="javascript:void(0);" onclick="exportActivePtcc(false);" class="btn btn-primary"><i
-                    class="icon-download"></i>&nbsp;&nbsp;<?= $this->translate->_("Active PTCC (List)"); ?></a>
             <a href="javascript:void(0);" onclick="exportActivePtcc(true);" class="btn btn-warning"><i
                     class="icon-key"></i>&nbsp;&nbsp;<?= $this->translate->_("Active PTCC + Passwords"); ?></a>
             <a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'data-managers', 'action' => 'add', 'ptcc' => '1'), 'default', true); ?>"
@@ -472,21 +470,36 @@ if (isset($this->ptcc) && !empty($this->ptcc) && $this->ptcc == 1) {
     }
 
     function exportActivePtcc(withPassword) {
-        if (withPassword) {
-            // Resetting is destructive — require the admin to type the word out.
-            var msg = "<?= $this->jsTranslate('This will RESET and overwrite the login passwords of ALL active PTCC. Any password they are currently using will immediately stop working. This cannot be undone.'); ?>\n\n" +
-                "<?= $this->jsTranslate('Type RESET to confirm:'); ?>";
-            var answer = prompt(msg);
-            if (answer === null) {
-                return; // cancelled
-            }
-            if (answer.trim().toUpperCase() !== "RESET") {
-                alert("<?= $this->jsTranslate('The confirmation text did not match. Export cancelled — no passwords were changed.'); ?>");
-                return;
-            }
-            generatePtccExport('active_credentials');
-        } else {
+        if (!withPassword) {
             generatePtccExport('active_list');
+            return;
         }
+        // Resetting is destructive — require the admin to type the word out, using
+        // the project's bootbox dialog (not the native browser prompt).
+        bootbox.prompt({
+            title: "<?= $this->jsTranslate('This will RESET and overwrite the login passwords of ALL active PTCC. Any password they are currently using will immediately stop working. This cannot be undone.'); ?>" +
+                "<br><br><strong><?= $this->jsTranslate('Type RESET to confirm:'); ?></strong>",
+            inputType: 'text',
+            buttons: {
+                confirm: {
+                    label: "<?= $this->jsTranslate('Reset & Export'); ?>",
+                    className: 'btn-warning'
+                },
+                cancel: {
+                    label: "<?= $this->jsTranslate('Cancel'); ?>",
+                    className: 'btn-default'
+                }
+            },
+            callback: function(value) {
+                if (value === null) {
+                    return; // cancelled
+                }
+                if ((value || '').trim().toUpperCase() !== "RESET") {
+                    bootbox.alert("<?= $this->jsTranslate('The confirmation text did not match. Export cancelled — no passwords were changed.'); ?>");
+                    return;
+                }
+                generatePtccExport('active_credentials');
+            }
+        });
     }
 </script>
