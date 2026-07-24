@@ -264,6 +264,19 @@ class Application_Model_DbTable_TempMail extends Zend_Db_Table_Abstract
 
         $aColumns = ['to_email', 'subject', 'message', 'status', 'failure_type', 'failure_reason', 'updated_at'];
 
+        /* Status scope — the page is "Failed Emails", so without an explicit
+         * filter only delivery failures are shown ('skipped' rows carry
+         * failure types like dev_trap_block / invalid_dsn) */
+        $validStatuses = ['failed', 'skipped', 'pending', 'picked-to-process', 'sent'];
+        $statusFilter = trim((string) ($parameters['statusFilter'] ?? ''));
+        if ($statusFilter === 'all') {
+            $statusWhere = '';
+        } elseif (in_array($statusFilter, $validStatuses, true)) {
+            $statusWhere = $this->getAdapter()->quoteInto('status = ?', $statusFilter);
+        } else {
+            $statusWhere = "status IN ('failed', 'skipped')";
+        }
+
         /* Indexed column (used for fast and accurate table cardinality) */
         $sIndexColumn = $this->_primary;
 
@@ -295,6 +308,7 @@ class Application_Model_DbTable_TempMail extends Zend_Db_Table_Abstract
             $searchArray = explode(' ', $parameters['sSearch']);
             $sWhereSub = '';
             foreach ($searchArray as $search) {
+                $quoted = $this->getAdapter()->quote('%' . $search . '%');
                 if ($sWhereSub == '') {
                     $sWhereSub .= '(';
                 } else {
@@ -304,9 +318,9 @@ class Application_Model_DbTable_TempMail extends Zend_Db_Table_Abstract
 
                 for ($i = 0; $i < $colSize; $i++) {
                     if ($i < $colSize - 1) {
-                        $sWhereSub .= $aColumns[$i] . " LIKE '%" . ($search) . "%' OR ";
+                        $sWhereSub .= $aColumns[$i] . ' LIKE ' . $quoted . ' OR ';
                     } else {
-                        $sWhereSub .= $aColumns[$i] . " LIKE '%" . ($search) . "%' ";
+                        $sWhereSub .= $aColumns[$i] . ' LIKE ' . $quoted . ' ';
                     }
                 }
                 $sWhereSub .= ')';
@@ -317,16 +331,20 @@ class Application_Model_DbTable_TempMail extends Zend_Db_Table_Abstract
         /* Individual column filtering */
         for ($i = 0; $i < count($aColumns); $i++) {
             if (isset($parameters['bSearchable_' . $i]) && $parameters['bSearchable_' . $i] == 'true' && $parameters['sSearch_' . $i] != '') {
+                $quoted = $this->getAdapter()->quote('%' . $parameters['sSearch_' . $i] . '%');
                 if ($sWhere == '') {
-                    $sWhere .= $aColumns[$i] . " LIKE '%" . ($parameters['sSearch_' . $i]) . "%' ";
+                    $sWhere .= $aColumns[$i] . ' LIKE ' . $quoted . ' ';
                 } else {
-                    $sWhere .= ' AND ' . $aColumns[$i] . " LIKE '%" . ($parameters['sSearch_' . $i]) . "%' ";
+                    $sWhere .= ' AND ' . $aColumns[$i] . ' LIKE ' . $quoted . ' ';
                 }
             }
         }
 
         $sQuery = $this->getAdapter()->select()->from(['a' => $this->_name]);
 
+        if ($statusWhere != '') {
+            $sQuery = $sQuery->where($statusWhere);
+        }
         if (isset($sWhere) && $sWhere != '') {
             $sQuery = $sQuery->where($sWhere);
         }
@@ -345,8 +363,11 @@ class Application_Model_DbTable_TempMail extends Zend_Db_Table_Abstract
         $aResultFilterTotal = $this->getAdapter()->fetchAll($sQuery);
         $iFilteredTotal = count($aResultFilterTotal);
 
-        /* Total data set length */
+        /* Total data set length (within the current status scope) */
         $sQuery = $this->getAdapter()->select()->from($this->_name, new Zend_Db_Expr("COUNT('" . $sIndexColumn . "')"));
+        if ($statusWhere != '') {
+            $sQuery = $sQuery->where($statusWhere);
+        }
         $aResultTotal = $this->getAdapter()->fetchCol($sQuery);
         $iTotal = $aResultTotal[0];
 
@@ -360,17 +381,26 @@ class Application_Model_DbTable_TempMail extends Zend_Db_Table_Abstract
             'aaData' => [],
         ];
 
-        $general = new Pt_Commons_General();
         foreach ($rResult as $aRow) {
+            /* Full HTML bodies wreck the grid layout — show a plain-text
+             * snippet in the cell and hand the full body to a modal viewer */
+            $plainMessage = trim(preg_replace('/\s+/', ' ', strip_tags((string) $aRow['message'])));
+            $snippet = mb_substr($plainMessage, 0, 160);
+            if (mb_strlen($plainMessage) > 160) {
+                $snippet .= '…';
+            }
+            $messageCell = '<div class="mail-snippet">' . htmlspecialchars($snippet, ENT_QUOTES) . '</div>'
+                . '<button type="button" class="btn btn-default btn-xs view-mail" data-message="'
+                . htmlspecialchars((string) $aRow['message'], ENT_QUOTES) . '">View</button>';
+
             $row = [];
-            $row[] = $aRow['to_email'];
-            $row[] = $aRow['subject'];
-            $row[] = $aRow['message'];
-            $row[] = ucwords($aRow['status']);
-            $row[] = ucwords(str_replace('-', ' ', $aRow['failure_type']));
-            $row[] = $aRow['failure_reason'];
-            $row[] = Pt_Commons_DateUtility::humanReadableDateFormat($aRow['updated_at']);
-            // $row[] = '<a href="/admin/sample-not-tested-reasons/edit/53s5k85_8d/' . base64_encode($aRow['ntr_id']) . '" class="btn btn-warning btn-xs" style="margin-right: 2px;"><i class="icon-pencil"></i> Edit</a>';
+            $row[] = htmlspecialchars((string) $aRow['to_email'], ENT_QUOTES);
+            $row[] = htmlspecialchars((string) $aRow['subject'], ENT_QUOTES);
+            $row[] = $messageCell;
+            $row[] = ucwords((string) $aRow['status']);
+            $row[] = ucwords(str_replace(['-', '_'], ' ', (string) $aRow['failure_type']));
+            $row[] = htmlspecialchars((string) $aRow['failure_reason'], ENT_QUOTES);
+            $row[] = Pt_Commons_DateUtility::humanReadableDateFormat($aRow['updated_at'], true);
 
             $output['aaData'][] = $row;
         }

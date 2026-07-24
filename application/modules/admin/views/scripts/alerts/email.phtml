@@ -1,28 +1,87 @@
-</style>
-<link rel="stylesheet" href="<?php echo $this->baseUrl("css/jquery.dataTables.css"); ?>" type="text/css" media="all">
-<h4 style="width:100%;height:50px;border-bottom:1px solid #777;">
-    <div style="font-size:22.5px;line-height:36px;color:#333;float:left;"><?= $this->translate->_("Failed Emails"); ?>
-    </div>
-</h4>
+<style>
+    /* Keep long email content from stretching the grid past the shell */
+    #emailTable {
+        table-layout: fixed;
+        width: 100%;
+    }
 
-<table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered table-hover"
-    id="emailTable">
-    <thead>
-        <tr>
-            <th scope="col"><?= $this->translate->_("To Email"); ?></th>
-            <th scope="col"><?= $this->translate->_("Subject"); ?></th>
-            <th scope="col"><?= $this->translate->_("Message"); ?></th>
-            <th scope="col"><?= $this->translate->_("Status"); ?></th>
-            <th scope="col"><?= $this->translate->_("Failure Type"); ?></th>
-            <th scope="col"><?= $this->translate->_("Failure Reasons"); ?></th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td colspan="6" class="dataTables_empty"><?= $this->translate->_("Loading data from server"); ?></td>
-        </tr>
-    </tbody>
-</table>
+    #emailTable td {
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        vertical-align: top;
+    }
+
+    #emailTable .mail-snippet {
+        color: #555;
+        margin-bottom: 6px;
+    }
+
+    /* Lone filter on this page — keep the select from spanning the whole card */
+    #statusFilter {
+        max-width: 240px;
+    }
+
+    #mailMessageModal iframe {
+        width: 100%;
+        height: 60vh;
+        border: none;
+    }
+</style>
+
+<div class="data-list">
+    <div class="data-list-head">
+        <h2><?= $this->translate->_("Failed Emails"); ?></h2>
+    </div>
+    <div class="data-list-body">
+        <div class="data-list-filters">
+            <div>
+                <label for="statusFilter"><?= $this->htmlTranslate("Status"); ?></label>
+                <select id="statusFilter" onchange="oTable.fnDraw();" class="form-control input-sm">
+                    <option value=""><?= $this->htmlTranslate("Failed & Skipped"); ?></option>
+                    <option value="failed"><?= $this->htmlTranslate("Failed"); ?></option>
+                    <option value="skipped"><?= $this->htmlTranslate("Skipped"); ?></option>
+                    <option value="pending"><?= $this->htmlTranslate("Pending"); ?></option>
+                    <option value="sent"><?= $this->htmlTranslate("Sent"); ?></option>
+                    <option value="all"><?= $this->htmlTranslate("All"); ?></option>
+                </select>
+            </div>
+        </div>
+        <table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered table-hover"
+            id="emailTable">
+            <thead>
+                <tr>
+                    <th scope="col" style="width:14%;"><?= $this->translate->_("To Email"); ?></th>
+                    <th scope="col" style="width:14%;"><?= $this->translate->_("Subject"); ?></th>
+                    <th scope="col" style="width:26%;"><?= $this->translate->_("Message"); ?></th>
+                    <th scope="col" style="width:8%;"><?= $this->translate->_("Status"); ?></th>
+                    <th scope="col" style="width:10%;"><?= $this->translate->_("Failure Type"); ?></th>
+                    <th scope="col" style="width:17%;"><?= $this->translate->_("Failure Reason"); ?></th>
+                    <th scope="col" style="width:11%;"><?= $this->translate->_("Updated On"); ?></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td colspan="7" class="dataTables_empty"><?= $this->translate->_("Loading data from server"); ?></td>
+                </tr>
+            </tbody>
+        </table>
+    </div><!-- /.data-list-body -->
+</div><!-- /.data-list -->
+
+<div class="modal fade" id="mailMessageModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title"><?= $this->translate->_("Email Message"); ?></h4>
+            </div>
+            <div class="modal-body">
+                <iframe id="mailMessageFrame" sandbox="" title="<?= $this->translate->_("Email Message"); ?>"></iframe>
+            </div>
+        </div>
+    </div>
+</div>
 
 <script type="text/javascript" charset="utf-8">
     /* Table initialisation */
@@ -38,32 +97,25 @@
             "bScrollCollapse": true,
             "sPaginationType": "bootstrap",
             "bRetrieve": true,
-            "aoColumns": [{
-                "sClass": "center"
-            },
-            {
-                "sClass": "center",
-            },
-            {
-                "sClass": "center",
-            },
-            {
-                "sClass": "center",
-            },
-            {
-                "sClass": "center",
-            },
-            {
-                "sClass": "center",
-            }
+            "aoColumns": [
+                { "sClass": "" },
+                { "sClass": "" },
+                { "sClass": "" },
+                { "sClass": "center" },
+                { "sClass": "center" },
+                { "sClass": "" },
+                { "sClass": "" }
             ],
             "aaSorting": [
-                [0, "desc"]
+                [6, "desc"]
             ],
             "bProcessing": true,
             "bSortClasses": false,
             "bServerSide": true,
             "sAjaxSource": "<?php echo $this->url(array('module' => 'admin', 'controller' => 'alerts', 'action' => 'email', 'format' => 'html')); ?>",
+            "fnServerParams": function (aoData) {
+                aoData.push({ "name": "statusFilter", "value": $("#statusFilter").val() });
+            },
             "fnServerData": function (sSource, aoData, fnCallback) {
                 $.ajax({
                     "dataType": 'json',
@@ -75,6 +127,11 @@
                     }
                 });
             }
+        });
+
+        $('#emailTable').on('click', '.view-mail', function () {
+            $('#mailMessageFrame').attr('srcdoc', $(this).data('message'));
+            $('#mailMessageModal').modal('show');
         });
     });
 </script>
