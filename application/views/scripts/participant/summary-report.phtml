@@ -1,4 +1,5 @@
 <link rel="stylesheet" href="<?php echo $this->baseUrl('css/daterangepicker.css'); ?>" type="text/css" media="all">
+<link href="<?php echo $this->baseUrl('css/select2.css'); ?>" rel="stylesheet" />
 <script type="text/javascript" src="<?php echo $this->baseUrl('js/moment.min.js'); ?>"></script>
 <style>
     .dataTables_paginate,
@@ -29,9 +30,14 @@
 
             <table class="table table-striped">
                 <tr class="dark">
-                    <td><?= $this->translate->_("Shipment Date"); ?></td>
-                    <td><?= $this->translate->_("Scheme"); ?></td>
-                    <td><?= $this->translate->_("Action"); ?></td>
+                    <td style="width:25%"><?= $this->translate->_("Shipment Date"); ?></td>
+                    <td style="width:25%"><?= $this->translate->_("Scheme"); ?></td>
+                    <?php if (!empty($this->countries)) { ?>
+                        <td style="width:25%"><?= $this->translate->_("Country"); ?></td>
+                    <?php } ?>
+                    <?php if (!empty($this->regions)) { ?>
+                        <td style="width:25%"><?= $this->translate->_("Region"); ?></td>
+                    <?php } ?>
                 </tr>
                 <tr class="light">
                     <td><input type="text" id="dateRange" name="dateRange" class="form-control" readonly="readonly"
@@ -49,10 +55,62 @@
                             ?>
                         </select>
                     </td>
+                    <?php if (!empty($this->countries)) { ?>
+                        <td>
+                            <select class="form-control select2" id="country" name="country"
+                                title="<?= $this->htmlTranslate("Please select the country to filter"); ?>"
+                                onchange="getOptions('participant', 'country', 'region', this.value, 'region');getOptions('participant', 'country', 'district', this.value, 'district');">
+                                <option value=""></option>
+                                <?php foreach ($this->countries as $country) { ?>
+                                    <option value="<?php echo $country['id']; ?>"><?php echo ucwords($country['iso_name']); ?></option>
+                                <?php } ?>
+                            </select>
+                        </td>
+                    <?php } ?>
+                    <?php if (!empty($this->regions)) { ?>
+                        <td>
+                            <select class="form-control select2" id="region" name="region"
+                                title="<?= $this->htmlTranslate("Please select the region to filter"); ?>"
+                                onchange="getOptions('participant', 'region', 'district', this.value, 'district');">
+                                <option value=""></option>
+                                <?php foreach ($this->regions as $region) { ?>
+                                    <option value="<?php echo $this->escape($region['region']); ?>"><?php echo ucwords($region['region']); ?></option>
+                                <?php } ?>
+                            </select>
+                        </td>
+                    <?php } ?>
+                </tr>
+                <?php if (!empty($this->districts)) { ?>
+                <tr class="dark">
+                    <td style="width:25%"><?= $this->translate->_("District"); ?></td>
+                    <td><?= $this->translate->_("Action"); ?></td>
+                </tr>
+                <tr class="light">
+                    <td>
+                        <select class="form-control select2" id="district" name="district"
+                            title="<?= $this->htmlTranslate("Please select the district to filter"); ?>">
+                            <option value=""></option>
+                            <?php foreach ($this->districts as $district) { ?>
+                                <option value="<?php echo $this->escape($district['district']); ?>"><?php echo ucwords($district['district']); ?></option>
+                            <?php } ?>
+                        </select>
+                    </td>
                     <td><button class="btn btn-success btn-sm"
                             onclick="summarySchemes()"><span><?= $this->translate->_("Get Report"); ?></span></button>
                     </td>
                 </tr>
+                <?php } else { ?>
+                <tr class="dark">
+                    <td colspan="<?= (!empty($this->countries) ? 1 : 0) + (!empty($this->regions) ? 1 : 0) + 2 - 1 ?>"></td>
+                    <td><?= $this->translate->_("Action"); ?></td>
+                </tr>
+                <tr class="light">
+                    <td colspan="<?= (!empty($this->countries) ? 1 : 0) + (!empty($this->regions) ? 1 : 0) + 2 - 1 ?>"></td>
+                    <td><button class="btn btn-success btn-sm"
+                            onclick="summarySchemes()"><span><?= $this->translate->_("Get Report"); ?></span></button>
+                    </td>
+                </tr>
+                <?php } ?>
             </table>
             <br><br>
             <table cellpadding="0" cellspacing="0" border="0" class="display datatable table table-bordered"
@@ -85,12 +143,33 @@
 <script type="text/javascript" src="<?php echo $this->baseUrl('js/highchart.js'); ?>"></script>
 <script type="text/javascript" src="<?php echo $this->baseUrl('js/raphael.min.js'); ?>"></script>
 <script type="text/javascript" src="<?php echo $this->baseUrl('js/daterangepicker.js'); ?>"></script>
+<script type="text/javascript" src="<?php echo $this->baseUrl('js/select2.min.js'); ?>"></script>
 
 <script>
     var startDate = "";
     var endDate = "";
     var oTable = null;
+    // Full DM-scoped option lists so clearing a parent filter restores them
+    var defaultLocationOptions = {};
     $(document).ready(function () {
+        $("#country").select2({
+            placeholder: "<?= $this->jsTranslate("Select Country"); ?>",
+            allowClear: true
+        });
+        $("#region").select2({
+            placeholder: "<?= $this->jsTranslate("Select Region"); ?>",
+            allowClear: true
+        });
+        $("#district").select2({
+            placeholder: "<?= $this->jsTranslate("Select District"); ?>",
+            allowClear: true
+        });
+        ['region', 'district'].forEach(function (id) {
+            if ($('#' + id).length) {
+                defaultLocationOptions[id] = $('#' + id).html();
+            }
+        });
+
         $('#dateRange').daterangepicker({
             locale: {
                 cancelLabel: 'Clear',
@@ -163,6 +242,18 @@
                 aoData.push({
                     "name": "endDate",
                     "value": endDate
+                });
+                aoData.push({
+                    "name": "country",
+                    "value": $("#country").val() || ''
+                });
+                aoData.push({
+                    "name": "region",
+                    "value": $("#region").val() || ''
+                });
+                aoData.push({
+                    "name": "district",
+                    "value": $("#district").val() || ''
                 });
             },
             "fnServerData": function (sSource, aoData, fnCallback) {
@@ -239,11 +330,41 @@
     });
 
     function summarySchemes() {
-        if (startDate == "" || endDate == "" || $("#scheme").val() == "" || $("#scheme").val() == null || $("#scheme").val() == undefined) {
-            alert("<?= $this->translate->_("Please pick date range and Scheme Type to proceed"); ?>");
-            return false;
-        }
+        // if (startDate == "" || endDate == "" || $("#scheme").val() == "" || $("#scheme").val() == null || $("#scheme").val() == undefined) {
+        //     alert("<?= $this->translate->_("Please pick date range and Scheme Type to proceed"); ?>");
+        //     return false;
+        // }
         oTable.fnDraw();
+    }
+
+    function getOptions(table, searchfield, returnfield, searchvalue, returnid) {
+        var $target = $("#" + returnid);
+        if ($target.length === 0) {
+            return;
+        }
+        if (searchvalue === "" || searchvalue === null || searchvalue === undefined) {
+            // Parent filter cleared — restore the full DM-scoped list
+            $target.html(defaultLocationOptions[returnid] || '<option value=""></option>');
+            $target.val('').trigger('change.select2');
+            return;
+        }
+        $.blockUI();
+        $.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'common', 'action' => 'get-options-by-value')); ?>", {
+                table: table,
+                searchfield: searchfield,
+                returnfield: returnfield,
+                searchvalue: searchvalue,
+                format: "html"
+            },
+            function(data) {
+                if (data != 0 && data != '' && data != undefined) {
+                    $target.html(data);
+                } else {
+                    $target.html('<option value=""></option>');
+                }
+                $target.val('').trigger('change.select2');
+                $.unblockUI();
+            });
     }
 
     function updateReportDownloadDateTime(id, type) {
