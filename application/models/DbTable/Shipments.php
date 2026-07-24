@@ -1132,17 +1132,17 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             // The shipment is finalized (query WHERE), so the PDF on disk is the
             // ground truth — report_generated is only generation-progress
             // bookkeeping and gets reset to 'no' whenever a re-run is queued.
-            // Excluded participants get their report too; missing PDFs still
-            // fall through to 'Not Available'.
-            $invididualFilePath = (DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . '-' . $aRow['map_id'] . '.pdf');
-            if (!file_exists($invididualFilePath)) {
-                // Search this file name using the map id
-                $files = glob(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . DIRECTORY_SEPARATOR . '*' . '-' . $aRow['map_id'] . '.pdf');
-                $invididualFilePath = isset($files[0]) ? $files[0] : '';
-            }
-            if ($invididualFilePath !== '' && file_exists($invididualFilePath)) {
-                $download = '<a href="' . Pt_Commons_SignedDownload::url($invididualFilePath) . '" class="btn btn-primary" onclick="updateReportDownloadDateTime(' . $aRow['map_id'] . ', \'individual\');"   style="text-decoration : none;overflow:hidden;margin-top:4px;"  target="_BLANK" download><i class="icon icon-download"></i> ' . $this->translator->_('Report') . '</a>';
-            }
+            // if ($aRow['is_excluded'] != 'yes') {
+                $invididualFilePath = (DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . '-' . $aRow['map_id'] . '.pdf');
+                if (!file_exists($invididualFilePath)) {
+                    // Search this file name using the map id
+                    $files = glob(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . DIRECTORY_SEPARATOR . '*' . '-' . $aRow['map_id'] . '.pdf');
+                    $invididualFilePath = isset($files[0]) ? $files[0] : '';
+                }
+                if ($invididualFilePath !== '' && file_exists($invididualFilePath)) {
+                    $download = '<a href="' . Pt_Commons_SignedDownload::url($invididualFilePath) . '" class="btn btn-primary" onclick="updateReportDownloadDateTime(' . $aRow['map_id'] . ', \'individual\');"   style="text-decoration : none;overflow:hidden;margin-top:4px;"  target="_BLANK" download><i class="icon icon-download"></i> ' . $this->translator->_('Report') . '</a>';
+                }
+            // }
             if (($aRow['final_result'] == '2') && (isset($aRow['corrective_action_file']) && $aRow['corrective_action_file'] != '')) {
                 $corrective = '<a href="/uploads/corrective-action-files/' . $aRow['corrective_action_file'] . '"   class="btn btn-warning"   style="text-decoration : none;overflow:hidden;margin-top:4px; clear:both !important;display:block;" target="_BLANK" download><i class="fa fa-fw fa-download"></i> ' . Pt_Commons_TranslateUtility::htmlTranslate('Corrective Actions') . '</a>';
             }

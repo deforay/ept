@@ -114,38 +114,40 @@
                 </tr>
             </table>
             <br><br>
-            <table cellpadding="0" cellspacing="0" border="0" class="display datatable table table-bordered"
-                id="individualReportTable">
-                <thead>
-                    <tr>
-                        <th scope="col"><?= $this->translate->_("Scheme"); ?></th>
-                        <th scope="col"><?= $this->translate->_("Shipment Code"); ?></th>
-                        <th scope="col"><?= $this->translate->_("Shipment Date"); ?></th>
-                        <th scope="col"><?= $this->translate->_("Participant Id"); ?></th>
-                        <th scope="col"><?= $this->translate->_("Participant"); ?></th>
-                        <th scope="col"><?= $this->translate->_("Response Date"); ?></th>
-                        <th scope="col"><?= $this->translate->_("Result"); ?></th>
-                        <th scope="col"><?= $this->translate->_("Report"); ?></th>
-                    </tr>
-                    <tr class="column-search-row">
-                        <th scope="col"></th>
-                        <th scope="col"><input type="text" class="form-control input-sm col-search" data-col="1" placeholder="<?= $this->translate->_('Search Code'); ?>" /></th>
-                        <th scope="col"></th>
-                        <th scope="col"><input type="text" class="form-control input-sm col-search" data-col="3" placeholder="<?= $this->translate->_('Search ID'); ?>" /></th>
-                        <th scope="col"><input type="text" class="form-control input-sm col-search" data-col="4" placeholder="<?= $this->translate->_('Search Name'); ?>" /></th>
-                        <th scope="col"></th>
-                        <th scope="col"></th>
-                        <th scope="col"></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td colspan="8" class="dataTables_empty"
-                            style="text-align: center;font-size:15px;font-weight:bold;">
-                            <?= $this->translate->_("Please pick date range and Scheme Type to proceed"); ?></td>
-                    </tr>
-                </tbody>
-            </table>
+            <div class="table-responsive">
+                <table cellpadding="0" cellspacing="0" border="0" class="display datatable table table-bordered"
+                    id="individualReportTable">
+                    <thead>
+                        <tr>
+                            <th scope="col"><?= $this->translate->_("Scheme"); ?></th>
+                            <th scope="col"><?= $this->translate->_("Shipment Code"); ?></th>
+                            <th scope="col"><?= $this->translate->_("Shipment Date"); ?></th>
+                            <th scope="col"><?= $this->translate->_("Participant Id"); ?></th>
+                            <th scope="col"><?= $this->translate->_("Participant"); ?></th>
+                            <th scope="col"><?= $this->translate->_("Response Date"); ?></th>
+                            <th scope="col"><?= $this->translate->_("Result"); ?></th>
+                            <th scope="col"><?= $this->translate->_("Report"); ?></th>
+                        </tr>
+                        <tr class="column-search-row">
+                            <th scope="col"></th>
+                            <th scope="col"><input type="text" class="form-control input-sm col-search" data-col="1" placeholder="<?= $this->translate->_('Search Code'); ?>" /></th>
+                            <th scope="col"></th>
+                            <th scope="col"><input type="text" class="form-control input-sm col-search" data-col="3" placeholder="<?= $this->translate->_('Search ID'); ?>" /></th>
+                            <th scope="col"><input type="text" class="form-control input-sm col-search" data-col="4" placeholder="<?= $this->translate->_('Search Name'); ?>" /></th>
+                            <th scope="col"></th>
+                            <th scope="col"></th>
+                            <th scope="col"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td colspan="8" class="dataTables_empty"
+                                style="text-align: center;font-size:15px;font-weight:bold;">
+                                <?= $this->translate->_("Please pick date range and Scheme Type to proceed"); ?></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </section>
