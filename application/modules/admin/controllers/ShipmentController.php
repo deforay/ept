@@ -206,16 +206,29 @@ class Admin_ShipmentController extends Zend_Controller_Action
         }
     }
 
+    // Delete a shipment. Permanent and irreversible — the admin must type DELETE
+    // and supply a reason (both validated here as well); the reason is audited.
     public function removeAction()
     {
-        if ($this->hasParam('sid')) {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
+        if ($request->isPost() && $this->hasParam('sid')) {
+            if (strtoupper(trim((string) $this->_getParam('confirmToken'))) !== 'DELETE') {
+                $this->view->message = 'Deletion not confirmed. Type DELETE to confirm.';
+                return;
+            }
+            $reason = trim((string) $this->_getParam('reason'));
+            if ($reason === '') {
+                $this->view->message = 'A reason for deleting is required.';
+                return;
+            }
             $sid = (int) base64_decode($this->_getParam('sid'));
             $shipmentService = new Application_Service_Shipments();
             if ($shipmentService->isShipmentCancelled($sid)) {
                 $this->view->message = 'This shipment is cancelled and can no longer be changed.';
                 return;
             }
-            $this->view->message = $shipmentService->removeShipment($sid);
+            $this->view->message = $shipmentService->removeShipment($sid, $reason);
         } else {
             $this->view->message = 'Unable to delete. Please try again later or contact system admin for help';
         }

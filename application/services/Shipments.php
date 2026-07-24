@@ -352,15 +352,21 @@ class Application_Service_Shipments
                 // A run in flight always wins over a leftover zip from an earlier
                 // run — never offer a download that is about to be superseded.
                 if (isset($aRow['tb_form_generated']) && $aRow['tb_form_generated'] == 'queued') {
-                    $downloadAllTBForms = '<a class="btn btn-success btn-xs" href="javascript:void(0);" disabled><span><i class="icon-refresh"></i> ' . $this->translator->_('Generating TB Forms...') . ' </span></a>';
+                    // Anchors ignore the disabled attribute; the .disabled class is
+                    // what actually kills the pointer.
+                    $downloadAllTBForms = '<a class="btn btn-success btn-xs disabled" href="javascript:void(0);"><span><i class="icon-refresh"></i> ' . $this->translator->_('Generating TB Forms...') . ' </span></a>';
                 } elseif ($tbFormPath !== null) {
                     $downloadAllTBForms = '<a href="/admin/shipment/download-tb/sid/' . $aRow['shipment_id'] . '/file/' . base64_encode($tbFormPath) . '" class="btn btn-success btn-xs" style="margin:3px 0;" target="_BLANK"> <i class="icon icon-download"></i> ' . $this->translator->_('TB Forms') . '</a>';
                 } elseif ($aRow['status'] == 'shipped' || $aRow['status'] == 'evaluated') {
-                    $downloadAllTBForms = '<a class="btn btn-success btn-xs" href="javascript:void(0);" onclick="generateTBFormsPDF(\'' . base64_encode($aRow['shipment_id']) . '\');"><span><i class="icon-refresh"></i> ' . $this->translator->_('Generate TB Forms') . ' </span></a>';
+                    $downloadAllTBForms = '<a class="btn btn-success btn-xs" href="javascript:void(0);" onclick="generateTBFormsPDF(\'' . base64_encode($aRow['shipment_id']) . '\', this);"><span><i class="icon-refresh"></i> ' . $this->translator->_('Generate TB Forms') . ' </span></a>';
                 }
             }
             if ($aRow['status'] != 'finalized' && ($aRow['reported_count'] == 0)) {
-                $delete = '<a class="btn btn-primary btn-xs" href="javascript:void(0);" onclick="removeShipment(\'' . base64_encode($aRow['shipment_id']) . '\')"><span><i class="icon-remove"></i> Delete</span></a>';
+                // Same layered encoding as the Cancel button: json_encode for the
+                // JS-string context, then htmlspecialchars for the HTML attribute.
+                $jsDelId = htmlspecialchars(json_encode(base64_encode($aRow['shipment_id'])), ENT_QUOTES);
+                $jsDelCode = htmlspecialchars(json_encode((string) $aRow['shipment_code']), ENT_QUOTES);
+                $delete = '<a class="btn btn-danger btn-xs" href="javascript:void(0);" onclick="removeShipment(' . $jsDelId . ', ' . $jsDelCode . ')"><span><i class="icon-remove"></i> Delete</span></a>';
             }
             if (($aRow['status'] == 'shipped' || $aRow['status'] == 'evaluated') && isset($aRow['notResponded']) && !empty($aRow['notResponded']) && $aRow['notResponded'] > 0) {
                 $informMail = '<a class="btn btn-warning btn-xs" href="/admin/email-participants/index/sid/' . base64_encode($aRow['shipment_id']) . '" title="Remind participants who have not responded"><span><i class="icon-bullhorn"></i> Remind</span></a>';
@@ -387,13 +393,13 @@ class Application_Service_Shipments
                 }
                 // Grouped by what the action does rather than emitted one per line:
                 // the record itself, then participant handling, then the things that
-                // send mail or produce a file, then the destructive one on its own.
+                // send mail or produce a file, then the destructive ones last.
                 // Each line is nowrap so a group never breaks mid-way.
                 $actionLines = [
                     [$edit, $clone],
-                    [$enrolled, $manageEnroll, $testkitbtn, $delete],
+                    [$enrolled, $manageEnroll, $testkitbtn],
                     [$announcementMail, $informMail, $downloadAllTBForms],
-                    [$cancel],
+                    [$cancel, $delete],
                 ];
                 $actions = '';
                 foreach ($actionLines as $line) {
@@ -2640,7 +2646,7 @@ class Application_Service_Shipments
         return $db->fetchAll($sql);
     }
 
-    public function removeShipment($sid)
+    public function removeShipment($sid, $reason = '')
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $db->beginTransaction();
@@ -2665,6 +2671,16 @@ class Application_Service_Shipments
             $shipmentParticipantMap->delete('shipment_id=' . $sid);
 
             $shipmentDb->delete('shipment_id=' . $sid);
+
+            // The shipment row is gone after this, so the reason's only durable
+            // home is the audit log (same wording as cancelShipment's entry).
+            $auditDb = new Application_Model_DbTable_AuditLog();
+            $auditDb->addNewAuditLog(
+                'Deleted shipment - ' . ($row['shipment_code'] ?? $sid)
+                    . ($reason !== '' ? ' (reason: ' . $reason . ')' : ''),
+                'shipment'
+            );
+
             $db->commit();
             return 'Shipment deleted.';
         } catch (Throwable $e) {
@@ -3957,6 +3973,15 @@ class Application_Service_Shipments
         // even if the request reaches this method directly.
         if (empty($sid) || Application_Service_Common::getConfig('instance') !== 'mtbept') {
             return null;
+        }
+        // A run is already queued/in flight — don't stack a duplicate job even if
+        // a stale grid (or a double-click) fires the request again.
+        $alreadyQueued = $db->fetchOne(
+            'SELECT tb_form_generated FROM shipment WHERE shipment_id = ?',
+            [$sid]
+        );
+        if ($alreadyQueued == 'queued') {
+            return 0;
         }
         $db->beginTransaction();
         try {
