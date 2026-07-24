@@ -344,8 +344,11 @@ class Application_Service_Shipments
             if ($aRow['status'] == 'shipped' || $aRow['status'] == 'evaluated') {
                 $manageEnroll = '<a class="btn btn-info btn-xs" href="/admin/shipment/manage-enroll/sid/' . base64_encode($aRow['shipment_id']) . '/sctype/' . base64_encode($aRow['scheme_type']) . '"><span><i class="icon-gear"></i> Enrollment</span></a>';
             }
+            // Finalized and cancelled shipments are closed — no TB form
+            // generation or download from this grid.
+            $downloadAllTBForms = '';
             $tbFormPath = self::resolveTbFormsZip($aRow['shipment_code']);
-            if ($isMtbeptInstance && $aRow['scheme_type'] == 'tb') {
+            if ($isMtbeptInstance && $aRow['scheme_type'] == 'tb' && !$isCancelled && $aRow['status'] != 'finalized') {
                 // A run in flight always wins over a leftover zip from an earlier
                 // run — never offer a download that is about to be superseded.
                 if (isset($aRow['tb_form_generated']) && $aRow['tb_form_generated'] == 'queued') {
