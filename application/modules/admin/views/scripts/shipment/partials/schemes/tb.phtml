@@ -300,9 +300,10 @@ $tbCountFilled = function (array $ref, array $keys): int {
     <label class="col-lg-3 control-label"
         for="effectiveDate"><?= $this->translate->_("Report Effective Date"); ?></label>
     <div class="col-lg-5">
-        <input type="text" name="effectiveDate" id="effectiveDate" placeholder="Select the report effective date"
-            title="Please select the report effective date" class="form-control input-sm datepicker"
+        <input type="text" name="effectiveDate" id="effectiveDate" autocomplete="off" placeholder="e.g. August 2025"
+            title="Enter the month and year to show in the report footer, e.g. August 2025" class="form-control input-sm"
             value="<?php echo htmlspecialchars($effectiveSettings['effectiveDate'] ?? ''); ?>" />
+        <small class="text-muted"><?= $this->translate->_("Free text — shown exactly as typed in the report PDF footer (e.g. August 2025)."); ?></small>
     </div>
 </div>
 <div class="form-group">
