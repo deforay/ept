@@ -1645,15 +1645,12 @@ class Application_Model_Tb
         $GLOBALS['formVersion'] = '';
         $GLOBALS['effectiveDate'] = '';
         // Organization name is the top line of the running header (e.g.
-        // "GHC/DGHT-International Laboratory Branch, Atlanta, GA"). SchemeConfig's
-        // instituteName is frequently unset, which dropped that line entirely — fall
-        // back to the canonical global_config institute_name (same source
-        // getFormConfiguration uses).
-        $organizationName = $config->instituteName ?? '';
-        if ($organizationName === '' || $organizationName === null) {
-            $organizationName = (string) (new Application_Model_DbTable_GlobalConfig())->getValue('institute_name');
-        }
-        $GLOBALS['organizationName'] = $organizationName;
+        // "GHC/DGHT-International Laboratory Branch, Atlanta, GA"). It comes from the
+        // global "Institute Name" setting (global_config.institute_name) — the same
+        // source getFormConfiguration uses. The previous $config->instituteName read
+        // was dead: SchemeConfig::get('tb') returns the tb subtree as an array, so
+        // the object-property access always resolved to null and dropped this line.
+        $GLOBALS['organizationName'] = (string) (new Application_Model_DbTable_GlobalConfig())->getValue('institute_name');
         $GLOBALS['formTitle'] = '';
 
         if (isset($result[0]['shipment_attributes']) && !empty($result[0]['shipment_attributes'])) {
