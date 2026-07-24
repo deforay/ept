@@ -633,6 +633,7 @@ $faqResults = json_decode($this->faqs);
 						<ul id="configNavList">
 							<li><a href="#generalConfig" data-section="generalConfig"><?= $this->translate->_("General Settings"); ?></a></li>
 							<li><a href="#participantConfig" data-section="participantConfig"><?= $this->translate->_("Participant Settings"); ?></a></li>
+							<li><a href="#customFieldsConfig" data-section="customFieldsConfig"><?= $this->translate->_("Shipment Custom Fields"); ?></a></li>
 							<li><a href="#emailConfig" data-section="emailConfig"><?= $this->translate->_("Email Settings"); ?></a></li>
 						</ul>
 
@@ -1128,6 +1129,55 @@ $faqResults = json_decode($this->faqs);
 			</div>
 
 			<div class="config-section">
+			<button type="button" class="collapsible active" data-toggle="collapse" data-target="#customFieldsConfig"
+				aria-expanded="true" aria-controls="collapseExample"><?= $this->translate->_("Shipment Custom Fields"); ?>
+				<b class="caret pull-right" style="text-align:right;"></b></button>
+			<div class="collapse-content" id="customFieldsConfig">
+				<div class="alert alert-info" style="margin: 10px 0;">
+					<i class="icon-info-sign"></i>
+					<?= $this->translate->_("These are additional fields that will be added to Response Forms."); ?>
+				</div>
+				<div class="row">
+					<div class="col-md-6">
+						<label for="custom_field_needed"
+							class="control-label"><?= $this->translate->_("Add Custom Field(s)?"); ?></label>
+						<div class="input-group">
+							<div class="btn-group radioBtn">
+								<a class="btn btn-primary btn-sm <?php echo (isset($this->custom_field_needed) && $this->custom_field_needed == "yes") ? " active " : "notActive"; ?>"
+									data-toggle="custom_field_needed" data-title="yes"
+									onclick="toggleRadios(this);customFieldStatus();"><?= $this->translate->_("YES"); ?></a>
+								<a class="btn btn-primary btn-sm <?php echo (!isset($this->custom_field_needed) || $this->custom_field_needed == "no") ? " active " : "notActive"; ?>"
+									data-toggle="custom_field_needed" data-title="no"
+									onclick="toggleRadios(this);customFieldStatus();"><?= $this->translate->_("NO"); ?></a>
+							</div>
+							<input type="hidden" name="custom_field_needed" id="custom_field_needed"
+								value="<?php echo $this->custom_field_needed ?? "no"; ?>">
+						</div>
+						<small class="text-muted"><?= $this->translate->_("If Yes, enter at least Custom Field 1."); ?></small>
+					</div>
+				</div>
+				<div class="row customFieldRow">
+					<div class="col-md-6">
+						<label for="custom_field_1"
+							class="control-label"><?= $this->translate->_("Custom Field 1"); ?></label>
+						<input type="text" class="form-control" id="custom_field_1" name="custom_field_1"
+							placeholder="<?= $this->translate->_('Enter custom field name'); ?>"
+							title="<?= $this->translate->_('Please enter custom field name'); ?>"
+							value="<?php echo $this->custom_field_1; ?>" />
+					</div>
+					<div class="col-md-6">
+						<label for="custom_field_2"
+							class="control-label"><?= $this->translate->_("Custom Field 2"); ?></label>
+						<input type="text" class="form-control" id="custom_field_2" name="custom_field_2"
+							placeholder="<?= $this->translate->_('Enter custom field name'); ?>"
+							title="<?= $this->translate->_('Please enter custom field name'); ?>"
+							value="<?php echo $this->custom_field_2; ?>" />
+					</div>
+				</div>
+			</div>
+			</div>
+
+			<div class="config-section">
 			<button type="button" class="collapsible active" data-toggle="collapse" data-target="#emailConfig"
 				aria-expanded="true" aria-controls="collapseExample"><?= $this->translate->_("Email Settings"); ?> <b
 					class="caret pull-right" style="text-align:right;"></b></button>
@@ -1580,6 +1630,15 @@ id="faqTable">
 			alert('<?= $this->translate->_("Please select at least one Active Scheme"); ?>');
 			return false;
 		}
+		// Custom fields: "No" blanks both names (the old /admin/custom-fields
+		// controller did this server-side); "Yes" requires at least field 1.
+		if ($("#custom_field_needed").val() != "yes") {
+			$("#custom_field_1, #custom_field_2").val("");
+		} else if ($.trim($("#custom_field_1").val()) === "") {
+			alert('<?= $this->translate->_("Please enter Custom Field 1 or set Add Custom Field(s) to No"); ?>');
+			$("#custom_field_1").focus();
+			return false;
+		}
 		flag = deforayValidator.init({
 			formId: 'globalConfigForm'
 		});
@@ -1816,6 +1875,7 @@ id="faqTable">
 
 		$('#training_instance').trigger('change');
 		participantLoginBan();
+		customFieldStatus();
 
 		// Auto-populate domain from current URL (always update to match current server)
 		$('#domain').val(window.location.origin);
@@ -1836,6 +1896,14 @@ id="faqTable">
 			$(".mail-box").show();
 		} else {
 			$(".mail-box").hide();
+		}
+	}
+
+	function customFieldStatus() {
+		if ($('#custom_field_needed').val() == "yes") {
+			$('.customFieldRow').show();
+		} else {
+			$('.customFieldRow').hide();
 		}
 	}
 

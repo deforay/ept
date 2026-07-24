@@ -219,7 +219,7 @@ if (!$pstatus && in_array('config-ept', $privileges)) {
 		'title' => $this->translate->_('Shipment Custom Fields'),
 		'category' => $this->translate->_('Configure'),
 		'icon' => 'icon-edit',
-		'url' => $this->url(['module' => 'admin', 'controller' => 'custom-fields'], 'default', true),
+		'url' => $this->url(['module' => 'admin', 'controller' => 'global-config'], 'default', true) . '#customFieldsConfig',
 		'keywords' => ['shipment', 'custom', 'fields']
 	];
 	$spotlightItems[] = [

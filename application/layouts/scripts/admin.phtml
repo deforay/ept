@@ -433,9 +433,6 @@ $helpPageKey = "$controllerName/$actionName";
 									<li id="PDFReportSettings"><a
 											href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'report-config'), 'default', true); ?>"><?= $this->translate->_("PDF Report Settings"); ?></a>
 									</li>
-									<li id="ShipmentCustomFields"><a
-											href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'custom-fields'), 'default', true); ?>"><?= $this->translate->_("Shipment Custom Fields"); ?></a>
-									</li>
 									<li id="CertificateTemplates"><a
 											href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'certificate-templates'), 'default', true); ?>">
 											<?= $this->translate->_("Certificate Templates"); ?></a></li>
@@ -838,8 +835,6 @@ $helpPageKey = "$controllerName/$actionName";
 				$('#HomeSettings').addClass('active');
 			} else if (splitsUrl[2] == 'report-config') {
 				$('#PDFReportSettings').addClass('active');
-			} else if (splitsUrl[2] == 'custom-fields') {
-				$('#ShipmentCustomFields').addClass('active');
 			} else if (splitsUrl[2] == 'certificate-templates') {
 				$('#CertificateTemplates').addClass('active');
 			} else if (splitsUrl[2] == 'alerts' && splitsUrl[3] == 'email') {
