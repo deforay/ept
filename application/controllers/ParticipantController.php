@@ -175,6 +175,8 @@ class ParticipantController extends Zend_Controller_Action
             $parameters = $this->getAllParams();
             $dbUsersProfile->getParticipantSchemesBySchemeId($parameters);
         } else {
+            $scheme = new Application_Service_Schemes();
+            $this->view->schemes = $scheme->getAllSchemes();
             $this->_helper->layout()->activeMenu = 'my-account';
             $this->_helper->layout()->activeSubMenu = 'scheme';
             $this->view->participantSchemes = $dbUsersProfile->getParticipantSchemes($authNameSpace->dm_id);
@@ -358,6 +360,8 @@ class ParticipantController extends Zend_Controller_Action
             $shipmentService = new Application_Service_Shipments();
             $shipmentService->getShipmentDefault($params);
         }
+        $scheme = new Application_Service_Schemes();
+        $this->view->schemes = $scheme->getAllSchemes();
     }
 
     public function currentSchemesAction()
@@ -374,6 +378,9 @@ class ParticipantController extends Zend_Controller_Action
         $shipment = new Application_Service_Shipments();
         $this->view->shipment = $shipment->getAllShipmentCode();
 
+        $scheme = new Application_Service_Schemes();
+        $this->view->schemes = $scheme->getAllSchemes();
+        
         $province = new Application_Service_Participants();
         $this->view->province = $province->getUniqueState();
     }
@@ -389,6 +396,8 @@ class ParticipantController extends Zend_Controller_Action
             $shipmentService = new Application_Service_Shipments();
             $shipmentService->getShipmentAll($params);
         }
+        $scheme = new Application_Service_Schemes();
+        $this->view->schemes = $scheme->getAllSchemes();
         $commonService = new Application_Service_Common();
         $this->view->globalQcAccess = $commonService->getConfig('qc_access');
     }

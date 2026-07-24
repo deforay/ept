@@ -265,7 +265,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             $sOffset = $parameters['iDisplayStart'];
             $sLimit = $parameters['iDisplayLength'];
         }
-
+        
         $sOrder = [];
         if (isset($parameters['iSortCol_0'])) {
             for ($i = 0; $i < intval($parameters['iSortingCols']); $i++) {
@@ -644,7 +644,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             }
             $sOrder = substr_replace($sOrder, '', -1);
         }
-
+        // dd($parameters);
         $sWhere = '';
         if (isset($parameters['sSearch']) && $parameters['sSearch'] != '') {
             $searchArray = explode(' ', $parameters['sSearch']);

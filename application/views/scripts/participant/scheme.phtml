@@ -16,7 +16,14 @@
 					<tr class="column-search-row">
 						<th scope="col"><input type="text" class="form-control input-sm col-search" data-col="0" placeholder="<?= $this->translate->_('Search ID'); ?>" /></th>
 						<th scope="col"><input type="text" class="form-control input-sm col-search" data-col="1" placeholder="<?= $this->translate->_('Search Name'); ?>" /></th>
-						<th scope="col"><input type="text" class="form-control input-sm col-search" data-col="2" placeholder="<?= $this->translate->_('Search Scheme'); ?>" /></th>
+						<th scope="col">
+                            <select id="scheme" name="scheme" class="form-control input-sm col-search" data-col="2">
+                                <option value=""> -- <?= $this->translate->_("Select Scheme Type"); ?> --</option>
+                                <?php foreach ($this->schemes as $scheme) { ?>
+                                    <option value="<?php echo $scheme['scheme_name']; ?>"><?php echo $scheme['scheme_name']; ?></option>
+                                    <?php } ?>
+                            </select>
+                        </th>
 					</tr>
 				</thead>
 				<?php
