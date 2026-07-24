@@ -504,7 +504,18 @@ class Application_Service_Common
         }
         $count = 0;
         $updated = preg_replace('/^(\s*timezone\s*=\s*).*$/m', '${1}"' . $timezone . '"', $contents, 1, $count);
-        if ($updated === null || $count < 1) {
+        if ($count < 1) {
+            // No timezone line exists yet (instances deployed before this setting
+            // never had one — the reason the picker kept falling back to the first
+            // zone, Africa/Abidjan). Insert it into the [production] base section so
+            // every env section inherits it; prepend as a last resort if that header
+            // isn't found.
+            $updated = preg_replace('/^(\[production\][^\r\n]*\r?\n)/m', '${1}timezone = "' . $timezone . "\"\n", $contents, 1, $count);
+            if ($count < 1) {
+                $updated = 'timezone = "' . $timezone . "\"\n" . $contents;
+            }
+        }
+        if ($updated === null) {
             return false;
         }
         return @file_put_contents($iniPath, $updated, LOCK_EX) !== false;
