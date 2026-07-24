@@ -1644,7 +1644,16 @@ class Application_Model_Tb
         $GLOBALS['issuingAuthority'] = $result[0]['issuing_authority'] ?? '';
         $GLOBALS['formVersion'] = '';
         $GLOBALS['effectiveDate'] = '';
-        $GLOBALS['organizationName'] = $config->instituteName ?? '';
+        // Organization name is the top line of the running header (e.g.
+        // "GHC/DGHT-International Laboratory Branch, Atlanta, GA"). SchemeConfig's
+        // instituteName is frequently unset, which dropped that line entirely — fall
+        // back to the canonical global_config institute_name (same source
+        // getFormConfiguration uses).
+        $organizationName = $config->instituteName ?? '';
+        if ($organizationName === '' || $organizationName === null) {
+            $organizationName = (string) (new Application_Model_DbTable_GlobalConfig())->getValue('institute_name');
+        }
+        $GLOBALS['organizationName'] = $organizationName;
         $GLOBALS['formTitle'] = '';
 
         if (isset($result[0]['shipment_attributes']) && !empty($result[0]['shipment_attributes'])) {
@@ -1658,12 +1667,12 @@ class Application_Model_Tb
 
         $fileName .= '.pdf';
 
-        // The template carries an explicit page break at A22. Combined with the
-        // .scrpgbrk forced-break CSS PhpSpreadsheet emits, that stranded the
-        // "records only" box alone on page 2 and pushed the attestation to
-        // page 3. Let the content flow instead: page 1 fills naturally with the
-        // results grid, and the records box + attestation share page 2.
-        $sheet->setBreak('A22', Worksheet::BREAK_NONE);
+        // Page 1 should end WITH the "records only" box (row 22, right after the
+        // Comments row); the ATTESTATION block (row 23) starts page 2. A row break
+        // set on A22 splits BELOW row 22, so row 22 stays on page 1 and row 23 opens
+        // page 2. (setBreak keys the split to the row it sits under, not the one it
+        // precedes.)
+        $sheet->setBreak('A22', Worksheet::BREAK_ROW);
 
         // Trim trailing empty template rows — their default heights add dead
         // space that can push the attestation block onto a third page.
@@ -1673,12 +1682,24 @@ class Application_Model_Tb
         }
 
         // PhpSpreadsheet's Mpdf writer starts the page with AddPageByArray() using
-        // THESE sheet margins (not the @page CSS), so the running header/footer live
-        // inside them. Give the top/bottom enough room that the title header and the
-        // issuing-authority footer don't overlap the grid. Units are inches.
-        $sheet->getPageMargins()->setTop(1.0)->setBottom(0.85)->setLeft(0.35)->setRight(0.35);
+        // THESE sheet margins (not the @page CSS), and the running header/footer sit
+        // inside them at mpdf's margin_header/margin_footer offset (9mm by default).
+        // With a 2-line header + 2-line footer that forced ~20mm top/bottom margins,
+        // which stole enough body height to bump the records box onto page 2. The
+        // writer subclass below pins margin_header/margin_footer to 2mm so the
+        // header/footer hug the paper edge; the top/bottom margins then only need to
+        // clear the block height, leaving the grid + records box room on page 1.
+        // Units are inches.
+        $sheet->getPageMargins()->setTop(0.6)->setBottom(0.55)->setLeft(0.35)->setRight(0.35);
 
-        $writer = new Mpdf($reader);
+        $writer = new class ($reader) extends Mpdf {
+            protected function createExternalWriterInstance(array $config): \Mpdf\Mpdf
+            {
+                $config['margin_header'] = 2;
+                $config['margin_footer'] = 2;
+                return new \Mpdf\Mpdf($config);
+            }
+        };
         $writer->setEditHtmlCallback([$this, 'addHeadersFooters']);
         // Give mpdf a per-process scratch directory. Its default temp path is a
         // single shared dir (sys-temp/phpsppdf/mpdf); when many workers generate
