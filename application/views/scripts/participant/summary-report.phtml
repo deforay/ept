@@ -123,7 +123,20 @@
                         <th scope="col"><?= $this->translate->_("Report"); ?></th>
                     </tr>
                     <tr class="column-search-row">
-                        <th scope="col"><input type="text" class="form-control input-sm col-search" data-col="0" placeholder="<?= $this->translate->_('Search Scheme'); ?>" /></th>
+                        <th scope="col">
+                            <!-- <input type="text" class="form-control input-sm col-search" data-col="0" placeholder="<?= $this->translate->_('Search Scheme'); ?>" /> -->
+                            <select id="scheme" name="scheme" class="form-control input-sm col-search" data-col="0">
+                                <option value=""> -- <?= $this->translate->_("Select Scheme Type"); ?> --</option>
+                                <?php
+                                foreach ($this->schemes as $scheme) {
+                                    ?>
+                                    <option value="<?php echo $scheme['scheme_id']; ?>"><?php echo $scheme['scheme_name']; ?>
+                                    </option>
+                                    <?php
+                                }
+                                ?>
+                            </select>
+                        </th>
                         <th scope="col"><input type="text" class="form-control input-sm col-search" data-col="1" placeholder="<?= $this->translate->_('Search Code'); ?>" /></th>
                         <th scope="col"></th>
                         <th scope="col"></th>
