@@ -67,6 +67,9 @@ application.ini
 config.ini
 .env
 
+# Office lock files, written next to a workbook while it is open
+~$*
+
 # Misc local files
 snyk_rules.instructions.md
 scheduled-jobs/reminder.php
