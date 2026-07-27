@@ -22,7 +22,6 @@ class Admin_FeedbackResponsesController extends Zend_Controller_Action
         $ajaxContext = $this->_helper->getHelper('AjaxContext');
         $ajaxContext->addActionContext('questions', 'html')
             ->addActionContext('shipment-questions', 'html')
-            ->addActionContext('get-questions', 'html')
             ->addActionContext('get-feedback-response-report', 'html')
             ->initContext();
         $this->_helper->layout()->pageName = 'configMenu';
@@ -92,27 +91,41 @@ class Admin_FeedbackResponsesController extends Zend_Controller_Action
             $feedbackService->saveShipmentQuestionMap($params);
             $this->redirect('/admin/feedback-responses/shipment-questions');
         }
+        $id = null;
         if ($this->hasParam('id')) {
             $id = (int)base64_decode($this->_getParam('id'));
             $this->view->sid = $id;
             $this->view->type = $this->_getParam('type');
-            $this->view->questions = $feedbackService->getAllIrelaventActiveQuestions($id);
+            $this->view->questions = $feedbackService->getAllActiveQuestions($id);
             $this->view->result = $feedbackService->getFeedBackFormsById($id);
         }
         $shipmentService = new Application_Service_Shipments();
         $this->view->shipments = $shipmentService->getAllShipmentCode();
+        // Feedback forms barely change between rounds, so offer the existing ones as a
+        // starting point instead of making the admin rebuild the same list every time.
+        $this->view->copySources = $feedbackService->getShipmentsWithFeedbackForm($id);
     }
+
+    /**
+     * JSON payload for one shipment's feedback form — the active question list flagged
+     * with that shipment's mapping, plus its content and audience. Serves both the
+     * "shipment changed" and "copy from another shipment" flows in the builder.
+     */
     public function getQuestionsAction()
     {
         /** @var Zend_Controller_Request_Http $request */
         $request = $this->getRequest();
         $this->_helper->layout()->disableLayout();
+        $this->_helper->viewRenderer->setNoRender(true);
         $feedbackService = new Application_Service_FeedBack();
+
+        $payload = ['questions' => [], 'formContent' => '', 'formShowTo' => ''];
         if ($request->isPost()) {
-            $parameters = $this->getAllParams();
-            $this->view->questions = $feedbackService->getAllIrelaventActiveQuestions($parameters['sid']);
-            $this->view->result = $feedbackService->getFeedBackQuestionsById($parameters['sid'], 'mapped');
+            $payload = $feedbackService->getFeedbackFormPayload((int) $this->_getParam('sid'));
         }
+        $this->getResponse()
+            ->setHeader('Content-Type', 'application/json')
+            ->setBody(json_encode($payload));
     }
 
     public function getFeedbackResponseReportAction()

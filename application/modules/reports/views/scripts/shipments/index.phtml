@@ -211,6 +211,14 @@
 				<button class="btn btn-danger btn-sm" style="margin-left:6px;"
 					onclick="document.location.href=document.location"><span><?= $this->htmlTranslate("Reset"); ?></span></button>
 			</div>
+			<!-- Cancelled shipments are hidden by default (cancelling is our soft-delete);
+			     this is the opt-in for the rare case where someone needs to see them. -->
+			<div style="min-width:0;">
+				<label class="checkbox-inline" style="margin-top:22px;">
+					<input type="checkbox" id="includeCancelled" onchange="getDrawable()" />
+					<?= $this->htmlTranslate("Include cancelled"); ?>
+				</label>
+			</div>
 		</div>
 		<!-- BULK DOWNLOAD TOOLBAR -->
 		<div id="bulkShipmentToolbar" style="margin:10px 0;display:none;">
@@ -559,6 +567,10 @@
 				aoData.push({
 					"name": "dataManager",
 					"value": dataManager
+				});
+				aoData.push({
+					"name": "includeCancelled",
+					"value": $("#includeCancelled").is(":checked") ? "yes" : "no"
 				});
 			},
 			"fnServerData": function (sSource, aoData, fnCallback) {

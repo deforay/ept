@@ -105,9 +105,20 @@ if ($this->shipments == false && count($this->shipments) <= 0) {
 									</div><!-- /.row-action-line -->
 									</div><!-- /.row-action-lines -->
 								<?php else: ?>
-									<a class="btn btn-primary btn-xs disabled" href="javascript:void(0)">
+									<a class="btn btn-primary btn-xs disabled" href="javascript:void(0)"
+										<?php if (!empty($btnStates['finalizeBlockedReason'])): ?>
+										title="<?= $this->escape($btnStates['finalizeBlockedReason']); ?>"
+										<?php endif; ?>>
 										<i class="icon-check"></i> <?= $this->translate->_("Finalize"); ?>
 									</a>
+									<?php if (!empty($btnStates['awaitingFeedbackForm']) && Application_Service_FeedBack::currentAdminCanBuildForms()): ?>
+										<div class="row-action-line">
+											<a class="btn btn-xs btn-warning" target="_blank"
+												href="/admin/feedback-responses/feedback-form/id/<?= $encodedShipmentId; ?>">
+												<i class="icon-plus"></i> <?= $this->translate->_("Create Feedback Form"); ?>
+											</a>
+										</div>
+									<?php endif; ?>
 								<?php endif; ?>
 							</td>
 						</tr>

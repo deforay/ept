@@ -79,18 +79,25 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
     public function updateShipmentStatusByDistribution($distributionId, $status)
     {
         $commonServices = new Application_Service_Common();
-        $shipmentRow = $this->fetchRow('distribution_id = ' . $distributionId);
+        // Never pick up a cancelled shipment here — this path mails participants
+        // about a "new shipment", and a cancelled one is soft-deleted.
+        $shipmentRow = $this->fetchRow('distribution_id = ' . $distributionId . ' AND cancelled_at IS NULL');
         /* New shipment mail alert start */
         $notParticipatedMailContent = $commonServices->getEmailTemplate('new_shipment');
-        $subQuery = $this->select()
-            ->from(['s' => 'shipment'], ['shipment_code', 'scheme_type'])
-            ->join(['spm' => 'shipment_participant_map'], 'spm.shipment_id=s.shipment_id', ['map_id', 'participant_id'])
-            ->join(['pmm' => 'participant_manager_map'], 'pmm.participant_id=spm.participant_id', ['dm_id'])
-            ->join(['p' => 'participant'], 'p.participant_id=pmm.participant_id', ['participantName' => new Zend_Db_Expr(Application_Model_DbTable_Participants::participantNameGroupConcatExpr('p'))])
-            ->join(['dm' => 'data_manager'], 'pmm.dm_id=dm.dm_id', ['primary_email'])
-            ->where('s.shipment_id=?', $shipmentRow['shipment_id'])
-            ->group('dm.dm_id')->setIntegrityCheck(false);
-        $subResult = $this->fetchAll($subQuery);
+        // Every shipment under this survey may be cancelled, in which case there is
+        // nobody to mail — skip straight to the status update.
+        $subResult = [];
+        if (!empty($shipmentRow['shipment_id'])) {
+            $subQuery = $this->select()
+                ->from(['s' => 'shipment'], ['shipment_code', 'scheme_type'])
+                ->join(['spm' => 'shipment_participant_map'], 'spm.shipment_id=s.shipment_id', ['map_id', 'participant_id'])
+                ->join(['pmm' => 'participant_manager_map'], 'pmm.participant_id=spm.participant_id', ['dm_id'])
+                ->join(['p' => 'participant'], 'p.participant_id=pmm.participant_id', ['participantName' => new Zend_Db_Expr(Application_Model_DbTable_Participants::participantNameGroupConcatExpr('p'))])
+                ->join(['dm' => 'data_manager'], 'pmm.dm_id=dm.dm_id', ['primary_email'])
+                ->where('s.shipment_id=?', $shipmentRow['shipment_id'])
+                ->group('dm.dm_id')->setIntegrityCheck(false);
+            $subResult = $this->fetchAll($subQuery);
+        }
         foreach ($subResult as $dm) {
             $search = ['##NAME##', '##SHIPCODE##', '##SHIPTYPE##', '##SURVEYCODE##', '##SURVEYDATE##',];
             $replace = [$dm['participantName'], $dm['shipment_code'], $dm['scheme_type'], '', ''];
@@ -109,7 +116,9 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         }
         /* New shipment mail alert end */
         if (isset($status) && $status != null && $status != '') {
-            return $this->update(['response_switch' => 'on', 'status' => $status], "distribution_id = $distributionId");
+            // Scoped to live shipments: without this, shipping a survey would flip
+            // response_switch back to 'on' for its cancelled shipments and un-lock them.
+            return $this->update(['response_switch' => 'on', 'status' => $status], "distribution_id = $distributionId AND cancelled_at IS NULL");
         } else {
             return 0;
         }
@@ -196,6 +205,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             ->joinLeft(['sp' => 'shipment_participant_map'], 's.shipment_id=sp.shipment_id', ['ONTIME' => new Zend_Db_Expr('COUNT(CASE substr(sp.evaluation_status,3,1) WHEN 1 THEN 1 END)'), 'NORESPONSE' => new Zend_Db_Expr('COUNT(CASE substr(sp.evaluation_status,2,1) WHEN 9 THEN 1 END)'), 'reported_count' => new Zend_Db_Expr("SUM(response_status is not null AND response_status like 'responded')")])
             ->joinLeft(['sl' => 'scheme_list'], 'sl.scheme_id=s.scheme_type')
             ->where("s.status='shipped' OR s.status='evaluated' OR s.status='finalized'")
+            ->where('s.cancelled_at IS NULL')
             ->where('year(s.shipment_date)  + 5 > year(CURDATE())')
             ->group('s.scheme_type')
             ->group('SHIP_YEAR');
@@ -265,7 +275,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             $sOffset = $parameters['iDisplayStart'];
             $sLimit = $parameters['iDisplayLength'];
         }
-        
+
         $sOrder = [];
         if (isset($parameters['iSortCol_0'])) {
             for ($i = 0; $i < intval($parameters['iSortingCols']); $i++) {
@@ -1133,15 +1143,15 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             // ground truth — report_generated is only generation-progress
             // bookkeeping and gets reset to 'no' whenever a re-run is queued.
             // if ($aRow['is_excluded'] != 'yes') {
-                $invididualFilePath = (DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . '-' . $aRow['map_id'] . '.pdf');
-                if (!file_exists($invididualFilePath)) {
-                    // Search this file name using the map id
-                    $files = glob(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . DIRECTORY_SEPARATOR . '*' . '-' . $aRow['map_id'] . '.pdf');
-                    $invididualFilePath = isset($files[0]) ? $files[0] : '';
-                }
-                if ($invididualFilePath !== '' && file_exists($invididualFilePath)) {
-                    $download = '<a href="' . Pt_Commons_SignedDownload::url($invididualFilePath) . '" class="btn btn-primary" onclick="updateReportDownloadDateTime(' . $aRow['map_id'] . ', \'individual\');"   style="text-decoration : none;overflow:hidden;margin-top:4px;"  target="_BLANK" download><i class="icon icon-download"></i> ' . $this->translator->_('Report') . '</a>';
-                }
+            $invididualFilePath = (DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . '-' . $aRow['map_id'] . '.pdf');
+            if (!file_exists($invididualFilePath)) {
+                // Search this file name using the map id
+                $files = glob(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . DIRECTORY_SEPARATOR . '*' . '-' . $aRow['map_id'] . '.pdf');
+                $invididualFilePath = isset($files[0]) ? $files[0] : '';
+            }
+            if ($invididualFilePath !== '' && file_exists($invididualFilePath)) {
+                $download = '<a href="' . Pt_Commons_SignedDownload::url($invididualFilePath) . '" class="btn btn-primary" onclick="updateReportDownloadDateTime(' . $aRow['map_id'] . ', \'individual\');"   style="text-decoration : none;overflow:hidden;margin-top:4px;"  target="_BLANK" download><i class="icon icon-download"></i> ' . $this->translator->_('Report') . '</a>';
+            }
             // }
             if (($aRow['final_result'] == '2') && (isset($aRow['corrective_action_file']) && $aRow['corrective_action_file'] != '')) {
                 $corrective = '<a href="/uploads/corrective-action-files/' . $aRow['corrective_action_file'] . '"   class="btn btn-warning"   style="text-decoration : none;overflow:hidden;margin-top:4px; clear:both !important;display:block;" target="_BLANK" download><i class="fa fa-fw fa-download"></i> ' . Pt_Commons_TranslateUtility::htmlTranslate('Corrective Actions') . '</a>';
@@ -1411,7 +1421,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         if (!empty($parameters['district'])) {
             $sQuery = $sQuery->where('p.district = ?', $parameters['district']);
         }
-        
+
         if (isset($sWhere) && $sWhere != '') {
             $sQuery = $sQuery->where($sWhere);
         }
@@ -1880,6 +1890,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             ->join(['spm' => 'shipment_participant_map'], 'spm.shipment_id=s.shipment_id', ['spm.map_id', 'spm.evaluation_status', 'spm.participant_id', 'RESPONSEDATE' => "DATE_FORMAT(spm.shipment_test_report_date,'%Y-%m-%d')", 'created_on_admin', 'created_on_user', 'updated_on_user', 'is_excluded'])
             ->join(['p' => 'participant'], 'p.participant_id=spm.participant_id', ['p.unique_identifier', 'p.first_name', 'p.last_name', 'p.state'])
             ->where("(s.status='shipped' OR s.status='evaluated' OR s.status='finalized')")
+            ->where('s.cancelled_at IS NULL')
             ->order('spm.created_on_admin DESC')
             ->order('spm.created_on_user DESC');
         if (!empty($aResult['dm_id'])) {
@@ -2012,6 +2023,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             ->joinLeft(['dm' => 'data_manager'], 'dm.dm_id=spm.updated_by_user', ['last_updated_by' => new Zend_Db_Expr("CONCAT(COALESCE(dm.first_name,''),' ', COALESCE(dm.last_name,''))")])
             ->joinLeft(['ntr' => 'r_response_not_tested_reasons'], 'ntr.ntr_id=spm.pt_not_tested_reason', ['notTestedReason' => 'ntr_reason'])
             ->where("(s.status='shipped' OR s.status='evaluated' OR s.status='finalized')")
+            ->where('s.cancelled_at IS NULL')
             ->order('spm.created_on_admin DESC')
             ->order('spm.created_on_user DESC');
         if (!empty($aResult['dm_id'])) {
@@ -4362,7 +4374,8 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             ->join(['p' => 'participant'], 'p.participant_id=spm.participant_id', ['p.unique_identifier', 'p.first_name', 'p.last_name'])
             ->join(['pmm' => 'participant_manager_map'], 'pmm.participant_id=p.participant_id')
             ->where('pmm.dm_id=?', $aResult['dm_id'])
-            ->where("s.status='shipped' OR s.status='evaluated'OR s.status='finalized'");
+            ->where("s.status='shipped' OR s.status='evaluated'OR s.status='finalized'")
+            ->where('s.cancelled_at IS NULL');
         $resultData = $this->getAdapter()->fetchAll($sQuery);
         if (empty($resultData)) {
             return ['status' => 'fail', 'message' => 'Report not ready.', 'profileInfo' => $aResult['profileInfo']];
@@ -4433,7 +4446,8 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             ->join(['p' => 'participant'], 'p.participant_id=spm.participant_id', [])
             ->join(['pmm' => 'participant_manager_map'], 'pmm.participant_id=p.participant_id', [])
             ->where('pmm.dm_id=?', $aResult['dm_id'])
-            ->where("s.status='shipped' OR s.status='evaluated'OR s.status='finalized'");
+            ->where("s.status='shipped' OR s.status='evaluated'OR s.status='finalized'")
+            ->where('s.cancelled_at IS NULL');
         $resultData = $this->getAdapter()->fetchAll($sQuery);
         if (empty($resultData)) {
             return ['status' => 'fail', 'message' => 'Report not ready.', 'profileInfo' => $aResult['profileInfo']];
@@ -4993,7 +5007,8 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             ->join(['p' => 'participant'], 'p.participant_id=spm.participant_id', ['p.unique_identifier', 'p.first_name', 'p.last_name', 'p.department_name', 'p.address', 'p.city', 'p.district', 'p.state', 'p.institute_name', 'p.country', 'p.email', 'p.mobile'])
             ->joinLeft(['c' => 'countries'], 'p.country=c.id', ['c.iso_name'])
             //->where("IFNULL(spm.response_status, 'noresponse') != 'responded'")
-            ->where("s.status != 'finalized'");
+            ->where("s.status != 'finalized'")
+            ->where('s.cancelled_at IS NULL');
 
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
         if (!empty($authNameSpace->dm_id)) {

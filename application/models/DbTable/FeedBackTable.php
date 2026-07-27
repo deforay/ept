@@ -122,14 +122,29 @@ class Application_Model_DbTable_FeedBackTable extends Zend_Db_Table_Abstract
 
         return $result;
     }
-    public function fetchAllIrelaventActiveQuestions($sid)
+    /**
+     * Every active question, carrying this shipment's mapping (mandatory flag + sort
+     * order) where one exists.
+     *
+     * The previous version excluded questions mapped *only* to this shipment, so
+     * re-saving an existing form silently dropped them from the picker. Mapped
+     * questions come first, in their saved order.
+     */
+    public function fetchAllActiveQuestions($sid)
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $sql = $db->select()->from(['rfq' => 'r_feedback_questions'], ['question_id', 'question_text', 'question_code'])
-            ->joinLeft(['rpff' => 'r_participant_feedback_form_question_map'], 'rfq.question_id=rpff.question_id', ['is_response_mandatory', 'sort_order'])
+            ->joinLeft(
+                ['rpff' => 'r_participant_feedback_form_question_map'],
+                'rfq.question_id = rpff.question_id AND rpff.shipment_id = ' . (int) $sid,
+                ['is_response_mandatory', 'sort_order', 'mappedShipmentId' => 'shipment_id']
+            )
             ->where("rfq.question_status ='active'")
-            ->where('(rpff.shipment_id != ' . $sid . " OR rpff.shipment_id IS null OR rpff.shipment_id like '')")
-            ->group('question_id');
+            ->group('rfq.question_id')
+            ->order(new Zend_Db_Expr('rpff.shipment_id IS NULL ASC'))
+            ->order(new Zend_Db_Expr('rpff.sort_order IS NULL ASC'))
+            ->order('rpff.sort_order ASC')
+            ->order('rfq.question_id ASC');
         return $db->fetchAll($sql);
     }
 
@@ -194,7 +209,7 @@ class Application_Model_DbTable_FeedBackTable extends Zend_Db_Table_Abstract
      * Save shipment question mapping details including feedback form data, files, and question mappings
      *
      * @param array $params Contains shipmentId, rfId, question, formFiles, mandatory, and sortOrder data
-     * @return bool|void Returns false if shipmentId is not provided, void otherwise
+     * @return array|false ['saved', 'feedbackTurnedOn', 'questionCount'], or false when nothing was saved
      */
     public function saveShipmentQuestionMapDetails($params)
     {
@@ -208,7 +223,7 @@ class Application_Model_DbTable_FeedBackTable extends Zend_Db_Table_Abstract
         // Fetch shipment details
         $shipmentResult = $db->fetchRow(
             $db->select()
-                ->from('shipment', ['scheme_type'])
+                ->from('shipment', ['scheme_type', 'collect_feedback'])
                 ->where('shipment_id = ?', $params['shipmentId'])
         );
 
@@ -230,8 +245,10 @@ class Application_Model_DbTable_FeedBackTable extends Zend_Db_Table_Abstract
                 'rpff_id = ' . (int) $feedbackFormId
             );
         } else {
-            // Insert new record
-            $feedbackFormId = $db->insert('r_participant_feedback_form', $feedbackFormData);
+            // Insert new record. insert() returns the affected row count, not the new id —
+            // reading it as an id stamped every new form's question rows with rpff_id = 1.
+            $db->insert('r_participant_feedback_form', $feedbackFormData);
+            $feedbackFormId = $db->lastInsertId('r_participant_feedback_form', 'rpff_id');
         }
 
         // Process questions if provided
@@ -321,6 +338,22 @@ class Application_Model_DbTable_FeedBackTable extends Zend_Db_Table_Abstract
             'Mapped feedback form for shipment - ' . ($shipmentCode ?: "#{$params['shipmentId']}") . " ({$questionCount} questions)",
             'feedback'
         );
+
+        // Building a form is the admin saying "collect feedback for this shipment", so
+        // switch the shipment's flag on rather than leaving a form nobody will ever see.
+        // The reverse (switching the flag off on the shipment form) keeps the form —
+        // see the confirmation on the shipment edit screen.
+        $feedbackTurnedOn = false;
+        if ($shipmentResult['collect_feedback'] !== 'yes') {
+            $db->update('shipment', ['collect_feedback' => 'yes'], 'shipment_id = ' . (int) $params['shipmentId']);
+            $feedbackTurnedOn = true;
+            $auditDb->addNewAuditLog(
+                'Turned on Collect Feedback for shipment - ' . ($shipmentCode ?: "#{$params['shipmentId']}") . ' (feedback form saved)',
+                'feedback'
+            );
+        }
+
+        return ['saved' => true, 'feedbackTurnedOn' => $feedbackTurnedOn, 'questionCount' => $questionCount];
     }
 
     public function fetchAllFeedBackResponses($parameters, $type)

@@ -23,7 +23,6 @@ class Admin_ShipmentController extends Zend_Controller_Action
         $ajaxContext->addActionContext('index', 'html')
             ->addActionContext('get-sample-form', 'html')
             ->addActionContext('get-shipment-code', 'html')
-            ->addActionContext('remove', 'html')
             ->addActionContext('view-enrollments', 'html')
             ->addActionContext('delete-shipment-participant', 'html')
             ->addActionContext('new-shipment-mail', 'html')
@@ -79,7 +78,21 @@ class Admin_ShipmentController extends Zend_Controller_Action
                 $this->redirect('/admin/shipment');
             }
             $shipmentService = new Application_Service_Shipments();
-            $shipmentService->addShipment($params);
+            $newShipmentId = $shipmentService->addShipment($params);
+
+            // A shipment that promises participants a feedback form can't be finalized
+            // until that form exists, so send the admin straight to the builder rather
+            // than letting them discover the block weeks later at finalization.
+            if (
+                !empty($newShipmentId)
+                && ($params['collectFeedBack'] ?? 'no') === 'yes'
+                && in_array('config-ept', explode(',', (new Zend_Session_Namespace('administrators'))->privileges))
+            ) {
+                $alertMsg = new Zend_Session_Namespace('alertSpace');
+                $alertMsg->message = 'Shipment saved. It collects participant feedback, so please build its feedback form now — the shipment cannot be finalized until you do.';
+                $this->redirect('/admin/feedback-responses/feedback-form/id/' . base64_encode($newShipmentId));
+            }
+
             if (isset($params['selectedDistribution']) && $params['selectedDistribution'] != '' && $params['selectedDistribution'] != null) {
                 $this->redirect('/admin/shipment/index/did/' . base64_encode($params['selectedDistribution']));
             } else {
@@ -206,34 +219,6 @@ class Admin_ShipmentController extends Zend_Controller_Action
         }
     }
 
-    // Delete a shipment. Permanent and irreversible — the admin must type DELETE
-    // and supply a reason (both validated here as well); the reason is audited.
-    public function removeAction()
-    {
-        /** @var Zend_Controller_Request_Http $request */
-        $request = $this->getRequest();
-        if ($request->isPost() && $this->hasParam('sid')) {
-            if (strtoupper(trim((string) $this->_getParam('confirmToken'))) !== 'DELETE') {
-                $this->view->message = 'Deletion not confirmed. Type DELETE to confirm.';
-                return;
-            }
-            $reason = trim((string) $this->_getParam('reason'));
-            if ($reason === '') {
-                $this->view->message = 'A reason for deleting is required.';
-                return;
-            }
-            $sid = (int) base64_decode($this->_getParam('sid'));
-            $shipmentService = new Application_Service_Shipments();
-            if ($shipmentService->isShipmentCancelled($sid)) {
-                $this->view->message = 'This shipment is cancelled and can no longer be changed.';
-                return;
-            }
-            $this->view->message = $shipmentService->removeShipment($sid, $reason);
-        } else {
-            $this->view->message = 'Unable to delete. Please try again later or contact system admin for help';
-        }
-    }
-
     // Cancel / expire a shipment. Permanent and irreversible — see cancelShipment().
     // The admin must type CANCEL and supply a reason (both validated server-side).
     public function cancelAction()
@@ -356,6 +341,8 @@ class Admin_ShipmentController extends Zend_Controller_Action
         }
         $common = new Application_Service_Common();
         $this->view->feedbackOption = $common->getConfig('participant_feedback');
+        // Lets the form tell the admin whether the promised feedback form actually exists.
+        $this->view->feedbackQuestionCount = Application_Service_FeedBack::getMappedQuestionCount($sid);
         return $response;
     }
 

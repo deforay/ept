@@ -3934,6 +3934,13 @@ class Application_Service_Evaluation
     {
         $shipmentId = base64_decode($params['sid']);
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+
+        // Finalizing opens the participant feedback window, so refuse to finalize a
+        // feedback-enabled shipment whose feedback form has not been built yet. The
+        // grid already hides the button; this is the guard for direct POSTs.
+        if (($params['type'] ?? '') === 'finalized' && Application_Service_FeedBack::isAwaitingFeedbackForm($shipmentId)) {
+            return 0;
+        }
         $existData = $db->fetchRow($db->select()->from('queue_report_generation')
             ->where('shipment_id = ?', $shipmentId)
             ->where('report_type = ?', $params['type']));

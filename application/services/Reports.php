@@ -106,6 +106,12 @@ class Application_Service_Reports
         if (isset($parameters['scheme']) && $parameters['scheme'] != '') {
             $sQuery = $sQuery->where('s.scheme_type = ?', $parameters['scheme']);
         }
+        // Cancelling is our soft-delete: cancelled shipments stay out of this report
+        // unless the "Include cancelled" box is ticked.
+        $includeCancelled = isset($parameters['includeCancelled']) && $parameters['includeCancelled'] == 'yes';
+        if (!$includeCancelled) {
+            $sQuery = $sQuery->where('s.cancelled_at IS NULL');
+        }
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
         if (!empty($authNameSpace->dm_id)) {
             $sQuery = $sQuery->joinLeft(['pmm' => 'participant_manager_map'], 'pmm.participant_id=p.participant_id', [])
@@ -146,8 +152,12 @@ class Application_Service_Reports
         $aResultFilterTotal = $dbAdapter->fetchAll($sQuery);
         $iFilteredTotal = count($aResultFilterTotal);
 
-        /* Total data set length */
+        /* Total data set length — scoped the same way as the grid, so the "of N"
+           count never includes cancelled rows the grid is hiding. */
         $sQuery = $dbAdapter->select()->from(['s' => 'shipment'], new Zend_Db_Expr("COUNT('" . $sIndexColumn . "')"));
+        if (!$includeCancelled) {
+            $sQuery = $sQuery->where('s.cancelled_at IS NULL');
+        }
         $aResultTotal = $dbAdapter->fetchCol($sQuery);
         $iTotal = $aResultTotal[0];
 
@@ -739,6 +749,7 @@ class Application_Service_Reports
             )
             ->joinLeft(['p' => 'participant'], 'p.participant_id=sp.participant_id')
             ->joinLeft(['rr' => 'r_results'], 'sp.final_result=rr.result_id')
+            ->where('s.cancelled_at IS NULL')
             ->group(['s.shipment_id']);
 
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
@@ -962,6 +973,7 @@ class Application_Service_Reports
             )
             ->joinLeft(['p' => 'participant'], 'p.participant_id=sp.participant_id')
             ->joinLeft(['rr' => 'r_results'], 'sp.final_result=rr.result_id')
+            ->where('s.cancelled_at IS NULL')
             ->group(['s.shipment_id']);
 
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
@@ -1670,6 +1682,7 @@ class Application_Service_Reports
 
         $sQuery = $db->select()->from(['s' => 'shipment'], ['s.shipment_id', 's.shipment_code', 's.scheme_type', 's.shipment_date',])
             ->where('s.scheme_type = ?', $schemeType)
+            ->where('s.cancelled_at IS NULL')
             ->order('s.shipment_date DESC');
         if (isset($startDate) && !empty($startDate) && isset($endDate) && !empty($endDate)) {
             $sQuery = $sQuery->where('DATE(s.shipment_date) >= ?', $this->common->isoDateFormat($startDate));
@@ -2709,7 +2722,8 @@ class Application_Service_Reports
                 ]
             )
             ->joinLeft(['p' => 'participant'], 'p.participant_id=sp.participant_id', ['region'])
-            ->joinLeft(['rr' => 'r_results'], 'sp.final_result=rr.result_id', ['']);
+            ->joinLeft(['rr' => 'r_results'], 'sp.final_result=rr.result_id', [''])
+            ->where('s.cancelled_at IS NULL');
 
         if (isset($parameters['scheme']) && $parameters['scheme'] != '') {
             $sQuery = $sQuery->where('s.scheme_type = ?', $parameters['scheme']);
@@ -3554,7 +3568,7 @@ class Application_Service_Reports
             $shQuery = $db->select()->from(['s' => 'shipment'])->where("s.shipment_id='" . $shipmentId . "'");
             $shimentResult = $db->fetchAll($shQuery);
         } else {
-            $shQuery = $db->select()->from(['s' => 'shipment'])->where("s.scheme_type='vl'");
+            $shQuery = $db->select()->from(['s' => 'shipment'])->where("s.scheme_type='vl'")->where('s.cancelled_at IS NULL');
             if (isset($params['start']) && $params['start'] != '' && isset($params['end']) && $params['end'] != '') {
                 $shQuery = $shQuery->where('DATE(s.shipment_date) >= ?', $this->common->isoDateFormat($params['start']));
                 $shQuery = $shQuery->where('DATE(s.shipment_date) <= ?', $this->common->isoDateFormat($params['end']));
@@ -3970,6 +3984,7 @@ class Application_Service_Reports
                 ->from(['s' => 'shipment'], ['s.shipment_id', 's.shipment_code', 's.scheme_type', 's.shipment_date', 's.response_deadline'])
                 ->where('DATE(s.shipment_date) >= ?', $startDate)
                 ->where('DATE(s.shipment_date) <= ?', $endDate)
+                ->where('s.cancelled_at IS NULL')
                 ->order('s.scheme_type');
 
             if (isset($params['scheme']) && !empty($params['scheme']) && count($params['scheme']) > 0) {

@@ -90,6 +90,8 @@ if ($this->shipments == false && count($this->shipments) <= 0) {
 											<a class="btn btn-primary btn-xs <?= $finalizeClass; ?>" href="javascript:void(0)"
 												<?php if ($finalizeEnabled): ?>
 												onclick="generateReports('<?= $encodedShipmentId; ?>', <?= (int) $finalizeEnabled; ?>, '<?= $this->dateFormat($shipment['distribution_date']); ?>', 'finalized')"
+												<?php elseif (!empty($btnStates['finalizeBlockedReason'])): ?>
+												title="<?= $this->escape($btnStates['finalizeBlockedReason']); ?>"
 												<?php endif; ?>>
 												<i class="icon-check"></i> <?= $this->translate->_("Finalize"); ?>
 											</a>

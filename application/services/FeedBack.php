@@ -27,10 +27,10 @@ class Application_Service_FeedBack
         return $db->fetchFeedBackQuestionsById($id, $type);
     }
 
-    public function getFeedBackFormsById($id, $type = '')
+    public function getFeedBackFormsById($id)
     {
         $db = new Application_Model_DbTable_FeedBackTable();
-        return $db->fetchFeedBackFormsById($id, $type);
+        return $db->fetchFeedBackFormsById($id);
     }
 
     public function getFeedBackAnswers($sid, $pid, $mid)
@@ -50,10 +50,191 @@ class Application_Service_FeedBack
     public function saveShipmentQuestionMap($params)
     {
         $db = new Application_Model_DbTable_FeedBackTable();
-        if ($db->saveShipmentQuestionMapDetails($params)) {
+        $result = $db->saveShipmentQuestionMapDetails($params);
+        if (!empty($result['saved'])) {
             $alertMsg = new Zend_Session_Namespace('alertSpace');
-            $alertMsg->message = 'Question mapped successfully';
+            $alertMsg->message = !empty($result['feedbackTurnedOn'])
+                ? 'Feedback form saved. Collect Feedback has been switched on for this shipment.'
+                : 'Feedback form saved.';
         }
+    }
+
+    /**
+     * Feedback is only ever collected for TB shipments, and only when the global
+     * participant_feedback config is switched on.
+     */
+    public static function isFeedbackEnabledGlobally(): bool
+    {
+        static $enabled = null;
+        if ($enabled === null) {
+            $enabled = (Application_Service_Common::getConfig('participant_feedback') === 'yes');
+        }
+        return $enabled;
+    }
+
+    /** How many questions are mapped to this shipment's feedback form. */
+    public static function getMappedQuestionCount($shipmentId): int
+    {
+        $shipmentId = (int) $shipmentId;
+        if ($shipmentId <= 0) {
+            return 0;
+        }
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        return (int) $db->fetchOne(
+            $db->select()
+                ->from('r_participant_feedback_form_question_map', new Zend_Db_Expr('COUNT(*)'))
+                ->where('shipment_id = ?', $shipmentId)
+        );
+    }
+
+    /**
+     * Shipment ids that have `collect_feedback = 'yes'` but no questions mapped yet.
+     *
+     * Used to block finalization: once an admin promises participants a feedback form,
+     * finalizing is what opens the feedback window, so an empty form would strand them
+     * on a blank page. Read once per request — the map table is small and every report
+     * grid calls this per row.
+     *
+     * @return array<int,bool> shipment_id => true
+     */
+    public static function shipmentsAwaitingFeedbackForm(): array
+    {
+        static $pending = null;
+        if ($pending !== null) {
+            return $pending;
+        }
+        $pending = [];
+        if (!self::isFeedbackEnabledGlobally()) {
+            return $pending;
+        }
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $sql = $db->select()
+            ->from(['s' => 'shipment'], ['shipment_id'])
+            ->joinLeft(
+                ['m' => 'r_participant_feedback_form_question_map'],
+                'm.shipment_id = s.shipment_id',
+                []
+            )
+            ->where("s.collect_feedback = 'yes'")
+            ->group('s.shipment_id')
+            ->having('COUNT(m.question_id) = 0');
+        foreach ($db->fetchCol($sql) as $shipmentId) {
+            $pending[(int) $shipmentId] = true;
+        }
+        return $pending;
+    }
+
+    /** True when this shipment has feedback switched on but no form built yet. */
+    public static function isAwaitingFeedbackForm($shipmentId): bool
+    {
+        return isset(self::shipmentsAwaitingFeedbackForm()[(int) $shipmentId]);
+    }
+
+    /**
+     * shipment_id => number of mapped questions, for every shipment that has a form.
+     * Read once per request so listing grids can badge each row without an N+1.
+     *
+     * @return array<int,int>
+     */
+    public static function feedbackFormQuestionCounts(): array
+    {
+        static $counts = null;
+        if ($counts !== null) {
+            return $counts;
+        }
+        $counts = [];
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $rows = $db->fetchAll(
+            $db->select()
+                ->from('r_participant_feedback_form_question_map', [
+                    'shipment_id',
+                    'questionCount' => new Zend_Db_Expr('COUNT(*)'),
+                ])
+                ->group('shipment_id')
+        );
+        foreach ($rows as $row) {
+            $counts[(int) $row['shipment_id']] = (int) $row['questionCount'];
+        }
+        return $counts;
+    }
+
+    /** How many questions this shipment's form has, from the per-request map. */
+    public static function questionCountFor($shipmentId): int
+    {
+        return self::feedbackFormQuestionCounts()[(int) $shipmentId] ?? 0;
+    }
+
+    /**
+     * The form builder lives behind `config-ept`, so report/evaluate pages only offer
+     * the shortcut to admins who can actually open it.
+     */
+    public static function currentAdminCanBuildForms(): bool
+    {
+        // Memoized: listing grids ask this once per row.
+        static $canBuild = null;
+        if ($canBuild === null) {
+            $adminSession = new Zend_Session_Namespace('administrators');
+            $canBuild = in_array('config-ept', explode(',', (string) $adminSession->privileges));
+        }
+        return $canBuild;
+    }
+
+    /**
+     * Shipments that already have a feedback form, for the "copy from" picker.
+     * Newest first so the previous round is the obvious first choice.
+     */
+    public function getShipmentsWithFeedbackForm($excludeShipmentId = null): array
+    {
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $sql = $db->select()
+            ->from(['s' => 'shipment'], ['shipment_id', 'shipment_code', 'shipment_date'])
+            ->join(
+                ['m' => 'r_participant_feedback_form_question_map'],
+                'm.shipment_id = s.shipment_id',
+                ['questionCount' => new Zend_Db_Expr('COUNT(m.question_id)')]
+            )
+            ->group('s.shipment_id')
+            ->order('s.shipment_date DESC')
+            ->order('s.shipment_id DESC');
+        if (!empty($excludeShipmentId)) {
+            $sql->where('s.shipment_id != ?', (int) $excludeShipmentId);
+        }
+        return $db->fetchAll($sql);
+    }
+
+    /**
+     * Everything the builder needs to render a form for one shipment: the full active
+     * question list flagged with that shipment's mapping, plus its saved content and
+     * audience. Drives both "shipment changed" and "copy from another shipment" —
+     * copying is read-only, the source form is never touched.
+     */
+    public function getFeedbackFormPayload($shipmentId): array
+    {
+        $shipmentId = (int) $shipmentId;
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+
+        $form = $db->fetchRow(
+            $db->select()
+                ->from('r_participant_feedback_form', ['form_content', 'form_show_to'])
+                ->where('shipment_id = ?', $shipmentId)
+        );
+
+        $questions = [];
+        foreach ($this->getAllActiveQuestions($shipmentId) as $row) {
+            $questions[] = [
+                'questionId' => (int) $row['question_id'],
+                'label' => $row['question_text'] . ' (' . $row['question_code'] . ')',
+                'selected' => !empty($row['mappedShipmentId']),
+                'mandatory' => ($row['is_response_mandatory'] === 'yes'),
+                'sortOrder' => $row['sort_order'],
+            ];
+        }
+
+        return [
+            'formContent' => $form['form_content'] ?? '',
+            'formShowTo' => $form['form_show_to'] ?? '',
+            'questions' => $questions,
+        ];
     }
 
     public function checkExpiry($sid)
@@ -68,10 +249,10 @@ class Application_Service_FeedBack
         return $db->fetchAllFeedBackResponses($parameters, $type);
     }
 
-    public function getAllIrelaventActiveQuestions($sid)
+    public function getAllActiveQuestions($sid)
     {
         $db = new Application_Model_DbTable_FeedBackTable();
-        return $db->fetchAllIrelaventActiveQuestions($sid);
+        return $db->fetchAllActiveQuestions($sid);
     }
 
     public function saveFeedBackForms($params)

@@ -8363,3 +8363,94 @@ td.center {
 	border-color: #eef1f5;
 	color: #b3c1d1;
 }
+
+/* ---------------------------------------------------------------------------
+   Shipment form — feedback form status strip.
+
+   "Collect Feedback" lives on the shipment form but the questions live in the
+   feedback form builder, so the two halves can disagree. This strip says which
+   half is missing, right under the selector that sets it.
+
+   Deliberately not a Bootstrap .alert: it sits between two ordinary text inputs
+   and should read as a note attached to the field, not as a page-level banner.
+   The tinted ground + left accent rail is the same idiom the listing grids use
+   for an expanded row, so an amber inset means the same thing everywhere.
+   --------------------------------------------------------------------------- */
+.feedback-form-status {
+	display: flex;
+	align-items: center;
+	padding: 8px 12px;
+	border-radius: 4px;
+	border-left: 4px solid #c8d4e3;
+	background: #f7f9fc;
+	font-size: 13px;
+	line-height: 1.45;
+	color: #4a5568;
+}
+
+.feedback-form-status .fbs-icon {
+	flex: 0 0 auto;
+	margin-right: 8px;
+	font-size: 14px;
+}
+
+.feedback-form-status .fbs-text {
+	flex: 1 1 auto;
+}
+
+/* White button on a tinted ground: the generic btn-primary/btn-warning fills are
+   built to sit on white and turn into a heavy dark slab in here. */
+.feedback-form-status .fbs-action {
+	flex: 0 0 auto;
+	margin-left: 12px;
+	padding: 3px 10px;
+	border: 1px solid rgba(0, 0, 0, 0.15);
+	border-radius: 3px;
+	background: #fff;
+	color: #3a4a5f;
+	font-size: 12px;
+	font-weight: 600;
+	line-height: 1.6;
+	text-decoration: none;
+	white-space: nowrap;
+}
+
+.feedback-form-status .fbs-action:hover,
+.feedback-form-status .fbs-action:focus {
+	background: #f2f6fa;
+	color: #2b3a4d;
+	text-decoration: none;
+}
+
+/* Something is missing and finalization is blocked on it. */
+.feedback-form-status--pending {
+	background: #fff8e1;
+	border-left-color: #f0ad4e;
+	color: #7a5b1c;
+}
+
+.feedback-form-status--pending .fbs-icon {
+	color: #d9832a;
+}
+
+/* Configured and consistent — confirm it quietly, don't celebrate it. */
+.feedback-form-status--ready {
+	background: #f4f9f5;
+	border-left-color: #7cb98a;
+	color: #40684a;
+}
+
+.feedback-form-status--ready .fbs-icon {
+	color: #5aa06d;
+}
+
+/* Neutral note (e.g. "you'll build the form after saving"). */
+.feedback-form-status--info {
+	background: #f2f7fc;
+	border-left-color: #7ba7d4;
+	color: #3a5a8a;
+}
+
+.feedback-form-status--info .fbs-icon {
+	color: #4a7fb5;
+}

@@ -1,13 +1,26 @@
 <?php
+
+$isClone = isset($this->type) && $this->type == 'clone';
+
+// Question picker state comes straight from the question list, which carries this
+// shipment's mapping (or, in clone mode, the source shipment's).
 $questionResults = $sortOrder = $mandatory = [];
-if (isset($this->result['feedback_form_question_results']) && !empty($this->result['feedback_form_question_results'])) {
-    foreach ($this->result['feedback_form_question_results'] as $key => $row) {
-        $questionResults[] = $row['questionId'];
-        $mandatory[] = ($row['is_response_mandatory'] == 'yes') ? $row['questionId'] : '';
-        $sortOrder[$row['questionId']] = $row['sort_order'];
+if (isset($this->questions) && !empty($this->questions)) {
+    foreach ($this->questions as $row) {
+        if (empty($row['mappedShipmentId'])) {
+            continue;
+        }
+        $questionResults[] = $row['question_id'];
+        if ($row['is_response_mandatory'] == 'yes') {
+            $mandatory[] = (string) $row['question_id'];
+        }
+        $sortOrder[(string) $row['question_id']] = $row['sort_order'];
     }
 }
-
+$hasPrefilledQuestions = !empty($questionResults);
+$formContent = $this->result['feedback_form_results']['form_content'] ?? '';
+$formShowTo = $this->result['feedback_form_results']['form_show_to'] ?? '';
+$rpffId = $this->result['feedback_form_results']['rpff_id'] ?? null;
 ?>
 <style>
     .dropdown-menu.open {
@@ -30,14 +43,17 @@ if (isset($this->result['feedback_form_question_results']) && !empty($this->resu
 <div class="well">
     <form name="addFeedbackQuestionsForm" id="addFeedbackQuestionsForm" method="post" action="<?php echo $this->url(array("module" => "admin", "controller" => "feedback-responses", "action" => "feedback-form"), 'default', true) ?>" class="form-horizontal bs-example" role="form" enctype="multipart/form-data" onsubmit="validateNow();return false;">
         <fieldset>
-            <?php if (isset($this->type) && !empty($this->type) && $this->type == 'clone') { ?>
+            <?php if ($isClone) { ?>
                 <legend><?= $this->translate->_("Clone Feedback Form"); ?></legend>
+                <div class="alert alert-info">
+                    <?= $this->translate->_("The questions below are copied from the shipment you cloned. Pick the shipment this form is for and save — the original form is left untouched."); ?>
+                </div>
             <?php } else { ?>
-                <legend><?= $this->translate->_("New Feedback Form"); ?></legend>
+                <legend><?= $this->translate->_("Feedback Form"); ?></legend>
             <?php  } ?>
             <div class="row">
                 <div class="col-lg-6">
-                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label class="control-label" for="shipmentId"><?= $this->translate->_("Select shipment to fetch questions"); ?> <span class="mandatory">*</span></label>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label class="control-label" for="shipmentId"><?= $this->translate->_("Shipment this feedback form is for"); ?> <span class="mandatory">*</span></label>
                     <div class="col-lg-12">
                         <select id="shipmentId" name="shipmentId" class="select2 form-control isRequired" title="Please select the shipment" onchange="loadQuestions(this.value);">
                             <option value="">--<?= $this->translate->_("Select"); ?>--</option>
@@ -54,18 +70,40 @@ if (isset($this->result['feedback_form_question_results']) && !empty($this->resu
                     <div class="col-lg-12">
                         <select class="select2 form-control" id="formTo" name="formTo" title="Please select where we show the forms">
                             <option value=""><?= $this->translate->_("--Select--"); ?></option>
-                            <option value="all-participants" <?php echo (isset($this->result['feedback_form_results']['form_show_to']) && !empty($this->result['feedback_form_results']['form_show_to']) && $this->result['feedback_form_results']['form_show_to'] == 'all-participants') ? 'selected="selected"' : ''; ?>><?= $this->translate->_("All Participants"); ?></option>
-                            <option value="passing-participants" <?php echo (isset($this->result['feedback_form_results']['form_show_to']) && !empty($this->result['feedback_form_results']['form_show_to']) && $this->result['feedback_form_results']['form_show_to'] == 'passing-participants') ? 'selected="selected"' : ''; ?>><?= $this->translate->_("Only Passing Participants"); ?></option>
-                            <option value="failing-participants" <?php echo (isset($this->result['feedback_form_results']['form_show_to']) && !empty($this->result['feedback_form_results']['form_show_to']) && $this->result['feedback_form_results']['form_show_to'] == 'failing-participants') ? 'selected="selected"' : ''; ?>><?= $this->translate->_("Only Failing Participants"); ?></option>
+                            <option value="all-participants" <?php echo ($formShowTo == 'all-participants') ? 'selected="selected"' : ''; ?>><?= $this->translate->_("All Participants"); ?></option>
+                            <option value="passing-participants" <?php echo ($formShowTo == 'passing-participants') ? 'selected="selected"' : ''; ?>><?= $this->translate->_("Only Passing Participants"); ?></option>
+                            <option value="failing-participants" <?php echo ($formShowTo == 'failing-participants') ? 'selected="selected"' : ''; ?>><?= $this->translate->_("Only Failing Participants"); ?></option>
                         </select>
                     </div>
                 </div>
             </div>
+            <?php if (isset($this->copySources) && !empty($this->copySources)) { ?>
+                <br>
+                <div class="row">
+                    <div class="col-lg-12">
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label class="control-label" for="copyFromShipment"><?= $this->translate->_("Start from an existing feedback form"); ?></label>
+                        <div class="col-lg-12">
+                            <div class="input-group">
+                                <select id="copyFromShipment" class="form-control" title="Please select the shipment to copy the feedback form from">
+                                    <option value="">--<?= $this->translate->_("Select a shipment to copy from"); ?>--</option>
+                                    <?php foreach ($this->copySources as $row) { ?>
+                                        <option value="<?php echo $row['shipment_id']; ?>"><?php echo htmlspecialchars($row['shipment_code']); ?> (<?php echo (int) $row['questionCount']; ?> <?= $this->translate->_("questions"); ?>)</option>
+                                    <?php } ?>
+                                </select>
+                                <span class="input-group-btn">
+                                    <button type="button" class="btn btn-default" onclick="copyFromShipment();"><i class="icon-copy"></i> <?= $this->translate->_("Copy"); ?></button>
+                                </span>
+                            </div>
+                            <small class="text-muted"><?= $this->translate->_("Copies that shipment's questions, content and audience into this form. The form you copy from is not changed."); ?></small>
+                        </div>
+                    </div>
+                </div>
+            <?php } ?>
             <br>
             <div class="form-group col-lg-12">
                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label class="control-label" for="formContent"><?= $this->translate->_("Enter Feedback Form Content"); ?></label>
                 <div class="col-lg-12">
-                    <textarea id="formContent" class="form-control richtextarea" name="formContent"><?php echo $this->result['feedback_form_results']['form_content']; ?></textarea>
+                    <textarea id="formContent" class="form-control richtextarea" name="formContent"><?php echo $formContent; ?></textarea>
                 </div>
             </div>
             <div class="form-group col-lg-12 text-center">
@@ -122,19 +160,19 @@ if (isset($this->result['feedback_form_question_results']) && !empty($this->resu
                     </tbody>
                 </table>
             </div>
-            <div class="<?php echo (isset($this->result['feedback_form_question_results']) && !empty($this->result['feedback_form_question_results'])) ? '' : 'hide'; ?> show-questions form-group col-lg-12" id="load-question">
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label class="control-label" for="shipmentId"><?= $this->translate->_("Select the available question"); ?> <span class="mandatory">*</span></label>
+            <div class="<?php echo $hasPrefilledQuestions ? '' : 'hide'; ?> show-questions form-group col-lg-12" id="load-question">
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label class="control-label" for="question"><?= $this->translate->_("Select the available question"); ?> <span class="mandatory">*</span></label>
                 <div class="col-lg-12">
                     <select id="question" multiple="multiple" name="question[]" class="select2 form-control" title="Please select the available question" onchange="loadQuestion()">
                         <?php if (isset($this->questions) && !empty($this->questions)) {
                             foreach ($this->questions as $key => $row) { ?>
-                                <option value="<?php echo $row['question_id']; ?>" <?php echo (isset($questionResults) && in_array($row['question_id'], $questionResults)) ? 'selected="selected"' : ''; ?>><?php echo $row['question_text'] . '(' . $row['question_code'] . ')'; ?></option>
+                                <option value="<?php echo $row['question_id']; ?>" <?php echo in_array($row['question_id'], $questionResults) ? 'selected="selected"' : ''; ?>><?php echo $row['question_text'] . '(' . $row['question_code'] . ')'; ?></option>
                         <?php }
                         } ?>
                     </select>
                 </div>
             </div>
-            <div class="<?php echo (isset($this->result['feedback_form_question_results']) && !empty($this->result['feedback_form_question_results'])) ? '' : 'hide'; ?> form-group col-lg-12" id="questionTable">
+            <div class="<?php echo $hasPrefilledQuestions ? '' : 'hide'; ?> form-group col-lg-12" id="questionTable">
                 <table class="table table-bordered table-striped" border="1" style="text-align:center;margin: auto;width: 95%;">
                     <thead>
                         <tr>
@@ -144,12 +182,15 @@ if (isset($this->result['feedback_form_question_results']) && !empty($this->resu
                         </tr>
                     </thead>
                     <tbody id="questionRow">
-                        <?php if (isset($this->result['feedback_form_question_results']) && !empty($this->result['feedback_form_question_results'])) {
-                            foreach ($this->result['feedback_form_question_results'] as $key => $row) { ?>
+                        <?php if (isset($this->questions) && !empty($this->questions)) {
+                            foreach ($this->questions as $key => $row) {
+                                if (empty($row['mappedShipmentId'])) {
+                                    continue;
+                                } ?>
                                 <tr>
                                     <td style="text-align:left !important;"><?php echo $row['question_text']; ?></td>
-                                    <td><input type="checkbox" <?php echo (isset($row['is_response_mandatory']) && !empty($row['is_response_mandatory']) && $row['is_response_mandatory'] == 'yes') ? 'checked' : ''; ?> name="mandatory[<?php echo $row['question_id']; ?>]" id="mandatory<?php echo $row['question_id']; ?>" title="Please select the mandatory or not" value="yes" /></td>
-                                    <td><input type="type" value="<?php echo $row['sort_order'] ?? null; ?>" class="form-control" name="sortOrder[<?php echo $row['question_id']; ?>]" id="sortOrder'+val+'" title="Please enter the sort order" placeholder="Enter the sort order" /></td>
+                                    <td><input type="checkbox" <?php echo ($row['is_response_mandatory'] == 'yes') ? 'checked' : ''; ?> name="mandatory[<?php echo $row['question_id']; ?>]" id="mandatory<?php echo $row['question_id']; ?>" title="Please select the mandatory or not" value="yes" /></td>
+                                    <td><input type="text" value="<?php echo $row['sort_order'] ?? null; ?>" class="form-control" name="sortOrder[<?php echo $row['question_id']; ?>]" id="sortOrder<?php echo $row['question_id']; ?>" title="Please enter the sort order" placeholder="Enter the sort order" /></td>
                                 </tr>
                         <?php }
                         } ?>
@@ -157,9 +198,9 @@ if (isset($this->result['feedback_form_question_results']) && !empty($this->resu
                 </table>
             </div>
 
-            <div id="respond" style="margin: 0px auto 0px auto; text-align: center;" class="<?php echo (isset($this->result) && !empty($this->result)) ? '' : 'hide'; ?> show-questions form-group col-lg-11" align="center">
-                <?php if ($this->result['feedback_form_results']['rpff_id']) { ?>
-                    <input type="hidden" name="rfId" value="<?php echo base64_encode($this->result['feedback_form_results']['rpff_id']); ?>" />
+            <div id="respond" style="margin: 0px auto 0px auto; text-align: center;" class="<?php echo $hasPrefilledQuestions ? '' : 'hide'; ?> show-questions form-group col-lg-11" align="center">
+                <?php if (!empty($rpffId) && !$isClone) { ?>
+                    <input type="hidden" name="rfId" value="<?php echo base64_encode($rpffId); ?>" />
                 <?php } ?>
                 <input name="submitbtn" class="btn btn-primary" type="submit" tabindex="7" value="<?= $this->translate->_("Submit"); ?>" />
                 <input class="btn btn-danger" type="button" onclick="window.location.href = '/admin/feedback-responses/shipment-questions';" tabindex="8" value="<?= $this->translate->_("Cancel"); ?>" />
@@ -173,6 +214,13 @@ if (isset($this->result['feedback_form_question_results']) && !empty($this->resu
 <script type="text/javascript">
     var duplicated = false;
     var tableRow = 1;
+    // Mandatory flags / sort orders for questions already mapped, so re-rendering the
+    // question table from the picker doesn't lose what was saved.
+    var questionPrefill = {
+        mandatory: <?php echo json_encode($mandatory); ?>,
+        sortOrder: <?php echo json_encode($sortOrder); ?>
+    };
+    var isCloneMode = <?php echo $isClone ? 'true' : 'false'; ?>;
 
     $(document).ready(function() {
         $("#shipmentId").select2({
@@ -186,6 +234,10 @@ if (isset($this->result['feedback_form_question_results']) && !empty($this->resu
         $('#question').selectpicker();
         $("#formContent").wysihtml5();
     });
+
+    function escapeHtml(text) {
+        return $('<div>').text(text == null ? '' : text).html();
+    }
 
     function checkDuplicate(tableName, fieldName, obj, fnct, msg) {
         $.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'common', 'action' => 'check-duplicate')); ?>", {
@@ -207,32 +259,95 @@ if (isset($this->result['feedback_form_question_results']) && !empty($this->resu
     }
 
     function validateNow() {
-        $("#formContent").val($("#formContentEditor").summernote('code'));
         flag = deforayValidator.init({
             formId: 'addFeedbackQuestionsForm'
         });
-        if (flag && !duplicated) {
-            $.blockUI();
-            document.getElementById('addFeedbackQuestionsForm').submit();
+        if (!flag || duplicated) {
+            return;
+        }
+        if ($('#question > option:selected').length === 0) {
+            alert("<?= $this->jsTranslate("Please select at least one question for this feedback form."); ?>");
+            return;
+        }
+        $.blockUI();
+        document.getElementById('addFeedbackQuestionsForm').submit();
+    }
+
+    // Push HTML back into the rich text editor as well as the underlying textarea.
+    function setFormContent(html) {
+        var $textarea = $('#formContent');
+        $textarea.val(html || '');
+        var wysihtml5Data = $textarea.data('wysihtml5');
+        if (wysihtml5Data && wysihtml5Data.editor) {
+            wysihtml5Data.editor.setValue(html || '', true);
         }
     }
 
-    function loadQuestions(id) {
-        <?php if (!isset($this->type) || empty($this->type) || $this->type != 'clone') { ?>
-            if (id != '') {
-                $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'feedback-responses', 'action' => 'get-questions'), 'default', true); ?>", {
-                        sid: id
-                    },
-                    function(data) {
-                        if (data != '' && data != undefined && data != null) {
-                            $('.show-questions').removeClass("hide");
-                            $("#question").html(data);
-                            $('#question').selectpicker();
-                            $('#question').selectpicker('refresh');
-                        }
-                    })
+    /**
+     * Render a feedback form payload (question list + content + audience) into the page.
+     * Used both when the target shipment changes and when copying an existing form.
+     */
+    function applyFormPayload(data, applyContent) {
+        var options = '';
+        var mandatory = [];
+        var sortOrder = {};
+        $.each(data.questions || [], function(i, q) {
+            options += '<option value="' + q.questionId + '"' + (q.selected ? ' selected="selected"' : '') + '>' + escapeHtml(q.label) + '</option>';
+            if (q.selected && q.mandatory) {
+                mandatory.push(String(q.questionId));
             }
-        <?php } ?>
+            if (q.selected && q.sortOrder !== null && q.sortOrder !== undefined) {
+                sortOrder[String(q.questionId)] = q.sortOrder;
+            }
+        });
+        questionPrefill = {
+            mandatory: mandatory,
+            sortOrder: sortOrder
+        };
+
+        $('#question').html(options);
+        $('#question').selectpicker('refresh');
+        $('.show-questions').removeClass('hide');
+        loadQuestion();
+
+        if (applyContent) {
+            $('#formTo').val(data.formShowTo || '').trigger('change');
+            setFormContent(data.formContent || '');
+        }
+    }
+
+    function fetchFormPayload(shipmentId, applyContent) {
+        $.blockUI();
+        $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'feedback-responses', 'action' => 'get-questions'), 'default', true); ?>", {
+                sid: shipmentId
+            })
+            .done(function(data) {
+                applyFormPayload(data, applyContent);
+            })
+            .fail(function() {
+                alert("<?= $this->jsTranslate("Could not load the questions for that shipment. Please try again."); ?>");
+            })
+            .always(function() {
+                $.unblockUI();
+            });
+    }
+
+    function loadQuestions(id) {
+        // In clone mode the questions are already prefilled from the source shipment —
+        // picking the target shipment must not wipe them.
+        if (isCloneMode || id === '') {
+            return;
+        }
+        fetchFormPayload(id, true);
+    }
+
+    function copyFromShipment() {
+        var sourceId = $('#copyFromShipment').val();
+        if (!sourceId) {
+            alert("<?= $this->jsTranslate("Please select the shipment to copy the feedback form from."); ?>");
+            return;
+        }
+        fetchFormPayload(sourceId, true);
     }
 
     function checkType(value) {
@@ -247,16 +362,17 @@ if (isset($this->result['feedback_form_question_results']) && !empty($this->resu
         var html = '';
         $('#questionTable').removeClass('hide');
         $('#question > option:selected').each(function() {
-            let text = $(this).text();
-            let val = $(this).val();
-            let mandatory = <?php echo json_encode($mandatory); ?>.includes(val) ? 'checked' : '';
-            let sortOrder = <?php echo json_encode($sortOrder); ?>[val];
-            if (sortOrder == undefined)
+            var text = $(this).text();
+            var val = $(this).val();
+            var mandatory = questionPrefill.mandatory.indexOf(String(val)) !== -1 ? 'checked' : '';
+            var sortOrder = questionPrefill.sortOrder[String(val)];
+            if (sortOrder === undefined || sortOrder === null) {
                 sortOrder = '';
+            }
             html += '<tr> \
-                    <td style="text-align:left !important;">' + text + '</td>\
+                    <td style="text-align:left !important;">' + escapeHtml(text) + '</td>\
                     <td><input type="checkbox" name="mandatory[' + val + ']"  ' + mandatory + ' id="mandatory' + val + '" title="Please select the mandatory or not" value="yes"/></td>\
-                    <td><input type="type" class="form-control" value="' + sortOrder + '" name="sortOrder[' + val + ']" id="sortOrder' + val + '" title="Please enter the sort order" placeholder="Enter the sort order"/></td>\
+                    <td><input type="text" class="form-control" value="' + sortOrder + '" name="sortOrder[' + val + ']" id="sortOrder' + val + '" title="Please enter the sort order" placeholder="Enter the sort order"/></td>\
                 </tr>';
         });
         $('#questionRow').html(html);

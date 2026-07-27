@@ -232,10 +232,17 @@ class Application_Service_Shipments
             $sQuery = $sQuery->where('s.distribution_id = ?', $parameters['distribution']);
         }
 
-        if (isset($parameters['currentType'])) {
-            if ($parameters['currentType'] == 'active') {
+        // Cancelling is our soft-delete, so a cancelled shipment is hidden from every
+        // view except the one that explicitly asks for it. Active/inactive describe
+        // the response switch on live shipments and never include cancelled ones.
+        $currentType = $parameters['currentType'] ?? 'all';
+        if ($currentType == 'cancelled') {
+            $sQuery = $sQuery->where('s.cancelled_at IS NOT NULL');
+        } else {
+            $sQuery = $sQuery->where('s.cancelled_at IS NULL');
+            if ($currentType == 'active') {
                 $sQuery = $sQuery->where("s.response_switch = 'on'");
-            } elseif ($parameters['currentType'] == 'inactive') {
+            } elseif ($currentType == 'inactive') {
                 $sQuery = $sQuery->where("s.response_switch = 'off'");
             }
         }
@@ -259,8 +266,10 @@ class Application_Service_Shipments
         $aResultFilterTotal = $db->fetchAll($sQuery);
         $iFilteredTotal = count($aResultFilterTotal);
 
-        /* Total data set length */
-        $sQuery = $db->select()->from('shipment', new Zend_Db_Expr("COUNT('shipment_id')"));
+        /* Total data set length — scoped the same way as the grid, so the "of N"
+           count never includes rows the current view deliberately hides. */
+        $sQuery = $db->select()->from('shipment', new Zend_Db_Expr("COUNT('shipment_id')"))
+            ->where($currentType == 'cancelled' ? 'cancelled_at IS NOT NULL' : 'cancelled_at IS NULL');
         $aResultTotal = $db->fetchCol($sQuery);
         $iTotal = $aResultTotal[0];
 
@@ -317,7 +326,6 @@ class Application_Service_Shipments
             //             $row[] = $aRow['new_shipment_mail_count'];
             $edit = '';
             $enrolled = '';
-            $delete = '';
             $announcementMail = '';
             $informMail = '';
             $manageEnroll = '';
@@ -361,19 +369,41 @@ class Application_Service_Shipments
                     $downloadAllTBForms = '<a class="btn btn-success btn-xs" href="javascript:void(0);" onclick="generateTBFormsPDF(\'' . base64_encode($aRow['shipment_id']) . '\', this);"><span><i class="icon-refresh"></i> ' . $this->translator->_('Generate TB Forms') . ' </span></a>';
                 }
             }
-            if ($aRow['status'] != 'finalized' && ($aRow['reported_count'] == 0)) {
-                // Same layered encoding as the Cancel button: json_encode for the
-                // JS-string context, then htmlspecialchars for the HTML attribute.
-                $jsDelId = htmlspecialchars(json_encode(base64_encode($aRow['shipment_id'])), ENT_QUOTES);
-                $jsDelCode = htmlspecialchars(json_encode((string) $aRow['shipment_code']), ENT_QUOTES);
-                $delete = '<a class="btn btn-danger btn-xs" href="javascript:void(0);" onclick="removeShipment(' . $jsDelId . ', ' . $jsDelCode . ')"><span><i class="icon-remove"></i> Delete</span></a>';
-            }
             if (($aRow['status'] == 'shipped' || $aRow['status'] == 'evaluated') && isset($aRow['notResponded']) && !empty($aRow['notResponded']) && $aRow['notResponded'] > 0) {
                 $informMail = '<a class="btn btn-warning btn-xs" href="/admin/email-participants/index/sid/' . base64_encode($aRow['shipment_id']) . '" title="Remind participants who have not responded"><span><i class="icon-bullhorn"></i> Remind</span></a>';
             }
             $testkitbtn = '';
             if ((!empty($aRow['shipment_id']) && $dtsSchemeType == 'vietnam' && $aRow['scheme_type'] == 'dts') && $aRow['status'] != 'finalized') {
                 $testkitbtn .= '<a class="btn btn-primary btn-xs" href="/admin/shipment/shipment-test-kits/sid/' . base64_encode(trim($aRow['shipment_id'])) . '"><span><i class="icon-medkit"></i> Testkit Map</span></a>';
+            }
+
+            // Feedback form state. The shipment flag and the form are configured on two
+            // different screens, so say plainly which of the two is missing — the admin
+            // otherwise only finds out at finalization, weeks later.
+            $feedbackBtn = '';
+            if (
+                Application_Service_FeedBack::isFeedbackEnabledGlobally()
+                && !$isCancelled
+                && Application_Service_FeedBack::currentAdminCanBuildForms()
+            ) {
+                $feedbackUrl = '/admin/feedback-responses/feedback-form/id/' . base64_encode($aRow['shipment_id']);
+                $feedbackQuestions = Application_Service_FeedBack::questionCountFor($aRow['shipment_id']);
+                $collectsFeedback = (($aRow['collect_feedback'] ?? 'no') == 'yes');
+
+                if ($collectsFeedback && $feedbackQuestions == 0) {
+                    $feedbackBtn = '<a class="btn btn-warning btn-xs" href="' . $feedbackUrl . '" title="'
+                        . $this->translator->_('This shipment collects participant feedback but has no feedback form yet. It cannot be finalized until you create one.')
+                        . '"><span><i class="icon-warning-sign"></i> ' . $this->translator->_('Set Up Feedback Form') . '</span></a>';
+                } elseif ($collectsFeedback) {
+                    $feedbackBtn = '<a class="btn btn-default btn-xs" href="' . $feedbackUrl . '" title="'
+                        . $this->translator->_('Feedback form is configured for this shipment') . '"><span><i class="icon-comments"></i> '
+                        . sprintf($this->translator->_('Feedback Form (%d)'), $feedbackQuestions) . '</span></a>';
+                } elseif ($feedbackQuestions > 0) {
+                    // The other half of the mismatch: a form nobody will ever be shown.
+                    $feedbackBtn = '<a class="btn btn-warning btn-xs" href="' . $feedbackUrl . '" title="'
+                        . $this->translator->_('A feedback form exists for this shipment but Collect Feedback is switched off, so participants will never see it.')
+                        . '"><span><i class="icon-warning-sign"></i> ' . $this->translator->_('Feedback Off') . '</span></a>';
+                }
             }
 
             if ($isCancelled) {
@@ -393,13 +423,14 @@ class Application_Service_Shipments
                 }
                 // Grouped by what the action does rather than emitted one per line:
                 // the record itself, then participant handling, then the things that
-                // send mail or produce a file, then the destructive ones last.
+                // send mail or produce a file, then the destructive one on its own.
                 // Each line is nowrap so a group never breaks mid-way.
                 $actionLines = [
                     [$edit, $clone],
                     [$enrolled, $manageEnroll, $testkitbtn],
+                    [$feedbackBtn],
                     [$announcementMail, $informMail, $downloadAllTBForms],
-                    [$cancel, $delete],
+                    [$cancel],
                 ];
                 $actions = '';
                 foreach ($actionLines as $line) {
@@ -2490,6 +2521,10 @@ class Application_Service_Shipments
             }
             $distroService->updateDistributionStatus($params['distribution'], 'pending');
             $dbAdapter->commit();
+
+            // Returned so the controller can send the admin straight on to a follow-up
+            // step (e.g. building the feedback form for a feedback-enabled shipment).
+            return (int) $lastId;
         } catch (Throwable $e) {
             $dbAdapter->rollBack();
             Pt_Commons_LoggerUtility::logError('addShipment rolled back: ' . $e->getMessage(), [
@@ -2637,6 +2672,7 @@ class Application_Service_Shipments
             ->from(['s' => 'shipment'], ['shipment_id', 'shipment_code', 'shipment_date', 'scheme_type'])
             ->join(['sp' => 'shipment_participant_map'], 'sp.shipment_id = s.shipment_id', ['participantCount' => new Zend_Db_Expr('COUNT(DISTINCT sp.participant_id)')])
             ->joinLeft(['sl' => 'scheme_list'], 'sl.scheme_id = s.scheme_type', ['scheme_name'])
+            ->where('s.cancelled_at IS NULL')
             ->group('s.shipment_id')
             ->having('participantCount > 0')
             ->order('s.shipment_date DESC');
@@ -2644,55 +2680,6 @@ class Application_Service_Shipments
             $sql->where('s.shipment_id != ?', (int) $excludeShipmentId);
         }
         return $db->fetchAll($sql);
-    }
-
-    public function removeShipment($sid, $reason = '')
-    {
-        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $db->beginTransaction();
-        try {
-            $shipmentDb = new Application_Model_DbTable_Shipments();
-            $row = $shipmentDb->fetchRow('shipment_id=' . $sid);
-            if ($row['scheme_type'] == 'dts') {
-                $db->delete('reference_dts_eia', 'shipment_id=' . $sid);
-                $db->delete('reference_dts_wb', 'shipment_id=' . $sid);
-                $db->delete('reference_result_dts', 'shipment_id=' . $sid);
-            } elseif ($row['scheme_type'] == 'dbs') {
-                $db->delete('reference_dbs_eia', 'shipment_id=' . $sid);
-                $db->delete('reference_dbs_wb', 'shipment_id=' . $sid);
-                $db->delete('reference_result_dbs', 'shipment_id=' . $sid);
-            } elseif ($row['scheme_type'] == 'vl') {
-                $db->delete('reference_result_vl', 'shipment_id=' . $sid);
-            } elseif ($row['scheme_type'] == 'eid') {
-                $db->delete('reference_result_eid', 'shipment_id=' . $sid);
-            }
-
-            $shipmentParticipantMap = new Application_Model_DbTable_ShipmentParticipantMap();
-            $shipmentParticipantMap->delete('shipment_id=' . $sid);
-
-            $shipmentDb->delete('shipment_id=' . $sid);
-
-            // The shipment row is gone after this, so the reason's only durable
-            // home is the audit log (same wording as cancelShipment's entry).
-            $auditDb = new Application_Model_DbTable_AuditLog();
-            $auditDb->addNewAuditLog(
-                'Deleted shipment - ' . ($row['shipment_code'] ?? $sid)
-                    . ($reason !== '' ? ' (reason: ' . $reason . ')' : ''),
-                'shipment'
-            );
-
-            $db->commit();
-            return 'Shipment deleted.';
-        } catch (Throwable $e) {
-            $db->rollBack();
-            Pt_Commons_LoggerUtility::logError('removeShipment rolled back: ' . $e->getMessage(), [
-                'sid' => $sid,
-                'file' => $e->getFile(),
-                'line' => $e->getLine(),
-                'trace' => substr($e->getTraceAsString(), 0, 8000),
-            ]);
-            throw $e;
-        }
     }
 
     public function isShipmentEditable($shipmentId = null, $participantId = null)
@@ -3308,10 +3295,17 @@ class Application_Service_Shipments
                 'pt_co_ordinator_name' => $params['PtCoOrdinatorName'],
                 'pt_co_ordinator_email' => $params['ptEmail'] ?? null,
                 'pt_co_ordinator_phone' => $params['ptPhone'] ?? null,
-                'collect_feedback' => $params['collectFeedBack'],
                 'response_deadline' => Pt_Commons_DateUtility::shipmentDeadlineValue($params['lastDate'], $params['lastTime'] ?? null),
                 'auto_close_at_deadline' => (isset($params['autoCloseAtDeadline']) && $params['autoCloseAtDeadline'] === 'no') ? 'no' : 'yes',
             ];
+
+            // Only TB shipments render the Collect Feedback selector, and only when the
+            // global participant_feedback config is on. Everywhere else the key is simply
+            // absent from the post, so leave the stored value alone instead of nulling a
+            // NOT NULL column.
+            if (isset($params['collectFeedBack']) && $params['collectFeedBack'] !== '') {
+                $updateData['collect_feedback'] = $params['collectFeedBack'];
+            }
 
             // Re-open the response window when an admin extends the deadline of a shipment
             // whose response switch was turned off (e.g. auto-closed at the old deadline).
@@ -3330,6 +3324,20 @@ class Application_Service_Shipments
                 $updateData,
                 'shipment_id = ' . $params['shipmentId']
             );
+
+            // The feedback switch decides whether participants ever see the form, and
+            // it is set on a different screen from the form itself — log the flip.
+            if (
+                isset($updateData['collect_feedback'])
+                && $updateData['collect_feedback'] !== ($shipmentRow['collect_feedback'] ?? null)
+            ) {
+                $auditDb = new Application_Model_DbTable_AuditLog();
+                $auditDb->addNewAuditLog(
+                    'Collect Feedback set to ' . $updateData['collect_feedback'] . ' for shipment - ' . $params['shipmentCode'],
+                    'shipment'
+                );
+            }
+
             $dbAdapter->commit();
         } catch (Throwable $e) {
             $dbAdapter->rollBack();
@@ -3790,6 +3798,7 @@ class Application_Service_Shipments
             ->join(['sp' => 'shipment_participant_map'], 'sp.shipment_id=s.shipment_id', ['shipment_score' => new Zend_Db_Expr('SUM(sp.shipment_score)'), 'documentation_score' => new Zend_Db_Expr('SUM(sp.documentation_score)'), 'participantCount' => new Zend_Db_Expr('count(sp.participant_id)'), 'receivedCount' => new Zend_Db_Expr("SUM(sp.shipment_test_date not like '0000-00-00')")])
             ->join(['sl' => 'scheme_list'], 's.scheme_type=sl.scheme_id', ['scheme_name'])
             ->where("s.status != 'pending'")
+            ->where('s.cancelled_at IS NULL')
             ->group('s.shipment_id')
             ->order('s.shipment_id');
         $result = $db->fetchAll($sQuery);
@@ -4792,6 +4801,17 @@ class Application_Service_Shipments
             }
         }
 
+        // Override: a shipment that promises participants a feedback form cannot be
+        // finalized until that form exists. Finalizing is what opens the feedback
+        // window, so an empty form would strand participants on a blank page.
+        $awaitingFeedbackForm = false;
+        if (!$isFinalized && !empty($shipment['shipment_id'])) {
+            $awaitingFeedbackForm = Application_Service_FeedBack::isAwaitingFeedbackForm($shipment['shipment_id']);
+            if ($awaitingFeedbackForm) {
+                $finalizeEnabled = false;
+            }
+        }
+
         return [
             'isEvaluated' => $isEvaluated,
             'hasReportsGenerated' => $hasReportsGenerated,
@@ -4803,6 +4823,10 @@ class Application_Service_Shipments
             'evaluateEnabled' => $evaluateEnabled,
             'generateReportsEnabled' => $generateReportsEnabled,
             'finalizeEnabled' => $finalizeEnabled,
+            'awaitingFeedbackForm' => $awaitingFeedbackForm,
+            'finalizeBlockedReason' => $awaitingFeedbackForm
+                ? $translator->_('This shipment collects participant feedback but no feedback form has been created yet. Create the feedback form before finalizing.')
+                : '',
         ];
     }
 
