@@ -1748,8 +1748,50 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
 
         // Load Excel data
         $objPHPExcel = IOFactory::load($fileName);
-        $sheetData = $objPHPExcel->getActiveSheet()->toArray(null, true, true, true);
+        $sheet = $objPHPExcel->getActiveSheet();
+        $sheetData = $sheet->toArray(null, true, true, true);
         $count = count($sheetData);
+
+        // Guard against Excel silently eating leading zeros on PT-IDs.
+        //
+        // A cell holding 01001 that Excel treats as a NUMBER is stored as 1001; the
+        // zero is a display format sitting on top of the value, not part of the data.
+        // By the time we read the file the zero is already gone, so we cannot recover
+        // it — we can only refuse the row and ask for the column to be text. This is
+        // what created 459 wrong site ids on the 2026-A enrolment.
+        //
+        // We only look at ids whose cell is numeric; a text cell keeps its zeros.
+        $numericIdRows = [];
+        $idWidths = [];
+        for ($i = 2; $i <= $count; ++$i) {
+            $rawId = trim((string) $sheet->getCell('B' . $i)->getValue());
+            if ($rawId === '' || !ctype_digit($rawId)) {
+                continue;
+            }
+            $idWidths[] = strlen($rawId);
+            if ($sheet->getCell('B' . $i)->getDataType() === \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_NUMERIC) {
+                $numericIdRows[$i] = $rawId;
+            }
+        }
+        // The widest all-digit id in the file is our best guess at the intended
+        // width; anything numeric and shorter has probably lost a zero.
+        $expectedIdWidth = $idWidths ? max($idWidths) : 0;
+
+        // A numeric id whose zero-padded form already exists is the unambiguous
+        // case: same site, zero dropped. Fetch those in one query.
+        $existingPadded = [];
+        if (!empty($numericIdRows)) {
+            $candidates = [];
+            foreach ($numericIdRows as $rawId) {
+                $candidates[] = '0' . $rawId;
+                $candidates[] = '00' . $rawId;
+            }
+            $found = $db->fetchCol(
+                $db->select()->from('participant', ['unique_identifier'])
+                    ->where('unique_identifier IN (?)', array_values(array_unique($candidates)))
+            );
+            $existingPadded = array_flip($found);
+        }
 
         // Get configuration
         $configDb = new Application_Model_DbTable_GlobalConfig();
@@ -1790,6 +1832,26 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                         continue;
                     }
                     $row['B'] = $normalized;
+
+                    // See the leading-zero note above the loop. Refuse rather than
+                    // create a second site under a truncated id.
+                    if (isset($numericIdRows[$i]) && ctype_digit($row['B'])) {
+                        $padded = null;
+                        foreach (['0' . $row['B'], '00' . $row['B']] as $candidate) {
+                            if (isset($existingPadded[$candidate])) {
+                                $padded = $candidate;
+                                break;
+                            }
+                        }
+                        if ($padded !== null) {
+                            $this->addError($response, $row, $i, "PT-ID '{$row['B']}' came through as a number and ePT already has '{$padded}'. Excel drops leading zeros from number cells. Format the PT-ID column as Text and upload again.");
+                            continue;
+                        }
+                        if ($expectedIdWidth > 0 && strlen($row['B']) < $expectedIdWidth) {
+                            $this->addError($response, $row, $i, "PT-ID '{$row['B']}' is shorter than the other IDs in this file ({$expectedIdWidth} digits) and came through as a number, so a leading zero was probably lost. Format the PT-ID column as Text and upload again.");
+                            continue;
+                        }
+                    }
                 }
 
                 // Handle email. Normalize to the same lowercased/trimmed form used by
