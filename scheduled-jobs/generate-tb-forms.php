@@ -250,6 +250,23 @@ try {
             static fn($f) => filesize($f) > 0
         ));
 
+        // Order the booklet by PT-ID. The forms are printed from this single file,
+        // and the PT-ID numbering is country-blocked (01xxx Botswana, 08xxx Malawi,
+        // …), so ordering by it keeps each country's sites together. glob() returns
+        // plain byte order, which is only equivalent while every id is the same
+        // width — a 4-digit id sorts in among the 5-digit ones and splits a country
+        // across the booklet. Compare the id segment naturally instead.
+        $formPrefix = 'TB-FORM-' . $shipmentCode . '-';
+        usort($pdfsToMerge, static function ($left, $right) use ($formPrefix) {
+            $idOf = static function ($path) use ($formPrefix) {
+                $name = basename($path, '.pdf');
+                return str_starts_with($name, $formPrefix)
+                    ? substr($name, strlen($formPrefix))
+                    : $name;
+            };
+            return strnatcasecmp($idOf($left), $idOf($right));
+        });
+
         // Surface a shortfall instead of silently producing an incomplete booklet:
         // one generated form per participant is expected.
         $generatedCount = count($pdfsToMerge);
