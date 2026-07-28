@@ -21,6 +21,40 @@ class Application_Service_Common
         $this->translator = Zend_Registry::get('translate');
         $this->db = Zend_Db_Table_Abstract::getDefaultAdapter();
     }
+
+    /**
+     * The dm_id that a report query should be narrowed to, or null for no narrowing.
+     *
+     * `datamanagers` and `administrators` are independent session namespaces and can
+     * both be live in one browser, so a participant login left open used to silently
+     * filter the admin report grids down to that one data manager's labs — with no
+     * indication on screen, and next to sibling pages that were never narrowed.
+     *
+     * Narrowing is therefore dropped only when an admin session is driving a request
+     * inside the admin-gated areas (/admin, /reports). Impersonation browses
+     * /participant/*, so it keeps the impersonated dm_id's scope; and the handful of
+     * ungated controllers under /reports stay narrowed for anyone without an admin
+     * session.
+     */
+    public static function getScopedDmId(): ?int
+    {
+        $authNameSpace = new Zend_Session_Namespace('datamanagers');
+        $dmId = (int) ($authNameSpace->dm_id ?? 0);
+        if ($dmId <= 0) {
+            return null;
+        }
+
+        $path = (string) parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH);
+        if (preg_match('#^/(admin|reports)(/|$)#i', $path)) {
+            $adminNameSpace = new Zend_Session_Namespace('administrators');
+            if (!empty($adminNameSpace->admin_id)) {
+                return null;
+            }
+        }
+
+        return $dmId;
+    }
+
     public static function isDateValid($date): bool
     {
         $date = trim($date ?? '');
@@ -2305,12 +2339,14 @@ class Application_Service_Common
     public function saveDownloadedHistoryDetails($params, $userId)
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        return $db->insert('track_report_downloaded_history', 
-        [
+        return $db->insert(
+            'track_report_downloaded_history',
+            [
             'report_type' => $params['report_type'] ?? null,
             'shipment_id' => is_array($params) && isset($params['shipment_id']) ? $params['shipment_id'] : null,
-            'downloaded_by' => $userId, 
-            'downloaded_on' => new Zend_Db_Expr('NOW()')
-        ]);
+            'downloaded_by' => $userId,
+            'downloaded_on' => new Zend_Db_Expr('NOW()'),
+        ]
+        );
     }
 }

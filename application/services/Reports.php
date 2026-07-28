@@ -112,10 +112,10 @@ class Application_Service_Reports
         if (!$includeCancelled) {
             $sQuery = $sQuery->where('s.cancelled_at IS NULL');
         }
-        $authNameSpace = new Zend_Session_Namespace('datamanagers');
-        if (!empty($authNameSpace->dm_id)) {
+        $scopedDmId = Application_Service_Common::getScopedDmId();
+        if (!empty($scopedDmId)) {
             $sQuery = $sQuery->joinLeft(['pmm' => 'participant_manager_map'], 'pmm.participant_id=p.participant_id', [])
-                ->where('pmm.dm_id = ?', $authNameSpace->dm_id);
+                ->where('pmm.dm_id = ?', $scopedDmId);
         }
         if (isset($parameters['startDate']) && $parameters['startDate'] != '' && isset($parameters['endDate']) && $parameters['endDate'] != '') {
 
@@ -363,11 +363,11 @@ class Application_Service_Reports
                 ->joinLeft(['rr' => 'r_results'], 'sp.final_result=rr.result_id', [])
                 ->group('rep.r_epid');
         }
-        $authNameSpace = new Zend_Session_Namespace('datamanagers');
-        if (!empty($authNameSpace->dm_id)) {
+        $scopedDmId = Application_Service_Common::getScopedDmId();
+        if (!empty($scopedDmId)) {
             $sQuery = $sQuery
                 ->joinLeft(['pmm' => 'participant_manager_map'], 'pmm.participant_id=p.participant_id', [])
-                ->where('pmm.dm_id = ?', $authNameSpace->dm_id);
+                ->where('pmm.dm_id = ?', $scopedDmId);
         }
         if (isset($params['scheme']) && $params['scheme'] != '') {
             $sQuery = $sQuery->where('s.scheme_type = ?', $params['scheme']);
@@ -477,11 +477,11 @@ class Application_Service_Reports
         //        }
         ///////////
 
-        $authNameSpace = new Zend_Session_Namespace('datamanagers');
-        if (!empty($authNameSpace->dm_id)) {
+        $scopedDmId = Application_Service_Common::getScopedDmId();
+        if (!empty($scopedDmId)) {
             $sQuery = $sQuery
                 ->joinLeft(['pmm' => 'participant_manager_map'], 'pmm.participant_id=p.participant_id', [])
-                ->where('pmm.dm_id = ?', $authNameSpace->dm_id);
+                ->where('pmm.dm_id = ?', $scopedDmId);
         }
         if (isset($parameters['startDate']) && $parameters['startDate'] != '' && isset($parameters['endDate']) && $parameters['endDate'] != '') {
 
@@ -752,11 +752,11 @@ class Application_Service_Reports
             ->where('s.cancelled_at IS NULL')
             ->group(['s.shipment_id']);
 
-        $authNameSpace = new Zend_Session_Namespace('datamanagers');
-        if (!empty($authNameSpace->dm_id)) {
+        $scopedDmId = Application_Service_Common::getScopedDmId();
+        if (!empty($scopedDmId)) {
             $sQuery = $sQuery
                 ->joinLeft(['pmm' => 'participant_manager_map'], 'pmm.participant_id=p.participant_id', [])
-                ->where('pmm.dm_id = ?', $authNameSpace->dm_id);
+                ->where('pmm.dm_id = ?', $scopedDmId);
         }
         if (isset($parameters['scheme']) && $parameters['scheme'] != '') {
             $sQuery = $sQuery->where('s.scheme_type = ?', $parameters['scheme']);
@@ -1613,11 +1613,11 @@ class Application_Service_Reports
             $dateObj->add(new DateInterval('P' . $i . 'D'));
             $endDate = $dateObj->format('Y-m-d');
 
-            $authNameSpace = new Zend_Session_Namespace('datamanagers');
-            if (!empty($authNameSpace->dm_id)) {
+            $scopedDmId = Application_Service_Common::getScopedDmId();
+            if (!empty($scopedDmId)) {
                 $sQuery = $sQuery
                     ->joinLeft(['pmm' => 'participant_manager_map'], 'pmm.participant_id=sp.participant_id', [])
-                    ->where('pmm.dm_id = ?', $authNameSpace->dm_id);
+                    ->where('pmm.dm_id = ?', $scopedDmId);
             }
 
             if (isset($date) && $date != '' && $endDate != '' && $i < $maxDays) {
@@ -2401,11 +2401,11 @@ class Application_Service_Reports
             ->joinLeft(['rr' => 'r_results'], 'sp.final_result=rr.result_id')
             ->group(['p.region']);
 
-        $authNameSpace = new Zend_Session_Namespace('datamanagers');
-        if (!empty($authNameSpace->dm_id)) {
+        $scopedDmId = Application_Service_Common::getScopedDmId();
+        if (!empty($scopedDmId)) {
             $sQuery = $sQuery
                 ->joinLeft(['pmm' => 'participant_manager_map'], 'pmm.participant_id=p.participant_id', [])
-                ->where('pmm.dm_id = ?', $authNameSpace->dm_id);
+                ->where('pmm.dm_id = ?', $scopedDmId);
         }
 
         if (isset($parameters['scheme']) && $parameters['scheme'] != '') {
@@ -2728,11 +2728,11 @@ class Application_Service_Reports
         if (isset($parameters['scheme']) && $parameters['scheme'] != '') {
             $sQuery = $sQuery->where('s.scheme_type = ?', $parameters['scheme']);
         }
-        $authNameSpace = new Zend_Session_Namespace('datamanagers');
-        if (!empty($authNameSpace->dm_id)) {
+        $scopedDmId = Application_Service_Common::getScopedDmId();
+        if (!empty($scopedDmId)) {
             $sQuery = $sQuery
                 ->joinLeft(['pmm' => 'participant_manager_map'], 'pmm.participant_id=p.participant_id', [])
-                ->where('pmm.dm_id = ?', $authNameSpace->dm_id);
+                ->where('pmm.dm_id = ?', $scopedDmId);
         }
         if (isset($parameters['startDate']) && $parameters['startDate'] != '' && isset($parameters['endDate']) && $parameters['endDate'] != '') {
 
@@ -2761,11 +2761,11 @@ class Application_Service_Reports
                     'pass_percentage' => new Zend_Db_Expr('((SUM(final_result = 1))/(SUM(final_result = 1) + SUM(final_result = 2)))*100'),
                 ]
             );
-        $authNameSpace = new Zend_Session_Namespace('datamanagers');
-        if (!empty($authNameSpace->dm_id)) {
+        $scopedDmId = Application_Service_Common::getScopedDmId();
+        if (!empty($scopedDmId)) {
             $sQuery = $sQuery
                 ->joinLeft(['pmm' => 'participant_manager_map'], 'pmm.participant_id=sp.participant_id', [])
-                ->where('pmm.dm_id = ?', $authNameSpace->dm_id);
+                ->where('pmm.dm_id = ?', $scopedDmId);
         }
         if (isset($parameters['scheme']) && $parameters['scheme'] != '') {
             $sQuery = $sQuery->where('s.scheme_type = ?', $parameters['scheme']);
@@ -4539,11 +4539,11 @@ class Application_Service_Reports
             ->join(['c' => 'countries'], 'p.country=c.id', ['iso_name'])
             ->order(new Zend_Db_Expr("CASE WHEN p.unique_identifier REGEXP '\d*' THEN CAST(CAST(p.unique_identifier AS DECIMAL) AS CHAR) ELSE TRIM(LEADING '0' FROM p.unique_identifier) END"));
 
-        $authNameSpace = new Zend_Session_Namespace('datamanagers');
-        if (!empty($authNameSpace->dm_id)) {
+        $scopedDmId = Application_Service_Common::getScopedDmId();
+        if (!empty($scopedDmId)) {
             $sQuery = $sQuery
                 ->joinLeft(['pmm' => 'participant_manager_map'], 'pmm.participant_id=p.participant_id', [])
-                ->where('pmm.dm_id = ?', $authNameSpace->dm_id);
+                ->where('pmm.dm_id = ?', $scopedDmId);
         }
 
         if (isset($parameters['shipmentId']) && $parameters['shipmentId'] != '') {
@@ -4571,10 +4571,10 @@ class Application_Service_Reports
         $sQuery = $dbAdapter->select()
             ->from(['spm' => 'shipment_participant_map'], new Zend_Db_Expr("COUNT('spm.map_id')"))
             ->where('spm.shipment_id = ' . $parameters['shipmentId']);
-        if (!empty($authNameSpace->dm_id)) {
+        if (!empty($scopedDmId)) {
             $sQuery = $sQuery
                 ->joinLeft(['pmm' => 'participant_manager_map'], 'pmm.participant_id=spm.participant_id', [])
-                ->where('pmm.dm_id = ?', $authNameSpace->dm_id);
+                ->where('pmm.dm_id = ?', $scopedDmId);
         }
         if (isset($sWhere) && $sWhere != '') {
             $sQuery = $sQuery->where($sWhere);
@@ -4649,11 +4649,11 @@ class Application_Service_Reports
             )
             ->where('spm.shipment_id = ' . $params['shipmentId'])
             ->group(['spm.shipment_id']);
-        $authNameSpace = new Zend_Session_Namespace('datamanagers');
-        if (!empty($authNameSpace->dm_id)) {
+        $scopedDmId = Application_Service_Common::getScopedDmId();
+        if (!empty($scopedDmId)) {
             $resultsQuery = $resultsQuery
                 ->joinLeft(['pmm' => 'participant_manager_map'], 'pmm.participant_id=spm.participant_id', [])
-                ->where('pmm.dm_id = ?', $authNameSpace->dm_id);
+                ->where('pmm.dm_id = ?', $scopedDmId);
         }
         $resultsCountResult = $db->fetchRow($resultsQuery);
         return [
@@ -4745,11 +4745,11 @@ class Application_Service_Reports
             )
             ->group('c.id');
 
-        $authNameSpace = new Zend_Session_Namespace('datamanagers');
-        if (!empty($authNameSpace->dm_id)) {
+        $scopedDmId = Application_Service_Common::getScopedDmId();
+        if (!empty($scopedDmId)) {
             $sQuery = $sQuery
                 ->joinLeft(['pmm' => 'participant_manager_map'], 'pmm.participant_id=p.participant_id', [])
-                ->where('pmm.dm_id = ?', $authNameSpace->dm_id);
+                ->where('pmm.dm_id = ?', $scopedDmId);
         }
 
         if (isset($parameters['shipmentId']) && $parameters['shipmentId'] != '') {
@@ -4784,10 +4784,10 @@ class Application_Service_Reports
         if (isset($parameters['shipmentId']) && $parameters['shipmentId'] != '') {
             $sQuery = $sQuery->where('spm.shipment_id like ?', $parameters['shipmentId']);
         }
-        if (!empty($authNameSpace->dm_id)) {
+        if (!empty($scopedDmId)) {
             $sQuery = $sQuery
                 ->joinLeft(['pmm' => 'participant_manager_map'], 'pmm.participant_id=p.participant_id', [])
-                ->where('pmm.dm_id = ?', $authNameSpace->dm_id);
+                ->where('pmm.dm_id = ?', $scopedDmId);
         }
         if (isset($sWhere) && $sWhere != '') {
             $sQuery = $sQuery->where($sWhere);
@@ -4833,11 +4833,11 @@ class Application_Service_Reports
             ->where('spm.shipment_id = ' . $params['shipmentId'])
             ->group(['c.id'])
             ->order('participant_count DESC');
-        $authNameSpace = new Zend_Session_Namespace('datamanagers');
-        if (!empty($authNameSpace->dm_id)) {
+        $scopedDmId = Application_Service_Common::getScopedDmId();
+        if (!empty($scopedDmId)) {
             $resultsQuery = $resultsQuery
                 ->joinLeft(['pmm' => 'participant_manager_map'], 'pmm.participant_id=p.participant_id', [])
-                ->where('pmm.dm_id = ?', $authNameSpace->dm_id);
+                ->where('pmm.dm_id = ?', $scopedDmId);
         }
         $resultsCountResult = $db->fetchAll($resultsQuery);
 
@@ -5053,11 +5053,11 @@ class Application_Service_Reports
             ->group('s.shipment_id')
             ->group('p.participant_id');
 
-        $authNameSpace = new Zend_Session_Namespace('datamanagers');
-        if (!empty($authNameSpace->dm_id)) {
+        $scopedDmId = Application_Service_Common::getScopedDmId();
+        if (!empty($scopedDmId)) {
             $sQuery = $sQuery
                 ->joinLeft(['pmm' => 'participant_manager_map'], 'pmm.participant_id=p.participant_id', [])
-                ->where('pmm.dm_id = ?', $authNameSpace->dm_id);
+                ->where('pmm.dm_id = ?', $scopedDmId);
         }
         if (isset($parameters['scheme']) && $parameters['scheme'] != '') {
             $sQuery = $sQuery->where('s.scheme_type = ?', $parameters['scheme']);

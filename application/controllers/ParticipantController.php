@@ -50,6 +50,72 @@ class ParticipantController extends Zend_Controller_Action
             ->initContext();
     }
 
+    /**
+     * Report actions that used to hang off the participant-side "Reports" menu.
+     *
+     * The menu was deleted in e8ee471dc (Mar 2026) but the actions stayed routable,
+     * so any logged-in data manager could still reach them by typing the URL — the
+     * only thing standing between them and the data was a missing <a> tag. Reports
+     * are admin-only until the data-manager reports module is built, so enforce that
+     * at dispatch instead of relying on a hidden menu.
+     *
+     * The admin equivalents live in the reports module (`module => reports`) and are
+     * gated on the `access-reports` privilege; nothing here affects them. Keep the
+     * AJAX/export companions listed alongside their page action — they return the
+     * same data and are just as reachable.
+     */
+    private const ADMIN_ONLY_REPORT_ACTIONS = [
+        'response-report',
+        'response-report-list',
+        'participant-performance',
+        'participant-performance-export',
+        'participant-performance-export-pdf',
+        'participant-performance-region-wise-export',
+        'participant-performance-timeliness-barchart',
+        'aberrant-test-results',
+        'region-wise-participant-report',
+        'shipment-response-report',
+        'participant-response',
+        'export-participants-response-details',
+        'shipments-reports',
+        'get-shipment-participant-list',
+        'response-chart',
+        'tb-results',
+        'results-count',
+        'tb-participants-per-country',
+        'participants-count',
+        'xtpt-indicators',
+        'tb-all-sites-results',
+    ];
+
+    public function preDispatch()
+    {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
+
+        // Match on the *resolved* action method, not the raw URL segment. The ZF
+        // dispatcher lowercases the segment, folds both '-' and '.' as word
+        // delimiters, and strips every other non-alphanumeric — so
+        // /participant/RESPONSE-REPORT and /participant/response.report both land
+        // on responseReportAction. A literal comparison against getActionName()
+        // would wave either of them straight past this gate. Normalising both
+        // sides through the dispatcher keeps the denylist identical to what the
+        // dispatcher will actually run, by construction.
+        $dispatcher = Zend_Controller_Front::getInstance()->getDispatcher();
+        $requested = $dispatcher->formatActionName($request->getActionName());
+        $blocked = array_map([$dispatcher, 'formatActionName'], self::ADMIN_ONLY_REPORT_ACTIONS);
+
+        if (!in_array($requested, $blocked, true)) {
+            return;
+        }
+
+        if ($request->isXmlHttpRequest()) {
+            $this->getResponse()->setHttpResponseCode(403)->sendResponse();
+            exit;
+        }
+        $this->redirect('/participant/dashboard');
+    }
+
     public function indexAction()
     {
         /** @var Zend_Controller_Request_Http $request */
@@ -380,7 +446,7 @@ class ParticipantController extends Zend_Controller_Action
 
         $scheme = new Application_Service_Schemes();
         $this->view->schemes = $scheme->getAllSchemes();
-        
+
         $province = new Application_Service_Participants();
         $this->view->province = $province->getUniqueState();
     }

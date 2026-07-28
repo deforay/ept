@@ -117,7 +117,17 @@ class Admin_LoginController extends Zend_Controller_Action
             // We are destroying the session here in case this person has
             // logged in as a User as well..
             // We don't want that
+            //
+            // clearIdentity() alone never achieved that: dm_id lives in the
+            // `datamanagers` session namespace, which Zend_Auth does not touch. A
+            // participant login left open in the same browser therefore survived
+            // into the admin session and silently scoped the admin report grids to
+            // that one data manager's labs (see Common::getScopedDmId()). Clear the
+            // participant namespaces outright so the comment above is actually true.
             Zend_Auth::getInstance()->clearIdentity();
+            (new Zend_Session_Namespace('datamanagers'))->unsetAll();
+            (new Zend_Session_Namespace('loggedUser'))->unsetAll();
+            (new Zend_Session_Namespace('impersonationBackup'))->unsetAll();
             //Zend_Session::destroy();
             SecurityService::generateCSRF();
         }
