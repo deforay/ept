@@ -996,6 +996,9 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
 
                             foreach ($sheetData as $row) {
 
+                                // See MiscUtility::normalizeImportText — pasted cells
+                                // carry no-break/zero-width characters that survive trim().
+                                $row = MiscUtility::normalizeImportRow($row);
                                 $row['D'] = MiscUtility::sanitizeAndValidateEmail(trim($row['D']));
                                 $row['E'] = MiscUtility::sanitizeAndValidateEmail(trim($row['E']));
 
@@ -1802,6 +1805,8 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         // Build cache for performance
         $countryCache = $this->buildCountryCache();
         $countryNames = $this->getCountryNames();
+        $countryNamesById = $this->getCountryNamesById();
+        $countryLabelDiffs = [];
         $duplicateChecks = $this->batchCheckDuplicates($sheetData, $prefix, $directParticipantLogin == 'yes');
         $duplicateChecks['fileParticipants'] = [];
         $duplicateChecks['fileDataManagers'] = [];
@@ -1811,7 +1816,9 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
 
         try {
             for ($i = 2; $i <= $count; ++$i) {
-                $row = array_map('trim', $sheetData[$i]);
+                // Strips no-break/zero-width characters as well as trimming; see
+                // MiscUtility::normalizeImportText.
+                $row = MiscUtility::normalizeImportRow($sheetData[$i]);
 
                 // Skip empty rows
                 if (empty($row['A']) && empty($row['C']) && empty($row['D'])) {
@@ -2063,6 +2070,22 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                     continue;
                 }
 
+                // The sheet's own wording for a country is not always what ePT stores
+                // (labs write "USAPI" where ePT holds the ISO name "United States Minor
+                // Outlying Islands"), and it is ePT's name that gets printed on forms.
+                // Record the difference so the admin sees it after the import instead of
+                // discovering it on a printed form. Deliberately NOT auto-applied: a
+                // single misspelling here would rename that country everywhere in ePT.
+                $sheetCountry = trim((string) ($row['M'] ?? ''));
+                $storedCountry = $countryNamesById[$countryId] ?? '';
+                if ($sheetCountry !== '' && $storedCountry !== '' && strcasecmp($sheetCountry, $storedCountry) !== 0) {
+                    $key = $countryId . '|' . $sheetCountry;
+                    if (!isset($countryLabelDiffs[$key])) {
+                        $countryLabelDiffs[$key] = ['sheet' => $sheetCountry, 'stored' => $storedCountry, 'rows' => 0];
+                    }
+                    $countryLabelDiffs[$key]['rows']++;
+                }
+
                 // Reuse the participant's existing ULID on re-import so its direct-login
                 // link stays stable; only mint a fresh one for new (or ULID-less) rows.
                 $ulid = null;
@@ -2277,6 +2300,20 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             $auditDb->addNewAuditLog("Bulk imported {$importedCount} participants (run {$importRunId}, {$errorCount} error(s))", 'participants');
 
             $alertMsg->message = 'Your file was imported successfully';
+
+            // Country wording differences are reported, never applied — see the note at
+            // the country-resolution step. ePT prints its own name on forms, so the admin
+            // needs to know when the two disagree.
+            if (!empty($countryLabelDiffs)) {
+                $response['country_label_warnings'] = array_values($countryLabelDiffs);
+                $parts = [];
+                foreach ($countryLabelDiffs as $diff) {
+                    $parts[] = "\"{$diff['sheet']}\" ({$diff['rows']} row(s)) is stored in ePT as \"{$diff['stored']}\"";
+                }
+                $alertMsg->message .= '. Note: forms and reports will show the ePT name, not the spelling in your file — '
+                    . implode('; ', $parts)
+                    . '. Update the country name in ePT if the file wording is the one you want printed.';
+            }
         } catch (Throwable $e) {
             $db->rollBack();
             Pt_Commons_LoggerUtility::logError('Bulk participant import failed: ' . $e->getMessage(), [
@@ -2469,6 +2506,16 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         return $db->fetchCol($db->select()->from('countries', ['iso_name']));
+    }
+
+    /**
+     * id => iso_name, used to tell the admin when the spreadsheet's wording for a
+     * country differs from the name ePT will actually print.
+     */
+    private function getCountryNamesById(): array
+    {
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        return $db->fetchPairs($db->select()->from('countries', ['id', 'iso_name']));
     }
 
     /**

@@ -1,6 +1,7 @@
 <?php
 
 use PhpOffice\PhpSpreadsheet\IOFactory;
+use Pt_Commons_MiscUtility as MiscUtility;
 
 class Application_Model_DbTable_Enrollments extends Zend_Db_Table_Abstract
 {
@@ -272,6 +273,15 @@ class Application_Model_DbTable_Enrollments extends Zend_Db_Table_Abstract
             // Load Excel data
             $objPHPExcel = IOFactory::load($uploadedFilePath);
             $sheetData = $objPHPExcel->getActiveSheet()->toArray(null, true, true, true);
+
+            // Strip no-break/zero-width characters up front so an id or a name that
+            // merely looks clean cannot fail an exact match later; see
+            // MiscUtility::normalizeImportText.
+            foreach ($sheetData as $rowKey => $rowValues) {
+                if (is_array($rowValues)) {
+                    $sheetData[$rowKey] = MiscUtility::normalizeImportRow($rowValues);
+                }
+            }
 
             if (empty($sheetData) || count($sheetData) < 2) {
                 throw new Exception('Excel file is empty or has no data rows.');

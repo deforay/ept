@@ -138,6 +138,59 @@ final class Pt_Commons_MiscUtility
     }
 
     /**
+     * Clean a cell coming out of an uploaded spreadsheet.
+     *
+     * Text pasted from Word, a browser or a PDF carries invisible characters that
+     * look like ordinary spaces but are not: non-breaking space (U+00A0) is by far
+     * the most common, and it made 2371 participant names unsearchable after the
+     * June 2026 enrolment import. Zero-width characters and a stray BOM behave the
+     * same way. They survive trim(), compare unequal to a normal space, and are
+     * invisible in every UI, so they can only be caught here at the point of entry.
+     *
+     * Collapses any run of whitespace to a single space and trims. Nulls stay null
+     * so callers can still tell "blank cell" from "empty string".
+     */
+    public static function normalizeImportText($value)
+    {
+        if ($value === null || is_bool($value) || is_int($value) || is_float($value)) {
+            return $value;
+        }
+        $text = (string) $value;
+        if ($text === '') {
+            return $text;
+        }
+
+        // Space-like characters that are not a plain space.
+        $text = str_replace([
+            "\xC2\xA0",     // U+00A0 no-break space
+            "\xE2\x80\xAF", // U+202F narrow no-break space
+            "\xE2\x80\x87", // U+2007 figure space
+            "\xE2\x80\x82", // U+2002 en space
+            "\xE2\x80\x83", // U+2003 em space
+            "\xE2\x80\x89", // U+2009 thin space
+        ], ' ', $text);
+
+        // Zero-width and formatting characters, which have no business in a name.
+        $text = str_replace([
+            "\xE2\x80\x8B", // U+200B zero-width space
+            "\xE2\x80\x8C", // U+200C zero-width non-joiner
+            "\xE2\x80\x8D", // U+200D zero-width joiner
+            "\xEF\xBB\xBF", // U+FEFF byte order mark
+            "\xC2\xAD",     // U+00AD soft hyphen
+        ], '', $text);
+
+        return trim((string) preg_replace('/\s+/u', ' ', $text));
+    }
+
+    /**
+     * normalizeImportText() applied across one spreadsheet row.
+     */
+    public static function normalizeImportRow(array $row): array
+    {
+        return array_map([self::class, 'normalizeImportText'], $row);
+    }
+
+    /**
      * Normalize a participant unique ID. Only letters, digits and hyphens are
      * allowed (no spaces or other special characters). Returns the trimmed ID
      * if it contains at least $minAlphanumeric letter/digit characters, else null.
