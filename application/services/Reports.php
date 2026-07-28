@@ -4984,7 +4984,7 @@ class Application_Service_Reports
         $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
         $dmId = !empty($authNameSpace->dm_id) ? (int) $authNameSpace->dm_id : null;
         $id = (int) $id;
-
+        $shipmentId = $id;
         // Build WHERE clause based on type. For 'summary' $id is the shipment id
         // and the update touches every row mapped to this data manager; for
         // 'individual' $id is the map id of a single row.
@@ -5006,6 +5006,10 @@ class Application_Service_Reports
             $where = "map_id = $id";
             $prefix = 'individual';
         }
+        $shipmentId = $dbAdapter->fetchCol($dbAdapter->select()->from(['spm' => 'shipment_participant_map'], ['shipment_id'])
+        ->where($where))[0];
+        $common = new Application_Service_Common();
+        $common->saveDownloadedHistoryDetails([ 'shipment_id' => $shipmentId, 'report_type' => $prefix ], $dmId);
 
         $now = $dbAdapter->quote(Pt_Commons_DateUtility::getCurrentDateTime());
         $meta = 'report_download_metadata';

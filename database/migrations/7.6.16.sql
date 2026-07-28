@@ -17,3 +17,13 @@ WHERE `s`.`tb_form_generated` = 'queued'
     WHERE `sj`.`status` IN ('pending', 'processing')
       AND `sj`.`job` = CONCAT('generate-tb-forms.php -s ', `s`.`shipment_id`)
   );
+
+-- Thana 27-Jul-2026: Add table to track report downloads
+CREATE TABLE `track_report_downloaded_history` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `report_type` varchar(100) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `downloaded_on` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `downloaded_by` varchar(256) COLLATE utf8mb4_general_ci NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci
+

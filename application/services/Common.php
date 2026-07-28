@@ -2301,4 +2301,16 @@ class Application_Service_Common
         $schemeDb = new Application_Model_DbTable_SchemeList();
         return $schemeDb->fetchPossibleResultById($id);
     }
+
+    public function saveDownloadedHistoryDetails($params, $userId)
+    {
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        return $db->insert('track_report_downloaded_history', 
+        [
+            'report_type' => $params['report_type'] ?? null,
+            'shipment_id' => is_array($params) && isset($params['shipment_id']) ? $params['shipment_id'] : null,
+            'downloaded_by' => $userId, 
+            'downloaded_on' => new Zend_Db_Expr('NOW()')
+        ]);
+    }
 }
