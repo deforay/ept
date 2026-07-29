@@ -984,6 +984,11 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
 
         $aColumns = ['s.scheme_type', 'shipment_code', 'DATE_FORMAT(shipment_date,"%d-%b-%Y")', 'unique_identifier', 'first_name', 'DATE_FORMAT(spm.shipment_test_report_date,"%d-%b-%Y")'];
         $orderColumns = ['s.scheme_type', 'shipment_code', 'shipment_date', 'unique_identifier', 'first_name', 'spm.shipment_test_report_date', 's.created_on_admin'];
+        // NOTE: $sOrder must stay an array. Zend_Db_Select::order() only splits a
+        // trailing ASC/DESC off a *single* expression, so a comma-joined string
+        // like "shipment_date DESC,shipment_code ASC" gets quoted whole as one
+        // identifier and MySQL rejects it. Harmless while a page sorted on one
+        // column; breaks the moment DataTables sends iSortingCols > 1.
 
         /* Indexed column (used for fast and accurate table cardinality) */
         $sIndexColumn = $this->_primary;
@@ -996,7 +1001,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             $sLimit = $parameters['iDisplayLength'];
         }
 
-        $sOrder = '';
+        $sOrder = [];
         if (isset($parameters['iSortCol_0'])) {
             for ($i = 0; $i < intval($parameters['iSortingCols']); $i++) {
                 if ($parameters['bSortable_' . intval($parameters['iSortCol_' . $i])] == 'true') {
@@ -1004,10 +1009,9 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                     if (!isset($orderColumns[$colIdx])) {
                         continue;
                     }
-                    $sOrder .= $orderColumns[$colIdx] . ' ' . Pt_Commons_General::sanitizeSortDirection($parameters['sSortDir_' . $i]) . ',';
+                    $sOrder[] = $orderColumns[$colIdx] . ' ' . Pt_Commons_General::sanitizeSortDirection($parameters['sSortDir_' . $i]);
                 }
             }
-            $sOrder = substr_replace($sOrder, '', -1);
         }
 
         $sWhere = '';
@@ -1329,6 +1333,8 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
 
         $aColumns = ['scheme_type', 'shipment_code', 'DATE_FORMAT(shipment_date,"%d-%b-%Y")'];
         $orderColumns = ['scheme_type', 'shipment_code', 'shipment_date'];
+        // NOTE: $sOrder must stay an array — see the same note in
+        // getindividualReportDetails(). A comma-joined string breaks multi-column sort.
 
         /* Indexed column (used for fast and accurate table cardinality) */
         $sIndexColumn = $this->_primary;
@@ -1341,7 +1347,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             $sLimit = $parameters['iDisplayLength'];
         }
 
-        $sOrder = '';
+        $sOrder = [];
         if (isset($parameters['iSortCol_0'])) {
             for ($i = 0; $i < intval($parameters['iSortingCols']); $i++) {
                 if ($parameters['bSortable_' . intval($parameters['iSortCol_' . $i])] == 'true') {
@@ -1349,10 +1355,9 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                     if (!isset($orderColumns[$colIdx])) {
                         continue;
                     }
-                    $sOrder .= $orderColumns[$colIdx] . ' ' . Pt_Commons_General::sanitizeSortDirection($parameters['sSortDir_' . $i]) . ',';
+                    $sOrder[] = $orderColumns[$colIdx] . ' ' . Pt_Commons_General::sanitizeSortDirection($parameters['sSortDir_' . $i]);
                 }
             }
-            $sOrder = substr_replace($sOrder, '', -1);
         }
 
         $sWhere = '';

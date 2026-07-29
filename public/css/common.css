@@ -32,3 +32,17 @@
 form[name$="ResponseForm"] #respond {
   padding: 20px 0 30px 0;
 }
+/* Per-column search row inside DataTables headers (`<tr class="column-search-row">`).
+   Used on ~20 admin and participant grids. Without this the controls sit at their
+   intrinsic width and leave dead space either side of a wide column. Trim the cell
+   padding, then let the control fill the column. */
+.column-search-row > th {
+  padding: 4px 6px;
+}
+
+.column-search-row .col-search {
+  min-width: 0;
+  width: 100%;
+  box-sizing: border-box;
+  display: block;
+}

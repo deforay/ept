@@ -27,7 +27,13 @@
 <section class="content">
     <div class="box">
         <div class="box-body">
-
+            <div class="filter-panel js-filter-panel">
+                <button type="button" class="btn btn-default btn-sm js-filter-toggle" aria-expanded="false">
+                    <i class="icon-filter"></i> <?= $this->translate->_("Filters"); ?>
+                    <span class="label label-info js-filter-count" style="display:none;">0</span>
+                    <span class="caret"></span>
+                </button>
+                <div class="js-filter-body">
             <table class="table table-striped">
                 <tr class="dark">
                     <td style="width:25%"><?= $this->translate->_("Shipment Date"); ?></td>
@@ -112,7 +118,8 @@
                 </tr>
                 <?php } ?>
             </table>
-            <br><br>
+                </div><!-- /.js-filter-body -->
+            </div><!-- /.filter-panel -->
             <table cellpadding="0" cellspacing="0" border="0" class="display datatable table table-bordered"
                 id="summaryReportTable">
                 <thead>
@@ -226,8 +233,10 @@
                 "sClass": "center",
             },
             {
-                "sClass": "center",
-                "bSortable": false
+                // Sortable so it can act as the tie-breaker within a shipment date.
+                // The server maps this column to shipment_code but skips any column
+                // DataTables reports as unsortable, so this has to stay true.
+                "sClass": "center"
             },
             {
                 "sClass": "center"
@@ -238,7 +247,8 @@
             }
             ],
             "aaSorting": [
-                [2, "desc"]
+                [2, "desc"],
+                [1, "asc"]
             ],
             "bProcessing": true,
             "bServerSide": true,
@@ -395,3 +405,5 @@
         }
     }
 </script>
+<?php // Must stay last: the panel collapses only after the select2 widgets above have measured themselves.
+include APPLICATION_PATH . '/views/partials/collapsible-filters.phtml'; ?>

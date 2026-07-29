@@ -440,7 +440,9 @@ $resolvedHelpSlug = $helpSlugMap[$activeMenu] ?? '';
             if (isset($configData['footer_text']) && !empty($configData['footer_text'])) {
                 $footerText = $configData['footer_text'];
             } ?>
-            <span><?= "$footerText |" . $this->translate->_("This project is supported by the U.S. President's Emergency Plan for AIDS Relief (PEPFAR) through the U.S. Centers for Disease Control and Prevention (CDC)."); ?></span>
+            <?php // Separator only when there is something to separate — an unset
+            // footer_text (the default) was rendering a bare leading "|". ?>
+            <span><?= ($footerText !== '' ? "$footerText | " : '') . $this->translate->_("This project is supported by the U.S. President's Emergency Plan for AIDS Relief (PEPFAR) through the U.S. Centers for Disease Control and Prevention (CDC)."); ?></span>
         </footer>
 
         <div class="control-sidebar-bg"></div>

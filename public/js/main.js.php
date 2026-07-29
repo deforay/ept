@@ -90,6 +90,17 @@
         if (!$head.length) return;
         var timer = null;
         var last = {};
+        // Seed with whatever is already in the boxes. Without this, the first blur
+        // of an untouched empty box compares '' against undefined, decides the value
+        // "changed", and fires a no-op filter — a full server-side redraw just for
+        // tabbing through the header. The table re-rendering reads as the grid
+        // spontaneously re-sorting itself.
+        $head.find(inputSelector).each(function () {
+            var seedCol = parseInt($(this).data('col'), 10);
+            if (!isNaN(seedCol)) {
+                last[seedCol] = $(this).val();
+            }
+        });
         function apply($input) {
             var col = parseInt($input.data('col'), 10);
             var val = $input.val();

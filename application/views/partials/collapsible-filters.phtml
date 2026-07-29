@@ -1,0 +1,109 @@
+<?php
+
+/**
+ * Collapsible filter panel, shared by the participant report pages.
+ *
+ * The filter block on these pages runs to four table rows and pushed the actual
+ * results table below the fold. This collapses it behind a toggle and surfaces a
+ * count so a collapsed panel can never hide an active filter from the user.
+ *
+ * Markup contract in the including view:
+ *
+ *   <div class="filter-panel js-filter-panel">
+ *       <button type="button" class="btn btn-default btn-sm js-filter-toggle"> ... </button>
+ *       <div class="js-filter-body"> ...the existing filter table... </div>
+ *   </div>
+ *
+ * IMPORTANT: include this at the *end* of the view, after the view's own <script>
+ * block. jQuery runs ready handlers in registration order, so the page's
+ * select2() calls fire first — while the panel is still visible — and measure
+ * their widths correctly. Collapsing first would initialise select2 inside a
+ * display:none container, which is the classic "select2 renders 0px wide" bug.
+ */
+?>
+<style>
+    .filter-panel {
+        margin-bottom: 12px;
+    }
+
+    .filter-panel .js-filter-toggle {
+        margin-bottom: 0;
+    }
+
+    .filter-panel .js-filter-toggle .caret {
+        margin-left: 4px;
+        transition: transform 0.15s ease;
+    }
+
+    .filter-panel.is-open .js-filter-toggle .caret {
+        transform: rotate(180deg);
+    }
+
+    .filter-panel .js-filter-count {
+        margin-left: 4px;
+    }
+
+    /* The filter table carries its own bottom margin; drop it so the collapsed
+       state doesn't leave a gap above the results table. */
+    .filter-panel .js-filter-body > table {
+        margin-top: 10px;
+        margin-bottom: 0;
+    }
+    /* NOTE: the per-column search row (.column-search-row / .col-search) is styled
+       globally in public/css/common.css — it applies to every grid, not just the
+       pages that include this partial. */
+</style>
+<script>
+    $(function () {
+        $('.js-filter-panel').each(function () {
+            var $panel = $(this);
+            var $body = $panel.find('.js-filter-body');
+            var $toggle = $panel.find('.js-filter-toggle');
+            var $count = $panel.find('.js-filter-count');
+
+            function activeFilterCount() {
+                var n = 0;
+                $body.find('select, input').each(function () {
+                    var $el = $(this);
+                    if ($el.is(':button, :submit, :reset')) {
+                        return;
+                    }
+                    var val = $el.val();
+                    if (val !== null && val !== '' && val.length !== 0) {
+                        n++;
+                    }
+                });
+                return n;
+            }
+
+            function refreshCount() {
+                var n = activeFilterCount();
+                $count.text(n).toggle(n > 0);
+                return n;
+            }
+
+            function setOpen(open) {
+                $panel.toggleClass('is-open', open);
+                $toggle.attr('aria-expanded', open ? 'true' : 'false');
+            }
+
+            $toggle.on('click', function () {
+                var open = !$panel.hasClass('is-open');
+                setOpen(open);
+                $body.stop(true, true).slideToggle(150);
+            });
+
+            // Any filter change re-counts, so the badge stays honest while collapsed.
+            $body.on('change keyup', 'select, input', refreshCount);
+
+            // Collapse only when nothing is filtered — an active filter the user
+            // can't see is worse than a tall panel.
+            if (refreshCount() === 0) {
+                $body.hide();
+                setOpen(false);
+            } else {
+                setOpen(true);
+            }
+        });
+    });
+</script>
