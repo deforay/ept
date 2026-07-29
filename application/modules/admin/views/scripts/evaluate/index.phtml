@@ -79,20 +79,23 @@
             "bScrollCollapse": true,
             "sPaginationType": "bootstrap",
             "bRetrieve": true,
+            // Columns 1-3 carry a per-column search box and were made unsortable to
+            // stop what looked like the grid re-sorting itself on clicking into a
+            // search field — actually bindColSearch firing a no-op filter on blur
+            // (fixed in main.js.php). All three are backed by $orderColumns in
+            // getAllDistributions(). Column 4 (Action) has no server ordering, so it
+            // stays unsortable.
             "aoColumns": [{
                 "sClass": "center"
             },
             {
-                "sClass": "center",
-                "bSortable": false
+                "sClass": "center"
             },
             {
-                "sClass": "center",
-                "bSortable": false
+                "sClass": "center"
             },
             {
-                "sClass": "center",
-                "bSortable": false
+                "sClass": "center"
             },
             {
                 "sClass": "center",

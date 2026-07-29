@@ -165,32 +165,32 @@ $authNameSpace = new Zend_Session_Namespace('datamanagers');
 			"bRetrieve": false,
 			"bDestroy": true,
 			"bSortCellsTop": true,
+			// Columns 1-6 carry a per-column search box. They were made unsortable to
+			// stop what looked like the grid re-sorting itself when you clicked into a
+			// search field — that was actually bindColSearch firing a no-op filter on
+			// blur (fixed in main.js.php). Sorting never came from the search row:
+			// bSortCellsTop keeps the listeners on the title row. All six are backed by
+			// $orderColumns in getShipmentCurrentDetails().
 			"aoColumns": [{
 					"sClass": "center",
 				},
 				{
-					"sClass": "center",
-					"bSortable": false
+					"sClass": "center"
 				},
 				{
-					"sClass": "center",
-					"bSortable": false
+					"sClass": "center"
 				},
 				{
-					"sClass": "center",
-					"bSortable": false
+					"sClass": "center"
 				},
 				{
-					"sClass": "center",
-					"bSortable": false
+					"sClass": "center"
 				},
 				{
-					"sClass": "center",
-					"bSortable": false
+					"sClass": "center"
 				},
 				{
-					"sClass": "center",
-					"bSortable": false
+					"sClass": "center"
 				},
 				{
 					"sClass": "center",
