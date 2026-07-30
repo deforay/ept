@@ -453,13 +453,15 @@ class Admin_ShipmentController extends Zend_Controller_Action
             $this->view->shipment = $shipmentService->getShipmentForEdit($shipmentId);
             $this->view->shipmentId = $shipmentId;
             $this->view->schemeType = $schemeType;
+            $this->view->isMtbeptInstance = (Application_Service_Common::getConfig('instance') === 'mtbept');
         }
     }
 
     /**
      * AJAX endpoint for the Manage Enrollment copy-email buttons.
      * Returns unique, deliverable participant and data-manager emails
-     * for the requested audience (enrolled / not-responded / not-enrolled).
+     * for the requested audience (enrolled / not-responded / not-enrolled),
+     * plus 'ptcc' on the MTBEPT instance.
      */
     public function manageEnrollEmailsAction()
     {
@@ -472,9 +474,13 @@ class Admin_ShipmentController extends Zend_Controller_Action
         $request = $this->getRequest();
         $response = ['participantEmails' => [], 'dataManagerEmails' => []];
         $scope = $this->_getParam('scope', 'enrolled');
+        $allowedScopes = ['enrolled', 'not-responded', 'not-enrolled'];
+        if (Application_Service_Common::getConfig('instance') === 'mtbept') {
+            $allowedScopes[] = 'ptcc';
+        }
         if (
             $request->isPost() && $this->hasParam('shipmentId')
-            && in_array($scope, ['enrolled', 'not-responded', 'not-enrolled'], true)
+            && in_array($scope, $allowedScopes, true)
         ) {
             $participantService = new Application_Service_Participants();
             $response = $participantService->getShipmentEmailsByScope((int) $this->_getParam('shipmentId'), $scope);

@@ -1026,35 +1026,44 @@ class Application_Service_Participants
      *   'not-responded' — enrolled but without a submitted response (same test
      *                     as getShipmentNotRespondedParticipants)
      *   'not-enrolled'  — active participants NOT in the shipment
+     *   'ptcc'          — MTBEPT only: the PTCC logins mapped to the enrolled
+     *                     participants (no participant emails in this list)
      *
      * Same deliverability convention as getAllPTDetails() — 'valid' and
      * 'unknown' stay eligible, flagged-bad statuses are dropped — then each
-     * cell is split, syntax-checked and de-duplicated in PHP.
+     * cell is split, syntax-checked and de-duplicated in PHP. Deactivated
+     * participants and data-manager / PTCC logins are left out of every scope.
      */
     public function getShipmentEmailsByScope($shipmentId, $scope = 'enrolled')
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $shipmentId = (int) $shipmentId;
         $badStatuses = ['hard_bounce', 'invalid_domain', 'invalid_syntax'];
+        $isPtccScope = ($scope === 'ptcc');
 
         $participantSql = $db->select()->distinct()->from(['p' => 'participant'], ['p.email'])
             ->where("p.email IS NOT NULL AND p.email <> ''")
-            ->where('p.email_status NOT IN (?)', $badStatuses);
+            ->where('p.email_status NOT IN (?)', $badStatuses)
+            ->where("p.status = 'active'");
 
+        // data_manager_type is the reliable discriminator here; the legacy
+        // data_manager.ptcc enum has drifted out of sync on both sides.
         $dataManagerSql = $db->select()->distinct()->from(['dm' => 'data_manager'], ['dm.primary_email'])
             ->join(['pmm' => 'participant_manager_map'], 'dm.dm_id = pmm.dm_id', [])
             ->join(['p' => 'participant'], 'p.participant_id = pmm.participant_id', [])
-            ->where('dm.data_manager_type LIKE ?', 'manager')
+            ->where('dm.data_manager_type LIKE ?', $isPtccScope ? 'ptcc' : 'manager')
             ->where("dm.primary_email IS NOT NULL AND dm.primary_email <> ''")
-            ->where('dm.primary_email_status NOT IN (?)', $badStatuses);
+            ->where('dm.primary_email_status NOT IN (?)', $badStatuses)
+            // Retired logins/participants stay in the table; don't mail them.
+            ->where("dm.status = 'active'")
+            ->where("p.status = 'active'");
 
         if ($scope === 'not-enrolled') {
             $enrolledSub = $db->select()
                 ->from(['spm' => 'shipment_participant_map'], ['spm.participant_id'])
                 ->where('spm.shipment_id = ?', $shipmentId);
             foreach ([$participantSql, $dataManagerSql] as $sql) {
-                $sql->where('p.participant_id NOT IN ?', $enrolledSub)
-                    ->where("p.status = 'active'");
+                $sql->where('p.participant_id NOT IN ?', $enrolledSub);
             }
         } else {
             foreach ([$participantSql, $dataManagerSql] as $sql) {
@@ -1067,7 +1076,7 @@ class Application_Service_Participants
         }
 
         return [
-            'participantEmails' => $this->extractValidEmails($db->fetchCol($participantSql)),
+            'participantEmails' => $isPtccScope ? [] : $this->extractValidEmails($db->fetchCol($participantSql)),
             'dataManagerEmails' => $this->extractValidEmails($db->fetchCol($dataManagerSql)),
         ];
     }

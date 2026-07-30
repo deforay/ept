@@ -27,6 +27,12 @@
                 title="<?= $this->translate->_("Participant + data manager emails of active participants not enrolled in this shipment"); ?>">
                 <i class="icon-copy"></i>&nbsp;<?= $this->translate->_("Copy Emails : Not Enrolled"); ?>
             </button>
+            <?php if (!empty($this->isMtbeptInstance)) : ?>
+                <button class="btn btn-default" type="button" onclick="copyShipmentEmails('ptcc');"
+                    title="<?= $this->translate->_("Emails of the active PTCCs mapped to participants enrolled in this shipment"); ?>">
+                    <i class="icon-copy"></i>&nbsp;<?= $this->translate->_("Copy Emails : PTCC"); ?>
+                </button>
+            <?php endif; ?>
         </div>
     </div>
     <div class="data-list-body">
@@ -694,7 +700,9 @@
      * Fetch unique, deliverable participant + data manager emails for the
      * requested audience and copy them to the clipboard as one merged,
      * de-duplicated list.
-     * @param {string} scope - 'enrolled', 'not-responded' or 'not-enrolled'
+     * @param {string} scope - 'enrolled', 'not-responded', 'not-enrolled' or
+     *                         'ptcc' (MTBEPT only; PTCC logins mapped to the
+     *                         enrolled participants, no participant emails)
      */
     function copyShipmentEmails(scope) {
         $.blockUI(); // Show loading overlay
@@ -727,9 +735,14 @@
 
                 copyTextToClipboard(emails.join(", "), function (copied) {
                     if (copied) {
-                        alert(emails.length + " <?= $this->translate->_("unique email address(es) copied to clipboard"); ?> (" +
-                            participantEmails.length + " <?= $this->translate->_("participant"); ?>, " +
-                            dataManagerEmails.length + " <?= $this->translate->_("data manager"); ?>)");
+                        var summary = emails.length + " <?= $this->translate->_("unique email address(es) copied to clipboard"); ?>";
+                        if (scope === 'ptcc') {
+                            summary += " (<?= $this->translate->_("PTCC"); ?>)";
+                        } else {
+                            summary += " (" + participantEmails.length + " <?= $this->translate->_("participant"); ?>, " +
+                                dataManagerEmails.length + " <?= $this->translate->_("data manager"); ?>)";
+                        }
+                        alert(summary);
                     } else {
                         // Clipboard access denied - let the user copy manually
                         window.prompt("<?= $this->translate->_("Press Ctrl+C / Cmd+C to copy"); ?>", emails.join(", "));
