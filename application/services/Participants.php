@@ -936,10 +936,6 @@ class Application_Service_Participants
         // than silently skip everything on a fresh install.
         $badStatuses = "'hard_bounce','invalid_domain','invalid_syntax'";
 
-        // HAVING expression that filters out rows where the CASE picked neither
-        // primary nor secondary (both empty or both flagged bad).
-        $havingDeliverable = 'email IS NOT NULL';
-
         // Pick the primary if its stamped status is OK; otherwise fall back to
         // the secondary; otherwise NULL (HAVING drops the row).
         $emailPicker = function (string $primaryCol, string $primaryStatusCol, string $secondaryCol, string $secondaryStatusCol) use ($badStatuses): string {
@@ -952,69 +948,266 @@ class Application_Service_Participants
             END";
         };
 
-        $applySkip = function (Zend_Db_Select $sql) use ($skipEmail, $host) {
+        // GROUP BY / HAVING run on the `mailTo` alias, never on `email`:
+        // `participant` has a real column called `email`, so as soon as that
+        // table is joined MySQL binds the bare name to the column instead of
+        // the select alias and silently groups unrelated people together
+        // (four different PTCCs collapsing into one row). `mailTo` matches no
+        // column in any joined table, so it can only mean the alias.
+        $groupAndFilter = function (Zend_Db_Select $sql) use ($skipEmail, $host) {
+            $sql->group('mailTo')
+                ->having('mailTo IS NOT NULL');
             if ($skipEmail && $host !== '') {
-                $sql->having('LOWER(email) NOT LIKE ?', '%@' . $host)
-                    ->having('LOWER(email) NOT LIKE ?', '%@%.' . $host);
+                $sql->having('LOWER(mailTo) NOT LIKE ?', '%@' . $host)
+                    ->having('LOWER(mailTo) NOT LIKE ?', '%@%.' . $host);
             }
             return $sql;
         };
 
         $result = [];
 
+        // Every join below fans rows out, so anything that isn't grouped has to
+        // be GROUP_CONCAT(DISTINCT ...) to stay stable.
+        $countryExpr = new Zend_Db_Expr("GROUP_CONCAT(DISTINCT c.iso_name ORDER BY c.iso_name SEPARATOR ', ')");
+
         if (in_array('participant', (array) $data['sendMail'], true)) {
+            $emailExpr = $emailPicker('p.email', 'p.email_status', 'p.additional_email', 'p.additional_email_status');
             $sql = $db->select()->from(['p' => 'participant'], [
-                'email' => new Zend_Db_Expr($emailPicker('p.email', 'p.email_status', 'p.additional_email', 'p.additional_email_status')),
+                'email'  => new Zend_Db_Expr($emailExpr),
+                'mailTo' => new Zend_Db_Expr($emailExpr),
                 'name'  => new Zend_Db_Expr(Application_Model_DbTable_Participants::participantNameGroupConcatExpr('p')),
+                'role'  => new Zend_Db_Expr("'participant'"),
             ])
                 ->joinLeft(['spm' => 'shipment_participant_map'], 'p.participant_id=spm.participant_id', [])
-                ->joinLeft(['s' => 'shipment'], 's.shipment_id=spm.shipment_id', ['s.shipment_code'])
+                ->joinLeft(['s' => 'shipment'], 's.shipment_id=spm.shipment_id', ['s.shipment_code', 's.shipment_date'])
                 ->joinLeft(['d' => 'distributions'], 'd.distribution_id=s.distribution_id', ['distribution_code', 'distribution_date'])
                 ->joinLeft(['sl' => 'scheme_list'], 'sl.scheme_id=s.scheme_type', ['SCHEME' => 'sl.scheme_name'])
+                ->joinLeft(['c' => 'countries'], 'c.id=p.country', ['country' => $countryExpr])
                 ->where('s.shipment_id IN(?)', (array) $data['shipments'])
-                ->group('email')
-                ->having($havingDeliverable);
+                ->where("p.status = 'active'");
 
-            $result[] = $db->fetchAll($applySkip($sql));
+            // When both audiences are selected the lab is the addressee and its
+            // data managers ride along as Cc, so collect them per participant.
+            if (!empty($data['ccDataManagers'])) {
+                $ccPicker = $emailPicker('ccdm.primary_email', 'ccdm.primary_email_status', 'ccdm.secondary_email', 'ccdm.secondary_email_status');
+                $sql->joinLeft(['ccpmm' => 'participant_manager_map'], 'ccpmm.participant_id=p.participant_id', [])
+                    ->joinLeft(
+                        ['ccdm' => 'data_manager'],
+                        "ccdm.dm_id=ccpmm.dm_id AND ccdm.data_manager_type LIKE 'manager' AND ccdm.status = 'active'",
+                        ['ccEmails' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT $ccPicker SEPARATOR ',')")]
+                    );
+            }
+
+            $result[] = $db->fetchAll($groupAndFilter($sql));
         }
 
+        $dmEmailExpr = $emailPicker('dm.primary_email', 'dm.primary_email_status', 'dm.secondary_email', 'dm.secondary_email_status');
+
         if (in_array('datamanager', (array) $data['sendMail'], true)) {
+            // A data manager's country comes from the participants they manage.
             $sql = $db->select()->from(['dm' => 'data_manager'], [
-                'email' => new Zend_Db_Expr($emailPicker('dm.primary_email', 'dm.primary_email_status', 'dm.secondary_email', 'dm.secondary_email_status')),
+                'email'  => new Zend_Db_Expr($dmEmailExpr),
+                'mailTo' => new Zend_Db_Expr($dmEmailExpr),
                 'name'  => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT dm.first_name,' ',dm.last_name ORDER BY dm.first_name SEPARATOR ', ')"),
+                'role'  => new Zend_Db_Expr("'datamanager'"),
             ])
                 ->joinLeft(['pmm' => 'participant_manager_map'], 'dm.dm_id=pmm.dm_id', [])
                 ->joinLeft(['spm' => 'shipment_participant_map'], 'spm.participant_id=pmm.participant_id', [])
-                ->joinLeft(['s' => 'shipment'], 's.shipment_id=spm.shipment_id', ['s.shipment_code'])
+                ->joinLeft(['s' => 'shipment'], 's.shipment_id=spm.shipment_id', ['s.shipment_code', 's.shipment_date'])
                 ->joinLeft(['d' => 'distributions'], 'd.distribution_id=s.distribution_id', ['distribution_code', 'distribution_date'])
                 ->joinLeft(['sl' => 'scheme_list'], 'sl.scheme_id=s.scheme_type', ['SCHEME' => 'sl.scheme_name'])
+                ->joinLeft(['p' => 'participant'], 'p.participant_id=pmm.participant_id', [])
+                ->joinLeft(['c' => 'countries'], 'c.id=p.country', ['country' => $countryExpr])
                 ->where('s.shipment_id IN(?)', (array) $data['shipments'])
                 ->where('data_manager_type LIKE "manager"')
-                ->group('email')
-                ->having($havingDeliverable);
+                ->where("dm.status = 'active'")
+                ->where("p.status = 'active'");
 
-            $result[] = $db->fetchAll($applySkip($sql));
+            $result[] = $db->fetchAll($groupAndFilter($sql));
         }
 
         if (in_array('ptcc', (array) $data['sendMail'], true)) {
+            // A PTCC's country comes from its own coverage map, not from the labs.
             $sql = $db->select()->from(['dm' => 'data_manager'], [
-                'email' => new Zend_Db_Expr($emailPicker('dm.primary_email', 'dm.primary_email_status', 'dm.secondary_email', 'dm.secondary_email_status')),
+                'email'  => new Zend_Db_Expr($dmEmailExpr),
+                'mailTo' => new Zend_Db_Expr($dmEmailExpr),
                 'name'  => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT dm.first_name,' ',dm.last_name ORDER BY dm.first_name SEPARATOR ', ')"),
+                'role'  => new Zend_Db_Expr("'ptcc'"),
             ])
                 ->joinLeft(['pmm' => 'participant_manager_map'], 'dm.dm_id=pmm.dm_id', [])
                 ->joinLeft(['spm' => 'shipment_participant_map'], 'spm.participant_id=pmm.participant_id', [])
-                ->joinLeft(['s' => 'shipment'], 's.shipment_id=spm.shipment_id', ['s.shipment_code'])
+                ->joinLeft(['s' => 'shipment'], 's.shipment_id=spm.shipment_id', ['s.shipment_code', 's.shipment_date'])
                 ->joinLeft(['d' => 'distributions'], 'd.distribution_id=s.distribution_id', ['distribution_code', 'distribution_date'])
                 ->joinLeft(['sl' => 'scheme_list'], 'sl.scheme_id=s.scheme_type', ['SCHEME' => 'sl.scheme_name'])
+                ->joinLeft(['pcm' => 'ptcc_countries_map'], 'pcm.ptcc_id=dm.dm_id', [])
+                ->joinLeft(['c' => 'countries'], 'c.id=pcm.country_id', ['country' => $countryExpr])
+                ->joinLeft(['p' => 'participant'], 'p.participant_id=pmm.participant_id', [])
                 ->where('s.shipment_id IN(?)', (array) $data['shipments'])
                 ->where('data_manager_type LIKE "ptcc"')
-                ->group('email')
-                ->having($havingDeliverable);
+                ->where("dm.status = 'active'")
+                ->where("p.status = 'active'");
 
-            $result[] = $db->fetchAll($applySkip($sql));
+            $result[] = $db->fetchAll($groupAndFilter($sql));
         }
 
         return $result;
+    }
+
+    /**
+     * The single source of truth for "who actually gets this email".
+     *
+     * Runs getAllPTDetails(), then applies exactly the filters the send loop
+     * used to apply inline — syntax validation, the @domain skip, and the
+     * cross-role de-dupe — so the preview screen and the real send can never
+     * disagree. Keyed by lowercased address; first role to claim an address
+     * keeps it, which is what guarantees one email per person.
+     *
+     * Selecting participants AND data managers together switches to
+     * participant-led addressing: the lab is the To, its active data managers
+     * are Cc'd on that same email, and a manager who shares the lab's address
+     * is dropped from Cc so nobody is listed twice on one message. A manager
+     * is only promoted to a To of their own when none of their sites has a
+     * deliverable address — otherwise that site would hear nothing at all.
+     *
+     * @return array{recipients: array<string, array>, invalid: string[]}
+     */
+    public function resolveMailRecipients($data)
+    {
+        $commonServices = new Application_Service_Common();
+        $host = strtolower(parse_url($commonServices->getConfig('domain'), PHP_URL_HOST) ?: '');
+        $skip = !empty($data['skipEmail']) && $data['skipEmail'] === 'on';
+
+        $roles = (array) ($data['sendMail'] ?? []);
+        $ccDataManagers = in_array('participant', $roles, true) && in_array('datamanager', $roles, true);
+        $data['ccDataManagers'] = $ccDataManagers;
+
+        $recipients = [];
+        $invalid = [];
+        // Every address already on a message, as a To or a Cc. In paired mode
+        // this is what stops a Cc'd manager also getting their own copy.
+        $covered = [];
+
+        $isSkipped = function (string $email) use ($skip, $host): bool {
+            if (!$skip || $host === '') {
+                return false;
+            }
+            $domain = strtolower(substr(strrchr($email, '@'), 1));
+            return $domain === $host || substr($domain, -strlen('.' . $host)) === '.' . $host;
+        };
+
+        foreach ($this->getAllPTDetails($data) as $row) {
+            foreach ($row as $pt) {
+                $toMail = trim((string) ($pt['email'] ?? ''));
+                if ($toMail === '') {
+                    continue;
+                }
+
+                $toEmail = Application_Service_Common::validateEmail($toMail);
+                if ($toEmail === null) {
+                    $invalid[$toMail] = $toMail;
+                    continue;
+                }
+
+                $key = strtolower($toEmail);
+                if (isset($recipients[$key])) {
+                    continue;
+                }
+
+                // A manager already Cc'd on their lab's email needs no second copy
+                if ($ccDataManagers && ($pt['role'] ?? '') === 'datamanager' && isset($covered[$key])) {
+                    continue;
+                }
+
+                if ($isSkipped($toEmail)) {
+                    continue;
+                }
+
+                // Resolve the Cc list: validated, domain-skipped, never the To itself
+                $cc = [];
+                foreach (preg_split('/[,;\s]+/', (string) ($pt['ccEmails'] ?? ''), -1, PREG_SPLIT_NO_EMPTY) as $raw) {
+                    $ccEmail = Application_Service_Common::validateEmail($raw);
+                    if ($ccEmail === null || $isSkipped($ccEmail)) {
+                        continue;
+                    }
+                    $ccKey = strtolower($ccEmail);
+                    if ($ccKey === $key || isset($cc[$ccKey])) {
+                        continue;
+                    }
+                    $cc[$ccKey] = $ccEmail;
+                }
+
+                $pt['email'] = $toEmail;
+                $pt['cc'] = array_values($cc);
+                $recipients[$key] = $pt;
+
+                $covered[$key] = true;
+                foreach (array_keys($cc) as $ccKey) {
+                    $covered[$ccKey] = true;
+                }
+            }
+        }
+
+        return ['recipients' => $recipients, 'invalid' => array_values($invalid)];
+    }
+
+    /**
+     * Which roles each address matches across ALL three audiences, regardless
+     * of what is selected. Lets the preview warn that an address queued as a
+     * PTCC today is also an enrolled participant, and would therefore receive
+     * a second copy from a separate send.
+     *
+     * @return array<string, string[]> lowercased email => roles
+     */
+    public function getMailRecipientRoleMap($data)
+    {
+        $data['sendMail'] = ['participant', 'datamanager', 'ptcc'];
+        // Role membership only — the Cc join would just slow this down
+        unset($data['ccDataManagers']);
+
+        $map = [];
+        foreach ($this->getAllPTDetails($data) as $row) {
+            foreach ($row as $pt) {
+                $email = Application_Service_Common::validateEmail(trim((string) ($pt['email'] ?? '')));
+                if ($email === null) {
+                    continue;
+                }
+                $key = strtolower($email);
+                $map[$key][$pt['role']] = $pt['role'];
+            }
+        }
+
+        return array_map('array_values', $map);
+    }
+
+    /**
+     * Merge-field values for one recipient row. Shared by the send and the
+     * preview so a previewed body is byte-identical to what goes out.
+     *
+     * @return array{0: string[], 1: string[]} [$search, $replace]
+     */
+    public static function mailMergeFields(array $pt): array
+    {
+        $surveyDate = Pt_Commons_DateUtility::humanReadableDateFormat($pt['distribution_date'] ?? null);
+        $shipDate = !empty($pt['shipment_date'])
+            ? Pt_Commons_DateUtility::humanReadableDateFormat($pt['shipment_date'])
+            : $surveyDate;
+        // The programme year is the survey's year, not today's — a panel
+        // prepared in December still belongs to the following year's round.
+        $year = !empty($pt['distribution_date']) ? date('Y', strtotime((string) $pt['distribution_date'])) : '';
+
+        return [
+            ['##NAME##', '##SHIPCODE##', '##SHIPTYPE##', '##SURVEYCODE##', '##SURVEYDATE##', '##SHIPDATE##', '##YEAR##', '##COUNTRY##'],
+            [
+                $pt['name'] ?? '',
+                $pt['shipment_code'] ?? '',
+                $pt['SCHEME'] ?? '',
+                $pt['distribution_code'] ?? '',
+                $surveyDate,
+                $shipDate,
+                $year,
+                $pt['country'] ?? '',
+            ],
+        ];
     }
 
     /**
@@ -1110,9 +1303,9 @@ class Application_Service_Participants
         $alertMsg = new Zend_Session_Namespace('alertSpace');
 
         $mail = json_decode($commonServices->getConfig('mail'));
-        $domain = $commonServices->getConfig('domain');
-        // Fetch recipients (already filtered by SQL if skipEmail was on)
-        $results = $this->getAllPTDetails($data);
+        // Validated, domain-skipped and de-duplicated — same call the preview
+        // screen makes, so what was previewed is what gets queued.
+        $resolved = $this->resolveMailRecipients($data);
 
         // Persist what was sent (for history)
         $emailParticipantDb = new Application_Model_DbTable_EmailParticipants();
@@ -1123,63 +1316,32 @@ class Application_Service_Participants
             'scode' => implode(',', (array) $data['shipments']),
         ]);
 
-        // Runtime “belt-and-suspenders” guard for skipping + subdomains
-        $host = strtolower(parse_url($domain, PHP_URL_HOST) ?: '');
-        $skip = !empty($data['skipEmail']) && $data['skipEmail'] === 'on';
+        if (!empty($resolved['invalid'])) {
+            $alertMsg->message = implode(', ', $resolved['invalid']) . ' — not valid email(s), skipped';
+        }
 
         $fromEmail = $mail->fromEmail;
         $fromFullName = $mail->fromName;
-        $cc = $mail->cc;
+        $configCc = trim((string) $mail->cc);
         $bcc = $mail->bcc;
 
         $status = false;
-        $seen = []; // cross-role de-dupe (participant/datamanager/ptcc)
-        foreach ($results as $row) {
-            foreach ($row as $pt) {
-                $toMail = trim((string) ($pt['email'] ?? ''));
-                if ($toMail === '') {
-                    continue;
-                }
-                // Normalize & basic syntax validation; returns normalized or null
-                $toEmail = Application_Service_Common::validateEmail($toMail);
-                if ($toEmail === null) {
-                    $alertMsg->message = "$toMail this is not a valid email to send";
-                    continue;
-                }
+        foreach ($resolved['recipients'] as $pt) {
+            // Personalize subject/message
+            [$search, $replace] = self::mailMergeFields($pt);
 
-                // De-dupe
-                $k = strtolower($toEmail);
-                if (isset($seen[$k])) {
-                    continue;
-                }
+            $message = str_replace($search, $replace, (string) $data['message']);
+            $subject = str_replace($search, $replace, (string) $data['subject']);
 
-                // Skip domains: exact host and any subdomain of host
-                if ($skip && $host !== '') {
-                    $toDomain = strtolower(substr(strrchr($toEmail, '@'), 1));
-                    if ($toDomain === $host || substr($toDomain, -strlen('.' . $host)) === '.' . $host) {
-                        continue;
-                    }
-                }
-
-                // Personalize subject/message
-                $surveyDate = Pt_Commons_DateUtility::humanReadableDateFormat($pt['distribution_date']);
-                $search = ['##NAME##', '##SHIPCODE##', '##SHIPTYPE##', '##SURVEYCODE##', '##SURVEYDATE##'];
-
-                $replace = [
-                    $pt['name'],
-                    $pt['shipment_code'],
-                    $pt['SCHEME'],
-                    $pt['distribution_code'],
-                    $surveyDate,
-                ];
-
-                $message = str_replace($search, $replace, (string) $data['message']);
-                $subject = str_replace($search, $replace, (string) $data['subject']);
-                // Queue email
-                $status = $commonServices->insertTempMail($toEmail, $cc, $bcc, $subject, $message, $fromEmail, $fromFullName) || $status;
-                // Mark as seen after successful queue attempt to avoid duplicates
-                $seen[$k] = true;
+            // The standing config Cc rides along with this row's data managers
+            $ccList = $pt['cc'] ?? [];
+            if ($configCc !== '') {
+                array_unshift($ccList, $configCc);
             }
+            $cc = implode(',', $ccList);
+
+            // Queue email
+            $status = $commonServices->insertTempMail($pt['email'], $cc, $bcc, $subject, $message, $fromEmail, $fromFullName) || $status;
         }
         if ($status) {
             $alertMsg = new Zend_Session_Namespace('alertSpace');

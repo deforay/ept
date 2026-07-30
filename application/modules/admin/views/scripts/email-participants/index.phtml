@@ -95,16 +95,83 @@ $eptDomain = parse_url($conf->domain, PHP_URL_HOST);
                     <span class="help-block"><?= $this->translate->_("Scheme Type"); ?> : ##SHIPTYPE##</span>
                     <span class="help-block"><?= $this->translate->_("PT Survey Code"); ?> : ##SURVEYCODE##</span>
                     <span class="help-block"><?= $this->translate->_("PT Survey Date"); ?> : ##SURVEYDATE##</span>
+                    <span class="help-block"><?= $this->translate->_("Shipment Date"); ?> : ##SHIPDATE##</span>
+                    <span class="help-block"><?= $this->translate->_("PT Survey Year"); ?> : ##YEAR##</span>
+                    <span class="help-block"><?= $this->translate->_("Country"); ?> : ##COUNTRY##</span>
                 </div>
             </div>
             <div id="respond" style="margin: 0px auto 0px auto; text-align: center;" align="center">
                 <input type="hidden" name="distributionId" id="distributionId" value="<?php echo $this->distributionId; ?>" />
                 <input type="hidden" name="shipmentSlectedId" id="shipmentSlectedId" value="<?php echo $this->shipmentId; ?>" />
+                <input class="btn btn-info" type="button" onclick="previewRecipients();return false;" tabindex="6" value="<?= $this->translate->_("Preview Recipients"); ?>" />
                 <input name="submitbtn" class="btn btn-primary" type="button" onclick="validateNow();return false;" tabindex="7" value="<?= $this->translate->_("Send"); ?>" />
                 <input class="btn btn-danger" type="button" onclick="window.location.href='/admin/index';" tabindex="8" value="<?= $this->translate->_("Back"); ?>" />
             </div>
         </fieldset>
     </form>
+</div>
+
+<!-- Recipient preview: the exact list the Send button would queue -->
+<div class="modal fade" id="recipientPreviewModal" tabindex="-1" role="dialog" aria-labelledby="recipientPreviewLabel">
+    <div class="modal-dialog modal-lg" role="document" style="width:90%;max-width:1100px;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="recipientPreviewLabel"><?= $this->translate->_("Recipient Preview"); ?></h4>
+            </div>
+            <div class="modal-body">
+                <!-- Pane 1: the recipient list -->
+                <div id="previewListPane">
+                <div id="previewSummary"></div>
+                <div id="previewWarnings"></div>
+                <div style="margin-bottom:8px;">
+                    <input type="text" id="previewFilter" class="form-control input-sm"
+                        placeholder="<?= $this->translate->_('Filter by name, email, country or type'); ?>"
+                        onkeyup="filterPreview(this.value);" />
+                    <span class="help-block" id="previewFilterCount" style="margin:4px 0 0 0;"></span>
+                </div>
+                <div style="max-height:420px;overflow-y:auto;border:1px solid #ddd;">
+                    <table class="table table-striped table-condensed" id="previewTable" style="margin:0;">
+                        <thead>
+                            <tr>
+                                <th style="width:40px;">#</th>
+                                <th style="width:110px;"><?= $this->translate->_("Type"); ?></th>
+                                <th><?= $this->translate->_("Name"); ?></th>
+                                <th><?= $this->translate->_("Email"); ?> (<?= $this->translate->_("To"); ?>)</th>
+                                <th><?= $this->translate->_("Cc"); ?></th>
+                                <th style="width:130px;"><?= $this->translate->_("Country"); ?></th>
+                                <th style="width:70px;"></th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+                </div><!-- /#previewListPane -->
+
+                <!-- Pane 2: one rendered message. Kept inside the SAME modal on
+                     purpose — a nested Bootstrap 3 modal opens behind this
+                     one's backdrop and reads as a dead button. -->
+                <div id="previewMessagePane" style="display:none;">
+                    <button type="button" class="btn btn-default btn-sm" onclick="closePreviewBody();"
+                        style="margin-bottom:12px;">
+                        &larr;&nbsp;<?= $this->translate->_("Back to the list"); ?>
+                    </button>
+                    <p style="margin:0 0 4px 0;"><strong><?= $this->translate->_("To"); ?>:</strong>
+                        <span id="previewBodyTo"></span></p>
+                    <p style="margin:0 0 4px 0;"><strong><?= $this->translate->_("Cc"); ?>:</strong>
+                        <span id="previewBodyCc"></span></p>
+                    <p style="margin:0 0 10px 0;"><strong><?= $this->translate->_("Subject"); ?>:</strong>
+                        <span id="previewBodySubject"></span></p>
+                    <div id="previewBodyContent"
+                        style="border:1px solid #eee;padding:12px;max-height:420px;overflow-y:auto;"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" onclick="copyPreviewEmails();"><?= $this->translate->_("Copy all addresses"); ?></button>
+                <button type="button" class="btn btn-default" data-dismiss="modal"><?= $this->translate->_("Close"); ?></button>
+            </div>
+        </div>
+    </div>
 </div>
 
 <script type="text/javascript" src="<?php echo $this->baseUrl('js/daterangepicker.js'); ?>"></script>
@@ -215,6 +282,266 @@ $eptDomain = parse_url($conf->domain, PHP_URL_HOST);
 
                 $.unblockUI();
             });
+    }
+
+    // Holds the last preview payload so the footer buttons and the per-row
+    // "View" links can work off it without a second round trip.
+    var previewData = null;
+
+    var ROLE_LABELS = {
+        participant: "<?= $this->translate->_("Participant"); ?>",
+        datamanager: "<?= $this->translate->_("Data Manager"); ?>",
+        ptcc: "<?= $this->translate->_("PTCC"); ?>"
+    };
+
+    function roleLabel(role) {
+        return ROLE_LABELS[role] || role;
+    }
+
+    /**
+     * Dry-run the send: ask the server for the exact de-duplicated recipient
+     * list for the current shipment/audience selection and show it.
+     */
+    function previewRecipients() {
+        $("#message").val($("#messageEditor").summernote('code'));
+
+        if ($('#shipments').val() == '' || $('#shipments').val() == null) {
+            alert("<?= $this->translate->_("Please select at least one shipment"); ?>");
+            return false;
+        }
+        if ($('#sendMail').val() == '' || $('#sendMail').val() == null) {
+            alert("<?= $this->translate->_("Please select who the email should go to"); ?>");
+            return false;
+        }
+
+        $.blockUI();
+        $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'email-participants', 'action' => 'preview-recipients')); ?>", {
+                shipments: $('#shipments').val(),
+                sendMail: $('#sendMail').val(),
+                skipEmail: $('#skipEmail').is(':checked') ? 'on' : '',
+                subject: $('#subject').val(),
+                message: $('#message').val(),
+                format: "html"
+            },
+            function(data) {
+                $.unblockUI();
+                previewData = data;
+                $('#previewFilter').val('');
+                $('#previewFilterCount').text('');
+                closePreviewBody(); // always reopen on the list, not a stale message
+                renderPreview(data);
+                $('#recipientPreviewModal').modal('show');
+            }, "json")
+            .fail(function() {
+                $.unblockUI();
+                alert("<?= $this->translate->_("Unable to build the preview. Please try again later or contact system admin for help"); ?>");
+            });
+    }
+
+    /**
+     * A headline plus a details list that stays collapsed — these lists run to
+     * hundreds of addresses and swamp the dialog if rendered inline.
+     */
+    function buildCollapsibleAlert(cssClass, headline, lines) {
+        var box = $('<div class="alert ' + cssClass + '" style="margin-bottom:10px;">');
+        var details = $('<div style="max-height:140px;overflow-y:auto;margin-top:8px;font-size:12px;display:none;">')
+            .text(lines.join(", "));
+
+        var toggle = $('<a href="javascript:void(0)" style="margin-left:6px;text-decoration:underline;">')
+            .text("<?= $this->translate->_("show"); ?>")
+            .on('click', function() {
+                details.toggle();
+                $(this).text(details.is(':visible') ?
+                    "<?= $this->translate->_("hide"); ?>" :
+                    "<?= $this->translate->_("show"); ?>");
+            });
+
+        return box.append($('<span>').text(headline)).append(toggle).append(details);
+    }
+
+    /** Client-side filter over the rendered rows — the list runs to 1000+. */
+    function filterPreview(term) {
+        term = $.trim(term).toLowerCase();
+        var shown = 0;
+        $('#previewTable tbody tr').each(function() {
+            var row = $(this);
+            var match = term === '' || row.data('haystack').indexOf(term) !== -1;
+            row.toggle(match);
+            if (match) {
+                shown++;
+            }
+        });
+
+        var total = (previewData && previewData.recipients) ? previewData.recipients.length : 0;
+        $('#previewFilterCount').text(term === '' ? '' : shown + " / " + total + " <?= $this->translate->_("shown"); ?>");
+    }
+
+    function renderPreview(data) {
+        var recipients = data.recipients || [];
+        var counts = data.counts || {};
+
+        var breakdown = [];
+        $.each(counts, function(role, count) {
+            breakdown.push(count + " " + roleLabel(role));
+        });
+
+        var ccMessages = $.grep(recipients, function(r) {
+            return r.cc && r.cc.length > 0;
+        });
+        var ccPeople = {};
+        $.each(ccMessages, function(i, r) {
+            $.each(r.cc, function(j, addr) {
+                ccPeople[addr.toLowerCase()] = true;
+            });
+        });
+
+        var summary = recipients.length + " <?= $this->translate->_("email(s) will be queued"); ?>" +
+            (breakdown.length ? " — <?= $this->translate->_("addressed to"); ?> " + breakdown.join(", ") : "");
+        if (ccMessages.length > 0) {
+            summary += ". " + ccMessages.length + " <?= $this->translate->_("of them also Cc a data manager"); ?> (" +
+                Object.keys(ccPeople).length + " <?= $this->translate->_("distinct manager(s)"); ?>)";
+        }
+
+        $('#previewSummary').html('').append(
+            $('<div class="alert alert-info" style="margin-bottom:10px;">').text(summary)
+        );
+
+        var warnings = $('#previewWarnings').html('');
+
+        // Only audiences outside this selection matter: those addresses would
+        // get a second copy from a separate send. Same-selection overlaps are
+        // already collapsed into one email and need no warning.
+        var overlaps = $.grep(recipients, function(r) {
+            return r.otherRoles && r.otherRoles.length > 0;
+        });
+        if (overlaps.length > 0) {
+            var lines = $.map(overlaps, function(r) {
+                return r.email + " (" + $.map(r.otherRoles, roleLabel).join(", ") + ")";
+            });
+            warnings.append(buildCollapsibleAlert(
+                'alert-warning',
+                overlaps.length + " <?= $this->translate->_("of these addresses also belong to an audience you did NOT select, so a separate send to that audience would reach them a second time"); ?>",
+                lines
+            ));
+        }
+
+        // Addresses landing more than once in THIS send — typically someone who
+        // runs their own lab and is Cc'd as the manager of neighbouring labs.
+        var multiple = data.multiple || [];
+        if (multiple.length > 0) {
+            warnings.append(buildCollapsibleAlert(
+                'alert-warning',
+                multiple.length + " <?= $this->translate->_("address(es) appear on more than one message in this send (own lab as To, plus Cc on labs they manage). Type multiple in the filter box to see them"); ?>",
+                $.map(multiple, function(m) {
+                    return m.email + " ×" + m.copies;
+                })
+            ));
+        }
+
+        if (data.invalid && data.invalid.length > 0) {
+            warnings.append(buildCollapsibleAlert(
+                'alert-danger',
+                data.invalid.length + " <?= $this->translate->_("address(es) were dropped as invalid"); ?>",
+                data.invalid
+            ));
+        }
+
+        var tbody = $('#previewTable tbody').empty();
+        if (recipients.length === 0) {
+            tbody.append($('<tr>').append(
+                $('<td colspan="7" class="text-center">').text("<?= $this->translate->_("No recipients match this selection"); ?>")
+            ));
+            return;
+        }
+
+        $.each(recipients, function(i, r) {
+            var viewBtn = $('<a href="javascript:void(0)" class="btn btn-xs btn-default">')
+                .text("<?= $this->translate->_("View"); ?>")
+                .on('click', function() {
+                    showPreviewBody(i);
+                });
+
+            var cc = r.cc || [];
+            var copies = r.copies || 1;
+
+            var toCell = $('<td>').text(r.email);
+            if (copies > 1) {
+                toCell.append(
+                    $('<span class="label label-warning" style="margin-left:6px;">')
+                        .attr('title', "<?= $this->translate->_("This inbox also receives Cc copies from labs it manages"); ?>")
+                        .text("×" + copies)
+                );
+            }
+
+            var row = $('<tr>')
+                .append($('<td>').text(i + 1))
+                .append($('<td>').text(roleLabel(r.role)))
+                .append($('<td>').text(r.name || ''))
+                .append(toCell)
+                .append($('<td>').css('font-size', '12px').text(cc.join(', ')))
+                .append($('<td>').text(r.country || ''))
+                .append($('<td>').append(viewBtn));
+
+            // Precomputed so filtering stays cheap across 1000+ rows. The
+            // "multiple" keyword is synthetic — it makes the duplicated
+            // inboxes reachable from the filter box.
+            row.data('haystack', [roleLabel(r.role), r.name || '', r.email, cc.join(' '), r.country || '',
+                    copies > 1 ? 'multiple' : ''
+                ]
+                .join(' ').toLowerCase());
+
+            tbody.append(row);
+        });
+    }
+
+    /**
+     * Show the fully merged subject/body one recipient would actually get, by
+     * swapping panes inside this modal rather than opening a second one.
+     */
+    function showPreviewBody(index) {
+        var r = (previewData && previewData.recipients) ? previewData.recipients[index] : null;
+        if (!r) {
+            return;
+        }
+        var cc = r.cc || [];
+        $('#previewBodyTo').text(r.name ? (r.name + " <" + r.email + ">") : r.email);
+        $('#previewBodyCc').text(cc.length ? cc.join(", ") : "—");
+        $('#previewBodySubject').text(r.subject || '');
+        // Admin-authored HTML from the editor — render it as the recipient sees it
+        $('#previewBodyContent').html(r.body || '');
+
+        $('#previewListPane').hide();
+        $('#previewMessagePane').show();
+    }
+
+    /** Return from a single message to the recipient list. */
+    function closePreviewBody() {
+        $('#previewMessagePane').hide();
+        $('#previewListPane').show();
+    }
+
+    function copyPreviewEmails() {
+        if (!previewData || !previewData.recipients || previewData.recipients.length === 0) {
+            return;
+        }
+        var emails = $.map(previewData.recipients, function(r) {
+            return r.email;
+        }).join(", ");
+
+        var textarea = document.createElement('textarea');
+        textarea.value = emails;
+        textarea.setAttribute('readonly', '');
+        textarea.style.position = 'fixed';
+        textarea.style.opacity = '0';
+        document.body.appendChild(textarea);
+        textarea.select();
+        try {
+            document.execCommand('copy');
+            alert(previewData.recipients.length + " <?= $this->translate->_("address(es) copied to clipboard"); ?>");
+        } catch (err) {
+            window.prompt("<?= $this->translate->_("Press Ctrl+C / Cmd+C to copy"); ?>", emails);
+        }
+        document.body.removeChild(textarea);
     }
 
     function fillTemplate(value) {
