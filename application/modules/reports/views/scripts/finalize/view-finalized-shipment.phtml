@@ -550,6 +550,16 @@ if (!empty($this->shipment)) {
                             "success": fnCallback
                         });
                     },
+                    "fnDrawCallback": function () {
+                        // Rows are replaced by DataTables on every draw, so Bootstrap tooltip
+                        // bindings on the "Downloaded" badges (title/data-toggle="tooltip")
+                        // need to be re-applied here each time.
+                        $('#shipmentEvaluation [data-toggle="tooltip"]').tooltip({
+                            html: true,
+                            container: 'body',
+                            placement: 'top'
+                        });
+                    },
                     "aoColumns": [
                         { "bSortable": false },
                         { "sClass": "center" },
