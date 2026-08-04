@@ -842,8 +842,8 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
     public function getShipmentReportDetails($parameters)
     {
         /* Array of database columns which should be read and sent back to DataTables. Use a space where
-         * you want to insert a non-database field (for example a counter or static image)
-         */
+        * you want to insert a non-database field (for example a counter or static image)
+        */
 
         $aColumns = ['year(shipment_date)', 'DATE_FORMAT(shipment_date,"%d-%b-%Y")', 'scheme_type', 'shipment_code'];
         $orderColumns = ['shipment_date', 'shipment_date', 'scheme_type', 'shipment_code'];
@@ -908,11 +908,43 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             }
         }
 
+        // ------------------------------------------------------------------
+        // Aggregate individual-report download history per shipment into a
+        // JSON array. NOTE: track_report_downloaded_history is shipment-level
+        // only (no participant/map_id column), so this history is shared
+        // across every participant row for the same shipment — it shows who
+        // downloaded *an* individual report for this shipment, not
+        // specifically the report on this row.
+        // ------------------------------------------------------------------
+        $individualHistoryInner = $this->getAdapter()->select()
+            ->from(['th' => 'track_report_downloaded_history'], ['th.shipment_id', 'th.downloaded_on'])
+            ->joinLeft(
+                ['dmh' => 'data_manager'],
+                'dmh.dm_id = th.downloaded_by',
+                ['dm_name' => new Zend_Db_Expr("COALESCE(NULLIF(TRIM(CONCAT(dmh.first_name,' ',dmh.last_name)), ''), 'Unknown')")]
+            )
+            ->where('th.report_type = ?', 'individual');
+
+        $individualHistorySelect = $this->getAdapter()->select()
+            ->from(['ihi' => $individualHistoryInner], ['shipment_id'])
+            ->columns([
+                'individualDownloadHistory' => new Zend_Db_Expr(
+                    "JSON_ARRAYAGG(JSON_OBJECT('name', dm_name, 'downloaded_on', downloaded_on))"
+                ),
+                'individualDownloadCount' => new Zend_Db_Expr('COUNT(*)'),
+            ])
+            ->group('shipment_id');
+
         $sQuery = $this->getAdapter()->select()->from(['s' => 'shipment'], [new Zend_Db_Expr('SQL_CALC_FOUND_ROWS s.scheme_type'), 'SHIP_YEAR' => 'year(s.shipment_date)', 's.shipment_date', 's.shipment_code', 's.shipment_id', 's.status'])
             ->join(['spm' => 'shipment_participant_map'], 'spm.shipment_id=s.shipment_id', ['spm.map_id', 'spm.participant_id'])
             ->join(['p' => 'participant'], 'p.participant_id=spm.participant_id', ['p.first_name', 'p.last_name'])
             // ->join(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id')
             ->join(['dm' => 'data_manager'], 'dm.dm_id=pmm.dm_id', ['dm.institute'])
+            ->joinLeft(
+                ['ih' => $individualHistorySelect],
+                'ih.shipment_id = s.shipment_id',
+                ['individualDownloadHistory' => 'ih.individualDownloadHistory', 'individualDownloadCount' => 'ih.individualDownloadCount']
+            )
             // ->where("pmm.dm_id=?", $this->_session->dm_id)
             ->where("s.status='shipped' OR s.status='evaluated' OR s.status='finalized'")
             ->where('year(s.shipment_date)  + 5 > year(CURDATE())')
@@ -941,8 +973,8 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         $iTotal = $iFilteredTotal = $this->getAdapter()->fetchOne('SELECT FOUND_ROWS()');
 
         /*
-         * Output
-         */
+        * Output
+        */
         $output = [
             'sEcho' => intval($parameters['sEcho']),
             'iTotalRecords' => $iTotal,
@@ -966,7 +998,30 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             $filePath = UPLOAD_PATH . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . DIRECTORY_SEPARATOR . $fileName;
             if (file_exists($filePath) && $aRow['status'] == 'finalized') {
                 $downloadFilePath = '/uploads' . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . DIRECTORY_SEPARATOR . $fileName;
-                $report = '<a href="' . $downloadFilePath . '"  style="text-decoration : underline;" target="_BLANK">Report</a>';
+
+                // Build a "who downloaded an individual report for this shipment"
+                // tooltip from track_report_downloaded_history, sorted newest-first
+                // in PHP (version-independent — see JSON_ARRAYAGG note elsewhere).
+                // Shipment-level only: this is shared across all participant rows
+                // for the same shipment, since the history table has no map_id.
+                $individualHistory = !empty($aRow['individualDownloadHistory']) ? (json_decode($aRow['individualDownloadHistory'], true) ?: []) : [];
+                usort($individualHistory, function ($a, $b) {
+                    return strcmp($b['downloaded_on'] ?? '', $a['downloaded_on'] ?? '');
+                });
+
+                $tooltipAttr = '';
+                if (!empty($individualHistory)) {
+                    $lines = [];
+                    foreach ($individualHistory as $i => $entry) {
+                        $name = htmlspecialchars($entry['name'] ?? $this->translator->_('Unknown'));
+                        $when = htmlspecialchars((string) Pt_Commons_DateUtility::humanReadableDateFormat($entry['downloaded_on'] ?? '', true));
+                        $lines[] = ($i + 1) . '. ' . $name . ' — ' . $when;
+                    }
+                    $tooltip = implode('<br>', $lines);
+                    $tooltipAttr = ' data-toggle="tooltip" data-html="true" title="' . htmlspecialchars($tooltip, ENT_QUOTES) . '"';
+                }
+
+                $report = '<a href="' . $downloadFilePath . '"  style="text-decoration : underline;"' . $tooltipAttr . ' target="_BLANK">Report</a>';
             }
             $row[] = $report;
 
@@ -1328,8 +1383,8 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
     public function getSummaryReportDetails($parameters)
     {
         /* Array of database columns which should be read and sent back to DataTables. Use a space where
-         * you want to insert a non-database field (for example a counter or static image)
-         */
+        * you want to insert a non-database field (for example a counter or static image)
+        */
 
         $aColumns = ['scheme_type', 'shipment_code', 'DATE_FORMAT(shipment_date,"%d-%b-%Y")'];
         $orderColumns = ['scheme_type', 'shipment_code', 'shipment_date'];
@@ -1395,10 +1450,40 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             }
         }
 
+        // ------------------------------------------------------------------
+        // Aggregate summary-report download history per shipment into a JSON
+        // array so it can be left-joined 1-row-per-shipment onto the main
+        // query below, without affecting the DISTINCT/GROUP BY on shipment_id.
+        // Same pattern used for the finalized-shipment participant grid.
+        // ------------------------------------------------------------------
+        $summaryHistoryInner = $this->getAdapter()->select()
+            ->from(['th' => 'track_report_downloaded_history'], ['th.shipment_id', 'th.downloaded_on'])
+            ->joinLeft(
+                ['dmh' => 'data_manager'],
+                'dmh.dm_id = th.downloaded_by',
+                ['dm_name' => new Zend_Db_Expr("COALESCE(NULLIF(TRIM(CONCAT(dmh.first_name,' ',dmh.last_name)), ''), 'Unknown')")]
+            )
+            ->where('th.report_type = ?', 'summary');
+
+        $summaryHistorySelect = $this->getAdapter()->select()
+            ->from(['shi' => $summaryHistoryInner], ['shipment_id'])
+            ->columns([
+                'summaryDownloadHistory' => new Zend_Db_Expr(
+                    "JSON_ARRAYAGG(JSON_OBJECT('name', dm_name, 'downloaded_on', downloaded_on))"
+                ),
+                'summaryDownloadCount' => new Zend_Db_Expr('COUNT(*)'),
+            ])
+            ->group('shipment_id');
+
         $sQuery = $this->getAdapter()->select()->distinct()->from(['s' => 'shipment'], [new Zend_Db_Expr('SQL_CALC_FOUND_ROWS s.shipment_id'), 's.scheme_type', 's.shipment_date', 's.shipment_code', 's.status'])
             ->join(['spm' => 'shipment_participant_map'], 'spm.shipment_id=s.shipment_id', [])
             ->join(['sl' => 'scheme_list'], 's.scheme_type=sl.scheme_id', ['scheme_name'])
             ->join(['p' => 'participant'], 'p.participant_id=spm.participant_id', ['participant_id'])
+            ->joinLeft(
+                ['sh' => $summaryHistorySelect],
+                'sh.shipment_id = s.shipment_id',
+                ['summaryDownloadHistory' => 'sh.summaryDownloadHistory', 'summaryDownloadCount' => 'sh.summaryDownloadCount']
+            )
             ->where("s.status like 'finalized'")
             ->group('s.shipment_id');
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
@@ -1445,8 +1530,8 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         $iTotal = $iFilteredTotal = $this->getAdapter()->fetchOne('SELECT FOUND_ROWS()');
 
         /*
-         * Output
-         */
+        * Output
+        */
         $output = [
             'sEcho' => intval($parameters['sEcho']),
             'iTotalRecords' => $iTotal,
@@ -1462,7 +1547,28 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             $row[] = Pt_Commons_DateUtility::humanReadableDateFormat($aRow['shipment_date']);
             if (file_exists(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . '-summary.pdf') && $aRow['status'] == 'finalized') {
                 $absPath = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . '-summary.pdf';
-                $row[] = '<a href="' . Pt_Commons_SignedDownload::url($absPath) . '" onclick="updateReportDownloadDateTime(' . $aRow['shipment_id'] . ', \'summary\');"  style="text-decoration : none;" download target="_BLANK">Download Report</a>';
+
+                // Build a "downloaded N times, most recently by X on Y" tooltip from
+                // track_report_downloaded_history, sorted newest-first in PHP so it
+                // works the same regardless of MySQL version (see JSON_ARRAYAGG note).
+                $summaryHistory = !empty($aRow['summaryDownloadHistory']) ? (json_decode($aRow['summaryDownloadHistory'], true) ?: []) : [];
+                usort($summaryHistory, function ($a, $b) {
+                    return strcmp($b['downloaded_on'] ?? '', $a['downloaded_on'] ?? '');
+                });
+
+                $tooltipAttr = '';
+                if (!empty($summaryHistory)) {
+                    $lines = [];
+                    foreach ($summaryHistory as $i => $entry) {
+                        $name = htmlspecialchars($entry['name'] ?? $this->translator->_('Unknown'));
+                        $when = htmlspecialchars((string) Pt_Commons_DateUtility::humanReadableDateFormat($entry['downloaded_on'] ?? '', true));
+                        $lines[] = ($i + 1) . '. ' . $name . ' — ' . $when;
+                    }
+                    $tooltip = implode('<br>', $lines);
+                    $tooltipAttr = ' data-toggle="tooltip" data-html="true" title="' . htmlspecialchars($tooltip, ENT_QUOTES) . '"';
+                }
+
+                $row[] = '<a href="' . Pt_Commons_SignedDownload::url($absPath) . '" onclick="updateReportDownloadDateTime(' . $aRow['shipment_id'] . ', \'summary\');" style="text-decoration : none;"' . $tooltipAttr . ' download target="_BLANK">Download Report</a>';
             } else {
                 $row[] = $this->translator->_('Not Available');
             }

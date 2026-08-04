@@ -316,6 +316,14 @@
                 });
             },
             "fnRowCallback": function (nRow, aData) {
+                // Rows are replaced by DataTables on every draw, so Bootstrap tooltip
+                // bindings on the "Downloaded" badges (title/data-toggle="tooltip")
+                // need to be re-applied here each time.
+                $('#individualReportTable [data-toggle="tooltip"]').tooltip({
+                    html: true,
+                    container: 'body',
+                    placement: 'top'
+                });
                 // Highlight rows with no mapped data managers (the DM column emits
                 // <em class="unmapped-tag">…</em> when the count is 0)
                 if ($(nRow).find('.unmapped-tag').length > 0) {
@@ -334,8 +342,8 @@
         oTable.fnFilter(value, colIdx);
     });
 
-     // Data Managers column — expand/collapse child row with on-demand AJAX fetch
-        $('#individualReportTable tbody').on('click', 'a.toggle-dm-row', function (e) {
+    // Data Managers column — expand/collapse child row with on-demand AJAX fetch
+    $('#individualReportTable tbody').on('click', 'a.toggle-dm-row', function (e) {
             e.preventDefault();
             var $btn = $(this);
             var participantId = $btn.data('participant-id');

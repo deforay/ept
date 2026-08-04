@@ -2000,6 +2000,13 @@ class Application_Service_Evaluation
             if (empty($history)) {
                 return '';
             }
+
+            // Sort newest download first, regardless of what order MySQL returned
+            // the JSON array in (JSON_ARRAYAGG row order isn't guaranteed pre-8.0.13).
+            usort($history, function ($a, $b) {
+                return strcmp($b['downloaded_on'] ?? '', $a['downloaded_on'] ?? '');
+            });
+
             $lines = [];
             foreach ($history as $i => $entry) {
                 $name = htmlspecialchars($entry['name'] ?? $translator->_('Unknown'));
