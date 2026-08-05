@@ -17,6 +17,36 @@
     .daterangepicker {
         display: none;
     }
+
+    .tooltip{
+        max-width:none !important;
+    }
+
+    .tooltip-inner{
+        max-width:none !important;
+        width:350px;
+        background:#575757;
+        color:#fff;
+        border:3px solid #111;
+        border-radius:8px;
+        padding:12px;
+        text-align:left;
+    }
+
+    .tooltip-inner table{
+        /* width:50%; */
+        border:none;
+    }
+
+    .tooltip-inner th,
+    .tooltip-inner td{
+        border:none !important;
+        white-space:nowrap;
+    }
+
+    .tooltip.top .tooltip-arrow{
+        border-top-color:#575757;
+    }
 </style>
 <section class="content-header">
     <h1>
@@ -295,7 +325,8 @@
                 $('#individualReportTable [data-toggle="tooltip"]').tooltip({
                     html: true,
                     container: 'body',
-                    placement: 'top'
+                    placement: 'top',
+                    sanitize: false
                 });
             }
         });

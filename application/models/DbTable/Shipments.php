@@ -919,9 +919,9 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         $individualHistoryInner = $this->getAdapter()->select()
             ->from(['th' => 'track_report_downloaded_history'], ['th.shipment_id', 'th.downloaded_on'])
             ->joinLeft(
-                ['dmh' => 'data_manager'],
-                'dmh.dm_id = th.downloaded_by',
-                ['dm_name' => new Zend_Db_Expr("COALESCE(NULLIF(TRIM(CONCAT(dmh.first_name,' ',dmh.last_name)), ''), 'Unknown')")]
+                ['p' => 'participant'],
+                'p.participant_id = th.downloaded_by',
+                ['p_name' => new Zend_Db_Expr(Application_Model_DbTable_Participants::participantNameExpr('p'))]
             )
             ->where('th.report_type = ?', 'individual');
 
@@ -929,7 +929,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             ->from(['ihi' => $individualHistoryInner], ['shipment_id'])
             ->columns([
                 'individualDownloadHistory' => new Zend_Db_Expr(
-                    "JSON_ARRAYAGG(JSON_OBJECT('name', dm_name, 'downloaded_on', downloaded_on))"
+                    "JSON_ARRAYAGG(JSON_OBJECT('name', p_name, 'downloaded_on', downloaded_on))"
                 ),
                 'individualDownloadCount' => new Zend_Db_Expr('COUNT(*)'),
             ])
@@ -1004,24 +1004,71 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 // in PHP (version-independent — see JSON_ARRAYAGG note elsewhere).
                 // Shipment-level only: this is shared across all participant rows
                 // for the same shipment, since the history table has no map_id.
-                $individualHistory = !empty($aRow['individualDownloadHistory']) ? (json_decode($aRow['individualDownloadHistory'], true) ?: []) : [];
+                $individualHistory = !empty($aRow['individualDownloadHistory'])
+                    ? (json_decode($aRow['individualDownloadHistory'], true) ?: [])
+                    : [];
+
                 usort($individualHistory, function ($a, $b) {
                     return strcmp($b['downloaded_on'] ?? '', $a['downloaded_on'] ?? '');
                 });
 
                 $tooltipAttr = '';
+
                 if (!empty($individualHistory)) {
-                    $lines = [];
+
+                    $scrollStyle = count($individualHistory) > 7
+                        ? "max-height:260px;overflow-y:auto;"
+                        : "";
+
+                    $tooltip = "
+                    <div style='{$scrollStyle}'>
+                        <table style='
+                            width:20%;
+                            color:#fff;
+                            border-collapse:collapse;
+                            font-size:13px;
+                        '>
+                            <thead style='position:sticky;top:0;background:#555;z-index:1;'>
+                                <tr style='border-bottom:1px solid #9a9a9a;'>
+                                    <th style='padding:8px 12px;text-align:left;'>#</th>
+                                    <th style='padding:8px 12px;text-align:left;'>Downloaded By</th>
+                                    <th style='padding:8px 12px;text-align:left;'>Downloaded On</th>
+                                </tr>
+                            </thead>
+                            <tbody>";
+
                     foreach ($individualHistory as $i => $entry) {
+
                         $name = htmlspecialchars($entry['name'] ?? $this->translator->_('Unknown'));
-                        $when = htmlspecialchars((string) Pt_Commons_DateUtility::humanReadableDateFormat($entry['downloaded_on'] ?? '', true));
-                        $lines[] = ($i + 1) . '. ' . $name . ' — ' . $when;
+                        $when = htmlspecialchars(
+                            (string) Pt_Commons_DateUtility::humanReadableDateFormat(
+                                $entry['downloaded_on'] ?? '',
+                                true
+                            )
+                        );
+
+                        $tooltip .= "
+                            <tr>
+                                <td style='padding:8px 12px;'>" . ($i + 1) . "</td>
+                                <td style='padding:8px 12px;'>{$name}</td>
+                                <td style='padding:8px 12px;'>{$when}</td>
+                            </tr>";
                     }
-                    $tooltip = implode('<br>', $lines);
-                    $tooltipAttr = ' data-toggle="tooltip" data-html="true" title="' . htmlspecialchars($tooltip, ENT_QUOTES) . '"';
+
+                    $tooltip .= "
+                            </tbody>
+                        </table>
+                    </div>";
+
+                    $tooltipAttr = ' data-toggle="tooltip"
+                        data-html="true"
+                        data-container="body"
+                        title="' . htmlspecialchars($tooltip, ENT_QUOTES,  "UTF-8") . '"';
                 }
 
-                $report = '<a href="' . $downloadFilePath . '"  style="text-decoration : underline;"' . $tooltipAttr . ' target="_BLANK">Report</a>';
+                $report = '<a href="' . $downloadFilePath . '" style="text-decoration:underline;"'
+                    . $tooltipAttr .
+                    ' target="_blank">Report</a>';
             }
             $row[] = $report;
 
@@ -1104,11 +1151,38 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             }
         }
 
+        $individualHistoryInner = $this->getAdapter()->select()
+            ->from(['th' => 'track_report_downloaded_history'], ['th.shipment_id', 'th.downloaded_on'])
+            ->joinLeft(
+                ['dmh' => 'data_manager'],
+                'dmh.dm_id = th.downloaded_by',
+                ['dm_name' => new Zend_Db_Expr("COALESCE(NULLIF(TRIM(CONCAT(dmh.first_name,' ',dmh.last_name)), ''), 'Unknown')")]
+            )
+            ->where('th.report_type = ?', 'individual');
+
+        $individualHistorySelect = $this->getAdapter()->select()
+            ->from(['ihi' => $individualHistoryInner], ['shipment_id'])
+            ->columns([
+                'individualDownloadHistory' => new Zend_Db_Expr(
+                    "JSON_ARRAYAGG(JSON_OBJECT('name', dm_name, 'downloaded_on', downloaded_on))"
+                ),
+                'individualDownloadCount' => new Zend_Db_Expr('COUNT(*)')
+            ])
+            ->group('shipment_id');
+
         $sQuery = $this->getAdapter()->select()->from(['s' => 'shipment'], [new Zend_Db_Expr('SQL_CALC_FOUND_ROWS s.scheme_type'), 'SHIP_YEAR' => 'year(s.shipment_date)', 's.shipment_date', 's.shipment_code', 's.response_deadline', 's.shipment_id', 's.corrective_action_file', 'shipmentStatus' => 's.status', 'collect_feedback', 'feedback_expiry_date'])
             ->join(['sl' => 'scheme_list'], 's.scheme_type=sl.scheme_id', ['scheme_name'])
             ->join(['spm' => 'shipment_participant_map'], 'spm.shipment_id=s.shipment_id', ['spm.map_id', 'final_result', 'spm.evaluation_status', 'spm.participant_id', 'shipment_score', 'documentation_score', 'is_excluded', 'is_pt_test_not_performed', 'RESPONSEDATE' => "DATE_FORMAT(spm.shipment_test_report_date,'%Y-%m-%d')", 'RESPONSE' => new Zend_Db_Expr("CASE substr(spm.evaluation_status,3,1) WHEN 1 THEN 'View' WHEN '9' THEN 'Enter Result' END"), 'response_status', 'REPORT' => new Zend_Db_Expr("CASE  WHEN spm.report_generated='yes' AND s.status='finalized' THEN 'Report' END")])
             ->join(['p' => 'participant'], 'p.participant_id=spm.participant_id', ['p.unique_identifier', 'p.first_name', 'p.last_name'])
             ->joinLeft(['rpff' => 'r_participant_feedback_form'], 'rpff.shipment_id=s.shipment_id', ['form_show_to'])
+            ->joinLeft(
+                ['ih' => $individualHistorySelect],
+                'ih.shipment_id = s.shipment_id',
+                [
+                    'individualDownloadHistory',
+                    'individualDownloadCount'
+                ]
+            )
             ->where("s.status='finalized'")
             ->where('s.cancelled_at IS NULL');
 
@@ -1208,8 +1282,80 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 $files = glob(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . DIRECTORY_SEPARATOR . '*' . '-' . $aRow['map_id'] . '.pdf');
                 $invididualFilePath = isset($files[0]) ? $files[0] : '';
             }
+            $individualHistory = !empty($aRow['individualDownloadHistory'])
+                ? (json_decode($aRow['individualDownloadHistory'], true) ?: [])
+                : [];
+
+            usort($individualHistory, function ($a, $b) {
+                return strcmp($b['downloaded_on'] ?? '', $a['downloaded_on'] ?? '');
+            });
+
+            $tooltipAttr = '';
+
+            if (!empty($individualHistory)) {
+
+                $scrollStyle = count($individualHistory) > 7
+                    ? "max-height:260px;overflow-y:auto;"
+                    : "";
+
+                $tooltip = "
+                <div style='{$scrollStyle}'>
+                    <table style='
+                        width:100%;
+                        color:#fff;
+                        border-collapse:collapse;
+                        font-size:13px;
+                    '>
+                        <thead style='position:sticky;top:0;background:#555;z-index:1;'>
+                            <tr style='border-bottom:1px solid #9a9a9a;'>
+                                <th style='padding:8px 12px;text-align:left;'>#</th>
+                                <th style='padding:8px 12px;text-align:left;'>Downloaded By</th>
+                                <th style='padding:8px 12px;text-align:left;'>Downloaded On</th>
+                            </tr>
+                        </thead>
+                        <tbody>";
+
+                foreach ($individualHistory as $i => $entry) {
+
+                    $name = htmlspecialchars($entry['name'] ?? $this->translator->_('Unknown'));
+
+                    $when = htmlspecialchars(
+                        (string) Pt_Commons_DateUtility::humanReadableDateFormat(
+                            $entry['downloaded_on'] ?? '',
+                            true
+                        )
+                    );
+
+                    $tooltip .= "
+                        <tr>
+                            <td style='padding:8px 12px;'>" . ($i + 1) . "</td>
+                            <td style='padding:8px 12px;'>{$name}</td>
+                            <td style='padding:8px 12px;'>{$when}</td>
+                        </tr>";
+                }
+
+                $tooltip .= "
+                        </tbody>
+                    </table>
+                </div>";
+
+                $tooltipAttr = ' data-toggle="tooltip"
+                    data-html="true"
+                    data-container="body"
+                    title="' . htmlspecialchars($tooltip, ENT_QUOTES, 'UTF-8') . '"';
+            }
+
             if ($invididualFilePath !== '' && file_exists($invididualFilePath)) {
-                $download = '<a href="' . Pt_Commons_SignedDownload::url($invididualFilePath) . '" class="btn btn-primary" onclick="updateReportDownloadDateTime(' . $aRow['map_id'] . ', \'individual\');"   style="text-decoration : none;overflow:hidden;margin-top:4px;"  target="_BLANK" download><i class="icon icon-download"></i> ' . $this->translator->_('Report') . '</a>';
+
+                $download = '<a href="' . Pt_Commons_SignedDownload::url($invididualFilePath) . '"
+                    class="btn btn-primary"
+                    ' . $tooltipAttr . '
+                    onclick="updateReportDownloadDateTime(' . $aRow['map_id'] . ', \'individual\');"
+                    style="text-decoration:none;overflow:hidden;margin-top:4px;"
+                    target="_BLANK"
+                    download>
+                    <i class="icon icon-download"></i> ' . $this->translator->_('Report') . '
+                </a>';
             }
             // }
             if (($aRow['final_result'] == '2') && (isset($aRow['corrective_action_file']) && $aRow['corrective_action_file'] != '')) {
