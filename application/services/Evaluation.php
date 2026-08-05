@@ -2001,19 +2001,52 @@ class Application_Service_Evaluation
                 return '';
             }
 
-            // Sort newest download first, regardless of what order MySQL returned
-            // the JSON array in (JSON_ARRAYAGG row order isn't guaranteed pre-8.0.13).
+            // Sort latest first
             usort($history, function ($a, $b) {
                 return strcmp($b['downloaded_on'] ?? '', $a['downloaded_on'] ?? '');
             });
 
-            $lines = [];
+            $html = "
+            <div style='max-height:260px; overflow-y:auto;'>
+            <table style='
+                width:20%;
+                color:#fff;
+                margin:0;
+                border-collapse:collapse;
+                font-size:13px;
+            '>
+                <thead style='position:sticky; top:0; background:#555; z-index:1;'>
+                    <tr style='border-bottom:1px solid #9a9a9a;'>
+                        <th style='padding:8px 12px;text-align:left;'>#</th>
+                        <th style='padding:8px 12px;text-align:left;'>Downloaded By</th>
+                        <th style='padding:8px 12px;text-align:left;'>Downloaded On</th>
+                    </tr>
+                </thead>
+                <tbody>";
+
             foreach ($history as $i => $entry) {
                 $name = htmlspecialchars($entry['name'] ?? $translator->_('Unknown'));
-                $when = htmlspecialchars((string) Pt_Commons_DateUtility::humanReadableDateFormat($entry['downloaded_on'] ?? '', true));
-                $lines[] = ($i + 1) . '. ' . $name . ' — ' . $when;
+                $when = htmlspecialchars(
+                    (string) Pt_Commons_DateUtility::humanReadableDateFormat(
+                        $entry['downloaded_on'] ?? '',
+                        true
+                    )
+                );
+
+                $html .= "
+                    <tr>
+                        <td style='padding:8px 12px;'>" . ($i + 1) . "</td>
+                        <td style='padding:8px 12px;'>" . $name . "</td>
+                        <td style='padding:8px 12px;'>" . $when . "</td>
+                    </tr>";
             }
-            return implode('<br>', $lines);
+
+            $html .= "
+                </tbody>
+            </table>
+            </div>";
+
+            return $html;
         };
 
         $individualHistory = !empty($shipment['individualDownloadHistory']) ? (json_decode($shipment['individualDownloadHistory'], true) ?: []) : [];
@@ -2027,7 +2060,7 @@ class Application_Service_Evaluation
             $indCountLabel = $indCount > 1 ? ' (' . $indCount . 'x)' : '';
             $indTooltip = $buildDownloadTooltip($individualHistory);
             $indBadge = '<span class="badge rounded-pill" data-toggle="tooltip" data-html="true"'
-                . ($indTooltip !== '' ? ' title="' . htmlspecialchars($indTooltip, ENT_QUOTES) . '"' : '')
+                . ($indTooltip !== '' ? ' title="' . htmlspecialchars($indTooltip, ENT_QUOTES, "UTF-8") . '"' : '')
                 . ' style="background-color:#d4edda;color:#155724;font-weight:500;padding:6px 12px;cursor:' . ($indTooltip !== '' ? 'help' : 'default') . ';">'
                 . '<i class="icon-check"></i> ' . $translator->_('Downloaded') . $indCountLabel . '</span>';
             $participantReport = $indBadge . '<br>'

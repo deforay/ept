@@ -233,7 +233,6 @@
             });
         $('#dateRange').val("");
         oTable = $('#individualReportTable').dataTable({
-
             //"paging": paging,
             "bJQueryUI": false,
             "bAutoWidth": false,
@@ -243,31 +242,15 @@
             "sPaginationType": "full_numbers",
             "bRetrieve": false,
             "bDestroy": true,
-            "aoColumns": [{
-                    "sClass": "center"
-                },
-                {
-                    "sClass": "center"
-                },
-                {
-                    "sClass": "center"
-                },
-                {
-                    "sClass": "center"
-                },
-                {
-                    "sClass": "center"
-                },
-                {
-                    "sClass": "center"
-                },
-                {
-                    "sClass": "center"
-                },
-                {
-                    "sClass": "center",
-                    "bSortable": false
-                }
+            "aoColumns": [
+                { "sClass": "center" },
+                { "sClass": "center" },
+                { "sClass": "center" },
+                { "sClass": "center" },
+                { "sClass": "center" },
+                { "sClass": "center" },
+                { "sClass": "center" },
+                { "sClass": "center", "bSortable": false }
             ],
             "aaSorting": [
                 [2, "desc"],
@@ -277,34 +260,13 @@
             "bServerSide": true,
             "sAjaxSource": "<?php echo $this->url(array('module' => 'default', 'controller' => 'participant', 'action' => 'report', 'format' => 'html')); ?>",
             "fnServerParams": function(aoData) {
-                aoData.push({
-                    "name": "scheme",
-                    "value": $("#scheme").val()
-                });
-                aoData.push({
-                    "name": "startDate",
-                    "value": startDate
-                });
-                aoData.push({
-                    "name": "endDate",
-                    "value": endDate
-                });
-                aoData.push({
-                    "name": "country",
-                    "value": $("#country").val() || ''
-                });
-                aoData.push({
-                    "name": "region",
-                    "value": $("#region").val() || ''
-                });
-                aoData.push({
-                    "name": "district",
-                    "value": $("#district").val() || ''
-                });
-                aoData.push({
-                    "name": "finalResult",
-                    "value": $("#finalResult").val() || ''
-                });
+                aoData.push({ "name": "scheme", "value": $("#scheme").val() });
+                aoData.push({ "name": "startDate", "value": startDate });
+                aoData.push({ "name": "endDate", "value": endDate });
+                aoData.push({ "name": "country", "value": $("#country").val() || '' });
+                aoData.push({ "name": "region", "value": $("#region").val() || '' });
+                aoData.push({ "name": "district", "value": $("#district").val() || '' });
+                aoData.push({ "name": "finalResult", "value": $("#finalResult").val() || '' });
             },
             "fnServerData": function(sSource, aoData, fnCallback) {
                 $.ajax({
@@ -316,14 +278,6 @@
                 });
             },
             "fnRowCallback": function (nRow, aData) {
-                // Rows are replaced by DataTables on every draw, so Bootstrap tooltip
-                // bindings on the "Downloaded" badges (title/data-toggle="tooltip")
-                // need to be re-applied here each time.
-                $('#individualReportTable [data-toggle="tooltip"]').tooltip({
-                    html: true,
-                    container: 'body',
-                    placement: 'top'
-                });
                 // Highlight rows with no mapped data managers (the DM column emits
                 // <em class="unmapped-tag">…</em> when the count is 0)
                 if ($(nRow).find('.unmapped-tag').length > 0) {
@@ -332,6 +286,17 @@
                     $(nRow).removeClass('row-unmapped');
                 }
                 return nRow;
+            },
+            "fnDrawCallback": function () {
+                // Runs once per draw, AFTER every row for this page has been inserted
+                // into the DOM — unlike fnRowCallback, which fires per-row *before*
+                // that row is attached, and so misses binding the last row(s) of
+                // each page. Re-bind the "Downloaded"/report-history tooltips here.
+                $('#individualReportTable [data-toggle="tooltip"]').tooltip({
+                    html: true,
+                    container: 'body',
+                    placement: 'top'
+                });
             }
         });
     $("#mappingFilter").change(function () {
