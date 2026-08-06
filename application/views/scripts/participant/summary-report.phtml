@@ -319,16 +319,6 @@
                 });
             },
             "fnRowCallback": function (nRow, aData) {
-                // Rows are replaced by DataTables on every draw, so Bootstrap tooltip
-                // bindings on the "Downloaded" badges (title/data-toggle="tooltip")
-                // need to be re-applied here each time.
-                $('#summaryReportTable [data-toggle="tooltip"]').tooltip({
-                    html: true,
-                    container: 'body',
-                    placement: 'top',
-                    sanitize: false
-                });
-                
                 // Highlight rows with no mapped data managers (the DM column emits
                 // <em class="unmapped-tag">…</em> when the count is 0)
                 if ($(nRow).find('.unmapped-tag').length > 0) {
@@ -337,6 +327,16 @@
                     $(nRow).removeClass('row-unmapped');
                 }
                 return nRow;
+            },
+            "fnDrawCallback": function () {
+                var $tips = $('#summaryReportTable [data-toggle="tooltip"]');
+                $tips.tooltip('destroy');   // Bootstrap 3 — not 'dispose'
+                $tips.tooltip({
+                    html: true,
+                    container: 'body',
+                    placement: 'top',
+                    sanitize: false
+                });
             }
         });
 

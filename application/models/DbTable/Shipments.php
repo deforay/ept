@@ -1610,10 +1610,12 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 ['dm_name' => new Zend_Db_Expr("COALESCE(NULLIF(TRIM(CONCAT(dmh.first_name,' ',dmh.last_name)), ''), 'Unknown')")]
             )
             ->where('th.report_type = ?', 'summary');
-
         $summaryHistorySelect = $this->getAdapter()->select()
             ->from(['shi' => $summaryHistoryInner], ['shipment_id'])
             ->columns([
+                // NOTE: the JSON object key is 'name' (dm_name is just the source
+                // column being aliased into it) — read $entry['name'] in PHP below,
+                // not $entry['dm_name'], or the download-history table renders empty.
                 'summaryDownloadHistory' => new Zend_Db_Expr(
                     "JSON_ARRAYAGG(JSON_OBJECT('name', dm_name, 'downloaded_on', downloaded_on))"
                 ),
@@ -1669,7 +1671,6 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         if (isset($sLimit) && isset($sOffset)) {
             $sQuery = $sQuery->limit($sLimit, $sOffset);
         }
-
         $rResult = $this->getAdapter()->fetchAll($sQuery);
 
         /* Data set length after filtering */
@@ -1697,24 +1698,81 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 // Build a "downloaded N times, most recently by X on Y" tooltip from
                 // track_report_downloaded_history, sorted newest-first in PHP so it
                 // works the same regardless of MySQL version (see JSON_ARRAYAGG note).
-                $summaryHistory = !empty($aRow['summaryDownloadHistory']) ? (json_decode($aRow['summaryDownloadHistory'], true) ?: []) : [];
+                $summaryHistory = !empty($aRow['summaryDownloadHistory'])
+                    ? (json_decode($aRow['summaryDownloadHistory'], true) ?: [])
+                    : [];
+
                 usort($summaryHistory, function ($a, $b) {
                     return strcmp($b['downloaded_on'] ?? '', $a['downloaded_on'] ?? '');
                 });
-
                 $tooltipAttr = '';
+
                 if (!empty($summaryHistory)) {
-                    $lines = [];
+
+                    $scrollStyle = count($summaryHistory) > 7
+                        ? "max-height:260px;overflow-y:auto;"
+                        : "";
+
+                    $tooltip = "
+                    <div style='{$scrollStyle}'>
+                        <table style='
+                            width:100%;
+                            color:#fff;
+                            border-collapse:collapse;
+                            font-size:13px;
+                        '>
+                            <thead style='position:sticky;top:0;background:#555;z-index:1;'>
+                                <tr style='border-bottom:1px solid #9a9a9a;'>
+                                    <th style='padding:8px 12px;text-align:left;'>#</th>
+                                    <th style='padding:8px 12px;text-align:left;'>Downloaded By</th>
+                                    <th style='padding:8px 12px;text-align:left;'>Downloaded On</th>
+                                </tr>
+                            </thead>
+                            <tbody>";
+
                     foreach ($summaryHistory as $i => $entry) {
+
+                        // FIXED: JSON_OBJECT('name', dm_name, ...) means the decoded
+                        // key is 'name', not 'dm_name'. Reading 'dm_name' here always
+                        // missed and silently fell through to the Unknown fallback
+                        // (or rendered an effectively empty tooltip depending on data).
                         $name = htmlspecialchars($entry['name'] ?? $this->translator->_('Unknown'));
-                        $when = htmlspecialchars((string) Pt_Commons_DateUtility::humanReadableDateFormat($entry['downloaded_on'] ?? '', true));
-                        $lines[] = ($i + 1) . '. ' . $name . ' — ' . $when;
+
+                        $when = htmlspecialchars(
+                            (string) Pt_Commons_DateUtility::humanReadableDateFormat(
+                                $entry['downloaded_on'] ?? '',
+                                true
+                            )
+                        );
+
+                        $tooltip .= "
+                            <tr>
+                                <td style='padding:8px 12px;'>" . ($i + 1) . "</td>
+                                <td style='padding:8px 12px;'>{$name}</td>
+                                <td style='padding:8px 12px;'>{$when}</td>
+                            </tr>";
                     }
-                    $tooltip = implode('<br>', $lines);
-                    $tooltipAttr = ' data-toggle="tooltip" data-html="true" title="' . htmlspecialchars($tooltip, ENT_QUOTES) . '"';
+
+                    $tooltip .= "
+                            </tbody>
+                        </table>
+                    </div>";
+
+                    $tooltipAttr = ' data-toggle="tooltip"
+                        data-html="true"
+                        data-container="body"
+                        title="' . htmlspecialchars($tooltip, ENT_QUOTES, 'UTF-8') . '"';
                 }
 
-                $row[] = '<a href="' . Pt_Commons_SignedDownload::url($absPath) . '" onclick="updateReportDownloadDateTime(' . $aRow['shipment_id'] . ', \'summary\');" style="text-decoration : none;"' . $tooltipAttr . ' download target="_BLANK">Download Report</a>';
+                $row[] = '<a href="' . Pt_Commons_SignedDownload::url($absPath) . '"
+                    class="btn btn-primary"
+                    ' . $tooltipAttr . '
+                    onclick="updateReportDownloadDateTime(' . $aRow['shipment_id'] . ', \'summary\');"
+                    style="text-decoration:none;overflow:hidden;margin-top:4px;"
+                    target="_BLANK"
+                    download>
+                    <i class="icon icon-download"></i> ' . $this->translator->_('Download Report') . '
+                </a>';
             } else {
                 $row[] = $this->translator->_('Not Available');
             }
