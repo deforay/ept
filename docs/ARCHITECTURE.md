@@ -9,7 +9,7 @@ This document describes the high-level structure and execution flow of the ePT c
 - Service classes use ZF1 `Zend_Db_Table` models (`application/models/DbTable`) and other models.
 - Views live under `application/views` and module-specific `application/modules/*/views`, with layouts under `application/layouts`.
 - Background work runs via Crunz scheduled jobs in `scheduled-jobs/`.
-- Multi-scheme support: DTS, VL, EID, TB, Recency, and Generic test types.
+- Multi-scheme support: DTS, VL, EID, TB, Recency, COVID-19, and DBS, plus user-configured custom tests (`generic`).
 
 ## Entry points
 
@@ -263,8 +263,8 @@ API controllers in `application/modules/api/controllers/`:
 `Application_Service_ApiServices` provides:
 
 - Authentication via `authToken`.
-- Data marshaling for all test schemes (DTS, VL, EID, TB, Recency, Generic).
-- Reference data: test kits, possible results, not-tested reasons.
+- Result marshaling for DTS, VL, and EID. The other schemes have no API path and are entered through the web portal.
+- Reference data: test kits, possible results, not-tested reasons. Recency possible results are returned under the `dts` key.
 
 ## Database migrations
 
