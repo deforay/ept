@@ -23,7 +23,7 @@ You always add shipments under a PT Survey. So the steps are:
 3. Then enroll participants in each shipment.
 4. Then click **Ship Now** on the PT Survey page.
 
-## What is on this page
+## What's on the page
 
 This page shows all the shipments in your system. You can:
 

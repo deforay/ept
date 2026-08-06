@@ -53,9 +53,10 @@ Bullets, **bold UI labels**, short paragraphs.
 - The first step often has no `target_pages` if it's "Make sure
   you have X before starting" — that's fine; the drawer will show
   no "✓ You're here" marker.
-- Use simple language. See [[feedback_no_dev_jargon]] in project
-  memory. No "modal", "configured", "mapped" — use "pop-up",
-  "set up", "linked". Same rules as per-page help.
+- Use simple language. No "modal", "configured", "mapped" — use
+  "pop-up", "set up", "linked". Same rules as per-page help. The
+  exception is a label the screen itself shows: if the status chip
+  reads *Configured*, call it *Configured* and explain it.
 - Link to per-page help docs with `[See: Add Shipment](../shipment-add.md)`
   when a step is best explained on its own page.
 
@@ -72,8 +73,10 @@ Bullets, **bold UI labels**, short paragraphs.
 
 ## File naming
 
-Action-first verbs, kebab-case:
+Action-first verbs, kebab-case. Two guides exist today:
+
 - `add-a-shipment.md`
 - `enroll-participants.md`
-- `evaluate-and-finalize.md`
-- `set-up-a-new-pt-programme.md`
+
+Names in the same shape suit the guides still to be written, for example
+`evaluate-and-finalize.md` and `set-up-a-new-pt-programme.md`.

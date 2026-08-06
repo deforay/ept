@@ -4,7 +4,7 @@ A one-page reference for procurement and infrastructure teams planning an ePT de
 
 ---
 
-## Technology Stack
+## Technology stack
 
 | Component | Technology |
 | --------- | ---------- |
@@ -31,7 +31,7 @@ App + MySQL run on the same host.
 
 ---
 
-## Storage & Backup
+## Storage and backup
 
 All ePT files (uploads, generated reports, charts, logs) live on the **local filesystem of the application host** alongside MySQL. There is no external object-storage dependency.
 
@@ -63,7 +63,7 @@ Infrastructure-side: keep MySQL on a private subnet, restrict SSH, enable disk e
 
 ---
 
-## Further Reading
+## Further reading
 
 - [Setup Guide](setup.md) — installation
 - [Architecture Guide](ARCHITECTURE.md) — system design and security

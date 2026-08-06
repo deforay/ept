@@ -1,6 +1,6 @@
 # Scheme Architecture Guide
 
-This document explains how test schemes (DTS, VL, EID, TB, Recency, COVID-19, DBS, Custom Tests) are organized in the EPT project. Use this as a reference when maintaining existing schemes or adding new ones.
+This document explains how test schemes (DTS, VL, EID, TB, Recency, COVID-19, DBS, Custom Tests) are organized in the ePT project. Use this as a reference when maintaining existing schemes or adding new ones.
 
 ---
 
@@ -17,7 +17,7 @@ This document explains how test schemes (DTS, VL, EID, TB, Recency, COVID-19, DB
 
 ## Overview
 
-Each scheme in EPT follows a consistent MVC architecture:
+Each scheme in ePT follows a consistent MVC architecture:
 
 ```mermaid
 graph TB
