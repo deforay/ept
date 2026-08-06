@@ -60,5 +60,5 @@ Hands-on exercises to follow along during or after the training:
 
 **Recommended approach:**
 - Use a test/training instance of ePT
-- Follow along with the [exercises](exercises/) for hands-on practice
+- Follow along with the [DTS HIV Serology exercise](exercises/dts-hiv-serology.md) for hands-on practice
 - Have participants complete the exercise during or immediately after the training

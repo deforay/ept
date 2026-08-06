@@ -6,6 +6,12 @@ repo_name: deforay/ept
 
 docs_dir: docs
 
+# In-app help topics are delivered by the help drawer, not this site. Their
+# frontmatter (summary, tags) is written for the drawer's topic index, and they
+# are not in the nav, so building them only leaks them into the site search.
+exclude_docs: |
+  help/
+
 theme:
   name: material
   palette:
