@@ -48,6 +48,7 @@ nav:
       - Infrastructure Planning: infrastructure.md
       - CLI Tools: cli-tools.md
   - Guides:
+      - Engineering Standards: engineering-standards.md
       - Architecture: ARCHITECTURE.md
       - Scheme Architecture: SchemeArchitecture.md
       - Admin Module: AdminModuleGuide.md
