@@ -251,9 +251,12 @@ class Application_Model_DbTable_FeedBackTable extends Zend_Db_Table_Abstract
             $feedbackFormId = $db->lastInsertId('r_participant_feedback_form', 'rpff_id');
         }
 
-        // Process questions if provided
+        // Process questions if provided. The form row above is already written, but with no
+        // questions mapped there is nothing to collect, so collect_feedback is left alone and
+        // this reports "nothing was saved" — which is what the caller already assumed a bare
+        // return meant.
         if (!isset($params['question']) || empty($params['question'])) {
-            return;
+            return false;
         }
 
         // ===== PROCESS AND SAVE UPLOADED FILES =====
