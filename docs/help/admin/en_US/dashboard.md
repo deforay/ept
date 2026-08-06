@@ -10,7 +10,7 @@ The Dashboard is the home page you see right after you log in.
 It gives you a quick look at the most important numbers in
 your ePT system.
 
-## What is on this page
+## What's on the page
 
 You will see a set of **cards** at the top with key numbers, and
 **charts** below.

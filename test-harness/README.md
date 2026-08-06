@@ -1,4 +1,4 @@
-# EPT Test Harnesses
+# ePT test harnesses
 
 Dev-only tools. Each provisions a synthetic shipment, fills bulk responses (correct + aberrant), runs the real evaluator as a subprocess, and asserts each participant's verdict against an independent expected verdict declared up-front.
 

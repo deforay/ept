@@ -111,8 +111,7 @@ Available environment variables:
 | `APP_DOMAIN` | `http://localhost/` | Application URL |
 | `APP_HOSTNAME` | `localhost` | Domain name (used by nginx for SSL) |
 
-!!! warning "Change the default password"
-    Update `DB_PASSWORD` and `MYSQL_ROOT_PASSWORD` in `docker-compose.yml` before deploying to production.
+> **Change the default password:** Update `DB_PASSWORD` and `MYSQL_ROOT_PASSWORD` in `docker-compose.yml` before deploying to production.
 
 ### What's Included
 
@@ -227,8 +226,7 @@ docker compose --profile ssl run --rm certbot renew
 docker compose --profile ssl exec nginx nginx -s reload
 ```
 
-!!! note "Dev mode"
-    Without `--profile ssl`, the app runs on HTTP only (on `APP_PORT`, default 80) — no nginx or certbot containers are started. This is the recommended setup for local development.
+> **Dev mode:** Without `--profile ssl`, the app runs on HTTP only (on `APP_PORT`, default 80) — no nginx or certbot containers are started. This is the recommended setup for local development.
 
 ---
 

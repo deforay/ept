@@ -1,6 +1,6 @@
 # ePT Training Curriculum
 
-## About This Training
+## About this training
 
 **What is ePT?** A web-based application used by PT Providers to manage the Proficiency Testing lifecycle — from creating surveys and enrolling participants, to evaluating results and generating reports.
 
@@ -31,7 +31,7 @@ Hands-on exercises to follow along during or after the training:
 
 ---
 
-## Quick Reference: Full PT Lifecycle
+## Quick reference: the full PT lifecycle
 
 ```
 1. Add Participants          →  Configure → PT Participants
@@ -50,7 +50,7 @@ Hands-on exercises to follow along during or after the training:
 
 ---
 
-## Delivering This Training
+## Delivering this training
 
 | Scenario | What to cover | Duration |
 |----------|---------------|----------|

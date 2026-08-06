@@ -4,7 +4,7 @@ Welcome to the ePT (e-Proficiency Testing) documentation. This index provides an
 
 ---
 
-## Project Overview
+## Project overview
 
 ePT is an open-source proficiency testing system for laboratory quality assurance. It enables organizations to:
 
@@ -13,7 +13,7 @@ ePT is an open-source proficiency testing system for laboratory quality assuranc
 - **Evaluate results** against reference data with configurable scoring
 - **Generate reports** (Excel, PDF) for analysis and certification
 
-### Supported Test Schemes
+### Supported test schemes
 
 Seven built-in schemes ship in the `scheme_list` table, plus any number of
 user-configured custom tests. The name in the middle column is what the
@@ -30,7 +30,7 @@ admin panel and participant portal display.
 | `dbs` | Dried Blood Spot - HIV Serology | EIA and Western Blot testing |
 | `generic` | Custom Tests | User-configured test types with dynamic fields |
 
-### Technology Stack
+### Technology stack
 
 - **Framework**: Zend Framework 1 (PHP 8.4)
 - **Database**: MySQL 8+
@@ -41,9 +41,9 @@ admin panel and participant portal display.
 
 ---
 
-## Documentation Index
+## Documentation index
 
-### Training Curriculum
+### Training curriculum
 
 | Document | Audience | Duration |
 | -------- | -------- | -------- |
@@ -54,7 +54,7 @@ admin panel and participant portal display.
 | [Part 4: Evaluation, Reports & Finalization](training/part4-evaluation-and-reports.md) | Admin | ~10 min |
 | [Exercise: DTS HIV Serology](training/exercises/dts-hiv-serology.md) | All | ~20–30 min |
 
-### Architecture & Guides
+### Architecture and guides
 
 | Document | Description |
 |----------|-------------|
@@ -67,22 +67,22 @@ admin panel and participant portal display.
 | [Translation Guide](TranslationGuide.md) | Internationalization and adding new languages |
 | [CLI Tools Reference](cli-tools.md) | Password resets, migrations, admin seeding, and other bin/ scripts for tech support |
 
-### Quick Links
+### Quick links
 
-#### For Developers
+#### For developers
 
 - [Request Lifecycle](ARCHITECTURE.md#request-lifecycle-web) - How requests flow through the system
 - [Service Layer](ARCHITECTURE.md#service-layer) - Business logic organization
 - [Database Migrations](ARCHITECTURE.md#database-migrations) - How to manage schema changes
 - [Adding a New Scheme](SchemeArchitecture.md#adding-a-new-scheme) - Step-by-step guide
 
-#### For Administrators
+#### For administrators
 
 - [Scheduled Jobs](ARCHITECTURE.md#scheduled-jobs) - Background task configuration
 - [Email Infrastructure](ARCHITECTURE.md#email-infrastructure) - Email queue and configuration
 - [Shipment Lifecycle](SchemeArchitecture.md#shipment-lifecycle) - How shipments progress through states
 
-#### For Maintainers
+#### For maintainers
 
 - [Security](ARCHITECTURE.md#security) - Authentication, authorization, CSRF protection
 - [Error Handling](ARCHITECTURE.md#error-handling-and-logging) - Logging and error management
@@ -90,7 +90,7 @@ admin panel and participant portal display.
 
 ---
 
-## Directory Structure (High-Level)
+## Directory structure
 
 ```
 ept/
@@ -121,7 +121,7 @@ ept/
 
 ---
 
-## Getting Started
+## Getting started
 
 ### Prerequisites
 
@@ -156,10 +156,27 @@ When adding new features or modifying existing ones:
 4. **Add migrations** - Database changes go in `database/migrations/`
 5. **Update documentation** - Keep these docs current with your changes
 
+### Documentation conventions
+
+Existing pages do not all follow these yet. Apply them to anything you write
+or substantially edit, rather than reformatting pages you are not otherwise
+touching.
+
+| Rule | Detail |
+| --- | --- |
+| Headings | Sentence case. Write "Supported test schemes", not "Supported Test Schemes". Keep product names and acronyms capitalised. |
+| New filenames | Kebab-case, for example `backup-and-migration.md`. The older `ARCHITECTURE.md` and `SchemeArchitecture.md` keep their names because renaming them would break published URLs. |
+| Callouts | Use `> **Title:**` blockquotes. MkDocs admonitions (`!!! warning`) render as literal text on GitHub, and these pages are read there as well as on the site. |
+| Adding a page | Add it to the `nav` in `mkdocs.yml` **and** to the documentation index above. A page missing from either one is hard to find. |
+| Scheme names | Match the `scheme_list` table. The supported test schemes table above is the reference. |
+
+Run `mkdocs build --strict` before pushing. The deploy workflow uses it, so a
+broken link or a bad reference fails the build rather than shipping.
+
 ---
 
 ## Support
 
-For questions or issues, contact: amit (at) deforay (dot) com
+For questions or issues, contact [amit@deforay.com](mailto:amit@deforay.com).
 
 GitHub: [deforay/ept](https://github.com/deforay/ept)

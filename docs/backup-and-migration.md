@@ -11,8 +11,7 @@ ePT is designed to run as a **single central instance**, so the tooling here fav
 | `bin/setup.sh` | Fresh install on a new machine, with an optional database import |
 | `bin/upgrade.sh` (`ept-update`) | Takes pre-upgrade safety backups automatically |
 
-!!! info "What is and isn't automated"
-    db-tools handles the **database** end-to-end. Application **code** is always fetched fresh from GitHub by `setup.sh`. **Uploaded files** (`public/uploads/`) and **config secrets** are never carried automatically — you copy those by hand during a move (see [Migrating to a new machine](#migrating-to-a-new-machine)).
+> **What is and isn't automated:** db-tools handles the **database** end-to-end. Application **code** is always fetched fresh from GitHub by `setup.sh`. **Uploaded files** (`public/uploads/`) and **config secrets** are never carried automatically — you copy those by hand during a move (see [Migrating to a new machine](#migrating-to-a-new-machine)).
 
 ---
 
@@ -32,8 +31,7 @@ composer backup
 
 Both wrap `vendor/bin/db-tools`. Archives are written to `<ept>/backups` with a 15-archive retention by default.
 
-!!! warning "Backups are encrypted by default"
-    `db-tools backup` encrypts archives (`.gpg`) using an encryption password unless you pass `--no-encrypt`. **You need the same password to restore.** For a backup you intend to restore on a *different* machine, either record the encryption password or create an unencrypted archive with `--no-encrypt` (see [Migrating](#migrating-to-a-new-machine)).
+> **Backups are encrypted by default:** `db-tools backup` encrypts archives (`.gpg`) using an encryption password unless you pass `--no-encrypt`. **You need the same password to restore.** For a backup you intend to restore on a *different* machine, either record the encryption password or create an unencrypted archive with `--no-encrypt` (see [Migrating](#migrating-to-a-new-machine)).
 
 ### Direct db-tools usage
 
@@ -62,8 +60,7 @@ php vendor/bin/db-tools config:show
 
 Run `composer db-backup` (or `php vendor/bin/db-tools backup`) from cron on whatever cadence the site needs. Old archives beyond the retention count are pruned automatically.
 
-!!! note "Pre-upgrade backups are automatic"
-    `ept-update` (`bin/upgrade.sh`) offers to back up the **database** to `/var/ept-backup/db/` and the **ePT folder** to `/var/ept-backup/www/` before every update. Those pre-upgrade dumps are a valid source for a restore or a migration — you don't have to take a fresh one just to move.
+> **Pre-upgrade backups are automatic:** `ept-update` (`bin/upgrade.sh`) offers to back up the **database** to `/var/ept-backup/db/` and the **ePT folder** to `/var/ept-backup/www/` before every update. Those pre-upgrade dumps are a valid source for a restore or a migration — you don't have to take a fresh one just to move.
 
 ---
 
@@ -100,13 +97,12 @@ php vendor/bin/db-tools purge-binlogs             # housekeeping
 
 `setup.sh` installs fresh code and **imports your database**, but it does **not** carry over uploads or config from the old machine. A complete move is therefore three parts: database, uploaded files, and config secrets.
 
-!!! danger "Preserve the salt and form secret"
-    Two values must survive the move, or existing hashed/encrypted data and logged-in sessions will break:
-
-    - `application/configs/application.ini` → `security.salt`
-    - `application/configs/.env` → `FORM_SECRET`
-
-    A fresh `setup.sh` **regenerates both**. Copy the originals from the old machine *after* setup completes.
+> **Preserve the salt and form secret:** Two values must survive the move, or existing hashed/encrypted data and logged-in sessions will break:
+>
+> - `application/configs/application.ini` → `security.salt`
+> - `application/configs/.env` → `FORM_SECRET`
+>
+> A fresh `setup.sh` **regenerates both**. Copy the originals from the old machine *after* setup completes.
 
 ### 1. On the old machine
 
@@ -152,8 +148,7 @@ cp /path/to/old/.env             /var/www/ept/application/configs/.env
 cd /var/www/ept && composer post-update
 ```
 
-!!! tip "Check DB credentials after copying application.ini"
-    `application.ini` carries the **old** machine's database host/user/password. If the new machine's MySQL differs, update `resources.db.params.*` before loading the app.
+> **Check DB credentials after copying application.ini:** `application.ini` carries the **old** machine's database host/user/password. If the new machine's MySQL differs, update `resources.db.params.*` before loading the app.
 
 Finally, log in at `http://<host>/admin`, confirm participants/shipments/reports render, and generate one report end-to-end to be sure uploads and the salt/secret came across intact.
 

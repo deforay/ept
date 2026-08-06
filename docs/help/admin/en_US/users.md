@@ -13,7 +13,7 @@ ePT — the people who manage PT Surveys, participants, and reports.
 > log in to the participant portal to send in results. Admin
 > users log in here to run the PT programme.
 
-## What is on this page
+## What's on the page
 
 You will see a table with one row per admin user. Each row shows:
 
