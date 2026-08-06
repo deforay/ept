@@ -1017,8 +1017,8 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 if (!empty($individualHistory)) {
 
                     $scrollStyle = count($individualHistory) > 7
-                        ? "max-height:260px;overflow-y:auto;"
-                        : "";
+                        ? 'max-height:260px;overflow-y:auto;'
+                        : '';
 
                     $tooltip = "
                     <div style='{$scrollStyle}'>
@@ -1055,15 +1055,15 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                             </tr>";
                     }
 
-                    $tooltip .= "
+                    $tooltip .= '
                             </tbody>
                         </table>
-                    </div>";
+                    </div>';
 
                     $tooltipAttr = ' data-toggle="tooltip"
                         data-html="true"
                         data-container="body"
-                        title="' . htmlspecialchars($tooltip, ENT_QUOTES,  "UTF-8") . '"';
+                        title="' . htmlspecialchars($tooltip, ENT_QUOTES, 'UTF-8') . '"';
                 }
 
                 $report = '<a href="' . $downloadFilePath . '" style="text-decoration:underline;"'
@@ -1166,7 +1166,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 'individualDownloadHistory' => new Zend_Db_Expr(
                     "JSON_ARRAYAGG(JSON_OBJECT('name', dm_name, 'downloaded_on', downloaded_on))"
                 ),
-                'individualDownloadCount' => new Zend_Db_Expr('COUNT(*)')
+                'individualDownloadCount' => new Zend_Db_Expr('COUNT(*)'),
             ])
             ->group('shipment_id');
 
@@ -1180,7 +1180,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 'ih.shipment_id = s.shipment_id',
                 [
                     'individualDownloadHistory',
-                    'individualDownloadCount'
+                    'individualDownloadCount',
                 ]
             )
             ->where("s.status='finalized'")
@@ -1295,8 +1295,8 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             if (!empty($individualHistory)) {
 
                 $scrollStyle = count($individualHistory) > 7
-                    ? "max-height:260px;overflow-y:auto;"
-                    : "";
+                    ? 'max-height:260px;overflow-y:auto;'
+                    : '';
 
                 $tooltip = "
                 <div style='{$scrollStyle}'>
@@ -1334,10 +1334,10 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                         </tr>";
                 }
 
-                $tooltip .= "
+                $tooltip .= '
                         </tbody>
                     </table>
-                </div>";
+                </div>';
 
                 $tooltipAttr = ' data-toggle="tooltip"
                     data-html="true"
@@ -1710,8 +1710,8 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 if (!empty($summaryHistory)) {
 
                     $scrollStyle = count($summaryHistory) > 7
-                        ? "max-height:260px;overflow-y:auto;"
-                        : "";
+                        ? 'max-height:260px;overflow-y:auto;'
+                        : '';
 
                     $tooltip = "
                     <div style='{$scrollStyle}'>
@@ -1753,10 +1753,10 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                             </tr>";
                     }
 
-                    $tooltip .= "
+                    $tooltip .= '
                             </tbody>
                         </table>
-                    </div>";
+                    </div>';
 
                     $tooltipAttr = ' data-toggle="tooltip"
                         data-html="true"

@@ -1776,7 +1776,7 @@ class Application_Service_Evaluation
                     "JSON_ARRAYAGG(JSON_OBJECT('name', dm_name, 'downloaded_on', downloaded_on))"
                 ),
             ])
-                
+
             ->group('shipment_id');
 
         $summaryHistoryInner = $db->select()
@@ -1798,7 +1798,7 @@ class Application_Service_Evaluation
             ])
             ->order('summaryDownloadHistory DESC')
             ->group('shipment_id');
-            
+
         $baseSelect = $db->select()
             ->from(['sp' => 'shipment_participant_map'])
             ->join(['s' => 'shipment'], 'sp.shipment_id=s.shipment_id')
@@ -2037,14 +2037,14 @@ class Application_Service_Evaluation
                     <tr>
                         <td style='padding:8px 12px;'>" . ($i + 1) . "</td>
                         <td style='padding:8px 12px;'>" . $name . "</td>
-                        <td style='padding:8px 12px;'>" . $when . "</td>
-                    </tr>";
+                        <td style='padding:8px 12px;'>" . $when . '</td>
+                    </tr>';
             }
 
-            $html .= "
+            $html .= '
                 </tbody>
             </table>
-            </div>";
+            </div>';
 
             return $html;
         };
@@ -2060,7 +2060,7 @@ class Application_Service_Evaluation
             $indCountLabel = $indCount > 1 ? ' (' . $indCount . 'x)' : '';
             $indTooltip = $buildDownloadTooltip($individualHistory);
             $indBadge = '<span class="badge rounded-pill" data-toggle="tooltip" data-html="true"'
-                . ($indTooltip !== '' ? ' title="' . htmlspecialchars($indTooltip, ENT_QUOTES, "UTF-8") . '"' : '')
+                . ($indTooltip !== '' ? ' title="' . htmlspecialchars($indTooltip, ENT_QUOTES, 'UTF-8') . '"' : '')
                 . ' style="background-color:#d4edda;color:#155724;font-weight:500;padding:6px 12px;cursor:' . ($indTooltip !== '' ? 'help' : 'default') . ';">'
                 . '<i class="icon-check"></i> ' . $translator->_('Downloaded') . $indCountLabel . '</span>';
             $participantReport = $indBadge . '<br>'
