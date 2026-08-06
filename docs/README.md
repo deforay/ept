@@ -15,16 +15,20 @@ ePT is an open-source proficiency testing system for laboratory quality assuranc
 
 ### Supported Test Schemes
 
-| Scheme | Description |
-|--------|-------------|
-| **DTS** | HIV Serology (Dried Tube Specimen) - Rapid HIV testing with multiple algorithms |
-| **VL** | HIV Viral Load - Quantitative viral load testing with Z-score analysis |
-| **EID** | Early Infant Diagnosis - PCR-based infant HIV testing |
-| **TB** | Tuberculosis - Molecular (GeneXpert) and microscopy testing |
-| **Recency** | HIV Recency - RTRI-based recent infection testing |
-| **COVID-19** | COVID-19 testing - Multi-platform PCR testing |
-| **DBS** | Dried Blood Spot - EIA and Western Blot testing |
-| **Custom Tests** | User-configurable test types with dynamic fields |
+Seven built-in schemes ship in the `scheme_list` table, plus any number of
+user-configured custom tests. The name in the middle column is what the
+admin panel and participant portal display.
+
+| Code | Name in ePT | Description |
+|--------|-------------|-------------|
+| `dts` | Dried Tube Specimen - HIV Serology | Rapid HIV testing with multiple algorithms |
+| `vl` | Dried Tube Specimen - HIV Viral Load | Quantitative viral load testing with Z-score analysis |
+| `eid` | Dried Blood Spot - Early Infant Diagnosis | PCR-based infant HIV testing |
+| `tb` | Dried Tube Specimen - Tuberculosis | Molecular (GeneXpert) and microscopy testing |
+| `recency` | Rapid Test for Recent Infection (RTRI) | Recent infection testing |
+| `covid19` | SARS-CoV-2 | Multi-platform PCR testing |
+| `dbs` | Dried Blood Spot - HIV Serology | EIA and Western Blot testing |
+| `generic` | Custom Tests | User-configured test types with dynamic fields |
 
 ### Technology Stack
 
@@ -55,6 +59,8 @@ ePT is an open-source proficiency testing system for laboratory quality assuranc
 | Document | Description |
 |----------|-------------|
 | [Setup Guide](setup.md) | Installing ePT on Ubuntu and Windows |
+| [Backup, Recovery & Migration](backup-and-migration.md) | Taking backups, restoring them, and moving an instance to a new machine |
+| [Infrastructure Planning](infrastructure.md) | Sizing, storage, networking, and security for procurement teams |
 | [Architecture Guide](ARCHITECTURE.md) | High-level system architecture, request lifecycle, security, modules, and infrastructure |
 | [Scheme Architecture](SchemeArchitecture.md) | Test scheme organization, data flow, evaluation logic, and report generation |
 | [Admin Module Guide](AdminModuleGuide.md) | Admin panel workflows, controllers, AJAX patterns, and form validation |

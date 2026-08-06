@@ -1,6 +1,6 @@
 # ePT
 
-Open Source e-Proficiency Testing (ePT) software for managing PT schemes including HIV Serology, Viral Load, EID, Recency, Covid-19, Tuberculosis, and custom tests.
+Open Source e-Proficiency Testing (ePT) software for managing PT schemes including HIV Serology (DTS and DBS), Viral Load, EID, Recency, SARS-CoV-2, Tuberculosis, and custom tests.
 
 ## Quick Start
 
