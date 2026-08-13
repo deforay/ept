@@ -327,7 +327,7 @@
 	</div>
 <?php else: ?>
 	<!-- Task 4: between-rounds card -->
-	<div class="row">
+	<!-- <div class="row">
 		<div class="col-lg-12">
 			<?php if (!empty($this->betweenRounds)): ?>
 				<div class="between-rounds-header">
@@ -392,10 +392,7 @@
 								<div class="metric-label"><?= $this->translate->_("Never responded"); ?></div>
 								<div class="metric-value">
 									<?php if ($card['neverRespondedCount'] > 0): ?>
-										<!-- <a
-											href="<?php echo $this->url(['module' => 'admin', 'controller' => 'shipment', 'action' => 'participants', 'id' => $card['shipmentId'], 'status' => 'never-responded'], 'default', true); ?>"> -->
 											<?php echo (int) $card['neverRespondedCount']; ?> <?= $this->translate->_("labs never responded"); ?>
-										<!-- </a> -->
 									<?php else: ?>
 										<span class="zero">0 <?= $this->translate->_("labs never responded"); ?></span>
 									<?php endif; ?>
@@ -417,14 +414,14 @@
 				</div>
 			<?php endif; ?>
 		</div>
-	</div>
+	</div> -->
 <?php endif; ?>
 
 <div class="row">
 	<div class="col-lg-12">
 		<div class="panel panel-default" id="ept-overview-panel">
 			<div class="panel-heading" style="cursor:pointer;" id="ept-overview-toggle" role="button"
-				aria-expanded="false" aria-controls="ept-overview-body">
+				aria-expanded="true" aria-controls="ept-overview-body">
 				<h3 class="panel-title">
 					<i class="icon-bar-chart"></i>&nbsp;&nbsp;<?= $this->translate->_("ePT Overview"); ?>
 					<i class="icon-chevron-down pull-right" id="ept-overview-chevron"></i>
