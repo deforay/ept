@@ -7,39 +7,43 @@ class Admin_IndexController extends Zend_Controller_Action
         $this->_helper->layout()->pageName = 'dashboard';
         /** @var Zend_Controller_Action_Helper_AjaxContext $ajaxContext */
         $ajaxContext = $this->_helper->getHelper('AjaxContext');
-        $ajaxContext->addActionContext('get-scheme-participants', 'html')
-            ->addActionContext('load-charts', 'html')
-            ->addActionContext('ept-overview', 'html')
+        $ajaxContext->addActionContext('ept-overview', 'html')
             ->initContext();
+        // NOTE: 'get-scheme-participants' and 'load-charts' ajax contexts were
+        // removed along with getSchemeParticipantsAction() / loadChartsAction()
+        // below — both existed solely to feed the "Active Participants enrolled
+        // per PT Scheme" and "List of all PT Surveys" charts, which are gone
+        // per Task 1. If anything else in the app still calls those endpoints,
+        // restore them before deploying this.
     }
 
     public function indexAction()
     {
-        $distributionService = new Application_Service_Distribution();
-        $shipmentService = new Application_Service_Shipments();
-        $scheme = new Application_Service_Schemes();
         $clientsServices = new Application_Service_Participants();
+        $dashboardService = new Application_Service_Dashboard();
 
-        $this->view->ptchart = $shipmentService->getShipmentListBasedOnScheme();
-        $this->view->events = $distributionService->getAllDistributionStatus();
-        $this->view->schemeCountResult = $scheme->countEnrollmentSchemes();
-        $this->view->shipmentCountResult = $shipmentService->getParticipantCountBasedOnShipment();
         $this->view->pendingParticipants = $clientsServices->getPendingParticipants();
 
-        $this->view->schemes = $scheme->getAllSchemes();
+        // Task 2: always-visible summary strip.
+        $this->view->summaryCounts = $dashboardService->getSummaryCounts();
 
-        $health = Application_Service_Common::getEmailQueueHealth([
-            'days'              => 7,
-            'min_total'         => 20,
-            'warn_threshold'    => 0.05,  // 5%
-            'critical_threshold' => 0.15,  // 15%
-        ]);
+        // Task 3 / Task 4: a round is "still open" for the table for as long as
+        // it's not finalized yet — that covers both shipments still taking
+        // responses and shipments whose deadline has passed but haven't been
+        // evaluated. Only once every shipment is finalized do we drop to the
+        // between-rounds card. See Application_Service_Dashboard::getOpenRoundsStatus().
+        $openRounds = $dashboardService->getOpenRoundsStatus();
+        $this->view->openRounds = $openRounds;
+        $this->view->showRoundTable = count($openRounds) > 0;
+        // Header count ("N rounds open for response") is the strict subset:
+        // status='shipped' AND deadline not crossed. The table itself still
+        // shows closed-but-unevaluated rows on top of that (see
+        // Application_Service_Dashboard::getOpenRoundsStatus() docblock).
+        $this->view->openRoundsCount = $dashboardService->countStrictlyOpenRounds($openRounds);
 
-        $this->view->emailHealth = $health;
-
-        // For a big red banner only on real trouble:
-        $this->view->showEmailCriticalAlert = ($health['severity'] === 'critical');
-        $this->view->showEmailWarningAlert  = ($health['severity'] === 'warning');
+        if (!$this->view->showRoundTable) {
+            $this->view->betweenRounds = $dashboardService->getBetweenRoundsSummary(5);
+        }
 
         // Nudge: shipments whose scores are out of date because responses arrived after
         // they were evaluated. Only for admins with 'config-ept' — the re-evaluate endpoint
@@ -49,28 +53,6 @@ class Admin_IndexController extends Zend_Controller_Action
         if (in_array('config-ept', $privileges, true)) {
             $this->view->staleShipments = (new Application_Service_Evaluation())->getShipmentsNeedingReEvaluation();
         }
-    }
-
-    public function getSchemeParticipantsAction()
-    {
-        if ($this->hasParam('schemeType')) {
-            $schemeType = $this->_getParam('schemeType');
-            $participantService = new Application_Service_Participants();
-            $this->view->participants = $participantService->getSchemeWiseParticipants($schemeType);
-        }
-    }
-
-    public function loadChartsAction()
-    {
-        /** @var Zend_Controller_Request_Http $request */
-        $request = $this->getRequest();
-        $shipmentService = new Application_Service_Shipments();
-        $scheme = new Application_Service_Schemes();
-        if ($request->isPost()) {
-            $this->view->type = $this->getParam('type');
-        }
-        $this->view->ptchart = $shipmentService->getShipmentListBasedOnScheme();
-        $this->view->schemeCountResult = $scheme->countEnrollmentSchemes();
     }
 
     public function eptOverviewAction()

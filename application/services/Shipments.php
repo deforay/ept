@@ -3437,9 +3437,13 @@ class Application_Service_Shipments
     {
         $resultArray = [];
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-
+ 
         $sQuery = $db->select()->from(['s' => 'shipment'], ['s.shipment_code', 's.scheme_type', 's.response_deadline'])
-            ->join(['sp' => 'shipment_participant_map'], 'sp.shipment_id=s.shipment_id', ['participantCount' => new Zend_Db_Expr('count(sp.participant_id)'), 'receivedCount' => new Zend_Db_Expr("SUM(sp.shipment_test_date not like '0000-00-00')")])
+            ->join(['sp' => 'shipment_participant_map'], 'sp.shipment_id=s.shipment_id', [
+                'participantCount' => new Zend_Db_Expr('count(sp.participant_id)'),
+                // FIX (bug 2): responded is defined by response_status, not shipment_test_date.
+                'receivedCount' => new Zend_Db_Expr('SUM(sp.response_status <> 0)'),
+            ])
             ->where("s.status='shipped' OR s.status='evaluated' OR s.status='finalized'")
             //->where("YEAR(s.shipment_date) = YEAR(CURDATE())")
             ->where('s.shipment_date > DATE_SUB(now(), INTERVAL 24 MONTH)')
@@ -3447,6 +3451,53 @@ class Application_Service_Shipments
             ->order('s.shipment_id');
         $resultArray = $db->fetchAll($sQuery);
         return $resultArray;
+    }
+ 
+    public function getShipmentListBasedOnScheme()
+    {
+        $total = $name = $response = [];
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $sQuery = $db->select()->from(['s' => 'shipment'], ['s.shipment_code', 's.scheme_type', 's.response_deadline', 'max_score', 'average_score'])
+            ->join(['sp' => 'shipment_participant_map'], 'sp.shipment_id=s.shipment_id', [
+                'shipment_score' => new Zend_Db_Expr('SUM(sp.shipment_score)'),
+                'documentation_score' => new Zend_Db_Expr('SUM(sp.documentation_score)'),
+                'participantCount' => new Zend_Db_Expr('count(sp.participant_id)'),
+                // FIX (bug 2): same swap as above.
+                'receivedCount' => new Zend_Db_Expr('SUM(sp.response_status <> 0)'),
+            ])
+            ->join(['sl' => 'scheme_list'], 's.scheme_type=sl.scheme_id', ['scheme_name'])
+            ->where("s.status != 'pending'")
+            ->where('s.cancelled_at IS NULL')
+            ->group('s.shipment_id')
+            ->order('s.shipment_id');
+        $result = $db->fetchAll($sQuery);
+ 
+        if (!empty($result)) {
+ 
+            foreach ($result as $key => $row) {
+                $response[$row['scheme_type']][$key] = [
+                    'shipment_code' => $row['shipment_code'],
+                    'shipment_score' => (isset($row['shipment_score']) && ($row['shipment_score']) > 0) ? $row['shipment_score'] : 0,
+                    'documentation_score' => $row['documentation_score'],
+                    'participantCount' => $row['participantCount'],
+                    'receivedCount' => (isset($row['receivedCount']) && ($row['receivedCount']) > 0) ? $row['receivedCount'] : 0,
+                    'scheme_type' => $row['scheme_type'],
+                ];
+ 
+                $total['participants'] = $total['participants'] ?? [];
+                // FIX (bug 1): seed 'received' from itself, not from 'participants'.
+                $total['received'] = $total['received'] ?? [];
+                $name[$row['scheme_type']] = $name[$row['scheme_type']] ?? [];
+ 
+                $total['participants'][$row['scheme_type']] = $total['participants'][$row['scheme_type']] ?? 0;
+                $total['received'][$row['scheme_type']] = $total['received'][$row['scheme_type']] ?? 0;
+ 
+                $total['participants'][$row['scheme_type']] += $row['participantCount'];
+                $total['received'][$row['scheme_type']] += (isset($row['receivedCount']) && ($row['receivedCount']) > 0) ? $row['receivedCount'] : 0;
+                $name[$row['scheme_type']] = $row['scheme_name'];
+            }
+        }
+        return ['result' => $response, 'total' => $total, 'name' => $name];
     }
 
     public function removeShipmentParticipant($mapId, $sId = '')
@@ -3795,16 +3846,22 @@ class Application_Service_Shipments
         $total = $name = $response = [];
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $sQuery = $db->select()->from(['s' => 'shipment'], ['s.shipment_code', 's.scheme_type', 's.response_deadline', 'max_score', 'average_score'])
-            ->join(['sp' => 'shipment_participant_map'], 'sp.shipment_id=s.shipment_id', ['shipment_score' => new Zend_Db_Expr('SUM(sp.shipment_score)'), 'documentation_score' => new Zend_Db_Expr('SUM(sp.documentation_score)'), 'participantCount' => new Zend_Db_Expr('count(sp.participant_id)'), 'receivedCount' => new Zend_Db_Expr("SUM(sp.shipment_test_date not like '0000-00-00')")])
+            ->join(['sp' => 'shipment_participant_map'], 'sp.shipment_id=s.shipment_id', [
+                'shipment_score' => new Zend_Db_Expr('SUM(sp.shipment_score)'),
+                'documentation_score' => new Zend_Db_Expr('SUM(sp.documentation_score)'),
+                'participantCount' => new Zend_Db_Expr('count(sp.participant_id)'),
+                // FIX (bug 2): same swap as above.
+                'receivedCount' => new Zend_Db_Expr('SUM(sp.response_status <> 0)'),
+            ])
             ->join(['sl' => 'scheme_list'], 's.scheme_type=sl.scheme_id', ['scheme_name'])
             ->where("s.status != 'pending'")
             ->where('s.cancelled_at IS NULL')
             ->group('s.shipment_id')
             ->order('s.shipment_id');
         $result = $db->fetchAll($sQuery);
-
+ 
         if (!empty($result)) {
-
+ 
             foreach ($result as $key => $row) {
                 $response[$row['scheme_type']][$key] = [
                     'shipment_code' => $row['shipment_code'],
@@ -3814,14 +3871,15 @@ class Application_Service_Shipments
                     'receivedCount' => (isset($row['receivedCount']) && ($row['receivedCount']) > 0) ? $row['receivedCount'] : 0,
                     'scheme_type' => $row['scheme_type'],
                 ];
-
+ 
                 $total['participants'] = $total['participants'] ?? [];
-                $total['received'] = $total['participants'] ?? [];
+                // FIX (bug 1): seed 'received' from itself, not from 'participants'.
+                $total['received'] = $total['received'] ?? [];
                 $name[$row['scheme_type']] = $name[$row['scheme_type']] ?? [];
-
+ 
                 $total['participants'][$row['scheme_type']] = $total['participants'][$row['scheme_type']] ?? 0;
                 $total['received'][$row['scheme_type']] = $total['received'][$row['scheme_type']] ?? 0;
-
+ 
                 $total['participants'][$row['scheme_type']] += $row['participantCount'];
                 $total['received'][$row['scheme_type']] += (isset($row['receivedCount']) && ($row['receivedCount']) > 0) ? $row['receivedCount'] : 0;
                 $name[$row['scheme_type']] = $row['scheme_name'];
