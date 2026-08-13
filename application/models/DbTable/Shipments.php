@@ -16,7 +16,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
 
     public function getShipmentData($sId, $pId)
     {
-        $sql = $this->getAdapter()->select()->from(['s' => $this->_name], ['*', 'panelName' => new Zend_Db_Expr('shipment_attributes->>"$.panelName"')])
+        $sql = $this->getAdapter()->select()->from(['s' => $this->_name], ['*', 'panelName' => new Zend_Db_Expr("JSON_UNQUOTE(JSON_EXTRACT(s.shipment_attributes, '$.panelName'))")])
             ->join(['sl' => 'scheme_list'], 's.scheme_type=sl.scheme_id', ['scheme_name', 'is_user_configured', 'user_test_config'])
             ->join(['sp' => 'shipment_participant_map'], 's.shipment_id=sp.shipment_id', ['*', 'shipment_test_date', 'RESPONSEDATE' => "DATE_FORMAT(sp.shipment_test_report_date,'%Y-%m-%d')"])
             ->joinLeft(['p' => 'participant'], 'sp.participant_id=p.participant_id', ['participant_id', 'unique_identifier', 'institute_name', 'anc'])
@@ -325,7 +325,12 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         }
 
         $sQuery = $this->getAdapter()->select()
-            ->from(['s' => 'shipment'], [new Zend_Db_Expr('SQL_CALC_FOUND_ROWS s.scheme_type'), 's.shipment_date', 's.shipment_code', 's.response_deadline', 's.shipment_id', 's.status', 's.response_switch', 'allow_editing_response', 'panelName' => new Zend_Db_Expr('shipment_attributes->>"$.panelName"')])
+            ->from(['s' => 'shipment'], [
+                new Zend_Db_Expr('SQL_CALC_FOUND_ROWS s.scheme_type'),
+                's.shipment_date', 's.shipment_code', 's.response_deadline',
+                's.shipment_id', 's.status', 's.response_switch', 'allow_editing_response',
+                'panelName' => new Zend_Db_Expr("JSON_UNQUOTE(JSON_EXTRACT(s.shipment_attributes, '$.panelName'))")
+            ])
             ->join(['d' => 'distributions'], 'd.distribution_id = s.distribution_id', ['distribution_code', 'distribution_date'])
             ->join(['sl' => 'scheme_list'], 'sl.scheme_id=s.scheme_type', ['scheme_name', 'is_user_configured'])
             ->join(['spm' => 'shipment_participant_map'], 'spm.shipment_id=s.shipment_id', ['spm.map_id', 'spm.evaluation_status', 'spm.response_status', 'spm.participant_id', 'RESPONSEDATE' => "DATE_FORMAT(spm.shipment_test_report_date,'%Y-%m-%d')"])
@@ -5316,7 +5321,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
     public function getStatusOfMappedSites($parameters)
     {
         $sQuery = $this->getAdapter()->select()
-            ->from(['s' => 'shipment'], ['s.scheme_type', 's.shipment_date', 's.shipment_code', 's.response_deadline', 's.shipment_id', 's.status', 's.response_switch', 'panelName' => new Zend_Db_Expr('shipment_attributes->>"$.panelName"')])
+            ->from(['s' => 'shipment'], ['s.scheme_type', 's.shipment_date', 's.shipment_code', 's.response_deadline', 's.shipment_id', 's.status', 's.response_switch', 'panelName' => new Zend_Db_Expr("JSON_UNQUOTE(JSON_EXTRACT(s.shipment_attributes, '$.panelName'))")])
             ->join(['sl' => 'scheme_list'], 'sl.scheme_id=s.scheme_type', ['scheme_name', 'is_user_configured'])
             ->join(['spm' => 'shipment_participant_map'], 'spm.shipment_id=s.shipment_id', ['spm.map_id', 'spm.evaluation_status', 'spm.response_status', 'spm.participant_id', 'response_date' => "DATE_FORMAT(spm.shipment_test_report_date,'%d-%b-%Y')"])
             ->join(['p' => 'participant'], 'p.participant_id=spm.participant_id', ['p.unique_identifier', 'p.first_name', 'p.last_name', 'p.department_name', 'p.address', 'p.city', 'p.district', 'p.state', 'p.institute_name', 'p.country', 'p.email', 'p.mobile'])
@@ -5352,7 +5357,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
     public function fetchFinalizedShipmentReportByDmId($dmId)
     {
         $sQuery = $this->getAdapter()->select()
-            ->from(['s' => 'shipment'], ['s.scheme_type', 's.shipment_date', 's.shipment_code', 's.response_deadline', 's.shipment_id', 's.status', 's.response_switch', 'panelName' => new Zend_Db_Expr('shipment_attributes->>"$.panelName"')])
+            ->from(['s' => 'shipment'], ['s.scheme_type', 's.shipment_date', 's.shipment_code', 's.response_deadline', 's.shipment_id', 's.status', 's.response_switch', 'panelName' => new Zend_Db_Expr("JSON_UNQUOTE(JSON_EXTRACT(s.shipment_attributes, '$.panelName'))")])
             ->join(['spm' => 'shipment_participant_map'], 'spm.shipment_id=s.shipment_id', ['spm.map_id', 'spm.evaluation_status', 'spm.response_status', 'spm.participant_id', 'response_date' => "DATE_FORMAT(spm.shipment_test_report_date,'%d-%b-%Y')", 'report_download_metadata'])
             ->join(['p' => 'participant'], 'p.participant_id=spm.participant_id', ['p.unique_identifier', 'p.first_name', 'p.last_name', 'p.department_name', 'p.address', 'p.city', 'p.district', 'p.state', 'p.institute_name', 'p.country', 'p.email', 'p.mobile'])
             ->join(['pmm' => 'participant_manager_map'], 'p.participant_id=pmm.participant_id', [])

@@ -147,27 +147,33 @@
 		margin-bottom: 12px;
 	}
 
-	.round-card .figure-grid {
+	.round-card .metric-grid {
 		display: flex;
 		flex-wrap: wrap;
-		gap: 22px;
+		gap: 12px;
 	}
 
-	.round-card .figure {
-		min-width: 150px;
+	.round-card .metric-card {
+		background: #fbfbfb;
+		border: 1px solid #eee;
+		border-radius: 4px;
+		padding: 12px 14px;
+		min-width: 170px;
+		flex: 1 1 170px;
 	}
 
-	.round-card .figure-label {
+	.round-card .metric-label {
 		font-size: 11px;
 		text-transform: uppercase;
 		letter-spacing: .03em;
 		color: #999;
-		margin-bottom: 2px;
+		margin-bottom: 6px;
 	}
 
-	.round-card .figure-value {
+	.round-card .metric-value {
 		font-size: 13px;
 		color: #333;
+		line-height: 1.5;
 	}
 
 	.round-card .trend-up {
@@ -225,13 +231,28 @@
 	<!-- Task 3: round table -->
 	<div class="row">
 		<div class="col-lg-12">
-			<div class="panel panel-primary">
+			<div class="panel <?php echo $this->openRoundsCount > 0 ? 'panel-primary' : 'panel-default'; ?>">
 				<div class="panel-heading">
 					<h3 class="panel-title">
-						<i class="icon-bar-chart"></i>&nbsp;&nbsp;
-						<?php echo (int) $this->openRoundsCount; ?>
-						<?= $this->translate->_("round"); ?><?php echo $this->openRoundsCount === 1 ? '' : 's'; ?>
-						<?= $this->translate->_("open for response"); ?>
+						<?php if ($this->openRoundsCount > 0): ?>
+							<i class="icon-bar-chart"></i>&nbsp;&nbsp;
+							<?php echo (int) $this->openRoundsCount; ?>
+							<?= $this->translate->_("round"); ?><?php echo $this->openRoundsCount === 1 ? '' : 's'; ?>
+							<?= $this->translate->_("open for response"); ?>
+							<?php if ($this->closedRoundsCount > 0): ?>
+								<span style="font-weight:400;color:#888;font-size:13px;">
+									&nbsp;&mdash;&nbsp;<?php echo (int) $this->closedRoundsCount; ?>
+									<?= $this->translate->_("awaiting evaluation"); ?>
+								</span>
+							<?php endif; ?>
+						<?php else: ?>
+							<i class="icon-time"></i>&nbsp;&nbsp;
+							<?= $this->translate->_("No rounds currently open for response"); ?>
+							<span style="font-weight:400;color:#888;font-size:13px;">
+								&nbsp;&mdash;&nbsp;<?php echo (int) $this->closedRoundsCount; ?>
+								<?= $this->translate->_("awaiting evaluation"); ?>
+							</span>
+						<?php endif; ?>
 					</h3>
 				</div>
 				<div class="panel-body">
@@ -321,19 +342,19 @@
 						<div class="round-card-sub">
 							<?= $this->translate->_("Finalized"); ?> <?php echo $this->escape($card['finalizedDateFull']); ?>
 						</div>
-						<div class="figure-grid">
-							<div class="figure">
-								<div class="figure-label"><?= $this->translate->_("Participation"); ?></div>
-								<div class="figure-value">
+						<div class="metric-grid">
+							<div class="metric-card">
+								<div class="metric-label"><?= $this->translate->_("Participation"); ?></div>
+								<div class="metric-value">
 									<?php echo (int) $card['tookPart']; ?> <?= $this->translate->_("took part"); ?>,
 									<?php echo (int) $card['noResponse']; ?> <?= $this->translate->_("no response"); ?>,
 									<?php echo (int) $card['unableToTest']; ?> <?= $this->translate->_("unable"); ?><br>
 									<?= $this->translate->_("Out of enrolled"); ?> <?php echo (int) $card['enrolledCount']; ?>
 								</div>
 							</div>
-							<div class="figure">
-								<div class="figure-label"><?= $this->translate->_("Results"); ?></div>
-								<div class="figure-value">
+							<div class="metric-card">
+								<div class="metric-label"><?= $this->translate->_("Results"); ?></div>
+								<div class="metric-value">
 									<?php echo (int) $card['pass']; ?> <?= $this->translate->_("pass"); ?>,
 									<?php echo (int) $card['fail']; ?> <?= $this->translate->_("fail"); ?>,
 									<?php echo (int) $card['excluded']; ?> <?= $this->translate->_("excluded"); ?>
@@ -342,9 +363,9 @@
 									<?php endif; ?>
 								</div>
 							</div>
-							<div class="figure">
-								<div class="figure-label"><?= $this->translate->_("Average score"); ?></div>
-								<div class="figure-value">
+							<div class="metric-card">
+								<div class="metric-label"><?= $this->translate->_("Average score"); ?></div>
+								<div class="metric-value">
 									<?php echo $this->escape($card['averageScore']); ?>
 									<?php if ($card['scoreDelta'] !== null): ?>
 										<span class="<?php echo $card['scoreDelta'] >= 0 ? 'trend-up' : 'trend-down'; ?>">
@@ -354,9 +375,9 @@
 									<?php endif; ?>
 								</div>
 							</div>
-							<div class="figure">
-								<div class="figure-label"><?= $this->translate->_("Repeat failers"); ?></div>
-								<div class="figure-value">
+							<div class="metric-card">
+								<div class="metric-label"><?= $this->translate->_("Repeat failers"); ?></div>
+								<div class="metric-value">
 									<?php if ($card['repeatFailerCount'] > 0): ?>
 										<a
 											href="<?php echo $this->url(['module' => 'admin', 'controller' => 'shipment', 'action' => 'participants', 'id' => $card['shipmentId'], 'status' => 'repeat-fail'], 'default', true); ?>">
@@ -367,22 +388,22 @@
 									<?php endif; ?>
 								</div>
 							</div>
-							<div class="figure">
-								<div class="figure-label"><?= $this->translate->_("Never responded"); ?></div>
-								<div class="figure-value">
+							<div class="metric-card">
+								<div class="metric-label"><?= $this->translate->_("Never responded"); ?></div>
+								<div class="metric-value">
 									<?php if ($card['neverRespondedCount'] > 0): ?>
-										<a
-											href="<?php echo $this->url(['module' => 'admin', 'controller' => 'shipment', 'action' => 'participants', 'id' => $card['shipmentId'], 'status' => 'never-responded'], 'default', true); ?>">
+										<!-- <a
+											href="<?php echo $this->url(['module' => 'admin', 'controller' => 'shipment', 'action' => 'participants', 'id' => $card['shipmentId'], 'status' => 'never-responded'], 'default', true); ?>"> -->
 											<?php echo (int) $card['neverRespondedCount']; ?> <?= $this->translate->_("labs never responded"); ?>
-										</a>
+										<!-- </a> -->
 									<?php else: ?>
 										<span class="zero">0 <?= $this->translate->_("labs never responded"); ?></span>
 									<?php endif; ?>
 								</div>
 							</div>
-							<div class="figure">
-								<div class="figure-label"><?= $this->translate->_("Report uptake"); ?></div>
-								<div class="figure-value">
+							<div class="metric-card">
+								<div class="metric-label"><?= $this->translate->_("Report uptake"); ?></div>
+								<div class="metric-value">
 									<?php echo (int) $card['reportOpenedCount']; ?> <?= $this->translate->_("of"); ?>
 									<?php echo (int) $card['tookPart']; ?>
 								</div>

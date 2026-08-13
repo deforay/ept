@@ -14,18 +14,28 @@
  *     shipment.scheme_type is actually the FK to scheme_list.scheme_id, despite
  *     the name — kept as-is to match the existing model.
  *
+ *   Confirmed:
+ *     shipment_participant_map.response_status is a STRING enum:
+ *       'responded' | 'noresponse' | 'late' | 'nottested'
+ *     "Took part / responded" = response_status != 'noresponse' (late and
+ *     nottested both count as having responded — the round table's numbers
+ *     only reconcile if responded + outstanding = total, which requires
+ *     late/nottested to be a subset of responded, not separate from it).
+ *     "Outstanding" = response_status = 'noresponse'.
+ *     "Late" = response_status = 'late'. "Unable to test" = response_status
+ *     = 'nottested'. This replaced an earlier guess at separate
+ *     is_response_late / is_pt_test_not_performed boolean columns, which
+ *     don't exist — everything comes off this one enum column.
+ *
  *   NOT visible in the code you shared, taken on trust from the spec's
  *   "Where the numbers come from" table — verify these exist before deploying:
  *     shipment.finalized_at
- *     shipment_participant_map.is_response_late
- *     shipment_participant_map.is_pt_test_not_performed
  *     shipment_participant_map.final_result   (1 pass, 2 fail, 3 excluded, 4 not evaluated)
  *     shipment_participant_map.report_download_metadata
  *
- *   "Open" (per clarified definition, confirmed in chat over the spec):
- *     status = 'shipped' AND response_deadline not yet crossed.
- *   response_switch, which the original spec mentioned, is NOT used —
- *   see PATCH_NOTES.md Task 3 if it turns out to matter in your schema.
+ *   "Open" (clarified in chat over the spec): status = 'shipped' AND
+ *   response_deadline not yet crossed. response_switch, which the original
+ *   spec mentioned, is NOT used anywhere in this file.
  *
  *   Also assumed: a participants table (participant_id PK) with an
  *   is_active/status column for "active participants", and scheme_list has
@@ -47,9 +57,13 @@ class Application_Service_Dashboard
     /** @var Zend_Db_Adapter_Abstract */
     protected $db;
 
+    /** @var Application_Service_Schemes */
+    protected $schemeService;
+
     public function __construct()
     {
         $this->db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $this->schemeService = new Application_Service_Schemes();
     }
 
     /**
@@ -57,15 +71,24 @@ class Application_Service_Dashboard
      */
     public function getSummaryCounts()
     {
-        // TODO verify table/column names against your real participants table.
-        $activeParticipants = (int) $this->db->fetchOne(
-            "SELECT COUNT(*) FROM participant WHERE status = 'active'"
-        );
+        // Reuses the same method the original (pre-rebuild) dashboard controller
+        // called to feed the removed "Active Participants enrolled per PT Scheme"
+        // chart — it already returns per-scheme enrolled-participant counts, so
+        // summing it gives total active participants without guessing a table.
+        // (Keyed by scheme name per the original phtml's usage — key identity
+        // doesn't matter here since we're only summing/counting values.)
+        $schemeCountsByName = $this->schemeService->countEnrollmentSchemes();
+        $activeParticipants = (int) array_sum($schemeCountsByName);
 
-        // TODO verify scheme_list has an active flag; if not, drop the WHERE.
-        $activeSchemes = (int) $this->db->fetchOne(
-            "SELECT COUNT(*) FROM scheme_list WHERE status = 'active'"
-        );
+        // Schemes with at least one enrolled participant. TODO: if "active
+        // scheme" should instead mean something like a status flag on the
+        // scheme itself (independent of enrollment), swap this for
+        // count($this->schemeService->getAllSchemes()) filtered accordingly —
+        // I don't have visibility into whether scheme_list carries its own
+        // active/inactive flag.
+        $activeSchemes = count(array_filter($schemeCountsByName, function ($count) {
+            return $count > 0;
+        }));
 
         $roundsCompletedThisYear = (int) $this->db->fetchOne(
             "SELECT COUNT(*) FROM shipment
@@ -108,9 +131,9 @@ class Application_Service_Dashboard
                 sl.scheme_name,
                 s.response_deadline,
                 COUNT(sp.participant_id) AS total,
-                SUM(sp.response_status is not null AND sp.response_status like 'responded') AS responded,
-                SUM(sp.shipment_test_report_date > s.response_deadline) AS late,
-                SUM(sp.is_pt_test_not_performed = 1) AS unable_to_test
+                SUM(sp.response_status != 'noresponse') AS responded,
+                SUM(sp.response_status = 'late') AS late,
+                SUM(sp.response_status = 'nottested') AS unable_to_test
             FROM shipment s
             JOIN scheme_list sl ON sl.scheme_id = s.scheme_type
             JOIN shipment_participant_map sp ON sp.shipment_id = s.shipment_id
@@ -197,6 +220,15 @@ class Application_Service_Dashboard
 
         $latestShipments = $this->db->fetchAll($latestSql);
         $cards = [];
+        // NOTE: the original (pre-rebuild) dashboard iterated this method's
+        // result as `foreach ($schemeCountResult as $schemeName => $pCount)`,
+        // which means it's keyed by scheme NAME, not scheme_id/scheme_type.
+        // Keying off name below to match that — but two schemes sharing a
+        // display name would collide under this keying. If
+        // countEnrollmentSchemes() actually returns numeric scheme_type/id
+        // keys and the original loop variable was just misleadingly named,
+        // switch this back to keying by $schemeType.
+        $schemeCountsByName = $this->schemeService->countEnrollmentSchemes();
 
         foreach ($latestShipments as $shipment) {
             $schemeType = $shipment['scheme_type'];
@@ -208,17 +240,15 @@ class Application_Service_Dashboard
             );
 
             // Enrolled count "out of enrolled" — not out of this shipment's
-            // participant list. TODO verify enrollment table/columns.
-            $enrolledCount = (int) $this->db->fetchOne(
-                "SELECT COUNT(*) FROM enrollment WHERE scheme_id = ? AND status = 'active'",
-                [$schemeType]
-            );
+            // participant list. Same source as getSummaryCounts(): the
+            // existing countEnrollmentSchemes() method, keyed by scheme name.
+            $enrolledCount = (int) ($schemeCountsByName[$schemeName] ?? 0);
 
             $participantStats = $this->db->fetchRow(
                 "SELECT
-                    SUM(response_status <> 0) AS took_part,
-                    SUM(response_status = 0) AS no_response,
-                    SUM(is_pt_test_not_performed = 1) AS unable_to_test,
+                    SUM(response_status != 'noresponse') AS took_part,
+                    SUM(response_status = 'noresponse') AS no_response,
+                    SUM(response_status = 'nottested') AS unable_to_test,
                     SUM(final_result = 1) AS pass,
                     SUM(final_result = 2) AS fail,
                     SUM(final_result = 3) AS excluded,
@@ -275,7 +305,7 @@ class Application_Service_Dashboard
                         FROM shipment_participant_map
                         WHERE shipment_id IN ($placeholders)
                         GROUP BY participant_id
-                        HAVING SUM(response_status <> 0) = 0
+                        HAVING SUM(response_status != 'noresponse') = 0
                      ) t",
                     $last3ShipmentIds
                 );
