@@ -33,16 +33,16 @@
  *     shipment_participant_map.final_result   (1 pass, 2 fail, 3 excluded, 4 not evaluated)
  *     shipment_participant_map.report_download_metadata
  *
- *   "Open" (clarified in chat over the spec): status = 'shipped' AND
- *   response_deadline not yet crossed. response_switch, which the original
- *   spec mentioned, is NOT used anywhere in this file.
+ *   "Open" for the round table (Task 3), per explicit instruction: status
+ *   != 'finalized' AND response_deadline >= NOW(). Expired-deadline
+ *   shipments are excluded from the table entirely — they don't appear
+ *   styled differently, they just don't show up. response_switch, which
+ *   the original spec mentioned, is NOT used anywhere in this file.
  *
- *   Also assumed: a participants table (participant_id PK) with an
- *   is_active/status column for "active participants", and scheme_list has
- *   some notion of active/inactive for "active schemes". Swap the TODO'd
- *   lines in getSummaryCounts() for whatever your real columns are, or
- *   better, call existing Application_Service_Participants /
- *   Application_Service_Schemes methods if they already compute this.
+ *   "Active participants" / "active schemes" (Task 2) and "out of enrolled"
+ *   (Task 4) all come from Application_Service_Schemes::countEnrollmentSchemes(),
+ *   not a raw query — see getSummaryCounts() and getBetweenRoundsSummary()
+ *   for the keyed-by-scheme-name caveat noted in PATCH_NOTES.md.
  *
  *   Per the spec's warning: shipments finalized before
  *   Evaluation::excludeNonResponder() landed over-counted non-responders as
@@ -107,20 +107,14 @@ class Application_Service_Dashboard
     /**
      * Task 3 — table rows.
      *
-     * "Open" (per clarified definition) = status = 'shipped' AND deadline
-     * not yet crossed. That's the strict definition used for the "N rounds
-     * open for response" count.
-     *
-     * The TABLE, however, shows a wider set: every shipment with
-     * status = 'shipped' (deadline crossed or not) — because a shipment
-     * whose deadline has passed but hasn't moved past 'shipped' (i.e. not
-     * yet evaluated) stays visible as a closed/red row until it is. The
-     * moment a shipment moves to 'evaluated' or 'finalized' it drops out of
-     * this table entirely (see class-level note on the 'evaluated' status
-     * gap in PATCH_NOTES.md).
-     *
-     * Each row carries both 'isOpen' and 'isClosed' so callers can count
-     * the strictly-open subset separately from the full row set.
+     * Explicit instruction overriding the earlier "keep closed rows visible
+     * until evaluated" behavior: this table shows ONLY currently-running
+     * shipments — status != 'finalized' AND response_deadline not yet
+     * crossed. Expired-deadline shipments are excluded entirely, not just
+     * styled differently. As a side effect this also closes the 'evaluated'
+     * status gap noted earlier in PATCH_NOTES.md — status != 'finalized'
+     * catches 'shipped' and 'evaluated' alike, as long as the deadline
+     * hasn't passed.
      */
     public function getOpenRoundsStatus()
     {
@@ -137,8 +131,9 @@ class Application_Service_Dashboard
             FROM shipment s
             JOIN scheme_list sl ON sl.scheme_id = s.scheme_type
             JOIN shipment_participant_map sp ON sp.shipment_id = s.shipment_id
-            WHERE s.status = 'shipped'
+            WHERE s.status != 'finalized'
               AND s.cancelled_at IS NULL
+              AND s.response_deadline >= NOW()
             GROUP BY s.shipment_id
             ORDER BY s.response_deadline ASC
         ";
@@ -150,19 +145,8 @@ class Application_Service_Dashboard
         foreach ($rows as $row) {
             $deadline = new DateTime($row['response_deadline']);
             $diffDays = (int) $now->diff($deadline)->format('%r%a'); // signed days, future positive
-            $isClosed = $deadline < $now;   // deadline crossed => not open, per clarified definition
-            $isOpen = !$isClosed;           // status='shipped' (query filter) AND deadline not crossed
-
-            if ($isClosed) {
-                $deadlineLabel = $this->relativePast($now, $deadline) . ' ago';
-                $rowClass = 'red';
-            } elseif ($diffDays <= 3) {
-                $deadlineLabel = 'In ' . $diffDays . ' day' . ($diffDays === 1 ? '' : 's');
-                $rowClass = 'amber';
-            } else {
-                $deadlineLabel = 'In ' . $diffDays . ' days';
-                $rowClass = '';
-            }
+            $rowClass = $diffDays <= 3 ? 'amber' : '';
+            $deadlineLabel = 'In ' . $diffDays . ' day' . ($diffDays === 1 ? '' : 's');
 
             $total = (int) $row['total'];
             $responded = (int) $row['responded'];
@@ -173,8 +157,6 @@ class Application_Service_Dashboard
                 'schemeName' => $row['scheme_name'],
                 'deadlineLabel' => $deadlineLabel,
                 'deadlineDate' => $deadline->format('Y-m-d'),
-                'isOpen' => $isOpen,
-                'isClosed' => $isClosed,
                 'rowClass' => $rowClass,
                 'total' => $total,
                 'responded' => $responded,
@@ -185,17 +167,6 @@ class Application_Service_Dashboard
         }
 
         return $out;
-    }
-
-    /**
-     * Strictly-open count for the table header ("N rounds open for
-     * response") — a subset of getOpenRoundsStatus()'s rows.
-     */
-    public function countStrictlyOpenRounds(array $rounds)
-    {
-        return count(array_filter($rounds, function ($r) {
-            return $r['isOpen'];
-        }));
     }
 
     /**
@@ -338,12 +309,67 @@ class Application_Service_Dashboard
         return $cards;
     }
 
-    private function relativePast(DateTime $now, DateTime $then)
+    /**
+     * Drill-down list for the "N outstanding" link on a round-table row —
+     * labs on a specific shipment that haven't responded yet.
+     *
+     * This is the only lab-list method left in the class: the equivalents
+     * for "never responded" and "repeat failers" were removed along with
+     * their links on the between-rounds card, since that card describes an
+     * already-finalized round and this page is scoped to currently-running
+     * shipments only. Not deleting the finalized-round versions blind —
+     * this comment is here so it's easy to find where they'd need to be
+     * rebuilt if a finalized-round drill-down page gets built later
+     * (queries would look like getBetweenRoundsSummary()'s scoreDelta/
+     * repeatFailerCount/neverRespondedCount blocks, returning rows instead
+     * of counts).
+     */
+    public function getOutstandingLabs($shipmentId)
     {
-        $days = $now->diff($then)->days;
-        if ($days === 0) {
-            return 'today';
+        $participantIds = $this->db->fetchCol(
+            "SELECT participant_id
+             FROM shipment_participant_map
+             WHERE shipment_id = ? AND response_status = 'noresponse'",
+            [$shipmentId]
+        );
+
+        return $this->fetchLabDetails($participantIds, [
+            'context' => 'No response recorded yet for this round',
+        ]);
+    }
+
+    /**
+     * Shared lab-detail lookup for the drill-down list above.
+     *
+     * ASSUMPTION — unconfirmed against your real schema: a `participant`
+     * table keyed by participant_id with lab_name/email/phone columns.
+     * None of this was visible in anything you've shared so far. Adjust
+     * the column list/table name to match your actual participants table
+     * (it may live in Application_Service_Participants already — if so,
+     * prefer calling a method there over this raw query).
+     */
+    private function fetchLabDetails(array $participantIds, array $extra = [])
+    {
+        if (empty($participantIds)) {
+            return [];
         }
-        return $days . ' day' . ($days === 1 ? '' : 's');
+
+        $placeholders = implode(',', array_fill(0, count($participantIds), '?'));
+        $rows = $this->db->fetchAll(
+            "SELECT participant_id, lab_name, email, phone
+             FROM participant
+             WHERE participant_id IN ($placeholders)
+             ORDER BY lab_name ASC",
+            $participantIds
+        );
+
+        return array_map(function ($row) use ($extra) {
+            return array_merge([
+                'participantId' => $row['participant_id'],
+                'labName' => $row['lab_name'],
+                'email' => $row['email'],
+                'phone' => $row['phone'],
+            ], $extra);
+        }, $rows);
     }
 }
