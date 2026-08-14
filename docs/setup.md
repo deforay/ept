@@ -53,9 +53,7 @@ To update an existing ePT installation:
 sudo ept-update
 ```
 
-Or specify a path: `sudo ept-update -p /var/www/ept`
-
-To update all ePT instances: `sudo ept-update -A`
+See [Updating an ePT installation](updating.md) for the other ways to run it, how to verify the result, and how to roll back.
 
 ---
 
@@ -174,7 +172,7 @@ To update ePT to the latest version:
 git pull && docker compose up --build -d
 ```
 
-The entrypoint script automatically runs `composer post-update` (migrations, collation fixes, etc.) on every container start.
+The entrypoint script runs `composer post-update` (migrations and collation fixes) on every container start. See [Updating an ePT installation](updating.md) for verification and rollback.
 
 ### Importing an Existing Database
 

@@ -236,6 +236,8 @@ domain = https://yourdomain.example.org/
 
 Updates an existing ePT installation to the latest version.
 
+> **Step-by-step procedure:** this section lists the options. For the full update procedure, including the run-from-GitHub one-liner, verification, and rollback, see [Updating an ePT installation](updating.md).
+
 The `ept-update` command is installed automatically during setup. If it's not available, install it manually:
 
 ```bash

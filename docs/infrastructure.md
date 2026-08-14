@@ -59,7 +59,7 @@ A typical medium-tier deployment occupies **20–40 GB** after 2–3 years.
 
 ePT enforces per-role authentication (admin / data manager / participant) with bcrypt passwords, CSRF tokens on state-changing forms, and a full audit log capturing actor, IP, user agent, and timestamp for every mutation. See [ARCHITECTURE.md → Security](ARCHITECTURE.md#security) for details.
 
-Infrastructure-side: keep MySQL on a private subnet, restrict SSH, enable disk encryption, and patch OS/PHP monthly. ePT itself is upgraded via `upgrade.sh`.
+Infrastructure-side: keep MySQL on a private subnet, restrict SSH, enable disk encryption, and patch OS/PHP monthly. ePT itself is upgraded via `upgrade.sh` (see [Updating an ePT installation](updating.md)).
 
 ---
 

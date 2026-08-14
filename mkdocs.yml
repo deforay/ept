@@ -32,35 +32,40 @@ theme:
   features:
     - navigation.instant
     - navigation.tracking
-    - navigation.sections
-    - navigation.expand
+    # Top-level groups become tabs across the header instead of one long
+    # sidebar. The sidebar then shows only the section you are reading.
+    - navigation.tabs
+    - navigation.tabs.sticky
     - navigation.top
     - toc.follow
     - content.tabs.link
+    - content.code.copy
+    - search.suggest
+    - search.highlight
   icon:
     repo: fontawesome/brands/github
 
 nav:
   - Home: README.md
-  - Setup & Operations:
-      - Setup: setup.md
-      - Backup, Recovery & Migration: backup-and-migration.md
-      - Infrastructure Planning: infrastructure.md
-      - CLI Tools: cli-tools.md
-  - Guides:
-      - Engineering Standards: engineering-standards.md
+  - Operations:
+      - Install: setup.md
+      - Update: updating.md
+      - Backup & recovery: backup-and-migration.md
+      - Infrastructure: infrastructure.md
+      - CLI tools: cli-tools.md
+  - Development:
       - Architecture: ARCHITECTURE.md
-      - Scheme Architecture: SchemeArchitecture.md
-      - Admin Module: AdminModuleGuide.md
+      - Schemes: SchemeArchitecture.md
+      - Admin module: AdminModuleGuide.md
       - Translation: TranslationGuide.md
+      - Engineering standards: engineering-standards.md
   - Training:
       - Overview: training/README.md
-      - "Part 1: System Setup & Participants": training/part1-setup-and-participants.md
-      - "Part 2: PT Survey & Shipment Management": training/part2-surveys-and-shipments.md
-      - "Part 3: Participant — Results & Reports": training/part3-participant.md
-      - "Part 4: Evaluation, Reports & Finalization": training/part4-evaluation-and-reports.md
-  - Exercises:
-      - "DTS HIV Serology": training/exercises/dts-hiv-serology.md
+      - "Part 1: Setup & participants": training/part1-setup-and-participants.md
+      - "Part 2: Surveys & shipments": training/part2-surveys-and-shipments.md
+      - "Part 3: Participant results": training/part3-participant.md
+      - "Part 4: Evaluation & reports": training/part4-evaluation-and-reports.md
+      - "Exercise: DTS HIV Serology": training/exercises/dts-hiv-serology.md
 
 markdown_extensions:
   - admonition
@@ -73,9 +78,13 @@ markdown_extensions:
   - pymdownx.tabbed:
       alternate_style: true
   - tables
+  # Right-hand contents lists H2 only. Deeper levels made it a second,
+  # competing navigation column.
   - toc:
       permalink: true
+      toc_depth: 2
   - attr_list
+  - md_in_html
   - pymdownx.emoji:
       emoji_index: !!python/name:material.extensions.emoji.twemoji
       emoji_generator: !!python/name:material.extensions.emoji.to_svg

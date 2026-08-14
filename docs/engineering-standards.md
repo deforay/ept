@@ -41,3 +41,33 @@ brief above names them; this table says where each one is defined.
 | Schema changes are migrations | `database/migrations/`; `sql/init.sql` is a seed, never edited to effect a change |
 | Version sync | `APP_VERSION` in `constants.php` and `system_config.app_version`, checked by `bin/check-version-sync.php` |
 | Job-queue whitelist | `ALLOWED_JOB_SCRIPTS` in `scheduled-jobs/execute-job-queue.php` |
+
+## 3. Making a change
+
+Read the architecture docs before changing an unfamiliar area. Understand the
+existing pattern rather than adding a second one.
+
+- Keep controllers thin. Put logic in `application/services/`.
+- Reuse the helpers in `library/Pt/Commons/` and `application/services/` before writing new ones.
+- Put every schema change in `database/migrations/`. Never edit `sql/init.sql` to effect a change.
+- Update the documentation in the same change, not afterwards.
+
+## 4. Documentation conventions
+
+Existing pages do not all follow these. Apply them to anything you write or
+substantially edit, rather than reformatting pages you are not otherwise
+touching.
+
+| Rule | Detail |
+| --- | --- |
+| Page type | One purpose per page. A how-to guide gives steps. A reference lists options. Do not mix the two on one page. |
+| Headings | Sentence case. Write "Supported test schemes", not "Supported Test Schemes". Keep product names and acronyms capitalised. |
+| Sentences | Short and direct. Present tense. Start instructions with the verb. |
+| New filenames | Kebab-case, for example `backup-and-migration.md`. `ARCHITECTURE.md` and `SchemeArchitecture.md` keep their names because renaming them breaks published URLs. |
+| Callouts | Use `> **Title:**` blockquotes. MkDocs admonitions (`!!! warning`) render as literal text on GitHub, and these pages are read there as well as on the site. |
+| Raw HTML | Avoid it. Markdown inside an HTML block does not render on GitHub, so Material card grids break the GitHub view. |
+| Adding a page | Add it to the `nav` in `mkdocs.yml` and to the "Where to start" table in [the documentation index](README.md). A page missing from either one is hard to find. |
+| Scheme names | Match the `scheme_list` table. The [supported test schemes](README.md#supported-test-schemes) table is the reference. |
+
+Run `mkdocs build --strict` before pushing. The deploy workflow uses it, so a
+broken link or a bad reference fails the build rather than shipping.
