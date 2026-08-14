@@ -1874,35 +1874,44 @@ class Application_Service_Common
         return false;
     }
 
+   private function maybeDecodeJson($value)
+    {
+        if (!is_string($value)) {
+            return $value;
+        }
+        $trimmed = trim($value);
+        if ($trimmed === '' || !in_array($trimmed[0], ['[', '{'], true)) {
+            return $value; // not JSON-shaped, leave as-is
+        }
+        $decoded = Pt_Commons_JsonUtility::safeDecode($value);
+        // require a non-empty result, not just "not null"
+        return (is_array($decoded) && !empty($decoded)) ? $decoded : $value;
+    }
+
     public function fetchAjaxDropdownList($params)
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
 
-        // Fix: Decode JSON strings if needed (only overwrite if decode succeeds)
-        if (isset($params['concat']) && is_string($params['concat'])) {
-            $decoded = Pt_Commons_JsonUtility::safeDecode($params['concat']);
-            if ($decoded !== null) {
-                $params['concat'] = $decoded;
-            }
+        if (isset($params['concat'])) {
+            $params['concat'] = $this->maybeDecodeJson($params['concat']);
         }
-        if (isset($params['fieldNames']) && is_string($params['fieldNames'])) {
-            $decoded = Pt_Commons_JsonUtility::safeDecode($params['fieldNames']);
-            if ($decoded !== null) {
-                $params['fieldNames'] = $decoded;
-            }
+        if (isset($params['fieldNames'])) {
+            $params['fieldNames'] = $this->maybeDecodeJson($params['fieldNames']);
         }
 
         // Handle concat fields properly
         $concat = [];
-        if (is_array($params['concat'])) {
-            foreach ($params['concat'] as $field) {
-                // Sanitize field name to prevent SQL injection
-                $field = preg_replace('/[^a-zA-Z0-9_]/', '', $field);
-                $concat[] = "COALESCE(`$field`,'')";
+        $concatFields = is_array($params['concat']) ? $params['concat'] : [$params['concat']];
+        foreach ($concatFields as $field) {
+            $field = preg_replace('/[^a-zA-Z0-9_]/', '', $field);
+            if ($field === '') {
+                continue;
             }
-        } else {
-            $field = preg_replace('/[^a-zA-Z0-9_]/', '', $params['concat']);
             $concat[] = "COALESCE(`$field`,'')";
+        }
+
+        if (empty($concat)) {
+            throw new Zend_Exception('No valid concat fields supplied for dropdown query.');
         }
 
         // Build the SQL query

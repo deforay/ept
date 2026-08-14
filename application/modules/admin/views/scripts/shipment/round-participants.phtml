@@ -1,0 +1,312 @@
+<?php
+/**
+ * Round-table drill-down — outstanding / late / unable-to-test labs for a
+ * single shipment. Reached from the three linked columns on the dashboard's
+ * round table (Task 3).
+ */
+$tabs = [
+    'outstanding' => 'Outstanding',
+    'late' => 'Late',
+    'unabletotest' => 'Unable to test',
+];
+?>
+<link rel="stylesheet" type="text/css" href="<?php echo $this->baseUrl('css/bootstrap-select.min.css'); ?>" />
+<link href="<?php echo $this->baseUrl('css/select2.css'); ?>" rel="stylesheet" />
+<style>
+	.participants-header { margin-bottom: 16px; }
+	.participants-header .round-code { font-weight: 600; color: #2b6cb0; font-size: 18px; }
+	.participants-header .round-scheme { color: #888; font-size: 13px; }
+	.participants-header .round-deadline { color: #888; font-size: 13px; margin-top: 2px; }
+
+	.status-tabs { margin-bottom: 16px; }
+	.status-tabs a {
+		display: inline-block;
+		padding: 6px 14px;
+		margin-right: 6px;
+		border: 1px solid #e3e3e3;
+		border-radius: 4px;
+		color: #555;
+		text-decoration: none;
+		font-size: 13px;
+	}
+	.status-tabs a.active {
+		background: #2b6cb0;
+		border-color: #2b6cb0;
+		color: #fff;
+	}
+
+	.lab-list { width: 100%; border-collapse: collapse; font-size: 13px; }
+	.lab-list th {
+		text-align: left; font-weight: 600; color: #555; padding: 8px 10px;
+		border-bottom: 2px solid #e3e3e3; text-transform: uppercase;
+		font-size: 11px; letter-spacing: .03em;
+	}
+	.lab-list td { padding: 10px; border-bottom: 1px solid #eee; }
+</style>
+
+<div class="row">
+	<div class="col-lg-12">
+		<ol class="breadcrumb" style="margin-bottom:10px;">
+			<li><a href="<?php echo $this->url(['module' => 'admin', 'controller' => 'index', 'action' => 'index'], 'default', true); ?>">Dashboard</a></li>
+			<li class="active">Round participants</li>
+		</ol>
+	</div>
+</div>
+
+<div class="participants-header">
+	<div class="round-code"><?php echo $this->escape($this->shipment['code']); ?></div>
+	<div class="round-scheme"><?php echo $this->escape($this->shipment['schemeName']); ?></div>
+	<div class="round-deadline">Deadline: <?php echo $this->escape(Pt_Commons_DateUtility::humanReadableDateFormat($this->shipment['deadlineDate'])); ?></div>
+</div>
+
+<div class="status-tabs">
+	<?php foreach ($tabs as $key => $label): ?>
+		<a class="<?php echo $key === $this->status ? 'active' : ''; ?>"
+			href="<?php echo $this->url(['module' => 'admin', 'controller' => 'shipment', 'action' => 'round-participants', 'id' => $this->shipment['shipmentId'], 'status' => $key], 'default', true); ?>">
+			<?php echo $this->escape($label); ?>
+		</a>
+	<?php endforeach; ?>
+</div>
+
+<div class="panel panel-default">
+	<div class="panel-heading">
+		<?php echo (int) $this->labCount; ?> <?php echo $this->escape($this->statusLabel); ?>
+	</div>
+	<div class="panel-body">
+		<table style="margin:20px 0;" class="table table-bordered">
+			<tr>
+				<td style="width:30%;text-align: center;font-weight:bold;">
+					<?= $this->translate->_("Institute"); ?>
+				</td>
+				<td style="width:30%;text-align: center;font-weight:bold;">
+					<?= $this->translate->_("Country"); ?>
+				</td>
+				<td style="width:25%;text-align: center;font-weight:bold;">
+					<?= $this->translate->_("Status"); ?>
+				</td>
+				<td style="width:15%;text-align: center;font-weight:bold;"></td>
+			</tr>
+			<tr>
+				<td>
+					<select id="labId" name="labId[]" multiple="multiple" class="form-control input-sm">
+						<option value=""> -- <?= $this->translate->_("Select Lab/Participant Name"); ?> --</option>
+					</select>
+				</td>
+				<td>
+					<select id="country" name="country[]" class="form-control input-sm">
+						<option value=""> -- <?= $this->translate->_("Select Country"); ?> --</option>
+					</select>
+				</td>
+				<td>
+					<select id="pstatus" name="pstatus" class="form-control input-sm">
+						<option value=""> -- <?= $this->translate->_("Select Status"); ?> --</option>
+						<option value="active"><?= $this->translate->_("Active"); ?></option>
+						<option value="inactive"><?= $this->translate->_("Inactive"); ?></option>
+					</select>
+				</td>
+				<td>
+					<button style="margin-right:6px;" class="btn btn-primary btn-sm"
+						onclick="getDrawable()"><i class="icon-search"></i>&nbsp;<?= $this->translate->_("Search"); ?></button><button
+						class="btn btn-default btn-sm"
+						onclick="document.location.href=document.location"><?= $this->translate->_("Reset"); ?></button>
+				</td>
+			</tr>
+		</table>
+		<table class="lab-list" id="labList">
+			<thead>
+				<tr>
+					<th>Participant ID</th>
+					<th>Lab Or Participant Name</th>
+					<th>Email</th>
+					<th>Phone</th>
+					<th>Country</th>
+					<th>State</th>
+					<th>District</th>
+				</tr>
+				<tr class="column-search-row">
+					<th><input type="text" class="form-control input-sm col-search" data-col="0" placeholder="<?= $this->translate->_('Search ID'); ?>" /></th>
+					<th><input type="text" class="form-control input-sm col-search" data-col="1" placeholder="<?= $this->translate->_('Search Name'); ?>" /></th>
+					<th><input type="text" class="form-control input-sm col-search" data-col="2" placeholder="<?= $this->translate->_('Search Email'); ?>" /></th>
+					<th><input type="text" class="form-control input-sm col-search" data-col="3" placeholder="<?= $this->translate->_('Search Phone'); ?>" /></th>
+					<th><input type="text" class="form-control input-sm col-search" data-col="4" placeholder="<?= $this->translate->_('Search Country'); ?>" /></th>
+					<th><input type="text" class="form-control input-sm col-search" data-col="5" placeholder="<?= $this->translate->_('Search State'); ?>" /></th>
+					<th><input type="text" class="form-control input-sm col-search" data-col="6" placeholder="<?= $this->translate->_('Search District'); ?>" /></th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td colspan="7" class="dataTables_empty"><?= $this->translate->_("Loading data from server"); ?></td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+</div>
+<script type="text/javascript" src="<?php echo $this->baseUrl('js/bootstrap-select.min.js'); ?>"></script>
+<script type="text/javascript" src="<?php echo $this->baseUrl('js/select2.min.js'); ?>"></script>
+<script type="text/javascript" charset="utf-8">
+	/* Table initialisation */
+    var oTable = null;
+    $(document).ready(function() {
+        oTable = $('#labList').dataTable({
+
+            "bJQueryUI": false,
+            "bAutoWidth": false,
+            "bInfo": true,
+            "bScrollCollapse": true,
+            "sPaginationType": "bootstrap",
+            "bRetrieve": true,
+            "bSortCellsTop": true,
+            "aoColumns": [{
+                    "sClass": "center"
+                },
+                {
+                    "sClass": "center"
+                },
+                {
+                    "sClass": "center"
+                },
+                {
+                    "sClass": "center"
+                },
+                {
+                    "sClass": "center"
+                },
+                {
+                    "sClass": "center",
+                },
+                {
+                    "sClass": "center",
+                }
+            ],
+            "aaSorting": [
+                [0, "asc"]
+            ],
+            "bProcessing": true,
+            "bServerSide": true,
+            "sAjaxSource": "<?php echo $this->url(array(
+				'module' => 'admin',
+				'controller' => 'shipment',
+				'action' => 'round-participants',
+				'id' => $this->shipment['shipmentId'],
+				'status' => $this->status,
+				'format' => 'html'
+			), 'default', true); ?>",
+			"fnServerParams": function(aoData) {
+				labName = $("#labId").val();
+				country = $("#country").val();
+				aoData.push({ "name": "pid", "value": labName });
+				aoData.push({ "name": "country", "value": country });
+				aoData.push({ "name": "pstatus", "value": $("#pstatus").val() || "" });
+				// no mappingFilter here — that's a participants.phtml-only concept
+			},
+            "fnServerData": function(sSource, aoData, fnCallback) {
+                $.ajax({
+                    "dataType": 'json',
+                    "type": "POST",
+                    "url": sSource,
+                    "data": aoData,
+                    "success": fnCallback
+                });
+            },
+            "fnRowCallback": function(nRow, aData) {
+                // Highlight rows with no mapped data managers (the DM column emits
+                // <em class="unmapped-tag">…</em> when the count is 0)
+                if ($(nRow).find('.unmapped-tag').length > 0) {
+                    $(nRow).addClass('row-unmapped');
+                } else {
+                    $(nRow).removeClass('row-unmapped');
+                }
+                return nRow;
+            }
+        });
+
+        $("#statusFilter").change(function() {
+            oTable.fnDraw();
+        });
+
+        $("#mappingFilter").change(function() {
+            oTable.fnDraw();
+        });
+
+        bindColSearch('#labList', function(value, colIdx) {
+            oTable.fnFilter(value, colIdx);
+        });
+
+		$("#country").select2({
+            placeholder: "<?= $this->translate->_("Choose one or more Countries"); ?>",
+            minimumInputLength: 3,
+            width: '100%',
+            allowClear: true,
+            ajax: {
+                placeholder: "<?= $this->translate->_("Type Country name to search"); ?>",
+                url: "<?php echo $this->url(array('module' => 'default', 'controller' => 'common', 'action' => 'get-all-countries')); ?>",
+                dataType: 'json',
+                delay: 250,
+                data: function(params) {
+                    return {
+                        search: params.term, // search term
+                        page: params.page
+                    };
+                },
+                processResults: function(data, params) {
+                    params.page = params.page || 1;
+                    return {
+                        results: data.result,
+                        pagination: {
+                            more: (params.page * 30) < data.total_count
+                        }
+                    };
+                },
+                //cache: true
+            },
+            escapeMarkup: function(markup) {
+                return markup;
+            }
+        });
+
+        $("#labId").select2({
+            placeholder: "<?= $this->translate->_("Choose one or more option(s)"); ?>",
+            minimumInputLength: 3,
+            width: '100%',
+            allowClear: true,
+            id: function(bond) {
+                return bond._id;
+            },
+            ajax: {
+                placeholder: "<?= $this->translate->_("Type list to search"); ?>",
+                url: "<?php echo $this->url(array('module' => 'reports', 'controller' => 'common', 'action' => 'get-ajax-drop-downs')); ?>",
+                dataType: 'json',
+                delay: 250,
+                data: function(params) {
+                    return {
+                        tableName: 'participant',
+                        returnId: 'institute_name',
+                        fieldNames: 'institute_name',
+                        concat: 'institute_name',
+                        search: params.term, // search term
+                        page: params.page
+                    };
+                },
+                processResults: function(data, params) {
+                    params.page = params.page || 1;
+                    return {
+                        results: data.result,
+                        pagination: {
+                            more: (params.page * 30) < data.total_count
+                        }
+                    };
+                },
+                //cache: true
+            },
+            escapeMarkup: function(markup) {
+                return markup;
+            }
+        });
+	});
+
+	 function getDrawable() {
+        $.blockUI();
+        oTable.fnDraw();
+        $.unblockUI();
+    }
+</script>

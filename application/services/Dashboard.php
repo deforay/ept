@@ -356,8 +356,9 @@ class Application_Service_Dashboard
 
         $placeholders = implode(',', array_fill(0, count($participantIds), '?'));
         $rows = $this->db->fetchAll(
-            "SELECT participant_id, lab_name, email, phone
-             FROM participant
+            "SELECT participant_id, lab_name, first_name, last_name, email, phone, unique_identifier, c.iso_name, p.state, p.district   
+             FROM participant As p
+             JOIN countries AS c ON c.id = p.country 
              WHERE participant_id IN ($placeholders)
              ORDER BY lab_name ASC",
             $participantIds
@@ -366,10 +367,269 @@ class Application_Service_Dashboard
         return array_map(function ($row) use ($extra) {
             return array_merge([
                 'participantId' => $row['participant_id'],
-                'labName' => $row['lab_name'],
+                'labName' => $row['lab_name'] ?? trim($row['first_name'] . ' ' . $row['last_name']),
                 'email' => $row['email'],
                 'phone' => $row['phone'],
+                'iso_name' => $row['iso_name'],
+                'state' => $row['state'],
+                'district' => $row['district'],
             ], $extra);
         }, $rows);
+    }
+
+    /**
+     * Task 3 drill-down — DataTables server-side source for the round
+     * participants list (Outstanding / Late / Unable to test). Same calling
+     * convention as Application_Model_DbTable_Participants::getAllParticipants():
+     * echoes DataTables JSON directly, caller returns immediately after.
+     *
+     * Supports the same three filters as the main participants grid (lab/institute,
+     * country, participant status) plus DataTables' own paging/search/sort — but
+     * scoped underneath the shipment_id + response_status bucket, which is not
+     * user-changeable (that's what the tab strip controls, via a page reload).
+     *
+     * ASSUMPTION: p.phone exists on `participant` — same assumption
+     * fetchLabDetails() already carries; adjust if your schema differs.
+     */
+    public function getRoundParticipantsDataTable($shipmentId, $status, array $parameters)
+    {
+        $shipment = $this->getShipmentHeaderForDrilldown($shipmentId);
+        if (!$shipment) {
+            echo json_encode([
+                'sEcho' => intval($parameters['sEcho'] ?? 0),
+                'iTotalRecords' => 0,
+                'iTotalDisplayRecords' => 0,
+                'aaData' => [],
+            ]);
+            return;
+        }
+
+        $responseStatusMap = [
+            'late' => 'late',
+            'unabletotest' => 'nottested',
+            'outstanding' => 'noresponse',
+        ];
+        $responseStatus = $responseStatusMap[$status] ?? 'noresponse';
+
+        // Column order must match the view's <thead> / aoColumns exactly:
+        // Participant ID, Name, Email, Phone, Country, State, District.
+        $aColumns = [
+            'p.participant_id',
+            new Zend_Db_Expr(Application_Model_DbTable_Participants::participantNameExpr('p')),
+            'p.email',
+            'p.phone',
+            'c.iso_name',
+            'p.state',
+            'p.district',
+        ];
+
+        $sLimit = '';
+        if (isset($parameters['iDisplayStart']) && $parameters['iDisplayLength'] != '-1') {
+            $sOffset = $parameters['iDisplayStart'];
+            $sLimit = $parameters['iDisplayLength'];
+        }
+
+        $sOrder = [];
+        if (isset($parameters['iSortCol_0'])) {
+            for ($i = 0; $i < intval($parameters['iSortingCols']); $i++) {
+                $colIdx = intval($parameters['iSortCol_' . $i]);
+                if (!isset($aColumns[$colIdx])) {
+                    continue;
+                }
+                if (($parameters['bSortable_' . $colIdx] ?? '') == 'true') {
+                    $sortDir = Pt_Commons_General::sanitizeSortDirection($parameters['sSortDir_' . $i]);
+                    $sOrder[] = new Zend_Db_Expr(((string) $aColumns[$colIdx]) . ' ' . $sortDir);
+                }
+            }
+        }
+
+        $sQuery = $this->db->select()
+            ->from(['p' => 'participant'], [
+                'p.participant_id', 'p.lab_name', 'p.first_name', 'p.last_name',
+                'p.email', 'p.phone', 'p.state', 'p.district',
+                'participantName' => new Zend_Db_Expr(Application_Model_DbTable_Participants::participantNameExpr('p')),
+            ])
+            ->join(['c' => 'countries'], 'c.id = p.country', ['iso_name'])
+            ->join(['sp' => 'shipment_participant_map'], 'sp.participant_id = p.participant_id', [])
+            ->where('sp.shipment_id = ?', $shipmentId)
+            ->where('sp.response_status = ?', $responseStatus)
+            ->group('p.participant_id');
+
+        // Same three filters the main participants grid offers, reused here so
+        // an admin can narrow "43 outstanding" down by lab/country/status
+        // without leaving the shipment scope.
+        if (!empty($parameters['pid'])) {
+            $pid = is_array($parameters['pid']) ? $parameters['pid'] : explode(',', $parameters['pid']);
+            $sQuery = $sQuery->where('p.institute_name IN (?)', $pid);
+        }
+        if (!empty($parameters['country'])) {
+            $cid = is_array($parameters['country']) ? $parameters['country'] : explode(',', $parameters['country']);
+            $sQuery = $sQuery->where('p.country IN (?)', $cid);
+        }
+        if (!empty($parameters['pstatus'])) {
+            $sQuery = $sQuery->where('p.status LIKE ?', $parameters['pstatus']);
+        }
+
+        // DataTables global search box.
+        if (!empty($parameters['sSearch'])) {
+            $searchArray = explode(' ', $parameters['sSearch']);
+            $sWhereSub = '';
+            foreach ($searchArray as $search) {
+                $sWhereSub .= ($sWhereSub === '' ? '(' : ' AND (');
+                $colSize = count($aColumns);
+                for ($i = 0; $i < $colSize; $i++) {
+                    $sWhereSub .= $aColumns[$i] . " LIKE '%" . $search . "%'" . ($i < $colSize - 1 ? ' OR ' : ' ');
+                }
+                $sWhereSub .= ')';
+            }
+            $sQuery = $sQuery->where($sWhereSub);
+        }
+
+        // Per-column search boxes (bSearchable_N / sSearch_N), same pattern as
+        // Application_Model_DbTable_Participants::getAllParticipants().
+        for ($i = 0; $i < count($aColumns); $i++) {
+            if (($parameters['bSearchable_' . $i] ?? '') == 'true' && !empty($parameters['sSearch_' . $i])) {
+                $sQuery = $sQuery->where($aColumns[$i] . " LIKE ?", '%' . $parameters['sSearch_' . $i] . '%');
+            }
+        }
+
+        if (!empty($sOrder)) {
+            $sQuery = $sQuery->order($sOrder);
+        }
+        if (isset($sLimit) && isset($sOffset)) {
+            $sQuery = $sQuery->limit($sLimit, $sOffset);
+        }
+
+        $rResult = $this->db->fetchAll($sQuery);
+
+        $countQuery = $sQuery->reset(Zend_Db_Select::LIMIT_COUNT)->reset(Zend_Db_Select::LIMIT_OFFSET);
+        $iFilteredTotal = count($this->db->fetchAll($countQuery));
+
+        // Unfiltered total for this shipment+status bucket (ignores the three
+        // filters above, matches the "of N" DataTables shows before any filter
+        // is applied — same semantics as getAllShipments()'s iTotalRecords).
+        $iTotal = (int) $this->db->fetchOne(
+            "SELECT COUNT(DISTINCT sp.participant_id) FROM shipment_participant_map sp
+            WHERE sp.shipment_id = ? AND sp.response_status = ?",
+            [$shipmentId, $responseStatus]
+        );
+
+        $output = [
+            'sEcho' => intval($parameters['sEcho'] ?? 0),
+            'iTotalRecords' => $iTotal,
+            'iTotalDisplayRecords' => $iFilteredTotal,
+            'aaData' => [],
+        ];
+
+        foreach ($rResult as $aRow) {
+            $output['aaData'][] = [
+                $aRow['participant_id'],
+                $aRow['participantName'] ?: trim($aRow['first_name'] . ' ' . $aRow['last_name']),
+                $aRow['email'],
+                $aRow['phone'],
+                $aRow['iso_name'],
+                $aRow['state'],
+                $aRow['district'],
+            ];
+        }
+
+        echo json_encode($output);
+    }
+
+    /**
+     * Task 3 drill-down — labs on a specific shipment matching one of the three
+     * response-status buckets shown in the round table: outstanding (no
+     * response yet), late (responded after the deadline), or unable to test.
+     *
+     * Replaces the earlier single-purpose getOutstandingLabs() with a shared
+     * shipment lookup + a status-keyed query, so all three round-table links
+     * (Outstanding / Late / Unable to test) land on one page/method pair
+     * instead of three near-identical ones.
+     *
+     * @param int    $shipmentId
+     * @param string $status 'outstanding' | 'late' | 'unabletotest'
+     * @return array|null null if the shipment doesn't exist
+     */
+    public function getRoundParticipantsList($shipmentId, $status)
+    {
+        $shipment = $this->getShipmentHeaderForDrilldown($shipmentId);
+        if (!$shipment) {
+            return null;
+        }
+
+        switch ($status) {
+            case 'late':
+                $participantIds = $this->db->fetchCol(
+                    "SELECT participant_id FROM shipment_participant_map
+                    WHERE shipment_id = ? AND response_status = 'late'",
+                    [$shipmentId]
+                );
+                $context = 'Responded after the deadline for this round';
+                $statusLabel = 'Late';
+                break;
+
+            case 'unabletotest':
+                $participantIds = $this->db->fetchCol(
+                    "SELECT participant_id FROM shipment_participant_map
+                    WHERE shipment_id = ? AND response_status = 'nottested'",
+                    [$shipmentId]
+                );
+                $context = 'Reported unable to run the PT panel this round';
+                $statusLabel = 'Unable to test';
+                break;
+
+            case 'outstanding':
+            default:
+                // Unrecognized/missing status falls back here rather than 404ing —
+                // an admin fat-fingering the URL should see something useful.
+                $participantIds = $this->db->fetchCol(
+                    "SELECT participant_id FROM shipment_participant_map
+                    WHERE shipment_id = ? AND response_status = 'noresponse'",
+                    [$shipmentId]
+                );
+                $context = 'No response recorded yet for this round';
+                $statusLabel = 'Outstanding';
+                $status = 'outstanding'; // normalize for the view (tab highlighting)
+                break;
+        }
+
+        $labs = $this->fetchLabDetails($participantIds, ['context' => $context]);
+
+        return [
+            'shipment' => $shipment,
+            'status' => $status,
+            'statusLabel' => $statusLabel,
+            'count' => count($labs),
+            'labs' => $labs,
+        ];
+    }
+
+    /**
+     * Minimal shipment header for the drill-down page's title/breadcrumb —
+     * code, scheme name, deadline, status. Deliberately NOT scoped to
+     * currently-open shipments like getOpenRoundsStatus() is: this page needs
+     * to keep working for a shipment that has since closed or been evaluated
+     * (e.g. an admin following a bookmark or an old reminder email), so it
+     * looks the shipment up directly instead of reusing the Task 3 query.
+     */
+    private function getShipmentHeaderForDrilldown($shipmentId)
+    {
+        $row = $this->db->fetchRow(
+            "SELECT s.shipment_id, s.shipment_code, sl.scheme_name, s.response_deadline, s.status
+            FROM shipment s
+            JOIN scheme_list sl ON sl.scheme_id = s.scheme_type
+            WHERE s.shipment_id = ?",
+            [$shipmentId]
+        );
+        if (!$row) {
+            return null;
+        }
+        return [
+            'shipmentId' => $row['shipment_id'],
+            'code' => strtoupper($row['shipment_code']),
+            'schemeName' => $row['scheme_name'],
+            'deadlineDate' => (new DateTime($row['response_deadline']))->format('Y-m-d'),
+            'status' => $row['status'],
+        ];
     }
 }

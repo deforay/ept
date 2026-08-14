@@ -103,6 +103,7 @@
 
 	.responded-bar-fill {
 		height: 100%;
+		display: block;
 		background: #2b6cb0;
 	}
 
@@ -264,7 +265,7 @@
 									<td>
 										<?php if ($round['outstanding'] > 0): ?>
 											<a
-												href="<?php echo $this->url(['module' => 'admin', 'controller' => 'shipment', 'action' => 'participants', 'id' => $round['shipmentId'], 'status' => 'outstanding'], 'default', true); ?>">
+												href="<?php echo $this->url(['module' => 'admin', 'controller' => 'shipment', 'action' => 'round-participants', 'id' => $round['shipmentId'], 'status' => 'outstanding'], 'default', true); ?>">
 												<?php echo (int) $round['outstanding']; ?>
 											</a>
 										<?php else: ?>
@@ -274,13 +275,18 @@
 									<td>
 										<?php if ($round['late'] > 0): ?>
 											<?php echo (int) $round['late']; ?>
+											<a href="<?php echo $this->url(['module' => 'admin', 'controller' => 'shipment', 'action' => 'round-participants', 'id' => $round['shipmentId'], 'status' => 'late'], 'default', true); ?>">
+												<?php echo (int) $round['late']; ?>
+											</a>
 										<?php else: ?>
 											<span class="zero">0</span>
 										<?php endif; ?>
 									</td>
 									<td>
 										<?php if ($round['unableToTest'] > 0): ?>
-											<?php echo (int) $round['unableToTest']; ?>
+											<a href="<?php echo $this->url(['module' => 'admin', 'controller' => 'shipment', 'action' => 'round-participants', 'id' => $round['shipmentId'], 'status' => 'unabletotest'], 'default', true); ?>">
+												<?php echo (int) $round['unableToTest']; ?>
+											</a>
 										<?php else: ?>
 											<span class="zero">0</span>
 										<?php endif; ?>

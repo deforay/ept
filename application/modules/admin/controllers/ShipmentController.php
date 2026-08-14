@@ -39,6 +39,7 @@ class Admin_ShipmentController extends Zend_Controller_Action
             ->addActionContext('get-shipment-participants', 'html')
             ->addActionContext('generate-tb-form', 'html')
             ->addActionContext('cancel', 'html')
+            ->addActionContext('round-participants', 'html')
             ->initContext();
         $this->_helper->layout()->pageName = 'manageMenu';
     }
@@ -664,5 +665,40 @@ class Admin_ShipmentController extends Zend_Controller_Action
         // picker from these per position, falling back to the global flags when absent.
         $dtsModel = new Application_Model_Dts();
         $this->view->shipmentKitPositions = $dtsModel->getShipmentTestkitPositions(base64_decode((string) $this->_getParam('sid')));
+    }
+
+    public function roundParticipantsAction()
+    {
+        $shipmentId = (int) $this->_getParam('id');
+        $status = (string) $this->_getParam('status', 'outstanding');
+
+        $allowedStatuses = ['outstanding', 'late', 'unabletotest'];
+        if (!in_array($status, $allowedStatuses, true)) {
+            $status = 'outstanding';
+        }
+
+        $dashboardService = new Application_Service_Dashboard();
+
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
+        if ($request->isPost()) {
+            // DataTables server-side draw — echoes JSON and returns, same
+            // calling convention as Application_Model_DbTable_Participants::getAllParticipants().
+            $params = $this->getAllParams();
+            $dashboardService->getRoundParticipantsDataTable($shipmentId, $status, $params);
+            return;
+        }
+
+        // Initial page load: just the shipment header + count for the panel
+        // heading. The table body itself is populated by the AJAX draw above.
+        $result = $dashboardService->getRoundParticipantsList($shipmentId, $status);
+        if ($result === null) {
+            throw new Zend_Controller_Action_Exception('Shipment not found', 404);
+        }
+
+        $this->view->shipment = $result['shipment'];
+        $this->view->status = $result['status'];
+        $this->view->statusLabel = $result['statusLabel'];
+        $this->view->labCount = $result['count'];
     }
 }
