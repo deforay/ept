@@ -897,11 +897,13 @@ class Application_Service_Dashboard
                       AND (response_status IS NULL OR response_status IN ('', 'noresponse'))",
                     [$shipmentId]
                 );
-                $context = Pt_Commons_TranslateUtility::safeTranslate(
-                    $shipment['status'] === 'finalized'
-                        ? 'Never responded to this round'
-                        : 'No response recorded yet for this round'
-                );
+                // Each literal is its own direct argument: xgettext only
+                // extracts string literals passed straight to a keyword, so a
+                // ternary *inside* the call leaves both strings out of the POT
+                // and they can never be translated.
+                $context = $shipment['status'] === 'finalized'
+                    ? Pt_Commons_TranslateUtility::safeTranslate('Never responded to this round')
+                    : Pt_Commons_TranslateUtility::safeTranslate('No response recorded yet for this round');
                 $status = 'outstanding'; // normalize for the view (tab highlighting)
                 break;
         }
