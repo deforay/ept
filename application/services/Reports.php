@@ -248,7 +248,7 @@ class Application_Service_Reports
             if ($isCancelled) {
                 $row[] = '<span class="label label-danger">' . $this->translator->_('Cancelled') . '</span>';
             } else {
-                $row[] = $this->translator->_(ucwords($aRow['status']));
+                $row[] = $this->translator->_(ucwords($aRow['status'] ?? ''));
             }
 
             $row[] = trim("$summaryDownload $allReportsDownload $viewFinalizedReports");

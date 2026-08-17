@@ -340,7 +340,7 @@ class Application_Service_Evaluation
             $row[] = Pt_Commons_DateUtility::humanReadableDateFormat($aRow['distribution_date']);
             $row[] = $aRow['distribution_code'];
             $row[] = $aRow['shipments'];
-            $row[] = $translator->_(ucwords($aRow['status']));
+            $row[] = $translator->_(ucwords($aRow['status'] ?? ''));
             $row[] = '<a class="btn btn-primary btn-xs" href="javascript:void(0);" onclick="getShipments(\'' . ($aRow['distribution_id']) . '\', \'' . $aRow['is_user_configured'] . '\')"><span><i class="icon-search"></i> View</span></a>';
 
             $output['aaData'][] = $row;

@@ -275,7 +275,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             $row[] = $aRow['mobile'];
             $row[] = $aRow['primary_email'];
             //$row[] = '<a href="javascript:void(0);" onclick="layoutModal(\'/admin/participants/view-participants/id/' . $aRow['dm_id'] . '\',\'980\',\'500\');" >' . $aRow['participantCount'] . '</a>';
-            $row[] = $translator->_(ucwords($aRow['status']));
+            $row[] = $translator->_(ucwords($aRow['status'] ?? ''));
             if (isset($parameters['ptcc']) && $parameters['ptcc'] == 1) {
                 $row[] = ucwords($aRow['iso_name']);
                 $row[] = ucwords($aRow['state']);
@@ -1768,17 +1768,17 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                     $row[] = ucwords($aRow['first_name'] . ' ' . $aRow['last_name']) ?? null;
                     $row[] = $aRow['mobile'] ?? null;
                     $row[] = $aRow['primary_email'] ?? null;
-                    $row[] = ucwords($aRow['status']) ?? null;
-                    $row[] = ucwords($aRow['iso_name']) ?? null;
+                    $row[] = ucwords($aRow['status'] ?? '');
+                    $row[] = ucwords($aRow['iso_name'] ?? '');
                     if ($hasState) {
-                        $row[] = ucwords($aRow['state']) ?? null;
+                        $row[] = ucwords($aRow['state'] ?? '');
                     }
                     if ($hasDistrict) {
-                        $row[] = ucwords($aRow['district']) ?? null;
+                        $row[] = ucwords($aRow['district'] ?? '');
                     }
                     if ($type == 'mapped') {
                         $row[] = $aRow['unique_identifier'] ?? null;
-                        $row[] = ucwords($aRow['labName']) ?? null;
+                        $row[] = ucwords($aRow['labName'] ?? '');
                         $row[] = $aRow['pmobile'] ?? null;
                         $row[] = $aRow['email'] ?? null;
                     }
