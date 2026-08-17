@@ -372,6 +372,48 @@ class Application_Service_Dashboard
     }
 
     /**
+     * Distinct labs still owing a response on a round that is open for
+     * response, and distinct labs in those rounds.
+     *
+     * Two things this deliberately is not:
+     *
+     * Not a sum over the round table. Adding each round's outstanding count
+     * together counts a lab once per round it owes, which reported "22,560
+     * labs yet to respond" on a Zimbabwe instance with 12,474 labs in total.
+     * The card says labs, so it counts labs.
+     *
+     * Not every unfinalized round. A closed round's non-responders can no
+     * longer respond, so putting them under a heading the admin is meant to
+     * act on made a number nobody could move. Those labs are still reachable
+     * through the table's outstanding links and the engagement donut. "Open
+     * for response" matches getOpenRoundsStatus(): switch on, deadline ahead.
+     *
+     * @return array{outstanding: int, total: int}
+     */
+    public function getOutstandingLabs()
+    {
+        $row = $this->db->fetchRow(
+            "SELECT
+                COUNT(DISTINCT sp.participant_id) AS total,
+                COUNT(DISTINCT CASE
+                    WHEN sp.response_status IS NULL
+                      OR sp.response_status IN ('', 'noresponse')
+                    THEN sp.participant_id END) AS outstanding
+             FROM shipment_participant_map sp
+             JOIN shipment s ON s.shipment_id = sp.shipment_id
+            WHERE s.status != 'finalized'
+              AND s.cancelled_at IS NULL
+              AND LOWER(s.response_switch) = 'on'
+              AND s.response_deadline >= NOW()"
+        );
+
+        return [
+            'outstanding' => (int) $row['outstanding'],
+            'total' => (int) $row['total'],
+        ];
+    }
+
+    /**
      * The whole active participant base, split by how engaged it is.
      *
      * Deliberately not a per-round cut: the round table and its Response %

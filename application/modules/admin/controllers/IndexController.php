@@ -46,6 +46,9 @@ class Admin_IndexController extends Zend_Controller_Action
         // shown either way.
         $this->view->engagement = $dashboardService->getParticipantEngagement();
         $this->view->schemeEngagement = $dashboardService->getSchemeEngagement();
+        // Counted as distinct labs on rounds still open for response — not
+        // summed across the table, which counts a lab once per round it owes.
+        $this->view->outstandingLabs = $dashboardService->getOutstandingLabs();
         // Closed but not yet finalized — the heading names these separately so
         // an idle system reads differently from one with a backlog.
         $this->view->awaitingFinalizeCount = count($openRounds) - count($openForResponse);

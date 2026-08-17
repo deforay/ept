@@ -20042,3 +20042,11 @@ msgstr ""
 #: application/services/Dashboard.php
 msgid "Not in any scheme"
 msgstr ""
+
+#: application/modules/admin/views/scripts/index/index.phtml
+msgid "of %d labs in rounds open for response"
+msgstr ""
+
+#: application/modules/admin/views/scripts/index/index.phtml
+msgid "Bars show each scheme's split. Numbers are labs."
+msgstr ""

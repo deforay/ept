@@ -716,15 +716,11 @@
 // always name the same number of schemes.
 $activeSchemes = count($this->schemeEngagement);
 $roundsInProgress = count($this->openRounds);
-// Labs still owing a response, added up across every round in progress. The
-// table breaks this down per round; the card is the number that decides
-// whether a reminder goes out at all.
-$labsOutstanding = 0;
-$labsInProgress = 0;
-foreach ($this->openRounds as $round) {
-	$labsOutstanding += (int) $round['outstanding'];
-	$labsInProgress += (int) $round['total'];
-}
+// Distinct labs owing a response on a round still open for response. Summing
+// the table's outstanding column here counted a lab once per round it owed,
+// which produced more "labs" than the instance has.
+$labsOutstanding = (int) $this->outstandingLabs['outstanding'];
+$labsInProgress = (int) $this->outstandingLabs['total'];
 $roundsThisYear = (int) $this->summaryCounts['roundsCompletedThisYear'];
 ?>
 <div class="row">
@@ -767,7 +763,7 @@ $roundsThisYear = (int) $this->summaryCounts['roundsCompletedThisYear'];
 					<?php
 					if ($labsInProgress > 0) {
 						echo $this->escape(sprintf(
-							$this->translate->_("of %d labs in rounds in progress"),
+							$this->translate->_("of %d labs in rounds open for response"),
 							$labsInProgress
 						));
 					}
@@ -853,6 +849,7 @@ $schemeRows = $this->schemeEngagement;
 					</div>
 					<div class="panel-body">
 						<div id="schemeChart" class="dashboard-chart"></div>
+						<div class="chart-note"><?= $this->translate->_("Bars show each scheme's split. Numbers are labs."); ?></div>
 					</div>
 			</div>
 		</div>
@@ -931,13 +928,13 @@ $schemeRows = $this->schemeEngagement;
 				},
 				yAxis: {
 					min: 0,
+					max: 100,
 					title: { text: null },
-					allowDecimals: false,
 					gridLineColor: '#f0f0f0',
 					// Without this the first series stacks on the right, which
 					// puts "actively participating" away from the axis.
 					reversedStacks: false,
-					labels: { style: { color: '#999', fontSize: '11px' } }
+					labels: { format: '{value}%', style: { color: '#999', fontSize: '11px' } }
 				},
 				legend: {
 					align: 'left',
@@ -950,7 +947,12 @@ $schemeRows = $this->schemeEngagement;
 				tooltip: { shared: true },
 				plotOptions: {
 					series: {
-						stacking: 'normal',
+						// Share, not count. On a linear count axis a scheme with
+						// 17 labs sitting next to one with 12,000 drew as a 1px
+						// mark — four of Zimbabwe's seven schemes were invisible.
+						// Every bar is now full width and the segment labels
+						// carry the actual numbers.
+						stacking: 'percent',
 						borderWidth: 0,
 						pointPadding: 0.1,
 						groupPadding: 0.12,

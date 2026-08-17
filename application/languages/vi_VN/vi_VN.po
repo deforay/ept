@@ -20456,3 +20456,9 @@ msgstr "Thuộc chương trình, chưa phản hồi"
 
 msgid "Not in any scheme"
 msgstr "Không thuộc chương trình nào"
+
+msgid "of %d labs in rounds open for response"
+msgstr "trên %d phòng xét nghiệm trong các vòng đang mở nhận phản hồi"
+
+msgid "Bars show each scheme's split. Numbers are labs."
+msgstr "Các thanh thể hiện tỷ lệ của từng chương trình. Con số là số phòng xét nghiệm."

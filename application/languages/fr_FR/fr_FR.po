@@ -21356,3 +21356,9 @@ msgstr "Inscrits à un programme, sans réponse"
 
 msgid "Not in any scheme"
 msgstr "Dans aucun programme"
+
+msgid "of %d labs in rounds open for response"
+msgstr "sur %d labos dans les cycles ouverts aux réponses"
+
+msgid "Bars show each scheme's split. Numbers are labs."
+msgstr "Les barres montrent la répartition de chaque programme. Les nombres sont des labos."
