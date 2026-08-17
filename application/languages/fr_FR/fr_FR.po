@@ -9919,7 +9919,6 @@ msgid "vs"
 msgstr "vs"
 
 #: application/modules/admin/views/scripts/index/index.phtml:592
-#, fuzzy
 msgid "Average score"
 msgstr "Score moyen"
 
@@ -14437,7 +14436,6 @@ msgstr "En attente Tous"
 #: application/modules/reports/views/scripts/shipments/participation-stats.ajax.phtml:119
 #: application/services/Dashboard.php:779
 #: application/services/Dashboard.php:786
-#, fuzzy
 msgid "Unable to test"
 msgstr "Impossible de tester le panel"
 
@@ -14655,7 +14653,6 @@ msgid "Ready to evaluate"
 msgstr "Prêt à évaluer"
 
 #: application/services/Dashboard.php:298
-#, fuzzy
 msgid "Generate reports"
 msgstr "Générer les rapports"
 
@@ -21309,8 +21306,8 @@ msgstr "dans %d programmes"
 msgid "Rounds in progress"
 msgstr "Cycles en cours"
 
-msgid "%1$d open · %2$d awaiting finalize"
-msgstr "%1$d ouvert(s) · %2$d en attente de finalisation"
+msgid "%1$d open, %2$d awaiting finalize"
+msgstr "%1$d ouvert(s), %2$d en attente de finalisation"
 
 msgid "nothing shipped right now"
 msgstr "aucun envoi en cours"

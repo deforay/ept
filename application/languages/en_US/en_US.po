@@ -19980,7 +19980,7 @@ msgid "Rounds in progress"
 msgstr ""
 
 #: application/modules/admin/views/scripts/index/index.phtml
-msgid "%1$d open · %2$d awaiting finalize"
+msgid "%1$d open, %2$d awaiting finalize"
 msgstr ""
 
 #: application/modules/admin/views/scripts/index/index.phtml

@@ -9870,7 +9870,6 @@ msgid "vs"
 msgstr "so với"
 
 #: application/modules/admin/views/scripts/index/index.phtml:592
-#, fuzzy
 msgid "Average score"
 msgstr "Điểm Trung bình"
 
@@ -14361,7 +14360,6 @@ msgstr "Đang chờ xử lý Tất cả"
 #: application/modules/reports/views/scripts/shipments/participation-stats.ajax.phtml:119
 #: application/services/Dashboard.php:779
 #: application/services/Dashboard.php:786
-#, fuzzy
 msgid "Unable to test"
 msgstr "Không thể xét nghiệm bộ mẫu"
 
@@ -14575,7 +14573,6 @@ msgid "Ready to evaluate"
 msgstr "Sẵn sàng đánh giá"
 
 #: application/services/Dashboard.php:298
-#, fuzzy
 msgid "Generate reports"
 msgstr "Tạo báo cáo"
 
@@ -20409,8 +20406,8 @@ msgstr "thuộc %d chương trình"
 msgid "Rounds in progress"
 msgstr "Vòng đang thực hiện"
 
-msgid "%1$d open · %2$d awaiting finalize"
-msgstr "%1$d đang mở · %2$d đang chờ hoàn thiện"
+msgid "%1$d open, %2$d awaiting finalize"
+msgstr "%1$d đang mở, %2$d đang chờ hoàn thiện"
 
 msgid "nothing shipped right now"
 msgstr "hiện chưa gửi vòng nào"

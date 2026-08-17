@@ -787,7 +787,10 @@ $roundsThisYear = (int) $this->summaryCounts['roundsCompletedThisYear'];
 					<?php
 					echo $this->escape($roundsInProgress > 0
 						? sprintf(
-							$this->translate->_("%1\$d open · %2\$d awaiting finalize"),
+							// Single-quoted and ASCII: xgettext's PHP scanner drops
+							// U+00B7 from string literals, so a msgid containing one
+							// can never round-trip through refresh-translations.php.
+							$this->translate->_('%1$d open, %2$d awaiting finalize'),
 							(int) $this->openRoundsCount,
 							(int) $this->awaitingFinalizeCount
 						)
