@@ -21362,3 +21362,9 @@ msgstr "sur %d labos dans les cycles ouverts aux réponses"
 
 msgid "Bars show each scheme's split. Numbers are labs."
 msgstr "Les barres montrent la répartition de chaque programme. Les nombres sont des labos."
+
+msgid "1 participant has registered and is waiting to be approved. Click to review."
+msgstr "1 participant s'est inscrit et attend une validation. Cliquez pour l'examiner."
+
+msgid "%d participants have registered and are waiting to be approved. Click to review."
+msgstr "%d participants se sont inscrits et attendent une validation. Cliquez pour les examiner."

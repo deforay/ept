@@ -20050,3 +20050,11 @@ msgstr ""
 #: application/modules/admin/views/scripts/index/index.phtml
 msgid "Bars show each scheme's split. Numbers are labs."
 msgstr ""
+
+#: application/modules/admin/views/scripts/index/index.phtml
+msgid "1 participant has registered and is waiting to be approved. Click to review."
+msgstr ""
+
+#: application/modules/admin/views/scripts/index/index.phtml
+msgid "%d participants have registered and are waiting to be approved. Click to review."
+msgstr ""

@@ -20462,3 +20462,9 @@ msgstr "trên %d phòng xét nghiệm trong các vòng đang mở nhận phản 
 
 msgid "Bars show each scheme's split. Numbers are labs."
 msgstr "Các thanh thể hiện tỷ lệ của từng chương trình. Con số là số phòng xét nghiệm."
+
+msgid "1 participant has registered and is waiting to be approved. Click to review."
+msgstr "1 đơn vị đã đăng ký và đang chờ phê duyệt. Nhấn để xem xét."
+
+msgid "%d participants have registered and are waiting to be approved. Click to review."
+msgstr "%d đơn vị đã đăng ký và đang chờ phê duyệt. Nhấn để xem xét."
