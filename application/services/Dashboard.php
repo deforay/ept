@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Application_Service_Dashboard
  *
@@ -248,13 +249,13 @@ class Application_Service_Dashboard
 
                 // Repeat failers: failed this round AND failed the round before.
                 $repeatFailerCount = (int) $this->db->fetchOne(
-                    "SELECT COUNT(*) FROM shipment_participant_map cur
+                    'SELECT COUNT(*) FROM shipment_participant_map cur
                      JOIN shipment_participant_map prev
                        ON prev.participant_id = cur.participant_id
                       AND prev.shipment_id = ?
                      WHERE cur.shipment_id = ?
                        AND cur.final_result = 2
-                       AND prev.final_result = 2",
+                       AND prev.final_result = 2',
                     [$previousShipment['shipment_id'], $shipmentId]
                 );
             }
@@ -476,11 +477,13 @@ class Application_Service_Dashboard
             $sWhereSub = '';
             foreach ($searchArray as $search) {
                 $sWhereSub .= ($sWhereSub === '' ? '(' : ' AND (');
-                $colSize = count($aColumns);
-                for ($i = 0; $i < $colSize; $i++) {
-                    $sWhereSub .= $aColumns[$i] . " LIKE '%" . $search . "%'" . ($i < $colSize - 1 ? ' OR ' : ' ');
+                // $aColumns is a fixed whitelist above, but $search is raw request
+                // input, so it is bound rather than concatenated.
+                $orParts = [];
+                foreach ($aColumns as $column) {
+                    $orParts[] = $this->db->quoteInto(((string) $column) . ' LIKE ?', '%' . $search . '%');
                 }
-                $sWhereSub .= ')';
+                $sWhereSub .= implode(' OR ', $orParts) . ')';
             }
             $sQuery = $sQuery->where($sWhereSub);
         }
@@ -489,7 +492,7 @@ class Application_Service_Dashboard
         // Application_Model_DbTable_Participants::getAllParticipants().
         for ($i = 0; $i < count($aColumns); $i++) {
             if (($parameters['bSearchable_' . $i] ?? '') == 'true' && !empty($parameters['sSearch_' . $i])) {
-                $sQuery = $sQuery->where($aColumns[$i] . " LIKE ?", '%' . $parameters['sSearch_' . $i] . '%');
+                $sQuery = $sQuery->where($aColumns[$i] . ' LIKE ?', '%' . $parameters['sSearch_' . $i] . '%');
             }
         }
 
@@ -509,8 +512,8 @@ class Application_Service_Dashboard
         // filters above, matches the "of N" DataTables shows before any filter
         // is applied — same semantics as getAllShipments()'s iTotalRecords).
         $iTotal = (int) $this->db->fetchOne(
-            "SELECT COUNT(DISTINCT sp.participant_id) FROM shipment_participant_map sp
-            WHERE sp.shipment_id = ? AND sp.response_status = ?",
+            'SELECT COUNT(DISTINCT sp.participant_id) FROM shipment_participant_map sp
+            WHERE sp.shipment_id = ? AND sp.response_status = ?',
             [$shipmentId, $responseStatus]
         );
 
@@ -615,10 +618,10 @@ class Application_Service_Dashboard
     private function getShipmentHeaderForDrilldown($shipmentId)
     {
         $row = $this->db->fetchRow(
-            "SELECT s.shipment_id, s.shipment_code, sl.scheme_name, s.response_deadline, s.status
+            'SELECT s.shipment_id, s.shipment_code, sl.scheme_name, s.response_deadline, s.status
             FROM shipment s
             JOIN scheme_list sl ON sl.scheme_id = s.scheme_type
-            WHERE s.shipment_id = ?",
+            WHERE s.shipment_id = ?',
             [$shipmentId]
         );
         if (!$row) {
