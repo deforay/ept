@@ -56,9 +56,17 @@ _('Dried Blood Spot - Early Infant Diagnosis');
 // scheme_list.scheme_name
 _('Dried Blood Spot - HIV Serology');
 // scheme_list.scheme_name
+_('Dried Tube Specimen - Hepatitis B Serology');
+// scheme_list.scheme_name
+_('Dried Tube Specimen - Hepatitis C Serology');
+// scheme_list.scheme_name
 _('Dried Tube Specimen - HIV Serology');
 // scheme_list.scheme_name
 _('Dried Tube Specimen - HIV Viral Load');
+// scheme_list.scheme_name
+_('Dried Tube Specimen - Malaria Serology');
+// scheme_list.scheme_name
+_('Dried Tube Specimen - Syphilis Serology');
 // scheme_list.scheme_name
 _('Dried Tube Specimen - Tuberculosis');
 // r_dts_corrective_actions.corrective_action
@@ -155,7 +163,7 @@ _('inconclusive');
 _('INDETERMINATE');
 // r_possibleresult.response
 _('indeterminate');
-// r_response_not_tested_reasons.ntr_reason
+// r_response_not_tested_reasons.ntr_reason, r_response_vl_not_tested_reason.vl_not_tested_reason
 _('Instrument down');
 // r_response_vl_not_tested_reason.vl_not_tested_reason
 _('Instrument Down');
@@ -169,6 +177,14 @@ _('interminate');
 _('INVALID');
 // r_possibleresult.response
 _('invalid');
+// r_possibleresult.response
+_('Invalid');
+// r_possibleresult.response
+_('Invalid/Failed');
+// r_possibleresult.response
+_('INVALID/FAILED');
+// r_possibleresult.response
+_('invalid/failed');
 // r_response_not_tested_reasons.ntr_reason, r_response_vl_not_tested_reason.vl_not_tested_reason
 _('Issue with Sample');
 // r_control.control_name
@@ -224,6 +240,8 @@ _('NEGATIVE');
 // r_possibleresult.response
 _('negative');
 // r_possibleresult.response
+_('Negative');
+// r_possibleresult.response
 _('Negative (HIV Not Detected)');
 // r_possibleresult.response
 _('NEGATIVE (HIV NOT DETECTED)');
@@ -231,7 +249,7 @@ _('NEGATIVE (HIV NOT DETECTED)');
 _('negative (hiv not detected)');
 // r_control.control_name
 _('Negative Control');
-// r_response_not_tested_reasons.ntr_reason
+// r_response_not_tested_reasons.ntr_reason, r_response_vl_not_tested_reason.vl_not_tested_reason
 _('No lab personal for testing of PT panel');
 // r_response_vl_not_tested_reason.vl_not_tested_reason
 _('No lab personnel/staff for testing of PT Panel');
@@ -372,6 +390,8 @@ _('Result not evaluated Ð test kit expiry date (first/second/third) is not repo
 // r_dts_corrective_actions.description
 _('Result not evaluated Ð Test Kit lot number (first/second/third) is not reported.');
 // r_covid19_corrective_actions.description
+_('Result not evaluated Ð Test Platform lot number (first/second/third) is not reported.');
+// r_covid19_corrective_actions.description
 _('Result not evaluated Ð test type expiry date (first/second/third) is not reported with PT response.');
 // r_covid19_corrective_actions.description
 _('Result not evaluated Ð Test Type lot number (first/second/third) is not reported.');
@@ -393,6 +413,8 @@ _('Sample (1/2/3) was not reported');
 _('Sample (1/2/3?) reported result does not match with expected result.');
 // scheme_list.scheme_name
 _('SARS-Cov-2');
+// scheme_list.scheme_name
+_('SARS-CoV-2');
 // r_modes_of_receipt.mode_name
 _('Scan');
 // r_possibleresult.response
@@ -417,6 +439,10 @@ _('Test kit repeated for confirmatory or tiebreaker test (T1/T2/T3).');
 _('Test kit XYZ expired M days before the test date DD-MON-YYY.');
 // r_dts_corrective_actions.description
 _('Testkit XYZ repeated for all 3 test kits');
+// r_covid19_corrective_actions.description
+_('Test platform repeated for confirmatory or tiebreaker test (T1/T2/T3).');
+// r_covid19_corrective_actions.description
+_('Test platform XYZ expired M days before the test date DD-MON-YYY.');
 // r_covid19_corrective_actions.description
 _('Test type repeated for confirmatory or tiebreaker test (T1/T2/T3).');
 // r_covid19_corrective_actions.description
@@ -451,6 +477,8 @@ _('Viral Load Machine not working');
 _('WEAK REACTIVE');
 // r_possibleresult.response
 _('weak reactive');
+// r_modes_of_receipt.mode_name
+_('WhatsApp');
 // r_dts_corrective_actions.description
 _('When the first test is wrong, we need to ask them to review');
 // r_covid19_corrective_actions.corrective_action, r_dts_corrective_actions.corrective_action

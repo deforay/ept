@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ePT\n"
 "Report-Msgid-Bugs-To: support@deforay.com\n"
-"POT-Creation-Date: 2026-08-17 19:42+0530\n"
+"POT-Creation-Date: 2026-08-17 23:50+0530\n"
 "PO-Revision-Date: 2026-07-07 08:33+0530\n"
 "Last-Translator: Amit <amit@deforay.com>\n"
 "Language-Team: \n"
@@ -21,43 +21,43 @@ msgstr ""
 "X-Poedit-SearchPath-2: scheduled-jobs\n"
 "X-Poedit-SearchPath-3: public/js/main.js.php\n"
 
-#: application/languages/db-translation-strings.php:23
+#: application/languages/db-translation-strings.php:25
 msgid "1+"
 msgstr "1+"
 
-#: application/languages/db-translation-strings.php:25
+#: application/languages/db-translation-strings.php:27
 msgid "2+"
 msgstr "2+"
 
-#: application/languages/db-translation-strings.php:27
+#: application/languages/db-translation-strings.php:29
 msgid "3+"
 msgstr "3+"
 
-#: application/languages/db-translation-strings.php:29
+#: application/languages/db-translation-strings.php:31
 msgid "Antenatal Clinic (PMTCT)"
 msgstr "Phòng khám tiền sản (PMTCT)"
 
-#: application/languages/db-translation-strings.php:31
+#: application/languages/db-translation-strings.php:33
 msgid "Centers for Disease Control and Prevention"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:33
+#: application/languages/db-translation-strings.php:35
 msgid "Controls were not reported"
 msgstr "Không có báo cáo về các biện pháp kiểm soát"
 
-#: application/languages/db-translation-strings.php:35
+#: application/languages/db-translation-strings.php:37
 msgid "Cottage hospital"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:37
+#: application/languages/db-translation-strings.php:39
 msgid "Courier"
 msgstr "Bưu kiện"
 
-#: application/languages/db-translation-strings.php:39
+#: application/languages/db-translation-strings.php:41
 msgid "Covid-19"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:41
+#: application/languages/db-translation-strings.php:43
 msgid ""
 "Covid19 Testing should be done within specified hours of rehydration as per "
 "SOP."
@@ -65,25 +65,25 @@ msgstr ""
 "Việc xét nghiệm Covid-19 cần được thực hiện trong khoảng thời gian quy định "
 "sau khi bù nước theo quy trình tiêu chuẩn (SOP)."
 
-#: application/languages/db-translation-strings.php:43
+#: application/languages/db-translation-strings.php:45
 #: application/models/Dts.php:2301
 msgid "Department"
 msgstr "Khoa/phòng"
 
-#: application/languages/db-translation-strings.php:45
+#: application/languages/db-translation-strings.php:47
 #: application/views/scripts/tb/assay-formats.ajax.phtml:866
 msgid "DETECTED"
 msgstr "ĐÃ PHÁT HIỆN"
 
-#: application/languages/db-translation-strings.php:47
+#: application/languages/db-translation-strings.php:49
 msgid "detected"
 msgstr "đã phát hiện"
 
-#: application/languages/db-translation-strings.php:49
+#: application/languages/db-translation-strings.php:51
 msgid "Did not meet the minimum score required"
 msgstr "Không đạt điểm tối thiểu theo yêu cầu"
 
-#: application/languages/db-translation-strings.php:51
+#: application/languages/db-translation-strings.php:53
 #: application/models/Dts.php:1583 application/models/Dts.php:1601
 #: application/models/Dts.php:2305 application/models/Dts.php:2382
 #: application/modules/admin/views/scripts/data-managers/index.phtml:173
@@ -109,23 +109,62 @@ msgstr "Không đạt điểm tối thiểu theo yêu cầu"
 msgid "District"
 msgstr "Quận/Huyện"
 
-#: application/languages/db-translation-strings.php:53
+#: application/languages/db-translation-strings.php:55
+#: application/views/scripts/participant/dashboard.phtml:382
+msgid "Dried Blood Spot - Early Infant Diagnosis"
+msgstr "Mẫu máu khô - Chẩn đoán sớm ở trẻ sơ sinh"
+
+#: application/languages/db-translation-strings.php:57
 #: application/views/scripts/participant/dashboard.phtml:441
 msgid "Dried Blood Spot - HIV Serology"
 msgstr "Mẫu máu khô - Xét nghiệm huyết thanh học HIV"
 
-#: application/languages/db-translation-strings.php:55
+#: application/languages/db-translation-strings.php:59
+#, fuzzy
+msgid "Dried Tube Specimen - Hepatitis B Serology"
+msgstr "Mẫu đông khô - Xét nghiệm huyết thanh học HIV"
+
+#: application/languages/db-translation-strings.php:61
+#, fuzzy
+msgid "Dried Tube Specimen - Hepatitis C Serology"
+msgstr "Mẫu đông khô - Xét nghiệm huyết thanh học HIV"
+
+#: application/languages/db-translation-strings.php:63
+msgid "Dried Tube Specimen - HIV Serology"
+msgstr "Mẫu đông khô - Xét nghiệm huyết thanh học HIV"
+
+#: application/languages/db-translation-strings.php:65
+#: application/views/scripts/participant/dashboard.phtml:324
+msgid "Dried Tube Specimen - HIV Viral Load"
+msgstr "Mẫu máu đông trong ống - Nồng độ virus HIV"
+
+#: application/languages/db-translation-strings.php:67
+#, fuzzy
+msgid "Dried Tube Specimen - Malaria Serology"
+msgstr "Mẫu đông khô - Xét nghiệm huyết thanh học HIV"
+
+#: application/languages/db-translation-strings.php:69
+#, fuzzy
+msgid "Dried Tube Specimen - Syphilis Serology"
+msgstr "Mẫu đông khô - Xét nghiệm huyết thanh học HIV"
+
+#: application/languages/db-translation-strings.php:71
+#: application/views/scripts/participant/dashboard.phtml:353
+msgid "Dried Tube Specimen - Tuberculosis"
+msgstr "Mẫu bệnh phẩm trong ống khô - Lao"
+
+#: application/languages/db-translation-strings.php:73
 msgid ""
 "DTS Testing should be done within specified hours of rehydration as per SOP."
 msgstr ""
 "Việc xét nghiệm DTS phải được thực hiện trong khoảng thời gian quy định sau "
 "khi bù nước theo quy trình tiêu chuẩn (SOP)."
 
-#: application/languages/db-translation-strings.php:57
+#: application/languages/db-translation-strings.php:75
 msgid "Early Infant Diagnosis"
 msgstr "Chẩn đoán sớm ở trẻ sơ sinh"
 
-#: application/languages/db-translation-strings.php:59
+#: application/languages/db-translation-strings.php:77
 #: application/models/DbTable/DataManagers.php:324
 #: application/models/DbTable/Distribution.php:156
 #: application/models/Dts.php:2308
@@ -134,7 +173,7 @@ msgstr "Chẩn đoán sớm ở trẻ sơ sinh"
 #: application/modules/admin/views/scripts/login/index.phtml:190
 #: application/modules/admin/views/scripts/participants/index.phtml:214
 #: application/modules/admin/views/scripts/participants/participant-upload-statistics.phtml:157
-#: application/modules/admin/views/scripts/participants/pending.phtml:21
+#: application/modules/admin/views/scripts/participants/pending.phtml:20
 #: application/modules/admin/views/scripts/participants/view-participants.phtml:12
 #: application/modules/admin/views/scripts/shipment/manage-enroll.phtml:94
 #: application/modules/admin/views/scripts/shipment/manage-enroll.phtml:127
@@ -147,7 +186,7 @@ msgstr "Chẩn đoán sớm ở trẻ sơ sinh"
 msgid "Email"
 msgstr "Email"
 
-#: application/languages/db-translation-strings.php:61
+#: application/languages/db-translation-strings.php:79
 msgid ""
 "Ensure expired test kit are not be used for testing. If test kits are not "
 "available, please contact your superior."
@@ -156,7 +195,7 @@ msgstr ""
 "không tìm thấy tên sinh phẩm xét nghiệm, vui lòng liên hệ với nhà cung cấp "
 "(NIHE)."
 
-#: application/languages/db-translation-strings.php:63
+#: application/languages/db-translation-strings.php:81
 msgid ""
 "Ensure expired test type are not be used for testing. If test types are not "
 "available, please contact your superior."
@@ -165,74 +204,74 @@ msgstr ""
 "không tìm thấy tên sinh phẩm xét nghiệm, vui lòng liên hệ với nhà cung cấp "
 "(NIHE)."
 
-#: application/languages/db-translation-strings.php:65
+#: application/languages/db-translation-strings.php:83
 msgid "Ensure expiry date information is submitted for all performed tests."
 msgstr ""
 "Đảm bảo cung cấp thông tin về ngày hết hạn cho tất cả các xét nghiệm đã thực "
 "hiện."
 
-#: application/languages/db-translation-strings.php:67
+#: application/languages/db-translation-strings.php:85
 msgid "Ensure test kit lot number is reported for all performed tests."
 msgstr ""
 "Đảm bảo ghi lại số lô của sinh phẩm xét nghiệm cho tất cả các xét nghiệm đã "
 "thực hiện."
 
-#: application/languages/db-translation-strings.php:69
+#: application/languages/db-translation-strings.php:87
 msgid "Ensure test kit name is reported for all performed tests."
 msgstr ""
 "Đảm bảo tên sinh phẩm xét nghiệm được ghi lại cho tất cả các xét nghiệm đã "
 "thực hiện."
 
-#: application/languages/db-translation-strings.php:71
+#: application/languages/db-translation-strings.php:89
 msgid "Ensure test type lot number is reported for all performed tests."
 msgstr ""
 "Đảm bảo ghi lại số lô của sinh phẩm xét nghiệm cho tất cả các xét nghiệm đã "
 "thực hiện."
 
-#: application/languages/db-translation-strings.php:73
+#: application/languages/db-translation-strings.php:91
 msgid "Ensure test type name is reported for all performed tests."
 msgstr ""
 "Đảm bảo tên sinh phẩm xét nghiệm được ghi lại cho tất cả các xét nghiệm đã "
 "thực hiện."
 
-#: application/languages/db-translation-strings.php:75
+#: application/languages/db-translation-strings.php:93
 msgid "Ensure to provide sample rehydration date"
 msgstr "Hãy đảm bảo cung cấp ngày hoàn nguyên mẫu"
 
-#: application/languages/db-translation-strings.php:77
+#: application/languages/db-translation-strings.php:95
 msgid "Ensure to provide supervisor approval along with his name."
 msgstr ""
 "Hãy đảm bảo có sự phê duyệt của người giám sát kèm theo tên của người đó."
 
-#: application/languages/db-translation-strings.php:79
+#: application/languages/db-translation-strings.php:97
 msgid "Ensure to provide to provide panel receipt date."
 msgstr "Hãy đảm bảo cung cấp ngày nhận bộ mẫu."
 
-#: application/languages/db-translation-strings.php:81
+#: application/languages/db-translation-strings.php:99
 msgid "Ensure to provide to provide panel testing date."
 msgstr "Hãy đảm bảo cung cấp ngày thử nghiệm bảng điều khiển."
 
-#: application/languages/db-translation-strings.php:83
+#: application/languages/db-translation-strings.php:101
 msgid "Equivocal"
 msgstr "Không rõ ràng/Nghi ngờ"
 
-#: application/languages/db-translation-strings.php:85
+#: application/languages/db-translation-strings.php:103
 msgid "EQUIVOCAL"
 msgstr "Không rõ ràng/Nghi ngờ"
 
-#: application/languages/db-translation-strings.php:87
+#: application/languages/db-translation-strings.php:105
 msgid "equivocal"
 msgstr "không rõ ràng"
 
-#: application/languages/db-translation-strings.php:89
+#: application/languages/db-translation-strings.php:107
 msgid "ERROR"
 msgstr "LỖI"
 
-#: application/languages/db-translation-strings.php:91
+#: application/languages/db-translation-strings.php:109
 msgid "error"
 msgstr "lỗi"
 
-#: application/languages/db-translation-strings.php:93
+#: application/languages/db-translation-strings.php:111
 #: application/modules/reports/views/scripts/distribution/finalize.phtml:214
 #: application/services/Evaluation.php:1943
 #: application/services/Evaluation.php:1945
@@ -243,147 +282,216 @@ msgstr "lỗi"
 msgid "Excluded"
 msgstr "Không bao gồm"
 
-#: application/languages/db-translation-strings.php:95
+#: application/languages/db-translation-strings.php:113
 msgid "EXCLUDED"
 msgstr "LOẠI TRỪ"
 
-#: application/languages/db-translation-strings.php:97
-#: application/modules/admin/views/scripts/index/index.phtml:687
+#: application/languages/db-translation-strings.php:115
+#: application/modules/admin/views/scripts/index/index.phtml:1362
 msgid "excluded"
 msgstr "đã loại trừ"
 
-#: application/languages/db-translation-strings.php:99
+#: application/languages/db-translation-strings.php:117
 #: application/modules/reports/views/scripts/distribution/finalize.phtml:213
 #: application/services/Evaluation.php:2489
 #: application/services/Evaluation.php:2566
 msgid "Fail"
 msgstr "Không Đạt"
 
-#: application/languages/db-translation-strings.php:101
+#: application/languages/db-translation-strings.php:119
 msgid "FAIL"
 msgstr "KHÔNG ĐẠT"
 
-#: application/languages/db-translation-strings.php:103
-#: application/modules/admin/views/scripts/index/index.phtml:682
+#: application/languages/db-translation-strings.php:121
+#: application/modules/admin/views/scripts/index/index.phtml:1357
 msgid "fail"
 msgstr "không đạt"
 
-#: application/languages/db-translation-strings.php:105
+#: application/languages/db-translation-strings.php:123
 msgid "For sample (1/2/3?) National Covid-19 Testing lab was not followed."
 msgstr ""
 "Đối với mẫu (1/2/3?), quy trình của Phòng thí nghiệm xét nghiệm Covid-19 "
 "quốc gia đã không được tuân thủ."
 
-#: application/languages/db-translation-strings.php:107
+#: application/languages/db-translation-strings.php:125
 msgid "For sample (1/2/3?) National HIV Testing algorithm was not followed."
 msgstr ""
 "Đối với mẫu (1/2/3?), quy trình xét nghiệm HIV quốc gia đã không được tuân "
 "thủ."
 
-#: application/languages/db-translation-strings.php:109
+#: application/languages/db-translation-strings.php:127
 msgid ""
 "For Test (1/2/3) testing is not performed with country approved test kit."
 msgstr ""
 "Đối với các bài kiểm tra (1/2/3), việc kiểm tra không được thực hiện bằng bộ "
 "dụng cụ xét nghiệm đã được cơ quan chức năng của quốc gia phê duyệt."
 
-#: application/languages/db-translation-strings.php:111
+#: application/languages/db-translation-strings.php:129
 msgid ""
 "For Test (1/2/3) testing is not performed with country approved test type."
 msgstr ""
 "Đối với các mẫu (1/2/3), xét nghiệm thực hiện bằng các loại sinh phẩm không "
 "được Bộ y tế phê duyệt."
 
-#: application/languages/db-translation-strings.php:113
+#: application/languages/db-translation-strings.php:131
 msgid "HIGH"
 msgstr "CAO"
 
-#: application/languages/db-translation-strings.php:115
+#: application/languages/db-translation-strings.php:133
 msgid "high"
 msgstr "cao"
 
-#: application/languages/db-translation-strings.php:117
+#: application/languages/db-translation-strings.php:135
 msgid "High Positive Control"
 msgstr "Mẫu chứng dương tính cao"
 
-#: application/languages/db-translation-strings.php:119
+#: application/languages/db-translation-strings.php:137
+#, fuzzy
+msgid "HIV-1 Detected"
+msgstr "Đã phát hiện"
+
+#: application/languages/db-translation-strings.php:139
+#, fuzzy
+msgid "HIV-1 DETECTED"
+msgstr "ĐÃ PHÁT HIỆN"
+
+#: application/languages/db-translation-strings.php:141
+#, fuzzy
+msgid "hiv-1 detected"
+msgstr "đã phát hiện"
+
+#: application/languages/db-translation-strings.php:143
+#, fuzzy
+msgid "HIV-1 Not Detected"
+msgstr "Không phát hiện"
+
+#: application/languages/db-translation-strings.php:145
+#, fuzzy
+msgid "HIV-1 NOT DETECTED"
+msgstr "KHÔNG PHÁT HIỆN ĐƯỢC"
+
+#: application/languages/db-translation-strings.php:147
+#, fuzzy
+msgid "hiv-1 not detected"
+msgstr "không phát hiện"
+
+#: application/languages/db-translation-strings.php:149
 #: application/modules/admin/views/scripts/partials/scheme-config-nav.phtml:58
 #: application/views/scripts/participant/dashboard.phtml:412
 msgid "HIV Serology"
 msgstr "Xét nghiệm huyết thanh học HIV"
 
-#: application/languages/db-translation-strings.php:121
+#: application/languages/db-translation-strings.php:151
 msgid "HIV Viral Load"
 msgstr "Tải lượng virus HIV"
 
-#: application/languages/db-translation-strings.php:123
+#: application/languages/db-translation-strings.php:153
 msgid "Hospital"
 msgstr "Bệnh viện"
 
-#: application/languages/db-translation-strings.php:125
+#: application/languages/db-translation-strings.php:155
 msgid "In-House Negative Control"
 msgstr "Mẫuchứng âm nội bộ"
 
-#: application/languages/db-translation-strings.php:127
+#: application/languages/db-translation-strings.php:157
 msgid "In-House Positive Control"
 msgstr "Mẫu chứng dương tính nội bộ"
 
-#: application/languages/db-translation-strings.php:129
+#: application/languages/db-translation-strings.php:159
 msgid "INCONCLUSIVE"
 msgstr "CHƯA KẾT LUẬN"
 
-#: application/languages/db-translation-strings.php:131
+#: application/languages/db-translation-strings.php:161
 #, fuzzy
 msgid "inconclusive"
 msgstr "Kết luận"
 
-#: application/languages/db-translation-strings.php:133
+#: application/languages/db-translation-strings.php:163
 #: application/views/scripts/tb/assay-formats.ajax.phtml:868
 msgid "INDETERMINATE"
 msgstr "KHÔNG XÁC ĐỊNH"
 
-#: application/languages/db-translation-strings.php:135
+#: application/languages/db-translation-strings.php:165
 msgid "indeterminate"
 msgstr "không xác định"
 
-#: application/languages/db-translation-strings.php:137
+#: application/languages/db-translation-strings.php:167
 msgid "Instrument down"
 msgstr "Thiết bị bị hỏng"
 
-#: application/languages/db-translation-strings.php:139
+#: application/languages/db-translation-strings.php:169
+msgid "Instrument Down"
+msgstr "Thiết bị bị hỏng"
+
+#: application/languages/db-translation-strings.php:171
+msgid "Interminate"
+msgstr "Không xác định"
+
+#: application/languages/db-translation-strings.php:173
+msgid "INTERMINATE"
+msgstr "KHÔNG XÁC ĐỊNH"
+
+#: application/languages/db-translation-strings.php:175
+msgid "interminate"
+msgstr "không có hồi kết"
+
+#: application/languages/db-translation-strings.php:177
 msgid "INVALID"
 msgstr "KHÔNG HỢP LỆ"
 
-#: application/languages/db-translation-strings.php:141
+#: application/languages/db-translation-strings.php:179
 msgid "invalid"
 msgstr "không hiệu lực"
 
-#: application/languages/db-translation-strings.php:143
+#: application/languages/db-translation-strings.php:181
+#: application/views/scripts/custom-test/response.phtml:470
+#: application/views/scripts/tb/assay-formats.ajax.phtml:468
+#: application/views/scripts/tb/assay-formats.ajax.phtml:673
+#: application/views/scripts/vl/response.phtml:693
+msgid "Invalid"
+msgstr "Không hợp lệ"
+
+#: application/languages/db-translation-strings.php:183
+#, fuzzy
+msgid "Invalid/Failed"
+msgstr "Không hợp lệ"
+
+#: application/languages/db-translation-strings.php:185
+#, fuzzy
+msgid "INVALID/FAILED"
+msgstr "KHÔNG HỢP LỆ"
+
+#: application/languages/db-translation-strings.php:187
+#, fuzzy
+msgid "invalid/failed"
+msgstr "không hiệu lực"
+
+#: application/languages/db-translation-strings.php:189
 msgid "Issue with Sample"
 msgstr "Vấn đề với mẫu"
 
-#: application/languages/db-translation-strings.php:145
+#: application/languages/db-translation-strings.php:191
 msgid "Kit Negative Control"
 msgstr "Chứng âm tính đi kèm bộ sinh phẩm"
 
-#: application/languages/db-translation-strings.php:147
+#: application/languages/db-translation-strings.php:193
 msgid "Kit Positive Control"
 msgstr "Chứng dương tính đi kèm bộ sinh phẩm"
 
-#: application/languages/db-translation-strings.php:149
+#: application/languages/db-translation-strings.php:195
 #: scheduled-jobs/report-layouts/participant-layouts/vietnam/dts.phtml:327
 msgid "Laboratory"
 msgstr "Phòng thí nghiệm"
 
-#: application/languages/db-translation-strings.php:151
+#: application/languages/db-translation-strings.php:197
 msgid "Laboratory facility no longer perform testing"
 msgstr "Cơ sở xét nghiệm không còn thực hiện các xét nghiệm nữa"
 
-#: application/languages/db-translation-strings.php:153
+#: application/languages/db-translation-strings.php:199
 msgid "Laboratory facility under renovation"
 msgstr "Cơ sở xét nghiệm đang được cải tạo"
 
-#: application/languages/db-translation-strings.php:155
+#: application/languages/db-translation-strings.php:201
 msgid ""
 "Late response, response not evaluated. Your response received after last "
 "date. Expected result for PT panel will be available for your reference."
@@ -391,140 +499,149 @@ msgstr ""
 "Báo cáo phản hồi muộn, báo cáo không được đánh giá. Báo cáo của bạn đã được "
 "nhận khi hết hạn. Kết quả dự kiến của bộ mẫu PT sẽ được gửi để bạn tham khảo."
 
-#: application/languages/db-translation-strings.php:157
+#: application/languages/db-translation-strings.php:203
 msgid "Local Health center"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:159
+#: application/languages/db-translation-strings.php:205
 msgid "Long Term"
 msgstr "Nhiễm lâu"
 
-#: application/languages/db-translation-strings.php:161
+#: application/languages/db-translation-strings.php:207
 msgid "LONG TERM"
 msgstr "Nhiễm lâu"
 
-#: application/languages/db-translation-strings.php:163
+#: application/languages/db-translation-strings.php:209
 msgid "long term"
 msgstr "dài hạn"
 
-#: application/languages/db-translation-strings.php:165
+#: application/languages/db-translation-strings.php:211
 msgid "LOW"
 msgstr "THẤP"
 
-#: application/languages/db-translation-strings.php:167
+#: application/languages/db-translation-strings.php:213
 msgid "low"
 msgstr "thấp"
 
-#: application/languages/db-translation-strings.php:169
+#: application/languages/db-translation-strings.php:215
 msgid "Low Positive Control"
 msgstr "Mẫu chứng dương tính nồng độ thấp"
 
-#: application/languages/db-translation-strings.php:171
+#: application/languages/db-translation-strings.php:217
 msgid "Machine not working"
 msgstr "Máy không hoạt động"
 
-#: application/languages/db-translation-strings.php:173
+#: application/languages/db-translation-strings.php:219
 msgid "Mandatory Samples not reported"
 msgstr "Các mẫu bắt buộc chưa được báo cáo"
 
-#: application/languages/db-translation-strings.php:175
+#: application/languages/db-translation-strings.php:221
 msgid "MEDIUM"
 msgstr "TRUNG BÌNH"
 
-#: application/languages/db-translation-strings.php:177
+#: application/languages/db-translation-strings.php:223
 msgid "medium"
 msgstr "trung bình"
 
-#: application/languages/db-translation-strings.php:179
+#: application/languages/db-translation-strings.php:225
 msgid "Military hospital"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:181
+#: application/languages/db-translation-strings.php:227
 msgid "Minimum score not reached"
 msgstr "Chưa đạt điểm tối thiểu"
 
-#: application/languages/db-translation-strings.php:183
+#: application/languages/db-translation-strings.php:229
 msgid "Missing supervisor approval for reported result."
 msgstr "Kết quả đã báo cáo chưa được người giám sát phê duyệt."
 
-#: application/languages/db-translation-strings.php:185
+#: application/languages/db-translation-strings.php:231
 msgid "Mobile VCT"
 msgstr "Dịch vụ tư vấn và xét nghiệm HIV di động"
 
-#: application/languages/db-translation-strings.php:187
+#: application/languages/db-translation-strings.php:233
 msgid "N"
 msgstr "N"
 
-#: application/languages/db-translation-strings.php:189
+#: application/languages/db-translation-strings.php:235
 msgid "n"
 msgstr "n"
 
-#: application/languages/db-translation-strings.php:191
+#: application/languages/db-translation-strings.php:237
 #, fuzzy
 msgid "National hospital"
 msgstr "thông tin chi tiết"
 
-#: application/languages/db-translation-strings.php:193
+#: application/languages/db-translation-strings.php:239
 msgid "NEGATIVE"
 msgstr "ÂM TÍNH"
 
-#: application/languages/db-translation-strings.php:195
+#: application/languages/db-translation-strings.php:241
 msgid "negative"
 msgstr "tiêu cực"
 
-#: application/languages/db-translation-strings.php:197
+#: application/languages/db-translation-strings.php:243
+#, fuzzy
+msgid "Negative"
+msgstr "tiêu cực"
+
+#: application/languages/db-translation-strings.php:245
 #, fuzzy
 msgid "Negative (HIV Not Detected)"
 msgstr "Không phát hiện HIV-1"
 
-#: application/languages/db-translation-strings.php:199
+#: application/languages/db-translation-strings.php:247
 #, fuzzy
 msgid "NEGATIVE (HIV NOT DETECTED)"
 msgstr "Không phát hiện HIV-1"
 
-#: application/languages/db-translation-strings.php:201
+#: application/languages/db-translation-strings.php:249
 #, fuzzy
 msgid "negative (hiv not detected)"
 msgstr "Không phát hiện HIV-1"
 
-#: application/languages/db-translation-strings.php:203
+#: application/languages/db-translation-strings.php:251
 msgid "Negative Control"
 msgstr "Mẫu chứng âm"
 
-#: application/languages/db-translation-strings.php:205
+#: application/languages/db-translation-strings.php:253
 msgid "No lab personal for testing of PT panel"
 msgstr "Không có nhân viên phòng thí nghiệm để thực hiện xét nghiệm bộ mẫu PT"
 
-#: application/languages/db-translation-strings.php:207
+#: application/languages/db-translation-strings.php:255
+msgid "No lab personnel/staff for testing of PT Panel"
+msgstr "Không có nhân viên phòng thí nghiệm để thực hiện xét nghiệm bộ mẫu PT"
+
+#: application/languages/db-translation-strings.php:257
 msgid "NONREACTIVE"
 msgstr "KHÔNG PHẢN ỨNG"
 
-#: application/languages/db-translation-strings.php:209
+#: application/languages/db-translation-strings.php:259
 msgid "nonreactive"
 msgstr "không phản ứng"
 
-#: application/languages/db-translation-strings.php:211
+#: application/languages/db-translation-strings.php:261
 msgid "No reagents for testing of PT panel"
 msgstr "Không có sinh phẩm để xét nghiệm bộ mẫu ngoại kiểm"
 
-#: application/languages/db-translation-strings.php:213
+#: application/languages/db-translation-strings.php:263
 msgid "NO RESULT"
 msgstr "KHÔNG CÓ KẾT QUẢ"
 
-#: application/languages/db-translation-strings.php:215
+#: application/languages/db-translation-strings.php:265
 msgid "no result"
 msgstr "không có kết quả"
 
-#: application/languages/db-translation-strings.php:217
+#: application/languages/db-translation-strings.php:267
 #: application/views/scripts/tb/assay-formats.ajax.phtml:867
 msgid "NOT DETECTED"
 msgstr "KHÔNG PHÁT HIỆN ĐƯỢC"
 
-#: application/languages/db-translation-strings.php:219
+#: application/languages/db-translation-strings.php:269
 msgid "not detected"
 msgstr "không phát hiện"
 
-#: application/languages/db-translation-strings.php:221
+#: application/languages/db-translation-strings.php:271
 #: application/services/Evaluation.php:1939
 #: application/services/Evaluation.php:1946
 #: application/services/Evaluation.php:2254
@@ -533,48 +650,63 @@ msgstr "không phát hiện"
 msgid "Not Evaluated"
 msgstr "Không đánh giá"
 
-#: application/languages/db-translation-strings.php:223
+#: application/languages/db-translation-strings.php:273
 msgid "NOT EVALUATED"
 msgstr "Không ĐÁNH GIÁ"
 
-#: application/languages/db-translation-strings.php:225
-#: application/modules/admin/views/scripts/index/index.phtml:693
+#: application/languages/db-translation-strings.php:275
+#: application/modules/admin/views/scripts/index/index.phtml:1368
 msgid "not evaluated"
 msgstr "chưa được đánh giá"
 
-#: application/languages/db-translation-strings.php:227
+#: application/languages/db-translation-strings.php:277
 msgid "Not received PT panel shipment due to country custom clearance issue"
 msgstr ""
 "Chưa nhận được lô hàng bộ mẫu PT do vướng mắc thông quan tại nước nhập khẩu"
 
-#: application/languages/db-translation-strings.php:229
+#: application/languages/db-translation-strings.php:279
 msgid ""
 "Not received PT panel shipment due to incorrect contact info on the shipment "
 "package"
 msgstr ""
 "Chưa nhận được bộ mẫu do thông tin liên hệ trên gói hàng không chính xác"
 
-#: application/languages/db-translation-strings.php:231
+#: application/languages/db-translation-strings.php:281
+msgid "Not Reported"
+msgstr "Chưa được báo cáo"
+
+#: application/languages/db-translation-strings.php:283
 msgid "NOT REPORTED"
 msgstr "CHƯA ĐƯỢC BÁO CÁO"
 
-#: application/languages/db-translation-strings.php:233
+#: application/languages/db-translation-strings.php:285
 msgid "not reported"
 msgstr "chưa được báo cáo"
 
-#: application/languages/db-translation-strings.php:235
+#: application/languages/db-translation-strings.php:287
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:223
+#: application/modules/reports/views/scripts/distribution/finalize.phtml:206
+#: application/modules/reports/views/scripts/distribution/shipment.phtml:263
+#: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:281
+#: application/services/Evaluation.php:1962
+#: application/services/Evaluation.php:2299
+#: application/services/Evaluation.php:2511
+msgid "Not Tested"
+msgstr "Chưa được kiểm tra"
+
+#: application/languages/db-translation-strings.php:289
 msgid "NOT TESTED"
 msgstr "CHƯA ĐƯỢC XÉT NGHIỆM"
 
-#: application/languages/db-translation-strings.php:237
+#: application/languages/db-translation-strings.php:291
 msgid "not tested"
 msgstr "chưa kiểm nghiệm"
 
-#: application/languages/db-translation-strings.php:239
+#: application/languages/db-translation-strings.php:293
 msgid "Online Response"
 msgstr "Phản hồi trực tuyến"
 
-#: application/languages/db-translation-strings.php:241
+#: application/languages/db-translation-strings.php:295
 #: application/views/scripts/contact-us/index.phtml:45
 #: application/views/scripts/covid19/response.phtml:433
 #: application/views/scripts/covid19/response.phtml:454
@@ -590,23 +722,27 @@ msgstr "Phản hồi trực tuyến"
 msgid "Other"
 msgstr "Khác"
 
-#: application/languages/db-translation-strings.php:243
+#: application/languages/db-translation-strings.php:297
+msgid "Other (please explain)"
+msgstr "Khác (vui lòng giải thích)"
+
+#: application/languages/db-translation-strings.php:299
 msgid "Outpatient Clinic"
 msgstr "Phòng khám ngoại trú"
 
-#: application/languages/db-translation-strings.php:245
+#: application/languages/db-translation-strings.php:301
 msgid "P"
 msgstr "P"
 
-#: application/languages/db-translation-strings.php:247
+#: application/languages/db-translation-strings.php:303
 msgid "p"
 msgstr "p"
 
-#: application/languages/db-translation-strings.php:249
+#: application/languages/db-translation-strings.php:305
 msgid "Panel receipt date missing in PT report form."
 msgstr "Ngày nhận bộ mẫu điền thiếu trong biểu mẫu báo cáo kết quả ngoại kiểm."
 
-#: application/languages/db-translation-strings.php:251
+#: application/languages/db-translation-strings.php:307
 msgid ""
 "Participant did not meet the score criteria (Participant Score is 80 and "
 "Required Score is 95)"
@@ -614,7 +750,7 @@ msgstr ""
 "Thí sinh không đạt tiêu chí điểm số (Điểm của thí sinh là 80, trong khi điểm "
 "yêu cầu là 95)"
 
-#: application/languages/db-translation-strings.php:253
+#: application/languages/db-translation-strings.php:309
 #: application/modules/reports/views/scripts/distribution/finalize.phtml:212
 #: application/modules/reports/views/scripts/participant-trends/index.phtml:139
 #: application/modules/reports/views/scripts/participant-trends/index.phtml:181
@@ -624,24 +760,42 @@ msgstr ""
 msgid "Pass"
 msgstr "Đạt"
 
-#: application/languages/db-translation-strings.php:255
+#: application/languages/db-translation-strings.php:311
 msgid "PASS"
 msgstr "ĐẠT"
 
-#: application/languages/db-translation-strings.php:257
-#: application/modules/admin/views/scripts/index/index.phtml:672
+#: application/languages/db-translation-strings.php:313
+#: application/modules/admin/views/scripts/index/index.phtml:1347
 msgid "pass"
 msgstr "đạt"
 
-#: application/languages/db-translation-strings.php:259
+#: application/languages/db-translation-strings.php:315
 msgid "Please ensure all critical fields are reported in your PT Result Form"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:261
+#: application/languages/db-translation-strings.php:317
+msgid "Please ensure condition of PT Samples is reported"
+msgstr "Vui lòng đảm bảo rằng tình trạng của các mẫu PT được báo cáo"
+
+#: application/languages/db-translation-strings.php:319
+msgid "Please ensure Refridgerator availability is reported"
+msgstr ""
+"Vui lòng đảm bảo thông tin về tình trạng sẵn có của tủ lạnh được báo cáo"
+
+#: application/languages/db-translation-strings.php:321
+msgid "Please ensure Room Temperature is reported"
+msgstr "Vui lòng đảm bảo rằng nhiệt độ phòng được báo cáo"
+
+#: application/languages/db-translation-strings.php:323
+msgid "Please ensure Stop Watch availability is reported"
+msgstr ""
+"Vui lòng đảm bảo rằng tình trạng sẵn có của đồng hồ bấm giờ được báo cáo"
+
+#: application/languages/db-translation-strings.php:325
 msgid "Please submit response before last date"
 msgstr "Vui lòng gửi phản hồi trước ngày hết hạn"
 
-#: application/languages/db-translation-strings.php:263
+#: application/languages/db-translation-strings.php:327
 msgid ""
 "Please test Covid19 sample as per National Covid-19 Testing lab. Review and "
 "refer to SOP for testing."
@@ -650,7 +804,7 @@ msgstr ""
 "nghiệm xét nghiệm Covid-19 Quốc gia. Hãy xem xét và tham khảo Quy trình tiêu "
 "chuẩn (SOP) về xét nghiệm."
 
-#: application/languages/db-translation-strings.php:265
+#: application/languages/db-translation-strings.php:329
 msgid ""
 "Please test DTS sample as per National HIV Testing algorithm. Review and "
 "refer to SOP for testing."
@@ -658,7 +812,7 @@ msgstr ""
 "Vui lòng xét nghiệm mẫu DTS theo quy trình xét nghiệm HIV quốc gia. Hãy xem "
 "xét và tham khảo Quy trình tiêu chuẩn (SOP) về xét nghiệm."
 
-#: application/languages/db-translation-strings.php:267
+#: application/languages/db-translation-strings.php:331
 msgid ""
 "Please use the approved test kits according to the SOP/National HIV Testing "
 "algorithm for confirmatory and tie-breaker."
@@ -667,7 +821,7 @@ msgstr ""
 "chuẩn (SOP) hoặc Thuật toán xét nghiệm HIV quốc gia để thực hiện xét nghiệm "
 "xác nhận và xét nghiệm phân định."
 
-#: application/languages/db-translation-strings.php:269
+#: application/languages/db-translation-strings.php:333
 msgid ""
 "Please use the approved test types according to the SOP/National Covid-19 "
 "Testing lab for confirmatory and tie-breaker."
@@ -676,55 +830,55 @@ msgstr ""
 "chuẩn (SOP) hoặc theo hướng dẫn của Phòng thí nghiệm xét nghiệm Covid-19 "
 "quốc gia để thực hiện xét nghiệm xác nhận và xét nghiệm phân định kết quả."
 
-#: application/languages/db-translation-strings.php:271
+#: application/languages/db-translation-strings.php:335
 msgid "PMTCT"
 msgstr "PMTCT"
 
-#: application/languages/db-translation-strings.php:273
+#: application/languages/db-translation-strings.php:337
 msgid "POSITIVE"
 msgstr "DƯƠNG TÍNH"
 
-#: application/languages/db-translation-strings.php:275
+#: application/languages/db-translation-strings.php:339
 msgid "positive"
 msgstr "dương tính"
 
-#: application/languages/db-translation-strings.php:277
+#: application/languages/db-translation-strings.php:341
 #, fuzzy
 msgid "Positive (HIV Detected)"
 msgstr "Phát hiện HIV-1"
 
-#: application/languages/db-translation-strings.php:279
+#: application/languages/db-translation-strings.php:343
 #, fuzzy
 msgid "POSITIVE (HIV DETECTED)"
 msgstr "Phát hiện HIV-1"
 
-#: application/languages/db-translation-strings.php:281
+#: application/languages/db-translation-strings.php:345
 #, fuzzy
 msgid "positive (hiv detected)"
 msgstr "phát hiện HIV-1"
 
-#: application/languages/db-translation-strings.php:283
+#: application/languages/db-translation-strings.php:347
 msgid "Postive"
 msgstr "Dương tính"
 
-#: application/languages/db-translation-strings.php:285
+#: application/languages/db-translation-strings.php:349
 msgid "POSTIVE"
 msgstr "Dương tính"
 
-#: application/languages/db-translation-strings.php:287
+#: application/languages/db-translation-strings.php:351
 msgid "postive"
 msgstr "tích cực"
 
-#: application/languages/db-translation-strings.php:289
+#: application/languages/db-translation-strings.php:353
 msgid "Primary care laboratory service tier"
 msgstr "Cấp độ dịch vụ xét nghiệm y tế cơ sở"
 
-#: application/languages/db-translation-strings.php:291
+#: application/languages/db-translation-strings.php:355
 #, fuzzy
 msgid "Private hospital"
 msgstr "Tư nhân"
 
-#: application/languages/db-translation-strings.php:293
+#: application/languages/db-translation-strings.php:357
 #: application/models/Dts.php:1582 application/models/Dts.php:1600
 #: application/models/Dts.php:2304 application/models/Dts.php:2334
 #: application/models/Dts.php:2354 application/models/Dts.php:2381
@@ -745,53 +899,53 @@ msgstr "Tư nhân"
 msgid "Province"
 msgstr "Tỉnh"
 
-#: application/languages/db-translation-strings.php:295
+#: application/languages/db-translation-strings.php:359
 msgid "Provincial general hospital"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:297
+#: application/languages/db-translation-strings.php:361
 msgid "PT Provider Negative Control"
 msgstr "Mẫu chứng âm tính của nhà cung cấp PT"
 
-#: application/languages/db-translation-strings.php:299
+#: application/languages/db-translation-strings.php:363
 msgid "PT Provider Positive Control"
 msgstr "Mẫu chứng dương tính của nhà cung cấp PT"
 
-#: application/languages/db-translation-strings.php:301
+#: application/languages/db-translation-strings.php:365
 msgid "Public Health Reference Laboratories"
 msgstr "Các phòng thí nghiệm tham chiếu về y tế công cộng"
 
-#: application/languages/db-translation-strings.php:303
+#: application/languages/db-translation-strings.php:367
 msgid "Rapid Test for Recent Infection (RTRI)"
 msgstr "Xét nghiệm nhanh phát hiện nhiễm mới HIV (RTRI)"
 
-#: application/languages/db-translation-strings.php:305
+#: application/languages/db-translation-strings.php:369
 msgid "Re-hydration date missing in PT report form."
 msgstr "Thiếu thông tin về ngày hoàn nguyên trong biểu mẫu báo cáo."
 
-#: application/languages/db-translation-strings.php:307
+#: application/languages/db-translation-strings.php:371
 msgid "REACTIVE"
 msgstr "PHẢN ỨNG"
 
-#: application/languages/db-translation-strings.php:309
+#: application/languages/db-translation-strings.php:373
 msgid "reactive"
 msgstr "phản ứng"
 
-#: application/languages/db-translation-strings.php:311
+#: application/languages/db-translation-strings.php:375
 #: application/views/partials/spotlight.phtml:627
 #: application/views/partials/spotlight.phtml:632
 msgid "Recent"
 msgstr "Nhiễm mới"
 
-#: application/languages/db-translation-strings.php:313
+#: application/languages/db-translation-strings.php:377
 msgid "RECENT"
 msgstr "Nhiễm mới"
 
-#: application/languages/db-translation-strings.php:315
+#: application/languages/db-translation-strings.php:379
 msgid "recent"
 msgstr "bài mới"
 
-#: application/languages/db-translation-strings.php:317
+#: application/languages/db-translation-strings.php:381
 #: application/modules/admin/views/scripts/enrollments/add.phtml:21
 #: application/modules/admin/views/scripts/evaluate/shipment.phtml:273
 #: application/modules/admin/views/scripts/participants/add.phtml:154
@@ -822,22 +976,22 @@ msgstr "bài mới"
 msgid "Region"
 msgstr "Khu vực"
 
-#: application/languages/db-translation-strings.php:319
+#: application/languages/db-translation-strings.php:383
 #, fuzzy
 msgid "Research Institute"
 msgstr "Viện Nghiên cứu Tìm kiếm"
 
-#: application/languages/db-translation-strings.php:321
+#: application/languages/db-translation-strings.php:385
 msgid "Result not evaluated Ð name of test kit not reported."
 msgstr ""
 "Kết quả không được đánh giá – tên sinh phẩm xét nghiệm không được báo cáo."
 
-#: application/languages/db-translation-strings.php:323
+#: application/languages/db-translation-strings.php:387
 msgid "Result not evaluated Ð name of test type not reported."
 msgstr ""
 "Kết quả không được đánh giá – Loại sinh phẩm xét nghiệm không được báo cáo."
 
-#: application/languages/db-translation-strings.php:325
+#: application/languages/db-translation-strings.php:389
 msgid ""
 "Result not evaluated Ð test kit expiry date (first/second/third) is not "
 "reported with PT response."
@@ -845,7 +999,7 @@ msgstr ""
 "Kết quả không được đánh giá – ngày hết hạn của bộ sinh phẩm xét nghiệm (lần "
 "1/lần 2/lần 3) không được báo cáo cùng với kết quả xét nghiệm so sánh."
 
-#: application/languages/db-translation-strings.php:327
+#: application/languages/db-translation-strings.php:391
 msgid ""
 "Result not evaluated Ð Test Kit lot number (first/second/third) is not "
 "reported."
@@ -853,7 +1007,16 @@ msgstr ""
 "Kết quả không được đánh giá. Số lô bộ dụng cụ xét nghiệm (số 1/số 2/số 3) "
 "không được báo cáo."
 
-#: application/languages/db-translation-strings.php:329
+#: application/languages/db-translation-strings.php:393
+#, fuzzy
+msgid ""
+"Result not evaluated Ð Test Platform lot number (first/second/third) is not "
+"reported."
+msgstr ""
+"Kết quả không được đánh giá. Số lô bộ dụng cụ xét nghiệm (số 1/số 2/số 3) "
+"không được báo cáo."
+
+#: application/languages/db-translation-strings.php:395
 msgid ""
 "Result not evaluated Ð test type expiry date (first/second/third) is not "
 "reported with PT response."
@@ -861,7 +1024,7 @@ msgstr ""
 "Kết quả không được đánh giá. Loại xét nghiệm (lần 1/lần 2/lần 3) không được "
 "báo cáo trong phản hồi PT."
 
-#: application/languages/db-translation-strings.php:331
+#: application/languages/db-translation-strings.php:397
 msgid ""
 "Result not evaluated Ð Test Type lot number (first/second/third) is not "
 "reported."
@@ -869,7 +1032,7 @@ msgstr ""
 "Kết quả không được đánh giá. Số lô sinh phẩm (thứ nhất/thứ hai/thứ ba) chưa "
 "được báo cáo."
 
-#: application/languages/db-translation-strings.php:333
+#: application/languages/db-translation-strings.php:399
 msgid ""
 "Review all testing procedures prior to performing client testing and contact "
 "your supervisor for improvement."
@@ -878,7 +1041,7 @@ msgstr ""
 "cho khách hàng và liên hệ với người quản lý của bạn để đề xuất các biện pháp "
 "cải thiện."
 
-#: application/languages/db-translation-strings.php:335
+#: application/languages/db-translation-strings.php:401
 msgid ""
 "Review all testing procedures prior to performing client testing as reported "
 "result does not match expected result."
@@ -886,21 +1049,21 @@ msgstr ""
 "Xem xét lại toàn bộ quy trình xét nghiệm trước khi tiến hành xét nghiệm cho "
 "khách hàng, vì kết quả báo cáo không khớp với kết quả dự kiến."
 
-#: application/languages/db-translation-strings.php:337
+#: application/languages/db-translation-strings.php:403
 msgid ""
 "Review and refer to National HIV Testing Algorithms for result "
 "interpretation as final result interpretation does not match the expected "
 "result."
 msgstr ""
 
-#: application/languages/db-translation-strings.php:339
+#: application/languages/db-translation-strings.php:405
 msgid ""
 "Review and Refer to SOP for testing. Investigate possible causes such as : "
 "(1) sample mix-up, (2) incorrect sample volume used, (3) interpreting the "
 "result before and after the manufacturer recommended time"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:341
+#: application/languages/db-translation-strings.php:407
 msgid ""
 "Review and refer to SOP for testing. Sample should be tested per National "
 "Covid-19 Testing lab."
@@ -908,7 +1071,7 @@ msgstr ""
 "Xem lại và tham khảo Quy trình tiêu chuẩn (SOP) về xét nghiệm. Mẫu phải được "
 "xét nghiệm tại phòng thí nghiệm xét nghiệm Covid-19 quốc gia."
 
-#: application/languages/db-translation-strings.php:343
+#: application/languages/db-translation-strings.php:409
 msgid ""
 "Review and refer to SOP for testing. Sample should be tested per National "
 "HIV Testing algorithm."
@@ -916,146 +1079,175 @@ msgstr ""
 "Xem lại và tham khảo Quy trình tiêu chuẩn (SOP) về xét nghiệm. Mẫu cần được "
 "xét nghiệm theo thuật toán xét nghiệm HIV quốc gia."
 
-#: application/languages/db-translation-strings.php:345
+#: application/languages/db-translation-strings.php:411
 msgid "Sample (1/2/3) was not reported"
 msgstr "Mẫu (1/2/3) không được báo cáo"
 
-#: application/languages/db-translation-strings.php:347
+#: application/languages/db-translation-strings.php:413
 msgid "Sample (1/2/3?) reported result does not match with expected result."
 msgstr ""
 "Kết quả được báo cáo trong mẫu (1/2/3?) không khớp với kết quả dự kiến."
 
-#: application/languages/db-translation-strings.php:349
+#: application/languages/db-translation-strings.php:415
+#, fuzzy
+msgid "SARS-Cov-2"
+msgstr "SARS-CoV-2"
+
+#: application/languages/db-translation-strings.php:417
+#: application/modules/admin/views/scripts/partials/scheme-config-nav.phtml:62
+#, fuzzy
+msgid "SARS-CoV-2"
+msgstr "SARS-CoV-2"
+
+#: application/languages/db-translation-strings.php:419
 msgid "Scan"
 msgstr "Quét"
 
-#: application/languages/db-translation-strings.php:351
+#: application/languages/db-translation-strings.php:421
 msgid "SCANTY"
 msgstr "QUÁ ÍT"
 
-#: application/languages/db-translation-strings.php:353
+#: application/languages/db-translation-strings.php:423
 msgid "scanty"
 msgstr "ít ỏi"
 
-#: application/languages/db-translation-strings.php:355
+#: application/languages/db-translation-strings.php:425
 msgid "Secondary and tertiary laboratory service tiers"
 msgstr "Các cấp độ dịch vụ phòng thí nghiệm thứ hai và thứ ba"
 
-#: application/languages/db-translation-strings.php:357
+#: application/languages/db-translation-strings.php:427
 msgid "SMS"
 msgstr "SMS"
 
-#: application/languages/db-translation-strings.php:359
+#: application/languages/db-translation-strings.php:429
 msgid "Some mandatory samples were not reported"
 msgstr "Một số mẫu bắt buộc chưa được báo cáo"
 
-#: application/languages/db-translation-strings.php:361
+#: application/languages/db-translation-strings.php:431
 msgid "TB Center"
 msgstr "Trung tâm Lao"
 
-#: application/languages/db-translation-strings.php:363
+#: application/languages/db-translation-strings.php:433
 msgid "Testing date missing in PT report form."
 msgstr "Thiếu ngày kiểm tra trong biểu mẫu báo cáo PT."
 
-#: application/languages/db-translation-strings.php:365
+#: application/languages/db-translation-strings.php:435
 msgid "Testing is not performed within X to Y hours of rehydration."
 msgstr ""
 "Không tiến hành xét nghiệm trong khoảng thời gian từ X đến Y giờ sau khi bù "
 "nước."
 
-#: application/languages/db-translation-strings.php:367
+#: application/languages/db-translation-strings.php:437
 msgid "Test kit repeated for confirmatory or tiebreaker test (T1/T2/T3)."
 msgstr ""
 "Bộ sinh phẩm xét nghiệm lặp lại được sử dụng cho xét nghiệm khẳng định hoặc "
 "xét nghiệm phân định (T1/T2/T3)."
 
-#: application/languages/db-translation-strings.php:369
+#: application/languages/db-translation-strings.php:439
 msgid "Test kit XYZ expired M days before the test date DD-MON-YYY."
 msgstr ""
 "Bộ sinh phẩm xét nghiệm XYZ đã hết hạn M ngày trước ngày xét nghiệm DD-THÁNG-"
 "NĂM."
 
-#: application/languages/db-translation-strings.php:371
+#: application/languages/db-translation-strings.php:441
 msgid "Testkit XYZ repeated for all 3 test kits"
 msgstr ""
 "Bộ sinh phẩm xét nghiệm XYZ được lặp lại cho cả 3 bộ sinh phẩm xét nghiệm"
 
-#: application/languages/db-translation-strings.php:373
+#: application/languages/db-translation-strings.php:443
+#, fuzzy
+msgid "Test platform repeated for confirmatory or tiebreaker test (T1/T2/T3)."
+msgstr ""
+"Bộ sinh phẩm xét nghiệm lặp lại được sử dụng cho xét nghiệm khẳng định hoặc "
+"xét nghiệm phân định (T1/T2/T3)."
+
+#: application/languages/db-translation-strings.php:445
+#, fuzzy
+msgid "Test platform XYZ expired M days before the test date DD-MON-YYY."
+msgstr ""
+"Bộ sinh phẩm xét nghiệm XYZ đã hết hạn M ngày trước ngày xét nghiệm DD-THÁNG-"
+"NĂM."
+
+#: application/languages/db-translation-strings.php:447
 msgid "Test type repeated for confirmatory or tiebreaker test (T1/T2/T3)."
 msgstr ""
 "Loại xét nghiệm được lặp lại để xác nhận hoặc phân định kết quả (T1/T2/T3)."
 
-#: application/languages/db-translation-strings.php:375
+#: application/languages/db-translation-strings.php:449
 msgid "Test type XYZ expired M days before the test date DD-MON-YYY."
 msgstr "Loại bài kiểm tra XYZ đã hết hạn M ngày trước ngày thi DD-THÁNG-NĂM."
 
-#: application/languages/db-translation-strings.php:377
+#: application/languages/db-translation-strings.php:451
 msgid "Testtype XYZ repeated for all 3 test types"
 msgstr "Loại thử nghiệm XYZ được lặp lại cho cả 3 loại thử nghiệm"
 
-#: application/languages/db-translation-strings.php:379
+#: application/languages/db-translation-strings.php:453
 msgid "The PT panel shipment was lost/damage"
 msgstr "Bộ mẫu ngoại kiểm bị thất lạc/hư hỏng"
 
-#: application/languages/db-translation-strings.php:381
+#: application/languages/db-translation-strings.php:455
 msgid "The PT panel testing failed during sample processing"
 msgstr "Bộ mẫu ngoại kiểm đã hỏng trong quá trình xử lý mẫu"
 
-#: application/languages/db-translation-strings.php:383
+#: application/languages/db-translation-strings.php:457
 msgid "The results were invalid for the entire run"
 msgstr "Kết quả không hợp lệ cho toàn bộ quá trình chạy"
 
-#: application/languages/db-translation-strings.php:385
+#: application/languages/db-translation-strings.php:459
 msgid "There were not enough responses for the VL Assay chosen"
 msgstr "Không có đủ kết quả cho phương pháp xét nghiệm VL đã chọn"
 
-#: application/languages/db-translation-strings.php:387
+#: application/languages/db-translation-strings.php:461
 msgid "TRACE"
 msgstr "Truy vết"
 
-#: application/languages/db-translation-strings.php:389
+#: application/languages/db-translation-strings.php:463
 msgid "trace"
 msgstr "dấu vết"
 
-#: application/languages/db-translation-strings.php:391
+#: application/languages/db-translation-strings.php:465
 #, fuzzy
 msgid "Tuberculosis"
 msgstr "bệnh lao"
 
-#: application/languages/db-translation-strings.php:393
+#: application/languages/db-translation-strings.php:467
 msgid "Unsatisfactory score"
 msgstr "Điểm không đạt yêu cầu"
 
-#: application/languages/db-translation-strings.php:395
+#: application/languages/db-translation-strings.php:469
 msgid "VCT"
 msgstr "VCT"
 
-#: application/languages/db-translation-strings.php:397
+#: application/languages/db-translation-strings.php:471
 msgid "VERY LOW"
 msgstr "RẤT THẤP"
 
-#: application/languages/db-translation-strings.php:399
+#: application/languages/db-translation-strings.php:473
 msgid "very low"
 msgstr "rất thấp"
 
-#: application/languages/db-translation-strings.php:401
+#: application/languages/db-translation-strings.php:475
 #, fuzzy
 msgid "Viral Load Machine not working"
 msgstr "Máy không hoạt động"
 
-#: application/languages/db-translation-strings.php:403
+#: application/languages/db-translation-strings.php:477
 msgid "WEAK REACTIVE"
 msgstr "PHẢN ỨNG YẾU"
 
-#: application/languages/db-translation-strings.php:405
+#: application/languages/db-translation-strings.php:479
 msgid "weak reactive"
 msgstr "phản ứng yếu"
 
-#: application/languages/db-translation-strings.php:407
+#: application/languages/db-translation-strings.php:481
+msgid "WhatsApp"
+msgstr ""
+
+#: application/languages/db-translation-strings.php:483
 msgid "When the first test is wrong, we need to ask them to review"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:409
+#: application/languages/db-translation-strings.php:485
 msgid "You are required to test all samples in PT panel"
 msgstr "Bạn phải tiến hành xét nghiệm tất cả các mẫu trong bộ mẫu ngoại kiểm"
 
@@ -1869,7 +2061,7 @@ msgstr "Quản trị viên ePT"
 #: application/layouts/scripts/home.phtml:122
 #: application/layouts/scripts/layout.phtml:291
 #: application/modules/admin/views/scripts/help/index.phtml:16
-#: application/modules/admin/views/scripts/index/index.phtml:349
+#: application/modules/admin/views/scripts/index/index.phtml:720
 #: application/modules/admin/views/scripts/shipment/round-participants.phtml:50
 #: application/views/partials/spotlight.phtml:33
 #: application/views/scripts/participant/dashboard.phtml:191
@@ -2063,6 +2255,7 @@ msgstr "Khảo sát PT"
 #: application/modules/admin/views/scripts/certificate-batches/index.phtml:156
 #: application/modules/admin/views/scripts/index/ept-overview.ajax.phtml:281
 #: application/modules/admin/views/scripts/participants/index.phtml:217
+#: application/modules/admin/views/scripts/participants/pending.phtml:23
 #: application/modules/admin/views/scripts/shipment/index.phtml:16
 #: application/views/partials/spotlight.phtml:397
 #: application/views/partials/spotlight.phtml:625
@@ -2369,6 +2562,7 @@ msgstr "Các chương trình mặc định"
 
 #: application/layouts/scripts/layout.phtml:351
 #: application/modules/admin/views/scripts/participants/index.phtml:216
+#: application/modules/admin/views/scripts/participants/pending.phtml:22
 #: application/views/scripts/data-managers/index.phtml:2
 msgid "Data Managers"
 msgstr "Quản lý dữ liệu"
@@ -2477,6 +2671,7 @@ msgstr "Các nhà quản lý dữ liệu phù hợp"
 #: application/models/DbTable/DataManagers.php:315
 #: application/models/DbTable/Distribution.php:133
 #: application/models/DbTable/Distribution.php:153
+#: application/models/DbTable/Participants.php:360
 #: application/modules/admin/controllers/SpotlightController.php:57
 #: application/modules/admin/views/scripts/data-managers/mapped-participants.ajax.phtml:51
 #: application/modules/admin/views/scripts/participants/mapped-data-managers.ajax.phtml:54
@@ -3176,7 +3371,7 @@ msgstr "Tin nhắn"
 #: application/modules/admin/views/scripts/participants/index.phtml:215
 #: application/modules/admin/views/scripts/participants/mapped-data-managers.ajax.phtml:25
 #: application/modules/admin/views/scripts/participants/participant-upload-statistics.phtml:154
-#: application/modules/admin/views/scripts/participants/pending.phtml:22
+#: application/modules/admin/views/scripts/participants/pending.phtml:21
 #: application/modules/admin/views/scripts/partners/edit.phtml:22
 #: application/modules/admin/views/scripts/partners/index.phtml:17
 #: application/modules/admin/views/scripts/sample-not-tested-reasons/add.phtml:43
@@ -3233,7 +3428,7 @@ msgstr "Nguyên nhân thất bại"
 #: application/modules/admin/views/scripts/job-tracking/index.phtml:144
 #: application/modules/admin/views/scripts/participant-messages/index.phtml:19
 #: application/modules/admin/views/scripts/participants/index.phtml:235
-#: application/modules/admin/views/scripts/participants/pending.phtml:28
+#: application/modules/admin/views/scripts/participants/pending.phtml:29
 #: application/modules/admin/views/scripts/partners/index.phtml:23
 #: application/modules/admin/views/scripts/sample-not-tested-reasons/index.phtml:28
 #: application/modules/admin/views/scripts/schemes/test-results.phtml:22
@@ -3300,7 +3495,7 @@ msgstr "Bỏ qua"
 #: application/modules/reports/views/scripts/shipment-response-report/index.phtml:149
 #: application/modules/reports/views/scripts/shipments/participation-stats.ajax.phtml:17
 #: application/modules/reports/views/scripts/shipments/participation-stats.ajax.phtml:103
-#: application/services/Dashboard.php:775
+#: application/services/Dashboard.php:1048
 #: application/views/scripts/participant/shipment-response-report.phtml:110
 #: scheduled-jobs/report-layouts/summary-layouts/default/dts.phtml:394
 msgid "Failed"
@@ -3486,7 +3681,7 @@ msgstr "Tỉnh"
 #: application/modules/admin/views/scripts/participant-messages/index.phtml:14
 #: application/modules/admin/views/scripts/participants/index.phtml:218
 #: application/modules/admin/views/scripts/participants/mapped-data-managers.ajax.phtml:26
-#: application/modules/admin/views/scripts/participants/pending.phtml:23
+#: application/modules/admin/views/scripts/participants/pending.phtml:24
 #: application/modules/admin/views/scripts/partners/index.phtml:18
 #: application/modules/admin/views/scripts/sample-not-tested-reasons/index.phtml:23
 #: application/modules/admin/views/scripts/schemes/manage-test-results.phtml:377
@@ -3838,7 +4033,7 @@ msgid "Excellence"
 msgstr "Sự xuất sắc"
 
 #: application/modules/admin/views/scripts/certificate-batches/index.phtml:159
-#: application/modules/admin/views/scripts/index/index.phtml:598
+#: application/modules/admin/views/scripts/index/index.phtml:1273
 msgid "Participation"
 msgstr "Sự tham gia"
 
@@ -5667,6 +5862,7 @@ msgstr "Chọn quốc gia"
 #: application/modules/admin/views/scripts/participants/add.phtml:161
 #: application/modules/admin/views/scripts/participants/edit.phtml:225
 #: application/modules/admin/views/scripts/participants/index.phtml:212
+#: application/modules/admin/views/scripts/participants/pending.phtml:18
 #: application/modules/admin/views/scripts/shipment/manage-enroll.phtml:88
 #: application/modules/admin/views/scripts/shipment/manage-enroll.phtml:121
 #: application/modules/admin/views/scripts/shipment/manage-enroll.phtml:161
@@ -5685,6 +5881,7 @@ msgstr "Vui lòng chọn tiểu bang"
 #: application/modules/admin/views/scripts/participants/add.phtml:165
 #: application/modules/admin/views/scripts/participants/edit.phtml:234
 #: application/modules/admin/views/scripts/participants/index.phtml:213
+#: application/modules/admin/views/scripts/participants/pending.phtml:19
 #: application/modules/admin/views/scripts/shipment/manage-enroll.phtml:89
 #: application/modules/admin/views/scripts/shipment/manage-enroll.phtml:122
 #: application/modules/admin/views/scripts/shipment/manage-enroll.phtml:162
@@ -6362,7 +6559,6 @@ msgid "Last Name"
 msgstr "Họ"
 
 #: application/modules/admin/views/scripts/data-managers/index.phtml:167
-#: application/modules/admin/views/scripts/participants/pending.phtml:18
 #: application/modules/admin/views/scripts/participants/view-participants.phtml:9
 #: application/modules/admin/views/scripts/shipment/manage-enroll.phtml:91
 #: application/modules/admin/views/scripts/shipment/manage-enroll.phtml:124
@@ -6681,7 +6877,6 @@ msgstr "Cấp độ phòng xét nghiệm"
 #: application/modules/admin/views/scripts/participants/add.phtml:287
 #: application/modules/admin/views/scripts/participants/edit.phtml:405
 #: application/modules/admin/views/scripts/participants/participant-manager-map.phtml:133
-#: application/modules/admin/views/scripts/participants/pending.phtml:20
 #: application/modules/admin/views/scripts/participants/view-participants.phtml:11
 #: application/modules/admin/views/scripts/shipment/manage-enroll.phtml:93
 #: application/modules/admin/views/scripts/shipment/manage-enroll.phtml:126
@@ -8032,7 +8227,7 @@ msgid "Response status"
 msgstr "Trạng thái phản hồi"
 
 #: application/modules/admin/views/scripts/evaluate/shipment.phtml:220
-#: application/modules/admin/views/scripts/index/index.phtml:414
+#: application/modules/admin/views/scripts/index/index.phtml:1089
 #: application/modules/admin/views/scripts/shipment/manage-enroll.phtml:65
 #: application/modules/reports/views/scripts/distribution/finalize.phtml:203
 #: application/modules/reports/views/scripts/distribution/shipment.phtml:260
@@ -8070,16 +8265,6 @@ msgstr "Chưa phản hồi"
 #: application/services/Evaluation.php:2509
 msgid "Late Response"
 msgstr "Trả lời chậm trễ"
-
-#: application/modules/admin/views/scripts/evaluate/shipment.phtml:223
-#: application/modules/reports/views/scripts/distribution/finalize.phtml:206
-#: application/modules/reports/views/scripts/distribution/shipment.phtml:263
-#: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:281
-#: application/services/Evaluation.php:1962
-#: application/services/Evaluation.php:2299
-#: application/services/Evaluation.php:2511
-msgid "Not Tested"
-msgstr "Chưa được kiểm tra"
 
 #: application/modules/admin/views/scripts/evaluate/shipment.phtml:227
 #: application/modules/admin/views/scripts/evaluate/shipment.phtml:318
@@ -9700,7 +9885,7 @@ msgid "To configure section headings and icons, go to"
 msgstr "Để định dạng tiêu đề phần và biểu tượng, hãy truy cập"
 
 #: application/modules/admin/views/scripts/index/ept-overview.ajax.phtml:192
-#: application/modules/admin/views/scripts/index/index.phtml:754
+#: application/modules/admin/views/scripts/index/index.phtml:1429
 msgid "ePT Overview"
 msgstr "Tổng quan về ePT"
 
@@ -9729,62 +9914,138 @@ msgstr "Sao chép dưới dạng văn bản thuần túy"
 msgid "Preview plain-text version"
 msgstr "Xem trước phiên bản văn bản thuần túy"
 
-#: application/modules/admin/views/scripts/index/index.phtml:358
-#: application/modules/admin/views/scripts/shipment/manage-enroll.phtml:742
-msgid "participant"
-msgstr "đơn vị tham gia"
-
-#: application/modules/admin/views/scripts/index/index.phtml:360
+#: application/modules/admin/views/scripts/index/index.phtml:740
 msgid ""
-"registered but not yet approved to use ePT. Please click here to approve."
-msgstr ""
-"Đã đăng ký nhưng chưa được phê duyệt để sử dụng ePT. Vui lòng nhấp vào đây "
-"để phê duyệt."
+"1 participant has registered and is waiting to be approved. Click to review."
+msgstr "1 đơn vị đã đăng ký và đang chờ phê duyệt. Nhấn để xem xét."
 
-#: application/modules/admin/views/scripts/index/index.phtml:371
+#: application/modules/admin/views/scripts/index/index.phtml:742
+#, php-format
+msgid ""
+"%d participants have registered and are waiting to be approved. Click to "
+"review."
+msgstr "%d đơn vị đã đăng ký và đang chờ phê duyệt. Nhấn để xem xét."
+
+#: application/modules/admin/views/scripts/index/index.phtml:769
 msgid "Active participants"
 msgstr "Đơn vị tham gia đang hoạt động"
 
-#: application/modules/admin/views/scripts/index/index.phtml:375
-#, fuzzy
-msgid "Active schemes"
-msgstr "Các chương trình đang triển khai"
+#: application/modules/admin/views/scripts/index/index.phtml:778
+msgid "across 1 scheme"
+msgstr "thuộc 1 chương trình"
 
-#: application/modules/admin/views/scripts/index/index.phtml:379
+#: application/modules/admin/views/scripts/index/index.phtml:779
+#, php-format
+msgid "across %d schemes"
+msgstr "thuộc %d chương trình"
+
+#: application/modules/admin/views/scripts/index/index.phtml:784
+msgid "Rounds in progress"
+msgstr "Vòng đang thực hiện"
+
+#: application/modules/admin/views/scripts/index/index.phtml:793
+#, php-format
+msgid "%1$d open, %2$d awaiting finalize"
+msgstr "%1$d đang mở, %2$d đang chờ hoàn thiện"
+
+#: application/modules/admin/views/scripts/index/index.phtml:797
+msgid "nothing shipped right now"
+msgstr "hiện chưa gửi vòng nào"
+
+#: application/modules/admin/views/scripts/index/index.phtml:802
+msgid "Labs yet to respond"
+msgstr "Phòng xét nghiệm chưa phản hồi"
+
+#: application/modules/admin/views/scripts/index/index.phtml:808
+#, php-format
+msgid "of %d labs in rounds open for response"
+msgstr "trên %d phòng xét nghiệm trong các vòng đang mở nhận phản hồi"
+
+#: application/modules/admin/views/scripts/index/index.phtml:816
 msgid "Rounds completed in"
 msgstr "Số vòng đã hoàn thành trong"
 
-#: application/modules/admin/views/scripts/index/index.phtml:396
+#: application/modules/admin/views/scripts/index/index.phtml:823
+#, php-format
+msgid "last finalized %s"
+msgstr "hoàn thiện gần nhất ngày %s"
+
+#: application/modules/admin/views/scripts/index/index.phtml:826
+msgid "no rounds finalized yet"
+msgstr "chưa có vòng nào được hoàn thiện"
+
+#: application/modules/admin/views/scripts/index/index.phtml:856
+msgid "Participant engagement"
+msgstr "Mức độ tham gia của đơn vị"
+
+#: application/modules/admin/views/scripts/index/index.phtml:879
+#, php-format
+msgid ""
+"Counted as participating after a response to a round shipped in the last %d "
+"months."
+msgstr ""
+"Được tính là có tham gia nếu đã phản hồi một vòng gửi trong %d tháng gần "
+"nhất."
+
+#: application/modules/admin/views/scripts/index/index.phtml:890
+msgid "Participation by scheme"
+msgstr "Mức độ tham gia theo chương trình"
+
+#: application/modules/admin/views/scripts/index/index.phtml:894
+msgid "Bars show each scheme's split. Numbers are labs."
+msgstr ""
+"Các thanh thể hiện tỷ lệ của từng chương trình. Con số là số phòng xét "
+"nghiệm."
+
+#: application/modules/admin/views/scripts/index/index.phtml:925
+msgid "active labs"
+msgstr "phòng xét nghiệm đang hoạt động"
+
+#: application/modules/admin/views/scripts/index/index.phtml:945
+msgid "Labs"
+msgstr "Phòng xét nghiệm"
+
+#: application/modules/admin/views/scripts/index/index.phtml:1012
+#: application/services/Dashboard.php:509
+msgid "Actively participating"
+msgstr "Đang tham gia tích cực"
+
+#: application/modules/admin/views/scripts/index/index.phtml:1017
+#: application/services/Dashboard.php:514
+msgid "In a scheme, not responding"
+msgstr "Thuộc chương trình, chưa phản hồi"
+
+#: application/modules/admin/views/scripts/index/index.phtml:1071
 msgid "round open for response"
 msgstr "vòng đang mở nhận phản hồi"
 
-#: application/modules/admin/views/scripts/index/index.phtml:397
+#: application/modules/admin/views/scripts/index/index.phtml:1072
 msgid "rounds open for response"
 msgstr "vòng đang mở nhận phản hồi"
 
-#: application/modules/admin/views/scripts/index/index.phtml:399
-#: application/modules/admin/views/scripts/index/index.phtml:554
+#: application/modules/admin/views/scripts/index/index.phtml:1074
+#: application/modules/admin/views/scripts/index/index.phtml:1229
 msgid "No rounds open for response"
 msgstr "Không có vòng nào đang mở nhận phản hồi"
 
-#: application/modules/admin/views/scripts/index/index.phtml:404
+#: application/modules/admin/views/scripts/index/index.phtml:1079
 msgid "awaiting finalize"
 msgstr "đang chờ hoàn thiện"
 
-#: application/modules/admin/views/scripts/index/index.phtml:412
+#: application/modules/admin/views/scripts/index/index.phtml:1087
 msgid "Round"
 msgstr "Vòng"
 
-#: application/modules/admin/views/scripts/index/index.phtml:413
+#: application/modules/admin/views/scripts/index/index.phtml:1088
 #: application/modules/admin/views/scripts/shipment/round-participants.phtml:59
 msgid "Deadline"
 msgstr "Ngày hết hạn"
 
-#: application/modules/admin/views/scripts/index/index.phtml:415
+#: application/modules/admin/views/scripts/index/index.phtml:1090
 msgid "Late / unable"
 msgstr "Trễ / không thực hiện"
 
-#: application/modules/admin/views/scripts/index/index.phtml:416
+#: application/modules/admin/views/scripts/index/index.phtml:1091
 #: application/modules/reports/views/scripts/distribution/shipment.phtml:50
 #: application/modules/reports/views/scripts/finalize/get-shipments.ajax.phtml:22
 #: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:87
@@ -9792,156 +10053,156 @@ msgstr "Trễ / không thực hiện"
 msgid "Response %"
 msgstr "Tỷ lệ phản hồi %"
 
-#: application/modules/admin/views/scripts/index/index.phtml:417
+#: application/modules/admin/views/scripts/index/index.phtml:1092
 #: application/services/Reports.php:2845 application/services/Reports.php:2944
 msgid "Pass %"
 msgstr "Tỷ lệ đạt %"
 
-#: application/modules/admin/views/scripts/index/index.phtml:418
+#: application/modules/admin/views/scripts/index/index.phtml:1093
 msgid "Next action"
 msgstr "Hành động tiếp theo"
 
-#: application/modules/admin/views/scripts/index/index.phtml:432
+#: application/modules/admin/views/scripts/index/index.phtml:1107
 msgid "shipped"
 msgstr "đã gửi ngày"
 
-#: application/modules/admin/views/scripts/index/index.phtml:444
+#: application/modules/admin/views/scripts/index/index.phtml:1119
 msgid "Due today"
 msgstr "Hết hạn hôm nay"
 
-#: application/modules/admin/views/scripts/index/index.phtml:448
+#: application/modules/admin/views/scripts/index/index.phtml:1123
 msgid "In 1 day"
 msgstr "Còn 1 ngày"
 
-#: application/modules/admin/views/scripts/index/index.phtml:449
+#: application/modules/admin/views/scripts/index/index.phtml:1124
 #, php-format
 msgid "In %d days"
 msgstr "Còn %d ngày"
 
-#: application/modules/admin/views/scripts/index/index.phtml:452
+#: application/modules/admin/views/scripts/index/index.phtml:1127
 msgid "Closed today"
 msgstr "Đã đóng hôm nay"
 
-#: application/modules/admin/views/scripts/index/index.phtml:456
+#: application/modules/admin/views/scripts/index/index.phtml:1131
 msgid "Closed 1 day ago"
 msgstr "Đã đóng 1 ngày trước"
 
-#: application/modules/admin/views/scripts/index/index.phtml:457
+#: application/modules/admin/views/scripts/index/index.phtml:1132
 #, php-format
 msgid "Closed %d days ago"
 msgstr "Đã đóng %d ngày trước"
 
-#: application/modules/admin/views/scripts/index/index.phtml:460
+#: application/modules/admin/views/scripts/index/index.phtml:1135
 msgid "Closed"
 msgstr "Đã đóng"
 
-#: application/modules/admin/views/scripts/index/index.phtml:471
-#: application/modules/admin/views/scripts/index/index.phtml:507
-#: application/modules/admin/views/scripts/index/index.phtml:601
-#: application/modules/admin/views/scripts/index/index.phtml:655
-#: application/modules/admin/views/scripts/index/index.phtml:733
+#: application/modules/admin/views/scripts/index/index.phtml:1146
+#: application/modules/admin/views/scripts/index/index.phtml:1182
+#: application/modules/admin/views/scripts/index/index.phtml:1276
+#: application/modules/admin/views/scripts/index/index.phtml:1330
+#: application/modules/admin/views/scripts/index/index.phtml:1408
 #: application/views/partials/help-drawer.phtml:114
 #: application/views/scripts/partial/paginate.phtml:40
 msgid "of"
 msgstr "trên"
 
-#: application/modules/admin/views/scripts/index/index.phtml:480
+#: application/modules/admin/views/scripts/index/index.phtml:1153
 msgid "outstanding"
 msgstr "chưa phản hồi"
 
-#: application/modules/admin/views/scripts/index/index.phtml:507
+#: application/modules/admin/views/scripts/index/index.phtml:1182
 msgid "evaluated"
 msgstr "đã đánh giá"
 
-#: application/modules/admin/views/scripts/index/index.phtml:509
+#: application/modules/admin/views/scripts/index/index.phtml:1184
 msgid "Scored once the round is evaluated"
 msgstr "Được chấm điểm sau khi vòng được đánh giá"
 
-#: application/modules/admin/views/scripts/index/index.phtml:555
+#: application/modules/admin/views/scripts/index/index.phtml:1230
 msgid "last finalized"
 msgstr "hoàn thiện gần nhất ngày"
 
-#: application/modules/admin/views/scripts/index/index.phtml:577
+#: application/modules/admin/views/scripts/index/index.phtml:1252
 msgid "finalized"
 msgstr "hoàn thiện ngày"
 
-#: application/modules/admin/views/scripts/index/index.phtml:588
+#: application/modules/admin/views/scripts/index/index.phtml:1263
 msgid "vs"
 msgstr "so với"
 
-#: application/modules/admin/views/scripts/index/index.phtml:592
+#: application/modules/admin/views/scripts/index/index.phtml:1267
 msgid "Average score"
 msgstr "Điểm Trung bình"
 
-#: application/modules/admin/views/scripts/index/index.phtml:603
+#: application/modules/admin/views/scripts/index/index.phtml:1278
 msgid "enrolled labs took part"
 msgstr "phòng thí nghiệm đã đăng ký tham gia"
 
-#: application/modules/admin/views/scripts/index/index.phtml:618
+#: application/modules/admin/views/scripts/index/index.phtml:1293
 msgid "took part"
 msgstr "đã tham gia"
 
-#: application/modules/admin/views/scripts/index/index.phtml:628
+#: application/modules/admin/views/scripts/index/index.phtml:1303
 msgid "unable to test"
 msgstr "không thể xét nghiệm"
 
-#: application/modules/admin/views/scripts/index/index.phtml:638
+#: application/modules/admin/views/scripts/index/index.phtml:1313
 msgid "no response"
 msgstr "không phản hồi"
 
-#: application/modules/admin/views/scripts/index/index.phtml:644
+#: application/modules/admin/views/scripts/index/index.phtml:1319
 msgid "not in this round"
 msgstr "không thuộc vòng này"
 
-#: application/modules/admin/views/scripts/index/index.phtml:652
+#: application/modules/admin/views/scripts/index/index.phtml:1327
 #: application/modules/admin/views/scripts/shipment/partials/schemes/eid.phtml:83
 msgid "Results"
 msgstr "Kết quả"
 
-#: application/modules/admin/views/scripts/index/index.phtml:657
+#: application/modules/admin/views/scripts/index/index.phtml:1332
 msgid "passed"
 msgstr "đạt"
 
-#: application/modules/admin/views/scripts/index/index.phtml:701
-#: application/services/Dashboard.php:776
+#: application/modules/admin/views/scripts/index/index.phtml:1376
+#: application/services/Dashboard.php:1049
 msgid "Repeat failers"
 msgstr "Không đạt lặp lại"
 
-#: application/modules/admin/views/scripts/index/index.phtml:704
+#: application/modules/admin/views/scripts/index/index.phtml:1379
 msgid "No earlier round for this scheme to compare against"
 msgstr "Chương trình này chưa có vòng trước để so sánh"
 
-#: application/modules/admin/views/scripts/index/index.phtml:713
-#: application/services/Dashboard.php:777
+#: application/modules/admin/views/scripts/index/index.phtml:1388
+#: application/services/Dashboard.php:1050
 msgid "Never responded"
 msgstr "Chưa bao giờ phản hồi"
 
-#: application/modules/admin/views/scripts/index/index.phtml:716
+#: application/modules/admin/views/scripts/index/index.phtml:1391
 msgid "Needs at least two finalized rounds for this scheme"
 msgstr "Cần ít nhất hai vòng đã hoàn thiện của chương trình này"
 
-#: application/modules/admin/views/scripts/index/index.phtml:724
+#: application/modules/admin/views/scripts/index/index.phtml:1399
 msgid "across the last"
 msgstr "trong"
 
-#: application/modules/admin/views/scripts/index/index.phtml:726
+#: application/modules/admin/views/scripts/index/index.phtml:1401
 msgid "rounds"
 msgstr "vòng gần nhất"
 
-#: application/modules/admin/views/scripts/index/index.phtml:730
+#: application/modules/admin/views/scripts/index/index.phtml:1405
 msgid "Opened their report"
 msgstr "Đã mở báo cáo"
 
-#: application/modules/admin/views/scripts/index/index.phtml:741
+#: application/modules/admin/views/scripts/index/index.phtml:1416
 msgid "No finalized rounds yet."
 msgstr "Chưa có vòng nào được hoàn thiện."
 
-#: application/modules/admin/views/scripts/index/index.phtml:760
+#: application/modules/admin/views/scripts/index/index.phtml:1435
 #: public/js/main.js.php:161
 msgid "Loading..."
 msgstr "Đang tải..."
 
-#: application/modules/admin/views/scripts/index/index.phtml:791
+#: application/modules/admin/views/scripts/index/index.phtml:1466
 msgid "Failed to load overview."
 msgstr "Không thể tải trang tổng quan."
 
@@ -10286,11 +10547,6 @@ msgstr "Đánh giá tác động môi trường"
 #: application/modules/admin/views/scripts/partials/scheme-config-nav.phtml:61
 msgid "TB"
 msgstr ""
-
-#: application/modules/admin/views/scripts/partials/scheme-config-nav.phtml:62
-#, fuzzy
-msgid "SARS-CoV-2"
-msgstr "SARS-CoV-2"
 
 #: application/modules/admin/views/scripts/partials/scheme-config-nav.phtml:63
 #, fuzzy
@@ -10794,7 +11050,7 @@ msgid "Unable to generate download"
 msgstr "Không thể tạo liên kết tải xuống"
 
 #: application/modules/admin/views/scripts/participants/index.phtml:608
-#: application/modules/admin/views/scripts/participants/pending.phtml:101
+#: application/modules/admin/views/scripts/participants/pending.phtml:115
 #: application/views/scripts/participant/view.phtml:193
 msgid "Are you sure you want to delete this participant?"
 msgstr "Bạn có chắc chắn muốn xóa người tham gia này không?"
@@ -10973,7 +11229,14 @@ msgstr "Danh sách tất cả các thành viên PT đang chờ xử lý"
 msgid "Back to All Participants"
 msgstr "Quay lại danh sách tất cả đơn vị tham gia"
 
-#: application/modules/admin/views/scripts/participants/pending.phtml:19
+#: application/modules/admin/views/scripts/participants/pending.phtml:129
+msgid "Something went wrong. Please try again later."
+msgstr "Có lỗi xảy ra. Xin vui lòng thử lại."
+
+#: application/modules/admin/views/scripts/participants/view-participants.phtml:2
+msgid "Participant Details"
+msgstr "Thông tin đơn vị tham gia"
+
 #: application/modules/admin/views/scripts/participants/view-participants.phtml:10
 #: application/modules/admin/views/scripts/profile/index.phtml:232
 #: application/modules/admin/views/scripts/shipment/manage-enroll.phtml:92
@@ -10984,14 +11247,6 @@ msgstr "Quay lại danh sách tất cả đơn vị tham gia"
 #: application/views/scripts/participant/view.phtml:20
 msgid "Phone"
 msgstr "Điện thoại"
-
-#: application/modules/admin/views/scripts/participants/pending.phtml:115
-msgid "Something went wrong. Please try again later."
-msgstr "Có lỗi xảy ra. Xin vui lòng thử lại."
-
-#: application/modules/admin/views/scripts/participants/view-participants.phtml:2
-msgid "Participant Details"
-msgstr "Thông tin đơn vị tham gia"
 
 #: application/modules/admin/views/scripts/participants/view-participants.phtml:37
 msgid "No Participants"
@@ -12506,6 +12761,10 @@ msgstr "Không tìm thấy phản hồi nào cho vòng ngoại kiểm này"
 #, fuzzy
 msgid "unique email address(es) copied to clipboard"
 msgstr "Nội dung email đã được sao chép vào khay nhớ tạm"
+
+#: application/modules/admin/views/scripts/shipment/manage-enroll.phtml:742
+msgid "participant"
+msgstr "đơn vị tham gia"
 
 #: application/modules/admin/views/scripts/shipment/manage-enroll.phtml:743
 #, fuzzy
@@ -14358,13 +14617,13 @@ msgstr "Đang chờ xử lý Tất cả"
 
 #: application/modules/reports/views/scripts/shipments/participation-stats.ajax.phtml:19
 #: application/modules/reports/views/scripts/shipments/participation-stats.ajax.phtml:119
-#: application/services/Dashboard.php:779
-#: application/services/Dashboard.php:786
+#: application/services/Dashboard.php:1052
+#: application/services/Dashboard.php:1059
 msgid "Unable to test"
 msgstr "Không thể xét nghiệm bộ mẫu"
 
 #: application/modules/reports/views/scripts/shipments/participation-stats.ajax.phtml:20
-#: application/services/Dashboard.php:778
+#: application/services/Dashboard.php:1051
 msgid "No response"
 msgstr "Không phản hồi"
 
@@ -14560,60 +14819,70 @@ msgstr "Mật khẩu không được chứa bất kỳ phần nào của địa 
 msgid "Password is too weak. Please choose a more complex password."
 msgstr "Mật khẩu quá yếu. Vui lòng chọn một mật khẩu phức tạp hơn."
 
-#: application/services/Dashboard.php:261
+#: application/services/Dashboard.php:270
+#: application/services/Dashboard.php:353
 msgid "Awaiting responses"
 msgstr "Đang chờ phản hồi"
 
-#: application/services/Dashboard.php:277
+#: application/services/Dashboard.php:287
+#: application/services/Dashboard.php:357
 msgid "No responses received"
 msgstr "Không nhận được phản hồi nào"
 
-#: application/services/Dashboard.php:287
+#: application/services/Dashboard.php:298
+#: application/services/Dashboard.php:361
 msgid "Ready to evaluate"
 msgstr "Sẵn sàng đánh giá"
 
-#: application/services/Dashboard.php:298
+#: application/services/Dashboard.php:310
+#: application/services/Dashboard.php:365
 msgid "Generate reports"
 msgstr "Tạo báo cáo"
 
-#: application/services/Dashboard.php:308
+#: application/services/Dashboard.php:321
+#: application/services/Dashboard.php:369
 msgid "Ready to finalize"
 msgstr "Sẵn sàng hoàn thiện"
 
-#: application/services/Dashboard.php:784
+#: application/services/Dashboard.php:519
+msgid "Not in any scheme"
+msgstr "Không thuộc chương trình nào"
+
+#: application/services/Dashboard.php:1057
 msgid "Outstanding"
 msgstr "Chưa phản hồi"
 
-#: application/services/Dashboard.php:785
+#: application/services/Dashboard.php:1058
 msgid "Late"
 msgstr "Trễ"
 
-#: application/services/Dashboard.php:821
+#: application/services/Dashboard.php:1094
 msgid "Responded after the deadline for this round"
 msgstr "Đã phản hồi sau ngày hết hạn của vòng này"
 
-#: application/services/Dashboard.php:830
+#: application/services/Dashboard.php:1103
 msgid "Reported unable to run the PT panel this round"
 msgstr "Đã báo không thể thực hiện bộ mẫu ngoại kiểm của vòng này"
 
-#: application/services/Dashboard.php:839
+#: application/services/Dashboard.php:1112
 msgid "Failed this round"
 msgstr "Không đạt ở vòng này"
 
-#: application/services/Dashboard.php:862
+#: application/services/Dashboard.php:1135
 msgid "Failed this round and the one before it"
 msgstr "Không đạt ở vòng này và vòng liền trước"
 
-#: application/services/Dashboard.php:887
+#: application/services/Dashboard.php:1160
 #, php-format
 msgid "No response across this scheme's last %d finalized rounds"
-msgstr "Không phản hồi trong %d vòng đã hoàn thiện gần nhất của chương trình này"
+msgstr ""
+"Không phản hồi trong %d vòng đã hoàn thiện gần nhất của chương trình này"
 
-#: application/services/Dashboard.php:905
+#: application/services/Dashboard.php:1178
 msgid "Never responded to this round"
 msgstr "Chưa từng phản hồi vòng này"
 
-#: application/services/Dashboard.php:906
+#: application/services/Dashboard.php:1179
 msgid "No response recorded yet for this round"
 msgstr "Chưa ghi nhận phản hồi nào cho vòng này"
 
@@ -16352,13 +16621,6 @@ msgstr "Vui lòng nhập kết quả cho"
 msgid "Please select invalid or error"
 msgstr "Vui lòng chọn \"không hợp lệ\" hoặc \"lỗi\""
 
-#: application/views/scripts/custom-test/response.phtml:470
-#: application/views/scripts/tb/assay-formats.ajax.phtml:468
-#: application/views/scripts/tb/assay-formats.ajax.phtml:673
-#: application/views/scripts/vl/response.phtml:693
-msgid "Invalid"
-msgstr "Không hợp lệ"
-
 #: application/views/scripts/custom-test/response.phtml:472
 #: application/views/scripts/vl/response.phtml:695
 msgid "Error"
@@ -17877,10 +18139,6 @@ msgstr ""
 msgid "Participant Shipment Score for SARS-CoV-2 Scheme"
 msgstr "Điểm đánh giá lô hàng của người tham gia trong Chương trình SARS-CoV-2"
 
-#: application/views/scripts/participant/dashboard.phtml:324
-msgid "Dried Tube Specimen - HIV Viral Load"
-msgstr "Mẫu máu đông trong ống - Nồng độ virus HIV"
-
 #: application/views/scripts/participant/dashboard.phtml:334
 #: application/views/scripts/participant/dashboard.phtml:363
 #: application/views/scripts/participant/dashboard.phtml:393
@@ -17888,14 +18146,6 @@ msgstr "Mẫu máu đông trong ống - Nồng độ virus HIV"
 #: application/views/scripts/participant/dashboard.phtml:451
 msgid "Performance"
 msgstr "Hiệu suất"
-
-#: application/views/scripts/participant/dashboard.phtml:353
-msgid "Dried Tube Specimen - Tuberculosis"
-msgstr "Mẫu bệnh phẩm trong ống khô - Lao"
-
-#: application/views/scripts/participant/dashboard.phtml:382
-msgid "Dried Blood Spot - Early Infant Diagnosis"
-msgstr "Mẫu máu khô - Chẩn đoán sớm ở trẻ sơ sinh"
 
 #: application/views/scripts/participant/dashboard.phtml:469
 msgid "Schemes Overview"
@@ -19805,44 +20055,15 @@ msgstr ""
 msgid "No participants"
 msgstr "Không có người tham gia"
 
-#~ msgid "Dried Tube Specimen - HIV Serology"
-#~ msgstr "Mẫu đông khô - Xét nghiệm huyết thanh học HIV"
-
-#~ msgid "Instrument Down"
-#~ msgstr "Thiết bị bị hỏng"
-
-#~ msgid "Interminate"
-#~ msgstr "Không xác định"
-
-#~ msgid "INTERMINATE"
-#~ msgstr "KHÔNG XÁC ĐỊNH"
-
-#~ msgid "interminate"
-#~ msgstr "không có hồi kết"
-
-#~ msgid "No lab personnel/staff for testing of PT Panel"
+#~ msgid ""
+#~ "registered but not yet approved to use ePT. Please click here to approve."
 #~ msgstr ""
-#~ "Không có nhân viên phòng thí nghiệm để thực hiện xét nghiệm bộ mẫu PT"
+#~ "Đã đăng ký nhưng chưa được phê duyệt để sử dụng ePT. Vui lòng nhấp vào "
+#~ "đây để phê duyệt."
 
-#~ msgid "Not Reported"
-#~ msgstr "Chưa được báo cáo"
-
-#~ msgid "Other (please explain)"
-#~ msgstr "Khác (vui lòng giải thích)"
-
-#~ msgid "Please ensure condition of PT Samples is reported"
-#~ msgstr "Vui lòng đảm bảo rằng tình trạng của các mẫu PT được báo cáo"
-
-#~ msgid "Please ensure Refridgerator availability is reported"
-#~ msgstr ""
-#~ "Vui lòng đảm bảo thông tin về tình trạng sẵn có của tủ lạnh được báo cáo"
-
-#~ msgid "Please ensure Room Temperature is reported"
-#~ msgstr "Vui lòng đảm bảo rằng nhiệt độ phòng được báo cáo"
-
-#~ msgid "Please ensure Stop Watch availability is reported"
-#~ msgstr ""
-#~ "Vui lòng đảm bảo rằng tình trạng sẵn có của đồng hồ bấm giờ được báo cáo"
+#, fuzzy
+#~ msgid "Active schemes"
+#~ msgstr "Các chương trình đang triển khai"
 
 #~ msgid "Map Participants"
 #~ msgstr "Bản đồ các thành viên tham gia"
@@ -20397,71 +20618,11 @@ msgstr "Không có người tham gia"
 #~ msgid "Reporting the availability of Refridgerator"
 #~ msgstr "Thông báo về tình trạng sẵn có của tủ lạnh"
 
-msgid "across 1 scheme"
-msgstr "thuộc 1 chương trình"
+#~ msgid "of %d labs in rounds in progress"
+#~ msgstr "trên %d phòng xét nghiệm trong các vòng đang thực hiện"
 
-msgid "across %d schemes"
-msgstr "thuộc %d chương trình"
+#~ msgid "Enrolled, not responding"
+#~ msgstr "Đã ghi danh, chưa phản hồi"
 
-msgid "Rounds in progress"
-msgstr "Vòng đang thực hiện"
-
-msgid "%1$d open, %2$d awaiting finalize"
-msgstr "%1$d đang mở, %2$d đang chờ hoàn thiện"
-
-msgid "nothing shipped right now"
-msgstr "hiện chưa gửi vòng nào"
-
-msgid "Labs yet to respond"
-msgstr "Phòng xét nghiệm chưa phản hồi"
-
-msgid "of %d labs in rounds in progress"
-msgstr "trên %d phòng xét nghiệm trong các vòng đang thực hiện"
-
-msgid "last finalized %s"
-msgstr "hoàn thiện gần nhất ngày %s"
-
-msgid "no rounds finalized yet"
-msgstr "chưa có vòng nào được hoàn thiện"
-
-msgid "Participant engagement"
-msgstr "Mức độ tham gia của đơn vị"
-
-msgid "Participation by scheme"
-msgstr "Mức độ tham gia theo chương trình"
-
-msgid "Counted as participating after a response to a round shipped in the last %d months."
-msgstr "Được tính là có tham gia nếu đã phản hồi một vòng gửi trong %d tháng gần nhất."
-
-msgid "active labs"
-msgstr "phòng xét nghiệm đang hoạt động"
-
-msgid "Labs"
-msgstr "Phòng xét nghiệm"
-
-msgid "Actively participating"
-msgstr "Đang tham gia tích cực"
-
-msgid "Enrolled, not responding"
-msgstr "Đã ghi danh, chưa phản hồi"
-
-msgid "Not enrolled in any scheme"
-msgstr "Chưa ghi danh chương trình nào"
-
-msgid "In a scheme, not responding"
-msgstr "Thuộc chương trình, chưa phản hồi"
-
-msgid "Not in any scheme"
-msgstr "Không thuộc chương trình nào"
-
-msgid "of %d labs in rounds open for response"
-msgstr "trên %d phòng xét nghiệm trong các vòng đang mở nhận phản hồi"
-
-msgid "Bars show each scheme's split. Numbers are labs."
-msgstr "Các thanh thể hiện tỷ lệ của từng chương trình. Con số là số phòng xét nghiệm."
-
-msgid "1 participant has registered and is waiting to be approved. Click to review."
-msgstr "1 đơn vị đã đăng ký và đang chờ phê duyệt. Nhấn để xem xét."
-
-msgid "%d participants have registered and are waiting to be approved. Click to review."
-msgstr "%d đơn vị đã đăng ký và đang chờ phê duyệt. Nhấn để xem xét."
+#~ msgid "Not enrolled in any scheme"
+#~ msgstr "Chưa ghi danh chương trình nào"

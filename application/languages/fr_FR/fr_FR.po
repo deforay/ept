@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ePT\n"
 "Report-Msgid-Bugs-To: support@deforay.com\n"
-"POT-Creation-Date: 2026-08-17 19:42+0530\n"
+"POT-Creation-Date: 2026-08-17 23:50+0530\n"
 "PO-Revision-Date: 2026-07-07 08:32+0530\n"
 "Last-Translator: Amit <amit@deforay.com>\n"
 "Language-Team: ePT\n"
@@ -21,43 +21,43 @@ msgstr ""
 "X-Poedit-SearchPath-2: scheduled-jobs\n"
 "X-Poedit-SearchPath-3: public/js/main.js.php\n"
 
-#: application/languages/db-translation-strings.php:23
+#: application/languages/db-translation-strings.php:25
 msgid "1+"
 msgstr "1+"
 
-#: application/languages/db-translation-strings.php:25
+#: application/languages/db-translation-strings.php:27
 msgid "2+"
 msgstr "2 ou plus"
 
-#: application/languages/db-translation-strings.php:27
+#: application/languages/db-translation-strings.php:29
 msgid "3+"
 msgstr "3 ans et plus"
 
-#: application/languages/db-translation-strings.php:29
+#: application/languages/db-translation-strings.php:31
 msgid "Antenatal Clinic (PMTCT)"
 msgstr "Consultation prénatale (PTME)"
 
-#: application/languages/db-translation-strings.php:31
+#: application/languages/db-translation-strings.php:33
 msgid "Centers for Disease Control and Prevention"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:33
+#: application/languages/db-translation-strings.php:35
 msgid "Controls were not reported"
 msgstr "Aucune donnée n'a été communiquée concernant les groupes témoins"
 
-#: application/languages/db-translation-strings.php:35
+#: application/languages/db-translation-strings.php:37
 msgid "Cottage hospital"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:37
+#: application/languages/db-translation-strings.php:39
 msgid "Courier"
 msgstr "Courier"
 
-#: application/languages/db-translation-strings.php:39
+#: application/languages/db-translation-strings.php:41
 msgid "Covid-19"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:41
+#: application/languages/db-translation-strings.php:43
 msgid ""
 "Covid19 Testing should be done within specified hours of rehydration as per "
 "SOP."
@@ -65,25 +65,25 @@ msgstr ""
 "Le test Covid-19 doit être effectué dans un délai déterminé après la "
 "réhydratation, conformément à la procédure standard."
 
-#: application/languages/db-translation-strings.php:43
+#: application/languages/db-translation-strings.php:45
 #: application/models/Dts.php:2301
 msgid "Department"
 msgstr "Département"
 
-#: application/languages/db-translation-strings.php:45
+#: application/languages/db-translation-strings.php:47
 #: application/views/scripts/tb/assay-formats.ajax.phtml:866
 msgid "DETECTED"
 msgstr "DÉTECTÉ"
 
-#: application/languages/db-translation-strings.php:47
+#: application/languages/db-translation-strings.php:49
 msgid "detected"
 msgstr "détecté"
 
-#: application/languages/db-translation-strings.php:49
+#: application/languages/db-translation-strings.php:51
 msgid "Did not meet the minimum score required"
 msgstr "N'a pas atteint le score minimum requis"
 
-#: application/languages/db-translation-strings.php:51
+#: application/languages/db-translation-strings.php:53
 #: application/models/Dts.php:1583 application/models/Dts.php:1601
 #: application/models/Dts.php:2305 application/models/Dts.php:2382
 #: application/modules/admin/views/scripts/data-managers/index.phtml:173
@@ -109,23 +109,62 @@ msgstr "N'a pas atteint le score minimum requis"
 msgid "District"
 msgstr "District"
 
-#: application/languages/db-translation-strings.php:53
+#: application/languages/db-translation-strings.php:55
+#: application/views/scripts/participant/dashboard.phtml:382
+msgid "Dried Blood Spot - Early Infant Diagnosis"
+msgstr "Tache de sang séché - Diagnostic précoce chez le nourrisson"
+
+#: application/languages/db-translation-strings.php:57
 #: application/views/scripts/participant/dashboard.phtml:441
 msgid "Dried Blood Spot - HIV Serology"
 msgstr "Tache de sang séché - Sérologie VIH"
 
-#: application/languages/db-translation-strings.php:55
+#: application/languages/db-translation-strings.php:59
+#, fuzzy
+msgid "Dried Tube Specimen - Hepatitis B Serology"
+msgstr "Échantillon en tube séché - Sérologie du VIH"
+
+#: application/languages/db-translation-strings.php:61
+#, fuzzy
+msgid "Dried Tube Specimen - Hepatitis C Serology"
+msgstr "Échantillon en tube séché - Sérologie du VIH"
+
+#: application/languages/db-translation-strings.php:63
+msgid "Dried Tube Specimen - HIV Serology"
+msgstr "Échantillon en tube séché - Sérologie du VIH"
+
+#: application/languages/db-translation-strings.php:65
+#: application/views/scripts/participant/dashboard.phtml:324
+msgid "Dried Tube Specimen - HIV Viral Load"
+msgstr "Échantillon de tube séché - Charge virale VIH"
+
+#: application/languages/db-translation-strings.php:67
+#, fuzzy
+msgid "Dried Tube Specimen - Malaria Serology"
+msgstr "Échantillon en tube séché - Sérologie du VIH"
+
+#: application/languages/db-translation-strings.php:69
+#, fuzzy
+msgid "Dried Tube Specimen - Syphilis Serology"
+msgstr "Échantillon en tube séché - Sérologie du VIH"
+
+#: application/languages/db-translation-strings.php:71
+#: application/views/scripts/participant/dashboard.phtml:353
+msgid "Dried Tube Specimen - Tuberculosis"
+msgstr "Échantillon de tube séché - Tuberculose"
+
+#: application/languages/db-translation-strings.php:73
 msgid ""
 "DTS Testing should be done within specified hours of rehydration as per SOP."
 msgstr ""
 "Le test DTS doit être effectué dans les heures spécifiées suivant la "
 "réhydratation, conformément à la procédure standard."
 
-#: application/languages/db-translation-strings.php:57
+#: application/languages/db-translation-strings.php:75
 msgid "Early Infant Diagnosis"
 msgstr "Diagnostic précoce chez le nourrisson"
 
-#: application/languages/db-translation-strings.php:59
+#: application/languages/db-translation-strings.php:77
 #: application/models/DbTable/DataManagers.php:324
 #: application/models/DbTable/Distribution.php:156
 #: application/models/Dts.php:2308
@@ -134,7 +173,7 @@ msgstr "Diagnostic précoce chez le nourrisson"
 #: application/modules/admin/views/scripts/login/index.phtml:190
 #: application/modules/admin/views/scripts/participants/index.phtml:214
 #: application/modules/admin/views/scripts/participants/participant-upload-statistics.phtml:157
-#: application/modules/admin/views/scripts/participants/pending.phtml:21
+#: application/modules/admin/views/scripts/participants/pending.phtml:20
 #: application/modules/admin/views/scripts/participants/view-participants.phtml:12
 #: application/modules/admin/views/scripts/shipment/manage-enroll.phtml:94
 #: application/modules/admin/views/scripts/shipment/manage-enroll.phtml:127
@@ -147,7 +186,7 @@ msgstr "Diagnostic précoce chez le nourrisson"
 msgid "Email"
 msgstr "Courriel"
 
-#: application/languages/db-translation-strings.php:61
+#: application/languages/db-translation-strings.php:79
 msgid ""
 "Ensure expired test kit are not be used for testing. If test kits are not "
 "available, please contact your superior."
@@ -155,7 +194,7 @@ msgstr ""
 "Veillez à ne pas utiliser de kits de test périmés. Si vous ne disposez pas "
 "de kits de test, veuillez contacter votre supérieur."
 
-#: application/languages/db-translation-strings.php:63
+#: application/languages/db-translation-strings.php:81
 msgid ""
 "Ensure expired test type are not be used for testing. If test types are not "
 "available, please contact your superior."
@@ -164,71 +203,71 @@ msgstr ""
 "tests. Si aucun type de test n'est disponible, veuillez contacter votre "
 "supérieur."
 
-#: application/languages/db-translation-strings.php:65
+#: application/languages/db-translation-strings.php:83
 msgid "Ensure expiry date information is submitted for all performed tests."
 msgstr "Veillez à indiquer la date d'expiration pour tous les tests effectués."
 
-#: application/languages/db-translation-strings.php:67
+#: application/languages/db-translation-strings.php:85
 msgid "Ensure test kit lot number is reported for all performed tests."
 msgstr ""
 "Veillez à indiquer le numéro de lot du kit de test pour tous les tests "
 "effectués."
 
-#: application/languages/db-translation-strings.php:69
+#: application/languages/db-translation-strings.php:87
 msgid "Ensure test kit name is reported for all performed tests."
 msgstr ""
 "Veillez à indiquer le nom du kit de test pour tous les tests effectués."
 
-#: application/languages/db-translation-strings.php:71
+#: application/languages/db-translation-strings.php:89
 msgid "Ensure test type lot number is reported for all performed tests."
 msgstr ""
 "Veillez à ce que le numéro de lot du type de test soit indiqué pour tous les "
 "tests effectués."
 
-#: application/languages/db-translation-strings.php:73
+#: application/languages/db-translation-strings.php:91
 msgid "Ensure test type name is reported for all performed tests."
 msgstr ""
 "Veillez à ce que le nom du type de test soit indiqué pour tous les tests "
 "effectués."
 
-#: application/languages/db-translation-strings.php:75
+#: application/languages/db-translation-strings.php:93
 msgid "Ensure to provide sample rehydration date"
 msgstr "Veillez à indiquer la date de réhydratation de l'échantillon"
 
-#: application/languages/db-translation-strings.php:77
+#: application/languages/db-translation-strings.php:95
 msgid "Ensure to provide supervisor approval along with his name."
 msgstr ""
 "Veillez à joindre l'autorisation du supérieur hiérarchique ainsi que son nom."
 
-#: application/languages/db-translation-strings.php:79
+#: application/languages/db-translation-strings.php:97
 msgid "Ensure to provide to provide panel receipt date."
 msgstr "Veillez à indiquer la date de réception du panneau."
 
-#: application/languages/db-translation-strings.php:81
+#: application/languages/db-translation-strings.php:99
 msgid "Ensure to provide to provide panel testing date."
 msgstr "Veillez à indiquer la date du test du panneau."
 
-#: application/languages/db-translation-strings.php:83
+#: application/languages/db-translation-strings.php:101
 msgid "Equivocal"
 msgstr "Ambigu"
 
-#: application/languages/db-translation-strings.php:85
+#: application/languages/db-translation-strings.php:103
 msgid "EQUIVOCAL"
 msgstr "AMBIGU"
 
-#: application/languages/db-translation-strings.php:87
+#: application/languages/db-translation-strings.php:105
 msgid "equivocal"
 msgstr "ambigu"
 
-#: application/languages/db-translation-strings.php:89
+#: application/languages/db-translation-strings.php:107
 msgid "ERROR"
 msgstr "ERREUR"
 
-#: application/languages/db-translation-strings.php:91
+#: application/languages/db-translation-strings.php:109
 msgid "error"
 msgstr "erreur"
 
-#: application/languages/db-translation-strings.php:93
+#: application/languages/db-translation-strings.php:111
 #: application/modules/reports/views/scripts/distribution/finalize.phtml:214
 #: application/services/Evaluation.php:1943
 #: application/services/Evaluation.php:1945
@@ -239,147 +278,216 @@ msgstr "erreur"
 msgid "Excluded"
 msgstr "Exclu"
 
-#: application/languages/db-translation-strings.php:95
+#: application/languages/db-translation-strings.php:113
 msgid "EXCLUDED"
 msgstr "EXCLU"
 
-#: application/languages/db-translation-strings.php:97
-#: application/modules/admin/views/scripts/index/index.phtml:687
+#: application/languages/db-translation-strings.php:115
+#: application/modules/admin/views/scripts/index/index.phtml:1362
 msgid "excluded"
 msgstr "exclus"
 
-#: application/languages/db-translation-strings.php:99
+#: application/languages/db-translation-strings.php:117
 #: application/modules/reports/views/scripts/distribution/finalize.phtml:213
 #: application/services/Evaluation.php:2489
 #: application/services/Evaluation.php:2566
 msgid "Fail"
 msgstr "Echec"
 
-#: application/languages/db-translation-strings.php:101
+#: application/languages/db-translation-strings.php:119
 msgid "FAIL"
 msgstr "ÉCHEC"
 
-#: application/languages/db-translation-strings.php:103
-#: application/modules/admin/views/scripts/index/index.phtml:682
+#: application/languages/db-translation-strings.php:121
+#: application/modules/admin/views/scripts/index/index.phtml:1357
 msgid "fail"
 msgstr "échecs"
 
-#: application/languages/db-translation-strings.php:105
+#: application/languages/db-translation-strings.php:123
 msgid "For sample (1/2/3?) National Covid-19 Testing lab was not followed."
 msgstr ""
 "Pour les échantillons (1/2/3 ?), les consignes du laboratoire national de "
 "dépistage de la Covid-19 n'ont pas été respectées."
 
-#: application/languages/db-translation-strings.php:107
+#: application/languages/db-translation-strings.php:125
 msgid "For sample (1/2/3?) National HIV Testing algorithm was not followed."
 msgstr ""
 "Pour l'échantillon (1/2/3 ?), l'algorithme national de dépistage du VIH n'a "
 "pas été respecté."
 
-#: application/languages/db-translation-strings.php:109
+#: application/languages/db-translation-strings.php:127
 msgid ""
 "For Test (1/2/3) testing is not performed with country approved test kit."
 msgstr ""
 "Pour les tests (1/2/3), les analyses ne sont pas effectuées à l'aide d'un "
 "kit de test homologué par le pays."
 
-#: application/languages/db-translation-strings.php:111
+#: application/languages/db-translation-strings.php:129
 msgid ""
 "For Test (1/2/3) testing is not performed with country approved test type."
 msgstr ""
 "Pour les essais (1/2/3), les essais ne sont pas réalisés selon le type "
 "d'essai approuvé par le pays."
 
-#: application/languages/db-translation-strings.php:113
+#: application/languages/db-translation-strings.php:131
 msgid "HIGH"
 msgstr "ÉLEVÉ"
 
-#: application/languages/db-translation-strings.php:115
+#: application/languages/db-translation-strings.php:133
 msgid "high"
 msgstr "élevé"
 
-#: application/languages/db-translation-strings.php:117
+#: application/languages/db-translation-strings.php:135
 msgid "High Positive Control"
 msgstr "Témoin positif"
 
-#: application/languages/db-translation-strings.php:119
+#: application/languages/db-translation-strings.php:137
+#, fuzzy
+msgid "HIV-1 Detected"
+msgstr "Détecté"
+
+#: application/languages/db-translation-strings.php:139
+#, fuzzy
+msgid "HIV-1 DETECTED"
+msgstr "DÉTECTÉ"
+
+#: application/languages/db-translation-strings.php:141
+#, fuzzy
+msgid "hiv-1 detected"
+msgstr "détecté"
+
+#: application/languages/db-translation-strings.php:143
+#, fuzzy
+msgid "HIV-1 Not Detected"
+msgstr "Non détecté"
+
+#: application/languages/db-translation-strings.php:145
+#, fuzzy
+msgid "HIV-1 NOT DETECTED"
+msgstr "NON DÉTECTÉ"
+
+#: application/languages/db-translation-strings.php:147
+#, fuzzy
+msgid "hiv-1 not detected"
+msgstr "non détecté"
+
+#: application/languages/db-translation-strings.php:149
 #: application/modules/admin/views/scripts/partials/scheme-config-nav.phtml:58
 #: application/views/scripts/participant/dashboard.phtml:412
 msgid "HIV Serology"
 msgstr "Sérologie du VIH"
 
-#: application/languages/db-translation-strings.php:121
+#: application/languages/db-translation-strings.php:151
 msgid "HIV Viral Load"
 msgstr "Charge virale du VIH"
 
-#: application/languages/db-translation-strings.php:123
+#: application/languages/db-translation-strings.php:153
 msgid "Hospital"
 msgstr "Hôpital"
 
-#: application/languages/db-translation-strings.php:125
+#: application/languages/db-translation-strings.php:155
 msgid "In-House Negative Control"
 msgstr "Contrôle négatif interne"
 
-#: application/languages/db-translation-strings.php:127
+#: application/languages/db-translation-strings.php:157
 msgid "In-House Positive Control"
 msgstr "Témoin positif interne"
 
-#: application/languages/db-translation-strings.php:129
+#: application/languages/db-translation-strings.php:159
 msgid "INCONCLUSIVE"
 msgstr "NON DÉCISIF"
 
-#: application/languages/db-translation-strings.php:131
+#: application/languages/db-translation-strings.php:161
 #, fuzzy
 msgid "inconclusive"
 msgstr "Conclusion"
 
-#: application/languages/db-translation-strings.php:133
+#: application/languages/db-translation-strings.php:163
 #: application/views/scripts/tb/assay-formats.ajax.phtml:868
 msgid "INDETERMINATE"
 msgstr "INDÉTERMINÉ"
 
-#: application/languages/db-translation-strings.php:135
+#: application/languages/db-translation-strings.php:165
 msgid "indeterminate"
 msgstr "indéterminé"
 
-#: application/languages/db-translation-strings.php:137
+#: application/languages/db-translation-strings.php:167
 msgid "Instrument down"
 msgstr "Instrument en panne"
 
-#: application/languages/db-translation-strings.php:139
+#: application/languages/db-translation-strings.php:169
+msgid "Instrument Down"
+msgstr "Instrument en panne"
+
+#: application/languages/db-translation-strings.php:171
+msgid "Interminate"
+msgstr "Interminable"
+
+#: application/languages/db-translation-strings.php:173
+msgid "INTERMINATE"
+msgstr "RENVOI"
+
+#: application/languages/db-translation-strings.php:175
+msgid "interminate"
+msgstr "interminable"
+
+#: application/languages/db-translation-strings.php:177
 msgid "INVALID"
 msgstr "INVALIDE"
 
-#: application/languages/db-translation-strings.php:141
+#: application/languages/db-translation-strings.php:179
 msgid "invalid"
 msgstr "non-valide"
 
-#: application/languages/db-translation-strings.php:143
+#: application/languages/db-translation-strings.php:181
+#: application/views/scripts/custom-test/response.phtml:470
+#: application/views/scripts/tb/assay-formats.ajax.phtml:468
+#: application/views/scripts/tb/assay-formats.ajax.phtml:673
+#: application/views/scripts/vl/response.phtml:693
+msgid "Invalid"
+msgstr "Invalide"
+
+#: application/languages/db-translation-strings.php:183
+#, fuzzy
+msgid "Invalid/Failed"
+msgstr "Invalide"
+
+#: application/languages/db-translation-strings.php:185
+#, fuzzy
+msgid "INVALID/FAILED"
+msgstr "INVALIDE"
+
+#: application/languages/db-translation-strings.php:187
+#, fuzzy
+msgid "invalid/failed"
+msgstr "non-valide"
+
+#: application/languages/db-translation-strings.php:189
 msgid "Issue with Sample"
 msgstr "Problème avec l'échantillon"
 
-#: application/languages/db-translation-strings.php:145
+#: application/languages/db-translation-strings.php:191
 msgid "Kit Negative Control"
 msgstr "Kit de contrôle négatif"
 
-#: application/languages/db-translation-strings.php:147
+#: application/languages/db-translation-strings.php:193
 msgid "Kit Positive Control"
 msgstr "Kit de contrôle positif"
 
-#: application/languages/db-translation-strings.php:149
+#: application/languages/db-translation-strings.php:195
 #: scheduled-jobs/report-layouts/participant-layouts/vietnam/dts.phtml:327
 msgid "Laboratory"
 msgstr "Laboratoire"
 
-#: application/languages/db-translation-strings.php:151
+#: application/languages/db-translation-strings.php:197
 msgid "Laboratory facility no longer perform testing"
 msgstr "Ce laboratoire n'effectue plus d'analyses"
 
-#: application/languages/db-translation-strings.php:153
+#: application/languages/db-translation-strings.php:199
 msgid "Laboratory facility under renovation"
 msgstr "Laboratoire en cours de rénovation"
 
-#: application/languages/db-translation-strings.php:155
+#: application/languages/db-translation-strings.php:201
 msgid ""
 "Late response, response not evaluated. Your response received after last "
 "date. Expected result for PT panel will be available for your reference."
@@ -388,142 +496,153 @@ msgstr ""
 "après la date limite. Les résultats attendus du jury d'examen seront mis à "
 "votre disposition pour consultation."
 
-#: application/languages/db-translation-strings.php:157
+#: application/languages/db-translation-strings.php:203
 msgid "Local Health center"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:159
+#: application/languages/db-translation-strings.php:205
 msgid "Long Term"
 msgstr "Longue durée"
 
-#: application/languages/db-translation-strings.php:161
+#: application/languages/db-translation-strings.php:207
 msgid "LONG TERM"
 msgstr "À LONG TERME"
 
-#: application/languages/db-translation-strings.php:163
+#: application/languages/db-translation-strings.php:209
 msgid "long term"
 msgstr "à long terme"
 
-#: application/languages/db-translation-strings.php:165
+#: application/languages/db-translation-strings.php:211
 msgid "LOW"
 msgstr "BAS"
 
-#: application/languages/db-translation-strings.php:167
+#: application/languages/db-translation-strings.php:213
 msgid "low"
 msgstr "basse"
 
-#: application/languages/db-translation-strings.php:169
+#: application/languages/db-translation-strings.php:215
 msgid "Low Positive Control"
 msgstr "Témoin positif faible"
 
-#: application/languages/db-translation-strings.php:171
+#: application/languages/db-translation-strings.php:217
 msgid "Machine not working"
 msgstr "La machine ne fonctionne pas"
 
-#: application/languages/db-translation-strings.php:173
+#: application/languages/db-translation-strings.php:219
 msgid "Mandatory Samples not reported"
 msgstr "Échantillons obligatoires non déclarés"
 
-#: application/languages/db-translation-strings.php:175
+#: application/languages/db-translation-strings.php:221
 msgid "MEDIUM"
 msgstr "MOYEN"
 
-#: application/languages/db-translation-strings.php:177
+#: application/languages/db-translation-strings.php:223
 msgid "medium"
 msgstr "moyen"
 
-#: application/languages/db-translation-strings.php:179
+#: application/languages/db-translation-strings.php:225
 msgid "Military hospital"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:181
+#: application/languages/db-translation-strings.php:227
 msgid "Minimum score not reached"
 msgstr "Le score minimum n'a pas été atteint"
 
-#: application/languages/db-translation-strings.php:183
+#: application/languages/db-translation-strings.php:229
 msgid "Missing supervisor approval for reported result."
 msgstr "L'approbation du responsable fait défaut pour le résultat communiqué."
 
-#: application/languages/db-translation-strings.php:185
+#: application/languages/db-translation-strings.php:231
 msgid "Mobile VCT"
 msgstr "Consultation et dépistage volontaires mobiles"
 
-#: application/languages/db-translation-strings.php:187
+#: application/languages/db-translation-strings.php:233
 msgid "N"
 msgstr "N"
 
-#: application/languages/db-translation-strings.php:189
+#: application/languages/db-translation-strings.php:235
 msgid "n"
 msgstr "n"
 
-#: application/languages/db-translation-strings.php:191
+#: application/languages/db-translation-strings.php:237
 #, fuzzy
 msgid "National hospital"
 msgstr "détails supplémentaires"
 
-#: application/languages/db-translation-strings.php:193
+#: application/languages/db-translation-strings.php:239
 msgid "NEGATIVE"
 msgstr "NÉGATIF"
 
-#: application/languages/db-translation-strings.php:195
+#: application/languages/db-translation-strings.php:241
 msgid "negative"
 msgstr "négative"
 
-#: application/languages/db-translation-strings.php:197
+#: application/languages/db-translation-strings.php:243
+#, fuzzy
+msgid "Negative"
+msgstr "négative"
+
+#: application/languages/db-translation-strings.php:245
 #, fuzzy
 msgid "Negative (HIV Not Detected)"
 msgstr "VIH-1 non détecté"
 
-#: application/languages/db-translation-strings.php:199
+#: application/languages/db-translation-strings.php:247
 #, fuzzy
 msgid "NEGATIVE (HIV NOT DETECTED)"
 msgstr "VIH-1 NON DÉTECTÉ"
 
-#: application/languages/db-translation-strings.php:201
+#: application/languages/db-translation-strings.php:249
 #, fuzzy
 msgid "negative (hiv not detected)"
 msgstr "VIH-1 non détecté"
 
-#: application/languages/db-translation-strings.php:203
+#: application/languages/db-translation-strings.php:251
 msgid "Negative Control"
 msgstr "Témoin négatif"
 
-#: application/languages/db-translation-strings.php:205
+#: application/languages/db-translation-strings.php:253
 msgid "No lab personal for testing of PT panel"
 msgstr ""
 "Pas de personnel de laboratoire disponible pour effectuer les analyses du "
 "panel PT"
 
-#: application/languages/db-translation-strings.php:207
+#: application/languages/db-translation-strings.php:255
+msgid "No lab personnel/staff for testing of PT Panel"
+msgstr ""
+"Absence de personnel de laboratoire pour la réalisation des analyses du "
+"panel PT"
+
+#: application/languages/db-translation-strings.php:257
 msgid "NONREACTIVE"
 msgstr "NON RÉACTIF"
 
-#: application/languages/db-translation-strings.php:209
+#: application/languages/db-translation-strings.php:259
 msgid "nonreactive"
 msgstr "non réactif"
 
-#: application/languages/db-translation-strings.php:211
+#: application/languages/db-translation-strings.php:261
 msgid "No reagents for testing of PT panel"
 msgstr "Aucun réactif pour le dosage du panel PT"
 
-#: application/languages/db-translation-strings.php:213
+#: application/languages/db-translation-strings.php:263
 msgid "NO RESULT"
 msgstr "NO RESULT"
 
-#: application/languages/db-translation-strings.php:215
+#: application/languages/db-translation-strings.php:265
 msgid "no result"
 msgstr "aucun résultat"
 
-#: application/languages/db-translation-strings.php:217
+#: application/languages/db-translation-strings.php:267
 #: application/views/scripts/tb/assay-formats.ajax.phtml:867
 msgid "NOT DETECTED"
 msgstr "NON DÉTECTÉ"
 
-#: application/languages/db-translation-strings.php:219
+#: application/languages/db-translation-strings.php:269
 msgid "not detected"
 msgstr "non détecté"
 
-#: application/languages/db-translation-strings.php:221
+#: application/languages/db-translation-strings.php:271
 #: application/services/Evaluation.php:1939
 #: application/services/Evaluation.php:1946
 #: application/services/Evaluation.php:2254
@@ -532,22 +651,22 @@ msgstr "non détecté"
 msgid "Not Evaluated"
 msgstr "Non évaluée"
 
-#: application/languages/db-translation-strings.php:223
+#: application/languages/db-translation-strings.php:273
 msgid "NOT EVALUATED"
 msgstr "N'A PAS ÉTÉ ÉVALUÉ"
 
-#: application/languages/db-translation-strings.php:225
-#: application/modules/admin/views/scripts/index/index.phtml:693
+#: application/languages/db-translation-strings.php:275
+#: application/modules/admin/views/scripts/index/index.phtml:1368
 msgid "not evaluated"
 msgstr "non évalués"
 
-#: application/languages/db-translation-strings.php:227
+#: application/languages/db-translation-strings.php:277
 msgid "Not received PT panel shipment due to country custom clearance issue"
 msgstr ""
 "Je n'ai pas reçu la livraison du panneau PT en raison d'un problème de "
 "dédouanement dans le pays"
 
-#: application/languages/db-translation-strings.php:229
+#: application/languages/db-translation-strings.php:279
 msgid ""
 "Not received PT panel shipment due to incorrect contact info on the shipment "
 "package"
@@ -555,27 +674,42 @@ msgstr ""
 "Je n'ai pas reçu le colis contenant le panneau PT car les coordonnées "
 "indiquées sur le colis étaient erronées"
 
-#: application/languages/db-translation-strings.php:231
+#: application/languages/db-translation-strings.php:281
+msgid "Not Reported"
+msgstr "Non Rapporté"
+
+#: application/languages/db-translation-strings.php:283
 msgid "NOT REPORTED"
 msgstr "NON SIGNALÉ"
 
-#: application/languages/db-translation-strings.php:233
+#: application/languages/db-translation-strings.php:285
 msgid "not reported"
 msgstr "non déclaré"
 
-#: application/languages/db-translation-strings.php:235
+#: application/languages/db-translation-strings.php:287
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:223
+#: application/modules/reports/views/scripts/distribution/finalize.phtml:206
+#: application/modules/reports/views/scripts/distribution/shipment.phtml:263
+#: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:281
+#: application/services/Evaluation.php:1962
+#: application/services/Evaluation.php:2299
+#: application/services/Evaluation.php:2511
+msgid "Not Tested"
+msgstr "Non testé"
+
+#: application/languages/db-translation-strings.php:289
 msgid "NOT TESTED"
 msgstr "NON TESTÉ"
 
-#: application/languages/db-translation-strings.php:237
+#: application/languages/db-translation-strings.php:291
 msgid "not tested"
 msgstr "non testé"
 
-#: application/languages/db-translation-strings.php:239
+#: application/languages/db-translation-strings.php:293
 msgid "Online Response"
 msgstr "Réponse en ligne"
 
-#: application/languages/db-translation-strings.php:241
+#: application/languages/db-translation-strings.php:295
 #: application/views/scripts/contact-us/index.phtml:45
 #: application/views/scripts/covid19/response.phtml:433
 #: application/views/scripts/covid19/response.phtml:454
@@ -591,25 +725,29 @@ msgstr "Réponse en ligne"
 msgid "Other"
 msgstr "Autre"
 
-#: application/languages/db-translation-strings.php:243
+#: application/languages/db-translation-strings.php:297
+msgid "Other (please explain)"
+msgstr "Autre (veuillez préciser)"
+
+#: application/languages/db-translation-strings.php:299
 msgid "Outpatient Clinic"
 msgstr "Service de consultations externes"
 
-#: application/languages/db-translation-strings.php:245
+#: application/languages/db-translation-strings.php:301
 msgid "P"
 msgstr "P"
 
-#: application/languages/db-translation-strings.php:247
+#: application/languages/db-translation-strings.php:303
 msgid "p"
 msgstr "p"
 
-#: application/languages/db-translation-strings.php:249
+#: application/languages/db-translation-strings.php:305
 msgid "Panel receipt date missing in PT report form."
 msgstr ""
 "La date de réception du panneau n'apparaît pas dans le formulaire de rapport "
 "PT."
 
-#: application/languages/db-translation-strings.php:251
+#: application/languages/db-translation-strings.php:307
 msgid ""
 "Participant did not meet the score criteria (Participant Score is 80 and "
 "Required Score is 95)"
@@ -617,7 +755,7 @@ msgstr ""
 "Le participant n'a pas satisfait aux critères de notation (sa note est de "
 "80, alors que la note requise est de 95)"
 
-#: application/languages/db-translation-strings.php:253
+#: application/languages/db-translation-strings.php:309
 #: application/modules/reports/views/scripts/distribution/finalize.phtml:212
 #: application/modules/reports/views/scripts/participant-trends/index.phtml:139
 #: application/modules/reports/views/scripts/participant-trends/index.phtml:181
@@ -627,24 +765,41 @@ msgstr ""
 msgid "Pass"
 msgstr "Réussi"
 
-#: application/languages/db-translation-strings.php:255
+#: application/languages/db-translation-strings.php:311
 msgid "PASS"
 msgstr "SATISFAISANT"
 
-#: application/languages/db-translation-strings.php:257
-#: application/modules/admin/views/scripts/index/index.phtml:672
+#: application/languages/db-translation-strings.php:313
+#: application/modules/admin/views/scripts/index/index.phtml:1347
 msgid "pass"
 msgstr "réussis"
 
-#: application/languages/db-translation-strings.php:259
+#: application/languages/db-translation-strings.php:315
 msgid "Please ensure all critical fields are reported in your PT Result Form"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:261
+#: application/languages/db-translation-strings.php:317
+msgid "Please ensure condition of PT Samples is reported"
+msgstr "Veuillez vous assurer que l'état des échantillons PT est bien indiqué"
+
+#: application/languages/db-translation-strings.php:319
+msgid "Please ensure Refridgerator availability is reported"
+msgstr ""
+"Veuillez vous assurer que la disponibilité du réfrigérateur est signalée"
+
+#: application/languages/db-translation-strings.php:321
+msgid "Please ensure Room Temperature is reported"
+msgstr "Veuillez vous assurer que la température ambiante est indiquée"
+
+#: application/languages/db-translation-strings.php:323
+msgid "Please ensure Stop Watch availability is reported"
+msgstr "Veuillez vous assurer que la disponibilité de Stop Watch est signalée"
+
+#: application/languages/db-translation-strings.php:325
 msgid "Please submit response before last date"
 msgstr "Veuillez envoyer votre réponse avant la date limite"
 
-#: application/languages/db-translation-strings.php:263
+#: application/languages/db-translation-strings.php:327
 msgid ""
 "Please test Covid19 sample as per National Covid-19 Testing lab. Review and "
 "refer to SOP for testing."
@@ -653,7 +808,7 @@ msgstr ""
 "laboratoire national de dépistage du Covid-19. Consultez et respectez la "
 "procédure opérationnelle standard (SOP) relative au dépistage."
 
-#: application/languages/db-translation-strings.php:265
+#: application/languages/db-translation-strings.php:329
 msgid ""
 "Please test DTS sample as per National HIV Testing algorithm. Review and "
 "refer to SOP for testing."
@@ -662,7 +817,7 @@ msgstr ""
 "dépistage du VIH. Consultez la procédure opérationnelle standard (SOP) "
 "relative au dépistage."
 
-#: application/languages/db-translation-strings.php:267
+#: application/languages/db-translation-strings.php:331
 msgid ""
 "Please use the approved test kits according to the SOP/National HIV Testing "
 "algorithm for confirmatory and tie-breaker."
@@ -671,7 +826,7 @@ msgstr ""
 "opérationnelle standard (SOP) et à l'algorithme national de dépistage du VIH "
 "pour les tests de confirmation et de départage."
 
-#: application/languages/db-translation-strings.php:269
+#: application/languages/db-translation-strings.php:333
 msgid ""
 "Please use the approved test types according to the SOP/National Covid-19 "
 "Testing lab for confirmatory and tie-breaker."
@@ -680,55 +835,55 @@ msgstr ""
 "opérationnelle standard (SOP) du laboratoire national de dépistage de la "
 "Covid-19 pour les tests de confirmation et de départage."
 
-#: application/languages/db-translation-strings.php:271
+#: application/languages/db-translation-strings.php:335
 msgid "PMTCT"
 msgstr "PTME"
 
-#: application/languages/db-translation-strings.php:273
+#: application/languages/db-translation-strings.php:337
 msgid "POSITIVE"
 msgstr "POSITIF"
 
-#: application/languages/db-translation-strings.php:275
+#: application/languages/db-translation-strings.php:339
 msgid "positive"
 msgstr "positive"
 
-#: application/languages/db-translation-strings.php:277
+#: application/languages/db-translation-strings.php:341
 #, fuzzy
 msgid "Positive (HIV Detected)"
 msgstr "Présence du VIH-1 détectée"
 
-#: application/languages/db-translation-strings.php:279
+#: application/languages/db-translation-strings.php:343
 #, fuzzy
 msgid "POSITIVE (HIV DETECTED)"
 msgstr "VIH-1 DÉTECTÉ"
 
-#: application/languages/db-translation-strings.php:281
+#: application/languages/db-translation-strings.php:345
 #, fuzzy
 msgid "positive (hiv detected)"
 msgstr "détection du VIH-1"
 
-#: application/languages/db-translation-strings.php:283
+#: application/languages/db-translation-strings.php:347
 msgid "Postive"
 msgstr "Positif"
 
-#: application/languages/db-translation-strings.php:285
+#: application/languages/db-translation-strings.php:349
 msgid "POSTIVE"
 msgstr "POSITIF"
 
-#: application/languages/db-translation-strings.php:287
+#: application/languages/db-translation-strings.php:351
 msgid "postive"
 msgstr "positif"
 
-#: application/languages/db-translation-strings.php:289
+#: application/languages/db-translation-strings.php:353
 msgid "Primary care laboratory service tier"
 msgstr "Niveau de service de laboratoire en soins primaires"
 
-#: application/languages/db-translation-strings.php:291
+#: application/languages/db-translation-strings.php:355
 #, fuzzy
 msgid "Private hospital"
 msgstr "Privé"
 
-#: application/languages/db-translation-strings.php:293
+#: application/languages/db-translation-strings.php:357
 #: application/models/Dts.php:1582 application/models/Dts.php:1600
 #: application/models/Dts.php:2304 application/models/Dts.php:2334
 #: application/models/Dts.php:2354 application/models/Dts.php:2381
@@ -749,55 +904,55 @@ msgstr "Privé"
 msgid "Province"
 msgstr "Province"
 
-#: application/languages/db-translation-strings.php:295
+#: application/languages/db-translation-strings.php:359
 msgid "Provincial general hospital"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:297
+#: application/languages/db-translation-strings.php:361
 msgid "PT Provider Negative Control"
 msgstr "Témoin négatif du fournisseur de PT"
 
-#: application/languages/db-translation-strings.php:299
+#: application/languages/db-translation-strings.php:363
 msgid "PT Provider Positive Control"
 msgstr "Témoin positif pour les tests de dépistage"
 
-#: application/languages/db-translation-strings.php:301
+#: application/languages/db-translation-strings.php:365
 msgid "Public Health Reference Laboratories"
 msgstr "Laboratoires de référence en santé publique"
 
-#: application/languages/db-translation-strings.php:303
+#: application/languages/db-translation-strings.php:367
 msgid "Rapid Test for Recent Infection (RTRI)"
 msgstr "Test rapide pour infection récente (RTRI)"
 
-#: application/languages/db-translation-strings.php:305
+#: application/languages/db-translation-strings.php:369
 msgid "Re-hydration date missing in PT report form."
 msgstr ""
 "La date de réhydratation n'apparaît pas dans le formulaire de rapport de "
 "physiothérapie."
 
-#: application/languages/db-translation-strings.php:307
+#: application/languages/db-translation-strings.php:371
 msgid "REACTIVE"
 msgstr "RÉACTIF"
 
-#: application/languages/db-translation-strings.php:309
+#: application/languages/db-translation-strings.php:373
 msgid "reactive"
 msgstr "réactif"
 
-#: application/languages/db-translation-strings.php:311
+#: application/languages/db-translation-strings.php:375
 #: application/views/partials/spotlight.phtml:627
 #: application/views/partials/spotlight.phtml:632
 msgid "Recent"
 msgstr "Récent"
 
-#: application/languages/db-translation-strings.php:313
+#: application/languages/db-translation-strings.php:377
 msgid "RECENT"
 msgstr "RÉCENT"
 
-#: application/languages/db-translation-strings.php:315
+#: application/languages/db-translation-strings.php:379
 msgid "recent"
 msgstr "récent"
 
-#: application/languages/db-translation-strings.php:317
+#: application/languages/db-translation-strings.php:381
 #: application/modules/admin/views/scripts/enrollments/add.phtml:21
 #: application/modules/admin/views/scripts/evaluate/shipment.phtml:273
 #: application/modules/admin/views/scripts/participants/add.phtml:154
@@ -828,20 +983,20 @@ msgstr "récent"
 msgid "Region"
 msgstr "Région"
 
-#: application/languages/db-translation-strings.php:319
+#: application/languages/db-translation-strings.php:383
 #, fuzzy
 msgid "Research Institute"
 msgstr "Institut de recherche"
 
-#: application/languages/db-translation-strings.php:321
+#: application/languages/db-translation-strings.php:385
 msgid "Result not evaluated Ð name of test kit not reported."
 msgstr "Résultat non évalué – nom du kit de test non indiqué."
 
-#: application/languages/db-translation-strings.php:323
+#: application/languages/db-translation-strings.php:387
 msgid "Result not evaluated Ð name of test type not reported."
 msgstr "Résultat non évalué – le nom du type de test n'a pas été indiqué."
 
-#: application/languages/db-translation-strings.php:325
+#: application/languages/db-translation-strings.php:389
 msgid ""
 "Result not evaluated Ð test kit expiry date (first/second/third) is not "
 "reported with PT response."
@@ -850,7 +1005,7 @@ msgstr ""
 "deuxième/troisième) n'est pas indiquée dans la réponse du test de "
 "performance."
 
-#: application/languages/db-translation-strings.php:327
+#: application/languages/db-translation-strings.php:391
 msgid ""
 "Result not evaluated Ð Test Kit lot number (first/second/third) is not "
 "reported."
@@ -858,7 +1013,16 @@ msgstr ""
 "Résultat non évalué – Le numéro de lot du kit de test (premier/deuxième/"
 "troisième) n'est pas indiqué."
 
-#: application/languages/db-translation-strings.php:329
+#: application/languages/db-translation-strings.php:393
+#, fuzzy
+msgid ""
+"Result not evaluated Ð Test Platform lot number (first/second/third) is not "
+"reported."
+msgstr ""
+"Résultat non évalué – Le numéro de lot du kit de test (premier/deuxième/"
+"troisième) n'est pas indiqué."
+
+#: application/languages/db-translation-strings.php:395
 msgid ""
 "Result not evaluated Ð test type expiry date (first/second/third) is not "
 "reported with PT response."
@@ -866,7 +1030,7 @@ msgstr ""
 "Résultat non évalué – la date d'expiration du type de test (premier/deuxième/"
 "troisième) n'est pas indiquée dans la réponse PT."
 
-#: application/languages/db-translation-strings.php:331
+#: application/languages/db-translation-strings.php:397
 msgid ""
 "Result not evaluated Ð Test Type lot number (first/second/third) is not "
 "reported."
@@ -874,7 +1038,7 @@ msgstr ""
 "Résultat non évalué – Le numéro de lot du type de test (premier/deuxième/"
 "troisième) n'est pas indiqué."
 
-#: application/languages/db-translation-strings.php:333
+#: application/languages/db-translation-strings.php:399
 msgid ""
 "Review all testing procedures prior to performing client testing and contact "
 "your supervisor for improvement."
@@ -883,7 +1047,7 @@ msgstr ""
 "chez le client et contactez votre supérieur hiérarchique pour apporter des "
 "améliorations."
 
-#: application/languages/db-translation-strings.php:335
+#: application/languages/db-translation-strings.php:401
 msgid ""
 "Review all testing procedures prior to performing client testing as reported "
 "result does not match expected result."
@@ -892,21 +1056,21 @@ msgstr ""
 "client, car les résultats communiqués ne correspondent pas aux résultats "
 "attendus."
 
-#: application/languages/db-translation-strings.php:337
+#: application/languages/db-translation-strings.php:403
 msgid ""
 "Review and refer to National HIV Testing Algorithms for result "
 "interpretation as final result interpretation does not match the expected "
 "result."
 msgstr ""
 
-#: application/languages/db-translation-strings.php:339
+#: application/languages/db-translation-strings.php:405
 msgid ""
 "Review and Refer to SOP for testing. Investigate possible causes such as : "
 "(1) sample mix-up, (2) incorrect sample volume used, (3) interpreting the "
 "result before and after the manufacturer recommended time"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:341
+#: application/languages/db-translation-strings.php:407
 msgid ""
 "Review and refer to SOP for testing. Sample should be tested per National "
 "Covid-19 Testing lab."
@@ -915,7 +1079,7 @@ msgstr ""
 "tests. L'échantillon doit être analysé par un laboratoire agréé pour les "
 "tests Covid-19."
 
-#: application/languages/db-translation-strings.php:343
+#: application/languages/db-translation-strings.php:409
 msgid ""
 "Review and refer to SOP for testing. Sample should be tested per National "
 "HIV Testing algorithm."
@@ -924,144 +1088,170 @@ msgstr ""
 "tests. L'échantillon doit être analysé conformément à l'algorithme national "
 "de dépistage du VIH."
 
-#: application/languages/db-translation-strings.php:345
+#: application/languages/db-translation-strings.php:411
 msgid "Sample (1/2/3) was not reported"
 msgstr "L'échantillon (1/2/3) n'a pas été signalé"
 
-#: application/languages/db-translation-strings.php:347
+#: application/languages/db-translation-strings.php:413
 msgid "Sample (1/2/3?) reported result does not match with expected result."
 msgstr ""
 "Le résultat indiqué pour l'échantillon (1/2/3 ?) ne correspond pas au "
 "résultat attendu."
 
-#: application/languages/db-translation-strings.php:349
+#: application/languages/db-translation-strings.php:415
+#, fuzzy
+msgid "SARS-Cov-2"
+msgstr "SARS-CoV-2"
+
+#: application/languages/db-translation-strings.php:417
+#: application/modules/admin/views/scripts/partials/scheme-config-nav.phtml:62
+#, fuzzy
+msgid "SARS-CoV-2"
+msgstr "SARS-CoV-2"
+
+#: application/languages/db-translation-strings.php:419
 msgid "Scan"
 msgstr "Scanner"
 
-#: application/languages/db-translation-strings.php:351
+#: application/languages/db-translation-strings.php:421
 msgid "SCANTY"
 msgstr "SCANTY"
 
-#: application/languages/db-translation-strings.php:353
+#: application/languages/db-translation-strings.php:423
 msgid "scanty"
 msgstr "maigre"
 
-#: application/languages/db-translation-strings.php:355
+#: application/languages/db-translation-strings.php:425
 msgid "Secondary and tertiary laboratory service tiers"
 msgstr "Niveaux de services de laboratoire secondaires et tertiaires"
 
-#: application/languages/db-translation-strings.php:357
+#: application/languages/db-translation-strings.php:427
 msgid "SMS"
 msgstr "SMS"
 
-#: application/languages/db-translation-strings.php:359
+#: application/languages/db-translation-strings.php:429
 msgid "Some mandatory samples were not reported"
 msgstr "Certains échantillons obligatoires n'ont pas été déclarés"
 
-#: application/languages/db-translation-strings.php:361
+#: application/languages/db-translation-strings.php:431
 msgid "TB Center"
 msgstr "Centre de lutte contre la tuberculose"
 
-#: application/languages/db-translation-strings.php:363
+#: application/languages/db-translation-strings.php:433
 msgid "Testing date missing in PT report form."
 msgstr "La date du test manque dans le formulaire de rapport PT."
 
-#: application/languages/db-translation-strings.php:365
+#: application/languages/db-translation-strings.php:435
 msgid "Testing is not performed within X to Y hours of rehydration."
 msgstr ""
 "Le test n'est pas effectué dans les X à Y heures suivant la réhydratation."
 
-#: application/languages/db-translation-strings.php:367
+#: application/languages/db-translation-strings.php:437
 msgid "Test kit repeated for confirmatory or tiebreaker test (T1/T2/T3)."
 msgstr ""
 "Répétition du test à des fins de confirmation ou de départage (T1/T2/T3)."
 
-#: application/languages/db-translation-strings.php:369
+#: application/languages/db-translation-strings.php:439
 msgid "Test kit XYZ expired M days before the test date DD-MON-YYY."
 msgstr "Le kit de test XYZ a expiré M jours avant la date du test JJ-LUN-AAAA."
 
-#: application/languages/db-translation-strings.php:371
+#: application/languages/db-translation-strings.php:441
 msgid "Testkit XYZ repeated for all 3 test kits"
 msgstr "Le test XYZ a été répété pour les trois kits de test"
 
-#: application/languages/db-translation-strings.php:373
+#: application/languages/db-translation-strings.php:443
+#, fuzzy
+msgid "Test platform repeated for confirmatory or tiebreaker test (T1/T2/T3)."
+msgstr ""
+"Répétition du test à des fins de confirmation ou de départage (T1/T2/T3)."
+
+#: application/languages/db-translation-strings.php:445
+#, fuzzy
+msgid "Test platform XYZ expired M days before the test date DD-MON-YYY."
+msgstr "Le kit de test XYZ a expiré M jours avant la date du test JJ-LUN-AAAA."
+
+#: application/languages/db-translation-strings.php:447
 msgid "Test type repeated for confirmatory or tiebreaker test (T1/T2/T3)."
 msgstr ""
 "Type de test répété pour un test de confirmation ou de départage (T1/T2/T3)."
 
-#: application/languages/db-translation-strings.php:375
+#: application/languages/db-translation-strings.php:449
 msgid "Test type XYZ expired M days before the test date DD-MON-YYY."
 msgstr ""
 "Le test de type XYZ a expiré M jours avant la date du test JJ-MOI-AAAA."
 
-#: application/languages/db-translation-strings.php:377
+#: application/languages/db-translation-strings.php:451
 msgid "Testtype XYZ repeated for all 3 test types"
 msgstr "Le type de test XYZ a été répété pour les trois types de test"
 
-#: application/languages/db-translation-strings.php:379
+#: application/languages/db-translation-strings.php:453
 msgid "The PT panel shipment was lost/damage"
 msgstr "L'envoi du panneau PT a été perdu ou endommagé"
 
-#: application/languages/db-translation-strings.php:381
+#: application/languages/db-translation-strings.php:455
 msgid "The PT panel testing failed during sample processing"
 msgstr "Le test du panel PT a échoué lors du traitement de l'échantillon"
 
-#: application/languages/db-translation-strings.php:383
+#: application/languages/db-translation-strings.php:457
 msgid "The results were invalid for the entire run"
 msgstr "Les résultats n'étaient pas valides pour l'ensemble de l'exécution"
 
-#: application/languages/db-translation-strings.php:385
+#: application/languages/db-translation-strings.php:459
 msgid "There were not enough responses for the VL Assay chosen"
 msgstr ""
 "Le nombre de réponses n'était pas suffisant pour le test VL sélectionné"
 
-#: application/languages/db-translation-strings.php:387
+#: application/languages/db-translation-strings.php:461
 msgid "TRACE"
 msgstr "TRACE"
 
-#: application/languages/db-translation-strings.php:389
+#: application/languages/db-translation-strings.php:463
 msgid "trace"
 msgstr "trace"
 
-#: application/languages/db-translation-strings.php:391
+#: application/languages/db-translation-strings.php:465
 #, fuzzy
 msgid "Tuberculosis"
 msgstr "tuberculose"
 
-#: application/languages/db-translation-strings.php:393
+#: application/languages/db-translation-strings.php:467
 msgid "Unsatisfactory score"
 msgstr "Note insuffisante"
 
-#: application/languages/db-translation-strings.php:395
+#: application/languages/db-translation-strings.php:469
 msgid "VCT"
 msgstr "VCT"
 
-#: application/languages/db-translation-strings.php:397
+#: application/languages/db-translation-strings.php:471
 msgid "VERY LOW"
 msgstr "TRÈS FAIBLE"
 
-#: application/languages/db-translation-strings.php:399
+#: application/languages/db-translation-strings.php:473
 msgid "very low"
 msgstr "très bas"
 
-#: application/languages/db-translation-strings.php:401
+#: application/languages/db-translation-strings.php:475
 #, fuzzy
 msgid "Viral Load Machine not working"
 msgstr "La machine ne fonctionne pas"
 
-#: application/languages/db-translation-strings.php:403
+#: application/languages/db-translation-strings.php:477
 msgid "WEAK REACTIVE"
 msgstr "RÉACTIF FAIBLE"
 
-#: application/languages/db-translation-strings.php:405
+#: application/languages/db-translation-strings.php:479
 msgid "weak reactive"
 msgstr "réactif faible"
 
-#: application/languages/db-translation-strings.php:407
+#: application/languages/db-translation-strings.php:481
+msgid "WhatsApp"
+msgstr ""
+
+#: application/languages/db-translation-strings.php:483
 msgid "When the first test is wrong, we need to ask them to review"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:409
+#: application/languages/db-translation-strings.php:485
 msgid "You are required to test all samples in PT panel"
 msgstr "Vous devez analyser tous les échantillons du panel PT"
 
@@ -1878,7 +2068,7 @@ msgstr "admin ePT"
 #: application/layouts/scripts/home.phtml:122
 #: application/layouts/scripts/layout.phtml:291
 #: application/modules/admin/views/scripts/help/index.phtml:16
-#: application/modules/admin/views/scripts/index/index.phtml:349
+#: application/modules/admin/views/scripts/index/index.phtml:720
 #: application/modules/admin/views/scripts/shipment/round-participants.phtml:50
 #: application/views/partials/spotlight.phtml:33
 #: application/views/scripts/participant/dashboard.phtml:191
@@ -2072,6 +2262,7 @@ msgstr "Enquête sur les PT"
 #: application/modules/admin/views/scripts/certificate-batches/index.phtml:156
 #: application/modules/admin/views/scripts/index/ept-overview.ajax.phtml:281
 #: application/modules/admin/views/scripts/participants/index.phtml:217
+#: application/modules/admin/views/scripts/participants/pending.phtml:23
 #: application/modules/admin/views/scripts/shipment/index.phtml:16
 #: application/views/partials/spotlight.phtml:397
 #: application/views/partials/spotlight.phtml:625
@@ -2378,6 +2569,7 @@ msgstr "Régimes en défaut"
 
 #: application/layouts/scripts/layout.phtml:351
 #: application/modules/admin/views/scripts/participants/index.phtml:216
+#: application/modules/admin/views/scripts/participants/pending.phtml:22
 #: application/views/scripts/data-managers/index.phtml:2
 msgid "Data Managers"
 msgstr "Gestionnaires de données"
@@ -2487,6 +2679,7 @@ msgstr "Gestionnaires de données appariées"
 #: application/models/DbTable/DataManagers.php:315
 #: application/models/DbTable/Distribution.php:133
 #: application/models/DbTable/Distribution.php:153
+#: application/models/DbTable/Participants.php:360
 #: application/modules/admin/controllers/SpotlightController.php:57
 #: application/modules/admin/views/scripts/data-managers/mapped-participants.ajax.phtml:51
 #: application/modules/admin/views/scripts/participants/mapped-data-managers.ajax.phtml:54
@@ -3187,7 +3380,7 @@ msgstr "Message"
 #: application/modules/admin/views/scripts/participants/index.phtml:215
 #: application/modules/admin/views/scripts/participants/mapped-data-managers.ajax.phtml:25
 #: application/modules/admin/views/scripts/participants/participant-upload-statistics.phtml:154
-#: application/modules/admin/views/scripts/participants/pending.phtml:22
+#: application/modules/admin/views/scripts/participants/pending.phtml:21
 #: application/modules/admin/views/scripts/partners/edit.phtml:22
 #: application/modules/admin/views/scripts/partners/index.phtml:17
 #: application/modules/admin/views/scripts/sample-not-tested-reasons/add.phtml:43
@@ -3244,7 +3437,7 @@ msgstr "Raisons de l'échec"
 #: application/modules/admin/views/scripts/job-tracking/index.phtml:144
 #: application/modules/admin/views/scripts/participant-messages/index.phtml:19
 #: application/modules/admin/views/scripts/participants/index.phtml:235
-#: application/modules/admin/views/scripts/participants/pending.phtml:28
+#: application/modules/admin/views/scripts/participants/pending.phtml:29
 #: application/modules/admin/views/scripts/partners/index.phtml:23
 #: application/modules/admin/views/scripts/sample-not-tested-reasons/index.phtml:28
 #: application/modules/admin/views/scripts/schemes/test-results.phtml:22
@@ -3311,7 +3504,7 @@ msgstr "Ignorés"
 #: application/modules/reports/views/scripts/shipment-response-report/index.phtml:149
 #: application/modules/reports/views/scripts/shipments/participation-stats.ajax.phtml:17
 #: application/modules/reports/views/scripts/shipments/participation-stats.ajax.phtml:103
-#: application/services/Dashboard.php:775
+#: application/services/Dashboard.php:1048
 #: application/views/scripts/participant/shipment-response-report.phtml:110
 #: scheduled-jobs/report-layouts/summary-layouts/default/dts.phtml:394
 msgid "Failed"
@@ -3497,7 +3690,7 @@ msgstr "État"
 #: application/modules/admin/views/scripts/participant-messages/index.phtml:14
 #: application/modules/admin/views/scripts/participants/index.phtml:218
 #: application/modules/admin/views/scripts/participants/mapped-data-managers.ajax.phtml:26
-#: application/modules/admin/views/scripts/participants/pending.phtml:23
+#: application/modules/admin/views/scripts/participants/pending.phtml:24
 #: application/modules/admin/views/scripts/partners/index.phtml:18
 #: application/modules/admin/views/scripts/sample-not-tested-reasons/index.phtml:23
 #: application/modules/admin/views/scripts/schemes/manage-test-results.phtml:377
@@ -3850,7 +4043,7 @@ msgid "Excellence"
 msgstr "Excellence"
 
 #: application/modules/admin/views/scripts/certificate-batches/index.phtml:159
-#: application/modules/admin/views/scripts/index/index.phtml:598
+#: application/modules/admin/views/scripts/index/index.phtml:1273
 msgid "Participation"
 msgstr "Participation"
 
@@ -5681,6 +5874,7 @@ msgstr "Sélectionnez un pays"
 #: application/modules/admin/views/scripts/participants/add.phtml:161
 #: application/modules/admin/views/scripts/participants/edit.phtml:225
 #: application/modules/admin/views/scripts/participants/index.phtml:212
+#: application/modules/admin/views/scripts/participants/pending.phtml:18
 #: application/modules/admin/views/scripts/shipment/manage-enroll.phtml:88
 #: application/modules/admin/views/scripts/shipment/manage-enroll.phtml:121
 #: application/modules/admin/views/scripts/shipment/manage-enroll.phtml:161
@@ -5699,6 +5893,7 @@ msgstr "Veuillez choisir un État"
 #: application/modules/admin/views/scripts/participants/add.phtml:165
 #: application/modules/admin/views/scripts/participants/edit.phtml:234
 #: application/modules/admin/views/scripts/participants/index.phtml:213
+#: application/modules/admin/views/scripts/participants/pending.phtml:19
 #: application/modules/admin/views/scripts/shipment/manage-enroll.phtml:89
 #: application/modules/admin/views/scripts/shipment/manage-enroll.phtml:122
 #: application/modules/admin/views/scripts/shipment/manage-enroll.phtml:162
@@ -6385,7 +6580,6 @@ msgid "Last Name"
 msgstr "Nom"
 
 #: application/modules/admin/views/scripts/data-managers/index.phtml:167
-#: application/modules/admin/views/scripts/participants/pending.phtml:18
 #: application/modules/admin/views/scripts/participants/view-participants.phtml:9
 #: application/modules/admin/views/scripts/shipment/manage-enroll.phtml:91
 #: application/modules/admin/views/scripts/shipment/manage-enroll.phtml:124
@@ -6710,7 +6904,6 @@ msgstr "Niveau du réseau"
 #: application/modules/admin/views/scripts/participants/add.phtml:287
 #: application/modules/admin/views/scripts/participants/edit.phtml:405
 #: application/modules/admin/views/scripts/participants/participant-manager-map.phtml:133
-#: application/modules/admin/views/scripts/participants/pending.phtml:20
 #: application/modules/admin/views/scripts/participants/view-participants.phtml:11
 #: application/modules/admin/views/scripts/shipment/manage-enroll.phtml:93
 #: application/modules/admin/views/scripts/shipment/manage-enroll.phtml:126
@@ -8061,7 +8254,7 @@ msgid "Response status"
 msgstr "Statut de la réponse"
 
 #: application/modules/admin/views/scripts/evaluate/shipment.phtml:220
-#: application/modules/admin/views/scripts/index/index.phtml:414
+#: application/modules/admin/views/scripts/index/index.phtml:1089
 #: application/modules/admin/views/scripts/shipment/manage-enroll.phtml:65
 #: application/modules/reports/views/scripts/distribution/finalize.phtml:203
 #: application/modules/reports/views/scripts/distribution/shipment.phtml:260
@@ -8099,16 +8292,6 @@ msgstr "Pas de réponse"
 #: application/services/Evaluation.php:2509
 msgid "Late Response"
 msgstr "Réponse tardive"
-
-#: application/modules/admin/views/scripts/evaluate/shipment.phtml:223
-#: application/modules/reports/views/scripts/distribution/finalize.phtml:206
-#: application/modules/reports/views/scripts/distribution/shipment.phtml:263
-#: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:281
-#: application/services/Evaluation.php:1962
-#: application/services/Evaluation.php:2299
-#: application/services/Evaluation.php:2511
-msgid "Not Tested"
-msgstr "Non testé"
 
 #: application/modules/admin/views/scripts/evaluate/shipment.phtml:227
 #: application/modules/admin/views/scripts/evaluate/shipment.phtml:318
@@ -9749,7 +9932,7 @@ msgstr ""
 "Pour configurer les en-têtes de section et les icônes, rendez-vous dans"
 
 #: application/modules/admin/views/scripts/index/ept-overview.ajax.phtml:192
-#: application/modules/admin/views/scripts/index/index.phtml:754
+#: application/modules/admin/views/scripts/index/index.phtml:1429
 msgid "ePT Overview"
 msgstr "Présentation d'ePT"
 
@@ -9778,62 +9961,142 @@ msgstr "Copier en texte brut"
 msgid "Preview plain-text version"
 msgstr "Aperçu de la version en texte brut"
 
-#: application/modules/admin/views/scripts/index/index.phtml:358
-#: application/modules/admin/views/scripts/shipment/manage-enroll.phtml:742
-msgid "participant"
-msgstr "place"
-
-#: application/modules/admin/views/scripts/index/index.phtml:360
+#: application/modules/admin/views/scripts/index/index.phtml:740
 msgid ""
-"registered but not yet approved to use ePT. Please click here to approve."
+"1 participant has registered and is waiting to be approved. Click to review."
 msgstr ""
-"inscrit mais pas encore autorisé à utiliser l'ePT. Veuillez cliquer ici pour "
-"l'approuver."
+"1 participant s'est inscrit et attend une validation. Cliquez pour "
+"l'examiner."
 
-#: application/modules/admin/views/scripts/index/index.phtml:371
+#: application/modules/admin/views/scripts/index/index.phtml:742
+#, php-format
+msgid ""
+"%d participants have registered and are waiting to be approved. Click to "
+"review."
+msgstr ""
+"%d participants se sont inscrits et attendent une validation. Cliquez pour "
+"les examiner."
+
+#: application/modules/admin/views/scripts/index/index.phtml:769
 msgid "Active participants"
 msgstr "Participants actifs"
 
-#: application/modules/admin/views/scripts/index/index.phtml:375
-#, fuzzy
-msgid "Active schemes"
-msgstr "Programmes actifs"
+#: application/modules/admin/views/scripts/index/index.phtml:778
+msgid "across 1 scheme"
+msgstr "dans 1 programme"
 
-#: application/modules/admin/views/scripts/index/index.phtml:379
+#: application/modules/admin/views/scripts/index/index.phtml:779
+#, php-format
+msgid "across %d schemes"
+msgstr "dans %d programmes"
+
+#: application/modules/admin/views/scripts/index/index.phtml:784
+msgid "Rounds in progress"
+msgstr "Cycles en cours"
+
+#: application/modules/admin/views/scripts/index/index.phtml:793
+#, php-format
+msgid "%1$d open, %2$d awaiting finalize"
+msgstr "%1$d ouvert(s), %2$d en attente de finalisation"
+
+#: application/modules/admin/views/scripts/index/index.phtml:797
+msgid "nothing shipped right now"
+msgstr "aucun envoi en cours"
+
+#: application/modules/admin/views/scripts/index/index.phtml:802
+msgid "Labs yet to respond"
+msgstr "Labos n'ayant pas encore répondu"
+
+#: application/modules/admin/views/scripts/index/index.phtml:808
+#, php-format
+msgid "of %d labs in rounds open for response"
+msgstr "sur %d labos dans les cycles ouverts aux réponses"
+
+#: application/modules/admin/views/scripts/index/index.phtml:816
 msgid "Rounds completed in"
 msgstr "Cycles terminés en"
 
-#: application/modules/admin/views/scripts/index/index.phtml:396
+#: application/modules/admin/views/scripts/index/index.phtml:823
+#, php-format
+msgid "last finalized %s"
+msgstr "dernière finalisation le %s"
+
+#: application/modules/admin/views/scripts/index/index.phtml:826
+msgid "no rounds finalized yet"
+msgstr "aucun cycle finalisé pour l'instant"
+
+#: application/modules/admin/views/scripts/index/index.phtml:856
+msgid "Participant engagement"
+msgstr "Engagement des participants"
+
+#: application/modules/admin/views/scripts/index/index.phtml:879
+#, php-format
+msgid ""
+"Counted as participating after a response to a round shipped in the last %d "
+"months."
+msgstr ""
+"Un labo est compté comme participant s'il a répondu à un cycle envoyé au "
+"cours des %d derniers mois."
+
+#: application/modules/admin/views/scripts/index/index.phtml:890
+msgid "Participation by scheme"
+msgstr "Participation par programme"
+
+#: application/modules/admin/views/scripts/index/index.phtml:894
+msgid "Bars show each scheme's split. Numbers are labs."
+msgstr ""
+"Les barres montrent la répartition de chaque programme. Les nombres sont des "
+"labos."
+
+#: application/modules/admin/views/scripts/index/index.phtml:925
+msgid "active labs"
+msgstr "labos actifs"
+
+#: application/modules/admin/views/scripts/index/index.phtml:945
+msgid "Labs"
+msgstr "Labos"
+
+#: application/modules/admin/views/scripts/index/index.phtml:1012
+#: application/services/Dashboard.php:509
+msgid "Actively participating"
+msgstr "Participation active"
+
+#: application/modules/admin/views/scripts/index/index.phtml:1017
+#: application/services/Dashboard.php:514
+msgid "In a scheme, not responding"
+msgstr "Inscrits à un programme, sans réponse"
+
+#: application/modules/admin/views/scripts/index/index.phtml:1071
 msgid "round open for response"
 msgstr "cycle ouvert aux réponses"
 
-#: application/modules/admin/views/scripts/index/index.phtml:397
+#: application/modules/admin/views/scripts/index/index.phtml:1072
 msgid "rounds open for response"
 msgstr "cycles ouverts aux réponses"
 
-#: application/modules/admin/views/scripts/index/index.phtml:399
-#: application/modules/admin/views/scripts/index/index.phtml:554
+#: application/modules/admin/views/scripts/index/index.phtml:1074
+#: application/modules/admin/views/scripts/index/index.phtml:1229
 msgid "No rounds open for response"
 msgstr "Aucun cycle ouvert aux réponses"
 
-#: application/modules/admin/views/scripts/index/index.phtml:404
+#: application/modules/admin/views/scripts/index/index.phtml:1079
 msgid "awaiting finalize"
 msgstr "en attente de finalisation"
 
-#: application/modules/admin/views/scripts/index/index.phtml:412
+#: application/modules/admin/views/scripts/index/index.phtml:1087
 msgid "Round"
 msgstr "Cycle"
 
-#: application/modules/admin/views/scripts/index/index.phtml:413
+#: application/modules/admin/views/scripts/index/index.phtml:1088
 #: application/modules/admin/views/scripts/shipment/round-participants.phtml:59
 msgid "Deadline"
 msgstr "Date d'échéance"
 
-#: application/modules/admin/views/scripts/index/index.phtml:415
+#: application/modules/admin/views/scripts/index/index.phtml:1090
 msgid "Late / unable"
 msgstr "Tardives / non réalisées"
 
-#: application/modules/admin/views/scripts/index/index.phtml:416
+#: application/modules/admin/views/scripts/index/index.phtml:1091
 #: application/modules/reports/views/scripts/distribution/shipment.phtml:50
 #: application/modules/reports/views/scripts/finalize/get-shipments.ajax.phtml:22
 #: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:87
@@ -9841,156 +10104,156 @@ msgstr "Tardives / non réalisées"
 msgid "Response %"
 msgstr "% de réponses"
 
-#: application/modules/admin/views/scripts/index/index.phtml:417
+#: application/modules/admin/views/scripts/index/index.phtml:1092
 #: application/services/Reports.php:2845 application/services/Reports.php:2944
 msgid "Pass %"
 msgstr "% de réussite"
 
-#: application/modules/admin/views/scripts/index/index.phtml:418
+#: application/modules/admin/views/scripts/index/index.phtml:1093
 msgid "Next action"
 msgstr "Action suivante"
 
-#: application/modules/admin/views/scripts/index/index.phtml:432
+#: application/modules/admin/views/scripts/index/index.phtml:1107
 msgid "shipped"
 msgstr "expédié le"
 
-#: application/modules/admin/views/scripts/index/index.phtml:444
+#: application/modules/admin/views/scripts/index/index.phtml:1119
 msgid "Due today"
 msgstr "Échéance aujourd'hui"
 
-#: application/modules/admin/views/scripts/index/index.phtml:448
+#: application/modules/admin/views/scripts/index/index.phtml:1123
 msgid "In 1 day"
 msgstr "Dans 1 jour"
 
-#: application/modules/admin/views/scripts/index/index.phtml:449
+#: application/modules/admin/views/scripts/index/index.phtml:1124
 #, php-format
 msgid "In %d days"
 msgstr "Dans %d jours"
 
-#: application/modules/admin/views/scripts/index/index.phtml:452
+#: application/modules/admin/views/scripts/index/index.phtml:1127
 msgid "Closed today"
 msgstr "Clôturé aujourd'hui"
 
-#: application/modules/admin/views/scripts/index/index.phtml:456
+#: application/modules/admin/views/scripts/index/index.phtml:1131
 msgid "Closed 1 day ago"
 msgstr "Clôturé il y a 1 jour"
 
-#: application/modules/admin/views/scripts/index/index.phtml:457
+#: application/modules/admin/views/scripts/index/index.phtml:1132
 #, php-format
 msgid "Closed %d days ago"
 msgstr "Clôturé il y a %d jours"
 
-#: application/modules/admin/views/scripts/index/index.phtml:460
+#: application/modules/admin/views/scripts/index/index.phtml:1135
 msgid "Closed"
 msgstr "Clôturé"
 
-#: application/modules/admin/views/scripts/index/index.phtml:471
-#: application/modules/admin/views/scripts/index/index.phtml:507
-#: application/modules/admin/views/scripts/index/index.phtml:601
-#: application/modules/admin/views/scripts/index/index.phtml:655
-#: application/modules/admin/views/scripts/index/index.phtml:733
+#: application/modules/admin/views/scripts/index/index.phtml:1146
+#: application/modules/admin/views/scripts/index/index.phtml:1182
+#: application/modules/admin/views/scripts/index/index.phtml:1276
+#: application/modules/admin/views/scripts/index/index.phtml:1330
+#: application/modules/admin/views/scripts/index/index.phtml:1408
 #: application/views/partials/help-drawer.phtml:114
 #: application/views/scripts/partial/paginate.phtml:40
 msgid "of"
 msgstr "sur"
 
-#: application/modules/admin/views/scripts/index/index.phtml:480
+#: application/modules/admin/views/scripts/index/index.phtml:1153
 msgid "outstanding"
 msgstr "en attente"
 
-#: application/modules/admin/views/scripts/index/index.phtml:507
+#: application/modules/admin/views/scripts/index/index.phtml:1182
 msgid "evaluated"
 msgstr "évalués"
 
-#: application/modules/admin/views/scripts/index/index.phtml:509
+#: application/modules/admin/views/scripts/index/index.phtml:1184
 msgid "Scored once the round is evaluated"
 msgstr "Noté une fois le cycle évalué"
 
-#: application/modules/admin/views/scripts/index/index.phtml:555
+#: application/modules/admin/views/scripts/index/index.phtml:1230
 msgid "last finalized"
 msgstr "dernière finalisation le"
 
-#: application/modules/admin/views/scripts/index/index.phtml:577
+#: application/modules/admin/views/scripts/index/index.phtml:1252
 msgid "finalized"
 msgstr "finalisé le"
 
-#: application/modules/admin/views/scripts/index/index.phtml:588
+#: application/modules/admin/views/scripts/index/index.phtml:1263
 msgid "vs"
 msgstr "vs"
 
-#: application/modules/admin/views/scripts/index/index.phtml:592
+#: application/modules/admin/views/scripts/index/index.phtml:1267
 msgid "Average score"
 msgstr "Score moyen"
 
-#: application/modules/admin/views/scripts/index/index.phtml:603
+#: application/modules/admin/views/scripts/index/index.phtml:1278
 msgid "enrolled labs took part"
 msgstr "laboratoires inscrits ont participé"
 
-#: application/modules/admin/views/scripts/index/index.phtml:618
+#: application/modules/admin/views/scripts/index/index.phtml:1293
 msgid "took part"
 msgstr "ont participé"
 
-#: application/modules/admin/views/scripts/index/index.phtml:628
+#: application/modules/admin/views/scripts/index/index.phtml:1303
 msgid "unable to test"
 msgstr "non réalisés"
 
-#: application/modules/admin/views/scripts/index/index.phtml:638
+#: application/modules/admin/views/scripts/index/index.phtml:1313
 msgid "no response"
 msgstr "sans réponse"
 
-#: application/modules/admin/views/scripts/index/index.phtml:644
+#: application/modules/admin/views/scripts/index/index.phtml:1319
 msgid "not in this round"
 msgstr "hors de ce cycle"
 
-#: application/modules/admin/views/scripts/index/index.phtml:652
+#: application/modules/admin/views/scripts/index/index.phtml:1327
 #: application/modules/admin/views/scripts/shipment/partials/schemes/eid.phtml:83
 msgid "Results"
 msgstr "Résultats"
 
-#: application/modules/admin/views/scripts/index/index.phtml:657
+#: application/modules/admin/views/scripts/index/index.phtml:1332
 msgid "passed"
 msgstr "réussis"
 
-#: application/modules/admin/views/scripts/index/index.phtml:701
-#: application/services/Dashboard.php:776
+#: application/modules/admin/views/scripts/index/index.phtml:1376
+#: application/services/Dashboard.php:1049
 msgid "Repeat failers"
 msgstr "Échecs répétés"
 
-#: application/modules/admin/views/scripts/index/index.phtml:704
+#: application/modules/admin/views/scripts/index/index.phtml:1379
 msgid "No earlier round for this scheme to compare against"
 msgstr "Aucun cycle antérieur de ce programme à comparer"
 
-#: application/modules/admin/views/scripts/index/index.phtml:713
-#: application/services/Dashboard.php:777
+#: application/modules/admin/views/scripts/index/index.phtml:1388
+#: application/services/Dashboard.php:1050
 msgid "Never responded"
 msgstr "Jamais de réponse"
 
-#: application/modules/admin/views/scripts/index/index.phtml:716
+#: application/modules/admin/views/scripts/index/index.phtml:1391
 msgid "Needs at least two finalized rounds for this scheme"
 msgstr "Nécessite au moins deux cycles finalisés pour ce programme"
 
-#: application/modules/admin/views/scripts/index/index.phtml:724
+#: application/modules/admin/views/scripts/index/index.phtml:1399
 msgid "across the last"
 msgstr "sur les"
 
-#: application/modules/admin/views/scripts/index/index.phtml:726
+#: application/modules/admin/views/scripts/index/index.phtml:1401
 msgid "rounds"
 msgstr "derniers cycles"
 
-#: application/modules/admin/views/scripts/index/index.phtml:730
+#: application/modules/admin/views/scripts/index/index.phtml:1405
 msgid "Opened their report"
 msgstr "Ont ouvert leur rapport"
 
-#: application/modules/admin/views/scripts/index/index.phtml:741
+#: application/modules/admin/views/scripts/index/index.phtml:1416
 msgid "No finalized rounds yet."
 msgstr "Aucun cycle finalisé pour le moment."
 
-#: application/modules/admin/views/scripts/index/index.phtml:760
+#: application/modules/admin/views/scripts/index/index.phtml:1435
 #: public/js/main.js.php:161
 msgid "Loading..."
 msgstr "Chargement..."
 
-#: application/modules/admin/views/scripts/index/index.phtml:791
+#: application/modules/admin/views/scripts/index/index.phtml:1466
 msgid "Failed to load overview."
 msgstr "Impossible de charger la vue d'ensemble."
 
@@ -10337,11 +10600,6 @@ msgstr "EIA"
 #: application/modules/admin/views/scripts/partials/scheme-config-nav.phtml:61
 msgid "TB"
 msgstr ""
-
-#: application/modules/admin/views/scripts/partials/scheme-config-nav.phtml:62
-#, fuzzy
-msgid "SARS-CoV-2"
-msgstr "SARS-CoV-2"
 
 #: application/modules/admin/views/scripts/partials/scheme-config-nav.phtml:63
 #, fuzzy
@@ -10849,7 +11107,7 @@ msgid "Unable to generate download"
 msgstr "Impossible de générer un téléchargement"
 
 #: application/modules/admin/views/scripts/participants/index.phtml:608
-#: application/modules/admin/views/scripts/participants/pending.phtml:101
+#: application/modules/admin/views/scripts/participants/pending.phtml:115
 #: application/views/scripts/participant/view.phtml:193
 msgid "Are you sure you want to delete this participant?"
 msgstr "Êtes-vous sûr de vouloir supprimer ce participant ?"
@@ -11030,7 +11288,14 @@ msgstr "Liste de tous les participants à la PT en attente"
 msgid "Back to All Participants"
 msgstr "Retour à tous les participants"
 
-#: application/modules/admin/views/scripts/participants/pending.phtml:19
+#: application/modules/admin/views/scripts/participants/pending.phtml:129
+msgid "Something went wrong. Please try again later."
+msgstr "Une erreur s'est produite. Veuillez réessayer plus tard."
+
+#: application/modules/admin/views/scripts/participants/view-participants.phtml:2
+msgid "Participant Details"
+msgstr "Détails du participant"
+
 #: application/modules/admin/views/scripts/participants/view-participants.phtml:10
 #: application/modules/admin/views/scripts/profile/index.phtml:232
 #: application/modules/admin/views/scripts/shipment/manage-enroll.phtml:92
@@ -11041,14 +11306,6 @@ msgstr "Retour à tous les participants"
 #: application/views/scripts/participant/view.phtml:20
 msgid "Phone"
 msgstr "Téléphone"
-
-#: application/modules/admin/views/scripts/participants/pending.phtml:115
-msgid "Something went wrong. Please try again later."
-msgstr "Une erreur s'est produite. Veuillez réessayer plus tard."
-
-#: application/modules/admin/views/scripts/participants/view-participants.phtml:2
-msgid "Participant Details"
-msgstr "Détails du participant"
 
 #: application/modules/admin/views/scripts/participants/view-participants.phtml:37
 msgid "No Participants"
@@ -12578,6 +12835,10 @@ msgstr "Aucun commentaire n'a été trouvé pour cet envoi"
 #, fuzzy
 msgid "unique email address(es) copied to clipboard"
 msgstr "Contenu de l'e-mail copié dans le presse-papiers"
+
+#: application/modules/admin/views/scripts/shipment/manage-enroll.phtml:742
+msgid "participant"
+msgstr "place"
 
 #: application/modules/admin/views/scripts/shipment/manage-enroll.phtml:743
 #, fuzzy
@@ -14434,13 +14695,13 @@ msgstr "En attente Tous"
 
 #: application/modules/reports/views/scripts/shipments/participation-stats.ajax.phtml:19
 #: application/modules/reports/views/scripts/shipments/participation-stats.ajax.phtml:119
-#: application/services/Dashboard.php:779
-#: application/services/Dashboard.php:786
+#: application/services/Dashboard.php:1052
+#: application/services/Dashboard.php:1059
 msgid "Unable to test"
 msgstr "Impossible de tester le panel"
 
 #: application/modules/reports/views/scripts/shipments/participation-stats.ajax.phtml:20
-#: application/services/Dashboard.php:778
+#: application/services/Dashboard.php:1051
 msgid "No response"
 msgstr "Sans réponse"
 
@@ -14640,60 +14901,69 @@ msgstr ""
 "Le mot de passe est trop faible. Veuillez choisir un mot de passe plus "
 "complexe."
 
-#: application/services/Dashboard.php:261
+#: application/services/Dashboard.php:270
+#: application/services/Dashboard.php:353
 msgid "Awaiting responses"
 msgstr "En attente de réponses"
 
-#: application/services/Dashboard.php:277
+#: application/services/Dashboard.php:287
+#: application/services/Dashboard.php:357
 msgid "No responses received"
 msgstr "Aucune réponse reçue"
 
-#: application/services/Dashboard.php:287
+#: application/services/Dashboard.php:298
+#: application/services/Dashboard.php:361
 msgid "Ready to evaluate"
 msgstr "Prêt à évaluer"
 
-#: application/services/Dashboard.php:298
+#: application/services/Dashboard.php:310
+#: application/services/Dashboard.php:365
 msgid "Generate reports"
 msgstr "Générer les rapports"
 
-#: application/services/Dashboard.php:308
+#: application/services/Dashboard.php:321
+#: application/services/Dashboard.php:369
 msgid "Ready to finalize"
 msgstr "Prêt à finaliser"
 
-#: application/services/Dashboard.php:784
+#: application/services/Dashboard.php:519
+msgid "Not in any scheme"
+msgstr "Dans aucun programme"
+
+#: application/services/Dashboard.php:1057
 msgid "Outstanding"
 msgstr "En attente"
 
-#: application/services/Dashboard.php:785
+#: application/services/Dashboard.php:1058
 msgid "Late"
 msgstr "Tardives"
 
-#: application/services/Dashboard.php:821
+#: application/services/Dashboard.php:1094
 msgid "Responded after the deadline for this round"
 msgstr "A répondu après la date d'échéance de ce cycle"
 
-#: application/services/Dashboard.php:830
+#: application/services/Dashboard.php:1103
 msgid "Reported unable to run the PT panel this round"
 msgstr "A déclaré ne pas pouvoir analyser le panel EEQ de ce cycle"
 
-#: application/services/Dashboard.php:839
+#: application/services/Dashboard.php:1112
 msgid "Failed this round"
 msgstr "En échec sur ce cycle"
 
-#: application/services/Dashboard.php:862
+#: application/services/Dashboard.php:1135
 msgid "Failed this round and the one before it"
 msgstr "En échec sur ce cycle et sur le précédent"
 
-#: application/services/Dashboard.php:887
+#: application/services/Dashboard.php:1160
 #, php-format
 msgid "No response across this scheme's last %d finalized rounds"
 msgstr "Aucune réponse sur les %d derniers cycles finalisés de ce programme"
 
-#: application/services/Dashboard.php:905
+#: application/services/Dashboard.php:1178
 msgid "Never responded to this round"
 msgstr "N'a jamais répondu à ce cycle"
 
-#: application/services/Dashboard.php:906
+#: application/services/Dashboard.php:1179
 msgid "No response recorded yet for this round"
 msgstr "Aucune réponse enregistrée pour ce cycle"
 
@@ -16437,13 +16707,6 @@ msgstr "Veuillez saisir le résultat pour"
 msgid "Please select invalid or error"
 msgstr "Veuillez sélectionner invalide ou erreur"
 
-#: application/views/scripts/custom-test/response.phtml:470
-#: application/views/scripts/tb/assay-formats.ajax.phtml:468
-#: application/views/scripts/tb/assay-formats.ajax.phtml:673
-#: application/views/scripts/vl/response.phtml:693
-msgid "Invalid"
-msgstr "Invalide"
-
 #: application/views/scripts/custom-test/response.phtml:472
 #: application/views/scripts/vl/response.phtml:695
 msgid "Error"
@@ -17963,10 +18226,6 @@ msgstr "Score d'expédition du participant pour le schéma de récence"
 msgid "Participant Shipment Score for SARS-CoV-2 Scheme"
 msgstr "Score d'expédition des participants pour le schéma SARS-CoV-2"
 
-#: application/views/scripts/participant/dashboard.phtml:324
-msgid "Dried Tube Specimen - HIV Viral Load"
-msgstr "Échantillon de tube séché - Charge virale VIH"
-
 #: application/views/scripts/participant/dashboard.phtml:334
 #: application/views/scripts/participant/dashboard.phtml:363
 #: application/views/scripts/participant/dashboard.phtml:393
@@ -17974,14 +18233,6 @@ msgstr "Échantillon de tube séché - Charge virale VIH"
 #: application/views/scripts/participant/dashboard.phtml:451
 msgid "Performance"
 msgstr "Performance"
-
-#: application/views/scripts/participant/dashboard.phtml:353
-msgid "Dried Tube Specimen - Tuberculosis"
-msgstr "Échantillon de tube séché - Tuberculose"
-
-#: application/views/scripts/participant/dashboard.phtml:382
-msgid "Dried Blood Spot - Early Infant Diagnosis"
-msgstr "Tache de sang séché - Diagnostic précoce chez le nourrisson"
 
 #: application/views/scripts/participant/dashboard.phtml:469
 msgid "Schemes Overview"
@@ -19907,46 +20158,15 @@ msgstr ""
 msgid "No participants"
 msgstr "Pas de participants"
 
-#~ msgid "Dried Tube Specimen - HIV Serology"
-#~ msgstr "Échantillon en tube séché - Sérologie du VIH"
-
-#~ msgid "Instrument Down"
-#~ msgstr "Instrument en panne"
-
-#~ msgid "Interminate"
-#~ msgstr "Interminable"
-
-#~ msgid "INTERMINATE"
-#~ msgstr "RENVOI"
-
-#~ msgid "interminate"
-#~ msgstr "interminable"
-
-#~ msgid "No lab personnel/staff for testing of PT Panel"
+#~ msgid ""
+#~ "registered but not yet approved to use ePT. Please click here to approve."
 #~ msgstr ""
-#~ "Absence de personnel de laboratoire pour la réalisation des analyses du "
-#~ "panel PT"
+#~ "inscrit mais pas encore autorisé à utiliser l'ePT. Veuillez cliquer ici "
+#~ "pour l'approuver."
 
-#~ msgid "Not Reported"
-#~ msgstr "Non Rapporté"
-
-#~ msgid "Other (please explain)"
-#~ msgstr "Autre (veuillez préciser)"
-
-#~ msgid "Please ensure condition of PT Samples is reported"
-#~ msgstr ""
-#~ "Veuillez vous assurer que l'état des échantillons PT est bien indiqué"
-
-#~ msgid "Please ensure Refridgerator availability is reported"
-#~ msgstr ""
-#~ "Veuillez vous assurer que la disponibilité du réfrigérateur est signalée"
-
-#~ msgid "Please ensure Room Temperature is reported"
-#~ msgstr "Veuillez vous assurer que la température ambiante est indiquée"
-
-#~ msgid "Please ensure Stop Watch availability is reported"
-#~ msgstr ""
-#~ "Veuillez vous assurer que la disponibilité de Stop Watch est signalée"
+#, fuzzy
+#~ msgid "Active schemes"
+#~ msgstr "Programmes actifs"
 
 #~ msgid "Map Participants"
 #~ msgstr "Carte des participants"
@@ -21297,71 +21517,11 @@ msgstr "Pas de participants"
 #~ msgid "the example google service json"
 #~ msgstr "l'exemple de service google json"
 
-msgid "across 1 scheme"
-msgstr "dans 1 programme"
+#~ msgid "of %d labs in rounds in progress"
+#~ msgstr "sur %d labos dans les cycles en cours"
 
-msgid "across %d schemes"
-msgstr "dans %d programmes"
+#~ msgid "Enrolled, not responding"
+#~ msgstr "Inscrits, sans réponse"
 
-msgid "Rounds in progress"
-msgstr "Cycles en cours"
-
-msgid "%1$d open, %2$d awaiting finalize"
-msgstr "%1$d ouvert(s), %2$d en attente de finalisation"
-
-msgid "nothing shipped right now"
-msgstr "aucun envoi en cours"
-
-msgid "Labs yet to respond"
-msgstr "Labos n'ayant pas encore répondu"
-
-msgid "of %d labs in rounds in progress"
-msgstr "sur %d labos dans les cycles en cours"
-
-msgid "last finalized %s"
-msgstr "dernière finalisation le %s"
-
-msgid "no rounds finalized yet"
-msgstr "aucun cycle finalisé pour l'instant"
-
-msgid "Participant engagement"
-msgstr "Engagement des participants"
-
-msgid "Participation by scheme"
-msgstr "Participation par programme"
-
-msgid "Counted as participating after a response to a round shipped in the last %d months."
-msgstr "Un labo est compté comme participant s'il a répondu à un cycle envoyé au cours des %d derniers mois."
-
-msgid "active labs"
-msgstr "labos actifs"
-
-msgid "Labs"
-msgstr "Labos"
-
-msgid "Actively participating"
-msgstr "Participation active"
-
-msgid "Enrolled, not responding"
-msgstr "Inscrits, sans réponse"
-
-msgid "Not enrolled in any scheme"
-msgstr "Non inscrits à un programme"
-
-msgid "In a scheme, not responding"
-msgstr "Inscrits à un programme, sans réponse"
-
-msgid "Not in any scheme"
-msgstr "Dans aucun programme"
-
-msgid "of %d labs in rounds open for response"
-msgstr "sur %d labos dans les cycles ouverts aux réponses"
-
-msgid "Bars show each scheme's split. Numbers are labs."
-msgstr "Les barres montrent la répartition de chaque programme. Les nombres sont des labos."
-
-msgid "1 participant has registered and is waiting to be approved. Click to review."
-msgstr "1 participant s'est inscrit et attend une validation. Cliquez pour l'examiner."
-
-msgid "%d participants have registered and are waiting to be approved. Click to review."
-msgstr "%d participants se sont inscrits et attendent une validation. Cliquez pour les examiner."
+#~ msgid "Not enrolled in any scheme"
+#~ msgstr "Non inscrits à un programme"

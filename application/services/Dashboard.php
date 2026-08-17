@@ -342,12 +342,33 @@ class Application_Service_Dashboard
      */
     public function summarisePipeline(array $openRounds)
     {
+        // Translated where the literal is written, not later through
+        // safeTranslate($stage['label']). xgettext only sees string literals
+        // sitting inside the call parentheses, so a label translated via a
+        // variable never reaches the POT and refresh-translations.php drops
+        // its catalog entry as obsolete. These five survived only because the
+        // same wording appears as a literal in getNextAction().
         $stages = [
-            'awaiting-responses' => ['label' => 'Awaiting responses', 'waitingOnLabs' => true],
-            'no-responses' => ['label' => 'No responses received', 'waitingOnLabs' => false],
-            'evaluate' => ['label' => 'Ready to evaluate', 'waitingOnLabs' => false],
-            'reports' => ['label' => 'Generate reports', 'waitingOnLabs' => false],
-            'finalize' => ['label' => 'Ready to finalize', 'waitingOnLabs' => false],
+            'awaiting-responses' => [
+                'label' => Pt_Commons_TranslateUtility::safeTranslate('Awaiting responses'),
+                'waitingOnLabs' => true,
+            ],
+            'no-responses' => [
+                'label' => Pt_Commons_TranslateUtility::safeTranslate('No responses received'),
+                'waitingOnLabs' => false,
+            ],
+            'evaluate' => [
+                'label' => Pt_Commons_TranslateUtility::safeTranslate('Ready to evaluate'),
+                'waitingOnLabs' => false,
+            ],
+            'reports' => [
+                'label' => Pt_Commons_TranslateUtility::safeTranslate('Generate reports'),
+                'waitingOnLabs' => false,
+            ],
+            'finalize' => [
+                'label' => Pt_Commons_TranslateUtility::safeTranslate('Ready to finalize'),
+                'waitingOnLabs' => false,
+            ],
         ];
 
         $counts = array_fill_keys(array_keys($stages), 0);
@@ -362,7 +383,7 @@ class Application_Service_Dashboard
         foreach ($stages as $key => $stage) {
             $out[] = [
                 'key' => $key,
-                'label' => Pt_Commons_TranslateUtility::safeTranslate($stage['label']),
+                'label' => $stage['label'],
                 'count' => $counts[$key],
                 'waitingOnLabs' => $stage['waitingOnLabs'],
             ];
@@ -478,16 +499,27 @@ class Application_Service_Dashboard
         $inScheme = min($inScheme, $totalActive);
         $participating = min($participating, $inScheme);
 
+        // Same reason as summarisePipeline(): translate the literal in place.
+        // "Not in any scheme" appears nowhere else in the codebase, so when it
+        // was translated through a variable it never reached the POT and the
+        // first catalog refresh deleted its fr and vi translations.
         $buckets = [
-            ['key' => 'participating', 'label' => 'Actively participating', 'count' => $participating],
-            ['key' => 'in-scheme-idle', 'label' => 'In a scheme, not responding', 'count' => $inScheme - $participating],
-            ['key' => 'no-scheme', 'label' => 'Not in any scheme', 'count' => $totalActive - $inScheme],
+            [
+                'key' => 'participating',
+                'label' => Pt_Commons_TranslateUtility::safeTranslate('Actively participating'),
+                'count' => $participating,
+            ],
+            [
+                'key' => 'in-scheme-idle',
+                'label' => Pt_Commons_TranslateUtility::safeTranslate('In a scheme, not responding'),
+                'count' => $inScheme - $participating,
+            ],
+            [
+                'key' => 'no-scheme',
+                'label' => Pt_Commons_TranslateUtility::safeTranslate('Not in any scheme'),
+                'count' => $totalActive - $inScheme,
+            ],
         ];
-
-        foreach ($buckets as &$bucket) {
-            $bucket['label'] = Pt_Commons_TranslateUtility::safeTranslate($bucket['label']);
-        }
-        unset($bucket);
 
         return [
             'total' => $totalActive,
