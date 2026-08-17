@@ -19966,3 +19966,79 @@ msgstr "PT Participant Info"
 #~| msgid "Corrective Actions"
 #~ msgid "Corrective actions"
 #~ msgstr "Corrective Actions"
+
+#: application/modules/admin/views/scripts/index/index.phtml
+msgid "across 1 scheme"
+msgstr ""
+
+#: application/modules/admin/views/scripts/index/index.phtml
+msgid "across %d schemes"
+msgstr ""
+
+#: application/modules/admin/views/scripts/index/index.phtml
+msgid "Rounds in progress"
+msgstr ""
+
+#: application/modules/admin/views/scripts/index/index.phtml
+msgid "%1$d open · %2$d awaiting finalize"
+msgstr ""
+
+#: application/modules/admin/views/scripts/index/index.phtml
+msgid "nothing shipped right now"
+msgstr ""
+
+#: application/modules/admin/views/scripts/index/index.phtml
+msgid "Labs yet to respond"
+msgstr ""
+
+#: application/modules/admin/views/scripts/index/index.phtml
+msgid "of %d labs in rounds in progress"
+msgstr ""
+
+#: application/modules/admin/views/scripts/index/index.phtml
+msgid "last finalized %s"
+msgstr ""
+
+#: application/modules/admin/views/scripts/index/index.phtml
+msgid "no rounds finalized yet"
+msgstr ""
+
+#: application/modules/admin/views/scripts/index/index.phtml
+msgid "Participant engagement"
+msgstr ""
+
+#: application/modules/admin/views/scripts/index/index.phtml
+msgid "Participation by scheme"
+msgstr ""
+
+#: application/modules/admin/views/scripts/index/index.phtml
+msgid "Counted as participating after a response to a round shipped in the last %d months."
+msgstr ""
+
+#: application/modules/admin/views/scripts/index/index.phtml
+msgid "active labs"
+msgstr ""
+
+#: application/modules/admin/views/scripts/index/index.phtml
+msgid "Labs"
+msgstr ""
+
+#: application/services/Dashboard.php
+msgid "Actively participating"
+msgstr ""
+
+#: application/services/Dashboard.php
+msgid "Enrolled, not responding"
+msgstr ""
+
+#: application/services/Dashboard.php
+msgid "Not enrolled in any scheme"
+msgstr ""
+
+#: application/services/Dashboard.php
+msgid "In a scheme, not responding"
+msgstr ""
+
+#: application/services/Dashboard.php
+msgid "Not in any scheme"
+msgstr ""

@@ -20399,3 +20399,60 @@ msgstr "Không có người tham gia"
 
 #~ msgid "Reporting the availability of Refridgerator"
 #~ msgstr "Thông báo về tình trạng sẵn có của tủ lạnh"
+
+msgid "across 1 scheme"
+msgstr "thuộc 1 chương trình"
+
+msgid "across %d schemes"
+msgstr "thuộc %d chương trình"
+
+msgid "Rounds in progress"
+msgstr "Vòng đang thực hiện"
+
+msgid "%1$d open · %2$d awaiting finalize"
+msgstr "%1$d đang mở · %2$d đang chờ hoàn thiện"
+
+msgid "nothing shipped right now"
+msgstr "hiện chưa gửi vòng nào"
+
+msgid "Labs yet to respond"
+msgstr "Phòng xét nghiệm chưa phản hồi"
+
+msgid "of %d labs in rounds in progress"
+msgstr "trên %d phòng xét nghiệm trong các vòng đang thực hiện"
+
+msgid "last finalized %s"
+msgstr "hoàn thiện gần nhất ngày %s"
+
+msgid "no rounds finalized yet"
+msgstr "chưa có vòng nào được hoàn thiện"
+
+msgid "Participant engagement"
+msgstr "Mức độ tham gia của đơn vị"
+
+msgid "Participation by scheme"
+msgstr "Mức độ tham gia theo chương trình"
+
+msgid "Counted as participating after a response to a round shipped in the last %d months."
+msgstr "Được tính là có tham gia nếu đã phản hồi một vòng gửi trong %d tháng gần nhất."
+
+msgid "active labs"
+msgstr "phòng xét nghiệm đang hoạt động"
+
+msgid "Labs"
+msgstr "Phòng xét nghiệm"
+
+msgid "Actively participating"
+msgstr "Đang tham gia tích cực"
+
+msgid "Enrolled, not responding"
+msgstr "Đã ghi danh, chưa phản hồi"
+
+msgid "Not enrolled in any scheme"
+msgstr "Chưa ghi danh chương trình nào"
+
+msgid "In a scheme, not responding"
+msgstr "Thuộc chương trình, chưa phản hồi"
+
+msgid "Not in any scheme"
+msgstr "Không thuộc chương trình nào"

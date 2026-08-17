@@ -39,10 +39,13 @@ class Admin_IndexController extends Zend_Controller_Action
 
         $this->view->openRounds = $openRounds;
         $this->view->openRoundsCount = count($openForResponse);
-        // Both dashboard charts are derived from the rows already fetched
-        // above, so neither costs a query.
+        // Derived from the rows already fetched above, so it costs no query.
         $this->view->pipelineStages = $dashboardService->summarisePipeline($openRounds);
-        $this->view->responseRates = $dashboardService->summariseResponseRates($openRounds);
+        // Engagement is about the participant base, not about any one round,
+        // so it does not vary with whether a round is open. Both panels are
+        // shown either way.
+        $this->view->engagement = $dashboardService->getParticipantEngagement();
+        $this->view->schemeEngagement = $dashboardService->getSchemeEngagement();
         // Closed but not yet finalized — the heading names these separately so
         // an idle system reads differently from one with a backlog.
         $this->view->awaitingFinalizeCount = count($openRounds) - count($openForResponse);

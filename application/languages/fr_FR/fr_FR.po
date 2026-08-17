@@ -21299,3 +21299,60 @@ msgstr "Pas de participants"
 
 #~ msgid "the example google service json"
 #~ msgstr "l'exemple de service google json"
+
+msgid "across 1 scheme"
+msgstr "dans 1 programme"
+
+msgid "across %d schemes"
+msgstr "dans %d programmes"
+
+msgid "Rounds in progress"
+msgstr "Cycles en cours"
+
+msgid "%1$d open · %2$d awaiting finalize"
+msgstr "%1$d ouvert(s) · %2$d en attente de finalisation"
+
+msgid "nothing shipped right now"
+msgstr "aucun envoi en cours"
+
+msgid "Labs yet to respond"
+msgstr "Labos n'ayant pas encore répondu"
+
+msgid "of %d labs in rounds in progress"
+msgstr "sur %d labos dans les cycles en cours"
+
+msgid "last finalized %s"
+msgstr "dernière finalisation le %s"
+
+msgid "no rounds finalized yet"
+msgstr "aucun cycle finalisé pour l'instant"
+
+msgid "Participant engagement"
+msgstr "Engagement des participants"
+
+msgid "Participation by scheme"
+msgstr "Participation par programme"
+
+msgid "Counted as participating after a response to a round shipped in the last %d months."
+msgstr "Un labo est compté comme participant s'il a répondu à un cycle envoyé au cours des %d derniers mois."
+
+msgid "active labs"
+msgstr "labos actifs"
+
+msgid "Labs"
+msgstr "Labos"
+
+msgid "Actively participating"
+msgstr "Participation active"
+
+msgid "Enrolled, not responding"
+msgstr "Inscrits, sans réponse"
+
+msgid "Not enrolled in any scheme"
+msgstr "Non inscrits à un programme"
+
+msgid "In a scheme, not responding"
+msgstr "Inscrits à un programme, sans réponse"
+
+msgid "Not in any scheme"
+msgstr "Dans aucun programme"

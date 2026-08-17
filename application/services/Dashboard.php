@@ -57,6 +57,13 @@
  */
 class Application_Service_Dashboard
 {
+    /**
+     * How far back a lab's response still counts as "actively participating".
+     * Long enough to cover an annual scheme, short enough that a lab which
+     * stopped answering drops out of the count.
+     */
+    public const ENGAGEMENT_WINDOW_MONTHS = 12;
+
     /** @var Zend_Db_Adapter_Abstract */
     protected $db;
 
@@ -70,28 +77,18 @@ class Application_Service_Dashboard
     }
 
     /**
-     * Task 2 — top strip. Three flat counts, no trends.
+     * Task 2 — top strip counts.
      */
     public function getSummaryCounts()
     {
-        // Reuses the same method the original (pre-rebuild) dashboard controller
-        // called to feed the removed "Active Participants enrolled per PT Scheme"
-        // chart — it already returns per-scheme enrolled-participant counts, so
-        // summing it gives total active participants without guessing a table.
-        // (Keyed by scheme name per the original phtml's usage — key identity
-        // doesn't matter here since we're only summing/counting values.)
-        $schemeCountsByName = $this->schemeService->countEnrollmentSchemes();
-        $activeParticipants = (int) array_sum($schemeCountsByName);
-
-        // Schemes with at least one enrolled participant. TODO: if "active
-        // scheme" should instead mean something like a status flag on the
-        // scheme itself (independent of enrollment), swap this for
-        // count($this->schemeService->getAllSchemes()) filtered accordingly —
-        // I don't have visibility into whether scheme_list carries its own
-        // active/inactive flag.
-        $activeSchemes = count(array_filter($schemeCountsByName, function ($count) {
-            return $count > 0;
-        }));
+        // Counted directly rather than by summing Schemes::countEnrollmentSchemes(),
+        // which was the original source: a lab enrolled in three schemes appears
+        // in three of those buckets, so the sum overstated the headcount on
+        // every multi-scheme instance. It also has to agree with the engagement
+        // donut, which is the same population.
+        $activeParticipants = (int) $this->db->fetchOne(
+            "SELECT COUNT(*) FROM participant WHERE status = 'active'"
+        );
 
         $roundsCompletedThisYear = (int) $this->db->fetchOne(
             "SELECT COUNT(*) FROM shipment
@@ -100,10 +97,21 @@ class Application_Service_Dashboard
                AND YEAR(finalized_at) = YEAR(CURDATE())"
         );
 
+        // Supporting line under the year count. An instance that has finalized
+        // nothing this year still reads as alive if the last round it did
+        // finalize is named.
+        $lastFinalized = $this->db->fetchOne(
+            "SELECT MAX(finalized_at) FROM shipment
+             WHERE status = 'finalized' AND cancelled_at IS NULL"
+        );
+
+        // No 'activeSchemes' here: the strip's scheme count now comes from
+        // getSchemeEngagement(), so the number under Active participants and
+        // the bars in the scheme chart can never disagree.
         return [
             'activeParticipants' => $activeParticipants,
-            'activeSchemes' => $activeSchemes,
             'roundsCompletedThisYear' => $roundsCompletedThisYear,
+            'lastFinalizedDate' => $lastFinalized ? date('d M Y', strtotime($lastFinalized)) : null,
         ];
     }
 
@@ -364,38 +372,145 @@ class Application_Service_Dashboard
     }
 
     /**
-     * Response rate per unfinalized round, worst first, so the rounds worth
-     * chasing come to the top. The table is ordered by deadline, which is the
-     * wrong order for that question.
+     * The whole active participant base, split by how engaged it is.
      *
-     * Rounds with no participants are dropped: their rate is undefined, and a
-     * zero bar would read as "nobody responded".
+     * Deliberately not a per-round cut: the round table and its Response %
+     * column already answer "how is this round doing". This answers a question
+     * nothing else on the page answers — of every lab on the books, how many
+     * are actually taking part.
      *
-     * @param array<int, array<string, mixed>> $openRounds
-     * @return array<int, array{code: string, schemeName: string, rate: int, responded: int, total: int, shipmentId: mixed}>
+     * "In a scheme" means enrolled in one OR shipped a round of one, not
+     * enrolled alone. The enrollments table is optional in practice: on the
+     * Malawi instance only `dts` has enrollment rows, while HBV and Syphilis
+     * each have ~6,500 labs that only ever arrive through a shipment. Reading
+     * enrollment alone reported those schemes as empty.
+     *
+     * The three buckets are disjoint and sum to the active participant count:
+     *   participating    responded to a round shipped inside the window
+     *   inSchemeIdle     in a scheme, but responded to nothing in the window
+     *   notInScheme      active on the books, in no scheme at all
+     *
+     * A window is needed or the first bucket only ever grows: a lab that
+     * answered once in 2019 is not "actively participating" today. Retired
+     * schemes are excluded by scheme_list.status, so a scheme nobody runs any
+     * more does not sit here as a permanent block of red.
+     *
+     * @return array{total: int, windowMonths: int, buckets: array<int, array{key: string, label: string, count: int}>}
      */
-    public function summariseResponseRates(array $openRounds)
+    public function getParticipantEngagement()
     {
-        $rows = [];
-        foreach ($openRounds as $round) {
-            if ($round['responseRate'] === null) {
-                continue;
-            }
-            $rows[] = [
-                'shipmentId' => $round['shipmentId'],
-                'code' => $round['code'],
-                'schemeName' => $round['schemeName'],
-                'rate' => (int) $round['responseRate'],
-                'responded' => (int) $round['responded'],
-                'total' => (int) $round['total'],
+        $window = self::ENGAGEMENT_WINDOW_MONTHS;
+
+        $totalActive = (int) $this->db->fetchOne(
+            "SELECT COUNT(*) FROM participant WHERE status = 'active'"
+        );
+
+        $inScheme = (int) $this->db->fetchOne(
+            "SELECT COUNT(*) FROM (
+                SELECT e.participant_id
+                  FROM enrollments e
+                  JOIN participant p ON p.participant_id = e.participant_id AND p.status = 'active'
+                  JOIN scheme_list sl ON sl.scheme_id = e.scheme_id AND sl.status = 'active'
+                UNION
+                SELECT sp.participant_id
+                  FROM shipment_participant_map sp
+                  JOIN shipment s ON s.shipment_id = sp.shipment_id AND s.cancelled_at IS NULL
+                  JOIN participant p ON p.participant_id = sp.participant_id AND p.status = 'active'
+                  JOIN scheme_list sl ON sl.scheme_id = s.scheme_type AND sl.status = 'active'
+             ) membership"
+        );
+
+        $participating = (int) $this->db->fetchOne(
+            "SELECT COUNT(DISTINCT sp.participant_id)
+               FROM shipment_participant_map sp
+               JOIN shipment s ON s.shipment_id = sp.shipment_id AND s.cancelled_at IS NULL
+               JOIN participant p ON p.participant_id = sp.participant_id AND p.status = 'active'
+               JOIN scheme_list sl ON sl.scheme_id = s.scheme_type AND sl.status = 'active'
+              WHERE s.shipment_date >= DATE_SUB(CURDATE(), INTERVAL {$window} MONTH)
+                AND sp.response_status IS NOT NULL
+                AND sp.response_status NOT IN ('', 'noresponse')"
+        );
+
+        // Clamped so a lab that responded under a scheme it has since left can
+        // never push the buckets past the total.
+        $inScheme = min($inScheme, $totalActive);
+        $participating = min($participating, $inScheme);
+
+        $buckets = [
+            ['key' => 'participating', 'label' => 'Actively participating', 'count' => $participating],
+            ['key' => 'in-scheme-idle', 'label' => 'In a scheme, not responding', 'count' => $inScheme - $participating],
+            ['key' => 'no-scheme', 'label' => 'Not in any scheme', 'count' => $totalActive - $inScheme],
+        ];
+
+        foreach ($buckets as &$bucket) {
+            $bucket['label'] = Pt_Commons_TranslateUtility::safeTranslate($bucket['label']);
+        }
+        unset($bucket);
+
+        return [
+            'total' => $totalActive,
+            'windowMonths' => $window,
+            'buckets' => $buckets,
+        ];
+    }
+
+    /**
+     * The same engagement split, per scheme, for a stacked bar.
+     *
+     * The donut says how big the idle share is. This says which scheme it sits
+     * in, which is the part that decides who to chase.
+     *
+     * Membership is enrolment UNION shipment history, for the reason given on
+     * getParticipantEngagement(). Only the participating half is windowed, so a
+     * scheme that has shipped nothing for a year still appears — as a full
+     * amber bar, which is the finding.
+     *
+     * @return array<int, array{schemeId: mixed, schemeName: string, enrolled: int, participating: int, notResponding: int}>
+     */
+    public function getSchemeEngagement()
+    {
+        $window = self::ENGAGEMENT_WINDOW_MONTHS;
+
+        $rows = $this->db->fetchAll(
+            "SELECT
+                sl.scheme_id,
+                sl.scheme_name,
+                COUNT(DISTINCT m.participant_id) AS enrolled,
+                COUNT(DISTINCT CASE WHEN m.responded = 1 THEN m.participant_id END) AS participating
+             FROM (
+                SELECT e.scheme_id, e.participant_id, 0 AS responded
+                  FROM enrollments e
+                  JOIN participant p ON p.participant_id = e.participant_id AND p.status = 'active'
+                UNION ALL
+                SELECT s.scheme_type AS scheme_id, sp.participant_id,
+                       CASE WHEN s.shipment_date >= DATE_SUB(CURDATE(), INTERVAL {$window} MONTH)
+                             AND sp.response_status IS NOT NULL
+                             AND sp.response_status NOT IN ('', 'noresponse')
+                            THEN 1 ELSE 0 END AS responded
+                  FROM shipment_participant_map sp
+                  JOIN shipment s ON s.shipment_id = sp.shipment_id AND s.cancelled_at IS NULL
+                  JOIN participant p ON p.participant_id = sp.participant_id AND p.status = 'active'
+             ) m
+             JOIN scheme_list sl ON sl.scheme_id = m.scheme_id AND sl.status = 'active'
+             GROUP BY sl.scheme_id, sl.scheme_name
+             HAVING enrolled > 0
+             ORDER BY enrolled DESC, sl.scheme_name ASC"
+        );
+
+        $out = [];
+        foreach ($rows as $row) {
+            $enrolled = (int) $row['enrolled'];
+            $participating = min((int) $row['participating'], $enrolled);
+            $out[] = [
+                'schemeId' => $row['scheme_id'],
+                'schemeName' => trim((string) $row['scheme_name']),
+                'enrolled' => $enrolled,
+                'participating' => $participating,
+                'notResponding' => $enrolled - $participating,
             ];
         }
 
-        usort($rows, function ($a, $b) {
-            return $a['rate'] <=> $b['rate'];
-        });
-
-        return $rows;
+        return $out;
     }
 
     /**
