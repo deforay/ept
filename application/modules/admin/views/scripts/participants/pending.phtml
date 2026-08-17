@@ -15,11 +15,12 @@
             <th scope="col"><?= $this->translate->_("Participant ID"); ?></th>
             <th scope="col"><?= $this->translate->_("Lab Name/Participant Name"); ?></th>
             <th scope="col"><?= $this->translate->_("Country"); ?></th>
-            <th scope="col"><?= $this->translate->_("Cell/Mobile"); ?></th>
-            <th scope="col"><?= $this->translate->_("Phone"); ?></th>
-            <th scope="col"><?= $this->translate->_("Affiliation"); ?></th>
+            <th scope="col"><?= $this->translate->_("State/Province"); ?></th>
+            <th scope="col"><?= $this->translate->_("District/County"); ?></th>
             <th scope="col"><?= $this->translate->_("Email"); ?></th>
             <th scope="col"><?= $this->translate->_("Status"); ?></th>
+            <th scope="col"><?= $this->translate->_("Data Managers"); ?></th>
+            <th scope="col"><?= $this->translate->_("Shipments"); ?></th>
             <th scope="col"><?= $this->translate->_("Action"); ?></th>
         </tr>
     </thead>
@@ -42,6 +43,12 @@
             "bScrollCollapse": true,
             "sPaginationType": "bootstrap",
             "bRetrieve": true,
+            /* Must stay in step with the columns emitted by
+               Application_Model_DbTable_Participants::getAllParticipants() — this page
+               shares that endpoint with /admin/participants. The Data Managers and
+               Shipments columns render child-row toggles whose handlers only exist on
+               the main listing, so they are declared (to keep indices aligned) but
+               hidden here. */
             "aoColumns": [{
                 "sClass": "center"
             },
@@ -64,7 +71,14 @@
                 "sClass": "center"
             },
             {
-                "sClass": "center"
+                "sClass": "center",
+                "bSortable": false,
+                "bVisible": false
+            },
+            {
+                "sClass": "center",
+                "bSortable": false,
+                "bVisible": false
             },
             {
                 "sClass": "center",
