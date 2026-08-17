@@ -1,409 +1,128 @@
-# ePT Translation Guide
+# How to translate ePT into your language
 
-This guide provides standards and terminology for translating the ePT (e-Proficiency Testing) platform. It ensures consistency across all language translations with proper context for medical/laboratory terminology.
+ePT ships in English. A laboratory that reads the interface in the wrong words reports the wrong result. This guide covers translating the interface so it stays correct for the people using it.
 
----
+Translations live in GNU gettext catalogs at `application/languages/{locale}/{locale}.po`.
 
-## Project Context
+## Before you start
 
-ePT is a **medical proficiency testing platform** for laboratory quality assurance. It enables organizations to:
+- Install [Poedit](https://poedit.net) 3.x.
+- Ask the instance maintainer to run `php bin/refresh-translations.php`. That command pulls new English strings into your `.po` file. See [CLI tools](cli-tools.md).
+- Read the next section before you translate the first string.
 
-- Create and manage PT (Proficiency Testing) shipments
-- Enroll participant laboratories and track their responses
-- Evaluate results against reference data
-- Generate reports for analysis and certification
+## Translate in the laboratory testing context
 
-### Critical Context
+ePT runs proficiency testing for medical laboratories. A PT provider sends prepared samples to enrolled laboratories. Each laboratory tests the samples and reports its results. The provider scores those results and issues a report.
 
-**"PT" = Proficiency Testing** (laboratory quality assurance testing)
+Every string means something in that setting. Translate the meaning, not the English word.
 
-PT does NOT mean:
-- Physical Therapy
-- Physiotherapy
-- Patient
-- Part-Time
+| Word | What it means in ePT | What it never means |
+| --- | --- | --- |
+| PT | Proficiency testing | Physical therapy, physiotherapy, patient, part-time |
+| Scheme | A category of testing, such as HIV Serology or Viral Load | A diagram, a plan, or a scam |
+| Shipment | A batch of samples sent out to laboratories | A commercial delivery or an order |
+| Round | One testing cycle of a scheme | A shape or a drinks round |
+| Panel | The set of samples in one shipment | A screen area or a control panel |
+| Participant | An enrolled laboratory | An individual person |
+| Outstanding | Has not responded yet | Excellent, or a destination |
+| Result | What a laboratory reported for a sample | An outcome in the general sense |
+| Evaluate | Score a laboratory's reported results | Consider or estimate |
+| Finalize | Lock a round so it can no longer change | Complete in the general sense |
 
-Always translate PT in the context of laboratory quality control and testing proficiency.
+## Keep one word for one thing
 
----
+Pick one translation for each term. Use it in every string, on every screen.
 
-## Core Terminology
+Rotating between two words for the same thing makes the interface unreadable. A laboratory that sees three different words for "shipment" cannot tell whether they mean three different things.
 
-### Platform Concepts
+These are the terms already fixed in the shipped catalogs. Match them.
 
-| English Term | Definition | Translation Notes |
-|--------------|------------|-------------------|
-| **Proficiency Testing (PT)** | A program where laboratories test unknown samples to assess their testing accuracy | Core concept - never confuse with medical therapy |
-| **PT Program** | An organized testing program managed through the platform | The main organizational unit |
-| **PT Manager** | Administrator role managing PT programs | A user role, not a software feature |
-| **Scheme** | A category of tests (e.g., HIV, TB, COVID-19) | Use "program" or "testing program" sense, not "diagram" |
-| **Shipment** | A batch of samples sent to participating laboratories | Physical delivery of test materials |
-| **Round** | A testing cycle within a scheme | Time-based testing period |
-| **Panel** | A set of samples within a shipment | Collection of test specimens |
-| **Participant** | An enrolled laboratory taking part in PT | Not an individual person, but a lab/facility |
+| English | French (fr_FR) | Vietnamese (vi_VN) |
+| --- | --- | --- |
+| Scheme | Programme | Chương trình |
+| Shipment | Expédition | Vòng ngoại kiểm |
+| Round | Cycle | Vòng |
+| Participant | Participant | Người tham gia |
+| Laboratory | Laboratoire | Phòng thí nghiệm |
+| Response | Réponse | Phản hồi |
+| Deadline | Date d'échéance | Ngày hết hạn |
+| Outstanding | En attente | Chưa phản hồi |
+| Pass | Réussi | Đạt |
+| Fail | Echec | Không Đạt |
+| Excluded | Exclu | Không bao gồm |
+| Not evaluated | Non évalué | Chưa được đánh giá |
+| Evaluate | Évaluer | Đánh giá |
+| Finalize | Finaliser | Hoàn thiện |
+| Report | Rapport | Báo cáo |
+| Score | Score | Điểm |
 
-### Test Schemes (Abbreviations)
+Adding a language? Fill in this table for it first. Translate afterwards.
 
-Keep abbreviations in English, but translate the full names:
+## Steps
 
-| Abbreviation | Full Name | Context |
-|--------------|-----------|---------|
-| **DTS** | Dried Tube Specimen | HIV Serology rapid testing |
-| **VL** | Viral Load | HIV quantitative testing |
-| **EID** | Early Infant Diagnosis | PCR-based infant HIV testing |
-| **TB** | Tuberculosis | Molecular and microscopy testing |
-| **Recency** | HIV Recency Testing | Recent infection detection |
-| **COVID-19** | Coronavirus Disease 2019 | Keep as "COVID-19" in all languages |
-| **DBS** | Dried Blood Spot | EIA and Western Blot testing |
+1. Open `application/languages/{locale}/{locale}.po` in Poedit.
+2. Sort by translation status so untranslated entries come first.
+3. Translate each empty entry. Check the source file path shown in the sidebar when the meaning is unclear.
+4. Check every entry Poedit marks as needing work. See the section below.
+5. Save the file. Poedit writes the `.po` and compiles the `.mo` beside it.
+6. Verify your work. See the section below.
 
-### Laboratory & Testing Terms
+## Check every entry marked as needing work
 
-| English | Definition |
-|---------|------------|
-| Laboratory | Facility performing the tests |
-| Sample / Specimen | Material being tested |
-| Result | Test outcome |
-| Reference Result | The correct/expected result |
-| Reported Result | What the participant laboratory submitted |
-| Concordance | Agreement between reported and reference results |
-| Discordance | Disagreement between reported and reference results |
-| Score | Numerical evaluation of performance |
-| Evaluation | Assessment of laboratory performance |
-| Algorithm | Testing procedure/workflow |
-| Assay | A test or testing procedure |
-| Reagent | Chemical substance used in testing |
+Poedit marks an entry orange when it copied the translation from a similar English string. These copies are guesses. They are wrong often enough that you must read every one.
 
-### User Interface Terms
+Real examples found in the shipped catalogs:
 
-| English | Usage Context |
-|---------|---------------|
-| Download | Retrieving files from server |
-| Upload | Sending files to server |
-| Submit | Sending form data / responses |
-| Save | Storing changes |
-| Cancel | Aborting an action |
-| Delete | Removing permanently |
-| Edit | Modifying existing data |
-| View | Displaying without editing |
-| Report | Generated document with results |
-| Dashboard | Overview/summary page |
-| Settings | Configuration options |
-| Establishment | Institution/facility (use formal term) |
+| English | Guessed translation | What it meant | Correct |
+| --- | --- | --- | --- |
+| Outstanding | destination | destination | En attente |
+| Next action | extraction | extraction | Action suivante |
+| unable to test | Activer les tests personnalisés | Enable custom tests | non réalisés |
+| Rounds completed in | Các cột được đánh dấu trong | The columns marked in | Số vòng đã hoàn thành trong |
+| No finalized rounds yet. | Chưa có tệp nhật ký nào | There are no log files | Chưa có vòng nào được hoàn thiện |
 
-### User Roles
+Read the English. Read the guess. If the guess does not say the same thing, replace it and clear the mark.
 
-| English | Context |
-|---------|---------|
-| Administrator | Full system access |
-| Admin | Abbreviated form of Administrator |
-| Data Manager | Manages participant data |
-| Participant | Laboratory user submitting results |
-| User | Generic system user |
+## Keep placeholders and markup exactly as they are
 
-### Status Terms
+Copy these through unchanged:
 
-| English | Context |
-|---------|---------|
-| Pending | Waiting for action |
-| In Progress | Currently being processed |
-| Completed | Finished successfully |
-| Active | Currently enabled |
-| Inactive | Currently disabled |
-| Approved | Accepted/validated |
-| Rejected | Declined/invalid |
-| Finalized | Locked and complete |
-| Shipped | Samples sent to participants |
-| Evaluated | Results have been assessed |
-
----
-
-## Translation Rules
-
-### 1. Preserve Technical Elements
-
-Never translate or modify:
-- Variable placeholders: `%s`, `%d`, `%1$s`, `{0}`, `{{name}}`
+- Number and text placeholders: `%d`, `%s`, `%1$s`
 - HTML tags: `<strong>`, `<br>`, `<a href="...">`
 - Email addresses and URLs
-- Code/technical identifiers
 
-Example:
-```
-Source: "Hello %s, you have %d messages"
-Translation: "[Greeting] %s, [you have] %d [messages]"
-```
+`%d` becomes a number when the page loads. Deleting it removes the number. Changing it breaks the page.
 
-### 2. Maintain Placeholder Order
+To reorder a sentence that has two placeholders, number them. `%s uploaded %d files` becomes `%2$d fichiers envoyés par %1$s`.
 
-Some languages require different word order. Use positional placeholders when reordering:
-```
-Source: "%s uploaded %d files"
-Translation (if reordering needed): "%2$d [files uploaded by] %1$s"
-```
+## Write for a professional reader
 
-### 3. Context Over Literal Translation
+- Use the formal register. French uses "vous". Vietnamese uses neutral professional forms.
+- Include articles. Write "Générer les rapports", not "Générer rapports".
+- Match the capitalisation style of the English string.
+- Use the correct accents and diacritics for your language.
+- Leave no space at the start or end of a translation.
 
-Translate meaning, not words:
-- "No. of Responses" = "Number of Responses" = [Count of responses submitted]
-- "PT Manager" = [Person who manages proficiency testing programs]
+## Verify your work
 
-### 4. Consistency
+1. Confirm Poedit reports zero untranslated and zero entries needing work.
+2. Run `msgfmt --check-format -o /dev/null application/languages/{locale}/{locale}.po`. It prints nothing when the placeholders are intact. It names the line when they are not.
+3. Sign in to ePT, switch the interface to your language, and open the admin dashboard.
+4. Read the round table. Every column heading and status should read as a laboratory professional would say it.
 
-Use the same translation for the same term throughout:
-- Pick ONE translation for "Email" and use it everywhere
-- Pick ONE translation for "Scheme" and use it everywhere
-- Document your choices in language-specific notes
+If a string still shows in English, the `.mo` file is stale. Ask the maintainer to rerun `php bin/refresh-translations.php --locale={locale}`.
 
-### 5. Formality
+## Where strings come from
 
-Use formal register throughout the application:
-- Use formal "you" forms where applicable (vous, Sie, usted, etc.)
-- Use professional/technical language
-- Avoid slang or colloquialisms
+Two sources feed the catalogs. Knowing which is which explains why a string appears.
 
-### 6. Completeness
+| Source | Example | Notes |
+| --- | --- | --- |
+| Application code | Column headings, buttons, messages | Extracted from `.phtml` and `.php` files |
+| Database lookup tables | Test result names, sample types | Extracted from `r_*` tables on that instance |
 
-- Never leave `msgstr` empty for strings that need translation
-- Translate the complete meaning, including implied articles/prepositions
-- Match the tone and intent of the original
+Database strings differ between instances. A string another country translated may not appear in your catalog.
 
----
+## Reporting a problem
 
-## Common Mistakes
-
-### 1. Wrong Context for "PT"
-
-| Wrong | Correct |
-|-------|---------|
-| Physical Therapy | Proficiency Testing |
-| Physiotherapy | Proficiency Testing |
-| Patient | (PT never means Patient here) |
-
-### 2. Wrong Context for "Scheme"
-
-| Wrong | Correct |
-|-------|---------|
-| Diagram/Blueprint | Testing Program/Category |
-| Plan/Plot | Testing Program/Category |
-
-### 3. Wrong Context for "Panel"
-
-| Wrong | Correct |
-|-------|---------|
-| UI Panel/Section | Set of test samples |
-| Control Panel | Set of test samples |
-
-### 4. Placeholder Errors
-
-| Wrong | Correct |
-|-------|---------|
-| Removing `%s` | Keep `%s` exactly |
-| Translating `%d` | Keep `%d` exactly |
-| Changing `{name}` to `{nom}` | Keep `{name}` exactly |
-
----
-
-## Quality Checklist
-
-Before submitting translations:
-
-- [ ] All strings have translations (no empty `msgstr`)
-- [ ] Placeholders preserved exactly (`%s`, `%d`, `{0}`, etc.)
-- [ ] HTML tags preserved exactly
-- [ ] "PT" translated as Proficiency Testing, not therapy
-- [ ] "Scheme" translated as testing program, not diagram
-- [ ] Terminology consistent throughout the file
-- [ ] Formal register used (formal "you")
-- [ ] No trailing or leading spaces in translations
-- [ ] Proper punctuation and capitalization for target language
-- [ ] Accents and special characters correct for target language
-
----
-
-## File Format
-
-### PO File Structure
-
-Translation files use GNU gettext format (`.po`):
-
-```po
-# Comment providing context
-#: path/to/source/file.php:123
-msgid "Original English text"
-msgstr "Translated text"
-```
-
-- `msgid`: Source text (DO NOT MODIFY)
-- `msgstr`: Your translation
-- `#:` Reference to source file location
-- `#` Comments provide context
-
-### Plural Forms
-
-Handle plurals according to target language rules:
-
-```po
-msgid "1 result"
-msgid_plural "%d results"
-msgstr[0] "singular form"
-msgstr[1] "plural form"
-```
-
-Note: Some languages have more than 2 plural forms (e.g., Russian, Arabic).
-
----
-
-## Adding a New Language
-
-1. Copy `application/languages/en_US/en_US.po` as template
-2. Create new directory: `application/languages/{locale}/{locale}.po`
-3. Update the PO file header with language metadata
-4. Translate all `msgstr` entries
-5. Run quality checks using this guide
-6. Test in the application
-
----
-
-## Translation Refresh Automation
-
-This project uses a simple per-instance workflow:
-
-1. Refresh the locale files from the current instance
-2. Open the target `.po` file in Poedit
-3. Translate the new or empty entries
-4. Save the file
-
-The refresh command is:
-
-```bash
-php bin/refresh-translations.php
-```
-
-What it does:
-
-1. Regenerates `application/languages/db-translation-strings.php` from the configured `r_*` tables
-2. Rebuilds the gettext source catalog from application code and DB-backed strings
-3. Merges new/changed `msgid` values into each locale `.po` file
-4. Compiles updated `.mo` files
-
-Important behavior:
-
-- Existing manual translations are preserved
-- New strings are added to `.po` files for later review
-- Removed strings are handled by normal gettext merge behavior
-- The script prepares the files; Poedit is where in-country maintainers do the actual translation work
-- If AI credentials are configured, the refresh command can also prefill empty translations before compiling `.mo`
-
-### Optional Flags
-
-Refresh one locale only:
-
-```bash
-php bin/refresh-translations.php --locale=fr_FR
-```
-
-Refresh only one DB lookup table while debugging:
-
-```bash
-php bin/refresh-translations.php --table=r_possibleresult
-```
-
-Skip AI even when AI credentials are configured:
-
-```bash
-php bin/refresh-translations.php --skip-ai
-```
-
-### Manual Editing Still Works
-
-For most deployments, maintainers only need these steps:
-
-```bash
-php bin/refresh-translations.php
-```
-
-Then:
-
-1. Open `application/languages/{locale}/{locale}.po` in Poedit
-2. Translate the new or untranslated entries
-3. Save the file in Poedit
-
-Poedit will update the `.po` file, and depending on the maintainer's setup it may also compile the `.mo`.
-
-If needed, you can rerun the refresh command after editing to make sure catalogs stay synchronized and `.mo` files are regenerated:
-
-```bash
-php bin/refresh-translations.php --locale=fr_FR
-```
-
-### Recommended Maintainer Workflow
-
-For in-country maintainers, the recommended process is:
-
-1. Run `php bin/refresh-translations.php`
-2. Open the locale `.po` file in Poedit
-3. Translate the newly added entries
-4. Save and test the application in that language
-
-### Optional AI Prefill
-
-If these environment variables are set on an instance:
-
-- `EPT_AI_API_URL`
-- `EPT_AI_API_KEY`
-- `EPT_AI_MODEL`
-
-then `php bin/refresh-translations.php` will automatically run an AI prefill step after merging `.po` files.
-
-How it works:
-
-- only empty singular `msgstr` entries are filled
-- existing human translations are never overwritten
-- the business context is loaded from this translation guide and sent with the request
-- `.mo` files are compiled after the AI update
-
-This keeps the manual Poedit workflow intact while reducing repetitive translation work for small deltas.
-
-They do not need to understand gettext internals, POT files, or command-line translation tools.
-
-### Cron Example
-
-Run once every night at 2:15 AM:
-
-```cron
-15 2 * * * cd /path/to/ept && php bin/refresh-translations.php >> logs/translation-refresh.log 2>&1
-```
-
-Make sure the environment has these GNU gettext tools available:
-
-- `xgettext`
-- `msgmerge`
-- `msgfmt`
-
----
-
-## Language-Specific Notes
-
-### French (fr_FR)
-- Use formal "vous" throughout
-- Include articles: "Générer les rapports" not "Générer rapports"
-- Use proper accents: É, è, ê, ç, à
-- "Email" → "Courriel" or "E-mail" (pick one)
-
-### Spanish (es_ES)
-- Use formal "usted" throughout
-- "Email" → "Correo electrónico"
-
-### Portuguese (pt_BR / pt_PT)
-- Distinguish Brazilian vs European Portuguese
-- Use formal register
-
-*(Add notes for other languages as needed)*
-
----
-
-## Contact
-
-For translation questions or to report issues:
-
-GitHub: [deforay/ept](https://github.com/deforay/ept)
+Report an English string that cannot be translated correctly, or one that is missing from the catalog, at [deforay/ept](https://github.com/deforay/ept). Include the English text and the screen it appears on.

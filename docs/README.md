@@ -14,7 +14,7 @@ ePT is an open-source proficiency testing system for laboratory quality assuranc
 | Learn the admin workflow end to end | [Training](training/README.md) |
 | Understand how the code fits together | [Architecture](ARCHITECTURE.md) |
 | Add or change a test scheme | [Schemes](SchemeArchitecture.md) |
-| Add a language | [Translation](TranslationGuide.md) |
+| Translate the interface or add a language | [Translation](TranslationGuide.md) |
 | Get a change reviewed and merged | [Engineering standards](engineering-standards.md) |
 
 ## Supported test schemes

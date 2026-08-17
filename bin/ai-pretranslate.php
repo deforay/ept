@@ -194,8 +194,19 @@ function buildTranslationContext(): string
         ]);
     }
 
+    // These must match the headings in docs/TranslationGuide.md. When they
+    // don't, every section drops out and the whole guide is sent instead,
+    // truncated at 7000 characters — so the domain rules that matter most can
+    // fall off the end without anything reporting a problem.
     $sections = [];
-    foreach (['## Project Context', '## Core Terminology', '## Translation Rules', '## Common Mistakes'] as $heading) {
+    $headings = [
+        '## Translate in the laboratory testing context',
+        '## Keep one word for one thing',
+        '## Check every entry marked as needing work',
+        '## Keep placeholders and markup exactly as they are',
+        '## Write for a professional reader',
+    ];
+    foreach ($headings as $heading) {
         $section = extractMarkdownSection($guide, $heading);
         if ($section !== '') {
             $sections[] = $section;
