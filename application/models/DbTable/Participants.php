@@ -357,10 +357,11 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                 $row[] = '<a href="javascript:void(0);" class="btn btn-success btn-xs toggle-shipments-row" data-participant-id="' . (int) $aRow['participant_id'] . '"><i class="icon-truck"></i> ' . $label . '</a>';
             }
 
+            $editLabel = $translator->_('Edit');
             if (isset($parameters['from']) && $parameters['from'] == 'participant') {
-                $edit = '<a href="/participant/edit-participant/id/' . $aRow['participant_id'] . '" class="btn btn-warning btn-xs" style="margin-right: 2px;"><i class="icon-pencil"></i> Edit</a>';
+                $edit = '<a href="/participant/edit-participant/id/' . $aRow['participant_id'] . '" class="btn btn-warning btn-xs" style="margin-right: 2px;"><i class="icon-pencil"></i> ' . $editLabel . '</a>';
             } else {
-                $edit = '<a href="/admin/participants/edit/id/' . $aRow['participant_id'] . '" class="btn btn-warning btn-xs" style="margin-right: 2px;"><i class="icon-pencil"></i> Edit</a>';
+                $edit = '<a href="/admin/participants/edit/id/' . $aRow['participant_id'] . '" class="btn btn-warning btn-xs" style="margin-right: 2px;"><i class="icon-pencil"></i> ' . $editLabel . '</a>';
             }
             if ($aRow['mapCount'] == 0 && $deleteStatus) {
                 //$delete = '<a href="javascript:void(0);" onclick="deleteParticipant(' . $aRow['participant_id'] . ');" class="btn btn-danger btn-xs" style="margin-right: 2px;"><i class="icon-trash"></i> Delete</a>';
