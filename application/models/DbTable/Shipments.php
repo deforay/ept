@@ -329,7 +329,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 new Zend_Db_Expr('SQL_CALC_FOUND_ROWS s.scheme_type'),
                 's.shipment_date', 's.shipment_code', 's.response_deadline',
                 's.shipment_id', 's.status', 's.response_switch', 'allow_editing_response',
-                'panelName' => new Zend_Db_Expr("JSON_UNQUOTE(JSON_EXTRACT(s.shipment_attributes, '$.panelName'))")
+                'panelName' => new Zend_Db_Expr("JSON_UNQUOTE(JSON_EXTRACT(s.shipment_attributes, '$.panelName'))"),
             ])
             ->join(['d' => 'distributions'], 'd.distribution_id = s.distribution_id', ['distribution_code', 'distribution_date'])
             ->join(['sl' => 'scheme_list'], 'sl.scheme_id=s.scheme_type', ['scheme_name', 'is_user_configured'])

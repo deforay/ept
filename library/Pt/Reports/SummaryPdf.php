@@ -351,8 +351,11 @@ class Pt_Reports_SummaryPdf extends Fpdi
         // Page number
 
         $this->writeHTML('<hr>', true, false, true, false, '');
+        // Resolve the address here rather than reusing Header()'s local: the two
+        // methods do not share scope, so the footer position rendered nothing.
+        $instituteAddress = $this->generalModel->getConfig('institute_address') ?? null;
         if ($this->instituteAddressPosition == 'footer' && isset($instituteAddress) && $instituteAddress != '') {
-            $this->writeHTML($instituteAddress, true, false, true, false, 'L');
+            $this->writeHTML(nl2br(stripcslashes(trim($instituteAddress))), true, false, true, false, 'L');
         }
         if (($this->schemeType == 'eid' || $this->schemeType == 'vl') && isset($this->config) && $this->config != '' && $this->layout != 'zimbabwe') {
             $effectiveDate = (!empty($effectiveDateToShow) || $effectiveDateToShow != '') ? new DateTime($effectiveDateToShow) : null;

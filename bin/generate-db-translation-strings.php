@@ -507,8 +507,11 @@ function decodeSingleQuotedLiteral(string $literal): ?string
 }
 
 /**
+ * Only the source values are read, so $current accepts either shape: the
+ * source-keyed map parsed back out of the file, or the plain list the DB scan builds.
+ *
  * @param array<string, array<string, string>> $existing
- * @param array<string, array<string, string>> $current
+ * @param array<string, array<array-key, string>> $current
  * @return array<string, array<string, string>>
  */
 function mergeStringSources(array $existing, array $current): array

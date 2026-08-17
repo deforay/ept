@@ -1874,7 +1874,7 @@ class Application_Service_Common
         return false;
     }
 
-   private function maybeDecodeJson($value)
+    private function maybeDecodeJson($value)
     {
         if (!is_string($value)) {
             return $value;

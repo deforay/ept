@@ -56,3 +56,12 @@ parameters:
         # PHPStan does not follow that require chain.
         -
             message: '#^Constant ROOT_PATH not found\.$#'
+        # The translation catalogs are generated files: nothing but bare _() calls,
+        # which exist only so xgettext can see DB- and help-backed strings. They are
+        # never executed. Pinning a per-file count in the baseline broke CI every time
+        # someone regenerated a catalog, so ignore by path instead.
+        -
+            message: '#^Call to function _\(\) on a separate line has no effect\.$#'
+            paths:
+                - application/languages/db-translation-strings.php
+                - application/languages/help-translation-strings.php

@@ -3433,11 +3433,11 @@ class Application_Service_Shipments
         return $resultArray;
     }
 
-     public function getParticipantCountBasedOnShipment()
+    public function getParticipantCountBasedOnShipment()
     {
         $resultArray = [];
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
- 
+
         $sQuery = $db->select()->from(['s' => 'shipment'], ['s.shipment_code', 's.scheme_type', 's.response_deadline'])
             ->join(['sp' => 'shipment_participant_map'], 'sp.shipment_id=s.shipment_id', [
                 'participantCount' => new Zend_Db_Expr('count(sp.participant_id)'),
@@ -3450,7 +3450,7 @@ class Application_Service_Shipments
         $resultArray = $db->fetchAll($sQuery);
         return $resultArray;
     }
- 
+
     public function removeShipmentParticipant($mapId, $sId = '')
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
@@ -3810,9 +3810,9 @@ class Application_Service_Shipments
             ->group('s.shipment_id')
             ->order('s.shipment_id');
         $result = $db->fetchAll($sQuery);
- 
+
         if (!empty($result)) {
- 
+
             foreach ($result as $key => $row) {
                 $response[$row['scheme_type']][$key] = [
                     'shipment_code' => $row['shipment_code'],
@@ -3822,15 +3822,15 @@ class Application_Service_Shipments
                     'receivedCount' => (isset($row['receivedCount']) && ($row['receivedCount']) > 0) ? $row['receivedCount'] : 0,
                     'scheme_type' => $row['scheme_type'],
                 ];
- 
+
                 $total['participants'] = $total['participants'] ?? [];
                 // FIX (bug 1): seed 'received' from itself, not from 'participants'.
                 $total['received'] = $total['received'] ?? [];
                 $name[$row['scheme_type']] = $name[$row['scheme_type']] ?? [];
- 
+
                 $total['participants'][$row['scheme_type']] = $total['participants'][$row['scheme_type']] ?? 0;
                 $total['received'][$row['scheme_type']] = $total['received'][$row['scheme_type']] ?? 0;
- 
+
                 $total['participants'][$row['scheme_type']] += $row['participantCount'];
                 $total['received'][$row['scheme_type']] += (isset($row['receivedCount']) && ($row['receivedCount']) > 0) ? $row['receivedCount'] : 0;
                 $name[$row['scheme_type']] = $row['scheme_name'];

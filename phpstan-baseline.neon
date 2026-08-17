@@ -61,18 +61,6 @@ parameters:
 			path: application/controllers/ParticipantController.php
 
 		-
-			message: '#^Call to function _\(\) on a separate line has no effect\.$#'
-			identifier: function.resultUnused
-			count: 186
-			path: application/languages/db-translation-strings.php
-
-		-
-			message: '#^Call to function _\(\) on a separate line has no effect\.$#'
-			identifier: function.resultUnused
-			count: 137
-			path: application/languages/help-translation-strings.php
-
-		-
 			message: '#^Loose comparison using \!\= between true and '''' will always evaluate to true\.$#'
 			identifier: notEqual.alwaysTrue
 			count: 1
@@ -3238,22 +3226,11 @@ parameters:
 			path: library/Pt/Reports/IndividualPdf.php
 
 		-
-			message: '#^Undefined variable\: \$instituteAddress$#'
-			identifier: variable.undefined
-			count: 1
-			path: library/Pt/Reports/IndividualPdf.php
-
-		-
 			message: '#^Variable \$html might not be defined\.$#'
 			identifier: variable.undefined
 			count: 8
 			path: library/Pt/Reports/IndividualPdf.php
 
-		-
-			message: '#^Variable \$instituteAddress in isset\(\) is never defined\.$#'
-			identifier: isset.variable
-			count: 1
-			path: library/Pt/Reports/IndividualPdf.php
 
 		-
 			message: '#^Loose comparison using \!\= between null and '''' will always evaluate to false\.$#'
@@ -3291,14 +3268,3 @@ parameters:
 			count: 2
 			path: library/Pt/Reports/SummaryPdf.php
 
-		-
-			message: '#^Undefined variable\: \$instituteAddress$#'
-			identifier: variable.undefined
-			count: 1
-			path: library/Pt/Reports/SummaryPdf.php
-
-		-
-			message: '#^Variable \$instituteAddress in isset\(\) is never defined\.$#'
-			identifier: isset.variable
-			count: 1
-			path: library/Pt/Reports/SummaryPdf.php

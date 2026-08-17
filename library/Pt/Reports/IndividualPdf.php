@@ -309,8 +309,10 @@ class Pt_Reports_IndividualPdf extends Fpdi
 
         if ($this->schemeType == 'eid' || $this->schemeType == 'vl' || $this->schemeType == 'tb') {
             $this->writeHTML('<hr>', true, false, true, false, '');
-            if ($this->instituteAddressPosition == 'footer' && isset($instituteAddress) && $instituteAddress != '') {
-                $this->writeHTML($instituteAddress, true, false, true, false, 'L');
+            // Resolve the address here rather than reusing Header()'s local: the two
+            // methods do not share scope, so the footer position rendered nothing.
+            if ($this->instituteAddressPosition == 'footer' && isset($this->config->instituteAddress) && $this->config->instituteAddress != '') {
+                $this->writeHTML(nl2br(stripcslashes(trim($this->config->instituteAddress))), true, false, true, false, 'L');
             }
         }
         $effectiveDate = (!empty($effectiveDateToShow) || $effectiveDateToShow != '') ? new DateTime($effectiveDateToShow) : null;
