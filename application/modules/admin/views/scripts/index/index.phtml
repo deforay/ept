@@ -413,8 +413,8 @@
 								<th><?= $this->translate->_("Deadline"); ?></th>
 								<th><?= $this->translate->_("Responded"); ?></th>
 								<th><?= $this->translate->_("Late / unable"); ?></th>
-								<th><?= $this->translate->_("Evaluated"); ?></th>
-								<th><?= $this->translate->_("Score"); ?></th>
+								<th><?= $this->translate->_("Response %"); ?></th>
+								<th><?= $this->translate->_("Pass %"); ?></th>
 								<th><?= $this->translate->_("Next action"); ?></th>
 							</tr>
 						</thead>
@@ -495,16 +495,16 @@
 										<?php endif; ?>
 									</td>
 									<td>
-										<?php if ($round['responded'] > 0): ?>
-											<span class="<?php echo $round['evaluated'] > 0 ? '' : 'zero'; ?>"><?php echo (int) $round['evaluated']; ?></span>
-											<span class="cell-sub"><?= $this->translate->_("of"); ?> <?php echo (int) $round['responded']; ?></span>
+										<?php if ($round['responseRate'] !== null): ?>
+											<span class="<?php echo $round['responseRate'] > 0 ? '' : 'zero'; ?>"><?php echo (int) $round['responseRate']; ?>%</span>
 										<?php else: ?>
 											<span class="zero">&mdash;</span>
 										<?php endif; ?>
 									</td>
 									<td>
-										<?php if ($round['averageScore'] !== null): ?>
-											<?php echo $this->escape($round['averageScore']); ?>
+										<?php if ($round['passRate'] !== null): ?>
+											<?php echo (int) $round['passRate']; ?>%
+											<span class="cell-sub"><?= $this->translate->_("of"); ?> <?php echo (int) $round['evaluated']; ?> <?= $this->translate->_("evaluated"); ?></span>
 										<?php else: ?>
 											<span class="zero" title="<?php echo $this->htmlTranslate("Scored once the round is evaluated"); ?>">&mdash;</span>
 										<?php endif; ?>

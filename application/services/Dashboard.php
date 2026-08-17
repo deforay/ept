@@ -144,7 +144,8 @@ class Application_Service_Dashboard
                 SUM(sp.response_status IS NOT NULL AND sp.response_status NOT IN ('', 'noresponse')) AS responded,
                 SUM(sp.response_status = 'late') AS late,
                 SUM(sp.response_status = 'nottested') AS unable_to_test,
-                SUM(sp.final_result IN (1, 2, 3, 4)) AS evaluated
+                SUM(sp.final_result IN (1, 2, 3, 4)) AS evaluated,
+                SUM(sp.final_result = 1) AS passed
             FROM shipment s
             JOIN scheme_list sl ON sl.scheme_id = s.scheme_type
             JOIN shipment_participant_map sp ON sp.shipment_id = s.shipment_id
@@ -217,10 +218,20 @@ class Application_Service_Dashboard
                 'late' => (int) $row['late'],
                 'unableToTest' => (int) $row['unable_to_test'],
                 'evaluated' => (int) $row['evaluated'],
-                // Null until the round is evaluated, which is itself worth
-                // showing — a blank score column means "no verdict yet",
-                // not "scored zero".
-                'averageScore' => $row['evaluated_at'] ? $row['average_score'] : null,
+                // Share of the shipment that came back. The Responded column
+                // carries the counts; this is the figure you compare across
+                // rounds of different sizes.
+                'responseRate' => $total > 0
+                    ? (int) round(($responded / $total) * 100)
+                    : null,
+                // Out of the labs that actually got a verdict, not out of the
+                // whole shipment — otherwise an unevaluated round reads as 0%
+                // passing rather than "not scored yet". Null when nothing has
+                // been evaluated, so a blank cell means "no verdict yet"
+                // rather than "everybody failed".
+                'passRate' => (int) $row['evaluated'] > 0
+                    ? (int) round(((int) $row['passed'] / (int) $row['evaluated']) * 100)
+                    : null,
                 'nextAction' => $this->getNextAction($row, $isOpen),
             ];
         }
