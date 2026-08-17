@@ -39,6 +39,10 @@ class Admin_IndexController extends Zend_Controller_Action
 
         $this->view->openRounds = $openRounds;
         $this->view->openRoundsCount = count($openForResponse);
+        // Both dashboard charts are derived from the rows already fetched
+        // above, so neither costs a query.
+        $this->view->pipelineStages = $dashboardService->summarisePipeline($openRounds);
+        $this->view->responseRates = $dashboardService->summariseResponseRates($openRounds);
         // Closed but not yet finalized — the heading names these separately so
         // an idle system reads differently from one with a backlog.
         $this->view->awaitingFinalizeCount = count($openRounds) - count($openForResponse);

@@ -258,6 +258,7 @@ class Application_Service_Dashboard
 
         if ($isOpen) {
             return [
+                'key' => 'awaiting-responses',
                 'label' => Pt_Commons_TranslateUtility::safeTranslate('Awaiting responses'),
                 'module' => 'admin',
                 'controller' => 'shipment',
@@ -274,6 +275,7 @@ class Application_Service_Dashboard
             // evaluation screen that would open with no rows in it.
             if ((int) $row['responded'] === 0) {
                 return [
+                    'key' => 'no-responses',
                     'label' => Pt_Commons_TranslateUtility::safeTranslate('No responses received'),
                     'module' => 'admin',
                     'controller' => 'shipment',
@@ -284,6 +286,7 @@ class Application_Service_Dashboard
             }
 
             return [
+                'key' => 'evaluate',
                 'label' => Pt_Commons_TranslateUtility::safeTranslate('Ready to evaluate'),
                 'module' => 'admin',
                 'controller' => 'evaluate',
@@ -295,6 +298,7 @@ class Application_Service_Dashboard
 
         if (empty($row['reports_generated_at'])) {
             return [
+                'key' => 'reports',
                 'label' => Pt_Commons_TranslateUtility::safeTranslate('Generate reports'),
                 'module' => 'reports',
                 'controller' => 'distribution',
@@ -305,6 +309,7 @@ class Application_Service_Dashboard
         }
 
         return [
+            'key' => 'finalize',
             'label' => Pt_Commons_TranslateUtility::safeTranslate('Ready to finalize'),
             'module' => 'reports',
             'controller' => 'distribution',
@@ -312,6 +317,85 @@ class Application_Service_Dashboard
             'param' => 'sid',
             'value' => $sid,
         ];
+    }
+
+    /**
+     * Unfinalized rounds grouped by what each is waiting on, in pipeline order.
+     *
+     * Derived from getOpenRoundsStatus() rather than queried, so the chart costs
+     * nothing and can never disagree with the table beneath it.
+     *
+     * Stages with no rounds are kept. A pipeline that reads
+     * "evaluate 8, reports 0, finalize 4" says something a chart with the empty
+     * bar dropped does not.
+     *
+     * @param array<int, array<string, mixed>> $openRounds
+     * @return array<int, array{key: string, label: string, count: int, waitingOnLabs: bool}>
+     */
+    public function summarisePipeline(array $openRounds)
+    {
+        $stages = [
+            'awaiting-responses' => ['label' => 'Awaiting responses', 'waitingOnLabs' => true],
+            'no-responses' => ['label' => 'No responses received', 'waitingOnLabs' => false],
+            'evaluate' => ['label' => 'Ready to evaluate', 'waitingOnLabs' => false],
+            'reports' => ['label' => 'Generate reports', 'waitingOnLabs' => false],
+            'finalize' => ['label' => 'Ready to finalize', 'waitingOnLabs' => false],
+        ];
+
+        $counts = array_fill_keys(array_keys($stages), 0);
+        foreach ($openRounds as $round) {
+            $key = $round['nextAction']['key'] ?? null;
+            if ($key !== null && array_key_exists($key, $counts)) {
+                $counts[$key]++;
+            }
+        }
+
+        $out = [];
+        foreach ($stages as $key => $stage) {
+            $out[] = [
+                'key' => $key,
+                'label' => Pt_Commons_TranslateUtility::safeTranslate($stage['label']),
+                'count' => $counts[$key],
+                'waitingOnLabs' => $stage['waitingOnLabs'],
+            ];
+        }
+
+        return $out;
+    }
+
+    /**
+     * Response rate per unfinalized round, worst first, so the rounds worth
+     * chasing come to the top. The table is ordered by deadline, which is the
+     * wrong order for that question.
+     *
+     * Rounds with no participants are dropped: their rate is undefined, and a
+     * zero bar would read as "nobody responded".
+     *
+     * @param array<int, array<string, mixed>> $openRounds
+     * @return array<int, array{code: string, schemeName: string, rate: int, responded: int, total: int, shipmentId: mixed}>
+     */
+    public function summariseResponseRates(array $openRounds)
+    {
+        $rows = [];
+        foreach ($openRounds as $round) {
+            if ($round['responseRate'] === null) {
+                continue;
+            }
+            $rows[] = [
+                'shipmentId' => $round['shipmentId'],
+                'code' => $round['code'],
+                'schemeName' => $round['schemeName'],
+                'rate' => (int) $round['responseRate'],
+                'responded' => (int) $round['responded'],
+                'total' => (int) $round['total'],
+            ];
+        }
+
+        usort($rows, function ($a, $b) {
+            return $a['rate'] <=> $b['rate'];
+        });
+
+        return $rows;
     }
 
     /**

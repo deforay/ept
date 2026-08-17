@@ -47,6 +47,42 @@
 		margin-top: 4px;
 	}
 
+	/* Dashboard charts. Highcharts ships from the admin layout, so these only
+	   need framing that matches the panels around them. */
+	.chart-panel .panel-body {
+		padding: 12px 14px;
+	}
+
+	.dashboard-chart {
+		width: 100%;
+	}
+
+	.chart-note {
+		margin-top: 6px;
+		font-size: 11px;
+		color: #999;
+	}
+
+	.chart-note .chart-key {
+		margin-right: 14px;
+	}
+
+	.chart-note .chart-swatch {
+		display: inline-block;
+		width: 9px;
+		height: 9px;
+		border-radius: 2px;
+		margin-right: 5px;
+	}
+
+	.chart-empty {
+		color: #999;
+		font-size: 13px;
+		text-align: center;
+		padding: 40px 0;
+		margin: 0;
+	}
+
 	/* Task 3 — round table */
 	.data-list {
 		width: 100%;
@@ -383,6 +419,172 @@
 </div>
 
 <?php if ($this->showRoundTable): ?>
+	<?php
+	// Both charts read the same rows as the table below, so they can never
+	// disagree with it. Highcharts is already loaded by the admin layout.
+	$pipelineTotal = array_sum(array_column($this->pipelineStages, 'count'));
+	?>
+	<div class="row">
+		<div class="col-lg-6">
+			<div class="panel panel-default chart-panel">
+				<div class="panel-heading">
+					<h3 class="panel-title"><?= $this->translate->_("What each round is waiting on"); ?></h3>
+				</div>
+				<div class="panel-body">
+					<div id="pipelineChart" class="dashboard-chart"></div>
+					<div class="chart-note">
+						<span class="chart-key"><span class="chart-swatch" style="background:#d68910;"></span><?= $this->translate->_("waiting on labs"); ?></span>
+						<span class="chart-key"><span class="chart-swatch" style="background:#2b6cb0;"></span><?= $this->translate->_("waiting on you"); ?></span>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="col-lg-6">
+			<div class="panel panel-default chart-panel">
+				<div class="panel-heading">
+					<h3 class="panel-title"><?= $this->translate->_("Response rate by round"); ?></h3>
+				</div>
+				<div class="panel-body">
+					<?php if (!empty($this->responseRates)): ?>
+						<div id="responseRateChart" class="dashboard-chart"></div>
+						<div class="chart-note"><?= $this->translate->_("Lowest first. Click a bar to open the round."); ?></div>
+					<?php else: ?>
+						<p class="chart-empty"><?= $this->translate->_("No rounds with participants yet."); ?></p>
+					<?php endif; ?>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script>
+		$(function () {
+			if (typeof Highcharts === 'undefined') { return; }
+
+			Highcharts.setOptions({ lang: { thousandsSep: ',' } });
+
+			var pipelineStages = <?php echo json_encode(array_map(function ($stage) {
+				return [
+					'name' => $stage['label'],
+					'y' => $stage['count'],
+					// One hue per side of the handover: a round the labs still
+					// hold reads differently from one sitting on the admin's desk.
+					'color' => $stage['waitingOnLabs'] ? '#d68910' : '#2b6cb0',
+				];
+			}, $this->pipelineStages), JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP); ?>;
+
+			Highcharts.chart('pipelineChart', {
+				chart: { type: 'bar', height: 240, backgroundColor: 'transparent', style: { fontFamily: 'inherit' } },
+				title: { text: null },
+				credits: { enabled: false },
+				legend: { enabled: false },
+				exporting: { enabled: false },
+				xAxis: {
+					type: 'category',
+					lineColor: '#e3e3e3',
+					tickLength: 0,
+					labels: { style: { color: '#555', fontSize: '12px' } }
+				},
+				yAxis: {
+					title: { text: null },
+					allowDecimals: false,
+					gridLineColor: '#f0f0f0',
+					labels: { style: { color: '#999', fontSize: '11px' } }
+				},
+				tooltip: {
+					pointFormat: '<b>{point.y}</b> <?= $this->jsTranslate("of"); ?> <?php echo (int) $pipelineTotal; ?> <?= $this->jsTranslate("rounds"); ?>'
+				},
+				plotOptions: {
+					bar: {
+						borderRadius: 3,
+						borderWidth: 0,
+						pointPadding: 0.12,
+						groupPadding: 0.08,
+						dataLabels: {
+							enabled: true,
+							style: { fontWeight: '600', color: '#2c3e50', textOutline: 'none', fontSize: '12px' }
+						}
+					}
+				},
+				series: [{ name: '<?= $this->jsTranslate("Rounds"); ?>', data: pipelineStages, colorByPoint: true }]
+			});
+
+			<?php if (!empty($this->responseRates)): ?>
+			var responseRates = <?php echo json_encode(array_map(function ($row) {
+				return [
+					'name' => $row['code'],
+					'y' => $row['rate'],
+					'responded' => $row['responded'],
+					'total' => $row['total'],
+					'url' => $this->url([
+						'module' => 'admin',
+						'controller' => 'shipment',
+						'action' => 'view',
+						'id' => $row['shipmentId'],
+					], 'default', true),
+				];
+			}, $this->responseRates), JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP); ?>;
+
+			Highcharts.chart('responseRateChart', {
+				chart: {
+					type: 'bar',
+					// Grows with the round count so the bars stay readable
+					// instead of compressing into slivers.
+					height: Math.max(240, 34 * responseRates.length),
+					// The axis is pinned to 100%, so a bar at 98% puts its data
+					// label past the plot edge. This reserves room for it and
+					// stops the last axis tick truncating to "10...".
+					marginRight: 52,
+					backgroundColor: 'transparent',
+					style: { fontFamily: 'inherit' }
+				},
+				title: { text: null },
+				credits: { enabled: false },
+				legend: { enabled: false },
+				exporting: { enabled: false },
+				xAxis: {
+					type: 'category',
+					lineColor: '#e3e3e3',
+					tickLength: 0,
+					labels: { style: { color: '#555', fontSize: '12px' } }
+				},
+				yAxis: {
+					title: { text: null },
+					min: 0,
+					max: 100,
+					gridLineColor: '#f0f0f0',
+					labels: { format: '{value}%', style: { color: '#999', fontSize: '11px' } }
+				},
+				tooltip: {
+					pointFormatter: function () {
+						return '<b>' + this.y + '%</b><br>' + this.responded + ' <?= $this->jsTranslate("of"); ?> ' + this.total + ' <?= $this->jsTranslate("responded"); ?>';
+					}
+				},
+				plotOptions: {
+					bar: {
+						color: '#2b6cb0',
+						borderRadius: 3,
+						borderWidth: 0,
+						cursor: 'pointer',
+						dataLabels: {
+							enabled: true,
+							format: '{point.y}%',
+							crop: false,
+							overflow: 'allow',
+							style: { fontWeight: '600', color: '#2c3e50', textOutline: 'none', fontSize: '11px' }
+						},
+						point: {
+							events: {
+								click: function () { if (this.url) { window.location.href = this.url; } }
+							}
+						}
+					}
+				},
+				series: [{ name: '<?= $this->jsTranslate("Response rate"); ?>', data: responseRates }]
+			});
+			<?php endif; ?>
+		});
+	</script>
+
 	<!-- Task 3: round table — currently-running shipments only (deadline not yet crossed) -->
 	<div class="row">
 		<div class="col-lg-12">
