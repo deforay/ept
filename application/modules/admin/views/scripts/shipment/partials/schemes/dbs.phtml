@@ -68,7 +68,7 @@ $reportType = $this->reportType ?? '';
 $possibleResultsHtml = '<select name="possibleResults[]" class="isRequired form-control input-sm"><option value="">--' . $this->translate->_("Select") . '--</option>';
 foreach ($possibleResults as $pr) {
     if ($pr['scheme_sub_group'] == 'DBS_FINAL') {
-        $possibleResultsHtml .= '<option value="' . htmlspecialchars($pr['id']) . '">' . htmlspecialchars($pr['response']) . '</option>';
+        $possibleResultsHtml .= '<option value="' . htmlspecialchars($pr['id']) . '">' . $this->htmlTranslate($pr['response']) . '</option>';
     }
 }
 $possibleResultsHtml .= '</select>';
@@ -90,7 +90,7 @@ $testResultsHtml = '<option value="">--' . $this->translate->_("Select") . '--</
 $dtsPossibleResults = $this->dtsPossibleResults ?? [];
 foreach ($dtsPossibleResults as $pr) {
     if ($pr['scheme_sub_group'] == 'DTS_TEST') {
-        $testResultsHtml .= '<option value="' . htmlspecialchars($pr['id']) . '">' . htmlspecialchars($pr['response']) . '</option>';
+        $testResultsHtml .= '<option value="' . htmlspecialchars($pr['id']) . '">' . $this->htmlTranslate($pr['response']) . '</option>';
     }
 }
 
@@ -182,7 +182,7 @@ $testResultsJs = str_replace(array("\n", "\r", "'"), array('', '', "\\'"), $test
                             ?>
                                     <option value="<?php echo htmlspecialchars($pr['id']); ?>"
                                         <?php echo ($referenceResult == $pr['id']) ? 'selected="selected"' : ''; ?>>
-                                        <?php echo htmlspecialchars($pr['response']); ?>
+                                        <?php echo $this->htmlTranslate($pr['response']); ?>
                                     </option>
                             <?php
                                 endif;
@@ -302,7 +302,7 @@ $testResultsJs = str_replace(array("\n", "\r", "'"), array('', '', "\\'"), $test
                                                                         ?>
                                                                                 <option value="<?php echo htmlspecialchars($pr['id']); ?>"
                                                                                     <?php echo (isset($pr['id']) && $pr['id'] == ($eia['result'] ?? '')) ? 'selected="selected"' : ''; ?>>
-                                                                                    <?php echo htmlspecialchars($pr['response']); ?>
+                                                                                    <?php echo $this->htmlTranslate($pr['response']); ?>
                                                                                 </option>
                                                                         <?php
                                                                             endif;
@@ -351,7 +351,7 @@ $testResultsJs = str_replace(array("\n", "\r", "'"), array('', '', "\\'"), $test
                                                                     if ($pr['scheme_sub_group'] == 'DTS_TEST'):
                                                                 ?>
                                                                         <option value="<?php echo htmlspecialchars($pr['id']); ?>">
-                                                                            <?php echo htmlspecialchars($pr['response']); ?>
+                                                                            <?php echo $this->htmlTranslate($pr['response']); ?>
                                                                         </option>
                                                                 <?php
                                                                     endif;
@@ -460,7 +460,7 @@ $testResultsJs = str_replace(array("\n", "\r", "'"), array('', '', "\\'"), $test
                                                                         ?>
                                                                                 <option value="<?php echo htmlspecialchars($pr['id']); ?>"
                                                                                     <?php echo (isset($pr['id']) && $pr['id'] == ($wb['result'] ?? '')) ? 'selected="selected"' : ''; ?>>
-                                                                                    <?php echo htmlspecialchars($pr['response']); ?>
+                                                                                    <?php echo $this->htmlTranslate($pr['response']); ?>
                                                                                 </option>
                                                                         <?php
                                                                             endif;

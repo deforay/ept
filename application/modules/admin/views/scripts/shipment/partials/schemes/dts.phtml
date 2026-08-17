@@ -132,12 +132,17 @@ $renderSampleDilutedSection = $isEditMode ? in_array('vietnam', $possibleDtsSche
 $view = $this;
 
 /**
- * The Vietnam workflow only needs dilution metadata for plasma samples.
+ * The Vietnam workflow needs dilution metadata on every panel, whatever the sample type.
  * This shared rule keeps add/edit rendering and client-side refresh logic aligned.
+ *
+ * This used to also require $sampleType === 'plasma', because the NIHE spec described the
+ * panels as "pooled plasma". NIHE ships serum panels too, and on those the column stayed
+ * hidden while still posting its default of "no" — so every sample was recorded as
+ * not diluted and weak positives were scored by the non-diluted rules. See round PT2024-02.
  */
-function isSampleDilutedColumnVisible(?string $schemeType, ?string $sampleType): bool
+function isSampleDilutedColumnVisible(?string $schemeType): bool
 {
-    return $schemeType === 'vietnam' && $sampleType === 'plasma';
+    return $schemeType === 'vietnam';
 }
 
 
@@ -170,7 +175,7 @@ $allGeenius = array_column($geeniusData, 'sample_id');
 $testResultsOptions = '<option value="">--' . htmlspecialchars($this->translate->_("Select")) . '--</option>';
 foreach ($dtsPossibleResults as $pr) {
     if ($pr['scheme_sub_group'] == 'DTS_TEST') {
-        $testResultsOptions .= '<option value="' . htmlspecialchars($pr['id']) . '">' . htmlspecialchars($pr['response']) . '</option>';
+        $testResultsOptions .= '<option value="' . htmlspecialchars($pr['id']) . '">' . $this->htmlTranslate($pr['response']) . '</option>';
     }
 }
 
@@ -178,7 +183,7 @@ foreach ($dtsPossibleResults as $pr) {
 $finalResultsOptions = '<option value="">--' . htmlspecialchars($this->translate->_("Select")) . '--</option>';
 foreach ($dtsPossibleResults as $pr) {
     if ($pr['scheme_sub_group'] == 'DTS_FINAL') {
-        $finalResultsOptions .= '<option value="' . htmlspecialchars($pr['id']) . '">' . htmlspecialchars($pr['response']) . '</option>';
+        $finalResultsOptions .= '<option value="' . htmlspecialchars($pr['id']) . '">' . $this->htmlTranslate($pr['response']) . '</option>';
     }
 }
 
@@ -186,7 +191,7 @@ foreach ($dtsPossibleResults as $pr) {
 $syphilisResultsOptions = '<option value="">--' . htmlspecialchars($this->translate->_("Select")) . '--</option>';
 foreach ($dtsPossibleResults as $pr) {
     if ($pr['scheme_sub_group'] == 'DTS_SYP_FINAL') {
-        $syphilisResultsOptions .= '<option value="' . htmlspecialchars($pr['id']) . '">' . htmlspecialchars($pr['response']) . '</option>';
+        $syphilisResultsOptions .= '<option value="' . htmlspecialchars($pr['id']) . '">' . $this->htmlTranslate($pr['response']) . '</option>';
     }
 }
 
@@ -194,7 +199,7 @@ foreach ($dtsPossibleResults as $pr) {
 $rtriResultsOptions = '<option value="">--' . htmlspecialchars($this->translate->_("Select")) . '--</option>';
 foreach ($rtriPossibleResults as $pr) {
     if ($pr['scheme_sub_group'] == 'RECENCY_FINAL') {
-        $rtriResultsOptions .= '<option value="' . htmlspecialchars($pr['id']) . '">' . htmlspecialchars($pr['response']) . '</option>';
+        $rtriResultsOptions .= '<option value="' . htmlspecialchars($pr['id']) . '">' . $this->htmlTranslate($pr['response']) . '</option>';
     }
 }
 
@@ -242,7 +247,7 @@ $showRtri = $isEditMode
 $showTestPanelType = $isEditMode
     ? (($effectiveSettings['screeningTest'] ?? null) == 'no')
     : true;
-$showSampleDiluted = isSampleDilutedColumnVisible($dtsSchemeType, $effectiveSettings['sampleType'] ?? null);
+$showSampleDiluted = isSampleDilutedColumnVisible($dtsSchemeType);
 ?>
 
 <style type="text/css">
@@ -543,7 +548,7 @@ if ($renderTestPanelTypeSection) { ?>
                             <?php foreach ($editPossibleResults as $pr):
                                 if ($pr['scheme_sub_group'] == 'DTS_FINAL'): ?>
                                     <option value="<?php echo htmlspecialchars($pr['id']); ?>" <?php echo ($referenceResult == $pr['id']) ? "selected='selected'" : ""; ?>>
-                                        <?php echo htmlspecialchars($pr['response']); ?>
+                                        <?php echo $this->htmlTranslate($pr['response']); ?>
                                     </option>
                                 <?php endif;
                             endforeach; ?>
@@ -555,7 +560,7 @@ if ($renderTestPanelTypeSection) { ?>
                             <?php foreach ($editPossibleResults as $pr):
                                 if ($pr['scheme_sub_group'] == 'DTS_SYP_FINAL'): ?>
                                     <option value="<?php echo htmlspecialchars($pr['id']); ?>" <?php echo ($syphilisResult == $pr['id']) ? "selected='selected'" : ""; ?>>
-                                        <?php echo htmlspecialchars($pr['response']); ?>
+                                        <?php echo $this->htmlTranslate($pr['response']); ?>
                                     </option>
                                 <?php endif;
                             endforeach; ?>
@@ -567,7 +572,7 @@ if ($renderTestPanelTypeSection) { ?>
                             <?php foreach ($rtriPossibleResults as $pr):
                                 if ($pr['scheme_sub_group'] == 'RECENCY_FINAL'): ?>
                                     <option value="<?php echo htmlspecialchars($pr['id']); ?>" <?php echo ($rtriResult == $pr['id']) ? "selected='selected'" : ""; ?>>
-                                        <?php echo htmlspecialchars($pr['response']); ?>
+                                        <?php echo $this->htmlTranslate($pr['response']); ?>
                                     </option>
                                 <?php endif;
                             endforeach; ?>
@@ -797,7 +802,6 @@ if ($renderTestPanelTypeSection) { ?>
         function refreshDtsSettingVisibility() {
             var schemeType = $('#dtsSchemeType').val();
             var screeningTest = $('#screeningTest').val();
-            var sampleType = $('#dtsSampleType').val();
             var enableSyphilis = $('#enableSyphilis').val();
             var enableRtri = $('#enableRtri').val();
 
@@ -811,7 +815,7 @@ if ($renderTestPanelTypeSection) { ?>
             $('.rtri-input').toggle(schemeType === 'updated-3-tests' && enableRtri === 'yes');
 
             if (isSampleDilutedVisible) {
-                $('.sample-diluted-input').toggle(schemeType === 'vietnam' && sampleType === 'plasma');
+                $('.sample-diluted-input').toggle(schemeType === 'vietnam');
             } else {
                 $('.sample-diluted-input').hide();
             }

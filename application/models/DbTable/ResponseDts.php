@@ -29,7 +29,10 @@ class Application_Model_DbTable_ResponseDts extends Zend_Db_Table_Abstract
                 }
 
                 if (isset($params['repeat_test_kit_name_1']) && trim($params['repeat_test_kit_name_1']) == 'other') {
-                    $otherRepeatTestkitId1 = $testkitsDb->addTestkitInParticipant($params['retest_test_kit_other_name_update_1'], $params['repeat_test_kit_name_1'], 'dts', 2);
+                    // Repeat kits share their position's dropdown, so a repeat of Test 1
+                    // belongs to position 1. This passed 2, which registered the new kit
+                    // against the Test 2 list and left it missing from Test 1.
+                    $otherRepeatTestkitId1 = $testkitsDb->addTestkitInParticipant($params['retest_test_kit_other_name_update_1'], $params['repeat_test_kit_name_1'], 'dts', 1);
                     $params['repeat_test_kit_name_1'] = $otherRepeatTestkitId1;
                 }
                 if (isset($params['repeat_test_kit_name_2']) && trim($params['repeat_test_kit_name_2']) == 'other') {

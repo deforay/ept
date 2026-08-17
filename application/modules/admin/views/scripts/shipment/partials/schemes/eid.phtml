@@ -37,7 +37,7 @@ $dtFormat = $vHelper->getDateFormat();
 // Build possible results dropdown HTML for JavaScript row addition
 $possibleResultsHtml = '<select name="possibleResults[]" class="isRequired form-control input-sm"><option value="">--' . $this->translate->_("Select") . '--</option>';
 foreach ($possibleResults as $pr) {
-    $possibleResultsHtml .= '<option value="' . htmlspecialchars($pr['id']) . '">' . htmlspecialchars($pr['response']) . '</option>';
+    $possibleResultsHtml .= '<option value="' . htmlspecialchars($pr['id']) . '">' . $this->htmlTranslate($pr['response']) . '</option>';
 }
 $possibleResultsHtml .= '</select>';
 
@@ -131,7 +131,7 @@ $effectiveDate = isset($eidConfig['effectiveDate']) ? $eidConfig['effectiveDate'
                         <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
                         <?php foreach ($possibleResults as $pr): ?>
                             <option value="<?php echo htmlspecialchars($pr['id']); ?>" <?php echo ($referenceResult == $pr['id']) ? 'selected="selected"' : ''; ?>>
-                                <?php echo htmlspecialchars($pr['response']); ?>
+                                <?php echo $this->htmlTranslate($pr['response']); ?>
                             </option>
                         <?php endforeach; ?>
                     </select>

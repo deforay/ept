@@ -68,7 +68,7 @@ $assayChoicesJs = str_replace(array("\n", "\r", "'"), array('', '', "\\'"), $ass
 // Build possible results dropdown HTML for JavaScript row addition
 $possibleResultsHtml = '<select name="possibleResults[]" class="isRequired form-control input-sm"><option value="">--' . $this->translate->_("Select") . '--</option>';
 foreach ($possibleResults as $pr) {
-    $possibleResultsHtml .= '<option value="' . htmlspecialchars($pr['id']) . '">' . htmlspecialchars($pr['response']) . '</option>';
+    $possibleResultsHtml .= '<option value="' . htmlspecialchars($pr['id']) . '">' . $this->htmlTranslate($pr['response']) . '</option>';
 }
 $possibleResultsHtml .= '</select>';
 
@@ -78,7 +78,7 @@ $possibleResultsJs = str_replace(array("\n", "\r", "'"), array('', '', "\\'"), $
 // Build test results dropdown HTML for JavaScript (assay modals)
 $testResultsHtml = '<option value="">--' . $this->translate->_("Select") . '--</option>';
 foreach ($possibleResults as $pr) {
-    $testResultsHtml .= '<option value="' . htmlspecialchars($pr['id']) . '">' . htmlspecialchars($pr['response']) . '</option>';
+    $testResultsHtml .= '<option value="' . htmlspecialchars($pr['id']) . '">' . $this->htmlTranslate($pr['response']) . '</option>';
 }
 $testResultsJs = str_replace(array("\n", "\r", "'"), array('', '', "\\'"), $testResultsHtml);
 
@@ -167,7 +167,7 @@ foreach ($savedSettings as $key => $savedValue) {
                             <?php foreach ($possibleResults as $pr): ?>
                                 <option value="<?php echo htmlspecialchars($pr['id']); ?>"
                                     <?php echo ($referenceResult == $pr['id']) ? 'selected="selected"' : ''; ?>>
-                                    <?php echo htmlspecialchars($pr['response']); ?>
+                                    <?php echo $this->htmlTranslate($pr['response']); ?>
                                 </option>
                             <?php endforeach; ?>
                         </select>
@@ -335,7 +335,7 @@ foreach ($savedSettings as $key => $savedValue) {
                                                 foreach ($this->recencyPossibleResults as $pr) {
                                                     if ($pr['scheme_sub_group'] == 'RECENCY_FINAL') {
                                                         $selected = ($pr['id'] == $recencyAssay['result']) ? "selected='selected'" : "";
-                                                        $testSelectedResults .= '<option value="' . htmlspecialchars($pr['id']) . '" ' . $selected . '>' . htmlspecialchars($pr['response']) . '</option>';
+                                                        $testSelectedResults .= '<option value="' . htmlspecialchars($pr['id']) . '" ' . $selected . '>' . $this->htmlTranslate($pr['response']) . '</option>';
                                                     }
                                                 }
                                     ?>

@@ -65,7 +65,7 @@
                                     <?php foreach ($dtsPossibleResults as $pr):
                                         if ($pr['scheme_sub_group'] == 'DTS_TEST'): ?>
                                         <option value="<?php echo htmlspecialchars($pr['id']); ?>" <?php echo (isset($pr['id']) && $pr['id'] == $eia['result']) ? "selected='selected'" : ""; ?>>
-                                            <?php echo htmlspecialchars($pr['response']); ?>
+                                            <?php echo $this->htmlTranslate($pr['response']); ?>
                                         </option>
                                     <?php endif; endforeach; ?>
                                 </select>
@@ -95,7 +95,7 @@
                                     <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
                                     <?php foreach ($dtsPossibleResults as $pr):
                                         if ($pr['scheme_sub_group'] == 'DTS_TEST'): ?>
-                                        <option value="<?php echo htmlspecialchars($pr['id']); ?>"><?php echo htmlspecialchars($pr['response']); ?></option>
+                                        <option value="<?php echo htmlspecialchars($pr['id']); ?>"><?php echo $this->htmlTranslate($pr['response']); ?></option>
                                     <?php endif; endforeach; ?>
                                 </select>
                             </td>
@@ -164,7 +164,7 @@
                                     <?php foreach ($dtsPossibleResults as $pr):
                                         if ($pr['scheme_sub_group'] == 'DTS_TEST'): ?>
                                         <option value="<?php echo htmlspecialchars($pr['id']); ?>" <?php echo (isset($pr['id']) && $pr['id'] == $wb['result']) ? "selected='selected'" : ""; ?>>
-                                            <?php echo htmlspecialchars($pr['response']); ?>
+                                            <?php echo $this->htmlTranslate($pr['response']); ?>
                                         </option>
                                     <?php endif; endforeach; ?>
                                 </select>
@@ -201,7 +201,7 @@
                                     <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
                                     <?php foreach ($dtsPossibleResults as $pr):
                                         if ($pr['scheme_sub_group'] == 'DTS_TEST'): ?>
-                                        <option value="<?php echo htmlspecialchars($pr['id']); ?>"><?php echo htmlspecialchars($pr['response']); ?></option>
+                                        <option value="<?php echo htmlspecialchars($pr['id']); ?>"><?php echo $this->htmlTranslate($pr['response']); ?></option>
                                     <?php endif; endforeach; ?>
                                 </select>
                             </td>
@@ -256,7 +256,7 @@
                                     <?php foreach ($dtsPossibleResults as $pr):
                                         if ($pr['scheme_sub_group'] == 'DTS_TEST'): ?>
                                         <option value="<?php echo htmlspecialchars($pr['id']); ?>" <?php echo (isset($pr['id']) && $pr['id'] == $rhiv['result']) ? "selected='selected'" : ""; ?>>
-                                            <?php echo htmlspecialchars($pr['response']); ?>
+                                            <?php echo $this->htmlTranslate($pr['response']); ?>
                                         </option>
                                     <?php endif; endforeach; ?>
                                 </select>
@@ -331,7 +331,7 @@
                                             $selected = ($pr['id'] == $geenius['result']) ? "selected='selected'" : "";
                                     ?>
                                         <option value="<?php echo htmlspecialchars($pr['id']); ?>" <?php echo $selected; ?>>
-                                            <?php echo htmlspecialchars($pr['response']); ?>
+                                            <?php echo $this->htmlTranslate($pr['response']); ?>
                                         </option>
                                     <?php endif; endforeach; ?>
                                 </select>

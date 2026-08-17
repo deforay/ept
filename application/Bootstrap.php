@@ -65,8 +65,8 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
         $locale = 'en_US'; // default fallback
 
         if (php_sapi_name() !== 'cli') {
-            // Priority 1: Admin module — check administrators session
-            if ($this->_isAdminRequest()) {
+            // Priority 1: Admin-side modules — check administrators session
+            if ($this->_isAdminSideRequest()) {
                 $adminNameSpace = new Zend_Session_Namespace('administrators');
                 if (!empty(trim($adminNameSpace->language ?? ''))) {
                     $locale = trim($adminNameSpace->language);
@@ -112,9 +112,15 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
         $view->translate = $translate;
     }
 
-    protected function _isAdminRequest()
+    /**
+     * True for the modules an administrator browses, so _initTranslate() reads their
+     * personal language. The reports module lives at /reports, not under /admin, so
+     * matching only /admin left every Reports page falling through to the instance
+     * locale — an admin with Vietnamese selected still got English there.
+     */
+    protected function _isAdminSideRequest()
     {
         $path = parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH);
-        return (bool) preg_match('#^/admin(/|$)#i', $path);
+        return (bool) preg_match('#^/(admin|reports)(/|$)#i', $path);
     }
 }

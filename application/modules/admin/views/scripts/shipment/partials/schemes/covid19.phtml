@@ -49,7 +49,7 @@ $dtFormat = $vHelper->getDateFormat();
 $possibleResultsHtml = '<select name="possibleResults[]" class="isRequired form-control input-sm"><option value="">--' . $this->translate->_("Select") . '--</option>';
 foreach ($possibleResultsSource as $pr) {
     if ($pr['scheme_sub_group'] == 'COVID19_FINAL') {
-        $possibleResultsHtml .= '<option value="' . htmlspecialchars($pr['id']) . '">' . htmlspecialchars($pr['response']) . '</option>';
+        $possibleResultsHtml .= '<option value="' . htmlspecialchars($pr['id']) . '">' . $this->htmlTranslate($pr['response']) . '</option>';
     }
 }
 $possibleResultsHtml .= '</select>';
@@ -61,7 +61,7 @@ $possibleResultsJs = str_replace(array("\n", "\r", "'"), array('', '', "\\'"), $
 $testResultsHtml = '<option value="">--' . $this->translate->_("Select") . '--</option>';
 foreach ($testResultsSource as $pr) {
     if ($pr['scheme_sub_group'] == 'COVID19_TEST') {
-        $testResultsHtml .= '<option value="' . htmlspecialchars($pr['id']) . '">' . htmlspecialchars($pr['response']) . '</option>';
+        $testResultsHtml .= '<option value="' . htmlspecialchars($pr['id']) . '">' . $this->htmlTranslate($pr['response']) . '</option>';
     }
 }
 
@@ -199,7 +199,7 @@ foreach ($savedSettings as $key => $savedValue) {
                                 if ($pr['scheme_sub_group'] == 'COVID19_FINAL'):
                             ?>
                                     <option value="<?php echo htmlspecialchars($pr['id']); ?>" <?php echo ($referenceResult == $pr['id']) ? "selected='selected'" : ""; ?>>
-                                        <?php echo htmlspecialchars($pr['response']); ?>
+                                        <?php echo $this->htmlTranslate($pr['response']); ?>
                                     </option>
                             <?php
                                 endif;
