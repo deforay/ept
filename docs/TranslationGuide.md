@@ -119,9 +119,9 @@ Two sources feed the catalogs. Knowing which is which explains why a string appe
 | Source | Example | Notes |
 | --- | --- | --- |
 | Application code | Column headings, buttons, messages | Extracted from `.phtml` and `.php` files |
-| Database lookup tables | Test result names, sample types | Extracted from `r_*` tables on that instance |
+| Database lookup tables | Test result names, sample types | Extracted from `r_*` tables |
 
-Database strings differ between instances. A string another country translated may not appear in your catalog.
+Every instance has its own lookup data, so the catalog holds the values from all of them. Expect strings for tests and sample types your instance does not run. Translate them anyway. Leaving them empty costs nothing, but translating them helps the next country.
 
 ## Reporting a problem
 

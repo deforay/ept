@@ -173,6 +173,26 @@ Typical maintainer workflow:
 2. Open `application/languages/{locale}/{locale}.po` in Poedit
 3. Translate new entries and save
 
+#### DB-backed strings accumulate
+
+`application/languages/db-translation-strings.php` holds the lookup values from
+`r_*` tables so `xgettext` can find them. Every instance has different lookup
+data, so the file is merged on each run, not replaced. Strings your database does
+not have are kept.
+
+This means running the command on one instance never deletes another instance's
+values, and the file is safe to commit. Repeated runs against the same database
+produce no diff.
+
+To rebuild from the current database alone, dropping everything else:
+
+```bash
+php bin/generate-db-translation-strings.php --prune
+```
+
+Use `--prune` only for a deliberate cleanup. It discards the other instances'
+strings, which are then recoverable only from git history.
+
 ---
 
 ## Installation & Updates
