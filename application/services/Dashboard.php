@@ -34,16 +34,18 @@
  *     shipment_participant_map.final_result   (1 pass, 2 fail, 3 excluded, 4 not evaluated)
  *     shipment_participant_map.report_download_metadata
  *
- *   "Open" for the round table (Task 3), per explicit instruction: status
- *   != 'finalized' AND response_deadline >= NOW(). Expired-deadline
- *   shipments are excluded from the table entirely — they don't appear
- *   styled differently, they just don't show up. response_switch, which
- *   the original spec mentioned, is NOT used anywhere in this file.
+ *   The round table (Task 3) carries every non-finalized, non-cancelled
+ *   shipment. "Open for response" — response_switch = 'on' AND the deadline
+ *   still ahead — only decides how the row is labelled, not whether it
+ *   appears: a closed round still needs evaluating and finalizing, and the
+ *   between-rounds card covers finalized rounds only, so dropping it here
+ *   would leave it visible nowhere.
  *
- *   "Active participants" / "active schemes" (Task 2) and "out of enrolled"
- *   (Task 4) all come from Application_Service_Schemes::countEnrollmentSchemes(),
- *   not a raw query — see getSummaryCounts() and getBetweenRoundsSummary()
- *   for the keyed-by-scheme-name caveat noted in PATCH_NOTES.md.
+ *   "Active participants" / "active schemes" (Task 2) come from
+ *   Application_Service_Schemes::countEnrollmentSchemes(). "Out of enrolled"
+ *   (Task 4) does NOT — that method keys its result by
+ *   strtoupper(scheme_name), and reading it by raw scheme_name silently
+ *   yielded 0 on every card. See getEnrolledCount().
  *
  *   Per the spec's warning: shipments finalized before
  *   Evaluation::excludeNonResponder() landed over-counted non-responders as
@@ -108,14 +110,22 @@ class Application_Service_Dashboard
     /**
      * Task 3 — table rows.
      *
-     * Explicit instruction overriding the earlier "keep closed rows visible
-     * until evaluated" behavior: this table shows ONLY currently-running
-     * shipments — status != 'finalized' AND response_deadline not yet
-     * crossed. Expired-deadline shipments are excluded entirely, not just
-     * styled differently. As a side effect this also closes the 'evaluated'
-     * status gap noted earlier in PATCH_NOTES.md — status != 'finalized'
-     * catches 'shipped' and 'evaluated' alike, as long as the deadline
-     * hasn't passed.
+     * Every non-finalized, non-cancelled shipment appears here, including ones
+     * whose deadline has gone by. A closed round still needs evaluating and
+     * finalizing, so per the spec's decision tree it stays in the table with a
+     * "Closed" chip rather than dropping out of the dashboard — an intermediate
+     * revision excluded them on deadline, which left a round awaiting
+     * evaluation visible nowhere at all (the between-rounds card only covers
+     * finalized rounds).
+     *
+     * "Open for response" is the spec's definition — response_switch = 'on'
+     * AND the deadline still ahead. The switch is what actually gates result
+     * entry (cron flips it at the deadline when auto_close_at_deadline is
+     * 'yes'), so a manually closed round reads as Closed even with days left.
+     *
+     * Newest deadline first, by explicit instruction — not the spec's
+     * soonest-first. Now that closed rounds stay in the table, soonest-first
+     * would head the list with the oldest unfinalized round on the system.
      */
     public function getOpenRoundsStatus()
     {
@@ -125,18 +135,23 @@ class Application_Service_Dashboard
                 s.shipment_code,
                 sl.scheme_name,
                 s.response_deadline,
+                s.response_switch,
+                s.shipment_date,
+                s.average_score,
+                s.evaluated_at,
+                s.reports_generated_at,
                 COUNT(sp.participant_id) AS total,
-                SUM(sp.response_status != 'noresponse') AS responded,
+                SUM(sp.response_status IS NOT NULL AND sp.response_status NOT IN ('', 'noresponse')) AS responded,
                 SUM(sp.response_status = 'late') AS late,
-                SUM(sp.response_status = 'nottested') AS unable_to_test
+                SUM(sp.response_status = 'nottested') AS unable_to_test,
+                SUM(sp.final_result IN (1, 2, 3, 4)) AS evaluated
             FROM shipment s
             JOIN scheme_list sl ON sl.scheme_id = s.scheme_type
             JOIN shipment_participant_map sp ON sp.shipment_id = s.shipment_id
             WHERE s.status != 'finalized'
               AND s.cancelled_at IS NULL
-              AND s.response_deadline >= NOW()
             GROUP BY s.shipment_id
-            ORDER BY s.response_deadline ASC
+            ORDER BY s.response_deadline DESC
         ";
 
         $rows = $this->db->fetchAll($sql);
@@ -146,8 +161,36 @@ class Application_Service_Dashboard
         foreach ($rows as $row) {
             $deadline = new DateTime($row['response_deadline']);
             $diffDays = (int) $now->diff($deadline)->format('%r%a'); // signed days, future positive
-            $rowClass = $diffDays <= 3 ? 'amber' : '';
-            $deadlineLabel = 'In ' . $diffDays . ' day' . ($diffDays === 1 ? '' : 's');
+            $deadlinePassed = $deadline < $now;
+            $switchOn = strtolower((string) $row['response_switch']) === 'on';
+            $isOpen = $switchOn && !$deadlinePassed;
+
+            // The chip's wording is composed in the view, not here: this is a
+            // sentence with a number in it, and building it in PHP would put
+            // "Closed 17 days ago" past the translator. The view gets a kind
+            // and a day count and picks a translatable phrase for each.
+            $deadlineDays = abs($diffDays);
+            if ($isOpen) {
+                $deadlineKind = $diffDays === 0 ? 'today' : 'future';
+                // Amber only inside the last 3 days; a round with a month to
+                // run shouldn't be tinted like it needs chasing.
+                $rowClass = $diffDays <= 3 ? 'amber' : '';
+                $chipClass = $diffDays <= 3 ? 'chip-amber' : '';
+            } else {
+                if (!$deadlinePassed) {
+                    // Switched off ahead of the deadline — closed by hand.
+                    $deadlineKind = 'closed';
+                } elseif ($deadlineDays === 0) {
+                    $deadlineKind = 'closed-today';
+                } else {
+                    $deadlineKind = 'closed-past';
+                }
+                // No row accent: on most instances every round is closed and
+                // waiting to be finalized, so accenting them all says nothing.
+                // The count in the panel heading carries that signal instead.
+                $rowClass = '';
+                $chipClass = 'chip-closed';
+            }
 
             $total = (int) $row['total'];
             $responded = (int) $row['responded'];
@@ -156,18 +199,108 @@ class Application_Service_Dashboard
                 'shipmentId' => $row['shipment_id'],
                 'code' => strtoupper($row['shipment_code']),
                 'schemeName' => $row['scheme_name'],
-                'deadlineLabel' => $deadlineLabel,
+                'isOpen' => $isOpen,
+                'deadlineKind' => $deadlineKind,
+                'deadlineDays' => $deadlineDays,
                 'deadlineDate' => $deadline->format('Y-m-d'),
+                // The chip says "Closed 17 days ago", which is the urgency but
+                // not the fact. The actual date is printed under it.
+                'deadlineDateLong' => $deadline->format('d M Y'),
+                'shippedDate' => $row['shipment_date']
+                    ? date('d M Y', strtotime($row['shipment_date']))
+                    : null,
                 'rowClass' => $rowClass,
+                'chipClass' => $chipClass,
                 'total' => $total,
                 'responded' => $responded,
                 'outstanding' => max(0, $total - $responded),
                 'late' => (int) $row['late'],
                 'unableToTest' => (int) $row['unable_to_test'],
+                'evaluated' => (int) $row['evaluated'],
+                // Null until the round is evaluated, which is itself worth
+                // showing — a blank score column means "no verdict yet",
+                // not "scored zero".
+                'averageScore' => $row['evaluated_at'] ? $row['average_score'] : null,
+                'nextAction' => $this->getNextAction($row, $isOpen),
             ];
         }
 
         return $out;
+    }
+
+    /**
+     * What this round is waiting on, and where to go and do it.
+     *
+     * Reads the shipment's own progress stamps rather than `status`: a round
+     * moves shipped → evaluated → reports generated → finalized, and only the
+     * timestamps distinguish the middle two. Everything here is by definition
+     * unfinalized, since getOpenRoundsStatus() excludes finalized rounds.
+     *
+     * Labels come back translated — the view escapes them and does not
+     * translate again.
+     *
+     * @return array{label: string, module: string, controller: string, action: string, param: string}
+     */
+    private function getNextAction(array $row, $isOpen)
+    {
+        $sid = base64_encode((string) $row['shipment_id']);
+
+        if ($isOpen) {
+            return [
+                'label' => Pt_Commons_TranslateUtility::safeTranslate('Awaiting responses'),
+                'module' => 'admin',
+                'controller' => 'shipment',
+                'action' => 'view',
+                'param' => 'id',
+                'value' => $row['shipment_id'],
+            ];
+        }
+
+        if (empty($row['evaluated_at'])) {
+            // Nobody submitted anything, so there is nothing to score.
+            // "Ready to evaluate" is technically true and practically
+            // useless — send the admin to the labs to chase instead of to an
+            // evaluation screen that would open with no rows in it.
+            if ((int) $row['responded'] === 0) {
+                return [
+                    'label' => Pt_Commons_TranslateUtility::safeTranslate('No responses received'),
+                    'module' => 'admin',
+                    'controller' => 'shipment',
+                    'action' => 'round-participants',
+                    'param' => 'id',
+                    'value' => $row['shipment_id'],
+                ];
+            }
+
+            return [
+                'label' => Pt_Commons_TranslateUtility::safeTranslate('Ready to evaluate'),
+                'module' => 'admin',
+                'controller' => 'evaluate',
+                'action' => 'shipment',
+                'param' => 'sid',
+                'value' => $sid,
+            ];
+        }
+
+        if (empty($row['reports_generated_at'])) {
+            return [
+                'label' => Pt_Commons_TranslateUtility::safeTranslate('Generate reports'),
+                'module' => 'reports',
+                'controller' => 'distribution',
+                'action' => 'shipment',
+                'param' => 'sid',
+                'value' => $sid,
+            ];
+        }
+
+        return [
+            'label' => Pt_Commons_TranslateUtility::safeTranslate('Ready to finalize'),
+            'module' => 'reports',
+            'controller' => 'distribution',
+            'action' => 'shipment',
+            'param' => 'sid',
+            'value' => $sid,
+        ];
     }
 
     /**
@@ -192,15 +325,6 @@ class Application_Service_Dashboard
 
         $latestShipments = $this->db->fetchAll($latestSql);
         $cards = [];
-        // NOTE: the original (pre-rebuild) dashboard iterated this method's
-        // result as `foreach ($schemeCountResult as $schemeName => $pCount)`,
-        // which means it's keyed by scheme NAME, not scheme_id/scheme_type.
-        // Keying off name below to match that — but two schemes sharing a
-        // display name would collide under this keying. If
-        // countEnrollmentSchemes() actually returns numeric scheme_type/id
-        // keys and the original loop variable was just misleadingly named,
-        // switch this back to keying by $schemeType.
-        $schemeCountsByName = $this->schemeService->countEnrollmentSchemes();
 
         foreach ($latestShipments as $shipment) {
             $schemeType = $shipment['scheme_type'];
@@ -212,20 +336,33 @@ class Application_Service_Dashboard
             );
 
             // Enrolled count "out of enrolled" — not out of this shipment's
-            // participant list. Same source as getSummaryCounts(): the
-            // existing countEnrollmentSchemes() method, keyed by scheme name.
-            $enrolledCount = (int) ($schemeCountsByName[$schemeName] ?? 0);
+            // participant list. Queried by scheme_id rather than read out of
+            // countEnrollmentSchemes(): that method keys its array by
+            // strtoupper(scheme_name), so the earlier lookup by raw
+            // scheme_list.scheme_name never matched and every card silently
+            // rendered "out of enrolled 0".
+            $enrolledCount = $this->getEnrolledCount($schemeType);
 
+            // The three participation buckets are disjoint here, unlike the
+            // round table's "responded" (which folds late + nottested in so
+            // that responded + outstanding = total). The card prints all
+            // three side by side against `enrolled`, so counting a lab as
+            // both "took part" and "unable to test" would read as an error.
+            // Blank/NULL response_status is treated as no-response, matching
+            // the column's 'noresponse' default.
             $participantStats = $this->db->fetchRow(
                 "SELECT
-                    SUM(response_status != 'noresponse') AS took_part,
-                    SUM(response_status = 'noresponse') AS no_response,
+                    COUNT(*) AS in_shipment,
+                    SUM(response_status IS NOT NULL AND response_status NOT IN ('', 'noresponse', 'nottested')) AS took_part,
+                    SUM(response_status IS NULL OR response_status IN ('', 'noresponse')) AS no_response,
                     SUM(response_status = 'nottested') AS unable_to_test,
                     SUM(final_result = 1) AS pass,
                     SUM(final_result = 2) AS fail,
                     SUM(final_result = 3) AS excluded,
                     SUM(final_result = 4) AS not_evaluated,
-                    SUM(report_download_metadata IS NOT NULL) AS report_opened
+                    SUM(final_result IS NULL OR final_result NOT IN (1, 2, 3, 4)) AS unrecorded,
+                    SUM(individual_report_downloaded_on IS NOT NULL
+                        OR JSON_LENGTH(report_download_metadata) > 0) AS report_opened
                  FROM shipment_participant_map
                  WHERE shipment_id = ?",
                 [$shipmentId]
@@ -242,8 +379,11 @@ class Application_Service_Dashboard
                 [$schemeType, $shipment['finalized_at']]
             );
 
+            // Both stay null when there is no earlier round to compare
+            // against — "no previous round" and "genuinely zero" have to be
+            // distinguishable on the card, and a plain 0 conflates them.
             $scoreDelta = null;
-            $repeatFailerCount = 0;
+            $repeatFailerCount = null;
             if ($previousShipment) {
                 $scoreDelta = round($shipment['average_score'] - $previousShipment['average_score'], 1);
 
@@ -260,26 +400,33 @@ class Application_Service_Dashboard
                 );
             }
 
-            // Never responded in the last 3 rounds for this scheme.
-            $last3ShipmentIds = $this->db->fetchCol(
+            // Never responded across this scheme's last few finalized rounds.
+            // The window is up to 3 rounds but tolerates 2, and the actual
+            // size travels with the count so the card can say which window it
+            // means. Previously this required exactly 3 rounds and returned a
+            // bare 0 otherwise, which read as "no problem labs" on any scheme
+            // that had only run once or twice.
+            $windowShipmentIds = $this->db->fetchCol(
                 "SELECT shipment_id FROM shipment
                  WHERE scheme_type = ? AND status = 'finalized' AND cancelled_at IS NULL
                  ORDER BY finalized_at DESC
                  LIMIT 3",
                 [$schemeType]
             );
-            $neverRespondedCount = 0;
-            if (count($last3ShipmentIds) === 3) {
-                $placeholders = implode(',', array_fill(0, count($last3ShipmentIds), '?'));
+            $neverRespondedWindow = count($windowShipmentIds);
+            $neverRespondedCount = null;
+            if ($neverRespondedWindow >= 2) {
+                $placeholders = implode(',', array_fill(0, $neverRespondedWindow, '?'));
                 $neverRespondedCount = (int) $this->db->fetchOne(
                     "SELECT COUNT(*) FROM (
                         SELECT participant_id
                         FROM shipment_participant_map
                         WHERE shipment_id IN ($placeholders)
                         GROUP BY participant_id
-                        HAVING SUM(response_status != 'noresponse') = 0
+                        HAVING SUM(response_status IS NOT NULL
+                                   AND response_status NOT IN ('', 'noresponse')) = 0
                      ) t",
-                    $last3ShipmentIds
+                    $windowShipmentIds
                 );
             }
 
@@ -289,9 +436,13 @@ class Application_Service_Dashboard
                 'shipmentId' => $shipmentId,
                 'schemeName' => $schemeName,
                 'roundCode' => strtoupper($shipment['shipment_code']),
-                'finalizedDateShort' => date('d M', strtotime($shipment['finalized_at'])),
-                'finalizedDateFull' => date('d M Y', strtotime($shipment['finalized_at'])),
+                // Always carries the year: the between-rounds heading reads
+                // "Last round finalized 31 Jul", which on an instance whose
+                // newest round closed in a previous year looks like a stale
+                // page rather than an old round.
+                'finalizedDate' => date('d M Y', strtotime($shipment['finalized_at'])),
                 'enrolledCount' => $enrolledCount,
+                'inShipment' => (int) $participantStats['in_shipment'],
                 'tookPart' => $tookPart,
                 'noResponse' => (int) $participantStats['no_response'],
                 'unableToTest' => (int) $participantStats['unable_to_test'],
@@ -299,10 +450,16 @@ class Application_Service_Dashboard
                 'fail' => (int) $participantStats['fail'],
                 'excluded' => (int) $participantStats['excluded'],
                 'notEvaluated' => (int) $participantStats['not_evaluated'],
+                // Labs the evaluation never stamped a verdict on. Without this
+                // the results line quietly drops them and stops reconciling
+                // with "took part".
+                'unrecorded' => (int) $participantStats['unrecorded'],
                 'averageScore' => $shipment['average_score'],
                 'scoreDelta' => $scoreDelta,
+                'previousRoundCode' => $previousShipment ? strtoupper($previousShipment['shipment_code']) : null,
                 'repeatFailerCount' => $repeatFailerCount,
                 'neverRespondedCount' => $neverRespondedCount,
+                'neverRespondedWindow' => $neverRespondedWindow,
                 'reportOpenedCount' => (int) $participantStats['report_opened'],
             ];
         }
@@ -311,32 +468,22 @@ class Application_Service_Dashboard
     }
 
     /**
-     * Drill-down list for the "N outstanding" link on a round-table row —
-     * labs on a specific shipment that haven't responded yet.
+     * Active participants enrolled in a scheme.
      *
-     * This is the only lab-list method left in the class: the equivalents
-     * for "never responded" and "repeat failers" were removed along with
-     * their links on the between-rounds card, since that card describes an
-     * already-finalized round and this page is scoped to currently-running
-     * shipments only. Not deleting the finalized-round versions blind —
-     * this comment is here so it's easy to find where they'd need to be
-     * rebuilt if a finalized-round drill-down page gets built later
-     * (queries would look like getBetweenRoundsSummary()'s scoreDelta/
-     * repeatFailerCount/neverRespondedCount blocks, returning rows instead
-     * of counts).
+     * Same definition Application_Model_DbTable_SchemeList::countEnrollmentSchemes()
+     * uses (active participant × enrollment row), queried by scheme_id so the
+     * caller doesn't have to know that method keys its result by
+     * strtoupper(scheme_name) — which is what broke the between-rounds card.
      */
-    public function getOutstandingLabs($shipmentId)
+    private function getEnrolledCount($schemeId)
     {
-        $participantIds = $this->db->fetchCol(
-            "SELECT participant_id
-             FROM shipment_participant_map
-             WHERE shipment_id = ? AND response_status = 'noresponse'",
-            [$shipmentId]
+        return (int) $this->db->fetchOne(
+            "SELECT COUNT(DISTINCT e.participant_id)
+             FROM enrollments e
+             JOIN participant p ON p.participant_id = e.participant_id
+             WHERE e.scheme_id = ? AND p.status = 'active'",
+            [$schemeId]
         );
-
-        return $this->fetchLabDetails($participantIds, [
-            'context' => 'No response recorded yet for this round',
-        ]);
     }
 
     /**
@@ -405,12 +552,12 @@ class Application_Service_Dashboard
             return;
         }
 
-        $responseStatusMap = [
-            'late' => 'late',
-            'unabletotest' => 'nottested',
-            'outstanding' => 'noresponse',
-        ];
-        $responseStatus = $responseStatusMap[$status] ?? 'noresponse';
+        // Resolved once, up front: 'repeatfailers' and 'neverresponded' are
+        // cross-shipment buckets, so the draw filters on the resolved
+        // participant IDs rather than on a response_status equality. Shipments
+        // here run to a few hundred labs, so the IN list stays small.
+        $bucket = $this->resolveDrilldown($shipment, $status);
+        $bucketIds = $bucket['ids'];
 
         // Column order must match the view's <thead> / aoColumns exactly:
         // Participant ID, Name, Email, Phone, Country, State, District.
@@ -451,9 +598,10 @@ class Application_Service_Dashboard
                 'participantName' => new Zend_Db_Expr(Application_Model_DbTable_Participants::participantNameExpr('p')),
             ])
             ->join(['c' => 'countries'], 'c.id = p.country', ['iso_name'])
-            ->join(['sp' => 'shipment_participant_map'], 'sp.participant_id = p.participant_id', [])
-            ->where('sp.shipment_id = ?', $shipmentId)
-            ->where('sp.response_status = ?', $responseStatus)
+            // Empty bucket: a sentinel that matches no participant, since an
+            // empty IN () list is a SQL syntax error and DataTables still
+            // needs a well-formed empty response.
+            ->where('p.participant_id IN (?)', $bucketIds ?: [0])
             ->group('p.participant_id');
 
         // Same three filters the main participants grid offers, reused here so
@@ -511,11 +659,7 @@ class Application_Service_Dashboard
         // Unfiltered total for this shipment+status bucket (ignores the three
         // filters above, matches the "of N" DataTables shows before any filter
         // is applied — same semantics as getAllShipments()'s iTotalRecords).
-        $iTotal = (int) $this->db->fetchOne(
-            'SELECT COUNT(DISTINCT sp.participant_id) FROM shipment_participant_map sp
-            WHERE sp.shipment_id = ? AND sp.response_status = ?',
-            [$shipmentId, $responseStatus]
-        );
+        $iTotal = count($bucketIds);
 
         $output = [
             'sEcho' => intval($parameters['sEcho'] ?? 0),
@@ -540,14 +684,13 @@ class Application_Service_Dashboard
     }
 
     /**
-     * Task 3 drill-down — labs on a specific shipment matching one of the three
-     * response-status buckets shown in the round table: outstanding (no
-     * response yet), late (responded after the deadline), or unable to test.
+     * Drill-down — the labs behind one linked number on the dashboard, for
+     * whichever bucket the URL names. Both dashboard blocks land here: the
+     * round table's Outstanding / Late / Unable-to-test columns, and the
+     * between-rounds card's Failed / Repeat failers / Never responded figures.
      *
-     * Replaces the earlier single-purpose getOutstandingLabs() with a shared
-     * shipment lookup + a status-keyed query, so all three round-table links
-     * (Outstanding / Late / Unable to test) land on one page/method pair
-     * instead of three near-identical ones.
+     * The bucket is resolved by resolveDrilldown(), shared with the DataTables
+     * draw so the two can't disagree about what a status means.
      *
      * @param int    $shipmentId
      * @param string $status 'outstanding' | 'late' | 'unabletotest'
@@ -560,48 +703,14 @@ class Application_Service_Dashboard
             return null;
         }
 
-        switch ($status) {
-            case 'late':
-                $participantIds = $this->db->fetchCol(
-                    "SELECT participant_id FROM shipment_participant_map
-                    WHERE shipment_id = ? AND response_status = 'late'",
-                    [$shipmentId]
-                );
-                $context = 'Responded after the deadline for this round';
-                $statusLabel = 'Late';
-                break;
-
-            case 'unabletotest':
-                $participantIds = $this->db->fetchCol(
-                    "SELECT participant_id FROM shipment_participant_map
-                    WHERE shipment_id = ? AND response_status = 'nottested'",
-                    [$shipmentId]
-                );
-                $context = 'Reported unable to run the PT panel this round';
-                $statusLabel = 'Unable to test';
-                break;
-
-            case 'outstanding':
-            default:
-                // Unrecognized/missing status falls back here rather than 404ing —
-                // an admin fat-fingering the URL should see something useful.
-                $participantIds = $this->db->fetchCol(
-                    "SELECT participant_id FROM shipment_participant_map
-                    WHERE shipment_id = ? AND response_status = 'noresponse'",
-                    [$shipmentId]
-                );
-                $context = 'No response recorded yet for this round';
-                $statusLabel = 'Outstanding';
-                $status = 'outstanding'; // normalize for the view (tab highlighting)
-                break;
-        }
-
-        $labs = $this->fetchLabDetails($participantIds, ['context' => $context]);
+        $bucket = $this->resolveDrilldown($shipment, $status);
+        $labs = $this->fetchLabDetails($bucket['ids'], ['context' => $bucket['context']]);
 
         return [
             'shipment' => $shipment,
-            'status' => $status,
-            'statusLabel' => $statusLabel,
+            'status' => $bucket['status'],
+            'statusLabel' => $bucket['label'],
+            'tabs' => self::drilldownStatuses($shipment['status']),
             'count' => count($labs),
             'labs' => $labs,
         ];
@@ -618,7 +727,8 @@ class Application_Service_Dashboard
     private function getShipmentHeaderForDrilldown($shipmentId)
     {
         $row = $this->db->fetchRow(
-            'SELECT s.shipment_id, s.shipment_code, sl.scheme_name, s.response_deadline, s.status
+            'SELECT s.shipment_id, s.shipment_code, s.scheme_type, sl.scheme_name,
+                    s.response_deadline, s.status, s.finalized_at
             FROM shipment s
             JOIN scheme_list sl ON sl.scheme_id = s.scheme_type
             WHERE s.shipment_id = ?',
@@ -630,9 +740,166 @@ class Application_Service_Dashboard
         return [
             'shipmentId' => $row['shipment_id'],
             'code' => strtoupper($row['shipment_code']),
+            'schemeType' => $row['scheme_type'],
             'schemeName' => $row['scheme_name'],
             'deadlineDate' => (new DateTime($row['response_deadline']))->format('Y-m-d'),
             'status' => $row['status'],
+            'finalizedAt' => $row['finalized_at'],
+        ];
+    }
+
+    /**
+     * Drill-down buckets the round-participants page offers, keyed by URL
+     * status, valued by tab label. Which set applies depends on the shipment:
+     * an open round is described by where its responses stand, a finalized one
+     * by the follow-up the between-rounds card points at.
+     *
+     * @param string $shipmentStatus shipment.status
+     * @return array<string, string>
+     */
+    public static function drilldownStatuses($shipmentStatus)
+    {
+        if ($shipmentStatus === 'finalized') {
+            return [
+                'failed' => Pt_Commons_TranslateUtility::safeTranslate('Failed'),
+                'repeatfailers' => Pt_Commons_TranslateUtility::safeTranslate('Repeat failers'),
+                'neverresponded' => Pt_Commons_TranslateUtility::safeTranslate('Never responded'),
+                'outstanding' => Pt_Commons_TranslateUtility::safeTranslate('No response'),
+                'unabletotest' => Pt_Commons_TranslateUtility::safeTranslate('Unable to test'),
+            ];
+        }
+
+        return [
+            'outstanding' => Pt_Commons_TranslateUtility::safeTranslate('Outstanding'),
+            'late' => Pt_Commons_TranslateUtility::safeTranslate('Late'),
+            'unabletotest' => Pt_Commons_TranslateUtility::safeTranslate('Unable to test'),
+        ];
+    }
+
+    /**
+     * Resolves a drill-down status to the participant IDs it covers, plus the
+     * heading copy for the page.
+     *
+     * Shared by getRoundParticipantsList() (initial page load) and
+     * getRoundParticipantsDataTable() (the AJAX draw) so both agree on what a
+     * status means — the two used to carry their own copy of the
+     * status→response_status mapping, which only worked while every bucket was
+     * a plain equality on one column. 'repeatfailers' and 'neverresponded'
+     * span shipments, so they can't be.
+     *
+     * An unrecognized status falls back to the shipment's first bucket rather
+     * than 404ing: an admin fat-fingering the URL should see something useful.
+     *
+     * @return array{ids: int[], status: string, label: string, context: string}
+     */
+    private function resolveDrilldown(array $shipment, $status)
+    {
+        $shipmentId = $shipment['shipmentId'];
+        $available = self::drilldownStatuses($shipment['status']);
+        if (!isset($available[$status])) {
+            $status = (string) array_key_first($available);
+        }
+
+        switch ($status) {
+            case 'late':
+                $ids = $this->db->fetchCol(
+                    "SELECT participant_id FROM shipment_participant_map
+                    WHERE shipment_id = ? AND response_status = 'late'",
+                    [$shipmentId]
+                );
+                $context = Pt_Commons_TranslateUtility::safeTranslate('Responded after the deadline for this round');
+                break;
+
+            case 'unabletotest':
+                $ids = $this->db->fetchCol(
+                    "SELECT participant_id FROM shipment_participant_map
+                    WHERE shipment_id = ? AND response_status = 'nottested'",
+                    [$shipmentId]
+                );
+                $context = Pt_Commons_TranslateUtility::safeTranslate('Reported unable to run the PT panel this round');
+                break;
+
+            case 'failed':
+                $ids = $this->db->fetchCol(
+                    'SELECT participant_id FROM shipment_participant_map
+                    WHERE shipment_id = ? AND final_result = 2',
+                    [$shipmentId]
+                );
+                $context = Pt_Commons_TranslateUtility::safeTranslate('Failed this round');
+                break;
+
+            case 'repeatfailers':
+                // Failed this round and the scheme's previous finalized round.
+                $previousShipmentId = $this->db->fetchOne(
+                    "SELECT shipment_id FROM shipment
+                    WHERE scheme_type = ? AND status = 'finalized' AND cancelled_at IS NULL
+                      AND finalized_at < ?
+                    ORDER BY finalized_at DESC
+                    LIMIT 1",
+                    [$shipment['schemeType'], $shipment['finalizedAt']]
+                );
+                $ids = $previousShipmentId ? $this->db->fetchCol(
+                    'SELECT cur.participant_id FROM shipment_participant_map cur
+                    JOIN shipment_participant_map prev
+                      ON prev.participant_id = cur.participant_id
+                     AND prev.shipment_id = ?
+                    WHERE cur.shipment_id = ?
+                      AND cur.final_result = 2
+                      AND prev.final_result = 2',
+                    [$previousShipmentId, $shipmentId]
+                ) : [];
+                $context = Pt_Commons_TranslateUtility::safeTranslate('Failed this round and the one before it');
+                break;
+
+            case 'neverresponded':
+                $windowShipmentIds = $this->db->fetchCol(
+                    "SELECT shipment_id FROM shipment
+                    WHERE scheme_type = ? AND status = 'finalized' AND cancelled_at IS NULL
+                    ORDER BY finalized_at DESC
+                    LIMIT 3",
+                    [$shipment['schemeType']]
+                );
+                $ids = [];
+                if (count($windowShipmentIds) >= 2) {
+                    $placeholders = implode(',', array_fill(0, count($windowShipmentIds), '?'));
+                    $ids = $this->db->fetchCol(
+                        "SELECT participant_id
+                        FROM shipment_participant_map
+                        WHERE shipment_id IN ($placeholders)
+                        GROUP BY participant_id
+                        HAVING SUM(response_status IS NOT NULL
+                                   AND response_status NOT IN ('', 'noresponse')) = 0",
+                        $windowShipmentIds
+                    );
+                }
+                $context = sprintf(
+                    Pt_Commons_TranslateUtility::safeTranslate('No response across this scheme\'s last %d finalized rounds'),
+                    count($windowShipmentIds)
+                );
+                break;
+
+            case 'outstanding':
+            default:
+                $ids = $this->db->fetchCol(
+                    "SELECT participant_id FROM shipment_participant_map
+                    WHERE shipment_id = ?
+                      AND (response_status IS NULL OR response_status IN ('', 'noresponse'))",
+                    [$shipmentId]
+                );
+                $context = Pt_Commons_TranslateUtility::safeTranslate(
+                    $shipment['status'] === 'finalized'
+                        ? 'Never responded to this round'
+                        : 'No response recorded yet for this round'
+                );
+                $status = 'outstanding'; // normalize for the view (tab highlighting)
+                break;
+        }
+
+        return [
+            'ids' => array_map('intval', $ids),
+            'status' => $status,
+            'label' => $available[$status],
+            'context' => $context,
         ];
     }
 }

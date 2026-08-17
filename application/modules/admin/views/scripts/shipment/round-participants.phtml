@@ -1,14 +1,14 @@
 <?php
 /**
- * Round-table drill-down — outstanding / late / unable-to-test labs for a
- * single shipment. Reached from the three linked columns on the dashboard's
- * round table (Task 3).
+ * Round drill-down — the labs behind one linked number on the dashboard.
+ *
+ * Reached from both dashboard blocks: the open-round table's Outstanding /
+ * Late / Unable-to-test columns, and the between-rounds card's Failed /
+ * Repeat failers / Never responded figures. The tab set comes from the
+ * controller because it depends on whether the round is finalized —
+ * see Application_Service_Dashboard::drilldownStatuses().
  */
-$tabs = [
-    'outstanding' => 'Outstanding',
-    'late' => 'Late',
-    'unabletotest' => 'Unable to test',
-];
+$tabs = $this->tabs;
 ?>
 <link rel="stylesheet" type="text/css" href="<?php echo $this->baseUrl('css/bootstrap-select.min.css'); ?>" />
 <link href="<?php echo $this->baseUrl('css/select2.css'); ?>" rel="stylesheet" />
@@ -47,8 +47,8 @@ $tabs = [
 <div class="row">
 	<div class="col-lg-12">
 		<ol class="breadcrumb" style="margin-bottom:10px;">
-			<li><a href="<?php echo $this->url(['module' => 'admin', 'controller' => 'index', 'action' => 'index'], 'default', true); ?>">Dashboard</a></li>
-			<li class="active">Round participants</li>
+			<li><a href="<?php echo $this->url(['module' => 'admin', 'controller' => 'index', 'action' => 'index'], 'default', true); ?>"><?= $this->translate->_("Dashboard"); ?></a></li>
+			<li class="active"><?= $this->translate->_("Round participants"); ?></li>
 		</ol>
 	</div>
 </div>
@@ -56,7 +56,7 @@ $tabs = [
 <div class="participants-header">
 	<div class="round-code"><?php echo $this->escape($this->shipment['code']); ?></div>
 	<div class="round-scheme"><?php echo $this->escape($this->shipment['schemeName']); ?></div>
-	<div class="round-deadline">Deadline: <?php echo $this->escape(Pt_Commons_DateUtility::humanReadableDateFormat($this->shipment['deadlineDate'])); ?></div>
+	<div class="round-deadline"><?= $this->translate->_("Deadline"); ?>: <?php echo $this->escape(Pt_Commons_DateUtility::humanReadableDateFormat($this->shipment['deadlineDate'])); ?></div>
 </div>
 
 <div class="status-tabs">
@@ -115,13 +115,13 @@ $tabs = [
 		<table class="lab-list" id="labList">
 			<thead>
 				<tr>
-					<th>Participant ID</th>
-					<th>Lab Or Participant Name</th>
-					<th>Email</th>
-					<th>Phone</th>
-					<th>Country</th>
-					<th>State</th>
-					<th>District</th>
+					<th><?= $this->translate->_("Participant ID"); ?></th>
+					<th><?= $this->translate->_("Lab Or Participant Name"); ?></th>
+					<th><?= $this->translate->_("Email"); ?></th>
+					<th><?= $this->translate->_("Phone"); ?></th>
+					<th><?= $this->translate->_("Country"); ?></th>
+					<th><?= $this->translate->_("State"); ?></th>
+					<th><?= $this->translate->_("District"); ?></th>
 				</tr>
 				<tr class="column-search-row">
 					<th><input type="text" class="form-control input-sm col-search" data-col="0" placeholder="<?= $this->translate->_('Search ID'); ?>" /></th>
@@ -233,12 +233,12 @@ $tabs = [
         });
 
 		$("#country").select2({
-            placeholder: "<?= $this->translate->_("Choose one or more Countries"); ?>",
+            placeholder: "<?= $this->jsTranslate("Choose one or more Countries"); ?>",
             minimumInputLength: 3,
             width: '100%',
             allowClear: true,
             ajax: {
-                placeholder: "<?= $this->translate->_("Type Country name to search"); ?>",
+                placeholder: "<?= $this->jsTranslate("Type Country name to search"); ?>",
                 url: "<?php echo $this->url(array('module' => 'default', 'controller' => 'common', 'action' => 'get-all-countries')); ?>",
                 dataType: 'json',
                 delay: 250,
@@ -265,7 +265,7 @@ $tabs = [
         });
 
         $("#labId").select2({
-            placeholder: "<?= $this->translate->_("Choose one or more option(s)"); ?>",
+            placeholder: "<?= $this->jsTranslate("Choose one or more option(s)"); ?>",
             minimumInputLength: 3,
             width: '100%',
             allowClear: true,
@@ -273,7 +273,7 @@ $tabs = [
                 return bond._id;
             },
             ajax: {
-                placeholder: "<?= $this->translate->_("Type list to search"); ?>",
+                placeholder: "<?= $this->jsTranslate("Type list to search"); ?>",
                 url: "<?php echo $this->url(array('module' => 'reports', 'controller' => 'common', 'action' => 'get-ajax-drop-downs')); ?>",
                 dataType: 'json',
                 delay: 250,

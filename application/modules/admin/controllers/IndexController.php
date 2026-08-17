@@ -27,16 +27,21 @@ class Admin_IndexController extends Zend_Controller_Action
         // Task 2: always-visible summary strip.
         $this->view->summaryCounts = $dashboardService->getSummaryCounts();
 
-        // Task 3 / Task 4: the round table shows only currently-running
-        // shipments — status != 'finalized' AND deadline not yet crossed
-        // (see Application_Service_Dashboard::getOpenRoundsStatus()).
-        // Expired-deadline shipments are excluded from the table entirely,
-        // not shown-but-styled-differently. Only once there are zero
-        // currently-running shipments does the dashboard fall through to
-        // the Task 4 between-rounds card.
+        // Task 3 / Task 4, following the spec's decision tree: the round table
+        // covers every unfinalized shipment, whether it is still taking
+        // responses or has closed and is waiting to be evaluated. Only when
+        // there are none at all does the dashboard fall through to the Task 4
+        // between-rounds card.
         $openRounds = $dashboardService->getOpenRoundsStatus();
+        $openForResponse = array_filter($openRounds, function ($round) {
+            return $round['isOpen'];
+        });
+
         $this->view->openRounds = $openRounds;
-        $this->view->openRoundsCount = count($openRounds);
+        $this->view->openRoundsCount = count($openForResponse);
+        // Closed but not yet finalized — the heading names these separately so
+        // an idle system reads differently from one with a backlog.
+        $this->view->awaitingFinalizeCount = count($openRounds) - count($openForResponse);
         $this->view->showRoundTable = count($openRounds) > 0;
 
         if (!$this->view->showRoundTable) {

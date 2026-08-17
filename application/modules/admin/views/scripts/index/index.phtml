@@ -71,8 +71,44 @@
 		vertical-align: middle;
 	}
 
-	.data-list tr.row-amber {
-		background: #fff8e6;
+	/* Status rides on the deadline chip, not on a row tint. Most instances sit
+	   with every round closed and awaiting finalize, and a full red row each
+	   turned an ordinary backlog into a wall of alarm. Only a deadline inside
+	   the next 3 days — something the admin can still act on — gets a row
+	   accent, and even then it is a left edge rather than a fill. */
+	.data-list tr.row-amber td:first-child {
+		box-shadow: inset 3px 0 0 #e0a800;
+	}
+
+	.data-list tbody tr:hover {
+		background: #f7f9fb;
+	}
+
+	/* Table links share the round-code blue. admin.css colours links teal
+	   globally, which read as a "good" green on the Outstanding column. */
+	.data-list td a {
+		color: #2b6cb0;
+	}
+
+	.deadline-chip {
+		display: inline-block;
+		padding: 2px 8px;
+		border-radius: 3px;
+		font-size: 12px;
+		white-space: nowrap;
+		border: 1px solid transparent;
+	}
+
+	.deadline-chip.chip-amber {
+		background: #fdf1d8;
+		border-color: #f0dcae;
+		color: #8a6100;
+	}
+
+	.deadline-chip.chip-closed {
+		background: #eef1f4;
+		border-color: #dde3e9;
+		color: #5b6b7c;
 	}
 
 	.data-list .round-code {
@@ -88,6 +124,27 @@
 
 	.data-list .zero {
 		color: #bbb;
+	}
+
+	/* Second line inside a cell — the shipped date, the "of N" denominator,
+	   the outstanding link. Keeps seven columns' worth of detail in the width
+	   of five without a horizontal scrollbar. */
+	.data-list .cell-sub {
+		display: block;
+		font-size: 11px;
+		color: #999;
+		margin-top: 3px;
+	}
+
+	.data-list a.cell-sub {
+		color: #2b6cb0;
+	}
+
+	.data-list .next-action {
+		display: inline-block;
+		font-size: 12px;
+		font-weight: 600;
+		white-space: nowrap;
 	}
 
 	.responded-bar-wrap {
@@ -107,7 +164,12 @@
 		background: #2b6cb0;
 	}
 
-	/* Task 4 — between-rounds cards */
+	/* Task 4 — between-rounds cards.
+	   Replaces the original six equal-weight metric boxes: they gave the round
+	   identity, the headline score and the follow-up counts the same visual
+	   weight, and each box repeated its own label inside its value ("REPEAT
+	   FAILERS" over "0 repeat failers"). The card now reads top-to-bottom as
+	   identity → score → participation → results → follow-up. */
 	.between-rounds-header {
 		color: #777;
 		font-size: 13px;
@@ -118,49 +180,56 @@
 		background: #fff;
 		border: 1px solid #e3e3e3;
 		border-radius: 4px;
-		padding: 16px 18px;
-		margin-bottom: 12px;
+		margin-bottom: 14px;
 	}
 
-	.round-card .round-card-title {
+	.round-card .round-card-head {
+		display: flex;
+		justify-content: space-between;
+		align-items: flex-start;
+		gap: 20px;
+		padding: 15px 18px 13px;
+		border-bottom: 1px solid #eee;
+	}
+
+	.round-card .round-card-id .scheme {
+		display: block;
+		font-size: 17px;
 		font-weight: 600;
 		color: #2c3e50;
-		margin-bottom: 2px;
 	}
 
-	.round-card .round-card-sub {
-		color: #888;
+	.round-card .round-card-id .round {
+		display: block;
 		font-size: 12px;
-		margin-bottom: 12px;
+		color: #888;
+		margin-top: 3px;
 	}
 
-	.round-card .metric-grid {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 12px;
+	.round-card .round-card-score {
+		text-align: right;
+		white-space: nowrap;
 	}
 
-	.round-card .metric-card {
-		background: #fbfbfb;
-		border: 1px solid #eee;
-		border-radius: 4px;
-		padding: 12px 14px;
-		min-width: 170px;
-		flex: 1 1 170px;
+	.round-card .score-value {
+		font-size: 26px;
+		font-weight: 600;
+		color: #2c3e50;
+		line-height: 1;
 	}
 
-	.round-card .metric-label {
+	.round-card .score-delta {
+		font-size: 12px;
+		margin-left: 6px;
+	}
+
+	.round-card .score-caption {
+		display: block;
 		font-size: 11px;
 		text-transform: uppercase;
-		letter-spacing: .03em;
+		letter-spacing: .04em;
 		color: #999;
-		margin-bottom: 6px;
-	}
-
-	.round-card .metric-value {
-		font-size: 13px;
-		color: #333;
-		line-height: 1.5;
+		margin-top: 5px;
 	}
 
 	.round-card .trend-up {
@@ -169,6 +238,105 @@
 
 	.round-card .trend-down {
 		color: #c0392b;
+	}
+
+	.round-meter {
+		padding: 13px 18px;
+		border-bottom: 1px solid #f2f2f2;
+	}
+
+	.round-meter .meter-head {
+		display: flex;
+		justify-content: space-between;
+		align-items: baseline;
+		gap: 12px;
+		margin-bottom: 7px;
+	}
+
+	.round-meter .meter-title {
+		font-size: 11px;
+		text-transform: uppercase;
+		letter-spacing: .04em;
+		color: #999;
+	}
+
+	.round-meter .meter-headline {
+		font-size: 13px;
+		color: #2c3e50;
+	}
+
+	/* 2px gaps in the card's own background separate the segments, per the
+	   stacked-bar spec — no borders, no track showing through. The unfilled
+	   remainder is an explicit final segment, not a background. */
+	.meter-bar {
+		display: flex;
+		gap: 2px;
+		height: 10px;
+	}
+
+	.meter-bar span {
+		display: block;
+		height: 100%;
+		flex-basis: 0;
+		min-width: 3px;
+		border-radius: 4px;
+	}
+
+	/* Pass/fail sit in the 6–8 CVD separation band, so every segment is
+	   direct-labelled here — the swatches are never the only encoding. */
+	.meter-key {
+		margin-top: 8px;
+		font-size: 12px;
+		color: #666;
+	}
+
+	.meter-key .key-item {
+		display: inline-block;
+		margin-right: 16px;
+	}
+
+	.meter-key .swatch {
+		display: inline-block;
+		width: 9px;
+		height: 9px;
+		border-radius: 2px;
+		margin-right: 5px;
+	}
+
+	.meter-key .key-count {
+		font-weight: 600;
+		color: #2c3e50;
+	}
+
+	.meter-key .key-zero,
+	.meter-key .key-zero .key-count {
+		color: #bbb;
+		font-weight: 400;
+	}
+
+	.round-card-foot {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 8px 26px;
+		padding: 12px 18px;
+		font-size: 12px;
+		color: #888;
+	}
+
+	.round-card-foot .foot-value {
+		font-weight: 600;
+		color: #2c3e50;
+	}
+
+	.round-card-foot .foot-value.foot-zero {
+		font-weight: 400;
+		color: #bbb;
+	}
+
+	.round-card-foot .foot-value.foot-na {
+		font-weight: 400;
+		color: #bbb;
+		cursor: help;
 	}
 </style>
 
@@ -208,7 +376,7 @@
 			</div>
 			<div class="stat">
 				<div class="stat-value"><?php echo (int) $this->summaryCounts['roundsCompletedThisYear']; ?></div>
-				<div class="stat-label"><?= $this->translate->_("Rounds completed in " . date('Y')); ?></div>
+				<div class="stat-label"><?= $this->translate->_("Rounds completed in"); ?> <?php echo date('Y'); ?></div>
 			</div>
 		</div>
 	</div>
@@ -222,9 +390,19 @@
 				<div class="panel-heading">
 					<h3 class="panel-title">
 						<i class="icon-bar-chart"></i>&nbsp;&nbsp;
-						<?php echo (int) $this->openRoundsCount; ?>
-						<?= $this->translate->_("round"); ?><?php echo $this->openRoundsCount === 1 ? '' : 's'; ?>
-						<?= $this->translate->_("open for response"); ?>
+						<?php if ($this->openRoundsCount > 0): ?>
+							<?php echo (int) $this->openRoundsCount; ?>
+							<?= $this->openRoundsCount === 1
+								? $this->translate->_("round open for response")
+								: $this->translate->_("rounds open for response"); ?>
+						<?php else: ?>
+							<?= $this->translate->_("No rounds open for response"); ?>
+						<?php endif; ?>
+						<?php if ($this->awaitingFinalizeCount > 0): ?>
+							·
+							<?php echo (int) $this->awaitingFinalizeCount; ?>
+							<?= $this->translate->_("awaiting finalize"); ?>
+						<?php endif; ?>
 					</h3>
 				</div>
 				<div class="panel-body">
@@ -234,9 +412,10 @@
 								<th><?= $this->translate->_("Round"); ?></th>
 								<th><?= $this->translate->_("Deadline"); ?></th>
 								<th><?= $this->translate->_("Responded"); ?></th>
-								<th><?= $this->translate->_("Outstanding"); ?></th>
-								<th><?= $this->translate->_("Late"); ?></th>
-								<th><?= $this->translate->_("Unable to test"); ?></th>
+								<th><?= $this->translate->_("Late / unable"); ?></th>
+								<th><?= $this->translate->_("Evaluated"); ?></th>
+								<th><?= $this->translate->_("Score"); ?></th>
+								<th><?= $this->translate->_("Next action"); ?></th>
 							</tr>
 						</thead>
 						<tbody>
@@ -248,11 +427,45 @@
 											<?php echo $this->escape($round['code']); ?>
 										</a>
 										<span class="round-scheme"><?php echo $this->escape($round['schemeName']); ?></span>
+										<?php if ($round['shippedDate']): ?>
+											<span class="cell-sub">
+												<?= $this->translate->_("shipped"); ?>
+												<?php echo $this->escape($round['shippedDate']); ?>
+											</span>
+										<?php endif; ?>
 									</td>
 									<td>
-										<span title="<?php echo $this->escape($round['deadlineDate']); ?>">
-											<?php echo $this->escape($round['deadlineLabel']); ?>
+										<?php
+										// Each variant is a whole sentence with its own catalog entry —
+										// composing "Closed " . $n . " days ago" in PHP would put the
+										// wording past the translator.
+										switch ($round['deadlineKind']) {
+											case 'today':
+												$deadlineText = $this->translate->_("Due today");
+												break;
+											case 'future':
+												$deadlineText = $round['deadlineDays'] === 1
+													? $this->translate->_("In 1 day")
+													: sprintf($this->translate->_("In %d days"), $round['deadlineDays']);
+												break;
+											case 'closed-today':
+												$deadlineText = $this->translate->_("Closed today");
+												break;
+											case 'closed-past':
+												$deadlineText = $round['deadlineDays'] === 1
+													? $this->translate->_("Closed 1 day ago")
+													: sprintf($this->translate->_("Closed %d days ago"), $round['deadlineDays']);
+												break;
+											default:
+												$deadlineText = $this->translate->_("Closed");
+												break;
+										}
+										?>
+										<span class="deadline-chip <?php echo $this->escape($round['chipClass']); ?>"
+											title="<?php echo $this->escape($round['deadlineDate']); ?>">
+											<?php echo $this->escape($deadlineText); ?>
 										</span>
+										<span class="cell-sub"><?php echo $this->escape($round['deadlineDateLong']); ?></span>
 									</td>
 									<td>
 										<?php echo (int) $round['responded']; ?> <?= $this->translate->_("of"); ?>
@@ -261,35 +474,46 @@
 											<span class="responded-bar-fill"
 												style="width:<?php echo $round['total'] > 0 ? round(($round['responded'] / $round['total']) * 100) : 0; ?>%;"></span>
 										</span>
-									</td>
-									<td>
 										<?php if ($round['outstanding'] > 0): ?>
-											<a
+											<a class="cell-sub"
 												href="<?php echo $this->url(['module' => 'admin', 'controller' => 'shipment', 'action' => 'round-participants', 'id' => $round['shipmentId'], 'status' => 'outstanding'], 'default', true); ?>">
-												<?php echo (int) $round['outstanding']; ?>
+												<?php echo (int) $round['outstanding']; ?> <?= $this->translate->_("outstanding"); ?>
 											</a>
-										<?php else: ?>
-											<span class="zero">0</span>
 										<?php endif; ?>
 									</td>
 									<td>
 										<?php if ($round['late'] > 0): ?>
-											<?php echo (int) $round['late']; ?>
-											<a href="<?php echo $this->url(['module' => 'admin', 'controller' => 'shipment', 'action' => 'round-participants', 'id' => $round['shipmentId'], 'status' => 'late'], 'default', true); ?>">
-												<?php echo (int) $round['late']; ?>
-											</a>
+											<a href="<?php echo $this->url(['module' => 'admin', 'controller' => 'shipment', 'action' => 'round-participants', 'id' => $round['shipmentId'], 'status' => 'late'], 'default', true); ?>"><?php echo (int) $round['late']; ?></a>
+										<?php else: ?>
+											<span class="zero">0</span>
+										<?php endif; ?>
+										<span class="zero">/</span>
+										<?php if ($round['unableToTest'] > 0): ?>
+											<a href="<?php echo $this->url(['module' => 'admin', 'controller' => 'shipment', 'action' => 'round-participants', 'id' => $round['shipmentId'], 'status' => 'unabletotest'], 'default', true); ?>"><?php echo (int) $round['unableToTest']; ?></a>
 										<?php else: ?>
 											<span class="zero">0</span>
 										<?php endif; ?>
 									</td>
 									<td>
-										<?php if ($round['unableToTest'] > 0): ?>
-											<a href="<?php echo $this->url(['module' => 'admin', 'controller' => 'shipment', 'action' => 'round-participants', 'id' => $round['shipmentId'], 'status' => 'unabletotest'], 'default', true); ?>">
-												<?php echo (int) $round['unableToTest']; ?>
-											</a>
+										<?php if ($round['responded'] > 0): ?>
+											<span class="<?php echo $round['evaluated'] > 0 ? '' : 'zero'; ?>"><?php echo (int) $round['evaluated']; ?></span>
+											<span class="cell-sub"><?= $this->translate->_("of"); ?> <?php echo (int) $round['responded']; ?></span>
 										<?php else: ?>
-											<span class="zero">0</span>
+											<span class="zero">&mdash;</span>
 										<?php endif; ?>
+									</td>
+									<td>
+										<?php if ($round['averageScore'] !== null): ?>
+											<?php echo $this->escape($round['averageScore']); ?>
+										<?php else: ?>
+											<span class="zero" title="<?php echo $this->htmlTranslate("Scored once the round is evaluated"); ?>">&mdash;</span>
+										<?php endif; ?>
+									</td>
+									<td>
+										<a class="next-action"
+											href="<?php echo $this->url(['module' => $round['nextAction']['module'], 'controller' => $round['nextAction']['controller'], 'action' => $round['nextAction']['action'], $round['nextAction']['param'] => $round['nextAction']['value']], 'default', true); ?>">
+											<?php echo $this->escape($round['nextAction']['label']); ?>
+										</a>
 									</td>
 								</tr>
 							<?php endforeach; ?>
@@ -304,78 +528,211 @@
 	<div class="row">
 		<div class="col-lg-12">
 			<?php if (!empty($this->betweenRounds)): ?>
+				<?php
+				// Proportional widths without percentage maths: flex-grow is the
+				// count and flex-basis is 0 (set in the stylesheet), so segments
+				// divide the bar in their own ratio. Zero-count segments are
+				// omitted rather than rendered at min-width, which would read as
+				// a real value.
+				$barSegment = function ($count, $color) {
+					if ((int) $count <= 0) {
+						return '';
+					}
+					return '<span style="flex-grow:' . (int) $count . ';background:' . $color . ';"></span>';
+				};
+				$drilldownUrl = function ($shipmentId, $status) {
+					return $this->url([
+						'module' => 'admin',
+						'controller' => 'shipment',
+						'action' => 'round-participants',
+						'id' => $shipmentId,
+						'status' => $status,
+					], 'default', true);
+				};
+				?>
 				<div class="between-rounds-header">
-					<?= $this->translate->_("Last round finalized"); ?>
-					<?php echo $this->escape($this->betweenRounds[0]['finalizedDateShort']); ?>
+					<?= $this->translate->_("No rounds open for response"); ?> ·
+					<?= $this->translate->_("last finalized"); ?>
+					<?php echo $this->escape($this->betweenRounds[0]['finalizedDate']); ?>
 				</div>
 				<?php foreach ($this->betweenRounds as $card): ?>
+					<?php
+					// Participation is measured against everyone enrolled in the
+					// scheme, so a round that shipped to fewer labs than are
+					// enrolled shows the shortfall as unfilled bar.
+					$participationTotal = max((int) $card['enrolledCount'], (int) $card['inShipment']);
+					$notShipped = $participationTotal - (int) $card['inShipment'];
+					// Anything the evaluation never stamped a verdict on rides
+					// with "not evaluated" — it is the same thing from the
+					// admin's point of view, and leaving it out stopped the
+					// results line reconciling with the shipment total.
+					$pending = (int) $card['notEvaluated'] + (int) $card['unrecorded'];
+					?>
 					<div class="round-card">
-						<div class="round-card-title"><?php echo $this->escape($card['schemeName']); ?> ·
-							<?php echo $this->escape($card['roundCode']); ?>
+						<div class="round-card-head">
+							<div class="round-card-id">
+								<span class="scheme"><?php echo $this->escape($card['schemeName']); ?></span>
+								<span class="round">
+									<?php echo $this->escape($card['roundCode']); ?> ·
+									<?= $this->translate->_("finalized"); ?>
+									<?php echo $this->escape($card['finalizedDate']); ?>
+								</span>
+							</div>
+							<div class="round-card-score">
+								<span class="score-value"><?php echo $this->escape($card['averageScore']); ?></span>
+								<?php if ($card['scoreDelta'] !== null): ?>
+									<span
+										class="score-delta <?php echo $card['scoreDelta'] > 0 ? 'trend-up' : ($card['scoreDelta'] < 0 ? 'trend-down' : ''); ?>">
+										<?php echo $card['scoreDelta'] > 0 ? '&uarr;' : ($card['scoreDelta'] < 0 ? '&darr;' : ''); ?>
+										<?php echo abs($card['scoreDelta']); ?>
+										<?= $this->translate->_("vs"); ?>
+										<?php echo $this->escape($card['previousRoundCode']); ?>
+									</span>
+								<?php endif; ?>
+								<span class="score-caption"><?= $this->translate->_("Average score"); ?></span>
+							</div>
 						</div>
-						<div class="round-card-sub">
-							<?= $this->translate->_("Finalized"); ?> <?php echo $this->escape($card['finalizedDateFull']); ?>
-						</div>
-						<div class="metric-grid">
-							<div class="metric-card">
-								<div class="metric-label"><?= $this->translate->_("Participation"); ?></div>
-								<div class="metric-value">
-									<?php echo (int) $card['tookPart']; ?> <?= $this->translate->_("took part"); ?>,
-									<?php echo (int) $card['noResponse']; ?> <?= $this->translate->_("no response"); ?>,
-									<?php echo (int) $card['unableToTest']; ?> <?= $this->translate->_("unable"); ?><br>
-									<?= $this->translate->_("Out of enrolled"); ?> <?php echo (int) $card['enrolledCount']; ?>
-								</div>
-							</div>
-							<div class="metric-card">
-								<div class="metric-label"><?= $this->translate->_("Results"); ?></div>
-								<div class="metric-value">
-									<?php echo (int) $card['pass']; ?> <?= $this->translate->_("pass"); ?>,
-									<?php echo (int) $card['fail']; ?> <?= $this->translate->_("fail"); ?>,
-									<?php echo (int) $card['excluded']; ?> <?= $this->translate->_("excluded"); ?>
-									<?php if ($card['notEvaluated'] > 0): ?>
-										, <?php echo (int) $card['notEvaluated']; ?> <?= $this->translate->_("not evaluated"); ?>
-									<?php endif; ?>
-								</div>
-							</div>
-							<div class="metric-card">
-								<div class="metric-label"><?= $this->translate->_("Average score"); ?></div>
-								<div class="metric-value">
-									<?php echo $this->escape($card['averageScore']); ?>
-									<?php if ($card['scoreDelta'] !== null): ?>
-										<span class="<?php echo $card['scoreDelta'] >= 0 ? 'trend-up' : 'trend-down'; ?>">
-											<?php echo $card['scoreDelta'] >= 0 ? '&uarr;' : '&darr;'; ?>
-											<?php echo abs($card['scoreDelta']); ?>
-										</span>
-									<?php endif; ?>
-								</div>
-							</div>
-							<div class="metric-card">
-								<div class="metric-label"><?= $this->translate->_("Repeat failers"); ?></div>
-								<div class="metric-value">
-									<?php if ($card['repeatFailerCount'] > 0): ?>
-										<?php echo (int) $card['repeatFailerCount']; ?> <?= $this->translate->_("repeat failers"); ?>
-									<?php else: ?>
-										<span class="zero">0 <?= $this->translate->_("repeat failers"); ?></span>
-									<?php endif; ?>
-								</div>
-							</div>
-							<div class="metric-card">
-								<div class="metric-label"><?= $this->translate->_("Never responded"); ?></div>
-								<div class="metric-value">
-									<?php if ($card['neverRespondedCount'] > 0): ?>
-										<?php echo (int) $card['neverRespondedCount']; ?> <?= $this->translate->_("labs never responded"); ?>
-									<?php else: ?>
-										<span class="zero">0 <?= $this->translate->_("labs never responded"); ?></span>
-									<?php endif; ?>
-								</div>
-							</div>
-							<div class="metric-card">
-								<div class="metric-label"><?= $this->translate->_("Report uptake"); ?></div>
-								<div class="metric-value">
-									<?php echo (int) $card['reportOpenedCount']; ?> <?= $this->translate->_("of"); ?>
+
+						<div class="round-meter">
+							<div class="meter-head">
+								<span class="meter-title"><?= $this->translate->_("Participation"); ?></span>
+								<span class="meter-headline">
 									<?php echo (int) $card['tookPart']; ?>
-								</div>
+									<?= $this->translate->_("of"); ?>
+									<?php echo (int) $participationTotal; ?>
+									<?= $this->translate->_("enrolled labs took part"); ?>
+								</span>
 							</div>
+							<div class="meter-bar">
+								<?php
+								echo $barSegment($card['tookPart'], '#2b6cb0');
+								echo $barSegment($card['unableToTest'], '#d68910');
+								echo $barSegment($card['noResponse'], '#9aa4ae');
+								echo $barSegment($notShipped, '#edf0f2');
+								?>
+							</div>
+							<div class="meter-key">
+								<span class="key-item <?php echo $card['tookPart'] > 0 ? '' : 'key-zero'; ?>">
+									<span class="swatch" style="background:#2b6cb0;"></span>
+									<span class="key-count"><?php echo (int) $card['tookPart']; ?></span>
+									<?= $this->translate->_("took part"); ?>
+								</span>
+								<span class="key-item <?php echo $card['unableToTest'] > 0 ? '' : 'key-zero'; ?>">
+									<span class="swatch" style="background:#d68910;"></span>
+									<?php if ($card['unableToTest'] > 0): ?>
+										<a class="key-count"
+											href="<?php echo $drilldownUrl($card['shipmentId'], 'unabletotest'); ?>"><?php echo (int) $card['unableToTest']; ?></a>
+									<?php else: ?>
+										<span class="key-count">0</span>
+									<?php endif; ?>
+									<?= $this->translate->_("unable to test"); ?>
+								</span>
+								<span class="key-item <?php echo $card['noResponse'] > 0 ? '' : 'key-zero'; ?>">
+									<span class="swatch" style="background:#9aa4ae;"></span>
+									<?php if ($card['noResponse'] > 0): ?>
+										<a class="key-count"
+											href="<?php echo $drilldownUrl($card['shipmentId'], 'outstanding'); ?>"><?php echo (int) $card['noResponse']; ?></a>
+									<?php else: ?>
+										<span class="key-count">0</span>
+									<?php endif; ?>
+									<?= $this->translate->_("no response"); ?>
+								</span>
+								<?php if ($notShipped > 0): ?>
+									<span class="key-item">
+										<span class="swatch" style="background:#edf0f2;"></span>
+										<span class="key-count"><?php echo (int) $notShipped; ?></span>
+										<?= $this->translate->_("not in this round"); ?>
+									</span>
+								<?php endif; ?>
+							</div>
+						</div>
+
+						<div class="round-meter">
+							<div class="meter-head">
+								<span class="meter-title"><?= $this->translate->_("Results"); ?></span>
+								<span class="meter-headline">
+									<?php echo (int) $card['pass']; ?>
+									<?= $this->translate->_("of"); ?>
+									<?php echo (int) $card['inShipment']; ?>
+									<?= $this->translate->_("passed"); ?>
+								</span>
+							</div>
+							<div class="meter-bar">
+								<?php
+								echo $barSegment($card['pass'], '#2e9e5b');
+								echo $barSegment($card['fail'], '#c0392b');
+								echo $barSegment($card['excluded'], '#9aa4ae');
+								echo $barSegment($pending, '#c8ced4');
+								?>
+							</div>
+							<div class="meter-key">
+								<span class="key-item <?php echo $card['pass'] > 0 ? '' : 'key-zero'; ?>">
+									<span class="swatch" style="background:#2e9e5b;"></span>
+									<span class="key-count"><?php echo (int) $card['pass']; ?></span>
+									<?= $this->translate->_("pass"); ?>
+								</span>
+								<span class="key-item <?php echo $card['fail'] > 0 ? '' : 'key-zero'; ?>">
+									<span class="swatch" style="background:#c0392b;"></span>
+									<?php if ($card['fail'] > 0): ?>
+										<a class="key-count"
+											href="<?php echo $drilldownUrl($card['shipmentId'], 'failed'); ?>"><?php echo (int) $card['fail']; ?></a>
+									<?php else: ?>
+										<span class="key-count">0</span>
+									<?php endif; ?>
+									<?= $this->translate->_("fail"); ?>
+								</span>
+								<span class="key-item <?php echo $card['excluded'] > 0 ? '' : 'key-zero'; ?>">
+									<span class="swatch" style="background:#9aa4ae;"></span>
+									<span class="key-count"><?php echo (int) $card['excluded']; ?></span>
+									<?= $this->translate->_("excluded"); ?>
+								</span>
+								<?php if ($pending > 0): ?>
+									<span class="key-item">
+										<span class="swatch" style="background:#c8ced4;"></span>
+										<span class="key-count"><?php echo (int) $pending; ?></span>
+										<?= $this->translate->_("not evaluated"); ?>
+									</span>
+								<?php endif; ?>
+							</div>
+						</div>
+
+						<div class="round-card-foot">
+							<span class="foot-item">
+								<?= $this->translate->_("Repeat failers"); ?>
+								<?php if ($card['repeatFailerCount'] === null): ?>
+									<span class="foot-value foot-na"
+										title="<?php echo $this->htmlTranslate("No earlier round for this scheme to compare against"); ?>">&mdash;</span>
+								<?php elseif ($card['repeatFailerCount'] > 0): ?>
+									<a class="foot-value"
+										href="<?php echo $drilldownUrl($card['shipmentId'], 'repeatfailers'); ?>"><?php echo (int) $card['repeatFailerCount']; ?></a>
+								<?php else: ?>
+									<span class="foot-value foot-zero">0</span>
+								<?php endif; ?>
+							</span>
+							<span class="foot-item">
+								<?= $this->translate->_("Never responded"); ?>
+								<?php if ($card['neverRespondedCount'] === null): ?>
+									<span class="foot-value foot-na"
+										title="<?php echo $this->htmlTranslate("Needs at least two finalized rounds for this scheme"); ?>">&mdash;</span>
+								<?php else: ?>
+									<?php if ($card['neverRespondedCount'] > 0): ?>
+										<a class="foot-value"
+											href="<?php echo $drilldownUrl($card['shipmentId'], 'neverresponded'); ?>"><?php echo (int) $card['neverRespondedCount']; ?></a>
+									<?php else: ?>
+										<span class="foot-value foot-zero">0</span>
+									<?php endif; ?>
+									<?= $this->translate->_("across the last"); ?>
+									<?php echo (int) $card['neverRespondedWindow']; ?>
+									<?= $this->translate->_("rounds"); ?>
+								<?php endif; ?>
+							</span>
+							<span class="foot-item">
+								<?= $this->translate->_("Opened their report"); ?>
+								<span
+									class="foot-value <?php echo $card['reportOpenedCount'] > 0 ? '' : 'foot-zero'; ?>"><?php echo (int) $card['reportOpenedCount']; ?></span>
+								<?= $this->translate->_("of"); ?>
+								<?php echo (int) $card['tookPart']; ?>
+							</span>
 						</div>
 					</div>
 				<?php endforeach; ?>
@@ -431,7 +788,7 @@
 					$('#ept-overview-content').html(data);
 					loaded = true;
 				}).fail(function () {
-					$('#ept-overview-content').text('<?= $this->translate->_("Failed to load overview."); ?>');
+					$('#ept-overview-content').text('<?= $this->jsTranslate("Failed to load overview."); ?>');
 				});
 			}
 		});

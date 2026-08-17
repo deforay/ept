@@ -672,11 +672,10 @@ class Admin_ShipmentController extends Zend_Controller_Action
         $shipmentId = (int) $this->_getParam('id');
         $status = (string) $this->_getParam('status', 'outstanding');
 
-        $allowedStatuses = ['outstanding', 'late', 'unabletotest'];
-        if (!in_array($status, $allowedStatuses, true)) {
-            $status = 'outstanding';
-        }
-
+        // No whitelist here: which buckets are valid depends on whether the
+        // round is finalized, so the service normalizes an unrecognized status
+        // against that shipment. $status only ever picks a switch branch — it
+        // never reaches a query.
         $dashboardService = new Application_Service_Dashboard();
 
         /** @var Zend_Controller_Request_Http $request */
@@ -699,6 +698,7 @@ class Admin_ShipmentController extends Zend_Controller_Action
         $this->view->shipment = $result['shipment'];
         $this->view->status = $result['status'];
         $this->view->statusLabel = $result['statusLabel'];
+        $this->view->tabs = $result['tabs'];
         $this->view->labCount = $result['count'];
     }
 }
