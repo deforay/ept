@@ -2726,6 +2726,11 @@ final class Application_Model_Dts
         if ($fail) {
             $out['algoResult'] = 'Fail';
         }
+        // An empty note is meaningful: the NIHE workbook leaves the Feedback column blank for
+        // combinations the laboratory got right, so nothing must be printed for that sample.
+        if (trim($text) === '') {
+            return;
+        }
         $out['failureReason'][] = [
             'warning' => $sampleLabel,
             'correctiveAction' => $text,
@@ -2845,6 +2850,12 @@ final class Application_Model_Dts
         $testsDone   = count($tests);
         $anyReactive = (bool) array_intersect(['R', 'WR'], $tests);
         $hasWeak     = in_array('WR', $tests, true);
+        // "Follow MOH HIV testing strategy" is not a catch-all remark. In both NIHE workbook
+        // sheets it appears on exactly one kind of row: the laboratory ran a test the algorithm
+        // did not call for — a screening lab going past its single test, or a confirmatory lab
+        // carrying on after a non-reactive Test 1. A lab that stopped where it should have gets
+        // no remark at all. (Too FEW tests on a positive is handled in the failure branches.)
+        $extraTesting = $testsDone > 1;
 
         // NIHE recommendation/feedback wording (workbook Feedback/Note/Recommendation columns).
         // Stored on $out['failureReason'] and translated at render in the vietnam report layout.
@@ -2875,7 +2886,7 @@ final class Application_Model_Dts
             //    marked "Sent for confirmation" (criterion #3 in the screening rules).
             if ($ref === 'N' && $final === 'N') {
                 $out['algoResult'] = 'Pass';
-                $this->vietnamFeedback($out, $sampleLabel, $FOLLOW_MOH);
+                $this->vietnamFeedback($out, $sampleLabel, $extraTesting ? $FOLLOW_MOH : '');
                 return;
             }
             if ($final === 'I') {
@@ -2897,7 +2908,11 @@ final class Application_Model_Dts
             if ($final === 'N') {
                 $out['algoResult'] = 'Pass';
                 // Reactive Test 1 on a true-negative sample: acceptable final, but flag Test 1.
-                $note = in_array($t1, ['R', 'WR'], true) ? $T1_NOTE : $FOLLOW_MOH;
+                // Otherwise the only remark due is the MOH nudge, and only when the lab kept
+                // testing past a non-reactive Test 1.
+                $note = in_array($t1, ['R', 'WR'], true)
+                    ? $T1_NOTE
+                    : ($extraTesting ? $FOLLOW_MOH : '');
                 $this->vietnamFeedback($out, $sampleLabel, $note);
                 return;
             }
@@ -2916,7 +2931,7 @@ final class Application_Model_Dts
             // positive must not be under-called as Indeterminate.
             if ($final === 'P' && $testsDone >= 3) {
                 $out['algoResult'] = 'Pass';
-                $note = $hasWeak ? $CHECK_WR : $FOLLOW_MOH;
+                $note = $hasWeak ? $CHECK_WR : '';
                 $this->vietnamFeedback($out, $sampleLabel, $note);
                 return;
             }
@@ -2933,7 +2948,10 @@ final class Application_Model_Dts
             // acceptable; when all three are strongly reactive, that is an under-call.
             if (in_array($final, $hasWeak ? ['P', 'I'] : ['P'], true)) {
                 $out['algoResult'] = 'Pass';
-                $note = ($final === 'P') ? $INTERPRET_WP : $FOLLOW_MOH;
+                // "Interpret weak positive results carefully" only makes sense when the lab
+                // actually reported a weak reactive; three strong reactives called Positive is
+                // simply correct and the workbook leaves the Feedback column blank.
+                $note = ($final === 'P' && $hasWeak) ? $INTERPRET_WP : '';
                 $this->vietnamFeedback($out, $sampleLabel, $note);
                 return;
             }
@@ -2944,7 +2962,7 @@ final class Application_Model_Dts
         // Fewer than three tests on a diluted positive: only Indeterminate/Inconclusive works.
         if ($final === 'I') {
             $out['algoResult'] = 'Pass';
-            $this->vietnamFeedback($out, $sampleLabel, $FOLLOW_MOH);
+            $this->vietnamFeedback($out, $sampleLabel, '');
             return;
         }
         $this->vietnamFeedback($out, $sampleLabel, $FOLLOW_MOH, true);
