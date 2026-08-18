@@ -2582,6 +2582,7 @@ final class Application_Model_Dts
                 $result1,
                 $result2,
                 $result3,
+                $repeatResult1,
                 $reportedResultCode,
                 $expectedResultCode,
                 $isScreening,
@@ -2818,6 +2819,7 @@ final class Application_Model_Dts
         ?string $result1,
         ?string $result2,
         ?string $result3,
+        ?string $repeatResult1,
         ?string $reportedResultCode,
         ?string $expectedResultCode,
         bool $isScreening,
@@ -2826,6 +2828,7 @@ final class Application_Model_Dts
         $t1 = $this->normalizeAlgoResult($result1);
         $t2 = $this->normalizeAlgoResult($result2);
         $t3 = $this->normalizeAlgoResult($result3);
+        $r1 = $this->normalizeAlgoResult($repeatResult1);
         // Final-interpretation codes (r_possibleresult DTS_FINAL): N, P, INC (Inconclusive),
         // and I = Indeterminate (long-existing id 6 — NOT 'IND'; 'IND' is the test-level
         // Indeterminate, DTS_TEST id 52, which appears in $t1/$t2/$t3, never here).
@@ -2851,11 +2854,12 @@ final class Application_Model_Dts
         $anyReactive = (bool) array_intersect(['R', 'WR'], $tests);
         $hasWeak     = in_array('WR', $tests, true);
         // "Follow MOH HIV testing strategy" is not a catch-all remark. In both NIHE workbook
-        // sheets it appears on exactly one kind of row: the laboratory ran a test the algorithm
-        // did not call for — a screening lab going past its single test, or a confirmatory lab
-        // carrying on after a non-reactive Test 1. A lab that stopped where it should have gets
-        // no remark at all. (Too FEW tests on a positive is handled in the failure branches.)
-        $extraTesting = $testsDone > 1;
+        // sheets it appears on exactly one kind of row: the laboratory carried on testing after
+        // a non-reactive Test 1, which the strategy says should end the workup. A reactive
+        // Test 1 justifies the further tests, so those rows carry no MOH remark (workbook rows
+        // 8-13). A lab that stopped where it should have gets no remark at all.
+        // (Too FEW tests on a positive is handled in the failure branches below.)
+        $extraTesting = $testsDone > 1 && $t1 === 'NR';
 
         // NIHE recommendation/feedback wording (workbook Feedback/Note/Recommendation columns).
         // Stored on $out['failureReason'] and translated at render in the vietnam report layout.
@@ -2907,10 +2911,13 @@ final class Application_Model_Dts
         if ($ref === 'N') {
             if ($final === 'N') {
                 $out['algoResult'] = 'Pass';
-                // Reactive Test 1 on a true-negative sample: acceptable final, but flag Test 1.
-                // Otherwise the only remark due is the MOH nudge, and only when the lab kept
-                // testing past a non-reactive Test 1.
-                $note = in_array($t1, ['R', 'WR'], true)
+                // Reactive Test 1 on a true-negative sample: acceptable final, but flag Test 1
+                // — unless the lab repeated Test 1 and it came out non-reactive, which is the
+                // correction the remark would have asked for (workbook rows 8, 10, 11, 13).
+                // With Test 1 in order, the only remark due is the MOH nudge, and only when
+                // the lab kept testing past a non-reactive Test 1.
+                $t1Flagged = in_array($t1, ['R', 'WR'], true) && $r1 !== 'NR';
+                $note = $t1Flagged
                     ? $T1_NOTE
                     : ($extraTesting ? $FOLLOW_MOH : '');
                 $this->vietnamFeedback($out, $sampleLabel, $note);
@@ -2935,8 +2942,11 @@ final class Application_Model_Dts
                 $this->vietnamFeedback($out, $sampleLabel, $note);
                 return;
             }
-            // Indeterminate under-call -> check the weak-reactive; else (e.g. only 2 tests) MOH.
-            $note = ($final === 'I') ? $CHECK_WR : $FOLLOW_MOH;
+            // Indeterminate under-call -> check the weak-reactive, but only if one was
+            // actually reported (workbook row 18 leaves it blank); else (e.g. only 2 tests) MOH.
+            $note = ($final === 'I')
+                ? ($hasWeak ? $CHECK_WR : '')
+                : $FOLLOW_MOH;
             $this->vietnamFeedback($out, $sampleLabel, $note, true);
             return;
         }
@@ -2955,7 +2965,7 @@ final class Application_Model_Dts
                 $this->vietnamFeedback($out, $sampleLabel, $note);
                 return;
             }
-            $this->vietnamFeedback($out, $sampleLabel, $FOLLOW_MOH, true);
+            $this->vietnamFeedback($out, $sampleLabel, '', true);
             return;
         }
 
