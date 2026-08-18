@@ -279,7 +279,7 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
 											<?php
 											foreach ($this->modeOfReceipt as $receipt) {
 												?>
-												<option value="<?php echo $receipt['mode_id']; ?>" <?php echo (isset($this->shipment["mode_id"]) && $this->shipment["mode_id"] == $receipt['mode_id']) ? "selected='selected'" : ''; ?>><?php echo $receipt['mode_name']; ?></option>
+												<option value="<?php echo $receipt['mode_id']; ?>" <?php echo (isset($this->shipment["mode_id"]) && $this->shipment["mode_id"] == $receipt['mode_id']) ? "selected='selected'" : ''; ?>><?= $this->htmlTranslate($receipt['mode_name']); ?></option>
 												<?php
 											}
 											?>
@@ -429,7 +429,7 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
 								<td class="dark">
 									<select name="result[]" id="result<?php echo $count; ?>" style="width: 200px"
 										class="<?php echo ($sample['mandatory'] == 1) ? " isRequired " : ""; ?> recency-pt-tested form-control vlResultValues"
-										title="Please select the result for <?php echo $sample['sample_label']; ?>">
+										title="<?= sprintf($this->htmlTranslate("Please select the result for %s"), htmlspecialchars($sample['sample_label'], ENT_QUOTES, 'UTF-8')); ?>">
 										<?php $this->dropdownSelection($possibleResults, $sample['reported_result'], true); ?>
 									</select>
 								</td>
@@ -449,11 +449,11 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
 								<select id="ptNotTestedReason" name="ptNotTestedReason" class="form-control"
 									title="<?= $this->htmlTranslate("Please select reason"); ?>" style="width:60%;"
 									onchange="checkComments(this.value);">
-									<option value="">--Select--</option>
+									<option value="">--<?= $this->translate->_("Select"); ?>--</option>
 									<?php foreach ($this->allNotTestedReason as $reason) { ?>
 										<option
 											data-collect-panel-receipt-date="<?= $reason['collect_panel_receipt_date']; ?>"
-											value="<?php echo $reason['ntr_id']; ?>" <?php echo ($this->shipment['pt_not_tested_reason'] == $reason['ntr_id']) ? 'selected="selected"' : ''; ?>><?php echo ucwords($reason['ntr_reason']); ?>
+											value="<?php echo $reason['ntr_id']; ?>" <?php echo ($this->shipment['pt_not_tested_reason'] == $reason['ntr_id']) ? 'selected="selected"' : ''; ?>><?= $this->htmlTranslate($reason['ntr_reason']); ?>
 										</option>
 									<?php } ?>
 								
@@ -487,7 +487,7 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
 					<hr>
 					<table class="table table-bordered table-striped" style="width:100%;margin:10px auto;">
 						<!-- <tr>
-							<th scope="col" style="width:20%;">Upload File</th>
+							<th scope="col" style="width:20%;"><?= $this->translate->_("Upload File"); ?></th>
 							<td colspan="3">
 								<?php
 								$hideUploadFileArea = false;
@@ -499,7 +499,7 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
 									$hideUploadFileArea = true;
 									?>
 									<span id="uploadeFileLink">
-										<a id="uploadeFileLink" href="/uploads/<?php echo $this->shipment['attributes']['uploaded_file'] ?>" download><?php echo basename($this->shipment['attributes']['uploaded_file']); ?></a>&nbsp;&nbsp;&nbsp;<a href="javascript:removeUploadedFile();" class="text-danger"><i class="icon icon-remove-sign"></i> Remove</a>
+										<a id="uploadeFileLink" href="/uploads/<?php echo $this->shipment['attributes']['uploaded_file'] ?>" download><?php echo basename($this->shipment['attributes']['uploaded_file']); ?></a>&nbsp;&nbsp;&nbsp;<a href="javascript:removeUploadedFile();" class="text-danger"><i class="icon icon-remove-sign"></i> <?= $this->translate->_("Remove"); ?></a>
 									</span>
 
 								<?php
@@ -595,12 +595,12 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
 			if (isset($warnings) && !empty($warnings)) { ?>
 				<table class="table table-bordered" style="width:100%;margin:0 auto;">
 					<tr>
-						<td style="width:25%;vertical-align: middle">Notes</td>
+						<td style="width:25%;vertical-align: middle"><?= $this->translate->_("Notes"); ?></td>
 						<td>
 							<table class='table table-bordered'>
 								<tr>
-									<th scope="col">Failure Reasons (or) Warnings</th>
-									<th scope="col">Corrective Actions (if any)</th>
+									<th scope="col"><?= $this->translate->_("Failure Reasons (or) Warnings"); ?></th>
+									<th scope="col"><?= $this->translate->_("Corrective Actions (if any)"); ?></th>
 								</tr>
 								<?php $i = 1;
 								foreach ($warnings as $warning) { ?>
@@ -646,10 +646,10 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
 				</tr>
 				<tr>
 					<td style="vertical-align: middle;" colspan="2">
-						<label>Is the above a follow up comment for corrective action? </label>
+						<label><?= $this->translate->_("Is the above a follow up comment for corrective action?"); ?> </label>
 						<input type="radio" name="isFollowUp" id="followUpYes" <?php echo (isset($this->shipment['is_followup']) && $this->shipment['is_followup'] == "yes") ? "checked='checked'" : ""; ?> value="yes"
-							title="<?= $this->htmlTranslate("Please choose whether this is a follow up comment or not"); ?>" /> Yes <input type="radio"
-							name="isFollowUp" id="followUpNo" value="no" <?php echo (isset($this->shipment['is_followup']) && $this->shipment['is_followup'] == "no") ? "checked='checked'" : ""; ?> /> No
+							title="<?= $this->htmlTranslate("Please choose whether this is a follow up comment or not"); ?>" /> <?= $this->translate->_("Yes"); ?> <input type="radio"
+							name="isFollowUp" id="followUpNo" value="no" <?php echo (isset($this->shipment['is_followup']) && $this->shipment['is_followup'] == "no") ? "checked='checked'" : ""; ?> /> <?= $this->translate->_("No"); ?>
 					</td>
 				</tr>
 				<tr>
@@ -694,7 +694,7 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
 	}
 
 	function removeUploadedFile() {
-		if (window.confirm("Do you really want to remove this file?")) {
+		if (window.confirm("<?= $this->jsTranslate("Do you really want to remove this file?"); ?>")) {
 			$("#uploadeFileLink").hide();
 			$("#uploadFileArea").show();
 		}
@@ -723,14 +723,14 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
 			},
 				function (data) {
 					if (!data) {
-						alert('Entered Password was wrong please try again later');
+						alert('<?= $this->jsTranslate("Entered Password was wrong please try again later"); ?>');
 						return false;
 					}
 					window.location.href = '/admin/evaluate/shipment/sid/<?php echo base64_encode($this->shipId); ?>';
 				}
 			);
 		} else {
-			alert('Please enter the password to confirm');
+			alert('<?= $this->jsTranslate("Please enter the password to confirm"); ?>');
 		}
 	}
 
@@ -744,7 +744,7 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
 		if (flag) {
 			if ($("#testDate").val() != "") {
 				if (moment($("#receiptDate").val()).isAfter($("#testDate").val())) {
-					alert('Testing Date has to come after the Shipment Receipt Date');
+					alert('<?= $this->jsTranslate("Testing Date has to come after the Shipment Receipt Date"); ?>');
 					return false;
 				}
 			}
@@ -758,7 +758,7 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
 	$(function () {
 		$('#isExcluded').change(function () {
 			if (this.value == 'yes') {
-				if (confirm('Please note that this action cannot be undone and will remove the participant and their response (if any) from the system')) {
+				if (confirm('<?= $this->jsTranslate("Please note that this action cannot be undone and will remove the participant and their response (if any) from the system"); ?>')) {
 					showdefModal('removeParticipant', 500, 250);
 				}
 			}

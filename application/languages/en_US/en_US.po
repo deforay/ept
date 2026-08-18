@@ -20058,3 +20058,111 @@ msgstr ""
 #: application/modules/admin/views/scripts/index/index.phtml
 msgid "%d participants have registered and are waiting to be approved. Click to review."
 msgstr ""
+
+#: application/views/scripts/dts/response.phtml:1335
+msgid "RTRI Panel"
+msgstr ""
+
+#: application/views/scripts/dts/response.phtml:1418
+#, php-format
+msgid "Please select the result for %s"
+msgstr ""
+
+#: application/views/scripts/dts/response.phtml:1882
+msgid "Please note that this action cannot be undone and will remove the participant and their response (if any) from the system"
+msgstr ""
+
+#: application/views/scripts/dts/response.phtml:1909
+msgid "Entered Password was wrong please try again later"
+msgstr ""
+
+#: application/views/scripts/dts/response.phtml:1916
+msgid "Please enter the password to confirm"
+msgstr ""
+
+#: application/views/scripts/dts/response.phtml:1929
+msgid "Testing Date has to come after the Shipment Receipt Date"
+msgstr ""
+
+#: application/views/scripts/covid19/response.phtml:1321
+msgid "CT Value"
+msgstr ""
+
+#: application/views/scripts/eid/response.phtml:340
+msgid "Detection Assay Expiry Date"
+msgstr ""
+
+#: application/views/scripts/eid/response.phtml:329
+msgid "Detection Assay Lot No."
+msgstr ""
+
+#: application/views/scripts/eid/response.phtml:794
+msgid "Do you really want to remove this file?"
+msgstr ""
+
+#: application/views/scripts/eid/response.phtml:968
+msgid "Do you want to update this email id?"
+msgstr ""
+
+#: application/views/scripts/eid/response.phtml:335
+msgid "Extraction Assay Expiry Date"
+msgstr ""
+
+#: application/views/scripts/eid/response.phtml:325
+msgid "Extraction Assay Lot No."
+msgstr ""
+
+#: application/views/scripts/covid19/response.phtml:1320
+msgid "Gene Type"
+msgstr ""
+
+#: application/views/scripts/covid19/response.phtml:1315
+msgid "Identified Gene Types for"
+msgstr ""
+
+#: application/views/scripts/tb/response.phtml:297
+msgid "Microscopy"
+msgstr ""
+
+#: application/views/scripts/tb/response.phtml:897
+msgid "N/A"
+msgstr ""
+
+#: application/views/scripts/custom-test/response.phtml:831
+msgid "Please ensure all SPC and Probe values are valid numbers"
+msgstr ""
+
+#: application/views/scripts/tb/response.phtml:876
+msgid "Please ensure all numeric field values are valid numbers"
+msgstr ""
+
+#: application/views/scripts/covid19/response.phtml:1404
+msgid "Please enter the CT Value"
+msgstr ""
+
+#: application/views/scripts/eid/response.phtml:508
+#, php-format
+msgid "Please enter the HIV CT/OD for %s"
+msgstr ""
+
+#: application/views/scripts/eid/response.phtml:512
+#, php-format
+msgid "Please enter the IC/QS Values for %s"
+msgstr ""
+
+#: application/views/scripts/vl/response.phtml:671
+#, php-format
+msgid "Please enter the Viral Load result for %s"
+msgstr ""
+
+#: application/views/scripts/tb/response.phtml:295
+msgid "Please type or select other assay/method"
+msgstr ""
+
+#: application/views/scripts/covid19/response.phtml:1322
+msgid "Remarks"
+msgstr ""
+
+#: application/views/scripts/custom-test/response.phtml:826
+msgid "Testing Date has to come after the Panel Receipt Date"
+msgstr ""

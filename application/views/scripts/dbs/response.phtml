@@ -139,7 +139,7 @@ if ($this->reqFrom == "admin") {
                                         <?php
                                         foreach ($this->modeOfReceipt as $receipt) {
                                             ?>
-                                            <option value="<?php echo $receipt['mode_id']; ?>" <?php echo (isset($this->shipment["mode_id"]) && $this->shipment["mode_id"] == $receipt['mode_id']) ? "selected='selected'" : ''; ?>><?php echo $receipt['mode_name']; ?></option>
+                                            <option value="<?php echo $receipt['mode_id']; ?>" <?php echo (isset($this->shipment["mode_id"]) && $this->shipment["mode_id"] == $receipt['mode_id']) ? "selected='selected'" : ''; ?>><?= $this->htmlTranslate($receipt['mode_name']); ?></option>
                                             <?php
                                         }
                                         ?>
@@ -532,12 +532,12 @@ if ($this->reqFrom == "admin") {
                         if (isset($warnings) && !empty($warnings)) { ?>
                             <table class="table table-bordered" style="width:100%;margin:0 auto;">
                                 <tr>
-                                    <td style="width:25%;vertical-align: middle">Notes</td>
+                                    <td style="width:25%;vertical-align: middle"><?= $this->translate->_("Notes"); ?></td>
                                     <td>
                                         <table class='table table-bordered'>
                                             <tr>
-                                                <th scope="col">Failure Reasons (or) Warnings</th>
-                                                <th scope="col">Corrective Actions (if any)</th>
+                                                <th scope="col"><?= $this->translate->_("Failure Reasons (or) Warnings"); ?></th>
+                                                <th scope="col"><?= $this->translate->_("Corrective Actions (if any)"); ?></th>
                                             </tr>
                                             <?php $i = 1;
                                             foreach ($warnings as $warning) { ?>
@@ -583,10 +583,10 @@ if ($this->reqFrom == "admin") {
                             </tr>
                             <tr>
                                 <td style="vertical-align: middle;" colspan="2">
-                                    <label>Is the above a follow up comment for corrective action? </label>
+                                    <label><?= $this->translate->_("Is the above a follow up comment for corrective action?"); ?> </label>
                                     <input type="radio" name="isFollowUp" id="followUpYes" <?php echo (isset($this->shipment['is_followup']) && $this->shipment['is_followup'] == "yes") ? "checked='checked'" : ""; ?> value="yes"
-                                        title="<?= $this->htmlTranslate("Please choose whether this is a follow up comment or not"); ?>" /> Yes <input
-                                        type="radio" name="isFollowUp" id="followUpNo" value="no" <?php echo (isset($this->shipment['is_followup']) && $this->shipment['is_followup'] == "no") ? "checked='checked'" : ""; ?> /> No
+                                        title="<?= $this->htmlTranslate("Please choose whether this is a follow up comment or not"); ?>" /> <?= $this->translate->_("Yes"); ?> <input
+                                        type="radio" name="isFollowUp" id="followUpNo" value="no" <?php echo (isset($this->shipment['is_followup']) && $this->shipment['is_followup'] == "no") ? "checked='checked'" : ""; ?> /> <?= $this->translate->_("No"); ?>
                                 </td>
                             </tr>
                             <tr>
@@ -680,7 +680,7 @@ if ($this->reqFrom == "admin") {
         });
         $('#isExcluded').change(function () {
             if (this.value == 'yes') {
-                if (confirm('Please note that this action cannot be undone and will remove the participant and their response (if any) from the system')) {
+                if (confirm('<?= $this->jsTranslate("Please note that this action cannot be undone and will remove the participant and their response (if any) from the system"); ?>')) {
                     showdefModal('removeParticipant', 500, 250);
                 }
             }
@@ -703,14 +703,14 @@ if ($this->reqFrom == "admin") {
             },
                 function (data) {
                     if (!data) {
-                        alert('Entered Password was wrong please try again later');
+                        alert('<?= $this->jsTranslate("Entered Password was wrong please try again later"); ?>');
                         return false;
                     }
                     window.location.href = '/admin/evaluate/shipment/sid/<?php echo base64_encode($this->shipId); ?>';
                 }
             );
         } else {
-            alert('Please enter the password to confirm');
+            alert('<?= $this->jsTranslate("Please enter the password to confirm"); ?>');
         }
     }
 
@@ -723,7 +723,7 @@ if ($this->reqFrom == "admin") {
         });
         if (flag) {
             if (moment($("#receipt_date").val()).isAfter($("#test_date").val())) {
-                alert('Testing Date has to come after the Shipment Receipt Date');
+                alert('<?= $this->jsTranslate("Testing Date has to come after the Shipment Receipt Date"); ?>');
                 return false;
             }
             $.blockUI();

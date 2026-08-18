@@ -265,7 +265,7 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
 									title="<?= $this->htmlTranslate("Please enter Test Receipt Date"); ?>" />
 								<i class="icon-remove-sign"
 									style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="<?= $this->htmlTranslate("Clear Date"); ?>"
-									title="<?= $this->htmlTranslate("Clear Date"); ?>" onclick="clearDate('receiptDate')"> Clear</i>
+									title="<?= $this->htmlTranslate("Clear Date"); ?>" onclick="clearDate('receiptDate')"> <?= $this->translate->_("Clear"); ?></i>
 							</td>
 
 							<td><label for="testDate"><?= $this->translate->_("Testing Date"); ?> <span
@@ -278,7 +278,7 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
 									readonly="readonly" />
 								<i class="icon-remove-sign"
 									style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="<?= $this->htmlTranslate("Clear Date"); ?>"
-									title="<?= $this->htmlTranslate("Clear Date"); ?>" onclick="clearDate('testDate')"> Clear</i>
+									title="<?= $this->htmlTranslate("Clear Date"); ?>" onclick="clearDate('testDate')"> <?= $this->translate->_("Clear"); ?></i>
 							</td>
 						</tr>
 						<tr class="dark">
@@ -331,7 +331,7 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
 									placeholder="<?= $this->htmlTranslate("Cartridge/Assay Expiration"); ?>" readonly="readonly" />
 								<i class="icon-remove-sign"
 									style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="<?= $this->htmlTranslate("Clear Date"); ?>"
-									title="<?= $this->htmlTranslate("Clear Date"); ?>" onclick="clearDate('assayExpirationDate')"> Clear</i>
+									title="<?= $this->htmlTranslate("Clear Date"); ?>" onclick="clearDate('assayExpirationDate')"> <?= $this->translate->_("Clear"); ?></i>
 							</td>
 						</tr>
 						<tr class="gx-pt">
@@ -347,7 +347,7 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
 									title="<?= $this->htmlTranslate("Please enter gene Xpert instrument"); ?>" />
 								<i class="icon-remove-sign"
 									style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="<?= $this->htmlTranslate("Clear Date"); ?>"
-									title="<?= $this->htmlTranslate("Clear Date"); ?>" onclick="clearDate('geneXpertInstrument')"> Clear</i>
+									title="<?= $this->htmlTranslate("Clear Date"); ?>" onclick="clearDate('geneXpertInstrument')"> <?= $this->translate->_("Clear"); ?></i>
 							</td>
 							<td style="width:20%;"> <label class="control-lable"
 									for="instrumentSn"><?= $this->translate->_("Instrument Serial Number"); ?></label>
@@ -380,7 +380,7 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
 									placeholder="<?= $this->htmlTranslate("Cartridge/Assay Expiration"); ?>" readonly="readonly" />
 								<i class="icon-remove-sign"
 									style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="<?= $this->htmlTranslate("Clear Date"); ?>"
-									title="<?= $this->htmlTranslate("Clear Date"); ?>" onclick="clearDate('assayExpirationDate')"> Clear</i>
+									title="<?= $this->htmlTranslate("Clear Date"); ?>" onclick="clearDate('assayExpirationDate')"> <?= $this->translate->_("Clear"); ?></i>
 							</td>
 						</tr>
 						<tr class="htp">
@@ -396,7 +396,7 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
 									title="<?= $this->htmlTranslate("Please enter gene Xpert instrument"); ?>" />
 								<i class="icon-remove-sign"
 									style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="<?= $this->htmlTranslate("Clear Date"); ?>"
-									title="<?= $this->htmlTranslate("Clear Date"); ?>" onclick="clearDate('geneXpertInstrument')"> Clear</i>
+									title="<?= $this->htmlTranslate("Clear Date"); ?>" onclick="clearDate('geneXpertInstrument')"> <?= $this->translate->_("Clear"); ?></i>
 							</td>
 							<td style="width:20%;"> <label class="control-lable"
 									for="instrumentSnExt"><?= $this->translate->_("Instrument Serial Number"); ?></label>
@@ -430,7 +430,7 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
 									placeholder="<?= $this->htmlTranslate("Cartridge/Assay Expiration"); ?>" readonly="readonly" />
 								<i class="icon-remove-sign"
 									style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="<?= $this->htmlTranslate("Clear Date"); ?>"
-									title="<?= $this->htmlTranslate("Clear Date"); ?>" onclick="clearDate('assayExpirationDate')"> Clear</i>
+									title="<?= $this->htmlTranslate("Clear Date"); ?>" onclick="clearDate('assayExpirationDate')"> <?= $this->translate->_("Clear"); ?></i>
 							</td>
 						</tr>
 						<tr class="htp">
@@ -446,7 +446,7 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
 									title="<?= $this->htmlTranslate("Please enter gene Xpert instrument"); ?>" />
 								<i class="icon-remove-sign"
 									style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="<?= $this->htmlTranslate("Clear Date"); ?>"
-									title="<?= $this->htmlTranslate("Clear Date"); ?>" onclick="clearDate('geneXpertInstrument')"> Clear</i>
+									title="<?= $this->htmlTranslate("Clear Date"); ?>" onclick="clearDate('geneXpertInstrument')"> <?= $this->translate->_("Clear"); ?></i>
 							</td>
 							<td style="width:20%;"> <label class="control-lable"
 									for="instrumentSnAmp"><?= $this->translate->_("Instrument Serial Number"); ?></label>
@@ -482,7 +482,7 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
 								<?php
 								if (isset($authNameSpace->enable_choosing_mode_of_receipt) && $authNameSpace->enable_choosing_mode_of_receipt != null && $authNameSpace->enable_choosing_mode_of_receipt != '' && $authNameSpace->enable_choosing_mode_of_receipt == 'yes') {
 									?>
-									<td><label for="modeOfReceipt">Mode of Receipt</label></td>
+									<td><label for="modeOfReceipt"><?= $this->translate->_("Mode of Receipt"); ?></label></td>
 									<td>
 										<select class="form-control" name="modeOfReceipt" id="modeOfReceipt"
 											class="form-control" title="<?= $this->htmlTranslate("Please choose the mode of receipt"); ?>">
@@ -490,7 +490,7 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
 											<?php
 											foreach ($this->modeOfReceipt as $receipt) {
 												?>
-												<option value="<?php echo $receipt['mode_id']; ?>" <?php echo (isset($this->shipment["mode_id"]) && $this->shipment["mode_id"] == $receipt['mode_id']) ? "selected='selected'" : ''; ?>><?php echo $receipt['mode_name']; ?></option>
+												<option value="<?php echo $receipt['mode_id']; ?>" <?php echo (isset($this->shipment["mode_id"]) && $this->shipment["mode_id"] == $receipt['mode_id']) ? "selected='selected'" : ''; ?>><?= $this->htmlTranslate($receipt['mode_name']); ?></option>
 												<?php
 											}
 											?>
@@ -514,7 +514,7 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
 						if ($this->globalQcAccess == 'yes' && (isset($authNameSpace->qc_access) && $authNameSpace->qc_access != null && $authNameSpace->qc_access != '' && $authNameSpace->qc_access == 'yes')) {
 							?>
 							<tr>
-								<td><label>QC Done</label></td>
+								<td><label><?= $this->translate->_("QC Done"); ?></label></td>
 								<td><input type="radio" id="qcDoneYes" name="qcDone" value="yes" <?php echo ($this->shipment['qc_done'] == "yes") ? " checked='checked' " : ""; ?>
 										onclick="checkQcStatus();" />
 									<strong><?= $this->translate->_("Yes"); ?></strong>&nbsp;&nbsp;<input type="radio"
@@ -543,7 +543,7 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
 										title="<?= $this->htmlTranslate("Please enter QC Date"); ?>" />
 									<i class="icon-remove-sign"
 										style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="<?= $this->htmlTranslate("Clear Date"); ?>"
-										title="<?= $this->htmlTranslate("Clear Date"); ?>" onclick="clearDate('qcDate')"> Clear</i>
+										title="<?= $this->htmlTranslate("Clear Date"); ?>" onclick="clearDate('qcDate')"> <?= $this->translate->_("Clear"); ?></i>
 								</td>
 								<td>
 									<label><?= $this->translate->_("QC Done By"); ?></label>
@@ -668,7 +668,7 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
 										name="vlResult[<?php echo $keyc; ?>]" id="vlResult<?php echo $count; ?>"
 										class="<?php echo ($sample['mandatory'] == 1 && empty($disabledAInvalid) && $disabledAInvalid == '') ? "isRequired" : ""; ?>  form-control checkVlVal vlResultValues"
 										value="<?php echo $vlResult; ?>"
-										title="Please enter the Viral Load result for <?php echo $sample['sample_label']; ?>" />
+										title="<?= sprintf($this->htmlTranslate("Please enter the Viral Load result for %s"), htmlspecialchars($sample['sample_label'], ENT_QUOTES, 'UTF-8')); ?>" />
 								</td>
 								<td style="text-align:center;">
 									<input type="hidden" name="tndReference[<?php echo $keyc; ?>]"
@@ -779,7 +779,7 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
 										?>
 										<option
 											data-collect-panel-receipt-date="<?= $reason['collect_panel_receipt_date']; ?>"
-											value="<?= $reason['ntr_id']; ?>" <?php echo ($this->shipment['pt_not_tested_reason'] == $reason['ntr_id']) ? 'selected="selected"' : ''; ?>><?php echo ucwords($reason['ntr_reason']); ?>
+											value="<?= $reason['ntr_id']; ?>" <?php echo ($this->shipment['pt_not_tested_reason'] == $reason['ntr_id']) ? 'selected="selected"' : ''; ?>><?= $this->htmlTranslate($reason['ntr_reason']); ?>
 										</option>
 									<?php } ?>
 								
@@ -968,12 +968,12 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
 					if (isset($warnings) && !empty($warnings)) { ?>
 						<table class="table table-bordered" style="width:100%;margin:0 auto;">
 							<tr>
-								<td style="width:25%;vertical-align: middle">Notes</td>
+								<td style="width:25%;vertical-align: middle"><?= $this->translate->_("Notes"); ?></td>
 								<td>
 									<table class='table table-bordered'>
 										<tr>
-											<th scope="col">Failure Reasons (or) Warnings</th>
-											<th scope="col">Corrective Actions (if any)</th>
+											<th scope="col"><?= $this->translate->_("Failure Reasons (or) Warnings"); ?></th>
+											<th scope="col"><?= $this->translate->_("Corrective Actions (if any)"); ?></th>
 										</tr>
 										<?php $i = 1;
 										foreach ($warnings as $warning) { ?>
@@ -1019,10 +1019,10 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
 						</tr>
 						<tr>
 							<td style="vertical-align: middle;" colspan="2">
-								<label>Is the above a follow up comment for corrective action? </label>
+								<label><?= $this->translate->_("Is the above a follow up comment for corrective action?"); ?> </label>
 								<input type="radio" name="isFollowUp" id="followUpYes" <?php echo (isset($this->shipment['is_followup']) && $this->shipment['is_followup'] == "yes") ? "checked='checked'" : ""; ?> value="yes"
-									title="<?= $this->htmlTranslate("Please choose whether this is a follow up comment or not"); ?>" /> Yes <input
-									type="radio" name="isFollowUp" id="followUpNo" value="no" <?php echo (isset($this->shipment['is_followup']) && $this->shipment['is_followup'] == "no") ? "checked='checked'" : ""; ?> /> No
+									title="<?= $this->htmlTranslate("Please choose whether this is a follow up comment or not"); ?>" /> <?= $this->translate->_("Yes"); ?> <input
+									type="radio" name="isFollowUp" id="followUpNo" value="no" <?php echo (isset($this->shipment['is_followup']) && $this->shipment['is_followup'] == "no") ? "checked='checked'" : ""; ?> /> <?= $this->translate->_("No"); ?>
 							</td>
 						</tr>
 						<tr>
@@ -1074,7 +1074,7 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
 	}
 
 	function removeUploadedFile() {
-		if (window.confirm("Do you really want to remove this file?")) {
+		if (window.confirm("<?= $this->jsTranslate("Do you really want to remove this file?"); ?>")) {
 			$("#uploadeFileLink").hide();
 			$("#uploadFileArea").show();
 		}
@@ -1175,7 +1175,7 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
 		});
 		$('#isExcluded').change(function () {
 			if (this.value == 'yes') {
-				if (confirm('Please note that this action cannot be undone and will remove the participant and their response (if any) from the system')) {
+				if (confirm('<?= $this->jsTranslate("Please note that this action cannot be undone and will remove the participant and their response (if any) from the system"); ?>')) {
 					showdefModal('removeParticipant', 500, 250);
 				}
 			}
@@ -1218,14 +1218,14 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
 			},
 				function (data) {
 					if (!data) {
-						alert('Entered Password was wrong please try again later');
+						alert('<?= $this->jsTranslate("Entered Password was wrong please try again later"); ?>');
 						return false;
 					}
 					window.location.href = '/admin/evaluate/shipment/sid/<?php echo base64_encode($this->shipId); ?>';
 				}
 			);
 		} else {
-			alert('Please enter the password to confirm');
+			alert('<?= $this->jsTranslate("Please enter the password to confirm"); ?>');
 		}
 	}
 
@@ -1271,7 +1271,7 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
 		if (flag) {
 			if ($("#testDate").val() != "") {
 				if (moment($("#receipt_date").val()).isAfter($("#test_date").val())) {
-					alert('Testing Date has to come after the Shipment Receipt Date');
+					alert('<?= $this->jsTranslate("Testing Date has to come after the Shipment Receipt Date"); ?>');
 					return false;
 				}
 			}
@@ -1428,7 +1428,7 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
 		if ($(oldId).val() != "") {
 
 			if ($(changeId).val() != $(oldId).val()) {
-				if (confirm("Do you want to update this email id?")) {
+				if (confirm("<?= $this->jsTranslate("Do you want to update this email id?"); ?>")) {
 					mailConfirmation = true;
 					confirmEmailId = confirmId;
 					updateEmailId = changeId;

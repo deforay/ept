@@ -20297,8 +20297,6 @@ msgstr "Không có người tham gia"
 #~ msgid "HBV Test"
 #~ msgstr "Xét nghiệm HBV"
 
-#~ msgid "N/A"
-#~ msgstr "Không áp dụng"
 
 #~ msgid "n/a"
 #~ msgstr "Không áp dụng"
@@ -20619,3 +20617,111 @@ msgstr "Không có người tham gia"
 
 #~ msgid "Not enrolled in any scheme"
 #~ msgstr "Chưa ghi danh chương trình nào"
+
+#: application/views/scripts/dts/response.phtml:1335
+msgid "RTRI Panel"
+msgstr "Bộ mẫu RTRI"
+
+#: application/views/scripts/dts/response.phtml:1418
+#, php-format
+msgid "Please select the result for %s"
+msgstr "Vui lòng chọn kết quả cho %s"
+
+#: application/views/scripts/dts/response.phtml:1882
+msgid "Please note that this action cannot be undone and will remove the participant and their response (if any) from the system"
+msgstr "Xin lưu ý rằng thao tác này không thể hoàn tác và sẽ xóa người tham gia cùng phản hồi của họ (nếu có) khỏi hệ thống"
+
+#: application/views/scripts/dts/response.phtml:1909
+msgid "Entered Password was wrong please try again later"
+msgstr "Mật khẩu đã nhập không đúng, vui lòng thử lại sau"
+
+#: application/views/scripts/dts/response.phtml:1916
+msgid "Please enter the password to confirm"
+msgstr "Vui lòng nhập mật khẩu để xác nhận"
+
+#: application/views/scripts/dts/response.phtml:1929
+msgid "Testing Date has to come after the Shipment Receipt Date"
+msgstr "Ngày xét nghiệm phải sau ngày nhận lô gửi"
+
+#: application/views/scripts/covid19/response.phtml:1321
+msgid "CT Value"
+msgstr "Giá trị CT"
+
+#: application/views/scripts/eid/response.phtml:340
+msgid "Detection Assay Expiry Date"
+msgstr "Ngày hết hạn của phương pháp phát hiện"
+
+#: application/views/scripts/eid/response.phtml:329
+msgid "Detection Assay Lot No."
+msgstr "Số lô của phương pháp phát hiện"
+
+#: application/views/scripts/eid/response.phtml:794
+msgid "Do you really want to remove this file?"
+msgstr "Bạn có thực sự muốn xóa tệp này không?"
+
+#: application/views/scripts/eid/response.phtml:968
+msgid "Do you want to update this email id?"
+msgstr "Bạn có muốn cập nhật địa chỉ email này không?"
+
+#: application/views/scripts/eid/response.phtml:335
+msgid "Extraction Assay Expiry Date"
+msgstr "Ngày hết hạn của phương pháp chiết xuất"
+
+#: application/views/scripts/eid/response.phtml:325
+msgid "Extraction Assay Lot No."
+msgstr "Số lô của phương pháp chiết xuất"
+
+#: application/views/scripts/covid19/response.phtml:1320
+msgid "Gene Type"
+msgstr "Loại gen"
+
+#: application/views/scripts/covid19/response.phtml:1315
+msgid "Identified Gene Types for"
+msgstr "Các loại gen đã xác định cho"
+
+#: application/views/scripts/tb/response.phtml:297
+msgid "Microscopy"
+msgstr "Soi kính hiển vi"
+
+#: application/views/scripts/tb/response.phtml:897
+msgid "N/A"
+msgstr "Không áp dụng"
+
+#: application/views/scripts/custom-test/response.phtml:831
+msgid "Please ensure all SPC and Probe values are valid numbers"
+msgstr "Vui lòng đảm bảo tất cả giá trị SPC và Probe là số hợp lệ"
+
+#: application/views/scripts/tb/response.phtml:876
+msgid "Please ensure all numeric field values are valid numbers"
+msgstr "Vui lòng đảm bảo tất cả các trường số đều là số hợp lệ"
+
+#: application/views/scripts/covid19/response.phtml:1404
+msgid "Please enter the CT Value"
+msgstr "Vui lòng nhập giá trị CT"
+
+#: application/views/scripts/eid/response.phtml:508
+#, php-format
+msgid "Please enter the HIV CT/OD for %s"
+msgstr "Vui lòng nhập giá trị CT/OD HIV cho %s"
+
+#: application/views/scripts/eid/response.phtml:512
+#, php-format
+msgid "Please enter the IC/QS Values for %s"
+msgstr "Vui lòng nhập giá trị IC/QS cho %s"
+
+#: application/views/scripts/vl/response.phtml:671
+#, php-format
+msgid "Please enter the Viral Load result for %s"
+msgstr "Vui lòng nhập kết quả tải lượng virus cho %s"
+
+#: application/views/scripts/tb/response.phtml:295
+msgid "Please type or select other assay/method"
+msgstr "Vui lòng nhập hoặc chọn phương pháp xét nghiệm khác"
+
+#: application/views/scripts/covid19/response.phtml:1322
+msgid "Remarks"
+msgstr "Nhận xét"
+
+#: application/views/scripts/custom-test/response.phtml:826
+msgid "Testing Date has to come after the Panel Receipt Date"
+msgstr "Ngày xét nghiệm phải sau ngày nhận bộ mẫu"

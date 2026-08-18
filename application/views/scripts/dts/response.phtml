@@ -396,7 +396,7 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
                                             class="form-control" title="<?= $this->htmlTranslate("Please choose the mode of receipt"); ?>">
                                             <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
                                             <?php foreach ($this->modeOfReceipt as $receipt) { ?>
-                                                <option value="<?php echo $receipt['mode_id']; ?>" <?php echo (isset($this->shipment["mode_id"]) && $this->shipment["mode_id"] == $receipt['mode_id']) ? "selected='selected'" : ''; ?>><?php echo $receipt['mode_name']; ?></option>
+                                                <option value="<?php echo $receipt['mode_id']; ?>" <?php echo (isset($this->shipment["mode_id"]) && $this->shipment["mode_id"] == $receipt['mode_id']) ? "selected='selected'" : ''; ?>><?= $this->htmlTranslate($receipt['mode_name']); ?></option>
                                             <?php } ?>
                                         </select>
                                     </td>
@@ -418,10 +418,10 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
                             <tr class="ptTestPerformed" style="<?php echo $hideQcWhenNotPerformed; ?>">
                                 <td><label><?= $this->translate->_("QC Done"); ?></label></td>
                                 <td><input type="radio" id="qcDoneYes" name="qcDone" value="yes" <?php echo ($this->shipment['qc_done'] == "yes") ? " checked='checked' " : ""; ?>
-                                        onclick="checkQcStatus();" /> <strong>Yes</strong>&nbsp;&nbsp;<input type="radio"
+                                        onclick="checkQcStatus();" /> <strong><?= $this->translate->_("Yes"); ?></strong>&nbsp;&nbsp;<input type="radio"
                                         class="isRequired" id="qcDoneNo" name="qcDone" title="<?= $this->htmlTranslate("Please select QC done status"); ?>"
                                         <?php echo ($this->shipment['qc_done'] == null || $this->shipment['qc_done'] == "" || $this->shipment['qc_done'] == "no") ? " checked='checked' " : ""; ?> value="no"
-                                        onclick="checkQcStatus();" /> <strong>No</strong> </td>
+                                        onclick="checkQcStatus();" /> <strong><?= $this->translate->_("No"); ?></strong> </td>
                                 <td colspan="2"></td>
                             </tr>
 
@@ -482,16 +482,16 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
                     $possibleSyphilisFinalResults = [];
                     foreach ($this->dtsPossibleResults as $pr) {
                         if ($pr['scheme_sub_group'] == 'DTS_TEST') {
-                            $possibleResults[$pr['id']] = strtoupper($pr['response']);
+                            $possibleResults[$pr['id']] = $pr['response'];
                         }
                         if ($pr['scheme_sub_group'] == 'DTS_SYP_TEST') {
-                            $possibleSyphilisResults[$pr['id']] = strtoupper($pr['response']);
+                            $possibleSyphilisResults[$pr['id']] = $pr['response'];
                         }
                         if ($pr['scheme_sub_group'] == 'DTS_FINAL') {
-                            $possibleFinalResults[$pr['id']] = strtoupper($pr['response']);
+                            $possibleFinalResults[$pr['id']] = $pr['response'];
                         }
                         if ($pr['scheme_sub_group'] == 'DTS_SYP_FINAL') {
-                            $possibleSyphilisFinalResults[$pr['id']] = strtoupper($pr['response']);
+                            $possibleSyphilisFinalResults[$pr['id']] = $pr['response'];
                         }
                     }
                     if (isset($this->recencyPossibleResults) && !empty($this->recencyPossibleResults)) {
@@ -1156,7 +1156,7 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
                                         <select name="test_result_1[<?php echo $sample['sample_id']; ?>]"
                                             id="<?php echo "testresult1_" . $count; ?>"
                                             class="form-control result-section-input">
-                                            <?php $this->dropdownSelection($possibleResults, $sample['test_result_1'], true); ?>
+                                            <?php $this->dropdownSelection($possibleResults, $sample['test_result_1'], true, true); ?>
                                         </select>
                                         <?php if ($syphilisActive) { ?>
                                             <div style="margin-top: 2%;padding-top: 4%;border-top: 1px solid gray;"
@@ -1164,7 +1164,7 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
                                                 <select name="syphilis_result[<?php echo $sample['sample_id']; ?>]"
                                                     id="<?php echo "syphilis_result_" . $count; ?>"
                                                     class="form-control result-section-input">
-                                                    <?php $this->dropdownSelection($possibleSyphilisResults, $sample['syphilis_result'], true); ?>
+                                                    <?php $this->dropdownSelection($possibleSyphilisResults, $sample['syphilis_result'], true, true); ?>
                                                 </select>
                                             </div>
                                         <?php } ?>
@@ -1174,7 +1174,7 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
                                         <select name="test_result_2[<?php echo $sample['sample_id']; ?>]"
                                             id="<?php echo "testresult2_" . $count; ?>"
                                             class="form-control result-section-input">
-                                            <?php $this->dropdownSelection($possibleResults, $sample['test_result_2'], true); ?>
+                                            <?php $this->dropdownSelection($possibleResults, $sample['test_result_2'], true, true); ?>
                                         </select>
                                     </td>
                                     <td style="width: <?php echo $width; ?>%;"
@@ -1182,7 +1182,7 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
                                         <select name="test_result_3[<?php echo $sample['sample_id']; ?>]"
                                             id="<?php echo "testresult3_" . $count; ?>"
                                             class="form-control result-section-input">
-                                            <?php $this->dropdownSelection($possibleResults, $sample['test_result_3'], true); ?>
+                                            <?php $this->dropdownSelection($possibleResults, $sample['test_result_3'], true, true); ?>
                                         </select>
                                     </td>
                                     <?php if ($allowRepeatTests) { ?>
@@ -1191,7 +1191,7 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
                                             <select name="repeat_test_result_1[<?php echo $sample['sample_id']; ?>]"
                                                 id="<?php echo "repeat_test_result_1_" . $count; ?>"
                                                 class="repeat_1 form-control result-section-input">
-                                                <?php $this->dropdownSelection($possibleResults, $sample['repeat_test_result_1'], true); ?>
+                                                <?php $this->dropdownSelection($possibleResults, $sample['repeat_test_result_1'], true, true); ?>
                                             </select>
                                         </td>
                                         <td style="width: <?php echo $width; ?>%;"
@@ -1199,7 +1199,7 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
                                             <select name="repeat_test_result_2[<?php echo $sample['sample_id']; ?>]"
                                                 id="<?php echo "repeat_test_result_2_" . $count; ?>"
                                                 class="repeat_2 form-control result-section-input">
-                                                <?php $this->dropdownSelection($possibleResults, $sample['repeat_test_result_2'], true); ?>
+                                                <?php $this->dropdownSelection($possibleResults, $sample['repeat_test_result_2'], true, true); ?>
                                             </select>
                                         </td>
                                         <td style="width: <?php echo $width; ?>%;"
@@ -1207,7 +1207,7 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
                                             <select name="repeat_test_result_3[<?php echo $sample['sample_id']; ?>]"
                                                 id="<?php echo "repeat_test_result_3_" . $count; ?>"
                                                 class="repeat_3 form-control result-section-input">
-                                                <?php $this->dropdownSelection($possibleResults, $sample['repeat_test_result_3'], true); ?>
+                                                <?php $this->dropdownSelection($possibleResults, $sample['repeat_test_result_3'], true, true); ?>
                                             </select>
                                         </td>
                                     <?php } ?>
@@ -1216,7 +1216,7 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
                                             id="<?php echo "testresultf_" . $count; ?>"
                                             class="vlResultValues form-control result-section-input" <?php echo ($sample['mandatory'] == 1) ? "class='isRequired'" : ""; ?>
                                             title="<?= $this->htmlTranslate("Please select the result"); ?>" style="float: left;">
-                                            <?php $this->dropdownSelection($possibleFinalResults, $sample['reported_result'], true); ?>
+                                            <?php $this->dropdownSelection($possibleFinalResults, $sample['reported_result'], true, true); ?>
                                         </select>
                                         <?php if ($syphilisActive) { ?>
                                             <div style="margin-top: 2%;padding-top: 4%;border-top: 1px solid gray;"
@@ -1224,7 +1224,7 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
                                                 <select name="syphilis_final[<?php echo $sample['sample_id']; ?>]"
                                                     id="<?php echo "syphilis_final_" . $count; ?>"
                                                     class="form-control result-section-input">
-                                                    <?php $this->dropdownSelection($possibleSyphilisFinalResults, $sample['syphilis_final'], true); ?>
+                                                    <?php $this->dropdownSelection($possibleSyphilisFinalResults, $sample['syphilis_final'], true, true); ?>
                                                 </select>
                                             </div>
                                         <?php } ?>
@@ -1294,7 +1294,7 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
                                         foreach ($this->allNotTestedReason as $reason) { ?>
                                             <option
                                                 data-collect-panel-receipt-date="<?= $reason['collect_panel_receipt_date']; ?>"
-                                                value="<?= $reason['ntr_id']; ?>" <?php echo ($this->shipment['pt_not_tested_reason'] == $reason['ntr_id']) ? 'selected="selected"' : ''; ?>><?php echo ucwords($reason['ntr_reason']); ?>
+                                                value="<?= $reason['ntr_id']; ?>" <?php echo ($this->shipment['pt_not_tested_reason'] == $reason['ntr_id']) ? 'selected="selected"' : ''; ?>><?= $this->htmlTranslate($reason['ntr_reason']); ?>
                                             </option>
                                         <?php } ?>
                                     
@@ -1332,7 +1332,7 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
                             <div class="rtrisection vlResultSection"
                                 style="<?php echo (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes') ? 'display:none;' : ''; ?>">
                                 <hr>
-                                <h4>RTRI Panel</h4>
+                                <h4><?= $this->translate->_("RTRI Panel"); ?></h4>
                                 <table class="table table-bordered table-striped" style="width:100%;margin:10px auto;">
                                     <thead>
                                         <tr align="center" class="">
@@ -1415,7 +1415,7 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
                                                     <select name="rtriResult[<?= $sample['sample_id']; ?>]"
                                                         id="rtriResult<?= $count; ?>" style="width: 200px"
                                                         class="recency_pt_tested_<?= $count; ?> form-control vlResultValues"
-                                                        title="Please select the result for <?php echo $sample['sample_label']; ?>"
+                                                        title="<?= sprintf($this->htmlTranslate("Please select the result for %s"), htmlspecialchars($sample['sample_label'], ENT_QUOTES, 'UTF-8')); ?>"
                                                         <?php echo $dtsRtriIsEditable; ?>>
                                                         <?php $this->dropdownSelection($rtriFinalPossibleResults, $sample['dts_rtri_reported_result'], true); ?>
                                                     </select>
@@ -1566,12 +1566,12 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
                 if (isset($warnings) && !empty($warnings)) { ?>
                     <table class="table table-bordered" style="width:100%;margin:0 auto;">
                         <tr>
-                            <td style="width:25%;vertical-align: middle">Notes</td>
+                            <td style="width:25%;vertical-align: middle"><?= $this->translate->_("Notes"); ?></td>
                             <td>
                                 <table class='table table-bordered'>
                                     <tr>
-                                        <th scope="col">Failure Reasons (or) Warnings</th>
-                                        <th scope="col">Corrective Actions (if any)</th>
+                                        <th scope="col"><?= $this->translate->_("Failure Reasons (or) Warnings"); ?></th>
+                                        <th scope="col"><?= $this->translate->_("Corrective Actions (if any)"); ?></th>
                                     </tr>
                                     <?php $i = 1;
                                     foreach ($warnings as $warning) { ?>
@@ -1879,7 +1879,7 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
         });
         $('#isExcluded').change(function () {
             if (this.value == 'yes') {
-                if (confirm('Please note that this action cannot be undone and will remove the participant and their response (if any) from the system')) {
+                if (confirm('<?= $this->jsTranslate("Please note that this action cannot be undone and will remove the participant and their response (if any) from the system"); ?>')) {
                     showdefModal('removeParticipant', 500, 250);
                 }
             }
@@ -1906,14 +1906,14 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
             },
                 function (data) {
                     if (!data) {
-                        alert('Entered Password was wrong please try again later');
+                        alert('<?= $this->jsTranslate("Entered Password was wrong please try again later"); ?>');
                         return false;
                     }
                     window.location.href = '/admin/evaluate/shipment/sid/' + <?php echo json_encode(base64_encode($this->shipId)); ?>;
                 }
             );
         } else {
-            alert('Please enter the password to confirm');
+            alert('<?= $this->jsTranslate("Please enter the password to confirm"); ?>');
         }
     }
 
@@ -1926,7 +1926,7 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
         });
         if (flag) {
             if (moment($("#receipt_date").val()).isAfter($("#test_date").val())) {
-                alert('Testing Date has to come after the Shipment Receipt Date');
+                alert('<?= $this->jsTranslate("Testing Date has to come after the Shipment Receipt Date"); ?>');
                 return false;
             }
             $.blockUI();

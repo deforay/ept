@@ -19,7 +19,7 @@ $download = "";
 // TB forms are an MTBEPT-only feature.
 if (Application_Service_Common::getConfig('instance') === 'mtbept') {
 	$downloadLink = base64_encode(TEMP_UPLOAD_PATH . '/' . $this->shipment['shipment_code'] . '/TB-FORM-' . $this->shipment['shipment_code'] . '-' . $this->shipment['unique_identifier'] . '.pdf');
-	$download = "<a tabindex='7' href='/participant/download-tb/sid/" . $this->shipment['shipment_id'] . "/pid/" . $this->shipment['participant_id'] . "/file/" . $downloadLink . "' class='btn btn-info' style='margin:3px 0;float: right;' target='_BLANK'> <i class='icon icon-download'></i> Download Form</a>";
+	$download = "<a tabindex='7' href='/participant/download-tb/sid/" . $this->shipment['shipment_id'] . "/pid/" . $this->shipment['participant_id'] . "/file/" . $downloadLink . "' class='btn btn-info' style='margin:3px 0;float: right;' target='_BLANK'> <i class='icon icon-download'></i> " . Pt_Commons_TranslateUtility::htmlTranslate('Download Form') . "</a>";
 }
 
 $possibleMicrosopeResults = $possibleResults = [];
@@ -209,7 +209,7 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
 									?>
 										<option
 											data-collect-panel-receipt-date="<?= $reason['collect_panel_receipt_date']; ?>"
-											value="<?= $reason['ntr_id']; ?>" <?php echo ($this->shipment['pt_not_tested_reason'] == $reason['ntr_id']) ? 'selected="selected"' : ''; ?>><?php echo ($reason['ntr_reason']); ?></option>
+											value="<?= $reason['ntr_id']; ?>" <?php echo ($this->shipment['pt_not_tested_reason'] == $reason['ntr_id']) ? 'selected="selected"' : ''; ?>><?= $this->htmlTranslate($reason['ntr_reason']); ?></option>
 									<?php } ?>
 									<?php
 									$ntrVal = $this->shipment['pt_not_tested_reason'] ?? '';
@@ -248,7 +248,7 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
 									title="<?= $this->htmlTranslate("Panel choose Received Date"); ?>" />
 								<i class="icon-remove-sign"
 									style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="<?= $this->htmlTranslate("Clear Date"); ?>"
-									title="<?= $this->htmlTranslate("Clear Date"); ?>" onclick="clearDate('receiptDate')"> Clear</i>
+									title="<?= $this->htmlTranslate("Clear Date"); ?>" onclick="clearDate('receiptDate')"> <?= $this->translate->_("Clear"); ?></i>
 							</td>
 							<td><label for="shipmentTestDate"><?= $this->translate->_("Submission Date"); ?> <span
 										class='mandatory vlResultValuesAsterisk'>*</span></label></td>
@@ -292,10 +292,10 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
 							<td style="width: 30%;<?php echo (isset($this->shipment['attributes']['other_assay_name']) && !empty($this->shipment['attributes']['other_assay_name'])) ? '' : 'display: none;'; ?>"
 								class="generic-tb-assay">
 								<select id="otherAssayName" style="width:100%;" name="otherAssayName"
-									class="form-control" tittle="Please type or select other assay/method">
-									<option value="">--Select--</option>
+									class="form-control" title="<?= $this->htmlTranslate("Please type or select other assay/method"); ?>">
+									<option value="">--<?= $this->translate->_("Select"); ?>--</option>
 									<option value="Microscopy" <?php if (isset($this->shipment['attributes']['other_assay_name']) && $this->shipment['attributes']['other_assay_name'] == "Microscopy")
-																	echo " selected "; ?>>Microscopy</option>
+																	echo " selected "; ?>><?= $this->translate->_("Microscopy"); ?></option>
 								</select>
 							</td>
 						</tr>
@@ -437,11 +437,11 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
 									<input type="radio" style="margin-right: 5px;" title="<?= $this->htmlTranslate("Please select the attestation"); ?>"
 										class="form-check-input attestation" id="attestation-yes" name="attestation"
 										value="yes" <?php echo (isset($this->shipment['attributes']['attestation']) && $this->shipment['attributes']['attestation'] == 'yes') ? "checked" : ""; ?>><label
-										class="form-check-label" for="attestation-yes">Yes</label>
+										class="form-check-label" for="attestation-yes"><?= $this->translate->_("Yes"); ?></label>
 									<input type="radio" title="<?= $this->htmlTranslate("Please select the attestation"); ?>"
 										style="margin-right: 5px;margin-left: 5px;" class="form-check-input attestation"
 										id="attestation-no" name="attestation" value="no" <?php echo (isset($this->shipment['attributes']['attestation']) && $this->shipment['attributes']['attestation'] == 'no') ? "checked" : ""; ?>><label
-										class="form-check-label" for="attestation-no">No</label>
+										class="form-check-label" for="attestation-no"><?= $this->translate->_("No"); ?></label>
 								</div>
 								<?= $this->translate->_("(Please select one)"); ?>
 							</td>
@@ -590,8 +590,8 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
 								<label><?= $this->translate->_("Is the above a follow up comment for corrective action?"); ?>
 								</label>
 								<input type="radio" name="isFollowUp" id="followUpYes" <?php echo (isset($this->shipment['is_followup']) && $this->shipment['is_followup'] == "yes") ? "checked='checked'" : ""; ?> value="yes"
-									title="<?= $this->htmlTranslate("Please choose whether this is a follow up comment or not"); ?>" /> Yes <input
-									type="radio" name="isFollowUp" id="followUpNo" value="no" <?php echo (isset($this->shipment['is_followup']) && $this->shipment['is_followup'] == "no") ? "checked='checked'" : ""; ?> /> No
+									title="<?= $this->htmlTranslate("Please choose whether this is a follow up comment or not"); ?>" /> <?= $this->translate->_("Yes"); ?> <input
+									type="radio" name="isFollowUp" id="followUpNo" value="no" <?php echo (isset($this->shipment['is_followup']) && $this->shipment['is_followup'] == "no") ? "checked='checked'" : ""; ?> /> <?= $this->translate->_("No"); ?>
 							</td>
 						</tr>
 						<tr>
@@ -763,7 +763,7 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
 		});
 		$('#isExcluded').change(function() {
 			if (this.value == 'yes') {
-				if (confirm('Please note that this action cannot be undone and will remove the participant and their response (if any) from the system')) {
+				if (confirm('<?= $this->jsTranslate("Please note that this action cannot be undone and will remove the participant and their response (if any) from the system"); ?>')) {
 					showdefModal('removeParticipant', 500, 250);
 				}
 			}
@@ -832,14 +832,14 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
 				},
 				function(data) {
 					if (!data) {
-						alert('Entered Password was wrong please try again later');
+						alert('<?= $this->jsTranslate("Entered Password was wrong please try again later"); ?>');
 						return false;
 					}
 					window.location.href = '/admin/evaluate/shipment/sid/<?php echo base64_encode($this->shipId); ?>';
 				}
 			);
 		} else {
-			alert('Please enter the password to confirm');
+			alert('<?= $this->jsTranslate("Please enter the password to confirm"); ?>');
 		}
 	}
 
@@ -857,7 +857,7 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
 		}
 		// $("#shipmentTestDate").val(moment(maxDate).format('DD-MMM-YYYY'));
 		if (moment($("#receipt_date").val()).isAfter($("#test_date").val())) {
-			alert('Testing Date has to come after the Panel Receipt Date');
+			alert('<?= $this->jsTranslate("Testing Date has to come after the Panel Receipt Date"); ?>');
 			return false;
 		}
 		$(".oneDecimal").css('background-color', '');
@@ -873,7 +873,7 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
 		});
 
 		if (proceed === false) {
-			alert('Please ensure all numeric field values are valid numbers');
+			alert('<?= $this->jsTranslate("Please ensure all numeric field values are valid numbers"); ?>');
 			return false;
 		} else if (proceed === true && mode == 'submit') {
 			$("#isDraft").val('no');
@@ -894,7 +894,7 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
 			$('.input-probe' + id).addClass('isRequired');
 			$("#errorCode" + id).removeClass('isRequired');
 		} else if ($(obj).val() == 'not-detected') {
-			$("#rifResistance" + id).append('<option value="na">N/A</option>');
+			$("#rifResistance" + id).append('<option value="na"><?= $this->jsTranslate("N/A"); ?></option>');
 			$("#rifResistance" + id).val("na");
 			$("#rifResistance" + id).addClass("readonly");
 			$(".input-probe" + id).attr("readonly", false);
@@ -902,7 +902,7 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
 			$("#errorCode" + id).removeClass('isRequired');
 		} else if ($(obj).val() == 'error' || $(obj).val() == 'no-result' || $(obj).val() == 'invalid') {
 			$("#errorCode" + id).addClass('isRequired');
-			$("#rifResistance" + id).append('<option value="na">N/A</option>');
+			$("#rifResistance" + id).append('<option value="na"><?= $this->jsTranslate("N/A"); ?></option>');
 			$("#rifResistance" + id).val("na");
 			$("#rifResistance" + id).addClass("readonly");
 			$(".input-probe" + id).attr("readonly", true);

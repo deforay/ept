@@ -20411,8 +20411,6 @@ msgstr "Pas de participants"
 #~ msgid "HBV Test"
 #~ msgstr "Test VHB"
 
-#~ msgid "N/A"
-#~ msgstr "N/A"
 
 #~ msgid "n/a"
 #~ msgstr "n/a"
@@ -21518,3 +21516,111 @@ msgstr "Pas de participants"
 
 #~ msgid "Not enrolled in any scheme"
 #~ msgstr "Non inscrits à un programme"
+
+#: application/views/scripts/dts/response.phtml:1335
+msgid "RTRI Panel"
+msgstr "Panel RTRI"
+
+#: application/views/scripts/dts/response.phtml:1418
+#, php-format
+msgid "Please select the result for %s"
+msgstr "Veuillez sélectionner le résultat pour %s"
+
+#: application/views/scripts/dts/response.phtml:1882
+msgid "Please note that this action cannot be undone and will remove the participant and their response (if any) from the system"
+msgstr "Veuillez noter que cette action est irréversible et supprimera le participant et sa réponse (le cas échéant) du système"
+
+#: application/views/scripts/dts/response.phtml:1909
+msgid "Entered Password was wrong please try again later"
+msgstr "Le mot de passe saisi est incorrect, veuillez réessayer plus tard"
+
+#: application/views/scripts/dts/response.phtml:1916
+msgid "Please enter the password to confirm"
+msgstr "Veuillez saisir le mot de passe pour confirmer"
+
+#: application/views/scripts/dts/response.phtml:1929
+msgid "Testing Date has to come after the Shipment Receipt Date"
+msgstr "La date du test doit être postérieure à la date de réception de l'envoi"
+
+#: application/views/scripts/covid19/response.phtml:1321
+msgid "CT Value"
+msgstr "Valeur CT"
+
+#: application/views/scripts/eid/response.phtml:340
+msgid "Detection Assay Expiry Date"
+msgstr "Date d'expiration du test de détection"
+
+#: application/views/scripts/eid/response.phtml:329
+msgid "Detection Assay Lot No."
+msgstr "N° de lot du test de détection"
+
+#: application/views/scripts/eid/response.phtml:794
+msgid "Do you really want to remove this file?"
+msgstr "Voulez-vous vraiment supprimer ce fichier ?"
+
+#: application/views/scripts/eid/response.phtml:968
+msgid "Do you want to update this email id?"
+msgstr "Voulez-vous mettre à jour cette adresse e-mail ?"
+
+#: application/views/scripts/eid/response.phtml:335
+msgid "Extraction Assay Expiry Date"
+msgstr "Date d'expiration du test d'extraction"
+
+#: application/views/scripts/eid/response.phtml:325
+msgid "Extraction Assay Lot No."
+msgstr "N° de lot du test d'extraction"
+
+#: application/views/scripts/covid19/response.phtml:1320
+msgid "Gene Type"
+msgstr "Type de gène"
+
+#: application/views/scripts/covid19/response.phtml:1315
+msgid "Identified Gene Types for"
+msgstr "Types de gènes identifiés pour"
+
+#: application/views/scripts/tb/response.phtml:297
+msgid "Microscopy"
+msgstr "Microscopie"
+
+#: application/views/scripts/tb/response.phtml:897
+msgid "N/A"
+msgstr "N/D"
+
+#: application/views/scripts/custom-test/response.phtml:831
+msgid "Please ensure all SPC and Probe values are valid numbers"
+msgstr "Veuillez vous assurer que toutes les valeurs SPC et Probe sont des nombres valides"
+
+#: application/views/scripts/tb/response.phtml:876
+msgid "Please ensure all numeric field values are valid numbers"
+msgstr "Veuillez vous assurer que tous les champs numériques contiennent des nombres valides"
+
+#: application/views/scripts/covid19/response.phtml:1404
+msgid "Please enter the CT Value"
+msgstr "Veuillez saisir la valeur CT"
+
+#: application/views/scripts/eid/response.phtml:508
+#, php-format
+msgid "Please enter the HIV CT/OD for %s"
+msgstr "Veuillez saisir la valeur CT/DO du VIH pour %s"
+
+#: application/views/scripts/eid/response.phtml:512
+#, php-format
+msgid "Please enter the IC/QS Values for %s"
+msgstr "Veuillez saisir les valeurs IC/QS pour %s"
+
+#: application/views/scripts/vl/response.phtml:671
+#, php-format
+msgid "Please enter the Viral Load result for %s"
+msgstr "Veuillez saisir le résultat de la charge virale pour %s"
+
+#: application/views/scripts/tb/response.phtml:295
+msgid "Please type or select other assay/method"
+msgstr "Veuillez saisir ou sélectionner un autre test/méthode"
+
+#: application/views/scripts/covid19/response.phtml:1322
+msgid "Remarks"
+msgstr "Remarques"
+
+#: application/views/scripts/custom-test/response.phtml:826
+msgid "Testing Date has to come after the Panel Receipt Date"
+msgstr "La date du test doit être postérieure à la date de réception du panel"

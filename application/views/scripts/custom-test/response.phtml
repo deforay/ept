@@ -276,7 +276,7 @@ if ($inConfirmStep) {
 									?>
 										<option
 											data-collect-panel-receipt-date="<?= $reason['collect_panel_receipt_date']; ?>"
-											value="<?= $reason['ntr_id']; ?>" <?php echo ($this->shipment['pt_not_tested_reason'] == $reason['ntr_id']) ? 'selected="selected"' : ''; ?>><?php echo ($reason['ntr_reason']); ?></option>
+											value="<?= $reason['ntr_id']; ?>" <?php echo ($this->shipment['pt_not_tested_reason'] == $reason['ntr_id']) ? 'selected="selected"' : ''; ?>><?= $this->htmlTranslate($reason['ntr_reason']); ?></option>
 									<?php } ?>
 								
 						<?php
@@ -781,7 +781,7 @@ if ($inConfirmStep) {
 		});
 		$('#isExcluded').change(function() {
 			if (this.value == 'yes') {
-				if (confirm('Please note that this action cannot be undone and will remove the participant and their response (if any) from the system')) {
+				if (confirm('<?= $this->jsTranslate("Please note that this action cannot be undone and will remove the participant and their response (if any) from the system"); ?>')) {
 					showdefModal('removeParticipant', 500, 250);
 				}
 			}
@@ -803,14 +803,14 @@ if ($inConfirmStep) {
 				},
 				function(data) {
 					if (!data) {
-						alert('Entered Password was wrong please try again later');
+						alert('<?= $this->jsTranslate("Entered Password was wrong please try again later"); ?>');
 						return false;
 					}
 					window.location.href = '/admin/evaluate/shipment/sid/<?php echo base64_encode($this->shipId); ?>';
 				}
 			);
 		} else {
-			alert('Please enter the password to confirm');
+			alert('<?= $this->jsTranslate("Please enter the password to confirm"); ?>');
 		}
 	}
 
@@ -823,12 +823,12 @@ if ($inConfirmStep) {
 		}
 		// $("#testDate").val(moment(maxDate).format('DD-MMM-YYYY'));
 		if (moment($("#receipt_date").val()).isAfter($("#test_date").val())) {
-			alert('Testing Date has to come after the Panel Receipt Date');
+			alert('<?= $this->jsTranslate("Testing Date has to come after the Panel Receipt Date"); ?>');
 			return false;
 		}
 		$(".oneDecimal").each(function() {
 			if (!$.isNumeric($(this).val())) {
-				alert('Please ensure all SPC and Probe values are valid numbers');
+				alert('<?= $this->jsTranslate("Please ensure all SPC and Probe values are valid numbers"); ?>');
 				return false;
 			}
 		});
