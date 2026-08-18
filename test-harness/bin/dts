@@ -397,6 +397,19 @@ function report_results(array $provision, array $result): void
         }
     }
 
+    // Rows the workbook contradicts itself on are asserted against what ePT does today, so
+    // they pass — but list them, or the disagreement quietly becomes the spec.
+    $setAside = [];
+    foreach (($result['accepted_divergences'] ?? []) as $d) {
+        $setAside[$d['sheet'] . ' sheet row ' . $d['row']] = $d['divergence'];
+    }
+    if (!empty($setAside)) {
+        fwrite(STDOUT, "\nAccepted divergences (workbook contradicts itself; NIHE to settle):\n");
+        foreach ($setAside as $where => $workbookSays) {
+            fwrite(STDOUT, "  $where — workbook says: $workbookSays\n");
+        }
+    }
+
     // Feedback text is reported apart from verdicts on purpose: a verdict mismatch means a
     // laboratory is graded wrongly, a note mismatch means it is graded correctly and told the
     // wrong thing. Both matter to NIHE; only one of them changes a score.

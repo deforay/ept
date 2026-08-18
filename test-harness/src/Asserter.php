@@ -70,6 +70,7 @@ final class Asserter
         $fails  = 0;
         $mismatches = [];
         $noteMismatches = [];
+        $acceptedDivergences = [];
 
         foreach ($provision['assignments'] as $a) {
             $mapId = $a['map_id'];
@@ -99,6 +100,15 @@ final class Asserter
                 }
             }
 
+            $workbook = $expectedByAberration[$aberration]['workbook'] ?? null;
+            if (!empty($workbook['divergence'])) {
+                $acceptedDivergences[$aberration] = [
+                    'sheet'      => $workbook['sheet'],
+                    'row'        => $workbook['row'],
+                    'divergence' => $workbook['divergence'],
+                ];
+            }
+
             $expectedNotes = $expectedByAberration[$aberration]['expected_notes'][$tier] ?? [];
             foreach ($expectedNotes as $sampleId => $expectedNote) {
                 $actualNotes = $notesByMap[$mapId][$sampleId] ?? [];
@@ -109,7 +119,7 @@ final class Asserter
                         'participant' => $a['participant_id'],
                         'aberration'  => $aberration,
                         'tier'        => $tier,
-                        'workbook'    => $expectedByAberration[$aberration]['workbook'] ?? null,
+                        'workbook'    => $workbook,
                         'sample'      => $sampleId,
                         'expected'    => $expectedNote === '' ? '(no feedback)' : $expectedNote,
                         'actual'      => $actualNote === '' ? '(no feedback)' : $actualNote,
@@ -132,10 +142,11 @@ final class Asserter
         }
 
         return [
-            'passes'          => $passes,
-            'fails'           => $fails,
-            'mismatches'      => $mismatches,
-            'note_mismatches' => $noteMismatches,
+            'passes'               => $passes,
+            'fails'                => $fails,
+            'mismatches'           => $mismatches,
+            'note_mismatches'      => $noteMismatches,
+            'accepted_divergences' => array_values($acceptedDivergences),
         ];
     }
 

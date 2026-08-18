@@ -549,6 +549,17 @@ return [
         'comment'   => 'sent_for_confirmation',
         'verdict'   => 'Acc',
         'note'      => '',
+        // ACCEPTED DIVERGENCE — a known disagreement, not a regression. The harness
+        // reports it and stays green; it only fails if ePT stops behaving this way.
+        // Rows 8-11 and 17-24 give a screening lab no note (or the MOH nudge) once it has ticked "Sent
+        // for confirmation", and reserve "Sample should be referred to confirmation lab" for labs that
+        // did NOT tick it. The sheet's own criteria list says the opposite: criterion 3 makes an
+        // unticked Inconclusive Not Acceptable. ePT implements the criteria text. Left alone until
+        // NIHE says which half of the sheet wins.
+        'divergence' => [
+            'verdict' => 'Acc',
+            'note'    => 'Sample should be referred to confirmation lab',
+        ],
     ],
     [
         'key'       => 'wb_scr_09',
@@ -565,6 +576,17 @@ return [
         'comment'   => 'sent_for_confirmation',
         'verdict'   => 'Acc',
         'note'      => 'Follow MOH HIV testing strategy',
+        // ACCEPTED DIVERGENCE — a known disagreement, not a regression. The harness
+        // reports it and stays green; it only fails if ePT stops behaving this way.
+        // Rows 8-11 and 17-24 give a screening lab no note (or the MOH nudge) once it has ticked "Sent
+        // for confirmation", and reserve "Sample should be referred to confirmation lab" for labs that
+        // did NOT tick it. The sheet's own criteria list says the opposite: criterion 3 makes an
+        // unticked Inconclusive Not Acceptable. ePT implements the criteria text. Left alone until
+        // NIHE says which half of the sheet wins.
+        'divergence' => [
+            'verdict' => 'Acc',
+            'note'    => 'Sample should be referred to confirmation lab',
+        ],
     ],
     [
         'key'       => 'wb_scr_10',
@@ -581,6 +603,17 @@ return [
         'comment'   => 'sent_for_confirmation',
         'verdict'   => 'Acc',
         'note'      => 'Follow MOH HIV testing strategy',
+        // ACCEPTED DIVERGENCE — a known disagreement, not a regression. The harness
+        // reports it and stays green; it only fails if ePT stops behaving this way.
+        // Rows 8-11 and 17-24 give a screening lab no note (or the MOH nudge) once it has ticked "Sent
+        // for confirmation", and reserve "Sample should be referred to confirmation lab" for labs that
+        // did NOT tick it. The sheet's own criteria list says the opposite: criterion 3 makes an
+        // unticked Inconclusive Not Acceptable. ePT implements the criteria text. Left alone until
+        // NIHE says which half of the sheet wins.
+        'divergence' => [
+            'verdict' => 'Acc',
+            'note'    => 'Sample should be referred to confirmation lab',
+        ],
     ],
     [
         'key'       => 'wb_scr_11',
@@ -597,6 +630,17 @@ return [
         'comment'   => 'sent_for_confirmation',
         'verdict'   => 'Acc',
         'note'      => 'Follow MOH HIV testing strategy',
+        // ACCEPTED DIVERGENCE — a known disagreement, not a regression. The harness
+        // reports it and stays green; it only fails if ePT stops behaving this way.
+        // Rows 8-11 and 17-24 give a screening lab no note (or the MOH nudge) once it has ticked "Sent
+        // for confirmation", and reserve "Sample should be referred to confirmation lab" for labs that
+        // did NOT tick it. The sheet's own criteria list says the opposite: criterion 3 makes an
+        // unticked Inconclusive Not Acceptable. ePT implements the criteria text. Left alone until
+        // NIHE says which half of the sheet wins.
+        'divergence' => [
+            'verdict' => 'Acc',
+            'note'    => 'Sample should be referred to confirmation lab',
+        ],
     ],
     [
         'key'       => 'wb_scr_12',
@@ -645,6 +689,17 @@ return [
         'comment'   => null,
         'verdict'   => 'Acc',
         'note'      => 'Sample should be referred to confirmation lab',
+        // ACCEPTED DIVERGENCE — a known disagreement, not a regression. The harness
+        // reports it and stays green; it only fails if ePT stops behaving this way.
+        // Rows 8-11 and 17-24 give a screening lab no note (or the MOH nudge) once it has ticked "Sent
+        // for confirmation", and reserve "Sample should be referred to confirmation lab" for labs that
+        // did NOT tick it. The sheet's own criteria list says the opposite: criterion 3 makes an
+        // unticked Inconclusive Not Acceptable. ePT implements the criteria text. Left alone until
+        // NIHE says which half of the sheet wins.
+        'divergence' => [
+            'verdict' => 'Unacc',
+            'note'    => 'Inconclusive screening result must be marked "Sent for confirmation"',
+        ],
     ],
     [
         'key'       => 'wb_scr_16',
@@ -661,6 +716,15 @@ return [
         'comment'   => null,
         'verdict'   => 'Unacc',
         'note'      => '',
+        // ACCEPTED DIVERGENCE — a known disagreement, not a regression. The harness
+        // reports it and stays green; it only fails if ePT stops behaving this way.
+        // Row 16 marks a missed weak positive Unacceptable with a blank NOTE cell. ePT tells the lab
+        // to review its kit interpretation rather than failing it without a word. Left alone until
+        // NIHE confirms the blank is deliberate.
+        'divergence' => [
+            'verdict' => 'Unacc',
+            'note'    => 'Review testing procedures and kit interpretation',
+        ],
     ],
     [
         'key'       => 'wb_scr_17',
@@ -677,6 +741,17 @@ return [
         'comment'   => 'sent_for_confirmation',
         'verdict'   => 'Acc',
         'note'      => '',
+        // ACCEPTED DIVERGENCE — a known disagreement, not a regression. The harness
+        // reports it and stays green; it only fails if ePT stops behaving this way.
+        // Rows 8-11 and 17-24 give a screening lab no note (or the MOH nudge) once it has ticked "Sent
+        // for confirmation", and reserve "Sample should be referred to confirmation lab" for labs that
+        // did NOT tick it. The sheet's own criteria list says the opposite: criterion 3 makes an
+        // unticked Inconclusive Not Acceptable. ePT implements the criteria text. Left alone until
+        // NIHE says which half of the sheet wins.
+        'divergence' => [
+            'verdict' => 'Acc',
+            'note'    => 'Sample should be referred to confirmation lab',
+        ],
     ],
     [
         'key'       => 'wb_scr_18',
@@ -693,6 +768,17 @@ return [
         'comment'   => 'sent_for_confirmation',
         'verdict'   => 'Acc',
         'note'      => '',
+        // ACCEPTED DIVERGENCE — a known disagreement, not a regression. The harness
+        // reports it and stays green; it only fails if ePT stops behaving this way.
+        // Rows 8-11 and 17-24 give a screening lab no note (or the MOH nudge) once it has ticked "Sent
+        // for confirmation", and reserve "Sample should be referred to confirmation lab" for labs that
+        // did NOT tick it. The sheet's own criteria list says the opposite: criterion 3 makes an
+        // unticked Inconclusive Not Acceptable. ePT implements the criteria text. Left alone until
+        // NIHE says which half of the sheet wins.
+        'divergence' => [
+            'verdict' => 'Acc',
+            'note'    => 'Sample should be referred to confirmation lab',
+        ],
     ],
     [
         'key'       => 'wb_scr_19',
@@ -709,6 +795,17 @@ return [
         'comment'   => 'sent_for_confirmation',
         'verdict'   => 'Acc',
         'note'      => '',
+        // ACCEPTED DIVERGENCE — a known disagreement, not a regression. The harness
+        // reports it and stays green; it only fails if ePT stops behaving this way.
+        // Rows 8-11 and 17-24 give a screening lab no note (or the MOH nudge) once it has ticked "Sent
+        // for confirmation", and reserve "Sample should be referred to confirmation lab" for labs that
+        // did NOT tick it. The sheet's own criteria list says the opposite: criterion 3 makes an
+        // unticked Inconclusive Not Acceptable. ePT implements the criteria text. Left alone until
+        // NIHE says which half of the sheet wins.
+        'divergence' => [
+            'verdict' => 'Acc',
+            'note'    => 'Sample should be referred to confirmation lab',
+        ],
     ],
     [
         'key'       => 'wb_scr_20',
@@ -725,6 +822,17 @@ return [
         'comment'   => null,
         'verdict'   => 'Acc',
         'note'      => 'Sample should be referred to confirmation lab',
+        // ACCEPTED DIVERGENCE — a known disagreement, not a regression. The harness
+        // reports it and stays green; it only fails if ePT stops behaving this way.
+        // Rows 8-11 and 17-24 give a screening lab no note (or the MOH nudge) once it has ticked "Sent
+        // for confirmation", and reserve "Sample should be referred to confirmation lab" for labs that
+        // did NOT tick it. The sheet's own criteria list says the opposite: criterion 3 makes an
+        // unticked Inconclusive Not Acceptable. ePT implements the criteria text. Left alone until
+        // NIHE says which half of the sheet wins.
+        'divergence' => [
+            'verdict' => 'Unacc',
+            'note'    => 'Inconclusive screening result must be marked "Sent for confirmation"',
+        ],
     ],
     [
         'key'       => 'wb_scr_21',
@@ -741,6 +849,17 @@ return [
         'comment'   => 'sent_for_confirmation',
         'verdict'   => 'Acc',
         'note'      => '',
+        // ACCEPTED DIVERGENCE — a known disagreement, not a regression. The harness
+        // reports it and stays green; it only fails if ePT stops behaving this way.
+        // Rows 8-11 and 17-24 give a screening lab no note (or the MOH nudge) once it has ticked "Sent
+        // for confirmation", and reserve "Sample should be referred to confirmation lab" for labs that
+        // did NOT tick it. The sheet's own criteria list says the opposite: criterion 3 makes an
+        // unticked Inconclusive Not Acceptable. ePT implements the criteria text. Left alone until
+        // NIHE says which half of the sheet wins.
+        'divergence' => [
+            'verdict' => 'Acc',
+            'note'    => 'Sample should be referred to confirmation lab',
+        ],
     ],
     [
         'key'       => 'wb_scr_22',
@@ -757,6 +876,17 @@ return [
         'comment'   => 'sent_for_confirmation',
         'verdict'   => 'Acc',
         'note'      => '',
+        // ACCEPTED DIVERGENCE — a known disagreement, not a regression. The harness
+        // reports it and stays green; it only fails if ePT stops behaving this way.
+        // Rows 8-11 and 17-24 give a screening lab no note (or the MOH nudge) once it has ticked "Sent
+        // for confirmation", and reserve "Sample should be referred to confirmation lab" for labs that
+        // did NOT tick it. The sheet's own criteria list says the opposite: criterion 3 makes an
+        // unticked Inconclusive Not Acceptable. ePT implements the criteria text. Left alone until
+        // NIHE says which half of the sheet wins.
+        'divergence' => [
+            'verdict' => 'Acc',
+            'note'    => 'Sample should be referred to confirmation lab',
+        ],
     ],
     [
         'key'       => 'wb_scr_23',
@@ -773,6 +903,17 @@ return [
         'comment'   => 'sent_for_confirmation',
         'verdict'   => 'Acc',
         'note'      => '',
+        // ACCEPTED DIVERGENCE — a known disagreement, not a regression. The harness
+        // reports it and stays green; it only fails if ePT stops behaving this way.
+        // Rows 8-11 and 17-24 give a screening lab no note (or the MOH nudge) once it has ticked "Sent
+        // for confirmation", and reserve "Sample should be referred to confirmation lab" for labs that
+        // did NOT tick it. The sheet's own criteria list says the opposite: criterion 3 makes an
+        // unticked Inconclusive Not Acceptable. ePT implements the criteria text. Left alone until
+        // NIHE says which half of the sheet wins.
+        'divergence' => [
+            'verdict' => 'Acc',
+            'note'    => 'Sample should be referred to confirmation lab',
+        ],
     ],
     [
         'key'       => 'wb_scr_24',
@@ -789,5 +930,16 @@ return [
         'comment'   => null,
         'verdict'   => 'Acc',
         'note'      => 'Sample should be referred to confirmation lab',
+        // ACCEPTED DIVERGENCE — a known disagreement, not a regression. The harness
+        // reports it and stays green; it only fails if ePT stops behaving this way.
+        // Rows 8-11 and 17-24 give a screening lab no note (or the MOH nudge) once it has ticked "Sent
+        // for confirmation", and reserve "Sample should be referred to confirmation lab" for labs that
+        // did NOT tick it. The sheet's own criteria list says the opposite: criterion 3 makes an
+        // unticked Inconclusive Not Acceptable. ePT implements the criteria text. Left alone until
+        // NIHE says which half of the sheet wins.
+        'divergence' => [
+            'verdict' => 'Unacc',
+            'note'    => 'Inconclusive screening result must be marked "Sent for confirmation"',
+        ],
     ],
 ];

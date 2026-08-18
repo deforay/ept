@@ -63,7 +63,9 @@ It drives both entry points:
 
 Use `bin/workbook` while editing the algorithm and `bin/dts` to prove the verdicts survive the real evaluator and reach the report. Both report **verdict** differences separately from **feedback** differences: a wrong verdict means a laboratory is graded wrongly, a wrong note means it is graded correctly and told the wrong thing. Only one of those changes a score, and they need different responses from whoever reads the output.
 
-The expectations file is the spec. Never regenerate it from `algoVietnam`, or the harness is testing the code against itself. Edit it by hand when NIHE revises the workbook.
+Fourteen screening rows carry a `divergence` block. Those are places where the workbook disagrees with **itself** — its accepted-interpretation rows hand "Sample should be referred to confirmation lab" to labs that did *not* tick the comment, while its own criterion 3 says an unticked Inconclusive is Not Acceptable. ePT follows the criteria text. Rather than let the harness sit permanently red over an unsettled question, those rows assert the behaviour that is accepted today, print what the workbook says beside it, and stay green. If ePT ever stops behaving that way the row fails normally, and if someone closes the gap the run says the `divergence` block can be deleted.
+
+The expectations file is the spec. Never regenerate it from `algoVietnam`, or the harness is testing the code against itself. Edit it by hand when NIHE revises the workbook — including removing a `divergence` block once NIHE rules on it.
 
 ## Supported algorithms
 

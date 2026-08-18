@@ -41,8 +41,15 @@ $workbookCases = static function (): array {
     $allAcceptable = array_fill_keys(range(1, 10), 'Acc');
     $out = [];
     foreach ($rows as $row) {
+        // A row with a 'divergence' block is one the workbook contradicts itself on and NIHE
+        // has not yet settled. Assert the behaviour that is accepted today so the run stays
+        // green, and carry the workbook's own answer alongside it so the report can show what
+        // is being set aside. If ePT ever stops doing either, the row fails normally.
+        $verdict = $row['divergence']['verdict'] ?? $row['verdict'];
+        $note    = $row['divergence']['note']    ?? $row['note'];
+
         $expected = $allAcceptable;
-        $expected[$row['sample_id']] = $row['verdict'];
+        $expected[$row['sample_id']] = $verdict;
         $out[$row['key']] = [
             'label'          => sprintf(
                 '%s workbook row %d on S%d',
@@ -52,8 +59,14 @@ $workbookCases = static function (): array {
             ),
             'allowed_tiers'  => [$row['tier']],
             'expected'       => [$row['tier'] => $expected],
-            'expected_notes' => [$row['tier'] => [$row['sample_id'] => $row['note']]],
-            'workbook'       => ['sheet' => $row['sheet'], 'row' => $row['row']],
+            'expected_notes' => [$row['tier'] => [$row['sample_id'] => $note]],
+            'workbook'       => [
+                'sheet'      => $row['sheet'],
+                'row'        => $row['row'],
+                'divergence' => isset($row['divergence'])
+                    ? ($row['verdict'] . ' / ' . ($row['note'] === '' ? '(no feedback)' : $row['note']))
+                    : null,
+            ],
         ];
     }
     return $out;

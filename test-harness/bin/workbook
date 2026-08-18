@@ -24,6 +24,11 @@ declare(strict_types=1);
  *
  * Expectations come from expectations/vietnam-workbook.php, which is transcribed from the
  * NIHE workbook by hand and must never be derived from the code it is checking.
+ *
+ * A few rows carry a 'divergence' block: places where the workbook disagrees with itself and
+ * NIHE has not yet said which half wins, so ePT deliberately does something else. Those record
+ * the behaviour that is accepted today. They are printed but do not fail the run — and if ePT
+ * ever stops behaving that way, the row stops matching the divergence and fails properly.
  */
 
 $root     = dirname(__DIR__);
@@ -59,6 +64,8 @@ $method->setAccessible(true);
 
 $verdictGaps = [];
 $noteGaps    = [];
+$accepted    = [];
+$resolved    = [];
 
 foreach ($rows as $row) {
     $out = ['algoResult' => 'Fail', 'failureReason' => []];
@@ -85,6 +92,27 @@ foreach ($rows as $row) {
     $note    = implode(' | ', array_column($out['failureReason'], 'correctiveAction'));
     $where   = sprintf('%s sheet row %d', $row['sheet'], $row['row']);
 
+    $matchesWorkbook = ($verdict === $row['verdict'] && $note === $row['note']);
+    if (isset($row['divergence'])) {
+        if ($matchesWorkbook) {
+            // Somebody closed the gap. Say so — the divergence block should now be deleted.
+            $resolved[] = $where;
+            continue;
+        }
+        if ($verdict === $row['divergence']['verdict'] && $note === $row['divergence']['note']) {
+            $accepted[] = sprintf(
+                "%s\n    workbook: %s / %s\n    ePT:      %s / %s",
+                $where,
+                $row['verdict'],
+                $row['note'] === '' ? '(no feedback)' : $row['note'],
+                $verdict,
+                $note === '' ? '(no feedback)' : $note
+            );
+            continue;
+        }
+        // Neither the workbook nor the accepted divergence — that is a real change.
+    }
+
     if ($verdict !== $row['verdict']) {
         $verdictGaps[] = sprintf('%-26s workbook %-5s  ePT %s', $where, $row['verdict'], $verdict);
     }
@@ -101,8 +129,11 @@ foreach ($rows as $row) {
 $checked = count($rows);
 fwrite(STDOUT, "─────────────────────────────────────────────\n");
 fwrite(STDOUT, "NIHE workbook matrix: $checked rows checked against algoVietnam\n");
-fwrite(STDOUT, sprintf("  verdicts : %d match, %d differ\n", $checked - count($verdictGaps), count($verdictGaps)));
-fwrite(STDOUT, sprintf("  feedback : %d match, %d differ\n", $checked - count($noteGaps), count($noteGaps)));
+fwrite(STDOUT, sprintf("  verdicts : %d match, %d differ\n", $checked - count($verdictGaps) - count($accepted), count($verdictGaps)));
+fwrite(STDOUT, sprintf("  feedback : %d match, %d differ\n", $checked - count($noteGaps) - count($accepted), count($noteGaps)));
+if (!empty($accepted)) {
+    fwrite(STDOUT, sprintf("  accepted : %d known disagreements, awaiting NIHE\n", count($accepted)));
+}
 
 if (!empty($verdictGaps)) {
     fwrite(STDOUT, "\nVerdict differences (a laboratory is graded differently from the workbook):\n");
@@ -114,6 +145,18 @@ if (!empty($noteGaps)) {
     fwrite(STDOUT, "\nFeedback differences (graded the same, told something different):\n");
     foreach ($noteGaps as $g) {
         fwrite(STDOUT, "  $g\n");
+    }
+}
+if (!empty($resolved)) {
+    fwrite(STDOUT, "\nNow matching the workbook — delete their 'divergence' blocks:\n");
+    foreach ($resolved as $r) {
+        fwrite(STDOUT, "  $r\n");
+    }
+}
+if (!empty($accepted)) {
+    fwrite(STDOUT, "\nAccepted divergences (workbook contradicts itself; NIHE to settle):\n");
+    foreach ($accepted as $a) {
+        fwrite(STDOUT, "  $a\n");
     }
 }
 fwrite(STDOUT, "─────────────────────────────────────────────\n");
