@@ -874,10 +874,15 @@ if ($renderTestPanelTypeSection) { ?>
         }
 
         refreshDtsSettingVisibility();
+
+        // addDtsRow() lives outside this scope but must apply the same column rules to the
+        // row it inserts. It used to re-derive them, and still required sampleType 'plasma'
+        // after that condition was dropped everywhere else — so on a serum panel the diluted
+        // column showed on the first row and vanished on every added one. One rule, one place.
+        window.refreshDtsSettingVisibility = refreshDtsSettingVisibility;
     });
 
     function addDtsRow(obj) {
-        dilutedVisible = (isSampleDilutedVisible && ($("#dtsSampleType").val() == "plasma") && $("#dtsSchemeType").val() == "vietnam") ? '' : 'display:none;';
         sampleCounter++;
         $(obj.parentNode.parentNode).after('<tr align="center"> \
         <td style="text-align: center"> \
@@ -901,7 +906,7 @@ if ($renderTestPanelTypeSection) { ?>
                 <option value="0"><?= $this->translate->_("No"); ?></option> \
             </select> \
         </td> \
-        <td class="sample-diluted-input" style="' + dilutedVisible + '">\
+        <td class="sample-diluted-input" style="display:none;">\
             <select name="isSampleDiluted[]" class="form-control input-sm" title="Please choose whether this sample is diluted">\
                 <option value=""><?= $this->translate->_("Select"); ?></option>\
                 <option value="yes"><?= $this->translate->_("Yes"); ?></option>\
@@ -928,6 +933,10 @@ if ($renderTestPanelTypeSection) { ?>
             $(".rtri-input").show();
         } else {
             $(".rtri-input").hide();
+        }
+
+        if (typeof window.refreshDtsSettingVisibility === 'function') {
+            window.refreshDtsSettingVisibility();
         }
 
         // Reinitialize datepickers
