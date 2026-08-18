@@ -14,6 +14,13 @@ namespace EptTestHarness;
  *   calculated_score 'Fail'           → 'Unacc'
  *   calculated_score 'Not Evaluated'  → 'NotEval'
  *   anything else                     → 'Other' (treated as mismatch)
+ *
+ * When an aberration also declares 'expected_notes', the participant feedback written to
+ * shipment_participant_map.failure_reason is checked against it — the exact string the NIHE
+ * workbook prints in its Feedback/NOTE column, with '' meaning the cell is blank and nothing
+ * may be printed. Note mismatches are counted and reported SEPARATELY from verdict
+ * mismatches: a wrong verdict means a lab is graded wrongly, a wrong note means a lab is
+ * graded correctly but told the wrong thing. They need different responses.
  */
 final class Asserter
 {
@@ -56,9 +63,13 @@ final class Asserter
             $byMap[(int) $r['shipment_map_id']][(int) $r['sample_id']] = (string) ($r['calculated_score'] ?? '');
         }
 
+        $sampleLabels = $this->sampleLabels($shipmentId);
+        $notesByMap   = $this->notesByMap($shipmentId, $sampleLabels);
+
         $passes = 0;
         $fails  = 0;
         $mismatches = [];
+        $noteMismatches = [];
 
         foreach ($provision['assignments'] as $a) {
             $mapId = $a['map_id'];
@@ -88,6 +99,24 @@ final class Asserter
                 }
             }
 
+            $expectedNotes = $expectedByAberration[$aberration]['expected_notes'][$tier] ?? [];
+            foreach ($expectedNotes as $sampleId => $expectedNote) {
+                $actualNotes = $notesByMap[$mapId][$sampleId] ?? [];
+                $actualNote  = implode(' | ', $actualNotes);
+                if ($actualNote !== $expectedNote) {
+                    $noteMismatches[] = [
+                        'map_id'      => $mapId,
+                        'participant' => $a['participant_id'],
+                        'aberration'  => $aberration,
+                        'tier'        => $tier,
+                        'workbook'    => $expectedByAberration[$aberration]['workbook'] ?? null,
+                        'sample'      => $sampleId,
+                        'expected'    => $expectedNote === '' ? '(no feedback)' : $expectedNote,
+                        'actual'      => $actualNote === '' ? '(no feedback)' : $actualNote,
+                    ];
+                }
+            }
+
             if (empty($sampleFailures)) {
                 $passes++;
             } else {
@@ -102,7 +131,62 @@ final class Asserter
             }
         }
 
-        return ['passes' => $passes, 'fails' => $fails, 'mismatches' => $mismatches];
+        return [
+            'passes'          => $passes,
+            'fails'           => $fails,
+            'mismatches'      => $mismatches,
+            'note_mismatches' => $noteMismatches,
+        ];
+    }
+
+    /** sample_label => sample_id for the shipment's reference panel. */
+    private function sampleLabels(int $shipmentId): array
+    {
+        $out = [];
+        foreach ($this->db->all(
+            "SELECT sample_id, sample_label FROM reference_result_dts WHERE shipment_id = ?",
+            [$shipmentId]
+        ) as $r) {
+            $out[(string) $r['sample_label']] = (int) $r['sample_id'];
+        }
+        return $out;
+    }
+
+    /**
+     * Participant feedback, keyed [map_id][sample_id] => list of recommendation strings.
+     *
+     * The evaluator writes one JSON blob per participant on shipment_participant_map, with
+     * each entry tagged by sample_label ('warning') and carrying the recommendation
+     * ('correctiveAction'). Entries whose label isn't one of this shipment's samples are
+     * participant-level notes, not per-sample feedback, so they're skipped.
+     */
+    private function notesByMap(int $shipmentId, array $sampleLabels): array
+    {
+        $out = [];
+        foreach ($this->db->all(
+            "SELECT map_id, failure_reason FROM shipment_participant_map WHERE shipment_id = ?",
+            [$shipmentId]
+        ) as $r) {
+            $decoded = json_decode((string) ($r['failure_reason'] ?? ''), true);
+            if (!is_array($decoded)) {
+                continue;
+            }
+            foreach ($decoded as $entry) {
+                if (!is_array($entry)) {
+                    continue;
+                }
+                $label = (string) ($entry['warning'] ?? '');
+                if (!isset($sampleLabels[$label])) {
+                    continue;
+                }
+                $action = trim((string) ($entry['correctiveAction'] ?? ''));
+                if ($action === '') {
+                    continue;
+                }
+                $out[(int) $r['map_id']][$sampleLabels[$label]][] = $action;
+            }
+        }
+        return $out;
     }
 
     private static function verdictFromScore(string $score): string

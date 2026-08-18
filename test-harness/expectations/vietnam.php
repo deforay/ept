@@ -26,6 +26,39 @@
  *   'NotEval' — 'Not Evaluated' (consensus short-circuit)
  */
 
+/**
+ * Every row of the NIHE workbook, turned into a one-lab case: the row's combination is
+ * written onto its target sample and the rest of that lab's panel is filled correctly, so
+ * the expected verdict is Acceptable everywhere except the sample under test.
+ *
+ * These also declare 'expected_notes' — the exact Feedback/NOTE cell from the sheet, with
+ * '' meaning the workbook leaves it blank and nothing may be printed. The Asserter checks
+ * notes separately from verdicts: a wrong verdict is a failure, a wrong note is a
+ * conformance gap, and the two want different responses from whoever reads the report.
+ */
+$workbookCases = static function (): array {
+    $rows = require __DIR__ . '/vietnam-workbook.php';
+    $allAcceptable = array_fill_keys(range(1, 10), 'Acc');
+    $out = [];
+    foreach ($rows as $row) {
+        $expected = $allAcceptable;
+        $expected[$row['sample_id']] = $row['verdict'];
+        $out[$row['key']] = [
+            'label'          => sprintf(
+                '%s workbook row %d on S%d',
+                ucfirst($row['sheet']),
+                $row['row'],
+                $row['sample_id']
+            ),
+            'allowed_tiers'  => [$row['tier']],
+            'expected'       => [$row['tier'] => $expected],
+            'expected_notes' => [$row['tier'] => [$row['sample_id'] => $row['note']]],
+            'workbook'       => ['sheet' => $row['sheet'], 'row' => $row['row']],
+        ];
+    }
+    return $out;
+};
+
 return [
     'samples' => [
         1  => ['ref' => 'P', 'diluted' => true,  'label' => 'Sample 1'],
@@ -130,5 +163,5 @@ return [
                 'confirmatory' => [],
             ],
         ],
-    ],
+    ] + $workbookCases(),
 ];

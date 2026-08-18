@@ -33,6 +33,23 @@ if ($flag === '--help' || $flag === '-h') {
     exit(0);
 }
 
+// Print the spec-coverage catalogue — one line per NIHE workbook row, so you can see what
+// the run will check without wading through the interactive listing.
+if ($flag === '--list-coverage') {
+    foreach (Variants::all() as $key => $variant) {
+        $catalogue = array_filter($variant['aberrations']::catalogue(), static fn ($m) => !empty($m['coverage']));
+        if (empty($catalogue)) {
+            continue;
+        }
+        fwrite(STDOUT, "\n$key — " . count($catalogue) . " spec-coverage cases:\n");
+        foreach ($catalogue as $abKey => $meta) {
+            fwrite(STDOUT, sprintf("  %-14s %s\n", $abKey, $meta['label']));
+        }
+    }
+    fwrite(STDOUT, "\n");
+    exit(0);
+}
+
 $config = Config::load($repoRoot);
 $db     = new Db($config);
 
@@ -97,7 +114,10 @@ if ($flag === '--cleanup') {
     if (!empty($result['restored'])) {
         fwrite(STDOUT, "Global settings restored:\n");
         foreach ($result['restored'] as $k => $v) {
-            fwrite(STDOUT, "  $k = '$v'\n");
+            // dtsConfig and resultCodeDisplay stash arrays, not scalars — same guard as
+            // --cleanup-all, otherwise every cleanup prints "Array" plus a PHP warning.
+            $display = is_scalar($v) ? "'$v'" : '(' . count((array) $v) . ' entries)';
+            fwrite(STDOUT, "  $k = $display\n");
         }
     }
     exit(0);
@@ -167,10 +187,24 @@ function run_interactive(Config $config, Db $db): void
     /** @var array $catalogue */
     $catalogue = $abClass::catalogue();
 
+    // Spec-coverage entries (one per NIHE workbook row) are listed as a single line —
+    // there are dozens of them and each always gets exactly one lab, so printing them
+    // individually would bury the aberrations you actually choose between.
+    $coverageKeys = array_keys(array_filter($catalogue, static fn ($m) => !empty($m['coverage'])));
     fwrite(STDOUT, "\nAvailable aberrations for $variantKey:\n");
     foreach ($catalogue as $key => $meta) {
+        if (!empty($meta['coverage'])) {
+            continue;
+        }
         $tiers = implode('+', $meta['allowed_tiers']);
         fwrite(STDOUT, sprintf("  %-38s [%s]  %s\n", $key, $tiers, $meta['label']));
+    }
+    if (!empty($coverageKeys)) {
+        fwrite(STDOUT, sprintf(
+            "  %-38s        %d spec-coverage cases, one lab each (run with --list-coverage to see them)\n",
+            '(' . $coverageKeys[0] . ' ... ' . end($coverageKeys) . ')',
+            count($coverageKeys)
+        ));
     }
 
     // 2b. Sample count — caps the variant's full sample set at the first N IDs.
@@ -189,8 +223,14 @@ function run_interactive(Config $config, Db $db): void
         $assignments = auto_distribute($catalogue, $total);
     } else {
         fwrite(STDOUT, "\nEnter number of participants to assign to each aberration. Blank or 0 = skip.\n");
-        $assignments = [];
+        if (!empty($coverageKeys)) {
+            fwrite(STDOUT, sprintf("(%d spec-coverage cases are added automatically, one lab each.)\n", count($coverageKeys)));
+        }
+        $assignments = coverage_assignments($catalogue);
         foreach ($catalogue as $key => $meta) {
+            if (!empty($meta['coverage'])) {
+                continue;
+            }
             $count = (int) prompt("  $key", '0');
             if ($count <= 0) {
                 continue;
@@ -320,7 +360,7 @@ function run_interactive(Config $config, Db $db): void
     fwrite(STDOUT, "  php test-harness/bin/dts --cleanup {$provision['shipment_code']}\n");
     fwrite(STDOUT, "  php test-harness/bin/dts --cleanup-all       (wipes every ATEST-* row)\n");
 
-    exit($result['fails'] === 0 ? 0 : 1);
+    exit(($result['fails'] === 0 && empty($result['note_mismatches'])) ? 0 : 1);
 }
 
 function report_results(array $provision, array $result): void
@@ -330,6 +370,12 @@ function report_results(array $provision, array $result): void
     fwrite(STDOUT, "Shipment: {$provision['shipment_code']} (id={$provision['shipment_id']})\n");
     fwrite(STDOUT, "PASS  {$result['passes']}/$total participants — all sample verdicts match expectations\n");
     fwrite(STDOUT, "FAIL  {$result['fails']}/$total participants\n");
+    if (!empty($result['note_mismatches'])) {
+        fwrite(STDOUT, sprintf(
+            "NOTE  %d feedback-text gaps (verdict right, recommendation wrong)\n",
+            count($result['note_mismatches'])
+        ));
+    }
     if (!empty($result['mismatches'])) {
         fwrite(STDOUT, "\nMismatches:\n");
         foreach ($result['mismatches'] as $m) {
@@ -350,6 +396,21 @@ function report_results(array $provision, array $result): void
             }
         }
     }
+
+    // Feedback text is reported apart from verdicts on purpose: a verdict mismatch means a
+    // laboratory is graded wrongly, a note mismatch means it is graded correctly and told the
+    // wrong thing. Both matter to NIHE; only one of them changes a score.
+    if (!empty($result['note_mismatches'])) {
+        fwrite(STDOUT, "\nFeedback-text gaps (NIHE workbook Feedback/NOTE column):\n");
+        foreach ($result['note_mismatches'] as $n) {
+            $where = isset($n['workbook'])
+                ? sprintf('%s sheet row %d', $n['workbook']['sheet'], $n['workbook']['row'])
+                : $n['aberration'];
+            fwrite(STDOUT, sprintf("  %s  (S%d, %s)\n", $where, $n['sample'], $n['tier']));
+            fwrite(STDOUT, "    workbook: {$n['expected']}\n");
+            fwrite(STDOUT, "    ePT:      {$n['actual']}\n");
+        }
+    }
     fwrite(STDOUT, "─────────────────────────────────────────────\n");
 }
 
@@ -361,8 +422,33 @@ function report_results(array $provision, array $result): void
  * @param array $catalogue  Aberrations::catalogue() output
  * @return array<int, array{aberration:string, tier:string}>
  */
+/**
+ * One lab per spec-coverage case. These are not a sample of the population — they are the
+ * NIHE workbook's accepted-interpretation matrix, and a row with no lab assigned to it is a
+ * row nobody checked. They come off the top of the panel before anything is distributed.
+ *
+ * @return array<int, array{aberration:string, tier:string}>
+ */
+function coverage_assignments(array $catalogue): array
+{
+    $out = [];
+    foreach ($catalogue as $key => $meta) {
+        if (empty($meta['coverage'])) {
+            continue;
+        }
+        $out[] = ['aberration' => $key, 'tier' => $meta['allowed_tiers'][0]];
+    }
+    return $out;
+}
+
 function auto_distribute(array $catalogue, int $total): array
 {
+    // Spec coverage is not optional and not proportional — take it off the top, then
+    // distribute whatever labs are left over the aberrations as before.
+    $coverage = coverage_assignments($catalogue);
+    $total = max(0, $total - count($coverage));
+    $catalogue = array_filter($catalogue, static fn ($m) => empty($m['coverage']));
+
     // Reserve a small slice for the non-response states (no_response / not_tested)
     // before distributing the remainder across the real aberrations. Real shipments
     // always have a handful of these; the harness keeps the rate small so the bulk
@@ -435,7 +521,7 @@ function auto_distribute(array $catalogue, int $total): array
         $emit($k, $count, $catalogue[$k]);
     }
 
-    return $assignments;
+    return array_merge($coverage, $assignments);
 }
 
 function prompt(string $question, string $default = ''): string

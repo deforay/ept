@@ -1,0 +1,121 @@
+#!/usr/bin/env php
+<?php
+
+declare(strict_types=1);
+
+/**
+ * Checks the Vietnam (NIHE) accepted-interpretation matrix against the algorithm — every
+ * row of the assessment workbook, verdict AND feedback text, in about a second.
+ *
+ *   APPLICATION_ENV=development php test-harness/bin/workbook
+ *   php test-harness/bin/workbook --sheet screening
+ *
+ * This is the ONE place the harness reaches into application/. Everywhere else it stays
+ * architecturally independent and drives the app as a black box through the database and a
+ * subprocess (see README). The exception is deliberate and narrow: algoVietnam is a pure
+ * function of its arguments — it calls only normalizeAlgoResult() and vietnamFeedback(),
+ * both private and side-effect free — so it can be exercised directly without a database,
+ * a shipment, or 47 generated PDFs. That turns a matrix conformance check from a
+ * ten-minute provisioning run into something worth running on every edit.
+ *
+ * bin/dts still covers the same 47 rows end to end, one lab each, and is what proves the
+ * verdicts survive the real evaluator and reach the report. Use this for the algorithm,
+ * that for the pipeline.
+ *
+ * Expectations come from expectations/vietnam-workbook.php, which is transcribed from the
+ * NIHE workbook by hand and must never be derived from the code it is checking.
+ */
+
+$root     = dirname(__DIR__);
+$repoRoot = dirname($root);
+
+$argv  = $_SERVER['argv'] ?? [];
+$sheet = null;
+foreach ($argv as $i => $a) {
+    if ($a === '--sheet') {
+        $sheet = $argv[$i + 1] ?? null;
+    }
+    if ($a === '--help' || $a === '-h') {
+        fwrite(STDOUT, "Usage: php test-harness/bin/workbook [--sheet screening|confirmatory]\n");
+        exit(0);
+    }
+}
+
+require_once $repoRoot . '/application/models/Dts.php';
+
+$rows = require $root . '/expectations/vietnam-workbook.php';
+if ($sheet !== null) {
+    $rows = array_values(array_filter($rows, static fn ($r) => $r['sheet'] === $sheet));
+    if (empty($rows)) {
+        fwrite(STDERR, "No rows for sheet '$sheet'. Use 'screening' or 'confirmatory'.\n");
+        exit(2);
+    }
+}
+
+$rc     = new ReflectionClass('Application_Model_Dts');
+$dts    = $rc->newInstanceWithoutConstructor();
+$method = $rc->getMethod('algoVietnam');
+$method->setAccessible(true);
+
+$verdictGaps = [];
+$noteGaps    = [];
+
+foreach ($rows as $row) {
+    $out = ['algoResult' => 'Fail', 'failureReason' => []];
+    $sample = [
+        'sample_label'      => 'S' . $row['sample_id'],
+        'is_sample_diluted' => $row['target'] === 'diluted' ? 'yes' : 'no',
+        'lab_comment'       => $row['comment'],
+    ];
+    // algoVietnam takes $out by reference, so the argument list has to carry a reference.
+    $args = [
+        $sample,
+        $row['t1'],
+        $row['t2'],
+        $row['t3'],
+        $row['r1'],
+        $row['final'],
+        $row['target'] === 'negative' ? 'N' : 'P',
+        $row['tier'] === 'screening',
+        &$out,
+    ];
+    $method->invokeArgs($dts, $args);
+
+    $verdict = $out['algoResult'] === 'Pass' ? 'Acc' : 'Unacc';
+    $note    = implode(' | ', array_column($out['failureReason'], 'correctiveAction'));
+    $where   = sprintf('%s sheet row %d', $row['sheet'], $row['row']);
+
+    if ($verdict !== $row['verdict']) {
+        $verdictGaps[] = sprintf('%-26s workbook %-5s  ePT %s', $where, $row['verdict'], $verdict);
+    }
+    if ($note !== $row['note']) {
+        $noteGaps[] = sprintf(
+            "%s\n    workbook: %s\n    ePT:      %s",
+            $where,
+            $row['note'] === '' ? '(no feedback)' : $row['note'],
+            $note === '' ? '(no feedback)' : $note
+        );
+    }
+}
+
+$checked = count($rows);
+fwrite(STDOUT, "─────────────────────────────────────────────\n");
+fwrite(STDOUT, "NIHE workbook matrix: $checked rows checked against algoVietnam\n");
+fwrite(STDOUT, sprintf("  verdicts : %d match, %d differ\n", $checked - count($verdictGaps), count($verdictGaps)));
+fwrite(STDOUT, sprintf("  feedback : %d match, %d differ\n", $checked - count($noteGaps), count($noteGaps)));
+
+if (!empty($verdictGaps)) {
+    fwrite(STDOUT, "\nVerdict differences (a laboratory is graded differently from the workbook):\n");
+    foreach ($verdictGaps as $g) {
+        fwrite(STDOUT, "  $g\n");
+    }
+}
+if (!empty($noteGaps)) {
+    fwrite(STDOUT, "\nFeedback differences (graded the same, told something different):\n");
+    foreach ($noteGaps as $g) {
+        fwrite(STDOUT, "  $g\n");
+    }
+}
+fwrite(STDOUT, "─────────────────────────────────────────────\n");
+
+exit((empty($verdictGaps) && empty($noteGaps)) ? 0 : 1);

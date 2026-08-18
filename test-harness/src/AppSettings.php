@@ -9,7 +9,7 @@ namespace EptTestHarness;
  * generation for DTS — currently:
  *
  *   scheme_config.dts.dtsSchemeType   — algorithm dispatch + scheme behavior
- *   report_config.report-layout       — which country layout phtml is rendered
+ *   global_config.report-layout       — which country layout phtml is rendered
  *
  * The harness flips these to match the chosen variant before evaluation runs,
  * stashes the previous values on shipment_attributes, and restores them when
@@ -153,20 +153,29 @@ final class AppSettings
         return $prev;
     }
 
-    /** Update report_config.report-layout, returning the prior value. */
+    /**
+     * Update global_config.report-layout, returning the prior value.
+     *
+     * Migration 7.6.14 merged report_config into global_config and dropped the old table;
+     * `context` now records which admin page owns the row. The key keeps its hyphens — names
+     * never collided across the two tables, so nothing was renamed in the merge.
+     */
     public function setReportLayout(string $layout): string
     {
         $prev = (string) ($this->db->scalar(
-            "SELECT value FROM report_config WHERE name = 'report-layout'"
+            "SELECT value FROM global_config WHERE name = 'report-layout'"
         ) ?? '');
         if ($prev === $layout) {
             return $prev;
         }
-        $existed = $this->db->scalar("SELECT 1 FROM report_config WHERE name = 'report-layout'");
+        $existed = $this->db->scalar("SELECT 1 FROM global_config WHERE name = 'report-layout'");
         if ($existed) {
-            $this->db->exec("UPDATE report_config SET value = ? WHERE name = 'report-layout'", [$layout]);
+            $this->db->exec("UPDATE global_config SET value = ? WHERE name = 'report-layout'", [$layout]);
         } else {
-            $this->db->exec("INSERT INTO report_config (name, value) VALUES ('report-layout', ?)", [$layout]);
+            $this->db->exec(
+                "INSERT INTO global_config (name, value, context) VALUES ('report-layout', ?, 'report')",
+                [$layout]
+            );
         }
         return $prev;
     }

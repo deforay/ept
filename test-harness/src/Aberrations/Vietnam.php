@@ -30,8 +30,58 @@ namespace EptTestHarness\Aberrations;
  */
 final class Vietnam
 {
+    /** The NIHE accepted-interpretation matrix, one entry per workbook row. */
+    public static function workbookRows(): array
+    {
+        static $rows = null;
+        if ($rows === null) {
+            $rows = require dirname(__DIR__, 2) . '/expectations/vietnam-workbook.php';
+        }
+        return $rows;
+    }
+
+    /**
+     * Catalogue entries generated from the workbook — one per row, each marked
+     * 'coverage' so bin/dts guarantees it a lab instead of letting the even spread
+     * round it down to zero.
+     *
+     * @return array<string, array{label:string, allowed_tiers: array<string>, coverage:bool}>
+     */
+    public static function workbookCatalogue(): array
+    {
+        $out = [];
+        foreach (self::workbookRows() as $row) {
+            $tests = implode('/', array_map(
+                static fn ($k) => $row[$k],
+                ['t1', 't2', 't3']
+            ));
+            $out[$row['key']] = [
+                'label' => sprintf(
+                    '%s sheet row %d: %s ref %s, %s%s -> %s (%s)',
+                    ucfirst($row['sheet']),
+                    $row['row'],
+                    $row['target'] === 'diluted' ? 'diluted' : 'non-diluted',
+                    $row['target'] === 'negative' ? 'N' : 'P',
+                    $tests,
+                    $row['r1'] !== '-' ? ', repeat T1 ' . $row['r1'] : '',
+                    $row['final'],
+                    $row['verdict']
+                ),
+                'allowed_tiers' => [$row['tier']],
+                'coverage'      => true,
+            ];
+        }
+        return $out;
+    }
+
     /** @return array<string, array{label:string, allowed_tiers: array<string>}> */
     public static function catalogue(): array
+    {
+        return self::handWrittenCatalogue() + self::workbookCatalogue();
+    }
+
+    /** @return array<string, array{label:string, allowed_tiers: array<string>}> */
+    private static function handWrittenCatalogue(): array
     {
         return [
             'fully_correct' => [
@@ -90,6 +140,9 @@ final class Vietnam
      */
     public static function generate(string $aberration, string $tier, int $seed = 0): array
     {
+        if (str_starts_with($aberration, 'wb_')) {
+            return self::applyWorkbookRow($aberration, $tier, $seed);
+        }
         $method = 'apply_' . $aberration;
         if (!method_exists(self::class, $method)) {
             throw new \RuntimeException("Unknown Vietnam aberration: $aberration");
@@ -253,6 +306,45 @@ final class Vietnam
         $r[1]['t3'] = '-';
         $r[1]['final'] = 'N';
         $r[1]['comment'] = null;
+        return $r;
+    }
+
+    /**
+     * Write one workbook row onto its target sample and leave the rest of the panel
+     * correct, so a failure names exactly one row of the sheet.
+     *
+     * The reference kit is used throughout: peer-consensus only ever touches diluted
+     * positives reported on a NON-reference kit (Dts::vietnamConsensusExclusions), so
+     * these cases always reach algoVietnam and are never withheld as Not Evaluated.
+     */
+    private static function applyWorkbookRow(string $aberration, string $tier, int $seed): array
+    {
+        $row = null;
+        foreach (self::workbookRows() as $candidate) {
+            if ($candidate['key'] === $aberration) {
+                $row = $candidate;
+                break;
+            }
+        }
+        if ($row === null) {
+            throw new \RuntimeException("Unknown workbook row aberration: $aberration");
+        }
+        if ($row['tier'] !== $tier) {
+            throw new \RuntimeException("Workbook row $aberration is $row[tier]-only, got tier '$tier'");
+        }
+
+        $r = self::baseline($tier, $seed);
+        $r[$row['sample_id']] = [
+            'comment' => $row['comment'],
+            't1'      => $row['t1'],
+            't2'      => $row['t2'],
+            't3'      => $row['t3'],
+            'r1'      => $row['r1'],
+            'final'   => $row['final'],
+            'kit1'    => 'reference',
+            'kit2'    => 'reference',
+            'kit3'    => 'reference',
+        ];
         return $r;
     }
 

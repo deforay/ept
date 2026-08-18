@@ -750,6 +750,17 @@ final class Provisioner
             'created_on'       => $now,
         ];
 
+        // Repeat of Test 1, written only when the spec asks for one. The NIHE workbook's
+        // negative-sample rows turn on it: a reactive Test 1 that was repeated and came back
+        // non-reactive draws no Test-1 remark, so the harness has to be able to produce it.
+        $repeat1 = $this->resolveTestCode((string) ($spec['r1'] ?? '-'), $lookups);
+        if ($repeat1 !== null) {
+            $row['repeat_test_kit_name_1'] = $kit1;
+            $row['repeat_lot_no_1']        = 'AUTOTEST-LOT1';
+            $row['repeat_exp_date_1']      = $expDate;
+            $row['repeat_test_result_1']   = $repeat1;
+        }
+
         $this->db->insert('response_result_dts', $row);
     }
 
