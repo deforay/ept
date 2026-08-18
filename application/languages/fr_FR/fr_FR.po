@@ -14577,9 +14577,8 @@ msgid "Please select a shipment"
 msgstr "Veuillez sélectionner un envoi"
 
 #: application/modules/reports/views/scripts/shipments/index.phtml:219
-#, fuzzy
 msgid "Include cancelled"
-msgstr "Indiquez le code pays."
+msgstr "Inclure les annulés"
 
 #: application/modules/reports/views/scripts/shipments/index.phtml:227
 msgid "Download Bulk Overview Reports - Selected"
@@ -14651,9 +14650,8 @@ msgid "Reports for PT Admin"
 msgstr "Rapports pour l'administrateur PT"
 
 #: application/modules/reports/views/scripts/shipments/index.phtml:263
-#, fuzzy
 msgid "Search Result Due Date"
-msgstr "Résultat Date d'échéance"
+msgstr "Rechercher une date d'échéance de résultat"
 
 #: application/modules/reports/views/scripts/shipments/index.phtml:282
 #: application/services/Shipments.php:4759
@@ -14670,14 +14668,12 @@ msgid "Unable to generate bulk download"
 msgstr "Impossible de générer un téléchargement groupé"
 
 #: application/modules/reports/views/scripts/shipments/index.phtml:461
-#, fuzzy
 msgid "Loading breakdown…"
-msgstr "Chargement du journal d'audit…"
+msgstr "Chargement de la répartition…"
 
 #: application/modules/reports/views/scripts/shipments/index.phtml:472
-#, fuzzy
 msgid "Failed to load breakdown. Please try again."
-msgstr "Échec du chargement des expéditions. Veuillez réessayer."
+msgstr "Échec du chargement de la répartition. Veuillez réessayer."
 
 #: application/modules/reports/views/scripts/shipments/index.phtml:634
 msgid "No feedback responses found for this shipment"
@@ -15011,9 +15007,8 @@ msgid "All Reports (DRAFT)"
 msgstr "Tous les rapports (PROJET)"
 
 #: application/services/Reports.php:214 application/services/Shipments.php:367
-#, fuzzy
 msgid "TB Forms"
-msgstr "Télécharger les formulaires de la CT"
+msgstr "Formulaires TB"
 
 #: application/services/Reports.php:220
 msgid "View Finalized"
@@ -15024,9 +15019,8 @@ msgid "View Draft Reports"
 msgstr "Afficher les rapports provisoires"
 
 #: application/services/Reports.php:242
-#, fuzzy
 msgid "Breakdown"
-msgstr "Répartition par programme"
+msgstr "Répartition"
 
 #: application/services/Reports.php:262
 msgid "No Response Report"
@@ -15074,13 +15068,12 @@ msgid "Total Passed"
 msgstr "Total conformes"
 
 #: application/services/Reports.php:5566
-#, fuzzy
 msgid "Laboratory Performance per Shipment"
-msgstr "Aperçu des performances des participants"
+msgstr "Performance du laboratoire par envoi"
 
 #: application/services/Reports.php:5573
 msgid "RATING PER SHIPMENT"
-msgstr ""
+msgstr "ÉVALUATION PAR ENVOI"
 
 #: application/services/Shipments.php:369
 msgid "Generate TB Forms"

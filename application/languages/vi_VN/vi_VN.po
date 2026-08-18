@@ -14499,9 +14499,8 @@ msgid "Please select a shipment"
 msgstr "Vui lòng chọn một lô hàng"
 
 #: application/modules/reports/views/scripts/shipments/index.phtml:219
-#, fuzzy
 msgid "Include cancelled"
-msgstr "Hãy thêm mã quốc gia."
+msgstr "Bao gồm cả mục đã hủy"
 
 #: application/modules/reports/views/scripts/shipments/index.phtml:227
 msgid "Download Bulk Overview Reports - Selected"
@@ -14573,9 +14572,8 @@ msgid "Reports for PT Admin"
 msgstr "Báo cáo dành cho Quản trị viên PT"
 
 #: application/modules/reports/views/scripts/shipments/index.phtml:263
-#, fuzzy
 msgid "Search Result Due Date"
-msgstr "Ngày công bố kết quả"
+msgstr "Tìm kiếm ngày công bố kết quả"
 
 #: application/modules/reports/views/scripts/shipments/index.phtml:282
 #: application/services/Shipments.php:4759
@@ -14592,14 +14590,12 @@ msgid "Unable to generate bulk download"
 msgstr "Không thể tạo liên kết tải xuống hàng loạt"
 
 #: application/modules/reports/views/scripts/shipments/index.phtml:461
-#, fuzzy
 msgid "Loading breakdown…"
-msgstr "Đang tải nhật ký kiểm toán…"
+msgstr "Đang tải phân tích chi tiết…"
 
 #: application/modules/reports/views/scripts/shipments/index.phtml:472
-#, fuzzy
 msgid "Failed to load breakdown. Please try again."
-msgstr "Không thể tải các lô hàng. Vui lòng thử lại."
+msgstr "Không thể tải phân tích chi tiết. Vui lòng thử lại."
 
 #: application/modules/reports/views/scripts/shipments/index.phtml:634
 msgid "No feedback responses found for this shipment"
@@ -14930,9 +14926,8 @@ msgid "All Reports (DRAFT)"
 msgstr "Tất cả các báo cáo (Bản thảo)"
 
 #: application/services/Reports.php:214 application/services/Shipments.php:367
-#, fuzzy
 msgid "TB Forms"
-msgstr "Tải xuống các mẫu đơn TB"
+msgstr "Biểu mẫu TB"
 
 #: application/services/Reports.php:220
 msgid "View Finalized"
@@ -14943,9 +14938,8 @@ msgid "View Draft Reports"
 msgstr "Xem bản nháp báo cáo"
 
 #: application/services/Reports.php:242
-#, fuzzy
 msgid "Breakdown"
-msgstr "Phân tích theo chương trình"
+msgstr "Phân tích chi tiết"
 
 #: application/services/Reports.php:262
 msgid "No Response Report"
@@ -14993,13 +14987,12 @@ msgid "Total Passed"
 msgstr "Tổng số đạt"
 
 #: application/services/Reports.php:5566
-#, fuzzy
 msgid "Laboratory Performance per Shipment"
-msgstr "Tổng quan về việc thực hiện của đơn vị tham gia"
+msgstr "Hiệu suất phòng thí nghiệm theo đợt gửi mẫu"
 
 #: application/services/Reports.php:5573
 msgid "RATING PER SHIPMENT"
-msgstr ""
+msgstr "ĐÁNH GIÁ THEO ĐỢT GỬI MẪU"
 
 #: application/services/Shipments.php:369
 msgid "Generate TB Forms"
