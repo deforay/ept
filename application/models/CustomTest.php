@@ -624,7 +624,7 @@ class Application_Model_CustomTest
         $totalScoreSheet->setTitle('Total Score', true);
         $totalScoreSheet->getDefaultColumnDimension()->setWidth(20);
         $totalScoreSheet->getDefaultRowDimension()->setRowHeight(30);
-        $totalScoreHeadings = ['Participant Code', 'Participant Name', 'No. of Panels Correct (N=' . $result['number_of_samples'] . ')', 'Panel Score(100% Conv.)', 'Panel Score(90% Conv.)', 'Documentation Score(100% Conv.)', 'Documentation Score(10% Conv.)', 'Total Score', 'Overall Performance'];
+        $totalScoreHeadings = ['Participant Code', 'Participant Name', 'Region', 'District', 'No. of Panels Correct (N=' . $result['number_of_samples'] . ')', 'Panel Score(100% Conv.)', 'Panel Score(90% Conv.)', 'Documentation Score(100% Conv.)', 'Documentation Score(10% Conv.)', 'Total Score', 'Overall Performance'];
 
         $totScoreSheetCol = 0;
         $totScoreRow = 1;
@@ -692,6 +692,8 @@ class Application_Model_CustomTest
                 //<------------ Total score sheet ------------
                 $totalScoreSheet->getCell(Coordinate::stringFromColumnIndex($totScoreCol++) . $totScoreRow)->setValueExplicit(ucwords($aRow['unique_identifier']));
                 $totalScoreSheet->getCell(Coordinate::stringFromColumnIndex($totScoreCol++) . $totScoreRow)->setValueExplicit($aRow['first_name'] . ' ' . $aRow['last_name']);
+                $totalScoreSheet->getCell(Coordinate::stringFromColumnIndex($totScoreCol++) . $totScoreRow)->setValueExplicit($aRow['region']);
+                $totalScoreSheet->getCell(Coordinate::stringFromColumnIndex($totScoreCol++) . $totScoreRow)->setValueExplicit($aRow['district'] ?? '');
                 //------------ Total score sheet ------------>
                 //Zend_Debug::dump($aRow['response']);
                 if (count($aRow['response']) > 0) {
