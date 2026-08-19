@@ -1265,7 +1265,7 @@ class ReportGenerator
         $includeExcluded = strtolower((string) $this->config->generateReportsForExcluded) === 'yes';
         $reportedCountExpr = $includeExcluded
             ? "SUM(spm.response_status LIKE 'responded' OR spm.response_status LIKE 'late' OR spm.shipment_test_date > '1970-01-01' OR IFNULL(spm.is_pt_test_not_performed, 'no') = 'yes')"
-            : "SUM(shipment_test_date > '1970-01-01' OR IFNULL(is_pt_test_not_performed, 'no') not like 'yes')";
+            : "SUM(spm.response_status LIKE 'responded' AND IFNULL(spm.is_excluded, 'no') = 'no')";
 
         return $this->db->fetchRow(
             $this->db->select()->from(
