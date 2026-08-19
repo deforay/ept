@@ -350,6 +350,16 @@ class Application_Service_Reports
                 ->joinLeft(['rr' => 'r_results'], 'sp.final_result=rr.result_id', [])
                 ->group('p.region')->where('p.region IS NOT NULL')->where("p.region != ''")/* ->where("p.status = 'active'") */ ;
         }
+        if (isset($params['reportType']) && $params['reportType'] == 'district') {
+            $sQuery = $dbAdapter->select()->from(['p' => 'participant'], ['p.district'])
+                ->joinLeft(['shp' => 'shipment_participant_map'], 'shp.participant_id=p.participant_id', [])
+                ->joinLeft(['s' => 'shipment'], 's.shipment_id=shp.shipment_id', ['response_deadline', 'shipment_code'])
+                ->joinLeft(['sp' => 'shipment_participant_map'], 'sp.participant_id=p.participant_id', ['others' => new Zend_Db_Expr('SUM(sp.shipment_test_date IS NULL)'), 'excluded' => new Zend_Db_Expr("SUM(if(sp.is_excluded = 'yes', 1, 0))"), 'number_failed' => new Zend_Db_Expr("SUM(sp.final_result = 2 AND sp.shipment_test_date <= DATE(s.response_deadline) AND sp.is_excluded != 'yes')"), 'number_passed' => new Zend_Db_Expr("SUM(sp.final_result = 1 AND sp.shipment_test_date <= DATE(s.response_deadline) AND sp.is_excluded != 'yes')"), 'number_late' => new Zend_Db_Expr("SUM(sp.shipment_test_date > DATE(s.response_deadline) AND sp.is_excluded != 'yes')")])
+                ->joinLeft(['sl' => 'scheme_list'], 's.scheme_type=sl.scheme_id', [])
+                ->joinLeft(['d' => 'distributions'], 'd.distribution_id=s.distribution_id', [])
+                ->joinLeft(['rr' => 'r_results'], 'sp.final_result=rr.result_id', [])
+                ->group('p.district')->where('p.district IS NOT NULL')->where("p.district != ''")/* ->where("p.status = 'active'") */ ;
+        }
         if (isset($params['reportType']) && $params['reportType'] == 'enrolled-programs') {
             $sQuery = $dbAdapter->select()->from(['p' => 'participant'], [])
                 //->joinLeft(array('sp'=>'shipment_participant_map'),'sp.participant_id=p.participant_id',array('participant_count'=> new Zend_Db_Expr("SUM(shipment_test_date = '') + SUM(shipment_test_date <> '')"), 'reported_count'=> new Zend_Db_Expr("SUM(shipment_test_date <> '')"), 'number_passed'=> new Zend_Db_Expr("SUM(final_result = 1)")))
