@@ -172,10 +172,10 @@ class Application_Model_CustomTest
                             }
                             $calcResult = 'fail';
                             $zScore = null;
-                        // FIX: was `!empty($result['reported_result'])`, which treats a correctly
-                        // reported "0" as "nothing reported" (empty(0) === true in PHP) and skips
-                        // scoring for it entirely. We only want to skip truly missing values
-                        // (null / empty string), not a legitimate numeric 0 result.
+                            // FIX: was `!empty($result['reported_result'])`, which treats a correctly
+                            // reported "0" as "nothing reported" (empty(0) === true in PHP) and skips
+                            // scoring for it entirely. We only want to skip truly missing values
+                            // (null / empty string), not a legitimate numeric 0 result.
                         } elseif ($result['reported_result'] !== null && $result['reported_result'] !== '') {
                             if (!isset($quantRange[$testkitId][$result['sample_id']])) {
                                 continue;
