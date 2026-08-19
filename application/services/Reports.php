@@ -388,6 +388,7 @@ class Application_Service_Reports
             $sQuery = $sQuery->where('s.shipment_date >= ?', $this->common->isoDateFormat($params['startDate']));
             $sQuery = $sQuery->where('s.shipment_date <= ?', $this->common->isoDateFormat($params['endDate']));
         }
+        $sQuery = $sQuery->order(new Zend_Db_Expr('(number_passed + number_failed + others + number_late + excluded) DESC'));
 
         return $dbAdapter->fetchAll($sQuery);
     }
