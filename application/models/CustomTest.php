@@ -83,6 +83,10 @@ class Application_Model_CustomTest
     {
         $counter = 0;
         $maxScore = 0;
+        // Tracks the highest per-participant max score seen across the whole shipment,
+        // so the shipment-level 'max_score' column reflects the shipment as a whole
+        // instead of whatever the last-processed participant happened to compute.
+        $shipmentMaxScore = 0;
         $finalResult = null;
         $passingScore = 100;
 
@@ -168,7 +172,11 @@ class Application_Model_CustomTest
                             }
                             $calcResult = 'fail';
                             $zScore = null;
-                        } elseif (!empty($result['reported_result'])) {
+                        // FIX: was `!empty($result['reported_result'])`, which treats a correctly
+                        // reported "0" as "nothing reported" (empty(0) === true in PHP) and skips
+                        // scoring for it entirely. We only want to skip truly missing values
+                        // (null / empty string), not a legitimate numeric 0 result.
+                        } elseif ($result['reported_result'] !== null && $result['reported_result'] !== '') {
                             if (!isset($quantRange[$testkitId][$result['sample_id']])) {
                                 continue;
                             }
@@ -267,6 +275,12 @@ class Application_Model_CustomTest
                 if ($maxScore > 100) {
                     $maxScore = 100;
                 }
+                // Track the largest per-participant max score seen in this shipment so we
+                // can persist a meaningful shipment-level value after the loop, instead of
+                // whichever participant happened to be processed last.
+                if ($maxScore > $shipmentMaxScore) {
+                    $shipmentMaxScore = $maxScore;
+                }
                 if ($maxScore > 0 && $totalScore > 0) {
                     $totalScore = ($totalScore / $maxScore) * 100;
                 }
@@ -296,8 +310,14 @@ class Application_Model_CustomTest
                         ];
                     }
 
-                    // if any of the results have failed, then the final result is fail
-                    if ($scoreResult == 'Fail' || $mandatoryResult == 'Fail') {
+                    // if the participant's score fails the passing threshold, the final result is fail.
+                    // NOTE: `$mandatoryResult` used to be checked here too, but it was never assigned
+                    // anywhere in this method, so `$mandatoryResult == 'Fail'` was always false and
+                    // effectively dead code. Removed to avoid implying mandatory-sample-specific
+                    // failure handling that doesn't actually exist. If per-mandatory-sample failure
+                    // is a real requirement, it needs to be implemented explicitly (e.g. checking
+                    // whether any `mandatory = 1` sample scored 0) rather than relying on this variable.
+                    if ($scoreResult == 'Fail') {
                         $finalResult = 2;
                     } else {
                         $finalResult = 1;
@@ -361,7 +381,11 @@ class Application_Model_CustomTest
             }
             $counter++;
         }
-        $db->update('shipment', ['max_score' => $maxScore, 'status' => 'evaluated'], 'shipment_id = ' . $shipmentId);
+        // FIX: previously used `$maxScore` here, which after the loop only held the LAST
+        // processed participant's max score (it's reset to 0 at the top of every iteration).
+        // Now uses `$shipmentMaxScore`, the largest max score observed across all participants
+        // in this shipment, which is a much more meaningful shipment-level value.
+        $db->update('shipment', ['max_score' => $shipmentMaxScore, 'status' => 'evaluated'], 'shipment_id = ' . $shipmentId);
         return $shipmentResult;
     }
 
@@ -683,7 +707,14 @@ class Application_Model_CustomTest
                         $resultReportSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(str_replace('-', ' ', ucwords($otherTestPossibleResults[$aRow['response'][$f]['reported_result']])));
 
                         $panelScoreSheet->getCell(Coordinate::stringFromColumnIndex($sheetThreeCol++) . $sheetThreeRow)->setValueExplicit($aRow['response'][$f]['calculated_score']);
-                        if (isset($aRow['response'][$f]['calculated_score']) && $aRow['response'][$f]['calculated_score'] == 20 && $aRow['response'][$f]['sample_id'] == $refResult[$f]['sample_id']) {
+                        // FIX: was hardcoded `calculated_score == 20`, which only happened to work
+                        // when a shipment had exactly 5 mandatory samples (100 / 5 = 20 each, per
+                        // updateEqualSampleScores()). Since sample scores are actually distributed
+                        // as 100/count(mandatorySamples), a correct sample's calculated_score equals
+                        // that sample's own sample_score (not a fixed 20) whenever it passes/matches -
+                        // it is 0 when it fails. So we just check it's a positive score for the
+                        // matching sample, which works regardless of how many mandatory samples exist.
+                        if (isset($aRow['response'][$f]['calculated_score']) && $aRow['response'][$f]['calculated_score'] > 0 && $aRow['response'][$f]['sample_id'] == $refResult[$f]['sample_id']) {
                             $countCorrectResult++;
                         }
                     }

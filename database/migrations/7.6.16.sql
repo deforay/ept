@@ -19,6 +19,7 @@ WHERE `s`.`tb_form_generated` = 'queued'
   );
 
 -- Thana 27-Jul-2026: Add table to track report downloads
+DROP TABLE `track_report_downloaded_history`;
 CREATE TABLE `track_report_downloaded_history` (
   `id` int NOT NULL AUTO_INCREMENT,
   `shipment_id` int DEFAULT NULL,
