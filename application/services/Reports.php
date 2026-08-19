@@ -610,6 +610,18 @@ class Application_Service_Reports
                 ->where('p.region IS NOT NULL')
                 ->where("p.region != ''");
         }
+        if (isset($parameters['reportType']) && $parameters['reportType'] == 'district') {
+            // Get total participants for each shipment code in each district
+
+            $sQuery = $sQuery->columns([
+                'district' => 'p.district',
+                'shipment_code' => 's.shipment_code',
+                'total_participants' => new Zend_Db_Expr('COUNT(DISTINCT sp.participant_id)'),
+            ])
+                ->group(['p.district', 's.shipment_code'])
+                ->where('p.district IS NOT NULL')
+                ->where("p.district != ''");
+        }
         if (isset($parameters['reportType']) && $parameters['reportType'] == 'enrolled-programs') {
             // Get total participants for each shipment code in each enrolled program
 
@@ -634,7 +646,7 @@ class Application_Service_Reports
             $sQuery = $sQuery->where('s.shipment_date >= ?', $this->common->isoDateFormat($parameters['startDate']));
             $sQuery = $sQuery->where('s.shipment_date <= ?', $this->common->isoDateFormat($parameters['endDate']));
         }
-
+        // die($sQuery);
         return $dbAdapter->fetchAll($sQuery);
     }
 
