@@ -2673,6 +2673,11 @@ class Application_Service_Evaluation
             $sql->where("(sp.response_status LIKE 'responded' OR sp.response_status LIKE 'late' OR sp.shipment_test_date > '1970-01-01' OR IFNULL(sp.is_pt_test_not_performed, 'no') = 'yes')");
         } else {
             $sql->where("sp.response_status IS NOT NULL AND sp.response_status LIKE 'responded'");
+            // Responding is not enough — the submission must also have survived evaluation.
+            // Without this the flag does nothing: an excluded submission still carries
+            // response_status 'responded', so every excluded participant got a report
+            // regardless of the setting.
+            $sql->where(new Zend_Db_Expr("IFNULL(sp.is_excluded, 'no') = 'no'"));
         }
 
         if (isset($sLimit) && isset($sOffset)) {
