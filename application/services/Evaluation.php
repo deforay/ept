@@ -3,6 +3,60 @@
 class Application_Service_Evaluation
 {
     /**
+     * Did this participant come back to us at all?
+     *
+     * 'nottested' counts: a lab that writes in to say it had no kits or nobody trained has
+     * responded, it just has no results. An empty shipment_test_date is NOT this question --
+     * the date is cleared on purpose for such a declaration, and a submission can carry
+     * results with the date left blank.
+     */
+    private const SQL_RESPONDED = "(IFNULL(sp.response_status, 'noresponse') IN ('responded', 'late', 'nottested'))";
+
+    /** The complement of self::SQL_RESPONDED, aggregated. Drafts count as no response. */
+    private const SQL_DID_NOT_RESPOND = "SUM(IFNULL(sp.response_status, 'noresponse') NOT IN ('responded', 'late', 'nottested'))";
+
+    /**
+     * Split a getResponseReports() row into the disjoint slices of the participation pie.
+     *
+     * Returns one entry per non-empty slice, in reading order, each with a stable key, its
+     * count and its percentage of the shipment. Colour stays with the layout because the
+     * country palettes differ. Labels come back in English; callers that translate run them
+     * through their own translator, which is why the label and the key are separate.
+     *
+     * The counts partition the shipment, so the slices reconcile to total_shipped by
+     * construction rather than by luck. "Not Yet Scored" only appears while a shipment still
+     * has responders awaiting a verdict, so a finished round shows the familiar four.
+     */
+    public static function participationSlices(array $responseResult): array
+    {
+        $total = (int) ($responseResult['total_shipped'] ?? 0);
+        if ($total <= 0) {
+            return [];
+        }
+
+        $slices = [
+            ['key' => 'passed', 'label' => 'Passed'],
+            ['key' => 'failed', 'label' => 'Failed'],
+            ['key' => 'no_response', 'label' => 'Not Responded'],
+            ['key' => 'excluded', 'label' => 'Excluded'],
+            ['key' => 'unscored', 'label' => 'Not Yet Scored'],
+        ];
+
+        $out = [];
+        foreach ($slices as $slice) {
+            $n = (int) ($responseResult['slice_' . $slice['key']] ?? 0);
+            if ($n <= 0) {
+                continue;
+            }
+            $slice['n'] = $n;
+            $slice['pct'] = number_format(($n / $total) * 100, 2);
+            $out[] = $slice;
+        }
+
+        return $out;
+    }
+
+    /**
      * Common "not a valid scored response" guard for scheme evaluate() loops.
      *
      * A participant who did not produce an on-time, testable response cannot pass or
@@ -3483,7 +3537,7 @@ class Application_Service_Evaluation
                         'sp.shipment_id=s.shipment_id',
                         [
                             'shipmentDate' => new Zend_Db_Expr("DATE_FORMAT(s.shipment_date,'%d-%b-%Y')"),
-                            'not_responded' => new Zend_Db_Expr("SUM(IFNULL(sp.response_status, 'noresponse') NOT IN ('responded', 'late', 'nottested'))"),
+                            'not_responded' => new Zend_Db_Expr(self::SQL_DID_NOT_RESPOND),
                             'excluded' => new Zend_Db_Expr("SUM(CASE WHEN (sp. final_result is not null AND sp. final_result != 2 AND sp. is_excluded is not null AND sp. is_excluded not like '' AND sp. is_excluded like 'yes') THEN 1 ELSE 0 END)"),
                             'total_shipped' => new Zend_Db_Expr('count("sp.map_id")'),
                             'reported_count' => new Zend_Db_Expr("SUM(shipment_test_report_date not like  '0000-00-00' OR is_pt_test_not_performed !='yes')"),
@@ -4038,12 +4092,35 @@ class Application_Service_Evaluation
                     // when a lab declares it could not test, and a submission can carry results with
                     // the date left blank. Same test as the non-participation mailer and
                     // Shipments::getShipmentParticipationStats(), so every surface agrees.
-                    'not_responded' => new Zend_Db_Expr("SUM(IFNULL(sp.response_status, 'noresponse') NOT IN ('responded', 'late', 'nottested'))"),
+                    'not_responded' => new Zend_Db_Expr(self::SQL_DID_NOT_RESPOND),
                     'excluded' => new Zend_Db_Expr("SUM(CASE WHEN (sp.is_excluded like 'yes') THEN 1 ELSE 0 END)"),
                     'number_failed' => new Zend_Db_Expr("SUM(CASE WHEN (sp.final_result = 2 AND sp.is_excluded != 'yes') THEN 1 ELSE 0 END)"),
                     'number_passed' => new Zend_Db_Expr("SUM(CASE WHEN (sp.final_result = 1 AND sp.is_excluded != 'yes') THEN 1 ELSE 0 END)"),
                     'number_late' => new Zend_Db_Expr(
                         'SUM(CASE WHEN (sp.shipment_test_report_date > s.response_deadline) THEN 1 ELSE 0 END)'
+                    ),
+                    // Five disjoint buckets for the participation pie -- see
+                    // self::participationSlices(). Every participant matches exactly one, so the
+                    // slices always reconcile to total_shipped.
+                    //
+                    // The chart used to take number_passed/number_failed/not_responded and derive
+                    // the fourth by subtracting non-responders from the excluded count. That broke
+                    // three ways: it erased genuine exclusions on shipments whose non-responders
+                    // were never flagged excluded, it counted non-responders carrying a stale
+                    // Pass/Fail in two slices at once, and responders still awaiting a verdict had
+                    // no slice at all and silently vanished.
+                    'slice_no_response' => new Zend_Db_Expr(self::SQL_DID_NOT_RESPOND),
+                    'slice_excluded' => new Zend_Db_Expr(
+                        'SUM(' . self::SQL_RESPONDED . " AND sp.is_excluded = 'yes')"
+                    ),
+                    'slice_passed' => new Zend_Db_Expr(
+                        'SUM(' . self::SQL_RESPONDED . " AND IFNULL(sp.is_excluded, 'no') <> 'yes' AND sp.final_result = 1)"
+                    ),
+                    'slice_failed' => new Zend_Db_Expr(
+                        'SUM(' . self::SQL_RESPONDED . " AND IFNULL(sp.is_excluded, 'no') <> 'yes' AND sp.final_result = 2)"
+                    ),
+                    'slice_unscored' => new Zend_Db_Expr(
+                        'SUM(' . self::SQL_RESPONDED . " AND IFNULL(sp.is_excluded, 'no') <> 'yes' AND IFNULL(sp.final_result, 0) NOT IN (1, 2))"
                     ),
                 ]
             )

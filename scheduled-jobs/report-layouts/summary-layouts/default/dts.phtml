@@ -370,35 +370,22 @@ if ($resultArray['shipment'] != "") {
 
         if (isset($responseResult) && count($responseResult) > 0 && $responseResult != '') {
             $total = $responseResult["total_shipped"];
-            $passedN = ($responseResult["number_passed"] > 0) ? $responseResult["number_passed"] : 0;
-            $failedN = ($responseResult["number_failed"] > 0) ? $responseResult["number_failed"] : 0;
-            $notRespondedN = $responseResult["not_responded"];
-            // Non-responders are also flagged excluded, so subtract them to keep the pie from
-            // counting them twice. Clamp at zero: abs() flipped the sign on shipments whose
-            // non-responders were never excluded, double-counting them instead of dropping them.
-            $responseResult["excluded"] = max(0, $responseResult["excluded"] - $responseResult["not_responded"]);
-            $excludedN = $responseResult["excluded"];
-            $passed = number_format($responseResult["number_passed"] / $total * 100, 2);
-            $failed = number_format($responseResult["number_failed"] / $total * 100, 2);
-            $notResponded = number_format($responseResult["not_responded"] / $total * 100, 2);
-            $excluded = number_format($responseResult["excluded"] / $total * 100, 2);
-            $data = [$passed, $failed, $notResponded, $excluded];
+            // Disjoint slices, so the chart reconciles to the participant total instead of
+            // deriving one slice by subtracting another. Empty slices are dropped, so a
+            // finished round still shows the familiar four.
+            $slices = Application_Service_Evaluation::participationSlices($responseResult);
+            $sliceColors = ['passed' => '#228B22', 'failed' => '#DC3545', 'no_response' => '#808080', 'excluded' => '#FFA500', 'unscored' => '#FFD700'];
 
-            if ($passed > 0 || $failed > 0 || $notResponded > 0 || $excluded > 0) {
+            if (!empty($slices)) {
                 $performancePiechart = Pt_Reports_ChartService::render([
                     'type' => 'pie',
                     'width' => 700, 'height' => 400,
                     'filename' => 'performanceChart',
                     'title' => Pt_Commons_TranslateUtility::safeTranslate("Shipment Participant Result Report") . " (N=" . $total . ")",
                     'slices' => [
-                        'data' => $data,
-                        'labels' => [
-                            Pt_Commons_TranslateUtility::safeTranslate("Passed") . " (N=" . $passedN . ")",
-                            Pt_Commons_TranslateUtility::safeTranslate("Failed") . " (N=" . $failedN . ")",
-                            Pt_Commons_TranslateUtility::safeTranslate("Not Responded") . " (N=" . $notRespondedN . ")",
-                            Pt_Commons_TranslateUtility::safeTranslate("Excluded") . " (N=" . $excludedN . ")",
-                        ],
-                        'colors' => ['#22C55E', '#DC3545', '#F59E0B', '#94A3B8'],
+                        'data' => array_column($slices, 'pct'),
+                        'labels' => array_map(static fn($slice) => Pt_Commons_TranslateUtility::safeTranslate($slice['label']) . ' (N=' . $slice['n'] . ')', $slices),
+                        'colors' => array_map(static fn($slice) => $sliceColors[$slice['key']], $slices),
                     ],
                     'legend' => ['position' => 'bottom'],
                 ], $outputDir);

@@ -402,23 +402,11 @@ if (!empty($resultArray['shipment'])) {
         $y = $pdf->getY() + 5;
         $total = $responseResult["total_shipped"];
 
-        $passedN = ($responseResult["number_passed"] > 0) ? $responseResult["number_passed"] : 0;
-        $failedN = ($responseResult["number_failed"] > 0) ? $responseResult["number_failed"] : 0;
-        $notRespondedN = $responseResult["not_responded"];
-        // Non-responders are also flagged excluded, so subtract them to keep the pie from
-        // counting them twice. Clamp at zero: abs() flipped the sign on shipments whose
-        // non-responders were never excluded, double-counting them instead of dropping them.
-        $responseResult["excluded"] = max(0, $responseResult["excluded"] - $responseResult["not_responded"]);
-        $excludedN = $responseResult["excluded"];
-        // $late = $responseResult["number_late"];
-        //$total = $passedN + $failedN + $notRespondedN + $excludedN;
-
-        // Some data
-        $passed = number_format((($passedN / $total) * 100), 2);
-        $failed = number_format((($failedN / $total) * 100), 2);
-        $notResponded = number_format((($responseResult["not_responded"] / $total) * 100), 2);
-        $excluded = number_format((($responseResult["excluded"] / $total) * 100), 2);
-        $data = array($passed, $failed, $notResponded, $excluded);
+        // Disjoint slices, so the chart reconciles to the participant total instead of
+        // deriving one slice by subtracting another. Empty slices are dropped, so a
+        // finished round still shows the familiar four.
+        $slices = Application_Service_Evaluation::participationSlices($responseResult);
+        $sliceColors = ['passed' => '#228B22', 'failed' => '#DC3545', 'no_response' => '#808080', 'excluded' => '#FFD700', 'unscored' => '#FFA500'];
         $outputDir = $reportsPath . DIRECTORY_SEPARATOR . $responseResult["shipment_code"];
         $performancePiechart = Pt_Reports_ChartService::render([
             'type' => 'pie',
@@ -426,9 +414,9 @@ if (!empty($resultArray['shipment'])) {
             'filename' => 'performanceChart',
             'title' => 'Shipment Participant Result Report (N=' . $total . ')',
             'slices' => [
-                'data' => $data,
-                'labels' => ["Passed (N=" . $passedN . ")", "Failed (N=" . $failedN . ")", "Not Responded (N=" . $notRespondedN . ")", "Excluded (N=" . $excludedN . ")"],
-                'colors' => ['#228B22', '#DC3545', '#808080', '#FFD700'],
+                'data' => array_column($slices, 'pct'),
+                'labels' => array_map(static fn($slice) => $slice['label'] . ' (N=' . $slice['n'] . ')', $slices),
+                'colors' => array_map(static fn($slice) => $sliceColors[$slice['key']], $slices),
             ],
             'legend' => ['position' => 'bottom'],
         ], $outputDir);
