@@ -6,10 +6,19 @@ function generateReports(sId, checkReportDate, surveyDate, _type) {
     if (checkReportDate == 1 || checkReportDate == true) {
         $.blockUI();
 
-        $.post("/reports/distribution/queue-reports-generation", {
+        // The finalize page offers an approval date and approver name. Both are optional,
+        // and the pages that finalize straight from a grid have no such fields — the
+        // service falls back to the finalizing admin and the current time either way.
+        var payload = {
             sid: sId,
             type: _type
-        })
+        };
+        if (_type === 'finalized') {
+            payload.resultsApprovedOn = $('#resultsApprovedOn').val() || '';
+            payload.resultsApprovedBy = $.trim($('#resultsApprovedBy').val() || '');
+        }
+
+        $.post("/reports/distribution/queue-reports-generation", payload)
             .done(function () {
                 $.unblockUI();
 

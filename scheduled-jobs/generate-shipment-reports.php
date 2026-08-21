@@ -1244,6 +1244,11 @@ class ReportGenerator
                         'scheme_type',
                         'shipment_attributes',
                         'pt_co_ordinator_name',
+                        'results_approved_by',
+                        // The approval recorded when the shipment was finalized. Falls back to
+                        // the report-generation timestamp for shipments finalized before there
+                        // was anywhere to record one, so old reports keep the date they had.
+                        'approval_date' => new Zend_Db_Expr('COALESCE(s.results_approved_on, qrg.date_finalised)'),
                         'distribution_id'
                     ]
                 )
@@ -1301,6 +1306,11 @@ class ReportGenerator
                         'scheme_type',
                         'shipment_attributes',
                         'pt_co_ordinator_name',
+                        'results_approved_by',
+                        // The approval recorded when the shipment was finalized. Falls back to
+                        // the report-generation timestamp for shipments finalized before there
+                        // was anywhere to record one, so old reports keep the date they had.
+                        'approval_date' => new Zend_Db_Expr('COALESCE(s.results_approved_on, qrg.date_finalised)'),
                         'distribution_id'
                     ]
                 )

@@ -4066,6 +4066,51 @@ class Application_Service_Evaluation
         $db->insert('queue_report_generation', $data);
     }
 
+    /**
+     * Record who approved a shipment's results, and when.
+     *
+     * Reports print a "Date of Approval" that was really the report-generation timestamp,
+     * re-stamped on every regeneration. Approval now happens at a physical meeting that can
+     * sit well after the reports were generated, so finalizing offers the admin a date and an
+     * approver name to enter.
+     *
+     * Left blank it falls back to now, and to the finalizing admin's name -- which is what
+     * the report effectively claimed before this existed. An approval already on record is
+     * never overwritten by a blank re-finalize, so regenerating the finalized reports keeps
+     * the date the meeting actually agreed on rather than silently moving it to today.
+     */
+    private function recordResultsApproval(int $shipmentId, array $params): void
+    {
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $existing = $db->fetchRow(
+            $db->select()
+                ->from('shipment', ['results_approved_on', 'results_approved_by'])
+                ->where('shipment_id = ?', $shipmentId)
+        ) ?: [];
+
+        $approvedOn = trim((string) ($params['resultsApprovedOn'] ?? ''));
+        $approvedBy = trim((string) ($params['resultsApprovedBy'] ?? ''));
+        $data = [];
+
+        if ($approvedOn !== '') {
+            $data['results_approved_on'] = Pt_Commons_DateUtility::isoDateFormat($approvedOn);
+        } elseif (empty($existing['results_approved_on'])) {
+            $data['results_approved_on'] = new Zend_Db_Expr('NOW()');
+        }
+
+        if ($approvedBy !== '') {
+            $data['results_approved_by'] = $approvedBy;
+        } elseif (empty($existing['results_approved_by'])) {
+            $authNameSpace = new Zend_Session_Namespace('administrators');
+            $name = trim(($authNameSpace->first_name ?? '') . ' ' . ($authNameSpace->last_name ?? ''));
+            $data['results_approved_by'] = $name !== '' ? $name : null;
+        }
+
+        if ($data !== []) {
+            $db->update('shipment', $data, 'shipment_id = ' . $shipmentId);
+        }
+    }
+
     public function queueReportsGeneration($params)
     {
         $shipmentId = base64_decode($params['sid']);
@@ -4076,6 +4121,12 @@ class Application_Service_Evaluation
         // grid already hides the button; this is the guard for direct POSTs.
         if (($params['type'] ?? '') === 'finalized' && Application_Service_FeedBack::isAwaitingFeedbackForm($shipmentId)) {
             return 0;
+        }
+
+        // Finalizing is where the results are signed off, so it is where the approval gets
+        // recorded. Reports read it from here instead of the report-generation timestamp.
+        if (($params['type'] ?? '') === 'finalized') {
+            $this->recordResultsApproval((int) $shipmentId, $params);
         }
         $existData = $db->fetchRow($db->select()->from('queue_report_generation')
             ->where('shipment_id = ?', $shipmentId)

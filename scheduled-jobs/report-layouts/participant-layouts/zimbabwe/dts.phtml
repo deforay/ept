@@ -48,10 +48,10 @@ if (!empty($resultArray['shipment'])) {
         $reportFormat = $reportService->getReportConfigValue('report-format');
         if (!empty($reportFormat)) {
             $pdf = new Pt_Reports_FpdiReport(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
-            $pdf->setParams($resultStatus, $evalRow['date_finalised'], $config, $watermark, "INDIVIDUAL", $layout, $result['scheme_name'], "dts", "", "", $shipmentAttributes);
+            $pdf->setParams($resultStatus, $evalRow['approval_date'], $config, $watermark, "INDIVIDUAL", $layout, $result['scheme_name'], "dts", "", "", $shipmentAttributes);
         } else {
             $pdf = new Pt_Reports_IndividualPdf(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
-            $pdf->setSchemeName($header, $result['scheme_name'], $logo, $logoRight, $resultStatus, $schemeType, $layout, $evalRow['date_finalised'], $config, $watermark, "", $instituteAddressPosition);
+            $pdf->setSchemeName($header, $result['scheme_name'], $logo, $logoRight, $resultStatus, $schemeType, $layout, $evalRow['approval_date'], $config, $watermark, "", $instituteAddressPosition);
         }
 
         // Configure PDF settings
@@ -153,8 +153,8 @@ if (!empty($resultArray['shipment'])) {
         if (!empty($result['participant_supervisor'])) {
             $fields[] = ['label' => 'Supervisor Name', 'value' => $result['participant_supervisor']];
         }
-        if (!empty($evalRow['date_finalised'])) {
-            $fields[] = ['label' => 'Report Issue Date', 'value' => Pt_Commons_DateUtility::humanReadableDateFormat($evalRow['date_finalised'])];
+        if (!empty($evalRow['approval_date'])) {
+            $fields[] = ['label' => 'Report Issue Date', 'value' => Pt_Commons_DateUtility::humanReadableDateFormat($evalRow['approval_date'])];
         }
         if (!empty($result['pt_co_ordinator_name'])) {
             $fields[] = ['label' => 'Scheme Coordinator', 'value' => $result['pt_co_ordinator_name']];
@@ -176,8 +176,8 @@ if (!empty($resultArray['shipment'])) {
             }
         }
 
-        if (!empty($evalRow['date_finalised'])) {
-            $fields[] = ['label' => 'Date of Approval', 'value' => Pt_Commons_DateUtility::humanReadableDateFormat($evalRow['date_finalised'])];
+        if (!empty($evalRow['approval_date'])) {
+            $fields[] = ['label' => 'Date of Approval', 'value' => Pt_Commons_DateUtility::humanReadableDateFormat($evalRow['approval_date'])];
         }
         // Build table with 3 columns per row
         $labInfo = '<table cellpadding="3" style="font-size:11px;">';
@@ -532,7 +532,7 @@ if (!empty($resultArray['shipment'])) {
                     <table cellpadding="5" style="width: 100%;">
                         <tr>
                             <td style="width: 50%; text-align: left;">Reviewed By: ' . $approveTxt . ',</td>
-                            <td style="width: 50%; text-align: right;">Approved by: Lucia Sisya</td>
+                            <td style="width: 50%; text-align: right;">Approved by: ' . ($evalRow['results_approved_by'] ?? 'Lucia Sisya') . '</td>
                         </tr>
                         <tr>
                             <td style="width: 50%; text-align: left;"><img style="width:100px;" src="' . $sign1 . '" /></td>

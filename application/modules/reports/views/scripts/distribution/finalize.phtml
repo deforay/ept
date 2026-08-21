@@ -162,6 +162,42 @@ if (!empty($this->shipment)) {
                     </div>
                 </div>
             <?php } ?>
+            <?php
+            // Results are signed off at a physical meeting that can happen well after the
+            // reports were generated, so the approval is the coordinator's to enter rather
+            // than a timestamp we invent. Left blank, the service records the finalizing
+            // admin and the current time, which is what the report used to show anyway.
+            $approvedOn = trim((string) ($this->shipment[0]['results_approved_on'] ?? ''));
+            $approvedBy = trim((string) ($this->shipment[0]['results_approved_by'] ?? ''));
+            ?>
+            <div class="row" style="margin-top:12px;">
+                <div class="col-lg-6 col-lg-offset-3">
+                    <fieldset style="border:1px solid #ddd;border-radius:4px;padding:10px 15px 15px;">
+                        <legend style="width:auto;border:0;margin-bottom:6px;padding:0 6px;font-size:13px;font-weight:bold;">
+                            <?= $this->translate->_("Results Approval"); ?>
+                        </legend>
+                        <p class="text-muted" style="margin:0 0 10px;font-size:12px;">
+                            <?= $this->translate->_("Optional. Leave blank to record you as the approver, as of now."); ?>
+                        </p>
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <label for="resultsApprovedOn"><?= $this->translate->_("Date of Approval"); ?></label>
+                                <input type="text" id="resultsApprovedOn" name="resultsApprovedOn"
+                                    class="form-control datepicker" readonly="readonly" autocomplete="off"
+                                    value="<?= ($approvedOn !== '') ? $this->escape($this->dateFormat($approvedOn)) : ''; ?>"
+                                    title="<?= $this->translate->_("Date the results were approved"); ?>" />
+                            </div>
+                            <div class="col-sm-6">
+                                <label for="resultsApprovedBy"><?= $this->translate->_("Approved By"); ?></label>
+                                <input type="text" id="resultsApprovedBy" name="resultsApprovedBy"
+                                    class="form-control" maxlength="256" autocomplete="off"
+                                    value="<?= $this->escape($approvedBy); ?>"
+                                    title="<?= $this->translate->_("Name of the person approving these results"); ?>" />
+                            </div>
+                        </div>
+                    </fieldset>
+                </div>
+            </div>
             <div class="row" align="center">
                 <a href="javascript:void(0)" class="btn btn-sm generate-btn btn-info <?php echo $reportQueue; ?>"
                     style="margin-top:10px;clear:both !important;padding: 10px;box-shadow: 0px 1px 5px grey;"
