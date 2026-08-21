@@ -234,7 +234,13 @@ class Application_Service_Reports
             $row[] = $aRow['distribution_code'];
             $row[] = Pt_Commons_DateUtility::humanReadableDateFormat($aRow['distribution_date']);
             $row[] = $aRow['shipment_code'];
-            $row[] = Pt_Commons_DateUtility::humanReadableDateFormat($aRow['response_deadline']);
+            // Same treatment as the admin shipments grid: the deadline is judged in the
+            // programme's cutoff timezone, so name that zone under the date rather than
+            // leaving a reader in another zone to assume their own clock.
+            $dueDate = Pt_Commons_DateUtility::humanReadableDateFormat($aRow['response_deadline'], true);
+            $row[] = empty($dueDate)
+                ? ''
+                : $dueDate . '<br /><small class="text-muted">' . htmlspecialchars(Pt_Commons_DateUtility::cutoffTimezoneLabel($aRow['response_deadline']), ENT_QUOTES) . '</small>';
             $row[] = $aRow['scheme_name'];
             // $row[] = $aRow['number_of_samples'];
             $participantsCell = $aRow['participant_count'];
