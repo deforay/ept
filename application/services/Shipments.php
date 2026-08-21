@@ -1920,7 +1920,7 @@ class Application_Service_Shipments
 
             if (isset($authNameSpace->qc_access) && $authNameSpace->qc_access == 'yes') {
                 $data['qc_done'] = $params['qcDone'] ?? 'no';
-                if (isset($data['qc_done']) && trim($data['qc_done']) == 'yes') {
+                if (trim($data['qc_done']) == 'yes') {
                     $data['qc_date'] = Pt_Commons_DateUtility::isoDateFormat($params['qcDate']);
                     $data['qc_done_by'] = trim($params['qcDoneBy']);
                     $data['qc_created_on'] = new Zend_Db_Expr('now()');
