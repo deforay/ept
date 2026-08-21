@@ -383,6 +383,87 @@ final class Pt_Commons_DateUtility
         }
     }
 
+    // Human-readable name for the timezone a response deadline is judged in, for
+    // showing next to a due date so an admin in another zone knows what the clock
+    // on screen means — e.g. "India Standard Time (IST, UTC+05:30)". Anywhere on
+    // Earth is named as the policy it is. The full name comes from ICU (intl); when
+    // that is unavailable the abbreviation and offset still carry the meaning.
+    // Pass the deadline to get the name and offset that apply to that instant (so
+    // DST is honoured); omit it for what is in force right now.
+    public static function cutoffTimezoneLabel(?string $dueDate = null): string
+    {
+        $tz = self::cutoffTimezone();
+        if ($tz->getName() === 'Etc/GMT+12') {
+            return Pt_Commons_TranslateUtility::safeTranslate('Anywhere on Earth') . ' (UTC-12)';
+        }
+
+        $at = self::shipmentCutoff($dueDate) ?? new DateTimeImmutable('now', new DateTimeZone('UTC'));
+        $local = $at->setTimezone($tz);
+        $offset = 'UTC' . $local->format('P');
+
+        // PHP gives a real abbreviation (IST, EAT, CAT) where the zone has one and
+        // a bare "+07" where it does not — the offset alone already says that.
+        $abbr = $local->format('T');
+        $hasAbbr = (bool) preg_match('/^[A-Za-z]{2,}$/', $abbr);
+        // "UTC, UTC+00:00" says the same thing twice.
+        $qualifiers = $hasAbbr
+            ? (($offset === 'UTC+00:00' && in_array($abbr, ['UTC', 'GMT'], true)) ? [$abbr] : [$abbr, $offset])
+            : [$offset];
+
+        $name = self::timezoneDisplayName($tz, $at);
+        return $name === null
+            ? implode(', ', $qualifiers)
+            : $name . ' (' . implode(', ', $qualifiers) . ')';
+    }
+
+    // ICU's generic long name for a zone ("India Standard Time", "Eastern Time").
+    // Null when intl is missing or ICU only offers a GMT offset, which the caller
+    // already shows.
+    private static function timezoneDisplayName(DateTimeZone $tz, DateTimeImmutable $at): ?string
+    {
+        if (!class_exists('IntlTimeZone')) {
+            return null;
+        }
+        try {
+            $icu = IntlTimeZone::createTimeZone($tz->getName());
+            $isDst = (bool) $at->setTimezone($tz)->format('I');
+            $locale = self::displayLocale();
+            $name = $icu->getDisplayName($isDst, IntlTimeZone::DISPLAY_LONG_GENERIC, $locale);
+            // Zones with no generic name (UTC) come back as an offset instead; the
+            // non-generic long name is a real name there ("Coordinated Universal Time",
+            // "temps universel coordonné").
+            if (self::isOffsetShapedName($name)) {
+                $name = $icu->getDisplayName($isDst, IntlTimeZone::DISPLAY_LONG, $locale);
+            }
+        } catch (Throwable $e) {
+            return null;
+        }
+        return self::isOffsetShapedName($name) ? null : $name;
+    }
+
+    // True when ICU handed back an offset rather than a name — "GMT+00:00" in
+    // English, "UTC+00:00" in French, "ម៉ោង​សកល +00:00" in Khmer. Match on the
+    // trailing offset, not the prefix, so this holds in every locale.
+    private static function isOffsetShapedName(mixed $name): bool
+    {
+        if (!is_string($name) || trim($name) === '') {
+            return true;
+        }
+        return (bool) preg_match('/[+\-\x{2212}]\s*\d{1,2}([:.]\d{2})?$/u', trim($name));
+    }
+
+    // The locale the request is being translated in (Bootstrap stores it), so the
+    // zone name follows the rest of the page. Falls back to en_US off-request.
+    private static function displayLocale(): string
+    {
+        try {
+            $locale = Zend_Registry::isRegistered('Zend_Locale') ? Zend_Registry::get('Zend_Locale') : null;
+        } catch (Throwable $e) {
+            $locale = null;
+        }
+        return is_string($locale) && $locale !== '' ? $locale : 'en_US';
+    }
+
     // Builds the DATETIME value to store in shipment.response_deadline from the
     // add/edit form. The deadline arrives from a single datetime picker as one
     // value (e.g. "29-May-2026 23:00"); when its time component is present it is

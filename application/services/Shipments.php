@@ -329,7 +329,13 @@ class Application_Service_Shipments
             $row[] = $aRow['SCHEME'];
             $row[] = $aRow['distribution_code'];
             $row[] = Pt_Commons_DateUtility::humanReadableDateFormat($aRow['distribution_date']);
-            $row[] = Pt_Commons_DateUtility::humanReadableDateFormat($aRow['response_deadline'], true);
+            // The deadline is judged in the programme's cutoff timezone, not the reader's,
+            // so name that zone under the date — an admin abroad otherwise reads the time
+            // as their own local clock.
+            $dueDate = Pt_Commons_DateUtility::humanReadableDateFormat($aRow['response_deadline'], true);
+            $row[] = empty($dueDate)
+                ? ''
+                : $dueDate . '<br /><small class="text-muted">' . htmlspecialchars(Pt_Commons_DateUtility::cutoffTimezoneLabel($aRow['response_deadline']), ENT_QUOTES) . '</small>';
             $row[] = $aRow['number_of_samples'];
             $row[] = $aRow['total_participants'];
             $row[] = $responseSwitch;
