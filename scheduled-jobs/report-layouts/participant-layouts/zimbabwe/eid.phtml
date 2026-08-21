@@ -268,6 +268,7 @@ if (!empty($resultArray['shipment'])) {
                 $submittedCount = (int) ($shipmentsUnderDistro['valid_responses'] ?? 0);
                 $notRespondedCount = max(0, $enrolledCount - $participatedCount);
                 $passedCount = (int) ($shipmentsUnderDistro['number_passed'] ?? 0);
+                $failedCount = (int) ($shipmentsUnderDistro['number_failed'] ?? 0);
                 $responseRate = $enrolledCount > 0 ? round(($participatedCount / $enrolledCount) * 100) : 0;
                 $passRate = $submittedCount > 0 ? round(($passedCount / $submittedCount) * 100) : 0;
 
@@ -294,13 +295,13 @@ if (!empty($resultArray['shipment'])) {
                             <td style="text-align:center;width:20%;">' . $notRespondedCount . '</td>
                         </tr>
                         <tr>
-                            <td style="background-color:#dbe4ee;text-align:center;font-weight:bold;width:35%;">Total Number of Participants Submitted Results</td>
-                            <td style="background-color:#dbe4ee;text-align:center;font-weight:bold;width:45%;">Total Number of Participants Satisfactory Performance</td>
+                            <td style="background-color:#dbe4ee;text-align:center;font-weight:bold;width:35%;">Total Number of Participants Satisfactory Performance</td>
+                            <td style="background-color:#dbe4ee;text-align:center;font-weight:bold;width:45%;">Total Number of Participants Unsatisfactory Performance</td>
                             <td style="background-color:#dbe4ee;text-align:center;font-weight:bold;width:20%;">Pass Rate</td>
                         </tr>
                         <tr>
-                            <td style="text-align:center;width:35%;">' . $submittedCount . '</td>
-                            <td style="text-align:center;width:45%;">' . $passedCount . '</td>
+                            <td style="text-align:center;width:35%;">' . $passedCount . '</td>
+                            <td style="text-align:center;width:45%;">' . $failedCount . '</td>
                             <td style="text-align:center;width:20%;">' . $passRate . '%</td>
                         </tr>
                     </table>';

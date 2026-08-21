@@ -3413,6 +3413,7 @@ class Application_Service_Shipments
                 // belongs to.
                 'valid_responses' => new Zend_Db_Expr("SUM(sp.response_status IN ('responded', 'late') AND IFNULL(sp.is_excluded, 'no') <> 'yes' AND IFNULL(sp.is_pt_test_not_performed, 'no') <> 'yes')"),
                 'number_passed' => new Zend_Db_Expr('SUM(sp.final_result = 1)'),
+                'number_failed' => new Zend_Db_Expr('SUM(sp.final_result = 2)'),
                 'downloaded_count' => new Zend_Db_Expr("SUM(sp.report_download_metadata IS NOT NULL AND JSON_UNQUOTE(JSON_EXTRACT(sp.report_download_metadata, '$.report_downloaded')) = 'yes')"),
                 'participant_report_count' => new Zend_Db_Expr("SUM(sp.report_download_metadata IS NOT NULL AND COALESCE(JSON_EXTRACT(sp.report_download_metadata, '$.first_individual_report_on'), JSON_EXTRACT(sp.report_download_metadata, '$.latest_individual_report_on')) IS NOT NULL)"),
                 'summary_report_count' => new Zend_Db_Expr("SUM(sp.report_download_metadata IS NOT NULL AND COALESCE(JSON_EXTRACT(sp.report_download_metadata, '$.first_summary_report_on'), JSON_EXTRACT(sp.report_download_metadata, '$.latest_summary_report_on')) IS NOT NULL)"),
