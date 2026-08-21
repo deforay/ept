@@ -44,6 +44,20 @@ class Application_Service_Shipments
         return null;
     }
 
+    /**
+     * Response status for a submission the participant is saving.
+     *
+     * A lab that comes back to say it could not test — no kits, nobody trained — has taken
+     * part, but it has not submitted results. Storing that as 'nottested' keeps the two apart
+     * at the source, instead of leaving every report, grid and dashboard to re-derive it from
+     * is_pt_test_not_performed. Recomputed on each save, so a lab that later returns and enters
+     * results goes back to 'responded'.
+     */
+    private static function responseStatusForSubmission(array $params): string
+    {
+        return (($params['isPtTestNotPerformed'] ?? '') === 'yes') ? 'nottested' : 'responded';
+    }
+
     private function logResponseSave($scheme, $params)
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
@@ -220,7 +234,7 @@ class Application_Service_Shipments
 
         $sQuery = $db->select()->from(['s' => 'shipment'])
             ->join(['d' => 'distributions'], 'd.distribution_id = s.distribution_id', ['distribution_code', 'distribution_date'])
-            ->joinLeft(['spm' => 'shipment_participant_map'], 's.shipment_id = spm.shipment_id', ['total_participants' => new Zend_Db_Expr('count(map_id)'), 'reported_count' => new Zend_Db_Expr("SUM(response_status is not null AND response_status like 'responded')"), 'last_new_shipment_mailed_on', 'new_shipment_mail_count', 'shipment_test_report_date', 'response_status', 'notResponded' => new Zend_Db_Expr("SUM( CASE WHEN (spm.shipment_test_report_date IS NULL OR DATE(spm.shipment_test_report_date) = '0000-00-00' OR spm.response_status like 'noresponse') THEN 1 ELSE 0 END )")])
+            ->joinLeft(['spm' => 'shipment_participant_map'], 's.shipment_id = spm.shipment_id', ['total_participants' => new Zend_Db_Expr('count(map_id)'), 'reported_count' => new Zend_Db_Expr("SUM(response_status IN ('responded', 'nottested'))"), 'last_new_shipment_mailed_on', 'new_shipment_mail_count', 'shipment_test_report_date', 'response_status', 'notResponded' => new Zend_Db_Expr("SUM( CASE WHEN (spm.shipment_test_report_date IS NULL OR DATE(spm.shipment_test_report_date) = '0000-00-00' OR spm.response_status like 'noresponse') THEN 1 ELSE 0 END )")])
             ->join(['sl' => 'scheme_list'], 'sl.scheme_id=s.scheme_type', ['SCHEME' => 'sl.scheme_name', 'is_user_configured'])
             ->group('s.shipment_id');
 
@@ -554,10 +568,7 @@ class Application_Service_Shipments
 
             $attributes = json_encode($attributes);
 
-            $responseStatus = 'responded';
-            // if ($params['isPtTestNotPerformed'] == "yes") {
-            //     $responseStatus = "nottested";
-            // }
+            $responseStatus = self::responseStatusForSubmission($params);
 
             $data = [
                 'shipment_receipt_date' => Pt_Commons_DateUtility::isoDateFormat($params['receiptDate']),
@@ -726,10 +737,7 @@ class Application_Service_Shipments
             ];
 
             $attributes = json_encode($attributes);
-            $responseStatus = 'responded';
-            // if ($params['isPtTestNotPerformed'] == "yes") {
-            //     $responseStatus = "nottested";
-            // }
+            $responseStatus = self::responseStatusForSubmission($params);
             $data = [
                 'shipment_receipt_date' => Pt_Commons_DateUtility::isoDateFormat($params['receiptDate']),
                 'shipment_test_date' => Pt_Commons_DateUtility::isoDateFormat($params['testDate']),
@@ -850,10 +858,7 @@ class Application_Service_Shipments
             }
             $attributes['dts_test_panel_type'] = $params['dtsTestPanelType'] ?? null;
             $attributes = json_encode($attributes);
-            $responseStatus = 'responded';
-            // if (isset($params['isPtTestNotPerformed']) && $params['isPtTestNotPerformed'] == "yes") {
-            //     $responseStatus = "nottested";
-            // }
+            $responseStatus = self::responseStatusForSubmission($params);
             $data = [
                 'shipment_receipt_date' => Pt_Commons_DateUtility::isoDateFormat($params['receiptDate']),
                 'shipment_test_date' => Pt_Commons_DateUtility::isoDateFormat($params['testDate']),
@@ -990,10 +995,7 @@ class Application_Service_Shipments
             $attributes['sample_rehydration_date'] = Pt_Commons_DateUtility::isoDateFormat($params['sampleRehydrationDate']);
             $attributes['algorithm'] = $params['algorithm'];
             $attributes = json_encode($attributes);
-            $responseStatus = 'responded';
-            // if ($params['isPtTestNotPerformed'] == "yes") {
-            //     $responseStatus = "nottested";
-            // }
+            $responseStatus = self::responseStatusForSubmission($params);
             $data = [
                 'shipment_receipt_date' => Pt_Commons_DateUtility::isoDateFormat($params['receiptDate']),
                 'shipment_test_date' => Pt_Commons_DateUtility::isoDateFormat($params['testDate']),
@@ -1512,10 +1514,7 @@ class Application_Service_Shipments
             $shipmentParticipantDb = new Application_Model_DbTable_ShipmentParticipantMap();
             $attributes['sample_rehydration_date'] = Pt_Commons_DateUtility::isoDateFormat($params['sampleRehydrationDate']);
             $attributes = json_encode($attributes);
-            $responseStatus = 'responded';
-            // if ($params['isPtTestNotPerformed'] == "yes") {
-            //     $responseStatus = "nottested";
-            // }
+            $responseStatus = self::responseStatusForSubmission($params);
             $data = [
                 'shipment_receipt_date' => Pt_Commons_DateUtility::isoDateFormat($params['receiptDate']),
                 'shipment_test_date' => Pt_Commons_DateUtility::isoDateFormat($params['testDate']),
@@ -1583,6 +1582,11 @@ class Application_Service_Shipments
 
         if (isset($params['isDraft']) && $params['isDraft'] === 'yes') {
             $responseStatus = 'draft';
+        } elseif (($params['isPtTestNotPerformed'] ?? '') === 'yes') {
+            // Declaring "could not test" is a finished submission. It must not fall through to
+            // the required-field check, which would see the emptied sample rows and file it as a
+            // half-written draft — i.e. as someone who never came back to us at all.
+            $responseStatus = self::responseStatusForSubmission($params);
         } else {
             $responseStatus = $this->checkTBRequiredFieldsValidations($params);
         }
@@ -1738,7 +1742,7 @@ class Application_Service_Shipments
             ];
 
             $attributes = json_encode($attributes);
-            $responseStatus = 'responded';
+            $responseStatus = self::responseStatusForSubmission($params);
 
             $data = [
                 'shipment_receipt_date' => (isset($params['receiptDate']) && !empty($params['receiptDate'])) ? Pt_Commons_DateUtility::isoDateFormat($params['receiptDate']) : '',
@@ -1875,10 +1879,7 @@ class Application_Service_Shipments
                 $params['modeOfReceipt'] = null;
             }
             $attributes = Zend_Json::encode($attributes);
-            $responseStatus = 'responded';
-            // if ($params['isPtTestNotPerformed'] == "yes") {
-            //     $responseStatus = "nottested";
-            // }
+            $responseStatus = self::responseStatusForSubmission($params);
             $data = [
                 'shipment_receipt_date' => Pt_Commons_DateUtility::isoDateFormat($params['receiptDate']),
                 'shipment_test_date' => Pt_Commons_DateUtility::isoDateFormat($params['testDate']),
@@ -3400,7 +3401,17 @@ class Application_Service_Shipments
             ->join(['sp' => 'shipment_participant_map'], 'sp.shipment_id=s.shipment_id', [
                 'report_generated',
                 'participant_count' => new Zend_Db_Expr('COUNT(sp.participant_id)'),
-                'reported_count' => new Zend_Db_Expr("SUM(sp.response_status IS NOT NULL AND sp.response_status LIKE 'responded')"),
+                'reported_count' => new Zend_Db_Expr("SUM(sp.response_status IN ('responded', 'nottested'))"),
+                // A lab that comes back saying "no kits" or "nobody trained" has taken part, but it
+                // has not submitted results, so the three counts below split that population apart.
+                // They read the same whether the declaration was stored as response_status
+                // 'nottested' or only as is_pt_test_not_performed = 'yes', so rounds evaluated
+                // before and after that storage changed stay comparable.
+                'participated_count' => new Zend_Db_Expr("SUM(sp.response_status IN ('responded', 'late', 'nottested'))"),
+                'unable_to_test' => new Zend_Db_Expr("SUM(sp.response_status = 'nottested' OR sp.is_pt_test_not_performed = 'yes')"),
+                // The set that actually reached evaluation, and the denominator number_passed
+                // belongs to.
+                'valid_responses' => new Zend_Db_Expr("SUM(sp.response_status IN ('responded', 'late') AND IFNULL(sp.is_excluded, 'no') <> 'yes' AND IFNULL(sp.is_pt_test_not_performed, 'no') <> 'yes')"),
                 'number_passed' => new Zend_Db_Expr('SUM(sp.final_result = 1)'),
                 'downloaded_count' => new Zend_Db_Expr("SUM(sp.report_download_metadata IS NOT NULL AND JSON_UNQUOTE(JSON_EXTRACT(sp.report_download_metadata, '$.report_downloaded')) = 'yes')"),
                 'participant_report_count' => new Zend_Db_Expr("SUM(sp.report_download_metadata IS NOT NULL AND COALESCE(JSON_EXTRACT(sp.report_download_metadata, '$.first_individual_report_on'), JSON_EXTRACT(sp.report_download_metadata, '$.latest_individual_report_on')) IS NOT NULL)"),
@@ -3663,7 +3674,7 @@ class Application_Service_Shipments
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $sql = $db->select()->from(['s' => 'shipment'], ['shipment_id', 'shipment_code', 'status', 'number_of_samples'])
             ->join(['d' => 'distributions'], 'd.distribution_id=s.distribution_id', ['distribution_code', 'distribution_date'])
-            ->join(['sp' => 'shipment_participant_map'], 'sp.shipment_id=s.shipment_id', ['participant_count' => new Zend_Db_Expr('count("participant_id")'), 'reported_count' => new Zend_Db_Expr("SUM(response_status is not null AND response_status like 'responded')"), 'number_passed' => new Zend_Db_Expr('SUM(final_result = 1)')])
+            ->join(['sp' => 'shipment_participant_map'], 'sp.shipment_id=s.shipment_id', ['participant_count' => new Zend_Db_Expr('count("participant_id")'), 'reported_count' => new Zend_Db_Expr("SUM(response_status IN ('responded', 'nottested'))"), 'number_passed' => new Zend_Db_Expr('SUM(final_result = 1)')])
             ->join(['sl' => 'scheme_list'], 'sl.scheme_id=s.scheme_type', ['scheme_name'])
             ->joinLeft(['rr' => 'r_results'], 'sp.final_result=rr.result_id')
             ->where("s.status='finalized'")
@@ -4233,7 +4244,7 @@ class Application_Service_Shipments
                 'final_result',
                 'map_id',
                 'total_participants' => new Zend_Db_Expr('count(map_id)'),
-                'reported_count' => new Zend_Db_Expr("SUM(response_status is not null AND response_status like 'responded')"),
+                'reported_count' => new Zend_Db_Expr("SUM(response_status IN ('responded', 'nottested'))"),
             ]
         )
             ->join(['s' => 'shipment'], 'spm.shipment_id=s.shipment_id', ['shipment_id', 'shipment_date', 'scheme_type', 'shipment_code', 'shipment_attributes', 'number_of_samples', 'response_deadline'])

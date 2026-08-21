@@ -386,7 +386,9 @@ if (!empty($resultArray['shipment'])) {
 
         // Summary count if provided
         if (isset($shipmentsUnderDistro) && !empty($shipmentsUnderDistro)) {
-            $responseRate = round(($shipmentsUnderDistro['reported_count'] / $shipmentsUnderDistro['participant_count']) * 100);
+            $enrolledCount = (int) ($shipmentsUnderDistro['participant_count'] ?? 0);
+            $participatedCount = (int) ($shipmentsUnderDistro['reported_count'] ?? 0);
+            $responseRate = $enrolledCount > 0 ? round(($participatedCount / $enrolledCount) * 100) : 0;
             $summaryCount = '<span style="font-weight:bold;font-size:12px;">Summary of Laboratory Scores</span><br/>
                 <table border="1" style="font-size:11px;width:100%;">
                     <tr>
@@ -395,8 +397,8 @@ if (!empty($resultArray['shipment'])) {
                         <td style="background-color:#dbe4ee;text-align:center;font-weight:bold;width:20%;">Response Rate</td>
                     </tr>
                     <tr>
-                        <td style="text-align:center;width:35%;">' . $shipmentsUnderDistro['participant_count'] . '</td>
-                        <td style="text-align:center;width:45%;">' . $shipmentsUnderDistro['reported_count'] . '</td>
+                        <td style="text-align:center;width:35%;">' . $enrolledCount . '</td>
+                        <td style="text-align:center;width:45%;">' . $participatedCount . '</td>
                         <td style="text-align:center;width:20%;">' . $responseRate . '%</td>
                     </tr>
                 </table>';

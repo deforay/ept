@@ -202,7 +202,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
          * SQL queries
          * Get data to display */
         $sQuery = $this->getAdapter()->select()->from(['s' => 'shipment'], [new Zend_Db_Expr('SQL_CALC_FOUND_ROWS s.scheme_type'), 'SHIP_YEAR' => 'year(s.shipment_date)', 'TOTALSHIPMEN' => new Zend_Db_Expr("COUNT('s.shipment_id')")])
-            ->joinLeft(['sp' => 'shipment_participant_map'], 's.shipment_id=sp.shipment_id', ['ONTIME' => new Zend_Db_Expr('COUNT(CASE substr(sp.evaluation_status,3,1) WHEN 1 THEN 1 END)'), 'NORESPONSE' => new Zend_Db_Expr('COUNT(CASE substr(sp.evaluation_status,2,1) WHEN 9 THEN 1 END)'), 'reported_count' => new Zend_Db_Expr("SUM(response_status is not null AND response_status like 'responded')")])
+            ->joinLeft(['sp' => 'shipment_participant_map'], 's.shipment_id=sp.shipment_id', ['ONTIME' => new Zend_Db_Expr('COUNT(CASE substr(sp.evaluation_status,3,1) WHEN 1 THEN 1 END)'), 'NORESPONSE' => new Zend_Db_Expr('COUNT(CASE substr(sp.evaluation_status,2,1) WHEN 9 THEN 1 END)'), 'reported_count' => new Zend_Db_Expr("SUM(response_status IN ('responded', 'nottested'))")])
             ->joinLeft(['sl' => 'scheme_list'], 'sl.scheme_id=s.scheme_type')
             ->where("s.status='shipped' OR s.status='evaluated' OR s.status='finalized'")
             ->where('s.cancelled_at IS NULL')
