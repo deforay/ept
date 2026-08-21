@@ -302,7 +302,10 @@ if ($resultArray['shipment'] != "") {
         $passedN = ($responseResult["number_passed"] > 0) ? $responseResult["number_passed"] : 0;
         $failedN = ($responseResult["number_failed"] > 0) ? $responseResult["number_failed"] : 0;
         $notRespondedN = $responseResult["not_responded"];
-        $responseResult["excluded"] = abs($responseResult["excluded"] - $responseResult["not_responded"]);
+        // Non-responders are also flagged excluded, so subtract them to keep the pie from
+        // counting them twice. Clamp at zero: abs() flipped the sign on shipments whose
+        // non-responders were never excluded, double-counting them instead of dropping them.
+        $responseResult["excluded"] = max(0, $responseResult["excluded"] - $responseResult["not_responded"]);
         $excludedN = $responseResult["excluded"];
         // $late = $responseResult["number_late"];
         //$total = $passedN + $failedN + $notRespondedN + $excludedN;

@@ -310,6 +310,16 @@ class Application_Service_Reports
         return Application_Service_Common::getSetting($name, Application_Model_DbTable_GlobalConfig::CONTEXT_REPORT);
     }
 
+    /**
+     * Per-participant totals across shipments, charted by the detailed and participant
+     * response reports.
+     *
+     * 'others' is the report's label for rounds the participant did not respond to. It used
+     * to count an empty shipment_test_date, which is not the same question: the date is
+     * cleared on purpose when a lab declares it could not test, and a submission can carry
+     * results with the date left blank. It now asks response_status, matching
+     * Shipments::getShipmentParticipationStats() and the non-participation mailer.
+     */
     public function getParticipantDetailedReport($params)
     {
         $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
@@ -320,7 +330,7 @@ class Application_Service_Reports
                 //->joinLeft(array('sp'=>'shipment_participant_map'),'sp.participant_id=p.participant_id',array('participant_count'=> new Zend_Db_Expr("SUM(shipment_test_date = '') + SUM(shipment_test_date <> '')"), 'reported_count'=> new Zend_Db_Expr("SUM(shipment_test_date <> '')"), 'number_passed'=> new Zend_Db_Expr("SUM(final_result = 1)")))
                 ->joinLeft(['shp' => 'shipment_participant_map'], 'shp.participant_id=p.participant_id', [])
                 ->joinLeft(['s' => 'shipment'], 's.shipment_id=shp.shipment_id', ['response_deadline'])
-                ->joinLeft(['sp' => 'shipment_participant_map'], 'sp.participant_id=p.participant_id', ['others' => new Zend_Db_Expr('SUM(sp.shipment_test_date IS NULL)'), 'excluded' => new Zend_Db_Expr("SUM(if(sp.is_excluded = 'yes', 1, 0))"), 'number_failed' => new Zend_Db_Expr("SUM(sp.final_result = 2 AND sp.shipment_test_date <= DATE(s.response_deadline) AND sp.is_excluded != 'yes')"), 'number_passed' => new Zend_Db_Expr("SUM(sp.final_result = 1 AND sp.shipment_test_date <= DATE(s.response_deadline) AND sp.is_excluded != 'yes')"), 'number_late' => new Zend_Db_Expr("SUM(sp.shipment_test_date > DATE(s.response_deadline) AND sp.is_excluded != 'yes')"), 'map_id'])
+                ->joinLeft(['sp' => 'shipment_participant_map'], 'sp.participant_id=p.participant_id', ['others' => new Zend_Db_Expr("SUM(IFNULL(sp.response_status, 'noresponse') NOT IN ('responded', 'late', 'nottested'))"), 'excluded' => new Zend_Db_Expr("SUM(if(sp.is_excluded = 'yes', 1, 0))"), 'number_failed' => new Zend_Db_Expr("SUM(sp.final_result = 2 AND sp.shipment_test_date <= DATE(s.response_deadline) AND sp.is_excluded != 'yes')"), 'number_passed' => new Zend_Db_Expr("SUM(sp.final_result = 1 AND sp.shipment_test_date <= DATE(s.response_deadline) AND sp.is_excluded != 'yes')"), 'number_late' => new Zend_Db_Expr("SUM(sp.shipment_test_date > DATE(s.response_deadline) AND sp.is_excluded != 'yes')"), 'map_id'])
                 ->joinLeft(['sl' => 'scheme_list'], 's.scheme_type=sl.scheme_id', [])
                 ->joinLeft(['d' => 'distributions'], 'd.distribution_id=s.distribution_id', [])
                 ->joinLeft(['rr' => 'r_results'], 'sp.final_result=rr.result_id', [])
@@ -333,7 +343,7 @@ class Application_Service_Reports
                 //->joinLeft(array('sp'=>'shipment_participant_map'),'sp.participant_id=p.participant_id',array('participant_count'=> new Zend_Db_Expr("SUM(shipment_test_date = '') + SUM(shipment_test_date <> '')"), 'reported_count'=> new Zend_Db_Expr("SUM(shipment_test_date <> '')"), 'number_passed'=> new Zend_Db_Expr("SUM(final_result = 1)")))
                 ->joinLeft(['shp' => 'shipment_participant_map'], 'shp.participant_id=p.participant_id', [])
                 ->joinLeft(['s' => 'shipment'], 's.shipment_id=shp.shipment_id', ['response_deadline'])
-                ->joinLeft(['sp' => 'shipment_participant_map'], 'sp.participant_id=p.participant_id', ['others' => new Zend_Db_Expr('SUM(sp.shipment_test_date IS NULL)'), 'excluded' => new Zend_Db_Expr("SUM(if(sp.is_excluded = 'yes', 1, 0))"), 'number_failed' => new Zend_Db_Expr("SUM(sp.final_result = 2 AND sp.shipment_test_date <= DATE(s.response_deadline) AND sp.is_excluded != 'yes')"), 'number_passed' => new Zend_Db_Expr("SUM(sp.final_result = 1 AND sp.shipment_test_date <= DATE(s.response_deadline) AND sp.is_excluded != 'yes')"), 'number_late' => new Zend_Db_Expr("SUM(sp.shipment_test_date > DATE(s.response_deadline) AND sp.is_excluded != 'yes')")])
+                ->joinLeft(['sp' => 'shipment_participant_map'], 'sp.participant_id=p.participant_id', ['others' => new Zend_Db_Expr("SUM(IFNULL(sp.response_status, 'noresponse') NOT IN ('responded', 'late', 'nottested'))"), 'excluded' => new Zend_Db_Expr("SUM(if(sp.is_excluded = 'yes', 1, 0))"), 'number_failed' => new Zend_Db_Expr("SUM(sp.final_result = 2 AND sp.shipment_test_date <= DATE(s.response_deadline) AND sp.is_excluded != 'yes')"), 'number_passed' => new Zend_Db_Expr("SUM(sp.final_result = 1 AND sp.shipment_test_date <= DATE(s.response_deadline) AND sp.is_excluded != 'yes')"), 'number_late' => new Zend_Db_Expr("SUM(sp.shipment_test_date > DATE(s.response_deadline) AND sp.is_excluded != 'yes')")])
                 ->joinLeft(['sl' => 'scheme_list'], 's.scheme_type=sl.scheme_id', [])
                 ->joinLeft(['d' => 'distributions'], 'd.distribution_id=s.distribution_id', [])
                 ->joinLeft(['rr' => 'r_results'], 'sp.final_result=rr.result_id', [])
@@ -344,7 +354,7 @@ class Application_Service_Reports
                 //->joinLeft(array('sp'=>'shipment_participant_map'),'sp.participant_id=p.participant_id',array('participant_count'=> new Zend_Db_Expr("SUM(shipment_test_date = '') + SUM(shipment_test_date <> '')"), 'reported_count'=> new Zend_Db_Expr("SUM(shipment_test_date <> '')"), 'number_passed'=> new Zend_Db_Expr("SUM(final_result = 1)")))
                 ->joinLeft(['shp' => 'shipment_participant_map'], 'shp.participant_id=p.participant_id', [])
                 ->joinLeft(['s' => 'shipment'], 's.shipment_id=shp.shipment_id', ['response_deadline', 'shipment_code'])
-                ->joinLeft(['sp' => 'shipment_participant_map'], 'sp.participant_id=p.participant_id', ['others' => new Zend_Db_Expr('SUM(sp.shipment_test_date IS NULL)'), 'excluded' => new Zend_Db_Expr("SUM(if(sp.is_excluded = 'yes', 1, 0))"), 'number_failed' => new Zend_Db_Expr("SUM(sp.final_result = 2 AND sp.shipment_test_date <= DATE(s.response_deadline) AND sp.is_excluded != 'yes')"), 'number_passed' => new Zend_Db_Expr("SUM(sp.final_result = 1 AND sp.shipment_test_date <= DATE(s.response_deadline) AND sp.is_excluded != 'yes')"), 'number_late' => new Zend_Db_Expr("SUM(sp.shipment_test_date > DATE(s.response_deadline) AND sp.is_excluded != 'yes')")])
+                ->joinLeft(['sp' => 'shipment_participant_map'], 'sp.participant_id=p.participant_id', ['others' => new Zend_Db_Expr("SUM(IFNULL(sp.response_status, 'noresponse') NOT IN ('responded', 'late', 'nottested'))"), 'excluded' => new Zend_Db_Expr("SUM(if(sp.is_excluded = 'yes', 1, 0))"), 'number_failed' => new Zend_Db_Expr("SUM(sp.final_result = 2 AND sp.shipment_test_date <= DATE(s.response_deadline) AND sp.is_excluded != 'yes')"), 'number_passed' => new Zend_Db_Expr("SUM(sp.final_result = 1 AND sp.shipment_test_date <= DATE(s.response_deadline) AND sp.is_excluded != 'yes')"), 'number_late' => new Zend_Db_Expr("SUM(sp.shipment_test_date > DATE(s.response_deadline) AND sp.is_excluded != 'yes')")])
                 ->joinLeft(['sl' => 'scheme_list'], 's.scheme_type=sl.scheme_id', [])
                 ->joinLeft(['d' => 'distributions'], 'd.distribution_id=s.distribution_id', [])
                 ->joinLeft(['rr' => 'r_results'], 'sp.final_result=rr.result_id', [])
@@ -354,7 +364,7 @@ class Application_Service_Reports
             $sQuery = $dbAdapter->select()->from(['p' => 'participant'], ['p.district'])
                 ->joinLeft(['shp' => 'shipment_participant_map'], 'shp.participant_id=p.participant_id', [])
                 ->joinLeft(['s' => 'shipment'], 's.shipment_id=shp.shipment_id', ['response_deadline', 'shipment_code'])
-                ->joinLeft(['sp' => 'shipment_participant_map'], 'sp.participant_id=p.participant_id', ['others' => new Zend_Db_Expr('SUM(sp.shipment_test_date IS NULL)'), 'excluded' => new Zend_Db_Expr("SUM(if(sp.is_excluded = 'yes', 1, 0))"), 'number_failed' => new Zend_Db_Expr("SUM(sp.final_result = 2 AND sp.shipment_test_date <= DATE(s.response_deadline) AND sp.is_excluded != 'yes')"), 'number_passed' => new Zend_Db_Expr("SUM(sp.final_result = 1 AND sp.shipment_test_date <= DATE(s.response_deadline) AND sp.is_excluded != 'yes')"), 'number_late' => new Zend_Db_Expr("SUM(sp.shipment_test_date > DATE(s.response_deadline) AND sp.is_excluded != 'yes')")])
+                ->joinLeft(['sp' => 'shipment_participant_map'], 'sp.participant_id=p.participant_id', ['others' => new Zend_Db_Expr("SUM(IFNULL(sp.response_status, 'noresponse') NOT IN ('responded', 'late', 'nottested'))"), 'excluded' => new Zend_Db_Expr("SUM(if(sp.is_excluded = 'yes', 1, 0))"), 'number_failed' => new Zend_Db_Expr("SUM(sp.final_result = 2 AND sp.shipment_test_date <= DATE(s.response_deadline) AND sp.is_excluded != 'yes')"), 'number_passed' => new Zend_Db_Expr("SUM(sp.final_result = 1 AND sp.shipment_test_date <= DATE(s.response_deadline) AND sp.is_excluded != 'yes')"), 'number_late' => new Zend_Db_Expr("SUM(sp.shipment_test_date > DATE(s.response_deadline) AND sp.is_excluded != 'yes')")])
                 ->joinLeft(['sl' => 'scheme_list'], 's.scheme_type=sl.scheme_id', [])
                 ->joinLeft(['d' => 'distributions'], 'd.distribution_id=s.distribution_id', [])
                 ->joinLeft(['rr' => 'r_results'], 'sp.final_result=rr.result_id', [])
@@ -367,7 +377,7 @@ class Application_Service_Reports
                 ->joinLeft(['rep' => 'r_enrolled_programs'], 'rep.r_epid=pe.ep_id', ['rep.enrolled_programs'])
                 ->joinLeft(['shp' => 'shipment_participant_map'], 'shp.participant_id=p.participant_id', [])
                 ->joinLeft(['s' => 'shipment'], 's.shipment_id=shp.shipment_id', ['response_deadline'])
-                ->joinLeft(['sp' => 'shipment_participant_map'], 'sp.participant_id=p.participant_id', ['others' => new Zend_Db_Expr('SUM(sp.shipment_test_date IS NULL)'), 'excluded' => new Zend_Db_Expr("SUM(if(sp.is_excluded = 'yes', 1, 0))"), 'number_failed' => new Zend_Db_Expr("SUM(sp.final_result = 2 AND sp.shipment_test_date <= DATE(s.response_deadline) AND sp.is_excluded != 'yes')"), 'number_passed' => new Zend_Db_Expr("SUM(sp.final_result = 1 AND sp.shipment_test_date <= DATE(s.response_deadline) AND sp.is_excluded != 'yes')"), 'number_late' => new Zend_Db_Expr("SUM(sp.shipment_test_date > DATE(s.response_deadline) AND sp.is_excluded != 'yes')")])
+                ->joinLeft(['sp' => 'shipment_participant_map'], 'sp.participant_id=p.participant_id', ['others' => new Zend_Db_Expr("SUM(IFNULL(sp.response_status, 'noresponse') NOT IN ('responded', 'late', 'nottested'))"), 'excluded' => new Zend_Db_Expr("SUM(if(sp.is_excluded = 'yes', 1, 0))"), 'number_failed' => new Zend_Db_Expr("SUM(sp.final_result = 2 AND sp.shipment_test_date <= DATE(s.response_deadline) AND sp.is_excluded != 'yes')"), 'number_passed' => new Zend_Db_Expr("SUM(sp.final_result = 1 AND sp.shipment_test_date <= DATE(s.response_deadline) AND sp.is_excluded != 'yes')"), 'number_late' => new Zend_Db_Expr("SUM(sp.shipment_test_date > DATE(s.response_deadline) AND sp.is_excluded != 'yes')")])
                 ->joinLeft(['sl' => 'scheme_list'], 's.scheme_type=sl.scheme_id', [])
                 ->joinLeft(['d' => 'distributions'], 'd.distribution_id=s.distribution_id', [])
                 ->joinLeft(['rr' => 'r_results'], 'sp.final_result=rr.result_id', [])

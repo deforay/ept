@@ -3483,7 +3483,7 @@ class Application_Service_Evaluation
                         'sp.shipment_id=s.shipment_id',
                         [
                             'shipmentDate' => new Zend_Db_Expr("DATE_FORMAT(s.shipment_date,'%d-%b-%Y')"),
-                            'not_responded' => new Zend_Db_Expr("SUM(CASE WHEN ((sp.shipment_test_date like '0000-00-00' OR sp.shipment_test_date IS NULL) AND sp.is_excluded like 'yes%') THEN 1 ELSE 0 END)"),
+                            'not_responded' => new Zend_Db_Expr("SUM(IFNULL(sp.response_status, 'noresponse') NOT IN ('responded', 'late', 'nottested'))"),
                             'excluded' => new Zend_Db_Expr("SUM(CASE WHEN (sp. final_result is not null AND sp. final_result != 2 AND sp. is_excluded is not null AND sp. is_excluded not like '' AND sp. is_excluded like 'yes') THEN 1 ELSE 0 END)"),
                             'total_shipped' => new Zend_Db_Expr('count("sp.map_id")'),
                             'reported_count' => new Zend_Db_Expr("SUM(shipment_test_report_date not like  '0000-00-00' OR is_pt_test_not_performed !='yes')"),
@@ -4034,7 +4034,11 @@ class Application_Service_Evaluation
                 'sp.participant_id=p.participant_id',
                 [
                     'total_shipped' => new Zend_Db_Expr('count("sp.map_id")'),
-                    'not_responded' => new Zend_Db_Expr("SUM(CASE WHEN ((sp.shipment_test_date like '0000-00-00' OR sp.shipment_test_date IS NULL)) THEN 1 ELSE 0 END)"),
+                    // An empty shipment_test_date is not "did not respond": it is cleared on purpose
+                    // when a lab declares it could not test, and a submission can carry results with
+                    // the date left blank. Same test as the non-participation mailer and
+                    // Shipments::getShipmentParticipationStats(), so every surface agrees.
+                    'not_responded' => new Zend_Db_Expr("SUM(IFNULL(sp.response_status, 'noresponse') NOT IN ('responded', 'late', 'nottested'))"),
                     'excluded' => new Zend_Db_Expr("SUM(CASE WHEN (sp.is_excluded like 'yes') THEN 1 ELSE 0 END)"),
                     'number_failed' => new Zend_Db_Expr("SUM(CASE WHEN (sp.final_result = 2 AND sp.is_excluded != 'yes') THEN 1 ELSE 0 END)"),
                     'number_passed' => new Zend_Db_Expr("SUM(CASE WHEN (sp.final_result = 1 AND sp.is_excluded != 'yes') THEN 1 ELSE 0 END)"),
