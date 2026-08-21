@@ -3617,7 +3617,13 @@ class Application_Service_Shipments
             ->joinLeft(['d' => 'distributions'], 'd.distribution_id = s.distribution_id', ['distribution_code', 'distribution_date'])
             ->joinLeft(['p' => 'participant'], 'p.participant_id=sp.participant_id', ['p.email', 'participantName' => new Zend_Db_Expr(Application_Model_DbTable_Participants::participantNameGroupConcatExpr('p'))])
             ->joinLeft(['sl' => 'scheme_list'], 'sl.scheme_id=s.scheme_type', ['SCHEME' => 'sl.scheme_name'])
-            ->where("(sp.shipment_test_date = '0000-00-00' OR sp.shipment_test_date IS null OR sp.shipment_test_date like '')")
+            // Who has not come back to us. An empty shipment_test_date used to stand in for
+            // that, but it is a poor proxy: a lab that declares it could not test has the date
+            // cleared on purpose, a late responder still responded, and a submission can carry
+            // results with the date left blank. All three were being chased for not taking
+            // part. response_status answers the question directly. Drafts stay on the list --
+            // a half-finished response is exactly what a reminder is for.
+            ->where("IFNULL(sp.response_status, 'noresponse') NOT IN ('responded', 'late', 'nottested')")
             ->where('sp.shipment_id = ?', $sid)
             ->group('sp.participant_id');
         $participantEmails = $db->fetchAll($sQuery);

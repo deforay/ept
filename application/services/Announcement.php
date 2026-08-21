@@ -19,7 +19,11 @@ class Application_Service_Announcement
                     ->joinLeft(['d' => 'distributions'], 'd.distribution_id = s.distribution_id', ['distribution_code', 'distribution_date'])
                     ->joinLeft(['p' => 'participant'], 'p.participant_id=sp.participant_id', ['p.email', 'participantName' => new Zend_Db_Expr(Application_Model_DbTable_Participants::participantNameGroupConcatExpr('p'))])
                     ->joinLeft(['sl' => 'scheme_list'], 'sl.scheme_id=s.scheme_type', ['SCHEME' => 'sl.scheme_name'])
-                    ->where("(sp.shipment_test_date = '0000-00-00' OR sp.shipment_test_date IS NULL OR sp.shipment_test_date like '')")
+                    // Same non-participation test as Shipments::getShipmentNotParticipated().
+                    // An empty shipment_test_date does not mean "did not take part": it is
+                    // cleared on purpose when a lab declares it could not test, and a late or
+                    // date-less submission is still a submission. Ask response_status instead.
+                    ->where("IFNULL(sp.response_status, 'noresponse') NOT IN ('responded', 'late', 'nottested')")
                     ->where('sp.participant_id IN(' . implode(',', $params['participants']) . ')')
                     ->group('sp.participant_id');
                 $participantEmails = $db->fetchAll($sQuery);
