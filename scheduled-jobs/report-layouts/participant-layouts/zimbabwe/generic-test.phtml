@@ -13,6 +13,9 @@
 $kitDb = new Application_Model_DbTable_Testkitnames();
 $pdfNew = new Zend_Pdf();
 $extractor = new Zend_Pdf_Resource_Extractor();
+// Standing approver name from /admin/report-config. The per-shipment approver recorded at
+// finalize overrides it in the signature block; the note below names the standing one.
+$defaultApproverName = (string) ($reportService->getReportConfigValue('report-approver-name') ?? '');
 $shipmentCode = '';
 
 // Check if shipment data exists
@@ -534,7 +537,7 @@ if (!empty($resultArray['shipment'])) {
                     <table cellpadding="5" style="width: 100%;">
                         <tr>
                             <td style="width: 50%; text-align: left;">Reviewed By: ' . $approveTxt . ',</td>
-                            <td style="width: 50%; text-align: right;">Approved by: ' . ($evalRow['results_approved_by'] ?? 'Lucia Sisya') . '</td>
+                            <td style="width: 50%; text-align: right;">Approved by: ' . ($evalRow['results_approved_by'] ?? $defaultApproverName) . '</td>
                         </tr>
                         <tr>
                             <td style="width: 50%; text-align: left;"><img style="width:100px;" src="' . $sign1 . '" /></td>
@@ -550,7 +553,7 @@ if (!empty($resultArray['shipment'])) {
         // Additional information
         $additionalInfo = '<span style="font-weight:bold;font-size:11px;">ADDITIONAL INFORMATION</span>
         <ol>
-            <li>The person authorizing/Approving PT Reports: Lucia Sisya (PT scheme Manager).</li>
+            <li>The person authorizing/Approving PT Reports: ' . $defaultApproverName . ' (PT scheme Manager).</li>
             <li>The services in the PT scheme that are subcontracted are: transportation of samples to Provincial Laboratories.</li>
             <li>The laboratory name and contact details are indicated on top (Page 1 Header) of the PT report.</li>
             <li>Confidentiality: All participant information is treated as confidential by the Provider unless otherwise stated. Only Participant names and facilities are disclosed on PT reports for all participants in the PT schemes for purposes of improving performance and implementation of the schemes.</li>

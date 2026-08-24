@@ -169,6 +169,11 @@ if (!empty($this->shipment)) {
             // admin and the current time, which is what the report used to show anyway.
             $approvedOn = trim((string) ($this->shipment[0]['results_approved_on'] ?? ''));
             $approvedBy = trim((string) ($this->shipment[0]['results_approved_by'] ?? ''));
+            // Nothing recorded yet: offer the standing approver from /admin/report-config, so
+            // the usual case is a glance rather than retyping the same name every round.
+            if ($approvedBy === '') {
+                $approvedBy = trim((string) ((new Application_Service_Reports())->getReportConfigValue('report-approver-name') ?? ''));
+            }
             ?>
             <div class="row" style="margin-top:12px;">
                 <div class="col-lg-6 col-lg-offset-3">

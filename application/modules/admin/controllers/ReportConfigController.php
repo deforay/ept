@@ -45,6 +45,7 @@ class Admin_ReportConfigController extends Zend_Controller_Action
             $this->view->reportFormatPdf = $reportService->getReportConfigValue('report-format');
             $this->view->templateTopMargin = $reportService->getReportConfigValue('template-top-margin');
             $this->view->generateReportsForExcluded = $reportService->getReportConfigValue('generate_reports_for_excluded');
+            $this->view->reportApproverName = $reportService->getReportConfigValue('report-approver-name');
         }
     }
 

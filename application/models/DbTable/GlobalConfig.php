@@ -263,6 +263,11 @@ class Application_Model_DbTable_GlobalConfig extends Zend_Db_Table_Abstract
             $changedSections[] = 'reports for excluded submissions';
         }
 
+        if (isset($params['reportApproverName'])) {
+            $this->update(['value' => trim((string) $params['reportApproverName'])], $this->reportRow('report-approver-name'));
+            $changedSections[] = 'default approver name';
+        }
+
         //$imageName ="logo_example.jpg";
         $alertMsg = new Zend_Session_Namespace('alertSpace');
 

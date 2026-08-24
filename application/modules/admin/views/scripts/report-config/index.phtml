@@ -591,6 +591,19 @@
 						<small class="text-muted"><?= $this->translate->_("Include participants whose submission was excluded from evaluation. Non-responders are never included."); ?></small>
 					</div>
 				</div>
+				<div class="row" style="margin-top:14px;">
+					<div class="col-md-8">
+						<label for="reportApproverName">
+							<?= $this->translate->_("Default Approver Name"); ?>
+						</label>
+						<input type="text" name="reportApproverName" id="reportApproverName" class="form-control"
+							maxlength="256"
+							value="<?php echo $this->escape($this->reportApproverName ?? ''); ?>"
+							placeholder="<?= $this->translate->_('Name of the person who normally approves PT reports'); ?>"
+							title="<?= $this->translate->_('Default approver name for reports'); ?>" />
+						<small class="text-muted"><?= $this->translate->_("Offered as the default when a shipment is finalized, and printed on reports finalized before an approver was recorded. Whoever finalizes can override it per shipment."); ?></small>
+					</div>
+				</div>
 				</div>
 			</div>
 
