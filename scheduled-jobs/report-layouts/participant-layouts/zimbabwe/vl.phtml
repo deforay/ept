@@ -428,6 +428,12 @@ if (!empty($resultArray['shipment'])) {
                     $pdf->writeHTML($note, true, false, true, false, '');
                 }
 
+                // The signature block and the ADDITIONAL INFORMATION note must name the same person:
+                // a one-off approver signs for this round, otherwise the standing name from report-config.
+                $approvedByName = trim((string) ($evalRow['results_approved_by'] ?? ''));
+                if ($approvedByName === '') {
+                    $approvedByName = $defaultApproverName;
+                }
                 $sign1 = WEB_ROOT . '/uploads/signatures/sign-1.png';
                 $sign2 = WEB_ROOT . '/uploads/signatures/sign-2.png';
                 // Row 1: Names
@@ -436,7 +442,7 @@ if (!empty($resultArray['shipment'])) {
                     <table cellpadding="5" style="width: 100%;">
                         <tr>
                             <td style="width: 50%; text-align: left;">Reviewed By: ' . $approveTxt . ',</td>
-                            <td style="width: 50%; text-align: right;">Approved by: ' . ($evalRow['results_approved_by'] ?? $defaultApproverName) . '</td>
+                            <td style="width: 50%; text-align: right;">Approved by: ' . $approvedByName . '</td>
                         </tr>
                         <tr>
                             <td style="width: 50%; text-align: left;"><img style="width:100px;" src="' . $sign1 . '" /></td>
@@ -452,7 +458,7 @@ if (!empty($resultArray['shipment'])) {
                 // Additional information
                 $additionalInfo = '<br><span style="font-weight:bold;font-size:12px;">ADDITIONAL INFORMATION</span>
                 <ol>
-                    <li>The person authorizing/Approving PT Reports: ' . $defaultApproverName . ' (PT scheme Manager).</li>
+                    ' . ($approvedByName !== '' ? '<li>The person authorizing/Approving PT Reports: ' . $approvedByName . '.</li>' : '') . '
                     <li>The services in the PT scheme that are subcontracted are: transportation of samples to Provincial Laboratories.</li>
                     <li>The laboratory name and contact details are indicated on top (Page 1 Header) of the PT report.</li>
                     <li>Confidentiality: All participant information is treated as confidential by the Provider unless otherwise stated. Only Participant names and facilities are disclosed on PT reports for all participants in the PT schemes for purposes of improving performance and implementation of the schemes.</li>
