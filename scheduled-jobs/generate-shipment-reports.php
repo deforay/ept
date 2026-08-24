@@ -328,6 +328,9 @@ class ReportGenerator
     private ?array $currentGeneTypes = null;
     private $currentShipmentLock = null;
     private ?array $evaluatedShipments = [];
+    // Standing approver from report-config. Constant for the whole run, so it is
+    // read once rather than per shipment.
+    private ?string $standingApprover = null;
 
     public function __construct(ReportConfig $config, ReportJobOptions $opts)
     {
@@ -490,6 +493,7 @@ class ReportGenerator
             return false; // Skip - couldn't acquire lock
         }
 
+        $evalRow['report_approver'] = $this->resolveReportApprover($evalRow);
         $this->currentShipment = $evalRow;
         $this->currentShipmentLock = $shipmentLock;
 
@@ -693,6 +697,7 @@ class ReportGenerator
             'shipment_id' => $shipmentId,
             'report_type' => $resultStatus
         ];
+        $evalRow['report_approver'] = $this->resolveReportApprover($evalRow);
 
         // Load COVID-19 gene types if needed
         $allGeneTypes = null;
@@ -1233,6 +1238,32 @@ class ReportGenerator
     /**
      * Fetch shipment details for worker mode.
      */
+    /**
+     * Resolve the single name a report prints as its approver.
+     *
+     * Layouts used to write `pt_co_ordinator_name ?? saname`, and saname is whichever admin
+     * happened to click Generate Reports -- someone who never approved anything. The order
+     * here is what the report is actually asserting: the approval signed off at finalize,
+     * else this shipment's own coordinator, else the standing approver from report-config.
+     * An empty result means the layout omits the line rather than printing a label with no
+     * name after it.
+     */
+    private function resolveReportApprover(array $evalRow): string
+    {
+        foreach (['results_approved_by', 'pt_co_ordinator_name'] as $key) {
+            $name = trim((string) ($evalRow[$key] ?? ''));
+            if ($name !== '') {
+                return $name;
+            }
+        }
+
+        if ($this->standingApprover === null) {
+            $this->standingApprover = trim((string) ($this->config->reportService->getReportConfigValue('report-approver-name') ?? ''));
+        }
+
+        return $this->standingApprover;
+    }
+
     private function fetchShipmentForWorker(int $shipmentId, string $reportType = 'generateReport'): ?array
     {
         return $this->db->fetchRow(

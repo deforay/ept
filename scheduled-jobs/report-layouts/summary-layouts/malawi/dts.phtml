@@ -49,7 +49,7 @@ if ($resultArray['shipment'] != "") {
     $pdf->AddPage('P', 'A4');
     $pdf->SetFont('freesans', '', 12);
     // PT Co-ordinator header details start
-    $approveTxt = $resultArray['shipment']['pt_co_ordinator_name'] ?? $evalRow['saname'];
+    $approveTxt = $evalRow['report_approver'] ?? '';
     $reportType = ($resultStatus == 'finalized') ? 'Finalized' : '';
     $headerInfo = '<span style="font-weight:bold;">HIV Serology Summary ' . $reportType . ' Report</span></br>';
     $headerInfo .= '<hr>';

@@ -57,7 +57,7 @@ if (!empty($resultArray['shipment'])) {
             : $result['scheme_name'];
         if (isset($reportFormat) && !empty($reportFormat)) {
             // Use FPDI report format
-            $approveTxt = $result['issuing_authority'] ?? ($resultArray['shipment'][0]['issuing_authority'] ?? ($evalRow['saname'] ?? null));
+            $approveTxt = $result['issuing_authority'] ?? ($resultArray['shipment'][0]['issuing_authority'] ?? ($evalRow['report_approver'] ?? ''));
             $pdf = new Pt_Reports_FpdiReport(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
             $pdf->setParams($resultStatus, $evalRow['approval_date'], "", $watermark, "INDIVIDUAL", $layout, $panelName, $schemeType, $approveTxt, "", $shipmentAttributes);
         } else {
@@ -78,7 +78,7 @@ if (!empty($resultArray['shipment'])) {
                 $instituteAddressPosition
             );
         }
-        $approveTxt = $resultArray['shipment'][0]['pt_co_ordinator_name'] ?? $evalRow['saname'] ?? null;
+        $approveTxt = $evalRow['report_approver'] ?? '';
         // Configure PDF settings
         $pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE, PDF_HEADER_STRING);
         $pdf->setHeaderFont(array('freesans', '', PDF_FONT_SIZE_MAIN));

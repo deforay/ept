@@ -58,7 +58,7 @@ if (!empty($resultArray['shipment'])) {
 
         if (isset($reportFormat) && !empty($reportFormat)) {
             // Use FPDI report format
-            $approveTxt = $result['issuing_authority'] ?? ($resultArray['shipment'][0]['issuing_authority'] ?? ($evalRow['saname'] ?? null));
+            $approveTxt = $result['issuing_authority'] ?? ($resultArray['shipment'][0]['issuing_authority'] ?? ($evalRow['report_approver'] ?? ''));
             $pdf = new Pt_Reports_FpdiReport(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
             $pdf->setParams($resultStatus, $evalRow['date_finalised'], "", $watermark, "INDIVIDUAL", $layout, $panelName,  $result['scheme_type'], $approveTxt, "", $shipmentAttributes);
         } else {
@@ -164,7 +164,7 @@ if (!empty($resultArray['shipment'])) {
             </tr>
             <tr>
                 <td><strong>Scheme Coordinator</strong><br>' . $result['pt_co_ordinator_name'] . '</td>
-                <td><strong>Report Authorised By</strong><br>' . $evalRow['saname'] . '</td>
+                <td><strong>Report Authorised By</strong><br>' . $evalRow['report_approver'] . '</td>
                 <td><strong>PT Panel Name and Date</strong><br>' . $result['distribution_code'] . ' (' . $shipmentDate . ')</td>
             </tr>
             <tr>
@@ -469,8 +469,8 @@ if (!empty($resultArray['shipment'])) {
         $html = '<br><br><p style="font-size:12px;text-align:center;">* END OF REPORT *</p>';
         $html .= '<br/><hr>';
 
-        if (!empty($resultArray['shipment'][0]['pt_co_ordinator_name']) || !empty($evalRow['saname'])) {
-            $approveTxt = $evalRow['saname'] ?? $resultArray['shipment'][0]['pt_co_ordinator_name'];
+        if (!empty($evalRow['report_approver'])) {
+            $approveTxt = $evalRow['report_approver'] ?? '';
             $html .= '<span style="text-align:center;font-weight:normal;"><small>All PT material is produced in line with the standard ISO17043:2023</small></span><br/>';
             $html .= '<span style="text-align:center;font-weight:normal;"><small>Report approved by ' . $approveTxt . '</small></span>';
             $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>This is a system generated report. No signature required</small></span>';

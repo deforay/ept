@@ -13,7 +13,7 @@ $passPercentage = Pt_Commons_SchemeConfig::get('eid.passPercentage');
 if (empty($passPercentage)) {
     $passPercentage = 80;
 }
-$approveTxt = $resultArray['shipment'][0]['pt_co_ordinator_name'] ?? $evalRow['saname'];
+$approveTxt = $evalRow['report_approver'] ?? '';
 
 $pdfNew = new Zend_Pdf();
 //$extractor = new Zend_Pdf_Resource_Extractor();

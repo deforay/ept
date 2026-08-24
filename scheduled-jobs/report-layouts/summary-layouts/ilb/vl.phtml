@@ -528,8 +528,8 @@ if ($resultArray['shipment'] != "") {
         }
 
         $html = '<br/>';
-        if ((isset($resultArray['shipment']['pt_co_ordinator_name']) && $resultArray['shipment']['pt_co_ordinator_name'] != "") || $evalRow['saname'] != '') {
-            $approveTxt = $resultArray['shipment']['pt_co_ordinator_name'] ?? $evalRow['saname'];
+        if (!empty($evalRow['report_approver'])) {
+            $approveTxt = $evalRow['report_approver'] ?? '';
             if ($layout == 'zimbabwe') {
                 $html .= '<span style="text-align:center;font-weight:normal;"><small>All PT material is produced in line with the standard ISO17043:2023</small></span><br/>';
             }

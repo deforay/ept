@@ -55,7 +55,7 @@ if (!empty($resultArray['shipment']) && $resultArray['shipment'] != "") {
     $pdf->AddPage('P', 'A4');
     $pdf->SetFont('helvetica', '', 10);
     // PT Co-ordinator header details start
-    $approveTxt = $resultArray['shipment']['pt_co_ordinator_name'] ?? $evalRow['saname'];
+    $approveTxt = $evalRow['report_approver'] ?? '';
     $reportType = ($resultStatus == 'finalized') ? 'Finalized' : '';
     $headerInfo = '<span style="font-weight:bold;">Tuberculosis Summary ' . $reportType . ' Report</span></br>';
     $headerInfo .= '<hr>';
@@ -577,7 +577,7 @@ if (!empty($resultArray['shipment']) && $resultArray['shipment'] != "") {
     $datetxt = "_____________________";
 
     if ($evalRow['report_type'] == 'finalized') {
-        $authorised = $resultArray['shipment']['pt_co_ordinator_name'] ?? $evalRow['saname'];
+        $authorised = $evalRow['report_approver'] ?? '';
         $datetxt = Pt_Commons_DateUtility::humanReadableDateFormat($evalRow['date_finalised'] ?? date('Y-m-d'));
     }
 

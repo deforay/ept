@@ -144,7 +144,7 @@ if (!empty($resultArray['shipment'])) {
             $distributionDate = Pt_Commons_DateUtility::humanReadableDateFormat($result['distribution_date']);
         }
         // PT Co-ordinator header details start
-        $approveTxt = $result['pt_co_ordinator_name'] ?? $evalRow['saname'];
+        $approveTxt = $evalRow['report_approver'] ?? '';
         $reportType = ($resultStatus == 'finalized') ? 'Finalized' : '';
 
         /* $labInfo = '<span style="font-weight:bold;"> ' . $evalRow['scheme_name'] . ' Participant ' . $reportType . ' Report for Survey No: ' . $result['distribution_code'] . ' </span></br>';
@@ -238,7 +238,7 @@ if (!empty($resultArray['shipment'])) {
             . nl2br($instituteAdditionalDetails)
             . '</td>';
 
-        $approveTxt = $result['issuing_authority'] ?? ($resultArray['shipment'][0]['issuing_authority'] ?? ($evalRow['saname'] ?? null));
+        $approveTxt = $result['issuing_authority'] ?? ($resultArray['shipment'][0]['issuing_authority'] ?? ($evalRow['report_approver'] ?? ''));
         // Center column - Report type and HIV (center-aligned, ~30% width)
         $labInfo .= '<td style="width:30%; vertical-align:middle; text-align:center;">'
             . '<strong>Individual Final Report</strong><br><br>'

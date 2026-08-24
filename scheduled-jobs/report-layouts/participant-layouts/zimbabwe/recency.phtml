@@ -483,7 +483,7 @@ if (!empty($resultArray['shipment'])) {
 
         $html = '<br/><hr>';
 
-        $approveTxt = $resultArray['shipment'][0]['pt_co_ordinator_name'] ?? $evalRow['saname'] ?? null;
+        $approveTxt = $evalRow['report_approver'] ?? '';
         $html .= '<span style="text-align:center;font-weight:normal;"><small>All PT material is produced in line with the standard ISO17043:2023</small></span><br/>';
         if (!empty($approveTxt)) {
             $html .= '<span style="text-align:center;font-weight:normal;"><small>Report approved by ' . $approveTxt . ' &nbsp; | &nbsp; Date of approval: ' . ($evalRow['approval_date'] ?? date('d M Y')) . '</small></span><br>';

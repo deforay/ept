@@ -74,7 +74,7 @@ if (!empty($resultArray['shipment']) && $resultArray['shipment'] != "") {
     $referenceRes .= '<td style="font-weight:normal;">' . $dueDate . '</td>';
     $referenceRes .= '</tr></table>';
     // Authorizer / PT scheme manager (malawi pattern) - shown only when configured.
-    $approveTxt = $resultArray['shipment']['pt_co_ordinator_name'] ?? ($evalRow['saname'] ?? '');
+    $approveTxt = $evalRow['report_approver'] ?? '';
     if (!empty($approveTxt)) {
         $referenceRes .= '<p style="text-align:right;font-size:10px;"><b>Report authorized by:</b> ' . $approveTxt . '</p>';
     }

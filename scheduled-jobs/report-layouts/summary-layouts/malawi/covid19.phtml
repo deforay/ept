@@ -50,7 +50,7 @@ if ($resultArray['shipment'] != "") {
     $y = 0;
 
     // PT Co-ordinator header details start
-    $approveTxt = $resultArray['shipment']['pt_co_ordinator_name'] ?? $evalRow['saname'];
+    $approveTxt = $evalRow['report_approver'] ?? '';
     $reportType = ($resultStatus == 'finalized') ? 'Finalized' : '';
     $headerInfo = '<span style="font-weight:bold;">SARS-CoV-2 Summary ' . $reportType . ' Report</span></br>';
     $headerInfo .= '<hr>';

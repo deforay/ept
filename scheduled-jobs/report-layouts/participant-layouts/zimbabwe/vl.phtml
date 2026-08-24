@@ -5,7 +5,7 @@ $participantPerformance = $reportService->getParticipantPerformanceReportByShipm
 $defaultApproverName = (string) ($reportService->getReportConfigValue('report-approver-name') ?? '');
 $equipmentsReports = $reportService->getVlAssayByShipmentId($evalRow['shipment_id']);
 $schemeType = $resultArray['shipment'][0]['scheme_type'];
-$approveTxt = $resultArray['shipment'][0]['pt_co_ordinator_name'] ?? $evalRow['saname'];
+$approveTxt = $evalRow['report_approver'] ?? '';
 
 $shipmentCode = '';
 

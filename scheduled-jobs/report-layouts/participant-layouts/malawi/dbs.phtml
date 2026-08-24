@@ -161,7 +161,7 @@ if (!empty($resultArray['shipment'])) {
         //}
 
         // PT Co-ordinator header details start
-        $approveTxt = $result['pt_co_ordinator_name'] ?? $evalRow['saname'];
+        $approveTxt = $evalRow['report_approver'] ?? '';
         $reportType = ($resultStatus == 'finalized') ? 'Finalized' : '';
 
         $labInfo = '<span style="font-weight:bold;">Dried Blood Spot Participant ' . $reportType . ' Report</span></br>';

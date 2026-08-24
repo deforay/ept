@@ -522,8 +522,8 @@ if (!empty($resultArray['shipment'])) {
             $pdf->writeHTML($html, true, false, true, false, '');
         }
         $html = '<br/><hr>';
-        if ((isset($resultArray['shipment'][0]['issuing_authority']) && $resultArray['shipment'][0]['issuing_authority'] != "") || $evalRow['saname'] != '') {
-            $approveTxt = $resultArray['shipment'][0]['issuing_authority'] ?? $evalRow['saname'];
+        if (!empty($resultArray['shipment'][0]['issuing_authority']) || !empty($evalRow['report_approver'])) {
+            $approveTxt = $resultArray['shipment'][0]['issuing_authority'] ?? ($evalRow['report_approver'] ?? '');
             $html .= '<span style="text-align:center;font-weight:normal;font-size:10"><small>Report approved by ' . $approveTxt . '</small></span>';
             $html .= '<br/><span style="text-align:center;font-weight:normal;font-size:10"><small>Date of approval: ' . date('d M Y') . '</small></span>';
         }

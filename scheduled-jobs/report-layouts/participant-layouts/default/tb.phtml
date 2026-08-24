@@ -330,7 +330,7 @@ if (!empty($resultArray['shipment'])) {
         $datetxt = "_____________________";
 
         if ($evalRow['report_type'] == 'finalized') {
-            $authorised = $resultArray['shipment'][0]['pt_co_ordinator_name'] ?? $evalRow['saname'];
+            $authorised = $evalRow['report_approver'] ?? '';
             $datetxt = Pt_Commons_DateUtility::humanReadableDateFormat($evalRow['date_finalised'] ?? date('Y-m-d'));
         }
 

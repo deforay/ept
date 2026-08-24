@@ -513,7 +513,7 @@ if (!empty($resultArray['shipment'])) {
                 </table>';
             $pdf->writeHTML($labTxt, true, false, true, false, '');
 
-            $approveTxt = $resultArray['shipment'][0]['pt_co_ordinator_name'] ?? $evalRow['saname'] ?? null;
+            $approveTxt = $evalRow['report_approver'] ?? '';
             $scorePerSample = round(($dtsPanelScore / count($result['responseResult'])), 2);
             $summaryNote = '<span style="font-weight:bold;font-size:12px;">Interpretation of Scores (Performance criteria)</span>
                 <ul>
