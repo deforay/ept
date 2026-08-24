@@ -493,7 +493,7 @@ if ($resultArray['shipment'] != "") {
 
         $html = '<hr>';
         if (!empty($resultArray['shipment']['issuing_authority']) || !empty($evalRow['report_approver'])) {
-            $approveTxt = $resultArray['shipment']['issuing_authority'] ?? ($evalRow['report_approver'] ?? '');
+            $approveTxt = ($resultArray['shipment']['issuing_authority'] ?? '') ?: ($evalRow['report_approver'] ?? '');
             $html .= '<span style="text-align:center;font-weight:normal;font-size:10"><small>Report approved by ' . $approveTxt . '</small></span>';
             $html .= '<br/><span style="text-align:center;font-weight:normal;font-size:10"><small>Date of approval: ' . date('d M Y') . '</small></span>';
         }
