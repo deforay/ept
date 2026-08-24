@@ -119,21 +119,6 @@ if (!empty($this->shipment)) {
             </tr>
         </table>
         <br />
-        <div class="row">
-            <div class="col-md-12">
-                <label
-                    class="form-control-label" for="shipmentComment"><?= $this->translate->_("Comment for all Participants of this shipment"); ?></label>
-                <textarea rows="10" cols="20" class="form-control" placeholder="Comment for all Participants of this shipment"
-                    title="Comment for all Participants of this shipment" name="shipmentComment"
-                    id="shipmentComment"><?php echo $this->shipment[0]['shipment_comment']; ?></textarea>
-                <br>
-                <input type="hidden" value="<?php echo base64_encode($this->shipment[0]['shipment_id']) ?>" name="shipmentId"
-                    id="shipmentId">
-                <button class="btn btn-primary"
-                    onclick="updateComment('<?php echo base64_encode($this->shipment[0]['shipment_id']) ?>');return false;"><span><?= $this->translate->_("Update Comment"); ?></span></button>
-            </div>
-        </div>
-        <hr>
         <?php
         $reportQueue = (isset($this->shipmentStatus['status']) && $this->shipmentStatus['status'] == 'pending') ? 'disabled' : '';
         $reportTitle = (isset($this->shipmentStatus['status']) && $this->shipmentStatus['status'] != 'finalized') ? 'Generating Reports and Finalizing Shipment ...' : 'Generate Reports and Finalize Shipment';
@@ -144,73 +129,101 @@ if (!empty($this->shipment)) {
         // Finalizing opens the participant feedback window, so it stays blocked until the
         // feedback form this shipment promises actually exists.
         $checkReportDate = (int) ($btnStates['generateReportsEnabled'] && !$btnStates['awaitingFeedbackForm']);
+        // $this->shipment[0] is the shipment this page finalizes. The old test read a bare
+        // $shipment, which at this point is whatever the shipment-list table above left
+        // behind on its last iteration -- a different shipment entirely. On a survey whose
+        // last-listed shipment is already finalized, that hid the finalize controls for the
+        // one actually being finalized.
+        $canFinalize = ($this->shipment[0]['status'] ?? '') != 'finalized';
+
+        // Results are signed off at a physical meeting that can happen well after the reports
+        // were generated, so the approval is the coordinator's to enter rather than a
+        // timestamp we invent. Left blank, the service records the finalizing admin and the
+        // current time, which is what the report used to show anyway.
+        $approvedOn = trim((string) ($this->shipment[0]['results_approved_on'] ?? ''));
+        $approvedBy = trim((string) ($this->shipment[0]['results_approved_by'] ?? ''));
+        // Nothing recorded yet: offer the standing approver from /admin/report-config, so the
+        // usual round is a glance rather than retyping the same name every time.
+        if ($approvedBy === '') {
+            $approvedBy = trim((string) ((new Application_Service_Reports())->getReportConfigValue('report-approver-name') ?? ''));
+        }
         ?>
-        <?php if ($shipment['status'] != 'finalized') { ?>
-            <?php if (!empty($btnStates['awaitingFeedbackForm'])) { ?>
-                <div class="row">
-                    <div class="col-lg-8 col-lg-offset-2">
-                        <div class="alert alert-warning" style="margin-top:10px;">
-                            <i class="icon-warning-sign"></i>
-                            <?php echo $btnStates['finalizeBlockedReason']; ?>
-                            <?php if (Application_Service_FeedBack::currentAdminCanBuildForms()) { ?>
-                                <a href="/admin/feedback-responses/feedback-form/id/<?php echo base64_encode($this->shipment[0]['shipment_id']); ?>"
-                                    target="_blank" class="btn btn-xs btn-primary" style="margin-left:8px;">
-                                    <i class="icon-plus"></i> <?= $this->translate->_("Create Feedback Form"); ?>
-                                </a>
-                            <?php } ?>
+        <!--
+            ==========================================================================
+            Finalize panel. The shipment comment, the results approval and the two
+            actions are one decision - what to tell participants, who signed off, then
+            commit - so they read as one panel instead of three centred islands. Labels
+            share the rhythm of .data-list-filters below.
+            ==========================================================================
+        -->
+        <div class="shipment-panel">
+            <div class="shipment-panel-body">
+                <div class="shipment-panel-field">
+                    <label for="shipmentComment"><?= $this->translate->_("Comment for all Participants of this shipment"); ?></label>
+                    <textarea rows="3" class="form-control"
+                        placeholder="<?= $this->translate->_("Optional. Appears on every participant's report for this shipment."); ?>"
+                        title="<?= $this->translate->_("Comment for all Participants of this shipment"); ?>"
+                        name="shipmentComment" id="shipmentComment"><?php echo $this->shipment[0]['shipment_comment']; ?></textarea>
+                    <input type="hidden" value="<?php echo base64_encode($this->shipment[0]['shipment_id']) ?>" name="shipmentId"
+                        id="shipmentId">
+                </div>
+                <?php if ($canFinalize) { ?>
+                    <div class="shipment-panel-grid">
+                        <div class="shipment-panel-field">
+                            <label for="resultsApprovedOn"><?= $this->translate->_("Date of Approval"); ?></label>
+                            <input type="text" id="resultsApprovedOn" name="resultsApprovedOn"
+                                class="form-control datepicker" readonly="readonly" autocomplete="off"
+                                value="<?= ($approvedOn !== '') ? $this->escape($this->dateFormat($approvedOn)) : ''; ?>"
+                                placeholder="<?= $this->translate->_("Defaults to today"); ?>"
+                                title="<?= $this->translate->_("Date the results were approved"); ?>" />
                         </div>
+                        <div class="shipment-panel-field">
+                            <label for="resultsApprovedBy"><?= $this->translate->_("Approved By"); ?></label>
+                            <input type="text" id="resultsApprovedBy" name="resultsApprovedBy"
+                                class="form-control" maxlength="256" autocomplete="off"
+                                value="<?= $this->escape($approvedBy); ?>"
+                                placeholder="<?= $this->translate->_("Defaults to you"); ?>"
+                                title="<?= $this->translate->_("Name of the person approving these results"); ?>" />
+                        </div>
+                    </div>
+                <?php } ?>
+            </div>
+            <?php if ($canFinalize && !empty($btnStates['awaitingFeedbackForm'])) { ?>
+                <div class="shipment-panel-alert">
+                    <div class="alert alert-warning" style="margin:0;">
+                        <i class="icon-warning-sign"></i>
+                        <?php echo $btnStates['finalizeBlockedReason']; ?>
+                        <?php if (Application_Service_FeedBack::currentAdminCanBuildForms()) { ?>
+                            <a href="/admin/feedback-responses/feedback-form/id/<?php echo base64_encode($this->shipment[0]['shipment_id']); ?>"
+                                target="_blank" class="btn btn-xs btn-primary" style="margin-left:8px;">
+                                <i class="icon-plus"></i> <?= $this->translate->_("Create Feedback Form"); ?>
+                            </a>
+                        <?php } ?>
                     </div>
                 </div>
             <?php } ?>
-            <?php
-            // Results are signed off at a physical meeting that can happen well after the
-            // reports were generated, so the approval is the coordinator's to enter rather
-            // than a timestamp we invent. Left blank, the service records the finalizing
-            // admin and the current time, which is what the report used to show anyway.
-            $approvedOn = trim((string) ($this->shipment[0]['results_approved_on'] ?? ''));
-            $approvedBy = trim((string) ($this->shipment[0]['results_approved_by'] ?? ''));
-            // Nothing recorded yet: offer the standing approver from /admin/report-config, so
-            // the usual case is a glance rather than retyping the same name every round.
-            if ($approvedBy === '') {
-                $approvedBy = trim((string) ((new Application_Service_Reports())->getReportConfigValue('report-approver-name') ?? ''));
-            }
-            ?>
-            <div class="row" style="margin-top:12px;">
-                <div class="col-lg-6 col-lg-offset-3">
-                    <fieldset style="border:1px solid #ddd;border-radius:4px;padding:10px 15px 15px;">
-                        <legend style="width:auto;border:0;margin-bottom:6px;padding:0 6px;font-size:13px;font-weight:bold;">
-                            <?= $this->translate->_("Results Approval"); ?>
-                        </legend>
-                        <p class="text-muted" style="margin:0 0 10px;font-size:12px;">
-                            <?= $this->translate->_("Optional. Leave blank to record you as the approver, as of now."); ?>
-                        </p>
-                        <div class="row">
-                            <div class="col-sm-6">
-                                <label for="resultsApprovedOn"><?= $this->translate->_("Date of Approval"); ?></label>
-                                <input type="text" id="resultsApprovedOn" name="resultsApprovedOn"
-                                    class="form-control datepicker" readonly="readonly" autocomplete="off"
-                                    value="<?= ($approvedOn !== '') ? $this->escape($this->dateFormat($approvedOn)) : ''; ?>"
-                                    title="<?= $this->translate->_("Date the results were approved"); ?>" />
-                            </div>
-                            <div class="col-sm-6">
-                                <label for="resultsApprovedBy"><?= $this->translate->_("Approved By"); ?></label>
-                                <input type="text" id="resultsApprovedBy" name="resultsApprovedBy"
-                                    class="form-control" maxlength="256" autocomplete="off"
-                                    value="<?= $this->escape($approvedBy); ?>"
-                                    title="<?= $this->translate->_("Name of the person approving these results"); ?>" />
-                            </div>
-                        </div>
-                    </fieldset>
+            <div class="shipment-panel-foot">
+                <?php if ($canFinalize) { ?>
+                    <p class="shipment-panel-note">
+                        <?= $this->translate->_("The approval is recorded when you finalize. Leave both fields blank to record you, as of now."); ?>
+                    </p>
+                <?php } ?>
+                <div class="shipment-panel-actions">
+                    <?php if (!$canFinalize) { ?>
+                        <!-- Already finalized: nothing else runs here, so this is the only way
+                             to save an edited comment. While the shipment can still be
+                             finalized, that button saves it, and a second button that does
+                             only that is one more thing to forget to press. -->
+                        <button class="btn btn-default"
+                            onclick="updateComment('<?php echo base64_encode($this->shipment[0]['shipment_id']) ?>');return false;"><span><?= $this->translate->_("Update Comment"); ?></span></button>
+                    <?php } else { ?>
+                        <a href="javascript:void(0)" class="btn generate-btn btn-info <?php echo $reportQueue; ?>"
+                            onclick="finalizeShipment('<?php echo base64_encode($this->shipment[0]['shipment_id']); ?>', <?php echo $checkReportDate; ?>, '<?php echo $this->dateFormat($this->shipment[0]['distribution_date']); ?>')"><i
+                                class="icon-ok"></i>&nbsp;&nbsp;<?php echo $reportTitle; ?></a>
+                    <?php } ?>
                 </div>
             </div>
-            <div class="row" align="center">
-                <a href="javascript:void(0)" class="btn btn-sm generate-btn btn-info <?php echo $reportQueue; ?>"
-                    style="margin-top:10px;clear:both !important;padding: 10px;box-shadow: 0px 1px 5px grey;"
-                    onclick="generateReports('<?php echo base64_encode($this->shipment[0]['shipment_id']); ?>', <?php echo $checkReportDate; ?>, '<?php echo $this->dateFormat($this->shipment[0]['distribution_date']); ?>', 'finalized')"><i
-                        class="icon-ok"></i>&nbsp&nbsp <?php echo $reportTitle; ?></a>
-            </div>
-        <?php }
-        ?>
+        </div>
         <?php if ($reportQueue != 'disabled') { ?>
             <div class="summaryDivTop row" align="center">
 
@@ -229,7 +242,16 @@ if (!empty($this->shipment)) {
             each <tr>, rather than sending a request back to the server.
             ==========================================================================
         -->
-        <div class="data-list-filters four-up" style="clear:both;margin-top:15px;">
+        <div class="data-list-filterbar">
+            <button type="button" class="btn btn-default btn-sm" id="toggleShipmentFilters"
+                aria-expanded="false" aria-controls="shipmentFilters">
+                <i class="icon-filter"></i>&nbsp;<?= $this->translate->_("Filters"); ?>
+                <span class="filter-active-count" id="shipmentFilterCount" style="display:none;"></span>
+                <i class="icon-chevron-down filterbar-caret"></i>
+            </button>
+        </div>
+        <div class="data-list-filters-collapse" id="shipmentFilters">
+        <div class="data-list-filters four-up" style="clear:both;">
             <div>
                 <label for="manuelOverride"><?= $this->translate->_("Manually overridden only"); ?></label>
                 <select id="manuelOverride" class="form-control" onchange="applyShipmentFilters()">
@@ -311,6 +333,7 @@ if (!empty($this->shipment)) {
                 </div>
             <?php } ?>
         </div>
+        </div><!-- /#shipmentFilters -->
 
         <table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered table-hover"
             id="shipmentEvaluation" style="width:100%;margin:10px 0;">
@@ -501,6 +524,13 @@ if (!empty($this->shipment)) {
                 }
                 $tr.toggle(ok);
             });
+
+            // Surface how many filters are set, so a closed panel never hides the
+            // reason rows are missing.
+            var active = [rs, rr, con, reg, st, dis].reduce(function (n, v) {
+                return n + (v.length ? 1 : 0);
+            }, 0) + (mo ? 1 : 0) + (tier ? 1 : 0) + (kit ? 1 : 0) + (dateRange ? 1 : 0);
+            $('#shipmentFilterCount').text(active).toggle(active > 0);
         }
 
         function getOptions(table, searchfield, returnfield, searchvalue, returnid) {
@@ -526,6 +556,14 @@ if (!empty($this->shipment)) {
         }
 
         $(document).ready(function () {
+
+            // Filters start closed. The container is clipped rather than hidden, so the
+            // select2 widgets below still measure a real width when they initialise.
+            $('#toggleShipmentFilters').on('click', function () {
+                var $btn = $(this);
+                var open = $('#shipmentFilters').toggleClass('is-open').hasClass('is-open');
+                $btn.toggleClass('is-open', open).attr('aria-expanded', open ? 'true' : 'false');
+            });
 
             // ---- select2 init (must run inside ready, AFTER select2.css/js are loaded) ----
             $("#filterResponseStatus").select2({
@@ -689,6 +727,24 @@ if (!empty($this->shipment)) {
                 "aaSorting": [],
                 "bProcessing": true,
             });
+
+            // DataTables owns the row above the table -- length control floated left, search
+            // floated right, nothing in between. The Filters toggle belongs on that line with
+            // them rather than stranded on a line of its own, so move it in once the wrapper
+            // exists, and drop the panel it opens directly above the table.
+            var $wrapper = $('#shipmentEvaluation_wrapper');
+            if ($wrapper.length) {
+                var $length = $wrapper.find('.dataTables_length').first();
+                if ($length.length) {
+                    // The toggle joins the length control inside its column. The panel goes
+                    // immediately before the table instead -- DT_bootstrap lays the controls
+                    // out in half-width Bootstrap columns, so dropping the panel next to the
+                    // search box would confine it to that right-hand half.
+                    $length.addClass('has-filterbar');
+                    $('.data-list-filterbar').addClass('is-inline').appendTo($length);
+                    $('#shipmentFilters').insertBefore($wrapper.find('table').first());
+                }
+            }
         });
 
         function fnFormatDetails(oTable, nTr) {
@@ -707,6 +763,26 @@ if (!empty($this->shipment)) {
                 }
             });
             return sOut;
+        }
+
+        // Finalizing generates the reports the comment is meant to appear on, but the
+        // finalize request never carried the comment -- so typing one and going straight to
+        // Finalize silently dropped it. Save it first, then finalize.
+        function finalizeShipment(sid, checkReportDate, surveyDate) {
+            if (!(checkReportDate == 1 || checkReportDate === true)) {
+                // Not finalizable yet; let generateReports explain why rather than saving.
+                generateReports(sid, checkReportDate, surveyDate, 'finalized');
+                return;
+            }
+            $.blockUI();
+            $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'evaluate', 'action' => 'update-shipment-comment'), 'default', true); ?>", {
+                sid: sid,
+                comment: $("#shipmentComment").val(),
+                format: "html"
+            }).always(function () {
+                $.unblockUI();
+                generateReports(sid, checkReportDate, surveyDate, 'finalized');
+            });
         }
 
         function updateComment(sid) {

@@ -7951,6 +7951,143 @@ td.center {
 	padding: 14px 16px 16px;
 }
 
+/* ── Finalize panel ──────────────────────────────────────────────────────────
+   Used by reports/distribution/finalize and /shipment. The shipment comment, the results
+   approval and the two actions used to sit as three separately-centred islands
+   floating above the filters, aligned with nothing. They are one decision --
+   what to tell participants, who signed off, then commit -- so they read as one
+   panel, borrowing the label rhythm of .data-list-filters below so the whole
+   page shares a vocabulary. */
+.shipment-panel {
+	border: 1px solid #e5e9f0;
+	border-radius: 6px;
+	background: #fff;
+	margin: 0 0 18px;
+}
+.shipment-panel-body {
+	padding: 16px 18px 4px;
+}
+/* Auto-fit rather than fixed halves: the approval fields drop to one per row on
+   a narrow window instead of squeezing. */
+.shipment-panel-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+	gap: 12px 16px;
+}
+.shipment-panel-field {
+	margin-bottom: 14px;
+}
+.shipment-panel-field label {
+	display: block;
+	margin-bottom: 4px;
+	font-size: 12px;
+	font-weight: 600;
+	text-transform: uppercase;
+	letter-spacing: 0.03em;
+	color: #6b7280;
+}
+.shipment-panel-field textarea.form-control {
+	resize: vertical;
+	min-height: 76px;
+}
+.shipment-panel-alert {
+	padding: 0 18px 4px;
+}
+/* Actions hold the right edge; the note takes the slack on the left and wraps
+   under them when the window is too narrow to hold both. */
+.shipment-panel-foot {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 16px;
+	flex-wrap: wrap;
+	padding: 12px 18px;
+	border-top: 1px solid #eef1f5;
+	background: #fafbfd;
+	border-radius: 0 0 6px 6px;
+}
+.shipment-panel-note {
+	margin: 0;
+	font-size: 12px;
+	color: #6b7280;
+}
+.shipment-panel-actions {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	margin-left: auto;
+}
+
+/* Collapsed filters. Opt-in: wrap a .data-list-filters in
+   .data-list-filters-collapse and add a .data-list-filterbar toggle above it.
+   Eight filters is a lot of standing real estate for controls reached now and
+   then, so they start closed and the table moves up the page.
+
+   Clipped with max-height rather than display:none on purpose: select2 sizes
+   itself from the computed width of the element it replaces, and a display:none
+   parent measures zero, leaving every filter collapsed to a sliver once opened.
+   Clipping keeps the children laid out and measurable. */
+.data-list-filters-collapse {
+	overflow: hidden;
+	max-height: 0;
+	/* Sits under DataTables' floated length/search row once moved there. */
+	clear: both;
+}
+.data-list-filters-collapse.is-open {
+	max-height: none;
+	margin-top: 15px;
+}
+.data-list-filterbar {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	clear: both;
+	margin: 4px 0 0;
+}
+/* Moved onto DataTables' controls row, beside the length select. Both become flex
+   children of .dataTables_length so they share a centre line -- floating them
+   side by side left the button's baseline sitting off from the select's. */
+.dataTables_length.has-filterbar {
+	display: flex;
+	align-items: center;
+	gap: 14px;
+	float: left;
+}
+.dataTables_length.has-filterbar label {
+	float: none;
+	margin: 0;
+	display: flex;
+	align-items: center;
+	gap: 6px;
+}
+.data-list-filterbar.is-inline {
+	display: inline-flex;
+	float: none;
+	clear: none;
+	margin: 0;
+}
+.data-list-filterbar .filterbar-caret {
+	margin-left: 4px;
+	font-size: 11px;
+}
+.data-list-filterbar .btn.is-open .filterbar-caret:before {
+	/* chevron-up, so the control says which way it will move */
+	content: "\f077";
+}
+/* Active-filter count, so a closed panel never hides why rows are missing. */
+.data-list-filterbar .filter-active-count {
+	display: inline-block;
+	min-width: 18px;
+	padding: 0 5px;
+	margin-left: 6px;
+	border-radius: 9px;
+	background: #3a5a8a;
+	color: #fff;
+	font-size: 11px;
+	line-height: 17px;
+	text-align: center;
+}
+
 /* Filters: one row of labelled selects, replacing each page's inline strip. */
 .data-list-filters {
 	display: grid;

@@ -146,29 +146,11 @@ if (!empty($this->shipment)) {
             </tr>
         </table>
         <br />
-        <div class="row">
-            <div class="col-md-12">
-                <label
-                    class="form-control-label"><?= $this->htmlTranslate("Comment for all Participants of this shipment"); ?></label>
-                <textarea rows="5" cols="20" class="form-control"
-                    placeholder="<?= $this->htmlTranslate("Comment for all Participants of this shipment"); ?>"
-                    title="<?= $this->htmlTranslate("Comment for all Participants of this shipment"); ?>"
-                    name="shipmentComment"
-                    id="shipmentComment"><?php echo $this->shipment[0]['shipment_comment']; ?></textarea>
-                <br>
-                <input type="hidden" value="<?php echo base64_encode($this->shipment[0]['shipment_id']) ?>"
-                    name="shipmentId" id="shipmentId">
-                <button class="btn btn-primary"
-                    onclick="updateComment('<?php echo base64_encode($this->shipment[0]['shipment_id']) ?>');return false;"><span><?= $this->htmlTranslate("Update Comment"); ?></span></button>
-            </div>
-        </div>
-        <hr>
-
         <?php
         $queueStatus = $this->shipmentStatus['status'] ?? '';
         // In-progress covers the whole async window: 'pending' (queued, waiting for the
         // worker) through 'generating'/'finalizing' (worker actively producing PDFs).
-        // The button must stay disabled across ALL of them — previously only 'pending'
+        // The button must stay disabled across ALL of them -- previously only 'pending'
         // was caught, so it re-enabled the moment the worker started, letting an admin
         // re-trigger a run that was still going.
         $reportInProgress = in_array($queueStatus, ['pending', 'generating', 'finalizing'], true);
@@ -189,11 +171,37 @@ if (!empty($this->shipment)) {
         // gate from the milestone timestamps (evaluated_at/...) via the shared
         // helper rather than a raw status string, which isn't a reliable source.
         $checkReportDate = (int) Application_Service_Shipments::getShipmentButtonStates($this->shipment[0])['generateReportsEnabled']; ?>
-        <div class="row" align="center">
-            <a href="javascript:void(0)" class="btn btn-sm generate-btn btn-info <?php echo $reportQueue; ?>"
-                style="margin-top:10px;clear:both !important;padding: 10px;box-shadow: 0px 1px 5px grey;"
-                onclick="generateReports('<?php echo base64_encode($this->shipment[0]['shipment_id']); ?>', <?php echo $checkReportDate; ?>, '<?php echo $this->dateFormat($this->shipment[0]['distribution_date']); ?>', 'generateReport')"><i
-                    class="icon-ok"></i>&nbsp&nbsp <?php echo $reportTitle; ?></a>
+        <!--
+            ==========================================================================
+            Shipment panel. Same treatment as reports/distribution/finalize: the comment
+            and the action that consumes it read as one panel rather than two islands
+            floating in whitespace. The primary button saves the comment before running,
+            so there is no separate Update Comment to forget.
+            ==========================================================================
+        -->
+        <div class="shipment-panel">
+            <div class="shipment-panel-body">
+                <div class="shipment-panel-field">
+                    <label for="shipmentComment"><?= $this->htmlTranslate("Comment for all Participants of this shipment"); ?></label>
+                    <textarea rows="3" class="form-control"
+                        placeholder="<?= $this->htmlTranslate("Optional. Appears on every participant's report for this shipment."); ?>"
+                        title="<?= $this->htmlTranslate("Comment for all Participants of this shipment"); ?>"
+                        name="shipmentComment"
+                        id="shipmentComment"><?php echo $this->shipment[0]['shipment_comment']; ?></textarea>
+                    <input type="hidden" value="<?php echo base64_encode($this->shipment[0]['shipment_id']) ?>"
+                        name="shipmentId" id="shipmentId">
+                </div>
+            </div>
+            <div class="shipment-panel-foot">
+                <p class="shipment-panel-note">
+                    <?= $this->htmlTranslate("The comment is saved with the reports when you generate them."); ?>
+                </p>
+                <div class="shipment-panel-actions">
+                    <a href="javascript:void(0)" class="btn generate-btn btn-info <?php echo $reportQueue; ?>"
+                        onclick="generateShipmentReports('<?php echo base64_encode($this->shipment[0]['shipment_id']); ?>', <?php echo $checkReportDate; ?>, '<?php echo $this->dateFormat($this->shipment[0]['distribution_date']); ?>')"><i
+                            class="icon-ok"></i>&nbsp;&nbsp;<?php echo $reportTitle; ?></a>
+                </div>
+            </div>
         </div>
         <?php if ($reportFailed) { ?>
             <div class="row" align="center">
@@ -241,7 +249,16 @@ if (!empty($this->shipment)) {
 
             </div>
         <?php } ?>
-        <div class="data-list-filters four-up" style="clear:both;margin-top:15px;">
+        <div class="data-list-filterbar">
+            <button type="button" class="btn btn-default btn-sm" id="toggleShipmentFilters"
+                aria-expanded="false" aria-controls="shipmentFilters">
+                <i class="icon-filter"></i>&nbsp;<?= $this->htmlTranslate("Filters"); ?>
+                <span class="filter-active-count" id="shipmentFilterCount" style="display:none;"></span>
+                <i class="icon-chevron-down filterbar-caret"></i>
+            </button>
+        </div>
+        <div class="data-list-filters-collapse" id="shipmentFilters">
+        <div class="data-list-filters four-up" style="clear:both;">
             <div>
                 <label for="manuelOverride"><?= $this->htmlTranslate("Manually overridden only"); ?></label>
                 <select name="manuelOverride" id="manuelOverride" class="form-control"
@@ -347,6 +364,7 @@ if (!empty($this->shipment)) {
                 </div>
             <?php } ?>
         </div>
+        </div><!-- /#shipmentFilters -->
         <table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered table-hover"
             id="shipmentEvaluation" style="margin:10px auto;">
             <thead>
@@ -572,7 +590,25 @@ if (!empty($this->shipment)) {
                             ed = _dateRange[1];
                         }
 
-                        if (rs) { aoData.push({ "name": "filterResponseStatus", "value": rs }); }
+                        if (rs) { aoData.push({ "name": "filterResponseStatus", "value": rs });
+
+                // Filters start closed; the toggle joins DataTables' controls row and the
+                // panel it opens sits directly above the table. Clipped rather than hidden so
+                // the select2 widgets inside still measure a real width when they initialise.
+                $('#toggleShipmentFilters').on('click', function () {
+                    var open = $('#shipmentFilters').toggleClass('is-open').hasClass('is-open');
+                    $(this).toggleClass('is-open', open).attr('aria-expanded', open ? 'true' : 'false');
+                });
+                var $wrapper = $('#shipmentEvaluation_wrapper');
+                if ($wrapper.length) {
+                    var $length = $wrapper.find('.dataTables_length').first();
+                    if ($length.length) {
+                        $length.addClass('has-filterbar');
+                        $('.data-list-filterbar').addClass('is-inline').appendTo($length);
+                        $('#shipmentFilters').insertBefore($wrapper.find('table').first());
+                    }
+                }
+ }
                         if (rr) { aoData.push({ "name": "filterResult", "value": rr }); }
                         if (sd) { aoData.push({ "name": "startDate", "value": sd }); }
 					    if (ed) { aoData.push({ "name": "endDate", "value": ed }); }
@@ -659,6 +695,24 @@ if (!empty($this->shipment)) {
                     }
                 });
                 return sOut;
+            }
+
+            // The reports carry this comment, but the generate request never sent it, so
+            // typing one and going straight to Generate silently dropped it. Save first.
+            function generateShipmentReports(sid, checkReportDate, surveyDate) {
+                if (!(checkReportDate == 1 || checkReportDate === true)) {
+                    generateReports(sid, checkReportDate, surveyDate, 'generateReport');
+                    return;
+                }
+                $.blockUI();
+                $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'evaluate', 'action' => 'update-shipment-comment'), 'default', true); ?>", {
+                    sid: sid,
+                    comment: $("#shipmentComment").val(),
+                    format: "html"
+                }).always(function () {
+                    $.unblockUI();
+                    generateReports(sid, checkReportDate, surveyDate, 'generateReport');
+                });
             }
 
             function updateComment(sid) {
