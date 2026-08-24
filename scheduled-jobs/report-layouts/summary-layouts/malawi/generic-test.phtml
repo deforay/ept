@@ -176,7 +176,7 @@ if (!empty($resultArray['shipment']) && $resultArray['shipment'] != "") {
         $html = '<span style="border-spacing: 25px;border-collapse: separate;line-height:5em;"></span>';
         $html .= '<p style="font-size:11px;text-align:center;font-weight:bold;"><u>End of ' . $reportType . ' Report</u>.</p>';
         $html .= '<p style="font-size:11px;font-weight:bold;"><i>This is the confidential report that summarizes your performance.</i></p>';
-        if (trim($resultArray['shipment']['shipment_comment']) != "") {
+        if (trim((string) ($resultArray['shipment']['shipment_comment'] ?? '')) != "") {
             $html .= '<p style="font-size:11px;"><b>Scheme Manager`s Comments:</b> ' . $resultArray['shipment']['shipment_comment'] . '</p>';
         }
         // $html .= '<p style="font-size:11px;font-weight:bold;text-align:center;"><i>NPH PT all rights reserved.</i></p>';

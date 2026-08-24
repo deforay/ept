@@ -367,7 +367,7 @@ if (!empty($resultArray['shipment']) && $resultArray['shipment'] != "") {
     if (trim($resultArray['shipment']['summaryResult']['shipment_comment'] ?? '') != "") {
         $comment = '<br><br><table border="1" style="width:100%;font-size:12px;" cellpadding="3">';
 
-        /*   if (trim($resultArray['shipment']['summaryResult']['evaluationComments']) != "") {
+        /*   if (trim((string) ($resultArray['shipment']['summaryResult']['evaluationComments'] ?? '')) != "") {
             $comment .= '<tr style="background-color:#595959;color:#FFFFFF;">';
             $comment .= '	<td style="text-align:center;" colspan="3"><strong>Evaluation Comments</strong></td>';
             $comment .= '</tr>';
@@ -385,7 +385,7 @@ if (!empty($resultArray['shipment']) && $resultArray['shipment'] != "") {
             $comment .= '</tr>';
         } */
 
-        if (trim($resultArray['shipment']['summaryResult']['shipment_comment']) != "") {
+        if (trim((string) ($resultArray['shipment']['summaryResult']['shipment_comment'] ?? '')) != "") {
             $comment .= '<tr style="background-color:#595959;color:#FFFFFF;">';
             $comment .= '	<td style="text-align:center;"><strong>Shipment Comments</strong></td>';
             $comment .= '</tr>';

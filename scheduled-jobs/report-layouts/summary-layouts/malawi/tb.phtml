@@ -384,10 +384,10 @@ if (!empty($resultArray['shipment']) && $resultArray['shipment'] != "") {
     }
     $pdf->writeHTML($aggregateCountsContent, true, false, true, false, '');
 
-    if (trim($resultArray['shipment']['summaryResult']['shipment_comment']) != "") {
+    if (trim((string) ($resultArray['shipment']['summaryResult']['shipment_comment'] ?? '')) != "") {
         $comment = '<br><br><table border="1" style="width:100%;font-size:12px;" cellpadding="3">';
 
-        /*   if (trim($resultArray['shipment']['summaryResult']['evaluationComments']) != "") {
+        /*   if (trim((string) ($resultArray['shipment']['summaryResult']['evaluationComments'] ?? '')) != "") {
             $comment .= '<tr style="background-color:#595959;color:#FFFFFF;">';
             $comment .= '	<td style="text-align:center;" colspan="3"><strong>Evaluation Comments</strong></td>';
             $comment .= '</tr>';
@@ -405,7 +405,7 @@ if (!empty($resultArray['shipment']) && $resultArray['shipment'] != "") {
             $comment .= '</tr>';
         } */
 
-        if (trim($resultArray['shipment']['summaryResult']['shipment_comment']) != "") {
+        if (trim((string) ($resultArray['shipment']['summaryResult']['shipment_comment'] ?? '')) != "") {
             $comment .= '<tr style="background-color:#595959;color:#FFFFFF;">';
             $comment .= '	<td style="text-align:center;"><strong>Shipment Comments</strong></td>';
             $comment .= '</tr>';
@@ -585,7 +585,7 @@ if (!empty($resultArray['shipment']) && $resultArray['shipment'] != "") {
     $html = '<span style="border-spacing: 25px;border-collapse: separate;line-height:5em;"></span>';
     $html .= '<p style="font-size:11px;text-align:center;font-weight:bold;"><u>End of ' . $reportType . ' Report</u>.</p>';
     $html .= '<p style="font-size:11px;font-weight:bold;"><i>This is the confidential report that summarizes your performance.</i></p>';
-    if (trim($resultArray['shipment']['shipment_comment']) != "") {
+    if (trim((string) ($resultArray['shipment']['shipment_comment'] ?? '')) != "") {
         $html .= '<p style="font-size:11px;"><b>Scheme Manager`s Comments:</b> ' . $resultArray['shipment']['shipment_comment'] . '</p>';
     }
     // $html .= '<p style="font-size:11px;font-weight:bold;text-align:center;"><i>NPH PT all rights reserved.</i></p>';

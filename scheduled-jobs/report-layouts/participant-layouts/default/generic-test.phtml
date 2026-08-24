@@ -101,11 +101,11 @@ if (!empty($resultArray['shipment'])) {
         $pdf->SetFont('helvetica', '', 11);
 
         // Format dates for display
-        $shipmentDate = !empty(trim($result['shipment_date']))
+        $shipmentDate = !empty(trim((string) ($result['shipment_date'] ?? '')))
             ? Pt_Commons_DateUtility::humanReadableDateFormat($result['shipment_date'])
             : '';
 
-        $lastResponseDate = !empty(trim($result['response_deadline']))
+        $lastResponseDate = !empty(trim((string) ($result['response_deadline'] ?? '')))
             ? Pt_Commons_DateUtility::humanReadableDateFormat($result['response_deadline'])
             : '';
 
@@ -409,7 +409,11 @@ if (!empty($resultArray['shipment'])) {
         if (isset($attributes) && isset($attributes['kit_name'])) {
             $kitResult = $kitDb->fetchGivenKitApprovalStatus($attributes['kit_name']);
             $wishes = '';
-            if ((!isset($kitResult['Approval']) || empty($kitResult['Approval'])) && $kitResult['Approval'] == 0 && $instance == 'philippines') {
+            // fetchGivenKitApprovalStatus() returns null when the kit is unknown, so the old
+            // bare $kitResult['Approval'] read warned on every such row. empty() already
+            // covers unset, null and 0 -- and the dropped `== 0` was wrong besides, since
+            // PHP 8 makes '' == 0 false, silently skipping kits with a blank approval.
+            if (empty($kitResult['Approval']) && $instance == 'philippines') {
                 $wishes .= '<p style="font-size:12px;margin-top:-20px;">For further evaluation. Participant is requested to submit a copy of the updated Certificate of Product Registration (CPR) issued by the Food and Drug Administration (FDA) Philippines.</p><br><br>';
             } else {
                 if ($result['is_excluded'] == 'yes') {
@@ -427,17 +431,17 @@ if (!empty($resultArray['shipment'])) {
         }
 
         // Add evaluation comments if available
-        if (!empty(trim($result['evaluationComments'])) || !empty(trim($result['optional_eval_comment']))) {
+        if (!empty(trim((string) ($result['evaluationComments'] ?? ''))) || !empty(trim((string) ($result['optional_eval_comment'] ?? '')))) {
             $comment = '<table border="1" style="width:100%;font-size:12px;" cellpadding="3">';
 
-            if (!empty(trim($result['evaluationComments']))) {
+            if (!empty(trim((string) ($result['evaluationComments'] ?? '')))) {
                 $comment .= '<tr>
                     <td style="font-weight:bold;width:30%;">Evaluation Comments </td>
                     <td style="width:70%;">' . $result['evaluationComments'] . '</td>
                 </tr>';
             }
 
-            if (!empty(trim($result['optional_eval_comment']))) {
+            if (!empty(trim((string) ($result['optional_eval_comment'] ?? '')))) {
                 $comment .= '<tr>
                     <td style="font-weight:bold;width:30%;">Specific Comments/Feedback</td>
                     <td style="width:70%;">' . $result['optional_eval_comment'] . '</td>
@@ -456,7 +460,7 @@ if (!empty($resultArray['shipment'])) {
         $pdf->writeHTML($html, true, false, true, false, '');
 
         // Add shipment comment if available
-        if (!empty(trim($result['shipment_comment']))) {
+        if (!empty(trim((string) ($result['shipment_comment'] ?? '')))) {
             $comment = '<table border="1" style="width:100%;" cellpadding="3">
                 <tr>
                     <td style="font-size:10px;font-weight:bold;" colspan="2">' . $result['shipment_comment'] . '</td>

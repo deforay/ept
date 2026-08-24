@@ -97,10 +97,10 @@ if (!empty($resultArray['shipment'])) {
 
         // ---------------------------------------------------------
 
-        if (trim($result['shipment_date']) != "") {
+        if (trim((string) ($result['shipment_date'] ?? '')) != "") {
             $result['shipment_date'] = Pt_Commons_DateUtility::humanReadableDateFormat($result['shipment_date']);
         }
-        if (trim($result['response_deadline']) != "") {
+        if (trim((string) ($result['response_deadline'] ?? '')) != "") {
             $result['response_deadline'] = Pt_Commons_DateUtility::humanReadableDateFormat($result['response_deadline']);
         }
 
@@ -384,7 +384,7 @@ if (!empty($resultArray['shipment'])) {
 							<td style="text-align:center;font-weight:bold;width:25%" colspan="2">Score</td>
 						</tr>';
 
-            if (strtolower($result['responseResult'][0]['supervisor_approval']) == 'yes' && trim($result['responseResult'][0]['participant_supervisor']) != "") {
+            if (strtolower($result['responseResult'][0]['supervisor_approval']) == 'yes' && trim((string) ($result['responseResult'][0]['participant_supervisor'] ?? '')) != "") {
                 $scoreDoc = $documentationScorePerItem;
                 $img = $imgPass;
             } else {
@@ -504,24 +504,24 @@ if (!empty($resultArray['shipment'])) {
         //if(trim($result['distribution_date'])!=""){
         //    $result['distribution_date']=Pt_Commons_DateUtility::humanReadableDateFormat($result['distribution_date']);
         //}
-        if (trim($result['shipment_comment']) != "" || trim($result['evaluationComments']) != "" || trim($result['optional_eval_comment']) != "") {
+        if (trim((string) ($result['shipment_comment'] ?? '')) != "" || trim((string) ($result['evaluationComments'] ?? '')) != "" || trim((string) ($result['optional_eval_comment'] ?? '')) != "") {
             $comment = '<br><br><table border="1" style="width:100%;font-size:12px;" cellpadding="3">';
 
-            if (trim($result['evaluationComments']) != "") {
+            if (trim((string) ($result['evaluationComments'] ?? '')) != "") {
                 $comment .= '<tr>';
                 $comment .= '<td style="font-weight:bold;width:30%;">Evaluation Comments </td>';
                 $comment .= '<td style="width:70%;">' . $result['evaluationComments'] . '</td>';
                 $comment .= '</tr>';
             }
 
-            if (trim($result['optional_eval_comment']) != "") {
+            if (trim((string) ($result['optional_eval_comment'] ?? '')) != "") {
                 $comment .= '<tr>';
                 $comment .= '<td style="font-weight:bold;width:30%;">Specific Comments/Feedback</td>';
                 $comment .= '<td style="width:70%;">' . $result['optional_eval_comment'] . '</td>';
                 $comment .= '</tr>';
             }
 
-            if (trim($result['shipment_comment']) != "") {
+            if (trim((string) ($result['shipment_comment'] ?? '')) != "") {
                 $comment .= '<tr>';
                 $comment .= '<td style="font-weight:bold;" colspan="2">' . $result['shipment_comment'] . '</td>';
                 $comment .= '</tr>';
@@ -539,7 +539,7 @@ if (!empty($resultArray['shipment'])) {
         $html .= '<p style="font-size:12px;">Thank you for participating in the ' . ($result['scheme_name']) . ' Proficiency Testing Program.</p>';
         $html .= '<br><p style="font-size:11px;text-align:center;font-weight:bold;"><u>End of ' . $eodReportText . ' Report</u>.</p>';
         $html .= '<p style="font-size:11px;font-weight:bold;"><i>This is the confidential report that summarizes your performance.</i></p>';
-        if (trim($result['shipment_comment']) != "") {
+        if (trim((string) ($result['shipment_comment'] ?? '')) != "") {
             $html .= '<p style="font-size:11px;"><b>Scheme Manager`s Comments:</b> ' . $result['shipment_comment'] . '</p>';
         }
         // $html .= '<p style="font-size:11px;font-weight:bold;text-align:center;"><i>NPH PT all rights reserved.</i></p>';

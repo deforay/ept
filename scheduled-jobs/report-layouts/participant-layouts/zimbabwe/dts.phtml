@@ -73,10 +73,10 @@ if (!empty($resultArray['shipment'])) {
         $pdf->AddPage();
 
         // Format dates
-        if (trim($result['shipment_date']) != "") {
+        if (trim((string) ($result['shipment_date'] ?? '')) != "") {
             $result['shipment_date'] = Pt_Commons_DateUtility::humanReadableDateFormat($result['shipment_date']);
         }
-        if (trim($result['response_deadline']) != "") {
+        if (trim((string) ($result['response_deadline'] ?? '')) != "") {
             $result['response_deadline'] = Pt_Commons_DateUtility::humanReadableDateFormat($result['response_deadline']);
         }
 
@@ -593,28 +593,28 @@ if (!empty($resultArray['shipment'])) {
 
         // Add comments section if available
         if (
-            !empty(trim($result['shipment_comment'])) ||
-            !empty(trim($result['evaluationComments'])) ||
-            !empty(trim($result['optional_eval_comment']))
+            !empty(trim((string) ($result['shipment_comment'] ?? ''))) ||
+            !empty(trim((string) ($result['evaluationComments'] ?? ''))) ||
+            !empty(trim((string) ($result['optional_eval_comment'] ?? '')))
         ) {
 
             $comment = '<br><br><table border="1" style="width:100%;font-size:12px;" cellpadding="3">';
 
-            if (!empty(trim($result['evaluationComments']))) {
+            if (!empty(trim((string) ($result['evaluationComments'] ?? '')))) {
                 $comment .= '<tr>
                     <td style="font-weight:bold;width:30%;">Evaluation Comments</td>
                     <td style="width:70%;">' . $result['evaluationComments'] . '</td>
                 </tr>';
             }
 
-            if (!empty(trim($result['optional_eval_comment']))) {
+            if (!empty(trim((string) ($result['optional_eval_comment'] ?? '')))) {
                 $comment .= '<tr>
                     <td style="font-weight:bold;width:30%;">Specific Comments/Feedback</td>
                     <td style="width:70%;">' . $result['optional_eval_comment'] . '</td>
                 </tr>';
             }
 
-            if (!empty(trim($result['shipment_comment']))) {
+            if (!empty(trim((string) ($result['shipment_comment'] ?? '')))) {
                 $comment .= '<tr>
                     <td style="font-weight:bold;" colspan="2">' . $result['shipment_comment'] . '</td>
                 </tr>';
@@ -662,7 +662,7 @@ if (!empty($resultArray['shipment'])) {
             }
         }
 
-        $lastName = !empty(trim($result['last_name'])) ? "_" . $result['last_name'] : "";
+        $lastName = !empty(trim((string) ($result['last_name'] ?? ''))) ? "_" . $result['last_name'] : "";
         $fileName = implode("-", $nameParts) . "-" . $result['map_id'];
         $fileName = Application_Service_Common::makeFileNameFriendly($fileName) . ".pdf";
         $filePath = $reportsPath . DIRECTORY_SEPARATOR . $result['shipment_code'] . DIRECTORY_SEPARATOR . $fileName;
