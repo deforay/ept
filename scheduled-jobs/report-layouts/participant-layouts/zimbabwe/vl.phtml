@@ -5,7 +5,11 @@ $participantPerformance = $reportService->getParticipantPerformanceReportByShipm
 $defaultApproverName = (string) ($reportService->getReportConfigValue('report-approver-name') ?? '');
 $equipmentsReports = $reportService->getVlAssayByShipmentId($evalRow['shipment_id']);
 $schemeType = $resultArray['shipment'][0]['scheme_type'];
-$approveTxt = $evalRow['report_approver'] ?? '';
+// The left signature slot is captioned "Scheme Coordinator" and the right one
+// "Scheme Manager": two people, not one. This is the coordinator, so it must NOT
+// fall through to the resolved approver -- that would sign both halves with the
+// same name. Blank is honest when no coordinator is recorded.
+$approveTxt = $resultArray['shipment'][0]['pt_co_ordinator_name'] ?? '';
 
 $shipmentCode = '';
 
