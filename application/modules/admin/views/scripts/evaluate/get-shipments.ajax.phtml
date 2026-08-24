@@ -168,16 +168,18 @@ if (isset($this->shipmentStatus['finalized']['status'])) {
 											. ' onclick="' . $generateOnClick . '">'
 											. '<i class="icon-ok"></i> ' . $this->translate->_("Generate Reports") . '</a>';
 									}
-									$finalizeOnClick = $finalizeEnabled
-										? ' onclick="generateReports(\'' . $encodedShipmentId . '\', ' . (int) $finalizeEnabled
-											. ', \'' . $this->dateFormat($shipment['distribution_date']) . '\', \'finalized\')"'
-										: '';
 									// Say why finalizing is off when it is a missing feedback form, and
 									// offer the one-click way to fix it.
 									$finalizeTitle = (!$finalizeEnabled && !empty($btnStates['finalizeBlockedReason']))
 										? ' title="' . $this->escape($btnStates['finalizeBlockedReason']) . '"'
 										: '';
-									$reportLine[] = '<a href="javascript:void(0)" class="btn btn-xs btn-primary ' . $finalizeClass . '"' . $finalizeTitle . $finalizeOnClick . '>'
+									// Finalizing records who approved the results and when, and those two fields
+									// live only on the finalize page. Going there rather than finalizing in place
+									// stops the approval date silently defaulting to the moment of the click.
+									$finalizeHref = $finalizeEnabled
+										? '/reports/distribution/finalize/sid/' . $encodedShipmentId
+										: 'javascript:void(0)';
+									$reportLine[] = '<a href="' . $finalizeHref . '" class="btn btn-xs btn-primary ' . $finalizeClass . '"' . $finalizeTitle . '>'
 										. '<i class="icon-ok"></i> ' . $finalReportTitle . '</a>';
 									if (!empty($btnStates['awaitingFeedbackForm']) && Application_Service_FeedBack::currentAdminCanBuildForms()) {
 										$reportLine[] = '<a class="btn btn-xs btn-warning" target="_blank"'

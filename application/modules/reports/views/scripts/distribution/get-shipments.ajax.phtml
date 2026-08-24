@@ -47,7 +47,6 @@ if ($this->shipments == false && count($this->shipments) <= 0) {
 						$hasReportsGenerated = $btnStates['hasReportsGenerated'];
 
 						$generateReportsClass = $generateReportsEnabled ? '' : 'disabled';
-						$finalizeClass = $finalizeEnabled ? '' : 'disabled';
 						$encodedShipmentId = base64_encode($shipment['shipment_id']);
 						?>
 						<tr>
@@ -87,14 +86,21 @@ if ($this->shipments == false && count($this->shipments) <= 0) {
 											<?php endif; ?>
 										</div>
 										<div class="row-action-line">
-											<a class="btn btn-primary btn-xs <?= $finalizeClass; ?>" href="javascript:void(0)"
-												<?php if ($finalizeEnabled): ?>
-												onclick="generateReports('<?= $encodedShipmentId; ?>', <?= (int) $finalizeEnabled; ?>, '<?= $this->dateFormat($shipment['distribution_date']); ?>', 'finalized')"
-												<?php elseif (!empty($btnStates['finalizeBlockedReason'])): ?>
-												title="<?= $this->escape($btnStates['finalizeBlockedReason']); ?>"
-												<?php endif; ?>>
-												<i class="icon-check"></i> <?= $this->translate->_("Finalize"); ?>
-											</a>
+											<!-- Finalizing records who approved the results and when, and those two fields
+											     live only on the finalize page. Going there rather than finalizing in place
+											     stops the approval date silently defaulting to the moment of the click. -->
+											<?php if ($finalizeEnabled): ?>
+												<a class="btn btn-primary btn-xs" href="/reports/distribution/finalize/sid/<?= $encodedShipmentId; ?>">
+													<i class="icon-check"></i> <?= $this->translate->_("Finalize"); ?>
+												</a>
+											<?php else: ?>
+												<a class="btn btn-primary btn-xs disabled" href="javascript:void(0)"
+													<?php if (!empty($btnStates['finalizeBlockedReason'])): ?>
+													title="<?= $this->escape($btnStates['finalizeBlockedReason']); ?>"
+													<?php endif; ?>>
+													<i class="icon-check"></i> <?= $this->translate->_("Finalize"); ?>
+												</a>
+											<?php endif; ?>
 										</div>
 									</div>
 								<?php elseif ($isFinalized): ?>
