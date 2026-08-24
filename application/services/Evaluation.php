@@ -4155,10 +4155,11 @@ class Application_Service_Evaluation
      * sit well after the reports were generated, so finalizing offers the admin a date and an
      * approver name to enter.
      *
-     * Left blank it falls back to now, and to the finalizing admin's name -- which is what
-     * the report effectively claimed before this existed. An approval already on record is
-     * never overwritten by a blank re-finalize, so regenerating the finalized reports keeps
-     * the date the meeting actually agreed on rather than silently moving it to today.
+     * Left blank it falls back to now, and to the standing approver from report-config,
+     * then to the finalizing admin's name -- which is what the report effectively claimed
+     * before this existed. An approval already on record is never overwritten by a blank
+     * re-finalize, so regenerating the finalized reports keeps the date the meeting
+     * actually agreed on rather than silently moving it to today.
      */
     private function recordResultsApproval(int $shipmentId, array $params): void
     {
@@ -4182,8 +4183,15 @@ class Application_Service_Evaluation
         if ($approvedBy !== '') {
             $data['results_approved_by'] = $approvedBy;
         } elseif (empty($existing['results_approved_by'])) {
-            $authNameSpace = new Zend_Session_Namespace('administrators');
-            $name = trim(($authNameSpace->first_name ?? '') . ' ' . ($authNameSpace->last_name ?? ''));
+            // Finalizing from a grid row sends no approver at all, so fall back the way the
+            // finalize page pre-fills its field: the standing approver from report-config
+            // first, and only then whichever admin happened to click Finalize. Reports print
+            // this name, so the admin is a last resort rather than the default.
+            $name = trim((string) ((new Application_Service_Reports())->getReportConfigValue('report-approver-name') ?? ''));
+            if ($name === '') {
+                $authNameSpace = new Zend_Session_Namespace('administrators');
+                $name = trim(($authNameSpace->first_name ?? '') . ' ' . ($authNameSpace->last_name ?? ''));
+            }
             $data['results_approved_by'] = $name !== '' ? $name : null;
         }
 
