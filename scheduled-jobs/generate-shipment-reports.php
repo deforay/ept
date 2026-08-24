@@ -1336,7 +1336,22 @@ class ReportGenerator
         return $this->db->fetchAll(
             $this->db->select()
                 ->from(['eq' => 'queue_report_generation'])
-                ->joinLeft(['s' => 'shipment'], 's.shipment_id=eq.shipment_id', ['shipment_code', 'scheme_type', 'shipment_attributes', 'pt_co_ordinator_name'])
+                ->joinLeft(
+                    ['s' => 'shipment'],
+                    's.shipment_id=eq.shipment_id',
+                    [
+                        'shipment_code',
+                        'scheme_type',
+                        'shipment_attributes',
+                        'pt_co_ordinator_name',
+                        'results_approved_by',
+                        // Summary reports read this row directly -- they are never re-fetched
+                        // through fetchShipmentForWorker() the way participant reports are in
+                        // subprocess mode -- so the approval has to be selected here too, or
+                        // the queued cron run prints no approval date at all.
+                        'approval_date' => new Zend_Db_Expr('COALESCE(s.results_approved_on, eq.date_finalised)'),
+                    ]
+                )
                 ->joinLeft(['sl' => 'scheme_list'], 's.scheme_type=sl.scheme_id', ['scheme_name'])
                 ->joinLeft(['sa' => 'system_admin'], 'eq.requested_by=sa.admin_id', ['saname' => new Zend_Db_Expr("CONCAT(sa.first_name,' ',sa.last_name)")])
                 ->where("eq.status=?", 'pending')
