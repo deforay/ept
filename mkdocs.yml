@@ -47,6 +47,7 @@ theme:
 
 nav:
   - Home: README.md
+  - About ePT: about-ept.md
   - Operations:
       - Install: setup.md
       - Update: updating.md

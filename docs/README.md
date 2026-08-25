@@ -6,6 +6,7 @@ ePT is an open-source proficiency testing system for laboratory quality assuranc
 
 | Your goal | Read |
 | --- | --- |
+| Understand what ePT is for | [About ePT](about-ept.md) |
 | Install ePT on Ubuntu, Docker, or Windows | [Install](setup.md) |
 | Update a running installation | [Update](updating.md) |
 | Back up, restore, or move an instance | [Backup & recovery](backup-and-migration.md) |
