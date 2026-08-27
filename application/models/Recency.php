@@ -741,8 +741,11 @@ class Application_Model_Recency
         $sheetThree->setTitle('Panel Score', true);
         $sheetThree->getDefaultColumnDimension()->setWidth(20);
         $sheetThree->getDefaultRowDimension()->setRowHeight(18);
+        // The sample labels sit after the two participant columns - the data rows below
+        // write participant code + name first. addRecencySampleNameInArray() returns just
+        // the labels (its other caller wants them on their own), so merge rather than assign.
         $panelScoreHeadings = ['Participant Code', 'Participant Name'];
-        $panelScoreHeadings = $this->addRecencySampleNameInArray($shipmentId);
+        $panelScoreHeadings = array_merge($panelScoreHeadings, $this->addRecencySampleNameInArray($shipmentId));
         array_push($panelScoreHeadings, 'Test# Correct', '% Correct');
         $sheetThreeColNo = 0;
         $sheetThreeRow = 1;
@@ -970,6 +973,13 @@ class Application_Model_Recency
                         $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($aRow['response'][$k]['diagnosis_line']);
                         $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($aRow['response'][$k]['longterm_line']);
                         $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($aRow['response'][$k]['finalResult']);
+
+                        // The Panel Score sheet has a column per sample between the participant
+                        // columns and the totals - without this its totals landed under the
+                        // sample headings.
+                        $sheetThree->getCell(Coordinate::stringFromColumnIndex($sheetThreeCol++) . $sheetThreeRow)
+                            ->setValueExplicit($aRow['response'][$k]['calculated_score'] ?? '');
+
                         if (isset($aRow['response'][$k]['calculated_score']) && $aRow['response'][$k]['calculated_score'] == 'Pass' && $aRow['response'][$k]['sample_id'] == $refResult[$k]['sample_id']) {
                             $countCorrectResult++;
                         }
