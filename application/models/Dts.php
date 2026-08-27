@@ -183,11 +183,8 @@ final class Application_Model_Dts
         $shipment['is_followup'] = 'no';
         $mapWhere = $this->db->quoteInto('map_id = ?', $shipment['map_id']);
 
-        if (Common::isDateValid($shipment['shipment_test_report_date'])) {
-            $shipmentTestReportDate = new DateTimeImmutable($shipment['shipment_test_report_date']);
-        } else {
-            $shipmentTestReportDate = new DateTimeImmutable('1970-01-01');
-        }
+        $shipmentTestReportDate = Pt_Commons_DateUtility::responseInstant($shipment['shipment_test_report_date'] ?? null)
+            ?? new DateTimeImmutable('1970-01-01');
 
         $totalScore = 0;
         $maxScore = 0;

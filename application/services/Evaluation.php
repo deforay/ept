@@ -109,18 +109,10 @@ class Application_Service_Evaluation
         $isLate = false;
         $responseSwitchOn = strtolower(trim((string) ($shipment['response_switch'] ?? ''))) === 'on';
         if (!$didNotParticipate && !$notTested && !$responseSwitchOn) {
-            $reportDate = trim((string) ($shipment['shipment_test_report_date'] ?? ''));
-            if ($reportDate !== '' && strncmp($reportDate, '0000', 4) !== 0) {
-                $cutoff = Pt_Commons_DateUtility::shipmentCutoff($shipment['response_deadline'] ?? null);
-                if ($cutoff !== null) {
-                    try {
-                        if (new DateTimeImmutable($reportDate) > $cutoff) {
-                            $isLate = true;
-                        }
-                    } catch (Throwable $e) {
-                        // Unparseable report date — leave scoring to the scheme.
-                    }
-                }
+            $respondedAt = Pt_Commons_DateUtility::responseInstant($shipment['shipment_test_report_date'] ?? null);
+            $cutoff = Pt_Commons_DateUtility::shipmentCutoff($shipment['response_deadline'] ?? null);
+            if ($respondedAt !== null && $cutoff !== null && $respondedAt > $cutoff) {
+                $isLate = true;
             }
         }
 
@@ -527,13 +519,8 @@ class Application_Service_Evaluation
 
             foreach ($shipmentResult as $shipment) {
                 Pt_Commons_MiscUtility::updateHeartbeat('shipment', 'shipment_id', $shipmentId);
-                $createdOnUser = explode(' ', $shipment['shipment_test_report_date'] ?? '');
-                if (trim($createdOnUser[0]) != '' && $createdOnUser[0] != null && trim($createdOnUser[0]) != '0000-00-00') {
-
-                    $createdOn = new DateTime($createdOnUser[0]);
-                } else {
-                    $createdOn = new DateTime('1970-01-01');
-                }
+                $createdOn = Pt_Commons_DateUtility::responseInstant($shipment['shipment_test_report_date'] ?? null)
+                    ?? new DateTimeImmutable('1970-01-01');
 
                 $lastDate = Pt_Commons_DateUtility::shipmentCutoff($shipment['response_deadline']);
                 if ($createdOn > $lastDate) {
@@ -997,7 +984,7 @@ class Application_Service_Evaluation
                 }
 
                 if (isset($params['testReportedDate']) && trim($params['testReportedDate']) != '') {
-                    $mapData['shipment_test_report_date'] = Pt_Commons_DateUtility::isoDateFormat($params['testReportedDate']);
+                    $mapData['shipment_test_report_date'] = Pt_Commons_DateUtility::isoDateFormat($params['testReportedDate'], true);
                 } else {
                     $mapData['shipment_test_report_date'] = new Zend_Db_Expr('now()');
                 }
@@ -1186,7 +1173,7 @@ class Application_Service_Evaluation
                 ];
 
                 if (isset($params['testReportedDate']) && trim($params['testReportedDate']) != '') {
-                    $mapData['shipment_test_report_date'] = Pt_Commons_DateUtility::isoDateFormat($params['testReportedDate']);
+                    $mapData['shipment_test_report_date'] = Pt_Commons_DateUtility::isoDateFormat($params['testReportedDate'], true);
                 } else {
                     $mapData['shipment_test_report_date'] = new Zend_Db_Expr('now()');
                 }
@@ -1427,7 +1414,7 @@ class Application_Service_Evaluation
                 }
 
                 if (isset($params['testReportedDate']) && trim($params['testReportedDate']) != '') {
-                    $mapData['shipment_test_report_date'] = Pt_Commons_DateUtility::isoDateFormat($params['testReportedDate']);
+                    $mapData['shipment_test_report_date'] = Pt_Commons_DateUtility::isoDateFormat($params['testReportedDate'], true);
                 } else {
                     $mapData['shipment_test_report_date'] = new Zend_Db_Expr('now()');
                 }
@@ -1496,7 +1483,7 @@ class Application_Service_Evaluation
                 ];
 
                 if (isset($params['testReceiptDate']) && trim($params['testReceiptDate']) != '') {
-                    $data['shipment_test_report_date'] = Pt_Commons_DateUtility::isoDateFormat($params['testReceiptDate']);
+                    $data['shipment_test_report_date'] = Pt_Commons_DateUtility::isoDateFormat($params['testReceiptDate'], true);
                 } else {
                     $data['shipment_test_report_date'] = new Zend_Db_Expr('now()');
                 }

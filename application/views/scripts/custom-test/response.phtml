@@ -1,11 +1,12 @@
 <?php
 $authNameSpace = new Zend_Session_Namespace('datamanagers');
 
+// Response Date carries a time of day - it is compared against the shipment's
+// response deadline, which can close part-way through its own day.
 if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment["shipment_test_report_date"]) != "") {
-	$expTestReceiptDate = explode(" ", $this->shipment["shipment_test_report_date"]);
-	$participantResponseDate = $this->dateFormat($expTestReceiptDate[0]);
+	$participantResponseDate = date('d-M-Y H:i', strtotime((string) $this->shipment["shipment_test_report_date"]));
 } else {
-	$participantResponseDate = date('d-M-Y');
+	$participantResponseDate = date('d-M-Y H:i');
 }
 $kitExpiryDate = "";
 if (isset($this->shipment['attributes']['kit_expiry_date']) && $this->shipment['attributes']['kit_expiry_date'] != "") {
@@ -394,15 +395,15 @@ if ($inConfirmStep) {
 								<td><label><?= $this->translate->_("Date Submitted"); ?> <span
 											class='mandatory'>*</span></label></td>
 								<td>
-									<input type="text" id="responseDate" name="responseDate" size="11" maxlength="11"
+									<input type="text" id="responseDate" name="responseDate" size="20" maxlength="20"
 										style="width:200px;float:left;" value="<?php echo $participantResponseDate; ?>"
-										class="form-control vlResultValues datepicker isRequired" readonly="readonly"
+										class="form-control vlResultValues datetimepicker isRequired" readonly="readonly"
 										title="<?= $this->translate->_("Please enter the response submission date"); ?>" />
 									<i class="icon-remove-sign"
 										style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;"
 										alt="<?= $this->translate->_("Clear Date"); ?>"
 										title="<?= $this->translate->_("Clear Date"); ?>"
-										onclick="clearDate('testReceiptDate')"> <?= $this->translate->_("Clear"); ?></i>
+										onclick="clearDate('responseDate')"> <?= $this->translate->_("Clear"); ?></i>
 								</td>
 							<?php } ?>
 						</tr>
@@ -771,10 +772,12 @@ if ($inConfirmStep) {
 			minDate: 'today',
 			// maxDate: new Date('<?php echo $this->shipment['shipment_date']; ?>')
 		});
-		$("#responseDate").datepicker("option", {
-			minDate: new Date('<?php echo $this->shipment['shipment_date']; ?>'),
-			maxDate: 'today'
-		});
+		// Response Date is a date + time picker (see initDateTimePickers in main.js.php);
+		// it is bound off the shared .datetimepicker class, so only the bounds are set here.
+		$("#responseDate")
+			.data('mindate', '<?php echo date('Y-m-d', strtotime((string) $this->shipment['shipment_date'])); ?>')
+			.data('maxdate', 'today');
+		window.initDateTimePickers('#responseDate');
 
 		$(".expDatepicker").datepicker({
 			dateFormat: '<?php echo $dtFormat; ?>'

@@ -1,10 +1,12 @@
 <?php
 
 $authNameSpace = new Zend_Session_Namespace('datamanagers');
+// Response Date carries a time of day - it is compared against the shipment's
+// response deadline, which can close part-way through its own day.
 if (!empty(trim($this->shipment["shipment_test_report_date"]))) {
-	$testReceiptDate = $this->dateFormat($this->shipment["shipment_test_report_date"]);
+	$testReceiptDate = date('d-M-Y H:i', strtotime((string) $this->shipment["shipment_test_report_date"]));
 } else {
-	$testReceiptDate = date('d-M-Y');
+	$testReceiptDate = date('d-M-Y H:i');
 }
 
 $labDirectorName = (isset($this->shipment['lab_director_name']) && $this->shipment['lab_director_name'] != "") ? $this->shipment['lab_director_name'] : $this->participant['lab_director_name'];
@@ -468,10 +470,10 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
 									<td><label for="testReceiptDate"><?= $this->translate->_("Response Date"); ?> <span class="mandatory">*</span>
 										</label></td>
 									<td>
-										<input type="text" id="testReceiptDate" name="testReceiptDate" size="11" maxlength="11"
+										<input type="text" id="testReceiptDate" name="testReceiptDate" size="20" maxlength="20"
 											style="width:80%;float:left;" value="<?php echo $testReceiptDate; ?>"
-											class="isRequired form-control datepicker" readonly="readonly"
-											title="<?= $this->htmlTranslate("Please enter Shipment Test Response Date "); ?>" />
+											class="isRequired form-control datetimepicker" readonly="readonly"
+											title="<?= $this->htmlTranslate("Please enter the date and time the response was submitted"); ?>" />
 										<i class="icon-remove-sign"
 											style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="<?= $this->htmlTranslate("Clear Date"); ?>"
 											title="<?= $this->htmlTranslate("Clear Date"); ?>" onclick="clearDate('testReceiptDate')">

@@ -4915,7 +4915,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                     // "response_deadline"         => (isset($params['vlData']->Section2->data->responseDate) && trim($params['vlData']->Section2->data->responseDate) != '')?date('Y-m-d',strtotime($params['vlData']->Section2->data->responseDate)):date('Y-m-d'),
                     'response_status' => (isset($params['vlData']->Section2->data->responseStatus) && !empty($params['vlData']->Section2->data->responseStatus)) ? $params['vlData']->Section2->data->responseStatus : null,
                     'attributes' => $attributes,
-                    'shipment_test_report_date' => (isset($params['vlData']->Section2->data->responseDate) && trim($params['vlData']->Section2->data->responseDate) != '') ? date('Y-m-d', strtotime($params['vlData']->Section2->data->responseDate)) : date('Y-m-d'),
+                    'shipment_test_report_date' => (isset($params['vlData']->Section2->data->responseDate) && trim($params['vlData']->Section2->data->responseDate) != '') ? date('Y-m-d H:i:s', strtotime($params['vlData']->Section2->data->responseDate)) : date('Y-m-d H:i:s'),
                     'supervisor_approval' => $params['vlData']->Section4->data->supervisorReviewSelected,
                     'participant_supervisor' => $params['vlData']->Section4->data->approvalInputText,
                     'user_comment' => $params['vlData']->Section4->data->comments,
@@ -5004,7 +5004,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 $data = [
                     'shipment_receipt_date' => date('Y-m-d', strtotime($params['dtsData']->Section2->data->testReceiptDate)),
                     'shipment_test_date' => date('Y-m-d', strtotime($params['dtsData']->Section2->data->testingDate)),
-                    'shipment_test_report_date' => (isset($params['dtsData']->Section2->data->responseDate) && trim($params['dtsData']->Section2->data->responseDate) != '') ? date('Y-m-d', strtotime($params['dtsData']->Section2->data->responseDate)) : date('Y-m-d'),
+                    'shipment_test_report_date' => (isset($params['dtsData']->Section2->data->responseDate) && trim($params['dtsData']->Section2->data->responseDate) != '') ? date('Y-m-d H:i:s', strtotime($params['dtsData']->Section2->data->responseDate)) : date('Y-m-d H:i:s'),
                     // "response_deadline"         => (isset($params['dtsData']->Section2->data->respDate) && trim($params['dtsData']->Section2->data->respDate) != '')?date('Y-m-d',strtotime($params['dtsData']->Section2->data->respDate)):date('Y-m-d'),
                     'response_status' => (isset($params['dtsData']->Section2->data->responseStatus) && !empty($params['dtsData']->Section2->data->responseStatus)) ? $params['dtsData']->Section2->data->responseStatus : null,
                     'attributes' => $attributes,
@@ -5084,7 +5084,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 $data = [
                     'shipment_receipt_date' => date('Y-m-d', strtotime($params['eidData']->Section2->data->testReceiptDate)),
                     'shipment_test_date' => date('Y-m-d', strtotime($params['eidData']->Section2->data->testDate)),
-                    'shipment_test_report_date' => (isset($params['eidData']->Section2->data->responseDate) && trim($params['eidData']->Section2->data->responseDate) != '') ? date('Y-m-d', strtotime($params['eidData']->Section2->data->responseDate)) : date('Y-m-d'),
+                    'shipment_test_report_date' => (isset($params['eidData']->Section2->data->responseDate) && trim($params['eidData']->Section2->data->responseDate) != '') ? date('Y-m-d H:i:s', strtotime($params['eidData']->Section2->data->responseDate)) : date('Y-m-d H:i:s'),
                     // "response_deadline"         => (isset($params['eidData']->Section2->data->respDate) && trim($params['eidData']->Section2->data->respDate) != '')?date('Y-m-d',strtotime($params['eidData']->Section2->data->respDate)):date('Y-m-d'),
                     'response_status' => (isset($params['eidData']->Section2->data->responseStatus) && !empty($params['eidData']->Section2->data->responseStatus)) ? $params['eidData']->Section2->data->responseStatus : null,
                     'attributes' => $attributes,
@@ -5185,7 +5185,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                     'updated_on_user' => new Zend_Db_Expr('now()'),
                 ];
                 if (isset($params['testReceiptDate']) && trim($params['testReceiptDate']) != '') {
-                    $data['shipment_test_report_date'] = Pt_Commons_DateUtility::isoDateFormat($params['testReceiptDate']);
+                    $data['shipment_test_report_date'] = Pt_Commons_DateUtility::isoDateFormat($params['testReceiptDate'], true);
                 } else {
                     $data['shipment_test_report_date'] = new Zend_Db_Expr('now()');
                 }
@@ -5239,7 +5239,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 $data = [
                     'shipment_receipt_date' => date('Y-m-d', strtotime($params['covid19Data']->Section2->data->testReceiptDate)),
                     'shipment_test_date' => date('Y-m-d', strtotime($params['covid19Data']->Section2->data->testingDate)),
-                    'shipment_test_report_date' => (isset($params['covid19Data']->Section2->data->responseDate) && trim($params['covid19Data']->Section2->data->responseDate) != '') ? date('Y-m-d', strtotime($params['covid19Data']->Section2->data->responseDate)) : date('Y-m-d'),
+                    'shipment_test_report_date' => (isset($params['covid19Data']->Section2->data->responseDate) && trim($params['covid19Data']->Section2->data->responseDate) != '') ? date('Y-m-d H:i:s', strtotime($params['covid19Data']->Section2->data->responseDate)) : date('Y-m-d H:i:s'),
                     'response_status' => (isset($params['covid19Data']->Section2->data->responseStatus) && !empty($params['covid19Data']->Section2->data->responseStatus)) ? $params['covid19Data']->Section2->data->responseStatus : null,
                     'attributes' => $attributes,
                     'supervisor_approval' => (isset($params['covid19Data']->Section6->data->supervisorReviewSelected) && $params['covid19Data']->Section6->data->supervisorReviewSelected != '') ? $params['covid19Data']->Section6->data->supervisorReviewSelected : '',

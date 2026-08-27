@@ -112,8 +112,7 @@ if (!empty($resultArray['shipment'])) {
         // Format response date
         $responseDate = '';
         if (isset($result['responseResult'][0]['responseDate']) && !empty(trim($result['responseResult'][0]['responseDate']))) {
-            $splitDate = explode(" ", $result['responseResult'][0]['responseDate']);
-            $responseDate = Pt_Commons_DateUtility::humanReadableDateFormat($splitDate[0]);
+            $responseDate = Pt_Commons_DateUtility::responseDateForDisplay($result['responseResult'][0]['responseDate']);
         }
 
         // Format shipment receipt date

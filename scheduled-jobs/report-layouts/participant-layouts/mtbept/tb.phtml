@@ -102,7 +102,7 @@ if (!empty($resultArray['shipment'])) {
         $score = 0;
 
         if (isset($result['responseResult'][0]['responseDate']) && trim($result['responseResult'][0]['responseDate']) != "") {
-            $responseDate = Pt_Commons_DateUtility::humanReadableDateFormat($result['responseResult'][0]['responseDate']);
+            $responseDate = Pt_Commons_DateUtility::responseDateForDisplay($result['responseResult'][0]['responseDate']);
         }
         $attributes = '';
         if (isset($result['attributes'])) {
@@ -119,7 +119,7 @@ if (!empty($resultArray['shipment'])) {
         }
 
         if (isset($result['responseResult'][0]['responseDate']) && trim($result['responseResult'][0]['responseDate']) != "") {
-            $shipmentTestReportDate = Pt_Commons_DateUtility::humanReadableDateFormat($result['responseResult'][0]['responseDate']);
+            $shipmentTestReportDate = Pt_Commons_DateUtility::responseDateForDisplay($result['responseResult'][0]['responseDate']);
         }
 
         $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:12px;">' . $panelName . '</span><br>';

@@ -67,12 +67,7 @@ class Application_Model_Vl
 
             $methodOfEvaluation = $shipmentAttributes['methodOfEvaluation'] ?? 'standard';
 
-            $createdOnUser = explode(' ', $shipment['shipment_test_report_date'] ?? '');
-            if (trim($createdOnUser[0]) != '' && $createdOnUser[0] != null && trim($createdOnUser[0]) != '0000-00-00') {
-                $createdOn = new DateTimeImmutable($createdOnUser[0]);
-            } else {
-                $createdOn = null;
-            }
+            $createdOn = Pt_Commons_DateUtility::responseInstant($shipment['shipment_test_report_date'] ?? null);
 
             $lastDate = Pt_Commons_DateUtility::shipmentCutoff($shipment['response_deadline']);
 

@@ -294,7 +294,7 @@ if (!empty($resultArray['shipment'])) {
         // ---- dates ----
         $responseDate = '';
         if (!empty($result['responseResult'][0]['responseDate'])) {
-            $responseDate = Pt_Commons_DateUtility::humanReadableDateFormat(explode(' ', $result['responseResult'][0]['responseDate'])[0]);
+            $responseDate = Pt_Commons_DateUtility::responseDateForDisplay($result['responseResult'][0]['responseDate']);
         }
         $shipmentDate  = trim((string) $result['shipment_date']) !== '' ? Pt_Commons_DateUtility::humanReadableDateFormat($result['shipment_date']) : '';
         $receiptDate   = !empty($result['responseResult'][0]['shipment_receipt_date']) ? Pt_Commons_DateUtility::humanReadableDateFormat($result['responseResult'][0]['shipment_receipt_date']) : '';

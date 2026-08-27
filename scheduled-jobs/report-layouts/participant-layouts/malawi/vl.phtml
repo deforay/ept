@@ -90,8 +90,7 @@ if (!empty($resultArray['shipment'])) {
         $score = 0;
         $passPercentage = Pt_Commons_SchemeConfig::get('vl.passPercentage');
         if (isset($result['responseResult'][0]['responseDate']) && trim($result['responseResult'][0]['responseDate']) != "") {
-            $splitDate = explode(" ", $result['responseResult'][0]['responseDate']);
-            $responseDate = Pt_Commons_DateUtility::humanReadableDateFormat($splitDate[0]);
+            $responseDate = Pt_Commons_DateUtility::responseDateForDisplay($result['responseResult'][0]['responseDate']);
         }
         $attributes = '';
         if (isset($result['attributes'])) {
@@ -107,7 +106,7 @@ if (!empty($resultArray['shipment'])) {
         }
 
         if (isset($result['responseResult'][0]['shipment_test_report_date']) && trim($result['responseResult'][0]['shipment_test_report_date']) != "") {
-            $shipmentTestReportDate = Pt_Commons_DateUtility::humanReadableDateFormat($result['responseResult'][0]['shipment_test_report_date']);
+            $shipmentTestReportDate = Pt_Commons_DateUtility::responseDateForDisplay($result['responseResult'][0]['shipment_test_report_date']);
         }
         if (isset($reportFormat) && !empty($reportFormat)) {
         } else {

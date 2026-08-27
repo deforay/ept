@@ -383,6 +383,56 @@ final class Pt_Commons_DateUtility
         }
     }
 
+    // Returns the moment a participant's response was submitted, as an absolute
+    // instant, so it can be compared against shipmentCutoff().
+    //
+    // `shipment_test_report_date` is a DATETIME and the response forms now capture
+    // a time of day, because a deadline can close part-way through its own day.
+    // A legacy date-only value (or one saved before the form carried a time) has
+    // no time component; it defaults to 00:00:00 so such a response is read as
+    // on time for the whole of that day rather than being back-dated to a moment
+    // that could fall the wrong side of an afternoon cut-off. The wall clock is
+    // interpreted in the same cutoff timezone the deadline is, then converted to
+    // UTC — both sides of the late test are then the same kind of instant.
+    public static function responseInstant(?string $responseDate): ?DateTimeImmutable
+    {
+        $value = trim((string) ($responseDate ?? ''));
+        if (strncmp($value, '0000', 4) === 0 || !self::isDateValid($value)) {
+            return null;
+        }
+
+        $parts = explode(' ', self::normalizeDateString($value), 2);
+        $dateOnly = $parts[0];
+        $time = (isset($parts[1]) && trim($parts[1]) !== '') ? trim($parts[1]) : '00:00:00';
+
+        try {
+            return (new DateTimeImmutable($dateOnly . ' ' . $time, self::cutoffTimezone()))
+                ->setTimezone(new DateTimeZone('UTC'));
+        } catch (Throwable $e) {
+            return null;
+        }
+    }
+
+    // Human-readable response date for a report, with the time of day appended only
+    // when the stored value actually carries one.
+    //
+    // Response dates have only carried a time since the response forms started
+    // capturing it; every value saved before that is date-only, stored as midnight.
+    // Printing "00:00" against a decade of historical rounds would be noise (and
+    // wrong - nobody submitted at midnight), so the time shows up only when it is
+    // real. Pairs with responseInstant(), which does the same job for comparison.
+    public static function responseDateForDisplay($responseDate, ?string $format = null): mixed
+    {
+        if (!self::isDateValid($responseDate)) {
+            return null;
+        }
+
+        $parts = explode(' ', trim((string) $responseDate), 2);
+        $hasTime = isset($parts[1]) && trim($parts[1]) !== '' && strncmp(trim($parts[1]), '00:00', 5) !== 0;
+
+        return self::humanReadableDateFormat($responseDate, $hasTime, $format);
+    }
+
     // Human-readable name for the timezone a response deadline is judged in, for
     // showing next to a due date so an admin in another zone knows what the clock
     // on screen means — e.g. "India Standard Time (IST, UTC+05:30)". Anywhere on

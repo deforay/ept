@@ -141,6 +141,61 @@
         });
     }
 
+    // Response Date is judged against the shipment's response deadline, which is a
+    // DATETIME that can close part-way through its own day. A date-only value reads
+    // as midnight, so an afternoon submission on the closing day would look early.
+    // These inputs therefore carry a time of day, using the same single-date +
+    // 24-hour-time daterangepicker the deadline field itself uses on the admin
+    // shipment form. Format is fixed at DD-MMM-YYYY HH:mm (month name, so the day
+    // and month can never be read the wrong way round).
+    //
+    // Optional data attributes, both accepting a YYYY-MM-DD date or the word
+    // "today": data-mindate, data-maxdate.
+    window.eptDateTimeFormat = 'DD-MMM-YYYY HH:mm';
+    window.initDateTimePickers = function (selector) {
+        if (!$.fn.daterangepicker) {
+            return;
+        }
+        $(selector || '.datetimepicker').each(function () {
+            var $input = $(this);
+            if ($input.data('daterangepicker')) {
+                return;
+            }
+            var bound = function (attr) {
+                var raw = $input.data(attr);
+                if (raw === undefined || raw === null || raw === '') return undefined;
+                return (String(raw) === 'today') ? moment().endOf('day') : moment(String(raw));
+            };
+            var current = $input.val() ? moment($input.val(), window.eptDateTimeFormat) : null;
+            $input.daterangepicker({
+                singleDatePicker: true,
+                timePicker: true,
+                timePicker24Hour: true,
+                autoUpdateInput: false,
+                showDropdowns: true,
+                minYear: moment().year() - 20,
+                maxYear: moment().year() + 20,
+                minDate: bound('mindate'),
+                maxDate: bound('maxdate'),
+                startDate: (current && current.isValid()) ? current : moment(),
+                locale: {
+                    format: window.eptDateTimeFormat,
+                    cancelLabel: '<?= $this->jsTranslate("Clear"); ?>',
+                    applyLabel: '<?= $this->jsTranslate("Apply"); ?>'
+                }
+            });
+            $input.on('apply.daterangepicker', function (ev, picker) {
+                $(this).val(picker.startDate.format(window.eptDateTimeFormat));
+            });
+            $input.on('cancel.daterangepicker', function () {
+                $(this).val('');
+            });
+        });
+    };
+    $(function () {
+        window.initDateTimePickers('.datetimepicker');
+    });
+
     if ($.fn.dataTable) {
         $.extend(true, $.fn.dataTable.defaults, {
             "language": {

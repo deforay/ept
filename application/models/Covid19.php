@@ -26,12 +26,8 @@ class Application_Model_Covid19
 
             //$shipment['is_excluded'] = 'no'; // setting it as no by default. It will become 'yes' if some condition matches.
 
-            $createdOnUser = explode(' ', $shipment['shipment_test_report_date'] ?? '');
-            if (trim($createdOnUser[0]) != '' && $createdOnUser[0] != null && trim($createdOnUser[0]) != '0000-00-00') {
-                $createdOn = new DateTime($createdOnUser[0]);
-            } else {
-                $createdOn = new DateTime('1970-01-01');
-            }
+            $createdOn = Pt_Commons_DateUtility::responseInstant($shipment['shipment_test_report_date'] ?? null)
+                ?? new DateTimeImmutable('1970-01-01');
 
             $results = $schemeService->getCovid19Samples($shipmentId, $shipment['participant_id']);
 

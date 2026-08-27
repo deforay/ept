@@ -597,7 +597,7 @@ class Application_Service_Shipments
             }
 
             if (isset($params['testReceiptDate']) && trim($params['testReceiptDate']) != '') {
-                $data['shipment_test_report_date'] = Pt_Commons_DateUtility::isoDateFormat($params['testReceiptDate']);
+                $data['shipment_test_report_date'] = Pt_Commons_DateUtility::isoDateFormat($params['testReceiptDate'], true);
             } else {
                 $data['shipment_test_report_date'] = new Zend_Db_Expr('now()');
             }
@@ -765,7 +765,7 @@ class Application_Service_Shipments
             }
 
             if (isset($params['testReceiptDate']) && trim($params['testReceiptDate']) != '') {
-                $data['shipment_test_report_date'] = Pt_Commons_DateUtility::isoDateFormat($params['testReceiptDate']);
+                $data['shipment_test_report_date'] = Pt_Commons_DateUtility::isoDateFormat($params['testReceiptDate'], true);
             } else {
                 $data['shipment_test_report_date'] = new Zend_Db_Expr('now()');
             }
@@ -886,7 +886,7 @@ class Application_Service_Shipments
 
             $testResponseDate = $params['testResponseDate'] ?? $params['testReceiptDate'] ?? null;
             if (isset($testResponseDate) && !empty($testResponseDate)) {
-                $data['shipment_test_report_date'] = Pt_Commons_DateUtility::isoDateFormat($testResponseDate);
+                $data['shipment_test_report_date'] = Pt_Commons_DateUtility::isoDateFormat($testResponseDate, true);
             } else {
                 $data['shipment_test_report_date'] = new Zend_Db_Expr('now()');
             }
@@ -1025,7 +1025,7 @@ class Application_Service_Shipments
             }
 
             if (isset($params['testReceiptDate']) && trim($params['testReceiptDate']) != '') {
-                $data['shipment_test_report_date'] = Pt_Commons_DateUtility::isoDateFormat($params['testReceiptDate']);
+                $data['shipment_test_report_date'] = Pt_Commons_DateUtility::isoDateFormat($params['testReceiptDate'], true);
             } else {
                 $data['shipment_test_report_date'] = new Zend_Db_Expr('now()');
             }
@@ -1541,7 +1541,7 @@ class Application_Service_Shipments
                 $data['updated_on_admin'] = new Zend_Db_Expr('now()');
             }
             if (isset($params['testReceiptDate']) && trim($params['testReceiptDate']) != '') {
-                $data['shipment_test_report_date'] = Pt_Commons_DateUtility::isoDateFormat($params['testReceiptDate']);
+                $data['shipment_test_report_date'] = Pt_Commons_DateUtility::isoDateFormat($params['testReceiptDate'], true);
             } else {
                 $data['shipment_test_report_date'] = new Zend_Db_Expr('now()');
             }
@@ -1651,7 +1651,7 @@ class Application_Service_Shipments
             }
 
             if (isset($params['responseDate']) && trim($params['responseDate']) != '') {
-                $data['shipment_test_report_date'] = Pt_Commons_DateUtility::isoDateFormat($params['responseDate']);
+                $data['shipment_test_report_date'] = Pt_Commons_DateUtility::isoDateFormat($params['responseDate'], true);
             } else {
                 $data['shipment_test_report_date'] = new Zend_Db_Expr('now()');
             }
@@ -1780,7 +1780,7 @@ class Application_Service_Shipments
 
             $responseDate = $params['responseDate'] ?? $params['testReceiptDate'] ?? null;
             if (!empty($responseDate) && trim($responseDate) != '') {
-                $data['shipment_test_report_date'] = Pt_Commons_DateUtility::isoDateFormat($responseDate);
+                $data['shipment_test_report_date'] = Pt_Commons_DateUtility::isoDateFormat($responseDate, true);
             } else {
                 $data['shipment_test_report_date'] = new Zend_Db_Expr('now()');
             }
@@ -1905,7 +1905,7 @@ class Application_Service_Shipments
             }
 
             if (isset($params['testReceiptDate']) && trim($params['testReceiptDate']) != '' && $responseStatus == 'responded') {
-                $data['shipment_test_report_date'] = Pt_Commons_DateUtility::isoDateFormat($params['testReceiptDate']);
+                $data['shipment_test_report_date'] = Pt_Commons_DateUtility::isoDateFormat($params['testReceiptDate'], true);
             } else {
                 $data['shipment_test_report_date'] = new Zend_Db_Expr('now()');
             }
