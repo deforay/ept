@@ -16,6 +16,10 @@ EMAIL=${2:-""}
 
 DATA_PATH="./docker/certbot"
 
+# nginx publishes 80 and 443 under this profile, so the app container has to
+# move off 80. Anything already exported wins.
+export APP_PORT="${APP_PORT:-8080}"
+
 if [ -d "$DATA_PATH/conf/live/$DOMAIN" ]; then
     echo "Certificates already exist for $DOMAIN."
     read -p "Replace existing certificates? (y/N) " decision
@@ -66,4 +70,4 @@ echo ""
 echo "### Done! Certificates installed for $DOMAIN"
 echo ""
 echo "Start ePT with SSL:"
-echo "  APP_HOSTNAME=$DOMAIN docker compose --profile ssl up -d"
+echo "  APP_PORT=$APP_PORT APP_HOSTNAME=$DOMAIN APP_DOMAIN=https://$DOMAIN/ docker compose --profile ssl up -d"

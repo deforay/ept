@@ -45,7 +45,7 @@ docker compose up --build -d
 docker compose exec ept php bin/seed-admin.php
 ```
 
-Access the admin panel at [http://localhost/admin](http://localhost/admin). Change the default database password in `docker-compose.yml` before putting this on a network.
+Access the admin panel at [http://localhost/admin](http://localhost/admin). Copy `.env.example` to `.env` and change `DB_PASSWORD` and `MYSQL_ROOT_PASSWORD` before putting this on a network.
 
 ### Windows
 

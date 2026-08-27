@@ -102,14 +102,17 @@ Available environment variables:
 | Variable | Default | Description |
 | --- | --- | --- |
 | `DB_HOST` | `ept-db` | MySQL hostname (use the service name) |
-| `DB_USER` | `root` | MySQL user |
+| `DB_USER` | `root` | MySQL user. The bundled `ept-db` container only creates `root` |
 | `DB_PASSWORD` | `ept_secret` | MySQL password |
-| `DB_NAME` | `ept` | Database name |
+| `DB_NAME` | `ept` | Database name. Fixed. `sql/init.sql` names the database it creates |
+| `MYSQL_ROOT_PASSWORD` | `ept_secret` | MySQL root password. Match `DB_PASSWORD` when `DB_USER` is `root` |
 | `APP_PORT` | `80` | Host port to expose the application on |
 | `APP_DOMAIN` | `http://localhost/` | Application URL |
 | `APP_HOSTNAME` | `localhost` | Domain name (used by nginx for SSL) |
+| `HTTP_PORT` | `80` | Host port nginx listens on (`--profile ssl` only) |
+| `HTTPS_PORT` | `443` | Host TLS port nginx listens on (`--profile ssl` only) |
 
-> **Change the default password:** Update `DB_PASSWORD` and `MYSQL_ROOT_PASSWORD` in `docker-compose.yml` before deploying to production.
+> **Change the default password:** Set `DB_PASSWORD` and `MYSQL_ROOT_PASSWORD` in `.env` before deploying to production. Both default to `ept_secret`. Set them before the first start. MySQL reads `MYSQL_ROOT_PASSWORD` only when it initializes an empty data directory, so changing it once `mysql_data` exists leaves the old password in place.
 
 ### What's Included
 
@@ -205,8 +208,10 @@ For production servers with a public IP and domain name, you can enable HTTPS wi
 sudo ./docker/init-letsencrypt.sh ept.example.org admin@example.org
 
 # Start with SSL enabled
-APP_HOSTNAME=ept.example.org APP_DOMAIN=https://ept.example.org/ docker compose --profile ssl up -d
+APP_PORT=8080 APP_HOSTNAME=ept.example.org APP_DOMAIN=https://ept.example.org/ docker compose --profile ssl up -d
 ```
+
+Set `APP_PORT` to a free port, or put it in `.env`. nginx publishes 80 and 443 under this profile, and the app container cannot publish 80 at the same time.
 
 **How it works:**
 
