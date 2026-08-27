@@ -856,13 +856,16 @@ class Application_Model_Recency
         if (isset($shipmentResult) && !empty($shipmentResult)) {
 
             foreach ($shipmentResult as $aRow) {
-                $r = 0;
+                // Column counters are 1-based: PhpSpreadsheet's stringFromColumnIndex()
+                // starts at 1 (PHPExcel's started at 0). The heading loops above already
+                // compensate with a "+ 1"; these row counters are passed straight through.
+                $r = 1;
                 $k = 0;
                 $rehydrationDate = '';
                 $shipmentTestDate = '';
-                $sheetThreeCol = 0;
-                $docScoreCol = 0;
-                $totScoreCol = 0;
+                $sheetThreeCol = 1;
+                $docScoreCol = 1;
+                $totScoreCol = 1;
                 $countCorrectResult = 0;
 
                 $colCellObj = $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow);
