@@ -504,7 +504,7 @@ class Application_Model_CustomTest
         //------------- Participant List Details End ------>
 
         //<-------- Second sheet start
-        $reportHeadings = ['Participant Code', 'Participant Name', 'Region', 'District', 'Shipment Receipt Date', 'Testing Date', 'Kit Name', 'Kit Lot Number', 'Kit Expiry Date'];
+        $reportHeadings = ['Participant Code', 'Participant Name', 'Region', 'District', 'Shipment Receipt Date', 'Testing Date', 'Date Reported', 'Kit Name', 'Kit Lot Number', 'Kit Expiry Date'];
         $shipmentAttributes = Zend_Json_Decoder::decode($result['shipment_attributes'], true);
         if (isset($shipmentAttributes['noOfTest']) && $shipmentAttributes['noOfTest'] == 2) {
             $reportHeadings = $this->addGenericTestSampleNameInArray($shipmentId, $reportHeadings);
@@ -667,12 +667,15 @@ class Application_Model_CustomTest
                     $shipmentTestDate = Pt_Commons_General::excelDateFormat($aRow['shipment_test_date']);
                 }
 
+                $reportedDate = Pt_Commons_DateUtility::responseDateForDisplay($aRow['shipment_test_report_date'] ?? null, 'd/m/Y') ?? '';
+
                 if (isset($attributes['kit_expiry_date']) && trim($attributes['kit_expiry_date']) != '' && trim($attributes['kit_expiry_date']) != '0000-00-00') {
                     $kitExpiryDate = Pt_Commons_General::excelDateFormat($attributes['kit_expiry_date']);
                 }
                 $testKits = $kitDb->getTestKitNameById($attributes['kit_name'])[0];
                 $resultReportSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($shipmentReceiptDate);
                 $resultReportSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($shipmentTestDate);
+                $resultReportSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($reportedDate);
                 $resultReportSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($testKits);
                 $resultReportSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($attributes['kit_lot_number']);
                 $resultReportSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($kitExpiryDate);

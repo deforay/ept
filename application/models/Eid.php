@@ -252,14 +252,17 @@ class Application_Model_Eid
         $firstSheet->getCell('J1')->setValue(html_entity_decode('Date Tested', ENT_QUOTES, 'UTF-8'));
 
         $firstSheet->mergeCells('K1:K2');
-        $firstSheet->getCell('K1')->setValue(html_entity_decode('Response Status', ENT_QUOTES, 'UTF-8'));
+        $firstSheet->getCell('K1')->setValue(html_entity_decode('Date Reported', ENT_QUOTES, 'UTF-8'));
 
         $firstSheet->mergeCells('L1:L2');
-        $firstSheet->getCell('L1')->setValue(html_entity_decode('Final Score', ENT_QUOTES, 'UTF-8'));
+        $firstSheet->getCell('L1')->setValue(html_entity_decode('Response Status', ENT_QUOTES, 'UTF-8'));
+
+        $firstSheet->mergeCells('M1:M2');
+        $firstSheet->getCell('M1')->setValue(html_entity_decode('Final Score', ENT_QUOTES, 'UTF-8'));
 
         $firstSheet->getDefaultRowDimension()->setRowHeight(15);
 
-        $colNameCount = 12;
+        $colNameCount = 13;
         $cellName1 = $firstSheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($colNameCount + 1) . '1')
             ->getColumn();
 
@@ -350,10 +353,13 @@ class Application_Model_Eid
 
             $receiptDate = ($rowOverAll['shipment_receipt_date'] != '' && $rowOverAll['shipment_receipt_date'] != '0000-00-00' && $rowOverAll['shipment_receipt_date'] != '1970-01-01') ? Pt_Commons_DateUtility::humanReadableDateFormat($rowOverAll['shipment_receipt_date']) : '';
             $testDate = ($rowOverAll['shipment_test_date'] != '' && $rowOverAll['shipment_test_date'] != '0000-00-00' && $rowOverAll['shipment_test_date'] != '1970-01-01') ? Pt_Commons_DateUtility::humanReadableDateFormat($rowOverAll['shipment_test_date']) : '';
+            $reportedDate = Pt_Commons_DateUtility::responseDateForDisplay($rowOverAll['shipment_test_report_date'] ?? null) ?? '';
             $firstSheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($col++) . $row)
                 ->setValueExplicit(html_entity_decode($receiptDate, ENT_QUOTES, 'UTF-8'));
             $firstSheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($col++) . $row)
                 ->setValueExplicit(html_entity_decode($testDate, ENT_QUOTES, 'UTF-8'));
+            $firstSheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($col++) . $row)
+                ->setValueExplicit(html_entity_decode($reportedDate, ENT_QUOTES, 'UTF-8'));
             if ($rowOverAll['is_pt_test_not_performed'] == 'yes') {
                 $firstSheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($col++) . $row)
                     ->setValueExplicit(html_entity_decode('PT Test Not Performed', ENT_QUOTES, 'UTF-8'));

@@ -635,7 +635,7 @@ class Application_Model_Recency
 
         //------------- Participant List Details End ------>
         //<-------- Second sheet start
-        $reportHeadings = ['Participant Code', 'Participant Name', 'Point of Contact', 'Region', 'Shipment Receipt Date', 'Sample Rehydration Date', 'Testing Date'];
+        $reportHeadings = ['Participant Code', 'Participant Name', 'Point of Contact', 'Region', 'Shipment Receipt Date', 'Sample Rehydration Date', 'Testing Date', 'Date Reported'];
 
         if ($result['scheme_type'] == 'recency') {
             foreach (range(0, $result['number_of_samples']) as $dummy) {
@@ -882,6 +882,8 @@ class Application_Model_Recency
                     $shipmentTestDate = Pt_Commons_General::excelDateFormat($aRow['shipment_test_date']);
                 }
 
+                $reportedDate = Pt_Commons_DateUtility::responseDateForDisplay($aRow['shipment_test_report_date'] ?? null, 'd/m/Y') ?? '';
+
                 if (trim($aRow['attributes']) != '') {
                     $attributes = Pt_Commons_JsonUtility::safeDecode($aRow['attributes']);
                     $sampleRehydrationDate = new Zend_Date($attributes['sample_rehydration_date']);
@@ -891,6 +893,7 @@ class Application_Model_Recency
                 $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($aRow['shipment_receipt_date']);
                 $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($rehydrationDate);
                 $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($shipmentTestDate);
+                $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($reportedDate);
 
                 $sheetThree->getCell(Coordinate::stringFromColumnIndex($sheetThreeCol++) . $sheetThreeRow)->setValueExplicit(ucwords($aRow['unique_identifier']));
                 $sheetThree->getCell(Coordinate::stringFromColumnIndex($sheetThreeCol++) . $sheetThreeRow)->setValueExplicit($aRow['first_name'] . ' ' . $aRow['last_name']);

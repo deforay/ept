@@ -137,9 +137,12 @@ FROM
                 WHEN shipment_participant_map.is_excluded = 'yes' THEN 'Yes' ELSE 'No'
             END AS `Submission Excluded`,
             shipment_participant_map.shipment_receipt_date AS `Panel Received date`,
-            CAST(
-                shipment_participant_map.shipment_test_report_date AS DATE
-            ) AS `Date PT Results Reported`,
+            CASE
+                WHEN shipment_participant_map.shipment_test_report_date IS NULL THEN NULL
+                WHEN TIME(shipment_participant_map.shipment_test_report_date) = '00:00:00'
+                    THEN DATE_FORMAT(shipment_participant_map.shipment_test_report_date, '%Y-%m-%d')
+                ELSE DATE_FORMAT(shipment_participant_map.shipment_test_report_date, '%Y-%m-%d %H:%i')
+            END AS `Date PT Results Reported`,
             CAST(attributes AS json) AS attributes_json,
             r_tb_assay.name AS assay_name,
             CASE WHEN IFNULL(

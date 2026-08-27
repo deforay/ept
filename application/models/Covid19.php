@@ -688,7 +688,7 @@ class Application_Model_Covid19
         //------------- Participant List Details End ------>
 
         //<-------- Second sheet start
-        $reportHeadings = ['Participant Code', 'Participant Name', 'Point of Contact', 'Region', 'Shipment Receipt Date', 'Sample Rehydration Date', 'Testing Date', 'Test#1 Name', 'Name of PCR reagent #1', 'PCR reagent Lot #1', 'PCR reagent expiry date #1', 'Type Lot #1', 'Expiry Date'];
+        $reportHeadings = ['Participant Code', 'Participant Name', 'Point of Contact', 'Region', 'Shipment Receipt Date', 'Sample Rehydration Date', 'Testing Date', 'Date Reported', 'Test#1 Name', 'Name of PCR reagent #1', 'PCR reagent Lot #1', 'PCR reagent expiry date #1', 'Type Lot #1', 'Expiry Date'];
         $maximumAllowed = $config['covid19MaximumTestAllowed'];
         if ($result['scheme_type'] == 'covid19') {
             $reportHeadings = $this->addCovid19SampleNameInArray($shipmentId, $reportHeadings);
@@ -953,6 +953,8 @@ class Application_Model_Covid19
                     $shipmentTestDate = Pt_Commons_General::excelDateFormat($aRow['shipment_test_date']);
                 }
 
+                $reportedDate = Pt_Commons_DateUtility::responseDateForDisplay($aRow['shipment_test_report_date'] ?? null, 'd/m/Y') ?? '';
+
                 if (trim($aRow['attributes']) != '') {
                     $attributes = Pt_Commons_JsonUtility::safeDecode($aRow['attributes']);
                     $sampleRehydrationDate = new Zend_Date($attributes['sample_rehydration_date']);
@@ -962,6 +964,7 @@ class Application_Model_Covid19
                 $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($aRow['shipment_receipt_date']);
                 $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($rehydrationDate);
                 $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($shipmentTestDate);
+                $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($reportedDate);
 
                 $sheetThree->getCell(Coordinate::stringFromColumnIndex($sheetThreeCol++), $sheetThreeRow)->setValueExplicit(ucwords($aRow['unique_identifier']));
                 $sheetThree->getCell(Coordinate::stringFromColumnIndex($sheetThreeCol++), $sheetThreeRow)->setValueExplicit($aRow['first_name'] . ' ' . $aRow['last_name']);

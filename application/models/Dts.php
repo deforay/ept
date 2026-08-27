@@ -1984,7 +1984,7 @@ final class Application_Model_Dts
                 }
 
                 $resultReportRow[] = Pt_Commons_General::excelDateFormat($aRow['shipment_test_date']);
-                $resultReportRow[] = Pt_Commons_General::excelDateFormat($aRow['shipment_test_report_date']);
+                $resultReportRow[] = Pt_Commons_DateUtility::responseDateForDisplay($aRow['shipment_test_report_date'] ?? null, 'd/m/Y') ?? '';
 
                 if (isset($config['displaySampleConditionFields']) && $config['displaySampleConditionFields'] == 'yes') {
 

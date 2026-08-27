@@ -443,6 +443,12 @@ class Application_Model_Vl
 
         $colNamesArray[] = 'Date Tested';
         $firstSheet->getCell(Coordinate::stringFromColumnIndex($colNameCount) . 1)
+            ->setValueExplicit(html_entity_decode('Date Reported', ENT_QUOTES, 'UTF-8'));
+        $firstSheet->getStyle(Coordinate::stringFromColumnIndex($colNameCount) . 1)->applyFromArray($borderStyle, true);
+        $colNameCount++;
+
+        $colNamesArray[] = 'Date Reported';
+        $firstSheet->getCell(Coordinate::stringFromColumnIndex($colNameCount) . 1)
             ->setValueExplicit(html_entity_decode('Assay', ENT_QUOTES, 'UTF-8'));
         $firstSheet->getStyle(Coordinate::stringFromColumnIndex($colNameCount) . 1)->applyFromArray($borderStyle, true);
         $colNameCount++;
@@ -636,16 +642,20 @@ class Application_Model_Vl
 
             $receiptDate = ($rowOverAll['shipment_receipt_date'] != '' && $rowOverAll['shipment_receipt_date'] != '0000-00-00') ? Pt_Commons_DateUtility::humanReadableDateFormat($rowOverAll['shipment_receipt_date']) : '';
             $testDate = ($rowOverAll['shipment_test_date'] != '' && $rowOverAll['shipment_test_date'] != '0000-00-00') ? Pt_Commons_DateUtility::humanReadableDateFormat($rowOverAll['shipment_test_date']) : '';
+            $reportedDate = Pt_Commons_DateUtility::responseDateForDisplay($rowOverAll['shipment_test_report_date'] ?? null) ?? '';
             $firstSheet->getCell(Coordinate::stringFromColumnIndex($col++) . $row)
                 ->setValueExplicit(html_entity_decode($receiptDate, ENT_QUOTES, 'UTF-8'));
             $firstSheet->getCell(Coordinate::stringFromColumnIndex($col++) . $row)
                 ->setValueExplicit(html_entity_decode($testDate, ENT_QUOTES, 'UTF-8'));
+            $firstSheet->getCell(Coordinate::stringFromColumnIndex($col++) . $row)
+                ->setValueExplicit(html_entity_decode($reportedDate, ENT_QUOTES, 'UTF-8'));
 
             // we are also building the data required for other Assay Sheets
             if ($attributes['vl_assay'] > 0) {
                 $assayWiseData[$attributes['vl_assay']][$rowOverAll['unique_identifier']][] = $rowOverAll['shipment_score'];
                 $assayWiseData[$attributes['vl_assay']][$rowOverAll['unique_identifier']][] = $receiptDate;
                 $assayWiseData[$attributes['vl_assay']][$rowOverAll['unique_identifier']][] = $testDate;
+                $assayWiseData[$attributes['vl_assay']][$rowOverAll['unique_identifier']][] = $reportedDate;
             }
 
             $firstSheet->getCell(Coordinate::stringFromColumnIndex($col++) . $row)

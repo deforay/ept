@@ -641,6 +641,7 @@ class Application_Model_Tb
                 'Region',
                 'Shipment Receipt Date',
                 'Testing Date',
+                'Date Reported',
                 'Assay Name',
                 'Assay Lot',
                 'Assay Expiration',
@@ -753,10 +754,13 @@ class Application_Model_Tb
                     if (isset($attributes['expiry_date']) && trim($attributes['expiry_date']) != '' && trim($attributes['expiry_date']) != '0000-00-00') {
                         $expiryDate = Pt_Commons_General::excelDateFormat($attributes['expiry_date']);
                     }
+                    $reportedDate = Pt_Commons_DateUtility::responseDateForDisplay($aRow['shipment_test_report_date'] ?? null, 'd/m/Y') ?? '';
                     $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
                         ->setValueExplicit($aRow['shipment_receipt_date'])->getStyle()->getFont()->getColor()->setARGB($txtColor);
                     $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
                         ->setValueExplicit($shipmentTestDate)->getStyle()->getFont()->getColor()->setARGB($txtColor);
+                    $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
+                        ->setValueExplicit($reportedDate)->getStyle()->getFont()->getColor()->setARGB($txtColor);
                     $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
                         ->setValueExplicit((isset($aRow['assayName']) && !empty($aRow['assayName'])) ? $aRow['assayName'] : '')->getStyle()->getFont()->getColor()->setARGB($txtColor);
                     $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
