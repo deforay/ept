@@ -101,6 +101,7 @@ $this->distributionDates = array_diff($this->distributionDates, array($ptEveDate
 
     var takenDates = [<?php echo '"' . implode('","', $this->distributionDates) . '"' ?>];
     var conflictIntro = "<?= $this->jsTranslate("There is already another PT Survey on this date. You can still save, but here is what it clashes with:"); ?>";
+    var conflictSelectedDate = "<?= $this->jsTranslate("Selected date:"); ?>";
     var conflictNoShipments = "<?= $this->jsTranslate("No shipments have been added to that PT Survey yet."); ?>";
     var conflictTitle = "<?= $this->jsTranslate("Date already has a PT Survey"); ?>";
 
@@ -129,7 +130,8 @@ $this->distributionDates = array_diff($this->distributionDates, array($ptEveDate
                 if (!surveys || !surveys.length) {
                     return;
                 }
-                var html = '<p>' + conflictIntro + '</p>';
+                var html = '<p>' + conflictSelectedDate + ' <strong>' + escapeHtml(ptDate) + '</strong></p>';
+                html += '<p>' + conflictIntro + '</p>';
                 surveys.forEach(function(survey) {
                     html += '<p><strong>' + escapeHtml(survey.distribution_code) + '</strong></p>';
                     if (survey.shipments && survey.shipments.length) {
