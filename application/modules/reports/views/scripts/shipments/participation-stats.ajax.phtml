@@ -11,14 +11,33 @@ $pct = static function ($n) use ($enrolled) {
     return $enrolled > 0 ? round(($n / $enrolled) * 100, 1) : 0;
 };
 
-// Segments that partition "enrolled" (excluded is shown separately as an overlay).
-$segments = [
-    ['key' => 'passed',         'label' => $this->htmlTranslate('Passed'),          'val' => (int) $s['passed'],         'color' => '#1f9d63'],
-    ['key' => 'failed',         'label' => $this->htmlTranslate('Failed'),          'val' => (int) $s['failed'],         'color' => '#d64550'],
-    ['key' => 'pending',        'label' => $this->htmlTranslate('Pending eval'),    'val' => (int) $s['pending_eval'],   'color' => '#e08a1e'],
-    ['key' => 'unable',         'label' => $this->htmlTranslate('Unable to test'),  'val' => (int) $s['unable_to_test'], 'color' => '#c9a227'],
-    ['key' => 'noresponse',     'label' => $this->htmlTranslate('No response'),     'val' => (int) $s['not_responded'],  'color' => '#9aa0a6'],
+// One name per bucket, defined once and reused by the bar, the legend and the tiles.
+// These five are mutually exclusive and add up to "enrolled" -- a participant is in exactly
+// one of them. Every label has to survive being read cold by someone who does not know the
+// system, which is why none of them is an abbreviation and why "Excluded from scoring" is
+// never used as a bucket name: it is a flag that cuts across three of these five.
+$label = [
+    'passed'       => $this->htmlTranslate('Passed'),
+    'failed'       => $this->htmlTranslate('Failed'),
+    'not_scored'   => $this->htmlTranslate('Submitted, could not be scored'),
+    'awaiting'     => $this->htmlTranslate('Awaiting evaluation'),
+    'unable'       => $this->htmlTranslate('Could not test'),
+    'noresponse'   => $this->htmlTranslate('No response'),
 ];
+
+// Segments that partition "enrolled". "Awaiting evaluation" is dropped when empty: on a
+// finalised round it is always zero and an always-zero segment reads as a broken chart.
+$segments = [
+    ['key' => 'passed',     'label' => $label['passed'],     'val' => (int) $s['passed'],         'color' => '#1f9d63'],
+    ['key' => 'failed',     'label' => $label['failed'],     'val' => (int) $s['failed'],         'color' => '#d64550'],
+    ['key' => 'not_scored', 'label' => $label['not_scored'], 'val' => (int) $s['not_scored'],     'color' => '#e08a1e'],
+    ['key' => 'awaiting',   'label' => $label['awaiting'],   'val' => (int) $s['awaiting_eval'],  'color' => '#3f6fb0'],
+    ['key' => 'unable',     'label' => $label['unable'],     'val' => (int) $s['unable_to_test'], 'color' => '#c9a227'],
+    ['key' => 'noresponse', 'label' => $label['noresponse'], 'val' => (int) $s['not_responded'],  'color' => '#9aa0a6'],
+];
+$segments = array_values(array_filter($segments, static function ($seg) {
+    return $seg['key'] !== 'awaiting' || $seg['val'] > 0;
+}));
 ?>
 <div class="pstats">
     <style>
@@ -88,11 +107,15 @@ $segments = [
     <div class="ps-tiles">
         <div class="ps-tile" style="border-left-color:#6b7684;">
             <div class="n"><?= $s['responded'] ?></div>
-            <div class="l"><?= $this->htmlTranslate('Responded') ?></div>
+            <div class="l"><?= $this->htmlTranslate('Replied') ?></div>
+            <div class="sub"><?= $this->htmlTranslate('of') ?> <?= $s['enrolled'] ?> <?= $this->htmlTranslate('enrolled') ?></div>
         </div>
         <div class="ps-tile" style="border-left-color:#3f6fb0;">
             <div class="n"><?= $s['tested'] ?></div>
-            <div class="l"><?= $this->htmlTranslate('Actually tested') ?></div>
+            <div class="l"><?= $this->htmlTranslate('Tested the panel') ?></div>
+            <?php if ((int) $s['unable_to_test'] > 0) { ?>
+                <div class="sub"><?= $s['unable_to_test'] ?> <?= $this->htmlTranslate('replied but could not test') ?></div>
+            <?php } ?>
         </div>
         <div class="ps-tile" style="border-left-color:#1f9d63;">
             <div class="n" style="color:#1f9d63;"><?= $s['passed'] ?></div>
@@ -104,11 +127,30 @@ $segments = [
         </div>
         <div class="ps-tile" style="border-left-color:#9aa0a6;">
             <div class="n"><?= $s['not_responded'] ?></div>
-            <div class="l"><?= $this->htmlTranslate('Did not respond') ?></div>
+            <div class="l"><?= $label['noresponse'] ?></div>
         </div>
         <div class="ps-tile" style="border-left-color:#c9a227;">
             <div class="n"><?= $s['excluded'] ?></div>
             <div class="l"><?= $this->htmlTranslate('Excluded from scoring') ?></div>
+            <?php // fall through to the composition below -- the total on its own reads as "no shows". ?>
+            <?php
+            // Excluded lumps together three quite different situations, and the third one --
+            // a lab that responded and tested but whose submission could not be scored -- is
+            // the actionable one. Spell the split out so the total is never read as "no shows".
+            $excParts = [];
+            foreach ([
+                'excluded_no_response'    => $label['noresponse'],
+                'excluded_unable_to_test' => $label['unable'],
+                'excluded_not_evaluable'  => $label['not_scored'],
+            ] as $statKey => $bucketLabel) {
+                if ((int) $s[$statKey] > 0) {
+                    $excParts[] = $s[$statKey] . ' ' . mb_strtolower($bucketLabel);
+                }
+            }
+            ?>
+            <?php if (!empty($excParts)) { ?>
+                <div class="sub"><?= implode(' &middot; ', $excParts) ?></div>
+            <?php } ?>
         </div>
     </div>
 
@@ -116,6 +158,5 @@ $segments = [
     <div class="ps-meta">
         <span><i class="icon-time"></i> <?= $this->htmlTranslate('Late responses') ?>: <b><?= $s['late_responses'] ?></b></span>
         <span><i class="icon-download"></i> <?= $this->htmlTranslate('Reports downloaded') ?>: <b><?= $s['reports_downloaded'] ?></b></span>
-        <span><?= $this->htmlTranslate('Unable to test') ?>: <b><?= $s['unable_to_test'] ?></b></span>
     </div>
 </div>

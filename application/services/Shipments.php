@@ -4879,9 +4879,19 @@ class Application_Service_Shipments
      *     responded / late / nottested / noresponse / draft.
      *
      * The participation funnel is a clean partition:
-     *   enrolled = responded + not_responded
+     *   enrolled  = responded + not_responded
      *   responded = tested + unable_to_test
-     *   tested   ⊇ passed + failed + pending_eval
+     *   tested    = passed + failed + not_scored + awaiting_eval
+     *
+     * "not_scored" is a response that arrived and was tested but cannot be scored --
+     * the submission was incomplete (missing test kit name / expiry / lot number, no
+     * algorithm reported) or arrived late, so evaluation set is_excluded. It is NOT
+     * "awaiting_eval": no future evaluation run will ever score it. Keeping the two
+     * apart matters because they were previously merged into a single residual, which
+     * reported hundreds of permanently-unscorable responses as pending work.
+     *
+     * "excluded" is the is_excluded flag and cuts across the partition:
+     *   excluded = excluded_no_response + excluded_unable_to_test + excluded_not_evaluable
      *
      * @param int $shipmentId
      * @return array
@@ -4910,6 +4920,19 @@ class Application_Service_Shipments
                 SUM((shipment_score + documentation_score) = 100
                     AND response_status IN ('responded','late')) AS scored_full,
                 SUM(is_excluded = 'yes') AS excluded,
+                -- The three reasons a participant lands in `excluded`. Disjoint and exhaustive:
+                -- never responded / responded but could not test / responded and tested but the
+                -- submission could not be scored (missing test kit details, algorithm not
+                -- reported, late). The third is derived rather than flagged, because is_excluded
+                -- is set from many sites across the scheme models and none of them record why.
+                SUM(is_excluded = 'yes'
+                    AND IFNULL(response_status, 'noresponse') NOT IN ('responded','late','nottested')) AS excluded_no_response,
+                SUM(is_excluded = 'yes'
+                    AND IFNULL(response_status, 'noresponse') IN ('responded','late','nottested')
+                    AND (response_status = 'nottested' OR is_pt_test_not_performed = 'yes')) AS excluded_unable_to_test,
+                SUM(is_excluded = 'yes'
+                    AND response_status IN ('responded','late')
+                    AND (is_pt_test_not_performed IS NULL OR is_pt_test_not_performed <> 'yes')) AS excluded_not_evaluable,
                 SUM(response_status = 'late' OR is_response_late = 'yes') AS late_responses,
                 SUM(individual_report_downloaded_on IS NOT NULL) AS reports_downloaded
             FROM shipment_participant_map
@@ -4925,12 +4948,18 @@ class Application_Service_Shipments
         $failed         = (int) ($row['failed'] ?? 0);
         $scoredFull     = (int) ($row['scored_full'] ?? 0);
         $excluded       = (int) ($row['excluded'] ?? 0);
+        $excNoResponse  = (int) ($row['excluded_no_response'] ?? 0);
+        $excUnable      = (int) ($row['excluded_unable_to_test'] ?? 0);
+        $excNotEvaluable = (int) ($row['excluded_not_evaluable'] ?? 0);
         $lateResponses  = (int) ($row['late_responses'] ?? 0);
         $reportsDownloaded = (int) ($row['reports_downloaded'] ?? 0);
 
         $notResponded = max(0, $enrolled - $responded);
-        // Responders who tested but haven't been scored Pass/Fail yet.
-        $pendingEval  = max(0, $tested - $passed - $failed);
+        // A tested response that evaluation excluded can never be scored, so it must not sit
+        // in the "still to be evaluated" residual -- otherwise the same participants surface
+        // under two contradictory labels on every report surface that reads these counts.
+        $notScored    = $excNotEvaluable;
+        $awaitingEval = max(0, $tested - $passed - $failed - $notScored);
 
         $responseRate = $enrolled > 0 ? round(($responded / $enrolled) * 100, 1) : 0.0;
         $passRate     = $tested > 0 ? round(($passed / $tested) * 100, 1) : 0.0;
@@ -4944,8 +4973,12 @@ class Application_Service_Shipments
             'passed'            => $passed,
             'failed'            => $failed,
             'scored_full'       => $scoredFull,
-            'pending_eval'      => $pendingEval,
+            'not_scored'        => $notScored,
+            'awaiting_eval'     => $awaitingEval,
             'excluded'          => $excluded,
+            'excluded_no_response'   => $excNoResponse,
+            'excluded_unable_to_test' => $excUnable,
+            'excluded_not_evaluable' => $excNotEvaluable,
             'late_responses'    => $lateResponses,
             'reports_downloaded' => $reportsDownloaded,
             'response_rate'     => $responseRate,
