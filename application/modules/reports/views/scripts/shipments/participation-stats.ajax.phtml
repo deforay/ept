@@ -108,13 +108,13 @@ $segments = array_values(array_filter($segments, static function ($seg) {
         <div class="ps-tile" style="border-left-color:#6b7684;">
             <div class="n"><?= $s['responded'] ?></div>
             <div class="l"><?= $this->htmlTranslate('Replied') ?></div>
-            <div class="sub"><?= $this->htmlTranslate('of') ?> <?= $s['enrolled'] ?> <?= $this->htmlTranslate('enrolled') ?></div>
+            <div class="sub"><?= sprintf($this->htmlTranslate('of %s enrolled'), (int) $s['enrolled']) ?></div>
         </div>
         <div class="ps-tile" style="border-left-color:#3f6fb0;">
             <div class="n"><?= $s['tested'] ?></div>
             <div class="l"><?= $this->htmlTranslate('Tested the panel') ?></div>
             <?php if ((int) $s['unable_to_test'] > 0) { ?>
-                <div class="sub"><?= $s['unable_to_test'] ?> <?= $this->htmlTranslate('replied but could not test') ?></div>
+                <div class="sub"><?= sprintf($this->htmlTranslate('%s replied but could not test'), (int) $s['unable_to_test']) ?></div>
             <?php } ?>
         </div>
         <div class="ps-tile" style="border-left-color:#1f9d63;">
@@ -144,6 +144,8 @@ $segments = array_values(array_filter($segments, static function ($seg) {
                 'excluded_not_evaluable'  => $label['not_scored'],
             ] as $statKey => $bucketLabel) {
                 if ((int) $s[$statKey] > 0) {
+                    // Count plus the already-translated bucket name. Lowercased AFTER translation,
+                    // never before -- the catalog must not carry cased duplicates of every label.
                     $excParts[] = $s[$statKey] . ' ' . mb_strtolower($bucketLabel);
                 }
             }

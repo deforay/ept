@@ -183,7 +183,7 @@ $dispM = static function ($v) {
                     <div class="vlGroupRow" data-group>
                         <div class="vlGroupRowHead">
                             <span class="vlGroupTag"><?php echo htmlspecialchars($groupTitle($groupIndex)); ?></span>
-                            <span class="vlGroupTotal" data-total><?php echo (int) $combined; ?> <?= $this->translate->_("participants combined"); ?></span>
+                            <span class="vlGroupTotal" data-total><?php echo sprintf($this->translate->_('%s participants combined'), (int) $combined); ?></span>
                         </div>
                         <div class="vlGroupMembers" data-members>
                             <?php foreach ($orderedMembers as $memberAssayId): ?>
@@ -221,7 +221,7 @@ $dispM = static function ($v) {
         <div class="vlGroupRow" data-group>
             <div class="vlGroupRowHead">
                 <span class="vlGroupTag"><?= $this->translate->_("New group"); ?></span>
-                <span class="vlGroupTotal" data-total>0 <?= $this->translate->_("participants combined"); ?></span>
+                <span class="vlGroupTotal" data-total><?php echo sprintf($this->translate->_('%s participants combined'), 0); ?></span>
             </div>
             <div class="vlGroupMembers" data-members></div>
             <select class="vlGroupPicker form-control input-sm" onchange="addVlChip(this)">
@@ -243,7 +243,7 @@ $dispM = static function ($v) {
             JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP
         ); ?>;
         var vlGroupEmptyLabel = "<?= $this->jsTranslate('Add a platform…'); ?>";
-        var vlGroupTotalLabel = "<?= $this->jsTranslate('participants combined'); ?>";
+        var vlGroupTotalTemplate = "<?= $this->jsTranslate('%s participants combined'); ?>";
         var vlChipRemoveTitle = "<?= $this->jsTranslate('Remove from group'); ?>";
     </script>
 
@@ -524,7 +524,7 @@ $dispM = static function ($v) {
             total += parseInt(chip.dataset.n, 10) || 0;
         });
         row.querySelector('input[name="assayGroup[]"]').value = ids.join(',');
-        row.querySelector('[data-total]').textContent = total + ' ' + vlGroupTotalLabel;
+        row.querySelector('[data-total]').textContent = vlGroupTotalTemplate.replace('%s', total);
 
         var members = row.querySelector('[data-members]');
         var empty = members.querySelector('.vlGroupEmpty');
