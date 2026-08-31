@@ -168,6 +168,49 @@ class Admin_DistributionsController extends Zend_Controller_Action
             ->setBody(json_encode($surveys));
     }
 
+    // JSON endpoint behind the "Add New PT Survey" modal on the shipment clone
+    // screen. Creates a survey and returns its id/code/date so the caller can drop
+    // it straight into the PT Survey dropdown without a page reload. Date clashes
+    // are allowed (same as the full Add screen); the modal warns inline first.
+    public function quickAddAction()
+    {
+        $this->_helper->layout()->disableLayout();
+        $this->_helper->viewRenderer->setNoRender(true);
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
+        $result = ['success' => false, 'message' => 'Invalid request.'];
+        if ($request->isPost()) {
+            $code = trim((string) $this->_getParam('distributionCode'));
+            $date = trim((string) $this->_getParam('distributionDate'));
+            $iso = Pt_Commons_DateUtility::isoDateFormat($date);
+            $distributionService = new Application_Service_Distribution();
+            if ($code === '' || empty($iso)) {
+                $result['message'] = 'Please provide a valid PT Survey date and code.';
+            } elseif ($distributionService->isCodeTaken($code, 0)) {
+                $result['message'] = 'This code already exists for another PT Survey. Please try something else.';
+            } else {
+                $newId = (int) $distributionService->addDistribution([
+                    'distributionCode' => $code,
+                    'distributionDate' => $date,
+                ]);
+                if ($newId > 0) {
+                    $result = [
+                        'success' => true,
+                        'distribution_id' => $newId,
+                        'distribution_code' => $code,
+                        'distribution_date' => (new Pt_Helper_View_DateFormat())->dateFormat($iso),
+                        'message' => 'PT Survey created.',
+                    ];
+                } else {
+                    $result['message'] = 'Could not create the PT Survey. Please try again.';
+                }
+            }
+        }
+        $this->getResponse()
+            ->setHeader('Content-Type', 'application/json')
+            ->setBody(json_encode($result));
+    }
+
     public function generateSurveyCodeAction()
     {
         $distributionService = new Application_Service_Distribution();

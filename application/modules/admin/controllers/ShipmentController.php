@@ -289,9 +289,13 @@ class Admin_ShipmentController extends Zend_Controller_Action
         }
         $shipmentService = new Application_Service_Shipments();
         $distro = new Application_Service_Distribution();
+        $commonServices = new Application_Service_Common();
         $this->view->cloneMode = true;
         $this->view->unshippedDistro = $distro->getUnshippedDistributions();
         $this->view->selectedDistribution = '';
+        // Feeds the inline "Add New PT Survey" modal on this screen.
+        $this->view->distributionDates = $distro->getDistributionDates();
+        $this->view->autogeneratePtCode = $commonServices->getConfig('auto_generate_pt_survey_code');
         $this->view->cloneSchemeId = $response['shipment']['scheme_type'];
         $this->view->cloneUserConfig = ($userConfig == 'yes') ? 'yes' : 'no';
         // Fresh, collision-free code so the clone never duplicates the source code.

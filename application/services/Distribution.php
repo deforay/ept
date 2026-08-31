@@ -126,6 +126,11 @@ class Application_Service_Distribution
         $disrtibutionDb = new Application_Model_DbTable_Distribution();
         return $disrtibutionDb->getSurveysOnDate($date, $excludeDistributionId);
     }
+    public function isCodeTaken($code, $excludeDistributionId = 0)
+    {
+        $disrtibutionDb = new Application_Model_DbTable_Distribution();
+        return $disrtibutionDb->isCodeTaken($code, $excludeDistributionId);
+    }
     public function getShipments($distroId)
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();

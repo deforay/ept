@@ -62,6 +62,11 @@ $rtriEnabled = $dtsConfig['rtriEnabled'] ?? 'no';
 								<option value="<?php echo $dist['distribution_id']; ?>"><?php echo $dist['distribution_code'] . "   (" . $this->dateFormat($dist['distribution_date']) . ")"; ?></option>
 							<?php endforeach; ?>
 						</select>
+						<span class="help-block" style="margin-bottom:0;">
+							<a href="javascript:void(0);" id="openQuickAddPtSurvey">
+								<i class="icon-plus"></i> <?= $this->translate->_("Add New PT Survey"); ?>
+							</a>
+						</span>
 					</div>
 
 					<input type="hidden" name="schemeId" id="schemeId" value="<?php echo $this->escape($this->cloneSchemeId); ?>" />
@@ -214,6 +219,58 @@ $rtriEnabled = $dtsConfig['rtriEnabled'] ?? 'no';
 	</fieldset>
 </div>
 
+<?php if ($cloneMode): ?>
+	<style type="text/css">
+		/* jQuery UI renders the calendar in a .ui-datepicker element appended to
+		   <body>, not inside the modal, so this rule cannot be scoped to the modal.
+		   Only #quickPtDate's beforeShowDay adds .pt-date-taken, so it stays local
+		   in effect. */
+		.ui-datepicker td.pt-date-taken a {
+			border: 2px solid #d9534f;
+			border-radius: 50%;
+		}
+
+		/* This page reworks several Bootstrap modal/backdrop z-indexes; keep the
+		   calendar above the open modal so it stays visible and clickable. */
+		.ui-datepicker {
+			z-index: 100000 !important;
+		}
+	</style>
+	<div class="modal" id="quickAddPtSurveyModal" tabindex="-1" role="dialog"
+		aria-labelledby="quickAddPtSurveyLabel">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+							aria-hidden="true">&times;</span></button>
+					<h4 class="modal-title" id="quickAddPtSurveyLabel"><?= $this->htmlTranslate("Add New PT Survey"); ?></h4>
+				</div>
+				<div class="modal-body">
+					<div class="form-group">
+						<label for="quickPtDate"><?= $this->translate->_("PT Survey Date"); ?> <span class="mandatory">*</span></label>
+						<input type="text" id="quickPtDate" class="form-control" readonly
+							placeholder="<?= $this->htmlTranslate("Select the PT Survey date"); ?>" />
+						<span class="help-block"><?= $this->translate->_("Dates that already have a PT Survey are marked with a red circle. You can still pick one, but you will be warned about the clash."); ?></span>
+					</div>
+					<div class="form-group">
+						<label for="quickPtCode"><?= $this->translate->_("PT Survey Code"); ?> <span class="mandatory">*</span></label>
+						<input type="text" id="quickPtCode" class="form-control"
+							placeholder="<?= $this->htmlTranslate("Enter a unique PT Survey code"); ?>" />
+					</div>
+					<div id="quickPtConflict" class="alert alert-warning" style="display:none;"></div>
+					<div id="quickPtError" class="alert alert-danger" style="display:none;"></div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default"
+						data-dismiss="modal"><?= $this->htmlTranslate("Cancel"); ?></button>
+					<button type="button" class="btn btn-primary"
+						id="quickPtSave"><?= $this->htmlTranslate("Create PT Survey"); ?></button>
+				</div>
+			</div>
+		</div>
+	</div>
+<?php endif; ?>
+
 <script>
 	var duplicated = false;
 
@@ -345,3 +402,201 @@ $rtriEnabled = $dtsConfig['rtriEnabled'] ?? 'no';
 		submitShipmentForm();
 	}
 </script>
+
+<?php if ($cloneMode): ?>
+	<script>
+		// "Add New PT Survey" modal on the clone screen. Same behaviour as the full
+		// /admin/distributions/add page, but the date-clash warning is shown INLINE
+		// inside this modal (a warning panel in the body) rather than as a second
+		// bootbox popup - stacking a modal on top of a modal is fragile on this page,
+		// which already juggles conflicting Bootstrap modal/backdrop z-indexes.
+		$(function () {
+			var takenDates = [<?php echo '"' . implode('","', array_map('addslashes', (array) $this->distributionDates)) . '"'; ?>];
+			var autoGenerateCode = <?php echo (isset($this->autogeneratePtCode) && $this->autogeneratePtCode == 'yes') ? 'true' : 'false'; ?>;
+			var conflictIntro = "<?= $this->jsTranslate("There is already another PT Survey on this date. You can still save, but here is what it clashes with:"); ?>";
+			var conflictIntroMany = "<?= $this->jsTranslate("There are already %s other PT Surveys on this date. You can still save, but here is what it clashes with:"); ?>";
+			var conflictSelectedDate = "<?= $this->jsTranslate("Selected date:"); ?>";
+			var conflictNoShipments = "<?= $this->jsTranslate("No shipments have been added to that PT Survey yet."); ?>";
+			var createFailedMsg = "<?= $this->jsTranslate("Could not create the PT Survey. Please try again."); ?>";
+			var missingFieldsMsg = "<?= $this->jsTranslate("Please provide a PT Survey date and code."); ?>";
+
+			function esc(str) {
+				return $('<div/>').text(str == null ? '' : str).html();
+			}
+
+			function renderConflict(ptDate, surveys) {
+				var $box = $('#quickPtConflict');
+				if (!surveys || !surveys.length) {
+					$box.hide().empty();
+					return;
+				}
+				var intro = surveys.length > 1 ? conflictIntroMany.replace('%s', surveys.length) : conflictIntro;
+				var html = '<p>' + conflictSelectedDate + ' <strong>' + esc(ptDate) + '</strong></p>';
+				html += '<p>' + intro + '</p>';
+				surveys.forEach(function (survey) {
+					html += '<p style="margin-bottom:2px;"><strong>' + esc(survey.distribution_code) + '</strong></p>';
+					if (survey.shipments && survey.shipments.length) {
+						html += '<ul>';
+						survey.shipments.forEach(function (shipment) {
+							var line = esc(shipment.shipment_code);
+							if (shipment.scheme_name) {
+								line += ' – ' + esc(shipment.scheme_name);
+							}
+							html += '<li>' + line + '</li>';
+						});
+						html += '</ul>';
+					} else {
+						html += '<p><em>' + conflictNoShipments + '</em></p>';
+					}
+				});
+				$box.html(html).show();
+			}
+
+			function checkConflict(ptDate) {
+				if (!ptDate) {
+					$('#quickPtConflict').hide().empty();
+					return;
+				}
+				$.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'distributions', 'action' => 'date-conflict')); ?>", {
+					distributionDate: ptDate,
+					format: "html"
+				}, function (data) {
+					var surveys = data;
+					if (typeof data === 'string') {
+						try {
+							surveys = JSON.parse(data);
+						} catch (e) {
+							return;
+						}
+					}
+					renderConflict(ptDate, surveys);
+				});
+			}
+
+			function generateCode(ptDate) {
+				if (!autoGenerateCode || !ptDate) {
+					return;
+				}
+				$.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'distributions', 'action' => 'generate-survey-code')); ?>", {
+					ptDate: ptDate,
+					format: "html"
+				}, function (data) {
+					if (data) {
+						$('#quickPtCode').val($.trim(data));
+					}
+				});
+			}
+
+			var $modal = $('#quickAddPtSurveyModal');
+
+			// This page loads the jschr bootstrap-modal + modalmanager plugin, which
+			// physically moves the modal (and #quickPtDate with it) into a scroll
+			// container on every open and back again on every close. A jQuery UI
+			// datepicker bound to an input that gets reparented like that goes dead -
+			// stale _lastInput/_curInst pointers mean _showDatepicker() silently
+			// no-ops on the second open. So build the picker fresh once the modal has
+			// settled in place ('shown') and tear it down before it moves back
+			// ('hide'). Note: this plugin fires un-namespaced show/shown/hide/hidden.
+			function buildDatepicker() {
+				destroyDatepicker();
+				$('#quickPtDate').datepicker({
+					dateFormat: '<?php echo $dtFormat; ?>',
+					beforeShowDay: function (date) {
+						var string = jQuery.datepicker.formatDate('dd-M-yy', date);
+						return [true, takenDates.indexOf(string) === -1 ? '' : 'pt-date-taken'];
+					},
+					onSelect: function (dateText) {
+						checkConflict(dateText);
+						generateCode(dateText);
+					}
+				});
+			}
+
+			function destroyDatepicker() {
+				if ($('#quickPtDate').hasClass('hasDatepicker')) {
+					try {
+						$('#quickPtDate').datepicker('hide').datepicker('destroy');
+					} catch (e) {}
+				}
+				try {
+					$.datepicker._lastInput = null;
+					$.datepicker._curInst = null;
+				} catch (e) {}
+			}
+
+			$('#quickPtCode').on('input', function () {
+				allowOnlyAlphaNumericAndHyphen('#quickPtCode');
+			});
+
+			$('#openQuickAddPtSurvey').on('click', function () {
+				$modal.modal('show');
+				// Safety net in case the plugin's 'shown' event does not fire.
+				setTimeout(function () {
+					if (!$('#quickPtDate').hasClass('hasDatepicker')) {
+						buildDatepicker();
+					}
+				}, 400);
+			});
+
+			$modal.on('show', function () {
+				$('#quickPtDate').val('');
+				$('#quickPtCode').val('');
+				$('#quickPtConflict').hide().empty();
+				$('#quickPtError').hide().empty();
+			});
+
+			// Modal has finished moving into place - safe to attach the picker.
+			$modal.on('shown', function () {
+				buildDatepicker();
+			});
+
+			// Fires before the plugin moves the modal back out - detach first.
+			$modal.on('hide', function () {
+				destroyDatepicker();
+			});
+
+			$('#quickPtSave').on('click', function () {
+				var date = $.trim($('#quickPtDate').val());
+				var code = $.trim($('#quickPtCode').val());
+				$('#quickPtError').hide().empty();
+				if (!date || !code) {
+					$('#quickPtError').text(missingFieldsMsg).show();
+					return;
+				}
+				var $btn = $(this).prop('disabled', true);
+				$.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'distributions', 'action' => 'quick-add')); ?>", {
+					distributionDate: date,
+					distributionCode: code,
+					format: "html"
+				}, function (data) {
+					var res = data;
+					if (typeof data === 'string') {
+						try {
+							res = JSON.parse(data);
+						} catch (e) {
+							res = { success: false, message: createFailedMsg };
+						}
+					}
+					if (res && res.success) {
+						var label = res.distribution_code + '   (' + res.distribution_date + ')';
+						$('#distribution')
+							.append($('<option>', { value: res.distribution_id, text: label }))
+							.val(res.distribution_id)
+							.trigger('change');
+						var pickedDate = $('#quickPtDate').datepicker('getDate');
+						if (pickedDate) {
+							takenDates.push(jQuery.datepicker.formatDate('dd-M-yy', pickedDate));
+						}
+						$modal.modal('hide');
+					} else {
+						$('#quickPtError').text((res && res.message) || createFailedMsg).show();
+					}
+				}).fail(function () {
+					$('#quickPtError').text(createFailedMsg).show();
+				}).always(function () {
+					$btn.prop('disabled', false);
+				});
+			});
+		});
+	</script>
+<?php endif; ?>
