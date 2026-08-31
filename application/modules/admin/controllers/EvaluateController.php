@@ -58,6 +58,24 @@ class Admin_EvaluateController extends Zend_Controller_Action
                 $this->view->staleShipments = (new Application_Service_Evaluation())->getShipmentsNeedingReEvaluation();
             }
             $this->view->schemeList = (new Application_Service_Schemes())->getAllSchemes();
+
+            // Ranges were just changed on a shipment: offer to re-score it, reusing the same
+            // nudge and queueing endpoint as the scheme settings pages. Read once and cleared,
+            // so it fires on the redirect that follows the change, not on later visits.
+            $nudge = new Zend_Session_Namespace('rangeReEval');
+            $nudgeShipmentId = (int) ($nudge->shipmentId ?? 0);
+            unset($nudge->shipmentId);
+            if ($nudgeShipmentId > 0) {
+                $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+                $schemeType = $db->fetchOne(
+                    $db->select()->from('shipment', ['scheme_type'])->where('shipment_id = ?', $nudgeShipmentId)
+                );
+                if (!empty($schemeType)) {
+                    $this->view->reEvalScheme = $schemeType;
+                    $this->view->reEvalShipmentIds = [$nudgeShipmentId];
+                    $this->view->reEvalReason = 'ranges';
+                }
+            }
         }
     }
 
@@ -161,6 +179,7 @@ class Admin_EvaluateController extends Zend_Controller_Action
         }
         $this->view->shipmentsUnderDistro = $evalService->getShipments($shipment[0]['distribution_id']);
         $this->view->dtsSchemeType = $this->dtsSchemeTypeFromShipment($shipment[0]);
+
     }
 
     /** Decode `shipment.shipment_attributes.dtsSchemeType` for view-side filter gating. */
@@ -342,8 +361,14 @@ class Admin_EvaluateController extends Zend_Controller_Action
         if ($this->hasParam('manualRange')) {
             $params = $request->getPost();
             $schemeService = new Application_Service_Schemes();
-            $vlModel->updateVlInformation($params);
             $shipmentId = (int)base64_decode($this->_getParam('sid'));
+
+            // Save the System/Manual choices FIRST, then recalculate, so the recalculation
+            // honours the choice just made. Previously these were two separate buttons and
+            // recalculating was a link navigation, which silently discarded unsaved choices.
+            $vlModel->updateVlInformation($params);
+            $vlModel->setVlRange($shipmentId);
+            $this->flagRangeChangeForReEvaluation($shipmentId);
             $this->redirect('/admin/evaluate/index/scheme/vl/showcalc/' . base64_encode($shipmentId));
         }
         if ($this->hasParam('sid')) {
@@ -359,6 +384,65 @@ class Admin_EvaluateController extends Zend_Controller_Action
 
     }
 
+    /**
+     * Flag a shipment as needing re-evaluation after its reference ranges were changed.
+     *
+     * Recalculating ranges leaves every stored score computed against the OLD ranges, so the
+     * admin has to be told. Carried through the redirect in the session because the range
+     * screens all redirect back to the evaluate page rather than rendering in place.
+     *
+     * Gated on 'config-ept' because that is what the queueing endpoint itself requires --
+     * nudging an admin who would only get a 403 is worse than staying quiet.
+     */
+    private function flagRangeChangeForReEvaluation(int $shipmentId): void
+    {
+        $adminSession = new Zend_Session_Namespace('administrators');
+        $privileges = $adminSession->privileges ? explode(',', $adminSession->privileges) : [];
+        if (!in_array('config-ept', $privileges, true)) {
+            return;
+        }
+
+        $nudge = new Zend_Session_Namespace('rangeReEval');
+        $nudge->shipmentId = $shipmentId;
+    }
+
+    /**
+     * Save the combined-platform groups for a shipment and recalculate its reference ranges.
+     *
+     * Grouping is a per-shipment decision, so it lives beside the manual ranges on the same
+     * screen. Recalculating here (rather than leaving it to the admin) keeps the displayed
+     * ranges honest -- the grid the admin is looking at is the thing they just changed.
+     */
+    public function saveVlAssayGroupsAction()
+    {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
+
+        if (!$request->isPost() || !$this->hasParam('sid')) {
+            $this->redirect('/admin/evaluate/');
+            return;
+        }
+
+        $shipmentId = (int) base64_decode($this->_getParam('sid'));
+
+        // Posted as one comma-separated list of assay ids per group row.
+        $groups = [];
+        foreach ((array) $request->getPost('assayGroup', []) as $row) {
+            $members = array_filter(array_map('intval', explode(',', (string) $row)));
+            if (count($members) > 1) {
+                $groups[] = array_values($members);
+            }
+        }
+
+        Application_Model_Vl::saveVlAssayGroups($shipmentId, $groups);
+
+        $vlModel = new Application_Model_Vl();
+        $vlModel->setVlRange($shipmentId);
+        $this->flagRangeChangeForReEvaluation($shipmentId);
+
+        $this->redirect('/admin/evaluate/index/scheme/vl/showcalc/' . base64_encode($shipmentId));
+    }
+
     public function recalculateVlRangeAction()
     {
         if ($this->hasParam('sid')) {
@@ -366,6 +450,7 @@ class Admin_EvaluateController extends Zend_Controller_Action
             $methodOfEvaluation = ($this->_getParam('method'));
             $vlModel = new Application_Model_Vl();
             $this->view->result = $vlModel->setVlRange($shipmentId);
+            $this->flagRangeChangeForReEvaluation($shipmentId);
             $this->redirect('/admin/evaluate/index/scheme/vl/showcalc/' . base64_encode($shipmentId));
         } else {
             $this->redirect('/admin/evaluate/');

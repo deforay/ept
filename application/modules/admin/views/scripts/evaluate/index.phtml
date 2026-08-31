@@ -7,6 +7,8 @@
     .shipments-child-row .modal-body > .table { margin-bottom: 0; background: transparent; }
 </style>
 <?php echo $this->render('partials/re-evaluate-stale-banner.phtml'); ?>
+<?php // Fires only on the redirect right after reference ranges were changed on this shipment. ?>
+<?php echo $this->render('partials/re-evaluate-nudge.phtml'); ?>
 
 <div class="data-list">
     <div class="data-list-head">

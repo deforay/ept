@@ -1,8 +1,25 @@
 <?php
-
 use mitoteam\jpgraph\MtJpGraph;
 
 MtJpGraph::load(['bar', 'line', 'pie'], true);
+
+// Participants on this platform for this sample. Falls back to no_of_responses so the layout
+// still renders against data built before the count was added; they are equal except when
+// platforms are pooled into a shared peer group.
+if (!function_exists('vlPlatformParticipants')) {
+    function vlPlatformParticipants(array $val): int
+    {
+        return (int) ($val['participants_on_platform'] ?? $val['no_of_responses'] ?? 0);
+    }
+}
+if (!function_exists('vlPassPercent')) {
+    function vlPassPercent(array $val): int
+    {
+        $n = vlPlatformParticipants($val);
+        return $n > 0 ? (int) round((((int) ($val['NumberPassed'] ?? 0)) / $n) * 100) : 0;
+    }
+}
+
 if ($resultArray['shipment'] != "") {
 
     if (!file_exists($reportsPath . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code']) && !is_dir($reportsPath . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'])) {
@@ -188,7 +205,7 @@ if ($resultArray['shipment'] != "") {
                         $sample[$k]['response'] ??= 0;
                         if (isset($val['median'])) {
 
-                            $sample[$k]['response'] += $val['no_of_responses'];
+                            $sample[$k]['response'] += vlPlatformParticipants($val);
                             $sample[$k]['median'] = $val['median'];
                             $sample[$k]['lowLimit'] = $val['low_limit'];
                             $sample[$k]['highLimit'] = $val['high_limit'];
@@ -222,12 +239,12 @@ if ($resultArray['shipment'] != "") {
                                     </tr>';
                     foreach ($vlCal as $key => $val) {
                         if (isset($val['median'])) {
-                            $score = round((($val['NumberPassed'] / $val['no_of_responses']) * 100));
+                            $score = vlPassPercent($val);
 
                             $calRes .= '<tr>';
                             $calRes .= '
                                     <td style="font-weight:normal;text-align:center;width:16%;">' . $val['sample_label'] . '</td>
-                                    <td style="font-weight:normal;text-align:center;">' . $val['no_of_responses'] . '</td>
+                                    <td style="font-weight:normal;text-align:center;">' . vlPlatformParticipants($val) . '</td>
                                     <td style="font-weight:normal;text-align:center;">' . Pt_Commons_NumberUtility::decimal($val['median']) . '</td>
                                     <td style="font-weight:normal;text-align:center;">' . Pt_Commons_NumberUtility::decimal($val['low_limit']) . '</td>
                                     <td style="font-weight:normal;text-align:center;">' . Pt_Commons_NumberUtility::decimal($val['high_limit']) . '</td>

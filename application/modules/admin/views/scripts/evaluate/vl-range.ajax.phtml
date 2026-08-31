@@ -34,6 +34,30 @@ foreach ($this->result as $sampleRows) {
     }
 }
 
+// Combined platform groups configured on this shipment. Members share one pooled peer group,
+// so their assigned value is identical and a manual range on a member would be ignored.
+$assayGroups = [];
+$groupOfAssay = [];
+if (!empty($this->shipmentId)) {
+    $assayGroups = Application_Model_Vl::getVlAssayGroups(
+        Zend_Db_Table_Abstract::getDefaultAdapter()->fetchOne(
+            'SELECT shipment_attributes FROM shipment WHERE shipment_id = ?',
+            [(int) $this->shipmentId]
+        )
+    );
+}
+foreach ($assayGroups as $groupIndex => $members) {
+    foreach ($members as $memberAssayId) {
+        $groupOfAssay[$memberAssayId] = $groupIndex;
+    }
+}
+$groupTitle = static function ($index) {
+    return 'Group ' . chr(65 + (int) $index);
+};
+$assayParticipants = !empty($this->shipmentId)
+    ? Application_Model_Vl::getVlAssayParticipantCounts($this->shipmentId)
+    : [];
+
 $numSamples = count($sampleLabels);
 $isIso = ($methodOfEvaluation == 'iso17043');
 $centerLabel = $isIso ? 'Median' : 'Mean';
@@ -81,6 +105,41 @@ $dispM = static function ($v) {
         font-weight: bold;
     }
 
+    #vlRangeWrap .vlGroupPanel { border: 1px solid #dfe3e8; border-radius: 6px; background: #fbfcfd;
+        padding: 12px 14px; margin: 0 0 16px 0; }
+    #vlRangeWrap .vlGroupHead { margin-bottom: 4px; }
+    #vlRangeWrap .vlGroupHint { color: #7a828e; font-size: 11px; font-weight: normal; }
+    #vlRangeWrap .vlGroupRow { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 12px;
+        padding: 10px 0; border-top: 1px solid #eceef1; }
+    #vlRangeWrap .vlGroupRowHead { display: flex; align-items: baseline; gap: 10px; min-width: 210px; }
+    #vlRangeWrap .vlGroupTag { font-weight: 600; font-size: 11px; text-transform: uppercase;
+        letter-spacing: .5px; color: #2b3038; }
+    #vlRangeWrap .vlGroupTotal { font-size: 11px; color: #7a828e; }
+    #vlRangeWrap .vlGroupMembers { display: flex; flex-wrap: wrap; gap: 6px; flex: 1 1 340px; }
+    #vlRangeWrap .vlChip { display: inline-flex; align-items: center; gap: 6px; padding: 3px 8px;
+        border: 1px solid #cfe0f0; border-radius: 12px; background: #eef5fb; color: #26506f;
+        font-size: 12px; white-space: nowrap; }
+    #vlRangeWrap .vlChip b { font-weight: 600; color: #4d7fa6; }
+    #vlRangeWrap .vlChip a { color: #7ea3bf; text-decoration: none; font-size: 14px; line-height: 1; }
+    #vlRangeWrap .vlChip a:hover { color: #b03a3a; }
+    #vlRangeWrap .vlGroupPicker { width: auto; min-width: 170px; max-width: 260px; display: inline-block; }
+    #vlRangeWrap .vlGroupRemove { color: #b03a3a; font-size: 11px; margin-left: auto; }
+    #vlRangeWrap .vlGroupActions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+        margin-top: 10px; padding-top: 10px; border-top: 1px solid #eceef1; }
+    #vlRangeWrap .vlGroupEmpty { color: #9aa0a6; font-size: 12px; font-style: italic; }
+    #vlRangeWrap .vlUnitMembers { display: flex; flex-wrap: wrap; gap: 4px 14px; margin-top: 5px;
+        font-weight: normal; font-size: 12px; text-transform: none; letter-spacing: 0; color: #46505c; }
+    #vlRangeWrap .vlUnitMembers b { color: #7a828e; font-weight: 600; }
+    #vlRangeWrap .vlUnitCount { display: inline-block; margin-left: 6px; padding: 0 6px; border-radius: 8px;
+        background: #eceef1; color: #6b7480; font-size: 10px; font-weight: 600; vertical-align: middle; }
+    #vlRangeWrap .vlUnitManualNote { margin-top: 5px; font-weight: normal; font-size: 11px;
+        text-transform: none; letter-spacing: 0; color: #8a6d1f; }
+    #vlRangeWrap .vlSetAll { display: inline-flex; align-items: center; gap: 5px; margin-right: 10px; }
+    #vlRangeWrap .vlSetAllLabel { font-size: 11px; color: #7a828e; font-weight: normal;
+        text-transform: none; letter-spacing: 0; }
+    #vlRangeWrap .assayGroupBadge { display: inline-block; margin-left: 8px; padding: 1px 7px;
+        border-radius: 9px; background: #e3edf8; color: #2c5c8f; font-size: 10px; font-weight: 600;
+        text-transform: uppercase; letter-spacing: .4px; vertical-align: middle; }
     #vlRangeWrap .inactiveRange {
         color: #aaa;
     }
@@ -95,27 +154,214 @@ $dispM = static function ($v) {
         <span style="float:right;"><span style="display:inline-block;width:12px;height:12px;background:#e8f5e9;border:1px solid #cfe8d2;"></span> <?= $this->translate->_("= range currently in use"); ?></span>
     </div>
 
+    <div class="vlGroupPanel">
+        <form method="post" action="/admin/evaluate/save-vl-assay-groups" id="vlAssayGroupForm">
+            <input type="hidden" name="csrf_token" value="<?php echo $csrfNamespace->token; ?>" />
+            <input type="hidden" name="sid" value="<?php echo base64_encode($this->shipmentId); ?>">
+
+            <div class="vlGroupHead">
+                <strong><?= $this->translate->_("Combined platforms"); ?></strong>
+                <span class="vlGroupHint">
+                    <?= $this->translate->_("Platforms in a group are pooled into one peer group and all receive the same assigned value. Use this where a platform is too small on its own to support a reliable consensus."); ?>
+                </span>
+            </div>
+
+            <div id="vlGroupRows">
+                <?php foreach ($assayGroups as $groupIndex => $members): ?>
+                    <?php
+                    $combined = 0;
+                    foreach ($members as $m) {
+                        $combined += $assayParticipants[$m] ?? 0;
+                    }
+                    // Stored order is by assay id; show them in name order so the chips read the
+                    // way the admin thinks about the platforms.
+                    $orderedMembers = $members;
+                    usort($orderedMembers, static function ($a, $b) use ($assays) {
+                        return strnatcasecmp($assays[$a] ?? '', $assays[$b] ?? '');
+                    });
+                    ?>
+                    <div class="vlGroupRow" data-group>
+                        <div class="vlGroupRowHead">
+                            <span class="vlGroupTag"><?php echo htmlspecialchars($groupTitle($groupIndex)); ?></span>
+                            <span class="vlGroupTotal" data-total><?php echo (int) $combined; ?> <?= $this->translate->_("participants combined"); ?></span>
+                        </div>
+                        <div class="vlGroupMembers" data-members>
+                            <?php foreach ($orderedMembers as $memberAssayId): ?>
+                                <span class="vlChip" data-assay="<?php echo (int) $memberAssayId; ?>" data-n="<?php echo (int) ($assayParticipants[$memberAssayId] ?? 0); ?>">
+                                    <?php echo htmlspecialchars($assays[$memberAssayId] ?? ('#' . $memberAssayId)); ?>
+                                    <b><?php echo (int) ($assayParticipants[$memberAssayId] ?? 0); ?></b>
+                                    <a href="javascript:void(0);" onclick="removeVlChip(this)" title="<?= $this->htmlTranslate("Remove from group"); ?>">&times;</a>
+                                </span>
+                            <?php endforeach; ?>
+                        </div>
+                        <select class="vlGroupPicker form-control input-sm" onchange="addVlChip(this)">
+                            <option value=""><?= $this->translate->_("Add a platform…"); ?></option>
+                        </select>
+                        <input type="hidden" name="assayGroup[]" value="<?php echo htmlspecialchars(implode(',', $members)); ?>">
+                        <a href="javascript:void(0);" class="vlGroupRemove" onclick="removeVlGroupRow(this)"><?= $this->translate->_("Remove group"); ?></a>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+
+            <div class="vlGroupActions">
+                <a class="btn btn-default btn-xs" href="javascript:void(0);" onclick="addVlGroupRow()">
+                    <i class="icon-plus"></i> <?= $this->translate->_("Add a group"); ?>
+                </a>
+                <button type="submit" class="btn btn-primary btn-xs">
+                    <?= $this->translate->_("Save groups and recalculate"); ?>
+                </button>
+                <span class="vlGroupHint">
+                    <?= $this->translate->_("Recalculates the ranges. Re-evaluate the shipment afterwards to update participant scores."); ?>
+                </span>
+            </div>
+        </form>
+    </div>
+
+    <template id="vlGroupRowTemplate">
+        <div class="vlGroupRow" data-group>
+            <div class="vlGroupRowHead">
+                <span class="vlGroupTag"><?= $this->translate->_("New group"); ?></span>
+                <span class="vlGroupTotal" data-total>0 <?= $this->translate->_("participants combined"); ?></span>
+            </div>
+            <div class="vlGroupMembers" data-members></div>
+            <select class="vlGroupPicker form-control input-sm" onchange="addVlChip(this)">
+                <option value=""><?= $this->translate->_("Add a platform…"); ?></option>
+            </select>
+            <input type="hidden" name="assayGroup[]" value="">
+            <a href="javascript:void(0);" class="vlGroupRemove" onclick="removeVlGroupRow(this)"><?= $this->translate->_("Remove group"); ?></a>
+        </div>
+    </template>
+
+    <script>
+        // Every platform in this shipment, with its own participant count. The pickers are built
+        // from this and only ever offer platforms that are not already in a group, which is what
+        // enforces "an assay belongs to at most one group" -- no cross-row bookkeeping needed.
+        var vlAllAssays = <?php echo json_encode(
+            array_map(static function ($id, $name) use ($assayParticipants) {
+                return ['id' => (int) $id, 'name' => $name, 'n' => (int) ($assayParticipants[$id] ?? 0)];
+            }, array_keys($assays), $assays),
+            JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP
+        ); ?>;
+        var vlGroupEmptyLabel = "<?= $this->jsTranslate('Add a platform…'); ?>";
+        var vlGroupTotalLabel = "<?= $this->jsTranslate('participants combined'); ?>";
+        var vlChipRemoveTitle = "<?= $this->jsTranslate('Remove from group'); ?>";
+    </script>
+
     <form class="form" name="vlRangeForm" id="vlRangeForm" method="post" action="/admin/evaluate/vl-range" onsubmit="submitVlRangeForm();return false;">
         <input type="hidden" name="manualRange" value="1">
         <input type="hidden" name="csrf_token" value="<?php echo $csrfNamespace->token; ?>" />
         <input type="hidden" name="sid" value="<?php echo base64_encode($this->shipmentId); ?>">
 
-        <?php foreach ($assays as $vlAssay => $assayName): ?>
+        <?php
+        // One rendered block per "unit": an ungrouped platform is its own unit, and a whole group
+        // is a single unit. Members of a group hold byte-identical ranges, so rendering three
+        // identical tables told the reader nothing and buried the platforms that do differ.
+        $displayUnits = [];
+        $seenGroups = [];
+        foreach ($assays as $vlAssay => $assayName) {
+            $groupIndex = $groupOfAssay[$vlAssay] ?? null;
+            if ($groupIndex === null) {
+                $displayUnits[] = ['group' => null, 'members' => [$vlAssay], 'read' => $vlAssay];
+                continue;
+            }
+            if (isset($seenGroups[$groupIndex])) {
+                continue;
+            }
+            $seenGroups[$groupIndex] = true;
+            $groupMembers = $assayGroups[$groupIndex];
+            usort($groupMembers, static function ($a, $b) use ($assays) {
+                return strnatcasecmp($assays[$a] ?? '', $assays[$b] ?? '');
+            });
+            $displayUnits[] = ['group' => $groupIndex, 'members' => $groupMembers, 'read' => $groupMembers[0]];
+        }
+        ?>
+
+        <?php foreach ($displayUnits as $unit):
+            $vlAssay = $unit['read'];
+            $isGrouped = $unit['group'] !== null;
+
+            // Which samples are on manual, and which have manual values at all. Offering "Manual"
+            // for a sample with no manual figures would select an empty range.
+            $useManual = [];
+            $sampleHasManual = [];
+            foreach ($sampleLabels as $sampleId => $label) {
+                $r = $grid[$vlAssay][$sampleId] ?? null;
+                $useManual[$sampleId] = ($r && ($r['use_range'] ?? '') === 'manual');
+                $sampleHasManual[$sampleId] = $r && (
+                    !empty($r['manual_low_limit']) || !empty($r['manual_high_limit'])
+                    || !empty($r['manual_median']) || !empty($r['manual_mean']) || !empty($r['manual_sd'])
+                );
+            }
+            $anyManual = in_array(true, $sampleHasManual, true);
+
+            // Grouping overrides a manual range, and a group block shows no manual rows -- so a
+            // manual range entered before the platform was grouped would otherwise vanish from
+            // the screen with no trace. Name the platforms that still carry one.
+            $membersWithManual = [];
+            if ($isGrouped) {
+                foreach ($unit['members'] as $memberAssayId) {
+                    foreach ($sampleLabels as $sampleId => $label) {
+                        $mr = $grid[$memberAssayId][$sampleId] ?? null;
+                        if ($mr && (
+                            !empty($mr['manual_low_limit']) || !empty($mr['manual_high_limit'])
+                            || !empty($mr['manual_median']) || !empty($mr['manual_mean']) || !empty($mr['manual_sd'])
+                        )) {
+                            $membersWithManual[] = $assays[$memberAssayId] ?? ('#' . $memberAssayId);
+                            break;
+                        }
+                    }
+                }
+            }
+            ?>
             <div class="vlAssayBlock">
                 <table class="table table-bordered table-striped table-condensed" style="width:100%;margin:0 auto;">
                     <thead>
                         <tr>
-                            <th class="assayTitle" colspan="2"><?php echo htmlspecialchars($assayName); ?></th>
+                            <th class="assayTitle" colspan="2">
+                                <?php if ($isGrouped): ?>
+                                    <span class="assayGroupBadge"><?php echo htmlspecialchars($groupTitle($unit['group'])); ?></span>
+                                    <div class="vlUnitMembers">
+                                        <?php foreach ($unit['members'] as $memberAssayId): ?>
+                                            <span><?php echo htmlspecialchars($assays[$memberAssayId] ?? ('#' . $memberAssayId)); ?>
+                                                <b><?php echo (int) ($assayParticipants[$memberAssayId] ?? 0); ?></b></span>
+                                        <?php endforeach; ?>
+                                    </div>
+                                    <?php if (!empty($membersWithManual)): ?>
+                                        <div class="vlUnitManualNote">
+                                            <i class="icon-info-sign"></i>
+                                            <?= $this->translate->_("Manual range stored but not in use while grouped:"); ?>
+                                            <?php echo htmlspecialchars(implode(', ', $membersWithManual)); ?>
+                                        </div>
+                                    <?php endif; ?>
+                                <?php else: ?>
+                                    <?php echo htmlspecialchars($assays[$vlAssay]); ?>
+                                    <span class="vlUnitCount"><?php echo (int) ($assayParticipants[$vlAssay] ?? 0); ?></span>
+                                <?php endif; ?>
+                            </th>
                             <th colspan="<?php echo max(1, $numSamples - 1); ?>" style="text-align:right;">
-                                <a class="btn btn-success btn-xs" href="javascript:void(0);" onclick="bulkEditAssay(<?php echo (int) $vlAssay; ?>)">
-                                    <i class="icon-edit"></i> <?= $this->translate->_("Edit all samples"); ?>
-                                </a>
+                                <?php if ($isGrouped): ?>
+                                    <span class="vlGroupHint"><?= $this->translate->_("Pooled range — the same for every platform in this group"); ?></span>
+                                <?php else: ?>
+                                    <span class="vlSetAll">
+                                        <span class="vlSetAllLabel"><?= $this->translate->_("Use for all samples"); ?></span>
+                                        <button type="button" class="btn btn-default btn-xs"
+                                            onclick="setAllUseRange(<?php echo (int) $vlAssay; ?>, 'calculated')"><?= $this->translate->_("System"); ?></button>
+                                        <button type="button" class="btn btn-default btn-xs"
+                                            onclick="setAllUseRange(<?php echo (int) $vlAssay; ?>, 'manual')"
+                                            <?php echo $anyManual ? '' : 'disabled title="' . $this->htmlTranslate('No manual values entered for this platform') . '"'; ?>><?= $this->translate->_("Manual"); ?></button>
+                                    </span>
+                                    <a class="btn btn-success btn-xs" href="javascript:void(0);" onclick="bulkEditAssay(<?php echo (int) $vlAssay; ?>)">
+                                        <i class="icon-edit"></i> <?= $this->translate->_("Edit all samples"); ?>
+                                    </a>
+                                <?php endif; ?>
                             </th>
                         </tr>
                         <tr>
                             <th style="width:200px;"></th>
+            <?php // Fixed sample-column widths so a block with fewer rows (a pooled group has no
+            // manual rows) still lines up with the blocks above and below it. ?>
                             <?php foreach ($sampleLabels as $sampleId => $label): ?>
-                                <th>
+                                <th style="width:<?php echo round(80 / max(1, $numSamples), 2); ?>%;">
                                     <a href="/admin/evaluate/vl-sample-plot/shipment/<?php echo (int) $this->shipmentId; ?>/sample/<?php echo (int) $sampleId; ?>"
                                         style="text-decoration:underline;"><?php echo htmlspecialchars($label); ?></a>
                                 </th>
@@ -123,19 +369,12 @@ $dispM = static function ($v) {
                         </tr>
                     </thead>
                     <tbody>
-                        <?php
-                        // precompute which samples are on manual for this assay
-                        $useManual = [];
-                        foreach ($sampleLabels as $sampleId => $label) {
-                            $r = $grid[$vlAssay][$sampleId] ?? null;
-                            $useManual[$sampleId] = ($r && ($r['use_range'] ?? '') === 'manual');
-                        }
-                        ?>
                         <tr>
                             <td class="metricLabel"><?= $this->translate->_("System Range (Lo – Hi)"); ?></td>
                             <?php foreach ($sampleLabels as $sampleId => $label):
                                 $r = $grid[$vlAssay][$sampleId] ?? null; ?>
-                                <td class="<?php echo $useManual[$sampleId] ? 'inactiveRange' : 'activeRange'; ?>">
+                                <td data-assay="<?php echo (int) $vlAssay; ?>" data-sample="<?php echo (int) $sampleId; ?>" data-kind="system"
+                                    class="<?php echo $useManual[$sampleId] ? 'inactiveRange' : 'activeRange'; ?>">
                                     <?php echo $r ? $rangeCell($r['low'] ?? null, $r['high'] ?? null) : '—'; ?>
                                 </td>
                             <?php endforeach; ?>
@@ -145,52 +384,60 @@ $dispM = static function ($v) {
                             <?php foreach ($sampleLabels as $sampleId => $label):
                                 $r = $grid[$vlAssay][$sampleId] ?? null;
                                 $center = $r ? ($isIso ? ($r['median'] ?? null) : ($r['mean'] ?? null)) : null; ?>
-                                <td class="<?php echo $useManual[$sampleId] ? 'inactiveRange' : 'activeRange'; ?>">
+                                <td data-assay="<?php echo (int) $vlAssay; ?>" data-sample="<?php echo (int) $sampleId; ?>" data-kind="system"
+                                    class="<?php echo $useManual[$sampleId] ? 'inactiveRange' : 'activeRange'; ?>">
                                     <?php echo $r ? ($disp($center) . ' / ' . $disp($r['sd'] ?? null)) : '—'; ?>
                                 </td>
                             <?php endforeach; ?>
                         </tr>
-                        <tr>
-                            <td class="metricLabel"><?= $this->translate->_("Manual Range (Lo – Hi)"); ?></td>
-                            <?php foreach ($sampleLabels as $sampleId => $label):
-                                $r = $grid[$vlAssay][$sampleId] ?? null;
-                                $hasManual = $r && (!empty($r['manual_low_limit']) || !empty($r['manual_high_limit'])); ?>
-                                <td class="<?php echo $useManual[$sampleId] ? 'activeRange' : ''; ?>">
-                                    <?php echo $hasManual ? ($dispM($r['manual_low_limit'] ?? null) . ' &ndash; ' . $dispM($r['manual_high_limit'] ?? null)) : '—'; ?>
-                                </td>
-                            <?php endforeach; ?>
-                        </tr>
-                        <tr>
-                            <td class="metricLabel"><?= $this->translate->_("Manual") . " " . $this->translate->_($centerLabel) . " / " . $this->translate->_($sdLabel); ?></td>
-                            <?php foreach ($sampleLabels as $sampleId => $label):
-                                $r = $grid[$vlAssay][$sampleId] ?? null;
-                                $mCenter = $r ? ($isIso ? ($r['manual_median'] ?? null) : ($r['manual_mean'] ?? null)) : null;
-                                $mSd = $r['manual_sd'] ?? null;
-                                $hasManual = (!empty($mCenter) || !empty($mSd)); ?>
-                                <td class="<?php echo $useManual[$sampleId] ? 'activeRange' : ''; ?>">
-                                    <?php echo $hasManual ? ($dispM($mCenter) . ' / ' . $dispM($mSd)) : '—'; ?>
-                                </td>
-                            <?php endforeach; ?>
-                        </tr>
-                        <tr>
-                            <td class="metricLabel"><?= $this->translate->_("Use Range"); ?></td>
-                            <?php foreach ($sampleLabels as $sampleId => $label):
-                                $r = $grid[$vlAssay][$sampleId] ?? null;
-                                if (!$r) {
-                                    echo '<td>—</td>';
-                                    continue;
-                                } ?>
-                                <td>
-                                    <input type="hidden" name="sampleId[<?php echo $vlAssay; ?>][<?php echo $sampleId; ?>]" value="<?php echo $sampleId; ?>">
-                                    <select name="useRange[<?php echo $vlAssay; ?>][<?php echo $sampleId; ?>]"
-                                        class="form-control" style="min-width:90px;margin:0 auto;"
-                                        onchange="toggleUseRange(<?php echo (int) $vlAssay; ?>, <?php echo (int) $sampleId; ?>, this.value)">
-                                        <option value="calculated" <?php echo $useManual[$sampleId] ? '' : "selected='selected'"; ?>><?= $this->translate->_("System"); ?></option>
-                                        <option value="manual" <?php echo $useManual[$sampleId] ? "selected='selected'" : ''; ?>><?= $this->translate->_("Manual"); ?></option>
-                                    </select>
-                                </td>
-                            <?php endforeach; ?>
-                        </tr>
+
+                        <?php if (!$isGrouped): ?>
+                            <tr>
+                                <td class="metricLabel"><?= $this->translate->_("Manual Range (Lo – Hi)"); ?></td>
+                                <?php foreach ($sampleLabels as $sampleId => $label):
+                                    $r = $grid[$vlAssay][$sampleId] ?? null;
+                                    $hasManual = $r && (!empty($r['manual_low_limit']) || !empty($r['manual_high_limit'])); ?>
+                                    <td data-assay="<?php echo (int) $vlAssay; ?>" data-sample="<?php echo (int) $sampleId; ?>" data-kind="manual"
+                                        class="<?php echo $useManual[$sampleId] ? 'activeRange' : ''; ?>">
+                                        <?php echo $hasManual ? ($dispM($r['manual_low_limit'] ?? null) . ' &ndash; ' . $dispM($r['manual_high_limit'] ?? null)) : '—'; ?>
+                                    </td>
+                                <?php endforeach; ?>
+                            </tr>
+                            <tr>
+                                <td class="metricLabel"><?= $this->translate->_("Manual") . " " . $this->translate->_($centerLabel) . " / " . $this->translate->_($sdLabel); ?></td>
+                                <?php foreach ($sampleLabels as $sampleId => $label):
+                                    $r = $grid[$vlAssay][$sampleId] ?? null;
+                                    $mCenter = $r ? ($isIso ? ($r['manual_median'] ?? null) : ($r['manual_mean'] ?? null)) : null;
+                                    $mSd = $r['manual_sd'] ?? null;
+                                    $hasManual = (!empty($mCenter) || !empty($mSd)); ?>
+                                    <td data-assay="<?php echo (int) $vlAssay; ?>" data-sample="<?php echo (int) $sampleId; ?>" data-kind="manual"
+                                        class="<?php echo $useManual[$sampleId] ? 'activeRange' : ''; ?>">
+                                        <?php echo $hasManual ? ($dispM($mCenter) . ' / ' . $dispM($mSd)) : '—'; ?>
+                                    </td>
+                                <?php endforeach; ?>
+                            </tr>
+                            <tr>
+                                <td class="metricLabel"><?= $this->translate->_("Use Range"); ?></td>
+                                <?php foreach ($sampleLabels as $sampleId => $label):
+                                    $r = $grid[$vlAssay][$sampleId] ?? null;
+                                    if (!$r) {
+                                        echo '<td>—</td>';
+                                        continue;
+                                    } ?>
+                                    <td>
+                                        <input type="hidden" name="sampleId[<?php echo $vlAssay; ?>][<?php echo $sampleId; ?>]" value="<?php echo $sampleId; ?>">
+                                        <select name="useRange[<?php echo $vlAssay; ?>][<?php echo $sampleId; ?>]"
+                                            data-use-range data-assay="<?php echo (int) $vlAssay; ?>" data-sample="<?php echo (int) $sampleId; ?>"
+                                            class="form-control" style="min-width:90px;margin:0 auto;"
+                                            onchange="toggleUseRange(<?php echo (int) $vlAssay; ?>, <?php echo (int) $sampleId; ?>, this.value)">
+                                            <option value="calculated" <?php echo $useManual[$sampleId] ? '' : "selected='selected'"; ?>><?= $this->translate->_("System"); ?></option>
+                                            <option value="manual" <?php echo $useManual[$sampleId] ? "selected='selected'" : ''; ?>
+                                                <?php echo $sampleHasManual[$sampleId] ? '' : 'disabled'; ?>><?= $this->translate->_("Manual"); ?></option>
+                                        </select>
+                                    </td>
+                                <?php endforeach; ?>
+                            </tr>
+                        <?php endif; ?>
                     </tbody>
                 </table>
             </div>
@@ -201,9 +448,11 @@ $dispM = static function ($v) {
         <?php endif; ?>
 
         <div style="text-align:center;margin:16px 0;">
-            <input type="submit" value="<?= $this->translate->_("Update Changes"); ?>" class="btn btn-primary">
-            <input type="button" value="<?= $this->translate->_("Re-Calculate"); ?>" class="btn btn-danger"
-                onclick="recalculate(<?php echo (int) $this->shipmentId; ?>, '<?php echo $methodOfEvaluation; ?>');">
+            <?php // One action: saving the System/Manual choices and recalculating were separate
+            // buttons, and the recalculate one navigated away, throwing unsaved choices out. ?>
+            <input type="submit" value="<?= $this->htmlTranslate("Update & Recalculate"); ?>" class="btn btn-primary">
+            <input type="button" value="<?= $this->htmlTranslate("Cancel"); ?>" class="btn btn-default"
+                onclick="cancelVlRangeEdits();">
         </div>
     </form>
 </div>
@@ -212,22 +461,173 @@ $dispM = static function ($v) {
     var vlBulkBaseUrl = "<?php echo $this->url(['module' => 'admin', 'controller' => 'evaluate', 'action' => 'add-manual-limits-bulk'], 'default', true); ?>";
     var vlBulkModalWidth = <?php echo $isIso ? 900 : 1180; ?>;
     var vlShipmentId = <?php echo (int) $this->shipmentId; ?>;
+    var vlShipmentIdEncoded = "<?php echo base64_encode($this->shipmentId); ?>";
 
     function bulkEditAssay(assayId) {
         var id = btoa(vlShipmentId + '#' + assayId);
         layoutModal(vlBulkBaseUrl + '/id/' + id, vlBulkModalWidth, 540);
     }
 
-    function recalculate(sid, method) {
-        document.location.href = "/admin/evaluate/recalculate-vl-range/sid/" + sid + "/method/" + method;
+    // Reload the panel from the server, dropping anything unsaved.
+    function cancelVlRangeEdits() {
+        if (typeof getVLReferenceScores === 'function') {
+            getVLReferenceScores(vlShipmentIdEncoded);
+        } else {
+            document.location.reload();
+        }
     }
 
     // visually flip the active highlight when the System/Manual toggle changes (saved on Update Changes)
+    // Move the "range currently in use" highlight as soon as the choice changes. Previously this
+    // was a no-op and the highlight only caught up after saving, so the control gave no feedback
+    // at the moment you used it.
     function toggleUseRange(assayId, sampleId, value) {
-        // no-op placeholder for inline feedback; full highlight refreshes after save
+        var manualChosen = (value === 'manual');
+        document.querySelectorAll(
+            '[data-assay="' + assayId + '"][data-sample="' + sampleId + '"][data-kind]'
+        ).forEach(function (cell) {
+            var isManualCell = (cell.dataset.kind === 'manual');
+            cell.classList.remove('activeRange', 'inactiveRange');
+            if (isManualCell === manualChosen) {
+                cell.classList.add('activeRange');
+            } else if (!isManualCell) {
+                cell.classList.add('inactiveRange');
+            }
+        });
     }
 
+    // Set every sample of one platform at once -- the common case is all-or-nothing, and doing it
+    // sample by sample meant five dropdowns per platform.
+    function setAllUseRange(assayId, value) {
+        document.querySelectorAll('select[data-use-range][data-assay="' + assayId + '"]').forEach(function (select) {
+            var option = select.querySelector('option[value="' + value + '"]');
+            if (!option || option.disabled) { return; }   // no manual figures for this sample
+            select.value = value;
+            toggleUseRange(assayId, parseInt(select.dataset.sample, 10), value);
+        });
+    }
+
+    // A group row's members live in its chips; the hidden field is derived from them on every
+    // change, so what is posted always matches what is on screen.
+    function vlGroupedIds() {
+        var used = [];
+        document.querySelectorAll('#vlGroupRows [data-members] .vlChip').forEach(function (chip) {
+            used.push(parseInt(chip.dataset.assay, 10));
+        });
+        return used;
+    }
+
+    function syncVlGroupRow(row) {
+        var ids = [], total = 0;
+        row.querySelectorAll('[data-members] .vlChip').forEach(function (chip) {
+            ids.push(chip.dataset.assay);
+            total += parseInt(chip.dataset.n, 10) || 0;
+        });
+        row.querySelector('input[name="assayGroup[]"]').value = ids.join(',');
+        row.querySelector('[data-total]').textContent = total + ' ' + vlGroupTotalLabel;
+
+        var members = row.querySelector('[data-members]');
+        var empty = members.querySelector('.vlGroupEmpty');
+        if (ids.length === 0 && !empty) {
+            var placeholder = document.createElement('span');
+            placeholder.className = 'vlGroupEmpty';
+            placeholder.textContent = vlGroupEmptyLabel;
+            members.appendChild(placeholder);
+        } else if (ids.length > 0 && empty) {
+            empty.remove();
+        }
+        return ids.length;
+    }
+
+    // Pickers only offer platforms that are not already in some group.
+    function refreshVlPickers() {
+        var used = vlGroupedIds();
+        document.querySelectorAll('#vlGroupRows .vlGroupPicker').forEach(function (select) {
+            select.textContent = '';
+            var blank = new Option(vlGroupEmptyLabel, '');
+            select.appendChild(blank);
+            vlAllAssays.forEach(function (a) {
+                if (used.indexOf(a.id) === -1) {
+                    select.appendChild(new Option(a.name + ' (' + a.n + ')', a.id));
+                }
+            });
+            select.disabled = (used.length >= vlAllAssays.length);
+        });
+    }
+
+    function addVlChip(select) {
+        var id = parseInt(select.value, 10);
+        if (!id) { return; }
+        var assay = vlAllAssays.filter(function (a) { return a.id === id; })[0];
+        if (!assay) { return; }
+        var row = select.closest('.vlGroupRow');
+
+        // Built as nodes rather than an HTML string: the platform name is a database value.
+        var chip = document.createElement('span');
+        chip.className = 'vlChip';
+        chip.dataset.assay = assay.id;
+        chip.dataset.n = assay.n;
+        chip.appendChild(document.createTextNode(assay.name + ' '));
+
+        var count = document.createElement('b');
+        count.textContent = assay.n;
+        chip.appendChild(count);
+        chip.appendChild(document.createTextNode(' '));
+
+        var remove = document.createElement('a');
+        remove.href = 'javascript:void(0);';
+        remove.title = vlChipRemoveTitle;
+        remove.innerHTML = '&times;';
+        remove.onclick = function () { removeVlChip(this); };
+        chip.appendChild(remove);
+
+        row.querySelector('[data-members]').appendChild(chip);
+        syncVlGroupRow(row);
+        refreshVlPickers();
+    }
+
+    function removeVlChip(link) {
+        var row = link.closest('.vlGroupRow');
+        link.closest('.vlChip').remove();
+        syncVlGroupRow(row);
+        refreshVlPickers();
+    }
+
+    function addVlGroupRow() {
+        var tpl = document.getElementById('vlGroupRowTemplate');
+        document.getElementById('vlGroupRows').appendChild(tpl.content.cloneNode(true));
+        var rows = document.querySelectorAll('#vlGroupRows .vlGroupRow');
+        syncVlGroupRow(rows[rows.length - 1]);
+        refreshVlPickers();
+    }
+
+    function removeVlGroupRow(link) {
+        link.closest('.vlGroupRow').remove();
+        refreshVlPickers();
+    }
+
+    document.getElementById('vlAssayGroupForm').addEventListener('submit', function (e) {
+        var undersized = 0;
+        document.querySelectorAll('#vlGroupRows .vlGroupRow').forEach(function (row) {
+            if (syncVlGroupRow(row) === 1) { undersized++; }
+        });
+        if (undersized > 0) {
+            e.preventDefault();
+            alert("<?= $this->jsTranslate('A group needs at least two platforms. Add another platform, or remove the group.'); ?>");
+            return false;
+        }
+        if (!confirm("<?= $this->jsTranslate('This recalculates the reference ranges for this shipment. Continue?'); ?>")) {
+            e.preventDefault();
+            return false;
+        }
+    });
+
+    refreshVlPickers();
+
     function submitVlRangeForm() {
+        if (!confirm("<?= $this->jsTranslate('This saves the System/Manual choices and recalculates the reference ranges for this shipment. Continue?'); ?>")) {
+            return false;
+        }
         $.blockUI();
         document.getElementById('vlRangeForm').submit();
     }

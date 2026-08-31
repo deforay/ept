@@ -3948,6 +3948,14 @@ class Application_Service_Evaluation
                             'res.shipment_map_id = sp.map_id and res.sample_id = refVl.sample_id',
                             [
                                 'NumberPassed' => new Zend_Db_Expr("SUM(CASE WHEN calculated_score = 'pass' OR calculated_score = 'warn' THEN 1 ELSE 0 END)"),
+                                // Participants on THIS platform for this sample -- the denominator of
+                                // "Participants with Passing Results". Deliberately not
+                                // reference_vl_calculation.no_of_responses: that is the n behind the
+                                // assigned value, which is a larger, shared number whenever several
+                                // platforms are pooled into one peer group. The two were historically
+                                // equal, so the layouts used no_of_responses for both; they diverge the
+                                // moment platforms are merged, and the pass rate then reads far too low.
+                                'participants_on_platform' => new Zend_Db_Expr('COUNT(*)'),
                             ]
                         )
                         ->where('vlCal.shipment_id=?', $shipmentId)

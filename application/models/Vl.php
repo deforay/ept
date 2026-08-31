@@ -717,6 +717,9 @@ class Application_Model_Vl
                 ->join(['sp' => 'shipment_participant_map'], 'vlCal.shipment_id=sp.shipment_id', [])
                 ->join(['res' => 'response_result_vl'], 'res.shipment_map_id = sp.map_id and res.sample_id = refVl.sample_id', [
                     'NumberPassed' => new Zend_Db_Expr("SUM(CASE WHEN calculated_score = 'pass' OR calculated_score = 'warn' THEN 1 ELSE 0 END)"),
+                    // Denominator of the passing-results column: participants on THIS platform,
+                    // which is not vlCal.no_of_responses once platforms share a pooled peer group.
+                    'participants_on_platform' => new Zend_Db_Expr('COUNT(*)'),
                 ])
 
                 ->where('vlCal.shipment_id = ?', $shipmentId)
@@ -780,7 +783,7 @@ class Application_Model_Vl
 
                         if (isset($val['median'])) {
 
-                            $sample[$k]['response'] += $val['no_of_responses'];
+                            $sample[$k]['response'] += (int) ($val['participants_on_platform'] ?? $val['no_of_responses']);
                             $sample[$k]['median'] = $val['median'];
                             $sample[$k]['lowLimit'] = $val['low_limit'];
                             $sample[$k]['highLimit'] = $val['high_limit'];
@@ -837,13 +840,16 @@ class Application_Model_Vl
                             $val['sd'] = $val['manual_sd'];
                         }
                         if (isset($val['median'])) {
-                            $score = round((($val['NumberPassed'] / $val['no_of_responses']) * 100));
+                            // Denominator is the participants on THIS platform, not the n behind the
+                            // assigned value -- those differ whenever platforms share a pooled peer group.
+                            $platformN = (int) ($val['participants_on_platform'] ?? $val['no_of_responses']);
+                            $score = $platformN > 0 ? (int) round(($val['NumberPassed'] / $platformN) * 100) : 0;
                             $newsheet->getCell(Coordinate::stringFromColumnIndex($col) . $row)
                                 ->setValueExplicit(html_entity_decode($val['sample_label'], ENT_QUOTES, 'UTF-8'));
                             $newsheet->getStyle(Coordinate::stringFromColumnIndex($col) . $row)->applyFromArray($vlBorderStyle, true);
                             $col++;
                             $newsheet->getCell(Coordinate::stringFromColumnIndex($col) . $row)
-                                ->setValueExplicit(html_entity_decode($val['no_of_responses'], ENT_QUOTES, 'UTF-8'));
+                                ->setValueExplicit(html_entity_decode((string) $platformN, ENT_QUOTES, 'UTF-8'));
                             $newsheet->getStyle(Coordinate::stringFromColumnIndex($col) . $row)->applyFromArray($vlBorderStyle, true);
                             $col++;
                             $newsheet->getCell(Coordinate::stringFromColumnIndex($col) . $row)
@@ -1430,6 +1436,194 @@ class Application_Model_Vl
         return $db->fetchAll($query);
     }
 
+    /**
+     * Reference statistics for one data set, by method of evaluation.
+     *
+     * Extracted from setVlRange() so a pooled peer group (several assays evaluated together)
+     * is computed by exactly the same code as a single assay -- when the two drifted apart
+     * they produced subtly different assigned values for the same numbers.
+     *
+     * @param array<int|float> $values reported viral loads, nulls already removed
+     */
+    private function calculateVlRangeStats(array $values, string $method): array
+    {
+        sort($values);
+
+        if ('iso17043' === $method) {
+            $median = QuantitativeCalculations::calculateMedian($values);
+            $q1 = QuantitativeCalculations::calculateQuantile($values, 0.25);
+            $q3 = QuantitativeCalculations::calculateQuantile($values, 0.75);
+            $iqr = $q3 - $q1;
+            $sd = 0.7413 * $iqr;
+            $standardUncertainty = !empty($values) ? (1.25 * $sd) / sqrt(count($values)) : 0;
+
+            if ($median == 0) {
+                $isUncertaintyAcceptable = 'NA';
+            } elseif ($standardUncertainty < (0.3 * $sd)) {
+                $isUncertaintyAcceptable = 'yes';
+            } else {
+                $isUncertaintyAcceptable = 'no';
+            }
+
+            return [
+                'q1' => $q1,
+                'q3' => $q3,
+                'iqr' => $iqr,
+                'quartile_low' => $q1,
+                'quartile_high' => $q3,
+                'mean' => 0,
+                'median' => $median,
+                'sd' => $sd,
+                'standard_uncertainty' => $standardUncertainty,
+                'is_uncertainty_acceptable' => $isUncertaintyAcceptable,
+                'cv' => 0,
+                'low_limit' => $q1,
+                'high_limit' => $q3,
+            ];
+        }
+
+        // standard: drop outliers outside the 1.5 x IQR fence, then mean +/- 3 SD
+        $q1 = QuantitativeCalculations::calculateQuantile($values, 0.25);
+        $q3 = QuantitativeCalculations::calculateQuantile($values, 0.75);
+        $iqr = $q3 - $q1;
+        $iqrMultiplier = $iqr * 1.5;
+        $quartileLowLimit = $q1 - $iqrMultiplier;
+        $quartileHighLimit = $q3 + $iqrMultiplier;
+
+        $newDataSet = [];
+        foreach ($values as $a) {
+            if ($a >= round($quartileLowLimit, 2) && $a <= round($quartileHighLimit, 2)) {
+                $newDataSet[] = $a;
+            }
+        }
+
+        $avg = QuantitativeCalculations::calculateMean($newDataSet);
+        $sd = QuantitativeCalculations::calculateStandardDeviation($newDataSet);
+        $cv = QuantitativeCalculations::calculateCoefficientOfVariation($newDataSet, $avg, $sd);
+
+        return [
+            'q1' => $q1,
+            'q3' => $q3,
+            'iqr' => $iqr,
+            'quartile_low' => $quartileLowLimit,
+            'quartile_high' => $quartileHighLimit,
+            'mean' => $avg,
+            'median' => 0,
+            'sd' => $sd,
+            'standard_uncertainty' => 0,
+            'is_uncertainty_acceptable' => 'NA',
+            'cv' => $cv,
+            'low_limit' => $avg - ($sd * 3),
+            'high_limit' => $avg + ($sd * 3),
+        ];
+    }
+
+    /**
+     * Assay groups configured on a shipment, as a list of lists of assay ids.
+     *
+     * A group makes several platforms share one peer group: their responses are pooled and the
+     * resulting assigned value written to every member. Used where a platform family (e.g. the
+     * Roche Cobas 5800/6800/8800) is too small individually to support its own consensus.
+     * Per-shipment by design -- grouping is a judgement call about one round's participants.
+     *
+     * Singletons, unknown ids and duplicates are discarded; an assay may sit in only one group.
+     */
+    public static function getVlAssayGroups(?string $shipmentAttributesJson): array
+    {
+        $attributes = Pt_Commons_JsonUtility::safeDecode($shipmentAttributesJson);
+        $raw = $attributes['vlAssayGroups'] ?? [];
+        if (!is_array($raw)) {
+            return [];
+        }
+
+        $groups = [];
+        $claimed = [];
+        foreach ($raw as $members) {
+            if (!is_array($members)) {
+                continue;
+            }
+            $clean = [];
+            foreach ($members as $assayId) {
+                $assayId = (int) $assayId;
+                if ($assayId > 0 && !isset($claimed[$assayId])) {
+                    $claimed[$assayId] = true;
+                    $clean[] = $assayId;
+                }
+            }
+            // a group of one is just the assay on its own
+            if (count($clean) > 1) {
+                sort($clean);
+                $groups[] = $clean;
+            }
+        }
+
+        return $groups;
+    }
+
+    /**
+     * Persist the assay groups for a shipment, merging into shipment_attributes.
+     *
+     * Stored per shipment rather than globally: which platforms may share a peer group depends
+     * on who actually participated in that round. Returns the normalised groups as saved.
+     */
+    /**
+     * Participants who reported on each assay in a shipment, keyed by assay id.
+     *
+     * Shown beside each platform when grouping, because "is this platform big enough on its own"
+     * is the whole question the admin is answering.
+     */
+    public static function getVlAssayParticipantCounts($shipmentId): array
+    {
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $rows = $db->fetchAll(
+            $db->select()
+                ->from(['sp' => 'shipment_participant_map'], [
+                    'assay' => new Zend_Db_Expr('sp.attributes->>"$.vl_assay"'),
+                    'participants' => new Zend_Db_Expr('COUNT(DISTINCT sp.map_id)'),
+                ])
+                ->where('sp.shipment_id = ?', (int) $shipmentId)
+                ->where("(sp.is_pt_test_not_performed LIKE 'yes') IS NOT TRUE")
+                ->group('assay')
+        );
+
+        $counts = [];
+        foreach ($rows as $row) {
+            if ($row['assay'] !== null && $row['assay'] !== '') {
+                $counts[(int) $row['assay']] = (int) $row['participants'];
+            }
+        }
+
+        return $counts;
+    }
+
+    public static function saveVlAssayGroups($shipmentId, array $groups): array
+    {
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $shipmentId = (int) $shipmentId;
+
+        $current = $db->fetchOne(
+            $db->select()->from('shipment', ['shipment_attributes'])->where('shipment_id = ?', $shipmentId)
+        );
+        $attributes = Pt_Commons_JsonUtility::safeDecode($current);
+        if (!is_array($attributes)) {
+            $attributes = [];
+        }
+
+        // Normalise through the same reader the calculation uses, so what is stored is exactly
+        // what will be honoured -- no silently-dropped singletons or duplicated members.
+        $attributes['vlAssayGroups'] = $groups;
+        $normalised = self::getVlAssayGroups(json_encode($attributes));
+        $attributes['vlAssayGroups'] = $normalised;
+
+        $db->update(
+            'shipment',
+            ['shipment_attributes' => json_encode($attributes)],
+            $db->quoteInto('shipment_id = ?', $shipmentId)
+        );
+
+        return $normalised;
+    }
+
     public function setVlRange($shipmentId)
     {
 
@@ -1448,6 +1642,17 @@ class Application_Model_Vl
         $shipmentAttributes = Pt_Commons_JsonUtility::safeDecode($shipment['shipment_attributes']);
 
         $method = isset($shipmentAttributes['methodOfEvaluation']) ? $shipmentAttributes['methodOfEvaluation'] : 'standard';
+
+        // Assays configured to share a peer group on this shipment. Members are handled by the
+        // grouped pass further down, never by the per-assay loop, so their responses are pooled
+        // once and the same assigned value written to each of them.
+        $assayGroups = self::getVlAssayGroups($shipment['shipment_attributes']);
+        $groupOfAssay = [];
+        foreach ($assayGroups as $groupIndex => $members) {
+            foreach ($members as $memberAssayId) {
+                $groupOfAssay[$memberAssayId] = $groupIndex;
+            }
+        }
 
         $db->delete('reference_vl_calculation', "use_range IS NOT NULL and use_range not like 'manual' AND " . $db->quoteInto('shipment_id = ?', $shipmentId));
 
@@ -1492,6 +1697,12 @@ class Application_Model_Vl
                 continue;
             }
 
+            // Grouped assays are computed from the pooled data set below. Skipping here also keeps
+            // them out of $skippedAssays, so they never borrow another platform's range.
+            if (isset($groupOfAssay[$vlAssayId])) {
+                continue;
+            }
+
             // IMPORTANT: If the reported samples for an Assay are < $minimumRequiredResponses
             // then we use the ranges of the Assay with maximum responses
 
@@ -1500,115 +1711,39 @@ class Application_Model_Vl
                 if ($vlAssayId != 6 && !empty($reportedVl) && count($reportedVl) > $minimumRequiredResponses) {
                     $responseCounter[$vlAssayId] = count($reportedVl);
 
-                    $inputArray = $reportedVl;
-
-                    $finalHigh = null;
-                    $finalLow = null;
-                    $quartileHighLimit = null;
-                    $quartileLowLimit = null;
-                    $iqr = null;
-                    $cv = null;
-                    $finalLow = null;
-                    $finalHigh = null;
-                    $avg = null;
-                    $median = null;
-                    $standardUncertainty = null;
-                    $isUncertaintyAcceptable = null;
-                    $q1 = $q3 = 0;
-
-                    // removing all null values
                     $inputArray = array_filter(
-                        $inputArray,
-                        function ($value) {
+                        $reportedVl,
+                        static function ($value) {
                             return !is_null($value);
                         }
                     );
 
-                    if ('standard' == $method) {
-                        sort($inputArray);
-                        $q1 = QuantitativeCalculations::calculateQuantile($inputArray, 0.25);
-                        $q3 = QuantitativeCalculations::calculateQuantile($inputArray, 0.75);
-                        $iqr = $q3 - $q1;
-                        $iqrMultiplier = $iqr * 1.5;
-                        $quartileLowLimit = $q1 - $iqrMultiplier;
-                        $quartileHighLimit = $q3 + $iqrMultiplier;
-
-                        $newDataSet = [];
-                        $removeArray = [];
-                        foreach ($inputArray as $a) {
-                            if ($a >= round($quartileLowLimit, 2) && $a <= round($quartileHighLimit, 2)) {
-                                $newDataSet[] = $a;
-                            } else {
-                                $removeArray[] = $a;
-                            }
-                        }
-
-                        //Zend_Debug::dump("Under Assay $vlAssayId-Sample $sample - COUNT AFTER REMOVING OUTLIERS: ".count($newArray) . " FOLLOWING ARE OUTLIERS");
-                        //Zend_Debug::dump($removeArray);
-
-                        $avg = QuantitativeCalculations::calculateMean($newDataSet);
-                        $sd = QuantitativeCalculations::calculateStandardDeviation($newDataSet);
-
-                        $cv = QuantitativeCalculations::calculateCoefficientOfVariation($newDataSet, $avg, $sd);
-                        $threeTimesSd = $sd * 3;
-                        $finalLow = $avg - $threeTimesSd;
-                        $finalHigh = $avg + $threeTimesSd;
-                    } elseif ('iso17043' == $method) {
-                        sort($inputArray);
-                        $median = QuantitativeCalculations::calculateMedian($inputArray);
-                        $finalLow = $quartileLowLimit = $q1 = QuantitativeCalculations::calculateQuantile($inputArray, 0.25);
-                        $finalHigh = $quartileHighLimit = $q3 = QuantitativeCalculations::calculateQuantile($inputArray, 0.75);
-                        $iqr = $q3 - $q1;
-                        $sd = 0.7413 * $iqr;
-                        if (!empty($inputArray)) {
-                            $standardUncertainty = (1.25 * $sd) / sqrt(count($inputArray));
-                        }
-                        if ($median == 0) {
-                            $isUncertaintyAcceptable = 'NA';
-                        } elseif ($standardUncertainty < (0.3 * $sd)) {
-                            $isUncertaintyAcceptable = 'yes';
-                        } else {
-                            $isUncertaintyAcceptable = 'no';
-                        }
-                    }
-
-                    $data = [
+                    $data = $this->calculateVlRangeStats($inputArray, $method) + [
                         'shipment_id' => $shipmentId,
                         'vl_assay' => $vlAssayId,
                         'no_of_responses' => count($inputArray),
                         'sample_id' => $sample,
-                        'q1' => $q1,
-                        'q3' => $q3,
-                        'iqr' => $iqr ?? 0,
-                        'quartile_low' => $quartileLowLimit,
-                        'quartile_high' => $quartileHighLimit,
-                        'mean' => $avg ?? 0,
-                        'median' => $median ?? 0,
-                        'sd' => $sd ?? 0,
-                        'standard_uncertainty' => $standardUncertainty ?? 0,
-                        'is_uncertainty_acceptable' => $isUncertaintyAcceptable ?? 'NA',
-                        'cv' => $cv ?? 0,
-                        'low_limit' => $finalLow,
-                        'high_limit' => $finalHigh,
                         'calculated_on' => new Zend_Db_Expr('now()'),
                     ];
 
-                    if (isset($oldQuantRange[$vlAssayId][$sample]) && !empty($oldQuantRange[$vlAssayId][$sample]) && $oldQuantRange[$vlAssayId][$sample]['use_range'] == 'manual') {
-                        $data['manual_q1'] = $oldQuantRange[$vlAssayId][$sample]['manual_q1'] ?? null;
-                        $data['manual_q3'] = $oldQuantRange[$vlAssayId][$sample]['manual_q3'] ?? null;
-                        $data['manual_cv'] = $oldQuantRange[$vlAssayId][$sample]['manual_cv'] ?? null;
-                        $data['manual_iqr'] = $oldQuantRange[$vlAssayId][$sample]['manual_iqr'] ?? null;
-                        $data['manual_quartile_high'] = $oldQuantRange[$vlAssayId][$sample]['manual_quartile_high'] ?? null;
-                        $data['manual_quartile_low'] = $oldQuantRange[$vlAssayId][$sample]['manual_quartile_low'] ?? null;
-                        $data['manual_low_limit'] = $oldQuantRange[$vlAssayId][$sample]['manual_low_limit'] ?? null;
-                        $data['manual_high_limit'] = $oldQuantRange[$vlAssayId][$sample]['manual_high_limit'] ?? null;
-                        $data['manual_mean'] = $oldQuantRange[$vlAssayId][$sample]['manual_mean'] ?? null;
-                        $data['manual_median'] = $oldQuantRange[$vlAssayId][$sample]['manual_median'] ?? null;
-                        $data['manual_sd'] = $oldQuantRange[$vlAssayId][$sample]['manual_sd'] ?? null;
-                        $data['manual_standard_uncertainty'] = $oldQuantRange[$vlAssayId][$sample]['manual_standard_uncertainty'] ?? null;
-                        $data['manual_is_uncertainty_acceptable'] = $oldQuantRange[$vlAssayId][$sample]['manual_is_uncertainty_acceptable'] ?? null;
-                        $data['updated_on'] = $oldQuantRange[$vlAssayId][$sample]['updated_on'] ?? null;
-                        $data['use_range'] = $oldQuantRange[$vlAssayId][$sample]['use_range'] ?? 'calculated';
+                    // Carry manual figures across on EVERY recalculation, not only when the row is
+                    // currently set to Manual. Storing a manual value and using it are separate
+                    // questions: this used to delete an admin's typed numbers the moment a sample
+                    // was switched back to System and the ranges were recalculated.
+                    $previous = $oldQuantRange[$vlAssayId][$sample] ?? null;
+                    if (!empty($previous)) {
+                        foreach ([
+                            'manual_q1', 'manual_q3', 'manual_cv', 'manual_iqr',
+                            'manual_quartile_high', 'manual_quartile_low',
+                            'manual_low_limit', 'manual_high_limit', 'manual_mean',
+                            'manual_median', 'manual_sd', 'manual_standard_uncertainty',
+                            'manual_is_uncertainty_acceptable', 'updated_on',
+                        ] as $manualColumn) {
+                            $data[$manualColumn] = $previous[$manualColumn] ?? null;
+                        }
+                        if (($previous['use_range'] ?? '') === 'manual') {
+                            $data['use_range'] = 'manual';
+                        }
                     }
 
                     $db->delete('reference_vl_calculation', $db->quoteInto('vl_assay = ?', $vlAssayId) . ' AND ' . $db->quoteInto('sample_id = ?', $sample) . ' AND ' . $db->quoteInto('shipment_id = ?', $shipmentId));
@@ -1622,6 +1757,72 @@ class Application_Model_Vl
 
                     $skippedAssays[] = $vlAssayId;
                     $skippedResponseCounter[$vlAssayId] = count($reportedVl);
+                }
+            }
+        }
+
+        // Grouped assays: pool the members' responses per sample, compute one range from the
+        // combined data set, and write it to every member of the group. A group that is still
+        // under the threshold falls back to the donor range exactly like a lone small assay.
+        foreach ($assayGroups as $groupIndex => $members) {
+            $pooled = [];
+            foreach ($members as $memberAssayId) {
+                foreach ($sampleWise[$memberAssayId] ?? [] as $sample => $reportedVl) {
+                    $pooled[$sample] = array_merge($pooled[$sample] ?? [], $reportedVl);
+                }
+            }
+
+            foreach ($pooled as $sample => $reportedVl) {
+                $inputArray = array_filter(
+                    $reportedVl,
+                    static function ($value) {
+                        return !is_null($value);
+                    }
+                );
+
+                if (count($inputArray) <= $minimumRequiredResponses) {
+                    foreach ($members as $memberAssayId) {
+                        $skippedAssays[] = $memberAssayId;
+                        $skippedResponseCounter[$memberAssayId] = count($sampleWise[$memberAssayId][$sample] ?? []);
+                    }
+                    continue;
+                }
+
+                $stats = $this->calculateVlRangeStats($inputArray, $method);
+
+                foreach ($members as $memberAssayId) {
+                    $data = $stats + [
+                        'shipment_id' => $shipmentId,
+                        'vl_assay' => $memberAssayId,
+                        'no_of_responses' => count($inputArray),
+                        'sample_id' => $sample,
+                        'calculated_on' => new Zend_Db_Expr('now()'),
+                        // Grouping and a manual range are competing answers to the same question,
+                        // and grouping is the more specific instruction, so it wins. The manual
+                        // values are carried over untouched so nothing the admin typed is lost.
+                        'use_range' => 'calculated',
+                    ];
+
+                    $previous = $oldQuantRange[$memberAssayId][$sample] ?? null;
+                    if (!empty($previous)) {
+                        foreach ([
+                            'manual_q1', 'manual_q3', 'manual_cv', 'manual_iqr',
+                            'manual_quartile_high', 'manual_quartile_low',
+                            'manual_low_limit', 'manual_high_limit', 'manual_mean',
+                            'manual_median', 'manual_sd', 'manual_standard_uncertainty',
+                            'manual_is_uncertainty_acceptable', 'updated_on',
+                        ] as $manualColumn) {
+                            $data[$manualColumn] = $previous[$manualColumn] ?? null;
+                        }
+                    }
+
+                    $db->delete(
+                        'reference_vl_calculation',
+                        $db->quoteInto('vl_assay = ?', $memberAssayId)
+                            . ' AND ' . $db->quoteInto('sample_id = ?', $sample)
+                            . ' AND ' . $db->quoteInto('shipment_id = ?', $shipmentId)
+                    );
+                    $db->insert('reference_vl_calculation', $data);
                 }
             }
         }
@@ -1656,22 +1857,21 @@ class Application_Model_Vl
                     continue;
                 }
 
-                if (isset($oldQuantRange[$vlAssayId][$sample]) && !empty($oldQuantRange[$vlAssayId][$sample]) && $oldQuantRange[$vlAssayId][$sample]['use_range'] == 'manual') {
-                    $row['manual_q1'] = $oldQuantRange[$vlAssayId][$sample]['manual_q1'] ?? null;
-                    $row['manual_q3'] = $oldQuantRange[$vlAssayId][$sample]['manual_q3'] ?? null;
-                    $row['manual_cv'] = $oldQuantRange[$vlAssayId][$sample]['manual_cv'] ?? null;
-                    $row['manual_iqr'] = $oldQuantRange[$vlAssayId][$sample]['manual_iqr'] ?? null;
-                    $row['manual_quartile_high'] = $oldQuantRange[$vlAssayId][$sample]['manual_quartile_high'] ?? null;
-                    $row['manual_quartile_low'] = $oldQuantRange[$vlAssayId][$sample]['manual_quartile_low'] ?? null;
-                    $row['manual_low_limit'] = $oldQuantRange[$vlAssayId][$sample]['manual_low_limit'] ?? null;
-                    $row['manual_high_limit'] = $oldQuantRange[$vlAssayId][$sample]['manual_high_limit'] ?? null;
-                    $row['manual_mean'] = $oldQuantRange[$vlAssayId][$sample]['manual_mean'] ?? null;
-                    $row['manual_median'] = $oldQuantRange[$vlAssayId][$sample]['manual_median'] ?? null;
-                    $row['manual_sd'] = $oldQuantRange[$vlAssayId][$sample]['manual_sd'] ?? null;
-                    $row['manual_standard_uncertainty'] = $oldQuantRange[$vlAssayId][$sample]['manual_standard_uncertainty'] ?? null;
-                    $row['manual_is_uncertainty_acceptable'] = $oldQuantRange[$vlAssayId][$sample]['manual_is_uncertainty_acceptable'] ?? null;
-                    $row['updated_on'] = $oldQuantRange[$vlAssayId][$sample]['updated_on'] ?? null;
-                    $row['use_range'] = $oldQuantRange[$vlAssayId][$sample]['use_range'] ?? 'calculated';
+                // Same rule as above: preserve what was typed, regardless of what is in force.
+                $previous = $oldQuantRange[$vlAssayId][$sample] ?? null;
+                if (!empty($previous)) {
+                    foreach ([
+                        'manual_q1', 'manual_q3', 'manual_cv', 'manual_iqr',
+                        'manual_quartile_high', 'manual_quartile_low',
+                        'manual_low_limit', 'manual_high_limit', 'manual_mean',
+                        'manual_median', 'manual_sd', 'manual_standard_uncertainty',
+                        'manual_is_uncertainty_acceptable', 'updated_on',
+                    ] as $manualColumn) {
+                        $row[$manualColumn] = $previous[$manualColumn] ?? null;
+                    }
+                    if (($previous['use_range'] ?? '') === 'manual') {
+                        $row['use_range'] = 'manual';
+                    }
                 }
 
                 $db->delete('reference_vl_calculation', 'vl_assay = ' . $row['vl_assay'] . ' AND sample_id= ' . $row['sample_id'] . ' AND shipment_id=  ' . $row['shipment_id']);

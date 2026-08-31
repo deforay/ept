@@ -3,14 +3,23 @@
 // Expects two view vars (set by the controller only on the request right after a save):
 //   $this->reEvalScheme        - scheme_type string (e.g. 'dts', 'vl', custom-test code)
 //   $this->reEvalShipmentIds   - int[] of shipment ids scored under the old settings
+//   $this->reEvalReason        - optional: 'settings' (default) or 'ranges', which only
+//                                changes the wording. The same partial serves the scheme
+//                                settings pages and the VL reference-range screens.
 $reEvalScheme = $this->reEvalScheme ?? '';
 $reEvalIds = $this->reEvalShipmentIds ?? [];
+$reEvalReason = $this->reEvalReason ?? 'settings';
+$isRangeChange = ($reEvalReason === 'ranges');
 ?>
 <script type="text/javascript">
     (function () {
         var reEvalScheme = <?php echo json_encode($reEvalScheme); ?>;
         var reEvalIds = <?php echo json_encode($reEvalIds); ?>;
         var reEvalUrl = '<?php echo $this->url(array("module" => "admin", "controller" => "scheme-re-evaluate", "action" => "re-evaluate"), "default", true) ?>';
+
+        var reEvalLead = "<?= $isRangeChange ? $this->jsTranslate('Reference ranges recalculated.') : $this->jsTranslate('Settings saved.'); ?>";
+        var reEvalOldThing = "<?= $isRangeChange ? $this->jsTranslate('previous ranges') : $this->jsTranslate('previous settings'); ?>";
+        var reEvalNewThing = "<?= $isRangeChange ? $this->jsTranslate('new ranges') : $this->jsTranslate('new settings'); ?>";
 
         if (!reEvalScheme || !reEvalIds || reEvalIds.length === 0) {
             return;
@@ -19,9 +28,9 @@ $reEvalIds = $this->reEvalShipmentIds ?? [];
         $(document).ready(function () {
             var total = reEvalIds.length;
             bootbox.confirm(
-                "Settings saved. <strong>" + total + "</strong> already-evaluated shipment" +
-                (total > 1 ? "s were" : " was") + " scored using the previous settings.<br><br>" +
-                "Re-evaluate " + (total > 1 ? "them" : "it") + " now so the scores reflect the new settings?" +
+                reEvalLead + " <strong>" + total + "</strong> already-evaluated shipment" +
+                (total > 1 ? "s were" : " was") + " scored using the " + reEvalOldThing + ".<br><br>" +
+                "Re-evaluate " + (total > 1 ? "them" : "it") + " now so the scores reflect the " + reEvalNewThing + "?" +
                 "<br><br><small class='text-muted'>Finalized shipments are left untouched. " +
                 "Shipments whose reports were already generated will return to the &quot;evaluated&quot; " +
                 "state and will need their reports regenerated.</small>",
