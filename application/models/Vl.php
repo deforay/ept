@@ -930,7 +930,7 @@ class Application_Model_Vl
                     $col++;
                     $newsheet->getCell(
                         Coordinate::stringFromColumnIndex($col) . ($row + 1)
-                    )->setValueExplicit(html_entity_decode($label['response'], ENT_QUOTES, 'UTF-8'));
+                    )->setValueExplicit(html_entity_decode((string) $label['response'], ENT_QUOTES, 'UTF-8'));
                     $newsheet->getStyle(Coordinate::stringFromColumnIndex($col) . ($row + 1))->applyFromArray($vlBorderStyle, true);
                     $col++;
                     $newsheet->getCell(
@@ -1685,9 +1685,8 @@ class Application_Model_Vl
 
         $responseCounter = [];
 
-        if ('standard' == $method) {
-            $minimumRequiredResponses = 6;
-        } elseif ('iso17043' == $method) {
+        $minimumRequiredResponses = 6;
+        if ('iso17043' == $method) {
             $minimumRequiredResponses = 18;
         }
 

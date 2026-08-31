@@ -369,7 +369,7 @@ class Admin_EvaluateController extends Zend_Controller_Action
             $vlModel->updateVlInformation($params);
             $vlModel->setVlRange($shipmentId);
             $this->flagRangeChangeForReEvaluation($shipmentId);
-            $this->redirect('/admin/evaluate/index/scheme/vl/showcalc/' . base64_encode($shipmentId));
+            $this->redirect('/admin/evaluate/index/scheme/vl/showcalc/' . base64_encode((string) $shipmentId));
         }
         if ($this->hasParam('sid')) {
             if ($request->isPost()) {
@@ -440,7 +440,7 @@ class Admin_EvaluateController extends Zend_Controller_Action
         $vlModel->setVlRange($shipmentId);
         $this->flagRangeChangeForReEvaluation($shipmentId);
 
-        $this->redirect('/admin/evaluate/index/scheme/vl/showcalc/' . base64_encode($shipmentId));
+        $this->redirect('/admin/evaluate/index/scheme/vl/showcalc/' . base64_encode((string) $shipmentId));
     }
 
     public function recalculateVlRangeAction()
@@ -451,7 +451,7 @@ class Admin_EvaluateController extends Zend_Controller_Action
             $vlModel = new Application_Model_Vl();
             $this->view->result = $vlModel->setVlRange($shipmentId);
             $this->flagRangeChangeForReEvaluation($shipmentId);
-            $this->redirect('/admin/evaluate/index/scheme/vl/showcalc/' . base64_encode($shipmentId));
+            $this->redirect('/admin/evaluate/index/scheme/vl/showcalc/' . base64_encode((string) $shipmentId));
         } else {
             $this->redirect('/admin/evaluate/');
         }
