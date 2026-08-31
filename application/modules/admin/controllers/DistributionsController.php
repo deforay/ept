@@ -146,6 +146,28 @@ class Admin_DistributionsController extends Zend_Controller_Action
         $this->view->message = $result['message'];
     }
 
+    // Surveys already scheduled on a date the admin just picked on the Add screen.
+    // Returns JSON [{distribution_code, shipments:[{shipment_code, scheme_name}]}];
+    // an empty array means the date is free. The clash itself is allowed - the UI
+    // only warns.
+    public function dateConflictAction()
+    {
+        $this->_helper->layout()->disableLayout();
+        $this->_helper->viewRenderer->setNoRender(true);
+        $surveys = [];
+        $ptDate = (string) $this->_getParam('distributionDate');
+        // On the edit screen the survey being edited is passed so its own row
+        // is not reported as a clash with itself.
+        $excludeId = (int) base64_decode((string) $this->_getParam('distributionId'));
+        if ($ptDate !== '') {
+            $distributionService = new Application_Service_Distribution();
+            $surveys = $distributionService->getSurveysOnDate($ptDate, $excludeId);
+        }
+        $this->getResponse()
+            ->setHeader('Content-Type', 'application/json')
+            ->setBody(json_encode($surveys));
+    }
+
     public function generateSurveyCodeAction()
     {
         $distributionService = new Application_Service_Distribution();

@@ -228,6 +228,52 @@ class Application_Model_DbTable_Distribution extends Zend_Db_Table_Abstract
         return $this->fetchRow('distribution_id = ' . $did);
     }
 
+    /**
+     * PT Surveys already scheduled on a given date, each with the shipments under
+     * it. Feeds the clash warning on the Add PT Survey screen: picking a date that
+     * is already taken is now allowed, but the admin is shown what they collide
+     * with before saving.
+     *
+     * @param string $date any parseable date (the picker's display format)
+     * @param int|null $excludeDistributionId a survey to leave out (its own row, on the edit screen)
+     * @return array<int,array{distribution_code:string,shipments:array<int,array{shipment_code:string,scheme_name:?string}>}>
+     */
+    public function getSurveysOnDate($date, $excludeDistributionId = null)
+    {
+        $iso = Pt_Commons_DateUtility::isoDateFormat($date);
+        if (empty($iso)) {
+            return [];
+        }
+        $db = $this->getAdapter();
+        $select = $db->select()
+            ->from(['d' => 'distributions'], ['distribution_id', 'distribution_code'])
+            ->joinLeft(['s' => 'shipment'], 's.distribution_id = d.distribution_id', ['shipment_code'])
+            ->joinLeft(['sl' => 'scheme_list'], 's.scheme_type = sl.scheme_id', ['scheme_name'])
+            ->where('DATE(d.distribution_date) = ?', $iso)
+            ->order(['d.distribution_code', 's.shipment_code']);
+        if ((int) $excludeDistributionId > 0) {
+            $select->where('d.distribution_id != ?', (int) $excludeDistributionId);
+        }
+        $rows = $db->fetchAll($select);
+        $surveys = [];
+        foreach ($rows as $row) {
+            $id = (int) $row['distribution_id'];
+            if (!isset($surveys[$id])) {
+                $surveys[$id] = [
+                    'distribution_code' => $row['distribution_code'],
+                    'shipments' => [],
+                ];
+            }
+            if (!empty($row['shipment_code'])) {
+                $surveys[$id]['shipments'][] = [
+                    'shipment_code' => $row['shipment_code'],
+                    'scheme_name' => $row['scheme_name'],
+                ];
+            }
+        }
+        return array_values($surveys);
+    }
+
     public function deleteDistribution($id)
     {
         $id = (int) $id;

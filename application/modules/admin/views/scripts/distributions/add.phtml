@@ -5,6 +5,12 @@ if (isset($this->autogeneratePtCode) && !empty($this->autogeneratePtCode) && $th
     $autogeneratePtCode = true;
 }
 ?>
+<style>
+    .ui-datepicker td.pt-date-taken a {
+        border: 2px solid #d9534f;
+        border-radius: 50%;
+    }
+</style>
 <div class="well">
     <form name="addDistributionForm" id="addDistributionForm" method="post" action="<?php echo $this->url(array("module" => "admin", "controller" => "distributions", "action" => "add"), null, true) ?>" class="form-horizontal bs-example" role="form">
         <fieldset>
@@ -15,8 +21,8 @@ if (isset($this->autogeneratePtCode) && !empty($this->autogeneratePtCode) && $th
                 <label class="col-lg-3 control-label" for="distributionDate"><?= $this->translate->_("PT Survey Date"); ?> <span class="mandatory">*</span></label>
 
                 <div class="col-lg-6">
-                    <input type="text" id="distributionDate" name="distributionDate" size="50" maxlength="45" class="isRequired form-control datepicker" readonly title="<?= $this->htmlTranslate("Please enter the PT Survey date here"); ?>" placeholder="<?= $this->htmlTranslate("Please enter the PT Survey date here"); ?>" onchange="generateSurveyCode(this.value)" />
-                    <span class="help-block"><?= $this->translate->_("Dates already having a PT Survey will be disabled and marked with a red circle."); ?></span>
+                    <input type="text" id="distributionDate" name="distributionDate" size="50" maxlength="45" class="isRequired form-control datepicker" readonly title="<?= $this->htmlTranslate("Please enter the PT Survey date here"); ?>" placeholder="<?= $this->htmlTranslate("Please enter the PT Survey date here"); ?>" onchange="generateSurveyCode(this.value); checkDateConflict(this.value);" />
+                    <span class="help-block"><?= $this->translate->_("Dates that already have a PT Survey are marked with a red circle. You can still pick one, but you will be warned about the clash."); ?></span>
                 </div>
 
             </div>
@@ -95,7 +101,58 @@ if (isset($this->autogeneratePtCode) && !empty($this->autogeneratePtCode) && $th
 
 
 
-    var disabledDates = [<?php echo '"' . implode('","', $this->distributionDates) . '"' ?>];
+    var takenDates = [<?php echo '"' . implode('","', $this->distributionDates) . '"' ?>];
+    var conflictIntro = "<?= $this->jsTranslate("There is already another PT Survey on this date. You can still save, but here is what it clashes with:"); ?>";
+    var conflictNoShipments = "<?= $this->jsTranslate("No shipments have been added to that PT Survey yet."); ?>";
+    var conflictTitle = "<?= $this->jsTranslate("Date already has a PT Survey"); ?>";
+
+    function escapeHtml(str) {
+        return $('<div/>').text(str == null ? '' : str).html();
+    }
+
+    function checkDateConflict(ptDate) {
+        if (!ptDate) {
+            return;
+        }
+        $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'distributions', 'action' => 'date-conflict')); ?>", {
+                distributionDate: ptDate,
+                format: "html"
+            },
+            function(data) {
+                var surveys = data;
+                if (typeof data === 'string') {
+                    try {
+                        surveys = JSON.parse(data);
+                    } catch (e) {
+                        return;
+                    }
+                }
+                if (!surveys || !surveys.length) {
+                    return;
+                }
+                var html = '<p>' + conflictIntro + '</p>';
+                surveys.forEach(function(survey) {
+                    html += '<p><strong>' + escapeHtml(survey.distribution_code) + '</strong></p>';
+                    if (survey.shipments && survey.shipments.length) {
+                        html += '<ul>';
+                        survey.shipments.forEach(function(shipment) {
+                            var line = escapeHtml(shipment.shipment_code);
+                            if (shipment.scheme_name) {
+                                line += ' &ndash; ' + escapeHtml(shipment.scheme_name);
+                            }
+                            html += '<li>' + line + '</li>';
+                        });
+                        html += '</ul>';
+                    } else {
+                        html += '<p><em>' + conflictNoShipments + '</em></p>';
+                    }
+                });
+                bootbox.alert({
+                    title: conflictTitle,
+                    message: html
+                });
+            });
+    }
 
 
 
@@ -110,7 +167,9 @@ if (isset($this->autogeneratePtCode) && !empty($this->autogeneratePtCode) && $th
             dateFormat: '<?php echo $this->defaultDateFormat(); ?>',
             beforeShowDay: function(date) {
                 var string = jQuery.datepicker.formatDate('dd-M-yy', date);
-                return [disabledDates.indexOf(string) == -1]
+                // Taken dates stay selectable now - just flagged with a red circle;
+                // checkDateConflict() warns once one is picked.
+                return [true, takenDates.indexOf(string) == -1 ? '' : 'pt-date-taken'];
             }
         });
         <?php if ($autogeneratePtCode) { ?>
