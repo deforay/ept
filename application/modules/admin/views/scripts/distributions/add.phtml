@@ -10,6 +10,11 @@ if (isset($this->autogeneratePtCode) && !empty($this->autogeneratePtCode) && $th
         border: 2px solid #d9534f;
         border-radius: 50%;
     }
+
+    /* Keep the calendar above the deforay modal box (#mbox is z-index 9999). */
+    .ui-datepicker {
+        z-index: 10000 !important;
+    }
 </style>
 <div class="well">
     <form name="addDistributionForm" id="addDistributionForm" method="post" action="<?php echo $this->url(array("module" => "admin", "controller" => "distributions", "action" => "add"), null, true) ?>" class="form-horizontal bs-example" role="form">
@@ -45,6 +50,21 @@ if (isset($this->autogeneratePtCode) && !empty($this->autogeneratePtCode) && $th
         </fieldset>
     </form>
 </div>
+
+<!-- Date-clash warning, shown with the deforay modal (showdefModal/hidedefModal). -->
+<div id="dateConflictModal" class="dialog">
+    <a href="javascript:void(0);" onClick="hidedefModal()" class="closeModal"></a>
+    <div class="modal-header">
+        <h4 class="modal-title"><?= $this->htmlTranslate("Date already has a PT Survey"); ?></h4>
+    </div>
+    <div class="modal-body">
+        <div id="dateConflictBody"></div>
+    </div>
+    <div style="text-align:center; padding:10px 0;">
+        <button type="button" class="btn btn-default" onclick="hidedefModal();"><?= $this->translate->_("Close"); ?></button>
+    </div>
+</div>
+
 <script type="text/javascript">
     var duplicated = false;
     var duplicateCheckXhr = null;
@@ -106,7 +126,6 @@ if (isset($this->autogeneratePtCode) && !empty($this->autogeneratePtCode) && $th
     var conflictIntroMany = "<?= $this->jsTranslate("There are already %s other PT Surveys on this date. You can still save, but here is what it clashes with:"); ?>";
     var conflictSelectedDate = "<?= $this->jsTranslate("Selected date:"); ?>";
     var conflictNoShipments = "<?= $this->jsTranslate("No shipments have been added to that PT Survey yet."); ?>";
-    var conflictTitle = "<?= $this->jsTranslate("Date already has a PT Survey"); ?>";
 
     function escapeHtml(str) {
         return $('<div/>').text(str == null ? '' : str).html();
@@ -151,10 +170,8 @@ if (isset($this->autogeneratePtCode) && !empty($this->autogeneratePtCode) && $th
                         html += '<p><em>' + conflictNoShipments + '</em></p>';
                     }
                 });
-                bootbox.alert({
-                    title: conflictTitle,
-                    message: html
-                });
+                $('#dateConflictBody').html(html);
+                showdefModal('dateConflictModal', 640, 470);
             });
     }
 
