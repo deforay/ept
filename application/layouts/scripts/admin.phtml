@@ -381,6 +381,9 @@ $helpPageKey = "$controllerName/$actionName";
 									<li id="NotTestedReasons"><a
 											href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'sample-not-tested-reasons'), 'default', true); ?>"><?= $this->translate->_("Not Tested Reasons"); ?></a>
 									</li>
+									<li id="FilesForParticipants"><a
+											href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'files-for-participants'), 'default', true); ?>"><?= $this->translate->_("Files For Participants"); ?></a>
+									</li>
 								<?php }
 								if (!$pstatus && in_array('config-ept', $privileges)) { ?>
 									<li class="divider"></li>

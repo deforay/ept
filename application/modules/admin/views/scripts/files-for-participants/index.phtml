@@ -1,0 +1,1286 @@
+<style>
+  
+
+    .bi-layout { display: flex; gap: 18px; align-items: flex-start; }
+    .bi-layout .bi-main { flex: 1 1 0; min-width: 0; }
+    .bi-layout .bi-side { flex: 0 0 360px; display: flex; flex-direction: column; gap: 14px; }
+
+    .bi-drop { position: relative; border: 2px dashed #cfd4dc; border-radius: 8px; padding: 32px 20px; text-align: center; background: #fbfcfd; transition: all 0.15s ease; cursor: pointer; }
+    .bi-drop:hover, .bi-drop.dragover { border-color: #66afe9; background: #f4f9ff; }
+    .bi-drop .bi-drop-icon { width: 44px; height: 44px; border-radius: 50%; background: #eef1f5; color: #6b7380; display: inline-flex; align-items: center; justify-content: center; font-size: 18px; margin-bottom: 10px; }
+    .bi-drop .bi-drop-title { font-weight: 600; color: #333; margin: 0 0 4px; }
+    .bi-drop .bi-drop-sub { color: #8a93a0; font-size: 13px; }
+    .bi-drop .bi-drop-sub .bi-browse { color: #337ab7; text-decoration: underline; }
+    .bi-drop .bi-accepts { color: #9aa3ad; font-size: 12px; margin-top: 8px; }
+    .bi-drop .bi-accepts code { background: #f1f3f5; padding: 1px 5px; border-radius: 3px; font-size: 11px; color: #333; }
+    .bi-drop input[type=file] { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+
+    .bi-filecard { display: none; align-items: center; gap: 12px; border: 1px dashed #b6c4e0; background: #f3f7fd; border-radius: 8px; padding: 14px 16px; }
+    .bi-filecard.active { display: flex; }
+    .bi-filecard .bi-file-icon { flex: 0 0 auto; width: 40px; height: 40px; border-radius: 4px; background: #dde6f7; color: #337ab7; display: inline-flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; }
+    .bi-filecard .bi-file-meta { flex: 1 1 auto; min-width: 0; }
+    .bi-filecard .bi-file-name { font-weight: 600; color: #333; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .bi-filecard .bi-file-size { color: #8a93a0; font-size: 12px; }
+    .bi-filecard .bi-file-actions { flex: 0 0 auto; display: flex; align-items: center; gap: 8px; }
+    .bi-filecard .bi-file-actions a { color: #337ab7; font-size: 13px; text-decoration: none; cursor: pointer; }
+    .bi-filecard .bi-file-actions a:hover { text-decoration: underline; }
+    .bi-filecard .bi-file-actions .bi-remove { color: #8a93a0; font-size: 18px; line-height: 1; }
+
+    .bi-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 14px; }
+
+    .bi-validation-error { background: #fdecea; border: 1px solid #f5c2bd; border-left: 4px solid #c0392b; border-radius: 6px; padding: 14px 16px; margin-bottom: 16px; color: #5a1a13; }
+    .bi-validation-error .bi-ve-title { font-weight: 600; font-size: 14px; margin: 0 0 6px; color: #a02b1f; display: flex; align-items: center; gap: 6px; }
+    .bi-validation-error .bi-ve-sub { font-size: 13px; margin: 0 0 10px; color: #6b2a22; }
+    .bi-validation-error table { width: 100%; border-collapse: collapse; background: #fff; border-radius: 4px; overflow: hidden; font-size: 13px; }
+    .bi-validation-error th, .bi-validation-error td { padding: 7px 10px; text-align: left; border-bottom: 1px solid #f1d6d2; }
+    .bi-validation-error th { background: #f9e3e0; color: #6b2a22; font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: 0.04em; }
+    .bi-validation-error tr:last-child td { border-bottom: 0; }
+    .bi-validation-error code { background: #f1f3f5; padding: 1px 6px; border-radius: 3px; font-size: 12px; color: #333; }
+    .bi-validation-error .bi-ve-empty { color: #8a93a0; font-style: italic; }
+
+    .bi-options { display: grid; grid-template-columns: 1fr; gap: 10px; margin-bottom: 16px; }
+    .bi-options label { display: block; font-size: 12px; font-weight: 600; color: #596270; margin: 0 0 4px; }
+    .bi-options select { width: 100%; padding: 7px 10px; border: 1px solid #ccc; border-radius: 4px; background: #fff; font-size: 13px; }
+
+    .bi-side .bi-side-cta { display: block; width: 100%; text-align: center; margin-bottom: 14px; }
+    .bi-side .bi-step-item { display: flex; gap: 10px; margin-bottom: 10px; }
+    .bi-side .bi-step-item .bi-step-num { flex: 0 0 22px; width: 22px; height: 22px; border-radius: 50%; background: #eef1f5; color: #6b7380; font-size: 12px; font-weight: 600; display: inline-flex; align-items: center; justify-content: center; }
+    .bi-side .bi-step-item .bi-step-text { color: #555; font-size: 13px; line-height: 1.45; }
+    .bi-side .bi-side-sub { color: #8a93a0; font-size: 12px; margin: -6px 0 12px; }
+    .bi-side .bi-note code { background: #f1f3f5; padding: 1px 5px; border-radius: 3px; font-size: 11px; color: #333; }
+
+    .shipmentResponseFilters {
+		margin: 20px 0;
+		padding: 12px;
+		border: 1px solid #ddd;
+		border-radius: 4px;
+		background: #fafafa;
+		font-size: 0; /* eat inline-block whitespace */
+	}
+
+	.shipmentResponseFilters .filterCell {
+		display: inline-block;
+		vertical-align: top;
+		width: 25%;
+		padding: 8px 10px;
+		box-sizing: border-box;
+		font-size: 14px;
+	}
+
+	.shipmentResponseFilters .filterCell.cellWide {
+		width: 33%;
+	}
+
+	.shipmentResponseFilters .filterCell.cellNarrow {
+		width: 17%;
+	}
+
+	.shipmentResponseFilters .filterLabel {
+		font-weight: 600;
+		font-size: 13px;
+		margin-bottom: 6px;
+		color: #333;
+	}
+
+	.shipmentResponseFilters .filterActions {
+		text-align: right;
+	}
+
+	.shipmentResponseFilters .filterActions .btn + .btn {
+		margin-left: 6px;
+	}
+
+     .wizard-container {
+            margin: 30px auto;
+        }
+
+        .wizard-steps {
+            display: flex;
+            margin-bottom: 30px;
+            padding: 0;
+            list-style: none;
+        }
+
+        .wizard-step {
+            flex: 1;
+            text-align: center;
+            position: relative;
+        }
+
+        .wizard-step:not(:last-child):after {
+            content: '';
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            width: 100%;
+            height: 2px;
+            background: #ddd;
+            z-index: 1;
+        }
+
+        .wizard-step.active:not(:last-child):after {
+            background: #337ab7;
+        }
+
+        .step-number {
+            position: relative;
+            z-index: 2;
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            line-height: 40px;
+            border-radius: 50%;
+            background: #ddd;
+            color: #555;
+            font-weight: bold;
+        }
+
+        .wizard-step.active .step-number {
+            background: #337ab7;
+            color: #fff;
+        }
+
+        .wizard-step.completed .step-number {
+            background: #5cb85c;
+            color: #fff;
+        }
+
+        .step-title {
+            display: block;
+            margin-top: 8px;
+            font-size: 13px;
+        }
+
+        .wizard-panel {
+            min-height: 350px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background: #fff;
+            padding: 25px;
+        }
+
+        .wizard-content {
+            display: none;
+        }
+
+        .wizard-content.active {
+            display: block;
+        }
+
+        .wizard-footer {
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid #ddd;
+            text-align: right;
+        }
+
+        .uploaded-file {
+            margin-bottom: 8px;
+        }
+
+        .uploaded-file .file-name {
+            margin-left: 8px;
+        }
+
+        .file-list {
+            margin-top: 15px;
+        }
+
+        .file-list .list-group-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .file-name-link {
+            word-break: break-all;
+        }
+
+        .upload-progress {
+            display: none;
+            margin-top: 15px;
+        }
+
+        .review-row {
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .required {
+            color: red;
+        }
+
+	@media (max-width: 992px) {
+		.shipmentResponseFilters .filterCell {
+			width: 50%;
+		}
+	}
+
+	@media (max-width: 600px) {
+		.shipmentResponseFilters .filterCell {
+			width: 100%;
+		}
+	}
+    @media (max-width: 992px) {
+        .bi-layout { flex-direction: column; }
+        .bi-layout .bi-side { flex: 1 1 auto; width: 100%; }
+    }
+
+    @keyframes bi-spin { to { transform: rotate(360deg); } }
+</style>
+<link href="<?php echo $this->baseUrl('css/select2.css'); ?>" rel="stylesheet" />
+
+ 
+
+
+<div class="container wizard-container">
+
+    <div class="panel panel-default">
+
+        <div class="panel-heading">
+            <h3 class="panel-title">
+                Upload Files For Participants
+            </h3>
+        </div>
+
+        <div class="panel-body">
+
+            <!-- ========================================= -->
+            <!-- WIZARD STEPS -->
+            <!-- ========================================= -->
+
+            <ul class="wizard-steps">
+
+                <li class="wizard-step active"
+                    data-step="1">
+
+                    <span class="step-number">
+                        1
+                    </span>
+
+                    <span class="step-title">
+                        Upload Files
+                    </span>
+
+                </li>
+
+                <li class="wizard-step"
+                    data-step="2">
+
+                    <span class="step-number">
+                        2
+                    </span>
+
+                    <span class="step-title">
+                        Review Files
+                    </span>
+
+                </li>
+
+                <li class="wizard-step"
+                    data-step="3">
+
+                    <span class="step-number">
+                        3
+                    </span>
+
+                    <span class="step-title">
+                        Confirm Files For Participants
+                    </span>
+
+                </li>
+
+              
+
+            </ul>
+
+
+            <!-- ========================================= -->
+            <!-- FORM -->
+            <!-- ========================================= -->
+
+            <form id="participantWizardForm" method="post" enctype="multipart/form-data" action="<?php echo $this->url(array("module" => "admin","controller" => "files-for-participants", "action" => "index"), 'default', true) ?>">
+
+                <input type="hidden"
+                       id="temp_id"
+                       name="temp_id"
+                       value="<?php echo isset($this->tempId)
+                           ? $this->escape($this->tempId)
+                           : ''; ?>">
+
+
+                <!-- ===================================== -->
+                <!-- STEP 1 -->
+                <!-- ===================================== -->
+
+                <div class="wizard-content active"
+                     data-step="1">
+
+                    <h4>
+                        Upload Files
+                    </h4>
+
+                    <hr>
+
+                    <div class="row">
+                          <div class="shipmentResponseFilters">
+           
+                <div class="filterCell cellWide">
+                    <div class="filterLabel">Scheme Type</div>
+                        <select id="scheme" name="scheme" class="input-sm" multiple="multiple" onchange="getShipmentCodes()"
+                            style="width:100%;">
+                            <option></option>
+                            <?php foreach ($this->schemes as $scheme) { ?>
+                                <option value="<?php echo $scheme['scheme_id']; ?>"><?php echo $scheme['scheme_name']; ?></option>
+                            <?php } ?>
+                        </select>
+                </div>
+            <div class="filterCell cellWide">
+                <div class="filterLabel">Shipment</div>
+               <select id="shipmentId" name="shipmentId" multiple="multiple" style="width:100%;">
+			<option></option>
+		</select>
+            </div>
+			<?php if (isset($this->countries) && !empty($this->countries)) { ?>
+		<div class="filterCell cellNarrow">
+			<div class="filterLabel"><?= $this->translate->_("Country"); ?></div>
+			<select class="form-control select2" id="country" name="country" title="Please select the country to filter"
+				onchange="getOptions('participant', 'country', 'region', this.value, 'region');">
+				<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
+				<?php foreach ($this->countries as $country) { ?>
+					<option value="<?php echo $country['id']; ?>"><?php echo ucwords($country['iso_name']); ?></option>
+				<?php } ?>
+			</select>
+		</div>
+        	<?php } ?>
+<?php if (isset($this->regions) && !empty($this->regions)) { ?>
+		<div class="filterCell">
+			<div class="filterLabel"><?= $this->translate->_("Region"); ?></div>
+			<select class="form-control select2" id="region" name="region" title="Please select the region to filter"
+				onchange="getOptions('participant', 'region', 'state', this.value, 'state');">
+				<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
+			</select>
+		</div>
+	<?php } ?>
+	<?php if (isset($this->states) && !empty($this->states)) { ?>
+		<div class="filterCell">
+			<div class="filterLabel"><?= $this->translate->_("Province"); ?></div>
+			<select class="form-control select2" id="state" name="state" title="Please select the province to filter"
+				onchange="getOptions('participant', 'state', 'district', this.value, 'district');">
+				<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
+			</select>
+		</div>
+	<?php } ?>
+	<?php if (isset($this->districts) && !empty($this->districts)) { ?>
+		<div class="filterCell">
+			<div class="filterLabel"><?= $this->translate->_("District"); ?></div>
+			<select class="form-control select2" id="district" name="district"
+				title="Please select the district to filter">
+				<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
+			</select>
+		</div>
+	<?php } ?>
+
+    <div class="filterCell">
+			<div class="filterLabel"><?= $this->translate->_("Result"); ?></div>
+			  <select id="filterResult" class="form-control">
+                    <option value=""><?= $this->htmlTranslate("All"); ?></option>
+                    <?php if (isset($this->results) && !empty($this->results)) {
+                        foreach ($this->results as $res) { ?>
+                            <option value="<?php echo $res['result_id'] ?>"><?php echo $res['result_name']; ?></option>
+                        <?php }
+                    } ?>
+                </select>
+		</div>
+
+
+		<div class="filterCell filterActions dontPrint">
+	</div>
+</div>
+                    </div>
+
+                  
+
+                    <div class="row">
+
+                       <div class="bi-drop" id="biDrop">
+                        <div class="bi-drop-icon"><i class="icon-upload"></i></div>
+                        <div class="bi-drop-title"><?= $this->translate->_("Drop your file here"); ?></div>
+                        <div class="bi-drop-sub"><?= $this->translate->_("or"); ?> <span class="bi-browse"><?= $this->translate->_("click to browse"); ?></span></div>
+                        <div class="bi-accepts"><?= $this->translate->_("Accepts"); ?> <code>.xls</code> <code>.xlsx</code></div>
+                        <input type="file" id="fileName" name="fileName[]" multiple class="isRequired" accept=".xls,.xlsx" title="Please select participants import data file">
+                    </div>
+                    </div>
+ <div class="cardDiv">
+    
+</div>
+                </div>
+
+
+                <!-- ===================================== -->
+                <!-- STEP 2 -->
+                <!-- ===================================== -->
+
+                <div class="wizard-content"
+                     data-step="2">
+
+                    <h4>
+                        Review Uploaded Files
+                    </h4>
+
+                    <hr>
+
+
+                    <!-- Upload progress -->
+
+                    <div id="uploadProgress"
+                         class="upload-progress">
+
+                        <div class="progress">
+
+                            <div id="uploadProgressBar"
+                                 class="progress-bar progress-bar-info"
+                                 role="progressbar"
+                                 style="width:0%;">
+
+                                0%
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- Uploaded files -->
+
+                    <div id="uploadedFilesContainer">
+
+                        <h4>
+                            
+                        </h4>
+
+                        <div id="uploadedFiles">
+
+                            <div class="alert alert-info">
+
+                                No files uploaded yet.
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- ===================================== -->
+                <!-- STEP 3 -->
+                <!-- ===================================== -->
+
+                <div class="wizard-content"
+                     data-step="3">
+
+                    <h4>
+                        Confirm Files For Below Participants
+                    </h4>
+
+                    <hr>
+
+                     <h4>Selected Participants</h4>
+
+                        <div id="reviewParticipants">
+                            
+                        </div>
+                        <input type="hidden" name="participantId" id="participantId" />
+                    <div class="review-row">
+
+                </div>
+
+</div>
+              
+   <!-- ===================================== -->
+                <!-- WIZARD FOOTER -->
+                <!-- ===================================== -->
+
+                <div class="wizard-footer">
+
+                       <button type="button"
+                            id="previousButton"
+                            class="btn btn-default"
+                            style="display:none;">
+
+                        <span class="glyphicon glyphicon-chevron-left"></span>
+                        Previous
+
+                    </button>
+
+
+                    <button type="button"
+                            id="nextButton"
+                            class="btn btn-primary">
+
+                        Next
+                        <span class="glyphicon glyphicon-chevron-right"></span>
+
+                    </button>
+
+                    <button type="submit"
+                            id="submitButton"
+                            class="btn btn-success"
+                            style="display:none;">
+
+                        <span class="glyphicon glyphicon-ok"></span>
+
+                        Submit
+
+                    </button>
+
+                </div>
+             
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+
+<script type="text/javascript" src="<?php echo $this->baseUrl('js/select2.min.js'); ?>"></script>
+
+<script type="text/javascript">
+
+
+var currentStep = 1;
+var totalSteps = 3;
+
+        var $input = $('#fileName');
+        var $card = $('#biFileCard');
+        var $name = $('#biFileName');
+        var $size = $('#biFileSize');
+         $input.on('change', function() {
+            showFile(this.files);
+        });
+
+        
+
+    function showFile(files) {
+
+        for (var i = 0; i < files.length; i++) {
+
+                var file = files[i];
+
+                if (!file) {
+                        $card.removeClass('active');
+                        $drop.show();
+                        return;
+                    }
+                    $name.text(file.name);
+                    $size.text(formatBytes(file.size));
+                    $card.addClass('active');
+
+            $(".cardDiv").append(
+                    '<div class="bi-filecard active" id="biFileCard"><div class="bi-file-icon">XLS</div><div class="bi-file-meta"><div class="bi-file-name" id="biFileName">'+file.name+'</div><div class="bi-file-size" id="biFileSize">'+file.size+'</div></div></div>');
+
+            }
+
+    }
+
+    function formatBytes(bytes) {
+        if (bytes < 1024) return bytes + ' B';
+        if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+        return (bytes / 1024 / 1024).toFixed(2) + ' MB';
+    }
+
+        function getShipmentCodes() {
+		schemeType = $("#scheme").select2("val");
+		$('#shipmentId').select2('data', null);
+
+		$.blockUI();
+		$.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'common', 'action' => 'get-shipments-by-scheme')); ?>", {
+			schemeType: schemeType,
+			format: "html"
+		},
+			function (data) {
+				if (data == 0) {
+					shipmentCode = false;
+				} else {
+					$("#shipmentId").html(data);
+					shipmentCode = true;
+				}
+
+				$.unblockUI();
+			});
+	}
+
+
+
+
+/*
+|--------------------------------------------------------------------------
+| SHOW STEP
+|--------------------------------------------------------------------------
+*/
+function showStep(step)
+{
+    /*
+     * Hide all contents
+     */
+    $('.wizard-content').removeClass('active');
+
+
+    /*
+     * Show current step
+     */
+    $('.wizard-content[data-step="' + step + '"]')
+        .addClass('active');
+
+
+    /*
+     * Update step indicators
+     */
+    $('.wizard-step').each(function () {
+
+        var stepNumber =
+            parseInt($(this).data('step'));
+
+        $(this).removeClass(
+            'active completed'
+        );
+
+        if (stepNumber < step) {
+
+            $(this).addClass('completed');
+
+        } else if (stepNumber === step) {
+
+            $(this).addClass('active');
+
+        }
+
+    });
+
+
+    /*
+     * Previous button
+     */
+    if (step === 1) {
+
+        $('#previousButton').hide();
+
+    } else {
+
+        $('#previousButton').show();
+
+    }
+
+
+    /*
+     * Next / Submit
+     */
+    if (step === 1) {
+
+        // Step 1
+        $('#nextButton').show();
+        $('#submitButton').hide();
+
+    } else if (step === 2) {
+
+        // Step 2
+        $('#nextButton').show();
+        $('#submitButton').hide();
+
+    } else if (step === 3) {
+
+        // Step 3 - Review
+        $('#nextButton').hide();
+        $('#submitButton').show();
+
+    }
+}
+
+/*
+|--------------------------------------------------------------------------
+| VALIDATE CURRENT STEP
+|--------------------------------------------------------------------------
+*/
+
+function validateStep(step)
+{
+    var valid = true;
+
+    if (step === 1) {
+
+        var fileName =
+            $.trim($('#fileName').val());
+
+        if (fileName === '') {
+
+            alert('Please upload file.');
+
+            $('#fileName').focus();
+
+            return false;
+        }
+
+    }
+
+    return valid;
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| NEXT
+|--------------------------------------------------------------------------
+*/
+
+ 
+$('#nextButton').on('click', function (e) {
+    e.preventDefault();
+    if (currentStep === 1) {
+
+        uploadFilesToTemporaryFolder();
+
+        currentStep = 2;
+        showStep(currentStep);
+
+        return;
+    }
+
+    if (currentStep === 2) {
+        getParticipants();
+
+        currentStep = 3;
+
+        showStep(currentStep);
+
+        return;
+    }
+});
+
+/*
+|--------------------------------------------------------------------------
+| PREVIOUS
+|--------------------------------------------------------------------------
+*/
+
+$('#previousButton').on('click', function () {
+
+    if (currentStep > 1) {
+
+        currentStep--;
+
+    }
+    showStep(currentStep);
+
+
+});
+
+
+/*
+|--------------------------------------------------------------------------
+| FILE UPLOAD
+|--------------------------------------------------------------------------
+*/
+
+function getParticipants()
+{
+    shipmentId = $("#shipmentId").val();
+    country = $("#country").val();
+    region = $("#region").val();
+    state = $("#state").val();
+    district = $("#district").val();
+    result = $("#filterResult").val();
+    html = '';
+  //  $.blockUI();
+		$.post("<?php echo $this->url(array('controller' => 'files-for-participants', 'action' => 'get-participants-for-files')); ?>", {
+			shipmentId: shipmentId,
+            country:country,
+            region: region,
+            state: state,
+            district: district,
+            result: result,
+			format: "html"
+		},
+			function (response) {
+                participants = JSON.parse(response);
+                result = (participants.data);
+         if (result.length === 0) {
+
+            $('#reviewParticipants').html(
+                '<div class="alert alert-warning">' +
+                'No participants selected.' +
+                '</div>'
+            );
+
+            return;
+        }
+        else{
+
+
+            html += '<ul class="list-group">';
+
+             participantIds = [];            
+            $.each(participants, function(index, row) {
+
+                var participantName = row[0];
+                var participantId = row[2];
+                /*
+                * If row[0] is empty, use row[1]
+                */
+                if (!participantName) {
+                    participantName = row[1];
+                }
+
+
+                html +=
+                    '<li class="list-group-item">' +
+
+                        '<span class="glyphicon ' +
+                        'glyphicon-user"></span> ' +
+
+                        $('<div>')
+                            .text(participantName)
+                            .html() +
+
+                    '</li>';
+                participantIds.push(participantId);
+                
+            });
+
+            html += '</ul>';
+                
+                $('#reviewParticipants').html(html);
+                  $('#participantId').val(participantIds.join(','));
+
+        }
+			});
+
+
+}
+ 
+function uploadFilesToTemporaryFolder() {
+
+    var formData = new FormData();
+
+    var files = $('#fileName')[0].files;
+
+    for (var i = 0; i < files.length; i++) {
+        formData.append('fileName[]', files[i]);
+    }
+ 
+    $.ajax({
+        url: '<?php echo $this->url(array("controller" => "files-for-participants","action" => "upload-temp")); ?>',
+        type: 'POST',
+        data: formData,
+        processData: false,
+        contentType: false,
+        dataType: 'json',
+
+        success: function (response) {
+            if (!response.status) {
+
+                alert(response.message);
+
+                return;
+            }
+
+            loadTemporaryFiles(response.temp_id);
+
+        },
+
+        error: function (xhr) {
+            console.log(xhr.responseText);
+        }
+    });
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| LOAD TEMPORARY FILES
+|--------------------------------------------------------------------------
+*/
+
+function loadTemporaryFiles(tempId)
+{
+    $('#uploadedFiles').html(
+        '<div class="alert alert-info">' +
+        'Loading files...' +
+        '</div>'
+    );
+
+    $("#temp_id").val(tempId);
+
+    $.ajax({
+
+        url: '<?php echo $this->url(array("controller" => "files-for-participants","action" => "get-temporary-files")); ?>',
+        type: 'GET',
+        dataType: 'json',
+        data: {
+            temp_id: tempId
+        },
+        success: function(response) {
+
+            if (!response.status) {
+
+                $('#uploadedFiles').html(
+                    '<div class="alert alert-danger">' +
+                    response.message +
+                    '</div>'
+                );
+
+                return;
+            }
+
+
+            displayTemporaryFiles(
+                response.files
+            );
+            showStep(2);
+
+        },
+
+        error: function(xhr) {
+
+            console.log(xhr.responseText);
+
+            $('#uploadedFiles').html(
+                '<div class="alert alert-danger">' +
+                'Unable to load uploaded files.' +
+                '</div>'
+            );
+        }
+
+    });
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| DISPLAY FILES
+|--------------------------------------------------------------------------
+*/
+
+function displayTemporaryFiles(files)
+{
+    var html = '';
+
+
+    if (!files || files.length === 0) {
+
+        $('#uploadedFiles').html(
+
+            '<div class="alert alert-info">' +
+            'No files uploaded yet.' +
+            '</div>'
+
+        );
+
+        return;
+    }
+
+
+    html +=
+        '<ul class="list-group file-list">';
+
+
+    $.each(files, function (index, file) {
+
+
+        var fileUrl =
+            '<?php echo $this->baseUrl(); ?>' +
+            'files-for-participants/view-temp-file' +
+            '?temp_id=' +
+            encodeURIComponent(
+                file.temp_id
+            ) +
+            '&file=' +
+            encodeURIComponent(
+                file.file_name
+            );
+
+
+        html +=
+            '<li class="list-group-item uploaded-file">';
+
+
+        html += '<span>';
+
+
+        /*
+         * File icon
+         */
+
+        var extension =
+            file.file_name
+                .split('.')
+                .pop()
+                .toLowerCase();
+
+
+        var icon =
+            'glyphicon-file';
+
+
+        if (
+            extension === 'pdf'
+        ) {
+
+            icon = 'glyphicon-file';
+
+        } else if (
+            extension === 'xls' ||
+            extension === 'xlsx' ||
+            extension === 'csv'
+        ) {
+
+            icon = 'glyphicon-list-alt';
+
+        } else if (
+            extension === 'jpg' ||
+            extension === 'jpeg' ||
+            extension === 'png' ||
+            extension === 'gif'
+        ) {
+
+            icon = 'glyphicon-picture';
+
+        }
+
+
+        html +=
+            '<span class="glyphicon ' +
+            icon +
+            '"></span>';
+
+
+        /*
+         * Filename
+         */
+
+        html +=
+            '<a href="' +
+            fileUrl +
+            '" ' +
+            'target="_blank" ' +
+            'rel="noopener noreferrer" ' +
+            'class="file-name file-name-link">' +
+
+            $('<div>')
+                .text(
+                    file.original_name ||
+                    file.file_name
+                )
+                .html() +
+
+            '</a>';
+
+
+        html += '</span>';
+
+
+        /*
+         * Remove button
+         */
+
+        html +=
+            '<button type="button" ' +
+            'class="btn btn-danger btn-xs remove-temp-file" ' +
+            'data-temp-id="' +
+            $('<div>')
+                .text(file.temp_id)
+                .html() +
+            '" ' +
+            'data-file-name="' +
+            $('<div>')
+                .text(file.file_name)
+                .html() +
+            '"' +
+
+             'data-row="temp-file-' +
+                    index +
+                    '">' +
+
+            '<span class="glyphicon ' +
+            'glyphicon-trash"></span> ' +
+            'Remove' +
+
+            '</button>';
+
+
+        html += '</li>';
+
+    });
+
+
+    html += '</ul>';
+
+
+    $('#uploadedFiles')
+        .html(html);
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| REMOVE TEMP FILE
+|--------------------------------------------------------------------------
+*/
+
+$(document).on(
+    'click',
+    '.remove-temp-file',
+    function () {
+
+        if (!confirm('Are you sure you want to remove this file?')) {
+            return;
+        }
+
+        var tempId = $(this).data('temp-id');
+        var fileName =  $(this).data('file-name');
+        var rowId = $(this).attr('data-row');
+        $.ajax({
+
+            url: '<?php echo $this->url(array('controller' => 'files-for-participants', 'action' => 'remove-temp-file' )); ?>',
+            type: 'POST',
+            dataType: 'json',
+            data: {
+                temp_id: tempId,
+                file: fileName
+            },
+
+            success: function (response) {
+
+                 if (response.status) {
+
+                    /*
+                     * Remove only this row
+                     */
+                    $('#' + rowId).remove();
+
+                } else {
+
+                    alert(response.message);
+                }
+
+                loadTemporaryFiles(
+                    tempId
+                );
+
+            }
+
+        });
+
+    }
+);
+
+
+/*
+|--------------------------------------------------------------------------
+| REVIEW DATA
+|--------------------------------------------------------------------------
+*/
+
+function loadReviewData()
+{
+    $('#review_first_name')
+        .text(
+            $('#first_name').val()
+        );
+
+    $('#review_last_name')
+        .text(
+            $('#last_name').val()
+        );
+
+    $('#review_email')
+        .text(
+            $('#email').val()
+        );
+
+    $('#review_phone')
+        .text(
+            $('#phone').val()
+        );
+
+
+    $('#reviewFiles')
+        .html(
+            $('#uploadedFiles')
+                .html()
+        );
+}
+
+ function getOptions(table, searchfield, returnfield, searchvalue, returnid) {
+            $.blockUI();
+            if(searchvalue == null || searchvalue == undefined || searchvalue == '') {
+                $("#" + returnid).html('<option value="">-- <?= $this->translate->_("Select"); ?> --</option>');
+                $.unblockUI();
+                return false;
+            }
+            $.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'common', 'action' => 'get-options-by-value')); ?>", {
+                    table: table,
+                    searchfield: searchfield,
+                    returnfield: returnfield,
+                    searchvalue: searchvalue,
+                    format: "html"
+                },
+                function (data) {
+                    if (data != 0 && data != '' && data != undefined) {
+                        $("#" + returnid).html(data);
+                    }
+                    $.unblockUI();
+                });
+        }
+
+
+/*
+|--------------------------------------------------------------------------
+| INITIALIZE
+|--------------------------------------------------------------------------
+*/
+
+
+    $(document).ready(function() {
+        $("#scheme").select2({
+			placeholder: "<?= $this->translate->_("Select one or more schemes"); ?>",
+			allowClear: true
+		});
+		$("#shipmentId").select2({
+			placeholder: "<?= $this->translate->_("Select one or more shipments"); ?>",
+			allowClear: true
+		});
+		$("#country").select2({
+			placeholder: "<?= $this->translate->_("Select Country"); ?>",
+			allowClear: true
+		});
+		$("#region").select2({
+			placeholder: "<?= $this->translate->_("Select Region"); ?>",
+			allowClear: true
+		});
+		$("#state").select2({
+			placeholder: "<?= $this->translate->_("Select Province"); ?>",
+			allowClear: true
+		});
+		$("#district").select2({
+			placeholder: "<?= $this->translate->_("Select District"); ?>",
+			allowClear: true
+		});
+        $("#filterResult").select2({
+			placeholder: "<?= $this->translate->_("Select Result"); ?>",
+			allowClear: true
+		});
+        
+      showStep(1);
+
+    });
+
+</script>
+
+

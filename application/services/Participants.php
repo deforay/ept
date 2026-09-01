@@ -1377,4 +1377,217 @@ class Application_Service_Participants
         $enrollments = new Application_Model_DbTable_Enrollments();
         return $enrollments->uploadBulkEnrollmentDetails($params);
     }
+
+     public function uploadFilesForParticipants(array $files, $tempId)
+    {
+        $tempDir = realpath(UPLOAD_PATH) . DIRECTORY_SEPARATOR . $tempId;
+
+        if (!is_dir($tempDir)) {
+            if (!mkdir($tempDir, 0755, true)) {
+                throw new Exception(
+                    'Unable to create temporary upload directory.'
+                );
+            }
+        }
+
+        $uploadedFiles = array();
+
+        foreach ($files['name'] as $index => $fileName) {
+
+            if ($files['error'][$index] !== UPLOAD_ERR_OK) {
+                continue;
+            }
+
+            $tmpName = $files['tmp_name'][$index];
+
+            $extension = strtolower(
+                pathinfo($fileName, PATHINFO_EXTENSION)
+            );
+
+            $newFileName = uniqid('participant_', true);
+
+            if ($extension !== '') {
+                $newFileName .= '.' . $extension;
+            }
+
+            $destination = $tempDir .
+                DIRECTORY_SEPARATOR .
+                $newFileName;
+
+            if (!move_uploaded_file($tmpName, $destination)) {
+                throw new Exception(
+                    'Unable to move uploaded file: ' . $fileName
+                );
+            }
+
+            $uploadedFiles[] = array(
+                'original_name' => $fileName,
+                'file_name'     => $newFileName,
+                'file_path'     => 'uploads/' .$tempId . '/' . $newFileName,
+                'temp_id'       => $tempId,
+                'extension'     => $extension,
+                'size'          => $files['size'][$index]
+            );
+        }
+
+        return $uploadedFiles; 
+    }
+
+    public function confirmTemporaryFiles($tempId, $participantId)
+    {
+
+            $uploadPath = rtrim(UPLOAD_PATH, DIRECTORY_SEPARATOR);
+
+            $tempDir = $uploadPath . DIRECTORY_SEPARATOR . $tempId;
+            $participantDir = $uploadPath
+                . DIRECTORY_SEPARATOR . 'participants'
+                . DIRECTORY_SEPARATOR . $participantId;
+
+            // Check temp directory
+            if (!is_dir($tempDir)) {
+                error_log('Temp directory does not exist: ' . $tempDir);
+                return false;
+            }
+
+            // Create participant directory
+            if (!is_dir($participantDir)) {
+                if (!mkdir($participantDir, 0775, true)) {
+                    error_log('Unable to create participant directory: ' . $participantDir);
+                    return false;
+                }
+            }
+
+            $iterator = new RecursiveIteratorIterator(
+                new RecursiveDirectoryIterator(
+                    $tempDir,
+                    RecursiveDirectoryIterator::SKIP_DOTS
+                ),
+                RecursiveIteratorIterator::LEAVES_ONLY
+            );
+
+            foreach ($iterator as $file) {
+
+                if (!$file->isFile()) {
+                    continue;
+                }
+
+                $source = $file->getPathname();
+                $filename = $file->getFilename();
+
+                $destination = $participantDir
+                    . DIRECTORY_SEPARATOR
+                    . $filename;
+
+                error_log('SOURCE: ' . $source);
+                error_log('DESTINATION: ' . $destination);
+
+                if (!is_readable($source)) {
+                    error_log('Source file is not readable: ' . $source);
+                    continue;
+                }
+
+                if (copy($source, $destination)) {
+                    error_log('Copied successfully: ' . $filename);
+                } else {
+                    error_log('FAILED TO COPY: ' . $source);
+                    error_log('PHP ERROR: ' . print_r(error_get_last(), true));
+                }
+        }
+
+        return true;
+
+    }
+
+    public function getTemporaryFiles($tempId)
+{
+    $tempId = basename($tempId);
+
+    $tempDir = APPLICATION_PATH .
+        '/../public/uploads/' .
+        $tempId;
+
+
+    if (!is_dir($tempDir)) {
+
+        return array();
+    }
+
+
+    $files = array();
+
+
+    foreach (scandir($tempDir) as $fileName) {
+
+        if ($fileName === '.' ||
+            $fileName === '..') {
+
+            continue;
+        }
+
+
+        $filePath =
+            $tempDir .
+            DIRECTORY_SEPARATOR .
+            $fileName;
+
+
+        if (!is_file($filePath)) {
+
+            continue;
+        }
+
+
+        $files[] = array(
+
+            'temp_id' =>
+                $tempId,
+
+            'file_name' =>
+                $fileName,
+
+            'original_name' =>
+                $fileName
+
+        );
+    }
+
+
+    return $files;
+}
+
+public function getParticipantsForFiles($parameters)
+{
+    $participantDb = new Application_Model_DbTable_Participants();
+    return $participantDb->fetchParticipantsForFiles($parameters);
+}
+
+public function removeTemporaryFiles($tempId, $fileName)
+{
+    if (empty($tempId)) {
+        return false;
+    }
+
+    // Prevent directory traversal
+    $tempId = basename($tempId);
+
+    $tempDir = APPLICATION_PATH .
+        '/../public/uploads/' .
+        $tempId;
+
+    if (!is_dir($tempDir)) {
+        return true;
+    }
+
+        $filePath = $tempDir .
+            DIRECTORY_SEPARATOR .
+            $fileName;
+
+        if (is_file($filePath)) {
+            unlink($filePath);
+        }
+
+
+    return true;
+}
+   
 }
