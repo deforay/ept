@@ -21,8 +21,6 @@ class Admin_FilesForParticipantsController extends Zend_Controller_Action
         /** @var Zend_Controller_Action_Helper_AjaxContext $ajaxContext */
         $ajaxContext = $this->_helper->getHelper('AjaxContext');
         $ajaxContext->addActionContext('index', 'html')
-            ->addActionContext('get-testkit', 'html')
-            ->addActionContext('update-status', 'html')
             ->initContext();
         $this->_helper->layout()->pageName = 'configMenu';
     }
@@ -32,20 +30,19 @@ class Admin_FilesForParticipantsController extends Zend_Controller_Action
         $participants = new Application_Service_Participants();
         $scheme = new Application_Service_Schemes();
         $shipmentParticipantMap = new Application_Model_DbTable_ShipmentParticipantMap();
-   /** @var Zend_Controller_Request_Http $request */
+        /** @var Zend_Controller_Request_Http $request */
         $request = $this->getRequest();
-        
 
-        if ($request->isPost()) { 
-            $params = $this->getAllParams();
-            $response = $participants->confirmTemporaryFiles($params['temp_id'], $params['participantId']);
+        if ($request->isPost()) {
+            $result = $participants->confirmTemporaryFiles(
+                $request->getPost('temp_id'),
+                $request->getPost('participantId')
+            );
             $alertMsg = new Zend_Session_Namespace('alertSpace');
-            if ($response === false) {
-                $alertMsg->message = 'Files are not uploaded to this participants';
-            } else {
-                $alertMsg->message = 'Files are uploaded to participants successfully';
-            }
-
+            $alertMsg->message = $result['message'];
+            // Redirect-after-post so a refresh cannot re-run the distribution.
+            $this->redirect('/admin/files-for-participants');
+            return;
         }
 
         $this->view->schemes = $scheme->getAllSchemes();
@@ -54,22 +51,17 @@ class Admin_FilesForParticipantsController extends Zend_Controller_Action
         $this->view->states = $participants->getAllParticipantStates();
         $this->view->districts = $participants->getAllParticipantDistricts();
         $this->view->results = $shipmentParticipantMap->fetchAllFinalResults();
-
     }
 
     public function getParticipantsForFilesAction()
     {
         $this->_helper->layout()->disableLayout();
-       // $this->_helper->viewRenderer->setNoRender(true);
-         /** @var Zend_Controller_Request_Http $request */
+        /** @var Zend_Controller_Request_Http $request */
         $request = $this->getRequest();
         if ($request->isPost()) {
-            $params = $this->getAllParams();
             $participants = new Application_Service_Participants();
-            
-            $this->view->results = $participants->getParticipantsForFiles($params);
+            $this->view->results = $participants->getParticipantsForFiles($request->getPost());
         }
-
     }
 
     public function uploadTempAction()
@@ -77,226 +69,131 @@ class Admin_FilesForParticipantsController extends Zend_Controller_Action
         $this->_helper->layout()->disableLayout();
         $this->_helper->viewRenderer->setNoRender(true);
 
-    try {
+        try {
+            if (empty($_FILES['fileName'])) {
+                throw new Exception('No files were uploaded.');
+            }
 
-        if (empty($_FILES['fileName'])) {
+            // Reuse the batch id when the wizard already has one, so going
+            // back to step 1 adds to the same batch instead of orphaning it.
+            $tempId = $this->getRequest()->getParam('temp_id');
+            if (Application_Service_Participants::filesForParticipantsTempPath($tempId) === null) {
+                $tempId = uniqid('participant_', true);
+            }
 
-            throw new Exception(
-                'No files were uploaded.'
-            );
+            $participantService = new Application_Service_Participants();
+            $result = $participantService->uploadFilesForParticipants($_FILES['fileName'], $tempId);
+
+            echo Zend_Json::encode([
+                'status'   => true,
+                'temp_id'  => $tempId,
+                'files'    => $result['files'],
+                'rejected' => $result['rejected'],
+            ]);
+        } catch (Exception $e) {
+            echo Zend_Json::encode([
+                'status'  => false,
+                'message' => $e->getMessage(),
+            ]);
         }
-
-
-        if (empty($tempId)) {
-            $tempId = uniqid('participant_', true);
-        }
-
-        $participantService = new Application_Service_Participants();
-
-        $files = $participantService->uploadFilesForParticipants(
-            $_FILES['fileName'],
-            $tempId
-        );
-
-        echo Zend_Json::encode(array(
-            'status'  => true,
-            'temp_id' => $tempId,
-            'files'   => $files
-        ));
-
-    } catch (Exception $e) {
-
-        echo Zend_Json::encode(array(
-            'status'  => false,
-            'message' => $e->getMessage()
-        ));
-    }
     }
 
     public function getTemporaryFilesAction()
-{
-    $this->_helper->layout()->disableLayout();
-    $this->_helper->viewRenderer->setNoRender(true);
+    {
+        $this->_helper->layout()->disableLayout();
+        $this->_helper->viewRenderer->setNoRender(true);
 
-    $tempId = $this->getRequest()
-                   ->getParam('temp_id');
+        $tempId = $this->getRequest()->getParam('temp_id');
+        if (empty($tempId)) {
+            echo Zend_Json::encode([
+                'status'  => false,
+                'message' => 'Temporary ID is required.',
+            ]);
+            return;
+        }
 
-    if (empty($tempId)) {
-
-        echo Zend_Json::encode(array(
-            'status'  => false,
-            'message' => 'Temporary ID is required.'
-        ));
-
-        return;
-    }
-
-
-    try {
-
-        $participantService = new Application_Service_Participants();
-
-
-        $files = $participantService->getTemporaryFiles($tempId);
-
-
-        echo Zend_Json::encode(array(
-            'status' => true,
-            'files'  => $files
-        ));
-
-    } catch (Exception $e) {
-
-        echo Zend_Json::encode(array(
-            'status'  => false,
-            'message' => $e->getMessage()
-        ));
-    }
-}
-
-public function viewTempFileAction()
-{
-    $this->_helper->layout()->disableLayout();
-    $this->_helper->viewRenderer->setNoRender(true);
-
-    $tempId = basename(
-        $this->getRequest()->getParam('temp_id')
-    );
-
-    $fileName = basename(
-        $this->getRequest()->getParam('file')
-    );
-
-    if (empty($tempId) || empty($fileName)) {
-
-        $this->getResponse()
-            ->setHttpResponseCode(400);
-
-        echo 'Invalid file request';
-
-        return;
-    }
-
-    /*
-     * Temporary folder
-     */
-    $tempDir = APPLICATION_PATH .
-        '/../public/uploads/temp/' .
-        $tempId;
-
-    $filePath =
-        $tempDir .
-        DIRECTORY_SEPARATOR .
-        $fileName;
-
-
-    /*
-     * Check file exists
-     */
-    if (!is_file($filePath)) {
-
-        $this->getResponse()
-            ->setHttpResponseCode(404);
-
-        echo 'Temporary file not found';
-
-        return;
-    }
-
-
-    /*
-     * Detect MIME type
-     */
-    $mimeType = 'application/octet-stream';
-
-    if (function_exists('mime_content_type')) {
-
-        $detectedMime =
-            mime_content_type($filePath);
-
-        if ($detectedMime) {
-            $mimeType = $detectedMime;
+        try {
+            $participantService = new Application_Service_Participants();
+            echo Zend_Json::encode([
+                'status' => true,
+                'files'  => $participantService->getTemporaryFiles($tempId),
+            ]);
+        } catch (Exception $e) {
+            echo Zend_Json::encode([
+                'status'  => false,
+                'message' => $e->getMessage(),
+            ]);
         }
     }
 
+    public function viewTempFileAction()
+    {
+        $this->_helper->layout()->disableLayout();
+        $this->_helper->viewRenderer->setNoRender(true);
 
-    /*
-     * Download headers
-     */
-    $response = $this->getResponse();
+        $tempDir = Application_Service_Participants::filesForParticipantsTempPath(
+            $this->getRequest()->getParam('temp_id')
+        );
+        $fileName = basename((string) $this->getRequest()->getParam('file'));
 
-    $response->setHeader(
-        'Content-Type',
-        $mimeType
-    );
+        if ($tempDir === null || $fileName === '' || $fileName === '.' || $fileName === '..') {
+            $this->getResponse()->setHttpResponseCode(400);
+            echo 'Invalid file request';
+            return;
+        }
 
-    $response->setHeader(
-        'Content-Disposition',
-        'attachment; filename="' .
-        addslashes($fileName) .
-        '"'
-    );
+        $filePath = $tempDir . DIRECTORY_SEPARATOR . $fileName;
+        if (!is_file($filePath)) {
+            $this->getResponse()->setHttpResponseCode(404);
+            echo 'Temporary file not found';
+            return;
+        }
 
-    $response->setHeader(
-        'Content-Length',
-        filesize($filePath)
-    );
+        $mimeType = 'application/octet-stream';
+        if (function_exists('mime_content_type')) {
+            $detectedMime = mime_content_type($filePath);
+            if ($detectedMime) {
+                $mimeType = $detectedMime;
+            }
+        }
 
-    $response->setHeader(
-        'Cache-Control',
-        'private'
-    );
+        $response = $this->getResponse();
+        $response->setHeader('Content-Type', $mimeType);
+        $response->setHeader('Content-Disposition', 'attachment; filename="' . addslashes($fileName) . '"');
+        $response->setHeader('Content-Length', filesize($filePath));
+        $response->setHeader('Cache-Control', 'private');
+        $response->sendHeaders();
 
-    $response->setHeader(
-        'Pragma',
-        'public'
-    );
-
-
-    /*
-     * Send file
-     */
-    readfile($filePath);
-
-    exit;
-}
-
-public function removeTempFileAction()
-{
-    $this->_helper->layout()->disableLayout();
-    $this->_helper->viewRenderer->setNoRender(true);
-
-    $tempId = $this->getRequest()
-        ->getParam('temp_id');
-    $fileName = $this->getRequest()
-        ->getParam('file');
-
-    if (empty($tempId)) {
-
-        echo Zend_Json::encode(array(
-            'status'  => false,
-            'message' => 'Temporary ID is required.'
-        ));
-
-        return;
+        readfile($filePath);
+        exit;
     }
 
-    try {
+    public function removeTempFileAction()
+    {
+        $this->_helper->layout()->disableLayout();
+        $this->_helper->viewRenderer->setNoRender(true);
 
-        $participantService =  new Application_Service_Participants();
+        $tempId = $this->getRequest()->getParam('temp_id');
+        $fileName = $this->getRequest()->getParam('file');
 
-        $result = $participantService->removeTemporaryFiles($tempId, $fileName);
+        if (empty($tempId)) {
+            echo Zend_Json::encode([
+                'status'  => false,
+                'message' => 'Temporary ID is required.',
+            ]);
+            return;
+        }
 
-        echo Zend_Json::encode(array(
-            'status' => $result
-        ));
-
-    } catch (Exception $e) {
-
-        echo Zend_Json::encode(array(
-            'status'  => false,
-            'message' => $e->getMessage()
-        ));
+        try {
+            $participantService = new Application_Service_Participants();
+            echo Zend_Json::encode([
+                'status' => $participantService->removeTemporaryFiles($tempId, $fileName),
+            ]);
+        } catch (Exception $e) {
+            echo Zend_Json::encode([
+                'status'  => false,
+                'message' => $e->getMessage(),
+            ]);
+        }
     }
-}
 }

@@ -2,12 +2,29 @@
 
 $fparam = base64_decode(urldecode($this->parameters['fileName']));
 $fparam = explode("#######", $fparam);
-$filename = $fparam[0];
-$foldername = $fparam[1];
-$filePath = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . $foldername . DIRECTORY_SEPARATOR .'certificates'. "/" . $filename;
+$filename = basename(trim($fparam[0] ?? ''));
+$foldername = basename(trim($fparam[1] ?? ''));
 
-if ($filename == '' || $filename == null || $foldername == '' || $foldername == null || !file_exists($filePath)) {
+// The folder must belong to one of the logged-in data manager's participants
+// (or be the shared 'common' folder) — the request parameter alone is not
+// proof of ownership.
+$allowedFolders = ['common'];
+$participantService = new Application_Service_Participants();
+foreach ((array) $participantService->getParticipantUniqueIdentifier() as $row) {
+    if (!empty($row['unique_identifier'])) {
+        $allowedFolders[] = (string) $row['unique_identifier'];
+    }
+}
+
+$filePath = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . $foldername . DIRECTORY_SEPARATOR . $filename;
+
+if (
+    $filename == '' || $foldername == '' || $filename == '.' || $filename == '..'
+    || !in_array($foldername, $allowedFolders, true)
+    || !is_file($filePath)
+) {
     header("location:/participant/file-downloads");
+    exit();
 }
 $mm_type = "application/octet-stream";
 header("Pragma: public");

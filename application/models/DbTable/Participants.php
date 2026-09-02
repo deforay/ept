@@ -3066,9 +3066,9 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         return $db->fetchAll($sql);
     }
 
-     public function fetchParticipantsForFiles($parameters)
+    public function fetchParticipantsForFiles($parameters)
     {
-     
+
         $sQuery = $this->getAdapter()->select()->from(['p' => 'participant'], [new Zend_Db_Expr('p.participant_id'), 'p.unique_identifier', 'p.institute_name', 'p.country', 'p.state', 'p.district', 'p.status', 'participantName' => new Zend_Db_Expr(self::participantNameGroupConcatExpr('p'))])
             ->joinLeft(['c' => 'countries'], 'c.id=p.country')
             ->joinLeft(['sp' => 'shipment_participant_map'], 'p.participant_id=sp.participant_id', ['shipment_test_report_date', 'final_result', 'RESPONSE' => new Zend_Db_Expr("CASE WHEN (sp.is_excluded ='yes') THEN 'Excluded'  WHEN (sp.shipment_test_date not like '' AND sp.shipment_test_date!='0000-00-00' AND sp.shipment_test_date not like 'NULL') THEN 'Responded' ELSE 'Not Responded' END")])
@@ -3079,13 +3079,12 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         if (isset($parameters['scheme']) && $parameters['scheme'] != '') {
             $sQuery = $sQuery->where('s.scheme_type IN (?)', (array) $parameters['scheme']);
         }
-        $authNameSpace = new Zend_Session_Namespace('datamanagers');
-        if (!empty($authNameSpace->dm_id)) {
+        $scopedDmId = Application_Service_Common::getScopedDmId();
+        if (!empty($scopedDmId)) {
             $sQuery = $sQuery
                 ->joinLeft(['pmm' => 'participant_manager_map'], 'pmm.participant_id=p.participant_id', [])
-                ->where('pmm.dm_id = ?', $authNameSpace->dm_id);
+                ->where('pmm.dm_id = ?', $scopedDmId);
         }
-     
 
         if (isset($parameters['shipmentId']) && $parameters['shipmentId'] != '') {
             $sQuery = $sQuery->where('s.shipment_id IN (?)', (array) $parameters['shipmentId']);
@@ -3111,18 +3110,18 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             $sQuery = $sQuery->where('sp.final_result = ?', $parameters['result']);
         }
 
-        if (isset($sWhere) && $sWhere != '') {
-            $sQuery = $sQuery->where($sWhere);
-        }
         $rResult = $this->getAdapter()->fetchAll($sQuery);
-        $output=[];
-         foreach ($rResult as $aRow) {
-            $row = [];
-
-            $row[] = $aRow['participantName'];
-            $row[] = $aRow['institute_name'];
-            $row[] = $aRow['participant_id'];
-            $output['data'] = $row;
+        $output = ['data' => []];
+        foreach ($rResult as $aRow) {
+            $output['data'][] = [
+                $aRow['participantName'],
+                $aRow['institute_name'],
+                $aRow['unique_identifier'],
+                $aRow['participant_id'],
+                ucwords((string) $aRow['iso_name']),
+                $aRow['state'],
+                $aRow['district'],
+            ];
         }
 
         return json_encode($output);

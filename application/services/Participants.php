@@ -1378,216 +1378,256 @@ class Application_Service_Participants
         return $enrollments->uploadBulkEnrollmentDetails($params);
     }
 
-     public function uploadFilesForParticipants(array $files, $tempId)
-    {
-        $tempDir = realpath(UPLOAD_PATH) . DIRECTORY_SEPARATOR . $tempId;
+    /**
+     * File types an admin may distribute to participants. Anything else —
+     * notably scripts — is rejected server-side regardless of what the
+     * browser's accept filter allowed through.
+     */
+    public const PARTICIPANT_FILE_EXTENSIONS = [
+        'pdf', 'doc', 'docx', 'xls', 'xlsx', 'csv', 'ppt', 'pptx',
+        'png', 'jpg', 'jpeg', 'gif', 'txt', 'zip',
+    ];
 
-        if (!is_dir($tempDir)) {
-            if (!mkdir($tempDir, 0755, true)) {
-                throw new Exception(
-                    'Unable to create temporary upload directory.'
-                );
+    /**
+     * Resolves a temp-upload batch id to its directory under DOWNLOADS_FOLDER
+     * (outside the webroot). Returns null for ids that fail the character
+     * whitelist, so a crafted temp_id can never escape the temp root.
+     */
+    public static function filesForParticipantsTempPath($tempId): ?string
+    {
+        $tempId = basename(trim((string) $tempId));
+        if ($tempId === '' || !preg_match('/^[a-zA-Z0-9_.\-]+$/', $tempId)) {
+            return null;
+        }
+        return DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR
+            . 'temp-participant-files' . DIRECTORY_SEPARATOR . $tempId;
+    }
+
+    private static function purgeStaleParticipantTempDirs(): void
+    {
+        $root = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'temp-participant-files';
+        if (!is_dir($root)) {
+            return;
+        }
+        foreach (scandir($root) as $dir) {
+            if ($dir === '.' || $dir === '..') {
+                continue;
+            }
+            $path = $root . DIRECTORY_SEPARATOR . $dir;
+            if (is_dir($path) && filemtime($path) < (time() - 86400)) {
+                Pt_Commons_MiscUtility::removeDirectory($path);
             }
         }
+    }
 
-        $uploadedFiles = array();
+    public function uploadFilesForParticipants(array $files, $tempId)
+    {
+        self::purgeStaleParticipantTempDirs();
 
-        foreach ($files['name'] as $index => $fileName) {
+        $tempDir = self::filesForParticipantsTempPath($tempId);
+        if ($tempDir === null) {
+            throw new Exception('Invalid upload reference.');
+        }
+
+        if (!is_dir($tempDir) && !Pt_Commons_MiscUtility::makeDirectory($tempDir)) {
+            throw new Exception('Unable to create temporary upload directory.');
+        }
+
+        $uploadedFiles = [];
+        $rejectedFiles = [];
+
+        foreach ((array) $files['name'] as $index => $originalName) {
 
             if ($files['error'][$index] !== UPLOAD_ERR_OK) {
+                $rejectedFiles[] = $originalName;
                 continue;
             }
 
-            $tmpName = $files['tmp_name'][$index];
+            $extension = Pt_Commons_MiscUtility::getFileExtension($originalName);
+            if (!in_array($extension, self::PARTICIPANT_FILE_EXTENSIONS, true)) {
+                $rejectedFiles[] = $originalName;
+                continue;
+            }
 
-            $extension = strtolower(
-                pathinfo($fileName, PATHINFO_EXTENSION)
+            // Keep the original name (participants see it as-is), reduced to a
+            // safe character set, deduplicated within the batch.
+            $baseName = Pt_Commons_MiscUtility::sanitizeFilename(
+                pathinfo($originalName, PATHINFO_FILENAME),
+                '/[^a-zA-Z0-9_\- ]/'
             );
-
-            $newFileName = uniqid('participant_', true);
-
-            if ($extension !== '') {
-                $newFileName .= '.' . $extension;
+            $baseName = trim(preg_replace('/[\s\-]+/', '-', $baseName), '-_');
+            if ($baseName === '') {
+                $baseName = uniqid('file-');
             }
 
-            $destination = $tempDir .
-                DIRECTORY_SEPARATOR .
-                $newFileName;
-
-            if (!move_uploaded_file($tmpName, $destination)) {
-                throw new Exception(
-                    'Unable to move uploaded file: ' . $fileName
-                );
+            $newFileName = $baseName . '.' . $extension;
+            $counter = 1;
+            while (file_exists($tempDir . DIRECTORY_SEPARATOR . $newFileName)) {
+                $newFileName = $baseName . '-' . $counter++ . '.' . $extension;
             }
 
-            $uploadedFiles[] = array(
-                'original_name' => $fileName,
+            $destination = $tempDir . DIRECTORY_SEPARATOR . $newFileName;
+            if (!move_uploaded_file($files['tmp_name'][$index], $destination)) {
+                throw new Exception('Unable to save uploaded file: ' . $originalName);
+            }
+
+            $uploadedFiles[] = [
+                'original_name' => $originalName,
                 'file_name'     => $newFileName,
-                'file_path'     => 'uploads/' .$tempId . '/' . $newFileName,
-                'temp_id'       => $tempId,
+                'temp_id'       => basename($tempDir),
                 'extension'     => $extension,
-                'size'          => $files['size'][$index]
-            );
+                'size'          => $files['size'][$index],
+            ];
         }
 
-        return $uploadedFiles; 
+        return [
+            'files'    => $uploadedFiles,
+            'rejected' => $rejectedFiles,
+        ];
     }
 
-    public function confirmTemporaryFiles($tempId, $participantId)
+    /**
+     * Copies a confirmed temp batch into downloads/<unique_identifier>/ for
+     * every selected participant — the folder that /participant/file-downloads
+     * and the mobile API list from. The temp batch is removed only when every
+     * copy succeeded.
+     */
+    public function confirmTemporaryFiles($tempId, $participantIds)
     {
+        $result = [
+            'status'       => false,
+            'participants' => 0,
+            'copied'       => 0,
+            'failed'       => 0,
+            'message'      => '',
+        ];
 
-            $uploadPath = rtrim(UPLOAD_PATH, DIRECTORY_SEPARATOR);
-
-            $tempDir = $uploadPath . DIRECTORY_SEPARATOR . $tempId;
-            $participantDir = $uploadPath
-                . DIRECTORY_SEPARATOR . 'participants'
-                . DIRECTORY_SEPARATOR . $participantId;
-
-            // Check temp directory
-            if (!is_dir($tempDir)) {
-                error_log('Temp directory does not exist: ' . $tempDir);
-                return false;
-            }
-
-            // Create participant directory
-            if (!is_dir($participantDir)) {
-                if (!mkdir($participantDir, 0775, true)) {
-                    error_log('Unable to create participant directory: ' . $participantDir);
-                    return false;
-                }
-            }
-
-            $iterator = new RecursiveIteratorIterator(
-                new RecursiveDirectoryIterator(
-                    $tempDir,
-                    RecursiveDirectoryIterator::SKIP_DOTS
-                ),
-                RecursiveIteratorIterator::LEAVES_ONLY
-            );
-
-            foreach ($iterator as $file) {
-
-                if (!$file->isFile()) {
-                    continue;
-                }
-
-                $source = $file->getPathname();
-                $filename = $file->getFilename();
-
-                $destination = $participantDir
-                    . DIRECTORY_SEPARATOR
-                    . $filename;
-
-                error_log('SOURCE: ' . $source);
-                error_log('DESTINATION: ' . $destination);
-
-                if (!is_readable($source)) {
-                    error_log('Source file is not readable: ' . $source);
-                    continue;
-                }
-
-                if (copy($source, $destination)) {
-                    error_log('Copied successfully: ' . $filename);
-                } else {
-                    error_log('FAILED TO COPY: ' . $source);
-                    error_log('PHP ERROR: ' . print_r(error_get_last(), true));
-                }
+        $tempDir = self::filesForParticipantsTempPath($tempId);
+        if ($tempDir === null || !is_dir($tempDir)) {
+            $result['message'] = 'The uploaded files could not be found. Please upload them again.';
+            return $result;
         }
 
-        return true;
+        $fileNames = [];
+        foreach (scandir($tempDir) as $fileName) {
+            if (is_file($tempDir . DIRECTORY_SEPARATOR . $fileName)) {
+                $fileNames[] = $fileName;
+            }
+        }
+        if (empty($fileNames)) {
+            $result['message'] = 'No files were uploaded. Please upload files before submitting.';
+            return $result;
+        }
 
+        $ids = array_values(array_unique(array_filter(
+            array_map('trim', explode(',', (string) $participantIds)),
+            'ctype_digit'
+        )));
+        if (empty($ids)) {
+            $result['message'] = 'No participants were selected.';
+            return $result;
+        }
+
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $rows = $db->fetchAll(
+            $db->select()
+                ->from('participant', ['participant_id', 'unique_identifier'])
+                ->where('participant_id IN (?)', $ids)
+        );
+
+        foreach ($rows as $row) {
+            $uniqueIdentifier = basename(trim((string) $row['unique_identifier']));
+            if ($uniqueIdentifier === '' || !preg_match('/^[a-zA-Z0-9_.\-]+$/', $uniqueIdentifier)) {
+                $result['failed'] += count($fileNames);
+                continue;
+            }
+
+            $participantDir = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . $uniqueIdentifier;
+            if (!is_dir($participantDir) && !Pt_Commons_MiscUtility::makeDirectory($participantDir)) {
+                $result['failed'] += count($fileNames);
+                continue;
+            }
+
+            $result['participants']++;
+            foreach ($fileNames as $fileName) {
+                $copied = copy(
+                    $tempDir . DIRECTORY_SEPARATOR . $fileName,
+                    $participantDir . DIRECTORY_SEPARATOR . $fileName
+                );
+                if ($copied) {
+                    $result['copied']++;
+                } else {
+                    $result['failed']++;
+                }
+            }
+        }
+
+        $missing = count($ids) - count($rows);
+        $result['status'] = $result['copied'] > 0 && $result['failed'] === 0 && $missing === 0;
+
+        if ($result['status']) {
+            Pt_Commons_MiscUtility::removeDirectory($tempDir);
+            $result['message'] = count($fileNames) . ' file(s) distributed to '
+                . $result['participants'] . ' participant(s) successfully';
+        } else {
+            $result['message'] = 'Distributed ' . $result['copied'] . ' file cop(ies); '
+                . ($result['failed'] + ($missing * count($fileNames)))
+                . ' failed. Please review and try again.';
+        }
+
+        return $result;
     }
 
     public function getTemporaryFiles($tempId)
-{
-    $tempId = basename($tempId);
-
-    $tempDir = APPLICATION_PATH .
-        '/../public/uploads/' .
-        $tempId;
-
-
-    if (!is_dir($tempDir)) {
-
-        return array();
-    }
-
-
-    $files = array();
-
-
-    foreach (scandir($tempDir) as $fileName) {
-
-        if ($fileName === '.' ||
-            $fileName === '..') {
-
-            continue;
+    {
+        $tempDir = self::filesForParticipantsTempPath($tempId);
+        if ($tempDir === null || !is_dir($tempDir)) {
+            return [];
         }
 
-
-        $filePath =
-            $tempDir .
-            DIRECTORY_SEPARATOR .
-            $fileName;
-
-
-        if (!is_file($filePath)) {
-
-            continue;
+        $files = [];
+        foreach (scandir($tempDir) as $fileName) {
+            $filePath = $tempDir . DIRECTORY_SEPARATOR . $fileName;
+            if ($fileName === '.' || $fileName === '..' || !is_file($filePath)) {
+                continue;
+            }
+            $files[] = [
+                'temp_id'       => basename($tempDir),
+                'file_name'     => $fileName,
+                'original_name' => $fileName,
+                'size'          => filesize($filePath),
+            ];
         }
 
-
-        $files[] = array(
-
-            'temp_id' =>
-                $tempId,
-
-            'file_name' =>
-                $fileName,
-
-            'original_name' =>
-                $fileName
-
-        );
+        return $files;
     }
 
-
-    return $files;
-}
-
-public function getParticipantsForFiles($parameters)
-{
-    $participantDb = new Application_Model_DbTable_Participants();
-    return $participantDb->fetchParticipantsForFiles($parameters);
-}
-
-public function removeTemporaryFiles($tempId, $fileName)
-{
-    if (empty($tempId)) {
-        return false;
+    public function getParticipantsForFiles($parameters)
+    {
+        $participantDb = new Application_Model_DbTable_Participants();
+        return $participantDb->fetchParticipantsForFiles($parameters);
     }
 
-    // Prevent directory traversal
-    $tempId = basename($tempId);
+    public function removeTemporaryFiles($tempId, $fileName)
+    {
+        $tempDir = self::filesForParticipantsTempPath($tempId);
+        if ($tempDir === null) {
+            return false;
+        }
+        if (!is_dir($tempDir)) {
+            return true;
+        }
 
-    $tempDir = APPLICATION_PATH .
-        '/../public/uploads/' .
-        $tempId;
+        $fileName = basename(trim((string) $fileName));
+        if ($fileName === '' || $fileName === '.' || $fileName === '..') {
+            return false;
+        }
 
-    if (!is_dir($tempDir)) {
-        return true;
-    }
-
-        $filePath = $tempDir .
-            DIRECTORY_SEPARATOR .
-            $fileName;
-
+        $filePath = $tempDir . DIRECTORY_SEPARATOR . $fileName;
         if (is_file($filePath)) {
             unlink($filePath);
         }
 
-
-    return true;
-}
-   
+        return true;
+    }
 }

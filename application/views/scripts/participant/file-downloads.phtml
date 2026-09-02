@@ -13,23 +13,27 @@
                             <th scope="col"><?= $this->translate->_("Participant Unique ID"); ?></th>
                             <th scope="col"><?= $this->translate->_("Participant Name"); ?></th>
                             <th scope="col"><?= $this->translate->_("Download"); ?></th>
-                            <!-- <th scope="col">Last Modified on Date</th> -->
+                            <th scope="col"><?= $this->translate->_("Shared On"); ?></th>
                         </tr>
                     </thead>
                     <tbody>
                         <?php
 
+                        // Files distributed by the admin live at the root of
+                        // downloads/<unique_identifier>/ (and downloads/common/ for
+                        // everyone). Subfolders such as certificates/ have their own
+                        // pages and are skipped here.
                         $arrCount = count($this->download);
                         $this->download[$arrCount]['unique_identifier'] = 'common';
                         if (count($this->download) > 0) {
                             foreach ($this->download as $uniqueId) {
-                                $path = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . $uniqueId['unique_identifier'] . DIRECTORY_SEPARATOR . 'certificates';
+                                $path = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . $uniqueId['unique_identifier'];
                                 if (is_dir($path) && count(scandir($path)) > 2) {
                                     $lab = Application_Model_DbTable_Participants::formatParticipantName($uniqueId); ?>
                                     <?php
                                     $files = [];
                                     foreach (scandir($path) as $fileName) {
-                                        if ($fileName != '.' && $fileName != '..') {
+                                        if ($fileName != '.' && $fileName != '..' && is_file($path . "/" . $fileName)) {
                                             $files[$fileName] = filemtime($path . "/" . $fileName);
                                         }
                                     }
@@ -39,8 +43,8 @@
                                             <tr>
                                                 <td><?php echo ucfirst($uniqueId['unique_identifier']); ?></td>
                                                 <td><?php echo ucfirst($lab); ?></td>
-                                                <td><a href="javascript:void(0);" onclick="getFile('<?php echo urlencode(base64_encode($descFile . '#######' . $uniqueId['unique_identifier'])); ?>');"><?php echo $descFile; ?></a></td>
-                                                <!-- <td><?php echo date("d-M-Y H:i:s", filemtime($path . "/" . $descFile)); ?></td> -->
+                                                <td><a href="javascript:void(0);" onclick="getFile('<?php echo urlencode(base64_encode($descFile . '#######' . $uniqueId['unique_identifier'])); ?>');"><?php echo $this->escape($descFile); ?></a></td>
+                                                <td><?php echo date("d-M-Y H:i", filemtime($path . "/" . $descFile)); ?></td>
                                             </tr>
                         <?php }
                                     }

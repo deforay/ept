@@ -118,8 +118,8 @@
             z-index: 1;
         }
 
-        .wizard-step.active:not(:last-child):after {
-            background: #337ab7;
+        .wizard-step.completed:not(:last-child):after {
+            background: #5cb85c;
         }
 
         .step-number {
@@ -176,6 +176,62 @@
 
         .uploaded-file {
             margin-bottom: 8px;
+        }
+
+        .participant-picker .picker-toolbar {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 10px;
+        }
+
+        .participant-picker .picker-select-all {
+            margin: 0;
+            font-weight: 600;
+            white-space: nowrap;
+            cursor: pointer;
+        }
+
+        .participant-picker #participantSearch {
+            max-width: 320px;
+        }
+
+        .participant-picker .picker-list {
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .participant-picker .picker-table {
+            margin-bottom: 0;
+        }
+
+        .participant-picker .picker-check-col {
+            width: 36px;
+        }
+
+        .participant-picker .picker-table tbody tr {
+            cursor: pointer;
+        }
+
+        .upload-section-title {
+            margin-top: 24px;
+        }
+
+        .confirm-columns {
+            display: flex;
+            gap: 24px;
+            align-items: flex-start;
+        }
+
+        .confirm-columns .confirm-col {
+            flex: 1 1 0;
+            min-width: 0;
+        }
+
+        @media (max-width: 992px) {
+            .confirm-columns { flex-direction: column; }
         }
 
         .uploaded-file .file-name {
@@ -316,18 +372,17 @@
                 <div class="wizard-content active"
                      data-step="1">
 
-                    <h4>
-                        Upload Files
-                    </h4>
+                    <h4><?= $this->translate->_("Select Participants & Upload Files"); ?></h4>
+                    <p class="text-muted"><?= $this->translate->_("Filter and load the participants who should receive the files, untick any exceptions, then upload the files below. You will see a final summary before anything is sent."); ?></p>
 
                     <hr>
 
                     <div class="row">
                           <div class="shipmentResponseFilters">
            
-                <div class="filterCell cellWide">
-                    <div class="filterLabel">Scheme Type</div>
-                        <select id="scheme" name="scheme" class="input-sm" multiple="multiple" onchange="getShipmentCodes()"
+                <div class="filterCell">
+                    <div class="filterLabel"><?= $this->translate->_("Scheme Type"); ?></div>
+                        <select id="scheme" name="scheme" multiple="multiple" onchange="getShipmentCodes()"
                             style="width:100%;">
                             <option></option>
                             <?php foreach ($this->schemes as $scheme) { ?>
@@ -335,14 +390,14 @@
                             <?php } ?>
                         </select>
                 </div>
-            <div class="filterCell cellWide">
-                <div class="filterLabel">Shipment</div>
+            <div class="filterCell">
+                <div class="filterLabel"><?= $this->translate->_("Shipment"); ?></div>
                <select id="shipmentId" name="shipmentId" multiple="multiple" style="width:100%;">
 			<option></option>
 		</select>
             </div>
 			<?php if (isset($this->countries) && !empty($this->countries)) { ?>
-		<div class="filterCell cellNarrow">
+		<div class="filterCell">
 			<div class="filterLabel"><?= $this->translate->_("Country"); ?></div>
 			<select class="form-control select2" id="country" name="country" title="Please select the country to filter"
 				onchange="getOptions('participant', 'country', 'region', this.value, 'region');">
@@ -395,11 +450,51 @@
 
 
 		<div class="filterCell filterActions dontPrint">
+				<button type="button" id="loadParticipantsBtn" class="btn btn-primary">
+					<i class="icon-search"></i> <?= $this->translate->_("Load Participants"); ?>
+				</button>
 	</div>
 </div>
                     </div>
 
                   
+
+                    <div class="participant-picker" id="participantPicker" style="display:none;">
+
+                        <div class="picker-toolbar">
+                            <label class="picker-select-all">
+                                <input type="checkbox" id="toggleAllParticipants" checked>
+                                <?= $this->translate->_("Select all"); ?>
+                            </label>
+                            <input type="text" id="participantSearch" class="form-control input-sm"
+                                placeholder="<?= $this->htmlTranslate("Search by name, lab ID or institute..."); ?>">
+                            <span class="badge" id="selectedCountBadge"></span>
+                        </div>
+
+                        <div class="picker-list">
+                            <table class="table table-striped table-condensed picker-table">
+                                <thead>
+                                    <tr>
+                                        <th class="picker-check-col"></th>
+                                        <th><?= $this->translate->_("Participant"); ?></th>
+                                        <th><?= $this->translate->_("Lab ID"); ?></th>
+                                        <th><?= $this->translate->_("Institute"); ?></th>
+                                        <th><?= $this->translate->_("Country"); ?></th>
+                                        <th><?= $this->translate->_("Province"); ?></th>
+                                        <th><?= $this->translate->_("District"); ?></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="reviewParticipants"></tbody>
+                            </table>
+                        </div>
+
+                    </div>
+
+                    <div id="noParticipantsMessage">
+                        <div class="alert alert-info"><?= $this->translate->_("Use the filters above and click Load Participants to choose who receives the files."); ?></div>
+                    </div>
+
+                    <h4 class="upload-section-title"><?= $this->translate->_("Upload Files"); ?></h4>
 
                     <div class="row">
 
@@ -407,8 +502,8 @@
                         <div class="bi-drop-icon"><i class="icon-upload"></i></div>
                         <div class="bi-drop-title"><?= $this->translate->_("Drop your file here"); ?></div>
                         <div class="bi-drop-sub"><?= $this->translate->_("or"); ?> <span class="bi-browse"><?= $this->translate->_("click to browse"); ?></span></div>
-                        <div class="bi-accepts"><?= $this->translate->_("Accepts"); ?> <code>.xls</code> <code>.xlsx</code></div>
-                        <input type="file" id="fileName" name="fileName[]" multiple class="isRequired" accept=".xls,.xlsx" title="Please select participants import data file">
+                        <div class="bi-accepts"><?= $this->translate->_("Accepts"); ?> <code>.pdf</code> <code>.doc</code> <code>.docx</code> <code>.xls</code> <code>.xlsx</code> <code>.csv</code> <code>.ppt</code> <code>.pptx</code> <code>.png</code> <code>.jpg</code> <code>.gif</code> <code>.txt</code> <code>.zip</code></div>
+                        <input type="file" id="fileName" name="fileName[]" multiple class="isRequired" accept=".pdf,.doc,.docx,.xls,.xlsx,.csv,.ppt,.pptx,.png,.jpg,.jpeg,.gif,.txt,.zip" title="Please select the files to distribute">
                     </div>
                     </div>
  <div class="cardDiv">
@@ -424,48 +519,17 @@
                 <div class="wizard-content"
                      data-step="2">
 
-                    <h4>
-                        Review Uploaded Files
-                    </h4>
+                    <h4><?= $this->translate->_("Review Uploaded Files"); ?></h4>
+                    <p class="text-muted"><?= $this->translate->_("These files will be distributed. Remove any that were uploaded by mistake, or go back to add more."); ?></p>
 
                     <hr>
 
-
-                    <!-- Upload progress -->
-
-                    <div id="uploadProgress"
-                         class="upload-progress">
-
-                        <div class="progress">
-
-                            <div id="uploadProgressBar"
-                                 class="progress-bar progress-bar-info"
-                                 role="progressbar"
-                                 style="width:0%;">
-
-                                0%
-
-                            </div>
-
-                        </div>
-
-                    </div>
-
-
-                    <!-- Uploaded files -->
-
                     <div id="uploadedFilesContainer">
-
-                        <h4>
-                            
-                        </h4>
 
                         <div id="uploadedFiles">
 
                             <div class="alert alert-info">
-
-                                No files uploaded yet.
-
+                                <?= $this->translate->_("No files uploaded yet."); ?>
                             </div>
 
                         </div>
@@ -482,59 +546,55 @@
                 <div class="wizard-content"
                      data-step="3">
 
-                    <h4>
-                        Confirm Files For Below Participants
-                    </h4>
+                    <h4><?= $this->translate->_("Confirm Distribution"); ?></h4>
+                    <p class="text-muted"><?= $this->translate->_("Nothing has been sent yet. Double-check the files and recipients below, then click Distribute Files."); ?></p>
 
                     <hr>
 
-                     <h4>Selected Participants</h4>
+                    <div id="distributionSummary"></div>
 
-                        <div id="reviewParticipants">
-                            
+                    <div class="confirm-columns">
+                        <div class="confirm-col">
+                            <h5><?= $this->translate->_("Files"); ?></h5>
+                            <div id="confirmFiles"></div>
                         </div>
-                        <input type="hidden" name="participantId" id="participantId" />
-                    <div class="review-row">
+                        <div class="confirm-col">
+                            <h5><?= $this->translate->_("Recipients"); ?></h5>
+                            <div id="confirmParticipants" class="picker-list"></div>
+                        </div>
+                    </div>
+
+                    <input type="hidden" name="participantId" id="participantId" />
 
                 </div>
 
-</div>
-              
-   <!-- ===================================== -->
+                <!-- ===================================== -->
                 <!-- WIZARD FOOTER -->
                 <!-- ===================================== -->
 
                 <div class="wizard-footer">
 
-                       <button type="button"
+                    <button type="button"
                             id="previousButton"
                             class="btn btn-default"
                             style="display:none;">
-
-                        <span class="glyphicon glyphicon-chevron-left"></span>
-                        Previous
-
+                        <i class="icon-chevron-left"></i>
+                        <?= $this->translate->_("Previous"); ?>
                     </button>
-
 
                     <button type="button"
                             id="nextButton"
                             class="btn btn-primary">
-
-                        Next
-                        <span class="glyphicon glyphicon-chevron-right"></span>
-
+                        <?= $this->translate->_("Next"); ?>
+                        <i class="icon-chevron-right"></i>
                     </button>
 
                     <button type="submit"
                             id="submitButton"
                             class="btn btn-success"
                             style="display:none;">
-
-                        <span class="glyphicon glyphicon-ok"></span>
-
-                        Submit
-
+                        <i class="icon-ok"></i>
+                        <?= $this->translate->_("Distribute Files"); ?>
                     </button>
 
                 </div>
@@ -558,36 +618,24 @@
 var currentStep = 1;
 var totalSteps = 3;
 
-        var $input = $('#fileName');
-        var $card = $('#biFileCard');
-        var $name = $('#biFileName');
-        var $size = $('#biFileSize');
-         $input.on('change', function() {
-            showFile(this.files);
-        });
+    $('#fileName').on('change', function() {
+        showSelectedFiles(this.files);
+    });
 
-        
-
-    function showFile(files) {
-
+    function showSelectedFiles(files) {
+        var html = '';
         for (var i = 0; i < files.length; i++) {
-
-                var file = files[i];
-
-                if (!file) {
-                        $card.removeClass('active');
-                        $drop.show();
-                        return;
-                    }
-                    $name.text(file.name);
-                    $size.text(formatBytes(file.size));
-                    $card.addClass('active');
-
-            $(".cardDiv").append(
-                    '<div class="bi-filecard active" id="biFileCard"><div class="bi-file-icon">XLS</div><div class="bi-file-meta"><div class="bi-file-name" id="biFileName">'+file.name+'</div><div class="bi-file-size" id="biFileSize">'+file.size+'</div></div></div>');
-
-            }
-
+            var file = files[i];
+            var ext = file.name.split('.').pop().toUpperCase();
+            html +=
+                '<div class="bi-filecard active">' +
+                '<div class="bi-file-icon">' + $('<div>').text(ext).html() + '</div>' +
+                '<div class="bi-file-meta">' +
+                '<div class="bi-file-name">' + $('<div>').text(file.name).html() + '</div>' +
+                '<div class="bi-file-size">' + formatBytes(file.size) + '</div>' +
+                '</div></div>';
+        }
+        $('.cardDiv').html(html);
     }
 
     function formatBytes(bytes) {
@@ -711,25 +759,28 @@ function showStep(step)
 
 function validateStep(step)
 {
-    var valid = true;
-
     if (step === 1) {
 
-        var fileName =
-            $.trim($('#fileName').val());
+        if ($('.participant-check').length === 0) {
+            alert('<?= $this->jsTranslate("Please click Load Participants to load the participant list first."); ?>');
+            return false;
+        }
 
-        if (fileName === '') {
+        if ($('.participant-check:checked').length === 0) {
+            alert('<?= $this->jsTranslate("Please select at least one participant to receive the files."); ?>');
+            return false;
+        }
 
-            alert('Please upload file.');
-
+        var hasNewFiles = $('#fileName')[0].files.length > 0;
+        if (!hasNewFiles && uploadedFileCount === 0) {
+            alert('<?= $this->jsTranslate("Please upload at least one file."); ?>');
             $('#fileName').focus();
-
             return false;
         }
 
     }
 
-    return valid;
+    return true;
 }
 
 
@@ -744,7 +795,13 @@ $('#nextButton').on('click', function (e) {
     e.preventDefault();
     if (currentStep === 1) {
 
-        uploadFilesToTemporaryFolder();
+        if (!validateStep(1)) {
+            return;
+        }
+
+        if ($('#fileName')[0].files.length > 0) {
+            uploadFilesToTemporaryFolder();
+        }
 
         currentStep = 2;
         showStep(currentStep);
@@ -753,7 +810,7 @@ $('#nextButton').on('click', function (e) {
     }
 
     if (currentStep === 2) {
-        getParticipants();
+        buildConfirmation();
 
         currentStep = 3;
 
@@ -788,81 +845,169 @@ $('#previousButton').on('click', function () {
 |--------------------------------------------------------------------------
 */
 
+var uploadedFileCount = 0;
+var lastUploadedFiles = [];
+
+function escapeText(value) {
+    return $('<div>').text(value == null ? '' : String(value)).html();
+}
+
 function getParticipants()
 {
-    shipmentId = $("#shipmentId").val();
-    country = $("#country").val();
-    region = $("#region").val();
-    state = $("#state").val();
-    district = $("#district").val();
-    result = $("#filterResult").val();
-    html = '';
-  //  $.blockUI();
-		$.post("<?php echo $this->url(array('controller' => 'files-for-participants', 'action' => 'get-participants-for-files')); ?>", {
-			shipmentId: shipmentId,
-            country:country,
-            region: region,
-            state: state,
-            district: district,
-            result: result,
-			format: "html"
-		},
-			function (response) {
-                participants = JSON.parse(response);
-                result = (participants.data);
-         if (result.length === 0) {
+    $.blockUI();
+    $.post("<?php echo $this->url(array('controller' => 'files-for-participants', 'action' => 'get-participants-for-files')); ?>", {
+        scheme: $("#scheme").val(),
+        shipmentId: $("#shipmentId").val(),
+        country: $("#country").val(),
+        region: $("#region").val(),
+        state: $("#state").val(),
+        district: $("#district").val(),
+        result: $("#filterResult").val(),
+        format: "html"
+    },
+    function (response) {
+        $.unblockUI();
+        var rows = [];
+        try {
+            rows = (JSON.parse(response).data) || [];
+        } catch (e) {
+            rows = [];
+        }
 
-            $('#reviewParticipants').html(
-                '<div class="alert alert-warning">' +
-                'No participants selected.' +
-                '</div>'
+        $('#participantSearch').val('');
+        $('#toggleAllParticipants').prop('checked', true);
+
+        if (rows.length === 0) {
+            $('#participantPicker').hide();
+            $('#reviewParticipants').empty();
+            $('#distributionSummary').empty();
+            $('#noParticipantsMessage').html(
+                '<div class="alert alert-warning"><?= $this->jsTranslate("No participants match the selected filters. Adjust the filters and load again."); ?></div>'
             );
-
+            updateSelectedCount();
             return;
         }
-        else{
 
+        var html = '';
+        $.each(rows, function (index, row) {
+            var participantName = row[0] || '';
+            var institute = row[1] || '';
+            var labId = row[2] || '';
+            var country = row[4] || '';
+            var province = row[5] || '';
+            var district = row[6] || '';
+            var searchText = (participantName + ' ' + labId + ' ' + institute + ' ' +
+                country + ' ' + province + ' ' + district).toLowerCase();
+            html +=
+                '<tr class="participant-row" data-search="' + escapeText(searchText) + '">' +
+                '<td><input type="checkbox" class="participant-check" value="' + escapeText(row[3]) + '" checked></td>' +
+                '<td>' + escapeText(participantName) + '</td>' +
+                '<td>' + escapeText(labId) + '</td>' +
+                '<td>' + escapeText(institute) + '</td>' +
+                '<td>' + escapeText(country) + '</td>' +
+                '<td>' + escapeText(province) + '</td>' +
+                '<td>' + escapeText(district) + '</td>' +
+                '</tr>';
+        });
 
-            html += '<ul class="list-group">';
-
-             participantIds = [];            
-            $.each(participants, function(index, row) {
-
-                var participantName = row[0];
-                var participantId = row[2];
-                /*
-                * If row[0] is empty, use row[1]
-                */
-                if (!participantName) {
-                    participantName = row[1];
-                }
-
-
-                html +=
-                    '<li class="list-group-item">' +
-
-                        '<span class="glyphicon ' +
-                        'glyphicon-user"></span> ' +
-
-                        $('<div>')
-                            .text(participantName)
-                            .html() +
-
-                    '</li>';
-                participantIds.push(participantId);
-                
-            });
-
-            html += '</ul>';
-                
-                $('#reviewParticipants').html(html);
-                  $('#participantId').val(participantIds.join(','));
-
-        }
-			});
-
-
+        $('#noParticipantsMessage').empty();
+        $('#reviewParticipants').html(html);
+        $('#participantPicker').show();
+        updateSelectedCount();
+    });
 }
+
+function updateSelectedCount()
+{
+    var total = $('.participant-check').length;
+    var checked = $('.participant-check:checked').length;
+    $('#selectedCountBadge').text(checked + ' / ' + total + ' <?= $this->jsTranslate("selected"); ?>');
+}
+
+/* Read-only recap for step 3: what will be sent, and to whom. */
+function buildConfirmation()
+{
+    var checkedRows = $('.participant-check:checked').closest('.participant-row');
+
+    $('#distributionSummary').html(
+        '<p><?= $this->jsTranslate("You are about to distribute"); ?> <strong>' + uploadedFileCount + '</strong> ' +
+        '<?= $this->jsTranslate("file(s) to"); ?> <strong>' + checkedRows.length + '</strong> ' +
+        '<?= $this->jsTranslate("participant(s)"); ?>.</p>'
+    );
+
+    var filesHtml = '<ul class="list-group">';
+    $.each(lastUploadedFiles, function (index, file) {
+        filesHtml += '<li class="list-group-item">' +
+            escapeText(file.original_name || file.file_name) +
+            (file.size ? ' <span class="text-muted">(' + formatBytes(file.size) + ')</span>' : '') +
+            '</li>';
+    });
+    filesHtml += '</ul>';
+    $('#confirmFiles').html(filesHtml);
+
+    var recipientsHtml = '<ul class="list-group">';
+    checkedRows.each(function () {
+        var cells = $(this).children('td');
+        recipientsHtml += '<li class="list-group-item">' +
+            escapeText($(cells[1]).text()) +
+            ' <span class="text-muted">(' + escapeText($(cells[2]).text()) + ')</span>' +
+            '</li>';
+    });
+    recipientsHtml += '</ul>';
+    $('#confirmParticipants').html(recipientsHtml);
+}
+
+/* Row click toggles its checkbox; checkbox changes refresh the count. */
+$(document).on('click', '.participant-row', function (e) {
+    if (!$(e.target).is('input')) {
+        var checkbox = $(this).find('.participant-check');
+        checkbox.prop('checked', !checkbox.prop('checked'));
+    }
+    updateSelectedCount();
+});
+$(document).on('change', '.participant-check', updateSelectedCount);
+
+/* Select all applies to the rows matching the current search. */
+$(document).on('change', '#toggleAllParticipants', function () {
+    var checked = $(this).prop('checked');
+    $('.participant-row:visible .participant-check').prop('checked', checked);
+    updateSelectedCount();
+});
+
+/* Debounced so typing stays smooth on instances with thousands of participants. */
+var participantSearchTimer = null;
+$(document).on('keyup input', '#participantSearch', function () {
+    var term = $.trim($(this).val()).toLowerCase();
+    clearTimeout(participantSearchTimer);
+    participantSearchTimer = setTimeout(function () {
+        $('.participant-row').each(function () {
+            var matches = term === '' || ($(this).data('search') || '').indexOf(term) !== -1;
+            $(this).toggle(matches);
+        });
+    }, 200);
+});
+
+/* Final gate: only checked participants are submitted, never an empty set. */
+$('#participantWizardForm').on('submit', function (e) {
+    var ids = $('.participant-check:checked').map(function () {
+        return this.value;
+    }).get();
+
+    if ($('#temp_id').val() === '' || uploadedFileCount === 0) {
+        alert('<?= $this->jsTranslate("No files have been uploaded. Please upload files first."); ?>');
+        e.preventDefault();
+        return false;
+    }
+
+    if (ids.length === 0) {
+        alert('<?= $this->jsTranslate("Please select at least one participant."); ?>');
+        e.preventDefault();
+        return false;
+    }
+
+    $('#participantId').val(ids.join(','));
+    $('#submitButton').prop('disabled', true);
+});
  
 function uploadFilesToTemporaryFolder() {
 
@@ -873,7 +1018,10 @@ function uploadFilesToTemporaryFolder() {
     for (var i = 0; i < files.length; i++) {
         formData.append('fileName[]', files[i]);
     }
- 
+
+    // Reuse the batch when re-visiting step 1 so earlier uploads are kept.
+    formData.append('temp_id', $('#temp_id').val());
+
     $.ajax({
         url: '<?php echo $this->url(array("controller" => "files-for-participants","action" => "upload-temp")); ?>',
         type: 'POST',
@@ -886,9 +1034,18 @@ function uploadFilesToTemporaryFolder() {
             if (!response.status) {
 
                 alert(response.message);
+                currentStep = 1;
+                showStep(currentStep);
 
                 return;
             }
+
+            if (response.rejected && response.rejected.length > 0) {
+                alert('<?= $this->jsTranslate("These files were not accepted (unsupported file type):"); ?>\n' + response.rejected.join('\n'));
+            }
+
+            $('#fileName').val('');
+            $('.cardDiv').empty();
 
             loadTemporaryFiles(response.temp_id);
 
@@ -896,6 +1053,9 @@ function uploadFilesToTemporaryFolder() {
 
         error: function (xhr) {
             console.log(xhr.responseText);
+            alert('<?= $this->jsTranslate("File upload failed. Please try again."); ?>');
+            currentStep = 1;
+            showStep(currentStep);
         }
     });
 }
@@ -969,161 +1129,58 @@ function loadTemporaryFiles(tempId)
 
 function displayTemporaryFiles(files)
 {
-    var html = '';
-
+    uploadedFileCount = files ? files.length : 0;
+    lastUploadedFiles = files || [];
 
     if (!files || files.length === 0) {
-
         $('#uploadedFiles').html(
-
-            '<div class="alert alert-info">' +
-            'No files uploaded yet.' +
-            '</div>'
-
+            '<div class="alert alert-info"><?= $this->jsTranslate("No files uploaded yet. Go back to upload files."); ?></div>'
         );
-
         return;
     }
 
+    var iconByExtension = {
+        pdf: 'icon-file-text',
+        doc: 'icon-file-text', docx: 'icon-file-text', txt: 'icon-file-text',
+        xls: 'icon-table', xlsx: 'icon-table', csv: 'icon-table',
+        ppt: 'icon-list-alt', pptx: 'icon-list-alt',
+        jpg: 'icon-picture', jpeg: 'icon-picture',
+        png: 'icon-picture', gif: 'icon-picture',
+        zip: 'icon-archive'
+    };
 
-    html +=
-        '<ul class="list-group file-list">';
-
+    var html = '<ul class="list-group file-list">';
 
     $.each(files, function (index, file) {
 
-
         var fileUrl =
-            '<?php echo $this->baseUrl(); ?>' +
-            'files-for-participants/view-temp-file' +
-            '?temp_id=' +
-            encodeURIComponent(
-                file.temp_id
-            ) +
-            '&file=' +
-            encodeURIComponent(
-                file.file_name
-            );
+            '<?php echo $this->url(array("controller" => "files-for-participants", "action" => "view-temp-file")); ?>' +
+            '?temp_id=' + encodeURIComponent(file.temp_id) +
+            '&file=' + encodeURIComponent(file.file_name);
 
+        var extension = file.file_name.split('.').pop().toLowerCase();
+        var icon = iconByExtension[extension] || 'icon-file';
 
         html +=
-            '<li class="list-group-item uploaded-file">';
-
-
-        html += '<span>';
-
-
-        /*
-         * File icon
-         */
-
-        var extension =
-            file.file_name
-                .split('.')
-                .pop()
-                .toLowerCase();
-
-
-        var icon =
-            'glyphicon-file';
-
-
-        if (
-            extension === 'pdf'
-        ) {
-
-            icon = 'glyphicon-file';
-
-        } else if (
-            extension === 'xls' ||
-            extension === 'xlsx' ||
-            extension === 'csv'
-        ) {
-
-            icon = 'glyphicon-list-alt';
-
-        } else if (
-            extension === 'jpg' ||
-            extension === 'jpeg' ||
-            extension === 'png' ||
-            extension === 'gif'
-        ) {
-
-            icon = 'glyphicon-picture';
-
-        }
-
-
-        html +=
-            '<span class="glyphicon ' +
-            icon +
-            '"></span>';
-
-
-        /*
-         * Filename
-         */
-
-        html +=
-            '<a href="' +
-            fileUrl +
-            '" ' +
-            'target="_blank" ' +
-            'rel="noopener noreferrer" ' +
-            'class="file-name file-name-link">' +
-
-            $('<div>')
-                .text(
-                    file.original_name ||
-                    file.file_name
-                )
-                .html() +
-
-            '</a>';
-
-
-        html += '</span>';
-
-
-        /*
-         * Remove button
-         */
-
-        html +=
-            '<button type="button" ' +
-            'class="btn btn-danger btn-xs remove-temp-file" ' +
-            'data-temp-id="' +
-            $('<div>')
-                .text(file.temp_id)
-                .html() +
-            '" ' +
-            'data-file-name="' +
-            $('<div>')
-                .text(file.file_name)
-                .html() +
-            '"' +
-
-             'data-row="temp-file-' +
-                    index +
-                    '">' +
-
-            '<span class="glyphicon ' +
-            'glyphicon-trash"></span> ' +
-            'Remove' +
-
-            '</button>';
-
-
-        html += '</li>';
-
+            '<li class="list-group-item uploaded-file">' +
+            '<span>' +
+            '<i class="' + icon + '"></i> ' +
+            '<a href="' + fileUrl + '" target="_blank" rel="noopener noreferrer" class="file-name file-name-link">' +
+            $('<div>').text(file.original_name || file.file_name).html() +
+            '</a>' +
+            (file.size ? ' <span class="text-muted">(' + formatBytes(file.size) + ')</span>' : '') +
+            '</span>' +
+            '<button type="button" class="btn btn-danger btn-xs remove-temp-file" ' +
+            'data-temp-id="' + $('<div>').text(file.temp_id).html() + '" ' +
+            'data-file-name="' + $('<div>').text(file.file_name).html() + '">' +
+            '<i class="icon-trash"></i> <?= $this->jsTranslate("Remove"); ?>' +
+            '</button>' +
+            '</li>';
     });
-
 
     html += '</ul>';
 
-
-    $('#uploadedFiles')
-        .html(html);
+    $('#uploadedFiles').html(html);
 }
 
 
@@ -1133,89 +1190,33 @@ function displayTemporaryFiles(files)
 |--------------------------------------------------------------------------
 */
 
-$(document).on(
-    'click',
-    '.remove-temp-file',
-    function () {
+$(document).on('click', '.remove-temp-file', function () {
 
-        if (!confirm('Are you sure you want to remove this file?')) {
-            return;
-        }
-
-        var tempId = $(this).data('temp-id');
-        var fileName =  $(this).data('file-name');
-        var rowId = $(this).attr('data-row');
-        $.ajax({
-
-            url: '<?php echo $this->url(array('controller' => 'files-for-participants', 'action' => 'remove-temp-file' )); ?>',
-            type: 'POST',
-            dataType: 'json',
-            data: {
-                temp_id: tempId,
-                file: fileName
-            },
-
-            success: function (response) {
-
-                 if (response.status) {
-
-                    /*
-                     * Remove only this row
-                     */
-                    $('#' + rowId).remove();
-
-                } else {
-
-                    alert(response.message);
-                }
-
-                loadTemporaryFiles(
-                    tempId
-                );
-
-            }
-
-        });
-
+    if (!confirm('<?= $this->jsTranslate("Are you sure you want to remove this file?"); ?>')) {
+        return;
     }
-);
 
+    var tempId = $(this).data('temp-id');
+    var fileName = $(this).data('file-name');
 
-/*
-|--------------------------------------------------------------------------
-| REVIEW DATA
-|--------------------------------------------------------------------------
-*/
+    $.ajax({
+        url: '<?php echo $this->url(array('controller' => 'files-for-participants', 'action' => 'remove-temp-file' )); ?>',
+        type: 'POST',
+        dataType: 'json',
+        data: {
+            temp_id: tempId,
+            file: fileName
+        },
+        success: function (response) {
+            if (!response.status) {
+                alert(response.message);
+            }
+            loadTemporaryFiles(tempId);
+        }
+    });
 
-function loadReviewData()
-{
-    $('#review_first_name')
-        .text(
-            $('#first_name').val()
-        );
+});
 
-    $('#review_last_name')
-        .text(
-            $('#last_name').val()
-        );
-
-    $('#review_email')
-        .text(
-            $('#email').val()
-        );
-
-    $('#review_phone')
-        .text(
-            $('#phone').val()
-        );
-
-
-    $('#reviewFiles')
-        .html(
-            $('#uploadedFiles')
-                .html()
-        );
-}
 
  function getOptions(table, searchfield, returnfield, searchvalue, returnid) {
             $.blockUI();
@@ -1278,6 +1279,8 @@ function loadReviewData()
 		});
         
       showStep(1);
+
+      $('#loadParticipantsBtn').on('click', getParticipants);
 
     });
 
