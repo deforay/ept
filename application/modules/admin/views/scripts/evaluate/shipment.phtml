@@ -770,7 +770,7 @@ if ($shipmentAttributesRaw !== '') {
 		function decideLateSubmission(mid, decision) {
 			var isApprove = decision === 'approve';
 			var confirmMsg = isApprove
-				? "<?= $this->jsTranslate('Approve this late submission? Its status becomes Responded, and it stays marked as late in history.'); ?>"
+				? "<?= $this->jsTranslate('Approve this late submission? Need to re-evaluate for participant scores; its status becomes Responded, and it stays marked as late in history.'); ?>"
 				: "<?= $this->jsTranslate('Reject this late submission?'); ?>";
 			if (!window.confirm(confirmMsg)) {
 				return;
