@@ -81,3 +81,7 @@ rector.php
 
 # Commit SHA stamped by setup.sh / upgrade.sh at deploy time
 VERSION.txt
+
+# Deploy-time helper scripts fetched by the setup instructions; not part of the repo
+ept-setup.sh
+lamp-setup.sh
