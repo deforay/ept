@@ -220,6 +220,8 @@ if ($shipmentAttributesRaw !== '') {
 				<option value="responded"><?= $this->htmlTranslate("Responded"); ?></option>
 				<option value="noresponse"><?= $this->htmlTranslate("Not Responded"); ?></option>
 				<option value="late"><?= $this->htmlTranslate("Late Response"); ?></option>
+				<option value="late_submitted"><?= $this->htmlTranslate("Late Submission (pending approval)"); ?></option>
+				<option value="late_rejected"><?= $this->htmlTranslate("Late Submission (rejected)"); ?></option>
 				<option value="nottested"><?= $this->htmlTranslate("Not Tested"); ?></option>
 			</select>
 		</div>
@@ -762,6 +764,35 @@ if ($shipmentAttributesRaw !== '') {
 				.fail(function (xhr) {
 					$.unblockUI();
 					alert("<?= $this->jsTranslate('Failed to delete the response. Please try again or contact the administrator.'); ?>");
+				});
+		}
+
+		function decideLateSubmission(mid, decision) {
+			var isApprove = decision === 'approve';
+			var confirmMsg = isApprove
+				? "<?= $this->jsTranslate('Approve this late submission? Its status becomes Responded, and it stays marked as late in history.'); ?>"
+				: "<?= $this->jsTranslate('Reject this late submission?'); ?>";
+			if (!window.confirm(confirmMsg)) {
+				return;
+			}
+			$.blockUI();
+			$.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'evaluate', 'action' => 'late-submission-decision'), 'default', true); ?>", {
+				mid: mid,
+				decision: decision,
+				format: "html"
+			})
+				.done(function (data) {
+					$.unblockUI();
+					if (data && data.ok) {
+						alert(data.message || "<?= $this->jsTranslate('Done.'); ?>");
+						oTable.fnDraw();
+					} else {
+						alert((data && data.message) || "<?= $this->jsTranslate('Could not update this late submission. Please try again.'); ?>");
+					}
+				})
+				.fail(function () {
+					$.unblockUI();
+					alert("<?= $this->jsTranslate('Could not update this late submission. Please try again.'); ?>");
 				});
 		}
 

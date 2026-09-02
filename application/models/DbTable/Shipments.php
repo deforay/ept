@@ -333,7 +333,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             ])
             ->join(['d' => 'distributions'], 'd.distribution_id = s.distribution_id', ['distribution_code', 'distribution_date'])
             ->join(['sl' => 'scheme_list'], 'sl.scheme_id=s.scheme_type', ['scheme_name', 'is_user_configured'])
-            ->join(['spm' => 'shipment_participant_map'], 'spm.shipment_id=s.shipment_id', ['spm.map_id', 'spm.evaluation_status', 'spm.response_status', 'spm.participant_id', 'RESPONSEDATE' => "DATE_FORMAT(spm.shipment_test_report_date,'%Y-%m-%d')"])
+            ->join(['spm' => 'shipment_participant_map'], 'spm.shipment_id=s.shipment_id', ['spm.map_id', 'spm.evaluation_status', 'spm.response_status', 'spm.late_submit_status', 'spm.participant_id', 'RESPONSEDATE' => "DATE_FORMAT(spm.shipment_test_report_date,'%Y-%m-%d')", 'RESPONSEDATETIME' => 'spm.shipment_test_report_date'])
             ->join(['p' => 'participant'], 'p.participant_id=spm.participant_id', ['p.unique_identifier', 'p.first_name', 'p.last_name', 'p.state', 'p.institute_name', 'p.country'])
             ->joinLeft(['c' => 'countries'], 'p.country=c.id', ['c.iso_name'])
             ->where("s.status='shipped' OR s.status='evaluated'")
@@ -403,7 +403,25 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             $row[] = $aRow['first_name'] . ' ' . $aRow['last_name'];
             $row[] = $aRow['institute_name'];
             $row[] = Pt_Commons_DateUtility::humanReadableDateFormat($aRow['response_deadline'], true);
-            $row[] = Pt_Commons_DateUtility::humanReadableDateFormat($aRow['RESPONSEDATE']);
+            // Response Date shows the time of day too (responseDateForDisplay appends it
+            // only when the stored value actually carries one - legacy rows stay date-only).
+            $responseDateCell = (string) Pt_Commons_DateUtility::responseDateForDisplay($aRow['RESPONSEDATETIME']);
+            if (!empty($aRow['late_submit_status'])) {
+                // Started on/before the deadline but submitted after it. Shown to the
+                // participant so a late submission is never silently accepted.
+                if ($aRow['response_status'] === 'late_submitted') {
+                    $lateLabel = Pt_Commons_TranslateUtility::htmlTranslate('Late submission — under review');
+                    $lateClass = 'label-warning';
+                } elseif ($aRow['response_status'] === 'late_rejected') {
+                    $lateLabel = Pt_Commons_TranslateUtility::htmlTranslate('Late submission — not accepted');
+                    $lateClass = 'label-danger';
+                } else {
+                    $lateLabel = Pt_Commons_TranslateUtility::htmlTranslate('Late submission — accepted');
+                    $lateClass = 'label-success';
+                }
+                $responseDateCell .= '<br/><span class="label ' . $lateClass . '">' . $lateLabel . '</span>';
+            }
+            $row[] = $responseDateCell;
 
             $buttonText = Pt_Commons_TranslateUtility::htmlTranslate('View/Edit');
             $buttonType = 'btn-primary';

@@ -61,6 +61,10 @@ class VlController extends Zend_Controller_Action
                 $this->view->vlRange = $vlModel->getVlRange($sID);
                 $this->view->evaluateData = $evalService->editEvaluation($sID, $pID, 'vl', $uc);
                 $this->_helper->layout()->setLayout('admin');
+            } else {
+                // Record when the participant first opened the form - the "started the
+                // test" moment the late-submission check compares against.
+                $shipmentService->recordResponseStart($sID, $pID);
             }
             $common = new Application_Service_Common();
             $this->view->invalidVlResult = $common->checkAssayInvalid($sID, $pID, true);

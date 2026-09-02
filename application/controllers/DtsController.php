@@ -50,6 +50,9 @@ class DtsController extends Zend_Controller_Action
                         $this->redirect('/participant/current-schemes');
                     }
                 }
+                // Record when the participant first opened the form - the "started the
+                // test" moment the late-submission check compares against.
+                $shipmentService->recordResponseStart($sID, $pID);
             }
 
             $this->view->dtsConfig = Pt_Commons_SchemeConfig::get('dts');

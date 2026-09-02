@@ -353,6 +353,29 @@ class Admin_EvaluateController extends Zend_Controller_Action
         }
     }
 
+    public function lateSubmissionDecisionAction()
+    {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
+        $this->_helper->layout()->disableLayout();
+        $this->_helper->viewRenderer->setNoRender();
+        $response = $this->getResponse();
+        $response->setHeader('Content-Type', 'application/json');
+
+        if (!$request->isPost() || !$this->hasParam('mid')) {
+            $response->setHttpResponseCode(400)->setBody(json_encode(['ok' => false, 'message' => 'Bad request']));
+            return;
+        }
+
+        $mapId = (int) base64_decode($this->_getParam('mid'));
+        $decision = (string) $this->_getParam('decision');
+        $adminSession = new Zend_Session_Namespace('administrators');
+
+        $evalService = new Application_Service_Evaluation();
+        $result = $evalService->decideLateSubmission($mapId, $decision, $adminSession->admin_id ?? null);
+        $response->setBody(json_encode($result));
+    }
+
     public function vlRangeAction()
     {
         $vlModel       = new Application_Model_Vl();

@@ -1922,9 +1922,10 @@ class Application_Service_Evaluation
         }
 
         // Sorting.
-        // Float responders to the top (responded, then late), leaving non-responders
-        // and not-tested below; the user's chosen column then sorts within each group.
-        $sortClauses = [new Zend_Db_Expr("CASE WHEN sp.response_status = 'responded' THEN 0 WHEN sp.response_status = 'late' THEN 1 ELSE 2 END")];
+        // Float responders to the top (responded, then late / late-submitted), leaving
+        // non-responders and not-tested below; the user's chosen column then sorts within
+        // each group.
+        $sortClauses = [new Zend_Db_Expr("CASE WHEN sp.response_status = 'responded' THEN 0 WHEN sp.response_status IN ('late', 'late_submitted') THEN 1 ELSE 2 END")];
         if (isset($parameters['iSortCol_0'])) {
             $sortingCols = (int) ($parameters['iSortingCols'] ?? 1);
             for ($i = 0; $i < $sortingCols; $i++) {
@@ -1999,6 +2000,10 @@ class Application_Service_Evaluation
             $responseStatus = $translator->_('Responded');
         } elseif ($shipment['response_status'] === 'late') {
             $responseStatus = $translator->_('Late Response');
+        } elseif ($shipment['response_status'] === 'late_submitted') {
+            $responseStatus = $translator->_('Late Submission (pending approval)');
+        } elseif ($shipment['response_status'] === 'late_rejected') {
+            $responseStatus = $translator->_('Late Submission (rejected)');
         } else {
             $responseStatus = $translator->_('Not Tested');
         }
@@ -2241,9 +2246,10 @@ class Application_Service_Evaluation
             $filtered->where($expr . ' LIKE ?', '%' . $parameters['sSearch_' . $i] . '%');
         }
 
-        // Float responders to the top (responded, then late), leaving non-responders
-        // and not-tested below; the user's chosen column then sorts within each group.
-        $sortClauses = [new Zend_Db_Expr("CASE WHEN sp.response_status = 'responded' THEN 0 WHEN sp.response_status = 'late' THEN 1 ELSE 2 END")];
+        // Float responders to the top (responded, then late / late-submitted), leaving
+        // non-responders and not-tested below; the user's chosen column then sorts within
+        // each group.
+        $sortClauses = [new Zend_Db_Expr("CASE WHEN sp.response_status = 'responded' THEN 0 WHEN sp.response_status IN ('late', 'late_submitted') THEN 1 ELSE 2 END")];
         if (isset($parameters['iSortCol_0'])) {
             $sortingCols = (int) ($parameters['iSortingCols'] ?? 1);
             for ($i = 0; $i < $sortingCols; $i++) {
@@ -2336,6 +2342,10 @@ class Application_Service_Evaluation
             }
         } elseif ($shipment['response_status'] === 'late') {
             $responseStatus = $translator->_('Late Response');
+        } elseif ($shipment['response_status'] === 'late_submitted') {
+            $responseStatus = $translator->_('Late Submission (pending approval)');
+        } elseif ($shipment['response_status'] === 'late_rejected') {
+            $responseStatus = $translator->_('Late Submission (rejected)');
         } else {
             $responseStatus = $translator->_('Not Tested');
         }
@@ -2464,9 +2474,10 @@ class Application_Service_Evaluation
             $filtered->where($expr . ' LIKE ?', '%' . $parameters['sSearch_' . $i] . '%');
         }
 
-        // Float responders to the top (responded, then late), leaving non-responders
-        // and not-tested below; the user's chosen column then sorts within each group.
-        $sortClauses = [new Zend_Db_Expr("CASE WHEN sp.response_status = 'responded' THEN 0 WHEN sp.response_status = 'late' THEN 1 ELSE 2 END")];
+        // Float responders to the top (responded, then late / late-submitted), leaving
+        // non-responders and not-tested below; the user's chosen column then sorts within
+        // each group.
+        $sortClauses = [new Zend_Db_Expr("CASE WHEN sp.response_status = 'responded' THEN 0 WHEN sp.response_status IN ('late', 'late_submitted') THEN 1 ELSE 2 END")];
         if (isset($parameters['iSortCol_0'])) {
             $sortingCols = (int) ($parameters['iSortingCols'] ?? 1);
             for ($i = 0; $i < $sortingCols; $i++) {
@@ -2548,6 +2559,10 @@ class Application_Service_Evaluation
             $responseStatus = $translator->_('Responded');
         } elseif ($shipment['response_status'] === 'late') {
             $responseStatus = $translator->_('Late Response');
+        } elseif ($shipment['response_status'] === 'late_submitted') {
+            $responseStatus = $translator->_('Late Submission (pending approval)');
+        } elseif ($shipment['response_status'] === 'late_rejected') {
+            $responseStatus = $translator->_('Late Submission (rejected)');
         } else {
             $responseStatus = $translator->_('Not Tested');
         }
@@ -2559,6 +2574,17 @@ class Application_Service_Evaluation
         $docScore = '<div style="text-align:center;">' . htmlspecialchars($documentationScore) . '</div>';
         $resultCell = '<div style="text-align:center;">' . htmlspecialchars($displayResult !== '' ? $displayResult : $translator->_('Not Evaluated')) . '</div>';
         $responseStatusCell = htmlspecialchars($responseStatus);
+        if (!empty($shipment['late_submit_status'])) {
+            // late_submit_status stays 1 even after an admin approves the late submission
+            // (status flips back to 'responded'), so it doubles as the "was late" history flag.
+            if ($shipment['response_status'] === 'late_submitted') {
+                $responseStatusCell = '<span class="label label-warning">' . htmlspecialchars($responseStatus) . '</span>';
+            } elseif ($shipment['response_status'] === 'late_rejected') {
+                $responseStatusCell = '<span class="label label-danger">' . htmlspecialchars($responseStatus) . '</span>';
+            } elseif ($shipment['response_status'] === 'responded') {
+                $responseStatusCell .= ' <span class="label label-info">' . $translator->_('late — approved') . '</span>';
+            }
+        }
         $respondedOn = !empty($shipment['shipment_test_report_date'])
             ? (Pt_Commons_DateUtility::humanReadableDateFormat($shipment['shipment_test_report_date'], true) ?? '-')
             : '-';
@@ -2607,6 +2633,20 @@ class Application_Service_Evaluation
         if ($displayResult === $translator->_('Fail') && !empty($shipment['corrective_action_file'])) {
             $actionParts[] = '<br><a class="btn btn-info btn-xs" href="/uploads/corrective-action-files/' . htmlspecialchars($shipment['corrective_action_file']) . '" download=""><span><i class="icon-download"></i> ' . $translator->_('Download Corrective Action') . '</span></a>';
         }
+
+        // Late-submission review: started on/before the deadline, submitted after it.
+        // Approve -> response_status back to 'responded' (kept traceable by
+        // late_submit_status = 1); Reject -> 'late_rejected'. A rejected one can still be
+        // approved later.
+        if ($canEdit && !empty($shipment['late_submit_status'])
+            && in_array($shipment['response_status'] ?? '', ['late_submitted', 'late_rejected'], true)) {
+            $midArg = json_encode(base64_encode((string) $shipment['map_id']), JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP);
+            $actionParts[] = '<br><a class="btn btn-success btn-xs" href="javascript:void(0);" onclick=\'decideLateSubmission(' . $midArg . ', "approve")\'><span><i class="icon-ok"></i> ' . $translator->_('Approve Late Submission') . '</span></a>';
+            if (($shipment['response_status'] ?? '') === 'late_submitted') {
+                $actionParts[] = '<a class="btn btn-danger btn-xs" href="javascript:void(0);" onclick=\'decideLateSubmission(' . $midArg . ', "reject")\'><span><i class="icon-remove"></i> ' . $translator->_('Reject') . '</span></a>';
+            }
+        }
+
         $actionCell = '<div style="white-space:nowrap;">' . implode(' ', $actionParts) . '</div>';
 
         return [
@@ -2620,6 +2660,65 @@ class Application_Service_Evaluation
             $lastModified,
             (int) $shipment['map_id'],
             $actionCell,
+        ];
+    }
+
+    /**
+     * Admin decision on a pending late submission (see Application_Service_Shipments::lateSubmissionCapture()).
+     *
+     * approve -> response_status = 'responded'; reject -> response_status = 'late_rejected'.
+     * late_submit_status is left at 1 either way, so the row stays traceable as "was late".
+     * Only rows currently flagged late (late_submit_status = 1) and sitting in
+     * 'late_submitted' / 'late_rejected' can be decided. Re-evaluating the shipment
+     * afterwards is a separate, explicit admin action.
+     *
+     * @return array{ok: bool, message: string, status?: string}
+     */
+    public function decideLateSubmission($mapId, string $decision, $adminId = null): array
+    {
+        $translator = Zend_Registry::get('translate');
+        $mapId = (int) $mapId;
+        $decision = strtolower(trim($decision));
+        if ($mapId <= 0 || !in_array($decision, ['approve', 'reject'], true)) {
+            return ['ok' => false, 'message' => $translator->_('Invalid request.')];
+        }
+
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $row = $db->fetchRow(
+            $db->select()
+                ->from(['sp' => 'shipment_participant_map'], ['map_id', 'response_status', 'late_submit_status', 'shipment_id', 'participant_id'])
+                ->where('sp.map_id = ?', $mapId)
+        );
+        if (!$row || (int) $row['late_submit_status'] !== 1
+            || !in_array($row['response_status'], ['late_submitted', 'late_rejected'], true)) {
+            return ['ok' => false, 'message' => $translator->_('This response is not a pending late submission.')];
+        }
+
+        $newStatus = $decision === 'approve' ? 'responded' : 'late_rejected';
+        if ($row['response_status'] === $newStatus) {
+            return ['ok' => true, 'message' => $translator->_('No change.'), 'status' => $newStatus];
+        }
+
+        $db->update('shipment_participant_map', [
+            'response_status'  => $newStatus,
+            'late_submit_status' => 1,
+            'updated_by_admin' => $adminId,
+            'updated_on_admin' => new Zend_Db_Expr('now()'),
+        ], $db->quoteInto('map_id = ?', $mapId));
+
+        $shipmentCode = (string) $db->fetchOne($db->select()->from('shipment', 'shipment_code')->where('shipment_id = ?', $row['shipment_id']));
+        $uid = (string) $db->fetchOne($db->select()->from('participant', 'unique_identifier')->where('participant_id = ?', $row['participant_id']));
+        (new Application_Model_DbTable_AuditLog())->addNewAuditLog(
+            ($decision === 'approve' ? 'Approved' : 'Rejected') . " late submission - {$shipmentCode} / {$uid}",
+            'response'
+        );
+
+        return [
+            'ok' => true,
+            'status' => $newStatus,
+            'message' => $decision === 'approve'
+                ? $translator->_('Late submission approved. Its status is now Responded (kept marked as late in history).')
+                : $translator->_('Late submission rejected.'),
         ];
     }
 

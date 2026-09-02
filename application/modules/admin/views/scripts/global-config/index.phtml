@@ -999,6 +999,15 @@ $faqResults = json_decode($this->faqs);
 							placeholder="<?= $this->translate->_('Enter certificate notification email'); ?>"
 							title="<?= $this->translate->_('Enter the email address for certificate notifications'); ?>">
 					</div>
+					<div class="col-md-6">
+						<label for="late_submission_grace_minutes"
+							class="control-label"><?= $this->translate->_("Late Submission Grace Window (minutes)"); ?></label>
+						<input type="number" min="0" step="1" class="form-control"
+							id="late_submission_grace_minutes" name="late_submission_grace_minutes"
+							placeholder="<?= $this->translate->_('e.g., 1440'); ?>"
+							title="<?= $this->translate->_('Minutes after a shipment deadline during which a participant who opened the response form before the deadline may still submit. The submission is saved and held for admin review as a late submission. 0 disables it.'); ?>"
+							value="<?php echo $this->late_submission_grace_minutes ?? 0; ?>">
+					</div>
 				</div>
 			</div>
 			</div>

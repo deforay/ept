@@ -58,6 +58,154 @@ class Application_Service_Shipments
         return (($params['isPtTestNotPerformed'] ?? '') === 'yes') ? 'nottested' : 'responded';
     }
 
+    /**
+     * Stamp shipment_participant_map.started_at the first time a participant opens the
+     * response form. This is the "started the test" moment the late-submission check
+     * compares against - the participant may open the form before the deadline and only
+     * finish (confirm) after it.
+     *
+     * Set once and never overwritten. No-op for admin-side access, for closed/finalized
+     * shipments (a start recorded after the shipment shut can never make a submission
+     * "late") and for view-only data managers - all covered by isShipmentEditable().
+     */
+    public function recordResponseStart($shipmentId, $participantId): void
+    {
+        $shipmentId = (int) $shipmentId;
+        $participantId = (int) $participantId;
+        if ($shipmentId <= 0 || $participantId <= 0) {
+            return;
+        }
+        if (!$this->isShipmentEditable($shipmentId, $participantId)) {
+            return;
+        }
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $db->update(
+            'shipment_participant_map',
+            ['started_at' => new Zend_Db_Expr('now()')],
+            $db->quoteInto('shipment_id = ?', $shipmentId)
+                . ' AND ' . $db->quoteInto('participant_id = ?', $participantId)
+                . ' AND started_at IS NULL'
+        );
+    }
+
+    /**
+     * True when a participant may still save a response even though the shipment has
+     * auto-closed at its deadline - a grace window for "started before the deadline,
+     * finishing just after it".
+     *
+     * All must hold: the late_submission_grace_minutes config is > 0; the caller is not a
+     * view-only data manager; the shipment is not finalized or cancelled; the participant's
+     * started_at is on/before the deadline; and now is strictly after the deadline but
+     * within the grace window. The strict "after the deadline" lower bound means a shipment
+     * a coordinator closed early is never reopened by this.
+     */
+    public function isWithinLateSubmissionGrace($shipmentId, $participantId): bool
+    {
+        $graceMinutes = (int) (Application_Service_Common::getConfig('late_submission_grace_minutes') ?: 0);
+        if ($graceMinutes <= 0) {
+            return false;
+        }
+
+        $dm = new Zend_Session_Namespace('datamanagers');
+        if (($dm->view_only_access ?? '') === 'yes') {
+            return false;
+        }
+
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $shipment = $db->fetchRow(
+            $db->select()->from('shipment', ['status', 'cancelled_at', 'response_deadline'])
+                ->where('shipment_id = ?', (int) $shipmentId)
+        );
+        if (!$shipment || $shipment['status'] === 'finalized' || !empty($shipment['cancelled_at'])) {
+            return false;
+        }
+
+        $startedAt = $db->fetchOne(
+            $db->select()->from('shipment_participant_map', 'started_at')
+                ->where('shipment_id = ?', (int) $shipmentId)
+                ->where('participant_id = ?', (int) $participantId)
+        );
+        if (empty($startedAt) || strncmp((string) $startedAt, '0000', 4) === 0) {
+            return false;
+        }
+
+        $cutoff = Pt_Commons_DateUtility::shipmentCutoff($shipment['response_deadline']);
+        $startInstant = Pt_Commons_DateUtility::responseInstant($startedAt);
+        if (!$cutoff || !$startInstant || $startInstant > $cutoff) {
+            return false;
+        }
+
+        $now = new DateTimeImmutable('now', new DateTimeZone('UTC'));
+        $graceEnd = $cutoff->modify('+' . $graceMinutes . ' minutes');
+        return $now > $cutoff && $now <= $graceEnd;
+    }
+
+    /**
+     * Late-submission capture (participant side).
+     *
+     * started_at is stamped when the participant opens the response form (see
+     * recordResponseStart()). When that start was on or before the shipment deadline but
+     * the response is being saved after it, the result is still stored in full but held as
+     * response_status = 'late_submitted' with late_submit_status = 1, until an admin
+     * approves it (approval flips the status back to 'responded' while keeping the flag = 1
+     * as history). Deadline vs. instant comparison uses the same helpers the evaluator uses
+     * so both code paths agree. Admin edits (reqAccessFrom = 'admin') are exempt. If no
+     * start was ever recorded, the row is left as an ordinary response.
+     *
+     * @param  string $responseStatus status already computed by responseStatusForSubmission()
+     * @return array{responseStatus: string, columns: array<string, mixed>}
+     *         the (possibly rewritten) status and the extra shipment_participant_map columns
+     */
+    private static function lateSubmissionCapture(array $params, string $responseStatus): array
+    {
+        $columns = ['late_submit_status' => 0];
+        if (isset($params['reqAccessFrom']) && $params['reqAccessFrom'] === 'admin') {
+            return ['responseStatus' => $responseStatus, 'columns' => []];
+        }
+
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $mapId = (int) ($params['smid'] ?? 0);
+       
+        $row = $mapId > 0
+            ? $db->fetchRow(
+                $db->select()
+                    ->from('shipment_participant_map', ['started_at'])
+                    ->columns(['db_now' => new Zend_Db_Expr('NOW()')])
+                    ->where('map_id = ?', $mapId)
+            )
+            : null;
+
+        $startedAt = $row['started_at'] ?? null;
+        $dbNow = $row['db_now'] ?? null;
+
+        if (empty($startedAt) || strncmp((string) $startedAt, '0000', 4) === 0) {
+            // No recorded start (participant reached the POST without opening the form) -
+            // treat as an ordinary response.
+            return ['responseStatus' => $responseStatus, 'columns' => $columns];
+        }
+
+        $deadline = !empty($params['shipmentId'])
+            ? $db->fetchOne($db->select()->from('shipment', 'response_deadline')->where('shipment_id = ?', $params['shipmentId']))
+            : null;
+        if (empty($deadline)) {
+            $deadline = $params['hdLastDate'] ?? null;
+        }
+
+        $cutoff = Pt_Commons_DateUtility::shipmentCutoff($deadline);
+        $startInstant = Pt_Commons_DateUtility::responseInstant($startedAt);
+        $submitInstant = Pt_Commons_DateUtility::responseInstant($dbNow);
+
+        $isLateSubmit = $cutoff && $startInstant && $submitInstant
+            && $startInstant <= $cutoff && $submitInstant > $cutoff;
+
+        if ($isLateSubmit && ($params['isPtTestNotPerformed'] ?? '') !== 'yes') {
+            $responseStatus = 'late_submitted';
+            $columns['late_submit_status'] = 1;
+        }
+
+        return ['responseStatus' => $responseStatus, 'columns' => $columns];
+    }
+
     private function logResponseSave($scheme, $params)
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
@@ -827,7 +975,9 @@ class Application_Service_Shipments
     public function updateDtsResults($params)
     {
         $alertMsg = new Zend_Session_Namespace('alertSpace');
-        if (!$this->isShipmentEditable($params['shipmentId'], $params['participantId']) && (!isset($params['reqAccessFrom']) || empty($params['reqAccessFrom']) || $params['reqAccessFrom'] != 'admin')) {
+        if (!$this->isShipmentEditable($params['shipmentId'], $params['participantId'])
+            && (!isset($params['reqAccessFrom']) || empty($params['reqAccessFrom']) || $params['reqAccessFrom'] != 'admin')
+            && !$this->isWithinLateSubmissionGrace($params['shipmentId'], $params['participantId'])) {
             $alertMsg->message = 'You are not allowed to update the response for this participant.';
             return false;
         }
@@ -865,7 +1015,13 @@ class Application_Service_Shipments
             $attributes['dts_test_panel_type'] = $params['dtsTestPanelType'] ?? null;
             $attributes = json_encode($attributes);
             $responseStatus = self::responseStatusForSubmission($params);
-            $data = [
+
+            // Hold a "started before the deadline, saved after it" response as
+            // 'late_submitted' pending admin approval; see lateSubmissionCapture().
+            $lateCapture = self::lateSubmissionCapture($params, $responseStatus);
+            $responseStatus = $lateCapture['responseStatus'];
+
+            $data = array_merge($lateCapture['columns'], [
                 'shipment_receipt_date' => Pt_Commons_DateUtility::isoDateFormat($params['receiptDate']),
                 'shipment_test_date' => Pt_Commons_DateUtility::isoDateFormat($params['testDate']),
                 'attributes' => $attributes,
@@ -874,7 +1030,7 @@ class Application_Service_Shipments
                 'user_comment' => $params['userComments'],
                 'mode_id' => $params['modeOfReceipt'] ?? null,
                 'response_status' => $responseStatus,
-            ];
+            ]);
 
             if (!empty($authNameSpace->dm_id)) {
                 $data['updated_by_user'] = $authNameSpace->dm_id ?? null;
@@ -963,7 +1119,11 @@ class Application_Service_Shipments
             if (isset($params['reqAccessFrom']) && !empty($params['reqAccessFrom']) && $params['reqAccessFrom'] == 'admin') {
                 $alertMsg->message = 'Updated Successfully';
             } elseif (isset($params['confirmForm']) && trim($params['confirmForm']) == 'yes') {
-                $alertMsg->message = 'Thank you for submitting your result. We have received it and the PT Results will be published on or after the due date';
+                if ($responseStatus === 'late_submitted') {
+                    $alertMsg->message = 'Your result was received after the due date and time and has been recorded as a late submission. Your PT provider will review it before it is evaluated.';
+                } else {
+                    $alertMsg->message = 'Thank you for submitting your result. We have received it and the PT Results will be published on or after the due date';
+                }
             } else {
                 $alertMsg->message = '';
             }
@@ -1137,6 +1297,7 @@ class Application_Service_Shipments
                 'custom_field_2' => null,
                 'synced' => 'no',
                 'synced_on' => null,
+                'started_at' => null
             ];
             $noOfRowsAffected = $shipmentParticipantDb->removeShipmentMapDetails($data, $mapId);
 
@@ -1198,6 +1359,7 @@ class Application_Service_Shipments
                 'custom_field_2' => null,
                 'synced' => 'no',
                 'synced_on' => null,
+                'started_at' => null
             ];
             $noOfRowsAffected = $shipmentParticipantDb->removeShipmentMapDetails($data, $mapId);
 
@@ -1255,6 +1417,7 @@ class Application_Service_Shipments
                 'custom_field_2' => null,
                 'synced' => 'no',
                 'synced_on' => null,
+                'started_at' => null
             ];
             $noOfRowsAffected = $shipmentParticipantDb->removeShipmentMapDetails($data, $mapId);
 
@@ -1305,6 +1468,7 @@ class Application_Service_Shipments
                 'custom_field_2' => null,
                 'synced' => 'no',
                 'synced_on' => null,
+                'started_at' => null
             ];
             $noOfRowsAffected = $shipmentParticipantDb->removeShipmentMapDetails($data, $mapId);
 
@@ -1361,6 +1525,7 @@ class Application_Service_Shipments
                 'custom_field_2' => null,
                 'synced' => 'no',
                 'synced_on' => null,
+                'started_at' => null
             ];
             $noOfRowsAffected = $shipmentParticipantDb->removeShipmentMapDetails($data, $mapId);
 
@@ -1420,6 +1585,7 @@ class Application_Service_Shipments
                 'custom_field_2' => null,
                 'synced' => 'no',
                 'synced_on' => null,
+                'started_at' => null
             ];
             $noOfRowsAffected = $shipmentParticipantDb->removeShipmentMapDetails($data, $mapId);
 
@@ -1480,6 +1646,7 @@ class Application_Service_Shipments
                 'custom_field_2' => null,
                 'synced' => 'no',
                 'synced_on' => null,
+                'started_at' => null
             ];
             $noOfRowsAffected = $shipmentParticipantDb->removeShipmentMapDetails($data, $mapId);
 
@@ -1821,7 +1988,9 @@ class Application_Service_Shipments
     public function updateVlResults($params)
     {
         $alertMsg = new Zend_Session_Namespace('alertSpace');
-        if (!$this->isShipmentEditable($params['shipmentId'], $params['participantId']) && (!isset($params['reqAccessFrom']) || empty($params['reqAccessFrom']) || $params['reqAccessFrom'] != 'admin')) {
+        if (!$this->isShipmentEditable($params['shipmentId'], $params['participantId'])
+            && (!isset($params['reqAccessFrom']) || empty($params['reqAccessFrom']) || $params['reqAccessFrom'] != 'admin')
+            && !$this->isWithinLateSubmissionGrace($params['shipmentId'], $params['participantId'])) {
             $alertMsg->message = 'You are not allowed to update the response for this participant.';
             return false;
         }
@@ -1886,7 +2055,13 @@ class Application_Service_Shipments
             }
             $attributes = Zend_Json::encode($attributes);
             $responseStatus = self::responseStatusForSubmission($params);
-            $data = [
+
+            // Hold a "started before the deadline, saved after it" response as
+            // 'late_submitted' pending admin approval; see lateSubmissionCapture().
+            $lateCapture = self::lateSubmissionCapture($params, $responseStatus);
+            $responseStatus = $lateCapture['responseStatus'];
+
+            $data = array_merge($lateCapture['columns'], [
                 'shipment_receipt_date' => Pt_Commons_DateUtility::isoDateFormat($params['receiptDate']),
                 'shipment_test_date' => Pt_Commons_DateUtility::isoDateFormat($params['testDate']),
                 'attributes' => $attributes,
@@ -1895,7 +2070,7 @@ class Application_Service_Shipments
                 'user_comment' => $params['userComments'],
                 'mode_id' => $params['modeOfReceipt'],
                 'response_status' => $responseStatus,
-            ];
+            ]);
             if (!empty($authNameSpace->dm_id)) {
                 $data['updated_by_user'] = $authNameSpace->dm_id ?? null;
                 $data['updated_on_user'] = new Zend_Db_Expr('now()');
@@ -1974,7 +2149,11 @@ class Application_Service_Shipments
             if (isset($params['reqAccessFrom']) && !empty($params['reqAccessFrom']) && $params['reqAccessFrom'] == 'admin') {
                 $alertMsg->message = 'Updated Successfully';
             } elseif (isset($params['confirmForm']) && trim($params['confirmForm']) == 'yes') {
-                $alertMsg->message = 'Thank you for submitting your result. We have received it and the PT Results will be published on or after the due date';
+                if ($responseStatus === 'late_submitted') {
+                    $alertMsg->message = 'Your result was received after the due date and time and has been recorded as a late submission. Your PT provider will review it before it is evaluated.';
+                } else {
+                    $alertMsg->message = 'Thank you for submitting your result. We have received it and the PT Results will be published on or after the due date';
+                }
             } else {
                 $alertMsg->message = '';
             }
