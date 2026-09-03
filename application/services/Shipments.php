@@ -3567,6 +3567,98 @@ class Application_Service_Shipments
         return $shipmentDb->getindividualReportDetails($parameters);
     }
 
+    /**
+     * Bundle the individual (participant) report PDFs for the given
+     * shipment_participant_map ids into a zip in the temp-download folder, for
+     * the "download selected" action on /participant/report.
+     *
+     * Mirrors the single-row download link: same finalized-shipment guard, same
+     * on-disk file-path resolution, same data-manager scoping (a DM only ever
+     * gets reports for the participants mapped to them) and the same
+     * download-history bookkeeping.
+     *
+     * @param array $mapIds shipment_participant_map ids (ints or numeric strings)
+     * @return string basename of the generated zip in TEMP_UPLOAD_PATH, or '' when there is nothing to bundle
+     */
+    public function bulkIndividualReportZip(array $mapIds): string
+    {
+        $mapIds = array_values(array_unique(array_filter(array_map('intval', $mapIds))));
+        if (empty($mapIds)) {
+            return '';
+        }
+
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $select = $db->select()
+            ->from(['spm' => 'shipment_participant_map'], ['map_id', 'participant_id'])
+            ->join(['s' => 'shipment'], 's.shipment_id = spm.shipment_id', ['shipment_code', 'status'])
+            ->join(['p' => 'participant'], 'p.participant_id = spm.participant_id', ['unique_identifier'])
+            ->where('spm.map_id IN (?)', $mapIds)
+            ->where("s.status = 'finalized'")
+            ->where('s.cancelled_at IS NULL')
+            ->group('spm.map_id');
+
+        $authNameSpace = new Zend_Session_Namespace('datamanagers');
+        if (!empty($authNameSpace->dm_id)) {
+            $select->join(['pmm' => 'participant_manager_map'], 'pmm.participant_id = p.participant_id', [])
+                ->where('pmm.dm_id = ?', (int) $authNameSpace->dm_id);
+        }
+
+        $rows = $db->fetchAll($select);
+        if (empty($rows)) {
+            return '';
+        }
+
+        $files = [];
+        $usedNames = [];
+        $downloadedMapIds = [];
+        foreach ($rows as $row) {
+            $dir = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $row['shipment_code'];
+            $path = $dir . DIRECTORY_SEPARATOR . $row['shipment_code'] . '-' . $row['map_id'] . '.pdf';
+            if (!file_exists($path)) {
+                $glob = glob($dir . DIRECTORY_SEPARATOR . '*-' . $row['map_id'] . '.pdf');
+                $path = $glob[0] ?? '';
+            }
+            if ($path === '' || !file_exists($path)) {
+                continue;
+            }
+            $base = preg_replace('/[^A-Za-z0-9._-]+/', '_', $row['shipment_code'] . '-' . ($row['unique_identifier'] ?: $row['map_id'])) . '.pdf';
+            if (isset($usedNames[$base])) {
+                $base = pathinfo($base, PATHINFO_FILENAME) . '-' . $row['map_id'] . '.pdf';
+            }
+            $usedNames[$base] = true;
+            $files[$base] = $path;
+            $downloadedMapIds[] = (int) $row['map_id'];
+        }
+
+        if (empty($files)) {
+            return '';
+        }
+
+        if (!is_dir(TEMP_UPLOAD_PATH)) {
+            @mkdir(TEMP_UPLOAD_PATH, 0775, true);
+        }
+
+        $zipName = 'individual-reports-' . date('Ymd-His') . '-' . bin2hex(random_bytes(4)) . '.zip';
+        $zipPath = TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $zipName;
+
+        $zip = new ZipArchive();
+        if ($zip->open($zipPath, ZipArchive::CREATE) !== true) {
+            return '';
+        }
+        foreach ($files as $name => $path) {
+            $zip->addFile($path, $name);
+        }
+        $zip->close();
+
+        // Record each download the same way the single-file link's onclick does.
+        $reportService = new Application_Service_Reports();
+        foreach ($downloadedMapIds as $mid) {
+            $reportService->saveReportDownloadDateTime($mid, 'individual');
+        }
+
+        return $zipName;
+    }
+
     public function getCorrectiveActionReport($parameters)
     {
         $shipmentDb = new Application_Model_DbTable_Shipments();

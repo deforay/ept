@@ -59,104 +59,108 @@
     <div class="box">
         <div class="box-body">
             <div class="filter-panel js-filter-panel">
-                <button type="button" class="btn btn-default btn-sm js-filter-toggle" aria-expanded="false">
-                    <i class="icon-filter"></i> <?= $this->translate->_("Filters"); ?>
-                    <span class="label label-info js-filter-count" style="display:none;">0</span>
-                    <span class="caret"></span>
-                </button>
-                <div class="js-filter-body">
-            <table class="table table-striped">
-                <tr class="dark">
-                    <td style="width:25%"><?= $this->translate->_("Shipment Date"); ?></td>
-                    <td style="width:25%"><?= $this->translate->_("Scheme"); ?></td>
-                    <?php if (!empty($this->countries)) { ?>
-                        <td style="width:25%"><?= $this->translate->_("Country"); ?></td>
-                    <?php } ?>
-                    <?php if (!empty($this->regions)) { ?>
-                        <td style="width:25%"><?= $this->translate->_("Region"); ?></td>
-                    <?php } ?>
-                </tr>
-                <tr class="light">
-                    <td><input type="text" id="dateRange" name="dateRange" class="form-control" readonly="readonly"
-                            style="background: #fff" placeholder="<?= $this->htmlTranslate("Click here to pick a Date Range"); ?>" /></td>
-                    <td>
-                        <select id="scheme" name="scheme" class="form-control">
-                            <option value=""> -- <?= $this->translate->_("Select Scheme Type"); ?> --</option>
-                            <?php
-                            foreach ($this->schemes as $scheme) {
-                            ?>
-                                <option value="<?php echo $scheme['scheme_id']; ?>"><?php echo $scheme['scheme_name']; ?>
-                                </option>
-                            <?php
-                            }
-                            ?>
-                        </select>
-                    </td>
-                    <?php if (!empty($this->countries)) { ?>
+                <table class="table table-striped">
+                    <tr class="dark">
+                        <td style="width:25%"><?= $this->translate->_("Shipment Date"); ?></td>
+                        <td style="width:25%"><?= $this->translate->_("Scheme"); ?></td>
+                        <?php if (!empty($this->countries)) { ?>
+                            <td style="width:25%"><?= $this->translate->_("Country"); ?></td>
+                        <?php } ?>
+                        <?php if (!empty($this->regions)) { ?>
+                            <td style="width:25%"><?= $this->translate->_("Region"); ?></td>
+                        <?php } ?>
+                    </tr>
+                    <tr class="light">
+                        <td><input type="text" id="dateRange" name="dateRange" class="form-control" readonly="readonly"
+                                style="background: #fff" placeholder="<?= $this->htmlTranslate("Click here to pick a Date Range"); ?>" /></td>
                         <td>
-                            <select class="form-control select2" id="country" name="country"
-                                title="<?= $this->htmlTranslate("Please select the country to filter"); ?>"
-                                onchange="getOptions('participant', 'country', 'region', this.value, 'region');getOptions('participant', 'country', 'district', this.value, 'district');">
-                                <option value=""></option>
-                                <?php foreach ($this->countries as $country) { ?>
-                                    <option value="<?php echo $country['id']; ?>"><?php echo ucwords($country['iso_name']); ?></option>
-                                <?php } ?>
+                            <select id="scheme" name="scheme" class="form-control">
+                                <option value=""> -- <?= $this->translate->_("Select Scheme Type"); ?> --</option>
+                                <?php
+                                foreach ($this->schemes as $scheme) {
+                                ?>
+                                    <option value="<?php echo $scheme['scheme_id']; ?>"><?php echo $scheme['scheme_name']; ?>
+                                    </option>
+                                <?php
+                                }
+                                ?>
                             </select>
                         </td>
-                    <?php } ?>
-                    <?php if (!empty($this->regions)) { ?>
+                        <?php if (!empty($this->countries)) { ?>
+                            <td>
+                                <select class="form-control select2" id="country" name="country"
+                                    title="<?= $this->htmlTranslate("Please select the country to filter"); ?>"
+                                    onchange="getOptions('participant', 'country', 'region', this.value, 'region');getOptions('participant', 'country', 'district', this.value, 'district');">
+                                    <option value=""></option>
+                                    <?php foreach ($this->countries as $country) { ?>
+                                        <option value="<?php echo $country['id']; ?>"><?php echo ucwords($country['iso_name']); ?></option>
+                                    <?php } ?>
+                                </select>
+                            </td>
+                        <?php } ?>
+                        <?php if (!empty($this->regions)) { ?>
+                            <td>
+                                <select class="form-control select2" id="region" name="region"
+                                    title="<?= $this->htmlTranslate("Please select the region to filter"); ?>"
+                                    onchange="getOptions('participant', 'region', 'district', this.value, 'district');">
+                                    <option value=""></option>
+                                    <?php foreach ($this->regions as $region) { ?>
+                                        <option value="<?php echo $this->escape($region['region']); ?>"><?php echo ucwords($region['region']); ?></option>
+                                    <?php } ?>
+                                </select>
+                            </td>
+                        <?php } ?>
+                    </tr>
+                    <tr class="dark">
+                        <?php if (!empty($this->districts)) { ?>
+                            <td style="width:25%"><?= $this->translate->_("District"); ?></td>
+                        <?php } ?>
+                        <td style="width:25%"><?= $this->translate->_("Result Outcome"); ?></td>
+                        <td><?= $this->translate->_("Action"); ?></td>
+                    </tr>
+                    <tr class="light">
+                        <?php if (!empty($this->districts)) { ?>
+                            <td>
+                                <select class="form-control select2" id="district" name="district"
+                                    title="<?= $this->htmlTranslate("Please select the district to filter"); ?>">
+                                    <option value=""></option>
+                                    <?php foreach ($this->districts as $district) { ?>
+                                        <option value="<?php echo $this->escape($district['district']); ?>"><?php echo ucwords($district['district']); ?></option>
+                                    <?php } ?>
+                                </select>
+                            </td>
+                        <?php } ?>
                         <td>
-                            <select class="form-control select2" id="region" name="region"
-                                title="<?= $this->htmlTranslate("Please select the region to filter"); ?>"
-                                onchange="getOptions('participant', 'region', 'district', this.value, 'district');">
+                            <select id="finalResult" name="finalResult" class="form-control select2"
+                                title="<?= $this->htmlTranslate("Please select the result outcome to filter"); ?>">
                                 <option value=""></option>
-                                <?php foreach ($this->regions as $region) { ?>
-                                    <option value="<?php echo $this->escape($region['region']); ?>"><?php echo ucwords($region['region']); ?></option>
-                                <?php } ?>
+                                <option value="1"><?= $this->translate->_("Satisfactory"); ?></option>
+                                <option value="2"><?= $this->translate->_("Unsatisfactory"); ?></option>
+                                <option value="3"><?= $this->translate->_("Excluded from evaluation"); ?></option>
                             </select>
                         </td>
-                    <?php } ?>
-                </tr>
-                <tr class="dark">
-                    <?php if (!empty($this->districts)) { ?>
-                        <td style="width:25%"><?= $this->translate->_("District"); ?></td>
-                    <?php } ?>
-                    <td style="width:25%"><?= $this->translate->_("Result Outcome"); ?></td>
-                    <td><?= $this->translate->_("Action"); ?></td>
-                </tr>
-                <tr class="light">
-                    <?php if (!empty($this->districts)) { ?>
-                        <td>
-                            <select class="form-control select2" id="district" name="district"
-                                title="<?= $this->htmlTranslate("Please select the district to filter"); ?>">
-                                <option value=""></option>
-                                <?php foreach ($this->districts as $district) { ?>
-                                    <option value="<?php echo $this->escape($district['district']); ?>"><?php echo ucwords($district['district']); ?></option>
-                                <?php } ?>
-                            </select>
+                        <td><button class="btn btn-success btn-sm"
+                                onclick="individualSchemes()"><span><?= $this->translate->_("Get Report"); ?></span></button>
                         </td>
-                    <?php } ?>
-                    <td>
-                        <select id="finalResult" name="finalResult" class="form-control select2"
-                            title="<?= $this->htmlTranslate("Please select the result outcome to filter"); ?>">
-                            <option value=""></option>
-                            <option value="1"><?= $this->translate->_("Satisfactory"); ?></option>
-                            <option value="2"><?= $this->translate->_("Unsatisfactory"); ?></option>
-                            <option value="3"><?= $this->translate->_("Excluded from evaluation"); ?></option>
-                        </select>
-                    </td>
-                    <td><button class="btn btn-success btn-sm"
-                            onclick="individualSchemes()"><span><?= $this->translate->_("Get Report"); ?></span></button>
-                    </td>
-                </tr>
-            </table>
-                </div><!-- /.js-filter-body -->
+                    </tr>
+                </table>
             </div><!-- /.filter-panel -->
+            <div id="rptBulkToolbar" style="margin:10px 0;display:none;">
+                <button class="btn btn-success btn-sm" id="rptBulkBtn" onclick="bulkDownloadReports()" disabled>
+                    <i class="icon-download"></i>
+                    <?= $this->translate->_("Download Selected Reports"); ?> (<span id="rptBulkCount">0</span>)
+                </button>
+                <button class="btn btn-default btn-sm" style="margin-left:5px;"
+                    onclick="clearReportSelection()"><?= $this->translate->_("Clear"); ?></button>
+            </div>
             <div class="table-responsive">
                 <table cellpadding="0" cellspacing="0" border="0" class="display datatable table table-bordered"
                     id="individualReportTable">
                     <thead>
                         <tr>
+                            <th scope="col" style="width:2%;text-align:center;">
+                                <input type="checkbox" id="rptCheckAll" onclick="event.stopPropagation();" title="<?= $this->htmlTranslate('Select all reports on this page'); ?>" />
+                            </th>
                             <th scope="col"><?= $this->translate->_("Scheme"); ?></th>
                             <th scope="col"><?= $this->translate->_("Shipment Code"); ?></th>
                             <th scope="col"><?= $this->translate->_("Shipment Date"); ?></th>
@@ -167,8 +171,9 @@
                             <th scope="col"><?= $this->translate->_("Report"); ?></th>
                         </tr>
                         <tr class="column-search-row">
+                            <th scope="col"></th>
                             <th scope="col">
-                                 <select id="scheme" name="scheme" class="form-control input-sm col-search" data-col="0">
+                                 <select id="scheme" name="scheme" class="form-control input-sm col-search" data-col="1">
                                     <option value=""> -- <?= $this->translate->_("Select Scheme Type"); ?> --</option>
                                     <?php
                                     foreach ($this->schemes as $scheme) {
@@ -180,10 +185,10 @@
                                     ?>
                                 </select>
                             </th>
-                            <th scope="col"><input type="text" class="form-control input-sm col-search" data-col="1" placeholder="<?= $this->translate->_('Search Code'); ?>" /></th>
+                            <th scope="col"><input type="text" class="form-control input-sm col-search" data-col="2" placeholder="<?= $this->translate->_('Search Code'); ?>" /></th>
                             <th scope="col"></th>
-                            <th scope="col"><input type="text" class="form-control input-sm col-search" data-col="3" placeholder="<?= $this->translate->_('Search ID'); ?>" /></th>
-                            <th scope="col"><input type="text" class="form-control input-sm col-search" data-col="4" placeholder="<?= $this->translate->_('Search Name'); ?>" /></th>
+                            <th scope="col"><input type="text" class="form-control input-sm col-search" data-col="4" placeholder="<?= $this->translate->_('Search ID'); ?>" /></th>
+                            <th scope="col"><input type="text" class="form-control input-sm col-search" data-col="5" placeholder="<?= $this->translate->_('Search Name'); ?>" /></th>
                             <th scope="col"></th>
                             <th scope="col"></th>
                             <th scope="col"></th>
@@ -191,7 +196,7 @@
                     </thead>
                     <tbody>
                         <tr>
-                            <td colspan="8" class="dataTables_empty"
+                            <td colspan="9" class="dataTables_empty"
                                 style="text-align: center;font-size:15px;font-weight:bold;">
                                 <?= $this->translate->_("Please pick date range and Scheme Type to proceed"); ?></td>
                         </tr>
@@ -273,6 +278,7 @@
             "bRetrieve": false,
             "bDestroy": true,
             "aoColumns": [
+                { "sClass": "center", "bSortable": false, "bSearchable": false },
                 { "sClass": "center" },
                 { "sClass": "center" },
                 { "sClass": "center" },
@@ -283,8 +289,8 @@
                 { "sClass": "center", "bSortable": false }
             ],
             "aaSorting": [
-                [2, "desc"],
-                [1, "asc"]
+                [3, "desc"],
+                [2, "asc"]
             ],
             "bProcessing": true,
             "bServerSide": true,
@@ -328,6 +334,7 @@
                     placement: 'top',
                     sanitize: false
                 });
+                restoreReportCheckboxes();
             }
         });
     $("#mappingFilter").change(function () {
@@ -336,6 +343,30 @@
 
     bindColSearch('#individualReportTable', function (value, colIdx) {
         oTable.fnFilter(value, colIdx);
+    });
+
+    // Bulk report selection — map_id -> true, kept across paging/redraws
+    $('#individualReportTable tbody').on('change', 'input.rpt-select', function () {
+        if (this.checked) {
+            selectedReports[this.value] = true;
+        } else {
+            delete selectedReports[this.value];
+        }
+        syncReportMasterCheckbox();
+        updateReportBulkUI();
+    });
+
+    $('#rptCheckAll').on('change', function () {
+        var on = this.checked;
+        $('#individualReportTable tbody input.rpt-select').each(function () {
+            this.checked = on;
+            if (on) {
+                selectedReports[this.value] = true;
+            } else {
+                delete selectedReports[this.value];
+            }
+        });
+        updateReportBulkUI();
     });
 
     // Data Managers column — expand/collapse child row with on-demand AJAX fetch
@@ -389,6 +420,65 @@
             return false;
         }
         oTable.fnDraw();
+    }
+
+    var selectedReports = {};
+
+    function updateReportBulkUI() {
+        var n = Object.keys(selectedReports).length;
+        $("#rptBulkCount").text(n);
+        $("#rptBulkBtn").prop("disabled", n === 0);
+        $("#rptBulkToolbar").toggle(n > 0);
+    }
+
+    function syncReportMasterCheckbox() {
+        var $all = $('#individualReportTable tbody input.rpt-select');
+        var checked = $all.filter(':checked').length;
+        $('#rptCheckAll')
+            .prop('indeterminate', checked > 0 && checked < $all.length)
+            .prop('checked', $all.length > 0 && checked === $all.length);
+    }
+
+    // Re-tick the rows on the current page from the kept selection (paging/redraw)
+    function restoreReportCheckboxes() {
+        $('#individualReportTable tbody input.rpt-select').each(function () {
+            this.checked = !!selectedReports[this.value];
+        });
+        syncReportMasterCheckbox();
+        updateReportBulkUI();
+    }
+
+    function clearReportSelection() {
+        selectedReports = {};
+        $('#individualReportTable tbody input.rpt-select, #rptCheckAll').prop('checked', false);
+        $('#rptCheckAll').prop('indeterminate', false);
+        updateReportBulkUI();
+    }
+
+    function bulkDownloadReports() {
+        var ids = Object.keys(selectedReports);
+        if (ids.length === 0) {
+            return;
+        }
+        $.blockUI();
+        $.post(
+            "<?php echo $this->url(array('module' => 'default', 'controller' => 'participant', 'action' => 'report-bulk-download', 'format' => 'html'), 'default', true); ?>", {
+                mapIds: ids,
+                format: "html"
+            },
+            function (data) {
+                $.unblockUI();
+                data = (data || "").trim();
+                if (data !== "") {
+                    document.location.href = "/temporary/" + data;
+                } else {
+                    alert("<?= $this->jsTranslate('No downloadable reports found for the selected rows'); ?>");
+                }
+            }
+        ).fail(function () {
+            $.unblockUI();
+            alert("<?= $this->jsTranslate('Unable to generate the bulk download. Please try again.'); ?>");
+        });
     }
 
     function getOptions(table, searchfield, returnfield, searchvalue, returnid) {

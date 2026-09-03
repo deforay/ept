@@ -13,6 +13,7 @@ class ParticipantController extends Zend_Controller_Action
             ->addActionContext('current-schemes', 'html')
             ->addActionContext('all-schemes', 'html')
             ->addActionContext('report', 'html')
+            ->addActionContext('report-bulk-download', 'html')
             ->addActionContext('corrective', 'html')
             ->addActionContext('summary-report', 'html')
             ->addActionContext('shipment-report', 'html')
@@ -159,6 +160,34 @@ class ParticipantController extends Zend_Controller_Action
         $this->view->countries = $participants->getParticipantCountriesList();
         $this->view->regions = $participants->getAllParticipantRegion();
         $this->view->districts = $participants->getAllParticipantDistricts();
+    }
+
+    /**
+     * "Download selected" on /participant/report — bundles the chosen individual
+     * report PDFs into a zip and echoes its temp-folder basename (the page then
+     * navigates to /temporary/<name>). Same access scope as reportAction().
+     */
+    public function reportBulkDownloadAction()
+    {
+        $this->_helper->layout()->disableLayout();
+        $this->_helper->viewRenderer->setNoRender(true);
+
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
+        if (!$request->isPost()) {
+            echo '';
+            return;
+        }
+        $mapIds = $request->getPost('mapIds', []);
+        if (!is_array($mapIds)) {
+            $mapIds = array_filter(array_map('trim', explode(',', (string) $mapIds)));
+        }
+        if (empty($mapIds)) {
+            echo '';
+            return;
+        }
+        $shipmentService = new Application_Service_Shipments();
+        echo $shipmentService->bulkIndividualReportZip($mapIds);
     }
 
     public function correctiveAction()

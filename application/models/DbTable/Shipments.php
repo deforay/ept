@@ -333,7 +333,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             ])
             ->join(['d' => 'distributions'], 'd.distribution_id = s.distribution_id', ['distribution_code', 'distribution_date'])
             ->join(['sl' => 'scheme_list'], 'sl.scheme_id=s.scheme_type', ['scheme_name', 'is_user_configured'])
-            ->join(['spm' => 'shipment_participant_map'], 'spm.shipment_id=s.shipment_id', ['spm.map_id', 'spm.evaluation_status', 'spm.response_status', 'spm.late_submit_status', 'spm.participant_id', 'RESPONSEDATE' => "DATE_FORMAT(spm.shipment_test_report_date,'%Y-%m-%d')", 'RESPONSEDATETIME' => 'spm.shipment_test_report_date'])
+            ->join(['spm' => 'shipment_participant_map'], 'spm.shipment_id=s.shipment_id', ['spm.map_id', 'spm.evaluation_status', 'spm.response_status', 'spm.participant_id', 'RESPONSEDATE' => "DATE_FORMAT(spm.shipment_test_report_date,'%Y-%m-%d')", 'RESPONSEDATETIME' => 'spm.shipment_test_report_date'])
             ->join(['p' => 'participant'], 'p.participant_id=spm.participant_id', ['p.unique_identifier', 'p.first_name', 'p.last_name', 'p.state', 'p.institute_name', 'p.country'])
             ->joinLeft(['c' => 'countries'], 'p.country=c.id', ['c.iso_name'])
             ->where("s.status='shipped' OR s.status='evaluated'")
@@ -405,23 +405,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             $row[] = Pt_Commons_DateUtility::humanReadableDateFormat($aRow['response_deadline'], true);
             // Response Date shows the time of day too (responseDateForDisplay appends it
             // only when the stored value actually carries one - legacy rows stay date-only).
-            $responseDateCell = (string) Pt_Commons_DateUtility::responseDateForDisplay($aRow['RESPONSEDATETIME']);
-            if (!empty($aRow['late_submit_status'])) {
-                // Started on/before the deadline but submitted after it. Shown to the
-                // participant so a late submission is never silently accepted.
-                if ($aRow['response_status'] === 'late_submitted') {
-                    $lateLabel = Pt_Commons_TranslateUtility::htmlTranslate('Late submission — under review');
-                    $lateClass = 'label-warning';
-                } elseif ($aRow['response_status'] === 'late_rejected') {
-                    $lateLabel = Pt_Commons_TranslateUtility::htmlTranslate('Late submission — not accepted');
-                    $lateClass = 'label-danger';
-                } else {
-                    $lateLabel = Pt_Commons_TranslateUtility::htmlTranslate('Late submission — accepted');
-                    $lateClass = 'label-success';
-                }
-                $responseDateCell .= '<br/><span class="label ' . $lateClass . '">' . $lateLabel . '</span>';
-            }
-            $row[] = $responseDateCell;
+            $row[] = (string) Pt_Commons_DateUtility::responseDateForDisplay($aRow['RESPONSEDATETIME']);
 
             $buttonText = Pt_Commons_TranslateUtility::htmlTranslate('View/Edit');
             $buttonType = 'btn-primary';
@@ -1107,8 +1091,10 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
          * you want to insert a non-database field (for example a counter or static image)
          */
 
-        $aColumns = ['s.scheme_type', 'shipment_code', 'DATE_FORMAT(shipment_date,"%d-%b-%Y")', 'unique_identifier', 'first_name', 'DATE_FORMAT(spm.shipment_test_report_date,"%d-%b-%Y")'];
-        $orderColumns = ['s.scheme_type', 'shipment_code', 'shipment_date', 'unique_identifier', 'first_name', 'spm.shipment_test_report_date', 's.created_on_admin'];
+        // Column 0 is the (non-sortable, non-searchable) bulk-select checkbox, so
+        // every real column is shifted one place to the right of its DataTables index.
+        $aColumns = ['spm.map_id', 's.scheme_type', 'shipment_code', 'DATE_FORMAT(shipment_date,"%d-%b-%Y")', 'unique_identifier', 'first_name', 'DATE_FORMAT(spm.shipment_test_report_date,"%d-%b-%Y")'];
+        $orderColumns = ['', 's.scheme_type', 'shipment_code', 'shipment_date', 'unique_identifier', 'first_name', 'spm.shipment_test_report_date', 's.created_on_admin'];
         // NOTE: $sOrder must stay an array. Zend_Db_Select::order() only splits a
         // trailing ASC/DESC off a *single* expression, so a comma-joined string
         // like "shipment_date DESC,shipment_code ASC" gets quoted whole as one
@@ -1368,7 +1354,9 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                     title="' . htmlspecialchars($tooltip, ENT_QUOTES, 'UTF-8') . '"';
             }
 
+            $hasReport = false;
             if ($invididualFilePath !== '' && file_exists($invididualFilePath)) {
+                $hasReport = true;
 
                 $download = '<a href="' . Pt_Commons_SignedDownload::url($invididualFilePath) . '"
                     class="btn btn-primary"
@@ -1401,6 +1389,14 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 }
             }
             $row[] = $download . $corrective . $feedback;
+
+            // Bulk-select checkbox (column 0) — only for rows whose report PDF
+            // actually exists on disk, so a participant can never select a row
+            // that has nothing to download.
+            $checkboxCell = $hasReport
+                ? '<input type="checkbox" class="rpt-select" value="' . (int) $aRow['map_id'] . '" aria-label="' . $this->translator->_('Select report') . '">'
+                : '';
+            array_unshift($row, $checkboxCell);
 
             $output['aaData'][] = $row;
         }

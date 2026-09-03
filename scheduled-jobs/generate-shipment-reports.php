@@ -1692,11 +1692,19 @@ class ReportGenerator
 
         $this->db->update('shipment', $shipmentUpdate, "shipment_id = " . $evalRow['shipment_id']);
 
-        // Add audit log for finalized shipments
+        // Add audit log for finalized shipments. Runs from CLI, so there is no
+        // admin session - attribute the action to whoever initiated the job.
         if (!empty($evalRow['id']) && $reportCompletedStatus == 'finalized') {
-            $authNameSpace = new Zend_Session_Namespace('administrators');
+            $auditActor = null;
+            $initiatedBy = !empty($evalRow['initated_by']) ? $evalRow['initated_by'] : $evalRow['requested_by'];
+            if (!empty($initiatedBy)) {
+                $adminDetails = $this->config->adminService->getSystemAdminDetails($initiatedBy);
+                if (!empty($adminDetails['primary_email'])) {
+                    $auditActor = ['email' => $adminDetails['primary_email'], 'role' => 'admin'];
+                }
+            }
             $auditDb = new Application_Model_DbTable_AuditLog();
-            $auditDb->addNewAuditLog("Finalized shipment - " . $evalRow['shipment_code'], "shipment");
+            $auditDb->addNewAuditLog("Finalized shipment - " . $evalRow['shipment_code'], "shipment", $auditActor);
         }
 
         // Update queue record

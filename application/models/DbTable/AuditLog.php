@@ -77,6 +77,11 @@ class Application_Model_DbTable_AuditLog extends Zend_Db_Table_Abstract
 
     private function resolveActor()
     {
+        // CLI runs (scheduled jobs) have no session; starting one here throws
+        // once any output has been emitted. Attribute these to the system.
+        if (php_sapi_name() === 'cli') {
+            return [null, 'system'];
+        }
         $admin = new Zend_Session_Namespace('administrators');
         if (!empty($admin->primary_email)) {
             return [$admin->primary_email, 'admin'];
