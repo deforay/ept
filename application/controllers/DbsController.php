@@ -40,6 +40,10 @@ class DbsController extends Zend_Controller_Action
                 $evalService = new Application_Service_Evaluation();
                 $this->view->evaluateData = $evalService->editEvaluation($sID, $pID, 'dbs', $uc);
                 $this->_helper->layout()->setLayout('admin');
+            } else {
+                // Record when the participant first opened the form - the "started the
+                // test" moment the late-submission check compares against.
+                $shipmentService->recordResponseStart($sID, $pID);
             }
             $participantService = new Application_Service_Participants();
             $this->view->participant = $participantService->getParticipantDetails($pID);

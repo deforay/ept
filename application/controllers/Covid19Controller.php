@@ -47,6 +47,10 @@ class Covid19Controller extends Zend_Controller_Action
                 $this->_helper->layout()->setLayout('admin');
             } elseif (!$access) {
                 $this->redirect('/participant/current-schemes');
+            } else {
+                // Record when the participant first opened the form - the "started the
+                // test" moment the late-submission check compares against.
+                $shipmentService->recordResponseStart($sID, $pID);
             }
 
             $this->view->covid19AllowedAlgorithms = Pt_Commons_SchemeConfig::get('covid19.allowedAlgorithms');

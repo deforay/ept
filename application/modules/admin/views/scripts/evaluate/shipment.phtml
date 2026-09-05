@@ -430,6 +430,9 @@ if ($shipmentAttributesRaw !== '') {
 	<script type="text/javascript" charset="utf-8">
 		var oTable = null;
 		var nTr = null;
+		// Reused by decideLateSubmission() to offer the same re-evaluate queue as the
+		// Re-Evaluate button above, without threading the shipment id through every call site.
+		var currentShipmentSid = "<?= base64_encode($this->shipment[0]['shipment_id']); ?>";
 		$("#filterResponseStatus").select2({
 			placeholder: "<?= $this->translate->_("Select one or more response status"); ?>",
 			allowClear: true,
@@ -770,7 +773,7 @@ if ($shipmentAttributesRaw !== '') {
 		function decideLateSubmission(mid, decision) {
 			var isApprove = decision === 'approve';
 			var confirmMsg = isApprove
-				? "<?= $this->jsTranslate('Approve this late submission? Need to re-evaluate for participant scores; its status becomes Responded, and it stays marked as late in history.'); ?>"
+				? "<?= $this->jsTranslate('Approve this late submission? Its status becomes Responded, and it stays marked as late in history.'); ?>"
 				: "<?= $this->jsTranslate('Reject this late submission?'); ?>";
 			if (!window.confirm(confirmMsg)) {
 				return;
@@ -784,8 +787,15 @@ if ($shipmentAttributesRaw !== '') {
 				.done(function (data) {
 					$.unblockUI();
 					if (data && data.ok) {
-						alert(data.message || "<?= $this->jsTranslate('Done.'); ?>");
 						oTable.fnDraw();
+						// Approving pulls this participant's scores back into contention, but the
+						// shipment's evaluated scores stay stale until it is re-run - offer the
+						// same re-evaluate queue the Re-Evaluate button above uses.
+						if (isApprove && window.confirm("<?= $this->jsTranslate('This response has been approved. Re-evaluate this shipment now to update participant scores?'); ?>")) {
+							scheduleShipmentEvaluation(currentShipmentSid);
+							return;
+						}
+						alert(data.message || "<?= $this->jsTranslate('Done.'); ?>");
 					} else {
 						alert((data && data.message) || "<?= $this->jsTranslate('Could not update this late submission. Please try again.'); ?>");
 					}

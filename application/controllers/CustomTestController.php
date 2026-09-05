@@ -47,6 +47,10 @@ class CustomTestController extends Zend_Controller_Action
                 $evalService = new Application_Service_Evaluation();
                 $this->view->evaluateData = $evalService->editEvaluation($sID, $pID, 'generic-test', $uc);
                 $this->_helper->layout()->setLayout('admin');
+            } else {
+                // Record when the participant first opened the form - the "started the
+                // test" moment the late-submission check compares against.
+                $shipmentService->recordResponseStart($sID, $pID);
             }
             $this->view->allSamples = $model->getSamplesForParticipant($sID, $pID);
             $participantService = new Application_Service_Participants();
