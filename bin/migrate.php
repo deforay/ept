@@ -637,6 +637,21 @@ foreach ($versions as $version) {
         $totalMigrations++;
         $versionErrors = 0;
 
+        // Every migration file bumps app_version itself on its first line, so the
+        // recorded version says "this file was opened", not "this file applied".
+        // Snapshot what the DB claims now; a failed run restores it below.
+        $versionBefore = null;
+        if (!$DRY_RUN && table_exists($db, 'system_config')) {
+            try {
+                $versionBefore = (string) $db->fetchOne(
+                    $db->select()->from('system_config', ['value'])
+                        ->where('config = ?', 'app_version')
+                );
+            } catch (Throwable $e) {
+                $versionBefore = null;
+            }
+        }
+
         $sql_contents = file_get_contents($file);
         // Normalize SQL comments: "-- comment" requires a space after "--" per the
         // SQL standard, but migration files sometimes omit it (e.g. "--Insert ...").
@@ -771,11 +786,12 @@ foreach ($versions as $version) {
                     } else {
                         $totalErrors++;
                         $versionErrors++;
-                        if (!$quietMode) {
-                            echo "Error executing query:\n{$query}\n{$msg}\n";
-                            if ($canLog) {
-                                Pt_Commons_LoggerUtility::logError('[migration:error] ' . $msg);
-                            }
+                        // Always surface a non-benign error, quiet mode included: -q is
+                        // how `composer migrate` runs during an upgrade, and swallowing
+                        // this left the chain halting with no visible reason.
+                        fwrite(STDERR, "Error executing query:\n{$query}\n{$msg}\n");
+                        if ($canLog) {
+                            Pt_Commons_LoggerUtility::logError('[migration:error] ' . $msg);
                         }
                         if (!$autoContinueOnError) {
                             echo 'Do you want to continue? (y/n): ';
@@ -812,7 +828,10 @@ foreach ($versions as $version) {
                 if (!$DRY_RUN) {
                     $db->rollBack();
                 }
-                exit("Migration aborted by user.\n");
+                // exit() with a string prints it and exits 0, which reported an
+                // aborted migration as a success. Print, then exit with a failure code.
+                fwrite(STDERR, "Migration aborted by user.\n");
+                exit(1);
             }
 
             // Persist the version only if the run wasn't aborted, not a dry-run, AND
@@ -830,9 +849,20 @@ foreach ($versions as $version) {
                             echo "Warning: failed to persist app_version to {$version}: " . $e->getMessage() . PHP_EOL;
                         }
                     }
-                } elseif (!$quietMode) {
-                    echo "\n*** app_version NOT bumped to {$version}: {$versionErrors} non-benign error(s) occurred. ***\n";
-                    echo "    Fix the underlying issue(s) above and re-run migrate.php.\n";
+                } else {
+                    // The file's own bump already ran inside this transaction; undo it so
+                    // a failed migration cannot report itself done. Restoring the snapshot
+                    // (rather than stripping the statement) leaves every migration file
+                    // usable standalone. Only restore when there was a value to begin with.
+                    if ($versionBefore !== null && $versionBefore !== '') {
+                        try {
+                            $db->update('system_config', ['value' => $versionBefore], $db->quoteInto('config = ?', 'app_version'));
+                        } catch (Throwable $e) {
+                            fwrite(STDERR, "Warning: failed to restore app_version to {$versionBefore}: " . $e->getMessage() . PHP_EOL);
+                        }
+                    }
+                    fwrite(STDERR, "\n*** app_version NOT bumped to {$version}: {$versionErrors} non-benign error(s) occurred. ***\n");
+                    fwrite(STDERR, "    Fix the underlying issue(s) above and re-run migrate.php.\n");
                 }
             } else {
                 if ($shouldBumpVersion) {
@@ -856,9 +886,7 @@ foreach ($versions as $version) {
         // Halt the migration chain on unresolved errors: downstream migrations often
         // assume prior versions applied cleanly, so continuing risks cascading damage.
         if ($versionErrors > 0) {
-            if (!$quietMode) {
-                echo "Halting further migrations after {$version} due to unresolved errors.\n";
-            }
+            fwrite(STDERR, "Halting further migrations after {$version} due to unresolved errors.\n");
             break;
         }
     }
@@ -876,4 +904,13 @@ if (!$quietMode) {
     echo "  Skipped queries      : $skippedQueries\n";
     echo "  Errors logged        : $totalErrors\n";
     echo "=======================================\n\n";
+}
+
+// A failed migration has to be a failed command. `composer migrate` runs
+// `migrate.php -yq`, so -y keeps the run going past an error to apply what it can
+// and the chain then halts -- but a zero exit told composer the step succeeded, so
+// it went on to @collation and the real error scrolled away unnoticed.
+// The exit code now reports what the run already knows.
+if ($totalErrors > 0) {
+    exit(1);
 }
