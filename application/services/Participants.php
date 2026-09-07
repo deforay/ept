@@ -296,6 +296,35 @@ class Application_Service_Participants
         return $db->fetchAll($sql);
     }
 
+    /**
+     * PT Survey ("Survey Number") list for the Individual Reports filter on
+     * /participant/report. Pulls the distributions that have at least one
+     * finalized shipment the current participant/DM is mapped to, so the
+     * dropdown only ever offers surveys that can actually return a report.
+     */
+    public function getParticipantSurveyList()
+    {
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $sql = $db->select()
+            ->from(['d' => 'distributions'], ['d.distribution_id', 'd.distribution_code'])
+            ->join(['s' => 'shipment'], 's.distribution_id = d.distribution_id', [])
+            ->join(['spm' => 'shipment_participant_map'], 'spm.shipment_id = s.shipment_id', [])
+            ->join(['p' => 'participant'], 'p.participant_id = spm.participant_id', [])
+            ->where("s.status = 'finalized'")
+            ->where('s.cancelled_at IS NULL')
+            ->where('d.distribution_code IS NOT NULL')
+            ->where("d.distribution_code != ''")
+            ->group('d.distribution_id')
+            ->order('d.distribution_code');
+        $authNameSpace = new Zend_Session_Namespace('datamanagers');
+        if (!empty($authNameSpace->dm_id)) {
+            $sql = $sql
+                ->joinLeft(['pmm' => 'participant_manager_map'], 'pmm.participant_id = p.participant_id', [])
+                ->where('pmm.dm_id = ?', $authNameSpace->dm_id);
+        }
+        return $db->fetchAll($sql);
+    }
+
     public function getAllParticipantDetails($dmId)
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();

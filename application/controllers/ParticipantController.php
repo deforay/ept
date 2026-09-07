@@ -160,6 +160,7 @@ class ParticipantController extends Zend_Controller_Action
         $this->view->countries = $participants->getParticipantCountriesList();
         $this->view->regions = $participants->getAllParticipantRegion();
         $this->view->districts = $participants->getAllParticipantDistricts();
+        $this->view->surveys = $participants->getParticipantSurveyList();
     }
 
     /**

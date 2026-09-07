@@ -1210,6 +1210,11 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             $sQuery = $sQuery->where('DATE(s.shipment_date) <= ?', Pt_Commons_DateUtility::isoDateFormat($parameters['endDate']));
         }
 
+        if (!empty($parameters['surveyNumber'])) {
+            // "Survey Number" filter — the shipment's parent PT Survey
+            // (distributions.distribution_id), reached via spm.shipment_id -> s.distribution_id.
+            $sQuery = $sQuery->where('s.distribution_id = ?', $parameters['surveyNumber']);
+        }
         if (!empty($parameters['country'])) {
             $sQuery = $sQuery->where('p.country = ?', $parameters['country']);
         }

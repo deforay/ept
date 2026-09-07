@@ -116,6 +116,7 @@
                             <td style="width:25%"><?= $this->translate->_("District"); ?></td>
                         <?php } ?>
                         <td style="width:25%"><?= $this->translate->_("Result Outcome"); ?></td>
+                        <td style="width:25%"><?= $this->translate->_("Survey Number"); ?></td>
                         <td><?= $this->translate->_("Action"); ?></td>
                     </tr>
                     <tr class="light">
@@ -137,6 +138,15 @@
                                 <option value="1"><?= $this->translate->_("Satisfactory"); ?></option>
                                 <option value="2"><?= $this->translate->_("Unsatisfactory"); ?></option>
                                 <option value="3"><?= $this->translate->_("Excluded from evaluation"); ?></option>
+                            </select>
+                        </td>
+                        <td>
+                            <select class="form-control select2" id="surveyNumber" name="surveyNumber"
+                                title="<?= $this->htmlTranslate("Please select the survey number to filter"); ?>">
+                                <option value=""></option>
+                                <?php foreach ((array) $this->surveys as $survey) { ?>
+                                    <option value="<?php echo $this->escape($survey['distribution_id']); ?>"><?php echo $this->escape($survey['distribution_code']); ?></option>
+                                <?php } ?>
                             </select>
                         </td>
                         <td><button class="btn btn-success btn-sm"
@@ -234,6 +244,10 @@
             placeholder: "<?= $this->jsTranslate("Select Result Outcome"); ?>",
             allowClear: true
         });
+        $("#surveyNumber").select2({
+            placeholder: "<?= $this->jsTranslate("Select Survey Number"); ?>",
+            allowClear: true
+        });
         ['region', 'district'].forEach(function(id) {
             if ($('#' + id).length) {
                 defaultLocationOptions[id] = $('#' + id).html();
@@ -303,6 +317,7 @@
                 aoData.push({ "name": "region", "value": $("#region").val() || '' });
                 aoData.push({ "name": "district", "value": $("#district").val() || '' });
                 aoData.push({ "name": "finalResult", "value": $("#finalResult").val() || '' });
+                aoData.push({ "name": "surveyNumber", "value": $("#surveyNumber").val() || '' });
             },
             "fnServerData": function(sSource, aoData, fnCallback) {
                 $.ajax({
