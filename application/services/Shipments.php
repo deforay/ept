@@ -165,7 +165,7 @@ class Application_Service_Shipments
 
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $mapId = (int) ($params['smid'] ?? 0);
-       
+
         $row = $mapId > 0
             ? $db->fetchRow(
                 $db->select()
@@ -1332,7 +1332,7 @@ class Application_Service_Shipments
                 'custom_field_2' => null,
                 'synced' => 'no',
                 'synced_on' => null,
-                'started_at' => null
+                'started_at' => null,
             ];
             $noOfRowsAffected = $shipmentParticipantDb->removeShipmentMapDetails($data, $mapId);
 
@@ -1394,7 +1394,7 @@ class Application_Service_Shipments
                 'custom_field_2' => null,
                 'synced' => 'no',
                 'synced_on' => null,
-                'started_at' => null
+                'started_at' => null,
             ];
             $noOfRowsAffected = $shipmentParticipantDb->removeShipmentMapDetails($data, $mapId);
 
@@ -1452,7 +1452,7 @@ class Application_Service_Shipments
                 'custom_field_2' => null,
                 'synced' => 'no',
                 'synced_on' => null,
-                'started_at' => null
+                'started_at' => null,
             ];
             $noOfRowsAffected = $shipmentParticipantDb->removeShipmentMapDetails($data, $mapId);
 
@@ -1503,7 +1503,7 @@ class Application_Service_Shipments
                 'custom_field_2' => null,
                 'synced' => 'no',
                 'synced_on' => null,
-                'started_at' => null
+                'started_at' => null,
             ];
             $noOfRowsAffected = $shipmentParticipantDb->removeShipmentMapDetails($data, $mapId);
 
@@ -1560,7 +1560,7 @@ class Application_Service_Shipments
                 'custom_field_2' => null,
                 'synced' => 'no',
                 'synced_on' => null,
-                'started_at' => null
+                'started_at' => null,
             ];
             $noOfRowsAffected = $shipmentParticipantDb->removeShipmentMapDetails($data, $mapId);
 
@@ -1620,7 +1620,7 @@ class Application_Service_Shipments
                 'custom_field_2' => null,
                 'synced' => 'no',
                 'synced_on' => null,
-                'started_at' => null
+                'started_at' => null,
             ];
             $noOfRowsAffected = $shipmentParticipantDb->removeShipmentMapDetails($data, $mapId);
 
@@ -1681,7 +1681,7 @@ class Application_Service_Shipments
                 'custom_field_2' => null,
                 'synced' => 'no',
                 'synced_on' => null,
-                'started_at' => null
+                'started_at' => null,
             ];
             $noOfRowsAffected = $shipmentParticipantDb->removeShipmentMapDetails($data, $mapId);
 

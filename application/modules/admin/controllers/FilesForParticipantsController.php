@@ -160,7 +160,10 @@ class Admin_FilesForParticipantsController extends Zend_Controller_Action
         $response = $this->getResponse();
         $response->setHeader('Content-Type', $mimeType);
         $response->setHeader('Content-Disposition', 'attachment; filename="' . addslashes($fileName) . '"');
-        $response->setHeader('Content-Length', filesize($filePath));
+        $fileSize = filesize($filePath);
+        if ($fileSize !== false) {
+            $response->setHeader('Content-Length', (string) $fileSize);
+        }
         $response->setHeader('Cache-Control', 'private');
         $response->sendHeaders();
 
