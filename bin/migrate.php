@@ -507,6 +507,31 @@ function handle_idempotent_ddl(Zend_Db_Adapter_Abstract $db, string $query): int
         return MIG_SKIPPED;
     }
 
+    // ALTER TABLE t MODIFY [COLUMN] `col` <definition...>
+    // A column redefinition assumes the column is there. On an instance whose table
+    // predates it (Malawi's user_login_history had no login_context), MySQL answers
+    // 1054 and the whole migration chain halts on a statement whose intent -- "the
+    // column should look like this" -- is satisfiable by creating it. Route it through
+    // add_column_if_missing, which adds it with this very definition when absent and
+    // otherwise runs the MODIFY untouched. Single-clause statements only: a
+    // comma-separated ALTER carries clauses this rewrite would drop.
+    if (
+        preg_match('/^alter\s+table\s+`?([a-z0-9_]+)`?\s+modify\s+(?:column\s+)?`?([a-z0-9_]+)`?\s+(.+?)\s*;?$/is', $q, $m) &&
+        preg_match('/,\s*(?:add|drop|modify|change)\s/i', $q) !== 1
+    ) {
+        $table = $m[1];
+        $column = $m[2];
+        if (!column_exists($db, $table, $column)) {
+            $ddl = sprintf('ALTER TABLE `%s` ADD COLUMN `%s` %s', $table, $column, trim($m[3]));
+            echo "Healing: `{$table}`.`{$column}` is missing; adding it with the definition this MODIFY asks for." . PHP_EOL;
+            mig_trace('modify->add', $ddl);
+            // Through add_column_if_missing rather than run_sql, so a MODIFY carrying
+            // `AFTER <anchor>` gets the same dangling-anchor strip as an ADD would.
+            return add_column_if_missing($db, $table, $column, $ddl);
+        }
+        return MIG_NOT_HANDLED;
+    }
+
     // ALTER TABLE t CHANGE [COLUMN] `old` `new` <definition...>  (column rename)
     // Idempotent: if the rename already happened (old column gone, new present), skip.
     // If `old` still exists we fall through to raw exec to perform it; a same-name
@@ -827,6 +852,18 @@ foreach ($versions as $version) {
             if ($aborted) {
                 if (!$DRY_RUN) {
                     $db->rollBack();
+                    // The file's own app_version bump is statement 1 and any DDL after it
+                    // committed it implicitly, so the rollback above cannot reach it.
+                    // Put the recorded version back by hand, exactly as the error path
+                    // does -- otherwise answering "n" leaves the DB claiming a version it
+                    // never finished and check-version-sync reports it as in sync.
+                    if ($versionBefore !== null && $versionBefore !== '') {
+                        try {
+                            $db->update('system_config', ['value' => $versionBefore], $db->quoteInto('config = ?', 'app_version'));
+                        } catch (Throwable $e) {
+                            fwrite(STDERR, "Warning: failed to restore app_version to {$versionBefore}: " . $e->getMessage() . PHP_EOL);
+                        }
+                    }
                 }
                 // exit() with a string prints it and exits 0, which reported an
                 // aborted migration as a success. Print, then exit with a failure code.
@@ -845,9 +882,11 @@ foreach ($versions as $version) {
                     try {
                         $db->update('system_config', ['value' => $version], $db->quoteInto('config = ?', 'app_version'));
                     } catch (Throwable $e) {
-                        if (!$quietMode) {
-                            echo "Warning: failed to persist app_version to {$version}: " . $e->getMessage() . PHP_EOL;
-                        }
+                        // Left unreported this reads as a clean migration while the DB
+                        // still records the older version, so count it like any other
+                        // failure and let the exit code carry it.
+                        $totalErrors++;
+                        fwrite(STDERR, "Warning: failed to persist app_version to {$version}: " . $e->getMessage() . PHP_EOL);
                     }
                 } else {
                     // The file's own bump already ran inside this transaction; undo it so
