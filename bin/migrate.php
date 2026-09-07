@@ -521,6 +521,13 @@ function handle_idempotent_ddl(Zend_Db_Adapter_Abstract $db, string $query): int
     ) {
         $table = $m[1];
         $column = $m[2];
+        // No table, nothing to redefine and nothing to add it to: adding the column
+        // would only trade 1054 for 1146 and halt the chain just the same. Skip, as
+        // the ADD PRIMARY KEY and ADD CONSTRAINT handlers do on the same drift.
+        if (!table_exists($db, $table)) {
+            mig_trace('modify->skip', "{$table} missing");
+            return MIG_SKIPPED;
+        }
         if (!column_exists($db, $table, $column)) {
             $ddl = sprintf('ALTER TABLE `%s` ADD COLUMN `%s` %s', $table, $column, trim($m[3]));
             echo "Healing: `{$table}`.`{$column}` is missing; adding it with the definition this MODIFY asks for." . PHP_EOL;
