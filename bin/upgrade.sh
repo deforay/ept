@@ -24,22 +24,71 @@ if [ "$EUID" -ne 0 ]; then
     exit 1
 fi
 
-# Download and update shared-functions.sh
+# Load shared-functions.sh: refresh from GitHub when we can, otherwise fall back
+# to a local copy. Never download straight onto the cached file -- wget -O
+# truncates the target before it fetches, so a network failure would destroy the
+# only working copy we have.
 SHARED_FN_PATH="/usr/local/lib/ept/shared-functions.sh"
 SHARED_FN_URL="https://raw.githubusercontent.com/deforay/ept/master/bin/shared-functions.sh"
 
 mkdir -p "$(dirname "$SHARED_FN_PATH")"
 
-if wget -q -O "$SHARED_FN_PATH" "$SHARED_FN_URL"; then
+# A usable copy is non-empty, parses as bash, and defines the functions we call.
+shared_fn_is_valid() {
+    local file="$1"
+    [ -s "$file" ] || return 1
+    grep -q '^prepare_system()' "$file" || return 1
+    bash -n "$file" 2>/dev/null
+}
+
+# Candidate local copies, best first: the checkout this script was run from, the
+# current directory, then any EPT install on the box.
+shared_fn_local_candidates() {
+    local self_dir=""
+    if [ -n "${BASH_SOURCE[0]:-}" ] && [ -f "${BASH_SOURCE[0]}" ]; then
+        self_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+        echo "$self_dir/shared-functions.sh"
+    fi
+    echo "$PWD/bin/shared-functions.sh"
+    echo "$PWD/shared-functions.sh"
+    local dir
+    for dir in /var/www/*/bin/shared-functions.sh; do
+        [ -f "$dir" ] && echo "$dir"
+    done
+}
+
+shared_fn_tmp="$(mktemp)"
+if wget -q -T 15 -t 2 -O "$shared_fn_tmp" "$SHARED_FN_URL" && shared_fn_is_valid "$shared_fn_tmp"; then
+    cat "$shared_fn_tmp" >"$SHARED_FN_PATH"
     chmod +x "$SHARED_FN_PATH"
     echo "Downloaded shared-functions.sh."
 else
-    echo "Failed to download shared-functions.sh."
-    if [ ! -f "$SHARED_FN_PATH" ]; then
-        echo "shared-functions.sh missing. Cannot proceed."
+    echo "Could not download shared-functions.sh -- looking for a local copy."
+    shared_fn_source=""
+    if shared_fn_is_valid "$SHARED_FN_PATH"; then
+        shared_fn_source="$SHARED_FN_PATH"
+    else
+        while read -r candidate; do
+            if shared_fn_is_valid "$candidate"; then
+                shared_fn_source="$candidate"
+                break
+            fi
+        done < <(shared_fn_local_candidates)
+    fi
+
+    if [ -z "$shared_fn_source" ]; then
+        echo "No usable shared-functions.sh found. Cannot proceed."
+        rm -f "$shared_fn_tmp"
         exit 1
     fi
+
+    if [ "$shared_fn_source" != "$SHARED_FN_PATH" ]; then
+        cat "$shared_fn_source" >"$SHARED_FN_PATH"
+        chmod +x "$SHARED_FN_PATH"
+    fi
+    echo "Using local shared-functions.sh from $shared_fn_source"
 fi
+rm -f "$shared_fn_tmp"
 
 # Source the shared functions
 # shellcheck disable=SC1090
