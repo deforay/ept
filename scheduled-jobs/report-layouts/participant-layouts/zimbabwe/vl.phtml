@@ -139,7 +139,7 @@ if (!empty($resultArray['shipment'])) {
         $htmlTitle .= '<span style="font-weight: bold;text-align:center;font-size:10;">Proficiency Testing Scheme - Dried Tube Specimen - HIV-1 Quantitative Viral Load Testing</span><br>';
         $pdf->writeHTML($htmlTitle, true, false, true, false, '');
         if (isset($attributes['vl_assay']) && $attributes['vl_assay'] == 6) {
-            $machine = 'Other' . " - " . $attributes['other_assay'];
+            $machine = !empty($attributes['other_assay']) ? 'Other' . " - " . $attributes['other_assay'] : 'Other';
         } else {
             $machine = $result['responseResult'][0]['vl_assay'] ?? '';
         }
@@ -213,7 +213,7 @@ if (!empty($resultArray['shipment'])) {
                                         <td style="background-color:#BDD6EE;width:74px;"><br><br>Sample ID </td>
                                         <td style="background-color:#BDD6EE;width:74px;">Your Results<br/>(log<sub>10</sub> copies/mL)</td>
                                         <td style="background-color:#BDD6EE;width:78px;"><br><br>Number of <br/>Participants</td>
-                                        <td style="background-color:#BDD6EE;width:68px;">Assigned <br/>Value<br/>(log<sub>10</sub> copies/mL)</td>
+                                        <td style="background-color:#BDD6EE;width:68px;">Robust <br/>Mean<br/>(log<sub>10</sub> copies/mL)</td>
                                         <td style="background-color:#BDD6EE;width:62px;"><br>Robust <br/>Standard <br/>Deviation</td>
                                         <td style="background-color:#BDD6EE;width:64px;">MU<br/>(log<sub>10</sub> copies/mL)</td>
                                         <td style="background-color:#BDD6EE;width:58px;"><br><br>z Score</td>
@@ -467,7 +467,7 @@ if (!empty($resultArray['shipment'])) {
                     <li>Confidentiality: All participant information is treated as confidential by the Provider unless otherwise stated. Only Participant names and facilities are disclosed on PT reports for all participants in the PT schemes for purposes of improving performance and implementation of the schemes.</li>
                     <li>The report number is the Participant Code on the PT Report</li>
                     <li>Items used in the preparation of PT items have been carefully selected and quality control measures have been performed to ensure homogeneity and stability of the items.</li>
-                    <li>Assigned/expected values are determined by the PT provider but not against reference materials or standards. Participants are allowed to use their internal procedures approved by MoHCC to test the analytes contained in the PT panels. The same scoring system is used for all participants even if they are using different methods of testing. There have been established procedures for statistical analysis of all PT results submitted by participants.</li>
+                    <li>The provider uses consensus robust mean and Standard deviation of all participant laboratories to assess their performance using Z-scores. (Assessment is not against a reference method or standards). The same scoring system is used for all laboratories even if they are using different methods of testing. There have been established procedures for statistical analysis of all Viral load PT results submitted by participants. The Robust Mean is calculated as the median of all participant results, while the Robust Standard Deviation is derived from the normalized interquartile range (0.7413 &times; IQR) of those results. This differs from an assigned value, which would be derived from testing against a reference material or method.</li>
                     <li>Each participant PT report contains the participant individual performance, summary of all laboratory performances and review remarks (Comments and recommendation).</li>
                     <li>The participant has 15 days to appeal the performance score from the date the report is released.</li>
                     <li>The PT scheme is a qualitative scheme and runs two times a year.</li>

@@ -1131,6 +1131,19 @@ class Application_Service_Evaluation
                 // $mandatoryFields = array('receiptDate', 'testDate', 'vlAssay', 'assayExpirationDate', 'assayLotNumber');
                 $mandatoryFields = ['receiptDate', 'testDate'];
                 $mandatoryCheckErrors = $shipmentService->mandatoryFieldsCheck($params, $mandatoryFields);
+
+                // "Other" (id 6) requires the participant to name the platform; without this
+                // the report prints a bare "Other" with nothing to identify what was actually used.
+                // Skipped, like the checks above, when the PT test wasn't performed at all.
+                if (
+                    empty($mandatoryCheckErrors)
+                    && (empty($params['isPtTestNotPerformed']) || $params['isPtTestNotPerformed'] !== 'yes')
+                    && (int) ($params['vlAssay'] ?? 0) === 6
+                    && trim((string) ($params['otherAssay'] ?? '')) === ''
+                ) {
+                    $mandatoryCheckErrors[] = 'otherAssay';
+                }
+
                 if (!empty($mandatoryCheckErrors)) {
 
                     $userAgent = $_SERVER['HTTP_USER_AGENT'];
