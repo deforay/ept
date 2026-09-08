@@ -621,17 +621,55 @@ class ParticipantController extends Zend_Controller_Action
     public function downloadTbAction()
     {
         $this->_helper->layout()->disableLayout();
-        if ($this->hasParam('file')) {
-            $params = $this->getAllParams();
-            $file = base64_decode($params['file']);
-            if (!isset($params['file']) || empty($params['file']) || !file_exists($file)) {
-                $shipmentService = new Application_Service_Shipments();
-                $file = $shipmentService->generateTbPdf($params['sid'], $params['pid']);
-            }
-            $this->view->file = $params['file'];
-        } else {
-            $this->redirect('/participant/current-scheme');
+
+        $sid = (int) $this->_getParam('sid');
+        $pid = (int) $this->_getParam('pid');
+        if (empty($sid) || empty($pid)) {
+            $this->redirect('/participant/current-schemes');
+            return;
         }
+
+        // Resolve the form from the shipment/participant, never from a path in
+        // the URL — the old links carried a base64 filesystem path that was fed
+        // straight to readfile().
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $row = $db->fetchRow(
+            $db->select()
+                ->from(['s' => 'shipment'], ['shipment_code'])
+                ->join(['spm' => 'shipment_participant_map'], 's.shipment_id = spm.shipment_id', [])
+                ->join(['p' => 'participant'], 'p.participant_id = spm.participant_id', ['unique_identifier'])
+                ->where('s.shipment_id = ?', $sid)
+                ->where('p.participant_id = ?', $pid)
+        );
+        if (empty($row['shipment_code']) || empty($row['unique_identifier'])) {
+            $this->redirect('/participant/current-schemes');
+            return;
+        }
+
+        // The form carries the participant's login credentials, so only serve it
+        // to someone who manages that lab — or to an admin, who reaches the same
+        // "Download Form" button on the response page opened from /admin/evaluate.
+        $adminNameSpace = new Zend_Session_Namespace('administrators');
+        if (empty($adminNameSpace->admin_id)) {
+            $participantService = new Application_Service_Participants();
+            $allowed = [];
+            foreach ((array) $participantService->getParticipantUniqueIdentifier() as $participant) {
+                if (!empty($participant['unique_identifier'])) {
+                    $allowed[] = (string) $participant['unique_identifier'];
+                }
+            }
+            if (!in_array((string) $row['unique_identifier'], $allowed, true)) {
+                $this->redirect('/participant/current-schemes');
+                return;
+            }
+        }
+
+        $file = Application_Service_Shipments::resolveTbFormForParticipant(
+            $row['shipment_code'],
+            $row['unique_identifier']
+        );
+
+        $this->view->file = ($file !== null) ? base64_encode($file) : '';
     }
 
     public function downloadFileAction()

@@ -1735,7 +1735,24 @@ class Application_Model_Tb
         if (!file_exists($tempUploadFolder . DIRECTORY_SEPARATOR . $schemeCode)) {
             mkdir($tempUploadFolder . DIRECTORY_SEPARATOR . $schemeCode);
         }
-        $writer->save($tempUploadFolder . DIRECTORY_SEPARATOR . $schemeCode . DIRECTORY_SEPARATOR . $fileName);
+        $stagedFile = $tempUploadFolder . DIRECTORY_SEPARATOR . $schemeCode . DIRECTORY_SEPARATOR . $fileName;
+        $writer->save($stagedFile);
+
+        // The staging folder above is transient — housekeeping prunes
+        // public/temporary at 7 days, which used to leave the participant's
+        // "Download Form" button pointing at a file that no longer existed.
+        // Keep a durable copy in the participant's own downloads folder.
+        if (!empty($participantId) && !empty($result[0]['unique_identifier'])) {
+            $durableFile = Application_Service_Shipments::tbFormParticipantPath(
+                $result[0]['shipment_code'],
+                $result[0]['unique_identifier']
+            );
+            if (!is_dir(dirname($durableFile))) {
+                @mkdir(dirname($durableFile), 0777, true);
+            }
+            @copy($stagedFile, $durableFile);
+        }
+
         return $fileName;
     }
 

@@ -45,6 +45,64 @@ class Application_Service_Shipments
     }
 
     /**
+     * A single participant's TB form file name, as written by generateFormPDF()
+     * and as stored inside the shipment bundle zip.
+     */
+    public static function tbFormFileName(string $shipmentCode, string $uniqueIdentifier): string
+    {
+        return 'TB-FORM-' . $shipmentCode . '-' . $uniqueIdentifier . '.pdf';
+    }
+
+    /**
+     * Durable home of one participant's TB form: downloads/<unique_identifier>/,
+     * the same ownership-gated folder the participant's other files live in.
+     */
+    public static function tbFormParticipantPath(string $shipmentCode, string $uniqueIdentifier): string
+    {
+        return DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . $uniqueIdentifier
+            . DIRECTORY_SEPARATOR . self::tbFormFileName($shipmentCode, $uniqueIdentifier);
+    }
+
+    /**
+     * Find a participant's TB form. generateFormPDF() writes it to
+     * downloads/<unique_identifier>/ as it goes, so that is where it normally
+     * lives; the generation staging folder is only a fallback for a run that
+     * happened before that, and housekeeping prunes it at 7 days anyway
+     * (bin/housekeeping.php). Forms generated before this landed are placed in
+     * the durable folder once by bin/dev/backfill-tb-forms.php.
+     *
+     * @return string|null Absolute path to the PDF, or null when none exists.
+     */
+    public static function resolveTbFormForParticipant(string $shipmentCode, string $uniqueIdentifier): ?string
+    {
+        // Both values become path segments, so a separator or traversal in either
+        // would step outside the participant's folder.
+        if (
+            $shipmentCode === '' || $uniqueIdentifier === ''
+            || $shipmentCode !== basename($shipmentCode) || $uniqueIdentifier !== basename($uniqueIdentifier)
+            || str_contains($shipmentCode, '\\') || str_contains($uniqueIdentifier, '\\')
+        ) {
+            return null;
+        }
+
+        $durable = self::tbFormParticipantPath($shipmentCode, $uniqueIdentifier);
+        if (is_file($durable)) {
+            return $durable;
+        }
+
+        $staging = TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $shipmentCode
+            . DIRECTORY_SEPARATOR . self::tbFormFileName($shipmentCode, $uniqueIdentifier);
+        if (is_file($staging)) {
+            if (!is_dir(dirname($durable))) {
+                @mkdir(dirname($durable), 0777, true);
+            }
+            return @copy($staging, $durable) ? $durable : $staging;
+        }
+
+        return null;
+    }
+
+    /**
      * Response status for a submission the participant is saving.
      *
      * A lab that comes back to say it could not test — no kits, nobody trained — has taken

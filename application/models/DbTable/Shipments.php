@@ -430,8 +430,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                     $buttonText = Pt_Commons_TranslateUtility::htmlTranslate('Enter Response');
                     if ($aRow['scheme_type'] == 'tb') {
                         if ($isMtbeptInstance) {
-                            $downloadLink = base64_encode(TEMP_UPLOAD_PATH . '/' . $aRow['shipment_code'] . '/TB-FORM-' . $aRow['shipment_code'] . '-' . $aRow['unique_identifier'] . '.pdf');
-                            $download = "<br/><a href='/participant/download-tb/sid/" . $aRow['shipment_id'] . '/pid/' . $aRow['participant_id'] . '/file/' . $downloadLink . "' class='btn btn-default' style='margin:3px 0;' target='_BLANK'> <i class='icon icon-download'></i> " . Pt_Commons_TranslateUtility::htmlTranslate('Download Form') . '</a>';
+                            $download = "<br/><a href='/participant/download-tb/sid/" . $aRow['shipment_id'] . '/pid/' . $aRow['participant_id'] . "' class='btn btn-default' style='margin:3px 0;' target='_BLANK'> <i class='icon icon-download'></i> " . Pt_Commons_TranslateUtility::htmlTranslate('Download Form') . '</a>';
                         }
                     } else {
                         $download = '<br/><a href="/' . $aRow['scheme_type'] . '/download/sid/' . $aRow['shipment_id'] . '/pid/' . $aRow['participant_id'] . '/eid/' . $aRow['evaluation_status'] . '" class="btn btn-default"  style="margin:3px 0;" target="_BLANK"> <i class="icon icon-download"></i> ' . Pt_Commons_TranslateUtility::htmlTranslate('Download Form') . '</a>';
@@ -605,12 +604,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                     $buttonText = Pt_Commons_TranslateUtility::htmlTranslate('Enter Response');
                     if ($aRow['scheme_type'] == 'tb') {
                         if ($isMtbeptInstance) {
-                            $downloadLink = TEMP_UPLOAD_PATH . '/' . $aRow['shipment_code'] . '/TB-FORM-' . $aRow['shipment_code'] . '-' . $aRow['unique_identifier'] . '.pdf';
-                            // if(file_exists($downloadLink)){
-                            $download = '<br/><a href="/participant/download-tb/file/' . base64_encode($downloadLink) . '" class="btn btn-default" style="margin:3px 0;" target="_BLANK"> <i class="icon icon-download"></i> ' . Pt_Commons_TranslateUtility::htmlTranslate('Download Form') . '</a>';
-                            /* }else{
-                                $download = '<br/><a href="/shipment-form/tb-download/sid/' . base64_encode($aRow['shipment_id']) . '/pid/' . base64_encode($aRow['participant_id']) . '"   class="btn btn-default"  style="margin:3px 0;" target="_BLANK"> <i class="icon icon-download"></i> Download Form</a>';
-                            } */
+                            $download = '<br/><a href="/participant/download-tb/sid/' . $aRow['shipment_id'] . '/pid/' . $aRow['participant_id'] . '" class="btn btn-default" style="margin:3px 0;" target="_BLANK"> <i class="icon icon-download"></i> ' . Pt_Commons_TranslateUtility::htmlTranslate('Download Form') . '</a>';
                         }
                     } else {
                         $download = '<br/><a href="/' . $aRow['scheme_type'] . '/download/sid/' . $aRow['shipment_id'] . '/pid/' . $aRow['participant_id'] . '/eid/' . $aRow['evaluation_status'] . '" class="btn btn-default" style="margin:3px 0;" target="_BLANK" download> <i class="icon icon-download"></i> ' . Pt_Commons_TranslateUtility::htmlTranslate('Download Form') . '</a>';
