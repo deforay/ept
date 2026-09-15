@@ -1226,6 +1226,25 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 $sQuery = $sQuery->where('spm.final_result = ?', $parameters['finalResult']);
             }
         }
+        if (!empty($parameters['responseStatus'])) {
+            // Buckets the free-text response_status into the same 4 groups shown
+            // in the new "Response Status" column, so the filter and the column
+            // always agree on a given row.
+            switch ($parameters['responseStatus']) {
+                case 'nottested':
+                    $sQuery = $sQuery->where("(spm.response_status = 'nottested' OR spm.is_pt_test_not_performed = 'yes')");
+                    break;
+                case 'late':
+                    $sQuery = $sQuery->where("spm.response_status IN ('late','late_submitted','late_rejected')");
+                    break;
+                case 'responded':
+                    $sQuery = $sQuery->where("spm.response_status = 'responded'");
+                    break;
+                default:
+                    $sQuery = $sQuery->where("(spm.response_status IS NULL OR spm.response_status IN ('', 'noresponse', 'draft'))");
+                    break;
+            }
+        }
 
         if (isset($sWhere) && $sWhere != '') {
             $sQuery = $sQuery->where($sWhere);
@@ -1273,12 +1292,26 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 $displayResult = $this->translator->_('Excluded from evaluation');
             }
 
+            // Buckets the free-text response_status into the same 4 groups the
+            // "Response Status" filter offers, so the column always matches
+            // whichever filter value would have selected this row.
+            if ($aRow['is_pt_test_not_performed'] == 'yes' || $aRow['response_status'] == 'nottested') {
+                $displayResponseStatus = $this->translator->_('Not Tested');
+            } elseif (in_array($aRow['response_status'], ['late', 'late_submitted', 'late_rejected'], true)) {
+                $displayResponseStatus = $this->translator->_('Late Response');
+            } elseif ($aRow['response_status'] == 'responded') {
+                $displayResponseStatus = $this->translator->_('Responded');
+            } else {
+                $displayResponseStatus = $this->translator->_('Not Responded');
+            }
+
             $row[] = strtoupper($aRow['scheme_name']);
             $row[] = $aRow['shipment_code'];
             $row[] = Pt_Commons_DateUtility::humanReadableDateFormat($aRow['shipment_date']);
             $row[] = $aRow['unique_identifier'];
             $row[] = $aRow['first_name'] . ' ' . $aRow['last_name'];
             $row[] = Pt_Commons_DateUtility::humanReadableDateFormat($aRow['RESPONSEDATE']);
+            $row[] = $displayResponseStatus;
             $row[] = $displayResult;
             // The shipment is finalized (query WHERE), so the PDF on disk is the
             // ground truth — report_generated is only generation-progress

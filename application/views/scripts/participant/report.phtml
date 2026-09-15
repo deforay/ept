@@ -117,7 +117,7 @@
                         <?php } ?>
                         <td style="width:25%"><?= $this->translate->_("Result Outcome"); ?></td>
                         <td style="width:25%"><?= $this->translate->_("Survey Number"); ?></td>
-                        <td><?= $this->translate->_("Action"); ?></td>
+                        <td style="width:25%"><?= $this->translate->_("Response Status"); ?></td>
                     </tr>
                     <tr class="light">
                         <?php if (!empty($this->districts)) { ?>
@@ -149,8 +149,20 @@
                                 <?php } ?>
                             </select>
                         </td>
+                    
+                        <td>
+                            <select id="responseStatus" name="responseStatus" class="form-control select2"
+                                title="<?= $this->htmlTranslate("Please select the response status to filter"); ?>">
+                                <option value="responded" selected><?= $this->translate->_("Responded"); ?></option>
+                                <option value="noresponse"><?= $this->translate->_("Not Responded"); ?></option>
+                                <option value="late"><?= $this->translate->_("Late Response"); ?></option>
+                                <option value="nottested"><?= $this->translate->_("Not Tested"); ?></option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr class="light">
                         <td><button class="btn btn-success btn-sm"
-                                onclick="individualSchemes()"><span><?= $this->translate->_("Get Report"); ?></span></button>
+                            onclick="individualSchemes()"><span><?= $this->translate->_("Get Report"); ?></span></button>
                         </td>
                     </tr>
                 </table>
@@ -177,6 +189,7 @@
                             <th scope="col"><?= $this->translate->_("Participant Id"); ?></th>
                             <th scope="col"><?= $this->translate->_("Participant"); ?></th>
                             <th scope="col"><?= $this->translate->_("Response Date"); ?></th>
+                            <th scope="col"><?= $this->translate->_("Response Status"); ?></th>
                             <th scope="col"><?= $this->translate->_("Result"); ?></th>
                             <th scope="col"><?= $this->translate->_("Report"); ?></th>
                         </tr>
@@ -202,11 +215,12 @@
                             <th scope="col"></th>
                             <th scope="col"></th>
                             <th scope="col"></th>
+                            <th scope="col"></th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
-                            <td colspan="9" class="dataTables_empty"
+                            <td colspan="10" class="dataTables_empty"
                                 style="text-align: center;font-size:15px;font-weight:bold;">
                                 <?= $this->translate->_("Please pick date range and Scheme Type to proceed"); ?></td>
                         </tr>
@@ -247,6 +261,10 @@
         $("#surveyNumber").select2({
             placeholder: "<?= $this->jsTranslate("Select Survey Number"); ?>",
             allowClear: true
+        });
+        $("#responseStatus").select2({
+            placeholder: "<?= $this->jsTranslate("Select Response Status"); ?>",
+            allowClear: false
         });
         ['region', 'district'].forEach(function(id) {
             if ($('#' + id).length) {
@@ -300,11 +318,13 @@
                 { "sClass": "center" },
                 { "sClass": "center" },
                 { "sClass": "center" },
+                { "sClass": "center" },
                 { "sClass": "center", "bSortable": false }
             ],
             "aaSorting": [
                 [3, "desc"],
-                [2, "asc"]
+                [2, "asc"],
+                [6, "desc"]
             ],
             "bProcessing": true,
             "bServerSide": true,
@@ -318,6 +338,7 @@
                 aoData.push({ "name": "district", "value": $("#district").val() || '' });
                 aoData.push({ "name": "finalResult", "value": $("#finalResult").val() || '' });
                 aoData.push({ "name": "surveyNumber", "value": $("#surveyNumber").val() || '' });
+                aoData.push({ "name": "responseStatus", "value": $("#responseStatus").val() || '' });
             },
             "fnServerData": function(sSource, aoData, fnCallback) {
                 $.ajax({
