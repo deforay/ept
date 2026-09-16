@@ -11,18 +11,18 @@ class Application_Model_DbTable_TbAssay extends Zend_Db_Table_Abstract
     }
     public function getTbAssayName($assayId)
     {
-        $row = $this->fetchRow("id = $assayId")->toArray();
+        $row = $this->fetchRow(['id = ?' => $assayId])->toArray();
         return $row['name'];
     }
     public function getTbAssayShortName($assayId)
     {
-        $row = $this->fetchRow("id = $assayId")->toArray();
+        $row = $this->fetchRow(['id = ?' => $assayId])->toArray();
         return $row['short_name'];
     }
 
     public function fetchTbAssayDrugResistanceStatus($assayId)
     {
-        $row = $this->fetchRow("id = $assayId")->toArray();
+        $row = $this->fetchRow(['id = ?' => $assayId])->toArray();
         return $row['drug_resistance_test'];
     }
 }

@@ -198,7 +198,7 @@ class Application_Service_ApiServices
                     'failed_participants' => new Zend_Db_Expr('SUM(spm.final_result != 1)'),
                     'excluded_participants' => new Zend_Db_Expr("SUM(spm.is_excluded = 'yes')"),
                 ],
-            )->where("s.scheme_type = '" . $schemeId . "'")
+            )->where('s.scheme_type = ?', $schemeId)
             ->group('spm.shipment_id');
         return $this->db->fetchAll($sql);
     }

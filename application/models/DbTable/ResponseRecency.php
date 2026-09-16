@@ -9,7 +9,7 @@ class Application_Model_DbTable_ResponseRecency extends Zend_Db_Table_Abstract
     {
         $sampleIds = $params['sampleId'];
         foreach ($sampleIds as $key => $sampleId) {
-            $res = $this->fetchRow('shipment_map_id = ' . $params['smid'] . ' and sample_id = ' . $sampleId);
+            $res = $this->fetchRow(['shipment_map_id = ?' => $params['smid'], 'sample_id = ?' => $sampleId]);
             $authNameSpace = new Zend_Session_Namespace('datamanagers');
             if (isset($params['isPtTestNotPerformed']) && $params['isPtTestNotPerformed'] == 'yes') {
                 $params['controlLine'][$key] = '';
@@ -36,7 +36,7 @@ class Application_Model_DbTable_ResponseRecency extends Zend_Db_Table_Abstract
                     'longterm_line' => $params['longtermLine'][$key],
                     'updated_by' => $authNameSpace->dm_id,
                     'updated_on' => new Zend_Db_Expr('now()'),
-                ], 'shipment_map_id = ' . $params['smid'] . ' and sample_id = ' . $sampleId);
+                ], ['shipment_map_id = ?' => $params['smid'], 'sample_id = ?' => $sampleId]);
             }
         }
         return true;
@@ -46,7 +46,7 @@ class Application_Model_DbTable_ResponseRecency extends Zend_Db_Table_Abstract
     {
         $sampleIds = $params['recencyData']->Section3->data->samples->id;
         foreach ($sampleIds as $key => $sampleId) {
-            $res = $this->fetchRow('shipment_map_id = ' . $params['mapId'] . ' and sample_id = ' . $sampleId);
+            $res = $this->fetchRow(['shipment_map_id = ?' => $params['mapId'], 'sample_id = ?' => $sampleId]);
 
             if ($res == null || count($res) == 0) {
                 $this->insert([
@@ -67,7 +67,7 @@ class Application_Model_DbTable_ResponseRecency extends Zend_Db_Table_Abstract
                     'longterm_line'     => $params['recencyData']->Section3->data->samples->longtermLine[$key],
                     'updated_by'        => $dm['dm_id'],
                     'updated_on'        => new Zend_Db_Expr('now()'),
-                ], 'shipment_map_id = ' . $params['mapId'] . ' and sample_id = ' . $sampleId);
+                ], ['shipment_map_id = ?' => $params['mapId'], 'sample_id = ?' => $sampleId]);
             }
         }
         return true;

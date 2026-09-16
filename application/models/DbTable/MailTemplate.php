@@ -18,7 +18,7 @@ class Application_Model_DbTable_MailTemplate extends Zend_Db_Table_Abstract
             'mail_footer' => $params['footer'],
         ];
         if (isset($params['mailId']) && $params['mailId'] != '') {
-            $this->update($data, 'mail_temp_id=' . $params['mailId']);
+            $this->update($data, ['mail_temp_id = ?' => $params['mailId']]);
         } else {
             $this->insert($data);
         }
@@ -27,7 +27,7 @@ class Application_Model_DbTable_MailTemplate extends Zend_Db_Table_Abstract
     }
     public function getEmailTemplateDetails($mailPurpose)
     {
-        return $this->fetchRow("mail_purpose='$mailPurpose'");
+        return $this->fetchRow(['mail_purpose = ?' => $mailPurpose]);
     }
 
     public function fetchAllEmailTemplateDetails()

@@ -74,7 +74,7 @@ class Application_Model_DbTable_CertificateTemplates extends Zend_Db_Table_Abstr
                         $extension = strtolower(pathinfo($pathPrefix . DIRECTORY_SEPARATOR . $fileNameSanitized, PATHINFO_EXTENSION));
                         $fileName = $scheme . '-p.' . $extension;
                         if (move_uploaded_file($_FILES['pCertificate']['tmp_name'][$key], $pathPrefix . DIRECTORY_SEPARATOR . $fileName)) {
-                            $this->update(['participation_certificate' => $fileName], 'ct_id = ' . $id);
+                            $this->update(['participation_certificate' => $fileName], ['ct_id = ?' => $id]);
                         }
                     }
                     if (!empty($_FILES['eCertificate']['name'][$key])) {
@@ -84,7 +84,7 @@ class Application_Model_DbTable_CertificateTemplates extends Zend_Db_Table_Abstr
                         $extension = strtolower(pathinfo($pathPrefix . DIRECTORY_SEPARATOR . $fileNameSanitized, PATHINFO_EXTENSION));
                         $fileName = $scheme . '-e.' . $extension;
                         if (move_uploaded_file($_FILES['eCertificate']['tmp_name'][$key], $pathPrefix . DIRECTORY_SEPARATOR . $fileName)) {
-                            $this->update(['excellence_certificate' => $fileName], 'ct_id = ' . $id);
+                            $this->update(['excellence_certificate' => $fileName], ['ct_id = ?' => $id]);
                         }
                     }
                 }

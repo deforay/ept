@@ -134,11 +134,11 @@ class Application_Model_DbTable_EidDetectionAssay extends Zend_Db_Table_Abstract
 
     public function fetchEidDetectionAssay($id)
     {
-        return $this->fetchRow('id = ' . $id)->where("`status` like 'active'");
+        return $this->fetchRow(['id = ?' => $id])->where("`status` like 'active'");
     }
 
     public function updateEidDetectionNameStatus($params)
     {
-        return $this->update(['status' => $params['switchStatus']], 'id = ' . $params['id']);
+        return $this->update(['status' => $params['switchStatus']], ['id = ?' => $params['id']]);
     }
 }

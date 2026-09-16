@@ -10,7 +10,7 @@ class Application_Model_DbTable_ResponseEid extends Zend_Db_Table_Abstract
         $sampleIds = $params['sampleId'];
 
         foreach ($sampleIds as $key => $sampleId) {
-            $res = $this->fetchRow('shipment_map_id = ' . $params['smid'] . ' and sample_id = ' . $sampleId);
+            $res = $this->fetchRow(['shipment_map_id = ?' => $params['smid'], 'sample_id = ?' => $sampleId]);
             $authNameSpace = new Zend_Session_Namespace('datamanagers');
             if (!empty($params['isPtTestNotPerformed']) && $params['isPtTestNotPerformed'] === 'yes') {
                 $params['hivCtOd'][$key] = '';
@@ -33,7 +33,7 @@ class Application_Model_DbTable_ResponseEid extends Zend_Db_Table_Abstract
                     'ic_qs' => $params['icQs'][$key],
                     'updated_by' => $authNameSpace->dm_id,
                     'updated_on' => new Zend_Db_Expr('now()'),
-                ], 'shipment_map_id = ' . $params['smid'] . ' and sample_id = ' . $sampleId);
+                ], ['shipment_map_id = ?' => $params['smid'], 'sample_id = ?' => $sampleId]);
             }
         }
     }
@@ -42,7 +42,7 @@ class Application_Model_DbTable_ResponseEid extends Zend_Db_Table_Abstract
     {
         $sampleIds = $params['eidData']->Section3->data->samples->id;
         foreach ($sampleIds as $key => $sampleId) {
-            $res = $this->fetchRow('shipment_map_id = ' . $params['mapId'] . ' and sample_id = ' . $sampleId);
+            $res = $this->fetchRow(['shipment_map_id = ?' => $params['mapId'], 'sample_id = ?' => $sampleId]);
 
             if (empty($res)) {
                 $this->insert([
@@ -61,7 +61,7 @@ class Application_Model_DbTable_ResponseEid extends Zend_Db_Table_Abstract
                     'ic_qs' => $params['eidData']->Section3->data->samples->IcQsValues[$key],
                     'updated_by' => $dm['dm_id'],
                     'updated_on' => new Zend_Db_Expr('now()'),
-                ], 'shipment_map_id = ' . $params['mapId'] . ' and sample_id = ' . $sampleId);
+                ], ['shipment_map_id = ?' => $params['mapId'], 'sample_id = ?' => $sampleId]);
             }
         }
         return true;
@@ -72,7 +72,7 @@ class Application_Model_DbTable_ResponseEid extends Zend_Db_Table_Abstract
         $id = 0;
         $sampleIds = $params['samples_id'];
         foreach ($sampleIds as $key => $sampleId) {
-            $res = $this->fetchRow('shipment_map_id = ' . $params['mapId'] . ' and sample_id = ' . $sampleId);
+            $res = $this->fetchRow(['shipment_map_id = ?' => $params['mapId'], 'sample_id = ?' => $sampleId]);
             $data = [
                 'shipment_map_id'   => $params['mapId'],
                 'sample_id'         => $sampleId,
@@ -87,7 +87,7 @@ class Application_Model_DbTable_ResponseEid extends Zend_Db_Table_Abstract
             } else {
                 $data['updated_by'] = $params['dmId'];
                 $data['updated_on'] = new Zend_Db_Expr('now()');
-                $id = $this->update($data, 'shipment_map_id = ' . $params['mapId'] . ' and sample_id = ' . $sampleId);
+                $id = $this->update($data, ['shipment_map_id = ?' => $params['mapId'], 'sample_id = ?' => $sampleId]);
             }
         }
         return $id;

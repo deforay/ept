@@ -13,7 +13,7 @@ class Application_Model_DbTable_ShipmentVl extends Zend_Db_Table_Abstract
     public function updateShipmentVl($params, $shipmentId, $participantId)
     {
         $params['evaluation_status'] = '11111110';
-        return $this->update($params, "vl_shipment_id = $shipmentId and participant_id = '".$participantId."'");
+        return $this->update($params, ['vl_shipment_id = ?' => $shipmentId, 'participant_id = ?' => $participantId]);
     }
 
 }

@@ -15,7 +15,7 @@ class Application_Model_DbTable_ResponseCovid19 extends Zend_Db_Table_Abstract
         $res = [];
         foreach ($sampleIds as $key => $sampleId) {
             // die("shipment_map_id = ".$params['smid'] . " and sample_id = ".$sampleId);
-            $res = $this->fetchRow('shipment_map_id = ' . $params['smid'] . ' and sample_id = ' . $sampleId);
+            $res = $this->fetchRow(['shipment_map_id = ?' => $params['smid'], 'sample_id = ?' => $sampleId]);
             $authNameSpace = new Zend_Session_Namespace('datamanagers');
             $testPlatformDb = new Application_Model_DbTable_TestTypenameCovid19();
             if (isset($params['test_type_1']) && trim($params['test_type_1']) == 'other') {
@@ -70,7 +70,7 @@ class Application_Model_DbTable_ResponseCovid19 extends Zend_Db_Table_Abstract
             } else {
                 $data['updated_by'] = $authNameSpace->dm_id;
                 $data['updated_on'] = new Zend_Db_Expr('now()');
-                $this->update($data, 'shipment_map_id = ' . $params['smid'] . ' and sample_id = ' . $sampleId);
+                $this->update($data, ['shipment_map_id = ?' => $params['smid'], 'sample_id = ?' => $sampleId]);
             }
         }
     }
@@ -96,7 +96,7 @@ class Application_Model_DbTable_ResponseCovid19 extends Zend_Db_Table_Abstract
             'updated_on' => new Zend_Db_Expr('now()'),
         ];
 
-        return $this->update($data, 'shipment_map_id = ' . $mapId);
+        return $this->update($data, ['shipment_map_id = ?' => $mapId]);
     }
 
     public function updateResultsByAPI($params, $dm, $allSamples)
@@ -175,7 +175,7 @@ class Application_Model_DbTable_ResponseCovid19 extends Zend_Db_Table_Abstract
                 'test_result_3' => (isset($noOfTest) && $noOfTest >= 3) ? $result3 : null,
                 'reported_result' => $reportedResult,
             ];
-            $res = $this->fetchRow('shipment_map_id = ' . $params['mapId'] . ' and sample_id = ' . $sampleId);
+            $res = $this->fetchRow(['shipment_map_id = ?' => $params['mapId'], 'sample_id = ?' => $sampleId]);
             if ($res == null || $res === false) {
                 $data['shipment_map_id'] = $params['mapId'];
                 $data['sample_id'] = $sampleId;
@@ -185,7 +185,7 @@ class Application_Model_DbTable_ResponseCovid19 extends Zend_Db_Table_Abstract
             } else {
                 $data['updated_by'] = $dm['dm_id'];
                 $data['updated_on'] = new Zend_Db_Expr('now()');
-                $this->update($data, 'shipment_map_id = ' . $params['mapId'] . ' and sample_id = ' . $sampleId);
+                $this->update($data, ['shipment_map_id = ?' => $params['mapId'], 'sample_id = ?' => $sampleId]);
             }
         }
         return true;

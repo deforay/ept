@@ -177,7 +177,7 @@ class Application_Model_DbTable_GlobalConfig extends Zend_Db_Table_Abstract
                 $schemeDb = new Application_Model_DbTable_SchemeList();
                 $schemeDb->update(['status' => 'inactive'], "status='active'");
                 foreach ($params['schemeId'] as $schemeId) {
-                    $schemeDb->update(['status' => 'active'], "scheme_id='" . $schemeId . "'");
+                    $schemeDb->update(['status' => 'active'], ['scheme_id = ?' => $schemeId]);
                 }
                 $changedSections[] = 'active schemes';
                 continue;

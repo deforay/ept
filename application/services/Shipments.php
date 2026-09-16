@@ -1604,7 +1604,7 @@ class Application_Service_Shipments
             $shipmentParticipantDb->removeShipmentMapDetails($data, $mapId);
 
             $responseDb = new Application_Model_DbTable_ResponseEid();
-            $responseDb->delete("shipment_map_id=$mapId");
+            $responseDb->delete(['shipment_map_id = ?' => $mapId]);
             if ($ownTx) {
                 $dbAdapter->commit();
             }
@@ -1663,7 +1663,7 @@ class Application_Service_Shipments
             $shipmentParticipantDb->removeShipmentMapDetails($data, $mapId);
 
             $responseDb = new Application_Model_DbTable_ResponseRecency();
-            $responseDb->delete("shipment_map_id=$mapId");
+            $responseDb->delete(['shipment_map_id = ?' => $mapId]);
             if ($ownTx) {
                 $dbAdapter->commit();
             }
@@ -1723,7 +1723,7 @@ class Application_Service_Shipments
             $shipmentParticipantDb->removeShipmentMapDetails($data, $mapId);
 
             $responseDb = new Application_Model_DbTable_ResponseVl();
-            $responseDb->delete("shipment_map_id=$mapId");
+            $responseDb->delete(['shipment_map_id = ?' => $mapId]);
             if ($ownTx) {
                 $dbAdapter->commit();
             }
@@ -1938,7 +1938,7 @@ class Application_Service_Shipments
                     if (isset($params['instrumentId'][$key]) && !empty($params['instrumentId'][$key])) {
                         $instrumentData['updated_by'] = $authNameSpace->dm_id ?? null;
                         $instrumentData['updated_on'] = new Zend_Db_Expr('now()');
-                        $tbInstrumentDb->update($instrumentData, 'instrument_id = ' . $params['instrumentId'][$key]);
+                        $tbInstrumentDb->update($instrumentData, ['instrument_id = ?' => $params['instrumentId'][$key]]);
                     } else {
                         $instrumentData['created_by'] = $authNameSpace->dm_id ?? null;
                         $instrumentData['created_on'] = new Zend_Db_Expr('now()');
@@ -3118,7 +3118,7 @@ class Application_Service_Shipments
 
             //$size = $size - $controlCount;
             if ($scheme == 'eid') {
-                $dbAdapter->delete('reference_result_eid', 'shipment_id = ' . $params['shipmentId']);
+                $dbAdapter->delete('reference_result_eid', ['shipment_id = ?' => $params['shipmentId']]);
                 for ($i = 0; $i < $size; $i++) {
 
                     $singleSampleScore = ($params['control'][$i] == 1 || $params['mandatory'][$i] != 1) ? 0 : $perSampleScore;
@@ -3140,8 +3140,8 @@ class Application_Service_Shipments
                 }
             } elseif ($scheme == 'vl') {
 
-                $dbAdapter->delete('reference_result_vl', 'shipment_id = ' . $params['shipmentId']);
-                $dbAdapter->delete('reference_vl_methods', 'shipment_id = ' . $params['shipmentId']);
+                $dbAdapter->delete('reference_result_vl', ['shipment_id = ?' => $params['shipmentId']]);
+                $dbAdapter->delete('reference_vl_methods', ['shipment_id = ?' => $params['shipmentId']]);
                 for ($i = 0; $i < $size; $i++) {
                     $singleSampleScore = ($params['control'][$i] == 1 || $params['mandatory'][$i] != 1) ? 0 : $perSampleScore;
                     $dbAdapter->insert(
@@ -3176,7 +3176,7 @@ class Application_Service_Shipments
                     }
                 }
             } elseif ($scheme == 'tb') {
-                $dbAdapter->delete('reference_result_tb', 'shipment_id = ' . $params['shipmentId']);
+                $dbAdapter->delete('reference_result_tb', ['shipment_id = ?' => $params['shipmentId']]);
                 // for ($i = 1; $i <= $size; $i++) {
                 foreach ($params['sampleName'] as $i => $value) {
                     $score = 0;
@@ -3224,11 +3224,11 @@ class Application_Service_Shipments
                     );
                 }
             } elseif ($scheme == 'dts') {
-                $dbAdapter->delete('reference_result_dts', 'shipment_id = ' . $params['shipmentId']);
-                $dbAdapter->delete('reference_dts_eia', 'shipment_id = ' . $params['shipmentId']);
-                $dbAdapter->delete('reference_dts_wb', 'shipment_id = ' . $params['shipmentId']);
-                $dbAdapter->delete('reference_dts_rapid_hiv', 'shipment_id = ' . $params['shipmentId']);
-                $dbAdapter->delete('reference_dts_geenius', 'shipment_id = ' . $params['shipmentId']);
+                $dbAdapter->delete('reference_result_dts', ['shipment_id = ?' => $params['shipmentId']]);
+                $dbAdapter->delete('reference_dts_eia', ['shipment_id = ?' => $params['shipmentId']]);
+                $dbAdapter->delete('reference_dts_wb', ['shipment_id = ?' => $params['shipmentId']]);
+                $dbAdapter->delete('reference_dts_rapid_hiv', ['shipment_id = ?' => $params['shipmentId']]);
+                $dbAdapter->delete('reference_dts_geenius', ['shipment_id = ?' => $params['shipmentId']]);
 
                 for ($i = 0; $i < $size; $i++) {
                     $refResulTDTSData = [
@@ -3374,7 +3374,7 @@ class Application_Service_Shipments
                     // ------------------>
                 }
             } elseif ($scheme == 'covid19') {
-                $dbAdapter->delete('reference_result_covid19', 'shipment_id = ' . $params['shipmentId']);
+                $dbAdapter->delete('reference_result_covid19', ['shipment_id = ?' => $params['shipmentId']]);
                 for ($i = 0; $i < $size; $i++) {
                     $dbAdapter->insert(
                         'reference_result_covid19',
@@ -3391,9 +3391,9 @@ class Application_Service_Shipments
                     );
                 }
             } elseif ($scheme == 'dbs') {
-                $dbAdapter->delete('reference_result_dbs', 'shipment_id = ' . $params['shipmentId']);
-                $dbAdapter->delete('reference_dbs_eia', 'shipment_id = ' . $params['shipmentId']);
-                $dbAdapter->delete('reference_dbs_wb', 'shipment_id = ' . $params['shipmentId']);
+                $dbAdapter->delete('reference_result_dbs', ['shipment_id = ?' => $params['shipmentId']]);
+                $dbAdapter->delete('reference_dbs_eia', ['shipment_id = ?' => $params['shipmentId']]);
+                $dbAdapter->delete('reference_dbs_wb', ['shipment_id = ?' => $params['shipmentId']]);
                 for ($i = 0; $i < $size; $i++) {
                     $dbAdapter->insert(
                         'reference_result_dbs',
@@ -3465,8 +3465,8 @@ class Application_Service_Shipments
                     // ------------------>
                 }
             } elseif ($scheme == 'recency') {
-                $dbAdapter->delete('reference_result_recency', 'shipment_id = ' . $params['shipmentId']);
-                $dbAdapter->delete('reference_recency_assay', 'shipment_id = ' . $params['shipmentId']);
+                $dbAdapter->delete('reference_result_recency', ['shipment_id = ?' => $params['shipmentId']]);
+                $dbAdapter->delete('reference_recency_assay', ['shipment_id = ?' => $params['shipmentId']]);
                 for ($i = 0; $i < $size; $i++) {
                     $dbAdapter->insert(
                         'reference_result_recency',
@@ -3512,7 +3512,7 @@ class Application_Service_Shipments
                 }
             } elseif (!in_array($scheme, ['eid', 'vl', 'tb', 'dts', 'covid19', 'dbs', 'recency']) || $params['userConfig'] == 'yes') {
 
-                $dbAdapter->delete('reference_result_generic_test', 'shipment_id = ' . $params['shipmentId']);
+                $dbAdapter->delete('reference_result_generic_test', ['shipment_id = ?' => $params['shipmentId']]);
                 for ($i = 0; $i < $size; $i++) {
                     $dbAdapter->insert(
                         'reference_result_generic_test',
@@ -3869,10 +3869,10 @@ class Application_Service_Shipments
                     $sql = $sql->where('sample_id =?', $sId);
                 }
                 if ($db->fetchRow($sql)) {
-                    $db->delete($response, 'shipment_map_id = ' . $mapId);
+                    $db->delete($response, ['shipment_map_id = ?' => $mapId]);
                 }
             }
-            $rows = $db->delete('shipment_participant_map', 'map_id = ' . $mapId);
+            $rows = $db->delete('shipment_participant_map', ['map_id = ?' => $mapId]);
             if ($ownTx) {
                 $db->commit();
             }
@@ -3988,7 +3988,7 @@ class Application_Service_Shipments
                 $bcc = $newShipmentMailContent['mail_bcc'];
                 $commonServices->insertTempMail($toEmail, $cc, $bcc, $subject, $message, $fromEmail, $fromFullName);
                 $count = $participantDetails['new_shipment_mail_count'] + 1;
-                $return = $db->update('shipment_participant_map', ['last_new_shipment_mailed_on' => new Zend_Db_Expr('now()'), 'new_shipment_mail_count' => $count], 'map_id = ' . $participantDetails['map_id']);
+                $return = $db->update('shipment_participant_map', ['last_new_shipment_mailed_on' => new Zend_Db_Expr('now()'), 'new_shipment_mail_count' => $count], ['map_id = ?' => $participantDetails['map_id']]);
             }
         }
         return $return;
@@ -4031,7 +4031,7 @@ class Application_Service_Shipments
                 $bcc = $notParticipatedMailContent['mail_bcc'];
                 $commonServices->insertTempMail($toEmail, $cc, $bcc, $subject, $message, $fromEmail, $fromFullName);
                 $count = $participantDetails['last_not_participated_mail_count'] + 1;
-                $return = $db->update('shipment_participant_map', ['last_not_participated_mailed_on' => new Zend_Db_Expr('now()'), 'last_not_participated_mail_count' => $count], 'map_id = ' . $participantDetails['map_id']);
+                $return = $db->update('shipment_participant_map', ['last_not_participated_mailed_on' => new Zend_Db_Expr('now()'), 'last_not_participated_mail_count' => $count], ['map_id = ?' => $participantDetails['map_id']]);
             }
         }
         return $return;
@@ -4146,9 +4146,9 @@ class Application_Service_Shipments
         $shipmentDate = explode(' ', $params['shipmentDate']);
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         if ($params['type'] == 'array') {
-            $participantIds = implode(',', $params['participants']);
-        } else {
             $participantIds = $params['participants'];
+        } else {
+            $participantIds = explode(',', (string) $params['participants']);
         }
 
         // $monthYear = Pt_Commons_General::getMonthsInRange($shipmentDate[0], $shipmentDate[1], 'dashboard');
@@ -4159,7 +4159,7 @@ class Application_Service_Shipments
         $sQuery = $db->select()->from(['s' => 'shipment'], ['s.shipment_code', 's.scheme_type', 's.response_deadline', 'max_score', 'average_score'])
             ->join(['sp' => 'shipment_participant_map'], 'sp.shipment_id=s.shipment_id', ['shipment_score' => new Zend_Db_Expr('SUM(sp.shipment_score)'), 'documentation_score' => new Zend_Db_Expr('SUM(sp.documentation_score)'), 'participantCount' => new Zend_Db_Expr('count(sp.participant_id)'), 'receivedCount' => new Zend_Db_Expr("SUM(sp.shipment_test_date not like '0000-00-00')")])
             ->where("s.status='finalized'")
-            ->where('sp.participant_id IN(' . $participantIds . ')')
+            ->where('sp.participant_id IN(?)', $participantIds)
             ->where('s.scheme_type = ?', $params['shipmentType'])
             ->group('s.shipment_id')
             // ->group("DATE_FORMAT(s.shipment_code,'%b-%Y')")
@@ -4171,10 +4171,10 @@ class Application_Service_Shipments
                 ->where('pmm.dm_id = ?', $authNameSpace->dm_id);
         }
         if (isset($shipmentDate[0]) && $shipmentDate[0] != '') {
-            $sQuery->where('s.shipment_date >="' . date('Y-m-01', strtotime($shipmentDate[0])) . '"');
+            $sQuery->where('s.shipment_date >= ?', date('Y-m-01', strtotime($shipmentDate[0])));
         }
         if (isset($shipmentDate[1]) && $shipmentDate[1] != '') {
-            $sQuery->where('s.shipment_date <="' . date('Y-m-t', strtotime($shipmentDate[1])) . '"');
+            $sQuery->where('s.shipment_date <= ?', date('Y-m-t', strtotime($shipmentDate[1])));
         }
 
         $result = $db->fetchAll($sQuery);
@@ -4249,7 +4249,7 @@ class Application_Service_Shipments
     {
         $authNameSpace = new Zend_Session_Namespace('administrators');
         $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $ifExist = $dbAdapter->fetchRow($dbAdapter->select()->from('scheduled_jobs')->where('job = "send-reports-mail.php -s ' . $sid . '" AND status = "pending"'));
+        $ifExist = $dbAdapter->fetchRow($dbAdapter->select()->from('scheduled_jobs')->where('job = ?', 'send-reports-mail.php -s ' . $sid)->where('status = "pending"'));
         if (!$ifExist) {
             $dbAdapter->insert(
                 'scheduled_jobs',
@@ -4361,7 +4361,7 @@ class Application_Service_Shipments
             }
         }
         $updateArray['manual_override'] = (isset($params['manualOverride']) && $params['manualOverride'] != '') ? $params['manualOverride'] : 'no';
-        return $db->update('shipment_participant_map', $updateArray, 'map_id = ' . $params['smid']);
+        return $db->update('shipment_participant_map', $updateArray, ['map_id = ?' => $params['smid']]);
     }
 
     public function generateTbPdf($sid, $pid)
@@ -4488,7 +4488,7 @@ class Application_Service_Shipments
             }
         }
         $updateArray['manual_override'] = (isset($params['manualOverride']) && $params['manualOverride'] != '') ? $params['manualOverride'] : 'no';
-        $db->update('shipment_participant_map', $updateArray, 'map_id = ' . $params['smid']);
+        $db->update('shipment_participant_map', $updateArray, ['map_id = ?' => $params['smid']]);
     }
 
     public function checkTBRequiredFieldsValidations($params)
@@ -4762,7 +4762,7 @@ class Application_Service_Shipments
                             'action_taken' => $token ?? null,
                             'action_date' => Pt_Commons_DateUtility::isoDateFormat($params['actionDate'][$cId]),
                         ];
-                        $db->update('dts_shipment_corrective_action_map', $data, 'shipment_map_id = ' . $params['shipmentMapId'][$cId] . ' AND corrective_action_id = ' . $cId);
+                        $db->update('dts_shipment_corrective_action_map', $data, ['shipment_map_id = ?' => $params['shipmentMapId'][$cId], 'corrective_action_id = ?' => $cId]);
                     }
                 }
             }

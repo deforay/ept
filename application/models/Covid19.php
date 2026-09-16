@@ -295,9 +295,9 @@ class Application_Model_Covid19
                 }
 
                 if ($score == 'Fail' || (!isset($result['reported_result']) || $result['reported_result'] == '' || $result['reported_result'] == null) || ($result['reference_result'] != $result['reported_result'])) {
-                    $db->update('response_result_covid19', ['calculated_score' => 'Fail'], 'shipment_map_id = ' . $result['map_id'] . ' and sample_id = ' . $result['sample_id']);
+                    $db->update('response_result_covid19', ['calculated_score' => 'Fail'], ['shipment_map_id = ?' => $result['map_id'], 'sample_id = ?' => $result['sample_id']]);
                 } else {
-                    $db->update('response_result_covid19', ['calculated_score' => 'Pass'], 'shipment_map_id = ' . $result['map_id'] . ' and sample_id = ' . $result['sample_id']);
+                    $db->update('response_result_covid19', ['calculated_score' => 'Pass'], ['shipment_map_id = ?' => $result['map_id'], 'sample_id = ?' => $result['sample_id']]);
                 }
             }
             $configuredDocScore = ((isset($config['documentationScore']) && $config['documentationScore'] != '' && $config['documentationScore'] != null) ? $config['documentationScore'] : 0);
@@ -404,7 +404,7 @@ class Application_Model_Covid19
                 $shipmentResult[$counter]['documentation_score'] = $documentationScore;
                 $scoreHolder[$shipment['map_id']] = $responseScore + $documentationScore;
 
-                $fRes = $db->fetchCol($db->select()->from('r_results', ['result_name'])->where('result_id = ' . $finalResult));
+                $fRes = $db->fetchCol($db->select()->from('r_results', ['result_name'])->where('result_id = ?', $finalResult));
 
                 $shipmentResult[$counter]['display_result'] = $fRes[0];
                 $shipmentResult[$counter]['failure_reason'] = $failureReason = (isset($failureReason) && count($failureReason) > 0) ? json_encode($failureReason) : '';
@@ -424,13 +424,13 @@ class Application_Model_Covid19
                     if (!isset($shipmentOverall['final_result']) || $shipmentOverall['final_result'] == '') {
                         $shipmentOverall['final_result'] = 2;
                     }
-                    $fRes = $db->fetchCol($db->select()->from('r_results', ['result_name'])->where('result_id = ' . $shipmentOverall['final_result']));
+                    $fRes = $db->fetchCol($db->select()->from('r_results', ['result_name'])->where('result_id = ?', $shipmentOverall['final_result']));
                     $shipmentResult[$counter]['display_result'] = $fRes[0];
-                    $db->update('shipment_participant_map', ['shipment_score' => $shipmentOverall['shipment_score'], 'documentation_score' => $shipmentOverall['documentation_score'], 'final_result' => $shipmentOverall['final_result']], 'map_id = ' . $shipment['map_id']);
+                    $db->update('shipment_participant_map', ['shipment_score' => $shipmentOverall['shipment_score'], 'documentation_score' => $shipmentOverall['documentation_score'], 'final_result' => $shipmentOverall['final_result']], ['map_id = ?' => $shipment['map_id']]);
                 }
             } else {
                 // let us update the total score in DB
-                $db->update('shipment_participant_map', ['shipment_score' => $responseScore, 'documentation_score' => 0, 'final_result' => $finalResult, 'is_followup' => $shipmentResult[$counter]['is_followup'], 'is_excluded' => $shipment['is_excluded'], 'failure_reason' => null], 'map_id = ' . $shipment['map_id']);
+                $db->update('shipment_participant_map', ['shipment_score' => $responseScore, 'documentation_score' => 0, 'final_result' => $finalResult, 'is_followup' => $shipmentResult[$counter]['is_followup'], 'is_excluded' => $shipment['is_excluded'], 'failure_reason' => null], ['map_id = ?' => $shipment['map_id']]);
             }
             /* $nofOfRowsDeleted = $db->delete('covid19_shipment_corrective_action_map', "shipment_map_id = " . $shipment['map_id']);
             $correctiveActionList = array_unique($correctiveActionList);
@@ -447,7 +447,7 @@ class Application_Model_Covid19
             $averageScore = 0;
         }
 
-        $db->update('shipment', ['max_score' => $maxScore, 'average_score' => $averageScore, 'status' => 'evaluated'], 'shipment_id = ' . $shipmentId);
+        $db->update('shipment', ['max_score' => $maxScore, 'average_score' => $averageScore, 'status' => 'evaluated'], ['shipment_id = ?' => $shipmentId]);
         return $shipmentResult;
     }
 

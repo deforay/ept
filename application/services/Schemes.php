@@ -71,7 +71,7 @@ class Application_Service_Schemes
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $db->beginTransaction();
         try {
-            $db->delete('dts_recommended_testkits', 'dts_test_mode = "' . $testMode . '"');
+            $db->delete('dts_recommended_testkits', ['dts_test_mode = ?' => $testMode]);
             foreach ($recommended as $testNo => $kits) {
                 if (!empty($kits)) {
                     foreach ($kits as $kit) {
@@ -129,7 +129,7 @@ class Application_Service_Schemes
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $db->beginTransaction();
         try {
-            $db->delete('generic_recommended_test_types', 'scheme_id = "' . $params['schemeCode'] . '"');
+            $db->delete('generic_recommended_test_types', ['scheme_id = ?' => $params['schemeCode']]);
             if (!empty($params['customTestkit'])) {
                 foreach ($params['customTestkit'] as $kit) {
                     $db->insert('generic_recommended_test_types', [
@@ -526,13 +526,13 @@ class Application_Service_Schemes
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         return $db->fetchAll($db->select()->from('r_control')
-            ->where("for_scheme='$schemeId'"));
+            ->where('for_scheme = ?', $schemeId));
     }
 
     public function getSchemeEvaluationComments($schemeId)
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        return $db->fetchAll($db->select()->from('r_evaluation_comments')->where("scheme='$schemeId'"));
+        return $db->fetchAll($db->select()->from('r_evaluation_comments')->where('scheme = ?', $schemeId));
     }
 
     /**
@@ -753,7 +753,7 @@ class Application_Service_Schemes
         $sql = $db->select()->from(['r_response_not_tested_reasons'])
             ->where('ntr_status = ? ', 'active');
         if (isset($testType) && $testType != '') {
-            $sql = $sql->where("JSON_SEARCH(`ntr_test_type`, 'all', '$testType') IS NOT NULL");
+            $sql = $sql->where("JSON_SEARCH(`ntr_test_type`, 'all', ?) IS NOT NULL", $testType);
         }
         return $db->fetchAll($sql);
     }

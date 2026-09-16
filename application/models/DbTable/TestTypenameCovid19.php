@@ -8,13 +8,13 @@ class Application_Model_DbTable_TestTypenameCovid19 extends Zend_Db_Table_Abstra
     public function getTestTypeNameById($testPlatformId)
     {
         return $this->getAdapter()->fetchCol($this->getAdapter()->select()->from('r_test_type_covid19', 'test_type_name')
-            ->where("test_type_id = '$testPlatformId'"));
+            ->where('test_type_id = ?', $testPlatformId));
     }
 
     public function getActiveTestTypesNamesForScheme($scheme, $countryAdapted = false)
     {
 
-        $sql = $this->getAdapter()->select()->from([$this->_name], ['test_type_id', 'test_type_name', 'test_type_1', 'test_type_2', 'test_type_3'])->where("scheme_type = '$scheme'");
+        $sql = $this->getAdapter()->select()->from([$this->_name], ['test_type_id', 'test_type_name', 'test_type_1', 'test_type_2', 'test_type_3'])->where('scheme_type = ?', $scheme);
 
         if ($countryAdapted) {
             $sql = $sql->where('country_adapted = 1');
@@ -33,7 +33,7 @@ class Application_Model_DbTable_TestTypenameCovid19 extends Zend_Db_Table_Abstra
     public function getActiveTestTypesNamesForSchemeResponseWise($scheme, $countryAdapted = false)
     {
 
-        $sql = $this->getAdapter()->select()->from([$this->_name], ['test_type_id', 'test_type_name', 'test_type_1', 'test_type_2', 'test_type_3'])->where("scheme_type = '$scheme'");
+        $sql = $this->getAdapter()->select()->from([$this->_name], ['test_type_id', 'test_type_name', 'test_type_1', 'test_type_2', 'test_type_3'])->where('scheme_type = ?', $scheme);
 
         if ($countryAdapted) {
             $sql = $sql->where('country_adapted = 1');
@@ -78,17 +78,17 @@ class Application_Model_DbTable_TestTypenameCovid19 extends Zend_Db_Table_Abstra
                 'country_adapted' => $params['countryAdapted'],
                 'approval' => $params['approved'],
             ];
-            return $this->update($data, "test_type_id='" . $params['testtypeId'] . "'");
+            return $this->update($data, ['test_type_id = ?' => $params['testtypeId']]);
         }
     }
 
     public function updateTestTypeStageDetails($params)
     {
-        if (trim($params['testPlatformStage']) != '') {
+        if (in_array(trim((string) ($params['testPlatformStage'] ?? '')), ['test_type_1', 'test_type_2', 'test_type_3'], true)) {
             $this->update([$params['testPlatformStage'] => '0'], []);
             if (isset($params['testPlatformData']) && $params['testPlatformData'] != '' && count($params['testPlatformData']) > 0) {
                 foreach ($params['testPlatformData'] as $data) {
-                    $this->update([$params['testPlatformStage'] => '1'], "test_type_id='" . $data . "'");
+                    $this->update([$params['testPlatformStage'] => '1'], ['test_type_id = ?' => $data]);
                 }
             }
         }
@@ -96,7 +96,7 @@ class Application_Model_DbTable_TestTypenameCovid19 extends Zend_Db_Table_Abstra
 
     public function checkTestTypeId($testtypeId, $scheme)
     {
-        $result = $this->fetchRow($this->select()->where("test_type_id='" . $testtypeId . "'"));
+        $result = $this->fetchRow($this->select()->where('test_type_id = ?', $testtypeId));
         if ($result != '') {
             $randomStr = Application_Service_Common::generateRandomString(13);
             $testtypeId = 'tt' . $randomStr;
@@ -251,7 +251,7 @@ class Application_Model_DbTable_TestTypenameCovid19 extends Zend_Db_Table_Abstra
             $randomStr = Application_Service_Common::generateRandomString(13);
             $testtypeId = 'tt' . $randomStr;
             $tkId = $this->checkTestTypeId($testtypeId, $scheme);
-            $result = $this->fetchRow($this->select()->where("test_type_name='" . $testtypeName . "'"));
+            $result = $this->fetchRow($this->select()->where('test_type_name = ?', $testtypeName));
 
             if ($result == '' && trim($oldName) == '') {
                 $data = [
@@ -267,12 +267,12 @@ class Application_Model_DbTable_TestTypenameCovid19 extends Zend_Db_Table_Abstra
                 $this->insert($data);
                 return $tkId;
             } else {
-                $result = $this->fetchRow($this->select()->where("test_type_name='" . $oldName . "'"));
+                $result = $this->fetchRow($this->select()->where('test_type_name = ?', $oldName));
                 if ($result != '') {
                     $data = [
                         'test_type_name' => trim($testtypeName),
                     ];
-                    $this->update($data, "test_type_id='" . $result['test_type_id'] . "'");
+                    $this->update($data, ['test_type_id = ?' => $result['test_type_id']]);
                     return $result['test_type_id'];
                 }
             }
@@ -286,7 +286,7 @@ class Application_Model_DbTable_TestTypenameCovid19 extends Zend_Db_Table_Abstra
             $randomStr = Application_Service_Common::generateRandomString(13);
             $testtypeId = 'tt' . $randomStr;
             $tkId = $this->checkTestTypeId($testtypeId, $scheme);
-            $result = $this->fetchRow($this->select()->where("test_type_name='" . $testtypeName . "'"));
+            $result = $this->fetchRow($this->select()->where('test_type_name = ?', $testtypeName));
 
             if ($result == '' && trim($oldName) == '') {
                 $data = [
@@ -303,7 +303,7 @@ class Application_Model_DbTable_TestTypenameCovid19 extends Zend_Db_Table_Abstra
                 $this->insert($data);
                 return $tkId;
             } else {
-                $result = $this->fetchRow($this->select()->where("test_type_name='" . $oldName . "'"));
+                $result = $this->fetchRow($this->select()->where('test_type_name = ?', $oldName));
                 if ($result != '') {
                     $data = [
                         'test_type_name' => trim($testtypeName),
@@ -314,7 +314,7 @@ class Application_Model_DbTable_TestTypenameCovid19 extends Zend_Db_Table_Abstra
                         'test_type_2' => ($type == 2) ? '1' : '0',
                         'test_type_3' => ($type == 3) ? '1' : '0',
                     ];
-                    $this->update($data, "test_type_id='" . $result['test_type_id'] . "'");
+                    $this->update($data, ['test_type_id = ?' => $result['test_type_id']]);
                     return $result['test_type_id'];
                 }
             }

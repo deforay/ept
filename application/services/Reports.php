@@ -1209,7 +1209,7 @@ class Application_Service_Reports
             }
         }
 
-        if (isset($parameters['scheme']) && $parameters['scheme'] != '') {
+        if (isset($parameters['scheme']) && is_string($parameters['scheme']) && preg_match('/^[a-z0-9_]+$/', $parameters['scheme'])) {
             $refTable = 'reference_result_' . $parameters['scheme'];
             $resTable = 'response_result_' . $parameters['scheme'];
 
@@ -3418,7 +3418,7 @@ class Application_Service_Reports
         foreach ($assayResult as $assayRow) {
             $cQuery = $db->select()->from(['sp' => 'shipment_participant_map'], ['sp.map_id', 'sp.attributes']);
             if ($shipmentId != null) {
-                $cQuery = $cQuery->where("sp.shipment_id='" . $shipmentId . "'");
+                $cQuery = $cQuery->where('sp.shipment_id = ?', $shipmentId);
             }
 
             $cResult = $db->fetchAll($cQuery);
@@ -3504,7 +3504,7 @@ class Application_Service_Reports
         $totalResult = [];
         if ($params['shipmentId'] != '') {
             $shipmentId = $params['shipmentId'];
-            $shQuery = $db->select()->from(['s' => 'shipment'])->where("s.shipment_id='" . $shipmentId . "'");
+            $shQuery = $db->select()->from(['s' => 'shipment'])->where('s.shipment_id = ?', $shipmentId);
             $shimentResult = $db->fetchAll($shQuery);
         } else {
             $shQuery = $db->select()->from(['s' => 'shipment'])->where("s.scheme_type='vl'")->where('s.cancelled_at IS NULL');
@@ -3527,14 +3527,14 @@ class Application_Service_Reports
                     $f = 0;
                     $e = 0;
                     $cQuery = $db->select()->from(['sp' => 'shipment_participant_map'], ['sp.map_id', 'sp.attributes'])
-                        ->where("sp.shipment_id='" . $shipmentId . "'");
+                        ->where('sp.shipment_id = ?', $shipmentId);
                     $cResult = $db->fetchAll($cQuery);
                     foreach ($cResult as $val) {
                         $valAttributes = Pt_Commons_JsonUtility::safeDecode($val['attributes']);
                         if ($assayRow['id'] == $valAttributes['vl_assay']) {
                             //check pass result
                             $pQuery = $db->select()->from(['rrv' => 'response_result_vl'], ['passResult' => new Zend_Db_Expr("SUM(IF(rrv.calculated_score='pass',1,0))"), 'failResult' => new Zend_Db_Expr("SUM(IF(rrv.calculated_score='fail',1,0))"), 'exResult' => new Zend_Db_Expr("SUM(IF(rrv.calculated_score='excluded',1,0))")])
-                                ->where("rrv.shipment_map_id='" . $val['map_id'] . "'")
+                                ->where('rrv.shipment_map_id = ?', $val['map_id'])
                                 ->group('rrv.shipment_map_id');
                             $pResult = $db->fetchRow($pQuery);
                             if ($pResult) {
@@ -3932,7 +3932,7 @@ class Application_Service_Reports
                     if ($sWhere != '') {
                         $sWhere .= ' OR ';
                     }
-                    $sWhere .= "s.scheme_type='" . $val . "'";
+                    $sWhere .= $db->quoteInto('s.scheme_type = ?', $val);
                 }
                 if (!empty($sWhere)) {
                     $query = $query->where($sWhere);
@@ -3974,9 +3974,9 @@ class Application_Service_Reports
 
             if (isset($params['shipmentId']) && !empty($params['shipmentId']) && count($params['shipmentId']) > 0) {
                 $impShipmentId = implode(',', $params['shipmentId']);
-                $sQuery->where('spm.shipment_id IN (' . $impShipmentId . ')');
+                $sQuery->where('spm.shipment_id IN (?)', $params['shipmentId']);
                 $shQuery = $db->select()->from(['s' => 'shipment'], ['s.shipment_code', 's.scheme_type'])
-                    ->where('s.shipment_id IN (' . $impShipmentId . ')')
+                    ->where('s.shipment_id IN (?)', $params['shipmentId'])
                     ->order('s.scheme_type');
                 $shipmentResult = $db->fetchAll($shQuery);
                 $shipmentCodeArray = [];
@@ -3986,7 +3986,7 @@ class Application_Service_Reports
                 }
             } else {
                 //$sQuery->where('spm.shipment_id IN(?)', $impShipmentId);
-                $sQuery->where('spm.shipment_id IN (' . $impShipmentId . ')');
+                $sQuery->where('spm.shipment_id IN (?)', $shipmentIdArray);
             }
 
             $shipmentParticipantResult = $db->fetchAll($sQuery);

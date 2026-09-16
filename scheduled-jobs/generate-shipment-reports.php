@@ -1640,7 +1640,7 @@ class ReportGenerator
             $shipmentUpdate['finalized_at'] = new Zend_Db_Expr('now()');
         }
 
-        $this->db->update('shipment', $shipmentUpdate, "shipment_id = " . $evalRow['shipment_id']);
+        $this->db->update('shipment', $shipmentUpdate, ['shipment_id = ?' => $evalRow['shipment_id']]);
 
         // Add audit log for finalized shipments. Runs from CLI, so there is no
         // admin session - attribute the action to whoever initiated the job.
@@ -1659,7 +1659,7 @@ class ReportGenerator
 
         // Update queue record
         if (!empty($evalRow['id'])) {
-            $this->db->update('queue_report_generation', $update, 'id=' . $evalRow['id']);
+            $this->db->update('queue_report_generation', $update, ['id = ?' => $evalRow['id']]);
         }
 
         // Send admin reminder email

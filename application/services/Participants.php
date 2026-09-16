@@ -89,7 +89,7 @@ class Application_Service_Participants
             }
             $db = Zend_Db_Table_Abstract::getDefaultAdapter();
             $sql = $db->select()->from(['eln' => 'enrollments'], ['*'])
-                ->where("eln.list_name IN ('" . implode("', '", $ids) . "')");
+                ->where('eln.list_name IN (?)', $ids);
             return $db->fetchAll($sql);
         }
     }

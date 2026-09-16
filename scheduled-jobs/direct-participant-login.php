@@ -33,7 +33,7 @@ try {
         $error = "PARTICIPANT UNIQUE ID => " . $pRow['unique_identifier'];
         if (empty($pRow['ulid'])) {
             $ulid = Pt_Commons_General::generateULID();
-            $db->update('participant', ['ulid' => $ulid, 'updated_on' => new Zend_Db_Expr('now()')], 'participant_id = ' . $pRow['participant_id']);
+            $db->update('participant', ['ulid' => $ulid, 'updated_on' => new Zend_Db_Expr('now()')], ['participant_id = ?' => $pRow['participant_id']]);
         } else {
             $ulid = $pRow['ulid'];
         }
@@ -42,7 +42,7 @@ try {
 
         $dmsql = $db->select()->from('data_manager')
             ->where("data_manager_type LIKE ?", 'participant')
-            ->where("primary_email LIKE '$newLoginID'");
+            ->where('primary_email LIKE ?', $newLoginID);
         $dmresult = $db->fetchRow($dmsql);
         $dataManagerData = [
             'participant_ulid' => $ulid,

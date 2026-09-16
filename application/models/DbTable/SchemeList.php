@@ -317,8 +317,8 @@ class Application_Model_DbTable_SchemeList extends Zend_Db_Table_Abstract
     {
         $response = [];
         if (!empty($id)) {
-            $response['schemeResult'] = $this->fetchRow($this->select()->where('scheme_id = "' . $id . '"'))->toArray();
-            $possibleResults = $this->getAdapter()->fetchAll($this->getAdapter()->select()->from('r_possibleresult', ['*'])->where('scheme_id = "' . $id . '"')->order('sort_order asc'));
+            $response['schemeResult'] = $this->fetchRow($this->select()->where('scheme_id = ?', $id))->toArray();
+            $possibleResults = $this->getAdapter()->fetchAll($this->getAdapter()->select()->from('r_possibleresult', ['*'])->where('scheme_id = ?', $id)->order('sort_order asc'));
 
             // Flag results already referenced by a shipment so the editor can lock them: their
             // code / label must not change or be removed, else historical results orphan (the
@@ -336,7 +336,7 @@ class Application_Model_DbTable_SchemeList extends Zend_Db_Table_Abstract
 
     public function checkUserConfig($id)
     {
-        $scheme = $this->fetchRow($this->select()->where('scheme_id = "' . $id . '"'))->toArray();
+        $scheme = $this->fetchRow($this->select()->where('scheme_id = ?', $id))->toArray();
         return $scheme['is_user_configured'];
     }
 
@@ -348,7 +348,7 @@ class Application_Model_DbTable_SchemeList extends Zend_Db_Table_Abstract
 
     public function fetchSchemeById($id)
     {
-        return $this->fetchRow($this->select()->where('scheme_id = "' . $id . '"'))->toArray();
+        return $this->fetchRow($this->select()->where('scheme_id = ?', $id))->toArray();
     }
 
     public function fetchAllPossibleResultsInGrid($parameters)

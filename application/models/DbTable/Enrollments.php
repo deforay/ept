@@ -221,7 +221,7 @@ class Application_Model_DbTable_Enrollments extends Zend_Db_Table_Abstract
     public function enrollParticipantToSchemes($participantId, $schemes, $listName = 'default')
     {
 
-        $this->delete("participant_id=$participantId");
+        $this->delete(['participant_id = ?' => $participantId]);
 
         foreach ($schemes as $scheme) {
             $data = [

@@ -60,7 +60,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
     public function updateShipmentStatus($shipmentId, $status)
     {
         if (isset($status) && $status != null && $status != '') {
-            return $this->update(['status' => $status], "shipment_id = $shipmentId");
+            return $this->update(['status' => $status], ['shipment_id = ?' => $shipmentId]);
         } else {
             return 0;
         }
@@ -69,7 +69,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
     public function responseSwitch($shipmentId, $switchStatus)
     {
         if (isset($switchStatus) && $switchStatus != null && $switchStatus != '') {
-            $this->update(['response_switch' => $switchStatus], "shipment_id = $shipmentId");
+            $this->update(['response_switch' => $switchStatus], ['shipment_id = ?' => $shipmentId]);
             return 'Shipment Response Status updated to ' . strtoupper($switchStatus) . ' successfully';
         } else {
             return 'Unable to change Shipment Response Status to ' . strtoupper($switchStatus) . '. Please try again later.';
@@ -81,7 +81,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         $commonServices = new Application_Service_Common();
         // Never pick up a cancelled shipment here — this path mails participants
         // about a "new shipment", and a cancelled one is soft-deleted.
-        $shipmentRow = $this->fetchRow('distribution_id = ' . $distributionId . ' AND cancelled_at IS NULL');
+        $shipmentRow = $this->fetchRow(['distribution_id = ?' => $distributionId, 'cancelled_at IS NULL']);
         /* New shipment mail alert start */
         $notParticipatedMailContent = $commonServices->getEmailTemplate('new_shipment');
         // Every shipment under this survey may be cancelled, in which case there is
@@ -118,7 +118,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         if (isset($status) && $status != null && $status != '') {
             // Scoped to live shipments: without this, shipping a survey would flip
             // response_switch back to 'on' for its cancelled shipments and un-lock them.
-            return $this->update(['response_switch' => 'on', 'status' => $status], "distribution_id = $distributionId AND cancelled_at IS NULL");
+            return $this->update(['response_switch' => 'on', 'status' => $status], ['distribution_id = ?' => $distributionId, 'cancelled_at IS NULL']);
         } else {
             return 0;
         }
@@ -126,7 +126,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
 
     public function getPendingShipmentsByDistribution($distributionId)
     {
-        return $this->fetchAll("status ='pending' AND distribution_id = $distributionId");
+        return $this->fetchAll(["status ='pending'", 'distribution_id = ?' => $distributionId]);
     }
 
     public function getShipmentOverviewDetails($parameters)
@@ -1160,7 +1160,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         if (!empty($authNameSpace->dm_id)) {
             $sQuery = $sQuery
                 ->join(['pmm' => 'participant_manager_map'], 'pmm.participant_id=p.participant_id', [])
-                ->where('pmm.dm_id = ' . $authNameSpace->dm_id);
+                ->where('pmm.dm_id = ?', $authNameSpace->dm_id);
         }
         if (isset($parameters['scheme']) && $parameters['scheme'] != '') {
             $sQuery = $sQuery->where('s.scheme_type = ?', $parameters['scheme']);
@@ -2333,7 +2333,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         if ($schemeType == 'custom-tests') {
             $sQuery = $sQuery->where("(sl.is_user_configured like 'yes')");
         } else {
-            $sQuery = $sQuery->where("(s.scheme_type like '$schemeType')");
+            $sQuery = $sQuery->where('(s.scheme_type like ?)', $schemeType);
         }
         $rResult = $this->getAdapter()->fetchAll($sQuery);
         if (empty($rResult)) {
@@ -4945,9 +4945,9 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                         'contact_person_email' => $params['vlData']->Section1->data->contactPersonEmail,
                         'contact_person_telephone' => $params['vlData']->Section1->data->contactPersonTelephone,
                     ];
-                    $dbAdapter->update('shipment_participant_map', $sectionData, 'map_id = ' . $params['mapId']);
+                    $dbAdapter->update('shipment_participant_map', $sectionData, ['map_id = ?' => $params['mapId']]);
                     /* Participant table updation */
-                    $dbAdapter->update('participant', $sectionData, 'participant_id = ' . $params['participantId']);
+                    $dbAdapter->update('participant', $sectionData, ['participant_id = ?' => $params['participantId']]);
                 }
                 $updateShipmentParticipantStatus = $shipmentParticipantDb->updateShipmentByAPI($data, $dm, $params);
 
@@ -5118,9 +5118,9 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                         'contact_person_email' => $params['eidData']->Section1->data->contactPersonEmail,
                         'contact_person_telephone' => $params['eidData']->Section1->data->contactPersonTelephone,
                     ];
-                    $dbAdapter->update('shipment_participant_map', $sectionData, 'map_id = ' . $params['mapId']);
+                    $dbAdapter->update('shipment_participant_map', $sectionData, ['map_id = ?' => $params['mapId']]);
                     /* Participant table updation */
-                    $dbAdapter->update('participant', $sectionData, 'participant_id = ' . $params['participantId']);
+                    $dbAdapter->update('participant', $sectionData, ['participant_id = ?' => $params['participantId']]);
                 }
 
                 $updateShipmentParticipantStatus = $shipmentParticipantDb->updateShipmentByAPI($data, $dm, $params);

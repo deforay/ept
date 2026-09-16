@@ -11,7 +11,7 @@ class Application_Model_DbTable_ResponseDbs extends Zend_Db_Table_Abstract
 
         foreach ($sampleIds as $key => $sampleId) {
             //die("shipment_map_id = ".$params['smid'] . " and sample_id = ".$sampleId);
-            $res = $this->fetchRow('shipment_map_id = ' . $params['smid'] . ' and sample_id = ' . $sampleId);
+            $res = $this->fetchRow(['shipment_map_id = ?' => $params['smid'], 'sample_id = ?' => $sampleId]);
             $authNameSpace = new Zend_Session_Namespace('datamanagers');
 
             if ($res == null || !empty($res)) {

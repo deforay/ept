@@ -66,7 +66,7 @@ class Application_Model_Eid
                     'failure_reason' => json_encode($failureReason),
                     'is_response_late' => 'yes',
                     'response_status' => 'late',
-                ], 'map_id = ' . $shipment['map_id']);
+                ], ['map_id = ?' => $shipment['map_id']]);
             } else {
                 $shipment['is_response_late'] = 'no';
             }
@@ -141,7 +141,7 @@ class Application_Model_Eid
                 $shipmentResult[$counter]['max_score'] = 100; //$maxScore;
                 $shipmentResult[$counter]['final_result'] = $finalResult;
 
-                $fRes = $db->fetchCol($db->select()->from('r_results', ['result_name'])->where('result_id = ' . $finalResult));
+                $fRes = $db->fetchCol($db->select()->from('r_results', ['result_name'])->where('result_id = ?', $finalResult));
 
                 $shipmentResult[$counter]['display_result'] = $fRes[0];
                 $shipmentResult[$counter]['failure_reason'] = $failureReason = json_encode($failureReason);
@@ -156,7 +156,7 @@ class Application_Model_Eid
                     if (!isset($shipmentOverall['final_result']) || $shipmentOverall['final_result'] == '') {
                         $shipmentOverall['final_result'] = 2;
                     }
-                    $fRes = $db->fetchCol($db->select()->from('r_results', ['result_name'])->where('result_id = ' . $shipmentOverall['final_result']));
+                    $fRes = $db->fetchCol($db->select()->from('r_results', ['result_name'])->where('result_id = ?', $shipmentOverall['final_result']));
                     $shipmentResult[$counter]['display_result'] = $fRes[0];
                     $overrideUpdateData = [
                         'shipment_score' => $shipmentOverall['shipment_score'],
@@ -166,7 +166,7 @@ class Application_Model_Eid
                     if ($shipment['is_response_late'] == 'yes') {
                         $overrideUpdateData['response_status'] = 'late';
                     }
-                    $db->update('shipment_participant_map', $overrideUpdateData, 'map_id = ' . $shipment['map_id']);
+                    $db->update('shipment_participant_map', $overrideUpdateData, ['map_id = ?' => $shipment['map_id']]);
                 }
             } else {
                 // let us update the total score in DB
@@ -179,12 +179,12 @@ class Application_Model_Eid
                 if ($shipment['is_response_late'] == 'yes') {
                     $normalUpdateData['response_status'] = 'late';
                 }
-                $db->update('shipment_participant_map', $normalUpdateData, 'map_id = ' . $shipment['map_id']);
+                $db->update('shipment_participant_map', $normalUpdateData, ['map_id = ?' => $shipment['map_id']]);
             }
             //$counter++;
             $counter++;
         }
-        $db->update('shipment', ['max_score' => $maxScore, 'status' => 'evaluated'], 'shipment_id = ' . $shipmentId);
+        $db->update('shipment', ['max_score' => $maxScore, 'status' => 'evaluated'], ['shipment_id = ?' => $shipmentId]);
 
         return $shipmentResult;
     }

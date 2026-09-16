@@ -371,21 +371,35 @@ class Application_Service_Common
         $value = trim(trim($params['value']), "'");
         $fnct = $params['fnct'];
 
+        // Table and column names arrive from the browser, so only known lookups are allowed
+        $allowedTables = [
+            'data_manager', 'distributions', 'participant', 'partners', 'r_covid19_gene_types',
+            'r_eid_detection_assay', 'r_eid_extraction_assay', 'r_participant_feedback_form_question_map',
+            'r_response_not_tested_reasons', 'r_test_type_covid19', 'r_testkitnames', 'r_vl_assay',
+            'scheme_list', 'shipment', 'system_admin',
+        ];
+        $isIdentifier = static fn ($name): bool => is_string($name) && preg_match('/^[A-Za-z_][A-Za-z0-9_]*$/', $name) === 1;
+
         $data = 0;
         // no point in checking duplication if the value is null or empty
         if (empty($value) || empty($tableName) || empty($fieldName)) {
             $data = 0;
+        } elseif (!in_array($tableName, $allowedTables, true) || !$isIdentifier($fieldName)) {
+            $data = 0;
         } elseif ($fnct == 'null' || empty($fnct) || $fnct == 'undefined' || $fnct == '') {
-            $sql = $db->select()->from($tableName)->where("$fieldName = ?", $value);
+            $sql = $db->select()->from($tableName)->where($db->quoteIdentifier($fieldName) . ' = ?', $value);
             $result = $db->fetchAll($sql);
             if (!empty($result)) {
                 $data = count($result);
             }
         } else {
             $table = explode('##', $fnct);
+            if (!$isIdentifier($table[0])) {
+                return 0;
+            }
             $sql = $db->select()->from($tableName)
-                ->where("$fieldName = ?", $value)
-                ->where("$table[0]!= '$table[1]'");
+                ->where($db->quoteIdentifier($fieldName) . ' = ?', $value)
+                ->where($db->quoteIdentifier($table[0]) . ' != ?', $table[1] ?? '');
             $result = $db->fetchAll($sql);
             if (!empty($result)) {
                 $data = count($result);

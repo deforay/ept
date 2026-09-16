@@ -63,7 +63,7 @@ class Application_Model_DbTable_HomeSection extends Zend_Db_Table_Abstract
         ];
 
         if (isset($params['homeSectionId']) && !empty($params['homeSectionId'])) {
-            return $this->update($data, "id = '" . $params['homeSectionId'] . "'");
+            return $this->update($data, ['id = ?' => $params['homeSectionId']]);
         } else {
             return $this->insert($data);
         }

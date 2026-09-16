@@ -11,7 +11,7 @@ class Application_Model_DbTable_ResponseTb extends Zend_Db_Table_Abstract
         $sampleIds = $params['sampleId'];
 
         foreach ($sampleIds as $key => $sampleId) {
-            $res = $this->fetchRow('shipment_map_id = ' . $params['smid'] . ' and sample_id = ' . $sampleId);
+            $res = $this->fetchRow(['shipment_map_id = ?' => $params['smid'], 'sample_id = ?' => $sampleId]);
             $authNameSpace = new Zend_Session_Namespace('datamanagers');
             $data = [
                 'shipment_map_id' => $params['smid'],
@@ -80,7 +80,7 @@ class Application_Model_DbTable_ResponseTb extends Zend_Db_Table_Abstract
             } else {
                 $data['updated_by'] = $authNameSpace->dm_id;
                 $data['updated_on'] = new Zend_Db_Expr(self::NOW);
-                $this->update($data, 'shipment_map_id = ' . $params['smid'] . ' and sample_id = ' . $sampleId);
+                $this->update($data, ['shipment_map_id = ?' => $params['smid'], 'sample_id = ?' => $sampleId]);
             }
         }
     }
@@ -114,6 +114,6 @@ class Application_Model_DbTable_ResponseTb extends Zend_Db_Table_Abstract
             'updated_by' => $authNameSpace->dm_id,
             'updated_on' => new Zend_Db_Expr(self::NOW),
         ];
-        return $this->update($data, 'shipment_map_id = ' . $mapId);
+        return $this->update($data, ['shipment_map_id = ?' => $mapId]);
     }
 }

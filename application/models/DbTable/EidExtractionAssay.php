@@ -134,11 +134,11 @@ class Application_Model_DbTable_EidExtractionAssay extends Zend_Db_Table_Abstrac
 
     public function fetchEidExtractionAssay($id)
     {
-        return $this->fetchRow('id = ' . $id)->where("`status` like 'active'");
+        return $this->fetchRow(['id = ?' => $id])->where("`status` like 'active'");
     }
 
     public function updateEidExtractionNameStatus($params)
     {
-        return $this->update(['status' => $params['switchStatus']], 'id = ' . $params['id']);
+        return $this->update(['status' => $params['switchStatus']], ['id = ?' => $params['id']]);
     }
 }

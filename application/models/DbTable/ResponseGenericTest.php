@@ -10,7 +10,7 @@ class Application_Model_DbTable_ResponseGenericTest extends Zend_Db_Table_Abstra
 
         $sampleIds = $params['sampleId'];
         foreach ($sampleIds as $key => $sampleId) {
-            $res = $this->fetchRow('shipment_map_id = ' . $params['smid'] . ' and sample_id = ' . $sampleId);
+            $res = $this->fetchRow(['shipment_map_id = ?' => $params['smid'], 'sample_id = ?' => $sampleId]);
             $authNameSpace = new Zend_Session_Namespace('datamanagers');
             $data = [
                 'shipment_map_id' => $params['smid'],
@@ -31,7 +31,7 @@ class Application_Model_DbTable_ResponseGenericTest extends Zend_Db_Table_Abstra
             } else {
                 $data['updated_by'] = $authNameSpace->dm_id;
                 $data['updated_on'] = new Zend_Db_Expr('now()');
-                $this->update($data, 'shipment_map_id = ' . $params['smid'] . ' and sample_id = ' . $sampleId);
+                $this->update($data, ['shipment_map_id = ?' => $params['smid'], 'sample_id = ?' => $sampleId]);
             }
         }
     }
@@ -50,7 +50,7 @@ class Application_Model_DbTable_ResponseGenericTest extends Zend_Db_Table_Abstra
             'updated_on' => new Zend_Db_Expr('now()'),
         ];
 
-        return $this->update($data, 'shipment_map_id = ' . $mapId);
+        return $this->update($data, ['shipment_map_id = ?' => $mapId]);
     }
 
     public function updateResultsByAPIV2($params)
@@ -58,7 +58,7 @@ class Application_Model_DbTable_ResponseGenericTest extends Zend_Db_Table_Abstra
         $id = 0;
         $sampleIds = $params['sample_id'];
         foreach ($sampleIds as $key => $sampleId) {
-            $res = $this->fetchRow('shipment_map_id = ' . $params['mapId'] . ' and sample_id = ' . $sampleId);
+            $res = $this->fetchRow(['shipment_map_id = ?' => $params['mapId'], 'sample_id = ?' => $sampleId]);
             $authNameSpace = new Zend_Session_Namespace('datamanagers');
             $data = [
                 'shipment_map_id' => $params['mapId'],
@@ -76,7 +76,7 @@ class Application_Model_DbTable_ResponseGenericTest extends Zend_Db_Table_Abstra
             } else {
                 $data['updated_by'] = $authNameSpace->dm_id;
                 $data['updated_on'] = new Zend_Db_Expr('now()');
-                $id = $this->update($data, 'shipment_map_id = ' . $params['mapId'] . ' and sample_id = ' . $sampleId);
+                $id = $this->update($data, ['shipment_map_id = ?' => $params['mapId'], 'sample_id = ?' => $sampleId]);
             }
         }
         return $id;

@@ -19,11 +19,11 @@ class Application_Model_DbTable_CustomPageContent extends Zend_Db_Table_Abstract
             ];
 
             /* Check IF Exist or not */
-            $sql = $this->select()->where('title like "' . $templates . '"');
+            $sql = $this->select()->where('title like ?', $templates);
             $exist = $this->fetchRow($sql);
-            $this->update(['status' => 'inactive'], "title != '" . $templates . "'");
+            $this->update(['status' => 'inactive'], ['title != ?' => $templates]);
             if (isset($exist) && !empty($exist)) {
-                return $this->update($data, 'id = ' . $exist['id']);
+                return $this->update($data, ['id = ?' => $exist['id']]);
             } else {
                 return $this->insert($data);
             }

@@ -220,7 +220,7 @@ class Application_Model_CustomTest
 
                         $maxScore += $result['sample_score'];
 
-                        $db->update('response_result_generic_test', ['z_score' => $zScore, 'calculated_score' => $calcResult], 'shipment_map_id = ' . $result['map_id'] . ' and sample_id = ' . $result['sample_id']);
+                        $db->update('response_result_generic_test', ['z_score' => $zScore, 'calculated_score' => $calcResult], ['shipment_map_id = ?' => $result['map_id'], 'sample_id = ?' => $result['sample_id']]);
                     }
                 } else {
                     foreach ($results as $result) {
@@ -243,7 +243,7 @@ class Application_Model_CustomTest
                         if (0 == $result['control']) {
                             $maxScore += $result['sample_score'];
                         }
-                        $db->update('response_result_generic_test', ['calculated_score' => $calculatedScore], 'shipment_map_id = ' . $result['map_id'] . ' and sample_id = ' . $result['sample_id']);
+                        $db->update('response_result_generic_test', ['calculated_score' => $calculatedScore], ['shipment_map_id = ?' => $result['map_id'], 'sample_id = ?' => $result['sample_id']]);
                     }
                 }
                 if (isset($updatedTestKitId) && !empty($updatedTestKitId['TestKitName_ID']) && isset($recommendedTestkits) && !empty($recommendedTestkits)) {
@@ -318,7 +318,7 @@ class Application_Model_CustomTest
                     $shipmentResult[$counter]['max_score'] = 100; //$maxScore;
                     $shipmentResult[$counter]['final_result'] = $finalResult;
 
-                    $fRes = $db->fetchCol($db->select()->from('r_results', ['result_name'])->where("result_id = $finalResult"));
+                    $fRes = $db->fetchCol($db->select()->from('r_results', ['result_name'])->where('result_id = ?', $finalResult));
 
                     $shipmentResult[$counter]['display_result'] = $fRes[0];
                     $shipmentResult[$counter]['failure_reason'] = $failureReason = json_encode($failureReason);
@@ -333,7 +333,7 @@ class Application_Model_CustomTest
                         if (!isset($shipmentOverall['final_result']) || $shipmentOverall['final_result'] == '') {
                             $shipmentOverall['final_result'] = 2;
                         }
-                        $fRes = $db->fetchCol($db->select()->from('r_results', ['result_name'])->where('result_id = ' . $shipmentOverall['final_result']));
+                        $fRes = $db->fetchCol($db->select()->from('r_results', ['result_name'])->where('result_id = ?', $shipmentOverall['final_result']));
                         $shipmentResult[$counter]['display_result'] = $fRes[0];
                         $overrideUpdateData = [
                             'shipment_score' => $shipmentOverall['shipment_score'],
@@ -343,7 +343,7 @@ class Application_Model_CustomTest
                         if ($shipment['is_response_late'] == 'yes') {
                             $overrideUpdateData['response_status'] = 'late';
                         }
-                        $db->update('shipment_participant_map', $overrideUpdateData, 'map_id = ' . $shipment['map_id']);
+                        $db->update('shipment_participant_map', $overrideUpdateData, ['map_id = ?' => $shipment['map_id']]);
                     }
                 } else {
                     // let us update the total score in DB
@@ -356,7 +356,7 @@ class Application_Model_CustomTest
                     if ($shipment['is_response_late'] == 'yes') {
                         $normalUpdateData['response_status'] = 'late';
                     }
-                    $db->update('shipment_participant_map', $normalUpdateData, 'map_id = ' . $shipment['map_id']);
+                    $db->update('shipment_participant_map', $normalUpdateData, ['map_id = ?' => $shipment['map_id']]);
                 }
             } else {
                 $shipment['is_response_late'] = 'yes';
@@ -369,7 +369,7 @@ class Application_Model_CustomTest
                     'failure_reason' => json_encode($failureReason),
                     'is_response_late' => 'yes',
                     'response_status' => 'late',
-                ], 'map_id = ' . $shipment['map_id']);
+                ], ['map_id = ?' => $shipment['map_id']]);
             }
             $counter++;
         }
@@ -377,7 +377,7 @@ class Application_Model_CustomTest
         // processed participant's max score (it's reset to 0 at the top of every iteration).
         // Now uses `$shipmentMaxScore`, the largest max score observed across all participants
         // in this shipment, which is a much more meaningful shipment-level value.
-        $db->update('shipment', ['max_score' => $shipmentMaxScore, 'status' => 'evaluated'], 'shipment_id = ' . $shipmentId);
+        $db->update('shipment', ['max_score' => $shipmentMaxScore, 'status' => 'evaluated'], ['shipment_id = ?' => $shipmentId]);
         return $shipmentResult;
     }
 
@@ -390,7 +390,8 @@ class Application_Model_CustomTest
             ->join(['s' => 'shipment'], 's.shipment_id=ref.shipment_id')
             ->join(['sp' => 'shipment_participant_map'], 's.shipment_id=sp.shipment_id')
             ->joinLeft(['res' => 'response_result_generic_test'], 'res.shipment_map_id = sp.map_id and res.sample_id = ref.sample_id', ['shipment_map_id', 'result_1', 'result_2', 'result_3', 'reported_result', 'is_result_invalid', 'error_code', 'additional_detail', 'comments'])
-            ->where("sp.shipment_id = $sId AND sp.participant_id = $pId");
+            ->where('sp.shipment_id = ?', $sId)
+            ->where('sp.participant_id = ?', $pId);
         return $db->fetchAll($sql);
     }
 
@@ -859,7 +860,7 @@ class Application_Model_CustomTest
             $regexpArray = [];
             $regexp = '';
             foreach ($countedAssayResult as $crow) {
-                $regexpArray[] = '\'%"kit_name":"' . $crow['testkit_id'] . '"%\'';
+                $regexpArray[] = $db->quote('%"kit_name":"' . $crow['testkit_id'] . '"%');
             }
             if (isset($regexpArray) && !empty($regexpArray)) {
                 $regexp = implode(' AND `attributes` NOT LIKE ', $regexpArray);
@@ -912,7 +913,7 @@ class Application_Model_CustomTest
                     ->where('vlCal.shipment_id=?', $shipmentId)
                     ->where('vlCal.testkit_id=?', $vlAssayRow['TESTKITNAMEID'])
                     ->where('refVl.control!=1')
-                    ->where('sp.attributes->>"$.kit_name" = "' . $vlAssayRow['TESTKITNAMEID'] . '"')
+                    ->where('sp.attributes->>"$.kit_name" = ?', $vlAssayRow['TESTKITNAMEID'])
                     ->where("sp.is_excluded not like 'yes' OR sp.is_excluded like '' OR sp.is_excluded is null")
                     ->where('sp.final_result = 1 OR sp.final_result = 2')
                     ->group('refVl.sample_id');
@@ -958,7 +959,7 @@ class Application_Model_CustomTest
         $sql = $this->db->select()->from(['generic_recommended_test_types']);
 
         if ($schemeId != null) {
-            $sql = $sql->where("scheme_id = '$schemeId'");
+            $sql = $sql->where('scheme_id = ?', $schemeId);
         }
         $stmt = $this->db->fetchAll($sql);
         $retval = [];
@@ -973,13 +974,13 @@ class Application_Model_CustomTest
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
 
         $beforeSetQuantRangeData = $db->fetchAll($db->select()->from('reference_generic_test_calculations', ['*'])
-            ->where("shipment_id = $shipmentId"));
+            ->where('shipment_id = ?', $shipmentId));
         $oldSetQuantRange = [];
         foreach ($beforeSetQuantRangeData as $beforeSetQuantRangeRow) {
             $oldSetQuantRange[$beforeSetQuantRangeRow['sample_id']] = $beforeSetQuantRangeRow;
         }
 
-        $db->delete('reference_generic_test_calculations', "use_range IS NOT NULL and use_range not like 'manual' AND shipment_id=$shipmentId");
+        $db->delete('reference_generic_test_calculations', ["use_range IS NOT NULL and use_range not like 'manual'", 'shipment_id = ?' => $shipmentId]);
 
         $sql = $db->select()->from(['ref' => 'reference_result_generic_test'], ['shipment_id', 'sample_id'])
             ->join(['s' => 'shipment'], 's.shipment_id=ref.shipment_id', [])
@@ -1086,12 +1087,12 @@ class Application_Model_CustomTest
                     $data['use_range'] = $oldSetQuantRange[$sample]['use_range'] ?? 'calculated';
                 }
 
-                $db->delete('reference_generic_test_calculations', "sample_id=$sample AND shipment_id=$shipmentId");
+                $db->delete('reference_generic_test_calculations', ['sample_id = ?' => $sample, 'shipment_id = ?' => $shipmentId]);
 
                 $db->insert('reference_generic_test_calculations', $data);
             } else {
                 if (isset($oldSetQuantRange[$sample]) && !empty($oldSetQuantRange[$sample]) && $oldSetQuantRange[$sample]['use_range'] != 'manual') {
-                    $db->delete('reference_generic_test_calculations', "shipment_id = $shipmentId");
+                    $db->delete('reference_generic_test_calculations', ['shipment_id = ?' => $shipmentId]);
                 }
             }
         }
@@ -1157,13 +1158,13 @@ class Application_Model_CustomTest
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
 
         $beforeSetQuantRangeData = $db->fetchAll($db->select()->from('reference_generic_test_calculations', ['*'])
-            ->where("shipment_id = $shipmentId"));
+            ->where('shipment_id = ?', $shipmentId));
         $oldQuantRange = [];
         foreach ($beforeSetQuantRangeData as $beforeSetQuantRangeRow) {
             $oldQuantRange[$beforeSetQuantRangeRow['testkit_id']][$beforeSetQuantRangeRow['sample_id']] = $beforeSetQuantRangeRow;
         }
 
-        $db->delete('reference_generic_test_calculations', "use_range IS NOT NULL and use_range not like 'manual' AND shipment_id=$shipmentId");
+        $db->delete('reference_generic_test_calculations', ["use_range IS NOT NULL and use_range not like 'manual'", 'shipment_id = ?' => $shipmentId]);
 
         $sql = $db->select()->from(['ref' => 'reference_result_generic_test'], ['shipment_id', 'sample_id'])
             ->join(['s' => 'shipment'], 's.shipment_id=ref.shipment_id', ['scheme_type'])
@@ -1282,13 +1283,13 @@ class Application_Model_CustomTest
                         $data['updated_on'] = $oldQuantRange[$testKitId][$sample]['updated_on'] ?? null;
                         $data['use_range'] = $oldQuantRange[$testKitId][$sample]['use_range'] ?? 'calculated';
                     }
-                    $db->delete('reference_generic_test_calculations', "testkit_id = '$testKitId' AND sample_id=$sample AND shipment_id=$shipmentId");
+                    $db->delete('reference_generic_test_calculations', ['testkit_id = ?' => $testKitId, 'sample_id = ?' => $sample, 'shipment_id = ?' => $shipmentId]);
 
                     $db->insert('reference_generic_test_calculations', $data);
                 } else {
 
                     if (isset($oldQuantRange[$testKitId][$sample]) && !empty($oldQuantRange[$testKitId][$sample]) && $oldQuantRange[$testKitId][$sample]['use_range'] != 'manual') {
-                        $db->delete('reference_generic_test_calculations', "testkit_id = '$testKitId' AND shipment_id = $shipmentId");
+                        $db->delete('reference_generic_test_calculations', ['testkit_id = ?' => $testKitId, 'shipment_id = ?' => $shipmentId]);
                     }
 
                     $skippedTestKits[] = $testKitId;
@@ -1320,7 +1321,7 @@ class Application_Model_CustomTest
                 $row['testkit_id'] = $testKitId;
                 $row['no_of_responses'] = $skippedResponseCounter[$testKitId];
 
-                $db->delete('reference_generic_test_calculations', "testkit_id = '" . $row['testkit_id'] . "' AND sample_id= " . $row['sample_id'] . ' AND shipment_id=  ' . $row['shipment_id']);
+                $db->delete('reference_generic_test_calculations', ['testkit_id = ?' => $row['testkit_id'], 'sample_id = ?' => $row['sample_id'], 'shipment_id = ?' => $row['shipment_id']]);
 
                 // if there are no responses then continue
                 if (empty($row['no_of_responses'])) {

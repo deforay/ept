@@ -32,7 +32,7 @@ class Application_Model_Tb
 
         $this->getConsensusResults($shipmentId);
 
-        $this->db->update('shipment_participant_map', ['failure_reason' => null, 'is_followup' => 'no', 'is_excluded' => 'no', 'final_result' => null], "shipment_id = $shipmentId");
+        $this->db->update('shipment_participant_map', ['failure_reason' => null, 'is_followup' => 'no', 'is_excluded' => 'no', 'final_result' => null], ['shipment_id = ?' => $shipmentId]);
         $this->db->update(
             'shipment_participant_map',
             [
@@ -83,7 +83,7 @@ class Application_Model_Tb
                         'failure_reason' => json_encode($failureReason),
                         'response_status' => 'late',
                     ],
-                    'map_id = ' . $shipment['map_id']
+                    ['map_id = ?' => $shipment['map_id']]
                 );
             } else {
                 $shipment['is_response_late'] = 'no';
@@ -93,7 +93,7 @@ class Application_Model_Tb
 
                     //if Sample is not mandatory, we will skip the evaluation
                     if (0 == $result['mandatory']) {
-                        $this->db->update('response_result_tb', ['calculated_score' => 'N.A.'], 'shipment_map_id = ' . $result['map_id'] . ' and sample_id = ' . $result['sample_id']);
+                        $this->db->update('response_result_tb', ['calculated_score' => 'N.A.'], ['shipment_map_id = ?' => $result['map_id'], 'sample_id = ?' => $result['sample_id']]);
                         continue;
                     }
 
@@ -282,7 +282,7 @@ class Application_Model_Tb
                     $db->update(
                         'response_result_tb',
                         ['calculated_score' => $calculatedScore],
-                        'shipment_map_id = ' . $result['map_id'] . ' and sample_id = ' . $result['sample_id']
+                        ['shipment_map_id = ?' => $result['map_id'], 'sample_id = ?' => $result['sample_id']]
                     );
                 }
                 if ($maxScore > 0 && $totalScore > 0) {
@@ -347,7 +347,7 @@ class Application_Model_Tb
                             'documentation_score' => $shipmentOverall['documentation_score'],
                             'final_result' => $shipmentOverall['final_result'],
                         ],
-                        'map_id = ' . $shipment['map_id']
+                        ['map_id = ?' => $shipment['map_id']]
                     );
                 }
             } else {
@@ -359,7 +359,7 @@ class Application_Model_Tb
                         'final_result' => $finalResult,
                         'failure_reason' => $failureReason,
                     ],
-                    'map_id = ' . $shipment['map_id']
+                    ['map_id = ?' => $shipment['map_id']]
                 );
             }
             $counter++;
@@ -368,7 +368,7 @@ class Application_Model_Tb
         $db->update('shipment', [
             'max_score' => $maxScore,
             'status' => 'evaluated',
-        ], "shipment_id = $shipmentId");
+        ], ['shipment_id = ?' => $shipmentId]);
         return $shipmentResult;
     }
 

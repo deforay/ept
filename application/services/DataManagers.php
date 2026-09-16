@@ -146,7 +146,7 @@ class Application_Service_DataManagers
 
     public function resentDMVerifyMail($params)
     {
-        $row = $this->datamanagersDb->fetchRow('new_email = "' . $params['registeredEmail'] . '"');
+        $row = $this->datamanagersDb->fetchRow($this->datamanagersDb->getAdapter()->quoteInto('new_email = ?', $params['registeredEmail']));
         if ($row) {
             $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
             $common = new Application_Service_Common();
@@ -170,7 +170,7 @@ class Application_Service_DataManagers
 
     public function checkOldMail($dmId)
     {
-        return $this->datamanagersDb->fetchRow('new_email IS NOT NULL AND new_email not like "" AND dm_id = ' . $dmId);
+        return $this->datamanagersDb->fetchRow(['new_email IS NOT NULL AND new_email not like ""', 'dm_id = ?' => $dmId]);
     }
 
     public function getAllUsers($params)

@@ -33,7 +33,7 @@ class Application_Model_DbTable_ResponseVl extends Zend_Db_Table_Abstract
                 'module_number' => $params['moduleNumber'][$key] ?? null,
                 'comment' => $params['comment'][$key] ?? null,
             ];
-            $res = $this->fetchRow('shipment_map_id = ' . $params['smid'] . ' and sample_id = ' . $sampleId);
+            $res = $this->fetchRow(['shipment_map_id = ?' => $params['smid'], 'sample_id = ?' => $sampleId]);
             if (empty($res)) {
                 $data['created_by'] = $authNameSpace->dm_id;
                 $data['created_on'] = new Zend_Db_Expr(self::NOW);
@@ -41,7 +41,7 @@ class Application_Model_DbTable_ResponseVl extends Zend_Db_Table_Abstract
             } else {
                 $data['updated_by'] = $authNameSpace->dm_id;
                 $data['updated_on'] = new Zend_Db_Expr(self::NOW);
-                $this->update($data, 'shipment_map_id = ' . $params['smid'] . ' and sample_id = ' . $sampleId);
+                $this->update($data, ['shipment_map_id = ?' => $params['smid'], 'sample_id = ?' => $sampleId]);
             }
         }
     }
@@ -51,7 +51,7 @@ class Application_Model_DbTable_ResponseVl extends Zend_Db_Table_Abstract
 
         $sampleIds = $params['vlData']->Section3->data->no->tableRowTxt->id;
         foreach ($sampleIds as $key => $sampleId) {
-            $res = $this->fetchRow('shipment_map_id = ' . $params['mapId'] . " and sample_id = '" . $sampleId . "'");
+            $res = $this->fetchRow(['shipment_map_id = ?' => $params['mapId'], 'sample_id = ?' => $sampleId]);
             //Set tnd value if Yes
             $tnd = null;
             if ($params['vlData']->Section3->data->isPtTestNotPerformedRadio == 'yes') {
@@ -77,7 +77,7 @@ class Application_Model_DbTable_ResponseVl extends Zend_Db_Table_Abstract
                     'is_tnd'                =>  $tnd,
                     'updated_by'            =>  $dm['dm_id'],
                     'updated_on'            =>  new Zend_Db_Expr('now()'),
-                ], 'shipment_map_id = ' . $params['mapId'] . ' and sample_id = ' . $sampleId);
+                ], ['shipment_map_id = ?' => $params['mapId'], 'sample_id = ?' => $sampleId]);
             }
         }
         return true;
@@ -89,7 +89,7 @@ class Application_Model_DbTable_ResponseVl extends Zend_Db_Table_Abstract
             $id = 0;
             $sampleIds = $params['sample_id'];
             foreach ($sampleIds as $key => $sampleId) {
-                $res = $this->fetchRow('shipment_map_id = ' . $params['mapId'] . " and sample_id = '" . $sampleId . "'");
+                $res = $this->fetchRow(['shipment_map_id = ?' => $params['mapId'], 'sample_id = ?' => $sampleId]);
                 //Set tnd value if Yes
                 if ($params['isPtTestNotPerformed'] == 'yes') {
                     $params['vlResult']->$key = '';
@@ -114,7 +114,7 @@ class Application_Model_DbTable_ResponseVl extends Zend_Db_Table_Abstract
                 } else {
                     $data['updated_by'] = $params['dmId'];
                     $data['updated_on'] = new Zend_Db_Expr('now()');
-                    $id = $this->update($data, 'shipment_map_id = ' . $params['mapId'] . ' and sample_id = ' . $sampleId);
+                    $id = $this->update($data, ['shipment_map_id = ?' => $params['mapId'], 'sample_id = ?' => $sampleId]);
                 }
             }
             return $id;

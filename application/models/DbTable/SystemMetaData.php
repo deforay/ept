@@ -9,6 +9,6 @@ class Application_Model_DbTable_SystemMetaData extends Zend_Db_Table_Abstract
     {
         return $this->getAdapter()->fetchRow($this->select()
             ->from($this->_name, ['metadata_value'])
-            ->where(" metadata_id = '" . $params . "'"));
+            ->where('metadata_id = ?', $params));
     }
 }

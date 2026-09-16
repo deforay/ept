@@ -12,6 +12,6 @@ class Application_Model_DbTable_SystemConfig extends Zend_Db_Table_Abstract
 
         return $this->getAdapter()->fetchRow($this->select()
             ->from($this->_name, ['value'])
-            ->where("`config`='$configName'"));
+            ->where('`config` = ?', $configName));
     }
 }

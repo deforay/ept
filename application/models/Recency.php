@@ -140,9 +140,9 @@ class Application_Model_Recency
                     }
 
                     if ($score == 'Fail' || (!isset($result['reported_result']) || $result['reported_result'] == '' || $result['reported_result'] == null) || ($result['reference_result'] != $result['reported_result'])) {
-                        $this->db->update('response_result_recency', ['calculated_score' => 'Fail'], 'shipment_map_id = ' . $result['map_id'] . ' and sample_id = ' . $result['sample_id']);
+                        $this->db->update('response_result_recency', ['calculated_score' => 'Fail'], ['shipment_map_id = ?' => $result['map_id'], 'sample_id = ?' => $result['sample_id']]);
                     } else {
-                        $this->db->update('response_result_recency', ['calculated_score' => 'Pass'], 'shipment_map_id = ' . $result['map_id'] . ' and sample_id = ' . $result['sample_id']);
+                        $this->db->update('response_result_recency', ['calculated_score' => 'Pass'], ['shipment_map_id = ?' => $result['map_id'], 'sample_id = ?' => $result['sample_id']]);
                     }
                 }
 
@@ -204,7 +204,7 @@ class Application_Model_Recency
                     $shipmentResult[$counter]['max_score'] = 100; //$maxScore;
                     $shipmentResult[$counter]['final_result'] = $finalResult;
 
-                    $fRes = $this->db->fetchCol($this->db->select()->from('r_results', ['result_name'])->where('result_id = ' . $finalResult));
+                    $fRes = $this->db->fetchCol($this->db->select()->from('r_results', ['result_name'])->where('result_id = ?', $finalResult));
 
                     $shipmentResult[$counter]['display_result'] = $fRes[0];
                     $shipmentResult[$counter]['failure_reason'] = $this->failureReason = json_encode($this->failureReason);
@@ -219,20 +219,20 @@ class Application_Model_Recency
                         if (!isset($shipmentOverall['final_result']) || $shipmentOverall['final_result'] == '') {
                             $shipmentOverall['final_result'] = 2;
                         }
-                        $fRes = $this->db->fetchCol($this->db->select()->from('r_results', ['result_name'])->where('result_id = ' . $shipmentOverall['final_result']));
+                        $fRes = $this->db->fetchCol($this->db->select()->from('r_results', ['result_name'])->where('result_id = ?', $shipmentOverall['final_result']));
                         $shipmentResult[$counter]['display_result'] = $fRes[0];
-                        $this->db->update('shipment_participant_map', ['shipment_score' => $shipmentOverall['shipment_score'], 'documentation_score' => $shipmentOverall['documentation_score'], 'final_result' => $shipmentOverall['final_result']], 'map_id = ' . $shipment['map_id']);
+                        $this->db->update('shipment_participant_map', ['shipment_score' => $shipmentOverall['shipment_score'], 'documentation_score' => $shipmentOverall['documentation_score'], 'final_result' => $shipmentOverall['final_result']], ['map_id = ?' => $shipment['map_id']]);
                     }
                 } else {
                     // let us update the total score in DB
-                    $this->db->update('shipment_participant_map', ['shipment_score' => $responseScore, 'documentation_score' => $documentationScore, 'final_result' => $finalResult, 'failure_reason' => $this->failureReason], 'map_id = ' . $shipment['map_id']);
+                    $this->db->update('shipment_participant_map', ['shipment_score' => $responseScore, 'documentation_score' => $documentationScore, 'final_result' => $finalResult, 'failure_reason' => $this->failureReason], ['map_id = ?' => $shipment['map_id']]);
                 }
                 //$counter++;
             } else {
                 $failureReason = [
                     'warning' => 'Response was submitted after the last response date.',
                 ];
-                $this->db->update('shipment_participant_map', ['failure_reason' => json_encode($failureReason)], 'map_id = ' . $shipment['map_id']);
+                $this->db->update('shipment_participant_map', ['failure_reason' => json_encode($failureReason)], ['map_id = ?' => $shipment['map_id']]);
             }
             $counter++;
         }
@@ -243,7 +243,7 @@ class Application_Model_Recency
             $averageScore = 0;
         }
 
-        $this->db->update('shipment', ['max_score' => $maxScore, 'average_score' => $averageScore, 'status' => 'evaluated'], 'shipment_id = ' . $shipmentId);
+        $this->db->update('shipment', ['max_score' => $maxScore, 'average_score' => $averageScore, 'status' => 'evaluated'], ['shipment_id = ?' => $shipmentId]);
 
         return $shipmentResult;
     }

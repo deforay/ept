@@ -21,8 +21,8 @@ class Application_Model_Vl
         $schemeService = new Application_Service_Schemes();
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
 
-        $db->update('shipment_participant_map', ['is_excluded' => 'no'], "shipment_id = $shipmentId");
-        $db->update('shipment_participant_map', ['is_excluded' => 'yes'], "shipment_id = $shipmentId and IFNULL(is_pt_test_not_performed, 'no') = 'yes'");
+        $db->update('shipment_participant_map', ['is_excluded' => 'no'], ['shipment_id = ?' => $shipmentId]);
+        $db->update('shipment_participant_map', ['is_excluded' => 'yes'], ['shipment_id = ?' => $shipmentId, "IFNULL(is_pt_test_not_performed, 'no') = 'yes'"]);
 
         $passPercentage = Pt_Commons_SchemeConfig::get('vl.passPercentage') ?? 100;
 
@@ -171,7 +171,7 @@ class Application_Model_Vl
 
                     $maxScore += $result['sample_score'];
 
-                    $db->update('response_result_vl', ['z_score' => $zScore, 'calculated_score' => $calcResult], 'shipment_map_id = ' . $result['map_id'] . ' and sample_id = ' . $result['sample_id']);
+                    $db->update('response_result_vl', ['z_score' => $zScore, 'calculated_score' => $calcResult], ['shipment_map_id = ?' => $result['map_id'], 'sample_id = ?' => $result['sample_id']]);
 
                     //// checking if mandatory fields were entered and were entered right
                     //if ($result['mandatory'] == 1) {
@@ -234,7 +234,7 @@ class Application_Model_Vl
                     $shipmentResult[$counter]['shipment_score'] = $totalScore;
                     $shipmentResult[$counter]['max_score'] = $passPercentage; //$maxScore;
 
-                    $fRes = $db->fetchCol($db->select()->from('r_results', ['result_name'])->where('result_id = ' . $finalResult));
+                    $fRes = $db->fetchCol($db->select()->from('r_results', ['result_name'])->where('result_id = ?', $finalResult));
 
                     $shipmentResult[$counter]['display_result'] = $fRes[0];
                     $shipmentResult[$counter]['failure_reason'] = $failureReason;
@@ -253,7 +253,7 @@ class Application_Model_Vl
                         if (!isset($shipmentOverall['final_result']) || $shipmentOverall['final_result'] == '') {
                             $shipmentOverall['final_result'] = 2;
                         }
-                        $fRes = $db->fetchCol($db->select()->from('r_results', ['result_name'])->where('result_id = ' . $shipmentOverall['final_result']));
+                        $fRes = $db->fetchCol($db->select()->from('r_results', ['result_name'])->where('result_id = ?', $shipmentOverall['final_result']));
                         $shipmentResult[$counter]['display_result'] = $fRes[0];
                         $overrideUpdateData = [
                             'shipment_score' => $shipmentOverall['shipment_score'],
@@ -262,7 +262,7 @@ class Application_Model_Vl
                         if ($shipment['is_response_late'] == 'yes') {
                             $overrideUpdateData['response_status'] = 'late';
                         }
-                        $db->update('shipment_participant_map', $overrideUpdateData, 'map_id = ' . $shipment['map_id']);
+                        $db->update('shipment_participant_map', $overrideUpdateData, ['map_id = ?' => $shipment['map_id']]);
                     }
                 } else {
                     $normalUpdateData = [
@@ -275,7 +275,7 @@ class Application_Model_Vl
                     if ($shipment['is_response_late'] == 'yes') {
                         $normalUpdateData['response_status'] = 'late';
                     }
-                    $db->update('shipment_participant_map', $normalUpdateData, 'map_id = ' . $shipment['map_id']);
+                    $db->update('shipment_participant_map', $normalUpdateData, ['map_id = ?' => $shipment['map_id']]);
                 }
             } else {
                 $shipment['is_response_late'] = 'yes';
@@ -287,11 +287,11 @@ class Application_Model_Vl
                     'failure_reason' => json_encode($failureReason),
                     'is_response_late' => 'yes',
                     'response_status' => 'late',
-                ], 'map_id = ' . $shipment['map_id']);
+                ], ['map_id = ?' => $shipment['map_id']]);
             }
             $counter++;
         }
-        $db->update('shipment', ['max_score' => $maxScore, 'status' => 'evaluated'], 'shipment_id = ' . $shipmentId);
+        $db->update('shipment', ['max_score' => $maxScore, 'status' => 'evaluated'], ['shipment_id = ?' => $shipmentId]);
 
         return $shipmentResult;
     }
@@ -722,7 +722,7 @@ class Application_Model_Vl
                 ->where('vlCal.shipment_id = ?', $shipmentId)
                 ->where('vlCal.vl_assay = ?', $assayRow['id'])
                 ->where('refVl.control != 1')
-                ->where('sp.attributes->>"$.vl_assay" = ' . $assayRow['id'])
+                ->where('sp.attributes->>"$.vl_assay" = ?', $assayRow['id'])
                 ->where("sp.is_excluded not like 'yes' OR sp.is_excluded like '' OR sp.is_excluded is null")
                 ->where('sp.final_result = 1 OR sp.final_result = 2')
                 ->group('refVl.sample_id');
@@ -970,8 +970,8 @@ class Application_Model_Vl
             }
             //get vl_assay wise low high limit
             $refVlCalci = $db->fetchAll($db->select()->from(['rvc' => 'reference_vl_calculation'])
-                ->join(['rrv' => 'reference_result_vl'], 'rrv.sample_id=rvc.sample_id AND rrv.shipment_id=' . $result['shipment_id'], ['sample_label'])
-                ->where('rvc.shipment_id=' . $result['shipment_id'])->where('rvc.vl_assay=' . $assayRow['id'])
+                ->join(['rrv' => 'reference_result_vl'], $db->quoteInto('rrv.sample_id=rvc.sample_id AND rrv.shipment_id = ?', $result['shipment_id']), ['sample_label'])
+                ->where('rvc.shipment_id = ?', $result['shipment_id'])->where('rvc.vl_assay = ?', $assayRow['id'])
                 ->where('rrv.control!=1'));
             if (count($refVlCalci) > 0) {
 
@@ -1851,7 +1851,7 @@ class Application_Model_Vl
                     }
                 }
 
-                $db->delete('reference_vl_calculation', 'vl_assay = ' . $row['vl_assay'] . ' AND sample_id= ' . $row['sample_id'] . ' AND shipment_id=  ' . $row['shipment_id']);
+                $db->delete('reference_vl_calculation', ['vl_assay = ?' => $row['vl_assay'], 'sample_id = ?' => $row['sample_id'], 'shipment_id = ?' => $row['shipment_id']]);
                 $db->insert('reference_vl_calculation', $row);
             }
         }
@@ -1916,7 +1916,7 @@ class Application_Model_Vl
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $sql = $db->select()->from(['rvc' => 'reference_vl_calculation'], ['*'])
-            ->join(['ref' => 'reference_result_vl'], 'rvc.sample_id = ref.sample_id AND ref.shipment_id=' . $sId, ['sample_label'])
+            ->join(['ref' => 'reference_result_vl'], $db->quoteInto('rvc.sample_id = ref.sample_id AND ref.shipment_id = ?', $sId), ['sample_label'])
             ->joinLeft(['a' => 'r_vl_assay'], 'a.id = rvc.vl_assay', ['assay_name' => 'name'])
             ->join(['s' => 'shipment'], 'rvc.shipment_id = s.shipment_id')
             ->where('rvc.shipment_id = ?', $sId)
@@ -1932,8 +1932,8 @@ class Application_Model_Vl
         // get the data from r_vl_assay table and show blank or 0 values for all fields
         if (empty($res)) {
             $sql = $db->select()->from(['a' => 'r_vl_assay'], ['assay_name' => 'name', 'vl_assay' => 'id'])
-                ->joinLeft(['s' => 'shipment'], "s.shipment_id = $sId")
-                ->join(['ref' => 'reference_result_vl'], "ref.shipment_id= $sId", ['sample_label', 'sample_id'])
+                ->joinLeft(['s' => 'shipment'], $db->quoteInto('s.shipment_id = ?', $sId))
+                ->join(['ref' => 'reference_result_vl'], $db->quoteInto('ref.shipment_id = ?', $sId), ['sample_label', 'sample_id'])
                 ->order(['sample_label', 'assay_name']);
 
             $res = $db->fetchAll($sql);
@@ -1989,7 +1989,7 @@ class Application_Model_Vl
                 $data['use_range'] = $params['useRange'][$assayId][$sampid];
                 $data['updated_on'] = new Zend_Db_Expr('now()');
                 //echo "shipment_id = ".base64_decode($params['sid'])." and sample_id = " . $sampid . " and "." vl_assay = " . $assayId ;
-                $db->update('reference_vl_calculation', $data, 'shipment_id = ' . base64_decode($params['sid']) . ' and sample_id = ' . $sampid . ' and ' . ' vl_assay = ' . $assayId);
+                $db->update('reference_vl_calculation', $data, ['shipment_id = ?' => base64_decode($params['sid']), 'sample_id = ?' => $sampid, 'vl_assay = ?' => $assayId]);
             }
         }
     }

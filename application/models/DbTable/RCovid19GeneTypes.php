@@ -7,13 +7,13 @@ class Application_Model_DbTable_RCovid19GeneTypes extends Zend_Db_Table_Abstract
 
     public function getgeneTypeNameById($geneTypeId)
     {
-        return $this->getAdapter()->fetchCol($this->getAdapter()->select()->from('r_covid19_gene_types', 'gene_name')->where("gene_id = '$geneTypeId'"));
+        return $this->getAdapter()->fetchCol($this->getAdapter()->select()->from('r_covid19_gene_types', 'gene_name')->where('gene_id = ?', $geneTypeId));
     }
 
     public function getActiveGeneTypesNamesForScheme($scheme, $countryAdapted = false)
     {
 
-        $sql = $this->getAdapter()->select()->from([$this->_name], ['gene_id', 'gene_name'])->where("scheme_type = '$scheme'");
+        $sql = $this->getAdapter()->select()->from([$this->_name], ['gene_id', 'gene_name'])->where('scheme_type = ?', $scheme);
         $stmt = $this->getAdapter()->fetchAll($sql);
 
         foreach ($stmt as $type) {
@@ -25,7 +25,7 @@ class Application_Model_DbTable_RCovid19GeneTypes extends Zend_Db_Table_Abstract
     public function getActiveGeneTypesNamesForSchemeResponseWise($scheme, $countryAdapted = false)
     {
 
-        $sql = $this->getAdapter()->select()->from([$this->_name], ['gene_id', 'gene_name'])->where("scheme_type = '$scheme'");
+        $sql = $this->getAdapter()->select()->from([$this->_name], ['gene_id', 'gene_name'])->where('scheme_type = ?', $scheme);
 
         if ($countryAdapted) {
             $sql = $sql->where('country_adapted = 1');
@@ -52,25 +52,13 @@ class Application_Model_DbTable_RCovid19GeneTypes extends Zend_Db_Table_Abstract
                 'scheme_type' => $params['scheme'],
                 'gene_status' => $params['geneStatus'],
             ];
-            return $this->update($data, "gene_id='" . $params['genetypeId'] . "'");
-        }
-    }
-
-    public function updateCovid19GeneTypeStageDetails($params)
-    {
-        if (trim($params['geneTypeStage']) != '') {
-            $this->update([$params['geneTypeStage'] => '0'], []);
-            if (isset($params['geneTypeData']) && $params['geneTypeData'] != '' && count($params['geneTypeData']) > 0) {
-                foreach ($params['geneTypeData'] as $data) {
-                    $this->update([$params['geneTypeStage'] => '1'], "gene_id='" . $data . "'");
-                }
-            }
+            return $this->update($data, ['gene_id = ?' => $params['genetypeId']]);
         }
     }
 
     public function checkGeneTypeId($genetypeId, $scheme)
     {
-        $result = $this->fetchRow($this->select()->where("gene_id='" . $genetypeId . "'"));
+        $result = $this->fetchRow($this->select()->where('gene_id = ?', $genetypeId));
         if ($result != '') {
 
             $randomStr = Application_Service_Common::generateRandomString(13);
@@ -216,7 +204,7 @@ class Application_Model_DbTable_RCovid19GeneTypes extends Zend_Db_Table_Abstract
     public function fetchAllCovid19GeneTypeResponseWise($scheme)
     {
 
-        $sql = $this->getAdapter()->select()->from([$this->_name], ['gene_id', 'gene_name'])->where("scheme_type = '$scheme'")->order('gene_name');
+        $sql = $this->getAdapter()->select()->from([$this->_name], ['gene_id', 'gene_name'])->where('scheme_type = ?', $scheme)->order('gene_name');
         $result = $this->getAdapter()->fetchAll($sql);
         $geneTypeOptions = [];
         foreach ($result as $geneType) {

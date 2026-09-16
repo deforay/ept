@@ -225,7 +225,7 @@ class Application_Model_DbTable_Distribution extends Zend_Db_Table_Abstract
 
     public function getDistribution($did)
     {
-        return $this->fetchRow('distribution_id = ' . $did);
+        return $this->fetchRow(['distribution_id = ?' => $did]);
     }
 
     /**
@@ -288,12 +288,12 @@ class Application_Model_DbTable_Distribution extends Zend_Db_Table_Abstract
         if ($shipmentCount > 0) {
             return 'Cannot delete a PT Survey that has shipments under it.';
         }
-        $row = $this->fetchRow("distribution_id = $id");
+        $row = $this->fetchRow(['distribution_id = ?' => $id]);
         if (!$row) {
             return 'PT Survey not found.';
         }
         $code = $row['distribution_code'];
-        $this->delete("distribution_id = $id");
+        $this->delete(['distribution_id = ?' => $id]);
         $auditDb = new Application_Model_DbTable_AuditLog();
         $auditDb->addNewAuditLog('Deleted PT Survey - ' . $code, 'shipment');
         return 'OK';
@@ -435,7 +435,7 @@ class Application_Model_DbTable_Distribution extends Zend_Db_Table_Abstract
             $data['distribution_code'] = $newCode;
         }
 
-        $affected = $this->update($data, 'distribution_id=' . $distributionId);
+        $affected = $this->update($data, ['distribution_id = ?' => $distributionId]);
         if ($affected > 0 && isset($data['distribution_code'])) {
             $auditDb = new Application_Model_DbTable_AuditLog();
             $auditDb->addNewAuditLog('Updated PT Survey - ' . $data['distribution_code'], 'shipment');
@@ -451,7 +451,7 @@ class Application_Model_DbTable_Distribution extends Zend_Db_Table_Abstract
     public function updateDistributionStatus($distributionId, $status)
     {
         if (!empty($status) && $status != '') {
-            return $this->update(['status' => $status], "distribution_id=$distributionId");
+            return $this->update(['status' => $status], ['distribution_id = ?' => $distributionId]);
         } else {
             return 0;
         }

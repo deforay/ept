@@ -199,7 +199,7 @@ class Application_Model_DbTable_SystemAdmin extends Zend_Db_Table_Abstract
         if (isset($params['language']) && $params['language'] != '') {
             $authNameSpace->language = $params['language'];
         }
-        $adminId = $this->update($data, 'admin_id=' . $params['adminId']);
+        $adminId = $this->update($data, ['admin_id = ?' => $params['adminId']]);
 
         if ($adminId > 0) {
             $name = trim(($firstName ?? '') . ' ' . ($lastName ?? ''));
@@ -223,6 +223,6 @@ class Application_Model_DbTable_SystemAdmin extends Zend_Db_Table_Abstract
 
     public function fetchSystemAdminByMail($mail, $password)
     {
-        return $this->fetchRow($this->select()->where('primary_email = "' . $mail . '" OR password = "' . $password . '"'));
+        return $this->fetchRow($this->select()->where($this->getAdapter()->quoteInto('primary_email = ?', $mail) . ' OR ' . $this->getAdapter()->quoteInto('password = ?', $password)));
     }
 }

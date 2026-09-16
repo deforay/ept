@@ -450,11 +450,11 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
 
         $dmId = (int) $params['userSystemId'];
         if ($dmId !== false && $dmId > 0) {
-            $this->update($data, "dm_id = $dmId");
+            $this->update($data, ['dm_id = ?' => $dmId]);
             if (isset($params['deleteSystemId']) && count($params['deleteSystemId']) > 0) {
-                $db->delete('participant_manager_map', "dm_id = {$params['deleteSystemId']}");
-                $db->delete('ptcc_countries_map', 'ptcc_id = ' . $params['deleteSystemId']);
-                $this->delete("dm_id = {$params['deleteSystemId']}");
+                $db->delete('participant_manager_map', ['dm_id = ?' => $params['deleteSystemId']]);
+                $db->delete('ptcc_countries_map', ['ptcc_id = ?' => $params['deleteSystemId']]);
+                $this->delete(['dm_id = ?' => $params['deleteSystemId']]);
             }
             $params['participantsList'] = isset($params['allparticipant']) ? Common::removeEmpty($this->decodeParticipantList($params['allparticipant'])) : [];
             $this->dmParticipantMap($params, $dmId, $isPtcc);
@@ -620,7 +620,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
     public function updateLastLogin($dmId)
     {
 
-        $noOfRows = $this->update(['last_login' => new Zend_Db_Expr('now()')], 'dm_id = ' . $dmId);
+        $noOfRows = $this->update(['last_login' => new Zend_Db_Expr('now()')], ['dm_id = ?' => $dmId]);
         if ($noOfRows != null && $noOfRows == 1) {
             return true;
         } else {
@@ -636,7 +636,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         //$searchParams = explode(" ", $searchParams);
         //foreach($searchParams as $s){
         if (isset($searchParams) && !empty($searchParams)) {
-            $sql = $sql->where("primary_email LIKE '%$searchParams%' OR first_name LIKE '%$searchParams%' OR last_name LIKE '%$searchParams%' OR institute LIKE '%$searchParams%'");
+            $sql = $sql->where('primary_email LIKE ? OR first_name LIKE ? OR last_name LIKE ? OR institute LIKE ?', '%' . $searchParams . '%');
         }
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
         if (isset($searchParams['from']) && $searchParams['from'] == 'participant' && $authNameSpace->ptcc == 1) {
@@ -721,7 +721,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                     ->join(['pmm' => 'participant_manager_map'], 'pmm.dm_id=dm.dm_id')
                     ->join(['p' => 'participant'], 'p.participant_id=pmm.participant_id', ['p.unique_identifier', 'p.first_name', 'p.last_name', 'p.lab_name', 'p.institute_name', 'p.state', 'country'])
                     ->join(['c' => 'countries'], 'c.id=p.country', ['*'])
-                    ->where('dm.dm_id=' . $list['dm_id']);
+                    ->where('dm.dm_id = ?', $list['dm_id']);
                 return ['id' => $list['dm_id'], 'email' => $list['primary_email'], 'participants' => $db->fetchAll($psql)];
             } else {
                 return false;
@@ -798,7 +798,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         $params['authToken'] = Common::generateRandomString(32);
         $params['download_link'] = Common::generateRandomString(32);
 
-        $this->update(['auth_token' => $params['authToken'], 'download_link' => $params['download_link'] ?? null, 'last_login' => new Zend_Db_Expr('now()'), 'api_token_generated_datetime' => new Zend_Db_Expr('now()')], 'dm_id = ' . $result['dm_id']);
+        $this->update(['auth_token' => $params['authToken'], 'download_link' => $params['download_link'] ?? null, 'last_login' => new Zend_Db_Expr('now()'), 'api_token_generated_datetime' => new Zend_Db_Expr('now()')], ['dm_id = ?' => $result['dm_id']]);
         $aResult = $this->fetchAuthToken($params);
 
         /* Validate new auth token and app-version */
@@ -920,7 +920,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         if (!isset($resultData) || trim($resultData['authToken']) == '') {
             return ['status' => 'fail', 'message' => 'Something went wrong please try again later'];
         } else {
-            $row = $this->fetchRow('auth_token="' . $params['authToken'] . '" AND new_email IS NOT NULL');
+            $row = $this->fetchRow(['auth_token = ?' => $params['authToken'], 'new_email IS NOT NULL']);
             if (!$row) {
                 return ['status' => 'success', 'data' => $resultData];
             } else {
@@ -987,7 +987,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             }
 
             $response['newAuthToken'] = Common::generateRandomString(6);
-            $id = $this->update(['auth_token' => $response['newAuthToken'], 'api_token_generated_datetime' => new Zend_Db_Expr('now()')], 'dm_id = ' . $result['dm_id']);
+            $id = $this->update(['auth_token' => $response['newAuthToken'], 'api_token_generated_datetime' => new Zend_Db_Expr('now()')], ['dm_id = ?' => $result['dm_id']]);
             if ($id > 0) {
                 $response['token-updated'] = true;
             } else {
@@ -1183,7 +1183,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         }
         $response['status'] = 'success';
 
-        $update = $this->update($updateData, 'dm_id = ' . $fetchOldMail['dm_id']);
+        $update = $this->update($updateData, ['dm_id = ?' => $fetchOldMail['dm_id']]);
         if ($update > 0) {
             if (!$forceLogin || $result) {
                 $response['message'] = 'Profile saved successfully.';
@@ -1200,7 +1200,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
 
     public function setStatusByEmail($status, $email)
     {
-        return $this->update(['status' => $status], "primary_email = '$email'");
+        return $this->update(['status' => $status], ['primary_email = ?' => $email]);
     }
 
     /**
@@ -1535,7 +1535,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                         $action = 'inserted';
                     }
                 } elseif (isset($params['bulkUploadDuplicateSkip']) && $params['bulkUploadDuplicateSkip'] == 'update-on-primary-email-match') {
-                    $db->update('data_manager', $dataManagerData, "primary_email = '$originalEmail'");
+                    $db->update('data_manager', $dataManagerData, ['primary_email = ?' => $originalEmail]);
                     $lastInsertedId = $dmresult['dm_id'];
                     $importedCount++;
                     $action = 'updated';
@@ -1903,15 +1903,15 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                 if (!empty($params['district'])) {
                     $locationWiseSwitch = true;
                     $params['district'] = !is_array($params['district']) ? [$params['district']] : $params['district'];
-                    $sql = $sql->where('district IN("' . implode('","', $params['district']) . '")');
+                    $sql = $sql->where('district IN (?)', $params['district']);
                 } elseif (!empty($params['province'])) {
                     $locationWiseSwitch = true;
                     $params['province'] = !is_array($params['province']) ? [$params['province']] : $params['province'];
-                    $sql = $sql->where('state IN("' . implode('","', $params['province']) . '")');
+                    $sql = $sql->where('state IN (?)', $params['province']);
                 } elseif (!empty($params['country'])) {
                     $locationWiseSwitch = true;
                     $params['country'] = !is_array($params['country']) ? [$params['country']] : $params['country'];
-                    $sql = $sql->where('country IN("' . implode('","', $params['country']) . '")');
+                    $sql = $sql->where('country IN (?)', $params['country']);
                 }
 
                 $pmmData = []; // Declare the participant manager mapping variable
@@ -1934,7 +1934,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                         ->where('dm_id = ?', $dmId);
                     if ($db->fetchRow($ptccQuery)) {
                         if (!empty($params['participantsList'])) {
-                            $db->delete('participant_manager_map', ['participant_id NOT IN(' . implode(',', $params['participantsList']) . ')', 'dm_id LIKE ' . $dmId]);
+                            $db->delete('participant_manager_map', ['participant_id NOT IN (?)' => $params['participantsList'], 'dm_id LIKE ?' => $dmId]);
                         }
                         // if (isset($params['province'][0]) && !empty($params['province'][0])) {
                         //     $db->delete('ptcc_countries_map', "ptcc_id = " . $dmId);
@@ -1942,7 +1942,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                     }
                     // Save locatons details
                     // if (isset($params['province'][0]) && !empty($params['province'][0])) {
-                    $db->delete('ptcc_countries_map', 'ptcc_id = ' . $dmId);
+                    $db->delete('ptcc_countries_map', ['ptcc_id = ?' => $dmId]);
                     $this->mapPtccLocations($params, $dmId);
                     // }
                     $common = new Application_Service_Common(); // Common objection creation for accessing the multiinsert functionality

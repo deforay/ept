@@ -787,7 +787,7 @@ try {
 	$output = [];
 
 	$query = $db->select()->from(['s' => 'shipment'], ['s.shipment_id', 's.shipment_code', 's.scheme_type', 's.shipment_date',])
-		->where("shipment_id IN ($shipmentsToGenerate)")
+		->where("shipment_id IN (?)", array_map('trim', explode(",", (string) $shipmentsToGenerate)))
 		->order("s.scheme_type");
 	$shipmentResult = $db->fetchAll($query);
 
@@ -802,8 +802,6 @@ try {
 		array_merge(...array_values($shipmentCodeArray))
 	);
 
-	$impShipmentId = implode(",", $shipmentIdArray);
-
 	$sQuery = $db->select()->from(['spm' => 'shipment_participant_map'], ['spm.map_id', 'spm.attributes', 'spm.shipment_test_report_date', 'spm.shipment_id', 'spm.participant_id', 'spm.shipment_score', 'spm.documentation_score', 'spm.final_result'])
 		->join(['s' => 'shipment'], 's.shipment_id=spm.shipment_id', ['shipment_code', 'scheme_type', 'response_deadline', 'shipment_date'])
 		->join(['p' => 'participant'], 'p.participant_id=spm.participant_id', ['unique_identifier', 'first_name', 'last_name', 'email', 'city', 'state', 'address', 'country', 'institute_name'])
@@ -812,7 +810,7 @@ try {
 		->order("unique_identifier ASC")
 		->order("scheme_type ASC");
 
-	$sQuery->where("spm.shipment_id IN ($impShipmentId)");
+	$sQuery->where("spm.shipment_id IN (?)", $shipmentIdArray);
 
 
 	$shipmentParticipantResult = $db->fetchAll($sQuery);

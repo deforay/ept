@@ -668,18 +668,18 @@ class Application_Service_Evaluation
                     $shipmentResult[$counter]['failure_reason'] = $failureReason = json_encode($failureReason);
                     if (isset($shipment['manual_override']) && $shipment['manual_override'] == 'yes') {
                         // let us update the total score in DB
-                        $db->update('shipment_participant_map', ['failure_reason' => $failureReason], 'map_id = ' . $shipment['map_id']);
+                        $db->update('shipment_participant_map', ['failure_reason' => $failureReason], ['map_id = ?' => $shipment['map_id']]);
                     } else {
                         // let us update the total score in DB
-                        $db->update('shipment_participant_map', ['shipment_score' => $totalScore, 'final_result' => $finalResult, 'failure_reason' => $failureReason], 'map_id = ' . $shipment['map_id']);
+                        $db->update('shipment_participant_map', ['shipment_score' => $totalScore, 'final_result' => $finalResult, 'failure_reason' => $failureReason], ['map_id = ?' => $shipment['map_id']]);
                     }
                     $counter++;
                 } else {
                     $failureReason = ['warning' => 'Response was submitted after the last response date.'];
-                    $db->update('shipment_participant_map', ['failure_reason' => json_encode($failureReason)], 'map_id = ' . $shipment['map_id']);
+                    $db->update('shipment_participant_map', ['failure_reason' => json_encode($failureReason)], ['map_id = ?' => $shipment['map_id']]);
                 }
             }
-            $db->update('shipment', ['max_score' => $maxScore], 'shipment_id = ' . $shipmentId);
+            $db->update('shipment', ['max_score' => $maxScore], ['shipment_id = ?' => $shipmentId]);
         } elseif ($shipmentResult[0]['scheme_type'] == 'dts') {
             if ($reEvaluate == true) {
                 // Set processing state
@@ -855,7 +855,7 @@ class Application_Service_Evaluation
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $sql = $db->select()->from(['s' => 'shipment'])
             ->join(['d' => 'distributions'], 'd.distribution_id=s.distribution_id')
-            ->join(['sp' => 'shipment_participant_map'], 'sp.shipment_id=s.shipment_id', ['fullscore' => new Zend_Db_Expr('(if((sp.shipment_score+sp.documentation_score) >= ' . $dtsPasspercentage . ', 1, 0))')])
+            ->join(['sp' => 'shipment_participant_map'], 'sp.shipment_id=s.shipment_id', ['fullscore' => new Zend_Db_Expr('(if((sp.shipment_score+sp.documentation_score) >= ' . $db->quote($dtsPasspercentage) . ', 1, 0))')])
             ->join(['p' => 'participant'], 'p.participant_id=sp.participant_id')
             ->where('sp.shipment_id = ?', $shipmentId)
             //->where("substring(sp.evaluation_status,4,1) != '0'")
@@ -893,7 +893,7 @@ class Application_Service_Evaluation
             /* Manual result override changes */
             if (isset($params['manualOverride']) && $params['manualOverride'] == 'yes') {
                 $shipmentDB = new Application_Model_DbTable_Shipments();
-                $shipmentDeails = $shipmentDB->fetchRow('shipment_id = ' . $params['shipmentId']);
+                $shipmentDeails = $shipmentDB->fetchRow($shipmentDB->getAdapter()->quoteInto('shipment_id = ?', $params['shipmentId']));
                 $maxScore = ((isset($shipmentDeails['max_score']) && $shipmentDeails['max_score'] != '') ? $shipmentDeails['max_score'] : 0);
                 $shipmentScore = ((isset($params['shipmentScore']) && $params['shipmentScore'] != '') ? $params['shipmentScore'] : 0);
                 $docScore = ((isset($params['documentationScore']) && $params['documentationScore'] != '') ? $params['documentationScore'] : 0);
@@ -985,8 +985,8 @@ class Application_Service_Evaluation
                     $mapData['custom_field_2'] = $params['customField2'];
                 }
 
-                $db->update('shipment_participant_map', $mapData, 'map_id = ' . $params['smid']);
-                $db->delete('response_result_eid', 'shipment_map_id = ' . $params['smid']);
+                $db->update('shipment_participant_map', $mapData, ['map_id = ?' => $params['smid']]);
+                $db->delete('response_result_eid', ['shipment_map_id = ?' => $params['smid']]);
                 for ($i = 0; $i < $size; $i++) {
 
                     /* $db = Zend_Db_Table_Abstract::getDefaultAdapter();
@@ -1075,7 +1075,7 @@ class Application_Service_Evaluation
                 if (isset($params['customField2']) && trim($params['customField2']) != '') {
                     $mapdata['custom_field_2'] = $params['customField2'];
                 }
-                $db->update('shipment_participant_map', $mapdata, 'map_id = ' . $params['smid']);
+                $db->update('shipment_participant_map', $mapdata, ['map_id = ?' => $params['smid']]);
 
                 for ($i = 0; $i < $size; $i++) {
                     $db->update('response_result_dts', [
@@ -1181,8 +1181,8 @@ class Application_Service_Evaluation
                     $mapData['custom_field_2'] = $params['customField2'];
                 }
 
-                $db->update('shipment_participant_map', $mapData, 'map_id = ' . $params['smid']);
-                $db->delete('response_result_vl', 'shipment_map_id = ' . $params['smid']);
+                $db->update('shipment_participant_map', $mapData, ['map_id = ?' => $params['smid']]);
+                $db->delete('response_result_vl', ['shipment_map_id = ?' => $params['smid']]);
                 /* $shipmentOverall = $db->fetchRow($db->select()->from('response_result_vl')
                                            ->where("shipment_map_id = ?", $params['smid'])); */
                 $resVlDb = new Application_Model_DbTable_ResponseVl();
@@ -1284,7 +1284,7 @@ class Application_Service_Evaluation
                 if (isset($params['customField2']) && trim($params['customField2']) != '') {
                     $mapdata['custom_field_2'] = $params['customField2'];
                 }
-                $db->update('shipment_participant_map', $mapdata, 'map_id = ' . $params['smid']);
+                $db->update('shipment_participant_map', $mapdata, ['map_id = ?' => $params['smid']]);
 
                 for ($i = 0; $i < $size; $i++) {
                     $db->update('response_result_recency', [
@@ -1330,7 +1330,7 @@ class Application_Service_Evaluation
                 if (isset($params['customField2']) && trim($params['customField2']) != '') {
                     $mapdata['custom_field_2'] = $params['customField2'];
                 }
-                $db->update('shipment_participant_map', $mapdata, 'map_id = ' . $params['smid']);
+                $db->update('shipment_participant_map', $mapdata, ['map_id = ?' => $params['smid']]);
 
                 for ($i = 0; $i < $size; $i++) {
                     $db->update('response_result_covid19', [
@@ -1422,8 +1422,8 @@ class Application_Service_Evaluation
                     $mapData['custom_field_2'] = $params['customField2'];
                 }
 
-                $db->update('shipment_participant_map', $mapData, 'map_id = ' . $params['smid']);
-                $db->delete('response_result_tb', 'shipment_map_id = ' . $params['smid']);
+                $db->update('shipment_participant_map', $mapData, ['map_id = ?' => $params['smid']]);
+                $db->delete('response_result_tb', ['shipment_map_id = ?' => $params['smid']]);
                 for ($i = 0; $i < $size; $i++) {
                     $resultData = [
                         'shipment_map_id' => $params['smid'],
@@ -1490,8 +1490,8 @@ class Application_Service_Evaluation
                     $data['custom_field_2'] = $params['customField2'];
                 }
 
-                $db->update('shipment_participant_map', $mapData, 'map_id = ' . $params['smid']);
-                $db->delete('response_result_generic_test', 'shipment_map_id = ' . $params['smid']);
+                $db->update('shipment_participant_map', $mapData, ['map_id = ?' => $params['smid']]);
+                $db->delete('response_result_generic_test', ['shipment_map_id = ?' => $params['smid']]);
                 for ($i = 0; $i < $size; $i++) {
                     $resultData = [
                         'shipment_map_id' => $params['smid'],
@@ -1525,7 +1525,7 @@ class Application_Service_Evaluation
                 }
             }
             $updateArray['manual_override'] = (isset($params['manualOverride']) && $params['manualOverride'] != '') ? $params['manualOverride'] : 'no';
-            $db->update('shipment_participant_map', $updateArray, 'map_id = ' . $params['smid']);
+            $db->update('shipment_participant_map', $updateArray, ['map_id = ?' => $params['smid']]);
             $db->commit();
         } catch (Throwable $e) {
             $db->rollBack();
@@ -1548,7 +1548,7 @@ class Application_Service_Evaluation
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $authNameSpace = new Zend_Session_Namespace('administrators');
         $admin = $authNameSpace->admin_id;
-        $noOfRows = $db->update('shipment', ['shipment_comment' => $params['comment'], 'updated_by_admin' => $admin, 'updated_on_admin' => new Zend_Db_Expr('now()')], 'shipment_id = ' . $shipmentId);
+        $noOfRows = $db->update('shipment', ['shipment_comment' => $params['comment'], 'updated_by_admin' => $admin, 'updated_on_admin' => new Zend_Db_Expr('now()')], ['shipment_id = ?' => $shipmentId]);
         if (isset($_FILES['correctiveActionFile']['name']) && count($_FILES['correctiveActionFile']) > 0) {
             $uploadDirectory = realpath(UPLOAD_PATH);
             if (isset($_FILES['correctiveActionFile']['name']) && trim($_FILES['correctiveActionFile']['name']) != '') {
@@ -1558,7 +1558,7 @@ class Application_Service_Evaluation
                 $pathname = $pathname . DIRECTORY_SEPARATOR . $fileName;
 
                 if (move_uploaded_file($_FILES['correctiveActionFile']['tmp_name'], $pathname)) {
-                    $db->update('shipment', ['corrective_action_file' => $fileName], "shipment_id = $shipmentId");
+                    $db->update('shipment', ['corrective_action_file' => $fileName], ['shipment_id = ?' => $shipmentId]);
                 }
             }
         }
@@ -1574,7 +1574,7 @@ class Application_Service_Evaluation
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $authNameSpace = new Zend_Session_Namespace('administrators');
         $admin = $authNameSpace->admin_id;
-        $noOfRows = $db->update('shipment', ['status' => $status, 'updated_by_admin' => $admin, 'updated_on_admin' => new Zend_Db_Expr('now()')], 'shipment_id = ' . $shipmentId);
+        $noOfRows = $db->update('shipment', ['status' => $status, 'updated_by_admin' => $admin, 'updated_on_admin' => new Zend_Db_Expr('now()')], ['shipment_id = ?' => $shipmentId]);
         if ($noOfRows > 0) {
             return 'Status updated';
         } else {
@@ -3217,7 +3217,7 @@ class Application_Service_Evaluation
                     ->join(['spm' => 'shipment_participant_map'], 's.shipment_id=spm.shipment_id', ['is_excluded', 'scored' => new Zend_Db_Expr('(spm.shipment_score + spm.documentation_score)')])
                     ->where('spm.participant_id = ?', $res['participant_id'])
                     ->where('s.scheme_type = ?', $res['scheme_type'])
-                    ->where("d.distribution_code IN('" . implode("','", $surveysList) . "')")
+                    ->where('d.distribution_code IN (?)', $surveysList)
                     ->where('DATE(d.distribution_date) <= ?', $res['distribution_date'])
                     ->order('d.distribution_date ASC')
                     ->group(['d.distribution_id'])->limit(5);
@@ -3231,7 +3231,7 @@ class Application_Service_Evaluation
                         'failed' => new Zend_Db_Expr('SUM(CASE WHEN (spm.response_status = \'responded\' AND spm.final_result = 2) THEN 1 ELSE 0 END)'),
                     ])
                     ->where('s.scheme_type = ?', $res['scheme_type'])
-                    ->where("d.distribution_code IN('" . implode("','", $surveysList) . "')")
+                    ->where('d.distribution_code IN (?)', $surveysList)
                     ->where('DATE(d.distribution_date) <= ?', $res['distribution_date'])
                     ->order('d.distribution_date ASC')
                     ->group(['d.distribution_id'])->limit(5);
@@ -3951,7 +3951,7 @@ class Application_Service_Evaluation
                 $regexpArray = [];
                 $regexp = '';
                 foreach ($countedAssayResult as $crow) {
-                    $regexpArray[] = '\'%"vl_assay":"' . $crow['vl_assay'] . '"%\'';
+                    $regexpArray[] = $db->quote('%"vl_assay":"' . $crow['vl_assay'] . '"%');
                 }
                 // select * from shipment_participant_map where `attributes` NOT REGEXP '\"vl_assay\":\"1\" |\"vl_assay\":\"4\" |\"vl_assay\":\"2\"' and shipment_id = 11
                 if (isset($regexpArray) && !empty($regexpArray)) {
@@ -4041,7 +4041,7 @@ class Application_Service_Evaluation
                         ->where('vlCal.shipment_id=?', $shipmentId)
                         ->where('vlCal.vl_assay=?', $vlAssayRow['id'])
                         ->where('refVl.control!=1')
-                        ->where('sp.attributes->>"$.vl_assay" = ' . $vlAssayRow['id'])
+                        ->where('sp.attributes->>"$.vl_assay" = ' . (int) $vlAssayRow['id'])
                         ->where("sp.is_excluded not like 'yes' OR sp.is_excluded like '' OR sp.is_excluded is null")
                         ->where('sp.final_result = 1 OR sp.final_result = 2')
                         ->group('refVl.sample_id');
@@ -4269,7 +4269,7 @@ class Application_Service_Evaluation
         }
 
         if ($data !== []) {
-            $db->update('shipment', $data, 'shipment_id = ' . $shipmentId);
+            $db->update('shipment', $data, ['shipment_id = ?' => $shipmentId]);
         }
     }
 
@@ -4319,8 +4319,8 @@ class Application_Service_Evaluation
                 ];
                 $saved = $db->insert('queue_report_generation', $data);
                 if ($saved > 0) {
-                    $db->update('shipment_participant_map', ['report_generated' => 'no'], 'shipment_id = ' . $shipmentId);
-                    return $db->update('shipment', ['report_in_queue' => 'yes', 'status' => 'queued'], 'shipment_id = ' . $shipmentId);
+                    $db->update('shipment_participant_map', ['report_generated' => 'no'], ['shipment_id = ?' => $shipmentId]);
+                    return $db->update('shipment', ['report_in_queue' => 'yes', 'status' => 'queued'], ['shipment_id = ?' => $shipmentId]);
                 }
             }
         } else {
@@ -4335,11 +4335,11 @@ class Application_Service_Evaluation
                 'date_finalised' => new Zend_Db_Expr('NOW()'),
                 'status' => 'pending',
             ];
-            $updated = $db->update('queue_report_generation', $data, 'id = ' . $existData['id']);
+            $updated = $db->update('queue_report_generation', $data, ['id = ?' => $existData['id']]);
             if ($updated > 0) {
                 // Reset report_generated flags so progress starts from 0%
-                $db->update('shipment_participant_map', ['report_generated' => 'no'], 'shipment_id = ' . $shipmentId);
-                $db->update('shipment', ['report_in_queue' => 'yes', 'status' => 'queued'], 'shipment_id = ' . $shipmentId);
+                $db->update('shipment_participant_map', ['report_generated' => 'no'], ['shipment_id = ?' => $shipmentId]);
+                $db->update('shipment', ['report_in_queue' => 'yes', 'status' => 'queued'], ['shipment_id = ?' => $shipmentId]);
             }
             return $updated;
         }

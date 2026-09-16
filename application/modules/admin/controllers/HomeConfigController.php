@@ -67,7 +67,7 @@ class Admin_HomeConfigController extends Zend_Controller_Action
                         $extension = strtolower(pathinfo($logosDir . DIRECTORY_SEPARATOR . $fileNameSanitized, PATHINFO_EXTENSION));
                         $fileName = Pt_Commons_MiscUtility::generateRandomString(4) . '.' . $extension;
                         if (move_uploaded_file($_FILES[$field]['tmp_name'], $logosDir . DIRECTORY_SEPARATOR . $fileName)) {
-                            $globalConfigDb->update(['value' => $fileName], "name = '" . $field . "'");
+                            $globalConfigDb->update(['value' => $fileName], ['name = ?' => $field]);
                         }
                     }
                 }
