@@ -1391,53 +1391,6 @@ class ReportGenerator
     }
 
     /**
-     * Acquire lock for manual shipment mode.
-     * @return resource|null Lock handle or null
-     */
-    private function acquireManualShipmentLock()
-    {
-        $lock = self::acquireShipmentLock((int) $this->opts->shipmentId);
-
-        if ($lock === null) {
-            $info = self::getShipmentLockInfo((int) $this->opts->shipmentId);
-            $running = self::isPidRunning($info['pid']);
-            $ageMinutes = ($info['mtime'] ? (int) floor((time() - $info['mtime']) / 60) : null);
-
-            if ($this->opts->force) {
-                $ttlOk = ($this->opts->lockTtlMinutes > 0 && $ageMinutes !== null && $ageMinutes >= $this->opts->lockTtlMinutes && !$running);
-                if ($ttlOk && is_string($info['path']) && $info['path'] !== '' && is_file($info['path'])) {
-                    @unlink($info['path']);
-                    $lock = self::acquireShipmentLock((int) $this->opts->shipmentId);
-                    if (is_resource($lock)) {
-                        return $lock;
-                    }
-                }
-                self::warn(
-                    "Shipment {$this->opts->shipmentId} appears locked (lock file: {$info['path']}). " .
-                    "Proceeding due to --force" .
-                    ($ttlOk ? " (lockTtl={$this->opts->lockTtlMinutes}m, age={$ageMinutes}m)." : ".") .
-                    " This can corrupt output if another job is actually running.",
-                    $this->opts->isCli
-                );
-                return null;
-            }
-
-            $details = "lock file: {$info['path']}";
-            if ($info['pid']) {
-                $details .= ", pid: {$info['pid']}" . ($running ? " (running)" : " (not running)");
-            }
-            if ($ageMinutes !== null) {
-                $details .= ", age: {$ageMinutes}m";
-            }
-            self::error("Another report generation process is already running for shipment {$this->opts->shipmentId} ({$details}). Exiting.", $this->opts->isCli);
-            self::log("If this is stale: check the PID (ps -fp <pid>) and remove the lock file, or rerun with --force.", $this->opts->isCli);
-            exit(1);
-        }
-
-        return $lock;
-    }
-
-    /**
      * Try to acquire lock for a shipment in the processing loop.
      * @return resource|false Lock handle or false if should skip
      */

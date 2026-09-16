@@ -2973,7 +2973,6 @@ final class Application_Model_Dts
             return;
         }
         $this->vietnamFeedback($out, $sampleLabel, $FOLLOW_MOH, true);
-        return;
     }
 
     /** RTRI rule-check, only sets rtriAlgoResult; leaves HIV algo as-is */
@@ -3023,7 +3022,8 @@ final class Application_Model_Dts
                 $out['algoResult'] = 'Pass';
                 return;
             }
-            return $this->warningForAlgo($out, $correctiveActions, $result['sample_label'] ?? '');
+            $this->warningForAlgo($out, $correctiveActions, $result['sample_label'] ?? '');
+            return;
         }
 
         if ($result1 === 'R' && $result2 === 'NR' && $result3 === 'NR') {
@@ -3036,7 +3036,8 @@ final class Application_Model_Dts
                 $out['algoResult'] = 'Pass';
                 return;
             }
-            return $this->warningForAlgo($out, $correctiveActions, $result['sample_label'] ?? '');
+            $this->warningForAlgo($out, $correctiveActions, $result['sample_label'] ?? '');
+            return;
         }
 
         if ($result1 === 'R' && $result2 === 'NR' && in_array($result3, ['R', 'X'], true)) {
@@ -3062,7 +3063,8 @@ final class Application_Model_Dts
                 $out['algoResult'] = 'Pass';
                 return;
             }
-            return $this->warningForAlgo($out, $correctiveActions, $result['sample_label'] ?? '');
+            $this->warningForAlgo($out, $correctiveActions, $result['sample_label'] ?? '');
+            return;
         }
 
         if ($result1 === 'R' && $result2 === 'NR' && in_array($result3, ['R', 'X', 'NR'], true)) {
@@ -3075,7 +3077,8 @@ final class Application_Model_Dts
                 $out['algoResult'] = 'Pass';
                 return;
             }
-            return $this->warningForAlgo($out, $correctiveActions, $result['sample_label'] ?? '');
+            $this->warningForAlgo($out, $correctiveActions, $result['sample_label'] ?? '');
+            return;
         }
 
         if ($result1 === 'NR' && $result2 === 'R' && in_array($result3, ['NR', 'X', 'R'], true)) {
@@ -3144,7 +3147,8 @@ final class Application_Model_Dts
                 $out['algoResult'] = 'Pass';
                 return;
             }
-            return $this->warningForAlgo($out, $correctiveActions, $result['sample_label'] ?? '');
+            $this->warningForAlgo($out, $correctiveActions, $result['sample_label'] ?? '');
+            return;
         }
         if ($result1 === 'R') {
             if ($result2 === 'R' && $result3 === 'R' && $reportedResultCode === 'P' && $repeatResult1 === '-') {
@@ -3160,9 +3164,11 @@ final class Application_Model_Dts
                     $out['algoResult'] = 'Pass';
                     return;
                 }
-                return $this->warningForAlgo($out, $correctiveActions, $result['sample_label'] ?? '');
+                $this->warningForAlgo($out, $correctiveActions, $result['sample_label'] ?? '');
+                return;
             }
-            return $this->warningForAlgo($out, $correctiveActions, $result['sample_label'] ?? '');
+            $this->warningForAlgo($out, $correctiveActions, $result['sample_label'] ?? '');
+            return;
         }
     }
 
@@ -3224,7 +3230,8 @@ final class Application_Model_Dts
                 $out['algoResult'] = 'Pass';
                 return;
             }
-            return $this->warningForAlgo($out, $correctiveActions, $result['sample_label'] ?? '');
+            $this->warningForAlgo($out, $correctiveActions, $result['sample_label'] ?? '');
+            return;
         }
 
         if ($result1 === 'R') {
@@ -3242,9 +3249,11 @@ final class Application_Model_Dts
                     $out['algoResult'] = 'Pass';
                     return;
                 }
-                return $this->warningForAlgo($out, $correctiveActions, $result['sample_label'] ?? '');
+                $this->warningForAlgo($out, $correctiveActions, $result['sample_label'] ?? '');
+                return;
             }
-            return $this->warningForAlgo($out, $correctiveActions, $result['sample_label'] ?? '');
+            $this->warningForAlgo($out, $correctiveActions, $result['sample_label'] ?? '');
+            return;
         }
 
         $this->warningForAlgo($out, $correctiveActions, $result['sample_label'] ?? '');
@@ -3267,7 +3276,8 @@ final class Application_Model_Dts
                 $out['algoResult'] = 'Pass';
                 return;
             }
-            return $this->warningForAlgo($out, $correctiveActions, $result['sample_label'] ?? '');
+            $this->warningForAlgo($out, $correctiveActions, $result['sample_label'] ?? '');
+            return;
         }
 
         if ($result1 === 'R') {
@@ -3292,9 +3302,11 @@ final class Application_Model_Dts
                     $out['algoResult'] = 'Pass';
                     return;
                 }
-                return $this->warningForAlgo($out, $correctiveActions, $result['sample_label'] ?? '');
+                $this->warningForAlgo($out, $correctiveActions, $result['sample_label'] ?? '');
+                return;
             }
-            return $this->warningForAlgo($out, $correctiveActions, $result['sample_label'] ?? '');
+            $this->warningForAlgo($out, $correctiveActions, $result['sample_label'] ?? '');
+            return;
         }
     }
 

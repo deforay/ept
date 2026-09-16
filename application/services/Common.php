@@ -2213,7 +2213,7 @@ class Application_Service_Common
     public function saveSchemeConfigByName($value, $name)
     {
         $sc = new Application_Model_DbTable_SchemeConfig();
-        return $sc->saveSchemeConfigByName($value, $name);
+        $sc->saveSchemeConfigByName($value, $name);
     }
 
     public static function getSchemeConfig($name)

@@ -1405,12 +1405,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 $corrective = '<a href="/uploads/corrective-action-files/' . $aRow['corrective_action_file'] . '"   class="btn btn-warning"   style="text-decoration : none;overflow:hidden;margin-top:4px; clear:both !important;display:block;" target="_BLANK" download><i class="fa fa-fw fa-download"></i> ' . Pt_Commons_TranslateUtility::htmlTranslate('Corrective Actions') . '</a>';
             }
             if ($aRow['shipmentStatus'] == 'finalized' && $aRow['collect_feedback'] == 'yes' && $aRow['response_status'] == 'responded' && $aRow['feedback_expiry_date'] >= date('Y-m-d') && isset($feedbackOption) && !empty($feedbackOption) && $feedbackOption == 'yes') {
-                $result = $db->fetchRow($db->select()->from(['participant_feedback_answer'])->where('shipment_id =?', $aRow['shipment_id'])->where('participant_id =?', $aRow['participant_id'])->where('map_id =?', $aRow['map_id']));
-                if ($result) {
-                    $feedback = '<a href="/participant/feed-back/sid/' . $aRow['shipment_id'] . '/pid/' . $aRow['participant_id'] . '/mid/' . $aRow['map_id'] . '"   class="btn btn-default" style="text-decoration : none;overflow:hidden;margin-top:4px; clear:both !important;display:block;"><i class="icon-comments"></i> ' . Pt_Commons_TranslateUtility::htmlTranslate('Feedback') . '</a>';
-                } else {
-                    $feedback = '<a href="/participant/feed-back/sid/' . $aRow['shipment_id'] . '/pid/' . $aRow['participant_id'] . '/mid/' . $aRow['map_id'] . '"   class="btn btn-default" style="text-decoration : none;overflow:hidden;margin-top:4px; clear:both !important;display:block;"><i class="icon-comments"></i> ' . Pt_Commons_TranslateUtility::htmlTranslate('Feedback') . '</a>';
-                }
+                $feedback = '<a href="/participant/feed-back/sid/' . $aRow['shipment_id'] . '/pid/' . $aRow['participant_id'] . '/mid/' . $aRow['map_id'] . '"   class="btn btn-default" style="text-decoration : none;overflow:hidden;margin-top:4px; clear:both !important;display:block;"><i class="icon-comments"></i> ' . Pt_Commons_TranslateUtility::htmlTranslate('Feedback') . '</a>';
                 if (isset($aRow['form_show_to']) && !empty($aRow['form_show_to'])) {
                     if ($aRow['form_show_to'] == 'passing-participants' && $aRow['final_result'] != 1) {
                         $feedback = '';
@@ -3459,11 +3454,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 /* if((isset($shipment['shipment_attributes']["screeningTest"]) && $shipment['shipment_attributes']["screeningTest"] == 'yes')){
                     $allSamplesResult['resultsText'] = array('Result-1','Final-Result');
                 } else{ */
-                if ((isset($allowRepeatTests) && $allowRepeatTests)) {
-                    $allSamplesResult['resultsText'] = ['Result-1', 'Result-2', 'Result-3', 'Repeat Result-1', 'Repeat Result-2', 'Repeat Result-3', 'Final-Result'];
-                } else {
-                    $allSamplesResult['resultsText'] = ['Result-1', 'Result-2', 'Result-3', 'Repeat Result-1', 'Repeat Result-2', 'Repeat Result-3', 'Final-Result'];
-                }
+                $allSamplesResult['resultsText'] = ['Result-1', 'Result-2', 'Result-3', 'Repeat Result-1', 'Repeat Result-2', 'Repeat Result-3', 'Final-Result'];
                 // }
 
                 if (!$testThreeOptional) {

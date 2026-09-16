@@ -96,13 +96,4 @@ class Pt_Reports_ChartService
         fclose($pipes[2]);
         return proc_close($process) === 0;
     }
-
-    private static function getConfigValue(string $name): ?string
-    {
-        try {
-            return Pt_Commons_General::getConfig($name);
-        } catch (\Throwable) {
-            return null;
-        }
-    }
 }

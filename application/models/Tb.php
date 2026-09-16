@@ -1487,7 +1487,7 @@ class Application_Model_Tb
         // "simulated body start" marker when present (falling back to <body>), so we
         // append that marker AFTER our tags — the whole block then lands in the
         // first chunk and mpdf binds the header/footer to the page margins.
-        $bodystring = '/<body>/';
+        $bodystring = '<body>';
         $bodyrepl = <<<EOF
     <body>
         <htmlpageheader name="myHeader1">
@@ -1516,7 +1516,7 @@ class Application_Model_Tb
         <!-- simulated body start -->
     EOF;
 
-        return preg_replace($bodystring, $bodyrepl, $html);
+        return str_replace($bodystring, $bodyrepl, $html);
     }
 
     public function getFormConfiguration($shipmentId)
@@ -2243,15 +2243,9 @@ class Application_Model_Tb
     {
         $queryString = file_get_contents(sprintf('%s/Reports/getTbAllSitesResultsSheet.sql', __DIR__));
 
-        $authNameSpace = new Zend_Session_Namespace('administrators');
         $userCondition = '';
-        if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1) {
-            $queryString = str_replace('{USER_CONDITION}', $userCondition, $queryString);
-            $query = $db->query($queryString, [$shipmentId]);
-        } else {
-            $queryString = str_replace('{USER_CONDITION}', $userCondition, $queryString);
-            $query = $db->query($queryString, [$shipmentId]);
-        }
+        $queryString = str_replace('{USER_CONDITION}', $userCondition, $queryString);
+        $query = $db->query($queryString, [$shipmentId]);
 
         $results = $query->fetchAll();
 

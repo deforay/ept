@@ -393,7 +393,6 @@ if (!empty($resultArray['shipment'])) {
             $interval = $sampleRehydrationDate->diff($testedOnDate);
 
             // Testing should be done within 24*($sampleRehydrateDays) hours of rehydration.
-            $sampleRehydrateDays = $sampleRehydrateDays;
             $rehydrateHours = $sampleRehydrateDays * 24;
 
             if ($interval->days < $sampleRehydrateDays || $interval->days > ($sampleRehydrateDays + 1)) {

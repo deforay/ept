@@ -2,8 +2,6 @@
 
 class ParticipantController extends Zend_Controller_Action
 {
-    private $noOfItems = 10;
-
     public function init()
     {
         /** @var Zend_Controller_Action_Helper_AjaxContext $ajaxContext */

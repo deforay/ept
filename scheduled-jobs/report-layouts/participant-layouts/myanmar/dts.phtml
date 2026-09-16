@@ -206,7 +206,6 @@ if ($totalPages > 0) {
         $interval = (isset($attributes['sample_rehydration_date']) && !empty($attributes['sample_rehydration_date'])) ? $srDate->diff($testedOnDate) : null;
 
         // Testing should be done within 24*($sampleRehydrateDays) hours of rehydration.
-        $sampleRehydrateDays = $sampleRehydrateDays;
         $rehydrateHours = $sampleRehydrateDays * 24;
 
         $shipmentReceiptDate = "";

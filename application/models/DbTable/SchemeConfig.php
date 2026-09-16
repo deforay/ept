@@ -80,7 +80,7 @@ class Application_Model_DbTable_SchemeConfig extends Zend_Db_Table_Abstract
 
     public function saveSchemeConfigByName($value, $name)
     {
-        return $this->insertOrUpdate($name, $value);
+        $this->insertOrUpdate($name, $value);
     }
 
     protected function insertOrUpdate($configName, $configValue)
