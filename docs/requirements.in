@@ -1,0 +1,5 @@
+# Top-level docs build dependencies. Regenerate the hash-locked
+# requirements.txt with:
+#   pip-compile --generate-hashes --strip-extras docs/requirements.in
+mkdocs==1.6.1
+mkdocs-material==9.7.7
