@@ -168,7 +168,7 @@ class Application_Model_DbTable_Partners extends Zend_Db_Table_Abstract
     {
         $partnerId = 0;
         if (isset($params['partnerId']) && trim($params['partnerId']) != '') {
-            $sortOrderResult = $partnerId = $params['partnerId'];
+            $partnerId = $params['partnerId'];
             $data = [
                 'partner_name' => $params['partnerName'],
                 'link' => $params['link'],

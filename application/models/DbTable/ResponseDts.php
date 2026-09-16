@@ -98,15 +98,14 @@ class Application_Model_DbTable_ResponseDts extends Zend_Db_Table_Abstract
                     $data['dts_rtri_reported_result'] = (isset($params['rtriResult'][$sampleId]) && !empty($params['rtriResult'][$sampleId])) ? $params['rtriResult'][$sampleId] : null;
                     $data['dts_rtri_is_editable'] = (isset($params['dtsRtriIsEditable'][$sampleId]) && !empty($params['dtsRtriIsEditable'][$sampleId])) ? $params['dtsRtriIsEditable'][$sampleId] : null;
                 }
-                $id = 0;
                 if (empty($res)) {
                     $data['created_by'] = $authNameSpace->dm_id;
                     $data['created_on'] = new Zend_Db_Expr('now()');
-                    $id = $this->insert($data);
+                    $this->insert($data);
                 } else {
                     $data['updated_by'] = $authNameSpace->dm_id;
                     $data['updated_on'] = new Zend_Db_Expr('now()');
-                    $id = $this->update($data, 'shipment_map_id = ' . $params['smid'] . ' and sample_id = ' . $sampleId);
+                    $this->update($data, 'shipment_map_id = ' . $params['smid'] . ' and sample_id = ' . $sampleId);
                 }
             }
         } catch (Throwable $e) {

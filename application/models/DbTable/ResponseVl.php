@@ -13,7 +13,6 @@ class Application_Model_DbTable_ResponseVl extends Zend_Db_Table_Abstract
         foreach ($sampleIds as $key => $sampleId) {
 
             $authNameSpace = new Zend_Session_Namespace('datamanagers');
-            $adminAuthNameSpace = new Zend_Session_Namespace('administrators');
             //Set tnd value if Yes
             $tnd = null;
             if (!empty($params['isPtTestNotPerformed']) && $params['isPtTestNotPerformed'] === 'yes') {

@@ -466,9 +466,6 @@ class Application_Model_DbTable_Distribution extends Zend_Db_Table_Abstract
         $aColumns = ["DATE_FORMAT(distribution_date,'%d-%b-%Y')", 'distribution_code', 's.shipment_code', 'd.status'];
         $orderColumns = ['distribution_date', 'distribution_code', 's.shipment_code', 'd.status'];
 
-        /* Indexed column (used for fast and accurate table cardinality) */
-        $sIndexColumn = 'distribution_id';
-
         $sLimit = '';
         if (isset($parameters['iDisplayStart']) && $parameters['iDisplayLength'] != '-1') {
             $sOffset = $parameters['iDisplayStart'];

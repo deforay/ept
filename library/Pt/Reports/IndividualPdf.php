@@ -109,7 +109,6 @@ class Pt_Reports_IndividualPdf extends Fpdi
             }
         } elseif ($this->schemeType == 'eid' && $this->layout != 'zimbabwe') {
             $this->SetFont('freesans', '', 10, '', true);
-            $html = '<span style="font-weight: bold;text-align:center;"><span style="text-align:center;font-size:11;">' . $this->header . '</span><br/>';
             if (isset($this->config) && $this->config != '') {
                 $html = '<span style="font-weight: bold;text-align:center;font-size:18px;">' . $this->config->instituteName . '</span>
 

@@ -204,8 +204,6 @@ class Admin_EvaluateController extends Zend_Controller_Action
             $evalService = new Application_Service_Evaluation();
             $response = $evalService->updateShipmentResults($params);
             $shipmentId = base64_encode($params['shipmentId']);
-            $participantId = base64_encode($params['participantId']);
-            $scheme = base64_encode($params['scheme']);
             $alertMsg = new Zend_Session_Namespace('alertSpace');
             if ($response === false) {
                 $alertMsg->message = 'Shipment Results NOT UPDATED for this participant';
@@ -383,7 +381,6 @@ class Admin_EvaluateController extends Zend_Controller_Action
         $request = $this->getRequest();
         if ($this->hasParam('manualRange')) {
             $params = $request->getPost();
-            $schemeService = new Application_Service_Schemes();
             $shipmentId = (int)base64_decode($this->_getParam('sid'));
 
             // Save the System/Manual choices FIRST, then recalculate, so the recalculation
@@ -470,7 +467,6 @@ class Admin_EvaluateController extends Zend_Controller_Action
     {
         if ($this->hasParam('sid')) {
             $shipmentId = (int)($this->_getParam('sid'));
-            $methodOfEvaluation = ($this->_getParam('method'));
             $vlModel = new Application_Model_Vl();
             $this->view->result = $vlModel->setVlRange($shipmentId);
             $this->flagRangeChangeForReEvaluation($shipmentId);
@@ -520,7 +516,6 @@ class Admin_EvaluateController extends Zend_Controller_Action
         $request = $this->getRequest();
         $sID = base64_decode($request->getParam('sid'));
         $pID = base64_decode($request->getParam('pid'));
-        $assayId = ($request->getParam('assayId'));
         $type = $request->getParam('type');
         $assayType = $request->getParam('assayType');
         $assayDrug = $request->getParam('assayDrug');

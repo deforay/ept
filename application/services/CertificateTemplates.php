@@ -118,12 +118,10 @@ class Application_Service_CertificateTemplates
 
         // Check if at least one required participant name field is present
         $hasRequiredField = false;
-        $foundParticipantField = null;
         foreach (self::REQUIRED_PARTICIPANT_FIELDS as $requiredField) {
             foreach ($fields as $field) {
                 if (strtolower($field) === strtolower($requiredField)) {
                     $hasRequiredField = true;
-                    $foundParticipantField = $field;
                     break 2;
                 }
             }

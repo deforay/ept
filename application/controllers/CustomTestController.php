@@ -74,7 +74,6 @@ class CustomTestController extends Zend_Controller_Action
 
             $disableOtherTestkit = Pt_Commons_SchemeConfig::get('custom.disableOtherTestkit');
 
-            $schemeCode = $shipment['scheme_type'];
             $this->view->disableOtherTestkit = $disableOtherTestkit ?? 'no';
         }
     }
@@ -86,7 +85,6 @@ class CustomTestController extends Zend_Controller_Action
         $this->_helper->layout()->disableLayout();
         $sID = $request->getParam('sid');
         $pID = $request->getParam('pid');
-        $eID = $request->getParam('eid');
 
         $reportService = new Application_Service_Reports();
         $this->view->header = $reportService->getReportConfigValue('report-header');

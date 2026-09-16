@@ -164,7 +164,7 @@ class Application_Model_DbTable_FeedBackTable extends Zend_Db_Table_Abstract
         $result = $db->fetchAll($sql);
         $response = [];
         if ($type == 'options') {
-            foreach ($result as $key => $q) {
+            foreach ($result as $q) {
                 $response[$q['question_id']] = $q['answer'];
             }
         } else {
@@ -369,9 +369,6 @@ class Application_Model_DbTable_FeedBackTable extends Zend_Db_Table_Abstract
         } else {
             $aColumns = ['question_text', 'question_code', 'question_type', 'question_status'];
         }
-
-        /* Indexed column (used for fast and accurate table cardinality) */
-        $sIndexColumn = $this->_primary;
 
         $sLimit = '';
         if (isset($parameters['iDisplayStart']) && $parameters['iDisplayLength'] != '-1') {

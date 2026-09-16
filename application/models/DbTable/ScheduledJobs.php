@@ -27,7 +27,6 @@ class Application_Model_DbTable_ScheduledJobs extends Zend_Db_Table_Abstract
             $shipmentId[] = intval($shipment['shipment_id']);
             if (!file_exists(SCHEDULED_JOBS_FOLDER . DIRECTORY_SEPARATOR . 'certificate-templates' . DIRECTORY_SEPARATOR . $shipment['scheme_type'] . '-e.docx')) {
                 $directory[] = $shipment['scheme_type'];
-                $resp = 9999999;
             }
         }
 

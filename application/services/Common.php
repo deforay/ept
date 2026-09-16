@@ -63,7 +63,7 @@ class Application_Service_Common
             $response = false;
         } else {
             try {
-                $dateTime = new DateTimeImmutable($date);
+                new DateTimeImmutable($date);
                 $errors = DateTimeImmutable::getLastErrors();
                 if (
                     !empty($errors['warning_count'])
@@ -436,7 +436,7 @@ class Application_Service_Common
         $result = $db->fetchAll($sql);
         if (isset($list) && !empty($list) && $list == 'list') {
             $response = [];
-            foreach ($result as $key => $value) {
+            foreach ($result as $value) {
                 if (isset($value['state']) && !empty($value['state'])) {
                     $response[] = $value['state'];
                 }
@@ -455,7 +455,7 @@ class Application_Service_Common
         $result = $db->fetchAll($sql);
         if (isset($list) && !empty($list) && $list == 'list') {
             $response = [];
-            foreach ($result as $key => $value) {
+            foreach ($result as $value) {
                 if (isset($value['district']) && !empty($value['district'])) {
                     $response[] = $value['district'];
                 }
@@ -621,7 +621,7 @@ class Application_Service_Common
             $db->getAdapter()->beginTransaction();
 
             try {
-                $result = $db->updateHomeBannerDetails($params);
+                $db->updateHomeBannerDetails($params);
                 $db->getAdapter()->commit();
             } catch (Exception $exc) {
                 $db->getAdapter()->rollBack();

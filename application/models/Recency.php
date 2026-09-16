@@ -221,7 +221,7 @@ class Application_Model_Recency
                         }
                         $fRes = $this->db->fetchCol($this->db->select()->from('r_results', ['result_name'])->where('result_id = ' . $shipmentOverall['final_result']));
                         $shipmentResult[$counter]['display_result'] = $fRes[0];
-                        $nofOfRowsUpdated = $this->db->update('shipment_participant_map', ['shipment_score' => $shipmentOverall['shipment_score'], 'documentation_score' => $shipmentOverall['documentation_score'], 'final_result' => $shipmentOverall['final_result']], 'map_id = ' . $shipment['map_id']);
+                        $this->db->update('shipment_participant_map', ['shipment_score' => $shipmentOverall['shipment_score'], 'documentation_score' => $shipmentOverall['documentation_score'], 'final_result' => $shipmentOverall['final_result']], 'map_id = ' . $shipment['map_id']);
                     }
                 } else {
                     // let us update the total score in DB
@@ -457,7 +457,6 @@ class Application_Model_Recency
 
         $cellName3 = $firstSheet->getCell(Coordinate::stringFromColumnIndex($colNameCount + 1) . '1')
             ->getColumn();
-        $colNumberforReference = $colNameCount;
         foreach ($refResult as $refRow) {
             $firstSheet->getCell(Coordinate::stringFromColumnIndex($colNameCount + 1) . 2)
                 ->setValueExplicit(html_entity_decode($refRow['sample_label'], ENT_QUOTES, 'UTF-8'));
@@ -579,7 +578,7 @@ class Application_Model_Recency
         $sheet->getDefaultColumnDimension()->setWidth(24);
         $sheet->getDefaultRowDimension()->setRowHeight(18);
 
-        foreach ($headings as $field => $value) {
+        foreach ($headings as $value) {
             $sheet->getCell(Coordinate::stringFromColumnIndex($colNo + 1) . $currentRow)
                 ->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
             // $sheet->getStyle(Coordinate::stringFromColumnIndex($colNo) . $currentRow)->getFont()->setBold(true);
@@ -629,7 +628,6 @@ class Application_Model_Recency
                 }
 
                 $currentRow++;
-                $shipmentCode = $aRow['shipment_code'];
             }
         }
 
@@ -730,8 +728,7 @@ class Application_Model_Recency
         //$sheet->getStyle("E2")->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB('#A7A7A7');
         //$sheet->getStyle("F2")->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB('#A7A7A7');
 
-        $cellName = $sheet->getCell(Coordinate::stringFromColumnIndex($n + 1) . 3)
-            ->getColumn();
+        $sheet->getCell(Coordinate::stringFromColumnIndex($n + 1) . 3);
         //$sheet->getStyle('A3:'.$cellName.'3')->getFill()->setFillType(\PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB('#969696');
         //$sheet->getStyle('A3:'.$cellName.'3')->applyFromArray($borderStyle);
 
@@ -873,7 +870,6 @@ class Application_Model_Recency
 
                 $colCellObj = $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow);
                 $colCellObj->setValueExplicit(ucwords($aRow['unique_identifier']));
-                $cellName = $colCellObj->getColumn();
                 //$sheet->getStyle($cellName.$currentRow)->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
                 //$sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['unique_identifier']), PHPExcel_Cell_DataType::TYPE_STRING);
                 $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($aRow['first_name'] . ' ' . $aRow['last_name']);
@@ -1041,10 +1037,6 @@ class Application_Model_Recency
             }
         }
 
-        $firstName = $authNameSpace->first_name;
-        $lastName = $authNameSpace->last_name;
-        $name = $firstName . ' ' . $lastName;
-        $userName = isset($name) != '' ? $name : $authNameSpace->primary_email;
         $auditDb = new Application_Model_DbTable_AuditLog();
         $auditDb->addNewAuditLog('Downloaded Recency Excel report - ' . ($result['shipment_code'] ?? '?'), 'shipment');
 

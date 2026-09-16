@@ -455,15 +455,12 @@ final class Application_Model_Dts
             // Checking algorithm Pass/Fail only if it is NOT a control.
             if (0 == $result['control']) {
                 $syphilisResult = $result1 = $result2 = $result3 = '';
-                $repeatResult1 = $repeatResult2 = $repeatResult3 = '';
+                $repeatResult1 = $repeatResult2 = '';
                 if ($syphilisEnabled === true) {
                     // getting syphilis result code : R, NR, I or -
                     $syphilisResult = $this->getResultCodeFromId($result['syphilis_result'] ?? '');
                 }
 
-                // getting results from test_result_1 and test_result_2 : R, NR, I or -
-                $result1 = $this->getResultCodeFromId($result['test_result_1'] ?? '');
-                $result2 = $this->getResultCodeFromId($result['test_result_2'] ?? '');
                 $repeatResult1 = $this->getResultCodeFromId($result['repeat_test_result_1'] ?? '');
 
                 // getting results from test_result_1 and test_result_2 : R, NR, I or -
@@ -472,13 +469,9 @@ final class Application_Model_Dts
 
                 if (!empty($attributes['algorithm']) && $attributes['algorithm'] != 'myanmarNationalDtsAlgo' && isset($config['dtsOptionalTest3']) && $config['dtsOptionalTest3'] == 'yes') {
                     $result3 = 'X';
-                    $repeatResult3 = 'X';
                 } else {
                     // getting $result2 from test_result_3 : R, NR, I or -
                     $result3 = $this->getResultCodeFromId($result['test_result_3'] ?? '');
-
-                    // getting repeat result from repeat_test_result_3 : R, NR, I or -
-                    $repeatResult3 = $this->getResultCodeFromId($result['repeat_test_result_3'] ?? '');
                 }
 
                 //$algoString = "Wrongly reported in the pattern : <strong>" . $result1 . "</strong> <strong>" . $result2 . "</strong> <strong>" . $result3 . "</strong>";
@@ -504,9 +497,6 @@ final class Application_Model_Dts
                     'failureReason' => [],
                     'correctiveActionList' => [],
                 ];
-
-                // pull from the algo dispatcher (if available)
-                $rtriAlgoResult = $algo['rtriAlgoResult'] ?? null;
 
                 $correctiveActionList ??= [];
 
@@ -1156,7 +1146,7 @@ final class Application_Model_Dts
             }
         }
 
-        $nofOfRowsDeleted = $this->db->delete('dts_shipment_corrective_action_map', $this->db->quoteInto('shipment_map_id = ?', $shipment['map_id']));
+        $this->db->delete('dts_shipment_corrective_action_map', $this->db->quoteInto('shipment_map_id = ?', $shipment['map_id']));
         if ($shipment['is_excluded'] != 'yes' && $shipment['is_pt_test_not_performed'] != 'yes') {
             $correctiveActionList = array_unique($correctiveActionList);
             foreach ($correctiveActionList as $ca) {
@@ -1674,7 +1664,6 @@ final class Application_Model_Dts
                 }
             }
         }
-        $addWithFinalResultCol = 2;
         /* Repeat test section */
         if (isset($config['allowRepeatTests']) && $config['allowRepeatTests'] == 'yes') {
             $reportHeadings = $this->appendSampleLabels($reportHeadings, $sampleLabels);
@@ -1710,14 +1699,11 @@ final class Application_Model_Dts
             $rtriPanelEndIndex = $rtriFinalStartIndex - 1;
             $rtriFinalEndIndex = count($reportHeadings) - 1;
         }
-        $finalResultStartCellCount = 0;
         if (!empty($haveCustom) && $haveCustom == 'yes') {
             if (isset($customField1) && $customField1 != '') {
-                $finalResultStartCellCount += 1;
                 array_push($reportHeadings, $customField1);
             }
             if (isset($customField2) && $customField2 != '') {
-                $finalResultStartCellCount += 1;
                 array_push($reportHeadings, $customField2);
             }
         }
@@ -1725,11 +1711,6 @@ final class Application_Model_Dts
             $reportHeadings,
             $this->translator->_('Comments')
         );
-        $finalResultStartCellCount += 1;
-        $finalResultStartCellCount += $result['number_of_samples'];
-        if ($result['number_of_controls'] > 0) {
-            $finalResultStartCellCount += $result['number_of_controls'];
-        }
 
         $colNo = 0;
         $repeatCellNo = 0;
@@ -1952,7 +1933,6 @@ final class Application_Model_Dts
                 }
                 $k = 0;
                 $rehydrationDate = '';
-                $shipmentTestDate = '';
                 $countCorrectResult = 0;
 
                 $resultReportRow = [];
@@ -2184,7 +2164,7 @@ final class Application_Model_Dts
                         // }
                         for ($k = 0; $k < ($aRow['number_of_samples'] + $aRow['number_of_controls']); $k++) {
                             $participantResponse[$k]['dts_rtri_control_line'] = (isset($participantResponse[$k]['dts_rtri_control_line']) && $participantResponse[$k]['dts_rtri_control_line']) ? $participantResponse[$k]['dts_rtri_control_line'] : null;
-                            $rr = $r++;
+                            $r++;
                             $resultReportRow[] = ucwords($participantResponse[$k]['dts_rtri_control_line']);
                             /* Merge titiles */
                             if ($k == 0) {
@@ -2198,7 +2178,7 @@ final class Application_Model_Dts
                         }
                         for ($k = 0; $k < ($aRow['number_of_samples'] + $aRow['number_of_controls']); $k++) {
                             $participantResponse[$k]['dts_rtri_diagnosis_line'] = (isset($participantResponse[$k]['dts_rtri_diagnosis_line']) && $participantResponse[$k]['dts_rtri_diagnosis_line']) ? $participantResponse[$k]['dts_rtri_diagnosis_line'] : null;
-                            $rr = $r++;
+                            $r++;
                             $resultReportRow[] = ucwords($participantResponse[$k]['dts_rtri_diagnosis_line']);
                             /* Merge titiles */
                             if ($k == 0) {
@@ -2212,7 +2192,7 @@ final class Application_Model_Dts
                         }
                         for ($k = 0; $k < ($aRow['number_of_samples'] + $aRow['number_of_controls']); $k++) {
                             $participantResponse[$k]['dts_rtri_longterm_line'] = (isset($participantResponse[$k]['dts_rtri_longterm_line']) && $participantResponse[$k]['dts_rtri_longterm_line']) ? $participantResponse[$k]['dts_rtri_longterm_line'] : null;
-                            $rr = $r++;
+                            $r++;
                             $resultReportRow[] = ucwords($participantResponse[$k]['dts_rtri_longterm_line']);
                             /* Merge titiles */
                             if ($k == 0) {
@@ -2395,11 +2375,6 @@ final class Application_Model_Dts
         $excel->setActiveSheetIndex(0);
 
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
-        $firstName = $authNameSpace->first_name;
-        $lastName = $authNameSpace->last_name;
-
-        $name = $firstName . ' ' . $lastName;
-        $userName = isset($name) != '' ? $name : $authNameSpace->primary_email;
         $auditDb = new Application_Model_DbTable_AuditLog();
         $auditDb->addNewAuditLog('Downloaded DTS Rapid HIV report - ' . ($shipmentCode ?? '?'), 'shipment');
 

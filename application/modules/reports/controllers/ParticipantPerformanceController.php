@@ -54,7 +54,6 @@ class Reports_ParticipantPerformanceController extends Zend_Controller_Action
         $request = $this->getRequest();
         $reportService = new Application_Service_Reports();
         if ($request->isPost()) {
-            $params = $this->getAllParams();
             $this->view->exported = $reportService->exportParticipantPerformanceReport();
         }
     }

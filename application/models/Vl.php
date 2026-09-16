@@ -17,7 +17,6 @@ class Application_Model_Vl
     {
         $counter = 0;
         $maxScore = 0;
-        $scoreHolder = [];
         $finalResult = null;
         $schemeService = new Application_Service_Schemes();
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
@@ -62,7 +61,6 @@ class Application_Model_Vl
                 continue;
             }
 
-            $attributes = Pt_Commons_JsonUtility::safeDecode($shipment['attributes']);
             $shipmentAttributes = Pt_Commons_JsonUtility::safeDecode($shipment['shipment_attributes']);
 
             $methodOfEvaluation = $shipmentAttributes['methodOfEvaluation'] ?? 'standard';
@@ -193,7 +191,7 @@ class Application_Model_Vl
                     $finalResult = '';
                     $totalScore = 0;
                     $failureReason = [];
-                    $shipmentResult[$counter]['shipment_score'] = $responseScore = 0;
+                    $shipmentResult[$counter]['shipment_score'] = 0;
                     $shipmentResult[$counter]['documentation_score'] = 0;
                     $shipmentResult[$counter]['display_result'] = 'Excluded';
                     $shipmentResult[$counter]['is_followup'] = 'yes';
@@ -595,7 +593,6 @@ class Application_Model_Vl
             //$firstSheet->getCell(Coordinate::stringFromColumnIndex(8) . $row)
             //->setValueExplicit(html_entity_decode($specimenVolume, ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
 
-            $col = 4;
             if ($rowOverAll['is_pt_test_not_performed'] == 'yes') {
                 $firstSheet->getCell(Coordinate::stringFromColumnIndex(4) . $row)
                     ->setValueExplicit(html_entity_decode('PT TEST NOT PERFORMED', ENT_QUOTES, 'UTF-8'));
@@ -773,7 +770,6 @@ class Application_Model_Vl
                 }
             }
             $sample = [];
-            $assayNameTxt = '';
             foreach ($vlCalculation as $vlCal) {
                 $row = 10;
                 if (isset($vlCal['participant_response_count']) && $vlCal['participant_response_count'] < 18 || $vlCal['vlAssay'] == 'Other') {
@@ -794,13 +790,6 @@ class Application_Model_Vl
                         }
                     }
                     // $responseTxt = $val['no_of_responses'];
-                    if ($vlCal['vlAssay'] == 'Other') {
-                        foreach ($vlCal['otherAssayName'] as $otherAssayName => $otherAssayCount) {
-                            $assayNameTxt .= "Other - $otherAssayName(n=$otherAssayCount), ";
-                        }
-                    } else {
-                        $assayNameTxt .= $vlCal['vlAssay'] . '(n=' . $vlCal[0]['no_of_responses'] . '), ';
-                    }
                 } else {
                     $newsheet->mergeCells('A10:H10');
                     $newsheet->getCell(Coordinate::stringFromColumnIndex(1) . 10)
@@ -919,7 +908,7 @@ class Application_Model_Vl
                 $newsheet->getStyle(Coordinate::stringFromColumnIndex(7) . ($row + 1))->applyFromArray($borderStyle, true);
 
                 $row++;
-                foreach ($sample as $point => $label) {
+                foreach ($sample as $label) {
                     $col = 1;
                     $score = round((($label['NumberPassed'] / $label['response']) * 100));
 
@@ -1218,7 +1207,7 @@ class Application_Model_Vl
             $newsheet->setTitle(strtoupper($assayRow['short_name']), true);
             $row = $startAt; // $row 1-$startAt already occupied
 
-            foreach ($assayData as $assayKey => $assayRow) {
+            foreach ($assayData as $assayRow) {
                 $row++;
                 $noOfCols = count($assayRow);
                 for ($c = 0; $c < $noOfCols; $c++) {
@@ -1231,10 +1220,6 @@ class Application_Model_Vl
             $countOfVlAssaySheet++;
         }
 
-        $firstName = $authNameSpace->first_name;
-        $lastName = $authNameSpace->last_name;
-        $name = $firstName . ' ' . $lastName;
-        $userName = isset($name) != '' ? $name : $authNameSpace->primary_email;
         $auditDb = new Application_Model_DbTable_AuditLog();
         $auditDb->addNewAuditLog('Downloaded DTS Viral Load report - ' . ($result['shipment_code'] ?? '?'), 'shipment');
 
@@ -1287,8 +1272,6 @@ class Application_Model_Vl
             }
 
             // Process this participant's samples
-            $participantAttributes = Pt_Commons_JsonUtility::safeDecode($samples[0]['attributes']);
-            $responseAssayId = $participantAttributes['vl_assay'] ?? null;
 
             $toReturn = [];
             $counter = 0;
@@ -1296,11 +1279,6 @@ class Application_Model_Vl
             foreach ($samples as $sample) {
                 $responseAssay = Pt_Commons_JsonUtility::safeDecode($sample['attributes']);
                 $assayId = $responseAssay['vl_assay'] ?? null;
-                if ($assayId == 6) {
-                    $assayName = $responseAssay['other_assay'] ?? '';
-                } else {
-                    $assayName = $vlAssayResultSet[$assayId] ?? '';
-                }
 
                 $toReturn[$counter]['vl_assay'] = $vlAssayResultSet[$assayId] ?? '';
                 $toReturn[$counter]['sample_label'] = $sample['sample_label'];

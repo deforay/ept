@@ -3,8 +3,6 @@
 use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
-use PhpOffice\PhpSpreadsheet\Style\Alignment;
-use PhpOffice\PhpSpreadsheet\Style\Border;
 
 class Application_Service_Shipments
 {
@@ -555,7 +553,6 @@ class Application_Service_Shipments
             $announcementMail = '';
             $informMail = '';
             $manageEnroll = '';
-            $download = '';
 
             // Finalized shipments get no Edit button (and no disabled "Finalized"
             // placeholder — the Status column already says it).
@@ -869,7 +866,7 @@ class Application_Service_Shipments
                     'participant_id = ' . $params['participantId']
                 );
             }
-            $noOfRowsAffected = $shipmentParticipantDb->updateShipment($data, $params['smid'], $params['hdLastDate']);
+            $shipmentParticipantDb->updateShipment($data, $params['smid'], $params['hdLastDate']);
 
             $eidResponseDb = new Application_Model_DbTable_ResponseEid();
             $eidResponseDb->updateResults($params);
@@ -926,12 +923,6 @@ class Application_Service_Shipments
 
             $mandatoryCheckErrors = $this->mandatoryFieldsCheck($params, $mandatoryFields);
             if (!empty($mandatoryCheckErrors)) {
-                $userAgent = $_SERVER['HTTP_USER_AGENT'];
-                $commonService = new Application_Service_Common();
-
-                // $ipAddress = $commonService->getIPAddress();
-                // $operatingSystem = $commonService->getOperatingSystem($userAgent);
-                // $browser = $commonService->getBrowser($userAgent);
                 // //throw new Exception('Missed mandatory fields - ' . implode(",", $mandatoryCheckErrors));
 
                 throw new Exception('Missed mandatory fields on the form');
@@ -1021,7 +1012,7 @@ class Application_Service_Shipments
                     $data['qc_created_on'] = null;
                 }
             }
-            $noOfRowsAffected = $shipmentParticipantDb->updateShipment($data, $params['smid'], $params['hdLastDate']);
+            $shipmentParticipantDb->updateShipment($data, $params['smid'], $params['hdLastDate']);
 
             $recencyResponseDb = new Application_Model_DbTable_ResponseRecency();
             $recencyResponseDb->updateResults($params);
@@ -1076,11 +1067,6 @@ class Application_Service_Shipments
 
             $mandatoryCheckErrors = $this->mandatoryFieldsCheck($params, $mandatoryFields);
             if (!empty($mandatoryCheckErrors)) {
-                $userAgent = $_SERVER['HTTP_USER_AGENT'];
-
-                // $ipAddress = $commonService->getIPAddress();
-                // $operatingSystem = $commonService->getOperatingSystem($userAgent);
-                // $browser = $commonService->getBrowser($userAgent);
                 throw new Exception('Missed mandatory fields on the form');
             }
 
@@ -1312,7 +1298,7 @@ class Application_Service_Shipments
             if (isset($params['customField2']) && !empty(trim($params['customField2']))) {
                 $data['custom_field_2'] = trim($params['customField2']);
             }
-            $noOfRowsAffected = $shipmentParticipantDb->updateShipment($data, $params['smid'], $params['hdLastDate']);
+            $shipmentParticipantDb->updateShipment($data, $params['smid'], $params['hdLastDate']);
             /* Save Gene Type */
             $geneIdentifyTypesDb = new Application_Model_DbTable_Covid19IdentifiedGenes();
             $geneIdentifyTypesDb->saveCovid19IdentifiedGenesResults($params);
@@ -1361,7 +1347,6 @@ class Application_Service_Shipments
         }
         try {
             $shipmentParticipantDb = new Application_Model_DbTable_ShipmentParticipantMap();
-            $authNameSpace = new Zend_Session_Namespace('datamanagers');
             $data = [
                 'shipment_receipt_date' => null,
                 'shipment_test_date' => null,
@@ -1392,7 +1377,7 @@ class Application_Service_Shipments
                 'synced_on' => null,
                 'started_at' => null,
             ];
-            $noOfRowsAffected = $shipmentParticipantDb->removeShipmentMapDetails($data, $mapId);
+            $shipmentParticipantDb->removeShipmentMapDetails($data, $mapId);
 
             $dtsResponseDb = new Application_Model_DbTable_ResponseDts();
             $dtsResponseDb->removeShipmentResults($mapId);
@@ -1422,7 +1407,6 @@ class Application_Service_Shipments
         }
         try {
             $shipmentParticipantDb = new Application_Model_DbTable_ShipmentParticipantMap();
-            $authNameSpace = new Zend_Session_Namespace('datamanagers');
             $data = [
                 'shipment_receipt_date' => null,
                 'shipment_test_date' => null,
@@ -1454,7 +1438,7 @@ class Application_Service_Shipments
                 'synced_on' => null,
                 'started_at' => null,
             ];
-            $noOfRowsAffected = $shipmentParticipantDb->removeShipmentMapDetails($data, $mapId);
+            $shipmentParticipantDb->removeShipmentMapDetails($data, $mapId);
 
             $geneTypeDb = new Application_Model_DbTable_Covid19IdentifiedGenes();
             $geneTypeDb->deleteCovid19IdentifiedGenesResults($mapId);
@@ -1484,7 +1468,6 @@ class Application_Service_Shipments
         $dbAdapter->beginTransaction();
         try {
             $shipmentParticipantDb = new Application_Model_DbTable_ShipmentParticipantMap();
-            $authNameSpace = new Zend_Session_Namespace('datamanagers');
             $data = [
                 'shipment_receipt_date' => null,
                 'shipment_test_date' => null,
@@ -1512,7 +1495,7 @@ class Application_Service_Shipments
                 'synced_on' => null,
                 'started_at' => null,
             ];
-            $noOfRowsAffected = $shipmentParticipantDb->removeShipmentMapDetails($data, $mapId);
+            $shipmentParticipantDb->removeShipmentMapDetails($data, $mapId);
 
             $tbResponseDb = new Application_Model_DbTable_ResponseTb();
             $tbResponseDb->removeShipmentResults($mapId);
@@ -1535,7 +1518,6 @@ class Application_Service_Shipments
         $dbAdapter->beginTransaction();
         try {
             $shipmentParticipantDb = new Application_Model_DbTable_ShipmentParticipantMap();
-            $authNameSpace = new Zend_Session_Namespace('datamanagers');
             $data = [
                 'shipment_receipt_date' => null,
                 'shipment_test_date' => null,
@@ -1563,7 +1545,7 @@ class Application_Service_Shipments
                 'synced_on' => null,
                 'started_at' => null,
             ];
-            $noOfRowsAffected = $shipmentParticipantDb->removeShipmentMapDetails($data, $mapId);
+            $shipmentParticipantDb->removeShipmentMapDetails($data, $mapId);
 
             $genericTestResponseDb = new Application_Model_DbTable_ResponseGenericTest();
             $genericTestResponseDb->removeShipmentResults($mapId);
@@ -1589,7 +1571,6 @@ class Application_Service_Shipments
         }
         try {
             $shipmentParticipantDb = new Application_Model_DbTable_ShipmentParticipantMap();
-            $authNameSpace = new Zend_Session_Namespace('datamanagers');
             $data = [
                 'shipment_receipt_date' => null,
                 'shipment_test_date' => null,
@@ -1620,7 +1601,7 @@ class Application_Service_Shipments
                 'synced_on' => null,
                 'started_at' => null,
             ];
-            $noOfRowsAffected = $shipmentParticipantDb->removeShipmentMapDetails($data, $mapId);
+            $shipmentParticipantDb->removeShipmentMapDetails($data, $mapId);
 
             $responseDb = new Application_Model_DbTable_ResponseEid();
             $responseDb->delete("shipment_map_id=$mapId");
@@ -1649,7 +1630,6 @@ class Application_Service_Shipments
         }
         try {
             $shipmentParticipantDb = new Application_Model_DbTable_ShipmentParticipantMap();
-            $authNameSpace = new Zend_Session_Namespace('datamanagers');
             $data = [
                 'shipment_receipt_date' => null,
                 'shipment_test_date' => null,
@@ -1680,7 +1660,7 @@ class Application_Service_Shipments
                 'synced_on' => null,
                 'started_at' => null,
             ];
-            $noOfRowsAffected = $shipmentParticipantDb->removeShipmentMapDetails($data, $mapId);
+            $shipmentParticipantDb->removeShipmentMapDetails($data, $mapId);
 
             $responseDb = new Application_Model_DbTable_ResponseRecency();
             $responseDb->delete("shipment_map_id=$mapId");
@@ -1710,7 +1690,6 @@ class Application_Service_Shipments
         }
         try {
             $shipmentParticipantDb = new Application_Model_DbTable_ShipmentParticipantMap();
-            $authNameSpace = new Zend_Session_Namespace('datamanagers');
             $data = [
                 'shipment_receipt_date' => null,
                 'shipment_test_date' => null,
@@ -1741,7 +1720,7 @@ class Application_Service_Shipments
                 'synced_on' => null,
                 'started_at' => null,
             ];
-            $noOfRowsAffected = $shipmentParticipantDb->removeShipmentMapDetails($data, $mapId);
+            $shipmentParticipantDb->removeShipmentMapDetails($data, $mapId);
 
             $responseDb = new Application_Model_DbTable_ResponseVl();
             $responseDb->delete("shipment_map_id=$mapId");
@@ -2083,7 +2062,7 @@ class Application_Service_Shipments
             if (isset($params['customField2']) && trim($params['customField2']) != '') {
                 $data['custom_field_2'] = $params['customField2'];
             }
-            $noOfRowsAffected = $shipmentParticipantDb->updateShipment($data, $params['smid'], $params['hdLastDate']);
+            $shipmentParticipantDb->updateShipment($data, $params['smid'], $params['hdLastDate']);
             $genericTestResponseDb = new Application_Model_DbTable_ResponseGenericTest();
             $genericTestResponseDb->updateResults($params);
             $this->saveAdminData($params);
@@ -2149,12 +2128,6 @@ class Application_Service_Shipments
 
             if (!empty($mandatoryCheckErrors)) {
 
-                $userAgent = $_SERVER['HTTP_USER_AGENT'];
-                $commonService = new Application_Service_Common();
-
-                // $ipAddress = $commonService->getIPAddress();
-                // $operatingSystem = $commonService->getOperatingSystem($userAgent);
-                // $browser = $commonService->getBrowser($userAgent);
                 // //throw new Exception('Missed mandatory fields - ' . implode(",", $mandatoryCheckErrors));
 
                 throw new Exception('Missed mandatory fields on the form');
@@ -2280,7 +2253,7 @@ class Application_Service_Shipments
                     'participant_id = ' . $params['participantId']
                 );
             }
-            $noOfRowsAffected = $shipmentParticipantDb->updateShipment($data, $params['smid'], $params['hdLastDate']);
+            $shipmentParticipantDb->updateShipment($data, $params['smid'], $params['hdLastDate']);
 
             $vlResponseDb = new Application_Model_DbTable_ResponseVl();
             $vlResponseDb->updateResults($params);
@@ -2490,7 +2463,7 @@ class Application_Service_Shipments
                         $refResulTDTSData['syphilis_reference_result'] = $params['possibleSyphilisResults'][$i];
                     }
 
-                    $lastRefId = $dbAdapter->insert('reference_result_dts', $refResulTDTSData);
+                    $dbAdapter->insert('reference_result_dts', $refResulTDTSData);
                     // <------ Insert reference_dts_eia table
                     if (isset($params['eia'][$i + 1]['eia'])) {
                         $eiaSize = sizeof($params['eia'][$i + 1]['eia']);
@@ -2604,7 +2577,7 @@ class Application_Service_Shipments
                                 if (trim($params['geenius'][$i + 1]['test'][$e]) != '') {
                                     $testDate = Pt_Commons_DateUtility::isoDateFormat($params['geenius'][$i + 1]['test'][$e]);
                                 }
-                                $id = $dbAdapter->insert(
+                                $dbAdapter->insert(
                                     'reference_dts_geenius',
                                     [
                                         'shipment_id' => $lastId,
@@ -3386,7 +3359,7 @@ class Application_Service_Shipments
                                 if (trim($params['geenius'][$i + 1]['test'][$e]) != '') {
                                     $testDate = Pt_Commons_DateUtility::isoDateFormat($params['geenius'][$i + 1]['test'][$e]);
                                 }
-                                $id = $dbAdapter->insert(
+                                $dbAdapter->insert(
                                     'reference_dts_geenius',
                                     [
                                         'shipment_id' => $params['shipmentId'],
@@ -3948,7 +3921,7 @@ class Application_Service_Shipments
 
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $schemeDb = new Application_Model_DbTable_SchemeList();
-        $uc = $schemeDb->checkUserConfig($sid);
+        $schemeDb->checkUserConfig($sid);
 
         $code = '';
         if ($sid == 'dts') {
@@ -3989,7 +3962,6 @@ class Application_Service_Shipments
     public function sendShipmentMailAlertToParticipants($sid)
     {
         $commonServices = new Application_Service_Common();
-        $general = new Pt_Commons_General();
         $newShipmentMailContent = $commonServices->getEmailTemplate('new_shipment');
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $return = 0;
@@ -4027,7 +3999,6 @@ class Application_Service_Shipments
     {
 
         $commonServices = new Application_Service_Common();
-        $general = new Pt_Commons_General();
         $notParticipatedMailContent = $commonServices->getEmailTemplate('not_participated');
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $return = 0;
@@ -4211,7 +4182,7 @@ class Application_Service_Shipments
         $result = $db->fetchAll($sQuery);
         if (!empty($result)) {
 
-            foreach ($result as $key => $row) {
+            foreach ($result as $row) {
                 $response[$row['shipment_code']] = [
                     'shipment_code' => $row['shipment_code'],
                     // 'participantName'       => $row['participantName'],
@@ -4318,8 +4289,8 @@ class Application_Service_Shipments
                     $invididualFilePath = isset($files[0]) ? $files[0] : '';
                 }
                 if (!file_exists(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . '-summary.pdf') && $aRow['status'] == 'finalized') {
-                    $filePath = glob(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . '-summary.pdf');
-                    $summaryFilePath = isset($files[0]) ? $files[0] : '';
+                    $summaryFiles = glob(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . DIRECTORY_SEPARATOR . '*-summary.pdf');
+                    $summaryFilePath = $summaryFiles[0] ?? '';
                 }
                 if (file_exists($invididualFilePath) && file_exists($summaryFilePath)) {
                     $commonServices = new Application_Service_Common();
@@ -4354,7 +4325,6 @@ class Application_Service_Shipments
             $shipmentDB = new Application_Model_DbTable_Shipments();
 
             $shipmentDeails = $shipmentDB->fetchRow('shipment_id = ' . $params['shipmentId']);
-            $maxScore = ((isset($shipmentDeails['max_score']) && $shipmentDeails['max_score'] != '') ? $shipmentDeails['max_score'] : 0);
             $shipmentScore = ((isset($params['shipmentScore']) && $params['shipmentScore'] != '') ? $params['shipmentScore'] : 0);
             $docScore = ((isset($params['documentationScore']) && $params['documentationScore'] != '') ? $params['documentationScore'] : 0);
             if (isset($params['manualCorrective']) && $params['manualCorrective'] != '') {
@@ -4411,7 +4381,6 @@ class Application_Service_Shipments
                 ->where('p.participant_id = ?', $pid)
                 ->group('p.participant_id');
             $tbResult = $db->fetchRow($sQuery);
-            $tbDb = new Application_Model_Tb();
             $GLOBALS['issuingAuthority'] = $tbResult['issuing_authority'] ?? null;
             return [
                 // 'file' => $tbDb->generateFormPDF($tbResult['shipment_id'], $tbResult['participant_id'], true, true),
@@ -4485,7 +4454,6 @@ class Application_Service_Shipments
         if (isset($params['manualOverride']) && $params['manualOverride'] == 'yes') {
             $shipmentDB = new Application_Model_DbTable_Shipments();
             $shipmentDeails = $shipmentDB->fetchRow('shipment_id = ' . $params['shipmentId']);
-            $maxScore = ((isset($shipmentDeails['max_score']) && $shipmentDeails['max_score'] != '') ? $shipmentDeails['max_score'] : 0);
             $shipmentScore = ((isset($params['shipmentScore']) && $params['shipmentScore'] != '') ? $params['shipmentScore'] : 0);
             $docScore = ((isset($params['documentationScore']) && $params['documentationScore'] != '') ? $params['documentationScore'] : 0);
             if (isset($params['manualCorrective']) && $params['manualCorrective'] != '') {
@@ -4526,7 +4494,7 @@ class Application_Service_Shipments
             }
         }
         $updateArray['manual_override'] = (isset($params['manualOverride']) && $params['manualOverride'] != '') ? $params['manualOverride'] : 'no';
-        $id = $db->update('shipment_participant_map', $updateArray, 'map_id = ' . $params['smid']);
+        $db->update('shipment_participant_map', $updateArray, 'map_id = ' . $params['smid']);
     }
 
     public function checkTBRequiredFieldsValidations($params)
@@ -4558,7 +4526,7 @@ class Application_Service_Shipments
         }
 
         /* Validating the array required fields not null */
-        foreach ($nntf as $ke => $shk) {
+        foreach ($nntf as $shk) {
             foreach ($params['sampleId'] as $i => $sample) {
                 if ((!isset($params[$shk][$i]))) {
                     $responseStatus = 'draft';
@@ -4782,7 +4750,7 @@ class Application_Service_Shipments
             $sql = $sql->where("spm.shipment_id = ?", $id);
         } */
         $sQuerySession = new Zend_Session_Namespace('capaViewExcel');
-        $sQuerySession->capaQuery = $firstQuery = $sql;
+        $sQuerySession->capaQuery = $sql;
         return $db->fetchAll($sql);
     }
 
@@ -4824,20 +4792,6 @@ class Application_Service_Shipments
 
             $output = [];
             $sheet = $excel->getActiveSheet();
-            $styleArray = [
-                'font' => [
-                    'bold' => true,
-                ],
-                'alignment' => [
-                    'horizontal' => Alignment::HORIZONTAL_CENTER,
-                    'vertical' => Alignment::VERTICAL_CENTER,
-                ],
-                'borders' => [
-                    'outline' => [
-                        'style' => Border::BORDER_THIN,
-                    ],
-                ],
-            ];
 
             $colNo = 0;
             $sheet->mergeCells('A1:I1');
@@ -4845,7 +4799,7 @@ class Application_Service_Shipments
                 ->setValueExplicit(html_entity_decode('CORRECTIVE ACTION PREVENTIVE ACTIONS', ENT_QUOTES, 'UTF-8'));
             $sheet->getStyle(Coordinate::stringFromColumnIndex(1) . 1, null, null)->getFont()->setBold(true);
 
-            foreach ($headings as $field => $value) {
+            foreach ($headings as $value) {
                 $sheet->getCell(Coordinate::stringFromColumnIndex($colNo + 1) . 3)
                     ->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
                 $sheet->getStyle(Coordinate::stringFromColumnIndex($colNo + 1) . 3, null, null)->getFont()->setBold(true);
@@ -4925,20 +4879,6 @@ class Application_Service_Shipments
 
             $output = [];
             $sheet = $excel->getActiveSheet();
-            $styleArray = [
-                'font' => [
-                    'bold' => true,
-                ],
-                'alignment' => [
-                    'horizontal' => Alignment::HORIZONTAL_CENTER,
-                    'vertical' => Alignment::VERTICAL_CENTER,
-                ],
-                'borders' => [
-                    'outline' => [
-                        'style' => Border::BORDER_THIN,
-                    ],
-                ],
-            ];
             $db = Zend_Db_Table_Abstract::getDefaultAdapter();
             $sQuerySession = new Zend_Session_Namespace('capaViewExcel');
             $rResult = $db->fetchAll($sQuerySession->capaQuery);
@@ -5002,7 +4942,7 @@ class Application_Service_Shipments
                 $sheet->mergeCells('E' . $no . ':F' . $no);
             }
             // }
-            foreach ($headings as $field => $value) {
+            foreach ($headings as $value) {
                 $sheet->getCell(Coordinate::stringFromColumnIndex($colNo + 1) . $dataRow)
                     ->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
                 $sheet->getStyle(Coordinate::stringFromColumnIndex($colNo + 1) . $dataRow, null, null)->getFont()->setBold(true);
@@ -5104,7 +5044,6 @@ class Application_Service_Shipments
     public function moveSummaryReport($params)
     {
         try {
-            $alertMsg = new Zend_Session_Namespace('alertSpace');
             $downloadDirectory = realpath(DOWNLOADS_FOLDER);
             $pathComponents = ['reports', $params['shipmentCode']];
             $pathname = Application_Service_Common::buildSafePath($downloadDirectory, $pathComponents);

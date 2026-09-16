@@ -9,14 +9,12 @@ class Application_Model_DbTable_ParticipantMessages extends Zend_Db_Table_Abstra
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $common = new Application_Service_Common();
-        $attachedFile = null;
         $loggedUser = new Zend_Session_Namespace('loggedUser');
         $partcipant_id = $loggedUser->partcipant_id;
         $fromMail = $loggedUser->primary_email;
         $fromName = $loggedUser->first_name . $loggedUser->last_name;
 
         if (isset($params['subject']) && $params['subject'] != '') {
-            $attachedFile = null;
             if (isset($_FILES['attachment']['name']) && !empty($_FILES['attachment']['name'][0])) {
                 $pathPrefix = UPLOAD_PATH . DIRECTORY_SEPARATOR . 'mail-attachments';
                 if (!is_dir($pathPrefix)) {
@@ -46,7 +44,6 @@ class Application_Model_DbTable_ParticipantMessages extends Zend_Db_Table_Abstra
             ];
 
             $db->insert('participant_messages', $data);
-            $insertId = $db->lastInsertId();
             $message = $params['message'];
             $subject = $params['subject'];
             $toMail = Application_Service_Common::getConfig('admin_email');

@@ -64,8 +64,6 @@ class Reports_ParticipantTrendsController extends Zend_Controller_Action
 
     public function chartAction()
     {
-        /** @var Zend_Controller_Request_Http $request */
-        $request = $this->getRequest();
         //if ($request->isPost()) {
         //    $params = $this->getAllParams();
         //    $reportService = new Application_Service_Reports();

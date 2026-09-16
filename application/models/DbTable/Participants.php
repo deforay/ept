@@ -128,9 +128,6 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
 
         $aColumns = ['unique_identifier', new Zend_Db_Expr(self::participantNameExpr('p')), 'iso_name', 'p.state', 'p.district', 'email', 'status'];
 
-        /* Indexed column (used for fast and accurate table cardinality) */
-        $sIndexColumn = 'participant_id';
-
         $sLimit = '';
         if (isset($parameters['iDisplayStart']) && $parameters['iDisplayLength'] != '-1') {
             $sOffset = $parameters['iDisplayStart'];
@@ -478,12 +475,8 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             }
         }
         $dmDb = new Application_Model_DbTable_DataManagers();
-        $configDb = new Application_Model_DbTable_GlobalConfig();
 
         if ((isset($params['dmPassword']) && !empty($params['dmPassword'])) && isset($params['pemail']) && !empty($params['pemail'])) {
-            $globalDb = new Application_Model_DbTable_GlobalConfig();
-            $prefix = $globalDb->getValue('participant_login_prefix');
-
             $dmData = [
                 'data_manager_type' => 'participant',
                 'primary_email' => $params['pemail'],
@@ -583,7 +576,6 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
 
         $dmDb = new Application_Model_DbTable_DataManagers();
         $db = Zend_Db_Table_Abstract::getAdapter();
-        $configDb = new Application_Model_DbTable_GlobalConfig();
         if ((isset($params['dmPassword']) && !empty($params['dmPassword'])) && isset($params['pemail']) && !empty($params['pemail'])) {
             $newDmId = $dmDb->insert([
                 'primary_email' => $params['pemail'] ?? $prefix . $params['pid'],
@@ -732,9 +724,6 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
 
         $aColumns = ['first_name', 'iso_name', 'mobile', 'email', 'p.status'];
 
-        /* Indexed column (used for fast and accurate table cardinality) */
-        $sIndexColumn = 'participant_id';
-
         $sLimit = '';
         if (isset($parameters['iDisplayStart']) && $parameters['iDisplayLength'] != '-1') {
             $sOffset = $parameters['iDisplayStart'];
@@ -854,9 +843,6 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
 
         $aColumns = ['first_name', 'iso_name', 'mobile', 'email', 'p.status'];
 
-        /* Indexed column (used for fast and accurate table cardinality) */
-        $sIndexColumn = 'participant_id';
-
         $sLimit = '';
         if (isset($parameters['iDisplayStart']) && $parameters['iDisplayLength'] != '-1') {
             $sOffset = $parameters['iDisplayStart'];
@@ -973,7 +959,6 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         try {
             $db = Zend_Db_Table_Abstract::getAdapter();
 
-            $dataForStatistics = [];
             if (isset($_FILES['bulkMap']['tmp_name']) && !empty($_FILES['bulkMap']['tmp_name'])) {
                 $common = new Application_Service_Common();
                 $allowedExtensions = ['xls', 'xlsx', 'csv'];
@@ -2813,7 +2798,6 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         ];
 
         $finalResult = [1 => 'Pass', 2 => 'Fail', 3 => 'Excluded'];
-        $general = new Pt_Commons_General();
         foreach ($rResult as $aRow) {
             $row = [];
 
@@ -2839,7 +2823,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         if (!in_array($locationField, $allowedFields)) {
             $locationField = 'country';
         }
-        return $db->fetchAll($sQuery = $db->select()
+        return $db->fetchAll($db->select()
             ->from(['p' => $this->_name], $returnFields)
             ->where($locationField . ' LIKE ?', $locationValue)
             ->group($group));
@@ -2853,20 +2837,6 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
 
             $output = [];
             $sheet = $excel->getActiveSheet();
-            $styleArray = [
-                'font' => [
-                    'bold' => true,
-                ],
-                'alignment' => [
-                    'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
-                    'vertical' => \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER,
-                ],
-                'borders' => [
-                    'outline' => [
-                        'style' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
-                    ],
-                ],
-            ];
 
             $colNo = 0;
             $db = Zend_Db_Table_Abstract::getDefaultAdapter();
@@ -2877,7 +2847,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                 ->group(['p.participant_id']);
             $totalResult = $db->fetchAll($pQuery);
 
-            foreach ($headings as $field => $value) {
+            foreach ($headings as $value) {
                 $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($colNo + 1) . 1)
                     ->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
                 $sheet->getStyle(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($colNo + 1) . 1, null, null)->getFont()->setBold(true);

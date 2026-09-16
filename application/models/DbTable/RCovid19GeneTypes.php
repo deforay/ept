@@ -199,8 +199,6 @@ class Application_Model_DbTable_RCovid19GeneTypes extends Zend_Db_Table_Abstract
             'iTotalDisplayRecords' => $iFilteredTotal,
             'aaData' => [],
         ];
-
-        $general = new Pt_Commons_General();
         foreach ($rResult as $aRow) {
             $row = [];
             $createdDate = explode(' ', $aRow['created_on']);

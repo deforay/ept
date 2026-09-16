@@ -76,8 +76,6 @@ class Admin_ParticipantMessagesController extends Zend_Controller_Action
     public function viewAction()
     {
         $distributionService = new Application_Service_ParticipantMessages();
-        /** @var Zend_Controller_Request_Http $request */
-        $request = $this->getRequest();
         if ($this->hasParam('d8s5_8d')) {
             $id = (int)base64_decode($this->_getParam('d8s5_8d'));
             $this->view->result = $distributionService->getParticipantMessageById($id);

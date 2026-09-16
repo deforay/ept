@@ -398,11 +398,6 @@ class Admin_ParticipantsController extends Zend_Controller_Action
 
     public function deleteParticipantAction()
     {
-        $participantService = new Application_Service_Participants();
-        if ($this->hasParam('participantId')) {
-            $participantId = $this->_getParam('participantId');
-            //$this->view->result = $participantService->deleteParticipant($participantId);
-        }
     }
 
     public function exportParticipantsDetailsAction()
@@ -422,8 +417,6 @@ class Admin_ParticipantsController extends Zend_Controller_Action
 
     public function filesAction()
     {
-        $downloadDirectory = scandir(DOWNLOADS_FOLDER, true);
-        $reportLayouts = array_diff(array_unique($downloadDirectory), ['.', '..', 'reports', 'index.php']);
         $participantService = new Application_Service_Participants();
         $this->view->participants = $participantService->getAllActiveParticipants();
     }

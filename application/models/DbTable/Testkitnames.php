@@ -261,9 +261,7 @@ class Application_Model_DbTable_Testkitnames extends Zend_Db_Table_Abstract
             'aaData' => [],
         ];
 
-        $general = new Pt_Commons_General();
         foreach ($rResult as $aRow) {
-            $kitChkbox = '';
             $row = [];
             $approved = 'No';
             if (trim($aRow['Approval']) == 1) {
@@ -339,7 +337,7 @@ class Application_Model_DbTable_Testkitnames extends Zend_Db_Table_Abstract
                     $data = [
                         'TestKit_Name' => trim($testkitName),
                     ];
-                    $saveId = $this->update($data, "TestKitName_ID='" . $result['TestKitName_ID'] . "'");
+                    $this->update($data, "TestKitName_ID='" . $result['TestKitName_ID'] . "'");
                     return $result['TestKitName_ID'];
                 }
             }

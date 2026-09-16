@@ -4,8 +4,6 @@ use Application_Service_Common as Common;
 use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
-use PhpOffice\PhpSpreadsheet\Style\Alignment;
-use PhpOffice\PhpSpreadsheet\Style\Border;
 use Pt_Commons_MiscUtility as MiscUtility;
 
 class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
@@ -25,7 +23,6 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
 
     public function addUser($params)
     {
-        $db = Zend_Db_Table_Abstract::getAdapter();
         $authNameSpace = new Zend_Session_Namespace('administrators');
         $data = [
             'first_name' => $params['fname'],
@@ -584,7 +581,6 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
 
     public function updatePasswordFromAdmin($email, $newpassword, $forcePasswordReset = false)
     {
-        $common = new Application_Service_Common();
         $newpassword = Common::passwordHash($newpassword);
         $noOfRows = $this->update(
             ['password' => $newpassword, 'force_password_reset' => $forcePasswordReset ? 1 : 0],
@@ -601,7 +597,6 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
     {
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
         $email = $authNameSpace->email;
-        $common = new Application_Service_Common();
         $result = $this->fethDataByCredentials(trim($email), trim($oldpassword));
         $passwordVerify = true;
         if (isset($result) && !empty($result)) {
@@ -1104,7 +1099,6 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             return ['status' => 'auth-fail', 'message' => 'Something went wrong. Please log in again'];
         }
 
-        $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
         $result = $this->fetchDataManagerByAuthToken($params['authToken']);
         if (isset($result) && trim($result['dm_id'] != '')) {
 
@@ -1687,20 +1681,6 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
 
             $output = [];
             $sheet = $excel->getActiveSheet();
-            $styleArray = [
-                'font' => [
-                    'bold' => true,
-                ],
-                'alignment' => [
-                    'horizontal' => Alignment::HORIZONTAL_CENTER,
-                    'vertical' => Alignment::VERTICAL_CENTER,
-                ],
-                'borders' => [
-                    'outline' => [
-                        'style' => Border::BORDER_THIN,
-                    ],
-                ],
-            ];
 
             $colNo = 0;
             $db = Zend_Db_Table_Abstract::getDefaultAdapter();
@@ -1756,7 +1736,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                 $headings[] = 'Password';
             }
 
-            foreach ($headings as $field => $value) {
+            foreach ($headings as $value) {
                 $sheet->getCell(Coordinate::stringFromColumnIndex($colNo + 1) . 1)
                     ->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
                 $sheet->getStyle(Coordinate::stringFromColumnIndex($colNo + 1) . 1, null, null)->getFont()->setBold(true);

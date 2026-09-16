@@ -28,10 +28,9 @@ class Application_Model_Tb
         $finalResult = null;
         $passingScore = Pt_Commons_SchemeConfig::get('tb.passPercentage') ?? 100;
 
-        $schemeService = new Application_Service_Schemes();
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
 
-        $consensusResults = $this->getConsensusResults($shipmentId);
+        $this->getConsensusResults($shipmentId);
 
         $this->db->update('shipment_participant_map', ['failure_reason' => null, 'is_followup' => 'no', 'is_excluded' => 'no', 'final_result' => null], "shipment_id = $shipmentId");
         $this->db->update(
@@ -327,11 +326,6 @@ class Application_Model_Tb
                 $shipmentResult[$counter]['max_score'] = 100; //$maxScore;
                 $shipmentResult[$counter]['final_result'] = $finalResult;
 
-                $fRes = $db->fetchCol($db->select()
-                    ->from('r_results', ['result_name'])
-                    ->where("result_id = $finalResult"));
-
-                // $shipmentResult[$counter]['display_result'] = $fRes[0];
                 $shipmentResult[$counter]['failure_reason'] = $failureReason = json_encode($failureReason);
             }
             /* Manual result override changes */
@@ -346,11 +340,7 @@ class Application_Model_Tb
                     if (!isset($shipmentOverall['final_result']) || $shipmentOverall['final_result'] == '') {
                         $shipmentOverall['final_result'] = 2;
                     }
-                    $fRes = $db->fetchCol($db->select()
-                        ->from('r_results', ['result_name'])
-                        ->where('result_id =  ?', $shipmentOverall['final_result']));
-                    // $shipmentResult[$counter]['display_result'] = $fRes[0];
-                    $nofOfRowsUpdated = $db->update(
+                    $db->update(
                         'shipment_participant_map',
                         [
                             'shipment_score' => $shipmentOverall['shipment_score'],
@@ -657,7 +647,6 @@ class Application_Model_Tb
             array_push($reportHeadings, 'Total Score');
             array_push($reportHeadings, 'Final Result');
             /* Feed Back Response Section */
-            $common = new Application_Service_Common();
             /* $feedbackOption = $common->getConfig('participant_feedback');
             if (isset($feedbackOption) && !empty($feedbackOption) && $feedbackOption == 'yes') {
                 $questions = $common->getFeedBackQuestions($shipmentId, $reportHeadings);
@@ -863,8 +852,6 @@ class Application_Model_Tb
                         } elseif ($aRow['final_result'] == 2) {
                             $finalResult = 'Fail';
                         }
-                        $finalCellColumn = ($r + 1);
-                        $finalCellRow = $currentRow;
                         $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
                             ->setValueExplicit($finalResult)->getStyle()->getFont()->getColor()->setARGB($txtColor);
                         /* Feed Back Response Section */
@@ -873,7 +860,7 @@ class Application_Model_Tb
                             }
                              */
                         foreach ([$countCorrectResult, $totPer, ($totPer * 0.9)] as $row) {
-                            $totalScoreSheet->getCell(Coordinate::stringFromColumnIndex($totScoreCol++) . $totScoreRow)->setValueExplicit($countCorrectResult);
+                            $totalScoreSheet->getCell(Coordinate::stringFromColumnIndex($totScoreCol++) . $totScoreRow)->setValueExplicit($row, DataType::TYPE_NUMERIC);
                         }
                     } else {
                         for ($f = 0; $f < 3; $f++) {
@@ -908,10 +895,6 @@ class Application_Model_Tb
             $this->common->setAllColumnWidthsInSheet($panelScoreSheet, 20);
             $this->common->setAllColumnWidthsInSheet($totalScoreSheet, 20);
 
-            $firstName = $authNameSpace->first_name;
-            $lastName = $authNameSpace->last_name;
-            $name = $firstName . ' ' . $lastName;
-            $userName = isset($name) != '' ? $name : $authNameSpace->primary_email;
             $auditDb = new Application_Model_DbTable_AuditLog();
             $auditDb->addNewAuditLog('Downloaded TB Excel report - ' . ($shipmentCode ?? '?'), 'shipment');
 
@@ -1767,7 +1750,6 @@ class Application_Model_Tb
                 ->where('shipment_id=?', $params['shipmentId']);
             $shipmentResult = $db->fetchRow($shipmentQuery);
             $excel = new Spreadsheet();
-            $sheet = $excel->getActiveSheet();
 
             /* Panel Statistics */
             $authNameSpace = new Zend_Session_Namespace('datamanagers');

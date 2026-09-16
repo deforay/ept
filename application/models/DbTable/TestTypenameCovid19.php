@@ -218,8 +218,6 @@ class Application_Model_DbTable_TestTypenameCovid19 extends Zend_Db_Table_Abstra
             'iTotalDisplayRecords' => $iFilteredTotal,
             'aaData' => [],
         ];
-
-        $general = new Pt_Commons_General();
         foreach ($rResult as $aRow) {
             $row = [];
             $approved = 'No';
@@ -266,7 +264,7 @@ class Application_Model_DbTable_TestTypenameCovid19 extends Zend_Db_Table_Abstra
                     'test_type_3' => ($testtype == 3 && $testtype != '') ? '1' : '0',
                     'created_on' => new Zend_Db_Expr('now()'),
                 ];
-                $saveId = $this->insert($data);
+                $this->insert($data);
                 return $tkId;
             } else {
                 $result = $this->fetchRow($this->select()->where("test_type_name='" . $oldName . "'"));
@@ -274,7 +272,7 @@ class Application_Model_DbTable_TestTypenameCovid19 extends Zend_Db_Table_Abstra
                     $data = [
                         'test_type_name' => trim($testtypeName),
                     ];
-                    $saveId = $this->update($data, "test_type_id='" . $result['test_type_id'] . "'");
+                    $this->update($data, "test_type_id='" . $result['test_type_id'] . "'");
                     return $result['test_type_id'];
                 }
             }
@@ -302,7 +300,7 @@ class Application_Model_DbTable_TestTypenameCovid19 extends Zend_Db_Table_Abstra
                     'test_type_3' => ($type == 3) ? '1' : '0',
                     'created_on' => new Zend_Db_Expr('now()'),
                 ];
-                $saveId = $this->insert($data);
+                $this->insert($data);
                 return $tkId;
             } else {
                 $result = $this->fetchRow($this->select()->where("test_type_name='" . $oldName . "'"));
@@ -316,7 +314,7 @@ class Application_Model_DbTable_TestTypenameCovid19 extends Zend_Db_Table_Abstra
                         'test_type_2' => ($type == 2) ? '1' : '0',
                         'test_type_3' => ($type == 3) ? '1' : '0',
                     ];
-                    $saveId = $this->update($data, "test_type_id='" . $result['test_type_id'] . "'");
+                    $this->update($data, "test_type_id='" . $result['test_type_id'] . "'");
                     return $result['test_type_id'];
                 }
             }

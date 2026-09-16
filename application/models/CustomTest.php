@@ -88,7 +88,6 @@ class Application_Model_CustomTest
         // instead of whatever the last-processed participant happened to compute.
         $shipmentMaxScore = 0;
         $finalResult = null;
-        $passingScore = 100;
 
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
 
@@ -104,10 +103,8 @@ class Application_Model_CustomTest
             }
             $testKitDb = new Application_Model_DbTable_Testkitnames();
             if (isset($attributes['kit_name']) && !empty($attributes['kit_name'])) {
-                $kitResult = $testKitDb->fetchGivenKitApprovalStatus($attributes['kit_name']);
                 $updatedTestKitId = $testKitDb->getTestKitNameById($attributes['kit_name']);
             } else {
-                $kitResult = false;
                 $updatedTestKitId = false;
             }
             $schemeService = new Application_Service_Schemes();
@@ -135,7 +132,6 @@ class Application_Model_CustomTest
             $calculatedScore = 0;
             $maxScore = 0;
             $failureReason = [];
-            $mandatoryResult = '';
             $scoreResult = '';
             $jsonConfig['minNumberOfResponses'] = $jsonConfig['minNumberOfResponses'] ?? 5;
             if (!empty($createdOn) && $createdOn <= $lastDate) {
@@ -411,8 +407,6 @@ class Application_Model_CustomTest
         foreach ($otherTestsPossibleResults as $row) {
             $otherTestPossibleResults[$row['result_code']] = $row['response'];
         }
-        $common = new Application_Service_Common();
-        $feedbackOption = $common->getConfig('participant_feedback');
         $borderStyle = [
             'alignment' => [
                 'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
@@ -513,7 +507,6 @@ class Application_Model_CustomTest
             $reportHeadings = $this->addGenericTestSampleNameInArray($shipmentId, $reportHeadings);
         }
         // For final Results
-        $jsonConfig = Zend_Json_Decoder::decode($shipmentResult[0]['user_test_config'], true);
         $reportHeadings = $this->addGenericTestSampleNameInArray($shipmentId, $reportHeadings);
         array_push($reportHeadings, 'Comments');
         $resultReportSheet = new Worksheet($excel, 'Results Reported');
@@ -542,7 +535,7 @@ class Application_Model_CustomTest
         $resultReportSheet->getStyle($firstCellName . '1')->applyFromArray($borderStyle, true);
         $resultReportSheet->getStyle($secondCellName . '1')->applyFromArray($borderStyle, true);
 
-        foreach ($reportHeadings as $field => $value) {
+        foreach ($reportHeadings as $value) {
 
             $resultReportSheet->getCell(Coordinate::stringFromColumnIndex($colNo + 1) . $currentRow)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
             $resultReportSheet->getStyle(Coordinate::stringFromColumnIndex($colNo + 1) . $currentRow)->getFont()->setBold(true);
@@ -624,7 +617,6 @@ class Application_Model_CustomTest
 
         $totScoreSheetCol = 0;
         $totScoreRow = 1;
-        $totScoreHeadingsCount = count($totalScoreHeadings);
         foreach ($totalScoreHeadings as $sheetThreeHK => $value) {
             $totalScoreSheet->getCell(Coordinate::stringFromColumnIndex($totScoreSheetCol + 1) . $totScoreRow)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
             $totalScoreSheet->getStyle(Coordinate::stringFromColumnIndex($totScoreSheetCol + 1) . $totScoreRow, null, null)->getFont()->setBold(true);
@@ -653,7 +645,6 @@ class Application_Model_CustomTest
                 $attributes = Pt_Commons_JsonUtility::safeDecode($aRow['attributes']);
                 $colCellObj = $resultReportSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow);
                 $colCellObj->setValueExplicit(ucwords($aRow['unique_identifier']));
-                $cellName = $colCellObj->getColumn();
                 $resultReportSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($aRow['first_name'] . ' ' . $aRow['last_name']);
                 // $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($aRow['dataManagerFirstName'] . ' ' . $aRow['dataManagerLastName']);
                 $resultReportSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($aRow['region']);
@@ -754,10 +745,6 @@ class Application_Model_CustomTest
 
         //----------- Second Sheet End----->
 
-        $firstName = $authNameSpace->first_name;
-        $lastName = $authNameSpace->last_name;
-        $name = $firstName . ' ' . $lastName;
-        $userName = isset($name) != '' ? $name : $authNameSpace->primary_email;
         $auditDb = new Application_Model_DbTable_AuditLog();
         $auditDb->addNewAuditLog('Downloaded Generic Test Excel report - ' . ($shipmentCode ?? '?'), 'shipment');
 
@@ -854,16 +841,6 @@ class Application_Model_CustomTest
         }
 
         $shipmentResult['correctRes'] = $correctResult;
-
-        foreach ($sQueryRes as $sVal) {
-            $cQuery = $db->select()->from(['refGenTest' => 'reference_result_generic_test'], ['refGenTest.sample_id', 'refGenTest.sample_label', 'refGenTest.reference_result', 'refGenTest.mandatory'])
-                ->joinLeft(['resGenTest' => 'response_result_generic_test'], 'resGenTest.sample_id = refGenTest.sample_id', ['reported_result'])
-                ->where('refGenTest.shipment_id = ? ', $shipmentId)
-                ->where('refGenTest.control = 0')
-                ->where('resGenTest.shipment_map_id = ? ', $sVal['map_id']);
-
-            $cResult = $db->fetchAll($cQuery);
-        }
 
         // To getting no of sample's and score from reference result model
         $query = $db->select()->from(['refvl' => 'reference_result_generic_test'], ['refvl.sample_score'])

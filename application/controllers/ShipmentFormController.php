@@ -40,7 +40,7 @@ class ShipmentFormController extends Zend_Controller_Action
             $this->view->logo = $reportService->getReportConfigValue('logo');
             $this->view->logoRight = $reportService->getReportConfigValue('logo-right');
             $shipmentService = new Application_Service_Shipments();
-            $this->view->shipment = $shipment = $shipmentService->getShipmentRowData($id);
+            $this->view->shipment = $shipmentService->getShipmentRowData($id);
             $this->view->customConfig = Pt_Commons_SchemeConfig::get('dts');
         }
     }

@@ -626,7 +626,7 @@ class Admin_ShipmentController extends Zend_Controller_Action
             $file = base64_decode($params['file']);
             if (!isset($params['file']) || empty($params['file']) || !file_exists($file)) {
                 $shipmentService = new Application_Service_Shipments();
-                $file = $shipmentService->generateTbPdf($params['sid'], $params['pid']);
+                $shipmentService->generateTbPdf($params['sid'], $params['pid']);
             }
             $this->view->file = $params['file'];
         } else {
@@ -650,7 +650,6 @@ class Admin_ShipmentController extends Zend_Controller_Action
     {
         /** @var Zend_Controller_Request_Http $request */
         $request = $this->getRequest();
-        $commonService = new Application_Service_Common();
         $kitDb = new Application_Model_DbTable_Testkitnames();
         if ($request->isPost()) {
             $params = $this->getAllParams();

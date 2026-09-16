@@ -1583,15 +1583,12 @@ class ReportGenerator
     {
         $feedbackExpiryDate = null;
         $reportCompletedStatus = 'evaluated';
-        $notifyType = 'individual_reports';
 
         if ($evalRow['report_type'] == 'generateReport') {
             $reportCompletedStatus = 'reports generated';
-            $notifyType = 'individual_reports';
             $link = '/reports/distribution/shipment/sid/' . base64_encode($evalRow['shipment_id']);
         } elseif ($evalRow['report_type'] == 'finalized') {
             $reportCompletedStatus = 'finalized';
-            $notifyType = 'summary_reports';
             $link = '/reports/shipments';
             $feedbackExpiryDate = date('Y-m-d', strtotime("+56 days"));
         }

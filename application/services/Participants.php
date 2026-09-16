@@ -395,7 +395,6 @@ class Application_Service_Participants
 
             $output = [];
             $sheet = $excel->getActiveSheet();
-            $colNo = 0;
 
             if ($params['type'] == 'from-participant') {
                 $sheet->mergeCells('A1:E1');
@@ -485,7 +484,6 @@ class Application_Service_Participants
                     : "Downloaded participant response report ({$rowCount} rows)";
             }
             $writer->save(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $filename);
-            $authNameSpace = new Zend_Session_Namespace('administrators');
             $auditDb = new Application_Model_DbTable_AuditLog();
             $auditDb->addNewAuditLog($auditAction, 'participants');
             return $filename;
@@ -618,7 +616,7 @@ class Application_Service_Participants
 
             foreach ($output as $rowNo => $rowData) {
                 $colNo = 0;
-                foreach ($rowData as $field => $value) {
+                foreach ($rowData as $value) {
                     if (!isset($value)) {
                         $value = '';
                     }
@@ -730,7 +728,6 @@ class Application_Service_Participants
             $extension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
             $fileName = "$random-$fileName";
             $response = [];
-            $lastInsertedId = 0;
             if (in_array($extension, $allowedExtensions)) {
                 $tempUploadDirectory = realpath(UPLOAD_PATH);
                 if (!file_exists($tempUploadDirectory . DIRECTORY_SEPARATOR . $fileName)) {
@@ -833,7 +830,6 @@ class Application_Service_Participants
 
             $output = [];
             $sheet = $excel->getActiveSheet();
-            $colNo = 0;
 
             $sheet->getCell('A1')->setValue(html_entity_decode('Participant Name', ENT_QUOTES, 'UTF-8'));
             $sheet->getCell('B1')->setValue(html_entity_decode('Institute Name', ENT_QUOTES, 'UTF-8'));
@@ -911,7 +907,6 @@ class Application_Service_Participants
         $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
 
         $eptDomain = rtrim($conf->domain, '/');
-        $common = new Application_Service_Common();
 
         if (!empty($downloads)) {
             foreach ($downloads as $uniqueId) {

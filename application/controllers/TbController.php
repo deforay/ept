@@ -81,7 +81,6 @@ class TbController extends Zend_Controller_Action
         $sID = $request->getParam('sid');
         $pID = $request->getParam('pid');
         $eID = $request->getParam('eid');
-        $assayId = $request->getParam('assayId');
         $type = $request->getParam('type');
         $assayType = $request->getParam('assayType');
         $assayDrug = $request->getParam('assayDrug');

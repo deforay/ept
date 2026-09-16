@@ -216,7 +216,7 @@ class ParticipantController extends Zend_Controller_Action
         $request = $this->getRequest();
         if ($request->isPost()) {
             $params = $request->getPost();
-            $result = $userService->updateUser($params);
+            $userService->updateUser($params);
 
             $auditDb = new Application_Model_DbTable_AuditLog();
             $auditDb->addNewAuditLog('Updated own user info', 'participants');
@@ -321,7 +321,7 @@ class ParticipantController extends Zend_Controller_Action
         $dbUsersProfile = new Application_Service_Participants();
         $globalConfigDb = new Application_Model_DbTable_GlobalConfig();
         $this->view->rsUsersProfile = $dbUsersProfile->getUsersParticipants();
-        $this->view->rsUser = $userInfo = $userService->getUserInfo();
+        $this->view->rsUser = $userService->getUserInfo();
         $this->view->passLength = $globalConfigDb->getValue('participant_login_password_length');
         $this->view->forceProfileConfirmation = $forceProfileConfirmation;
         $this->view->profileConfirmed = !empty($_SESSION['profile_confirmed']);
@@ -598,8 +598,6 @@ class ParticipantController extends Zend_Controller_Action
     {
         $this->_helper->layout()->activeMenu = 'my-account';
         $this->_helper->layout()->activeSubMenu = 'testers';
-        $participantService = new Application_Service_Participants();
-        $commonService = new Application_Service_Common();
 
         if ($this->hasParam('pid')) {
             $pId = $this->_getParam('pid');

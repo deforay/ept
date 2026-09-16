@@ -23,7 +23,6 @@ class Application_Model_Eid
             $passingScore = (int) $passingScore;
         }
 
-        $scoreHolder = [];
         $finalResult = null;
         $schemeService = new Application_Service_Schemes();
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
@@ -167,7 +166,7 @@ class Application_Model_Eid
                     if ($shipment['is_response_late'] == 'yes') {
                         $overrideUpdateData['response_status'] = 'late';
                     }
-                    $nofOfRowsUpdated = $db->update('shipment_participant_map', $overrideUpdateData, 'map_id = ' . $shipment['map_id']);
+                    $db->update('shipment_participant_map', $overrideUpdateData, 'map_id = ' . $shipment['map_id']);
                 }
             } else {
                 // let us update the total score in DB
@@ -313,7 +312,6 @@ class Application_Model_Eid
 
         $schemeService = new Application_Service_Schemes();
         $extractionAssayList = $schemeService->getEidExtractionAssay();
-        $detectionAssayList = $schemeService->getEidDetectionAssay();
 
         foreach ($resultOverAll as $rowOverAll) {
             //Zend_Debug::dump($rowOverAll);
@@ -398,10 +396,6 @@ class Application_Model_Eid
         $firstSheet = $this->common->applyBordersToSheet($firstSheet);
         $firstSheet = $this->common->setAllColumnWidthsInSheet($firstSheet, 20);
 
-        $firstName = $authNameSpace->first_name;
-        $lastName = $authNameSpace->last_name;
-        $name = $firstName . ' ' . $lastName;
-        $userName = isset($name) != '' ? $name : $authNameSpace->primary_email;
         $auditDb = new Application_Model_DbTable_AuditLog();
         $auditDb->addNewAuditLog('Downloaded DTS EID Excel report - ' . ($result['shipment_code'] ?? '?'), 'shipment');
 

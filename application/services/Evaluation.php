@@ -375,11 +375,7 @@ class Application_Service_Evaluation
             'aaData' => [],
         ];
 
-        $shipmentDb = new Application_Model_DbTable_Shipments();
-
         foreach ($rResult as $aRow) {
-
-            $shipmentResults = $shipmentDb->getPendingShipmentsByDistribution($aRow['distribution_id']);
 
             $row = [];
             $row['DT_RowId'] = 'dist' . $aRow['distribution_id'];
@@ -533,13 +529,10 @@ class Application_Service_Evaluation
                     $testKit1 = '';
                     $testKit2 = '';
                     $testKit3 = '';
-                    $testKitRepeatResult = '';
                     $testKitExpiryResult = '';
                     $lotResult = '';
                     $scoreResult = '';
                     $failureReason = [];
-
-                    $attributes = Pt_Commons_JsonUtility::safeDecode($shipment['attributes']);
 
                     foreach ($results as $result) {
 
@@ -672,16 +665,13 @@ class Application_Service_Evaluation
                     $shipmentResult[$counter]['shipment_score'] = $totalScore;
                     $shipmentResult[$counter]['max_score'] = $maxScore;
 
-                    $fRes = $db->fetchCol($db->select()->from('r_results', ['result_name'])->where('result_id = ' . $finalResult));
-
-                    // $shipmentResult[$counter]['display_result'] = $fRes[0];
                     $shipmentResult[$counter]['failure_reason'] = $failureReason = json_encode($failureReason);
                     if (isset($shipment['manual_override']) && $shipment['manual_override'] == 'yes') {
                         // let us update the total score in DB
-                        $nofOfRowsUpdated = $db->update('shipment_participant_map', ['failure_reason' => $failureReason], 'map_id = ' . $shipment['map_id']);
+                        $db->update('shipment_participant_map', ['failure_reason' => $failureReason], 'map_id = ' . $shipment['map_id']);
                     } else {
                         // let us update the total score in DB
-                        $nofOfRowsUpdated = $db->update('shipment_participant_map', ['shipment_score' => $totalScore, 'final_result' => $finalResult, 'failure_reason' => $failureReason], 'map_id = ' . $shipment['map_id']);
+                        $db->update('shipment_participant_map', ['shipment_score' => $totalScore, 'final_result' => $finalResult, 'failure_reason' => $failureReason], 'map_id = ' . $shipment['map_id']);
                     }
                     $counter++;
                 } else {
@@ -733,7 +723,6 @@ class Application_Service_Evaluation
     {
         $participantService = new Application_Service_Participants();
         $schemeService = new Application_Service_Schemes();
-        $shipmentService = new Application_Service_Shipments();
 
         $participantData = $participantService->getParticipantDetails($participantId);
         $shipmentData = $schemeService->getShipmentData($shipmentId, $participantId);
@@ -819,7 +808,6 @@ class Application_Service_Evaluation
     {
         $participantService = new Application_Service_Participants();
         $schemeService = new Application_Service_Schemes();
-        $shipmentService = new Application_Service_Shipments();
 
         $participantData = $participantService->getParticipantDetails($participantId);
         $shipmentData = $schemeService->getShipmentData($shipmentId, $participantId);
@@ -1146,12 +1134,6 @@ class Application_Service_Evaluation
 
                 if (!empty($mandatoryCheckErrors)) {
 
-                    $userAgent = $_SERVER['HTTP_USER_AGENT'];
-                    $commonService = new Application_Service_Common();
-
-                    // $ipAddress = $commonService->getIPAddress();
-                    // $operatingSystem = $commonService->getOperatingSystem($userAgent);
-                    // $browser = $commonService->getBrowser($userAgent);
                     //throw new Exception('Missed mandatory fields - ' . implode(",", $mandatoryCheckErrors));
 
                     return false;
@@ -1217,7 +1199,7 @@ class Application_Service_Evaluation
                         'updated_by' => $admin,
                         'updated_on' => new Zend_Db_Expr('now()'),
                     ];
-                    $id = $resVlDb->insert($resData);
+                    $resVlDb->insert($resData);
                     // } else {
                     // 	$resData = array(
                     // 		'reported_viral_load'	=> $params['reported'][$i],
@@ -2847,7 +2829,6 @@ class Application_Service_Evaluation
         }
 
         $meanScore = [];
-        $testType = $shipmentResult[0]['scheme_type'];
         $tableType = ($shipmentResult[0]['is_user_configured'] == 'yes') ? 'generic_test' : $shipmentResult[0]['scheme_type'];
 
         if (isset($layout) && !empty($layout) && $layout == 'malawi') {
@@ -3287,7 +3268,6 @@ class Application_Service_Evaluation
     {
         $vlCalculation = $penResult = $shipmentResult = [];
         $dtsPasspercentage = Pt_Commons_SchemeConfig::get('dts.passPercentage') ?? 100;
-        $pass = $dtsPasspercentage ?? 95;
 
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $sql = $db->select()->from(['s' => 'shipment'], ['s.shipment_id', 's.shipment_code', 's.scheme_type', 's.shipment_date', 's.response_deadline', 's.max_score', 'shipment_attributes', 's.pt_co_ordinator_name', 's.pt_co_ordinator_phone', 's.pt_co_ordinator_email', 'shipment_comment', 's.issuing_authority'])
@@ -3295,7 +3275,6 @@ class Application_Service_Evaluation
             ->join(['d' => 'distributions'], 'd.distribution_id=s.distribution_id', ['d.distribution_code'])
             ->where('s.shipment_id = ?', $shipmentId);
         $shipmentResult = $db->fetchRow($sql);
-        $i = 0;
         if (!empty($shipmentResult)) {
             $db->update('shipment', [
                 'status' => 'evaluated',
@@ -3782,15 +3761,6 @@ class Application_Service_Evaluation
                         ->group(['refrecency.sample_id']);
                     $shipmentResult['summaryResult'][] = $sQueryRes;
                     $shipmentResult['summaryResult'][count($shipmentResult['summaryResult']) - 1]['correctCount'] = $db->fetchAll($tQuery);
-
-                    $rQuery = $db->select()->from(['spm' => 'shipment_participant_map'], ['spm.map_id', 'spm.shipment_id'])
-                        ->join(['resrecency' => 'response_result_recency'], 'resrecency.shipment_map_id=spm.map_id', ['resrecency.control_line', 'resrecency.diagnosis_line', 'resrecency.diagnosis_line'])
-                        ->where('spm.final_result IS NOT NULL')
-                        ->where("spm.final_result!=''")
-                        //->where("substring(spm.evaluation_status,4,1) != '0'")
-                        ->where('spm.shipment_id = ?', $shipmentId)
-                        ->group('spm.map_id');
-                    $rQueryRes = $db->fetchAll($rQuery);
                 }
 
                 $sql = $db->select()->from(['p' => 'participant'])
@@ -3915,7 +3885,6 @@ class Application_Service_Evaluation
                 ksort($extAssayResult);
 
                 // clubbing all the results with less than or equal to 5 responses with Others
-                $eresult = [];
                 foreach ($extAssayResult as $exid => $edata) {
                     if ($exid == 8) {
                         continue;
@@ -4143,8 +4112,6 @@ class Application_Service_Evaluation
 
                     $shipmentResult['summaryResult'][] = $sQueryRes;
                     $shipmentResult['summaryResult'][count($shipmentResult['summaryResult']) - 1]['correctCount'] = $db->fetchAll($tQuery);
-
-                    $typeNameRes = $db->fetchAll($db->select()->from('r_test_type_covid19')->where("scheme_type='covid19'"));
 
                     $rQuery = $db->select()->from(['spm' => 'shipment_participant_map'], [''])
                         ->join(

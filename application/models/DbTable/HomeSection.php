@@ -8,7 +8,6 @@ class Application_Model_DbTable_HomeSection extends Zend_Db_Table_Abstract
     public function saveHomeSectionDetails($params)
     {
         $authNameSpace = new Zend_Session_Namespace('administrators');
-        $common = new Application_Service_Common();
         $sectionImage = null;
         $link = null;
         if (isset($params['link']) && $params['link'] != '') {

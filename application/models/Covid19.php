@@ -44,7 +44,6 @@ class Application_Model_Covid19
             $testPlatform1 = '';
             $testPlatform2 = '';
             $testPlatform3 = '';
-            $testPlatformRepeatResult = '';
             $testPlatformExpiryResult = '';
             $lotResult = '';
             $scoreResult = '';
@@ -73,23 +72,6 @@ class Application_Model_Covid19
             //$threeTestCorrectResponses = array('NXX','PPP');
 
             $testedOn = new DateTime($results[0]['shipment_test_date']);
-
-            // Getting the Test Date string to show in Corrective Actions and other sentences
-            $testDate = $testedOn->format('d-M-Y');
-
-            // Getting test type expiry dates as reported
-            $expDate1 = '';
-            if (isset($results[0]['exp_date_1']) && trim($results[0]['exp_date_1']) != '0000-00-00' && trim(strtotime($results[0]['exp_date_1'])) != '') {
-                $expDate1 = new DateTime($results[0]['exp_date_1']);
-            }
-            $expDate2 = '';
-            if (isset($results[0]['exp_date_2']) && trim($results[0]['exp_date_2']) != '0000-00-00' && trim(strtotime($results[0]['exp_date_2'])) != '') {
-                $expDate2 = new DateTime($results[0]['exp_date_2']);
-            }
-            $expDate3 = '';
-            if (isset($results[0]['exp_date_3']) && trim($results[0]['exp_date_3']) != '0000-00-00' && trim(strtotime($results[0]['exp_date_3'])) != '') {
-                $expDate3 = new DateTime($results[0]['exp_date_3']);
-            }
 
             // Getting Test Platform Names
 
@@ -141,13 +123,10 @@ class Application_Model_Covid19
                 // }
                 if (isset($recommendedTesttypes[1]) && count($recommendedTesttypes[1]) > 0) {
                     if (!in_array($results[0]['test_type_1'], $recommendedTesttypes[1])) {
-                        $tt1RecommendedUsed = false;
                         $failureReason[] = [
                             'warning' => 'For Test 1, testing is not performed with country approved test type.',
                             'correctiveAction' => $correctiveActions[17],
                         ];
-                    } else {
-                        $tt1RecommendedUsed = true;
                     }
                 }
             }
@@ -176,13 +155,10 @@ class Application_Model_Covid19
 
                 if (isset($recommendedTesttypes[2]) && count($recommendedTesttypes[2]) > 0) {
                     if (!in_array($results[0]['test_type_2'], $recommendedTesttypes[2])) {
-                        $tt2RecommendedUsed = false;
                         $failureReason[] = [
                             'warning' => 'For Test 2, testing is not performed with country approved test type.',
                             'correctiveAction' => $correctiveActions[17],
                         ];
-                    } else {
-                        $tt2RecommendedUsed = true;
                     }
                 }
             }
@@ -212,13 +188,10 @@ class Application_Model_Covid19
 
                 if (isset($recommendedTesttypes[3]) && count($recommendedTesttypes[3]) > 0) {
                     if (!in_array($results[0]['test_type_3'], $recommendedTesttypes[3])) {
-                        $tt3RecommendedUsed = false;
                         $failureReason[] = [
                             'warning' => 'For Test 3, testing is not performed with country approved test type.',
                             'correctiveAction' => $correctiveActions[17],
                         ];
-                    } else {
-                        $tt3RecommendedUsed = true;
                     }
                 }
             }
@@ -301,7 +274,6 @@ class Application_Model_Covid19
             // 	}
             // }
 
-            $samplePassOrFail = [];
             foreach ($results as $result) {
                 if (isset($result['reported_result']) && $result['reported_result'] != null) {
                     if ($result['reference_result'] == $result['reported_result']) {
@@ -454,11 +426,11 @@ class Application_Model_Covid19
                     }
                     $fRes = $db->fetchCol($db->select()->from('r_results', ['result_name'])->where('result_id = ' . $shipmentOverall['final_result']));
                     $shipmentResult[$counter]['display_result'] = $fRes[0];
-                    $nofOfRowsUpdated = $db->update('shipment_participant_map', ['shipment_score' => $shipmentOverall['shipment_score'], 'documentation_score' => $shipmentOverall['documentation_score'], 'final_result' => $shipmentOverall['final_result']], 'map_id = ' . $shipment['map_id']);
+                    $db->update('shipment_participant_map', ['shipment_score' => $shipmentOverall['shipment_score'], 'documentation_score' => $shipmentOverall['documentation_score'], 'final_result' => $shipmentOverall['final_result']], 'map_id = ' . $shipment['map_id']);
                 }
             } else {
                 // let us update the total score in DB
-                $nofOfRowsUpdated = $db->update('shipment_participant_map', ['shipment_score' => $responseScore, 'documentation_score' => 0, 'final_result' => $finalResult, 'is_followup' => $shipmentResult[$counter]['is_followup'], 'is_excluded' => $shipment['is_excluded'], 'failure_reason' => null], 'map_id = ' . $shipment['map_id']);
+                $db->update('shipment_participant_map', ['shipment_score' => $responseScore, 'documentation_score' => 0, 'final_result' => $finalResult, 'is_followup' => $shipmentResult[$counter]['is_followup'], 'is_excluded' => $shipment['is_excluded'], 'failure_reason' => null], 'map_id = ' . $shipment['map_id']);
             }
             /* $nofOfRowsDeleted = $db->delete('covid19_shipment_corrective_action_map', "shipment_map_id = " . $shipment['map_id']);
             $correctiveActionList = array_unique($correctiveActionList);
@@ -488,21 +460,6 @@ class Application_Model_Covid19
         $common = new Application_Service_Common();
         $feedbackOption = $common->getConfig('participant_feedback');
         $configuredDocScore = ((isset($config['documentationScore']) && $config['documentationScore'] != '' && $config['documentationScore'] != null) ? $config['documentationScore'] : 0);
-        $styleArray = [
-            'font' => [
-                'bold' => true,
-            ],
-            'alignment' => [
-                'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
-                'vertical' => \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER,
-            ],
-            'borders' => [
-                'outline' => [
-                    'style' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
-                ],
-            ],
-        ];
-
         $borderStyle = [
             'alignment' => [
                 'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
@@ -640,7 +597,7 @@ class Application_Model_Covid19
         $sheet->getDefaultColumnDimension()->setWidth(24);
         $sheet->getDefaultRowDimension()->setRowHeight(18);
 
-        foreach ($headings as $field => $value) {
+        foreach ($headings as $value) {
             $sheet->getCell(Coordinate::stringFromColumnIndex($colNo + 1), $currentRow)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
             $sheet->getStyle(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($colNo + 1) . $currentRow, null, null)->getFont()->setBold(true);
             $cellName = $sheet->getCell(Coordinate::stringFromColumnIndex($colNo + 1), $currentRow)->getColumn();
@@ -761,7 +718,7 @@ class Application_Model_Covid19
         //$sheet->getStyle("E2")->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB('#A7A7A7');
         //$sheet->getStyle("F2")->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB('#A7A7A7');
 
-        $cellName = $sheet->getCell(Coordinate::stringFromColumnIndex($n + 1), 3)->getColumn();
+        $sheet->getCell(Coordinate::stringFromColumnIndex($n + 1), 3);
         //$sheet->getStyle('A3:'.$cellName.'3')->getFill()->setFillType(\PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB('#969696');
         //$sheet->getStyle('A3:'.$cellName.'3')->applyFromArray($borderStyle);
         //<-------- Sheet three heading -------
@@ -938,19 +895,16 @@ class Application_Model_Covid19
                 $rehydrationDate = '';
                 $shipmentTestDate = '';
                 $sheetThreeCol = 1;
-                $docScoreCol = 1;
                 $totScoreCol = 1;
                 $countCorrectResult = 0;
 
                 $colCellObj = $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow);
                 $colCellObj->setValueExplicit(ucwords($aRow['unique_identifier']));
-                $cellName = $colCellObj->getColumn();
                 $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($aRow['first_name'] . ' ' . $aRow['last_name']);
                 $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($aRow['dataManagerFirstName'] . ' ' . $aRow['dataManagerLastName']);
                 $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($aRow['region']);
-                $shipmentReceiptDate = '';
                 if (isset($aRow['shipment_receipt_date']) && trim($aRow['shipment_receipt_date']) != '') {
-                    $shipmentReceiptDate = $aRow['shipment_receipt_date'] = Pt_Commons_General::excelDateFormat($aRow['shipment_receipt_date']);
+                    $aRow['shipment_receipt_date'] = Pt_Commons_General::excelDateFormat($aRow['shipment_receipt_date']);
                 }
 
                 if (isset($aRow['shipment_test_date']) && trim($aRow['shipment_test_date']) != '' && trim($aRow['shipment_test_date']) != '0000-00-00') {
@@ -961,7 +915,6 @@ class Application_Model_Covid19
 
                 if (trim($aRow['attributes']) != '') {
                     $attributes = Pt_Commons_JsonUtility::safeDecode($aRow['attributes']);
-                    $sampleRehydrationDate = new Zend_Date($attributes['sample_rehydration_date']);
                     $rehydrationDate = Pt_Commons_General::excelDateFormat($attributes['sample_rehydration_date']);
                 }
 
@@ -1162,10 +1115,6 @@ class Application_Model_Covid19
 
         //----------- Second Sheet End----->
 
-        $firstName = $authNameSpace->first_name;
-        $lastName = $authNameSpace->last_name;
-        $name = $firstName . ' ' . $lastName;
-        $userName = isset($name) != '' ? $name : $authNameSpace->primary_email;
         $auditDb = new Application_Model_DbTable_AuditLog();
         $auditDb->addNewAuditLog('Downloaded COVID-19 Excel report - ' . ($shipmentCode ?? '?'), 'shipment');
 

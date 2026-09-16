@@ -669,21 +669,6 @@ class Application_Service_Reports
 
     public function getParticipantTrendsReport($parameters)
     {
-        /* Array of database columns which should be read and sent back to DataTables. Use a space where
-         * you want to insert a non-database field (for example a counter or static image)
-         */
-
-        $aColumns = [
-            'sl.scheme_name',
-            "DATE_FORMAT(s.shipment_date,'%d-%b-%Y')",
-            's.shipment_code',
-            new Zend_Db_Expr('count("sp.map_id")'),
-            new Zend_Db_Expr("SUM(sp.shipment_test_date not like '0000-00-00')"),
-            new Zend_Db_Expr("(SUM(sp.shipment_test_date not like '0000-00-00') - SUM(is_excluded = 'yes'))"),
-            new Zend_Db_Expr('SUM(final_result = 1)'),
-            new Zend_Db_Expr('((SUM(final_result = 1))/(SUM(final_result = 1) + SUM(final_result = 2)))*100'),
-            //'average_score'
-        ];
         $searchColumns = [
             'sl.scheme_name',
             "DATE_FORMAT(s.shipment_date,'%d-%b-%Y')",
@@ -893,21 +878,6 @@ class Application_Service_Reports
 
     public function getParticipantPerformanceReport($parameters)
     {
-        /* Array of database columns which should be read and sent back to DataTables. Use a space where
-         * you want to insert a non-database field (for example a counter or static image)
-         */
-
-        $aColumns = [
-            'sl.scheme_name',
-            "DATE_FORMAT(s.shipment_date,'%d-%b-%Y')",
-            's.shipment_code',
-            new Zend_Db_Expr('count("sp.map_id")'),
-            new Zend_Db_Expr("SUM(sp.shipment_test_date not like '0000-00-00')"),
-            new Zend_Db_Expr("(SUM(sp.shipment_test_date not like '0000-00-00') - SUM(is_excluded = 'yes'))"),
-            new Zend_Db_Expr('SUM(final_result = 1)'),
-            new Zend_Db_Expr('((SUM(final_result = 1))/(SUM(final_result = 1) + SUM(final_result = 2)))*100'),
-            //'average_score'
-        ];
         $searchColumns = [
             'sl.scheme_name',
             "DATE_FORMAT(s.shipment_date,'%d-%b-%Y')",
@@ -1028,7 +998,6 @@ class Application_Service_Reports
         }
 
         if (isset($parameters['startDate']) && $parameters['startDate'] != '' && isset($parameters['endDate']) && $parameters['endDate'] != '') {
-            $common = new Application_Service_Common();
             $sQuery = $sQuery->where('DATE(s.shipment_date) >= ?', $this->common->isoDateFormat($parameters['startDate']));
             $sQuery = $sQuery->where('DATE(s.shipment_date) <= ?', $this->common->isoDateFormat($parameters['endDate']));
         }
@@ -1071,7 +1040,6 @@ class Application_Service_Reports
         }
 
         if (isset($parameters['startDate']) && $parameters['startDate'] != '' && isset($parameters['endDate']) && $parameters['endDate'] != '') {
-            $common = new Application_Service_Common();
             $sQuery = $sQuery->where('DATE(s.shipment_date) >= ?', $this->common->isoDateFormat($parameters['startDate']));
             $sQuery = $sQuery->where('DATE(s.shipment_date) <= ?', $this->common->isoDateFormat($parameters['endDate']));
         }
@@ -1183,9 +1151,6 @@ class Application_Service_Reports
             new Zend_Db_Expr('SUM(sp.final_result=1)'),
             new Zend_Db_Expr("(SUM(sp.shipment_test_date not like '0000-00-00') - SUM(is_excluded = 'yes'))"),
         ];
-
-        /* Indexed column (used for fast and accurate table cardinality) */
-        $sIndexColumn = 'shipment_id';
 
         $sLimit = '';
         if (isset($parameters['iDisplayStart']) && $parameters['iDisplayLength'] != '-1') {
@@ -1444,16 +1409,6 @@ class Application_Service_Reports
 
     public function getTestKitDetailedReport($parameters)
     {
-        /* Array of database columns which should be read and sent back to DataTables. Use a space where
-         * you want to insert a non-database field (for example a counter or static image)
-         */
-
-        //    $aColumns = array('tn.TestKit_Name',new Zend_Db_Expr("CAST((COUNT('shipment_map_id')/s.number_of_samples) as UNSIGNED)"));
-
-        $aColumns = [
-            'tn.TestKit_Name',
-            new Zend_Db_Expr("CAST((COUNT('shipment_map_id')/s.number_of_samples) as UNSIGNED)"),
-        ];
         $searchColumns = [
             'tn.TestKit_Name',
             'totalTest',
@@ -1639,7 +1594,6 @@ class Application_Service_Reports
 
         $responseResult = [];
         $responseDate = [];
-        $initialStartDate = $date;
 
         for ($i = $step; $i <= $maxDays; $i += $step) {
             $sQuery = $dbAdapter->select()->from(['s' => 'shipment'], [''])
@@ -1707,7 +1661,7 @@ class Application_Service_Reports
         } elseif ($schemeType == 'tb') {
             $tbObj = new Application_Model_Tb();
             return $tbObj->generateTbExcelReport($shipmentId);
-        } elseif ($schemeType == 'generic-test' || $uc = 'yes') {
+        } elseif ($schemeType == 'generic-test' || $uc == 'yes') {
             $genericTestObj = new Application_Model_CustomTest();
             return $genericTestObj->generateGenericTestExcelReport($shipmentId, $schemeType);
         } else {
@@ -1733,11 +1687,6 @@ class Application_Service_Reports
     public function getCorrectiveActionReport($parameters)
     {
 
-        /* Array of database columns which should be read and sent back to DataTables. Use a space where
-         * you want to insert a non-database field (for example a counter or static image)
-         */
-
-        $aColumns = [new Zend_Db_Expr('count("cam.corrective_action_id")'), 'ca.corrective_action'];
         $searchColumns = ['total_corrective', 'ca.corrective_action'];
         $orderColumns = [new Zend_Db_Expr('count("cam.corrective_action_id")'), 'ca.corrective_action'];
 
@@ -1988,7 +1937,7 @@ class Application_Service_Reports
             $sheet->getStyle(Coordinate::stringFromColumnIndex(1) . 2, null, null)->getFont()->setBold(true);
             $sheet->getStyle(Coordinate::stringFromColumnIndex(1) . 3, null, null)->getFont()->setBold(true);
 
-            foreach ($headings as $field => $value) {
+            foreach ($headings as $value) {
                 $sheet->getCell(Coordinate::stringFromColumnIndex($colNo + 1) . 5)
                     ->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
                 $sheet->getStyle(Coordinate::stringFromColumnIndex($colNo + 1) . 5, null, null)->getFont()->setBold(true);
@@ -2106,7 +2055,6 @@ class Application_Service_Reports
             $totalShipped = ($totalResult['total_shipped']);
             $totalResp = ($totalResult['total_responses']);
             $validResp = ($totalResult['valid_responses']);
-            $avgScore = round($totalResult['average_score'], 2) . '%';
 
             $sheet->mergeCells('A4:B4');
             $sheet->getCell(Coordinate::stringFromColumnIndex(1) . 4)
@@ -2125,7 +2073,7 @@ class Application_Service_Reports
             //->setValueExplicit(html_entity_decode('Average score :' . $avgScore, ENT_QUOTES, 'UTF-8'));
             //$sheet->getStyle(Coordinate::stringFromColumnIndex(0) . 7)->getFont()->setBold(true);
 
-            foreach ($headings as $field => $value) {
+            foreach ($headings as $value) {
                 $sheet->getCell(Coordinate::stringFromColumnIndex($colNo + 1) . 9)
                     ->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
                 $sheet->getStyle(Coordinate::stringFromColumnIndex($colNo + 1) . 9, null, null)->getFont()->setBold(true);
@@ -2224,7 +2172,7 @@ class Application_Service_Reports
             $sheet->getStyle(Coordinate::stringFromColumnIndex(1) . 3, null, null)->getFont()->setBold(true);
             $sheet->getStyle(Coordinate::stringFromColumnIndex(1) . 2, null, null)->getFont()->setBold(true);
             $sheet->getStyle(Coordinate::stringFromColumnIndex(1) . 1, null, null)->getFont()->setBold(true);
-            foreach ($headings as $field => $value) {
+            foreach ($headings as $value) {
                 $sheet->getCell(Coordinate::stringFromColumnIndex($colNo + 1) . 5)
                     ->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
                 $sheet->getStyle(Coordinate::stringFromColumnIndex($colNo + 1) . 5, null, null)->getFont()->setBold(true);
@@ -2325,7 +2273,7 @@ class Application_Service_Reports
         $sQuerySession = new Zend_Session_Namespace('CorrectiveActionsExcel');
         $rResult = $db->fetchAll($sQuerySession->correctiveActionsQuery);
 
-        return $result = ['countCorrectiveAction' => $totalResult, 'correctiveAction' => $rResult];
+        return ['countCorrectiveAction' => $totalResult, 'correctiveAction' => $rResult];
     }
 
     public function exportShipmentsReportInPdf()
@@ -2337,19 +2285,6 @@ class Application_Service_Reports
 
     public function getParticipantTrendsRegionWiseReport($parameters)
     {
-        /* Array of database columns which should be read and sent back to DataTables. Use a space where
-         * you want to insert a non-database field (for example a counter or static image)
-         */
-
-        $aColumns = [
-            'p.region',
-            new Zend_Db_Expr('count("sp.map_id")'),
-            new Zend_Db_Expr("SUM(sp.shipment_test_date not like '0000-00-00')"),
-            new Zend_Db_Expr("(SUM(sp.shipment_test_date not like '0000-00-00') - SUM(is_excluded = 'yes'))"),
-            new Zend_Db_Expr('SUM(final_result = 1)'),
-            new Zend_Db_Expr('((SUM(final_result = 1))/(SUM(final_result = 1) + SUM(final_result = 2)))*100'),
-            'average_score',
-        ];
         $searchColumns = [
             'p.region',
             'total_responses',
@@ -2541,19 +2476,6 @@ class Application_Service_Reports
 
     public function getParticipantPerformanceRegionWiseReport($parameters)
     {
-        /* Array of database columns which should be read and sent back to DataTables. Use a space where
-         * you want to insert a non-database field (for example a counter or static image)
-         */
-
-        $aColumns = [
-            'p.region',
-            new Zend_Db_Expr('count("sp.map_id")'),
-            new Zend_Db_Expr("SUM(sp.shipment_test_date not like '0000-00-00')"),
-            new Zend_Db_Expr("(SUM(sp.shipment_test_date not like '0000-00-00') - SUM(is_excluded = 'yes'))"),
-            new Zend_Db_Expr('SUM(final_result = 1)'),
-            new Zend_Db_Expr('((SUM(final_result = 1))/(SUM(final_result = 1) + SUM(final_result = 2)))*100'),
-            'average_score',
-        ];
         $searchColumns = [
             'p.region',
             'total_responses',
@@ -2658,7 +2580,6 @@ class Application_Service_Reports
         }
 
         if (isset($parameters['startDate']) && $parameters['startDate'] != '' && isset($parameters['endDate']) && $parameters['endDate'] != '') {
-            $common = new Application_Service_Common();
             $sQuery = $sQuery->where('DATE(s.shipment_date) >= ?', $this->common->isoDateFormat($parameters['startDate']));
             $sQuery = $sQuery->where('DATE(s.shipment_date) <= ?', $this->common->isoDateFormat($parameters['endDate']));
         }
@@ -2705,7 +2626,6 @@ class Application_Service_Reports
         }
 
         if (isset($parameters['startDate']) && $parameters['startDate'] != '' && isset($parameters['endDate']) && $parameters['endDate'] != '') {
-            $common = new Application_Service_Common();
             $sQuery = $sQuery->where('DATE(s.shipment_date) >= ?', $this->common->isoDateFormat($parameters['startDate']));
             $sQuery = $sQuery->where('DATE(s.shipment_date) <= ?', $this->common->isoDateFormat($parameters['endDate']));
         }
@@ -2914,7 +2834,7 @@ class Application_Service_Reports
             $sheet->getStyle(Coordinate::stringFromColumnIndex(1) . 3, null, null)->getFont()->setBold(true);
             $sheet->getStyle(Coordinate::stringFromColumnIndex(1) . 4, null, null)->getFont()->setBold(true);
 
-            foreach ($headings as $field => $value) {
+            foreach ($headings as $value) {
                 $sheet->getCell(Coordinate::stringFromColumnIndex($colNo + 1) . 6)
                     ->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
                 $sheet->getStyle(Coordinate::stringFromColumnIndex($colNo + 1) . 6, null, null)->getFont()->setBold(true);
@@ -3012,7 +2932,7 @@ class Application_Service_Reports
             $sheet->getStyle(Coordinate::stringFromColumnIndex(1) . 3, null, null)->getFont()->setBold(true);
             $sheet->getStyle(Coordinate::stringFromColumnIndex(1) . 4, null, null)->getFont()->setBold(true);
 
-            foreach ($headings as $field => $value) {
+            foreach ($headings as $value) {
                 $sheet->getCell(Coordinate::stringFromColumnIndex($colNo + 1) . 6)
                     ->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
                 $sheet->getStyle(Coordinate::stringFromColumnIndex($colNo + 1) . 6, null, null)->getFont()->setBold(true);
@@ -3319,19 +3239,6 @@ class Application_Service_Reports
     //get vl assay distribution
     public function getAllVlAssayDistributionReports($parameters)
     {
-        /* Array of database columns which should be read and sent back to DataTables. Use a space where
-         * you want to insert a non-database field (for example a counter or static image)
-         */
-
-        $aColumns = [
-            'sl.scheme_name',
-            "DATE_FORMAT(s.shipment_date,'%d-%b-%Y')",
-            's.shipment_code',
-            'sp.shipment_score',
-            'sp.documentation_score',
-            "DATE_FORMAT(sp.shipment_test_date,'%d-%b-%Y')",
-            "DATE_FORMAT(sp.shipment_receipt_date,'%d-%b-%Y')",
-        ];
         $searchColumns = [
             'sl.scheme_name',
             "DATE_FORMAT(s.shipment_date,'%d-%b-%Y')",
@@ -3350,9 +3257,6 @@ class Application_Service_Reports
             'sp.shipment_test_date',
             'sp.shipment_receipt_date',
         ];
-
-        /* Indexed column (used for fast and accurate table cardinality) */
-        $sIndexColumn = 'map_id';
 
         $sLimit = '';
         if (isset($parameters['iDisplayStart']) && $parameters['iDisplayLength'] != '-1') {
@@ -4987,7 +4891,7 @@ class Application_Service_Reports
 
                 foreach ($output as $rowNo => $rowData) {
                     $colNo = 0;
-                    foreach ($rowData as $field => $value) {
+                    foreach ($rowData as $value) {
                         $sheet->getCell(Coordinate::stringFromColumnIndex($colNo + 1) . ($rowNo + 2))
                             ->setValueExplicit(html_entity_decode($value));
 
@@ -4998,6 +4902,7 @@ class Application_Service_Reports
                 $writer = IOFactory::createWriter($excel, 'Xlsx');
                 $shipmentCode = (string) ($resultSet[0]['shipment_code'] ?? '');
                 $filename = $shipmentCode . '-Response-Status-' . date('d-M-Y-H-i-s') . '.xlsx';
+                $writer->save($this->tempUploadDirectory . DIRECTORY_SEPARATOR . $filename);
                 $rowCount = count($resultSet);
                 $detail = $shipmentCode !== '' ? " - {$shipmentCode}" : '';
                 $auditDb = new Application_Model_DbTable_AuditLog();
@@ -5023,7 +4928,6 @@ class Application_Service_Reports
         $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
         $dmId = !empty($authNameSpace->dm_id) ? (int) $authNameSpace->dm_id : null;
         $id = (int) $id;
-        $shipmentId = $id;
         // Build WHERE clause based on type. For 'summary' $id is the shipment id
         // and the update touches every row mapped to this data manager; for
         // 'individual' $id is the map id of a single row.
@@ -5148,7 +5052,7 @@ class Application_Service_Reports
             $sheet->getCell(Coordinate::stringFromColumnIndex(1) . 1)
                 ->setValueExplicit(html_entity_decode('Participant Performance Report', ENT_QUOTES, 'UTF-8'));
             $sheet->getStyle(Coordinate::stringFromColumnIndex(1) . 1, null, null)->getFont()->setBold(true);
-            foreach ($headings as $field => $value) {
+            foreach ($headings as $value) {
                 $sheet->getCell(Coordinate::stringFromColumnIndex($colNo + 1) . 5)
                     ->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
                 $sheet->getStyle(Coordinate::stringFromColumnIndex($colNo + 1) . 5, null, null)->getFont()->setBold(true);

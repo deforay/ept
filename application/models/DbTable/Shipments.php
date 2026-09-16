@@ -138,11 +138,6 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         $aColumns = ['year(shipment_date)', 'scheme_name'];
         $orderColumns = ['shipment_date', 'scheme_name'];
 
-        /* Indexed column (used for fast and accurate table cardinality) */
-        $sIndexColumn = $this->_primary;
-
-        $sTable = $this->_name;
-
         $sLimit = '';
         if (isset($parameters['iDisplayStart']) && $parameters['iDisplayLength'] != '-1') {
             $sOffset = $parameters['iDisplayStart'];
@@ -264,11 +259,6 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
 
         $aColumns = ['DATE_FORMAT(shipment_date,"%d-%b-%Y")', 'scheme_name', 'shipment_code', 'distribution_code', 'unique_identifier', new Zend_Db_Expr(Application_Model_DbTable_Participants::participantNameExpr('p')), 'p.institute_name', 'DATE_FORMAT(response_deadline,"%d-%b-%Y %H:%i")', 'DATE_FORMAT(spm.shipment_test_report_date,"%d-%b-%Y")'];
         $orderColumns = ['shipment_date', 'scheme_name', 'shipment_code', 'distribution_code', 'unique_identifier', 'first_name', 'p.institute_name', 'response_deadline', 'spm.shipment_test_report_date'];
-
-        /* Indexed column (used for fast and accurate table cardinality) */
-        $sIndexColumn = $this->_primary;
-
-        $sTable = $this->_name;
 
         $sLimit = '';
         if (isset($parameters['iDisplayStart']) && $parameters['iDisplayLength'] != '-1') {
@@ -459,11 +449,6 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         $aColumns = ['year(shipment_date)', 'DATE_FORMAT(shipment_date,"%d-%b-%Y")', 'scheme_name', 'shipment_code', 'unique_identifier', 'first_name', 'DATE_FORMAT(response_deadline,"%d-%b-%Y %H:%i")', 'DATE_FORMAT(spm.shipment_test_report_date,"%d-%b-%Y")'];
         $orderColumns = ['shipment_date', 'shipment_date', 'scheme_name', 'shipment_code', 'unique_identifier', 'first_name', 'response_deadline', 'spm.shipment_test_report_date'];
 
-        /* Indexed column (used for fast and accurate table cardinality) */
-        $sIndexColumn = $this->_primary;
-
-        $sTable = $this->_name;
-
         $sLimit = '';
         if (isset($parameters['iDisplayStart']) && $parameters['iDisplayLength'] != '-1') {
             $sOffset = $parameters['iDisplayStart'];
@@ -564,7 +549,6 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             'aaData' => [],
         ];
 
-        $general = new Pt_Commons_General();
         $shipmentParticipantDb = new Application_Model_DbTable_ShipmentParticipantMap();
         // TB forms are an MTBEPT-only feature.
         $isMtbeptInstance = (Application_Service_Common::getConfig('instance') === 'mtbept');
@@ -630,11 +614,6 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
 
         $aColumns = ['s.shipment_id', 'year(shipment_date)', 'DATE_FORMAT(shipment_date,"%d-%b-%Y")', 'scheme_name', 'shipment_code', 'unique_identifier', 'first_name', 'DATE_FORMAT(spm.shipment_test_report_date,"%d-%b-%Y")'];
         $orderColumns = ['s.shipment_id', 'shipment_date', 'shipment_date', 'scheme_name', 'shipment_code', 'unique_identifier', 'first_name', 'spm.shipment_test_report_date'];
-
-        /* Indexed column (used for fast and accurate table cardinality) */
-        $sIndexColumn = $this->_primary;
-
-        $sTable = $this->_name;
 
         $sLimit = '';
         if (isset($parameters['iDisplayStart']) && $parameters['iDisplayLength'] != '-1') {
@@ -739,7 +718,6 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             'aaData' => [],
         ];
         $globalQcAccess = Application_Service_Common::getConfig('qc_access');
-        $general = new Pt_Commons_General();
         $shipmentParticipantDb = new Application_Model_DbTable_ShipmentParticipantMap();
         foreach ($rResult as $aRow) {
             $delete = '';
@@ -848,11 +826,6 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
 
         $aColumns = ['year(shipment_date)', 'DATE_FORMAT(shipment_date,"%d-%b-%Y")', 'scheme_type', 'shipment_code'];
         $orderColumns = ['shipment_date', 'shipment_date', 'scheme_type', 'shipment_code'];
-
-        /* Indexed column (used for fast and accurate table cardinality) */
-        $sIndexColumn = $this->_primary;
-
-        $sTable = $this->_name;
 
         $sLimit = '';
         if (isset($parameters['iDisplayStart']) && $parameters['iDisplayLength'] != '-1') {
@@ -983,7 +956,6 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             'aaData' => [],
         ];
 
-        $general = new Pt_Commons_General();
         foreach ($rResult as $aRow) {
             $row = [];
             $report = '';
@@ -1094,11 +1066,6 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         // like "shipment_date DESC,shipment_code ASC" gets quoted whole as one
         // identifier and MySQL rejects it. Harmless while a page sorted on one
         // column; breaks the moment DataTables sends iSortingCols > 1.
-
-        /* Indexed column (used for fast and accurate table cardinality) */
-        $sIndexColumn = $this->_primary;
-
-        $sTable = $this->_name;
 
         $sLimit = '';
         if (isset($parameters['iDisplayStart']) && $parameters['iDisplayLength'] != '-1') {
@@ -1272,7 +1239,6 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             'aaData' => [],
         ];
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $general = new Pt_Commons_General();
         $common = new Application_Service_Common();
         $feedbackOption = $common->getConfig('participant_feedback');
         foreach ($rResult as $aRow) {
@@ -1440,11 +1406,6 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         $aColumns = ['shipment_code', 'DATE_FORMAT(shipment_date,"%d-%b-%Y")', 'scheme_type', 'unique_identifier', 'first_name', 'DATE_FORMAT(spm.shipment_test_report_date,"%d-%b-%Y")'];
         $orderColumns = ['shipment_code', 'shipment_date', 'scheme_type', 'unique_identifier', 'first_name', 'spm.shipment_test_report_date', 's.created_on_admin'];
 
-        /* Indexed column (used for fast and accurate table cardinality) */
-        $sIndexColumn = $this->_primary;
-
-        $sTable = $this->_name;
-
         $sLimit = '';
         if (isset($parameters['iDisplayStart']) && $parameters['iDisplayLength'] != '-1') {
             $sOffset = $parameters['iDisplayStart'];
@@ -1499,8 +1460,6 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 }
             }
         }
-
-        $general = new Pt_Commons_General();
 
         $sQuery = $this->getAdapter()->select()->from(['s' => 'shipment'], [new Zend_Db_Expr('SQL_CALC_FOUND_ROWS s.scheme_type'), 'SHIP_YEAR' => 'year(s.shipment_date)', 's.shipment_date', 's.shipment_code', 's.response_deadline', 's.shipment_id', 's.corrective_action_file'])
             ->join(['sl' => 'scheme_list'], 's.scheme_type=sl.scheme_id', ['scheme_name'])
@@ -1582,11 +1541,6 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         $orderColumns = ['scheme_type', 'shipment_code', 'shipment_date'];
         // NOTE: $sOrder must stay an array — see the same note in
         // getindividualReportDetails(). A comma-joined string breaks multi-column sort.
-
-        /* Indexed column (used for fast and accurate table cardinality) */
-        $sIndexColumn = $this->_primary;
-
-        $sTable = $this->_name;
 
         $sLimit = '';
         if (isset($parameters['iDisplayStart']) && $parameters['iDisplayLength'] != '-1') {
@@ -1732,7 +1686,6 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             'aaData' => [],
         ];
 
-        $general = new Pt_Commons_General();
         foreach ($rResult as $aRow) {
             $row = [];
             $row[] = (!empty($aRow['scheme_name'])) ? ($aRow['scheme_name']) : null;
@@ -1843,9 +1796,6 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
 
         $aColumns = ['sl.scheme_name', 'shipment_code', 'distribution_code', "DATE_FORMAT(distribution_date,'%d-%b-%Y')", "DATE_FORMAT(response_deadline,'%d-%b-%Y %H:%i')"];
         $orderColumns = ['sl.scheme_name', 'shipment_code', 'distribution_code', 'distribution_date', 'response_deadline'];
-
-        /* Indexed column (used for fast and accurate table cardinality) */
-        $sIndexColumn = 'shipment_id';
 
         $sLimit = '';
         if (isset($parameters['iDisplayStart']) && $parameters['iDisplayLength'] != '-1') {
@@ -1966,9 +1916,6 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         $aColumns = ["DATE_FORMAT(distribution_date,'%d-%b-%Y')", 'distribution_code', 's.shipment_code', 'd.status'];
         $orderColumns = ['distribution_date', 'distribution_code', 's.shipment_code', 'd.status'];
 
-        /* Indexed column (used for fast and accurate table cardinality) */
-        $sIndexColumn = 'distribution_id';
-
         $sLimit = '';
         if (isset($parameters['iDisplayStart']) && $parameters['iDisplayLength'] != '-1') {
             $sOffset = $parameters['iDisplayStart'];
@@ -2076,10 +2023,8 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             'aaData' => [],
         ];
 
-        $shipmentDb = new Application_Model_DbTable_Shipments();
         foreach ($rResult as $aRow) {
             $replaceSummaryRportBtn = '';
-            $shipmentResults = $shipmentDb->getPendingShipmentsByDistribution($aRow['distribution_id']);
 
             $row = [];
             $row['DT_RowId'] = 'dist' . $aRow['distribution_id'];
@@ -2107,11 +2052,6 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
 
         $aColumns = ['DATE_FORMAT(shipment_date,"%d-%b-%Y")', 'shipment_code', 'unique_identifier', 'first_name', 'DATE_FORMAT(spm.shipment_test_report_date,"%d-%b-%Y")', 'shipment_score'];
         $orderColumns = ['shipment_date', 'shipment_code', 'unique_identifier', 'first_name', 'spm.shipment_test_report_date', 'shipment_score'];
-
-        /* Indexed column (used for fast and accurate table cardinality) */
-        $sIndexColumn = $this->_primary;
-
-        $sTable = $this->_name;
 
         $sLimit = '';
         if (isset($parameters['iDisplayStart']) && $parameters['iDisplayLength'] != '-1') {
@@ -2405,7 +2345,6 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         $participantDb = new Application_Model_DbTable_Participants();
         $spMap = new Application_Model_DbTable_ShipmentParticipantMap();
         $date = new Zend_Date();
-        $dtsModel = new Application_Model_Dts();
         $globalConfigDb = new Application_Model_DbTable_GlobalConfig();
         $schemeService = new Application_Service_Schemes();
         $common = new Application_Service_Common();
@@ -2939,7 +2878,6 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             // Section 3 end // Section 4 Start
 
             $teskitArray = [];
-            $testKitKey = 0;
 
             // Shipment-specific testkit->position override, with the global catalog as the
             // per-position fallback and any already-saved kit kept selectable. Shared with
@@ -2949,7 +2887,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 true,
                 $dtsModel->savedTestKitsByPosition($allSamples)
             );
-            foreach ($allTestKits as $testKitKey => $testkit) {
+            foreach ($allTestKits as $testkit) {
                 if ($testkit['testkit_1'] == '1') {
                     $teskitArray['kitNameDropdown']['Test-1']['status'] = true;
                     $teskitArray['kitNameDropdown']['Test-1']['data'][] = [
@@ -3725,7 +3663,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             $section3['data']['yes']['supportText'] = 'Do you need any support from the PT Provider ?';
             $section3['data']['yes']['supportTextArea'] = $shipment['pt_support_comments'];
             // return $allSamples;
-            foreach ($allSamples as $key => $sample) {
+            foreach ($allSamples as $sample) {
                 if (isset($shipment['is_pt_test_not_performed']) && $shipment['is_pt_test_not_performed'] == 'yes') {
                     $sample['mandatory'] = 0;
                 }
@@ -4739,7 +4677,6 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         }
         /* Started the API service for individual report */
         $data = [];
-        $general = new Pt_Commons_General();
         $token = $dmDb->fetchAuthTokenByToken($params);
         foreach ($resultData as $aRow) {
             $downloadReports = '';
@@ -4811,7 +4748,6 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         }
         /* Started the API service for summary report */
         $data = [];
-        $general = new Pt_Commons_General();
         $token = $dmDb->fetchAuthTokenByToken($params);
         foreach ($resultData as $aRow) {
             $downloadReports = '';

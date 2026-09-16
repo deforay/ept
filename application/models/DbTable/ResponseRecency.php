@@ -60,7 +60,7 @@ class Application_Model_DbTable_ResponseRecency extends Zend_Db_Table_Abstract
                     'created_on'        => new Zend_Db_Expr('now()'),
                 ]);
             } else {
-                $update = $this->update([
+                $this->update([
                     'reported_result'   => $params['recencyData']->Section3->data->samples->yourResults[$key],
                     'control_line'      => $params['recencyData']->Section3->data->samples->controlLine[$key],
                     'diagnosis_line' => $params['recencyData']->Section3->data->samples->verificationLine[$key],

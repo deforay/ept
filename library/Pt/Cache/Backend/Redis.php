@@ -181,7 +181,7 @@ class Deforay_Cache_Backend_Redis extends Zend_Cache_Backend implements Zend_Cac
             if ($lifetime !== null) {
                 $this->_redis->setTimeout($this->_keyFromItemTags($id), $lifetime);
             } else {
-                $redis = $this->_redis->persist($this->_keyFromItemTags($id));
+                $this->_redis->persist($this->_keyFromItemTags($id));
             }
 
             return $return;
@@ -388,7 +388,7 @@ class Deforay_Cache_Backend_Redis extends Zend_Cache_Backend implements Zend_Cac
             return false;
         }
         if (is_string($tag)) {
-            $id = [$tag];
+            $tag = [$tag];
         }
         if (!count($tag)) {
             return false;
@@ -539,9 +539,6 @@ class Deforay_Cache_Backend_Redis extends Zend_Cache_Backend implements Zend_Cac
         if (!$this->_redis) {
             return false;
         }
-
-        $result = true;
-        $all = [];
 
         if ($mode == Zend_Cache::CLEANING_MODE_ALL) {
             return $this->_redis->flushDb();

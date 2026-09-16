@@ -56,7 +56,7 @@ class Reports_CorrectivePreventiveActionsController extends Zend_Controller_Acti
         $request = $this->getRequest();
         if ($request->isPost()) {
             $params = $this->getAllParams();
-            $result = $shipmentService->savePreventiveActions($params);
+            $shipmentService->savePreventiveActions($params);
             $this->redirect('/reports/corrective-preventive-actions');
         } elseif ($this->hasParam('id')) {
             $id = (int) base64_decode($this->_getParam('id'));

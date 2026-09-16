@@ -57,8 +57,6 @@ class Application_Service_Announcement
                         $datamanagers[] = $dm['dm_id'];
                     }
                 }
-                $title = $params['subject'];
-                $msgBody = $params['message'];
                 if ($lastId > 0 && $tempId > 0) {
                     $db->commit();
                     $alertMsg->message = 'New announcement created successfully';

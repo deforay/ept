@@ -230,10 +230,7 @@ class Admin_CustomTestController extends Zend_Controller_Action
     {
         /** @var Zend_Controller_Request_Http $request */
         $request = $this->getRequest();
-        $schemeService = new Application_Service_Schemes();
         if ($request->isPost()) {
-            $overwrite = $request->getPost('overwrite') === 'yes';
-
             if (empty($_FILES['importFile']['tmp_name']) || !is_uploaded_file($_FILES['importFile']['tmp_name'])) {
                 $this->view->error = 'Please choose a custom test export file (.json) to import.';
                 return;

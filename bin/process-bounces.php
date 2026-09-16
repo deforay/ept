@@ -465,7 +465,7 @@ function cleanRecipient(string $raw): string
 {
     $raw = trim($raw);
     if (strpos($raw, ';') !== false) {
-        [$type, $addr] = explode(';', $raw, 2);
+        [, $addr] = explode(';', $raw, 2);
         $raw = trim($addr);
     }
     $raw = trim($raw, " \t\"'<>");

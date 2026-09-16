@@ -111,7 +111,6 @@ class Application_Model_DbTable_ResponseNotTestedReasons extends Zend_Db_Table_A
             'aaData' => [],
         ];
 
-        $general = new Pt_Commons_General();
         $schemeDb = new Application_Model_DbTable_SchemeList();
         $schemeList = $schemeDb->getFullSchemeList(true);
         foreach ($rResult as $aRow) {
