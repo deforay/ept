@@ -3985,7 +3985,9 @@ class Application_Service_Reports
                     $shipmentCodeArray[$val['scheme_type']][] = $val['shipment_code'];
                 }
             } else {
-                //$sQuery->where('spm.shipment_id IN(?)', $impShipmentId);
+                if (empty($shipmentIdArray)) {
+                    return json_encode(['fileName' => '']);
+                }
                 $sQuery->where('spm.shipment_id IN (?)', $shipmentIdArray);
             }
 

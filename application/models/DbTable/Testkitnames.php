@@ -130,7 +130,7 @@ class Application_Model_DbTable_Testkitnames extends Zend_Db_Table_Abstract
         if ($result != '') {
             $randomStr = Application_Service_Common::generateRandomString(13);
             $testkitId = "tk$randomStr";
-            $this->checkTestkitId($testkitId, $scheme);
+            return $this->checkTestkitId($testkitId, $scheme);
         } else {
             return $testkitId;
         }
@@ -374,7 +374,6 @@ class Application_Model_DbTable_Testkitnames extends Zend_Db_Table_Abstract
                 $result = $this->fetchRow($this->select()->where('TestKit_Name = ?', $oldName));
                 if ($result != '') {
                     $data = [
-                        'TestKit_Name' => trim($testkitName),
                         'TestKit_Name' => trim($testkitName),
                         'pt_provider_validated' => '1',
                     ];

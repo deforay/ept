@@ -223,6 +223,6 @@ class Application_Model_DbTable_SystemAdmin extends Zend_Db_Table_Abstract
 
     public function fetchSystemAdminByMail($mail, $password)
     {
-        return $this->fetchRow($this->select()->where($this->getAdapter()->quoteInto('primary_email = ?', $mail) . ' OR ' . $this->getAdapter()->quoteInto('password = ?', $password)));
+        return $this->fetchRow($this->select()->where('primary_email = ?', $mail));
     }
 }

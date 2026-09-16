@@ -3918,8 +3918,6 @@ class Application_Service_Shipments
         }
 
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $schemeDb = new Application_Model_DbTable_SchemeList();
-        $schemeDb->checkUserConfig($sid);
 
         $code = '';
         if ($sid == 'dts') {

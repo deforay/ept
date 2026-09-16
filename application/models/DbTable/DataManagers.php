@@ -451,11 +451,6 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         $dmId = (int) $params['userSystemId'];
         if ($dmId !== false && $dmId > 0) {
             $this->update($data, ['dm_id = ?' => $dmId]);
-            if (isset($params['deleteSystemId']) && count($params['deleteSystemId']) > 0) {
-                $db->delete('participant_manager_map', ['dm_id = ?' => $params['deleteSystemId']]);
-                $db->delete('ptcc_countries_map', ['ptcc_id = ?' => $params['deleteSystemId']]);
-                $this->delete(['dm_id = ?' => $params['deleteSystemId']]);
-            }
             $params['participantsList'] = isset($params['allparticipant']) ? Common::removeEmpty($this->decodeParticipantList($params['allparticipant'])) : [];
             $this->dmParticipantMap($params, $dmId, $isPtcc);
 

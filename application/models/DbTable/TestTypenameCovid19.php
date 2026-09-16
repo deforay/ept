@@ -100,7 +100,7 @@ class Application_Model_DbTable_TestTypenameCovid19 extends Zend_Db_Table_Abstra
         if ($result != '') {
             $randomStr = Application_Service_Common::generateRandomString(13);
             $testtypeId = 'tt' . $randomStr;
-            $this->checkTestTypeId($testtypeId, $scheme);
+            return $this->checkTestTypeId($testtypeId, $scheme);
         } else {
             return $testtypeId;
         }
@@ -308,7 +308,6 @@ class Application_Model_DbTable_TestTypenameCovid19 extends Zend_Db_Table_Abstra
                     $data = [
                         'test_type_name' => trim($testtypeName),
                         'scheme_type' => $scheme,
-                        'test_type_name' => trim($testtypeName),
                         'country_adapted' => '1',
                         'test_type_1' => ($type == 1) ? '1' : '0',
                         'test_type_2' => ($type == 2) ? '1' : '0',

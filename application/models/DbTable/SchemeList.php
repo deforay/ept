@@ -336,8 +336,8 @@ class Application_Model_DbTable_SchemeList extends Zend_Db_Table_Abstract
 
     public function checkUserConfig($id)
     {
-        $scheme = $this->fetchRow($this->select()->where('scheme_id = ?', $id))->toArray();
-        return $scheme['is_user_configured'];
+        $scheme = $this->fetchRow($this->select()->where('scheme_id = ?', $id));
+        return $scheme ? $scheme['is_user_configured'] : null;
     }
 
     public function fetchGenericSchemeLists()
