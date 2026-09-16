@@ -245,13 +245,6 @@ if ((isset($this->directParticipantLogin) && !empty($this->directParticipantLogi
                 </div>
             </div>
             <hr class="participant-form-divider" style="border:1px solid #ccc;background: #ccc;width:95%; clear:both;" />
-            <?php if ($directParticipantLogin) { ?>
-                <div class="form-group col-lg-6">
-                    <label class="col-lg-4 control-label"><?= $this->translate->_("Contact Name"); ?> </label>
-
-                    <div class="col-lg-8"><input type="text" id="contactname" name="contactname" size="50" maxlength="255" class="form-control" title="Please enter the contact name here" placeholder="<?= $this->translate->_('Please enter the contact name here'); ?>" /></div>
-                </div>
-            <?php } ?>
             <div class="form-group col-lg-12 pt-login-dev">
                 <?php echo $this->render('participants/_data-manager-dual-list.phtml'); ?>
             </div>

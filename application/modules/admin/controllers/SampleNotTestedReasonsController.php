@@ -22,7 +22,6 @@ class Admin_SampleNotTestedReasonsController extends Zend_Controller_Action
         $ajaxContext = $this->_helper->getHelper('AjaxContext');
         $ajaxContext->addActionContext('index', 'html')
             ->addActionContext('get-testkit', 'html')
-            ->addActionContext('update-status', 'html')
             ->initContext();
         $this->_helper->layout()->pageName = 'configMenu';
     }
@@ -82,18 +81,6 @@ class Admin_SampleNotTestedReasonsController extends Zend_Controller_Action
             $this->view->result = $schemeService->getNotTestedReasonById($id);
         } else {
             $this->redirect('admin/sample-not-tested-reasons/index');
-        }
-    }
-
-    public function updateStatusAction()
-    {
-        /** @var Zend_Controller_Request_Http $request */
-        $request = $this->getRequest();
-        if ($request->isPost()) {
-            $params = $request->getPost();
-            $dtsModel = new Application_Model_Dts();
-            $this->view->testkitList = $dtsModel->updateTestKitStatus($params);
-            $this->view->testkitStage = $stage;
         }
     }
 }
