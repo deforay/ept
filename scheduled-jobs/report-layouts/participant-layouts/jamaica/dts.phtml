@@ -197,7 +197,6 @@ if (!empty($resultArray['shipment'])) {
         // Testing should be done within 24*($sampleRehydrateDays) hours of rehydration.
         $rehydrateHours = $sampleRehydrateDays * 24;
         $sampleConditionFields = Pt_Commons_SchemeConfig::get('dts.displaySampleConditionFields');
-        ;
 
         $shipmentReceiptDate = "";
         if (isset($result['responseResult'][0]['shipment_receipt_date']) && trim($result['responseResult'][0]['shipment_receipt_date']) != "") {

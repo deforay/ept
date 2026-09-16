@@ -194,7 +194,6 @@ if (!empty($resultArray['shipment'])) {
         $labInfo .= '</table>';
         $pdf->writeHTML($labInfo, true, false, true, false, '');
 
-        $methodOfEvaluation == 'iso17043';
         if ($methodOfEvaluation == 'iso17043') {
             if (!empty($result['responseResult'])) {
                 $htmlTitle = '<span style="font-weight: bold;text-align:left;font-size:12px;">Your Dried Tube Specimen - HIV-1 Quantitative Viral Load Testing Proficiency results :</span>';

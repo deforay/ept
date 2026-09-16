@@ -2428,7 +2428,6 @@ class Application_Service_Shipments
                     );
                     if (isset($params['vlRef'][$i + 1]['assay'])) {
                         $assaySize = count($params['vlRef'][$i + 1]['assay']);
-                        ;
                         for ($e = 0; $e < $assaySize; $e++) {
                             if (trim($params['vlRef'][$i + 1]['assay'][$e]) != '' && trim($params['vlRef'][$i + 1]['value'][$e]) != '') {
                                 $dbAdapter->insert(
@@ -3161,7 +3160,6 @@ class Application_Service_Shipments
 
                     if (isset($params['vlRef'][$i + 1]['assay'])) {
                         $assaySize = count($params['vlRef'][$i + 1]['assay']);
-                        ;
                         for ($e = 0; $e < $assaySize; $e++) {
                             if (trim($params['vlRef'][$i + 1]['assay'][$e]) != '' && trim($params['vlRef'][$i + 1]['value'][$e]) != '') {
                                 $dbAdapter->insert(
@@ -3516,7 +3514,7 @@ class Application_Service_Shipments
 
                 $dbAdapter->delete('reference_result_generic_test', 'shipment_id = ' . $params['shipmentId']);
                 for ($i = 0; $i < $size; $i++) {
-                    $id = $dbAdapter->insert(
+                    $dbAdapter->insert(
                         'reference_result_generic_test',
                         [
                             'shipment_id' => $params['shipmentId'],
@@ -4322,9 +4320,7 @@ class Application_Service_Shipments
         if (isset($params['manualOverride']) && $params['manualOverride'] == 'yes') {
             // To get scheme config
             $dtsPassPercentage = Pt_Commons_SchemeConfig::get('dts.passPercentage') ?? 100;
-            $shipmentDB = new Application_Model_DbTable_Shipments();
 
-            $shipmentDeails = $shipmentDB->fetchRow('shipment_id = ' . $params['shipmentId']);
             $shipmentScore = ((isset($params['shipmentScore']) && $params['shipmentScore'] != '') ? $params['shipmentScore'] : 0);
             $docScore = ((isset($params['documentationScore']) && $params['documentationScore'] != '') ? $params['documentationScore'] : 0);
             if (isset($params['manualCorrective']) && $params['manualCorrective'] != '') {
@@ -4452,8 +4448,6 @@ class Application_Service_Shipments
         // To get scheme config
         $dtsPassPercentage = Pt_Commons_SchemeConfig::get('dts.passPercentage') ?? 100;
         if (isset($params['manualOverride']) && $params['manualOverride'] == 'yes') {
-            $shipmentDB = new Application_Model_DbTable_Shipments();
-            $shipmentDeails = $shipmentDB->fetchRow('shipment_id = ' . $params['shipmentId']);
             $shipmentScore = ((isset($params['shipmentScore']) && $params['shipmentScore'] != '') ? $params['shipmentScore'] : 0);
             $docScore = ((isset($params['documentationScore']) && $params['documentationScore'] != '') ? $params['documentationScore'] : 0);
             if (isset($params['manualCorrective']) && $params['manualCorrective'] != '') {
@@ -4722,10 +4716,8 @@ class Application_Service_Shipments
             $row[] = ($aRow['final_result'] == 1) ? 'Pass' : 'Fail';
             if (isset($parameters['originatedFrom']) && !empty($parameters['originatedFrom']) && $parameters['originatedFrom'] == 'admin') {
                 $row[] = '<br>&nbsp;<a class="btn btn-primary btn-xs" href="/reports/corrective-preventive-actions/capa/id/' . base64_encode($aRow['participant_id']) . '"><span><i class="icon-plus"></i> Action</span></a>';
-                ;
             } else {
                 $row[] = '<br>&nbsp;<a class="btn btn-primary btn-xs" href="/capa/capa/id/' . base64_encode($aRow['participant_id']) . '"><span><i class="icon-plus"></i> Action</span></a>';
-                ;
             }
             $output['aaData'][] = $row;
         }
@@ -4836,7 +4828,7 @@ class Application_Service_Shipments
 
             foreach ($output as $rowNo => $rowData) {
                 $colNo = 0;
-                foreach ($rowData as $field => $value) {
+                foreach ($rowData as $value) {
                     if (!isset($value)) {
                         $value = '';
                     }
@@ -4960,7 +4952,7 @@ class Application_Service_Shipments
 
             foreach ($output as $rowNo => $rowData) {
                 $colNo = 0;
-                foreach ($rowData as $field => $value) {
+                foreach ($rowData as $value) {
                     if (!isset($value)) {
                         $value = '';
                     }

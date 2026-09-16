@@ -1525,7 +1525,7 @@ class Application_Service_Evaluation
                 }
             }
             $updateArray['manual_override'] = (isset($params['manualOverride']) && $params['manualOverride'] != '') ? $params['manualOverride'] : 'no';
-            $id = $db->update('shipment_participant_map', $updateArray, 'map_id = ' . $params['smid']);
+            $db->update('shipment_participant_map', $updateArray, 'map_id = ' . $params['smid']);
             $db->commit();
         } catch (Throwable $e) {
             $db->rollBack();
@@ -3447,7 +3447,6 @@ class Application_Service_Evaluation
                 }
                 // $shipmentResult['testKit'] = $db->fetchAll($tksql);
                 $tksql->group($testkitGroup);
-                ;
                 $shipmentResult['testKitByTestNumber'] = $db->fetchAll($tksql);
 
                 // testkit chart

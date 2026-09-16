@@ -62,25 +62,9 @@ class Application_Service_Common
         if (empty($date) || 'undefined' === $date || 'null' === $date || '0000-00-00' === $date) {
             $response = false;
         } else {
-            try {
-                new DateTimeImmutable($date);
-                $errors = DateTimeImmutable::getLastErrors();
-                if (
-                    !empty($errors['warning_count'])
-                    || !empty($errors['error_count'])
-                ) {
-                    $response = false;
-                } else {
-                    $response = true;
-                }
-            } catch (Throwable $e) {
-                Pt_Commons_LoggerUtility::logError($e->getMessage(), [
-                    'file'  => $e->getFile(),
-                    'line'  => $e->getLine(),
-                    'trace' => $e->getTraceAsString(),
-                ]);
-                $response = false;
-            }
+            // Same parser as DateTimeImmutable, but reports problems instead of throwing
+            $parsed = date_parse($date);
+            $response = empty($parsed['warning_count']) && empty($parsed['error_count']);
         }
 
         return $response;

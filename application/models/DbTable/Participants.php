@@ -2871,7 +2871,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
 
             foreach ($output as $rowNo => $rowData) {
                 $colNo = 0;
-                foreach ($rowData as $field => $value) {
+                foreach ($rowData as $value) {
                     if (!isset($value)) {
                         $value = '';
                     }

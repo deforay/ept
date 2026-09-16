@@ -1964,7 +1964,7 @@ class Application_Service_Reports
 
             foreach ($output as $rowNo => $rowData) {
                 $colNo = 0;
-                foreach ($rowData as $field => $value) {
+                foreach ($rowData as $value) {
                     if (!isset($value)) {
                         $value = '';
                     }
@@ -2098,7 +2098,7 @@ class Application_Service_Reports
 
             foreach ($output as $rowNo => $rowData) {
                 $colNo = 0;
-                foreach ($rowData as $field => $value) {
+                foreach ($rowData as $value) {
                     if (!isset($value)) {
                         $value = '';
                     }
@@ -2200,7 +2200,7 @@ class Application_Service_Reports
 
             foreach ($output as $rowNo => $rowData) {
                 $colNo = 0;
-                foreach ($rowData as $field => $value) {
+                foreach ($rowData as $value) {
                     if (!isset($value)) {
                         $value = '';
                     }
@@ -2858,7 +2858,7 @@ class Application_Service_Reports
 
             foreach ($output as $rowNo => $rowData) {
                 $colNo = 0;
-                foreach ($rowData as $field => $value) {
+                foreach ($rowData as $value) {
                     if (!isset($value)) {
                         $value = '';
                     }
@@ -2956,7 +2956,7 @@ class Application_Service_Reports
 
             foreach ($output as $rowNo => $rowData) {
                 $colNo = 0;
-                foreach ($rowData as $field => $value) {
+                foreach ($rowData as $value) {
                     if (!isset($value)) {
                         $value = '';
                     }
@@ -5075,7 +5075,7 @@ class Application_Service_Reports
 
             foreach ($output as $rowNo => $rowData) {
                 $colNo = 0;
-                foreach ($rowData as $field => $value) {
+                foreach ($rowData as $value) {
                     if (!isset($value)) {
                         $value = '';
                     }

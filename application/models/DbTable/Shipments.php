@@ -1238,7 +1238,6 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             'iTotalDisplayRecords' => $iFilteredTotal,
             'aaData' => [],
         ];
-        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $common = new Application_Service_Common();
         $feedbackOption = $common->getConfig('participant_feedback');
         foreach ($rResult as $aRow) {

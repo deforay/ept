@@ -394,7 +394,6 @@ class Admin_EvaluateController extends Zend_Controller_Action
         if ($this->hasParam('sid')) {
             if ($request->isPost()) {
                 $shipmentId = (int)base64_decode($this->_getParam('sid'));
-                $schemeService = new Application_Service_Schemes();
                 $this->view->result = $vlModel->getVlRangeInformation($shipmentId);
                 $this->view->shipmentId = $shipmentId;
             }

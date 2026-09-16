@@ -274,7 +274,7 @@ $resolvedHelpSlug = $helpSlugMap[$activeMenu] ?? '';
                 <ul class="sidebar-menu">
                     <li class="header"><?= $this->translate->_("MAIN NAVIGATION"); ?></li>
 
-                    <?php if (empty($authNameSpace->dm_id) || empty($authNameSpace->dm_id)) { ?>
+                    <?php if (empty($authNameSpace->dm_id)) { ?>
                         <li class="<?php echo ($activeMenu == 'home') ? ' active ' : '';  ?>">
                             <a href="/">
                                 <i class="icon icon-home"></i>

@@ -1787,7 +1787,7 @@ final class Application_Model_Dts
             $resultsReportedSheet->getStyle($repeatFirstCellName . '1')->applyFromArray($borderStyle, true);
             $resultsReportedSheet->getStyle($repeatSecondCellName . '1')->applyFromArray($borderStyle, true);
         }
-        foreach ($reportHeadings as $field => $value) {
+        foreach ($reportHeadings as $value) {
             $resultsReportedSheet->setCellValue(Coordinate::stringFromColumnIndex($colNo + 1) . $currentRow, $value);
             $resultsReportedSheet->getStyle(Coordinate::stringFromColumnIndex($colNo + 1) . $currentRow)->getFont()->setBold(true);
             $resultsReportedSheet->getStyle(Coordinate::stringFromColumnIndex($colNo + 1) . $currentRow)->applyFromArray($borderStyle, true);
@@ -2374,7 +2374,6 @@ final class Application_Model_Dts
 
         $excel->setActiveSheetIndex(0);
 
-        $authNameSpace = new Zend_Session_Namespace('datamanagers');
         $auditDb = new Application_Model_DbTable_AuditLog();
         $auditDb->addNewAuditLog('Downloaded DTS Rapid HIV report - ' . ($shipmentCode ?? '?'), 'shipment');
 

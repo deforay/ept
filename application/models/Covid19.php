@@ -682,7 +682,7 @@ class Application_Model_Covid19
         $sheet->getStyle($firstCellName . '1')->applyFromArray($borderStyle, true);
         $sheet->getStyle($secondCellName . '1')->applyFromArray($borderStyle, true);
 
-        foreach ($reportHeadings as $field => $value) {
+        foreach ($reportHeadings as $value) {
 
             $sheet->getCell(Coordinate::stringFromColumnIndex($colNo + 1), $currentRow)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
             $sheet->getStyle(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($colNo + 1) . $currentRow, null, null)->getFont()->setBold(true);
