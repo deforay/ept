@@ -80,7 +80,7 @@ final class Pt_Commons_LoggerUtility
             $logger->log($level, $message, $context);
         } catch (Throwable $e) {
             // Flatten line breaks so a message can't forge extra log entries.
-            error_log('[ePT logger] ' . strtoupper((string) $level) . ': ' . str_replace(["\r", "\n"], ' ', (string) $message)
+            error_log('[ePT logger] ' . strtoupper((string) $level) . ': ' . preg_replace('/[\x00-\x1F\x7F]+/', ' ', (string) $message)
                 . ' | logging failed: ' . $e->getMessage());
         }
     }

@@ -22,7 +22,8 @@ class LogController extends Zend_Controller_Action
         if ($payload === null) {
             return;
         }
-        $message = $this->trimField($payload['message'] ?? '', self::MAX_FIELD_LENGTH);
+        // Control characters (CR/LF included) could forge extra log lines.
+        $message = preg_replace('/[\x00-\x1F\x7F]+/', ' ', $this->trimField($payload['message'] ?? '', self::MAX_FIELD_LENGTH));
         if ($message === '') {
             $response->setHttpResponseCode(204);
             return;

@@ -89,13 +89,11 @@ foreach ($bundles as $bundle) {
         if ($entry === false || !str_starts_with($entry, $prefix) || !str_ends_with($entry, '.pdf')) {
             continue;
         }
-        $uniqueIdentifier = substr($entry, strlen($prefix), -4);
-        // The identifier becomes a directory name under downloads/, so reject
-        // anything that could climb out of it (separators, "." or "..").
-        if (
-            $uniqueIdentifier === '' || $uniqueIdentifier === '.' || $uniqueIdentifier === '..'
-            || $uniqueIdentifier !== basename($uniqueIdentifier) || str_contains($uniqueIdentifier, '\\')
-        ) {
+        $rawIdentifier = substr($entry, strlen($prefix), -4);
+        // The identifier becomes a directory name under downloads/, so reduce it
+        // to a bare name and skip entries that tried to climb out of it.
+        $uniqueIdentifier = basename(str_replace('\\', '/', $rawIdentifier));
+        if ($uniqueIdentifier !== $rawIdentifier || $uniqueIdentifier === '' || $uniqueIdentifier === '.' || $uniqueIdentifier === '..') {
             continue;
         }
 
