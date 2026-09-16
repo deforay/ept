@@ -2800,6 +2800,7 @@ class Application_Service_Reports
             $this->translator->_('Pass %'),
         ];
 
+        $sQuerySession = new Zend_Session_Namespace('ParticipantTrendsExcel');
         try {
             $excel = new Spreadsheet();
 
@@ -2838,7 +2839,6 @@ class Application_Service_Reports
             }
 
             $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-            $sQuerySession = new Zend_Session_Namespace('ParticipantTrendsExcel');
             $rResult = $db->fetchAll($sQuerySession->participantRegionQuery);
             foreach ($rResult as $aRow) {
                 $row = [];

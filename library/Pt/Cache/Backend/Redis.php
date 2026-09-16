@@ -397,9 +397,7 @@ class Deforay_Cache_Backend_Redis extends Zend_Cache_Backend implements Zend_Cac
         foreach ($tag as $t) {
             $deleteTags[] = $this->_keyFromTag($t);
         }
-        if ($deleteTags && count($deleteTags)) {
-            $this->_redis->delete($deleteTags);
-        }
+        $this->_redis->delete($deleteTags);
 
         return true;
     }
