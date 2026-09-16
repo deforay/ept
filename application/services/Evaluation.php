@@ -300,9 +300,9 @@ class Application_Service_Evaluation
                         continue;
                     }
                     if ($i < $colSize - 1) {
-                        $sWhereSub .= $aColumns[$i] . " LIKE '%" . ($search) . "%' OR ";
+                        $sWhereSub .= $aColumns[$i] . ' LIKE ' . Pt_Commons_General::sqlLikeContains($search) . ' OR ';
                     } else {
-                        $sWhereSub .= $aColumns[$i] . " LIKE '%" . ($search) . "%' ";
+                        $sWhereSub .= $aColumns[$i] . ' LIKE ' . Pt_Commons_General::sqlLikeContains($search) . ' ';
                     }
                 }
                 $sWhereSub .= ')';
@@ -314,9 +314,9 @@ class Application_Service_Evaluation
         for ($i = 0; $i < count($aColumns); $i++) {
             if (isset($parameters['bSearchable_' . $i]) && $parameters['bSearchable_' . $i] == 'true' && $parameters['sSearch_' . $i] != '') {
                 if ($sWhere == '') {
-                    $sWhere .= $aColumns[$i] . " LIKE '%" . ($parameters['sSearch_' . $i]) . "%' ";
+                    $sWhere .= $aColumns[$i] . ' LIKE ' . Pt_Commons_General::sqlLikeContains($parameters['sSearch_' . $i]) . ' ';
                 } else {
-                    $sWhere .= ' AND ' . $aColumns[$i] . " LIKE '%" . ($parameters['sSearch_' . $i]) . "%' ";
+                    $sWhere .= ' AND ' . $aColumns[$i] . ' LIKE ' . Pt_Commons_General::sqlLikeContains($parameters['sSearch_' . $i]) . ' ';
                 }
             }
         }
@@ -4881,11 +4881,11 @@ class Application_Service_Evaluation
                 } else {
                     $sWhereSub .= ' AND (';
                 }
-                $sWhereSub .= "p.first_name LIKE '%" . addslashes($search) . "%' OR ";
-                $sWhereSub .= "p.last_name LIKE '%" . addslashes($search) . "%' OR ";
-                $sWhereSub .= "p.unique_identifier LIKE '%" . addslashes($search) . "%' OR ";
-                $sWhereSub .= "p.state LIKE '%" . addslashes($search) . "%' OR ";
-                $sWhereSub .= "p.district LIKE '%" . addslashes($search) . "%'";
+                $sWhereSub .= 'p.first_name LIKE ' . Pt_Commons_General::sqlLikeContains($search) . ' OR ';
+                $sWhereSub .= 'p.last_name LIKE ' . Pt_Commons_General::sqlLikeContains($search) . ' OR ';
+                $sWhereSub .= 'p.unique_identifier LIKE ' . Pt_Commons_General::sqlLikeContains($search) . ' OR ';
+                $sWhereSub .= 'p.state LIKE ' . Pt_Commons_General::sqlLikeContains($search) . ' OR ';
+                $sWhereSub .= 'p.district LIKE ' . Pt_Commons_General::sqlLikeContains($search) . '';
                 $sWhereSub .= ')';
             }
             $sWhere .= $sWhereSub;

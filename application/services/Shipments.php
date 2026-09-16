@@ -412,9 +412,9 @@ class Application_Service_Shipments
                 for ($i = 0; $i < $colSize; $i++) {
                     if (isset($aColumns[$i]) && !empty($aColumns[$i])) {
                         if ($i < $colSize - 1) {
-                            $sWhereSub .= $aColumns[$i] . " LIKE '%" . ($search) . "%' OR ";
+                            $sWhereSub .= $aColumns[$i] . ' LIKE ' . Pt_Commons_General::sqlLikeContains($search) . ' OR ';
                         } else {
-                            $sWhereSub .= $aColumns[$i] . " LIKE '%" . ($search) . "%' ";
+                            $sWhereSub .= $aColumns[$i] . ' LIKE ' . Pt_Commons_General::sqlLikeContains($search) . ' ';
                         }
                     }
                 }
@@ -428,9 +428,9 @@ class Application_Service_Shipments
             if (isset($aColumns[$i]) && !empty($aColumns[$i])) {
                 if (isset($parameters["bSearchable_$i"]) && $parameters["bSearchable_$i"] == 'true' && $parameters["sSearch_$i"] != '') {
                     if ($sWhere == '') {
-                        $sWhere .= $aColumns[$i] . " LIKE '%" . ($parameters['sSearch_' . $i]) . "%' ";
+                        $sWhere .= $aColumns[$i] . ' LIKE ' . Pt_Commons_General::sqlLikeContains($parameters['sSearch_' . $i]) . ' ';
                     } else {
-                        $sWhere .= ' AND ' . $aColumns[$i] . " LIKE '%" . ($parameters['sSearch_' . $i]) . "%' ";
+                        $sWhere .= ' AND ' . $aColumns[$i] . ' LIKE ' . Pt_Commons_General::sqlLikeContains($parameters['sSearch_' . $i]) . ' ';
                     }
                 }
             }
@@ -4600,9 +4600,9 @@ class Application_Service_Shipments
                 for ($i = 0; $i < $colSize; $i++) {
                     if (isset($aColumns[$i]) && !empty($aColumns[$i])) {
                         if ($i < $colSize - 1) {
-                            $sWhereSub .= $aColumns[$i] . " LIKE '%" . ($search) . "%' OR ";
+                            $sWhereSub .= $aColumns[$i] . ' LIKE ' . Pt_Commons_General::sqlLikeContains($search) . ' OR ';
                         } else {
-                            $sWhereSub .= $aColumns[$i] . " LIKE '%" . ($search) . "%' ";
+                            $sWhereSub .= $aColumns[$i] . ' LIKE ' . Pt_Commons_General::sqlLikeContains($search) . ' ';
                         }
                     }
                 }
@@ -4616,9 +4616,9 @@ class Application_Service_Shipments
             if (isset($aColumns[$i]) && !empty($aColumns[$i])) {
                 if (isset($parameters['bSearchable_' . $i]) && $parameters['bSearchable_' . $i] == 'true' && $parameters['sSearch_' . $i] != '') {
                     if ($sWhere == '') {
-                        $sWhere .= $aColumns[$i] . " LIKE '%" . ($parameters['sSearch_' . $i]) . "%' ";
+                        $sWhere .= $aColumns[$i] . ' LIKE ' . Pt_Commons_General::sqlLikeContains($parameters['sSearch_' . $i]) . ' ';
                     } else {
-                        $sWhere .= ' AND ' . $aColumns[$i] . " LIKE '%" . ($parameters['sSearch_' . $i]) . "%' ";
+                        $sWhere .= ' AND ' . $aColumns[$i] . ' LIKE ' . Pt_Commons_General::sqlLikeContains($parameters['sSearch_' . $i]) . ' ';
                     }
                 }
             }

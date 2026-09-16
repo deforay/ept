@@ -207,6 +207,12 @@ class Pt_Commons_General
         return strtoupper((string) $raw) === 'DESC' ? 'DESC' : 'ASC';
     }
 
+    // Quoted '%value%' literal for a LIKE search built from request input
+    public static function sqlLikeContains($value): string
+    {
+        return Zend_Db_Table_Abstract::getDefaultAdapter()->quote('%' . (string) $value . '%');
+    }
+
     // Generate a ULID
     public static function generateULID($attachExtraString = true): string
     {

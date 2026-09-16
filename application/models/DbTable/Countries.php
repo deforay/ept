@@ -18,9 +18,9 @@ class Application_Model_DbTable_Countries extends Zend_Db_Table_Abstract
     public function fetchAllCountries($search)
     {
         $sql = $this->select();
-        $sql =  $sql->where("iso_name LIKE '%" . $search . "%'")
-            ->orWhere("iso2 LIKE '%" . $search . "%'")
-            ->orWhere("iso3 LIKE '%" . $search . "%'");
+        $sql =  $sql->where('iso_name LIKE ' . Pt_Commons_General::sqlLikeContains($search) . '')
+            ->orWhere('iso2 LIKE ' . Pt_Commons_General::sqlLikeContains($search) . '')
+            ->orWhere('iso3 LIKE ' . Pt_Commons_General::sqlLikeContains($search) . '');
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
         if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1 && !empty($authNameSpace->ptccMappedCountries)) {
             $sql = $sql->where('id IN(' . $authNameSpace->ptccMappedCountries . ')');

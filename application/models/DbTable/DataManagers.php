@@ -135,9 +135,9 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
 
                 for ($i = 0; $i < $colSize; $i++) {
                     if ($i < $colSize - 1) {
-                        $sWhereSub .= $searchableColumns[$i] . " LIKE '%" . ($search) . "%' OR ";
+                        $sWhereSub .= $searchableColumns[$i] . ' LIKE ' . Pt_Commons_General::sqlLikeContains($search) . ' OR ';
                     } else {
-                        $sWhereSub .= $searchableColumns[$i] . " LIKE '%" . ($search) . "%' ";
+                        $sWhereSub .= $searchableColumns[$i] . ' LIKE ' . Pt_Commons_General::sqlLikeContains($search) . ' ';
                     }
                 }
                 $sWhereSub .= ')';
@@ -157,9 +157,9 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                     continue;
                 }
                 if ($sWhere == '') {
-                    $sWhere .= $aColumns[$i] . " LIKE '%" . ($parameters['sSearch_' . $i]) . "%' ";
+                    $sWhere .= $aColumns[$i] . ' LIKE ' . Pt_Commons_General::sqlLikeContains($parameters['sSearch_' . $i]) . ' ';
                 } else {
-                    $sWhere .= ' AND ' . $aColumns[$i] . " LIKE '%" . ($parameters['sSearch_' . $i]) . "%' ";
+                    $sWhere .= ' AND ' . $aColumns[$i] . ' LIKE ' . Pt_Commons_General::sqlLikeContains($parameters['sSearch_' . $i]) . ' ';
                 }
             }
         }

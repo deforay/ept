@@ -43,7 +43,7 @@ class Application_Model_DbTable_CustomPageContent extends Zend_Db_Table_Abstract
     {
         $sql = $this->getAdapter()->select()->from(['hs' => $this->_name], ['title', 'content']);
         if (isset($title) && !empty($title)) {
-            $sql = $sql->where("title like '%" . $title . "%'");
+            $sql = $sql->where('title LIKE ?', '%' . $title . '%');
             return $this->getAdapter()->fetchAll($sql);
         } else {
             $sql = $sql->where('status= ? ', 'active');
