@@ -489,15 +489,6 @@ final class Application_Model_Dts
                 // line visibility used later
                 $verificationLine = $result['dts_rtri_diagnosis_line'] ?? null;
 
-                $algo = [
-                    'algoResult' => 'Fail',
-                    'scorePct' => 0.0,
-                    'sypAlgoResult' => null,
-                    'rtriAlgoResult' => null,
-                    'failureReason' => [],
-                    'correctiveActionList' => [],
-                ];
-
                 $correctiveActionList ??= [];
 
                 $algo = $this->evaluateAlgorithm(

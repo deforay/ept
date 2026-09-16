@@ -1,9 +1,3 @@
-// this function helps us to check if a string starts with a specified substring or not
-if (!String.prototype.startsWith) {
-	String.prototype.startsWith = function (str) {
-		return !this.indexOf(str);
-	}
-}
 
 //function to check if a given element has a particular class or not
 
@@ -96,9 +90,8 @@ function isNumeric(str, required) {
 	if (required) {
 		if ((str == null || str.length == 0))
 			return false;
-	} else {
-		if (str != "")
-			return !isNaN(parseFloat(str)) && isFinite(str);
+	} else if (str != "") {
+		return !isNaN(parseFloat(str)) && isFinite(str);
 	}
 	return true;
 }
@@ -178,16 +171,7 @@ function confirmPassword(name) {
 }
 //confirm mail address validation
 function confirmMailAddress(name) {
-	var elements = document.getElementsByName(name);
-	//assuming that there will be only 2 fields with this name
-
-	if (elements[0].value == elements[1].value) {
-		return true;
-	}
-	else {
-		return false;
-	}
-
+	return confirmPassword(name);
 }
 //checkbox or radio required validation
 function isRequiredCheckBox(name) {
@@ -273,9 +257,6 @@ function deforayValidatorInternal(formInputs, useTitleToShowMessage) {
 	var i, classes, valid, elementTitle, errorMsg, innerParts;
 	for (i = 0; i < formInputs.length; i++) {
 		classes = formInputs[i].className;
-		if (classes == "" || classes == null) {
-			valid = true;
-		}
 		var parts = classes.split(" ");
 
 		if (hasClassName(formInputs[i], "useTitle")) {
@@ -290,7 +271,6 @@ function deforayValidatorInternal(formInputs, useTitleToShowMessage) {
 		for (var cCount = 0; cCount < parts.length; cCount++) {
 			var required = false;
 			if (parts[cCount] == "isRequired") {
-				required = true;
 				if (formInputs[i].type == 'checkbox' || formInputs[i].type == 'radio') {
 					valid = isRequiredCheckBox(formInputs[i].name);
 					if (elementTitle != null && elementTitle != "") {
@@ -313,7 +293,7 @@ function deforayValidatorInternal(formInputs, useTitleToShowMessage) {
 				}
 			}
 			else if (parts[cCount] == "isEmail") {
-				var valu = (formInputs[i].value);
+				valu = (formInputs[i].value);
 				valid = isEmail(valu, required);
 				if (elementTitle != null && elementTitle != "") {
 					errorMsg = elementTitle;

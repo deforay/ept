@@ -69,7 +69,7 @@ final class Pt_Commons_MiscUtility
         $string = preg_replace('/[\x00-\x1F\x7F]/u', '', $string);
 
         // Trim Unicode whitespace and control characters from both ends
-        $string = preg_replace('/^[\p{Z}\p{C}]+|[\p{Z}\p{C}]+$/u', '', $string);
+        $string = preg_replace('/(?:^[\p{Z}\p{C}]+)|(?:[\p{Z}\p{C}]+$)/u', '', $string);
 
         return $string;
     }

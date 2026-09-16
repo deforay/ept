@@ -29,7 +29,7 @@ class Pt_Reports_FpdiReport extends Fpdi
         $this->generalModel = new Pt_Commons_General();
     }
 
-    public function setParams($resultStatus, $dateTime, $config = '', $watermark, $reportType, $layout, $scheme = '', $schemeType = '', $approveTxt = '', $staticFooterHtml = '', $shipmentAttributes = '', $distributionCode = '')
+    public function setParams($resultStatus, $dateTime, $config, $watermark, $reportType, $layout, $scheme = '', $schemeType = '', $approveTxt = '', $staticFooterHtml = '', $shipmentAttributes = '', $distributionCode = '')
     {
         $this->resultStatus       = $resultStatus;
         $this->dateTime           = $dateTime;

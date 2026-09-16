@@ -15,7 +15,7 @@ function generateReports(sId, checkReportDate, surveyDate, _type) {
         };
         if (_type === 'finalized') {
             payload.resultsApprovedOn = $('#resultsApprovedOn').val() || '';
-            payload.resultsApprovedBy = $.trim($('#resultsApprovedBy').val() || '');
+            payload.resultsApprovedBy = String($('#resultsApprovedBy').val() || '').trim();
         }
 
         $.post("/reports/distribution/queue-reports-generation", payload)

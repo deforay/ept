@@ -52,7 +52,6 @@ function goingUp(elm,toTop){
 
 function scrollFix() {
 	var obbx = getEl('mbox');
-	var olay = getEl('ol');
 	if(obbx.style.display != 'none'){	
 	clearTimeout(timer);
     var tp = posTop() + ((pageHeight() - hit) / 2) - 12;
@@ -84,7 +83,6 @@ var hit = 0;
 function showdefModal(obl, wd, ht) {
     wid=wd;
     hit=ht;
-    var h = 'hidden';
     var b = 'block';
     var p = 'px';
 	
@@ -141,7 +139,6 @@ function showdefModal(obl, wd, ht) {
     return false;
 }
 function hidedefModal() {
-    var v = 'visible';
     var n = 'none';
     getEl('ol').style.display = n;
     getEl('mbox').style.display = n;

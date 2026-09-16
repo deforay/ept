@@ -10,7 +10,7 @@ function getCookie(c_name)
     {
         x=ARRcookies[i].substr(0,ARRcookies[i].indexOf("="));
         y=ARRcookies[i].substr(ARRcookies[i].indexOf("=")+1);
-        x=x.replace(/^\s+|\s+$/g,"");
+        x=x.trim();
         if (x==c_name)
         {
             return unescape(y);
@@ -44,18 +44,21 @@ jQuery.cookie = function (key, value, options) {
 
         value = String(value);
 
-        return (document.cookie = [
+        var cookie = [
             encodeURIComponent(key), '=',
             options.raw ? value : encodeURIComponent(value),
             options.expires ? '; expires=' + options.expires.toUTCString() : '', // use expires attribute, max-age is not supported by IE
             options.path ? '; path=' + options.path : '',
             options.domain ? '; domain=' + options.domain : '',
             options.secure ? '; secure' : ''
-        ].join(''));
+        ].join('');
+        document.cookie = cookie;
+        return cookie;
     }
 
     // key and possibly options given, get cookie...
     options = value || {};
     var result, decode = options.raw ? function (s) { return s; } : decodeURIComponent;
-    return (result = new RegExp('(?:^|; )' + encodeURIComponent(key) + '=([^;]*)').exec(document.cookie)) ? decode(result[1]) : null;
+    result = new RegExp('(?:^|; )' + encodeURIComponent(key) + '=([^;]*)').exec(document.cookie);
+    return result ? decode(result[1]) : null;
 };

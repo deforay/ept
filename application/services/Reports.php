@@ -524,10 +524,6 @@ class Application_Service_Reports
             $sQuery = $sQuery->where($sWhere);
         }
 
-        if (!empty($sOrder)) {
-            $sQuery = $sQuery->order($sOrder);
-        }
-
         if (isset($sLimit) && isset($sOffset)) {
             $sQuery = $sQuery->limit($sLimit, $sOffset);
         }

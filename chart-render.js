@@ -45,7 +45,7 @@ for (let n = 0; n < 256; n++) {
 function pngCrc32(buf) {
     let crc = -1;
     for (let i = 0; i < buf.length; i++) crc = crcTable[(crc ^ buf[i]) & 0xFF] ^ (crc >>> 8);
-    return (crc ^ -1) | 0;
+    return crc ^ -1;
 }
 
 // Word-wrap a string to fit within maxWidth (in px) using the ctx's current font.

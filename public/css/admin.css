@@ -7727,8 +7727,6 @@ input[type="color"]:focus,
 	position: fixed
 }
 
-body {}
-
 .mandatory {
 	color: red;
 }
