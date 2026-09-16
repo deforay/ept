@@ -350,6 +350,12 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         if (isset($parameters['province']) && $parameters['province'] != '') {
             $sQuery = $sQuery->where('p.state = ?', $parameters['province']);
         }
+        if (!empty($parameters['surveyNumber'])) {
+            $sQuery = $sQuery->where('s.distribution_id = ?', $parameters['surveyNumber']);
+        }
+        if (!empty($parameters['participantId'])) {
+            $sQuery = $sQuery->where('p.participant_id = ?', $parameters['participantId']);
+        }
 
         if (isset($sWhere) && $sWhere != '') {
             $sQuery = $sQuery->where($sWhere);
@@ -1478,6 +1484,9 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         }
         if (isset($parameters['scheme']) && $parameters['scheme'] != '') {
             $sQuery = $sQuery->where('s.scheme_type = ?', $parameters['scheme']);
+        }
+        if (!empty($parameters['participantId'])) {
+            $sQuery = $sQuery->where('p.participant_id = ?', $parameters['participantId']);
         }
         $general = new Application_Service_Common();
         if (isset($parameters['startDate']) && $parameters['startDate'] != '' && isset($parameters['endDate']) && $parameters['endDate'] != '') {

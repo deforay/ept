@@ -67,23 +67,55 @@ $authNameSpace = new Zend_Session_Namespace('datamanagers');
 			<?= $this->translate->_("Inactive Schemes only"); ?>
 			<br /><br />
 
+			<div class="filter-panel js-filter-panel">
+				<button type="button" class="btn btn-default btn-sm js-filter-toggle" aria-expanded="false"
+					data-expand-text="<?= $this->htmlTranslate("Expand Filters"); ?>"
+					data-collapse-text="<?= $this->htmlTranslate("Collapse Filters"); ?>">
+					<i class="icon-filter"></i> <span class="js-filter-toggle-text"><?= $this->translate->_("Expand Filters"); ?></span>
+					<span class="label label-info js-filter-count" style="display:none;">0</span>
+					<span class="caret"></span>
+				</button>
+				<div class="js-filter-summary"></div>
+				<div class="js-filter-body">
 			<table class="table table-striped">
 				<tr class="dark">
 					<td><?= $this->translate->_("Shipment Code"); ?></td>
 					<td><?= $this->translate->_("Province"); ?></td>
+					<td><?= $this->translate->_("PT Survey Code"); ?></td>
+					<td><?= $this->translate->_("Participant"); ?></td>
 					<!-- <td>Action</td> -->
 				</tr>
 				<tr class="light">
 					<td>
-						<select id="shipmentCode" name="shipmentCode" class="select2 form-control">
+						<select id="shipmentCode" name="shipmentCode" class="select2 form-control" data-filter-label="<?= $this->htmlTranslate("Shipment Code"); ?>">
 							<option value=""> -- <?= $this->translate->_("Select Code"); ?> --</option>
 						</select>
 					</td>
 					<td>
-						<select id="province" name="province" class="form-control">
+						<select id="province" name="province" class="form-control" data-filter-label="<?= $this->htmlTranslate("Province"); ?>">
 							<option value=""> -- <?= $this->translate->_("Select State"); ?> --</option>
 							<?php foreach ($this->province as $province) { ?>
 								<option value="<?php echo $province['state']; ?>"><?php echo $province['state']; ?></option>
+							<?php } ?>
+						</select>
+					</td>
+					<td>
+						<select id="surveyNumber" name="surveyNumber" class="select2 form-control"
+							title="<?= $this->htmlTranslate("Please select the PT survey code to filter"); ?>"
+							data-filter-label="<?= $this->htmlTranslate("PT Survey Code"); ?>">
+							<option value=""></option>
+							<?php foreach ((array) $this->surveys as $survey) { ?>
+								<option value="<?php echo $this->escape($survey['distribution_id']); ?>"><?php echo $this->escape($survey['distribution_code']); ?></option>
+							<?php } ?>
+						</select>
+					</td>
+					<td>
+						<select id="participantId" name="participantId" class="select2 form-control"
+							title="<?= $this->htmlTranslate("Please select the participant to filter"); ?>"
+							data-filter-label="<?= $this->htmlTranslate("Participant"); ?>">
+							<option value=""></option>
+							<?php foreach ((array) $this->participants as $participant) { ?>
+								<option value="<?php echo $participant['participant_id']; ?>"><?php echo $this->escape($participant['unique_identifier'] . ' - ' . $participant['first_name'] . ' ' . $participant['last_name']); ?></option>
 							<?php } ?>
 						</select>
 					</td>
@@ -91,6 +123,8 @@ $authNameSpace = new Zend_Session_Namespace('datamanagers');
 							onclick="reportFilter()"><span><?= $this->translate->_("Filter"); ?></span></button></td>
 				</tr>
 			</table>
+				</div><!-- /.js-filter-body -->
+			</div><!-- /.filter-panel -->
 			<br><br>
 			<?php if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1) { ?>
 				<button class="btn btn-warning btn-sm pull-right" onclick="downloadPendingSites()"><i
@@ -225,6 +259,14 @@ $authNameSpace = new Zend_Session_Namespace('datamanagers');
 					"name": "province",
 					"value": $("#province").val()
 				});
+				aoData.push({
+					"name": "surveyNumber",
+					"value": $("#surveyNumber").val()
+				});
+				aoData.push({
+					"name": "participantId",
+					"value": $("#participantId").val()
+				});
 			},
 			"fnServerData": function(sSource, aoData, fnCallback) {
 				$.ajax({
@@ -251,7 +293,15 @@ $authNameSpace = new Zend_Session_Namespace('datamanagers');
 
 	$(document).ready(function() {
 
-		$(".select2").select2({
+		$(".select2").not("#surveyNumber, #participantId").select2({
+			allowClear: true
+		});
+		$("#surveyNumber").select2({
+			placeholder: "<?= $this->jsTranslate("Select PT Survey Code"); ?>",
+			allowClear: true
+		});
+		$("#participantId").select2({
+			placeholder: "<?= $this->jsTranslate("Select Participant"); ?>",
 			allowClear: true
 		});
 
@@ -401,3 +451,5 @@ $authNameSpace = new Zend_Session_Namespace('datamanagers');
 		}
 	}
 </script>
+<?php // Must stay last: the panel collapses only after the select2 widgets above have measured themselves.
+include APPLICATION_PATH . '/views/partials/collapsible-filters.phtml'; ?>

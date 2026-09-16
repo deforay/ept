@@ -59,6 +59,15 @@
     <div class="box">
         <div class="box-body">
             <div class="filter-panel js-filter-panel">
+                <button type="button" class="btn btn-default btn-sm js-filter-toggle" aria-expanded="false"
+                    data-expand-text="<?= $this->htmlTranslate("Expand Filters"); ?>"
+                    data-collapse-text="<?= $this->htmlTranslate("Collapse Filters"); ?>">
+                    <i class="icon-filter"></i> <span class="js-filter-toggle-text"><?= $this->translate->_("Expand Filters"); ?></span>
+                    <span class="label label-info js-filter-count" style="display:none;">0</span>
+                    <span class="caret"></span>
+                </button>
+                <div class="js-filter-summary"></div>
+                <div class="js-filter-body">
                 <table class="table table-striped">
                     <tr class="dark">
                         <td style="width:25%"><?= $this->translate->_("Shipment Date"); ?></td>
@@ -72,9 +81,10 @@
                     </tr>
                     <tr class="light">
                         <td><input type="text" id="dateRange" name="dateRange" class="form-control" readonly="readonly"
-                                style="background: #fff" placeholder="<?= $this->htmlTranslate("Click here to pick a Date Range"); ?>" /></td>
+                                style="background: #fff" placeholder="<?= $this->htmlTranslate("Click here to pick a Date Range"); ?>"
+                                data-filter-label="<?= $this->htmlTranslate("Shipment Date"); ?>" /></td>
                         <td>
-                            <select id="scheme" name="scheme" class="form-control">
+                            <select id="scheme" name="scheme" class="form-control" data-filter-label="<?= $this->htmlTranslate("Scheme"); ?>">
                                 <option value=""> -- <?= $this->translate->_("Select Scheme Type"); ?> --</option>
                                 <?php
                                 foreach ($this->schemes as $scheme) {
@@ -90,6 +100,7 @@
                             <td>
                                 <select class="form-control select2" id="country" name="country"
                                     title="<?= $this->htmlTranslate("Please select the country to filter"); ?>"
+                                    data-filter-label="<?= $this->htmlTranslate("Country"); ?>"
                                     onchange="getOptions('participant', 'country', 'region', this.value, 'region');getOptions('participant', 'country', 'district', this.value, 'district');">
                                     <option value=""></option>
                                     <?php foreach ($this->countries as $country) { ?>
@@ -102,6 +113,7 @@
                             <td>
                                 <select class="form-control select2" id="region" name="region"
                                     title="<?= $this->htmlTranslate("Please select the region to filter"); ?>"
+                                    data-filter-label="<?= $this->htmlTranslate("Region"); ?>"
                                     onchange="getOptions('participant', 'region', 'district', this.value, 'district');">
                                     <option value=""></option>
                                     <?php foreach ($this->regions as $region) { ?>
@@ -123,7 +135,8 @@
                         <?php if (!empty($this->districts)) { ?>
                             <td>
                                 <select class="form-control select2" id="district" name="district"
-                                    title="<?= $this->htmlTranslate("Please select the district to filter"); ?>">
+                                    title="<?= $this->htmlTranslate("Please select the district to filter"); ?>"
+                                    data-filter-label="<?= $this->htmlTranslate("District"); ?>">
                                     <option value=""></option>
                                     <?php foreach ($this->districts as $district) { ?>
                                         <option value="<?php echo $this->escape($district['district']); ?>"><?php echo ucwords($district['district']); ?></option>
@@ -133,7 +146,8 @@
                         <?php } ?>
                         <td>
                             <select id="finalResult" name="finalResult" class="form-control select2"
-                                title="<?= $this->htmlTranslate("Please select the result outcome to filter"); ?>">
+                                title="<?= $this->htmlTranslate("Please select the result outcome to filter"); ?>"
+                                data-filter-label="<?= $this->htmlTranslate("Result Outcome"); ?>">
                                 <option value=""></option>
                                 <option value="1"><?= $this->translate->_("Satisfactory"); ?></option>
                                 <option value="2"><?= $this->translate->_("Unsatisfactory"); ?></option>
@@ -142,7 +156,8 @@
                         </td>
                         <td>
                             <select class="form-control select2" id="surveyNumber" name="surveyNumber"
-                                title="<?= $this->htmlTranslate("Please select the survey number to filter"); ?>">
+                                title="<?= $this->htmlTranslate("Please select the survey number to filter"); ?>"
+                                data-filter-label="<?= $this->htmlTranslate("Survey Number"); ?>">
                                 <option value=""></option>
                                 <?php foreach ((array) $this->surveys as $survey) { ?>
                                     <option value="<?php echo $this->escape($survey['distribution_id']); ?>"><?php echo $this->escape($survey['distribution_code']); ?></option>
@@ -152,7 +167,8 @@
                     
                         <td>
                             <select id="responseStatus" name="responseStatus" class="form-control select2"
-                                title="<?= $this->htmlTranslate("Please select the response status to filter"); ?>">
+                                title="<?= $this->htmlTranslate("Please select the response status to filter"); ?>"
+                                data-filter-label="<?= $this->htmlTranslate("Response Status"); ?>">
                                 <option value="responded" selected><?= $this->translate->_("Responded"); ?></option>
                                 <option value="noresponse"><?= $this->translate->_("Not Responded"); ?></option>
                                 <option value="late"><?= $this->translate->_("Late Response"); ?></option>
@@ -166,6 +182,7 @@
                         </td>
                     </tr>
                 </table>
+                </div><!-- /.js-filter-body -->
             </div><!-- /.filter-panel -->
             <div id="rptBulkToolbar" style="margin:10px 0;display:none;">
                 <button class="btn btn-success btn-sm" id="rptBulkBtn" onclick="bulkDownloadReports()" disabled>
@@ -299,6 +316,15 @@
                 endDate = end.format('DD-MMM-YYYY');
             });
         $('#dateRange').val("");
+        // The picker only updates startDate/endDate through its own apply
+        // callback above — so clearing the field some other way (e.g. the "x"
+        // on its filter-summary pill) needs its own hook to keep them in sync.
+        $('#dateRange').on('change', function () {
+            if ($(this).val() === '') {
+                startDate = '';
+                endDate = '';
+            }
+        });
         oTable = $('#individualReportTable').dataTable({
             //"paging": paging,
             "bJQueryUI": false,

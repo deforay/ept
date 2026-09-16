@@ -325,6 +325,89 @@ class Application_Service_Participants
         return $db->fetchAll($sql);
     }
 
+    /**
+     * Participant list for the "Participants" filter on /participant/corrective.
+     * Scoped exactly like the corrective-action report itself (finalized
+     * shipment, has a corrective-action file, unsatisfactory result) so the
+     * dropdown only ever offers participants who can actually return a row.
+     */
+    public function getCorrectiveActionParticipantList()
+    {
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $sql = $db->select()
+            ->from(['p' => 'participant'], ['p.participant_id', 'p.unique_identifier', 'p.first_name', 'p.last_name'])
+            ->join(['spm' => 'shipment_participant_map'], 'spm.participant_id = p.participant_id', [])
+            ->join(['s' => 'shipment'], 's.shipment_id = spm.shipment_id', [])
+            ->where("s.status = 'finalized'")
+            ->where("s.corrective_action_file NOT LIKE ''")
+            ->where('spm.final_result = 2')
+            ->group('p.participant_id')
+            ->order('p.first_name');
+        $authNameSpace = new Zend_Session_Namespace('datamanagers');
+        if (!empty($authNameSpace->dm_id)) {
+            $sql = $sql
+                ->joinLeft(['pmm' => 'participant_manager_map'], 'pmm.participant_id = p.participant_id', [])
+                ->where('pmm.dm_id = ?', $authNameSpace->dm_id);
+        }
+        return $db->fetchAll($sql);
+    }
+
+    /**
+     * PT Survey ("PT Survey Code") list for the filter on
+     * /participant/current-schemes. Scoped the same way as that page's own
+     * grid (shipped/evaluated, not cancelled) rather than
+     * getParticipantSurveyList's finalized-only scope, so the dropdown only
+     * offers surveys that can actually return a row there.
+     */
+    public function getCurrentSchemeSurveyList()
+    {
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $sql = $db->select()
+            ->from(['d' => 'distributions'], ['d.distribution_id', 'd.distribution_code'])
+            ->join(['s' => 'shipment'], 's.distribution_id = d.distribution_id', [])
+            ->join(['spm' => 'shipment_participant_map'], 'spm.shipment_id = s.shipment_id', [])
+            ->join(['p' => 'participant'], 'p.participant_id = spm.participant_id', [])
+            ->where("(s.status = 'shipped' OR s.status = 'evaluated')")
+            ->where('s.cancelled_at IS NULL')
+            ->where('d.distribution_code IS NOT NULL')
+            ->where("d.distribution_code != ''")
+            ->group('d.distribution_id')
+            ->order('d.distribution_code');
+        $authNameSpace = new Zend_Session_Namespace('datamanagers');
+        if (!empty($authNameSpace->dm_id)) {
+            $sql = $sql
+                ->joinLeft(['pmm' => 'participant_manager_map'], 'pmm.participant_id = p.participant_id', [])
+                ->where('pmm.dm_id = ?', $authNameSpace->dm_id);
+        }
+        return $db->fetchAll($sql);
+    }
+
+    /**
+     * Participant list for the "Participant" filter on
+     * /participant/current-schemes. Scoped the same way as that page's own
+     * grid (shipped/evaluated, not cancelled), so the dropdown only offers
+     * participants who can actually return a row there.
+     */
+    public function getCurrentSchemeParticipantList()
+    {
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $sql = $db->select()
+            ->from(['p' => 'participant'], ['p.participant_id', 'p.unique_identifier', 'p.first_name', 'p.last_name'])
+            ->join(['spm' => 'shipment_participant_map'], 'spm.participant_id = p.participant_id', [])
+            ->join(['s' => 'shipment'], 's.shipment_id = spm.shipment_id', [])
+            ->where("(s.status = 'shipped' OR s.status = 'evaluated')")
+            ->where('s.cancelled_at IS NULL')
+            ->group('p.participant_id')
+            ->order('p.first_name');
+        $authNameSpace = new Zend_Session_Namespace('datamanagers');
+        if (!empty($authNameSpace->dm_id)) {
+            $sql = $sql
+                ->joinLeft(['pmm' => 'participant_manager_map'], 'pmm.participant_id = p.participant_id', [])
+                ->where('pmm.dm_id = ?', $authNameSpace->dm_id);
+        }
+        return $db->fetchAll($sql);
+    }
+
     public function getAllParticipantDetails($dmId)
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();

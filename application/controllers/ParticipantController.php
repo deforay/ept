@@ -202,6 +202,8 @@ class ParticipantController extends Zend_Controller_Action
         }
         $scheme = new Application_Service_Schemes();
         $this->view->schemes = $scheme->getAllSchemes();
+        $participants = new Application_Service_Participants();
+        $this->view->participants = $participants->getCorrectiveActionParticipantList();
     }
 
     public function userInfoAction()
@@ -477,6 +479,8 @@ class ParticipantController extends Zend_Controller_Action
 
         $province = new Application_Service_Participants();
         $this->view->province = $province->getUniqueState();
+        $this->view->surveys = $province->getCurrentSchemeSurveyList();
+        $this->view->participants = $province->getCurrentSchemeParticipantList();
     }
 
     public function allSchemesAction()

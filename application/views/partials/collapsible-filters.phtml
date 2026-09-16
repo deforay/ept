@@ -19,6 +19,22 @@
  * select2() calls fire first — while the panel is still visible — and measure
  * their widths correctly. Collapsing first would initialise select2 inside a
  * display:none container, which is the classic "select2 renders 0px wide" bug.
+ *
+ * All of the below are optional add-ons to the contract above. A view that
+ * omits them keeps behaving exactly as before (plain toggle + count badge) —
+ * every lookup for these is guarded, so this is backward compatible with
+ * existing includes such as summary-report.phtml.
+ *
+ *   - Toggle text that flips between expanded/collapsed: give the toggle
+ *     button `data-expand-text="..."` / `data-collapse-text="..."` attributes
+ *     and wrap the label word(s) in `<span class="js-filter-toggle-text">`.
+ *   - A summary line of removable pill tags ("Label **value** ×") shown next
+ *     to the toggle: add `<div class="js-filter-summary"></div>` as a sibling
+ *     of `.js-filter-body`, and tag each filter field that should appear in
+ *     it with `data-filter-label="..."` (untagged fields still count toward
+ *     the numeric badge, they just don't get a pill). Clicking a pill's "×"
+ *     clears that one field and fires its native `change`, so the rest of the
+ *     page reacts exactly as if the user had cleared it themselves.
  */
 ?>
 <style>
@@ -43,6 +59,56 @@
         margin-left: 4px;
     }
 
+    /* Hidden by default (whether via this class or a page's own inline
+       style="display:none;") and shown only by adding .is-visible — jQuery's
+       .show()/.toggle() would otherwise set an inline display:block that
+       clobbers the inline-flex needed to sit next to the toggle button, so
+       the JS below toggles this class instead of calling .show()/.hide(). */
+    .filter-panel .js-filter-summary {
+        display: none;
+        flex-wrap: wrap;
+        align-items: center;
+        vertical-align: middle;
+        margin-left: 8px;
+    }
+
+    .filter-panel .js-filter-summary.is-visible {
+        display: inline-flex;
+    }
+
+    .filter-panel .js-filter-summary .filter-tag {
+        display: inline-flex;
+        align-items: center;
+        background: #f4f4f5;
+        border: 1px solid #dcdcdc;
+        border-radius: 999px;
+        padding: 3px 6px 3px 12px;
+        margin: 2px 6px 2px 0;
+        font-size: 12px;
+        color: #767676;
+    }
+
+    .filter-panel .js-filter-summary .filter-tag-value {
+        color: #1a1a1a;
+        font-weight: 600;
+        margin-left: 4px;
+    }
+
+    .filter-panel .js-filter-summary .filter-tag-remove {
+        border: none;
+        background: transparent;
+        color: #999;
+        cursor: pointer;
+        margin-left: 6px;
+        padding: 0 4px;
+        font-size: 14px;
+        line-height: 1;
+    }
+
+    .filter-panel .js-filter-summary .filter-tag-remove:hover {
+        color: #333;
+    }
+
     /* The filter table carries its own bottom margin; drop it so the collapsed
        state doesn't leave a gap above the results table. */
     .filter-panel .js-filter-body > table {
@@ -60,31 +126,98 @@
             var $body = $panel.find('.js-filter-body');
             var $toggle = $panel.find('.js-filter-toggle');
             var $count = $panel.find('.js-filter-count');
+            var $toggleText = $toggle.find('.js-filter-toggle-text');
+            var $summary = $panel.find('.js-filter-summary');
+            var expandText = $toggle.data('expand-text');
+            var collapseText = $toggle.data('collapse-text');
 
-            function activeFilterCount() {
-                var n = 0;
+            function activeFields() {
+                var fields = [];
                 $body.find('select, input').each(function () {
                     var $el = $(this);
                     if ($el.is(':button, :submit, :reset')) {
                         return;
                     }
                     var val = $el.val();
-                    if (val !== null && val !== '' && val.length !== 0) {
-                        n++;
+                    if (val === null || val === '' || val.length === 0) {
+                        return;
                     }
+                    fields.push($el);
                 });
-                return n;
+                return fields;
+            }
+
+            function fieldDisplayValue($el) {
+                if ($el.is('select')) {
+                    return $el.find('option:selected').map(function () {
+                        return $(this).text().trim();
+                    }).get().join(', ');
+                }
+                return String($el.val()).trim();
+            }
+
+            // Clearing works for both plain selects/inputs and select2 (which
+            // just wraps the same underlying element) — val('').trigger('change')
+            // is select2's own documented way to clear programmatically, and it
+            // re-syncs the widget's own display along with firing the native
+            // 'change' our own delegated handler below is listening for.
+            function clearField($el) {
+                $el.val($el.is('select') && $el.prop('multiple') ? [] : '').trigger('change');
+            }
+
+            // Only fields explicitly tagged with data-filter-label show up as a
+            // tag — everything else still counts toward the numeric badge.
+            function buildTag($el) {
+                var label = $el.data('filter-label');
+                if (!label) {
+                    return null;
+                }
+                var display = fieldDisplayValue($el);
+                if (display === '') {
+                    return null;
+                }
+                var $tag = $('<span class="filter-tag"></span>');
+                $('<span class="filter-tag-label"></span>').text(label).appendTo($tag);
+                $('<span class="filter-tag-value"></span>').text(display).appendTo($tag);
+                $('<button type="button" class="filter-tag-remove" aria-label="Remove filter"></button>')
+                    .html('&times;')
+                    .on('click', function () {
+                        clearField($el);
+                    })
+                    .appendTo($tag);
+                return $tag;
             }
 
             function refreshCount() {
-                var n = activeFilterCount();
+                var n = activeFields().length;
                 $count.text(n).toggle(n > 0);
                 return n;
+            }
+
+            // Rebuilds the pill tags from whatever is currently selected —
+            // called both at load and on every change, so a field that starts
+            // out with a default value (e.g. Response Status = Responded)
+            // shows its pill immediately, same as the count badge already did.
+            function refreshSummary() {
+                if (!$summary.length) {
+                    return;
+                }
+                $summary.empty();
+                activeFields().forEach(function ($el) {
+                    var $tag = buildTag($el);
+                    if ($tag) {
+                        $summary.append($tag);
+                    }
+                });
+                $summary.toggleClass('is-visible', $summary.children().length > 0);
             }
 
             function setOpen(open) {
                 $panel.toggleClass('is-open', open);
                 $toggle.attr('aria-expanded', open ? 'true' : 'false');
+                if ($toggleText.length && expandText && collapseText) {
+                    $toggleText.text(open ? collapseText : expandText);
+                }
             }
 
             $toggle.on('click', function () {
@@ -93,17 +226,21 @@
                 $body.stop(true, true).slideToggle(150);
             });
 
-            // Any filter change re-counts, so the badge stays honest while collapsed.
-            $body.on('change keyup', 'select, input', refreshCount);
+            // Any filter change re-counts and rebuilds the summary tags, so both
+            // stay honest while collapsed.
+            $body.on('change keyup', 'select, input', function () {
+                refreshCount();
+                refreshSummary();
+            });
 
-            // Collapse only when nothing is filtered — an active filter the user
-            // can't see is worse than a tall panel.
-            if (refreshCount() === 0) {
-                $body.hide();
-                setOpen(false);
-            } else {
-                setOpen(true);
-            }
+            // Always start collapsed — a field that merely defaults to a
+            // preset value (e.g. Response Status = Responded) shouldn't force
+            // the panel open on page load. The badge and summary pills still
+            // reflect that default immediately; only the body stays closed.
+            refreshCount();
+            refreshSummary();
+            $body.hide();
+            setOpen(false);
         });
     });
 </script>
