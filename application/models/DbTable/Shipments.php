@@ -345,10 +345,10 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         }
 
         if (isset($parameters['shipmentCode']) && $parameters['shipmentCode'] != '') {
-            $sQuery = $sQuery->where("s.shipment_code = '" . $parameters['shipmentCode'] . "'");
+            $sQuery = $sQuery->where('s.shipment_code = ?', $parameters['shipmentCode']);
         }
         if (isset($parameters['province']) && $parameters['province'] != '') {
-            $sQuery = $sQuery->where("p.state = '" . $parameters['province'] . "'");
+            $sQuery = $sQuery->where('p.state = ?', $parameters['province']);
         }
 
         if (isset($sWhere) && $sWhere != '') {
@@ -5318,10 +5318,10 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         }
 
         if (isset($parameters['shipmentCode']) && $parameters['shipmentCode'] != '') {
-            $sQuery = $sQuery->where("s.shipment_code = '" . $parameters['shipmentCode'] . "'");
+            $sQuery = $sQuery->where('s.shipment_code = ?', $parameters['shipmentCode']);
         }
         if (isset($parameters['province']) && $parameters['province'] != '') {
-            $sQuery = $sQuery->where("p.state = '" . $parameters['province'] . "'");
+            $sQuery = $sQuery->where('p.state = ?', $parameters['province']);
         }
         return $this->getAdapter()->fetchAll($sQuery);
     }

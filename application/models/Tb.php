@@ -1760,11 +1760,11 @@ class Application_Model_Tb
                 SUM(CASE WHEN spm.shipment_score >= 80 THEN 1 ELSE 0 END) AS scored_higher_than_80,
                 SUM(CASE WHEN spm.shipment_score = 100 THEN 1 ELSE 0 END) AS scored_100
                 FROM shipment_participant_map AS spm";
+            $panelStatisticsQuery .= ' JOIN participant AS p ON p.participant_id = spm.participant_id';
             if (!empty($authNameSpace->dm_id)) {
-                $panelStatisticsQuery .= ' JOIN participant_manager_map AS pmm ON pmm.participant_id = pmm.participant_id ';
+                $panelStatisticsQuery .= ' JOIN participant_manager_map AS pmm ON pmm.participant_id = p.participant_id';
             }
-            $panelStatisticsQuery .= ' JOIN participant AS p ON p.participant_id = spm.participant_id
-                WHERE spm.shipment_id = ' . $params['shipmentId'];
+            $panelStatisticsQuery .= ' WHERE spm.shipment_id = ' . (int) $params['shipmentId'];
             if (!empty($authNameSpace->dm_id)) {
                 $panelStatisticsQuery .= " AND pmm.dm_id IN({$authNameSpace->dm_id}) ";
             }

@@ -1371,7 +1371,7 @@ class Application_Service_Reports
                     ->where('rpa.aff_id=?', $params['affiliateValue']);
                 $iResult = $dbAdapter->fetchRow($iQuery);
                 $appliate = $iResult['affiliate'];
-                $sQuery = $sQuery->where('p.affiliation="' . $appliate . '" OR p.affiliation=' . $params['affiliateValue']);
+                $sQuery = $sQuery->where('p.affiliation = ' . $dbAdapter->quote($appliate) . ' OR p.affiliation = ' . $dbAdapter->quote($params['affiliateValue']));
             } else {
                 $sQuery = $sQuery->joinLeft(['pa' => 'r_participant_affiliates'], 'p.affiliation=pa.affiliate', []);
             }
@@ -1508,7 +1508,7 @@ class Application_Service_Reports
                     ->where('rpa.aff_id=?', $parameters['affiliateValue']);
                 $iResult = $dbAdapter->fetchRow($iQuery);
                 $appliate = $iResult['affiliate'];
-                $sQuery = $sQuery->where('p.affiliation="' . $appliate . '" OR p.affiliation=' . $parameters['affiliateValue']);
+                $sQuery = $sQuery->where('p.affiliation = ' . $dbAdapter->quote($appliate) . ' OR p.affiliation = ' . $dbAdapter->quote($parameters['affiliateValue']));
             } else {
                 $sQuery = $sQuery->joinLeft(['pa' => 'r_participant_affiliates'], 'p.affiliation=pa.affiliate', []);
             }
@@ -3092,7 +3092,7 @@ class Application_Service_Reports
                     ->where('rpa.aff_id=?', $parameters['affiliateValue']);
                 $iResult = $dbAdapter->fetchRow($iQuery);
                 $appliate = $iResult['affiliation'];
-                $sQuery = $sQuery->where('p.affiliation="' . $appliate . '" OR p.affiliation=' . $parameters['affiliateValue']);
+                $sQuery = $sQuery->where('p.affiliation = ' . $dbAdapter->quote($appliate) . ' OR p.affiliation = ' . $dbAdapter->quote($parameters['affiliateValue']));
             } else {
                 $sQuery = $sQuery->joinLeft(['pa' => 'r_participant_affiliates'], 'p.affiliation=pa.affiliate', ['affiliation' => 'affiliate']);
             }
@@ -3197,7 +3197,7 @@ class Application_Service_Reports
                         ->where('rpa.aff_id=?', $parameters['affiliateValue']);
                     $iResult = $dbAdapter->fetchRow($iQuery);
                     $appliate = $iResult['affiliation'];
-                    $sQuery = $sQuery->where('p.affiliation="' . $appliate . '" OR p.affiliation=' . $parameters['affiliateValue']);
+                    $sQuery = $sQuery->where('p.affiliation = ' . $dbAdapter->quote($appliate) . ' OR p.affiliation = ' . $dbAdapter->quote($parameters['affiliateValue']));
                 } else {
                     $sQuery = $sQuery->joinLeft(['pa' => 'r_participant_affiliates'], 'p.affiliation=pa.affiliate', ['affiliation' => 'affiliate']);
                 }
@@ -4509,7 +4509,7 @@ class Application_Service_Reports
         $sWhere = '';
         $sQuery = $dbAdapter->select()
             ->from(['spm' => 'shipment_participant_map'], new Zend_Db_Expr("COUNT('spm.map_id')"))
-            ->where('spm.shipment_id = ' . $parameters['shipmentId']);
+            ->where('spm.shipment_id = ?', $parameters['shipmentId']);
         if (!empty($scopedDmId)) {
             $sQuery = $sQuery
                 ->joinLeft(['pmm' => 'participant_manager_map'], 'pmm.participant_id=spm.participant_id', [])
@@ -4586,7 +4586,7 @@ class Application_Service_Reports
                     'not_participated' => 'sum(spm.shipment_test_report_date is null)',
                 ]
             )
-            ->where('spm.shipment_id = ' . $params['shipmentId'])
+            ->where('spm.shipment_id = ?', $params['shipmentId'])
             ->group(['spm.shipment_id']);
         $scopedDmId = Application_Service_Common::getScopedDmId();
         if (!empty($scopedDmId)) {
@@ -4769,7 +4769,7 @@ class Application_Service_Reports
                 'p.country = c.id',
                 ['id', 'country_name' => 'c.iso_name']
             )
-            ->where('spm.shipment_id = ' . $params['shipmentId'])
+            ->where('spm.shipment_id = ?', $params['shipmentId'])
             ->group(['c.id'])
             ->order('participant_count DESC');
         $scopedDmId = Application_Service_Common::getScopedDmId();

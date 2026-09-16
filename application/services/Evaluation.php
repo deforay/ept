@@ -912,7 +912,7 @@ class Application_Service_Evaluation
 
                 if (isset($params['extractionAssayOther']) && $params['extractionAssayOther'] != '') {
                     $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
-                    $ifExist = $dbAdapter->fetchRow($dbAdapter->select()->from(['rea' => 'r_eid_extraction_assay'])->where('name LIKE "' . $params['extractionAssayOther'] . '%"'));
+                    $ifExist = $dbAdapter->fetchRow($dbAdapter->select()->from(['rea' => 'r_eid_extraction_assay'])->where('name LIKE ?', $params['extractionAssayOther'] . '%'));
                     if ($ifExist && $ifExist['name'] != '') {
                         $dbAdapter->update(
                             'r_eid_extraction_assay',
@@ -991,7 +991,7 @@ class Application_Service_Evaluation
 
                     /* $db = Zend_Db_Table_Abstract::getDefaultAdapter();
                                                         $sql = $db->select()->from('response_result_eid')
-                                                            ->where("shipment_map_id = " . $params['smid'] . " AND sample_id = " . $params['sampleId'][$i]);
+                                                            ->where('shipment_map_id = ?', $params['smid'])->where('sample_id = ?', $params['sampleId'][$i]);
                                                         $respResult = $db->fetchRow($sql); */
 
                     /* if (false != $respResult) {
@@ -1000,7 +1000,7 @@ class Application_Service_Evaluation
                                                                 'updated_by' => $admin,
                                                                 'updated_on' => new Zend_Db_Expr('now()')
                                                             );
-                                                            $db->update('response_result_eid', $resultData, "shipment_map_id = " . $params['smid'] . " AND sample_id = " . $params['sampleId'][$i]);
+                                                            $db->update('response_result_eid', $resultData, ['shipment_map_id = ?' => $params['smid'], 'sample_id = ?' => $params['sampleId'][$i]]);
                                                         } else { */
                     $resultData = [
                         'shipment_map_id' => $params['smid'],
@@ -1106,7 +1106,7 @@ class Application_Service_Evaluation
                         'kit_additional_info' => json_encode($params['additionalInfoKit'][$i], true),
                         'updated_by' => $admin,
                         'updated_on' => new Zend_Db_Expr('now()'),
-                    ], 'shipment_map_id = ' . $params['smid'] . ' AND sample_id = ' . $params['sampleId'][$i]);
+                    ], ['shipment_map_id = ?' => $params['smid'], 'sample_id = ?' => $params['sampleId'][$i]]);
                 }
                 /* Manual result override changes */
                 if (isset($params['manualOverride']) && $params['manualOverride'] == 'yes') {
@@ -1252,7 +1252,7 @@ class Application_Service_Evaluation
                         'reported_result' => $params['reported_result'][$i],
                         'updated_by' => $admin,
                         'updated_on' => new Zend_Db_Expr('now()'),
-                    ], 'shipment_map_id = ' . $params['smid'] . ' AND sample_id = ' . $params['sampleId'][$i]);
+                    ], ['shipment_map_id = ?' => $params['smid'], 'sample_id = ?' => $params['sampleId'][$i]]);
                 }
             } elseif ($params['scheme'] == 'recency') {
 
@@ -1362,7 +1362,7 @@ class Application_Service_Evaluation
                         'reported_result' => $params['reported_result'][$i],
                         'updated_by' => $admin,
                         'updated_on' => new Zend_Db_Expr('now()'),
-                    ], 'shipment_map_id = ' . $params['smid'] . ' AND sample_id = ' . $params['sampleId'][$i]);
+                    ], ['shipment_map_id = ?' => $params['smid'], 'sample_id = ?' => $params['sampleId'][$i]]);
                 }
 
                 /* Save Gene Type */
@@ -1448,7 +1448,7 @@ class Application_Service_Evaluation
                     ];
                     /* Check if assay xpert or ultra */
                     $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-                    $sQuery = $db->select()->from('r_tb_assay', 'short_name')->where('id = ' . $params['assayName']);
+                    $sQuery = $db->select()->from('r_tb_assay', 'short_name')->where('id = ?', $params['assayName']);
                     $assayName = $db->fetchRow($sQuery);
                     if (isset($assayName['short_name']) && !empty($assayName['short_name']) && $assayName['short_name'] == 'xpert-mtb-rif') {
                         $resultData['spc_xpert'] = $params['spc'] ?? null;

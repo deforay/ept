@@ -49,7 +49,7 @@ class Application_Model_DbTable_Testkitnames extends Zend_Db_Table_Abstract
         ];
         if (isset($params['scheme']) && !empty($params['scheme'])) {
             $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-            $db->delete('scheme_testkit_map', 'scheme_type IN ("' . implode('", "', $params['scheme']) . '") AND testkit_id = "' . $params['testkitId'] . '"');
+            $db->delete('scheme_testkit_map', ['scheme_type IN (?)' => $params['scheme'], 'testkit_id = ?' => $params['testkitId']]);
             foreach ($params['scheme'] as $scheme) {
                 $mapData = [
                     'scheme_type' => $scheme,
@@ -80,7 +80,7 @@ class Application_Model_DbTable_Testkitnames extends Zend_Db_Table_Abstract
             ];
             if (isset($params['scheme']) && !empty($params['scheme'])) {
                 $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-                $db->delete('scheme_testkit_map', 'scheme_type IN ("' . implode('", "', $params['scheme']) . '") AND testkit_id = "' . $params['testkitId'] . '"');
+                $db->delete('scheme_testkit_map', ['scheme_type IN (?)' => $params['scheme'], 'testkit_id = ?' => $params['testkitId']]);
                 foreach ($params['scheme'] as $scheme) {
                     $mapData = [
                         'scheme_type' => $scheme,

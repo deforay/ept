@@ -66,7 +66,7 @@ class Application_Model_DbTable_ResponseTb extends Zend_Db_Table_Abstract
             }
             /* Check if assay xpert or ultra */
             $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-            $sQuery = $db->select()->from('r_tb_assay', 'short_name')->where('id = ' . $params['assayName']);
+            $sQuery = $db->select()->from('r_tb_assay', 'short_name')->where('id = ?', $params['assayName']);
             $assayName = $db->fetchRow($sQuery);
             if (isset($assayName['short_name']) && !empty($assayName['short_name']) && $assayName['short_name'] == 'xpert-mtb-rif') {
                 $data['spc_xpert'] = $params['spc'][$key] ?? null;

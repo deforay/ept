@@ -743,7 +743,7 @@ class Application_Service_Shipments
 
             if (isset($params['extractionAssayOther']) && $params['extractionAssayOther'] != '') {
                 $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
-                $ifExist = $dbAdapter->fetchRow($dbAdapter->select()->from(['rea' => 'r_eid_extraction_assay'])->where('name LIKE "' . $params['extractionAssayOther'] . '%"'));
+                $ifExist = $dbAdapter->fetchRow($dbAdapter->select()->from(['rea' => 'r_eid_extraction_assay'])->where('name LIKE ?', $params['extractionAssayOther'] . '%'));
                 if ($ifExist && $ifExist['name'] != '') {
                     $dbAdapter->update(
                         'r_eid_extraction_assay',
@@ -3099,7 +3099,7 @@ class Application_Service_Shipments
         $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
         $dbAdapter->beginTransaction();
         try {
-            $shipmentRow = $dbAdapter->fetchRow($dbAdapter->select()->from(['s' => 'shipment'])->where('shipment_id = ' . $params['shipmentId']));
+            $shipmentRow = $dbAdapter->fetchRow($dbAdapter->select()->from(['s' => 'shipment'])->where('shipment_id = ?', $params['shipmentId']));
             // DTS edit mode can intentionally retain saved shipment settings or refresh specific ones from config.
             $dtsSchemeType = $params['dtsSchemeType'] ?? (Pt_Commons_SchemeConfig::get('dts.dtsSchemeType') ?? 'updated-3-tests');
             $scheme = $shipmentRow['scheme_type'];
@@ -4160,7 +4160,7 @@ class Application_Service_Shipments
             ->join(['sp' => 'shipment_participant_map'], 'sp.shipment_id=s.shipment_id', ['shipment_score' => new Zend_Db_Expr('SUM(sp.shipment_score)'), 'documentation_score' => new Zend_Db_Expr('SUM(sp.documentation_score)'), 'participantCount' => new Zend_Db_Expr('count(sp.participant_id)'), 'receivedCount' => new Zend_Db_Expr("SUM(sp.shipment_test_date not like '0000-00-00')")])
             ->where("s.status='finalized'")
             ->where('sp.participant_id IN(' . $participantIds . ')')
-            ->where("s.scheme_type = '" . $params['shipmentType'] . "'")
+            ->where('s.scheme_type = ?', $params['shipmentType'])
             ->group('s.shipment_id')
             // ->group("DATE_FORMAT(s.shipment_code,'%b-%Y')")
             ->order('s.shipment_id');
