@@ -90,9 +90,10 @@ foreach ($bundles as $bundle) {
             continue;
         }
         $rawIdentifier = substr($entry, strlen($prefix), -4);
-        // The identifier becomes a directory name under downloads/, so reduce it
-        // to a bare name and skip entries that tried to climb out of it.
-        $uniqueIdentifier = basename(str_replace('\\', '/', $rawIdentifier));
+        // The identifier becomes a directory name under downloads/, so allowlist
+        // its characters (no separators survive) and skip entries that needed
+        // stripping or are "." / "..".
+        $uniqueIdentifier = preg_replace('/[^A-Za-z0-9._-]/', '', $rawIdentifier) ?? '';
         if ($uniqueIdentifier !== $rawIdentifier || $uniqueIdentifier === '' || $uniqueIdentifier === '.' || $uniqueIdentifier === '..') {
             continue;
         }
