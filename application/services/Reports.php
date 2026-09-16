@@ -3059,13 +3059,13 @@ class Application_Service_Reports
             $writer->save($this->tempUploadDirectory . DIRECTORY_SEPARATOR . $filename);
             return $filename;
         } catch (Exception $exc) {
-            return '';
             $sQuerySession->participantRegionQuery = '';
             Pt_Commons_LoggerUtility::logError('Failed to generate region-wise participant performance report (Excel): ' . $exc->getMessage(), [
                 'file' => $exc->getFile(),
                 'line' => $exc->getLine(),
                 'trace' => $exc->getTraceAsString(),
             ]);
+            return '';
         }
     }
 

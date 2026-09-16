@@ -38,6 +38,7 @@ class Application_Model_Covid19
 
             $totalScore = 0;
             $maxScore = 0;
+            $documentationScore = 0;
             $mandatoryResult = '';
             $lotResult = '';
             $testPlatform1 = '';
