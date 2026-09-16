@@ -73,7 +73,7 @@ function sizeFix() {
     obol.style.width = pageWidth() + 'px';
 }
 function kp(e) {
-    ky = e ? e.which : event.keyCode;
+    var ky = e ? e.which : event.keyCode;
     if (ky == 88 || ky == 120) hidedefModal();
     return false
 }

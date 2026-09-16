@@ -34,10 +34,10 @@ var deforayValidator = {
 	init: function (settings) {
 		this.settings = settings;
 		this.form = document.getElementById(this.settings["formId"]);
-		formInputs = jQuery("input[type='text'],input[type='password'],textarea,select");
+		var formInputs = jQuery("input[type='text'],input[type='password'],textarea,select");
 
 		// change color of inputs on focus
-		for (i = 0; i < formInputs.length; i++) {
+		for (var i = 0; i < formInputs.length; i++) {
 			formInputs[i].onfocus = function () {
 				this.style.background = "#FFFFFF";
 			}
@@ -51,10 +51,10 @@ var deforayValidator = {
 		}
 	},
 	validate: function () {
-		error = '';
+		var error = '';
 		this.form = document.getElementById(this.settings["formId"]);
-		formInputs = this.form.getElementsByTagName('*');
-		useTitleToShowMessage = true;
+		var formInputs = this.form.getElementsByTagName('*');
+		var useTitleToShowMessage = true;
 		if (this.settings["useTitle"] != 'undefined' && this.settings["useTitle"] != null && this.settings["useTitle"] == false) {
 			useTitleToShowMessage = false;
 		}
@@ -193,8 +193,7 @@ function confirmMailAddress(name) {
 function isRequiredCheckBox(name) {
 	var flag = false;
 	var elements = document.getElementsByName(name);
-	size = elements.length;
-	count = 0;
+	var size = elements.length;
 
 	for (var i = 0; i < size; i++) {
 		if (elements[i].checked) {
@@ -209,7 +208,7 @@ function isRequiredCheckBox(name) {
 }
 function findPos(obj) {
 
-	var curleft = curtop = 0;
+	var curleft = 0, curtop = 0;
 	if (obj.offsetParent) {
 		curleft = obj.offsetLeft
 		curtop = obj.offsetTop
@@ -221,166 +220,10 @@ function findPos(obj) {
 	return [curleft, curtop];
 
 }
-function deforayValidatorInternal(formInputs, useTitleToShowMessage) {
-	console.log(formInputs);
-	// change color of inputs on focus
-	for (i = 0; i < formInputs.length; i++) {
-		classes = formInputs[i].className;
-		if (classes == "" || classes == null) {
-			valid = true;
-		}
-		var parts = classes.split(" ");
-
-		if (hasClassName(formInputs[i], "useTitle")) {
-
-			elementTitle = formInputs[i].title;
-		}
-		else if (useTitleToShowMessage) {
-			elementTitle = formInputs[i].title;
-		}
-		else {
-			elementTitle = "";
-		}
-		for (var cCount = 0; cCount < parts.length; cCount++) {
-			var required = false;
-			if (parts[cCount] == "isRequired") {
-				required = true;
-				if (formInputs[i].type == 'checkbox' || formInputs[i].type == 'radio') {
-					valid = isRequiredCheckBox(formInputs[i].name);
-					if (elementTitle != null && elementTitle != "") {
-						errorMsg = elementTitle;
-					}
-					else {
-						errorMsg = "Please select " + formInputs[i].name;
-					}
-
-				}
-				else {
-
-					var valu = (formInputs[i].value);
-					valid = !isRequired(valu);
-					if (elementTitle != null && elementTitle != "") {
-						errorMsg = elementTitle;
-					}
-					else {
-						errorMsg = "Please don't leave this field blank";
-					}
-				}
-			}
-			else if (parts[cCount] == "isEmail") {
-				var valu = (formInputs[i].value);
-				valid = isEmail(valu, required);
-				if (elementTitle != null && elementTitle != "") {
-					errorMsg = elementTitle;
-				}
-				else {
-					errorMsg = "Please enter a valid email id";
-				}
-			}
-			else if (parts[cCount] == "isNumeric") {
-				valid = isNumeric(formInputs[i].value, required);
-				if (elementTitle != null && elementTitle != "") {
-					errorMsg = elementTitle;
-				}
-				else {
-					errorMsg = "Please enter a valid number.";
-				}
-			}
-			else if (parts[cCount] == "isAlpha") {
-				valid = isAlpha(formInputs[i].value, required);
-				if (elementTitle != null && elementTitle != "") {
-					errorMsg = elementTitle;
-				}
-				else {
-					errorMsg = "This field can only contain alphabets and numbers.";
-				}
-			}
-			else if (parts[cCount] == "isAlphaNum") {
-				valid = isAlphaNum(formInputs[i].value, required);
-				if (elementTitle != null && elementTitle != "") {
-					errorMsg = elementTitle;
-				}
-				else {
-					errorMsg = "This field can only contain alphabets and numbers.";
-				}
-			}
-			else if (parts[cCount] == "isSymbol") {
-				valid = isSymbol(formInputs[i].value, required);
-				if (elementTitle != null && elementTitle != "") {
-					errorMsg = elementTitle;
-				}
-				else {
-					errorMsg = "This field cannot contain alphabets and numbers.";
-				}
-			}
-			else if (parts[cCount].startsWith("minLength")) {
-				innerParts = parts[cCount].split("_");
-				valid = minLength(formInputs[i].value, innerParts[1]);
-				if (elementTitle != null && elementTitle != "") {
-					errorMsg = elementTitle;
-				}
-				else {
-					errorMsg = "Minimum " + innerParts[1] + " characters required";
-				}
-			}
-			else if (parts[cCount].startsWith("maxLength")) {
-				innerParts = parts[cCount].split("_");
-				valid = maxLength(formInputs[i].value, innerParts[1]);
-				if (elementTitle != null && elementTitle != "") {
-					errorMsg = elementTitle;
-				}
-				else {
-					errorMsg = "More than " + innerParts[1] + " characters not allowed";
-				}
-			}
-			else if (parts[cCount].startsWith("exactLength")) {
-				innerParts = parts[cCount].split("_");
-				valid = exactLength(formInputs[i].value, innerParts[1]);
-				if (elementTitle != null && elementTitle != "") {
-					errorMsg = elementTitle;
-				}
-				else {
-					errorMsg = "This field should have exactly " + innerParts[1] + " characters";
-				}
-			}
-			else if (parts[cCount] == "confirmPassword") {
-				valid = confirmPassword(formInputs[i].name);
-				if (elementTitle != null && elementTitle != "") {
-					errorMsg = elementTitle;
-				}
-				else {
-					errorMsg = "Please make sure password and confirm password are same";
-				}
-			}
-			else if (parts[cCount] == "confirmMailAddress") {
-				valid = confirmMailAddress(formInputs[i].name);
-				if (elementTitle != null && elementTitle != "") {
-					errorMsg = elementTitle;
-				}
-				else {
-					errorMsg = "Please make sure mail address and confirm mail address are same";
-				}
-			}
-			else {
-				valid = true;
-			}
-			if (!valid) {
-				formInputs[i].style.background = "#FFFF99";
-				formInputs[i].style.border = "1px solid #CF3339";
-				//formInputs[i].focus();
-				//myPos = findPos(formInputs[i]);
-				//scrollTo(myPos[0],myPos[1]);
-
-				return errorMsg;
-			}
-		}
-	}
-}
-
 function setAutoWidth() {
 	var len = $('.autoWidth th').length;
 	if (len > 0) {
-		colwidth = 100 / len;
+		var colwidth = 100 / len;
 		$('.autoWidth th').each(function (index, e) {
 			$(e).css('width', colwidth + '%');
 		});
@@ -426,12 +269,8 @@ function isValidSSL(str, required) {
 	return validSslTypes.includes(str.toLowerCase().trim());
 }
 
-// Update the deforayValidatorInternal function by adding these cases in the validation loop
-// Add these new cases after the existing validation cases (after "confirmMailAddress")
-
 function deforayValidatorInternal(formInputs, useTitleToShowMessage) {
-	console.log(formInputs);
-	// change color of inputs on focus
+	var i, classes, valid, elementTitle, errorMsg, innerParts;
 	for (i = 0; i < formInputs.length; i++) {
 		classes = formInputs[i].className;
 		if (classes == "" || classes == null) {
@@ -567,7 +406,6 @@ function deforayValidatorInternal(formInputs, useTitleToShowMessage) {
 					errorMsg = "Please make sure mail address and confirm mail address are same";
 				}
 			}
-			// NEW VALIDATION RULES FOR EMAIL CONFIGURATION
 			else if (parts[cCount] == "isValidPort") {
 				valid = isValidPort(formInputs[i].value, required);
 				if (elementTitle != null && elementTitle != "") {
