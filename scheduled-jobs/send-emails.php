@@ -154,19 +154,19 @@ try {
         $dsn = $devTrapDsn;
         Pt_Commons_LoggerUtility::logInfo("send-emails: routing via email.devTrapDsn (DB SMTP creds ignored)");
     } else {
+        // Symfony Mailer ignores an "encryption" query option: implicit TLS is the
+        // smtps scheme, and STARTTLS is only enforced with require_tls. Plain smtp
+        // still upgrades via STARTTLS when the server offers it.
+        $encryption = $smtpMailDetails->ssl ?? '';
         $dsn = sprintf(
-            'smtp://%s:%s@%s:%d',
+            '%s://%s:%s@%s:%d%s',
+            $encryption === 'ssl' ? 'smtps' : 'smtp',
             urlencode($smtpMailDetails->username ?? ''),
             urlencode($smtpMailDetails->password ?? ''),
             $smtpMailDetails->host ?? 'localhost',
-            $smtpMailDetails->port ?? 587
+            $smtpMailDetails->port ?? 587,
+            $encryption === 'tls' ? '?require_tls=true' : ''
         );
-
-        if (isset($smtpMailDetails->ssl) && $smtpMailDetails->ssl === 'ssl') {
-            $dsn .= '?encryption=ssl';
-        } elseif (isset($smtpMailDetails->ssl) && $smtpMailDetails->ssl === 'tls') {
-            $dsn .= '?encryption=tls';
-        }
     }
 
     // === Pull up to N pending rows this minute ===

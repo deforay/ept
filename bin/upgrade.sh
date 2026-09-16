@@ -58,7 +58,7 @@ shared_fn_local_candidates() {
 }
 
 shared_fn_tmp="$(mktemp)"
-if wget -q -T 15 -t 2 -O "$shared_fn_tmp" "$SHARED_FN_URL" && shared_fn_is_valid "$shared_fn_tmp"; then
+if wget -q --https-only --max-redirect=0 -T 15 -t 2 -O "$shared_fn_tmp" "$SHARED_FN_URL" && shared_fn_is_valid "$shared_fn_tmp"; then
     cat "$shared_fn_tmp" >"$SHARED_FN_PATH"
     chmod +x "$SHARED_FN_PATH"
     echo "Downloaded shared-functions.sh."
@@ -799,10 +799,10 @@ upgrade_instance() {
     local CURRENT_COMPOSER_LOCK_CHECKSUM="none"
 
     if [ -f "${ept_path}/composer.json" ]; then
-        CURRENT_COMPOSER_JSON_CHECKSUM=$(md5sum "${ept_path}/composer.json" | awk '{print $1}')
+        CURRENT_COMPOSER_JSON_CHECKSUM=$(sha256sum "${ept_path}/composer.json" | awk '{print $1}')
     fi
     if [ -f "${ept_path}/composer.lock" ]; then
-        CURRENT_COMPOSER_LOCK_CHECKSUM=$(md5sum "${ept_path}/composer.lock" | awk '{print $1}')
+        CURRENT_COMPOSER_LOCK_CHECKSUM=$(sha256sum "${ept_path}/composer.lock" | awk '{print $1}')
     fi
 
     # Build symlink exclude list for this instance
@@ -864,13 +864,13 @@ upgrade_instance() {
         local NEW_COMPOSER_LOCK_CHECKSUM="none"
 
         if [ -f "${ept_path}/composer.json" ]; then
-            NEW_COMPOSER_JSON_CHECKSUM=$(md5sum "${ept_path}/composer.json" 2>/dev/null | awk '{print $1}')
+            NEW_COMPOSER_JSON_CHECKSUM=$(sha256sum "${ept_path}/composer.json" 2>/dev/null | awk '{print $1}')
         else
             NEED_FULL_INSTALL=true
         fi
 
         if [ -f "${ept_path}/composer.lock" ] && [ "$NEED_FULL_INSTALL" = false ]; then
-            NEW_COMPOSER_LOCK_CHECKSUM=$(md5sum "${ept_path}/composer.lock" 2>/dev/null | awk '{print $1}')
+            NEW_COMPOSER_LOCK_CHECKSUM=$(sha256sum "${ept_path}/composer.lock" 2>/dev/null | awk '{print $1}')
         else
             NEED_FULL_INSTALL=true
         fi
@@ -895,19 +895,16 @@ upgrade_instance() {
             # Download once; the /tmp copy is reused across instances in this run.
             if [ ! -f "$vendor_tar" ]; then
                 download_file "$vendor_tar" "$vendor_url" "Downloading vendor packages..."
-                download_file "${vendor_tar}.sha256" "${vendor_url}.sha256" "Downloading checksum..." 2>/dev/null || \
-                    download_file "${vendor_tar}.md5" "${vendor_url}.md5" "Downloading checksum..."
+                download_file "${vendor_tar}.sha256" "${vendor_url}.sha256" "Downloading checksum..."
             fi
 
-            # Prefer sha256, fall back to md5. Verify by hash value (verify_checksum),
+            # Verify by sha256 hash value (verify_checksum),
             # not `sum -c` -- the release checksum bakes in the name "vendor.tar.gz",
             # which never matches our /tmp/ept-vendor.tar.gz and silently forced a slow
             # full composer install on every upgrade.
             local vendor_checksum=""
             if [ -f "${vendor_tar}.sha256" ]; then
                 vendor_checksum="${vendor_tar}.sha256"
-            elif [ -f "${vendor_tar}.md5" ]; then
-                vendor_checksum="${vendor_tar}.md5"
             fi
 
             if [ -n "$vendor_checksum" ] && verify_checksum "$vendor_tar" "$vendor_checksum"; then

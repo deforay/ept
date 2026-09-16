@@ -90,7 +90,12 @@ foreach ($bundles as $bundle) {
             continue;
         }
         $uniqueIdentifier = substr($entry, strlen($prefix), -4);
-        if ($uniqueIdentifier === '' || str_contains($uniqueIdentifier, '/')) {
+        // The identifier becomes a directory name under downloads/, so reject
+        // anything that could climb out of it (separators, "." or "..").
+        if (
+            $uniqueIdentifier === '' || $uniqueIdentifier === '.' || $uniqueIdentifier === '..'
+            || $uniqueIdentifier !== basename($uniqueIdentifier) || str_contains($uniqueIdentifier, '\\')
+        ) {
             continue;
         }
 

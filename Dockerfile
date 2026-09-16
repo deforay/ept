@@ -24,7 +24,7 @@ RUN a2enmod rewrite headers expires
 ENV NODE_VERSION=22.22.2
 RUN ARCH=$(dpkg --print-architecture) \
     && if [ "$ARCH" = "amd64" ]; then NODEARCH=x64; elif [ "$ARCH" = "arm64" ]; then NODEARCH=arm64; fi \
-    && curl -fsSL "https://nodejs.org/dist/v${NODE_VERSION}/node-v${NODE_VERSION}-linux-${NODEARCH}.tar.xz" \
+    && curl -fsSL --proto '=https' --tlsv1.2 "https://nodejs.org/dist/v${NODE_VERSION}/node-v${NODE_VERSION}-linux-${NODEARCH}.tar.xz" \
     | tar -xJ -C /usr/local --strip-components=1 \
     && node --version && npm --version
 
@@ -59,7 +59,8 @@ COPY . .
 RUN composer install --prefer-dist --no-dev --no-interaction --optimize-autoloader
 
 # Install Node dependencies for chart rendering
-RUN npm ci
+# Lifecycle scripts off except skia-canvas, which fetches its prebuilt native binary
+RUN npm ci --ignore-scripts && npm rebuild skia-canvas
 
 # Create required directories
 RUN mkdir -p application/cache logs downloads backups public/temporary public/uploads

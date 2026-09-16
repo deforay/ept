@@ -76,7 +76,13 @@ class Admin_LoginController extends Zend_Controller_Action
                 // always re-surfaces any shipments needing re-evaluation (see
                 // partials/re-evaluate-stale-banner.phtml).
                 if (isset($_COOKIE['reeval_nudge_dismissed'])) {
-                    setcookie('reeval_nudge_dismissed', '', time() - 3600, '/');
+                    setcookie('reeval_nudge_dismissed', '', [
+                        'expires' => time() - 3600,
+                        'path' => '/',
+                        'secure' => !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off',
+                        'httponly' => true,
+                        'samesite' => 'Strict',
+                    ]);
                     unset($_COOKIE['reeval_nudge_dismissed']);
                 }
 

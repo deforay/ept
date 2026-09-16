@@ -31,7 +31,7 @@ jobs:
           python-version: '3.x'
 
       - name: Install dependencies
-        run: pip install "mkdocs>=1.6,<2" mkdocs-material
+        run: pip install --only-binary :all: -r docs/requirements.txt
 
       - name: Build site
         run: mkdocs build --strict

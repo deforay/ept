@@ -46,7 +46,7 @@ shared_fn_local_candidates() {
 }
 
 shared_fn_tmp="$(mktemp)"
-if wget -q -T 15 -t 2 -O "$shared_fn_tmp" "$SHARED_FN_URL" && shared_fn_is_valid "$shared_fn_tmp"; then
+if wget -q --https-only --max-redirect=0 -T 15 -t 2 -O "$shared_fn_tmp" "$SHARED_FN_URL" && shared_fn_is_valid "$shared_fn_tmp"; then
     cat "$shared_fn_tmp" >"$SHARED_FN_PATH"
     chmod +x "$SHARED_FN_PATH"
     echo "Downloaded shared-functions.sh."
@@ -376,12 +376,12 @@ CURRENT_COMPOSER_JSON_CHECKSUM="none"
 CURRENT_COMPOSER_LOCK_CHECKSUM="none"
 
 if [ -f "${ept_path}/composer.json" ]; then
-    CURRENT_COMPOSER_JSON_CHECKSUM=$(md5sum "${ept_path}/composer.json" | awk '{print $1}')
+    CURRENT_COMPOSER_JSON_CHECKSUM=$(sha256sum "${ept_path}/composer.json" | awk '{print $1}')
     echo "Current composer.json checksum: ${CURRENT_COMPOSER_JSON_CHECKSUM}"
 fi
 
 if [ -f "${ept_path}/composer.lock" ]; then
-    CURRENT_COMPOSER_LOCK_CHECKSUM=$(md5sum "${ept_path}/composer.lock" | awk '{print $1}')
+    CURRENT_COMPOSER_LOCK_CHECKSUM=$(sha256sum "${ept_path}/composer.lock" | awk '{print $1}')
     echo "Current composer.lock checksum: ${CURRENT_COMPOSER_LOCK_CHECKSUM}"
 fi
 
@@ -399,8 +399,7 @@ if [ ! -d "${ept_path}/vendor" ] && curl --output /dev/null --silent --head --fa
     rm -f "$VENDOR_TAR" "${VENDOR_TAR}.sha256" "${VENDOR_TAR}.md5"
     (
         download_file "$VENDOR_TAR" "$VENDOR_URL" "Downloading vendor packages..."
-        download_file "${VENDOR_TAR}.sha256" "${VENDOR_URL}.sha256" "Downloading checksum..." 2>/dev/null || \
-            download_file "${VENDOR_TAR}.md5" "${VENDOR_URL}.md5" "Downloading checksum..."
+        download_file "${VENDOR_TAR}.sha256" "${VENDOR_URL}.sha256" "Downloading checksum..."
     ) >/tmp/ept-vendor-prefetch.log 2>&1 &
     VENDOR_PREFETCH_PID=$!
 fi
@@ -481,13 +480,13 @@ else
     NEW_COMPOSER_LOCK_CHECKSUM="none"
 
     if [ -f "${ept_path}/composer.json" ]; then
-        NEW_COMPOSER_JSON_CHECKSUM=$(md5sum "${ept_path}/composer.json" 2>/dev/null | awk '{print $1}')
+        NEW_COMPOSER_JSON_CHECKSUM=$(sha256sum "${ept_path}/composer.json" 2>/dev/null | awk '{print $1}')
     else
         NEED_FULL_INSTALL=true
     fi
 
     if [ -f "${ept_path}/composer.lock" ] && [ "$NEED_FULL_INSTALL" = false ]; then
-        NEW_COMPOSER_LOCK_CHECKSUM=$(md5sum "${ept_path}/composer.lock" 2>/dev/null | awk '{print $1}')
+        NEW_COMPOSER_LOCK_CHECKSUM=$(sha256sum "${ept_path}/composer.lock" 2>/dev/null | awk '{print $1}')
     else
         NEED_FULL_INSTALL=true
     fi
@@ -517,18 +516,15 @@ if [ "$NEED_FULL_INSTALL" = true ]; then
     elif curl --output /dev/null --silent --head --fail "$VENDOR_URL"; then
         rm -f "$VENDOR_TAR" "${VENDOR_TAR}.sha256" "${VENDOR_TAR}.md5"
         download_file "$VENDOR_TAR" "$VENDOR_URL" "Downloading vendor packages..."
-        download_file "${VENDOR_TAR}.sha256" "${VENDOR_URL}.sha256" "Downloading checksum..." 2>/dev/null || \
-            download_file "${VENDOR_TAR}.md5" "${VENDOR_URL}.md5" "Downloading checksum..."
+        download_file "${VENDOR_TAR}.sha256" "${VENDOR_URL}.sha256" "Downloading checksum..."
     fi
 
-    # Prefer sha256, fall back to md5; verify by hash value (verify_checksum), not
+    # Verify by sha256 hash value (verify_checksum), not
     # `sum -c` -- the release checksum bakes in the name "vendor.tar.gz", which won't
     # match our /tmp/ept-vendor.tar.gz and would wrongly force a full composer install.
     vendor_checksum=""
     if [ -f "${VENDOR_TAR}.sha256" ]; then
         vendor_checksum="${VENDOR_TAR}.sha256"
-    elif [ -f "${VENDOR_TAR}.md5" ]; then
-        vendor_checksum="${VENDOR_TAR}.md5"
     fi
 
     if [ -f "$VENDOR_TAR" ] && [ -n "$vendor_checksum" ] && verify_checksum "$VENDOR_TAR" "$vendor_checksum"; then
@@ -796,7 +792,7 @@ if [ -f "$app_ini" ]; then
     if [ "$setup_ssl" = true ]; then
         sed -i "s|^domain\s*=.*|domain = https://${hostname}/|" "$app_ini"
     else
-        sed -i "s|^domain\s*=.*|domain = http://${hostname}/|" "$app_ini"
+        sed -i "s|^domain\s*=.*|domain = http://${hostname}/|" "$app_ini" # NOSONAR -- plain HTTP only when the admin declined SSL setup
     fi
 
     # Generate a random security salt if still empty

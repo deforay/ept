@@ -535,8 +535,8 @@ download_file() {
 # literal "vendor.tar.gz" in the cwd. When we download the tarball under a different
 # name (e.g. /tmp/ept-vendor.tar.gz), that check fails with "vendor.tar.gz: FAILED
 # open or read" and the caller wrongly falls back to a slow full composer install.
-# Compare the hash *value* directly to avoid that. Algorithm is picked from the
-# checksum file's extension (.sha256 -> sha256sum, anything else -> md5sum).
+# Compare the hash *value* directly to avoid that. Only .sha256 checksum files are
+# accepted.
 verify_checksum() {
     local file="$1"
     local checksum_file="$2"
@@ -546,11 +546,14 @@ verify_checksum() {
     expected=$(awk 'NR==1{print $1}' "$checksum_file")
     [ -n "$expected" ] || return 1
 
-    local actual
+    # MD5 is too weak to vouch for a downloaded tarball.
     case "$checksum_file" in
-        *.sha256) actual=$(sha256sum "$file" | awk '{print $1}') ;;
-        *)        actual=$(md5sum "$file" | awk '{print $1}') ;;
+        *.sha256) ;;
+        *) return 1 ;;
     esac
+
+    local actual
+    actual=$(sha256sum "$file" | awk '{print $1}')
 
     [ "$expected" = "$actual" ]
 }
@@ -572,8 +575,8 @@ download_if_changed() {
 
     if [ -f "$output_file" ]; then
         local new_checksum old_checksum
-        new_checksum=$(md5sum "$tmpfile" | awk '{print $1}')
-        old_checksum=$(md5sum "$output_file" | awk '{print $1}')
+        new_checksum=$(sha256sum "$tmpfile" | awk '{print $1}')
+        old_checksum=$(sha256sum "$output_file" | awk '{print $1}')
 
         if [ "$new_checksum" = "$old_checksum" ]; then
             print info "$(basename "$output_file") is already up-to-date."
@@ -1138,11 +1141,11 @@ ensure_composer() {
     if ! command -v composer >/dev/null 2>&1; then
     print warning "Composer still missing after switch-php; installing verified global composer…"
 
-    sig="$(curl -fsSL https://composer.github.io/installer.sig)" || {
+    sig="$(curl -fsSL --proto '=https' --tlsv1.2 https://composer.github.io/installer.sig)" || {
         print error "Failed to fetch Composer installer signature."; exit 1; }
 
     installer="$(mktemp)"
-    curl -fsSL https://getcomposer.org/installer -o "$installer" || {
+    curl -fsSL --proto '=https' --tlsv1.2 https://getcomposer.org/installer -o "$installer" || {
         print error "Failed to download Composer installer."; rm -f "$installer"; exit 1; }
 
     actual="$(php -r "echo hash_file('sha384', '${installer}');")"
@@ -1465,7 +1468,7 @@ ensure_nodejs() {
     fi
 
     if command -v curl &>/dev/null; then
-        curl -fsSL "https://deb.nodesource.com/setup_${node_major}.x" | bash -
+        curl -fsSL --proto '=https' --tlsv1.2 "https://deb.nodesource.com/setup_${node_major}.x" | bash -
         apt-get install -y nodejs
     else
         apt-get install -y nodejs npm
@@ -1527,7 +1530,10 @@ install_npm_packages() {
     fi
 
     print info "Installing npm packages in ${app_path}..."
-    sudo -u www-data npm "${npm_cmd}" --omit=dev 2>/dev/null || npm "${npm_cmd}" --omit=dev
+    # Lifecycle scripts stay off for the dependency tree; only skia-canvas needs
+    # its install script (it fetches the prebuilt native binary).
+    sudo -u www-data sh -c "npm ${npm_cmd} --omit=dev --ignore-scripts && npm rebuild skia-canvas" 2>/dev/null \
+        || { npm "${npm_cmd}" --omit=dev --ignore-scripts && npm rebuild skia-canvas; }
 
     # Record the lockfile checksum so the next upgrade can skip a no-op install.
     if [ -n "${current_sum}" ] && [ -d "node_modules" ]; then

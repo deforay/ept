@@ -110,7 +110,6 @@ jobs:
           
           # Create package and checksums
           tar -czf "${{ env.PACKAGE_NAME }}" vendor/
-          md5sum "${{ env.PACKAGE_NAME }}" > "${{ env.PACKAGE_NAME }}.md5"
           sha256sum "${{ env.PACKAGE_NAME }}" > "${{ env.PACKAGE_NAME }}.sha256"
           
           echo "Package created successfully"
@@ -125,7 +124,6 @@ jobs:
           name: vendor-package
           path: |
             ${{ env.PACKAGE_NAME }}
-            ${{ env.PACKAGE_NAME }}.md5
             ${{ env.PACKAGE_NAME }}.sha256
           retention-days: 90
           compression-level: 0
@@ -145,7 +143,6 @@ jobs:
           
           ### Checksums
           
-          **MD5:** \`$(cat ${{ env.PACKAGE_NAME }}.md5 | cut -d' ' -f1)\`
           **SHA256:** \`$(cat ${{ env.PACKAGE_NAME }}.sha256 | cut -d' ' -f1)\`
           
           ### Installation
@@ -175,7 +172,7 @@ jobs:
           tag: vendor-latest
           name: Latest Vendor Package
           bodyFile: release_notes.md
-          artifacts: "vendor.tar.gz,vendor.tar.gz.md5,vendor.tar.gz.sha256"
+          artifacts: "vendor.tar.gz,vendor.tar.gz.sha256"
           allowUpdates: true
           replacesArtifacts: true
 
