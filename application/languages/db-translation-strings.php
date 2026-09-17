@@ -31,6 +31,8 @@ _('3+');
 _('Antenatal Clinic (PMTCT)');
 // r_network_tiers.network_name
 _('Centers for Disease Control and Prevention');
+// r_response_not_tested_reasons.ntr_reason
+_('Computer not working or is not available');
 // r_evaluation_comments.comment
 _('Controls were not reported');
 // r_network_tiers.network_name
@@ -51,6 +53,8 @@ _('detected');
 _('Did not meet the minimum score required');
 // r_site_type.site_type
 _('District');
+// r_feedback_questions.question_text
+_('Do you have additional suggestions or comments to help improve the XTPT program?');
 // scheme_list.scheme_name
 _('Dried Blood Spot - Early Infant Diagnosis');
 // scheme_list.scheme_name
@@ -151,6 +155,12 @@ _('HIV Serology');
 _('HIV Viral Load');
 // r_participant_affiliates.affiliate, r_site_type.site_type
 _('Hospital');
+// r_feedback_questions.question_text
+_('How can follow-up and corrective action for unsatisfactory scores be improved?');
+// r_feedback_questions.question_text
+_('How can the XTPT panel testing instructions, dried tube specimen sample type, ePT result submission process, or performance and summary reports be improved?');
+// r_feedback_questions.question_text
+_('If my site receives an unsatisfactory score (or less than 100% on an XTPT panel), a representative from the national or subnational TB or quality assurance program(s) contacts me to follow up and helps me to determine the cause.');
 // r_control.control_name
 _('In-House Negative Control');
 // r_control.control_name
@@ -167,6 +177,8 @@ _('indeterminate');
 _('Instrument down');
 // r_response_vl_not_tested_reason.vl_not_tested_reason
 _('Instrument Down');
+// r_response_not_tested_reasons.ntr_reason
+_('Instrument is out of service');
 // r_possibleresult.response
 _('Interminate');
 // r_possibleresult.response
@@ -197,6 +209,8 @@ _('Laboratory');
 _('Laboratory facility no longer perform testing');
 // r_response_not_tested_reasons.ntr_reason, r_response_vl_not_tested_reason.vl_not_tested_reason
 _('Laboratory facility under renovation');
+// r_response_not_tested_reasons.ntr_reason
+_('Laboratory or Site is not functional or is closed');
 // r_covid19_corrective_actions.description, r_dts_corrective_actions.description
 _('Late response, response not evaluated. Your response received after last date. Expected result for PT panel will be available for your reference.');
 // r_network_tiers.network_name
@@ -229,6 +243,8 @@ _('Minimum score not reached');
 _('Missing supervisor approval for reported result.');
 // r_participant_affiliates.affiliate, r_site_type.site_type
 _('Mobile VCT');
+// r_feedback_questions.question_text
+_('My testing site uses XTPT program results to improve the quality of patient testing.');
 // r_possibleresult.response
 _('N');
 // r_possibleresult.response
@@ -371,6 +387,8 @@ _('Re-hydration date missing in PT report form.');
 _('REACTIVE');
 // r_possibleresult.response
 _('reactive');
+// r_response_not_tested_reasons.ntr_reason
+_('Reagent Stock Out');
 // r_possibleresult.response
 _('Recent');
 // r_possibleresult.response
@@ -395,6 +413,8 @@ _('Result not evaluated Ð Test Platform lot number (first/second/third) is not 
 _('Result not evaluated Ð test type expiry date (first/second/third) is not reported with PT response.');
 // r_covid19_corrective_actions.description
 _('Result not evaluated Ð Test Type lot number (first/second/third) is not reported.');
+// r_feedback_questions.question_text
+_('Result submission using ePT is simple to complete.');
 // r_covid19_corrective_actions.corrective_action, r_dts_corrective_actions.corrective_action
 _('Review all testing procedures prior to performing client testing and contact your supervisor for improvement.');
 // r_covid19_corrective_actions.corrective_action, r_dts_corrective_actions.corrective_action
@@ -449,6 +469,8 @@ _('Test type repeated for confirmatory or tiebreaker test (T1/T2/T3).');
 _('Test type XYZ expired M days before the test date DD-MON-YYY.');
 // r_covid19_corrective_actions.description
 _('Testtype XYZ repeated for all 3 test types');
+// r_feedback_questions.question_text
+_('The Dried Tube Specimen (DTS) sample type is easy to rehydrate and test.');
 // r_response_not_tested_reasons.ntr_reason, r_response_vl_not_tested_reason.vl_not_tested_reason
 _('The PT panel shipment was lost/damage');
 // r_response_not_tested_reasons.ntr_reason, r_response_vl_not_tested_reason.vl_not_tested_reason
@@ -457,6 +479,16 @@ _('The PT panel testing failed during sample processing');
 _('The results were invalid for the entire run');
 // r_evaluation_comments.comment
 _('There were not enough responses for the VL Assay chosen');
+// r_feedback_questions.question_text
+_('The turnaround time between result submission and performance report receipt for this round of XTPT was within the estimated time frame indicated on the annual invitation.');
+// r_feedback_questions.question_text
+_('The Xpert TB Proficiency Testing (XTPT) Panel was received in good condition.');
+// r_feedback_questions.question_text
+_('The XTPT Individual Performance Report, including my site\'s score and test results, is easy to read and interpret.');
+// r_feedback_questions.question_text
+_('The XTPT panel testing instructions were well-organized and easy to understand.');
+// r_feedback_questions.question_text
+_('The XTPT Participant Summary Report, including analysing all participants\' results, is easy to read and interpret.');
 // r_possibleresult.response
 _('TRACE');
 // r_possibleresult.response
@@ -477,6 +509,8 @@ _('Viral Load Machine not working');
 _('WEAK REACTIVE');
 // r_possibleresult.response
 _('weak reactive');
+// r_feedback_questions.question_text
+_('Were there any challenges or barriers to participating in the XTPT program? If yes, please list the specific challenges (i.e., instrument operational status, facility access, equipment availability, reagent availability, personnel availability to conduct tests or report results).');
 // r_modes_of_receipt.mode_name
 _('WhatsApp');
 // r_dts_corrective_actions.description
