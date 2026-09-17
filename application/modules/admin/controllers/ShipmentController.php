@@ -465,8 +465,8 @@ class Admin_ShipmentController extends Zend_Controller_Action
     /**
      * AJAX endpoint for the Manage Enrollment copy-email buttons.
      * Returns unique, deliverable participant and data-manager emails
-     * for the requested audience (enrolled / not-responded / not-enrolled),
-     * plus 'ptcc' on the MTBEPT instance.
+     * for the requested audience (enrolled / not-responded / not-enrolled /
+     * passed / failed), plus 'ptcc' on the MTBEPT instance.
      */
     public function manageEnrollEmailsAction()
     {
@@ -479,7 +479,7 @@ class Admin_ShipmentController extends Zend_Controller_Action
         $request = $this->getRequest();
         $response = ['participantEmails' => [], 'dataManagerEmails' => []];
         $scope = $this->_getParam('scope', 'enrolled');
-        $allowedScopes = ['enrolled', 'not-responded', 'not-enrolled'];
+        $allowedScopes = ['enrolled', 'not-responded', 'not-enrolled', 'passed', 'failed'];
         if (Application_Service_Common::getConfig('instance') === 'mtbept') {
             $allowedScopes[] = 'ptcc';
         }

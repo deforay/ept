@@ -140,6 +140,7 @@ class Reports_FinalizeController extends Zend_Controller_Action
         $this->view->responseCount = $evalService->getResponseCount($id, $header['distribution_id']);
         $this->view->shipmentsUnderDistro = $shipmentService->getShipmentInReports($header['distribution_id']);
         $this->view->dtsSchemeType = $this->dtsSchemeTypeFromShipment($header);
+        $this->view->isMtbeptInstance = (Application_Service_Common::getConfig('instance') === 'mtbept');
 
         $navUrls = $evalService->getFinalizedShipmentNavUrls($id);
         $evSession = new Zend_Session_Namespace('evalShipmentList');

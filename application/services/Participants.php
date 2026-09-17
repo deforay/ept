@@ -1326,6 +1326,9 @@ class Application_Service_Participants
      *   'not-responded' — enrolled but without a submitted response (same test
      *                     as getShipmentNotRespondedParticipants)
      *   'not-enrolled'  — active participants NOT in the shipment
+     *   'passed'        — enrolled responders with final_result Pass
+     *   'failed'        — enrolled responders with final_result Fail
+     *                     (unsatisfactory performance)
      *   'ptcc'          — MTBEPT only: the PTCC logins mapped to the enrolled
      *                     participants (no participant emails in this list)
      *
@@ -1371,6 +1374,13 @@ class Application_Service_Participants
                     ->where('spm.shipment_id = ?', $shipmentId);
                 if ($scope === 'not-responded') {
                     $sql->where("(spm.shipment_test_report_date IS NULL OR DATE(spm.shipment_test_report_date) = '0000-00-00' OR spm.response_status LIKE 'noresponse')");
+                }
+                if ($scope === 'passed' || $scope === 'failed') {
+                    // final_result=2 was historically stamped on non-responders,
+                    // so only count a Fail that came from a submitted response.
+                    $sql->where('spm.final_result = ?', $scope === 'passed' ? 1 : 2)
+                        ->where("spm.response_status = 'responded'")
+                        ->where("(spm.is_excluded IS NULL OR spm.is_excluded <> 'yes')");
                 }
             }
         }

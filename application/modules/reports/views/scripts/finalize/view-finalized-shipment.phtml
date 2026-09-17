@@ -133,6 +133,20 @@ if (!empty($this->shipment)) {
                 <strong><?php echo $this->shipment[0]['shipment_code']; ?></strong>
             </h2>
             <div class="data-list-actions">
+                <button class="btn btn-default" type="button" onclick="copyShipmentEmails('passed');"
+                    title="<?= $this->htmlTranslate("Participant + data manager emails of participants who passed this shipment"); ?>">
+                    <i class="icon-copy"></i>&nbsp;<?= $this->htmlTranslate("Copy Emails : Passed"); ?>
+                </button>
+                <button class="btn btn-default" type="button" onclick="copyShipmentEmails('failed');"
+                    title="<?= $this->htmlTranslate("Participant + data manager emails of participants with unsatisfactory performance in this shipment"); ?>">
+                    <i class="icon-copy"></i>&nbsp;<?= $this->htmlTranslate("Copy Emails : Unsatisfactory"); ?>
+                </button>
+                <?php if (!empty($this->isMtbeptInstance)) : ?>
+                    <button class="btn btn-default" type="button" onclick="copyShipmentEmails('ptcc');"
+                        title="<?= $this->htmlTranslate("Emails of the active PTCCs mapped to participants enrolled in this shipment"); ?>">
+                        <i class="icon-copy"></i>&nbsp;<?= $this->htmlTranslate("Copy Emails : PTCC"); ?>
+                    </button>
+                <?php endif; ?>
                 <?php
                 $finalizeShipmentsUrl = $this->url(array('module' => 'reports', 'controller' => 'finalize', 'action' => 'shipments'), 'default', true);
                 $referer = $_SERVER['HTTP_REFERER'] ?? '';
@@ -642,6 +656,86 @@ if (!empty($this->shipment)) {
                         }
                         $.unblockUI();
                     });
+            }
+
+            /**
+             * Copy the unique participant + data manager emails for a result
+             * audience ('passed' / 'failed') or the round's PTCCs ('ptcc').
+             * Shares the Manage Enrollment endpoint.
+             */
+            function copyShipmentEmails(scope) {
+                $.blockUI();
+                $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'shipment', 'action' => 'manage-enroll-emails'), 'default', true); ?>", {
+                    shipmentId: "<?php echo (int) $this->shipmentId; ?>",
+                    scope: scope
+                },
+                    function (data) {
+                        $.unblockUI();
+                        var participantEmails = data.participantEmails || [];
+                        var dataManagerEmails = data.dataManagerEmails || [];
+                        var seen = {};
+                        var emails = [];
+                        $.each(participantEmails.concat(dataManagerEmails), function (i, email) {
+                            var key = email.toLowerCase();
+                            if (!seen[key]) {
+                                seen[key] = true;
+                                emails.push(email);
+                            }
+                        });
+
+                        if (emails.length === 0) {
+                            alert("<?= $this->jsTranslate("No valid email addresses found for this selection"); ?>");
+                            return;
+                        }
+
+                        copyTextToClipboard(emails.join(", "), function (copied) {
+                            if (copied) {
+                                var summary = emails.length + " " + "<?= $this->jsTranslate("unique email address(es) copied to clipboard"); ?>";
+                                if (scope === 'ptcc') {
+                                    summary += " (PTCC)";
+                                } else {
+                                    summary += " (" + participantEmails.length + " " + "<?= $this->jsTranslate("participant"); ?>" + ", " +
+                                        dataManagerEmails.length + " " + "<?= $this->jsTranslate("data manager"); ?>" + ")";
+                                }
+                                alert(summary);
+                            } else {
+                                window.prompt("<?= $this->jsTranslate("Press Ctrl+C / Cmd+C to copy"); ?>", emails.join(", "));
+                            }
+                        });
+                    }, "json")
+                    .fail(function () {
+                        $.unblockUI();
+                        alert("<?= $this->jsTranslate("Unable to fetch email addresses. Please try again later or contact system admin for help"); ?>");
+                    });
+            }
+
+            function copyTextToClipboard(text, done) {
+                if (navigator.clipboard && window.isSecureContext) {
+                    navigator.clipboard.writeText(text).then(
+                        function () { done(true); },
+                        function () { done(legacyCopyToClipboard(text)); }
+                    );
+                } else {
+                    done(legacyCopyToClipboard(text));
+                }
+            }
+
+            function legacyCopyToClipboard(text) {
+                var textarea = document.createElement('textarea');
+                textarea.value = text;
+                textarea.setAttribute('readonly', '');
+                textarea.style.position = 'fixed';
+                textarea.style.opacity = '0';
+                document.body.appendChild(textarea);
+                textarea.select();
+                var copied = false;
+                try {
+                    copied = document.execCommand('copy');
+                } catch (err) {
+                    copied = false;
+                }
+                document.body.removeChild(textarea);
+                return copied;
             }
 
             function fnFormatDetails(oTable, nTr) {
