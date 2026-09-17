@@ -90,48 +90,50 @@ $totalCount = count($mergedRows);
 
 <div class="bi-result-wrap">
     <div class="bi-header">
-        <a class="bi-back" href="/admin/data-managers/index/ptcc/1">&larr; <?= $this->translate->_("Back to PTCC list"); ?></a>
-        <h2><?= $this->translate->_("Bulk Import PTCC"); ?></h2>
-        <div class="bi-sub"><?= $this->translate->_("Import complete. Review the results below."); ?></div>
+        <a class="bi-back" href="/admin/data-managers/index/ptcc/1">&larr; <?= $this->htmlTranslate("Back to PTCC list"); ?></a>
+        <h2><?= $this->htmlTranslate("Bulk Import PTCC"); ?></h2>
+        <div class="bi-sub"><?= $this->htmlTranslate("Import complete. Review the results below."); ?></div>
     </div>
 
     <div class="bi-steps">
-        <div class="bi-step done"><span class="bi-num">1</span> <?= $this->translate->_("Upload"); ?></div>
+        <div class="bi-step done"><span class="bi-num">1</span> <?= $this->htmlTranslate("Upload"); ?></div>
         <span class="bi-sep">&rsaquo;</span>
-        <div class="bi-step active"><span class="bi-num">2</span> <?= $this->translate->_("Done"); ?></div>
+        <div class="bi-step done"><span class="bi-num">2</span> <?= $this->htmlTranslate("Review"); ?></div>
+        <span class="bi-sep">&rsaquo;</span>
+        <div class="bi-step active"><span class="bi-num">3</span> <?= $this->htmlTranslate("Done"); ?></div>
     </div>
 
     <div class="bi-card">
         <div class="bi-done-head">
             <div class="bi-check"><i class="icon-ok"></i></div>
             <div class="bi-done-text">
-                <h3><?= $this->translate->_("Import complete"); ?></h3>
+                <h3><?= $this->htmlTranslate("Import complete"); ?></h3>
                 <div class="bi-done-sub">
                     <?php if ($savedCount > 0): ?>
-                        <?= sprintf($this->translate->_("%d of %d row(s) were saved."), $savedCount, $totalCount); ?>
+                        <?= sprintf($this->htmlTranslate("%d of %d row(s) were saved."), $savedCount, $totalCount); ?>
                     <?php else: ?>
-                        <?= $this->translate->_("No new PTCCs were added."); ?>
+                        <?= $this->htmlTranslate("No new PTCCs were added."); ?>
                     <?php endif; ?>
                 </div>
             </div>
             <div class="bi-pills">
-                <span class="bi-pill ok"><i class="icon-ok-sign"></i> <?= $insertedCount ?> <?= $this->translate->_("added"); ?></span>
-                <span class="bi-pill upd"><i class="icon-refresh"></i> <?= $updatedCount ?> <?= $this->translate->_("updated"); ?></span>
-                <span class="bi-pill dup"><i class="icon-warning-sign"></i> <?= $skippedCount ?> <?= $this->translate->_("skipped"); ?></span>
+                <span class="bi-pill ok"><i class="icon-ok-sign"></i> <?= $insertedCount ?> <?= $this->htmlTranslate("added"); ?></span>
+                <span class="bi-pill upd"><i class="icon-refresh"></i> <?= $updatedCount ?> <?= $this->htmlTranslate("updated"); ?></span>
+                <span class="bi-pill dup"><i class="icon-warning-sign"></i> <?= $skippedCount ?> <?= $this->htmlTranslate("skipped"); ?></span>
             </div>
         </div>
 
         <div class="bi-done-actions">
             <a class="btn btn-default" href="/admin/data-managers/bulk-import-ptcc">
-                <i class="icon-upload"></i> <?= $this->translate->_("Import another file"); ?>
+                <i class="icon-upload"></i> <?= $this->htmlTranslate("Import another file"); ?>
             </a>
             <?php if ($errorCount > 0): ?>
                 <button type="button" class="btn btn-warning" id="biExportErrors">
-                    <i class="icon-download"></i> <?= $this->translate->_("Export skipped rows"); ?>
+                    <i class="icon-download"></i> <?= $this->htmlTranslate("Export skipped rows"); ?>
                 </button>
             <?php endif; ?>
             <a class="btn btn-primary" href="/admin/data-managers/index/ptcc/1">
-                <i class="icon-user"></i> <?= $this->translate->_("Back to PTCC list"); ?>
+                <i class="icon-user"></i> <?= $this->htmlTranslate("Back to PTCC list"); ?>
             </a>
         </div>
 
@@ -139,24 +141,24 @@ $totalCount = count($mergedRows);
             <table class="table table-bordered table-striped table-hover dataTable" id="resultsTable">
                 <thead>
                     <tr>
-                        <td><?= $this->translate->_("Row"); ?></td>
-                        <td><?= $this->translate->_("Status"); ?></td>
-                        <td><?= $this->translate->_("Primary Email"); ?></td>
-                        <td><?= $this->translate->_("Name"); ?></td>
-                        <td><?= $this->translate->_("Institute"); ?></td>
-                        <td><?= $this->translate->_("Country"); ?></td>
-                        <td><?= $this->translate->_("Mapped"); ?></td>
-                        <td><?= $this->translate->_("Reason"); ?></td>
+                        <td><?= $this->htmlTranslate("Row"); ?></td>
+                        <td><?= $this->htmlTranslate("Status"); ?></td>
+                        <td><?= $this->htmlTranslate("Primary Email"); ?></td>
+                        <td><?= $this->htmlTranslate("Name"); ?></td>
+                        <td><?= $this->htmlTranslate("Institute"); ?></td>
+                        <td><?= $this->htmlTranslate("Country"); ?></td>
+                        <td><?= $this->htmlTranslate("Mapped"); ?></td>
+                        <td><?= $this->htmlTranslate("Reason"); ?></td>
                     </tr>
                 </thead>
                 <tbody>
                     <?php foreach ($mergedRows as $r): ?>
                         <?php
-                        $label = $r['status'] === 'ok' ? $this->translate->_('added') : ($r['status'] === 'upd' ? $this->translate->_('updated') : $this->translate->_('skipped'));
+                        $label = $r['status'] === 'ok' ? $this->htmlTranslate('added') : ($r['status'] === 'upd' ? $this->htmlTranslate('updated') : $this->htmlTranslate('skipped'));
                         ?>
                         <tr>
                             <td><?= $this->escape((string)$r['s_no']) ?></td>
-                            <td><span class="bi-status <?= $r['status'] ?>"><?= $this->escape($label) ?></span></td>
+                            <td><span class="bi-status <?= $r['status'] ?>"><?= $label ?></span></td>
                             <td><?= $this->escape($r['primary_email']) ?></td>
                             <td><?= $this->escape($r['name']) ?></td>
                             <td><?= $this->escape($r['institute']) ?></td>

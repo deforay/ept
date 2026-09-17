@@ -797,47 +797,78 @@ class Application_Service_Participants
         return $participantDb->fetchParticipantSearch($search);
     }
 
-    public function uploadBulkParticipants($params = null)
+    /** Import options carried from the upload form to the confirmed import. */
+    private const BULK_IMPORT_OPTIONS = ['bulkUploadDuplicateSkip', 'bulkUploadAllowEmailRepeat', 'resetPassword'];
+
+    /**
+     * Upload step: store the file and dry-run the import. The returned response
+     * carries a review_token that importReviewedBulkParticipants() redeems.
+     */
+    public function previewBulkParticipants(array $params)
+    {
+        $path = $this->storeBulkImportUpload();
+        if ($path === null) {
+            return false;
+        }
+        $options = array_intersect_key($params, array_flip(self::BULK_IMPORT_OPTIONS));
+        $response = $this->runBulkImport($path, $options, true);
+        if (is_array($response) && empty($response['validation_error'])) {
+            $response['review_token'] = Pt_Commons_ImportReview::stash('participants', $path, $options);
+            $response['options'] = $options;
+        }
+        return $response;
+    }
+
+    /** Import step: run the reviewed file for real with the options it was reviewed under. */
+    public function importReviewedBulkParticipants(string $token)
+    {
+        $pending = Pt_Commons_ImportReview::claim('participants', $token);
+        if ($pending === null) {
+            $alertMsg = new Zend_Session_Namespace('alertSpace');
+            $alertMsg->message = 'This review has expired or was already imported. Please upload the file again.';
+            return false;
+        }
+        return $this->runBulkImport($pending['path'], $pending['params'], false);
+    }
+
+    private function storeBulkImportUpload(): ?string
+    {
+        $alertMsg = new Zend_Session_Namespace('alertSpace');
+        if (empty($_FILES['fileName']['name']) || !is_uploaded_file($_FILES['fileName']['tmp_name'] ?? '')) {
+            $alertMsg->message = 'File not uploaded. Please try again.';
+            return null;
+        }
+        $fileName = preg_replace('/[^A-Za-z0-9.]/', '-', $_FILES['fileName']['name']);
+        $extension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
+        if (!in_array($extension, ['xls', 'xlsx', 'csv'], true)) {
+            $alertMsg->message = 'File format not supported';
+            return null;
+        }
+        $path = realpath(UPLOAD_PATH) . DIRECTORY_SEPARATOR . Pt_Commons_MiscUtility::generateRandomString(6) . '-' . $fileName;
+        if (file_exists($path) || !move_uploaded_file($_FILES['fileName']['tmp_name'], $path)) {
+            $alertMsg->message = 'Data import failed';
+            return null;
+        }
+        return $path;
+    }
+
+    private function runBulkImport(string $path, array $params, bool $dryRun)
     {
         ini_set('memory_limit', -1);
         ini_set('max_execution_time', -1);
         try {
-            $alertMsg = new Zend_Session_Namespace('alertSpace');
             $participantDb = new Application_Model_DbTable_Participants();
-            $allowedExtensions = ['xls', 'xlsx', 'csv'];
-            $fileName = preg_replace('/[^A-Za-z0-9.]/', '-', $_FILES['fileName']['name']);
-            $fileName = str_replace(' ', '-', $fileName);
-            $random = Pt_Commons_MiscUtility::generateRandomString(6);
-            $extension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
-            $fileName = "$random-$fileName";
-            $response = [];
-            if (in_array($extension, $allowedExtensions)) {
-                $tempUploadDirectory = realpath(UPLOAD_PATH);
-                if (!file_exists($tempUploadDirectory . DIRECTORY_SEPARATOR . $fileName)) {
-                    if (move_uploaded_file($_FILES['fileName']['tmp_name'], $tempUploadDirectory . DIRECTORY_SEPARATOR . $fileName)) {
-                        $response = $participantDb->processBulkImport($tempUploadDirectory . DIRECTORY_SEPARATOR . $fileName, false, $params);
-                    } else {
-                        $alertMsg->message = 'Data import failed';
-                        return false;
-                    }
-                } else {
-                    $alertMsg->message = 'File not uploaded. Please try again.';
-                    return false;
-                }
-            } else {
-                $alertMsg->message = 'File format not supported';
-                return false;
-            }
+            return $participantDb->processBulkImport($path, false, $params, $dryRun);
         } catch (Throwable $exc) {
             Pt_Commons_LoggerUtility::logError($exc->getMessage(), [
                 'file'  => $exc->getFile(),
                 'line'  => $exc->getLine(),
                 'trace' => $exc->getTraceAsString(),
             ]);
+            $alertMsg = new Zend_Session_Namespace('alertSpace');
             $alertMsg->message = $this->describeBulkImportFailure($exc);
             return false;
         }
-        return $response;
     }
 
     private function describeBulkImportFailure(Throwable $exc): string

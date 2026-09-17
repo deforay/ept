@@ -1001,46 +1001,69 @@ class Application_Service_DataManagers
             return false;
         }
     }
-    public function uploadBulkDatamanager($params)
+    /** Import options carried from the PTCC upload form to the confirmed import. */
+    private const PTCC_IMPORT_OPTIONS = ['bulkUploadDuplicateSkip', 'deactivateExistingPTCC'];
+
+    /**
+     * Upload step: store the file and dry-run the PTCC import. The returned response
+     * carries a review_token that importReviewedBulkDatamanager() redeems.
+     */
+    public function previewBulkDatamanager(array $params)
+    {
+        $alertMsg = new Zend_Session_Namespace('alertSpace');
+        if (empty($_FILES['fileName']['name']) || !is_uploaded_file($_FILES['fileName']['tmp_name'] ?? '')) {
+            $alertMsg->message = 'File not uploaded. Please try again.';
+            return false;
+        }
+        $fileName = preg_replace('/[^A-Za-z0-9.]/', '-', $_FILES['fileName']['name']);
+        $extension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
+        if (!in_array($extension, ['xls', 'xlsx', 'csv'], true)) {
+            $alertMsg->message = 'File format not supported';
+            return false;
+        }
+        $path = realpath(TEMP_UPLOAD_PATH) . DIRECTORY_SEPARATOR . Pt_Commons_MiscUtility::generateRandomString(6) . '-' . $fileName;
+        if (file_exists($path) || !move_uploaded_file($_FILES['fileName']['tmp_name'], $path)) {
+            $alertMsg->message = 'Data import failed';
+            return false;
+        }
+
+        $options = array_intersect_key($params, array_flip(self::PTCC_IMPORT_OPTIONS));
+        $response = $this->runBulkDatamanagerImport($path, $options, true);
+        if (is_array($response) && empty($response['validation_error'])) {
+            $response['review_token'] = Pt_Commons_ImportReview::stash('ptcc', $path, $options);
+            $response['options'] = $options;
+        }
+        return $response;
+    }
+
+    /** Import step: run the reviewed PTCC file for real with its reviewed options. */
+    public function importReviewedBulkDatamanager(string $token)
+    {
+        $pending = Pt_Commons_ImportReview::claim('ptcc', $token);
+        if ($pending === null) {
+            $alertMsg = new Zend_Session_Namespace('alertSpace');
+            $alertMsg->message = 'This review has expired or was already imported. Please upload the file again.';
+            return false;
+        }
+        return $this->runBulkDatamanagerImport($pending['path'], $pending['params'], false);
+    }
+
+    private function runBulkDatamanagerImport(string $path, array $params, bool $dryRun)
     {
         ini_set('memory_limit', -1);
         ini_set('max_execution_time', -1);
         try {
-            $alertMsg = new Zend_Session_Namespace('alertSpace');
-            $allowedExtensions = ['xls', 'xlsx', 'csv'];
-            $fileName = preg_replace('/[^A-Za-z0-9.]/', '-', $_FILES['fileName']['name']);
-            $fileName = str_replace(' ', '-', $fileName);
-            $random = Pt_Commons_MiscUtility::generateRandomString(6);
-            $extension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
-            $fileName = $random . '-' . $fileName;
-            $response = [];
-            if (in_array($extension, $allowedExtensions)) {
-                $tempUploadDirectory = realpath(TEMP_UPLOAD_PATH);
-                if (!file_exists($tempUploadDirectory . DIRECTORY_SEPARATOR . $fileName)) {
-                    if (move_uploaded_file($_FILES['fileName']['tmp_name'], $tempUploadDirectory . DIRECTORY_SEPARATOR . $fileName)) {
-                        $response = $this->datamanagersDb->processBulkImport($tempUploadDirectory . DIRECTORY_SEPARATOR . $fileName, false, $params);
-                    } else {
-                        $alertMsg->message = 'Data import failed';
-                        return false;
-                    }
-                } else {
-                    $alertMsg->message = 'File not uploaded. Please try again.';
-                    return false;
-                }
-            } else {
-                $alertMsg->message = 'File format not supported';
-                return false;
-            }
-        } catch (Exception $exc) {
-            Pt_Commons_LoggerUtility::logError('Failed to import participants data (Excel): ' . $exc->getMessage(), [
+            return $this->datamanagersDb->processBulkImport($path, false, $params, 'ptcc', $dryRun);
+        } catch (Throwable $exc) {
+            Pt_Commons_LoggerUtility::logError('Failed to import PTCC data (Excel): ' . $exc->getMessage(), [
                 'file'  => $exc->getFile(),
                 'line'  => $exc->getLine(),
                 'trace' => $exc->getTraceAsString(),
             ]);
+            $alertMsg = new Zend_Session_Namespace('alertSpace');
             $alertMsg->message = 'File not uploaded. Something went wrong please try again later!';
             return false;
         }
-        return $response;
     }
 
     public function exportPTCCDetails($params)

@@ -129,40 +129,50 @@ class Admin_ParticipantsController extends Zend_Controller_Action
 
     public function bulkImportAction()
     {
-        /** @var Zend_Controller_Request_Http $request */
-        $request = $this->getRequest();
-        $participantService = new Application_Service_Participants();
-
         $bulkImportSession = new Zend_Session_Namespace('bulkImportFeedback');
         if (!empty($bulkImportSession->mismatches)) {
             $this->view->validationMismatches = $bulkImportSession->mismatches;
             unset($bulkImportSession->mismatches);
         }
+    }
 
-        if ($request->isPost()) {
-            $this->view->response = $participantService->uploadBulkParticipants();
+    /** Step 2: dry-run the uploaded file and show what importing it would do. */
+    public function bulkImportReviewAction()
+    {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
+        if (!$request->isPost()) {
+            $this->redirect('/admin/participants/bulk-import');
+            return;
+        }
+        $participantService = new Application_Service_Participants();
+        $result = $participantService->previewBulkParticipants($request->getPost());
+        if (is_array($result) && !empty($result['validation_error'])) {
+            $bulkImportSession = new Zend_Session_Namespace('bulkImportFeedback');
+            $bulkImportSession->mismatches = $result['mismatches'];
+            $this->redirect('/admin/participants/bulk-import');
+        } elseif (!$result) {
+            $this->redirect('/admin/participants/bulk-import');
+        } else {
+            $this->view->response = $result;
         }
     }
 
+    /** Step 3: import the reviewed file and show the results. */
     public function participantUploadStatisticsAction()
     {
         /** @var Zend_Controller_Request_Http $request */
         $request = $this->getRequest();
-        $participantService = new Application_Service_Participants();
-        if ($request->isPost()) {
-            $params = $request->getPost();
-            $result = $participantService->uploadBulkParticipants($params);
-            if (is_array($result) && !empty($result['validation_error'])) {
-                $bulkImportSession = new Zend_Session_Namespace('bulkImportFeedback');
-                $bulkImportSession->mismatches = $result['mismatches'];
-                $this->redirect('/admin/participants/bulk-import');
-            } elseif (!$result) {
-                $this->redirect('/admin/participants');
-            } else {
-                $this->view->response = $result;
-            }
-        } else {
+        if (!$request->isPost()) {
             $this->redirect('/admin/participants');
+            return;
+        }
+        $participantService = new Application_Service_Participants();
+        $result = $participantService->importReviewedBulkParticipants((string) $request->getPost('reviewToken', ''));
+        if (!$result) {
+            $this->redirect('/admin/participants/bulk-import');
+        } else {
+            $this->view->response = $result;
         }
     }
 

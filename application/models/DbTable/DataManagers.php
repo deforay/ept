@@ -1389,7 +1389,11 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         return $mismatches;
     }
 
-    public function processBulkImport($fileName, $allFakeEmail = false, $params = null, $type = 'ptcc')
+    /**
+     * With $dryRun the import runs inside its transaction and is rolled back, so the
+     * review screen shows exactly what confirming would do.
+     */
+    public function processBulkImport($fileName, $allFakeEmail = false, $params = null, $type = 'ptcc', bool $dryRun = false)
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         try {
@@ -1423,13 +1427,28 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             // password only once instead of once per row.
             $passwordHashCache = [];
 
-            //If deactivate existing PTCC
-            if (isset($params['deactivateExistingPTCC']) && $params['deactivateExistingPTCC'] == 'yes') {
-                $db->update('data_manager', ['status' => 'inactive'], "data_manager_type = 'ptcc'");
-            }
+            $countryNamesById = $db->fetchPairs($db->select()->from('countries', ['id', 'iso_name']));
 
             // Single transaction for entire operation
             $db->beginTransaction();
+
+            // Deactivate existing PTCCs inside the transaction, so a dry run (or a failed
+            // import) rolls it back. Remember who was active to report who stays off.
+            $deactivateExisting = isset($params['deactivateExistingPTCC']) && $params['deactivateExistingPTCC'] == 'yes';
+            $previouslyActive = [];
+            if ($deactivateExisting) {
+                $previouslyActive = $db->fetchAll(
+                    $db->select()
+                        ->from('data_manager', ['primary_email', 'first_name', 'last_name'])
+                        ->where("data_manager_type = 'ptcc'")
+                        ->where("status = 'active'")
+                );
+                $db->update('data_manager', ['status' => 'inactive'], "data_manager_type = 'ptcc'");
+            }
+            $previouslyActiveEmails = [];
+            foreach ($previouslyActive as $ptcc) {
+                $previouslyActiveEmails[strtolower(trim((string) $ptcc['primary_email']))] = true;
+            }
 
             for ($i = 2; $i <= $count; ++$i) {
                 $lastInsertedId = 0;
@@ -1450,8 +1469,8 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                 }
 
                 $sheetData[$i]['B'] = filter_var(trim($sheetData[$i]['B']), FILTER_SANITIZE_EMAIL);
-                $sheetData[$i]['K'] = Common::removeEmpty(explode(',', $sheetData[$i]['K'])) ?? [];
-                $sheetData[$i]['L'] = Common::removeEmpty(explode(',', $sheetData[$i]['L'])) ?? [];
+                $sheetData[$i]['K'] = Common::removeEmpty(explode(',', (string) $sheetData[$i]['K'])) ?? [];
+                $sheetData[$i]['L'] = Common::removeEmpty(explode(',', (string) $sheetData[$i]['L'])) ?? [];
 
                 $originalEmail = null;
                 if (!empty($sheetData[$i]['B']) && filter_var($sheetData[$i]['B'], FILTER_VALIDATE_EMAIL)) {
@@ -1530,6 +1549,12 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                         $action = 'inserted';
                     }
                 } elseif (isset($params['bulkUploadDuplicateSkip']) && $params['bulkUploadDuplicateSkip'] == 'update-on-primary-email-match') {
+                    $summaryRow['changes'] = $this->diffDataManager((int) $dmresult['dm_id'], $dataManagerData, $countryNamesById);
+                    // "Deactivate existing" already flipped this row off a moment ago in the
+                    // same transaction; it was active before, so that's not a real change.
+                    if (isset($summaryRow['changes']['status'], $previouslyActiveEmails[strtolower(trim((string) $originalEmail))])) {
+                        unset($summaryRow['changes']['status']);
+                    }
                     $db->update('data_manager', $dataManagerData, ['primary_email = ?' => $originalEmail]);
                     $lastInsertedId = $dmresult['dm_id'];
                     $importedCount++;
@@ -1579,6 +1604,28 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                 }
             }
 
+            // PTCCs switched off by "deactivate existing" and not brought back by the file
+            if ($deactivateExisting) {
+                $inFile = [];
+                foreach ($response['data'] as $saved) {
+                    $inFile[strtolower(trim((string) $saved['primary_email']))] = true;
+                }
+                $response['deactivated'] = [];
+                foreach ($previouslyActive as $ptcc) {
+                    if (!isset($inFile[strtolower(trim((string) $ptcc['primary_email']))])) {
+                        $response['deactivated'][] = [
+                            'primary_email' => $ptcc['primary_email'],
+                            'name' => trim($ptcc['first_name'] . ' ' . $ptcc['last_name']),
+                        ];
+                    }
+                }
+            }
+
+            if ($dryRun) {
+                $db->rollBack();
+                return $response;
+            }
+
             // Commit the entire transaction at once
             $db->commit();
         } catch (Throwable $e) {
@@ -1598,6 +1645,36 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
 
         $alertMsg->message = 'Your file was imported successfully';
         return $response;
+    }
+
+    /**
+     * Before/after of a PTCC update for the review screen. The password is left out:
+     * an update always rewrites it, which the review states once for all rows.
+     */
+    private function diffDataManager(int $dmId, array $newData, array $countryNamesById): array
+    {
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $existing = $db->fetchRow($db->select()->from('data_manager')->where('dm_id = ?', $dmId));
+        if (empty($existing)) {
+            return [];
+        }
+        $changes = [];
+        foreach (['first_name', 'last_name', 'institute', 'mobile', 'secondary_email', 'view_only_access', 'country_id', 'status'] as $field) {
+            if (!array_key_exists($field, $newData)) {
+                continue;
+            }
+            $old = trim((string) ($existing[$field] ?? ''));
+            $new = trim((string) $newData[$field]);
+            if ($old === $new) {
+                continue;
+            }
+            if ($field === 'country_id') {
+                $old = $countryNamesById[$old] ?? $old;
+                $new = $countryNamesById[$new] ?? $new;
+            }
+            $changes[$field] = ['from' => $old, 'to' => $new];
+        }
+        return $changes;
     }
 
     // Helper methods for optimization

@@ -80,35 +80,37 @@
 
 <div class="bulk-import-wrap">
     <div class="bi-header">
-        <a class="bi-back" href="/admin/participants">&larr; <?= $this->translate->_("Back to participants"); ?></a>
-        <h2><?= $this->translate->_("Bulk Import Participants"); ?></h2>
-        <div class="bi-sub"><?= $this->translate->_("Upload a CSV or XLSX of participants. Duplicates and errors will be listed after import."); ?></div>
+        <a class="bi-back" href="/admin/participants">&larr; <?= $this->htmlTranslate("Back to participants"); ?></a>
+        <h2><?= $this->htmlTranslate("Bulk Import Participants"); ?></h2>
+        <div class="bi-sub"><?= $this->htmlTranslate("Upload a CSV or XLSX of participants. You'll review what will change before anything is saved."); ?></div>
     </div>
 
     <div class="bi-steps">
-        <div class="bi-step active"><span class="bi-num">1</span> <?= $this->translate->_("Upload"); ?></div>
+        <div class="bi-step active"><span class="bi-num">1</span> <?= $this->htmlTranslate("Upload"); ?></div>
         <span class="bi-sep">&rsaquo;</span>
-        <div class="bi-step"><span class="bi-num">2</span> <?= $this->translate->_("Done"); ?></div>
+        <div class="bi-step"><span class="bi-num">2</span> <?= $this->htmlTranslate("Review"); ?></div>
+        <span class="bi-sep">&rsaquo;</span>
+        <div class="bi-step"><span class="bi-num">3</span> <?= $this->htmlTranslate("Done"); ?></div>
     </div>
 
     <?php if (!empty($this->validationMismatches)): ?>
         <div class="bi-validation-error" role="alert">
-            <p class="bi-ve-title"><i class="icon-exclamation-sign"></i> <?= $this->translate->_("The uploaded file does not match the template"); ?></p>
-            <p class="bi-ve-sub"><?= $this->translate->_("Please download the latest template and copy your data into it. We found the following column header issues:"); ?></p>
+            <p class="bi-ve-title"><i class="icon-exclamation-sign"></i> <?= $this->htmlTranslate("The uploaded file does not match the template"); ?></p>
+            <p class="bi-ve-sub"><?= $this->htmlTranslate("Please download the latest template and copy your data into it. We found the following column header issues:"); ?></p>
             <table>
                 <thead>
                     <tr>
-                        <th scope="col" style="width: 80px;"><?= $this->translate->_("Column"); ?></th>
-                        <th scope="col"><?= $this->translate->_("Expected header"); ?></th>
-                        <th scope="col"><?= $this->translate->_("Found in your file"); ?></th>
+                        <th scope="col" style="width: 80px;"><?= $this->htmlTranslate("Column"); ?></th>
+                        <th scope="col"><?= $this->htmlTranslate("Expected header"); ?></th>
+                        <th scope="col"><?= $this->htmlTranslate("Found in your file"); ?></th>
                     </tr>
                 </thead>
                 <tbody>
                     <?php foreach ($this->validationMismatches as $m): ?>
                         <tr>
                             <td><code><?= $this->escape($m['column']); ?></code></td>
-                            <td><?= $m['expected'] !== '' ? $this->escape($m['expected']) : '<span class="bi-ve-empty">' . $this->translate->_("(empty)") . '</span>'; ?></td>
-                            <td><?= $m['actual'] !== '' ? $this->escape($m['actual']) : '<span class="bi-ve-empty">' . $this->translate->_("(empty)") . '</span>'; ?></td>
+                            <td><?= $m['expected'] !== '' ? $this->escape($m['expected']) : '<span class="bi-ve-empty">' . $this->htmlTranslate("(empty)") . '</span>'; ?></td>
+                            <td><?= $m['actual'] !== '' ? $this->escape($m['actual']) : '<span class="bi-ve-empty">' . $this->htmlTranslate("(empty)") . '</span>'; ?></td>
                         </tr>
                     <?php endforeach; ?>
                 </tbody>
@@ -117,7 +119,7 @@
     <?php endif; ?>
 
     <form name="bulkParticipantForm" id="bulkParticipantForm" method="post"
-          action="<?php echo $this->url(array("module" => "admin", "controller" => "participants", "action" => "participant-upload-statistics"), 'default', true) ?>"
+          action="<?php echo $this->url(array("module" => "admin", "controller" => "participants", "action" => "bulk-import-review"), 'default', true) ?>"
           enctype="multipart/form-data" role="form"
           onsubmit="validateNow(); return false;">
 
@@ -125,7 +127,7 @@
             <div class="bi-main">
                 <div class="bi-card">
                     <div class="bi-chips">
-                        <span class="bi-chips-label"><?= $this->translate->_("Required"); ?></span>
+                        <span class="bi-chips-label"><?= $this->htmlTranslate("Required"); ?></span>
                         <span class="bi-chip required">unique_identifier</span>
                         <span class="bi-chip required">first_name</span>
                         <span class="bi-chip required">primary_email</span>
@@ -134,34 +136,34 @@
 
                     <div class="bi-options">
                         <div>
-                            <label for="bulkUploadDuplicateSkip"><?= $this->translate->_("If a Unique ID already exists"); ?></label>
+                            <label for="bulkUploadDuplicateSkip"><?= $this->htmlTranslate("If a Unique ID already exists"); ?></label>
                             <select name="bulkUploadDuplicateSkip" id="bulkUploadDuplicateSkip" class="isRequired" title="Please choose the upload options" onchange="showHideResetPassword(this.value);">
-                                <option value="skip-duplicates"><?= $this->translate->_("Skip the row (don't update)"); ?></option>
-                                <option value="update-on-unique-id-match"><?= $this->translate->_("Update all data for that participant"); ?></option>
-                                <option value="update-email-only"><?= $this->translate->_("Update email only (if changed)"); ?></option>
+                                <option value="skip-duplicates"><?= $this->htmlTranslate("Skip the row (don't update)"); ?></option>
+                                <option value="update-on-unique-id-match"><?= $this->htmlTranslate("Update all data for that participant"); ?></option>
+                                <option value="update-email-only"><?= $this->htmlTranslate("Update email only (if changed)"); ?></option>
                             </select>
                         </div>
                         <div>
-                            <label for="bulkUploadAllowEmailRepeat"><?= $this->translate->_("Same email across participants"); ?></label>
+                            <label for="bulkUploadAllowEmailRepeat"><?= $this->htmlTranslate("Same email across participants"); ?></label>
                             <select name="bulkUploadAllowEmailRepeat" id="bulkUploadAllowEmailRepeat" class="isRequired" title="Please choose the upload options">
-                                <option value="allow-existing-email"><?= $this->translate->_("Allow — reuse existing DM / PT login email"); ?></option>
-                                <option value="do-not-allow-existing-email"><?= $this->translate->_("Don't allow — email must be unique"); ?></option>
+                                <option value="allow-existing-email"><?= $this->htmlTranslate("Allow — reuse existing DM / PT login email"); ?></option>
+                                <option value="do-not-allow-existing-email"><?= $this->htmlTranslate("Don't allow — email must be unique"); ?></option>
                             </select>
                         </div>
                         <div class="reset-password hide">
-                            <label for="resetPassword"><?= $this->translate->_("Reset password on update"); ?></label>
+                            <label for="resetPassword"><?= $this->htmlTranslate("Reset password on update"); ?></label>
                             <select name="resetPassword" id="resetPassword">
-                                <option value="yes"><?= $this->translate->_("Yes"); ?></option>
-                                <option value="no"><?= $this->translate->_("No"); ?></option>
+                                <option value="yes"><?= $this->htmlTranslate("Yes"); ?></option>
+                                <option value="no"><?= $this->htmlTranslate("No"); ?></option>
                             </select>
                         </div>
                     </div>
 
                     <div class="bi-drop" id="biDrop">
                         <div class="bi-drop-icon"><i class="icon-upload"></i></div>
-                        <div class="bi-drop-title"><?= $this->translate->_("Drop your file here"); ?></div>
-                        <div class="bi-drop-sub"><?= $this->translate->_("or"); ?> <span class="bi-browse"><?= $this->translate->_("click to browse"); ?></span></div>
-                        <div class="bi-accepts"><?= $this->translate->_("Accepts"); ?> <code>.xls</code> <code>.xlsx</code></div>
+                        <div class="bi-drop-title"><?= $this->htmlTranslate("Drop your file here"); ?></div>
+                        <div class="bi-drop-sub"><?= $this->htmlTranslate("or"); ?> <span class="bi-browse"><?= $this->htmlTranslate("click to browse"); ?></span></div>
+                        <div class="bi-accepts"><?= $this->htmlTranslate("Accepts"); ?> <code>.xls</code> <code>.xlsx</code></div>
                         <input type="file" id="fileName" name="fileName" class="isRequired" accept=".xls,.xlsx" title="Please select participants import data file">
                     </div>
 
@@ -172,14 +174,14 @@
                             <div class="bi-file-size" id="biFileSize"></div>
                         </div>
                         <div class="bi-file-actions">
-                            <a id="biReplace"><i class="icon-refresh"></i> <?= $this->translate->_("Replace"); ?></a>
-                            <a class="bi-remove" id="biRemove" title="<?= $this->translate->_("Remove"); ?>">&times;</a>
+                            <a id="biReplace"><i class="icon-refresh"></i> <?= $this->htmlTranslate("Replace"); ?></a>
+                            <a class="bi-remove" id="biRemove" title="<?= $this->htmlTranslate("Remove"); ?>">&times;</a>
                         </div>
                     </div>
 
                     <div class="bi-actions">
-                        <button type="button" class="btn btn-default" onclick="window.location.href='/admin/participants';"><?= $this->translate->_("Cancel"); ?></button>
-                        <button type="submit" class="btn btn-primary" id="biImportBtn" name="submitbtn"><i class="icon-upload"></i> <?= $this->translate->_("Import Excel"); ?></button>
+                        <button type="button" class="btn btn-default" onclick="window.location.href='/admin/participants';"><?= $this->htmlTranslate("Cancel"); ?></button>
+                        <button type="submit" class="btn btn-primary" id="biImportBtn" name="submitbtn"><i class="icon-eye-open"></i> <?= $this->htmlTranslate("Review import"); ?></button>
                     </div>
                 </div>
             </div>
@@ -187,25 +189,25 @@
             <div class="bi-side">
                 <div class="bi-card">
                     <a class="btn btn-primary bi-side-cta" href="<?php echo $this->baseUrl('/files/Participant-Bulk-Import-Excel-Format-v2.xlsx'); ?>" download>
-                        <i class="icon-download"></i> <?= $this->translate->_("Download Excel template"); ?>
+                        <i class="icon-download"></i> <?= $this->htmlTranslate("Download Excel template"); ?>
                     </a>
-                    <h4><i class="icon-info-sign"></i> <?= $this->translate->_("How to prepare your file"); ?></h4>
-                    <div class="bi-side-sub"><?= $this->translate->_("Columns marked in"); ?> <span class="mandatory"><?= $this->translate->_("red"); ?></span> <?= $this->translate->_("are mandatory."); ?></div>
+                    <h4><i class="icon-info-sign"></i> <?= $this->htmlTranslate("How to prepare your file"); ?></h4>
+                    <div class="bi-side-sub"><?= $this->htmlTranslate("Columns marked in"); ?> <span class="mandatory"><?= $this->htmlTranslate("red"); ?></span> <?= $this->htmlTranslate("are mandatory."); ?></div>
                     <div class="bi-step-item">
                         <span class="bi-step-num">1</span>
-                        <div class="bi-step-text"><?= $this->translate->_("Download the template and fill one row per participant."); ?></div>
+                        <div class="bi-step-text"><?= $this->htmlTranslate("Download the template and fill one row per participant."); ?></div>
                     </div>
                     <div class="bi-step-item">
                         <span class="bi-step-num">2</span>
-                        <div class="bi-step-text"><?= $this->translate->_("The"); ?> <code>unique_identifier</code> <?= $this->translate->_("field must be unique for each participant."); ?></div>
+                        <div class="bi-step-text"><?= $this->htmlTranslate("The"); ?> <code>unique_identifier</code> <?= $this->htmlTranslate("field must be unique for each participant."); ?></div>
                     </div>
                     <div class="bi-step-item">
                         <span class="bi-step-num">3</span>
-                        <div class="bi-step-text"><?= $this->translate->_("For a Lab or Clinic, put the Lab/Clinic Name in the"); ?> <code>first_name</code> <?= $this->translate->_("column."); ?></div>
+                        <div class="bi-step-text"><?= $this->htmlTranslate("For a Lab or Clinic, put the Lab/Clinic Name in the"); ?> <code>first_name</code> <?= $this->htmlTranslate("column."); ?></div>
                     </div>
                     <div class="bi-step-item">
                         <span class="bi-step-num">4</span>
-                        <div class="bi-step-text"><?= $this->translate->_("After import, you'll see which rows were saved and which were skipped with reasons."); ?></div>
+                        <div class="bi-step-text"><?= $this->htmlTranslate("Before anything is saved, you'll see which rows will be added, updated or skipped, and why."); ?></div>
                     </div>
                 </div>
             </div>
@@ -220,8 +222,8 @@
     var biBlockMessage = <?= json_encode(
         '<div style="padding:10px 6px;">'
         . '<div class="bi-spinner" style="width:38px;height:38px;margin:0 auto 14px;border:4px solid #e6e9ee;border-top-color:#337ab7;border-radius:50%;animation:bi-spin 0.8s linear infinite;"></div>'
-        . '<h4 style="margin:0 0 6px;font-weight:600;">' . $this->htmlTranslate("Importing your participant file…") . '</h4>'
-        . '<div style="color:#8a93a0;font-size:13px;line-height:1.5;">' . $this->htmlTranslate("This can take up to a minute for larger files.") . '<br>' . $this->htmlTranslate("Please keep this window open — do not refresh or close it.") . '</div>'
+        . '<h4 style="margin:0 0 6px;font-weight:600;">' . $this->htmlTranslate("Checking your participant file…") . '</h4>'
+        . '<div style="color:#8a93a0;font-size:13px;line-height:1.5;">' . $this->htmlTranslate("Nothing is saved yet. This can take up to a minute for larger files.") . '<br>' . $this->htmlTranslate("Please keep this window open — do not refresh or close it.") . '</div>'
         . '</div>'
     ); ?>;
 
@@ -230,7 +232,7 @@
         var flag = deforayValidator.init({ formId: 'bulkParticipantForm' });
         if (flag && !duplicated) {
             var $btn = $('#biImportBtn');
-            $btn.prop('disabled', true).html('<i class="icon-refresh"></i> <?= $this->jsTranslate("Importing…"); ?>');
+            $btn.prop('disabled', true).html('<i class="icon-refresh"></i> <?= $this->jsTranslate("Checking…"); ?>');
             $.blockUI({
                 message: biBlockMessage,
                 css: {

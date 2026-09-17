@@ -1,0 +1,240 @@
+<?= $this->render('participants/_import-review-style.phtml'); ?>
+<?php
+$response = $this->response;
+$options = $response['options'] ?? [];
+
+$fieldLabels = [
+    'first_name' => $this->htmlTranslate('First Name'),
+    'last_name' => $this->htmlTranslate('Last Name'),
+    'institute' => $this->htmlTranslate('Institute'),
+    'mobile' => $this->htmlTranslate('Mobile'),
+    'secondary_email' => $this->htmlTranslate('Secondary Email'),
+    'view_only_access' => $this->htmlTranslate('View Only Access'),
+    'country_id' => $this->htmlTranslate('Country'),
+    'status' => $this->htmlTranslate('Status'),
+];
+
+$counts = ['new' => 0, 'upd' => 0, 'same' => 0, 'skip' => 0, 'err' => 0];
+$unmapped = 0;
+$rows = [];
+$clearing = 0;
+
+foreach ($response['data'] ?? [] as $row) {
+    $changes = $row['changes'] ?? [];
+    foreach ($changes as $change) {
+        if ($change['to'] === '') {
+            $clearing++;
+            break;
+        }
+    }
+    if (($row['action'] ?? '') === 'updated') {
+        $status = empty($changes) ? 'same' : 'upd';
+    } else {
+        $status = 'new';
+    }
+    $counts[$status]++;
+    $mapped = array_key_exists('mapped', $row) ? (int) $row['mapped'] : null;
+    if ($mapped === 0) {
+        $unmapped++;
+    }
+    $rows[] = [
+        'status' => $status . ($mapped === 0 ? ' unmapped' : ''),
+        'badge' => $status,
+        's_no' => $row['s_no'] ?? '',
+        'email' => $row['primary_email'] ?? '',
+        'name' => trim($row['name'] ?? ''),
+        'institute' => $row['institute'] ?? '',
+        'country' => $row['country'] ?? '',
+        'mapped' => $mapped,
+        'changes' => $changes,
+        'reason' => '',
+    ];
+}
+
+foreach ($response['error-data'] ?? [] as $row) {
+    $reason = (string) ($row['error'] ?? '');
+    $status = stripos($reason, 'already exist') !== false ? 'skip' : 'err';
+    $counts[$status]++;
+    $rows[] = [
+        'status' => $status,
+        'badge' => $status,
+        's_no' => $row['s_no'] ?? '',
+        'email' => $row['primary_email'] ?? '',
+        'name' => trim($row['name'] ?? ''),
+        'institute' => $row['institute'] ?? '',
+        'country' => $row['country'] ?? '',
+        'mapped' => null,
+        'changes' => [],
+        'reason' => $reason,
+    ];
+}
+
+usort($rows, fn($a, $b) => (int) $a['s_no'] <=> (int) $b['s_no']);
+
+$importable = $counts['new'] + $counts['upd'] + $counts['same'];
+$updatedExisting = $counts['upd'] + $counts['same'];
+$deactivated = $response['deactivated'] ?? [];
+$deactivateOn = ($options['deactivateExistingPTCC'] ?? 'no') === 'yes';
+
+$statusLabels = [
+    'new' => $this->htmlTranslate('New'),
+    'upd' => $this->htmlTranslate('Update'),
+    'same' => $this->htmlTranslate('No changes'),
+    'skip' => $this->htmlTranslate('Skipped'),
+    'err' => $this->htmlTranslate('Error'),
+];
+?>
+
+<div class="bi-review-wrap">
+    <div class="bi-header">
+        <a class="bi-back" href="/admin/data-managers/index/ptcc/1">&larr; <?= $this->htmlTranslate("Back to PTCC list"); ?></a>
+        <h2><?= $this->htmlTranslate("Bulk Import PTCC"); ?></h2>
+        <div class="bi-sub"><?= $this->htmlTranslate("Nothing has been saved yet. Check what will change, then import."); ?></div>
+    </div>
+
+    <div class="bi-steps">
+        <div class="bi-step done"><span class="bi-num">1</span> <?= $this->htmlTranslate("Upload"); ?></div>
+        <span class="bi-sep">&rsaquo;</span>
+        <div class="bi-step active"><span class="bi-num">2</span> <?= $this->htmlTranslate("Review"); ?></div>
+        <span class="bi-sep">&rsaquo;</span>
+        <div class="bi-step"><span class="bi-num">3</span> <?= $this->htmlTranslate("Done"); ?></div>
+    </div>
+
+    <div class="bi-card">
+        <div class="bi-review-head">
+            <div>
+                <h3>
+                    <?php if ($importable > 0): ?>
+                        <?= sprintf($this->htmlTranslate("%d of %d row(s) are ready to import"), $importable, count($rows)); ?>
+                    <?php else: ?>
+                        <?= $this->htmlTranslate("No rows can be imported from this file"); ?>
+                    <?php endif; ?>
+                </h3>
+                <div class="bi-options-recap">
+                    <strong><?= $this->htmlTranslate("If a Primary Email already exists"); ?>:</strong>
+                    <?= ($options['bulkUploadDuplicateSkip'] ?? '') === 'update-on-primary-email-match' ? $this->htmlTranslate("Update all data for that PTCC") : $this->htmlTranslate("Skip the row (don't update)"); ?>
+                    &nbsp;&middot;&nbsp;
+                    <strong><?= $this->htmlTranslate("Deactivate Existing PTCC Before Import"); ?>:</strong>
+                    <?= $deactivateOn ? $this->htmlTranslate("Yes") : $this->htmlTranslate("No"); ?>
+                </div>
+            </div>
+        </div>
+
+        <div class="bi-tiles">
+            <button type="button" class="bi-tile all selected" data-filter="">
+                <span class="bi-tile-num"><?= count($rows); ?></span><span class="bi-tile-label"><?= $this->htmlTranslate("All rows"); ?></span>
+            </button>
+            <button type="button" class="bi-tile new" data-filter="new">
+                <span class="bi-tile-num"><?= $counts['new']; ?></span><span class="bi-tile-label"><?= $this->htmlTranslate("New PTCCs"); ?></span>
+            </button>
+            <button type="button" class="bi-tile upd" data-filter="upd">
+                <span class="bi-tile-num"><?= $counts['upd']; ?></span><span class="bi-tile-label"><?= $this->htmlTranslate("Will be updated"); ?></span>
+            </button>
+            <?php if ($counts['same'] > 0): ?>
+                <button type="button" class="bi-tile same" data-filter="same">
+                    <span class="bi-tile-num"><?= $counts['same']; ?></span><span class="bi-tile-label"><?= $this->htmlTranslate("Already up to date"); ?></span>
+                </button>
+            <?php endif; ?>
+            <?php if ($unmapped > 0): ?>
+                <button type="button" class="bi-tile err" data-filter="unmapped">
+                    <span class="bi-tile-num"><?= $unmapped; ?></span><span class="bi-tile-label"><?= $this->htmlTranslate("Map no participants"); ?></span>
+                </button>
+            <?php endif; ?>
+            <button type="button" class="bi-tile skip" data-filter="skip">
+                <span class="bi-tile-num"><?= $counts['skip']; ?></span><span class="bi-tile-label"><?= $this->htmlTranslate("Skipped"); ?></span>
+            </button>
+            <button type="button" class="bi-tile err" data-filter="err">
+                <span class="bi-tile-num"><?= $counts['err']; ?></span><span class="bi-tile-label"><?= $this->htmlTranslate("Errors"); ?></span>
+            </button>
+        </div>
+
+        <?php if ($deactivateOn): ?>
+            <div class="bi-warn">
+                <?php if (!empty($deactivated)): ?>
+                    <strong><?= sprintf($this->htmlTranslate("%d active PTCC(s) are not in this file and will be deactivated."), count($deactivated)); ?></strong>
+                    <details>
+                        <summary><?= $this->htmlTranslate("Show who"); ?></summary>
+                        <ul>
+                            <?php foreach ($deactivated as $ptcc): ?>
+                                <li><?= $this->escape($ptcc['name'] !== '' ? $ptcc['name'] . ' — ' . $ptcc['primary_email'] : $ptcc['primary_email']); ?></li>
+                            <?php endforeach; ?>
+                        </ul>
+                    </details>
+                <?php else: ?>
+                    <strong><?= $this->htmlTranslate("Every active PTCC is in this file, so none will be deactivated."); ?></strong>
+                <?php endif; ?>
+            </div>
+        <?php endif; ?>
+        <?php if ($clearing > 0): ?>
+            <div class="bi-warn">
+                <strong><?= sprintf($this->htmlTranslate("%d update(s) will clear existing details because those cells are blank in the file."), $clearing); ?></strong>
+                <?= $this->htmlTranslate("Fill in the blank cells if you want to keep the current values. Look for (cleared) in the table below."); ?>
+            </div>
+        <?php endif; ?>
+        <?php if ($updatedExisting > 0): ?>
+            <div class="bi-warn">
+                <strong><?= sprintf($this->htmlTranslate("Passwords will be reset for %d existing PTCC(s)."), $updatedExisting); ?></strong>
+                <?= $this->htmlTranslate("Their logins will use the password in the file, or the default password where it is blank. Their participant mappings are rebuilt from the file's location."); ?>
+            </div>
+        <?php endif; ?>
+
+        <?php if (!empty($rows)): ?>
+            <table class="table table-bordered table-striped table-hover dataTable" id="reviewTable">
+                <thead>
+                    <tr>
+                        <td><?= $this->htmlTranslate("Row"); ?></td>
+                        <td><?= $this->htmlTranslate("Action"); ?></td>
+                        <td><?= $this->htmlTranslate("Primary Email"); ?></td>
+                        <td><?= $this->htmlTranslate("Name"); ?></td>
+                        <td><?= $this->htmlTranslate("Country"); ?></td>
+                        <td><?= $this->htmlTranslate("Participants mapped"); ?></td>
+                        <td><?= $this->htmlTranslate("What will happen"); ?></td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach ($rows as $r): ?>
+                        <tr data-status="<?= $r['status']; ?>">
+                            <td><?= $this->escape((string) $r['s_no']); ?></td>
+                            <td><span class="bi-status <?= $r['badge']; ?>"><?= $statusLabels[$r['badge']]; ?></span></td>
+                            <td><?= $this->escape($r['email']); ?></td>
+                            <td><?= $this->escape($r['name']); ?></td>
+                            <td><?= $this->escape($r['country']); ?></td>
+                            <td<?= $r['mapped'] === 0 ? ' style="color:#a94442;font-weight:600;"' : ''; ?>><?= $r['mapped'] === null ? '' : (int) $r['mapped']; ?></td>
+                            <?php if ($r['reason'] !== ''): ?>
+                                <td class="details reason"><?= $this->escape($r['reason']); ?></td>
+                            <?php elseif ($r['badge'] === 'new'): ?>
+                                <td class="details"><span class="muted"><?= $this->htmlTranslate("PTCC login will be created"); ?></span></td>
+                            <?php elseif (empty($r['changes'])): ?>
+                                <td class="details"><span class="muted"><?= $this->htmlTranslate("Details already match"); ?></span></td>
+                            <?php else: ?>
+                                <td class="details">
+                                    <?php foreach ($r['changes'] as $field => $change): ?>
+                                        <div class="bi-change">
+                                            <span class="field"><?= ($fieldLabels[$field] ?? $this->escape($field)); ?>:</span>
+                                            <?php if ($change['from'] !== ''): ?><del><?= $this->escape($change['from']); ?></del> &rarr;<?php endif; ?>
+                                            <?php if ($change['to'] !== ''): ?><ins><?= $this->escape($change['to']); ?></ins><?php else: ?><span class="muted"><?= $this->htmlTranslate("(cleared)"); ?></span><?php endif; ?>
+                                        </div>
+                                    <?php endforeach; ?>
+                                </td>
+                            <?php endif; ?>
+                        </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+        <?php endif; ?>
+
+        <form id="biConfirmForm" method="post" action="<?= $this->url(['module' => 'admin', 'controller' => 'data-managers', 'action' => 'bulk-import-ptcc'], 'default', true); ?>">
+            <input type="hidden" name="reviewToken" value="<?= $this->escape($response['review_token'] ?? ''); ?>">
+            <div class="bi-confirm">
+                <a class="btn btn-default" href="/admin/data-managers/bulk-import-ptcc"><i class="icon-arrow-left"></i> <?= $this->htmlTranslate("Upload a different file"); ?></a>
+                <?php if ($importable > 0 || ($deactivateOn && !empty($deactivated))): ?>
+                    <button type="submit" class="btn btn-primary" id="biConfirmBtn">
+                        <i class="icon-upload"></i> <?= sprintf($this->htmlTranslate("Import %d row(s)"), $importable); ?>
+                    </button>
+                <?php endif; ?>
+            </div>
+        </form>
+    </div>
+</div>
+
+<?= $this->render('participants/_import-review-script.phtml'); ?>

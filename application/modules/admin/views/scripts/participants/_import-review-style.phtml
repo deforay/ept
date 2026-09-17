@@ -1,0 +1,64 @@
+<link rel="stylesheet" href="<?php echo $this->baseUrl("assets/plugins/datatables/jquery.dataTables.min.css"); ?>">
+<style>
+    .bi-review-wrap { max-width: 1200px; margin: 0 auto; }
+    .bi-review-wrap .bi-header { padding: 0 4px 8px; }
+    .bi-review-wrap .bi-header h2 { margin: 0 0 4px; font-weight: 600; font-size: 22px; }
+    .bi-review-wrap .bi-header .bi-sub { color: #888; font-size: 13px; }
+    .bi-review-wrap .bi-header .bi-back { float: right; color: #337ab7; text-decoration: none; font-size: 13px; }
+    .bi-review-wrap .bi-header .bi-back:hover { text-decoration: underline; }
+
+    .bi-steps { display: flex; align-items: center; gap: 10px; margin: 8px 4px 18px; font-size: 13px; color: #9aa3ad; }
+    .bi-steps .bi-step { display: flex; align-items: center; gap: 6px; }
+    .bi-steps .bi-step .bi-num { width: 22px; height: 22px; border-radius: 50%; background: #e6e9ee; color: #6b7380; display: inline-flex; align-items: center; justify-content: center; font-weight: 600; font-size: 12px; }
+    .bi-steps .bi-step.active { color: #333; }
+    .bi-steps .bi-step.active .bi-num { background: #555; color: #fff; }
+    .bi-steps .bi-step.done { color: #6b7380; }
+    .bi-steps .bi-step.done .bi-num { background: #cfd6e0; color: #fff; }
+    .bi-steps .bi-sep { color: #c4cbd4; }
+
+    .bi-card { background: #fff; border: 1px solid #e6e9ee; border-radius: 8px; padding: 24px; box-shadow: 0 1px 2px rgba(0,0,0,0.04); }
+
+    .bi-review-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 18px; flex-wrap: wrap; padding-bottom: 16px; border-bottom: 1px solid #f0f2f5; margin-bottom: 16px; }
+    .bi-review-head h3 { margin: 0 0 4px; font-weight: 600; font-size: 18px; color: #333; }
+    .bi-review-head .bi-review-sub { color: #6b7380; font-size: 13px; }
+    .bi-review-head .bi-options-recap { color: #8a93a0; font-size: 12px; margin-top: 6px; }
+    .bi-review-head .bi-options-recap strong { color: #596270; font-weight: 600; }
+    .bi-review-actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+
+    .bi-tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-bottom: 16px; }
+    .bi-tile { display: block; width: 100%; text-align: left; background: #fff; border: 1px solid #e6e9ee; border-left-width: 4px; border-radius: 6px; padding: 10px 12px; cursor: pointer; font: inherit; color: inherit; }
+    .bi-tile:hover { background: #f7f9fb; }
+    .bi-tile.selected { box-shadow: 0 0 0 2px #66afe9; }
+    .bi-tile .bi-tile-num { display: block; font-size: 22px; font-weight: 600; line-height: 1.2; }
+    .bi-tile .bi-tile-label { display: block; font-size: 12px; color: #6b7380; }
+    .bi-tile.all { border-left-color: #9aa3ad; }
+    .bi-tile.new { border-left-color: #3c763d; }
+    .bi-tile.upd { border-left-color: #31708f; }
+    .bi-tile.same { border-left-color: #b8c1cc; }
+    .bi-tile.skip { border-left-color: #c09853; }
+    .bi-tile.err { border-left-color: #a94442; }
+
+    .bi-warn { border-radius: 6px; padding: 10px 14px; margin-bottom: 10px; font-size: 13px; line-height: 1.5; background: #fcf8e3; border: 1px solid #faebcc; color: #6d5530; }
+    .bi-warn strong { color: #5a4526; }
+    .bi-warn ul { margin: 6px 0 0; padding-left: 18px; }
+    .bi-warn details summary { cursor: pointer; color: #8a6d3b; margin-top: 4px; }
+
+    table#reviewTable.dataTable { width: 100% !important; }
+    table#reviewTable thead td { background: #f7f9fb; font-weight: 600; color: #596270; font-size: 12px; text-transform: uppercase; letter-spacing: 0.04em; }
+    table#reviewTable .bi-status { display: inline-block; padding: 2px 8px; border-radius: 3px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; white-space: nowrap; }
+    table#reviewTable .bi-status.new { background: #dff0d8; color: #3c763d; }
+    table#reviewTable .bi-status.upd { background: #d9edf7; color: #31708f; }
+    table#reviewTable .bi-status.same { background: #eef1f5; color: #6b7380; }
+    table#reviewTable .bi-status.skip { background: #fcf8e3; color: #8a6d3b; }
+    table#reviewTable .bi-status.err { background: #f2dede; color: #a94442; }
+    table#reviewTable td.details { font-size: 12px; }
+    table#reviewTable td.details.reason { color: #a94442; }
+    table#reviewTable td.details .muted { color: #9aa3ad; }
+    table#reviewTable .bi-change { white-space: normal; }
+    table#reviewTable .bi-change .field { color: #596270; font-weight: 600; }
+    table#reviewTable .bi-change del { color: #a94442; text-decoration: line-through; }
+    table#reviewTable .bi-change ins { color: #3c763d; text-decoration: none; }
+
+    .bi-confirm { display: flex; justify-content: flex-end; gap: 8px; margin-top: 16px; flex-wrap: wrap; }
+    @keyframes bi-spin { to { transform: rotate(360deg); } }
+</style>

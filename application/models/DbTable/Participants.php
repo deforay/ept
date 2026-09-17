@@ -1712,7 +1712,12 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         return $mismatches;
     }
 
-    public function processBulkImport($fileName, $allFakeEmail = false, $params = null)
+    /**
+     * With $dryRun the whole import still runs, inside the same transaction, and is
+     * rolled back at the end. The review screen is built from that run, so what the
+     * admin approves is decided by exactly the code that later saves it.
+     */
+    public function processBulkImport($fileName, $allFakeEmail = false, $params = null, bool $dryRun = false)
     {
         // One id per import run: tags the failure rows written to participants_not_uploaded
         // and names the re-importable error export, so a run's failures stay separable.
@@ -1879,6 +1884,13 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                 if (isset($params['bulkUploadDuplicateSkip']) && $params['bulkUploadDuplicateSkip'] == 'update-email-only' && $participantExists) {
                     $participantId = $participantExists['participant_id'];
 
+                    $previousEmail = (string) $db->fetchOne(
+                        $db->select()->from('participant', 'email')->where('participant_id = ?', $participantId)
+                    );
+                    $emailChanges = strcasecmp(trim($previousEmail), $originalEmail) === 0
+                        ? []
+                        : ['email' => ['from' => $previousEmail, 'to' => $originalEmail]];
+
                     $db->update('participant', ['email' => $originalEmail], $db->quoteInto('participant_id = ?', $participantId));
 
                     $mappedDms = $db->fetchAll(
@@ -1978,7 +1990,8 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                         }
                     }
 
-                    $response['data'][] = $this->buildImportSuccessRow($sheetData[$i], $i, $originalEmail, $tempUploadDirectory . DIRECTORY_SEPARATOR . $fileName);
+                    $response['data'][] = $this->buildImportSuccessRow($sheetData[$i], $i, $originalEmail, $tempUploadDirectory . DIRECTORY_SEPARATOR . $fileName)
+                        + ['action' => 'email-only', 'changes' => $emailChanges];
 
                     $duplicateChecks['fileParticipants'][$row['B']] = true;
                     $duplicateChecks['fileDataManagers'][$originalEmail] = true;
@@ -2215,6 +2228,13 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                     }
                 }
 
+                // What an update would change, for the review screen. Compared on the
+                // cleaned values actually written, so whitespace-only edits don't show.
+                $participantChanges = [];
+                if (!empty($participantExists)) {
+                    $participantChanges = $this->diffParticipant((int) $participantExists['participant_id'], $participantData, $countryNamesById);
+                }
+
                 // Insert/update participant
                 $lastInsertedId = 0;
                 try {
@@ -2247,7 +2267,8 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                         $common->insertIgnore('participant_manager_map', ['dm_id' => $dmId, 'participant_id' => $lastInsertedId]);
 
                         // Success - add to response
-                        $response['data'][] = $this->buildImportSuccessRow($sheetData[$i], $i, $originalEmail, $tempUploadDirectory . DIRECTORY_SEPARATOR . $fileName);
+                        $response['data'][] = $this->buildImportSuccessRow($sheetData[$i], $i, $originalEmail, $tempUploadDirectory . DIRECTORY_SEPARATOR . $fileName)
+                            + ['action' => empty($participantExists) ? 'new' : 'update', 'changes' => $participantChanges];
                     } else {
                         $this->addError($response, $row, $i, 'Could not add Participant Login');
                     }
@@ -2267,6 +2288,17 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                 } else {
                     $this->addError($response, $row, $i, 'Could not add Participant');
                 }
+            }
+
+            if (!empty($countryLabelDiffs)) {
+                $response['country_label_warnings'] = array_values($countryLabelDiffs);
+            }
+
+            if ($dryRun) {
+                $db->rollBack();
+                // The problem rows can be fixed and re-uploaded straight from the review.
+                $response['error_file'] = $this->buildErrorExportFile($response['error-rows-full'], $importRunId);
+                return $response;
             }
 
             $db->commit();
@@ -2291,7 +2323,6 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             // the country-resolution step. ePT prints its own name on forms, so the admin
             // needs to know when the two disagree.
             if (!empty($countryLabelDiffs)) {
-                $response['country_label_warnings'] = array_values($countryLabelDiffs);
                 $parts = [];
                 foreach ($countryLabelDiffs as $diff) {
                     $parts[] = "\"{$diff['sheet']}\" ({$diff['rows']} row(s)) is stored in ePT as \"{$diff['stored']}\"";
@@ -2312,6 +2343,42 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         }
 
         return $response;
+    }
+
+    /**
+     * Field-by-field before/after of a participant update, keyed by column. Values
+     * are compared as trimmed strings (NULL and '' are the same); country is shown
+     * by name. status is included because an import reactivates inactive sites.
+     */
+    private function diffParticipant(int $participantId, array $newData, array $countryNamesById): array
+    {
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $existing = $db->fetchRow($db->select()->from('participant')->where('participant_id = ?', $participantId));
+        if (empty($existing)) {
+            return [];
+        }
+        $fields = [
+            'individual', 'first_name', 'last_name', 'institute_name', 'department_name', 'address',
+            'shipping_address', 'district', 'state', 'region', 'country', 'zip', 'long', 'lat',
+            'mobile', 'email', 'additional_email', 'status',
+        ];
+        $changes = [];
+        foreach ($fields as $field) {
+            if (!array_key_exists($field, $newData)) {
+                continue;
+            }
+            $old = trim((string) ($existing[$field] ?? ''));
+            $new = trim((string) $newData[$field]);
+            if ($field === 'email' ? strcasecmp($old, $new) === 0 : $old === $new) {
+                continue;
+            }
+            if ($field === 'country') {
+                $old = $countryNamesById[$old] ?? $old;
+                $new = $countryNamesById[$new] ?? $new;
+            }
+            $changes[$field] = ['from' => $old, 'to' => $new];
+        }
+        return $changes;
     }
 
     /**

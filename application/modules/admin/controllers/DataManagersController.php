@@ -455,19 +455,31 @@ class Admin_DataManagersController extends Zend_Controller_Action
         }
 
         if ($request->isPost()) {
-            $params = $request->getPost();
-            $result = $userService->uploadBulkDatamanager($params);
+            $reviewToken = (string) $request->getPost('reviewToken', '');
+            if ($reviewToken !== '') {
+                // Confirmed from the review screen — import the reviewed file.
+                $result = $userService->importReviewedBulkDatamanager($reviewToken);
+                if (!$result) {
+                    $this->redirect('/admin/data-managers/bulk-import-ptcc');
+                    return;
+                }
+                $this->view->response = $result;
+                $this->_helper->viewRenderer->setScriptAction('bulk-import-ptcc-statistics');
+                return;
+            }
+
+            // Fresh upload — dry-run it and show the review.
+            $result = $userService->previewBulkDatamanager($request->getPost());
             if (is_array($result) && !empty($result['validation_error'])) {
                 // Uploaded file headers don't match the template — bounce back to the form with the details.
                 $bulkImportSession->mismatches = $result['mismatches'];
                 $this->redirect('/admin/data-managers/bulk-import-ptcc');
             } elseif (!$result) {
                 // Hard failure (bad file / format) — the flash message carries the reason.
-                $this->redirect('/admin/data-managers/index/ptcc/1');
+                $this->redirect('/admin/data-managers/bulk-import-ptcc');
             } else {
-                // Render the post-import summary instead of the upload form.
                 $this->view->response = $result;
-                $this->_helper->viewRenderer->setScriptAction('bulk-import-ptcc-statistics');
+                $this->_helper->viewRenderer->setScriptAction('bulk-import-ptcc-review');
             }
         }
         // GET falls through and renders the upload form (bulk-import-ptcc.phtml).

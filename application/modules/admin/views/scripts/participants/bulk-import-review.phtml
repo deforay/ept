@@ -1,0 +1,256 @@
+<?= $this->render('participants/_import-review-style.phtml'); ?>
+<?php
+$response = $this->response;
+$options = $response['options'] ?? [];
+$duplicateMode = $options['bulkUploadDuplicateSkip'] ?? 'skip-duplicates';
+
+$fieldLabels = [
+    'individual' => $this->htmlTranslate('Individual'),
+    'first_name' => $this->htmlTranslate('Lab / First Name'),
+    'last_name' => $this->htmlTranslate('Last Name'),
+    'institute_name' => $this->htmlTranslate('Institute'),
+    'department_name' => $this->htmlTranslate('Department'),
+    'address' => $this->htmlTranslate('Address'),
+    'shipping_address' => $this->htmlTranslate('Shipping Address'),
+    'district' => $this->htmlTranslate('District'),
+    'state' => $this->htmlTranslate('Province/State'),
+    'region' => $this->htmlTranslate('Region'),
+    'country' => $this->htmlTranslate('Country'),
+    'zip' => $this->htmlTranslate('Zip'),
+    'long' => $this->htmlTranslate('Longitude'),
+    'lat' => $this->htmlTranslate('Latitude'),
+    'mobile' => $this->htmlTranslate('Mobile'),
+    'email' => $this->htmlTranslate('Email'),
+    'additional_email' => $this->htmlTranslate('Additional Email'),
+    'status' => $this->htmlTranslate('Status'),
+];
+
+$counts = ['new' => 0, 'upd' => 0, 'same' => 0, 'skip' => 0, 'err' => 0];
+$reactivated = 0;
+$rows = [];
+$clearing = 0;
+
+foreach ($response['data'] ?? [] as $row) {
+    $changes = $row['changes'] ?? [];
+    foreach ($changes as $change) {
+        if ($change['to'] === '') {
+            $clearing++;
+            break;
+        }
+    }
+    $action = $row['action'] ?? 'new';
+    if ($action === 'new') {
+        $status = 'new';
+    } else {
+        $status = empty($changes) ? 'same' : 'upd';
+    }
+    $counts[$status]++;
+    if (isset($changes['status']) && $changes['status']['to'] === 'active') {
+        $reactivated++;
+    }
+    $rows[] = [
+        'status' => $status,
+        's_no' => $row['s_no'] ?? '',
+        'id' => $row['participant_id'] ?? '',
+        'name' => trim(($row['participant_lab_name'] ?? '') . ' ' . ($row['participant_last_name'] ?? '')),
+        'email' => $row['participant_email'] ?? '',
+        'country' => $row['country'] ?? '',
+        'changes' => $changes,
+        'email_only' => $action === 'email-only',
+        'reason' => '',
+    ];
+}
+
+foreach ($response['error-data'] ?? [] as $row) {
+    $reason = (string) ($row['error'] ?? '');
+    $status = (stripos($reason, 'duplicate') !== false || stripos($reason, 'already exist') !== false) ? 'skip' : 'err';
+    $counts[$status]++;
+    $rows[] = [
+        'status' => $status,
+        's_no' => $row['s_no'] ?? '',
+        'id' => $row['participant_id'] ?? '',
+        'name' => trim(($row['participant_lab_name'] ?? '') . ' ' . ($row['participant_last_name'] ?? '')),
+        'email' => $row['participant_email'] ?? '',
+        'country' => $row['country'] ?? '',
+        'changes' => [],
+        'email_only' => false,
+        'reason' => $reason,
+    ];
+}
+
+usort($rows, fn($a, $b) => (int) $a['s_no'] <=> (int) $b['s_no']);
+
+$importable = $counts['new'] + $counts['upd'] + $counts['same'];
+$updatedExisting = $counts['upd'] + $counts['same'];
+$passwordsReset = ($options['resetPassword'] ?? '') === 'yes' && $duplicateMode === 'update-on-unique-id-match' && $updatedExisting > 0;
+
+$statusLabels = [
+    'new' => $this->htmlTranslate('New'),
+    'upd' => $this->htmlTranslate('Update'),
+    'same' => $this->htmlTranslate('No changes'),
+    'skip' => $this->htmlTranslate('Skipped'),
+    'err' => $this->htmlTranslate('Error'),
+];
+$modeLabels = [
+    'skip-duplicates' => $this->htmlTranslate("Skip the row (don't update)"),
+    'update-on-unique-id-match' => $this->htmlTranslate('Update all data for that participant'),
+    'update-email-only' => $this->htmlTranslate('Update email only (if changed)'),
+];
+
+$errorFile = $response['error_file'] ?? null;
+$errorFilePath = $errorFile ? realpath(TEMP_UPLOAD_PATH) . DIRECTORY_SEPARATOR . $errorFile : null;
+?>
+
+<div class="bi-review-wrap">
+    <div class="bi-header">
+        <a class="bi-back" href="/admin/participants">&larr; <?= $this->htmlTranslate("Back to participants"); ?></a>
+        <h2><?= $this->htmlTranslate("Bulk Import Participants"); ?></h2>
+        <div class="bi-sub"><?= $this->htmlTranslate("Nothing has been saved yet. Check what will change, then import."); ?></div>
+    </div>
+
+    <div class="bi-steps">
+        <div class="bi-step done"><span class="bi-num">1</span> <?= $this->htmlTranslate("Upload"); ?></div>
+        <span class="bi-sep">&rsaquo;</span>
+        <div class="bi-step active"><span class="bi-num">2</span> <?= $this->htmlTranslate("Review"); ?></div>
+        <span class="bi-sep">&rsaquo;</span>
+        <div class="bi-step"><span class="bi-num">3</span> <?= $this->htmlTranslate("Done"); ?></div>
+    </div>
+
+    <div class="bi-card">
+        <div class="bi-review-head">
+            <div>
+                <h3>
+                    <?php if ($importable > 0): ?>
+                        <?= sprintf($this->htmlTranslate("%d of %d row(s) are ready to import"), $importable, count($rows)); ?>
+                    <?php else: ?>
+                        <?= $this->htmlTranslate("No rows can be imported from this file"); ?>
+                    <?php endif; ?>
+                </h3>
+                <div class="bi-options-recap">
+                    <strong><?= $this->htmlTranslate("If a Unique ID already exists"); ?>:</strong> <?= ($modeLabels[$duplicateMode] ?? $this->escape($duplicateMode)); ?>
+                    &nbsp;&middot;&nbsp;
+                    <strong><?= $this->htmlTranslate("Same email across participants"); ?>:</strong>
+                    <?= ($options['bulkUploadAllowEmailRepeat'] ?? '') === 'do-not-allow-existing-email' ? $this->htmlTranslate("Don't allow") : $this->htmlTranslate("Allow"); ?>
+                </div>
+            </div>
+            <div class="bi-review-actions">
+                <?php if (($counts['skip'] + $counts['err']) > 0 && $errorFilePath && is_file($errorFilePath)): ?>
+                    <a class="btn btn-default" href="<?= htmlspecialchars(Pt_Commons_SignedDownload::url($errorFilePath)); ?>" download>
+                        <i class="icon-download"></i> <?= $this->htmlTranslate("Download rows that won't import"); ?>
+                    </a>
+                <?php endif; ?>
+            </div>
+        </div>
+
+        <div class="bi-tiles">
+            <button type="button" class="bi-tile all selected" data-filter="">
+                <span class="bi-tile-num"><?= count($rows); ?></span><span class="bi-tile-label"><?= $this->htmlTranslate("All rows"); ?></span>
+            </button>
+            <button type="button" class="bi-tile new" data-filter="new">
+                <span class="bi-tile-num"><?= $counts['new']; ?></span><span class="bi-tile-label"><?= $this->htmlTranslate("New participants"); ?></span>
+            </button>
+            <button type="button" class="bi-tile upd" data-filter="upd">
+                <span class="bi-tile-num"><?= $counts['upd']; ?></span><span class="bi-tile-label"><?= $this->htmlTranslate("Will be updated"); ?></span>
+            </button>
+            <?php if ($counts['same'] > 0): ?>
+                <button type="button" class="bi-tile same" data-filter="same">
+                    <span class="bi-tile-num"><?= $counts['same']; ?></span><span class="bi-tile-label"><?= $this->htmlTranslate("Already up to date"); ?></span>
+                </button>
+            <?php endif; ?>
+            <button type="button" class="bi-tile skip" data-filter="skip">
+                <span class="bi-tile-num"><?= $counts['skip']; ?></span><span class="bi-tile-label"><?= $this->htmlTranslate("Skipped"); ?></span>
+            </button>
+            <button type="button" class="bi-tile err" data-filter="err">
+                <span class="bi-tile-num"><?= $counts['err']; ?></span><span class="bi-tile-label"><?= $this->htmlTranslate("Errors"); ?></span>
+            </button>
+        </div>
+
+        <?php if ($passwordsReset): ?>
+            <div class="bi-warn">
+                <strong><?= sprintf($this->htmlTranslate("Passwords will be reset for %d existing participant(s)."), $updatedExisting); ?></strong>
+                <?= $this->htmlTranslate("Their logins will use the password in the file, or the default password where it is blank."); ?>
+            </div>
+        <?php endif; ?>
+        <?php if ($clearing > 0): ?>
+            <div class="bi-warn">
+                <strong><?= sprintf($this->htmlTranslate("%d update(s) will clear existing details because those cells are blank in the file."), $clearing); ?></strong>
+                <?= $this->htmlTranslate("Fill in the blank cells if you want to keep the current values. Look for (cleared) in the table below."); ?>
+            </div>
+        <?php endif; ?>
+        <?php if ($reactivated > 0): ?>
+            <div class="bi-warn">
+                <strong><?= sprintf($this->htmlTranslate("%d inactive participant(s) will be made active again."), $reactivated); ?></strong>
+            </div>
+        <?php endif; ?>
+        <?php if (!empty($response['country_label_warnings'])): ?>
+            <div class="bi-warn">
+                <strong><?= $this->htmlTranslate("Some country names in the file differ from the names ePT stores."); ?></strong>
+                <?= $this->htmlTranslate("Forms and reports will show the ePT name:"); ?>
+                <ul>
+                    <?php foreach ($response['country_label_warnings'] as $diff): ?>
+                        <li>&ldquo;<?= $this->escape($diff['sheet']); ?>&rdquo; &rarr; &ldquo;<?= $this->escape($diff['stored']); ?>&rdquo; (<?= (int) $diff['rows']; ?>)</li>
+                    <?php endforeach; ?>
+                </ul>
+            </div>
+        <?php endif; ?>
+
+        <?php if (!empty($rows)): ?>
+            <table class="table table-bordered table-striped table-hover dataTable" id="reviewTable">
+                <thead>
+                    <tr>
+                        <td><?= $this->htmlTranslate("Row"); ?></td>
+                        <td><?= $this->htmlTranslate("Action"); ?></td>
+                        <td><?= $this->htmlTranslate("Unique ID"); ?></td>
+                        <td><?= $this->htmlTranslate("Name"); ?></td>
+                        <td><?= $this->htmlTranslate("Email"); ?></td>
+                        <td><?= $this->htmlTranslate("Country"); ?></td>
+                        <td><?= $this->htmlTranslate("What will happen"); ?></td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach ($rows as $r): ?>
+                        <tr data-status="<?= $r['status']; ?>">
+                            <td><?= $this->escape((string) $r['s_no']); ?></td>
+                            <td><span class="bi-status <?= $r['status']; ?>"><?= $statusLabels[$r['status']]; ?></span></td>
+                            <td><?= $this->escape($r['id']); ?></td>
+                            <td><?= $this->escape($r['name']); ?></td>
+                            <td><?= $this->escape($r['email']); ?></td>
+                            <td><?= $this->escape($r['country']); ?></td>
+                            <?php if ($r['reason'] !== ''): ?>
+                                <td class="details reason"><?= $this->escape($r['reason']); ?></td>
+                            <?php elseif ($r['status'] === 'new'): ?>
+                                <td class="details"><span class="muted"><?= $this->htmlTranslate("Participant and login will be created"); ?></span></td>
+                            <?php elseif (empty($r['changes'])): ?>
+                                <td class="details"><span class="muted"><?= $r['email_only'] ? $this->htmlTranslate("Email is already the same") : $this->htmlTranslate("Details already match"); ?></span></td>
+                            <?php else: ?>
+                                <td class="details">
+                                    <?php foreach ($r['changes'] as $field => $change): ?>
+                                        <div class="bi-change">
+                                            <span class="field"><?= ($fieldLabels[$field] ?? $this->escape($field)); ?>:</span>
+                                            <?php if ($change['from'] !== ''): ?><del><?= $this->escape($change['from']); ?></del> &rarr;<?php endif; ?>
+                                            <?php if ($change['to'] !== ''): ?><ins><?= $this->escape($change['to']); ?></ins><?php else: ?><span class="muted"><?= $this->htmlTranslate("(cleared)"); ?></span><?php endif; ?>
+                                        </div>
+                                    <?php endforeach; ?>
+                                </td>
+                            <?php endif; ?>
+                        </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+        <?php endif; ?>
+
+        <form id="biConfirmForm" method="post" action="<?= $this->url(['module' => 'admin', 'controller' => 'participants', 'action' => 'participant-upload-statistics'], 'default', true); ?>">
+            <input type="hidden" name="reviewToken" value="<?= $this->escape($response['review_token'] ?? ''); ?>">
+            <div class="bi-confirm">
+                <a class="btn btn-default" href="/admin/participants/bulk-import"><i class="icon-arrow-left"></i> <?= $this->htmlTranslate("Upload a different file"); ?></a>
+                <?php if ($importable > 0): ?>
+                    <button type="submit" class="btn btn-primary" id="biConfirmBtn">
+                        <i class="icon-upload"></i> <?= sprintf($this->htmlTranslate("Import %d row(s)"), $importable); ?>
+                    </button>
+                <?php endif; ?>
+            </div>
+        </form>
+    </div>
+</div>
+
+<?= $this->render('participants/_import-review-script.phtml'); ?>
