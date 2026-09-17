@@ -58,9 +58,18 @@ php vendor/bin/db-tools config:show
 
 ### Scheduling
 
-Run `composer db-backup` (or `php vendor/bin/db-tools backup`) from cron on whatever cadence the site needs. Old archives beyond the retention count are pruned automatically.
+The bundled Crunz schedule defines a daily database backup at 00:45 in the application
+timezone. It also defines a Sunday 01:00 snapshot of `application.ini`.
+These jobs require a working cron/Crunz runner. Verify execution before adding another
+backup schedule. Old archives beyond the retention count are pruned automatically.
 
-> **Pre-upgrade backups are automatic:** `ept-update` (`bin/upgrade.sh`) offers to back up the **database** to `/var/ept-backup/db/` and the **ePT folder** to `/var/ept-backup/www/` before every update. Those pre-upgrade dumps are a valid source for a restore or a migration — you don't have to take a fresh one just to move.
+The configuration snapshot covers only `application.ini`. File backups, other
+configuration files and off-host copying require separate arrangements.
+See [storage and retention](data-lifecycle.md) for scope and default retention.
+
+> **Pre-upgrade backups are optional:** `ept-update` offers database and folder backups.
+> Both prompts default to no. Database dumps go to `/var/ept-backup/db/` and folder
+> copies to `/var/ept-backup/www/`. Confirm a successful backup before relying on it for recovery.
 
 ---
 

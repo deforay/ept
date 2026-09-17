@@ -2,6 +2,31 @@
 
 This document describes the high-level structure and execution flow of the ePT codebase.
 
+Reviewed baseline: ePT 7.6.21. See [security controls](security.md),
+[the data model](data-model.md) and [the API inventory](api-reference.md) for supporting references.
+
+## Deployment components
+
+```mermaid
+flowchart LR
+    U[Browser users] -->|HTTPS| W[Web server and PHP application]
+    C[API clients] -->|HTTPS| W
+    W --> DB[(MySQL)]
+    W --> FS[Uploads and generated files]
+    CR[Cron and Crunz] --> J[PHP scheduled jobs]
+    J --> DB
+    J --> FS
+    J --> SMTP[SMTP service]
+    DB -. backup .-> B[Backup archives]
+    FS -. operator-managed backup .-> B
+    B -. operator-managed copy .-> O[Off-host backup destination]
+```
+
+The application is a modular monolith, not a microservice deployment.
+The diagram shows logical components. Actual VM placement, network boundaries and
+backup destinations belong in the installation's deployment record.
+Backup arrows describe required operational arrangements, not verified running services.
+
 ## High-level overview
 
 - Zend Framework 1 (ZF1) MVC app with default module plus `admin`, `api`, and `reports` modules.
@@ -60,7 +85,7 @@ flowchart TD
 - Stored in session namespace `csrf`.
 - Validates POST/PUT/PATCH/DELETE requests using timing-safe `hash_equals()`.
 - Token source: `X-CSRF-Token` header or `csrf_token` POST parameter.
-- Exempt: CLI requests, XHR, API module, error controller.
+- Exempt: CLI requests, XHR, API module, error controller, non-modifying methods and requests without a session token.
 
 ### Authentication
 
@@ -74,6 +99,7 @@ Session-based authentication using `Zend_Session_Namespace`:
   - Force password reset capability.
   - CAPTCHA verification before login.
   - Session tracking via `UserLoginHistory`.
+  - A 30-minute web inactivity timeout. Participant impersonation defaults to a 15-minute idle timeout.
 
 ### Authorization
 
@@ -81,7 +107,7 @@ Session-based authentication using `Zend_Session_Namespace`:
 
 - Frontend access requires `datamanagers` session.
 - Admin module access requires `administrators` session.
-- Admins can access specific frontend URIs: `/dts/response`, `/eid/response`, `/vl/response`, `/tb/response`, `/recency/response`, `/generic-test/response`, `/tb/assay-formats`.
+- The request plugin allows authenticated administrators through to frontend `response` and `assay-formats` actions. Controller-level privileges still require separate review.
 - Unauthenticated users redirected to login.
 - Disabled for: error controller, auth controller, captcha, shipment-form.
 
@@ -190,6 +216,14 @@ flowchart TD
 | `reset-stale-jobs.php` | Every 15 min | Stale job recovery |
 | `db-tools backup` | Daily 00:45 | Database backup |
 | `db-tools purge-binlogs` | Daily 04:05 | MySQL binary log cleanup |
+| `backup-config.php` | Sunday 01:00 | Snapshot `application.ini` |
+| `housekeeping.php` | Daily 03:30 | Prune eligible records and temporary files |
+| `check-participant-emails.php` | Every 4 hours at minute 15 | Validate participant and data-manager email addresses |
+| `process-bounces.php` | Every 30 minutes | Process configured bounce inbox |
+| `process-shipment-deadlines.php` | Every minute | Close eligible shipments and queue evaluation |
+
+Schedules use the configured timezone. See [storage and retention](data-lifecycle.md)
+for cleanup scope and [troubleshooting](troubleshooting.md) for execution checks.
 
 ### Job queue
 
@@ -254,7 +288,7 @@ API controllers in `application/modules/api/controllers/`:
 
 ### Response format
 
-- JSON-only responses (no XML).
+- Most data actions serialize JSON. Participant report download actions render views.
 - Request parsing: `json_decode(file_get_contents('php://input'))`.
 - Response: `json_encode($result, JSON_PRETTY_PRINT)`.
 
@@ -263,8 +297,11 @@ API controllers in `application/modules/api/controllers/`:
 `Application_Service_ApiServices` provides:
 
 - Authentication via `authToken`.
-- Result marshaling for DTS, VL, and EID. The other schemes have no API path and are entered through the web portal.
+- Result marshaling for DTS, VL, EID and custom tests. Dedicated response actions for other schemes are absent from the current controller inventory.
 - Reference data: test kits, possible results, not-tested reasons. Recency possible results are returned under the `dts` key.
+
+Authentication checks differ by endpoint. The module does not provide one uniform
+authentication guard. See [API boundaries](api-reference.md#integration-boundaries).
 
 ## Database migrations
 
@@ -274,9 +311,9 @@ API controllers in `application/modules/api/controllers/`:
 
 - SQL-based migrations in `database/migrations/`.
 - Version tracking via `system_config.app_version`.
-- Uses `version_compare()` to run only newer migrations.
+- Uses `version_compare()` to run migrations at or above the current database version, including replay of the current version.
 - Idempotent DDL helper functions.
-- Flags: `--dry-run`, `-y` (auto-continue), `-q` (quiet).
+- Flags: `-d` (dry run), `-y` (auto-continue), `-q` (quiet), `-v VERSION` (starting version), `--status` (migration status).
 
 ### Run-once scripts
 
@@ -355,7 +392,10 @@ logs/                     # Application logs
 
 ## Testing
 
-The codebase does not currently have automated tests. Unit and integration tests would improve maintainability.
+The repository includes evaluator harnesses for selected DTS algorithms and qualitative
+custom tests. It also includes PHPStan and coding-style checks.
+These do not establish full application coverage or deployment acceptance.
+See [the validation package](validation.md) for coverage, limitations and proposed acceptance cases.
 
 ## Notes for maintainers
 
@@ -364,4 +404,4 @@ The codebase does not currently have automated tests. Unit and integration tests
 - Use `cli-bootstrap.php` for any new CLI tooling that needs ZF1 configs/services.
 - The codebase integrates modern libraries (Monolog, Symfony Mailer) alongside ZF1 components.
 - All background processing is cron-based (no daemon workers).
-- Session-based authentication only; no OAuth/JWT support.
+- Web authentication uses sessions. API services use application-specific token handling rather than OAuth/JWT.

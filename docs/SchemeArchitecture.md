@@ -345,7 +345,7 @@ sequenceDiagram
 | Recency | `response_result_recency` | `reference_result_recency` |
 | COVID-19 | `response_result_covid19` | `reference_result_covid19` |
 | DBS | `response_result_dbs` | `reference_result_dbs` |
-| Custom Tests | `response_result_generic_test` | (uses scheme config) |
+| Custom Tests | `response_result_generic_test` | `reference_result_generic_test` |
 
 ### Table Relationships
 
@@ -599,7 +599,8 @@ stateDiagram-v2
     Shipped --> ResponseCollection: Participants enter results
     ResponseCollection --> Evaluation: Admin triggers evaluation
     Evaluation --> Evaluated: Scores calculated
-    Evaluated --> Finalized: Generate reports
+    Evaluated --> ReportsGenerated: Generate reports
+    ReportsGenerated --> Finalized: Review and finalize
     Finalized --> [*]
 
     note right of ResponseCollection
@@ -614,6 +615,9 @@ stateDiagram-v2
 ```
 
 ## Scoring Formula
+
+The lifecycle above describes workflow stages, not literal values for every database status.
+Deadline processing can also queue evaluation. Generation and finalization are separate actions.
 
 Most schemes follow this pattern:
 

@@ -103,7 +103,7 @@ This role is useful for countries with decentralized PT programs where regional 
 
 | Role | Enter Results | Download Reports | Manage PT | Oversee Users |
 |------|---------------|------------------|-----------|---------------|
-| PT Administrator | No (admin only) | Yes (all) | Yes | Yes |
+| PT Administrator | With response-edit privileges | According to privileges | According to privileges | According to privileges |
 | PTCC | No | Yes (assigned) | No | Yes (Data Managers) |
 | Data Manager | Yes | Yes (assigned) | No | No |
 | Participant | Via Data Manager | Via Data Manager | No | No |
@@ -216,7 +216,9 @@ $adminSession = new Zend_Session_Namespace('administrators');
 // Contains: admin_id, primary_email, first_name, last_name, privileges, activeScheme
 ```
 
-**Session Duration:** 10 hours (`Zend_Session::rememberMe(60 * 60 * 10)`)
+**Session lifetime:** The remember-me cookie configuration does not override the
+30-minute authenticated web inactivity timeout in `Pt_Plugins_PreSetter`.
+Participant impersonation defaults to a 15-minute idle timeout. See [security controls](security.md).
 
 ### Login Flow
 
@@ -272,7 +274,7 @@ if (!in_array('manage-shipments', $privileges)) {
 - **Token Generation:** 64-character hex string
 - **Storage:** `csrf` session namespace
 - **Validation:** Header `X-CSRF-Token` or POST `csrf_token`
-- **Exempt:** AJAX requests, API module, GET requests
+- **Exempt:** XHR, API, CLI, error routes, non-modifying methods and requests without a session token
 
 ---
 

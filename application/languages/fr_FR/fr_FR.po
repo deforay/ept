@@ -22991,3 +22991,27 @@ msgstr "Pas de participants"
 
 #~ msgid "Not enrolled in any scheme"
 #~ msgstr "Non inscrits à un programme"
+
+#: application/languages/help-translation-strings.php
+msgid "Admin Users"
+msgstr "Utilisateurs administrateurs"
+
+#: application/languages/help-translation-strings.php
+msgid "People who can log in to the admin side of ePT"
+msgstr "Personnes autorisées à se connecter à l’espace d’administration d’ePT"
+
+#: application/languages/help-translation-strings.php
+msgid "users"
+msgstr "utilisateurs"
+
+#: application/languages/help-translation-strings.php
+msgid "admin"
+msgstr "administration"
+
+#: application/languages/help-translation-strings.php
+msgid "system-admin"
+msgstr "administrateur système"
+
+#: application/languages/help-translation-strings.php
+msgid "roles"
+msgstr "rôles"

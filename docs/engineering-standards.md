@@ -71,3 +71,32 @@ touching.
 
 Run `mkdocs build --strict` before pushing. The deploy workflow uses it, so a
 broken link or a bad reference fails the build rather than shipping.
+
+## 5. Maintaining versioned references
+
+Update the reviewed version on affected reference pages when implementation changes.
+Keep implementation behaviour separate from proposed requirements and executed evidence.
+
+| Change | References to review |
+| --- | --- |
+| Schema migration | Core dictionary and physical column snapshot |
+| API controller or payload | API route inventory and integration acceptance cases |
+| Authentication or privileges | Security reference and user management |
+| Scheduler or cleanup | Architecture, storage and retention, backup procedures |
+| Dependency lockfile | Software and license inventory |
+| Workflow or evaluation | Functional requirements, user guide and validation cases |
+
+For a physical-column refresh, capture read-only metadata from a version-matched
+reference database. Include table, column, ordinal position, SQL type, nullability,
+default, column key and extra attributes from `information_schema.COLUMNS`.
+Capture foreign-key column mappings from `information_schema.KEY_COLUMN_USAGE`.
+Record the application version, server version and capture date.
+Preserve the distinction between physical types and programme-approved business definitions.
+
+For a license refresh, use each PHP package's name, version and license array in
+`composer.lock`. Use each non-root package location, version and license in
+`package-lock.json`. Keep missing metadata explicit and retain the bundled-asset limitation.
+
+Keep country-specific assessment notes outside `docs/`. Public procedures use generic
+examples. Local inventories, agreements, completed test evidence and approvals remain
+separate deployment records.

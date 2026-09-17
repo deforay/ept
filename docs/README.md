@@ -1,8 +1,13 @@
 # ePT Documentation
 
+[Documentation en français](fr/README.md)
+
 ePT is an open-source proficiency testing system for laboratory quality assurance. Organisations use it to run PT shipments, collect results from participating laboratories, evaluate those results against reference data, and issue reports.
 
 ## Where to start
+
+The system references use ePT 7.6.21 as their baseline.
+Deployment facts, approved policies and executed validation evidence remain installation-specific.
 
 | Your goal | Read |
 | --- | --- |
@@ -17,6 +22,18 @@ ePT is an open-source proficiency testing system for laboratory quality assuranc
 | Add or change a test scheme | [Schemes](SchemeArchitecture.md) |
 | Translate the interface or add a language | [Translation](TranslationGuide.md) |
 | Get a change reviewed and merged | [Engineering standards](engineering-standards.md) |
+| Complete common administrator and participant tasks | [User guide](user-guide.md) |
+| Create, change and review account access | [User management](user-management.md) |
+| Review functional requirements and use cases | [Requirements baseline](functional-requirements.md) |
+| Review security controls and non-functional requirements | [Security](security.md) |
+| Understand core records and business fields | [Data model and core dictionary](data-model.md) |
+| Look up SQL types, defaults and nullability | [Physical column reference](physical-schema.md) |
+| Identify implemented integration routes | [API inventory](api-reference.md) |
+| Review locked software packages and license metadata | [Software and licenses](software-licenses.md) |
+| Prepare acceptance tests and record evidence | [Validation package](validation.md) |
+| Investigate operational faults | [Troubleshooting](troubleshooting.md) |
+| Review storage locations and cleanup rules | [Storage and retention](data-lifecycle.md) |
+| Assemble a deployment evidence package | [Deployment handover](deployment-handover.md) |
 
 ## Supported test schemes
 

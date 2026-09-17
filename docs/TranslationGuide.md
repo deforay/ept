@@ -4,6 +4,27 @@ ePT ships in English. A laboratory that reads the interface in the wrong words r
 
 Translations live in GNU gettext catalogs at `application/languages/{locale}/{locale}.po`.
 
+## Translate documentation pages
+
+Public documentation uses whole-page translations. French pages live in `docs/fr/`
+with the same filenames as their English sources. Start from the
+[French documentation index](fr/README.md).
+
+1. Translate the complete page, including headings, tables, diagram labels and limitations.
+2. Apply the same technical-writing rules in both languages: short sentences, direct instructions and consistent terms.
+3. Preserve commands, routes, identifiers, version numbers, license expressions and requirement IDs.
+4. Link to the French counterpart when it exists. Label links to untranslated pages as English.
+5. Add the page to the French navigation in `mkdocs.yml` and the French index.
+6. Add reciprocal language links between the English and French pages.
+7. Run `mkdocs build --strict` to check navigation and links.
+
+For in-app help, place the translated body in `docs/help/{audience}/fr_FR/`.
+Keep the English frontmatter keys and source strings. Translate their displayed values
+through the French PO/MO catalog. See [the help authoring reference](https://github.com/deforay/ept/blob/master/docs/help/README.md).
+
+The public French section currently covers the twelve system and operations pages
+listed in its index. Older guides remain English and are labeled accordingly.
+
 ## Before you start
 
 - Install [Poedit](https://poedit.net) 3.x.

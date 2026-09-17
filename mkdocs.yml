@@ -48,12 +48,25 @@ theme:
 nav:
   - Home: README.md
   - About ePT: about-ept.md
+  - User guide: user-guide.md
   - Operations:
       - Install: setup.md
       - Update: updating.md
       - Backup & recovery: backup-and-migration.md
       - Infrastructure: infrastructure.md
       - CLI tools: cli-tools.md
+      - Troubleshooting: troubleshooting.md
+      - User management: user-management.md
+      - Storage & retention: data-lifecycle.md
+      - Deployment handover: deployment-handover.md
+  - System reference:
+      - Functional requirements: functional-requirements.md
+      - Security & non-functional requirements: security.md
+      - Data model & core dictionary: data-model.md
+      - Physical columns: physical-schema.md
+      - API routes: api-reference.md
+      - Software & licenses: software-licenses.md
+      - Validation: validation.md
   - Development:
       - Architecture: ARCHITECTURE.md
       - Schemes: SchemeArchitecture.md
@@ -67,6 +80,22 @@ nav:
       - "Part 3: Participant results": training/part3-participant.md
       - "Part 4: Evaluation & reports": training/part4-evaluation-and-reports.md
       - "Exercise: DTS HIV Serology": training/exercises/dts-hiv-serology.md
+  - Français:
+      - Accueil: fr/README.md
+      - Guide utilisateur: fr/user-guide.md
+      - Exploitation:
+          - Gestion des utilisateurs: fr/user-management.md
+          - Dépannage: fr/troubleshooting.md
+          - Stockage et conservation: fr/data-lifecycle.md
+          - Remise du déploiement: fr/deployment-handover.md
+      - Référentiels:
+          - Exigences fonctionnelles: fr/functional-requirements.md
+          - Sécurité: fr/security.md
+          - Modèle de données: fr/data-model.md
+          - Colonnes physiques: fr/physical-schema.md
+          - Routes API: fr/api-reference.md
+          - Logiciels et licences: fr/software-licenses.md
+          - Validation: fr/validation.md
 
 markdown_extensions:
   - admonition

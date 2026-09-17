@@ -103,7 +103,9 @@ The script prompts for first name, last name, email, and password.
 
 ### Run Migrations
 
-Applies pending database migrations from `database/migrations/`. Migrations are versioned and run in order — only versions newer than the current `app_version` in `system_config` are applied.
+Applies migrations from `database/migrations/` in version order. The runner includes
+the current `system_config.app_version` and newer versions. Current-version replay
+requires migrations to be idempotent.
 
 ```bash
 # Standard run — prompts on errors

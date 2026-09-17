@@ -4,73 +4,46 @@ summary: People who can log in to the admin side of ePT
 tags: [users, admin, system-admin, login, roles]
 ---
 
-# Admin Users
+# PT managers
 
-This page lists the people who can log in to the **admin side** of
-ePT — the people who manage PT Surveys, participants, and reports.
+Manage administrator accounts through **Configure → PT Managers**.
+This page requires the configuration privilege.
 
-> Admin users are different from **participants**. Participants
-> log in to the participant portal to send in results. Admin
-> users log in here to run the PT programme.
+PT managers use the administrative area. Data managers use the participant portal
+for their mapped participants. A participant record is separate from either account.
 
-## What's on the page
+## Add an account
 
-You will see a table with one row per admin user. Each row shows:
+1. Select **Add** from the PT Managers page.
+2. Enter the person's name, primary email, initial password and required contact fields.
+3. Select the active schemes assigned to this account.
+4. Select the approved privileges.
+5. Set the account status and submit the form.
+6. Arrange secure delivery of the initial credentials.
+7. Confirm the owner can sign in and change the initial password.
 
-- **Name**
-- **Email** (this is also the login id)
-- **Role** — what the user is allowed to do (see below)
-- **Status** — Active or Inactive
-- **Last Login**
+The form uses scheme assignments and individual privileges. It does not provide
+a fixed set of Super Admin, Reviewer and Read-only roles.
+Creating an account requires an initial password. Do not assume it sends an invitation link.
 
-You can search the list using the search box at the top right.
+## Change access
 
-## Roles
+1. Select **Edit** for the PT manager.
+2. Change the status, scheme assignments or privileges to match the approved request.
+3. Submit the form.
+4. Verify access after a fresh login.
 
-A role decides what a user can see and do in the admin panel.
-The most common roles are:
+To deactivate an account, set its status to **Inactive**.
+Verify that a fresh login is rejected. Keep the account record for historical attribution.
 
-- **Super Admin** — full access to everything, including settings
-  and other admin users.
-- **PT Manager / Admin** — can manage PT Surveys, participants,
-  evaluation, and reports. Cannot usually change system settings.
-- **Reviewer / Read-only** — can view PT Surveys and reports but
-  cannot change them.
+## Recover access
 
-Your system may have extra roles set up. Your Super Admin
-controls who can have which role.
+Use the login password-recovery flow or contact the authorized technical operator.
+The operator has separate CLI tools for resetting administrator and data-manager passwords.
+Confirm the account type before requesting a reset.
 
-## Common things you do here
+## Verify an assignment
 
-### Add a new admin user
-
-- Click **Add** at the top right.
-- Fill in the name, email, and pick a role.
-- Save. The new user will receive a welcome email with a link to
-  set their password.
-
-### Edit a user
-
-- Click the user's name (or the **Edit** action) on the list.
-- Change the name, email, role, or status.
-- Save.
-
-### Deactivate a user
-
-To stop someone from logging in, edit the user and change
-**Status** to **Inactive**. The account stays in the system (so
-you keep an audit trail), but they cannot log in any more.
-
-### Reset a password
-
-If a user is locked out, edit the user and use **Reset Password**.
-They will get an email with a link to set a new password.
-
-## Tips
-
-- Try to keep at least **two Super Admins** in the system. If the
-  only Super Admin gets locked out, no one can help.
-- Use **real email addresses**. Password reset and notification
-  emails go to whatever email is on file.
-- Do not share logins between people. Each person should have
-  their own admin account so the audit log can show who did what.
+Confirm the account can perform its assigned task for the intended scheme.
+Also confirm that an unassigned administrative operation is rejected.
+Record the reviewer and date in the local access review record.
