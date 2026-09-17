@@ -20,12 +20,6 @@
     .bi-card { background: #fff; border: 1px solid #e6e9ee; border-radius: 8px; padding: 18px; box-shadow: 0 1px 2px rgba(0,0,0,0.04); }
     .bi-card h4 { margin: 0 0 12px; font-size: 14px; font-weight: 600; color: #333; }
 
-    .bi-chips { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-bottom: 12px; }
-    .bi-chips .bi-chips-label { font-size: 11px; letter-spacing: 0.06em; color: #8a93a0; text-transform: uppercase; margin-right: 4px; }
-    .bi-chip { display: inline-block; padding: 2px 9px; border-radius: 3px; font-family: Menlo, Consolas, monospace; font-size: 12px; }
-    .bi-chip.required { background: #f2dede; color: #a94442; border: 1px solid #ebccd1; }
-    .bi-chip.optional { background: #f1f3f5; color: #596270; border: 1px solid #e2e5ea; }
-
     .bi-drop { position: relative; border: 2px dashed #cfd4dc; border-radius: 8px; padding: 32px 20px; text-align: center; background: #fbfcfd; transition: all 0.15s ease; cursor: pointer; }
     .bi-drop:hover, .bi-drop.dragover { border-color: #66afe9; background: #f4f9ff; }
     .bi-drop .bi-drop-icon { width: 44px; height: 44px; border-radius: 50%; background: #eef1f5; color: #6b7380; display: inline-flex; align-items: center; justify-content: center; font-size: 18px; margin-bottom: 10px; }
@@ -59,18 +53,44 @@
     .bi-validation-error code { background: #f1f3f5; padding: 1px 6px; border-radius: 3px; font-size: 12px; color: #333; }
     .bi-validation-error .bi-ve-empty { color: #8a93a0; font-style: italic; }
 
-    .bi-options { display: grid; grid-template-columns: 1fr; gap: 10px; margin-bottom: 16px; }
-    .bi-options label { display: block; font-size: 12px; font-weight: 600; color: #596270; margin: 0 0 4px; }
-    .bi-options select { width: 100%; padding: 7px 10px; border: 1px solid #ccc; border-radius: 4px; background: #fff; font-size: 13px; }
+    .bi-section { margin-bottom: 18px; }
+    .bi-section-title { font-size: 13px; font-weight: 600; color: #333; margin: 0 0 8px; }
+
+    .bi-choice-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+    .bi-choice { position: relative; border: 1px solid #dfe3e8; border-radius: 6px; background: #fff; transition: border-color 0.15s ease, box-shadow 0.15s ease; }
+    .bi-choice .bi-choice-main { display: block; margin: 0; padding: 12px 14px 12px 38px; cursor: pointer; font-weight: normal; }
+    .bi-choice:hover { border-color: #b6c4e0; }
+    .bi-choice input[type=radio] { position: absolute; left: 14px; top: 14px; margin: 0; }
+    .bi-choice .bi-choice-title { display: block; font-weight: 600; color: #333; font-size: 13px; margin-bottom: 3px; }
+    .bi-choice .bi-choice-desc { display: block; color: #6b7380; font-size: 12px; line-height: 1.45; }
+    .bi-choice.selected { border-color: #337ab7; box-shadow: 0 0 0 1px #337ab7; background: #f7fafd; }
+    .bi-choice .bi-choice-extra { display: none; margin: -4px 14px 12px 38px; padding-top: 8px; border-top: 1px dashed #d5dde8; font-size: 12px; color: #333; }
+    .bi-choice.selected .bi-choice-extra { display: block; }
+    .bi-choice .bi-choice-extra label { font-weight: normal; margin: 0; cursor: pointer; }
+
+    .bi-switch { display: inline-flex; border: 1px solid #cfd4dc; border-radius: 6px; overflow: hidden; }
+    .bi-switch label { margin: 0; padding: 6px 14px; font-size: 13px; font-weight: normal; color: #596270; background: #fff; cursor: pointer; border-left: 1px solid #cfd4dc; }
+    .bi-switch label:first-child { border-left: 0; }
+    .bi-switch input { position: absolute; opacity: 0; pointer-events: none; }
+    .bi-switch input:checked + span { color: #fff; }
+    .bi-switch label.selected { background: #337ab7; color: #fff; }
+    .bi-switch input:focus-visible + span { outline: 2px solid #66afe9; outline-offset: 2px; }
+    .bi-hint { color: #8a93a0; font-size: 12px; margin-top: 6px; }
+
+    .bi-columns { list-style: none; margin: 0; padding: 0; border-top: 1px solid #f0f2f5; }
+    .bi-columns li { display: grid; grid-template-columns: 22px 1fr; column-gap: 10px; align-items: baseline; padding: 5px 0; border-bottom: 1px solid #f0f2f5; font-size: 13px; color: #444; }
+    .bi-columns .bi-col { flex: 0 0 22px; text-align: center; font-family: Menlo, Consolas, monospace; font-size: 11px; color: #6b7380; background: #f1f3f5; border-radius: 3px; padding: 1px 0; }
+    .bi-columns .bi-req { color: #a94442; font-weight: 600; }
+    .bi-columns .bi-col-note { grid-column: 2; color: #8a93a0; font-size: 11px; }
 
     .bi-side .bi-side-cta { display: block; width: 100%; text-align: center; margin-bottom: 14px; }
     .bi-side .bi-step-item { display: flex; gap: 10px; margin-bottom: 10px; }
     .bi-side .bi-step-item .bi-step-num { flex: 0 0 22px; width: 22px; height: 22px; border-radius: 50%; background: #eef1f5; color: #6b7380; font-size: 12px; font-weight: 600; display: inline-flex; align-items: center; justify-content: center; }
     .bi-side .bi-step-item .bi-step-text { color: #555; font-size: 13px; line-height: 1.45; }
-    .bi-side .bi-side-sub { color: #8a93a0; font-size: 12px; margin: -6px 0 12px; }
     .bi-side .bi-note code { background: #f1f3f5; padding: 1px 5px; border-radius: 3px; font-size: 11px; color: #333; }
 
     @media (max-width: 992px) {
+        .bi-choice-grid { grid-template-columns: 1fr; }
         .bi-layout { flex-direction: column; }
         .bi-layout .bi-side { flex: 1 1 auto; width: 100%; }
     }
@@ -126,37 +146,44 @@
         <div class="bi-layout">
             <div class="bi-main">
                 <div class="bi-card">
-                    <div class="bi-chips">
-                        <span class="bi-chips-label"><?= $this->htmlTranslate("Required"); ?></span>
-                        <span class="bi-chip required">unique_identifier</span>
-                        <span class="bi-chip required">first_name</span>
-                        <span class="bi-chip required">primary_email</span>
-                        <span class="bi-chip required">country</span>
+                    <div class="bi-section">
+                        <div class="bi-section-title"><?= $this->htmlTranslate("If a Participant ID is already in ePT"); ?></div>
+                        <div class="bi-choice-grid">
+                            <div class="bi-choice selected">
+                                <label class="bi-choice-main">
+                                    <input type="radio" name="bulkUploadDuplicateSkip" value="skip-duplicates" checked>
+                                    <span class="bi-choice-title"><?= $this->htmlTranslate("Add new only"); ?></span>
+                                    <span class="bi-choice-desc"><?= $this->htmlTranslate("Existing participants are left untouched. Their rows are skipped."); ?></span>
+                                </label>
+                            </div>
+                            <div class="bi-choice">
+                                <label class="bi-choice-main">
+                                    <input type="radio" name="bulkUploadDuplicateSkip" value="update-on-unique-id-match">
+                                    <span class="bi-choice-title"><?= $this->htmlTranslate("Update all details"); ?></span>
+                                    <span class="bi-choice-desc"><?= $this->htmlTranslate("Existing participants take every value from the file. Blank cells clear what is stored."); ?></span>
+                                </label>
+                                <div class="bi-choice-extra">
+                                    <label><input type="checkbox" id="resetPasswordToggle"> <?= $this->htmlTranslate("Also reset their passwords"); ?></label>
+                                </div>
+                            </div>
+                            <div class="bi-choice">
+                                <label class="bi-choice-main">
+                                    <input type="radio" name="bulkUploadDuplicateSkip" value="update-email-only">
+                                    <span class="bi-choice-title"><?= $this->htmlTranslate("Update email only"); ?></span>
+                                    <span class="bi-choice-desc"><?= $this->htmlTranslate("Only the email of existing participants changes. Everything else stays as it is."); ?></span>
+                                </label>
+                            </div>
+                        </div>
+                        <input type="hidden" name="resetPassword" id="resetPassword" value="yes">
                     </div>
 
-                    <div class="bi-options">
-                        <div>
-                            <label for="bulkUploadDuplicateSkip"><?= $this->htmlTranslate("If a Unique ID already exists"); ?></label>
-                            <select name="bulkUploadDuplicateSkip" id="bulkUploadDuplicateSkip" class="isRequired" title="Please choose the upload options" onchange="showHideResetPassword(this.value);">
-                                <option value="skip-duplicates"><?= $this->htmlTranslate("Skip the row (don't update)"); ?></option>
-                                <option value="update-on-unique-id-match"><?= $this->htmlTranslate("Update all data for that participant"); ?></option>
-                                <option value="update-email-only"><?= $this->htmlTranslate("Update email only (if changed)"); ?></option>
-                            </select>
+                    <div class="bi-section">
+                        <div class="bi-section-title"><?= $this->htmlTranslate("Same email on more than one participant"); ?></div>
+                        <div class="bi-switch" role="radiogroup">
+                            <label class="selected"><input type="radio" name="bulkUploadAllowEmailRepeat" value="allow-existing-email" checked><span><?= $this->htmlTranslate("Allow"); ?></span></label>
+                            <label><input type="radio" name="bulkUploadAllowEmailRepeat" value="do-not-allow-existing-email"><span><?= $this->htmlTranslate("Don't allow"); ?></span></label>
                         </div>
-                        <div>
-                            <label for="bulkUploadAllowEmailRepeat"><?= $this->htmlTranslate("Same email across participants"); ?></label>
-                            <select name="bulkUploadAllowEmailRepeat" id="bulkUploadAllowEmailRepeat" class="isRequired" title="Please choose the upload options">
-                                <option value="allow-existing-email"><?= $this->htmlTranslate("Allow — reuse existing DM / PT login email"); ?></option>
-                                <option value="do-not-allow-existing-email"><?= $this->htmlTranslate("Don't allow — email must be unique"); ?></option>
-                            </select>
-                        </div>
-                        <div class="reset-password hide">
-                            <label for="resetPassword"><?= $this->htmlTranslate("Reset password on update"); ?></label>
-                            <select name="resetPassword" id="resetPassword">
-                                <option value="yes"><?= $this->htmlTranslate("Yes"); ?></option>
-                                <option value="no"><?= $this->htmlTranslate("No"); ?></option>
-                            </select>
-                        </div>
+                        <div class="bi-hint"><?= $this->htmlTranslate("Allow lets one data manager look after several participants."); ?></div>
                     </div>
 
                     <div class="bi-drop" id="biDrop">
@@ -164,7 +191,7 @@
                         <div class="bi-drop-title"><?= $this->htmlTranslate("Drop your file here"); ?></div>
                         <div class="bi-drop-sub"><?= $this->htmlTranslate("or"); ?> <span class="bi-browse"><?= $this->htmlTranslate("click to browse"); ?></span></div>
                         <div class="bi-accepts"><?= $this->htmlTranslate("Accepts"); ?> <code>.xls</code> <code>.xlsx</code></div>
-                        <input type="file" id="fileName" name="fileName" class="isRequired" accept=".xls,.xlsx" title="Please select participants import data file">
+                        <input type="file" id="fileName" name="fileName" class="isRequired" accept=".xls,.xlsx" title="<?= $this->htmlTranslate("Please select participants import data file"); ?>">
                     </div>
 
                     <div class="bi-filecard" id="biFileCard">
@@ -192,23 +219,44 @@
                         <i class="icon-download"></i> <?= $this->htmlTranslate("Download Excel template"); ?>
                     </a>
                     <h4><i class="icon-info-sign"></i> <?= $this->htmlTranslate("How to prepare your file"); ?></h4>
-                    <div class="bi-side-sub"><?= $this->htmlTranslate("Columns marked in"); ?> <span class="mandatory"><?= $this->htmlTranslate("red"); ?></span> <?= $this->htmlTranslate("are mandatory."); ?></div>
                     <div class="bi-step-item">
                         <span class="bi-step-num">1</span>
-                        <div class="bi-step-text"><?= $this->htmlTranslate("Download the template and fill one row per participant."); ?></div>
+                        <div class="bi-step-text"><?= $this->htmlTranslate("Fill one row per participant. Keep the heading row and the column order."); ?></div>
                     </div>
                     <div class="bi-step-item">
                         <span class="bi-step-num">2</span>
-                        <div class="bi-step-text"><?= $this->htmlTranslate("The"); ?> <code>unique_identifier</code> <?= $this->htmlTranslate("field must be unique for each participant."); ?></div>
+                        <div class="bi-step-text"><?= $this->htmlTranslate("Format the Participant ID column as Text, or Excel drops leading zeros."); ?></div>
                     </div>
                     <div class="bi-step-item">
                         <span class="bi-step-num">3</span>
-                        <div class="bi-step-text"><?= $this->htmlTranslate("For a Lab or Clinic, put the Lab/Clinic Name in the"); ?> <code>first_name</code> <?= $this->htmlTranslate("column."); ?></div>
-                    </div>
-                    <div class="bi-step-item">
-                        <span class="bi-step-num">4</span>
                         <div class="bi-step-text"><?= $this->htmlTranslate("Before anything is saved, you'll see which rows will be added, updated or skipped, and why."); ?></div>
                     </div>
+                </div>
+                <div class="bi-card">
+                    <h4><?= $this->htmlTranslate("Template columns"); ?></h4>
+                    <ul class="bi-columns">
+                        <li><span class="bi-col">A</span><span><?= $this->htmlTranslate("S.No."); ?></span></li>
+                        <li><span class="bi-col">B</span><span class="bi-req"><?= $this->htmlTranslate("Participant ID"); ?>*</span></li>
+                        <li><span class="bi-col">C</span><span class="bi-req"><?= $this->htmlTranslate("Individual Participant (yes/no)"); ?>*</span></li>
+                        <li><span class="bi-col">D</span><span class="bi-req"><?= $this->htmlTranslate("First Name or Lab Name"); ?>*</span> <span class="bi-col-note"><?= $this->htmlTranslate("For a lab or clinic, use the lab name"); ?></span></li>
+                        <li><span class="bi-col">E</span><span><?= $this->htmlTranslate("Last Name"); ?></span></li>
+                        <li><span class="bi-col">F</span><span><?= $this->htmlTranslate("Institute Name"); ?></span></li>
+                        <li><span class="bi-col">G</span><span><?= $this->htmlTranslate("Department"); ?></span></li>
+                        <li><span class="bi-col">H</span><span><?= $this->htmlTranslate("Address"); ?></span></li>
+                        <li><span class="bi-col">I</span><span><?= $this->htmlTranslate("Shipping Address"); ?></span></li>
+                        <li><span class="bi-col">J</span><span><?= $this->htmlTranslate("District/County"); ?></span></li>
+                        <li><span class="bi-col">K</span><span><?= $this->htmlTranslate("Province/State"); ?></span></li>
+                        <li><span class="bi-col">L</span><span><?= $this->htmlTranslate("Region"); ?></span></li>
+                        <li><span class="bi-col">M</span><span class="bi-req"><?= $this->htmlTranslate("Country Name"); ?>*</span> <span class="bi-col-note"><?= $this->htmlTranslate("Pick from the dropdown"); ?></span></li>
+                        <li><span class="bi-col">N</span><span><?= $this->htmlTranslate("Zip"); ?></span></li>
+                        <li><span class="bi-col">O</span><span><?= $this->htmlTranslate("Longitude"); ?></span></li>
+                        <li><span class="bi-col">P</span><span><?= $this->htmlTranslate("Latitude"); ?></span></li>
+                        <li><span class="bi-col">Q</span><span><?= $this->htmlTranslate("Mobile Number"); ?></span></li>
+                        <li><span class="bi-col">R</span><span class="bi-req"><?= $this->htmlTranslate("Email ID"); ?>*</span></li>
+                        <li><span class="bi-col">S</span><span><?= $this->htmlTranslate("Password"); ?></span> <span class="bi-col-note"><?= $this->htmlTranslate("Blank uses the default password"); ?></span></li>
+                        <li><span class="bi-col">T</span><span><?= $this->htmlTranslate("Additional Email ID"); ?></span></li>
+                    </ul>
+                    <div class="bi-hint">* <?= $this->htmlTranslate("Required"); ?></div>
                 </div>
             </div>
         </div>
@@ -252,15 +300,17 @@
         }
     }
 
-    function showHideResetPassword(value) {
-        if (value == 'update-on-unique-id-match') {
-            $('.reset-password').removeClass('hide');
-            $("#resetPassword").val('no');
-            $('#resetPassword').addClass('isRequired');
+    // resetPassword mirrors the old dropdown: the checkbox decides it in "Update all
+    // details"; every other mode sends "yes" so new participants get a password.
+    function syncImportChoices() {
+        $('.bi-choice, .bi-switch label').each(function() {
+            $(this).toggleClass('selected', $(this).find('input[type=radio]').is(':checked'));
+        });
+        var mode = $('input[name=bulkUploadDuplicateSkip]:checked').val();
+        if (mode === 'update-on-unique-id-match') {
+            $('#resetPassword').val($('#resetPasswordToggle').is(':checked') ? 'yes' : 'no');
         } else {
-            $('#resetPassword').removeClass('isRequired');
-            $("#resetPassword").val('yes');
-            $('.reset-password').addClass('hide');
+            $('#resetPassword').val('yes');
         }
     }
 
@@ -271,7 +321,8 @@
     }
 
     $(document).ready(function() {
-        showHideResetPassword($('#bulkUploadDuplicateSkip').val());
+        $('input[name=bulkUploadDuplicateSkip], input[name=bulkUploadAllowEmailRepeat], #resetPasswordToggle').on('change', syncImportChoices);
+        syncImportChoices();
 
         var $drop = $('#biDrop');
         var $input = $('#fileName');
