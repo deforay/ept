@@ -1181,7 +1181,7 @@ foreach ($this->participants as $row) {
 
 
 	function removeSchemes(schemeType, mid, userConfiguration = 'no') {
-		if (window.confirm("Are you sure you want to remove this response?\n This cannot be undone !")) {
+		if (window.confirm("<?= $this->jsTranslate("Are you sure you want to remove this response?\n This cannot be undone !") ?>")) {
 			$.blockUI();
 			$.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'common', 'action' => 'delete-response')); ?>", {
 					schemeType: schemeType,
@@ -1190,7 +1190,7 @@ foreach ($this->participants as $row) {
 					format: "html"
 				},
 				function(data) {
-					alert("Response removed successfully");
+					alert("<?= $this->jsTranslate("Response removed successfully") ?>");
 					schemeTable.fnDraw();
 					$.unblockUI();
 				});
@@ -1241,20 +1241,20 @@ foreach ($this->participants as $row) {
 						schemeTable.fnDraw();
 						$("#countChecksPending").text("0");
 						selectedQc = '';
-						alert("Qc details added successfully");
+						alert("<?= $this->jsTranslate("Qc details added successfully") ?>");
 						hidedefModal();
 					}
 				});
 
 		} else {
-			alert("Please select the date");
+			alert("<?= $this->jsTranslate("Please select the date") ?>");
 		}
 
 	}
 
 	function checkQcStatus() {
 		if (selectedQc.length == 0) {
-			alert("Please select at least one shipment to proceed with QC");
+			alert("<?= $this->jsTranslate("Please select at least one shipment to proceed with QC") ?>");
 		} else {
 			showQcForm();
 		}

@@ -106,7 +106,7 @@
                 return;
             }
             // Inject a placeholder child row, then populate via AJAX
-            var placeholder = '<div style="padding:12px;color:#888;"><i class="icon-refresh"></i> <?= $this->translate->_("Loading data managers…"); ?></div>';
+            var placeholder = '<div style="padding:12px;color:#888;"><i class="icon-refresh"></i> <?= $this->jsTranslate("Loading data managers…") ?></div>';
             oTable.fnOpen(tr, placeholder, 'dm-child-container');
             $btn.removeClass('btn-primary').addClass('btn-success');
             $.post(
@@ -119,7 +119,7 @@
                 }
             ).fail(function () {
                 var $childTr = $(tr).next('tr');
-                $childTr.find('td').first().html('<div style="padding:12px;color:#a94442;"><?= $this->translate->_("Failed to load data managers. Please try again."); ?></div>');
+                $childTr.find('td').first().html('<div style="padding:12px;color:#a94442;"><?= $this->jsTranslate("Failed to load data managers. Please try again.") ?></div>');
             });
         });
 

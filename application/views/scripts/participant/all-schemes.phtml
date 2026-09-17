@@ -226,7 +226,7 @@ $dtFormat = $genderHelper->getDateFormat();
                 return;
             }
             // Inject a placeholder child row, then populate via AJAX
-            var placeholder = '<div style="padding:12px;color:#888;"><i class="icon-refresh"></i> <?= $this->translate->_("Loading data managers…"); ?></div>';
+            var placeholder = '<div style="padding:12px;color:#888;"><i class="icon-refresh"></i> <?= $this->jsTranslate("Loading data managers…") ?></div>';
             schemeTable.fnOpen(tr, placeholder, 'dm-child-container');
             $btn.removeClass('btn-primary').addClass('btn-success');
             $.post(
@@ -239,7 +239,7 @@ $dtFormat = $genderHelper->getDateFormat();
                 }
             ).fail(function () {
                 var $childTr = $(tr).next('tr');
-                $childTr.find('td').first().html('<div style="padding:12px;color:#a94442;"><?= $this->translate->_("Failed to load data managers. Please try again."); ?></div>');
+                $childTr.find('td').first().html('<div style="padding:12px;color:#a94442;"><?= $this->jsTranslate("Failed to load data managers. Please try again.") ?></div>');
             });
         });
 
@@ -262,7 +262,7 @@ $dtFormat = $genderHelper->getDateFormat();
 
 
 	function removeSchemes(schemeType, mid, userConfiguration = 'no') {
-		if (window.confirm("Are you sure you want to remove this response?\n This cannot be undone !")) {
+		if (window.confirm("<?= $this->jsTranslate("Are you sure you want to remove this response?\n This cannot be undone !") ?>")) {
 			$.blockUI();
 			$.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'common', 'action' => 'delete-response')); ?>", {
 				schemeType: schemeType,
@@ -271,7 +271,7 @@ $dtFormat = $genderHelper->getDateFormat();
 				format: "html"
 			},
 				function (data) {
-					alert("<?= $this->translate->_("Response removed successfully"); ?>");
+					alert("<?= $this->jsTranslate("Response removed successfully") ?>");
 					schemeTable.fnDraw();
 					$.unblockUI();
 				});
@@ -322,20 +322,20 @@ $dtFormat = $genderHelper->getDateFormat();
 						schemeTable.fnDraw();
 						$("#countChecksPending").text("0");
 						selectedQc = '';
-						alert("<?= $this->translate->_("Qc details added successfully"); ?>");
+						alert("<?= $this->jsTranslate("Qc details added successfully") ?>");
 						hidedefModal();
 					}
 				});
 
 		} else {
-			alert("<?= $this->translate->_("Please select the date"); ?>");
+			alert("<?= $this->jsTranslate("Please select the date") ?>");
 		}
 
 	}
 
 	function checkQcStatus() {
 		if (selectedQc.length == 0) {
-			alert("<?= $this->translate->_("Please select at least one shipment to proceed with QC"); ?> ");
+			alert("<?= $this->jsTranslate("Please select at least one shipment to proceed with QC") ?> ");
 		} else {
 			showQcForm();
 		}

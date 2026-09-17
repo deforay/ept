@@ -179,7 +179,7 @@
                 var $tag = $('<span class="filter-tag"></span>');
                 $('<span class="filter-tag-label"></span>').text(label).appendTo($tag);
                 $('<span class="filter-tag-value"></span>').text(display).appendTo($tag);
-                $('<button type="button" class="filter-tag-remove" aria-label="Remove filter"></button>')
+                $('<button type="button" class="filter-tag-remove" aria-label="<?= $this->jsTranslate('Remove filter') ?>"></button>')
                     .html('&times;')
                     .on('click', function () {
                         clearField($el);

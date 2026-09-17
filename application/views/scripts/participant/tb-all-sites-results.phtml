@@ -63,7 +63,7 @@
 
 	function drawTable() {
 		if ($("#shipmentId").val() == "") {
-			alert("Please select a shipment to proceed");
+			alert("<?= $this->jsTranslate("Please select a shipment to proceed") ?>");
 			return;
 		}
 

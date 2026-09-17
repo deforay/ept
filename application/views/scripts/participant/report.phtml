@@ -62,7 +62,7 @@
                 <button type="button" class="btn btn-default btn-sm js-filter-toggle" aria-expanded="false"
                     data-expand-text="<?= $this->htmlTranslate("Expand Filters"); ?>"
                     data-collapse-text="<?= $this->htmlTranslate("Collapse Filters"); ?>">
-                    <i class="icon-filter"></i> <span class="js-filter-toggle-text"><?= $this->translate->_("Expand Filters"); ?></span>
+                    <i class="icon-filter"></i> <span class="js-filter-toggle-text"><?= $this->htmlTranslate("Expand Filters"); ?></span>
                     <span class="label label-info js-filter-count" style="display:none;">0</span>
                     <span class="caret"></span>
                 </button>
@@ -128,7 +128,7 @@
                             <td style="width:25%"><?= $this->translate->_("District"); ?></td>
                         <?php } ?>
                         <td style="width:25%"><?= $this->translate->_("Result Outcome"); ?></td>
-                        <td style="width:25%"><?= $this->translate->_("Survey Number"); ?></td>
+                        <td style="width:25%"><?= $this->translate->_("PT Survey Code"); ?></td>
                         <td style="width:25%"><?= $this->translate->_("Response Status"); ?></td>
                     </tr>
                     <tr class="light">
@@ -156,8 +156,8 @@
                         </td>
                         <td>
                             <select class="form-control select2" id="surveyNumber" name="surveyNumber"
-                                title="<?= $this->htmlTranslate("Please select the survey number to filter"); ?>"
-                                data-filter-label="<?= $this->htmlTranslate("Survey Number"); ?>">
+                                title="<?= $this->htmlTranslate("Please select the PT Survey Code to filter"); ?>"
+                                data-filter-label="<?= $this->htmlTranslate("PT Survey Code"); ?>">
                                 <option value=""></option>
                                 <?php foreach ((array) $this->surveys as $survey) { ?>
                                     <option value="<?php echo $this->escape($survey['distribution_id']); ?>"><?php echo $this->escape($survey['distribution_code']); ?></option>
@@ -276,7 +276,7 @@
             allowClear: true
         });
         $("#surveyNumber").select2({
-            placeholder: "<?= $this->jsTranslate("Select Survey Number"); ?>",
+            placeholder: "<?= $this->jsTranslate("Select PT Survey Code"); ?>",
             allowClear: true
         });
         $("#responseStatus").select2({
@@ -443,7 +443,7 @@
                 return;
             }
             // Inject a placeholder child row, then populate via AJAX
-            var placeholder = '<div style="padding:12px;color:#888;"><i class="icon-refresh"></i> <?= $this->translate->_("Loading data managers…"); ?></div>';
+            var placeholder = '<div style="padding:12px;color:#888;"><i class="icon-refresh"></i> <?= $this->jsTranslate("Loading data managers…") ?></div>';
             oTable.fnOpen(tr, placeholder, 'dm-child-container');
             $btn.removeClass('btn-primary').addClass('btn-success');
             $.post(
@@ -456,7 +456,7 @@
                 }
             ).fail(function () {
                 var $childTr = $(tr).next('tr');
-                $childTr.find('td').first().html('<div style="padding:12px;color:#a94442;"><?= $this->translate->_("Failed to load data managers. Please try again."); ?></div>');
+                $childTr.find('td').first().html('<div style="padding:12px;color:#a94442;"><?= $this->jsTranslate("Failed to load data managers. Please try again.") ?></div>');
             });
         });
 
@@ -478,7 +478,7 @@
 
     function individualSchemes() {
         if ($('#dateRange').val() && $("#scheme").val() == "") {
-            alert("<?= $this->translate->_("Please pick date range and Scheme Type to proceed"); ?>");
+            alert("<?= $this->jsTranslate("Please pick date range and Scheme Type to proceed") ?>");
             return false;
         }
         oTable.fnDraw();

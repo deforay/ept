@@ -232,7 +232,7 @@ if ((isset($this->shipmentDetails['shipment_code']) && $this->shipmentDetails['s
             return false;
         }
         if ($("#dateRange").val() == "") {
-            alert('Please pick a date range to fetch shipment list');
+            alert('<?= $this->jsTranslate('Please pick a date range to fetch shipment list') ?>');
             $('#dateRange').focus();
             return false;
         }
@@ -389,7 +389,7 @@ if ((isset($this->shipmentDetails['shipment_code']) && $this->shipmentDetails['s
         },
             function (data) {
                 if (data == "" || data == null) {
-                    alert('Unable to generate download');
+                    alert('<?= $this->jsTranslate('Unable to generate download') ?>');
                 } else {
                     document.location.href = '/temporary/' + data;
                 }
@@ -409,7 +409,7 @@ if ((isset($this->shipmentDetails['shipment_code']) && $this->shipmentDetails['s
         },
             function (data) {
                 if (data == "" || data == null) {
-                    alert('Unable to generate download');
+                    alert('<?= $this->jsTranslate('Unable to generate download') ?>');
                 } else {
                     $('#exportPdf').attr('href', '/temporary/' + data);
                     $('#exportPdf').removeClass('hide');
@@ -419,7 +419,7 @@ if ((isset($this->shipmentDetails['shipment_code']) && $this->shipmentDetails['s
 
     function shipmetRegionReport(shipmentId) {
         if (startDate == "" || endDate == "" || $("#scheme").val() == "" || $("#scheme").val() == null || $("#scheme").val() == undefined) {
-            alert("Please pick date range and Scheme Type to proceed");
+            alert("<?= $this->jsTranslate("Please pick date range and Scheme Type to proceed") ?>");
             return false;
         }
         currentHighlighted = shipmentId;
@@ -538,7 +538,7 @@ if ((isset($this->shipmentDetails['shipment_code']) && $this->shipmentDetails['s
         },
             function (data) {
                 if (data == "" || data == null) {
-                    alert('Unable to generate download');
+                    alert('<?= $this->jsTranslate('Unable to generate download') ?>');
                 } else {
                     document.location.href = '/temporary/' + data;
                 }

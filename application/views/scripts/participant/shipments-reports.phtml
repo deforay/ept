@@ -123,7 +123,7 @@
 
 	function getDrawable() {
 		if ($("#dateRange").val() == '') {
-			alert("Please select date range");
+			alert("<?= $this->jsTranslate("Please select date range") ?>");
 			return false;
 		} else {
 			$.blockUI();

@@ -65,7 +65,7 @@
         // Check if more than 3 files are selected
         if (files.length > 3) {
             flag = false;
-            alert("You can only upload a maximum of 3 files.");
+            alert("<?= $this->jsTranslate("You can only upload a maximum of 3 files.") ?>");
             return false;
         }
 
@@ -76,7 +76,7 @@
 
             if (allowedExtensions.indexOf(fileExtension) === -1) {
                 flag = false;
-                alert("Invalid file type. Only PDF, DOC, DOCX, XLS, XLSX, JPG, JPEG, and PNG are allowed.");
+                alert("<?= $this->jsTranslate("Invalid file type. Only PDF, DOC, DOCX, XLS, XLSX, JPG, JPEG, and PNG are allowed.") ?>");
                 break;
             }
         }

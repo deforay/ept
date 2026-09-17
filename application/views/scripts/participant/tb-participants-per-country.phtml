@@ -108,7 +108,7 @@
 
 	function getShipmentCodes() {
 		if (startDate == "" || endDate == "") {
-			alert('Please pick a date range to fetch shipment list');
+			alert('<?= $this->jsTranslate('Please pick a date range to fetch shipment list') ?>');
 			$('#dateRange').focus();
 			return false;
 		}
@@ -129,7 +129,7 @@
 
 	function drawTable(callBack) {
 		if ($("#dateRange").val() == "" || $("#shipmentId").val() == "") {
-			alert("Please pick date range and shipment to proceed");
+			alert("<?= $this->jsTranslate("Please pick date range and shipment to proceed") ?>");
 			return false;
 		}
 		$("#countriesTable").removeClass("hide");

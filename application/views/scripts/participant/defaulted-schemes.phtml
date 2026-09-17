@@ -148,7 +148,7 @@
                 return;
             }
             // Inject a placeholder child row, then populate via AJAX
-            var placeholder = '<div style="padding:12px;color:#888;"><i class="icon-refresh"></i> <?= $this->translate->_("Loading data managers…"); ?></div>';
+            var placeholder = '<div style="padding:12px;color:#888;"><i class="icon-refresh"></i> <?= $this->jsTranslate("Loading data managers…") ?></div>';
             dsTable.fnOpen(tr, placeholder, 'dm-child-container');
             $btn.removeClass('btn-primary').addClass('btn-success');
             $.post(
@@ -161,7 +161,7 @@
                 }
             ).fail(function () {
                 var $childTr = $(tr).next('tr');
-                $childTr.find('td').first().html('<div style="padding:12px;color:#a94442;"><?= $this->translate->_("Failed to load data managers. Please try again."); ?></div>');
+                $childTr.find('td').first().html('<div style="padding:12px;color:#a94442;"><?= $this->jsTranslate("Failed to load data managers. Please try again.") ?></div>');
             });
         });
 
@@ -183,7 +183,7 @@
 
 
 	function removeSchemes(schemeType, mid, userConfiguration = 'no') {
-		if (window.confirm("<?= $this->translate->_("Are you sure you want to remove this response? This cannot be undone!"); ?> ")) {
+		if (window.confirm("<?= $this->jsTranslate("Are you sure you want to remove this response? This cannot be undone!") ?> ")) {
 			$.blockUI();
 			$.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'dts', 'action' => 'delete')); ?>", {
 					mid: mid,
@@ -192,7 +192,7 @@
 					format: "html"
 				},
 				function(data) {
-					alert("Response removed successfully");
+					alert("<?= $this->jsTranslate("Response removed successfully") ?>");
 
 					dsTable.fnDraw();
 					$.unblockUI();

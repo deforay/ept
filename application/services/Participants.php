@@ -297,7 +297,7 @@ class Application_Service_Participants
     }
 
     /**
-     * PT Survey ("Survey Number") list for the Individual Reports filter on
+     * PT Survey ("PT Survey Code") list for the Individual Reports filter on
      * /participant/report. Pulls the distributions that have at least one
      * finalized shipment the current participant/DM is mapped to, so the
      * dropdown only ever offers surveys that can actually return a report.

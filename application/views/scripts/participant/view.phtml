@@ -141,7 +141,7 @@
                 return;
             }
             // Inject a placeholder child row, then populate via AJAX
-            var placeholder = '<div style="padding:12px;color:#888;"><i class="icon-refresh"></i> <?= $this->translate->_("Loading data managers…"); ?></div>';
+            var placeholder = '<div style="padding:12px;color:#888;"><i class="icon-refresh"></i> <?= $this->jsTranslate("Loading data managers…") ?></div>';
             oTable.fnOpen(tr, placeholder, 'dm-child-container');
             $btn.removeClass('btn-primary').addClass('btn-success');
             $.post(
@@ -154,7 +154,7 @@
                 }
             ).fail(function () {
                 var $childTr = $(tr).next('tr');
-                $childTr.find('td').first().html('<div style="padding:12px;color:#a94442;"><?= $this->translate->_("Failed to load data managers. Please try again."); ?></div>');
+                $childTr.find('td').first().html('<div style="padding:12px;color:#a94442;"><?= $this->jsTranslate("Failed to load data managers. Please try again.") ?></div>');
             });
         });
 
@@ -181,7 +181,7 @@
             function (data) {
                 $.unblockUI();
                 if (data == "" || data == null || data == undefined || $.trim(data) == 'not-found' || !data) {
-                    alert('<?= $this->translate->_("Unable to generate download"); ?>');
+                    alert('<?= $this->jsTranslate("Unable to generate download") ?>');
                 } else {
                     window.open('/temporary/' + data, '_blank');
                 }
@@ -190,7 +190,7 @@
 
     function deleteParticipant(id) {
         if (id > 0) {
-            if (confirm("<?= $this->translate->_("Are you sure you want to delete this participant?"); ?> ")) {
+            if (confirm("<?= $this->jsTranslate("Are you sure you want to delete this participant?") ?> ")) {
                 // $.blockUI();
                 $.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'participant', 'action' => 'delete-participant')); ?>", {
                     participantId: id,
@@ -204,7 +204,7 @@
                     });
             }
         } else {
-            alert("<?= $this->translate->_("Someting went wrong Please try again later!"); ?> ")
+            alert("<?= $this->jsTranslate("Someting went wrong Please try again later!") ?> ")
         }
     }
 </script>

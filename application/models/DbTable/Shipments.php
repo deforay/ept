@@ -1178,7 +1178,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         }
 
         if (!empty($parameters['surveyNumber'])) {
-            // "Survey Number" filter — the shipment's parent PT Survey
+            // "PT Survey Code" filter — the shipment's parent PT Survey
             // (distributions.distribution_id), reached via spm.shipment_id -> s.distribution_id.
             $sQuery = $sQuery->where('s.distribution_id = ?', $parameters['surveyNumber']);
         }

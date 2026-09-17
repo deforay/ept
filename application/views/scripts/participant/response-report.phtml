@@ -127,10 +127,10 @@
     function drawGraph() {
 
         if ($("#dateRange").val() == '') {
-            alert("Please select date range");
+            alert("<?= $this->jsTranslate("Please select date range") ?>");
             return false;
         } else if ($("#reportType").val() == '') {
-            alert('Please select the report type');
+            alert('<?= $this->jsTranslate('Please select the report type') ?>');
             return;
         }
         drawTable();
