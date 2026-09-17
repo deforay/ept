@@ -878,36 +878,29 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
 	}
 
 	function rifDetectionChange(obj, id) {
-		if ($(obj).val() == 'detected') {
-			$(".input-probe" + id).attr("readonly", false);
-			$("#rifResistance" + id + " option[value='na']").remove();
-			$("#rifResistance" + id).removeClass("readonly");
-			$('.input-probe' + id).addClass('isRequired');
-			$("#errorCode" + id).removeClass('isRequired');
-		} else if ($(obj).val() == 'not-detected') {
-			$("#rifResistance" + id).append('<option value="na"><?= $this->jsTranslate("N/A"); ?></option>');
-			$("#rifResistance" + id).val("na");
-			$("#rifResistance" + id).addClass("readonly");
-			$(".input-probe" + id).attr("readonly", false);
-			$('.input-probe' + id).addClass('isRequired');
-			$("#errorCode" + id).removeClass('isRequired');
-		} else if ($(obj).val() == 'error' || $(obj).val() == 'no-result' || $(obj).val() == 'invalid') {
-			$("#errorCode" + id).addClass('isRequired');
-			$("#rifResistance" + id).append('<option value="na"><?= $this->jsTranslate("N/A"); ?></option>');
-			$("#rifResistance" + id).val("na");
-			$("#rifResistance" + id).addClass("readonly");
-			$(".input-probe" + id).attr("readonly", true);
-			$('.input-probe' + id).val('');
-			$('.input-probe' + id).removeClass('isRequired');
-			$(".input-probe" + id).attr("readonly", true);
-			$(".input-probe" + id).css("cursor", 'not-allowed');
+		// Probe classes use row numbers, which can differ from database sample IDs.
+		const $row = $(obj).closest('tr');
+		const $probes = $row.find('.probe');
+		const $errorCode = $row.find('input[name^="errCode["]');
+		const $rifResistance = $("#rifResistance" + id);
+		const result = $(obj).val();
+		const hasNoCtValues = ['error', 'no-result', 'invalid'].includes(result);
+
+		$probes.attr('readonly', hasNoCtValues)
+			.toggleClass('isRequired', !hasNoCtValues)
+			.css('cursor', hasNoCtValues ? 'not-allowed' : '');
+		$errorCode.toggleClass('isRequired', hasNoCtValues);
+		if (hasNoCtValues) {
+			$probes.val('');
+		}
+
+		$rifResistance.find("option[value='na']").remove();
+		if (result == 'not-detected' || hasNoCtValues) {
+			$rifResistance.append('<option value="na"><?= $this->jsTranslate("N/A"); ?></option>');
+			$rifResistance.val('na');
+			$rifResistance.addClass('readonly');
 		} else {
-			$("#errorCode" + id).removeClass('isRequired');
-			$(".input-probe" + id).attr("readonly", false);
-			$("#rifResistance" + id + " option[value='na']").remove();
-			$("#rifResistance" + id).removeClass("readonly");
-			$('.input-probe' + id).addClass('isRequired');
-			$("#errorCode" + id).removeClass('isRequired');
+			$rifResistance.removeClass('readonly');
 		}
 	}
 
