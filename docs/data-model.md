@@ -1,7 +1,5 @@
 # Data model and core dictionary
 
-[Français](fr/data-model.md)
-
 This reference describes core ePT 7.6.21 entities and selected business fields.
 It is not a complete physical schema or a field dictionary for every scheme.
 The [physical column reference](physical-schema.md) records all 1,156 columns from a

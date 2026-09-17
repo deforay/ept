@@ -1,7 +1,5 @@
 # Documentation ePT en français
 
-[English](../README.md)
-
 Ces guides et référentiels concernent ePT 7.6.21. Ils s'appliquent à toutes les installations.
 Les configurations locales, politiques approuvées et preuves de validation restent propres à chaque installation.
 
@@ -42,3 +40,19 @@ Les guides antérieurs ci-dessous restent en anglais. Les liens correspondants d
 | Examiner la conception technique | [Architecture](../ARCHITECTURE.md), [programmes](../SchemeArchitecture.md), [module administrateur](../AdminModuleGuide.md) |
 | Suivre le parcours de formation | [Formation](../training/README.md) |
 | Maintenir la documentation et les traductions | [Règles de développement](../engineering-standards.md), [traduction](../TranslationGuide.md) |
+
+## Programmes pris en charge {#supported-test-schemes}
+
+La table `scheme_list` contient sept programmes intégrés et les tests personnalisés.
+La colonne centrale reprend les noms anglais dans ePT.
+
+| Code | Nom dans ePT | Description |
+| --- | --- | --- |
+| `dts` | Dried Tube Specimen - HIV Serology | Tests rapides du VIH selon plusieurs algorithmes |
+| `vl` | Dried Tube Specimen - HIV Viral Load | Mesure quantitative de la charge virale avec analyse du score Z |
+| `eid` | Dried Blood Spot - Early Infant Diagnosis | Diagnostic du VIH chez le nourrisson par PCR |
+| `tb` | Dried Tube Specimen - Tuberculosis | Tests moléculaires (GeneXpert) et microscopie |
+| `recency` | Rapid Test for Recent Infection (RTRI) | Tests d'infection récente |
+| `covid19` | SARS-CoV-2 | Tests PCR sur plusieurs plateformes |
+| `dbs` | Dried Blood Spot - HIV Serology | Tests EIA et Western Blot |
+| `generic` | Custom Tests | Types de tests configurables avec champs dynamiques |

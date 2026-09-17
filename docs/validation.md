@@ -1,7 +1,5 @@
 # Validation package
 
-[Français](fr/validation.md)
-
 This reference provides a proposed acceptance baseline for ePT 7.6.21.
 It contains test definitions and an evidence format. It does not record executed tests
 or programme approval.

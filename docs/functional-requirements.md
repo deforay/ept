@@ -1,7 +1,5 @@
 # Functional requirements baseline
 
-[Français](fr/functional-requirements.md)
-
 This reference describes ePT 7.6.21 from the implementation and existing workflow guides.
 It is a baseline for programme review, not a signed user requirements specification.
 Acceptance checks appear in the [validation package](validation.md).

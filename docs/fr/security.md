@@ -1,7 +1,5 @@
 # Contrôles de sécurité et exigences opérationnelles
 
-[English](../security.md)
-
 Ce référentiel décrit les chemins d'implémentation examinés dans ePT 7.6.21.
 Il présente les contrôles et leurs limites. Il ne constitue ni un rapport de test d'intrusion ni une certification.
 

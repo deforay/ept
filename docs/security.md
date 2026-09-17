@@ -1,7 +1,5 @@
 # Security controls and operational requirements
 
-[Français](fr/security.md)
-
 This reference describes reviewed implementation paths in ePT 7.6.21.
 It records controls and limitations, not penetration-test results or certification.
 

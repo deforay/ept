@@ -1,7 +1,5 @@
 # Modèle de données et dictionnaire principal
 
-[English](../data-model.md)
-
 Ce référentiel décrit les entités principales d'ePT 7.6.21 et une sélection de champs métier.
 Il ne constitue ni un schéma physique complet ni un dictionnaire de tous les champs de chaque programme.
 Le [référentiel des colonnes physiques](physical-schema.md) décrit les 1 156 colonnes d'une base de référence à cette version.

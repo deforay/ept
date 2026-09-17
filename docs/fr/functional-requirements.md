@@ -1,7 +1,5 @@
 # Référentiel des exigences fonctionnelles
 
-[English](../functional-requirements.md)
-
 Ce référentiel décrit ePT 7.6.21 à partir de son implémentation et des guides de travail existants.
 Il sert de base à la revue du programme. Il ne constitue pas un cahier des charges approuvé.
 Les contrôles d'acceptation figurent dans le [dossier de validation](validation.md).

@@ -1,7 +1,5 @@
 # Référentiel de stockage et de conservation
 
-[English](../data-lifecycle.md)
-
 Ce référentiel décrit le stockage et le nettoyage implémentés dans ePT 7.6.21.
 Les valeurs logicielles par défaut ne constituent pas une politique approuvée de conservation ou d'élimination du programme.
 

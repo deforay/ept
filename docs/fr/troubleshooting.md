@@ -1,7 +1,5 @@
 # Comment examiner les problèmes opérationnels
 
-[English](../troubleshooting.md)
-
 Identifiez le composant défaillant avant de modifier une installation ePT.
 Ces procédures concernent ePT 7.6.21 et nécessitent les droits d'accès correspondant au composant concerné.
 

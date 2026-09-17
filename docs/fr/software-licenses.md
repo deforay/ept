@@ -1,7 +1,5 @@
 # Inventaire des logiciels et licences
 
-[English](../software-licenses.md)
-
 Cet inventaire consigne les métadonnées de licence du code ePT 7.6.21 au 17 septembre 2026.
 Il décrit les paquets verrouillés. Il ne résulte pas d'une inspection des logiciels installés sur un serveur.
 

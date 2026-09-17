@@ -1,7 +1,5 @@
 # Physical column reference
 
-[Français](fr/physical-schema.md)
-
 This snapshot records schema metadata from a reference database on 17 September 2026.
 The recorded application version is 7.6.21. The database server reports MySQL 8.4.11.
 It contains 108 tables and 1,156 columns. No participant, account or response records are included.

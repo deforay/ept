@@ -1,7 +1,5 @@
 # Software and license inventory
 
-[Français](fr/software-licenses.md)
-
 This inventory records license metadata in the ePT 7.6.21 checkout on 17 September 2026.
 It describes locked packages, not an inspection of installed software on a server.
 

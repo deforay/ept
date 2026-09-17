@@ -1,7 +1,5 @@
 # How to prepare a deployment handover
 
-[Français](fr/deployment-handover.md)
-
 Assemble a versioned evidence package for an ePT installation.
 
 ## Before you start

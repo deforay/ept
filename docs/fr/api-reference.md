@@ -1,7 +1,5 @@
 # Inventaire des routes API
 
-[English](../api-reference.md)
-
 Cet inventaire décrit les contrôleurs présents dans ePT 7.6.21.
 Il identifie les points d'entrée d'intégration. Il ne constitue ni un contrat client complet ni une évaluation de sécurité.
 Les routes Zend par défaut utilisent `/api/{controller}/{action}`.
@@ -83,7 +81,7 @@ Les schémas complets des corps de requête et les cas de rejet nécessitent une
 | `/api/participant/file-downloads` | Paramètres de requête | Obtenir les informations de téléchargement des certificats |
 | `/api/aggregated-insights` | Le contrôleur accepte les paramètres de requête | Renvoyer des informations sur l'instance et des données agrégées |
 
-## Limites des intégrations
+## Limites des intégrations {#integration-boundaries}
 
 La méthode examinée du service aggregated-insights ne vérifie pas `authToken`.
 Les actions de téléchargement utilisent une gestion distincte des liens.

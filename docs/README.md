@@ -1,7 +1,5 @@
 # ePT Documentation
 
-[Documentation en français](fr/README.md)
-
 ePT is an open-source proficiency testing system for laboratory quality assurance. Organisations use it to run PT shipments, collect results from participating laboratories, evaluate those results against reference data, and issue reports.
 
 ## Where to start

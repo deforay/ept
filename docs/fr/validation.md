@@ -1,7 +1,5 @@
 # Dossier de validation
 
-[English](../validation.md)
-
 Ce référentiel propose une base d'acceptation pour ePT 7.6.21.
 Il contient des définitions de tests et un format de preuve.
 Il ne consigne ni tests exécutés ni approbation du programme.

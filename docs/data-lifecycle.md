@@ -1,7 +1,5 @@
 # Storage and retention reference
 
-[Français](fr/data-lifecycle.md)
-
 This reference describes ePT 7.6.21 storage and cleanup implementation.
 Software defaults are not an approved programme retention or disposition policy.
 

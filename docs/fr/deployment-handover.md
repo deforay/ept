@@ -1,7 +1,5 @@
 # Comment préparer la remise d'un déploiement
 
-[English](../deployment-handover.md)
-
 Constituez un dossier de preuves versionné pour une installation ePT.
 
 ## Avant de commencer

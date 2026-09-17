@@ -1,7 +1,5 @@
 # Référentiel des colonnes physiques
 
-[English](../physical-schema.md)
-
 Cet instantané consigne les métadonnées du schéma d'une base de référence au 17 septembre 2026.
 La version applicative enregistrée est 7.6.21. Le serveur de base indique MySQL 8.4.11.
 Il contient 108 tables et 1 156 colonnes. Aucune donnée de participant, de compte ou de réponse n'est incluse.

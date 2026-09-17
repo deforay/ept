@@ -1,7 +1,5 @@
 # How to complete common ePT workflows
 
-[Français](fr/user-guide.md)
-
 Use this guide to find the procedure for your role in ePT 7.6.21.
 Menu visibility depends on account privileges and enabled programme features.
 

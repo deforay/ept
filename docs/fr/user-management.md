@@ -1,7 +1,5 @@
 # Comment gérer les accès utilisateurs
 
-[English](../user-management.md)
-
 Créez et examinez les comptes ePT 7.6.21 avec les droits nécessaires aux tâches attribuées.
 
 ## Avant de commencer

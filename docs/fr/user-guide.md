@@ -1,7 +1,5 @@
 # Comment réaliser les tâches courantes dans ePT
 
-[English](../user-guide.md)
-
 Utilisez ce guide pour trouver la procédure adaptée à votre rôle dans ePT 7.6.21.
 Les menus visibles dépendent des privilèges du compte et des fonctions activées.
 

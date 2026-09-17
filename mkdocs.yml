@@ -30,7 +30,7 @@ theme:
         icon: material/brightness-4
         name: Switch to light mode
   features:
-    - navigation.instant
+    # Language changes must reload the page to refresh localized theme labels.
     - navigation.tracking
     # Top-level groups become tabs across the header instead of one long
     # sidebar. The sidebar then shows only the section you are reading.
@@ -80,22 +80,55 @@ nav:
       - "Part 3: Participant results": training/part3-participant.md
       - "Part 4: Evaluation & reports": training/part4-evaluation-and-reports.md
       - "Exercise: DTS HIV Serology": training/exercises/dts-hiv-serology.md
-  - Français:
-      - Accueil: fr/README.md
-      - Guide utilisateur: fr/user-guide.md
-      - Exploitation:
-          - Gestion des utilisateurs: fr/user-management.md
-          - Dépannage: fr/troubleshooting.md
-          - Stockage et conservation: fr/data-lifecycle.md
-          - Remise du déploiement: fr/deployment-handover.md
-      - Référentiels:
-          - Exigences fonctionnelles: fr/functional-requirements.md
-          - Sécurité: fr/security.md
-          - Modèle de données: fr/data-model.md
-          - Colonnes physiques: fr/physical-schema.md
-          - Routes API: fr/api-reference.md
-          - Logiciels et licences: fr/software-licenses.md
-          - Validation: fr/validation.md
+
+plugins:
+  - search
+  - i18n:
+      docs_structure: folder
+      fallback_to_default: true
+      languages:
+        - locale: en
+          name: English
+          default: true
+        - locale: fr
+          name: Français
+          site_name: Documentation ePT
+          site_description: Documentation et formation pour le système ePT d'essais d'aptitude
+          nav_translations:
+            Home: Accueil
+            About ePT: Présentation (anglais)
+            User guide: Guide utilisateur
+            Operations: Exploitation
+            Install: Installation (anglais)
+            Update: Mise à jour (anglais)
+            Backup & recovery: Sauvegarde et reprise (anglais)
+            Infrastructure: Infrastructure (anglais)
+            CLI tools: Outils CLI (anglais)
+            Troubleshooting: Dépannage
+            User management: Gestion des utilisateurs
+            Storage & retention: Stockage et conservation
+            Deployment handover: Remise du déploiement
+            System reference: Référentiels
+            Functional requirements: Exigences fonctionnelles
+            Security & non-functional requirements: Sécurité et exigences non fonctionnelles
+            Data model & core dictionary: Modèle de données et dictionnaire
+            Physical columns: Colonnes physiques
+            API routes: Routes API
+            Software & licenses: Logiciels et licences
+            Validation: Validation
+            Development: Développement (anglais)
+            Architecture: Architecture (anglais)
+            Schemes: Programmes (anglais)
+            Admin module: Module administrateur (anglais)
+            Translation: Traduction (anglais)
+            Engineering standards: Règles de développement (anglais)
+            Training: Formation (anglais)
+            Overview: Vue d'ensemble (anglais)
+            "Part 1: Setup & participants": "Partie 1 : Configuration et participants (anglais)"
+            "Part 2: Surveys & shipments": "Partie 2 : Enquêtes et expéditions (anglais)"
+            "Part 3: Participant results": "Partie 3 : Résultats des participants (anglais)"
+            "Part 4: Evaluation & reports": "Partie 4 : Évaluation et rapports (anglais)"
+            "Exercise: DTS HIV Serology": "Exercice : Sérologie VIH DTS (anglais)"
 
 markdown_extensions:
   - admonition

@@ -1,7 +1,5 @@
 # API route inventory
 
-[Français](fr/api-reference.md)
-
 This inventory describes the controllers present in ePT 7.6.21.
 It identifies integration entry points, not a complete client contract or a security assessment.
 Default Zend routes use `/api/{controller}/{action}`.

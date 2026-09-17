@@ -1,7 +1,5 @@
 # How to investigate operational problems
 
-[Français](fr/troubleshooting.md)
-
 Identify the failing component before changing an ePT installation.
 These procedures target ePT 7.6.21 and require access appropriate to the affected component.
 

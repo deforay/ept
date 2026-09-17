@@ -1,7 +1,5 @@
 # How to manage user access
 
-[Français](fr/user-management.md)
-
 Create and review ePT 7.6.21 accounts with the access needed for their assigned work.
 
 ## Before you start

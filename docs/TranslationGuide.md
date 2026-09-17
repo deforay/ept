@@ -7,15 +7,15 @@ Translations live in GNU gettext catalogs at `application/languages/{locale}/{lo
 ## Translate documentation pages
 
 Public documentation uses whole-page translations. French pages live in `docs/fr/`
-with the same filenames as their English sources. Start from the
-[French documentation index](fr/README.md).
+with the same filenames as their English sources. Use the header language picker
+to switch between English and French.
 
 1. Translate the complete page, including headings, tables, diagram labels and limitations.
 2. Apply the same technical-writing rules in both languages: short sentences, direct instructions and consistent terms.
 3. Preserve commands, routes, identifiers, version numbers, license expressions and requirement IDs.
 4. Link to the French counterpart when it exists. Label links to untranslated pages as English.
-5. Add the page to the French navigation in `mkdocs.yml` and the French index.
-6. Add reciprocal language links between the English and French pages.
+5. Add the page to the shared navigation and its French label under `nav_translations` in `mkdocs.yml`.
+6. Verify that the header language picker opens the corresponding translated page.
 7. Run `mkdocs build --strict` to check navigation and links.
 
 For in-app help, place the translated body in `docs/help/{audience}/fr_FR/`.
