@@ -14,6 +14,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
     // hash; users are expected to change it on first login. NOSONAR
     protected $_defaultPassword = 'ept1@)(*&^'; // NOSONAR
     protected $_defaultPasswordHash = null;
+    private array $importPasswordHashes = [];
 
     public function __construct()
     {
@@ -2144,10 +2145,12 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                     'status' => 'active',
                 ];
 
-                // Handle password
-                if (isset($params['resetPassword']) && $params['resetPassword'] == 'yes') {
-                    $password = empty($row['S']) ? $this->_defaultPassword : trim($row['S']);
-                    $dataManagerData['password'] = ($password == $this->_defaultPassword) ? $this->_defaultPasswordHash : Common::passwordHash($password);
+                // Handle password. "Reset password" only decides for logins that already
+                // exist; a login created here always gets one, or nobody could sign in.
+                $password = empty($row['S']) ? $this->_defaultPassword : trim($row['S']);
+                $resetPassword = isset($params['resetPassword']) && $params['resetPassword'] == 'yes';
+                if ($resetPassword || empty($dataManagerExists)) {
+                    $dataManagerData['password'] = $this->hashImportPassword($password);
                 }
 
                 // Insert/update data manager. Wrap in try/catch so a stray duplicate-
@@ -2182,10 +2185,9 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                     $dataManagerData2['data_manager_type'] = 'participant';
                     $dataManagerData2['primary_email'] = $prefix . $row['B'];
                     $dataManagerData2['participant_ulid'] = $ulid;
-
-                    if (isset($params['resetPassword']) && $params['resetPassword'] == 'yes') {
-                        $password = empty($row['S']) ? $this->_defaultPassword : trim($row['S']);
-                        $dataManagerData2['password'] = ($password == $this->_defaultPassword) ? $this->_defaultPasswordHash : Common::passwordHash($password);
+                    unset($dataManagerData2['password']);
+                    if ($resetPassword) {
+                        $dataManagerData2['password'] = $this->hashImportPassword($password);
                     }
 
                     // The login pseudo-email is derived from the Unique ID, so on re-import
@@ -2209,6 +2211,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
 
                     try {
                         if (empty($dmExists2)) {
+                            $dataManagerData2['password'] = $this->hashImportPassword($password);
                             $db->insert('data_manager', $dataManagerData2);
                             $dmId2 = $db->lastInsertId();
                         } else {
@@ -2343,6 +2346,15 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         }
 
         return $response;
+    }
+
+    /** bcrypt is slow and most rows share a password, so hash each distinct one once. */
+    private function hashImportPassword(string $password): string
+    {
+        if ($password === $this->_defaultPassword) {
+            return $this->_defaultPasswordHash;
+        }
+        return $this->importPasswordHashes[$password] ??= Common::passwordHash($password);
     }
 
     /**
