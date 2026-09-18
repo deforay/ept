@@ -199,7 +199,7 @@ $status = [
     });
 
     function shipDistribution(did) {
-        var choice = confirm("<?= $this->translate->_("Are you sure you want to ship this PT Survey?"); ?> \n <?= $this->translate->_("You cannot undo this!"); ?>")
+        var choice = confirm("<?= $this->jsTranslate("Are you sure you want to ship this PT Survey?"); ?> \n <?= $this->jsTranslate("You cannot undo this!"); ?>")
         if (!choice) {
             return false;
         }
@@ -256,12 +256,12 @@ $status = [
                     if (msg === 'OK') {
                         oTable.fnDraw();
                     } else {
-                        alert(msg || "<?= $this->translate->_('Failed to delete the PT Survey. Please try again or contact the administrator.'); ?>");
+                        alert(msg || "<?= $this->jsTranslate('Failed to delete the PT Survey. Please try again or contact the administrator.'); ?>");
                     }
                 })
                 .fail(function () {
                     $.unblockUI();
-                    alert("<?= $this->translate->_('Failed to delete the PT Survey. Please try again or contact the administrator.'); ?>");
+                    alert("<?= $this->jsTranslate('Failed to delete the PT Survey. Please try again or contact the administrator.'); ?>");
                 });
         });
 

@@ -10,9 +10,9 @@
 					<span class="mandatory">*</span></label>
 				<div class="col-lg-8">
 					<input type="text" id="geneTypeName" name="geneTypeName" size="50" maxlength="255"
-						class="isRequired form-control" title="Please enter the GeneType Name here"
-						placeholder="Please enter the GeneType Name here"
-						onblur="checkDuplicate('r_covid19_gene_types', 'gene_id', this, null, 'This GeneType Name already exists for another GeneType. Please try something else.')" />
+						class="isRequired form-control" title="<?= $this->htmlTranslate("Please enter the GeneType Name here") ?>"
+						placeholder="<?= $this->htmlTranslate("Please enter the GeneType Name here") ?>"
+						onblur="checkDuplicate('r_covid19_gene_types', 'gene_id', this, null, '<?= $this->jsTranslate("This GeneType Name already exists for another GeneType. Please try something else.") ?>')" />
 				</div>
 			</div>
 
@@ -21,7 +21,7 @@
 						class="mandatory">*</span></label>
 
 				<div class="col-lg-8">
-					<select id="scheme" name="scheme" class="form-control isRequired" title="Please select a Scheme">
+					<select id="scheme" name="scheme" class="form-control isRequired" title="<?= $this->htmlTranslate("Please select a Scheme") ?>">
 						<option value="">--<?= $this->translate->_("Select Scheme"); ?>--</option>
 						<?php foreach ($this->schemeList as $scheme) { ?>
 							<option value="<?php echo $scheme->scheme_id; ?>"><?php echo $scheme->scheme_name; ?></option>
@@ -35,7 +35,7 @@
 						class="mandatory">*</span></label>
 				<div class="col-lg-8">
 					<select class="form-control isRequired" name="geneStatus" id="geneStatus"
-						title="Please choose the country adapted here">
+						title="<?= $this->htmlTranslate("Please choose the country adapted here") ?>">
 						<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
 						<option value="active"><?= $this->translate->_("Active"); ?></option>
 						<option value="inactive"><?= $this->translate->_("Inactive"); ?></option>

@@ -32,7 +32,7 @@
                         class="isRequired form-control isEmail"
                         title="<?= $this->translate->_('Please enter the primary email id here'); ?>"
                         placeholder="<?= $this->translate->_('Please enter the primary email id here'); ?>"
-                        onblur="checkDuplicate('system_admin', 'primary_email','primaryEmail',null, 'This Email already exists for another Admin. Please try something else.');checkEmailId()" />
+                        onblur="checkDuplicate('system_admin', 'primary_email','primaryEmail',null, '<?= $this->jsTranslate("This Email already exists for another Admin. Please try something else.") ?>');checkEmailId()" />
                 </div>
             </div>
             <div class="form-group">
@@ -205,7 +205,7 @@
         secondaryEmail = document.getElementById("secondaryEmail").value;
         if (secondaryEmail != "") {
             if (primaryEmail == secondaryEmail) {
-                alert("<?= $this->translate->_("Please check your primary email and secondary email"); ?> ");
+                alert("<?= $this->jsTranslate("Please check your primary email and secondary email") ?> ");
                 document.getElementById("secondaryEmail").value = "";
                 $("#secondaryEmail").focus();
                 duplicated = true;

@@ -14,7 +14,7 @@
                 <label class="col-lg-12 control-label"><?= $this->translate->_("Choose a Test to map test kit"); ?>
 
                     <div class="">
-                        <select class="form-control isRequired" name="testStages" id="testStages" title="Please choose a test stage" onchange="getTestKit(this.value)">
+                        <select class="form-control isRequired" name="testStages" id="testStages" title="<?= $this->htmlTranslate("Please choose a test stage") ?>" onchange="getTestKit(this.value)">
                             <option value=""> -- <?= $this->translate->_("Select"); ?> -- </option>
                             <option value="testkit_1"><?= $this->translate->_("HIV Serology - Test 1"); ?></option>
                             <option value="testkit_2"><?= $this->translate->_("HIV Serology - Test 2"); ?></option>
@@ -64,10 +64,10 @@
                 $('#submitdatamanager').removeClass('hide');
                 $('#testKitData').html(data);
                 $('#testKitData').multiSelect("destroy").multiSelect({
-                    selectableFooter: "<div class='custom-header'>Unselected Testkits (<span id='msUnselectedCountHolder'></span>)</div>",
-                    selectionFooter: "<div class='custom-header'>Selected Testkits (<span id='msSelectedCountHolder'></span>)</div>",
-                    selectableHeader: "<input type='text' class='search-input form-control' autocomplete='off' placeholder='Type Testkit Name To Filter'>",
-                    selectionHeader: "<input type='text' class='search-input form-control' autocomplete='off' placeholder='Type Testkit Name To Filter'>",
+                    selectableFooter: "<div class='custom-header'><?= $this->jsTranslate('Unselected Testkits') ?> (<span id='msUnselectedCountHolder'></span>)</div>",
+                    selectionFooter: "<div class='custom-header'><?= $this->jsTranslate('Selected Testkits') ?> (<span id='msSelectedCountHolder'></span>)</div>",
+                    selectableHeader: "<input type='text' class='search-input form-control' autocomplete='off' placeholder='<?= $this->jsTranslate('Type Testkit Name To Filter') ?>'>",
+                    selectionHeader: "<input type='text' class='search-input form-control' autocomplete='off' placeholder='<?= $this->jsTranslate('Type Testkit Name To Filter') ?>'>",
                     afterInit: function(ms) {
                         var that = this,
                             $selectableSearch = that.$selectableUl.prev(),

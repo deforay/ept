@@ -11,8 +11,8 @@
 						class="mandatory">*</span></label>
 				<div class="col-lg-8">
 					<input type="text" id="testPlatformName" name="testPlatformName" size="50" maxlength="255"
-						class="isRequired form-control" title="Please enter the Test Platform Name here"
-						placeholder="Please enter the Test Platform Name here"
+						class="isRequired form-control" title="<?= $this->htmlTranslate("Please enter the Test Platform Name here") ?>"
+						placeholder="<?= $this->htmlTranslate("Please enter the Test Platform Name here") ?>"
 						onblur="checkDuplicate('r_test_type_covid19', 'test_type_id', this, '<?php echo "test_type_id##" . $this->result['test_type_id']; ?>', 'This Test Platform Name already exists for another Test Platform. Please try something else.')"
 						value="<?php echo $this->result['test_type_name']; ?>" />
 				</div>
@@ -23,8 +23,8 @@
 					for="shortTestTypeName"><?= $this->translate->_("Short Test Platform Name"); ?></label>
 				<div class="col-lg-8">
 					<input type="text" id="shortTestTypeName" name="shortTestTypeName" size="50" maxlength="255"
-						class="form-control" title="Please enter the Short Test Platform Name here"
-						placeholder="Please enter the Short Test Platform Name here"
+						class="form-control" title="<?= $this->htmlTranslate("Please enter the Short Test Platform Name here") ?>"
+						placeholder="<?= $this->htmlTranslate("Please enter the Short Test Platform Name here") ?>"
 						value="<?php echo $this->result['test_type_short_name']; ?>" />
 					<input type="hidden" id="testtypeId" name="testtypeId" size="50" maxlength="255"
 						class="form-control" value="<?php echo $this->result['test_type_id']; ?>" />
@@ -37,8 +37,8 @@
 						class="mandatory">*</span></label>
 				<div class="col-lg-8">
 					<input type="text" id="approvalAgency" name="approvalAgency" size="50" maxlength="255"
-						class="isRequired form-control" title="Please enter the approval Agency here"
-						placeholder="Please enter the approval Agency here"
+						class="isRequired form-control" title="<?= $this->htmlTranslate("Please enter the approval Agency here") ?>"
+						placeholder="<?= $this->htmlTranslate("Please enter the approval Agency here") ?>"
 						value="<?php echo $this->result['test_type_approval_agency']; ?>" />
 				</div>
 			</div>
@@ -47,7 +47,7 @@
 						class="mandatory">*</span></label>
 
 				<div class="col-lg-8">
-					<select id="scheme" name="scheme" class="form-control isRequired" title="Please select the Scheme">
+					<select id="scheme" name="scheme" class="form-control isRequired" title="<?= $this->htmlTranslate("Please select the Scheme") ?>">
 						<option value="">--<?= $this->translate->_("Select Scheme"); ?>--</option>
 						<?php foreach ($this->schemeList as $scheme) { ?>
 							<option value="<?php echo $scheme->scheme_id; ?>" <?php echo (isset($this->result['scheme_type']) && $this->result['scheme_type'] == $scheme->scheme_id) ? " selected='selected'" : ""; ?>><?php echo $scheme->scheme_name; ?></option>
@@ -61,8 +61,8 @@
 
 				<div class="col-lg-8">
 					<input type="text" id="sourceReference" name="sourceReference" size="50" maxlength="255"
-						class="form-control" title="Please enter the Source Reference here"
-						placeholder="Please enter the Source Reference here"
+						class="form-control" title="<?= $this->htmlTranslate("Please enter the Source Reference here") ?>"
+						placeholder="<?= $this->htmlTranslate("Please enter the Source Reference here") ?>"
 						value="<?php echo $this->result['source_reference']; ?>" />
 				</div>
 			</div>
@@ -72,8 +72,8 @@
 					for="manufacturer"><?= $this->translate->_("Test Platform Manufacturer"); ?></label>
 				<div class="col-lg-8">
 					<input type="text" id="manufacturer" name="manufacturer" size="50" maxlength="255"
-						class="form-control" title="Please enter the test-platform manufacturer here"
-						placeholder="Please enter the test-platform manufacturer here"
+						class="form-control" title="<?= $this->htmlTranslate("Please enter the test-platform manufacturer here") ?>"
+						placeholder="<?= $this->htmlTranslate("Please enter the test-platform manufacturer here") ?>"
 						value="<?php echo $this->result['test_type_manufacturer']; ?>" />
 				</div>
 			</div>
@@ -91,7 +91,7 @@
 						class="mandatory">*</span></label>
 				<div class="col-lg-8">
 					<select class="form-control isRequired" name="approved" id="approved"
-						title="Please choose the test-platform approved here">
+						title="<?= $this->htmlTranslate("Please choose the test-platform approved here") ?>">
 						<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
 						<option value="1" <?php echo (($this->result["approval"] == '1') ? "selected='selected'" : "") ?>>
 							<?= $this->translate->_("Yes"); ?></option>
@@ -107,7 +107,7 @@
 						class="mandatory">*</span></label>
 				<div class="col-lg-8">
 					<select class="form-control isRequired" name="countryAdapted" id="countryAdapted"
-						title="Please choose the country adapted here">
+						title="<?= $this->htmlTranslate("Please choose the country adapted here") ?>">
 						<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
 						<option value="1" <?php echo (($this->result["country_adapted"] == '1') ? "selected='selected'" : "") ?>><?= $this->translate->_("Yes"); ?></option>
 						<option value="0" <?php echo (($this->result["country_adapted"] == '0') ? "selected='selected'" : "") ?>><?= $this->translate->_("No"); ?></option>

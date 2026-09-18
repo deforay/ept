@@ -88,7 +88,7 @@ $directParticipantLogin = (isset($this->directParticipantLogin) && $this->direct
 
                 <div class="col-lg-8">
                     <input type="text" id="pid" name="pid" size="50" class="isRequired form-control"
-                        title="Please enter the Participant id here" placeholder="Please enter the Participant id here"
+                        title="<?= $this->htmlTranslate("Please enter the Participant id here") ?>" placeholder="<?= $this->htmlTranslate("Please enter the Participant id here") ?>"
                         value="<?php echo $this->participant['unique_identifier']; ?>"
                         onblur="checkDuplicate('participant', 'unique_identifier', this, '<?php echo "participant_id##" . $this->participant['participant_id']; ?>', 'This Participant ID already exists for another Participant. Please try something else.')" />
                 </div>
@@ -103,8 +103,8 @@ $directParticipantLogin = (isset($this->directParticipantLogin) && $this->direct
 
                 <div class="col-lg-8">
                     <input type="text" id="pfname" name="pfname" size="50" maxlength="255" class="form-control"
-                        title="Please enter the First or lab Name or First Name here"
-                        placeholder="Please enter the Lab Name or First Name here"
+                        title="<?= $this->htmlTranslate("Please enter the First or lab Name or First Name here") ?>"
+                        placeholder="<?= $this->htmlTranslate("Please enter the Lab Name or First Name here") ?>"
                         value="<?php echo $this->participant['first_name']; ?>" />
                 </div>
             </div>
@@ -112,8 +112,8 @@ $directParticipantLogin = (isset($this->directParticipantLogin) && $this->direct
                 <label class="col-lg-4 control-label" for="plname"><?= $this->translate->_("Last Name"); ?></label>
 
                 <div class="col-lg-8"><input type="text" id="plname" name="plname" size="50" maxlength="255"
-                        class="form-control" title="Please enter the last name here"
-                        placeholder="Please enter the last name here"
+                        class="form-control" title="<?= $this->htmlTranslate("Please enter the last name here") ?>"
+                        placeholder="<?= $this->htmlTranslate("Please enter the last name here") ?>"
                         value="<?php echo $this->participant['last_name']; ?>" /></div>
             </div>
 
@@ -121,8 +121,8 @@ $directParticipantLogin = (isset($this->directParticipantLogin) && $this->direct
                 <label class="col-lg-4 control-label" for="contactname"><?= $this->translate->_("Contact Person Name"); ?> </label>
 
                 <div class="col-lg-8"><input type="text" id="contactname" name="contactname" size="50" maxlength="255"
-                        class="form-control" title="Please enter the contact name here"
-                        placeholder="Please enter the contact name here"
+                        class="form-control" title="<?= $this->htmlTranslate("Please enter the contact name here") ?>"
+                        placeholder="<?= $this->htmlTranslate("Please enter the contact name here") ?>"
                         value="<?php echo $this->participant['contact_name']; ?>" /></div>
             </div>
 
@@ -131,8 +131,8 @@ $directParticipantLogin = (isset($this->directParticipantLogin) && $this->direct
                         class="mandatory">*</span></label>
 
                 <div class="col-lg-8"><input type="text" id="instituteName" name="instituteName" size="50"
-                        maxlength="255" class="isRequired form-control" title="Please enter the Institute Name here"
-                        placeholder="Please enter the Institute Name here"
+                        maxlength="255" class="isRequired form-control" title="<?= $this->htmlTranslate("Please enter the Institute Name here") ?>"
+                        placeholder="<?= $this->htmlTranslate("Please enter the Institute Name here") ?>"
                         value="<?php echo $this->participant['institute_name']; ?>" /></div>
             </div>
             <div class="form-group col-lg-6">
@@ -140,8 +140,8 @@ $directParticipantLogin = (isset($this->directParticipantLogin) && $this->direct
                         class="mandatory">*</span></label>
 
                 <div class="col-lg-8"><input type="text" id="departmentName" name="departmentName" size="50"
-                        maxlength="255" class="isRequired form-control" title="Please enter the Department Name here"
-                        placeholder="Please enter the Department Name here"
+                        maxlength="255" class="isRequired form-control" title="<?= $this->htmlTranslate("Please enter the Department Name here") ?>"
+                        placeholder="<?= $this->htmlTranslate("Please enter the Department Name here") ?>"
                         value="<?php echo $this->participant['department_name']; ?>" /></div>
             </div>
             <div class="form-group col-lg-6">
@@ -149,16 +149,16 @@ $directParticipantLogin = (isset($this->directParticipantLogin) && $this->direct
                         class="mandatory">*</span></label>
 
                 <div class="col-lg-8"><input type="text" id="pemail" name="pemail" size="50" maxlength="255"
-                        class="isRequired isEmail form-control" title="Please enter the email id here"
+                        class="isRequired isEmail form-control" title="<?= $this->htmlTranslate("Please enter the email id here") ?>"
                         value="<?php echo $this->participant['email']; ?>"
-                        placeholder="Please enter the email id here" /></div>
+                        placeholder="<?= $this->htmlTranslate("Please enter the email id here") ?>" /></div>
             </div>
             <div class="form-group col-lg-6">
                 <label class="col-lg-4 control-label" for="additionalEmail"><?= $this->translate->_("Additional/Alternate E-mail"); ?></label>
 
                 <div class="col-lg-8"><input type="text" id="additionalEmail" name="additionalEmail" size="50"
-                        maxlength="255" class="form-control" title="Please enter the email id here"
-                        placeholder="Please enter the additional email id here"
+                        maxlength="255" class="form-control" title="<?= $this->htmlTranslate("Please enter the email id here") ?>"
+                        placeholder="<?= $this->htmlTranslate("Please enter the additional email id here") ?>"
                         value="<?php echo $this->participant['additional_email']; ?>" />
                     <span
                         class="help"><?= $this->translate->_("(Please enter comma separated multiple emails)"); ?></span>
@@ -192,8 +192,8 @@ $directParticipantLogin = (isset($this->directParticipantLogin) && $this->direct
                 <label class="col-lg-4 control-label" for="address"><?= $this->translate->_("Physical Address"); ?></label>
 
                 <div class="col-lg-8"><textarea id="address" name="address" size="50" class="form-control"
-                        title="Please enter the address here"
-                        placeholder="Please enter the address here"><?php echo $this->participant['address']; ?></textarea>
+                        title="<?= $this->htmlTranslate("Please enter the address here") ?>"
+                        placeholder="<?= $this->htmlTranslate("Please enter the address here") ?>"><?php echo $this->participant['address']; ?></textarea>
                 </div>
             </div>
             <div class="form-group col-lg-6">
@@ -202,7 +202,7 @@ $directParticipantLogin = (isset($this->directParticipantLogin) && $this->direct
 
                 <div class="col-lg-8">
                     <select class="form-control isRequired" name="country" id="country"
-                        title="Please choose the country here">
+                        title="<?= $this->htmlTranslate("Please choose the country here") ?>">
                         <option value=""></option>
                         <?php foreach ($this->countriesList as $cou) { ?>
                             <option value="<?php echo $cou['id']; ?>" <?php echo (isset($this->participant["country"]) && $this->participant["country"] == $cou['id']) ? 'selected="selected"' : ''; ?>>
@@ -217,8 +217,8 @@ $directParticipantLogin = (isset($this->directParticipantLogin) && $this->direct
                     class="col-lg-4 control-label" for="zip"><?= $this->translate->_("Zip/Postal Code (if applicable)"); ?></label>
 
                 <div class="col-lg-8"><input type="text" id="zip" name="zip" size="50" maxlength="255"
-                        class="form-control" title="Please enter the Zip/Postal here"
-                        placeholder="Please enter the Zip/Postal here"
+                        class="form-control" title="<?= $this->htmlTranslate("Please enter the Zip/Postal here") ?>"
+                        placeholder="<?= $this->htmlTranslate("Please enter the Zip/Postal here") ?>"
                         value="<?php echo $this->participant['zip']; ?>" /></div>
             </div>
             <div class="form-group col-lg-6">
@@ -226,8 +226,8 @@ $directParticipantLogin = (isset($this->directParticipantLogin) && $this->direct
                         class="mandatory">*</span></label>
 
                 <div class="col-lg-8"><input type="text" id="state" name="state" size="50" maxlength="255"
-                        class="form-control isRequired" title="Please enter the state here"
-                        placeholder="Please enter the state/province here"
+                        class="form-control isRequired" title="<?= $this->htmlTranslate("Please enter the state here") ?>"
+                        placeholder="<?= $this->htmlTranslate("Please enter the state/province here") ?>"
                         value="<?php echo $this->participant['state']; ?>" /></div>
             </div>
             <div class="form-group col-lg-6">
@@ -235,15 +235,15 @@ $directParticipantLogin = (isset($this->directParticipantLogin) && $this->direct
                         class="mandatory">*</span></label>
 
                 <div class="col-lg-8"><input type="text" id="district" name="district" size="50" maxlength="255"
-                        class="form-control isRequired" title="Please enter the district here"
-                        placeholder="Please enter the district/county here"
+                        class="form-control isRequired" title="<?= $this->htmlTranslate("Please enter the district here") ?>"
+                        placeholder="<?= $this->htmlTranslate("Please enter the district/county here") ?>"
                         value="<?php echo $this->participant['district']; ?>" /></div>
             </div>
             <div class="form-group col-lg-6">
                 <label class="col-lg-4 control-label" for="city"><?= $this->translate->_("City"); ?></label>
 
                 <div class="col-lg-8"><input type="text" id="city" name="city" size="50" maxlength="255"
-                        class="form-control" title="Please enter the city here" placeholder="Please enter the city here"
+                        class="form-control" title="<?= $this->htmlTranslate("Please enter the city here") ?>" placeholder="<?= $this->htmlTranslate("Please enter the city here") ?>"
                         value="<?php echo $this->participant['city']; ?>" /></div>
             </div>
             <div class="form-group col-lg-12 shipping-address-section">
@@ -252,8 +252,8 @@ $directParticipantLogin = (isset($this->directParticipantLogin) && $this->direct
 
                 <div class="col-lg-10">
                     <textarea id="shippingAddress" name="shippingAddress" size="50" class="form-control"
-                        title="Please enter the shipping address here"
-                        placeholder="Please enter the Shipping Address here"><?php echo $this->participant['shipping_address']; ?></textarea>
+                        title="<?= $this->htmlTranslate("Please enter the shipping address here") ?>"
+                        placeholder="<?= $this->htmlTranslate("Please enter the Shipping Address here") ?>"><?php echo $this->participant['shipping_address']; ?></textarea>
                     <span
                         class="help"><?= $this->translate->_("Ship-to address. Use this only if different from the physical address."); ?></span>
                     <label class="checkbox-inline" style="padding-top: 8px;">
@@ -266,7 +266,7 @@ $directParticipantLogin = (isset($this->directParticipantLogin) && $this->direct
                 <label class="col-lg-4 control-label" for="region"><?= $this->translate->_("Region"); ?></label>
                 <div class="col-lg-8">
                     <input type="text" id="region" name="region" size="50" maxlength="255" class="form-control"
-                        title="Please enter region here" placeholder="Please enter the region here"
+                        title="<?= $this->htmlTranslate("Please enter region here") ?>" placeholder="<?= $this->htmlTranslate("Please enter the region here") ?>"
                         value="<?php echo $this->participant['region']; ?>" />
                 </div>
             </div>
@@ -274,8 +274,8 @@ $directParticipantLogin = (isset($this->directParticipantLogin) && $this->direct
             <div class="form-group col-lg-6">
                 <label class="col-lg-4 control-label" for="lat"><?= $this->translate->_("Latitude"); ?></label>
                 <div class="col-lg-8"><input type="text" id="lat" name="lat" size="50" maxlength="255"
-                        class="form-control" title="Please enter the latitude here"
-                        placeholder="Please enter the latitude here" value="<?php echo $this->participant['lat']; ?>" />
+                        class="form-control" title="<?= $this->htmlTranslate("Please enter the latitude here") ?>"
+                        placeholder="<?= $this->htmlTranslate("Please enter the latitude here") ?>" value="<?php echo $this->participant['lat']; ?>" />
                 </div>
             </div>
 
@@ -283,8 +283,8 @@ $directParticipantLogin = (isset($this->directParticipantLogin) && $this->direct
                 <label class="col-lg-4 control-label" for="long"><?= $this->translate->_("Longitude"); ?></label>
 
                 <div class="col-lg-8"><input type="text" id="long" name="long" size="50" maxlength="255"
-                        class="form-control" title="Please enter the longitude here"
-                        placeholder="Please enter the longitude here"
+                        class="form-control" title="<?= $this->htmlTranslate("Please enter the longitude here") ?>"
+                        placeholder="<?= $this->htmlTranslate("Please enter the longitude here") ?>"
                         value="<?php echo $this->participant['long']; ?>" /></div>
             </div>
             <div class="form-group col-lg-6">
@@ -292,7 +292,7 @@ $directParticipantLogin = (isset($this->directParticipantLogin) && $this->direct
 
                 <div class="col-lg-8">
                     <select id="fundingSource" name="fundingSource" class="form-control"
-                        title="Please select the funding source">
+                        title="<?= $this->htmlTranslate("Please select the funding source") ?>">
                         <option value="">--<?= $this->translate->_("Select"); ?>--</option>
                         <option value="government" <?php echo (isset($this->participant['funding_source']) && $this->participant['funding_source'] == 'government') ? 'selected="selected"' : ''; ?>>
                             <?= $this->translate->_("Government"); ?>
@@ -311,8 +311,8 @@ $directParticipantLogin = (isset($this->directParticipantLogin) && $this->direct
 
                 <div class="col-lg-8">
                     <input type="text" id="testingVolume" name="testingVolume" size="50" maxlength="255"
-                        class="form-control" title="Please enter testing volume here"
-                        placeholder="Please enter the testing volume here"
+                        class="form-control" title="<?= $this->htmlTranslate("Please enter testing volume here") ?>"
+                        placeholder="<?= $this->htmlTranslate("Please enter the testing volume here") ?>"
                         value="<?php echo $this->participant['testing_volume']; ?>" />
                 </div>
             </div>
@@ -320,7 +320,7 @@ $directParticipantLogin = (isset($this->directParticipantLogin) && $this->direct
                 <label class="col-lg-4 control-label" for="enrolledProgram"><?= $this->translate->_("Enrolled Programs"); ?> </label>
                 <div class="col-lg-8">
                     <select name="enrolledProgram[]" id="enrolledProgram" multiple="multiple" class="form-control"
-                        data-selected-text-format="count>3" title="Please choose Enrolled Programs">
+                        data-selected-text-format="count>3" title="<?= $this->htmlTranslate("Please choose Enrolled Programs") ?>">
                         <?php
                         $enrolledProg = explode(",", $this->participant['enrolled_prog']);
                         foreach ($this->enrolledPrograms as $enrolledPrograms) { ?>
@@ -347,7 +347,7 @@ $directParticipantLogin = (isset($this->directParticipantLogin) && $this->direct
             <div class="form-group col-lg-6">
                 <label class="col-lg-4 control-label" for="anc"><?= $this->translate->_("ANC"); ?> </label>
                 <div class="col-lg-8">
-                    <select name="anc" id="anc" class="form-control" title="Please choose ANC">
+                    <select name="anc" id="anc" class="form-control" title="<?= $this->htmlTranslate("Please choose ANC") ?>">
                         <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
                         <option value="yes" <?php echo (isset($this->participant['anc']) && $this->participant['anc'] == "yes") ? "selected='selected'" : ""; ?>>
                             <?= $this->translate->_("Yes"); ?>
@@ -362,8 +362,8 @@ $directParticipantLogin = (isset($this->directParticipantLogin) && $this->direct
                 <label class="col-lg-4 control-label"><?= $this->translate->_("PEPFAR ID"); ?> </label>
                 <div class="col-lg-8">
                     <input type="text" value="<?php echo $this->participant['pepfar_id'] ?? null ?>" name="pepfarID"
-                        id="pepfarID" class="form-control" placeholder="Enter the pepfar ID"
-                        title="Please enter the pepfar ID" />
+                        id="pepfarID" class="form-control" placeholder="<?= $this->htmlTranslate("Enter the pepfar ID") ?>"
+                        title="<?= $this->htmlTranslate("Please enter the pepfar ID") ?>" />
                 </div>
             </div>
             <div class="form-group col-lg-6">
@@ -371,14 +371,14 @@ $directParticipantLogin = (isset($this->directParticipantLogin) && $this->direct
 
                 <div class="col-lg-8"><input id="phone1" type="text" id="pphone2" name="pphone2" size="50"
                         maxlength="255" class="form-control isNumeric checkNum"
-                        title="Please enter mobile/cell number here" placeholder="Please enter mobile/cell number here"
+                        title="<?= $this->htmlTranslate("Please enter mobile/cell number here") ?>" placeholder="<?= $this->htmlTranslate("Please enter mobile/cell number here") ?>"
                         value="<?php echo $this->participant['mobile']; ?>" /></div>
             </div>
             <div class="form-group col-lg-6">
                 <label class="col-lg-4 control-label" for="phone2"><?= $this->translate->_("Phone Number"); ?></label>
 
                 <div class="col-lg-8"><input id="phone2" type="text" id="pphone1" name="pphone1" size="50"
-                        maxlength="255" placeholder="Please enter phone number here"
+                        maxlength="255" placeholder="<?= $this->htmlTranslate("Please enter phone number here") ?>"
                         class="form-control isNumeric checkNum" value="<?php echo $this->participant['phone']; ?>" />
                 </div>
             </div>
@@ -388,7 +388,7 @@ $directParticipantLogin = (isset($this->directParticipantLogin) && $this->direct
 
                 <div class="col-lg-8">
                     <select name="network" id="network" class="form-control isRequired"
-                        title="Please choose the network tier">
+                        title="<?= $this->htmlTranslate("Please choose the network tier") ?>">
                         <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
                         <?php foreach ($this->networks as $nw) {
                             ?>
@@ -407,7 +407,7 @@ $directParticipantLogin = (isset($this->directParticipantLogin) && $this->direct
 
                 <div class="col-lg-8">
                     <select name="partAff" id="partAff" class="form-control isRequired"
-                        title="Please choose the affiliation here">
+                        title="<?= $this->htmlTranslate("Please choose the affiliation here") ?>">
                         <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
                         <?php foreach ($this->affiliates as $aff) {
                             ?>
@@ -426,7 +426,7 @@ $directParticipantLogin = (isset($this->directParticipantLogin) && $this->direct
 
                     <div class="col-lg-8">
                         <select id="scheme" name="scheme[]" class="form-control isRequired" multiple="multiple"
-                            title="Please choose one or more Schemes" data-selected-text-format="count>3">
+                            title="<?= $this->htmlTranslate("Please choose one or more Schemes") ?>" data-selected-text-format="count>3">
                             <?php
                             foreach ($this->schemes as $scheme) {
                                 ?>
@@ -446,7 +446,7 @@ $directParticipantLogin = (isset($this->directParticipantLogin) && $this->direct
                         class="mandatory">*</span></label>
                 <div class="col-lg-8">
                     <select type="text" id="status" name="status" class="isRequired form-control"
-                        title="Please select user status here">
+                        title="<?= $this->htmlTranslate("Please select user status here") ?>">
                         <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
                         <option value="active" <?php echo ($this->participant['status'] == "active") ? "selected='selected'" : ""; ?>>
                             <?= $this->translate->_("Active"); ?>
@@ -571,13 +571,13 @@ $directParticipantLogin = (isset($this->directParticipantLogin) && $this->direct
     function checkIndividualParticipant() {
         let isChecked = $('#individualParticipant').is(':checked');
         if (isChecked) {
-            $("#pfnameLabel").text("<?= $this->translate->_("First Name"); ?>");
+            $("#pfnameLabel").text("<?= $this->jsTranslate("First Name"); ?>");
             $("#lastNameDiv").show();
             $("#lastNameDiv").removeClass('hide');
             $("#contactnameDiv").hide();
             $("#contactnameDiv").addClass('hide');
         } else {
-            $("#pfnameLabel").html("<?= $this->translate->_("Lab Name"); ?>");
+            $("#pfnameLabel").html("<?= $this->jsTranslate("Lab Name"); ?>");
             $("#lastNameDiv").hide();
             $("#lastNameDiv").addClass('hide');
             $("#contactnameDiv").show();

@@ -349,7 +349,7 @@ $initials  = strtoupper(
         var l = ($('#last_name').val() || '').trim();
         var initials = (f ? f[0].toUpperCase() : '') + (l ? l[0].toUpperCase() : '');
         $('#avatarCircle').text(initials || 'AD');
-        $('#avatarName').text(((f + ' ' + l).trim()) || 'Admin User');
+        $('#avatarName').text(((f + ' ' + l).trim()) || '<?= $this->jsTranslate('Admin User') ?>');
     }
 
     function checkPasswordMatch() {
@@ -358,15 +358,15 @@ $initials  = strtoupper(
         var hint = $('#pwMatchHint');
         if (cp.length === 0) {
             hint.removeClass('pw-match-ok pw-match-fail')
-                .text('<?= $this->translate->_("Must match the new password."); ?>');
+                .text('<?= $this->jsTranslate("Must match the new password.") ?>');
             return;
         }
         if (np === cp) {
             hint.removeClass('pw-match-fail').addClass('pw-match-ok')
-                .text('<?= $this->translate->_("Passwords match."); ?>');
+                .text('<?= $this->jsTranslate("Passwords match.") ?>');
         } else {
             hint.removeClass('pw-match-ok').addClass('pw-match-fail')
-                .text('<?= $this->translate->_("Passwords do not match."); ?>');
+                .text('<?= $this->jsTranslate("Passwords do not match.") ?>');
         }
     }
 
@@ -376,13 +376,13 @@ $initials  = strtoupper(
 
         if (np !== '' || cp !== '') {
             if ($('#old_password').val() === '') {
-                alert('<?= $this->translate->_("Please enter your current password to change it."); ?>');
+                alert('<?= $this->jsTranslate("Please enter your current password to change it.") ?>');
                 $('#old_password').focus();
                 return false;
             }
             if (!validatePassword('#new_password')) return false;
             if (np !== cp) {
-                alert('<?= $this->translate->_("New password and confirm password must match."); ?>');
+                alert('<?= $this->jsTranslate("New password and confirm password must match.") ?>');
                 $('#confirm_password').focus();
                 return false;
             }

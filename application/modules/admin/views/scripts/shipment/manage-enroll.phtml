@@ -504,7 +504,7 @@
      */
     function removeParticipants(mid, sid) {
         // Confirm action with user
-        if (window.confirm("<?= $this->translate->_("Are you sure you want to remove this participant? This cannot be undone!"); ?>")) {
+        if (window.confirm("<?= $this->jsTranslate("Are you sure you want to remove this participant? This cannot be undone!") ?>")) {
             $.blockUI(); // Show loading overlay
 
             // Send AJAX request to remove participant
@@ -516,9 +516,9 @@
                 function (data) {
                     // Check if removal was successful
                     if (data > 0) {
-                        alert("<?= $this->translate->_("Participant(s) removed successfully. If previously evaluated, you may have to re-evaluate the shipment to ensure the numbers are updated."); ?>");
+                        alert("<?= $this->jsTranslate("Participant(s) removed successfully. If previously evaluated, you may have to re-evaluate the shipment to ensure the numbers are updated.") ?>");
                     } else {
-                        alert("<?= $this->translate->_("Unable to delete. Please try again later or contact system admin for help"); ?>");
+                        alert("<?= $this->jsTranslate("Unable to delete. Please try again later or contact system admin for help") ?>");
                     }
 
                     // Refresh all initialized tables to reflect changes
@@ -604,12 +604,12 @@
     function submitEnrollParticipants(pid, sid) {
         // Validate that at least one participant is selected
         if (pid == "" || pid == null || pid == undefined) {
-            alert("<?= $this->translate->_("You need to select at least one participant to proceed"); ?>");
+            alert("<?= $this->jsTranslate("You need to select at least one participant to proceed") ?>");
             return false;
         }
 
         // Confirm action with user
-        if (window.confirm("<?= $this->translate->_("Are you sure you want to enroll the selected participant(s)? This cannot be undone!"); ?>")) {
+        if (window.confirm("<?= $this->jsTranslate("Are you sure you want to enroll the selected participant(s)? This cannot be undone!") ?>")) {
             $.blockUI(); // Show loading overlay
 
             // Send AJAX request to enroll participants
@@ -621,7 +621,7 @@
                 function (data) {
                     // Check if enrollment was successful
                     if (data > 0) {
-                        alert('<?= $this->translate->_("Participant(s) enrolled successfully"); ?>');
+                        alert('<?= $this->jsTranslate("Participant(s) enrolled successfully") ?>');
                     }
 
                     // Refresh all initialized tables to reflect changes
@@ -657,7 +657,7 @@
             function (data) {
                 // Check if file was generated successfully
                 if (data == "" || data == null || data == undefined) {
-                    alert('<?= $this->translate->_("Unable to generate download"); ?>');
+                    alert('<?= $this->jsTranslate("Unable to generate download") ?>');
                 } else {
                     // Trigger download by redirecting to temporary file location
                     document.location.href = '/temporary/' + data;
@@ -683,7 +683,7 @@
             function (data) {
                 // Check if file was generated successfully
                 if (data == "" || data == null || data == undefined) {
-                    alert('<?= $this->translate->_("Unable to generate download"); ?>');
+                    alert('<?= $this->jsTranslate("Unable to generate download") ?>');
                 } else {
                     // Trigger download by redirecting to temporary file location
                     document.location.href = '/temporary/' + data;
@@ -729,29 +729,29 @@
                 });
 
                 if (emails.length === 0) {
-                    alert("<?= $this->translate->_("No valid email addresses found for this selection"); ?>");
+                    alert("<?= $this->jsTranslate("No valid email addresses found for this selection") ?>");
                     return;
                 }
 
                 copyTextToClipboard(emails.join(", "), function (copied) {
                     if (copied) {
-                        var summary = emails.length + " <?= $this->translate->_("unique email address(es) copied to clipboard"); ?>";
+                        var summary = emails.length + " <?= $this->jsTranslate("unique email address(es) copied to clipboard") ?>";
                         if (scope === 'ptcc') {
-                            summary += " (<?= $this->translate->_("PTCC"); ?>)";
+                            summary += " (<?= $this->jsTranslate("PTCC") ?>)";
                         } else {
-                            summary += " (" + participantEmails.length + " <?= $this->translate->_("participant"); ?>, " +
-                                dataManagerEmails.length + " <?= $this->translate->_("data manager"); ?>)";
+                            summary += " (" + participantEmails.length + " <?= $this->jsTranslate("participant") ?>, " +
+                                dataManagerEmails.length + " <?= $this->jsTranslate("data manager") ?>)";
                         }
                         alert(summary);
                     } else {
                         // Clipboard access denied - let the user copy manually
-                        window.prompt("<?= $this->translate->_("Press Ctrl+C / Cmd+C to copy"); ?>", emails.join(", "));
+                        window.prompt("<?= $this->jsTranslate("Press Ctrl+C / Cmd+C to copy") ?>", emails.join(", "));
                     }
                 });
             }, "json")
             .fail(function () {
                 $.unblockUI();
-                alert("<?= $this->translate->_("Unable to fetch email addresses. Please try again later or contact system admin for help"); ?>");
+                alert("<?= $this->jsTranslate("Unable to fetch email addresses. Please try again later or contact system admin for help") ?>");
             });
     }
 

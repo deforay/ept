@@ -219,12 +219,12 @@
         }).then(function (r) { return r.json().then(function (j) { return { ok: r.ok, json: j }; }); })
           .then(function (res) {
               if (!res.ok || !res.json.ok) {
-                  alert('Delete failed: ' + (res.json.error || 'unknown'));
+                  alert('<?= $this->jsTranslate("Delete failed: ") ?>' + (res.json.error || '<?= $this->jsTranslate("unknown") ?>'));
                   return;
               }
               if (typeof onDone === 'function') { onDone(res.json); }
           })
-          .catch(function () { alert('Delete failed (network).'); });
+          .catch(function () { alert('<?= $this->jsTranslate("Delete failed (network)."); ?>'); });
     }
 
     // Honour a deep-link like ?q=ERR-... (e.g. the "View Logs" button on the

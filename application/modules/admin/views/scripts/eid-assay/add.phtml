@@ -9,7 +9,7 @@
                         class="mandatory">*</span></label>
 
                 <div class="col-lg-5">
-                    <select id="category" name="category" class="isRequired form-control" title="Please select category"
+                    <select id="category" name="category" class="isRequired form-control" title="<?= $this->htmlTranslate("Please select category") ?>"
                         onchange="getCategoryValue(this.value);">
                         <option value=""> -- <?= $this->translate->_("Select"); ?> -- </option>
                         <option value="extraction" <?php echo ($this->source == "extraction") ? "selected='selected'" : ""; ?>><?= $this->translate->_("Extraction"); ?></option>
@@ -22,7 +22,7 @@
                         class="mandatory">*</span></label>
 
                 <div class="col-lg-5"><input type="text" id="name" name="name" class="isRequired form-control"
-                        title="Please enter the name here" placeholder="Please enter the name here" /></div>
+                        title="<?= $this->htmlTranslate("Please enter the name here") ?>" placeholder="<?= $this->htmlTranslate("Please enter the name here") ?>" /></div>
             </div>
             <br>
             <div id="respond" style="margin: 0px auto 0px auto; text-align: center;" align="center">
@@ -68,9 +68,9 @@
     function getCategoryValue(Val) {
         $("#name").val("");
         if (Val == "extraction") {
-            $("#name").attr("onblur", "checkDuplicate('r_eid_extraction_assay','name','name',null, 'The name that you entered already exist. Please try something else.')");
+            $("#name").attr("onblur", "checkDuplicate('r_eid_extraction_assay','name','name',null, '<?= $this->jsTranslate('The name that you entered already exist. Please try something else.') ?>')");
         } else if (Val == "detection") {
-            $("#name").attr("onblur", "checkDuplicate('r_eid_detection_assay','name','name',null, 'The name that you entered already exist. Please try something else.')");
+            $("#name").attr("onblur", "checkDuplicate('r_eid_detection_assay','name','name',null, '<?= $this->jsTranslate('The name that you entered already exist. Please try something else.') ?>')");
         } else {
             $("#name").removeAttr("onblur");
         }

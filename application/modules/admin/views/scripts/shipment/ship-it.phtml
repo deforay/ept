@@ -254,34 +254,34 @@
 				$("#listNameField").hide();
 		});
 		$('#participantList').select2({
-			placeholder: "<?= $this->translate->_('Choose a saved list to auto-select its participants'); ?>",
+			placeholder: "<?= $this->jsTranslate('Choose a saved list to auto-select its participants') ?>",
 			allowClear: true
 		});
 		$('#copyFromShipment').select2({
-			placeholder: "<?= $this->translate->_('Choose a previous shipment to copy its participants'); ?>",
+			placeholder: "<?= $this->jsTranslate('Choose a previous shipment to copy its participants') ?>",
 			allowClear: true
 		});
 		$("#city").select2({
-			placeholder: "<?= $this->translate->_("Select one or more cities"); ?>",
+			placeholder: "<?= $this->jsTranslate("Select one or more cities") ?>",
 			allowClear: true
 		});
 		$("#state").select2({
-			placeholder: "<?= $this->translate->_("Select one or more provinces"); ?>",
+			placeholder: "<?= $this->jsTranslate("Select one or more provinces") ?>",
 			allowClear: true
 		});
 
 		$("#region").select2({
-			placeholder: "<?= $this->translate->_("Select one or more regions"); ?>",
+			placeholder: "<?= $this->jsTranslate("Select one or more regions") ?>",
 			allowClear: true
 		});
 
 		$("#district").select2({
-			placeholder: "<?= $this->translate->_("Select one or more districts"); ?>",
+			placeholder: "<?= $this->jsTranslate("Select one or more districts") ?>",
 			allowClear: true
 		});
 
 		$("#country").select2({
-			placeholder: "<?= $this->translate->_("Select one or more countries"); ?>",
+			placeholder: "<?= $this->jsTranslate("Select one or more countries") ?>",
 			allowClear: true
 		});
 
@@ -311,7 +311,7 @@
 		<?php if (isset($this->participantListsName) && count($this->participantListsName) > 0) { ?>
 			$('#participants').on('change', function() {
 				if ($("#participantList").val() != "" && updateList) {
-					if (!confirm("<?= $this->translate->_("Are you sure! You want to update this list to selected participant list name?"); ?>")) {
+					if (!confirm("<?= $this->jsTranslate("Are you sure! You want to update this list to selected participant list name?") ?>")) {
 						$("#participantList").val('');
 					}
 				}
@@ -345,7 +345,7 @@
 
 		$(_elements).each(function(i, e) {
 			$("#" + _elements[i]).select2({
-				placeholder: "<?= $this->translate->_("Choose one or more option(s)"); ?>",
+				placeholder: "<?= $this->jsTranslate("Choose one or more option(s)") ?>",
 				minimumInputLength: _minInputLength[i],
 				width: '100%',
 				allowClear: true,
@@ -353,7 +353,7 @@
 					return bond._id;
 				},
 				ajax: {
-					placeholder: "<?= $this->translate->_("Type list to search"); ?>",
+					placeholder: "<?= $this->jsTranslate("Type list to search") ?>",
 					url: "<?php echo $this->url(array('module' => 'reports', 'controller' => 'common', 'action' => 'get-ajax-drop-downs')); ?>",
 					dataType: 'json',
 					delay: 250,
@@ -391,7 +391,7 @@
 		if ($("#participantList").val() != "" && $("#listName").val() != "") {
 			if ($("#participantList").find('option:selected').text() != $("#listName").val()) {
 				$("#listName").focus();
-				if (confirm("<?= $this->translate->_("Are you sure! You want to update the participant list name?"); ?>")) {
+				if (confirm("<?= $this->jsTranslate("Are you sure! You want to update the participant list name?") ?>")) {
 					$("#participantListId").val($("#participantList").val());
 				} else {
 					$("#participantList").val('');
@@ -453,7 +453,7 @@
 		let hasPreset = presetVal && presetVal.length;
 		let hasShipment = shipmentVal && $.trim(shipmentVal) != '';
 		if (!hasPreset && !hasShipment) {
-			alert("<?= $this->translate->_('Choose a preset list or an existing shipment first.'); ?>");
+			alert("<?= $this->jsTranslate('Choose a preset list or an existing shipment first.') ?>");
 			return;
 		}
 		if (hasPreset && hasShipment) {
@@ -513,7 +513,7 @@
 				if (data != "" && data != undefined) {
 					VirtualDualList.get('#participants').addSelectedIds(data.split(","));
 				} else {
-					alert("<?= $this->translate->_('That shipment has no participants to copy.'); ?>");
+					alert("<?= $this->jsTranslate('That shipment has no participants to copy.') ?>");
 				}
 				$.unblockUI();
 			});

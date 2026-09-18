@@ -9,7 +9,7 @@
             <div class="row singleMap">
                 <label class="col-lg-4 control-label" for="allparticipant"><?= $this->translate->_("Choose a Data Manager (Participant Login)"); ?> <span class="mandatory">*</span></label>
                 <div class="col-lg-8">
-                    <select class="select2" style="width:60%;" name="allparticipant" id="allparticipant" placeholder="Please choose a participant" title="Please choose a participant" onchange="getParticipantDirectories();"></select>
+                    <select class="select2" style="width:60%;" name="allparticipant" id="allparticipant" placeholder="<?= $this->htmlTranslate("Please choose a participant") ?>" title="<?= $this->htmlTranslate("Please choose a participant") ?>" onchange="getParticipantDirectories();"></select>
                 </div>
             </div>
         </div>
@@ -23,7 +23,7 @@
             </div>
         </div>
         <br />
-        <select class="isRequired" id="participants" name="participants[]" multiple="multiple" title="Please select the participants to map">
+        <select class="isRequired" id="participants" name="participants[]" multiple="multiple" title="<?= $this->htmlTranslate("Please select the participants to map") ?>">
         </select>
         <br />
         <input type="hidden" id='datamanagerId' name='datamanagerId' />
@@ -37,7 +37,7 @@
     <div id="bulkForm" class="row bulkForm" style="display:none;">
         <label class="col-lg-3 control-label" style="height: 40px;"><?= $this->translate->_("Upload Bulk Importing Map File"); ?></label>
         <div class="col-lg-6">
-            <input class="form-control" style="width:100%;" name="bulkMap" id="bulkMap" type="file" placeholder="Upload mapping file" title="Please choose a file to upload" />
+            <input class="form-control" style="width:100%;" name="bulkMap" id="bulkMap" type="file" placeholder="<?= $this->htmlTranslate("Upload mapping file") ?>" title="<?= $this->htmlTranslate("Please choose a file to upload") ?>" />
         </div>
         <input name="submitbtn" class="btn btn-primary" type="button" onclick="validateNow(); return false;" tabindex="7" value="<?= $this->translate->_("Upload"); ?>" />
         <input type="button" onclick="window.location.href = '<?php echo $this->url(array('module' => 'admin', 'controller' => 'participants', 'action' => 'participant-manager-map'), 'default', true); ?>'" class="btn btn-danger" value="<?= $this->translate->_("Cancel"); ?>" />
@@ -77,12 +77,12 @@
 
     $(document).ready(function() {
         $("#allparticipant").select2({
-            placeholder: "<?= $this->translate->_("Choose one or more Participant(s)"); ?>",
+            placeholder: "<?= $this->jsTranslate("Choose one or more Participant(s)"); ?>",
             minimumInputLength: 3,
             width: '100%',
             allowClear: true,
             ajax: {
-                placeholder: "<?= $this->translate->_("Type participant name to search"); ?>",
+                placeholder: "<?= $this->jsTranslate("Type participant name to search"); ?>",
                 url: "<?php echo $this->url(array('module' => 'admin', 'controller' => 'data-managers', 'action' => 'get-participants-names')); ?>",
                 dataType: 'json',
                 delay: 250,

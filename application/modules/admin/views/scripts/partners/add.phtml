@@ -5,12 +5,12 @@
             <div class="form-group">
                 <label class="col-lg-3 control-label" for="partnerName"><?= $this->translate->_("Partner Name"); ?> <span class="mandatory">*</span></label>
 
-                <div class="col-lg-5"><textarea id="partnerName" name="partnerName" class="isRequired form-control" title="Please enter the partner name here" placeholder="Please enter the partner name here" onblur="checkDuplicate('partners', 'partner_name','partnerName',null, 'The name that you entered already exist. Please try something else.');"></textarea></div>
+                <div class="col-lg-5"><textarea id="partnerName" name="partnerName" class="isRequired form-control" title="<?= $this->htmlTranslate("Please enter the partner name here") ?>" placeholder="<?= $this->htmlTranslate("Please enter the partner name here") ?>" onblur="checkDuplicate('partners', 'partner_name','partnerName',null, '<?= $this->jsTranslate('The name that you entered already exist. Please try something else.') ?>');"></textarea></div>
             </div>
             <div class="form-group">
                 <label class="col-lg-3 control-label"><?= $this->translate->_("Link"); ?> <br>eg: https://ept.vlsmartconnect.com/</label>
 
-                <div class="col-lg-5"><input type="text" id="link" name="link" class="form-control" title="Please enter the link here" placeholder="Please enter the link here" />
+                <div class="col-lg-5"><input type="text" id="link" name="link" class="form-control" title="<?= $this->htmlTranslate("Please enter the link here") ?>" placeholder="<?= $this->htmlTranslate("Please enter the link here") ?>" />
                 </div>
             </div>
             <br>

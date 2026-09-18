@@ -924,12 +924,12 @@ $faqResults = $this->faq;
 	}
 
 	function deleteLogo(field, filename) {
-		if (confirm('<?= $this->translate->_("Are you sure you want to delete this logo?"); ?>')) {
+		if (confirm('<?= $this->jsTranslate("Are you sure you want to delete this logo?") ?>')) {
 			$('#delete_' + field).val(filename);
 			// Hide the current logo preview and show placeholder
 			var container = $('#' + field).closest('.fileupload');
 			container.find('.fileupload-new.thumbnail img').remove();
-			container.find('.fileupload-new.thumbnail').html('<span class="text-muted" style="text-align: center;"><i class="icon-picture" style="font-size: 30px;"></i><br><?= $this->translate->_("No logo"); ?></span>');
+			container.find('.fileupload-new.thumbnail').html('<span class="text-muted" style="text-align: center;"><i class="icon-picture" style="font-size: 30px;"></i><br><?= $this->jsTranslate("No logo") ?></span>');
 			// Hide the delete button
 			container.find('a[onclick^="deleteLogo"]').hide();
 		}
@@ -938,14 +938,14 @@ $faqResults = $this->faq;
 	function addTbRow(obj) {
 		let html = '<tr>\
 			<td>\
-				<textarea name="faqQuestions[]" class="form-control input-sm" placeholder="<?= $this->translate->_("Enter the question"); ?>"></textarea>\
+				<textarea name="faqQuestions[]" class="form-control input-sm" placeholder="<?= $this->jsTranslate("Enter the question") ?>"></textarea>\
 			</td>\
 			<td>\
-				<textarea name="faqAnswers[]" class="form-control input-sm" placeholder="<?= $this->translate->_("Enter the answer"); ?>"></textarea>\
+				<textarea name="faqAnswers[]" class="form-control input-sm" placeholder="<?= $this->jsTranslate("Enter the answer") ?>"></textarea>\
 			</td>\
 			<td>\
-				<a href="javascript:void(0);" onclick="addTbRow(this);" class="btn btn-xs btn-info" title="<?= $this->translate->_("Add row"); ?>"><i class="icon-plus"></i></a>\
-				&nbsp;&nbsp;<a href="javascript:void(0);" onclick="removeRow(this)" class="btn btn-xs btn-danger" title="<?= $this->translate->_("Remove row"); ?>"><i class="icon-minus"></i></a>\
+				<a href="javascript:void(0);" onclick="addTbRow(this);" class="btn btn-xs btn-info" title="<?= $this->jsTranslate("Add row") ?>"><i class="icon-plus"></i></a>\
+				&nbsp;&nbsp;<a href="javascript:void(0);" onclick="removeRow(this)" class="btn btn-xs btn-danger" title="<?= $this->jsTranslate("Remove row") ?>"><i class="icon-minus"></i></a>\
 			</td>\
 		</tr>';
 		$(obj.parentNode.parentNode).after(html);

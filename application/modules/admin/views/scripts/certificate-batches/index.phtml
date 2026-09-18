@@ -138,7 +138,7 @@
         </td>
         <td>
             <input type="text" id="dateRange" name="dateRange" class="form-control input-sm" readonly="readonly"
-                style="background: #fff" placeholder="Click to select date range" />
+                style="background: #fff" placeholder="<?= $this->htmlTranslate("Click to select date range") ?>" />
         </td>
         <td>
             <button class="btn btn-danger btn-sm" onclick="resetFilters()">
@@ -324,20 +324,20 @@
         // Show first 2 and a count
         var html = '<span class="label label-default">' + escapeHtml(codes[0].trim()) + '</span> ';
         html += '<span class="label label-default">' + escapeHtml(codes[1].trim()) + '</span> ';
-        html += '<span class="text-muted">+' + (codes.length - 2) + ' more</span>';
+        html += '<span class="text-muted">+' + (codes.length - 2) + ' <?= $this->jsTranslate("more") ?></span>';
         return html;
     }
 
     function formatStatusBadge(status) {
         var statusConfig = {
-            'pending': { cls: 'batch-status-pending', icon: 'icon-clock', label: 'Pending' },
-            'generating': { cls: 'batch-status-generating', icon: 'icon-spinner icon-spin', label: 'Generating' },
-            'generated': { cls: 'batch-status-generated', icon: 'icon-ok', label: 'Generated' },
-            'approved': { cls: 'batch-status-approved', icon: 'icon-thumbs-up', label: 'Approved' },
-            'distributed': { cls: 'batch-status-distributed', icon: 'icon-envelope', label: 'Distributed' },
-            'failed': { cls: 'batch-status-failed', icon: 'icon-remove', label: 'Failed' },
-            'rejected': { cls: 'batch-status-failed', icon: 'icon-ban-circle', label: 'Rejected' },
-            'cancelled': { cls: 'batch-status-cancelled', icon: 'icon-ban-circle', label: 'Cancelled' }
+            'pending': { cls: 'batch-status-pending', icon: 'icon-clock', label: '<?= $this->jsTranslate('Pending') ?>' },
+            'generating': { cls: 'batch-status-generating', icon: 'icon-spinner icon-spin', label: '<?= $this->jsTranslate('Generating') ?>' },
+            'generated': { cls: 'batch-status-generated', icon: 'icon-ok', label: '<?= $this->jsTranslate('Generated') ?>' },
+            'approved': { cls: 'batch-status-approved', icon: 'icon-thumbs-up', label: '<?= $this->jsTranslate('Approved') ?>' },
+            'distributed': { cls: 'batch-status-distributed', icon: 'icon-envelope', label: '<?= $this->jsTranslate('Distributed') ?>' },
+            'failed': { cls: 'batch-status-failed', icon: 'icon-remove', label: '<?= $this->jsTranslate('Failed') ?>' },
+            'rejected': { cls: 'batch-status-failed', icon: 'icon-ban-circle', label: '<?= $this->jsTranslate('Rejected') ?>' },
+            'cancelled': { cls: 'batch-status-cancelled', icon: 'icon-ban-circle', label: '<?= $this->jsTranslate('Cancelled') ?>' }
         };
 
         var config = statusConfig[status] || { cls: 'batch-status-pending', icon: 'icon-question', label: status };
@@ -361,13 +361,13 @@
 
         var timeAgo = '';
         if (diff < 60) {
-            timeAgo = diff + 's ago';
+            timeAgo = diff + '<?= $this->jsTranslate('s ago') ?>';
         } else if (diff < 3600) {
-            timeAgo = Math.floor(diff / 60) + 'm ago';
+            timeAgo = Math.floor(diff / 60) + '<?= $this->jsTranslate('m ago') ?>';
         } else if (diff < 86400) {
-            timeAgo = Math.floor(diff / 3600) + 'h ago';
+            timeAgo = Math.floor(diff / 3600) + '<?= $this->jsTranslate('h ago') ?>';
         } else {
-            timeAgo = Math.floor(diff / 86400) + 'd ago';
+            timeAgo = Math.floor(diff / 86400) + '<?= $this->jsTranslate('d ago') ?>';
         }
 
         // Format as readable date
@@ -382,22 +382,22 @@
 
         // Download ZIP button (if download_url exists)
         if (row.download_url) {
-            actions.push('<a href="' + row.download_url + '" class="btn btn-success btn-action" target="_blank" title="Download ZIP">' +
-                '<i class="icon-download"></i> Download</a>');
+            actions.push('<a href="' + row.download_url + '" class="btn btn-success btn-action" target="_blank" title="<?= $this->jsTranslate("Download ZIP") ?>">' +
+                '<i class="icon-download"></i> <?= $this->jsTranslate("Download") ?></a>');
         }
 
         // Approve & Distribute button (if status is generated)
         if (row.status === 'generated') {
-            actions.push('<button class="btn btn-primary btn-action" onclick="approveBatch(' + row.batch_id + ')" title="Approve and distribute certificates">' +
-                '<i class="icon-ok"></i> Approve</button>');
-            actions.push('<button class="btn btn-danger btn-action" onclick="rejectBatch(' + row.batch_id + ')" title="Reject this batch">' +
-                '<i class="icon-remove"></i> Reject</button>');
+            actions.push('<button class="btn btn-primary btn-action" onclick="approveBatch(' + row.batch_id + ')" title="<?= $this->jsTranslate("Approve and distribute certificates") ?>">' +
+                '<i class="icon-ok"></i> <?= $this->jsTranslate("Approve") ?></button>');
+            actions.push('<button class="btn btn-danger btn-action" onclick="rejectBatch(' + row.batch_id + ')" title="<?= $this->jsTranslate("Reject this batch") ?>">' +
+                '<i class="icon-remove"></i> <?= $this->jsTranslate("Reject") ?></button>');
         }
 
         // Cancel button (if status is pending or generating)
         if (row.status === 'pending' || row.status === 'generating') {
-            actions.push('<button class="btn btn-danger btn-action" onclick="cancelBatch(' + row.batch_id + ')" title="Cancel this batch">' +
-                '<i class="icon-remove"></i> Cancel</button>');
+            actions.push('<button class="btn btn-danger btn-action" onclick="cancelBatch(' + row.batch_id + ')" title="<?= $this->jsTranslate("Cancel this batch") ?>">' +
+                '<i class="icon-remove"></i> <?= $this->jsTranslate("Cancel") ?></button>');
         }
 
         if (actions.length === 0) {
@@ -418,7 +418,7 @@
     }
 
     function approveBatch(batchId) {
-        if (!confirm('Are you sure you want to approve this batch and schedule certificate distribution?\n\nThis will send certificates to all participants via email.')) {
+        if (!confirm('<?= $this->jsTranslate('Are you sure you want to approve this batch and schedule certificate distribution?\n\nThis will send certificates to all participants via email.') ?>')) {
             return;
         }
 
@@ -431,20 +431,20 @@
             dataType: 'json',
             success: function (response) {
                 if (response.success) {
-                    alert('Certificates approved and distribution scheduled successfully.');
+                    alert('<?= $this->jsTranslate('Certificates approved and distribution scheduled successfully.') ?>');
                     refreshBatches();
                 } else {
-                    alert('Failed to approve batch: ' + response.message);
+                    alert('<?= $this->jsTranslate('Failed to approve batch: ') ?>' + response.message);
                 }
             },
             error: function () {
-                alert('Error approving batch. Please try again.');
+                alert('<?= $this->jsTranslate('Error approving batch. Please try again.') ?>');
             }
         });
     }
 
     function cancelBatch(batchId) {
-        if (!confirm('Are you sure you want to cancel this batch?')) {
+        if (!confirm('<?= $this->jsTranslate('Are you sure you want to cancel this batch?') ?>')) {
             return;
         }
 
@@ -457,20 +457,20 @@
             dataType: 'json',
             success: function (response) {
                 if (response.success) {
-                    alert('Batch cancelled successfully.');
+                    alert('<?= $this->jsTranslate('Batch cancelled successfully.') ?>');
                     refreshBatches();
                 } else {
-                    alert('Failed to cancel batch: ' + response.message);
+                    alert('<?= $this->jsTranslate('Failed to cancel batch: ') ?>' + response.message);
                 }
             },
             error: function () {
-                alert('Error cancelling batch. Please try again.');
+                alert('<?= $this->jsTranslate('Error cancelling batch. Please try again.') ?>');
             }
         });
     }
 
     function rejectBatch(batchId) {
-        if (!confirm('Are you sure you want to reject this batch?\n\nThe certificates will NOT be distributed to participants.')) {
+        if (!confirm('<?= $this->jsTranslate('Are you sure you want to reject this batch?\n\nThe certificates will NOT be distributed to participants.') ?>')) {
             return;
         }
 
@@ -483,14 +483,14 @@
             dataType: 'json',
             success: function (response) {
                 if (response.success) {
-                    alert('Batch rejected successfully.');
+                    alert('<?= $this->jsTranslate('Batch rejected successfully.') ?>');
                     refreshBatches();
                 } else {
-                    alert('Failed to reject batch: ' + response.message);
+                    alert('<?= $this->jsTranslate('Failed to reject batch: ') ?>' + response.message);
                 }
             },
             error: function () {
-                alert('Error rejecting batch. Please try again.');
+                alert('<?= $this->jsTranslate('Error rejecting batch. Please try again.') ?>');
             }
         });
     }
@@ -537,10 +537,10 @@
         var $indicator = $('#autoRefreshIndicator');
         if (hasActiveBatches) {
             $indicator.removeClass('auto-refresh-paused');
-            $indicator.html('<i class="icon-refresh icon-spin"></i> <?= $this->translate->_("Auto-refreshing every 5 seconds"); ?>');
+            $indicator.html('<i class="icon-refresh icon-spin"></i> <?= $this->jsTranslate("Auto-refreshing every 5 seconds") ?>');
         } else {
             $indicator.removeClass('auto-refresh-paused');
-            $indicator.html('<i class="icon-refresh icon-spin"></i> <?= $this->translate->_("Auto-refreshing every 5 seconds"); ?>');
+            $indicator.html('<i class="icon-refresh icon-spin"></i> <?= $this->jsTranslate("Auto-refreshing every 5 seconds") ?>');
         }
     }
 

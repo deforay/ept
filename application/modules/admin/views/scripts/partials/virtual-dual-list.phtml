@@ -79,15 +79,15 @@
         }
         $container.addClass('vdl-wrapper').empty();
 
-        var filterPh  = this.opts.filterPlaceholder || 'Type to filter';
-        var leftLbl   = this.opts.unselectedLabel    || 'Unselected';
-        var rightLbl  = this.opts.selectedLabel      || 'Selected';
-        var pendingAddLbl    = this.opts.pendingAddLabel    || 'pending add';
-        var pendingRemoveLbl = this.opts.pendingRemoveLabel || 'pending remove';
+        var filterPh  = this.opts.filterPlaceholder || '<?= $this->jsTranslate('Type to filter') ?>';
+        var leftLbl   = this.opts.unselectedLabel    || '<?= $this->jsTranslate('Unselected') ?>';
+        var rightLbl  = this.opts.selectedLabel      || '<?= $this->jsTranslate('Selected') ?>';
+        var pendingAddLbl    = this.opts.pendingAddLabel    || '<?= $this->jsTranslate('pending add') ?>';
+        var pendingRemoveLbl = this.opts.pendingRemoveLabel || '<?= $this->jsTranslate('pending remove') ?>';
         var showLegend = this.opts.showLegend !== false;
-        var legendSaved   = this.opts.legendSaved   || 'Saved (already selected)';
-        var legendAdded   = this.opts.legendAdded   || 'Pending add (save to apply)';
-        var legendRemoved = this.opts.legendRemoved || 'Pending remove (save to apply)';
+        var legendSaved   = this.opts.legendSaved   || '<?= $this->jsTranslate('Saved (already selected)') ?>';
+        var legendAdded   = this.opts.legendAdded   || '<?= $this->jsTranslate('Pending add (save to apply)') ?>';
+        var legendRemoved = this.opts.legendRemoved || '<?= $this->jsTranslate('Pending remove (save to apply)') ?>';
 
         var legendHtml = '';
         if (showLegend) {

@@ -24,7 +24,7 @@ if ($this->admin['privileges'] != "") {
                 <label class="col-lg-3 control-label" for="primaryEmail"><?= $this->translate->_("Primary Email"); ?> <span class="mandatory">*</span></label>
 
                 <div class="col-lg-5">
-                    <input type="text" id="primaryEmail" name="primaryEmail" size="50" class="isRequired form-control isEmail" title="<?= $this->translate->_("Please enter the primary email id here"); ?>" placeholder="<?= $this->translate->_("Please enter primary email id"); ?>" value="<?php echo $this->admin['primary_email']; ?>" onblur="checkDuplicate('system_admin', 'primary_email','primaryEmail','<?php echo "admin_id##" . $this->admin['admin_id']; ?>', 'This Email already exists for another Admin. Please try something else.');checkEmailId();" />
+                    <input type="text" id="primaryEmail" name="primaryEmail" size="50" class="isRequired form-control isEmail" title="<?= $this->translate->_("Please enter the primary email id here"); ?>" placeholder="<?= $this->translate->_("Please enter primary email id"); ?>" value="<?php echo $this->admin['primary_email']; ?>" onblur="checkDuplicate('system_admin', 'primary_email','primaryEmail','<?php echo "admin_id##" . $this->admin['admin_id']; ?>', '<?= $this->jsTranslate("This Email already exists for another Admin. Please try something else.") ?>');checkEmailId();" />
                 </div>
             </div>
             <div class="form-group">
@@ -163,7 +163,7 @@ if ($this->admin['privileges'] != "") {
         secondaryEmail = document.getElementById("secondaryEmail").value;
         if (secondaryEmail != "") {
             if (primaryEmail == secondaryEmail) {
-                alert("<?= $this->translate->_("Please check your primary email and secondary email"); ?>");
+                alert("<?= $this->jsTranslate("Please check your primary email and secondary email") ?>");
                 document.getElementById("secondaryEmail").value = "";
                 $("#secondaryEmail").focus();
                 duplicated = true;

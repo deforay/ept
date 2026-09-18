@@ -4,14 +4,14 @@
             <div class="form-group">
                 <label class="col-lg-3 control-label" for="title"><?= $this->translate->_("Title"); ?><span class="mandatory">*</span></label>
                 <div class="col-lg-6">
-                    <input value="<?php echo $this->result['notify_title']; ?>" type="text" id="title<?php echo $this->purpose; ?>" name="title" class="isRequired form-control" title="Please enter a push notification title" placeholder="Enter the push notification title" />
+                    <input value="<?php echo $this->result['notify_title']; ?>" type="text" id="title<?php echo $this->purpose; ?>" name="title" class="isRequired form-control" title="<?= $this->htmlTranslate("Please enter a push notification title") ?>" placeholder="<?= $this->htmlTranslate("Enter the push notification title") ?>" />
                 </div>
             </div>
 
             <div class="form-group">
                 <label class="col-lg-3 control-label" for="msgBody"><?= $this->translate->_("Push Notification Message"); ?><span class="mandatory">*</span></label>
                 <div class="col-lg-6">
-                    <textarea type="text" id="msgBody<?php echo $this->purpose; ?>" name="msgBody" class="isRequired form-control" title="Please enter a push notification message" placeholder="Enter the push notification message"><?php echo $this->result['notify_body']; ?></textarea>
+                    <textarea type="text" id="msgBody<?php echo $this->purpose; ?>" name="msgBody" class="isRequired form-control" title="<?= $this->htmlTranslate("Please enter a push notification message") ?>" placeholder="<?= $this->htmlTranslate("Enter the push notification message") ?>"><?php echo $this->result['notify_body']; ?></textarea>
                 </div>
             </div>
 
@@ -29,14 +29,14 @@
             <div class="form-group">
                 <label class="col-lg-3 control-label" for="dataMsg"><?= $this->translate->_("Data Message"); ?></label>
                 <div class="col-lg-6">
-                    <textarea type="text" id="dataMsg<?php echo $this->purpose; ?>" name="dataMsg" class="richtextarea form-control" title="Please enter a push notification message" placeholder="Enter the push notification message"><?php echo $this->result['data_msg']; ?></textarea>
+                    <textarea type="text" id="dataMsg<?php echo $this->purpose; ?>" name="dataMsg" class="richtextarea form-control" title="<?= $this->htmlTranslate("Please enter a push notification message") ?>" placeholder="<?= $this->htmlTranslate("Enter the push notification message") ?>"><?php echo $this->result['data_msg']; ?></textarea>
                 </div>
             </div>
 
             <div class="form-group">
                 <label class="col-lg-3 control-label" for="icon"><?= $this->translate->_("Icon"); ?></label>
                 <div class="col-lg-6">
-                    <input value="<?php echo $this->result['icon']; ?>" type="text" id="icon<?php echo $this->purpose; ?>" name="icon" class="richtextarea form-control" title="Please enter a push notification icon" placeholder="Enter the push notification icon" />
+                    <input value="<?php echo $this->result['icon']; ?>" type="text" id="icon<?php echo $this->purpose; ?>" name="icon" class="richtextarea form-control" title="<?= $this->htmlTranslate("Please enter a push notification icon") ?>" placeholder="<?= $this->htmlTranslate("Enter the push notification icon") ?>" />
                 </div>
             </div>
             <br><br>
@@ -70,7 +70,7 @@
                 function(data) {
                     $.unblockUI();
                     if (data != null || data > 0 || data != undefined) {
-                        alert('Updated successfully.');
+                        alert('<?= $this->jsTranslate('Updated successfully.') ?>');
                         // location.reload();
                     }
                 });

@@ -120,15 +120,15 @@ $testResultsJs = str_replace(array("\n", "\r", "'"), array('', '', "\\'"), $test
     <div class="form-group">
         <label class="col-lg-3 control-label" for="ptEmail"><?= $this->translate->_("PT Co-ordinator Email"); ?></label>
         <div class="col-lg-5">
-            <input type="text" name="ptEmail" id="ptEmail" placeholder="Enter PT Co-ordinator email"
-                title="Please enter the PT Co-ordinator email" class="form-control input-sm isEmail" />
+            <input type="text" name="ptEmail" id="ptEmail" placeholder="<?= $this->htmlTranslate("Enter PT Co-ordinator email") ?>"
+                title="<?= $this->htmlTranslate("Please enter the PT Co-ordinator email") ?>" class="form-control input-sm isEmail" />
         </div>
     </div>
     <div class="form-group">
         <label class="col-lg-3 control-label"><?= $this->translate->_("PT Co-ordinator Phone Number"); ?></label>
         <div class="col-lg-5">
-            <input type="text" name="ptPhone" id="ptPhone" placeholder="Enter PT Co-ordinator phone number"
-                title="Please enter the PT Co-ordinator phone number" class="form-control input-sm isNumeric" />
+            <input type="text" name="ptPhone" id="ptPhone" placeholder="<?= $this->htmlTranslate("Enter PT Co-ordinator phone number") ?>"
+                title="<?= $this->htmlTranslate("Please enter the PT Co-ordinator phone number") ?>" class="form-control input-sm isNumeric" />
         </div>
     </div>
 <?php endif; ?>
@@ -163,7 +163,7 @@ $testResultsJs = str_replace(array("\n", "\r", "'"), array('', '', "\\'"), $test
                     <td style="text-align: center">
                         <input type="text" name="sampleName[]" class="isRequired input-sm form-control"
                             value="<?php echo htmlspecialchars($sampleLabel); ?>"
-                            title="Please enter sample name here" placeholder="Please enter sample name here" />
+                            title="<?= $this->htmlTranslate("Please enter sample name here") ?>" placeholder="<?= $this->htmlTranslate("Please enter sample name here") ?>" />
                         <input type="hidden" id="sampleId" name="sampleId[]"
                             value="<?php echo htmlspecialchars($sampleId); ?>" />
                     </td>
@@ -171,8 +171,8 @@ $testResultsJs = str_replace(array("\n", "\r", "'"), array('', '', "\\'"), $test
                         <input type="text" name="samplePreparationDate[]" readonly="readonly"
                             class="isRequired form-control input-sm datepicker"
                             value="<?php echo htmlspecialchars($samplePrepDate); ?>"
-                            placeholder="Please enter the sample preparation date"
-                            title="Please enter the sample preparation date" />
+                            placeholder="<?= $this->htmlTranslate("Please enter the sample preparation date") ?>"
+                            title="<?= $this->htmlTranslate("Please enter the sample preparation date") ?>" />
                     </td>
                     <td>
                         <select name="possibleResults[]" class="isRequired form-control input-sm">
@@ -192,7 +192,7 @@ $testResultsJs = str_replace(array("\n", "\r", "'"), array('', '', "\\'"), $test
                     </td>
                     <td>
                         <select name="control[]" class="isRequired controlOrNot form-control input-sm"
-                            title="Please choose whether this sample is a control">
+                            title="<?= $this->htmlTranslate("Please choose whether this sample is a control") ?>">
                             <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
                             <option value="1" <?php echo ($control == 1) ? 'selected="selected"' : ''; ?>><?= $this->translate->_("Yes"); ?></option>
                             <option value="0" <?php echo ($control == 0) ? 'selected="selected"' : ''; ?>><?= $this->translate->_("No"); ?></option>
@@ -200,7 +200,7 @@ $testResultsJs = str_replace(array("\n", "\r", "'"), array('', '', "\\'"), $test
                     </td>
                     <td>
                         <select name="mandatory[]" class="isRequired form-control input-sm"
-                            title="Please choose whether this sample/control is mandatory">
+                            title="<?= $this->htmlTranslate("Please choose whether this sample/control is mandatory") ?>">
                             <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
                             <option value="1" <?php echo ($mandatory == 1) ? 'selected="selected"' : ''; ?>><?= $this->translate->_("Yes"); ?></option>
                             <option value="0" <?php echo ($mandatory == 0) ? 'selected="selected"' : ''; ?>><?= $this->translate->_("No"); ?></option>
@@ -208,7 +208,7 @@ $testResultsJs = str_replace(array("\n", "\r", "'"), array('', '', "\\'"), $test
                     </td>
                     <td>
                         <input type="text" name="score[]" class="isRequired score isNumeric form-control input-sm"
-                            placeholder="Score" title="Please enter the score for this control/sample"
+                            placeholder="<?= $this->htmlTranslate("Score") ?>" title="<?= $this->htmlTranslate("Please enter the score for this control/sample") ?>"
                             value="<?php echo htmlspecialchars($sampleScore); ?>" />
                     </td>
                     <td>
@@ -225,7 +225,7 @@ $testResultsJs = str_replace(array("\n", "\r", "'"), array('', '', "\\'"), $test
                         </a>
                         <?php if ($counter > 1): ?>
                             <a href="javascript:void(0);" onclick="removeDbsRow(this,<?php echo htmlspecialchars($sampleId); ?>)"
-                                class="btn btn-xs btn-danger" title="Remove this row completely">
+                                class="btn btn-xs btn-danger" title="<?= $this->htmlTranslate("Remove this row completely") ?>">
                                 <i class="icon-minus"></i>
                             </a>
                         <?php endif; ?>
@@ -320,7 +320,7 @@ $testResultsJs = str_replace(array("\n", "\r", "'"), array('', '', "\\'"), $test
                                                                         <a href="javascript:void(0);"
                                                                             onclick="removeDbsRow(this,'<?php echo htmlspecialchars($eia['sample_id']); ?>')"
                                                                             class="btn btn-xs btn-danger"
-                                                                            title="Remove this row completely">
+                                                                            title="<?= $this->htmlTranslate("Remove this row completely") ?>">
                                                                             <i class="icon-minus"></i>
                                                                         </a>
                                                                     <?php endif; ?>
@@ -478,7 +478,7 @@ $testResultsJs = str_replace(array("\n", "\r", "'"), array('', '', "\\'"), $test
                                                                         <a href="javascript:void(0);"
                                                                             onclick="removeWbRow(this,'<?php echo htmlspecialchars($wb['sample_id']); ?>')"
                                                                             class="btn btn-xs btn-danger"
-                                                                            title="Remove this row completely">
+                                                                            title="<?= $this->htmlTranslate("Remove this row completely") ?>">
                                                                             <i class="icon-minus"></i>
                                                                         </a>
                                                                     <?php endif; ?>
@@ -539,20 +539,20 @@ $testResultsJs = str_replace(array("\n", "\r", "'"), array('', '', "\\'"), $test
             <tr align="center">
                 <td style="text-align: center">
                     <input type="text" name="sampleName[]" class="isRequired input-sm form-control"
-                        title="Please enter sample name here" placeholder="Please enter sample name here" />
+                        title="<?= $this->htmlTranslate("Please enter sample name here") ?>" placeholder="<?= $this->htmlTranslate("Please enter sample name here") ?>" />
                 </td>
                 <td>
                     <input type="text" name="samplePreparationDate[]" readonly="readonly"
                         class="isRequired form-control input-sm datepicker"
-                        placeholder="Please enter the sample preparation date"
-                        title="Please enter the sample preparation date" />
+                        placeholder="<?= $this->htmlTranslate("Please enter the sample preparation date") ?>"
+                        title="<?= $this->htmlTranslate("Please enter the sample preparation date") ?>" />
                 </td>
                 <td>
                     <?php echo $possibleResultsHtml; ?>
                 </td>
                 <td>
                     <select name="control[]" class="isRequired controlOrNot form-control input-sm"
-                        title="Please choose whether this sample is a control">
+                        title="<?= $this->htmlTranslate("Please choose whether this sample is a control") ?>">
                         <?php if ($isEditMode): ?>
                             <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
                             <option value="1"><?= $this->translate->_("Yes"); ?></option>
@@ -565,7 +565,7 @@ $testResultsJs = str_replace(array("\n", "\r", "'"), array('', '', "\\'"), $test
                 </td>
                 <td>
                     <select name="mandatory[]" class="isRequired form-control input-sm"
-                        title="Please choose whether this sample/control is mandatory">
+                        title="<?= $this->htmlTranslate("Please choose whether this sample/control is mandatory") ?>">
                         <?php if ($isEditMode): ?>
                             <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
                             <option value="1"><?= $this->translate->_("Yes"); ?></option>
@@ -578,7 +578,7 @@ $testResultsJs = str_replace(array("\n", "\r", "'"), array('', '', "\\'"), $test
                 </td>
                 <td>
                     <input type="text" name="score[]" class="isRequired score isNumeric form-control input-sm"
-                        placeholder="Score" title="Please enter the score for this control/sample" />
+                        placeholder="<?= $this->htmlTranslate("Score") ?>" title="<?= $this->htmlTranslate("Please enter the score for this control/sample") ?>" />
                 </td>
                 <td>
                     <?php if ($isEditMode): ?>
@@ -602,7 +602,7 @@ $testResultsJs = str_replace(array("\n", "\r", "'"), array('', '', "\\'"), $test
                         <i class="icon-plus"></i> <?= $this->translate->_("Sample/Control"); ?>
                     </a>
                     <a href="javascript:void(0);" onclick="removeRow(this)" class="btn btn-xs btn-danger"
-                        title="Remove this row completely">
+                        title="<?= $this->htmlTranslate("Remove this row completely") ?>">
                         <i class="icon-minus"></i>
                     </a>
                 </td>
@@ -656,59 +656,59 @@ $testResultsJs = str_replace(array("\n", "\r", "'"), array('', '', "\\'"), $test
         <?php if ($isEditMode): ?>
         $(obj.parentNode.parentNode).after('<tr align="center"> \
             <td style="text-align: center"> \
-                <input type="text" name="sampleName[]" class="isRequired input-sm form-control" title="Please enter sample name here" placeholder="Please enter sample name here"/> \
+                <input type="text" name="sampleName[]" class="isRequired input-sm form-control" title="<?= $this->jsTranslate("Please enter sample name here") ?>" placeholder="<?= $this->jsTranslate("Please enter sample name here") ?>"/> \
             </td> \
             <td> \
-                <input type="text" name="samplePreparationDate[]" readonly="readonly" class="isRequired form-control input-sm datepicker" placeholder="Please enter the sample preparation date" title="Please enter the sample preparation date" /> \
+                <input type="text" name="samplePreparationDate[]" readonly="readonly" class="isRequired form-control input-sm datepicker" placeholder="<?= $this->jsTranslate("Please enter the sample preparation date") ?>" title="<?= $this->jsTranslate("Please enter the sample preparation date") ?>" /> \
             </td> \
             <td><?php echo $possibleResultsJs; ?></td> \
             <td> \
-                <select name="control[]" class="isRequired controlOrNot form-control input-sm" title="Please choose whether this sample is a control"> \
-                    <option value="1"><?= $this->translate->_("Yes"); ?></option> \
-                    <option value="0" selected="selected"><?= $this->translate->_("No"); ?></option> \
+                <select name="control[]" class="isRequired controlOrNot form-control input-sm" title="<?= $this->jsTranslate("Please choose whether this sample is a control") ?>"> \
+                    <option value="1"><?= $this->jsTranslate("Yes") ?></option> \
+                    <option value="0" selected="selected"><?= $this->jsTranslate("No") ?></option> \
                 </select> \
             </td> \
             <td> \
-                <select name="mandatory[]" class="isRequired form-control input-sm" title="Please choose whether this sample/control is mandatory"> \
-                    <option value="1" selected="selected"><?= $this->translate->_("Yes"); ?></option> \
-                    <option value="0"><?= $this->translate->_("No"); ?></option> \
+                <select name="mandatory[]" class="isRequired form-control input-sm" title="<?= $this->jsTranslate("Please choose whether this sample/control is mandatory") ?>"> \
+                    <option value="1" selected="selected"><?= $this->jsTranslate("Yes") ?></option> \
+                    <option value="0"><?= $this->jsTranslate("No") ?></option> \
                 </select> \
             </td> \
-            <td><input type="text" name="score[]" class="isRequired score isNumeric form-control input-sm" placeholder="Score" title="Please enter the score for this control/sample" /></td> \
+            <td><input type="text" name="score[]" class="isRequired score isNumeric form-control input-sm" placeholder="<?= $this->jsTranslate("Score") ?>" title="<?= $this->jsTranslate("Please enter the score for this control/sample") ?>" /></td> \
             <td> \
-                <a data-toggle="modal" href="#sampleEia' + sampleCounter + '" class="btn btn-xs btn-primary" onclick="loadCal()"><i class="icon-beaker"></i> <?= $this->translate->_("EIA"); ?> </a> \
-                <a data-toggle="modal" href="#sampleWb' + sampleCounter + '" class="btn btn-xs btn-primary" onclick="loadCal()"><i class="icon-beaker"></i> <?= $this->translate->_("WB"); ?> </a> \
-                <a href="javascript:void(0);" onclick="addDbsRow(this);" class="btn btn-xs btn-info"><i class="icon-plus"></i> <?= $this->translate->_("Sample/Control"); ?></a> \
-                <a href="javascript:void(0);" onclick="removeDbsRow(this,' + sampleCounter + ')" class="btn btn-xs btn-danger" title="Remove this row completely"><i class="icon-minus"></i></a> \
+                <a data-toggle="modal" href="#sampleEia' + sampleCounter + '" class="btn btn-xs btn-primary" onclick="loadCal()"><i class="icon-beaker"></i> <?= $this->jsTranslate("EIA") ?> </a> \
+                <a data-toggle="modal" href="#sampleWb' + sampleCounter + '" class="btn btn-xs btn-primary" onclick="loadCal()"><i class="icon-beaker"></i> <?= $this->jsTranslate("WB") ?> </a> \
+                <a href="javascript:void(0);" onclick="addDbsRow(this);" class="btn btn-xs btn-info"><i class="icon-plus"></i> <?= $this->jsTranslate("Sample/Control") ?></a> \
+                <a href="javascript:void(0);" onclick="removeDbsRow(this,' + sampleCounter + ')" class="btn btn-xs btn-danger" title="<?= $this->jsTranslate("Remove this row completely") ?>"><i class="icon-minus"></i></a> \
             </td> \
         </tr>');
         <?php else: ?>
         $(obj.parentNode.parentNode).after('<tr align="center"> \
             <td style="text-align: center"> \
-                <input type="text" name="sampleName[]" class="isRequired input-sm form-control" title="Please enter sample name here" placeholder="Please enter sample name here"/> \
+                <input type="text" name="sampleName[]" class="isRequired input-sm form-control" title="<?= $this->jsTranslate("Please enter sample name here") ?>" placeholder="<?= $this->jsTranslate("Please enter sample name here") ?>"/> \
             </td> \
             <td> \
-                <input type="text" name="samplePreparationDate[]" readonly="readonly" class="isRequired form-control input-sm datepicker" placeholder="Please enter the sample preparation date" title="Please enter the sample preparation date" /> \
+                <input type="text" name="samplePreparationDate[]" readonly="readonly" class="isRequired form-control input-sm datepicker" placeholder="<?= $this->jsTranslate("Please enter the sample preparation date") ?>" title="<?= $this->jsTranslate("Please enter the sample preparation date") ?>" /> \
             </td> \
             <td><?php echo $possibleResultsJs; ?></td> \
             <td> \
-                <select name="control[]" class="isRequired controlOrNot form-control input-sm" title="Please choose whether this sample is a control"> \
-                    <option value="1"><?= $this->translate->_("Yes"); ?></option> \
-                    <option value="0" selected="selected"><?= $this->translate->_("No"); ?></option> \
+                <select name="control[]" class="isRequired controlOrNot form-control input-sm" title="<?= $this->jsTranslate("Please choose whether this sample is a control") ?>"> \
+                    <option value="1"><?= $this->jsTranslate("Yes") ?></option> \
+                    <option value="0" selected="selected"><?= $this->jsTranslate("No") ?></option> \
                 </select> \
             </td> \
             <td> \
-                <select name="mandatory[]" class="isRequired form-control input-sm" title="Please choose whether this sample/control is mandatory"> \
-                    <option value="1" selected="selected"><?= $this->translate->_("Yes"); ?></option> \
-                    <option value="0"><?= $this->translate->_("No"); ?></option> \
+                <select name="mandatory[]" class="isRequired form-control input-sm" title="<?= $this->jsTranslate("Please choose whether this sample/control is mandatory") ?>"> \
+                    <option value="1" selected="selected"><?= $this->jsTranslate("Yes") ?></option> \
+                    <option value="0"><?= $this->jsTranslate("No") ?></option> \
                 </select> \
             </td> \
-            <td><input type="text" name="score[]" class="isRequired score isNumeric form-control input-sm" placeholder="Score" title="Please enter the score for this control/sample" /></td> \
+            <td><input type="text" name="score[]" class="isRequired score isNumeric form-control input-sm" placeholder="<?= $this->jsTranslate("Score") ?>" title="<?= $this->jsTranslate("Please enter the score for this control/sample") ?>" /></td> \
             <td> \
-                <a href="javascript:void(0);" class="btn btn-xs btn-primary" onclick="showdefModal(\'sampleEia' + sampleCounter + '\', 900, 500); loadCal()"><i class="icon-beaker"></i> <?= $this->translate->_("EIA"); ?> </a> \
-                <a href="javascript:void(0);" class="btn btn-xs btn-primary" onclick="showdefModal(\'sampleWb' + sampleCounter + '\', 900, 500); loadCal()"><i class="icon-beaker"></i> <?= $this->translate->_("WB"); ?> </a> \
-                <a href="javascript:void(0);" onclick="addDbsRow(this);" class="btn btn-xs btn-info"><i class="icon-plus"></i> <?= $this->translate->_("Sample/Control"); ?></a> \
-                <a href="javascript:void(0);" onclick="removeRow(this)" class="btn btn-xs btn-danger" title="Remove this row completely"><i class="icon-minus"></i></a> \
+                <a href="javascript:void(0);" class="btn btn-xs btn-primary" onclick="showdefModal(\'sampleEia' + sampleCounter + '\', 900, 500); loadCal()"><i class="icon-beaker"></i> <?= $this->jsTranslate("EIA") ?> </a> \
+                <a href="javascript:void(0);" class="btn btn-xs btn-primary" onclick="showdefModal(\'sampleWb' + sampleCounter + '\', 900, 500); loadCal()"><i class="icon-beaker"></i> <?= $this->jsTranslate("WB") ?> </a> \
+                <a href="javascript:void(0);" onclick="addDbsRow(this);" class="btn btn-xs btn-info"><i class="icon-plus"></i> <?= $this->jsTranslate("Sample/Control") ?></a> \
+                <a href="javascript:void(0);" onclick="removeRow(this)" class="btn btn-xs btn-danger" title="<?= $this->jsTranslate("Remove this row completely") ?>"><i class="icon-minus"></i></a> \
             </td> \
         </tr>');
         <?php endif; ?>
@@ -737,7 +737,7 @@ $testResultsJs = str_replace(array("\n", "\r", "'"), array('', '', "\\'"), $test
         <?php if ($isEditMode): ?>
         $("#eiaBlockHolder").after('<div id="sampleEia' + sampleId + '" class="modal fade" tabindex="-1" data-width="860" style="display: none;"> \
             <div class="modal-header"> \
-                <h4 class="modal-title"><?= $this->translate->_("EIA"); ?></h4> \
+                <h4 class="modal-title"><?= $this->jsTranslate("EIA") ?></h4> \
             </div> \
             <div class="modal-body"> \
                 <div class="row"> \
@@ -745,13 +745,13 @@ $testResultsJs = str_replace(array("\n", "\r", "'"), array('', '', "\\'"), $test
                         <table style="width: 100%; margin: 0 auto;" class="table table-bordered table-striped clearfix"> \
                             <thead> \
                                 <tr align="center"> \
-                                    <th scope="col" style="width:20%; text-align: center;"><?= $this->translate->_("EIA"); ?></th> \
-                                    <th scope="col" style="width:10%; text-align: center;"><?= $this->translate->_("Lot Number"); ?></th> \
-                                    <th scope="col" style="width:12%; text-align: center;"><?= $this->translate->_("Expiry"); ?></th> \
-                                    <th scope="col" style="width:10%; text-align: center;"><?= $this->translate->_("OD"); ?></th> \
-                                    <th scope="col" style="width:10%; text-align: center;"><?= $this->translate->_("Cutoff"); ?></th> \
-                                    <th scope="col" style="width:10%; text-align: center;"><?= $this->translate->_("Result"); ?></th> \
-                                    <th scope="col" style="width:10%; text-align: center;"><?= $this->translate->_("Options"); ?></th> \
+                                    <th scope="col" style="width:20%; text-align: center;"><?= $this->jsTranslate("EIA") ?></th> \
+                                    <th scope="col" style="width:10%; text-align: center;"><?= $this->jsTranslate("Lot Number") ?></th> \
+                                    <th scope="col" style="width:12%; text-align: center;"><?= $this->jsTranslate("Expiry") ?></th> \
+                                    <th scope="col" style="width:10%; text-align: center;"><?= $this->jsTranslate("OD") ?></th> \
+                                    <th scope="col" style="width:10%; text-align: center;"><?= $this->jsTranslate("Cutoff") ?></th> \
+                                    <th scope="col" style="width:10%; text-align: center;"><?= $this->jsTranslate("Result") ?></th> \
+                                    <th scope="col" style="width:10%; text-align: center;"><?= $this->jsTranslate("Options") ?></th> \
                                 </tr> \
                             </thead> \
                             <tbody> \
@@ -779,7 +779,7 @@ $testResultsJs = str_replace(array("\n", "\r", "'"), array('', '', "\\'"), $test
         $("#eiaBlockHolder").after('<div id="sampleEia' + sampleId + '" class="dialog"> \
             <span onClick="hidedefModal()" class="closeModal"></span> \
             <div class="modal-header"> \
-                <h4 class="modal-title"><?= $this->translate->_("EIA"); ?></h4> \
+                <h4 class="modal-title"><?= $this->jsTranslate("EIA") ?></h4> \
             </div> \
             <div class="modal-body"> \
                 <div class="row"> \
@@ -787,12 +787,12 @@ $testResultsJs = str_replace(array("\n", "\r", "'"), array('', '', "\\'"), $test
                         <table style="width: 100%; margin: 0 auto;" class="table table-bordered table-striped clearfix"> \
                             <thead> \
                                 <tr align="center"> \
-                                    <th scope="col" style="width:20%; text-align: center;"><?= $this->translate->_("EIA"); ?></th> \
-                                    <th scope="col" style="width:10%; text-align: center;"><?= $this->translate->_("Lot Number"); ?></th> \
-                                    <th scope="col" style="width:12%; text-align: center;"><?= $this->translate->_("Expiry"); ?></th> \
-                                    <th scope="col" style="width:10%; text-align: center;"><?= $this->translate->_("OD"); ?></th> \
-                                    <th scope="col" style="width:10%; text-align: center;"><?= $this->translate->_("Cutoff"); ?></th> \
-                                    <th scope="col" style="width:10%; text-align: center;"><?= $this->translate->_("Options"); ?></th> \
+                                    <th scope="col" style="width:20%; text-align: center;"><?= $this->jsTranslate("EIA") ?></th> \
+                                    <th scope="col" style="width:10%; text-align: center;"><?= $this->jsTranslate("Lot Number") ?></th> \
+                                    <th scope="col" style="width:12%; text-align: center;"><?= $this->jsTranslate("Expiry") ?></th> \
+                                    <th scope="col" style="width:10%; text-align: center;"><?= $this->jsTranslate("OD") ?></th> \
+                                    <th scope="col" style="width:10%; text-align: center;"><?= $this->jsTranslate("Cutoff") ?></th> \
+                                    <th scope="col" style="width:10%; text-align: center;"><?= $this->jsTranslate("Options") ?></th> \
                                 </tr> \
                             </thead> \
                             <tbody> \
@@ -832,7 +832,7 @@ $testResultsJs = str_replace(array("\n", "\r", "'"), array('', '', "\\'"), $test
             <td><select class="form-control" name="eia[' + sampleId + '][result][]"><?php echo $testResultsJs; ?></select></td> \
             <td> \
                 <a href="javascript:void(0);" onclick="addNewEiaRow(this,' + sampleId + ')" class="btn btn-primary btn-xs"><i class="icon-plus"></i></a> \
-                <a href="javascript:void(0);" onclick="removeRow(this)" class="btn btn-xs btn-danger" title="Remove this row completely"><i class="icon-minus"></i></a> \
+                <a href="javascript:void(0);" onclick="removeRow(this)" class="btn btn-xs btn-danger" title="<?= $this->jsTranslate("Remove this row completely") ?>"><i class="icon-minus"></i></a> \
             </td> \
         </tr>');
         <?php else: ?>
@@ -844,7 +844,7 @@ $testResultsJs = str_replace(array("\n", "\r", "'"), array('', '', "\\'"), $test
             <td><input type="text" name="eia[' + sampleId + '][cutoff][]" class="form-control"/></td> \
             <td> \
                 <a href="javascript:void(0);" onclick="addNewEiaRow(this,' + sampleId + ')" class="btn btn-primary btn-xs"><i class="icon-plus"></i></a> \
-                <a href="javascript:void(0);" onclick="removeRow(this)" class="btn btn-xs btn-danger" title="Remove this row completely"><i class="icon-minus"></i></a> \
+                <a href="javascript:void(0);" onclick="removeRow(this)" class="btn btn-xs btn-danger" title="<?= $this->jsTranslate("Remove this row completely") ?>"><i class="icon-minus"></i></a> \
             </td> \
         </tr>');
         <?php endif; ?>
@@ -857,7 +857,7 @@ $testResultsJs = str_replace(array("\n", "\r", "'"), array('', '', "\\'"), $test
         <?php if ($isEditMode): ?>
         $("#wbBlockHolder").after('<div id="sampleWb' + sampleWbId + '" class="modal fade" tabindex="-1" data-width="960" style="display: none;"> \
             <div class="modal-header"> \
-                <h4 class="modal-title"><?= $this->translate->_("WB"); ?></h4> \
+                <h4 class="modal-title"><?= $this->jsTranslate("WB") ?></h4> \
             </div> \
             <div class="modal-body"> \
                 <div class="row" style="overflow-x: scroll;"> \
@@ -877,7 +877,7 @@ $testResultsJs = str_replace(array("\n", "\r", "'"), array('', '', "\\'"), $test
                                     <th scope="col" style="text-align: center;">31</th> \
                                     <th scope="col" style="text-align: center;">24</th> \
                                     <th scope="col" style="text-align: center;">17</th> \
-                                    <th scope="col" style="text-align: center;"><?= $this->translate->_("Options"); ?></th> \
+                                    <th scope="col" style="text-align: center;"><?= $this->jsTranslate("Options") ?></th> \
                                 </tr> \
                             </thead> \
                             <tbody> \
@@ -904,14 +904,14 @@ $testResultsJs = str_replace(array("\n", "\r", "'"), array('', '', "\\'"), $test
                 </div> \
             </div> \
             <div class="modal-footer"> \
-                <button type="button" data-dismiss="modal" class="btn btn-primary"><?= $this->translate->_("OK"); ?></button> \
+                <button type="button" data-dismiss="modal" class="btn btn-primary"><?= $this->jsTranslate("OK") ?></button> \
             </div> \
         </div>');
         <?php else: ?>
         $("#wbBlockHolder").after('<div id="sampleWb' + sampleWbId + '" class="dialog" tabindex="-1"> \
             <span onClick="hidedefModal()" class="closeModal"></span> \
             <div class="modal-header"> \
-                <h4 class="modal-title"><?= $this->translate->_("WB"); ?></h4> \
+                <h4 class="modal-title"><?= $this->jsTranslate("WB") ?></h4> \
             </div> \
             <div class="modal-body"> \
                 <div class="row" style="overflow-x: scroll;"> \
@@ -919,9 +919,9 @@ $testResultsJs = str_replace(array("\n", "\r", "'"), array('', '', "\\'"), $test
                         <table style="width: 100%; margin: 0 auto;" class="table table-bordered table-striped clearfix"> \
                             <thead> \
                                 <tr align="center"> \
-                                    <th scope="col" style="text-align: center;"><?= $this->translate->_("WB"); ?></th> \
-                                    <th scope="col" style="text-align: center;"><?= $this->translate->_("Lot Number"); ?></th> \
-                                    <th scope="col" style="text-align: center;"><?= $this->translate->_("Expiry"); ?></th> \
+                                    <th scope="col" style="text-align: center;"><?= $this->jsTranslate("WB") ?></th> \
+                                    <th scope="col" style="text-align: center;"><?= $this->jsTranslate("Lot Number") ?></th> \
+                                    <th scope="col" style="text-align: center;"><?= $this->jsTranslate("Expiry") ?></th> \
                                     <th scope="col" style="text-align: center;">160</th> \
                                     <th scope="col" style="text-align: center;">120</th> \
                                     <th scope="col" style="text-align: center;">66</th> \
@@ -931,7 +931,7 @@ $testResultsJs = str_replace(array("\n", "\r", "'"), array('', '', "\\'"), $test
                                     <th scope="col" style="text-align: center;">31</th> \
                                     <th scope="col" style="text-align: center;">24</th> \
                                     <th scope="col" style="text-align: center;">17</th> \
-                                    <th scope="col" style="text-align: center;"><?= $this->translate->_("Options"); ?></th> \
+                                    <th scope="col" style="text-align: center;"><?= $this->jsTranslate("Options") ?></th> \
                                 </tr> \
                             </thead> \
                             <tbody> \
@@ -958,7 +958,7 @@ $testResultsJs = str_replace(array("\n", "\r", "'"), array('', '', "\\'"), $test
                 </div> \
             </div> \
             <div class="modal-footer"> \
-                <button type="button" class="btn btn-primary" onclick="closeShipmentModal(\'sampleWb' + sampleWbId + '\')"><?= $this->translate->_("OK"); ?></button> \
+                <button type="button" class="btn btn-primary" onclick="closeShipmentModal(\'sampleWb' + sampleWbId + '\')"><?= $this->jsTranslate("OK") ?></button> \
             </div> \
         </div>');
         <?php endif; ?>
@@ -983,7 +983,7 @@ $testResultsJs = str_replace(array("\n", "\r", "'"), array('', '', "\\'"), $test
             <td><select name="wb[' + sampleWbId + '][17][]" style="width:70px; font-weight:bold;" class="form-control"><option value=""></option><option value="1">+</option><option value="0">-</option></select></td> \
             <td> \
                 <a href="javascript:void(0);" onclick="addNewWbRow(this,' + sampleWbId + ')" class="btn btn-primary btn-xs"><i class="icon-plus"></i></a> \
-                <a href="javascript:void(0);" onclick="removeWbRow(this,' + sampleWbId + ')" class="btn btn-xs btn-danger" title="Remove this row completely"><i class="icon-minus"></i></a> \
+                <a href="javascript:void(0);" onclick="removeWbRow(this,' + sampleWbId + ')" class="btn btn-xs btn-danger" title="<?= $this->jsTranslate("Remove this row completely") ?>"><i class="icon-minus"></i></a> \
             </td> \
         </tr>');
         $(".datepicker").datepicker({

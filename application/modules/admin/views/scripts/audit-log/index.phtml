@@ -865,9 +865,9 @@
             $feed.html(''
                 + '<div class="empty-state">'
                 +   '<i class="far fa-folder-open"></i>'
-                +   'No audit entries match the current filters.'
+                +   '<?= $this->jsTranslate('No audit entries match the current filters.') ?>'
                 + '</div>');
-            $summary.html('<strong>0</strong> entries');
+            $summary.html('<strong>0</strong> <?= $this->jsTranslate('entries') ?>');
             $pagination.hide();
             return;
         }
@@ -899,8 +899,8 @@
 
         var start = (payload.page - 1) * payload.pageSize + 1;
         var end = Math.min(start + payload.items.length - 1, payload.total);
-        $summary.html('<strong>' + payload.total.toLocaleString() + '</strong> entries');
-        $pageInfo.html('Showing <strong>' + start + '</strong>–<strong>' + end + '</strong> of <strong>' + payload.total.toLocaleString() + '</strong>');
+        $summary.html('<strong>' + payload.total.toLocaleString() + '</strong> <?= $this->jsTranslate('entries') ?>');
+        $pageInfo.html('<?= $this->jsTranslate('Showing') ?> <strong>' + start + '</strong>–<strong>' + end + '</strong> <?= $this->jsTranslate('of') ?> <strong>' + payload.total.toLocaleString() + '</strong>');
         $prev.prop('disabled', payload.page <= 1);
         $next.prop('disabled', payload.page >= payload.totalPages);
         $pagination.show();
@@ -908,7 +908,7 @@
 
     function fetchFeed() {
         var seq = ++fetchSeq;
-        $feed.html('<div class="loading-state"><i class="fas fa-circle-notch fa-spin"></i>Loading…</div>');
+        $feed.html('<div class="loading-state"><i class="fas fa-circle-notch fa-spin"></i><?= $this->jsTranslate('Loading…') ?></div>');
         $.ajax({
             url: feedUrl,
             type: 'POST',
@@ -934,7 +934,7 @@
             $feed.html(''
                 + '<div class="empty-state">'
                 +   '<i class="fas fa-exclamation-triangle"></i>'
-                +   'Failed to load audit log. Please retry.'
+                +   '<?= $this->jsTranslate('Failed to load audit log. Please retry.') ?>'
                 + '</div>');
             $pagination.hide();
         });

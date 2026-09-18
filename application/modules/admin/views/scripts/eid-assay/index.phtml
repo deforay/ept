@@ -203,7 +203,7 @@
     });
 
     function changeNameStatus(formSource, eidId, switchStatus) {
-        if (window.confirm("<?= $this->translate->_("Are you sure you wish to change this assay status to"); ?> " + switchStatus + " ?")) {
+        if (window.confirm("<?= $this->jsTranslate("Are you sure you wish to change this assay status to") ?> " + switchStatus + " ?")) {
             $.blockUI();
             $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'eid-assay', 'action' => 'change-status')); ?>", {
                 formSource: formSource,
@@ -213,7 +213,7 @@
             },
                 function (data) {
                     if (data == 0) {
-                        alert("Status not updated..Please try again once.");
+                        alert("<?= $this->jsTranslate("Status not updated..Please try again once.") ?>");
                     }
                     if (formSource == "extraction") {
                         exTable.fnDraw();

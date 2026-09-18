@@ -18,25 +18,25 @@ if ($this->mailPurpose == 'new_shipment') {
             <div class="form-group">
                 <label for="adminName" class="col-lg-3 control-label"><?= $this->translate->_("From Name"); ?> <span class="mandatory">*</span></label>
                 <div class="col-lg-6">
-                    <input type="text" class="form-control isRequired" id="adminName<?php echo $this->mailPurpose; ?>" name="adminName" placeholder="Enter Admin Name" title="Please enter from name" value="<?php echo $this->mailTemplateDetails["from_name"]; ?>" />
+                    <input type="text" class="form-control isRequired" id="adminName<?php echo $this->mailPurpose; ?>" name="adminName" placeholder="<?= $this->htmlTranslate("Enter Admin Name") ?>" title="<?= $this->htmlTranslate("Please enter from name") ?>" value="<?php echo $this->mailTemplateDetails["from_name"]; ?>" />
                 </div>
             </div>
             <div class="form-group">
                 <label for="adminEmail" class="col-lg-3 control-label"><?= $this->translate->_("From Email"); ?> <span class="mandatory">*</span></label>
                 <div class="col-lg-6">
-                    <input type="text" class="form-control isRequired" id="adminEmail<?php echo $this->mailPurpose; ?>" name="adminEmail" placeholder="Enter Admin Email" title="Please enter from email" value="<?php echo $this->mailTemplateDetails["mail_from"]; ?>" />
+                    <input type="text" class="form-control isRequired" id="adminEmail<?php echo $this->mailPurpose; ?>" name="adminEmail" placeholder="<?= $this->htmlTranslate("Enter Admin Email") ?>" title="<?= $this->htmlTranslate("Please enter from email") ?>" value="<?php echo $this->mailTemplateDetails["mail_from"]; ?>" />
                 </div>
             </div>
             <div class="form-group">
                 <label for="adminBcc" class="col-lg-3 control-label">Bcc</label>
                 <div class="col-lg-6">
-                    <textarea class="form-control" id="adminBcc<?php echo $this->mailPurpose; ?>" name="adminBcc" placeholder="Enter comma seperated mails" title="Please enter bcc mails"><?php echo $this->mailTemplateDetails["mail_bcc"]; ?></textarea>
+                    <textarea class="form-control" id="adminBcc<?php echo $this->mailPurpose; ?>" name="adminBcc" placeholder="<?= $this->htmlTranslate("Enter comma seperated mails") ?>" title="<?= $this->htmlTranslate("Please enter bcc mails") ?>"><?php echo $this->mailTemplateDetails["mail_bcc"]; ?></textarea>
                 </div>
             </div>
             <div class="form-group">
                 <label for="adminCc" class="col-lg-3 control-label">Cc </label>
                 <div class="col-lg-6">
-                    <textarea class="form-control" id="adminCc<?php echo $this->mailPurpose; ?>" name="adminCc" placeholder="Enter comma seperated mails" title="Please enter Cc mails"><?php echo $this->mailTemplateDetails["mail_cc"]; ?></textarea>
+                    <textarea class="form-control" id="adminCc<?php echo $this->mailPurpose; ?>" name="adminCc" placeholder="<?= $this->htmlTranslate("Enter comma seperated mails") ?>" title="<?= $this->htmlTranslate("Please enter Cc mails") ?>"><?php echo $this->mailTemplateDetails["mail_cc"]; ?></textarea>
                 </div>
             </div>
             <div class="form-group">
@@ -49,13 +49,13 @@ if ($this->mailPurpose == 'new_shipment') {
             <div class="form-group">
                 <label for="subject" class="col-lg-3 control-label"><?= $this->translate->_("Subject"); ?> <span class="mandatory">*</span></label>
                 <div class="col-lg-6">
-                    <textarea class="form-control isRequired" id="subject<?php echo $this->mailPurpose; ?>" name="subject" placeholder="Enter Subject" title="Please enter subject"><?php echo $this->mailTemplateDetails["mail_subject"]; ?></textarea>
+                    <textarea class="form-control isRequired" id="subject<?php echo $this->mailPurpose; ?>" name="subject" placeholder="<?= $this->htmlTranslate("Enter Subject") ?>" title="<?= $this->htmlTranslate("Please enter subject") ?>"><?php echo $this->mailTemplateDetails["mail_subject"]; ?></textarea>
                 </div>
             </div>
             <div class="form-group">
                 <label for="mailMessage" class="col-lg-3 control-label"><?= $this->translate->_("Message"); ?> <span class="mandatory">*</span></label>
                 <div class="col-lg-6">
-                    <textarea class="form-control isRequired richtextarea" id="mailMessage<?php echo $this->mailPurpose; ?>" name="message" placeholder="Enter Message" title="Please enter message"><?php echo $this->mailTemplateDetails["mail_content"]; ?></textarea>
+                    <textarea class="form-control isRequired richtextarea" id="mailMessage<?php echo $this->mailPurpose; ?>" name="message" placeholder="<?= $this->htmlTranslate("Enter Message") ?>" title="<?= $this->htmlTranslate("Please enter message") ?>"><?php echo $this->mailTemplateDetails["mail_content"]; ?></textarea>
                 </div>
             </div>
             <div class="form-group">
@@ -73,7 +73,7 @@ if ($this->mailPurpose == 'new_shipment') {
             <div class="form-group">
                 <label for="footer" class="col-lg-3 control-label"><?= $this->translate->_("Footer"); ?></label>
                 <div class="col-lg-6">
-                    <textarea class="form-control richtextarea" id="footer<?php echo $this->mailPurpose; ?>" name="footer" placeholder="Enter Footer Content" title="Please footer content"><?php echo $this->mailTemplateDetails["mail_footer"]; ?></textarea>
+                    <textarea class="form-control richtextarea" id="footer<?php echo $this->mailPurpose; ?>" name="footer" placeholder="<?= $this->htmlTranslate("Enter Footer Content") ?>" title="<?= $this->htmlTranslate("Please footer content") ?>"><?php echo $this->mailTemplateDetails["mail_footer"]; ?></textarea>
                 </div>
             </div>
             <input type="hidden" id="mailPurpose<?php echo $this->mailPurpose; ?>" name="mailPurpose" value="<?php echo $this->mailPurpose; ?>" />
@@ -110,7 +110,7 @@ if ($this->mailPurpose == 'new_shipment') {
                 function(data) {
                     $.unblockUI();
                     if (data != null || data > 0 || data != undefined) {
-                        alert('Updated successfully.');
+                        alert('<?= $this->jsTranslate('Updated successfully.') ?>');
                         // location.reload();
                     }
                 });

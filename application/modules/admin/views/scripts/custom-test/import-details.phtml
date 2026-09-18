@@ -518,7 +518,7 @@ $schemeNameValue = $this->result['schemeResult']['scheme_name'] ?? '';
             if (expectedResult && expectedResult.trim() !== '') {
                 var norm = expectedResult.trim().toLowerCase();
                 if (resultsByType[resultType] && resultsByType[resultType].includes(norm)) {
-                    alert('Duplicate expected result "' + expectedResult + '" found for Result Type "' + (resultType === 'test-result' ? 'Test Result' : 'Final Interpretation') + '". Each expected result must be unique within a result type.');
+                    alert('<?= $this->jsTranslate('Duplicate expected result "') ?>' + expectedResult + '<?= $this->jsTranslate('" found for Result Type "') ?>' + (resultType === 'test-result' ? '<?= $this->jsTranslate('Test Result') ?>' : '<?= $this->jsTranslate('Final Interpretation') ?>') + '<?= $this->jsTranslate('". Each expected result must be unique within a result type.') ?>');
                     valid = false;
                     return false;
                 }
@@ -528,7 +528,7 @@ $schemeNameValue = $this->result['schemeResult']['scheme_name'] ?? '';
             if (resultCode && resultCode.trim() !== '') {
                 var normCode = resultCode.trim().toUpperCase();
                 if (allResultCodes.includes(normCode)) {
-                    alert('Duplicate Result Code "' + resultCode + '" found. Each result code must be unique.');
+                    alert('<?= $this->jsTranslate('Duplicate Result Code "') ?>' + resultCode + '<?= $this->jsTranslate('" found. Each result code must be unique.') ?>');
                     valid = false;
                     return false;
                 }
@@ -667,11 +667,11 @@ $schemeNameValue = $this->result['schemeResult']['scheme_name'] ?? '';
             if (parseInt(data, 10) > 0) {
                 codeDuplicated = true;
                 $code.addClass('input-dup-error');
-                $fb.removeClass('text-success').addClass('text-danger').html('<i class="icon-warning-sign"></i> This code is already in use. Please choose a different one.').show();
+                $fb.removeClass('text-success').addClass('text-danger').html('<i class="icon-warning-sign"></i> <?= $this->jsTranslate('This code is already in use. Please choose a different one.') ?>').show();
             } else {
                 codeDuplicated = false;
                 $code.removeClass('input-dup-error');
-                $fb.removeClass('text-danger').addClass('text-success').html('<i class="icon-ok"></i> This code is available.').show();
+                $fb.removeClass('text-danger').addClass('text-success').html('<i class="icon-ok"></i> <?= $this->jsTranslate('This code is available.') ?>').show();
             }
         });
     }

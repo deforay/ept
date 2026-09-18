@@ -29,9 +29,9 @@ $result = $this->result;
                     <?php
                     if (isset($result['attached_file']) && trim($result['attached_file']) != '' && file_exists(realpath(UPLOAD_PATH) . DIRECTORY_SEPARATOR . 'mail-attachments' . DIRECTORY_SEPARATOR . $result['attached_file'])) {
                     ?>
-                        <img src="/uploads/mail-attachments/<?php echo $result['attached_file']; ?>" style="width: 200px; height: 200px;" alt="No image" />
+                        <img src="/uploads/mail-attachments/<?php echo $result['attached_file']; ?>" style="width: 200px; height: 200px;" alt="<?= $this->htmlTranslate("No image") ?>" />
                     <?php } else { ?>
-                        <img src="/images/loading.gif" alt="NO file attaced" />
+                        <img src="/images/loading.gif" alt="<?= $this->htmlTranslate("NO file attaced") ?>" />
                     <?php } ?>
                 </div>
             </div>

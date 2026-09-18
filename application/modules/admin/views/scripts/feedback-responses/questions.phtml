@@ -146,7 +146,7 @@
                 }
             ).fail(function () {
                 var $childTr = $(tr).next('tr');
-                $childTr.find('td').first().html('<div style="padding:12px;color:#a94442;"><?= $this->translate->_("Failed to load data managers. Please try again."); ?></div>');
+                $childTr.find('td').first().html('<div style="padding:12px;color:#a94442;"><?= $this->jsTranslate("Failed to load data managers. Please try again."); ?></div>');
             });
         });
 
@@ -179,7 +179,7 @@
                     $.unblockUI();
                     document.location.href = '/temporary/' + data;
                 } else {
-                    alert("Response not found for this shipment");
+                    alert("<?= $this->jsTranslate("Response not found for this shipment"); ?>");
                 }
                 $.unblockUI();
             });

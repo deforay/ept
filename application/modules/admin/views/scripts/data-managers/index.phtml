@@ -351,7 +351,7 @@ if (isset($this->ptcc) && !empty($this->ptcc) && $this->ptcc == 1) {
                 }
             ).fail(function() {
                 var $childTr = $(tr).next('tr');
-                $childTr.find('td').first().html('<div style="padding:12px;color:#a94442;"><?= $this->translate->_("Failed to load participants. Please try again."); ?></div>');
+                $childTr.find('td').first().html('<div style="padding:12px;color:#a94442;"><?= $this->jsTranslate("Failed to load participants. Please try again."); ?></div>');
             });
         });
 

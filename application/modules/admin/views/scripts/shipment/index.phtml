@@ -394,7 +394,7 @@
     }
 
     function responseSwitch(switchStatus, sid) {
-        if (window.confirm("<?= $this->translate->_("Are you sure you wish to switch this shipment"); ?> " + switchStatus + " ?")) {
+        if (window.confirm("<?= $this->jsTranslate("Are you sure you wish to switch this shipment") ?> " + switchStatus + " ?")) {
             $.blockUI();
             $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'shipment', 'action' => 'response-switch')); ?>", {
                     sid: sid,
@@ -415,7 +415,7 @@
     function drawTable() {
         oTable = $('#shipmentTable').dataTable({
             "oLanguage": {
-                "sEmptyTable": "<?= $this->translate->_("No shipment schemes under this Distribution yet"); ?>"
+                "sEmptyTable": "<?= $this->jsTranslate("No shipment schemes under this Distribution yet") ?>"
             },
             "bJQueryUI": false,
             "bAutoWidth": false,
@@ -564,14 +564,14 @@
     }
 
     function mailShipment(sid) {
-        if (window.confirm("Are you sure you want to send announcement mail to all participants ?")) {
+        if (window.confirm("<?= $this->jsTranslate("Are you sure you want to send announcement mail to all participants ?") ?>")) {
             $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'shipment', 'action' => 'new-shipment-mail')); ?>", {
                     sid: sid,
                     format: "html"
                 },
                 function(data) {
                     if (data > 0) {
-                        alert("<?= $this->translate->_("Mail Sent successfully"); ?>");
+                        alert("<?= $this->jsTranslate("Mail Sent successfully") ?>");
                     }
                     oTable.fnDraw();
                 });
@@ -580,7 +580,7 @@
     }
 
     function generateTBFormsPDF(sid, btn) {
-        if (window.confirm("<?= $this->translate->_("Are you sure you want to generate TB forms for this shipment?"); ?>")) {
+        if (window.confirm("<?= $this->jsTranslate("Are you sure you want to generate TB forms for this shipment?") ?>")) {
             // Neutralize the button right away; the fnDraw() below replaces it
             // with the real "Generating..." placeholder once the row refreshes.
             if (btn) {
@@ -594,7 +594,7 @@
                 },
                 function(data) {
                     if (data > 0) {
-                        alert("<?= $this->translate->_("Generating TB forms"); ?>");
+                        alert("<?= $this->jsTranslate("Generating TB forms") ?>");
                     }
                     oTable.fnDraw();
                 });

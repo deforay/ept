@@ -237,14 +237,14 @@
 
         /* ── Translated strings ────────────────────────────────────── */
         var i18n = {
-            test1: '<?= addslashes($this->translate->_("Test 1")); ?>',
-            test2: '<?= addslashes($this->translate->_("Test 2")); ?>',
-            test3: '<?= addslashes($this->translate->_("Test 3")); ?>',
-            position: '<?= addslashes($this->translate->_("Position")); ?>',
-            noKits: '<?= addslashes($this->translate->_("No kits assigned")); ?>',
-            unselHdr: '<?= addslashes($this->translate->_("Available Test Kits")); ?>',
-            selHdr: '<?= addslashes($this->translate->_("Assigned Test Kits")); ?>',
-            searchPh: '<?= addslashes($this->translate->_("Type kit name to filter...")); ?>'
+            test1: '<?= $this->jsTranslate("Test 1") ?>',
+            test2: '<?= $this->jsTranslate("Test 2") ?>',
+            test3: '<?= $this->jsTranslate("Test 3") ?>',
+            position: '<?= $this->jsTranslate("Position") ?>',
+            noKits: '<?= $this->jsTranslate("No kits assigned") ?>',
+            unselHdr: '<?= $this->jsTranslate("Available Test Kits") ?>',
+            selHdr: '<?= $this->jsTranslate("Assigned Test Kits") ?>',
+            searchPh: '<?= $this->jsTranslate("Type kit name to filter...") ?>'
         };
 
         /* ── State ─────────────────────────────────────────────────── */

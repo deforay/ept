@@ -184,12 +184,12 @@ if ($shipmentAttributesRaw !== '') {
 			<div class="col-md-12">
 				<label for="correctiveActionFile" class="form-control-label">Corrective Action Files</label>
 				<input type="file" class="form-control" name="correctiveActionFile" id="correctiveActionFile"
-					title="Please chosse corrective actiion file.">
+					title="<?= $this->htmlTranslate("Please chosse corrective actiion file.") ?>">
 
 				<label for="comment" class="form-control-label">Comment for all Participants of this shipment</label>
 				<textarea rows="3" cols="20" class="form-control"
-					placeholder="Comment for all Participants of this shipment"
-					title="Comment for all Participants of this shipment" name="comment"
+					placeholder="<?= $this->htmlTranslate("Comment for all Participants of this shipment") ?>"
+					title="<?= $this->htmlTranslate("Comment for all Participants of this shipment") ?>" name="comment"
 					id="comment"><?php echo $this->shipment[0]['shipment_comment']; ?></textarea>
 				<br>
 				<input type="hidden" value="evaluate" name="from">
@@ -205,7 +205,7 @@ if ($shipmentAttributesRaw !== '') {
 		<div>
 			<label for="manuelOverride"><?= $this->htmlTranslate("Manually overridden only"); ?></label>
 			<select name="manuelOverride" id="manuelOverride" class="form-control"
-				title="Please choose manual override yes or no" onchange="manualOverride(this.value)">
+				title="<?= $this->htmlTranslate("Please choose manual override yes or no") ?>" onchange="manualOverride(this.value)">
 				<option value="">-- <?= $this->htmlTranslate("Select"); ?> --</option>
 				<option <?php echo (isset($this->override) && $this->override == "no") ? " selected='selected' " : ""; ?>
 					value="no"><?= $this->htmlTranslate("No"); ?></option>
@@ -434,32 +434,32 @@ if ($shipmentAttributesRaw !== '') {
 		// Re-Evaluate button above, without threading the shipment id through every call site.
 		var currentShipmentSid = "<?= base64_encode($this->shipment[0]['shipment_id']); ?>";
 		$("#filterResponseStatus").select2({
-			placeholder: "<?= $this->translate->_("Select one or more response status"); ?>",
+			placeholder: "<?= $this->jsTranslate("Select one or more response status"); ?>",
 			allowClear: true,
 			width: '100%'
 		});
 		$("#filterResult").select2({
-			placeholder: "<?= $this->translate->_("Select one or more results"); ?>",
+			placeholder: "<?= $this->jsTranslate("Select one or more results"); ?>",
 			allowClear: true,
 			width: '100%'
 		});
 		$("#country").select2({
-			placeholder: "<?= $this->translate->_("Select one or more countries"); ?>",
+			placeholder: "<?= $this->jsTranslate("Select one or more countries"); ?>",
 			allowClear: true,
 			width: '100%'
 		});
 		$("#region").select2({
-			placeholder: "<?= $this->translate->_("Select one or more regions"); ?>",
+			placeholder: "<?= $this->jsTranslate("Select one or more regions"); ?>",
 			allowClear: true,
 			width: '100%'
 		});
 		$("#state").select2({
-			placeholder: "<?= $this->translate->_("Select one or more states"); ?>",
+			placeholder: "<?= $this->jsTranslate("Select one or more states"); ?>",
 			allowClear: true,
 			width: '100%'
 		});
 		$("#district").select2({
-			placeholder: "<?= $this->translate->_("Select one or more districts"); ?>",
+			placeholder: "<?= $this->jsTranslate("Select one or more districts"); ?>",
 			allowClear: true,
 			width: '100%'
 		});

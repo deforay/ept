@@ -61,7 +61,7 @@ $isRangeChange = ($reEvalReason === 'ranges');
             // per shipment tore down and rebuilt the box, making it flicker/"reload".
             $.blockUI({
                 message: "<div id='reEvalBox'>" +
-                    "<h4 style='margin:0;font-size:16px;color:#2c3e50;font-weight:600;'><?= $this->translate->_("Queuing shipments for re-evaluation"); ?>&hellip;</h4>" +
+                    "<h4 style='margin:0;font-size:16px;color:#2c3e50;font-weight:600;'><?= $this->jsTranslate("Queuing shipments for re-evaluation") ?>&hellip;</h4>" +
                     "<p id='reEvalProgress' style='margin:10px 0 0;font-size:14px;color:#555;'></p>" +
                     "</div>",
                 css: blockCss,
@@ -81,11 +81,11 @@ $isRangeChange = ($reEvalReason === 'ranges');
                         "<div style='margin:0 auto 14px;width:48px;height:48px;border-radius:50%;background:#eef8f1;line-height:48px;'>" +
                             "<svg width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='#36a45c' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round' style='vertical-align:middle;'><polyline points='20 6 9 17 4 12'></polyline></svg>" +
                         "</div>" +
-                        "<h4 style='margin:0;font-size:17px;color:#2c3e50;font-weight:600;'><?= $this->translate->_("Re-evaluation queued."); ?></h4>" +
-                        "<p style='margin:8px 0 0;font-size:14px;color:#555;'>" + (done - failed) + " / " + total + " <?= $this->translate->_("queued"); ?>" +
-                        (failed > 0 ? ", " + failed + " <?= $this->translate->_("could not be queued"); ?>" : "") + "</p>" +
-                        "<p style='margin:8px 0 0;font-size:12px;color:#999;'><?= $this->translate->_("They will be processed in the background shortly."); ?></p>" +
-                        "<button type='button' id='reEvalNudgeOk' style='margin-top:18px;background:#e6952c;color:#fff;border:0;padding:9px 30px;border-radius:5px;font-weight:600;font-size:14px;cursor:pointer;'><?= $this->translate->_("OK"); ?></button>";
+                        "<h4 style='margin:0;font-size:17px;color:#2c3e50;font-weight:600;'><?= $this->jsTranslate("Re-evaluation queued.") ?></h4>" +
+                        "<p style='margin:8px 0 0;font-size:14px;color:#555;'>" + (done - failed) + " / " + total + " <?= $this->jsTranslate("queued") ?>" +
+                        (failed > 0 ? ", " + failed + " <?= $this->jsTranslate("could not be queued") ?>" : "") + "</p>" +
+                        "<p style='margin:8px 0 0;font-size:12px;color:#999;'><?= $this->jsTranslate("They will be processed in the background shortly.") ?></p>" +
+                        "<button type='button' id='reEvalNudgeOk' style='margin-top:18px;background:#e6952c;color:#fff;border:0;padding:9px 30px;border-radius:5px;font-weight:600;font-size:14px;cursor:pointer;'><?= $this->jsTranslate("OK") ?></button>";
                     $('#reEvalBox').html(doneMsg);
                     $('#reEvalNudgeOk').on('click', function () { $.unblockUI(); });
                     return;

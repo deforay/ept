@@ -488,7 +488,7 @@ $formAction = $this->url(array("module" => "admin", "controller" => "custom-test
 				if (expectedResult && expectedResult.trim() !== '') {
 					var normalizedResult = expectedResult.trim().toLowerCase();
 					if (resultsByType[resultType].includes(normalizedResult)) {
-						alert('Duplicate expected result "' + expectedResult + '" found for Result Type "' + (resultType === 'test-result' ? 'Test Result' : 'Final Interpretation') + '". Each expected result must be unique within a result type.');
+						alert('<?= $this->jsTranslate('Duplicate expected result "') ?>' + expectedResult + '<?= $this->jsTranslate('" found for Result Type "') ?>' + (resultType === 'test-result' ? '<?= $this->jsTranslate('Test Result') ?>' : '<?= $this->jsTranslate('Final Interpretation') ?>') + '<?= $this->jsTranslate('". Each expected result must be unique within a result type.') ?>');
 						return false;
 					}
 					resultsByType[resultType].push(normalizedResult);
@@ -499,7 +499,7 @@ $formAction = $this->url(array("module" => "admin", "controller" => "custom-test
 				if (resultCode && resultCode.trim() !== '') {
 					var normalizedCode = resultCode.trim().toUpperCase();
 					if (allResultCodes.includes(normalizedCode)) {
-						alert('Duplicate Result Code "' + resultCode + '" found. Each result code must be unique.');
+						alert('<?= $this->jsTranslate('Duplicate Result Code "') ?>' + resultCode + '<?= $this->jsTranslate('" found. Each result code must be unique.') ?>');
 						return false;
 					}
 					allResultCodes.push(normalizedCode);
@@ -521,7 +521,7 @@ $formAction = $this->url(array("module" => "admin", "controller" => "custom-test
 			formId: 'editGenericTestForm'
 		});
 		if (codeDuplicated) {
-			alert('This code is already in use. Please choose a different one.', 'err');
+			alert('<?= $this->jsTranslate('This code is already in use. Please choose a different one.') ?>', 'err');
 			$('#schemeCode').focus();
 			return false;
 		}
@@ -802,12 +802,12 @@ $formAction = $this->url(array("module" => "admin", "controller" => "custom-test
 				codeDuplicated = true;
 				$code.addClass('input-dup-error');
 				$fb.removeClass('text-success').addClass('text-danger')
-					.html('<i class="icon-warning-sign"></i> This code is already in use. Please choose a different one.').show();
+					.html('<i class="icon-warning-sign"></i> <?= $this->jsTranslate('This code is already in use. Please choose a different one.') ?>').show();
 			} else {
 				codeDuplicated = false;
 				$code.removeClass('input-dup-error');
 				$fb.removeClass('text-danger').addClass('text-success')
-					.html('<i class="icon-ok"></i> This code is available.').show();
+					.html('<i class="icon-ok"></i> <?= $this->jsTranslate('This code is available.') ?>').show();
 			}
 		});
 	}

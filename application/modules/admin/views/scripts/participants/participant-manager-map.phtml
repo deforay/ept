@@ -57,7 +57,7 @@
                 <div class="row singleMap">
                     <label class="col-lg-4 control-label"><?= $this->translate->_("Choose a Data Manager (Participant Login)"); ?> <span class="mandatory">*</span></label>
                     <div class="col-lg-8">
-                        <select class="select2" style="width:60%;" name="alldatamangers" id="alldatamangers" placeholder="Please choose a PT Login" title="Please choose a PT Login"></select>
+                        <select class="select2" style="width:60%;" name="alldatamangers" id="alldatamangers" placeholder="<?= $this->htmlTranslate("Please choose a PT Login") ?>" title="<?= $this->htmlTranslate("Please choose a PT Login") ?>"></select>
                         <a href="javascript:void(0);" style=" line-height: 1.2; " onclick="advFilter()" class="btn btn-sm btn-primary filter-btn"><?= $this->translate->_("Show advanced filters"); ?></a>
                     </div>
                 </div>
@@ -69,7 +69,7 @@
                         <?php if (isset($this->countries) && count($this->countries) > 0) { ?>
                             <label class="col-lg-2 control-label" style="height: 40px;" for="country"><?= $this->translate->_("Country"); ?></label>
                             <div class="col-lg-4">
-                                <select class="select2" style="width:100%;" name="country" id="country" placeholder="Choose country" title="Please choose a country" onchange="getDataManager();getStats(this.value);">
+                                <select class="select2" style="width:100%;" name="country" id="country" placeholder="<?= $this->htmlTranslate("Choose country") ?>" title="<?= $this->htmlTranslate("Please choose a country") ?>" onchange="getDataManager();getStats(this.value);">
                                     <option value=""></option>
                                     <?php foreach ($this->countries as $countries) { ?>
                                         <option value="<?php echo $countries['id']; ?>"><?php echo $countries['iso_name']; ?></option>
@@ -80,7 +80,7 @@
                         if (isset($this->province) && count($this->province) > 0) { ?>
                             <label class="col-lg-2 control-label" style="height: 40px;" for="province"><?= $this->translate->_("Province"); ?></label>
                             <div class="col-lg-4">
-                                <select class="select2" style="width:100%;" name="province" id="province" placeholder="Choose province" title="Please choose a province" onchange="getDataManager();getDistricts(this.value);">
+                                <select class="select2" style="width:100%;" name="province" id="province" placeholder="<?= $this->htmlTranslate("Choose province") ?>" title="<?= $this->htmlTranslate("Please choose a province") ?>" onchange="getDataManager();getDistricts(this.value);">
                                     <option value=""></option>
                                     <?php foreach ($this->province as $province) { ?>
                                         <option value="<?php echo $province['state']; ?>"><?php echo $province['state']; ?></option>
@@ -95,7 +95,7 @@
                         <?php if (isset($this->district) && count($this->district) > 0) { ?>
                             <label class="col-lg-2 control-label" style="height: 40px;" for="district"><?= $this->translate->_("District"); ?></label>
                             <div class="col-lg-4">
-                                <select class="select2" style="width:100%;" name="district" id="district" placeholder="Choose district" title="Please choose a district" onchange="getDataManager();getInstitutes();">
+                                <select class="select2" style="width:100%;" name="district" id="district" placeholder="<?= $this->htmlTranslate("Choose district") ?>" title="<?= $this->htmlTranslate("Please choose a district") ?>" onchange="getDataManager();getInstitutes();">
                                     <option value=""></option>
                                     <?php foreach ($this->district as $district) { ?>
                                         <option value="<?php echo $district['district']; ?>"><?php echo $district['district']; ?></option>
@@ -106,7 +106,7 @@
                         if (isset($this->institutes) && count($this->institutes) > 0) { ?>
                             <label class="col-lg-2 control-label" style="height: 40px;" for="institute"><?= $this->translate->_("Institute"); ?></label>
                             <div class="col-lg-4">
-                                <select class="select2" style="width:100%;" name="institute" id="institute" placeholder="Choose institute" title="Please choose a institute" onchange="getDataManager()">
+                                <select class="select2" style="width:100%;" name="institute" id="institute" placeholder="<?= $this->htmlTranslate("Choose institute") ?>" title="<?= $this->htmlTranslate("Please choose a institute") ?>" onchange="getDataManager()">
                                     <option value=""></option>
                                     <?php foreach ($this->institutes as $institute) { ?>
                                         <option value="<?php echo $institute['institute_name']; ?>"><?php echo $institute['institute_name']; ?></option>
@@ -121,7 +121,7 @@
                         <?php if (isset($this->networksTier) && count($this->networksTier) > 0) { ?>
                             <label class="col-lg-2 control-label" style="height: 40px;" for="networkTier"><?= $this->translate->_("Network Tier"); ?></label>
                             <div class="col-lg-4">
-                                <select class="select2" style="width:100%;" name="networkTier" id="networkTier" placeholder="Choose network tier" title="Please choose a network tier" onchange="getDataManager()">
+                                <select class="select2" style="width:100%;" name="networkTier" id="networkTier" placeholder="<?= $this->htmlTranslate("Choose network tier") ?>" title="<?= $this->htmlTranslate("Please choose a network tier") ?>" onchange="getDataManager()">
                                     <option value=""></option>
                                     <?php foreach ($this->networksTier as $networksTier) { ?>
                                         <option value="<?php echo $networksTier['network_id']; ?>"><?php echo $networksTier['network_name']; ?></option>
@@ -132,7 +132,7 @@
                         if (isset($this->affiliation) && count($this->affiliation) > 0) { ?>
                             <label class="col-lg-2 control-label" style="height: 40px;" for="affiliation"><?= $this->translate->_("Affiliation"); ?></label>
                             <div class="col-lg-4">
-                                <select class="select2" style="width:100%;" name="affiliation" id="affiliation" placeholder="Choose affiliation" title="Please choose a affiliation" onchange="getDataManager()">
+                                <select class="select2" style="width:100%;" name="affiliation" id="affiliation" placeholder="<?= $this->htmlTranslate("Choose affiliation") ?>" title="<?= $this->htmlTranslate("Please choose a affiliation") ?>" onchange="getDataManager()">
                                     <option value=""></option>
                                     <?php foreach ($this->affiliation as $affiliation) { ?>
                                         <option value="<?php echo $affiliation['affiliate']; ?>"><?php echo $affiliation['affiliate']; ?></option>
@@ -190,7 +190,7 @@
     <div id="bulkForm" class="row bulkForm" style="display:none;">
         <label class="col-lg-3 control-label" style="height: 40px;"><?= $this->translate->_("Upload Bulk Importing Map File"); ?></label>
         <div class="col-lg-6">
-            <input class="form-control" style="width:100%;" name="bulkMap" id="bulkMap" type="file" placeholder="Upload mapping file" title="Please choose a file to upload" />
+            <input class="form-control" style="width:100%;" name="bulkMap" id="bulkMap" type="file" placeholder="<?= $this->htmlTranslate("Upload mapping file") ?>" title="<?= $this->htmlTranslate("Please choose a file to upload") ?>" />
         </div>
         <input name="submitbtn" class="btn btn-primary" type="button" onclick="validateNow(); return false;" tabindex="7" value="<?= $this->translate->_("Upload"); ?>" />
         <input type="button" onclick="window.location.href = '<?php echo $this->url(array('module' => 'admin', 'controller' => 'participants', 'action' => 'participant-manager-map'), 'default', true); ?>'" class="btn btn-danger" value="<?= $this->translate->_("Cancel"); ?>" />
@@ -544,16 +544,16 @@
     }
 
     $(document).ready(function() {
-        $("#country").select2({ allowClear: true, placeholder: "<?= $this->translate->_("Select Country"); ?>" });
-        $("#province").select2({ allowClear: true, placeholder: "<?= $this->translate->_("Select Province"); ?>" });
-        $("#district").select2({ allowClear: true, placeholder: "<?= $this->translate->_("Select District"); ?>" });
-        $("#networkTier").select2({ allowClear: true, placeholder: "<?= $this->translate->_("Select Network Tier"); ?>" });
-        $("#affiliation").select2({ allowClear: true, placeholder: "<?= $this->translate->_("Select Affiliation"); ?>" });
-        $("#institute").select2({ allowClear: true, placeholder: "<?= $this->translate->_("Select Institute"); ?>" });
+        $("#country").select2({ allowClear: true, placeholder: "<?= $this->jsTranslate("Select Country"); ?>" });
+        $("#province").select2({ allowClear: true, placeholder: "<?= $this->jsTranslate("Select Province"); ?>" });
+        $("#district").select2({ allowClear: true, placeholder: "<?= $this->jsTranslate("Select District"); ?>" });
+        $("#networkTier").select2({ allowClear: true, placeholder: "<?= $this->jsTranslate("Select Network Tier"); ?>" });
+        $("#affiliation").select2({ allowClear: true, placeholder: "<?= $this->jsTranslate("Select Affiliation"); ?>" });
+        $("#institute").select2({ allowClear: true, placeholder: "<?= $this->jsTranslate("Select Institute"); ?>" });
 
         <?php if (empty($this->isModal)) { ?>
         $("#alldatamangers").select2({
-            placeholder: "<?= $this->translate->_("Select PT Login"); ?>",
+            placeholder: "<?= $this->jsTranslate("Select PT Login"); ?>",
             allowClear: true,
             minimumInputLength: 1,
             ajax: {

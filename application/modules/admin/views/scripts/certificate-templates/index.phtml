@@ -433,9 +433,9 @@ $(document).ready(function() {
     $('.btn-remove').on('click', function() {
         var scheme = $(this).data('scheme');
         var type = $(this).data('type');
-        var typeName = type === 'participation' ? '<?= $this->translate->_("participation"); ?>' : '<?= $this->translate->_("excellence"); ?>';
+        var typeName = type === 'participation' ? '<?= $this->jsTranslate("participation") ?>' : '<?= $this->jsTranslate("excellence") ?>';
 
-        if (confirm('<?= $this->translate->_("Are you sure you want to remove this"); ?> ' + typeName + ' <?= $this->translate->_("certificate template?"); ?>')) {
+        if (confirm('<?= $this->jsTranslate("Are you sure you want to remove this") ?> ' + typeName + ' <?= $this->jsTranslate("certificate template?") ?>')) {
             $.ajax({
                 url: removeUrl,
                 type: 'POST',
@@ -447,11 +447,11 @@ $(document).ready(function() {
                     if (response.success) {
                         location.reload();
                     } else {
-                        alert(response.message || '<?= $this->translate->_("Failed to remove template"); ?>');
+                        alert(response.message || '<?= $this->jsTranslate("Failed to remove template") ?>');
                     }
                 },
                 error: function() {
-                    alert('<?= $this->translate->_("Failed to remove template"); ?>');
+                    alert('<?= $this->jsTranslate("Failed to remove template") ?>');
                 }
             });
         }

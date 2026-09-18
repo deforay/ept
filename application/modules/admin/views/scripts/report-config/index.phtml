@@ -788,7 +788,7 @@
 	}
 
 	function deleteReport() {
-		if (confirm("<?= $this->translate->_('Are you sure you want to remove the template? This action cannot be undone!'); ?>")) {
+		if (confirm("<?= $this->jsTranslate('Are you sure you want to remove the template? This action cannot be undone!'); ?>")) {
 			$('#deleteTemplate').val('yes');
 		}
 	}

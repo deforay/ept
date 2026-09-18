@@ -1221,7 +1221,7 @@ $(document).on('click', '.remove-temp-file', function () {
  function getOptions(table, searchfield, returnfield, searchvalue, returnid) {
             $.blockUI();
             if(searchvalue == null || searchvalue == undefined || searchvalue == '') {
-                $("#" + returnid).html('<option value="">-- <?= $this->translate->_("Select"); ?> --</option>');
+                $("#" + returnid).html('<option value="">-- <?= $this->jsTranslate("Select"); ?> --</option>');
                 $.unblockUI();
                 return false;
             }

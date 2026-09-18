@@ -114,7 +114,7 @@
         </td>
         <td>
             <input type="text" id="dateRange" name="dateRange" class="form-control input-sm" readonly="readonly"
-                style="background: #fff" placeholder="Click to select date range" />
+                style="background: #fff" placeholder="<?= $this->htmlTranslate("Click to select date range") ?>" />
         </td>
         <td>
             <button class="btn btn-danger btn-sm" onclick="resetFilters()">
@@ -281,9 +281,9 @@
         // Build tooltip content with job details
         var tooltipContent = '';
         if (row.queue_type === 'report_generation') {
-            tooltipContent = 'Report Generation\n';
-            tooltipContent += 'Shipment: ' + (row.shipment_code || 'N/A') + '\n';
-            tooltipContent += 'Type: ' + (row.report_type || 'All');
+            tooltipContent = '<?= $this->jsTranslate('Report Generation') ?>\n';
+            tooltipContent += '<?= $this->jsTranslate('Shipment: ') ?>' + (row.shipment_code || '<?= $this->jsTranslate('N/A') ?>') + '\n';
+            tooltipContent += '<?= $this->jsTranslate('Type: ') ?>' + (row.report_type || '<?= $this->jsTranslate('All') ?>');
         } else if (row.job) {
             // For scheduled jobs, show the full command/script
             tooltipContent = row.job;
@@ -316,16 +316,16 @@
     function formatStatusBadge(row) {
         var status = (typeof row === 'object' && row !== null) ? row.status : row;
         var statusConfig = {
-            'pending': { cls: 'job-status-pending', icon: 'icon-clock', label: 'Pending' },
-            'generating': { cls: 'job-status-processing', icon: 'icon-spinner icon-spin', label: 'Generating' },
-            'finalizing': { cls: 'job-status-processing', icon: 'icon-spinner icon-spin', label: 'Finalizing' },
-            'processing': { cls: 'job-status-processing', icon: 'icon-spinner icon-spin', label: 'Processing' },
-            'evaluated': { cls: 'job-status-completed', icon: 'icon-ok', label: 'Completed' },
-            'finalized': { cls: 'job-status-completed', icon: 'icon-ok', label: 'Finalized' },
-            'completed': { cls: 'job-status-completed', icon: 'icon-ok', label: 'Completed' },
-            'reports generated': { cls: 'job-status-completed', icon: 'icon-ok', label: 'Reports Generated' },
-            'failed': { cls: 'job-status-cancelled', icon: 'icon-warning-sign', label: 'Failed' },
-            'cancelled': { cls: 'job-status-cancelled', icon: 'icon-ban-circle', label: 'Cancelled' }
+            'pending': { cls: 'job-status-pending', icon: 'icon-clock', label: '<?= $this->jsTranslate('Pending') ?>' },
+            'generating': { cls: 'job-status-processing', icon: 'icon-spinner icon-spin', label: '<?= $this->jsTranslate('Generating') ?>' },
+            'finalizing': { cls: 'job-status-processing', icon: 'icon-spinner icon-spin', label: '<?= $this->jsTranslate('Finalizing') ?>' },
+            'processing': { cls: 'job-status-processing', icon: 'icon-spinner icon-spin', label: '<?= $this->jsTranslate('Processing') ?>' },
+            'evaluated': { cls: 'job-status-completed', icon: 'icon-ok', label: '<?= $this->jsTranslate('Completed') ?>' },
+            'finalized': { cls: 'job-status-completed', icon: 'icon-ok', label: '<?= $this->jsTranslate('Finalized') ?>' },
+            'completed': { cls: 'job-status-completed', icon: 'icon-ok', label: '<?= $this->jsTranslate('Completed') ?>' },
+            'reports generated': { cls: 'job-status-completed', icon: 'icon-ok', label: '<?= $this->jsTranslate('Reports Generated') ?>' },
+            'failed': { cls: 'job-status-cancelled', icon: 'icon-warning-sign', label: '<?= $this->jsTranslate('Failed') ?>' },
+            'cancelled': { cls: 'job-status-cancelled', icon: 'icon-ban-circle', label: '<?= $this->jsTranslate('Cancelled') ?>' }
         };
 
         var config = statusConfig[status] || { cls: 'job-status-pending', icon: 'icon-question', label: status };
@@ -354,12 +354,12 @@
 
         return '<button class="btn btn-danger btn-xs btn-cancel-job" ' +
             'onclick="cancelJob(' + row.job_id + ', \'' + row.queue_type + '\')" ' +
-            'title="Cancel this job">' +
-            '<i class="icon-remove"></i> Cancel</button>';
+            'title="<?= $this->jsTranslate("Cancel this job") ?>">' +
+            '<i class="icon-remove"></i> <?= $this->jsTranslate("Cancel") ?></button>';
     }
 
     function cancelJob(jobId, queueType) {
-        if (!confirm('Are you sure you want to cancel this job?')) {
+        if (!confirm('<?= $this->jsTranslate('Are you sure you want to cancel this job?') ?>')) {
             return;
         }
 
@@ -373,21 +373,21 @@
             dataType: 'json',
             success: function (response) {
                 if (response.success) {
-                    alert('Job cancelled successfully');
+                    alert('<?= $this->jsTranslate('Job cancelled successfully') ?>');
                     refreshJobs();
                 } else {
-                    alert('Failed to cancel job: ' + response.message);
+                    alert('<?= $this->jsTranslate('Failed to cancel job: ') ?>' + response.message);
                 }
             },
             error: function () {
-                alert('Error cancelling job. Please try again.');
+                alert('<?= $this->jsTranslate('Error cancelling job. Please try again.') ?>');
             }
         });
     }
 
     function formatProgress(row) {
         if (row.progress === null || row.progress === undefined) {
-            return '<span class="text-muted">N/A</span>';
+            return '<span class="text-muted"><?= $this->jsTranslate("N/A") ?></span>';
         }
 
         var percent = Math.round(row.progress);
@@ -399,7 +399,7 @@
             percent + '%</div></div>';
 
         if (row.progress_completed !== null && row.progress_total !== null) {
-            var unit = row.job_type === 'Send Emails' ? 'emails' : 'reports';
+            var unit = row.job_type === 'Send Emails' ? '<?= $this->jsTranslate('emails') ?>' : '<?= $this->jsTranslate('reports') ?>';
             html += '<small class="text-muted">' + row.progress_completed + '/' + row.progress_total + ' ' + unit + '</small>';
         }
 
@@ -410,9 +410,9 @@
                 // Show failed count for emails
                 summaryLabel = '<span style="color:#d9534f;"><i class="icon-warning-sign"></i> ' + row.summary_status + '</span>';
             } else if (row.summary_status === 'completed') {
-                summaryLabel = '<span style="color:#5cb85c;"><i class="icon-ok"></i> Summary done</span>';
+                summaryLabel = '<span style="color:#5cb85c;"><i class="icon-ok"></i> <?= $this->jsTranslate("Summary done") ?></span>';
             } else {
-                summaryLabel = '<span class="text-muted"><i class="icon-clock"></i> Summary pending</span>';
+                summaryLabel = '<span class="text-muted"><i class="icon-clock"></i> <?= $this->jsTranslate("Summary pending") ?></span>';
             }
             html += '<br>' + summaryLabel;
         }
@@ -476,7 +476,7 @@
         var human = humanizeDuration(secs);
 
         if (endDate) {
-            return '<span title="' + escapeHtml('Ended: ' + endStr) + '">' + human + '</span>';
+            return '<span title="' + escapeHtml('<?= $this->jsTranslate('Ended: ') ?>' + endStr) + '">' + human + '</span>';
         }
         if (RUNNING_STATUSES.indexOf(row.status) !== -1) {
             return '<span class="text-muted">' + human + ' &hellip;</span>';
@@ -493,13 +493,13 @@
 
         var timeAgo = '';
         if (diff < 60) {
-            timeAgo = diff + 's ago';
+            timeAgo = diff + '<?= $this->jsTranslate('s ago') ?>';
         } else if (diff < 3600) {
-            timeAgo = Math.floor(diff / 60) + 'm ago';
+            timeAgo = Math.floor(diff / 60) + '<?= $this->jsTranslate('m ago') ?>';
         } else if (diff < 86400) {
-            timeAgo = Math.floor(diff / 3600) + 'h ago';
+            timeAgo = Math.floor(diff / 3600) + '<?= $this->jsTranslate('h ago') ?>';
         } else {
-            timeAgo = Math.floor(diff / 86400) + 'd ago';
+            timeAgo = Math.floor(diff / 86400) + '<?= $this->jsTranslate('d ago') ?>';
         }
 
         // Format as readable date

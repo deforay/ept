@@ -22,7 +22,7 @@ $section3Name = !empty($home->subHeading3) ? $home->subHeading3 : $this->transla
             <div class="form-group">
                 <label class="col-lg-3 control-label" for="section"><?= $this->translate->_("Resource Section"); ?> <span class="mandatory">*</span></label>
                 <div class="col-lg-5">
-                    <select name="section" id="section" class="form-control isRequired" title="Please choose the resource section" onchange="getDisplayOrderNo()" style="width:285px;">
+                    <select name="section" id="section" class="form-control isRequired" title="<?= $this->htmlTranslate("Please choose the resource section") ?>" onchange="getDisplayOrderNo()" style="width:285px;">
                         <option value="">--<?= $this->translate->_("Select Resource Section"); ?>--</option>
                         <option value="section1" <?php echo ($this->result['section'] == 'section1') ? "selected='selected'" : ""; ?>><?= $section1Name; ?></option>
                         <option value="section2" <?php echo ($this->result['section'] == 'section2') ? "selected='selected'" : ""; ?>><?= $section2Name; ?></option>
@@ -33,7 +33,7 @@ $section3Name = !empty($home->subHeading3) ? $home->subHeading3 : $this->transla
             <div class="form-group">
                 <label class="col-lg-3 control-label" for="type"><?= $this->translate->_("Type"); ?> <span class="mandatory">*</span></label>
                 <div class="col-lg-5">
-                    <select name="type" id="type" class="form-control isRequired" title="Please choose the type" style="width:285px;" onchange="toggleInputFields();">
+                    <select name="type" id="type" class="form-control isRequired" title="<?= $this->htmlTranslate("Please choose the type") ?>" style="width:285px;" onchange="toggleInputFields();">
                         <option value="">--<?= $this->translate->_("Select Type"); ?>--</option>
                         <option value="link" <?php echo ($this->result['type'] == 'link') ? "selected='selected'" : ""; ?>><?= $this->translate->_("Link"); ?></option>
                         <option value="file" <?php echo ($this->result['type'] == 'file') ? "selected='selected'" : ""; ?>><?= $this->translate->_("File"); ?></option>
@@ -44,7 +44,7 @@ $section3Name = !empty($home->subHeading3) ? $home->subHeading3 : $this->transla
             <div class="form-group link-group" style="display: none;">
                 <label class="col-lg-3 control-label" for="link"><?= $this->translate->_("Link"); ?> <span class="mandatory">*</span></label>
                 <div class="col-lg-5">
-                    <input type="text" id="link" name="link" value="<?php echo $this->result['link']; ?>" size="50" class="form-control" title="Please enter link" placeholder="Please enter link">
+                    <input type="text" id="link" name="link" value="<?php echo $this->result['link']; ?>" size="50" class="form-control" title="<?= $this->htmlTranslate("Please enter link") ?>" placeholder="<?= $this->htmlTranslate("Please enter link") ?>">
                 </div>
             </div>
 
@@ -65,12 +65,12 @@ $section3Name = !empty($home->subHeading3) ? $home->subHeading3 : $this->transla
 
             <div class="form-group">
                 <label class="col-lg-3 control-label" for="displayText"><?= $this->translate->_("Display Text"); ?> <span class="mandatory">*</span></label>
-                <div class="col-lg-5"><input type="text" value="<?php echo $this->result['text']; ?>" id="displayText" name="displayText" size="50" maxlength="255" class="isRequired form-control" title="Please enter the display text here" placeholder="Enter the display text here" /></div>
+                <div class="col-lg-5"><input type="text" value="<?php echo $this->result['text']; ?>" id="displayText" name="displayText" size="50" maxlength="255" class="isRequired form-control" title="<?= $this->htmlTranslate("Please enter the display text here") ?>" placeholder="<?= $this->htmlTranslate("Enter the display text here") ?>" /></div>
             </div>
             <div class="form-group">
                 <label class="col-lg-3 control-label" for="icon"><?= $this->translate->_("Icon"); ?> <span class="mandatory">*</span></label>
                 <div class="col-lg-5">
-                    <select name="icon" id="icon" class="form-control isRequired" title="Please choose the Icon">
+                    <select name="icon" id="icon" class="form-control isRequired" title="<?= $this->htmlTranslate("Please choose the Icon") ?>">
                         <option value="">--<?= $this->translate->_("Select Icon"); ?>--</option>
                         <option value="bx bx-file" data-icon="fa fa-file" <?php echo ($this->result['icon'] == 'bx bx-file') ? "selected='selected'" : ""; ?>><?= $this->translate->_("Document"); ?></option>
                         <option value="bx bx-download" data-icon="fa fa-download" <?php echo ($this->result['icon'] == 'bx bx-download') ? "selected='selected'" : ""; ?>><?= $this->translate->_("Download"); ?></option>
@@ -82,12 +82,12 @@ $section3Name = !empty($home->subHeading3) ? $home->subHeading3 : $this->transla
             </div>
             <div class="form-group">
                 <label class="col-lg-3 control-label" for="displayOrder"><?= $this->translate->_("Display Order"); ?> <span class="mandatory">*</span></label>
-                <div class="col-lg-5"><input type="text" value="<?php echo $this->result['display_order']; ?>" id="displayOrder" name="displayOrder" size="50" maxlength="255" class="isRequired form-control" title="Please enter the display order here" placeholder="Please enter the display order here" /></div>
+                <div class="col-lg-5"><input type="text" value="<?php echo $this->result['display_order']; ?>" id="displayOrder" name="displayOrder" size="50" maxlength="255" class="isRequired form-control" title="<?= $this->htmlTranslate("Please enter the display order here") ?>" placeholder="<?= $this->htmlTranslate("Please enter the display order here") ?>" /></div>
             </div>
             <div class="form-group">
                 <label class="col-lg-3 control-label"><?= $this->translate->_("Status"); ?> <span class="mandatory">*</span></label>
                 <div class="col-lg-5">
-                    <select id="status" name="status" class="isRequired form-control" title="Please select user status here">
+                    <select id="status" name="status" class="isRequired form-control" title="<?= $this->htmlTranslate("Please select user status here") ?>">
                         <option value="">--<?= $this->translate->_("Select Status"); ?>--</option>
                         <option value="active" <?php echo ($this->result['status'] == 'active') ? "selected='selected'" : ""; ?>><?= $this->translate->_("Active"); ?></option>
                         <option value="inactive" <?php echo ($this->result['status'] == 'inactive') ? "selected='selected'" : ""; ?>><?= $this->translate->_("Inactive"); ?></option>
@@ -193,13 +193,13 @@ $section3Name = !empty($home->subHeading3) ? $home->subHeading3 : $this->transla
                         // Set the display order to maxSortOrder + 1
                         document.getElementById("displayOrder").value = parseInt(response.maxSortOrder, 10) + 1;
                     } else {
-                        alert("Error: Could not fetch the display order.");
+                        alert("<?= $this->jsTranslate("Error: Could not fetch the display order.") ?>");
                         document.getElementById("displayOrder").value = "";
                     }
                 },
                 error: function(xhr, status, error) {
                     console.error("AJAX Error:", error);
-                    alert("Error fetching display order. Please try again.");
+                    alert("<?= $this->jsTranslate("Error fetching display order. Please try again.") ?>");
                     document.getElementById("displayOrder").value = "";
                 }
             });

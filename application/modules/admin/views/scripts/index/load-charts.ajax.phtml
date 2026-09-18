@@ -17,7 +17,7 @@ if ($this->type == "participant-per-scheme") { ?>
                     type: 'column'
                 },
                 title: {
-                    text: '<?= $this->translate->_("Active Participants enrolled per PT Scheme"); ?>'
+                    text: '<?= $this->jsTranslate("Active Participants enrolled per PT Scheme") ?>'
                 },
                 subtitle: {
                     text: ''
@@ -26,13 +26,13 @@ if ($this->type == "participant-per-scheme") { ?>
                     categories: [<?= "'" . implode("','", array_keys($dataScheme)) . "'"; ?>],
                     crosshair: true,
                     title: {
-                        text: '<?= $this->translate->_("Scheme Names"); ?>'
+                        text: '<?= $this->jsTranslate("Scheme Names") ?>'
                     }
                 },
                 yAxis: {
                     min: 0,
                     title: {
-                        text: '<?= $this->translate->_("Number of Participants"); ?>'
+                        text: '<?= $this->jsTranslate("Number of Participants") ?>'
                     }
                 },
                 legend: {
@@ -72,10 +72,10 @@ if ($this->type == "participant-per-scheme") { ?>
                     type: 'column',
                 },
                 title: {
-                    text: '<?= $this->translate->_("No. of Participants for all PT Schemes"); ?>'
+                    text: '<?= $this->jsTranslate("No. of Participants for all PT Schemes") ?>'
                 },
                 subtitle: {
-                    text: '<?= $this->translate->_("Click the columns to view individual Panels/Shipments."); ?>'
+                    text: '<?= $this->jsTranslate("Click the columns to view individual Panels/Shipments.") ?>'
                 },
                 accessibility: {
                     announceNewData: {
@@ -101,7 +101,7 @@ if ($this->type == "participant-per-scheme") { ?>
                 },
                 yAxis: {
                     title: {
-                        text: '<?= $this->translate->_("Number of Participants"); ?>'
+                        text: '<?= $this->jsTranslate("Number of Participants") ?>'
                     }
                 },
                 credits: {
@@ -123,7 +123,7 @@ if ($this->type == "participant-per-scheme") { ?>
                 },
 
                 series: [{
-                        name: "<?= $this->translate->_("Number of participants"); ?>",
+                        name: "<?= $this->jsTranslate("Number of participants") ?>",
                         data: [
                             <?php $sn = count($this->ptchart['total']['participants']);
                             $n = 0;
@@ -141,7 +141,7 @@ if ($this->type == "participant-per-scheme") { ?>
                         ]
                     },
                     {
-                        name: "<?= $this->translate->_("Number of participants responded"); ?>",
+                        name: "<?= $this->jsTranslate("Number of participants responded") ?>",
                         data: [
                             <?php $sn = count($this->ptchart['total']['received']);
                             $n = 0;
@@ -168,7 +168,7 @@ if ($this->type == "participant-per-scheme") { ?>
                             if (isset($this->ptchart['result'][$scheme]) && count($this->ptchart['result'][$scheme]) > 0) {
                                 echo '{
                                 id: "a-' . $scheme . '",
-                                name: "' . $this->translate->_("Number of participants") . '",
+                                name: "' . $this->jsTranslate("Number of participants") . '",
                                 data :
                                 [';
                                 $ssn = count($this->ptchart['result'][$scheme]);
@@ -187,7 +187,7 @@ if ($this->type == "participant-per-scheme") { ?>
                                 }
                                 echo ']},{
                                 id: "r-' . $scheme . '",
-                                name: "' . $this->translate->_("Number of participants responded") . '",
+                                name: "' . $this->jsTranslate("Number of participants responded") . '",
                                 data :
                                 [';
                                 $ssn = count($this->ptchart['result'][$scheme]);

@@ -207,7 +207,7 @@
 	}
 
 	function removeParticipants(mid, sid) {
-		if (window.confirm("<?= $this->translate->_("Are you sure you want to remove this participant? This cannot be undone!"); ?>")) {
+		if (window.confirm("<?= $this->jsTranslate("Are you sure you want to remove this participant? This cannot be undone!") ?>")) {
 			$.blockUI();
 			$.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'shipment', 'action' => 'delete-shipment-participant')); ?>", {
 				mid: mid,
@@ -216,9 +216,9 @@
 			},
 				function (data) {
 					if (data > 0) {
-						alert("<?= $this->translate->_("Participant(s) removed successfully"); ?>");
+						alert("<?= $this->jsTranslate("Participant(s) removed successfully") ?>");
 					} else {
-						alert("<?= $this->translate->_("Unable to delete. Please try again later or contact system admin for help"); ?>");
+						alert("<?= $this->jsTranslate("Unable to delete. Please try again later or contact system admin for help") ?>");
 					}
 					drawTable();
 					$.unblockUI();
@@ -271,7 +271,7 @@
 			formId: 'addParticipantForm'
 		});
 		if (flag) {
-			conf = confirm("<?= $this->translate->_("Are you sure you want to add the selected participants to this shipment"); ?>");
+			conf = confirm("<?= $this->jsTranslate("Are you sure you want to add the selected participants to this shipment") ?>");
 			if (conf) {
 				document.getElementById('addParticipantForm').submit();
 			}

@@ -23,7 +23,7 @@ $eptDomain = parse_url($conf->domain, PHP_URL_HOST);
             <div class="form-group">
                 <label for="templates" class="col-lg-2 control-label"><?= $this->translate->_("Template"); ?></label>
                 <div class="col-lg-10">
-                    <select id="templates" name="templates" class="form-control" title="Please select template to fill the form" onchange="fillTemplate(this.value);">
+                    <select id="templates" name="templates" class="form-control" title="<?= $this->htmlTranslate("Please select template to fill the form") ?>" onchange="fillTemplate(this.value);">
                         <option value="">--<?= $this->translate->_("Select"); ?>--</option>
                         <?php if (isset($this->templates) && !empty($this->templates)) {
                             foreach ($this->templates as $row) {
@@ -48,7 +48,7 @@ $eptDomain = parse_url($conf->domain, PHP_URL_HOST);
                     <div class="form-group">
                         <label for="shipments" class="col-lg-4 control-label"><?= $this->translate->_("Shipment Code"); ?> <span class="mandatory">*</span></label>
                         <div class="col-lg-8">
-                            <select id="shipments" name="shipments[]" data-live-search="true" class="form-control" multiple="multiple" data-selected-text-format="count>3" placeholder="<?= $this->translate->_('Select shipments'); ?>" title="Please select one or more shipments"></select>
+                            <select id="shipments" name="shipments[]" data-live-search="true" class="form-control" multiple="multiple" data-selected-text-format="count>3" placeholder="<?= $this->translate->_('Select shipments'); ?>" title="<?= $this->htmlTranslate('Please select one or more shipments') ?>"></select>
                         </div>
                     </div>
                 </div>
@@ -63,7 +63,7 @@ $eptDomain = parse_url($conf->domain, PHP_URL_HOST);
             <div class="form-group">
                 <label for="sendMail" class="col-lg-2 control-label"><?= $this->translate->_("To"); ?> <span class="mandatory">*</span></label>
                 <div class="col-lg-10">
-                    <select id="sendMail" name="sendMail[]" class="form-control" multiple="multiple" data-selected-text-format="count>3" placeholder="<?= $this->translate->_('Select option'); ?>" title="Please select one or more option">
+                    <select id="sendMail" name="sendMail[]" class="form-control" multiple="multiple" data-selected-text-format="count>3" placeholder="<?= $this->translate->_('Select option'); ?>" title="<?= $this->htmlTranslate('Please select one or more option') ?>">
                         <option value="participant">Participants</option>
                         <option value="datamanager">Data Managers</option>
                         <?php if (in_array('tb', $modules)) { ?>
@@ -75,14 +75,14 @@ $eptDomain = parse_url($conf->domain, PHP_URL_HOST);
             <div class="form-group">
                 <label for="subject" class="col-lg-2 control-label"><?= $this->translate->_("Subject"); ?></label>
                 <div class="col-lg-10">
-                    <input type="text" name="subject" id="subject" class="js-example-basic-multiple form-control" placeholder="<?= $this->translate->_('Please enter subject'); ?>" title="Please enter subject">
+                    <input type="text" name="subject" id="subject" class="js-example-basic-multiple form-control" placeholder="<?= $this->translate->_('Please enter subject'); ?>" title="<?= $this->htmlTranslate('Please enter subject') ?>">
                 </div>
             </div>
 
             <div class="form-group">
                 <label for="message" class="col-lg-2 control-label"><?= $this->translate->_("Mail Content"); ?><span class="mandatory">*</span></label>
                 <div class="col-lg-10">
-                    <div id="messageEditor" name="messageEditor" class="richtextarea form-control" title="Please enter a Mail Content" placeholder="<?= $this->translate->_('Enter the Mail Content'); ?>">
+                    <div id="messageEditor" name="messageEditor" class="richtextarea form-control" title="<?= $this->htmlTranslate('Please enter a Mail Content') ?>" placeholder="<?= $this->translate->_('Enter the Mail Content'); ?>">
                     </div>
                     <textarea style="display:none;" id="message" name="message"></textarea>
                 </div>
@@ -190,20 +190,20 @@ $eptDomain = parse_url($conf->domain, PHP_URL_HOST);
     function validateNow() {
         $("#message").val($("#messageEditor").summernote('code'));
         if ($('#shipments').val() == '') {
-            alert("Please select schipment code and TO for sending the mails");
+            alert("<?= $this->jsTranslate("Please select schipment code and TO for sending the mails") ?>");
             return false;
         }
         if ($('#sendMail').val() == '') {
-            alert("Please select schipment code and TO for sending the mails");
+            alert("<?= $this->jsTranslate("Please select schipment code and TO for sending the mails") ?>");
             return false;
         }
         if ($('#subject').val() == '') {
-            alert("Please enter the mail subject");
+            alert("<?= $this->jsTranslate("Please enter the mail subject") ?>");
             return false;
         }
         if ($.trim($('#message').val()) == '') {
             $('#message').val('');
-            alert("Please enter the mail content");
+            alert("<?= $this->jsTranslate("Please enter the mail content") ?>");
             return false;
         }
         flag = deforayValidator.init({
@@ -219,7 +219,7 @@ $eptDomain = parse_url($conf->domain, PHP_URL_HOST);
         $('#shipments, #sendMail').selectpicker();
 
         $('#messageEditor').summernote({
-            placeholder: 'Please enter the Contact Information here',
+            placeholder: '<?= $this->jsTranslate("Please enter the Contact Information here") ?>',
             tabsize: 2,
             height: 200
         });
@@ -289,9 +289,9 @@ $eptDomain = parse_url($conf->domain, PHP_URL_HOST);
     var previewData = null;
 
     var ROLE_LABELS = {
-        participant: "<?= $this->translate->_("Participant"); ?>",
-        datamanager: "<?= $this->translate->_("Data Manager"); ?>",
-        ptcc: "<?= $this->translate->_("PTCC"); ?>"
+        participant: "<?= $this->jsTranslate("Participant") ?>",
+        datamanager: "<?= $this->jsTranslate("Data Manager") ?>",
+        ptcc: "<?= $this->jsTranslate("PTCC") ?>"
     };
 
     function roleLabel(role) {
@@ -306,11 +306,11 @@ $eptDomain = parse_url($conf->domain, PHP_URL_HOST);
         $("#message").val($("#messageEditor").summernote('code'));
 
         if ($('#shipments').val() == '' || $('#shipments').val() == null) {
-            alert("<?= $this->translate->_("Please select at least one shipment"); ?>");
+            alert("<?= $this->jsTranslate("Please select at least one shipment") ?>");
             return false;
         }
         if ($('#sendMail').val() == '' || $('#sendMail').val() == null) {
-            alert("<?= $this->translate->_("Please select who the email should go to"); ?>");
+            alert("<?= $this->jsTranslate("Please select who the email should go to") ?>");
             return false;
         }
 
@@ -334,7 +334,7 @@ $eptDomain = parse_url($conf->domain, PHP_URL_HOST);
             }, "json")
             .fail(function() {
                 $.unblockUI();
-                alert("<?= $this->translate->_("Unable to build the preview. Please try again later or contact system admin for help"); ?>");
+                alert("<?= $this->jsTranslate("Unable to build the preview. Please try again later or contact system admin for help") ?>");
             });
     }
 
@@ -348,12 +348,12 @@ $eptDomain = parse_url($conf->domain, PHP_URL_HOST);
             .text(lines.join(", "));
 
         var toggle = $('<a href="javascript:void(0)" style="margin-left:6px;text-decoration:underline;">')
-            .text("<?= $this->translate->_("show"); ?>")
+            .text("<?= $this->jsTranslate("show") ?>")
             .on('click', function() {
                 details.toggle();
                 $(this).text(details.is(':visible') ?
-                    "<?= $this->translate->_("hide"); ?>" :
-                    "<?= $this->translate->_("show"); ?>");
+                    "<?= $this->jsTranslate("hide") ?>" :
+                    "<?= $this->jsTranslate("show") ?>");
             });
 
         return box.append($('<span>').text(headline)).append(toggle).append(details);
@@ -373,7 +373,7 @@ $eptDomain = parse_url($conf->domain, PHP_URL_HOST);
         });
 
         var total = (previewData && previewData.recipients) ? previewData.recipients.length : 0;
-        $('#previewFilterCount').text(term === '' ? '' : shown + " / " + total + " <?= $this->translate->_("shown"); ?>");
+        $('#previewFilterCount').text(term === '' ? '' : shown + " / " + total + " <?= $this->jsTranslate("shown") ?>");
     }
 
     function renderPreview(data) {
@@ -395,11 +395,11 @@ $eptDomain = parse_url($conf->domain, PHP_URL_HOST);
             });
         });
 
-        var summary = recipients.length + " <?= $this->translate->_("email(s) will be queued"); ?>" +
-            (breakdown.length ? " — <?= $this->translate->_("addressed to"); ?> " + breakdown.join(", ") : "");
+        var summary = recipients.length + " <?= $this->jsTranslate("email(s) will be queued") ?>" +
+            (breakdown.length ? " — <?= $this->jsTranslate("addressed to") ?> " + breakdown.join(", ") : "");
         if (ccMessages.length > 0) {
-            summary += ". " + ccMessages.length + " <?= $this->translate->_("of them also Cc a data manager"); ?> (" +
-                Object.keys(ccPeople).length + " <?= $this->translate->_("distinct manager(s)"); ?>)";
+            summary += ". " + ccMessages.length + " <?= $this->jsTranslate("of them also Cc a data manager") ?> (" +
+                Object.keys(ccPeople).length + " <?= $this->jsTranslate("distinct manager(s)") ?>)";
         }
 
         $('#previewSummary').html('').append(
@@ -420,7 +420,7 @@ $eptDomain = parse_url($conf->domain, PHP_URL_HOST);
             });
             warnings.append(buildCollapsibleAlert(
                 'alert-warning',
-                overlaps.length + " <?= $this->translate->_("of these addresses also belong to an audience you did NOT select, so a separate send to that audience would reach them a second time"); ?>",
+                overlaps.length + " <?= $this->jsTranslate("of these addresses also belong to an audience you did NOT select, so a separate send to that audience would reach them a second time") ?>",
                 lines
             ));
         }
@@ -431,7 +431,7 @@ $eptDomain = parse_url($conf->domain, PHP_URL_HOST);
         if (multiple.length > 0) {
             warnings.append(buildCollapsibleAlert(
                 'alert-warning',
-                multiple.length + " <?= $this->translate->_("address(es) appear on more than one message in this send (own lab as To, plus Cc on labs they manage). Type multiple in the filter box to see them"); ?>",
+                multiple.length + " <?= $this->jsTranslate("address(es) appear on more than one message in this send (own lab as To, plus Cc on labs they manage). Type multiple in the filter box to see them") ?>",
                 $.map(multiple, function(m) {
                     return m.email + " ×" + m.copies;
                 })
@@ -441,7 +441,7 @@ $eptDomain = parse_url($conf->domain, PHP_URL_HOST);
         if (data.invalid && data.invalid.length > 0) {
             warnings.append(buildCollapsibleAlert(
                 'alert-danger',
-                data.invalid.length + " <?= $this->translate->_("address(es) were dropped as invalid"); ?>",
+                data.invalid.length + " <?= $this->jsTranslate("address(es) were dropped as invalid") ?>",
                 data.invalid
             ));
         }
@@ -449,14 +449,14 @@ $eptDomain = parse_url($conf->domain, PHP_URL_HOST);
         var tbody = $('#previewTable tbody').empty();
         if (recipients.length === 0) {
             tbody.append($('<tr>').append(
-                $('<td colspan="7" class="text-center">').text("<?= $this->translate->_("No recipients match this selection"); ?>")
+                $('<td colspan="7" class="text-center">').text("<?= $this->jsTranslate("No recipients match this selection") ?>")
             ));
             return;
         }
 
         $.each(recipients, function(i, r) {
             var viewBtn = $('<a href="javascript:void(0)" class="btn btn-xs btn-default">')
-                .text("<?= $this->translate->_("View"); ?>")
+                .text("<?= $this->jsTranslate("View") ?>")
                 .on('click', function() {
                     showPreviewBody(i);
                 });
@@ -468,7 +468,7 @@ $eptDomain = parse_url($conf->domain, PHP_URL_HOST);
             if (copies > 1) {
                 toCell.append(
                     $('<span class="label label-warning" style="margin-left:6px;">')
-                        .attr('title', "<?= $this->translate->_("This inbox also receives Cc copies from labs it manages"); ?>")
+                        .attr('title', "<?= $this->jsTranslate("This inbox also receives Cc copies from labs it manages") ?>")
                         .text("×" + copies)
                 );
             }
@@ -537,9 +537,9 @@ $eptDomain = parse_url($conf->domain, PHP_URL_HOST);
         textarea.select();
         try {
             document.execCommand('copy');
-            alert(previewData.recipients.length + " <?= $this->translate->_("address(es) copied to clipboard"); ?>");
+            alert(previewData.recipients.length + " <?= $this->jsTranslate("address(es) copied to clipboard") ?>");
         } catch (err) {
-            window.prompt("<?= $this->translate->_("Press Ctrl+C / Cmd+C to copy"); ?>", emails);
+            window.prompt("<?= $this->jsTranslate("Press Ctrl+C / Cmd+C to copy") ?>", emails);
         }
         document.body.removeChild(textarea);
     }

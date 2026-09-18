@@ -188,14 +188,14 @@ $adminSession = new Zend_Session_Namespace('administrators');
         $("#testkitId").val(selectedKit);
     } */
     function updateAll() {
-        if (confirm("Are you sure you want to update the status?\n This cannot be undone !")) {
+        if (confirm("<?= $this->jsTranslate("Are you sure you want to update the status?\n This cannot be undone !") ?>")) {
             $.blockUI();
             $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'testkit', 'action' => 'update-status')); ?>", {
                 status: $('#updateStatus').val(),
                 format: "html"
             },
                 function (data) {
-                    alert("<?= $this->translate->_("Status updated successfully"); ?>");
+                    alert("<?= $this->jsTranslate("Status updated successfully") ?>");
                     oTable.fnDraw();
                     $.unblockUI();
                 });

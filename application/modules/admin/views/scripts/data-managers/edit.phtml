@@ -344,7 +344,7 @@ foreach ($this->participantList as $part) {
                     if (typeof pdlFlashError === 'function') {
                         pdlFlashError();
                     }
-                    alert("<?= $this->translate->_('Please select at least one Participant to map'); ?>");
+                    alert("<?= $this->jsTranslate('Please select at least one Participant to map'); ?>");
                     return false;
                 }
                 if (typeof pdlConfirmMulti === 'function' && !pdlConfirmMulti()) {
@@ -362,7 +362,7 @@ foreach ($this->participantList as $part) {
         secondaryEmail = document.getElementById("semail").value;
         if (secondaryEmail != "") {
             if (primaryEmail == secondaryEmail) {
-                alert("<?= $this->translate->_("Please check your primary email and secondary email"); ?>");
+                alert("<?= $this->jsTranslate("Please check your primary email and secondary email"); ?>");
                 document.getElementById("secondaryEmail").value = "";
                 $("#secondaryEmail").focus();
                 duplicated = true;

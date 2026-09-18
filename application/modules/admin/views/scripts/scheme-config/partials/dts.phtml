@@ -406,7 +406,7 @@ $showThreeTestFields = !empty($dts['dtsSchemeType']) && in_array($dts['dtsScheme
 
         // Validate Minimum Passing Score (0-100)
         if (passScore < 0 || passScore > 100) {
-            alert('<?= $this->translate->_("Minimum Passing Score must be between 0 and 100."); ?>');
+            alert('<?= $this->jsTranslate("Minimum Passing Score must be between 0 and 100.") ?>');
             $('#dtsPassPercentage').focus();
             return false;
         }
@@ -414,14 +414,14 @@ $showThreeTestFields = !empty($dts['dtsSchemeType']) && in_array($dts['dtsScheme
         // Validate Panel + Documentation = 100
         var total = Math.round((panelScore + docScore) * 100) / 100;
         if (total !== 100) {
-            alert('<?= $this->translate->_("Panel Score + Documentation Score must equal 100. Current total: "); ?>' + total);
+            alert('<?= $this->jsTranslate("Panel Score + Documentation Score must equal 100. Current total: ") ?>' + total);
             $('#dtsPanelScore').focus();
             return false;
         }
 
         // Validate Algorithm Score >= 0
         if (algoScore < 0) {
-            alert('<?= $this->translate->_("Algorithm Score must be 0 or a positive number."); ?>');
+            alert('<?= $this->jsTranslate("Algorithm Score must be 0 or a positive number.") ?>');
             $('#dtsAlgorithmScore').focus();
             return false;
         }

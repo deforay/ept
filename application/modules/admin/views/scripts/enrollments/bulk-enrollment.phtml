@@ -20,13 +20,13 @@
                     <div class="row">
                         <label class="col-lg-4 control-label" for=""><?= $this->translate->_("Enrollment List Name"); ?></label>
                         <div class="col-lg-8">
-                            <input type="text" name="listName" id="listName" class="form-control" placeholder="<?= $this->translate->_('Enter the list name'); ?>" title="Please enter the list name" />
+                            <input type="text" name="listName" id="listName" class="form-control" placeholder="<?= $this->translate->_('Enter the list name'); ?>" title="<?= $this->htmlTranslate("Please enter the list name") ?>" />
                         </div>
                     </div><br>
                     <div class="row">
                         <label class="col-lg-4 control-label" for="fileName"><?= $this->translate->_("Select file to upload"); ?><span class="mandatory">*</span></label>
                         <div class="col-lg-8">
-                            <input type="file" class="form-control isRequired" id="fileName" name="fileName" title="Please select participants import data file">
+                            <input type="file" class="form-control isRequired" id="fileName" name="fileName" title="<?= $this->htmlTranslate("Please select participants import data file") ?>">
                         </div>
                     </div>
                 </div>

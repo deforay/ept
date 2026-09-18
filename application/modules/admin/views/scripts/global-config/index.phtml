@@ -1567,7 +1567,7 @@ id="faqTable">
 	<div class="modal-dialog" role="document">
 		<div class="modal-content">
 			<div class="modal-header">
-				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+				<button type="button" class="close" data-dismiss="modal" aria-label="<?= $this->htmlTranslate("Close") ?>"><span
 						aria-hidden="true">&times;</span></button>
 				<h4 class="modal-title" id="iconPickerModalLabel"><i class="icon-th"></i>
 					<?= $this->translate->_("Select Icon"); ?></h4>
@@ -1614,7 +1614,7 @@ id="faqTable">
 		if (invalidEmails.length > 0) {
 			return {
 				valid: false,
-				message: '<?= $this->translate->_("Invalid email address(es)"); ?>: ' + invalidEmails.join(', ')
+				message: '<?= $this->jsTranslate("Invalid email address(es)") ?>: ' + invalidEmails.join(', ')
 			};
 		}
 		return {
@@ -1636,7 +1636,7 @@ id="faqTable">
 		}
 		// Validate at least one scheme is selected
 		if ($('#schemeList input[type="checkbox"]:checked').length === 0) {
-			alert('<?= $this->translate->_("Please select at least one Active Scheme"); ?>');
+			alert('<?= $this->jsTranslate("Please select at least one Active Scheme") ?>');
 			return false;
 		}
 		// Custom fields: "No" blanks both names (the old /admin/custom-fields
@@ -1644,7 +1644,7 @@ id="faqTable">
 		if ($("#custom_field_needed").val() != "yes") {
 			$("#custom_field_1, #custom_field_2").val("");
 		} else if ($.trim($("#custom_field_1").val()) === "") {
-			alert('<?= $this->translate->_("Please enter Custom Field 1 or set Add Custom Field(s) to No"); ?>');
+			alert('<?= $this->jsTranslate("Please enter Custom Field 1 or set Add Custom Field(s) to No") ?>');
 			$("#custom_field_1").focus();
 			return false;
 		}
@@ -1852,7 +1852,7 @@ id="faqTable">
 		// Searchable Application Timezone picker — pick a valid IANA zone, no typos.
 		new TomSelect('#app_timezone', {
 			create: false,
-			placeholder: '<?= $this->translate->_("Search timezone..."); ?>'
+			placeholder: '<?= $this->jsTranslate("Search timezone...") ?>'
 		});
 
 		// Cutoff policy: 2 fixed options, searchable for consistency.
@@ -1867,7 +1867,7 @@ id="faqTable">
 		new TomSelect('#instance', {
 			create: false,
 			allowEmptyOption: true,
-			placeholder: '<?= $this->translate->_("Search instance..."); ?>'
+			placeholder: '<?= $this->jsTranslate("Search instance...") ?>'
 		});
 
 		$('#training_instance').on('change', function () {
@@ -1937,14 +1937,14 @@ id="faqTable">
 	function addTbRow(obj) {
 		let html = '<tr>\
 			<td>\
-				<textarea name="faqQuestions[]" class="form-control input-sm" placeholder="<?= $this->translate->_("Enter the question"); ?>" title="<?= $this->translate->_("Enter the FAQ question"); ?>"></textarea>\
+				<textarea name="faqQuestions[]" class="form-control input-sm" placeholder="<?= $this->jsTranslate("Enter the question") ?>" title="<?= $this->jsTranslate("Enter the FAQ question") ?>"></textarea>\
 			</td>\
 			<td>\
-				<textarea name="faqAnswers[]" class="form-control input-sm" placeholder="<?= $this->translate->_("Enter the answer"); ?>" title="<?= $this->translate->_("Enter the FAQ answer"); ?>"></textarea>\
+				<textarea name="faqAnswers[]" class="form-control input-sm" placeholder="<?= $this->jsTranslate("Enter the answer") ?>" title="<?= $this->jsTranslate("Enter the FAQ answer") ?>"></textarea>\
 			</td>\
 			<td>\
-				<a href="javascript:void(0);" onclick="addTbRow(this);" class="btn btn-xs btn-info" title="<?= $this->translate->_("Add row"); ?>"><i class="icon-plus"></i></a>\
-				&nbsp;&nbsp;<a href="javascript:void(0);" onclick="removeRow(this)" class="btn btn-xs btn-danger" title="<?= $this->translate->_("Remove row"); ?>"><i class="icon-minus"></i></a>\
+				<a href="javascript:void(0);" onclick="addTbRow(this);" class="btn btn-xs btn-info" title="<?= $this->jsTranslate("Add row") ?>"><i class="icon-plus"></i></a>\
+				&nbsp;&nbsp;<a href="javascript:void(0);" onclick="removeRow(this)" class="btn btn-xs btn-danger" title="<?= $this->jsTranslate("Remove row") ?>"><i class="icon-minus"></i></a>\
 			</td>\
 		</tr>';
 		$(obj.parentNode.parentNode).after(html);

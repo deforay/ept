@@ -274,7 +274,7 @@ if (!empty($this->ptcc) && $this->ptcc == 1) {
                 },
                 function(data) {
                     if (data > 0) {
-                        if (confirm("This email is already linked to a Data Manager account. Do you want to add this user as a PTCC? If you choose yes, then this data manager will be converted to PTCC and all old Participant mappings will be removed")) {
+                        if (confirm("<?= $this->jsTranslate("This email is already linked to a Data Manager account. Do you want to add this user as a PTCC? If you choose yes, then this data manager will be converted to PTCC and all old Participant mappings will be removed"); ?>")) {
                             $('#respond').append('<input type="hidden" id="userSystemId" name="userSystemId" value="' + data + '" />');
                             $('#addUserForm').attr('action', "/admin/data-managers/edit");
                         } else {
@@ -407,7 +407,7 @@ if (!empty($this->ptcc) && $this->ptcc == 1) {
                     if (typeof pdlFlashError === 'function') {
                         pdlFlashError();
                     }
-                    alert("<?= $this->translate->_('Please select at least one Participant to map'); ?>");
+                    alert("<?= $this->jsTranslate('Please select at least one Participant to map'); ?>");
                     return false;
                 }
                 if (typeof pdlConfirmMulti === 'function' && !pdlConfirmMulti()) {
@@ -424,7 +424,7 @@ if (!empty($this->ptcc) && $this->ptcc == 1) {
         secondaryEmail = document.getElementById("semail").value;
         if (secondaryEmail != "") {
             if (primaryEmail == secondaryEmail) {
-                alert("<?= $this->translate->_("Please check your primary email and secondary email"); ?>");
+                alert("<?= $this->jsTranslate("Please check your primary email and secondary email"); ?>");
                 document.getElementById("secondaryEmail").value = "";
                 $("#secondaryEmail").focus();
                 duplicated = true;

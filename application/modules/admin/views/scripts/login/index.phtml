@@ -167,7 +167,7 @@ if ($alertStatus === 'success') {
 <div class="container">
 	<?php if ($alertMessage !== ''): ?>
 		<div class="alert <?php echo $alertClass; ?> alert-dismissible" role="alert" style="max-width:480px;margin:0 auto 10px auto;">
-			<button type="button" class="close" data-dismiss="alert" aria-label="Close" onclick="this.parentNode.style.display='none';return false;" style="background:none;border:none;float:right;font-size:20px;line-height:1;cursor:pointer;">&times;</button>
+			<button type="button" class="close" data-dismiss="alert" aria-label="<?= $this->htmlTranslate("Close") ?>" onclick="this.parentNode.style.display='none';return false;" style="background:none;border:none;float:right;font-size:20px;line-height:1;cursor:pointer;">&times;</button>
 			<?php echo htmlspecialchars($alertMessage, ENT_QUOTES, 'UTF-8'); ?>
 		</div>
 	<?php endif; ?>
@@ -188,18 +188,18 @@ if ($alertStatus === 'success') {
 
 		<div class="form-group">
 			<label for="inputEmail"><?= $this->translate->_("Email"); ?></label>
-			<input type="text" id="username" name="username" class="isRequired form-control isEmail" title="Please enter your registered email" placeholder="eg. mymail@mail.com" autofocus />
+			<input type="text" id="username" name="username" class="isRequired form-control isEmail" title="<?= $this->htmlTranslate("Please enter your registered email") ?>" placeholder="<?= $this->htmlTranslate("eg. mymail@mail.com") ?>" autofocus />
 		</div>
 		<div class="form-group">
 			<label for="inputEmail"><?= $this->translate->_("Password"); ?></label>
-			<input type="password" id="password" name="password" class="isRequired  form-control" title="Please enter your password" placeholder="eg. X8df!90EO" />
+			<input type="password" id="password" name="password" class="isRequired  form-control" title="<?= $this->htmlTranslate("Please enter your password") ?>" placeholder="<?= $this->htmlTranslate("eg. X8df!90EO") ?>" />
 		</div>
 		<div class="captcha-row">
 			<div class="captcha-col">
-				<img id="capChaw" class="captcha-img" src="/captcha/<?php echo Pt_Commons_MiscUtility::generateRandomNumber(); ?>" alt="CAPTCHA" />
+				<img id="capChaw" class="captcha-img" src="/captcha/<?php echo Pt_Commons_MiscUtility::generateRandomNumber(); ?>" alt="<?= $this->htmlTranslate("CAPTCHA") ?>" />
 				<button type="button" tabindex="-1" onclick="getCaptcha('capChaw');return false;" class="btn btn-link btn-xs captcha-refresh"><i class="icon-refresh"></i> <?= $this->translate->_("Get New Image"); ?></button>
 			</div>
-			<input type="text" id="challengeResponse" placeholder="Enter text from image" class="form-control captcha-input" title="Please enter the text from the image." maxlength="40" />
+			<input type="text" id="challengeResponse" placeholder="<?= $this->htmlTranslate("Enter text from image") ?>" class="form-control captcha-input" title="<?= $this->htmlTranslate("Please enter the text from the image.") ?>" maxlength="40" />
 		</div>
 		<br>
 		<button type class="btn btn-lg btn-primary btn-block" onclick="validateLogin();return false;"><?= $loginButtonText; ?></button>
@@ -234,7 +234,7 @@ if ($alertStatus === 'success') {
 					},
 					function(data) {
 						if (data == 'fail') {
-							alert("<?= $this->translate->_("Text you entered from the image is incorrect. Please try again"); ?>");
+							alert("<?= $this->jsTranslate("Text you entered from the image is incorrect. Please try again") ?>");
 							getCaptcha('capChaw');
 							document.getElementById("challengeResponse").value = "";
 							return false;
@@ -244,7 +244,7 @@ if ($alertStatus === 'success') {
 						}
 					});
 			} else {
-				alert("<?= $this->translate->_("Please enter the text from the image to proceed."); ?>");
+				alert("<?= $this->jsTranslate("Please enter the text from the image to proceed.") ?>");
 			}
 		}
 	}

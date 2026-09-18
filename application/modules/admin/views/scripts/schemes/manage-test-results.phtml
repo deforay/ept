@@ -636,11 +636,11 @@ $schemeId = !empty($this->results[0]['scheme_id']) ? strtoupper(trim($this->resu
 		if (IS_USER_CONFIGURED) {
 			return '<div class="input-group input-group-sm" style="display:flex;">' +
 				'<span class="input-group-addon result-code-prefix-addon js-code-prefix" style="display:inline-table;"></span>' +
-				'<input type="text" class="form-control isRequired js-code-suffix input-sm" placeholder="<?= $this->translate->_("e.g. P"); ?>" maxlength="20" />' +
+				'<input type="text" class="form-control isRequired js-code-suffix input-sm" placeholder="<?= $this->jsTranslate("e.g. P"); ?>" maxlength="20" />' +
 				'</div>' +
 				'<input type="hidden" name="resultCode[]" class="js-code-hidden" />';
 		}
-		return '<input type="text" name="resultCode[]" class="form-control isRequired js-code-plain" placeholder="<?= $this->translate->_("e.g. POS"); ?>" required />';
+		return '<input type="text" name="resultCode[]" class="form-control isRequired js-code-plain" placeholder="<?= $this->jsTranslate("e.g. POS"); ?>" required />';
 	}
 
 	function buildRow() {
@@ -649,24 +649,24 @@ $schemeId = !empty($this->results[0]['scheme_id']) ? strtoupper(trim($this->resu
 			'<td class="row-num"></td>' +
 			'<td>' +
 			'<select name="resultType[]" class="form-control isRequired js-type' + (IS_USER_CONFIGURED ? ' js-result-type' : '') + '" required>' +
-			'<option value="">-- <?= $this->translate->_("Select"); ?> --</option>' +
-			'<option value="TEST"><?= $this->translate->_("Test Result"); ?></option>' +
-			'<option value="FINAL"><?= $this->translate->_("Final Interpretation"); ?></option>' +
+			'<option value="">-- <?= $this->jsTranslate("Select"); ?> --</option>' +
+			'<option value="TEST"><?= $this->jsTranslate("Test Result"); ?></option>' +
+			'<option value="FINAL"><?= $this->jsTranslate("Final Interpretation"); ?></option>' +
 			'</select>' +
 			'</td>' +
-			'<td><input type="text" name="response[]" class="form-control isRequired" placeholder="<?= $this->translate->_("Enter response"); ?>" required /></td>' +
+			'<td><input type="text" name="response[]" class="form-control isRequired" placeholder="<?= $this->jsTranslate("Enter response"); ?>" required /></td>' +
 			'<td>' + buildResultCodeCell() + '</td>' +
 			'<td>' +
 			'<select name="displayContext[]" class="form-control">' +
-			'<option value="all"><?= $this->translate->_("All"); ?></option>' +
-			'<option value="participant"><?= $this->translate->_("Participant"); ?></option>' +
-			'<option value="admin"><?= $this->translate->_("Admin"); ?></option>' +
-			'<option value="none"><?= $this->translate->_("None"); ?></option>' +
+			'<option value="all"><?= $this->jsTranslate("All"); ?></option>' +
+			'<option value="participant"><?= $this->jsTranslate("Participant"); ?></option>' +
+			'<option value="admin"><?= $this->jsTranslate("Admin"); ?></option>' +
+			'<option value="none"><?= $this->jsTranslate("None"); ?></option>' +
 			'</select>' +
 			'</td>' +
 			'<td><input type="text" name="sortOrder[]" class="form-control js-sort" placeholder="0" /></td>' +
 			'<td class="action-cell">' +
-			'<button type="button" class="btn-row-remove" title="<?= $this->translate->_("Remove row"); ?>" onclick="removeRow(this)">&#8722;</button>' +
+			'<button type="button" class="btn-row-remove" title="<?= $this->jsTranslate("Remove row"); ?>" onclick="removeRow(this)">&#8722;</button>' +
 			'</td>';
 		return tr;
 	}
@@ -688,15 +688,15 @@ $schemeId = !empty($this->results[0]['scheme_id']) ? strtoupper(trim($this->resu
 		}
 
 		if (!type) {
-			alert('<?= $this->translate->_("Please select a result type."); ?>');
+			alert('<?= $this->jsTranslate("Please select a result type."); ?>');
 			return;
 		}
 		if (!response) {
-			alert('<?= $this->translate->_("Please enter a response."); ?>');
+			alert('<?= $this->jsTranslate("Please enter a response."); ?>');
 			return;
 		}
 		if (!code) {
-			alert('<?= $this->translate->_("Please enter a result code."); ?>');
+			alert('<?= $this->jsTranslate("Please enter a result code."); ?>');
 			return;
 		}
 
@@ -884,9 +884,9 @@ $schemeId = !empty($this->results[0]['scheme_id']) ? strtoupper(trim($this->resu
 	}
 
 	function dupMessage(dup) {
-		if (dup.response && dup.code) return '<?= $this->translate->_("Another result of this type already uses this response and result code."); ?>';
-		if (dup.response) return '<?= $this->translate->_("Another result of this type already uses this response."); ?>';
-		return '<?= $this->translate->_("Another result of this type already uses this result code."); ?>';
+		if (dup.response && dup.code) return '<?= $this->jsTranslate("Another result of this type already uses this response and result code."); ?>';
+		if (dup.response) return '<?= $this->jsTranslate("Another result of this type already uses this response."); ?>';
+		return '<?= $this->jsTranslate("Another result of this type already uses this result code."); ?>';
 	}
 
 	/* ── Validation & submit ───────────────────────────────────────────────── */
@@ -897,7 +897,7 @@ $schemeId = !empty($this->results[0]['scheme_id']) ? strtoupper(trim($this->resu
 		var pendingResp = $.trim($('#addResponse').val());
 		var pendingCode = IS_USER_CONFIGURED ? $.trim($('#addCodeSuffix').val()) : $.trim($('#addCode').val());
 		if (pendingResp || pendingCode) {
-			alert('<?= $this->translate->_("You have a result in the Add box that has not been added yet. Click \"Add\" to include it, or clear it before saving."); ?>');
+			alert('<?= $this->jsTranslate("You have a result in the Add box that has not been added yet. Click \"Add\" to include it, or clear it before saving."); ?>');
 			return false;
 		}
 
@@ -905,7 +905,7 @@ $schemeId = !empty($this->results[0]['scheme_id']) ? strtoupper(trim($this->resu
 			var valid = true;
 			$('#rowsBody .js-code-hidden').each(function() {
 				if (!$(this).val()) {
-					alert('<?= $this->translate->_("Please enter a result code for all rows."); ?>');
+					alert('<?= $this->jsTranslate("Please enter a result code for all rows."); ?>');
 					valid = false;
 					return false;
 				}
