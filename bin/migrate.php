@@ -19,6 +19,7 @@ if (php_sapi_name() !== 'cli') {
 }
 
 require_once __DIR__ . '/../cli-bootstrap.php';
+require_once __DIR__ . '/lib/migration-sql.php';
 
 use PhpMyAdmin\SqlParser\Parser;
 
@@ -397,6 +398,32 @@ function handle_idempotent_ddl(Zend_Db_Adapter_Abstract $db, string $query): int
     $q = preg_replace('/NULL\s*AFTER/i', 'NULL AFTER', $q);
     mig_trace('handle_idempotent_ddl', substr($q, 0, 160));
 
+    // A successful first ADD does not prove that the remaining ADDs landed.
+    // Split only column additions. Other ALTER actions can depend on atomic execution.
+    if (preg_match('/^alter\s+table\s+`?([a-z0-9_]+)`?\s+(.+)$/is', $q, $alter)) {
+        $clauses = migration_split_clauses($alter[2]);
+        if (count($clauses) > 1) {
+            $onlyColumnAdds = true;
+            foreach ($clauses as $clause) {
+                if (!preg_match('/^add\s+(?:column\s+)?(?!(?:primary|unique|key|index|constraint|foreign|check|fulltext|spatial)\b)`?[a-z0-9_]+`?\s+/i', $clause)) {
+                    $onlyColumnAdds = false;
+                    break;
+                }
+            }
+            if ($onlyColumnAdds) {
+                $result = MIG_SKIPPED;
+                foreach ($clauses as $clause) {
+                    if (handle_idempotent_ddl($db, "ALTER TABLE `{$alter[1]}` {$clause}") === MIG_EXECUTED) {
+                        $result = MIG_EXECUTED;
+                    }
+                }
+                return $result;
+            }
+            // Do not let single-action handlers silently skip part of a mixed ALTER.
+            return MIG_NOT_HANDLED;
+        }
+    }
+
     // CREATE TABLE [IF NOT EXISTS] `table` (...)
     if (preg_match('/^create\s+table\s+(?:if\s+not\s+exists\s+)?`?([^`]+)`?\s*\(/i', $q, $m)) {
         return create_table_if_missing($db, $m[1], $q);
@@ -408,7 +435,7 @@ function handle_idempotent_ddl(Zend_Db_Adapter_Abstract $db, string $query): int
     }
 
     // ALTER TABLE ... ADD [COLUMN] `col` ...
-    if (preg_match('/^alter\s+table\s+`?([a-z0-9_]+)`?\s+add\s+(?:column\s+)?`?([a-z0-9_]+)`?\s+/i', $q, $m)) {
+    if (preg_match('/^alter\s+table\s+`?([a-z0-9_]+)`?\s+add\s+(?:column\s+)?(?!(?:primary|unique|key|index|constraint|foreign|check|fulltext|spatial)\b)`?([a-z0-9_]+)`?\s+/i', $q, $m)) {
         return add_column_if_missing($db, $m[1], $m[2], $q);
     }
 

@@ -56,7 +56,9 @@
         "db-backup": "@php vendor/bin/db-tools backup",
         "tasks": "@php vendor/bin/crunz schedule:run",
         "collation": "@php vendor/bin/db-tools collation",
+        "heal-schema": "@php bin/heal-schema.php --apply",
         "migrate": [
+            "@heal-schema",
             "@php bin/migrate.php -yq",
             "@collation"
         ],
