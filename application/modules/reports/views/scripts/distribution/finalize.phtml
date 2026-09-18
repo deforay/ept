@@ -19,6 +19,56 @@ if (!empty($this->shipment)) {
             vertical-align: middle;
         }
 
+        /* Active-filter pill summary, sitting next to the toggle button inside
+           .data-list-filterbar (already a flex row, so this just flows beside
+           it). Same visual language as the shared collapsible-filters.phtml
+           partial used elsewhere, kept local here rather than included since
+           this page's filter bar/body get relocated at runtime and don't
+           match that partial's single-wrapper markup contract. */
+        #shipmentFilterSummary {
+            display: none;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 4px;
+        }
+
+        #shipmentFilterSummary.is-visible {
+            display: flex;
+        }
+
+        #shipmentFilterSummary .filter-tag {
+            display: inline-flex;
+            align-items: center;
+            background: #f4f4f5;
+            border: 1px solid #dcdcdc;
+            border-radius: 999px;
+            padding: 3px 6px 3px 12px;
+            margin: 2px 0;
+            font-size: 12px;
+            color: #767676;
+        }
+
+        #shipmentFilterSummary .filter-tag-value {
+            color: #1a1a1a;
+            font-weight: 600;
+            margin-left: 4px;
+        }
+
+        #shipmentFilterSummary .filter-tag-remove {
+            border: none;
+            background: transparent;
+            color: #999;
+            cursor: pointer;
+            margin-left: 6px;
+            padding: 0 4px;
+            font-size: 14px;
+            line-height: 1;
+        }
+
+        #shipmentFilterSummary .filter-tag-remove:hover {
+            color: #333;
+        }
+
     </style>
     <link rel="stylesheet" href="<?php echo $this->baseUrl('css/daterangepicker.css'); ?>" type="text/css" media="all">
     <script type="text/javascript" src="<?php echo $this->baseUrl('js/moment.min.js'); ?>"></script>
@@ -245,10 +295,11 @@ if (!empty($this->shipment)) {
         <div class="data-list-filterbar">
             <button type="button" class="btn btn-default btn-sm" id="toggleShipmentFilters"
                 aria-expanded="false" aria-controls="shipmentFilters">
-                <i class="icon-filter"></i>&nbsp;<?= $this->translate->_("Filters"); ?>
+                <i class="icon-filter"></i>&nbsp;<span id="shipmentFilterToggleText"><?= $this->translate->_("Expand Filters"); ?></span>
                 <span class="filter-active-count" id="shipmentFilterCount" style="display:none;"></span>
                 <i class="icon-chevron-down filterbar-caret"></i>
             </button>
+            <div id="shipmentFilterSummary"></div>
         </div>
         <div class="data-list-filters-collapse" id="shipmentFilters">
         <div class="data-list-filters four-up" style="clear:both;">
@@ -531,6 +582,54 @@ if (!empty($this->shipment)) {
                 return n + (v.length ? 1 : 0);
             }, 0) + (mo ? 1 : 0) + (tier ? 1 : 0) + (kit ? 1 : 0) + (dateRange ? 1 : 0);
             $('#shipmentFilterCount').text(active).toggle(active > 0);
+
+            // Pill summary next to the toggle, mirroring the shared
+            // collapsible-filters.phtml partial's look — see that file's
+            // fieldDisplayValue()/buildTag() for the pattern this follows.
+            function selectedText($el) {
+                return $el.find('option:selected').map(function () {
+                    return $(this).text().trim();
+                }).get().join(', ');
+            }
+            var tagFields = [];
+            if (mo) { tagFields.push({ $el: $('#manuelOverride'), label: "<?= $this->jsTranslate("Manually overridden only"); ?>", value: selectedText($('#manuelOverride')) }); }
+            if (rs.length) { tagFields.push({ $el: $('#filterResponseStatus'), label: "<?= $this->jsTranslate("Response status"); ?>", value: selectedText($('#filterResponseStatus')) }); }
+            if (rr.length) { tagFields.push({ $el: $('#filterResult'), label: "<?= $this->jsTranslate("Result"); ?>", value: selectedText($('#filterResult')) }); }
+            if (dateRange) { tagFields.push({ $el: $('#dateRange'), label: "<?= $this->jsTranslate("Date Range"); ?>", value: dateRange }); }
+            if (con.length) { tagFields.push({ $el: $('#country'), label: "<?= $this->jsTranslate("Country"); ?>", value: selectedText($('#country')) }); }
+            if (reg.length) { tagFields.push({ $el: $('#region'), label: "<?= $this->jsTranslate("Region"); ?>", value: selectedText($('#region')) }); }
+            if (st.length) { tagFields.push({ $el: $('#state'), label: "<?= $this->jsTranslate("Province"); ?>", value: selectedText($('#state')) }); }
+            if (dis.length) { tagFields.push({ $el: $('#district'), label: "<?= $this->jsTranslate("District"); ?>", value: selectedText($('#district')) }); }
+            if (tier) { tagFields.push({ $el: $('#vietnamTier'), label: "<?= $this->jsTranslate("Tier"); ?>", value: selectedText($('#vietnamTier')) }); }
+            if (kit) { tagFields.push({ $el: $('#vietnamNonStandardKit'), label: "<?= $this->jsTranslate("Primary kit"); ?>", value: selectedText($('#vietnamNonStandardKit')) }); }
+
+            var $summary = $('#shipmentFilterSummary');
+            $summary.empty();
+            tagFields.forEach(function (f) {
+                var $tag = $('<span class="filter-tag"></span>');
+                $('<span class="filter-tag-label"></span>').text(f.label).appendTo($tag);
+                $('<span class="filter-tag-value"></span>').text(f.value).appendTo($tag);
+                $('<button type="button" class="filter-tag-remove" aria-label="Remove filter"></button>')
+                    .html('&times;')
+                    .on('click', function () { clearShipmentFilter(f.$el); })
+                    .appendTo($tag);
+                $summary.append($tag);
+            });
+            $summary.toggleClass('is-visible', tagFields.length > 0);
+        }
+
+        // Clears one filter field and re-applies — used by each pill's "x".
+        // .trigger('change') resyncs select2's own display and fires the
+        // onchange/.on('change', applyShipmentFilters) bindings already on
+        // these fields; the explicit call below covers #dateRange, which has
+        // no such binding (its picker calls applyShipmentFilters() directly).
+        function clearShipmentFilter($el) {
+            if ($el.is('select')) {
+                $el.val($el.prop('multiple') ? [] : '').trigger('change');
+            } else {
+                $el.val('');
+            }
+            applyShipmentFilters();
         }
 
         function getOptions(table, searchfield, returnfield, searchvalue, returnid) {
@@ -563,6 +662,9 @@ if (!empty($this->shipment)) {
                 var $btn = $(this);
                 var open = $('#shipmentFilters').toggleClass('is-open').hasClass('is-open');
                 $btn.toggleClass('is-open', open).attr('aria-expanded', open ? 'true' : 'false');
+                $('#shipmentFilterToggleText').text(open
+                    ? "<?= $this->jsTranslate("Collapse Filters"); ?>"
+                    : "<?= $this->jsTranslate("Expand Filters"); ?>");
             });
 
             // ---- select2 init (must run inside ready, AFTER select2.css/js are loaded) ----
