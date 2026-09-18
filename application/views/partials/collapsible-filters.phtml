@@ -138,6 +138,16 @@
                     if ($el.is(':button, :submit, :reset')) {
                         return;
                     }
+                    // A checkbox/radio's .val() is its "value" attribute (jQuery
+                    // defaults an absent one to "on"), not whether it's ticked —
+                    // so an unticked box would otherwise always read as "active".
+                    if ($el.is(':checkbox, :radio')) {
+                        if (!$el.is(':checked')) {
+                            return;
+                        }
+                        fields.push($el);
+                        return;
+                    }
                     var val = $el.val();
                     if (val === null || val === '' || val.length === 0) {
                         return;
@@ -153,6 +163,13 @@
                         return $(this).text().trim();
                     }).get().join(', ');
                 }
+                if ($el.is(':checkbox, :radio')) {
+                    // .val() here is the "value" attribute (often the meaningless
+                    // default "on" for a plain checkbox), not a useful label — the
+                    // field's own data-filter-label already says what it is, so
+                    // just confirm it's ticked.
+                    return "<?= $this->jsTranslate("Yes"); ?>";
+                }
                 return String($el.val()).trim();
             }
 
@@ -162,6 +179,10 @@
             // re-syncs the widget's own display along with firing the native
             // 'change' our own delegated handler below is listening for.
             function clearField($el) {
+                if ($el.is(':checkbox, :radio')) {
+                    $el.prop('checked', false).trigger('change');
+                    return;
+                }
                 $el.val($el.is('select') && $el.prop('multiple') ? [] : '').trigger('change');
             }
 

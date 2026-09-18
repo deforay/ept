@@ -69,16 +69,27 @@
 		}
 	}
 </style>
+<div class="filter-panel js-filter-panel">
+	<button type="button" class="btn btn-default btn-sm js-filter-toggle" aria-expanded="false"
+		data-expand-text="<?= $this->htmlTranslate("Expand Filters"); ?>"
+		data-collapse-text="<?= $this->htmlTranslate("Collapse Filters"); ?>">
+		<i class="icon-filter"></i> <span class="js-filter-toggle-text"><?= $this->translate->_("Expand Filters"); ?></span>
+		<span class="label label-info js-filter-count" style="display:none;">0</span>
+		<span class="caret"></span>
+	</button>
+	<div class="js-filter-summary"></div>
+	<div class="js-filter-body">
 <div class="shipmentResponseFilters">
 	<div class="filterCell cellNarrow">
 		<div class="filterLabel"><?= $this->translate->_("Date Range"); ?></div>
 		<input type="text" id="dateRange" name="dateRange" class="form-control input-sm" readonly="readonly"
-			style="background: #fff" placeholder="Click here to pick a Date Range" />
+			style="background: #fff" placeholder="Click here to pick a Date Range"
+			data-filter-label="<?= $this->htmlTranslate("Date Range"); ?>" />
 	</div>
 	<div class="filterCell cellWide">
 		<div class="filterLabel"><?= $this->translate->_("Scheme Type"); ?></div>
 		<select id="scheme" name="scheme" class="input-sm" multiple="multiple" onchange="getShipmentCodes()"
-			style="width:100%;">
+			style="width:100%;" data-filter-label="<?= $this->htmlTranslate("Scheme Type"); ?>">
 			<option></option>
 			<?php foreach ($this->schemes as $scheme) { ?>
 				<option value="<?php echo $scheme['scheme_id']; ?>"><?php echo $scheme['scheme_name']; ?></option>
@@ -87,7 +98,8 @@
 	</div>
 	<div class="filterCell cellWide">
 		<div class="filterLabel"><?= $this->translate->_("Shipment"); ?></div>
-		<select id="shipmentId" name="shipmentId" multiple="multiple" style="width:100%;">
+		<select id="shipmentId" name="shipmentId" multiple="multiple" style="width:100%;"
+			data-filter-label="<?= $this->htmlTranslate("Shipment"); ?>">
 			<option></option>
 		</select>
 	</div>
@@ -95,6 +107,7 @@
 		<div class="filterCell cellNarrow">
 			<div class="filterLabel"><?= $this->translate->_("Country"); ?></div>
 			<select class="form-control select2" id="country" name="country" title="Please select the country to filter"
+				data-filter-label="<?= $this->htmlTranslate("Country"); ?>"
 				onchange="getOptions('participant', 'country', 'region', this.value, 'region');">
 				<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
 				<?php foreach ($this->countries as $country) { ?>
@@ -107,6 +120,7 @@
 		<div class="filterCell">
 			<div class="filterLabel"><?= $this->translate->_("Region"); ?></div>
 			<select class="form-control select2" id="region" name="region" title="Please select the region to filter"
+				data-filter-label="<?= $this->htmlTranslate("Region"); ?>"
 				onchange="getOptions('participant', 'region', 'state', this.value, 'state');">
 				<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
 			</select>
@@ -116,6 +130,7 @@
 		<div class="filterCell">
 			<div class="filterLabel"><?= $this->translate->_("Province"); ?></div>
 			<select class="form-control select2" id="state" name="state" title="Please select the province to filter"
+				data-filter-label="<?= $this->htmlTranslate("Province"); ?>"
 				onchange="getOptions('participant', 'state', 'district', this.value, 'district');">
 				<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
 			</select>
@@ -125,7 +140,8 @@
 		<div class="filterCell">
 			<div class="filterLabel"><?= $this->translate->_("District"); ?></div>
 			<select class="form-control select2" id="district" name="district"
-				title="Please select the district to filter">
+				title="Please select the district to filter"
+				data-filter-label="<?= $this->htmlTranslate("District"); ?>">
 				<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
 			</select>
 		</div>
@@ -137,6 +153,8 @@
 			onclick="document.location.href = document.location"><span><?= $this->translate->_("Reset"); ?></span></button>
 	</div>
 </div>
+	</div><!-- /.js-filter-body -->
+</div><!-- /.filter-panel -->
 <div id="participant" style="margin: 0 auto"></div>
 <table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered table-hover hide"
 	id="shipmentTable">
@@ -502,3 +520,5 @@
 			});
 	}
 </script>
+<?php // Must stay last: the panel collapses only after the select2 widgets above have measured themselves.
+include APPLICATION_PATH . '/views/partials/collapsible-filters.phtml'; ?>

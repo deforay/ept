@@ -14,6 +14,16 @@
 <legend>
     <h3><?= $this->translate->_("Participant Response Report"); ?></h3>
 </legend>
+<div class="filter-panel js-filter-panel">
+    <button type="button" class="btn btn-default btn-sm js-filter-toggle" aria-expanded="false"
+        data-expand-text="<?= $this->htmlTranslate("Expand Filters"); ?>"
+        data-collapse-text="<?= $this->htmlTranslate("Collapse Filters"); ?>">
+        <i class="icon-filter"></i> <span class="js-filter-toggle-text"><?= $this->translate->_("Expand Filters"); ?></span>
+        <span class="label label-info js-filter-count" style="display:none;">0</span>
+        <span class="caret"></span>
+    </button>
+    <div class="js-filter-summary"></div>
+    <div class="js-filter-body">
 <table style="margin:20px 0;" class="table table-bordered">
     <tr>
         <td style="width:120px;text-align: center;font-weight:bold;">
@@ -32,10 +42,12 @@
     <tr>
         <td>
             <input type="text" id="dateRange" name="dateRange" class="form-control input-sm isRequired"
-                readonly="readonly" style="background: #fff" placeholder="Click here to pick a Date Range" />
+                readonly="readonly" style="background: #fff" placeholder="Click here to pick a Date Range"
+                data-filter-label="<?= $this->htmlTranslate("Date Range"); ?>" />
         </td>
         <td>
-            <select id="scheme" name="scheme" class="form-control input-sm">
+            <select id="scheme" name="scheme" class="form-control input-sm"
+                data-filter-label="<?= $this->htmlTranslate("Scheme"); ?>">
                 <option value=""> -- <?= $this->translate->_("Select Scheme Type"); ?>--</option>
                 <?php
                 foreach ($this->schemes as $scheme) {
@@ -47,7 +59,8 @@
             </select>
         </td>
         <td>
-            <select id="reportType" name="reportType" class="form-control input-sm">
+            <select id="reportType" name="reportType" class="form-control input-sm"
+                data-filter-label="<?= $this->htmlTranslate("Report Type"); ?>">
                 <option value=""> -- <?= $this->translate->_("Select Report Type"); ?> --</option>
                 <option value="network"><?= $this->translate->_("Network Tier"); ?></option>
                 <option value="affiliation"><?= $this->translate->_("Affiliation"); ?></option>
@@ -65,6 +78,8 @@
         </td>
     </tr>
 </table>
+    </div><!-- /.js-filter-body -->
+</div><!-- /.filter-panel -->
 <div id="participant" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
 
 <br>
@@ -352,3 +367,5 @@
         }
     });
 </script>
+<?php // Must stay last: the panel collapses only after the select2 widgets above have measured themselves.
+include APPLICATION_PATH . '/views/partials/collapsible-filters.phtml'; ?>

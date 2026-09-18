@@ -198,12 +198,23 @@
 		<h2><?= $this->htmlTranslate("Shipments Report"); ?></h2>
 	</div>
 	<div class="data-list-body">
+		<div class="filter-panel js-filter-panel">
+			<button type="button" class="btn btn-default btn-sm js-filter-toggle" aria-expanded="false"
+				data-expand-text="<?= $this->htmlTranslate("Expand Filters"); ?>"
+				data-collapse-text="<?= $this->htmlTranslate("Collapse Filters"); ?>">
+				<i class="icon-filter"></i> <span class="js-filter-toggle-text"><?= $this->htmlTranslate("Expand Filters"); ?></span>
+				<span class="label label-info js-filter-count" style="display:none;">0</span>
+				<span class="caret"></span>
+			</button>
+			<div class="js-filter-summary"></div>
+			<div class="js-filter-body">
 		<div class="data-list-toolbar">
 			<div style="min-width:280px;">
 				<label for="dateRange"><?= $this->htmlTranslate("Pick a Date Range (Optional)"); ?></label>
 				<input type="text" id="dateRange" name="dateRange" class="form-control input-sm" readonly="readonly"
 					style="background: #fff"
-					placeholder="<?= $this->htmlTranslate('Click here to pick a Date Range'); ?>" />
+					placeholder="<?= $this->htmlTranslate('Click here to pick a Date Range'); ?>"
+					data-filter-label="<?= $this->htmlTranslate("Date Range"); ?>" />
 			</div>
 			<div style="min-width:0;">
 				<button class="btn btn-success btn-sm"
@@ -215,11 +226,14 @@
 			     this is the opt-in for the rare case where someone needs to see them. -->
 			<div style="min-width:0;">
 				<label class="checkbox-inline" style="margin-top:22px;">
-					<input type="checkbox" id="includeCancelled" onchange="getDrawable()" />
+					<input type="checkbox" id="includeCancelled" onchange="getDrawable()"
+						data-filter-label="<?= $this->htmlTranslate("Include cancelled"); ?>" />
 					<?= $this->htmlTranslate("Include cancelled"); ?>
 				</label>
 			</div>
 		</div>
+			</div><!-- /.js-filter-body -->
+		</div><!-- /.filter-panel -->
 		<!-- BULK DOWNLOAD TOOLBAR -->
 		<div id="bulkShipmentToolbar" style="margin:10px 0;display:none;">
 			<button class="btn btn-success btn-sm" id="bulkShipmentBtn" onclick="bulkDownloadShipments()" disabled>
@@ -441,7 +455,18 @@
 			function (start, end) {
 				startDate = start.format('DD-MMM-YYYY');
 				endDate = end.format('DD-MMM-YYYY');
+				// autoUpdateInput is false above, so the plugin never writes the
+				// picked range into #dateRange itself — but drawTable() re-derives
+				// startDate/endDate by parsing this field's value on every draw,
+				// which would otherwise silently overwrite what was just picked
+				// with nothing. Keep the two in sync here.
+				$('#dateRange').val(startDate + ' to ' + endDate);
 			});
+		$('#dateRange').on('cancel.daterangepicker', function (ev, picker) {
+			$(this).val('');
+			startDate = "";
+			endDate = "";
+		});
 
 		getDrawable();
 
@@ -655,3 +680,5 @@
 			});
 	}
 </script>
+<?php // Must stay last: the panel collapses only after the select2 widgets above have measured themselves.
+include APPLICATION_PATH . '/views/partials/collapsible-filters.phtml'; ?>
