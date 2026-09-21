@@ -23015,3 +23015,9 @@ msgstr "administrateur système"
 #: application/languages/help-translation-strings.php
 msgid "roles"
 msgstr "rôles"
+
+#: application/modules/reports/views/scripts/distribution/finalize.phtml
+#: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml
+msgid "Response Date Range"
+msgstr "Plage de dates de réponse"

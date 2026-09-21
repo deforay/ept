@@ -22101,3 +22101,9 @@ msgstr "Không có người tham gia"
 
 #~ msgid "Not enrolled in any scheme"
 #~ msgstr "Chưa ghi danh chương trình nào"
+
+#: application/modules/reports/views/scripts/distribution/finalize.phtml
+#: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml
+msgid "Response Date Range"
+msgstr "Phạm vi ngày phản hồi"

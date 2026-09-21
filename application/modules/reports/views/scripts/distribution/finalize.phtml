@@ -321,15 +321,16 @@ if (!empty($this->shipment)) {
                 </select>
             </div>
             <div>
-                <label for="filterResult"><?= $this->translate->_("Result"); ?></label>
+                <label for="filterResult"><?= $this->translate->_("Final Result"); ?></label>
                 <select id="filterResult" class="form-control" multiple>
-                    <option value="pass"><?= $this->translate->_("Pass"); ?></option>
-                    <option value="fail"><?= $this->translate->_("Fail"); ?></option>
+                    <option value="pass"><?= $this->translate->_("Satisfactory"); ?></option>
+                    <option value="fail"><?= $this->translate->_("Unsatisfactory"); ?></option>
                     <option value="excluded"><?= $this->translate->_("Excluded"); ?></option>
+                    <option value="notevaluated"><?= $this->translate->_("Not Evaluated"); ?></option>
                 </select>
             </div>
             <div>
-                <label for="dateRange"><?= $this->translate->_("Date Range"); ?></label>
+                <label for="dateRange"><?= $this->translate->_("Response Date Range"); ?></label>
                 <input type="text" id="dateRange" name="dateRange" class="form-control" readonly="readonly"
                     style="background: #fff" placeholder="<?= $this->translate->_("Click here to pick a Date Range"); ?>" />
             </div>
@@ -453,7 +454,7 @@ if (!empty($this->shipment)) {
 
                     $rowResponseStatus = !empty($shipment['response_status']) ? $shipment['response_status'] : 'noresponse';
                     $rowResultMap = [1 => 'pass', 2 => 'fail', 3 => 'excluded'];
-                    $rowResult = $rowResultMap[(int) ($shipment['final_result'] ?? 0)] ?? '';
+                    $rowResult = $rowResultMap[(int) ($shipment['final_result'] ?? 0)] ?? 'notevaluated';
                     $rowAttrs = Pt_Commons_JsonUtility::safeDecode($shipment['attributes'] ?? '') ?: [];
                     $rowTier = $rowAttrs['dts_test_panel_type'] ?? '';
                     $rowNonRef = $shipment['has_non_ref_kit'] ?? 'no';
@@ -594,8 +595,8 @@ if (!empty($this->shipment)) {
             var tagFields = [];
             if (mo) { tagFields.push({ $el: $('#manuelOverride'), label: "<?= $this->jsTranslate("Manually overridden only"); ?>", value: selectedText($('#manuelOverride')) }); }
             if (rs.length) { tagFields.push({ $el: $('#filterResponseStatus'), label: "<?= $this->jsTranslate("Response status"); ?>", value: selectedText($('#filterResponseStatus')) }); }
-            if (rr.length) { tagFields.push({ $el: $('#filterResult'), label: "<?= $this->jsTranslate("Result"); ?>", value: selectedText($('#filterResult')) }); }
-            if (dateRange) { tagFields.push({ $el: $('#dateRange'), label: "<?= $this->jsTranslate("Date Range"); ?>", value: dateRange }); }
+            if (rr.length) { tagFields.push({ $el: $('#filterResult'), label: "<?= $this->jsTranslate("Final Result"); ?>", value: selectedText($('#filterResult')) }); }
+            if (dateRange) { tagFields.push({ $el: $('#dateRange'), label: "<?= $this->jsTranslate("Response Date Range"); ?>", value: dateRange }); }
             if (con.length) { tagFields.push({ $el: $('#country'), label: "<?= $this->jsTranslate("Country"); ?>", value: selectedText($('#country')) }); }
             if (reg.length) { tagFields.push({ $el: $('#region'), label: "<?= $this->jsTranslate("Region"); ?>", value: selectedText($('#region')) }); }
             if (st.length) { tagFields.push({ $el: $('#state'), label: "<?= $this->jsTranslate("Province"); ?>", value: selectedText($('#state')) }); }
@@ -675,7 +676,7 @@ if (!empty($this->shipment)) {
             }).on('change', applyShipmentFilters);
 
             $("#filterResult").select2({
-                placeholder: "<?= $this->translate->_("Select one or more results"); ?>",
+                placeholder: "<?= $this->translate->_("Select one or more final results"); ?>",
                 allowClear: true,
                 width: '100%'
             }).on('change', applyShipmentFilters);

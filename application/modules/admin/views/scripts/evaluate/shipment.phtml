@@ -238,21 +238,21 @@ if ($shipmentAttributesRaw !== '') {
 			</select>
 		</div>
 		<div>
-			<label for="filterResult"><?= $this->htmlTranslate("Result"); ?></label>
+			<label for="filterResult"><?= $this->htmlTranslate("Final Result"); ?></label>
 			<select id="filterResult" class="form-control" multiple onchange="applyShipmentFilters()"
-				data-filter-label="<?= $this->htmlTranslate("Result"); ?>">
-				<option value=""><?= $this->htmlTranslate("All"); ?></option>
-				<?php foreach ($this->results as $res) { ?>
-					<option value="<?php echo $res['result_id'] ?>"><?php echo $res['result_name']; ?></option>
-				<?php } ?>
+				data-filter-label="<?= $this->htmlTranslate("Final Result"); ?>">
+				<option value="1"><?= $this->htmlTranslate("Satisfactory"); ?></option>
+				<option value="2"><?= $this->htmlTranslate("Unsatisfactory"); ?></option>
+				<option value="3"><?= $this->htmlTranslate("Excluded"); ?></option>
+				<option value="notevaluated"><?= $this->htmlTranslate("Not Evaluated"); ?></option>
 			</select>
 		</div>
 		<div>
-			<label for="dateRange"><?= $this->htmlTranslate("Date Range"); ?></label>
+			<label for="dateRange"><?= $this->htmlTranslate("Response Date Range"); ?></label>
 			<input type="text" id="dateRange" name="dateRange" class="form-control" onchange="applyShipmentFilters()"
 				readonly="readonly" style="background: #fff"
 				placeholder="<?= $this->htmlTranslate("Click here to pick a Date Range"); ?>"
-				data-filter-label="<?= $this->htmlTranslate("Date Range"); ?>" />
+				data-filter-label="<?= $this->htmlTranslate("Response Date Range"); ?>" />
 		</div>
 		<?php if (($this->dtsSchemeType ?? '') === 'vietnam') { ?>
 			<div>
@@ -461,7 +461,7 @@ if ($shipmentAttributesRaw !== '') {
 			width: '100%'
 		});
 		$("#filterResult").select2({
-			placeholder: "<?= $this->jsTranslate("Select one or more results"); ?>",
+			placeholder: "<?= $this->jsTranslate("Select one or more final results"); ?>",
 			allowClear: true,
 			width: '100%'
 		});

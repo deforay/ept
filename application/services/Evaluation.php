@@ -1646,8 +1646,8 @@ class Application_Service_Evaluation
      * Universal (every scheme, every country):
      *   - filterResponseStatus ∈ {'responded','noresponse','late','nottested'}
      *     → sp.response_status = <value>
-     *   - filterResult ∈ {'pass','fail','excluded'}
-     *     → sp.final_result = 1 / 2 / 3
+     *   - filterResult ∈ {1,2,3,'notevaluated'} (comma-separated for multi-select)
+     *     → sp.final_result IN (1,2,3) and/or final_result IS NULL / 0
      *
      * Vietnam-specific (rendered + sent only when the shipment is Vietnam):
      *   - vietnamTier ∈ {'screening','confirmatory'}
@@ -1683,9 +1683,24 @@ class Application_Service_Evaluation
                 $baseSelect = $baseSelect->where('sp.response_status IN (?)', $statusArr);
             }
         }
-        $result = explode(',', $parameters['filterResult']);
-        if (isset($parameters['filterResult']) && $parameters['filterResult'] != '') {
-            $baseSelect = $baseSelect->where('sp.final_result IN (?)', $result);
+        // Final Result: 1 Satisfactory / 2 Unsatisfactory / 3 Excluded, plus the
+        // pseudo-value 'notevaluated' (final_result is NULL or 0 until evaluated).
+        $resultTokens = array_filter(
+            array_map('trim', explode(',', (string) ($parameters['filterResult'] ?? ''))),
+            'strlen'
+        );
+        if (!empty($resultTokens)) {
+            $resultConditions = [];
+            $resultIds = array_values(array_intersect($resultTokens, ['1', '2', '3']));
+            if (!empty($resultIds)) {
+                $resultConditions[] = $baseSelect->getAdapter()->quoteInto('sp.final_result IN (?)', $resultIds);
+            }
+            if (in_array('notevaluated', $resultTokens, true)) {
+                $resultConditions[] = '(sp.final_result IS NULL OR sp.final_result = 0)';
+            }
+            if (!empty($resultConditions)) {
+                $baseSelect = $baseSelect->where('(' . implode(' OR ', $resultConditions) . ')');
+            }
         }
         if (isset($parameters['country']) && $parameters['country'] != '') {
             $country = explode(',', $parameters['country']);

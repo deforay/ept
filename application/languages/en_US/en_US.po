@@ -21573,3 +21573,9 @@ msgstr "PT Participant Info"
 #~| msgid "Corrective Actions"
 #~ msgid "Corrective actions"
 #~ msgstr "Corrective Actions"
+
+#: application/modules/reports/views/scripts/distribution/finalize.phtml
+#: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml
+msgid "Response Date Range"
+msgstr ""
