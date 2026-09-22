@@ -51,6 +51,7 @@ foreach (($this->allSamples ?? []) as $s) {
 $testResultOptions = [];
 $finalResultOptions = [];
 $allResultOptions = [];
+$selectableResultOptions = [];
 foreach ($this->otherTestsPossibleResults as $row) {
 	$subGroup = strtoupper(trim((string) ($row['scheme_sub_group'] ?? '')));
 	$allResultOptions[$row['result_code']] = $row['response'];
@@ -58,6 +59,7 @@ foreach ($this->otherTestsPossibleResults as $row) {
 	if (($row['status'] ?? 'active') === 'inactive' && !isset($storedResultCodes[$row['result_code']])) {
 		continue;
 	}
+	$selectableResultOptions[$row['result_code']] = $row['response'];
 	if ($subGroup === 'TEST' || $subGroup === '') {
 		$testResultOptions[$row['result_code']] = $row['response'];
 	}
@@ -69,11 +71,12 @@ foreach ($this->otherTestsPossibleResults as $row) {
 // Schemes that define only one namespace (HCV RDT has only TEST codes, SYPH RDT only FINAL)
 // would otherwise leave the opposite dropdown empty, so fall both dropdowns back to the full
 // option list in that case — same as legacy schemes that don't use sub-groups at all.
+// The fallback uses the selectable list, not $allResultOptions, so retired results stay hidden.
 if (empty($testResultOptions)) {
-	$testResultOptions = $allResultOptions;
+	$testResultOptions = $selectableResultOptions;
 }
 if (empty($finalResultOptions)) {
-	$finalResultOptions = $allResultOptions;
+	$finalResultOptions = $selectableResultOptions;
 }
 ?>
 <style>
