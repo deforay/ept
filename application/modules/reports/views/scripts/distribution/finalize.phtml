@@ -211,7 +211,7 @@ if (!empty($this->shipment)) {
                 <div class="shipment-panel-field">
                     <label for="shipmentComment"><?= $this->translate->_("Comment for all Participants of this shipment"); ?></label>
                     <textarea rows="3" class="form-control"
-                        placeholder="<?= $this->translate->_("Optional. Appears on every participant's report for this shipment."); ?>"
+                        placeholder="<?= $this->htmlTranslate("Optional. Appears on every participant's report for this shipment."); ?>"
                         title="<?= $this->translate->_("Comment for all Participants of this shipment"); ?>"
                         name="shipmentComment" id="shipmentComment"><?php echo $this->shipment[0]['shipment_comment']; ?></textarea>
                     <input type="hidden" value="<?php echo base64_encode($this->shipment[0]['shipment_id']) ?>" name="shipmentId"
@@ -224,7 +224,7 @@ if (!empty($this->shipment)) {
                             <input type="text" id="resultsApprovedOn" name="resultsApprovedOn"
                                 class="form-control datepicker" readonly="readonly" autocomplete="off"
                                 value="<?= ($approvedOn !== '') ? $this->escape($this->dateFormat($approvedOn)) : ''; ?>"
-                                placeholder="<?= $this->translate->_("Defaults to today"); ?>"
+                                placeholder="<?= $this->htmlTranslate("Defaults to today"); ?>"
                                 title="<?= $this->translate->_("Date the results were approved"); ?>" />
                         </div>
                         <div class="shipment-panel-field">
@@ -232,7 +232,7 @@ if (!empty($this->shipment)) {
                             <input type="text" id="resultsApprovedBy" name="resultsApprovedBy"
                                 class="form-control" maxlength="256" autocomplete="off"
                                 value="<?= $this->escape($approvedBy); ?>"
-                                placeholder="<?= $this->translate->_("Defaults to you"); ?>"
+                                placeholder="<?= $this->htmlTranslate("Defaults to you"); ?>"
                                 title="<?= $this->translate->_("Name of the person approving these results"); ?>" />
                         </div>
                     </div>
@@ -332,7 +332,7 @@ if (!empty($this->shipment)) {
             <div>
                 <label for="dateRange"><?= $this->translate->_("Response Date Range"); ?></label>
                 <input type="text" id="dateRange" name="dateRange" class="form-control" readonly="readonly"
-                    style="background: #fff" placeholder="<?= $this->translate->_("Click here to pick a Date Range"); ?>" />
+                    style="background: #fff" placeholder="<?= $this->htmlTranslate("Click here to pick a Date Range"); ?>" />
             </div>
             <div>
                 <label for="country"><?= $this->translate->_("Country"); ?></label>
@@ -610,7 +610,7 @@ if (!empty($this->shipment)) {
                 var $tag = $('<span class="filter-tag"></span>');
                 $('<span class="filter-tag-label"></span>').text(f.label).appendTo($tag);
                 $('<span class="filter-tag-value"></span>').text(f.value).appendTo($tag);
-                $('<button type="button" class="filter-tag-remove" aria-label="Remove filter"></button>')
+                $('<button type="button" class="filter-tag-remove" aria-label="<?= $this->jsTranslate("Remove filter"); ?>"></button>')
                     .html('&times;')
                     .on('click', function () { clearShipmentFilter(f.$el); })
                     .appendTo($tag);

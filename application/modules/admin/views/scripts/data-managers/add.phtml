@@ -31,7 +31,7 @@ if (!empty($this->ptcc) && $this->ptcc == 1) {
                             <input type="text" id="dmUserId" name="dmUserId" size="50"
                                 class="isRequired isEmail form-control"
                                 title="<?= $this->translate->_('Please enter the correct primary email id here'); ?>"
-                                placeholder="<?= $this->translate->_('Please enter the primary email id here'); ?>"
+                                placeholder="<?= $this->htmlTranslate('Please enter the primary email id here'); ?>"
                                 autocomplete="off"
                                 onblur="checkDuplicate('data_manager', 'primary_email', this, null, 'This primary e-mail ID already exists for another PT login. Please try something else.')" />
                         </div>
@@ -45,7 +45,7 @@ if (!empty($this->ptcc) && $this->ptcc == 1) {
                             <input type="password" pattern=".{<?php echo $this->passLength ?? 8; ?>,}" id="dmPassword"
                                 name="dmPassword" size="50" value="" class="isRequired form-control"
                                 title="<?= $this->translate->_("Please enter a valid password and should minimum length of " . $this->passLength ?? 8); ?>"
-                                placeholder="<?= $this->translate->_('Please enter a password'); ?>"
+                                placeholder="<?= $this->htmlTranslate('Please enter a password'); ?>"
                                 onchange="validatePassword(this);" autocomplete="off">
                         </div>
                     </div>
@@ -60,7 +60,7 @@ if (!empty($this->ptcc) && $this->ptcc == 1) {
                             <input type="password" id="confirmPassword" name="dmPassword" size="50" value=""
                                 class="isRequired form-control confirmPassword"
                                 title="<?= $this->translate->_('Please repeat the same password'); ?>"
-                                placeholder="<?= $this->translate->_('Please repeat the same password'); ?>" />
+                                placeholder="<?= $this->htmlTranslate('Please repeat the same password'); ?>" />
                         </div>
                     </div>
                 </div>
@@ -70,7 +70,7 @@ if (!empty($this->ptcc) && $this->ptcc == 1) {
                         <div class="col-lg-12"><input type="text" id="institute" name="institute" size="50"
                                 maxlength="255" class="form-control"
                                 title="<?= $this->translate->_('Please enter the institute name here'); ?>"
-                                placeholder="<?= $this->translate->_('Please enter the institute name here'); ?>"
+                                placeholder="<?= $this->htmlTranslate('Please enter the institute name here'); ?>"
                                 value="<?php echo (isset($this->contact['lab'])) ? $this->contact['lab'] : "" ?>" />
                         </div>
                     </div>
@@ -84,7 +84,7 @@ if (!empty($this->ptcc) && $this->ptcc == 1) {
                         <div class="col-lg-12"><input type="text" id="fname" name="fname" size="50" maxlength="255"
                                 class="isRequired form-control"
                                 title="<?= $this->translate->_('Please enter the first name here'); ?>"
-                                placeholder="<?= $this->translate->_('Please enter the first name here'); ?>"
+                                placeholder="<?= $this->htmlTranslate('Please enter the first name here'); ?>"
                                 value="<?php echo (isset($this->contact['first_name'])) ? $this->contact['first_name'] : "" ?>" />
                         </div>
                     </div>
@@ -95,7 +95,7 @@ if (!empty($this->ptcc) && $this->ptcc == 1) {
                         <div class="col-lg-12"><input type="text" id="lname" name="lname" size="50" maxlength="255"
                                 class="form-control"
                                 title="<?= $this->translate->_('Please enter the last name here'); ?>"
-                                placeholder="<?= $this->translate->_('Please enter the last name here'); ?>"
+                                placeholder="<?= $this->htmlTranslate('Please enter the last name here'); ?>"
                                 value="<?php echo (isset($this->contact['last_name'])) ? $this->contact['last_name'] : "" ?>" />
                         </div>
                     </div>
@@ -108,7 +108,7 @@ if (!empty($this->ptcc) && $this->ptcc == 1) {
                         <div class="col-lg-12"><input type="text" id="semail" name="semail" size="50" maxlength="255"
                                 class="isEmail form-control"
                                 title="<?= $this->translate->_('Please enter a secondary email id here'); ?>"
-                                placeholder="<?= $this->translate->_('Please enter a secondary email id here'); ?>" />
+                                placeholder="<?= $this->htmlTranslate('Please enter a secondary email id here'); ?>" />
                         </div>
                     </div>
                 </div>
@@ -118,7 +118,7 @@ if (!empty($this->ptcc) && $this->ptcc == 1) {
                         <div class="col-lg-12"><input type="text" id="phone1" name="phone1" size="50" maxlength="255"
                                 class=" form-control checkNum"
                                 title="<?= $this->translate->_('Please enter mobile/cell number here'); ?>"
-                                placeholder="<?= $this->translate->_('Please enter mobile/cell number here'); ?>"
+                                placeholder="<?= $this->htmlTranslate('Please enter mobile/cell number here'); ?>"
                                 value="<?php echo (isset($this->contact['phone'])) ? $this->contact['phone'] : "" ?>" />
                         </div>
                     </div>
@@ -129,7 +129,7 @@ if (!empty($this->ptcc) && $this->ptcc == 1) {
                     <div class="form-group">
                         <label class="control-label" for="phone2"><?= $this->translate->_("Phone Number"); ?></label>
                         <div class="col-lg-12"><input type="text" id="phone2" name="phone2" size="50" maxlength="255"
-                                placeholder="<?= $this->translate->_('Please enter phone number here'); ?>"
+                                placeholder="<?= $this->htmlTranslate('Please enter phone number here'); ?>"
                                 class="checkNum form-control" /></div>
                     </div>
                 </div>

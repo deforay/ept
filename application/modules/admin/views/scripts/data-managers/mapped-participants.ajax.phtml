@@ -10,7 +10,7 @@ $pCount = count($mappedParticipants);
             <i class="icon-user"></i>
             <span><?= sprintf($this->translate->_('%d Participant(s) mapped'), $pCount); ?></span>
             <?php if ($pCount > 5) { ?>
-                <input type="text" class="form-control input-sm participant-filter-input" placeholder="<?= $this->translate->_('Filter by ID, name, institute or email…'); ?>" />
+                <input type="text" class="form-control input-sm participant-filter-input" placeholder="<?= $this->htmlTranslate('Filter by ID, name, institute or email…'); ?>" />
             <?php } ?>
         </div>
         <div class="participant-list-wrap" style="max-height:260px;overflow-y:auto;">

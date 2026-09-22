@@ -57,7 +57,7 @@ $formAction = $this->url(['module' => 'admin', 'controller' => 'data-managers', 
     <div class="form-group">
         <label for="identifiers"><?= $this->translate->_('Paste emails or Lab IDs'); ?></label>
         <textarea id="identifiers" name="identifiers" rows="6" class="form-control"
-            placeholder="<?= $this->translate->_('One per line, or comma/semicolon-separated. Examples:'); ?>&#10;5121&#10;5452&#10;user@example.com"><?= htmlspecialchars($pastedText, ENT_QUOTES, 'UTF-8'); ?></textarea>
+            placeholder="<?= $this->htmlTranslate('One per line, or comma/semicolon-separated. Examples:'); ?>&#10;5121&#10;5452&#10;user@example.com"><?= htmlspecialchars($pastedText, ENT_QUOTES, 'UTF-8'); ?></textarea>
         <div class="help-line">
             <?= $this->translate->_('Each Lab ID resolves to all DMs mapped to that participant. Each email resolves to one DM.'); ?>
         </div>

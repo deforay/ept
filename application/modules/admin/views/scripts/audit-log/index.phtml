@@ -582,7 +582,7 @@
         </div>
         <div class="field">
             <label for="dateRange"><?= $this->translate->_("Date Range"); ?></label>
-            <input type="text" id="dateRange" placeholder="<?= $this->translate->_("Any date"); ?>" readonly />
+            <input type="text" id="dateRange" placeholder="<?= $this->htmlTranslate("Any date"); ?>" readonly />
         </div>
         <div class="field">
             <label for="type"><?= $this->translate->_("Context"); ?></label>
@@ -610,22 +610,22 @@
         </div>
         <div class="field">
             <label for="actorEmail"><?= $this->translate->_("Actor email"); ?></label>
-            <input type="search" id="actorEmail" placeholder="<?= $this->translate->_("e.g. dm@lab.org"); ?>" autocomplete="off" />
+            <input type="search" id="actorEmail" placeholder="<?= $this->htmlTranslate("e.g. dm@lab.org"); ?>" autocomplete="off" />
         </div>
         <div class="field">
             <label for="labId"><?= $this->translate->_("Lab ID"); ?></label>
-            <input type="search" id="labId" placeholder="<?= $this->translate->_("participant unique ID"); ?>" autocomplete="off" />
+            <input type="search" id="labId" placeholder="<?= $this->htmlTranslate("participant unique ID"); ?>" autocomplete="off" />
         </div>
         <div class="field">
             <label><?= $this->translate->_("Session"); ?></label>
-            <input type="search" id="sessionHash" placeholder="<?= $this->translate->_("16-char session hash"); ?>" autocomplete="off" />
+            <input type="search" id="sessionHash" placeholder="<?= $this->htmlTranslate("16-char session hash"); ?>" autocomplete="off" />
         </div>
         <button type="button" class="reset-btn" id="resetBtn"><?= $this->translate->_("Reset"); ?></button>
     </div>
 
     <div class="audit-search" id="searchWrap">
         <i class="fas fa-search"></i>
-        <input type="search" id="searchBox" placeholder="<?= $this->translate->_("Search actions — try a name, code, or keyword…"); ?>" autocomplete="off" />
+        <input type="search" id="searchBox" placeholder="<?= $this->htmlTranslate("Search actions — try a name, code, or keyword…"); ?>" autocomplete="off" />
         <button type="button" class="clear-search" id="clearSearch" title="Clear search">
             <i class="fas fa-times"></i>
         </button>

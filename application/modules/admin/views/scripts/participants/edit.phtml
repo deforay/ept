@@ -173,7 +173,7 @@ $directParticipantLogin = (isset($this->directParticipantLogin) && $this->direct
                             <input type="password" pattern=".{<?= $this->passLength ?? 8; ?>,}" id="dmPassword"
                                 name="dmPassword" class="form-control isPassword"
                                 title="<?= $this->translate->_("Please enter a valid password with minimum length of") . " " . ($this->passLength ?? 8); ?>"
-                                placeholder="<?= $this->translate->_("Please enter a password"); ?>" autocomplete="off">
+                                placeholder="<?= $this->htmlTranslate("Please enter a password"); ?>" autocomplete="off">
                         </div>
                     </div>
                     <div class="col-lg-6">
@@ -182,7 +182,7 @@ $directParticipantLogin = (isset($this->directParticipantLogin) && $this->direct
                             <input type="password" id="confirmPassword" name="dmPassword"
                                 class="form-control confirmPassword"
                                 title="<?= $this->translate->_("Please repeat the same password"); ?>"
-                                placeholder="<?= $this->translate->_("Please repeat the same password"); ?>" />
+                                placeholder="<?= $this->htmlTranslate("Please repeat the same password"); ?>" />
                         </div>
                     </div>
                 </div>

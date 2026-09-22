@@ -13,7 +13,7 @@ $canViewAsParticipant = in_array('view-as-participant', $adminPrivileges, true);
             <i class="icon-user"></i>
             <span><?= sprintf($this->translate->_('%d Data Manager(s) mapped'), $dmCount); ?></span>
             <?php if ($dmCount > 5) { ?>
-                <input type="text" class="form-control input-sm dm-filter-input" placeholder="<?= $this->translate->_('Filter by name or email…'); ?>" />
+                <input type="text" class="form-control input-sm dm-filter-input" placeholder="<?= $this->htmlTranslate('Filter by name or email…'); ?>" />
             <?php } ?>
         </div>
         <div class="dm-list-wrap" style="max-height:260px;overflow-y:auto;">

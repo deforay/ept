@@ -488,7 +488,7 @@ $faqResults = $this->faq;
 							<div class="input-group input-group-sm">
 								<span class="input-group-addon"><i class="icon-search"></i></span>
 								<input type="text" class="form-control" id="searchSettings"
-									placeholder="<?= $this->translate->_('Search settings'); ?>" />
+									placeholder="<?= $this->htmlTranslate('Search settings'); ?>" />
 							</div>
 						</div>
 
@@ -529,7 +529,7 @@ $faqResults = $this->faq;
 							class="control-label"><?= $this->translate->_("Line 1 (Main Title)"); ?></label>
 						<input type="text" value="<?php echo $home->heading1 ?? null; ?>" id="homeHeading1"
 							name="home[heading1]" class="form-control"
-							placeholder="<?= $this->translate->_('e.g., Welcome to ePT for TB'); ?>"
+							placeholder="<?= $this->htmlTranslate('e.g., Welcome to ePT for TB'); ?>"
 							title="<?= $this->translate->_('Enter the main title for the hero banner'); ?>" />
 					</div>
 				</div>
@@ -539,7 +539,7 @@ $faqResults = $this->faq;
 							class="control-label"><?= $this->translate->_("Line 2 (Subtitle)"); ?></label>
 						<input type="text" value="<?php echo $home->heading2 ?? null; ?>" id="homeHeading2"
 							name="home[heading2]" class="form-control"
-							placeholder="<?= $this->translate->_('e.g., Online Proficiency Testing Tool'); ?>"
+							placeholder="<?= $this->htmlTranslate('e.g., Online Proficiency Testing Tool'); ?>"
 							title="<?= $this->translate->_('Enter the subtitle for the hero banner'); ?>" />
 					</div>
 				</div>
@@ -548,7 +548,7 @@ $faqResults = $this->faq;
 						<label for="homeHeading3"
 							class="control-label"><?= $this->translate->_("Line 3 (Description)"); ?></label>
 						<textarea id="homeHeading3" name="home[heading3]" class="form-control" rows="3"
-							placeholder="<?= $this->translate->_('Enter a longer description or call to action'); ?>"
+							placeholder="<?= $this->htmlTranslate('Enter a longer description or call to action'); ?>"
 							title="<?= $this->translate->_('Enter the description text for the hero banner'); ?>"><?php echo $home->heading3 ?? null; ?></textarea>
 					</div>
 				</div>
@@ -557,14 +557,14 @@ $faqResults = $this->faq;
 						<label for="homeVideoUrl" class="control-label"><?= $this->translate->_("Video URL"); ?></label>
 						<input type="text" value="<?php echo $home->videoUrl ?? null; ?>" id="homeVideoUrl"
 							name="home[videoUrl]" class="form-control"
-							placeholder="<?= $this->translate->_('e.g., https://youtube.com/watch?v=...'); ?>"
+							placeholder="<?= $this->htmlTranslate('e.g., https://youtube.com/watch?v=...'); ?>"
 							title="<?= $this->translate->_('Enter a YouTube or video URL'); ?>" />
 					</div>
 					<div class="col-md-6">
 						<label for="homeTitle" class="control-label"><?= $this->translate->_("Page Title"); ?></label>
 						<input type="text" value="<?php echo $home->title ?? null; ?>" id="homeTitle" name="home[title]"
 							class="form-control"
-							placeholder="<?= $this->translate->_('Enter the browser page title'); ?>"
+							placeholder="<?= $this->htmlTranslate('Enter the browser page title'); ?>"
 							title="<?= $this->translate->_('Enter the title displayed in browser tab'); ?>" />
 					</div>
 				</div>
@@ -574,7 +574,7 @@ $faqResults = $this->faq;
 							class="control-label"><?= $this->translate->_("Additional Link URL"); ?></label>
 						<input type="text" value="<?php echo $home->additionalLink ?? null; ?>" id="homeAdditionalLink"
 							name="home[additionalLink]" class="form-control"
-							placeholder="<?= $this->translate->_('e.g., https://example.com/guide.pdf'); ?>"
+							placeholder="<?= $this->htmlTranslate('e.g., https://example.com/guide.pdf'); ?>"
 							title="<?= $this->translate->_('Enter an additional link URL'); ?>" />
 					</div>
 					<div class="col-md-6">
@@ -582,7 +582,7 @@ $faqResults = $this->faq;
 							class="control-label"><?= $this->translate->_("Additional Link Text"); ?></label>
 						<input type="text" value="<?php echo $home->additionalLinkText ?? null; ?>"
 							id="homeAdditionalLinkText" name="home[additionalLinkText]" class="form-control"
-							placeholder="<?= $this->translate->_('e.g., Download Guide'); ?>"
+							placeholder="<?= $this->htmlTranslate('e.g., Download Guide'); ?>"
 							title="<?= $this->translate->_('Enter the text for the additional link button'); ?>" />
 					</div>
 				</div>
@@ -649,7 +649,7 @@ $faqResults = $this->faq;
 									class="<?php echo $home->icon1 ?? ''; ?>"></i></span>
 							<input type="text" value="<?php echo $home->icon1 ?? null; ?>" id="homeIcon1"
 								name="home[icon1]" class="form-control icon-input"
-								placeholder="<?= $this->translate->_('e.g., bx bx-file'); ?>"
+								placeholder="<?= $this->htmlTranslate('e.g., bx bx-file'); ?>"
 								onchange="updateIconPreview('homeIcon1', 'iconPreview1')" />
 							<button type="button" class="icon-picker-btn"
 								onclick="openIconPicker('homeIcon1', 'iconPreview1')"
@@ -663,7 +663,7 @@ $faqResults = $this->faq;
 							class="control-label"><?= $this->translate->_("Section Heading"); ?></label>
 						<input type="text" value="<?php echo $home->subHeading1 ?? null; ?>" id="homeSubHeading1"
 							name="home[subHeading1]" class="form-control"
-							placeholder="<?= $this->translate->_('e.g., DOWNLOADS'); ?>" />
+							placeholder="<?= $this->htmlTranslate('e.g., DOWNLOADS'); ?>" />
 					</div>
 				</div>
 
@@ -679,7 +679,7 @@ $faqResults = $this->faq;
 									class="<?php echo $home->icon2 ?? ''; ?>"></i></span>
 							<input type="text" value="<?php echo $home->icon2 ?? null; ?>" id="homeIcon2"
 								name="home[icon2]" class="form-control icon-input"
-								placeholder="<?= $this->translate->_('e.g., bi bi-book-half'); ?>"
+								placeholder="<?= $this->htmlTranslate('e.g., bi bi-book-half'); ?>"
 								onchange="updateIconPreview('homeIcon2', 'iconPreview2')" />
 							<button type="button" class="icon-picker-btn"
 								onclick="openIconPicker('homeIcon2', 'iconPreview2')"
@@ -693,7 +693,7 @@ $faqResults = $this->faq;
 							class="control-label"><?= $this->translate->_("Section Heading"); ?></label>
 						<input type="text" value="<?php echo $home->subHeading2 ?? null; ?>" id="homeSubHeading2"
 							name="home[subHeading2]" class="form-control"
-							placeholder="<?= $this->translate->_('e.g., PROCESSES/PROGRAMS'); ?>" />
+							placeholder="<?= $this->htmlTranslate('e.g., PROCESSES/PROGRAMS'); ?>" />
 					</div>
 				</div>
 
@@ -709,7 +709,7 @@ $faqResults = $this->faq;
 									class="<?php echo $home->icon3 ?? ''; ?>"></i></span>
 							<input type="text" value="<?php echo $home->icon3 ?? null; ?>" id="homeIcon3"
 								name="home[icon3]" class="form-control icon-input"
-								placeholder="<?= $this->translate->_('e.g., bx bx-file'); ?>"
+								placeholder="<?= $this->htmlTranslate('e.g., bx bx-file'); ?>"
 								onchange="updateIconPreview('homeIcon3', 'iconPreview3')" />
 							<button type="button" class="icon-picker-btn"
 								onclick="openIconPicker('homeIcon3', 'iconPreview3')"
@@ -723,7 +723,7 @@ $faqResults = $this->faq;
 							class="control-label"><?= $this->translate->_("Section Heading"); ?></label>
 						<input type="text" value="<?php echo $home->subHeading3 ?? null; ?>" id="homeSubHeading3"
 							name="home[subHeading3]" class="form-control"
-							placeholder="<?= $this->translate->_('e.g., PROGRESS/IMPROVEMENTS'); ?>" />
+							placeholder="<?= $this->htmlTranslate('e.g., PROGRESS/IMPROVEMENTS'); ?>" />
 					</div>
 				</div>
 			</div>
@@ -826,11 +826,11 @@ $faqResults = $this->faq;
 									<tr>
 										<td>
 											<textarea name="faqQuestions[]" class="form-control input-sm"
-												placeholder="<?= $this->translate->_('Enter the question'); ?>"><?php echo $faq; ?></textarea>
+												placeholder="<?= $this->htmlTranslate('Enter the question'); ?>"><?php echo $faq; ?></textarea>
 										</td>
 										<td>
 											<textarea name="faqAnswers[]" class="form-control input-sm"
-												placeholder="<?= $this->translate->_('Enter the answer'); ?>"><?php echo $answer; ?></textarea>
+												placeholder="<?= $this->htmlTranslate('Enter the answer'); ?>"><?php echo $answer; ?></textarea>
 										</td>
 										<td>
 											<a href="javascript:void(0);" onclick="addTbRow(this);" class="btn btn-xs btn-info"
@@ -845,11 +845,11 @@ $faqResults = $this->faq;
 								<tr>
 									<td>
 										<textarea name="faqQuestions[]" class="form-control input-sm"
-											placeholder="<?= $this->translate->_('Enter the question'); ?>"></textarea>
+											placeholder="<?= $this->htmlTranslate('Enter the question'); ?>"></textarea>
 									</td>
 									<td>
 										<textarea name="faqAnswers[]" class="form-control input-sm"
-											placeholder="<?= $this->translate->_('Enter the answer'); ?>"></textarea>
+											placeholder="<?= $this->htmlTranslate('Enter the answer'); ?>"></textarea>
 									</td>
 									<td>
 										<a href="javascript:void(0);" onclick="addTbRow(this);" class="btn btn-xs btn-info"
@@ -888,7 +888,7 @@ $faqResults = $this->faq;
 				<h4 class="modal-title" id="iconPickerModalLabel"><i class="icon-th"></i>
 					<?= $this->translate->_("Select Icon"); ?></h4>
 				<input type="text" class="form-control" id="iconSearchInput"
-					placeholder="<?= $this->translate->_('Search icons...'); ?>">
+					placeholder="<?= $this->htmlTranslate('Search icons...'); ?>">
 			</div>
 			<div class="modal-body">
 				<div class="icon-grid" id="iconGrid"></div>

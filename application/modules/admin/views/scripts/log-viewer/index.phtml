@@ -84,7 +84,7 @@
             <?php endforeach; ?>
         </select>
 
-        <input type="text" id="logvQ" placeholder="<?= $this->translate->_('Search text (case-insensitive)…'); ?>">
+        <input type="text" id="logvQ" placeholder="<?= $this->htmlTranslate('Search text (case-insensitive)…'); ?>">
         <input type="number" id="logvLimit" min="50" max="5000" step="50" value="500" title="<?= $this->translate->_('Max lines'); ?>">
 
         <button class="btn" id="logvRefresh" type="button"><i class="fa fa-sync"></i> <?= $this->translate->_('Refresh'); ?></button>

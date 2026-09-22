@@ -187,7 +187,7 @@ $initials  = strtoupper(
                             </label>
                             <input type="text" id="firstName" name="firstName"
                                 class="form-control isRequired"
-                                placeholder="<?= $this->translate->_("e.g. John"); ?>"
+                                placeholder="<?= $this->htmlTranslate("e.g. John"); ?>"
                                 title="<?= $this->translate->_("Please enter your first name"); ?>"
                                 value="<?= htmlspecialchars($result['first_name'] ?? ''); ?>"
                                 oninput="updateAvatarPreview()">
@@ -199,7 +199,7 @@ $initials  = strtoupper(
                             </label>
                             <input type="text" id="lastName" name="lastName"
                                 class="form-control isRequired"
-                                placeholder="<?= $this->translate->_("e.g. Doe"); ?>"
+                                placeholder="<?= $this->htmlTranslate("e.g. Doe"); ?>"
                                 title="<?= $this->translate->_("Please enter your last name"); ?>"
                                 value="<?= htmlspecialchars($result['last_name'] ?? ''); ?>"
                                 oninput="updateAvatarPreview()">
@@ -214,7 +214,7 @@ $initials  = strtoupper(
                             <label for="primaryEmail"><?= $this->translate->_("Primary Email"); ?></label>
                             <input type="email" id="primaryEmail" name="primaryEmail"
                                 class="form-control isEmail"
-                                placeholder="<?= $this->translate->_("e.g. primary@mail.com"); ?>"
+                                placeholder="<?= $this->htmlTranslate("e.g. primary@mail.com"); ?>"
                                 title="<?= $this->translate->_("Please enter a valid primary email"); ?>"
                                 value="<?= htmlspecialchars($result['primary_email'] ?? ''); ?>">
                             <small class="text-muted"><?= $this->translate->_("Used for account login and mail notifications."); ?></small>
@@ -223,7 +223,7 @@ $initials  = strtoupper(
                             <label for="secondaryEmail"><?= $this->translate->_("Secondary Email"); ?></label>
                             <input type="email" id="secondaryEmail" name="secondaryEmail"
                                 class="form-control isEmail"
-                                placeholder="<?= $this->translate->_("e.g. backup@mail.com"); ?>"
+                                placeholder="<?= $this->htmlTranslate("e.g. backup@mail.com"); ?>"
                                 title="<?= $this->translate->_("Please enter a valid secondary email"); ?>"
                                 value="<?= htmlspecialchars($result['secondary_email'] ?? ''); ?>">
                             <small class="text-muted"><?= $this->translate->_("Used for account recovery notifications."); ?></small>
@@ -232,7 +232,7 @@ $initials  = strtoupper(
                             <label for="phone"><?= $this->translate->_("Phone"); ?></label>
                             <input type="text" id="phone" name="phone"
                                 class="form-control"
-                                placeholder="<?= $this->translate->_("e.g. +1 202 555 0101"); ?>"
+                                placeholder="<?= $this->htmlTranslate("e.g. +1 202 555 0101"); ?>"
                                 title="<?= $this->translate->_("Please enter your phone number"); ?>"
                                 value="<?= htmlspecialchars($result['phone'] ?? ''); ?>">
                             <small class="text-muted"><?= $this->translate->_("Include country code."); ?></small>
@@ -292,7 +292,7 @@ $initials  = strtoupper(
                             </label>
                             <input type="password" id="oldPassword" name="oldPassword"
                                 class="form-control"
-                                placeholder="<?= $this->translate->_("Enter your current password"); ?>"
+                                placeholder="<?= $this->htmlTranslate("Enter your current password"); ?>"
                                 title="<?= $this->translate->_("Required to confirm any password change"); ?>">
                             <small class="text-muted"><?= $this->translate->_("Required to confirm any password change."); ?></small>
                         </div>
@@ -305,7 +305,7 @@ $initials  = strtoupper(
                             <label for="new_password"><?= $this->translate->_("New Password"); ?></label>
                             <input type="password" id="new_password" name="password"
                                 class="form-control"
-                                placeholder="<?= $this->translate->_("Min 8 chars, 1 number, 1 symbol"); ?>"
+                                placeholder="<?= $this->htmlTranslate("Min 8 chars, 1 number, 1 symbol"); ?>"
                                 title="<?= $this->translate->_("Leave blank to keep current password"); ?>"
                                 oninput="checkPasswordMatch()">
                             <small class="text-muted"><?= $this->translate->_("Leave blank to keep your current password."); ?></small>
@@ -314,7 +314,7 @@ $initials  = strtoupper(
                             <label for="confirm_password"><?= $this->translate->_("Confirm New Password"); ?></label>
                             <input type="password" id="confirm_password" name="password"
                                 class="form-control"
-                                placeholder="<?= $this->translate->_("Re-enter new password"); ?>"
+                                placeholder="<?= $this->htmlTranslate("Re-enter new password"); ?>"
                                 title="<?= $this->translate->_("Must match the new password"); ?>"
                                 oninput="checkPasswordMatch()">
                             <small class="text-muted" id="pwMatchHint">

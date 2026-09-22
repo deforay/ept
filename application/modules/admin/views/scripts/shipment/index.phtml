@@ -71,7 +71,7 @@
             <th scope="col"><?= $this->translate->_("Action"); ?></th>
         </tr>
         <tr class="column-search-row">
-            <th scope="col"><input type="text" class="form-control input-sm col-search" data-col="0" placeholder="<?= $this->translate->_('Search Shipment Code'); ?>" /></th>
+            <th scope="col"><input type="text" class="form-control input-sm col-search" data-col="0" placeholder="<?= $this->htmlTranslate('Search Shipment Code'); ?>" /></th>
             <th scope="col">
                 <select class="form-control input-sm col-search" data-col="1">
                     <option value=""><?= $this->translate->_("All"); ?></option>
@@ -80,7 +80,7 @@
                     <?php } ?>
                 </select>
             </th>
-            <th scope="col"><input type="text" class="form-control input-sm col-search" data-col="2" placeholder="<?= $this->translate->_('Search PT Survey Code'); ?>" /></th>
+            <th scope="col"><input type="text" class="form-control input-sm col-search" data-col="2" placeholder="<?= $this->htmlTranslate('Search PT Survey Code'); ?>" /></th>
             <th scope="col"></th>
             <th scope="col"></th>
             <th scope="col"></th>
@@ -131,7 +131,7 @@
                 <label for="lastDate" class="col-lg-3 control-label"><?= $this->translate->_("Result Due Date & Time"); ?> <span class="mandatory">*</span></label>
 
                 <div class="col-lg-5">
-                    <input type="text" id="lastDate" name="lastDate" size="50" maxlength="45" readonly="readonly" class="isRequired form-control input-sm deadlinepicker" title="<?= $this->translate->_('The response deadline. The time is the exact close time, interpreted in the application timezone.'); ?>" placeholder="<?= $this->translate->_('Select date and time'); ?>" />
+                    <input type="text" id="lastDate" name="lastDate" size="50" maxlength="45" readonly="readonly" class="isRequired form-control input-sm deadlinepicker" title="<?= $this->translate->_('The response deadline. The time is the exact close time, interpreted in the application timezone.'); ?>" placeholder="<?= $this->htmlTranslate('Select date and time'); ?>" />
                     <small class="text-muted"><?= $this->translate->_("The time is the exact close time, in the application timezone."); ?></small>
                 </div>
             </div>

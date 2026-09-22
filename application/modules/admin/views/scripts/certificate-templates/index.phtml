@@ -435,7 +435,7 @@ $(document).ready(function() {
         var type = $(this).data('type');
         var typeName = type === 'participation' ? '<?= $this->jsTranslate("participation") ?>' : '<?= $this->jsTranslate("excellence") ?>';
 
-        if (confirm('<?= $this->jsTranslate("Are you sure you want to remove this") ?> ' + typeName + ' <?= $this->jsTranslate("certificate template?") ?>')) {
+        if (confirm('<?= $this->jsTranslate("Are you sure you want to remove this %s certificate template?") ?>'.replace('%s', function () { return typeName; }))) {
             $.ajax({
                 url: removeUrl,
                 type: 'POST',

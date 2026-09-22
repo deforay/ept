@@ -269,7 +269,7 @@ $schemeNameValue = $this->result['schemeResult']['scheme_name'] ?? '';
                                                                             <input type="text"
                                                                                 value="<?php echo $value['result_code'] ?? ''; ?>"
                                                                                 class="form-control qualitative-input-<?php echo $rowCount . $innerCount; ?> input-sm resultCodeSuffix"
-                                                                                placeholder="<?= $this->translate->_("Code"); ?>"
+                                                                                placeholder="<?= $this->htmlTranslate("Code"); ?>"
                                                                                 maxlength="20"
                                                                                 title="<?= $this->translate->_("Please enter the result code"); ?>" />
                                                                         </div>
@@ -414,7 +414,7 @@ $schemeNameValue = $this->result['schemeResult']['scheme_name'] ?? '';
                                                         <td>
                                                             <div class="input-group input-group-sm">
                                                                 <span class="input-group-addon resultCodePrefix" style="display:none;padding:6px 8px;"></span>
-                                                                <input type="text" class="form-control qualitative-input-11 input-sm resultCodeSuffix" placeholder="<?= $this->translate->_("Code"); ?>" maxlength="20" title="<?= $this->translate->_("Please enter the result code"); ?>" />
+                                                                <input type="text" class="form-control qualitative-input-11 input-sm resultCodeSuffix" placeholder="<?= $this->htmlTranslate("Code"); ?>" maxlength="20" title="<?= $this->translate->_("Please enter the result code"); ?>" />
                                                             </div>
                                                             <input type="hidden" name="qualitative[resultCode][1][1]" class="resultCodeHidden" />
                                                         </td>
@@ -518,7 +518,9 @@ $schemeNameValue = $this->result['schemeResult']['scheme_name'] ?? '';
             if (expectedResult && expectedResult.trim() !== '') {
                 var norm = expectedResult.trim().toLowerCase();
                 if (resultsByType[resultType] && resultsByType[resultType].includes(norm)) {
-                    alert('<?= $this->jsTranslate('Duplicate expected result "') ?>' + expectedResult + '<?= $this->jsTranslate('" found for Result Type "') ?>' + (resultType === 'test-result' ? '<?= $this->jsTranslate('Test Result') ?>' : '<?= $this->jsTranslate('Final Interpretation') ?>') + '<?= $this->jsTranslate('". Each expected result must be unique within a result type.') ?>');
+                    alert('<?= $this->jsTranslate('Duplicate expected result "%1$s" found for Result Type "%2$s". Each expected result must be unique within a result type.') ?>'
+							.replace('%1$s', function () { return expectedResult; })
+							.replace('%2$s', function () { return resultType === 'test-result' ? '<?= $this->jsTranslate('Test Result') ?>' : '<?= $this->jsTranslate('Final Interpretation') ?>'; }));
                     valid = false;
                     return false;
                 }
@@ -528,7 +530,8 @@ $schemeNameValue = $this->result['schemeResult']['scheme_name'] ?? '';
             if (resultCode && resultCode.trim() !== '') {
                 var normCode = resultCode.trim().toUpperCase();
                 if (allResultCodes.includes(normCode)) {
-                    alert('<?= $this->jsTranslate('Duplicate Result Code "') ?>' + resultCode + '<?= $this->jsTranslate('" found. Each result code must be unique.') ?>');
+                    alert('<?= $this->jsTranslate('Duplicate Result Code "%s" found. Each result code must be unique.') ?>'
+							.replace('%s', function () { return resultCode; }));
                     valid = false;
                     return false;
                 }

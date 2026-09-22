@@ -329,7 +329,7 @@ $schemeId = !empty($this->results[0]['scheme_id']) ? strtoupper(trim($this->resu
 					<div class="field field-resp">
 						<label for="addResponse"><?= $this->translate->_("Response"); ?> <span class="mandatory">*</span></label>
 						<input type="text" id="addResponse" class="form-control"
-							placeholder="<?= $this->translate->_("Enter response"); ?>" />
+							placeholder="<?= $this->htmlTranslate("Enter response"); ?>" />
 					</div>
 					<div class="field field-code">
 						<label><?= $this->translate->_("Result Code"); ?> <span class="mandatory">*</span></label>
@@ -337,11 +337,11 @@ $schemeId = !empty($this->results[0]['scheme_id']) ? strtoupper(trim($this->resu
 							<div class="input-group input-group-sm" style="display:flex;">
 								<span class="input-group-addon result-code-prefix-addon" id="addCodePrefix" style="display:inline-table;"></span>
 								<input type="text" id="addCodeSuffix" class="form-control input-sm"
-									placeholder="<?= $this->translate->_("e.g. P"); ?>" maxlength="20" />
+									placeholder="<?= $this->htmlTranslate("e.g. P"); ?>" maxlength="20" />
 							</div>
 						<?php else : ?>
 							<input type="text" id="addCode" class="form-control"
-								placeholder="<?= $this->translate->_("e.g. POS"); ?>" />
+								placeholder="<?= $this->htmlTranslate("e.g. POS"); ?>" />
 						<?php endif; ?>
 					</div>
 					<div class="field field-context">
@@ -456,7 +456,7 @@ $schemeId = !empty($this->results[0]['scheme_id']) ? strtoupper(trim($this->resu
 											<input type="text" name="response[<?php echo $i; ?>]" <?php echo $disable; ?>
 												class="form-control isRequired"
 												value="<?= htmlspecialchars((string) $row['response']); ?>"
-												placeholder="<?= $this->translate->_("Enter response"); ?>"
+												placeholder="<?= $this->htmlTranslate("Enter response"); ?>"
 												title="<?= $this->translate->_("Please enter the response"); ?>" required />
 										</td>
 										<td>
@@ -465,7 +465,7 @@ $schemeId = !empty($this->results[0]['scheme_id']) ? strtoupper(trim($this->resu
 													<span class="input-group-addon result-code-prefix-addon js-code-prefix" style="display:inline-table;"></span>
 													<input type="text" <?php echo $disable; ?>
 														class="form-control isRequired js-code-suffix input-sm"
-														placeholder="<?= $this->translate->_("e.g. P"); ?>" maxlength="20"
+														placeholder="<?= $this->htmlTranslate("e.g. P"); ?>" maxlength="20"
 														value="<?= htmlspecialchars((string) $displaySuffix); ?>"
 														title="<?= $this->translate->_("Please enter the result code suffix"); ?>" />
 												</div>
@@ -475,7 +475,7 @@ $schemeId = !empty($this->results[0]['scheme_id']) ? strtoupper(trim($this->resu
 												<input type="text" name="resultCode[<?php echo $i; ?>]" <?php echo $disable; ?>
 													class="form-control isRequired js-code-plain"
 													value="<?= htmlspecialchars((string) $storedCode); ?>"
-													placeholder="<?= $this->translate->_("e.g. POS"); ?>"
+													placeholder="<?= $this->htmlTranslate("e.g. POS"); ?>"
 													title="<?= $this->translate->_("Please enter the short result code"); ?>"
 													required />
 											<?php endif; ?>

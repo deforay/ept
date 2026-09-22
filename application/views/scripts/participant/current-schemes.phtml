@@ -151,7 +151,7 @@ $authNameSpace = new Zend_Session_Namespace('datamanagers');
 					<tr class="column-search-row">
 						<th scope="col"></th>
 						<th scope="col">
-							<!-- <input type="text" class="form-control input-sm col-search" data-col="1" placeholder="<?= $this->translate->_('Search Scheme'); ?>" /> -->
+							<!-- <input type="text" class="form-control input-sm col-search" data-col="1" placeholder="<?= $this->htmlTranslate('Search Scheme'); ?>" /> -->
 							 <select id="scheme" name="scheme" class="form-control input-sm col-search" data-col="1">
                                 <option value=""> -- <?= $this->translate->_("Select Scheme Type"); ?> --</option>
                                 <?php
@@ -164,11 +164,11 @@ $authNameSpace = new Zend_Session_Namespace('datamanagers');
                                 ?>
                             </select>
 						</th>
-						<th scope="col"><input type="text" class="form-control input-sm col-search" data-col="2" placeholder="<?= $this->translate->_('Search Code'); ?>" /></th>
-						<th scope="col"><input type="text" class="form-control input-sm col-search" data-col="3" placeholder="<?= $this->translate->_('Search Survey Code'); ?>" /></th>
-						<th scope="col"><input type="text" class="form-control input-sm col-search" data-col="4" placeholder="<?= $this->translate->_('Search Participant ID'); ?>" /></th>
-						<th scope="col"><input type="text" class="form-control input-sm col-search" data-col="5" placeholder="<?= $this->translate->_('Search Name'); ?>" /></th>
-						<th scope="col"><input type="text" class="form-control input-sm col-search" data-col="6" placeholder="<?= $this->translate->_('Search Institute Name'); ?>" /></th>
+						<th scope="col"><input type="text" class="form-control input-sm col-search" data-col="2" placeholder="<?= $this->htmlTranslate('Search Code'); ?>" /></th>
+						<th scope="col"><input type="text" class="form-control input-sm col-search" data-col="3" placeholder="<?= $this->htmlTranslate('Search Survey Code'); ?>" /></th>
+						<th scope="col"><input type="text" class="form-control input-sm col-search" data-col="4" placeholder="<?= $this->htmlTranslate('Search Participant ID'); ?>" /></th>
+						<th scope="col"><input type="text" class="form-control input-sm col-search" data-col="5" placeholder="<?= $this->htmlTranslate('Search Name'); ?>" /></th>
+						<th scope="col"><input type="text" class="form-control input-sm col-search" data-col="6" placeholder="<?= $this->htmlTranslate('Search Institute Name'); ?>" /></th>
 						<th scope="col"></th>
 						<th scope="col"></th>
 						<th scope="col"></th>

@@ -95,7 +95,7 @@ $formAction = $isEditMode
                     <input type="text" readonly="readonly" name="lastDate" id="lastDate"
                         class="form-control deadlinepicker isRequired"
                         value="<?php echo $this->escape($deadlineDisplay); ?>"
-                        placeholder="<?= $this->translate->_('Select date and time'); ?>"
+                        placeholder="<?= $this->htmlTranslate('Select date and time'); ?>"
                         title="<?= $this->translate->_('The response deadline. The time is the exact close time, interpreted in the application timezone.'); ?>" />
                     <small class="text-muted"><?= $this->translate->_("The time is the exact close time, in the application timezone."); ?></small>
                 </div>

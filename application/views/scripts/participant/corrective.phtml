@@ -90,10 +90,10 @@
                             <th scope="col"><?= $this->translate->_("Corrective Action"); ?></th>
                         </tr>
                         <tr class="column-search-row">
-                            <th scope="col"><input type="text" class="form-control input-sm col-search" data-col="0" placeholder="<?= $this->translate->_('Search Code'); ?>" /></th>
+                            <th scope="col"><input type="text" class="form-control input-sm col-search" data-col="0" placeholder="<?= $this->htmlTranslate('Search Code'); ?>" /></th>
                             <th scope="col"></th>
                             <th scope="col">
-                                <!-- <input type="text" class="form-control input-sm col-search" data-col="2" placeholder="<?= $this->translate->_('Search Scheme'); ?>" /> -->
+                                <!-- <input type="text" class="form-control input-sm col-search" data-col="2" placeholder="<?= $this->htmlTranslate('Search Scheme'); ?>" /> -->
                                 <select name="scheme" class="form-control input-sm col-search" data-col="2">
                                     <option value=""> -- <?= $this->translate->_("Select Scheme Type"); ?> --</option>
                                     <?php
@@ -106,8 +106,8 @@
                                     ?>
                                 </select>
                             </th>
-                            <th scope="col"><input type="text" class="form-control input-sm col-search" data-col="3" placeholder="<?= $this->translate->_('Search ID'); ?>" /></th>
-                            <th scope="col"><input type="text" class="form-control input-sm col-search" data-col="4" placeholder="<?= $this->translate->_('Search Name'); ?>" /></th>
+                            <th scope="col"><input type="text" class="form-control input-sm col-search" data-col="3" placeholder="<?= $this->htmlTranslate('Search ID'); ?>" /></th>
+                            <th scope="col"><input type="text" class="form-control input-sm col-search" data-col="4" placeholder="<?= $this->htmlTranslate('Search Name'); ?>" /></th>
                             <th scope="col"></th>
                             <th scope="col"></th>
                         </tr>

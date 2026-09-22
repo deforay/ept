@@ -40,7 +40,7 @@ $eptDomain = parse_url($conf->domain, PHP_URL_HOST);
                     <div class="form-group">
                         <label for="dateRange" class="col-lg-4 control-label"><?= $this->translate->_("Date Range"); ?> <span class="mandatory">*</span></label>
                         <div class="col-lg-8">
-                            <input type="text" id="dateRange" name="dateRange" class="form-control input-sm" readonly="readonly" style="background: #fff" placeholder="<?= $this->translate->_('Click here to pick a Date Range'); ?>" onchange="getShipmentCodes();" />
+                            <input type="text" id="dateRange" name="dateRange" class="form-control input-sm" readonly="readonly" style="background: #fff" placeholder="<?= $this->htmlTranslate('Click here to pick a Date Range'); ?>" onchange="getShipmentCodes();" />
                         </div>
                     </div>
                 </div>
@@ -48,7 +48,7 @@ $eptDomain = parse_url($conf->domain, PHP_URL_HOST);
                     <div class="form-group">
                         <label for="shipments" class="col-lg-4 control-label"><?= $this->translate->_("Shipment Code"); ?> <span class="mandatory">*</span></label>
                         <div class="col-lg-8">
-                            <select id="shipments" name="shipments[]" data-live-search="true" class="form-control" multiple="multiple" data-selected-text-format="count>3" placeholder="<?= $this->translate->_('Select shipments'); ?>" title="<?= $this->htmlTranslate('Please select one or more shipments') ?>"></select>
+                            <select id="shipments" name="shipments[]" data-live-search="true" class="form-control" multiple="multiple" data-selected-text-format="count>3" placeholder="<?= $this->htmlTranslate('Select shipments'); ?>" title="<?= $this->htmlTranslate('Please select one or more shipments') ?>"></select>
                         </div>
                     </div>
                 </div>
@@ -63,7 +63,7 @@ $eptDomain = parse_url($conf->domain, PHP_URL_HOST);
             <div class="form-group">
                 <label for="sendMail" class="col-lg-2 control-label"><?= $this->translate->_("To"); ?> <span class="mandatory">*</span></label>
                 <div class="col-lg-10">
-                    <select id="sendMail" name="sendMail[]" class="form-control" multiple="multiple" data-selected-text-format="count>3" placeholder="<?= $this->translate->_('Select option'); ?>" title="<?= $this->htmlTranslate('Please select one or more option') ?>">
+                    <select id="sendMail" name="sendMail[]" class="form-control" multiple="multiple" data-selected-text-format="count>3" placeholder="<?= $this->htmlTranslate('Select option'); ?>" title="<?= $this->htmlTranslate('Please select one or more option') ?>">
                         <option value="participant">Participants</option>
                         <option value="datamanager">Data Managers</option>
                         <?php if (in_array('tb', $modules)) { ?>
@@ -75,14 +75,14 @@ $eptDomain = parse_url($conf->domain, PHP_URL_HOST);
             <div class="form-group">
                 <label for="subject" class="col-lg-2 control-label"><?= $this->translate->_("Subject"); ?></label>
                 <div class="col-lg-10">
-                    <input type="text" name="subject" id="subject" class="js-example-basic-multiple form-control" placeholder="<?= $this->translate->_('Please enter subject'); ?>" title="<?= $this->htmlTranslate('Please enter subject') ?>">
+                    <input type="text" name="subject" id="subject" class="js-example-basic-multiple form-control" placeholder="<?= $this->htmlTranslate('Please enter subject'); ?>" title="<?= $this->htmlTranslate('Please enter subject') ?>">
                 </div>
             </div>
 
             <div class="form-group">
                 <label for="message" class="col-lg-2 control-label"><?= $this->translate->_("Mail Content"); ?><span class="mandatory">*</span></label>
                 <div class="col-lg-10">
-                    <div id="messageEditor" name="messageEditor" class="richtextarea form-control" title="<?= $this->htmlTranslate('Please enter a Mail Content') ?>" placeholder="<?= $this->translate->_('Enter the Mail Content'); ?>">
+                    <div id="messageEditor" name="messageEditor" class="richtextarea form-control" title="<?= $this->htmlTranslate('Please enter a Mail Content') ?>" placeholder="<?= $this->htmlTranslate('Enter the Mail Content'); ?>">
                     </div>
                     <textarea style="display:none;" id="message" name="message"></textarea>
                 </div>
@@ -126,7 +126,7 @@ $eptDomain = parse_url($conf->domain, PHP_URL_HOST);
                 <div id="previewWarnings"></div>
                 <div style="margin-bottom:8px;">
                     <input type="text" id="previewFilter" class="form-control input-sm"
-                        placeholder="<?= $this->translate->_('Filter by name, email, country or type'); ?>"
+                        placeholder="<?= $this->htmlTranslate('Filter by name, email, country or type'); ?>"
                         onkeyup="filterPreview(this.value);" />
                     <span class="help-block" id="previewFilterCount" style="margin:4px 0 0 0;"></span>
                 </div>

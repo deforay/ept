@@ -94,7 +94,7 @@ ksort($finalResultOptions);
             <span><?= sprintf($this->translate->_('%d Shipment(s)'), $shipmentCount); ?></span>
             <span class="shipments-filter-count text-muted" style="margin-left:6px;display:none;"></span>
             <?php if ($shipmentCount > 5) { ?>
-                <input type="text" class="form-control input-sm shipments-filter-input" placeholder="<?= $this->translate->_('Filter by code, scheme, status…'); ?>" />
+                <input type="text" class="form-control input-sm shipments-filter-input" placeholder="<?= $this->htmlTranslate('Filter by code, scheme, status…'); ?>" />
             <?php } ?>
         </div>
         <?php if ($shipmentCount > 1) { ?>

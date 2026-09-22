@@ -36,7 +36,7 @@ $vl = $this->vlConfig ?? [];
                 <div class="col-md-6">
                     <label for="reportVersion" class="control-label"><?= $this->translate->_("Report Version"); ?></label>
                     <input type="text" id="reportVersion" name="vl[reportVersion]" class="form-control"
-                        placeholder="<?= $this->translate->_('Enter the report version'); ?>"
+                        placeholder="<?= $this->htmlTranslate('Enter the report version'); ?>"
                         value="<?php echo $vl['reportVersion'] ?? null; ?>"
                         title="<?= $this->translate->_('Please enter the report version'); ?>" />
                     <small class="text-muted"><?= $this->translate->_("Shows in the report PDF footer."); ?></small>
@@ -44,7 +44,7 @@ $vl = $this->vlConfig ?? [];
                 <div class="col-md-6">
                     <label for="effectiveDate" class="control-label"><?= $this->translate->_("Report Effective Date"); ?></label>
                     <input type="text" id="effectiveDate" name="vl[effectiveDate]" class="form-control datepicker"
-                        placeholder="<?= $this->translate->_('Select the report effective date'); ?>"
+                        placeholder="<?= $this->htmlTranslate('Select the report effective date'); ?>"
                         title="<?= $this->translate->_('Please select the report effective date'); ?>"
                         value="<?php echo $vl['effectiveDate'] ?? null; ?>" />
                     <small class="text-muted"><?= $this->translate->_("Shows in the report PDF footer."); ?></small>
@@ -64,7 +64,7 @@ $vl = $this->vlConfig ?? [];
                         <span class="mandatory">*</span></label>
                     <div id="vlContentEditor" class="richtextarea form-control"
                         title="<?= $this->translate->_('Please enter content for individual VL reports'); ?>"
-                        placeholder="<?= $this->translate->_('Enter content for individual VL reports'); ?>"><?php echo htmlspecialchars_decode($vl['contentForIndividualVlReports'] ?? ''); ?></div>
+                        placeholder="<?= $this->htmlTranslate('Enter content for individual VL reports'); ?>"><?php echo htmlspecialchars_decode($vl['contentForIndividualVlReports'] ?? ''); ?></div>
                     <textarea style="display: none;" id="contentForIndividualVlReports" class="form-control"
                         name="vl[contentForIndividualVlReports]"></textarea>
                 </div>
