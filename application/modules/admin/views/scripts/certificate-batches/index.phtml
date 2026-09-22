@@ -418,7 +418,7 @@
     }
 
     function approveBatch(batchId) {
-        if (!confirm('<?= $this->jsTranslate('Are you sure you want to approve this batch and schedule certificate distribution?\n\nThis will send certificates to all participants via email.') ?>')) {
+        if (!confirm('<?= $this->jsTranslate("Are you sure you want to approve this batch and schedule certificate distribution?\n\nThis will send certificates to all participants via email.") ?>')) {
             return;
         }
 
@@ -470,7 +470,7 @@
     }
 
     function rejectBatch(batchId) {
-        if (!confirm('<?= $this->jsTranslate('Are you sure you want to reject this batch?\n\nThe certificates will NOT be distributed to participants.') ?>')) {
+        if (!confirm('<?= $this->jsTranslate("Are you sure you want to reject this batch?\n\nThe certificates will NOT be distributed to participants.") ?>')) {
             return;
         }
 

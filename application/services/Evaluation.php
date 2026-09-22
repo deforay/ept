@@ -1647,7 +1647,7 @@ class Application_Service_Evaluation
      *   - filterResponseStatus ∈ {'responded','noresponse','late','nottested'}
      *     → sp.response_status = <value>
      *   - filterResult ∈ {1,2,3,'notevaluated'} (comma-separated for multi-select)
-     *     → sp.final_result IN (1,2,3) and/or final_result IS NULL / 0
+     *     → sp.final_result IN (1,2,3) and/or final_result IS NULL / 0 / 4
      *
      * Vietnam-specific (rendered + sent only when the shipment is Vietnam):
      *   - vietnamTier ∈ {'screening','confirmatory'}
@@ -1684,10 +1684,10 @@ class Application_Service_Evaluation
             }
         }
         // Final Result: 1 Satisfactory / 2 Unsatisfactory / 3 Excluded, plus the
-        // pseudo-value 'notevaluated' (final_result is NULL or 0 until evaluated).
+        // pseudo-value 'notevaluated' (final_result 4, or NULL / 0 until evaluated).
         $resultTokens = array_filter(
             array_map('trim', explode(',', (string) ($parameters['filterResult'] ?? ''))),
-            'strlen'
+            static fn (string $token): bool => $token !== ''
         );
         if (!empty($resultTokens)) {
             $resultConditions = [];
@@ -1696,7 +1696,7 @@ class Application_Service_Evaluation
                 $resultConditions[] = $baseSelect->getAdapter()->quoteInto('sp.final_result IN (?)', $resultIds);
             }
             if (in_array('notevaluated', $resultTokens, true)) {
-                $resultConditions[] = '(sp.final_result IS NULL OR sp.final_result = 0)';
+                $resultConditions[] = '(sp.final_result IS NULL OR sp.final_result IN (0, 4))';
             }
             if (!empty($resultConditions)) {
                 $baseSelect = $baseSelect->where('(' . implode(' OR ', $resultConditions) . ')');
