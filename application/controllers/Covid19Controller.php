@@ -21,7 +21,7 @@ class Covid19Controller extends Zend_Controller_Action
         if ($request->isPost()) {
             $data = $request->getPost();
             $shipmentService->updateCovid19Results($data);
-            if (isset($data['reqAccessFrom']) && !empty($data['reqAccessFrom']) && $data['reqAccessFrom'] == 'admin') {
+            if (Application_Service_Shipments::isAdminEdit($data)) {
                 $this->redirect('/admin/evaluate/shipment/sid/' . base64_encode($data['shipmentId']));
             } elseif (isset($data['comingFrom']) && trim($data['comingFrom']) != '') {
                 $this->redirect('/participant/' . $data['comingFrom']);

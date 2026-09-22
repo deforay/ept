@@ -212,10 +212,24 @@ class Application_Service_Shipments
      * @return array{responseStatus: string, columns: array<string, mixed>}
      *         the (possibly rewritten) status and the extra shipment_participant_map columns
      */
+    /**
+     * True only when the form claims an admin edit AND an administrator is signed in.
+     * reqAccessFrom comes from the POST body, so it is never trusted on its own: an admin
+     * edit skips the shipment lock and late-submission capture.
+     */
+    public static function isAdminEdit(array $params): bool
+    {
+        if (($params['reqAccessFrom'] ?? '') !== 'admin') {
+            return false;
+        }
+        $adminAuthNameSpace = new Zend_Session_Namespace('administrators');
+        return !empty($adminAuthNameSpace->admin_id);
+    }
+
     private static function lateSubmissionCapture(array $params, string $responseStatus): array
     {
         $columns = ['late_submit_status' => 0];
-        if (isset($params['reqAccessFrom']) && $params['reqAccessFrom'] === 'admin') {
+        if (self::isAdminEdit($params)) {
             return ['responseStatus' => $responseStatus, 'columns' => []];
         }
 
@@ -322,7 +336,7 @@ class Application_Service_Shipments
         }
 
         $confirmForm = isset($params['confirmForm']) && trim($params['confirmForm']) === 'yes';
-        $adminOverride = isset($params['reqAccessFrom']) && $params['reqAccessFrom'] === 'admin';
+        $adminOverride = self::isAdminEdit($params);
         // Only TB has a real "Save as Draft" path. For every other scheme, the
         // first click of Submit is a UX confirmation step that re-renders the
         // form expecting a Confirm click — not a draft. Skip logging it so the
@@ -694,7 +708,7 @@ class Application_Service_Shipments
     {
         $alertMsg = new Zend_Session_Namespace('alertSpace');
         if (!$this->isShipmentEditable($params['shipmentId'], $params['participantId'])
-            && (!isset($params['reqAccessFrom']) || empty($params['reqAccessFrom']) || $params['reqAccessFrom'] != 'admin')
+            && !self::isAdminEdit($params)
             && !$this->isWithinLateSubmissionGrace($params['shipmentId'], $params['participantId'])) {
             $alertMsg->message = 'You are not allowed to update the response for this participant.';
             return false;
@@ -875,7 +889,7 @@ class Application_Service_Shipments
 
             $db->commit();
             $this->logResponseSave('EID', $params);
-            if (isset($params['reqAccessFrom']) && !empty($params['reqAccessFrom']) && $params['reqAccessFrom'] == 'admin') {
+            if (self::isAdminEdit($params)) {
                 $alertMsg->message = 'Updated Successfully';
             } elseif (isset($params['confirmForm']) && trim($params['confirmForm']) == 'yes') {
                 if ($responseStatus === 'late_submitted') {
@@ -905,7 +919,7 @@ class Application_Service_Shipments
     {
         $alertMsg = new Zend_Session_Namespace('alertSpace');
         if (!$this->isShipmentEditable($params['shipmentId'], $params['participantId'])
-            && (!isset($params['reqAccessFrom']) || empty($params['reqAccessFrom']) || $params['reqAccessFrom'] != 'admin')
+            && !self::isAdminEdit($params)
             && !$this->isWithinLateSubmissionGrace($params['shipmentId'], $params['participantId'])) {
             $alertMsg->message = 'You are not allowed to update the response for this participant.';
             return false;
@@ -1018,7 +1032,7 @@ class Application_Service_Shipments
             $recencyResponseDb->updateResults($params);
             $db->commit();
             $this->logResponseSave('Recency', $params);
-            if (isset($params['reqAccessFrom']) && !empty($params['reqAccessFrom']) && $params['reqAccessFrom'] == 'admin') {
+            if (self::isAdminEdit($params)) {
                 $alertMsg->message = 'Updated Successfully';
             } elseif (isset($params['confirmForm']) && trim($params['confirmForm']) == 'yes') {
                 if ($responseStatus === 'late_submitted') {
@@ -1048,7 +1062,7 @@ class Application_Service_Shipments
     {
         $alertMsg = new Zend_Session_Namespace('alertSpace');
         if (!$this->isShipmentEditable($params['shipmentId'], $params['participantId'])
-            && (!isset($params['reqAccessFrom']) || empty($params['reqAccessFrom']) || $params['reqAccessFrom'] != 'admin')
+            && !self::isAdminEdit($params)
             && !$this->isWithinLateSubmissionGrace($params['shipmentId'], $params['participantId'])) {
             $alertMsg->message = 'You are not allowed to update the response for this participant.';
             return false;
@@ -1061,7 +1075,7 @@ class Application_Service_Shipments
         $mandatoryFields = ['receiptDate', 'testDate', 'sampleRehydrationDate', 'algorithm'];
         $db->beginTransaction();
         try {
-            if (isset($params['reqAccessFrom']) && !empty($params['reqAccessFrom']) && $params['reqAccessFrom'] == 'admin') {
+            if (self::isAdminEdit($params)) {
                 $this->updateAdminEvaluateEditShipments($params);
             }
 
@@ -1183,7 +1197,7 @@ class Application_Service_Shipments
 
             $db->commit();
             $this->logResponseSave('DTS', $params);
-            if (isset($params['reqAccessFrom']) && !empty($params['reqAccessFrom']) && $params['reqAccessFrom'] == 'admin') {
+            if (self::isAdminEdit($params)) {
                 $alertMsg->message = 'Updated Successfully';
             } elseif (isset($params['confirmForm']) && trim($params['confirmForm']) == 'yes') {
                 if ($responseStatus === 'late_submitted') {
@@ -1213,7 +1227,7 @@ class Application_Service_Shipments
     {
         $alertMsg = new Zend_Session_Namespace('alertSpace');
         if (!$this->isShipmentEditable($params['shipmentId'], $params['participantId'])
-            && (!isset($params['reqAccessFrom']) || empty($params['reqAccessFrom']) || $params['reqAccessFrom'] != 'admin')
+            && !self::isAdminEdit($params)
             && !$this->isWithinLateSubmissionGrace($params['shipmentId'], $params['participantId'])) {
             $alertMsg->message = 'You are not allowed to update the response for this participant.';
             return false;
@@ -1308,7 +1322,7 @@ class Application_Service_Shipments
             $this->saveAdminData($params);
             $db->commit();
             $this->logResponseSave('COVID-19', $params);
-            if (isset($params['reqAccessFrom']) && !empty($params['reqAccessFrom']) && $params['reqAccessFrom'] == 'admin') {
+            if (self::isAdminEdit($params)) {
                 $alertMsg->message = 'Updated Successfully';
             } elseif (isset($params['confirmForm']) && trim($params['confirmForm']) == 'yes') {
                 if ($responseStatus === 'late_submitted') {
@@ -1746,7 +1760,7 @@ class Application_Service_Shipments
 
         $alertMsg = new Zend_Session_Namespace('alertSpace');
         if (!$this->isShipmentEditable($params['shipmentId'], $params['participantId'])
-            && (!isset($params['reqAccessFrom']) || empty($params['reqAccessFrom']) || $params['reqAccessFrom'] != 'admin')
+            && !self::isAdminEdit($params)
             && !$this->isWithinLateSubmissionGrace($params['shipmentId'], $params['participantId'])) {
             $alertMsg->message = 'You are not allowed to update the response for this participant.';
             return false;
@@ -1832,7 +1846,7 @@ class Application_Service_Shipments
     {
         $alertMsg = new Zend_Session_Namespace('alertSpace');
         if (!$this->isShipmentEditable($params['shipmentId'], $params['participantId'])
-            && (!isset($params['reqAccessFrom']) || empty($params['reqAccessFrom']) || $params['reqAccessFrom'] != 'admin')
+            && !self::isAdminEdit($params)
             && !$this->isWithinLateSubmissionGrace($params['shipmentId'], $params['participantId'])) {
             $alertMsg->message = 'You are not allowed to update the response for this participant.';
             return false;
@@ -1957,7 +1971,7 @@ class Application_Service_Shipments
             $alertMessage = '';
             if ($responseStatus === 'draft') {
                 $alertMessage = 'Draft saved successfully. Please ensure to complete and submit your response before due date.\\n\\n\\nOnly fully submitted responses will be considered for evaluation';
-            } elseif (!empty($params['reqAccessFrom']) && $params['reqAccessFrom'] == 'admin') {
+            } elseif (self::isAdminEdit($params)) {
                 $alertMessage = 'Updated Successfully';
             } elseif ($responseStatus === 'late_submitted') {
                 $alertMessage = 'Your result was received after the due date and time and has been recorded as a late submission. Your PT provider will review it before it is evaluated.';
@@ -1985,7 +1999,7 @@ class Application_Service_Shipments
     {
         $alertMsg = new Zend_Session_Namespace('alertSpace');
         if (!$this->isShipmentEditable($params['shipmentId'], $params['participantId'])
-            && (!isset($params['reqAccessFrom']) || empty($params['reqAccessFrom']) || $params['reqAccessFrom'] != 'admin')
+            && !self::isAdminEdit($params)
             && !$this->isWithinLateSubmissionGrace($params['shipmentId'], $params['participantId'])) {
             $alertMsg->message = 'You are not allowed to update the response for this participant.';
             return false;
@@ -2068,7 +2082,7 @@ class Application_Service_Shipments
             $this->saveAdminData($params);
             $db->commit();
             $this->logResponseSave('Generic Test', $params);
-            if (isset($params['reqAccessFrom']) && !empty($params['reqAccessFrom']) && $params['reqAccessFrom'] == 'admin') {
+            if (self::isAdminEdit($params)) {
                 $alertMsg->message = 'Updated Successfully';
             } elseif (isset($params['confirmForm']) && trim($params['confirmForm']) == 'yes') {
                 if ($responseStatus === 'late_submitted') {
@@ -2097,7 +2111,7 @@ class Application_Service_Shipments
     {
         $alertMsg = new Zend_Session_Namespace('alertSpace');
         if (!$this->isShipmentEditable($params['shipmentId'], $params['participantId'])
-            && (!isset($params['reqAccessFrom']) || empty($params['reqAccessFrom']) || $params['reqAccessFrom'] != 'admin')
+            && !self::isAdminEdit($params)
             && !$this->isWithinLateSubmissionGrace($params['shipmentId'], $params['participantId'])) {
             $alertMsg->message = 'You are not allowed to update the response for this participant.';
             return false;
@@ -2261,7 +2275,7 @@ class Application_Service_Shipments
             $db->commit();
             $this->logResponseSave('VL', $params);
 
-            if (isset($params['reqAccessFrom']) && !empty($params['reqAccessFrom']) && $params['reqAccessFrom'] == 'admin') {
+            if (self::isAdminEdit($params)) {
                 $alertMsg->message = 'Updated Successfully';
             } elseif (isset($params['confirmForm']) && trim($params['confirmForm']) == 'yes') {
                 if ($responseStatus === 'late_submitted') {

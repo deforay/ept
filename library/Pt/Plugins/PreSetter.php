@@ -67,6 +67,20 @@ class Pt_Plugins_PreSetter extends Zend_Controller_Plugin_Abstract
             }
         }
 
+        // reqAccessFrom=admin lets a response save skip the shipment lock (finalized,
+        // closed or cancelled). It comes from the form, so a POST that claims it without
+        // an administrator session is rejected here, before any response form handles it.
+        if (!$loggedInAsAdmin && $request->isPost() && $request->getPost('reqAccessFrom') === 'admin') {
+            $translate = Zend_Registry::get('translate');
+            $alertMsg = new Zend_Session_Namespace('alertSpace');
+            $alertMsg->message = $translate->_('You are not allowed to update the response for this participant.');
+
+            $response = $this->getResponse();
+            $response->setRedirect('/participant/dashboard', 302);
+            $response->sendResponse();
+            exit;
+        }
+
         // Idle timeout: 30 minutes of inactivity ends an authenticated session.
         // Sliding window — only requests *within the same module* count as
         // activity, so an idle admin tab doesn't keep a participant session
