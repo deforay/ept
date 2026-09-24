@@ -349,20 +349,41 @@ if ($inConfirmStep) {
 							<td style="width:20%;"> <label class="control-lable"
 									for="kitName"><?= $this->translate->_("Kit Name"); ?> <span
 										class="mandatory">*</span></label></td>
+							<?php
+							$savedKit = (string) ($this->shipment['attributes']['kit_name'] ?? '');
+							$otherKitAllowed = ($this->disableOtherTestkit ?? 'no') !== 'yes';
+							$savedKitListed = false;
+							foreach ($this->allTestKits as $testkit) {
+								if ($savedKit !== '' && strtolower($savedKit) == strtolower($testkit['TESTKITNAMEID'])) {
+									$savedKitListed = true;
+								}
+							}
+							// A kit saved as free text (older "Other" entries) or as a kit not mapped to this
+							// scheme is shown under "Other" so re-saving keeps it instead of blanking it.
+							$savedOtherKitName = '';
+							if ($savedKit !== '' && !$savedKitListed && $otherKitAllowed) {
+								$savedKitLookup = (new Application_Model_DbTable_Testkitnames())->getTestKitNameById($savedKit);
+								$savedOtherKitName = !empty($savedKitLookup[0]) ? $savedKitLookup[0] : $savedKit;
+							}
+							// Admins correcting older responses are not forced to supply a kit, and the field
+							// cannot be mandatory when there is nothing to choose.
+							$kitRequired = !$adminAccess && (!empty($this->allTestKits) || $otherKitAllowed);
+							?>
 							<td style="width:30%;">
-								<select name="kitName" id="kitName" class="form-control vlResultValues isRequired"
+								<select name="kitName" id="kitName" class="form-control<?= $kitRequired ? ' vlResultValues isRequired' : ''; ?>"
 									title="<?= $this->translate->_("Please select a test kit"); ?>"
 									onchange="testKitChanged(this.value);">
 									<option value=""> ---<?= $this->translate->_("Select Kit"); ?>---</option>
 									<?php foreach ($this->allTestKits as $key => $testkit) { ?>
-										<option value="<?php echo $testkit['TESTKITNAMEID'] ?>" <?php echo (isset($this->shipment['attributes']['kit_name']) && !empty($this->shipment['attributes']['kit_name']) && strtolower($this->shipment['attributes']['kit_name']) == strtolower($testkit['TESTKITNAMEID'])) ? 'selected="selected"' : ""; ?>><?php echo $testkit['TESTKITNAME'] ?></option>
+										<option value="<?php echo $testkit['TESTKITNAMEID'] ?>" <?php echo ($savedKit !== '' && strtolower($savedKit) == strtolower($testkit['TESTKITNAMEID'])) ? 'selected="selected"' : ""; ?>><?php echo $testkit['TESTKITNAME'] ?></option>
 									<?php }
-									if ((!isset($this->disableOtherTestkit) || empty($this->disableOtherTestkit)) || $this->disableOtherTestkit != 'yes') { ?>
-										<option value="other"><?= $this->translate->_("Other"); ?></option>
+									if ($otherKitAllowed) { ?>
+										<option value="other" <?= $savedOtherKitName !== '' ? 'selected="selected"' : ''; ?>><?= $this->translate->_("Other"); ?></option>
 									<?php } ?>
 								</select>
 								<input type="text" class="form-control result-section-input" maxlength="40"
 									name="kitNameOther" id="kitNameOther" style="display: none;"
+									value="<?= htmlspecialchars($savedOtherKitName, ENT_QUOTES, 'UTF-8'); ?>"
 									placeholder="<?= $this->htmlTranslate("Enter kit name"); ?>" />
 							</td>
 						</tr>
@@ -879,6 +900,7 @@ if ($inConfirmStep) {
 			$('.ptTestPerformed').show();
 		}
 	}).trigger('change');
+	testKitChanged($('#kitName').val() || '');
 
 	function testKitChanged(value) {
 		if (value.toLowerCase() == 'other') {
