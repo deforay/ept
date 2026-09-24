@@ -76,6 +76,30 @@ final class Variants
                     'passPercentage'     => '95',
                     'documentationScore' => '10',
                     'dtsAlgorithmScore'  => '0',
+                    // Test 3 stays optional here; a Zimbabwe dev database has it on.
+                    'dtsRequireTest3'    => 'no',
+                ],
+            ],
+
+            'zimbabwe-3-tests' => [
+                'label'        => 'Updated 3-tests, Test 3 required (Zimbabwe)',
+                'algoKey'      => 'dts-3-tests',
+                'schemeType'   => 'updated-3-tests',
+                'reportLayout' => 'zimbabwe',
+                'tierAware'    => false,
+                'aberrations'  => \EptTestHarness\Aberrations\ZimbabweThreeTests::class,
+                'expectations' => $base . '/expectations/zimbabwe-3-tests.php',
+                'shipmentAttributes' => [
+                    'screeningTest'    => 'no',
+                    'noOfTestsInPanel' => 3,
+                    'dtsTestPanelType' => 'no',
+                ],
+                'dtsConfig' => [
+                    'allowedAlgorithms'  => 'dts-3-tests',
+                    'passPercentage'     => '95',
+                    'documentationScore' => '10',
+                    'dtsAlgorithmScore'  => '0',
+                    'dtsRequireTest3'    => 'yes',
                 ],
             ],
         ];

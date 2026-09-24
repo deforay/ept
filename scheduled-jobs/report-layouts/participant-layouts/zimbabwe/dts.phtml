@@ -369,8 +369,12 @@ if (!empty($resultArray['shipment'])) {
                 $pdf->writeHTML($nmsTable, true, false, true, false, '');
             }
 
-            // Calculate and display documentation score
-            $documentationScorePerItem = ($maxDocumentationPoints > 0) ? ($maxDocumentationPoints / 5) : 0;
+            // Calculate and display documentation score. Items and per-item points mirror the
+            // evaluator (Application_Model_Dts): the two rehydration items exist only when the
+            // shipment's sample type is 'dried', giving 5 items instead of 3.
+            $driedPanel = ($shipmentAttributes['sampleType'] ?? '') === 'dried';
+            $totalDocumentationItems = $driedPanel ? 5 : 3;
+            $documentationScorePerItem = ($maxDocumentationPoints > 0) ? round($maxDocumentationPoints / $totalDocumentationItems, 2) : 0;
 
             $docRes = '<span style="font-weight:bold;font-size:12px;">Your documentation score :</span><br/>
                 <table border="1" style="font-size:12px;width:100%;">
@@ -392,8 +396,8 @@ if (!empty($resultArray['shipment'])) {
                 ],
                 [
                     'title' => 'Reporting of the Sample Rehydration Date',
-                    'condition' => (!empty(trim($attributes['sample_rehydration_date'] ?? '')) && $sampleTypeDisplay == ""),
-                    'style' => $sampleTypeDisplay
+                    'condition' => Application_Model_Dts::isRehydrationDateValid($attributes['sample_rehydration_date'] ?? null, $result['responseResult'][0]['shipment_receipt_date'] ?? null),
+                    'driedOnly' => true
                 ],
                 [
                     'title' => 'Reporting of the Shipment Test Date',
@@ -402,40 +406,41 @@ if (!empty($resultArray['shipment'])) {
             ];
 
             foreach ($docItems as $item) {
+                if (!empty($item['driedOnly']) && !$driedPanel) {
+                    continue;
+                }
                 $scoreDoc = $item['condition'] ? $documentationScorePerItem : 0;
                 $img = $item['condition'] ? $imgPass : $imgFail;
-                $style = isset($item['style']) ? ' style="' . $item['style'] . '"' : '';
 
-                $docRes .= '<tr' . $style . '>
+                $docRes .= '<tr>
                     <td style="text-align:left;font-weight:bold;">' . $item['title'] . '</td>
                     <td style="text-align:center;"><img style="width:9px;" src="' . $img . '" /></td>
                     <td style="text-align:center;">' . $scoreDoc . '</td>
                 </tr>';
             }
 
-            // Special handling for rehydration time check
-            $scoreDoc = 0;
-            $img = $imgFail;
-            if (!empty($attributes['sample_rehydration_date']) && !empty($result['responseResult'][0]['shipment_test_date'])) {
-                $sampleRehydrationDate = new DateTime($attributes['sample_rehydration_date']);
-                $testedOnDate = new DateTime($result['responseResult'][0]['shipment_test_date']);
-                $interval = $sampleRehydrationDate->diff($testedOnDate);
-                $totalHours = ($interval->d * 24) + $interval->h + ($interval->i / 60) + ($interval->s / 3600);
+            // Rehydration window: the same check the evaluator scored, so this row always
+            // agrees with the documentation score printed under Overall Score.
+            $sampleRehydrateDays = (int) ($config['sampleRehydrateDays'] ?? 0);
+            $withinWindow = Application_Model_Dts::isTestedWithinRehydrationWindow(
+                $attributes['sample_rehydration_date'] ?? null,
+                $result['responseResult'][0]['shipment_test_date'] ?? null,
+                $sampleRehydrateDays
+            );
+            $scoreDoc = $withinWindow ? $documentationScorePerItem : 0;
+            $img = $withinWindow ? $imgPass : $imgFail;
+            $rehydrationWindowTitle = ($sampleRehydrateDays === 0)
+                ? 'Testing done on the day of rehydration or the day after'
+                : 'Testing done ' . $sampleRehydrateDays . ' to ' . ($sampleRehydrateDays + 1) . ' days after rehydration';
 
-                $sampleRehydrateDays = $config['sampleRehydrateDays'];
-                $rehydrateHours = $sampleRehydrateDays * 24;
-
-                if ($totalHours <= $rehydrateHours) {
-                    $scoreDoc = $documentationScorePerItem;
-                    $img = $imgPass;
-                }
-            }
-
-            $docRes .= '<tr style="' . $sampleTypeDisplay . '">
-                <td style="text-align:left;font-weight:bold;">Testing to be done within ' . ($rehydrateHours ?? 0) . ' hours of rehydration.</td>
+            if ($driedPanel) {
+                $docRes .= '<tr>
+                <td style="text-align:left;font-weight:bold;">' . $rehydrationWindowTitle . '</td>
                 <td style="text-align:center;"><img style="width:11px;" src="' . $img . '" /></td>
                 <td style="text-align:center;">' . $scoreDoc . '</td>
-            </tr></table><br>';
+            </tr>';
+            }
+            $docRes .= '</table><br>';
 
             $pdf->writeHTML($docRes, true, false, true, false, '');
             $totalScore = $result['shipment_score'] + $result['documentation_score'];

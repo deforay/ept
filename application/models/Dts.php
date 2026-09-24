@@ -164,6 +164,9 @@ final class Application_Model_Dts
         $rtriEnabled = $context['rtriEnabled'];
         $possibleRecencyResults = $context['possibleRecencyResults'];
         $vietnamConsensusExclusions = $context['vietnamConsensusExclusions'] ?? [];
+        // A 2-test panel (dtsOptionalTest3) has no Test 3 to require.
+        $requireTest3 = ($config['dtsRequireTest3'] ?? 'no') === 'yes'
+            && ($config['dtsOptionalTest3'] ?? 'no') !== 'yes';
 
         // dump($results[0]['map_id']);
         // dump($results[0]['response_status']);
@@ -510,7 +513,8 @@ final class Application_Model_Dts
                     $syphilisResult ?? null,
                     $reportedSyphilisResultCode ?? null,
                     $correctiveActions,
-                    $possibleRecencyResults
+                    $possibleRecencyResults,
+                    $requireTest3
                 );
 
                 $algoResult = $algo['algoResult'];
@@ -905,8 +909,14 @@ final class Application_Model_Dts
         //D.3
         if (isset($shipmentAttributes['sampleType']) && $shipmentAttributes['sampleType'] == 'dried') {
             // Only for Dried Samples we will check Sample Rehydration
-            if (isset($attributes['sample_rehydration_date']) && trim($attributes['sample_rehydration_date']) != '') {
+            if (self::isRehydrationDateValid($attributes['sample_rehydration_date'] ?? null, $results[0]['shipment_receipt_date'] ?? null)) {
                 $documentationScore += $documentationScorePerItem;
+            } elseif (Common::isDateValid($attributes['sample_rehydration_date'] ?? null)) {
+                $failureReason[] = [
+                    'warning' => 'Rehydration date is before the panel receipt date',
+                    'correctiveAction' => 'Record the date the panel was actually rehydrated. A panel can only be rehydrated after it has been received.',
+                ];
+                $correctiveActionList[] = 12;
             } else {
                 $failureReason[] = [
                     'warning' => 'Missing reporting rehydration date for DTS Panel',
@@ -930,24 +940,11 @@ final class Application_Model_Dts
         if (isset($shipmentAttributes['sampleType']) && $shipmentAttributes['sampleType'] == 'dried') {
 
             // Only for Dried samples we will do this check
-
-            // Testing should be done within 24*($sampleRehydrateDays) hours of rehydration.
-            $sampleRehydrateDays = null;
-            $interval = null;
-            if (!empty($attributes['sample_rehydration_date'])) {
-                $sampleRehydrationDate = new DateTimeImmutable($attributes['sample_rehydration_date']);
-                $testedOnDate = new DateTimeImmutable($results[0]['shipment_test_date']);
-                $interval = $sampleRehydrationDate->diff($testedOnDate);
-                $sampleRehydrateDays = $config['sampleRehydrateDays'];
-            }
-            //$rehydrateHours = $sampleRehydrateDays * 24;
-            // we can allow testers to test upto sampleRehydrateDays or sampleRehydrateDays + 1
-            if (
-                !isset($attributes['sample_rehydration_date']) ||
-                $attributes['sample_rehydration_date'] === null
-                || $interval->days < $sampleRehydrateDays
-                || $interval->days > ($sampleRehydrateDays + 1)
-            ) {
+            if (!self::isTestedWithinRehydrationWindow(
+                $attributes['sample_rehydration_date'] ?? null,
+                $results[0]['shipment_test_date'] ?? null,
+                $config['sampleRehydrateDays'] ?? 0
+            )) {
                 $failureReason[] = [
                     'warning' => 'Testing not done within specified time of rehydration as per SOP.',
                     'correctiveAction' => $correctiveActions[14],
@@ -1154,6 +1151,43 @@ final class Application_Model_Dts
             'maxScore' => $maxScore,
         ];
     }
+    /**
+     * Whether a dried panel was tested within the rehydration window: sampleRehydrateDays
+     * to sampleRehydrateDays + 1 calendar days after rehydration (1 = "testing after 1 day
+     * only", so the day after or the day after that). The evaluator scores this
+     * documentation item and the participant reports print it, so both call this rather
+     * than each working the window out on its own.
+     */
+    /**
+     * Whether a rehydration date was reported and is possible: a panel can only be
+     * rehydrated after it was received. A missing receipt date loses its own
+     * documentation point, so it does not also cost this one.
+     */
+    public static function isRehydrationDateValid(?string $rehydrationDate, ?string $receiptDate): bool
+    {
+        if (!Common::isDateValid($rehydrationDate)) {
+            return false;
+        }
+        if (!Common::isDateValid($receiptDate)) {
+            return true;
+        }
+        return new DateTimeImmutable($rehydrationDate) >= new DateTimeImmutable($receiptDate);
+    }
+
+    public static function isTestedWithinRehydrationWindow(?string $rehydrationDate, ?string $testDate, $rehydrateDays): bool
+    {
+        if (!Common::isDateValid($rehydrationDate) || !Common::isDateValid($testDate)) {
+            return false;
+        }
+        $interval = (new DateTimeImmutable($rehydrationDate))->diff(new DateTimeImmutable($testDate));
+        if ($interval->invert) {
+            // tested before the panel was rehydrated
+            return false;
+        }
+        $minDays = (int) $rehydrateDays;
+        return $interval->days >= $minDays && $interval->days <= $minDays + 1;
+    }
+
     public function getDtsSamples($sId, $pId = null)
     {
         $sql = $this->db->select()->from(['ref' => 'reference_result_dts'])
@@ -1933,6 +1967,7 @@ final class Application_Model_Dts
                 $resultReportRow[] = $aRow['province'];
                 $resultReportRow[] = $aRow['district'];
 
+                $shipmentReceiptDateRaw = $aRow['shipment_receipt_date'] ?? null;
                 $shipmentReceiptDate = $aRow['shipment_receipt_date'] = Pt_Commons_General::excelDateFormat($aRow['shipment_receipt_date']);
 
                 $resultReportRow[] = $shipmentReceiptDate;
@@ -2002,7 +2037,7 @@ final class Application_Model_Dts
                 if (isset($attributes['algorithm']) && $attributes['algorithm'] == 'myanmarNationalDtsAlgo') {
                     $docScoreRow[] = '-';
                 } else {
-                    if (isset($rehydrationDate) && trim($rehydrationDate) != '') {
+                    if (self::isRehydrationDateValid($attributes['sample_rehydration_date'] ?? null, $shipmentReceiptDateRaw)) {
                         $docScoreRow[] = $documentationScorePerItem;
                     } else {
                         $docScoreRow[] = 0;
@@ -2017,21 +2052,8 @@ final class Application_Model_Dts
 
                 if (isset($attributes['algorithm']) && $attributes['algorithm'] == 'myanmarNationalDtsAlgo') {
                     $docScoreRow[] = '-';
-                } elseif (isset($sampleRehydrationDate) && isset($aRow['shipment_test_date']) && Common::isDateValid($aRow['shipment_test_date'])) {
-
-                    $sampleRehydrationDate = new DateTimeImmutable($attributes['sample_rehydration_date']);
-                    $testedOnDate = new DateTimeImmutable($aRow['shipment_test_date']);
-                    $interval = $sampleRehydrationDate->diff($testedOnDate);
-
-                    // Testing should be done within 24*($sampleRehydrateDays) hours of rehydration.
-                    $sampleRehydrateDays = $config['sampleRehydrateDays'];
-                    //$rehydrateHours = $sampleRehydrateDays * 24;
-
-                    if ($interval->days < $sampleRehydrateDays || $interval->days > ($sampleRehydrateDays + 1)) {
-                        $docScoreRow[] = 0;
-                    } else {
-                        $docScoreRow[] = $documentationScorePerItem;
-                    }
+                } elseif (self::isTestedWithinRehydrationWindow($attributes['sample_rehydration_date'] ?? null, $aRow['shipment_test_date'] ?? null, $config['sampleRehydrateDays'] ?? 0)) {
+                    $docScoreRow[] = $documentationScorePerItem;
                 } else {
                     $docScoreRow[] = 0;
                 }
@@ -2524,7 +2546,8 @@ final class Application_Model_Dts
         ?string $syphilisResult = null,
         ?string $reportedSyphilisResultCode = null,
         array $correctiveActions = [],
-        array $possibleRecencyResults = []
+        array $possibleRecencyResults = [],
+        bool $requireTest3 = false
     ): array {
         $out = [
             'algoResult' => 'Fail',
@@ -2570,7 +2593,8 @@ final class Application_Model_Dts
                 $repeatResult1,
                 $reportedResultCode,
                 $correctiveActions,
-                $out
+                $out,
+                $requireTest3
             );
 
             // Optional RTRI check (only if enabled & sample allowed)
@@ -2714,12 +2738,40 @@ final class Application_Model_Dts
         return empty(array_intersect(['R', 'WR'], $codes));
     }
 
+    /**
+     * Whether a DTS final-result code means Indeterminate or Inconclusive. Matched on the
+     * response label because the codes drift between instances: Indeterminate is 'I' on
+     * some databases and 'IND' on others, where 'I' is Invalid.
+     */
+    private function isIndeterminateFinalCode(?string $code): bool
+    {
+        if ($code === null || $code === '' || $code === '-') {
+            return false;
+        }
+        static $codes = null;
+        $codes ??= $this->db->fetchCol(
+            $this->db->select()
+                ->from('r_possibleresult', ['result_code'])
+                ->where('scheme_id = ?', 'dts')
+                ->where('scheme_sub_group = ?', 'DTS_FINAL')
+                ->where('UPPER(response) IN (?)', ['INDETERMINATE', 'INCONCLUSIVE'])
+        );
+        return in_array($code, $codes, true);
+    }
+
     private function normalizeAlgoResult(?string $result): string
     {
         return (in_array(trim(strtolower($result)), [null, '', 'x', 'n/a'], true)) ? '-' : $result;
     }
 
-    /** Updated-3-tests / confirmatory path */
+    /**
+     * Updated-3-tests / confirmatory path.
+     *
+     * With $requireTest3 (scheme_config.dts.dtsRequireTest3, Zimbabwe), Test 1 and Test 2
+     * reactive is not enough to conclude Positive: Test 3 must be run and reactive, and a
+     * non-reactive Test 3 must be reported Indeterminate/Inconclusive. Without it, Test 3
+     * is ignored once Test 1 and Test 2 agree.
+     */
     private function algoUpdatedThreeTests(
         array $result,
         ?string $result1,
@@ -2728,7 +2780,8 @@ final class Application_Model_Dts
         ?string $repeatResult1,
         ?string $reportedResultCode,
         array $correctiveActions,
-        array &$out
+        array &$out,
+        bool $requireTest3 = false
     ) {
 
         $result1 = $this->normalizeAlgoResult($result1);
@@ -2743,7 +2796,24 @@ final class Application_Model_Dts
                 $this->warningForAlgo($out, $correctiveActions, $result['sample_label'] ?? '');
             }
         } elseif ($result1 == 'R') {
-            if ($result2 == 'R' && $reportedResultCode == 'P' && $repeatResult1 == '-') {
+            if ($requireTest3 && $result2 == 'R') {
+                $sampleLabel = $result['sample_label'] ?? '';
+                if ($result3 == '-') {
+                    $out['algoResult'] = 'Fail';
+                    $out['failureReason'][] = [
+                        'warning' => "For <strong>{$sampleLabel}</strong> Test 3 was not reported. Test 1 and Test 2 were reactive, so Test 3 is required before a result can be concluded.",
+                        'correctiveAction' => $correctiveActions[2] ?? '',
+                    ];
+                    $out['correctiveActionList'][] = 2;
+                } elseif ($repeatResult1 == '-' && (
+                    ($result3 == 'R' && $reportedResultCode == 'P')
+                    || ($result3 == 'NR' && $this->isIndeterminateFinalCode($reportedResultCode))
+                )) {
+                    $out['algoResult'] = 'Pass';
+                } else {
+                    $this->warningForAlgo($out, $correctiveActions, $sampleLabel);
+                }
+            } elseif ($result2 == 'R' && $reportedResultCode == 'P' && $repeatResult1 == '-') {
                 $out['algoResult'] = 'Pass';
             } elseif ($result2 == 'NR') {
                 if ($repeatResult1 == 'NR' && $reportedResultCode == 'N') {

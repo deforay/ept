@@ -263,6 +263,10 @@ if (!empty($resultArray['shipment'])) {
             }
         }
         $interval = $srDate->diff($testedOnDate);
+        // Same checks the evaluator scored (Application_Model_Dts), so the report agrees with
+        // the documentation score: received, then rehydrated, then tested within the window.
+        $rehydrationDateValid = Application_Model_Dts::isRehydrationDateValid($attributes['sample_rehydration_date'] ?? null, $result['responseResult'][0]['shipment_receipt_date'] ?? null);
+        $withinRehydrationWindow = Application_Model_Dts::isTestedWithinRehydrationWindow($attributes['sample_rehydration_date'] ?? null, $result['responseResult'][0]['shipment_test_date'] ?? null, $sampleRehydrateDays);
 
         $rehydrateHours = $sampleRehydrateDays * 24;
         $sampleConditionFields = (isset($displaySampleConditionFields) && $displaySampleConditionFields != "") ? $displaySampleConditionFields : 'no';
@@ -378,8 +382,8 @@ if (!empty($resultArray['shipment'])) {
             $labInfo .= '<tr>';
             $labInfo .= '<td style="' . $shipmentAttributesSampleTypeDisplay . '"><strong>Rehydration Date</strong>';
             if (
-                empty($sampleRehydrationDate)
-                || ($interval->days < $sampleRehydrateDays || $interval->days > ($sampleRehydrateDays + 1))
+                !$rehydrationDateValid
+                || !$withinRehydrationWindow
             ) {
                 $labInfo .= '<img style="width:10px;" src="' . $flag . '"/>';
             }
@@ -846,7 +850,7 @@ if (!empty($resultArray['shipment'])) {
             $docRes .= '</tr>';
 
             // Rehydration date (dried samples only)
-            $img = (!empty($attributes['sample_rehydration_date']) && $shipmentAttributesSampleTypeDisplay == "") ? $imgPass : $imgFail;
+            $img = ($rehydrationDateValid && $shipmentAttributesSampleTypeDisplay == "") ? $imgPass : $imgFail;
             $docRes .= '<tr style="' . $shipmentAttributesSampleTypeDisplay . '">';
             $docRes .= '<td style="text-align:left;">Reporting of the Sample Rehydration Date</td>';
             $docRes .= '<td style="text-align:center;"><img style="width:9px;" src="' . $img . '" /></td>';
@@ -860,7 +864,7 @@ if (!empty($resultArray['shipment'])) {
             $docRes .= '</tr>';
 
             // Rehydration timing
-            $img = ($interval->days < $sampleRehydrateDays || $interval->days > ($sampleRehydrateDays + 1)) ? $imgFail : $imgPass;
+            $img = $withinRehydrationWindow ? $imgPass : $imgFail;
             $docRes .= '<tr style="' . $shipmentAttributesSampleTypeDisplay . '">';
             $docRes .= '<td style="text-align:left;">Testing to be done within ' . $rehydrateHours . ' hours of rehydration.</td>';
             $docRes .= '<td style="text-align:center;"><img style="width:11px;" src="' . $img . '" /></td>';

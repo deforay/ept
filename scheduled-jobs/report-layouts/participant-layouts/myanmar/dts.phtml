@@ -204,6 +204,10 @@ if ($totalPages > 0) {
         $shipmentTestDateRaw = $result['responseResult'][0]['shipment_test_date'] ?? null;
         $testedOnDate = !empty($shipmentTestDateRaw) ? new DateTime($shipmentTestDateRaw) : null;
         $interval = (isset($attributes['sample_rehydration_date']) && !empty($attributes['sample_rehydration_date'])) ? $srDate->diff($testedOnDate) : null;
+        // Same checks the evaluator scored (Application_Model_Dts), so the report agrees with
+        // the documentation score: received, then rehydrated, then tested within the window.
+        $rehydrationDateValid = Application_Model_Dts::isRehydrationDateValid($attributes['sample_rehydration_date'] ?? null, $result['responseResult'][0]['shipment_receipt_date'] ?? null);
+        $withinRehydrationWindow = Application_Model_Dts::isTestedWithinRehydrationWindow($attributes['sample_rehydration_date'] ?? null, $result['responseResult'][0]['shipment_test_date'] ?? null, $sampleRehydrateDays);
 
         // Testing should be done within 24*($sampleRehydrateDays) hours of rehydration.
         $rehydrateHours = $sampleRehydrateDays * 24;
@@ -583,7 +587,7 @@ if ($totalPages > 0) {
 							<td style="text-align:left;font-weight:bold;">Panel/Shipment Receipt Date Specified</td>
                         </tr>';
 
-            if (isset($attributes['sample_rehydration_date']) && trim($attributes['sample_rehydration_date']) != "" && $shipmentAttributesSampleTypeDisplay == "") {
+            if ($rehydrationDateValid && $shipmentAttributesSampleTypeDisplay == "") {
                 $scoreDoc = $documentationScorePerItem;
                 $img = $imgPass;
             } else {
@@ -606,7 +610,7 @@ if ($totalPages > 0) {
             $docRes .= '<tr>
                             <td style="text-align:left;font-weight:bold;">Reporting of the Shipment Test Date</td>
                         </tr>';
-            if (isset($interval->days) && ($interval->days < $sampleRehydrateDays || $interval->days > ($sampleRehydrateDays + 1))) {
+            if (!$withinRehydrationWindow) {
                 $scoreDoc = 0;
                 $img = $imgFail;
             } else {

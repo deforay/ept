@@ -205,6 +205,10 @@ if (!empty($resultArray['shipment'])) {
         $shipmentTestDateRaw = $result['responseResult'][0]['shipment_test_date'] ?? null;
         $testedOnDate = !empty($shipmentTestDateRaw) ? new DateTime($shipmentTestDateRaw) : null;
         $interval = ($srDate && $testedOnDate) ? $srDate->diff($testedOnDate) : null;
+        // Same checks the evaluator scored (Application_Model_Dts), so the report agrees with
+        // the documentation score: received, then rehydrated, then tested within the window.
+        $rehydrationDateValid = Application_Model_Dts::isRehydrationDateValid($attributes['sample_rehydration_date'] ?? null, $result['responseResult'][0]['shipment_receipt_date'] ?? null);
+        $withinRehydrationWindow = Application_Model_Dts::isTestedWithinRehydrationWindow($attributes['sample_rehydration_date'] ?? null, $result['responseResult'][0]['shipment_test_date'] ?? null, $sampleRehydrateDays);
 
         // Testing should be done within 24*($sampleRehydrateDays) hours of rehydration.
         $rehydrateHours = $sampleRehydrateDays * 24;
@@ -580,7 +584,7 @@ if (!empty($resultArray['shipment'])) {
 							<td style="text-align:center;">' . $scoreDoc . '</td>
                         </tr>';
 
-            if (isset($attributes['sample_rehydration_date']) && trim($attributes['sample_rehydration_date']) != "" && $shipmentAttributesSampleTypeDisplay == "") {
+            if ($rehydrationDateValid && $shipmentAttributesSampleTypeDisplay == "") {
                 $scoreDoc = $documentationScorePerItem;
                 $img = $imgPass;
             } else {
@@ -607,7 +611,7 @@ if (!empty($resultArray['shipment'])) {
                             <td style="text-align:center;"><img style="width:9px;" src="' . $img . '" /></td>
 							<td style="text-align:center;">' . $scoreDoc . '</td>
                         </tr>';
-            if ($interval->days < $sampleRehydrateDays || $interval->days > ($sampleRehydrateDays + 1)) {
+            if (!$withinRehydrationWindow) {
                 $scoreDoc = 0;
                 $img = $imgFail;
             } else {

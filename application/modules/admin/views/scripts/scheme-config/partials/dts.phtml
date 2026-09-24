@@ -228,6 +228,23 @@ $showThreeTestFields = !empty($dts['dtsSchemeType']) && in_array($dts['dtsScheme
                 </div>
             </div>
 
+            <div class="row" id="dtsRequireTest3Div" style="display: none;">
+                <div class="col-md-6">
+                    <label for="dtsRequireTest3" class="control-label"><?= $this->translate->_("Require Test 3 to Confirm Positive"); ?></label>
+                    <div class="btn-group radioBtn">
+                        <a class="btn btn-primary btn-sm <?php echo (isset($dts['dtsRequireTest3']) && $dts['dtsRequireTest3'] == "yes") ? " active " : "notActive"; ?>"
+                            data-toggle="dtsRequireTest3" data-title="yes"
+                            onclick="toggleRadios(this);"><?= $this->translate->_("YES"); ?></a>
+                        <a class="btn btn-primary btn-sm <?php echo (!isset($dts['dtsRequireTest3']) || $dts['dtsRequireTest3'] != "yes") ? " active " : "notActive"; ?>"
+                            data-toggle="dtsRequireTest3" data-title="no"
+                            onclick="toggleRadios(this);"><?= $this->translate->_("NO"); ?></a>
+                    </div>
+                    <input type="hidden" name="dts[dtsRequireTest3]" id="dtsRequireTest3"
+                        value="<?php echo $dts['dtsRequireTest3'] ?? "no"; ?>">
+                    <small class="text-muted"><?= $this->translate->_("When Test 1 and Test 2 are reactive, Test 3 must be reactive to report Positive; a non-reactive Test 3 must be reported Indeterminate."); ?></small>
+                </div>
+            </div>
+
             <div class="row">
                 <div class="col-md-6" id="allowedAlgorithmsDiv">
                     <label for="allowedAlgorithms" class="control-label"><?= $this->translate->_("Allowed Algorithms"); ?>
@@ -479,6 +496,7 @@ $showThreeTestFields = !empty($dts['dtsSchemeType']) && in_array($dts['dtsScheme
         $('#allowedAlgorithmsDiv').show();
         $('#dtsSyphilisDiv').hide();
         $('#dtsRtriDiv').hide();
+        $('#dtsRequireTest3Div').hide();
 
         if ($(this).val() == 'ghana') {
             $('#dtsSyphilisDiv').show();
@@ -501,6 +519,7 @@ $showThreeTestFields = !empty($dts['dtsSchemeType']) && in_array($dts['dtsScheme
         } else if ($(this).val() == 'updated-3-tests' || $(this).val() == 'vietnam') {
             $('#dtsSyphilisDiv').hide();
             $('#dtsRtriDiv').show();
+            $('#dtsRequireTest3Div').show();
             $('#allowedAlgorithms').multiselect('deselectAll', false);
             $('#allowedAlgorithms').multiselect('select', []);
             $('#allowedAlgorithms').removeClass('isRequired');

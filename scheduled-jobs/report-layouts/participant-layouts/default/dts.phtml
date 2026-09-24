@@ -203,6 +203,10 @@ if (!empty($resultArray['shipment'])) {
         $testedOnDate = !empty($shipmentTestDateRaw) ? new DateTime($shipmentTestDateRaw) : null;
         $interval = ($srDate && $testedOnDate) ? $srDate->diff($testedOnDate) : null;
         $sampleRehydrateDays = Pt_Commons_SchemeConfig::get('dts.sampleRehydrateDays') ?? 0;
+        // Same checks the evaluator scored (Application_Model_Dts), so the report agrees with
+        // the documentation score: received, then rehydrated, then tested within the window.
+        $rehydrationDateValid = Application_Model_Dts::isRehydrationDateValid($attributes['sample_rehydration_date'] ?? null, $result['responseResult'][0]['shipment_receipt_date'] ?? null);
+        $withinRehydrationWindow = Application_Model_Dts::isTestedWithinRehydrationWindow($attributes['sample_rehydration_date'] ?? null, $result['responseResult'][0]['shipment_test_date'] ?? null, $sampleRehydrateDays);
         $displaySampleConditionFields = Pt_Commons_SchemeConfig::get('dts.displaySampleConditionFields');
         $passPercentage = Pt_Commons_SchemeConfig::get('dts.passPercentage');
         // Testing should be done within 24*($sampleRehydrateDays) hours of rehydration.
@@ -235,7 +239,7 @@ if (!empty($resultArray['shipment'])) {
         $labInfo .= '<tr>';
         $labInfo .= '	<td><strong>' . Pt_Commons_TranslateUtility::safeTranslate('Panel Receipt Date') . '</strong><br>' . $shipmentReceiptDate . '</td>';
         $labInfo .= '	<td style="' . $shipmentAttributesSampleTypeDisplay . '"><strong>' . Pt_Commons_TranslateUtility::safeTranslate('Rehydration Date') . '</strong>';
-        if (!empty($flag) && (empty($sampleRehydrationDate) || ($interval->days < $sampleRehydrateDays || $interval->days > ($sampleRehydrateDays + 1)))) {
+        if (!empty($flag) && (!$rehydrationDateValid || !$withinRehydrationWindow)) {
             $labInfo .= '<img style="width:10px;" src="' . $flag . '"/>';
         }
         if (isset($sampleRehydrationDate) && $sampleRehydrationDate != "") {
@@ -645,7 +649,7 @@ if (!empty($resultArray['shipment'])) {
             <td style="text-align:center;">' . $scoreDoc . '</td>';
             $docRes .= '</tr>';
 
-            if (isset($attributes['sample_rehydration_date']) && trim($attributes['sample_rehydration_date']) != "" && $shipmentAttributesSampleTypeDisplay == "") {
+            if ($rehydrationDateValid && $shipmentAttributesSampleTypeDisplay == "") {
                 $scoreDoc = $documentationScorePerItem;
                 $img = $imgPass;
             } else {
@@ -674,7 +678,7 @@ if (!empty($resultArray['shipment'])) {
             $docRes .= '</tr>';
 
 
-            if ($interval->days < $sampleRehydrateDays || $interval->days > ($sampleRehydrateDays + 1)) {
+            if (!$withinRehydrationWindow) {
                 $scoreDoc = 0;
                 $img = $imgFail;
             } else {
