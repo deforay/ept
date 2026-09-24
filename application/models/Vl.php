@@ -1223,6 +1223,67 @@ class Application_Model_Vl
             $countOfVlAssaySheet++;
         }
 
+        // Statistics inputs: every submitted result, whether it fed its sample's statistics and why not.
+        $inputs = $this->getStatisticsInputs((int) $shipmentId);
+        $inputsSheet = new Worksheet($excel, '');
+        $excel->addSheet($inputsSheet, $countOfVlAssaySheet);
+        $inputsSheet->setTitle('Statistics Inputs', true);
+        $methodText = ('iso17043' === $inputs['method'])
+            ? 'Assigned value = median, SD = normalized IQR (0.7413 x IQR), ISO 13528 simple robust estimators; not iterative'
+            : 'Mean and SD after removing results outside Q1 - 1.5 x IQR and Q3 + 1.5 x IQR';
+        $headerLines = [
+            'Statistics inputs - ' . ($result['shipment_code'] ?? ''),
+            'Method: ' . $methodText,
+            'Values: log10 copies/mL as reported (Target Not Detected recorded as 0)',
+            'Minimum group size: more than ' . $inputs['minimum'] . ' on-time responses per platform and sample; smaller platforms and the reserved "Other" platform (ID 6) are scored against the largest platform',
+        ];
+        $row = 1;
+        foreach ($headerLines as $i => $line) {
+            $inputsSheet->getCell('A' . $row)->setValueExplicit($line);
+            if (0 === $i) {
+                $inputsSheet->getStyle('A' . $row)->applyFromArray($boldStyleArray, true);
+            }
+            $row++;
+        }
+
+        $writeTableRow = static function (Worksheet $sheet, int $rowNumber, array $values, bool $header) use ($vlBorderStyle, $boldStyleArray): void {
+            foreach (array_values($values) as $c => $value) {
+                $cell = Coordinate::stringFromColumnIndex($c + 1) . $rowNumber;
+                if (is_int($value) || is_float($value)) {
+                    $sheet->getCell($cell)->setValue($value);
+                } else {
+                    $sheet->getCell($cell)->setValueExplicit((string) $value);
+                }
+                $sheet->getStyle($cell)->applyFromArray($header ? $boldStyleArray : $vlBorderStyle, true);
+            }
+        };
+
+        $row++;
+        $writeTableRow($inputsSheet, $row++, ['Statistics Group', 'Sample', 'Results Used', 'Results Not Used'], true);
+        foreach ($inputs['summary'] as $summaryRow) {
+            $writeTableRow($inputsSheet, $row++, [$summaryRow['group'], $summaryRow['sample'], $summaryRow['used'], $summaryRow['not_used']], false);
+        }
+
+        $row++;
+        $writeTableRow($inputsSheet, $row++, ['Participant ID', 'Lab Name', 'Platform', 'Sample', 'Reported Result (log10 copies/mL)', 'Used in Statistics', 'Reason Not Used', 'Statistics Group'], true);
+        foreach ($inputs['rows'] as $inputRow) {
+            $writeTableRow($inputsSheet, $row++, [
+                $inputRow['lab_id'],
+                $inputRow['lab_name'],
+                $inputRow['platform'],
+                $inputRow['sample'],
+                $inputRow['result'],
+                $inputRow['used'] ? 'Yes' : 'No',
+                $inputRow['reason'],
+                $inputRow['group'],
+            ], false);
+        }
+        foreach (range('A', 'H') as $column) {
+            $inputsSheet->getColumnDimension($column)->setAutoSize(true);
+        }
+        // Keep the long method lines from stretching column A.
+        $inputsSheet->getColumnDimension('A')->setAutoSize(false)->setWidth(18);
+
         $auditDb = new Application_Model_DbTable_AuditLog();
         $auditDb->addNewAuditLog('Downloaded DTS Viral Load report - ' . ($result['shipment_code'] ?? '?'), 'shipment');
 
@@ -1603,6 +1664,177 @@ class Application_Model_Vl
         );
 
         return $normalised;
+    }
+
+    /**
+     * Read-only audit of the statistics inputs: for every submitted result, whether it was used
+     * in its sample's statistics and, if not, why. Mirrors the selection rules in setVlRange()
+     * (on-time responses, invalid results dropped, minimum group size counted on all eligible
+     * responses, pooled groups, "Other" and small platforms scored against the largest
+     * platform, and the 1.5 x IQR fence for the standard method). Keep the two in step.
+     *
+     * @return array{method: string, minimum: int, rows: list<array<string, mixed>>, summary: list<array<string, mixed>>}
+     */
+    public function getStatisticsInputs(int $shipmentId): array
+    {
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $shipment = $db->fetchRow($db->select()->from('shipment')->where('shipment_id = ?', $shipmentId));
+        $attributes = Pt_Commons_JsonUtility::safeDecode($shipment['shipment_attributes'] ?? null);
+        $method = $attributes['methodOfEvaluation'] ?? 'standard';
+        $minimum = ('iso17043' === $method) ? 18 : 6;
+
+        $assayNames = $this->getVlAssay();
+        $groups = self::getVlAssayGroups($shipment['shipment_attributes'] ?? null);
+        $groupOf = [];
+        $groupLabels = [];
+        foreach ($groups as $groupIndex => $members) {
+            foreach ($members as $memberAssayId) {
+                $groupOf[$memberAssayId] = $groupIndex;
+            }
+            $groupLabels[$groupIndex] = 'Pooled: ' . implode(' + ', array_map(
+                static fn ($id) => $assayNames[$id] ?? (string) $id,
+                $members
+            ));
+        }
+
+        $results = $db->fetchAll($db->select()
+            ->from(['ref' => 'reference_result_vl'], ['sample_id', 'sample_label'])
+            ->join(['s' => 'shipment'], 's.shipment_id = ref.shipment_id', [])
+            ->join(['sp' => 'shipment_participant_map'], 'sp.shipment_id = s.shipment_id', [
+                'map_id',
+                'assay' => new Zend_Db_Expr('sp.attributes->>"$.vl_assay"'),
+                'other_assay' => new Zend_Db_Expr('sp.attributes->>"$.other_assay"'),
+                'is_pt_test_not_performed',
+                'on_time' => new Zend_Db_Expr('sp.shipment_test_report_date <= s.response_deadline'),
+            ])
+            ->join(['p' => 'participant'], 'p.participant_id = sp.participant_id', ['unique_identifier', 'lab_name'])
+            ->joinLeft(['res' => 'response_result_vl'], 'res.shipment_map_id = sp.map_id AND res.sample_id = ref.sample_id', ['reported_viral_load', 'is_result_invalid'])
+            ->where('ref.shipment_id = ?', $shipmentId)
+            ->where('ref.control != 1')
+            ->where("sp.shipment_test_report_date IS NOT NULL OR sp.is_pt_test_not_performed = 'yes'")
+            ->order(['p.unique_identifier', 'ref.sample_id']));
+
+        // Eligible = would be selected by setVlRange(). Group size counts every eligible row
+        // (a blank or invalid result still counts towards the minimum), values exclude them.
+        $eligibleCount = [];
+        $usable = [];
+        foreach ($results as $i => $row) {
+            $invalid = in_array($row['is_result_invalid'] ?? '', ['invalid', 'error'], true);
+            $eligible = $row['is_pt_test_not_performed'] !== 'yes' && (int) $row['on_time'] === 1;
+            $results[$i]['eligible'] = $eligible;
+            $results[$i]['has_value'] = !$invalid && $row['reported_viral_load'] !== null;
+            if ($eligible) {
+                $eligibleCount[$row['assay']][$row['sample_id']] = ($eligibleCount[$row['assay']][$row['sample_id']] ?? 0) + 1;
+                if ($results[$i]['has_value']) {
+                    $usable[$row['assay']][$row['sample_id']][] = (float) $row['reported_viral_load'];
+                }
+            }
+        }
+
+        // Which group each assay/sample was computed in, the same way setVlRange() decides it.
+        $computed = [];
+        $donorAssay = null;
+        $donorCount = 0;
+        foreach ($assayNames as $assayId => $assayName) {
+            if (isset($groupOf[$assayId]) || $assayId == 6 || !isset($eligibleCount[$assayId])) {
+                continue;
+            }
+            foreach ($eligibleCount[$assayId] as $sampleId => $count) {
+                if ($count > $minimum) {
+                    $computed[$assayId][$sampleId] = ['label' => $assayName, 'values' => $usable[$assayId][$sampleId] ?? []];
+                    if ($count > $donorCount) {
+                        $donorAssay = $assayId;
+                        $donorCount = $count;
+                    }
+                }
+            }
+        }
+        foreach ($groups as $groupIndex => $members) {
+            $sampleIds = [];
+            foreach ($members as $memberAssayId) {
+                $sampleIds += array_fill_keys(array_keys($eligibleCount[$memberAssayId] ?? []), true);
+            }
+            foreach (array_keys($sampleIds) as $sampleId) {
+                $pooled = [];
+                foreach ($members as $memberAssayId) {
+                    $pooled = array_merge($pooled, $usable[$memberAssayId][$sampleId] ?? []);
+                }
+                if (count($pooled) > $minimum) {
+                    foreach ($members as $memberAssayId) {
+                        $computed[$memberAssayId][$sampleId] = ['label' => $groupLabels[$groupIndex], 'values' => $pooled];
+                    }
+                }
+            }
+        }
+
+        // Standard method drops values outside the 1.5 x IQR fence before the mean and SD.
+        $fences = [];
+        if ('standard' === $method) {
+            foreach ($computed as $assayId => $samples) {
+                foreach ($samples as $sampleId => $group) {
+                    $stats = $this->calculateVlRangeStats($group['values'], 'standard');
+                    $fences[$assayId][$sampleId] = [round($stats['quartile_low'], 2), round($stats['quartile_high'], 2)];
+                }
+            }
+        }
+
+        $donorLabel = null !== $donorAssay ? ($assayNames[$donorAssay] ?? (string) $donorAssay) : null;
+        $rows = [];
+        $summary = [];
+        foreach ($results as $row) {
+            $assayId = $row['assay'];
+            $sampleId = $row['sample_id'];
+            $platform = $assayNames[$assayId] ?? ('' !== (string) $assayId ? (string) $assayId : 'Not reported');
+            if ($assayId == 6 && !empty($row['other_assay'])) {
+                $platform .= ' - ' . $row['other_assay'];
+            }
+            $group = $computed[$assayId][$sampleId]['label'] ?? null;
+            $used = false;
+            $reason = '';
+
+            if ($row['is_pt_test_not_performed'] === 'yes') {
+                $reason = 'PT not performed';
+            } elseif (!$row['eligible']) {
+                $reason = 'Late response';
+            } elseif (!isset($assayNames[$assayId])) {
+                $reason = 'Platform not recognised';
+            } elseif (!$row['has_value']) {
+                $reason = in_array($row['is_result_invalid'] ?? '', ['invalid', 'error'], true)
+                    ? 'Invalid / error result'
+                    : 'No result reported for this sample';
+            } elseif (null === $group) {
+                // Platform ID 6 is the reserved "Other" slot: never analysed on its own, even if renamed.
+                $reason = ($assayId == 6 ? 'Platform recorded under the reserved "Other" slot, which is never analysed on its own' : 'Platform has ' . $minimum . ' or fewer results for this sample')
+                    . (null !== $donorLabel
+                        ? '; scored against ' . $donorLabel . ' statistics'
+                        : '; no platform reached the minimum, so not evaluated');
+                $group = null !== $donorLabel ? 'Scored against: ' . $donorLabel : 'Not evaluated';
+            } elseif (isset($fences[$assayId][$sampleId])
+                && ((float) $row['reported_viral_load'] < $fences[$assayId][$sampleId][0] || (float) $row['reported_viral_load'] > $fences[$assayId][$sampleId][1])) {
+                $reason = 'Outside the 1.5 x IQR outlier fence';
+            } else {
+                $used = true;
+            }
+
+            $rows[] = [
+                'lab_id' => $row['unique_identifier'],
+                'lab_name' => $row['lab_name'],
+                'platform' => $platform,
+                'sample' => $row['sample_label'],
+                'result' => $row['has_value'] ? (float) $row['reported_viral_load'] : ($row['is_result_invalid'] ? ucwords($row['is_result_invalid']) : ''),
+                'used' => $used,
+                'reason' => $reason,
+                'group' => $group ?? '',
+            ];
+
+            if (null !== $group && !str_starts_with($group, 'Scored against') && 'Not evaluated' !== $group) {
+                $key = $group . "\0" . $row['sample_label'];
+                $summary[$key] ??= ['group' => $group, 'sample' => $row['sample_label'], 'used' => 0, 'not_used' => 0];
+                $summary[$key][$used ? 'used' : 'not_used']++;
+            }
+        }
+
+        return ['method' => $method, 'minimum' => $minimum, 'rows' => $rows, 'summary' => array_values($summary)];
     }
 
     public function setVlRange($shipmentId)
