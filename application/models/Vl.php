@@ -48,6 +48,9 @@ class Application_Model_Vl
         foreach ($shipmentResult as $shipment) {
             Pt_Commons_MiscUtility::updateHeartbeat('shipment', 'shipment_id', $shipmentId);
             $shipment['is_excluded'] = 'no'; // setting it as no by default. It will become 'yes' if some condition matches.
+            // Per participant: the late-response branch appends without resetting, so a late
+            // participant used to inherit the previous participant's warnings.
+            $failureReason = [];
 
             // No response / could not test / late → EXCLUDED, never failed (shared rule).
             // VL's own late/no-response else-branch would otherwise mis-tag non-responders
