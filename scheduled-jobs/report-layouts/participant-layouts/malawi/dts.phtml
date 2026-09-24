@@ -241,28 +241,6 @@ if (!empty($resultArray['shipment'])) {
             $responseDate = Pt_Commons_DateUtility::responseDateForDisplay($result['responseResult'][0]['responseDate']);
         }
 
-        // FIX #2: guard DateTime construction against empty / missing date
-        $srDate = new DateTime(); // safe fallback
-        if (!empty($attributes['sample_rehydration_date'])) {
-            try {
-                $srDate = new DateTime($attributes['sample_rehydration_date']);
-            } catch (Throwable $e) {
-                $srDate = new DateTime();
-            }
-        }
-
-        $testedOnDate = new DateTime(); // fallback
-        if (
-            isset($result['responseResult'][0]['shipment_test_date'])
-            && !empty($result['responseResult'][0]['shipment_test_date'])
-        ) {
-            try {
-                $testedOnDate = new DateTime($result['responseResult'][0]['shipment_test_date']);
-            } catch (Throwable $e) {
-                $testedOnDate = new DateTime();
-            }
-        }
-        $interval = $srDate->diff($testedOnDate);
         // Same checks the evaluator scored (Application_Model_Dts), so the report agrees with
         // the documentation score: received, then rehydrated, then tested within the window.
         $rehydrationDateValid = Application_Model_Dts::isRehydrationDateValid($attributes['sample_rehydration_date'] ?? null, $result['responseResult'][0]['shipment_receipt_date'] ?? null);

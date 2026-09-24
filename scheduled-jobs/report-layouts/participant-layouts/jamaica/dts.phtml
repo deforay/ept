@@ -189,10 +189,6 @@ if (!empty($resultArray['shipment'])) {
             $sampleRehydrationDate = Pt_Commons_DateUtility::humanReadableDateFormat($attributes['sample_rehydration_date']);
         }
 
-        $srDate = !empty($attributes['sample_rehydration_date']) ? new DateTime($attributes['sample_rehydration_date']) : null;
-        $shipmentTestDateRaw = $result['responseResult'][0]['shipment_test_date'] ?? null;
-        $testedOnDate = !empty($shipmentTestDateRaw) ? new DateTime($shipmentTestDateRaw) : null;
-        $interval = ($srDate && $testedOnDate) ? $srDate->diff($testedOnDate) : null;
 
         // Testing should be done within 24*($sampleRehydrateDays) hours of rehydration.
         $rehydrateHours = $sampleRehydrateDays * 24;

@@ -100,6 +100,8 @@ final class Variants
                     'documentationScore' => '10',
                     'dtsAlgorithmScore'  => '0',
                     'dtsRequireTest3'    => 'yes',
+                    // A 2-test panel switches the Test 3 requirement off; keep Test 3 shown.
+                    'dtsOptionalTest3'   => 'no',
                 ],
             ],
         ];

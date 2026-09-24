@@ -200,10 +200,6 @@ if ($totalPages > 0) {
             $sampleRehydrationDate = Pt_Commons_DateUtility::humanReadableDateFormat($attributes['sample_rehydration_date']);
         }
 
-        $srDate = !empty($attributes['sample_rehydration_date']) ? new DateTime($attributes['sample_rehydration_date']) : null;
-        $shipmentTestDateRaw = $result['responseResult'][0]['shipment_test_date'] ?? null;
-        $testedOnDate = !empty($shipmentTestDateRaw) ? new DateTime($shipmentTestDateRaw) : null;
-        $interval = (isset($attributes['sample_rehydration_date']) && !empty($attributes['sample_rehydration_date'])) ? $srDate->diff($testedOnDate) : null;
         // Same checks the evaluator scored (Application_Model_Dts), so the report agrees with
         // the documentation score: received, then rehydrated, then tested within the window.
         $rehydrationDateValid = Application_Model_Dts::isRehydrationDateValid($attributes['sample_rehydration_date'] ?? null, $result['responseResult'][0]['shipment_receipt_date'] ?? null);

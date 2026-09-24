@@ -165,7 +165,8 @@ final class Application_Model_Dts
         $possibleRecencyResults = $context['possibleRecencyResults'];
         $vietnamConsensusExclusions = $context['vietnamConsensusExclusions'] ?? [];
         // A 2-test panel (dtsOptionalTest3) has no Test 3 to require.
-        $requireTest3 = ($config['dtsRequireTest3'] ?? 'no') === 'yes'
+        $requireTest3 = $dtsSchemeType === 'updated-3-tests'
+            && ($config['dtsRequireTest3'] ?? 'no') === 'yes'
             && ($config['dtsOptionalTest3'] ?? 'no') !== 'yes';
 
         // dump($results[0]['map_id']);
@@ -914,9 +915,9 @@ final class Application_Model_Dts
             } elseif (Common::isDateValid($attributes['sample_rehydration_date'] ?? null)) {
                 $failureReason[] = [
                     'warning' => 'Rehydration date is before the panel receipt date',
-                    'correctiveAction' => 'Record the date the panel was actually rehydrated. A panel can only be rehydrated after it has been received.',
+                    'correctiveAction' => $correctiveActions[22] ?? '',
                 ];
-                $correctiveActionList[] = 12;
+                $correctiveActionList[] = 22;
             } else {
                 $failureReason[] = [
                     'warning' => 'Missing reporting rehydration date for DTS Panel',
@@ -1152,13 +1153,6 @@ final class Application_Model_Dts
         ];
     }
     /**
-     * Whether a dried panel was tested within the rehydration window: sampleRehydrateDays
-     * to sampleRehydrateDays + 1 calendar days after rehydration (1 = "testing after 1 day
-     * only", so the day after or the day after that). The evaluator scores this
-     * documentation item and the participant reports print it, so both call this rather
-     * than each working the window out on its own.
-     */
-    /**
      * Whether a rehydration date was reported and is possible: a panel can only be
      * rehydrated after it was received. A missing receipt date loses its own
      * documentation point, so it does not also cost this one.
@@ -1174,6 +1168,13 @@ final class Application_Model_Dts
         return new DateTimeImmutable($rehydrationDate) >= new DateTimeImmutable($receiptDate);
     }
 
+    /**
+     * Whether a dried panel was tested within the rehydration window: sampleRehydrateDays
+     * to sampleRehydrateDays + 1 calendar days after rehydration (1 = "testing after 1 day
+     * only", so the day after or the day after that). The evaluator scores this
+     * documentation item and the participant reports print it, so both call this rather
+     * than each working the window out on its own.
+     */
     public static function isTestedWithinRehydrationWindow(?string $rehydrationDate, ?string $testDate, $rehydrateDays): bool
     {
         if (!Common::isDateValid($rehydrationDate) || !Common::isDateValid($testDate)) {
@@ -1981,7 +1982,6 @@ final class Application_Model_Dts
                 }
 
                 if (isset($attributes['sample_rehydration_date']) && !empty($attributes['sample_rehydration_date'])) {
-                    $sampleRehydrationDate = new Zend_Date($attributes['sample_rehydration_date']);
                     $rehydrationDate = Pt_Commons_General::excelDateFormat($attributes['sample_rehydration_date']);
                 }
 
@@ -2818,7 +2818,7 @@ final class Application_Model_Dts
             } elseif ($result2 == 'NR') {
                 if ($repeatResult1 == 'NR' && $reportedResultCode == 'N') {
                     $out['algoResult'] = 'Pass';
-                } elseif ($repeatResult1 == 'R' && $reportedResultCode == 'I') {
+                } elseif ($repeatResult1 == 'R' && $this->isIndeterminateFinalCode($reportedResultCode)) {
                     $out['algoResult'] = 'Pass';
                 } else {
                     $this->warningForAlgo($out, $correctiveActions, $result['sample_label'] ?? '');
