@@ -2012,12 +2012,24 @@ class Application_Service_Shipments
         $db->beginTransaction();
         try {
             $shipmentParticipantDb = new Application_Model_DbTable_ShipmentParticipantMap();
-            // if it is other kit name means
-            if ((isset($params['kitNameOther']) && !empty($params['kitNameOther']))) {
-                $params['kitName'] = $params['kitNameOther'];
-                /* Add other testkit name as testkit table */
+            // "Other" kit: store the kit ID (reports resolve kit_name by ID), reusing an existing
+            // kit of the same name, and map it to this scheme so it shows up in the dropdown.
+            $otherKitName = trim((string) ($params['kitNameOther'] ?? ''));
+            if (($params['kitName'] ?? '') === 'other' && $otherKitName !== '') {
                 $testKitDb = new Application_Model_DbTable_Testkitnames();
-                $testKitDb->addTestkitInParticipant('', $params['kitNameOther'], $params['schemeName']);
+                $schemeType = (string) ($params['customTestName'] ?? '');
+                $existingKit = $testKitDb->fetchRow($testKitDb->select()->where('TestKit_Name = ?', $otherKitName));
+                if ($existingKit) {
+                    $params['kitName'] = $existingKit['TestKitName_ID'];
+                    if ($schemeType !== '') {
+                        $db->query(
+                            'INSERT IGNORE INTO scheme_testkit_map (scheme_type, testkit_id) VALUES (?, ?)',
+                            [$schemeType, $params['kitName']]
+                        );
+                    }
+                } else {
+                    $params['kitName'] = $testKitDb->addTestkitInParticipant('', $otherKitName, $schemeType);
+                }
             }
 
             $attributes = [

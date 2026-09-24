@@ -350,7 +350,7 @@ if ($inConfirmStep) {
 									for="kitName"><?= $this->translate->_("Kit Name"); ?> <span
 										class="mandatory">*</span></label></td>
 							<td style="width:30%;">
-								<select name="kitName" id="kitName" class="form-control"
+								<select name="kitName" id="kitName" class="form-control vlResultValues isRequired"
 									title="<?= $this->translate->_("Please select a test kit"); ?>"
 									onchange="testKitChanged(this.value);">
 									<option value=""> ---<?= $this->translate->_("Select Kit"); ?>---</option>
@@ -861,6 +861,7 @@ if ($inConfirmStep) {
 		if ($(this).val() == 'yes') {
 			$('.vlResultSection').hide();
 			$('.vlResultValues').val('');
+			testKitChanged($('#kitName').val() || '');
 			$('.vlResultBlock').html('');
 			$('.ptNotPerformedSection').show();
 			$('.vlResultValues').removeClass('isRequired');
