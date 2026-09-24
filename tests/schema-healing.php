@@ -88,7 +88,7 @@ try {
     check(str_contains($e->getMessage(), 'existing key'), 'Explain conflicting keys.');
 }
 try {
-    new SchemaRepairPlan('CREATE TABLE example (id int); ALTER TABLE example DROP id;');
+    $unsupported = new SchemaRepairPlan('CREATE TABLE example (id int); ALTER TABLE example DROP id;');
     throw new LogicException('Unsupported dump DDL must stop repair.');
 } catch (RuntimeException $e) {
     check(str_contains($e->getMessage(), 'Unsupported'), 'Explain unsupported definitions.');
@@ -98,13 +98,7 @@ check(count(migration_split_clauses("ADD a ENUM('yes','no'), ADD b DECIMAL(10,4)
     'Do not split quoted strings or type parameters.');
 
 // Load the real routing helpers without bootstrapping or touching the configured database.
-$source = file_get_contents(__DIR__ . '/../bin/migrate.php');
-$start = strpos($source, 'function current_db(');
-$end = strpos($source, '/* ---------------------- End helpers');
-eval(substr($source, $start, $end - $start));
-define('MIG_NOT_HANDLED', 0);
-define('MIG_EXECUTED', 1);
-define('MIG_SKIPPED', 2);
+require_once __DIR__ . '/../bin/lib/migration-helpers.php';
 $DRY_RUN = false;
 
 class HealingTestAdapter extends Zend_Db_Adapter_Pdo_Mysql
