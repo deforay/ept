@@ -51,6 +51,7 @@ if (!$scripts) {
 
 $phpBin = defined('PHP_BINARY') ? PHP_BINARY : 'php';
 $hadFailures = false;
+$pendingCount = 0;
 
 foreach ($scripts as $scriptPath) {
     $scriptName = basename($scriptPath);
@@ -60,10 +61,10 @@ foreach ($scripts as $scriptPath) {
     );
 
     if ($alreadyRan) {
-        $io->text("Skipping run-once script (already ran): {$scriptName}");
         continue;
     }
 
+    $pendingCount++;
     $io->text("Running run-once script: {$scriptName}");
     $cmd = escapeshellarg($phpBin) . ' ' . escapeshellarg($scriptPath);
     system($cmd, $exitCode);
@@ -95,6 +96,10 @@ foreach ($scripts as $scriptPath) {
         $io->warning("Failed to record run-once script execution: {$scriptName}");
         $hadFailures = true;
     }
+}
+
+if ($pendingCount === 0) {
+    $io->text('No pending run-once scripts.');
 }
 
 if ($hadFailures) {
