@@ -958,11 +958,13 @@ upgrade_instance() {
     # Make runner script executable (only for first instance)
     if [ "$instance_num" -eq 1 ]; then
         chmod +x "${ept_path}/runner" 2>/dev/null
-        sudo rm /usr/local/bin/runner 2>/dev/null || true
-        sudo ln -s "${ept_path}/runner" /usr/local/bin/runner 2>/dev/null
+        for cmd in ept runner; do
+            sudo rm -f "/usr/local/bin/${cmd}" 2>/dev/null || true
+            sudo ln -s "${ept_path}/runner" "/usr/local/bin/${cmd}" 2>/dev/null
+        done
 
-        if [ -L "/usr/local/bin/runner" ]; then
-            print success "ept runner command installed globally"
+        if [ -L "/usr/local/bin/ept" ]; then
+            print success "ept command installed globally (run 'ept' for the menu)"
         fi
     fi
 

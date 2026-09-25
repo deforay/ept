@@ -6,6 +6,29 @@ All commands below assume you are in the ePT installation directory (e.g., `/var
 
 ---
 
+## The `ept` Command
+
+Setup and upgrade install `ept` (also available as `runner`) in `/usr/local/bin`. Run it with no arguments for a numbered menu, or use one of these commands:
+
+```bash
+ept check             # database, schema version, latest backup, disk, writable dirs, cron
+ept update            # fetch the latest ept-update and run it for this installation
+ept backup            # back up the database and config now
+ept backup list       # list backup archives
+ept backup verify     # check backup archives are intact
+ept restore           # restore the database from a backup (takes a safety backup first)
+ept pitr [restore]    # inspect or apply binlogs for point-in-time recovery
+ept migrate           # apply pending database migrations
+ept run-once          # run pending one-time scripts
+ept scripts           # the interactive launcher below
+```
+
+`ept` asks for administrator rights only for `update`. Commands that start the app run as the account that owns the installation (usually `www-data`), so running them with `sudo` doesn't leave files the web server can't replace.
+
+Any other word is passed to composer, for example `ept tasks` or `ept phpstan`. `ept update` updates ePT, not composer packages. To run composer's own update, use `ept composer update`.
+
+---
+
 ## Interactive Launcher
 
 If you don't remember which script does what, run the launcher — it lists every runnable script in `bin/` with a short description, shows the usage block for any you pick, and then runs it with the arguments you type.

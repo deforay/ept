@@ -1,16 +1,405 @@
 #!/usr/bin/env bash
 # File: runner
+#
+# The front door for running an ePT server. Installed as both `ept` and
+# `runner` in /usr/local/bin.
+#
+#   ept                   a numbered menu
+#   ept check             is this server healthy? (database, schema, backups, disk, cron)
+#   ept update            update ePT to the current release (runs ept-update)
+#   ept backup            back up the database and config now
+#   ept backup list       list backup archives
+#   ept backup verify     check backup archives are intact
+#   ept restore           restore the database from a backup archive
+#   ept pitr [restore]    inspect / apply binlogs for point-in-time recovery
+#   ept migrate           apply pending database migrations
+#   ept run-once          run pending one-time scripts
+#   ept scripts           browse and run the scripts in bin/
+#
+# Anything else goes to composer, as before (`ept tasks`, `ept phpstan`, ...).
+# `update` now means "update ePT", so composer's own update is reached as
+# `ept composer update`.
+#
+# Administrator rights are asked for only by commands that need them. Commands
+# that boot the app run as the account that owns it (www-data on a server), so
+# a root run never leaves behind log or temp files the web server can't replace.
 
-# Use current dir if it has composer.json; else use script dir
+set -uo pipefail
+
+RAW_BASE="https://raw.githubusercontent.com/deforay/ept/master/bin"
+
+# --- where the application lives ----------------------------------------------
+# A checkout in the current directory wins; otherwise follow the symlink back to
+# the installation, and failing that look under /var/www.
+
+looks_like_install() {
+    [ -f "$1/composer.json" ] && [ -d "$1/public" ] && [ -f "$1/application/configs/application.ini" ]
+}
+
+find_install() {
+    local candidate
+    for candidate in /var/www/ept /var/www/*/; do
+        candidate="${candidate%/}"
+        if looks_like_install "$candidate"; then
+            printf '%s' "$candidate"
+            return 0
+        fi
+    done
+    return 1
+}
+
 if [ -f "composer.json" ]; then
-    WORK_DIR="$(pwd)"
+    APP_DIR="$(pwd)"
 else
-    WORK_DIR="$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")" && pwd)"
-    cd "$WORK_DIR"
+    APP_DIR="$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")" && pwd)"
+    if [ ! -f "${APP_DIR}/composer.json" ]; then
+        APP_DIR="$(find_install)" || {
+            printf '\033[1;91m❌\033[0m No ePT installation found under /var/www.\n' >&2
+            printf '   Run this from inside the installation directory.\n' >&2
+            exit 1
+        }
+    fi
 fi
+
+# --- output -------------------------------------------------------------------
+
+say()     { printf "%s\n" "$*"; }
+info()    { printf "\033[1;96mℹ️ \033[0m %s\n" "$*"; }
+success() { printf "\033[1;92m✅\033[0m %s\n" "$*"; }
+warning() { printf "\033[1;93m⚠️ \033[0m %s\n" "$*"; }
+error()   { printf "\033[1;91m❌\033[0m %s\n" "$*" >&2; }
+
+header() {
+    printf "\n\033[1;96m%s\033[0m\n" "$*"
+    printf "\033[1;96m%s\033[0m\n\n" "$(printf '%*s' "${#1}" '' | tr ' ' '=')"
+}
+
+confirm() {
+    local answer
+    read -r -p "$1 (y/N): " answer || return 1
+    [[ "$answer" =~ ^[Yy]$ ]]
+}
+
+# --- privileges ---------------------------------------------------------------
+
+as_root() {
+    if [ "$(id -u)" -eq 0 ]; then
+        "$@"
+        return $?
+    fi
+    if ! command -v sudo >/dev/null 2>&1; then
+        error "This needs administrator rights, and sudo is not installed."
+        return 1
+    fi
+    info "This needs administrator rights. You may be asked for your password." >&2
+    sudo "$@"
+}
+
+# The account the app runs as, judged by who owns its writable directories.
+# On a developer's checkout that is the developer, so nothing switches user.
+web_user() {
+    local target owner
+    for target in "${APP_DIR}/logs" "${APP_DIR}/public" "$APP_DIR"; do
+        [ -e "$target" ] || continue
+        owner="$(stat -c %U "$target" 2>/dev/null || stat -f %Su "$target" 2>/dev/null)"
+        case "$owner" in
+            www-data|apache|apache2|_www|http|nginx)
+                printf '%s' "$owner"
+                return 0
+                ;;
+        esac
+        return 1
+    done
+    return 1
+}
+
+# Run a command inside APP_DIR as the app's account when there is one and we
+# are not it already; otherwise run it as whoever typed it.
+as_app() {
+    local runner
+    if ! runner="$(web_user)" || [ "$(id -un)" = "$runner" ]; then
+        ( cd "$APP_DIR" && "$@" )
+        return $?
+    fi
+    if [ "$(id -u)" -ne 0 ]; then
+        if ! command -v sudo >/dev/null 2>&1; then
+            ( cd "$APP_DIR" && "$@" )
+            return $?
+        fi
+        info "Running as ${runner}. You may be asked for your password." >&2
+    fi
+    ( cd "$APP_DIR" && sudo -u "$runner" "$@" )
+}
+
+# Composer run as root (the passthrough) can leave root-owned files in the
+# runtime directories; hand them back to the app's account afterwards.
+reclaim_runtime_ownership() {
+    [ "$(id -u)" -eq 0 ] || return 0
+    local runner d
+    runner="$(web_user)" || return 0
+    for d in logs downloads public/temporary; do
+        [ -d "${APP_DIR}/${d}" ] && chown -R "${runner}:${runner}" "${APP_DIR}/${d}" 2>/dev/null
+    done
+    return 0
+}
+
+run_composer() {
+    local rc=0
+    ( cd "$APP_DIR" && COMPOSER_ALLOW_SUPERUSER=1 composer "$@" ) || rc=$?
+    reclaim_runtime_ownership
+    return "$rc"
+}
+
+db_tools() {
+    as_app php vendor/bin/db-tools "$@"
+}
+
+# --- fetching the updater -------------------------------------------------------
+# Download as the current user into a temp file, then install it as root.
+
+install_script() { # install_script <script-name.sh> <destination-name>
+    local url="${RAW_BASE}/$1" dest="/usr/local/bin/$2" tmp status
+    tmp="$(mktemp)" || return 1
+
+    if command -v wget >/dev/null 2>&1; then
+        wget -q -O "$tmp" "$url" || { rm -f "$tmp"; return 1; }
+    elif command -v curl >/dev/null 2>&1; then
+        curl -fsSL -o "$tmp" "$url" || { rm -f "$tmp"; return 1; }
+    else
+        rm -f "$tmp"
+        error "Neither wget nor curl is installed."
+        return 1
+    fi
+
+    # A captive portal or truncated download is still a file; don't install it.
+    if [ "$(head -c 2 "$tmp")" != '#!' ]; then
+        rm -f "$tmp"
+        error "The download is not a script. The server may be behind a portal that intercepted it."
+        return 1
+    fi
+
+    as_root install -m 0755 "$tmp" "$dest"
+    status=$?
+    rm -f "$tmp"
+    return $status
+}
+
+# --- commands -----------------------------------------------------------------
+
+cmd_update() {
+    header "Updating ePT"
+
+    # Refresh the updater first: nothing else replaces it once installed.
+    local updater="/usr/local/bin/ept-update"
+    if ! install_script upgrade.sh ept-update; then
+        if [ -x "$updater" ]; then
+            warning "Could not fetch the latest updater; using the one already installed."
+        elif [ -f "${APP_DIR}/bin/upgrade.sh" ]; then
+            warning "Could not fetch the latest updater; using the copy in this installation."
+            updater="${APP_DIR}/bin/upgrade.sh"
+        else
+            error "Could not download the updater. Check this server's internet connection."
+            return 1
+        fi
+    fi
+
+    as_root bash "$updater" -p "$APP_DIR" "$@"
+}
+
+cmd_backup() {
+    case "${1:-now}" in
+        now)         header "Backing up"; as_app composer backup ;;
+        list|show)   shift; db_tools show "$@" ;;
+        verify)      shift; db_tools verify "$@" ;;
+        *)
+            error "Unknown backup command: $1"
+            say "Try: ept backup, ept backup list, ept backup verify"
+            return 2
+            ;;
+    esac
+}
+
+cmd_restore() {
+    header "Restoring the database"
+    say "A safety backup of the current database is taken before anything is replaced."
+    say ""
+    db_tools restore "$@"
+}
+
+cmd_pitr() {
+    case "${1:-info}" in
+        info)    shift; db_tools pitr-info "$@" ;;
+        restore) shift; db_tools pitr-restore "$@" ;;
+        *)       db_tools pitr-info "$@" ;;
+    esac
+}
+
+cmd_check() {
+    header "ePT health check"
+    local failures=0 warnings=0 out
+
+    say "Installation: ${APP_DIR}"
+    say "PHP:          $(php -r 'echo PHP_VERSION;' 2>/dev/null || echo 'not found')"
+    say ""
+
+    if out="$(db_tools db:test 2>&1)"; then
+        success "Database is reachable"
+    else
+        error "Database is not reachable"
+        printf '%s\n' "$out" | tail -n 5 | sed 's/^/     /'
+        failures=$((failures + 1))
+    fi
+
+    if out="$(as_app php bin/check-version-sync.php 2>&1)"; then
+        success "Schema is up to date — ${out}"
+    else
+        warning "Schema and code disagree — ${out}"
+        say "     Fix with: ept migrate"
+        warnings=$((warnings + 1))
+    fi
+
+    local latest age_days
+    latest="$(ls -t "${APP_DIR}/backups"/*.sql* 2>/dev/null | head -n 1)"
+    if [ -z "$latest" ]; then
+        warning "No database backups found in ${APP_DIR}/backups"
+        say "     Take one with: ept backup"
+        warnings=$((warnings + 1))
+    else
+        age_days=$(( ( $(date +%s) - $(stat -c %Y "$latest" 2>/dev/null || stat -f %m "$latest") ) / 86400 ))
+        if [ "$age_days" -gt 2 ]; then
+            warning "Latest backup is ${age_days} days old: $(basename "$latest")"
+            warnings=$((warnings + 1))
+        else
+            success "Latest backup: $(basename "$latest") (${age_days} day(s) old)"
+        fi
+    fi
+
+    local used
+    used="$(df -P "$APP_DIR" 2>/dev/null | awk 'NR==2 { gsub("%", "", $5); print $5 }')"
+    if [ -n "$used" ] && [ "$used" -ge 90 ]; then
+        error "Disk is ${used}% full"
+        failures=$((failures + 1))
+    elif [ -n "$used" ]; then
+        success "Disk is ${used}% full"
+    fi
+
+    local d unwritable=()
+    for d in logs downloads public/temporary public/uploads; do
+        [ -d "${APP_DIR}/${d}" ] || continue
+        as_app test -w "$d" 2>/dev/null || unwritable+=("$d")
+    done
+    if [ ${#unwritable[@]} -gt 0 ]; then
+        error "Not writable by the app: ${unwritable[*]}"
+        failures=$((failures + 1))
+    else
+        success "Runtime directories are writable"
+    fi
+
+    # The scheduler lives in root's crontab, which only root can read.
+    if [ "$(id -u)" -eq 0 ]; then
+        if crontab -l 2>/dev/null | grep -q "cd ${APP_DIR} && ./cron.sh"; then
+            success "Scheduled jobs are set up in cron"
+        else
+            warning "No cron entry runs ${APP_DIR}/cron.sh — scheduled jobs will not run"
+            warnings=$((warnings + 1))
+        fi
+    fi
+
+    say ""
+    if [ "$failures" -gt 0 ]; then
+        error "${failures} problem(s), ${warnings} warning(s)"
+        return 1
+    fi
+    [ "$warnings" -gt 0 ] && warning "${warnings} warning(s)" || success "All good"
+    return 0
+}
+
+# --- help and menu ------------------------------------------------------------
+
+cmd_help() {
+    header "ePT"
+    say "  ept                   Show the menu"
+    say ""
+    say "  ept check             Check this server is healthy"
+    say "  ept update            Update ePT to the current release"
+    say "  ept migrate           Apply pending database migrations"
+    say "  ept run-once          Run pending one-time scripts"
+    say ""
+    say "  ept backup            Back up the database and config now"
+    say "  ept backup list       List backup archives"
+    say "  ept backup verify     Check backup archives are intact"
+    say "  ept restore           Restore the database from a backup"
+    say "  ept pitr [restore]    Point-in-time recovery from binlogs"
+    say ""
+    say "  ept scripts           Browse and run the scripts in bin/"
+    say ""
+    say "  Anything else is passed to composer, e.g. ept tasks."
+    say "  Use 'ept composer update' for composer's own update command."
+    say ""
+}
+
+menu() {
+    header "ePT"
+    say "  1) Check this server is healthy"
+    say "  2) Back up now"
+    say "  3) List backups"
+    say "  4) Restore from a backup"
+    say "  5) Update ePT"
+    say "  6) Apply database migrations"
+    say "  7) Browse other maintenance scripts"
+    say "  8) Quit"
+    say ""
+
+    local choice
+    read -r -p "Type a number and press Enter: " choice || return 0
+    say ""
+
+    case "$(printf '%s' "$choice" | tr -d '[:space:]')" in
+        1) cmd_check ;;
+        2) cmd_backup now ;;
+        3) cmd_backup list ;;
+        4) cmd_restore ;;
+        5) confirm "Update ePT now?" && cmd_update ;;
+        6) as_app composer migrate ;;
+        7) as_app php bin/console.php ;;
+        8|q|Q|"") return 0 ;;
+        *)
+            warning "That was not one of the numbers. Nothing has been done."
+            return 2
+            ;;
+    esac
+}
+
+# --- dispatch -----------------------------------------------------------------
 
 if [ $# -eq 0 ]; then
-    exec composer tasks
-else
-    exec composer "$@"
+    # No terminal to answer a menu (cron, pipes, ssh -c): print help instead.
+    if [ -t 0 ]; then
+        menu
+    else
+        cmd_help
+    fi
+    exit $?
 fi
+
+command=$1
+shift
+
+case "$command" in
+    update)                     cmd_update "$@" ;;
+    backup)                     cmd_backup "$@" ;;
+    restore)                    cmd_restore "$@" ;;
+    pitr)                       cmd_pitr "$@" ;;
+    check|health|doctor)        cmd_check "$@" ;;
+    scripts|console)            as_app php bin/console.php "$@" ;;
+    run-once)                   as_app php bin/run-once.php "$@" ;;
+    menu)                       menu ;;
+    help|--help|-h)             cmd_help ;;
+    composer)                   run_composer "$@" ;;
+
+    # These boot the app and write logs/temp files, so run them as its account.
+    migrate|tasks|heal-schema|collation|db-backup|config-backup|post-update|generate-salt)
+                                as_app composer "$command" "$@" ;;
+
+    *)                          run_composer "$command" "$@" ;;
+esac

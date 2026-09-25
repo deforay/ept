@@ -914,11 +914,13 @@ setup_cron "${ept_path}"
 # Make runner script executable and install globally
 if [ -f "${ept_path}/runner" ]; then
     chmod +x "${ept_path}/runner"
-    rm -f /usr/local/bin/runner 2>/dev/null || true
-    ln -s "${ept_path}/runner" /usr/local/bin/runner 2>/dev/null
+    for cmd in ept runner; do
+        rm -f "/usr/local/bin/${cmd}" 2>/dev/null || true
+        ln -s "${ept_path}/runner" "/usr/local/bin/${cmd}" 2>/dev/null
+    done
 
-    if [ -L "/usr/local/bin/runner" ]; then
-        print success "ept runner command installed globally"
+    if [ -L "/usr/local/bin/ept" ]; then
+        print success "ept command installed globally (run 'ept' for the menu)"
     fi
 fi
 
