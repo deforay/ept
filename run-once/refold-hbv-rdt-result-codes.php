@@ -13,7 +13,8 @@
 // (HBV-P/N/I active FINAL, long codes inactive) and are verified, not changed.
 //
 // Runs after fix-hbv-rdt-forced-test-results.php, which needs the long codes to find the
-// forced Test Results. bin/run-once.php runs scripts in natural sort order.
+// forced Test Results. bin/run-once.php runs scripts in natural sort order, and this script
+// refuses to fold until that one is recorded as done (see the gate below).
 //
 // Scoring is NOT recalculated here. Affected shipments are listed at the end and must be
 // re-evaluated (and their reports regenerated) for corrected scores to reach participants.
@@ -34,6 +35,8 @@ const CODE_MAP = [
 
 const RESULT_COLUMNS = ['result_1', 'result_2', 'result_3', 'reported_result'];
 
+const FORCED_REPAIR_SCRIPT = 'fix-hbv-rdt-forced-test-results.php';
+
 function say(string $msg): void
 {
     echo "[hbv-refold] {$msg}\n";
@@ -47,6 +50,21 @@ try {
     if (strtolower(trim($instance)) !== TARGET_INSTANCE) {
         say('Instance is ' . ($instance !== '' ? "'{$instance}'" : '(unset)') . ", not '" . TARGET_INSTANCE . "'. Nothing to do.");
         exit(0);
+    }
+
+    // --- Gate: the forced-result repair must have succeeded first -------------------
+    // bin/run-once.php carries on after a failed script, and folding erases the long codes
+    // that repair relies on, so a retry could no longer find its rows. If it is present but
+    // not recorded, stop and let the next upgrade retry both in order. If it was deleted
+    // (correction declined), fold anyway.
+    if (is_file(__DIR__ . '/' . FORCED_REPAIR_SCRIPT)) {
+        $forcedDone = (bool) $db->fetchOne(
+            'SELECT 1 FROM run_once_scripts WHERE script_name = ? LIMIT 1',
+            [FORCED_REPAIR_SCRIPT]
+        );
+        if (!$forcedDone) {
+            throw new RuntimeException(FORCED_REPAIR_SCRIPT . ' has not completed. Not folding, so it can still find its rows on retry.');
+        }
     }
 
     // --- Safety: the canonical options must be in place ----------------------------
