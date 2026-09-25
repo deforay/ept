@@ -31,7 +31,8 @@ These procedures target ePT 7.6.21 and require access appropriate to the affecte
 3. Check the configured scheduler and its execution output.
 4. Review job tracking or email outcomes in the application where available.
 
-Use `php bin/console.php list` to locate supported administrative tools.
+Run `ept check` on the server first. It checks the database, schema version, latest backup, disk space, writable folders and cron in one pass.
+Use `ept scripts` to locate supported administrative tools.
 Use [CLI tools](cli-tools.md) for their arguments.
 Do not edit queue or evaluation rows directly to conceal a failed job.
 

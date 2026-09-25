@@ -55,6 +55,7 @@ nav:
       - Backup & recovery: backup-and-migration.md
       - Infrastructure: infrastructure.md
       - CLI tools: cli-tools.md
+      - Repair missing tables: heal-schema.md
       - Troubleshooting: troubleshooting.md
       - User management: user-management.md
       - Storage & retention: data-lifecycle.md
@@ -104,6 +105,7 @@ plugins:
             Backup & recovery: Sauvegarde et reprise (anglais)
             Infrastructure: Infrastructure (anglais)
             CLI tools: Outils CLI (anglais)
+            Repair missing tables: Réparer les tables manquantes (anglais)
             Troubleshooting: Dépannage
             User management: Gestion des utilisateurs
             Storage & retention: Stockage et conservation

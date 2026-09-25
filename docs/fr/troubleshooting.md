@@ -31,7 +31,8 @@ Ces procédures concernent ePT 7.6.21 et nécessitent les droits d'accès corres
 3. Contrôlez le planificateur configuré et sa sortie d'exécution.
 4. Consultez le suivi des tâches ou les résultats des courriels dans l'application, lorsqu'ils sont disponibles.
 
-Utilisez `php bin/console.php list` pour repérer les outils d'administration pris en charge.
+Lancez d'abord `ept check` sur le serveur. Cette commande vérifie en une fois la base de données, la version du schéma, la dernière sauvegarde, l'espace disque, les dossiers accessibles en écriture et le cron.
+Utilisez `ept scripts` pour repérer les outils d'administration pris en charge.
 Consultez les [outils CLI, en anglais](../cli-tools.md), pour leurs paramètres.
 Ne modifiez pas directement les lignes de file ou d'évaluation pour masquer une tâche défaillante.
 

@@ -43,6 +43,7 @@ sudo ./ept-setup.sh --db https://example.com/ept-base.sql.gz
 - Following successful setup completion, access ePT through `http://ept/admin` (or `https://yourdomain/admin` if SSL was configured) in your browser
 - If no SQL file was provided, the setup will prompt you to create an initial admin account
 - Change the default admin password immediately after first login
+- Run `ept check` on the server to confirm the database, backups, disk and cron are in order. Type `ept` alone for a menu of maintenance tasks
 - Configure your organization settings, add participants, create PT surveys, and set up shipments
 
 ### Updating
@@ -50,7 +51,7 @@ sudo ./ept-setup.sh --db https://example.com/ept-base.sql.gz
 To update an existing ePT installation:
 
 ```bash
-sudo ept-update
+sudo ept update
 ```
 
 See [Updating an ePT installation](updating.md) for the other ways to run it, how to verify the result, and how to roll back.

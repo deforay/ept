@@ -2,7 +2,9 @@
 
 This guide updates a running ePT installation to the latest code on `master`.
 
-One command does the whole job: `bin/upgrade.sh`, installed on most boxes as `ept-update`. It refreshes the application code, dependencies, database schema, and cron entry for every instance you point it at.
+On a server where setup or a previous update has run, `ept` does the whole job. `sudo ept update` downloads the current updater (`bin/upgrade.sh`, installed as `ept-update`) and runs it against this installation. The updater refreshes the application code, dependencies, database schema, and cron entry.
+
+To check `ept` is installed, type `ept` and press Enter. A numbered menu headed **ePT** means it is. Type `8` and press Enter to leave the menu. If you see `command not found`, follow [If `ept` is not installed yet](#if-ept-is-not-installed-yet).
 
 ## Before you start
 
@@ -13,66 +15,78 @@ One command does the whole job: `bin/upgrade.sh`, installed on most boxes as `ep
 | MySQL root password | Read from `application.ini` when the configured user is `root`. Otherwise the script prompts for it |
 | Downtime | The site stays up during the file copy. Apache reloads at the end |
 
-> **Take a backup first on anything you cannot lose:** the update offers its own pre-update backups, and they default to "no". See [Backups](#backups-before-an-update).
+## Update the installation
 
-## Update every instance on the box
+1. Take a fresh backup:
 
-Run the script straight from GitHub:
+    ```bash
+    ept backup
+    ```
+
+    Wait for the backup to finish without errors. Don't update a server whose backup fails.
+
+2. Start the update:
+
+    ```bash
+    sudo ept update
+    ```
+
+    Enter your password if asked. The updater asks whether to upgrade Ubuntu packages and whether to take its own pre-update backups. See [Backups before an update](#backups-before-an-update).
+
+3. When the "Upgrade Summary" prints, check the server:
+
+    ```bash
+    ept check
+    ```
+
+    Every line should show ✅. See [Verify the update](#verify-the-update).
+
+Flags after `update` go to the updater. To skip the Ubuntu package upgrade and both backup prompts:
+
+```bash
+sudo ept update -s -b
+```
+
+Use `-s -b` only when the MySQL root password is reachable from `application.ini`. Otherwise the updater still stops to ask for it.
+
+## If `ept` is not installed yet
+
+Servers that haven't been updated since `ept` was introduced still have the old `runner` command. On those servers, `runner update` runs Composer's update, which is not an ePT update. Run the updater straight from GitHub once:
 
 ```bash
 curl -fsSL "https://raw.githubusercontent.com/deforay/ept/master/bin/upgrade.sh?v=$(date +%s)" \
   | sudo bash -s -- -A
 ```
 
-Use this form when `ept-update` is missing, out of date, or you want to be certain you are running the current script. Two details make it work:
+The update installs `ept`, so this is needed only once per server. Two details make the command work:
 
 - `?v=$(date +%s)` defeats the raw.githubusercontent.com cache, which otherwise serves a stale copy of the script for several minutes after a push.
 - The script reads every prompt from `/dev/tty`, not from standard input. Piping it into `bash` does not break the interactive questions.
 
 Everything after `-s --` is passed to the script as flags. `-A` finds and updates every ePT installation under `/var/www`.
 
-## Update from the installed command
+## Update several installations on one server
 
-If `ept-update` is present, call it directly:
+`ept update` updates the installation `ept` belongs to. To update more than one installation at once, call the updater directly:
 
 ```bash
-# Prompt for the installation path, then update it
-sudo ept-update
-
-# Update one specific installation
-sudo ept-update -p /var/www/ept
-
 # Update every installation under /var/www
 sudo ept-update -A
 
 # Detect installations, then choose which ones to update
 sudo ept-update -A -i
-```
 
-To install or refresh the command:
-
-```bash
-sudo wget -O /usr/local/bin/ept-update https://raw.githubusercontent.com/deforay/ept/master/bin/upgrade.sh
-sudo chmod +x /usr/local/bin/ept-update
+# Update every installation without prompts
+sudo ept-update -A -s -b
 ```
 
 The full flag list is in the [CLI Tools Reference](cli-tools.md#update-existing-install).
 
 > **How instances are detected:** `-A` treats a directory under `/var/www` as an ePT installation when it contains both `application/configs/application.ini` and `public/`. Nothing else is touched.
 
-## Run an update unattended
-
-```bash
-sudo ept-update -A -s -b
-```
-
-`-s` skips the Ubuntu package upgrade. `-b` skips both backup prompts. Use this only when the MySQL root password is reachable from `application.ini`, otherwise the script still stops to ask for it.
-
-Skip the Ubuntu package upgrade with `-s` when the box is patched on its own schedule, or when you want the shortest possible run.
-
 ## Update a Docker installation
 
-`ept-update` does not apply to Docker. Rebuild the containers instead:
+`ept update` does not apply to Docker. Rebuild the containers instead:
 
 ```bash
 git pull && docker compose up --build -d
@@ -91,19 +105,17 @@ These dumps are a valid source for a restore or a machine move. See [Backup, Rec
 
 ## Verify the update
 
-The run ends with an "Upgrade Summary" block listing the instances that succeeded and the instances that failed. Check three things after it prints.
-
-Confirm the code and database agree:
+The run ends with an "Upgrade Summary" block listing the instances that succeeded and the instances that failed. Then check the server:
 
 ```bash
-cd /var/www/ept
-sudo -u www-data php bin/check-version-sync.php
+ept check
 ```
 
-A healthy install prints:
+A healthy server prints a ✅ line for each check, including:
 
 ```text
-Version in sync: 7.6.12
+✅ Database is reachable
+✅ Schema is up to date — Version in sync: 7.6.22
 ```
 
 Confirm the deployed commit:
@@ -118,11 +130,10 @@ Then load the site in a browser and sign in.
 
 ## Fix a version mismatch
 
-`check-version-sync.php` reports a mismatch when migrations did not fully apply. Re-run them against the affected instance:
+`ept check` prints `Schema and code disagree` when migrations did not fully apply. Re-run them:
 
 ```bash
-cd /var/www/ept
-sudo -u www-data composer migrate
+ept migrate
 ```
 
 Read the output for the failing statement. Migrations are idempotent, so re-running a partially applied version is safe. For migration options, see [Run migrations](cli-tools.md#run-migrations).

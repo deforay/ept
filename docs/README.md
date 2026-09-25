@@ -14,6 +14,7 @@ Deployment facts, approved policies and executed validation evidence remain inst
 | Update a running installation | [Update](updating.md) |
 | Back up, restore, or move an instance | [Backup & recovery](backup-and-migration.md) |
 | Size hardware before buying it | [Infrastructure](infrastructure.md) |
+| Check a server's health, or run maintenance with the `ept` command | [CLI tools](cli-tools.md#the-ept-command) |
 | Reset a password, run a migration, refresh translations | [CLI tools](cli-tools.md) |
 | Learn the admin workflow end to end | [Training](training/README.md) |
 | Understand how the code fits together | [Architecture](ARCHITECTURE.md) |

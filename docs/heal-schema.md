@@ -5,7 +5,7 @@ Use `sql/init.sql` to restore missing schema before running migrations.
 1. Back up the database:
 
    ```sh
-   composer db-backup
+   ept db-backup
    ```
 
 2. Preview the repairs:
@@ -22,11 +22,11 @@ Use `sql/init.sql` to restore missing schema before running migrations.
 3. Apply the repairs and resume migrations:
 
    ```sh
-   composer migrate
+   ept migrate
    ```
 
-   Both `composer migrate` and `composer post-update` run the repair before migrations.
-   To apply only the repairs, run `composer heal-schema` or `php bin/heal-schema.php --apply`.
+   Both `ept migrate` and `ept post-update` run the repair before migrations.
+   To apply only the repairs, run `ept heal-schema` or `php bin/heal-schema.php --apply`.
 
    New tables include the dump's indexes, foreign keys, and final `AUTO_INCREMENT` definitions.
    New tables are empty. The repair does not import seed rows or recover lost data.

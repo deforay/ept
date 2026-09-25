@@ -6,10 +6,10 @@ ePT is designed to run as a **single central instance**, so the tooling here fav
 
 | Tool | Role |
 | --- | --- |
-| `vendor/bin/db-tools` (`amitdugar/db-tools`) | Create, restore, verify, and point-in-time-recover database backups |
-| `composer` scripts | Convenience wrappers around db-tools + config snapshot |
+| `ept` | Everyday commands: back up, list, verify, restore, point-in-time recovery |
+| `vendor/bin/db-tools` (`amitdugar/db-tools`) | The engine behind `ept`: create, restore, verify, and point-in-time-recover database backups |
 | `bin/setup.sh` | Fresh install on a new machine, with an optional database import |
-| `bin/upgrade.sh` (`ept-update`) | Takes pre-upgrade safety backups automatically |
+| `bin/upgrade.sh` (`ept update`) | Offers pre-upgrade database and folder backups |
 
 > **What is and isn't automated:** db-tools handles the **database** end-to-end. Application **code** is always fetched fresh from GitHub by `setup.sh`. **Uploaded files** (`public/uploads/`) and **config secrets** are never carried automatically — you copy those by hand during a move (see [Migrating to a new machine](#migrating-to-a-new-machine)).
 
@@ -19,21 +19,24 @@ ePT is designed to run as a **single central instance**, so the tooling here fav
 
 ### Quick backup
 
-From the ePT directory:
+From any directory on the server:
 
 ```bash
-# Database only
-composer db-backup
-
 # Database + a snapshot of application.ini (config)
-composer backup
+ept backup
+
+# List archives, and check they are intact
+ept backup list
+ept backup verify
 ```
 
-Both wrap `vendor/bin/db-tools`. Archives are written to `<ept>/backups` with a 15-archive retention by default.
+`ept backup` runs as the account that owns the installation, so the archives stay readable by the app. Archives are written to `<ept>/backups` with a 15-archive retention by default.
 
 > **Backups are encrypted by default:** `db-tools backup` encrypts archives (`.gpg`) using an encryption password unless you pass `--no-encrypt`. **You need the same password to restore.** For a backup you intend to restore on a *different* machine, either record the encryption password or create an unencrypted archive with `--no-encrypt` (see [Migrating](#migrating-to-a-new-machine)).
 
 ### Direct db-tools usage
+
+Use db-tools directly for options `ept backup` doesn't expose. Run these from the ePT directory:
 
 ```bash
 # Encrypted, compressed archive into the default backups dir
@@ -67,7 +70,7 @@ The configuration snapshot covers only `application.ini`. File backups, other
 configuration files and off-host copying require separate arrangements.
 See [storage and retention](data-lifecycle.md) for scope and default retention.
 
-> **Pre-upgrade backups are optional:** `ept-update` offers database and folder backups.
+> **Pre-upgrade backups are optional:** `ept update` offers database and folder backups.
 > Both prompts default to no. Database dumps go to `/var/ept-backup/db/` and folder
 > copies to `/var/ept-backup/www/`. Confirm a successful backup before relying on it for recovery.
 
@@ -79,14 +82,16 @@ To restore onto the **same machine** (or to rebuild after data loss):
 
 ```bash
 # Interactive: pick an archive from the backups dir
-php vendor/bin/db-tools restore
+ept restore
 
 # Restore a specific archive
-php vendor/bin/db-tools restore /path/to/ept-YYYYMMDD-HHMMSS.sql.zst.gpg
+ept restore /path/to/ept-YYYYMMDD-HHMMSS.sql.zst.gpg
 
 # Encrypted archive — supply the password
-php vendor/bin/db-tools restore <archive> --encryption-password='...'
+ept restore <archive> --encryption-password='...'
 ```
+
+`ept restore` passes every option to `db-tools restore`.
 
 db-tools takes a **safety backup before restoring** by default (skip with `--skip-safety-backup`), and prompts for confirmation unless you pass `--force`.
 
@@ -95,9 +100,9 @@ db-tools takes a **safety backup before restoring** by default (skip with `--ski
 If binary logging is enabled, db-tools can roll forward past the last full backup:
 
 ```bash
-php vendor/bin/db-tools pitr-info                 # inspect available binlogs
-php vendor/bin/db-tools pitr-restore              # apply binlogs to a target time
-php vendor/bin/db-tools purge-binlogs             # housekeeping
+ept pitr                                          # inspect available binlogs
+ept pitr restore                                  # apply binlogs to a target time
+php vendor/bin/db-tools purge-binlogs             # housekeeping (from the ePT directory)
 ```
 
 ---
@@ -154,7 +159,8 @@ cp /path/to/old/config.ini       /var/www/ept/application/configs/config.ini
 cp /path/to/old/.env             /var/www/ept/application/configs/.env
 
 # Fix ownership/permissions if needed, then run any pending migrations
-cd /var/www/ept && composer post-update
+ept post-update
+ept check
 ```
 
 > **Check DB credentials after copying application.ini:** `application.ini` carries the **old** machine's database host/user/password. If the new machine's MySQL differs, update `resources.db.params.*` before loading the app.
@@ -178,15 +184,16 @@ Finally, log in at `http://<host>/admin`, confirm participants/shipments/reports
 ## Command reference
 
 ```bash
-composer backup                    # db-tools backup + config snapshot
-composer db-backup                 # database backup only
-php vendor/bin/db-tools backup     # backup (encrypted, compressed) → <ept>/backups
-php vendor/bin/db-tools restore    # restore (interactive; safety backup first)
-php vendor/bin/db-tools show       # list archives
-php vendor/bin/db-tools verify     # integrity check
-php vendor/bin/db-tools export     # plain SQL export
+ept backup                         # database + config snapshot → <ept>/backups
+ept db-backup                      # database backup only
+ept backup list                    # list archives
+ept backup verify                  # integrity check
+ept restore                        # restore (interactive; safety backup first)
+ept pitr [restore]                 # point-in-time recovery from binlogs
+ept check                          # includes the age of the latest backup
+php vendor/bin/db-tools export     # plain SQL export (from the ePT directory)
 php vendor/bin/db-tools import     # plain SQL import
 php vendor/bin/db-tools config:show   # active profile
 sudo ./ept-setup.sh --db <archive>    # fresh install + DB import (new machine)
-sudo ept-update                       # update in place (auto pre-upgrade backup)
+sudo ept update                       # update in place (optional pre-upgrade backup)
 ```

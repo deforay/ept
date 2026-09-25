@@ -283,7 +283,9 @@ Updates an existing ePT installation to the latest version.
 
 > **Step-by-step procedure:** this section lists the options. For the full update procedure, including the run-from-GitHub one-liner, verification, and rollback, see [Updating an ePT installation](updating.md).
 
-The `ept-update` command is installed automatically during setup. If it's not available, install it manually:
+On a single installation, `sudo ept update` is the simplest form: it refreshes `ept-update` and runs it with `-p` set to this installation. Any flags after `update` are passed through, for example `sudo ept update -s -b`.
+
+The `ept-update` command is installed automatically during setup, and `ept update` refreshes it on every run. If it's not available, install it manually:
 
 ```bash
 sudo wget -O /usr/local/bin/ept-update https://raw.githubusercontent.com/deforay/ept/master/bin/upgrade.sh

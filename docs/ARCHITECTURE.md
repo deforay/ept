@@ -41,7 +41,7 @@ Backup arrows describe required operational arrangements, not verified running s
 - Web: `public/index.php`
 - CLI bootstrap (used by scripts/jobs): `cli-bootstrap.php`
 - Scheduled tasks: `scheduled-jobs/ScheduledTasks.php` (Crunz)
-- CLI utilities: `bin/*.php`, `db-tools.php`, `runner/`
+- CLI utilities: `bin/*.php`, `db-tools.php`, `runner` (installed as `ept`)
 
 ## Request lifecycle (web)
 

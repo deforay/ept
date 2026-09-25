@@ -36,6 +36,7 @@ Les guides antérieurs ci-dessous restent en anglais. Les liens correspondants d
 | Mettre à jour une installation | [Mise à jour](../updating.md) |
 | Sauvegarder, restaurer ou déplacer une installation | [Sauvegarde et migration](../backup-and-migration.md) |
 | Dimensionner l'infrastructure | [Infrastructure](../infrastructure.md) |
+| Vérifier l'état d'un serveur ou lancer la maintenance avec la commande `ept` | [Outils CLI](../cli-tools.md#the-ept-command) |
 | Utiliser les commandes d'administration | [Outils CLI](../cli-tools.md) |
 | Examiner la conception technique | [Architecture](../ARCHITECTURE.md), [programmes](../SchemeArchitecture.md), [module administrateur](../AdminModuleGuide.md) |
 | Suivre le parcours de formation | [Formation](../training/README.md) |
