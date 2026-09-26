@@ -1,27 +1,46 @@
 <div class="well">
-    <form name="editPartnerForm" id="editPartnerForm" method="post" action="<?php echo $this->url(array("module" => "admin", "controller" => "partners", "action" => "edit"), 'default', true) ?>" class="form-horizontal bs-example" role="form" enctype="multipart/form-data" onsubmit="validateNow();return false;">
+    <form name="editPartnerForm" id="editPartnerForm" method="post"
+        action="<?php echo $this->url(array("module" => "admin", "controller" => "partners", "action" => "edit"), 'default', true) ?>"
+        class="form-horizontal bs-example" role="form" enctype="multipart/form-data"
+        onsubmit="validateNow();return false;">
         <fieldset>
             <legend><?= $this->translate->_("Edit Partner"); ?></legend>
             <div class="form-group">
-                <label class="col-lg-3 control-label" for="partnerName"><?= $this->translate->_("Partner Name"); ?> <span class="mandatory">*</span></label>
+                <label class="col-lg-3 control-label" for="partnerName"><?= $this->translate->_("Partner Name"); ?>
+                    <span class="mandatory">*</span></label>
 
-                <div class="col-lg-5"><textarea id="partnerName" name="partnerName" class="isRequired form-control" title="<?= $this->htmlTranslate("Please enter the partner name here") ?>" placeholder="<?= $this->htmlTranslate("Please enter the partner name here") ?>" onblur="checkDuplicate('partners', 'partner_name','partnerName','<?php echo "partner_id##" . $this->partner['partner_id']; ?>', '<?= $this->jsTranslate('The name that you entered already exist. Please try something else.') ?>');"><?php echo $this->partner['partner_name']; ?></textarea></div>
-            </div>
-            <div class="form-group">
-                <label class="col-lg-3 control-label" for="link"><?= $this->translate->_("Link"); ?> <br>eg: https://ept.vlsmartconnect.com/</label>
-
-                <div class="col-lg-5"><input type="text" id="link" name="link" class="form-control" title="<?= $this->htmlTranslate("Please enter the link here") ?>" placeholder="<?= $this->htmlTranslate("Please enter the link here") ?>" value="<?php echo $this->partner['link']; ?>" />
+                <div class="col-lg-5"><textarea id="partnerName" name="partnerName" class="isRequired form-control"
+                        title="<?= $this->htmlTranslate("Please enter the partner name here") ?>"
+                        placeholder="<?= $this->htmlTranslate("Please enter the partner name here") ?>"
+                        onblur="checkDuplicate('partners', 'partner_name','partnerName','<?php echo "partner_id##" . $this->partner['partner_id']; ?>', '<?= $this->jsTranslate('The name that you entered already exist. Please try something else.') ?>');"><?php echo $this->partner['partner_name']; ?></textarea>
                 </div>
             </div>
             <div class="form-group">
-                <label class="col-lg-3 control-label" for="sortOrder"><?= $this->translate->_("Sort Order"); ?> <span class="mandatory">*</span></label>
+                <label class="col-lg-3 control-label" for="link"><?= $this->translate->_("Link"); ?> <br>eg:
+                    https://ept.example.com/</label>
 
-                <div class="col-lg-5"><input type="text" id="sortOrder" name="sortOrder" class="isRequired isNumeric form-control" title="<?= $this->htmlTranslate("Please enter the sort order") ?>" placeholder="<?= $this->htmlTranslate("Please enter the sort order here") ?>" value="<?php echo $this->partner['sort_order']; ?>" /></div>
+                <div class="col-lg-5"><input type="text" id="link" name="link" class="form-control"
+                        title="<?= $this->htmlTranslate("Please enter the link here") ?>"
+                        placeholder="<?= $this->htmlTranslate("Please enter the link here") ?>"
+                        value="<?php echo $this->partner['link']; ?>" />
+                </div>
             </div>
             <div class="form-group">
-                <label class="col-lg-3 control-label"><?= $this->translate->_("Status"); ?> <span class="mandatory">*</span></label>
+                <label class="col-lg-3 control-label" for="sortOrder"><?= $this->translate->_("Sort Order"); ?> <span
+                        class="mandatory">*</span></label>
+
+                <div class="col-lg-5"><input type="text" id="sortOrder" name="sortOrder"
+                        class="isRequired isNumeric form-control"
+                        title="<?= $this->htmlTranslate("Please enter the sort order") ?>"
+                        placeholder="<?= $this->htmlTranslate("Please enter the sort order here") ?>"
+                        value="<?php echo $this->partner['sort_order']; ?>" /></div>
+            </div>
+            <div class="form-group">
+                <label class="col-lg-3 control-label"><?= $this->translate->_("Status"); ?> <span
+                        class="mandatory">*</span></label>
                 <div class="col-lg-5">
-                    <select type="text" id="status" name="status" class="isRequired form-control" title="<?= $this->htmlTranslate("Please select partner status") ?>">
+                    <select type="text" id="status" name="status" class="isRequired form-control"
+                        title="<?= $this->htmlTranslate("Please select partner status") ?>">
                         <option value="active" <?php echo ($this->partner['status'] == "active") ? "selected='selected'" : ""; ?>>
                             <?= $this->translate->_("Active"); ?>
                         </option>
@@ -34,9 +53,12 @@
             <br>
 
             <div id="respond" style="margin: 0px auto 0px auto; text-align: center;" align="center">
-                <input type="hidden" id="partnerId" name="partnerId" value="<?php echo $this->partner['partner_id']; ?>" />
-                <input name="submitbtn" class="btn btn-primary" type="submit" tabindex="7" value="<?= $this->translate->_("Update"); ?>" />
-                <input class="btn btn-danger" type="button" onclick="window.location.href='/admin/partners';" tabindex="8" value="<?= $this->translate->_("Cancel"); ?>" />
+                <input type="hidden" id="partnerId" name="partnerId"
+                    value="<?php echo $this->partner['partner_id']; ?>" />
+                <input name="submitbtn" class="btn btn-primary" type="submit" tabindex="7"
+                    value="<?= $this->translate->_("Update"); ?>" />
+                <input class="btn btn-danger" type="button" onclick="window.location.href='/admin/partners';"
+                    tabindex="8" value="<?= $this->translate->_("Cancel"); ?>" />
             </div>
         </fieldset>
     </form>
@@ -48,13 +70,13 @@
         objValue = $(obj).val();
         if ($.trim(objValue) != '') {
             $.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'common', 'action' => 'check-duplicate')); ?>", {
-                    tableName: tableName,
-                    fieldName: fieldName,
-                    value: objValue,
-                    fnct: fnct,
-                    format: "html"
-                },
-                function(data) {
+                tableName: tableName,
+                fieldName: fieldName,
+                value: objValue,
+                fnct: fnct,
+                format: "html"
+            },
+                function (data) {
                     if (data > 0) {
                         alert(msg, "err");
                         duplicated = true;
