@@ -73,18 +73,22 @@ try {
     $mxCache = [];
 
     $totals = [
-        'participant'  => ['scanned' => 0, 'valid' => 0, 'invalid_syntax' => 0, 'invalid_domain' => 0, 'unknown' => 0],
-        'data_manager' => ['scanned' => 0, 'valid' => 0, 'invalid_syntax' => 0, 'invalid_domain' => 0, 'unknown' => 0],
+        'participant'  => ['scanned' => 0, 'valid' => 0, 'invalid_syntax' => 0, 'invalid_domain' => 0, 'login_only' => 0, 'unknown' => 0],
+        'data_manager' => ['scanned' => 0, 'valid' => 0, 'invalid_syntax' => 0, 'invalid_domain' => 0, 'login_only' => 0, 'unknown' => 0],
     ];
 
     /**
-     * Classify a single address. Returns one of unknown|valid|invalid_syntax|invalid_domain.
-     * Empty/null → 'unknown' (no email to check; not an error).
+     * Classify a single address. Returns one of unknown|valid|invalid_syntax|invalid_domain|login_only.
+     * Empty/null → 'unknown' (no email to check; not an error). login_only = an address bulk
+     * import made up so the account can sign in; there is no mailbox behind it.
      */
     $classify = function (?string $raw) use (&$mxCache): string {
         $addr = trim((string) $raw);
         if ($addr === '') {
             return 'unknown';
+        }
+        if (Pt_Commons_MiscUtility::isGeneratedEmail($addr)) {
+            return 'login_only';
         }
         $normalized = Application_Service_Common::validateEmail($addr);
         if ($normalized === null) {
@@ -197,12 +201,13 @@ try {
                 continue;
             }
             $io->writeln(sprintf(
-                '  %-13s scanned=%d  valid=%d  invalid_domain=%d  invalid_syntax=%d  unknown=%d',
+                '  %-13s scanned=%d  valid=%d  invalid_domain=%d  invalid_syntax=%d  login_only=%d  unknown=%d',
                 $t,
                 $counts['scanned'],
                 $counts['valid'],
                 $counts['invalid_domain'],
                 $counts['invalid_syntax'],
+                $counts['login_only'],
                 $counts['unknown']
             ));
         }
@@ -235,6 +240,7 @@ function classifyOverall(string $primary, string $secondary): string
         $primary === 'valid'   || $secondary === 'valid'                     => 'valid',
         $primary === 'unknown' && $secondary === 'unknown'                   => 'unknown',
         $primary === 'invalid_domain' || $secondary === 'invalid_domain'     => 'invalid_domain',
+        $primary === 'login_only' || $secondary === 'login_only'             => 'login_only',
         default                                                              => 'invalid_syntax',
     };
 }

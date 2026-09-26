@@ -246,11 +246,30 @@ final class Pt_Commons_MiscUtility
         return (string) base64_decode($value);
     }
 
+    /** Host part of the login-only addresses generateFakeEmailId() makes up. */
+    public static function generatedEmailHost(): string
+    {
+        static $host = null;
+        if ($host === null) {
+            $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
+            $eptDomain = !empty($conf->domain) ? rtrim($conf->domain, '/') : 'ept';
+            $host = strtolower((string) (parse_url($eptDomain, PHP_URL_HOST) ?: 'ept'));
+        }
+        return $host;
+    }
+
+    /** True for an address generateFakeEmailId() made up: it only logs in, no mailbox behind it. */
+    public static function isGeneratedEmail($email): bool
+    {
+        $email = strtolower(trim((string) $email));
+        $at = strrpos($email, '@');
+        // 'ept' is the host used before application.ini had a domain configured.
+        return $at !== false && in_array(substr($email, $at + 1), [self::generatedEmailHost(), 'ept'], true);
+    }
+
     public static function generateFakeEmailId($uniqueId, $participantName)
     {
-        $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
-        $eptDomain = !empty($conf->domain) ? rtrim($conf->domain, '/') : 'ept';
-        $host = parse_url($eptDomain, PHP_URL_HOST) ?: 'ept';
+        $host = self::generatedEmailHost();
 
         $sanitizedUniqueId = self::sanitizeInput(self::cleanString($uniqueId));
         $sanitizedParticipantName = self::sanitizeInput(self::cleanString($participantName));

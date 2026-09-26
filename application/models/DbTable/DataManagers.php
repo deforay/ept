@@ -1493,6 +1493,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                 }
 
                 $originalEmail ??= MiscUtility::sanitizeAndValidateEmail($sheetData[$i]['B']);
+                $emailIsGenerated = MiscUtility::isGeneratedEmail($originalEmail);
 
                 // Use cached country lookup instead of individual query
                 $countryId = $this->getCountryIdFromCache($sheetData[$i]['J'], $countryCache);
@@ -1553,7 +1554,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
 
                 $action = null;
                 if (empty($dmresult)) {
-                    $db->insert('data_manager', $dataManagerData);
+                    $db->insert('data_manager', $dataManagerData + ['primary_email_status' => $emailIsGenerated ? 'login_only' : 'unknown']);
                     $lastInsertedId = $db->lastInsertId();
                     if ($lastInsertedId > 0) {
                         $importedCount++;
@@ -1566,7 +1567,8 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                     if (isset($summaryRow['changes']['status'], $previouslyActiveEmails[strtolower(trim((string) $originalEmail))])) {
                         unset($summaryRow['changes']['status']);
                     }
-                    $db->update('data_manager', $dataManagerData, ['primary_email = ?' => $originalEmail]);
+                    // Same address, so a checked/bounce status stays; only a generated one is re-stamped.
+                    $db->update('data_manager', $dataManagerData + ($emailIsGenerated ? ['primary_email_status' => 'login_only'] : []), ['primary_email = ?' => $originalEmail]);
                     $lastInsertedId = $dmresult['dm_id'];
                     $importedCount++;
                     $action = 'updated';

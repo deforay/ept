@@ -1068,11 +1068,12 @@ class Application_Service_Participants
         $skipEmail = !empty($data['skipEmail']) && $data['skipEmail'] === 'on';
 
         // Status values that mean "do not deliver" — populated by
-        // bin/check-participant-emails.php (syntax+MX) and bin/process-bounces.php
-        // (hard bounces). 'valid' and 'unknown' both stay eligible: unknown
-        // rows haven't been classified yet, and we'd rather attempt-and-bounce
-        // than silently skip everything on a fresh install.
-        $badStatuses = "'hard_bounce','invalid_domain','invalid_syntax'";
+        // bin/check-participant-emails.php (syntax+MX), bin/process-bounces.php
+        // (hard bounces) and bulk import (login_only: a made-up login address).
+        // 'valid' and 'unknown' both stay eligible: unknown rows haven't been
+        // classified yet, and we'd rather attempt-and-bounce than silently skip
+        // everything on a fresh install.
+        $badStatuses = "'hard_bounce','invalid_domain','invalid_syntax','login_only'";
 
         // Pick the primary if its stamped status is OK; otherwise fall back to
         // the secondary; otherwise NULL (HAVING drops the row).
@@ -1372,7 +1373,7 @@ class Application_Service_Participants
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $shipmentId = (int) $shipmentId;
-        $badStatuses = ['hard_bounce', 'invalid_domain', 'invalid_syntax'];
+        $badStatuses = ['hard_bounce', 'invalid_domain', 'invalid_syntax', 'login_only'];
         $isPtccScope = ($scope === 'ptcc');
 
         $participantSql = $db->select()->distinct()->from(['p' => 'participant'], ['p.email'])

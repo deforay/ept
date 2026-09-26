@@ -1240,7 +1240,6 @@ class Application_Service_Common
     public static function isUndeliverableEmail(string $email): bool
     {
         static $domainCache = [];
-        static $instanceHost = null;
         static $dnsWorks = null;
 
         $at = strrpos($email, '@');
@@ -1251,17 +1250,7 @@ class Application_Service_Common
         if (isset($domainCache[$domain])) {
             return $domainCache[$domain];
         }
-
-        if ($instanceHost === null) {
-            try {
-                $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
-                $instanceHost = strtolower((string) parse_url(rtrim((string) $conf->get('domain'), '/'), PHP_URL_HOST));
-            } catch (Throwable) {
-                $instanceHost = '';
-            }
-        }
-
-        if ($instanceHost !== '' && $domain === $instanceHost) {
+        if (Pt_Commons_MiscUtility::isGeneratedEmail($email)) {
             return $domainCache[$domain] = true;
         }
         $dnsWorks ??= checkdnsrr('gmail.com', 'MX');

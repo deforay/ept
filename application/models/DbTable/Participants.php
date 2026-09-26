@@ -1863,6 +1863,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                     $originalEmail = strtolower(trim((string) $originalEmail));
                     $emailWasSynthesized = true;
                 }
+                $emailStatus = $emailWasSynthesized ? 'login_only' : 'unknown';
 
                 // Validation checks
                 if (empty($originalEmail)) {
@@ -1892,7 +1893,11 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                         ? []
                         : ['email' => ['from' => $previousEmail, 'to' => $originalEmail]];
 
-                    $db->update('participant', ['email' => $originalEmail], $db->quoteInto('participant_id = ?', $participantId));
+                    $emailUpdate = ['email' => $originalEmail];
+                    if ($emailChanges || $emailWasSynthesized) {
+                        $emailUpdate['email_status'] = $emailStatus;
+                    }
+                    $db->update('participant', $emailUpdate, $db->quoteInto('participant_id = ?', $participantId));
 
                     $mappedDms = $db->fetchAll(
                         $db->select()
@@ -1954,7 +1959,13 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                             ]);
                         } else {
                             $dmIdForResponse = $currentDmId;
-                            $db->update('data_manager', ['primary_email' => $originalEmail], $db->quoteInto('dm_id = ?', $dmIdForResponse));
+                            // Status goes first: MySQL applies SET left to right, so the IF still sees the old address.
+                            $db->update('data_manager', [
+                                'primary_email_status' => $emailWasSynthesized
+                                    ? 'login_only'
+                                    : new Zend_Db_Expr($db->quoteInto('IF(LOWER(TRIM(primary_email)) = ?, primary_email_status, \'unknown\')', $originalEmail)),
+                                'primary_email' => $originalEmail,
+                            ], $db->quoteInto('dm_id = ?', $dmIdForResponse));
                         }
                     } else {
                         if ($existingDmForEmail) {
@@ -1973,6 +1984,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                                 'mobile' => MiscUtility::cleanString($row['Q'] ?? ''),
                                 'secondary_email' => MiscUtility::cleanString($row['T'] ?? ''),
                                 'primary_email' => $originalEmail,
+                                'primary_email_status' => $emailStatus,
                                 'force_password_reset' => 1,
                                 'created_by' => $authNameSpace->admin_id,
                                 'created_on' => new Zend_Db_Expr('now()'),
@@ -2120,6 +2132,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                     'lat' => MiscUtility::cleanString($row['P'] ?? ''),
                     'mobile' => MiscUtility::cleanString($row['Q'] ?? ''),
                     'email' => $originalEmail,
+                    'email_status' => $emailStatus,
                     'additional_email' => MiscUtility::cleanString($row['T'] ?? ''),
                     'force_profile_updation' => 0,
                     'created_by' => $authNameSpace->admin_id,
@@ -2144,6 +2157,10 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                     'created_on' => new Zend_Db_Expr('now()'),
                     'status' => 'active',
                 ];
+                // An existing DM matched on this same address keeps its checked/bounce status.
+                if ($emailWasSynthesized || empty($dataManagerExists)) {
+                    $dataManagerData['primary_email_status'] = $emailStatus;
+                }
 
                 // Handle password. "Reset password" only decides for logins that already
                 // exist; a login created here always gets one, or nobody could sign in.
@@ -2185,6 +2202,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                     $dataManagerData2['data_manager_type'] = 'participant';
                     $dataManagerData2['primary_email'] = $prefix . $row['B'];
                     $dataManagerData2['participant_ulid'] = $ulid;
+                    $dataManagerData2['primary_email_status'] = 'login_only';
                     unset($dataManagerData2['password']);
                     if ($resetPassword) {
                         $dataManagerData2['password'] = $this->hashImportPassword($password);
