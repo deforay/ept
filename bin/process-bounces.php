@@ -64,8 +64,17 @@ try {
     }
 
     $port     = (int) ($bounceConf->port ?? 993);
-    $user     = (string) ($bounceConf->username ?? '');
+    $user     = trim((string) ($bounceConf->username ?? ''));
     $pass     = (string) ($bounceConf->password ?? '');
+    // Bounces of app mail come back to the SMTP account, so by default read that
+    // mailbox with the same login (a Gmail app password works for IMAP too).
+    if ($user === '') {
+        $smtp = Application_Service_Common::getMailSettings();
+        $user = $smtp['username'];
+        if ($pass === '') {
+            $pass = $smtp['password'];
+        }
+    }
     $ssl      = strtolower(trim((string) ($bounceConf->ssl ?? 'ssl')));
     $folder   = (string) ($bounceConf->folder ?? 'INBOX');
     $markSeen = strtolower(trim((string) ($bounceConf->markSeen ?? 'no'))) === 'yes';
