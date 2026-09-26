@@ -5,7 +5,31 @@ if (php_sapi_name() !== 'cli') {
     exit(0);
 }
 
+// --if-migrated (used by composer post-install-cmd): run only when the app is configured
+// and the database is already at the code's version. composer install also runs on a
+// fresh box with no database, and before migrations during an upgrade; scripts written
+// against the new schema must not run then. composer post-update runs them after migrating.
+$ifMigrated = in_array('--if-migrated', $argv ?? [], true);
+if ($ifMigrated && !is_file(__DIR__ . '/../application/configs/application.ini')) {
+    echo 'run-once: application.ini not found; skipping (run composer post-update after setup).' . PHP_EOL;
+    exit(0);
+}
+
 require_once __DIR__ . '/../cli-bootstrap.php';
+
+if ($ifMigrated) {
+    try {
+        $dbVersion = (string) Zend_Db_Table_Abstract::getDefaultAdapter()->fetchOne(
+            "SELECT `value` FROM `system_config` WHERE `config` = 'app_version'"
+        );
+    } catch (Throwable) {
+        $dbVersion = '';
+    }
+    if ($dbVersion === '' || version_compare(APP_VERSION, $dbVersion) !== 0) {
+        echo 'run-once: database is not at ' . APP_VERSION . ' yet; skipping (composer post-update migrates, then runs them).' . PHP_EOL;
+        exit(0);
+    }
+}
 
 use Symfony\Component\Console\Input\ArgvInput;
 use Symfony\Component\Console\Output\ConsoleOutput;

@@ -80,7 +80,8 @@
         ],
         "run-once": "@php bin/run-once.php",
         "post-install-cmd": [
-            "@install-hooks"
+            "@install-hooks",
+            "@php bin/run-once.php --if-migrated"
         ],
         "post-update-cmd": [
             "@install-hooks"
