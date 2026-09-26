@@ -24,23 +24,6 @@ All mail settings live in `application/configs/application.ini` on the server. T
 
 Before saving, the page logs in to the mail server with the new details. If the server refuses the login, a red message shows the server's reply and nothing is saved. The previous settings keep working.
 
-To set the values on the server instead, edit these lines in the `[production]` section of `application.ini`:
-
-```ini
-email.host = "smtp.gmail.com"
-email.config.port = "587"
-email.config.ssl = "tls"
-email.config.auth = "login"
-email.config.username = "support@example.org"
-email.config.password = "abcdabcdabcdabcd"
-email.fromName = "ePT Support"
-email.fromEmail = ""
-email.cc = ""
-email.bcc = ""
-```
-
-A value cannot contain a double quote, a backslash, `${` or a line break.
-
 If the page reports that `application.ini` is not writable, run `sudo ept update`. The updater makes the file writable by the web server.
 
 ## Turn on bounce processing
@@ -63,8 +46,6 @@ Bounces of mail that ePT sends come back to the SMTP account. Bounces of mail yo
 
     Click **Update**. The page opens the mailbox and the folder before saving. If that fails, a red message shows why and nothing is saved.
 
-    The same values can be set in the `[production]` section of `application.ini` as `email.bounce.host`, `email.bounce.port`, `email.bounce.ssl`, `email.bounce.folder`, `email.bounce.username` and `email.bounce.password`.
-
 4. Preview what the processor would mark:
 
     ```bash
@@ -80,7 +61,7 @@ Bounces of mail that ePT sends come back to the SMTP account. Bounces of mail yo
     sudo -u www-data php bin/process-bounces.php --reset-state
     ```
 
-After this, the scheduler runs the processor every 30 minutes. It reads only new messages. It does not delete or move them unless you set `email.bounce.markSeen = "yes"` or `email.bounce.moveTo`.
+After this, the scheduler runs the processor every 30 minutes. It reads only new messages. It does not delete or move them.
 
 A full mailbox, a spam block or a rate limit does not mark the address. Only a report that the mailbox does not exist does.
 
