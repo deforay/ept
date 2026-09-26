@@ -3,8 +3,6 @@ $modules = [];
 foreach ($this->schemes as $scheme) {
     $modules[] = $scheme['scheme_id'];
 }
-$conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
-$eptDomain = parse_url($conf->domain, PHP_URL_HOST);
 ?>
 <style>
     :focus-visible {
@@ -51,12 +49,6 @@ $eptDomain = parse_url($conf->domain, PHP_URL_HOST);
                             <select id="shipments" name="shipments[]" data-live-search="true" class="form-control" multiple="multiple" data-selected-text-format="count>3" placeholder="<?= $this->htmlTranslate('Select shipments'); ?>" title="<?= $this->htmlTranslate('Please select one or more shipments') ?>"></select>
                         </div>
                     </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-6 form-check" style=" left: 17%; ">
-                    <input type="checkbox" name="skipEmail" id="skipEmail" class="form-check-input" value="on" checked>
-                    <label for="skipEmail" class="form-check-label"><?= $this->translate->_("Skip emails with") . " @" . $eptDomain; ?></label>
                 </div>
             </div>
             <hr>
@@ -318,7 +310,6 @@ $eptDomain = parse_url($conf->domain, PHP_URL_HOST);
         $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'email-participants', 'action' => 'preview-recipients')); ?>", {
                 shipments: $('#shipments').val(),
                 sendMail: $('#sendMail').val(),
-                skipEmail: $('#skipEmail').is(':checked') ? 'on' : '',
                 subject: $('#subject').val(),
                 message: $('#message').val(),
                 format: "html"

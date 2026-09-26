@@ -582,6 +582,130 @@ class Application_Service_Participants
         }
     }
 
+    /**
+     * Workbook of every participant and data manager with an email that mail cannot reach:
+     * missing, made up at import (login_only), bounced, or failing the syntax/MX check.
+     * Returns the file name under TEMP_UPLOAD_PATH, or '' on failure.
+     */
+    public function exportUnusableEmails(): string
+    {
+        ini_set('memory_limit', -1);
+        set_time_limit(0);
+        $badStatuses = ['hard_bounce', 'invalid_domain', 'invalid_syntax', 'login_only'];
+        $labels = [
+            'missing'        => 'No email',
+            'login_only'     => 'Login-only address (made up at import)',
+            'hard_bounce'    => 'Bounced',
+            'invalid_domain' => 'Domain does not accept mail',
+            'invalid_syntax' => 'Not a valid email address',
+        ];
+        $problem = function (?string $email, ?string $status) use ($badStatuses): ?string {
+            if (trim((string) $email) === '') {
+                return 'missing';
+            }
+            return in_array($status, $badStatuses, true) ? $status : null;
+        };
+        $label = fn (?string $key): string => $key === null ? '' : $labels[$key];
+
+        try {
+            $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+            $quotedBad = $db->quote($badStatuses);
+
+            $participants = $db->fetchAll(
+                $db->select()
+                    ->from(['p' => 'participant'], [
+                        'p.unique_identifier',
+                        'participantName' => new Zend_Db_Expr(Application_Model_DbTable_Participants::participantNameExpr('p')),
+                        'p.status', 'p.email', 'p.email_status', 'p.additional_email', 'p.additional_email_status',
+                        'p.last_bounce_at', 'p.last_bounce_reason',
+                    ])
+                    ->joinLeft(['c' => 'countries'], 'c.id = p.country', ['iso_name'])
+                    ->where("p.email IS NULL OR TRIM(p.email) = '' OR p.email_status IN ($quotedBad)"
+                        . " OR (TRIM(COALESCE(p.additional_email, '')) <> '' AND p.additional_email_status IN ($quotedBad))")
+                    ->order(['p.status ASC', 'c.iso_name ASC', 'p.unique_identifier ASC'])
+            );
+
+            $dataManagers = $db->fetchAll(
+                $db->select()
+                    ->from(['dm' => 'data_manager'], [
+                        'name' => new Zend_Db_Expr("TRIM(CONCAT(COALESCE(dm.first_name, ''), ' ', COALESCE(dm.last_name, '')))"),
+                        'dm.institute', 'dm.data_manager_type', 'dm.status',
+                        'dm.primary_email', 'dm.primary_email_status', 'dm.secondary_email', 'dm.secondary_email_status',
+                        'dm.last_bounce_at', 'dm.last_bounce_reason',
+                        'labIds' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT p.unique_identifier ORDER BY p.unique_identifier SEPARATOR ', ')"),
+                    ])
+                    ->joinLeft(['c' => 'countries'], 'c.id = dm.country_id', ['iso_name'])
+                    ->joinLeft(['pmm' => 'participant_manager_map'], 'pmm.dm_id = dm.dm_id', [])
+                    ->joinLeft(['p' => 'participant'], 'p.participant_id = pmm.participant_id', [])
+                    ->where("dm.primary_email IS NULL OR TRIM(dm.primary_email) = '' OR dm.primary_email_status IN ($quotedBad)"
+                        . " OR (TRIM(COALESCE(dm.secondary_email, '')) <> '' AND dm.secondary_email_status IN ($quotedBad))")
+                    ->group('dm.dm_id')
+                    ->order(['dm.status ASC', 'dm.data_manager_type ASC', 'c.iso_name ASC', 'dm.primary_email ASC'])
+            );
+
+            $excel = new Spreadsheet();
+            $writeSheet = function ($sheet, string $title, array $headings, array $rows): void {
+                $sheet->setTitle($title);
+                $sheet->fromArray($headings, null, 'A1');
+                if (!empty($rows)) {
+                    $sheet->fromArray($rows, null, 'A2', true);
+                }
+                $lastCol = Coordinate::stringFromColumnIndex(count($headings));
+                $sheet->getStyle("A1:{$lastCol}1")->getFont()->setBold(true);
+                $sheet->setAutoFilter("A1:{$lastCol}" . max(1, count($rows) + 1));
+                $sheet->freezePane('A2');
+                $this->common->setAllColumnWidthsInSheet($sheet, 24);
+            };
+
+            $participantRows = [];
+            foreach ($participants as $r) {
+                $primary = $problem($r['email'], $r['email_status']);
+                $additional = trim((string) $r['additional_email']) === '' ? null : $problem($r['additional_email'], $r['additional_email_status']);
+                $reachable = $primary === null || (trim((string) $r['additional_email']) !== '' && $additional === null);
+                $participantRows[] = [
+                    $r['unique_identifier'], $r['participantName'], $r['iso_name'], ucfirst((string) $r['status']),
+                    $r['email'], $label($primary), $r['additional_email'], $label($additional),
+                    $reachable ? 'Yes' : 'No', $r['last_bounce_at'], $r['last_bounce_reason'],
+                ];
+            }
+            $writeSheet($excel->getActiveSheet(), 'Participants', [
+                'Lab ID', 'Participant Name', 'Country', 'Status', 'Email', 'Email Problem',
+                'Additional Email', 'Additional Email Problem', 'Reachable By Email', 'Last Bounce', 'Bounce Reason',
+            ], $participantRows);
+
+            $types = ['manager' => 'Data Manager', 'ptcc' => 'PTCC', 'participant' => 'Participant Login'];
+            $dmRows = [];
+            foreach ($dataManagers as $r) {
+                $primary = $problem($r['primary_email'], $r['primary_email_status']);
+                $secondary = trim((string) $r['secondary_email']) === '' ? null : $problem($r['secondary_email'], $r['secondary_email_status']);
+                $reachable = $primary === null || (trim((string) $r['secondary_email']) !== '' && $secondary === null);
+                $dmRows[] = [
+                    $r['name'], $r['institute'], $types[$r['data_manager_type']] ?? $r['data_manager_type'], $r['iso_name'],
+                    ucfirst((string) $r['status']), $r['labIds'], $r['primary_email'], $label($primary),
+                    $r['secondary_email'], $label($secondary), $reachable ? 'Yes' : 'No', $r['last_bounce_at'], $r['last_bounce_reason'],
+                ];
+            }
+            $writeSheet($excel->createSheet(), 'Data Managers', [
+                'Name', 'Institute', 'Type', 'Country', 'Status', 'Lab IDs', 'Login Email', 'Login Email Problem',
+                'Secondary Email', 'Secondary Email Problem', 'Reachable By Email', 'Last Bounce', 'Bounce Reason',
+            ], $dmRows);
+            $excel->setActiveSheetIndex(0);
+
+            $filename = 'UNUSABLE-EMAILS-' . date('d-M-Y-H-i-s') . '.xlsx';
+            IOFactory::createWriter($excel, 'Xlsx')->save(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $filename);
+            $auditDb = new Application_Model_DbTable_AuditLog();
+            $auditDb->addNewAuditLog(sprintf('Downloaded unusable email list (%d participants, %d data managers)', count($participantRows), count($dmRows)), 'participants');
+            return $filename;
+        } catch (Throwable $exc) {
+            Pt_Commons_LoggerUtility::logError('Failed to generate unusable email export: ' . $exc->getMessage(), [
+                'file'  => $exc->getFile(),
+                'line'  => $exc->getLine(),
+                'trace' => $exc->getTraceAsString(),
+            ]);
+            return '';
+        }
+    }
+
     public function exportShipmentNotRespondedParticipantsDetails($params)
     {
         try {
@@ -1061,11 +1185,7 @@ class Application_Service_Participants
     public function getAllPTDetails($data)
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
-
-        $host = strtolower(parse_url($conf->domain, PHP_URL_HOST) ?: '');
-
-        $skipEmail = !empty($data['skipEmail']) && $data['skipEmail'] === 'on';
+        $host = Pt_Commons_MiscUtility::generatedEmailHost();
 
         // Status values that mean "do not deliver" — populated by
         // bin/check-participant-emails.php (syntax+MX), bin/process-bounces.php
@@ -1093,14 +1213,14 @@ class Application_Service_Participants
         // the select alias and silently groups unrelated people together
         // (four different PTCCs collapsing into one row). `mailTo` matches no
         // column in any joined table, so it can only mean the alias.
-        $groupAndFilter = function (Zend_Db_Select $sql) use ($skipEmail, $host) {
-            $sql->group('mailTo')
-                ->having('mailTo IS NOT NULL');
-            if ($skipEmail && $host !== '') {
-                $sql->having('LOWER(mailTo) NOT LIKE ?', '%@' . $host)
-                    ->having('LOWER(mailTo) NOT LIKE ?', '%@%.' . $host);
-            }
-            return $sql;
+        // Made-up login addresses are skipped even before their status is stamped
+        // login_only; '@ept' is the host used before a domain was configured.
+        $groupAndFilter = function (Zend_Db_Select $sql) use ($host) {
+            return $sql->group('mailTo')
+                ->having('mailTo IS NOT NULL')
+                ->having('LOWER(mailTo) NOT LIKE ?', '%@' . $host)
+                ->having('LOWER(mailTo) NOT LIKE ?', '%@%.' . $host)
+                ->having('LOWER(mailTo) NOT LIKE ?', '%@ept');
         };
 
         $result = [];
@@ -1212,9 +1332,7 @@ class Application_Service_Participants
      */
     public function resolveMailRecipients($data)
     {
-        $commonServices = new Application_Service_Common();
-        $host = strtolower(parse_url($commonServices->getConfig('domain'), PHP_URL_HOST) ?: '');
-        $skip = !empty($data['skipEmail']) && $data['skipEmail'] === 'on';
+        $host = Pt_Commons_MiscUtility::generatedEmailHost();
 
         $roles = (array) ($data['sendMail'] ?? []);
         $ccDataManagers = in_array('participant', $roles, true) && in_array('datamanager', $roles, true);
@@ -1226,12 +1344,9 @@ class Application_Service_Participants
         // this is what stops a Cc'd manager also getting their own copy.
         $covered = [];
 
-        $isSkipped = function (string $email) use ($skip, $host): bool {
-            if (!$skip || $host === '') {
-                return false;
-            }
+        $isSkipped = function (string $email) use ($host): bool {
             $domain = strtolower(substr(strrchr($email, '@'), 1));
-            return $domain === $host || substr($domain, -strlen('.' . $host)) === '.' . $host;
+            return Pt_Commons_MiscUtility::isGeneratedEmail($email) || substr($domain, -strlen('.' . $host)) === '.' . $host;
         };
 
         foreach ($this->getAllPTDetails($data) as $row) {

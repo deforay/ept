@@ -98,6 +98,8 @@ if (isset($this->ptcc) && !empty($this->ptcc) && $this->ptcc == 1) {
                 class="btn btn-primary"><i
                     class="icon-user"></i>&nbsp;&nbsp;<?= $this->translate->_("Add New Data Manager (Participant Login)"); ?></a>
         <?php } ?>
+            <a href="javascript:void(0);" onclick="downloadUnusableEmails();" class="btn btn-warning"><i
+                    class="icon-envelope"></i>&nbsp;&nbsp;<?= $this->translate->_("Unusable Emails"); ?></a>
         </div>
     </div>
     <div class="data-list-body">
@@ -453,6 +455,19 @@ if (isset($this->ptcc) && !empty($this->ptcc) && $this->ptcc == 1) {
         });
 
     });
+
+    function downloadUnusableEmails() {
+        $.blockUI();
+        $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'participants', 'action' => 'export-unusable-emails', 'format' => 'html'), 'default', true); ?>",
+            function(data) {
+                $.unblockUI();
+                if (!data || $.trim(data) == '') {
+                    alert('<?= $this->jsTranslate("Unable to generate download"); ?>');
+                } else {
+                    window.open('/temporary/' + $.trim(data), '_blank');
+                }
+            });
+    }
 
     function generatePtccExport(type) {
         $.blockUI();

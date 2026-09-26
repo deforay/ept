@@ -28,6 +28,7 @@ class Admin_ParticipantsController extends Zend_Controller_Action
             ->addActionContext('get-participant-list', 'html')
             ->addActionContext('delete-participant', 'html')
             ->addActionContext('export-participants-map', 'html')
+            ->addActionContext('export-unusable-emails', 'html')
             ->addActionContext('mapped-data-managers', 'html')
             ->addActionContext('participant-shipments', 'html')
             ->initContext();
@@ -422,6 +423,17 @@ class Admin_ParticipantsController extends Zend_Controller_Action
             $this->view->result = $participantService->exportShipmentRespondedParticipantsDetails($params);
         } else {
             return false;
+        }
+    }
+
+    public function exportUnusableEmailsAction()
+    {
+        $this->_helper->layout()->disableLayout();
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
+        if ($request->isPost()) {
+            $participantService = new Application_Service_Participants();
+            $this->view->result = $participantService->exportUnusableEmails();
         }
     }
 

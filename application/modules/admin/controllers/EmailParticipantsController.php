@@ -81,7 +81,6 @@ class Admin_EmailParticipantsController extends Zend_Controller_Action
         $data = [
             'shipments' => array_filter((array) $this->_getParam('shipments', [])),
             'sendMail'  => array_filter((array) $this->_getParam('sendMail', [])),
-            'skipEmail' => $this->_getParam('skipEmail'),
         ];
 
         if (empty($data['shipments']) || empty($data['sendMail'])) {
