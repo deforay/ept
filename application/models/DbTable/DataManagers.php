@@ -11,6 +11,22 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
     protected $_name = 'data_manager';
     protected $_primary = ['dm_id'];
 
+    public static function sameEmail($a, $b): bool
+    {
+        return strtolower(trim((string) $a)) === strtolower(trim((string) $b));
+    }
+
+    /**
+     * new_email only means a change is awaiting verification when it differs from
+     * primary_email. The profile-review flow used to copy the unchanged address into it,
+     * which made the app send "change from X to X" verification mails.
+     */
+    public static function hasPendingEmailChange($row): bool
+    {
+        return !empty($row) && trim((string) ($row['new_email'] ?? '')) !== ''
+            && !self::sameEmail($row['new_email'], $row['primary_email'] ?? '');
+    }
+
     /**
      * Request-scoped memo caches for the PTCC bulk import. The participant table
      * is never mutated during an import, so these location lookups return the
@@ -404,12 +420,9 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         ];
 
         if (
-            $dmNameSpace->force_profile_check_primary == 'yes' ||
-            (
-                isset($params['pemail']) && $params['pemail'] != '' &&
-                isset($params['oldpemail']) && $params['oldpemail'] != '' &&
-                $params['oldpemail'] != $params['pemail']
-            )
+            isset($params['pemail']) && $params['pemail'] != '' &&
+            isset($params['oldpemail']) && $params['oldpemail'] != '' &&
+            !self::sameEmail($params['oldpemail'], $params['pemail'])
         ) {
             $data['new_email'] = $params['pemail'];
         }
@@ -727,7 +740,13 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
 
     public function changeForceProfileCheckByEmail($params)
     {
-        return $this->update(['force_profile_check' => 'no', 'new_email' => $params['registeredEmail'], 'last_date_for_email_reset' => date('Y-m-d', strtotime('+30 days'))], 'dm_id =' . base64_decode($params['dmId']));
+        $dmId = (int) base64_decode((string) $params['dmId']);
+        $data = ['force_profile_check' => 'no', 'last_date_for_email_reset' => date('Y-m-d', strtotime('+30 days'))];
+        $current = $this->fetchRow(['dm_id = ?' => $dmId]);
+        if ($current && !self::sameEmail($current['primary_email'], $params['registeredEmail'])) {
+            $data['new_email'] = $params['registeredEmail'];
+        }
+        return $this->update($data, ['dm_id = ?' => $dmId]);
     }
 
     public function loginDatamanagerByAPI($params)
@@ -849,7 +868,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                     ->where('auth_token = ?', $params['authToken'])
                     ->where('new_email IS NOT NULL')
             );
-            if (!$row) {
+            if (!self::hasPendingEmailChange($row)) {
                 $payload = [
                     'status' => 'success',
                     'data' => $resultData,
@@ -916,7 +935,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             return ['status' => 'fail', 'message' => 'Something went wrong please try again later'];
         } else {
             $row = $this->fetchRow(['auth_token = ?' => $params['authToken'], 'new_email IS NOT NULL']);
-            if (!$row) {
+            if (!self::hasPendingEmailChange($row)) {
                 return ['status' => 'success', 'data' => $resultData];
             } else {
                 $resultData['resendMail'] = '/api/participant/resend?id=' . base64_encode($row['new_email'] . '##' . $row['primary_email']);
@@ -1154,14 +1173,8 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             'mobile' => $params['mobile'],
             'phone' => $params['phone'],
         ];
-        /* check primary email already exist or not */
-        $select = $this->select()
-            ->where('auth_token = ?', $params['authToken'])
-            ->where('primary_email LIKE ?', $params['primaryEmail'])
-            ->where('new_email NOT LIKE ? OR new_email IS NULL', $params['primaryEmail']);
-        $result = $this->fetchRow($select);
         $forceLogin = false;
-        if (!$result) {
+        if (!self::sameEmail($fetchOldMail['primary_email'], $params['primaryEmail'])) {
             $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
             $common = new Application_Service_Common();
             $eptDomain = rtrim($conf->domain, '/');
@@ -1171,16 +1184,14 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             $common->insertTempMail($params['primaryEmail'], null, null, 'ePT | Change of login email id', $message, $fromMail, $fromName);
             // $response['status'] = 'force-login';
             $forceLogin = true;
-            if ($params['primaryEmail'] != $result['primary_email']) {
-                $updateData['new_email'] = $params['primaryEmail'];
-            }
+            $updateData['new_email'] = $params['primaryEmail'];
             // $this->setStatusByEmail('inactive', $fetchOldMail['primary_email']);
         }
         $response['status'] = 'success';
 
         $update = $this->update($updateData, ['dm_id = ?' => $fetchOldMail['dm_id']]);
         if ($update > 0) {
-            if (!$forceLogin || $result) {
+            if (!$forceLogin) {
                 $response['message'] = 'Profile saved successfully.';
             } else {
                 $response['message'] = 'Please check your email ' . $params['primaryEmail'] . '. Once you verify, you can use ' . $params['primaryEmail'] . ' to login to ePT.';

@@ -93,7 +93,7 @@ class Application_Service_DataManagers
         $sessionAlert = new Zend_Session_Namespace('alertSpace');
         /* Set lang in runtime */
         $authNameSpace->language = $params['language'];
-        if (isset($params['oldpemail']) && !empty($params['oldpemail']) && isset($params['pemail']) && !empty($params['pemail']) && ($params['oldpemail'] != $params['pemail'])) {
+        if (isset($params['oldpemail']) && !empty($params['oldpemail']) && isset($params['pemail']) && !empty($params['pemail']) && !Application_Model_DbTable_DataManagers::sameEmail($params['oldpemail'], $params['pemail'])) {
             $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
             $eptDomain = rtrim($conf->domain, '/');
             $common = new Application_Service_Common();
@@ -118,7 +118,7 @@ class Application_Service_DataManagers
     public function confirmPrimaryMail($params, $showAlert = false)
     {
         $sessionAlert = new Zend_Session_Namespace('alertSpace');
-        if ($params['oldEmail'] != $params['registeredEmail']) {
+        if (!Application_Model_DbTable_DataManagers::sameEmail($params['oldEmail'], $params['registeredEmail'])) {
             $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
             $common = new Application_Service_Common();
             $eptDomain = rtrim($conf->domain, '/');
@@ -147,7 +147,7 @@ class Application_Service_DataManagers
     public function resentDMVerifyMail($params)
     {
         $row = $this->datamanagersDb->fetchRow($this->datamanagersDb->getAdapter()->quoteInto('new_email = ?', $params['registeredEmail']));
-        if ($row) {
+        if (Application_Model_DbTable_DataManagers::hasPendingEmailChange($row)) {
             $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
             $common = new Application_Service_Common();
             $eptDomain = rtrim($conf->domain, '/');
@@ -170,7 +170,8 @@ class Application_Service_DataManagers
 
     public function checkOldMail($dmId)
     {
-        return $this->datamanagersDb->fetchRow(['new_email IS NOT NULL AND new_email not like ""', 'dm_id = ?' => $dmId]);
+        $row = $this->datamanagersDb->fetchRow(['new_email IS NOT NULL AND new_email not like ""', 'dm_id = ?' => $dmId]);
+        return Application_Model_DbTable_DataManagers::hasPendingEmailChange($row) ? $row : null;
     }
 
     public function getAllUsers($params)

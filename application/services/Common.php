@@ -1213,6 +1213,9 @@ class Application_Service_Common
         foreach ($buckets as $bucket => $rawList) {
             foreach ($split($rawList) as $raw) {
                 $normalized = self::validateEmail($raw); // returns normalized or null
+                if ($normalized !== null && self::isUndeliverableEmail($normalized)) {
+                    $normalized = null;
+                }
                 if ($normalized !== null) {
                     $key = strtolower($normalized);
                     if (!isset($seen[$key])) {
@@ -1226,6 +1229,43 @@ class Application_Service_Common
         }
 
         return $out;
+    }
+
+    /**
+     * Addresses that can never receive mail: the login-only addresses bulk import makes up
+     * (MiscUtility::generateFakeEmailId, <id>@<instance host>) and any domain without an MX
+     * record, which also catches addresses generated under an earlier instance domain.
+     * The MX rule is skipped when DNS itself is unreachable, so an offline box keeps sending.
+     */
+    public static function isUndeliverableEmail(string $email): bool
+    {
+        static $domainCache = [];
+        static $instanceHost = null;
+        static $dnsWorks = null;
+
+        $at = strrpos($email, '@');
+        $domain = $at === false ? '' : strtolower(substr($email, $at + 1));
+        if ($domain === '') {
+            return true;
+        }
+        if (isset($domainCache[$domain])) {
+            return $domainCache[$domain];
+        }
+
+        if ($instanceHost === null) {
+            try {
+                $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
+                $instanceHost = strtolower((string) parse_url(rtrim((string) $conf->get('domain'), '/'), PHP_URL_HOST));
+            } catch (Throwable) {
+                $instanceHost = '';
+            }
+        }
+
+        if ($instanceHost !== '' && $domain === $instanceHost) {
+            return $domainCache[$domain] = true;
+        }
+        $dnsWorks ??= checkdnsrr('gmail.com', 'MX');
+        return $domainCache[$domain] = $dnsWorks && !checkdnsrr($domain, 'MX');
     }
 
     public static function formatMailFailureReason(?string $reason): ?string
