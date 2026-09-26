@@ -7,7 +7,8 @@
 // email.bounce.* in application.ini), identifies delivery-failure reports
 // (DSNs / MAILER-DAEMON / common bounce subjects), and stamps the failing
 // recipient address with email_status='hard_bounce' so future bulk sends
-// skip it. Soft (4.x.x) bounces are logged but ignored.
+// skip it. Soft bounces (full mailbox, spam/policy blocks, 4.x.x; see
+// isHardBounce) are counted but ignored.
 //
 // Read-only by default: doesn't mark Seen, doesn't move, doesn't delete.
 // UID-based idempotency via system_config.bounce_last_uid means re-runs
@@ -170,7 +171,7 @@ try {
         }
 
         foreach ($recipients as $r) {
-            $isHard = isset($r['status'][0]) && $r['status'][0] === '5';
+            $isHard = isHardBounce($r['status'], $r['reason']);
             if (!$isHard) {
                 $stats['soft']++;
                 continue;
@@ -254,6 +255,40 @@ try {
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
+
+/**
+ * Hard = the mailbox itself is gone, so retrying is pointless. The server's wording decides
+ * first because codes are unreliable across providers: Yahoo answers "552 ... mailbox not
+ * found" for a missing account, while 552 / 5.2.2 normally means a full mailbox. Only when
+ * the text says neither does the status decide: 5.1.x (bad address) and a bare 5.0.0 are
+ * hard; 5.2.x (mailbox), 5.7.x (spam/policy) and the rest leave a real mailbox, so soft.
+ */
+function isHardBounce(string $status, string $reason): bool
+{
+    $text = strtolower($reason);
+    $gone = [
+        'not found', 'does not exist', "doesn't exist", 'no such user', 'no such mailbox', 'user unknown',
+        'unknown user', 'unknown recipient', 'invalid mailbox', 'invalid recipient', 'user is terminated',
+        'account disabled', 'account has been disabled', 'mailbox unavailable', 'recipient address rejected',
+        'address rejected', 'no mailbox', 'nosuchuser',
+    ];
+    foreach ($gone as $needle) {
+        if (strpos($text, $needle) !== false) {
+            return true;
+        }
+    }
+    $temporary = [
+        'mailbox full', 'mailbox is full', 'inbox is full', 'inbox full', 'over quota', 'quota exceeded',
+        'exceeded storage', 'insufficient storage', 'too much mail', 'rate limit', 'try again later', 'temporarily',
+    ];
+    foreach ($temporary as $needle) {
+        if (strpos($text, $needle) !== false) {
+            return false;
+        }
+    }
+    $status = trim($status);
+    return strpos($status, '5.1.') === 0 || $status === '5.0.0';
+}
 
 /**
  * Decide whether a message is a delivery-failure report by inspecting headers.

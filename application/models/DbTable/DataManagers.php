@@ -11,6 +11,12 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
     protected $_name = 'data_manager';
     protected $_primary = ['dm_id'];
 
+    /** Any email change through this table also resets that address's delivery status. */
+    public function update(array $data, $where)
+    {
+        return parent::update(Pt_Commons_MiscUtility::withEmailStatusReset($data, ['primary_email' => 'primary_email_status', 'secondary_email' => 'secondary_email_status'], $this->getAdapter()), $where);
+    }
+
     public static function sameEmail($a, $b): bool
     {
         return strtolower(trim((string) $a)) === strtolower(trim((string) $b));

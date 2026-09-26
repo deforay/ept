@@ -73,8 +73,8 @@ try {
     $mxCache = [];
 
     $totals = [
-        'participant'  => ['scanned' => 0, 'valid' => 0, 'invalid_syntax' => 0, 'invalid_domain' => 0, 'login_only' => 0, 'unknown' => 0],
-        'data_manager' => ['scanned' => 0, 'valid' => 0, 'invalid_syntax' => 0, 'invalid_domain' => 0, 'login_only' => 0, 'unknown' => 0],
+        'participant'  => ['scanned' => 0, 'valid' => 0, 'invalid_syntax' => 0, 'invalid_domain' => 0, 'login_only' => 0, 'hard_bounce' => 0, 'unknown' => 0],
+        'data_manager' => ['scanned' => 0, 'valid' => 0, 'invalid_syntax' => 0, 'invalid_domain' => 0, 'login_only' => 0, 'hard_bounce' => 0, 'unknown' => 0],
     ];
 
     /**
@@ -103,8 +103,11 @@ try {
 
     $processBatch = function (string $table, array $rows, string $pk, string $primaryStatusCol, string $secondaryStatusCol) use ($db, $dryRun, $classify, &$totals): void {
         foreach ($rows as $row) {
-            $primaryStatus   = $classify($row['primary_addr']);
-            $secondaryStatus = $classify($row['secondary_addr']);
+            // A bounce is evidence the syntax/MX check cannot overturn: the domain still
+            // takes mail, the mailbox does not. Editing the address resets it (the table
+            // classes' update()), so a kept hard_bounce always belongs to this address.
+            $primaryStatus   = $row['primary_status'] === 'hard_bounce' ? 'hard_bounce' : $classify($row['primary_addr']);
+            $secondaryStatus = $row['secondary_status'] === 'hard_bounce' ? 'hard_bounce' : $classify($row['secondary_addr']);
 
             $totals[$table]['scanned']++;
             $totals[$table][classifyOverall($primaryStatus, $secondaryStatus)]++;
@@ -127,7 +130,7 @@ try {
 
     $processTable = function (string $table, string $pk, string $primaryCol, string $secondaryCol, string $primaryStatusCol, string $secondaryStatusCol) use ($db, $batchSize, $maxBatches, $recheckDays, $dryRun, $quiet, $io, $processBatch, &$totals): void {
         $sqlTemplate = sprintf(
-            'SELECT %s AS pk, %s AS primary_addr, %s AS secondary_addr
+            'SELECT %s AS pk, %s AS primary_addr, %s AS secondary_addr, %s AS primary_status, %s AS secondary_status
                FROM %s
               WHERE (
                        (%s IS NOT NULL AND %s <> "")
@@ -140,6 +143,8 @@ try {
             $db->quoteIdentifier($pk),
             $db->quoteIdentifier($primaryCol),
             $db->quoteIdentifier($secondaryCol),
+            $db->quoteIdentifier($primaryStatusCol),
+            $db->quoteIdentifier($secondaryStatusCol),
             $db->quoteIdentifier($table),
             $db->quoteIdentifier($primaryCol),
             $db->quoteIdentifier($primaryCol),
@@ -201,13 +206,14 @@ try {
                 continue;
             }
             $io->writeln(sprintf(
-                '  %-13s scanned=%d  valid=%d  invalid_domain=%d  invalid_syntax=%d  login_only=%d  unknown=%d',
+                '  %-13s scanned=%d  valid=%d  invalid_domain=%d  invalid_syntax=%d  login_only=%d  hard_bounce=%d  unknown=%d',
                 $t,
                 $counts['scanned'],
                 $counts['valid'],
                 $counts['invalid_domain'],
                 $counts['invalid_syntax'],
                 $counts['login_only'],
+                $counts['hard_bounce'],
                 $counts['unknown']
             ));
         }
@@ -241,6 +247,7 @@ function classifyOverall(string $primary, string $secondary): string
         $primary === 'unknown' && $secondary === 'unknown'                   => 'unknown',
         $primary === 'invalid_domain' || $secondary === 'invalid_domain'     => 'invalid_domain',
         $primary === 'login_only' || $secondary === 'login_only'             => 'login_only',
+        $primary === 'hard_bounce' || $secondary === 'hard_bounce'           => 'hard_bounce',
         default                                                              => 'invalid_syntax',
     };
 }

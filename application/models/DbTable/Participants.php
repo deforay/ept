@@ -9,6 +9,12 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
 {
     protected $_name = 'participant';
     protected $_primary = 'participant_id';
+
+    /** Any email change through this table also resets that address's delivery status. */
+    public function update(array $data, $where)
+    {
+        return parent::update(Pt_Commons_MiscUtility::withEmailStatusReset($data, ['email' => 'email_status', 'additional_email' => 'additional_email_status'], $this->getAdapter()), $where);
+    }
     // Initial onboarding password used when bulk-importing data managers from
     // a spreadsheet whose password column is blank. Stored only as a bcrypt
     // hash; users are expected to change it on first login. NOSONAR

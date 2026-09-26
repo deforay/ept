@@ -267,6 +267,34 @@ final class Pt_Commons_MiscUtility
         return $at !== false && in_array(substr($email, $at + 1), [self::generatedEmailHost(), 'ept'], true);
     }
 
+    /**
+     * For a table update that writes email columns, put a matching status reset in front of
+     * each one ($map is email column => status column). The status is kept when the address
+     * is unchanged, so a stamped bounce survives a profile save; a new address goes back to
+     * unknown (or login_only when it is a made-up one) for the checker to classify. It has to
+     * come first because MySQL applies SET left to right. Callers that set the status
+     * themselves, or pass an expression, are left alone.
+     */
+    public static function withEmailStatusReset(array $data, array $map, Zend_Db_Adapter_Abstract $db): array
+    {
+        $resets = [];
+        foreach ($map as $emailCol => $statusCol) {
+            if (!array_key_exists($emailCol, $data) || array_key_exists($statusCol, $data) || $data[$emailCol] instanceof Zend_Db_Expr) {
+                continue;
+            }
+            $new = strtolower(trim((string) $data[$emailCol]));
+            $fresh = self::isGeneratedEmail($new) ? 'login_only' : 'unknown';
+            $resets[$statusCol] = new Zend_Db_Expr(sprintf(
+                "IF(LOWER(TRIM(COALESCE(%s, ''))) = %s, %s, %s)",
+                $db->quoteIdentifier($emailCol),
+                $db->quote($new),
+                $db->quoteIdentifier($statusCol),
+                $db->quote($fresh)
+            ));
+        }
+        return $resets + $data;
+    }
+
     public static function generateFakeEmailId($uniqueId, $participantName)
     {
         $host = self::generatedEmailHost();
