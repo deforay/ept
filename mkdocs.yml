@@ -54,6 +54,7 @@ nav:
       - Update: updating.md
       - Backup & recovery: backup-and-migration.md
       - Infrastructure: infrastructure.md
+      - Email delivery: email.md
       - CLI tools: cli-tools.md
       - Repair missing tables: heal-schema.md
       - Troubleshooting: troubleshooting.md
@@ -104,6 +105,7 @@ plugins:
             Update: Mise à jour (anglais)
             Backup & recovery: Sauvegarde et reprise (anglais)
             Infrastructure: Infrastructure (anglais)
+            Email delivery: Envoi des e-mails (anglais)
             CLI tools: Outils CLI (anglais)
             Repair missing tables: Réparer les tables manquantes (anglais)
             Troubleshooting: Dépannage

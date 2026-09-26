@@ -20,7 +20,7 @@ These procedures target ePT 7.6.21 and require access appropriate to the affecte
 | Response cannot be edited | Shipment status, response switch, deadline and account permissions | Ask the programme administrator to review collection state | A permitted test response saves and reopens |
 | Late response awaiting review | Supported submission path and late-submission state | Have an authorized administrator review the held response | Approved result appears in the intended workflow |
 | Evaluation or report remains queued | Scheduler, job status, PHP errors and disk space | Investigate the failing job before requesting another run | Queue completes and the output belongs to the expected shipment |
-| Email not delivered | Queue outcome, SMTP configuration, recipient address and provider rejection | Correct the specific delivery failure | A test message reaches the intended test mailbox |
+| Email not delivered | Queue outcome, SMTP configuration, recipient address and provider rejection | Correct the specific delivery failure. See [Keeping email delivery working](email.md) | A test message reaches the intended test mailbox |
 | Report unavailable | Generation status, finalization, mapping and generated files | Complete the authorized reporting workflow | Correct account downloads the expected report |
 | Backup missing | Scheduler, destination permissions, disk space and backup configuration | Restore backup execution and off-host copying | New archive passes verification and a restore test |
 

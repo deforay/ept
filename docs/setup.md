@@ -321,7 +321,7 @@ composer dump-autoload -o
 - Edit `application.ini` with:
   - Domain: `domain = http://ept/`
   - Database credentials (`resources.db.params.*`)
-  - Email SMTP settings
+  - Email SMTP settings (or set them later on **Configure → ePT Global Settings**, see [Keeping email delivery working](email.md))
   - Security salt (set to a random string)
 - Edit `config.ini` with your organization name and evaluation settings
 

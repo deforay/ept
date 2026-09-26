@@ -20,7 +20,7 @@ Ces procédures concernent ePT 7.6.21 et nécessitent les droits d'accès corres
 | Réponse non modifiable | État de l'expédition, commutateur de réponse, échéance et droits | Demandez à l'administrateur du programme d'examiner l'état de collecte | Une réponse de test autorisée s'enregistre et se rouvre |
 | Réponse tardive en attente de revue | Parcours de soumission pris en charge et état de retard | Faites examiner la réponse par un administrateur autorisé | Le résultat approuvé apparaît dans le processus prévu |
 | Évaluation ou rapport bloqué en file | Planificateur, état des tâches, erreurs PHP et espace disque | Examinez la tâche défaillante avant de demander une nouvelle exécution | La file se termine et la sortie concerne la bonne expédition |
-| Courriel non livré | Résultat en file, configuration SMTP, adresse destinataire et rejet du fournisseur | Corrigez la cause précise de l'échec | Un message de test arrive dans la boîte prévue |
+| Courriel non livré | Résultat en file, configuration SMTP, adresse destinataire et rejet du fournisseur | Corrigez la cause précise de l'échec. Voir [Keeping email delivery working](../email.md) (anglais) | Un message de test arrive dans la boîte prévue |
 | Rapport indisponible | Génération, finalisation, association et fichiers produits | Terminez le processus de rapport autorisé | Le bon compte télécharge le rapport attendu |
 | Sauvegarde absente | Planificateur, droits du répertoire cible, espace disque et configuration | Rétablissez les sauvegardes et les copies hors serveur | La nouvelle archive réussit la vérification et un test de restauration |
 
