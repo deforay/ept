@@ -106,6 +106,23 @@ the database cannot send email on its own.
   never shown; leave it blank to keep the current one.
 - **Authentication Type** — Login, Plain, or CRAM-MD5.
 
+### Bounce Inbox
+
+The IMAP mailbox where delivery-failure reports arrive. Every 30
+minutes ePT reads new reports from it and marks addresses that no
+longer exist, so later emails skip them. Leave **IMAP Host** empty
+to turn this off.
+
+- **IMAP Host / Port** — for Gmail, `imap.gmail.com` and 993.
+- **Encryption** — SSL for port 993.
+- **Folder or Gmail Label** — for example `ept-bounces`. Empty
+  reads the INBOX.
+- **Username / Password** — leave both empty to read the SMTP
+  account's mailbox with the SMTP login.
+
+Before saving, ePT opens the mailbox and the folder. If that fails,
+a red message shows why and nothing is saved.
+
 ## Saving
 
 Click **Update** to save the whole form. Required fields are

@@ -53,8 +53,10 @@ try {
     $db = Zend_Db::factory($conf->resources->db);
     Zend_Db_Table::setDefaultAdapter($db);
 
-    $bounceConf = isset($conf->email->bounce) ? $conf->email->bounce : null;
-    $host = trim((string) ($bounceConf->host ?? ''));
+    // Host, login and folder are shared with the Global Config form; an empty
+    // username reads the SMTP account's mailbox, where bounces of app mail arrive.
+    $bounce = Application_Service_Common::getBounceSettings(true);
+    $host = $bounce['host'];
     if ($host === '') {
         // Cron-friendly no-op: feature disabled.
         if (!$quiet) {
@@ -63,20 +65,10 @@ try {
         exit(0);
     }
 
-    $port     = (int) ($bounceConf->port ?? 993);
-    $user     = trim((string) ($bounceConf->username ?? ''));
-    $pass     = (string) ($bounceConf->password ?? '');
-    // Bounces of app mail come back to the SMTP account, so by default read that
-    // mailbox with the same login (a Gmail app password works for IMAP too).
-    if ($user === '') {
-        $smtp = Application_Service_Common::getMailSettings();
-        $user = $smtp['username'];
-        if ($pass === '') {
-            $pass = $smtp['password'];
-        }
-    }
-    $ssl      = strtolower(trim((string) ($bounceConf->ssl ?? 'ssl')));
-    $folder   = (string) ($bounceConf->folder ?? 'INBOX');
+    $bounceConf = $conf->email->bounce ?? null;
+    $port     = (int) $bounce['port'];
+    $ssl      = $bounce['ssl'];
+    $folder   = $bounce['folder'];
     $markSeen = strtolower(trim((string) ($bounceConf->markSeen ?? 'no'))) === 'yes';
     $moveTo   = trim((string) ($bounceConf->moveTo ?? ''));
 
@@ -95,16 +87,7 @@ try {
         ));
     }
 
-    $storageParams = [
-        'host'     => $host,
-        'port'     => $port,
-        'user'     => $user,
-        'password' => $pass,
-        'folder'   => $folder,
-    ];
-    if ($ssl === 'ssl' || $ssl === 'tls') {
-        $storageParams['ssl'] = strtoupper($ssl);
-    }
+    $storageParams = Application_Service_Common::bounceImapParams($bounce);
     $storage = new Zend_Mail_Storage_Imap($storageParams);
 
     // ---------- State (UID high-water mark) ----------

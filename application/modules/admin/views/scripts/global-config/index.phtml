@@ -1289,6 +1289,62 @@ $faqResults = json_decode($this->faqs);
 						</select>
 					</div>
 				</div>
+				<?php $bounce = (object) array_map(fn($v) => htmlspecialchars((string) $v, ENT_QUOTES, 'UTF-8'), $this->bounceSettings ?? []); ?>
+				<h5 style="margin-top: 20px; border-bottom: 1px solid #ddd; padding-bottom: 10px;"><?= $this->translate->_("Bounce Inbox"); ?></h5>
+				<div class="alert alert-info" style="margin: 10px 0;">
+					<i class="icon-info-sign"></i>
+					<?= $this->translate->_("ePT reads delivery-failure reports from this IMAP mailbox every 30 minutes and marks addresses that no longer exist, so later emails skip them. Leave IMAP Host empty to turn this off."); ?>
+					<?= $this->translate->_("Leave Username empty to read the SMTP account's mailbox with the SMTP login."); ?>
+				</div>
+				<?php if (!empty($this->bounceSaveResult) && $this->bounceSaveResult['message'] !== ''): ?>
+					<div class="alert <?= $this->bounceSaveResult['ok'] ? 'alert-success' : 'alert-danger'; ?>" style="margin: 10px 0;">
+						<?= $this->escape($this->bounceSaveResult['message']); ?>
+					</div>
+				<?php endif; ?>
+				<div class="row">
+					<div class="col-md-6">
+						<label for="bounceHost" class="control-label"><?= $this->translate->_("IMAP Host"); ?></label>
+						<input type="text" value="<?php echo $bounce->host ?? null; ?>" id="bounceHost"
+							name="bounceConfig[host]" class="form-control" style="background: #fff"
+							placeholder="<?= $this->htmlTranslate('e.g., imap.gmail.com'); ?>" />
+					</div>
+					<div class="col-md-6">
+						<label for="bouncePort" class="control-label"><?= $this->translate->_("IMAP Port"); ?></label>
+						<input type="text" value="<?php echo $bounce->port ?? null; ?>" id="bouncePort"
+							name="bounceConfig[port]" class="form-control isValidPort" style="background: #fff"
+							placeholder="993" />
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-md-6">
+						<label for="bounceSsl" class="control-label"><?= $this->translate->_("Encryption"); ?></label>
+						<select class="form-control" id="bounceSsl" name="bounceConfig[ssl]">
+							<option value="ssl" <?php echo (!isset($bounce->ssl) || in_array($bounce->ssl, ['', 'ssl'], true)) ? 'selected="selected"' : ""; ?>>SSL</option>
+							<option value="tls" <?php echo (isset($bounce->ssl) && $bounce->ssl == 'tls') ? 'selected="selected"' : ""; ?>>TLS</option>
+							<option value="none" <?php echo (isset($bounce->ssl) && $bounce->ssl == 'none') ? 'selected="selected"' : ""; ?>><?= $this->translate->_("None"); ?></option>
+						</select>
+					</div>
+					<div class="col-md-6">
+						<label for="bounceFolder" class="control-label"><?= $this->translate->_("Folder or Gmail Label"); ?></label>
+						<input type="text" value="<?php echo $bounce->folder ?? null; ?>" id="bounceFolder"
+							name="bounceConfig[folder]" class="form-control" style="background: #fff"
+							placeholder="<?= $this->htmlTranslate('e.g., ept-bounces (default INBOX)'); ?>" />
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-md-6">
+						<label for="bounceUsername" class="control-label"><?= $this->translate->_("Username"); ?></label>
+						<input type="text" value="<?php echo $bounce->username ?? null; ?>" id="bounceUsername"
+							name="bounceConfig[username]" class="form-control" style="background: #fff"
+							placeholder="<?= $this->htmlTranslate('Empty: use the SMTP login'); ?>" />
+					</div>
+					<div class="col-md-6">
+						<label for="bouncePassword" class="control-label"><?= $this->translate->_("Password"); ?></label>
+						<input type="password" value="" id="bouncePassword" autocomplete="new-password"
+							name="bounceConfig[password]" class="form-control" style="background: #fff"
+							placeholder="<?= !empty($this->bounceSettings['password']) ? $this->htmlTranslate('Password is set. Leave blank to keep it') : $this->htmlTranslate('Empty: use the SMTP login'); ?>" />
+					</div>
+				</div>
 			</div>
 			</div>
 

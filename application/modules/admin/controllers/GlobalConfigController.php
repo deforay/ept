@@ -48,6 +48,14 @@ class Admin_GlobalConfigController extends Zend_Controller_Action
                 }
                 unset($params['emailConfig']);
             }
+            if (isset($params['bounceConfig']) && is_array($params['bounceConfig'])) {
+                $this->view->bounceSaveResult = $commonServices->updateBounceSettings($params['bounceConfig']);
+                if ($this->view->bounceSaveResult['ok'] && $this->view->bounceSaveResult['message'] !== '') {
+                    $auditDb = new Application_Model_DbTable_AuditLog();
+                    $auditDb->addNewAuditLog('Updated bounce inbox settings', 'config');
+                }
+                unset($params['bounceConfig']);
+            }
             $commonServices->updateConfig($params);
         }
         $assign = $commonServices->getGlobalConfigDetails();
@@ -55,6 +63,7 @@ class Admin_GlobalConfigController extends Zend_Controller_Action
         $this->view->app_timezone = $commonServices->getApplicationTimezone();
         $this->view->appDomain = $commonServices->getApplicationDomain();
         $this->view->mailSettings = Application_Service_Common::getMailSettings();
+        $this->view->bounceSettings = Application_Service_Common::getBounceSettings();
         $this->view->allSchemes = $commonServices->getFullSchemesDetails();
     }
 }

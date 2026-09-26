@@ -51,14 +51,19 @@ Bounces of mail that ePT sends come back to the SMTP account. Bounces of mail yo
 
 1. In the SMTP account's Gmail, create a filter. Set **From** to `mailer-daemon@googlemail.com` and choose **Apply the label** `ept-bounces`.
 2. If you also send from your own Gmail, create a filter there too. Set **From** to `mailer-daemon@googlemail.com` and choose **Forward it to** the SMTP account.
-3. Add these lines to the `[production]` section of `application.ini`:
+3. Open **Configure → ePT Global Settings → Email Settings** and fill in the **Bounce Inbox** part:
 
-    ```ini
-    email.bounce.host = "imap.gmail.com"
-    email.bounce.folder = "ept-bounces"
-    ```
+    | Field | Value |
+    | --- | --- |
+    | **IMAP Host** | `imap.gmail.com` |
+    | **IMAP Port** | `993` |
+    | **Encryption** | SSL |
+    | **Folder or Gmail Label** | `ept-bounces` |
+    | **Username** and **Password** | Leave empty to use the SMTP login. To read a different mailbox, fill them in |
 
-    The processor logs in with the SMTP username and password. To read a different mailbox, also set `email.bounce.username` and `email.bounce.password`.
+    Click **Update**. The page opens the mailbox and the folder before saving. If that fails, a red message shows why and nothing is saved.
+
+    The same values can be set in the `[production]` section of `application.ini` as `email.bounce.host`, `email.bounce.port`, `email.bounce.ssl`, `email.bounce.folder`, `email.bounce.username` and `email.bounce.password`.
 
 4. Preview what the processor would mark:
 
@@ -69,7 +74,7 @@ Bounces of mail that ePT sends come back to the SMTP account. Bounces of mail yo
 
     Each line starting with `HARD` names an address the processor would mark as bounced. `--reset-state` makes this first run read the whole folder.
 
-5. Run it once for real:
+5. Run it once for real, or wait up to 30 minutes for the scheduler. Saving a new mailbox or folder makes the next run read the whole folder.
 
     ```bash
     sudo -u www-data php bin/process-bounces.php --reset-state

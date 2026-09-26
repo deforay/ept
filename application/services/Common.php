@@ -648,6 +648,128 @@ class Application_Service_Common
         return ['ok' => true, 'message' => $transportChanged ? 'Email settings saved; the mail server accepted the login.' : 'Email settings saved.'];
     }
 
+    /** application.ini keys behind each bounce-inbox setting (bin/process-bounces.php). */
+    private const BOUNCE_INI_KEYS = [
+        'host'     => 'email.bounce.host',
+        'port'     => 'email.bounce.port',
+        'ssl'      => 'email.bounce.ssl',
+        'folder'   => 'email.bounce.folder',
+        'username' => 'email.bounce.username',
+        'password' => 'email.bounce.password',
+    ];
+
+    /**
+     * The bounce inbox settings as stored in application.ini. With $effective, empty
+     * values get the processor's defaults (port 993, SSL, INBOX) and an empty username
+     * falls back to the SMTP login, since bounces of app mail come back to that mailbox.
+     */
+    public static function getBounceSettings(bool $effective = false): array
+    {
+        $settings = [];
+        foreach (self::BOUNCE_INI_KEYS as $field => $iniKey) {
+            $settings[$field] = self::readIniValue($iniKey);
+        }
+        return $effective ? self::withBounceDefaults($settings) : $settings;
+    }
+
+    private static function withBounceDefaults(array $s): array
+    {
+        $s['port'] = $s['port'] !== '' ? $s['port'] : '993';
+        $s['ssl'] = strtolower($s['ssl'] !== '' ? $s['ssl'] : 'ssl');
+        $s['folder'] = $s['folder'] !== '' ? $s['folder'] : 'INBOX';
+        if ($s['username'] === '') {
+            $smtp = self::getMailSettings();
+            $s['username'] = $smtp['username'];
+            if ($s['password'] === '') {
+                $s['password'] = $smtp['password'];
+            }
+        }
+        return $s;
+    }
+
+    /** Zend_Mail_Storage_Imap parameters for effective bounce settings. */
+    public static function bounceImapParams(array $s): array
+    {
+        $params = [
+            'host'     => $s['host'],
+            'port'     => (int) $s['port'],
+            'user'     => $s['username'],
+            'password' => $s['password'],
+            'folder'   => $s['folder'],
+        ];
+        if (in_array($s['ssl'], ['ssl', 'tls'], true)) {
+            $params['ssl'] = strtoupper($s['ssl']);
+        }
+        return $params;
+    }
+
+    /**
+     * Save the Bounce Inbox form into application.ini. A blank password keeps the
+     * current one; a blank username means "use the SMTP login" and clears the bounce
+     * password. When the inbox is set, it is opened first and nothing is written if
+     * the login or the folder fails. Pointing at another mailbox or folder restarts
+     * the processor from that folder's first message.
+     *
+     * @return array{ok: bool, message: string}
+     */
+    public function updateBounceSettings(array $input): array
+    {
+        $current = self::getBounceSettings();
+        $new = [];
+        foreach (array_keys(self::BOUNCE_INI_KEYS) as $field) {
+            $new[$field] = trim((string) ($input[$field] ?? ''));
+        }
+        if ($new['username'] === '') {
+            $new['password'] = '';
+        } elseif ($new['password'] === '' && $new['username'] === $current['username']) {
+            $new['password'] = $current['password'];
+        }
+        foreach ($new as $field => $value) {
+            if (!self::isSafeIniValue($value)) {
+                return ['ok' => false, 'message' => "The bounce {$field} value cannot contain double quotes, backslashes, \${ or line breaks."];
+            }
+        }
+        if ($new['port'] !== '' && !ctype_digit($new['port'])) {
+            return ['ok' => false, 'message' => 'The IMAP port must be a number.'];
+        }
+        // Nothing to save while bounce processing stays off (the Encryption list always posts a value).
+        if ($new === $current || ($new['host'] === '' && $current['host'] === '')) {
+            return ['ok' => true, 'message' => ''];
+        }
+
+        if ($new['host'] !== '') {
+            $effective = self::withBounceDefaults($new);
+            if ($effective['username'] === '') {
+                return ['ok' => false, 'message' => 'Enter a bounce inbox username, or set the SMTP username first.'];
+            }
+            try {
+                $storage = new Zend_Mail_Storage_Imap(self::bounceImapParams($effective));
+                $storage->close();
+            } catch (Throwable $e) {
+                return ['ok' => false, 'message' => 'Could not open the bounce inbox, so the settings were not saved: ' . $e->getMessage()];
+            }
+        }
+
+        $values = [];
+        foreach (self::BOUNCE_INI_KEYS as $field => $iniKey) {
+            $values[$iniKey] = $new[$field];
+        }
+        if (!self::writeProductionIniValues($values)) {
+            return ['ok' => false, 'message' => 'Could not write application.ini. Make it writable by the web server user and save again.'];
+        }
+
+        // UIDs are per folder, so the high-water mark of the old folder means nothing here.
+        $mailboxChanged = $new['host'] !== $current['host'] || $new['username'] !== $current['username'] || $new['folder'] !== $current['folder'];
+        if ($mailboxChanged) {
+            $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+            $db->update('system_config', ['value' => '0'], ['config = ?' => 'bounce_last_uid']);
+        }
+        if ($new['host'] === '') {
+            return ['ok' => true, 'message' => 'Bounce processing is turned off.'];
+        }
+        return ['ok' => true, 'message' => 'Bounce inbox saved; the mail server accepted the login and the folder.'];
+    }
+
     /** The instance URL from application.ini (links, generated login addresses). */
     public function getApplicationDomain(): string
     {
