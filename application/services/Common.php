@@ -1232,10 +1232,9 @@ class Application_Service_Common
     }
 
     /**
-     * Addresses that can never receive mail: the login-only addresses bulk import makes up
-     * (MiscUtility::generateFakeEmailId, <id>@<instance host>) and any domain without an MX
-     * record, which also catches addresses generated under an earlier instance domain.
-     * The MX rule is skipped when DNS itself is unreachable, so an offline box keeps sending.
+     * Addresses that can never receive mail: any domain without an MX record. That covers
+     * the login-only addresses bulk import makes up (<id>@<instance host>) whenever the
+     * instance host takes no mail, and ones generated under an earlier instance domain.
      */
     public static function isUndeliverableEmail(string $email): bool
     {
@@ -1250,11 +1249,15 @@ class Application_Service_Common
         if (isset($domainCache[$domain])) {
             return $domainCache[$domain];
         }
-        if (Pt_Commons_MiscUtility::isGeneratedEmail($email)) {
-            return $domainCache[$domain] = true;
-        }
+        // The instance host can be a real mail domain too (mtbept.com: support@ is a real
+        // mailbox next to made-up <id>@mtbept.com logins), so the host alone decides
+        // nothing; its made-up logins are skipped through their login_only status instead.
+        // Only when DNS is unreachable does the host rule stand in for the MX check.
         $dnsWorks ??= checkdnsrr('gmail.com', 'MX');
-        return $domainCache[$domain] = $dnsWorks && !checkdnsrr($domain, 'MX');
+        if (!$dnsWorks) {
+            return $domainCache[$domain] = Pt_Commons_MiscUtility::isGeneratedEmail($email);
+        }
+        return $domainCache[$domain] = !checkdnsrr($domain, 'MX');
     }
 
     public static function formatMailFailureReason(?string $reason): ?string
