@@ -75,8 +75,10 @@
         "cs-fix": "@php vendor/bin/php-cs-fixer fix",
         "post-update": [
             "@migrate",
-            "@generate-salt"
+            "@generate-salt",
+            "@run-once"
         ],
+        "run-once": "@php bin/run-once.php",
         "post-install-cmd": [
             "@install-hooks"
         ],
