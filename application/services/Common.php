@@ -1246,6 +1246,9 @@ class Application_Service_Common
         if ($domain === '') {
             return true;
         }
+        if (in_array(strtolower(trim($email)), self::configuredMailboxes(), true)) {
+            return false;
+        }
         if (isset($domainCache[$domain])) {
             return $domainCache[$domain];
         }
@@ -1258,6 +1261,41 @@ class Application_Service_Common
             return $domainCache[$domain] = Pt_Commons_MiscUtility::isGeneratedEmail($email);
         }
         return $domainCache[$domain] = !checkdnsrr($domain, 'MX');
+    }
+
+    /**
+     * Addresses this instance sends as or authenticates with (SMTP login, sender, admin
+     * email in application.ini and global_config). Mail is sent from them, so they exist.
+     */
+    private static function configuredMailboxes(): array
+    {
+        static $list = null;
+        if ($list !== null) {
+            return $list;
+        }
+        $candidates = [];
+        try {
+            $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
+            $candidates[] = $conf->email->config->username ?? null;
+        } catch (Throwable) {
+            // no ini mail block
+        }
+        try {
+            $mail = json_decode((string) self::getConfig('mail'));
+            $candidates[] = $mail->username ?? null;
+            $candidates[] = $mail->fromEmail ?? null;
+            $candidates[] = self::getConfig('admin_email');
+        } catch (Throwable) {
+            // no DB mail settings yet
+        }
+        $list = [];
+        foreach ($candidates as $address) {
+            $address = strtolower(trim((string) $address));
+            if ($address !== '' && strpos($address, '@') !== false) {
+                $list[] = $address;
+            }
+        }
+        return $list = array_values(array_unique($list));
     }
 
     public static function formatMailFailureReason(?string $reason): ?string
