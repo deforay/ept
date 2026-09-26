@@ -1566,7 +1566,7 @@ class Application_Service_Participants
         $commonServices = new Application_Service_Common();
         $alertMsg = new Zend_Session_Namespace('alertSpace');
 
-        $mail = json_decode($commonServices->getConfig('mail'));
+        $mail = Application_Service_Common::getMailSettings();
         // Validated, domain-skipped and de-duplicated — same call the preview
         // screen makes, so what was previewed is what gets queued.
         $resolved = $this->resolveMailRecipients($data);
@@ -1584,10 +1584,10 @@ class Application_Service_Participants
             $alertMsg->message = implode(', ', $resolved['invalid']) . ' — not valid email(s), skipped';
         }
 
-        $fromEmail = $mail->fromEmail;
-        $fromFullName = $mail->fromName;
-        $configCc = trim((string) $mail->cc);
-        $bcc = $mail->bcc;
+        $fromEmail = $mail['fromEmail'];
+        $fromFullName = $mail['fromName'];
+        $configCc = $mail['cc'];
+        $bcc = $mail['bcc'];
 
         $status = false;
         foreach ($resolved['recipients'] as $pt) {

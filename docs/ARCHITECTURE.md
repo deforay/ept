@@ -253,18 +253,22 @@ for cleanup scope and [troubleshooting](troubleshooting.md) for execution checks
 
 ### Configuration
 
-Mail settings stored in `system_config.mail` (JSON):
+All mail settings live in `application.ini`, never in the database, so a
+production dump restored elsewhere carries no SMTP login.
+`Application_Service_Common::getMailSettings()` is the one reader; the
+Global Config page writes the same keys through `updateMailSettings()`.
 
-```json
-{
-  "host": "smtp.example.com",
-  "port": 587,
-  "username": "...",
-  "password": "...",
-  "ssl": "tls",
-  "fromEmail": "...",
-  "fromName": "ePT System"
-}
+```ini
+email.host = "smtp.example.com"
+email.config.port = "587"
+email.config.ssl = "tls"
+email.config.auth = "login"
+email.config.username = "..."
+email.config.password = "..."
+email.fromName = "ePT System"
+email.fromEmail = "..."   ; defaults to the username
+email.cc = ""
+email.bcc = ""
 ```
 
 ### Health monitoring

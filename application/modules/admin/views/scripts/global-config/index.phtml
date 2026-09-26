@@ -1,5 +1,6 @@
 <?php
-$emailConfig = json_decode($this->mail);
+// Email settings come from application.ini (Common::getMailSettings), not global_config.
+$emailConfig = (object) array_map(fn($v) => htmlspecialchars((string) $v, ENT_QUOTES, 'UTF-8'), $this->mailSettings ?? []);
 $recency = json_decode($this->recency);
 $home = json_decode($this->home);
 $faqResults = json_decode($this->faqs);
@@ -658,11 +659,15 @@ $faqResults = json_decode($this->faqs);
 				<div class="row">
 					<div class="col-md-6">
 						<label for="host" class="control-label"><?= $this->translate->_("Domain"); ?></label>
-						<input type="text" value="<?php echo $this->domain ?? null; ?>" id="domain"
+						<input type="text" value="<?php echo $this->escape($this->appDomain ?? ''); ?>" id="domain"
 							name="emailConfig[domain]" class="form-control" style="background: #fff"
 							title="<?= $this->translate->_('Domain for this ePT instance'); ?>" />
 						<small
 							class="text-muted"><?= $this->translate->_("Auto-filled from URL. Edit if using a proxy or CDN."); ?></small>
+						<?php if (isset($this->appDomainSaved) && $this->appDomainSaved === false): ?>
+							<small
+								class="text-danger"><?= $this->translate->_('Could not update the Domain (application.ini not writable or not a valid http(s) URL).'); ?></small>
+						<?php endif; ?>
 					</div>
 					<div class="col-md-6">
 						<label for="locale" class="control-label"><?= $this->translate->_("Language"); ?></label>
@@ -1194,7 +1199,13 @@ $faqResults = json_decode($this->faqs);
 				<div class="alert alert-info" style="margin: 10px 0;">
 					<i class="icon-info-sign"></i>
 					<?= $this->translate->_("Email configuration is optional. You can configure it later when you have the email server details."); ?>
+					<?= $this->translate->_("These settings are stored in application.ini on the server, not in the database."); ?>
 				</div>
+				<?php if (!empty($this->mailSaveResult)): ?>
+					<div class="alert <?= $this->mailSaveResult['ok'] ? 'alert-success' : 'alert-danger'; ?>" style="margin: 10px 0;">
+						<?= $this->escape($this->mailSaveResult['message']); ?>
+					</div>
+				<?php endif; ?>
 				<div class="row">
 					<div class="col-md-6">
 						<label for="host" class="control-label"><?= $this->translate->_("SMTP Host"); ?></label>
@@ -1262,9 +1273,9 @@ $faqResults = json_decode($this->faqs);
 				<div class="row">
 					<div class="col-md-6">
 						<label for="password" class="control-label"><?= $this->translate->_("Password"); ?></label>
-						<input type="password" value="<?php echo $emailConfig->password ?? null; ?>" id="password"
+						<input type="password" value="" id="password" autocomplete="new-password"
 							name="emailConfig[password]" class="form-control" style="background: #fff"
-							placeholder="<?= $this->htmlTranslate('Enter SMTP password'); ?>" />
+							placeholder="<?= !empty($this->mailSettings['password']) ? $this->htmlTranslate('Password is set. Leave blank to keep it') : $this->htmlTranslate('Enter SMTP password'); ?>" />
 					</div>
 					<div class="col-md-6">
 						<label for="auth"
@@ -1886,8 +1897,12 @@ id="faqTable">
 		participantLoginBan();
 		customFieldStatus();
 
-		// Auto-populate domain from current URL (always update to match current server)
-		$('#domain').val(window.location.origin);
+		// Suggest the current URL only when application.ini has no domain yet; the saved
+		// value is written back to application.ini, so it must not follow whatever
+		// address (IP, http://) the admin happens to be browsing from.
+		if ($.trim($('#domain').val()) === '') {
+			$('#domain').val(window.location.origin);
+		}
 	});
 
 	// Add highlight style

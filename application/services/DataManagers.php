@@ -494,9 +494,9 @@ class Application_Service_DataManagers
             . '<br/><br/>' . $t('If you have any questions or did not expect this email, please contact ePT Support.')
             . '<br/><br/>' . $t('Thank you') . ',<br/>' . $t('ePT Support');
 
-        $mailCfg = json_decode((string) Application_Service_Common::getConfig('mail'));
-        $fromEmail = $mailCfg->fromEmail ?? Application_Service_Common::getConfig('admin_email');
-        $fromName  = $mailCfg->fromName  ?? (Application_Service_Common::getConfig('admin_name') ?: 'ePT Support');
+        $mailCfg = Application_Service_Common::getMailSettings();
+        $fromEmail = $mailCfg['fromEmail'] ?: Application_Service_Common::getConfig('admin_email');
+        $fromName  = $mailCfg['fromName'] ?: (Application_Service_Common::getConfig('admin_name') ?: 'ePT Support');
 
         $common = new Application_Service_Common();
         $common->insertTempMail(
@@ -794,9 +794,9 @@ class Application_Service_DataManagers
             . '<br/><br/>' . $t('If you have any questions or did not expect this email, please contact ePT Support.')
             . '<br/><br/>' . $t('Thank you') . ',<br/>' . $t('ePT Support');
 
-        $mailCfg = json_decode((string) Application_Service_Common::getConfig('mail'));
-        $fromEmail = $mailCfg->fromEmail ?? Application_Service_Common::getConfig('admin_email');
-        $fromName  = $mailCfg->fromName  ?? (Application_Service_Common::getConfig('admin_name') ?: 'ePT Support');
+        $mailCfg = Application_Service_Common::getMailSettings();
+        $fromEmail = $mailCfg['fromEmail'] ?: Application_Service_Common::getConfig('admin_email');
+        $fromName  = $mailCfg['fromName'] ?: (Application_Service_Common::getConfig('admin_name') ?: 'ePT Support');
 
         $common->insertTempMail(
             $toEmail,

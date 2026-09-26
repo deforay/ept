@@ -126,11 +126,8 @@ class Application_Model_DbTable_GlobalConfig extends Zend_Db_Table_Abstract
             }
         }
 
-        if (isset($params['emailConfig']) && !empty($params['emailConfig'])) {
-            $this->saveConfigByName(json_encode($params['emailConfig'], true), 'mail');
-            unset($params['emailConfig']);
-            $changedSections[] = 'email config';
-        }
+        // Email settings are saved to application.ini (Common::updateMailSettings), never here.
+        unset($params['emailConfig']);
         if (isset($params['covid19']) && !empty($params['covid19'])) {
             $this->saveConfigByName(json_encode($params['covid19'], true), 'covid19');
             unset($params['covid19']);

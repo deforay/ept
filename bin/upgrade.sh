@@ -951,6 +951,14 @@ upgrade_instance() {
         log_action "Version mismatch after migration for ${ept_path}: ${version_output}"
     fi
 
+    # The web app and run-once scripts write application.ini (timezone, domain, email
+    # settings), so www-data must be able to write it. Group access keeps the owner as is.
+    app_ini="${ept_path}/application/configs/application.ini"
+    if [ -f "$app_ini" ]; then
+        chgrp www-data "$app_ini" 2>/dev/null && chmod g+rw "$app_ini" 2>/dev/null ||
+            print warning "Could not make ${app_ini} writable by www-data; email settings cannot be saved from the admin page."
+    fi
+
     # Run run-once scripts
     print info "Running run-once scripts..."
     sudo -u www-data php "${ept_path}/bin/run-once.php"

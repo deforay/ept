@@ -83,9 +83,10 @@ class Application_Model_DbTable_TempMail extends Zend_Db_Table_Abstract
 
             // Set and validate sender email address
             // Falls back to configured default email if not provided or invalid
+            $defaultFrom = Application_Service_Common::getMailSettings()['fromEmail'];
             try {
-                $fromMail = (string) ($fromMail ?: $conf->email->config->username);
-                $fromMail = Application_Service_Common::validateEmail($fromMail) ?: $conf->email->config->username;
+                $fromMail = (string) ($fromMail ?: $defaultFrom);
+                $fromMail = Application_Service_Common::validateEmail($fromMail) ?: $defaultFrom;
                 $fromName = $fromName ?: 'ePT Support';
             } catch (Throwable $e) {
                 Pt_Commons_LoggerUtility::logWarning('Failed to set FROM address: ' . $e->getMessage(), [
@@ -94,7 +95,7 @@ class Application_Model_DbTable_TempMail extends Zend_Db_Table_Abstract
                     'trace' => $e->getTraceAsString(),
                 ]);
                 // Use configuration default as ultimate fallback
-                $fromMail = $conf->email->config->username;
+                $fromMail = $defaultFrom;
                 $fromName = 'ePT Support';
             }
 

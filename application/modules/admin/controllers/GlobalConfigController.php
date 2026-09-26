@@ -34,11 +34,27 @@ class Admin_GlobalConfigController extends Zend_Controller_Action
                 $this->view->appTimezoneSaved = $commonServices->updateApplicationTimezone($params['app_timezone']);
                 unset($params['app_timezone']);
             }
+            // Mail settings and the instance URL live in application.ini as well.
+            if (isset($params['emailConfig']) && is_array($params['emailConfig'])) {
+                $emailConfig = $params['emailConfig'];
+                if (array_key_exists('domain', $emailConfig)) {
+                    $this->view->appDomainSaved = $commonServices->updateApplicationDomain($emailConfig['domain']);
+                    unset($emailConfig['domain']);
+                }
+                $this->view->mailSaveResult = $commonServices->updateMailSettings($emailConfig);
+                if ($this->view->mailSaveResult['ok']) {
+                    $auditDb = new Application_Model_DbTable_AuditLog();
+                    $auditDb->addNewAuditLog('Updated email settings', 'config');
+                }
+                unset($params['emailConfig']);
+            }
             $commonServices->updateConfig($params);
         }
         $assign = $commonServices->getGlobalConfigDetails();
         $this->view->assign($assign);
         $this->view->app_timezone = $commonServices->getApplicationTimezone();
+        $this->view->appDomain = $commonServices->getApplicationDomain();
+        $this->view->mailSettings = Application_Service_Common::getMailSettings();
         $this->view->allSchemes = $commonServices->getFullSchemesDetails();
     }
 }

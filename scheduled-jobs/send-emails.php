@@ -114,20 +114,27 @@ try {
     $db = Zend_Db::factory($conf->resources->db);
     Zend_Db_Table::setDefaultAdapter($db);
 
-    $globalConfigDb = new Application_Model_DbTable_GlobalConfig();
-    $smtpJson = $globalConfigDb->getValue('mail');
-    if ($smtpJson === null || trim($smtpJson) === '') {
-        // Not an error — expected on environments that haven't configured outbound mail yet.
-        // Cron fires every minute; logging this at ERROR floods the log.
-        Pt_Commons_LoggerUtility::logWarning('send-emails.php: SMTP not configured; skipping run.');
+    // All mail settings live in application.ini, never the database, so a cloned
+    // prod DB carries no SMTP login and cannot mail real people from another box.
+    // Until run-once/move-mail-settings-to-ini.php has moved and emptied the old
+    // global_config.mail row, application.ini may still lack the login; leave the
+    // queue pending rather than fail it. Only the row's presence is read here.
+    $unmoved = trim((string) $db->fetchOne("SELECT `value` FROM `global_config` WHERE `name` = 'mail'"));
+    if ($unmoved !== '' && $unmoved !== 'null' && $unmoved !== '{}') {
+        Pt_Commons_LoggerUtility::logWarning('send-emails.php: mail settings are still in global_config.mail; run bin/run-once.php to move them to application.ini. Queue left pending.');
         exit(0);
     }
-    $smtpMailDetails = json_decode($smtpJson);
+    $mailSettings = Application_Service_Common::getMailSettings();
+    if ($mailSettings['host'] === '') {
+        // Not an error — expected on environments that haven't configured outbound mail yet.
+        // Cron fires every minute; logging this at ERROR floods the log.
+        Pt_Commons_LoggerUtility::logWarning('send-emails.php: SMTP not configured (email.host is empty in application.ini); skipping run.');
+        exit(0);
+    }
 
     // Dev mail trap safety net. If application.ini sets email.devTrapDsn, ignore
-    // the DB SMTP creds and route there (Mailpit/Mailhog) — this defends against a
-    // cloned prod DB shipping live SMTP credentials. A non-empty value that isn't
-    // a parseable smtp:// DSN blocks the queue entirely.
+    // the SMTP login and route there (Mailpit/Mailhog). A non-empty value that
+    // isn't a parseable smtp:// DSN blocks the queue entirely.
     $devTrapDsn = trim((string) ($conf->email->devTrapDsn ?? ''));
 
     if ($devTrapDsn !== '') {
@@ -152,21 +159,9 @@ try {
         }
 
         $dsn = $devTrapDsn;
-        Pt_Commons_LoggerUtility::logInfo("send-emails: routing via email.devTrapDsn (DB SMTP creds ignored)");
+        Pt_Commons_LoggerUtility::logInfo("send-emails: routing via email.devTrapDsn (SMTP login ignored)");
     } else {
-        // Symfony Mailer ignores an "encryption" query option: implicit TLS is the
-        // smtps scheme, and STARTTLS is only enforced with require_tls. Plain smtp
-        // still upgrades via STARTTLS when the server offers it.
-        $encryption = $smtpMailDetails->ssl ?? '';
-        $dsn = sprintf(
-            '%s://%s:%s@%s:%d%s',
-            $encryption === 'ssl' ? 'smtps' : 'smtp',
-            urlencode($smtpMailDetails->username ?? ''),
-            urlencode($smtpMailDetails->password ?? ''),
-            $smtpMailDetails->host ?? 'localhost',
-            $smtpMailDetails->port ?? 587,
-            $encryption === 'tls' ? '?require_tls=true' : ''
-        );
+        $dsn = Application_Service_Common::smtpDsn($mailSettings);
     }
 
     // === Pull up to N pending rows this minute ===
@@ -296,8 +291,8 @@ try {
             }
 
             // Common From
-            $fromEmail = $smtpMailDetails->fromEmail ?? $smtpMailDetails->username;
-            $fromFullName = $smtpMailDetails->fromName ?? 'ePT System';
+            $fromEmail = $mailSettings['fromEmail'];
+            $fromFullName = $mailSettings['fromName'] ?: 'ePT System';
 
             // Validate reply_to (single address; take first if commas/semicolons present)
             $replyToRaw = isset($result['reply_to']) ? trim((string) $result['reply_to']) : '';

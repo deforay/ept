@@ -114,7 +114,22 @@ class Application_Service_Common
     {
         $devTrapDsn = trim((string) ($conf->email->devTrapDsn ?? ''));
         if ($devTrapDsn === '') {
-            return new Zend_Mail_Transport_Smtp($conf->email->host, $conf->email->config->toArray());
+            $s = self::getMailSettings();
+            if ($s['host'] === '') {
+                error_log('Common::buildSmtpTransport(): email.host is empty in application.ini; mail is not configured.');
+                return null;
+            }
+            $smtpCfg = ['port' => (int) ($s['port'] ?: 587)];
+            if ($s['username'] !== '') {
+                $smtpCfg['auth'] = in_array($s['auth'], ['login', 'plain', 'crammd5'], true) ? $s['auth'] : 'login';
+                $smtpCfg['username'] = $s['username'];
+                $smtpCfg['password'] = $s['password'];
+            }
+            $ssl = strtolower($s['ssl']);
+            if (in_array($ssl, ['tls', 'starttls', 'ssl'], true)) {
+                $smtpCfg['ssl'] = $ssl === 'ssl' ? 'ssl' : 'tls';
+            }
+            return new Zend_Mail_Transport_Smtp($s['host'], $smtpCfg);
         }
 
         $parts = parse_url($devTrapDsn);
@@ -156,8 +171,9 @@ class Application_Service_Common
             return false;
         }
 
-        $fromMail = $fromMail ?: $conf->email->config->username;
-        $fromName = $fromName ?: 'ePT System';
+        $mailSettings = self::getMailSettings();
+        $fromMail = $fromMail ?: $mailSettings['fromEmail'];
+        $fromName = $fromName ?: ($mailSettings['fromName'] ?: 'ePT System');
 
         $systemMail = new Zend_Mail();
 
@@ -513,6 +529,197 @@ class Application_Service_Common
         } catch (Throwable $e) {
             return '';
         }
+    }
+
+    /** application.ini keys behind each mail setting. */
+    private const MAIL_INI_KEYS = [
+        'host'      => 'email.host',
+        'port'      => 'email.config.port',
+        'ssl'       => 'email.config.ssl',
+        'auth'      => 'email.config.auth',
+        'username'  => 'email.config.username',
+        'password'  => 'email.config.password',
+        'fromName'  => 'email.fromName',
+        'fromEmail' => 'email.fromEmail',
+        'cc'        => 'email.cc',
+        'bcc'       => 'email.bcc',
+    ];
+
+    /**
+     * Every outgoing-mail setting, read from application.ini only. The database holds
+     * none of it, so a production dump restored elsewhere carries no SMTP login and
+     * cannot mail real people. fromEmail falls back to the SMTP username.
+     */
+    public static function getMailSettings(): array
+    {
+        $settings = array_fill_keys(array_keys(self::MAIL_INI_KEYS), '');
+        try {
+            $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
+            $email = $conf->get('email');
+            if ($email instanceof Zend_Config) {
+                $config = $email->get('config');
+                foreach (self::MAIL_INI_KEYS as $field => $iniKey) {
+                    $leaf = substr($iniKey, strrpos($iniKey, '.') + 1);
+                    $source = str_starts_with($iniKey, 'email.config.') ? $config : $email;
+                    $settings[$field] = $source instanceof Zend_Config ? trim((string) $source->get($leaf, '')) : '';
+                }
+            }
+        } catch (Throwable) {
+            // unreadable ini: every setting stays empty, so nothing is sent
+        }
+        if ($settings['fromEmail'] === '') {
+            $settings['fromEmail'] = $settings['username'];
+        }
+        return $settings;
+    }
+
+    /** Symfony Mailer DSN for the given settings (smtps for implicit SSL, require_tls for TLS). */
+    public static function smtpDsn(array $s): string
+    {
+        $ssl = strtolower((string) ($s['ssl'] ?? ''));
+        return sprintf(
+            '%s://%s:%s@%s:%d%s',
+            $ssl === 'ssl' ? 'smtps' : 'smtp',
+            urlencode((string) ($s['username'] ?? '')),
+            urlencode((string) ($s['password'] ?? '')),
+            $s['host'] ?: 'localhost',
+            (int) ($s['port'] ?: 587),
+            in_array($ssl, ['tls', 'starttls'], true) ? '?require_tls=true' : ''
+        );
+    }
+
+    /**
+     * Save the Email Settings form into application.ini. A blank password keeps the
+     * current one. When the connection details change, the new login is tried first
+     * and nothing is written if the server refuses it, so a typo cannot stop mail.
+     *
+     * @return array{ok: bool, message: string}
+     */
+    public function updateMailSettings(array $input): array
+    {
+        $current = self::getMailSettings();
+        $storedFromEmail = self::readIniValue(self::MAIL_INI_KEYS['fromEmail']);
+        $new = [];
+        foreach (array_keys(self::MAIL_INI_KEYS) as $field) {
+            $new[$field] = trim((string) ($input[$field] ?? ''));
+        }
+        if ($new['password'] === '') {
+            $new['password'] = $current['password'];
+        }
+        foreach ($new as $field => $value) {
+            if (!self::isSafeIniValue($value)) {
+                return ['ok' => false, 'message' => "The {$field} value cannot contain double quotes, backslashes, \${ or line breaks."];
+            }
+        }
+        if ($new['port'] !== '' && !ctype_digit($new['port'])) {
+            return ['ok' => false, 'message' => 'The SMTP port must be a number.'];
+        }
+
+        $transportFields = ['host', 'port', 'ssl', 'auth', 'username', 'password'];
+        $transportChanged = false;
+        foreach ($transportFields as $field) {
+            if ($new[$field] !== $current[$field]) {
+                $transportChanged = true;
+            }
+        }
+        if ($transportChanged && $new['host'] !== '') {
+            try {
+                $transport = Symfony\Component\Mailer\Transport::fromDsn(self::smtpDsn($new));
+                if ($transport instanceof Symfony\Component\Mailer\Transport\Smtp\SmtpTransport) {
+                    $transport->start();
+                    $transport->stop();
+                }
+            } catch (Throwable $e) {
+                return ['ok' => false, 'message' => 'The mail server refused these settings, so they were not saved: ' . $e->getMessage()];
+            }
+        }
+
+        // Keep fromEmail unset while it only mirrors the username (see getMailSettings()).
+        if ($new['fromEmail'] === $new['username'] && $storedFromEmail === '') {
+            $new['fromEmail'] = '';
+        }
+        $values = [];
+        foreach (self::MAIL_INI_KEYS as $field => $iniKey) {
+            $values[$iniKey] = $new[$field];
+        }
+        if (!self::writeProductionIniValues($values)) {
+            return ['ok' => false, 'message' => 'Could not write application.ini. Make it writable by the web server user and save again.'];
+        }
+        return ['ok' => true, 'message' => $transportChanged ? 'Email settings saved; the mail server accepted the login.' : 'Email settings saved.'];
+    }
+
+    /** The instance URL from application.ini (links, generated login addresses). */
+    public function getApplicationDomain(): string
+    {
+        return self::readIniValue('domain');
+    }
+
+    /** Save the instance URL into application.ini; only a changed, valid http(s) URL is written. */
+    public function updateApplicationDomain($domain): bool
+    {
+        $domain = rtrim(trim((string) $domain), '/');
+        if ($domain === '' || $domain === rtrim($this->getApplicationDomain(), '/')) {
+            return true;
+        }
+        $scheme = strtolower((string) parse_url($domain, PHP_URL_SCHEME));
+        if (!in_array($scheme, ['http', 'https'], true) || !parse_url($domain, PHP_URL_HOST) || !self::isSafeIniValue($domain)) {
+            return false;
+        }
+        return self::writeProductionIniValues(['domain' => $domain]);
+    }
+
+    private static function readIniValue(string $key): string
+    {
+        try {
+            $node = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
+            foreach (explode('.', $key) as $part) {
+                $node = $node instanceof Zend_Config ? $node->get($part) : null;
+            }
+            return is_scalar($node) ? trim((string) $node) : '';
+        } catch (Throwable) {
+            return '';
+        }
+    }
+
+    /** INI double-quoted values cannot escape ", and PHP expands ${...} inside them. */
+    private static function isSafeIniValue(string $value): bool
+    {
+        return strpbrk($value, "\"\\\r\n") === false && strpos($value, '${') === false;
+    }
+
+    /**
+     * Set keys inside application.ini's [production] section (the other sections inherit
+     * it), one line each so comments and section inheritance survive; a missing key is
+     * added at the end of that section. Returns false if the file cannot be rewritten.
+     */
+    public static function writeProductionIniValues(array $values): bool
+    {
+        $iniPath = APPLICATION_PATH . '/configs/application.ini';
+        if (!is_writable($iniPath)) {
+            return false;
+        }
+        $contents = @file_get_contents($iniPath);
+        if ($contents === false || !preg_match('/^\[production\][^\r\n]*\r?\n/m', $contents, $m, PREG_OFFSET_CAPTURE)) {
+            return false;
+        }
+        $start = $m[0][1] + strlen($m[0][0]);
+        $end = preg_match('/^\[/m', $contents, $next, PREG_OFFSET_CAPTURE, $start) ? $next[0][1] : strlen($contents);
+        $section = substr($contents, $start, $end - $start);
+
+        foreach ($values as $key => $value) {
+            $line = $key . ' = "' . $value . '"';
+            $pattern = '/^[ \t]*' . preg_quote($key, '/') . '[ \t]*=.*$/m';
+            $count = 0;
+            $section = preg_replace_callback($pattern, fn () => $line, $section, 1, $count);
+            if ($count === 0) {
+                $section = rtrim($section, "\r\n") . "\n" . $line . "\n";
+            }
+        }
+        if (!str_ends_with($section, "\n")) {
+            $section .= "\n";
+        }
+        $updated = substr($contents, 0, $start) . $section . ($end < strlen($contents) ? "\n" . ltrim(substr($contents, $end), "\r\n") : '');
+        return @file_put_contents($iniPath, $updated, LOCK_EX) !== false;
     }
 
     // Persists the PHP application timezone into application.ini's [production]
@@ -1264,8 +1471,8 @@ class Application_Service_Common
     }
 
     /**
-     * Addresses this instance sends as or authenticates with (SMTP login, sender, admin
-     * email in application.ini and global_config). Mail is sent from them, so they exist.
+     * Addresses this instance sends as or authenticates with (SMTP login and sender from
+     * application.ini, admin email from global_config). Mail is sent from them, so they exist.
      */
     private static function configuredMailboxes(): array
     {
@@ -1273,20 +1480,12 @@ class Application_Service_Common
         if ($list !== null) {
             return $list;
         }
-        $candidates = [];
+        $mailSettings = self::getMailSettings();
+        $candidates = [$mailSettings['username'], $mailSettings['fromEmail']];
         try {
-            $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
-            $candidates[] = $conf->email->config->username ?? null;
-        } catch (Throwable) {
-            // no ini mail block
-        }
-        try {
-            $mail = json_decode((string) self::getConfig('mail'));
-            $candidates[] = $mail->username ?? null;
-            $candidates[] = $mail->fromEmail ?? null;
             $candidates[] = self::getConfig('admin_email');
         } catch (Throwable) {
-            // no DB mail settings yet
+            // no global_config yet
         }
         $list = [];
         foreach ($candidates as $address) {

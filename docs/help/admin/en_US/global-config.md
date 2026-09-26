@@ -91,7 +91,9 @@ How participants log in and what they can do.
 
 ## Email Settings
 
-SMTP credentials and defaults for outgoing email.
+SMTP credentials and defaults for outgoing email. These are stored
+in `application.ini` on the server, not in the database, so a copy of
+the database cannot send email on its own.
 
 - **SMTP Host / Port** — server hostname and port (587 for TLS,
   465 for SSL).
@@ -100,7 +102,8 @@ SMTP credentials and defaults for outgoing email.
 - **CC / BCC** — default copy recipients for every system
   email.
 - **Encryption** — TLS, SSL, STARTTLS, or None.
-- **Username / Password** — SMTP credentials.
+- **Username / Password** — SMTP credentials. The password is
+  never shown; leave it blank to keep the current one.
 - **Authentication Type** — Login, Plain, or CRAM-MD5.
 
 ## Saving
@@ -119,7 +122,7 @@ not save and the missing field is highlighted.
 - After changing **Active Schemes**, reload the affected admin
   pages (DTS, VL, TB settings) to see menu items appear or
   disappear.
-- Changed SMTP settings? Send yourself a test email straight
-  away (for example, via *Send Email to Participants* on a
-  shipped survey) to check the new credentials before
-  participants try to use the system.
+- Changed the SMTP host, username or password? The page logs in
+  to the mail server before saving. If the server refuses, a red
+  message explains why and nothing is saved, so the old settings
+  keep working.
