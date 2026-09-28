@@ -687,6 +687,30 @@ class Application_Service_Common
         return $s;
     }
 
+    /**
+     * What the bounce processor has done: its latest run (system_config.bounce_last_run,
+     * null before the first run) and how many addresses are marked as bounced.
+     *
+     * @return array{lastRun: ?array, bounced: int, lastBounceAt: ?string}
+     */
+    public function getBounceStatus(): array
+    {
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $lastRun = json_decode((string) $db->fetchOne("SELECT `value` FROM system_config WHERE config = 'bounce_last_run'"), true);
+        $row = $db->fetchRow(
+            "SELECT
+                (SELECT COUNT(*) FROM participant WHERE email_status = 'hard_bounce' OR additional_email_status = 'hard_bounce')
+              + (SELECT COUNT(*) FROM data_manager WHERE primary_email_status = 'hard_bounce' OR secondary_email_status = 'hard_bounce') AS bounced,
+                (SELECT MAX(t) FROM (SELECT MAX(last_bounce_at) AS t FROM participant
+                                     UNION ALL SELECT MAX(last_bounce_at) FROM data_manager) latest) AS last_bounce_at"
+        );
+        return [
+            'lastRun' => is_array($lastRun) ? $lastRun : null,
+            'bounced' => (int) ($row['bounced'] ?? 0),
+            'lastBounceAt' => $row['last_bounce_at'] ?? null,
+        ];
+    }
+
     /** Zend_Mail_Storage_Imap parameters for effective bounce settings. */
     public static function bounceImapParams(array $s): array
     {
@@ -763,6 +787,7 @@ class Application_Service_Common
         if ($mailboxChanged) {
             $db = Zend_Db_Table_Abstract::getDefaultAdapter();
             $db->update('system_config', ['value' => '0'], ['config = ?' => 'bounce_last_uid']);
+            $db->delete('system_config', ['config = ?' => 'bounce_last_run']);
         }
         if ($new['host'] === '') {
             return ['ok' => true, 'message' => 'Bounce processing is turned off.'];

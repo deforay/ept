@@ -123,9 +123,13 @@ try {
         }
     }
     ksort($newMessages);
+    $waiting = count($newMessages);
     $newMessages = array_slice($newMessages, 0, $maxToProcess, true);
 
     if (!$newMessages) {
+        if (!$dryRun) {
+            recordBounceRun($db, ['ok' => true, 'scanned' => 0, 'hard' => 0, 'stamped' => 0, 'waiting' => 0]);
+        }
         if (!$quiet) {
             $io->writeln('  no new messages.');
         }
@@ -216,6 +220,15 @@ try {
     if (!$dryRun && $highestProcessedUid > $lastUid) {
         $db->update('system_config', ['value' => (string) $highestProcessedUid], ['config = ?' => 'bounce_last_uid']);
     }
+    if (!$dryRun) {
+        recordBounceRun($db, [
+            'ok' => true,
+            'scanned' => $stats['scanned'],
+            'hard' => $stats['hard'],
+            'stamped' => $stats['stamped_rows'],
+            'waiting' => $waiting - $stats['scanned'],
+        ]);
+    }
 
     if (!$quiet) {
         $io->section('Summary');
@@ -240,8 +253,30 @@ try {
             'trace' => $e->getTraceAsString(),
         ]);
     }
+    if (isset($db) && !($dryRun ?? false)) {
+        try {
+            recordBounceRun($db, ['ok' => false, 'error' => $e->getMessage()]);
+        } catch (Throwable) {
+            // the database itself is the problem; the log entry above is all we can do
+        }
+    }
     fwrite(STDERR, 'process-bounces failed: ' . $e->getMessage() . PHP_EOL);
     exit(1);
+}
+
+/**
+ * Keep a summary of the latest run in system_config.bounce_last_run, shown under
+ * Bounce Inbox on Global Settings so admins can see the processor is working.
+ */
+function recordBounceRun(Zend_Db_Adapter_Abstract $db, array $summary): void
+{
+    $value = json_encode(['at' => date('Y-m-d H:i:s')] + $summary);
+    $exists = $db->fetchOne("SELECT 1 FROM system_config WHERE config = 'bounce_last_run'");
+    if ($exists) {
+        $db->update('system_config', ['value' => $value], ['config = ?' => 'bounce_last_run']);
+    } else {
+        $db->insert('system_config', ['config' => 'bounce_last_run', 'value' => $value, 'display_name' => 'Latest bounce processor run']);
+    }
 }
 
 // ---------------------------------------------------------------------------

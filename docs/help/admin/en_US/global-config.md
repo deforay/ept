@@ -123,6 +123,11 @@ to turn this off.
 Before saving, ePT opens the mailbox and the folder. If that fails,
 a red message shows why and nothing is saved.
 
+Once the inbox is set, a box above the fields shows when it was
+last checked, how many addresses that check marked, and how many
+are marked as bounced in total. It turns red if the last check
+failed or no check has run for over two hours.
+
 ## Saving
 
 Click **Update** to save the whole form. Required fields are

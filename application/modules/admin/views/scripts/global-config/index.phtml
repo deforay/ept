@@ -1296,6 +1296,42 @@ $faqResults = json_decode($this->faqs);
 					<?= $this->translate->_("ePT reads delivery-failure reports from this IMAP mailbox every 30 minutes and marks addresses that no longer exist, so later emails skip them. Leave IMAP Host empty to turn this off."); ?>
 					<?= $this->translate->_("Leave Username empty to read the SMTP account's mailbox with the SMTP login."); ?>
 				</div>
+				<?php
+				$bounceStatus = $this->bounceStatus ?? null;
+				$lastRun = $bounceStatus['lastRun'] ?? null;
+				if (!empty($this->bounceSettings['host']) && $bounceStatus !== null):
+					$runAt = $lastRun ? strtotime($lastRun['at']) : null;
+					// Runs every 30 minutes, so two hours of silence means the scheduler is not running.
+					$stale = $runAt !== null && $runAt < time() - 7200;
+					$statusClass = ($lastRun && empty($lastRun['ok'])) || $stale ? 'alert-danger' : ($lastRun ? 'alert-success' : 'alert-warning');
+				?>
+					<div class="alert <?= $statusClass; ?>" id="bounceStatus" style="margin: 10px 0;">
+						<?php if (!$lastRun): ?>
+							<?= $this->translate->_("Not checked yet. The first check runs within 30 minutes of saving."); ?>
+						<?php elseif (empty($lastRun['ok'])): ?>
+							<?= sprintf($this->translate->_("The last check failed on %s:"), $this->escape(Pt_Commons_DateUtility::humanReadableDateFormat($lastRun['at'], true))); ?>
+							<?= $this->escape($lastRun['error'] ?? ''); ?>
+						<?php else: ?>
+							<?= sprintf(
+								$this->translate->_("Last checked on %s: read %d new message(s) and marked %d address(es) as bounced."),
+								$this->escape(Pt_Commons_DateUtility::humanReadableDateFormat($lastRun['at'], true)),
+								(int) $lastRun['scanned'],
+								(int) $lastRun['hard']
+							); ?>
+							<?php if ((int) ($lastRun['waiting'] ?? 0) > 0): ?>
+								<?= sprintf($this->translate->_("%d older message(s) are still waiting; up to 200 are read every 30 minutes."), (int) $lastRun['waiting']); ?>
+							<?php endif; ?>
+						<?php endif; ?>
+						<?php if ($stale): ?>
+							<br><strong><?= $this->translate->_("No check has run for over two hours. Check that the ePT scheduler (cron) is running on the server."); ?></strong>
+						<?php endif; ?>
+						<br><?= sprintf($this->translate->_("Addresses marked as bounced so far: %d."), $bounceStatus['bounced']); ?>
+						<?php if (!empty($bounceStatus['lastBounceAt'])): ?>
+							<?= sprintf($this->translate->_("Most recent on %s."), $this->escape(Pt_Commons_DateUtility::humanReadableDateFormat($bounceStatus['lastBounceAt'], true))); ?>
+						<?php endif; ?>
+						<?= $this->translate->_("To see which ones, use the Unusable Emails button on the PT Participants page."); ?>
+					</div>
+				<?php endif; ?>
 				<?php if (!empty($this->bounceSaveResult) && $this->bounceSaveResult['message'] !== ''): ?>
 					<div class="alert <?= $this->bounceSaveResult['ok'] ? 'alert-success' : 'alert-danger'; ?>" style="margin: 10px 0;">
 						<?= $this->escape($this->bounceSaveResult['message']); ?>

@@ -64,6 +64,7 @@ class Admin_GlobalConfigController extends Zend_Controller_Action
         $this->view->appDomain = $commonServices->getApplicationDomain();
         $this->view->mailSettings = Application_Service_Common::getMailSettings();
         $this->view->bounceSettings = Application_Service_Common::getBounceSettings();
+        $this->view->bounceStatus = $commonServices->getBounceStatus();
         $this->view->allSchemes = $commonServices->getFullSchemesDetails();
     }
 }

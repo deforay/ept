@@ -65,6 +65,19 @@ After this, the scheduler runs the processor every 30 minutes. It reads only new
 
 A full mailbox, a spam block or a rate limit does not mark the address. Only a report that the mailbox does not exist does.
 
+### Check that bounce processing is working
+
+Open **Configure → ePT Global Settings → Email Settings**. Under **Bounce Inbox**, a box shows the latest check:
+
+| Box | Meaning | What to do |
+| --- | --- | --- |
+| Green, "Last checked on …" | The last check worked. It shows how many new messages it read and how many addresses it marked | Nothing. If it says older messages are still waiting, it is working through the mailbox |
+| Yellow, "Not checked yet" | No check has run since the inbox was saved | Wait 30 minutes and reload |
+| Red, "The last check failed" | The mailbox could not be read. The box shows the server's reply | Fix the login or folder and click **Update** |
+| Red, "No check has run for over two hours" | The ePT scheduler is not running | Ask the server administrator to check the cron job that runs `crunz schedule:run` |
+
+The box also shows how many addresses are marked as bounced so far. To see which ones, use **Unusable Emails** on **Configure → PT Participants**.
+
 ## Find participants and data managers who cannot receive email
 
 1. Open **Configure → PT Participants**, or **Configure → Data Manager (Participant Login)**.
