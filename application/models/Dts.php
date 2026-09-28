@@ -2885,12 +2885,12 @@ final class Application_Model_Dts
         $testsDone   = count($tests);
         $anyReactive = (bool) array_intersect(['R', 'WR'], $tests);
         $hasWeak     = in_array('WR', $tests, true);
-        // "Follow MOH HIV testing strategy" is not a catch-all remark. In both NIHE workbook
-        // sheets it appears on exactly one kind of row: the laboratory carried on testing after
-        // a non-reactive Test 1, which the strategy says should end the workup. A reactive
-        // Test 1 justifies the further tests, so those rows carry no MOH remark (workbook rows
-        // 8-13). A lab that stopped where it should have gets no remark at all.
-        // (Too FEW tests on a positive is handled in the failure branches below.)
+        // "Follow MOH HIV testing strategy" is not a catch-all remark, and the two tiers use it
+        // differently. Confirmatory: only when the laboratory carried on testing after a
+        // non-reactive Test 1 — a reactive Test 1 justifies the further tests (workbook rows
+        // 8-13). Screening: whenever the laboratory ran more than one test, reactive or not,
+        // diluted or not (NIHE, Sep 2026). A lab that stopped where it should have gets no
+        // remark at all. (Too FEW tests on a positive is handled in the failure branches below.)
         $extraTesting = $testsDone > 1 && $t1 === 'NR';
 
         // NIHE recommendation/feedback wording (workbook Feedback/Note/Recommendation columns).
@@ -2903,7 +2903,8 @@ final class Application_Model_Dts
         $REVIEW_SAMPLE = 'Review testing procedures and sample handling';
         $REFER_CONF    = 'Sample should be referred to confirmation lab';
         $SCREEN_NO_POS = 'Screening labs must not conclude "HIV Positive." Samples should be reported as "Inconclusive" and referred for confirmatory testing';
-        $NEED_SENT_CONF = 'Inconclusive screening result must be marked "Sent for confirmation"';
+
+        $screeningMoh = $testsDone > 1 ? $FOLLOW_MOH : '';
 
         $labComment = strtolower(trim((string) ($result['lab_comment'] ?? '')));
 
@@ -2918,20 +2919,22 @@ final class Application_Model_Dts
                 $this->vietnamFeedback($out, $sampleLabel, $REVIEW_KIT, true);
                 return;
             }
-            // 3. Correctly-called Negative -> follow MOH; Inconclusive/Indeterminate -> must be
-            //    marked "Sent for confirmation" (criterion #3 in the screening rules).
+            // 3. Correctly-called Negative -> MOH remark if more than one test was run.
             if ($ref === 'N' && $final === 'N') {
                 $out['algoResult'] = 'Pass';
-                $this->vietnamFeedback($out, $sampleLabel, $extraTesting ? $FOLLOW_MOH : '');
+                $this->vietnamFeedback($out, $sampleLabel, $screeningMoh);
                 return;
             }
+            // 4. Inconclusive/Indeterminate is the right call. Without the "Sent for
+            //    confirmation" comment it is still Acceptable, but the lab is told to refer the
+            //    sample (criterion #3, as revised by NIHE Sep 2026; workbook rows 14, 20, 24).
             if ($final === 'I') {
-                if ($labComment !== 'sent_for_confirmation') {
-                    $this->vietnamFeedback($out, $sampleLabel, $NEED_SENT_CONF, true);
-                    return;
-                }
                 $out['algoResult'] = 'Pass';
-                $this->vietnamFeedback($out, $sampleLabel, $REFER_CONF);
+                $this->vietnamFeedback(
+                    $out,
+                    $sampleLabel,
+                    $labComment === 'sent_for_confirmation' ? $screeningMoh : $REFER_CONF
+                );
                 return;
             }
             $this->vietnamFeedback($out, $sampleLabel, $REVIEW_KIT, true);
