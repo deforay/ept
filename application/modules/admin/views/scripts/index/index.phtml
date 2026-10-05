@@ -1198,8 +1198,9 @@ $schemeRows = $this->schemeEngagement;
 			</div>
 		</div>
 	</div>
-<?php else: ?>
-	<!-- Task 4: between-rounds card -->
+<?php endif; ?>
+<?php if (!$this->showRoundTable || !empty($this->betweenRounds)): ?>
+	<!-- Task 4: last-finalized cards (under the round table while a round is running) -->
 	<div class="row">
 		<div class="col-lg-12">
 			<?php if (!empty($this->betweenRounds)): ?>
@@ -1226,7 +1227,11 @@ $schemeRows = $this->schemeEngagement;
 				};
 				?>
 				<div class="between-rounds-header">
-					<?= $this->translate->_("No rounds open for response"); ?> ·
+					<?php if ($this->showRoundTable): ?>
+						<?= $this->translate->_("Previous rounds"); ?> ·
+					<?php else: ?>
+						<?= $this->translate->_("No rounds open for response"); ?> ·
+					<?php endif; ?>
 					<?= $this->translate->_("last finalized"); ?>
 					<?php echo $this->escape($this->betweenRounds[0]['finalizedDate']); ?>
 				</div>

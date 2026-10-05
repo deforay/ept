@@ -54,9 +54,10 @@ class Admin_IndexController extends Zend_Controller_Action
         $this->view->awaitingFinalizeCount = count($openRounds) - count($openForResponse);
         $this->view->showRoundTable = count($openRounds) > 0;
 
-        if (!$this->view->showRoundTable) {
-            $this->view->betweenRounds = $dashboardService->getBetweenRoundsSummary(5);
-        }
+        // Last finalized round per scheme. Shown under the round table while a
+        // round is running, so a mid-round dashboard still shows how the
+        // previous round ended.
+        $this->view->betweenRounds = $dashboardService->getBetweenRoundsSummary(5);
 
         // Nudge: shipments whose scores are out of date because responses arrived after
         // they were evaluated. Only for admins with 'config-ept' — the re-evaluate endpoint
