@@ -296,7 +296,8 @@ final class Pt_Commons_ArchiveUtility
                     return $result === true;
 
                 case 'csv':
-                    return is_readable($path);
+                    // Plain text: the is_file/is_readable guard above is the whole check.
+                    return true;
 
                 default:
                     return false;
