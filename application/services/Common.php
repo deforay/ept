@@ -255,6 +255,27 @@ class Application_Service_Common
         return self::getSetting($name);
     }
 
+    /**
+     * Where participants send questions: support_email when set, else admin_email.
+     * Either may hold several addresses. Invalid entries are dropped and the rest
+     * come back as "a@x.org, b@y.org".
+     */
+    public static function getSupportEmail(): string
+    {
+        foreach (['support_email', 'admin_email'] as $name) {
+            $valid = [];
+            foreach (preg_split('/[,;\s]+/', (string) self::getSetting($name), -1, PREG_SPLIT_NO_EMPTY) as $email) {
+                if (filter_var($email, FILTER_VALIDATE_EMAIL) !== false) {
+                    $valid[strtolower($email)] = $email;
+                }
+            }
+            if ($valid !== []) {
+                return implode(', ', $valid);
+            }
+        }
+        return '';
+    }
+
     // Returns true iff the session holds a passed captcha, then clears it so
     // the same solve can't be replayed across multiple POSTs.
     public static function consumeCaptcha(): bool

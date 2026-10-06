@@ -4025,9 +4025,10 @@ class Application_Service_Shipments
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $return = 0;
         $sQuery = $db->select()->from(['sp' => 'shipment_participant_map'], ['sp.participant_id', 'sp.map_id', 'sp.last_not_participated_mail_count', 'sp.final_result'])
-            ->joinLeft(['s' => 'shipment'], 's.shipment_id=sp.shipment_id', ['s.shipment_code', 's.shipment_code'])
+            ->joinLeft(['s' => 'shipment'], 's.shipment_id=sp.shipment_id', ['s.shipment_code', 's.shipment_date', 's.response_deadline'])
             ->joinLeft(['d' => 'distributions'], 'd.distribution_id = s.distribution_id', ['distribution_code', 'distribution_date'])
-            ->joinLeft(['p' => 'participant'], 'p.participant_id=sp.participant_id', ['p.email', 'participantName' => new Zend_Db_Expr(Application_Model_DbTable_Participants::participantNameGroupConcatExpr('p'))])
+            ->joinLeft(['p' => 'participant'], 'p.participant_id=sp.participant_id', ['p.email', 'p.unique_identifier', 'participantName' => new Zend_Db_Expr(Application_Model_DbTable_Participants::participantNameGroupConcatExpr('p'))])
+            ->joinLeft(['c' => 'countries'], 'c.id=p.country', ['country' => 'c.iso_name'])
             ->joinLeft(['sl' => 'scheme_list'], 'sl.scheme_id=s.scheme_type', ['SCHEME' => 'sl.scheme_name'])
             // Who has not come back to us. An empty shipment_test_date used to stand in for
             // that, but it is a poor proxy: a lab that declares it could not test has the date
@@ -4041,13 +4042,15 @@ class Application_Service_Shipments
         $participantEmails = $db->fetchAll($sQuery);
         foreach ($participantEmails as $participantDetails) {
             if ($participantDetails['email'] != '') {
-                $surveyDate = Pt_Commons_DateUtility::humanReadableDateFormat($participantDetails['distribution_date']);
-                $search = ['##NAME##', '##SHIPCODE##', '##SHIPTYPE##', '##SURVEYCODE##', '##SURVEYDATE##',];
-                $replace = [$participantDetails['participantName'], $participantDetails['shipment_code'], $participantDetails['SCHEME'], $participantDetails['distribution_code'], $surveyDate];
-                $content = $notParticipatedMailContent['mail_content'];
-                $message = str_replace($search, $replace, $content);
-                // $subject = $notParticipatedMailContent['mail_subject'];
-                $subject = str_replace($search, $replace, $notParticipatedMailContent['mail_subject']);
+                // Same merge as Email Participants, so this template can use the
+                // {{field}} names as well as the older ##FIELD## tokens
+                $mergeRow = $participantDetails + [
+                    'name' => $participantDetails['participantName'],
+                    'participant_names' => $participantDetails['participantName'],
+                    'participant_ids' => $participantDetails['unique_identifier'],
+                ];
+                $message = Application_Service_Participants::mailMerge((string) $notParticipatedMailContent['mail_content'], $mergeRow);
+                $subject = Application_Service_Participants::mailMerge((string) $notParticipatedMailContent['mail_subject'], $mergeRow);
                 $fromEmail = $notParticipatedMailContent['mail_from'];
                 $fromFullName = $notParticipatedMailContent['from_name'];
                 $toEmail = $participantDetails['email'];

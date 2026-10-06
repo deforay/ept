@@ -57,6 +57,15 @@ class Admin_EmailParticipantsController extends Zend_Controller_Action
         $this->view->shipment = $shipment->getAllShipmentCode();
         $scheme = new Application_Service_Schemes();
         $this->view->schemes = $scheme->getAllSchemes();
+        // Sender and the standing Cc/Bcc ride on every message, so the
+        // message preview shows them alongside each recipient's own To/Cc.
+        $mail = Application_Service_Common::getMailSettings();
+        $this->view->mailSender = [
+            'fromName'  => $mail['fromName'],
+            'fromEmail' => $mail['fromEmail'],
+            'cc'        => $mail['cc'],
+            'bcc'       => $mail['bcc'],
+        ];
     }
 
     /**
@@ -90,9 +99,6 @@ class Admin_EmailParticipantsController extends Zend_Controller_Action
 
         $participantService = new Application_Service_Participants();
         $resolved = $participantService->resolveMailRecipients($data);
-        // Roles across every audience, so we can flag an address that a
-        // separate send (e.g. the PTCC one) would also reach.
-        $roleMap = $participantService->getMailRecipientRoleMap($data);
 
         $subject = (string) $this->_getParam('subject', '');
         $message = (string) $this->_getParam('message', '');
@@ -112,16 +118,9 @@ class Admin_EmailParticipantsController extends Zend_Controller_Action
 
         $recipients = [];
         $counts = [];
-        foreach ($resolved['recipients'] as $key => $pt) {
+        foreach ($resolved['recipients'] as $pt) {
             $role = $pt['role'] ?? '';
             $counts[$role] = ($counts[$role] ?? 0) + 1;
-
-            [$search, $replace] = Application_Service_Participants::mailMergeFields($pt);
-            // Only audiences OUTSIDE this selection are worth flagging. An
-            // address that is both participant and data manager is already
-            // de-duplicated into a single email by this send; one that is also
-            // a PTCC would get a second copy from the separate PTCC send.
-            $otherRoles = array_values(array_diff($roleMap[$key] ?? [], $data['sendMail']));
 
             $recipients[] = [
                 'email'        => $pt['email'],
@@ -130,11 +129,10 @@ class Admin_EmailParticipantsController extends Zend_Controller_Action
                 'country'      => $pt['country'] ?? '',
                 'shipmentCode' => $pt['shipment_code'] ?? '',
                 'cc'           => $pt['cc'] ?? [],
-                'otherRoles'   => $otherRoles,
                 // >1 when this inbox also appears as a Cc on other messages
                 'copies'       => $inbox[strtolower($pt['email'])] ?? 1,
-                'subject'      => str_replace($search, $replace, $subject),
-                'body'         => str_replace($search, $replace, $message),
+                'subject'      => Application_Service_Participants::mailMerge($subject, $pt),
+                'body'         => Application_Service_Participants::mailMerge($message, $pt),
             ];
         }
 

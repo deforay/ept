@@ -3,7 +3,9 @@ $title = '';
 if ($this->mailPurpose == 'new_shipment') {
     $title = 'New Shipment Announcement';
 } elseif ($this->mailPurpose == 'not_participated') {
-    $title = 'Not Participated Reminder';
+    $title = 'Not Responded Reminder';
+} elseif ($this->mailPurpose == 'deadline_extended') {
+    $title = 'Deadline Extended';
 } elseif ($this->mailPurpose == 'not_participant_report_mail') {
     $title = 'Reports';
 } elseif ($this->mailPurpose == 'send_participant_report_mail') {
@@ -61,13 +63,29 @@ if ($this->mailPurpose == 'new_shipment') {
             <div class="form-group">
                 <label for="message" class="col-lg-3 control-label"><?= $this->translate->_("Key"); ?></label>
                 <div class="col-lg-6">
-                    <span class="help-block"><?= $this->translate->_("Lab Name/Participant Name"); ?> : ##NAME##</span>
-                    <span class="help-block"><?= $this->translate->_("Shipment Code"); ?> : ##SHIPCODE##</span>
-                    <span class="help-block"><?= $this->translate->_("Scheme Type"); ?> : ##SHIPTYPE##</span>
-                    <span class="help-block"><?= $this->translate->_("PT Survey Code"); ?> : ##SURVEYCODE##</span>
-                    <span class="help-block"><?= $this->translate->_("PT Survey Date"); ?> : ##SURVEYDATE##</span>
-                    <span class="help-block"><?= $this->translate->_("Individual Report Link"); ?> : ##IND_REPORT_LINK##</span>
-                    <span class="help-block"><?= $this->translate->_("Summary Report Link"); ?> : ##SUM_REPORT_LINK##</span>
+                    <?php if (in_array($this->mailPurpose, ['not_participated', 'deadline_extended'], true)) { ?>
+                        <?php // Sent through the shared merge, so the full {{field}} set works here ?>
+                        <span class="help-block"><?= $this->htmlTranslate("Recipient name"); ?> : {{recipient_name}}</span>
+                        <span class="help-block"><?= $this->htmlTranslate("Participant name"); ?> : {{participant_name}}</span>
+                        <span class="help-block"><?= $this->htmlTranslate("Participant ID"); ?> : {{participant_id}}</span>
+                        <span class="help-block"><?= $this->htmlTranslate("Country"); ?> : {{country}}</span>
+                        <span class="help-block"><?= $this->htmlTranslate("Shipment code"); ?> : {{shipment_code}}</span>
+                        <span class="help-block"><?= $this->htmlTranslate("Scheme"); ?> : {{scheme}}</span>
+                        <span class="help-block"><?= $this->htmlTranslate("Shipment date"); ?> : {{shipment_date}}</span>
+                        <span class="help-block"><?= $this->htmlTranslate("Response deadline"); ?> : {{response_deadline}}</span>
+                        <span class="help-block"><?= $this->htmlTranslate("PT survey code"); ?> : {{pt_survey_code}}</span>
+                        <span class="help-block"><?= $this->htmlTranslate("PT survey date"); ?> : {{pt_survey_date}}</span>
+                        <span class="help-block"><?= $this->htmlTranslate("PT survey year"); ?> : {{year}}</span>
+                        <span class="help-block"><?= $this->htmlTranslate("Support email"); ?> : {{support_email}}</span>
+                    <?php } else { ?>
+                        <span class="help-block"><?= $this->translate->_("Lab Name/Participant Name"); ?> : ##NAME##</span>
+                        <span class="help-block"><?= $this->translate->_("Shipment Code"); ?> : ##SHIPCODE##</span>
+                        <span class="help-block"><?= $this->translate->_("Scheme Type"); ?> : ##SHIPTYPE##</span>
+                        <span class="help-block"><?= $this->translate->_("PT Survey Code"); ?> : ##SURVEYCODE##</span>
+                        <span class="help-block"><?= $this->translate->_("PT Survey Date"); ?> : ##SURVEYDATE##</span>
+                        <span class="help-block"><?= $this->translate->_("Individual Report Link"); ?> : ##IND_REPORT_LINK##</span>
+                        <span class="help-block"><?= $this->translate->_("Summary Report Link"); ?> : ##SUM_REPORT_LINK##</span>
+                    <?php } ?>
                 </div>
             </div>
             <div class="form-group">

@@ -1228,6 +1228,10 @@ class Application_Service_Participants
         // Every join below fans rows out, so anything that isn't grouped has to
         // be GROUP_CONCAT(DISTINCT ...) to stay stable.
         $countryExpr = new Zend_Db_Expr("GROUP_CONCAT(DISTINCT c.iso_name ORDER BY c.iso_name SEPARATOR ', ')");
+        // A manager or PTCC covering several participants gets all of their
+        // IDs and names, whatever name the email itself is addressed to
+        $labIdExpr = "GROUP_CONCAT(DISTINCT p.unique_identifier ORDER BY p.unique_identifier SEPARATOR ', ')";
+        $labNameExpr = Application_Model_DbTable_Participants::participantNameGroupConcatExpr('p');
 
         if (in_array('participant', (array) $data['sendMail'], true)) {
             $emailExpr = $emailPicker('p.email', 'p.email_status', 'p.additional_email', 'p.additional_email_status');
@@ -1236,9 +1240,11 @@ class Application_Service_Participants
                 'mailTo' => new Zend_Db_Expr($emailExpr),
                 'name'  => new Zend_Db_Expr(Application_Model_DbTable_Participants::participantNameGroupConcatExpr('p')),
                 'role'  => new Zend_Db_Expr("'participant'"),
+                'participant_ids' => new Zend_Db_Expr($labIdExpr),
+                'participant_names' => new Zend_Db_Expr($labNameExpr),
             ])
                 ->joinLeft(['spm' => 'shipment_participant_map'], 'p.participant_id=spm.participant_id', [])
-                ->joinLeft(['s' => 'shipment'], 's.shipment_id=spm.shipment_id', ['s.shipment_code', 's.shipment_date'])
+                ->joinLeft(['s' => 'shipment'], 's.shipment_id=spm.shipment_id', ['s.shipment_code', 's.shipment_date', 's.response_deadline'])
                 ->joinLeft(['d' => 'distributions'], 'd.distribution_id=s.distribution_id', ['distribution_code', 'distribution_date'])
                 ->joinLeft(['sl' => 'scheme_list'], 'sl.scheme_id=s.scheme_type', ['SCHEME' => 'sl.scheme_name'])
                 ->joinLeft(['c' => 'countries'], 'c.id=p.country', ['country' => $countryExpr])
@@ -1269,10 +1275,12 @@ class Application_Service_Participants
                 'mailTo' => new Zend_Db_Expr($dmEmailExpr),
                 'name'  => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT dm.first_name,' ',dm.last_name ORDER BY dm.first_name SEPARATOR ', ')"),
                 'role'  => new Zend_Db_Expr("'datamanager'"),
+                'participant_ids' => new Zend_Db_Expr($labIdExpr),
+                'participant_names' => new Zend_Db_Expr($labNameExpr),
             ])
                 ->joinLeft(['pmm' => 'participant_manager_map'], 'dm.dm_id=pmm.dm_id', [])
                 ->joinLeft(['spm' => 'shipment_participant_map'], 'spm.participant_id=pmm.participant_id', [])
-                ->joinLeft(['s' => 'shipment'], 's.shipment_id=spm.shipment_id', ['s.shipment_code', 's.shipment_date'])
+                ->joinLeft(['s' => 'shipment'], 's.shipment_id=spm.shipment_id', ['s.shipment_code', 's.shipment_date', 's.response_deadline'])
                 ->joinLeft(['d' => 'distributions'], 'd.distribution_id=s.distribution_id', ['distribution_code', 'distribution_date'])
                 ->joinLeft(['sl' => 'scheme_list'], 'sl.scheme_id=s.scheme_type', ['SCHEME' => 'sl.scheme_name'])
                 ->joinLeft(['p' => 'participant'], 'p.participant_id=pmm.participant_id', [])
@@ -1292,10 +1300,12 @@ class Application_Service_Participants
                 'mailTo' => new Zend_Db_Expr($dmEmailExpr),
                 'name'  => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT dm.first_name,' ',dm.last_name ORDER BY dm.first_name SEPARATOR ', ')"),
                 'role'  => new Zend_Db_Expr("'ptcc'"),
+                'participant_ids' => new Zend_Db_Expr($labIdExpr),
+                'participant_names' => new Zend_Db_Expr($labNameExpr),
             ])
                 ->joinLeft(['pmm' => 'participant_manager_map'], 'dm.dm_id=pmm.dm_id', [])
                 ->joinLeft(['spm' => 'shipment_participant_map'], 'spm.participant_id=pmm.participant_id', [])
-                ->joinLeft(['s' => 'shipment'], 's.shipment_id=spm.shipment_id', ['s.shipment_code', 's.shipment_date'])
+                ->joinLeft(['s' => 'shipment'], 's.shipment_id=spm.shipment_id', ['s.shipment_code', 's.shipment_date', 's.response_deadline'])
                 ->joinLeft(['d' => 'distributions'], 'd.distribution_id=s.distribution_id', ['distribution_code', 'distribution_date'])
                 ->joinLeft(['sl' => 'scheme_list'], 'sl.scheme_id=s.scheme_type', ['SCHEME' => 'sl.scheme_name'])
                 ->joinLeft(['pcm' => 'ptcc_countries_map'], 'pcm.ptcc_id=dm.dm_id', [])
@@ -1405,42 +1415,37 @@ class Application_Service_Participants
     }
 
     /**
-     * Which roles each address matches across ALL three audiences, regardless
-     * of what is selected. Lets the preview warn that an address queued as a
-     * PTCC today is also an enrolled participant, and would therefore receive
-     * a second copy from a separate send.
-     *
-     * @return array<string, string[]> lowercased email => roles
+     * The merge fields Email Participants offers, as {{key}} => legacy ##TOKEN##.
+     * The {{key}} form is what the page suggests. The ##TOKEN## form keeps
+     * working because saved mail templates and older drafts still use it.
+     * Labels live in the view so the translation extractor finds them.
      */
-    public function getMailRecipientRoleMap($data)
-    {
-        $data['sendMail'] = ['participant', 'datamanager', 'ptcc'];
-        // Role membership only — the Cc join would just slow this down
-        unset($data['ccDataManagers']);
-
-        $map = [];
-        foreach ($this->getAllPTDetails($data) as $row) {
-            foreach ($row as $pt) {
-                $email = Application_Service_Common::validateEmail(trim((string) ($pt['email'] ?? '')));
-                if ($email === null) {
-                    continue;
-                }
-                $key = strtolower($email);
-                $map[$key][$pt['role']] = $pt['role'];
-            }
-        }
-
-        return array_map('array_values', $map);
-    }
+    public const MAIL_MERGE_FIELDS = [
+        'recipient_name'    => '##NAME##',
+        'participant_name'  => null,
+        'participant_id'    => null,
+        'country'           => '##COUNTRY##',
+        'shipment_code'     => '##SHIPCODE##',
+        'scheme'            => '##SHIPTYPE##',
+        'shipment_date'     => '##SHIPDATE##',
+        'response_deadline' => null,
+        'pt_survey_code'    => '##SURVEYCODE##',
+        'pt_survey_date'    => '##SURVEYDATE##',
+        'year'              => '##YEAR##',
+        'support_email'     => null,
+    ];
 
     /**
-     * Merge-field values for one recipient row. Shared by the send and the
-     * preview so a previewed body is byte-identical to what goes out.
+     * Merge-field values for one recipient row, keyed like MAIL_MERGE_FIELDS.
      *
-     * @return array{0: string[], 1: string[]} [$search, $replace]
+     * @return array<string, string>
      */
-    public static function mailMergeFields(array $pt): array
+    public static function mailMergeValues(array $pt): array
     {
+        // Same for every recipient, so look it up once per request
+        static $supportEmail = null;
+        $supportEmail ??= Application_Service_Common::getSupportEmail();
+
         $surveyDate = Pt_Commons_DateUtility::humanReadableDateFormat($pt['distribution_date'] ?? null);
         $shipDate = !empty($pt['shipment_date'])
             ? Pt_Commons_DateUtility::humanReadableDateFormat($pt['shipment_date'])
@@ -1449,19 +1454,54 @@ class Application_Service_Participants
         // prepared in December still belongs to the following year's round.
         $year = !empty($pt['distribution_date']) ? date('Y', strtotime((string) $pt['distribution_date'])) : '';
 
+        // An end-of-day cutoff reads better as a plain date; any other time
+        // of day is part of the deadline and has to be shown.
+        $deadline = (string) ($pt['response_deadline'] ?? '');
+        $time = strlen($deadline) > 10 ? substr($deadline, 11, 5) : '';
+        $deadline = Pt_Commons_DateUtility::humanReadableDateFormat(
+            $deadline,
+            $time !== '' && !in_array($time, ['00:00', '23:59'], true)
+        );
+
         return [
-            ['##NAME##', '##SHIPCODE##', '##SHIPTYPE##', '##SURVEYCODE##', '##SURVEYDATE##', '##SHIPDATE##', '##YEAR##', '##COUNTRY##'],
-            [
-                $pt['name'] ?? '',
-                $pt['shipment_code'] ?? '',
-                $pt['SCHEME'] ?? '',
-                $pt['distribution_code'] ?? '',
-                $surveyDate,
-                $shipDate,
-                $year,
-                $pt['country'] ?? '',
-            ],
+            // A manager saved without a name still gets a greeting
+            'recipient_name'    => (string) (($pt['name'] ?? '') !== '' ? $pt['name'] : ($pt['participant_names'] ?? '')),
+            'participant_name'  => (string) ($pt['participant_names'] ?? ''),
+            'participant_id'    => (string) ($pt['participant_ids'] ?? ''),
+            'country'           => (string) ($pt['country'] ?? ''),
+            'shipment_code'     => (string) ($pt['shipment_code'] ?? ''),
+            'scheme'            => (string) ($pt['SCHEME'] ?? ''),
+            'shipment_date'     => (string) $shipDate,
+            'response_deadline' => (string) $deadline,
+            'pt_survey_code'    => (string) ($pt['distribution_code'] ?? ''),
+            'pt_survey_date'    => (string) $surveyDate,
+            'year'              => $year,
+            'support_email'     => $supportEmail,
         ];
+    }
+
+    /**
+     * Fill one recipient's values into a subject or body. Shared by the send
+     * and the preview so a previewed message is byte-identical to what goes
+     * out. {{ key }} is matched case- and space-insensitively; an unknown key
+     * is left as typed so the preview shows the typo instead of hiding it.
+     */
+    public static function mailMerge(string $text, array $pt): string
+    {
+        $values = self::mailMergeValues($pt);
+
+        $text = preg_replace_callback('/\{\{\s*([A-Za-z_]+)\s*\}\}/', function ($m) use ($values) {
+            $key = strtolower($m[1]);
+            return array_key_exists($key, $values) ? $values[$key] : $m[0];
+        }, $text);
+
+        $legacy = [];
+        foreach (self::MAIL_MERGE_FIELDS as $key => $token) {
+            if ($token !== null) {
+                $legacy[$token] = $values[$key];
+            }
+        }
+        return strtr($text, $legacy);
     }
 
     /**
@@ -1592,10 +1632,8 @@ class Application_Service_Participants
         $status = false;
         foreach ($resolved['recipients'] as $pt) {
             // Personalize subject/message
-            [$search, $replace] = self::mailMergeFields($pt);
-
-            $message = str_replace($search, $replace, (string) $data['message']);
-            $subject = str_replace($search, $replace, (string) $data['subject']);
+            $message = self::mailMerge((string) $data['message'], $pt);
+            $subject = self::mailMerge((string) $data['subject'], $pt);
 
             // The standing config Cc rides along with this row's data managers
             $ccList = $pt['cc'] ?? [];

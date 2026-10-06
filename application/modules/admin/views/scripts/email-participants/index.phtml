@@ -4,198 +4,323 @@ foreach ($this->schemes as $scheme) {
     $modules[] = $scheme['scheme_id'];
 }
 ?>
+<link rel="stylesheet" type="text/css" href="<?php echo $this->baseUrl('css/bootstrap-select.min.css'); ?>" />
 <style>
-    :focus-visible {
-        outline: none !important;
+    .ep-wrap { max-width: 1200px; margin: 0 auto; }
+    .ep-header { padding: 0 4px 14px; }
+    .ep-header h2 { margin: 0 0 4px; font-weight: 600; font-size: 22px; }
+    .ep-header .ep-sub { color: #888; font-size: 13px; }
+    .ep-header .ep-back { float: right; color: #337ab7; text-decoration: none; font-size: 13px; }
+    .ep-header .ep-back:hover { text-decoration: underline; }
+
+    .ep-layout { display: flex; gap: 18px; align-items: flex-start; }
+    .ep-layout .ep-main { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; gap: 14px; }
+    .ep-layout .ep-side { flex: 0 0 320px; display: flex; flex-direction: column; gap: 14px; position: sticky; top: 70px; }
+
+    .ep-card { background: #fff; border: 1px solid #e6e9ee; border-radius: 8px; padding: 18px; box-shadow: 0 1px 2px rgba(0,0,0,0.04); }
+    .ep-card h4 { margin: 0 0 14px; font-size: 14px; font-weight: 600; color: #333; display: flex; align-items: center; gap: 8px; }
+    .ep-card h4 .ep-num { width: 22px; height: 22px; border-radius: 50%; background: #555; color: #fff; display: inline-flex; align-items: center; justify-content: center; font-size: 12px; }
+
+    .ep-field { margin-bottom: 14px; }
+    .ep-field:last-child { margin-bottom: 0; }
+    .ep-field label:not(.ep-choice) { display: block; font-size: 13px; font-weight: 600; color: #333; margin: 0 0 6px; }
+    .ep-field label .mandatory { color: #c0392b; }
+    .ep-field .ep-hint { color: #8a93a0; font-size: 12px; margin-top: 5px; }
+
+    /* bootstrap-select renders a grey btn-default; match the text inputs */
+    .ep-card .bootstrap-select > .btn-ep-select { background: #fff; color: #333; border: 1px solid #ccc; box-shadow: none; text-shadow: none; }
+    .ep-card .bootstrap-select > .btn-ep-select:focus { border-color: #66afe9; outline: 0; }
+    .ep-card .bootstrap-select { width: 100% !important; }
+
+    .ep-choice-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; }
+    .ep-choice { position: relative; display: block; margin: 0; padding: 12px 14px 12px 38px; border: 1px solid #dfe3e8; border-radius: 6px; background: #fff; cursor: pointer; font-weight: normal; transition: border-color 0.15s ease, box-shadow 0.15s ease; }
+    .ep-choice:hover { border-color: #b6c4e0; }
+    .ep-choice input[type=checkbox] { position: absolute; left: 14px; top: 14px; margin: 0; }
+    .ep-choice .ep-choice-title { display: block; font-weight: 600; color: #333; font-size: 13px; margin-bottom: 3px; }
+    .ep-choice .ep-choice-desc { display: block; color: #6b7380; font-size: 12px; line-height: 1.45; }
+    .ep-choice.selected { border-color: #337ab7; box-shadow: 0 0 0 1px #337ab7; background: #f7fafd; }
+
+    .ep-card .note-editor.note-frame { border: 1px solid #ccc; border-radius: 4px; box-shadow: none; margin: 0; }
+    /* The admin theme greys btn-default; give the editor toolbar the same
+       white-on-light look as the inputs around it */
+    .ep-card .note-toolbar { background: #f7f8fa; border-bottom: 1px solid #e6e9ee; padding: 6px 8px; border-radius: 4px 4px 0 0; }
+    .ep-card .note-toolbar .note-btn-group { margin: 2px 6px 2px 0; }
+    .ep-card .note-toolbar .note-btn { background: #fff; color: #444; border: 1px solid #d5dae1; box-shadow: none; text-shadow: none; }
+    .ep-card .note-toolbar .note-btn:hover,
+    .ep-card .note-toolbar .note-btn:focus { background: #eef2f7; color: #222; border-color: #c3cad4; }
+    .ep-card .note-toolbar .note-btn.active,
+    .ep-card .note-toolbar .note-btn:active { background: #e3eaf3; color: #1f4f82; border-color: #b6c4e0; box-shadow: none; }
+    .ep-card .note-statusbar { background: #f7f8fa; border-top: 1px solid #e6e9ee; }
+
+    .ep-actions { display: flex; justify-content: flex-end; align-items: center; gap: 8px; }
+    .ep-actions .ep-actions-note { margin-right: auto; color: #8a93a0; font-size: 12px; }
+
+    .ep-tokens { list-style: none; margin: 0; padding: 0; }
+    .ep-tokens li { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 2px 8px; padding: 5px 0; border-bottom: 1px solid #f0f2f5; font-size: 13px; color: #444; }
+    .ep-tokens li:last-child { border-bottom: 0; }
+    .ep-tokens .ep-token-desc { flex: 0 0 100%; order: 3; color: #8a93a0; font-size: 11px; line-height: 1.35; }
+    .ep-tokens button { border: 1px solid #d5dde8; background: #f4f7fb; color: #2b5d8f; border-radius: 4px; padding: 1px 7px; font-family: Menlo, Consolas, monospace; font-size: 11px; cursor: pointer; white-space: nowrap; }
+    .ep-tokens button:hover { background: #e6eef8; border-color: #b6c4e0; }
+    .ep-side .ep-side-text { color: #555; font-size: 13px; line-height: 1.5; margin: 0 0 10px; }
+    .ep-side .ep-side-text:last-child { margin-bottom: 0; }
+
+    @media (max-width: 992px) {
+        .ep-layout { flex-direction: column; }
+        .ep-layout .ep-side { flex: 1 1 auto; width: 100%; position: static; }
     }
 </style>
-<link rel="stylesheet" href="<?php echo $this->baseUrl('css/daterangepicker.css'); ?>" type="text/css" media="all">
-<script type="text/javascript" src="<?php echo $this->baseUrl('js/moment.min.js'); ?>"></script>
-<link rel="stylesheet" type="text/css" href="<?php echo $this->baseUrl('css/bootstrap-select.min.css'); ?>" />
-<link rel="stylesheet" type="text/css" href="<?php echo $this->baseUrl('css/multi-select.css'); ?>" />
-<link href="<?php echo $this->baseUrl('css/select2.css'); ?>" rel="stylesheet" />
-<div class="well">
-    <form name="emailParticipantForm" id="emailParticipantForm" method="post" action="<?php echo $this->url(array("module" => "admin", "controller" => "email-participants", "action" => "index"), 'default', true) ?>" class="form-horizontal" role="form">
-        <fieldset>
-            <legend><?= $this->translate->_("Email Participants"); ?></legend>
-            <div class="form-group">
-                <label for="templates" class="col-lg-2 control-label"><?= $this->translate->_("Template"); ?></label>
-                <div class="col-lg-10">
-                    <select id="templates" name="templates" class="form-control" title="<?= $this->htmlTranslate("Please select template to fill the form") ?>" onchange="fillTemplate(this.value);">
-                        <option value="">--<?= $this->translate->_("Select"); ?>--</option>
-                        <?php if (isset($this->templates) && !empty($this->templates)) {
-                            foreach ($this->templates as $row) {
-                                if (isset($row['mail_purpose']) && !empty($row['mail_purpose'])) { ?>
-                                    <option value="<?php echo $row['mail_purpose']; ?>"><?php echo ucwords(str_replace("_", " ", $row['mail_purpose'])); ?></option>
-                        <?php }
-                            }
-                        } ?>
-                    </select>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label for="dateRange" class="col-lg-4 control-label"><?= $this->translate->_("Date Range"); ?> <span class="mandatory">*</span></label>
-                        <div class="col-lg-8">
-                            <input type="text" id="dateRange" name="dateRange" class="form-control input-sm" readonly="readonly" style="background: #fff" placeholder="<?= $this->htmlTranslate('Click here to pick a Date Range'); ?>" onchange="getShipmentCodes();" />
+
+<div class="ep-wrap">
+    <div class="ep-header">
+        <a class="ep-back" href="/admin/index">&larr; <?= $this->htmlTranslate("Back"); ?></a>
+        <h2><?= $this->htmlTranslate("Email Participants"); ?></h2>
+        <div class="ep-sub"><?= $this->htmlTranslate("Write one message. Each recipient in the shipments you select gets their own copy. Preview lists every recipient before you send."); ?></div>
+    </div>
+
+    <form name="emailParticipantForm" id="emailParticipantForm" method="post" action="<?php echo $this->url(array("module" => "admin", "controller" => "email-participants", "action" => "index"), 'default', true) ?>" role="form">
+        <div class="ep-layout">
+            <div class="ep-main">
+                <div class="ep-card">
+                    <h4><span class="ep-num">1</span> <?= $this->htmlTranslate("Who should get it"); ?></h4>
+                    <div class="ep-field">
+                        <label for="shipments"><?= $this->htmlTranslate("Shipments"); ?> <span class="mandatory">*</span></label>
+                        <select id="shipments" name="shipments[]" data-live-search="true" data-style="btn-ep-select" class="form-control" multiple="multiple" data-selected-text-format="count>3" title="<?= $this->htmlTranslate('Select one or more shipments') ?>"></select>
+                        <div class="ep-hint"><?= $this->htmlTranslate("Newest first. Type a code or year to find older shipments."); ?></div>
+                    </div>
+                    <div class="ep-field">
+                        <label><?= $this->htmlTranslate("Send to"); ?> <span class="mandatory">*</span></label>
+                        <div class="ep-choice-grid" id="sendMailChoices">
+                            <label class="ep-choice">
+                                <input type="checkbox" name="sendMail[]" value="participant" checked>
+                                <span class="ep-choice-title"><?= $this->htmlTranslate("Participants"); ?></span>
+                                <span class="ep-choice-desc"><?= $this->htmlTranslate("Each lab enrolled in the shipment, at the lab's own email address."); ?></span>
+                            </label>
+                            <label class="ep-choice">
+                                <input type="checkbox" name="sendMail[]" value="datamanager">
+                                <span class="ep-choice-title"><?= $this->htmlTranslate("Data Managers"); ?></span>
+                                <span class="ep-choice-desc"><?= $this->htmlTranslate("The people who enter results for those labs."); ?> <?= $this->htmlTranslate("If Participants is also ticked, they get a Cc on the lab's email instead of a separate email."); ?></span>
+                            </label>
+                            <?php if (in_array('tb', $modules)) { ?>
+                                <label class="ep-choice">
+                                    <input type="checkbox" name="sendMail[]" value="ptcc">
+                                    <span class="ep-choice-title"><?= $this->htmlTranslate("PTCC Managers"); ?></span>
+                                    <span class="ep-choice-desc"><?= $this->htmlTranslate("Country coordinators for the labs in TB shipments."); ?></span>
+                                </label>
+                            <?php } ?>
                         </div>
                     </div>
                 </div>
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label for="shipments" class="col-lg-4 control-label"><?= $this->translate->_("Shipment Code"); ?> <span class="mandatory">*</span></label>
-                        <div class="col-lg-8">
-                            <select id="shipments" name="shipments[]" data-live-search="true" class="form-control" multiple="multiple" data-selected-text-format="count>3" placeholder="<?= $this->htmlTranslate('Select shipments'); ?>" title="<?= $this->htmlTranslate('Please select one or more shipments') ?>"></select>
-                        </div>
+
+                <div class="ep-card">
+                    <h4><span class="ep-num">2</span> <?= $this->htmlTranslate("What to send"); ?></h4>
+                    <div class="ep-field">
+                        <label for="templates"><?= $this->htmlTranslate("Start from a template"); ?></label>
+                        <select id="templates" name="templates" class="form-control" title="<?= $this->htmlTranslate("Select a template to fill in the subject and message") ?>" onchange="fillTemplate(this.value);">
+                            <option value=""><?= $this->htmlTranslate("No template"); ?></option>
+                            <?php
+                            // Stored keys stay as they are (code looks them up); only the shown name changes
+                            $templateNames = [
+                                'not_participated' => $this->htmlTranslate("Not Responded Reminder"),
+                                'deadline_extended' => $this->htmlTranslate("Deadline Extended"),
+                            ];
+                            if (isset($this->templates) && !empty($this->templates)) {
+                                foreach ($this->templates as $row) {
+                                    if (isset($row['mail_purpose']) && !empty($row['mail_purpose'])) { ?>
+                                        <option value="<?php echo $this->escape($row['mail_purpose']); ?>"><?php echo $templateNames[$row['mail_purpose']] ?? $this->escape(ucwords(str_replace("_", " ", $row['mail_purpose']))); ?></option>
+                            <?php }
+                                }
+                            } ?>
+                        </select>
+                    </div>
+                    <div class="ep-field">
+                        <label for="subject"><?= $this->htmlTranslate("Subject"); ?> <span class="mandatory">*</span></label>
+                        <input type="text" name="subject" id="subject" class="form-control" placeholder="<?= $this->htmlTranslate('Enter the subject'); ?>" title="<?= $this->htmlTranslate('Enter the subject') ?>">
+                    </div>
+                    <div class="ep-field">
+                        <label for="messageEditor"><?= $this->htmlTranslate("Message"); ?> <span class="mandatory">*</span></label>
+                        <div id="messageEditor" class="richtextarea" title="<?= $this->htmlTranslate('Enter the message') ?>"></div>
+                        <textarea style="display:none;" id="message" name="message"></textarea>
                     </div>
                 </div>
-            </div>
-            <hr>
-            <div class="form-group">
-                <label for="sendMail" class="col-lg-2 control-label"><?= $this->translate->_("To"); ?> <span class="mandatory">*</span></label>
-                <div class="col-lg-10">
-                    <select id="sendMail" name="sendMail[]" class="form-control" multiple="multiple" data-selected-text-format="count>3" placeholder="<?= $this->htmlTranslate('Select option'); ?>" title="<?= $this->htmlTranslate('Please select one or more option') ?>">
-                        <option value="participant">Participants</option>
-                        <option value="datamanager">Data Managers</option>
-                        <?php if (in_array('tb', $modules)) { ?>
-                            <option value="ptcc">PTCC Managers</option>
-                        <?php } ?>
-                    </select>
-                </div>
-            </div>
-            <div class="form-group">
-                <label for="subject" class="col-lg-2 control-label"><?= $this->translate->_("Subject"); ?></label>
-                <div class="col-lg-10">
-                    <input type="text" name="subject" id="subject" class="js-example-basic-multiple form-control" placeholder="<?= $this->htmlTranslate('Please enter subject'); ?>" title="<?= $this->htmlTranslate('Please enter subject') ?>">
+
+                <div class="ep-card ep-actions">
+                    <span class="ep-actions-note"><?= $this->htmlTranslate("The mail job sends queued emails in batches."); ?></span>
+                    <input type="hidden" name="distributionId" id="distributionId" value="<?php echo $this->escape($this->distributionId); ?>" />
+                    <input type="hidden" name="shipmentSlectedId" id="shipmentSlectedId" value="<?php echo $this->escape($this->shipmentId); ?>" />
+                    <button type="button" class="btn btn-default" onclick="window.location.href='/admin/index';"><?= $this->htmlTranslate("Cancel"); ?></button>
+                    <button type="button" class="btn btn-info" onclick="openPreview();"><i class="icon-eye-open"></i> <?= $this->htmlTranslate("Preview"); ?></button>
+                    <button type="button" class="btn btn-primary" name="submitbtn" onclick="validateNow();"><i class="icon-envelope"></i> <?= $this->htmlTranslate("Send"); ?></button>
                 </div>
             </div>
 
-            <div class="form-group">
-                <label for="message" class="col-lg-2 control-label"><?= $this->translate->_("Mail Content"); ?><span class="mandatory">*</span></label>
-                <div class="col-lg-10">
-                    <div id="messageEditor" name="messageEditor" class="richtextarea form-control" title="<?= $this->htmlTranslate('Please enter a Mail Content') ?>" placeholder="<?= $this->htmlTranslate('Enter the Mail Content'); ?>">
-                    </div>
-                    <textarea style="display:none;" id="message" name="message"></textarea>
+            <div class="ep-side">
+                <div class="ep-card">
+                    <h4><i class="icon-tags"></i> <?= $this->htmlTranslate("Merge fields"); ?></h4>
+                    <p class="ep-side-text"><?= $this->htmlTranslate("Click a field to insert it at the cursor, in the subject or the message. Each recipient gets their own value."); ?></p>
+                    <ul class="ep-tokens">
+                        <?php
+                        $mergeLabels = [
+                            'recipient_name' => $this->htmlTranslate("Recipient name"),
+                            'participant_name' => $this->htmlTranslate("Participant name"),
+                            'participant_id' => $this->htmlTranslate("Participant ID"),
+                            'country' => $this->htmlTranslate("Country"),
+                            'shipment_code' => $this->htmlTranslate("Shipment code"),
+                            'scheme' => $this->htmlTranslate("Scheme"),
+                            'shipment_date' => $this->htmlTranslate("Shipment date"),
+                            'response_deadline' => $this->htmlTranslate("Response deadline"),
+                            'pt_survey_code' => $this->htmlTranslate("PT survey code"),
+                            'pt_survey_date' => $this->htmlTranslate("PT survey date"),
+                            'year' => $this->htmlTranslate("PT survey year"),
+                            'support_email' => $this->htmlTranslate("Support email"),
+                        ];
+                        // Only the fields whose meaning depends on who the email goes to
+                        $mergeDescriptions = [
+                            'recipient_name' => $this->htmlTranslate("Who the email is addressed to."),
+                            'participant_name' => $this->htmlTranslate("The lab or individual. A manager's email lists all of theirs."),
+                            'participant_id' => $this->htmlTranslate("A manager's email lists all of theirs."),
+                            // The address it fills in, so nobody has to go and look it up
+                            // The address it fills in, with a way to change it. A new tab, so
+                            // a half-written email on this page is not lost.
+                            'support_email' => (($supportEmail = Application_Service_Common::getSupportEmail()) !== ''
+                                ? $this->escape($supportEmail)
+                                : $this->htmlTranslate("Not set."))
+                                . ' <a href="/admin/global-config#support_email" target="_blank" rel="noopener">'
+                                . $this->htmlTranslate("Change in Global Settings") . '</a>',
+                        ];
+                        foreach (Application_Service_Participants::MAIL_MERGE_FIELDS as $key => $legacy) { ?>
+                            <li title="<?= $legacy !== null ? sprintf($this->htmlTranslate("Older form: %s"), $legacy) : '' ?>"><span><?= $mergeLabels[$key] ?? $key ?></span><?php if (isset($mergeDescriptions[$key])) { ?><span class="ep-token-desc"><?= $mergeDescriptions[$key] ?></span><?php } ?><button type="button" onclick="insertToken('{{<?= $key ?>}}');">{{<?= $key ?>}}</button></li>
+                        <?php } ?>
+                    </ul>
+                </div>
+                <div class="ep-card">
+                    <h4><i class="icon-info-sign"></i> <?= $this->htmlTranslate("Before you send"); ?></h4>
+                    <p class="ep-side-text"><?= $this->htmlTranslate("Preview lists every recipient and shows each copy of the message. You can send from the preview."); ?></p>
+                    <p class="ep-side-text"><?= $this->htmlTranslate("ePT skips addresses marked as bounced or invalid."); ?></p>
                 </div>
             </div>
-            <div class="form-group">
-                <label for="message" class="col-lg-2 control-label"><?= $this->translate->_("Key"); ?></label>
-                <div class="col-lg-10">
-                    <span class="help-block"><?= $this->translate->_("Lab Name/Participant Name"); ?> : ##NAME##</span>
-                    <span class="help-block"><?= $this->translate->_("Shipment Code"); ?> : ##SHIPCODE##</span>
-                    <span class="help-block"><?= $this->translate->_("Scheme Type"); ?> : ##SHIPTYPE##</span>
-                    <span class="help-block"><?= $this->translate->_("PT Survey Code"); ?> : ##SURVEYCODE##</span>
-                    <span class="help-block"><?= $this->translate->_("PT Survey Date"); ?> : ##SURVEYDATE##</span>
-                    <span class="help-block"><?= $this->translate->_("Shipment Date"); ?> : ##SHIPDATE##</span>
-                    <span class="help-block"><?= $this->translate->_("PT Survey Year"); ?> : ##YEAR##</span>
-                    <span class="help-block"><?= $this->translate->_("Country"); ?> : ##COUNTRY##</span>
-                </div>
-            </div>
-            <div id="respond" style="margin: 0px auto 0px auto; text-align: center;" align="center">
-                <input type="hidden" name="distributionId" id="distributionId" value="<?php echo $this->distributionId; ?>" />
-                <input type="hidden" name="shipmentSlectedId" id="shipmentSlectedId" value="<?php echo $this->shipmentId; ?>" />
-                <input class="btn btn-info" type="button" onclick="previewRecipients();return false;" tabindex="6" value="<?= $this->translate->_("Preview Recipients"); ?>" />
-                <input name="submitbtn" class="btn btn-primary" type="button" onclick="validateNow();return false;" tabindex="7" value="<?= $this->translate->_("Send"); ?>" />
-                <input class="btn btn-danger" type="button" onclick="window.location.href='/admin/index';" tabindex="8" value="<?= $this->translate->_("Back"); ?>" />
-            </div>
-        </fieldset>
+        </div>
     </form>
 </div>
 
-<!-- Recipient preview: the exact list the Send button would queue -->
+<!-- Preview: the exact recipient list the Send button would queue, and the
+     message each of them would get -->
+<style>
+    #previewMessagePane .mail-head { border: 1px solid #e5e5e5; border-bottom: 0; background: #fafafa; padding: 10px 14px; border-radius: 4px 4px 0 0; }
+    #previewMessagePane .mail-head dl { margin: 0; }
+    #previewMessagePane .mail-head dt { float: left; width: 64px; clear: left; color: #888; font-weight: normal; }
+    #previewMessagePane .mail-head dd { margin-left: 70px; margin-bottom: 2px; word-break: break-word; }
+    #previewMessagePane .mail-head .mail-subject { font-size: 16px; font-weight: 600; margin-bottom: 8px; }
+    #previewBodyFrame { display: block; width: 100%; height: 440px; border: 1px solid #e5e5e5; border-radius: 0 0 4px 4px; background: #fff; }
+    #previewMessageNav { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 10px; }
+    #previewTable td { vertical-align: middle; }
+    #previewTabs { margin-bottom: 14px; }
+    #previewTabs > li.disabled > a { cursor: not-allowed; }
+</style>
 <div class="modal fade" id="recipientPreviewModal" tabindex="-1" role="dialog" aria-labelledby="recipientPreviewLabel">
     <div class="modal-dialog modal-lg" role="document" style="width:90%;max-width:1100px;">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="recipientPreviewLabel"><?= $this->translate->_("Recipient Preview"); ?></h4>
+                <h4 class="modal-title" id="recipientPreviewLabel"><?= $this->htmlTranslate("Preview"); ?></h4>
             </div>
             <div class="modal-body">
+                <ul class="nav nav-tabs" id="previewTabs">
+                    <li data-pane="message"><a href="javascript:void(0)" onclick="showPreviewTab('message');"><?= $this->htmlTranslate("Message"); ?></a></li>
+                    <li data-pane="list"><a href="javascript:void(0)" onclick="showPreviewTab('list');"><?= $this->htmlTranslate("Recipients"); ?> <span class="badge" id="previewRecipientCount"></span></a></li>
+                </ul>
                 <!-- Pane 1: the recipient list -->
                 <div id="previewListPane">
-                <div id="previewSummary"></div>
-                <div id="previewWarnings"></div>
-                <div style="margin-bottom:8px;">
-                    <input type="text" id="previewFilter" class="form-control input-sm"
-                        placeholder="<?= $this->htmlTranslate('Filter by name, email, country or type'); ?>"
-                        onkeyup="filterPreview(this.value);" />
-                    <span class="help-block" id="previewFilterCount" style="margin:4px 0 0 0;"></span>
-                </div>
-                <div style="max-height:420px;overflow-y:auto;border:1px solid #ddd;">
-                    <table class="table table-striped table-condensed" id="previewTable" style="margin:0;">
-                        <thead>
-                            <tr>
-                                <th style="width:40px;">#</th>
-                                <th style="width:110px;"><?= $this->translate->_("Type"); ?></th>
-                                <th><?= $this->translate->_("Name"); ?></th>
-                                <th><?= $this->translate->_("Email"); ?> (<?= $this->translate->_("To"); ?>)</th>
-                                <th><?= $this->translate->_("Cc"); ?></th>
-                                <th style="width:130px;"><?= $this->translate->_("Country"); ?></th>
-                                <th style="width:70px;"></th>
-                            </tr>
-                        </thead>
-                        <tbody></tbody>
-                    </table>
-                </div>
+                    <div id="previewSummary"></div>
+                    <div id="previewWarnings"></div>
+                    <div style="margin-bottom:8px;">
+                        <input type="text" id="previewFilter" class="form-control input-sm"
+                            placeholder="<?= $this->htmlTranslate('Filter by name, email, country or type'); ?>"
+                            onkeyup="filterPreview(this.value);" />
+                        <span class="help-block" id="previewFilterCount" style="margin:4px 0 0 0;"></span>
+                    </div>
+                    <div style="max-height:420px;overflow-y:auto;border:1px solid #ddd;">
+                        <table class="table table-striped table-condensed" id="previewTable" style="margin:0;">
+                            <thead>
+                                <tr>
+                                    <th style="width:50px;">#</th>
+                                    <th class="col-type" style="width:120px;"><?= $this->htmlTranslate("Type"); ?></th>
+                                    <th><?= $this->htmlTranslate("Name"); ?></th>
+                                    <th><?= $this->htmlTranslate("Email"); ?></th>
+                                    <th class="col-cc"><?= $this->htmlTranslate("Cc"); ?></th>
+                                    <th style="width:150px;"><?= $this->htmlTranslate("Country"); ?></th>
+                                    <th style="width:80px;"></th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
                 </div><!-- /#previewListPane -->
 
-                <!-- Pane 2: one rendered message. Kept inside the SAME modal on
+                <!-- Pane 2: one rendered message. A tab of the SAME modal on
                      purpose — a nested Bootstrap 3 modal opens behind this
                      one's backdrop and reads as a dead button. -->
                 <div id="previewMessagePane" style="display:none;">
-                    <button type="button" class="btn btn-default btn-sm" onclick="closePreviewBody();"
-                        style="margin-bottom:12px;">
-                        &larr;&nbsp;<?= $this->translate->_("Back to the list"); ?>
-                    </button>
-                    <p style="margin:0 0 4px 0;"><strong><?= $this->translate->_("To"); ?>:</strong>
-                        <span id="previewBodyTo"></span></p>
-                    <p style="margin:0 0 4px 0;"><strong><?= $this->translate->_("Cc"); ?>:</strong>
-                        <span id="previewBodyCc"></span></p>
-                    <p style="margin:0 0 10px 0;"><strong><?= $this->translate->_("Subject"); ?>:</strong>
-                        <span id="previewBodySubject"></span></p>
-                    <div id="previewBodyContent"
-                        style="border:1px solid #eee;padding:12px;max-height:420px;overflow-y:auto;"></div>
+                    <div id="previewMessageNav">
+                        <span id="previewPosition" class="text-muted"></span>
+                        <div id="previewStepper">
+                            <button type="button" class="btn btn-default btn-sm" id="previewPrevBtn" onclick="stepPreviewBody(-1);">&lsaquo;&nbsp;<?= $this->htmlTranslate("Previous"); ?></button>
+                            <button type="button" class="btn btn-default btn-sm" id="previewNextBtn" onclick="stepPreviewBody(1);"><?= $this->htmlTranslate("Next"); ?>&nbsp;&rsaquo;</button>
+                        </div>
+                    </div>
+                    <div id="previewUnmergedNote" class="alert alert-info" style="display:none;margin-bottom:10px;">
+                        <?= $this->htmlTranslate("This is your draft as typed. Select shipments and recipients, then preview again to see the fields filled in for each recipient."); ?>
+                    </div>
+                    <div id="previewFieldWarning" class="alert alert-warning" style="display:none;margin-bottom:10px;"></div>
+                    <div class="mail-head">
+                        <div class="mail-subject" id="previewBodySubject"></div>
+                        <dl>
+                            <dt><?= $this->htmlTranslate("From"); ?></dt>
+                            <dd id="previewBodyFrom"></dd>
+                            <dt><?= $this->htmlTranslate("To"); ?></dt>
+                            <dd id="previewBodyTo"></dd>
+                            <dt class="row-cc"><?= $this->htmlTranslate("Cc"); ?></dt>
+                            <dd class="row-cc" id="previewBodyCc"></dd>
+                            <dt class="row-bcc"><?= $this->htmlTranslate("Bcc"); ?></dt>
+                            <dd class="row-bcc" id="previewBodyBcc"></dd>
+                        </dl>
+                    </div>
+                    <!-- Sandboxed so the admin stylesheet can't restyle the
+                         message and nothing in the body can run -->
+                    <iframe id="previewBodyFrame" sandbox="" title="<?= $this->htmlTranslate('Message preview'); ?>"></iframe>
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default" onclick="copyPreviewEmails();"><?= $this->translate->_("Copy all addresses"); ?></button>
-                <button type="button" class="btn btn-default" data-dismiss="modal"><?= $this->translate->_("Close"); ?></button>
+                <button type="button" class="btn btn-default" id="previewCopyBtn" onclick="copyPreviewEmails();"><?= $this->htmlTranslate("Copy all addresses"); ?></button>
+                <button type="button" class="btn btn-default" data-dismiss="modal"><?= $this->htmlTranslate("Close"); ?></button>
+                <button type="button" class="btn btn-primary" id="previewSendBtn" style="display:none;" onclick="sendFromPreview();"></button>
             </div>
         </div>
     </div>
 </div>
 
-<script type="text/javascript" src="<?php echo $this->baseUrl('js/daterangepicker.js'); ?>"></script>
 <!-- include summernote css/js -->
 <script src="<?php echo $this->baseUrl('/assets/dist/js/app.js'); ?>"></script>
 <link rel="stylesheet" type="text/css" href="<?php echo $this->baseUrl('css/summernote.min.css'); ?>">
 <script type="text/javascript" src="<?php echo $this->baseUrl('js/summernote.min.js'); ?>"></script>
 <script type="text/javascript" src="<?php echo $this->baseUrl('js/bootstrap-select.min.js'); ?>"></script>
-<script type="text/javascript" src="<?php echo $this->baseUrl('js/select2.min.js'); ?>"></script>
-<script type="text/javascript" src="<?php echo $this->baseUrl("js/jquery.multi-select.js"); ?>"></script>
-<script type="text/javascript" src="<?php echo $this->baseUrl("js/jquery.quicksearch.js"); ?>"></script>
 <script type="text/javascript">
-    var startDate = "";
-    var endDate = "";
-
     function validateNow() {
         $("#message").val($("#messageEditor").summernote('code'));
-        if ($('#shipments').val() == '') {
-            alert("<?= $this->jsTranslate("Please select schipment code and TO for sending the mails") ?>");
+        if (!$('#shipments').val() || $('#shipments').val().length === 0) {
+            alert("<?= $this->jsTranslate("Select at least one shipment.") ?>");
             return false;
         }
-        if ($('#sendMail').val() == '') {
-            alert("<?= $this->jsTranslate("Please select schipment code and TO for sending the mails") ?>");
+        if (getSendMail().length === 0) {
+            alert("<?= $this->jsTranslate("Select who gets the email.") ?>");
             return false;
         }
         if ($('#subject').val() == '') {
-            alert("<?= $this->jsTranslate("Please enter the mail subject") ?>");
+            alert("<?= $this->jsTranslate("Enter the subject.") ?>");
             return false;
         }
         if ($.trim($('#message').val()) == '') {
             $('#message').val('');
-            alert("<?= $this->jsTranslate("Please enter the mail content") ?>");
+            alert("<?= $this->jsTranslate("Enter the message.") ?>");
             return false;
         }
         flag = deforayValidator.init({
@@ -208,50 +333,90 @@ foreach ($this->schemes as $scheme) {
     }
     $(document).ready(function() {
         getShipmentCodes();
-        $('#shipments, #sendMail').selectpicker();
+        $('#shipments').selectpicker();
 
         $('#messageEditor').summernote({
-            placeholder: '<?= $this->jsTranslate("Please enter the Contact Information here") ?>',
+            placeholder: '<?= $this->jsTranslate("Write your message here") ?>',
             tabsize: 2,
-            height: 200
-        });
-
-        $('#dateRange').daterangepicker({
-                locale: {
-                    cancelLabel: 'Clear',
-                    format: 'DD-MMM-YYYY',
-                    separator: ' to ',
+            height: 300,
+            // Typing {{ offers the merge fields, narrowed as you type
+            hint: {
+                match: /\{\{\s*(\w*)$/,
+                search: function(keyword, callback) {
+                    keyword = keyword.toLowerCase();
+                    callback($.grep(MERGE_KEYS, function(key) {
+                        return key.indexOf(keyword) !== -1;
+                    }));
                 },
-                autoApply: true,
-                showDropdowns: true,
-                alwaysShowCalendars: true,
-                autoUpdateInput: true,
-                startDate: moment().subtract(179, 'days'),
-                endDate: moment(),
-                maxDate: moment(),
-                ranges: {
-                    'This Month': [moment().startOf('month'), moment().endOf('month')],
-                    'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
-                    'Last 60 Days': [moment().subtract(59, 'days'), moment()],
-                    'Last 90 Days': [moment().subtract(89, 'days'), moment()],
-                    'Last 180 Days': [moment().subtract(179, 'days'), moment()],
-                    'Last 12 Months': [moment().subtract(12, 'month'), moment()],
-                    'Last 18 Months': [moment().subtract(18, 'month'), moment()],
+                template: function(key) {
+                    return '{{' + key + '}}';
+                },
+                content: function(key) {
+                    return document.createTextNode('{{' + key + '}}');
                 }
             },
-            function(start, end) {
-                startDate = start.format('DD-MMM-YYYY');
-                endDate = end.format('DD-MMM-YYYY');
-            });
+            callbacks: {
+                onFocus: function() {
+                    lastTokenTarget = 'message';
+                },
+                onBlur: function() {
+                    $('#messageEditor').summernote('saveRange');
+                    editorHasCursor = true;
+                }
+            }
+        });
+        $('#subject').on('focus', function() {
+            lastTokenTarget = 'subject';
+        });
+
+        $('#sendMailChoices input').on('change', function() {
+            $(this).closest('.ep-choice').toggleClass('selected', this.checked);
+        }).trigger('change');
+
     });
 
-    function getShipmentCodes() {
-        $('#shipmentId').select2('data', null);
+    function getSendMail() {
+        return $('#sendMailChoices input:checked').map(function() {
+            return this.value;
+        }).get();
+    }
 
+    // Where a clicked merge field lands: the subject or the message body,
+    // whichever was focused last.
+    var lastTokenTarget = 'message';
+    // False until the message has been clicked into, so a field clicked
+    // first lands at the end of the body rather than before the greeting.
+    var editorHasCursor = false;
+
+    function insertToken(token) {
+        if (lastTokenTarget === 'subject') {
+            var el = document.getElementById('subject');
+            var start = el.selectionStart != null ? el.selectionStart : el.value.length;
+            var end = el.selectionEnd != null ? el.selectionEnd : start;
+            el.value = el.value.slice(0, start) + token + el.value.slice(end);
+            el.focus();
+            el.setSelectionRange(start + token.length, start + token.length);
+            return;
+        }
+        if (editorHasCursor) {
+            $('#messageEditor').summernote('restoreRange');
+        } else {
+            var editable = $('#messageEditor').next('.note-editor').find('.note-editable')[0];
+            var last = editable.lastElementChild || editable;
+            var range = document.createRange();
+            range.selectNodeContents(last);
+            range.collapse(false);
+            var selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            $('#messageEditor').summernote('editor.setLastRange');
+        }
+        $('#messageEditor').summernote('insertText', token);
+    }
+
+    function getShipmentCodes() {
         $.blockUI();
         $.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'common', 'action' => 'get-shipments-by-date')); ?>", {
-                startDate: startDate,
-                endDate: endDate,
                 distributionId: $("#distributionId").val(),
                 notFinalized: false,
                 format: "html"
@@ -277,39 +442,83 @@ foreach ($this->schemes as $scheme) {
     }
 
     // Holds the last preview payload so the footer buttons and the per-row
-    // "View" links can work off it without a second round trip.
+    // "Preview" links can work off it without a second round trip.
     var previewData = null;
+    var previewIndex = 0;
+
+    // From and the standing Cc/Bcc from the mail settings — on every message
+    var MAIL_SENDER = <?= json_encode($this->mailSender ?? [], JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?>;
 
     var ROLE_LABELS = {
         participant: "<?= $this->jsTranslate("Participant") ?>",
         datamanager: "<?= $this->jsTranslate("Data Manager") ?>",
-        ptcc: "<?= $this->jsTranslate("PTCC") ?>"
+        ptcc: "<?= $this->jsTranslate("PTCC Manager") ?>"
     };
+    var ROLE_BREAKDOWN = {
+        participant: "<?= $this->jsTranslate("%s to participants") ?>",
+        datamanager: "<?= $this->jsTranslate("%s to data managers") ?>",
+        ptcc: "<?= $this->jsTranslate("%s to PTCC managers") ?>"
+    };
+
+    /** Fill %s placeholders in order, so translations keep whole sentences. */
+    function fmt(text) {
+        var args = arguments,
+            i = 1;
+        return String(text).replace(/%s/g, function() {
+            return args[i++];
+        });
+    }
 
     function roleLabel(role) {
         return ROLE_LABELS[role] || role;
     }
 
+    function formatCount(n) {
+        return Number(n).toLocaleString();
+    }
+
+    // {{key}} names and legacy ##TOKENS## the server knows how to fill
+    var MERGE_KEYS = <?= json_encode(array_keys(Application_Service_Participants::MAIL_MERGE_FIELDS)) ?>;
+    var MERGE_LEGACY = <?= json_encode(array_values(array_filter(Application_Service_Participants::MAIL_MERGE_FIELDS))) ?>;
+    var MERGE_PATTERN = /\{\{\s*[A-Za-z_]+\s*\}\}|##[A-Z_]+##/g;
+
+    /** Fields typed in the draft that nothing will fill — they'd go out as-is. */
+    function unknownMergeFields(text) {
+        var unknown = {};
+        $.each(text.match(MERGE_PATTERN) || [], function(i, field) {
+            var known = field.charAt(0) === '{' ?
+                MERGE_KEYS.indexOf(field.replace(/[{}\s]/g, '').toLowerCase()) !== -1 :
+                MERGE_LEGACY.indexOf(field) !== -1;
+            if (!known) {
+                unknown[field] = true;
+            }
+        });
+        return Object.keys(unknown);
+    }
+
+    function showFieldWarning() {
+        var unknown = unknownMergeFields($('#subject').val() + ' ' + $("#messageEditor").summernote('code'));
+        $('#previewFieldWarning')
+            .text(unknown.length ? fmt("<?= $this->jsTranslate("Not merge fields, so they are sent exactly as typed: %s") ?>", unknown.join(", ")) : '')
+            .toggle(unknown.length > 0);
+    }
+
+    function hasSelection() {
+        var shipments = $('#shipments').val();
+        var audience = getSendMail();
+        return shipments && shipments.length > 0 && audience && audience.length > 0;
+    }
+
     /**
-     * Dry-run the send: ask the server for the exact de-duplicated recipient
-     * list for the current shipment/audience selection and show it.
+     * Dry-run the send on the server: the exact de-duplicated recipient list
+     * for the current selection, each with its merged subject and body.
      */
-    function previewRecipients() {
+    function fetchPreview(onDone) {
         $("#message").val($("#messageEditor").summernote('code'));
-
-        if ($('#shipments').val() == '' || $('#shipments').val() == null) {
-            alert("<?= $this->jsTranslate("Please select at least one shipment") ?>");
-            return false;
-        }
-        if ($('#sendMail').val() == '' || $('#sendMail').val() == null) {
-            alert("<?= $this->jsTranslate("Please select who the email should go to") ?>");
-            return false;
-        }
-
         $.blockUI();
         $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'email-participants', 'action' => 'preview-recipients')); ?>", {
                 shipments: $('#shipments').val(),
-                sendMail: $('#sendMail').val(),
+                sendMail: getSendMail(),
                 subject: $('#subject').val(),
                 message: $('#message').val(),
                 format: "html"
@@ -317,16 +526,76 @@ foreach ($this->schemes as $scheme) {
             function(data) {
                 $.unblockUI();
                 previewData = data;
-                $('#previewFilter').val('');
-                $('#previewFilterCount').text('');
-                closePreviewBody(); // always reopen on the list, not a stale message
                 renderPreview(data);
-                $('#recipientPreviewModal').modal('show');
+                onDone(data);
             }, "json")
             .fail(function() {
                 $.unblockUI();
-                alert("<?= $this->jsTranslate("Unable to build the preview. Please try again later or contact system admin for help") ?>");
+                alert("<?= $this->jsTranslate("The preview failed to load. Try again. If it fails again, contact your system administrator.") ?>");
             });
+    }
+
+    /**
+     * One dialog, two tabs: the message as it lands in an inbox, and who gets
+     * it. Without shipments and an audience picked there is nobody to merge
+     * against yet, so only the draft as typed can be shown.
+     */
+    function openPreview() {
+        var hasMessage = !$('#messageEditor').summernote('isEmpty');
+        showFieldWarning();
+
+        if (!hasSelection()) {
+            if (!hasMessage) {
+                alert("<?= $this->jsTranslate("Enter a message, or select shipments and recipients, before you preview.") ?>");
+                return false;
+            }
+            previewData = null;
+            showMessage({
+                subject: $('#subject').val(),
+                to: "<?= $this->jsTranslate("(each recipient)") ?>",
+                cc: [],
+                body: $("#messageEditor").summernote('code').replace(MERGE_PATTERN, '<mark>$&</mark>')
+            });
+            $('#previewUnmergedNote').show();
+            $('#previewStepper, #previewPosition, #previewCopyBtn, #previewSendBtn').hide();
+            $('#previewRecipientCount').text('');
+            $('#previewTabs li[data-pane="message"]').removeClass('disabled');
+            $('#previewTabs li[data-pane="list"]').addClass('disabled');
+            showPreviewTab('message');
+            $('#recipientPreviewModal').modal('show');
+            return;
+        }
+
+        fetchPreview(function(data) {
+            var count = (data.recipients || []).length;
+            $('#previewTabs li[data-pane="list"]').removeClass('disabled');
+            $('#previewRecipientCount').text(formatCount(count));
+            $('#previewCopyBtn').show();
+            // Sending needs real recipients and a body; the form's own checks
+            // (subject etc.) still run on the way out.
+            $('#previewSendBtn')
+                .text(fmt("<?= $this->jsTranslate("Send (%s)") ?>", formatCount(count)))
+                .toggle(hasMessage && count > 0);
+            if (hasMessage && count > 0) {
+                showPreviewBody(0);
+                showPreviewTab('message');
+            } else {
+                $('#previewTabs li[data-pane="message"]').toggleClass('disabled', count === 0 || !hasMessage);
+                showPreviewTab('list');
+            }
+            $('#recipientPreviewModal').modal('show');
+        });
+    }
+
+    function showPreviewTab(pane) {
+        var tab = $('#previewTabs li[data-pane="' + pane + '"]');
+        if (tab.hasClass('disabled')) {
+            return;
+        }
+        $('#previewTabs li').removeClass('active');
+        tab.addClass('active');
+        $('#previewListPane').toggle(pane === 'list');
+        $('#previewMessagePane').toggle(pane === 'message');
     }
 
     /**
@@ -364,57 +633,44 @@ foreach ($this->schemes as $scheme) {
         });
 
         var total = (previewData && previewData.recipients) ? previewData.recipients.length : 0;
-        $('#previewFilterCount').text(term === '' ? '' : shown + " / " + total + " <?= $this->jsTranslate("shown") ?>");
+        $('#previewFilterCount').text(term === '' ? '' : fmt("<?= $this->jsTranslate("Shown: %s of %s") ?>", formatCount(shown), formatCount(total)));
     }
 
     function renderPreview(data) {
         var recipients = data.recipients || [];
         var counts = data.counts || {};
+        var roles = Object.keys(counts);
 
-        var breakdown = [];
-        $.each(counts, function(role, count) {
-            breakdown.push(count + " " + roleLabel(role));
+        $('#previewFilter').val('');
+        $('#previewFilterCount').text('');
+
+        // "Emails to queue: 1,287 (1,247 to participants, 40 to PTCC managers)"
+        var breakdown = $.map(roles, function(role) {
+            return fmt(ROLE_BREAKDOWN[role] || (role + ": %s"), formatCount(counts[role]));
         });
+        var summary = $('<div class="alert alert-info" style="margin-bottom:10px;">')
+            .append($('<strong>').text(fmt("<?= $this->jsTranslate("Emails to queue: %s") ?>", formatCount(recipients.length))))
+            .append(document.createTextNode(breakdown.length > 1 ? " (" + breakdown.join(", ") + ")" : ""));
 
         var ccMessages = $.grep(recipients, function(r) {
             return r.cc && r.cc.length > 0;
         });
-        var ccPeople = {};
-        $.each(ccMessages, function(i, r) {
-            $.each(r.cc, function(j, addr) {
-                ccPeople[addr.toLowerCase()] = true;
-            });
-        });
-
-        var summary = recipients.length + " <?= $this->jsTranslate("email(s) will be queued") ?>" +
-            (breakdown.length ? " — <?= $this->jsTranslate("addressed to") ?> " + breakdown.join(", ") : "");
         if (ccMessages.length > 0) {
-            summary += ". " + ccMessages.length + " <?= $this->jsTranslate("of them also Cc a data manager") ?> (" +
-                Object.keys(ccPeople).length + " <?= $this->jsTranslate("distinct manager(s)") ?>)";
+            summary.append($('<div>').text(fmt("<?= $this->jsTranslate("Emails that also Cc the lab's data managers: %s") ?>", formatCount(ccMessages.length))));
         }
-
-        $('#previewSummary').html('').append(
-            $('<div class="alert alert-info" style="margin-bottom:10px;">').text(summary)
-        );
+        var standing = [];
+        if (MAIL_SENDER.cc) {
+            standing.push(fmt("<?= $this->jsTranslate("Cc %s") ?>", MAIL_SENDER.cc));
+        }
+        if (MAIL_SENDER.bcc) {
+            standing.push(fmt("<?= $this->jsTranslate("Bcc %s") ?>", MAIL_SENDER.bcc));
+        }
+        if (standing.length > 0) {
+            summary.append($('<div>').text(fmt("<?= $this->jsTranslate("Every email also goes to: %s") ?>", standing.join(", "))));
+        }
+        $('#previewSummary').html('').append(summary);
 
         var warnings = $('#previewWarnings').html('');
-
-        // Only audiences outside this selection matter: those addresses would
-        // get a second copy from a separate send. Same-selection overlaps are
-        // already collapsed into one email and need no warning.
-        var overlaps = $.grep(recipients, function(r) {
-            return r.otherRoles && r.otherRoles.length > 0;
-        });
-        if (overlaps.length > 0) {
-            var lines = $.map(overlaps, function(r) {
-                return r.email + " (" + $.map(r.otherRoles, roleLabel).join(", ") + ")";
-            });
-            warnings.append(buildCollapsibleAlert(
-                'alert-warning',
-                overlaps.length + " <?= $this->jsTranslate("of these addresses also belong to an audience you did NOT select, so a separate send to that audience would reach them a second time") ?>",
-                lines
-            ));
-        }
 
         // Addresses landing more than once in THIS send — typically someone who
         // runs their own lab and is Cc'd as the manager of neighbouring labs.
@@ -422,7 +678,7 @@ foreach ($this->schemes as $scheme) {
         if (multiple.length > 0) {
             warnings.append(buildCollapsibleAlert(
                 'alert-warning',
-                multiple.length + " <?= $this->jsTranslate("address(es) appear on more than one message in this send (own lab as To, plus Cc on labs they manage). Type multiple in the filter box to see them") ?>",
+                fmt("<?= $this->jsTranslate("Addresses that get more than one email in this send: %s. Each gets their own lab's email plus a Cc for every lab they manage.") ?>", formatCount(multiple.length)),
                 $.map(multiple, function(m) {
                     return m.email + " ×" + m.copies;
                 })
@@ -432,24 +688,29 @@ foreach ($this->schemes as $scheme) {
         if (data.invalid && data.invalid.length > 0) {
             warnings.append(buildCollapsibleAlert(
                 'alert-danger',
-                data.invalid.length + " <?= $this->jsTranslate("address(es) were dropped as invalid") ?>",
+                fmt("<?= $this->jsTranslate("Invalid addresses, skipped: %s") ?>", formatCount(data.invalid.length)),
                 data.invalid
             ));
         }
 
+        // Columns that would be empty or identical on every row only add noise
+        $('#previewTable .col-type').toggle(roles.length > 1);
+        $('#previewTable .col-cc').toggle(ccMessages.length > 0);
+
         var tbody = $('#previewTable tbody').empty();
         if (recipients.length === 0) {
             tbody.append($('<tr>').append(
-                $('<td colspan="7" class="text-center">').text("<?= $this->jsTranslate("No recipients match this selection") ?>")
+                $('<td colspan="7" class="text-center">').text("<?= $this->jsTranslate("No recipients match this selection.") ?>")
             ));
             return;
         }
 
         $.each(recipients, function(i, r) {
             var viewBtn = $('<a href="javascript:void(0)" class="btn btn-xs btn-default">')
-                .text("<?= $this->jsTranslate("View") ?>")
+                .text("<?= $this->jsTranslate("Preview") ?>")
                 .on('click', function() {
                     showPreviewBody(i);
+                    showPreviewTab('message');
                 });
 
             var cc = r.cc || [];
@@ -459,17 +720,17 @@ foreach ($this->schemes as $scheme) {
             if (copies > 1) {
                 toCell.append(
                     $('<span class="label label-warning" style="margin-left:6px;">')
-                        .attr('title', "<?= $this->jsTranslate("This inbox also receives Cc copies from labs it manages") ?>")
-                        .text("×" + copies)
+                    .attr('title', "<?= $this->jsTranslate("This address also gets a Cc for every lab it manages.") ?>")
+                    .text("×" + copies)
                 );
             }
 
             var row = $('<tr>')
                 .append($('<td>').text(i + 1))
-                .append($('<td>').text(roleLabel(r.role)))
+                .append($('<td class="col-type">').text(roleLabel(r.role)).toggle(roles.length > 1))
                 .append($('<td>').text(r.name || ''))
                 .append(toCell)
-                .append($('<td>').css('font-size', '12px').text(cc.join(', ')))
+                .append($('<td class="col-cc">').css('font-size', '12px').text(cc.join(', ')).toggle(ccMessages.length > 0))
                 .append($('<td>').text(r.country || ''))
                 .append($('<td>').append(viewBtn));
 
@@ -485,30 +746,72 @@ foreach ($this->schemes as $scheme) {
         });
     }
 
-    /**
-     * Show the fully merged subject/body one recipient would actually get, by
-     * swapping panes inside this modal rather than opening a second one.
-     */
+    /** Fill the inbox-style header and the sandboxed body frame. */
+    function showMessage(msg) {
+        var from = MAIL_SENDER.fromEmail || '';
+        if (MAIL_SENDER.fromName) {
+            from = MAIL_SENDER.fromName + (from ? " <" + from + ">" : "");
+        }
+        var cc = (msg.cc || []).slice();
+        if (MAIL_SENDER.cc) {
+            cc.unshift(MAIL_SENDER.cc);
+        }
+
+        $('#previewBodySubject').text(msg.subject || "<?= $this->jsTranslate("(no subject)") ?>");
+        $('#previewBodyFrom').text(from || "<?= $this->jsTranslate("(not set in the mail settings)") ?>");
+        $('#previewBodyTo').text(msg.to);
+        $('#previewBodyCc').text(cc.join(", "));
+        $('#previewMessagePane .row-cc').toggle(cc.length > 0);
+        $('#previewBodyBcc').text(MAIL_SENDER.bcc || '');
+        $('#previewMessagePane .row-bcc').toggle(!!MAIL_SENDER.bcc);
+
+        // Mail clients render the body on a blank page with their own default
+        // font, so give the frame the same plain baseline.
+        $('#previewBodyFrame').attr('srcdoc',
+            '<!doctype html><html><head><meta charset="utf-8"><style>' +
+            'body{margin:16px;font-family:Arial,Helvetica,sans-serif;font-size:14px;line-height:1.45;color:#222;}' +
+            'img{max-width:100%;height:auto;}mark{background:#fff3b0;}' +
+            '</style></head><body>' + (msg.body || '') + '</body></html>');
+    }
+
+    /** One recipient's fully merged message, exactly as it will be queued. */
     function showPreviewBody(index) {
-        var r = (previewData && previewData.recipients) ? previewData.recipients[index] : null;
+        var list = (previewData && previewData.recipients) ? previewData.recipients : [];
+        var r = list[index];
         if (!r) {
             return;
         }
-        var cc = r.cc || [];
-        $('#previewBodyTo').text(r.name ? (r.name + " <" + r.email + ">") : r.email);
-        $('#previewBodyCc').text(cc.length ? cc.join(", ") : "—");
-        $('#previewBodySubject').text(r.subject || '');
-        // Admin-authored HTML from the editor — render it as the recipient sees it
-        $('#previewBodyContent').html(r.body || '');
+        previewIndex = index;
+        showMessage({
+            subject: r.subject,
+            to: r.name ? (r.name + " <" + r.email + ">") : r.email,
+            cc: r.cc || [],
+            body: r.body
+        });
 
-        $('#previewListPane').hide();
-        $('#previewMessagePane').show();
+        $('#previewTabs li[data-pane="message"]').removeClass('disabled');
+        $('#previewUnmergedNote').hide();
+        $('#previewStepper, #previewPosition').show();
+        $('#previewPosition').text(fmt("<?= $this->jsTranslate("Recipient %s of %s") ?>", formatCount(index + 1), formatCount(list.length)));
+        $('#previewPrevBtn').prop('disabled', index === 0);
+        $('#previewNextBtn').prop('disabled', index >= list.length - 1);
     }
 
-    /** Return from a single message to the recipient list. */
-    function closePreviewBody() {
-        $('#previewMessagePane').hide();
-        $('#previewListPane').show();
+    function stepPreviewBody(delta) {
+        showPreviewBody(previewIndex + delta);
+    }
+
+    /** Send straight from the preview, once the admin has seen what goes out. */
+    function sendFromPreview() {
+        var count = (previewData && previewData.recipients) ? previewData.recipients.length : 0;
+        if (count === 0) {
+            return;
+        }
+        if (!confirm(fmt("<?= $this->jsTranslate("Queue this email now? Recipients: %s") ?>", formatCount(count)))) {
+            return;
+        }
+        $('#recipientPreviewModal').modal('hide');
+        validateNow();
     }
 
     function copyPreviewEmails() {
@@ -528,7 +831,7 @@ foreach ($this->schemes as $scheme) {
         textarea.select();
         try {
             document.execCommand('copy');
-            alert(previewData.recipients.length + " <?= $this->jsTranslate("address(es) copied to clipboard") ?>");
+            alert(fmt("<?= $this->jsTranslate("Addresses copied to the clipboard: %s") ?>", formatCount(previewData.recipients.length)));
         } catch (err) {
             window.prompt("<?= $this->jsTranslate("Press Ctrl+C / Cmd+C to copy") ?>", emails);
         }
@@ -536,6 +839,9 @@ foreach ($this->schemes as $scheme) {
     }
 
     function fillTemplate(value) {
+        if (value === '') {
+            return;
+        }
         $.blockUI();
         $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'email-participants', 'action' => 'get-mail-template')); ?>", {
                 mailPurpose: value,
@@ -546,7 +852,7 @@ foreach ($this->schemes as $scheme) {
                     let obj = jQuery.parseJSON(data);
                     $('#subject').val(obj.subject);
                     let html = (obj.content + '<br><br>' + obj.footer);
-                    $("#messageEditor").summernote('pasteHTML', html);
+                    $("#messageEditor").summernote('code', html);
                 }
 
                 $.unblockUI();

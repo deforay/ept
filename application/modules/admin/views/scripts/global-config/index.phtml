@@ -730,6 +730,8 @@ $faqResults = json_decode($this->faqs);
 						</div>
 						<small class="text-muted"><?= $this->translate->_("Select at least one scheme to enable"); ?></small>
 					</div>
+				</div>
+				<div class="row">
 					<div class="col-md-6">
 						<label for="admin_email"
 							class="control-label"><?= $this->translate->_("Administrator Email"); ?></label>
@@ -737,6 +739,14 @@ $faqResults = json_decode($this->faqs);
 							placeholder="<?= $this->htmlTranslate('Enter administrator email (optional)'); ?>"
 							title="<?= $this->translate->_('Enter the administrator email address'); ?>"
 							value="<?= $this->admin_email; ?>" />
+					</div>
+					<div class="col-md-6">
+						<label for="support_email" class="control-label"><?= $this->htmlTranslate("Support Email"); ?></label>
+						<input type="text" class="form-control" id="support_email" name="support_email"
+							placeholder="<?= $this->htmlTranslate('Enter support email (optional)'); ?>"
+							title="<?= $this->htmlTranslate('Where participants send questions. Separate several addresses with commas.'); ?>"
+							value="<?= $this->escape($this->support_email ?? ''); ?>" />
+						<small class="text-muted"><?= $this->htmlTranslate("Shown to participants in emails. Blank uses the administrator email."); ?></small>
 					</div>
 				</div>
 				<div class="row">
@@ -1736,6 +1746,12 @@ id="faqTable">
 				$("#jobCompletionAlertMails").focus();
 				return false;
 			}
+		}
+		var supportValidation = validateEmails($("#support_email").val());
+		if (!supportValidation.valid) {
+			alert(supportValidation.message);
+			$("#support_email").focus();
+			return false;
 		}
 		// Validate at least one scheme is selected
 		if ($('#schemeList input[type="checkbox"]:checked').length === 0) {
