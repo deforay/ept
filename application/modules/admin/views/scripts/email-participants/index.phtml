@@ -64,11 +64,39 @@ foreach ($this->schemes as $scheme) {
     .ep-side .ep-side-text { color: #555; font-size: 13px; line-height: 1.5; margin: 0 0 10px; }
     .ep-side .ep-side-text:last-child { margin-bottom: 0; }
 
+    .ep-tabs { margin: 0 4px 14px; }
+    .ep-tabs .badge { margin-left: 4px; }
+
+    .ep-schedule { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 10px; margin-top: 14px; padding-top: 14px; border-top: 1px solid #eef0f3; }
+    .ep-schedule .ep-field { margin: 0; }
+    .ep-schedule input[type=datetime-local] { width: 230px; }
+    .ep-schedule .ep-hint { flex: 1 1 260px; margin: 0 0 10px; color: #8a93a0; font-size: 12px; }
+
+    .ep-list { margin: 0; }
+    .ep-list th { font-size: 12px; color: #6b7380; font-weight: 600; white-space: nowrap; }
+    .ep-list td { vertical-align: top !important; font-size: 13px; }
+    .ep-list .ep-list-sub { color: #8a93a0; font-size: 12px; margin-top: 2px; }
+    .ep-list .ep-list-reason { color: #a94442; font-size: 12px; margin-top: 4px; }
+    .ep-list .ep-row-actions { display: flex; flex-wrap: wrap; gap: 4px; justify-content: flex-end; }
+    .ep-list-empty { color: #8a93a0; text-align: center; padding: 24px 0; }
+
     @media (max-width: 992px) {
         .ep-layout { flex-direction: column; }
         .ep-layout .ep-side { flex: 1 1 auto; width: 100%; position: static; }
     }
 </style>
+<?php
+$editEmail = $this->editEmail ?? null;
+// What the edit form starts from: the email as saved
+$editData = $editEmail === null ? null : [
+    'id'          => (int) $editEmail['id'],
+    'subject'     => (string) $editEmail['subject'],
+    'content'     => (string) $editEmail['content'],
+    'shipments'   => array_values(array_filter(explode(',', (string) $editEmail['shipment_code']))),
+    'audiences'   => array_values(array_filter(explode(',', (string) $editEmail['receivers']))),
+    'scheduledAt' => !empty($editEmail['scheduled_at']) ? str_replace(' ', 'T', substr($editEmail['scheduled_at'], 0, 16)) : '',
+];
+?>
 
 <div class="ep-wrap">
     <div class="ep-header">
@@ -77,6 +105,49 @@ foreach ($this->schemes as $scheme) {
         <div class="ep-sub"><?= $this->htmlTranslate("Write one message. Each recipient in the shipments you select gets their own copy. Preview lists every recipient before you send."); ?></div>
     </div>
 
+    <ul class="nav nav-tabs ep-tabs" id="epTabs">
+        <li data-tab="compose"><a href="javascript:void(0)" onclick="showTab('compose');"><?= $editData ? $this->htmlTranslate("Edit scheduled email") : $this->htmlTranslate("Compose"); ?></a></li>
+        <li data-tab="scheduled"><a href="javascript:void(0)" onclick="showTab('scheduled');"><?= $this->htmlTranslate("Scheduled"); ?> <span class="badge" id="scheduledCount"></span></a></li>
+        <li data-tab="history"><a href="javascript:void(0)" onclick="showTab('history');"><?= $this->htmlTranslate("History"); ?></a></li>
+    </ul>
+
+    <div id="paneScheduled" class="ep-card" style="display:none;">
+        <h4><i class="icon-time"></i> <?= $this->htmlTranslate("Scheduled emails"); ?></h4>
+        <p class="ep-side-text" style="color:#8a93a0;font-size:12px;"><?= sprintf($this->htmlTranslate("Times are in the %s time zone. Recipients are worked out when the email goes out, so labs enrolled after it was scheduled are included. An email that is partway out can still be paused or cancelled: the messages not yet sent are held back."), $this->escape($this->timezone)); ?></p>
+        <table class="table ep-list" id="scheduledTable">
+            <thead>
+                <tr>
+                    <th><?= $this->htmlTranslate("Send at"); ?></th>
+                    <th><?= $this->htmlTranslate("Subject"); ?></th>
+                    <th><?= $this->htmlTranslate("Shipments"); ?></th>
+                    <th><?= $this->htmlTranslate("To"); ?></th>
+                    <th><?= $this->htmlTranslate("Status"); ?></th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+    <div id="paneHistory" class="ep-card" style="display:none;">
+        <h4><i class="icon-list"></i> <?= $this->htmlTranslate("Sent and cancelled emails"); ?></h4>
+        <p class="ep-side-text" style="color:#8a93a0;font-size:12px;"><?= $this->htmlTranslate("The latest 200 emails. Delivery counts are kept for 30 days after sending."); ?></p>
+        <table class="table ep-list" id="historyTable">
+            <thead>
+                <tr>
+                    <th><?= $this->htmlTranslate("Created"); ?></th>
+                    <th><?= $this->htmlTranslate("Subject"); ?></th>
+                    <th><?= $this->htmlTranslate("Shipments"); ?></th>
+                    <th><?= $this->htmlTranslate("To"); ?></th>
+                    <th><?= $this->htmlTranslate("Status"); ?></th>
+                    <th><?= $this->htmlTranslate("By"); ?></th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+    <div id="paneCompose">
     <form name="emailParticipantForm" id="emailParticipantForm" method="post" action="<?php echo $this->url(array("module" => "admin", "controller" => "email-participants", "action" => "index"), 'default', true) ?>" role="form">
         <div class="ep-layout">
             <div class="ep-main">
@@ -143,13 +214,32 @@ foreach ($this->schemes as $scheme) {
                     </div>
                 </div>
 
-                <div class="ep-card ep-actions">
-                    <span class="ep-actions-note"><?= $this->htmlTranslate("The mail job sends queued emails in batches."); ?></span>
-                    <input type="hidden" name="distributionId" id="distributionId" value="<?php echo $this->escape($this->distributionId); ?>" />
-                    <input type="hidden" name="shipmentSlectedId" id="shipmentSlectedId" value="<?php echo $this->escape($this->shipmentId); ?>" />
-                    <button type="button" class="btn btn-default" onclick="window.location.href='/admin/index';"><?= $this->htmlTranslate("Cancel"); ?></button>
-                    <button type="button" class="btn btn-info" onclick="openPreview();"><i class="icon-eye-open"></i> <?= $this->htmlTranslate("Preview"); ?></button>
-                    <button type="button" class="btn btn-primary" name="submitbtn" onclick="validateNow();"><i class="icon-envelope"></i> <?= $this->htmlTranslate("Send"); ?></button>
+                <div class="ep-card">
+                    <div class="ep-actions">
+                        <span class="ep-actions-note"><?= $this->htmlTranslate("The mail job sends queued emails in batches."); ?></span>
+                        <input type="hidden" name="distributionId" id="distributionId" value="<?php echo $this->escape($this->distributionId); ?>" />
+                        <input type="hidden" name="shipmentSlectedId" id="shipmentSlectedId" value="<?php echo $this->escape($this->shipmentId); ?>" />
+                        <input type="hidden" name="emailId" id="emailId" value="<?= $editData ? $editData['id'] : '' ?>" />
+                        <input type="hidden" name="sendMode" id="sendMode" value="now" />
+                        <?php if ($editData) { ?>
+                            <button type="button" class="btn btn-default" onclick="window.location.href='/admin/email-participants?tab=scheduled';"><?= $this->htmlTranslate("Discard changes"); ?></button>
+                        <?php } else { ?>
+                            <button type="button" class="btn btn-default" onclick="window.location.href='/admin/index';"><?= $this->htmlTranslate("Cancel"); ?></button>
+                        <?php } ?>
+                        <button type="button" class="btn btn-info" onclick="openPreview();"><i class="icon-eye-open"></i> <?= $this->htmlTranslate("Preview"); ?></button>
+                        <?php if (!$editData) { ?>
+                            <button type="button" class="btn btn-default" id="scheduleToggleBtn" onclick="toggleSchedulePanel();"><i class="icon-time"></i> <?= $this->htmlTranslate("Schedule…"); ?></button>
+                        <?php } ?>
+                        <button type="button" class="btn <?= $editData ? 'btn-default' : 'btn-primary' ?>" name="submitbtn" onclick="validateNow('now');"><i class="icon-envelope"></i> <?= $this->htmlTranslate("Send now"); ?></button>
+                    </div>
+                    <div class="ep-schedule" id="schedulePanel" style="<?= $editData ? '' : 'display:none;' ?>">
+                        <div class="ep-field">
+                            <label for="scheduledAt"><?= $this->htmlTranslate("Send at"); ?> <span class="mandatory">*</span></label>
+                            <input type="datetime-local" name="scheduledAt" id="scheduledAt" class="form-control" value="<?= $editData ? $this->escape($editData['scheduledAt']) : '' ?>" min="<?= date('Y-m-d\TH:i') ?>">
+                        </div>
+                        <div class="ep-hint"><?= sprintf($this->htmlTranslate("Time zone: %s. Recipients are worked out at the send time."), $this->escape($this->timezone)); ?></div>
+                        <button type="button" class="btn btn-primary" onclick="validateNow('schedule');"><i class="icon-time"></i> <?= $editData ? $this->htmlTranslate("Save changes") : $this->htmlTranslate("Schedule"); ?></button>
+                    </div>
                 </div>
             </div>
 
@@ -200,6 +290,7 @@ foreach ($this->schemes as $scheme) {
             </div>
         </div>
     </form>
+    </div><!-- /#paneCompose -->
 </div>
 
 <!-- Preview: the exact recipient list the Send button would queue, and the
@@ -304,7 +395,21 @@ foreach ($this->schemes as $scheme) {
 <script type="text/javascript" src="<?php echo $this->baseUrl('js/summernote.min.js'); ?>"></script>
 <script type="text/javascript" src="<?php echo $this->baseUrl('js/bootstrap-select.min.js'); ?>"></script>
 <script type="text/javascript">
-    function validateNow() {
+    // The scheduled email being edited, or null when composing a new one
+    var EDIT_EMAIL = <?= json_encode($editData, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?>;
+    // The current time in the application time zone, as a datetime-local
+    // value. The browser's own clock may be in another time zone.
+    var SERVER_NOW = "<?= date('Y-m-d\TH:i') ?>";
+
+    function toggleSchedulePanel() {
+        $('#schedulePanel').toggle();
+        if ($('#schedulePanel').is(':visible')) {
+            $('#scheduledAt').focus();
+        }
+    }
+
+    function validateNow(mode) {
+        mode = mode || 'now';
         $("#message").val($("#messageEditor").summernote('code'));
         if (!$('#shipments').val() || $('#shipments').val().length === 0) {
             alert("<?= $this->jsTranslate("Select at least one shipment.") ?>");
@@ -323,6 +428,23 @@ foreach ($this->schemes as $scheme) {
             alert("<?= $this->jsTranslate("Enter the message.") ?>");
             return false;
         }
+        if (mode === 'schedule') {
+            // datetime-local values sort as strings, so this compares times
+            var when = $('#scheduledAt').val();
+            if (!when) {
+                alert("<?= $this->jsTranslate("Choose when to send the email.") ?>");
+                $('#scheduledAt').focus();
+                return false;
+            }
+            if (when <= SERVER_NOW) {
+                alert("<?= $this->jsTranslate("Choose a send time in the future.") ?>");
+                $('#scheduledAt').focus();
+                return false;
+            }
+        } else if (EDIT_EMAIL && !confirm("<?= $this->jsTranslate("Send this email now instead of at its scheduled time?") ?>")) {
+            return false;
+        }
+        $('#sendMode').val(mode);
         flag = deforayValidator.init({
             formId: 'emailParticipantForm'
         });
@@ -332,6 +454,12 @@ foreach ($this->schemes as $scheme) {
         }
     }
     $(document).ready(function() {
+        if (EDIT_EMAIL) {
+            $('#subject').val(EDIT_EMAIL.subject);
+            $('#sendMailChoices input').each(function() {
+                this.checked = EDIT_EMAIL.audiences.indexOf(this.value) !== -1;
+            });
+        }
         getShipmentCodes();
         $('#shipments').selectpicker();
 
@@ -373,6 +501,14 @@ foreach ($this->schemes as $scheme) {
             $(this).closest('.ep-choice').toggleClass('selected', this.checked);
         }).trigger('change');
 
+        if (EDIT_EMAIL) {
+            $('#messageEditor').summernote('code', EDIT_EMAIL.content);
+        }
+        showTab(EDIT_EMAIL ? 'compose' : "<?= $this->escape($this->tab ?? 'compose') ?>");
+        // Fills the Scheduled count badge whichever tab is open
+        if (!EDIT_EMAIL) {
+            loadEmailList('scheduled');
+        }
     });
 
     function getSendMail() {
@@ -427,7 +563,9 @@ foreach ($this->schemes as $scheme) {
                     $("#shipments").html('');
                 } else {
                     $("#shipments").html(data);
-                    if ($('#shipmentSlectedId').val() != '') {
+                    if (EDIT_EMAIL) {
+                        $("#shipments").val(EDIT_EMAIL.shipments);
+                    } else if ($('#shipmentSlectedId').val() != '') {
                         $("#shipments").val($('#shipmentSlectedId').val());
                         $("#templates").val('not_participated');
                         fillTemplate($("#templates").val());
@@ -575,7 +713,8 @@ foreach ($this->schemes as $scheme) {
             // (subject etc.) still run on the way out.
             $('#previewSendBtn')
                 .text(fmt("<?= $this->jsTranslate("Send (%s)") ?>", formatCount(count)))
-                .toggle(hasMessage && count > 0);
+                // Not while editing: Send now and Save changes are on the form
+                .toggle(hasMessage && count > 0 && !EDIT_EMAIL);
             if (hasMessage && count > 0) {
                 showPreviewBody(0);
                 showPreviewTab('message');
@@ -857,6 +996,220 @@ foreach ($this->schemes as $scheme) {
 
                 $.unblockUI();
             });
+    }
+
+    /* ---------- Scheduled and History tabs ---------- */
+
+    var STATUS_LABELS = {
+        scheduled: ["<?= $this->jsTranslate("Scheduled") ?>", 'label-info'],
+        paused: ["<?= $this->jsTranslate("Paused") ?>", 'label-warning'],
+        dispatching: ["<?= $this->jsTranslate("Queuing") ?>", 'label-primary'],
+        sending: ["<?= $this->jsTranslate("Sending") ?>", 'label-primary'],
+        queued: ["<?= $this->jsTranslate("Sent") ?>", 'label-success'],
+        cancelled: ["<?= $this->jsTranslate("Cancelled") ?>", 'label-default'],
+        failed: ["<?= $this->jsTranslate("Failed") ?>", 'label-danger']
+    };
+    var listTimer = null;
+
+    function showTab(tab) {
+        $('#epTabs li').removeClass('active');
+        $('#epTabs li[data-tab="' + tab + '"]').addClass('active');
+        $('#paneCompose').toggle(tab === 'compose');
+        $('#paneScheduled').toggle(tab === 'scheduled');
+        $('#paneHistory').toggle(tab === 'history');
+
+        clearInterval(listTimer);
+        if (tab !== 'compose') {
+            loadEmailList(tab);
+            // Progress of a send still going out
+            if (tab === 'scheduled') {
+                listTimer = setInterval(function() {
+                    loadEmailList('scheduled');
+                }, 30000);
+            }
+        }
+        if (!EDIT_EMAIL && window.history.replaceState) {
+            window.history.replaceState(null, '', '/admin/email-participants' + (tab === 'compose' ? '' : '?tab=' + tab));
+        }
+    }
+
+    function loadEmailList(view) {
+        $.get("/admin/email-participants/list", {
+            view: view
+        }, function(data) {
+            renderEmailList(view, data.rows || [], data.now);
+        }, "json");
+    }
+
+    /** "2026-10-06 14:30:00" → "06-Oct-2026 14:30", in the app's time zone */
+    function formatWhen(value) {
+        if (!value) {
+            return '';
+        }
+        var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        var d = String(value);
+        return d.substr(8, 2) + '-' + months[parseInt(d.substr(5, 2), 10) - 1] + '-' + d.substr(0, 4) + ' ' + d.substr(11, 5);
+    }
+
+    function displayStatus(row) {
+        var p = row.progress || {};
+        var unsent = (p.pending || 0) + (p['picked-to-process'] || 0) + (p.held || 0);
+        if (row.status === 'queued' && unsent > 0) {
+            return 'sending';
+        }
+        return row.status;
+    }
+
+    /** "312 sent · 4 failed · 180 waiting", or the total once counts are pruned */
+    function progressText(row) {
+        var p = row.progress || {};
+        var parts = [];
+        var waiting = (p.pending || 0) + (p['picked-to-process'] || 0);
+        if (p.sent) {
+            parts.push(fmt("<?= $this->jsTranslate("%s sent") ?>", formatCount(p.sent)));
+        }
+        if (waiting) {
+            parts.push(fmt("<?= $this->jsTranslate("%s waiting") ?>", formatCount(waiting)));
+        }
+        if (p.held) {
+            parts.push(fmt("<?= $this->jsTranslate("%s held") ?>", formatCount(p.held)));
+        }
+        if (p.failed || p.skipped) {
+            parts.push(fmt("<?= $this->jsTranslate("%s failed") ?>", formatCount((p.failed || 0) + (p.skipped || 0))));
+        }
+        if (p.cancelled) {
+            parts.push(fmt("<?= $this->jsTranslate("%s not sent") ?>", formatCount(p.cancelled)));
+        }
+        if (parts.length === 0 && row.queuedCount) {
+            parts.push(fmt("<?= $this->jsTranslate("%s messages") ?>", formatCount(row.queuedCount)));
+        }
+        return parts.join(' · ');
+    }
+
+    function statusCell(row) {
+        var key = displayStatus(row);
+        var label = STATUS_LABELS[key] || [key, 'label-default'];
+        var cell = $('<td>').append($('<span class="label">').addClass(label[1]).text(label[0]));
+        if (row.inFlight && (row.status === 'paused' || row.status === 'cancelled')) {
+            cell.append($('<div class="ep-list-sub">').text("<?= $this->jsTranslate("Partly sent") ?>"));
+        }
+        var progress = progressText(row);
+        if (progress) {
+            cell.append($('<div class="ep-list-sub">').text(progress));
+        }
+        if (row.failureReason) {
+            cell.append($('<div class="ep-list-reason">').text(row.failureReason));
+        }
+        return cell;
+    }
+
+    function actionButton(label, css, onClick) {
+        return $('<button type="button" class="btn btn-xs">').addClass(css).text(label).on('click', onClick);
+    }
+
+    function rowActions(row, now) {
+        var box = $('<div class="ep-row-actions">');
+        if (row.editable) {
+            box.append(actionButton("<?= $this->jsTranslate("Edit") ?>", 'btn-default', function() {
+                window.location.href = '/admin/email-participants?edit=' + row.id;
+            }));
+        }
+        var waiting = row.status === 'scheduled' || (row.status === 'queued' && displayStatus(row) === 'sending');
+        if (waiting) {
+            box.append(actionButton("<?= $this->jsTranslate("Pause") ?>", 'btn-warning', function() {
+                changeState(row, 'pause');
+            }));
+        }
+        if (row.status === 'paused') {
+            box.append(actionButton("<?= $this->jsTranslate("Resume") ?>", 'btn-success', function() {
+                // A paused email whose time went by would go out the moment
+                // it resumed, so ask rather than surprise
+                if (!row.inFlight && row.scheduledAt <= now) {
+                    if (confirm("<?= $this->jsTranslate("Its send time has passed. Send it now? Choose Cancel to set a new time instead.") ?>")) {
+                        changeState(row, 'send-now');
+                    } else {
+                        window.location.href = '/admin/email-participants?edit=' + row.id;
+                    }
+                    return;
+                }
+                changeState(row, 'resume');
+            }));
+        }
+        if (row.editable) {
+            box.append(actionButton("<?= $this->jsTranslate("Send now") ?>", 'btn-primary', function() {
+                if (confirm(fmt("<?= $this->jsTranslate("Send \"%s\" now instead of at its scheduled time?") ?>", row.subject))) {
+                    changeState(row, 'send-now');
+                }
+            }));
+        }
+        if (row.editable || (row.inFlight && (row.status === 'queued' || row.status === 'paused') && displayStatus(row) !== 'queued')) {
+            box.append(actionButton("<?= $this->jsTranslate("Cancel") ?>", 'btn-danger', function() {
+                var question = row.inFlight ?
+                    "<?= $this->jsTranslate("Cancel this email? Messages already sent cannot be recalled. The rest will not be sent.") ?>" :
+                    "<?= $this->jsTranslate("Cancel this email? It will not be sent.") ?>";
+                if (confirm(question)) {
+                    changeState(row, 'cancel');
+                }
+            }));
+        }
+        return box;
+    }
+
+    function changeState(row, action) {
+        $.blockUI();
+        $.post("/admin/email-participants/change-state", {
+            id: row.id,
+            'do': action
+        }, function(data) {
+            $.unblockUI();
+            alert(data.message);
+            loadEmailList('scheduled');
+        }, "json").fail(function() {
+            $.unblockUI();
+            alert("<?= $this->jsTranslate("That did not work. Reload the page and try again.") ?>");
+        });
+    }
+
+    function audienceText(audiences) {
+        return $.map(audiences || [], roleLabel).join(', ');
+    }
+
+    function renderEmailList(view, rows, now) {
+        if (view === 'scheduled') {
+            $('#scheduledCount').text(rows.length ? rows.length : '');
+        }
+        var tbody = $(view === 'scheduled' ? '#scheduledTable tbody' : '#historyTable tbody').empty();
+        if (rows.length === 0) {
+            tbody.append($('<tr>').append($('<td colspan="6" class="ep-list-empty">').text(view === 'scheduled' ?
+                "<?= $this->jsTranslate("No emails are scheduled. Use Schedule… on the Compose tab to send one later.") ?>" :
+                "<?= $this->jsTranslate("No emails have been sent from this page yet.") ?>")));
+            return;
+        }
+        $.each(rows, function(i, row) {
+            var subject = $('<td>').append($('<div>').text(row.subject));
+            var by = row.createdBy + (row.updatedBy && row.updatedBy !== row.createdBy ? ' · ' + fmt("<?= $this->jsTranslate("edited by %s") ?>", row.updatedBy) : '');
+            var tr = $('<tr>');
+            if (view === 'scheduled') {
+                subject.append($('<div class="ep-list-sub">').text(by));
+                tr.append($('<td style="white-space:nowrap;">').text(row.scheduledAt ? formatWhen(row.scheduledAt) : formatWhen(row.dispatchedAt)))
+                    .append(subject)
+                    .append($('<td>').text(row.shipments.join(', ')))
+                    .append($('<td>').text(audienceText(row.audiences)))
+                    .append(statusCell(row))
+                    .append($('<td>').append(rowActions(row, now)));
+            } else {
+                if (row.scheduledAt) {
+                    subject.append($('<div class="ep-list-sub">').text(fmt("<?= $this->jsTranslate("Scheduled for %s") ?>", formatWhen(row.scheduledAt))));
+                }
+                tr.append($('<td style="white-space:nowrap;">').text(formatWhen(row.createdAt)))
+                    .append(subject)
+                    .append($('<td>').text(row.shipments.join(', ')))
+                    .append($('<td>').text(audienceText(row.audiences)))
+                    .append(statusCell(row))
+                    .append($('<td>').text(by));
+            }
+            tbody.append(tr);
+        });
     }
 
 </script>

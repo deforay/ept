@@ -1601,54 +1601,161 @@ class Application_Service_Participants
         return array_values($unique);
     }
 
-    public function sendParticipantEmail($data)
+    /**
+     * Saves an email from Email Participants. With $scheduledAt it waits for
+     * the dispatch-scheduled-emails job; without it, it is queued now.
+     *
+     * @return array{id: int, queued: int, invalid: string[]}
+     */
+    public function saveParticipantEmail(array $data, ?string $scheduledAt, string $adminEmail): array
     {
-        $commonServices = new Application_Service_Common();
-        $alertMsg = new Zend_Session_Namespace('alertSpace');
-
-        $mail = Application_Service_Common::getMailSettings();
-        // Validated, domain-skipped and de-duplicated — same call the preview
-        // screen makes, so what was previewed is what gets queued.
-        $resolved = $this->resolveMailRecipients($data);
-
-        // Persist what was sent (for history)
         $emailParticipantDb = new Application_Model_DbTable_EmailParticipants();
-        $emailParticipantDb->saveEmailParticipants([
-            'subject' => $data['subject'],
-            'message' => $data['message'],
-            'email' => implode(',', (array) $data['sendMail']),
-            'scode' => implode(',', (array) $data['shipments']),
+        $id = $emailParticipantDb->createEmail($data, $scheduledAt, $adminEmail);
+        if ($scheduledAt !== null) {
+            return ['id' => $id, 'queued' => 0, 'invalid' => []];
+        }
+        return ['id' => $id] + $this->queueParticipantEmail($id);
+    }
+
+    /**
+     * Works out the recipients of a saved email and queues one message each,
+     * linked back to it. The caller must first have moved the email to
+     * 'dispatching', which is what stops it being queued twice. Reads no
+     * session, so the dispatch job can call it.
+     *
+     * @return array{queued: int, invalid: string[]}
+     */
+    public function queueParticipantEmail(int $id): array
+    {
+        $emailParticipantDb = new Application_Model_DbTable_EmailParticipants();
+        $email = $emailParticipantDb->fetchEmail($id);
+        if ($email === null || $email['status'] !== 'dispatching') {
+            return ['queued' => 0, 'invalid' => []];
+        }
+
+        $data = [
+            'subject'   => (string) $email['subject'],
+            'message'   => (string) $email['content'],
+            'sendMail'  => array_filter(explode(',', (string) $email['receivers'])),
+            'shipments' => array_filter(explode(',', (string) $email['shipment_code'])),
+        ];
+
+        try {
+            // Validated, domain-skipped and de-duplicated — same call the preview
+            // screen makes, so what was previewed is what gets queued.
+            $resolved = $this->resolveMailRecipients($data);
+
+            $commonServices = new Application_Service_Common();
+            $mail = Application_Service_Common::getMailSettings();
+            $queued = 0;
+            foreach ($resolved['recipients'] as $pt) {
+                // The standing config Cc rides along with this row's data managers
+                $ccList = $pt['cc'] ?? [];
+                if ($mail['cc'] !== '') {
+                    array_unshift($ccList, $mail['cc']);
+                }
+
+                $tempId = $commonServices->insertTempMail(
+                    $pt['email'],
+                    implode(',', $ccList),
+                    $mail['bcc'],
+                    self::mailMerge($data['subject'], $pt),
+                    self::mailMerge($data['message'], $pt),
+                    $mail['fromEmail'],
+                    $mail['fromName'],
+                    null,
+                    null,
+                    $id
+                );
+                if ($tempId) {
+                    $queued++;
+                }
+            }
+        } catch (Throwable $e) {
+            Pt_Commons_LoggerUtility::logError("Email Participants: queuing email {$id} failed: " . $e->getMessage(), [
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ]);
+            $emailParticipantDb->changeStatus($id, ['dispatching'], 'failed', null, [
+                'dispatched_at'  => new Zend_Db_Expr('NOW()'),
+                'failure_reason' => 'Could not work out the recipients: ' . $e->getMessage(),
+            ]);
+            return ['queued' => 0, 'invalid' => []];
+        }
+
+        $emailParticipantDb->changeStatus($id, ['dispatching'], $queued > 0 ? 'queued' : 'failed', null, [
+            'dispatched_at'  => new Zend_Db_Expr('NOW()'),
+            'queued_count'   => $queued,
+            'failure_reason' => $queued > 0 ? null : 'No recipients: the selected shipments have no one in the chosen audiences with a usable email address.',
         ]);
 
-        if (!empty($resolved['invalid'])) {
-            $alertMsg->message = implode(', ', $resolved['invalid']) . ' — not valid email(s), skipped';
+        return ['queued' => $queued, 'invalid' => $resolved['invalid']];
+    }
+
+    /**
+     * Pause, resume, cancel or send now. Each works on an email still waiting
+     * for its time, and pause, resume and cancel also work on one partway out.
+     * Pausing that one holds its unsent messages in temp_mail; cancelling
+     * cancels them. A message the mail job has already picked up still goes.
+     *
+     * @return array{ok: bool, code: string, count?: int} code names the outcome
+     *         for the controller to word; count is the number of messages moved
+     */
+    public function changeParticipantEmailState(int $id, string $action, string $adminEmail): array
+    {
+        $emailParticipantDb = new Application_Model_DbTable_EmailParticipants();
+        $email = $emailParticipantDb->fetchEmail($id);
+        if ($email === null) {
+            return ['ok' => false, 'code' => 'missing'];
         }
+        $inFlight = !empty($email['dispatched_at']);
+        $stale = ['ok' => false, 'code' => 'stale'];
 
-        $fromEmail = $mail['fromEmail'];
-        $fromFullName = $mail['fromName'];
-        $configCc = $mail['cc'];
-        $bcc = $mail['bcc'];
+        switch ($action) {
+            case 'pause':
+                if (!$emailParticipantDb->changeStatus($id, $inFlight ? ['queued'] : ['scheduled'], 'paused', $adminEmail)) {
+                    return $stale;
+                }
+                if ($inFlight) {
+                    $held = $emailParticipantDb->moveQueuedMessages($id, ['pending'], 'held');
+                    return ['ok' => true, 'code' => 'paused_held', 'count' => $held];
+                }
+                return ['ok' => true, 'code' => 'paused'];
 
-        $status = false;
-        foreach ($resolved['recipients'] as $pt) {
-            // Personalize subject/message
-            $message = self::mailMerge((string) $data['message'], $pt);
-            $subject = self::mailMerge((string) $data['subject'], $pt);
+            case 'resume':
+                if ($inFlight) {
+                    if (!$emailParticipantDb->changeStatus($id, ['paused'], 'queued', $adminEmail)) {
+                        return $stale;
+                    }
+                    $released = $emailParticipantDb->moveQueuedMessages($id, ['held'], 'pending');
+                    return ['ok' => true, 'code' => 'resumed_released', 'count' => $released];
+                }
+                if (!$emailParticipantDb->changeStatus($id, ['paused'], 'scheduled', $adminEmail)) {
+                    return $stale;
+                }
+                return ['ok' => true, 'code' => 'resumed'];
 
-            // The standing config Cc rides along with this row's data managers
-            $ccList = $pt['cc'] ?? [];
-            if ($configCc !== '') {
-                array_unshift($ccList, $configCc);
-            }
-            $cc = implode(',', $ccList);
+            case 'cancel':
+                $from = $inFlight ? ['queued', 'paused'] : ['scheduled', 'paused'];
+                if (!$emailParticipantDb->changeStatus($id, $from, 'cancelled', $adminEmail)) {
+                    return $stale;
+                }
+                if ($inFlight) {
+                    $cancelled = $emailParticipantDb->moveQueuedMessages($id, ['pending', 'held'], 'cancelled');
+                    return ['ok' => true, 'code' => 'cancelled_messages', 'count' => $cancelled];
+                }
+                return ['ok' => true, 'code' => 'cancelled'];
 
-            // Queue email
-            $status = $commonServices->insertTempMail($pt['email'], $cc, $bcc, $subject, $message, $fromEmail, $fromFullName) || $status;
+            case 'send-now':
+                if ($inFlight || !$emailParticipantDb->changeStatus($id, ['scheduled', 'paused'], 'dispatching', $adminEmail)) {
+                    return $stale;
+                }
+                $result = $this->queueParticipantEmail($id);
+                return $result['queued'] > 0
+                    ? ['ok' => true, 'code' => 'queued', 'count' => $result['queued']]
+                    : ['ok' => false, 'code' => 'no_recipients'];
         }
-        if ($status) {
-            $alertMsg = new Zend_Session_Namespace('alertSpace');
-            $alertMsg->message = 'Emails queued for sending';
-        }
+        return ['ok' => false, 'code' => 'unknown_action'];
     }
 
     public function exportParticipantMapDetails()

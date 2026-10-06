@@ -58,6 +58,14 @@ $schedule->run($phpPath . " " . SCHEDULED_JOBS_FOLDER . "/send-emails.php")
     ->preventOverlapping()
     ->description('Sending Emails');
 
+// Queue Email Participants emails whose scheduled time has come. They then go
+// out through the Sending Emails job above.
+$schedule->run($phpPath . " " . SCHEDULED_JOBS_FOLDER . "/dispatch-scheduled-emails.php")
+    ->everyMinute()
+    ->timezone($timezone)
+    ->preventOverlapping()
+    ->description('Dispatching scheduled participant emails');
+
 // Run scheduled tasks
 $schedule->run($phpPath . " " . SCHEDULED_JOBS_FOLDER . "/execute-job-queue.php")
     ->everyMinute()

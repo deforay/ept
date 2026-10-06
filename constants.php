@@ -1,6 +1,6 @@
 <?php
 
-const APP_VERSION = '7.6.24';
+const APP_VERSION = '7.6.25';
 
 // Shipment statuses that indicate temporary/in-progress states (not milestones)
 const SHIPMENT_EPHEMERAL_STATUSES = ['draft', 'ready', 'queued', 'processing', 'pending'];

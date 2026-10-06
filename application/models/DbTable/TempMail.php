@@ -28,7 +28,8 @@ class Application_Model_DbTable_TempMail extends Zend_Db_Table_Abstract
         $fromMail = null,
         $fromName = null,
         $attachments = [],
-        $replyTo = null
+        $replyTo = null,
+        ?int $emailParticipantId = null
     ) {
 
         try {
@@ -177,6 +178,8 @@ class Application_Model_DbTable_TempMail extends Zend_Db_Table_Abstract
                 'message' => (string) $message,
                 'attachment' => $files ? json_encode($files, JSON_UNESCAPED_SLASHES) : '',
                 'status' => 'pending', // Queue status for background processing
+                // The Email Participants email this message was queued from, if any
+                'email_participant_id' => $emailParticipantId,
             ];
             // Insert record into database
             try {
@@ -268,7 +271,7 @@ class Application_Model_DbTable_TempMail extends Zend_Db_Table_Abstract
         /* Status scope — the page is "Failed Emails", so without an explicit
          * filter only delivery failures are shown ('skipped' rows carry
          * failure types like dev_trap_block / invalid_dsn) */
-        $validStatuses = ['failed', 'skipped', 'pending', 'picked-to-process', 'sent'];
+        $validStatuses = ['failed', 'skipped', 'pending', 'picked-to-process', 'sent', 'held', 'cancelled'];
         $statusFilter = trim((string) ($parameters['statusFilter'] ?? ''));
         if ($statusFilter === 'all') {
             $statusWhere = '';

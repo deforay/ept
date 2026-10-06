@@ -11,7 +11,7 @@ declare(strict_types=1);
  *
  * DB targets covered:
  *   - track_api_requests       90 days  (API request log, by requested_on)
- *   - temp_mail                30 days  (terminal rows: sent/failed)
+ *   - temp_mail                30 days  (terminal rows: sent/failed/cancelled)
  *   - push_notification        90 days  (non-pending rows, by created_on)
  *   - audit_log               730 days  (statement-level audit trail)
  *   - user_login_history      730 days  (login audit; same window as audit_log
@@ -95,9 +95,9 @@ try {
         ],
         [
             'name'   => 'temp_mail',
-            'count'  => "SELECT COUNT(*) FROM temp_mail WHERE status IN ('sent','failed','failure','fail') "
+            'count'  => "SELECT COUNT(*) FROM temp_mail WHERE status IN ('sent','failed','failure','fail','cancelled') "
                       . 'AND COALESCE(sent_at, updated_at, queued_on) < NOW() - INTERVAL 30 DAY',
-            'delete' => "DELETE FROM temp_mail WHERE status IN ('sent','failed','failure','fail') "
+            'delete' => "DELETE FROM temp_mail WHERE status IN ('sent','failed','failure','fail','cancelled') "
                       . 'AND COALESCE(sent_at, updated_at, queued_on) < NOW() - INTERVAL 30 DAY',
         ],
         [

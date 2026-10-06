@@ -965,11 +965,11 @@ class Application_Service_Common
             }
         }
     }
-    public function insertTempMail($to, $cc, $bcc, $subject, $message, $fromMail = null, $fromName = null, $attachedFile = null, $replyTo = null)
+    public function insertTempMail($to, $cc, $bcc, $subject, $message, $fromMail = null, $fromName = null, $attachedFile = null, $replyTo = null, ?int $emailParticipantId = null)
     {
         $db = new Application_Model_DbTable_TempMail();
         $replyTo ??= $fromMail;
-        return $db->insertTempMailDetails($to, $cc, $bcc, $subject, $message, $fromMail, $fromName, $attachedFile, $replyTo);
+        return $db->insertTempMailDetails($to, $cc, $bcc, $subject, $message, $fromMail, $fromName, $attachedFile, $replyTo, $emailParticipantId);
     }
 
     public function getAllModeOfReceipt()
