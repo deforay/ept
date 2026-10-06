@@ -300,28 +300,30 @@ if (!empty($resultArray['shipment'])) {
             $pdf->writeHTML($notTestedInfo, true, false, true, false, '');
         }
 
-        // Comments section - always show heading (no border, just header bar)
-        $comment = '<table style="width:100%;font-size:12px;" cellpadding="3">';
-        $comment .= '<tr style="background-color:#595959;color:#FFFFFF;">';
-        $comment .= '	<td style="text-align:center;"><strong>Comments</strong></td>';
-        $comment .= '</tr>';
+        // Comments section - only shown when there is at least one comment
+        $evaluationComments = trim($result['evaluationComments'] ?? '');
+        $optionalEvalComment = trim($result['optional_eval_comment'] ?? '');
+        if ($evaluationComments != "" || $optionalEvalComment != "") {
+            $comment = '<table style="width:100%;font-size:12px;" cellpadding="3">';
+            $comment .= '<tr style="background-color:#595959;color:#FFFFFF;">';
+            $comment .= '	<td style="text-align:center;"><strong>Comments</strong></td>';
+            $comment .= '</tr>';
 
-        if (trim($result['evaluationComments'] ?? '') != "" || trim($result['optional_eval_comment'] ?? '') != "") {
-            if (trim($result['evaluationComments'] ?? '') != "") {
+            if ($evaluationComments != "") {
                 $comment .= '<tr>';
                 $comment .= '   <td style="width:100%;text-align:justify;font-size:11px;">' . nl2br($result['evaluationComments']) . '</td>';
                 $comment .= '</tr>';
             }
 
-            if (trim($result['optional_eval_comment'] ?? '') != "") {
+            if ($optionalEvalComment != "") {
                 $comment .= '<tr>';
                 $comment .= '   <td style="width:100%;text-align:justify;font-size:11px;">' . nl2br($result['optional_eval_comment']) . '</td>';
                 $comment .= '</tr>';
             }
-        }
 
-        $comment .= '</table>';
-        $pdf->writeHTML($comment, true, false, true, false, '');
+            $comment .= '</table>';
+            $pdf->writeHTML($comment, true, false, true, false, '');
+        }
 
 
 
