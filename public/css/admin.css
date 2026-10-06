@@ -8399,6 +8399,26 @@ td.center {
 	flex-wrap: wrap;
 }
 
+/* A short tag per item when a cell lists several — e.g. the schemes a not-tested
+   reason applies to. Full names joined with commas ran to four lines a row. */
+.data-list .scheme-chips {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 4px;
+}
+
+.data-list .scheme-chip {
+	display: inline-block;
+	padding: 2px 8px;
+	font-size: 11.5px;
+	line-height: 1.5;
+	white-space: nowrap;
+	background: #eef3f9;
+	border: 1px solid #cfdae8;
+	border-radius: 10px;
+	color: #3a5a8a;
+}
+
 /* The child-row tables are not .dataTable, so they miss the row-button sizing
    above; match it here so a row button looks the same wherever it appears —
    scoped to the child rows themselves, not just to grouped action stacks, since

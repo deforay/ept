@@ -34,6 +34,9 @@ class Admin_SampleNotTestedReasonsController extends Zend_Controller_Action
             $params = $this->getAllParams();
             $schemeService = new Application_Service_Schemes();
             $schemeService->getAllSampleNotTeastedReasonsInGrid($params);
+        } else {
+            $schemeDb = new Application_Model_DbTable_SchemeList();
+            $this->view->schemeList = $schemeDb->getFullSchemeList(true);
         }
     }
 

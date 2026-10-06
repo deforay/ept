@@ -80,6 +80,11 @@ class Application_Model_DbTable_ResponseNotTestedReasons extends Zend_Db_Table_A
         if (isset($sWhere) && $sWhere != '') {
             $sQuery = $sQuery->where($sWhere);
         }
+        // Same match as Application_Service_Schemes::getNotTestedReasons(), so
+        // filtering by a test lists exactly what that test's response form offers.
+        if (!empty($parameters['scheme'])) {
+            $sQuery = $sQuery->where("JSON_SEARCH(`ntr_test_type`, 'all', ?) IS NOT NULL", (string) $parameters['scheme']);
+        }
         if (!empty($sOrder)) {
             $sQuery = $sQuery->order($sOrder);
         }
@@ -113,16 +118,30 @@ class Application_Model_DbTable_ResponseNotTestedReasons extends Zend_Db_Table_A
 
         $schemeDb = new Application_Model_DbTable_SchemeList();
         $schemeList = $schemeDb->getFullSchemeList(true);
+        // Full scheme names ("Dried Tube Specimen - HIV Viral Load") made this
+        // column unreadable, so each scheme shows as a short chip with the full
+        // name on hover. Built-in schemes get the short labels the Scheme Config
+        // sidebar uses; custom tests already have short ids (HBV, SYP).
+        $shortLabels = [
+            'dts'     => 'HIV Serology',
+            'dbs'     => 'DBS',
+            'vl'      => 'VL',
+            'eid'     => 'EID',
+            'tb'      => 'TB',
+            'covid19' => 'SARS-CoV-2',
+            'recency' => 'Recency',
+        ];
         foreach ($rResult as $aRow) {
             $row = [];
-            $schemeData = [];
-            $scheme = Pt_Commons_JsonUtility::safeDecode($aRow['ntr_test_type']);
+            $chips = [];
+            $scheme = (array) Pt_Commons_JsonUtility::safeDecode($aRow['ntr_test_type']);
             foreach ($scheme as $r) {
-                $schemeData[] = $schemeList[$r];
+                $chips[] = '<span class="scheme-chip" title="' . htmlspecialchars($schemeList[$r] ?? $r, ENT_QUOTES) . '">'
+                    . htmlspecialchars($shortLabels[$r] ?? $r, ENT_QUOTES) . '</span>';
             }
             $row[] = ucwords($aRow['ntr_reason']);
             $row[] = $aRow['reason_code'];
-            $row[] = implode(',', $schemeData);
+            $row[] = $chips ? '<div class="scheme-chips">' . implode('', $chips) . '</div>' : '';
             $row[] = ucwords($aRow['collect_panel_receipt_date']);
             $row[] = ucwords($aRow['ntr_status']);
             $row[] = '<a href="/admin/sample-not-tested-reasons/edit/53s5k85_8d/' . base64_encode($aRow['ntr_id']) . '" class="btn btn-warning btn-xs" style="margin-right: 2px;"><i class="icon-pencil"></i> Edit</a>';
