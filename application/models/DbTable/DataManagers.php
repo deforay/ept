@@ -134,6 +134,12 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                     if (!isset($aColumns[$colIdx])) {
                         continue;
                     }
+                    // Blank values go last in either direction, so a sort by name
+                    // opens on named records rather than the few imported without one.
+                    // Bare names (state, district) are select aliases and stay as they are.
+                    if (str_contains($aColumns[$colIdx], '.')) {
+                        $sOrder .= "(NULLIF(TRIM({$aColumns[$colIdx]}), '') IS NULL), ";
+                    }
                     $sOrder .= $aColumns[$colIdx] . '
 				 	' . Pt_Commons_General::sanitizeSortDirection($parameters['sSortDir_' . $i]) . ', ';
                 }
@@ -242,7 +248,10 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         }
 
         if (!empty($sOrder)) {
-            $sQuery = $sQuery->order($sOrder);
+            // An expression, so Zend does not split it at the commas and quote the
+            // blanks-last test as a column name. Columns come from $aColumns and
+            // the direction is sanitised above.
+            $sQuery = $sQuery->order(new Zend_Db_Expr($sOrder));
         }
 
         if (isset($sLimit) && isset($sOffset)) {
@@ -268,6 +277,34 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             }
         }
 
+        /* A manager imported without a name is identified by the participants they
+           look after instead, so the row still says who it is. */
+        $participantsByNamelessDm = [];
+        $namelessDmIds = array_column(array_filter($rResult, fn ($r) => trim(($r['first_name'] ?? '') . ($r['last_name'] ?? '')) === ''), 'dm_id');
+        if (!empty($namelessDmIds)) {
+            $nameSelect = $this->getAdapter()->select()
+                ->from(['pmm' => 'participant_manager_map'], ['dm_id'])
+                ->join(['p' => 'participant'], 'p.participant_id = pmm.participant_id', [
+                    // "Lab name (ID)", or just the ID when the lab has no name either
+                    'label' => new Zend_Db_Expr('IF(' . Application_Model_DbTable_Participants::participantNameExpr('p') . " = '', p.unique_identifier, CONCAT(" . Application_Model_DbTable_Participants::participantNameExpr('p') . ", ' (', p.unique_identifier, ')'))"),
+                ])
+                ->where('pmm.dm_id IN (?)', $namelessDmIds)
+                ->order('p.unique_identifier');
+            foreach ($this->getAdapter()->fetchAll($nameSelect) as $nameRow) {
+                // Escaped without re-encoding, since some names are stored already escaped
+                $participantsByNamelessDm[$nameRow['dm_id']][] = htmlspecialchars(trim(preg_replace('/\s+/', ' ', (string) $nameRow['label'])), ENT_QUOTES, 'UTF-8', false);
+            }
+        }
+        // Coloured by how much it needs attention: a bounce is a real address that
+        // failed, an invalid one is usually a made-up import address, and login-only
+        // accounts are expected to have no mailbox.
+        $undeliverableLabels = [
+            'hard_bounce' => [$translator->_('Bounced'), 'is-danger'],
+            'invalid_domain' => [$translator->_('Undeliverable'), 'is-warning'],
+            'invalid_syntax' => [$translator->_('Undeliverable'), 'is-warning'],
+            'login_only' => [$translator->_('Login only'), 'is-muted'],
+        ];
+
         /*
          * Output
          */
@@ -286,19 +323,33 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             //}
             $row[] = '<input type="checkbox" class="dm-select" value="' . (int) $aRow['dm_id']
                 . '" data-email="' . htmlspecialchars((string) $aRow['primary_email'], ENT_QUOTES, 'UTF-8') . '" />';
-            $row[] = $aRow['first_name'];
-            $row[] = $aRow['last_name'];
+            if (trim(($aRow['first_name'] ?? '') . ($aRow['last_name'] ?? '')) === '') {
+                $labels = $participantsByNamelessDm[$aRow['dm_id']] ?? [];
+                $more = count($labels) > 1 ? ' ' . sprintf($translator->_('+%d more'), count($labels) - 1) : '';
+                $row[] = '<span class="dm-noname">' . $translator->_('No name') . '</span>'
+                    . ($labels ? '<span class="dm-noname-hint">' . $labels[0] . $more . '</span>' : '');
+            } else {
+                $row[] = htmlspecialchars((string) $aRow['first_name'], ENT_QUOTES, 'UTF-8', false);
+            }
+            $row[] = htmlspecialchars((string) $aRow['last_name'], ENT_QUOTES, 'UTF-8', false);
             if (!isset($parameters['ptcc']) || $parameters['ptcc'] != 1) {
                 $row[] = $aRow['institute'];
             }
             $row[] = $aRow['mobile'];
-            $row[] = $aRow['primary_email'];
+            // Escaped without re-encoding, since some values are stored already escaped
+            $emailCell = htmlspecialchars((string) $aRow['primary_email'], ENT_QUOTES, 'UTF-8', false);
+            $emailStatus = $aRow['primary_email_status'] ?? '';
+            if (isset($undeliverableLabels[$emailStatus])) {
+                [$flagText, $flagClass] = $undeliverableLabels[$emailStatus];
+                $emailCell .= ' <span class="dm-email-flag ' . $flagClass . '" title="' . htmlspecialchars($translator->_('ePT does not send email to this address.'), ENT_QUOTES, 'UTF-8') . '">' . $flagText . '</span>';
+            }
+            $row[] = $emailCell;
             //$row[] = '<a href="javascript:void(0);" onclick="layoutModal(\'/admin/participants/view-participants/id/' . $aRow['dm_id'] . '\',\'980\',\'500\');" >' . $aRow['participantCount'] . '</a>';
             $row[] = $translator->_(ucwords($aRow['status'] ?? ''));
             if (isset($parameters['ptcc']) && $parameters['ptcc'] == 1) {
-                $row[] = ucwords($aRow['iso_name']);
-                $row[] = ucwords($aRow['state']);
-                $row[] = ucwords($aRow['district']);
+                $row[] = ucwords((string) ($aRow['iso_name'] ?? ''));
+                $row[] = ucwords((string) ($aRow['state'] ?? ''));
+                $row[] = ucwords((string) ($aRow['district'] ?? ''));
             }
             /* Mapped Participants column — compact toggle; the list loads on demand */
             $pCount = isset($participantCountByDm[$aRow['dm_id']]) ? $participantCountByDm[$aRow['dm_id']] : 0;
@@ -344,8 +395,8 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
 
             // "View as Participant" — only rendered for admins with the
             // view-as-participant privilege. Opens in a new tab so the
-            // admin's current admin-side workflow isn't disrupted. Kept on its own
-            // line: it leaves the admin UI entirely and is audited.
+            // admin's current admin-side workflow isn't disrupted. It leaves the
+            // admin UI entirely and is audited, so it keeps its own red colour.
             if (!$fromParticipant) {
                 $adminSession = new Zend_Session_Namespace('administrators');
                 $adminPrivileges = array_map('trim', explode(',', (string) ($adminSession->privileges ?? '')));
@@ -356,7 +407,9 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             }
 
             $actions = '';
-            foreach ([$recordLine, $credentialLine, $extraLine] as $line) {
+            // Two lines, not three: View as rides with the record actions. Its red
+            // still marks it as the one that leaves the admin UI.
+            foreach ([$recordLine . $extraLine, $credentialLine] as $line) {
                 if ($line !== '') {
                     $actions .= '<div class="row-action-line">' . $line . '</div>';
                 }

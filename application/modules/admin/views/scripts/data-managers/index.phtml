@@ -155,6 +155,53 @@ if (isset($this->ptcc) && !empty($this->ptcc) && $this->ptcc == 1) {
     #usersTable tr.row-unmapped:hover>td {
         background-color: #faf2cc !important;
     }
+
+    /* Managers imported without a name: say so, then who they look after */
+    #usersTable .dm-noname {
+        color: #8a93a0;
+        font-style: italic;
+    }
+
+    #usersTable .dm-noname-hint {
+        display: block;
+        color: #8a93a0;
+        font-size: 11px;
+        margin-top: 2px;
+    }
+
+    /* Addresses ePT never mails, coloured by how much they need attention */
+    #usersTable .dm-email-flag {
+        /* Own line under the address, so short and long addresses look alike */
+        display: block;
+        width: fit-content;
+        margin-top: 3px;
+        padding: 1px 7px;
+        border: 1px solid;
+        border-radius: 10px;
+        font-size: 10.5px;
+        font-weight: 600;
+        line-height: 1.5;
+        white-space: nowrap;
+        vertical-align: middle;
+    }
+
+    #usersTable .dm-email-flag.is-danger {
+        background: #fdecea;
+        border-color: #f1a9a0;
+        color: #a02b1f;
+    }
+
+    #usersTable .dm-email-flag.is-warning {
+        background: #fff4dc;
+        border-color: #f0c36d;
+        color: #8a5a00;
+    }
+
+    #usersTable .dm-email-flag.is-muted {
+        background: #fff;
+        border-color: #cfd4dc;
+        color: #6b7380;
+    }
 </style>
 <table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered table-hover"
     id="usersTable">
