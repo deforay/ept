@@ -213,6 +213,11 @@ class Pt_Reports_FpdiReport extends TCPDF
             ?? ($shipmentId ? $shipmentService->getShipmentAttributes($shipmentId, 'reportVersion') : null);
         $showTime   = $this->dateTime ?? date('Y-m-d H:i:s');
         $reportDate = Pt_Commons_DateUtility::humanReadableDateFormat($showTime);
+        // Set the footer font before taking the page aliases: getAliasNumPage()
+        // returns a single-byte alias under a non-unicode font (TCPDF's default
+        // footer font is Helvetica), which then corrupts the FreeSans text it is
+        // written into ("Page ? ??") unless the layout set a unicode footer font.
+        $this->SetFont('freesans', '', 7, '', true);
         $pageNumber = 'Page ' . $this->getAliasNumPage() . ' of ' . $this->getAliasNbPages();
 
         $finalizeReport = (isset($this->resultStatus) && trim($this->resultStatus) == 'finalized')
@@ -321,7 +326,6 @@ class Pt_Reports_FpdiReport extends TCPDF
         } else {
             $this->SetY(in_array($this->layout, ['default', 'ilb', 'malawi'], true) ? -10 : -5);
         }
-        $this->SetFont('freesans', '', 7, '', true);
         $this->writeHTML($completeFooterHtml, true, false, false, false, '');
     }
 }
