@@ -197,6 +197,21 @@ class AuthController extends Zend_Controller_Action
                 $passwordVerify = password_verify($password, $result['password']);
             }
             $userId = null;
+
+            // Checked only after the password matches, so account status can't be probed.
+            if ($passwordVerify && strtolower((string) ($result['status'] ?? '')) !== 'active') {
+                (new Application_Model_DbTable_UserLoginHistory())->addLoginHistory([
+                    'user_id' => $result['dm_id'],
+                    'login_context' => 'participant',
+                    'login_status' => 'failed',
+                    'login_id' => $username,
+                ]);
+                $sessionAlert->message = 'Your account is inactive. Please contact the PT Administrator for support.';
+                $sessionAlert->status = 'failure';
+                $this->redirect($this->loginUri);
+                return;
+            }
+
             if (isset($result) && !empty($result) && $passwordVerify) {
                 // Successful login - clear login attempts
                 unset($counts[$username], $timers[$username]);
