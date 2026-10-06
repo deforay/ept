@@ -513,10 +513,6 @@ $fileName = $resultArray['shipment']['shipment_code'] . "-summary.pdf";
 $filePath = $reportsPath . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'] . DIRECTORY_SEPARATOR . $fileName;
 //$pdf->Output('example_003.pdf', 'I');
 $pdf->Output($filePath, "F");
-if ($trainingInstance == "yes") {
-    //Watermark section
-    $pdf = new Pt_Reports_PdfRotate();
-}
 //============================================================+
 // END OF FILE
 //============================================================+

@@ -860,7 +860,4 @@ if ($resultArray['shipment'] != "") {
     $fileName = $resultArray['shipment']['shipment_code'] . $panelTestType . "-summary.pdf";
     $filePath = $reportsPath . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'] . DIRECTORY_SEPARATOR . $fileName;
     $pdf->Output($filePath, "F");
-    if ($trainingInstance == "yes") {
-        $pdf = new Pt_Reports_PdfRotate();
-    }
 }

@@ -392,10 +392,6 @@ if (!empty($resultArray['shipment'])) {
         $fileName = Application_Service_Common::makeFileNameFriendly($fileName) . ".pdf";
         $filePath = $downloadDirectory . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $result['shipment_code'] . DIRECTORY_SEPARATOR . $fileName;
         $created = $pdf->Output($filePath, "F");
-        if ($trainingInstance == "yes") {
-            //Watermark section
-            $pdf = new Pt_Reports_PdfRotate();
-        }
 
         $loadpdf = Zend_Pdf::load($filePath);
 

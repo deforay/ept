@@ -1,13 +1,10 @@
 <?php
 
-use setasign\Fpdi\Tcpdf\Fpdi;
-
-class Pt_Reports_FpdiReport extends Fpdi
+class Pt_Reports_FpdiReport extends TCPDF
 {
     public $resultStatus = '';
     public $dateTime = '';
     public $watermark = '';
-    public $angle = '';
     public $config = '';
     public $generalModel;
     public $reportType = '';
@@ -67,11 +64,8 @@ class Pt_Reports_FpdiReport extends Fpdi
 
     public function Header()
     {
-        if (!empty($this->template) && $this->template != '') {
-            $this->setSourceFile($this->template);
-            $template = $this->ImportPage(1);
-            $this->useImportedPage($template);
-        }
+        // An uploaded letterhead ($this->template) is not drawn here: Output()
+        // lays it under every page once the report is rendered.
         if (isset($this->scheme) && !empty($this->scheme) && $this->PageNo() == 1) {
             if (isset($this->templateTopMargin) && !empty($this->templateTopMargin)) {
                 $this->SetY($this->templateTopMargin);
@@ -120,42 +114,85 @@ class Pt_Reports_FpdiReport extends Fpdi
         }
     }
 
-    public function Rotate($angle, $x = -1, $y = -1)
+    /**
+     * With a letterhead configured, render the report first and then lay the
+     * letterhead's first page under each page in a second pass.
+     *
+     * The letterhead used to be imported in Header() through FPDI's TCPDF
+     * bridge, which reaches into TCPDF internals (_out() and friends). That
+     * tied the report to TCPDF 6. Composing afterwards with FPDF-based FPDI only
+     * reads finished PDFs, so the report class is plain TCPDF.
+     */
+    public function Output($name = 'doc.pdf', $dest = 'I')
     {
-        if ($x == -1) {
-            $x = $this->x;
+        if (empty($this->template)) {
+            return parent::Output($name, $dest);
         }
-        if ($y == -1) {
-            $y = $this->y;
+
+        // TCPDF's Output() tears the object down as it closes, so read what the
+        // second pass needs first.
+        $letterhead = $this->template;
+        $meta = [
+            'Title'    => (string) $this->title,
+            'Author'   => (string) $this->author,
+            'Subject'  => (string) $this->subject,
+            'Creator'  => (string) $this->creator,
+            'Keywords' => (string) $this->keywords,
+        ];
+        $pdf = self::underlayLetterhead((string) parent::Output($name, 'S'), $letterhead, $meta);
+        $dest = strtoupper((string) $dest);
+        if ($dest === 'S') {
+            return $pdf;
         }
-        if ($this->angle != 0) {
-            $this->_out('Q');
+        if ($dest === 'F' || $dest === 'FI' || $dest === 'FD') {
+            file_put_contents($name, $pdf);
+            if ($dest === 'F') {
+                return '';
+            }
         }
-        $this->angle = $angle;
-        if ($angle != 0) {
-            $angle *= M_PI / 180;
-            $c  = cos($angle);
-            $s  = sin($angle);
-            $cx = $x * $this->k;
-            $cy = ($this->h - $y) * $this->k;
-            $this->_out(sprintf('q %.5F %.5F %.5F %.5F %.2F %.2F cm 1 0 0 1 %.2F %.2F cm', $c, $s, -$s, $c, $cx, $cy, -$cx, -$cy));
+        // Inline (I) or download (D), as TCPDF would send it.
+        if (!headers_sent()) {
+            header('Content-Type: application/pdf');
+            header('Content-Length: ' . strlen($pdf));
+            $disposition = str_ends_with($dest, 'D') ? 'attachment' : 'inline';
+            header('Content-Disposition: ' . $disposition . '; filename="' . basename($name) . '"');
         }
+        echo $pdf;
+        return '';
+    }
+
+    /** @param array<string, string> $meta Document info, keyed by FPDF setter suffix */
+    private static function underlayLetterhead(string $report, string $letterheadFile, array $meta): string
+    {
+        $out = new \setasign\Fpdi\Fpdi();
+        $out->setSourceFile($letterheadFile);
+        $letterhead = $out->importPage(1);
+
+        $pageCount = $out->setSourceFile(\setasign\Fpdi\PdfParser\StreamReader::createByString($report));
+        for ($i = 1; $i <= $pageCount; $i++) {
+            // Last argument keeps the report's hyperlinks.
+            $page = $out->importPage($i, \setasign\Fpdi\PdfReader\PageBoundaries::CROP_BOX, true, true);
+            $size = $out->getTemplateSize($page);
+            $out->AddPage($size['orientation'], [$size['width'], $size['height']]);
+            $out->useTemplate($letterhead);
+            $out->useTemplate($page);
+        }
+
+        foreach ($meta as $field => $value) {
+            $out->{'Set' . $field}($value, true);
+        }
+
+        return $out->Output('S');
     }
 
     public function RotatedText($x, $y, $txt, $angle)
     {
+        // TCPDF's own transform stack; balanced per call, so nothing needs
+        // closing at page end.
+        $this->StartTransform();
         $this->Rotate($angle, $x, $y);
         $this->Text($x, $y, $txt);
-        $this->Rotate(0);
-    }
-
-    public function _endpage()
-    {
-        if ($this->angle != 0) {
-            $this->angle = 0;
-            $this->_out('Q');
-        }
-        parent::_endpage();
+        $this->StopTransform();
     }
 
     public function Footer()

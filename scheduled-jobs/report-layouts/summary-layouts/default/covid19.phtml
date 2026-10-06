@@ -406,10 +406,6 @@ if ($resultArray['shipment'] != "") {
     //$pdf->Output('example_003.pdf', 'I');
     $pdf->Output($filePath, "F");
 
-    if ($trainingInstance == "yes") {
-        //Watermark section
-        $pdf = new Pt_Reports_PdfRotate();
-    }
     //============================================================+
     // END OF FILE
     //============================================================+
