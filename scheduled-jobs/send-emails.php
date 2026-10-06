@@ -125,7 +125,8 @@ try {
         exit(0);
     }
     $mailSettings = Application_Service_Common::getMailSettings();
-    if ($mailSettings['host'] === '') {
+    // A dev mail trap needs no SMTP host of its own, so only bail when neither is set.
+    if ($mailSettings['host'] === '' && trim((string) ($conf->email->devTrapDsn ?? '')) === '') {
         // Not an error — expected on environments that haven't configured outbound mail yet.
         // Cron fires every minute; logging this at ERROR floods the log.
         Pt_Commons_LoggerUtility::logWarning('send-emails.php: SMTP not configured (email.host is empty in application.ini); skipping run.');
@@ -291,7 +292,7 @@ try {
             }
 
             // Common From
-            $fromEmail = $mailSettings['fromEmail'];
+            $fromEmail = $mailSettings['fromEmail'] ?: ($devTrapDsn !== '' ? 'ept-dev@example.com' : '');
             $fromFullName = $mailSettings['fromName'] ?: 'ePT System';
 
             // Validate reply_to (single address; take first if commas/semicolons present)
