@@ -25,6 +25,10 @@
 // Shared group, reachable whenever DTS *or* custom tests are on. The old menu
 // gated it on dts alone, which left a custom-tests-only instance unable to reach
 // it at all.
+//
+// Not Tested Reasons sits in Shared for the same reason: each reason carries its
+// own scheme list (ntr_test_type), so it is no one scheme's page. It is shown
+// whenever the sidebar is, so Shared renders even without DTS or custom tests.
 
 $adminSession = new Zend_Session_Namespace('administrators');
 $activeSchemes = (array) ($adminSession->activeSchemes ?? []);
@@ -140,10 +144,13 @@ $tree = array_merge(
         // note above), so it belongs to neither — and at the bottom of the list
         // it was effectively hidden.
         'label' => $this->translate->_('Shared'),
-        'show'  => in_array('dts', $activeSchemes) || $customTestsOn,
-        'pages' => [
-            ['label' => $this->translate->_('Test Kits'), 'controller' => 'testkit'],
-        ],
+        'show'  => true,
+        'pages' => array_values(array_filter([
+            (in_array('dts', $activeSchemes) || $customTestsOn)
+                ? ['label' => $this->translate->_('Test Kits'), 'controller' => 'testkit']
+                : null,
+            ['label' => $this->translate->_('Not Tested Reasons'), 'controller' => 'sample-not-tested-reasons'],
+        ])),
     ]],
     $schemeGroups,
     [[

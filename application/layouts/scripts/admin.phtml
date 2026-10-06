@@ -378,9 +378,6 @@ $helpPageKey = "$controllerName/$actionName";
 									<li id="EmailParticipants"><a
 											href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'email-participants'), 'default', true); ?>"><?= $this->translate->_("Email Participants"); ?></a>
 									</li>
-									<li id="NotTestedReasons"><a
-											href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'sample-not-tested-reasons'), 'default', true); ?>"><?= $this->translate->_("Not Tested Reasons"); ?></a>
-									</li>
 									<li id="FilesForParticipants"><a
 											href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'files-for-participants'), 'default', true); ?>"><?= $this->translate->_("Files For Participants"); ?></a>
 									</li>
@@ -413,11 +410,16 @@ $helpPageKey = "$controllerName/$actionName";
 									// catalogue shared by DTS and custom tests rather than one scheme's setting,
 									// so it keeps a top-level entry here where people expect to find it. Gating
 									// matches the hub's Shared group (DTS or custom tests), not DTS alone.
+									// Not Tested Reasons is in that Shared group too and, like it, keeps a
+									// top-level entry; it is config-ept only, so it sits in this block.
 									if (in_array('dts', (array) $adminSession->activeSchemes) || (isset($configData['generic_test_config']) && $configData['generic_test_config'] == 'yes')) { ?>
 										<li id="TestKits"><a
 												href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'testkit'), 'default', true); ?>"><?= $this->translate->_("Test Kits"); ?></a>
 										</li>
 									<?php } ?>
+									<li id="NotTestedReasons"><a
+											href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'sample-not-tested-reasons'), 'default', true); ?>"><?= $this->translate->_("Not Tested Reasons"); ?></a>
+									</li>
 									<?php if (!empty($schemeConfigSchemes)) { ?>
 										<li id="SchemeConfig"><a
 												href="<?php echo $this->url(['scheme' => reset($schemeConfigSchemes)], 'schemeConfigRoute', true); ?>"><?= $this->translate->_("Scheme Config"); ?></a>
@@ -439,8 +441,6 @@ $helpPageKey = "$controllerName/$actionName";
 									<li id="CertificateTemplates"><a
 											href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'certificate-templates'), 'default', true); ?>">
 											<?= $this->translate->_("Certificate Templates"); ?></a></li>
-									<li id="FailedEmails"><a href="/admin/alerts/email">
-											<?= $this->translate->_("Failed Emails"); ?></a></li>
 									<li id="MailTemplate"><a href="/admin/mail-template">
 											<?= $this->translate->_("Mail Template"); ?></a></li>
 									<li class="divider"></li>
@@ -463,6 +463,8 @@ $helpPageKey = "$controllerName/$actionName";
 									<li id="JobTracking"><a
 											href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'job-tracking'), 'default', true); ?>"><?= $this->translate->_("Job Tracking"); ?></a>
 									</li>
+									<li id="FailedEmails"><a href="/admin/alerts/email">
+											<?= $this->translate->_("Failed Emails"); ?></a></li>
 									<li id="CertificateBatches"><a
 											href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'certificate-batches'), 'default', true); ?>"><?= $this->translate->_("Certificate Batches"); ?></a>
 									</li>

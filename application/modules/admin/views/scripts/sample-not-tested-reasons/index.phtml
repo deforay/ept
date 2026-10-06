@@ -1,18 +1,22 @@
 <?php
-$adminSession = new Zend_Session_Namespace('administrators');
+// Rendered inside the Scheme Config hub frame, under the Shared group: each
+// reason carries its own list of schemes (ntr_test_type), so it belongs to no
+// single scheme. No schemeConfigTitle — the .data-list card names the page.
 ?>
-<h4 style="width:100%;height:50px;border-bottom:1px solid #777;">
+<?php echo $this->render('partials/scheme-config-open.phtml'); ?>
 
-    <div style="font-size:22.5px;line-height:36px;color:#333;float:left;">
-        <?= $this->translate->_("List of All Not Tested Reasons"); ?></div>
-    <div style="margin-top:10px;">
-        <a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'sample-not-tested-reasons', 'action' => 'add'), 'default', true); ?>"
-            class="btn btn-primary" style="float:right;"><i
-                class="icon-user"></i>&nbsp;&nbsp;<?= $this->translate->_("Add New Not Tested Reason"); ?></a>
+<div class="data-list">
+    <div class="data-list-head">
+        <h2><?= $this->translate->_("List of All Not Tested Reasons"); ?></h2>
+        <div class="data-list-actions">
+            <a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'sample-not-tested-reasons', 'action' => 'add'), 'default', true); ?>"
+                class="btn btn-primary"><i
+                    class="icon-plus"></i>&nbsp;&nbsp;<?= $this->translate->_("Add New Not Tested Reason"); ?></a>
+        </div>
     </div>
-</h4>
+    <div class="data-list-body">
 <table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered table-hover"
-    id="testkitTable">
+    id="notTestedReasonsTable">
     <thead>
         <tr>
             <th scope="col"><?= $this->translate->_("Not Tested Reason"); ?></th>
@@ -29,67 +33,34 @@ $adminSession = new Zend_Session_Namespace('administrators');
         </tr>
     </tbody>
 </table>
+    </div><!-- /.data-list-body -->
+</div><!-- /.data-list -->
+
 <script type="text/javascript" charset="utf-8">
     /* Table initialisation */
     var oTable = null;
     $(document).ready(function () {
-        drawTable();
-    });
-
-    function drawTable() {
-        oTable = $('#testkitTable').dataTable({
-
+        oTable = $('#notTestedReasonsTable').dataTable({
             "bJQueryUI": false,
             "bAutoWidth": false,
             "bInfo": true,
             "bScrollCollapse": true,
             "sPaginationType": "bootstrap",
-            "bRetrieve": false,
-            "bDestroy": true,
+            "bRetrieve": true,
             "aoColumns": [
-                {
-                    "sClass": "center"
-                },
-                {
-                    "sClass": "center"
-                },
-                {
-                    "sClass": "center"
-                },
-                {
-                    "sClass": "center"
-                },
-                {
-                    "sClass": "center"
-                },
-                {
-                    "sClass": "center",
-                    "bSortable": false
-                }
+                { "sClass": "" },
+                { "sClass": "center" },
+                { "sClass": "" },
+                { "sClass": "center" },
+                { "sClass": "center" },
+                { "sClass": "center", "bSortable": false }
             ],
             "aaSorting": [
                 [0, "asc"]
             ],
-            /* "fnDrawCallback": function() {
-                var checkBoxes = document.getElementsByName("subchk[]");
-                len = checkBoxes.length;
-                for (c = 0; c < len; c++) {
-                    if (jQuery.inArray(checkBoxes[c].id, selectedKit) != -1) {
-                        checkBoxes[c].setAttribute("checked", true);
-                    }
-                }
-
-            }, */
             "bProcessing": true,
             "bServerSide": true,
             "sAjaxSource": "<?php echo $this->url(array('module' => 'admin', 'controller' => 'sample-not-tested-reasons', 'action' => 'index', 'format' => 'html')); ?>",
-            "fnServerParams": function (aoData) {
-                approvalStatus = $("#status").val();
-                aoData.push({
-                    "name": "status",
-                    "value": approvalStatus
-                });
-            },
             "fnServerData": function (sSource, aoData, fnCallback) {
                 $.ajax({
                     "dataType": 'json',
@@ -100,5 +71,6 @@ $adminSession = new Zend_Session_Namespace('administrators');
                 });
             }
         });
-    }
+    });
 </script>
+<?php echo $this->render('partials/scheme-config-close.phtml'); ?>
