@@ -64,6 +64,13 @@ class Admin_ImpersonateController extends Zend_Controller_Action
             $this->redirect('/admin');
             return;
         }
+        if (strtolower((string) ($result['status'] ?? '')) !== 'active') {
+            $sessionAlert = new Zend_Session_Namespace('alertSpace');
+            $sessionAlert->message = 'Inactive data managers cannot be viewed as participants.';
+            $sessionAlert->status = 'failure';
+            $this->redirect('/admin');
+            return;
+        }
 
         $adminSession = new Zend_Session_Namespace('administrators');
         $authNameSpace = new Zend_Session_Namespace('datamanagers');

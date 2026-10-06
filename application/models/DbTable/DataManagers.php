@@ -400,7 +400,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             if (!$fromParticipant) {
                 $adminSession = new Zend_Session_Namespace('administrators');
                 $adminPrivileges = array_map('trim', explode(',', (string) ($adminSession->privileges ?? '')));
-                if (in_array('view-as-participant', $adminPrivileges, true)) {
+                if (in_array('view-as-participant', $adminPrivileges, true) && strtolower($aRow['status'] ?? '') === 'active') {
                     $viewAsUrl = '/admin/impersonate/start?dm_id=' . (int) $aRow['dm_id'];
                     $extraLine .= '<a href="' . $viewAsUrl . '" target="_blank" rel="noopener" class="btn btn-danger btn-xs" title="' . $translator->_('Opens the participant UI as this user. Audited.') . '"><i class="icon-eye-open"></i> ' . $translator->_('View as') . '</a>';
                 }
