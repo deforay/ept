@@ -137,6 +137,7 @@ try {
     // the SMTP login and route there (Mailpit/Mailhog). A non-empty value that
     // isn't a parseable smtp:// DSN blocks the queue entirely.
     $devTrapDsn = trim((string) ($conf->email->devTrapDsn ?? ''));
+    $trapWebUrl = null;
 
     if ($devTrapDsn !== '') {
         $trapParts = parse_url($devTrapDsn);
@@ -161,6 +162,13 @@ try {
 
         $dsn = $devTrapDsn;
         Pt_Commons_LoggerUtility::logInfo("send-emails: routing via email.devTrapDsn (SMTP login ignored)");
+
+        // Run by hand in a terminal, point the dev at each caught message in
+        // Mailpit. Under cron STDOUT is not a terminal, so nothing is printed.
+        $trapWebUrl = stream_isatty(STDOUT) ? Application_Service_Common::mailTrapWebUrl() : null;
+        if ($trapWebUrl !== null) {
+            echo "Dev mail trap is on: mail goes to Mailpit, not real inboxes.\nMailpit inbox: {$trapWebUrl}\n";
+        }
     } else {
         $dsn = Application_Service_Common::smtpDsn($mailSettings);
     }
@@ -176,6 +184,9 @@ try {
     $mailResult = $db->fetchAll($sQuery);
 
     if (empty($mailResult)) {
+        if ($trapWebUrl !== null) {
+            echo "No mail is queued.\n";
+        }
         return; // nothing to do
     }
 
@@ -377,8 +388,20 @@ try {
                     }
                 }
 
+                // Our own Message-ID, so the message can be found in Mailpit
+                $trapMessageId = null;
+                if ($trapWebUrl !== null) {
+                    $trapMessageId = bin2hex(random_bytes(16)) . '@ept.dev-trap';
+                    $email->getHeaders()->addIdHeader('Message-ID', $trapMessageId);
+                }
+
                 try {
                     $mailer->send($email);
+                    if ($trapWebUrl !== null && $trapMessageId !== null) {
+                        $more = count($batch['to']) + count($batch['cc']) + count($batch['bcc']) - 1;
+                        echo "  {$batch['to'][0]}" . ($more > 0 ? " (+{$more})" : '') . " \"{$email->getSubject()}\"\n"
+                            . '    ' . Application_Service_Common::mailTrapMessageUrl($trapWebUrl, $trapMessageId) . "\n";
+                    }
                     if (BATCH_SLEEP_MS > 0) {
                         usleep(BATCH_SLEEP_MS * 1000);
                     }

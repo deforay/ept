@@ -146,8 +146,13 @@ verify() {
     ' "$ROOT_DIR" "$subject" || { print error "The app could not send the test mail. Check the PHP error log."; exit 1; }
 
     sleep 1
-    if curl -fs -G "$MAILPIT_API/search" --data-urlencode "query=subject:\"$subject\"" | grep -q '"messages_count":[1-9]'; then
+    local found
+    found="$(curl -fs -G "$MAILPIT_API/search" --data-urlencode "query=subject:\"$subject\"" \
+        | php -r '$d = json_decode(stream_get_contents(STDIN), true); echo $d["messages"][0]["ID"] ?? "";')"
+    if [[ -n "$found" ]]; then
         print success "Test mail sent by the app was caught by Mailpit. No mail from this box reaches real people."
+        print info "Open it: http://localhost:8025/view/$found"
+        print info "Running php scheduled-jobs/send-emails.php by hand prints a link like this for each queued mail it sends."
     else
         print error "The test mail did not arrive in Mailpit. Do not trust this box with a live database yet."
         exit 1

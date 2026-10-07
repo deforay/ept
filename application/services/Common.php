@@ -101,6 +101,46 @@ class Application_Service_Common
     }
 
     /**
+     * The web inbox of the dev mail trap, when email.devTrapDsn routes mail to
+     * a catcher such as Mailpit. Null on a real instance (no trap) and when the
+     * trap is set to block mail. email.devTrapWebUrl overrides the address;
+     * otherwise it is the DSN's host on Mailpit's default web port, 8025.
+     */
+    public static function mailTrapWebUrl(): ?string
+    {
+        $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
+        $dsn = trim((string) ($conf->email->devTrapDsn ?? ''));
+        $parts = $dsn !== '' ? parse_url($dsn) : false;
+        if (!$parts || ($parts['scheme'] ?? '') !== 'smtp' || empty($parts['host'])) {
+            return null;
+        }
+        $webUrl = trim((string) ($conf->email->devTrapWebUrl ?? ''));
+        return rtrim($webUrl !== '' ? $webUrl : "http://{$parts['host']}:8025", '/');
+    }
+
+    /**
+     * Link to one trapped message in Mailpit, found by its Message-ID. Mailpit
+     * stores a message a moment after accepting it, so the lookup retries
+     * briefly. If Mailpit still has not stored it, or its API cannot be
+     * reached, this returns a search link instead, which finds the message
+     * once it is stored.
+     */
+    public static function mailTrapMessageUrl(string $webUrl, string $messageId): string
+    {
+        $query = 'message-id:' . trim($messageId, '<> ');
+        $context = stream_context_create(['http' => ['timeout' => 1]]);
+        for ($attempt = 0; $attempt < 3; $attempt++) {
+            $json = @file_get_contents($webUrl . '/api/v1/search?' . http_build_query(['query' => $query, 'limit' => 1]), false, $context);
+            $id = json_decode((string) $json, true)['messages'][0]['ID'] ?? null;
+            if (is_string($id) && $id !== '') {
+                return $webUrl . '/view/' . rawurlencode($id);
+            }
+            usleep(200_000);
+        }
+        return $webUrl . '/search?' . http_build_query(['q' => $query]);
+    }
+
+    /**
      * Build the SMTP transport, with an opt-in dev mail trap.
      *
      * If application.ini sets `email.devTrapDsn` to a parseable smtp:// DSN,
