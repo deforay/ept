@@ -444,7 +444,8 @@ class Application_Service_Schemes
             ->join(['p' => 'participant'], 'p.participant_id=sp.participant_id', ['unique_identifier'])
             ->joinLeft(['res' => 'response_result_vl'], 'res.shipment_map_id = sp.map_id and res.sample_id = ref.sample_id', ['reported_viral_load', 'is_tnd', 'responseDate' => 'res.created_on', 'is_result_invalid', 'error_code', 'module_number', 'comment', 'z_score', 'calculated_score'])
             ->where('sp.shipment_id = ? ', $shipmentId)
-            ->where('sp.map_id IN (?)', $mapIds);
+            ->where('sp.map_id IN (?)', $mapIds)
+            ->order('ref.sample_id');
 
         if ($withoutControls) {
             $sql = $sql->where('ref.control = 0');

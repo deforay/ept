@@ -16,6 +16,21 @@ if (!function_exists('vlPassPercent')) {
         return $n > 0 ? (int) round((((int) ($val['NumberPassed'] ?? 0)) / $n) * 100) : 0;
     }
 }
+// The range participants were actually graded on: the manual figures when the admin set the
+// sample to Manual, otherwise the calculated ones. Same switch as Application_Model_Vl::getVlRange().
+if (!function_exists('vlIsoRange')) {
+    function vlIsoRange(array $val): array
+    {
+        $manual = ($val['use_range'] ?? '') === 'manual';
+        // Grading casts a blank manual median/SD to 0 (see Application_Model_Vl::evaluate()), so print it that way
+        return [
+            'median' => $manual ? (float) ($val['manual_median'] ?? 0) : $val['median'],
+            'low' => $manual ? ($val['manual_q1'] ?? null) : $val['low_limit'],
+            'high' => $manual ? ($val['manual_q3'] ?? null) : $val['high_limit'],
+            'sd' => $manual ? (float) ($val['manual_sd'] ?? 0) : $val['sd'],
+        ];
+    }
+}
 
 if ($resultArray['shipment'] != "") {
 
@@ -236,7 +251,16 @@ if ($resultArray['shipment'] != "") {
             $referenceCount = 0;
 
             foreach ($resultArray['shipment']['vlCalculation'] as $assayId => $vlCal) {
-                if (isset($vlCal['participant_response_count']) && $vlCal['participant_response_count'] < 18 || $vlCal['vlAssay'] == "Other") {
+                // A platform the admin gave its own manual range was not graded on the reference
+                // values, so it is shown in its own table rather than pooled under them.
+                $hasManualRange = false;
+                foreach ($vlCal as $val) {
+                    if (isset($val['median']) && ($val['use_range'] ?? '') === 'manual') {
+                        $hasManualRange = true;
+                    }
+                }
+
+                if (!$hasManualRange && (isset($vlCal['participant_response_count']) && $vlCal['participant_response_count'] < 18 || $vlCal['vlAssay'] == "Other")) {
                     $platformTotal = 0;
                     foreach ($vlCal as $k => $val) {
                         // Only build a row for actual samples (which carry a median);
@@ -246,11 +270,12 @@ if ($resultArray['shipment'] != "") {
                             $sample[$k]['NumberPassed'] ??= 0;
                             $sample[$k]['response'] ??= 0;
 
+                            $range = vlIsoRange($val);
                             $sample[$k]['response'] += vlPlatformParticipants($val);
-                            $sample[$k]['median'] = $val['median'];
-                            $sample[$k]['lowLimit'] = $val['low_limit'];
-                            $sample[$k]['highLimit'] = $val['high_limit'];
-                            $sample[$k]['sd'] = $val['sd'];
+                            $sample[$k]['median'] = $range['median'];
+                            $sample[$k]['lowLimit'] = $range['low'];
+                            $sample[$k]['highLimit'] = $range['high'];
+                            $sample[$k]['sd'] = $range['sd'];
                             $sample[$k]['NumberPassed'] += !empty($val['NumberPassed']) ? $val['NumberPassed'] : 0;
                             $sample[$k]['label'] = $val['sample_label'];
                             $platformTotal = max($platformTotal, vlPlatformParticipants($val));
@@ -267,14 +292,15 @@ if ($resultArray['shipment'] != "") {
                     $calRes = $vlTableHeader($vlCal['vlAssay']);
                     foreach ($vlCal as $key => $val) {
                         if (isset($val['median'])) {
-                            $calRes .= $vlTableRow($val['sample_label'], vlPlatformParticipants($val), $val['median'], $val['low_limit'], $val['high_limit'], $val['sd'], $val['NumberPassed'], vlPassPercent($val));
+                            $range = vlIsoRange($val);
+                            $calRes .= $vlTableRow($val['sample_label'], vlPlatformParticipants($val), $range['median'], $range['low'], $range['high'], $range['sd'], $val['NumberPassed'], vlPassPercent($val));
                         }
                     }
                     $calRes .= '</table>';
 
                     $pdf->writeHTML($calRes, true, false, true, false, '');
 
-                    if ($assayId != 6 && !in_array($assayId, $groupedAssayIds) && $vlCal['participant_response_count'] > $referenceCount) {
+                    if ($assayId != 6 &&!in_array($assayId, $groupedAssayIds) && $vlCal['participant_response_count'] > $referenceCount) {
                         $referenceAssay = $vlCal['vlAssay'];
                         $referenceCount = $vlCal['participant_response_count'];
                     }

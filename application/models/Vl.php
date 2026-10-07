@@ -1406,8 +1406,9 @@ class Application_Model_Vl
 
                         $toReturn[$counter]['low'] = $sampleRange['q1'] ?? 'Not Applicable';
                         $toReturn[$counter]['high'] = $sampleRange['q3'] ?? 'Not Applicable';
-                        $toReturn[$counter]['sd'] = $sampleRange['sd'] ?? 'Not Applicable';
-                        $toReturn[$counter]['median'] = $sampleRange['median'] ?? 'Not Applicable';
+                        // The range exists, so a null here is a blank manual entry -- graded as 0 by evaluate()
+                        $toReturn[$counter]['sd'] = $sampleRange['sd'] ?? 0;
+                        $toReturn[$counter]['median'] = $sampleRange['median'] ?? 0;
                         // Standard uncertainty of the assigned value u(x_pt) = 1.25 * s* / sqrt(p) (ISO 13528).
                         $toReturn[$counter]['standard_uncertainty'] = $sampleRange['standard_uncertainty'] ?? null;
                         $toReturn[$counter]['zscore'] = $sample['z_score'] ?? 0;
