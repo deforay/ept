@@ -32,7 +32,7 @@ if (!empty($resultArray['shipment'])) {
         // create new PDF document
         $reportFormat = $reportService->getReportConfigValue('report-format');
 
-        $formVersion = $shipmentAttributes['formVersion'] ?? '';
+        $formVersion = $shipmentAttributes['formVersion'] ?? $shipmentAttributes['reportVersion'];
         $effectiveDate = $shipmentAttributes['effectiveDate'] ?? '';
         $issuingAuthority = $result['issuing_authority'] ?? '';
 
@@ -157,11 +157,12 @@ if (!empty($resultArray['shipment'])) {
         }
 
         if ($layout != 'zimbabwe') {
-            $htmlTitle = '<br><br><br><span style="font-weight: bold;text-align:center;font-size:12px;">Proficiency Testing Program for HIV-1 Viral Load using Dried Tube Specimen</span><br>';
+            $htmlTitle = '<br><div style="font-weight:bold;text-align:center;font-size:13px;">Proficiency Testing Program for HIV-1 Viral Load using Dried Tube Specimen</div><br><br>';
             $pdf->writeHTML($htmlTitle, true, false, true, false, '');
         }
 
-        $labInfo = '<br><table cellpadding="4" style="font-size:12px;width:100%;">';
+        $pdf->SetFont('freesans', '', 11);
+        $labInfo = '<table cellpadding="1" style="font-size:12px;width:100%;">';
 
         /* $labInfo .= '<tr>';
         $labInfo .= '<tr>';
@@ -170,13 +171,13 @@ if (!empty($resultArray['shipment'])) {
         $labInfo .= '</tr>'; */
 
         $labInfo .= '<tr>';
-        $labInfo .= '	<td width="50%"><strong>PT Panel Name and Due Date : </strong><span style="font-weight: normal;">' . $result['distribution_code'] . '(' . Pt_Commons_DateUtility::humanReadableDateFormat($result['response_deadline']) . ')</span></td>';
-        $labInfo .= '	<td width="50%"><strong>Panel Received Date : </strong><span style="font-weight: normal;">' . $shipmentReceiptDate . '</span></td>';
+        $labInfo .= '	<td width="50%">PT Panel Name and Due Date: ' . $result['distribution_code'] . ' (' . Pt_Commons_DateUtility::humanReadableDateFormat($result['response_deadline']) . ')</td>';
+        $labInfo .= '	<td width="50%">Panel Received Date: ' . $shipmentReceiptDate . '</td>';
         $labInfo .= '</tr>';
 
         $labInfo .= '<tr>';
-        $labInfo .= '	<td width="50%"><strong>Laboratory ID : </strong><span style="font-weight: normal;">' . $result['unique_identifier'] . '</span></td>';
-        $labInfo .= '	<td width="50%"><strong>Panel Tested Date : </strong><span style="font-weight: normal;">' . $shipmentTestDate . '</span></td>';
+        $labInfo .= '	<td width="50%">Laboratory ID: ' . $result['unique_identifier'] . '</td>';
+        $labInfo .= '	<td width="50%">Panel Tested Date: ' . $shipmentTestDate . '</td>';
         $labInfo .= '</tr>';
 
         if (isset($attributes['vl_assay']) && $attributes['vl_assay'] == 6) {
@@ -185,8 +186,8 @@ if (!empty($resultArray['shipment'])) {
             $machine = $result['responseResult'][0]['vl_assay'];
         }
         $labInfo .= '<tr>';
-        $labInfo .= '	<td width="50%"><strong>Platform/Assay Name : </strong><span style="font-weight: normal;">' . $machine . '</span></td>';
-        $labInfo .= '	<td width="50%"><strong>Results Submitted Date : </strong><span style="font-weight: normal;">' . $shipmentTestReportDate . '</span></td>';
+        $labInfo .= '	<td width="50%">Platform/Assay Name: ' . $machine . '</td>';
+        $labInfo .= '	<td width="50%">Results Submitted Date: ' . $shipmentTestReportDate . '</td>';
         $labInfo .= '</tr>';
         if ($layout == 'zimbabwe') {
             $labInfo .= '<tr>';
@@ -203,31 +204,33 @@ if (!empty($resultArray['shipment'])) {
         if ($methodOfEvaluation == 'iso17043') {
 
             if (!empty($result['responseResult'])) {
-                // $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:11px;">Individual Participant Results Report</span><br>';
-                // $pdf->writeHTML($htmlTitle, true, false, true, false, '');
+                $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:11px;">Individual Participant Results Report</span><br>';
+                $pdf->writeHTML($htmlTitle, true, false, true, false, '');
 
                 $labRes = "";
                 $rowspan = count($result['responseResult']);
                 //if($result['responseResult'][0]['no_of_participants'] > 6 && $attributes['vl_assay']!=6) {
                 if ($result['responseResult'][0]['no_of_participants'] > 0) {
-                    $labRes .= '<table border="1" style="text-align:center;font-weight:bold;width:650px;font-size:9px;">
+                    $th = 'background-color:#BDD6EE;font-weight:bold;';
+                    $labRes .= '<table border="1" cellpadding="2" style="text-align:center;width:650px;font-size:10px;">
                                     <tr>
-                                        <td style="background-color:white;" colspan="2"></td>
-                                        <td style="background-color:#BDD6EE;" colspan="6">All Participants Results Summary</td>
-                                        <td style="background-color:#BDD6EE;" colspan="3">Your Lab Performance</td>
+                                        <td colspan="2"></td>
+                                        <td style="' . $th . 'font-size:11px;" colspan="5">All Participants Results Summary</td>
+                                        <td style="' . $th . '"></td>
+                                        <td style="' . $th . 'font-size:11px;" colspan="3">Your Lab Performance</td>
                                     </tr>
                                     <tr>
-                                        <td style="background-color:#BDD6EE;width:10%;"><br><br>Sample ID </td>
-                                        <td style="background-color:#BDD6EE;width:9%;">Your Results<br/>(log<sub>10</sub> copies/mL)</td>
-                                        <td style="background-color:#BDD6EE;width:10%;"><br><br>Number of <br/>Participants</td>
-                                        <td style="background-color:#BDD6EE;width:9%;">Assigned <br/>Value<br/>(log<sub>10</sub> copies/mL)</td>
-                                        <td style="background-color:#BDD6EE;width:8%;"><br><br>Lower Limit <br/>(Q1)</td>
-                                        <td style="background-color:#BDD6EE;width:8%;"><br><br>Upper Limit <br/>(Q3)</td>
-                                        <td style="background-color:#BDD6EE;width:9%;"><br>Robust <br/>Standard <br/>Deviation</td>
-                                        <td style="background-color:#BDD6EE;width:12%;">Acceptable <br/>Result <br/>Interval</td>
-                                        <td style="background-color:#BDD6EE;width:7%;"><br><br>z Score</td>
-                                        <td style="background-color:#BDD6EE;width:10%;"><br><br>Grade</td>
-                                        <td style="background-color:#BDD6EE;width:8%;"><br><br>Score</td>
+                                        <td style="' . $th . 'width:10%;"><br><br>Sample ID</td>
+                                        <td style="' . $th . 'width:9%;">Your Results<br/>(Log<sub>10</sub> copies/mL)</td>
+                                        <td style="' . $th . 'width:10%;"><br><br>Number of Participants</td>
+                                        <td style="' . $th . 'width:9%;">Assigned Value<br/>(Log<sub>10</sub> copies/mL)</td>
+                                        <td style="' . $th . 'width:8%;"><br><br>Lower Limit<br/>(Q1)</td>
+                                        <td style="' . $th . 'width:8%;"><br><br>Upper Limit<br/>(Q3)</td>
+                                        <td style="' . $th . 'width:9%;"><br>Robust Standard Deviation</td>
+                                        <td style="' . $th . 'width:12%;"><br>Acceptable Result Interval</td>
+                                        <td style="' . $th . 'width:7%;"><br><br>z Score</td>
+                                        <td style="' . $th . 'width:10%;"><br><br>Grade</td>
+                                        <td style="' . $th . 'width:8%;"><br><br>Score</td>
                                     </tr>';
 
                     foreach ($result['responseResult'] as $key => $response) {
@@ -256,7 +259,7 @@ if (!empty($resultArray['shipment'])) {
                         }
 
                         $labRes .= '<tr>
-                                <td style="text-align:center;width:10%;">' . $response['sample_label'] . '</td>
+                                <td style="text-align:left;width:10%;">' . $response['sample_label'] . '</td>
                                 <td style="width:9%;">' . $yrResult . '</td>
                                 <td style="width:10%;">' . $response['no_of_participants'] . '</td>
                                 <td style="width:9%;">' . Pt_Commons_NumberUtility::decimal($response['median']) . '</td>
@@ -310,13 +313,13 @@ if (!empty($resultArray['shipment'])) {
                 //    $labRes.='<h5>"Other Platforms were not analyzed or graded"</h5>';
                 //}
 
-                $labRes .= '<br><small>0.00 indicated Target Not Detected (TND) results and NA for Not Applicable</small>';
+                $labRes .= '<span style="font-size:11px;">0.00 indicated Target Not Detected (TND) results and NA for Not Applicable</span>';
 
                 $pdf->SetLeftMargin(15);
                 $pdf->writeHTML($labRes, true, false, true, false, '');
 
-                $zscorehtml = '<br><h5 style="text-align:center;">Results Interpretation and Recommended Actions</h5>';
-                $zscorehtml .= '<table border="1" style="text-align:center;width:650px;font-size:11px;">   ';
+                $zscorehtml = '<div style="text-align:center;font-weight:bold;font-size:12px;">Results Interpretation and Recommended Actions</div>';
+                $zscorehtml .= '<table border="1" style="text-align:center;width:650px;font-size:11px;">';
                 $zscorehtml .= '<tr>';
                 $zscorehtml .= '<th style="background-color:#BDD6EE;"><strong>z Score</strong></th>';
                 $zscorehtml .= '<th style="background-color:#BDD6EE;"><strong>Results Interpretation</strong></th>';
@@ -337,38 +340,52 @@ if (!empty($resultArray['shipment'])) {
 
                 $zscorehtml .= '<tr>';
                 $zscorehtml .= '<td>z ≥ ± 3.0</td>';
-                $zscorehtml .= '<td style="color:red;">Unacceptable</td>';
-                $zscorehtml .= '<td style="color:red;">Perform corrective action</td>';
+                $zscorehtml .= '<td>Unacceptable</td>';
+                $zscorehtml .= '<td>Perform corrective action</td>';
                 $zscorehtml .= '</tr>';
 
                 $zscorehtml .= '</table>';
                 // $zscorehtml .= '<br/><span style="text-align:justify;font-size:8;"><i style="color:darkgreen;background-color:lightgreen;">NOTE: *Results due date was extended for ePT results validation from submitted participants to address discrepancies.</i></span>';
                 $pdf->writeHTML($zscorehtml, true, false, true, false, '');
 
-                $note = '<h5 style="margin-bottom: 0px;">Participants with scores of less than 100%</h5>';
-                $note .= '<span style="text-align:justify;font-size:11px;font-weight:normal;">Laboratory must complete a <em>Proficiency Testing Corrective Action Form</em> within 30 days of report authorization date. Refer to Proficiency Testing Corrective Action Flowchart for additional guidance. Documents are available on the ePT site in the "Corrective Action" tab under the Main Navigation.</span>';
+                // Section headings carry a rule underneath, as in the individual report template
+                $ruledHeading = fn($text) => '<table cellpadding="1" style="width:100%;"><tr><td style="font-weight:bold;font-size:11px;border-bottom:1.5px solid #000;">' . $text . '</td></tr></table>';
+                $rule = '<table style="width:100%;"><tr><td style="border-bottom:1.5px solid #000;font-size:4px;">&nbsp;</td></tr></table>';
+                $para = 'text-align:justify;font-size:11px;font-weight:normal;';
 
-                $note .= '<h5 style="margin-bottom: 0px;">Information with respect to compliance with standards ISO 13528:2022(E)<br>Preparation of Proficiency Test items: </h5>';
-                $note .= '<span style="text-align:justify;font-size:11px;font-weight:normal;">The proficiency test items were prepared by the trained staff of CDC-ILB using inactivated cultured HIV-1, following institutional SOPs. The PT samples were issued with instructions to report on detection using routine methods.  The PT samples were tested for homogeneity prior to shipment and met program requirements.</span>';
+                $note = '<br/>' . $ruledHeading('Participants with scores of less than 100%');
+                $note .= '<span style="' . $para . '">Laboratory must complete a Proficiency Testing Corrective Action Form within 30 days of report authorization date. Refer to Proficiency Testing Corrective Action Flowchart for additional guidance. Documents are available on the ePT site in the &ldquo;Corrective Action&rdquo; tab under the Main Navigation.</span><br/>';
 
-                $note .= '<h5 style="margin-bottom: 0px;">Procedures used to establish the assigned value:</h5>';
-                $note .= '<span style="text-align:justify;font-size:11px;font-weight:normal;">The results of participating laboratories using the same VL platform were grouped together and analyzed for peer-comparison using the normalized InterQuartile Range (nIQR) method. The nIQR method uses the median as the assigned value because it is a robust estimator of central tendency that is less influenced by outliers. This approach ensures that the assigned value remains representative of the central distribution of participant results, even when a proportion of results may be extreme or atypical. Assigned value, Robust Standard Deviation, Standard Uncertainty of assigned value, z score and performance score were derived as per the Standard ISO13528: 2022(E). A VL platform with the most participants was used as a reference value to evaluate results for VL platforms with less than eighteen participants in this PT round.</span>';
+                $note .= '<div style="font-weight:bold;font-size:11px;">Information with respect to compliance with standards ISO 13528:2022(E)</div>';
+                $note .= $ruledHeading('Preparation of Proficiency Test items:');
+                $note .= '<span style="' . $para . '">The proficiency test items were prepared by the trained staff of CDC-ILB using inactivated cultured HIV-1, following institutional SOPs. The PT samples were issued with instructions to report on detection using routine methods. The PT samples were tested for homogeneity prior to shipment and met program requirements.</span><br/>';
 
-                $note .= '<h5 style="margin-bottom: 0px;">Statistical Definitions and Performance Criteria</h5>';
-                $note .= '<span style="text-align:justify;font-size:11px;font-weight:normal;">The following quartile definitions are applied to participant results:<br/>'
-                    . '<strong>Q1 (Lower Limit):</strong> Represents the 25th percentile of all participant results<br/>'
-                    . '<strong>Q3 (Upper Limit):</strong> Represents the 75th percentile of all participant results</span>';
-                $note .= '<h5 style="margin-bottom: 0px;">Acceptable Performance Criteria</h5>';
-                $note .= '<span style="text-align:justify;font-size:11px;font-weight:normal;">Acceptable performance is defined as achieving a z-score with an absolute value less than 3.0 (|z| &lt; 3.0), where the z-score is calculated as:<br/>z = (Participant Result &ndash; Assigned Value) / Robust SD</span>';
-                $note .= '<h5 style="margin-bottom: 0px;">Acceptable Result Interval</h5>';
-                $note .= '<span style="text-align:justify;font-size:11px;font-weight:normal;">For each sample, an Acceptable Result Interval is calculated and reported as:<br/>Assigned Value &plusmn; (3 &times; Robust SD)<br/>Results falling within this interval are considered acceptable performance (|z| &lt; 3.0).<br/><br/>'
-                    . '(Robust Standard Deviation (SD) in the nIQR method is a dispersion estimate calculated as 0.7413 &times; (Q3 &minus; Q1), where Q1 and Q3 are the 25th and 75th percentiles of participant results. It provides a resistant estimate of variability that is less influenced by outliers than the classical standard deviation.)</span>';
+                $note .= '<div style="font-weight:bold;font-size:11px;">Procedures used to establish the assigned value:</div>';
+                $note .= '<span style="' . $para . '">The results of participating laboratories using the same VL platform were grouped together and analyzed for peer-comparison using the normalized InterQuartile Range (nIQR) method. The nIQR method uses the median as the assigned value because it is a robust estimator of central tendency that is less influenced by outliers. This approach ensures that the assigned value remains representative of the central distribution of participant results, even when a proportion of results may be extreme or atypical. Assigned value, Robust Standard Deviation, Standard Uncertainty of assigned value, z score and performance score were derived as per the Standard ISO13528: 2022(E). A VL platform with the most participants was used as a reference value to evaluate results for VL platforms with less than eighteen participants in this PT round.</span><br/>';
+                $note .= $rule;
 
-                $note .= '<h5 style="margin-bottom: 0px;">Subcontracting:</h5>';
-                $note .= '<span style="text-align:justify;font-size:11px;font-weight:normal;">Only the transport of PT items and the ePT site administration are subcontracted. </span>';
+                // Definitions and criteria are indented with the formulas set apart in bold
+                $note .= '<table cellpadding="2" style="width:100%;"><tr><td style="width:7%;"></td><td style="width:93%;font-size:11px;">';
+                $note .= '<strong>Statistical Definitions and Performance Criteria</strong><br/>';
+                $note .= 'The following quartile definitions are applied to participant results:<br/>';
+                $note .= '&bull;&nbsp;&nbsp;Q1 (Lower Limit): Represents the 25th percentile of all participant results<br/>';
+                $note .= '&bull;&nbsp;&nbsp;Q3 (Upper Limit): Represents the 75th percentile of all participant results<br/><br/>';
+                $note .= '<span style="font-size:12px;"><strong>Acceptable Performance Criteria</strong><br/>';
+                $note .= '<span style="text-align:justify;">Acceptable performance is defined as achieving a z-score with an absolute value less than 3.0 (|z| &lt; 3.0), where the z-score is calculated as:</span><br/>';
+                $note .= '<strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;z = (Participant Result &ndash; Assigned Value) / Robust SD</strong><br/>';
+                $note .= '<strong>Acceptable Result Interval</strong><br/>';
+                $note .= 'For each sample, an Acceptable Result Interval is calculated and reported as:<br/>';
+                $note .= '<strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Assigned Value &plusmn; (3 &times; Robust SD)</strong><br/>';
+                $note .= 'Results falling within this interval are considered acceptable performance (|z| &lt; 3.0).</span>';
+                $note .= '</td></tr></table>';
+                $note .= '<span style="text-align:justify;font-size:12px;color:#0A2F41;"><strong>(Robust Standard Deviation (SD)</strong> in the nIQR method is a dispersion estimate calculated as 0.7413 &times; (Q3 &minus; Q1), where Q1 and Q3 are the 25th and 75th percentiles of participant results. It provides a resistant estimate of variability that is less influenced by outliers than the classical standard deviation.)</span><br/><br/>';
 
-                $note .= '<h5 style="margin-bottom: 0px;">Confidentiality:</h5>';
-                $note .= '<span style="text-align:justify;font-size:11px;font-weight:normal;">The identities of participants are kept confidential and known only to the staff involved in the implementation of the Proficiency Testing.  Each participant has been assigned a unique identification number for the purposes of database management.</span>';
+                $note .= '<div style="font-weight:bold;font-size:11px;">Subcontracting:</div>';
+                $note .= '<span style="' . $para . '">Only the transport of PT items and the ePT site administration are subcontracted.</span><br/>';
+                $note .= $rule . '<br/>';
+
+                $note .= '<div style="font-weight:bold;font-size:11px;">Confidentiality:</div>';
+                $note .= '<span style="' . $para . '">The identities of participants are kept confidential and known only to the staff involved in the implementation of the Proficiency Testing. Each participant has been assigned a unique identification number for the purposes of database management.</span>';
 
                 $contentForReport = !empty($contentForIndividualVlReports) ? htmlspecialchars_decode($contentForIndividualVlReports) : null;
                 $contentForReport = str_replace("'", '"', $contentForReport);
@@ -558,22 +575,22 @@ if (!empty($resultArray['shipment'])) {
             $html .= '<br><small>Note: A VL platform with the most participants was used as a reference value to evaluate results for VL platforms with less than 6 participants on this PT round.</small>';
             $pdf->writeHTML($html, true, false, true, false, '');
         }
-        $html = '<br/>';
+        $html = '<hr style="height:1.5px;">';
         // if ((isset($resultArray['shipment'][0]['pt_co_ordinator_name']) && $resultArray['shipment'][0]['pt_co_ordinator_name'] != "") || $evalRow['saname'] != '') {
         $approveTxt = $evalRow['report_approver'] ?? '';
         if ($layout == 'zimbabwe') {
             $html .= '<span style="text-align:center;font-weight:normal;"><small>All PT material is produced in line with the standard ISO17043:2023</small></span><br/>';
         }
         if (!empty($approveTxt)) {
-            $html .= '<span style="text-align:center;font-weight:normal;"><small>Report approved by ' . $approveTxt . '</small> &nbsp;|&nbsp; <small>Date of approval: ' . Pt_Commons_DateUtility::humanReadableDateFormat($evalRow['date_finalised'] ?? date('d M Y')) . '</small></span>';
+            $html .= '<span style="text-align:center;font-weight:normal;font-size:10px;">Report approved by ' . $approveTxt . ' &nbsp;&nbsp;&nbsp; Date of approval: ' . Pt_Commons_DateUtility::humanReadableDateFormat($evalRow['date_finalised'] ?? date('d M Y')) . '</span><br/>';
         }
         // }
-        $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>This is a system generated report. No signature required</small></span>';
+        $html .= '<br/><span style="text-align:center;font-weight:normal;font-size:10px;"><i>This is a system generated report. No signature required</i></span>';
         $eodReportText = "End of report";
         if ($evalRow['report_type'] == 'finalized') {
             $eodReportText = "End of final report";
         }
-        $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>- ' . $eodReportText . ' -</small></span>';
+        $html .= '<br/><span style="text-align:center;font-weight:normal;font-size:10px;">&ndash; ' . $eodReportText . ' &ndash;</span>';
         $pdf->writeHTML($html, true, false, true, false, '');
         if (ob_get_contents()) {
             ob_end_clean();

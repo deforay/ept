@@ -100,7 +100,7 @@ class Pt_Reports_FpdiReport extends TCPDF
         } elseif ($this->layout != 'malawi' && $this->layout != 'zimbabwe' && $this->layout != 'default') {
             if (isset($this->reportType) && !empty($this->reportType) && strtolower($this->reportType) == 'summary' && $this->PageNo() == 1) {
                 $this->writeHTML('<br>All Participants Results Report', true, false, true, false, 'C');
-            } elseif (strtolower($this->reportType) == 'individual' && $this->PageNo() == 1 && $this->schemeType != 'dts') {
+            } elseif (strtolower($this->reportType) == 'individual' && $this->PageNo() == 1 && !in_array($this->schemeType, ['dts', 'ilb', 'vl'], true)) {
                 $this->writeHTML('Individual Participant Results Report', true, false, true, false, 'C');
             }
         }
