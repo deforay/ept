@@ -246,14 +246,24 @@ class Pt_Reports_ChartRenderer_ChartJsNode implements Pt_Reports_ChartRenderer_R
                     'backgroundColor'    => $color,
                     'pointBackgroundColor' => $color,
                     'pointBorderColor'   => $color,
-                    'pointRadius'        => 6,
+                    'pointRadius'        => $ds['pointRadius'] ?? 6,
                     'borderWidth'        => 2,
                     'fill'               => false,
+                    // showLine=false draws the markers alone, unconnected
+                    'showLine'           => $ds['showLine'] ?? true,
                     'yAxisID'            => 'y2',
                     'order'              => 0,
                 ];
                 if (!empty($ds['label'])) {
                     $chartDataset['label'] = $ds['label'];
+                }
+                // Drawn beside each point by the eptValueLabels plugin in chart-render.js
+                if (!empty($ds['valueLabels'])) {
+                    $chartDataset['valueLabels'] = $ds['valueLabels'];
+                }
+                // clip=false lets markers at the axis maximum draw whole instead of half-cut
+                if (isset($ds['clip'])) {
+                    $chartDataset['clip'] = $ds['clip'];
                 }
                 $chartDatasets[] = $chartDataset;
             } else {
@@ -672,11 +682,15 @@ class Pt_Reports_ChartRenderer_ChartJsNode implements Pt_Reports_ChartRenderer_R
 
     private function buildXTicks(array $config): array
     {
-        $ticks = ['font' => ['size' => 26]];
+        $ticks = ['font' => ['size' => $config['xAxis']['fontSize'] ?? 26]];
         $angle = $config['xAxis']['labelAngle'] ?? 0;
         if ($angle > 0) {
             $ticks['maxRotation'] = $angle;
             $ticks['minRotation'] = $angle;
+        } elseif (isset($config['xAxis']['labelAngle'])) {
+            // An explicit 0 keeps labels horizontal (pair with multi-line labels) instead of auto-rotating
+            $ticks['maxRotation'] = 0;
+            $ticks['autoSkip'] = false;
         }
         return $ticks;
     }

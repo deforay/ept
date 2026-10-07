@@ -44,9 +44,10 @@ if ($resultArray['shipment'] != "") {
 
     $shipmentAttributes = Pt_Commons_JsonUtility::safeDecode($resultArray['shipment']['shipment_attributes']);
     $shipmentAttributes['shipment_id'] = $resultArray['shipment']['shipment_id'];
-    $formVersion = $shipmentAttributes['formVersion'] ?? $shipmentAttributes['reportVersion'] ?? '';
-    $effectiveDate = $shipmentAttributes['effectiveDate'] ?? '';
-    $issuingAuthority = $resultArray['shipment']['issuing_authority'] ?? '';
+    // CDC document control for this form: the number is fixed here (the shipment has one version field for two forms); issuing authority and effective date default to the form's own and can be overridden per shipment
+    $formVersion = 'FRM-000131-ILB';
+    $effectiveDate = ($shipmentAttributes['effectiveDate'] ?? '') ?: 'April 2026';
+    $issuingAuthority = ($resultArray['shipment']['issuing_authority'] ?? '') ?: 'David Turgeon, PhD';
 
     // Build footer table row conditionally
     $footerCells = [];
@@ -73,7 +74,7 @@ if ($resultArray['shipment'] != "") {
     }
 
     // Only create footer if we have at least one element
-    $staticFooterHtml = '<hr style="border: 1px solid #000;">';
+    $staticFooterHtml = '';
     if (!empty($footerCells)) {
         $staticFooterHtml .= '<table style="width:100%;" cellpadding="0" cellspacing="0" border="0">
                     <tr align="center" style="text-align:center;">
@@ -211,6 +212,9 @@ if ($resultArray['shipment'] != "") {
             $sample = [];
             $assayNameList = [];
             $noOfPaResponseTxt = "";
+            // Chart bars, in table order: bar label => platforms whose participants it counts
+            $chartPlatforms = [];
+            $pooledAssayNames = [];
 
             // Table opening shared by every platform table. $refMark flags the columns that
             // come from the reference platform (used for the "< 18 participants" table).
@@ -281,6 +285,7 @@ if ($resultArray['shipment'] != "") {
                             $platformTotal = max($platformTotal, vlPlatformParticipants($val));
                         }
                     }
+                    $pooledAssayNames[] = $vlCal['vlAssay'];
                     if ($vlCal['vlAssay'] == "Other") {
                         foreach ($vlCal['otherAssayName'] as $otherAssayName => $otherAssayCount) {
                             $assayNameList[] = "Other - $otherAssayName (n=$otherAssayCount)";
@@ -299,8 +304,9 @@ if ($resultArray['shipment'] != "") {
                     $calRes .= '</table>';
 
                     $pdf->writeHTML($calRes, true, false, true, false, '');
+                    $chartPlatforms[$vlCal['vlAssay']] = [$vlCal['vlAssay']];
 
-                    if ($assayId != 6 &&!in_array($assayId, $groupedAssayIds) && $vlCal['participant_response_count'] > $referenceCount) {
+                    if ($assayId != 6 && !in_array($assayId, $groupedAssayIds) && $vlCal['participant_response_count'] > $referenceCount) {
                         $referenceAssay = $vlCal['vlAssay'];
                         $referenceCount = $vlCal['participant_response_count'];
                     }
@@ -318,6 +324,7 @@ if ($resultArray['shipment'] != "") {
                 }
                 $calRes .= '</table>';
                 $pdf->writeHTML($calRes, true, false, true, false, '');
+                $chartPlatforms['VL platforms with < 18 participants'] = $pooledAssayNames;
 
                 $note = '<span style="text-align:justify;font-size:11px;"><strong>Number of Participants for each VL platform with less than 18 participants (Total ' . $noOfPaResponseTxt . '):</strong> ' . implode('; ', $assayNameList) . '.</span>';
                 if (!empty($referenceAssay)) {
@@ -325,6 +332,74 @@ if ($resultArray['shipment'] != "") {
                 }
                 $note .= '<hr>';
                 $pdf->writeHTML($note, true, false, true, false, '');
+            }
+        }
+
+        // All Participants Results Summary chart: one bar group per table above, plus all participants.
+        // Counts are participants (final_result 1 = scored 100%, 2 = below 100%) on the bar's platforms.
+        if (!empty($chartPlatforms)) {
+            $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+            $platformCounts = $db->fetchAll($db->select()
+                ->from(['sp' => 'shipment_participant_map'], [
+                    'submitted' => new Zend_Db_Expr('COUNT(*)'),
+                    'passed' => new Zend_Db_Expr('SUM(sp.final_result = 1)'),
+                    'failed' => new Zend_Db_Expr('SUM(sp.final_result = 2)'),
+                ])
+                ->join(['rvla' => 'r_vl_assay'], 'rvla.id = sp.attributes->>"$.vl_assay"', ['assay_name' => 'name'])
+                ->where('sp.shipment_id = ?', $resultArray['shipment']['shipment_id'])
+                ->where("sp.is_excluded not like 'yes' OR sp.is_excluded like '' OR sp.is_excluded is null")
+                ->where('sp.final_result IN (1, 2)')
+                ->group('rvla.id'));
+            $platformCounts = array_column($platformCounts, null, 'assay_name');
+
+            $chartLabels = $submitted = $passed = $failed = $passPercent = [];
+            foreach ($chartPlatforms + ['All Participants' => array_keys($platformCounts)] as $chartLabel => $names) {
+                $s = $p = $f = 0;
+                foreach ($names as $name) {
+                    $s += (int) ($platformCounts[$name]['submitted'] ?? 0);
+                    $p += (int) ($platformCounts[$name]['passed'] ?? 0);
+                    $f += (int) ($platformCounts[$name]['failed'] ?? 0);
+                }
+                $chartLabels[] = $chartLabel;
+                $submitted[] = $s;
+                $passed[] = $p;
+                $failed[] = $f;
+                $passPercent[] = $s > 0 ? round(($p / $s) * 100) : 0;
+            }
+
+            if (array_sum($submitted) > 0) {
+                $outputDir = $reportsPath . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'];
+                $chartFile = Pt_Reports_ChartService::render([
+                    'type' => 'bar+line',
+                    'width' => 700,
+                    'height' => 460,
+                    'filename' => 'all-participants-chart',
+                    'title' => 'All Participants Results Summary',
+                    // Multi-line labels stay horizontal and readable however many platforms there are
+                    'xAxis' => ['labels' => array_map(fn($label) => explode("\n", wordwrap($label, count($chartLabels) > 5 ? 12 : 28, "\n", true)), $chartLabels), 'labelAngle' => 0, 'fontSize' => count($chartLabels) > 5 ? 17 : 24],
+                    'yAxis' => ['title' => 'Number of Participants'],
+                    'y2Axis' => ['min' => 0, 'max' => 100, 'title' => 'Percent of Participants Scoring "100%"'],
+                    'datasets' => [
+                        ['type' => 'bar', 'data' => $submitted, 'label' => 'Number of Participants Submitting Results', 'colors' => ['#4472C4']],
+                        ['type' => 'bar', 'data' => $passed, 'label' => 'Number of Participants Scoring "100%"', 'colors' => ['#92D050']],
+                        ['type' => 'bar', 'data' => $failed, 'label' => 'Number of Participants Scoring Below "100%"', 'colors' => ['#FFC000']],
+                        ['type' => 'line', 'data' => $passPercent, 'label' => 'Percent of Participants Scoring "100%"', 'colors' => ['#C55A11'], 'showLine' => false, 'clip' => false, 'pointRadius' => 10, 'valueLabels' => ['suffix' => '%']],
+                    ],
+                    'legend' => ['position' => 'bottom'],
+                ], $outputDir);
+
+                if (!empty($chartFile) && file_exists($chartFile)) {
+                    // Explicit width in mm (TCPDF auto-width ignores DPI); height from the PNG's own aspect
+                    $chartWidth = $pdf->getPageWidth() - PDF_MARGIN_LEFT - PDF_MARGIN_RIGHT;
+                    [$pngW, $pngH] = getimagesize($chartFile);
+                    $chartHeight = $chartWidth * $pngH / $pngW;
+                    if ($pdf->GetY() + $chartHeight > $pdf->getPageHeight() - PDF_MARGIN_BOTTOM) {
+                        $pdf->AddPage();
+                    }
+                    $pdf->Image($chartFile, PDF_MARGIN_LEFT, $pdf->GetY(), $chartWidth, $chartHeight, 'PNG', '', 'N');
+                    $pdf->Ln(4);
+                    unlink($chartFile);
+                }
             }
         }
 
@@ -379,7 +454,9 @@ if ($resultArray['shipment'] != "") {
                 $html .= '<span style="text-align:center;font-weight:normal;"><small>All PT material is produced in line with the standard ISO17043:2023</small></span><br/>';
             }
             if (!empty($approveTxt)) {
-                $html .= '<span style="text-align:center;font-weight:normal;font-size:10px;">Report approved by ' . $approveTxt . ' &nbsp;&nbsp;&nbsp; Date of approval: ' . Application_Service_Common::humanReadableDateFormat($evalRow['date_finalised'] ?? date('d M Y')) . '</span><br/>';
+                // Approver on the left, month and year of approval on the right, as on the CDC forms
+                $approvalDate = date('F Y', strtotime($evalRow['date_finalised'] ?? 'now') ?: time());
+                $html .= '<table style="width:100%;font-size:10px;"><tr><td style="width:65%;text-align:left;">Report approved by ' . $approveTxt . '</td><td style="width:35%;text-align:right;">Date of approval: ' . $approvalDate . '</td></tr></table>';
             }
         }
         $html .= '<br/><span style="text-align:center;font-weight:normal;font-size:10px;"><i>This is a system generated report. No signature required</i></span>';

@@ -69,7 +69,32 @@ function wrapTextToWidth(ctx, text, maxWidth) {
     return lines;
 }
 
+// Opt-in value labels: a dataset carrying `valueLabels: { suffix, size, offsetX }` gets each
+// value drawn beside its point (e.g. "93%" next to a marker). Datasets without it are untouched.
+const valueLabelsPlugin = {
+    id: 'eptValueLabels',
+    afterDatasetsDraw(chart) {
+        const { ctx } = chart;
+        chart.data.datasets.forEach((ds, i) => {
+            const meta = chart.getDatasetMeta(i);
+            if (!ds.valueLabels || meta.hidden) return;
+            const { suffix = '', size = 22, offsetX = 16, color = '#000' } = ds.valueLabels;
+            ctx.save();
+            ctx.font = `${size}px ${Chart.defaults.font.family}`;
+            ctx.fillStyle = color;
+            ctx.textAlign = 'left';
+            ctx.textBaseline = 'middle';
+            meta.data.forEach((el, j) => {
+                const v = ds.data[j];
+                if (v !== null && v !== undefined) ctx.fillText(`${v}${suffix}`, el.x + offsetX, el.y);
+            });
+            ctx.restore();
+        });
+    },
+};
+
 Chart.register(
+    valueLabelsPlugin,
     CategoryScale,
     LinearScale,
     LogarithmicScale,

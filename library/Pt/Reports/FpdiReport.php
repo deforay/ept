@@ -293,6 +293,15 @@ class Pt_Reports_FpdiReport extends TCPDF
             $completeFooterHtml .= '</table>';
 
             // -------------------------------------------------------------------
+            // ILB (CDC)
+            // The form number / issuing authority / effective date row comes from the
+            // layout's staticFooterHtml; under it only a centred page number, as on the CDC forms.
+            // -------------------------------------------------------------------
+        } elseif ($this->layout == 'ilb' && $this->schemeType == 'vl') {
+
+            $completeFooterHtml = '<div style="text-align:center; font-size:9px;">' . $pageNumber . '</div>';
+
+            // -------------------------------------------------------------------
             // DEFAULT
             // 3 columns: (empty) | Report generated on ... (center) | Page (right)
             // -------------------------------------------------------------------

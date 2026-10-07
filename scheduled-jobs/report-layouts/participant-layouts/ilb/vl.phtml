@@ -32,9 +32,10 @@ if (!empty($resultArray['shipment'])) {
         // create new PDF document
         $reportFormat = $reportService->getReportConfigValue('report-format');
 
-        $formVersion = $shipmentAttributes['formVersion'] ?? $shipmentAttributes['reportVersion'] ?? '';
-        $effectiveDate = $shipmentAttributes['effectiveDate'] ?? '';
-        $issuingAuthority = $result['issuing_authority'] ?? '';
+        // CDC document control for this form: the number is fixed here (the shipment has one version field for two forms); issuing authority and effective date default to the form's own and can be overridden per shipment
+        $formVersion = 'FRM-000130-ILB';
+        $effectiveDate = ($shipmentAttributes['effectiveDate'] ?? '') ?: 'April 2026';
+        $issuingAuthority = ($result['issuing_authority'] ?? '') ?: 'David Turgeon, PhD';
 
         // Build footer table row conditionally
         $footerCells = [];
@@ -61,7 +62,7 @@ if (!empty($resultArray['shipment'])) {
         }
 
         // Only create footer if we have at least one element
-        $staticFooterHtml = '<hr style="border: 1px solid #000;">';
+        $staticFooterHtml = '';
         if (!empty($footerCells)) {
             $staticFooterHtml .= '<table style="width:100%;" cellpadding="0" cellspacing="0" border="0">
                     <tr align="center" style="text-align:center;">
@@ -582,7 +583,9 @@ if (!empty($resultArray['shipment'])) {
             $html .= '<span style="text-align:center;font-weight:normal;"><small>All PT material is produced in line with the standard ISO17043:2023</small></span><br/>';
         }
         if (!empty($approveTxt)) {
-            $html .= '<span style="text-align:center;font-weight:normal;font-size:10px;">Report approved by ' . $approveTxt . ' &nbsp;&nbsp;&nbsp; Date of approval: ' . Pt_Commons_DateUtility::humanReadableDateFormat($evalRow['date_finalised'] ?? date('d M Y')) . '</span><br/>';
+            // Approver on the left, month and year of approval on the right, as on the CDC forms
+            $approvalDate = date('F Y', strtotime($evalRow['date_finalised'] ?? 'now') ?: time());
+            $html .= '<table style="width:100%;font-size:10px;"><tr><td style="width:65%;text-align:left;">Report approved by ' . $approveTxt . '</td><td style="width:35%;text-align:right;">Date of approval: ' . $approvalDate . '</td></tr></table>';
         }
         // }
         $html .= '<br/><span style="text-align:center;font-weight:normal;font-size:10px;"><i>This is a system generated report. No signature required</i></span>';
