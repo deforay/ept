@@ -1898,7 +1898,9 @@ class Application_Model_Vl
 
         $responseCounter = [];
 
-        $minimumRequiredResponses = 6;
+        // Fewest responses an assay needs for its own range (inclusive). ISO 17043 needs at
+        // least 18; standard keeps its historical "more than 6".
+        $minimumRequiredResponses = 7;
         if ('iso17043' == $method) {
             $minimumRequiredResponses = 18;
         }
@@ -1920,7 +1922,7 @@ class Application_Model_Vl
 
             foreach ($sampleWise[$vlAssayId] as $sample => $reportedVl) {
 
-                if ($vlAssayId != 6 && !empty($reportedVl) && count($reportedVl) > $minimumRequiredResponses) {
+                if ($vlAssayId != 6 && !empty($reportedVl) && count($reportedVl) >= $minimumRequiredResponses) {
                     $responseCounter[$vlAssayId] = count($reportedVl);
 
                     $inputArray = array_filter(
@@ -1992,7 +1994,7 @@ class Application_Model_Vl
                     }
                 );
 
-                if (count($inputArray) <= $minimumRequiredResponses) {
+                if (count($inputArray) < $minimumRequiredResponses) {
                     foreach ($members as $memberAssayId) {
                         $skippedAssays[] = $memberAssayId;
                         $skippedResponseCounter[$memberAssayId] = count($sampleWise[$memberAssayId][$sample] ?? []);

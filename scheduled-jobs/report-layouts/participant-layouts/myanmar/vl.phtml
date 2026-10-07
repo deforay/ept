@@ -163,7 +163,7 @@ if (!empty($resultArray['shipment'])) {
         $pdf->writeHTML($labInfo, true, false, true, false, '');
         $responseGreater = false;
         foreach ($result['responseResult'] as $key => $response) {
-            if ($response['no_of_participants'] > 18) {
+            if ($response['no_of_participants'] >= 18) {
                 $responseGreater = true;
             }
         }
