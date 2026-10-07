@@ -32,7 +32,7 @@ if (!empty($resultArray['shipment'])) {
         // create new PDF document
         $reportFormat = $reportService->getReportConfigValue('report-format');
 
-        $formVersion = $shipmentAttributes['formVersion'] ?? $shipmentAttributes['reportVersion'];
+        $formVersion = $shipmentAttributes['formVersion'] ?? $shipmentAttributes['reportVersion'] ?? '';
         $effectiveDate = $shipmentAttributes['effectiveDate'] ?? '';
         $issuingAuthority = $result['issuing_authority'] ?? '';
 

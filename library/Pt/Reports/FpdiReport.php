@@ -98,9 +98,11 @@ class Pt_Reports_FpdiReport extends TCPDF
             $nihe .= '</div>';
             $this->writeHTML($nihe, true, false, false, false, '');
         } elseif ($this->layout != 'malawi' && $this->layout != 'zimbabwe' && $this->layout != 'default') {
-            if (isset($this->reportType) && !empty($this->reportType) && strtolower($this->reportType) == 'summary' && $this->PageNo() == 1) {
+            // ILB VL templates print the report title in the body, below the programme title
+            $titleInBody = $this->layout == 'ilb' && $this->schemeType == 'vl';
+            if (isset($this->reportType) && !empty($this->reportType) && strtolower($this->reportType) == 'summary' && $this->PageNo() == 1 && !$titleInBody) {
                 $this->writeHTML('<br>All Participants Results Report', true, false, true, false, 'C');
-            } elseif (strtolower($this->reportType) == 'individual' && $this->PageNo() == 1 && !in_array($this->schemeType, ['dts'], true) && $this->layout != 'lib') {
+            } elseif (strtolower($this->reportType) == 'individual' && $this->PageNo() == 1 && $this->schemeType != 'dts' && !$titleInBody) {
                 $this->writeHTML('Individual Participant Results Report', true, false, true, false, 'C');
             }
         }
