@@ -81,7 +81,7 @@ $fmt = static function ($v) {
             <i class="icon-info-sign"></i>
             <?= $this->translate->_("Grading uses Median and Robust SD (z-score); Lower/Upper limits are report-only."); ?>
             <strong><?= $this->translate->_("Enter just the limits and Median / Robust SD are auto-filled"); ?></strong>
-            <?= $this->translate->_("(Median = (Lower + Upper) / 2 and Robust SD = (Upper − Lower) / (2 × the SD multiple below). You can still override them."); ?>
+            <?= $this->translate->_("(Median = (Lower + Upper) / 2 and Robust SD = (Upper − Lower) / (2 × the SD multiple below). Median and Robust SD you type yourself are kept as entered."); ?>
             <div style="margin-top:6px;">
                 <label for="limitSdMultiple" style="display:inline;font-weight:bold;"><?= $this->translate->_("Limits entered are"); ?></label>
                 <select id="limitSdMultiple" class="form-control input-sm" style="display:inline-block;width:auto;margin-left:6px;">
@@ -169,7 +169,7 @@ $fmt = static function ($v) {
     }
 
     // iso17043: limits are mean ± k SD (k picked in #limitSdMultiple), so Median = (Lo+Hi)/2 and Robust SD = (Hi-Lo)/(2k)
-    function deriveRow(sampleId, onlyIfEmpty) {
+    function deriveRow(sampleId, onlyIfEmpty, force) {
         if (vlBulkMethod !== 'iso17043') {
             return;
         }
@@ -180,27 +180,78 @@ $fmt = static function ($v) {
         }
         var $median = bulkInput(sampleId, 'manualMedian');
         var $sd = bulkInput(sampleId, 'manualSd');
-        if (!onlyIfEmpty || $median.val() === '') {
-            $median.val(round4((low + high) / 2));
+        // A Median / Robust SD the user typed (or saved values that did not come from these limits)
+        // is never overwritten: deriving them from limits rounded to 2 decimals loses precision
+        // ...unless the user asked to recalculate them (force)
+        if ($median.val() === '' || force || (!onlyIfEmpty && !$median.data('typed'))) {
+            $median.val(round4((low + high) / 2)).data('typed', false);
         }
-        if (!onlyIfEmpty || $sd.val() === '') {
+        if ($sd.val() === '' || force || (!onlyIfEmpty && !$sd.data('typed'))) {
             var sdMultiple = parseInt($('#limitSdMultiple').val(), 10) || 2;
-            $sd.val(round4((high - low) / (2 * sdMultiple)));
+            $sd.val(round4((high - low) / (2 * sdMultiple))).data('typed', false);
         }
     }
 
-    // switching between ± 2 SD and ± 3 SD re-derives every row that has both limits
-    $(document).on('change', '#limitSdMultiple', function () {
+    function rowHasTypedValues(sampleId) {
+        return !!(bulkInput(sampleId, 'manualMedian').data('typed') || bulkInput(sampleId, 'manualSd').data('typed'));
+    }
+
+    function confirmRecalculate() {
+        return window.confirm("Median / Robust SD were entered by hand. Recalculate them from the limits?");
+    }
+
+    // Typing in Median / Robust SD keeps that value; clearing the field hands it back to auto-fill
+    $(document).on('input', '#bulkManualForm input[data-role="manualMedian"], #bulkManualForm input[data-role="manualSd"]', function () {
+        $(this).data('typed', this.value !== '');
+    });
+
+    // Saved values that are not what the limits would give (e.g. exact figures typed in) count as typed
+    $(function () {
+        if (vlBulkMethod !== 'iso17043') {
+            return;
+        }
         $('#bulkManualForm input[data-role="manualLowLimit"]').each(function () {
-            deriveRow($(this).data('sample'), false);
+            var sampleId = $(this).data('sample');
+            var low = parseFloat(this.value);
+            var high = parseFloat(bulkInput(sampleId, 'manualHighLimit').val());
+            var $median = bulkInput(sampleId, 'manualMedian');
+            var $sd = bulkInput(sampleId, 'manualSd');
+            var median = parseFloat($median.val());
+            var sd = parseFloat($sd.val());
+            if (isNaN(low) || isNaN(high) || high <= low) {
+                $median.data('typed', !isNaN(median));
+                $sd.data('typed', !isNaN(sd));
+                return;
+            }
+            var sdMultiple = parseInt($('#limitSdMultiple').val(), 10) || 2;
+            $median.data('typed', !isNaN(median) && Math.abs(median - round4((low + high) / 2)) > 0.00005);
+            $sd.data('typed', !isNaN(sd) && Math.abs(sd - round4((high - low) / (2 * sdMultiple))) > 0.00005
+                && Math.abs(sd - round4((high - low) / 6)) > 0.00005);
+        });
+    });
+
+    // switching between ± 2 SD and ± 3 SD re-derives every row that has both limits
+    // (rows with hand-entered values are only recalculated if the user agrees)
+    $(document).on('change', '#limitSdMultiple', function () {
+        var $lows = $('#bulkManualForm input[data-role="manualLowLimit"]');
+        var anyTyped = $lows.toArray().some(function (el) { return rowHasTypedValues($(el).data('sample')); });
+        var force = anyTyped && confirmRecalculate();
+        $lows.each(function () {
+            deriveRow($(this).data('sample'), false, force);
         });
     });
 
     // re-check order + re-derive whenever a limit is edited
+    // (a corrected limit on a row with hand-entered Median / Robust SD asks before replacing them)
+    $(document).on('focus', '#bulkManualForm input[data-role="manualLowLimit"], #bulkManualForm input[data-role="manualHighLimit"]', function () {
+        $(this).data('before', this.value);
+    });
     $(document).on('blur', '#bulkManualForm input[data-role="manualLowLimit"], #bulkManualForm input[data-role="manualHighLimit"]', function () {
         var sampleId = $(this).data('sample');
+        var changed = this.value !== $(this).data('before');
         flipLimitsIfNeeded(sampleId);
-        deriveRow(sampleId, false);
+        var force = changed && rowHasTypedValues(sampleId) && confirmRecalculate();
+        deriveRow(sampleId, false, force);
     });
 
     function prefillFromSystem() {
