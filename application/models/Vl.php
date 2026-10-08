@@ -775,7 +775,20 @@ class Application_Model_Vl
             $sample = [];
             foreach ($vlCalculation as $vlCal) {
                 $row = 10;
-                if (isset($vlCal['participant_response_count']) && $vlCal['participant_response_count'] < 18 || $vlCal['vlAssay'] == 'Other') {
+                // Print the range participants were graded on: the manual figures where the admin set
+                // Manual (a range entered as limits has no Q1/Q3, so the limits stand in). Same rule as
+                // the ILB summary report, which also keeps manually-ranged platforms out of the pool.
+                $hasManualRange = false;
+                foreach ($vlCal as $calKey => $calVal) {
+                    if (is_array($calVal) && isset($calVal['median']) && ($calVal['use_range'] ?? '') === 'manual') {
+                        $hasManualRange = true;
+                        $vlCal[$calKey]['median'] = (float) ($calVal['manual_median'] ?? 0);
+                        $vlCal[$calKey]['sd'] = (float) ($calVal['manual_sd'] ?? 0);
+                        $vlCal[$calKey]['low_limit'] = $calVal['manual_q1'] ?? $calVal['manual_low_limit'] ?? null;
+                        $vlCal[$calKey]['high_limit'] = $calVal['manual_q3'] ?? $calVal['manual_high_limit'] ?? null;
+                    }
+                }
+                if (!$hasManualRange && (isset($vlCal['participant_response_count']) && $vlCal['participant_response_count'] < 18 || $vlCal['vlAssay'] == 'Other')) {
                     $t = 0;
 
                     foreach ($vlCal as $k => $val) {
@@ -825,12 +838,6 @@ class Application_Model_Vl
                     foreach ($vlCal as $key => $val) {
                         $col = 1;
 
-                        if (!empty($val['useRange']) && $val['useRange'] == 'manual') {
-                            $val['low'] = $val['manual_low'];
-                            $val['high'] = $val['manual_high'];
-                            $val['median'] = $val['manual_median'];
-                            $val['sd'] = $val['manual_sd'];
-                        }
                         if (isset($val['median'])) {
                             // Denominator is the participants on THIS platform, not the n behind the
                             // assigned value -- those differ whenever platforms share a pooled peer group.
@@ -1404,8 +1411,9 @@ class Application_Model_Vl
                             $grade = 'Warning';
                         }
 
-                        $toReturn[$counter]['low'] = $sampleRange['q1'] ?? 'Not Applicable';
-                        $toReturn[$counter]['high'] = $sampleRange['q3'] ?? 'Not Applicable';
+                        // A manual range entered as limits has no Q1/Q3: fall back to the entered limits
+                        $toReturn[$counter]['low'] = $sampleRange['q1'] ?? $sampleRange['low'] ?? 'Not Applicable';
+                        $toReturn[$counter]['high'] = $sampleRange['q3'] ?? $sampleRange['high'] ?? 'Not Applicable';
                         // The range exists, so a null here is a blank manual entry -- graded as 0 by evaluate()
                         $toReturn[$counter]['sd'] = $sampleRange['sd'] ?? 0;
                         $toReturn[$counter]['median'] = $sampleRange['median'] ?? 0;

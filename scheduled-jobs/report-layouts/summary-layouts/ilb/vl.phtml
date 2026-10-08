@@ -25,8 +25,9 @@ if (!function_exists('vlIsoRange')) {
         // Grading casts a blank manual median/SD to 0 (see Application_Model_Vl::evaluate()), so print it that way
         return [
             'median' => $manual ? (float) ($val['manual_median'] ?? 0) : $val['median'],
-            'low' => $manual ? ($val['manual_q1'] ?? null) : $val['low_limit'],
-            'high' => $manual ? ($val['manual_q3'] ?? null) : $val['high_limit'],
+            // A manual range entered as limits has no Q1/Q3, so the entered limits are shown instead
+            'low' => $manual ? ($val['manual_q1'] ?? $val['manual_low_limit'] ?? null) : $val['low_limit'],
+            'high' => $manual ? ($val['manual_q3'] ?? $val['manual_high_limit'] ?? null) : $val['high_limit'],
             'sd' => $manual ? (float) ($val['manual_sd'] ?? 0) : $val['sd'],
         ];
     }
