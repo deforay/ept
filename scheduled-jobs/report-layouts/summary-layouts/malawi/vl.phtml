@@ -4,6 +4,68 @@ use mitoteam\jpgraph\MtJpGraph;
 
 MtJpGraph::load(['bar', 'line', 'pie'], true);
 
+// Participants on this platform for this sample. Falls back to no_of_responses so the layout
+// still renders against data built before the count was added; they are equal except when
+// platforms are pooled into a shared peer group.
+if (!function_exists('vlPlatformParticipants')) {
+    function vlPlatformParticipants(array $val): int
+    {
+        return (int) ($val['participants_on_platform'] ?? $val['no_of_responses'] ?? 0);
+    }
+}
+if (!function_exists('vlPassPercent')) {
+    function vlPassPercent(array $val): int
+    {
+        $n = vlPlatformParticipants($val);
+        return $n > 0 ? (int) round((((int) ($val['NumberPassed'] ?? 0)) / $n) * 100) : 0;
+    }
+}
+
+// The range participants were actually graded on: the manual figures when the admin set the
+// sample to Manual, otherwise the calculated ones. Same switch as Application_Model_Vl::getVlRange().
+if (!function_exists('vlIsoRange')) {
+    function vlIsoRange(array $val): array
+    {
+        $manual = ($val['use_range'] ?? '') === 'manual';
+        // Grading casts a blank manual median/SD to 0 (see Application_Model_Vl::evaluate()), so print it that way
+        return [
+            'median' => $manual ? (float) ($val['manual_median'] ?? 0) : $val['median'],
+            // A manual range entered as limits has no Q1/Q3, so the entered limits are shown instead
+            'low' => $manual ? ($val['manual_q1'] ?? $val['manual_low_limit'] ?? null) : $val['low_limit'],
+            'high' => $manual ? ($val['manual_q3'] ?? $val['manual_high_limit'] ?? null) : $val['high_limit'],
+            'sd' => $manual ? (float) ($val['manual_sd'] ?? 0) : $val['sd'],
+        ];
+    }
+}
+// Standard (mean ± SD) evaluation grades on the low/high limits, which are likewise the
+// manual ones when the sample is set to Manual (see Application_Model_Vl::getVlRange()).
+if (!function_exists('vlStandardRange')) {
+    function vlStandardRange(array $val): array
+    {
+        $manual = ($val['use_range'] ?? '') === 'manual';
+        return [
+            'mean' => $manual ? ($val['manual_mean'] ?? null) : $val['mean'],
+            'sd' => $manual ? ($val['manual_sd'] ?? null) : $val['sd'],
+            'low' => $manual ? ($val['manual_low_limit'] ?? null) : $val['low_limit'],
+            'high' => $manual ? ($val['manual_high_limit'] ?? null) : $val['high_limit'],
+            'cv' => $manual ? ($val['manual_cv'] ?? null) : $val['cv'],
+        ];
+    }
+}
+// A platform the admin gave its own manual range was not graded on the reference values,
+// so it is shown in its own table rather than pooled under them.
+if (!function_exists('vlHasManualRange')) {
+    function vlHasManualRange(array $vlCal): bool
+    {
+        foreach ($vlCal as $val) {
+            if (is_array($val) && isset($val['median']) && ($val['use_range'] ?? '') === 'manual') {
+                return true;
+            }
+        }
+        return false;
+    }
+}
+
 if ($resultArray['shipment'] != "") {
 
     if (!file_exists($reportsPath . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code']) && !is_dir($reportsPath . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'])) {
@@ -13,13 +75,14 @@ if ($resultArray['shipment'] != "") {
     // create new PDF document
     $reportService = new Application_Service_Reports();
     $reportFormat = $reportService->getReportConfigValue('report-format');
+    // Read before choosing the PDF class: the report-format branch needs it too, or no tables are written
+    $shipmentAttributes = Pt_Commons_JsonUtility::safeDecode($resultArray['shipment']['shipment_attributes']);
+    $methodOfEvaluation = isset($shipmentAttributes['methodOfEvaluation']) ? $shipmentAttributes['methodOfEvaluation'] : 'standard';
     if (isset($reportFormat) && !empty($reportFormat)) {
         $pdf = new Pt_Reports_FpdiReport(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
         $pdf->setParams($resultStatus, $evalRow['date_finalised'], "", $watermark, "SUMMARY", $layout, $resultArray['shipment']['scheme_name']);
     } else {
         $pdf = new Pt_Reports_SummaryPdf(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
-        $shipmentAttributes = Pt_Commons_JsonUtility::safeDecode($resultArray['shipment']['shipment_attributes']);
-        $methodOfEvaluation = isset($shipmentAttributes['methodOfEvaluation']) ? $shipmentAttributes['methodOfEvaluation'] : 'standard';
         if ($methodOfEvaluation == 'iso17043') {
             $pdf->setSchemeName($header, $resultArray['shipment']['scheme_name'], $logo, $logoRight, $resultStatus, $resultArray['shipment']['scheme_type'], $evalRow['date_finalised'], "", $watermark, $evalRow['date_finalised'], $instituteAddressPosition, $layout);
         } else {
@@ -127,13 +190,14 @@ if ($resultArray['shipment'] != "") {
 
                     for ($c = 0; $c < $countCal; $c++) {
                         if (isset($vlCal[$c]['mean'])) {
+                            $stdRange = vlStandardRange($vlCal[$c]);
                             $calRes .= '<tr>';
                             $calRes .= '<td>' . $vlCal[$c]['sample_label'] . '</td>
-                                    <td style="text-align:center;">' . Pt_Commons_NumberUtility::decimal($vlCal[$c]['mean']) . '</td>
-                                    <td style="text-align:center;">' . Pt_Commons_NumberUtility::decimal($vlCal[$c]['sd']) . '</td>
-                                    <td style="text-align:center;">' . Pt_Commons_NumberUtility::decimal($vlCal[$c]['low_limit']) . '</td>
-                                    <td style="text-align:center;">' . Pt_Commons_NumberUtility::decimal($vlCal[$c]['high_limit']) . '</td>
-                                    <td style="text-align:center;">' . Pt_Commons_NumberUtility::decimal($vlCal[$c]['cv']) . '</td>
+                                    <td style="text-align:center;">' . Pt_Commons_NumberUtility::decimal($stdRange['mean']) . '</td>
+                                    <td style="text-align:center;">' . Pt_Commons_NumberUtility::decimal($stdRange['sd']) . '</td>
+                                    <td style="text-align:center;">' . Pt_Commons_NumberUtility::decimal($stdRange['low']) . '</td>
+                                    <td style="text-align:center;">' . Pt_Commons_NumberUtility::decimal($stdRange['high']) . '</td>
+                                    <td style="text-align:center;">' . Pt_Commons_NumberUtility::decimal($stdRange['cv']) . '</td>
                                 </tr>';
                         }
                     }
@@ -162,18 +226,21 @@ if ($resultArray['shipment'] != "") {
             $assayNameTxt = "";
             $noOfPaResponseTxt = "";
             foreach ($resultArray['shipment']['vlCalculation'] as $vlCal) {
-                if (isset($vlCal['participant_response_count']) && $vlCal['participant_response_count'] < 18 || $vlCal['vlAssay'] == "Other") {
+                if (!vlHasManualRange($vlCal) && (isset($vlCal['participant_response_count']) && $vlCal['participant_response_count'] < 18 || $vlCal['vlAssay'] == "Other")) {
                     $t = 0;
 
                     foreach ($vlCal as $k => $val) {
 
                         if (isset($val['median'])) {
+                            $sample[$k]['response'] ??= 0;
+                            $sample[$k]['NumberPassed'] ??= 0;
 
-                            $sample[$k]['response'] += $val['no_of_responses'];
-                            $sample[$k]['median'] = $val['median'];
-                            $sample[$k]['lowLimit'] = $val['low_limit'];
-                            $sample[$k]['highLimit'] = $val['high_limit'];
-                            $sample[$k]['sd'] = $val['sd'];
+                            $sample[$k]['response'] += vlPlatformParticipants($val);
+                            $range = vlIsoRange($val);
+                            $sample[$k]['median'] = $range['median'];
+                            $sample[$k]['lowLimit'] = $range['low'];
+                            $sample[$k]['highLimit'] = $range['high'];
+                            $sample[$k]['sd'] = $range['sd'];
                             $sample[$k]['NumberPassed'] += !empty($val['NumberPassed']) ? $val['NumberPassed'] : 0;
                             $sample[$t]['label'] = $val['sample_label'];
                             $t++;
@@ -185,7 +252,7 @@ if ($resultArray['shipment'] != "") {
                             $assayNameTxt .= 'Other - ' . $otherAssayName . '(n=' . $otherAssayCount . '), ';
                         }
                     } else {
-                        $assayNameTxt .= $vlCal['vlAssay'] . '(n=' . $vlCal[0]['no_of_responses'] . '), ';
+                        $assayNameTxt .= $vlCal['vlAssay'] . '(n=' . vlPlatformParticipants($vlCal[0]) . '), ';
                     }
                 } else {
                     $calRes = '<table border="1" style="font-weight:bold;width:650px;">
@@ -203,16 +270,17 @@ if ($resultArray['shipment'] != "") {
                                     </tr>';
                     foreach ($vlCal as $key => $val) {
                         if (isset($val['median'])) {
-                            $score = round((($val['NumberPassed'] / $val['no_of_responses']) * 100));
+                            $score = vlPassPercent($val);
+                            $range = vlIsoRange($val);
 
                             $calRes .= '<tr>';
                             $calRes .= '
                                     <td style="font-weight:normal;text-align:center;width:16%;">' . $val['sample_label'] . '</td>
-                                    <td style="font-weight:normal;text-align:center;">' . $val['no_of_responses'] . '</td>
-                                    <td style="font-weight:normal;text-align:center;">' . Pt_Commons_NumberUtility::decimal($val['median']) . '</td>
-                                    <td style="font-weight:normal;text-align:center;">' . Pt_Commons_NumberUtility::decimal($val['low_limit']) . '</td>
-                                    <td style="font-weight:normal;text-align:center;">' . Pt_Commons_NumberUtility::decimal($val['high_limit']) . '</td>
-                                    <td style="font-weight:normal;text-align:center;">' . Pt_Commons_NumberUtility::decimal($val['sd']) . '</td>
+                                    <td style="font-weight:normal;text-align:center;">' . vlPlatformParticipants($val) . '</td>
+                                    <td style="font-weight:normal;text-align:center;">' . Pt_Commons_NumberUtility::decimal($range['median']) . '</td>
+                                    <td style="font-weight:normal;text-align:center;">' . Pt_Commons_NumberUtility::decimal($range['low']) . '</td>
+                                    <td style="font-weight:normal;text-align:center;">' . Pt_Commons_NumberUtility::decimal($range['high']) . '</td>
+                                    <td style="font-weight:normal;text-align:center;">' . Pt_Commons_NumberUtility::decimal($range['sd']) . '</td>
                                     <td style="font-weight:normal;text-align:center;">' . $val['NumberPassed'] . '</td>
                                     <td style="font-weight:normal;text-align:center;">' . $score . '%</td>
                                 </tr>';
@@ -249,7 +317,7 @@ if ($resultArray['shipment'] != "") {
                     if (!isset($label['median'])) {
                         continue;
                     }
-                    $score = round((($label['NumberPassed'] / $label['response']) * 100));
+                    $score = $label['response'] > 0 ? round(($label['NumberPassed'] / $label['response']) * 100) : 0;
                     $calRes .= '<tr>';
                     $calRes .= '
                             <td style="font-weight:normal;text-align:center;width:16%;">' . $label['label'] . '</td>
@@ -321,6 +389,7 @@ if ($resultArray['shipment'] != "") {
         $totalBarResponses = array_sum($noOfPaResponse);
         $totalBarPassed = array_sum($participantScore);
         $totalBarFailed = array_sum($scoreBelow);
+        $totalBarAvg = 0;
         if ($totalBarResponses > 0) {
             $totalBarAvg = round(($totalBarPassed / $totalBarResponses) * 100);
         }

@@ -32,6 +32,34 @@ if (!function_exists('vlIsoRange')) {
         ];
     }
 }
+// Standard (mean ± SD) evaluation grades on the low/high limits, which are likewise the
+// manual ones when the sample is set to Manual (see Application_Model_Vl::getVlRange()).
+if (!function_exists('vlStandardRange')) {
+    function vlStandardRange(array $val): array
+    {
+        $manual = ($val['use_range'] ?? '') === 'manual';
+        return [
+            'mean' => $manual ? ($val['manual_mean'] ?? null) : $val['mean'],
+            'sd' => $manual ? ($val['manual_sd'] ?? null) : $val['sd'],
+            'low' => $manual ? ($val['manual_low_limit'] ?? null) : $val['low_limit'],
+            'high' => $manual ? ($val['manual_high_limit'] ?? null) : $val['high_limit'],
+            'cv' => $manual ? ($val['manual_cv'] ?? null) : $val['cv'],
+        ];
+    }
+}
+// A platform the admin gave its own manual range was not graded on the reference values,
+// so it is shown in its own table rather than pooled under them.
+if (!function_exists('vlHasManualRange')) {
+    function vlHasManualRange(array $vlCal): bool
+    {
+        foreach ($vlCal as $val) {
+            if (is_array($val) && isset($val['median']) && ($val['use_range'] ?? '') === 'manual') {
+                return true;
+            }
+        }
+        return false;
+    }
+}
 
 if ($resultArray['shipment'] != "") {
 
@@ -182,13 +210,14 @@ if ($resultArray['shipment'] != "") {
 
                     for ($c = 0; $c < $countCal; $c++) {
                         if (isset($vlCal[$c]['mean'])) {
+                            $stdRange = vlStandardRange($vlCal[$c]);
                             $calRes .= '<tr>';
                             $calRes .= '<td>' . $vlCal[$c]['sample_label'] . '</td>
-                                    <td style="text-align:center;">' . Pt_Commons_NumberUtility::decimal($vlCal[$c]['mean']) . '</td>
-                                    <td style="text-align:center;">' . Pt_Commons_NumberUtility::decimal($vlCal[$c]['sd']) . '</td>
-                                    <td style="text-align:center;">' . Pt_Commons_NumberUtility::decimal($vlCal[$c]['low_limit']) . '</td>
-                                    <td style="text-align:center;">' . Pt_Commons_NumberUtility::decimal($vlCal[$c]['high_limit']) . '</td>
-                                    <td style="text-align:center;">' . Pt_Commons_NumberUtility::decimal($vlCal[$c]['cv']) . '</td>
+                                    <td style="text-align:center;">' . Pt_Commons_NumberUtility::decimal($stdRange['mean']) . '</td>
+                                    <td style="text-align:center;">' . Pt_Commons_NumberUtility::decimal($stdRange['sd']) . '</td>
+                                    <td style="text-align:center;">' . Pt_Commons_NumberUtility::decimal($stdRange['low']) . '</td>
+                                    <td style="text-align:center;">' . Pt_Commons_NumberUtility::decimal($stdRange['high']) . '</td>
+                                    <td style="text-align:center;">' . Pt_Commons_NumberUtility::decimal($stdRange['cv']) . '</td>
                                 </tr>';
                         }
                     }

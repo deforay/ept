@@ -259,7 +259,7 @@ class Pt_Reports_ChartRenderer_JpGraph implements Pt_Reports_ChartRenderer_Rende
         // X-axis
         $xAxis = $config['xAxis'] ?? [];
         if (!empty($xAxis['labels'])) {
-            $graph->xaxis->SetTickLabels($xAxis['labels']);
+            $graph->xaxis->SetTickLabels($this->tickLabels($xAxis['labels']));
         }
         $graph->xaxis->SetTextLabelInterval(1);
         $graph->xaxis->HideLine(false);
@@ -385,7 +385,7 @@ class Pt_Reports_ChartRenderer_JpGraph implements Pt_Reports_ChartRenderer_Rende
         $yAxis = $config['yAxis'] ?? [];
 
         if (!empty($xAxis['labels'])) {
-            $graph->xaxis->SetTickLabels($xAxis['labels']);
+            $graph->xaxis->SetTickLabels($this->tickLabels($xAxis['labels']));
         }
         if (!empty($xAxis['title'])) {
             $graph->xaxis->title->Set($xAxis['title']);
@@ -407,6 +407,15 @@ class Pt_Reports_ChartRenderer_JpGraph implements Pt_Reports_ChartRenderer_Rende
         $graph->yaxis->HideTicks(false, false);
         $graph->xaxis->SetTickSide(SIDE_DOWN);
         $graph->yaxis->SetTickSide(SIDE_LEFT);
+    }
+
+    /**
+     * Chart.js takes a multi-line tick label as an array of lines; JPGraph wants one string
+     * with newlines, and fails on an array. Accept both so either renderer can draw the config.
+     */
+    private function tickLabels(array $labels): array
+    {
+        return array_map(fn($label) => is_array($label) ? implode("\n", $label) : $label, $labels);
     }
 
     private function applyMargins(Graph $graph, array $config): void
