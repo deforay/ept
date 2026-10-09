@@ -705,6 +705,23 @@ class Application_Model_Vl
 
         $countOfVlAssaySheet = 1;
 
+        // Reference platform for the small platforms: the largest with its own range, as picked in
+        // setVlRange() ("Other" and clubbed assays never donate). Named in their tables' titles.
+        $referenceAssayName = null;
+        $clubbedAssayIds = array_merge(...self::getVlAssayGroups($result['shipment_attributes'] ?? null) ?: [[]]);
+        $responsesByAssay = $db->fetchAll($db->select()
+            ->from(['rvc' => 'reference_vl_calculation'], ['vl_assay', 'responses' => new Zend_Db_Expr('MAX(rvc.no_of_responses)')])
+            ->join(['a' => 'r_vl_assay'], 'a.id = rvc.vl_assay', ['name'])
+            ->where('rvc.shipment_id = ?', $shipmentId)
+            ->group('rvc.vl_assay')
+            ->order('responses DESC'));
+        foreach ($responsesByAssay as $assayResponses) {
+            if ($assayResponses['vl_assay'] != 6 && !in_array($assayResponses['vl_assay'], $clubbedAssayIds) && $assayResponses['responses'] >= 18) {
+                $referenceAssayName = $assayResponses['name'];
+                break;
+            }
+        }
+
         foreach ($assayRes as $assayRow) {
             $newsheet = new Worksheet($excel, '');
             $excel->addSheet($newsheet, $countOfVlAssaySheet);
@@ -884,7 +901,8 @@ class Application_Model_Vl
             if (isset($sample) && count($sample) > 0) {
                 $newsheet->mergeCells('A' . $row . ':H' . $row);
                 $newsheet->getCell(Coordinate::stringFromColumnIndex(1) . $row)
-                    ->setValueExplicit(html_entity_decode('Platform/Assay Name: VL platforms with < 18 participants', ENT_QUOTES, 'UTF-8'));
+                    // Each tab holds one platform, so its table is titled with that platform, not the pooled group
+                    ->setValueExplicit(html_entity_decode('Platform/Assay Name: ' . $assayRow['name'] . (!empty($referenceAssayName) ? ' (evaluated against ' . $referenceAssayName . ')' : ' (platform with < 18 participants)'), ENT_QUOTES, 'UTF-8'));
                 $newsheet->getCell(
                     Coordinate::stringFromColumnIndex(1) . ($row + 1)
                 )->setValueExplicit(html_entity_decode('Specimen ID', ENT_QUOTES, 'UTF-8'));
