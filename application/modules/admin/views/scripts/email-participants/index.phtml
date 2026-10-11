@@ -61,6 +61,9 @@ foreach ($this->schemes as $scheme) {
     .ep-tokens .ep-token-desc { flex: 0 0 100%; order: 3; color: #8a93a0; font-size: 11px; line-height: 1.35; }
     .ep-tokens button { border: 1px solid #d5dde8; background: #f4f7fb; color: #2b5d8f; border-radius: 4px; padding: 1px 7px; font-family: Menlo, Consolas, monospace; font-size: 11px; cursor: pointer; white-space: nowrap; }
     .ep-tokens button:hover { background: #e6eef8; border-color: #b6c4e0; }
+    .ep-subject-fields { max-height: 320px; overflow-y: auto; }
+    #subjectHint { left: 0; right: auto; min-width: 220px; }
+    .ep-subject-fields code { margin-left: 6px; font-size: 11px; color: #2b5d8f; background: #f4f7fb; }
     .ep-side .ep-side-text { color: #555; font-size: 13px; line-height: 1.5; margin: 0 0 10px; }
     .ep-side .ep-side-text:last-child { margin-bottom: 0; }
 
@@ -205,7 +208,34 @@ $editData = $editEmail === null ? null : [
                     </div>
                     <div class="ep-field">
                         <label for="subject"><?= $this->htmlTranslate("Subject"); ?> <span class="mandatory">*</span></label>
-                        <input type="text" name="subject" id="subject" class="form-control" placeholder="<?= $this->htmlTranslate('Enter the subject'); ?>" title="<?= $this->htmlTranslate('Enter the subject') ?>">
+                        <?php
+                        $mergeLabels = [
+                            'recipient_name' => $this->htmlTranslate("Recipient name"),
+                            'participant_name' => $this->htmlTranslate("Participant name"),
+                            'participant_id' => $this->htmlTranslate("Participant ID"),
+                            'country' => $this->htmlTranslate("Country"),
+                            'shipment_code' => $this->htmlTranslate("Shipment code"),
+                            'scheme' => $this->htmlTranslate("Scheme"),
+                            'shipment_date' => $this->htmlTranslate("Shipment date"),
+                            'response_deadline' => $this->htmlTranslate("Response deadline"),
+                            'pt_survey_code' => $this->htmlTranslate("PT survey code"),
+                            'pt_survey_date' => $this->htmlTranslate("PT survey date"),
+                            'year' => $this->htmlTranslate("PT survey year"),
+                            'support_email' => $this->htmlTranslate("Support email"),
+                        ];
+                        ?>
+                        <div class="input-group">
+                            <input type="text" name="subject" id="subject" class="form-control" placeholder="<?= $this->htmlTranslate('Enter the subject'); ?>" title="<?= $this->htmlTranslate('Enter the subject') ?>">
+                            <div class="input-group-btn">
+                                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" title="<?= $this->htmlTranslate('Insert a merge field into the subject') ?>"><i class="icon-tags"></i> <?= $this->htmlTranslate("Insert field"); ?> <span class="caret"></span></button>
+                                <ul class="dropdown-menu dropdown-menu-right ep-subject-fields">
+                                    <?php foreach (array_keys(Application_Service_Participants::MAIL_MERGE_FIELDS) as $key) { ?>
+                                        <li><a href="javascript:void(0);" onclick="lastTokenTarget = 'subject'; insertToken('{{<?= $key ?>}}');"><?= $mergeLabels[$key] ?? $key ?> <code>{{<?= $key ?>}}</code></a></li>
+                                    <?php } ?>
+                                </ul>
+                            </div>
+                            <ul id="subjectHint" class="dropdown-menu ep-subject-fields"></ul>
+                        </div>
                     </div>
                     <div class="ep-field">
                         <label for="messageEditor"><?= $this->htmlTranslate("Message"); ?> <span class="mandatory">*</span></label>
@@ -249,20 +279,6 @@ $editData = $editEmail === null ? null : [
                     <p class="ep-side-text"><?= $this->htmlTranslate("Click a field to insert it at the cursor, in the subject or the message. Each recipient gets their own value."); ?></p>
                     <ul class="ep-tokens">
                         <?php
-                        $mergeLabels = [
-                            'recipient_name' => $this->htmlTranslate("Recipient name"),
-                            'participant_name' => $this->htmlTranslate("Participant name"),
-                            'participant_id' => $this->htmlTranslate("Participant ID"),
-                            'country' => $this->htmlTranslate("Country"),
-                            'shipment_code' => $this->htmlTranslate("Shipment code"),
-                            'scheme' => $this->htmlTranslate("Scheme"),
-                            'shipment_date' => $this->htmlTranslate("Shipment date"),
-                            'response_deadline' => $this->htmlTranslate("Response deadline"),
-                            'pt_survey_code' => $this->htmlTranslate("PT survey code"),
-                            'pt_survey_date' => $this->htmlTranslate("PT survey date"),
-                            'year' => $this->htmlTranslate("PT survey year"),
-                            'support_email' => $this->htmlTranslate("Support email"),
-                        ];
                         // Only the fields whose meaning depends on who the email goes to
                         $mergeDescriptions = [
                             'recipient_name' => $this->htmlTranslate("Who the email is addressed to."),
@@ -496,6 +512,7 @@ $editData = $editEmail === null ? null : [
         $('#subject').on('focus', function() {
             lastTokenTarget = 'subject';
         });
+        initSubjectHint();
 
         $('#sendMailChoices input').on('change', function() {
             $(this).closest('.ep-choice').toggleClass('selected', this.checked);
@@ -548,6 +565,83 @@ $editData = $editEmail === null ? null : [
             $('#messageEditor').summernote('editor.setLastRange');
         }
         $('#messageEditor').summernote('insertText', token);
+    }
+
+    /**
+     * Typing {{ in the subject offers the merge fields, narrowed as you type,
+     * like the message editor does. Arrows move, Enter or Tab picks, Esc closes.
+     */
+    function initSubjectHint() {
+        var $input = $('#subject');
+        var $menu = $('#subjectHint');
+        var matches = [];
+        var active = 0;
+
+        function typedToken() {
+            var el = $input[0];
+            var m = el.value.slice(0, el.selectionStart).match(/\{\{\s*(\w*)$/);
+            return m ? { start: el.selectionStart - m[0].length, keyword: m[1].toLowerCase() } : null;
+        }
+
+        function close() {
+            matches = [];
+            $menu.hide().empty();
+        }
+
+        function render() {
+            $menu.empty();
+            $.each(matches, function(i, key) {
+                $('<li>').toggleClass('active', i === active)
+                    .append($('<a href="javascript:void(0);">').append($('<code>').text('{{' + key + '}}')))
+                    .on('mousedown', function(e) {
+                        // mousedown, not click, so the input keeps its caret
+                        e.preventDefault();
+                        pick(key);
+                    })
+                    .appendTo($menu);
+            });
+            $menu.toggle(matches.length > 0);
+        }
+
+        function pick(key) {
+            var token = typedToken();
+            if (!token) {
+                return close();
+            }
+            var el = $input[0];
+            var after = el.value.slice(el.selectionStart).replace(/^\w*\s*\}\}/, '');
+            var before = el.value.slice(0, token.start) + '{{' + key + '}}';
+            el.value = before + after;
+            el.setSelectionRange(before.length, before.length);
+            close();
+        }
+
+        $input.on('input click', function() {
+            var token = typedToken();
+            if (!token) {
+                return close();
+            }
+            matches = $.grep(MERGE_KEYS, function(key) {
+                return key.indexOf(token.keyword) !== -1;
+            });
+            active = 0;
+            render();
+        }).on('keydown', function(e) {
+            if (!matches.length) {
+                return;
+            }
+            if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+                active = (active + (e.key === 'ArrowDown' ? 1 : matches.length - 1)) % matches.length;
+                render();
+            } else if (e.key === 'Enter' || e.key === 'Tab') {
+                pick(matches[active]);
+            } else if (e.key === 'Escape') {
+                close();
+            } else {
+                return;
+            }
+            e.preventDefault();
+        }).on('blur', close);
     }
 
     function getShipmentCodes() {
