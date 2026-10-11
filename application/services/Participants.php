@@ -1215,8 +1215,11 @@ class Application_Service_Participants
         // column in any joined table, so it can only mean the alias.
         // Made-up login addresses are skipped even before their status is stamped
         // login_only; '@ept' is the host used before a domain was configured.
+        // One row per address, lab and shipment: a manager or PTCC covering
+        // 200 labs gets 200 emails, each about one lab in one shipment, rather
+        // than one email with every lab's details run together.
         $groupAndFilter = function (Zend_Db_Select $sql) use ($host) {
-            return $sql->group('mailTo')
+            return $sql->group(['mailTo', 'p.participant_id', 's.shipment_id'])
                 ->having('mailTo IS NOT NULL')
                 ->having('LOWER(mailTo) NOT LIKE ?', '%@' . $host)
                 ->having('LOWER(mailTo) NOT LIKE ?', '%@%.' . $host)
@@ -1225,29 +1228,41 @@ class Application_Service_Participants
 
         $result = [];
 
-        // Every join below fans rows out, so anything that isn't grouped has to
-        // be GROUP_CONCAT(DISTINCT ...) to stay stable.
-        $countryExpr = new Zend_Db_Expr("GROUP_CONCAT(DISTINCT c.iso_name ORDER BY c.iso_name SEPARATOR ', ')");
-        // A manager or PTCC covering several participants gets all of their
-        // IDs and names, whatever name the email itself is addressed to
-        $labIdExpr = "GROUP_CONCAT(DISTINCT p.unique_identifier ORDER BY p.unique_identifier SEPARATOR ', ')";
-        $labNameExpr = Application_Model_DbTable_Participants::participantNameGroupConcatExpr('p');
+        // A reminder goes only to labs still to respond, and a manager's
+        // email covers only those of their labs
+        $pendingOnly = self::normalizeLabFilter($data['labFilter'] ?? null) === self::LAB_FILTER_PENDING;
+        $applyLabFilter = function (Zend_Db_Select $sql) use ($pendingOnly): Zend_Db_Select {
+            if ($pendingOnly) {
+                $sql->where("IFNULL(spm.response_status, 'noresponse') NOT IN (?)", self::RESPONSE_STATUSES_DONE);
+            }
+            return $sql;
+        };
+
+        // Each row is one lab in one shipment, so the lab's own columns are
+        // single values. Never GROUP_CONCAT them: a manager's labs reach the
+        // email as {{lab_table}}, not as a comma-separated list.
+        $labNameExpr = new Zend_Db_Expr(Application_Model_DbTable_Participants::participantNameExpr('p'));
+        $labColumns = [
+            'lab_id' => 'p.participant_id',
+            'participant_ids' => 'p.unique_identifier',
+            'participant_names' => $labNameExpr,
+        ];
+        // Two manager logins can share one address; address them by one name
+        $dmNameExpr = new Zend_Db_Expr("MIN(TRIM(CONCAT(COALESCE(dm.first_name, ''), ' ', COALESCE(dm.last_name, ''))))");
 
         if (in_array('participant', (array) $data['sendMail'], true)) {
             $emailExpr = $emailPicker('p.email', 'p.email_status', 'p.additional_email', 'p.additional_email_status');
             $sql = $db->select()->from(['p' => 'participant'], [
                 'email'  => new Zend_Db_Expr($emailExpr),
                 'mailTo' => new Zend_Db_Expr($emailExpr),
-                'name'  => new Zend_Db_Expr(Application_Model_DbTable_Participants::participantNameGroupConcatExpr('p')),
+                'name'  => $labNameExpr,
                 'role'  => new Zend_Db_Expr("'participant'"),
-                'participant_ids' => new Zend_Db_Expr($labIdExpr),
-                'participant_names' => new Zend_Db_Expr($labNameExpr),
-            ])
-                ->joinLeft(['spm' => 'shipment_participant_map'], 'p.participant_id=spm.participant_id', [])
-                ->joinLeft(['s' => 'shipment'], 's.shipment_id=spm.shipment_id', ['s.shipment_code', 's.shipment_date', 's.response_deadline'])
+            ] + $labColumns)
+                ->joinLeft(['spm' => 'shipment_participant_map'], 'p.participant_id=spm.participant_id', ['spm.response_status'])
+                ->joinLeft(['s' => 'shipment'], 's.shipment_id=spm.shipment_id', ['s.shipment_id', 's.shipment_code', 's.shipment_date', 's.response_deadline'])
                 ->joinLeft(['d' => 'distributions'], 'd.distribution_id=s.distribution_id', ['distribution_code', 'distribution_date'])
                 ->joinLeft(['sl' => 'scheme_list'], 'sl.scheme_id=s.scheme_type', ['SCHEME' => 'sl.scheme_name'])
-                ->joinLeft(['c' => 'countries'], 'c.id=p.country', ['country' => $countryExpr])
+                ->joinLeft(['c' => 'countries'], 'c.id=p.country', ['country' => 'c.iso_name'])
                 ->where('s.shipment_id IN(?)', (array) $data['shipments'])
                 ->where("p.status = 'active'");
 
@@ -1263,64 +1278,75 @@ class Application_Service_Participants
                     );
             }
 
-            $result[] = $db->fetchAll($groupAndFilter($sql));
+            $result[] = $db->fetchAll($groupAndFilter($applyLabFilter($sql)));
         }
 
         $dmEmailExpr = $emailPicker('dm.primary_email', 'dm.primary_email_status', 'dm.secondary_email', 'dm.secondary_email_status');
 
         if (in_array('datamanager', (array) $data['sendMail'], true)) {
-            // A data manager's country comes from the participants they manage.
             $sql = $db->select()->from(['dm' => 'data_manager'], [
                 'email'  => new Zend_Db_Expr($dmEmailExpr),
                 'mailTo' => new Zend_Db_Expr($dmEmailExpr),
-                'name'  => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT dm.first_name,' ',dm.last_name ORDER BY dm.first_name SEPARATOR ', ')"),
+                'name'  => $dmNameExpr,
                 'role'  => new Zend_Db_Expr("'datamanager'"),
-                'participant_ids' => new Zend_Db_Expr($labIdExpr),
-                'participant_names' => new Zend_Db_Expr($labNameExpr),
-            ])
+            ] + $labColumns)
                 ->joinLeft(['pmm' => 'participant_manager_map'], 'dm.dm_id=pmm.dm_id', [])
-                ->joinLeft(['spm' => 'shipment_participant_map'], 'spm.participant_id=pmm.participant_id', [])
-                ->joinLeft(['s' => 'shipment'], 's.shipment_id=spm.shipment_id', ['s.shipment_code', 's.shipment_date', 's.response_deadline'])
+                ->joinLeft(['spm' => 'shipment_participant_map'], 'spm.participant_id=pmm.participant_id', ['spm.response_status'])
+                ->joinLeft(['s' => 'shipment'], 's.shipment_id=spm.shipment_id', ['s.shipment_id', 's.shipment_code', 's.shipment_date', 's.response_deadline'])
                 ->joinLeft(['d' => 'distributions'], 'd.distribution_id=s.distribution_id', ['distribution_code', 'distribution_date'])
                 ->joinLeft(['sl' => 'scheme_list'], 'sl.scheme_id=s.scheme_type', ['SCHEME' => 'sl.scheme_name'])
                 ->joinLeft(['p' => 'participant'], 'p.participant_id=pmm.participant_id', [])
-                ->joinLeft(['c' => 'countries'], 'c.id=p.country', ['country' => $countryExpr])
+                ->joinLeft(['c' => 'countries'], 'c.id=p.country', ['country' => 'c.iso_name'])
                 ->where('s.shipment_id IN(?)', (array) $data['shipments'])
                 ->where('data_manager_type LIKE "manager"')
                 ->where("dm.status = 'active'")
                 ->where("p.status = 'active'");
 
-            $result[] = $db->fetchAll($groupAndFilter($sql));
+            $result[] = $db->fetchAll($groupAndFilter($applyLabFilter($sql)));
         }
 
         if (in_array('ptcc', (array) $data['sendMail'], true)) {
-            // A PTCC's country comes from its own coverage map, not from the labs.
             $sql = $db->select()->from(['dm' => 'data_manager'], [
                 'email'  => new Zend_Db_Expr($dmEmailExpr),
                 'mailTo' => new Zend_Db_Expr($dmEmailExpr),
-                'name'  => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT dm.first_name,' ',dm.last_name ORDER BY dm.first_name SEPARATOR ', ')"),
+                'name'  => $dmNameExpr,
                 'role'  => new Zend_Db_Expr("'ptcc'"),
-                'participant_ids' => new Zend_Db_Expr($labIdExpr),
-                'participant_names' => new Zend_Db_Expr($labNameExpr),
-            ])
+            ] + $labColumns)
                 ->joinLeft(['pmm' => 'participant_manager_map'], 'dm.dm_id=pmm.dm_id', [])
-                ->joinLeft(['spm' => 'shipment_participant_map'], 'spm.participant_id=pmm.participant_id', [])
-                ->joinLeft(['s' => 'shipment'], 's.shipment_id=spm.shipment_id', ['s.shipment_code', 's.shipment_date', 's.response_deadline'])
+                ->joinLeft(['spm' => 'shipment_participant_map'], 'spm.participant_id=pmm.participant_id', ['spm.response_status'])
+                ->joinLeft(['s' => 'shipment'], 's.shipment_id=spm.shipment_id', ['s.shipment_id', 's.shipment_code', 's.shipment_date', 's.response_deadline'])
                 ->joinLeft(['d' => 'distributions'], 'd.distribution_id=s.distribution_id', ['distribution_code', 'distribution_date'])
                 ->joinLeft(['sl' => 'scheme_list'], 'sl.scheme_id=s.scheme_type', ['SCHEME' => 'sl.scheme_name'])
-                ->joinLeft(['pcm' => 'ptcc_countries_map'], 'pcm.ptcc_id=dm.dm_id', [])
-                ->joinLeft(['c' => 'countries'], 'c.id=pcm.country_id', ['country' => $countryExpr])
                 ->joinLeft(['p' => 'participant'], 'p.participant_id=pmm.participant_id', [])
+                ->joinLeft(['c' => 'countries'], 'c.id=p.country', ['country' => 'c.iso_name'])
                 ->where('s.shipment_id IN(?)', (array) $data['shipments'])
                 ->where('data_manager_type LIKE "ptcc"')
                 ->where("dm.status = 'active'")
                 ->where("p.status = 'active'");
 
-            $result[] = $db->fetchAll($groupAndFilter($sql));
+            $result[] = $db->fetchAll($groupAndFilter($applyLabFilter($sql)));
         }
 
         return $result;
     }
+
+    /** How managers and PTCCs get an email that covers several of their labs */
+    public const MANAGER_DELIVERY_COMBINED = 'combined';
+    public const MANAGER_DELIVERY_PER_LAB = 'per_lab';
+
+    /** Which labs an email is about: all in the shipment, or those still to respond */
+    public const LAB_FILTER_ALL = 'all';
+    public const LAB_FILTER_PENDING = 'pending';
+
+    /**
+     * Response statuses that mean the lab has dealt with the shipment, one way
+     * or another. Anything else — no response, or a draft not yet
+     * submitted — still owes a response.
+     */
+    private const RESPONSE_STATUSES_DONE = ['responded', 'late', 'nottested', 'late_submitted', 'late_rejected'];
+
+    /** Audiences that look after labs rather than being one */
+    private const MANAGER_ROLES = ['datamanager', 'ptcc'];
 
     /**
      * The single source of truth for "who actually gets this email".
@@ -1328,15 +1354,22 @@ class Application_Service_Participants
      * Runs getAllPTDetails(), then applies exactly the filters the send loop
      * used to apply inline — syntax validation, the @domain skip, and the
      * cross-role de-dupe — so the preview screen and the real send can never
-     * disagree. Keyed by lowercased address; first role to claim an address
-     * keeps it, which is what guarantees one email per person.
+     * disagree. Rows come in one per address, lab and shipment; the first role
+     * to claim that combination keeps it, so nobody hears about the same lab
+     * in the same shipment twice.
      *
-     * Selecting participants AND data managers together switches to
-     * participant-led addressing: the lab is the To, its active data managers
-     * are Cc'd on that same email, and a manager who shares the lab's address
-     * is dropped from Cc so nobody is listed twice on one message. A manager
-     * is only promoted to a To of their own when none of their sites has a
-     * deliverable address — otherwise that site would hear nothing at all.
+     * $data['managerDelivery'] decides what a data manager or PTCC gets:
+     *
+     * - combined (the default): one email per shipment, with all their labs in
+     *   it as {{lab_table}}. Labs still get their own email; managers are not
+     *   Cc'd on it, since the summary already covers that lab.
+     * - per_lab: one email per lab per shipment. With participants selected
+     *   too, the lab is the To and its data managers are Cc'd on that same
+     *   email (a manager who shares the lab's address is dropped from Cc). A
+     *   manager only gets a To of their own for a lab with no deliverable
+     *   address — otherwise that lab would hear nothing at all.
+     *
+     * Every recipient carries 'labs': the labs its email is about.
      *
      * @return array{recipients: array<string, array>, invalid: string[]}
      */
@@ -1345,13 +1378,19 @@ class Application_Service_Participants
         $host = Pt_Commons_MiscUtility::generatedEmailHost();
 
         $roles = (array) ($data['sendMail'] ?? []);
-        $ccDataManagers = in_array('participant', $roles, true) && in_array('datamanager', $roles, true);
+        $combined = self::normalizeManagerDelivery($data['managerDelivery'] ?? null) === self::MANAGER_DELIVERY_COMBINED;
+        $ccDataManagers = !$combined && in_array('participant', $roles, true) && in_array('datamanager', $roles, true);
         $data['ccDataManagers'] = $ccDataManagers;
 
         $recipients = [];
         $invalid = [];
-        // Every address already on a message, as a To or a Cc. In paired mode
-        // this is what stops a Cc'd manager also getting their own copy.
+        // Manager rows whose lab already went to this same address as the
+        // lab's own email. No separate email for them, but a manager who also
+        // looks after other labs still sees that lab in their table.
+        $claimedLabs = [];
+        // Every address already on a lab's message for a shipment, as a To or a
+        // Cc. In paired mode this is what stops a Cc'd manager also getting
+        // their own copy of that lab's email.
         $covered = [];
 
         $isSkipped = function (string $email) use ($host): bool {
@@ -1372,8 +1411,16 @@ class Application_Service_Participants
                     continue;
                 }
 
-                $key = strtolower($toEmail);
+                $lab = '|' . ($pt['lab_id'] ?? '') . '|' . ($pt['shipment_id'] ?? '');
+                $key = strtolower($toEmail) . $lab;
                 if (isset($recipients[$key])) {
+                    if (
+                        $combined
+                        && in_array($pt['role'] ?? '', self::MANAGER_ROLES, true)
+                        && ($recipients[$key]['role'] ?? '') === 'participant'
+                    ) {
+                        $claimedLabs[strtolower($toEmail) . '|' . ($pt['shipment_id'] ?? '')][] = self::labSummary($pt);
+                    }
                     continue;
                 }
 
@@ -1393,7 +1440,7 @@ class Application_Service_Participants
                     if ($ccEmail === null || $isSkipped($ccEmail)) {
                         continue;
                     }
-                    $ccKey = strtolower($ccEmail);
+                    $ccKey = strtolower($ccEmail) . $lab;
                     if ($ccKey === $key || isset($cc[$ccKey])) {
                         continue;
                     }
@@ -1402,6 +1449,7 @@ class Application_Service_Participants
 
                 $pt['email'] = $toEmail;
                 $pt['cc'] = array_values($cc);
+                $pt['labs'] = [self::labSummary($pt)];
                 $recipients[$key] = $pt;
 
                 $covered[$key] = true;
@@ -1411,7 +1459,87 @@ class Application_Service_Participants
             }
         }
 
+        if ($combined) {
+            $recipients = self::combineManagerRecipients($recipients, $claimedLabs);
+        }
+
         return ['recipients' => $recipients, 'invalid' => array_values($invalid)];
+    }
+
+    /** Anything but pending is all, which is what older saved emails meant */
+    public static function normalizeLabFilter($value): string
+    {
+        return $value === self::LAB_FILTER_PENDING ? self::LAB_FILTER_PENDING : self::LAB_FILTER_ALL;
+    }
+
+    /** Anything but per_lab is combined, so older saved emails keep one email per manager */
+    public static function normalizeManagerDelivery($value): string
+    {
+        return $value === self::MANAGER_DELIVERY_PER_LAB ? self::MANAGER_DELIVERY_PER_LAB : self::MANAGER_DELIVERY_COMBINED;
+    }
+
+    /** One row of {{lab_table}} */
+    private static function labSummary(array $pt): array
+    {
+        return [
+            'key'     => (string) ($pt['lab_id'] ?? ''),
+            'id'      => (string) ($pt['participant_ids'] ?? ''),
+            'name'    => (string) ($pt['participant_names'] ?? ''),
+            'country' => (string) ($pt['country'] ?? ''),
+            'status'  => (string) ($pt['response_status'] ?? ''),
+        ];
+    }
+
+    /**
+     * Folds each manager's or PTCC's per-lab rows into one recipient per
+     * address and shipment, adding the $claimedLabs that already went to the
+     * same address as a lab's own email. A manager left with one lab gets that
+     * lab's fields, so their email reads like the lab's own; with several,
+     * mailMerge() words the lab fields for the table it appends.
+     */
+    private static function combineManagerRecipients(array $recipients, array $claimedLabs): array
+    {
+        $combined = [];
+        foreach ($recipients as $key => $pt) {
+            if (!in_array($pt['role'] ?? '', self::MANAGER_ROLES, true)) {
+                $combined[$key] = $pt;
+                continue;
+            }
+            $groupKey = strtolower($pt['email']) . '|' . ($pt['shipment_id'] ?? '');
+            if (!isset($combined[$groupKey])) {
+                $pt['combined'] = true;
+                $combined[$groupKey] = $pt;
+                continue;
+            }
+            $combined[$groupKey]['labs'][] = $pt['labs'][0];
+        }
+
+        foreach ($combined as $groupKey => &$pt) {
+            if (empty($pt['combined'])) {
+                continue;
+            }
+            foreach ($claimedLabs[$groupKey] ?? [] as $lab) {
+                $pt['labs'][] = $lab;
+            }
+            // The same lab can arrive through several roles at one address
+            // (data manager and PTCC both); it is still one row in the table
+            $unique = [];
+            foreach ($pt['labs'] as $lab) {
+                $unique[$lab['key'] !== '' ? $lab['key'] : $lab['id']] ??= $lab;
+            }
+            $pt['labs'] = array_values($unique);
+            // A manager with one lab in the shipment keeps that lab's fields
+            if (count($pt['labs']) === 1) {
+                $pt['participant_ids'] = $pt['labs'][0]['id'];
+                $pt['participant_names'] = $pt['labs'][0]['name'];
+                $pt['country'] = $pt['labs'][0]['country'];
+                continue;
+            }
+            usort($pt['labs'], fn ($a, $b) => strnatcasecmp($a['id'], $b['id']));
+        }
+        unset($pt);
+
+        return $combined;
     }
 
     /**
@@ -1433,14 +1561,20 @@ class Application_Service_Participants
         'pt_survey_date'    => '##SURVEYDATE##',
         'year'              => '##YEAR##',
         'support_email'     => null,
+        'lab_table'         => null,
     ];
 
     /**
      * Merge-field values for one recipient row, keyed like MAIL_MERGE_FIELDS.
      *
+     * An email about several labs (a manager's, combined) never lists them in
+     * a field: the lab fields point at the table mailMerge() adds instead —
+     * "the 12 labs listed below" in the message, "12 labs" in the subject.
+     * Country is only spelled out when all the labs share it.
+     *
      * @return array<string, string>
      */
-    public static function mailMergeValues(array $pt): array
+    public static function mailMergeValues(array $pt, bool $isSubject = false): array
     {
         // Same for every recipient, so look it up once per request
         static $supportEmail = null;
@@ -1463,12 +1597,29 @@ class Application_Service_Participants
             $time !== '' && !in_array($time, ['00:00', '23:59'], true)
         );
 
+        $labName = (string) ($pt['participant_names'] ?? '');
+        $labId = (string) ($pt['participant_ids'] ?? '');
+        $country = (string) ($pt['country'] ?? '');
+        $labCount = self::isMultiLab($pt) ? count($pt['labs']) : 0;
+        if ($labCount > 0) {
+            $countries = array_unique(array_column($pt['labs'], 'country'));
+            $labsPhrase = sprintf(self::translate($isSubject ? '%s labs' : 'the %s labs listed below'), $labCount);
+            $labName = $labsPhrase;
+            $labId = $isSubject ? $labsPhrase : self::translate('listed below');
+            $country = count($countries) === 1
+                ? (string) reset($countries)
+                : ($isSubject
+                    ? sprintf(self::translate('%s countries'), count($countries))
+                    : self::translate('the countries listed below'));
+        }
+
         return [
-            // A manager saved without a name still gets a greeting
-            'recipient_name'    => (string) (($pt['name'] ?? '') !== '' ? $pt['name'] : ($pt['participant_names'] ?? '')),
-            'participant_name'  => (string) ($pt['participant_names'] ?? ''),
-            'participant_id'    => (string) ($pt['participant_ids'] ?? ''),
-            'country'           => (string) ($pt['country'] ?? ''),
+            // A manager saved without a name is greeted by their lab's name,
+            // or by their address when the email covers several labs
+            'recipient_name'    => (string) (($pt['name'] ?? '') !== '' ? $pt['name'] : ($labCount > 0 ? ($pt['email'] ?? '') : $labName)),
+            'participant_name'  => $labName,
+            'participant_id'    => $labId,
+            'country'           => $country,
             'shipment_code'     => (string) ($pt['shipment_code'] ?? ''),
             'scheme'            => (string) ($pt['SCHEME'] ?? ''),
             'shipment_date'     => (string) $shipDate,
@@ -1477,7 +1628,92 @@ class Application_Service_Participants
             'pt_survey_date'    => (string) $surveyDate,
             'year'              => $year,
             'support_email'     => $supportEmail,
+            // Filled by mailMerge(), which knows where the table goes
+            'lab_table'         => $isSubject ? $labName : '',
         ];
+    }
+
+    /** Words that open a greeting, in the languages ePT ships with */
+    private const GREETINGS = 'Dear|Hello|Hi|Greetings|Cher|Chère|Chers|Chères|Bonjour|Kính gửi|Xin chào|Thân gửi';
+
+    /**
+     * Puts {{lab_table}} after the block holding the first lab field, unless
+     * the admin placed it. A field inside a list waits for the list to end.
+     */
+    private static function placeLabTable(string $text): string
+    {
+        if (preg_match('/\{\{\s*lab_table\s*\}\}/i', $text)) {
+            return $text;
+        }
+        if (!preg_match('/\{\{\s*(participant_name|participant_id|country)\s*\}\}|##COUNTRY##/i', $text, $m, PREG_OFFSET_CAPTURE)) {
+            return $text;
+        }
+        $from = $m[0][1];
+        if (!preg_match('#</(p|div|ul|ol|h[1-6]|blockquote|table)>#i', $text, $close, PREG_OFFSET_CAPTURE, $from)) {
+            return $text;
+        }
+        $at = $close[0][1] + strlen($close[0][0]);
+        return substr($text, 0, $at) . '{{lab_table}}' . substr($text, $at);
+    }
+
+    /** Formatting a field can be wrapped in without leaving its sentence */
+    private const INLINE_TAG = '<\/?(?:b|strong|i|em|u|span|font)\b[^>]*>';
+
+    /** A manager's combined email that covers more than one lab */
+    private static function isMultiLab(array $pt): bool
+    {
+        return !empty($pt['combined']) && count($pt['labs'] ?? []) > 1;
+    }
+
+    private static function translate(string $text): string
+    {
+        static $translate = false;
+        if ($translate === false) {
+            $translate = Zend_Registry::isRegistered('translate') ? Zend_Registry::get('translate') : null;
+        }
+        return $translate ? $translate->_($text) : $text;
+    }
+
+    /**
+     * {{lab_table}}: the labs an email is about, one row each, with how far
+     * each has got with its response. Inline styles only, since mail clients
+     * drop <style> blocks.
+     */
+    public static function labTableHtml(array $pt): string
+    {
+        $labs = $pt['labs'] ?? [self::labSummary($pt)];
+
+        $t = fn (string $text): string => htmlspecialchars(self::translate($text), ENT_QUOTES, 'UTF-8');
+        $statuses = [
+            'responded'      => $t('Responded'),
+            'late'           => $t('Responded late'),
+            'late_submitted' => $t('Submitted late, awaiting approval'),
+            'late_rejected'  => $t('Late, not accepted'),
+            'nottested'      => $t('Could not test'),
+            'draft'          => $t('Draft, not submitted'),
+        ];
+        $notYet = $t('Not yet');
+
+        $cell = 'padding:6px 10px;border:1px solid #d9dee5;text-align:left;vertical-align:top;';
+        $head = $cell . 'background:#f4f6f9;font-weight:bold;';
+
+        $html = '<table cellpadding="0" cellspacing="0" style="border-collapse:collapse;font-size:14px;margin:8px 0;">'
+            . '<thead><tr>'
+            . "<th style=\"$head\">" . $t('Participant ID') . '</th>'
+            . "<th style=\"$head\">" . $t('Participant name') . '</th>'
+            . "<th style=\"$head\">" . $t('Country') . '</th>'
+            . "<th style=\"$head\">" . $t('Response') . '</th>'
+            . '</tr></thead><tbody>';
+        $e = fn (string $v): string => htmlspecialchars($v, ENT_QUOTES, 'UTF-8');
+        foreach ($labs as $lab) {
+            $html .= '<tr>'
+                . "<td style=\"$cell\">" . $e($lab['id']) . '</td>'
+                . "<td style=\"$cell\">" . $e($lab['name']) . '</td>'
+                . "<td style=\"$cell\">" . $e($lab['country']) . '</td>'
+                . "<td style=\"$cell\">" . ($statuses[$lab['status']] ?? $notYet) . '</td>'
+                . '</tr>';
+        }
+        return $html . '</tbody></table>';
     }
 
     /**
@@ -1485,23 +1721,69 @@ class Application_Service_Participants
      * and the preview so a previewed message is byte-identical to what goes
      * out. {{ key }} is matched case- and space-insensitively; an unknown key
      * is left as typed so the preview shows the typo instead of hiding it.
+     *
+     * One pass over the text, both {{key}} and ##TOKEN## forms together, so a
+     * value that happens to contain a token (a lab named "##NAME##") is never
+     * filled in a second time. The message is HTML, so values are escaped
+     * there ("GSMC & KEMH"); the subject is plain text and takes them as is.
+     *
+     * A manager's email about several labs always carries the table: where
+     * {{lab_table}} is, else right after the paragraph that first mentions the
+     * labs ("listed below" has to be true), else at the end.
+     * "({{participant_id}})" would only say "(listed below)" again there, so
+     * it goes, brackets and all.
+     *
+     * A greeting is to a person, so in a manager's or PTCC's email
+     * "Dear {{participant_name}}" greets them by name, not their lab's.
      */
-    public static function mailMerge(string $text, array $pt): string
+    public static function mailMerge(string $text, array $pt, bool $isSubject = false): string
     {
-        $values = self::mailMergeValues($pt);
+        $values = self::mailMergeValues($pt, $isSubject);
+        $multiLab = self::isMultiLab($pt);
+        if (!$isSubject && ($multiLab || stripos($text, 'lab_table') !== false)) {
+            $values['lab_table'] = self::labTableHtml($pt);
+        }
+        if (in_array($pt['role'] ?? '', self::MANAGER_ROLES, true)) {
+            $text = preg_replace(
+                // Formatting may sit between them: "Dear <b>{{participant_name}}</b>"
+                '/(?<!\p{L})((?:' . self::GREETINGS . ')(?:\s|&nbsp;|' . self::INLINE_TAG . ')+)\{\{\s*participant_name\s*\}\}/iu',
+                '$1{{recipient_name}}',
+                $text
+            );
+        }
 
-        $text = preg_replace_callback('/\{\{\s*([A-Za-z_]+)\s*\}\}/', function ($m) use ($values) {
-            $key = strtolower($m[1]);
-            return array_key_exists($key, $values) ? $values[$key] : $m[0];
-        }, $text);
+        if ($multiLab) {
+            // Any formatting tags inside the brackets stay, so the HTML stays balanced
+            $text = preg_replace('/\s*\((\s*(?:' . self::INLINE_TAG . '\s*)*)\{\{\s*participant_id\s*\}\}((?:\s*' . self::INLINE_TAG . ')*)\s*\)/i', '$1$2', $text);
+            if (!$isSubject) {
+                $text = self::placeLabTable($text);
+            }
+        }
 
         $legacy = [];
         foreach (self::MAIL_MERGE_FIELDS as $key => $token) {
             if ($token !== null) {
-                $legacy[$token] = $values[$key];
+                $legacy[$token] = $key;
             }
         }
-        return strtr($text, $legacy);
+
+        $usedTable = false;
+        $text = preg_replace_callback('/\{\{\s*([A-Za-z_]+)\s*\}\}|##[A-Z_]+##/', function ($m) use ($values, $legacy, $isSubject, &$usedTable) {
+            $key = isset($m[1]) ? strtolower($m[1]) : ($legacy[$m[0]] ?? null);
+            if ($key === null || !array_key_exists($key, $values)) {
+                return $m[0];
+            }
+            if ($key === 'lab_table') {
+                $usedTable = true;
+                return $values[$key];
+            }
+            return $isSubject ? $values[$key] : htmlspecialchars($values[$key], ENT_QUOTES, 'UTF-8');
+        }, $text);
+
+        if ($multiLab && !$isSubject && !$usedTable) {
+            $text .= $values['lab_table'];
+        }
+        return $text;
     }
 
     /**
@@ -1638,6 +1920,8 @@ class Application_Service_Participants
             'message'   => (string) $email['content'],
             'sendMail'  => array_filter(explode(',', (string) $email['receivers'])),
             'shipments' => array_filter(explode(',', (string) $email['shipment_code'])),
+            'managerDelivery' => $email['manager_delivery'] ?? null,
+            'labFilter' => $email['lab_filter'] ?? null,
         ];
 
         try {
@@ -1659,7 +1943,7 @@ class Application_Service_Participants
                     $pt['email'],
                     implode(',', $ccList),
                     $mail['bcc'],
-                    self::mailMerge($data['subject'], $pt),
+                    self::mailMerge($data['subject'], $pt, true),
                     self::mailMerge($data['message'], $pt),
                     $mail['fromEmail'],
                     $mail['fromName'],

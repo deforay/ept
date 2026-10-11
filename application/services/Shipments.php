@@ -4024,7 +4024,7 @@ class Application_Service_Shipments
         $notParticipatedMailContent = $commonServices->getEmailTemplate('not_participated');
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $return = 0;
-        $sQuery = $db->select()->from(['sp' => 'shipment_participant_map'], ['sp.participant_id', 'sp.map_id', 'sp.last_not_participated_mail_count', 'sp.final_result'])
+        $sQuery = $db->select()->from(['sp' => 'shipment_participant_map'], ['sp.participant_id', 'sp.map_id', 'sp.last_not_participated_mail_count', 'sp.final_result', 'sp.response_status'])
             ->joinLeft(['s' => 'shipment'], 's.shipment_id=sp.shipment_id', ['s.shipment_code', 's.shipment_date', 's.response_deadline'])
             ->joinLeft(['d' => 'distributions'], 'd.distribution_id = s.distribution_id', ['distribution_code', 'distribution_date'])
             ->joinLeft(['p' => 'participant'], 'p.participant_id=sp.participant_id', ['p.email', 'p.unique_identifier', 'participantName' => new Zend_Db_Expr(Application_Model_DbTable_Participants::participantNameGroupConcatExpr('p'))])
@@ -4050,7 +4050,7 @@ class Application_Service_Shipments
                     'participant_ids' => $participantDetails['unique_identifier'],
                 ];
                 $message = Application_Service_Participants::mailMerge((string) $notParticipatedMailContent['mail_content'], $mergeRow);
-                $subject = Application_Service_Participants::mailMerge((string) $notParticipatedMailContent['mail_subject'], $mergeRow);
+                $subject = Application_Service_Participants::mailMerge((string) $notParticipatedMailContent['mail_subject'], $mergeRow, true);
                 $fromEmail = $notParticipatedMailContent['mail_from'];
                 $fromFullName = $notParticipatedMailContent['from_name'];
                 $toEmail = $participantDetails['email'];

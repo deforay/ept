@@ -97,6 +97,8 @@ class Admin_EmailParticipantsController extends Zend_Controller_Action
             'message'   => (string) ($post['message'] ?? ''),
             'shipments' => array_values(array_filter((array) ($post['shipments'] ?? []), 'ctype_digit')),
             'sendMail'  => array_values(array_intersect((array) ($post['sendMail'] ?? []), ['participant', 'datamanager', 'ptcc'])),
+            'managerDelivery' => Application_Service_Participants::normalizeManagerDelivery($post['managerDelivery'] ?? null),
+            'labFilter' => Application_Service_Participants::normalizeLabFilter($post['labFilter'] ?? null),
         ];
         $editId = (int) ($post['emailId'] ?? 0);
         $schedule = ($post['sendMode'] ?? 'now') === 'schedule';
@@ -283,6 +285,8 @@ class Admin_EmailParticipantsController extends Zend_Controller_Action
         $data = [
             'shipments' => array_filter((array) $this->_getParam('shipments', [])),
             'sendMail'  => array_filter((array) $this->_getParam('sendMail', [])),
+            'managerDelivery' => Application_Service_Participants::normalizeManagerDelivery($this->_getParam('managerDelivery')),
+            'labFilter' => Application_Service_Participants::normalizeLabFilter($this->_getParam('labFilter')),
         ];
 
         if (empty($data['shipments']) || empty($data['sendMail'])) {
@@ -321,10 +325,11 @@ class Admin_EmailParticipantsController extends Zend_Controller_Action
                 'role'         => $role,
                 'country'      => $pt['country'] ?? '',
                 'shipmentCode' => $pt['shipment_code'] ?? '',
+                'labCount'     => count($pt['labs'] ?? []),
                 'cc'           => $pt['cc'] ?? [],
                 // >1 when this inbox also appears as a Cc on other messages
                 'copies'       => $inbox[strtolower($pt['email'])] ?? 1,
-                'subject'      => Application_Service_Participants::mailMerge($subject, $pt),
+                'subject'      => Application_Service_Participants::mailMerge($subject, $pt, true),
                 'body'         => Application_Service_Participants::mailMerge($message, $pt),
             ];
         }

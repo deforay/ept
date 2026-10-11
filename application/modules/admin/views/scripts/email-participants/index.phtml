@@ -35,7 +35,8 @@ foreach ($this->schemes as $scheme) {
     .ep-choice-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; }
     .ep-choice { position: relative; display: block; margin: 0; padding: 12px 14px 12px 38px; border: 1px solid #dfe3e8; border-radius: 6px; background: #fff; cursor: pointer; font-weight: normal; transition: border-color 0.15s ease, box-shadow 0.15s ease; }
     .ep-choice:hover { border-color: #b6c4e0; }
-    .ep-choice input[type=checkbox] { position: absolute; left: 14px; top: 14px; margin: 0; }
+    .ep-choice input[type=checkbox],
+    .ep-choice input[type=radio] { position: absolute; left: 14px; top: 14px; margin: 0; }
     .ep-choice .ep-choice-title { display: block; font-weight: 600; color: #333; font-size: 13px; margin-bottom: 3px; }
     .ep-choice .ep-choice-desc { display: block; color: #6b7380; font-size: 12px; line-height: 1.45; }
     .ep-choice.selected { border-color: #337ab7; box-shadow: 0 0 0 1px #337ab7; background: #f7fafd; }
@@ -97,6 +98,8 @@ $editData = $editEmail === null ? null : [
     'content'     => (string) $editEmail['content'],
     'shipments'   => array_values(array_filter(explode(',', (string) $editEmail['shipment_code']))),
     'audiences'   => array_values(array_filter(explode(',', (string) $editEmail['receivers']))),
+    'managerDelivery' => Application_Service_Participants::normalizeManagerDelivery($editEmail['manager_delivery'] ?? null),
+    'labFilter'   => Application_Service_Participants::normalizeLabFilter($editEmail['lab_filter'] ?? null),
     'scheduledAt' => !empty($editEmail['scheduled_at']) ? str_replace(' ', 'T', substr($editEmail['scheduled_at'], 0, 16)) : '',
 ];
 ?>
@@ -172,7 +175,7 @@ $editData = $editEmail === null ? null : [
                             <label class="ep-choice">
                                 <input type="checkbox" name="sendMail[]" value="datamanager">
                                 <span class="ep-choice-title"><?= $this->htmlTranslate("Data Managers"); ?></span>
-                                <span class="ep-choice-desc"><?= $this->htmlTranslate("The people who enter results for those labs."); ?> <?= $this->htmlTranslate("If Participants is also ticked, they get a Cc on the lab's email instead of a separate email."); ?></span>
+                                <span class="ep-choice-desc"><?= $this->htmlTranslate("The people who enter results for those labs."); ?></span>
                             </label>
                             <?php if (in_array('tb', $modules)) { ?>
                                 <label class="ep-choice">
@@ -181,6 +184,36 @@ $editData = $editEmail === null ? null : [
                                     <span class="ep-choice-desc"><?= $this->htmlTranslate("Country coordinators for the labs in TB shipments."); ?></span>
                                 </label>
                             <?php } ?>
+                        </div>
+                    </div>
+                    <div class="ep-field">
+                        <label><?= $this->htmlTranslate("Which labs"); ?></label>
+                        <div class="ep-choice-grid ep-radio-group" id="labFilterChoices">
+                            <label class="ep-choice">
+                                <input type="radio" name="labFilter" value="<?= Application_Service_Participants::LAB_FILTER_ALL ?>" checked>
+                                <span class="ep-choice-title"><?= $this->htmlTranslate("All labs in the shipment"); ?></span>
+                                <span class="ep-choice-desc"><?= $this->htmlTranslate("Every lab enrolled, whether or not it has responded."); ?></span>
+                            </label>
+                            <label class="ep-choice">
+                                <input type="radio" name="labFilter" value="<?= Application_Service_Participants::LAB_FILTER_PENDING ?>">
+                                <span class="ep-choice-title"><?= $this->htmlTranslate("Only labs that have not responded"); ?></span>
+                                <span class="ep-choice-desc"><?= $this->htmlTranslate("For reminders: labs with no response yet, or a draft not submitted. Managers hear only about those of their labs. Worked out again when a scheduled email is sent."); ?></span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="ep-field" id="managerDeliveryField" style="display:none;">
+                        <label><?= $this->htmlTranslate("How managers get it"); ?></label>
+                        <div class="ep-choice-grid ep-radio-group" id="managerDeliveryChoices">
+                            <label class="ep-choice">
+                                <input type="radio" name="managerDelivery" value="<?= Application_Service_Participants::MANAGER_DELIVERY_COMBINED ?>" checked>
+                                <span class="ep-choice-title"><?= $this->htmlTranslate("One email listing all their labs"); ?></span>
+                                <span class="ep-choice-desc"><?= $this->htmlTranslate("One email per shipment, with a table of their labs at the end. In it, the participant fields say “the 12 labs listed below”. Labs still get their own email, without the manager in Cc."); ?></span>
+                            </label>
+                            <label class="ep-choice">
+                                <input type="radio" name="managerDelivery" value="<?= Application_Service_Participants::MANAGER_DELIVERY_PER_LAB ?>">
+                                <span class="ep-choice-title"><?= $this->htmlTranslate("A separate email for each lab"); ?></span>
+                                <span class="ep-choice-desc"><?= $this->htmlTranslate("One email per lab per shipment. If Participants is also ticked, data managers are Cc'd on the lab's own email instead."); ?></span>
+                            </label>
                         </div>
                     </div>
                 </div>
@@ -222,6 +255,7 @@ $editData = $editEmail === null ? null : [
                             'pt_survey_date' => $this->htmlTranslate("PT survey date"),
                             'year' => $this->htmlTranslate("PT survey year"),
                             'support_email' => $this->htmlTranslate("Support email"),
+                            'lab_table' => $this->htmlTranslate("Table of labs"),
                         ];
                         ?>
                         <div class="input-group">
@@ -229,7 +263,7 @@ $editData = $editEmail === null ? null : [
                             <div class="input-group-btn">
                                 <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" title="<?= $this->htmlTranslate('Insert a merge field into the subject') ?>"><i class="icon-tags"></i> <?= $this->htmlTranslate("Insert field"); ?> <span class="caret"></span></button>
                                 <ul class="dropdown-menu dropdown-menu-right ep-subject-fields">
-                                    <?php foreach (array_keys(Application_Service_Participants::MAIL_MERGE_FIELDS) as $key) { ?>
+                                    <?php foreach (array_diff(array_keys(Application_Service_Participants::MAIL_MERGE_FIELDS), ['lab_table']) as $key) { ?>
                                         <li><a href="javascript:void(0);" onclick="lastTokenTarget = 'subject'; insertToken('{{<?= $key ?>}}');"><?= $mergeLabels[$key] ?? $key ?> <code>{{<?= $key ?>}}</code></a></li>
                                     <?php } ?>
                                 </ul>
@@ -282,8 +316,10 @@ $editData = $editEmail === null ? null : [
                         // Only the fields whose meaning depends on who the email goes to
                         $mergeDescriptions = [
                             'recipient_name' => $this->htmlTranslate("Who the email is addressed to."),
-                            'participant_name' => $this->htmlTranslate("The lab or individual. A manager's email lists all of theirs."),
-                            'participant_id' => $this->htmlTranslate("A manager's email lists all of theirs."),
+                            'participant_name' => $this->htmlTranslate("The lab or individual the email is about. In a manager's email about several labs: “the 12 labs listed below”."),
+                            'participant_id' => $this->htmlTranslate("In a manager's email about several labs: “listed below”."),
+                            'country' => $this->htmlTranslate("In a manager's email about several labs, the country only when they share one."),
+                            'lab_table' => $this->htmlTranslate("A manager's email about several labs gets this table at the end anyway. Put it here to place it elsewhere."),
                             // The address it fills in, so nobody has to go and look it up
                             // The address it fills in, with a way to change it. A new tab, so
                             // a half-written email on this page is not lost.
@@ -475,6 +511,12 @@ $editData = $editEmail === null ? null : [
             $('#sendMailChoices input').each(function() {
                 this.checked = EDIT_EMAIL.audiences.indexOf(this.value) !== -1;
             });
+            $('#managerDeliveryChoices input').each(function() {
+                this.checked = this.value === EDIT_EMAIL.managerDelivery;
+            });
+            $('#labFilterChoices input').each(function() {
+                this.checked = this.value === EDIT_EMAIL.labFilter;
+            });
         }
         getShipmentCodes();
         $('#shipments').selectpicker();
@@ -516,6 +558,15 @@ $editData = $editEmail === null ? null : [
 
         $('#sendMailChoices input').on('change', function() {
             $(this).closest('.ep-choice').toggleClass('selected', this.checked);
+            // The delivery choice only means something when managers are in the audience
+            $('#managerDeliveryField').toggle($.grep(getSendMail(), function(role) {
+                return role !== 'participant';
+            }).length > 0);
+        }).trigger('change');
+        $('.ep-radio-group input').on('change', function() {
+            $(this).closest('.ep-radio-group').find('input').each(function() {
+                $(this).closest('.ep-choice').toggleClass('selected', this.checked);
+            });
         }).trigger('change');
 
         if (EDIT_EMAIL) {
@@ -527,6 +578,14 @@ $editData = $editEmail === null ? null : [
             loadEmailList('scheduled');
         }
     });
+
+    function getLabFilter() {
+        return $('#labFilterChoices input:checked').val() || '<?= Application_Service_Participants::LAB_FILTER_ALL ?>';
+    }
+
+    function getManagerDelivery() {
+        return $('#managerDeliveryChoices input:checked').val() || '<?= Application_Service_Participants::MANAGER_DELIVERY_COMBINED ?>';
+    }
 
     function getSendMail() {
         return $('#sendMailChoices input:checked').map(function() {
@@ -542,7 +601,7 @@ $editData = $editEmail === null ? null : [
     var editorHasCursor = false;
 
     function insertToken(token) {
-        if (lastTokenTarget === 'subject') {
+        if (lastTokenTarget === 'subject' && token !== '{{lab_table}}') {
             var el = document.getElementById('subject');
             var start = el.selectionStart != null ? el.selectionStart : el.value.length;
             var end = el.selectionEnd != null ? el.selectionEnd : start;
@@ -621,8 +680,9 @@ $editData = $editEmail === null ? null : [
             if (!token) {
                 return close();
             }
+            // A table cannot go in a subject
             matches = $.grep(MERGE_KEYS, function(key) {
-                return key.indexOf(token.keyword) !== -1;
+                return key !== 'lab_table' && key.indexOf(token.keyword) !== -1;
             });
             active = 0;
             render();
@@ -745,22 +805,28 @@ $editData = $editEmail === null ? null : [
      * Dry-run the send on the server: the exact de-duplicated recipient list
      * for the current selection, each with its merged subject and body.
      */
-    function fetchPreview(onDone) {
+    function requestPreview() {
         $("#message").val($("#messageEditor").summernote('code'));
+        return $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'email-participants', 'action' => 'preview-recipients')); ?>", {
+            shipments: $('#shipments').val(),
+            sendMail: getSendMail(),
+            managerDelivery: getManagerDelivery(),
+            labFilter: getLabFilter(),
+            subject: $('#subject').val(),
+            message: $('#message').val(),
+            format: "html"
+        }, null, "json");
+    }
+
+    function fetchPreview(onDone) {
         $.blockUI();
-        $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'email-participants', 'action' => 'preview-recipients')); ?>", {
-                shipments: $('#shipments').val(),
-                sendMail: getSendMail(),
-                subject: $('#subject').val(),
-                message: $('#message').val(),
-                format: "html"
-            },
-            function(data) {
+        requestPreview()
+            .done(function(data) {
                 $.unblockUI();
                 previewData = data;
                 renderPreview(data);
                 onDone(data);
-            }, "json")
+            })
             .fail(function() {
                 $.unblockUI();
                 alert("<?= $this->jsTranslate("The preview failed to load. Try again. If it fails again, contact your system administrator.") ?>");
@@ -905,13 +971,13 @@ $editData = $editEmail === null ? null : [
 
         var warnings = $('#previewWarnings').html('');
 
-        // Addresses landing more than once in THIS send — typically someone who
-        // runs their own lab and is Cc'd as the manager of neighbouring labs.
+        // Addresses landing more than once in THIS send: one per shipment, a
+        // lab's email plus a manager's, or one per lab when sent separately.
         var multiple = data.multiple || [];
         if (multiple.length > 0) {
             warnings.append(buildCollapsibleAlert(
                 'alert-warning',
-                fmt("<?= $this->jsTranslate("Addresses that get more than one email in this send: %s. Each gets their own lab's email plus a Cc for every lab they manage.") ?>", formatCount(multiple.length)),
+                fmt("<?= $this->jsTranslate("Addresses that get more than one email in this send: %s.") ?>", formatCount(multiple.length)),
                 $.map(multiple, function(m) {
                     return m.email + " ×" + m.copies;
                 })
@@ -953,7 +1019,7 @@ $editData = $editEmail === null ? null : [
             if (copies > 1) {
                 toCell.append(
                     $('<span class="label label-warning" style="margin-left:6px;">')
-                    .attr('title', "<?= $this->jsTranslate("This address also gets a Cc for every lab it manages.") ?>")
+                    .attr('title', "<?= $this->jsTranslate("This address gets more than one email in this send, as a To or a Cc.") ?>")
                     .text("×" + copies)
                 );
             }
@@ -961,7 +1027,8 @@ $editData = $editEmail === null ? null : [
             var row = $('<tr>')
                 .append($('<td>').text(i + 1))
                 .append($('<td class="col-type">').text(roleLabel(r.role)).toggle(roles.length > 1))
-                .append($('<td>').text(r.name || ''))
+                .append($('<td>').text(r.name || '').append(r.labCount > 1 ?
+                    $('<span class="text-muted" style="margin-left:6px;font-size:12px;">').text(fmt("<?= $this->jsTranslate("(%s labs)") ?>", formatCount(r.labCount))) : null))
                 .append(toCell)
                 .append($('<td class="col-cc">').css('font-size', '12px').text(cc.join(', ')).toggle(ccMessages.length > 0))
                 .append($('<td>').text(r.country || ''))
