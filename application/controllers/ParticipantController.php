@@ -359,16 +359,21 @@ class ParticipantController extends Zend_Controller_Action
             $pmService = new Application_Service_ParticipantMessages();
             $response = $pmService->addParticipantMessage($params);
             $sessionAlert = new Zend_Session_Namespace('alertSpace');
-            if ($response['status'] === 'success') {
+            if (($response['status'] ?? '') === 'success') {
                 $sessionAlert->message = 'Mail set successfully';
                 $sessionAlert->status = 'success';
-                return true;
+            } elseif (($response['status'] ?? '') === 'invalid-email') {
+                $sessionAlert->message = 'Please enter a valid email address so we can reply to you';
+                $sessionAlert->status = 'failure';
+                // Redisplay what they wrote so fixing the address doesn't cost the message
+                $this->view->submitted = $params;
             } else {
                 $sessionAlert->message = 'Sorry, we could not process this message. Please try again';
                 $sessionAlert->status = 'failure';
-                return false;
             }
         }
+        $loggedUser = new Zend_Session_Namespace('loggedUser');
+        $this->view->replyEmail = (new Application_Service_ParticipantMessages())->getReplyEmailForDm($loggedUser->partcipant_id);
     }
 
     public function testereditAction()

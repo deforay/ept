@@ -32,6 +32,13 @@ class IndexController extends Zend_Controller_Action
                 return;
             }
 
+            // Reject a bad reply address before consuming the single-use token and
+            // captcha below, so the visitor can correct it and resubmit.
+            if (!Application_Service_Common::validateEmail((string) ($params['email'] ?? ''))) {
+                $this->view->message = 'invalid-email';
+                return;
+            }
+
             // Anti-spam: single-use HMAC form token. 5s minimum age rejects the
             // sub-second bot posts that never render the page.
             if (!Application_Service_Common::consumeFormToken($params['form_token'] ?? null, 'contactFormTokens', 5)) {

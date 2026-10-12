@@ -341,7 +341,9 @@ try {
 
                 // Set From and Reply-To
                 $email->from(new Address($fromEmail, $fromFullName))
-                    ->replyTo(new Address($replyTo, $fromFullName));
+                    // Only label Reply-To with our name when it is our address; a
+                    // participant's address shown as "ePT Support" looks like ours
+                    ->replyTo(strcasecmp($replyTo, $fromEmail) === 0 ? new Address($replyTo, $fromFullName) : new Address($replyTo));
 
                 // Add recipients
                 foreach ($batch['to'] as $toId) {

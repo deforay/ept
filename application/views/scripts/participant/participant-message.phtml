@@ -1,4 +1,15 @@
-<?php $authNameSpace = new Zend_Session_Namespace('datamanagers'); ?>
+<?php $authNameSpace = new Zend_Session_Namespace('datamanagers');
+$submitted = is_array($this->submitted ?? null) ? $this->submitted : [];
+$replyEmailValue = array_key_exists('replyEmail', $submitted) ? (string) $submitted['replyEmail'] : (string) $this->replyEmail;
+// Labels stay literal so xgettext keeps extracting them
+$subjectOptions = [
+    'Report an issue on Panels' => $this->translate->_("Report an issue on Panels"),
+    'Question on using ePT' => $this->translate->_("Question on using ePT"),
+    'Question on PT Panels' => $this->translate->_("Question on PT Panels"),
+    'Feedback' => $this->translate->_("Feedback"),
+    'Other' => $this->translate->_("Other"),
+];
+?>
 <section class="content-header">
     <h1>
         <?= $this->translate->_("Mail content"); ?>
@@ -19,18 +30,30 @@
                             <td>
                                 <select id="subject" name="subject" class="form-control input-sm isRequired" title="<?= $this->htmlTranslate("Please Select Subject"); ?>">
                                     <option value=""> -- <?= $this->translate->_("Select Subject"); ?> --</option>
-                                    <option value="Report an issue on Panels"><?= $this->translate->_("Report an issue on Panels"); ?></option>
-                                    <option value="Question on using ePT"><?= $this->translate->_("Question on using ePT"); ?></option>
-                                    <option value="Question on PT Panels"><?= $this->translate->_("Question on PT Panels"); ?></option>
-                                    <option value="Feedback"><?= $this->translate->_("Feedback"); ?></option>
-                                    <option value="Other"><?= $this->translate->_("Other"); ?></option>
+                                    <?php foreach ($subjectOptions as $opt => $label) { ?>
+                                        <option value="<?= $this->escape($opt); ?>" <?= (($submitted['subject'] ?? '') === $opt) ? 'selected' : ''; ?>><?= $label; ?></option>
+                                    <?php } ?>
                                 </select>
                             </td>
                         </tr>
 
                         <tr align="left" class="light">
+                            <td><?= $this->translate->_("Your Email"); ?> <span class="text-danger">*</span></td>
+                            <td>
+                                <input type="email" id="replyEmail" name="replyEmail" class="form-control input-sm isRequired" value="<?= $this->escape($replyEmailValue); ?>" title="<?= $this->htmlTranslate("Please enter a valid email address so we can reply to you"); ?>" placeholder="<?= $this->htmlTranslate("you@example.com"); ?>" />
+                                <small class="text-muted">
+                                    <?php if (empty($this->replyEmail)) { ?>
+                                        <?= $this->translate->_("We do not have a valid email address for you. Please enter one so we can reply to your message."); ?>
+                                    <?php } else { ?>
+                                        <?= $this->translate->_("We will reply to this address. Change it if needed."); ?>
+                                    <?php } ?>
+                                </small>
+                            </td>
+                        </tr>
+
+                        <tr align="left" class="light">
                             <td><?= $this->translate->_("Message"); ?></td>
-                            <td><textarea name="message" id="message" rows="3" class="isRequired form-control" title="<?= $this->htmlTranslate("Please enter message"); ?>" placeholder="<?= $this->htmlTranslate("Please enter message"); ?>"></textarea></td>
+                            <td><textarea name="message" id="message" rows="3" class="isRequired form-control" title="<?= $this->htmlTranslate("Please enter message"); ?>" placeholder="<?= $this->htmlTranslate("Please enter message"); ?>"><?= $this->escape((string) ($submitted['message'] ?? '')); ?></textarea></td>
                         </tr>
 
                         <tr align="left" class="light">
@@ -79,6 +102,15 @@
                 alert("<?= $this->jsTranslate("Invalid file type. Only PDF, DOC, DOCX, XLS, XLSX, JPG, JPEG, and PNG are allowed.") ?>");
                 break;
             }
+        }
+
+        // Loose shape check so a typo doesn't cost the message on a server round-trip;
+        // the server does the real validation.
+        var replyEmail = document.getElementById('replyEmail');
+        if (flag && replyEmail.value.trim() !== '' && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(replyEmail.value.trim())) {
+            alert("<?= $this->jsTranslate("Please enter a valid email address so we can reply to you") ?>");
+            replyEmail.focus();
+            return false;
         }
 
         // If all validation passes, submit the form

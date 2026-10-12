@@ -12,9 +12,35 @@ class Application_Model_DbTable_ParticipantMessages extends Zend_Db_Table_Abstra
         $loggedUser = new Zend_Session_Namespace('loggedUser');
         $partcipant_id = $loggedUser->partcipant_id;
         $fromMail = $loggedUser->primary_email;
-        $fromName = $loggedUser->first_name . $loggedUser->last_name;
+        $fromName = trim($loggedUser->first_name . ' ' . $loggedUser->last_name);
+        $files = [];
+        $attachedFiles = [];
 
         if (isset($params['subject']) && $params['subject'] != '') {
+            // primary_email is often a login ID, not a mailbox. Use the address the
+            // DM typed on the form, else the best one on file, so admins can reply.
+            // A typo must be corrected, not silently swapped for a stored address.
+            $typed = trim((string) ($params['replyEmail'] ?? ''));
+            $replyTo = $typed !== ''
+                ? Application_Service_Common::validateEmail($typed)
+                : (new Application_Service_ParticipantMessages())->getReplyEmailForDm($partcipant_id);
+            if (!$replyTo) {
+                return ['status' => 'invalid-email'];
+            }
+            // Keep a typed address on file, but only to fill a blank secondary email or
+            // replace one already flagged unusable; never clobber a working list or
+            // reset the status of an address that has bounced.
+            $secondary = $db->fetchRow($db->select()->from('data_manager', ['secondary_email', 'secondary_email_status'])->where('dm_id = ?', $partcipant_id));
+            $storedSecondary = trim((string) ($secondary['secondary_email'] ?? ''));
+            $secondaryUnusable = in_array($secondary['secondary_email_status'] ?? '', ['login_only', 'hard_bounce', 'invalid_syntax', 'invalid_domain'], true);
+            if (strcasecmp($replyTo, (string) $fromMail) !== 0
+                && ($storedSecondary === '' || ($secondaryUnusable && strcasecmp($replyTo, $storedSecondary) !== 0))) {
+                $db->update('data_manager', [
+                    'secondary_email' => $replyTo,
+                    'secondary_email_status' => 'unknown',
+                ], $db->quoteInto('dm_id = ?', $partcipant_id));
+            }
+
             if (isset($_FILES['attachment']['name']) && !empty($_FILES['attachment']['name'][0])) {
                 $pathPrefix = UPLOAD_PATH . DIRECTORY_SEPARATOR . 'mail-attachments';
                 if (!is_dir($pathPrefix)) {
@@ -44,12 +70,29 @@ class Application_Model_DbTable_ParticipantMessages extends Zend_Db_Table_Abstra
             ];
 
             $db->insert('participant_messages', $data);
-            $message = $params['message'];
+            $e = fn ($v) => htmlspecialchars(trim((string) $v), ENT_QUOTES, 'UTF-8');
             $subject = $params['subject'];
+            $labIds = $db->fetchCol(
+                $db->select()->from(['pmm' => 'participant_manager_map'], [])
+                    ->join(['p' => 'participant'], 'p.participant_id = pmm.participant_id', ['unique_identifier'])
+                    ->where('pmm.dm_id = ?', $partcipant_id)
+            );
+
+            $message = '<p style="padding:10px 12px;background:#eef5ff;border-left:4px solid #2a6ebb;">'
+                . 'To respond, reply to this email or write to '
+                . '<a href="mailto:' . $e($replyTo) . '?subject=' . rawurlencode('Re: ' . $subject) . '"><strong>' . $e($replyTo) . '</strong></a>'
+                . '</p>';
+            $message .= 'From : ' . $e($fromName) . '<br/>';
+            $message .= 'Login : ' . $e($fromMail) . '<br/>';
+            if (!empty($labIds)) {
+                $message .= 'Lab ID(s) : ' . $e(implode(', ', $labIds)) . '<br/>';
+            }
+            $message .= 'Subject : ' . $e($subject) . '<br/><br/>';
+            $message .= nl2br($e($params['message']));
+
             $toMail = Application_Service_Common::getConfig('admin_email');
-            $common->insertTempMail($toMail, null, null, $subject, $message, $fromMail, $fromName, $attachedFiles);
-            $response['status'] = 'success';
-            return $response;
+            $queued = $common->insertTempMail($toMail, null, null, $subject, $message, $fromMail, $fromName, $attachedFiles, $replyTo);
+            return ['status' => $queued ? 'success' : 'failure'];
         }
     }
 

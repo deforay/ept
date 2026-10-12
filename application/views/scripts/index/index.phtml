@@ -462,6 +462,9 @@ if (isset($this->htmlHomePage) && !empty($this->htmlHomePage) && isset($this->ho
                                         if (data == 1 || data == '1') {
                                             alert('<?= $this->jsTranslate("Thank you for your interest in this program. We will contact you shortly."); ?>');
                                             $("#submitbtn").remove();
+                                        } else if (data == 'invalid-email') {
+                                            alert("<?= $this->jsTranslate("Please enter a valid email address so we can reply to you"); ?>");
+                                            $("#email").focus();
                                         } else {
                                             alert("<?= $this->jsTranslate("Sorry, we could not send your message right now. Please try again later."); ?>");
                                         }

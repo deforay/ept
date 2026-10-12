@@ -396,15 +396,28 @@ class Application_Service_Common
         $name = (isset($params['firstName']) && !empty($params['firstName'])) ? true : false;
         $id = (isset($params['participantId']) && !empty($params['participantId'])) ? true : false;
         $subject = (isset($params['subject']) && !empty($params['subject'])) ? true : false;
+        // The submitter's address becomes the Reply-To; an invalid one would make the
+        // queue silently fall back to the system address and leave us unable to reply.
+        $replyTo = self::validateEmail((string) ($params['email'] ?? ''));
+        if ($name && $id && $subject && !$replyTo) {
+            return 'invalid-email';
+        }
         if ($name && $id && $subject) {
+            $params['email'] = $replyTo;
+            $e = fn ($key) => htmlspecialchars(trim((string) ($params[$key] ?? '')), ENT_QUOTES, 'UTF-8');
+            $fullName = trim($e('firstName') . ' ' . $e('lastName'));
 
-            $message = '<h3>The following details were entered by ' . $params['participantId'] . '</h3>';
-            $message .= 'Name : ' . $params['firstName'] . ' ' . $params['lastName'] . '<br/>';
-            $message .= 'ID : ' . $params['participantId'] . '<br/>';
-            $message .= 'Email : ' . $params['email'] . '<br/>';
-            $message .= 'Subject : ' . $params['subject'] . '<br/>';
-            $message .= 'Country Name : ' . $params['country'] . '<br/>';
-            $message .= 'Message : ' . $params['message'] . '<br/>';
+            $message = '<p style="padding:10px 12px;background:#eef5ff;border-left:4px solid #2a6ebb;">'
+                . 'To respond, reply to this email or write to '
+                . '<a href="mailto:' . $e('email') . '?subject=' . rawurlencode('Re: ' . trim((string) $params['subject'])) . '"><strong>' . $e('email') . '</strong></a>'
+                . '</p>';
+            $message .= '<h3>The following details were entered by ' . $e('participantId') . '</h3>';
+            $message .= 'Name : ' . $fullName . '<br/>';
+            $message .= 'ID : ' . $e('participantId') . '<br/>';
+            $message .= 'Email : <a href="mailto:' . $e('email') . '">' . $e('email') . '</a><br/>';
+            $message .= 'Subject : ' . $e('subject') . '<br/>';
+            $message .= 'Country Name : ' . $e('country') . '<br/>';
+            $message .= 'Message : ' . nl2br($e('message')) . '<br/>';
 
             $db = new Application_Model_DbTable_ContactUs();
 
