@@ -25,7 +25,8 @@
         }
     });
 
-    // Idle-timeout coordination with PreSetter.php (server enforces 30 min).
+    // Idle-timeout coordination with PreSetter.php (server enforces the idle
+    // limit: 2 hours unless session.idleMinutes in application.ini says otherwise).
     // Heartbeat fires only when the user has actually interacted since the last
     // ping, so a walked-away tab still expires server-side.
     (function () {

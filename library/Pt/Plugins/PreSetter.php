@@ -81,11 +81,11 @@ class Pt_Plugins_PreSetter extends Zend_Controller_Plugin_Abstract
             exit;
         }
 
-        // Idle timeout: 30 minutes of inactivity ends an authenticated session.
-        // Sliding window — only requests *within the same module* count as
-        // activity, so an idle admin tab doesn't keep a participant session
-        // alive (and vice versa).
-        $idleLimitSec = 1800;
+        // Idle timeout: inactivity ends an authenticated session (2 hours, or
+        // session.idleMinutes in application.ini). Sliding window — only
+        // requests *within the same module* count as activity, so an idle admin
+        // tab doesn't keep a participant session alive (and vice versa).
+        $idleLimitSec = self::idleLimitSeconds();
         $now = time();
         $expiredKind = null;
         $moduleName = $request->getModuleName();
@@ -288,5 +288,30 @@ class Pt_Plugins_PreSetter extends Zend_Controller_Plugin_Abstract
             }
             $layout->setLayout('admin');
         }
+    }
+
+    /** Default idle limit when application.ini does not set session.idleMinutes */
+    private const DEFAULT_IDLE_MINUTES = 120;
+
+    /**
+     * PHP keeps session data for 8 hours (session.gc_maxlifetime, set by
+     * setup and upgrade), so a longer idle limit would be cut short anyway.
+     */
+    private const MAX_IDLE_MINUTES = 480;
+
+    /** The page pings every 5 minutes while in use; a shorter limit would sign people out mid-typing */
+    private const MIN_IDLE_MINUTES = 10;
+
+    private static function idleLimitSeconds(): int
+    {
+        $minutes = self::DEFAULT_IDLE_MINUTES;
+        $bootstrap = Zend_Controller_Front::getInstance()->getParam('bootstrap');
+        if ($bootstrap !== null) {
+            $configured = (int) ($bootstrap->getOptions()['session']['idleMinutes'] ?? 0);
+            if ($configured > 0) {
+                $minutes = max(self::MIN_IDLE_MINUTES, min($configured, self::MAX_IDLE_MINUTES));
+            }
+        }
+        return $minutes * 60;
     }
 }
