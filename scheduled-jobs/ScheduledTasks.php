@@ -98,6 +98,14 @@ $schedule->run($phpPath . " " . BIN_PATH . "/process-bounces.php --quiet")
     ->preventOverlapping()
     ->description('Processing email bounces');
 
+// Keep PTCCs mapped to the labs in their countries, provinces and districts. Saving a
+// lab maps it straight away; this catches anything that path missed.
+$schedule->run($phpPath . " " . SCHEDULED_JOBS_FOLDER . "/ptcc-auto-mapping.php")
+    ->cron('20 2 * * *') // 02:20 am daily
+    ->timezone($timezone)
+    ->preventOverlapping()
+    ->description('Mapping PTCCs to the labs in their areas');
+
 // Process shipment deadlines once the response deadline has passed: flip
 // response_switch 'on' -> 'off' at the exact response_deadline instant (interpreted
 // in the cutoff timezone) and queue an evaluation for each closed shipment so results

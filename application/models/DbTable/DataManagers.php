@@ -41,7 +41,6 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
      */
     private array $ptccProvinceListCache = [];
     private array $ptccDistrictListCache = [];
-    private array $ptccLocationParticipantsCache = [];
 
     public function addUser($params)
     {
@@ -566,40 +565,26 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
     public function mapPtccLocations($params, $dmId)
     {
         $db = Zend_Db_Table_Abstract::getAdapter();
-        foreach ($params['country'] as $country) {
-            $countryDuplicate = true;
-            if (isset($params['province'][0]) && sizeof($params['province']) > 0) {
-                $provinceList = $this->getProvinceListCached($country);
-                foreach ($params['province'] as $state) {
-                    if (isset($provinceList) && count($provinceList) > 0 && in_array($state, $provinceList)) {
-                        if (isset($params['district'][0]) && sizeof($params['district']) > 0) {
-                            $districtList = $this->getDistrictListCached($state);
-                            foreach ($params['district'] as $district) {
-                                $_districtData = ['ptcc_id' => $dmId, 'country_id' => $country];
-                                $_districtData['state'] = $state;
-                                if (isset($districtList) && count($districtList) > 0 && in_array($district, $districtList)) {
-                                    $_districtData['district'] = $district;
-                                }
-                                $db->insert('ptcc_countries_map', $_districtData);
-                            }
-                        } else {
-                            if (isset($provinceList) && count($provinceList) > 0 && in_array($state, $provinceList)) {
-                                $db->insert('ptcc_countries_map', ['ptcc_id' => $dmId, 'country_id' => $country, 'state' => $state]);
-                            }
-                        }
-                    } else {
-                        if (isset($provinceList) && count($provinceList) > 0 && in_array($state, $provinceList)) {
-                            $db->insert('ptcc_countries_map', ['ptcc_id' => $dmId, 'country_id' => $country, 'state' => $state]);
-                        } else {
-                            if ($countryDuplicate) {
-                                $db->insert('ptcc_countries_map', ['ptcc_id' => $dmId, 'country_id' => $country]);
-                                $countryDuplicate = false;
-                            }
-                        }
-                    }
-                }
-            } else {
+        // Each picked province goes under the country it belongs to, and each
+        // picked district under its province. A country or province with
+        // nothing narrower picked inside it is covered whole.
+        $provinces = (array) ($params['province'] ?? []);
+        $districts = (array) ($params['district'] ?? []);
+        foreach ((array) $params['country'] as $country) {
+            $countryProvinces = array_values(array_intersect($provinces, (array) $this->getProvinceListCached($country)));
+            if ($countryProvinces === []) {
                 $db->insert('ptcc_countries_map', ['ptcc_id' => $dmId, 'country_id' => $country]);
+                continue;
+            }
+            foreach ($countryProvinces as $state) {
+                $stateDistricts = array_values(array_intersect($districts, (array) $this->getDistrictListCached($state)));
+                if ($stateDistricts === []) {
+                    $db->insert('ptcc_countries_map', ['ptcc_id' => $dmId, 'country_id' => $country, 'state' => $state]);
+                    continue;
+                }
+                foreach ($stateDistricts as $district) {
+                    $db->insert('ptcc_countries_map', ['ptcc_id' => $dmId, 'country_id' => $country, 'state' => $state, 'district' => $district]);
+                }
             }
         }
     }
@@ -1375,6 +1360,72 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         }
     }
 
+    /**
+     * Maps each PTCC to the labs in its countries, provinces or districts
+     * (ptcc_countries_map), the same rule saving a PTCC applies. Labs added,
+     * moved or imported later are picked up here; labs no longer in a PTCC's
+     * areas are unmapped. Only active PTCCs: an inactive one cannot log in or
+     * be emailed, and saving it when it is reactivated maps it. A PTCC with no
+     * areas is left alone, since its labs were mapped by hand.
+     *
+     * With $participantIds, only those labs are checked: what adding,
+     * editing or importing a lab needs. With $ptccIds, only those PTCCs:
+     * what saving a PTCC needs.
+     *
+     * @param int[]|null $participantIds
+     * @param int[]|null $ptccIds
+     * @return array{added: int, removed: int}
+     */
+    public function syncPtccParticipants(?array $participantIds = null, ?array $ptccIds = null): array
+    {
+        $db = $this->getAdapter();
+        $filter = '';
+        foreach (['p.participant_id' => $participantIds, 'dm.dm_id' => $ptccIds] as $column => $ids) {
+            if ($ids === null) {
+                continue;
+            }
+            $ids = array_values(array_unique(array_map('intval', $ids)));
+            if ($ids === []) {
+                return ['added' => 0, 'removed' => 0];
+            }
+            $filter .= $db->quoteInto(" AND $column IN (?)", $ids);
+        }
+
+        // A lab is in an area when its country matches and, where the area
+        // names a province or district, those match too. A broader area row is
+        // ignored when the same PTCC has narrower rows inside it: older saves
+        // wrote a whole-province row beside the districts picked in it (and a
+        // whole-country row beside its provinces), which would otherwise widen
+        // the PTCC to everything there.
+        $inArea = "p.country = pcm.country_id
+            AND (pcm.state IS NULL OR pcm.state = '' OR p.state = pcm.state)
+            AND (pcm.district IS NULL OR pcm.district = '' OR p.district = pcm.district)
+            AND NOT EXISTS (SELECT 1 FROM ptcc_countries_map n
+                WHERE n.ptcc_id = pcm.ptcc_id AND n.country_id = pcm.country_id
+                AND (
+                    ((pcm.state IS NULL OR pcm.state = '') AND n.state IS NOT NULL AND n.state <> '')
+                    OR ((pcm.district IS NULL OR pcm.district = '') AND pcm.state IS NOT NULL AND pcm.state <> ''
+                        AND n.state = pcm.state AND n.district IS NOT NULL AND n.district <> '')
+                ))";
+
+        $added = $db->query("INSERT IGNORE INTO participant_manager_map (dm_id, participant_id)
+            SELECT DISTINCT pcm.ptcc_id, p.participant_id
+            FROM ptcc_countries_map pcm
+            JOIN data_manager dm ON dm.dm_id = pcm.ptcc_id AND dm.data_manager_type = 'ptcc' AND dm.status = 'active'
+            JOIN participant p ON $inArea
+            WHERE NOT EXISTS (SELECT 1 FROM participant_manager_map x
+                WHERE x.dm_id = pcm.ptcc_id AND x.participant_id = p.participant_id)" . $filter)->rowCount();
+
+        $removed = $db->query("DELETE pmm FROM participant_manager_map pmm
+            JOIN data_manager dm ON dm.dm_id = pmm.dm_id AND dm.data_manager_type = 'ptcc' AND dm.status = 'active'
+            JOIN participant p ON p.participant_id = pmm.participant_id
+            WHERE EXISTS (SELECT 1 FROM ptcc_countries_map a WHERE a.ptcc_id = pmm.dm_id)
+            AND NOT EXISTS (SELECT 1 FROM ptcc_countries_map pcm
+                WHERE pcm.ptcc_id = pmm.dm_id AND $inArea)" . $filter)->rowCount();
+
+        return ['added' => (int) $added, 'removed' => (int) $removed];
+    }
+
     public function fetchRelaventPtcc($field, $value)
     {
         // Get the db adapter
@@ -2041,62 +2092,18 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                 $params['district'] = isset($params['district']) ? $common->removeEmpty((array) $params['district']) : [];
                 $params['province'] = isset($params['province']) ? $common->removeEmpty((array) $params['province']) : [];
                 $params['country'] = isset($params['country']) ? $common->removeEmpty((array) $params['country']) : [];
-                $locationWiseSwitch = false; //This variable for check if the any one of the location wise participant mapping
-                $sql = $db->select()->from(['p' => 'participant'], ['participant_id']); // Initiate the participants list table
-
-                if (!empty($params['district'])) {
-                    $locationWiseSwitch = true;
-                    $params['district'] = !is_array($params['district']) ? [$params['district']] : $params['district'];
-                    $sql = $sql->where('district IN (?)', $params['district']);
-                } elseif (!empty($params['province'])) {
-                    $locationWiseSwitch = true;
-                    $params['province'] = !is_array($params['province']) ? [$params['province']] : $params['province'];
-                    $sql = $sql->where('state IN (?)', $params['province']);
-                } elseif (!empty($params['country'])) {
-                    $locationWiseSwitch = true;
-                    $params['country'] = !is_array($params['country']) ? [$params['country']] : $params['country'];
-                    $sql = $sql->where('country IN (?)', $params['country']);
-                }
-
-                $pmmData = []; // Declare the participant manager mapping variable
-                if ($locationWiseSwitch) { // Check the status activated or not
-                    // Fetch list of participants for this location. Identical across every
-                    // PTCC row that targets the same location, so memoize by signature.
-                    $locationSignature = 'c=' . implode(',', (array) $params['country'])
-                        . '|s=' . implode(',', (array) $params['province'])
-                        . '|d=' . implode(',', (array) $params['district']);
-                    if (!array_key_exists($locationSignature, $this->ptccLocationParticipantsCache)) {
-                        $this->ptccLocationParticipantsCache[$locationSignature] = $db->fetchAll($sql);
-                    }
-                    $locationwiseparticipants = $this->ptccLocationParticipantsCache[$locationSignature];
-                    foreach ($locationwiseparticipants as $value) {
-                        $pmmData[] = ['dm_id' => $dmId, 'participant_id' => $value['participant_id']]; // Create the inserting data
-                        $params['participantsList'][] = $value['participant_id'];
-                    }
-                    $ptccQuery = $this->getAdapter()->select()
-                        ->from(['pmm' => 'participant_manager_map'], [new Zend_Db_Expr('SQL_CALC_FOUND_ROWS *')])
-                        ->where('dm_id = ?', $dmId);
-                    if ($db->fetchRow($ptccQuery)) {
-                        if (!empty($params['participantsList'])) {
-                            $db->delete('participant_manager_map', ['participant_id NOT IN (?)' => $params['participantsList'], 'dm_id LIKE ?' => $dmId]);
-                        }
-                        // if (isset($params['province'][0]) && !empty($params['province'][0])) {
-                        //     $db->delete('ptcc_countries_map', "ptcc_id = " . $dmId);
-                        // }
-                    }
-                    // Save locatons details
-                    // if (isset($params['province'][0]) && !empty($params['province'][0])) {
+                // Save the PTCC's areas, then map its labs by the same rule the
+                // lab-side sync and the daily job use, so all three agree
+                $count = 0;
+                if (!empty($params['district']) || !empty($params['province']) || !empty($params['country'])) {
                     $db->delete('ptcc_countries_map', ['ptcc_id = ?' => $dmId]);
                     $this->mapPtccLocations($params, $dmId);
-                    // }
-                    $common = new Application_Service_Common(); // Common objection creation for accessing the multiinsert functionality
-                    if (isset($pmmData) && !empty($pmmData)) {
-                        $common->insertMultiple('participant_manager_map', $pmmData, true); // Inserting the mulitiple pmm data at one go
-                    }
+                    $this->syncPtccParticipants(null, [(int) $dmId]);
+                    $count = (int) $db->fetchOne('SELECT COUNT(*) FROM participant_manager_map WHERE dm_id = ?', [(int) $dmId]);
                 }
                 // Report how many participants this PTCC was mapped to so callers can surface
                 // it (0 is legitimate — a valid location with no participants yet — not an error).
-                return ['ok' => true, 'count' => count($pmmData)];
+                return ['ok' => true, 'count' => $count];
             }
         } catch (Throwable $e) {
             if ($inTx) {

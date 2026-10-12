@@ -518,6 +518,9 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             $auditDb->addNewAuditLog("Updated participant - $userName", 'participants');
         }
 
+        // Last, so the data-manager mapping above cannot replace it; the lab's
+        // country, province or district may have changed
+        $this->mapToPtccs([(int) $params['participantId']]);
         return $noOfRows;
     }
 
@@ -632,6 +635,8 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             $auditDb = new Application_Model_DbTable_AuditLog();
             $auditDb->addNewAuditLog('Added a new participant - ' . $userName, 'participants');
         }
+        // Last, so the data-manager mapping above cannot replace it
+        $this->mapToPtccs([(int) $participantId]);
         return $participantId;
     }
 
@@ -700,6 +705,8 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         //$fromName = Common::getConfig('admin-name');
         $common->sendMail($toMail, null, null, "New Participant Registered  ($participantName)", $message, null, 'ePT Admin');
 
+        // After the creator's own mapping, which a PTCC creator would otherwise collide with
+        $this->mapToPtccs([(int) $participantId]);
         return $participantId;
     }
 
@@ -1724,6 +1731,25 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
      * rolled back at the end. The review screen is built from that run, so what the
      * admin approves is decided by exactly the code that later saves it.
      */
+    /**
+     * Maps labs to the PTCCs whose countries, provinces or districts cover
+     * them (null: every lab). A failure is logged, never fatal: the lab is
+     * saved either way, and the daily ptcc-auto-mapping job catches up.
+     *
+     * @param int[]|null $participantIds
+     */
+    private function mapToPtccs(?array $participantIds): void
+    {
+        try {
+            (new Application_Model_DbTable_DataManagers())->syncPtccParticipants($participantIds);
+        } catch (Throwable $e) {
+            Pt_Commons_LoggerUtility::logError('Mapping labs to PTCCs failed: ' . $e->getMessage(), [
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ]);
+        }
+    }
+
     public function processBulkImport($fileName, $allFakeEmail = false, $params = null, bool $dryRun = false)
     {
         // One id per import run: tags the failure rows written to participants_not_uploaded
@@ -2329,6 +2355,10 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             }
 
             $db->commit();
+
+            // Imported labs, new or moved, join the PTCCs covering their areas.
+            // One pass over every PTCC is cheaper than one per row.
+            $this->mapToPtccs(null);
 
             // Persist the failure log outside the transaction so a late rollback can't erase
             // it; each row carries the run-id + full columns.

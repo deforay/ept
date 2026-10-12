@@ -1,63 +1,21 @@
 <?php
-// PTCC manager location wise mapping issue fixing auto runner
-// set php memeroy limit
+
+// Maps every PTCC to the labs in its countries, provinces or districts, and unmaps labs
+// that have left them. Adding, editing and importing labs already map them as they are
+// saved; this daily run catches anything those paths missed. Safe to re-run.
+
 ini_set('memory_limit', '-1');
-require_once __DIR__ . '/../cli-bootstrap.php'; //Initiate the cron
+require_once __DIR__ . '/../cli-bootstrap.php';
 
-$conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV); // Define the db resource config object
-$general = new Application_Service_Common(); // Declare the common functionality access object
 try {
-    $db = Zend_Db::factory($conf->resources->db);
-    Zend_Db_Table::setDefaultAdapter($db);
-    /* To get list of ptcc manager */
-    $sQuery = $db->select()
-        ->from(['dm' => 'data_manager'], ['dm_id'])
-        ->joinLeft(['pcm' => 'ptcc_countries_map'], 'dm.dm_id=pcm.ptcc_id', ['country_id', 'state', 'district'])
-        ->where("dm.ptcc like 'yes'");
-    $result = $db->fetchAll($sQuery);
-    if (!empty($result)) {
-        $dm = new Application_Model_DbTable_DataManagers();
-        foreach ($result as $key => $value) {
-            $dm->dmParticipantMap($value, $value['dm_id'], true);
-
-            /* $locationwiseparticipants = [];
-            $sql = $db->select()->from(array('p' => 'participant'), array('participant_id')); // Initiate the participants list table
-            // Based on district wise
-            if (isset($value['district']) && !empty($value['district']) && count($value['district']) > 0) {
-                $sql = $sql->orWhere('district IN("' . $value['district'] . '")');
-            }
-            // Based on province wise
-            if (isset($value['province']) && !empty($value['province']) && count($value['province']) > 0) {
-                $sql = $sql->orWhere('state IN("' . $value['province'] . '")');
-            }
-            // Based on country wise
-            if (isset($value['country']) && !empty($value['country']) && count($value['country']) > 0) {
-                $sql = $sql->orWhere('country IN("' . $value['country'] . '")');
-            }
-            $sql = $sql->group('participant_id');
-            // Fetch list of participants from location wise
-            $locationwiseparticipants = $db->fetchAll($sql);
-            $multipleData = [];
-            if (isset($locationwiseparticipants[0]) && sizeof($locationwiseparticipants) > 0) { // check the participants avaiablity
-                $dm = new Application_Model_DbTable_DataManagers();
-                $params['participantsList'][] = $params['participant_id'];
-                $dm->dmParticipantMap($params, $locationwiseparticipants, false, true);
-
-                $db->delete('participant_manager_map', 'dm_id = ' . $value['dm_id']); // Reomve the outdated records from the pmm table
-                foreach ($locationwiseparticipants as $pkey => $pvalue) {
-                    $multipleData[] = array('participant_id' => $pvalue['participant_id'], 'dm_id' => $value['dm_id']); // create the map data for pmm creation
-                }
-            }
-            // Insert the multiple records
-            if (isset($multipleData[0]) && sizeof($multipleData) > 0) {
-                $general->insertMultiple('participant_manager_map', $multipleData, true);
-            } */
-        }
-    }
+    $result = (new Application_Model_DbTable_DataManagers())->syncPtccParticipants();
+    echo "PTCC lab mapping: {$result['added']} added, {$result['removed']} removed" . PHP_EOL;
 } catch (Throwable $e) {
     Pt_Commons_LoggerUtility::logError($e->getMessage(), [
         'file'  => $e->getFile(),
         'line'  => $e->getLine(),
         'trace' => $e->getTraceAsString(),
     ]);
+    fwrite(STDERR, 'ptcc-auto-mapping failed: ' . $e->getMessage() . PHP_EOL);
+    exit(1);
 }
