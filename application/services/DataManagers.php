@@ -479,20 +479,9 @@ class Application_Service_DataManagers
         $loginId  = (string) ($params['primaryMail'] ?? $to[0]);
         $password = (string) ($params['password'] ?? '');
 
-        $historyHtml = $this->renderActivityHistoryHtml($priorHistory);
-
         $t = static fn (string $s): string => Pt_Commons_TranslateUtility::safeTranslate($s);
         $subject = $t('Your ePT account login details') . ' — ' . $loginId;
-        $message = $t('Dear Participant') . ',<br/><br/>'
-            . $t('Here are your login details for the ePT portal.') . '<br/><br/>'
-            . $t('Website') . ': <a href="' . htmlspecialchars($loginUrl, ENT_QUOTES, 'UTF-8') . '">'
-            . htmlspecialchars($loginUrl, ENT_QUOTES, 'UTF-8') . '</a><br/>'
-            . $t('Login ID') . ': ' . htmlspecialchars($loginId, ENT_QUOTES, 'UTF-8') . '<br/>'
-            . $t('Password') . ': ' . htmlspecialchars($password, ENT_QUOTES, 'UTF-8')
-            . $historyHtml
-            . '<br/><br/>' . $t('For your security, please sign in and change your password as soon as possible, and keep these details confidential.')
-            . '<br/><br/>' . $t('If you have any questions or did not expect this email, please contact ePT Support.')
-            . '<br/><br/>' . $t('Thank you') . ',<br/>' . $t('ePT Support');
+        $message = $this->renderCredentialsEmailHtml($t('Dear Participant'), $loginUrl, $loginId, $password, $priorHistory);
 
         $mailCfg = Application_Service_Common::getMailSettings();
         $fromEmail = $mailCfg['fromEmail'] ?: Application_Service_Common::getConfig('admin_email');
@@ -513,6 +502,34 @@ class Application_Service_DataManagers
         $alert->message = 'Password reset and login email queued for ' . $to[0];
     }
 
+    /* Body of the login-credentials email, shared by the single-user and bulk
+       reset flows. Inline styles only (mail clients drop <style>); the newlines
+       keep the strip_tags() plain-text part readable. $greeting is already escaped. */
+    private function renderCredentialsEmailHtml(string $greeting, string $loginUrl, string $loginId, string $password, array $priorHistory): string
+    {
+        $t = static fn (string $s): string => Pt_Commons_TranslateUtility::safeTranslate($s);
+        $e = static fn (string $s): string => htmlspecialchars($s, ENT_QUOTES, 'UTF-8');
+        $p = '<p style="margin:0 0 16px;">';
+        $label = '<td style="padding:6px 16px 6px 0;color:#666;white-space:nowrap;vertical-align:top;">';
+        $value = '<td style="padding:6px 0;vertical-align:top;">';
+        $mono  = 'font-family:Consolas,Menlo,monospace;font-size:15px;';
+
+        return '<div style="font-family:Arial,Helvetica,sans-serif;font-size:14px;line-height:1.5;color:#222;max-width:560px;">' . "\n"
+            . $p . $greeting . ',</p>' . "\n"
+            . $p . $t('Here are your login details for the ePT portal.') . '</p>' . "\n"
+            . '<table cellpadding="0" cellspacing="0" style="border-collapse:collapse;margin:0 0 16px;padding:0;background:#f5f7fa;border:1px solid #dde3ea;border-radius:6px;">'
+            . '<tr><td style="padding:12px 16px;"><table cellpadding="0" cellspacing="0" style="border-collapse:collapse;">' . "\n"
+            . '<tr>' . $label . $t('Website') . ':</td> ' . $value . '<a href="' . $e($loginUrl) . '" style="color:#1a56db;">' . $e($loginUrl) . '</a></td></tr>' . "\n"
+            . '<tr>' . $label . $t('Login ID') . ':</td> ' . $value . '<span style="' . $mono . '">' . $e($loginId) . '</span></td></tr>' . "\n"
+            . '<tr>' . $label . $t('Password') . ':</td> ' . $value . '<span style="' . $mono . 'font-weight:bold;letter-spacing:1px;">' . $e($password) . '</span></td></tr>' . "\n"
+            . '</table></td></tr></table>' . "\n"
+            . $p . '<strong>' . $t('For your security, please sign in and change your password as soon as possible, and keep these details confidential.') . '</strong></p>' . "\n"
+            . $this->renderActivityHistoryHtml($priorHistory)
+            . $p . $t('If you have any questions or did not expect this email, please contact ePT Support.') . '</p>' . "\n"
+            . '<p style="margin:0;">' . $t('Thank you') . ',<br/>' . "\n" . $t('ePT Support') . '</p>' . "\n"
+            . '</div>';
+    }
+
     /* Renders the "recent activity on this account" HTML block appended to
        credentials emails. Shared by the single-user and bulk reset flows so
        both emails stay consistent. Returns '' when there's no prior history. */
@@ -529,25 +546,27 @@ class Application_Service_DataManagers
             $whenH = htmlspecialchars($when, ENT_QUOTES, 'UTF-8');
             $kind = $r['kind'] ?? 'reset';
             if ($kind === 'login') {
-                $line = $whenH . ' &mdash; ' . $t('you signed in to ePT');
+                $line = $whenH . ' — ' . $t('you signed in to ePT');
             } elseif ($kind === 'self_change') {
-                $line = $whenH . ' &mdash; ' . $t('you changed your password');
+                $line = $whenH . ' — ' . $t('you changed your password');
             } else { // reset
                 $actor = trim((string) ($r['actorName'] ?? '')) ?: trim((string) ($r['actorEmail'] ?? ''));
                 if ($actor !== '') {
-                    $line = $whenH . ' &mdash; ' . $t('your password was reset by') . ' '
+                    $line = $whenH . ' — ' . $t('your password was reset by') . ' '
                         . htmlspecialchars($actor, ENT_QUOTES, 'UTF-8');
                 } else {
-                    $line = $whenH . ' &mdash; ' . $t('your password was reset');
+                    $line = $whenH . ' — ' . $t('your password was reset');
                 }
                 if (!empty($r['emailSent'])) {
                     $line .= ' <em>(' . $t('login details were emailed to you') . ')</em>';
                 }
             }
-            $items .= '<li>' . $line . '</li>';
+            $items .= '<li style="margin:2px 0;">' . $line . '</li>' . "\n";
         }
-        return '<br/><br/>' . $t('Recent activity on your account:')
-            . '<ul>' . $items . '</ul>';
+        return '<div style="margin:0 0 16px;padding-top:12px;border-top:1px solid #e5e5e5;font-size:13px;color:#555;">' . "\n"
+            . '<p style="margin:0 0 4px;">' . $t('Recent activity on your account:') . '</p>' . "\n"
+            . '<ul style="margin:0;padding-left:20px;">' . $items . '</ul>' . "\n"
+            . '</div>' . "\n";
     }
 
     /* Resolves a list of pasted identifiers (emails OR participant unique_identifier
@@ -777,22 +796,12 @@ class Application_Service_DataManagers
     private function queueBulkCredentialsEmail(Application_Service_Common $common, string $toEmail, string $name, string $password, string $loginUrl, array $cc, array $bcc, array $priorHistory = []): void
     {
         $t = static fn (string $s): string => Pt_Commons_TranslateUtility::safeTranslate($s);
-        $historyHtml = $this->renderActivityHistoryHtml($priorHistory);
         $greeting = $name !== ''
             ? $t('Dear') . ' ' . htmlspecialchars($name, ENT_QUOTES, 'UTF-8')
             : $t('Dear Participant');
         $recipientLabel = $name !== '' ? $name . ' (' . $toEmail . ')' : $toEmail;
         $subject = $t('Your ePT account login details') . ' — ' . $recipientLabel;
-        $message = $greeting . ',<br/><br/>'
-            . $t('Here are your login details for the ePT portal.') . '<br/><br/>'
-            . $t('Website') . ': <a href="' . htmlspecialchars($loginUrl, ENT_QUOTES, 'UTF-8') . '">'
-            . htmlspecialchars($loginUrl, ENT_QUOTES, 'UTF-8') . '</a><br/>'
-            . $t('Login ID') . ': ' . htmlspecialchars($toEmail, ENT_QUOTES, 'UTF-8') . '<br/>'
-            . $t('Password') . ': ' . htmlspecialchars($password, ENT_QUOTES, 'UTF-8')
-            . $historyHtml
-            . '<br/><br/>' . $t('For your security, please sign in and change your password as soon as possible, and keep these details confidential.')
-            . '<br/><br/>' . $t('If you have any questions or did not expect this email, please contact ePT Support.')
-            . '<br/><br/>' . $t('Thank you') . ',<br/>' . $t('ePT Support');
+        $message = $this->renderCredentialsEmailHtml($greeting, $loginUrl, $toEmail, $password, $priorHistory);
 
         $mailCfg = Application_Service_Common::getMailSettings();
         $fromEmail = $mailCfg['fromEmail'] ?: Application_Service_Common::getConfig('admin_email');
