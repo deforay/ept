@@ -415,7 +415,7 @@ class Pt_Reports_ChartRenderer_JpGraph implements Pt_Reports_ChartRenderer_Rende
      */
     private function tickLabels(array $labels): array
     {
-        return array_map(fn($label) => is_array($label) ? implode("\n", $label) : $label, $labels);
+        return array_map(fn ($label) => is_array($label) ? implode("\n", $label) : $label, $labels);
     }
 
     private function applyMargins(Graph $graph, array $config): void
