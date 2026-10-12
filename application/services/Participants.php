@@ -1453,6 +1453,8 @@ class Application_Service_Participants
 
                 $pt['email'] = $toEmail;
                 $pt['cc'] = array_values($cc);
+                $pt['name'] = self::tidyName($pt['name'] ?? '');
+                $pt['participant_names'] = self::tidyName($pt['participant_names'] ?? '');
                 $pt['labs'] = [self::labSummary($pt)];
                 $recipients[$key] = $pt;
 
@@ -1488,10 +1490,23 @@ class Application_Service_Participants
         return [
             'key'     => (string) ($pt['lab_id'] ?? ''),
             'id'      => (string) ($pt['participant_ids'] ?? ''),
-            'name'    => (string) ($pt['participant_names'] ?? ''),
+            'name'    => self::tidyName($pt['participant_names'] ?? ''),
             'country' => (string) ($pt['country'] ?? ''),
             'status'  => (string) ($pt['response_status'] ?? ''),
         ];
+    }
+
+    /**
+     * Names as people read them. Lab names are often typed as
+     * "Central Hospital ,Benin,Edo State"; an email shows
+     * "Central Hospital, Benin, Edo State". The stored name is unchanged.
+     */
+    public static function tidyName($name): string
+    {
+        // A comma between digits is a decimal ("km 12,5"), not a separator
+        $name = preg_replace('/(?<!\d)\s*,\s*|\s*,\s*(?!\d)/u', ', ', (string) $name);
+        $name = preg_replace('/\s+/u', ' ', $name);
+        return trim($name, " \t\n\r\0\x0B,");
     }
 
     /**
@@ -1601,7 +1616,7 @@ class Application_Service_Participants
             $time !== '' && !in_array($time, ['00:00', '23:59'], true)
         );
 
-        $labName = (string) ($pt['participant_names'] ?? '');
+        $labName = self::tidyName($pt['participant_names'] ?? '');
         $labId = (string) ($pt['participant_ids'] ?? '');
         $country = (string) ($pt['country'] ?? '');
         $labCount = self::isMultiLab($pt) ? count($pt['labs']) : 0;
@@ -1620,7 +1635,7 @@ class Application_Service_Participants
         return [
             // A manager saved without a name is greeted by their lab's name,
             // or by their address when the email covers several labs
-            'recipient_name'    => (string) (($pt['name'] ?? '') !== '' ? $pt['name'] : ($labCount > 0 ? ($pt['email'] ?? '') : $labName)),
+            'recipient_name'    => ($pt['name'] ?? '') !== '' ? self::tidyName($pt['name']) : (string) ($labCount > 0 ? ($pt['email'] ?? '') : $labName),
             'participant_name'  => $labName,
             'participant_id'    => $labId,
             'country'           => $country,
