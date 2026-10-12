@@ -96,7 +96,8 @@ try {
         }
         $domain = strtolower(substr(strrchr($normalized, '@'), 1));
         if (!isset($mxCache[$domain])) {
-            $mxCache[$domain] = checkdnsrr($domain, 'MX');
+            // Retries a miss, so a lookup that times out does not stamp a real address invalid
+            $mxCache[$domain] = Application_Service_Common::domainReceivesMail($domain);
         }
         return $mxCache[$domain] ? 'valid' : 'invalid_domain';
     };

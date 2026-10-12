@@ -1675,7 +1675,24 @@ class Application_Service_Common
         if (!$dnsWorks) {
             return $domainCache[$domain] = Pt_Commons_MiscUtility::isGeneratedEmail($email);
         }
-        return $domainCache[$domain] = !checkdnsrr($domain, 'MX');
+        return $domainCache[$domain] = !self::domainReceivesMail($domain);
+    }
+
+    /**
+     * Whether a domain has a mail server (MX record). A lookup that times out also reads
+     * as "no record", so a miss is tried once more: a flaky resolver must not drop a
+     * real address (earl.mantes@ritm.gov.ph on mtbept, Oct 2026). A domain with only an
+     * address record still counts as taking no mail: older imports made up logins on
+     * such domains, and this check is what keeps mail away from them.
+     */
+    public static function domainReceivesMail(string $domain): bool
+    {
+        for ($attempt = 1; $attempt <= 2; $attempt++) {
+            if (checkdnsrr($domain, 'MX')) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -2447,7 +2464,7 @@ class Application_Service_Common
         }
 
         // Check DNS records for the domain
-        if (!checkdnsrr($domain, 'MX')) {
+        if (!self::domainReceivesMail($domain)) {
             return false;
         }
 
