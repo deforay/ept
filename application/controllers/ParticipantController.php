@@ -359,16 +359,17 @@ class ParticipantController extends Zend_Controller_Action
             $pmService = new Application_Service_ParticipantMessages();
             $response = $pmService->addParticipantMessage($params);
             $sessionAlert = new Zend_Session_Namespace('alertSpace');
+            $translator = Zend_Registry::get('translate');
             if (($response['status'] ?? '') === 'success') {
-                $sessionAlert->message = 'Mail set successfully';
+                $sessionAlert->message = $translator->_('Your message has been sent');
                 $sessionAlert->status = 'success';
             } elseif (($response['status'] ?? '') === 'invalid-email') {
-                $sessionAlert->message = 'Please enter a valid email address so we can reply to you';
+                $sessionAlert->message = $translator->_('Please enter a valid email address so we can reply to you');
                 $sessionAlert->status = 'failure';
                 // Redisplay what they wrote so fixing the address doesn't cost the message
                 $this->view->submitted = $params;
             } else {
-                $sessionAlert->message = 'Sorry, we could not process this message. Please try again';
+                $sessionAlert->message = $translator->_('Sorry, we could not process this message. Please try again');
                 $sessionAlert->status = 'failure';
             }
         }
