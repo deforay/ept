@@ -43,6 +43,7 @@ backups/config/*
 node_modules/
 cypress/
 vendor/
+vendor.prev/
 .vscode/
 .claude/
 .venv/

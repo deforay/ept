@@ -908,10 +908,31 @@ upgrade_instance() {
             fi
 
             if [ -n "$vendor_checksum" ] && verify_checksum "$vendor_tar" "$vendor_checksum"; then
+                # Unpack into an empty vendor/. Unpacking over the old one keeps files a
+                # package dropped between versions, and a stale file can change which code
+                # path a library takes (ZipStream v2's Option/Archive.php left beside v3
+                # made every Excel export fail on mtbept). The old vendor/ comes back if
+                # the unpack fails.
+                local vendor_prev="${ept_path}/vendor.prev"
+                rm -rf "$vendor_prev"
+                if [ -d "${ept_path}/vendor" ] && ! mv "${ept_path}/vendor" "$vendor_prev"; then
+                    # Could not set the old vendor/ aside (a mount point, say): unpacking
+                    # over it is the old behaviour, and it must not be deleted on failure
+                    print warning "Could not move vendor/ aside; unpacking over it."
+                    vendor_prev=""
+                fi
                 tar -xzf "$vendor_tar" -C "${ept_path}" &
                 local vendor_tar_pid=$!
                 spinner "${vendor_tar_pid}"
-                wait ${vendor_tar_pid}
+                if wait ${vendor_tar_pid}; then
+                    [ -n "$vendor_prev" ] && rm -rf "$vendor_prev"
+                elif [ -n "$vendor_prev" ] && [ -d "$vendor_prev" ]; then
+                    print warning "Unpacking vendor packages failed; restoring the previous vendor/."
+                    rm -rf "${ept_path}/vendor"
+                    mv "$vendor_prev" "${ept_path}/vendor"
+                else
+                    print warning "Unpacking vendor packages failed."
+                fi
 
                 chown -R www-data:www-data "${ept_path}/vendor" 2>/dev/null || true
                 chmod -R 755 "${ept_path}/vendor" 2>/dev/null || true
