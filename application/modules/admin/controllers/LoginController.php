@@ -27,6 +27,7 @@ class Admin_LoginController extends Zend_Controller_Action
                 $sessionAlert->message = 'Sorry. Unable to log you in. Please check the text from image';
                 $sessionAlert->status = 'failure';
                 $this->redirect('/admin');
+                return;
             }
             $systemAdminDb = new Application_Model_DbTable_SystemAdmin();
 
@@ -115,6 +116,11 @@ class Admin_LoginController extends Zend_Controller_Action
                 $sessionAlert = new Zend_Session_Namespace('alertSpace');
                 $sessionAlert->message = 'Sorry. Unable to log you in. Please check your login credentials';
                 $sessionAlert->status = 'failure';
+                // Back to a fresh form: the one-time form token and the captcha
+                // are only issued on GET, so re-rendering this POST would leave
+                // the next attempt with a spent token and bounce it silently
+                $this->redirect('/admin');
+                return;
             }
         } else {
             $commonServices = new Application_Service_Common();
