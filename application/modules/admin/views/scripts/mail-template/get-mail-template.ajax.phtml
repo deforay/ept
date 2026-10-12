@@ -33,9 +33,9 @@ $audienceNames = [
                     </select>
                     <span class="help-block">
                         <?php if ($audience === 'participant') { ?>
-                            <?= $this->htmlTranslate("The version emails ePT sends on its own use, and the one Email Participants offers when writing to participants."); ?>
+                            <?= $this->htmlTranslate("ePT uses this version for the emails it sends on its own. Email Participants offers it for emails to participants."); ?>
                         <?php } else { ?>
-                            <?= sprintf($this->htmlTranslate("Offered on Email Participants when writing to %s. Save it to create this version."), mb_strtolower(strip_tags($audienceNames[$audience]))); ?>
+                            <?= sprintf($this->htmlTranslate("Email Participants offers this version for emails to %s. Save to create it."), mb_strtolower(strip_tags($audienceNames[$audience]))); ?>
                         <?php } ?>
                     </span>
                 </div>

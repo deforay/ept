@@ -53,6 +53,11 @@ foreach ($this->schemes as $scheme) {
     .ep-card .note-toolbar .note-btn:active { background: #e3eaf3; color: #1f4f82; border-color: #b6c4e0; box-shadow: none; }
     .ep-card .note-statusbar { background: #f7f8fa; border-top: 1px solid #e6e9ee; }
 
+    /* Who and which labs side by side; stacked when narrow */
+    .ep-row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 0 28px; }
+    .ep-row .ep-field:last-child { margin-bottom: 0; }
+    /* Below the admin shell's 1200px step the columns get too narrow for a row of three buttons (PTCC on TB instances) */
+    @media (max-width: 1199px) { .ep-row { grid-template-columns: minmax(0, 1fr); } .ep-row .ep-col + .ep-col { margin-top: 14px; } }
     /* One row of buttons per choice; the picked one's help shows below */
     .ep-seg { display: inline-flex; flex-wrap: wrap; border: 1px solid #ccd3dc; border-radius: 6px; overflow: hidden; }
     .ep-seg .ep-choice { margin: 0; padding: 7px 14px; border: 0; border-right: 1px solid #ccd3dc; border-radius: 0; background: #fff; font-size: 13px; font-weight: 600; color: #444; cursor: pointer; box-shadow: none; }
@@ -204,6 +209,8 @@ $editData = $editEmail === null ? null : [
                     // whichever is picked (data-hint), so the form stays short
                     $P = 'Application_Service_Participants';
                     ?>
+                    <div class="ep-row">
+                    <div class="ep-col">
                     <div class="ep-field">
                         <label><?= $this->htmlTranslate("Send to"); ?> <span class="mandatory">*</span></label>
                         <div class="ep-seg ep-radio-group" id="sendMailChoices">
@@ -211,16 +218,16 @@ $editData = $editEmail === null ? null : [
                                 <input type="radio" name="sendMail" value="participant" checked> <?= $this->htmlTranslate("Participants"); ?>
                             </label>
                             <label class="ep-choice" data-hint="<?= $this->htmlTranslate("The people who enter results for those labs."); ?>">
-                                <input type="radio" name="sendMail" value="datamanager"> <?= $this->htmlTranslate("Data Managers"); ?>
+                                <input type="radio" name="sendMail" value="datamanager"> <?= $this->htmlTranslate("Data managers"); ?>
                             </label>
                             <?php if (in_array('tb', $modules)) { ?>
                                 <label class="ep-choice" data-hint="<?= $this->htmlTranslate("Country coordinators for the labs in TB shipments."); ?>">
-                                    <input type="radio" name="sendMail" value="ptcc"> <?= $this->htmlTranslate("PTCC Managers"); ?>
+                                    <input type="radio" name="sendMail" value="ptcc"> <?= $this->htmlTranslate("PTCC managers"); ?>
                                 </label>
                             <?php } ?>
                         </div>
                         <div class="ep-hint ep-seg-hint"></div>
-                        <div class="ep-hint" id="legacyAudienceNote" style="display:none;"><?= $this->htmlTranslate("This email was written for several audiences before each email had its own, and it still goes to all of them. To change who gets it, cancel it and write one email per audience."); ?></div>
+                        <div class="ep-hint" id="legacyAudienceNote" style="display:none;"><?= $this->htmlTranslate("This email goes to several audiences. It was saved before each email had one audience. To change who gets it, cancel it and write one email per audience."); ?></div>
                         <label class="ep-check" id="ccOptionField">
                             <input type="checkbox" name="ccDataManagers" id="ccDataManagers" value="1">
                             <?= $this->htmlTranslate("Also Cc each lab's data managers on the lab's email"); ?>
@@ -229,26 +236,30 @@ $editData = $editEmail === null ? null : [
                     <div class="ep-field" id="managerDeliveryField" style="display:none;">
                         <label><?= $this->htmlTranslate("How they get it"); ?></label>
                         <div class="ep-seg ep-radio-group" id="managerDeliveryChoices">
-                            <label class="ep-choice" data-hint="<?= $this->htmlTranslate("One email per shipment, with a table of their labs. With several labs, the participant fields say “the 12 labs listed below”."); ?>">
+                            <label class="ep-choice" data-hint="<?= $this->htmlTranslate("One per shipment, with a table of their labs."); ?>">
                                 <input type="radio" name="managerDelivery" value="<?= $P::MANAGER_DELIVERY_COMBINED ?>" checked> <?= $this->htmlTranslate("One email listing all their labs"); ?>
                             </label>
-                            <label class="ep-choice" data-hint="<?= $this->htmlTranslate("One email per lab per shipment, each about that lab only."); ?>">
+                            <label class="ep-choice" data-hint="<?= $this->htmlTranslate("One per lab, per shipment."); ?>">
                                 <input type="radio" name="managerDelivery" value="<?= $P::MANAGER_DELIVERY_PER_LAB ?>"> <?= $this->htmlTranslate("One email per lab"); ?>
                             </label>
                         </div>
                         <div class="ep-hint ep-seg-hint"></div>
                     </div>
+                    </div>
+                    <div class="ep-col">
                     <div class="ep-field">
                         <label><?= $this->htmlTranslate("Which labs"); ?></label>
                         <div class="ep-seg ep-radio-group" id="labFilterChoices">
                             <label class="ep-choice" data-hint="<?= $this->htmlTranslate("Every lab enrolled, whether or not it has responded."); ?>">
                                 <input type="radio" name="labFilter" value="<?= $P::LAB_FILTER_ALL ?>" checked> <?= $this->htmlTranslate("All labs"); ?>
                             </label>
-                            <label class="ep-choice" data-hint="<?= $this->htmlTranslate("For reminders: labs with no response yet, or a draft not submitted. Worked out again when a scheduled email is sent."); ?>">
+                            <label class="ep-choice" data-hint="<?= $this->htmlTranslate("For reminders. Labs with no response, or only an unsubmitted draft. A scheduled email checks again when it goes out."); ?>">
                                 <input type="radio" name="labFilter" value="<?= $P::LAB_FILTER_PENDING ?>"> <?= $this->htmlTranslate("Only labs that have not responded"); ?>
                             </label>
                         </div>
                         <div class="ep-hint ep-seg-hint"></div>
+                    </div>
+                    </div>
                     </div>
                 </div>
 
@@ -362,12 +373,12 @@ $editData = $editEmail === null ? null : [
                             ],
                             'participant_name' => [
                                 'participant' => $this->htmlTranslate("The lab's name."),
-                                'combined' => $this->htmlTranslate("With one lab, its name. With several, “the 12 labs listed below”, and the table follows. After “Dear”, their own name."),
+                                'combined' => $this->htmlTranslate("With one lab, its name. With several, “the 12 labs listed below”, followed by the table. After “Dear”, their own name."),
                                 'per_lab' => $this->htmlTranslate("The lab this email is about. After “Dear”, their own name."),
                             ],
                             'participant_id' => [
                                 'participant' => $this->htmlTranslate("The lab's participant ID."),
-                                'combined' => $this->htmlTranslate("With one lab, its ID. With several, “listed below”; written in brackets, it is left out."),
+                                'combined' => $this->htmlTranslate("With one lab, its ID. With several, “listed below”. In brackets, ePT leaves it out."),
                                 'per_lab' => $this->htmlTranslate("The ID of the lab this email is about."),
                             ],
                             'country' => [
@@ -377,7 +388,7 @@ $editData = $editEmail === null ? null : [
                             ],
                             'lab_table' => [
                                 'participant' => $this->htmlTranslate("A one-row table: the lab's ID, name, country and response."),
-                                'combined' => $this->htmlTranslate("Their labs, with whether each has responded. Added after the first mention of the labs anyway; put it here to place it elsewhere."),
+                                'combined' => $this->htmlTranslate("Their labs, with whether each has responded. ePT adds it after the first mention of the labs. Put it here to place it yourself."),
                                 'per_lab' => $this->htmlTranslate("A one-row table for the lab this email is about."),
                             ],
                         ];
@@ -684,7 +695,7 @@ $editData = $editEmail === null ? null : [
             return;
         }
         // updateAudienceHelp() has already cleared it when this audience has no version
-        if (confirm("<?= $this->jsTranslate("Load this template's version for the audience you picked? It replaces the subject and message.") ?>")) {
+        if (confirm("<?= $this->jsTranslate("Load this template's version for the selected audience? It replaces the subject and message.") ?>")) {
             fillTemplate(purpose);
         } else {
             select.val('');
