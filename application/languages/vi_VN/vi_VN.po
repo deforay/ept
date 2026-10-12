@@ -22107,3 +22107,18 @@ msgstr "Không có người tham gia"
 #: application/modules/admin/views/scripts/evaluate/shipment.phtml
 msgid "Response Date Range"
 msgstr "Phạm vi ngày phản hồi"
+
+msgid "Your message has been sent"
+msgstr "Tin nhắn của bạn đã được gửi"
+
+msgid "Please enter a valid email address so we can reply to you"
+msgstr "Vui lòng nhập một địa chỉ email hợp lệ để chúng tôi có thể phản hồi bạn"
+
+msgid "Sorry, we could not process this message. Please try again"
+msgstr "Xin lỗi, chúng tôi không thể xử lý tin nhắn này. Vui lòng thử lại"
+
+msgid "We do not have a valid email address for you. Please enter one so we can reply to your message."
+msgstr "Chúng tôi chưa có địa chỉ email hợp lệ của bạn. Vui lòng nhập một địa chỉ để chúng tôi có thể phản hồi tin nhắn của bạn."
+
+msgid "We will reply to this address. Change it if needed."
+msgstr "Chúng tôi sẽ phản hồi đến địa chỉ này. Bạn có thể thay đổi nếu cần."

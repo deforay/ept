@@ -23021,3 +23021,18 @@ msgstr "rôles"
 #: application/modules/admin/views/scripts/evaluate/shipment.phtml
 msgid "Response Date Range"
 msgstr "Plage de dates de réponse"
+
+msgid "Your message has been sent"
+msgstr "Votre message a été envoyé"
+
+msgid "Please enter a valid email address so we can reply to you"
+msgstr "Veuillez saisir une adresse e-mail valide afin que nous puissions vous répondre"
+
+msgid "Sorry, we could not process this message. Please try again"
+msgstr "Désolé, nous n'avons pas pu traiter ce message. Veuillez réessayer"
+
+msgid "We do not have a valid email address for you. Please enter one so we can reply to your message."
+msgstr "Nous n'avons pas d'adresse e-mail valide pour vous. Veuillez en saisir une afin que nous puissions répondre à votre message."
+
+msgid "We will reply to this address. Change it if needed."
+msgstr "Nous vous répondrons à cette adresse. Modifiez-la si nécessaire."
