@@ -1,8 +1,10 @@
 <?php
 
 use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
+use PhpOffice\PhpSpreadsheet\Cell\DataType;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
 
 class Application_Service_Participants
 {
@@ -610,6 +612,9 @@ class Application_Service_Participants
         try {
             $db = Zend_Db_Table_Abstract::getDefaultAdapter();
             $quotedBad = $db->quote($badStatuses);
+            // A manager's Lab IDs and a PTCC's Areas run past MySQL's 1,024-byte
+            // GROUP_CONCAT default, which would cut them off without a word
+            $db->query('SET SESSION group_concat_max_len = 1048576');
 
             $participants = $db->fetchAll(
                 $db->select()
@@ -628,11 +633,13 @@ class Application_Service_Participants
             $dataManagers = $db->fetchAll(
                 $db->select()
                     ->from(['dm' => 'data_manager'], [
+                        'dm.dm_id',
                         'name' => new Zend_Db_Expr("TRIM(CONCAT(COALESCE(dm.first_name, ''), ' ', COALESCE(dm.last_name, '')))"),
                         'dm.institute', 'dm.data_manager_type', 'dm.status',
                         'dm.primary_email', 'dm.primary_email_status', 'dm.secondary_email', 'dm.secondary_email_status',
                         'dm.last_bounce_at', 'dm.last_bounce_reason',
                         'labIds' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT p.unique_identifier ORDER BY p.unique_identifier SEPARATOR ', ')"),
+                        'labCount' => new Zend_Db_Expr('COUNT(DISTINCT p.participant_id)'),
                     ])
                     ->joinLeft(['c' => 'countries'], 'c.id = dm.country_id', ['iso_name'])
                     ->joinLeft(['pmm' => 'participant_manager_map'], 'pmm.dm_id = dm.dm_id', [])
@@ -644,11 +651,22 @@ class Application_Service_Participants
             );
 
             $excel = new Spreadsheet();
-            $writeSheet = function ($sheet, string $title, array $headings, array $rows): void {
+            // $textColumns hold IDs: written as text so 19012 stays left-aligned beside
+            // 01033 and a leading zero survives, without Excel's "number stored as
+            // text" flag on every cell
+            $writeSheet = function ($sheet, string $title, array $headings, array $rows, array $textColumns = []): void {
                 $sheet->setTitle($title);
                 $sheet->fromArray($headings, null, 'A1');
                 if (!empty($rows)) {
                     $sheet->fromArray($rows, null, 'A2', true);
+                }
+                foreach ($textColumns as $col) {
+                    $sheet->getStyle("{$col}2:{$col}" . (count($rows) + 1))->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_TEXT);
+                    foreach ($rows as $i => $row) {
+                        $cell = $sheet->getCell($col . ($i + 2));
+                        $cell->setValueExplicit((string) $row[Coordinate::columnIndexFromString($col) - 1], DataType::TYPE_STRING);
+                        $cell->getIgnoredErrors()->setNumberStoredAsText(true);
+                    }
                 }
                 $lastCol = Coordinate::stringFromColumnIndex(count($headings));
                 $sheet->getStyle("A1:{$lastCol}1")->getFont()->setBold(true);
@@ -671,11 +689,17 @@ class Application_Service_Participants
             $writeSheet($excel->getActiveSheet(), 'Participants', [
                 'Lab ID', 'Participant Name', 'Country', 'Status', 'Email', 'Email Problem',
                 'Additional Email', 'Additional Email Problem', 'Reachable By Email', 'Last Bounce', 'Bounce Reason',
-            ], $participantRows);
+            ], $participantRows, ['A']);
 
-            $types = ['manager' => 'Data Manager', 'ptcc' => 'PTCC', 'participant' => 'Participant Login'];
+            $types = ['manager' => 'Data Manager', 'participant' => 'Participant Login'];
             $dmRows = [];
+            $ptccs = [];
             foreach ($dataManagers as $r) {
+                // PTCCs get a sheet of their own, below
+                if ($r['data_manager_type'] === 'ptcc') {
+                    $ptccs[] = $r;
+                    continue;
+                }
                 $primary = $problem($r['primary_email'], $r['primary_email_status']);
                 $secondary = trim((string) $r['secondary_email']) === '' ? null : $problem($r['secondary_email'], $r['secondary_email_status']);
                 $reachable = $primary === null || (trim((string) $r['secondary_email']) !== '' && $secondary === null);
@@ -688,7 +712,38 @@ class Application_Service_Participants
             $writeSheet($excel->createSheet(), 'Data Managers', [
                 'Name', 'Institute', 'Type', 'Country', 'Status', 'Lab IDs', 'Login Email', 'Login Email Problem',
                 'Secondary Email', 'Secondary Email Problem', 'Reachable By Email', 'Last Bounce', 'Bounce Reason',
-            ], $dmRows);
+            ], $dmRows, ['F']);
+
+            // A PTCC covers whole countries, provinces or districts, often hundreds of
+            // labs, so its sheet names the areas and counts the labs instead of
+            // listing their IDs
+            if (!empty($ptccs)) {
+                $areas = $db->fetchPairs(
+                    $db->select()
+                        ->from(['pcm' => 'ptcc_countries_map'], [
+                            'pcm.ptcc_id',
+                            'areas' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT CONCAT_WS(' / ', c.iso_name, NULLIF(pcm.state, ''), NULLIF(pcm.district, '')) ORDER BY c.iso_name, pcm.state, pcm.district SEPARATOR '; ')"),
+                        ])
+                        ->joinLeft(['c' => 'countries'], 'c.id = pcm.country_id', [])
+                        ->where('pcm.ptcc_id IN (?)', array_column($ptccs, 'dm_id'))
+                        ->group('pcm.ptcc_id')
+                );
+                $ptccRows = [];
+                foreach ($ptccs as $r) {
+                    $primary = $problem($r['primary_email'], $r['primary_email_status']);
+                    $secondary = trim((string) $r['secondary_email']) === '' ? null : $problem($r['secondary_email'], $r['secondary_email_status']);
+                    $reachable = $primary === null || (trim((string) $r['secondary_email']) !== '' && $secondary === null);
+                    $ptccRows[] = [
+                        $r['name'], ucfirst((string) $r['status']), $areas[$r['dm_id']] ?? '', (int) $r['labCount'],
+                        $r['primary_email'], $label($primary), $r['secondary_email'], $label($secondary),
+                        $reachable ? 'Yes' : 'No', $r['last_bounce_at'], $r['last_bounce_reason'],
+                    ];
+                }
+                $writeSheet($excel->createSheet(), 'PTCCs', [
+                    'Name', 'Status', 'Areas', 'Labs', 'Login Email', 'Login Email Problem',
+                    'Secondary Email', 'Secondary Email Problem', 'Reachable By Email', 'Last Bounce', 'Bounce Reason',
+                ], $ptccRows);
+            }
             $excel->setActiveSheetIndex(0);
 
             $filename = 'UNUSABLE-EMAILS-' . date('d-M-Y-H-i-s') . '.xlsx';
