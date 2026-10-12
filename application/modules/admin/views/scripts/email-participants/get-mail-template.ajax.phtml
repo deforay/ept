@@ -1,4 +1,9 @@
 <?php
+// No version of this template for the chosen audience yet
+if (empty($this->result)) {
+    echo '';
+    return;
+}
 echo json_encode(array(
     "purpose" => $this->result['mail_purpose'],
     "fromName" => $this->result['from_name'],

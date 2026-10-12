@@ -2,6 +2,9 @@
 
 class Admin_EmailParticipantsController extends Zend_Controller_Action
 {
+    /** Who an email can go to. Each email goes to one of them, in its own words. */
+    private const AUDIENCES = ['participant', 'datamanager', 'ptcc'];
+
     public function init()
     {
 
@@ -58,6 +61,26 @@ class Admin_EmailParticipantsController extends Zend_Controller_Action
                 return;
             }
         }
+        // "Write a version for data managers": same shipments and labs as an
+        // earlier email, for another audience, with the text left to write
+        $fromId = (int) $this->_getParam('from', 0);
+        if ($editId === 0 && $fromId > 0) {
+            $from = (new Application_Model_DbTable_EmailParticipants())->fetchEmail($fromId);
+            if ($from !== null) {
+                $audience = (string) $this->_getParam('audience', '');
+                $this->view->prefill = [
+                    'shipments' => array_values(array_filter(explode(',', (string) $from['shipment_code']))),
+                    'labFilter' => Application_Service_Participants::normalizeLabFilter($from['lab_filter'] ?? null),
+                    'audience'  => in_array($audience, self::AUDIENCES, true) ? $audience : null,
+                ];
+            }
+        }
+        // Offered once, after an email is sent or scheduled
+        $followUp = new Zend_Session_Namespace('emailParticipantsFollowUp');
+        if (!empty($followUp->email)) {
+            $this->view->followUp = $followUp->email;
+            unset($followUp->email);
+        }
         $this->view->tab = in_array($this->_getParam('tab'), ['scheduled', 'history'], true) ? $this->_getParam('tab') : 'compose';
         $this->view->timezone = date_default_timezone_get();
 
@@ -96,11 +119,22 @@ class Admin_EmailParticipantsController extends Zend_Controller_Action
             'subject'   => trim((string) ($post['subject'] ?? '')),
             'message'   => (string) ($post['message'] ?? ''),
             'shipments' => array_values(array_filter((array) ($post['shipments'] ?? []), 'ctype_digit')),
-            'sendMail'  => array_values(array_intersect((array) ($post['sendMail'] ?? []), ['participant', 'datamanager', 'ptcc'])),
+            'sendMail'  => self::audienceFrom($post['sendMail'] ?? null),
             'managerDelivery' => Application_Service_Participants::normalizeManagerDelivery($post['managerDelivery'] ?? null),
             'labFilter' => Application_Service_Participants::normalizeLabFilter($post['labFilter'] ?? null),
         ];
+        $data['ccDataManagers'] = $data['sendMail'] === ['participant'] && !empty($post['ccDataManagers']);
         $editId = (int) ($post['emailId'] ?? 0);
+        // An email saved for several audiences, before each email had one,
+        // keeps them all when edited; the page locks its audience
+        if ($editId > 0) {
+            $saved = $emailParticipantDb->fetchEmail($editId);
+            $savedAudiences = array_values(array_intersect(explode(',', (string) ($saved['receivers'] ?? '')), self::AUDIENCES));
+            if (count($savedAudiences) > 1) {
+                $data['sendMail'] = $savedAudiences;
+                $data['ccDataManagers'] = !empty($saved['cc_data_managers']);
+            }
+        }
         $schedule = ($post['sendMode'] ?? 'now') === 'schedule';
         $back = $editId > 0 ? "/admin/email-participants?edit={$editId}" : '/admin/email-participants';
 
@@ -136,6 +170,7 @@ class Admin_EmailParticipantsController extends Zend_Controller_Action
                 return;
             }
             $auditDb->addNewAuditLog("Edited scheduled email #{$editId} to participants" . $detail, 'config');
+            self::offerFollowUp($editId, $data['sendMail']);
             if ($schedule) {
                 $alertMsg->message = sprintf($t->_('Changes saved. The email will be sent at %s.'), self::formatScheduledAt($scheduledAt));
             } else {
@@ -147,6 +182,7 @@ class Admin_EmailParticipantsController extends Zend_Controller_Action
         }
 
         $result = $participantService->saveParticipantEmail($data, $scheduledAt, $adminEmail);
+        self::offerFollowUp((int) $result['id'], $data['sendMail']);
         if ($schedule) {
             $auditDb->addNewAuditLog("Scheduled email #{$result['id']} to participants for {$scheduledAt}" . $detail, 'config');
             $alertMsg->message = sprintf($t->_('Email scheduled. It will be sent at %s.'), self::formatScheduledAt($scheduledAt));
@@ -163,6 +199,28 @@ class Admin_EmailParticipantsController extends Zend_Controller_Action
         }
         $alertMsg->message = $message;
         $this->redirect('/admin/email-participants?tab=history');
+    }
+
+    /**
+     * The one audience an email goes to. The form sends a single value; an
+     * array is taken at its first valid entry.
+     *
+     * @return string[] empty, or one audience
+     */
+    private static function audienceFrom($value): array
+    {
+        $valid = array_values(array_intersect((array) $value, self::AUDIENCES));
+        return array_slice($valid, 0, 1);
+    }
+
+    /** After a send or schedule, offer to write the same email for another audience */
+    private static function offerFollowUp(int $id, array $audiences): void
+    {
+        if ($id <= 0) {
+            return;
+        }
+        $followUp = new Zend_Session_Namespace('emailParticipantsFollowUp');
+        $followUp->email = ['id' => $id, 'audience' => $audiences[0] ?? ''];
     }
 
     /**
@@ -284,10 +342,11 @@ class Admin_EmailParticipantsController extends Zend_Controller_Action
 
         $data = [
             'shipments' => array_filter((array) $this->_getParam('shipments', [])),
-            'sendMail'  => array_filter((array) $this->_getParam('sendMail', [])),
+            'sendMail'  => self::audienceFrom($this->_getParam('sendMail')),
             'managerDelivery' => Application_Service_Participants::normalizeManagerDelivery($this->_getParam('managerDelivery')),
             'labFilter' => Application_Service_Participants::normalizeLabFilter($this->_getParam('labFilter')),
         ];
+        $data['ccDataManagers'] = $data['sendMail'] === ['participant'] && !empty($this->_getParam('ccDataManagers'));
 
         if (empty($data['shipments']) || empty($data['sendMail'])) {
             echo json_encode(['recipients' => [], 'invalid' => [], 'counts' => []]);
@@ -355,7 +414,7 @@ class Admin_EmailParticipantsController extends Zend_Controller_Action
         if ($request->isPost()) {
             $purpose = $request->getParam('mailPurpose');
             $common = new Application_Service_Common();
-            $this->view->result = $common->getEmailTemplate($purpose);
+            $this->view->result = $common->getEmailTemplate($purpose, (string) $request->getParam('audience', 'participant'));
         }
     }
 

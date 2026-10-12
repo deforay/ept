@@ -23,7 +23,7 @@ foreach ($this->schemes as $scheme) {
 
     .ep-field { margin-bottom: 14px; }
     .ep-field:last-child { margin-bottom: 0; }
-    .ep-field label:not(.ep-choice) { display: block; font-size: 13px; font-weight: 600; color: #333; margin: 0 0 6px; }
+    .ep-field label:not(.ep-choice):not(.ep-check) { display: block; font-size: 13px; font-weight: 600; color: #333; margin: 0 0 6px; }
     .ep-field label .mandatory { color: #c0392b; }
     .ep-field .ep-hint { color: #8a93a0; font-size: 12px; margin-top: 5px; }
 
@@ -53,6 +53,18 @@ foreach ($this->schemes as $scheme) {
     .ep-card .note-toolbar .note-btn:active { background: #e3eaf3; color: #1f4f82; border-color: #b6c4e0; box-shadow: none; }
     .ep-card .note-statusbar { background: #f7f8fa; border-top: 1px solid #e6e9ee; }
 
+    /* One row of buttons per choice; the picked one's help shows below */
+    .ep-seg { display: inline-flex; flex-wrap: wrap; border: 1px solid #ccd3dc; border-radius: 6px; overflow: hidden; }
+    .ep-seg .ep-choice { margin: 0; padding: 7px 14px; border: 0; border-right: 1px solid #ccd3dc; border-radius: 0; background: #fff; font-size: 13px; font-weight: 600; color: #444; cursor: pointer; box-shadow: none; }
+    .ep-seg .ep-choice:last-child { border-right: 0; }
+    .ep-seg .ep-choice input { position: absolute; opacity: 0; pointer-events: none; }
+    .ep-seg .ep-choice.selected { background: #337ab7; color: #fff; box-shadow: none; }
+    .ep-seg .ep-choice:not(.selected):hover { background: #f4f7fb; }
+    .ep-field .ep-seg-hint { margin-top: 6px; }
+    .ep-seg.ep-locked { opacity: .6; }
+    .ep-check { display: flex; align-items: center; gap: 8px; margin: 12px 0 0; font-weight: normal; font-size: 13px; color: #444; cursor: pointer; }
+    .ep-check input { margin: 0; }
+    .ep-followup { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 0 0 14px; }
     .ep-actions { display: flex; justify-content: flex-end; align-items: center; gap: 8px; }
     .ep-actions .ep-actions-note { margin-right: auto; color: #8a93a0; font-size: 12px; }
 
@@ -100,6 +112,7 @@ $editData = $editEmail === null ? null : [
     'audiences'   => array_values(array_filter(explode(',', (string) $editEmail['receivers']))),
     'managerDelivery' => Application_Service_Participants::normalizeManagerDelivery($editEmail['manager_delivery'] ?? null),
     'labFilter'   => Application_Service_Participants::normalizeLabFilter($editEmail['lab_filter'] ?? null),
+    'ccDataManagers' => !empty($editEmail['cc_data_managers']),
     'scheduledAt' => !empty($editEmail['scheduled_at']) ? str_replace(' ', 'T', substr($editEmail['scheduled_at'], 0, 16)) : '',
 ];
 ?>
@@ -108,8 +121,30 @@ $editData = $editEmail === null ? null : [
     <div class="ep-header">
         <a class="ep-back" href="/admin/index">&larr; <?= $this->htmlTranslate("Back"); ?></a>
         <h2><?= $this->htmlTranslate("Email Participants"); ?></h2>
-        <div class="ep-sub"><?= $this->htmlTranslate("Write one message. Each recipient in the shipments you select gets their own copy. Preview lists every recipient before you send."); ?></div>
+        <div class="ep-sub"><?= $this->htmlTranslate("Write an email for one audience. Each recipient in the shipments you select gets their own copy. Preview lists every recipient before you send."); ?></div>
     </div>
+
+    <?php
+    // Just sent or scheduled: offer the same shipments to the other audiences
+    if (!$editData && !empty($this->followUp['id'])) {
+        $others = array_diff(['participant', 'datamanager', 'ptcc'], [$this->followUp['audience']]);
+        if (!in_array('tb', $modules)) {
+            $others = array_diff($others, ['ptcc']);
+        }
+        $followUpNames = [
+            'participant' => $this->htmlTranslate("Participants"),
+            'datamanager' => $this->htmlTranslate("Data managers"),
+            'ptcc' => $this->htmlTranslate("PTCC managers"),
+        ];
+        if (!empty($others)) { ?>
+            <div class="alert alert-info ep-followup">
+                <?= $this->htmlTranslate("Write a version of this email for another audience, with the same shipments and labs:"); ?>
+                <?php foreach ($others as $audience) { ?>
+                    <a class="btn btn-default btn-sm" href="/admin/email-participants?from=<?= (int) $this->followUp['id'] ?>&amp;audience=<?= $audience ?>"><?= $followUpNames[$audience] ?> &rarr;</a>
+                <?php } ?>
+            </div>
+    <?php }
+    } ?>
 
     <ul class="nav nav-tabs ep-tabs" id="epTabs">
         <li data-tab="compose"><a href="javascript:void(0)" onclick="showTab('compose');"><?= $editData ? $this->htmlTranslate("Edit scheduled email") : $this->htmlTranslate("Compose"); ?></a></li>
@@ -164,57 +199,56 @@ $editData = $editEmail === null ? null : [
                         <select id="shipments" name="shipments[]" data-live-search="true" data-style="btn-ep-select" class="form-control" multiple="multiple" data-selected-text-format="count>3" title="<?= $this->htmlTranslate('Select one or more shipments') ?>"></select>
                         <div class="ep-hint"><?= $this->htmlTranslate("Newest first. Type a code or year to find older shipments."); ?></div>
                     </div>
+                    <?php
+                    // Compact choices: one row of buttons each, and one line of help for
+                    // whichever is picked (data-hint), so the form stays short
+                    $P = 'Application_Service_Participants';
+                    ?>
                     <div class="ep-field">
                         <label><?= $this->htmlTranslate("Send to"); ?> <span class="mandatory">*</span></label>
-                        <div class="ep-choice-grid" id="sendMailChoices">
-                            <label class="ep-choice">
-                                <input type="checkbox" name="sendMail[]" value="participant" checked>
-                                <span class="ep-choice-title"><?= $this->htmlTranslate("Participants"); ?></span>
-                                <span class="ep-choice-desc"><?= $this->htmlTranslate("Each lab enrolled in the shipment, at the lab's own email address."); ?></span>
+                        <div class="ep-seg ep-radio-group" id="sendMailChoices">
+                            <label class="ep-choice" data-hint="<?= $this->htmlTranslate("Each lab enrolled in the shipment, at the lab's own email address."); ?>">
+                                <input type="radio" name="sendMail" value="participant" checked> <?= $this->htmlTranslate("Participants"); ?>
                             </label>
-                            <label class="ep-choice">
-                                <input type="checkbox" name="sendMail[]" value="datamanager">
-                                <span class="ep-choice-title"><?= $this->htmlTranslate("Data Managers"); ?></span>
-                                <span class="ep-choice-desc"><?= $this->htmlTranslate("The people who enter results for those labs."); ?></span>
+                            <label class="ep-choice" data-hint="<?= $this->htmlTranslate("The people who enter results for those labs."); ?>">
+                                <input type="radio" name="sendMail" value="datamanager"> <?= $this->htmlTranslate("Data Managers"); ?>
                             </label>
                             <?php if (in_array('tb', $modules)) { ?>
-                                <label class="ep-choice">
-                                    <input type="checkbox" name="sendMail[]" value="ptcc">
-                                    <span class="ep-choice-title"><?= $this->htmlTranslate("PTCC Managers"); ?></span>
-                                    <span class="ep-choice-desc"><?= $this->htmlTranslate("Country coordinators for the labs in TB shipments."); ?></span>
+                                <label class="ep-choice" data-hint="<?= $this->htmlTranslate("Country coordinators for the labs in TB shipments."); ?>">
+                                    <input type="radio" name="sendMail" value="ptcc"> <?= $this->htmlTranslate("PTCC Managers"); ?>
                                 </label>
                             <?php } ?>
                         </div>
+                        <div class="ep-hint ep-seg-hint"></div>
+                        <div class="ep-hint" id="legacyAudienceNote" style="display:none;"><?= $this->htmlTranslate("This email was written for several audiences before each email had its own, and it still goes to all of them. To change who gets it, cancel it and write one email per audience."); ?></div>
+                        <label class="ep-check" id="ccOptionField">
+                            <input type="checkbox" name="ccDataManagers" id="ccDataManagers" value="1">
+                            <?= $this->htmlTranslate("Also Cc each lab's data managers on the lab's email"); ?>
+                        </label>
+                    </div>
+                    <div class="ep-field" id="managerDeliveryField" style="display:none;">
+                        <label><?= $this->htmlTranslate("How they get it"); ?></label>
+                        <div class="ep-seg ep-radio-group" id="managerDeliveryChoices">
+                            <label class="ep-choice" data-hint="<?= $this->htmlTranslate("One email per shipment, with a table of their labs. With several labs, the participant fields say “the 12 labs listed below”."); ?>">
+                                <input type="radio" name="managerDelivery" value="<?= $P::MANAGER_DELIVERY_COMBINED ?>" checked> <?= $this->htmlTranslate("One email listing all their labs"); ?>
+                            </label>
+                            <label class="ep-choice" data-hint="<?= $this->htmlTranslate("One email per lab per shipment, each about that lab only."); ?>">
+                                <input type="radio" name="managerDelivery" value="<?= $P::MANAGER_DELIVERY_PER_LAB ?>"> <?= $this->htmlTranslate("One email per lab"); ?>
+                            </label>
+                        </div>
+                        <div class="ep-hint ep-seg-hint"></div>
                     </div>
                     <div class="ep-field">
                         <label><?= $this->htmlTranslate("Which labs"); ?></label>
-                        <div class="ep-choice-grid ep-radio-group" id="labFilterChoices">
-                            <label class="ep-choice">
-                                <input type="radio" name="labFilter" value="<?= Application_Service_Participants::LAB_FILTER_ALL ?>" checked>
-                                <span class="ep-choice-title"><?= $this->htmlTranslate("All labs in the shipment"); ?></span>
-                                <span class="ep-choice-desc"><?= $this->htmlTranslate("Every lab enrolled, whether or not it has responded."); ?></span>
+                        <div class="ep-seg ep-radio-group" id="labFilterChoices">
+                            <label class="ep-choice" data-hint="<?= $this->htmlTranslate("Every lab enrolled, whether or not it has responded."); ?>">
+                                <input type="radio" name="labFilter" value="<?= $P::LAB_FILTER_ALL ?>" checked> <?= $this->htmlTranslate("All labs"); ?>
                             </label>
-                            <label class="ep-choice">
-                                <input type="radio" name="labFilter" value="<?= Application_Service_Participants::LAB_FILTER_PENDING ?>">
-                                <span class="ep-choice-title"><?= $this->htmlTranslate("Only labs that have not responded"); ?></span>
-                                <span class="ep-choice-desc"><?= $this->htmlTranslate("For reminders: labs with no response yet, or a draft not submitted. Managers hear only about those of their labs. Worked out again when a scheduled email is sent."); ?></span>
+                            <label class="ep-choice" data-hint="<?= $this->htmlTranslate("For reminders: labs with no response yet, or a draft not submitted. Worked out again when a scheduled email is sent."); ?>">
+                                <input type="radio" name="labFilter" value="<?= $P::LAB_FILTER_PENDING ?>"> <?= $this->htmlTranslate("Only labs that have not responded"); ?>
                             </label>
                         </div>
-                    </div>
-                    <div class="ep-field" id="managerDeliveryField" style="display:none;">
-                        <label><?= $this->htmlTranslate("How managers get it"); ?></label>
-                        <div class="ep-choice-grid ep-radio-group" id="managerDeliveryChoices">
-                            <label class="ep-choice">
-                                <input type="radio" name="managerDelivery" value="<?= Application_Service_Participants::MANAGER_DELIVERY_COMBINED ?>" checked>
-                                <span class="ep-choice-title"><?= $this->htmlTranslate("One email listing all their labs"); ?></span>
-                                <span class="ep-choice-desc"><?= $this->htmlTranslate("One email per shipment, with a table of their labs at the end. In it, the participant fields say “the 12 labs listed below”. Labs still get their own email, without the manager in Cc."); ?></span>
-                            </label>
-                            <label class="ep-choice">
-                                <input type="radio" name="managerDelivery" value="<?= Application_Service_Participants::MANAGER_DELIVERY_PER_LAB ?>">
-                                <span class="ep-choice-title"><?= $this->htmlTranslate("A separate email for each lab"); ?></span>
-                                <span class="ep-choice-desc"><?= $this->htmlTranslate("One email per lab per shipment. If Participants is also ticked, data managers are Cc'd on the lab's own email instead."); ?></span>
-                            </label>
-                        </div>
+                        <div class="ep-hint ep-seg-hint"></div>
                     </div>
                 </div>
 
@@ -230,13 +264,16 @@ $editData = $editEmail === null ? null : [
                                 'not_participated' => $this->htmlTranslate("Not Responded Reminder"),
                                 'deadline_extended' => $this->htmlTranslate("Deadline Extended"),
                             ];
-                            if (isset($this->templates) && !empty($this->templates)) {
-                                foreach ($this->templates as $row) {
-                                    if (isset($row['mail_purpose']) && !empty($row['mail_purpose'])) { ?>
-                                        <option value="<?php echo $this->escape($row['mail_purpose']); ?>"><?php echo $templateNames[$row['mail_purpose']] ?? $this->escape(ucwords(str_replace("_", " ", $row['mail_purpose']))); ?></option>
-                            <?php }
+                            // One option per purpose, listing the audiences it has a version for
+                            $templateAudiences = [];
+                            foreach ($this->templates ?? [] as $row) {
+                                if (!empty($row['mail_purpose'])) {
+                                    $templateAudiences[$row['mail_purpose']][] = $row['audience'] ?? 'participant';
                                 }
-                            } ?>
+                            }
+                            foreach ($templateAudiences as $purpose => $audiences) { ?>
+                                <option value="<?php echo $this->escape($purpose); ?>" data-audiences="<?= $this->escape(implode(',', $audiences)) ?>"><?php echo $templateNames[$purpose] ?? $this->escape(ucwords(str_replace("_", " ", $purpose))); ?></option>
+                            <?php } ?>
                         </select>
                     </div>
                     <div class="ep-field">
@@ -313,13 +350,38 @@ $editData = $editEmail === null ? null : [
                     <p class="ep-side-text"><?= $this->htmlTranslate("Click a field to insert it at the cursor, in the subject or the message. Each recipient gets their own value."); ?></p>
                     <ul class="ep-tokens">
                         <?php
-                        // Only the fields whose meaning depends on who the email goes to
+                        // The fields whose meaning depends on who the email goes to: for
+                        // participants, for managers getting one email listing their labs
+                        // (combined), or one email per lab (per_lab). The page shows the
+                        // one for the audience and option selected.
+                        $audienceHelp = [
+                            'recipient_name' => [
+                                'participant' => $this->htmlTranslate("The lab's name, or the person's for an individual participant."),
+                                'combined' => $this->htmlTranslate("Their own name."),
+                                'per_lab' => $this->htmlTranslate("Their own name."),
+                            ],
+                            'participant_name' => [
+                                'participant' => $this->htmlTranslate("The lab's name."),
+                                'combined' => $this->htmlTranslate("With one lab, its name. With several, “the 12 labs listed below”, and the table follows. After “Dear”, their own name."),
+                                'per_lab' => $this->htmlTranslate("The lab this email is about. After “Dear”, their own name."),
+                            ],
+                            'participant_id' => [
+                                'participant' => $this->htmlTranslate("The lab's participant ID."),
+                                'combined' => $this->htmlTranslate("With one lab, its ID. With several, “listed below”; written in brackets, it is left out."),
+                                'per_lab' => $this->htmlTranslate("The ID of the lab this email is about."),
+                            ],
+                            'country' => [
+                                'participant' => $this->htmlTranslate("The lab's country."),
+                                'combined' => $this->htmlTranslate("Their labs' country, or “the countries listed below” when they are in several."),
+                                'per_lab' => $this->htmlTranslate("The lab's country."),
+                            ],
+                            'lab_table' => [
+                                'participant' => $this->htmlTranslate("A one-row table: the lab's ID, name, country and response."),
+                                'combined' => $this->htmlTranslate("Their labs, with whether each has responded. Added after the first mention of the labs anyway; put it here to place it elsewhere."),
+                                'per_lab' => $this->htmlTranslate("A one-row table for the lab this email is about."),
+                            ],
+                        ];
                         $mergeDescriptions = [
-                            'recipient_name' => $this->htmlTranslate("Who the email is addressed to."),
-                            'participant_name' => $this->htmlTranslate("The lab or individual the email is about. In a manager's email about several labs: “the 12 labs listed below”."),
-                            'participant_id' => $this->htmlTranslate("In a manager's email about several labs: “listed below”."),
-                            'country' => $this->htmlTranslate("In a manager's email about several labs, the country only when they share one."),
-                            'lab_table' => $this->htmlTranslate("A manager's email about several labs gets this table at the end anyway. Put it here to place it elsewhere."),
                             // The address it fills in, so nobody has to go and look it up
                             // The address it fills in, with a way to change it. A new tab, so
                             // a half-written email on this page is not lost.
@@ -330,7 +392,7 @@ $editData = $editEmail === null ? null : [
                                 . $this->htmlTranslate("Change in Global Settings") . '</a>',
                         ];
                         foreach (Application_Service_Participants::MAIL_MERGE_FIELDS as $key => $legacy) { ?>
-                            <li title="<?= $legacy !== null ? sprintf($this->htmlTranslate("Older form: %s"), $legacy) : '' ?>"><span><?= $mergeLabels[$key] ?? $key ?></span><?php if (isset($mergeDescriptions[$key])) { ?><span class="ep-token-desc"><?= $mergeDescriptions[$key] ?></span><?php } ?><button type="button" onclick="insertToken('{{<?= $key ?>}}');">{{<?= $key ?>}}</button></li>
+                            <li title="<?= $legacy !== null ? sprintf($this->htmlTranslate("Older form: %s"), $legacy) : '' ?>"><span><?= $mergeLabels[$key] ?? $key ?></span><?php if (isset($audienceHelp[$key])) { ?><span class="ep-token-desc" data-help-participant="<?= $audienceHelp[$key]['participant'] ?>" data-help-combined="<?= $audienceHelp[$key]['combined'] ?>" data-help-per_lab="<?= $audienceHelp[$key]['per_lab'] ?>"><?= $audienceHelp[$key]['participant'] ?></span><?php } elseif (isset($mergeDescriptions[$key])) { ?><span class="ep-token-desc"><?= $mergeDescriptions[$key] ?></span><?php } ?><button type="button" onclick="insertToken('{{<?= $key ?>}}');">{{<?= $key ?>}}</button></li>
                         <?php } ?>
                     </ul>
                 </div>
@@ -449,6 +511,8 @@ $editData = $editEmail === null ? null : [
 <script type="text/javascript">
     // The scheduled email being edited, or null when composing a new one
     var EDIT_EMAIL = <?= json_encode($editData, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?>;
+    // Shipments, labs and audience carried over from an earlier email
+    var PREFILL = <?= json_encode($this->prefill ?? null, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?>;
     // The current time in the application time zone, as a datetime-local
     // value. The browser's own clock may be in another time zone.
     var SERVER_NOW = "<?= date('Y-m-d\TH:i') ?>";
@@ -509,13 +573,31 @@ $editData = $editEmail === null ? null : [
         if (EDIT_EMAIL) {
             $('#subject').val(EDIT_EMAIL.subject);
             $('#sendMailChoices input').each(function() {
-                this.checked = EDIT_EMAIL.audiences.indexOf(this.value) !== -1;
+                this.checked = this.value === EDIT_EMAIL.audiences[0];
             });
+            // Saved for several audiences before each email had one: it keeps
+            // them all (the server holds to that), so the choice is locked
+            if (EDIT_EMAIL.audiences.length > 1) {
+                $('#sendMailChoices input').prop('disabled', true);
+                $('#sendMailChoices').addClass('ep-locked');
+                $('#legacyAudienceNote').show();
+            }
+            $('#ccDataManagers').prop('checked', EDIT_EMAIL.ccDataManagers);
             $('#managerDeliveryChoices input').each(function() {
                 this.checked = this.value === EDIT_EMAIL.managerDelivery;
             });
             $('#labFilterChoices input').each(function() {
                 this.checked = this.value === EDIT_EMAIL.labFilter;
+            });
+        }
+        if (PREFILL) {
+            if (PREFILL.audience) {
+                $('#sendMailChoices input').each(function() {
+                    this.checked = this.value === PREFILL.audience;
+                });
+            }
+            $('#labFilterChoices input').each(function() {
+                this.checked = this.value === PREFILL.labFilter;
             });
         }
         getShipmentCodes();
@@ -556,18 +638,16 @@ $editData = $editEmail === null ? null : [
         });
         initSubjectHint();
 
-        $('#sendMailChoices input').on('change', function() {
-            $(this).closest('.ep-choice').toggleClass('selected', this.checked);
-            // The delivery choice only means something when managers are in the audience
-            $('#managerDeliveryField').toggle($.grep(getSendMail(), function(role) {
-                return role !== 'participant';
-            }).length > 0);
-        }).trigger('change');
+        $('#sendMailChoices input, #managerDeliveryChoices input').on('change', updateAudienceHelp);
+        $('#sendMailChoices input').on('change', offerTemplateForAudience);
         $('.ep-radio-group input').on('change', function() {
-            $(this).closest('.ep-radio-group').find('input').each(function() {
+            var group = $(this).closest('.ep-radio-group');
+            group.find('input').each(function() {
                 $(this).closest('.ep-choice').toggleClass('selected', this.checked);
             });
+            group.siblings('.ep-seg-hint').text(group.find('input:checked').closest('.ep-choice').attr('data-hint') || '');
         }).trigger('change');
+        updateAudienceHelp();
 
         if (EDIT_EMAIL) {
             $('#messageEditor').summernote('code', EDIT_EMAIL.content);
@@ -591,6 +671,53 @@ $editData = $editEmail === null ? null : [
         return $('#sendMailChoices input:checked').map(function() {
             return this.value;
         }).get();
+    }
+
+    /**
+     * A template's text is written for one audience. Switching audience with
+     * one loaded offers that audience's version, or lets the template go.
+     */
+    function offerTemplateForAudience() {
+        var select = $('#templates');
+        var purpose = select.val();
+        if (!purpose) {
+            return;
+        }
+        // updateAudienceHelp() has already cleared it when this audience has no version
+        if (confirm("<?= $this->jsTranslate("Load this template's version for the audience you picked? It replaces the subject and message.") ?>")) {
+            fillTemplate(purpose);
+        } else {
+            select.val('');
+        }
+    }
+
+    /**
+     * What the page says depends on who the email is for: the options that
+     * apply, which templates exist, and what each merge field will hold.
+     * help: 'participant', or a manager's 'combined' / 'per_lab'.
+     */
+    function updateAudienceHelp() {
+        var audience = getSendMail()[0] || 'participant';
+        var isManager = audience !== 'participant';
+        var help = isManager ? getManagerDelivery() : 'participant';
+
+        $('#ccOptionField').toggle(!isManager);
+        $('#managerDeliveryField').toggle(isManager);
+
+        $('.ep-token-desc[data-help-participant]').each(function() {
+            var text = $(this).attr('data-help-' + help);
+            $(this).text(text || '').toggle(!!text);
+        });
+
+        // Templates are kept per audience; only this audience's are offered
+        var select = $('#templates');
+        select.find('option[data-audiences]').each(function() {
+            var has = $(this).attr('data-audiences').split(',').indexOf(audience) !== -1;
+            $(this).prop('hidden', !has).prop('disabled', !has);
+        });
+        if (select.find('option:selected').prop('disabled')) {
+            select.val('');
+        }
     }
 
     // Where a clicked merge field lands: the subject or the message body,
@@ -717,8 +844,8 @@ $editData = $editEmail === null ? null : [
                     $("#shipments").html('');
                 } else {
                     $("#shipments").html(data);
-                    if (EDIT_EMAIL) {
-                        $("#shipments").val(EDIT_EMAIL.shipments);
+                    if (EDIT_EMAIL || PREFILL) {
+                        $("#shipments").val((EDIT_EMAIL || PREFILL).shipments);
                     } else if ($('#shipmentSlectedId').val() != '') {
                         $("#shipments").val($('#shipmentSlectedId').val());
                         $("#templates").val('not_participated');
@@ -812,6 +939,7 @@ $editData = $editEmail === null ? null : [
             sendMail: getSendMail(),
             managerDelivery: getManagerDelivery(),
             labFilter: getLabFilter(),
+            ccDataManagers: $('#ccDataManagers').is(':checked') ? 1 : 0,
             subject: $('#subject').val(),
             message: $('#message').val(),
             format: "html"
@@ -1145,10 +1273,13 @@ $editData = $editEmail === null ? null : [
         $.blockUI();
         $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'email-participants', 'action' => 'get-mail-template')); ?>", {
                 mailPurpose: value,
+                audience: getSendMail()[0] || 'participant',
                 format: "html"
             },
             function(data) {
-                if (data != undefined && data != null && data != "") {
+                if (data == undefined || data == null || $.trim(data) == "") {
+                    alert("<?= $this->jsTranslate("This template has no version for this audience yet. Add one under Mail Templates.") ?>");
+                } else {
                     let obj = jQuery.parseJSON(data);
                     $('#subject').val(obj.subject);
                     let html = (obj.content + '<br><br>' + obj.footer);

@@ -1363,11 +1363,14 @@ class Application_Service_Participants
      * - combined (the default): one email per shipment, with all their labs in
      *   it as {{lab_table}}. Labs still get their own email; managers are not
      *   Cc'd on it, since the summary already covers that lab.
-     * - per_lab: one email per lab per shipment. With participants selected
-     *   too, the lab is the To and its data managers are Cc'd on that same
-     *   email (a manager who shares the lab's address is dropped from Cc). A
-     *   manager only gets a To of their own for a lab with no deliverable
-     *   address — otherwise that lab would hear nothing at all.
+     * - per_lab: one email per lab per shipment.
+     *
+     * $data['ccDataManagers'] on a participants email Cc's each lab's data
+     * managers on that lab's own email (a manager who shares the lab's address
+     * is dropped from Cc). Emails saved before it existed asked for this by
+     * selecting participants and data managers together with per_lab; then a
+     * manager only gets a To of their own for a lab with no deliverable
+     * address — otherwise that lab would hear nothing at all.
      *
      * Every recipient carries 'labs': the labs its email is about.
      *
@@ -1379,7 +1382,8 @@ class Application_Service_Participants
 
         $roles = (array) ($data['sendMail'] ?? []);
         $combined = self::normalizeManagerDelivery($data['managerDelivery'] ?? null) === self::MANAGER_DELIVERY_COMBINED;
-        $ccDataManagers = !$combined && in_array('participant', $roles, true) && in_array('datamanager', $roles, true);
+        $ccDataManagers = in_array('participant', $roles, true)
+            && (!empty($data['ccDataManagers']) || (!$combined && in_array('datamanager', $roles, true)));
         $data['ccDataManagers'] = $ccDataManagers;
 
         $recipients = [];
@@ -1922,6 +1926,7 @@ class Application_Service_Participants
             'shipments' => array_filter(explode(',', (string) $email['shipment_code'])),
             'managerDelivery' => $email['manager_delivery'] ?? null,
             'labFilter' => $email['lab_filter'] ?? null,
+            'ccDataManagers' => !empty($email['cc_data_managers']),
         ];
 
         try {

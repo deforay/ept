@@ -13,10 +13,33 @@ if ($this->mailPurpose == 'new_shipment') {
 } elseif ($this->mailPurpose == 'announcement') {
     $title = 'Announcement';
 }
+$audience = $this->audience ?? 'participant';
+$audienceNames = [
+    'participant' => $this->htmlTranslate("Participants"),
+    'datamanager' => $this->htmlTranslate("Data managers"),
+    'ptcc' => $this->htmlTranslate("PTCC managers"),
+];
 ?>
 <div class="well">
     <fieldset>
         <form class="form-horizontal" role="form">
+            <div class="form-group">
+                <label for="audience<?php echo $this->mailPurpose; ?>" class="col-lg-3 control-label"><?= $this->htmlTranslate("Written for"); ?></label>
+                <div class="col-lg-6">
+                    <select class="form-control" id="audience<?php echo $this->mailPurpose; ?>" name="audience" onchange="loadMailTemplateFor(this, '<?php echo $this->escape($this->mailPurpose); ?>', this.value);">
+                        <?php foreach ($audienceNames as $value => $label) { ?>
+                            <option value="<?= $value ?>" <?= $value === $audience ? 'selected' : '' ?>><?= $label ?></option>
+                        <?php } ?>
+                    </select>
+                    <span class="help-block">
+                        <?php if ($audience === 'participant') { ?>
+                            <?= $this->htmlTranslate("The version emails ePT sends on its own use, and the one Email Participants offers when writing to participants."); ?>
+                        <?php } else { ?>
+                            <?= sprintf($this->htmlTranslate("Offered on Email Participants when writing to %s. Save it to create this version."), mb_strtolower(strip_tags($audienceNames[$audience]))); ?>
+                        <?php } ?>
+                    </span>
+                </div>
+            </div>
             <div class="form-group">
                 <label for="adminName" class="col-lg-3 control-label"><?= $this->translate->_("From Name"); ?> <span class="mandatory">*</span></label>
                 <div class="col-lg-6">
@@ -63,7 +86,7 @@ if ($this->mailPurpose == 'new_shipment') {
             <div class="form-group">
                 <label for="message" class="col-lg-3 control-label"><?= $this->translate->_("Key"); ?></label>
                 <div class="col-lg-6">
-                    <?php if (in_array($this->mailPurpose, ['not_participated', 'deadline_extended'], true)) { ?>
+                    <?php if (in_array($this->mailPurpose, ['not_participated', 'deadline_extended'], true) || $audience !== 'participant') { ?>
                         <?php // Sent through the shared merge, so the full {{field}} set works here ?>
                         <span class="help-block"><?= $this->htmlTranslate("Recipient name"); ?> : {{recipient_name}}</span>
                         <span class="help-block"><?= $this->htmlTranslate("Participant name"); ?> : {{participant_name}}</span>
@@ -77,6 +100,9 @@ if ($this->mailPurpose == 'new_shipment') {
                         <span class="help-block"><?= $this->htmlTranslate("PT survey date"); ?> : {{pt_survey_date}}</span>
                         <span class="help-block"><?= $this->htmlTranslate("PT survey year"); ?> : {{year}}</span>
                         <span class="help-block"><?= $this->htmlTranslate("Support email"); ?> : {{support_email}}</span>
+                        <?php if ($audience !== 'participant') { ?>
+                            <span class="help-block"><?= $this->htmlTranslate("Table of labs"); ?> : {{lab_table}}</span>
+                        <?php } ?>
                     <?php } else { ?>
                         <span class="help-block"><?= $this->translate->_("Lab Name/Participant Name"); ?> : ##NAME##</span>
                         <span class="help-block"><?= $this->translate->_("Shipment Code"); ?> : ##SHIPCODE##</span>
@@ -110,6 +136,21 @@ if ($this->mailPurpose == 'new_shipment') {
         $("#mailMessage<?php echo $this->mailPurpose; ?>,#footer<?php echo $this->mailPurpose; ?>").wysihtml5();
     });
 
+    // Each audience has its own version of a template: switching reloads this panel with it
+    function loadMailTemplateFor(select, purpose, audience) {
+        var panel = $(select).closest('.panel');
+        $.blockUI();
+        $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'mail-template', 'action' => 'get-mail-template'), 'default', true); ?>", {
+                template: purpose,
+                audience: audience,
+                format: "html"
+            },
+            function(data) {
+                $.unblockUI();
+                panel.html(data);
+            });
+    }
+
     function saveMailTemplate(purpose) {
         if ($('#adminName' + purpose).val() != '' && $('#adminEmail' + purpose).val() != '' && $('#subject' + purpose) && $('#mailMessage' + purpose)) {
             $.blockUI();
@@ -123,6 +164,7 @@ if ($this->mailPurpose == 'new_shipment') {
                     footer: $('#footer' + purpose).val(),
                     mailPurpose: $('#mailPurpose' + purpose).val(),
                     mailId: $('#mailId' + purpose).val(),
+                    audience: $('#audience' + purpose).val(),
                     format: "html"
                 },
                 function(data) {

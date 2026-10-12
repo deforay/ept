@@ -45,8 +45,10 @@ class Admin_MailTemplateController extends Zend_Controller_Action
         $commonServices = new Application_Service_Common();
         if ($request->isPost()) {
             $purpose = $this->_getParam('template');
-            $this->view->mailTemplateDetails = $commonServices->getEmailTemplate($purpose);
+            $audience = Application_Model_DbTable_MailTemplate::normalizeAudience($this->_getParam('audience'));
+            $this->view->mailTemplateDetails = $commonServices->getEmailTemplate($purpose, $audience);
             $this->view->mailPurpose = $purpose;
+            $this->view->audience = $audience;
         }
     }
 }

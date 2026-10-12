@@ -967,10 +967,10 @@ class Application_Service_Common
         }
         return @file_put_contents($iniPath, $updated, LOCK_EX) !== false;
     }
-    public function getEmailTemplate($purpose)
+    public function getEmailTemplate($purpose, string $audience = 'participant')
     {
         $db = new Application_Model_DbTable_MailTemplate();
-        return $db->getEmailTemplateDetails($purpose);
+        return $db->getEmailTemplateDetails($purpose, $audience);
     }
     public function getAllEmailTemplateDetails()
     {
