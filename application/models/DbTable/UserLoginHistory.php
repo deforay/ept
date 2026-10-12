@@ -91,7 +91,7 @@ class Application_Model_DbTable_UserLoginHistory extends Zend_Db_Table_Abstract
         try {
             $select = $this->getAdapter()->select()
                 ->from(['ulh' => $this->_name], ['login_attempted_datetime', 'ip_address', 'browser', 'operating_system'])
-                ->joinInner(['dm' => 'data_managers'], 'ulh.user_id = dm.dm_id', [])
+                ->joinInner(['dm' => 'data_manager'], 'ulh.user_id = dm.dm_id', [])
                 ->where('dm.primary_email = ?', $email)
                 ->where('ulh.login_context = ?', 'participant')
                 ->where('ulh.login_status = ?', 'success')
@@ -225,11 +225,11 @@ class Application_Model_DbTable_UserLoginHistory extends Zend_Db_Table_Abstract
             }
         }
 
-        // Join with data_managers table to get user details
+        // Join with data_manager table to get user details
         $sQuery = $this->getAdapter()->select()
             ->from(['dlh' => $this->_name])
             ->joinLeft(
-                ['dm' => 'data_managers'],
+                ['dm' => 'data_manager'],
                 'dlh.user_id = dm.dm_id',
                 ['first_name', 'last_name', 'primary_email']
             );
