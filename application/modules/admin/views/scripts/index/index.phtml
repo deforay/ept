@@ -1098,7 +1098,7 @@ $schemeRows = $this->schemeEngagement;
 								<tr class="<?php echo $round['rowClass'] ? 'row-' . $round['rowClass'] : ''; ?>">
 									<td>
 										<a class="round-code"
-											href="<?php echo $this->url(['module' => 'admin', 'controller' => 'shipment', 'action' => 'view', 'id' => $round['shipmentId']], 'default', true); ?>">
+											href="<?php echo $this->url(['module' => 'admin', 'controller' => 'shipment', 'action' => 'round-participants', 'id' => $round['shipmentId']], 'default', true); ?>">
 											<?php echo $this->escape($round['code']); ?>
 										</a>
 										<span class="round-scheme"><?php echo $this->escape($round['schemeName']); ?></span>
@@ -1186,7 +1186,7 @@ $schemeRows = $this->schemeEngagement;
 									</td>
 									<td>
 										<a class="next-action"
-											href="<?php echo $this->url(['module' => $round['nextAction']['module'], 'controller' => $round['nextAction']['controller'], 'action' => $round['nextAction']['action'], $round['nextAction']['param'] => $round['nextAction']['value']], 'default', true); ?>">
+											href="<?php echo $this->url(['module' => $round['nextAction']['module'], 'controller' => $round['nextAction']['controller'], 'action' => $round['nextAction']['action'], $round['nextAction']['param'] => $round['nextAction']['value']] + (isset($round['nextAction']['status']) ? ['status' => $round['nextAction']['status']] : []), 'default', true); ?>">
 											<?php echo $this->escape($round['nextAction']['label']); ?>
 										</a>
 									</td>

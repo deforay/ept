@@ -258,7 +258,7 @@ class Application_Service_Dashboard
      * Labels come back translated — the view escapes them and does not
      * translate again.
      *
-     * @return array{label: string, module: string, controller: string, action: string, param: string}
+     * @return array{key: string, label: string, module: string, controller: string, action: string, param: string, value: mixed, status?: string}
      */
     private function getNextAction(array $row, $isOpen)
     {
@@ -270,9 +270,10 @@ class Application_Service_Dashboard
                 'label' => Pt_Commons_TranslateUtility::safeTranslate('Awaiting responses'),
                 'module' => 'admin',
                 'controller' => 'shipment',
-                'action' => 'view',
+                'action' => 'round-participants',
                 'param' => 'id',
                 'value' => $row['shipment_id'],
+                'status' => 'outstanding',
             ];
         }
 
