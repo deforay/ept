@@ -52,7 +52,7 @@ if (!$pstatus && in_array('config-ept', $privileges)) {
 	if (isset($configData['participant_feedback']) && $configData['participant_feedback'] == 'yes') {
 		$spotlightItems[] = [
 			'id' => 'configure-feedback',
-			'title' => $this->translate->_('Configure Feedback'),
+			'title' => $this->translate->_('Feedback Questions'),
 			'category' => $this->translate->_('Configure'),
 			'icon' => 'icon-comments',
 			'url' => $this->url(['module' => 'admin', 'controller' => 'feedback-responses', 'action' => 'questions'], 'default', true),
@@ -60,7 +60,7 @@ if (!$pstatus && in_array('config-ept', $privileges)) {
 		];
 		$spotlightItems[] = [
 			'id' => 'enable-feedback',
-			'title' => $this->translate->_('Enable Feedback'),
+			'title' => $this->translate->_('Feedback Forms'),
 			'category' => $this->translate->_('Configure'),
 			'icon' => 'icon-comments-alt',
 			'url' => $this->url(['module' => 'admin', 'controller' => 'feedback-responses', 'action' => 'shipment-questions'], 'default', true),

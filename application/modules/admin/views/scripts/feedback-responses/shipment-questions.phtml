@@ -1,155 +1,150 @@
-<h4 style="width:100%;height:50px;border-bottom:1px solid #777;">
-    <div style="font-size:22.5px;line-height:36px;color:#333;float:left;"><?= $this->translate->_("Feedback Form"); ?>
+<?php
+
+use Pt_Commons_DateUtility as DateUtility;
+
+$forms = $this->forms ?? [];
+$today = date('Y-m-d');
+$audienceLabels = [
+    'passing-participants' => $this->htmlTranslate("Passing participants only"),
+    'failing-participants' => $this->htmlTranslate("Failing participants only"),
+];
+?>
+<style>
+    #feedbackForms > tbody > tr > td { vertical-align: middle; }
+    #feedbackForms .ff-code { font-weight: 600; color: #2b6cb0; }
+    #feedbackForms .ff-sub { color: #6b7280; font-size: 12px; margin-top: 2px; }
+    #feedbackForms .ff-num { text-align: center; font-variant-numeric: tabular-nums; }
+    #feedbackForms .ff-past { color: #9ca3af; }
+    #feedbackForms .ff-state { display: inline-block; padding: 1px 8px; border-radius: 10px; font-size: 12px; font-weight: 600; white-space: nowrap; }
+    #feedbackForms .ff-state--open { background: #e8f5ec; color: #2f6b3f; }
+    #feedbackForms .ff-state--waiting { background: #eef2f7; color: #4a5568; }
+    #feedbackForms .ff-state--closed { background: #f3f4f6; color: #6b7280; }
+    #feedbackForms .ff-state--off { background: #fff3cd; color: #7a5b1c; }
+    #feedbackForms .ff-actions { display: flex; gap: 4px; justify-content: flex-end; white-space: nowrap; }
+    #feedbackForms .ff-nowrap { white-space: nowrap; }
+    .ff-intro { color: #6b7280; font-size: 13px; margin: 0 0 12px; }
+</style>
+
+<div class="data-list">
+    <div class="data-list-head">
+        <h2><?= $this->htmlTranslate("Feedback Forms"); ?></h2>
+        <div class="data-list-actions">
+            <a class="btn btn-default btn-sm" href="/admin/feedback-responses/questions"><i class="icon-list"></i> <?= $this->htmlTranslate("Manage questions"); ?></a>
+            <a class="btn btn-primary btn-sm" href="/admin/feedback-responses/feedback-form"><i class="icon-plus"></i> <?= $this->htmlTranslate("New feedback form"); ?></a>
+        </div>
     </div>
-    <div style="margin-top:10px;"><a
-            href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'feedback-responses', 'action' => 'feedback-form'), 'default', true); ?>"
-            class="btn btn-primary" style="float:right;"><i
-                class="icon-plus"></i>&nbsp;&nbsp;<?= $this->translate->_("Create New Feedback Form"); ?></a></div>
-</h4>
-<table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered table-hover"
-    id="feedbackResponse">
-    <thead>
-        <tr>
-            <th scope="col" style="width:20%;"><?= $this->translate->_("Shipment Code"); ?></th>
-            <th scope="col" style="width:20%;"><?= $this->translate->_("Scheme Name"); ?></th>
-            <th scope="col" style="width:30%;"><?= $this->translate->_("Number of Question Mapped"); ?></th>
-            <th scope="col" style="width:10%;"><?= $this->translate->_("Action"); ?></th>
-        </tr>
-        <tr class="column-search-row">
-            <th scope="col"><input type="text" class="form-control input-sm col-search" data-col="0" placeholder="<?= $this->htmlTranslate('Search Survey Code'); ?>" /></th>
-            <th scope="col"><input type="text" class="form-control input-sm col-search" data-col="1" placeholder="<?= $this->htmlTranslate('Search Code'); ?>" /></th>
-            <th scope="col"></th>
-            <th scope="col"></th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td colspan="4" class="dataTables_empty"><?= $this->translate->_("Loading data from server"); ?></td>
-        </tr>
-    </tbody>
-</table>
+    <div class="data-list-body">
+        <p class="ff-intro"><?= $this->htmlTranslate("Participants can fill in a shipment's feedback form once the shipment is finalized, until its feedback deadline. Newest shipments are listed first."); ?></p>
+        <?php if (empty($forms)) { ?>
+            <div class="alert alert-info"><?= $this->htmlTranslate("No feedback forms yet. Create one for a shipment to start collecting feedback."); ?></div>
+        <?php } ?>
+        <table class="table table-striped table-hover" id="feedbackForms">
+            <thead>
+                <tr>
+                    <th scope="col"><?= $this->htmlTranslate("Shipment"); ?></th>
+                    <th scope="col"><?= $this->htmlTranslate("Response deadline"); ?></th>
+                    <th scope="col"><?= $this->htmlTranslate("Feedback"); ?></th>
+                    <th scope="col"><?= $this->htmlTranslate("Feedback deadline"); ?></th>
+                    <th scope="col" style="text-align:center;"><?= $this->htmlTranslate("Questions"); ?></th>
+                    <th scope="col" style="text-align:center;"><?= $this->htmlTranslate("Responses"); ?></th>
+                    <th scope="col"><span class="sr-only"><?= $this->htmlTranslate("Actions"); ?></span></th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($forms as $row) {
+                    $encodedId = base64_encode((string) $row['shipment_id']);
+                    $openForDays = (int) ($row['open_for_days'] ?? 0) > 0 ? (int) $row['open_for_days'] : Application_Service_FeedBack::DEFAULT_OPEN_FOR_DAYS;
+                    $deadline = !empty($row['response_deadline']) ? substr($row['response_deadline'], 0, 10) : '';
+                    $expiry = !empty($row['feedback_expiry_date']) ? substr($row['feedback_expiry_date'], 0, 10) : '';
+                    $finalized = !empty($row['finalized_at']) || $row['status'] === 'finalized';
 
-<script type="text/javascript" charset="utf-8">
-    /* Table initialisation */
-    var oTable = null;
-    $(document).ready(function () {
-        oTable = $('#feedbackResponse').dataTable({
+                    // Where feedback stands: switched off, waiting for finalization, open, or closed
+                    if (($row['collect_feedback'] ?? 'no') !== 'yes') {
+                        $state = ['off', $this->htmlTranslate("Switched off")];
+                        $stateTitle = $this->htmlTranslate("Collect Feedback is off for this shipment, so participants don't see this form. Saving the form switches it on.");
+                    } elseif (!$finalized) {
+                        $state = ['waiting', $this->htmlTranslate("Opens when finalized")];
+                        $stateTitle = '';
+                    } elseif ($expiry !== '' && $expiry >= $today) {
+                        $state = ['open', $this->htmlTranslate("Open")];
+                        $stateTitle = '';
+                    } else {
+                        $state = ['closed', $this->htmlTranslate("Closed")];
+                        $stateTitle = '';
+                    } ?>
+                    <tr>
+                        <td data-order="<?= $this->escape(($row['shipment_date'] ?? '') . sprintf('%010d', $row['shipment_id'])) ?>">
+                            <div class="ff-code"><?= $this->escape($row['shipment_code']) ?></div>
+                            <div class="ff-sub">
+                                <?= $this->escape($row['scheme_name'] ?? '') ?>
+                                <?php if (!empty($row['shipment_date'])) { ?>
+                                    &middot; <span class="ff-nowrap"><?= $this->escape(DateUtility::humanReadableDateFormat($row['shipment_date'])) ?></span>
+                                <?php } ?>
+                            </div>
+                        </td>
+                        <td data-order="<?= $this->escape($deadline) ?>" class="ff-nowrap <?= ($deadline !== '' && $deadline < $today) ? 'ff-past' : '' ?>">
+                            <?= $deadline !== '' ? $this->escape(DateUtility::humanReadableDateFormat($deadline)) : '&mdash;' ?>
+                        </td>
+                        <td>
+                            <span class="ff-state ff-state--<?= $state[0] ?>" <?= $stateTitle !== '' ? 'title="' . $stateTitle . '"' : '' ?>><?= $state[1] ?></span>
+                            <?php if (!empty($audienceLabels[$row['form_show_to'] ?? ''])) { ?>
+                                <div class="ff-sub"><?= $audienceLabels[$row['form_show_to']] ?></div>
+                            <?php } ?>
+                        </td>
+                        <td data-order="<?= $this->escape($expiry) ?>" class="ff-nowrap">
+                            <?php if ($finalized && $expiry !== '') { ?>
+                                <span class="<?= $expiry < $today ? 'ff-past' : '' ?>"><?= $this->escape(DateUtility::humanReadableDateFormat($expiry)) ?></span>
+                            <?php } else { ?>
+                                <span class="ff-sub" style="margin:0;"><?= sprintf($this->htmlTranslate("%d days after finalization"), $openForDays) ?></span>
+                            <?php } ?>
+                        </td>
+                        <td class="ff-num"><?= (int) $row['questionCount'] ?></td>
+                        <td class="ff-num"><?= (int) ($row['responseCount'] ?? 0) ?></td>
+                        <td>
+                            <div class="ff-actions">
+                                <a class="btn btn-default btn-xs" href="/admin/feedback-responses/feedback-form/id/<?= $encodedId ?>"><i class="icon-pencil"></i> <?= $this->htmlTranslate("Edit"); ?></a>
+                                <a class="btn btn-default btn-xs" href="/admin/feedback-responses/feedback-form/id/<?= $encodedId ?>/type/clone" title="<?= $this->htmlTranslate('Use this form for another shipment'); ?>"><i class="icon-copy"></i> <?= $this->htmlTranslate("Copy"); ?></a>
+                                <?php if ((int) ($row['responseCount'] ?? 0) > 0) { ?>
+                                    <a class="btn btn-default btn-xs" href="javascript:void(0);" onclick="downloadResponses(<?= (int) $row['shipment_id'] ?>);" title="<?= $this->htmlTranslate('Download the responses as a spreadsheet'); ?>"><i class="icon-download-alt"></i> <?= $this->htmlTranslate("Responses"); ?></a>
+                                <?php } ?>
+                            </div>
+                        </td>
+                    </tr>
+                <?php } ?>
+            </tbody>
+        </table>
+    </div>
+</div>
 
-            "bJQueryUI": false,
+<script type="text/javascript">
+    $(document).ready(function() {
+        $('#feedbackForms').dataTable({
             "bAutoWidth": false,
-            "bSortCellsTop": true,
-            "bInfo": true,
-            "bScrollCollapse": true,
             "sPaginationType": "bootstrap",
-            "bRetrieve": true,
-            "aoColumns": [{
-                "sClass": "center"
-            },
-            {
-                "sClass": "center",
-            },
-            {
-                "sClass": "center",
-            },
-            {
-                "sClass": "center",
-                "bSortable": false
-            }
-            ],
-            "aaSorting": [
-                [0, "ASC"]
-            ],
-            "bProcessing": true,
-            "bServerSide": true,
-            "sAjaxSource": "<?php echo $this->url(array('module' => 'admin', 'controller' => 'feedback-responses', 'action' => 'shipment-questions', 'format' => 'html')); ?>",
-            "fnServerData": function (sSource, aoData, fnCallback) {
-                $.ajax({
-                    "dataType": 'json',
-                    "type": "POST",
-                    "url": sSource,
-                    "data": aoData,
-                    "success": fnCallback
-                });
-            },
-             "fnRowCallback": function (nRow, aData) {
-                // Highlight rows with no mapped data managers (the DM column emits
-                // <em class="unmapped-tag">…</em> when the count is 0)
-                if ($(nRow).find('.unmapped-tag').length > 0) {
-                    $(nRow).addClass('row-unmapped');
+            "iDisplayLength": 25,
+            // Rows arrive newest first; keep that order until someone sorts
+            "aaSorting": [],
+            "aoColumns": [null, null, null, null, null, null, {
+                "bSortable": false,
+                "bSearchable": false
+            }]
+        });
+    });
+
+    function downloadResponses(shipmentId) {
+        $.blockUI();
+        $.post("/admin/feedback-responses/get-feedback-response-report", {
+                sid: shipmentId,
+                format: "html"
+            })
+            .done(function(data) {
+                if ($.trim(data) !== '') {
+                    document.location.href = '/temporary/' + $.trim(data);
                 } else {
-                    $(nRow).removeClass('row-unmapped');
+                    alert("<?= $this->jsTranslate("No responses found for this shipment."); ?>");
                 }
-                return nRow;
-            }
-        });
-
-    $("#mappingFilter").change(function () {
-        oTable.fnDraw();
-    });
-
-    bindColSearch('#feedbackResponse', function (value, colIdx) {
-        oTable.fnFilter(value, colIdx);
-    });
-
-     // Data Managers column — expand/collapse child row with on-demand AJAX fetch
-        $('#feedbackResponse tbody').on('click', 'a.toggle-dm-row', function (e) {
-            e.preventDefault();
-            var $btn = $(this);
-            var participantId = $btn.data('participant-id');
-            var tr = $btn.closest('tr')[0];
-            if (oTable.fnIsOpen(tr)) {
-                oTable.fnClose(tr);
-                $btn.removeClass('btn-success').addClass('btn-primary');
-                return;
-            }
-            // Inject a placeholder child row, then populate via AJAX
-            var placeholder = '<div style="padding:12px;color:#888;"><i class="icon-refresh"></i> <?= $this->translate->_("Loading data managers…"); ?></div>';
-            oTable.fnOpen(tr, placeholder, 'dm-child-container');
-            $btn.removeClass('btn-primary').addClass('btn-success');
-            $.post(
-                "<?php echo $this->url(array('module' => 'admin', 'controller' => 'feedback-responses', 'action' => 'shipment-questions', 'format' => 'html')); ?>",
-                { id: participantId },
-                function (html) {
-                    // fnOpen wraps our content in a td inside a tr — replace that td's content
-                    var $childTr = $(tr).next('tr');
-                    $childTr.find('td').first().html(html);
-                }
-            ).fail(function () {
-                var $childTr = $(tr).next('tr');
-                $childTr.find('td').first().html('<div style="padding:12px;color:#a94442;"><?= $this->jsTranslate("Failed to load data managers. Please try again."); ?></div>');
-            });
-        });
-
-        // Inline filter for the expanded DM list (only present when > 5 mapped DMs)
-        $('#feedbackResponse tbody').on('input', 'input.dm-filter-input', function () {
-            var q = $(this).val().toLowerCase().trim();
-            var $rows = $(this).closest('.dm-child-row').find('tr.dm-row');
-            if (q === '') {
-                $rows.show();
-                return;
-            }
-            $rows.each(function () {
-                var blob = $(this).attr('data-dm-search') || '';
-                $(this).toggle(blob.indexOf(q) !== -1);
-            });
-        });
-
-
-    });
-
-    function generateFeedbackResponseReports(shipmentId) {
-        // $.blockUI();
-        $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'feedback-responses', 'action' => 'get-feedback-response-report')); ?>", {
-            sid: shipmentId,
-            format: "html"
-        },
-            function (data) {
-                if (data != "") {
-                    $.unblockUI();
-                    document.location.href = '/temporary/' + data;
-                } else {
-                    alert("<?= $this->jsTranslate("Response not found for this shipment"); ?>");
-                }
+            })
+            .always(function() {
                 $.unblockUI();
             });
     }

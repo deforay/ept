@@ -386,10 +386,10 @@ $helpPageKey = "$controllerName/$actionName";
 									<li class="divider"></li>
 									<?php if (isset($configData['participant_feedback']) && $configData['participant_feedback'] == 'yes') { ?>
 										<li id="FeedbackQuestions"><a
-												href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'feedback-responses', 'action' => 'questions'), 'default', true); ?>"><?= $this->translate->_("Configure Feedback"); ?></a>
+												href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'feedback-responses', 'action' => 'questions'), 'default', true); ?>"><?= $this->translate->_("Feedback Questions"); ?></a>
 										</li>
 										<li id="ShipmentQustionsMap"><a
-												href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'feedback-responses', 'action' => 'shipment-questions'), 'default', true); ?>"><?= $this->translate->_("Enable Feedback"); ?></a>
+												href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'feedback-responses', 'action' => 'shipment-questions'), 'default', true); ?>"><?= $this->translate->_("Feedback Forms"); ?></a>
 										</li>
 									<?php } ?>
 									<?php

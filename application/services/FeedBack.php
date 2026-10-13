@@ -161,6 +161,33 @@ class Application_Service_FeedBack
         return $counts;
     }
 
+    /**
+     * Every shipment with a feedback form, newest first, with what the list page
+     * shows: its response deadline, when feedback opens or closes, and how many
+     * questions and responses the form has.
+     */
+    public function getFeedbackFormList(): array
+    {
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $questionCounts = $db->select()
+            ->from('r_participant_feedback_form_question_map', ['shipment_id', 'questionCount' => new Zend_Db_Expr('COUNT(*)')])
+            ->group('shipment_id');
+        $responseCounts = $db->select()
+            ->from('participant_feedback_answer', ['shipment_id', 'responseCount' => new Zend_Db_Expr('COUNT(DISTINCT map_id)')])
+            ->group('shipment_id');
+
+        return $db->fetchAll(
+            $db->select()
+                ->from(['s' => 'shipment'], ['shipment_id', 'shipment_code', 'shipment_date', 'response_deadline', 'status', 'collect_feedback', 'finalized_at', 'feedback_expiry_date'])
+                ->join(['q' => $questionCounts], 'q.shipment_id = s.shipment_id', ['questionCount'])
+                ->joinLeft(['r' => $responseCounts], 'r.shipment_id = s.shipment_id', ['responseCount'])
+                ->joinLeft(['f' => 'r_participant_feedback_form'], 'f.shipment_id = s.shipment_id', ['form_show_to', 'open_for_days'])
+                ->joinLeft(['sl' => 'scheme_list'], 'sl.scheme_id = s.scheme_type', ['scheme_name'])
+                ->order('s.shipment_date DESC')
+                ->order('s.shipment_id DESC')
+        );
+    }
+
     /** How many days after finalization this shipment's feedback form stays open */
     public static function openForDays($shipmentId): int
     {

@@ -21,7 +21,6 @@ class Admin_FeedbackResponsesController extends Zend_Controller_Action
         /** @var Zend_Controller_Action_Helper_AjaxContext $ajaxContext */
         $ajaxContext = $this->_helper->getHelper('AjaxContext');
         $ajaxContext->addActionContext('questions', 'html')
-            ->addActionContext('shipment-questions', 'html')
             ->addActionContext('get-feedback-response-report', 'html')
             ->initContext();
         $this->_helper->layout()->pageName = 'configMenu';
@@ -72,13 +71,8 @@ class Admin_FeedbackResponsesController extends Zend_Controller_Action
 
     public function shipmentQuestionsAction()
     {
-        /** @var Zend_Controller_Request_Http $request */
-        $request = $this->getRequest();
-        if ($request->isPost()) {
-            $parameters = $this->getAllParams();
-            $feedbackService = new Application_Service_FeedBack();
-            $feedbackService->getAllFeedBackResponses($parameters, 'mapped');
-        }
+        $feedbackService = new Application_Service_FeedBack();
+        $this->view->forms = $feedbackService->getFeedbackFormList();
     }
 
     public function feedbackFormAction()
