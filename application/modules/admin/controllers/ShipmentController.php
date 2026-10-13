@@ -702,6 +702,7 @@ class Admin_ShipmentController extends Zend_Controller_Action
         $this->view->status = $result['status'];
         $this->view->statusLabel = $result['statusLabel'];
         $this->view->tabs = $result['tabs'];
+        $this->view->tabCounts = $result['tabCounts'];
         $this->view->labCount = $result['count'];
     }
 }

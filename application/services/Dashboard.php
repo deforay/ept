@@ -772,45 +772,6 @@ class Application_Service_Dashboard
     }
 
     /**
-     * Shared lab-detail lookup for the drill-down list above.
-     *
-     * ASSUMPTION — unconfirmed against your real schema: a `participant`
-     * table keyed by participant_id with lab_name/email/phone columns.
-     * None of this was visible in anything you've shared so far. Adjust
-     * the column list/table name to match your actual participants table
-     * (it may live in Application_Service_Participants already — if so,
-     * prefer calling a method there over this raw query).
-     */
-    private function fetchLabDetails(array $participantIds, array $extra = [])
-    {
-        if (empty($participantIds)) {
-            return [];
-        }
-
-        $placeholders = implode(',', array_fill(0, count($participantIds), '?'));
-        $rows = $this->db->fetchAll(
-            "SELECT participant_id, lab_name, first_name, last_name, email, phone, unique_identifier, c.iso_name, p.state, p.district   
-             FROM participant As p
-             JOIN countries AS c ON c.id = p.country 
-             WHERE participant_id IN ($placeholders)
-             ORDER BY lab_name ASC",
-            $participantIds
-        );
-
-        return array_map(function ($row) use ($extra) {
-            return array_merge([
-                'participantId' => $row['participant_id'],
-                'labName' => $row['lab_name'] ?? trim($row['first_name'] . ' ' . $row['last_name']),
-                'email' => $row['email'],
-                'phone' => $row['phone'],
-                'iso_name' => $row['iso_name'],
-                'state' => $row['state'],
-                'district' => $row['district'],
-            ], $extra);
-        }, $rows);
-    }
-
-    /**
      * Task 3 drill-down — DataTables server-side source for the round
      * participants list (Outstanding / Late / Unable to test). Same calling
      * convention as Application_Model_DbTable_Participants::getAllParticipants():
@@ -820,9 +781,6 @@ class Application_Service_Dashboard
      * country, participant status) plus DataTables' own paging/search/sort — but
      * scoped underneath the shipment_id + response_status bucket, which is not
      * user-changeable (that's what the tab strip controls, via a page reload).
-     *
-     * ASSUMPTION: p.phone exists on `participant` — same assumption
-     * fetchLabDetails() already carries; adjust if your schema differs.
      */
     public function getRoundParticipantsDataTable($shipmentId, $status, array $parameters)
     {
@@ -845,9 +803,10 @@ class Application_Service_Dashboard
         $bucketIds = $bucket['ids'];
 
         // Column order must match the view's <thead> / aoColumns exactly:
-        // Participant ID, Name, Email, Phone, Country, State, District.
+        // Participant ID (the lab's own unique_identifier, not the row id),
+        // Name, Email, Phone, Country, State, District.
         $aColumns = [
-            'p.participant_id',
+            'p.unique_identifier',
             new Zend_Db_Expr(Application_Model_DbTable_Participants::participantNameExpr('p')),
             'p.email',
             'p.phone',
@@ -878,11 +837,13 @@ class Application_Service_Dashboard
 
         $sQuery = $this->db->select()
             ->from(['p' => 'participant'], [
-                'p.participant_id', 'p.lab_name', 'p.first_name', 'p.last_name',
+                'p.participant_id', 'p.unique_identifier', 'p.lab_name', 'p.first_name', 'p.last_name',
                 'p.email', 'p.phone', 'p.state', 'p.district',
                 'participantName' => new Zend_Db_Expr(Application_Model_DbTable_Participants::participantNameExpr('p')),
             ])
-            ->join(['c' => 'countries'], 'c.id = p.country', ['iso_name'])
+            // LEFT: a lab with no country set is still outstanding — an inner
+            // join dropped it, so this list ran one short of the dashboard.
+            ->joinLeft(['c' => 'countries'], 'c.id = p.country', ['iso_name'])
             // Empty bucket: a sentinel that matches no participant, since an
             // empty IN () list is a SQL syntax error and DataTables still
             // needs a well-formed empty response.
@@ -953,15 +914,19 @@ class Application_Service_Dashboard
             'aaData' => [],
         ];
 
+        // DataTables renders cells as HTML, so every value is escaped here.
+        $esc = static fn ($v) => htmlspecialchars((string) ($v ?? ''), ENT_QUOTES, 'UTF-8');
         foreach ($rResult as $aRow) {
+            $name = $aRow['participantName'] ?: trim($aRow['first_name'] . ' ' . $aRow['last_name']);
+            $email = (string) ($aRow['email'] ?? '');
             $output['aaData'][] = [
-                $aRow['participant_id'],
-                $aRow['participantName'] ?: trim($aRow['first_name'] . ' ' . $aRow['last_name']),
-                $aRow['email'],
-                $aRow['phone'],
-                $aRow['iso_name'],
-                $aRow['state'],
-                $aRow['district'],
+                '<span class="pid">' . $esc($aRow['unique_identifier']) . '</span>',
+                '<a href="/admin/participants/edit/id/' . (int) $aRow['participant_id'] . '">' . $esc($name) . '</a>',
+                $email !== '' ? '<a href="mailto:' . $esc($email) . '">' . $esc($email) . '</a>' : '',
+                $esc($aRow['phone']),
+                $esc($aRow['iso_name']),
+                $esc($aRow['state']),
+                $esc($aRow['district']),
             ];
         }
 
@@ -989,15 +954,24 @@ class Application_Service_Dashboard
         }
 
         $bucket = $this->resolveDrilldown($shipment, $status);
-        $labs = $this->fetchLabDetails($bucket['ids'], ['context' => $bucket['context']]);
+
+        // One count per tab, so the tab strip says where the labs are before
+        // anyone clicks. Each is the same resolution the draw uses.
+        $tabs = self::drilldownStatuses($shipment['status']);
+        $tabCounts = [];
+        foreach (array_keys($tabs) as $key) {
+            $tabCounts[$key] = $key === $bucket['status']
+                ? count($bucket['ids'])
+                : count($this->resolveDrilldown($shipment, $key)['ids']);
+        }
 
         return [
             'shipment' => $shipment,
             'status' => $bucket['status'],
             'statusLabel' => $bucket['label'],
-            'tabs' => self::drilldownStatuses($shipment['status']),
-            'count' => count($labs),
-            'labs' => $labs,
+            'tabs' => $tabs,
+            'tabCounts' => $tabCounts,
+            'count' => count($bucket['ids']),
         ];
     }
 
