@@ -221,19 +221,27 @@ if ($alertStatus === 'success') {
 		if (u && !u.value) { u.focus(); }
 	});
 
+	// Submit once: a double-click used to start two captcha checks, each submitting
+	var loginSubmitting = false;
+
 	function validateLogin() {
+		if (loginSubmitting) {
+			return;
+		}
 		flag = deforayValidator.init({
 			formId: 'loginForm'
 		});
 		if (flag) {
 			challenge_field = document.getElementById("challengeResponse").value;
 			if (challenge_field != "") {
+				loginSubmitting = true;
 				$.post("<?php echo $this->url(array(), 'checkCaptchaRoute', true); ?>", {
 						challenge_field: challenge_field,
 						format: "html"
 					},
 					function(data) {
 						if (data == 'fail') {
+							loginSubmitting = false;
 							alert("<?= $this->jsTranslate("Text you entered from the image is incorrect. Please try again") ?>");
 							getCaptcha('capChaw');
 							document.getElementById("challengeResponse").value = "";
@@ -242,6 +250,9 @@ if ($alertStatus === 'success') {
 							$.blockUI();
 							document.getElementById('loginForm').submit();
 						}
+					})
+					.fail(function() {
+						loginSubmitting = false;
 					});
 			} else {
 				alert("<?= $this->jsTranslate("Please enter the text from the image to proceed.") ?>");

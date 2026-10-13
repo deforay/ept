@@ -429,6 +429,21 @@ class Application_Service_DataManagers
         foreach ($events as $entry) {
             $ts = strtotime((string) $entry['when']);
             $isDup = false;
+            // Sign-ins from the same IP under a minute apart are one sign-in
+            // submitted twice. A different IP is always listed: this is a
+            // security notice, and a second sign-in elsewhere must show.
+            if ($entry['kind'] === 'login' && ($entry['ip'] ?? '') !== '') {
+                foreach ($deduped as $kept) {
+                    if (
+                        $kept['kind'] === 'login'
+                        && ($kept['ip'] ?? '') === $entry['ip']
+                        && abs(strtotime((string) $kept['when']) - $ts) < 60
+                    ) {
+                        $isDup = true;
+                        break;
+                    }
+                }
+            }
             if ($entry['kind'] === 'reset' && empty($entry['confirmed'])) {
                 foreach ($deduped as $i => $kept) {
                     if ($kept['kind'] === 'reset' && !empty($kept['confirmed'])

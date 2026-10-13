@@ -228,19 +228,28 @@ $attemptTimer = ($attemptUser !== null) ? ($attemptTimers[$attemptUser] ?? null)
 		<?php } ?>
 	});
 
+	// A double-click (or Enter then a click) used to start two captcha checks, and
+	// each one submitted the form: two sign-ins a second apart
+	var loginSubmitting = false;
+
 	function validateLogin() {
+		if (loginSubmitting) {
+			return;
+		}
 		flag = deforayValidator.init({
 			formId: 'loginForm'
 		});
 		if (flag) {
 			challenge_field = document.getElementById("challengeResponse").value;
 			if (challenge_field != "") {
+				loginSubmitting = true;
 				$.post("<?php echo $this->url([], 'checkCaptchaRoute', true); ?>", {
 						challenge_field: challenge_field,
 						format: "html"
 					},
 					function(data) {
 						if (data == 'fail') {
+							loginSubmitting = false;
 							alert("<?= $this->jsTranslate('The text you entered from the image is incorrect. Please try again.'); ?>");
 							getCaptcha('capChaw');
 							document.getElementById("challengeResponse").value = "";
@@ -249,6 +258,9 @@ $attemptTimer = ($attemptUser !== null) ? ($attemptTimers[$attemptUser] ?? null)
 							$.blockUI();
 							document.getElementById('loginForm').submit();
 						}
+					})
+					.fail(function() {
+						loginSubmitting = false;
 					});
 			} else {
 				alert("<?= $this->jsTranslate('Please enter the text from the image to proceed.'); ?>");
