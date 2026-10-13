@@ -20,8 +20,17 @@ $audienceLabels = [
     #feedbackForms .ff-state--waiting { background: #eef2f7; color: #4a5568; }
     #feedbackForms .ff-state--closed { background: #f3f4f6; color: #6b7280; }
     #feedbackForms .ff-state--off { background: #fff3cd; color: #7a5b1c; }
-    #feedbackForms .ff-actions { display: flex; gap: 4px; justify-content: flex-end; white-space: nowrap; }
+    #feedbackForms .ff-actions { display: flex; gap: 4px; justify-content: flex-start; white-space: nowrap; }
     #feedbackForms .ff-nowrap { white-space: nowrap; }
+    /* .data-list quietens row buttons to pale blue, which vanishes on the striped
+       rows here: Edit is the main action, the rest are outlined on white */
+    .data-list #feedbackForms.dataTable .ff-actions .btn { font-size: 12px; padding: 4px 10px; }
+    .data-list #feedbackForms.dataTable .ff-actions .btn-primary { background: #4a6fa5; border-color: #3a5a8a; color: #fff; }
+    .data-list #feedbackForms.dataTable .ff-actions .btn-primary:hover,
+    .data-list #feedbackForms.dataTable .ff-actions .btn-primary:focus { background: #3a5a8a; border-color: #2f4a73; color: #fff; }
+    .data-list #feedbackForms.dataTable .ff-actions .btn-default { background: #fff; border-color: #9fb3cf; color: #3a5a8a; }
+    .data-list #feedbackForms.dataTable .ff-actions .btn-default:hover,
+    .data-list #feedbackForms.dataTable .ff-actions .btn-default:focus { background: #4a6fa5; border-color: #3a5a8a; color: #fff; }
     .ff-intro { color: #6b7280; font-size: 13px; margin: 0 0 12px; }
 </style>
 
@@ -102,7 +111,7 @@ $audienceLabels = [
                         <td class="ff-num"><?= (int) ($row['responseCount'] ?? 0) ?></td>
                         <td>
                             <div class="ff-actions">
-                                <a class="btn btn-default btn-xs" href="/admin/feedback-responses/feedback-form/id/<?= $encodedId ?>"><i class="icon-pencil"></i> <?= $this->htmlTranslate("Edit"); ?></a>
+                                <a class="btn btn-primary btn-xs" href="/admin/feedback-responses/feedback-form/id/<?= $encodedId ?>"><i class="icon-pencil"></i> <?= $this->htmlTranslate("Edit"); ?></a>
                                 <a class="btn btn-default btn-xs" href="/admin/feedback-responses/feedback-form/id/<?= $encodedId ?>/type/clone" title="<?= $this->htmlTranslate('Use this form for another shipment'); ?>"><i class="icon-copy"></i> <?= $this->htmlTranslate("Copy"); ?></a>
                                 <?php if ((int) ($row['responseCount'] ?? 0) > 0) { ?>
                                     <a class="btn btn-default btn-xs" href="javascript:void(0);" onclick="downloadResponses(<?= (int) $row['shipment_id'] ?>);" title="<?= $this->htmlTranslate('Download the responses as a spreadsheet'); ?>"><i class="icon-download-alt"></i> <?= $this->htmlTranslate("Responses"); ?></a>
