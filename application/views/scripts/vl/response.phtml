@@ -1273,7 +1273,7 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
 		if (flag) {
 			if ($("#testDate").val() != "") {
 				if (moment($("#receipt_date").val()).isAfter($("#test_date").val())) {
-					alert('<?= $this->jsTranslate("Testing Date has to come after the Shipment Receipt Date"); ?>');
+					alert('<?= $this->jsTranslate("The testing date cannot be before the shipment receipt date"); ?>');
 					return false;
 				}
 			}
@@ -1430,7 +1430,7 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
 		if ($(oldId).val() != "") {
 
 			if ($(changeId).val() != $(oldId).val()) {
-				if (confirm("<?= $this->jsTranslate("Do you want to update this email id?"); ?>")) {
+				if (confirm("<?= $this->jsTranslate("Do you want to update this email address?"); ?>")) {
 					mailConfirmation = true;
 					confirmEmailId = confirmId;
 					updateEmailId = changeId;

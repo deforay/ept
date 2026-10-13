@@ -848,7 +848,7 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
 		}
 		// $("#shipmentTestDate").val(moment(maxDate).format('DD-MMM-YYYY'));
 		if (moment($("#receipt_date").val()).isAfter($("#test_date").val())) {
-			alert('<?= $this->jsTranslate("Testing Date has to come after the Panel Receipt Date"); ?>');
+			alert('<?= $this->jsTranslate("The testing date cannot be before the panel receipt date"); ?>');
 			return false;
 		}
 		$(".oneDecimal").css('background-color', '');

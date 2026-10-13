@@ -724,7 +724,7 @@ if ($this->reqFrom == "admin") {
         });
         if (flag) {
             if (moment($("#receipt_date").val()).isAfter($("#test_date").val())) {
-                alert('<?= $this->jsTranslate("Testing Date has to come after the Shipment Receipt Date"); ?>');
+                alert('<?= $this->jsTranslate("The testing date cannot be before the shipment receipt date"); ?>');
                 return false;
             }
             $.blockUI();

@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: e-PT\n"
 "Report-Msgid-Bugs-To: support@deforay.com\n"
-"POT-Creation-Date: 2026-10-13 18:35+0530\n"
+"POT-Creation-Date: 2026-10-13 18:36+0530\n"
 "PO-Revision-Date: 2022-06-07 20:34+0530\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -18679,9 +18679,10 @@ msgstr "View PT Result"
 
 #: application/modules/reports/views/scripts/shipment-response-report/index.phtml:454
 #: application/views/scripts/participant/response-report.phtml:130
+#: application/views/scripts/participant/shipment-response-report.phtml:391
 #: application/views/scripts/participant/shipments-reports.phtml:126
 #, fuzzy
-msgid "Please select date range"
+msgid "Please select a date range"
 msgstr "PT Participant Info"
 
 #: application/modules/reports/views/scripts/shipment-response-report/index.phtml:457
@@ -20770,7 +20771,7 @@ msgstr ""
 #: application/views/scripts/eid/response.phtml:840
 #: application/views/scripts/recency/response.phtml:748
 #: application/views/scripts/vl/response.phtml:1276
-msgid "Testing Date has to come after the Shipment Receipt Date"
+msgid "The testing date cannot be before the shipment receipt date"
 msgstr ""
 
 #: application/views/scripts/covid19/response.phtml:1278
@@ -21043,7 +21044,7 @@ msgstr ""
 
 #: application/views/scripts/custom-test/response.phtml:869
 #: application/views/scripts/tb/response.phtml:851
-msgid "Testing Date has to come after the Panel Receipt Date"
+msgid "The testing date cannot be before the panel receipt date"
 msgstr ""
 
 #: application/views/scripts/custom-test/response.phtml:874
@@ -21667,7 +21668,7 @@ msgstr "Change Password"
 
 #: application/views/scripts/eid/response.phtml:969
 #: application/views/scripts/vl/response.phtml:1433
-msgid "Do you want to update this email id?"
+msgid "Do you want to update this email address?"
 msgstr ""
 
 #: application/views/scripts/error/error.phtml:114
@@ -22963,11 +22964,6 @@ msgstr "All Schemes"
 #: application/views/scripts/participant/schemeinfo.phtml:9
 msgid "Enrolled Labd/Tester"
 msgstr ""
-
-#: application/views/scripts/participant/shipment-response-report.phtml:391
-#, fuzzy
-msgid "Please select a date range"
-msgstr "PT Participant Info"
 
 #: application/views/scripts/participant/shipments-reports.phtml:67
 #, fuzzy

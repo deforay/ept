@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ePT\n"
 "Report-Msgid-Bugs-To: support@deforay.com\n"
-"POT-Creation-Date: 2026-10-13 18:35+0530\n"
+"POT-Creation-Date: 2026-10-13 18:36+0530\n"
 "PO-Revision-Date: 2026-07-07 08:32+0530\n"
 "Last-Translator: Amit <amit@deforay.com>\n"
 "Language-Team: ePT\n"
@@ -18861,9 +18861,10 @@ msgstr "Résultat de l'évaluation"
 
 #: application/modules/reports/views/scripts/shipment-response-report/index.phtml:454
 #: application/views/scripts/participant/response-report.phtml:130
+#: application/views/scripts/participant/shipment-response-report.phtml:391
 #: application/views/scripts/participant/shipments-reports.phtml:126
-msgid "Please select date range"
-msgstr "Veuillez sélectionner une période"
+msgid "Please select a date range"
+msgstr "Sélectionnez une période"
 
 #: application/modules/reports/views/scripts/shipment-response-report/index.phtml:457
 #: application/views/scripts/participant/shipment-response-report.phtml:394
@@ -20916,9 +20917,11 @@ msgstr "Veuillez saisir le mot de passe pour confirmer"
 #: application/views/scripts/eid/response.phtml:840
 #: application/views/scripts/recency/response.phtml:748
 #: application/views/scripts/vl/response.phtml:1276
-msgid "Testing Date has to come after the Shipment Receipt Date"
-msgstr ""
-"La date du test doit être postérieure à la date de réception de l'expédition"
+msgid "The testing date cannot be before the shipment receipt date"
+msgstr "La date du test ne peut pas être antérieure à la date de réception de l'expédition"
+"La date du test ne peut pas être antérieure à la date de réception de "
+"l'expéditionLa date du test doit être postérieure à la date de réception de "
+"l'expédition"
 
 #: application/views/scripts/covid19/response.phtml:1278
 #: application/views/scripts/covid19/response.phtml:1302
@@ -21186,8 +21189,9 @@ msgstr ""
 
 #: application/views/scripts/custom-test/response.phtml:869
 #: application/views/scripts/tb/response.phtml:851
-msgid "Testing Date has to come after the Panel Receipt Date"
-msgstr "La date du test doit être postérieure à la date de réception du panel"
+msgid "The testing date cannot be before the panel receipt date"
+msgstr "La date du test ne peut pas être antérieure à la date de réception du panel"
+"La date du test ne peut pas être antérieure à la date de réception du panel"
 
 #: application/views/scripts/custom-test/response.phtml:874
 msgid "Please ensure all SPC and Probe values are valid numbers"
@@ -21792,7 +21796,7 @@ msgstr "Veuillez saisir le nom de l'autre test."
 
 #: application/views/scripts/eid/response.phtml:969
 #: application/views/scripts/vl/response.phtml:1433
-msgid "Do you want to update this email id?"
+msgid "Do you want to update this email address?"
 msgstr "Voulez-vous mettre à jour cette adresse e-mail ?"
 
 #: application/views/scripts/error/error.phtml:114
@@ -23024,10 +23028,6 @@ msgstr "Programme - DTS"
 #: application/views/scripts/participant/schemeinfo.phtml:9
 msgid "Enrolled Labd/Tester"
 msgstr "Laboratoire/testeur inscrit(e)"
-
-#: application/views/scripts/participant/shipment-response-report.phtml:391
-msgid "Please select a date range"
-msgstr "Sélectionnez une période"
 
 #: application/views/scripts/participant/shipments-reports.phtml:67
 msgid "Download Excel Report"

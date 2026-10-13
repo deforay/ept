@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ePT\n"
 "Report-Msgid-Bugs-To: support@deforay.com\n"
-"POT-Creation-Date: 2026-10-13 18:35+0530\n"
+"POT-Creation-Date: 2026-10-13 18:36+0530\n"
 "PO-Revision-Date: 2026-07-07 08:33+0530\n"
 "Last-Translator: Amit <amit@deforay.com>\n"
 "Language-Team: \n"
@@ -18703,8 +18703,9 @@ msgstr "Kết quả đánh giá"
 
 #: application/modules/reports/views/scripts/shipment-response-report/index.phtml:454
 #: application/views/scripts/participant/response-report.phtml:130
+#: application/views/scripts/participant/shipment-response-report.phtml:391
 #: application/views/scripts/participant/shipments-reports.phtml:126
-msgid "Please select date range"
+msgid "Please select a date range"
 msgstr "Vui lòng chọn khoảng thời gian"
 
 #: application/modules/reports/views/scripts/shipment-response-report/index.phtml:457
@@ -20747,8 +20748,8 @@ msgstr "Vui lòng nhập mật khẩu để xác nhận"
 #: application/views/scripts/eid/response.phtml:840
 #: application/views/scripts/recency/response.phtml:748
 #: application/views/scripts/vl/response.phtml:1276
-msgid "Testing Date has to come after the Shipment Receipt Date"
-msgstr "Ngày xét nghiệm phải sau ngày nhận mẫu của vòng ngoại kiểm"
+msgid "The testing date cannot be before the shipment receipt date"
+msgstr "Ngày xét nghiệm không được trước ngày nhận mẫu của vòng ngoại kiểm"
 
 #: application/views/scripts/covid19/response.phtml:1278
 #: application/views/scripts/covid19/response.phtml:1302
@@ -21016,8 +21017,8 @@ msgstr ""
 
 #: application/views/scripts/custom-test/response.phtml:869
 #: application/views/scripts/tb/response.phtml:851
-msgid "Testing Date has to come after the Panel Receipt Date"
-msgstr "Ngày xét nghiệm phải sau ngày nhận bộ mẫu"
+msgid "The testing date cannot be before the panel receipt date"
+msgstr "Ngày xét nghiệm không được trước ngày nhận bộ mẫu"
 
 #: application/views/scripts/custom-test/response.phtml:874
 msgid "Please ensure all SPC and Probe values are valid numbers"
@@ -21619,7 +21620,7 @@ msgstr "Vui lòng nhập tên xét nghiệm khác."
 
 #: application/views/scripts/eid/response.phtml:969
 #: application/views/scripts/vl/response.phtml:1433
-msgid "Do you want to update this email id?"
+msgid "Do you want to update this email address?"
 msgstr "Bạn có muốn cập nhật địa chỉ email này không?"
 
 #: application/views/scripts/error/error.phtml:114
@@ -22846,10 +22847,6 @@ msgstr "Chương trình - DTS"
 #: application/views/scripts/participant/schemeinfo.phtml:9
 msgid "Enrolled Labd/Tester"
 msgstr "Phòng xét nghiệm tham gia/người thực hiện"
-
-#: application/views/scripts/participant/shipment-response-report.phtml:391
-msgid "Please select a date range"
-msgstr "Vui lòng chọn khoảng thời gian"
 
 #: application/views/scripts/participant/shipments-reports.phtml:67
 msgid "Download Excel Report"
