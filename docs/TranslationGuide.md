@@ -56,26 +56,59 @@ Pick one translation for each term. Use it in every string, on every screen.
 
 Rotating between two words for the same thing makes the interface unreadable. A laboratory that sees three different words for "shipment" cannot tell whether they mean three different things.
 
-These are the terms already fixed in the shipped catalogs. Match them.
+These are the fixed terms. Match them in every string.
 
 | English | French (fr_FR) | Vietnamese (vi_VN) |
 | --- | --- | --- |
 | Scheme | Programme | Chương trình |
 | Shipment | Expédition | Vòng ngoại kiểm |
 | Round | Cycle | Vòng |
-| Participant | Participant | Người tham gia |
-| Laboratory | Laboratoire | Phòng thí nghiệm |
+| PT survey | Enquête PT | Khảo sát PT |
+| Participant | Participant | Đơn vị tham gia |
+| Laboratory, lab | Laboratoire | Phòng xét nghiệm |
+| Lab ID | ID du laboratoire | Mã phòng xét nghiệm |
+| Data manager | Gestionnaire de données | Người quản lý dữ liệu |
+| PTCC | PTCC | PTCC |
+| Enroll | Inscrire | Đăng ký |
+| Sample | Échantillon | Mẫu |
+| Panel (of samples) | Panel | Bộ mẫu |
+| Panel (screen area) | Panneau | Khung |
+| Dried tube specimen | Échantillon sur tube séché | Mẫu ống khô |
+| Test kit | Kit de test | Bộ sinh phẩm |
+| Assay | Technique | Phương pháp xét nghiệm |
+| Platform (instrument) | Plateforme | Hệ thống máy |
+| Viral load | Charge virale | Tải lượng virus |
+| Result | Résultat | Kết quả |
 | Response | Réponse | Phản hồi |
-| Deadline | Date d'échéance | Ngày hết hạn |
+| Deadline | Date limite | Hạn nộp kết quả |
+| Expiry date | Date d'expiration | Ngày hết hạn |
 | Outstanding | En attente | Chưa phản hồi |
-| Pass | Réussi | Đạt |
-| Fail | Echec | Không Đạt |
-| Excluded | Exclu | Không bao gồm |
-| Not evaluated | Non évalué | Chưa được đánh giá |
 | Evaluate | Évaluer | Đánh giá |
-| Finalize | Finaliser | Hoàn thiện |
+| Not evaluated | Non évalué | Chưa được đánh giá |
+| Pass | Réussi | Đạt |
+| Fail | Échec | Không đạt |
+| Satisfactory | Satisfaisant | Đạt |
+| Unsatisfactory | Insatisfaisant | Không đạt |
+| Excluded | Exclu | Loại trừ |
+| Finalize | Finaliser | Hoàn tất |
 | Report | Rapport | Báo cáo |
 | Score | Score | Điểm |
+| Certificate | Certificat | Giấy chứng nhận |
+| Corrective action | Action corrective | Hành động khắc phục |
+| Email | E-mail | Email |
+| Email template | Modèle d'e-mail | Mẫu email |
+| Login (account name) | Identifiant | Tên đăng nhập |
+| Log in | Se connecter | Đăng nhập |
+
+Notes on terms that read differently from the English word:
+
+- A participant is a laboratory, not a person. Vietnamese uses "Đơn vị tham gia", the usual wording in external quality assessment.
+- Vietnamese "Phòng thí nghiệm" means a research laboratory. A testing laboratory is "Phòng xét nghiệm".
+- "Deadline" is the last day to submit results. Vietnamese "Ngày hết hạn" means an expiry date. Keep it for kit and sample expiry.
+- "Excluded" means left out of the evaluation. Vietnamese "Không bao gồm" means "not included" and reads as a missing item.
+- "Finalize" locks the round. Vietnamese "Hoàn thiện" means "perfect" or "polish". Use "Hoàn tất".
+- French uses "Laboratoire" in full. Do not write "labo".
+- Keep product, assay, test kit and instrument names in their original form. They are brand names.
 
 Adding a language? Fill in this table for it first. Translate afterwards.
 
@@ -100,7 +133,7 @@ Real examples found in the shipped catalogs:
 | Next action | extraction | extraction | Action suivante |
 | unable to test | Activer les tests personnalisés | Enable custom tests | non réalisés |
 | Rounds completed in | Các cột được đánh dấu trong | The columns marked in | Số vòng đã hoàn thành trong |
-| No finalized rounds yet. | Chưa có tệp nhật ký nào | There are no log files | Chưa có vòng nào được hoàn thiện |
+| No finalized rounds yet. | Chưa có tệp nhật ký nào | There are no log files | Chưa có vòng nào được hoàn tất |
 
 Read the English. Read the guess. If the guess does not say the same thing, replace it and clear the mark.
 

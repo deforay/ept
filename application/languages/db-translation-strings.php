@@ -395,8 +395,12 @@ _('Recent');
 _('RECENT');
 // r_possibleresult.response
 _('recent');
+// r_dts_corrective_actions.corrective_action
+_('Record the date the panel was actually rehydrated. A panel can only be rehydrated after it has been received.');
 // r_site_type.site_type
 _('Region');
+// r_dts_corrective_actions.description
+_('Rehydration date is before the panel receipt date.');
 // r_network_tiers.network_name
 _('Research Institute');
 // r_dts_corrective_actions.description
