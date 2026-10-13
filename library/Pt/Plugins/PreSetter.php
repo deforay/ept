@@ -328,7 +328,12 @@ class Pt_Plugins_PreSetter extends Zend_Controller_Plugin_Abstract
         $controller = $request->getControllerName();
         $action = $request->getActionName();
 
-        if ($request->getParam('from') === 'admin') {
+        $from = [$request->getUserParam('from')];
+        if ($request instanceof Zend_Controller_Request_Http) {
+            $from[] = $request->getQuery('from');
+            $from[] = $request->getPost('from');
+        }
+        if (in_array('admin', $from, true)) {
             return false;
         }
         // The public contact form's participantId is whatever the visitor typed
@@ -387,17 +392,27 @@ class Pt_Plugins_PreSetter extends Zend_Controller_Plugin_Abstract
      */
     private static function idsFromParams(Zend_Controller_Request_Abstract $request, array $names): ?array
     {
+        // Every source, not just the one getParam() picks (route, then query, then
+        // post): a controller reading getPost() must not get an id this never saw
+        $sources = [$request->getUserParams()];
+        if ($request instanceof Zend_Controller_Request_Http) {
+            $sources[] = $request->getQuery();
+            $sources[] = $request->getPost();
+        }
+
         $ids = [];
         foreach ($names as $name) {
-            foreach ((array) $request->getParam($name) as $value) {
-                if (is_array($value) || trim((string) $value) === '') {
-                    continue;
+            foreach ($sources as $source) {
+                foreach ((array) ($source[$name] ?? []) as $value) {
+                    if (is_array($value) || trim((string) $value) === '') {
+                        continue;
+                    }
+                    $id = self::decodeId((string) $value);
+                    if ($id === null) {
+                        return null;
+                    }
+                    $ids[] = $id;
                 }
-                $id = self::decodeId((string) $value);
-                if ($id === null) {
-                    return null;
-                }
-                $ids[] = $id;
             }
         }
         return $ids;
