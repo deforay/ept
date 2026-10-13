@@ -1590,7 +1590,7 @@ class ReportGenerator
         } elseif ($evalRow['report_type'] == 'finalized') {
             $reportCompletedStatus = 'finalized';
             $link = '/reports/shipments';
-            $feedbackExpiryDate = date('Y-m-d', strtotime("+56 days"));
+            $feedbackExpiryDate = date('Y-m-d', strtotime('+' . Application_Service_FeedBack::openForDays($evalRow['shipment_id']) . ' days'));
         }
 
         // Send completion alert email

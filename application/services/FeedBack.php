@@ -6,6 +6,9 @@ use PhpOffice\PhpSpreadsheet\Spreadsheet;
 
 class Application_Service_FeedBack
 {
+    /** Days a feedback form stays open after finalization when its form doesn't say */
+    public const DEFAULT_OPEN_FOR_DAYS = 56;
+
     protected $tempUploadDirectory;
 
     /** @var Zend_Translate */
@@ -158,6 +161,18 @@ class Application_Service_FeedBack
         return $counts;
     }
 
+    /** How many days after finalization this shipment's feedback form stays open */
+    public static function openForDays($shipmentId): int
+    {
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $days = $db->fetchOne(
+            $db->select()
+                ->from('r_participant_feedback_form', 'open_for_days')
+                ->where('shipment_id = ?', (int) $shipmentId)
+        );
+        return (int) $days > 0 ? (int) $days : self::DEFAULT_OPEN_FOR_DAYS;
+    }
+
     /** How many questions this shipment's form has, from the per-request map. */
     public static function questionCountFor($shipmentId): int
     {
@@ -215,7 +230,7 @@ class Application_Service_FeedBack
 
         $form = $db->fetchRow(
             $db->select()
-                ->from('r_participant_feedback_form', ['form_content', 'form_show_to'])
+                ->from('r_participant_feedback_form', ['form_content', 'form_show_to', 'open_for_days'])
                 ->where('shipment_id = ?', $shipmentId)
         );
 
@@ -227,12 +242,14 @@ class Application_Service_FeedBack
                 'selected' => !empty($row['mappedShipmentId']),
                 'mandatory' => ($row['is_response_mandatory'] === 'yes'),
                 'sortOrder' => $row['sort_order'],
+                'showTo' => $row['question_show_to'] ?: 'all-participants',
             ];
         }
 
         return [
             'formContent' => $form['form_content'] ?? '',
             'formShowTo' => $form['form_show_to'] ?? '',
+            'openForDays' => (int) ($form['open_for_days'] ?? 0) > 0 ? (int) $form['open_for_days'] : self::DEFAULT_OPEN_FOR_DAYS,
             'questions' => $questions,
         ];
     }

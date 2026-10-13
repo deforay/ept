@@ -1,409 +1,757 @@
 <?php
 
 $isClone = isset($this->type) && $this->type == 'clone';
+$sid = !empty($this->sid) ? (int) $this->sid : null;
 
-// Question picker state comes straight from the question list, which carries this
-// shipment's mapping (or, in clone mode, the source shipment's).
-$questionResults = $sortOrder = $mandatory = [];
-if (isset($this->questions) && !empty($this->questions)) {
-    foreach ($this->questions as $row) {
-        if (empty($row['mappedShipmentId'])) {
-            continue;
-        }
-        $questionResults[] = $row['question_id'];
-        if ($row['is_response_mandatory'] == 'yes') {
-            $mandatory[] = (string) $row['question_id'];
-        }
-        $sortOrder[(string) $row['question_id']] = $row['sort_order'];
+$form = $this->result['feedback_form_results'] ?? null;
+$formContent = $form['form_content'] ?? '';
+$formShowTo = ($form['form_show_to'] ?? '') ?: 'all-participants';
+$hasSavedForm = !empty($form) && !$isClone;
+
+// Shipments, newest first, with the code of the one this page is for
+$shipments = $this->shipments ?? [];
+usort($shipments, fn($a, $b) => (int) $b['shipment_id'] <=> (int) $a['shipment_id']);
+$shipmentCode = '';
+foreach ($shipments as $row) {
+    if ((int) $row['shipment_id'] === $sid) {
+        $shipmentCode = $row['shipment_code'];
     }
 }
-$hasPrefilledQuestions = !empty($questionResults);
-$formContent = $this->result['feedback_form_results']['form_content'] ?? '';
-$formShowTo = $this->result['feedback_form_results']['form_show_to'] ?? '';
-$rpffId = $this->result['feedback_form_results']['rpff_id'] ?? null;
+
+// Shipments that already have a form, so picking one can say so
+$shipmentsWithForm = [];
+foreach ($this->copySources ?? [] as $row) {
+    $shipmentsWithForm[(int) $row['shipment_id']] = true;
+}
+if ($sid && !empty($form)) {
+    $shipmentsWithForm[$sid] = true;
+}
+
+// The question list in the same shape the copy request returns, so one render path
+// serves the page load and a copy
+$questionState = [];
+foreach ($this->questions ?? [] as $row) {
+    $questionState[] = [
+        'questionId' => (int) $row['question_id'],
+        'label' => $row['question_text'] . ' (' . $row['question_code'] . ')',
+        'selected' => !empty($row['mappedShipmentId']),
+        'mandatory' => ($row['is_response_mandatory'] ?? '') === 'yes',
+        'sortOrder' => $row['sort_order'],
+        'showTo' => ($row['question_show_to'] ?? '') ?: 'all-participants',
+    ];
+}
+
+// How long the form stays open after finalization, and when this shipment's did open
+$openForDays = (int) ($form['open_for_days'] ?? 0) > 0 ? (int) $form['open_for_days'] : Application_Service_FeedBack::DEFAULT_OPEN_FOR_DAYS;
+$finalizedOn = (!$isClone && !empty($this->feedbackWindow['finalized_at'])) ? substr($this->feedbackWindow['finalized_at'], 0, 10) : '';
+
+// Attachments belong to the shipment's own folder, so a copied form starts without them
+$files = $isClone ? [] : ($this->result['feedback_form_files_results'] ?? []);
+
+$audiences = [
+    'all-participants' => [
+        'label' => $this->htmlTranslate("All participants"),
+        'hint' => $this->htmlTranslate("Every participant in the shipment."),
+    ],
+    'passing-participants' => [
+        'label' => $this->htmlTranslate("Passing only"),
+        'hint' => $this->htmlTranslate("Only participants who passed this shipment."),
+    ],
+    'failing-participants' => [
+        'label' => $this->htmlTranslate("Failing only"),
+        'hint' => $this->htmlTranslate("Only participants who failed this shipment."),
+    ],
+];
 ?>
+<link rel="stylesheet" type="text/css" href="<?php echo $this->baseUrl('css/summernote.min.css'); ?>">
+<link href="<?php echo $this->baseUrl('css/select2.css'); ?>" rel="stylesheet" />
 <style>
-    .dropdown-menu.open {
-        width: 100%;
-        overflow: auto;
-    }
+    .ff-wrap { max-width: 1200px; margin: 0 auto; }
+    .ff-header { padding: 0 4px 14px; }
+    .ff-header h2 { margin: 0 0 4px; font-weight: 600; font-size: 22px; }
+    .ff-header .ff-sub { color: #888; font-size: 13px; }
+    .ff-header .ff-back { float: right; color: #337ab7; text-decoration: none; font-size: 13px; }
+    .ff-header .ff-back:hover { text-decoration: underline; }
 
-    .dropdown-menu.open li {
-        text-wrap: wrap;
-    }
+    .ff-layout { display: flex; gap: 18px; align-items: flex-start; }
+    .ff-layout .ff-main { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; gap: 14px; }
+    .ff-layout .ff-side { flex: 0 0 300px; display: flex; flex-direction: column; gap: 14px; position: sticky; top: 70px; }
 
-    .selected i.glyphicon.glyphicon-ok.icon-ok.check-mark {
-        display: contents !important;
+    .ff-card { background: #fff; border: 1px solid #e6e9ee; border-radius: 8px; padding: 18px; box-shadow: 0 1px 2px rgba(0,0,0,0.04); }
+    .ff-card h4 { margin: 0 0 14px; font-size: 14px; font-weight: 600; color: #333; display: flex; align-items: center; gap: 8px; }
+    .ff-card h4 .ff-num { width: 22px; height: 22px; border-radius: 50%; background: #555; color: #fff; display: inline-flex; align-items: center; justify-content: center; font-size: 12px; flex: 0 0 auto; }
+    .ff-card h4 .ff-h-aside { margin-left: auto; font-weight: normal; font-size: 12px; color: #8a93a0; }
+    .ff-card h4 .ff-h-aside a { color: #337ab7; }
+
+    .ff-field { margin-bottom: 14px; }
+    .ff-field:last-child { margin-bottom: 0; }
+    .ff-field > label { display: block; font-size: 13px; font-weight: 600; color: #333; margin: 0 0 6px; }
+    .ff-field label .mandatory { color: #c0392b; }
+    .ff-hint { color: #8a93a0; font-size: 12px; margin-top: 5px; }
+    .ff-hint.ff-warn { color: #8a6d3b; }
+
+    .ff-row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 0 28px; }
+    @media (max-width: 1199px) { .ff-row { grid-template-columns: minmax(0, 1fr); } .ff-row .ff-field + .ff-field { margin-top: 14px; } }
+
+    /* One row of buttons per choice; the picked one's help shows below */
+    .ff-seg { display: inline-flex; flex-wrap: wrap; border: 1px solid #ccd3dc; border-radius: 6px; overflow: hidden; }
+    .ff-seg .ff-choice { position: relative; margin: 0; padding: 7px 14px; border-right: 1px solid #ccd3dc; background: #fff; font-size: 13px; font-weight: 600; color: #444; cursor: pointer; }
+    .ff-seg .ff-choice:last-child { border-right: 0; }
+    .ff-seg .ff-choice input { position: absolute; opacity: 0; pointer-events: none; }
+    .ff-seg .ff-choice.selected { background: #337ab7; color: #fff; }
+    .ff-seg .ff-choice:not(.selected):hover { background: #f4f7fb; }
+
+    .ff-days { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+    .ff-days input[type=number] { width: 90px; }
+    .ff-days .ff-days-unit { font-size: 13px; color: #444; }
+    .ff-chip { border: 1px solid #ccd3dc; background: #fff; color: #444; border-radius: 12px; padding: 2px 10px; font-size: 12px; font-weight: 600; cursor: pointer; }
+    .ff-chip:hover { background: #f4f7fb; }
+    .ff-chip.selected { background: #337ab7; border-color: #337ab7; color: #fff; }
+
+    .ff-copy { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; padding: 10px 14px; border: 1px dashed #c8d4e3; border-radius: 8px; background: #f7f9fc; font-size: 13px; color: #4a5568; }
+    .ff-copy select { width: auto; min-width: 220px; flex: 0 1 320px; }
+    .ff-copy .ff-copy-label { font-weight: 600; }
+
+    .ff-empty { color: #8a93a0; text-align: center; padding: 18px 0; font-size: 13px; }
+    .ff-locked { opacity: .45; pointer-events: none; }
+
+    /* Questions: what is on the form, in order, then what can be added */
+    .ff-qlist { list-style: none; margin: 0; padding: 0; border: 1px solid #e6e9ee; border-radius: 6px; }
+    .ff-qlist li { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-bottom: 1px solid #f0f2f5; font-size: 13px; color: #333; }
+    .ff-qlist li:last-child { border-bottom: 0; }
+    .ff-qlist .ff-pos { flex: 0 0 22px; color: #8a93a0; font-weight: 600; text-align: right; }
+    .ff-qlist .ff-qtext { flex: 1 1 auto; min-width: 0; }
+    .ff-qlist .ff-tag { display: inline-block; margin-left: 6px; padding: 0 6px; border-radius: 3px; background: #fff3cd; color: #7a5b1c; font-size: 11px; font-weight: 600; white-space: nowrap; }
+    .ff-qlist .ff-req { flex: 0 0 auto; display: flex; align-items: center; gap: 5px; margin: 0; font-weight: normal; font-size: 12px; color: #555; cursor: pointer; white-space: nowrap; }
+    .ff-qlist .ff-req input { margin: 0; }
+    .ff-qlist .ff-btns { flex: 0 0 auto; display: flex; gap: 3px; }
+    .ff-icon-btn { border: 1px solid #d5dae1; background: #fff; color: #555; border-radius: 4px; width: 26px; height: 26px; padding: 0; line-height: 24px; text-align: center; cursor: pointer; }
+    .ff-icon-btn:hover:not([disabled]) { background: #eef2f7; color: #222; }
+    .ff-icon-btn[disabled] { opacity: .35; cursor: default; }
+    .ff-icon-btn.ff-remove:hover { background: #fbeaea; color: #a94442; border-color: #e4b9b9; }
+    .ff-add-btn { flex: 0 0 auto; border: 1px solid #b6c4e0; background: #f4f7fb; color: #2b5d8f; border-radius: 4px; padding: 2px 10px; font-size: 12px; font-weight: 600; cursor: pointer; white-space: nowrap; }
+    .ff-add-btn:hover { background: #e6eef8; }
+    .ff-available { margin-top: 16px; }
+    .ff-available-head { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+    .ff-available-head .ff-available-title { font-size: 13px; font-weight: 600; color: #333; }
+    .ff-available-head input { margin-left: auto; max-width: 260px; }
+    .ff-available .ff-qlist { max-height: 300px; overflow-y: auto; }
+
+    /* Attachments */
+    .ff-files { width: 100%; }
+    .ff-files th { font-size: 12px; color: #6b7380; font-weight: 600; padding: 0 8px 6px 0; text-align: left; }
+    .ff-files td { padding: 0 8px 8px 0; vertical-align: middle; }
+    .ff-files td:last-child { padding-right: 0; width: 1%; white-space: nowrap; }
+    .ff-files .ff-file-current { font-size: 13px; }
+    .ff-files .ff-file-current a { font-weight: 600; }
+    .ff-files .ff-file-replace { margin-left: 8px; font-size: 12px; color: #8a93a0; }
+    .ff-files input[type=file] { font-size: 12px; max-width: 100%; }
+
+    .ff-card .note-editor.note-frame { border: 1px solid #ccc; border-radius: 4px; box-shadow: none; margin: 0; }
+    .ff-card .note-toolbar { background: #f7f8fa; border-bottom: 1px solid #e6e9ee; padding: 6px 8px; border-radius: 4px 4px 0 0; }
+    .ff-card .note-toolbar .note-btn-group { margin: 2px 6px 2px 0; }
+    .ff-card .note-toolbar .note-btn { background: #fff; color: #444; border: 1px solid #d5dae1; box-shadow: none; text-shadow: none; }
+    .ff-card .note-toolbar .note-btn:hover,
+    .ff-card .note-toolbar .note-btn:focus { background: #eef2f7; color: #222; border-color: #c3cad4; }
+    .ff-card .note-toolbar .note-btn.active,
+    .ff-card .note-toolbar .note-btn:active { background: #e3eaf3; color: #1f4f82; border-color: #b6c4e0; box-shadow: none; }
+    .ff-card .note-statusbar { background: #f7f8fa; border-top: 1px solid #e6e9ee; }
+
+    .ff-actions { display: flex; justify-content: flex-end; align-items: center; gap: 8px; }
+    .ff-actions .ff-actions-note { margin-right: auto; color: #8a93a0; font-size: 12px; }
+
+    .ff-summary { list-style: none; margin: 0; padding: 0; }
+    .ff-summary li { display: flex; justify-content: space-between; gap: 10px; padding: 6px 0; border-bottom: 1px solid #f0f2f5; font-size: 13px; color: #555; }
+    .ff-summary li:last-child { border-bottom: 0; }
+    .ff-summary li strong { color: #333; text-align: right; }
+    .ff-side-text { color: #555; font-size: 13px; line-height: 1.5; margin: 0 0 10px; }
+    .ff-side-text:last-child { margin-bottom: 0; }
+
+    @media (max-width: 992px) {
+        .ff-layout { flex-direction: column; }
+        .ff-layout .ff-side { flex: 1 1 auto; width: 100%; position: static; }
     }
 </style>
-<link rel="stylesheet" type="text/css" href="<?php echo $this->baseUrl('css/bootstrap-select.min.css'); ?>" />
-<link href="<?php echo $this->baseUrl('/css/glyphicon.css'); ?>" rel="stylesheet">
-<link rel="stylesheet" href="<?php echo $this->baseUrl('/css/bootstrap-wysihtml5/bootstrap3-wysihtml5.min.css'); ?>" type="text/css" />
-<link href="<?php echo $this->baseUrl('css/select2.css'); ?>" rel="stylesheet" />
-<div class="well">
-    <form name="addFeedbackQuestionsForm" id="addFeedbackQuestionsForm" method="post" action="<?php echo $this->url(array("module" => "admin", "controller" => "feedback-responses", "action" => "feedback-form"), 'default', true) ?>" class="form-horizontal bs-example" role="form" enctype="multipart/form-data" onsubmit="validateNow();return false;">
-        <fieldset>
+
+<div class="ff-wrap">
+    <div class="ff-header">
+        <a class="ff-back" href="/admin/feedback-responses/shipment-questions">&larr; <?= $this->htmlTranslate("All feedback forms"); ?></a>
+        <h2>
             <?php if ($isClone) { ?>
-                <legend><?= $this->translate->_("Clone Feedback Form"); ?></legend>
-                <div class="alert alert-info">
-                    <?= $this->translate->_("The questions below are copied from the shipment you cloned. Pick the shipment this form is for and save — the original form is left untouched."); ?>
-                </div>
+                <?= sprintf($this->htmlTranslate("Copy the %s feedback form"), $this->escape($shipmentCode)); ?>
+            <?php } elseif ($sid) { ?>
+                <?= sprintf($this->htmlTranslate("Feedback form for %s"), $this->escape($shipmentCode)); ?>
             <?php } else { ?>
-                <legend><?= $this->translate->_("Feedback Form"); ?></legend>
-            <?php  } ?>
-            <div class="row">
-                <div class="col-lg-6">
-                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label class="control-label" for="shipmentId"><?= $this->translate->_("Shipment this feedback form is for"); ?> <span class="mandatory">*</span></label>
-                    <div class="col-lg-12">
-                        <select id="shipmentId" name="shipmentId" class="select2 form-control isRequired" title="Please select the shipment" onchange="loadQuestions(this.value);">
-                            <option value="">--<?= $this->translate->_("Select"); ?>--</option>
-                            <?php if (isset($this->shipments) && !empty($this->shipments)) {
-                                foreach ($this->shipments as $key => $row) { ?>
-                                    <option value="<?php echo $row['shipment_id']; ?>" <?php echo (isset($this->sid) && !empty($this->sid) && $this->sid == $row['shipment_id']) ? 'selected="selected"' : ''; ?>><?php echo $row['shipment_code']; ?></option>
-                            <?php }
-                            } ?>
-                        </select>
-                    </div>
-                </div>
-                <div class="col-lg-6">
-                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label class="control-label" for="formTo"><?= $this->translate->_("Show feedback form to"); ?></label>
-                    <div class="col-lg-12">
-                        <select class="select2 form-control" id="formTo" name="formTo" title="Please select where we show the forms">
-                            <option value=""><?= $this->translate->_("--Select--"); ?></option>
-                            <option value="all-participants" <?php echo ($formShowTo == 'all-participants') ? 'selected="selected"' : ''; ?>><?= $this->translate->_("All Participants"); ?></option>
-                            <option value="passing-participants" <?php echo ($formShowTo == 'passing-participants') ? 'selected="selected"' : ''; ?>><?= $this->translate->_("Only Passing Participants"); ?></option>
-                            <option value="failing-participants" <?php echo ($formShowTo == 'failing-participants') ? 'selected="selected"' : ''; ?>><?= $this->translate->_("Only Failing Participants"); ?></option>
-                        </select>
-                    </div>
-                </div>
-            </div>
-            <?php if (isset($this->copySources) && !empty($this->copySources)) { ?>
-                <br>
-                <div class="row">
-                    <div class="col-lg-12">
-                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label class="control-label" for="copyFromShipment"><?= $this->translate->_("Start from an existing feedback form"); ?></label>
-                        <div class="col-lg-12">
-                            <div class="input-group">
-                                <select id="copyFromShipment" class="form-control" title="Please select the shipment to copy the feedback form from">
-                                    <option value="">--<?= $this->translate->_("Select a shipment to copy from"); ?>--</option>
-                                    <?php foreach ($this->copySources as $row) { ?>
-                                        <option value="<?php echo $row['shipment_id']; ?>"><?php echo htmlspecialchars($row['shipment_code']); ?> (<?php echo (int) $row['questionCount']; ?> <?= $this->translate->_("questions"); ?>)</option>
-                                    <?php } ?>
-                                </select>
-                                <span class="input-group-btn">
-                                    <button type="button" class="btn btn-default" onclick="copyFeedbackFormFromShipment();"><i class="icon-copy"></i> <?= $this->translate->_("Copy"); ?></button>
-                                </span>
+                <?= $this->htmlTranslate("New feedback form"); ?>
+            <?php } ?>
+        </h2>
+        <div class="ff-sub">
+            <?php if ($isClone) { ?>
+                <?= $this->htmlTranslate("The questions, introduction, audience and days open below come from that form. Pick the shipment to use them for and save. The original form is not changed."); ?>
+            <?php } else { ?>
+                <?= $this->htmlTranslate("The questions participants answer after a shipment, with an optional introduction and files to download."); ?>
+            <?php } ?>
+        </div>
+    </div>
+
+    <form name="addFeedbackQuestionsForm" id="addFeedbackQuestionsForm" method="post" action="<?php echo $this->url(array("module" => "admin", "controller" => "feedback-responses", "action" => "feedback-form"), 'default', true) ?>" role="form" enctype="multipart/form-data" onsubmit="return validateNow();">
+        <div class="ff-layout">
+            <div class="ff-main">
+                <div class="ff-card">
+                    <h4><span class="ff-num">1</span> <?= $this->htmlTranslate("Shipment and audience"); ?></h4>
+                    <div class="ff-row">
+                        <div class="ff-field">
+                            <label for="shipmentId"><?= $this->htmlTranslate("Shipment"); ?> <span class="mandatory">*</span></label>
+                            <select id="shipmentId" name="shipmentId" class="form-control" onchange="shipmentChanged(this.value);">
+                                <option value=""></option>
+                                <?php foreach ($shipments as $row) {
+                                    $rowId = (int) $row['shipment_id'];
+                                    $selected = !$isClone && $rowId === $sid; ?>
+                                    <option value="<?= $rowId ?>" data-has-form="<?= isset($shipmentsWithForm[$rowId]) ? '1' : '0' ?>" <?= $selected ? 'selected="selected"' : '' ?>><?= $this->escape($row['shipment_code']) ?><?= isset($shipmentsWithForm[$rowId]) && !$selected ? ' · ' . $this->htmlTranslate("has a form") : '' ?></option>
+                                <?php } ?>
+                            </select>
+                            <div class="ff-hint" id="shipmentHint">
+                                <?php if (!$sid && !$isClone) { ?>
+                                    <?= $this->htmlTranslate("Pick the shipment first. If it already has a form, that form opens."); ?>
+                                <?php } elseif (!$isClone) { ?>
+                                    <?= $this->htmlTranslate("Picking another shipment opens its form."); ?>
+                                <?php } ?>
                             </div>
-                            <small class="text-muted"><?= $this->translate->_("Copies that shipment's questions, content and audience into this form. The form you copy from is not changed."); ?></small>
+                        </div>
+                        <div class="ff-field">
+                            <label><?= $this->htmlTranslate("Who sees this form"); ?></label>
+                            <div class="ff-seg" id="formToChoices">
+                                <?php foreach ($audiences as $value => $audience) { ?>
+                                    <label class="ff-choice<?= $formShowTo === $value ? ' selected' : '' ?>" data-hint="<?= $audience['hint'] ?>">
+                                        <input type="radio" name="formTo" value="<?= $value ?>" <?= $formShowTo === $value ? 'checked' : '' ?>> <?= $audience['label'] ?>
+                                    </label>
+                                <?php } ?>
+                            </div>
+                            <div class="ff-hint" id="formToHint"></div>
+                        </div>
+                    </div>
+                    <div class="ff-field" style="margin-top:14px;">
+                        <label for="openForDays"><?= $this->htmlTranslate("Open for feedback"); ?></label>
+                        <div class="ff-days">
+                            <input type="number" id="openForDays" name="openForDays" class="form-control input-sm" min="1" max="365" step="1" value="<?= $openForDays ?>" oninput="syncWindow(); dirty = true;">
+                            <span class="ff-days-unit"><?= $this->htmlTranslate("days after the shipment is finalized"); ?></span>
+                            <button type="button" class="ff-chip" data-days="14" onclick="setDays(14);"><?= $this->htmlTranslate("2 weeks"); ?></button>
+                            <button type="button" class="ff-chip" data-days="28" onclick="setDays(28);"><?= $this->htmlTranslate("4 weeks"); ?></button>
+                            <button type="button" class="ff-chip" data-days="56" onclick="setDays(56);"><?= $this->htmlTranslate("8 weeks"); ?></button>
+                        </div>
+                        <div class="ff-hint" id="windowHint"></div>
+                    </div>
+                </div>
+
+                <div id="formBody" class="<?= ($sid || $isClone) ? '' : 'ff-locked' ?>" style="display:flex;flex-direction:column;gap:14px;">
+                    <?php if (!empty($this->copySources) && !$isClone) { ?>
+                        <div class="ff-copy">
+                            <span class="ff-copy-label"><i class="icon-copy"></i> <?= $this->htmlTranslate("Reuse an earlier form:"); ?></span>
+                            <select id="copySource" class="form-control input-sm" title="<?= $this->htmlTranslate('Shipment to copy the feedback form from'); ?>">
+                                <option value=""><?= $this->htmlTranslate("Pick a shipment"); ?></option>
+                                <?php foreach ($this->copySources as $row) { ?>
+                                    <option value="<?= (int) $row['shipment_id'] ?>"><?= $this->escape($row['shipment_code']) ?> (<?= sprintf($this->htmlTranslate("%d questions"), (int) $row['questionCount']) ?>)</option>
+                                <?php } ?>
+                            </select>
+                            <button type="button" class="btn btn-default btn-sm" onclick="copyFeedbackFormFromShipment();"><?= $this->htmlTranslate("Copy into this form"); ?></button>
+                            <span class="ff-hint" style="margin:0;"><?= $this->htmlTranslate("Fills in its questions, introduction, audience and days open. Nothing is saved until you click Save."); ?></span>
+                        </div>
+                    <?php } ?>
+
+                    <div class="ff-card">
+                        <h4>
+                            <span class="ff-num">2</span> <?= $this->htmlTranslate("Questions"); ?> <span class="mandatory" style="color:#c0392b;">*</span>
+                            <span class="ff-h-aside"><a href="/admin/feedback-responses/questions" target="_blank"><?= $this->htmlTranslate("Manage questions"); ?> &nearr;</a></span>
+                        </h4>
+                        <ul class="ff-qlist" id="selectedQuestions"></ul>
+                        <div class="ff-hint"><?= $this->htmlTranslate("Participants see the questions in this order. Use the arrows to move one."); ?></div>
+
+                        <div class="ff-available">
+                            <div class="ff-available-head">
+                                <span class="ff-available-title"><?= $this->htmlTranslate("Add questions"); ?> <span id="availableCount" style="color:#8a93a0;font-weight:normal;"></span></span>
+                                <input type="search" id="questionSearch" class="form-control input-sm" placeholder="<?= $this->htmlTranslate('Search questions'); ?>" oninput="renderQuestions();">
+                            </div>
+                            <ul class="ff-qlist" id="availableQuestions"></ul>
+                        </div>
+                    </div>
+
+                    <div class="ff-card">
+                        <h4><span class="ff-num">3</span> <?= $this->htmlTranslate("Introduction"); ?> <span class="ff-h-aside"><?= $this->htmlTranslate("Optional"); ?></span></h4>
+                        <div class="ff-field">
+                            <div id="formContentEditor"></div>
+                            <textarea style="display:none;" id="formContent" name="formContent"><?= $this->escape($formContent); ?></textarea>
+                            <div class="ff-hint"><?= $this->htmlTranslate("Shown above the questions, for example to thank participants or explain why you ask."); ?></div>
+                        </div>
+                    </div>
+
+                    <div class="ff-card">
+                        <h4><span class="ff-num">4</span> <?= $this->htmlTranslate("Files to download"); ?> <span class="ff-h-aside"><?= $this->htmlTranslate("Optional"); ?></span></h4>
+                        <input type="hidden" name="formFilesPosted" value="1">
+                        <table class="ff-files" id="filesTable" style="<?= empty($files) ? 'display:none;' : '' ?>">
+                            <thead>
+                                <tr>
+                                    <th style="width:38%;"><?= $this->htmlTranslate("File"); ?></th>
+                                    <th style="width:32%;"><?= $this->htmlTranslate("Name participants see"); ?></th>
+                                    <th style="width:22%;"><?= $this->htmlTranslate("Who sees it"); ?></th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody id="fileRows">
+                                <?php foreach (array_values($files) as $i => $row) {
+                                    $key = $i + 1;
+                                    $fileOnDisk = !empty($row['feedback_file']) && is_file(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'feedback-forms' . DIRECTORY_SEPARATOR . (int) $row['shipment_id'] . DIRECTORY_SEPARATOR . basename($row['feedback_file']));
+                                    $fileTo = ($row['files_show_to'] ?? '') ?: 'all-participants'; ?>
+                                    <tr>
+                                        <td>
+                                            <?php if ($fileOnDisk) { ?>
+                                                <input type="hidden" name="formFiles[existing][<?= $key ?>]" value="<?= $this->escape(basename($row['feedback_file'])) ?>">
+                                                <div class="ff-file-current">
+                                                    <a href="/uploads/feedback-forms/<?= (int) $row['shipment_id'] ?>/<?= rawurlencode(basename($row['feedback_file'])) ?>" target="_blank"><i class="icon-file"></i> <?= $this->escape(basename($row['feedback_file'])) ?></a>
+                                                    <a href="javascript:void(0);" class="ff-file-replace" onclick="$(this).closest('td').find('input[type=file]').show().trigger('click'); $(this).remove();"><?= $this->htmlTranslate("Replace"); ?></a>
+                                                </div>
+                                                <input type="file" name="formFiles[files][<?= $key ?>]" style="display:none;margin-top:4px;">
+                                            <?php } else { ?>
+                                                <input type="file" name="formFiles[files][<?= $key ?>]">
+                                                <div class="ff-hint ff-warn"><?= $this->htmlTranslate("The saved file is missing. Choose it again, or remove this row."); ?></div>
+                                            <?php } ?>
+                                        </td>
+                                        <td><input type="text" name="formFiles[name][<?= $key ?>]" class="form-control input-sm" maxlength="50" value="<?= $this->escape($row['file_name'] ?? '') ?>" placeholder="<?= $this->htmlTranslate('Same as the file'); ?>"></td>
+                                        <td>
+                                            <select name="formFiles[filesTo][<?= $key ?>]" class="form-control input-sm">
+                                                <?php foreach ($audiences as $value => $audience) { ?>
+                                                    <option value="<?= $value ?>" <?= $fileTo === $value ? 'selected' : '' ?>><?= $audience['label'] ?></option>
+                                                <?php } ?>
+                                            </select>
+                                        </td>
+                                        <td>
+                                            <input type="hidden" name="formFiles[sort][<?= $key ?>]" class="ff-file-sort" value="">
+                                            <button type="button" class="ff-icon-btn ff-remove" title="<?= $this->htmlTranslate('Remove this file from the form'); ?>" onclick="removeFileRow(this);"><i class="icon-remove"></i></button>
+                                        </td>
+                                    </tr>
+                                <?php } ?>
+                            </tbody>
+                        </table>
+                        <div class="ff-empty" id="filesEmpty" style="<?= empty($files) ? '' : 'display:none;' ?>padding:4px 0 12px;"><?= $this->htmlTranslate("No files. Add a report, certificate or guidance document participants can download with the form."); ?></div>
+                        <button type="button" class="btn btn-default btn-sm" onclick="addFileRow();"><i class="icon-plus"></i> <?= $this->htmlTranslate("Add a file"); ?></button>
+                        <div class="ff-hint"><?= $this->htmlTranslate("PDF, Word, Excel, PowerPoint, CSV, text or image files."); ?></div>
+                    </div>
+
+                    <div class="ff-card">
+                        <div class="ff-actions">
+                            <span class="ff-actions-note">
+                                <?= $this->htmlTranslate("Saving switches on Collect Feedback for the shipment if it is off."); ?>
+                            </span>
+                            <a class="btn btn-default" href="/admin/feedback-responses/shipment-questions"><?= $this->htmlTranslate("Cancel"); ?></a>
+                            <button type="submit" class="btn btn-primary" name="submitbtn"><i class="icon-ok"></i> <?= $this->htmlTranslate("Save feedback form"); ?></button>
                         </div>
                     </div>
                 </div>
-            <?php } ?>
-            <br>
-            <div class="form-group col-lg-12">
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label class="control-label" for="formContent"><?= $this->translate->_("Enter Feedback Form Content"); ?></label>
-                <div class="col-lg-12">
-                    <textarea id="formContent" class="form-control richtextarea" name="formContent"><?php echo $formContent; ?></textarea>
-                </div>
-            </div>
-            <div class="form-group col-lg-12 text-center">
-                <table class="table table-bordered table-striped" style="text-align:center;margin: auto;width: 97%;">
-                    <thead>
-                        <tr>
-                            <th scope="col" style="width:40%;">Upload one or more files</th>
-                            <th scope="col" style="width:30%;">File Name</th>
-                            <th scope="col" style="width:20%;">Show feedback files to</th>
-                            <th scope="col" style="width:20%;">Sort Order</th>
-                            <th scope="col" style="width:10%;">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody id="formRow">
-                        <?php if (isset($this->result['feedback_form_files_results']) && !empty($this->result['feedback_form_files_results'])) {
-                            foreach ($this->result['feedback_form_files_results'] as $key => $row) { ?>
-                                <tr>
-                                    <td>
-                                        <?php if (isset($row['feedback_file']) && !empty($row['feedback_file']) && file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'feedback-forms' . DIRECTORY_SEPARATOR . $row['shipment_id'] . DIRECTORY_SEPARATOR . $row['feedback_file'])) { ?>
-                                            <a href="/uploads/feedback-forms/<?php echo $row['shipment_id']; ?>/<?php echo $row['feedback_file']; ?>" target="_blank">Download</a>
-                                        <?php } else { ?>
-                                            <input type="file" id="formFiles<?php echo ($key + 1); ?>" name="formFiles[files][<?php echo ($key + 1); ?>]" class="form-control option" placeholder="Select the form file" title="Please select the form file">
-                                        <?php } ?>
-                                    </td>
-                                    <td>
-                                        <select class="select2 form-control" id="filesTo<?php echo ($key + 1); ?>" name="formFiles[filesTo][<?php echo ($key + 1); ?>]" title="Please select where we show the question">
-                                            <option value=""><?= $this->translate->_("--Select--"); ?></option>
-                                            <option value="all-participants" <?php echo (isset($row['files_show_to']) && !empty($row['files_show_to']) && $row['files_show_to'] == 'all-participants') ? "selected='selected'" : ""; ?>><?= $this->translate->_("All Participants"); ?></option>
-                                            <option value="passing-participants" <?php echo (isset($row['files_show_to']) && !empty($row['files_show_to']) && $row['files_show_to'] == 'passing-participants') ? "selected='selected'" : ""; ?>><?= $this->translate->_("Only Passing Participants"); ?></option>
-                                            <option value="failing-participants" <?php echo (isset($row['files_show_to']) && !empty($row['files_show_to']) && $row['files_show_to'] == 'failing-participants') ? "selected='selected'" : ""; ?>><?= $this->translate->_("Only Failing Participants"); ?></option>
-                                        </select>
-                                    </td>
-                                    <td><input type="text" id="formFilesName<?php echo ($key + 1); ?>" value="<?php echo $row['file_name']; ?>" name="formFiles[name][<?php echo ($key + 1); ?>]" class="form-control option" placeholder="Enter the file name" title="Please enter the file name"></td>
-                                    <td><input type="text" id="formFilesSort<?php echo ($key + 1); ?>" value="<?php echo $row['sort_order']; ?>" name="formFiles[sort][<?php echo ($key + 1); ?>]" class="form-control option" placeholder="Enter the sort order" title="Please enter the sort order"></td>
-                                    <td style=" vertical-align: middle; text-align:center; "><a href="javascript:void(0);" onclick="addRow(this);" class="btn btn-xs btn-info"><i class="icon-plus"></i></a></td>
-                                </tr>
-                            <?php }
-                        } else { ?>
-                            <tr>
-                                <td><input type="file" id="formFiles1" name="formFiles[files][]" class="form-control option" placeholder="Select the form file" title="Please select the form file"></td>
-                                <td><input type="text" id="formFilesName1" name="formFiles[name][]" class="form-control option" placeholder="Enter the file name" title="Please enter the file name"></td>
-                                <td>
-                                    <select class="select2 form-control" id="filesTo1" name="formFiles[filesTo][]" title="Please select where we show the question">
-                                        <option value=""><?= $this->translate->_("--Select--"); ?></option>
-                                        <option value="all-participants"><?= $this->translate->_("All Participants"); ?></option>
-                                        <option value="passing-participants"><?= $this->translate->_("Only Passing Participants"); ?></option>
-                                        <option value="failing-participants"><?= $this->translate->_("Only Failing Participants"); ?></option>
-                                    </select>
-                                </td>
-                                <td><input type="text" id="formFilesSort1" name="formFiles[sort][]" class="form-control option" placeholder="Enter the sort order" title="Please enter the sort order"></td>
-                                <td style=" vertical-align: middle; text-align:center; "><a href="javascript:void(0);" onclick="addRow(this);" class="btn btn-xs btn-info"><i class="icon-plus"></i></a></td>
-                            </tr>
-                        <?php } ?>
-                    </tbody>
-                </table>
-            </div>
-            <div class="<?php echo $hasPrefilledQuestions ? '' : 'hide'; ?> show-questions form-group col-lg-12" id="load-question">
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label class="control-label" for="question"><?= $this->translate->_("Select the available question"); ?> <span class="mandatory">*</span></label>
-                <div class="col-lg-12">
-                    <select id="question" multiple="multiple" name="question[]" class="select2 form-control" title="Please select the available question" onchange="loadQuestion()">
-                        <?php if (isset($this->questions) && !empty($this->questions)) {
-                            foreach ($this->questions as $key => $row) { ?>
-                                <option value="<?php echo $row['question_id']; ?>" <?php echo in_array($row['question_id'], $questionResults) ? 'selected="selected"' : ''; ?>><?php echo $row['question_text'] . '(' . $row['question_code'] . ')'; ?></option>
-                        <?php }
-                        } ?>
-                    </select>
-                </div>
-            </div>
-            <div class="<?php echo $hasPrefilledQuestions ? '' : 'hide'; ?> form-group col-lg-12" id="questionTable">
-                <table class="table table-bordered table-striped" border="1" style="text-align:center;margin: auto;width: 95%;">
-                    <thead>
-                        <tr>
-                            <th scope="col" style="width:80%;text-align:left !important;">Question</th>
-                            <th scope="col" style="width:10%;text-align:center;">Mandatory</th>
-                            <th scope="col" style="width:10%;text-align:center;">Sort Order</th>
-                        </tr>
-                    </thead>
-                    <tbody id="questionRow">
-                        <?php if (isset($this->questions) && !empty($this->questions)) {
-                            foreach ($this->questions as $key => $row) {
-                                if (empty($row['mappedShipmentId'])) {
-                                    continue;
-                                } ?>
-                                <tr>
-                                    <td style="text-align:left !important;"><?php echo $row['question_text']; ?></td>
-                                    <td><input type="checkbox" <?php echo ($row['is_response_mandatory'] == 'yes') ? 'checked' : ''; ?> name="mandatory[<?php echo $row['question_id']; ?>]" id="mandatory<?php echo $row['question_id']; ?>" title="Please select the mandatory or not" value="yes" /></td>
-                                    <td><input type="text" value="<?php echo $row['sort_order'] ?? null; ?>" class="form-control" name="sortOrder[<?php echo $row['question_id']; ?>]" id="sortOrder<?php echo $row['question_id']; ?>" title="Please enter the sort order" placeholder="Enter the sort order" /></td>
-                                </tr>
-                        <?php }
-                        } ?>
-                    </tbody>
-                </table>
             </div>
 
-            <div id="respond" style="margin: 0px auto 0px auto; text-align: center;" class="<?php echo $hasPrefilledQuestions ? '' : 'hide'; ?> show-questions form-group col-lg-11" align="center">
-                <?php if (!empty($rpffId) && !$isClone) { ?>
-                    <input type="hidden" name="rfId" value="<?php echo base64_encode($rpffId); ?>" />
-                <?php } ?>
-                <input name="submitbtn" class="btn btn-primary" type="submit" tabindex="7" value="<?= $this->translate->_("Submit"); ?>" />
-                <input class="btn btn-danger" type="button" onclick="window.location.href = '/admin/feedback-responses/shipment-questions';" tabindex="8" value="<?= $this->translate->_("Cancel"); ?>" />
+            <div class="ff-side">
+                <div class="ff-card">
+                    <h4><i class="icon-list-alt"></i> <?= $this->htmlTranslate("Summary"); ?></h4>
+                    <ul class="ff-summary">
+                        <li><?= $this->htmlTranslate("Shipment"); ?> <strong id="sumShipment">—</strong></li>
+                        <li><?= $this->htmlTranslate("Shown to"); ?> <strong id="sumAudience">—</strong></li>
+                        <li><?= $this->htmlTranslate("Questions"); ?> <strong id="sumQuestions">—</strong></li>
+                        <li><?= $this->htmlTranslate("Open"); ?> <strong id="sumWindow">—</strong></li>
+                        <li><?= $this->htmlTranslate("Files"); ?> <strong id="sumFiles">—</strong></li>
+                    </ul>
+                </div>
+                <div class="ff-card">
+                    <h4><i class="icon-info-sign"></i> <?= $this->htmlTranslate("Good to know"); ?></h4>
+                    <p class="ff-side-text"><?= $this->htmlTranslate("Required questions must be answered before a participant can submit the form."); ?></p>
+                    <p class="ff-side-text"><?= $this->htmlTranslate("A question marked Passing only or Failing only keeps that limit, even on a form shown to all participants."); ?></p>
+                    <p class="ff-side-text"><?= $this->htmlTranslate("To change a question's wording, use Manage questions. The change shows on every form that uses it."); ?></p>
+                </div>
             </div>
-        </fieldset>
+        </div>
     </form>
 </div>
-<script type="text/javascript" src="<?php echo $this->baseUrl('js/bootstrap-select.min.js'); ?>"></script>
+
 <script type="text/javascript" src="<?php echo $this->baseUrl('js/select2.min.js'); ?>"></script>
-<script src="<?php echo $this->baseUrl('/js/bootstrap-wysihtml5/bootstrap3-wysihtml5.all.min.js'); ?>" type="text/javascript"></script>
+<script type="text/javascript" src="<?php echo $this->baseUrl('js/summernote.min.js'); ?>"></script>
 <script type="text/javascript">
-    var duplicated = false;
-    var tableRow = 1;
-    // Mandatory flags / sort orders for questions already mapped, so re-rendering the
-    // question table from the picker doesn't lose what was saved.
-    var questionPrefill = {
-        mandatory: <?php echo json_encode($mandatory); ?>,
-        sortOrder: <?php echo json_encode($sortOrder); ?>
-    };
-    var isCloneMode = <?php echo $isClone ? 'true' : 'false'; ?>;
+    var isCloneMode = <?= $isClone ? 'true' : 'false' ?>;
+    var finalizedOn = <?= json_encode($finalizedOn) ?>;
+    var currentShipmentId = <?= json_encode(($sid && !$isClone) ? (string) $sid : '') ?>;
+    var questions = [];
+    var fileRowKey = <?= count($files) ?>;
+    var dirty = false;
+    var AUDIENCE_LABELS = <?= json_encode(array_map(fn($a) => html_entity_decode($a['label'], ENT_QUOTES), $audiences)) ?>;
+<?php if (!empty($this->copySources) && !$isClone) { ?>
+    var EMPTY_QUESTIONS = '<?= $this->jsTranslate("No questions yet. Add them from the list below, or reuse an earlier form.") ?>';
+<?php } else { ?>
+    var EMPTY_QUESTIONS = '<?= $this->jsTranslate("No questions yet. Add them from the list below.") ?>';
+<?php } ?>
+    var FILE_ACCEPT = '.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.odt,.ods,.csv,.txt,.jpg,.jpeg,.png,.gif';
 
     $(document).ready(function() {
-        $("#shipmentId").select2({
-            placeholder: 'Select shipment to fetch questions',
-            allowClear: true,
+        $('#shipmentId').select2({
+            placeholder: '<?= $this->jsTranslate("Pick a shipment") ?>',
+            width: '100%'
         });
-        $("#formTo").select2({
-            placeholder: 'Select form to show',
-            allowClear: true,
+
+        $('#formContentEditor').summernote({
+            placeholder: '<?= $this->jsTranslate("Optional. For example: Thank you for taking part in this round.") ?>',
+            height: 160,
+            toolbar: [
+                ['style', ['style']],
+                ['font', ['bold', 'italic', 'underline', 'clear']],
+                ['para', ['ul', 'ol']],
+                ['insert', ['link']],
+                ['view', ['codeview']]
+            ],
+            callbacks: {
+                onChange: function() {
+                    dirty = true;
+                }
+            }
         });
-        $('#question').selectpicker();
-        $("#formContent").wysihtml5();
+        $('#formContentEditor').summernote('code', $('#formContent').val());
+
+        $('input[type=file]').attr('accept', FILE_ACCEPT);
+
+        $('#formToChoices').on('change', 'input', function() {
+            syncAudience();
+            dirty = true;
+        });
+        $('#fileRows').on('change input', 'input, select', function() {
+            dirty = true;
+            updateSummary();
+        });
+
+        setQuestions(<?= json_encode($questionState) ?>);
+        syncAudience();
+        syncWindow();
+        dirty = false;
+    });
+
+    function setDays(days) {
+        $('#openForDays').val(days);
+        syncWindow();
+        dirty = true;
+    }
+
+    function formatDate(d) {
+        return d.toLocaleDateString(undefined, {
+            day: 'numeric',
+            month: 'short',
+            year: 'numeric'
+        });
+    }
+
+    // Days as typed, kept to 1–365
+    function openForDays() {
+        var days = parseInt($('#openForDays').val(), 10);
+        return (days >= 1 && days <= 365) ? days : 0;
+    }
+
+    function syncWindow() {
+        var days = openForDays();
+        $('.ff-chip').each(function() {
+            $(this).toggleClass('selected', Number($(this).data('days')) === days);
+        });
+        var hint = '';
+        if (!days) {
+            hint = '<?= $this->jsTranslate("Enter a number of days from 1 to 365.") ?>';
+        } else if (finalizedOn) {
+            var opened = new Date(finalizedOn + 'T00:00:00');
+            var closes = new Date(opened.getTime());
+            closes.setDate(closes.getDate() + days);
+            var closed = closes < new Date(new Date().toDateString());
+            hint = (closed ?
+                    '<?= $this->jsTranslate('Opened on %1$s and closed on %2$s. Saving with more days opens it again until the new date.') ?>' :
+                    '<?= $this->jsTranslate('Opened on %1$s. Closes on %2$s.') ?>')
+                .replace('%1$s', formatDate(opened)).replace('%2$s', formatDate(closes));
+        } else {
+            hint = '<?= $this->jsTranslate("Opens when the shipment is finalized.") ?>';
+        }
+        $('#windowHint').toggleClass('ff-warn', !days).text(hint);
+        updateSummary();
+    }
+
+    window.addEventListener('beforeunload', function(e) {
+        if (dirty) {
+            e.preventDefault();
+            e.returnValue = '';
+        }
     });
 
     function escapeHtml(text) {
         return $('<div>').text(text == null ? '' : text).html();
     }
 
-    function checkDuplicate(tableName, fieldName, obj, fnct, msg) {
-        $.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'common', 'action' => 'check-duplicate')); ?>", {
-                tableName: tableName,
-                fieldName: fieldName,
-                value: obj.value,
-                fnct: fnct,
-                format: "html"
-            },
-            function(data) {
-                if (data > 0) {
-                    alert(msg, "err");
-                    duplicated = true;
-                    $(obj).val('');
-                } else {
-                    duplicated = false;
-                }
+    function syncAudience() {
+        var $picked = $('#formToChoices input:checked');
+        $('#formToChoices .ff-choice').removeClass('selected');
+        $picked.closest('.ff-choice').addClass('selected');
+        $('#formToHint').text($picked.closest('.ff-choice').data('hint') || '');
+        updateSummary();
+    }
+
+    // Selected questions first, in their saved order, then the rest as listed
+    function setQuestions(list) {
+        var selected = [];
+        var rest = [];
+        $.each(list || [], function(i, q) {
+            q = $.extend({}, q, {
+                questionId: String(q.questionId)
             });
+            (q.selected ? selected : rest).push(q);
+        });
+        selected.sort(function(a, b) {
+            var sa = (a.sortOrder === null || a.sortOrder === '' || a.sortOrder === undefined) ? Infinity : Number(a.sortOrder);
+            var sb = (b.sortOrder === null || b.sortOrder === '' || b.sortOrder === undefined) ? Infinity : Number(b.sortOrder);
+            return sa - sb;
+        });
+        questions = selected.concat(rest);
+        renderQuestions();
     }
 
-    function validateNow() {
-        flag = deforayValidator.init({
-            formId: 'addFeedbackQuestionsForm'
+    function audienceTag(showTo) {
+        if (!showTo || showTo === 'all-participants') {
+            return '';
+        }
+        return '<span class="ff-tag">' + escapeHtml(AUDIENCE_LABELS[showTo] || showTo) + '</span>';
+    }
+
+    function renderQuestions() {
+        var selected = questions.filter(function(q) {
+            return q.selected;
         });
-        if (!flag || duplicated) {
+        var term = $.trim($('#questionSearch').val() || '').toLowerCase();
+        var available = questions.filter(function(q) {
+            return !q.selected;
+        });
+
+        var html = '';
+        $.each(selected, function(i, q) {
+            html += '<li data-id="' + q.questionId + '">' +
+                '<span class="ff-pos">' + (i + 1) + '</span>' +
+                '<span class="ff-qtext">' + escapeHtml(q.label) + audienceTag(q.showTo) + '</span>' +
+                '<input type="hidden" name="question[]" value="' + q.questionId + '">' +
+                '<input type="hidden" name="sortOrder[' + q.questionId + ']" value="' + (i + 1) + '">' +
+                '<label class="ff-req" title="<?= $this->jsTranslate("Participants must answer this question") ?>"><input type="checkbox" name="mandatory[' + q.questionId + ']" value="yes"' + (q.mandatory ? ' checked' : '') + ' onchange="setMandatory(\'' + q.questionId + '\', this.checked);"> <?= $this->jsTranslate("Required") ?></label>' +
+                '<span class="ff-btns">' +
+                '<button type="button" class="ff-icon-btn" title="<?= $this->jsTranslate("Move up") ?>" onclick="moveQuestion(\'' + q.questionId + '\', -1);"' + (i === 0 ? ' disabled' : '') + '><i class="icon-arrow-up"></i></button>' +
+                '<button type="button" class="ff-icon-btn" title="<?= $this->jsTranslate("Move down") ?>" onclick="moveQuestion(\'' + q.questionId + '\', 1);"' + (i === selected.length - 1 ? ' disabled' : '') + '><i class="icon-arrow-down"></i></button>' +
+                '<button type="button" class="ff-icon-btn ff-remove" title="<?= $this->jsTranslate("Remove from the form") ?>" onclick="toggleQuestion(\'' + q.questionId + '\', false);"><i class="icon-remove"></i></button>' +
+                '</span></li>';
+        });
+        $('#selectedQuestions').html(html || '<li class="ff-empty" style="display:block;">' + EMPTY_QUESTIONS + '</li>');
+
+        var shown = 0;
+        html = '';
+        $.each(available, function(i, q) {
+            if (term && q.label.toLowerCase().indexOf(term) === -1) {
+                return;
+            }
+            shown++;
+            html += '<li>' +
+                '<span class="ff-qtext">' + escapeHtml(q.label) + audienceTag(q.showTo) + '</span>' +
+                '<button type="button" class="ff-add-btn" onclick="toggleQuestion(\'' + q.questionId + '\', true);"><i class="icon-plus"></i> <?= $this->jsTranslate("Add") ?></button>' +
+                '</li>';
+        });
+        if (!html) {
+            html = '<li class="ff-empty" style="display:block;">' + (available.length ?
+                '<?= $this->jsTranslate("No questions match your search.") ?>' :
+                '<?= $this->jsTranslate("Every active question is on the form.") ?>') + '</li>';
+        }
+        $('#availableQuestions').html(html);
+        $('#availableCount').text(available.length ? '(' + available.length + ')' : '');
+        updateSummary();
+    }
+
+    function findQuestion(id) {
+        for (var i = 0; i < questions.length; i++) {
+            if (questions[i].questionId === id) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    // Adding puts the question at the end of the form; removing returns it to the list
+    function toggleQuestion(id, include) {
+        var i = findQuestion(id);
+        if (i === -1) {
             return;
         }
-        if ($('#question > option:selected').length === 0) {
-            alert("<?= $this->jsTranslate("Please select at least one question for this feedback form."); ?>");
+        var q = questions.splice(i, 1)[0];
+        q.selected = include;
+        var lastSelected = -1;
+        $.each(questions, function(j, other) {
+            if (other.selected) {
+                lastSelected = j;
+            }
+        });
+        questions.splice(lastSelected + 1, 0, q);
+        dirty = true;
+        renderQuestions();
+    }
+
+    function moveQuestion(id, step) {
+        var i = findQuestion(id);
+        var j = i + step;
+        if (i === -1 || j < 0 || j >= questions.length || !questions[j].selected) {
+            return;
+        }
+        var q = questions[i];
+        questions[i] = questions[j];
+        questions[j] = q;
+        dirty = true;
+        renderQuestions();
+    }
+
+    function setMandatory(id, value) {
+        var i = findQuestion(id);
+        if (i !== -1) {
+            questions[i].mandatory = value;
+            dirty = true;
+            updateSummary();
+        }
+    }
+
+    function updateSummary() {
+        var picked = $('#shipmentId option:selected');
+        $('#sumShipment').text(picked.val() ? $.trim(picked.text().split(' · ')[0]) : '—');
+        var audience = $('#formToChoices input:checked').val();
+        $('#sumAudience').text(AUDIENCE_LABELS[audience] || '—');
+        var selected = questions.filter(function(q) {
+            return q.selected;
+        });
+        var required = selected.filter(function(q) {
+            return q.mandatory;
+        }).length;
+        $('#sumQuestions').text(selected.length ?
+            selected.length + (required ? ' (' + required + ' <?= $this->jsTranslate("required") ?>)' : '') :
+            '<?= $this->jsTranslate("None yet") ?>');
+        var files = 0;
+        $('#fileRows tr').each(function() {
+            if ($(this).find('input[name^="formFiles[existing]"]').length || $(this).find('input[type=file]').val()) {
+                files++;
+            }
+        });
+        $('#sumFiles').text(files || '<?= $this->jsTranslate("None") ?>');
+        var days = openForDays();
+        $('#sumWindow').text(days ? '<?= $this->jsTranslate("%d days") ?>'.replace('%d', days) : '—');
+    }
+
+    function shipmentChanged(id) {
+        updateSummary();
+        if (isCloneMode) {
+            // A copy keeps what it brought; just say if the target already has a form
+            var hasForm = $('#shipmentId option:selected').data('has-form') == 1;
+            $('#shipmentHint').toggleClass('ff-warn', hasForm).text(hasForm ?
+                '<?= $this->jsTranslate("This shipment already has a feedback form. Saving replaces it with this one.") ?>' : '');
+            return;
+        }
+        if (!id || id === currentShipmentId) {
+            return;
+        }
+        if (dirty && !confirm('<?= $this->jsTranslate("Open the form for the other shipment? Changes you have not saved here will be lost.") ?>')) {
+            $('#shipmentId').val(currentShipmentId).trigger('change.select2');
+            updateSummary();
+            return;
+        }
+        dirty = false;
+        window.location.href = '/admin/feedback-responses/feedback-form/id/' + btoa(id);
+    }
+
+    function copyFeedbackFormFromShipment() {
+        var sourceId = $('#copySource').val();
+        if (!sourceId) {
+            alert('<?= $this->jsTranslate("Pick the shipment to copy the feedback form from.") ?>');
+            return;
+        }
+        var hasContent = questions.some(function(q) {
+            return q.selected;
+        }) || !$('#formContentEditor').summernote('isEmpty');
+        if (hasContent && !confirm('<?= $this->jsTranslate("Replace the questions, introduction, audience and days open on this form with the copied ones? Files are kept.") ?>')) {
             return;
         }
         $.blockUI();
-        document.getElementById('addFeedbackQuestionsForm').submit();
-    }
-
-    // Push HTML back into the rich text editor as well as the underlying textarea.
-    function setFormContent(html) {
-        var $textarea = $('#formContent');
-        $textarea.val(html || '');
-        var wysihtml5Data = $textarea.data('wysihtml5');
-        if (wysihtml5Data && wysihtml5Data.editor) {
-            wysihtml5Data.editor.setValue(html || '', true);
-        }
-    }
-
-    /**
-     * Render a feedback form payload (question list + content + audience) into the page.
-     * Used both when the target shipment changes and when copying an existing form.
-     */
-    function applyFormPayload(data, applyContent) {
-        var options = '';
-        var mandatory = [];
-        var sortOrder = {};
-        $.each(data.questions || [], function(i, q) {
-            options += '<option value="' + q.questionId + '"' + (q.selected ? ' selected="selected"' : '') + '>' + escapeHtml(q.label) + '</option>';
-            if (q.selected && q.mandatory) {
-                mandatory.push(String(q.questionId));
-            }
-            if (q.selected && q.sortOrder !== null && q.sortOrder !== undefined) {
-                sortOrder[String(q.questionId)] = q.sortOrder;
-            }
-        });
-        questionPrefill = {
-            mandatory: mandatory,
-            sortOrder: sortOrder
-        };
-
-        $('#question').html(options);
-        $('#question').selectpicker('refresh');
-        $('.show-questions').removeClass('hide');
-        loadQuestion();
-
-        if (applyContent) {
-            $('#formTo').val(data.formShowTo || '').trigger('change');
-            setFormContent(data.formContent || '');
-        }
-    }
-
-    function fetchFormPayload(shipmentId, applyContent) {
-        $.blockUI();
-        $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'feedback-responses', 'action' => 'get-questions'), 'default', true); ?>", {
-                sid: shipmentId
+        $.post('<?= $this->url(array('module' => 'admin', 'controller' => 'feedback-responses', 'action' => 'get-questions'), 'default', true); ?>', {
+                sid: sourceId
             })
             .done(function(data) {
-                applyFormPayload(data, applyContent);
+                setQuestions(data.questions);
+                $('#formContentEditor').summernote('code', data.formContent || '');
+                $('#formToChoices input[value="' + (data.formShowTo || 'all-participants') + '"]').prop('checked', true);
+                if (data.openForDays) {
+                    $('#openForDays').val(data.openForDays);
+                    syncWindow();
+                }
+                syncAudience();
+                dirty = true;
             })
             .fail(function() {
-                alert("<?= $this->jsTranslate("Could not load the questions for that shipment. Please try again."); ?>");
+                alert('<?= $this->jsTranslate("Could not load that feedback form. Please try again.") ?>');
             })
             .always(function() {
                 $.unblockUI();
             });
     }
 
-    function loadQuestions(id) {
-        // In clone mode the questions are already prefilled from the source shipment —
-        // picking the target shipment must not wipe them.
-        if (isCloneMode || id === '') {
-            return;
-        }
-        fetchFormPayload(id, true);
-    }
-
-    function copyFeedbackFormFromShipment() {
-        var sourceId = $('#copyFromShipment').val();
-        if (!sourceId) {
-            alert("<?= $this->jsTranslate("Please select the shipment to copy the feedback form from."); ?>");
-            return;
-        }
-        fetchFormPayload(sourceId, true);
-    }
-
-    function checkType(value) {
-        if (value == 'dropdown') {
-            $('#optionTaple').removeClass('hide');
-        } else {
-            $('#optionTaple').addClass('hide');
-        }
-    }
-
-    function loadQuestion() {
-        var html = '';
-        $('#questionTable').removeClass('hide');
-        $('#question > option:selected').each(function() {
-            var text = $(this).text();
-            var val = $(this).val();
-            var mandatory = questionPrefill.mandatory.indexOf(String(val)) !== -1 ? 'checked' : '';
-            var sortOrder = questionPrefill.sortOrder[String(val)];
-            if (sortOrder === undefined || sortOrder === null) {
-                sortOrder = '';
-            }
-            html += '<tr> \
-                    <td style="text-align:left !important;">' + escapeHtml(text) + '</td>\
-                    <td><input type="checkbox" name="mandatory[' + val + ']"  ' + mandatory + ' id="mandatory' + val + '" title="Please select the mandatory or not" value="yes"/></td>\
-                    <td><input type="text" class="form-control" value="' + sortOrder + '" name="sortOrder[' + val + ']" id="sortOrder' + val + '" title="Please enter the sort order" placeholder="Enter the sort order"/></td>\
-                </tr>';
+    function addFileRow() {
+        fileRowKey++;
+        var k = fileRowKey;
+        var options = '';
+        $.each(AUDIENCE_LABELS, function(value, label) {
+            options += '<option value="' + value + '">' + escapeHtml(label) + '</option>';
         });
-        $('#questionRow').html(html);
-    }
-
-    function addRow() {
-        tableRow++;
-        $('#formRow').append(
-            '<tr> \
-                <td><input type="file" id="formFiles{{tableRow}}" name="formFiles[files][]" class="form-control option" placeholder="Select the form file" title="Please select the form file"></td>\
-                <td><input type="text" id="formFilesName{{tableRow}}" name="formFiles[name][]" class="form-control option" placeholder="Enter the file name" title="Please enter the file name"></td>\
-                <td>\
-                    <select class="select2 form-control" id="filesTo{{tableRow}}" name="formFiles[filesTo][]" title="Please select where we show the question">\
-                        <option value=""><?= $this->translate->_("--Select--"); ?></option>\
-                        <option value="all-participants"><?= $this->translate->_("All Participants"); ?></option>\
-                        <option value="passing-participants"><?= $this->translate->_("Only Passing Participants"); ?></option>\
-                        <option value="failing-participants"><?= $this->translate->_("Only Failing Participants"); ?></option>\
-                    </select>\
-                </td>\
-                <td><input type="text" id="formFilesSort{{tableRow}}" name="formFiles[sort][]" class="form-control option" placeholder="Enter the sort order" title="Please enter the sort order"></td>\
-                <td style=" vertical-align: middle; text-align:center; "><a href="javascript:void(0);" onclick="addRow(this);" class="btn btn-xs btn-info"><i class="icon-plus"></i></a>&nbsp;&nbsp;<a  href="javascript:void(0);" onclick="removeRow(this)" class="btn btn-xs btn-danger"  title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a></td>\
-            </tr>'
+        $('#fileRows').append(
+            '<tr>' +
+            '<td><input type="file" name="formFiles[files][' + k + ']" accept="' + FILE_ACCEPT + '"></td>' +
+            '<td><input type="text" name="formFiles[name][' + k + ']" class="form-control input-sm" maxlength="50" placeholder="<?= $this->jsTranslate("Same as the file") ?>"></td>' +
+            '<td><select name="formFiles[filesTo][' + k + ']" class="form-control input-sm">' + options + '</select></td>' +
+            '<td><input type="hidden" name="formFiles[sort][' + k + ']" class="ff-file-sort" value="">' +
+            '<button type="button" class="ff-icon-btn ff-remove" title="<?= $this->jsTranslate("Remove this file from the form") ?>" onclick="removeFileRow(this);"><i class="icon-remove"></i></button></td>' +
+            '</tr>'
         );
+        $('#filesTable').show();
+        $('#filesEmpty').hide();
+        $('#fileRows tr:last input[type=file]').trigger('click');
     }
 
-    function removeRow(obj) {
-        $(obj.parentNode.parentNode).fadeOut("normal", function() {
-            $(this).remove();
-        });
-        if ($("#formRow tr").length == 1) {
-            addRow();
+    function removeFileRow(btn) {
+        $(btn).closest('tr').remove();
+        if (!$('#fileRows tr').length) {
+            $('#filesTable').hide();
+            $('#filesEmpty').show();
         }
+        dirty = true;
+        updateSummary();
+    }
+
+    function validateNow() {
+        if (!$('#shipmentId').val()) {
+            alert('<?= $this->jsTranslate("Pick the shipment this feedback form is for.") ?>');
+            return false;
+        }
+        if (!questions.some(function(q) {
+                return q.selected;
+            })) {
+            alert('<?= $this->jsTranslate("Add at least one question to the feedback form.") ?>');
+            return false;
+        }
+        if (!openForDays()) {
+            alert('<?= $this->jsTranslate("Enter how many days the form stays open, from 1 to 365.") ?>');
+            $('#openForDays').focus();
+            return false;
+        }
+        if (isCloneMode && $('#shipmentId option:selected').data('has-form') == 1 &&
+            !confirm('<?= $this->jsTranslate("This shipment already has a feedback form. Replace it with this one?") ?>')) {
+            return false;
+        }
+        $('#formContent').val($('#formContentEditor').summernote('isEmpty') ? '' : $('#formContentEditor').summernote('code'));
+        $('#fileRows tr').each(function(i) {
+            $(this).find('.ff-file-sort').val(i + 1);
+        });
+        dirty = false;
+        $.blockUI();
+        return true;
     }
 </script>

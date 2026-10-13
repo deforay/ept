@@ -106,18 +106,14 @@ class Application_Model_DbTable_FeedBackTable extends Zend_Db_Table_Abstract
             ->order('rpfq.sort_order ASC');
         $result['feedback_form_question_results'] = $db->fetchAll($questionMapSql);
 
-        // Fetch feedback form files mapping results
+        // Every attachment on the form. This is the admin builder's view, so no
+        // per-participant filtering: an attachment missing here is dropped on save.
         $filesMapSql = $db->select()
             ->from(['rpff' => 'r_participant_feedback_form_files_map'], ['*'])
-            ->join(['spm' => 'shipment_participant_map'], 'spm.shipment_id=rpff.shipment_id', ['spm.map_id', 'final_result'])
-            ->where("(
-                    rpff.files_show_to IS NULL
-                    OR rpff.files_show_to = 'all-participants' 
-                    OR (rpff.files_show_to = 'passing-participants' AND spm.final_result = 1 AND rpff.files_show_to != 'passing-participants' AND rpff.files_show_to != 'all-participants')
-                    OR (rpff.files_show_to = 'failing-participants' AND spm.final_result != 1 AND rpff.files_show_to != 'passing-participants' AND rpff.files_show_to != 'all-participants')
-                )")
             ->where('rpff.shipment_id = ?', $id)
-            ->group('rpff.rpf_id');
+            ->order(new Zend_Db_Expr('rpff.sort_order IS NULL ASC'))
+            ->order('rpff.sort_order ASC')
+            ->order('rpff.rpf_id ASC');
         $result['feedback_form_files_results'] = $db->fetchAll($filesMapSql);
 
         return $result;
@@ -133,7 +129,7 @@ class Application_Model_DbTable_FeedBackTable extends Zend_Db_Table_Abstract
     public function fetchAllActiveQuestions($sid)
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $sql = $db->select()->from(['rfq' => 'r_feedback_questions'], ['question_id', 'question_text', 'question_code'])
+        $sql = $db->select()->from(['rfq' => 'r_feedback_questions'], ['question_id', 'question_text', 'question_code', 'question_show_to'])
             ->joinLeft(
                 ['rpff' => 'r_participant_feedback_form_question_map'],
                 'rfq.question_id = rpff.question_id AND rpff.shipment_id = ' . (int) $sid,
@@ -223,9 +219,14 @@ class Application_Model_DbTable_FeedBackTable extends Zend_Db_Table_Abstract
         // Fetch shipment details
         $shipmentResult = $db->fetchRow(
             $db->select()
-                ->from('shipment', ['scheme_type', 'collect_feedback'])
+                ->from('shipment', ['scheme_type', 'collect_feedback', 'finalized_at'])
                 ->where('shipment_id = ?', $params['shipmentId'])
         );
+
+        $openForDays = (int) ($params['openForDays'] ?? 0);
+        if ($openForDays < 1 || $openForDays > 365) {
+            $openForDays = Application_Service_FeedBack::DEFAULT_OPEN_FOR_DAYS;
+        }
 
         // Prepare feedback form data
         $feedbackFormData = [
@@ -233,20 +234,26 @@ class Application_Model_DbTable_FeedBackTable extends Zend_Db_Table_Abstract
             'shipment_id' => $params['shipmentId'],
             'scheme_type' => $shipmentResult['scheme_type'] ?? null,
             'form_content' => $params['formContent'] ?? null,
+            'open_for_days' => $openForDays,
         ];
 
-        // Update or insert feedback form record
-        if (isset($params['rfId']) && !empty($params['rfId'])) {
-            // Update existing record
-            $feedbackFormId = base64_decode($params['rfId']);
+        // One form per shipment: find it by shipment rather than trusting the posted id,
+        // so saving a copied form onto a shipment that already has one updates that form
+        // instead of adding a second.
+        $feedbackFormId = $db->fetchOne(
+            $db->select()
+                ->from('r_participant_feedback_form', 'rpff_id')
+                ->where('shipment_id = ?', (int) $params['shipmentId'])
+        );
+        if (!empty($feedbackFormId)) {
             $db->update(
                 'r_participant_feedback_form',
                 $feedbackFormData,
                 'rpff_id = ' . (int) $feedbackFormId
             );
         } else {
-            // Insert new record. insert() returns the affected row count, not the new id —
-            // reading it as an id stamped every new form's question rows with rpff_id = 1.
+            // insert() returns the affected row count, not the new id — reading it as an
+            // id stamped every new form's question rows with rpff_id = 1.
             $db->insert('r_participant_feedback_form', $feedbackFormData);
             $feedbackFormId = $db->lastInsertId('r_participant_feedback_form', 'rpff_id');
         }
@@ -259,55 +266,72 @@ class Application_Model_DbTable_FeedBackTable extends Zend_Db_Table_Abstract
             return false;
         }
 
-        // ===== PROCESS AND SAVE UPLOADED FILES =====
-        if (isset($params['formFiles']['name']) && !empty($params['formFiles']['name'])) {
-            // Delete existing file mappings for this shipment
+        // Already finalized: the form opened then, so move its closing date to match
+        if (!empty($shipmentResult['finalized_at'])) {
+            $db->update(
+                'shipment',
+                ['feedback_expiry_date' => date('Y-m-d', strtotime(substr($shipmentResult['finalized_at'], 0, 10) . " +{$openForDays} days"))],
+                'shipment_id = ' . (int) $params['shipmentId']
+            );
+        }
+
+        // ===== PROCESS AND SAVE ATTACHMENTS =====
+        // The form posts every attachment row it shows (formFilesPosted), so the posted
+        // rows replace the saved ones: a removed row is dropped, and a kept row with no
+        // new upload keeps its saved file (formFiles[existing]).
+        if (!empty($params['formFilesPosted'])) {
             $db->delete(
                 'r_participant_feedback_form_files_map',
                 'shipment_id = ' . (int) $params['shipmentId']
             );
 
-            // Prepare upload directory
-            $uploadFolder = realpath(UPLOAD_PATH);
-            $dirPath = 'feedback-forms' . DIRECTORY_SEPARATOR . $params['shipmentId'];
-            $uploadDir = $uploadFolder . DIRECTORY_SEPARATOR . $dirPath;
+            $uploadDir = realpath(UPLOAD_PATH) . DIRECTORY_SEPARATOR . 'feedback-forms' . DIRECTORY_SEPARATOR . (int) $params['shipmentId'];
+            $allowedExtensions = ['pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'odt', 'ods', 'csv', 'txt', 'jpg', 'jpeg', 'png', 'gif'];
 
-            // Create directory if it doesn't exist
-            if (!is_dir($uploadDir)) {
-                Application_Service_Common::makeDirectory($uploadDir);
-            }
+            foreach ((array) ($params['formFiles']['name'] ?? []) as $key => $fileName) {
+                $storedFile = null;
 
-            // Process each uploaded file
-            foreach ($params['formFiles']['name'] as $key => $fileName) {
-                $fileData = [
-                    'rpff_id' => $feedbackFormId,
-                    'shipment_id' => $params['shipmentId'],
-                    'scheme_type' => $shipmentResult['scheme_type'] ?? null,
-                    'feedback_file' => null,
-                    'file_name' => $fileName ?? null,
-                    'files_show_to' => $params['formFiles']['filesTo'][$key] ?? null,
-                    'sort_order' => $params['formFiles']['sort'][$key] ?? null,
-                ];
-                // Handle file upload if file is valid
+                // Keep the saved file, but only one that really is in this shipment's folder
+                $existing = basename((string) ($params['formFiles']['existing'][$key] ?? ''));
+                if ($existing !== '' && is_file($uploadDir . DIRECTORY_SEPARATOR . $existing)) {
+                    $storedFile = $existing;
+                }
+
                 if (
                     !empty($_FILES['formFiles']['name']['files'][$key])
-                    && $_FILES['formFiles']['error']['files'][$key] === 0
+                    && $_FILES['formFiles']['error']['files'][$key] === UPLOAD_ERR_OK
                 ) {
-                    // Get file extension
                     $originalFileName = $_FILES['formFiles']['name']['files'][$key];
-                    $extension = substr($originalFileName, strrpos($originalFileName, '.') + 1);
-                    // Generate unique filename
-                    $newFileName = Application_Service_Common::generateRandomString(6) . '.' . $extension;
-                    $targetPath = $uploadDir . DIRECTORY_SEPARATOR . $newFileName;
-
-                    // Move uploaded file and update file data
-                    if (move_uploaded_file($_FILES['formFiles']['tmp_name']['files'][$key], $targetPath)) {
-                        $fileData['feedback_file'] = $newFileName;
+                    $extension = strtolower(pathinfo($originalFileName, PATHINFO_EXTENSION));
+                    if (in_array($extension, $allowedExtensions, true)) {
+                        if (!is_dir($uploadDir)) {
+                            Application_Service_Common::makeDirectory($uploadDir);
+                        }
+                        $newFileName = Application_Service_Common::generateRandomString(6) . '.' . $extension;
+                        if (move_uploaded_file($_FILES['formFiles']['tmp_name']['files'][$key], $uploadDir . DIRECTORY_SEPARATOR . $newFileName)) {
+                            $storedFile = $newFileName;
+                        }
+                    }
+                    if (trim((string) $fileName) === '') {
+                        $fileName = pathinfo($originalFileName, PATHINFO_FILENAME);
                     }
                 }
 
-                // Insert file mapping record
-                $db->insert('r_participant_feedback_form_files_map', $fileData);
+                // A row with no file is an empty line the admin never filled in
+                if ($storedFile === null) {
+                    continue;
+                }
+
+                $db->insert('r_participant_feedback_form_files_map', [
+                    'rpff_id' => $feedbackFormId,
+                    'shipment_id' => $params['shipmentId'],
+                    'scheme_type' => $shipmentResult['scheme_type'] ?? null,
+                    'feedback_file' => $storedFile,
+                    // file_name is varchar(50)
+                    'file_name' => mb_substr(trim((string) $fileName) !== '' ? trim((string) $fileName) : $storedFile, 0, 50),
+                    'files_show_to' => ($params['formFiles']['filesTo'][$key] ?? '') ?: 'all-participants',
+                    'sort_order' => is_numeric($params['formFiles']['sort'][$key] ?? null) ? (int) $params['formFiles']['sort'][$key] : null,
+                ]);
             }
         }
 

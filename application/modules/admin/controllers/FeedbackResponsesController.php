@@ -98,6 +98,13 @@ class Admin_FeedbackResponsesController extends Zend_Controller_Action
             $this->view->type = $this->_getParam('type');
             $this->view->questions = $feedbackService->getAllActiveQuestions($id);
             $this->view->result = $feedbackService->getFeedBackFormsById($id);
+            // When the form opened and closes, for a shipment that is already finalized
+            $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+            $this->view->feedbackWindow = $db->fetchRow(
+                $db->select()
+                    ->from('shipment', ['finalized_at', 'feedback_expiry_date'])
+                    ->where('shipment_id = ?', $id)
+            );
         }
         $shipmentService = new Application_Service_Shipments();
         $this->view->shipments = $shipmentService->getAllShipmentCode();
