@@ -180,8 +180,8 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
 									title="<?= $this->htmlTranslate("Please enter the laboratory director email"); ?>"
 									onchange="changeEmail('#labDirectorEmail','#labDirectorEmailChange', '#confirmLabDirectorEmail');">
 								<input type="text" id="confirmLabDirectorEmail" name="confirmLabDirectorEmail"
-									class="form-control" placeholder="<?= $this->htmlTranslate("Enter the confirm laboratory director email"); ?>"
-									title="<?= $this->htmlTranslate("Please enter the confirm laboratory director email"); ?>" style="display: none;">
+									class="form-control" placeholder="<?= $this->htmlTranslate("Re-enter the laboratory director email"); ?>"
+									title="<?= $this->htmlTranslate("Please re-enter the laboratory director email to confirm"); ?>" style="display: none;">
 							</td>
 						</tr>
 						<tr>
@@ -209,8 +209,8 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
 									title="<?= $this->htmlTranslate("Please enter the contact person email"); ?>"
 									onchange="changeEmail('#contactPersonEmail','#contactPersonEmailChange','#confirmContactPersonEmail');">
 								<input type="text" id="confirmContactPersonEmail" name="confirmContactPersonEmail"
-									class="form-control" placeholder="<?= $this->htmlTranslate("Enter the confirm contact person email"); ?>"
-									title="<?= $this->htmlTranslate("Please enter the confirm contact person email"); ?>" style="display: none;">
+									class="form-control" placeholder="<?= $this->htmlTranslate("Re-enter the contact person email"); ?>"
+									title="<?= $this->htmlTranslate("Please re-enter the contact person email to confirm"); ?>" style="display: none;">
 							</td>
 						</tr>
 						<tr>
@@ -302,8 +302,8 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
 									?>
 								</select>
 								<input type="text" name="extractionAssayOther" id="extractionAssayOther"
-									class="form-control" placeholder="<?= $this->htmlTranslate("Enter the assay name other"); ?>"
-									title="<?= $this->htmlTranslate("Please enter the assay name other"); ?>" style="display: none;">
+									class="form-control" placeholder="<?= $this->htmlTranslate("Enter the other assay name"); ?>"
+									title="<?= $this->htmlTranslate("Please enter the other assay name"); ?>" style="display: none;">
 							</td>
 						</tr>
 						<!--

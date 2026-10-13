@@ -704,7 +704,7 @@ if ($this->reqFrom == "admin") {
             },
                 function (data) {
                     if (!data) {
-                        alert('<?= $this->jsTranslate("Entered Password was wrong please try again later"); ?>');
+                        alert('<?= $this->jsTranslate("Incorrect password. Please try again."); ?>');
                         return false;
                     }
                     window.location.href = '/admin/evaluate/shipment/sid/<?php echo base64_encode($this->shipId); ?>';

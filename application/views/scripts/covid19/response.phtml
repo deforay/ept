@@ -367,7 +367,7 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
                                         <span class='mandatory'>*</span></label></td>
                                 <td>
                                     <select class="form-control" name="numberOfParticipantTest" id="numberOfParticipantTest"
-                                        title="<?= $this->htmlTranslate("Please select number of participant test"); ?>"
+                                        title="<?= $this->htmlTranslate("Please select the number of tests"); ?>"
                                         onchange="showHideTest(this.value);">
                                         <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
                                         <?php $selected = "";
@@ -547,31 +547,31 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
                                 <td><input type="text" placeholder="<?= $this->htmlTranslate("Enter name of PCR reagent 1"); ?>" class="form-control"
                                         name="name_of_pcr_reagent_1" id="name_of_pcr_reagent_1"
                                         value="<?php echo ($nameOfPcrReagent1); ?>" style="width: 100%;"
-                                        title="<?= $this->htmlTranslate("Please enter name of PCR reagent. 1"); ?>" /></td>
+                                        title="<?= $this->htmlTranslate("Please enter the name of PCR reagent 1"); ?>" /></td>
                                 <td class='testTwo'><input type="text" placeholder="<?= $this->htmlTranslate("Enter name of PCR reagent 2"); ?>"
                                         class="form-control" name="name_of_pcr_reagent_2" id="name_of_pcr_reagent_2"
                                         value="<?php echo ($nameOfPcrReagent2); ?>" style="width: 100%;"
-                                        title="<?= $this->htmlTranslate("Please enter name of PCR reagent. 2"); ?>" /></td>
+                                        title="<?= $this->htmlTranslate("Please enter the name of PCR reagent 2"); ?>" /></td>
                                 <td class='testThree'><input type="text" placeholder="<?= $this->htmlTranslate("Enter name of PCR reagent 3"); ?>"
                                         class="form-control" name="name_of_pcr_reagent_3" id="name_of_pcr_reagent_3"
                                         value="<?php echo ($nameOfPcrReagent3); ?>" style="width: 100%;"
-                                        title="<?= $this->htmlTranslate("Please enter name of PCR reagent. 3"); ?>" /></td>
+                                        title="<?= $this->htmlTranslate("Please enter the name of PCR reagent 3"); ?>" /></td>
                             </tr>
 
                             <tr align="CENTER" class="light">
                                 <th scope="col"><?= $this->translate->_("PCR reagent Lot number"); ?></th>
-                                <td><input type="text" placeholder="<?= $this->htmlTranslate("Enter PCR reagent Lot no 1"); ?>" class="form-control"
+                                <td><input type="text" placeholder="<?= $this->htmlTranslate("Enter PCR reagent lot number 1"); ?>" class="form-control"
                                         name="pcr_reagent_lot_no_1" id="pcr_reagent_lot_no_1"
                                         value="<?php echo ($pcrLotNo1); ?>" style="width: 100%;"
-                                        title="<?= $this->htmlTranslate("Please enter PCR reagent Lot no. 1"); ?>" /></td>
-                                <td class='testTwo'><input type="text" placeholder="<?= $this->htmlTranslate("Enter PCR reagent Lot no  2"); ?>"
+                                        title="<?= $this->htmlTranslate("Please enter the lot number of PCR reagent 1"); ?>" /></td>
+                                <td class='testTwo'><input type="text" placeholder="<?= $this->htmlTranslate("Enter PCR reagent lot number 2"); ?>"
                                         class="form-control" name="pcr_reagent_lot_no_2" id="pcr_reagent_lot_no_2"
                                         value="<?php echo ($pcrLotNo2); ?>" style="width: 100%;"
-                                        title="<?= $this->htmlTranslate("Please enter PCR reagent Lot no. 2"); ?>" /></td>
-                                <td class='testThree'><input type="text" placeholder="<?= $this->htmlTranslate("Enter PCR reagent Lot no  3"); ?>"
+                                        title="<?= $this->htmlTranslate("Please enter the lot number of PCR reagent 2"); ?>" /></td>
+                                <td class='testThree'><input type="text" placeholder="<?= $this->htmlTranslate("Enter PCR reagent lot number 3"); ?>"
                                         class="form-control" name="pcr_reagent_lot_no_3" id="pcr_reagent_lot_no_3"
                                         value="<?php echo ($pcrLotNo3); ?>" style="width: 100%;"
-                                        title="<?= $this->htmlTranslate("Please enter PCR reagent Lot no. 3"); ?>" /></td>
+                                        title="<?= $this->htmlTranslate("Please enter the lot number of PCR reagent 3"); ?>" /></td>
                             </tr>
 
                             <tr align="CENTER" class="dark">
@@ -579,7 +579,7 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
                                 <td><input type="text" placeholder="<?= $this->htmlTranslate("Enter PCR reagent expiry date 1"); ?>"
                                         class="expDatepicker form-control" name="pcr_reagent_exp_date_1"
                                         id="pcr_reagent_exp_date_1" value="<?php echo ($pcrExpDate1); ?>"
-                                        style="width: 100%;" title="<?= $this->htmlTranslate("Please enter PCR reagent expiry date. 1"); ?>"
+                                        style="width: 100%;" title="<?= $this->htmlTranslate("Please select the expiry date of PCR reagent 1"); ?>"
                                         readonly="readonly" /><i class="icon-remove-sign"
                                         style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;"
                                         alt="<?= $this->htmlTranslate("Clear Date"); ?>" title="<?= $this->htmlTranslate("Clear Date"); ?>"
@@ -588,7 +588,7 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
                                 <td class='testTwo'><input type="text" placeholder="<?= $this->htmlTranslate("Enter PCR reagent expiry date 2"); ?>"
                                         class="expDatepicker form-control" name="pcr_reagent_exp_date_2"
                                         id="pcr_reagent_exp_date_2" value="<?php echo ($pcrExpDate2); ?>"
-                                        style="width: 100%;" title="<?= $this->htmlTranslate("Please enter PCR reagent expiry date. 2"); ?>"
+                                        style="width: 100%;" title="<?= $this->htmlTranslate("Please select the expiry date of PCR reagent 2"); ?>"
                                         readonly="readonly" /><i class="icon-remove-sign"
                                         style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;"
                                         alt="<?= $this->htmlTranslate("Clear Date"); ?>" title="<?= $this->htmlTranslate("Clear Date"); ?>"
@@ -597,7 +597,7 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
                                 <td class='testThree'><input type="text" placeholder="<?= $this->htmlTranslate("Enter PCR reagent expiry date 3"); ?>"
                                         class="expDatepicker form-control" name="pcr_reagent_exp_date_3"
                                         id="pcr_reagent_exp_date_3" value="<?php echo ($pcrExpDate3); ?>"
-                                        style="width: 100%;" title="<?= $this->htmlTranslate("Please enter PCR reagent expiry date. 3"); ?>"
+                                        style="width: 100%;" title="<?= $this->htmlTranslate("Please select the expiry date of PCR reagent 3"); ?>"
                                         readonly="readonly" /><i class="icon-remove-sign"
                                         style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;"
                                         alt="<?= $this->htmlTranslate("Clear Date"); ?>" title="<?= $this->htmlTranslate("Clear Date"); ?>"
@@ -1206,7 +1206,7 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
             },
                 function (data) {
                     if (!data) {
-                        alert('<?= $this->jsTranslate("Entered Password was wrong please try again later"); ?>');
+                        alert('<?= $this->jsTranslate("Incorrect password. Please try again."); ?>');
                         return false;
                     }
                     window.location.href = '/admin/evaluate/shipment/sid/' + <?php echo json_encode(base64_encode($this->shipId ?? '')); ?>;

@@ -1,9 +1,10 @@
 #
+#: application/views/partials/help-drawer.phtml:102
 msgid ""
 msgstr ""
 "Project-Id-Version: ePT\n"
 "Report-Msgid-Bugs-To: support@deforay.com\n"
-"POT-Creation-Date: 2026-10-13 13:39+0530\n"
+"POT-Creation-Date: 2026-10-13 18:35+0530\n"
 "PO-Revision-Date: 2026-07-07 08:32+0530\n"
 "Last-Translator: Amit <amit@deforay.com>\n"
 "Language-Team: ePT\n"
@@ -119,7 +120,7 @@ msgstr "N'a pas atteint le score minimum requis"
 #: application/modules/admin/views/scripts/participants/bulk-import-review.phtml:15
 #: application/modules/admin/views/scripts/participants/participant-manager-map.phtml:96
 #: application/modules/admin/views/scripts/participants/participant-upload-statistics.phtml:162
-#: application/modules/admin/views/scripts/shipment/round-participants.phtml:124
+#: application/modules/admin/views/scripts/shipment/round-participants.phtml:109
 #: application/modules/admin/views/scripts/shipment/ship-it.phtml:73
 #: application/modules/reports/views/scripts/detailed/index.phtml:68
 #: application/modules/reports/views/scripts/distribution/finalize.phtml:362
@@ -217,7 +218,7 @@ msgstr "Diagnostic précoce chez le nourrisson"
 #: application/modules/admin/views/scripts/shipment/manage-enroll.phtml:94
 #: application/modules/admin/views/scripts/shipment/manage-enroll.phtml:127
 #: application/modules/admin/views/scripts/shipment/manage-enroll.phtml:167
-#: application/modules/admin/views/scripts/shipment/round-participants.phtml:120
+#: application/modules/admin/views/scripts/shipment/round-participants.phtml:105
 #: application/modules/admin/views/scripts/shipment/view-enrollments.phtml:44
 #: application/modules/admin/views/scripts/shipment/view-enrollments.phtml:64
 #: application/modules/admin/views/scripts/system-admins/index.phtml:16
@@ -323,7 +324,7 @@ msgid "EXCLUDED"
 msgstr "EXCLU"
 
 #: application/languages/db-translation-strings.php:119
-#: application/modules/admin/views/scripts/index/index.phtml:1367
+#: application/modules/admin/views/scripts/index/index.phtml:1372
 msgid "excluded"
 msgstr "exclus"
 
@@ -338,7 +339,7 @@ msgid "FAIL"
 msgstr "ÉCHEC"
 
 #: application/languages/db-translation-strings.php:125
-#: application/modules/admin/views/scripts/index/index.phtml:1362
+#: application/modules/admin/views/scripts/index/index.phtml:1367
 msgid "fail"
 msgstr "échec"
 
@@ -729,7 +730,7 @@ msgid "NOT EVALUATED"
 msgstr "NON ÉVALUÉ"
 
 #: application/languages/db-translation-strings.php:291
-#: application/modules/admin/views/scripts/index/index.phtml:1373
+#: application/modules/admin/views/scripts/index/index.phtml:1378
 msgid "not evaluated"
 msgstr "non évalué"
 
@@ -844,7 +845,7 @@ msgid "PASS"
 msgstr "RÉUSSI"
 
 #: application/languages/db-translation-strings.php:329
-#: application/modules/admin/views/scripts/index/index.phtml:1352
+#: application/modules/admin/views/scripts/index/index.phtml:1357
 msgid "pass"
 msgstr "réussi"
 
@@ -1572,7 +1573,7 @@ msgstr ""
 #: application/layouts/scripts/layout.phtml:292
 #: application/modules/admin/views/scripts/help/index.phtml:16
 #: application/modules/admin/views/scripts/index/index.phtml:720
-#: application/modules/admin/views/scripts/shipment/round-participants.phtml:50
+#: application/modules/admin/views/scripts/shipment/round-participants.phtml:47
 #: application/views/partials/spotlight.phtml:33
 #: application/views/scripts/participant/dashboard.phtml:191
 msgid "Dashboard"
@@ -2288,7 +2289,7 @@ msgstr "Confirmer"
 #: application/modules/admin/views/scripts/evaluate/vl-range.ajax.phtml:454
 #: application/modules/admin/views/scripts/feedback-responses/add.phtml:70
 #: application/modules/admin/views/scripts/feedback-responses/edit.phtml:83
-#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:206
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:344
 #: application/modules/admin/views/scripts/home-section-links/add.phtml:97
 #: application/modules/admin/views/scripts/home-section-links/edit.phtml:103
 #: application/modules/admin/views/scripts/job-tracking/index.phtml:358
@@ -2349,7 +2350,6 @@ msgstr "Confirmer"
 #: application/views/scripts/participant/user-info.phtml:125
 #: application/views/scripts/recency/response.phtml:686
 #: application/views/scripts/tb/response.phtml:637
-#: application/views/scripts/vl/response-old.phtml:377
 #: application/views/scripts/vl/response.phtml:1061
 msgid "Cancel"
 msgstr "Annuler"
@@ -2441,14 +2441,16 @@ msgstr "Fichiers pour les participants"
 
 #: application/layouts/scripts/admin.phtml:389
 #: application/views/partials/spotlight.phtml:55
-msgid "Configure Feedback"
-msgstr "Configurer le retour d'information"
+#, fuzzy
+msgid "Feedback Questions"
+msgstr "Options de retour d'information"
 
 #: application/layouts/scripts/admin.phtml:392
-#: application/modules/admin/views/scripts/global-config/index.phtml:1073
+#: application/modules/admin/views/scripts/feedback-responses/shipment-questions.phtml:39
 #: application/views/partials/spotlight.phtml:63
-msgid "Enable Feedback"
-msgstr "Activer les commentaires"
+#, fuzzy
+msgid "Feedback Forms"
+msgstr "Formulaire de feedback"
 
 #: application/layouts/scripts/admin.phtml:420
 #: application/modules/admin/views/scripts/partials/scheme-config-open.phtml:22
@@ -2671,7 +2673,7 @@ msgstr "Rapport annuel de performance"
 #: application/layouts/scripts/admin.phtml:583
 #: application/modules/admin/views/scripts/partials/scheme-config-nav.phtml:192
 #: application/modules/admin/views/scripts/participants/index.phtml:160
-#: application/modules/admin/views/scripts/shipment/round-participants.phtml:109
+#: application/modules/admin/views/scripts/shipment/round-participants.phtml:96
 #: application/modules/reports/views/scripts/corrective-preventive-actions/index.phtml:74
 #: application/modules/reports/views/scripts/shipments/index.phtml:221
 #: application/views/scripts/capa/index.phtml:49 public/js/main.js.php:209
@@ -2696,12 +2698,12 @@ msgstr "Mon profil"
 msgid "Sign Out"
 msgstr "Déconnexion"
 
-#: application/layouts/scripts/admin.phtml:715
+#: application/layouts/scripts/admin.phtml:716
 #: application/layouts/scripts/layout.phtml:428
 msgid "some problem"
 msgstr "un problème"
 
-#: application/layouts/scripts/admin.phtml:726
+#: application/layouts/scripts/admin.phtml:727
 #: application/layouts/scripts/home.phtml:178
 msgid ""
 " This project is supported by the U.S. President's Emergency Plan for AIDS "
@@ -2712,29 +2714,29 @@ msgstr ""
 "contre le sida (PEPFAR) par l'intermédiaire des Centres américains de "
 "contrôle et de prévention des maladies (CDC)."
 
-#: application/layouts/scripts/admin.phtml:731
+#: application/layouts/scripts/admin.phtml:732
 #: application/layouts/scripts/home.phtml:181
 #: application/layouts/scripts/layout.phtml:436
 msgid "Deployed commit"
 msgstr "Commit déployé"
 
-#: application/layouts/scripts/admin.phtml:741
+#: application/layouts/scripts/admin.phtml:742
 msgid "database not fully migrated"
 msgstr "la base de données n'a pas été entièrement migrée"
 
-#: application/layouts/scripts/admin.phtml:742
+#: application/layouts/scripts/admin.phtml:743
 msgid "code older than database"
 msgstr "code plus ancien que la base de données"
 
-#: application/layouts/scripts/admin.phtml:745
+#: application/layouts/scripts/admin.phtml:746
 msgid "App version"
 msgstr "Version de l'application"
 
-#: application/layouts/scripts/admin.phtml:745
+#: application/layouts/scripts/admin.phtml:746
 msgid "DB version"
 msgstr "Version de la base de données"
 
-#: application/layouts/scripts/admin.phtml:746
+#: application/layouts/scripts/admin.phtml:747
 msgid "DB ver."
 msgstr "Version de la base de données"
 
@@ -2958,13 +2960,13 @@ msgid "ePT does not send email to this address."
 msgstr "ePT n'envoie pas d'e-mail à cette adresse."
 
 #: application/models/DbTable/DataManagers.php:359
-#: application/models/DbTable/Participants.php:349
+#: application/models/DbTable/Participants.php:352
 msgid "None mapped"
 msgstr "Aucune association"
 
 #: application/models/DbTable/DataManagers.php:361
-#: application/models/DbTable/Participants.php:351
-#: application/models/DbTable/Participants.php:360
+#: application/models/DbTable/Participants.php:354
+#: application/models/DbTable/Participants.php:363
 #, php-format
 msgid "View (%d)"
 msgstr "Afficher (%d)"
@@ -2976,10 +2978,11 @@ msgstr "Modifier ce gestionnaire de données"
 #: application/models/DbTable/DataManagers.php:384
 #: application/models/DbTable/Distribution.php:133
 #: application/models/DbTable/Distribution.php:153
-#: application/models/DbTable/Participants.php:364
+#: application/models/DbTable/Participants.php:367
 #: application/modules/admin/controllers/SpotlightController.php:57
 #: application/modules/admin/views/scripts/data-managers/mapped-participants.ajax.phtml:51
 #: application/modules/admin/views/scripts/email-participants/index.phtml:1416
+#: application/modules/admin/views/scripts/feedback-responses/shipment-questions.phtml:114
 #: application/modules/admin/views/scripts/participants/mapped-data-managers.ajax.phtml:54
 #: application/services/Evaluation.php:2626
 msgid "Edit"
@@ -3093,7 +3096,8 @@ msgstr "Supprimer"
 msgid "View"
 msgstr "Voir"
 
-#: application/models/DbTable/Participants.php:358
+#: application/models/DbTable/Participants.php:361
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:637
 #: application/modules/admin/views/scripts/global-config/index.phtml:1272
 #: application/modules/admin/views/scripts/global-config/index.phtml:1370
 #: application/modules/admin/views/scripts/schemes/manage-test-results.phtml:353
@@ -3189,6 +3193,7 @@ msgstr "Réponse tardive"
 #: application/modules/reports/views/scripts/distribution/shipment.phtml:277
 #: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:304
 #: application/modules/reports/views/scripts/shipment-response-report/index.phtml:164
+#: application/services/Dashboard.php:1033
 #: application/services/Evaluation.php:2010
 #: application/services/Evaluation.php:2351
 #: application/services/Evaluation.php:2569
@@ -3226,6 +3231,7 @@ msgid "Report"
 msgstr "Rapport"
 
 #: application/models/DbTable/Shipments.php:1379
+#: application/modules/admin/views/scripts/feedback-responses/shipment-questions.phtml:55
 #: application/services/Reports.php:274
 #: application/views/scripts/participant/participant-message.phtml:9
 msgid "Feedback"
@@ -3480,7 +3486,7 @@ msgstr "Commentaires"
 #: application/modules/admin/views/scripts/shipment/manage-enroll.phtml:123
 #: application/modules/admin/views/scripts/shipment/manage-enroll.phtml:163
 #: application/modules/admin/views/scripts/shipment/round-participants.phtml:82
-#: application/modules/admin/views/scripts/shipment/round-participants.phtml:122
+#: application/modules/admin/views/scripts/shipment/round-participants.phtml:107
 #: application/modules/admin/views/scripts/shipment/ship-it.phtml:61
 #: application/modules/admin/views/scripts/shipment/view-enrollments.phtml:42
 #: application/modules/admin/views/scripts/shipment/view-enrollments.phtml:62
@@ -3866,7 +3872,7 @@ msgstr "Message"
 #: application/modules/admin/views/scripts/sample-not-tested-reasons/index.phtml:37
 #: application/modules/admin/views/scripts/schemes/test-results.phtml:16
 #: application/modules/admin/views/scripts/shipment/index.phtml:67
-#: application/modules/admin/views/scripts/shipment/round-participants.phtml:85
+#: application/modules/admin/views/scripts/shipment/round-participants.phtml:88
 #: application/modules/admin/views/scripts/shipment/view-enrollments.phtml:45
 #: application/modules/admin/views/scripts/shipment/view-enrollments.phtml:65
 #: application/modules/admin/views/scripts/system-admins/add.phtml:77
@@ -3910,7 +3916,6 @@ msgstr "Raisons de l'échec"
 #: application/modules/admin/views/scripts/evaluate/index.phtml:48
 #: application/modules/admin/views/scripts/evaluate/shipment.phtml:353
 #: application/modules/admin/views/scripts/feedback-responses/questions.phtml:33
-#: application/modules/admin/views/scripts/feedback-responses/shipment-questions.phtml:27
 #: application/modules/admin/views/scripts/home-section-links/index.phtml:43
 #: application/modules/admin/views/scripts/job-tracking/index.phtml:144
 #: application/modules/admin/views/scripts/participant-messages/index.phtml:19
@@ -3923,7 +3928,7 @@ msgstr "Raisons de l'échec"
 #: application/modules/admin/views/scripts/shipment/manage-enroll.phtml:101
 #: application/modules/admin/views/scripts/shipment/manage-enroll.phtml:134
 #: application/modules/admin/views/scripts/shipment/manage-enroll.phtml:174
-#: application/modules/admin/views/scripts/shipment/round-participants.phtml:138
+#: application/modules/admin/views/scripts/shipment/round-participants.phtml:123
 #: application/modules/admin/views/scripts/shipment/view-enrollments.phtml:71
 #: application/modules/admin/views/scripts/system-admins/index.phtml:23
 #: application/modules/admin/views/scripts/test-platform/index.phtml:53
@@ -3984,7 +3989,7 @@ msgstr "Échecs et ignorés"
 #: application/modules/reports/views/scripts/shipment-response-report/index.phtml:167
 #: application/modules/reports/views/scripts/shipments/participation-stats.ajax.phtml:21
 #: application/modules/reports/views/scripts/shipments/participation-stats.ajax.phtml:126
-#: application/services/Dashboard.php:1048
+#: application/services/Dashboard.php:1023
 #: application/views/scripts/participant/shipment-response-report.phtml:110
 msgid "Failed"
 msgstr "Échec"
@@ -4163,7 +4168,7 @@ msgstr "Sélectionner l'expédition"
 #: application/modules/admin/views/scripts/announcement/compose.phtml:45
 #: application/modules/admin/views/scripts/data-managers/index.phtml:221
 #: application/modules/admin/views/scripts/enrollments/add.phtml:25
-#: application/modules/admin/views/scripts/shipment/round-participants.phtml:123
+#: application/modules/admin/views/scripts/shipment/round-participants.phtml:108
 #: application/modules/admin/views/scripts/shipment/ship-it.phtml:69
 #: application/views/scripts/participant/testeredit.phtml:58
 msgid "State"
@@ -4191,7 +4196,6 @@ msgstr "État"
 #: application/modules/admin/views/scripts/evaluate/shipment.phtml:78
 #: application/modules/admin/views/scripts/evaluate/shipment.phtml:347
 #: application/modules/admin/views/scripts/feedback-responses/questions.phtml:21
-#: application/modules/admin/views/scripts/feedback-responses/shipment-questions.phtml:16
 #: application/modules/admin/views/scripts/home-section-links/index.phtml:38
 #: application/modules/admin/views/scripts/participant-messages/index.phtml:14
 #: application/modules/admin/views/scripts/participants/bulk-import-review.phtml:202
@@ -4295,7 +4299,7 @@ msgstr "Sélectionnez une ou plusieurs villes"
 #: application/modules/admin/views/scripts/participants/index.phtml:162
 #: application/modules/admin/views/scripts/participants/participant-shipments.ajax.phtml:154
 #: application/modules/admin/views/scripts/shipment/index.phtml:39
-#: application/modules/admin/views/scripts/shipment/round-participants.phtml:111
+#: application/modules/admin/views/scripts/shipment/round-participants.phtml:97
 #: application/modules/admin/views/scripts/shipment/ship-it.phtml:100
 #: application/modules/reports/views/scripts/annual/index.phtml:37
 #: application/modules/reports/views/scripts/corrective-actions/index.phtml:62
@@ -4479,6 +4483,7 @@ msgstr "Source du flux"
 
 #: application/modules/admin/views/scripts/audit-log/index.phtml:578
 #: application/modules/admin/views/scripts/certificate-batches/index.phtml:162
+#: application/modules/admin/views/scripts/feedback-responses/shipment-questions.phtml:59
 #: application/modules/admin/views/scripts/home-config/index.phtml:819
 #: application/modules/admin/views/scripts/job-tracking/index.phtml:139
 msgid "Actions"
@@ -4622,11 +4627,11 @@ msgid "Showing"
 msgstr "Affichage"
 
 #: application/modules/admin/views/scripts/audit-log/index.phtml:903
-#: application/modules/admin/views/scripts/index/index.phtml:1146
-#: application/modules/admin/views/scripts/index/index.phtml:1182
-#: application/modules/admin/views/scripts/index/index.phtml:1281
-#: application/modules/admin/views/scripts/index/index.phtml:1335
-#: application/modules/admin/views/scripts/index/index.phtml:1413
+#: application/modules/admin/views/scripts/index/index.phtml:1151
+#: application/modules/admin/views/scripts/index/index.phtml:1187
+#: application/modules/admin/views/scripts/index/index.phtml:1286
+#: application/modules/admin/views/scripts/index/index.phtml:1340
+#: application/modules/admin/views/scripts/index/index.phtml:1418
 #: application/views/partials/help-drawer.phtml:114
 #: application/views/scripts/partial/paginate.phtml:40
 msgid "of"
@@ -4668,7 +4673,7 @@ msgid "Excellence"
 msgstr "Excellence"
 
 #: application/modules/admin/views/scripts/certificate-batches/index.phtml:159
-#: application/modules/admin/views/scripts/index/index.phtml:1278
+#: application/modules/admin/views/scripts/index/index.phtml:1283
 msgid "Participation"
 msgstr "Participation"
 
@@ -4866,6 +4871,7 @@ msgstr "Remplacer le modèle"
 #: application/modules/admin/views/scripts/certificate-templates/index.phtml:215
 #: application/modules/admin/views/scripts/certificate-templates/index.phtml:270
 #: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc.phtml:164
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:310
 #: application/modules/admin/views/scripts/participants/bulk-import.phtml:204
 #: application/modules/admin/views/scripts/report-config/index.phtml:511
 msgid "Replace"
@@ -5270,7 +5276,6 @@ msgstr "Veuillez choisir ici le pays d'adaptation"
 #: application/modules/admin/views/scripts/feedback-responses/add.phtml:44
 #: application/modules/admin/views/scripts/feedback-responses/edit.phtml:34
 #: application/modules/admin/views/scripts/feedback-responses/edit.phtml:44
-#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:59
 #: application/modules/admin/views/scripts/files-for-participants/index.phtml:404
 #: application/modules/admin/views/scripts/files-for-participants/index.phtml:416
 #: application/modules/admin/views/scripts/files-for-participants/index.phtml:425
@@ -5559,7 +5564,7 @@ msgstr "Sélectionner"
 #: application/modules/admin/views/scripts/partners/edit.phtml:45
 #: application/modules/admin/views/scripts/sample-not-tested-reasons/add.phtml:47
 #: application/modules/admin/views/scripts/sample-not-tested-reasons/edit.phtml:50
-#: application/modules/admin/views/scripts/shipment/round-participants.phtml:103
+#: application/modules/admin/views/scripts/shipment/round-participants.phtml:91
 #: application/modules/admin/views/scripts/system-admins/add.phtml:84
 #: application/modules/admin/views/scripts/system-admins/edit.phtml:60
 #: application/modules/admin/views/scripts/testkit/add.phtml:153
@@ -5590,7 +5595,7 @@ msgstr "Actif"
 #: application/modules/admin/views/scripts/partners/edit.phtml:48
 #: application/modules/admin/views/scripts/sample-not-tested-reasons/add.phtml:48
 #: application/modules/admin/views/scripts/sample-not-tested-reasons/edit.phtml:51
-#: application/modules/admin/views/scripts/shipment/round-participants.phtml:104
+#: application/modules/admin/views/scripts/shipment/round-participants.phtml:92
 #: application/modules/admin/views/scripts/system-admins/add.phtml:85
 #: application/modules/admin/views/scripts/system-admins/edit.phtml:61
 #: application/views/scripts/data-managers/index.phtml:12
@@ -5605,6 +5610,7 @@ msgstr "Inactif"
 #: application/modules/admin/views/scripts/data-managers/add.phtml:253
 #: application/modules/admin/views/scripts/eid-assay/add.phtml:30
 #: application/modules/admin/views/scripts/feedback-responses/add.phtml:69
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:554
 #: application/modules/admin/views/scripts/home-section-links/add.phtml:96
 #: application/modules/admin/views/scripts/participants/add.phtml:306
 #: application/modules/admin/views/scripts/partners/add.phtml:31
@@ -5698,7 +5704,6 @@ msgid "Gene type Name"
 msgstr "Nom du type de gène"
 
 #: application/modules/admin/views/scripts/covid19-gene-type/index.phtml:37
-#: application/modules/admin/views/scripts/feedback-responses/shipment-questions.phtml:14
 #: application/modules/admin/views/scripts/sample-not-tested-reasons/add.phtml:23
 #: application/modules/admin/views/scripts/sample-not-tested-reasons/edit.phtml:26
 #: application/modules/admin/views/scripts/schemes/test-results.phtml:14
@@ -6649,7 +6654,7 @@ msgstr "Veuillez répéter le même mot de passe"
 #: application/modules/admin/views/scripts/participants/participant-manager-map.phtml:107
 #: application/modules/admin/views/scripts/participants/participant-upload-statistics.phtml:161
 #: application/modules/admin/views/scripts/participants/_data-manager-dual-list.phtml:156
-#: application/modules/admin/views/scripts/shipment/round-participants.phtml:79
+#: application/modules/admin/views/scripts/shipment/round-participants.phtml:76
 #: application/modules/admin/views/scripts/shipment/ship-it.phtml:55
 #: application/views/scripts/data-managers/index.phtml:24
 #: application/views/scripts/participant/password.phtml:116
@@ -6777,7 +6782,7 @@ msgstr "Veuillez choisir votre pays"
 #: application/modules/admin/views/scripts/files-for-participants/index.phtml:1261
 #: application/modules/admin/views/scripts/participants/index.phtml:148
 #: application/modules/admin/views/scripts/participants/participant-manager-map.phtml:547
-#: application/modules/admin/views/scripts/shipment/round-participants.phtml:97
+#: application/modules/admin/views/scripts/shipment/round-participants.phtml:84
 #: application/modules/reports/views/scripts/shipment-response-report/index.phtml:221
 #: application/views/scripts/index/index.phtml:414
 #: application/views/scripts/participant/report.phtml:263
@@ -6847,14 +6852,14 @@ msgstr "Choisir une ou plusieurs options"
 #: application/modules/admin/views/scripts/data-managers/add.phtml:297
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:227
 #: application/modules/admin/views/scripts/participants/index.phtml:524
-#: application/modules/admin/views/scripts/shipment/round-participants.phtml:236
+#: application/modules/admin/views/scripts/shipment/round-participants.phtml:184
 msgid "Choose one or more Countries"
 msgstr "Choisissez un ou plusieurs pays"
 
 #: application/modules/admin/views/scripts/data-managers/add.phtml:302
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:232
 #: application/modules/admin/views/scripts/participants/index.phtml:529
-#: application/modules/admin/views/scripts/shipment/round-participants.phtml:241
+#: application/modules/admin/views/scripts/shipment/round-participants.phtml:189
 msgid "Type Country name to search"
 msgstr "Tapez le nom du pays à rechercher"
 
@@ -7372,6 +7377,7 @@ msgid "Blank uses the default password"
 msgstr "Laisser vide pour utiliser le mot de passe par défaut"
 
 #: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc.phtml:216
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:536
 #: application/modules/admin/views/scripts/participants/bulk-import.phtml:259
 msgid "Required"
 msgstr "Requis"
@@ -7760,7 +7766,7 @@ msgstr "Rechercher un numéro de mobile"
 #: application/modules/admin/views/scripts/data-managers/index.phtml:234
 #: application/modules/admin/views/scripts/data-managers/index.phtml:238
 #: application/modules/admin/views/scripts/participants/index.phtml:228
-#: application/modules/admin/views/scripts/shipment/round-participants.phtml:129
+#: application/modules/admin/views/scripts/shipment/round-participants.phtml:114
 msgid "Search Email"
 msgstr "Rechercher un e-mail"
 
@@ -7776,20 +7782,20 @@ msgstr "Rechercher un statut"
 #: application/modules/admin/views/scripts/data-managers/index.phtml:240
 #: application/modules/admin/views/scripts/enrollments/index.phtml:52
 #: application/modules/admin/views/scripts/participants/index.phtml:225
-#: application/modules/admin/views/scripts/shipment/round-participants.phtml:131
+#: application/modules/admin/views/scripts/shipment/round-participants.phtml:116
 #: application/views/scripts/participant/view.phtml:29
 msgid "Search Country"
 msgstr "Rechercher un pays"
 
 #: application/modules/admin/views/scripts/data-managers/index.phtml:241
 #: application/modules/admin/views/scripts/participants/index.phtml:226
-#: application/modules/admin/views/scripts/shipment/round-participants.phtml:132
+#: application/modules/admin/views/scripts/shipment/round-participants.phtml:117
 msgid "Search State"
 msgstr "Rechercher un État"
 
 #: application/modules/admin/views/scripts/data-managers/index.phtml:242
 #: application/modules/admin/views/scripts/participants/index.phtml:227
-#: application/modules/admin/views/scripts/shipment/round-participants.phtml:133
+#: application/modules/admin/views/scripts/shipment/round-participants.phtml:118
 msgid "Search District"
 msgstr "Rechercher un district"
 
@@ -7876,7 +7882,7 @@ msgstr "Filtrer par identifiant, nom, établissement ou adresse e-mail…"
 #: application/modules/admin/views/scripts/shipment/manage-enroll.phtml:85
 #: application/modules/admin/views/scripts/shipment/manage-enroll.phtml:118
 #: application/modules/admin/views/scripts/shipment/manage-enroll.phtml:158
-#: application/modules/admin/views/scripts/shipment/round-participants.phtml:118
+#: application/modules/admin/views/scripts/shipment/round-participants.phtml:103
 #: application/modules/reports/views/scripts/corrective-preventive-actions/capa.phtml:28
 #: application/modules/reports/views/scripts/corrective-preventive-actions/index.phtml:87
 #: application/views/scripts/auth/verify-email.phtml:92
@@ -8471,7 +8477,6 @@ msgstr "Expéditions dans le cadre de cette enquête PT"
 #: application/modules/admin/views/scripts/enrollments/view.phtml:13
 #: application/modules/admin/views/scripts/evaluate/get-shipments.ajax.phtml:62
 #: application/modules/admin/views/scripts/evaluate/shipment.phtml:68
-#: application/modules/admin/views/scripts/feedback-responses/shipment-questions.phtml:13
 #: application/modules/admin/views/scripts/mail-template/get-mail-template.ajax.phtml:108
 #: application/modules/admin/views/scripts/mail-template/get-mail-template.phtml:48
 #: application/modules/admin/views/scripts/mail-template/get-push-notification.ajax.phtml:22
@@ -8886,6 +8891,7 @@ msgid "Shipment date"
 msgstr "Date d'expédition"
 
 #: application/modules/admin/views/scripts/email-participants/index.phtml:301
+#: application/modules/admin/views/scripts/feedback-responses/shipment-questions.phtml:54
 #: application/modules/admin/views/scripts/mail-template/get-mail-template.ajax.phtml:98
 msgid "Response deadline"
 msgstr "Date limite de réponse"
@@ -9517,14 +9523,14 @@ msgstr "Désinscription en attente (enregistrer pour valider)"
 
 #: application/modules/admin/views/scripts/enrollments/add.phtml:142
 #: application/modules/admin/views/scripts/participants/index.phtml:556
-#: application/modules/admin/views/scripts/shipment/round-participants.phtml:268
+#: application/modules/admin/views/scripts/shipment/round-participants.phtml:216
 #: application/modules/admin/views/scripts/shipment/ship-it.phtml:348
 msgid "Choose one or more option(s)"
 msgstr "Choisissez une ou plusieurs option(s)"
 
 #: application/modules/admin/views/scripts/enrollments/add.phtml:150
 #: application/modules/admin/views/scripts/participants/index.phtml:564
-#: application/modules/admin/views/scripts/shipment/round-participants.phtml:276
+#: application/modules/admin/views/scripts/shipment/round-participants.phtml:224
 #: application/modules/admin/views/scripts/shipment/ship-it.phtml:356
 msgid "Type list to search"
 msgstr "Tapez la liste à rechercher"
@@ -9619,7 +9625,7 @@ msgstr "Inscrit le"
 
 #: application/modules/admin/views/scripts/enrollments/index.phtml:50
 #: application/modules/admin/views/scripts/participants/index.phtml:223
-#: application/modules/admin/views/scripts/shipment/round-participants.phtml:127
+#: application/modules/admin/views/scripts/shipment/round-participants.phtml:112
 #: application/views/scripts/participant/all-schemes.phtml:73
 #: application/views/scripts/participant/corrective.phtml:109
 #: application/views/scripts/participant/defaulted-schemes.phtml:36
@@ -9632,7 +9638,7 @@ msgstr "Rechercher par ID"
 
 #: application/modules/admin/views/scripts/enrollments/index.phtml:51
 #: application/modules/admin/views/scripts/participants/index.phtml:224
-#: application/modules/admin/views/scripts/shipment/round-participants.phtml:128
+#: application/modules/admin/views/scripts/shipment/round-participants.phtml:113
 #: application/views/scripts/participant/all-schemes.phtml:74
 #: application/views/scripts/participant/corrective.phtml:110
 #: application/views/scripts/participant/current-schemes.phtml:170
@@ -9654,7 +9660,6 @@ msgstr "Rechercher un programme"
 #: application/modules/admin/views/scripts/enrollments/index.phtml:93
 #: application/modules/admin/views/scripts/evaluate/index.phtml:167
 #: application/modules/admin/views/scripts/feedback-responses/questions.phtml:136
-#: application/modules/admin/views/scripts/feedback-responses/shipment-questions.phtml:106
 #: application/modules/admin/views/scripts/participants/index.phtml:387
 #: application/modules/reports/views/scripts/distribution/index.phtml:146
 #: application/modules/reports/views/scripts/finalize/index.phtml:138
@@ -9674,7 +9679,6 @@ msgstr "Chargement des gestionnaires de données…"
 #: application/modules/admin/views/scripts/enrollments/index.phtml:106
 #: application/modules/admin/views/scripts/evaluate/index.phtml:180
 #: application/modules/admin/views/scripts/feedback-responses/questions.phtml:149
-#: application/modules/admin/views/scripts/feedback-responses/shipment-questions.phtml:119
 #: application/modules/admin/views/scripts/participants/index.phtml:364
 #: application/modules/reports/views/scripts/distribution/index.phtml:159
 #: application/modules/reports/views/scripts/finalize/index.phtml:151
@@ -9980,7 +9984,6 @@ msgid "All Scheme Types"
 msgstr "Tous les types de programmes"
 
 #: application/modules/admin/views/scripts/evaluate/index.phtml:40
-#: application/modules/admin/views/scripts/feedback-responses/shipment-questions.phtml:19
 #: application/modules/reports/views/scripts/distribution/index.phtml:44
 #: application/modules/reports/views/scripts/finalize/index.phtml:36
 #: application/modules/reports/views/scripts/finalize/shipments.phtml:37
@@ -9990,7 +9993,6 @@ msgstr "Rechercher un code d'enquête"
 
 #: application/modules/admin/views/scripts/evaluate/index.phtml:41
 #: application/modules/admin/views/scripts/feedback-responses/questions.phtml:25
-#: application/modules/admin/views/scripts/feedback-responses/shipment-questions.phtml:20
 #: application/modules/reports/views/scripts/distribution/index.phtml:45
 #: application/modules/reports/views/scripts/finalize/index.phtml:37
 #: application/modules/reports/views/scripts/finalize/shipments.phtml:38
@@ -10769,10 +10771,6 @@ msgstr "Afficher la question de rétroaction à"
 
 #: application/modules/admin/views/scripts/feedback-responses/add.phtml:23
 #: application/modules/admin/views/scripts/feedback-responses/edit.phtml:23
-#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:72
-#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:133
-#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:150
-#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:389
 #: application/views/scripts/participant/current-schemes.phtml:316
 #: application/views/scripts/participant/current-schemes.phtml:323
 #: application/views/scripts/participant/current-schemes.phtml:332
@@ -10781,28 +10779,16 @@ msgstr "--Sélectionner--"
 
 #: application/modules/admin/views/scripts/feedback-responses/add.phtml:24
 #: application/modules/admin/views/scripts/feedback-responses/edit.phtml:24
-#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:73
-#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:134
-#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:151
-#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:390
 msgid "All Participants"
 msgstr "Tous les participants"
 
 #: application/modules/admin/views/scripts/feedback-responses/add.phtml:25
 #: application/modules/admin/views/scripts/feedback-responses/edit.phtml:25
-#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:74
-#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:135
-#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:152
-#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:391
 msgid "Only Passing Participants"
 msgstr "Seuls les participants ayant réussi"
 
 #: application/modules/admin/views/scripts/feedback-responses/add.phtml:26
 #: application/modules/admin/views/scripts/feedback-responses/edit.phtml:26
-#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:75
-#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:136
-#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:153
-#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:392
 msgid "Only Failing Participants"
 msgstr "Seuls les participants ayant échoué"
 
@@ -10848,96 +10834,447 @@ msgstr "Modifier la question"
 msgid "Clone"
 msgstr "Dupliquer"
 
-#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:47
-msgid "Clone Feedback Form"
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:53
+#, fuzzy
+msgid "All participants"
+msgstr "Tous les participants"
+
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:54
+#, fuzzy
+msgid "Every participant in the shipment."
+msgstr "Clôturer la liste des participants de cette expédition"
+
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:57
+#, fuzzy
+msgid "Passing only"
+msgstr "Score de réussite"
+
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:58
+#, fuzzy
+msgid "Only participants who passed this shipment."
+msgstr "Ajouter des participants à cette expédition"
+
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:61
+#, fuzzy
+msgid "Failing only"
+msgstr "Connexion uniquement"
+
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:62
+#, fuzzy
+msgid "Only participants who failed this shipment."
+msgstr "Ajouter des participants à cette expédition"
+
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:178
+#, fuzzy
+msgid "All feedback forms"
+msgstr "Afficher le formulaire de commentaires à"
+
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:181
+#, fuzzy, php-format
+msgid "Copy the %s feedback form"
 msgstr "Dupliquer le formulaire de feedback"
 
-#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:49
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:183
+#, fuzzy, php-format
+msgid "Feedback form for %s"
+msgstr "Formulaire de feedback (%d)"
+
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:185
+#: application/modules/admin/views/scripts/feedback-responses/shipment-questions.phtml:42
+#, fuzzy
+msgid "New feedback form"
+msgstr "Afficher le formulaire de commentaires à"
+
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:190
+#, fuzzy
 msgid ""
-"The questions below are copied from the shipment you cloned. Pick the "
-"shipment this form is for and save — the original form is left untouched."
+"The questions, introduction, audience and days open below come from that "
+"form. Pick the shipment to use them for and save. The original form is not "
+"changed."
 msgstr ""
 "Les questions ci-dessous sont copiées de l'expédition que vous avez "
 "dupliquée. Choisissez l'expédition à laquelle ce formulaire est destiné et "
 "enregistrez — le formulaire d'origine n'est pas modifié."
 
-#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:52
-#: application/modules/admin/views/scripts/feedback-responses/shipment-questions.phtml:2
-msgid "Feedback Form"
-msgstr "Formulaire de feedback"
-
-#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:56
-msgid "Shipment this feedback form is for"
-msgstr "Expédition concernée par ce formulaire de feedback"
-
-#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:69
-msgid "Show feedback form to"
-msgstr "Afficher le formulaire de commentaires à"
-
-#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:84
-msgid "Start from an existing feedback form"
-msgstr "Partir d'un formulaire de feedback existant"
-
-#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:88
-msgid "Select a shipment to copy from"
-msgstr "Sélectionnez une expédition à partir de laquelle copier"
-
-#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:90
-msgid "questions"
-msgstr "questions"
-
-#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:94
-#: application/modules/admin/views/scripts/index/ept-overview.ajax.phtml:329
-msgid "Copy"
-msgstr "Copier"
-
-#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:97
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:192
 msgid ""
-"Copies that shipment's questions, content and audience into this form. The "
-"form you copy from is not changed."
+"The questions participants answer after a shipment, with an optional "
+"introduction and files to download."
 msgstr ""
-"Copie les questions, le contenu et le public de cette expédition dans ce "
-"formulaire. Le formulaire copié n'est pas modifié."
 
-#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:104
-msgid "Enter Feedback Form Content"
-msgstr "Entrer le contenu du formulaire de commentaires"
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:201
+#, fuzzy
+msgid "Shipment and audience"
+msgstr "Date d'expédition"
 
-#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:164
-msgid "Select the available question"
-msgstr "Sélectionnez la question disponible"
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:204
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:355
+#: application/modules/admin/views/scripts/feedback-responses/shipment-questions.phtml:53
+#: application/modules/admin/views/scripts/files-for-participants/index.phtml:394
+#: application/modules/admin/views/scripts/shipment/ship-it.phtml:48
+#: application/modules/reports/views/scripts/corrective-actions/index.phtml:54
+#: application/modules/reports/views/scripts/participant-performance/index.phtml:98
+#: application/modules/reports/views/scripts/participant-trends/index.phtml:105
+#: application/modules/reports/views/scripts/shipment-response-report/index.phtml:100
+#: application/modules/reports/views/scripts/shipment-response-report/index.phtml:102
+#: application/views/scripts/covid19/response.phtml:1314
+#: application/views/scripts/participant/all-schemes.phtml:45
+#: application/views/scripts/participant/current-schemes.phtml:140
+#: application/views/scripts/participant/dashboard.phtml:527
+#: application/views/scripts/participant/defaulted-schemes.phtml:13
+#: application/views/scripts/participant/shipment-response-report.phtml:21
+msgid "Shipment"
+msgstr "Expédition"
 
-#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:205
-#: application/modules/admin/views/scripts/shipment/shipment-test-kits.phtml:215
-#: application/modules/reports/views/scripts/corrective-preventive-actions/capa.phtml:115
-#: application/views/scripts/capa/capa.phtml:109
-#: application/views/scripts/dts/response.phtml:1654
-#: application/views/scripts/participant/add.phtml:182
-#: application/views/scripts/participant/all-schemes.phtml:105
-#: application/views/scripts/participant/dashboard.phtml:569
-#: application/views/scripts/participant/participant-message.phtml:68
-#: application/views/scripts/participant/testeredit.phtml:195
-#: application/views/scripts/participant/user-info.phtml:122
-#: application/views/scripts/tb/response.phtml:633
-#: application/views/scripts/vl/response-old.phtml:375
-msgid "Submit"
-msgstr "Envoyer"
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:210
+#, fuzzy
+msgid "has a form"
+msgstr "Plateforme de test"
 
-#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:269
-msgid "Please select at least one question for this feedback form."
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:215
+msgid "Pick the shipment first. If it already has a form, that form opens."
 msgstr ""
-"Veuillez sélectionner au moins une question pour ce formulaire de feedback."
 
-#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:328
-msgid "Could not load the questions for that shipment. Please try again."
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:217
+msgid "Picking another shipment opens its form."
 msgstr ""
-"Impossible de charger les questions de cette expédition. Veuillez réessayer."
 
-#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:347
-msgid "Please select the shipment to copy the feedback form from."
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:222
+msgid "Who sees this form"
+msgstr ""
+
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:234
+#, fuzzy
+msgid "Open for feedback"
+msgstr "Configurer le retour d'information"
+
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:237
+#, fuzzy
+msgid "days after the shipment is finalized"
+msgstr "Veuillez saisir le score de l'expédition"
+
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:238
+msgid "2 weeks"
+msgstr ""
+
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:239
+msgid "4 weeks"
+msgstr ""
+
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:240
+msgid "8 weeks"
+msgstr ""
+
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:249
+msgid "Reuse an earlier form:"
+msgstr ""
+
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:250
+#, fuzzy
+msgid "Shipment to copy the feedback form from"
 msgstr ""
 "Veuillez sélectionner l'expédition à partir de laquelle copier le formulaire "
 "de feedback."
+
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:251
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:392
+#, fuzzy
+msgid "Pick a shipment"
+msgstr "Sélectionnez une expédition"
+
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:253
+#, fuzzy, php-format
+msgid "%d questions"
+msgstr "questions"
+
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:256
+#, fuzzy
+msgid "Copy into this form"
+msgstr "hors de ce cycle"
+
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:257
+msgid ""
+"Fills in its questions, introduction, audience and days open. Nothing is "
+"saved until you click Save."
+msgstr ""
+
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:263
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:357
+#: application/modules/admin/views/scripts/feedback-responses/shipment-questions.phtml:57
+#: application/views/scripts/index/index.phtml:289
+msgid "Questions"
+msgstr "Questions"
+
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:264
+#: application/modules/admin/views/scripts/feedback-responses/shipment-questions.phtml:41
+#, fuzzy
+msgid "Manage questions"
+msgstr "questions"
+
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:267
+msgid ""
+"Participants see the questions in this order. Use the arrows to move one."
+msgstr ""
+
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:271
+#, fuzzy
+msgid "Add questions"
+msgstr "questions"
+
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:272
+#, fuzzy
+msgid "Search questions"
+msgstr "Chercher une question"
+
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:279
+#, fuzzy
+msgid "Introduction"
+msgstr "extraction"
+
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:279
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:288
+msgid "Optional"
+msgstr "Optionnel"
+
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:283
+msgid ""
+"Shown above the questions, for example to thank participants or explain why "
+"you ask."
+msgstr ""
+
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:288
+#, fuzzy
+msgid "Files to download"
+msgstr "Vos téléchargements"
+
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:293
+#: application/modules/admin/views/scripts/home-section-links/add.phtml:40
+#: application/modules/admin/views/scripts/home-section-links/add.phtml:53
+#: application/modules/admin/views/scripts/home-section-links/edit.phtml:39
+#: application/modules/admin/views/scripts/home-section-links/edit.phtml:52
+msgid "File"
+msgstr "Fichier"
+
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:294
+#, fuzzy
+msgid "Name participants see"
+msgstr "Nouveaux participants"
+
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:295
+#, fuzzy
+msgid "Who sees it"
+msgstr "Qui doit le recevoir"
+
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:315
+msgid "The saved file is missing. Choose it again, or remove this row."
+msgstr ""
+
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:318
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:708
+#, fuzzy
+msgid "Same as the file"
+msgstr "Importer un autre fichier"
+
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:328
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:711
+#, fuzzy
+msgid "Remove this file from the form"
+msgstr "Supprimez complètement cette ligne"
+
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:334
+msgid ""
+"No files. Add a report, certificate or guidance document participants can "
+"download with the form."
+msgstr ""
+
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:335
+#, fuzzy
+msgid "Add a file"
+msgstr "Ajouter une expédition"
+
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:336
+msgid "PDF, Word, Excel, PowerPoint, CSV, text or image files."
+msgstr ""
+
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:342
+msgid "Saving switches on Collect Feedback for the shipment if it is off."
+msgstr ""
+
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:345
+#, fuzzy
+msgid "Save feedback form"
+msgstr "Afficher le formulaire de commentaires à"
+
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:353
+#, fuzzy
+msgid "Summary"
+msgstr "Rapport de synthèse terminé"
+
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:356
+#, fuzzy
+msgid "Shown to"
+msgstr "Voir qui"
+
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:358
+#: application/modules/admin/views/scripts/feedback-responses/shipment-questions.phtml:78
+#: application/views/partials/spotlight.phtml:610
+msgid "Open"
+msgstr "Ouvrir"
+
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:359
+#: application/modules/admin/views/scripts/files-for-participants/index.phtml:558
+msgid "Files"
+msgstr "Fichiers"
+
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:363
+msgid "Good to know"
+msgstr ""
+
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:364
+msgid ""
+"Required questions must be answered before a participant can submit the form."
+msgstr ""
+
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:365
+msgid ""
+"A question marked Passing only or Failing only keeps that limit, even on a "
+"form shown to all participants."
+msgstr ""
+
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:366
+msgid ""
+"To change a question's wording, use Manage questions. The change shows on "
+"every form that uses it."
+msgstr ""
+
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:384
+msgid ""
+"No questions yet. Add them from the list below, or reuse an earlier form."
+msgstr ""
+
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:386
+msgid "No questions yet. Add them from the list below."
+msgstr ""
+
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:397
+msgid "Optional. For example: Thank you for taking part in this round."
+msgstr ""
+
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:458
+msgid "Enter a number of days from 1 to 365."
+msgstr ""
+
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:465
+#, php-format
+msgid ""
+"Opened on %1$s and closed on %2$s. Saving with more days opens it again "
+"until the new date."
+msgstr ""
+
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:466
+#, php-format
+msgid "Opened on %1$s. Closes on %2$s."
+msgstr ""
+
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:469
+#, fuzzy
+msgid "Opens when the shipment is finalized."
+msgstr "Veuillez saisir le score de l'expédition"
+
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:536
+#, fuzzy
+msgid "Participants must answer this question"
+msgstr "Participant dans l'impossibilité d'effectuer le test"
+
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:538
+#, fuzzy
+msgid "Move up"
+msgstr "Supprimer le groupe"
+
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:539
+#, fuzzy
+msgid "Move down"
+msgstr "Liste déroulante"
+
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:540
+#, fuzzy
+msgid "Remove from the form"
+msgstr "Retirer du groupe"
+
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:559
+#, fuzzy
+msgid "No questions match your search."
+msgstr "Aucun sujet ne correspond à votre recherche."
+
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:560
+msgid "Every active question is on the form."
+msgstr ""
+
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:629
+#, fuzzy
+msgid "required"
+msgstr "Requis"
+
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:630
+#, fuzzy
+msgid "None yet"
+msgstr "Aucun"
+
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:639
+#, fuzzy, php-format
+msgid "%d days"
+msgstr "Dans %d jours"
+
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:648
+#, fuzzy
+msgid ""
+"This shipment already has a feedback form. Saving replaces it with this one."
+msgstr ""
+"Cette expédition a un formulaire de feedback. Désactiver Recueillir le "
+"feedback signifie que les participants ne le verront jamais."
+
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:654
+msgid ""
+"Open the form for the other shipment? Changes you have not saved here will "
+"be lost."
+msgstr ""
+
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:666
+#, fuzzy
+msgid "Pick the shipment to copy the feedback form from."
+msgstr ""
+"Veuillez sélectionner l'expédition à partir de laquelle copier le formulaire "
+"de feedback."
+
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:672
+msgid ""
+"Replace the questions, introduction, audience and days open on this form "
+"with the copied ones? Files are kept."
+msgstr ""
+
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:691
+#, fuzzy
+msgid "Could not load that feedback form. Please try again."
+msgstr "Impossible de charger l'aide. Veuillez réessayer."
+
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:731
+#, fuzzy
+msgid "Pick the shipment this feedback form is for."
+msgstr "Expédition concernée par ce formulaire de feedback"
+
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:737
+#, fuzzy
+msgid "Add at least one question to the feedback form."
+msgstr ""
+"Veuillez sélectionner au moins une question pour ce formulaire de feedback."
+
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:741
+msgid "Enter how many days the form stays open, from 1 to 365."
+msgstr ""
+
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:746
+msgid "This shipment already has a feedback form. Replace it with this one?"
+msgstr ""
 
 #: application/modules/admin/views/scripts/feedback-responses/questions.phtml:7
 msgid "Feed Back Questions List"
@@ -10956,17 +11293,89 @@ msgid "Search Type"
 msgstr "Rechercher un type"
 
 #: application/modules/admin/views/scripts/feedback-responses/questions.phtml:182
-#: application/modules/admin/views/scripts/feedback-responses/shipment-questions.phtml:151
 msgid "Response not found for this shipment"
 msgstr "Réponse introuvable pour cette expédition"
 
-#: application/modules/admin/views/scripts/feedback-responses/shipment-questions.phtml:7
-msgid "Create New Feedback Form"
-msgstr "Créer un nouveau formulaire de retour d'information"
+#: application/modules/admin/views/scripts/feedback-responses/shipment-questions.phtml:8
+#, fuzzy
+msgid "Passing participants only"
+msgstr "Association des participants pour :"
 
-#: application/modules/admin/views/scripts/feedback-responses/shipment-questions.phtml:15
-msgid "Number of Question Mapped"
-msgstr "Nombre de questions associées"
+#: application/modules/admin/views/scripts/feedback-responses/shipment-questions.phtml:9
+#, fuzzy
+msgid "Failing participants only"
+msgstr "Association des participants pour :"
+
+#: application/modules/admin/views/scripts/feedback-responses/shipment-questions.phtml:46
+msgid ""
+"Participants can fill in a shipment's feedback form once the shipment is "
+"finalized, until its feedback deadline. Newest shipments are listed first."
+msgstr ""
+
+#: application/modules/admin/views/scripts/feedback-responses/shipment-questions.phtml:48
+#, fuzzy
+msgid ""
+"No feedback forms yet. Create one for a shipment to start collecting "
+"feedback."
+msgstr ""
+"Pas encore de formulaire de feedback — obligatoire avant de pouvoir "
+"finaliser cette expédition."
+
+#: application/modules/admin/views/scripts/feedback-responses/shipment-questions.phtml:56
+#, fuzzy
+msgid "Feedback deadline"
+msgstr "Options de retour d'information"
+
+#: application/modules/admin/views/scripts/feedback-responses/shipment-questions.phtml:58
+#: application/modules/admin/views/scripts/feedback-responses/shipment-questions.phtml:117
+#: application/modules/reports/views/scripts/shipments/index.phtml:261
+#: application/modules/reports/views/scripts/shipments/response-chart.phtml:96
+msgid "Responses"
+msgstr "Réponses"
+
+#: application/modules/admin/views/scripts/feedback-responses/shipment-questions.phtml:72
+msgid "Switched off"
+msgstr ""
+
+#: application/modules/admin/views/scripts/feedback-responses/shipment-questions.phtml:73
+msgid ""
+"Collect Feedback is off for this shipment, so participants don't see this "
+"form. Saving the form switches it on."
+msgstr ""
+
+#: application/modules/admin/views/scripts/feedback-responses/shipment-questions.phtml:75
+#, fuzzy
+msgid "Opens when finalized"
+msgstr "dernière finalisation le"
+
+#: application/modules/admin/views/scripts/feedback-responses/shipment-questions.phtml:81
+#: application/modules/admin/views/scripts/index/index.phtml:1135
+msgid "Closed"
+msgstr "Clôturé"
+
+#: application/modules/admin/views/scripts/feedback-responses/shipment-questions.phtml:107
+#, fuzzy, php-format
+msgid "%d days after finalization"
+msgstr "Accepter les réponses après finalisation"
+
+#: application/modules/admin/views/scripts/feedback-responses/shipment-questions.phtml:115
+#, fuzzy
+msgid "Use this form for another shipment"
+msgstr "Réponse introuvable pour cette expédition"
+
+#: application/modules/admin/views/scripts/feedback-responses/shipment-questions.phtml:115
+#: application/modules/admin/views/scripts/index/ept-overview.ajax.phtml:329
+msgid "Copy"
+msgstr "Copier"
+
+#: application/modules/admin/views/scripts/feedback-responses/shipment-questions.phtml:117
+msgid "Download the responses as a spreadsheet"
+msgstr ""
+
+#: application/modules/admin/views/scripts/feedback-responses/shipment-questions.phtml:153
+#, fuzzy
+msgid "No responses found for this shipment."
+msgstr "Aucun échantillon n'a été trouvé pour cette expédition."
 
 #: application/modules/admin/views/scripts/files-for-participants/index.phtml:375
 msgid "Select Participants & Upload Files"
@@ -10981,22 +11390,6 @@ msgstr ""
 "Filtrez et chargez les participants qui doivent recevoir les fichiers, "
 "décochez les exceptions, puis téléversez les fichiers ci-dessous. Un "
 "récapitulatif final s'affiche avant tout envoi."
-
-#: application/modules/admin/views/scripts/files-for-participants/index.phtml:394
-#: application/modules/admin/views/scripts/shipment/ship-it.phtml:48
-#: application/modules/reports/views/scripts/corrective-actions/index.phtml:54
-#: application/modules/reports/views/scripts/participant-performance/index.phtml:98
-#: application/modules/reports/views/scripts/participant-trends/index.phtml:105
-#: application/modules/reports/views/scripts/shipment-response-report/index.phtml:100
-#: application/modules/reports/views/scripts/shipment-response-report/index.phtml:102
-#: application/views/scripts/covid19/response.phtml:1314
-#: application/views/scripts/participant/all-schemes.phtml:45
-#: application/views/scripts/participant/current-schemes.phtml:140
-#: application/views/scripts/participant/dashboard.phtml:527
-#: application/views/scripts/participant/defaulted-schemes.phtml:13
-#: application/views/scripts/participant/shipment-response-report.phtml:21
-msgid "Shipment"
-msgstr "Expédition"
 
 #: application/modules/admin/views/scripts/files-for-participants/index.phtml:454
 msgid "Load Participants"
@@ -11050,10 +11443,6 @@ msgid ""
 msgstr ""
 "Rien n'a encore été envoyé. Vérifiez les fichiers et les destinataires ci-"
 "dessous, puis cliquez sur Distribuer les fichiers."
-
-#: application/modules/admin/views/scripts/files-for-participants/index.phtml:558
-msgid "Files"
-msgstr "Fichiers"
 
 #: application/modules/admin/views/scripts/files-for-participants/index.phtml:597
 msgid "Distribute Files"
@@ -11636,6 +12025,10 @@ msgstr "Entrez la longueur minimale du mot de passe pour les participants"
 #: application/modules/admin/views/scripts/global-config/index.phtml:1057
 msgid "Allow Name Editing"
 msgstr "Autoriser la modification du nom"
+
+#: application/modules/admin/views/scripts/global-config/index.phtml:1073
+msgid "Enable Feedback"
+msgstr "Activer les commentaires"
 
 #: application/modules/admin/views/scripts/global-config/index.phtml:1091
 msgid "Direct Login"
@@ -12352,13 +12745,6 @@ msgstr "Sélectionnez le type"
 msgid "Link"
 msgstr "Lien"
 
-#: application/modules/admin/views/scripts/home-section-links/add.phtml:40
-#: application/modules/admin/views/scripts/home-section-links/add.phtml:53
-#: application/modules/admin/views/scripts/home-section-links/edit.phtml:39
-#: application/modules/admin/views/scripts/home-section-links/edit.phtml:52
-msgid "File"
-msgstr "Fichier"
-
 #: application/modules/admin/views/scripts/home-section-links/add.phtml:48
 #: application/modules/admin/views/scripts/home-section-links/edit.phtml:47
 msgid "Please enter link"
@@ -12433,7 +12819,7 @@ msgstr "Modifier le lien vers la ressource"
 
 #: application/modules/admin/views/scripts/home-section-links/edit.phtml:91
 #: application/modules/admin/views/scripts/participants/index.phtml:153
-#: application/modules/admin/views/scripts/shipment/round-participants.phtml:102
+#: application/modules/admin/views/scripts/shipment/round-participants.phtml:90
 msgid "Select Status"
 msgstr "Sélectionner un statut"
 
@@ -12452,7 +12838,7 @@ msgstr ""
 "Pour configurer les en-têtes de section et les icônes, rendez-vous dans"
 
 #: application/modules/admin/views/scripts/index/ept-overview.ajax.phtml:192
-#: application/modules/admin/views/scripts/index/index.phtml:1434
+#: application/modules/admin/views/scripts/index/index.phtml:1439
 msgid "ePT Overview"
 msgstr "Présentation d'ePT"
 
@@ -12577,12 +12963,12 @@ msgid "Labs"
 msgstr "Laboratoires"
 
 #: application/modules/admin/views/scripts/index/index.phtml:1012
-#: application/services/Dashboard.php:509
+#: application/services/Dashboard.php:510
 msgid "Actively participating"
 msgstr "Participation active"
 
 #: application/modules/admin/views/scripts/index/index.phtml:1017
-#: application/services/Dashboard.php:514
+#: application/services/Dashboard.php:515
 msgid "In a scheme, not responding"
 msgstr "Inscrits à un programme, sans réponse"
 
@@ -12595,7 +12981,7 @@ msgid "rounds open for response"
 msgstr "cycles ouverts aux réponses"
 
 #: application/modules/admin/views/scripts/index/index.phtml:1074
-#: application/modules/admin/views/scripts/index/index.phtml:1233
+#: application/modules/admin/views/scripts/index/index.phtml:1238
 msgid "No rounds open for response"
 msgstr "Aucun cycle ouvert aux réponses"
 
@@ -12608,7 +12994,7 @@ msgid "Round"
 msgstr "Cycle"
 
 #: application/modules/admin/views/scripts/index/index.phtml:1088
-#: application/modules/admin/views/scripts/shipment/round-participants.phtml:59
+#: application/modules/admin/views/scripts/shipment/round-participants.phtml:56
 msgid "Deadline"
 msgstr "Date limite"
 
@@ -12663,111 +13049,107 @@ msgstr "Clôturé il y a 1 jour"
 msgid "Closed %d days ago"
 msgstr "Clôturé il y a %d jours"
 
-#: application/modules/admin/views/scripts/index/index.phtml:1135
-msgid "Closed"
-msgstr "Clôturé"
-
-#: application/modules/admin/views/scripts/index/index.phtml:1153
+#: application/modules/admin/views/scripts/index/index.phtml:1158
 msgid "outstanding"
 msgstr "en attente"
 
-#: application/modules/admin/views/scripts/index/index.phtml:1182
+#: application/modules/admin/views/scripts/index/index.phtml:1187
 msgid "evaluated"
 msgstr "évalués"
 
-#: application/modules/admin/views/scripts/index/index.phtml:1184
+#: application/modules/admin/views/scripts/index/index.phtml:1189
 msgid "Scored once the round is evaluated"
 msgstr "Noté une fois le cycle évalué"
 
-#: application/modules/admin/views/scripts/index/index.phtml:1231
+#: application/modules/admin/views/scripts/index/index.phtml:1236
 msgid "Previous rounds"
 msgstr "Cycles précédents"
 
-#: application/modules/admin/views/scripts/index/index.phtml:1235
+#: application/modules/admin/views/scripts/index/index.phtml:1240
 msgid "last finalized"
 msgstr "dernière finalisation le"
 
-#: application/modules/admin/views/scripts/index/index.phtml:1257
+#: application/modules/admin/views/scripts/index/index.phtml:1262
 msgid "finalized"
 msgstr "finalisé le"
 
-#: application/modules/admin/views/scripts/index/index.phtml:1268
+#: application/modules/admin/views/scripts/index/index.phtml:1273
 msgid "vs"
 msgstr "vs"
 
-#: application/modules/admin/views/scripts/index/index.phtml:1272
+#: application/modules/admin/views/scripts/index/index.phtml:1277
 msgid "Average score"
 msgstr "Score moyen"
 
-#: application/modules/admin/views/scripts/index/index.phtml:1283
+#: application/modules/admin/views/scripts/index/index.phtml:1288
 msgid "enrolled labs took part"
 msgstr "laboratoires inscrits ont participé"
 
-#: application/modules/admin/views/scripts/index/index.phtml:1298
+#: application/modules/admin/views/scripts/index/index.phtml:1303
 msgid "took part"
 msgstr "ont participé"
 
-#: application/modules/admin/views/scripts/index/index.phtml:1308
+#: application/modules/admin/views/scripts/index/index.phtml:1313
 msgid "unable to test"
 msgstr "non réalisés"
 
-#: application/modules/admin/views/scripts/index/index.phtml:1318
+#: application/modules/admin/views/scripts/index/index.phtml:1323
 msgid "no response"
 msgstr "sans réponse"
 
-#: application/modules/admin/views/scripts/index/index.phtml:1324
+#: application/modules/admin/views/scripts/index/index.phtml:1329
 msgid "not in this round"
 msgstr "hors de ce cycle"
 
-#: application/modules/admin/views/scripts/index/index.phtml:1332
+#: application/modules/admin/views/scripts/index/index.phtml:1337
 #: application/modules/admin/views/scripts/shipment/partials/schemes/eid.phtml:83
 msgid "Results"
 msgstr "Résultats"
 
-#: application/modules/admin/views/scripts/index/index.phtml:1337
+#: application/modules/admin/views/scripts/index/index.phtml:1342
 msgid "passed"
 msgstr "réussis"
 
-#: application/modules/admin/views/scripts/index/index.phtml:1381
-#: application/services/Dashboard.php:1049
+#: application/modules/admin/views/scripts/index/index.phtml:1386
+#: application/services/Dashboard.php:1024
 msgid "Repeat failers"
 msgstr "Échecs répétés"
 
-#: application/modules/admin/views/scripts/index/index.phtml:1384
+#: application/modules/admin/views/scripts/index/index.phtml:1389
 msgid "No earlier round for this scheme to compare against"
 msgstr "Aucun cycle antérieur de ce programme à comparer"
 
-#: application/modules/admin/views/scripts/index/index.phtml:1393
-#: application/services/Dashboard.php:1050
+#: application/modules/admin/views/scripts/index/index.phtml:1398
+#: application/services/Dashboard.php:1025
 msgid "Never responded"
 msgstr "Jamais de réponse"
 
-#: application/modules/admin/views/scripts/index/index.phtml:1396
+#: application/modules/admin/views/scripts/index/index.phtml:1401
 msgid "Needs at least two finalized rounds for this scheme"
 msgstr "Nécessite au moins deux cycles finalisés pour ce programme"
 
-#: application/modules/admin/views/scripts/index/index.phtml:1404
+#: application/modules/admin/views/scripts/index/index.phtml:1409
 msgid "across the last"
 msgstr "sur les"
 
-#: application/modules/admin/views/scripts/index/index.phtml:1406
+#: application/modules/admin/views/scripts/index/index.phtml:1411
 msgid "rounds"
 msgstr "derniers cycles"
 
-#: application/modules/admin/views/scripts/index/index.phtml:1410
+#: application/modules/admin/views/scripts/index/index.phtml:1415
 msgid "Opened their report"
 msgstr "Ont ouvert leur rapport"
 
-#: application/modules/admin/views/scripts/index/index.phtml:1421
+#: application/modules/admin/views/scripts/index/index.phtml:1426
 msgid "No finalized rounds yet."
 msgstr "Aucun cycle finalisé pour le moment."
 
-#: application/modules/admin/views/scripts/index/index.phtml:1440
+#: application/modules/admin/views/scripts/index/index.phtml:1445
 #: public/js/main.js.php:217
 msgid "Loading..."
 msgstr "Chargement..."
 
-#: application/modules/admin/views/scripts/index/index.phtml:1471
+#: application/modules/admin/views/scripts/index/index.phtml:1476
 msgid "Failed to load overview."
 msgstr "Impossible de charger la vue d'ensemble."
 
@@ -13029,13 +13411,13 @@ msgstr "Saisir un texte à partir d'une image"
 msgid "Please enter the text from the image."
 msgstr "Veuillez saisir le texte figurant sur l'image."
 
-#: application/modules/admin/views/scripts/login/index.phtml:237
+#: application/modules/admin/views/scripts/login/index.phtml:245
 msgid "Text you entered from the image is incorrect. Please try again"
 msgstr ""
 "Le texte que vous avez saisi dans l'image est incorrect. Veuillez réessayer"
 
-#: application/modules/admin/views/scripts/login/index.phtml:247
-#: application/views/scripts/auth/login.phtml:254
+#: application/modules/admin/views/scripts/login/index.phtml:258
+#: application/views/scripts/auth/login.phtml:266
 #: application/views/scripts/auth/new-password.phtml:161
 #: application/views/scripts/auth/reset-password.phtml:132
 #: application/views/scripts/contact-us/index.phtml:136
@@ -14157,7 +14539,7 @@ msgid "Download as Excel"
 msgstr "Télécharger au format Excel"
 
 #: application/modules/admin/views/scripts/participants/index.phtml:143
-#: application/modules/admin/views/scripts/shipment/round-participants.phtml:92
+#: application/modules/admin/views/scripts/shipment/round-participants.phtml:78
 #: application/modules/admin/views/scripts/shipment/ship-it.phtml:57
 msgid "Select Lab/Participant Name"
 msgstr "Sélectionner le nom du laboratoire/participant"
@@ -14395,7 +14777,7 @@ msgstr "Détails du participant"
 #: application/modules/admin/views/scripts/shipment/manage-enroll.phtml:92
 #: application/modules/admin/views/scripts/shipment/manage-enroll.phtml:125
 #: application/modules/admin/views/scripts/shipment/manage-enroll.phtml:165
-#: application/modules/admin/views/scripts/shipment/round-participants.phtml:121
+#: application/modules/admin/views/scripts/shipment/round-participants.phtml:106
 #: application/modules/admin/views/scripts/system-admins/index.phtml:17
 #: application/views/scripts/participant/view.phtml:20
 msgid "Phone"
@@ -17222,15 +17604,15 @@ msgstr "Résultats de référence"
 msgid "Viral Load"
 msgstr "Charge virale"
 
-#: application/modules/admin/views/scripts/shipment/round-participants.phtml:51
+#: application/modules/admin/views/scripts/shipment/round-participants.phtml:48
 msgid "Round participants"
 msgstr "Participants du cycle"
 
-#: application/modules/admin/views/scripts/shipment/round-participants.phtml:119
+#: application/modules/admin/views/scripts/shipment/round-participants.phtml:104
 msgid "Lab Or Participant Name"
 msgstr "Nom du laboratoire ou du participant"
 
-#: application/modules/admin/views/scripts/shipment/round-participants.phtml:130
+#: application/modules/admin/views/scripts/shipment/round-participants.phtml:115
 msgid "Search Phone"
 msgstr "Rechercher un téléphone"
 
@@ -17417,6 +17799,20 @@ msgstr "Veuillez sélectionner les kits de test à attribuer"
 #: application/modules/admin/views/scripts/shipment/shipment-test-kits.phtml:206
 msgid "Current Assignments (all positions)"
 msgstr "Affectations actuelles (toutes les positions)"
+
+#: application/modules/admin/views/scripts/shipment/shipment-test-kits.phtml:215
+#: application/modules/reports/views/scripts/corrective-preventive-actions/capa.phtml:115
+#: application/views/scripts/capa/capa.phtml:109
+#: application/views/scripts/dts/response.phtml:1654
+#: application/views/scripts/participant/add.phtml:182
+#: application/views/scripts/participant/all-schemes.phtml:105
+#: application/views/scripts/participant/dashboard.phtml:569
+#: application/views/scripts/participant/participant-message.phtml:68
+#: application/views/scripts/participant/testeredit.phtml:195
+#: application/views/scripts/participant/user-info.phtml:122
+#: application/views/scripts/tb/response.phtml:633
+msgid "Submit"
+msgstr "Envoyer"
 
 #: application/modules/admin/views/scripts/shipment/shipment-test-kits.phtml:243
 msgid "Position"
@@ -18558,11 +18954,6 @@ msgstr "Télécharger les rapports récapitulatifs groupés - Sélectionnés"
 msgid "Clear"
 msgstr "Effacer"
 
-#: application/modules/reports/views/scripts/shipments/index.phtml:261
-#: application/modules/reports/views/scripts/shipments/response-chart.phtml:96
-msgid "Responses"
-msgstr "Réponses"
-
 #: application/modules/reports/views/scripts/shipments/index.phtml:265
 msgid "Reports for Participants"
 msgstr "Rapports destinés aux participants"
@@ -18615,7 +19006,7 @@ msgid "Could not test"
 msgstr "N'a pas pu tester"
 
 #: application/modules/reports/views/scripts/shipments/participation-stats.ajax.phtml:25
-#: application/services/Dashboard.php:1051
+#: application/services/Dashboard.php:1026
 msgid "No response"
 msgstr "Sans réponse"
 
@@ -18784,109 +19175,114 @@ msgstr "Kit de test 3"
 msgid "Test Count"
 msgstr "Nombre de tests"
 
-#: application/services/Common.php:2036
+#: application/services/Common.php:2024
 msgid "Password must be a string."
 msgstr "Le mot de passe doit être une chaîne de caractères."
 
-#: application/services/Common.php:2046
+#: application/services/Common.php:2034
 msgid "Password must not exceed 128 characters."
 msgstr "Le mot de passe ne doit pas dépasser 128 caractères."
 
-#: application/services/Common.php:2051
+#: application/services/Common.php:2039
 msgid "Password must contain at least one letter."
 msgstr "Le mot de passe doit contenir au moins une lettre."
 
-#: application/services/Common.php:2056
+#: application/services/Common.php:2044
 msgid "Password must contain at least one number."
 msgstr "Le mot de passe doit contenir au moins un chiffre."
 
-#: application/services/Common.php:2061
+#: application/services/Common.php:2049
 msgid "Password must contain at least one symbol."
 msgstr "Le mot de passe doit contenir au moins un symbole."
 
-#: application/services/Common.php:2072
+#: application/services/Common.php:2060
 msgid "Password must not contain parts of your name."
 msgstr "Le mot de passe ne doit pas contenir de parties de votre nom."
 
-#: application/services/Common.php:2092
+#: application/services/Common.php:2080
 msgid "Password must not contain parts of your email address."
 msgstr ""
 "Le mot de passe ne doit pas contenir de parties de votre adresse e-mail."
 
-#: application/services/Common.php:2109
+#: application/services/Common.php:2097
 msgid "Password is too weak. Please choose a more complex password."
 msgstr ""
 "Le mot de passe est trop faible. Veuillez choisir un mot de passe plus "
 "complexe."
 
 #: application/services/Dashboard.php:270
-#: application/services/Dashboard.php:353
+#: application/services/Dashboard.php:354
 msgid "Awaiting responses"
 msgstr "En attente de réponses"
 
-#: application/services/Dashboard.php:287
-#: application/services/Dashboard.php:357
+#: application/services/Dashboard.php:288
+#: application/services/Dashboard.php:358
 msgid "No responses received"
 msgstr "Aucune réponse reçue"
 
-#: application/services/Dashboard.php:298
-#: application/services/Dashboard.php:361
+#: application/services/Dashboard.php:299
+#: application/services/Dashboard.php:362
 msgid "Ready to evaluate"
 msgstr "Prêt à évaluer"
 
-#: application/services/Dashboard.php:310
-#: application/services/Dashboard.php:365
+#: application/services/Dashboard.php:311
+#: application/services/Dashboard.php:366
 msgid "Generate reports"
 msgstr "Générer les rapports"
 
-#: application/services/Dashboard.php:321
-#: application/services/Dashboard.php:369
+#: application/services/Dashboard.php:322
+#: application/services/Dashboard.php:370
 msgid "Ready to finalize"
 msgstr "Prêt à finaliser"
 
-#: application/services/Dashboard.php:519
+#: application/services/Dashboard.php:520
 msgid "Not in any scheme"
 msgstr "Dans aucun programme"
 
-#: application/services/Dashboard.php:1052
-#: application/services/Dashboard.php:1059
+#: application/services/Dashboard.php:1027
+#: application/services/Dashboard.php:1035
 msgid "Unable to test"
 msgstr "Impossible de tester"
 
-#: application/services/Dashboard.php:1057
+#: application/services/Dashboard.php:1032
 msgid "Outstanding"
 msgstr "En attente"
 
-#: application/services/Dashboard.php:1058
+#: application/services/Dashboard.php:1034
 msgid "Late"
 msgstr "Tardives"
 
-#: application/services/Dashboard.php:1094
+#: application/services/Dashboard.php:1075
+#, fuzzy
+msgid "Submitted a response for this round"
+msgstr "N'a jamais répondu à ce cycle"
+
+#: application/services/Dashboard.php:1084
 msgid "Responded after the deadline for this round"
 msgstr "A répondu après la date limite de ce cycle"
 
-#: application/services/Dashboard.php:1103
+#: application/services/Dashboard.php:1093
 msgid "Reported unable to run the PT panel this round"
 msgstr "A déclaré ne pas pouvoir analyser le panel PT de ce cycle"
 
-#: application/services/Dashboard.php:1112
+#: application/services/Dashboard.php:1102
 msgid "Failed this round"
 msgstr "En échec sur ce cycle"
 
-#: application/services/Dashboard.php:1135
+#: application/services/Dashboard.php:1125
 msgid "Failed this round and the one before it"
 msgstr "En échec sur ce cycle et sur le précédent"
 
-#: application/services/Dashboard.php:1160
+#: application/services/Dashboard.php:1150
 #, php-format
 msgid "No response across this scheme's last %d finalized rounds"
 msgstr "Aucune réponse sur les %d derniers cycles finalisés de ce programme"
 
-#: application/services/Dashboard.php:1178
+#: application/services/Dashboard.php:1168
 msgid "Never responded to this round"
 msgstr "N'a jamais répondu à ce cycle"
 
-#: application/services/Dashboard.php:1179
+#: application/services/Dashboard.php:1169
 msgid "No response recorded yet for this round"
 msgstr "Aucune réponse enregistrée pour ce cycle"
 
@@ -19231,10 +19627,6 @@ msgstr "Naviguer"
 msgid "Enter"
 msgstr "Entrer"
 
-#: application/views/partials/spotlight.phtml:610
-msgid "Open"
-msgstr "Ouvrir"
-
 #: application/views/partials/spotlight.phtml:612
 msgid "Esc"
 msgstr "Échap"
@@ -19263,17 +19655,6 @@ msgstr "Connexion des participants à ePT"
 #: application/views/scripts/auth/login.phtml:127
 msgid "Please enter your email or username"
 msgstr "Veuillez saisir votre adresse e-mail ou votre nom d'utilisateur"
-
-#: application/views/scripts/auth/login.phtml:127
-#: application/views/scripts/auth/reset-password.phtml:78
-#: application/views/scripts/contact-us/index.phtml:29
-#: application/views/scripts/participant/add-participant.phtml:150
-#: application/views/scripts/participant/add.phtml:127
-#: application/views/scripts/participant/edit-participant.phtml:199
-#: application/views/scripts/participant/participant-message.phtml:43
-#: application/views/scripts/participant/testeredit.phtml:154
-msgid "you@example.com"
-msgstr "you@example.com"
 
 #: application/views/scripts/auth/login.phtml:128
 msgid "Your email or username"
@@ -19313,7 +19694,7 @@ msgstr "Mot de passe oublié ?"
 msgid "Don't have a login ? Click here to contact us"
 msgstr "Vous n'avez pas d'identifiant ? Cliquez ici pour nous contacter"
 
-#: application/views/scripts/auth/login.phtml:244
+#: application/views/scripts/auth/login.phtml:253
 #: application/views/scripts/auth/new-password.phtml:151
 #: application/views/scripts/auth/reset-password.phtml:122
 #: application/views/scripts/contact-us/index.phtml:107
@@ -19730,7 +20111,6 @@ msgstr "Date de réception du test"
 #: application/views/scripts/dbs/response.phtml:98
 #: application/views/scripts/eid/response.phtml:267
 #: application/views/scripts/recency/response.phtml:175
-#: application/views/scripts/vl/response-old.phtml:113
 #: application/views/scripts/vl/response.phtml:267
 msgid "Please enter Test Receipt Date"
 msgstr "Veuillez saisir la date de réception du test"
@@ -19826,12 +20206,6 @@ msgstr "Veuillez saisir la date de réception du test"
 #: application/views/scripts/tb/response.phtml:322
 #: application/views/scripts/tb/response.phtml:350
 #: application/views/scripts/tb/response.phtml:351
-#: application/views/scripts/vl/response-old.phtml:114
-#: application/views/scripts/vl/response-old.phtml:119
-#: application/views/scripts/vl/response-old.phtml:126
-#: application/views/scripts/vl/response-old.phtml:160
-#: application/views/scripts/vl/response-old.phtml:178
-#: application/views/scripts/vl/response-old.phtml:233
 #: application/views/scripts/vl/response.phtml:269
 #: application/views/scripts/vl/response.phtml:270
 #: application/views/scripts/vl/response.phtml:282
@@ -19893,7 +20267,6 @@ msgstr "Mode de réception"
 #: application/views/scripts/dts/response.phtml:397
 #: application/views/scripts/eid/response.phtml:375
 #: application/views/scripts/recency/response.phtml:278
-#: application/views/scripts/vl/response-old.phtml:187
 #: application/views/scripts/vl/response.phtml:490
 msgid "Please choose the mode of receipt"
 msgstr "Veuillez choisir le mode de réception"
@@ -19913,7 +20286,6 @@ msgstr "CQ effectué"
 #: application/views/scripts/dts/response.phtml:423
 #: application/views/scripts/eid/response.phtml:409
 #: application/views/scripts/recency/response.phtml:312
-#: application/views/scripts/vl/response-old.phtml:217
 #: application/views/scripts/vl/response.phtml:523
 msgid "Please select QC done status"
 msgstr "Veuillez sélectionner le statut « Contrôle qualité effectué »"
@@ -19962,7 +20334,6 @@ msgstr "Date du CQ"
 #: application/views/scripts/dts/response.phtml:444
 #: application/views/scripts/eid/response.phtml:431
 #: application/views/scripts/recency/response.phtml:334
-#: application/views/scripts/vl/response-old.phtml:232
 #: application/views/scripts/vl/response.phtml:545
 msgid "Please enter QC Date"
 msgstr "Veuillez saisir la date du contrôle qualité"
@@ -19981,7 +20352,6 @@ msgstr "CQ effectué par"
 #: application/views/scripts/dts/response.phtml:455
 #: application/views/scripts/eid/response.phtml:441
 #: application/views/scripts/recency/response.phtml:345
-#: application/views/scripts/vl/response-old.phtml:239
 #: application/views/scripts/vl/response.phtml:555
 msgid "Please enter QC done by name"
 msgstr "Veuillez indiquer le nom de la personne chargée du contrôle qualité"
@@ -19991,7 +20361,7 @@ msgid "Number of tests"
 msgstr "Nombre de tests"
 
 #: application/views/scripts/covid19/response.phtml:370
-msgid "Please select number of participant test"
+msgid "Please select the number of tests"
 msgstr "Veuillez sélectionner le nombre de tests"
 
 #: application/views/scripts/covid19/response.phtml:385
@@ -20063,51 +20433,51 @@ msgid "Enter name of PCR reagent 1"
 msgstr "Entrez le nom du réactif PCR 1"
 
 #: application/views/scripts/covid19/response.phtml:550
-msgid "Please enter name of PCR reagent. 1"
-msgstr "Veuillez saisir le nom du réactif PCR. 1"
+msgid "Please enter the name of PCR reagent 1"
+msgstr "Veuillez saisir le nom du réactif PCR n° 1"
 
 #: application/views/scripts/covid19/response.phtml:551
 msgid "Enter name of PCR reagent 2"
 msgstr "Entrez le nom du réactif PCR 2"
 
 #: application/views/scripts/covid19/response.phtml:554
-msgid "Please enter name of PCR reagent. 2"
-msgstr "Veuillez saisir le nom du réactif PCR. 2"
+msgid "Please enter the name of PCR reagent 2"
+msgstr "Veuillez saisir le nom du réactif PCR n° 2"
 
 #: application/views/scripts/covid19/response.phtml:555
 msgid "Enter name of PCR reagent 3"
 msgstr "Saisissez le nom du réactif PCR 3"
 
 #: application/views/scripts/covid19/response.phtml:558
-msgid "Please enter name of PCR reagent. 3"
-msgstr "Veuillez saisir le nom du réactif PCR. 3"
+msgid "Please enter the name of PCR reagent 3"
+msgstr "Veuillez saisir le nom du réactif PCR n° 3"
 
 #: application/views/scripts/covid19/response.phtml:562
 msgid "PCR reagent Lot number"
 msgstr "Numéro de lot du réactif PCR"
 
 #: application/views/scripts/covid19/response.phtml:563
-msgid "Enter PCR reagent Lot no 1"
+msgid "Enter PCR reagent lot number 1"
 msgstr "Saisir le numéro de lot du réactif PCR n° 1"
 
 #: application/views/scripts/covid19/response.phtml:566
-msgid "Please enter PCR reagent Lot no. 1"
+msgid "Please enter the lot number of PCR reagent 1"
 msgstr "Veuillez saisir le numéro de lot du réactif PCR n° 1"
 
 #: application/views/scripts/covid19/response.phtml:567
-msgid "Enter PCR reagent Lot no  2"
+msgid "Enter PCR reagent lot number 2"
 msgstr "Saisir le numéro de lot du réactif PCR n° 2"
 
 #: application/views/scripts/covid19/response.phtml:570
-msgid "Please enter PCR reagent Lot no. 2"
+msgid "Please enter the lot number of PCR reagent 2"
 msgstr "Veuillez saisir le numéro de lot du réactif PCR n° 2"
 
 #: application/views/scripts/covid19/response.phtml:571
-msgid "Enter PCR reagent Lot no  3"
+msgid "Enter PCR reagent lot number 3"
 msgstr "Saisir le numéro de lot du réactif PCR n° 3"
 
 #: application/views/scripts/covid19/response.phtml:574
-msgid "Please enter PCR reagent Lot no. 3"
+msgid "Please enter the lot number of PCR reagent 3"
 msgstr "Veuillez saisir le numéro de lot du réactif PCR n° 3"
 
 #: application/views/scripts/covid19/response.phtml:578
@@ -20119,24 +20489,24 @@ msgid "Enter PCR reagent expiry date 1"
 msgstr "Saisir la date de péremption du réactif PCR 1"
 
 #: application/views/scripts/covid19/response.phtml:582
-msgid "Please enter PCR reagent expiry date. 1"
-msgstr "Veuillez saisir la date de péremption du réactif PCR. 1"
+msgid "Please select the expiry date of PCR reagent 1"
+msgstr "Veuillez sélectionner la date de péremption du réactif PCR n° 1"
 
 #: application/views/scripts/covid19/response.phtml:588
 msgid "Enter PCR reagent expiry date 2"
 msgstr "Saisir la date de péremption du réactif PCR 2"
 
 #: application/views/scripts/covid19/response.phtml:591
-msgid "Please enter PCR reagent expiry date. 2"
-msgstr "Veuillez saisir la date de péremption du réactif PCR. 2"
+msgid "Please select the expiry date of PCR reagent 2"
+msgstr "Veuillez sélectionner la date de péremption du réactif PCR n° 2"
 
 #: application/views/scripts/covid19/response.phtml:597
 msgid "Enter PCR reagent expiry date 3"
 msgstr "Saisir la date de péremption du réactif PCR 3"
 
 #: application/views/scripts/covid19/response.phtml:600
-msgid "Please enter PCR reagent expiry date. 3"
-msgstr "Veuillez saisir la date de péremption du réactif PCR. 3"
+msgid "Please select the expiry date of PCR reagent 3"
+msgstr "Veuillez sélectionner la date de péremption du réactif PCR n° 3"
 
 #: application/views/scripts/covid19/response.phtml:609
 #: application/views/scripts/dbs/response.phtml:268
@@ -20246,7 +20616,6 @@ msgstr "Raison pour laquelle le panel PT n'a pas été testé"
 #: application/views/scripts/eid/response.phtml:529
 #: application/views/scripts/recency/response.phtml:451
 #: application/views/scripts/tb/response.phtml:205
-#: application/views/scripts/vl/response-old.phtml:303
 #: application/views/scripts/vl/response.phtml:777
 msgid "Please select reason"
 msgstr "Veuillez sélectionner un motif"
@@ -20276,7 +20645,6 @@ msgstr "Vos commentaires"
 #: application/views/scripts/eid/response.phtml:565
 #: application/views/scripts/recency/response.phtml:476
 #: application/views/scripts/tb/response.phtml:232
-#: application/views/scripts/vl/response-old.phtml:314
 #: application/views/scripts/vl/response.phtml:813
 msgid "Please enter comments"
 msgstr "Veuillez entrer vos commentaires"
@@ -20293,7 +20661,6 @@ msgstr "Avez-vous besoin d'un appui de la part de l'organisateur du PT ?"
 #: application/views/scripts/dts/response.phtml:1327
 #: application/views/scripts/eid/response.phtml:573
 #: application/views/scripts/recency/response.phtml:484
-#: application/views/scripts/vl/response-old.phtml:317
 #: application/views/scripts/vl/response.phtml:821
 msgid "Please enter message to PT provider"
 msgstr "Veuillez saisir votre message à l'attention du prestataire PT"
@@ -20530,8 +20897,8 @@ msgstr ""
 #: application/views/scripts/recency/response.phtml:727
 #: application/views/scripts/tb/response.phtml:826
 #: application/views/scripts/vl/response.phtml:1223
-msgid "Entered Password was wrong please try again later"
-msgstr "Le mot de passe saisi est incorrect, veuillez réessayer plus tard"
+msgid "Incorrect password. Please try again."
+msgstr "Mot de passe incorrect. Veuillez réessayer."
 
 #: application/views/scripts/covid19/response.phtml:1216
 #: application/views/scripts/custom-test/response.phtml:856
@@ -20750,8 +21117,8 @@ msgid "Please enter the result for"
 msgstr "Veuillez saisir le résultat pour"
 
 #: application/views/scripts/custom-test/response.phtml:507
-msgid "Please select invalid or error"
-msgstr "Veuillez sélectionner invalide ou erreur"
+msgid "Please select whether the result is invalid or an error"
+msgstr "Veuillez indiquer si le résultat est invalide ou une erreur"
 
 #: application/views/scripts/custom-test/response.phtml:518
 #: application/views/scripts/tb/assay-formats.ajax.phtml:148
@@ -20996,7 +21363,7 @@ msgid "Type of Test"
 msgstr "Type de test"
 
 #: application/views/scripts/dts/response.phtml:468
-msgid "Please choose scrrening or confirmatory of test type"
+msgid "Please choose screening or confirmatory test type"
 msgstr "Veuillez choisir entre un test de dépistage ou un test de confirmation"
 
 #: application/views/scripts/dts/response.phtml:530
@@ -21089,18 +21456,18 @@ msgstr "Veuillez sélectionner la date d'expiration de la répétition 3"
 
 #: application/views/scripts/dts/response.phtml:900
 #: application/views/scripts/dts/response.phtml:938
-msgid "Please select the QC done for test 1"
-msgstr "Veuillez sélectionner le contrôle qualité effectué pour le test 1"
+msgid "Please select whether QC was done for test 1"
+msgstr "Veuillez indiquer si le contrôle qualité a été effectué pour le test 1"
 
 #: application/views/scripts/dts/response.phtml:912
 #: application/views/scripts/dts/response.phtml:947
-msgid "Please select the QC done for test 2"
-msgstr "Veuillez sélectionner le contrôle qualité effectué pour le test 2"
+msgid "Please select whether QC was done for test 2"
+msgstr "Veuillez indiquer si le contrôle qualité a été effectué pour le test 2"
 
 #: application/views/scripts/dts/response.phtml:924
 #: application/views/scripts/dts/response.phtml:956
-msgid "Please select the QC done for test 3"
-msgstr "Veuillez sélectionner le contrôle qualité effectué pour le test 3"
+msgid "Please select whether QC was done for test 3"
+msgstr "Veuillez indiquer si le contrôle qualité a été effectué pour le test 3"
 
 #: application/views/scripts/dts/response.phtml:999
 msgid "Select QC Date 1"
@@ -21177,8 +21544,8 @@ msgid "Retest after 14 days"
 msgstr "Refaites le test au bout de 14 jours"
 
 #: application/views/scripts/dts/response.phtml:1260
-msgid "Please select restest or not?"
-msgstr "Veuillez indiquer s'il s'agit d'un nouveau test ou non ?"
+msgid "Please select whether this is a retest"
+msgstr "Veuillez indiquer s'il s'agit d'un nouveau test"
 
 #: application/views/scripts/dts/response.phtml:1277
 #: application/views/scripts/eid/response.phtml:550
@@ -21284,14 +21651,15 @@ msgstr "Veuillez saisir l'adresse e-mail du directeur du laboratoire"
 
 #: application/views/scripts/eid/response.phtml:183
 #: application/views/scripts/vl/response.phtml:202
-msgid "Enter the confirm laboratory director email"
-msgstr "Entrez l'adresse e-mail du directeur du laboratoire"
+msgid "Re-enter the laboratory director email"
+msgstr "Saisissez à nouveau l'adresse e-mail du directeur du laboratoire"
 
 #: application/views/scripts/eid/response.phtml:184
 #: application/views/scripts/vl/response.phtml:203
-msgid "Please enter the confirm laboratory director email"
+msgid "Please re-enter the laboratory director email to confirm"
 msgstr ""
-"Veuillez saisir l'adresse e-mail du directeur du laboratoire pour "
+"Veuillez saisir à nouveau l'adresse e-mail du directeur du laboratoire pour "
+"confirmerVeuillez saisir l'adresse e-mail du directeur du laboratoire pour "
 "confirmation"
 
 #: application/views/scripts/eid/response.phtml:195
@@ -21321,14 +21689,17 @@ msgstr "Veuillez saisir l'adresse e-mail de la personne à contacter"
 
 #: application/views/scripts/eid/response.phtml:212
 #: application/views/scripts/vl/response.phtml:231
-msgid "Enter the confirm contact person email"
+msgid "Re-enter the contact person email"
 msgstr ""
-"Entrez l'adresse e-mail de la personne à contacter pour la confirmation"
+"Saisissez à nouveau l'adresse e-mail de la personne à contacterEntrez "
+"l'adresse e-mail de la personne à contacter pour la confirmation"
 
 #: application/views/scripts/eid/response.phtml:213
 #: application/views/scripts/vl/response.phtml:232
-msgid "Please enter the confirm contact person email"
-msgstr "Veuillez confirmer l'adresse e-mail de la personne à contacter"
+msgid "Please re-enter the contact person email to confirm"
+msgstr ""
+"Veuillez saisir à nouveau l'adresse e-mail de la personne à contacter pour "
+"confirmer"
 
 #: application/views/scripts/eid/response.phtml:219
 #: application/views/scripts/vl/response.phtml:238
@@ -21351,11 +21722,11 @@ msgid "Shipment Testing Date"
 msgstr "Date de test de l'expédition"
 
 #: application/views/scripts/eid/response.phtml:305
-msgid "Enter the assay name other"
+msgid "Enter the other assay name"
 msgstr "Entrez le nom du test (autre)"
 
 #: application/views/scripts/eid/response.phtml:306
-msgid "Please enter the assay name other"
+msgid "Please enter the other assay name"
 msgstr "Veuillez saisir le nom du test (autre)"
 
 #: application/views/scripts/eid/response.phtml:311
@@ -21524,10 +21895,6 @@ msgstr "F.A.Q"
 #: application/views/scripts/index/index.phtml:289
 msgid "Frequently Asked"
 msgstr "Fréquemment Demandé"
-
-#: application/views/scripts/index/index.phtml:289
-msgid "Questions"
-msgstr "Questions"
 
 #: application/views/scripts/index/index.phtml:322
 msgid "Got a question or feedback? Feel free to reach out to us."
@@ -23244,7 +23611,7 @@ msgid "Panel Received Date"
 msgstr "Date de réception du panel"
 
 #: application/views/scripts/tb/response.phtml:248
-msgid "Panel choose Received Date"
+msgid "Please select the panel received date"
 msgstr "Sélectionnez la date de réception du panel"
 
 #: application/views/scripts/tb/response.phtml:253
@@ -23291,7 +23658,7 @@ msgid "Cartridge/Assay Expiration"
 msgstr "Expiration de la cartouche/essai"
 
 #: application/views/scripts/tb/response.phtml:317
-msgid "Please select the assay expiration"
+msgid "Please select the assay expiration date"
 msgstr "Veuillez sélectionner la date d'expiration du test"
 
 #: application/views/scripts/tb/response.phtml:327
@@ -23306,8 +23673,8 @@ msgstr "Date d'étalonnage de l'instrument Xpert"
 #: application/views/scripts/vl/response.phtml:349
 #: application/views/scripts/vl/response.phtml:398
 #: application/views/scripts/vl/response.phtml:448
-msgid "Please enter gene Xpert instrument"
-msgstr "Veuillez saisir l'instrument GeneXpert"
+msgid "Please select the date of the last instrument calibration"
+msgstr "Veuillez sélectionner la date du dernier étalonnage de l'instrument"
 
 #: application/views/scripts/tb/response.phtml:335
 #: application/views/scripts/vl/response.phtml:360
@@ -23358,26 +23725,26 @@ msgstr "Veuillez saisir le numéro de série"
 #: application/views/scripts/tb/response.phtml:385
 #: application/views/scripts/tb/response.phtml:407
 #: application/views/scripts/tb/response.phtml:772
-msgid "Enter installed on date"
-msgstr "Saisir la date d'installation"
+msgid "Installation date"
+msgstr "Date d'installation"
 
 #: application/views/scripts/tb/response.phtml:386
 #: application/views/scripts/tb/response.phtml:407
 #: application/views/scripts/tb/response.phtml:772
-msgid "Please enter installed on date"
-msgstr "Veuillez indiquer la date d'installation"
+msgid "Please select the installation date"
+msgstr "Veuillez sélectionner la date d'installation"
 
 #: application/views/scripts/tb/response.phtml:390
 #: application/views/scripts/tb/response.phtml:410
 #: application/views/scripts/tb/response.phtml:773
-msgid "Enter last calibrated"
-msgstr "Saisir la dernière date d'étalonnage"
+msgid "Last calibration date"
+msgstr "Date du dernier étalonnage"
 
 #: application/views/scripts/tb/response.phtml:391
 #: application/views/scripts/tb/response.phtml:411
 #: application/views/scripts/tb/response.phtml:773
-msgid "Please enter the last calibrated"
-msgstr "Veuillez saisir la date du dernier étalonnage"
+msgid "Please select the last calibration date"
+msgstr "Veuillez sélectionner la date du dernier étalonnage"
 
 #: application/views/scripts/tb/response.phtml:427
 msgid "ATTESTATION"
@@ -23428,51 +23795,27 @@ msgstr ""
 "Veuillez vous assurer que tous les champs numériques contiennent des nombres "
 "valides"
 
-#: application/views/scripts/vl/response-old.phtml:118
-msgid "Please enter the Sample Rehydration Date"
-msgstr "Veuillez saisir la date de réhydratation de l'échantillon"
-
-#: application/views/scripts/vl/response-old.phtml:125
 #: application/views/scripts/vl/response.phtml:279
 msgid "Please enter the Panel Test Date"
 msgstr "Veuillez saisir la date d'analyse du panel"
-
-#: application/views/scripts/vl/response-old.phtml:138
-#: application/views/scripts/vl/response.phtml:292
-msgid "Please select the Viral Load Assay"
-msgstr "Veuillez sélectionner la technique de charge virale"
-
-#: application/views/scripts/vl/response-old.phtml:151
-#: application/views/scripts/vl/response.phtml:310
-#: application/views/scripts/vl/response.phtml:315
-msgid "Please specify Other Assay Name"
-msgstr "Veuillez préciser le nom de l'autre technique"
-
-#: application/views/scripts/vl/response-old.phtml:159
-msgid "Please enter Assay Expiration date"
-msgstr "Veuillez saisir la date d'expiration du test"
-
-#: application/views/scripts/vl/response-old.phtml:164
-msgid "Please enter Assay lot number"
-msgstr "Veuillez saisir le numéro de lot du test"
-
-#: application/views/scripts/vl/response-old.phtml:177
-msgid "Please enter Shipment Test Response Date "
-msgstr "Veuillez saisir la date de réponse de l'expédition "
-
-#: application/views/scripts/vl/response-old.phtml:260
-#: application/views/scripts/vl/response.phtml:594
-msgid "Enter a result value to calculate the log value"
-msgstr "Saisissez une valeur pour calculer le logarithme"
 
 #: application/views/scripts/vl/response.phtml:287
 msgid "Viral Load Assay"
 msgstr "Technique de charge virale"
 
+#: application/views/scripts/vl/response.phtml:292
+msgid "Please select the Viral Load Assay"
+msgstr "Veuillez sélectionner la technique de charge virale"
+
 #: application/views/scripts/vl/response.phtml:301
 #: application/views/scripts/vl/response.phtml:305
 msgid "Specimen Volume used for testing"
 msgstr "Volume de l'échantillon utilisé pour l'essai"
+
+#: application/views/scripts/vl/response.phtml:310
+#: application/views/scripts/vl/response.phtml:315
+msgid "Please specify Other Assay Name"
+msgstr "Veuillez préciser le nom de l'autre technique"
 
 #: application/views/scripts/vl/response.phtml:341
 #: application/views/scripts/vl/response.phtml:390
@@ -23552,6 +23895,10 @@ msgid "Viral Load Calculator (Convert copies/ml to Log<sub>10</sub>)"
 msgstr ""
 "Calculateur de charge virale (conversion des copies/ml en Log<sub>10</sub>)"
 
+#: application/views/scripts/vl/response.phtml:594
+msgid "Enter a result value to calculate the log value"
+msgstr "Saisissez une valeur pour calculer le logarithme"
+
 #: application/views/scripts/vl/response.phtml:604
 msgid "copies/ml"
 msgstr "copies/ml"
@@ -23616,8 +23963,8 @@ msgid "Please enter your comment"
 msgstr "Veuillez entrer votre commentaire"
 
 #: application/views/scripts/vl/response.phtml:690
-msgid "Please choose assay invalid or error"
-msgstr "Veuillez sélectionner « Test non valide » ou « Erreur »"
+msgid "Please choose whether the result is invalid or an error"
+msgstr "Veuillez indiquer si le résultat est invalide ou une erreur"
 
 #: application/views/scripts/vl/response.phtml:711
 msgid "Please enter the Module Number/Instrument Serial"
@@ -23700,6 +24047,11 @@ msgid "Your session has expired due to inactivity. Please sign in again."
 msgstr ""
 "Votre session a expiré en raison d'une inactivité prolongée. Veuillez vous "
 "reconnecter."
+
+#: library/Pt/Plugins/PreSetter.php:271
+#, fuzzy
+msgid "You do not have access to that participant."
+msgstr "Vous n'êtes pas autorisé à modifier la réponse de ce participant."
 
 #: public/js/main.js.php:185
 msgid "Apply"
@@ -24299,6 +24651,51 @@ msgstr ""
 msgid "No participants"
 msgstr "Aucun participant"
 
+#~ msgid "you@example.com"
+#~ msgstr "you@example.com"
+
+#~ msgid "Start from an existing feedback form"
+#~ msgstr "Partir d'un formulaire de feedback existant"
+
+#~ msgid "Select a shipment to copy from"
+#~ msgstr "Sélectionnez une expédition à partir de laquelle copier"
+
+#~ msgid ""
+#~ "Copies that shipment's questions, content and audience into this form. "
+#~ "The form you copy from is not changed."
+#~ msgstr ""
+#~ "Copie les questions, le contenu et le public de cette expédition dans ce "
+#~ "formulaire. Le formulaire copié n'est pas modifié."
+
+#~ msgid "Enter Feedback Form Content"
+#~ msgstr "Entrer le contenu du formulaire de commentaires"
+
+#~ msgid "Select the available question"
+#~ msgstr "Sélectionnez la question disponible"
+
+#~ msgid "Could not load the questions for that shipment. Please try again."
+#~ msgstr ""
+#~ "Impossible de charger les questions de cette expédition. Veuillez "
+#~ "réessayer."
+
+#~ msgid "Create New Feedback Form"
+#~ msgstr "Créer un nouveau formulaire de retour d'information"
+
+#~ msgid "Number of Question Mapped"
+#~ msgstr "Nombre de questions associées"
+
+#~ msgid "Please enter the Sample Rehydration Date"
+#~ msgstr "Veuillez saisir la date de réhydratation de l'échantillon"
+
+#~ msgid "Please enter Assay Expiration date"
+#~ msgstr "Veuillez saisir la date d'expiration du test"
+
+#~ msgid "Please enter Assay lot number"
+#~ msgstr "Veuillez saisir le numéro de lot du test"
+
+#~ msgid "Please enter Shipment Test Response Date "
+#~ msgstr "Veuillez saisir la date de réponse de l'expédition "
+
 #~ msgid "instance"
 #~ msgstr "Instance"
 
@@ -24377,9 +24774,6 @@ msgstr "Aucun participant"
 #, fuzzy
 #~ msgid "Select Survey Number"
 #~ msgstr "Sélectionner le numéro du kit de test"
-
-#~ msgid "Optional"
-#~ msgstr "Optionnel"
 
 #~ msgid "Columns marked in"
 #~ msgstr "Les colonnes marquées en"
@@ -24636,9 +25030,6 @@ msgstr "Aucun participant"
 
 #~ msgid "High Limit"
 #~ msgstr "Limite haute"
-
-#~ msgid "Accept Responses After Finalization"
-#~ msgstr "Accepter les réponses après finalisation"
 
 #~ msgid "DTS scheme type."
 #~ msgstr "Type de régime DTS."
@@ -25216,9 +25607,6 @@ msgstr "Aucun participant"
 
 #~ msgid "Feature Cards"
 #~ msgstr "Cartes spéciales"
-
-#~ msgid "Feedback options"
-#~ msgstr "Options de retour d'information"
 
 #, fuzzy
 #~ msgid "Feedback reports to participants at the end of every pt event"

@@ -504,7 +504,7 @@ if ($inConfirmStep) {
 										</td>
 										<td>
 											<select name="invalidVlResult[]" id="invalidVlResult<?php echo $count; ?>"
-												title="<?= $this->translate->_("Please select invalid or error"); ?>"
+												title="<?= $this->translate->_("Please select whether the result is invalid or an error"); ?>"
 												class="invalidVlResult assayInvalidFields form-control"
 												onchange="invalidOrErrorResult(this.value, <?php echo $count; ?>)">
 												<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
@@ -846,7 +846,7 @@ if ($inConfirmStep) {
 				},
 				function(data) {
 					if (!data) {
-						alert('<?= $this->jsTranslate("Entered Password was wrong please try again later"); ?>');
+						alert('<?= $this->jsTranslate("Incorrect password. Please try again."); ?>');
 						return false;
 					}
 					window.location.href = '/admin/evaluate/shipment/sid/<?php echo base64_encode($this->shipId); ?>';

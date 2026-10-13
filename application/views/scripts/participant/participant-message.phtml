@@ -40,7 +40,7 @@ $subjectOptions = [
                         <tr align="left" class="light">
                             <td><?= $this->translate->_("Your Email"); ?> <span class="text-danger">*</span></td>
                             <td>
-                                <input type="email" id="replyEmail" name="replyEmail" class="form-control input-sm isRequired" value="<?= $this->escape($replyEmailValue); ?>" title="<?= $this->htmlTranslate("Please enter a valid email address so we can reply to you"); ?>" placeholder="<?= $this->htmlTranslate("you@example.com"); ?>" />
+                                <input type="email" id="replyEmail" name="replyEmail" class="form-control input-sm isRequired" value="<?= $this->escape($replyEmailValue); ?>" title="<?= $this->htmlTranslate("Please enter a valid email address so we can reply to you"); ?>" placeholder="you@example.com" />
                                 <small class="text-muted">
                                     <?php if (empty($this->replyEmail)) { ?>
                                         <?= $this->translate->_("We do not have a valid email address for you. Please enter one so we can reply to your message."); ?>

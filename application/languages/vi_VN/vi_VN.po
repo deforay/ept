@@ -1,9 +1,10 @@
 #
+#: application/views/partials/help-drawer.phtml:102
 msgid ""
 msgstr ""
 "Project-Id-Version: ePT\n"
 "Report-Msgid-Bugs-To: support@deforay.com\n"
-"POT-Creation-Date: 2026-10-13 13:39+0530\n"
+"POT-Creation-Date: 2026-10-13 18:35+0530\n"
 "PO-Revision-Date: 2026-07-07 08:33+0530\n"
 "Last-Translator: Amit <amit@deforay.com>\n"
 "Language-Team: \n"
@@ -118,7 +119,7 @@ msgstr "Không đạt điểm tối thiểu theo yêu cầu"
 #: application/modules/admin/views/scripts/participants/bulk-import-review.phtml:15
 #: application/modules/admin/views/scripts/participants/participant-manager-map.phtml:96
 #: application/modules/admin/views/scripts/participants/participant-upload-statistics.phtml:162
-#: application/modules/admin/views/scripts/shipment/round-participants.phtml:124
+#: application/modules/admin/views/scripts/shipment/round-participants.phtml:109
 #: application/modules/admin/views/scripts/shipment/ship-it.phtml:73
 #: application/modules/reports/views/scripts/detailed/index.phtml:68
 #: application/modules/reports/views/scripts/distribution/finalize.phtml:362
@@ -216,7 +217,7 @@ msgstr "Chẩn đoán sớm ở trẻ sơ sinh"
 #: application/modules/admin/views/scripts/shipment/manage-enroll.phtml:94
 #: application/modules/admin/views/scripts/shipment/manage-enroll.phtml:127
 #: application/modules/admin/views/scripts/shipment/manage-enroll.phtml:167
-#: application/modules/admin/views/scripts/shipment/round-participants.phtml:120
+#: application/modules/admin/views/scripts/shipment/round-participants.phtml:105
 #: application/modules/admin/views/scripts/shipment/view-enrollments.phtml:44
 #: application/modules/admin/views/scripts/shipment/view-enrollments.phtml:64
 #: application/modules/admin/views/scripts/system-admins/index.phtml:16
@@ -325,7 +326,7 @@ msgid "EXCLUDED"
 msgstr "LOẠI TRỪ"
 
 #: application/languages/db-translation-strings.php:119
-#: application/modules/admin/views/scripts/index/index.phtml:1367
+#: application/modules/admin/views/scripts/index/index.phtml:1372
 msgid "excluded"
 msgstr "đã loại trừ"
 
@@ -340,7 +341,7 @@ msgid "FAIL"
 msgstr "KHÔNG ĐẠT"
 
 #: application/languages/db-translation-strings.php:125
-#: application/modules/admin/views/scripts/index/index.phtml:1362
+#: application/modules/admin/views/scripts/index/index.phtml:1367
 msgid "fail"
 msgstr "không đạt"
 
@@ -727,7 +728,7 @@ msgid "NOT EVALUATED"
 msgstr "CHƯA ĐƯỢC ĐÁNH GIÁ"
 
 #: application/languages/db-translation-strings.php:291
-#: application/modules/admin/views/scripts/index/index.phtml:1373
+#: application/modules/admin/views/scripts/index/index.phtml:1378
 msgid "not evaluated"
 msgstr "chưa được đánh giá"
 
@@ -837,7 +838,7 @@ msgid "PASS"
 msgstr "ĐẠT"
 
 #: application/languages/db-translation-strings.php:329
-#: application/modules/admin/views/scripts/index/index.phtml:1352
+#: application/modules/admin/views/scripts/index/index.phtml:1357
 msgid "pass"
 msgstr "đạt"
 
@@ -1556,7 +1557,7 @@ msgstr ""
 #: application/layouts/scripts/layout.phtml:292
 #: application/modules/admin/views/scripts/help/index.phtml:16
 #: application/modules/admin/views/scripts/index/index.phtml:720
-#: application/modules/admin/views/scripts/shipment/round-participants.phtml:50
+#: application/modules/admin/views/scripts/shipment/round-participants.phtml:47
 #: application/views/partials/spotlight.phtml:33
 #: application/views/scripts/participant/dashboard.phtml:191
 msgid "Dashboard"
@@ -2265,7 +2266,7 @@ msgstr "Xác nhận"
 #: application/modules/admin/views/scripts/evaluate/vl-range.ajax.phtml:454
 #: application/modules/admin/views/scripts/feedback-responses/add.phtml:70
 #: application/modules/admin/views/scripts/feedback-responses/edit.phtml:83
-#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:206
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:344
 #: application/modules/admin/views/scripts/home-section-links/add.phtml:97
 #: application/modules/admin/views/scripts/home-section-links/edit.phtml:103
 #: application/modules/admin/views/scripts/job-tracking/index.phtml:358
@@ -2326,7 +2327,6 @@ msgstr "Xác nhận"
 #: application/views/scripts/participant/user-info.phtml:125
 #: application/views/scripts/recency/response.phtml:686
 #: application/views/scripts/tb/response.phtml:637
-#: application/views/scripts/vl/response-old.phtml:377
 #: application/views/scripts/vl/response.phtml:1061
 msgid "Cancel"
 msgstr "Hủy"
@@ -2418,14 +2418,16 @@ msgstr "Tệp cho đơn vị tham gia"
 
 #: application/layouts/scripts/admin.phtml:389
 #: application/views/partials/spotlight.phtml:55
-msgid "Configure Feedback"
-msgstr "Cài đặt phản hồi"
+#, fuzzy
+msgid "Feedback Questions"
+msgstr "Danh sách câu hỏi phản hồi"
 
 #: application/layouts/scripts/admin.phtml:392
-#: application/modules/admin/views/scripts/global-config/index.phtml:1073
+#: application/modules/admin/views/scripts/feedback-responses/shipment-questions.phtml:39
 #: application/views/partials/spotlight.phtml:63
-msgid "Enable Feedback"
-msgstr "Bật tính năng phản hồi"
+#, fuzzy
+msgid "Feedback Forms"
+msgstr "Mẫu phản hồi"
 
 #: application/layouts/scripts/admin.phtml:420
 #: application/modules/admin/views/scripts/partials/scheme-config-open.phtml:22
@@ -2648,7 +2650,7 @@ msgstr "Báo cáo kết quả thực hiện hàng năm"
 #: application/layouts/scripts/admin.phtml:583
 #: application/modules/admin/views/scripts/partials/scheme-config-nav.phtml:192
 #: application/modules/admin/views/scripts/participants/index.phtml:160
-#: application/modules/admin/views/scripts/shipment/round-participants.phtml:109
+#: application/modules/admin/views/scripts/shipment/round-participants.phtml:96
 #: application/modules/reports/views/scripts/corrective-preventive-actions/index.phtml:74
 #: application/modules/reports/views/scripts/shipments/index.phtml:221
 #: application/views/scripts/capa/index.phtml:49 public/js/main.js.php:209
@@ -2673,12 +2675,12 @@ msgstr "Hồ sơ của tôi"
 msgid "Sign Out"
 msgstr "Đăng xuất"
 
-#: application/layouts/scripts/admin.phtml:715
+#: application/layouts/scripts/admin.phtml:716
 #: application/layouts/scripts/layout.phtml:428
 msgid "some problem"
 msgstr "một số vấn đề"
 
-#: application/layouts/scripts/admin.phtml:726
+#: application/layouts/scripts/admin.phtml:727
 #: application/layouts/scripts/home.phtml:178
 msgid ""
 " This project is supported by the U.S. President's Emergency Plan for AIDS "
@@ -2689,29 +2691,29 @@ msgstr ""
 "thống Hoa Kỳ (PEPFAR) thông qua Trung tâm Kiểm soát và Phòng ngừa Dịch bệnh "
 "Hoa Kỳ (CDC)."
 
-#: application/layouts/scripts/admin.phtml:731
+#: application/layouts/scripts/admin.phtml:732
 #: application/layouts/scripts/home.phtml:181
 #: application/layouts/scripts/layout.phtml:436
 msgid "Deployed commit"
 msgstr "Commit đã triển khai"
 
-#: application/layouts/scripts/admin.phtml:741
+#: application/layouts/scripts/admin.phtml:742
 msgid "database not fully migrated"
 msgstr "cơ sở dữ liệu chưa được di chuyển hoàn toàn"
 
-#: application/layouts/scripts/admin.phtml:742
+#: application/layouts/scripts/admin.phtml:743
 msgid "code older than database"
 msgstr "mã nguồn cũ hơn cơ sở dữ liệu"
 
-#: application/layouts/scripts/admin.phtml:745
+#: application/layouts/scripts/admin.phtml:746
 msgid "App version"
 msgstr "Phiên bản ứng dụng"
 
-#: application/layouts/scripts/admin.phtml:745
+#: application/layouts/scripts/admin.phtml:746
 msgid "DB version"
 msgstr "Phiên bản cơ sở dữ liệu"
 
-#: application/layouts/scripts/admin.phtml:746
+#: application/layouts/scripts/admin.phtml:747
 msgid "DB ver."
 msgstr "Phiên bản cơ sở dữ liệu"
 
@@ -2935,13 +2937,13 @@ msgid "ePT does not send email to this address."
 msgstr "ePT không gửi email đến địa chỉ này."
 
 #: application/models/DbTable/DataManagers.php:359
-#: application/models/DbTable/Participants.php:349
+#: application/models/DbTable/Participants.php:352
 msgid "None mapped"
 msgstr "Chưa được gán"
 
 #: application/models/DbTable/DataManagers.php:361
-#: application/models/DbTable/Participants.php:351
-#: application/models/DbTable/Participants.php:360
+#: application/models/DbTable/Participants.php:354
+#: application/models/DbTable/Participants.php:363
 #, php-format
 msgid "View (%d)"
 msgstr "Xem (%d)"
@@ -2953,10 +2955,11 @@ msgstr "Chỉnh sửa người quản lý dữ liệu này"
 #: application/models/DbTable/DataManagers.php:384
 #: application/models/DbTable/Distribution.php:133
 #: application/models/DbTable/Distribution.php:153
-#: application/models/DbTable/Participants.php:364
+#: application/models/DbTable/Participants.php:367
 #: application/modules/admin/controllers/SpotlightController.php:57
 #: application/modules/admin/views/scripts/data-managers/mapped-participants.ajax.phtml:51
 #: application/modules/admin/views/scripts/email-participants/index.phtml:1416
+#: application/modules/admin/views/scripts/feedback-responses/shipment-questions.phtml:114
 #: application/modules/admin/views/scripts/participants/mapped-data-managers.ajax.phtml:54
 #: application/services/Evaluation.php:2626
 msgid "Edit"
@@ -3070,7 +3073,8 @@ msgstr "Xóa"
 msgid "View"
 msgstr "Xem"
 
-#: application/models/DbTable/Participants.php:358
+#: application/models/DbTable/Participants.php:361
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:637
 #: application/modules/admin/views/scripts/global-config/index.phtml:1272
 #: application/modules/admin/views/scripts/global-config/index.phtml:1370
 #: application/modules/admin/views/scripts/schemes/manage-test-results.phtml:353
@@ -3166,6 +3170,7 @@ msgstr "Phản hồi muộn"
 #: application/modules/reports/views/scripts/distribution/shipment.phtml:277
 #: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:304
 #: application/modules/reports/views/scripts/shipment-response-report/index.phtml:164
+#: application/services/Dashboard.php:1033
 #: application/services/Evaluation.php:2010
 #: application/services/Evaluation.php:2351
 #: application/services/Evaluation.php:2569
@@ -3203,6 +3208,7 @@ msgid "Report"
 msgstr "Báo cáo"
 
 #: application/models/DbTable/Shipments.php:1379
+#: application/modules/admin/views/scripts/feedback-responses/shipment-questions.phtml:55
 #: application/services/Reports.php:274
 #: application/views/scripts/participant/participant-message.phtml:9
 msgid "Feedback"
@@ -3457,7 +3463,7 @@ msgstr "Ghi chú"
 #: application/modules/admin/views/scripts/shipment/manage-enroll.phtml:123
 #: application/modules/admin/views/scripts/shipment/manage-enroll.phtml:163
 #: application/modules/admin/views/scripts/shipment/round-participants.phtml:82
-#: application/modules/admin/views/scripts/shipment/round-participants.phtml:122
+#: application/modules/admin/views/scripts/shipment/round-participants.phtml:107
 #: application/modules/admin/views/scripts/shipment/ship-it.phtml:61
 #: application/modules/admin/views/scripts/shipment/view-enrollments.phtml:42
 #: application/modules/admin/views/scripts/shipment/view-enrollments.phtml:62
@@ -3842,7 +3848,7 @@ msgstr "Tin nhắn"
 #: application/modules/admin/views/scripts/sample-not-tested-reasons/index.phtml:37
 #: application/modules/admin/views/scripts/schemes/test-results.phtml:16
 #: application/modules/admin/views/scripts/shipment/index.phtml:67
-#: application/modules/admin/views/scripts/shipment/round-participants.phtml:85
+#: application/modules/admin/views/scripts/shipment/round-participants.phtml:88
 #: application/modules/admin/views/scripts/shipment/view-enrollments.phtml:45
 #: application/modules/admin/views/scripts/shipment/view-enrollments.phtml:65
 #: application/modules/admin/views/scripts/system-admins/add.phtml:77
@@ -3886,7 +3892,6 @@ msgstr "Nguyên nhân thất bại"
 #: application/modules/admin/views/scripts/evaluate/index.phtml:48
 #: application/modules/admin/views/scripts/evaluate/shipment.phtml:353
 #: application/modules/admin/views/scripts/feedback-responses/questions.phtml:33
-#: application/modules/admin/views/scripts/feedback-responses/shipment-questions.phtml:27
 #: application/modules/admin/views/scripts/home-section-links/index.phtml:43
 #: application/modules/admin/views/scripts/job-tracking/index.phtml:144
 #: application/modules/admin/views/scripts/participant-messages/index.phtml:19
@@ -3899,7 +3904,7 @@ msgstr "Nguyên nhân thất bại"
 #: application/modules/admin/views/scripts/shipment/manage-enroll.phtml:101
 #: application/modules/admin/views/scripts/shipment/manage-enroll.phtml:134
 #: application/modules/admin/views/scripts/shipment/manage-enroll.phtml:174
-#: application/modules/admin/views/scripts/shipment/round-participants.phtml:138
+#: application/modules/admin/views/scripts/shipment/round-participants.phtml:123
 #: application/modules/admin/views/scripts/shipment/view-enrollments.phtml:71
 #: application/modules/admin/views/scripts/system-admins/index.phtml:23
 #: application/modules/admin/views/scripts/test-platform/index.phtml:53
@@ -3960,7 +3965,7 @@ msgstr "Thất bại và bỏ qua"
 #: application/modules/reports/views/scripts/shipment-response-report/index.phtml:167
 #: application/modules/reports/views/scripts/shipments/participation-stats.ajax.phtml:21
 #: application/modules/reports/views/scripts/shipments/participation-stats.ajax.phtml:126
-#: application/services/Dashboard.php:1048
+#: application/services/Dashboard.php:1023
 #: application/views/scripts/participant/shipment-response-report.phtml:110
 msgid "Failed"
 msgstr "Thất bại"
@@ -4139,7 +4144,7 @@ msgstr "Chọn vòng ngoại kiểm"
 #: application/modules/admin/views/scripts/announcement/compose.phtml:45
 #: application/modules/admin/views/scripts/data-managers/index.phtml:221
 #: application/modules/admin/views/scripts/enrollments/add.phtml:25
-#: application/modules/admin/views/scripts/shipment/round-participants.phtml:123
+#: application/modules/admin/views/scripts/shipment/round-participants.phtml:108
 #: application/modules/admin/views/scripts/shipment/ship-it.phtml:69
 #: application/views/scripts/participant/testeredit.phtml:58
 msgid "State"
@@ -4167,7 +4172,6 @@ msgstr "Tỉnh"
 #: application/modules/admin/views/scripts/evaluate/shipment.phtml:78
 #: application/modules/admin/views/scripts/evaluate/shipment.phtml:347
 #: application/modules/admin/views/scripts/feedback-responses/questions.phtml:21
-#: application/modules/admin/views/scripts/feedback-responses/shipment-questions.phtml:16
 #: application/modules/admin/views/scripts/home-section-links/index.phtml:38
 #: application/modules/admin/views/scripts/participant-messages/index.phtml:14
 #: application/modules/admin/views/scripts/participants/bulk-import-review.phtml:202
@@ -4270,7 +4274,7 @@ msgstr "Chọn một hoặc nhiều thành phố"
 #: application/modules/admin/views/scripts/participants/index.phtml:162
 #: application/modules/admin/views/scripts/participants/participant-shipments.ajax.phtml:154
 #: application/modules/admin/views/scripts/shipment/index.phtml:39
-#: application/modules/admin/views/scripts/shipment/round-participants.phtml:111
+#: application/modules/admin/views/scripts/shipment/round-participants.phtml:97
 #: application/modules/admin/views/scripts/shipment/ship-it.phtml:100
 #: application/modules/reports/views/scripts/annual/index.phtml:37
 #: application/modules/reports/views/scripts/corrective-actions/index.phtml:62
@@ -4451,6 +4455,7 @@ msgstr "Nguồn cấp dữ liệu"
 
 #: application/modules/admin/views/scripts/audit-log/index.phtml:578
 #: application/modules/admin/views/scripts/certificate-batches/index.phtml:162
+#: application/modules/admin/views/scripts/feedback-responses/shipment-questions.phtml:59
 #: application/modules/admin/views/scripts/home-config/index.phtml:819
 #: application/modules/admin/views/scripts/job-tracking/index.phtml:139
 msgid "Actions"
@@ -4594,11 +4599,11 @@ msgid "Showing"
 msgstr "Hiển thị"
 
 #: application/modules/admin/views/scripts/audit-log/index.phtml:903
-#: application/modules/admin/views/scripts/index/index.phtml:1146
-#: application/modules/admin/views/scripts/index/index.phtml:1182
-#: application/modules/admin/views/scripts/index/index.phtml:1281
-#: application/modules/admin/views/scripts/index/index.phtml:1335
-#: application/modules/admin/views/scripts/index/index.phtml:1413
+#: application/modules/admin/views/scripts/index/index.phtml:1151
+#: application/modules/admin/views/scripts/index/index.phtml:1187
+#: application/modules/admin/views/scripts/index/index.phtml:1286
+#: application/modules/admin/views/scripts/index/index.phtml:1340
+#: application/modules/admin/views/scripts/index/index.phtml:1418
 #: application/views/partials/help-drawer.phtml:114
 #: application/views/scripts/partial/paginate.phtml:40
 msgid "of"
@@ -4640,7 +4645,7 @@ msgid "Excellence"
 msgstr "Xuất sắc"
 
 #: application/modules/admin/views/scripts/certificate-batches/index.phtml:159
-#: application/modules/admin/views/scripts/index/index.phtml:1278
+#: application/modules/admin/views/scripts/index/index.phtml:1283
 msgid "Participation"
 msgstr "Sự tham gia"
 
@@ -4838,6 +4843,7 @@ msgstr "Thay thế mẫu"
 #: application/modules/admin/views/scripts/certificate-templates/index.phtml:215
 #: application/modules/admin/views/scripts/certificate-templates/index.phtml:270
 #: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc.phtml:164
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:310
 #: application/modules/admin/views/scripts/participants/bulk-import.phtml:204
 #: application/modules/admin/views/scripts/report-config/index.phtml:511
 msgid "Replace"
@@ -5238,7 +5244,6 @@ msgstr "Vui lòng chọn quốc gia áp dụng tại đây"
 #: application/modules/admin/views/scripts/feedback-responses/add.phtml:44
 #: application/modules/admin/views/scripts/feedback-responses/edit.phtml:34
 #: application/modules/admin/views/scripts/feedback-responses/edit.phtml:44
-#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:59
 #: application/modules/admin/views/scripts/files-for-participants/index.phtml:404
 #: application/modules/admin/views/scripts/files-for-participants/index.phtml:416
 #: application/modules/admin/views/scripts/files-for-participants/index.phtml:425
@@ -5527,7 +5532,7 @@ msgstr "Chọn"
 #: application/modules/admin/views/scripts/partners/edit.phtml:45
 #: application/modules/admin/views/scripts/sample-not-tested-reasons/add.phtml:47
 #: application/modules/admin/views/scripts/sample-not-tested-reasons/edit.phtml:50
-#: application/modules/admin/views/scripts/shipment/round-participants.phtml:103
+#: application/modules/admin/views/scripts/shipment/round-participants.phtml:91
 #: application/modules/admin/views/scripts/system-admins/add.phtml:84
 #: application/modules/admin/views/scripts/system-admins/edit.phtml:60
 #: application/modules/admin/views/scripts/testkit/add.phtml:153
@@ -5558,7 +5563,7 @@ msgstr "Đang hoạt động"
 #: application/modules/admin/views/scripts/partners/edit.phtml:48
 #: application/modules/admin/views/scripts/sample-not-tested-reasons/add.phtml:48
 #: application/modules/admin/views/scripts/sample-not-tested-reasons/edit.phtml:51
-#: application/modules/admin/views/scripts/shipment/round-participants.phtml:104
+#: application/modules/admin/views/scripts/shipment/round-participants.phtml:92
 #: application/modules/admin/views/scripts/system-admins/add.phtml:85
 #: application/modules/admin/views/scripts/system-admins/edit.phtml:61
 #: application/views/scripts/data-managers/index.phtml:12
@@ -5573,6 +5578,7 @@ msgstr "Không hoạt động"
 #: application/modules/admin/views/scripts/data-managers/add.phtml:253
 #: application/modules/admin/views/scripts/eid-assay/add.phtml:30
 #: application/modules/admin/views/scripts/feedback-responses/add.phtml:69
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:554
 #: application/modules/admin/views/scripts/home-section-links/add.phtml:96
 #: application/modules/admin/views/scripts/participants/add.phtml:306
 #: application/modules/admin/views/scripts/partners/add.phtml:31
@@ -5666,7 +5672,6 @@ msgid "Gene type Name"
 msgstr "Tên loại gen"
 
 #: application/modules/admin/views/scripts/covid19-gene-type/index.phtml:37
-#: application/modules/admin/views/scripts/feedback-responses/shipment-questions.phtml:14
 #: application/modules/admin/views/scripts/sample-not-tested-reasons/add.phtml:23
 #: application/modules/admin/views/scripts/sample-not-tested-reasons/edit.phtml:26
 #: application/modules/admin/views/scripts/schemes/test-results.phtml:14
@@ -6614,7 +6619,7 @@ msgstr "Vui lòng nhập lại mật khẩu"
 #: application/modules/admin/views/scripts/participants/participant-manager-map.phtml:107
 #: application/modules/admin/views/scripts/participants/participant-upload-statistics.phtml:161
 #: application/modules/admin/views/scripts/participants/_data-manager-dual-list.phtml:156
-#: application/modules/admin/views/scripts/shipment/round-participants.phtml:79
+#: application/modules/admin/views/scripts/shipment/round-participants.phtml:76
 #: application/modules/admin/views/scripts/shipment/ship-it.phtml:55
 #: application/views/scripts/data-managers/index.phtml:24
 #: application/views/scripts/participant/password.phtml:116
@@ -6742,7 +6747,7 @@ msgstr "Vui lòng chọn quốc gia"
 #: application/modules/admin/views/scripts/files-for-participants/index.phtml:1261
 #: application/modules/admin/views/scripts/participants/index.phtml:148
 #: application/modules/admin/views/scripts/participants/participant-manager-map.phtml:547
-#: application/modules/admin/views/scripts/shipment/round-participants.phtml:97
+#: application/modules/admin/views/scripts/shipment/round-participants.phtml:84
 #: application/modules/reports/views/scripts/shipment-response-report/index.phtml:221
 #: application/views/scripts/index/index.phtml:414
 #: application/views/scripts/participant/report.phtml:263
@@ -6811,14 +6816,14 @@ msgstr "Chọn một hoặc nhiều tùy chọn"
 #: application/modules/admin/views/scripts/data-managers/add.phtml:297
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:227
 #: application/modules/admin/views/scripts/participants/index.phtml:524
-#: application/modules/admin/views/scripts/shipment/round-participants.phtml:236
+#: application/modules/admin/views/scripts/shipment/round-participants.phtml:184
 msgid "Choose one or more Countries"
 msgstr "Chọn một hoặc nhiều quốc gia"
 
 #: application/modules/admin/views/scripts/data-managers/add.phtml:302
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:232
 #: application/modules/admin/views/scripts/participants/index.phtml:529
-#: application/modules/admin/views/scripts/shipment/round-participants.phtml:241
+#: application/modules/admin/views/scripts/shipment/round-participants.phtml:189
 msgid "Type Country name to search"
 msgstr "Nhập tên quốc gia để tìm kiếm"
 
@@ -7333,6 +7338,7 @@ msgid "Blank uses the default password"
 msgstr "Để trống sẽ dùng mật khẩu mặc định"
 
 #: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc.phtml:216
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:536
 #: application/modules/admin/views/scripts/participants/bulk-import.phtml:259
 msgid "Required"
 msgstr "Bắt buộc"
@@ -7714,7 +7720,7 @@ msgstr "Tìm kiếm số di động"
 #: application/modules/admin/views/scripts/data-managers/index.phtml:234
 #: application/modules/admin/views/scripts/data-managers/index.phtml:238
 #: application/modules/admin/views/scripts/participants/index.phtml:228
-#: application/modules/admin/views/scripts/shipment/round-participants.phtml:129
+#: application/modules/admin/views/scripts/shipment/round-participants.phtml:114
 msgid "Search Email"
 msgstr "Tìm kiếm email"
 
@@ -7730,20 +7736,20 @@ msgstr "Tìm kiếm trạng thái"
 #: application/modules/admin/views/scripts/data-managers/index.phtml:240
 #: application/modules/admin/views/scripts/enrollments/index.phtml:52
 #: application/modules/admin/views/scripts/participants/index.phtml:225
-#: application/modules/admin/views/scripts/shipment/round-participants.phtml:131
+#: application/modules/admin/views/scripts/shipment/round-participants.phtml:116
 #: application/views/scripts/participant/view.phtml:29
 msgid "Search Country"
 msgstr "Tìm kiếm theo quốc gia"
 
 #: application/modules/admin/views/scripts/data-managers/index.phtml:241
 #: application/modules/admin/views/scripts/participants/index.phtml:226
-#: application/modules/admin/views/scripts/shipment/round-participants.phtml:132
+#: application/modules/admin/views/scripts/shipment/round-participants.phtml:117
 msgid "Search State"
 msgstr "Tìm kiếm theo tiểu bang"
 
 #: application/modules/admin/views/scripts/data-managers/index.phtml:242
 #: application/modules/admin/views/scripts/participants/index.phtml:227
-#: application/modules/admin/views/scripts/shipment/round-participants.phtml:133
+#: application/modules/admin/views/scripts/shipment/round-participants.phtml:118
 msgid "Search District"
 msgstr "Tìm kiếm khu vực"
 
@@ -7830,7 +7836,7 @@ msgstr "Lọc theo ID, tên, cơ sở hoặc email…"
 #: application/modules/admin/views/scripts/shipment/manage-enroll.phtml:85
 #: application/modules/admin/views/scripts/shipment/manage-enroll.phtml:118
 #: application/modules/admin/views/scripts/shipment/manage-enroll.phtml:158
-#: application/modules/admin/views/scripts/shipment/round-participants.phtml:118
+#: application/modules/admin/views/scripts/shipment/round-participants.phtml:103
 #: application/modules/reports/views/scripts/corrective-preventive-actions/capa.phtml:28
 #: application/modules/reports/views/scripts/corrective-preventive-actions/index.phtml:87
 #: application/views/scripts/auth/verify-email.phtml:92
@@ -8415,7 +8421,6 @@ msgstr "Các vòng ngoại kiểm thuộc khảo sát PT này"
 #: application/modules/admin/views/scripts/enrollments/view.phtml:13
 #: application/modules/admin/views/scripts/evaluate/get-shipments.ajax.phtml:62
 #: application/modules/admin/views/scripts/evaluate/shipment.phtml:68
-#: application/modules/admin/views/scripts/feedback-responses/shipment-questions.phtml:13
 #: application/modules/admin/views/scripts/mail-template/get-mail-template.ajax.phtml:108
 #: application/modules/admin/views/scripts/mail-template/get-mail-template.phtml:48
 #: application/modules/admin/views/scripts/mail-template/get-push-notification.ajax.phtml:22
@@ -8831,6 +8836,7 @@ msgid "Shipment date"
 msgstr "Ngày gửi vòng ngoại kiểm"
 
 #: application/modules/admin/views/scripts/email-participants/index.phtml:301
+#: application/modules/admin/views/scripts/feedback-responses/shipment-questions.phtml:54
 #: application/modules/admin/views/scripts/mail-template/get-mail-template.ajax.phtml:98
 msgid "Response deadline"
 msgstr "Hạn nộp kết quả"
@@ -9456,14 +9462,14 @@ msgstr "Đang chờ hủy đăng ký (lưu để áp dụng)"
 
 #: application/modules/admin/views/scripts/enrollments/add.phtml:142
 #: application/modules/admin/views/scripts/participants/index.phtml:556
-#: application/modules/admin/views/scripts/shipment/round-participants.phtml:268
+#: application/modules/admin/views/scripts/shipment/round-participants.phtml:216
 #: application/modules/admin/views/scripts/shipment/ship-it.phtml:348
 msgid "Choose one or more option(s)"
 msgstr "Chọn một hoặc nhiều tùy chọn"
 
 #: application/modules/admin/views/scripts/enrollments/add.phtml:150
 #: application/modules/admin/views/scripts/participants/index.phtml:564
-#: application/modules/admin/views/scripts/shipment/round-participants.phtml:276
+#: application/modules/admin/views/scripts/shipment/round-participants.phtml:224
 #: application/modules/admin/views/scripts/shipment/ship-it.phtml:356
 msgid "Type list to search"
 msgstr "Nhập từ khóa để tìm kiếm"
@@ -9558,7 +9564,7 @@ msgstr "Ngày đăng ký"
 
 #: application/modules/admin/views/scripts/enrollments/index.phtml:50
 #: application/modules/admin/views/scripts/participants/index.phtml:223
-#: application/modules/admin/views/scripts/shipment/round-participants.phtml:127
+#: application/modules/admin/views/scripts/shipment/round-participants.phtml:112
 #: application/views/scripts/participant/all-schemes.phtml:73
 #: application/views/scripts/participant/corrective.phtml:109
 #: application/views/scripts/participant/defaulted-schemes.phtml:36
@@ -9571,7 +9577,7 @@ msgstr "Tìm kiếm theo ID"
 
 #: application/modules/admin/views/scripts/enrollments/index.phtml:51
 #: application/modules/admin/views/scripts/participants/index.phtml:224
-#: application/modules/admin/views/scripts/shipment/round-participants.phtml:128
+#: application/modules/admin/views/scripts/shipment/round-participants.phtml:113
 #: application/views/scripts/participant/all-schemes.phtml:74
 #: application/views/scripts/participant/corrective.phtml:110
 #: application/views/scripts/participant/current-schemes.phtml:170
@@ -9593,7 +9599,6 @@ msgstr "Tìm kiếm chương trình"
 #: application/modules/admin/views/scripts/enrollments/index.phtml:93
 #: application/modules/admin/views/scripts/evaluate/index.phtml:167
 #: application/modules/admin/views/scripts/feedback-responses/questions.phtml:136
-#: application/modules/admin/views/scripts/feedback-responses/shipment-questions.phtml:106
 #: application/modules/admin/views/scripts/participants/index.phtml:387
 #: application/modules/reports/views/scripts/distribution/index.phtml:146
 #: application/modules/reports/views/scripts/finalize/index.phtml:138
@@ -9613,7 +9618,6 @@ msgstr "Đang tải danh sách người quản lý dữ liệu…"
 #: application/modules/admin/views/scripts/enrollments/index.phtml:106
 #: application/modules/admin/views/scripts/evaluate/index.phtml:180
 #: application/modules/admin/views/scripts/feedback-responses/questions.phtml:149
-#: application/modules/admin/views/scripts/feedback-responses/shipment-questions.phtml:119
 #: application/modules/admin/views/scripts/participants/index.phtml:364
 #: application/modules/reports/views/scripts/distribution/index.phtml:159
 #: application/modules/reports/views/scripts/finalize/index.phtml:151
@@ -9917,7 +9921,6 @@ msgid "All Scheme Types"
 msgstr "Tất cả các loại chương trình"
 
 #: application/modules/admin/views/scripts/evaluate/index.phtml:40
-#: application/modules/admin/views/scripts/feedback-responses/shipment-questions.phtml:19
 #: application/modules/reports/views/scripts/distribution/index.phtml:44
 #: application/modules/reports/views/scripts/finalize/index.phtml:36
 #: application/modules/reports/views/scripts/finalize/shipments.phtml:37
@@ -9927,7 +9930,6 @@ msgstr "Tìm kiếm mã khảo sát"
 
 #: application/modules/admin/views/scripts/evaluate/index.phtml:41
 #: application/modules/admin/views/scripts/feedback-responses/questions.phtml:25
-#: application/modules/admin/views/scripts/feedback-responses/shipment-questions.phtml:20
 #: application/modules/reports/views/scripts/distribution/index.phtml:45
 #: application/modules/reports/views/scripts/finalize/index.phtml:37
 #: application/modules/reports/views/scripts/finalize/shipments.phtml:38
@@ -10698,10 +10700,6 @@ msgstr "Hiển thị câu hỏi phản hồi cho"
 
 #: application/modules/admin/views/scripts/feedback-responses/add.phtml:23
 #: application/modules/admin/views/scripts/feedback-responses/edit.phtml:23
-#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:72
-#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:133
-#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:150
-#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:389
 #: application/views/scripts/participant/current-schemes.phtml:316
 #: application/views/scripts/participant/current-schemes.phtml:323
 #: application/views/scripts/participant/current-schemes.phtml:332
@@ -10710,28 +10708,16 @@ msgstr "--Chọn--"
 
 #: application/modules/admin/views/scripts/feedback-responses/add.phtml:24
 #: application/modules/admin/views/scripts/feedback-responses/edit.phtml:24
-#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:73
-#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:134
-#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:151
-#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:390
 msgid "All Participants"
 msgstr "Tất cả các đơn vị tham gia"
 
 #: application/modules/admin/views/scripts/feedback-responses/add.phtml:25
 #: application/modules/admin/views/scripts/feedback-responses/edit.phtml:25
-#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:74
-#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:135
-#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:152
-#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:391
 msgid "Only Passing Participants"
 msgstr "Chỉ các đơn vị tham gia đạt"
 
 #: application/modules/admin/views/scripts/feedback-responses/add.phtml:26
 #: application/modules/admin/views/scripts/feedback-responses/edit.phtml:26
-#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:75
-#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:136
-#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:153
-#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:392
 msgid "Only Failing Participants"
 msgstr "Chỉ các đơn vị tham gia không đạt"
 
@@ -10777,91 +10763,441 @@ msgstr "Chỉnh sửa câu hỏi"
 msgid "Clone"
 msgstr "Sao chép/nhân bản"
 
-#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:47
-msgid "Clone Feedback Form"
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:53
+#, fuzzy
+msgid "All participants"
+msgstr "Tất cả các đơn vị tham gia"
+
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:54
+#, fuzzy
+msgid "Every participant in the shipment."
+msgstr "Khoá danh sách đơn vị tham gia cho vòng ngoại kiểm này"
+
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:57
+#, fuzzy
+msgid "Passing only"
+msgstr "Điểm đạt"
+
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:58
+#, fuzzy
+msgid "Only participants who passed this shipment."
+msgstr "Thêm đơn vị tham gia vào vòng ngoại kiểm này"
+
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:61
+#, fuzzy
+msgid "Failing only"
+msgstr "Chỉ đăng nhập"
+
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:62
+#, fuzzy
+msgid "Only participants who failed this shipment."
+msgstr "Thêm đơn vị tham gia vào vòng ngoại kiểm này"
+
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:178
+#, fuzzy
+msgid "All feedback forms"
+msgstr "Hiển thị biểu mẫu phản hồi cho"
+
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:181
+#, fuzzy, php-format
+msgid "Copy the %s feedback form"
 msgstr "Sao chép biểu mẫu phản hồi"
 
-#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:49
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:183
+#, fuzzy, php-format
+msgid "Feedback form for %s"
+msgstr "Mẫu phản hồi (%d)"
+
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:185
+#: application/modules/admin/views/scripts/feedback-responses/shipment-questions.phtml:42
+#, fuzzy
+msgid "New feedback form"
+msgstr "Hiển thị biểu mẫu phản hồi cho"
+
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:190
+#, fuzzy
 msgid ""
-"The questions below are copied from the shipment you cloned. Pick the "
-"shipment this form is for and save — the original form is left untouched."
+"The questions, introduction, audience and days open below come from that "
+"form. Pick the shipment to use them for and save. The original form is not "
+"changed."
 msgstr ""
 "Các câu hỏi bên dưới được sao chép từ vòng ngoại kiểm bạn đã nhân bản. Hãy "
 "chọn vòng ngoại kiểm dành cho mẫu này và lưu — mẫu gốc không bị thay đổi."
 
-#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:52
-#: application/modules/admin/views/scripts/feedback-responses/shipment-questions.phtml:2
-msgid "Feedback Form"
-msgstr "Mẫu phản hồi"
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:192
+msgid ""
+"The questions participants answer after a shipment, with an optional "
+"introduction and files to download."
+msgstr ""
 
-#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:56
-msgid "Shipment this feedback form is for"
-msgstr "Vòng ngoại kiểm áp dụng mẫu phản hồi này"
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:201
+#, fuzzy
+msgid "Shipment and audience"
+msgstr "Ngày gửi vòng ngoại kiểm"
 
-#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:69
-msgid "Show feedback form to"
-msgstr "Hiển thị biểu mẫu phản hồi cho"
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:204
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:355
+#: application/modules/admin/views/scripts/feedback-responses/shipment-questions.phtml:53
+#: application/modules/admin/views/scripts/files-for-participants/index.phtml:394
+#: application/modules/admin/views/scripts/shipment/ship-it.phtml:48
+#: application/modules/reports/views/scripts/corrective-actions/index.phtml:54
+#: application/modules/reports/views/scripts/participant-performance/index.phtml:98
+#: application/modules/reports/views/scripts/participant-trends/index.phtml:105
+#: application/modules/reports/views/scripts/shipment-response-report/index.phtml:100
+#: application/modules/reports/views/scripts/shipment-response-report/index.phtml:102
+#: application/views/scripts/covid19/response.phtml:1314
+#: application/views/scripts/participant/all-schemes.phtml:45
+#: application/views/scripts/participant/current-schemes.phtml:140
+#: application/views/scripts/participant/dashboard.phtml:527
+#: application/views/scripts/participant/defaulted-schemes.phtml:13
+#: application/views/scripts/participant/shipment-response-report.phtml:21
+msgid "Shipment"
+msgstr "Vòng ngoại kiểm"
 
-#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:84
-msgid "Start from an existing feedback form"
-msgstr "Bắt đầu từ một mẫu phản hồi có sẵn"
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:210
+#, fuzzy
+msgid "has a form"
+msgstr "Hệ thống máy xét nghiệm"
 
-#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:88
-msgid "Select a shipment to copy from"
-msgstr "Chọn vòng ngoại kiểm để sao chép"
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:215
+msgid "Pick the shipment first. If it already has a form, that form opens."
+msgstr ""
 
-#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:90
-msgid "questions"
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:217
+msgid "Picking another shipment opens its form."
+msgstr ""
+
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:222
+msgid "Who sees this form"
+msgstr ""
+
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:234
+#, fuzzy
+msgid "Open for feedback"
+msgstr "Cài đặt phản hồi"
+
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:237
+#, fuzzy
+msgid "days after the shipment is finalized"
+msgstr "Vui lòng nhập điểm vòng ngoại kiểm"
+
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:238
+msgid "2 weeks"
+msgstr ""
+
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:239
+msgid "4 weeks"
+msgstr ""
+
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:240
+msgid "8 weeks"
+msgstr ""
+
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:249
+msgid "Reuse an earlier form:"
+msgstr ""
+
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:250
+#, fuzzy
+msgid "Shipment to copy the feedback form from"
+msgstr "Vui lòng chọn vòng ngoại kiểm để sao chép mẫu phản hồi."
+
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:251
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:392
+#, fuzzy
+msgid "Pick a shipment"
+msgstr "Chọn một vòng ngoại kiểm"
+
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:253
+#, fuzzy, php-format
+msgid "%d questions"
 msgstr "câu hỏi"
 
-#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:94
-#: application/modules/admin/views/scripts/index/ept-overview.ajax.phtml:329
-msgid "Copy"
-msgstr "Sao chép"
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:256
+#, fuzzy
+msgid "Copy into this form"
+msgstr "không thuộc vòng này"
 
-#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:97
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:257
 msgid ""
-"Copies that shipment's questions, content and audience into this form. The "
-"form you copy from is not changed."
+"Fills in its questions, introduction, audience and days open. Nothing is "
+"saved until you click Save."
 msgstr ""
-"Sao chép câu hỏi, nội dung và đối tượng của vòng ngoại kiểm đó vào mẫu này. "
-"Mẫu được sao chép không bị thay đổi."
 
-#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:104
-msgid "Enter Feedback Form Content"
-msgstr "Nhập nội dung vào biểu mẫu phản hồi"
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:263
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:357
+#: application/modules/admin/views/scripts/feedback-responses/shipment-questions.phtml:57
+#: application/views/scripts/index/index.phtml:289
+msgid "Questions"
+msgstr "Câu hỏi"
 
-#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:164
-msgid "Select the available question"
-msgstr "Chọn câu hỏi có sẵn"
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:264
+#: application/modules/admin/views/scripts/feedback-responses/shipment-questions.phtml:41
+#, fuzzy
+msgid "Manage questions"
+msgstr "câu hỏi"
 
-#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:205
-#: application/modules/admin/views/scripts/shipment/shipment-test-kits.phtml:215
-#: application/modules/reports/views/scripts/corrective-preventive-actions/capa.phtml:115
-#: application/views/scripts/capa/capa.phtml:109
-#: application/views/scripts/dts/response.phtml:1654
-#: application/views/scripts/participant/add.phtml:182
-#: application/views/scripts/participant/all-schemes.phtml:105
-#: application/views/scripts/participant/dashboard.phtml:569
-#: application/views/scripts/participant/participant-message.phtml:68
-#: application/views/scripts/participant/testeredit.phtml:195
-#: application/views/scripts/participant/user-info.phtml:122
-#: application/views/scripts/tb/response.phtml:633
-#: application/views/scripts/vl/response-old.phtml:375
-msgid "Submit"
-msgstr "Gửi"
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:267
+msgid ""
+"Participants see the questions in this order. Use the arrows to move one."
+msgstr ""
 
-#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:269
-msgid "Please select at least one question for this feedback form."
-msgstr "Vui lòng chọn ít nhất một câu hỏi cho mẫu phản hồi này."
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:271
+#, fuzzy
+msgid "Add questions"
+msgstr "câu hỏi"
+
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:272
+#, fuzzy
+msgid "Search questions"
+msgstr "Tìm câu hỏi"
+
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:279
+#, fuzzy
+msgid "Introduction"
+msgstr "chiết xuất"
+
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:279
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:288
+msgid "Optional"
+msgstr "Không bắt buộc"
+
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:283
+msgid ""
+"Shown above the questions, for example to thank participants or explain why "
+"you ask."
+msgstr ""
+
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:288
+#, fuzzy
+msgid "Files to download"
+msgstr "Tải xuống tệp"
+
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:293
+#: application/modules/admin/views/scripts/home-section-links/add.phtml:40
+#: application/modules/admin/views/scripts/home-section-links/add.phtml:53
+#: application/modules/admin/views/scripts/home-section-links/edit.phtml:39
+#: application/modules/admin/views/scripts/home-section-links/edit.phtml:52
+msgid "File"
+msgstr "Tập tin"
+
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:294
+#, fuzzy
+msgid "Name participants see"
+msgstr "Đơn vị tham gia mới"
+
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:295
+#, fuzzy
+msgid "Who sees it"
+msgstr "Ai sẽ nhận"
+
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:315
+msgid "The saved file is missing. Choose it again, or remove this row."
+msgstr ""
+
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:318
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:708
+#, fuzzy
+msgid "Same as the file"
+msgstr "Nhập một tệp khác"
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:328
-msgid "Could not load the questions for that shipment. Please try again."
-msgstr "Không thể tải câu hỏi của vòng ngoại kiểm đó. Vui lòng thử lại."
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:711
+#, fuzzy
+msgid "Remove this file from the form"
+msgstr "Xóa hoàn toàn hàng này"
 
-#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:347
-msgid "Please select the shipment to copy the feedback form from."
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:334
+msgid ""
+"No files. Add a report, certificate or guidance document participants can "
+"download with the form."
+msgstr ""
+
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:335
+#, fuzzy
+msgid "Add a file"
+msgstr "Thêm vòng ngoại kiểm"
+
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:336
+msgid "PDF, Word, Excel, PowerPoint, CSV, text or image files."
+msgstr ""
+
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:342
+msgid "Saving switches on Collect Feedback for the shipment if it is off."
+msgstr ""
+
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:345
+#, fuzzy
+msgid "Save feedback form"
+msgstr "Hiển thị biểu mẫu phản hồi cho"
+
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:353
+#, fuzzy
+msgid "Summary"
+msgstr "Đã tạo báo cáo tổng hợp"
+
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:356
+#, fuzzy
+msgid "Shown to"
+msgstr "Xem danh sách"
+
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:358
+#: application/modules/admin/views/scripts/feedback-responses/shipment-questions.phtml:78
+#: application/views/partials/spotlight.phtml:610
+msgid "Open"
+msgstr "Mở"
+
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:359
+#: application/modules/admin/views/scripts/files-for-participants/index.phtml:558
+msgid "Files"
+msgstr "Tệp"
+
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:363
+msgid "Good to know"
+msgstr ""
+
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:364
+msgid ""
+"Required questions must be answered before a participant can submit the form."
+msgstr ""
+
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:365
+msgid ""
+"A question marked Passing only or Failing only keeps that limit, even on a "
+"form shown to all participants."
+msgstr ""
+
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:366
+msgid ""
+"To change a question's wording, use Manage questions. The change shows on "
+"every form that uses it."
+msgstr ""
+
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:384
+msgid ""
+"No questions yet. Add them from the list below, or reuse an earlier form."
+msgstr ""
+
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:386
+msgid "No questions yet. Add them from the list below."
+msgstr ""
+
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:397
+msgid "Optional. For example: Thank you for taking part in this round."
+msgstr ""
+
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:458
+msgid "Enter a number of days from 1 to 365."
+msgstr ""
+
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:465
+#, php-format
+msgid ""
+"Opened on %1$s and closed on %2$s. Saving with more days opens it again "
+"until the new date."
+msgstr ""
+
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:466
+#, php-format
+msgid "Opened on %1$s. Closes on %2$s."
+msgstr ""
+
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:469
+#, fuzzy
+msgid "Opens when the shipment is finalized."
+msgstr "Vui lòng nhập điểm vòng ngoại kiểm"
+
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:536
+#, fuzzy
+msgid "Participants must answer this question"
+msgstr "Đơn vị tham gia không thể thực hiện xét nghiệm"
+
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:538
+#, fuzzy
+msgid "Move up"
+msgstr "Xóa nhóm"
+
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:539
+#, fuzzy
+msgid "Move down"
+msgstr "Thả xuống"
+
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:540
+#, fuzzy
+msgid "Remove from the form"
+msgstr "Loại khỏi nhóm"
+
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:559
+#, fuzzy
+msgid "No questions match your search."
+msgstr "Không có chủ đề nào phù hợp với tìm kiếm của bạn."
+
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:560
+msgid "Every active question is on the form."
+msgstr ""
+
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:629
+#, fuzzy
+msgid "required"
+msgstr "Bắt buộc"
+
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:630
+#, fuzzy
+msgid "None yet"
+msgstr "Không"
+
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:639
+#, fuzzy, php-format
+msgid "%d days"
+msgstr "Còn %d ngày"
+
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:648
+#, fuzzy
+msgid ""
+"This shipment already has a feedback form. Saving replaces it with this one."
+msgstr ""
+"Vòng ngoại kiểm này có mẫu phản hồi. Tắt Thu thập phản hồi đồng nghĩa với "
+"việc đơn vị tham gia sẽ không bao giờ thấy mẫu này."
+
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:654
+msgid ""
+"Open the form for the other shipment? Changes you have not saved here will "
+"be lost."
+msgstr ""
+
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:666
+#, fuzzy
+msgid "Pick the shipment to copy the feedback form from."
 msgstr "Vui lòng chọn vòng ngoại kiểm để sao chép mẫu phản hồi."
+
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:672
+msgid ""
+"Replace the questions, introduction, audience and days open on this form "
+"with the copied ones? Files are kept."
+msgstr ""
+
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:691
+#, fuzzy
+msgid "Could not load that feedback form. Please try again."
+msgstr "Không thể tải trang trợ giúp. Vui lòng thử lại."
+
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:731
+#, fuzzy
+msgid "Pick the shipment this feedback form is for."
+msgstr "Vòng ngoại kiểm áp dụng mẫu phản hồi này"
+
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:737
+#, fuzzy
+msgid "Add at least one question to the feedback form."
+msgstr "Vui lòng chọn ít nhất một câu hỏi cho mẫu phản hồi này."
+
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:741
+msgid "Enter how many days the form stays open, from 1 to 365."
+msgstr ""
+
+#: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:746
+msgid "This shipment already has a feedback form. Replace it with this one?"
+msgstr ""
 
 #: application/modules/admin/views/scripts/feedback-responses/questions.phtml:7
 msgid "Feed Back Questions List"
@@ -10880,17 +11216,89 @@ msgid "Search Type"
 msgstr "Tìm kiếm loại"
 
 #: application/modules/admin/views/scripts/feedback-responses/questions.phtml:182
-#: application/modules/admin/views/scripts/feedback-responses/shipment-questions.phtml:151
 msgid "Response not found for this shipment"
 msgstr "Không tìm thấy phản hồi cho vòng ngoại kiểm này"
 
-#: application/modules/admin/views/scripts/feedback-responses/shipment-questions.phtml:7
-msgid "Create New Feedback Form"
-msgstr "Tạo biểu mẫu phản hồi mới"
+#: application/modules/admin/views/scripts/feedback-responses/shipment-questions.phtml:8
+#, fuzzy
+msgid "Passing participants only"
+msgstr "Gán đơn vị tham gia cho:"
 
-#: application/modules/admin/views/scripts/feedback-responses/shipment-questions.phtml:15
-msgid "Number of Question Mapped"
-msgstr "Số câu hỏi đã được gán"
+#: application/modules/admin/views/scripts/feedback-responses/shipment-questions.phtml:9
+#, fuzzy
+msgid "Failing participants only"
+msgstr "Gán đơn vị tham gia cho:"
+
+#: application/modules/admin/views/scripts/feedback-responses/shipment-questions.phtml:46
+msgid ""
+"Participants can fill in a shipment's feedback form once the shipment is "
+"finalized, until its feedback deadline. Newest shipments are listed first."
+msgstr ""
+
+#: application/modules/admin/views/scripts/feedback-responses/shipment-questions.phtml:48
+#, fuzzy
+msgid ""
+"No feedback forms yet. Create one for a shipment to start collecting "
+"feedback."
+msgstr ""
+"Chưa có biểu mẫu phản hồi — bắt buộc phải có trước khi hoàn tất vòng ngoại "
+"kiểm này."
+
+#: application/modules/admin/views/scripts/feedback-responses/shipment-questions.phtml:56
+#, fuzzy
+msgid "Feedback deadline"
+msgstr "Hạn nộp kết quả"
+
+#: application/modules/admin/views/scripts/feedback-responses/shipment-questions.phtml:58
+#: application/modules/admin/views/scripts/feedback-responses/shipment-questions.phtml:117
+#: application/modules/reports/views/scripts/shipments/index.phtml:261
+#: application/modules/reports/views/scripts/shipments/response-chart.phtml:96
+msgid "Responses"
+msgstr "Phản hồi"
+
+#: application/modules/admin/views/scripts/feedback-responses/shipment-questions.phtml:72
+msgid "Switched off"
+msgstr ""
+
+#: application/modules/admin/views/scripts/feedback-responses/shipment-questions.phtml:73
+msgid ""
+"Collect Feedback is off for this shipment, so participants don't see this "
+"form. Saving the form switches it on."
+msgstr ""
+
+#: application/modules/admin/views/scripts/feedback-responses/shipment-questions.phtml:75
+#, fuzzy
+msgid "Opens when finalized"
+msgstr "hoàn tất gần nhất ngày"
+
+#: application/modules/admin/views/scripts/feedback-responses/shipment-questions.phtml:81
+#: application/modules/admin/views/scripts/index/index.phtml:1135
+msgid "Closed"
+msgstr "Đã đóng"
+
+#: application/modules/admin/views/scripts/feedback-responses/shipment-questions.phtml:107
+#, fuzzy, php-format
+msgid "%d days after finalization"
+msgstr "Chấp nhận phản hồi sau khi hoàn tất"
+
+#: application/modules/admin/views/scripts/feedback-responses/shipment-questions.phtml:115
+#, fuzzy
+msgid "Use this form for another shipment"
+msgstr "Không tìm thấy phản hồi cho vòng ngoại kiểm này"
+
+#: application/modules/admin/views/scripts/feedback-responses/shipment-questions.phtml:115
+#: application/modules/admin/views/scripts/index/ept-overview.ajax.phtml:329
+msgid "Copy"
+msgstr "Sao chép"
+
+#: application/modules/admin/views/scripts/feedback-responses/shipment-questions.phtml:117
+msgid "Download the responses as a spreadsheet"
+msgstr ""
+
+#: application/modules/admin/views/scripts/feedback-responses/shipment-questions.phtml:153
+#, fuzzy
+msgid "No responses found for this shipment."
+msgstr "Không tìm thấy mẫu nào cho vòng ngoại kiểm này."
 
 #: application/modules/admin/views/scripts/files-for-participants/index.phtml:375
 msgid "Select Participants & Upload Files"
@@ -10905,22 +11313,6 @@ msgstr ""
 "Lọc và tải danh sách đơn vị tham gia sẽ nhận tệp, bỏ chọn các trường hợp "
 "ngoại lệ, sau đó tải tệp lên bên dưới. Bạn sẽ thấy bản tóm tắt cuối cùng "
 "trước khi gửi."
-
-#: application/modules/admin/views/scripts/files-for-participants/index.phtml:394
-#: application/modules/admin/views/scripts/shipment/ship-it.phtml:48
-#: application/modules/reports/views/scripts/corrective-actions/index.phtml:54
-#: application/modules/reports/views/scripts/participant-performance/index.phtml:98
-#: application/modules/reports/views/scripts/participant-trends/index.phtml:105
-#: application/modules/reports/views/scripts/shipment-response-report/index.phtml:100
-#: application/modules/reports/views/scripts/shipment-response-report/index.phtml:102
-#: application/views/scripts/covid19/response.phtml:1314
-#: application/views/scripts/participant/all-schemes.phtml:45
-#: application/views/scripts/participant/current-schemes.phtml:140
-#: application/views/scripts/participant/dashboard.phtml:527
-#: application/views/scripts/participant/defaulted-schemes.phtml:13
-#: application/views/scripts/participant/shipment-response-report.phtml:21
-msgid "Shipment"
-msgstr "Vòng ngoại kiểm"
 
 #: application/modules/admin/views/scripts/files-for-participants/index.phtml:454
 msgid "Load Participants"
@@ -10974,10 +11366,6 @@ msgid ""
 msgstr ""
 "Chưa có gì được gửi. Hãy kiểm tra lại tệp và người nhận bên dưới, rồi nhấn "
 "Phân phối tệp."
-
-#: application/modules/admin/views/scripts/files-for-participants/index.phtml:558
-msgid "Files"
-msgstr "Tệp"
 
 #: application/modules/admin/views/scripts/files-for-participants/index.phtml:597
 msgid "Distribute Files"
@@ -11548,6 +11936,10 @@ msgstr "Nhập độ dài tối thiểu của mật khẩu cho đơn vị tham g
 #: application/modules/admin/views/scripts/global-config/index.phtml:1057
 msgid "Allow Name Editing"
 msgstr "Cho phép chỉnh sửa tên"
+
+#: application/modules/admin/views/scripts/global-config/index.phtml:1073
+msgid "Enable Feedback"
+msgstr "Bật tính năng phản hồi"
 
 #: application/modules/admin/views/scripts/global-config/index.phtml:1091
 msgid "Direct Login"
@@ -12250,13 +12642,6 @@ msgstr "Chọn kiểu"
 msgid "Link"
 msgstr "Liên kết"
 
-#: application/modules/admin/views/scripts/home-section-links/add.phtml:40
-#: application/modules/admin/views/scripts/home-section-links/add.phtml:53
-#: application/modules/admin/views/scripts/home-section-links/edit.phtml:39
-#: application/modules/admin/views/scripts/home-section-links/edit.phtml:52
-msgid "File"
-msgstr "Tập tin"
-
 #: application/modules/admin/views/scripts/home-section-links/add.phtml:48
 #: application/modules/admin/views/scripts/home-section-links/edit.phtml:47
 msgid "Please enter link"
@@ -12330,7 +12715,7 @@ msgstr "Chỉnh sửa liên kết nguồn"
 
 #: application/modules/admin/views/scripts/home-section-links/edit.phtml:91
 #: application/modules/admin/views/scripts/participants/index.phtml:153
-#: application/modules/admin/views/scripts/shipment/round-participants.phtml:102
+#: application/modules/admin/views/scripts/shipment/round-participants.phtml:90
 msgid "Select Status"
 msgstr "Chọn tình trạng"
 
@@ -12347,7 +12732,7 @@ msgid "To configure section headings and icons, go to"
 msgstr "Để cấu hình tiêu đề phần và biểu tượng, hãy truy cập"
 
 #: application/modules/admin/views/scripts/index/ept-overview.ajax.phtml:192
-#: application/modules/admin/views/scripts/index/index.phtml:1434
+#: application/modules/admin/views/scripts/index/index.phtml:1439
 msgid "ePT Overview"
 msgstr "Tổng quan về ePT"
 
@@ -12468,12 +12853,12 @@ msgid "Labs"
 msgstr "Phòng xét nghiệm"
 
 #: application/modules/admin/views/scripts/index/index.phtml:1012
-#: application/services/Dashboard.php:509
+#: application/services/Dashboard.php:510
 msgid "Actively participating"
 msgstr "Đang tham gia tích cực"
 
 #: application/modules/admin/views/scripts/index/index.phtml:1017
-#: application/services/Dashboard.php:514
+#: application/services/Dashboard.php:515
 msgid "In a scheme, not responding"
 msgstr "Thuộc chương trình, chưa phản hồi"
 
@@ -12486,7 +12871,7 @@ msgid "rounds open for response"
 msgstr "vòng đang mở nhận phản hồi"
 
 #: application/modules/admin/views/scripts/index/index.phtml:1074
-#: application/modules/admin/views/scripts/index/index.phtml:1233
+#: application/modules/admin/views/scripts/index/index.phtml:1238
 msgid "No rounds open for response"
 msgstr "Không có vòng nào đang mở nhận phản hồi"
 
@@ -12499,7 +12884,7 @@ msgid "Round"
 msgstr "Vòng"
 
 #: application/modules/admin/views/scripts/index/index.phtml:1088
-#: application/modules/admin/views/scripts/shipment/round-participants.phtml:59
+#: application/modules/admin/views/scripts/shipment/round-participants.phtml:56
 msgid "Deadline"
 msgstr "Hạn nộp kết quả"
 
@@ -12554,111 +12939,107 @@ msgstr "Đã đóng 1 ngày trước"
 msgid "Closed %d days ago"
 msgstr "Đã đóng %d ngày trước"
 
-#: application/modules/admin/views/scripts/index/index.phtml:1135
-msgid "Closed"
-msgstr "Đã đóng"
-
-#: application/modules/admin/views/scripts/index/index.phtml:1153
+#: application/modules/admin/views/scripts/index/index.phtml:1158
 msgid "outstanding"
 msgstr "chưa phản hồi"
 
-#: application/modules/admin/views/scripts/index/index.phtml:1182
+#: application/modules/admin/views/scripts/index/index.phtml:1187
 msgid "evaluated"
 msgstr "đã đánh giá"
 
-#: application/modules/admin/views/scripts/index/index.phtml:1184
+#: application/modules/admin/views/scripts/index/index.phtml:1189
 msgid "Scored once the round is evaluated"
 msgstr "Được chấm điểm sau khi vòng được đánh giá"
 
-#: application/modules/admin/views/scripts/index/index.phtml:1231
+#: application/modules/admin/views/scripts/index/index.phtml:1236
 msgid "Previous rounds"
 msgstr "Các vòng trước"
 
-#: application/modules/admin/views/scripts/index/index.phtml:1235
+#: application/modules/admin/views/scripts/index/index.phtml:1240
 msgid "last finalized"
 msgstr "hoàn tất gần nhất ngày"
 
-#: application/modules/admin/views/scripts/index/index.phtml:1257
+#: application/modules/admin/views/scripts/index/index.phtml:1262
 msgid "finalized"
 msgstr "hoàn tất ngày"
 
-#: application/modules/admin/views/scripts/index/index.phtml:1268
+#: application/modules/admin/views/scripts/index/index.phtml:1273
 msgid "vs"
 msgstr "so với"
 
-#: application/modules/admin/views/scripts/index/index.phtml:1272
+#: application/modules/admin/views/scripts/index/index.phtml:1277
 msgid "Average score"
 msgstr "Điểm Trung bình"
 
-#: application/modules/admin/views/scripts/index/index.phtml:1283
+#: application/modules/admin/views/scripts/index/index.phtml:1288
 msgid "enrolled labs took part"
 msgstr "phòng xét nghiệm đã đăng ký có tham gia"
 
-#: application/modules/admin/views/scripts/index/index.phtml:1298
+#: application/modules/admin/views/scripts/index/index.phtml:1303
 msgid "took part"
 msgstr "đã tham gia"
 
-#: application/modules/admin/views/scripts/index/index.phtml:1308
+#: application/modules/admin/views/scripts/index/index.phtml:1313
 msgid "unable to test"
 msgstr "không thể xét nghiệm"
 
-#: application/modules/admin/views/scripts/index/index.phtml:1318
+#: application/modules/admin/views/scripts/index/index.phtml:1323
 msgid "no response"
 msgstr "không phản hồi"
 
-#: application/modules/admin/views/scripts/index/index.phtml:1324
+#: application/modules/admin/views/scripts/index/index.phtml:1329
 msgid "not in this round"
 msgstr "không thuộc vòng này"
 
-#: application/modules/admin/views/scripts/index/index.phtml:1332
+#: application/modules/admin/views/scripts/index/index.phtml:1337
 #: application/modules/admin/views/scripts/shipment/partials/schemes/eid.phtml:83
 msgid "Results"
 msgstr "Kết quả"
 
-#: application/modules/admin/views/scripts/index/index.phtml:1337
+#: application/modules/admin/views/scripts/index/index.phtml:1342
 msgid "passed"
 msgstr "đạt"
 
-#: application/modules/admin/views/scripts/index/index.phtml:1381
-#: application/services/Dashboard.php:1049
+#: application/modules/admin/views/scripts/index/index.phtml:1386
+#: application/services/Dashboard.php:1024
 msgid "Repeat failers"
 msgstr "Không đạt lặp lại"
 
-#: application/modules/admin/views/scripts/index/index.phtml:1384
+#: application/modules/admin/views/scripts/index/index.phtml:1389
 msgid "No earlier round for this scheme to compare against"
 msgstr "Chương trình này chưa có vòng trước để so sánh"
 
-#: application/modules/admin/views/scripts/index/index.phtml:1393
-#: application/services/Dashboard.php:1050
+#: application/modules/admin/views/scripts/index/index.phtml:1398
+#: application/services/Dashboard.php:1025
 msgid "Never responded"
 msgstr "Chưa bao giờ phản hồi"
 
-#: application/modules/admin/views/scripts/index/index.phtml:1396
+#: application/modules/admin/views/scripts/index/index.phtml:1401
 msgid "Needs at least two finalized rounds for this scheme"
 msgstr "Cần ít nhất hai vòng đã hoàn tất của chương trình này"
 
-#: application/modules/admin/views/scripts/index/index.phtml:1404
+#: application/modules/admin/views/scripts/index/index.phtml:1409
 msgid "across the last"
 msgstr "trong"
 
-#: application/modules/admin/views/scripts/index/index.phtml:1406
+#: application/modules/admin/views/scripts/index/index.phtml:1411
 msgid "rounds"
 msgstr "vòng gần nhất"
 
-#: application/modules/admin/views/scripts/index/index.phtml:1410
+#: application/modules/admin/views/scripts/index/index.phtml:1415
 msgid "Opened their report"
 msgstr "Đã mở báo cáo"
 
-#: application/modules/admin/views/scripts/index/index.phtml:1421
+#: application/modules/admin/views/scripts/index/index.phtml:1426
 msgid "No finalized rounds yet."
 msgstr "Chưa có vòng nào được hoàn tất."
 
-#: application/modules/admin/views/scripts/index/index.phtml:1440
+#: application/modules/admin/views/scripts/index/index.phtml:1445
 #: public/js/main.js.php:217
 msgid "Loading..."
 msgstr "Đang tải..."
 
-#: application/modules/admin/views/scripts/index/index.phtml:1471
+#: application/modules/admin/views/scripts/index/index.phtml:1476
 msgid "Failed to load overview."
 msgstr "Không thể tải trang tổng quan."
 
@@ -12920,12 +13301,12 @@ msgstr "Nhập văn bản từ hình ảnh"
 msgid "Please enter the text from the image."
 msgstr "Vui lòng nhập nội dung văn bản trong hình ảnh."
 
-#: application/modules/admin/views/scripts/login/index.phtml:237
+#: application/modules/admin/views/scripts/login/index.phtml:245
 msgid "Text you entered from the image is incorrect. Please try again"
 msgstr "Nội dung bạn nhập từ hình ảnh không chính xác. Vui lòng thử lại"
 
-#: application/modules/admin/views/scripts/login/index.phtml:247
-#: application/views/scripts/auth/login.phtml:254
+#: application/modules/admin/views/scripts/login/index.phtml:258
+#: application/views/scripts/auth/login.phtml:266
 #: application/views/scripts/auth/new-password.phtml:161
 #: application/views/scripts/auth/reset-password.phtml:132
 #: application/views/scripts/contact-us/index.phtml:136
@@ -14039,7 +14420,7 @@ msgid "Download as Excel"
 msgstr "Tải xuống dưới dạng tệp Excel"
 
 #: application/modules/admin/views/scripts/participants/index.phtml:143
-#: application/modules/admin/views/scripts/shipment/round-participants.phtml:92
+#: application/modules/admin/views/scripts/shipment/round-participants.phtml:78
 #: application/modules/admin/views/scripts/shipment/ship-it.phtml:57
 msgid "Select Lab/Participant Name"
 msgstr "Chọn tên phòng xét nghiệm/đơn vị tham gia"
@@ -14275,7 +14656,7 @@ msgstr "Thông tin đơn vị tham gia"
 #: application/modules/admin/views/scripts/shipment/manage-enroll.phtml:92
 #: application/modules/admin/views/scripts/shipment/manage-enroll.phtml:125
 #: application/modules/admin/views/scripts/shipment/manage-enroll.phtml:165
-#: application/modules/admin/views/scripts/shipment/round-participants.phtml:121
+#: application/modules/admin/views/scripts/shipment/round-participants.phtml:106
 #: application/modules/admin/views/scripts/system-admins/index.phtml:17
 #: application/views/scripts/participant/view.phtml:20
 msgid "Phone"
@@ -17071,15 +17452,15 @@ msgstr "Kết quả tham chiếu"
 msgid "Viral Load"
 msgstr "Tải lượng virus"
 
-#: application/modules/admin/views/scripts/shipment/round-participants.phtml:51
+#: application/modules/admin/views/scripts/shipment/round-participants.phtml:48
 msgid "Round participants"
 msgstr "Đơn vị tham gia trong vòng"
 
-#: application/modules/admin/views/scripts/shipment/round-participants.phtml:119
+#: application/modules/admin/views/scripts/shipment/round-participants.phtml:104
 msgid "Lab Or Participant Name"
 msgstr "Tên phòng xét nghiệm hoặc đơn vị tham gia"
 
-#: application/modules/admin/views/scripts/shipment/round-participants.phtml:130
+#: application/modules/admin/views/scripts/shipment/round-participants.phtml:115
 msgid "Search Phone"
 msgstr "Tìm kiếm số điện thoại"
 
@@ -17266,6 +17647,20 @@ msgstr "Vui lòng chọn bộ sinh phẩm cần gán"
 #: application/modules/admin/views/scripts/shipment/shipment-test-kits.phtml:206
 msgid "Current Assignments (all positions)"
 msgstr "Phân bổ hiện tại (tất cả các vị trí)"
+
+#: application/modules/admin/views/scripts/shipment/shipment-test-kits.phtml:215
+#: application/modules/reports/views/scripts/corrective-preventive-actions/capa.phtml:115
+#: application/views/scripts/capa/capa.phtml:109
+#: application/views/scripts/dts/response.phtml:1654
+#: application/views/scripts/participant/add.phtml:182
+#: application/views/scripts/participant/all-schemes.phtml:105
+#: application/views/scripts/participant/dashboard.phtml:569
+#: application/views/scripts/participant/participant-message.phtml:68
+#: application/views/scripts/participant/testeredit.phtml:195
+#: application/views/scripts/participant/user-info.phtml:122
+#: application/views/scripts/tb/response.phtml:633
+msgid "Submit"
+msgstr "Gửi"
 
 #: application/modules/admin/views/scripts/shipment/shipment-test-kits.phtml:243
 msgid "Position"
@@ -18401,11 +18796,6 @@ msgstr "Tải xuống các báo cáo tổng quan hàng loạt - Đã chọn"
 msgid "Clear"
 msgstr "Xóa"
 
-#: application/modules/reports/views/scripts/shipments/index.phtml:261
-#: application/modules/reports/views/scripts/shipments/response-chart.phtml:96
-msgid "Responses"
-msgstr "Phản hồi"
-
 #: application/modules/reports/views/scripts/shipments/index.phtml:265
 msgid "Reports for Participants"
 msgstr "Báo cáo dành cho đơn vị tham gia"
@@ -18456,7 +18846,7 @@ msgid "Could not test"
 msgstr "Không thể xét nghiệm"
 
 #: application/modules/reports/views/scripts/shipments/participation-stats.ajax.phtml:25
-#: application/services/Dashboard.php:1051
+#: application/services/Dashboard.php:1026
 msgid "No response"
 msgstr "Không phản hồi"
 
@@ -18625,106 +19015,111 @@ msgstr "Bộ sinh phẩm 3"
 msgid "Test Count"
 msgstr "Số lần xét nghiệm"
 
-#: application/services/Common.php:2036
+#: application/services/Common.php:2024
 msgid "Password must be a string."
 msgstr "Mật khẩu phải là một chuỗi ký tự."
 
-#: application/services/Common.php:2046
+#: application/services/Common.php:2034
 msgid "Password must not exceed 128 characters."
 msgstr "Mật khẩu không được dài quá 128 ký tự."
 
-#: application/services/Common.php:2051
+#: application/services/Common.php:2039
 msgid "Password must contain at least one letter."
 msgstr "Mật khẩu phải chứa ít nhất một chữ cái."
 
-#: application/services/Common.php:2056
+#: application/services/Common.php:2044
 msgid "Password must contain at least one number."
 msgstr "Mật khẩu phải chứa ít nhất một chữ số."
 
-#: application/services/Common.php:2061
+#: application/services/Common.php:2049
 msgid "Password must contain at least one symbol."
 msgstr "Mật khẩu phải chứa ít nhất một ký tự đặc biệt."
 
-#: application/services/Common.php:2072
+#: application/services/Common.php:2060
 msgid "Password must not contain parts of your name."
 msgstr "Mật khẩu không được chứa bất kỳ phần nào trong tên của bạn."
 
-#: application/services/Common.php:2092
+#: application/services/Common.php:2080
 msgid "Password must not contain parts of your email address."
 msgstr "Mật khẩu không được chứa bất kỳ phần nào của địa chỉ email của bạn."
 
-#: application/services/Common.php:2109
+#: application/services/Common.php:2097
 msgid "Password is too weak. Please choose a more complex password."
 msgstr "Mật khẩu quá yếu. Vui lòng chọn một mật khẩu phức tạp hơn."
 
 #: application/services/Dashboard.php:270
-#: application/services/Dashboard.php:353
+#: application/services/Dashboard.php:354
 msgid "Awaiting responses"
 msgstr "Đang chờ phản hồi"
 
-#: application/services/Dashboard.php:287
-#: application/services/Dashboard.php:357
+#: application/services/Dashboard.php:288
+#: application/services/Dashboard.php:358
 msgid "No responses received"
 msgstr "Không nhận được phản hồi nào"
 
-#: application/services/Dashboard.php:298
-#: application/services/Dashboard.php:361
+#: application/services/Dashboard.php:299
+#: application/services/Dashboard.php:362
 msgid "Ready to evaluate"
 msgstr "Sẵn sàng đánh giá"
 
-#: application/services/Dashboard.php:310
-#: application/services/Dashboard.php:365
+#: application/services/Dashboard.php:311
+#: application/services/Dashboard.php:366
 msgid "Generate reports"
 msgstr "Tạo báo cáo"
 
-#: application/services/Dashboard.php:321
-#: application/services/Dashboard.php:369
+#: application/services/Dashboard.php:322
+#: application/services/Dashboard.php:370
 msgid "Ready to finalize"
 msgstr "Sẵn sàng hoàn tất"
 
-#: application/services/Dashboard.php:519
+#: application/services/Dashboard.php:520
 msgid "Not in any scheme"
 msgstr "Không thuộc chương trình nào"
 
-#: application/services/Dashboard.php:1052
-#: application/services/Dashboard.php:1059
+#: application/services/Dashboard.php:1027
+#: application/services/Dashboard.php:1035
 msgid "Unable to test"
 msgstr "Không thể xét nghiệm"
 
-#: application/services/Dashboard.php:1057
+#: application/services/Dashboard.php:1032
 msgid "Outstanding"
 msgstr "Chưa phản hồi"
 
-#: application/services/Dashboard.php:1058
+#: application/services/Dashboard.php:1034
 msgid "Late"
 msgstr "Trễ"
 
-#: application/services/Dashboard.php:1094
+#: application/services/Dashboard.php:1075
+#, fuzzy
+msgid "Submitted a response for this round"
+msgstr "Chưa từng phản hồi vòng này"
+
+#: application/services/Dashboard.php:1084
 msgid "Responded after the deadline for this round"
 msgstr "Đã phản hồi sau hạn nộp kết quả của vòng này"
 
-#: application/services/Dashboard.php:1103
+#: application/services/Dashboard.php:1093
 msgid "Reported unable to run the PT panel this round"
 msgstr "Đã báo không thể thực hiện bộ mẫu ngoại kiểm của vòng này"
 
-#: application/services/Dashboard.php:1112
+#: application/services/Dashboard.php:1102
 msgid "Failed this round"
 msgstr "Không đạt ở vòng này"
 
-#: application/services/Dashboard.php:1135
+#: application/services/Dashboard.php:1125
 msgid "Failed this round and the one before it"
 msgstr "Không đạt ở vòng này và vòng liền trước"
 
-#: application/services/Dashboard.php:1160
+#: application/services/Dashboard.php:1150
 #, php-format
 msgid "No response across this scheme's last %d finalized rounds"
 msgstr "Không phản hồi trong %d vòng đã hoàn tất gần nhất của chương trình này"
 
-#: application/services/Dashboard.php:1178
+#: application/services/Dashboard.php:1168
 msgid "Never responded to this round"
 msgstr "Chưa từng phản hồi vòng này"
 
-#: application/services/Dashboard.php:1179
+#: application/services/Dashboard.php:1169
 msgid "No response recorded yet for this round"
 msgstr "Chưa ghi nhận phản hồi nào cho vòng này"
 
@@ -19067,10 +19462,6 @@ msgstr "Điều hướng"
 msgid "Enter"
 msgstr "Enter"
 
-#: application/views/partials/spotlight.phtml:610
-msgid "Open"
-msgstr "Mở"
-
 #: application/views/partials/spotlight.phtml:612
 msgid "Esc"
 msgstr "Esc"
@@ -19099,17 +19490,6 @@ msgstr "Đăng nhập cho đơn vị tham gia ePT"
 #: application/views/scripts/auth/login.phtml:127
 msgid "Please enter your email or username"
 msgstr "Vui lòng nhập địa chỉ email hoặc tên người dùng của bạn"
-
-#: application/views/scripts/auth/login.phtml:127
-#: application/views/scripts/auth/reset-password.phtml:78
-#: application/views/scripts/contact-us/index.phtml:29
-#: application/views/scripts/participant/add-participant.phtml:150
-#: application/views/scripts/participant/add.phtml:127
-#: application/views/scripts/participant/edit-participant.phtml:199
-#: application/views/scripts/participant/participant-message.phtml:43
-#: application/views/scripts/participant/testeredit.phtml:154
-msgid "you@example.com"
-msgstr "you@example.com"
 
 #: application/views/scripts/auth/login.phtml:128
 msgid "Your email or username"
@@ -19149,7 +19529,7 @@ msgstr "Quên mật khẩu?"
 msgid "Don't have a login ? Click here to contact us"
 msgstr "Bạn chưa có tài khoản? Nhấp vào đây để liên hệ với chúng tôi"
 
-#: application/views/scripts/auth/login.phtml:244
+#: application/views/scripts/auth/login.phtml:253
 #: application/views/scripts/auth/new-password.phtml:151
 #: application/views/scripts/auth/reset-password.phtml:122
 #: application/views/scripts/contact-us/index.phtml:107
@@ -19564,7 +19944,6 @@ msgstr "Ngày nhận mẫu xét nghiệm"
 #: application/views/scripts/dbs/response.phtml:98
 #: application/views/scripts/eid/response.phtml:267
 #: application/views/scripts/recency/response.phtml:175
-#: application/views/scripts/vl/response-old.phtml:113
 #: application/views/scripts/vl/response.phtml:267
 msgid "Please enter Test Receipt Date"
 msgstr "Vui lòng nhập ngày nhận mẫu xét nghiệm"
@@ -19660,12 +20039,6 @@ msgstr "Vui lòng nhập ngày nhận mẫu xét nghiệm"
 #: application/views/scripts/tb/response.phtml:322
 #: application/views/scripts/tb/response.phtml:350
 #: application/views/scripts/tb/response.phtml:351
-#: application/views/scripts/vl/response-old.phtml:114
-#: application/views/scripts/vl/response-old.phtml:119
-#: application/views/scripts/vl/response-old.phtml:126
-#: application/views/scripts/vl/response-old.phtml:160
-#: application/views/scripts/vl/response-old.phtml:178
-#: application/views/scripts/vl/response-old.phtml:233
 #: application/views/scripts/vl/response.phtml:269
 #: application/views/scripts/vl/response.phtml:270
 #: application/views/scripts/vl/response.phtml:282
@@ -19727,7 +20100,6 @@ msgstr "Hình thức nhận mẫu"
 #: application/views/scripts/dts/response.phtml:397
 #: application/views/scripts/eid/response.phtml:375
 #: application/views/scripts/recency/response.phtml:278
-#: application/views/scripts/vl/response-old.phtml:187
 #: application/views/scripts/vl/response.phtml:490
 msgid "Please choose the mode of receipt"
 msgstr "Vui lòng chọn hình thức nhận mẫu"
@@ -19747,7 +20119,6 @@ msgstr "Đã kiểm tra chất lượng"
 #: application/views/scripts/dts/response.phtml:423
 #: application/views/scripts/eid/response.phtml:409
 #: application/views/scripts/recency/response.phtml:312
-#: application/views/scripts/vl/response-old.phtml:217
 #: application/views/scripts/vl/response.phtml:523
 msgid "Please select QC done status"
 msgstr "Vui lòng chọn trạng thái \"Đã kiểm tra chất lượng\""
@@ -19796,7 +20167,6 @@ msgstr "Ngày kiểm tra chất lượng"
 #: application/views/scripts/dts/response.phtml:444
 #: application/views/scripts/eid/response.phtml:431
 #: application/views/scripts/recency/response.phtml:334
-#: application/views/scripts/vl/response-old.phtml:232
 #: application/views/scripts/vl/response.phtml:545
 msgid "Please enter QC Date"
 msgstr "Vui lòng nhập ngày kiểm tra chất lượng"
@@ -19815,7 +20185,6 @@ msgstr "Kiểm tra chất lượng do"
 #: application/views/scripts/dts/response.phtml:455
 #: application/views/scripts/eid/response.phtml:441
 #: application/views/scripts/recency/response.phtml:345
-#: application/views/scripts/vl/response-old.phtml:239
 #: application/views/scripts/vl/response.phtml:555
 msgid "Please enter QC done by name"
 msgstr "Vui lòng nhập tên người thực hiện kiểm tra chất lượng"
@@ -19825,7 +20194,7 @@ msgid "Number of tests"
 msgstr "Số lượng xét nghiệm"
 
 #: application/views/scripts/covid19/response.phtml:370
-msgid "Please select number of participant test"
+msgid "Please select the number of tests"
 msgstr "Vui lòng chọn số lượng xét nghiệm"
 
 #: application/views/scripts/covid19/response.phtml:385
@@ -19897,51 +20266,51 @@ msgid "Enter name of PCR reagent 1"
 msgstr "Nhập tên của thuốc thử PCR 1"
 
 #: application/views/scripts/covid19/response.phtml:550
-msgid "Please enter name of PCR reagent. 1"
-msgstr "Vui lòng nhập tên của thuốc thử PCR. 1"
+msgid "Please enter the name of PCR reagent 1"
+msgstr "Vui lòng nhập tên của thuốc thử PCR số 1"
 
 #: application/views/scripts/covid19/response.phtml:551
 msgid "Enter name of PCR reagent 2"
 msgstr "Nhập tên của thuốc thử PCR số 2"
 
 #: application/views/scripts/covid19/response.phtml:554
-msgid "Please enter name of PCR reagent. 2"
-msgstr "Vui lòng nhập tên của thuốc thử PCR. 2"
+msgid "Please enter the name of PCR reagent 2"
+msgstr "Vui lòng nhập tên của thuốc thử PCR số 2"
 
 #: application/views/scripts/covid19/response.phtml:555
 msgid "Enter name of PCR reagent 3"
 msgstr "Nhập tên của thuốc thử PCR số 3"
 
 #: application/views/scripts/covid19/response.phtml:558
-msgid "Please enter name of PCR reagent. 3"
-msgstr "Vui lòng nhập tên của thuốc thử PCR. 3"
+msgid "Please enter the name of PCR reagent 3"
+msgstr "Vui lòng nhập tên của thuốc thử PCR số 3"
 
 #: application/views/scripts/covid19/response.phtml:562
 msgid "PCR reagent Lot number"
 msgstr "Số lô của thuốc thử PCR"
 
 #: application/views/scripts/covid19/response.phtml:563
-msgid "Enter PCR reagent Lot no 1"
+msgid "Enter PCR reagent lot number 1"
 msgstr "Nhập số lô của thuốc thử PCR số 1"
 
 #: application/views/scripts/covid19/response.phtml:566
-msgid "Please enter PCR reagent Lot no. 1"
+msgid "Please enter the lot number of PCR reagent 1"
 msgstr "Vui lòng nhập số lô của thuốc thử PCR số 1"
 
 #: application/views/scripts/covid19/response.phtml:567
-msgid "Enter PCR reagent Lot no  2"
+msgid "Enter PCR reagent lot number 2"
 msgstr "Nhập số lô của thuốc thử PCR số 2"
 
 #: application/views/scripts/covid19/response.phtml:570
-msgid "Please enter PCR reagent Lot no. 2"
+msgid "Please enter the lot number of PCR reagent 2"
 msgstr "Vui lòng nhập số lô của thuốc thử PCR số 2"
 
 #: application/views/scripts/covid19/response.phtml:571
-msgid "Enter PCR reagent Lot no  3"
+msgid "Enter PCR reagent lot number 3"
 msgstr "Nhập số lô của thuốc thử PCR số 3"
 
 #: application/views/scripts/covid19/response.phtml:574
-msgid "Please enter PCR reagent Lot no. 3"
+msgid "Please enter the lot number of PCR reagent 3"
 msgstr "Vui lòng nhập số lô của thuốc thử PCR số 3"
 
 #: application/views/scripts/covid19/response.phtml:578
@@ -19953,24 +20322,24 @@ msgid "Enter PCR reagent expiry date 1"
 msgstr "Nhập ngày hết hạn của thuốc thử PCR 1"
 
 #: application/views/scripts/covid19/response.phtml:582
-msgid "Please enter PCR reagent expiry date. 1"
-msgstr "Vui lòng nhập ngày hết hạn của thuốc thử PCR. 1"
+msgid "Please select the expiry date of PCR reagent 1"
+msgstr "Vui lòng chọn ngày hết hạn của thuốc thử PCR số 1"
 
 #: application/views/scripts/covid19/response.phtml:588
 msgid "Enter PCR reagent expiry date 2"
 msgstr "Nhập ngày hết hạn của thuốc thử PCR 2"
 
 #: application/views/scripts/covid19/response.phtml:591
-msgid "Please enter PCR reagent expiry date. 2"
-msgstr "Vui lòng nhập ngày hết hạn của thuốc thử PCR. 2"
+msgid "Please select the expiry date of PCR reagent 2"
+msgstr "Vui lòng chọn ngày hết hạn của thuốc thử PCR số 2"
 
 #: application/views/scripts/covid19/response.phtml:597
 msgid "Enter PCR reagent expiry date 3"
 msgstr "Nhập ngày hết hạn của thuốc thử PCR 3"
 
 #: application/views/scripts/covid19/response.phtml:600
-msgid "Please enter PCR reagent expiry date. 3"
-msgstr "Vui lòng nhập ngày hết hạn của thuốc thử PCR. 3"
+msgid "Please select the expiry date of PCR reagent 3"
+msgstr "Vui lòng chọn ngày hết hạn của thuốc thử PCR số 3"
 
 #: application/views/scripts/covid19/response.phtml:609
 #: application/views/scripts/dbs/response.phtml:268
@@ -20080,7 +20449,6 @@ msgstr "Lý do không thực hiện xét nghiệm bộ mẫu PT"
 #: application/views/scripts/eid/response.phtml:529
 #: application/views/scripts/recency/response.phtml:451
 #: application/views/scripts/tb/response.phtml:205
-#: application/views/scripts/vl/response-old.phtml:303
 #: application/views/scripts/vl/response.phtml:777
 msgid "Please select reason"
 msgstr "Vui lòng chọn lý do"
@@ -20110,7 +20478,6 @@ msgstr "Ý kiến của bạn"
 #: application/views/scripts/eid/response.phtml:565
 #: application/views/scripts/recency/response.phtml:476
 #: application/views/scripts/tb/response.phtml:232
-#: application/views/scripts/vl/response-old.phtml:314
 #: application/views/scripts/vl/response.phtml:813
 msgid "Please enter comments"
 msgstr "Vui lòng nhập nhận xét"
@@ -20127,7 +20494,6 @@ msgstr "Bạn có cần sự hỗ trợ từ đơn vị cung cấp chương trì
 #: application/views/scripts/dts/response.phtml:1327
 #: application/views/scripts/eid/response.phtml:573
 #: application/views/scripts/recency/response.phtml:484
-#: application/views/scripts/vl/response-old.phtml:317
 #: application/views/scripts/vl/response.phtml:821
 msgid "Please enter message to PT provider"
 msgstr "Vui lòng nhập nội dung tin nhắn gửi đến đơn vị cung cấp PT"
@@ -20362,8 +20728,8 @@ msgstr ""
 #: application/views/scripts/recency/response.phtml:727
 #: application/views/scripts/tb/response.phtml:826
 #: application/views/scripts/vl/response.phtml:1223
-msgid "Entered Password was wrong please try again later"
-msgstr "Mật khẩu đã nhập không đúng, vui lòng thử lại sau"
+msgid "Incorrect password. Please try again."
+msgstr "Mật khẩu không đúng. Vui lòng thử lại."
 
 #: application/views/scripts/covid19/response.phtml:1216
 #: application/views/scripts/custom-test/response.phtml:856
@@ -20581,7 +20947,7 @@ msgid "Please enter the result for"
 msgstr "Vui lòng nhập kết quả cho"
 
 #: application/views/scripts/custom-test/response.phtml:507
-msgid "Please select invalid or error"
+msgid "Please select whether the result is invalid or an error"
 msgstr "Vui lòng chọn \"không hợp lệ\" hoặc \"lỗi\""
 
 #: application/views/scripts/custom-test/response.phtml:518
@@ -20825,7 +21191,7 @@ msgid "Type of Test"
 msgstr "Loại xét nghiệm"
 
 #: application/views/scripts/dts/response.phtml:468
-msgid "Please choose scrrening or confirmatory of test type"
+msgid "Please choose screening or confirmatory test type"
 msgstr "Vui lòng chọn loại xét nghiệm sàng lọc hoặc khẳng định"
 
 #: application/views/scripts/dts/response.phtml:530
@@ -20918,21 +21284,24 @@ msgstr "Vui lòng chọn ngày hết hạn của lần xét nghiệm lặp lại
 
 #: application/views/scripts/dts/response.phtml:900
 #: application/views/scripts/dts/response.phtml:938
-msgid "Please select the QC done for test 1"
+msgid "Please select whether QC was done for test 1"
 msgstr ""
-"Vui lòng chọn quy trình kiểm tra chất lượng đã thực hiện cho xét nghiệm 1"
+"Vui lòng chọn đã thực hiện QC cho xét nghiệm 1 hay chưaVui lòng chọn quy "
+"trình kiểm tra chất lượng đã thực hiện cho xét nghiệm 1"
 
 #: application/views/scripts/dts/response.phtml:912
 #: application/views/scripts/dts/response.phtml:947
-msgid "Please select the QC done for test 2"
+msgid "Please select whether QC was done for test 2"
 msgstr ""
-"Vui lòng chọn quy trình kiểm tra chất lượng đã thực hiện cho xét nghiệm 2"
+"Vui lòng chọn đã thực hiện QC cho xét nghiệm 2 hay chưaVui lòng chọn quy "
+"trình kiểm tra chất lượng đã thực hiện cho xét nghiệm 2"
 
 #: application/views/scripts/dts/response.phtml:924
 #: application/views/scripts/dts/response.phtml:956
-msgid "Please select the QC done for test 3"
+msgid "Please select whether QC was done for test 3"
 msgstr ""
-"Vui lòng chọn quy trình kiểm tra chất lượng đã thực hiện cho xét nghiệm 3"
+"Vui lòng chọn đã thực hiện QC cho xét nghiệm 3 hay chưaVui lòng chọn quy "
+"trình kiểm tra chất lượng đã thực hiện cho xét nghiệm 3"
 
 #: application/views/scripts/dts/response.phtml:999
 msgid "Select QC Date 1"
@@ -21009,8 +21378,8 @@ msgid "Retest after 14 days"
 msgstr "Thực hiện xét nghiệm lại sau 14 ngày"
 
 #: application/views/scripts/dts/response.phtml:1260
-msgid "Please select restest or not?"
-msgstr "Vui lòng chọn đây có phải là xét nghiệm lại hay không?"
+msgid "Please select whether this is a retest"
+msgstr "Vui lòng chọn đây có phải là xét nghiệm lại không"
 
 #: application/views/scripts/dts/response.phtml:1277
 #: application/views/scripts/eid/response.phtml:550
@@ -21115,13 +21484,14 @@ msgstr "Vui lòng nhập địa chỉ email của giám đốc phòng xét nghi�
 
 #: application/views/scripts/eid/response.phtml:183
 #: application/views/scripts/vl/response.phtml:202
-msgid "Enter the confirm laboratory director email"
-msgstr "Nhập địa chỉ email của giám đốc phòng xét nghiệm để xác nhận"
+msgid "Re-enter the laboratory director email"
+msgstr "Nhập lại địa chỉ email của giám đốc phòng xét nghiệm"
 
 #: application/views/scripts/eid/response.phtml:184
 #: application/views/scripts/vl/response.phtml:203
-msgid "Please enter the confirm laboratory director email"
-msgstr "Vui lòng nhập địa chỉ email xác nhận của giám đốc phòng xét nghiệm"
+msgid "Please re-enter the laboratory director email to confirm"
+msgstr ""
+"Vui lòng nhập lại địa chỉ email của giám đốc phòng xét nghiệm để xác nhận"
 
 #: application/views/scripts/eid/response.phtml:195
 #: application/views/scripts/vl/response.phtml:214
@@ -21150,13 +21520,13 @@ msgstr "Vui lòng nhập địa chỉ email của người liên hệ"
 
 #: application/views/scripts/eid/response.phtml:212
 #: application/views/scripts/vl/response.phtml:231
-msgid "Enter the confirm contact person email"
-msgstr "Nhập địa chỉ email của người liên hệ"
+msgid "Re-enter the contact person email"
+msgstr "Nhập lại địa chỉ email của người liên hệ"
 
 #: application/views/scripts/eid/response.phtml:213
 #: application/views/scripts/vl/response.phtml:232
-msgid "Please enter the confirm contact person email"
-msgstr "Vui lòng nhập địa chỉ email của người liên hệ để xác nhận"
+msgid "Please re-enter the contact person email to confirm"
+msgstr "Vui lòng nhập lại địa chỉ email của người liên hệ để xác nhận"
 
 #: application/views/scripts/eid/response.phtml:219
 #: application/views/scripts/vl/response.phtml:238
@@ -21179,11 +21549,11 @@ msgid "Shipment Testing Date"
 msgstr "Ngày thực hiện xét nghiệm vòng ngoại kiểm"
 
 #: application/views/scripts/eid/response.phtml:305
-msgid "Enter the assay name other"
+msgid "Enter the other assay name"
 msgstr "Nhập tên xét nghiệm khác"
 
 #: application/views/scripts/eid/response.phtml:306
-msgid "Please enter the assay name other"
+msgid "Please enter the other assay name"
 msgstr "Vui lòng nhập tên xét nghiệm khác"
 
 #: application/views/scripts/eid/response.phtml:311
@@ -21351,10 +21721,6 @@ msgstr "Câu hỏi thường gặp"
 #: application/views/scripts/index/index.phtml:289
 msgid "Frequently Asked"
 msgstr "Câu hỏi thường gặp"
-
-#: application/views/scripts/index/index.phtml:289
-msgid "Questions"
-msgstr "Câu hỏi"
 
 #: application/views/scripts/index/index.phtml:322
 msgid "Got a question or feedback? Feel free to reach out to us."
@@ -23064,7 +23430,7 @@ msgid "Panel Received Date"
 msgstr "Ngày nhận bộ mẫu"
 
 #: application/views/scripts/tb/response.phtml:248
-msgid "Panel choose Received Date"
+msgid "Please select the panel received date"
 msgstr "Chọn ngày nhận bộ mẫu"
 
 #: application/views/scripts/tb/response.phtml:253
@@ -23111,7 +23477,7 @@ msgid "Cartridge/Assay Expiration"
 msgstr "Hạn sử dụng của cartridge/sinh phẩm"
 
 #: application/views/scripts/tb/response.phtml:317
-msgid "Please select the assay expiration"
+msgid "Please select the assay expiration date"
 msgstr "Vui lòng chọn ngày hết hạn của xét nghiệm"
 
 #: application/views/scripts/tb/response.phtml:327
@@ -23126,8 +23492,8 @@ msgstr "Ngày hiệu chuẩn thiết bị Xpert"
 #: application/views/scripts/vl/response.phtml:349
 #: application/views/scripts/vl/response.phtml:398
 #: application/views/scripts/vl/response.phtml:448
-msgid "Please enter gene Xpert instrument"
-msgstr "Vui lòng nhập thiết bị GeneXpert"
+msgid "Please select the date of the last instrument calibration"
+msgstr "Vui lòng chọn ngày hiệu chuẩn thiết bị gần nhất"
 
 #: application/views/scripts/tb/response.phtml:335
 #: application/views/scripts/vl/response.phtml:360
@@ -23178,26 +23544,26 @@ msgstr "Vui lòng nhập số sê-ri"
 #: application/views/scripts/tb/response.phtml:385
 #: application/views/scripts/tb/response.phtml:407
 #: application/views/scripts/tb/response.phtml:772
-msgid "Enter installed on date"
-msgstr "Nhập ngày cài đặt"
+msgid "Installation date"
+msgstr "Ngày cài đặt"
 
 #: application/views/scripts/tb/response.phtml:386
 #: application/views/scripts/tb/response.phtml:407
 #: application/views/scripts/tb/response.phtml:772
-msgid "Please enter installed on date"
-msgstr "Vui lòng nhập ngày cài đặt"
+msgid "Please select the installation date"
+msgstr "Vui lòng chọn ngày cài đặt"
 
 #: application/views/scripts/tb/response.phtml:390
 #: application/views/scripts/tb/response.phtml:410
 #: application/views/scripts/tb/response.phtml:773
-msgid "Enter last calibrated"
-msgstr "Nhập lần hiệu chuẩn gần nhất"
+msgid "Last calibration date"
+msgstr "Ngày hiệu chuẩn gần nhất"
 
 #: application/views/scripts/tb/response.phtml:391
 #: application/views/scripts/tb/response.phtml:411
 #: application/views/scripts/tb/response.phtml:773
-msgid "Please enter the last calibrated"
-msgstr "Vui lòng nhập ngày hiệu chuẩn gần nhất"
+msgid "Please select the last calibration date"
+msgstr "Vui lòng chọn ngày hiệu chuẩn gần nhất"
 
 #: application/views/scripts/tb/response.phtml:427
 msgid "ATTESTATION"
@@ -23245,51 +23611,27 @@ msgstr "Nhập tên người giám sát"
 msgid "Please ensure all numeric field values are valid numbers"
 msgstr "Vui lòng đảm bảo tất cả các trường số đều là số hợp lệ"
 
-#: application/views/scripts/vl/response-old.phtml:118
-msgid "Please enter the Sample Rehydration Date"
-msgstr "Vui lòng nhập ngày tái hydrat hóa mẫu"
-
-#: application/views/scripts/vl/response-old.phtml:125
 #: application/views/scripts/vl/response.phtml:279
 msgid "Please enter the Panel Test Date"
 msgstr "Vui lòng nhập ngày xét nghiệm bộ mẫu"
-
-#: application/views/scripts/vl/response-old.phtml:138
-#: application/views/scripts/vl/response.phtml:292
-msgid "Please select the Viral Load Assay"
-msgstr "Vui lòng chọn phương pháp xét nghiệm tải lượng virus"
-
-#: application/views/scripts/vl/response-old.phtml:151
-#: application/views/scripts/vl/response.phtml:310
-#: application/views/scripts/vl/response.phtml:315
-msgid "Please specify Other Assay Name"
-msgstr "Vui lòng ghi rõ tên phương pháp xét nghiệm khác"
-
-#: application/views/scripts/vl/response-old.phtml:159
-msgid "Please enter Assay Expiration date"
-msgstr "Vui lòng nhập ngày hết hạn của xét nghiệm"
-
-#: application/views/scripts/vl/response-old.phtml:164
-msgid "Please enter Assay lot number"
-msgstr "Vui lòng nhập số lô xét nghiệm"
-
-#: application/views/scripts/vl/response-old.phtml:177
-msgid "Please enter Shipment Test Response Date "
-msgstr "Vui lòng nhập ngày phản hồi vòng ngoại kiểm "
-
-#: application/views/scripts/vl/response-old.phtml:260
-#: application/views/scripts/vl/response.phtml:594
-msgid "Enter a result value to calculate the log value"
-msgstr "Nhập giá trị kết quả để tính giá trị log"
 
 #: application/views/scripts/vl/response.phtml:287
 msgid "Viral Load Assay"
 msgstr "Phương pháp xét nghiệm tải lượng virus"
 
+#: application/views/scripts/vl/response.phtml:292
+msgid "Please select the Viral Load Assay"
+msgstr "Vui lòng chọn phương pháp xét nghiệm tải lượng virus"
+
 #: application/views/scripts/vl/response.phtml:301
 #: application/views/scripts/vl/response.phtml:305
 msgid "Specimen Volume used for testing"
 msgstr "Thể tích mẫu được sử dụng để xét nghiệm"
+
+#: application/views/scripts/vl/response.phtml:310
+#: application/views/scripts/vl/response.phtml:315
+msgid "Please specify Other Assay Name"
+msgstr "Vui lòng ghi rõ tên phương pháp xét nghiệm khác"
 
 #: application/views/scripts/vl/response.phtml:341
 #: application/views/scripts/vl/response.phtml:390
@@ -23369,6 +23711,10 @@ msgid "Viral Load Calculator (Convert copies/ml to Log<sub>10</sub>)"
 msgstr ""
 "Công cụ tính tải lượng virus (Chuyển đổi số bản sao/ml sang Log<sub>10</sub>)"
 
+#: application/views/scripts/vl/response.phtml:594
+msgid "Enter a result value to calculate the log value"
+msgstr "Nhập giá trị kết quả để tính giá trị log"
+
 #: application/views/scripts/vl/response.phtml:604
 msgid "copies/ml"
 msgstr "bản sao/ml"
@@ -23433,7 +23779,7 @@ msgid "Please enter your comment"
 msgstr "Vui lòng nhập bình luận của bạn"
 
 #: application/views/scripts/vl/response.phtml:690
-msgid "Please choose assay invalid or error"
+msgid "Please choose whether the result is invalid or an error"
 msgstr "Vui lòng chọn \"Kết quả xét nghiệm không hợp lệ\" hoặc \"Lỗi\""
 
 #: application/views/scripts/vl/response.phtml:711
@@ -23516,6 +23862,11 @@ msgid "Your session has expired due to inactivity. Please sign in again."
 msgstr ""
 "Phiên làm việc của bạn đã hết hạn do không có hoạt động. Vui lòng đăng nhập "
 "lại."
+
+#: library/Pt/Plugins/PreSetter.php:271
+#, fuzzy
+msgid "You do not have access to that participant."
+msgstr "Bạn không được phép cập nhật phản hồi cho đơn vị tham gia này."
 
 #: public/js/main.js.php:185
 msgid "Apply"
@@ -24114,6 +24465,49 @@ msgstr ""
 msgid "No participants"
 msgstr "Không có đơn vị tham gia"
 
+#~ msgid "you@example.com"
+#~ msgstr "you@example.com"
+
+#~ msgid "Start from an existing feedback form"
+#~ msgstr "Bắt đầu từ một mẫu phản hồi có sẵn"
+
+#~ msgid "Select a shipment to copy from"
+#~ msgstr "Chọn vòng ngoại kiểm để sao chép"
+
+#~ msgid ""
+#~ "Copies that shipment's questions, content and audience into this form. "
+#~ "The form you copy from is not changed."
+#~ msgstr ""
+#~ "Sao chép câu hỏi, nội dung và đối tượng của vòng ngoại kiểm đó vào mẫu "
+#~ "này. Mẫu được sao chép không bị thay đổi."
+
+#~ msgid "Enter Feedback Form Content"
+#~ msgstr "Nhập nội dung vào biểu mẫu phản hồi"
+
+#~ msgid "Select the available question"
+#~ msgstr "Chọn câu hỏi có sẵn"
+
+#~ msgid "Could not load the questions for that shipment. Please try again."
+#~ msgstr "Không thể tải câu hỏi của vòng ngoại kiểm đó. Vui lòng thử lại."
+
+#~ msgid "Create New Feedback Form"
+#~ msgstr "Tạo biểu mẫu phản hồi mới"
+
+#~ msgid "Number of Question Mapped"
+#~ msgstr "Số câu hỏi đã được gán"
+
+#~ msgid "Please enter the Sample Rehydration Date"
+#~ msgstr "Vui lòng nhập ngày tái hydrat hóa mẫu"
+
+#~ msgid "Please enter Assay Expiration date"
+#~ msgstr "Vui lòng nhập ngày hết hạn của xét nghiệm"
+
+#~ msgid "Please enter Assay lot number"
+#~ msgstr "Vui lòng nhập số lô xét nghiệm"
+
+#~ msgid "Please enter Shipment Test Response Date "
+#~ msgstr "Vui lòng nhập ngày phản hồi vòng ngoại kiểm "
+
 #~ msgid "instance"
 #~ msgstr "trường hợp"
 
@@ -24192,9 +24586,6 @@ msgstr "Không có đơn vị tham gia"
 #, fuzzy
 #~ msgid "Select Survey Number"
 #~ msgstr "Chọn số sinh phẩm xét nghiệm"
-
-#~ msgid "Optional"
-#~ msgstr "Không bắt buộc"
 
 #~ msgid "Columns marked in"
 #~ msgstr "Các cột được đánh dấu trong"
@@ -24439,9 +24830,6 @@ msgstr "Không có đơn vị tham gia"
 
 #~ msgid "High Limit"
 #~ msgstr "Giới hạn cao"
-
-#~ msgid "Accept Responses After Finalization"
-#~ msgstr "Chấp nhận phản hồi sau khi hoàn tất"
 
 #~ msgid "DTS scheme type."
 #~ msgstr "Loại chương trình DTS."

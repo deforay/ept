@@ -124,7 +124,7 @@
                             <th scope="col"><?= $this->translate->_("Participant/Lab Contact Name"); ?></th>
                             <td><input type="text" id="contactname" name="contactname" size="50" maxlength="255" class="form-control" title="<?= $this->htmlTranslate("Please enter the contact name"); ?>" placeholder="<?= $this->htmlTranslate("Contact name"); ?>" /></td>
                             <th scope="col"><?= $this->translate->_("Participant e-mail Address"); ?> <span class="mandatory">*</span></th>
-                            <td><input type="email" id="pemail" name="pemail" size="25" maxlength="45" value="<?php echo $this->rsParticipant['email']; ?>" title="<?= $this->htmlTranslate("Please enter the participant's email address"); ?>" placeholder="<?= $this->htmlTranslate("you@example.com"); ?>" class="form-control isRequired isEmail" /></td>
+                            <td><input type="email" id="pemail" name="pemail" size="25" maxlength="45" value="<?php echo $this->rsParticipant['email']; ?>" title="<?= $this->htmlTranslate("Please enter the participant's email address"); ?>" placeholder="you@example.com" class="form-control isRequired isEmail" /></td>
                         </tr>
 
                         <tr>

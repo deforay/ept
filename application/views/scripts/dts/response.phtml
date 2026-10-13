@@ -465,7 +465,7 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
                                 <td><label for="dtsTestPanelType"><?= $this->translate->_("Type of Test"); ?></label></td>
                                 <td>
                                     <select class="form-control" name="dtsTestPanelType" id="dtsTestPanelType"
-                                        class="form-control" title="<?= $this->htmlTranslate("Please choose scrrening or confirmatory of test type"); ?>"
+                                        class="form-control" title="<?= $this->htmlTranslate("Please choose screening or confirmatory test type"); ?>"
                                         onchange="updateTestType(this.value);">
                                         <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
                                         <option value="screening" <?php echo (isset($this->shipment['attributes']['dts_test_panel_type']) && $this->shipment['attributes']['dts_test_panel_type'] == "screening") ? " selected='selected' " : ""; ?>><?= $this->translate->_("Screening"); ?></option>
@@ -897,7 +897,7 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
                                     <?php } ?>
                                     <td class="testOne testOneSpan">
                                         <select name="qc_done_1" id="qc_done_1" class="form-control result-section-input"
-                                            title="<?= $this->htmlTranslate("Please select the QC done for test 1"); ?>">
+                                            title="<?= $this->htmlTranslate("Please select whether QC was done for test 1"); ?>">
                                             <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
                                             <option value="yes" <?php echo (isset($this->allSamples[0]['qc_done_1']) && $this->allSamples[0]['qc_done_1'] == "yes") ? "selected='selected'" : "" ?>>
                                                 <?= $this->translate->_("Yes"); ?>
@@ -909,7 +909,7 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
                                     </td>
                                     <td class='testTwo testTwoSpan'>
                                         <select name="qc_done_2" id="qc_done_2" class="form-control result-section-input"
-                                            title="<?= $this->htmlTranslate("Please select the QC done for test 2"); ?>">
+                                            title="<?= $this->htmlTranslate("Please select whether QC was done for test 2"); ?>">
                                             <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
                                             <option value="yes" <?php echo (isset($this->allSamples[0]['qc_done_2']) && $this->allSamples[0]['qc_done_2'] == "yes") ? "selected='selected'" : "" ?>>
                                                 <?= $this->translate->_("Yes"); ?>
@@ -921,7 +921,7 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
                                     </td>
                                     <td class='testThree testThreeSpan'>
                                         <select name="qc_done_3" id="qc_done_3" class="form-control result-section-input"
-                                            title="<?= $this->htmlTranslate("Please select the QC done for test 3"); ?>">
+                                            title="<?= $this->htmlTranslate("Please select whether QC was done for test 3"); ?>">
                                             <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
                                             <option value="yes" <?php echo (isset($this->allSamples[0]['qc_done_3']) && $this->allSamples[0]['qc_done_3'] == "yes") ? "selected='selected'" : "" ?>>
                                                 <?= $this->translate->_("Yes"); ?>
@@ -935,7 +935,7 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
                                         <td class="testOneRepeat testOneRepeatSpan">
                                             <select name="repeat_qc_done_1" id="repeat_qc_done_1"
                                                 class="form-control repeat_1 result-section-input"
-                                                title="<?= $this->htmlTranslate("Please select the QC done for test 1"); ?>">
+                                                title="<?= $this->htmlTranslate("Please select whether QC was done for test 1"); ?>">
                                                 <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
                                                 <option value="yes" <?php echo (isset($this->allSamples[0]['repeat_qc_done_1']) && $this->allSamples[0]['repeat_qc_done_1'] == "yes") ? "selected='selected'" : "" ?>><?= $this->translate->_("Yes"); ?></option>
                                                 <option value="no" <?php echo (isset($this->allSamples[0]['repeat_qc_done_1']) && $this->allSamples[0]['repeat_qc_done_1'] == "no") ? "selected='selected'" : "" ?>><?= $this->translate->_("No"); ?></option>
@@ -944,7 +944,7 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
                                         <td class='repeatTestTwo testTwoRepeatSpan testTwo'>
                                             <select name="repeat_qc_done_2" id="repeat_qc_done_2"
                                                 class="form-control repeat_2 result-section-input"
-                                                title="<?= $this->htmlTranslate("Please select the QC done for test 2"); ?>">
+                                                title="<?= $this->htmlTranslate("Please select whether QC was done for test 2"); ?>">
                                                 <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
                                                 <option value="yes" <?php echo (isset($this->allSamples[0]['repeat_qc_done_2']) && $this->allSamples[0]['repeat_qc_done_2'] == "yes") ? "selected='selected'" : "" ?>><?= $this->translate->_("Yes"); ?></option>
                                                 <option value="no" <?php echo (isset($this->allSamples[0]['repeat_qc_done_2']) && $this->allSamples[0]['repeat_qc_done_2'] == "no") ? "selected='selected'" : "" ?>><?= $this->translate->_("No"); ?></option>
@@ -953,7 +953,7 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
                                         <td class='repeatTestThree testThreeRepeatSpan testThree'>
                                             <select name="repeat_qc_done_3" id="repeat_qc_done_3"
                                                 class="form-control repeat_3 result-section-input"
-                                                title="<?= $this->htmlTranslate("Please select the QC done for test 3"); ?>">
+                                                title="<?= $this->htmlTranslate("Please select whether QC was done for test 3"); ?>">
                                                 <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
                                                 <option value="yes" <?php echo (isset($this->allSamples[0]['repeat_qc_done_3']) && $this->allSamples[0]['repeat_qc_done_3'] == "yes") ? "selected='selected'" : "" ?>><?= $this->translate->_("Yes"); ?></option>
                                                 <option value="no" <?php echo (isset($this->allSamples[0]['repeat_qc_done_3']) && $this->allSamples[0]['repeat_qc_done_3'] == "no") ? "selected='selected'" : "" ?>><?= $this->translate->_("No"); ?></option>
@@ -1257,7 +1257,7 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
                                         <td style="width: <?php echo $width; ?>%;" class="colwidth">
                                             <select name="is_this_retest[<?php echo $sample['sample_id']; ?>]"
                                                 id="<?php echo "is_this_retest_" . $count; ?>"
-                                                class="form-control result-section-input" title="<?= $this->htmlTranslate("Please select restest or not?"); ?>"
+                                                class="form-control result-section-input" title="<?= $this->htmlTranslate("Please select whether this is a retest"); ?>"
                                                 style="float: left;">
                                                 <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
                                                 <option value="yes" <?php echo (isset($sample['is_this_retest']) && $sample['is_this_retest'] == "yes") ? "selected='selected'" : "" ?>>
@@ -1907,7 +1907,7 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
             },
                 function (data) {
                     if (!data) {
-                        alert('<?= $this->jsTranslate("Entered Password was wrong please try again later"); ?>');
+                        alert('<?= $this->jsTranslate("Incorrect password. Please try again."); ?>');
                         return false;
                     }
                     window.location.href = '/admin/evaluate/shipment/sid/' + <?php echo json_encode(base64_encode($this->shipId)); ?>;
