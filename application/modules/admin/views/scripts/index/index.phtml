@@ -1143,7 +1143,12 @@ $schemeRows = $this->schemeEngagement;
 										<span class="cell-sub"><?php echo $this->escape($round['deadlineDateLong']); ?></span>
 									</td>
 									<td>
-										<?php echo (int) $round['responded']; ?> <?= $this->translate->_("of"); ?>
+										<?php if ($round['responded'] > 0): ?>
+											<a href="<?php echo $this->url(['module' => 'admin', 'controller' => 'shipment', 'action' => 'round-participants', 'id' => $round['shipmentId'], 'status' => 'responded'], 'default', true); ?>"><?php echo (int) $round['responded']; ?></a>
+										<?php else: ?>
+											<?php echo (int) $round['responded']; ?>
+										<?php endif; ?>
+										<?= $this->translate->_("of"); ?>
 										<?php echo (int) $round['total']; ?>
 										<?php // The magnitude bar that used to sit here duplicated the
 										// Response % pill two columns over, in a different colour. ?>

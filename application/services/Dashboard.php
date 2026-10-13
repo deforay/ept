@@ -943,7 +943,7 @@ class Application_Service_Dashboard
      * draw so the two can't disagree about what a status means.
      *
      * @param int    $shipmentId
-     * @param string $status 'outstanding' | 'late' | 'unabletotest'
+     * @param string $status 'outstanding' | 'responded' | 'late' | 'unabletotest'
      * @return array|null null if the shipment doesn't exist
      */
     public function getRoundParticipantsList($shipmentId, $status)
@@ -1030,6 +1030,7 @@ class Application_Service_Dashboard
 
         return [
             'outstanding' => Pt_Commons_TranslateUtility::safeTranslate('Outstanding'),
+            'responded' => Pt_Commons_TranslateUtility::safeTranslate('Responded'),
             'late' => Pt_Commons_TranslateUtility::safeTranslate('Late'),
             'unabletotest' => Pt_Commons_TranslateUtility::safeTranslate('Unable to test'),
         ];
@@ -1060,6 +1061,20 @@ class Application_Service_Dashboard
         }
 
         switch ($status) {
+            case 'responded':
+                // Exact complement of 'outstanding', and the same rule as the
+                // dashboard's "N of M" responded figure — so late and
+                // unable-to-test labs are in here too, as they are there.
+                $ids = $this->db->fetchCol(
+                    "SELECT participant_id FROM shipment_participant_map
+                    WHERE shipment_id = ?
+                      AND response_status IS NOT NULL
+                      AND response_status NOT IN ('', 'noresponse')",
+                    [$shipmentId]
+                );
+                $context = Pt_Commons_TranslateUtility::safeTranslate('Submitted a response for this round');
+                break;
+
             case 'late':
                 $ids = $this->db->fetchCol(
                     "SELECT participant_id FROM shipment_participant_map
