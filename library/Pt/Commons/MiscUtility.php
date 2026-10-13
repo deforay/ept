@@ -871,9 +871,10 @@ final class Pt_Commons_MiscUtility
     }
 
     /**
-     * Characters used in every system-generated temporary password: capitals
-     * and digits only, minus the look-alikes 0/O, 1/I/L and U/V. Passwords get
-     * read off emails and printed forms and typed by hand, so legibility wins.
+     * Characters used in random temporary passwords: capitals and digits only,
+     * minus the look-alikes 0/O, 1/I/L and U/V. Passwords get read off emails
+     * and typed by hand, so legibility wins. (Seeded ones keep the v1 formula;
+     * see generateTempPassword().)
      */
     public const TEMP_PASSWORD_ALPHABET = '23456789ABCDEFGHJKMNPQRSTVWXYZ';
 
@@ -881,18 +882,25 @@ final class Pt_Commons_MiscUtility
      * The one generator for system-issued temporary passwords (admin resets,
      * bulk resets, CLI resets, TB forms, PTCC exports).
      *
-     * Without a seed the password is random. With a seed (participant ID,
-     * PTCC email) it is deterministic: same seed → same password until the
-     * security.salt or the version tag below changes.
-     *
-     * Always contains at least 2 digits and 2 letters, so it also passes
+     * Without a seed the password is random: capitals and digits, always with
+     * at least 2 of each, so it also passes
      * Application_Service_Common::validatePassword().
      *
+     * With a seed (participant ID, PTCC email) it is deterministic and keeps the
+     * original v1 formula: those passwords are printed on TB forms and sent to
+     * PTCC managers, and regenerating a form must give back the same password
+     * the lab already holds. Changing the formula is a password rotation for
+     * every lab still on its temp password, so do it only with new forms.
+     *
      * @param string|null $seed   null = random; otherwise the deterministic key
-     * @param int         $length 8–20 chars
+     * @param int         $length 8–20 chars (8–10 when seeded)
      */
     public static function generateTempPassword(?string $seed = null, int $length = 10): string
     {
+        if ($seed !== null) {
+            return self::seededTempPassword($seed, $length);
+        }
+
         $length = max(8, min($length, 20));
         $alphabet = self::TEMP_PASSWORD_ALPHABET;
         $size = strlen($alphabet);
@@ -900,24 +908,8 @@ final class Pt_Commons_MiscUtility
         // character is equally likely.
         $limit = 256 - (256 % $size);
 
-        $salt = '';
-        $normSeed = '';
-        if ($seed !== null) {
-            $config = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
-            $salt = (string) ($config->security->salt ?? '');
-            if (strlen($salt) < 16) { // ensure some entropy
-                throw new RuntimeException('security.salt missing/too short');
-            }
-            $normSeed = strtolower(trim($seed));
-        }
-
-        // v2 = TEMP_PASSWORD_ALPHABET (v1 was mixed-case base64); bump to rotate.
-        $version = 'v2';
-
-        for ($attempt = 0; ; $attempt++) {
-            $bytes = $seed === null
-                ? random_bytes(32)
-                : hash_hmac('sha256', $version . '|' . $attempt . '|' . $normSeed, $salt, true);
+        while (true) {
+            $bytes = random_bytes(32);
 
             $password = '';
             foreach (str_split($bytes) as $byte) {
@@ -939,6 +931,32 @@ final class Pt_Commons_MiscUtility
                 return $password;
             }
         }
+    }
+
+    /**
+     * The deterministic temp password for a participant ID or PTCC email: the
+     * v1 formula (HMAC of the seed with security.salt, base64, look-alikes
+     * removed). Kept byte-for-byte so passwords already printed or sent still
+     * match what is stored.
+     */
+    private static function seededTempPassword(string $seed, int $length): string
+    {
+        $length = max(8, min($length, 10));
+        $config = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
+        $salt = (string) ($config->security->salt ?? '');
+        if (strlen($salt) < 16) { // ensure some entropy
+            throw new RuntimeException('security.salt missing/too short');
+        }
+
+        $raw = hash_hmac('sha256', 'v1|' . strtolower(trim($seed)), $salt, true);
+        $b64url = rtrim(strtr(base64_encode($raw), '+/', '-_'), '=');
+        $clean = preg_replace('/[^A-Za-z0-9]/', '', $b64url);
+        $clean = str_replace(['0', 'O', 'o', '1', 'I', 'l'], '', $clean);
+        if (strlen($clean) < $length) {
+            $clean = str_replace(['0', '1'], '', bin2hex($raw));
+        }
+
+        return substr($clean, 0, $length);
     }
 
     /** Lazily-created global console output */
