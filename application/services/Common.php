@@ -1,7 +1,5 @@
 <?php
 
-use Hackzilla\PasswordGenerator\Generator\ComputerPasswordGenerator;
-use Hackzilla\PasswordGenerator\Generator\RequirementPasswordGenerator;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
@@ -1382,20 +1380,10 @@ class Application_Service_Common
 
     public function generatePassword()
     {
-
-        $generator = new RequirementPasswordGenerator();
-        $generator
-            ->setLength(12)
-            ->setOptionValue(ComputerPasswordGenerator::OPTION_UPPER_CASE, true)
-            ->setOptionValue(ComputerPasswordGenerator::OPTION_LOWER_CASE, true)
-            ->setOptionValue(ComputerPasswordGenerator::OPTION_NUMBERS, true)
-            ->setOptionValue(ComputerPasswordGenerator::OPTION_SYMBOLS, false)
-            ->setMinimumCount(ComputerPasswordGenerator::OPTION_UPPER_CASE, 2)
-            ->setMinimumCount(ComputerPasswordGenerator::OPTION_LOWER_CASE, 2)
-            ->setMinimumCount(ComputerPasswordGenerator::OPTION_NUMBERS, 2);
-
-        $password = $generator->generatePassword();
-        return $password;
+        // Never shorter than the configured participant password minimum,
+        // or the admin reset form would reject its own generated value.
+        $minLength = (int) self::getConfig('participant_login_password_length');
+        return Pt_Commons_MiscUtility::generateTempPassword(null, max(10, $minLength));
     }
 
     public function checkAssayInvalid($sid = null, $pid = null, $status = false)

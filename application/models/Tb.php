@@ -1592,7 +1592,22 @@ class Application_Model_Tb
                 // back to the DB. The credential printed on the form is the same
                 // HMAC value already stored, so it stays valid; skipping the write
                 // also avoids a redundant password-reset audit log row per run.
-                if ($resetPasswordInDb === true) {
+                // Exception: an account still on its temp password whose hash no
+                // longer matches (the generator changed since the last full run)
+                // gets the new value written, so the reprint isn't a dead login.
+                // Accounts that already chose their own password are never touched.
+                $needsWrite = $resetPasswordInDb === true;
+                if (!$needsWrite) {
+                    $stored = $this->db->fetchRow(
+                        $this->db->select()
+                            ->from('data_manager', ['password', 'force_password_reset'])
+                            ->where('primary_email = ?', $prefix . $result[0]['unique_identifier'])
+                    );
+                    $needsWrite = !empty($stored)
+                        && (int) $stored['force_password_reset'] === 1
+                        && !password_verify($tempPassword, (string) $stored['password']);
+                }
+                if ($needsWrite) {
                     $dataManagerService->resetPasswordFromAdmin([
                         'primaryMail' => $prefix . $result[0]['unique_identifier'],
                         'password' => $tempPassword,

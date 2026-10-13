@@ -47,19 +47,6 @@ try {
         return password_hash($password, PASSWORD_BCRYPT, ['cost' => 14]);
     }
 
-    function generateSecurePassword(int $length = 12): string
-    {
-        $chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*';
-        $password = '';
-        $max = strlen($chars) - 1;
-
-        for ($i = 0; $i < $length; $i++) {
-            $password .= $chars[random_int(0, $max)];
-        }
-
-        return $password;
-    }
-
     function getAdminByEmail($db, string $email): ?array
     {
         $user = $db->fetchRow(
@@ -200,7 +187,7 @@ try {
 
     $newPassword = null;
     if ($generatePassword) {
-        $newPassword = generateSecurePassword(12);
+        $newPassword = Pt_Commons_MiscUtility::generateTempPassword(null, 12);
         $io->text("Generated password: <comment>$newPassword</comment>");
     } elseif ($passwordArg !== null) {
         $newPassword = trim((string) $passwordArg);

@@ -48,19 +48,6 @@ try {
         return password_hash($password, PASSWORD_BCRYPT, ['cost' => 14]);
     }
 
-    function generateSecurePassword(int $length = 12): string
-    {
-        $chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-        $password = '';
-        $max = strlen($chars) - 1;
-
-        for ($i = 0; $i < $length; $i++) {
-            $password .= $chars[random_int(0, $max)];
-        }
-
-        return $password;
-    }
-
     /**
      * Get data managers mapped to a participant code
      */
@@ -265,7 +252,7 @@ try {
 
     $newPassword = null;
     if ($generatePassword) {
-        $newPassword = generateSecurePassword(12);
+        $newPassword = Pt_Commons_MiscUtility::generateTempPassword(null, 12);
     } elseif ($passwordArg !== null) {
         $newPassword = trim((string) $passwordArg);
         if (strlen($newPassword) < 6) {
@@ -276,7 +263,7 @@ try {
         // Ask if user wants to auto-generate
         if ($io->confirm('Auto-generate a secure password?', true)) {
             $generatePassword = true;
-            $newPassword = generateSecurePassword(12);
+            $newPassword = Pt_Commons_MiscUtility::generateTempPassword(null, 12);
         }
     }
 

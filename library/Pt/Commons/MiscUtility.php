@@ -871,46 +871,74 @@ final class Pt_Commons_MiscUtility
     }
 
     /**
-     * Generate a deterministic temporary password for a participant ID.
-     *
-     * Same ID → Same password (until the secret or version are changed).
-     *
-     * @param string $participantId
-     * @param int    $length  8–10 chars
-     * @return string
+     * Characters used in every system-generated temporary password: capitals
+     * and digits only, minus the look-alikes 0/O, 1/I/L and U/V. Passwords get
+     * read off emails and printed forms and typed by hand, so legibility wins.
      */
-    public static function generateTempPassword(string $participantId, int $length = 10): string
+    public const TEMP_PASSWORD_ALPHABET = '23456789ABCDEFGHJKMNPQRSTVWXYZ';
+
+    /**
+     * The one generator for system-issued temporary passwords (admin resets,
+     * bulk resets, CLI resets, TB forms, PTCC exports).
+     *
+     * Without a seed the password is random. With a seed (participant ID,
+     * PTCC email) it is deterministic: same seed → same password until the
+     * security.salt or the version tag below changes.
+     *
+     * Always contains at least 2 digits and 2 letters, so it also passes
+     * Application_Service_Common::validatePassword().
+     *
+     * @param string|null $seed   null = random; otherwise the deterministic key
+     * @param int         $length 8–20 chars
+     */
+    public static function generateTempPassword(?string $seed = null, int $length = 10): string
     {
-        $length = max(8, min($length, 10));
-        $normId = strtolower(trim($participantId));
+        $length = max(8, min($length, 20));
+        $alphabet = self::TEMP_PASSWORD_ALPHABET;
+        $size = strlen($alphabet);
+        // Drop bytes at or above the last full multiple of $size so every
+        // character is equally likely.
+        $limit = 256 - (256 % $size);
 
-        // Load from application.ini
-        $config = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
-        $salt = (string) ($config->security->salt ?? '');
-
-        if (strlen($salt) < 16) { // ensure some entropy
-            throw new RuntimeException('security.salt missing/too short');
+        $salt = '';
+        $normSeed = '';
+        if ($seed !== null) {
+            $config = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
+            $salt = (string) ($config->security->salt ?? '');
+            if (strlen($salt) < 16) { // ensure some entropy
+                throw new RuntimeException('security.salt missing/too short');
+            }
+            $normSeed = strtolower(trim($seed));
         }
 
-        // Version tag so you can rotate later
-        $version = 'v1';
+        // v2 = TEMP_PASSWORD_ALPHABET (v1 was mixed-case base64); bump to rotate.
+        $version = 'v2';
 
-        // HMAC with salt
-        $raw = hash_hmac('sha256', $version . '|' . $normId, $salt, true);
+        for ($attempt = 0; ; $attempt++) {
+            $bytes = $seed === null
+                ? random_bytes(32)
+                : hash_hmac('sha256', $version . '|' . $attempt . '|' . $normSeed, $salt, true);
 
-        // Base64 encode
-        $b64url = rtrim(strtr(base64_encode($raw), '+/', '-_'), '=');
+            $password = '';
+            foreach (str_split($bytes) as $byte) {
+                $n = ord($byte);
+                if ($n >= $limit) {
+                    continue;
+                }
+                $password .= $alphabet[$n % $size];
+                if (strlen($password) === $length) {
+                    break;
+                }
+            }
 
-        // Keep only alphanumeric, strip confusing ones
-        $clean = preg_replace('/[^A-Za-z0-9]/', '', $b64url);
-        $clean = str_replace(['0', 'O', 'o', '1', 'I', 'l'], '', $clean);
-
-        // Fallback: if too short, use hex
-        if (strlen($clean) < $length) {
-            $clean = str_replace(['0', '1'], '', bin2hex($raw));
+            if (
+                strlen($password) === $length
+                && preg_match_all('/[0-9]/', $password) >= 2
+                && preg_match_all('/[A-Z]/', $password) >= 2
+            ) {
+                return $password;
+            }
         }
-
-        return substr($clean, 0, $length);
     }
 
     /** Lazily-created global console output */
