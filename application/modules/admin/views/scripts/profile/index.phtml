@@ -214,7 +214,7 @@ $initials  = strtoupper(
                             <label for="primaryEmail"><?= $this->translate->_("Primary Email"); ?></label>
                             <input type="email" id="primaryEmail" name="primaryEmail"
                                 class="form-control isEmail"
-                                placeholder="<?= $this->htmlTranslate("e.g. primary@mail.com"); ?>"
+                                placeholder="<?= $this->htmlTranslate("e.g."); ?> primary@mail.com"
                                 title="<?= $this->translate->_("Please enter a valid primary email"); ?>"
                                 value="<?= htmlspecialchars($result['primary_email'] ?? ''); ?>">
                             <small class="text-muted"><?= $this->translate->_("Used for account login and mail notifications."); ?></small>
@@ -223,7 +223,7 @@ $initials  = strtoupper(
                             <label for="secondaryEmail"><?= $this->translate->_("Secondary Email"); ?></label>
                             <input type="email" id="secondaryEmail" name="secondaryEmail"
                                 class="form-control isEmail"
-                                placeholder="<?= $this->htmlTranslate("e.g. backup@mail.com"); ?>"
+                                placeholder="<?= $this->htmlTranslate("e.g."); ?> backup@mail.com"
                                 title="<?= $this->translate->_("Please enter a valid secondary email"); ?>"
                                 value="<?= htmlspecialchars($result['secondary_email'] ?? ''); ?>">
                             <small class="text-muted"><?= $this->translate->_("Used for account recovery notifications."); ?></small>

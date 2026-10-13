@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: e-PT\n"
 "Report-Msgid-Bugs-To: support@deforay.com\n"
-"POT-Creation-Date: 2026-10-13 18:36+0530\n"
+"POT-Creation-Date: 2026-10-13 18:48+0530\n"
 "PO-Revision-Date: 2022-06-07 20:34+0530\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -4425,7 +4425,11 @@ msgid "Actor email"
 msgstr ""
 
 #: application/modules/admin/views/scripts/audit-log/index.phtml:613
-msgid "e.g. dm@lab.org"
+#: application/modules/admin/views/scripts/global-config/index.phtml:1246
+#: application/modules/admin/views/scripts/login/index.phtml:191
+#: application/modules/admin/views/scripts/profile/index.phtml:217
+#: application/modules/admin/views/scripts/profile/index.phtml:226
+msgid "e.g."
 msgstr ""
 
 #: application/modules/admin/views/scripts/audit-log/index.phtml:616
@@ -11904,10 +11908,6 @@ msgstr ""
 msgid "From Email"
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1246
-msgid "e.g., noreply@example.com"
-msgstr ""
-
 #: application/modules/admin/views/scripts/global-config/index.phtml:1251
 msgid "CC"
 msgstr ""
@@ -13111,10 +13111,6 @@ msgstr ""
 #, fuzzy
 msgid "Please enter your registered email"
 msgstr "Change Password"
-
-#: application/modules/admin/views/scripts/login/index.phtml:191
-msgid "eg. mymail@mail.com"
-msgstr ""
 
 #: application/modules/admin/views/scripts/login/index.phtml:195
 #: application/views/scripts/auth/login.phtml:131
@@ -14768,10 +14764,6 @@ msgstr "Change Password"
 msgid "Enter your family name."
 msgstr ""
 
-#: application/modules/admin/views/scripts/profile/index.phtml:217
-msgid "e.g. primary@mail.com"
-msgstr ""
-
 #: application/modules/admin/views/scripts/profile/index.phtml:218
 #, fuzzy
 msgid "Please enter a valid primary email"
@@ -14779,10 +14771,6 @@ msgstr "Change Password"
 
 #: application/modules/admin/views/scripts/profile/index.phtml:220
 msgid "Used for account login and mail notifications."
-msgstr ""
-
-#: application/modules/admin/views/scripts/profile/index.phtml:226
-msgid "e.g. backup@mail.com"
 msgstr ""
 
 #: application/modules/admin/views/scripts/profile/index.phtml:227

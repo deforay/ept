@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ePT\n"
 "Report-Msgid-Bugs-To: support@deforay.com\n"
-"POT-Creation-Date: 2026-10-13 18:36+0530\n"
+"POT-Creation-Date: 2026-10-13 18:48+0530\n"
 "PO-Revision-Date: 2026-07-07 08:33+0530\n"
 "Last-Translator: Amit <amit@deforay.com>\n"
 "Language-Team: \n"
@@ -4510,8 +4510,12 @@ msgid "Actor email"
 msgstr "Email của người thực hiện"
 
 #: application/modules/admin/views/scripts/audit-log/index.phtml:613
-msgid "e.g. dm@lab.org"
-msgstr "Ví dụ: dm@lab.org"
+#: application/modules/admin/views/scripts/global-config/index.phtml:1246
+#: application/modules/admin/views/scripts/login/index.phtml:191
+#: application/modules/admin/views/scripts/profile/index.phtml:217
+#: application/modules/admin/views/scripts/profile/index.phtml:226
+msgid "e.g."
+msgstr "VD:"
 
 #: application/modules/admin/views/scripts/audit-log/index.phtml:616
 #: application/modules/admin/views/scripts/files-for-participants/index.phtml:480
@@ -12073,10 +12077,6 @@ msgstr "ví dụ: Hệ thống ePT"
 msgid "From Email"
 msgstr "Email người gửi"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1246
-msgid "e.g., noreply@example.com"
-msgstr "Ví dụ: noreply@example.com"
-
 #: application/modules/admin/views/scripts/global-config/index.phtml:1251
 msgid "CC"
 msgstr "CC"
@@ -13256,10 +13256,6 @@ msgstr "PHIÊN BẢN ĐÀO TẠO"
 #: application/modules/admin/views/scripts/login/index.phtml:191
 msgid "Please enter your registered email"
 msgstr "Vui lòng nhập email đã đăng ký của bạn"
-
-#: application/modules/admin/views/scripts/login/index.phtml:191
-msgid "eg. mymail@mail.com"
-msgstr "vd. mymail@mail.com"
 
 #: application/modules/admin/views/scripts/login/index.phtml:195
 #: application/views/scripts/auth/login.phtml:131
@@ -14828,10 +14824,6 @@ msgstr "Vui lòng nhập họ của bạn"
 msgid "Enter your family name."
 msgstr "Hãy nhập họ của bạn."
 
-#: application/modules/admin/views/scripts/profile/index.phtml:217
-msgid "e.g. primary@mail.com"
-msgstr "Ví dụ: primary@mail.com"
-
 #: application/modules/admin/views/scripts/profile/index.phtml:218
 msgid "Please enter a valid primary email"
 msgstr "Vui lòng nhập địa chỉ email chính hợp lệ"
@@ -14839,10 +14831,6 @@ msgstr "Vui lòng nhập địa chỉ email chính hợp lệ"
 #: application/modules/admin/views/scripts/profile/index.phtml:220
 msgid "Used for account login and mail notifications."
 msgstr "Được sử dụng để đăng nhập tài khoản và nhận thông báo qua email."
-
-#: application/modules/admin/views/scripts/profile/index.phtml:226
-msgid "e.g. backup@mail.com"
-msgstr "Ví dụ: backup@mail.com"
 
 #: application/modules/admin/views/scripts/profile/index.phtml:227
 msgid "Please enter a valid secondary email"
@@ -24461,6 +24449,21 @@ msgstr ""
 #: scheduled-jobs/report-layouts/summary-layouts/vietnam/dts.phtml:854
 msgid "No participants"
 msgstr "Không có đơn vị tham gia"
+
+#~ msgid "e.g. dm@lab.org"
+#~ msgstr "Ví dụ: dm@lab.org"
+
+#~ msgid "e.g., noreply@example.com"
+#~ msgstr "Ví dụ: noreply@example.com"
+
+#~ msgid "eg. mymail@mail.com"
+#~ msgstr "vd. mymail@mail.com"
+
+#~ msgid "e.g. primary@mail.com"
+#~ msgstr "Ví dụ: primary@mail.com"
+
+#~ msgid "e.g. backup@mail.com"
+#~ msgstr "Ví dụ: backup@mail.com"
 
 #~ msgid "you@example.com"
 #~ msgstr "you@example.com"

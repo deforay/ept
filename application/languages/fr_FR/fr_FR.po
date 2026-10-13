@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ePT\n"
 "Report-Msgid-Bugs-To: support@deforay.com\n"
-"POT-Creation-Date: 2026-10-13 18:36+0530\n"
+"POT-Creation-Date: 2026-10-13 18:48+0530\n"
 "PO-Revision-Date: 2026-07-07 08:32+0530\n"
 "Last-Translator: Amit <amit@deforay.com>\n"
 "Language-Team: ePT\n"
@@ -4538,8 +4538,12 @@ msgid "Actor email"
 msgstr "E-mail de l'acteur"
 
 #: application/modules/admin/views/scripts/audit-log/index.phtml:613
-msgid "e.g. dm@lab.org"
-msgstr "par exemple : dm@lab.org"
+#: application/modules/admin/views/scripts/global-config/index.phtml:1246
+#: application/modules/admin/views/scripts/login/index.phtml:191
+#: application/modules/admin/views/scripts/profile/index.phtml:217
+#: application/modules/admin/views/scripts/profile/index.phtml:226
+msgid "e.g."
+msgstr "p. ex."
 
 #: application/modules/admin/views/scripts/audit-log/index.phtml:616
 #: application/modules/admin/views/scripts/files-for-participants/index.phtml:480
@@ -12167,10 +12171,6 @@ msgstr "Par exemple, système ePT"
 msgid "From Email"
 msgstr "E-mail de l'expéditeur"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1246
-msgid "e.g., noreply@example.com"
-msgstr "Par exemple, noreply@example.com"
-
 #: application/modules/admin/views/scripts/global-config/index.phtml:1251
 msgid "CC"
 msgstr "CC"
@@ -13366,10 +13366,6 @@ msgstr "INSTANCE DE FORMATION"
 #: application/modules/admin/views/scripts/login/index.phtml:191
 msgid "Please enter your registered email"
 msgstr "Veuillez saisir votre adresse e-mail enregistrée"
-
-#: application/modules/admin/views/scripts/login/index.phtml:191
-msgid "eg. mymail@mail.com"
-msgstr "ex. mymail@mail.com"
 
 #: application/modules/admin/views/scripts/login/index.phtml:195
 #: application/views/scripts/auth/login.phtml:131
@@ -14951,10 +14947,6 @@ msgstr "Veuillez saisir votre nom de famille"
 msgid "Enter your family name."
 msgstr "Entrez votre nom de famille."
 
-#: application/modules/admin/views/scripts/profile/index.phtml:217
-msgid "e.g. primary@mail.com"
-msgstr "par exemple : primary@mail.com"
-
 #: application/modules/admin/views/scripts/profile/index.phtml:218
 msgid "Please enter a valid primary email"
 msgstr "Veuillez saisir une adresse e-mail principale valide"
@@ -14962,10 +14954,6 @@ msgstr "Veuillez saisir une adresse e-mail principale valide"
 #: application/modules/admin/views/scripts/profile/index.phtml:220
 msgid "Used for account login and mail notifications."
 msgstr "Utilisé pour la connexion au compte et les notifications par e-mail."
-
-#: application/modules/admin/views/scripts/profile/index.phtml:226
-msgid "e.g. backup@mail.com"
-msgstr "par exemple : backup@mail.com"
 
 #: application/modules/admin/views/scripts/profile/index.phtml:227
 msgid "Please enter a valid secondary email"
@@ -20918,10 +20906,11 @@ msgstr "Veuillez saisir le mot de passe pour confirmer"
 #: application/views/scripts/recency/response.phtml:748
 #: application/views/scripts/vl/response.phtml:1276
 msgid "The testing date cannot be before the shipment receipt date"
-msgstr "La date du test ne peut pas être antérieure à la date de réception de l'expédition"
+msgstr ""
 "La date du test ne peut pas être antérieure à la date de réception de "
-"l'expéditionLa date du test doit être postérieure à la date de réception de "
-"l'expédition"
+"l'expéditionLa date du test ne peut pas être antérieure à la date de "
+"réception de l'expéditionLa date du test doit être postérieure à la date de "
+"réception de l'expédition"
 
 #: application/views/scripts/covid19/response.phtml:1278
 #: application/views/scripts/covid19/response.phtml:1302
@@ -21190,8 +21179,10 @@ msgstr ""
 #: application/views/scripts/custom-test/response.phtml:869
 #: application/views/scripts/tb/response.phtml:851
 msgid "The testing date cannot be before the panel receipt date"
-msgstr "La date du test ne peut pas être antérieure à la date de réception du panel"
-"La date du test ne peut pas être antérieure à la date de réception du panel"
+msgstr ""
+"La date du test ne peut pas être antérieure à la date de réception du "
+"panelLa date du test ne peut pas être antérieure à la date de réception du "
+"panel"
 
 #: application/views/scripts/custom-test/response.phtml:874
 msgid "Please ensure all SPC and Probe values are valid numbers"
@@ -24650,6 +24641,21 @@ msgstr ""
 #: scheduled-jobs/report-layouts/summary-layouts/vietnam/dts.phtml:854
 msgid "No participants"
 msgstr "Aucun participant"
+
+#~ msgid "e.g. dm@lab.org"
+#~ msgstr "par exemple : dm@lab.org"
+
+#~ msgid "e.g., noreply@example.com"
+#~ msgstr "Par exemple, noreply@example.com"
+
+#~ msgid "eg. mymail@mail.com"
+#~ msgstr "ex. mymail@mail.com"
+
+#~ msgid "e.g. primary@mail.com"
+#~ msgstr "par exemple : primary@mail.com"
+
+#~ msgid "e.g. backup@mail.com"
+#~ msgstr "par exemple : backup@mail.com"
 
 #~ msgid "you@example.com"
 #~ msgstr "you@example.com"
