@@ -103,9 +103,12 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             ->from(['pmm' => 'participant_manager_map'])
             ->where('pmm.participant_id = ?', $participantId);
 
-        if (isset($dmDb) && !empty($dmDb) && $dmDb != '') {
-            $sql = $sql->where('pmm.dm_id = ?', $dmId);
+        // Without a data manager there is nobody to grant access to. ($dmDb, a typo,
+        // used to skip this filter, so any data manager passed for any mapped lab.)
+        if (empty($dmId)) {
+            return false;
         }
+        $sql = $sql->where('pmm.dm_id = ?', $dmId);
         $row = $this->getAdapter()->fetchRow($sql);
         return $row !== false;
     }

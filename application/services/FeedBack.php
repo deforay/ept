@@ -18,10 +18,10 @@ class Application_Service_FeedBack
         $this->tempUploadDirectory = realpath(TEMP_UPLOAD_PATH);
         $this->translator = Zend_Registry::get('translate');
     }
-    public function getFeedBackQuestions($sid)
+    public function getFeedBackQuestions($sid, $mapId)
     {
         $db = new Application_Model_DbTable_FeedBackTable();
-        return $db->fetchFeedBackQuestions($sid);
+        return $db->fetchFeedBackQuestions($sid, $mapId);
     }
 
     public function getFeedBackQuestionsById($id, $type = '')
@@ -276,7 +276,16 @@ class Application_Service_FeedBack
     {
         $authNameSpace = new Zend_Session_Namespace('administrators');
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        foreach ($params['questionId'] as $key => $q) {
+        // Only answers to questions on this shipment's form
+        $formQuestions = array_map('intval', $db->fetchCol(
+            $db->select()
+                ->from('r_participant_feedback_form_question_map', 'question_id')
+                ->where('shipment_id = ?', (int) $params['shipmentId'])
+        ));
+        foreach ((array) ($params['questionId'] ?? []) as $key => $q) {
+            if (!in_array((int) $q, $formQuestions, true)) {
+                continue;
+            }
             if (isset($params['answer'][$key]['date']) && !empty($params['answer'][$key]['date'])) {
                 $answer = Pt_Commons_DateUtility::isoDateFormat($params['answer'][$key]['date']);
             } else {

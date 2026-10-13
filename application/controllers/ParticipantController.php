@@ -1119,22 +1119,49 @@ class ParticipantController extends Zend_Controller_Action
         $feedbackService = new Application_Service_FeedBack();
         /** @var Zend_Controller_Request_Http $request */
         $request = $this->getRequest();
+        $alertMsg = new Zend_Session_Namespace('alertSpace');
+
+        // The map row ties the lab to the shipment; the ids must all name that one row.
+        // (PreSetter has already checked the lab is this data manager's.)
+        if ($request->isPost()) {
+            $sid = (int) $request->getPost('shipmentId');
+            $pid = (int) $request->getPost('participantId');
+            $mid = (int) $request->getPost('mapId');
+        } else {
+            $sid = (int) $request->getParam('sid');
+            $pid = (int) $request->getParam('pid');
+            $mid = (int) $request->getParam('mid');
+        }
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $mapRow = $db->fetchRow(
+            $db->select()
+                ->from('shipment_participant_map', ['map_id'])
+                ->where('map_id = ?', $mid)
+                ->where('shipment_id = ?', $sid)
+                ->where('participant_id = ?', $pid)
+        );
+        if (empty($mapRow)) {
+            $this->redirect('/participant/report');
+            return;
+        }
+        if (!$feedbackService->checkExpiry($sid)) {
+            $alertMsg->message = 'Feedback form expired!';
+            $this->redirect('/participant/report');
+            return;
+        }
+
         if ($request->isPost()) {
             $params = $this->getAllParams();
-
+            $params['shipmentId'] = $sid;
+            $params['participantId'] = $pid;
+            $params['mapId'] = $mid;
             $this->view->response = $feedbackService->saveFeedBackForms($params);
             $this->redirect('/participant/report');
         } else {
-            $alertMsg = new Zend_Session_Namespace('alertSpace');
-            $this->view->sID = $sid = $request->getParam('sid');
-            $this->view->pID = $pid = $request->getParam('pid');
-            $this->view->mID = $mid = $request->getParam('mid');
-            $checkExpiry = $feedbackService->checkExpiry($sid);
-            if (!$checkExpiry) {
-                $alertMsg->message = 'Feedback form expired!';
-                $this->redirect('/participant/report');
-            }
-            $this->view->questions  = $result = $feedbackService->getFeedBackQuestions($sid);
+            $this->view->sID = $sid;
+            $this->view->pID = $pid;
+            $this->view->mID = $mid;
+            $this->view->questions = $result = $feedbackService->getFeedBackQuestions($sid, $mid);
             if (count($result['result']) == 0) {
                 $alertMsg->message = 'Question not available for now. Please try again later.';
                 $this->redirect('/participant/report');

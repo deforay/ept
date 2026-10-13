@@ -254,6 +254,28 @@ class Pt_Plugins_PreSetter extends Zend_Controller_Plugin_Abstract
             return;
         }
 
+        // A data manager only ever works on the labs mapped to them. Every front-end page
+        // that takes a lab or shipment-map id from the request is checked here, so a
+        // changed id in a URL or form can't open, change or delete another lab's data.
+        if ($request->getModuleName() == 'default' && !$loggedInAsAdmin) {
+            $dmId = $loggedInAsParticipant ? (int) $authNameSpace->dm_id : 0;
+            if (!self::participantScopeAllowed($request, $dmId)) {
+                if ($request->isXmlHttpRequest()) {
+                    $response = $this->getResponse();
+                    $response->setHttpResponseCode(403)->setBody('');
+                    $response->sendResponse();
+                    exit;
+                }
+                $translate = Zend_Registry::get('translate');
+                $alertMsg = new Zend_Session_Namespace('alertSpace');
+                $alertMsg->message = $translate->_('You do not have access to that participant.');
+                $response = $this->getResponse();
+                $response->setRedirect($dmId > 0 ? '/participant/dashboard' : '/auth/login', 302);
+                $response->sendResponse();
+                exit;
+            }
+        }
+
         if (
             $request->getModuleName() == 'default' &&
             $request->getControllerName() != 'shipment-form'  &&
@@ -288,6 +310,111 @@ class Pt_Plugins_PreSetter extends Zend_Controller_Plugin_Abstract
             }
             $layout->setLayout('admin');
         }
+    }
+
+    /** Front-end test controllers whose `pid` is a participant id */
+    private const SCHEME_CONTROLLERS = ['dts', 'vl', 'eid', 'tb', 'dbs', 'recency', 'covid19', 'custom-test'];
+
+    /**
+     * Whether every lab (participant) and shipment-map id in the request belongs to
+     * this data manager. `participantId`, `smid` and `mapId` are ids wherever they
+     * appear; `pid` and `mid` only on the pages where they are (elsewhere `pid` is a
+     * typed Lab ID, for example). Ids may be plain or base64. A request without these
+     * params is allowed; one with them and no data manager ($dmId 0) is not, and
+     * neither is the admin-only `from=admin` view.
+     */
+    private static function participantScopeAllowed(Zend_Controller_Request_Abstract $request, int $dmId): bool
+    {
+        $controller = $request->getControllerName();
+        $action = $request->getActionName();
+
+        if ($request->getParam('from') === 'admin') {
+            return false;
+        }
+        // The public contact form's participantId is whatever the visitor typed
+        if ($controller === 'index') {
+            return true;
+        }
+
+        $participantParams = ['participantId'];
+        $mapParams = ['smid', 'mapId'];
+        if (
+            in_array($controller, self::SCHEME_CONTROLLERS, true)
+            || ($controller === 'participant' && in_array($action, ['feed-back', 'certificate', 'download-tb'], true))
+            || ($controller === 'shipment-form' && $action === 'tb-download')
+        ) {
+            $participantParams[] = 'pid';
+        }
+        if ($controller === 'common' || ($controller === 'participant' && $action === 'feed-back')) {
+            $mapParams[] = 'mid';
+        }
+
+        $participantIds = self::idsFromParams($request, $participantParams);
+        $mapIds = self::idsFromParams($request, $mapParams);
+        if ($participantIds === null || $mapIds === null) {
+            return false;
+        }
+
+        if (empty($participantIds) && empty($mapIds)) {
+            return true;
+        }
+        if ($dmId <= 0) {
+            return false;
+        }
+
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $allowed = array_map('intval', $db->fetchCol(
+            $db->select()->from('participant_manager_map', 'participant_id')->where('dm_id = ?', $dmId)
+        ));
+        if (!empty($mapIds)) {
+            $mapped = $db->fetchCol(
+                $db->select()->from('shipment_participant_map', 'participant_id')->where('map_id IN (?)', array_unique($mapIds))
+            );
+            if (count($mapped) !== count(array_unique($mapIds))) {
+                // A map id that doesn't exist
+                return false;
+            }
+            $participantIds = array_merge($participantIds, array_map('intval', $mapped));
+        }
+
+        return empty(array_diff(array_unique($participantIds), $allowed));
+    }
+
+    /**
+     * The ids in these params, or null when one holds something that isn't an id
+     *
+     * @return int[]|null
+     */
+    private static function idsFromParams(Zend_Controller_Request_Abstract $request, array $names): ?array
+    {
+        $ids = [];
+        foreach ($names as $name) {
+            foreach ((array) $request->getParam($name) as $value) {
+                if (is_array($value) || trim((string) $value) === '') {
+                    continue;
+                }
+                $id = self::decodeId((string) $value);
+                if ($id === null) {
+                    return null;
+                }
+                $ids[] = $id;
+            }
+        }
+        return $ids;
+    }
+
+    /** A positive integer id, sent plain or base64-encoded */
+    private static function decodeId(string $value): ?int
+    {
+        $value = trim($value);
+        if (!ctype_digit($value)) {
+            $decoded = base64_decode($value, true);
+            if ($decoded === false || !ctype_digit($decoded)) {
+                return null;
+            }
+            $value = $decoded;
+        }
+        return (int) $value > 0 ? (int) $value : null;
     }
 
     /** Default idle limit when application.ini does not set session.idleMinutes */
