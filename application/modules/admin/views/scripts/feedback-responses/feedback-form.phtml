@@ -91,7 +91,7 @@ $rpffId = $this->result['feedback_form_results']['rpff_id'] ?? null;
                                     <?php } ?>
                                 </select>
                                 <span class="input-group-btn">
-                                    <button type="button" class="btn btn-default" onclick="copyFromShipment();"><i class="icon-copy"></i> <?= $this->translate->_("Copy"); ?></button>
+                                    <button type="button" class="btn btn-default" onclick="copyFeedbackFormFromShipment();"><i class="icon-copy"></i> <?= $this->translate->_("Copy"); ?></button>
                                 </span>
                             </div>
                             <small class="text-muted"><?= $this->translate->_("Copies that shipment's questions, content and audience into this form. The form you copy from is not changed."); ?></small>
@@ -341,7 +341,7 @@ $rpffId = $this->result['feedback_form_results']['rpff_id'] ?? null;
         fetchFormPayload(id, true);
     }
 
-    function copyFromShipment() {
+    function copyFeedbackFormFromShipment() {
         var sourceId = $('#copyFromShipment').val();
         if (!sourceId) {
             alert("<?= $this->jsTranslate("Please select the shipment to copy the feedback form from."); ?>");
