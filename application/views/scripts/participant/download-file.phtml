@@ -16,12 +16,22 @@ foreach ((array) $participantService->getParticipantUniqueIdentifier() as $row) 
     }
 }
 
-$filePath = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . $foldername . DIRECTORY_SEPARATOR . $filename;
+// Files sit at the folder root; the legacy certificates/ subfolder (where
+// distributed certificates still land, and where links made before the
+// files-for-participants rework pointed) is the fallback.
+$filePath = '';
+foreach (['', 'certificates' . DIRECTORY_SEPARATOR] as $subFolder) {
+    $candidate = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . $foldername . DIRECTORY_SEPARATOR . $subFolder . $filename;
+    if (is_file($candidate)) {
+        $filePath = $candidate;
+        break;
+    }
+}
 
 if (
     $filename == '' || $foldername == '' || $filename == '.' || $filename == '..'
     || !in_array($foldername, $allowedFolders, true)
-    || !is_file($filePath)
+    || $filePath === ''
 ) {
     header("location:/participant/file-downloads");
     exit();

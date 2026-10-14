@@ -344,22 +344,41 @@ class Application_Model_DbTable_ShipmentParticipantMap extends Zend_Db_Table_Abs
 
     public function fetchParticipantShipments($pId)
     {
-        $query = $this->getAdapter()->select()->distinct()->from(['sp' => 'shipment_participant_map'], ['shipment_id'])
-            ->join(['s' => 'shipment'], 's.shipment_id=sp.shipment_id', ['scheme_type', 'year' => 'YEAR(shipment_date)'])
-            ->join(['p' => 'participant'], 'p.participant_id=sp.participant_id', ['p.unique_identifier', 'p.participant_id'])
-            ->joinLeft(['cb' => 'certificate_batches'], 'sp.shipment_id IN(cb.shipment_ids)', ['batch_name'])
+        // One row per certificate batch the participant took part in, plus one
+        // per year/scheme with no batch. shipment_ids is a comma list, so it
+        // needs FIND_IN_SET: IN() casts the string to its first id only.
+        $query = $this->getAdapter()->select()
+            ->from(['sp' => 'shipment_participant_map'], ['shipment_id' => new Zend_Db_Expr('MIN(sp.shipment_id)')])
+            ->join(['s' => 'shipment'], 's.shipment_id=sp.shipment_id', ['scheme_type', 'year' => new Zend_Db_Expr('MIN(YEAR(s.shipment_date))')])
+            ->join(['p' => 'participant'], 'p.participant_id=sp.participant_id', [
+                'unique_identifier' => new Zend_Db_Expr('MAX(p.unique_identifier)'),
+                'participant_id' => new Zend_Db_Expr('MAX(p.participant_id)'),
+            ])
+            ->joinLeft(['cb' => 'certificate_batches'], "FIND_IN_SET(sp.shipment_id, REPLACE(cb.shipment_ids, ' ', '')) > 0", ['batch_name' => new Zend_Db_Expr('MAX(cb.batch_name)')])
             ->where('sp.participant_id = ?', $pId)
-            // ->where("s.scheme_type ='vl' OR s.scheme_type='eid'")
             ->where("sp.shipment_test_date!='0000-00-00'")
             ->where('s.cancelled_at IS NULL')
-            ->group('year')
-            ->group('s.scheme_type');
+            ->group('s.scheme_type')
+            ->group(new Zend_Db_Expr("COALESCE(CONCAT('batch-', cb.batch_id), YEAR(s.shipment_date))"));
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
         if (!empty($authNameSpace->dm_id)) {
             $query = $query->joinLeft(['pmm' => 'participant_manager_map'], 'pmm.participant_id=p.participant_id', [])
                 ->where('pmm.dm_id = ?', $authNameSpace->dm_id);
         }
-        return $this->getAdapter()->fetchAll($query);
+        $rows = $this->getAdapter()->fetchAll($query);
+
+        // A year/scheme row without a batch only says "no certificate"; drop it
+        // when a batch already covers that year and scheme.
+        $batched = [];
+        foreach ($rows as $row) {
+            if (!empty($row['batch_name'])) {
+                $batched[$row['year'] . '|' . $row['scheme_type']] = true;
+            }
+        }
+        return array_values(array_filter(
+            $rows,
+            fn ($row) => !empty($row['batch_name']) || !isset($batched[$row['year'] . '|' . $row['scheme_type']])
+        ));
     }
 
     public function updateShipmentByAPI($data, $dm, $params)

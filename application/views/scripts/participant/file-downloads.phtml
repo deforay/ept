@@ -21,8 +21,10 @@
 
                         // Files distributed by the admin live at the root of
                         // downloads/<unique_identifier>/ (and downloads/common/ for
-                        // everyone). Subfolders such as certificates/ have their own
-                        // pages and are skipped here.
+                        // everyone). The legacy certificates/ subfolder, where
+                        // distributed certificates still land, is listed as a
+                        // fallback; a root file wins on a name clash, matching
+                        // the lookup order in download-file.
                         $arrCount = count($this->download);
                         $this->download[$arrCount]['unique_identifier'] = 'common';
                         if (count($this->download) > 0) {
@@ -32,9 +34,14 @@
                                     $lab = Application_Model_DbTable_Participants::formatParticipantName($uniqueId); ?>
                                     <?php
                                     $files = [];
-                                    foreach (scandir($path) as $fileName) {
-                                        if ($fileName != '.' && $fileName != '..' && is_file($path . "/" . $fileName)) {
-                                            $files[$fileName] = filemtime($path . "/" . $fileName);
+                                    foreach ([$path, $path . DIRECTORY_SEPARATOR . 'certificates'] as $dir) {
+                                        if (!is_dir($dir)) {
+                                            continue;
+                                        }
+                                        foreach (scandir($dir) as $fileName) {
+                                            if ($fileName != '.' && $fileName != '..' && !isset($files[$fileName]) && is_file($dir . "/" . $fileName)) {
+                                                $files[$fileName] = filemtime($dir . "/" . $fileName);
+                                            }
                                         }
                                     }
                                     if (!empty($files)) {
@@ -44,7 +51,7 @@
                                                 <td><?php echo ucfirst($uniqueId['unique_identifier']); ?></td>
                                                 <td><?php echo ucfirst($lab); ?></td>
                                                 <td><a href="javascript:void(0);" onclick="getFile('<?php echo urlencode(base64_encode($descFile . '#######' . $uniqueId['unique_identifier'])); ?>');"><?php echo $this->escape($descFile); ?></a></td>
-                                                <td><?php echo date("d-M-Y H:i", filemtime($path . "/" . $descFile)); ?></td>
+                                                <td><?php echo date("d-M-Y H:i", $files[$descFile]); ?></td>
                                             </tr>
                         <?php }
                                     }
