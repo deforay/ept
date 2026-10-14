@@ -667,6 +667,7 @@ set_permissions() {
     local path=$1
     local mode=${2:-"full"}          # full | quick | minimal
     local wait_mode=${3:-"async"}    # async | sync
+    local skip=${4:-""}              # top-level entries under $path to leave out, space-separated
 
     # Who to grant (robust under sudo/non-interactive)
     local who="${SUDO_USER:-${USER:-root}}"
@@ -718,31 +719,40 @@ set_permissions() {
         fi
     '
 
+    # Pruned so the walk never descends into them. upgrade.sh skips vendor/:
+    # it is swapped out while this async pass runs, which made find print
+    # "No such file or directory" for every package, and it is chowned on its own.
+    local prune=()
+    local entry
+    for entry in $skip; do
+        prune+=(-path "${path%/}/${entry}" -prune -o)
+    done
+
     local pids=()
 
     case "$mode" in
         full)
             # Directories: rwx to user + www-data, plus default ACLs so new files inherit it
-            find "$path" -type d -not -path "*/.git*" -not -path "*/node_modules*" -print0 \
+            find "$path" "${prune[@]}" -type d -not -path "*/.git*" -not -path "*/node_modules*" -print0 \
             | xargs -0 -P "$PARALLEL" -I{} sh -c "$_acl_apply_cmd" _ {} "$DIR_ACL" &
             pids+=($!)
 
             # Files: rw to user + www-data
-            find "$path" -type f -not -path "*/.git*" -not -path "*/node_modules*" -print0 \
+            find "$path" "${prune[@]}" -type f -not -path "*/.git*" -not -path "*/node_modules*" -print0 \
             | xargs -0 -P "$PARALLEL" -I{} sh -c "$_acl_apply_cmd" _ {} "u:${who}:rw,u:www-data:rw" &
             pids+=($!)
         ;;
         quick)
-            find "$path" -type d -print0 \
+            find "$path" "${prune[@]}" -type d -print0 \
             | xargs -0 -P "$PARALLEL" -I{} sh -c "$_acl_apply_cmd" _ {} "$DIR_ACL" &
             pids+=($!)
 
-            find "$path" -type f -name "*.php" -print0 \
+            find "$path" "${prune[@]}" -type f -name "*.php" -print0 \
             | xargs -0 -P "$PARALLEL" -I{} sh -c "$_acl_apply_cmd" _ {} "u:${who}:rw,u:www-data:rw" &
             pids+=($!)
         ;;
         minimal)
-            find "$path" -type d -print0 \
+            find "$path" "${prune[@]}" -type d -print0 \
             | xargs -0 -P "$PARALLEL" -I{} sh -c "$_acl_apply_cmd" _ {} "$DIR_ACL" &
             pids+=($!)
         ;;

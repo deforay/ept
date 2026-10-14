@@ -840,8 +840,9 @@ upgrade_instance() {
     print success "Files copied to ${ept_path}."
     log_action "Files copied to ${ept_path}."
 
-    # Set proper permissions
-    set_permissions "${ept_path}" "quick"
+    # Set proper permissions. vendor/ is left out: the vendor step below swaps
+    # it while this pass runs in the background, and chowns it itself.
+    set_permissions "${ept_path}" "quick" "async" "vendor vendor.prev"
 
     # Run Composer Install as www-data
     print info "Running composer operations..."
