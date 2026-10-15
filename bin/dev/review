@@ -6,6 +6,12 @@
 #   bin/dev/review                 # review the working branch against master
 #   bin/dev/review <commit-sha>    # review one commit
 #   bin/dev/review --uncommitted   # review the working tree before committing
+#   bin/dev/review --since-last    # review every commit not yet recorded as reviewed
+#   bin/dev/review --pending       # list commits not yet recorded as reviewed
+#   bin/dev/review --mark [sha]    # record a commit (default HEAD) as reviewed
+#
+#   --verify may precede any of the review forms, and REVIEW_VERIFY=1 in .env makes it the
+#   default. It adds a second pass whose only job is to refute the first one's findings.
 #
 # This is a local developer tool. It is deliberately not wired into CI: a review pass
 # that gates a merge needs branch protection to mean anything, and master has none yet.
@@ -27,7 +33,7 @@ set -euo pipefail
 cd "$(dirname "$0")/../.."
 
 # Read from the untracked .env, so the reviewer's name lives on the machine rather than in
-# the repository. Only these two keys are read: something reading a diff has no business
+# the repository. Only the REVIEW_* keys are read: something reading a diff has no business
 # inheriting DB_PASSWORD or EPT_AI_API_KEY, which share that file.
 read_env() {
     [ -f .env ] || return 0
@@ -39,6 +45,97 @@ read_env() {
         sub(/^[^=]*=[[:space:]]*/, ""); sub(/[[:space:]]+$/, "");
         gsub(/^["'\'']|["'\'']$/, ""); print; exit }' .env
 }
+
+# --- The ledger -------------------------------------------------------------------------
+#
+# A record of which commits have already been through a review, so "where do I start?" is a
+# command rather than a memory. Deliberately NOT in the repository: committing it would put a
+# bookmark that changes on every review into the history of the code being reviewed, and
+# into every site's deployment. It lives inside the .git directory instead — local by
+# construction, never committed, never deployed. --git-common-dir rather than --git-dir, so
+# that every linked worktree shares one ledger instead of keeping its own.
+LEDGER="${REVIEW_LEDGER:-$(read_env REVIEW_LEDGER)}"
+[ -n "$LEDGER" ] || LEDGER="$(git rev-parse --git-common-dir)/reviewed-commits.txt"
+
+# Where an empty ledger starts. Reviewing the whole history to bootstrap would be days of
+# work nobody asked for; this is the recent past, and anything older is deemed shipped.
+BOOTSTRAP_COMMITS=10
+
+# The commits on HEAD that the ledger does not account for, oldest first.
+#
+# A set difference, not a high-water mark. Walking back from HEAD to the newest recorded
+# commit and stopping is simpler, but then marking one older commit out of order — a review
+# cut short and recorded by hand later — silently declares everything before it reviewed.
+# The window starts at the oldest recorded commit still on this branch — oldest in history,
+# not first in the file, since marks can be made in any order — and inside it every commit
+# is checked against the ledger individually. An entry that is not on HEAD's history (an
+# amend, a rebase, another worktree's branch) never matches, so it is ignored, not trusted.
+pending_commits() {
+    local start="" sha
+    if [ -f "$LEDGER" ]; then
+        start="$(git rev-list HEAD | awk -F'\t' 'NR == FNR { seen[$1] = 1; next } ($1 in seen) { last = $1 } END { print last }' "$LEDGER" -)"
+    fi
+
+    local range
+    if [ -n "$start" ]; then
+        range="${start}..HEAD"
+    elif git rev-parse -q --verify "HEAD~${BOOTSTRAP_COMMITS}" >/dev/null; then
+        range="HEAD~${BOOTSTRAP_COMMITS}..HEAD"
+    else
+        range="HEAD"
+    fi
+
+    # Merge commits are left out: what they bring in is the commits they join, which are
+    # listed in their own right.
+    git log --reverse --no-merges --format='%H' "$range" | while read -r sha; do
+        [ -f "$LEDGER" ] && grep -q "^$sha" "$LEDGER" && continue
+        echo "$sha"
+    done
+}
+
+mark_reviewed() {
+    local sha subject
+    sha="$(git rev-parse --verify "${1:-HEAD}^{commit}")"
+    if [ -f "$LEDGER" ] && grep -q "^$sha" "$LEDGER"; then
+        echo "Already recorded: $(git log -1 --format='%h %s' "$sha")"
+        return 0
+    fi
+    subject="$(git log -1 --format='%s' "$sha")"
+    printf '%s\t%s\t%s\n' "$sha" "$(date -u +%Y-%m-%dT%H:%M:%SZ)" "$subject" >> "$LEDGER"
+    echo "Recorded as reviewed: $(git log -1 --format='%h %s' "$sha")"
+}
+
+# --- Arguments --------------------------------------------------------------------------
+
+VERIFY="${REVIEW_VERIFY:-$(read_env REVIEW_VERIFY)}"
+if [ "${1:-}" = "--verify" ]; then
+    VERIFY=1
+    shift
+fi
+
+case "${1:-}" in
+    --pending)
+        PENDING="$(pending_commits)"
+        if [ -z "$PENDING" ]; then
+            echo "Nothing pending — every recent commit on this branch is recorded as reviewed."
+            exit 0
+        fi
+        echo "Not yet recorded as reviewed (oldest first):"
+        for sha in $PENDING; do
+            git log -1 --format='  %h  %s' "$sha"
+        done
+        exit 0
+        ;;
+    --mark)
+        mark_reviewed "${2:-HEAD}"
+        exit 0
+        ;;
+    --uncommitted|--since-last) ;;
+    -*)
+        echo "Unknown option: $1 (see the usage at the top of $0)" >&2
+        exit 1
+        ;;
+esac
 
 if [ -z "${REVIEW_AGENT:-}" ]; then
     REVIEW_AGENT="$(read_env REVIEW_AGENT)"
@@ -102,8 +199,35 @@ $BRIEF"
 # The scope travels inside the prompt rather than as a --base/--commit flag: those flags
 # select a built-in review mode and are mutually exclusive with custom instructions, and
 # the instructions are the entire point of this script.
+MARK_AFTER=""
 case "${1:-}" in
     --uncommitted) SCOPE="Review the staged, unstaged and untracked changes in the working tree (\`git status\`, \`git diff\`, \`git diff --cached\`)." ;;
+    --since-last)
+        # Resolved to concrete SHAs now, not after the reviewer returns. A review takes
+        # minutes and HEAD can move under it — a parallel session landing a commit would
+        # otherwise be recorded as reviewed without anyone having read it. What is recorded
+        # afterwards is this list, whatever HEAD has become.
+        PENDING="$(pending_commits)"
+        if [ -z "$PENDING" ]; then
+            echo "Nothing to review — every recent commit on this branch is recorded as reviewed."
+            exit 0
+        fi
+        TIP="$(git rev-parse HEAD)"
+        OLDEST="$(echo "$PENDING" | head -n 1)"
+        # The diff runs from the parent of the oldest pending commit to the tip, so a commit
+        # already recorded that sits between two pending ones is read again. That costs a
+        # little; splitting the review into disjoint ranges would lose the "one body of work"
+        # judgement below, which costs more.
+        if ! BASE="$(git rev-parse -q --verify "${OLDEST}^")"; then
+            echo "The oldest pending commit is the root commit; review it with: $0 ${OLDEST}" >&2
+            exit 1
+        fi
+        MARK_AFTER="$(git log --reverse --no-merges --format='%H' "${BASE}..${TIP}")"
+        SCOPE="Review the changes introduced by these commits together: \`git diff ${BASE}..${TIP}\`, with
+\`git log --reverse --format='%h %s' ${BASE}..${TIP}\` for what each one was for. Judge them as one
+body of work — a defect introduced in one commit and fixed in a later one is not a finding. Ignore
+code outside that diff except where you need it to judge the diff."
+        ;;
     "")            SCOPE="Review the changes on the current branch relative to master: \`git diff master...HEAD\`. Ignore code outside that diff except where you need it to judge the diff." ;;
     *)             SCOPE="Review the changes introduced by commit $1: \`git show $1\`. Ignore code outside that diff except where you need it to judge the diff." ;;
 esac
@@ -117,4 +241,73 @@ $CONTEXT"
 # treats an empty array under `set -u` as an unbound variable.
 read -r -a AGENT_ARGS <<< "$REVIEW_AGENT_ARGS"
 
-exec "$REVIEW_AGENT" ${AGENT_ARGS[@]+"${AGENT_ARGS[@]}"} "$PROMPT"
+# A single pass with nothing to record afterwards keeps the reviewer on the terminal.
+if [ "$VERIFY" != "1" ] && [ -z "$MARK_AFTER" ]; then
+    exec "$REVIEW_AGENT" ${AGENT_ARGS[@]+"${AGENT_ARGS[@]}"} "$PROMPT"
+fi
+
+# Spelled out rather than `mktemp -t`, whose meaning differs between BSD and GNU.
+SCRATCH="$(mktemp -d "${TMPDIR:-/tmp}/review.XXXXXX")"
+trap 'rm -rf "$SCRATCH"' EXIT
+
+# One pass, streamed to the terminal and kept in $2. A review always says something: a
+# reviewer that exits cleanly with nothing on stdout was stopped before it reviewed — some
+# CLIs exit 0 after refusing a command they needed — so that run must not reach the ledger.
+run_pass() {
+    "$REVIEW_AGENT" ${AGENT_ARGS[@]+"${AGENT_ARGS[@]}"} "$1" | tee "$2"
+    if [ ! -s "$2" ]; then
+        echo "The reviewer exited without printing a review, so nothing was reviewed." >&2
+        exit 1
+    fi
+}
+
+FINDINGS="$SCRATCH/findings"
+run_pass "$PROMPT" "$FINDINGS"
+
+if [ "$VERIFY" = "1" ]; then
+    echo
+    echo "── verifying ──────────────────────────────────────────────────────────────────"
+    echo
+
+    # One pass that both finds and reports has nothing pushing back on it, and that is
+    # where the false positives live. This one is deliberately one-sided: it is not asked
+    # whether the findings are good, it is asked to break them — a reader invited to
+    # "check" a claim mostly agrees with it. Its own evidence is held to the bar the brief
+    # sets for a finding, so a refutation that cannot cite a line is no better than the
+    # claim it is trying to kill.
+    VERIFY_PROMPT="A review pass on this repository produced the findings below. Your only
+job is to try to REFUTE each one. Do not add findings of your own, do not restate them, and do
+not soften them into suggestions.
+
+For each finding, open the code it cites and answer with one of:
+  CONFIRMED   file:line and the quoted line that proves the defect is real
+  REFUTED     file:line and the quoted line that shows the claim is wrong, or that names the
+              premise it rests on and shows that premise is false
+  UNVERIFIED  you could not find the line either way — say what you looked for
+
+A finding whose premise is a claim about code is refuted the moment that code says otherwise,
+however plausible the reasoning built on it. A deliberate trade-off recorded in the commit
+message, in a comment, or in docs/engineering-standards.md is refuted too: it is a rebuttal
+rather than a defect.
+
+Finish with the surviving findings only, in severity order, each with its evidence. Say
+plainly how many you refuted and why. If every finding is refuted, say that.
+
+$SCOPE
+
+The findings to refute:
+
+$(cat "$FINDINGS")"
+
+    run_pass "$VERIFY_PROMPT" "$SCRATCH/verified"
+fi
+
+# Reached only after every pass finished (set -e stops a failed one), so an abandoned or
+# refused review never advances the ledger.
+if [ -n "$MARK_AFTER" ]; then
+    echo
+    for sha in $MARK_AFTER; do
+        mark_reviewed "$sha"
+    done
+    echo "Ledger updated: $LEDGER"
+fi
