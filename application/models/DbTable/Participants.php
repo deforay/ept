@@ -3,6 +3,7 @@
 use Application_Service_Common as Common;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use Pt_Commons_ImportTemplate as ImportTemplate;
 use Pt_Commons_MiscUtility as MiscUtility;
 
 class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
@@ -1695,40 +1696,6 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         return $response;
     }
 
-    private function validateUploadedFile($fileName, $templateFilePath)
-    {
-        $uploadedSpreadsheet = IOFactory::load($fileName);
-        $templateSpreadsheet = IOFactory::load($templateFilePath);
-
-        $uploadedHeaders = $uploadedSpreadsheet->getSheet(0)->rangeToArray('A1:Z1')[0];
-        $templateHeaders = $templateSpreadsheet->getSheet(0)->rangeToArray('A1:Z1')[0];
-
-        $normalize = function ($header) {
-            return strtolower(preg_replace('/\s+/', '', (string) $header));
-        };
-
-        $mismatches = [];
-        foreach ($templateHeaders as $idx => $expected) {
-            $actual = $uploadedHeaders[$idx] ?? null;
-            if ($normalize($expected) === $normalize($actual)) {
-                continue;
-            }
-            $colLetter = chr(ord('A') + $idx);
-            $expectedLabel = trim(preg_replace('/\s+/', ' ', (string) $expected));
-            $actualLabel = trim(preg_replace('/\s+/', ' ', (string) $actual));
-            if ($expectedLabel === '' && $actualLabel === '') {
-                continue;
-            }
-            $mismatches[] = [
-                'column' => $colLetter,
-                'expected' => $expectedLabel,
-                'actual' => $actualLabel,
-            ];
-        }
-
-        return $mismatches;
-    }
-
     /**
      * With $dryRun the whole import still runs, inside the same transaction, and is
      * rolled back at the end. The review screen is built from that run, so what the
@@ -1765,8 +1732,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         $authNameSpace = new Zend_Session_Namespace('administrators');
 
         // Validate file format
-        $templateFilePath = realpath(WEB_ROOT) . '/files/Participant-Bulk-Import-Excel-Format-v2.xlsx';
-        $mismatches = $this->validateUploadedFile($fileName, $templateFilePath);
+        $mismatches = ImportTemplate::validate(ImportTemplate::PARTICIPANTS, $fileName);
         if (!empty($mismatches)) {
             return [
                 'data' => [],
@@ -1833,6 +1799,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         $countryCache = $this->buildCountryCache();
         $countryNames = $this->getCountryNames();
         $countryNamesById = $this->getCountryNamesById();
+        $localizedCountries = ImportTemplate::localizedCountryIndex();
         $countryLabelDiffs = [];
         $duplicateChecks = $this->batchCheckDuplicates($sheetData, $prefix, $directParticipantLogin == 'yes');
         $duplicateChecks['fileParticipants'] = [];
@@ -2100,10 +2067,8 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                 }
 
                 // Prepare participant data
-                $isIndividual = strtolower($row['C'] ?? 'yes');
-                if (!in_array($isIndividual, ['yes', 'no'])) {
-                    $isIndividual = 'yes';
-                }
+                // Accepts yes and no in every installed language, such as "non" or "không".
+                $isIndividual = ImportTemplate::normalizeYesNo($row['C'] ?? '') ?? 'yes';
 
                 $countryId = $this->getCountryIdFromCache($row['M'] ?? '', $countryCache);
 
@@ -2123,9 +2088,12 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                 // Record the difference so the admin sees it after the import instead of
                 // discovering it on a printed form. Deliberately NOT auto-applied: a
                 // single misspelling here would rename that country everywhere in ePT.
+                // A country's name in another installed language is not reported. It is the
+                // name the dropdown offers in a template downloaded in that language.
                 $sheetCountry = trim((string) ($row['M'] ?? ''));
                 $storedCountry = $countryNamesById[$countryId] ?? '';
-                if ($sheetCountry !== '' && $storedCountry !== '' && strcasecmp($sheetCountry, $storedCountry) !== 0) {
+                $isLocalizedName = ($localizedCountries[mb_strtolower($sheetCountry)] ?? null) === (int) $countryId;
+                if ($sheetCountry !== '' && $storedCountry !== '' && !$isLocalizedName && strcasecmp($sheetCountry, $storedCountry) !== 0) {
                     $key = $countryId . '|' . $sheetCountry;
                     if (!isset($countryLabelDiffs[$key])) {
                         $countryLabelDiffs[$key] = ['sheet' => $sheetCountry, 'stored' => $storedCountry, 'rows' => 0];
@@ -2492,11 +2460,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             return null;
         }
         try {
-            $templatePath = realpath(WEB_ROOT) . '/files/Participant-Bulk-Import-Excel-Format-v2.xlsx';
-            if (!is_file($templatePath)) {
-                return null;
-            }
-            $ss = IOFactory::load($templatePath);
+            $ss = ImportTemplate::build(ImportTemplate::PARTICIPANTS);
             $sheet = $ss->getSheet(0);
 
             // Drop the template's sample rows (everything below the header) so only the
@@ -2753,7 +2717,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         $countryId = null; // Default country ID if not found
 
         if (!empty($countryInput)) {
-            $key = strtolower(trim($countryInput));
+            $key = mb_strtolower(trim($countryInput));
             $countryId = $countryCache[$key] ?? null;
         }
 

@@ -69,6 +69,12 @@ class Admin_EnrollmentsController extends Zend_Controller_Action
         }
     }
 
+    /** The enrollment import template, generated in the admin's language. */
+    public function bulkEnrollmentTemplateAction()
+    {
+        Pt_Commons_ImportTemplate::send(Pt_Commons_ImportTemplate::ENROLLMENT);
+    }
+
     public function bulkEnrollmentAction()
     {
         /** @var Zend_Controller_Request_Http $request */

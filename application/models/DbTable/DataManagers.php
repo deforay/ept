@@ -4,6 +4,7 @@ use Application_Service_Common as Common;
 use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use Pt_Commons_ImportTemplate as ImportTemplate;
 use Pt_Commons_MiscUtility as MiscUtility;
 
 class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
@@ -1476,40 +1477,6 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         }
     }
 
-    private function validateUploadedFile($fileName, $templateFilePath)
-    {
-        $uploadedSpreadsheet = IOFactory::load($fileName);
-        $templateSpreadsheet = IOFactory::load($templateFilePath);
-
-        $uploadedHeaders = $uploadedSpreadsheet->getSheet(0)->rangeToArray('A1:Z1')[0];
-        $templateHeaders = $templateSpreadsheet->getSheet(0)->rangeToArray('A1:Z1')[0];
-
-        $normalize = function ($header) {
-            return strtolower(preg_replace('/\s+/', '', (string) $header));
-        };
-
-        $mismatches = [];
-        foreach ($templateHeaders as $idx => $expected) {
-            $actual = $uploadedHeaders[$idx] ?? null;
-            if ($normalize($expected) === $normalize($actual)) {
-                continue;
-            }
-            $colLetter = chr(ord('A') + $idx);
-            $expectedLabel = trim(preg_replace('/\s+/', ' ', (string) $expected));
-            $actualLabel = trim(preg_replace('/\s+/', ' ', (string) $actual));
-            if ($expectedLabel === '' && $actualLabel === '') {
-                continue;
-            }
-            $mismatches[] = [
-                'column' => $colLetter,
-                'expected' => $expectedLabel,
-                'actual' => $actualLabel,
-            ];
-        }
-
-        return $mismatches;
-    }
-
     /**
      * With $dryRun the import runs inside its transaction and is rolled back, so the
      * review screen shows exactly what confirming would do.
@@ -1522,8 +1489,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             $alertMsg = new Zend_Session_Namespace('alertSpace');
 
             // Reject the upload up front if its column headers don't match the template.
-            $templateFilePath = realpath(WEB_ROOT) . '/files/PTCC_Bulk_Import_Excel_Format.xlsx';
-            $mismatches = $this->validateUploadedFile($fileName, $templateFilePath);
+            $mismatches = ImportTemplate::validate(ImportTemplate::PTCC, $fileName);
             if (!empty($mismatches)) {
                 return [
                     'data' => [],
@@ -1637,9 +1603,16 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                     'first_name' => ($sheetData[$i]['C']),
                     'last_name' => ($sheetData[$i]['D']),
                     'institute' => ($sheetData[$i]['E']),
-                    'mobile' => ($sheetData[$i]['H']),
+                    // G is the cell phone and H the landline. This import used to read only
+                    // H as the mobile, and the template's sample row put the number in H.
+                    // If G is blank, H stays the mobile, so those files keep their number.
+                    'mobile' => trim((string) $sheetData[$i]['G']) !== '' ? $sheetData[$i]['G'] : $sheetData[$i]['H'],
                     'secondary_email' => MiscUtility::sanitizeAndValidateEmail($sheetData[$i]['F']),
-                    'view_only_access' => ($sheetData[$i]['I']),
+                    // Stored as 'yes' or 'no' in every language. Some readers test == 'no',
+                    // so a stored "Non", "No" or blank hides "Delete Response" without any
+                    // error. A blank cell means no, as the edit form already shows it.
+                    'view_only_access' => ImportTemplate::normalizeYesNo($sheetData[$i]['I'])
+                        ?? (trim((string) $sheetData[$i]['I']) === '' ? 'no' : $sheetData[$i]['I']),
                     'country_id' => $countryId,
                     'primary_email' => MiscUtility::sanitizeAndValidateEmail($originalEmail),
                     'password' => $password,
@@ -1648,6 +1621,12 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                     'data_manager_type' => $type ?? 'ptcc',
                     'status' => 'active',
                 ];
+                // Written only when H is the landline: H is filled and G holds the mobile.
+                // If G is blank, H already went to mobile above. Writing it to phone too
+                // would overwrite a landline entered in the form.
+                if (trim((string) $sheetData[$i]['G']) !== '' && trim((string) $sheetData[$i]['H']) !== '') {
+                    $dataManagerData['phone'] = $sheetData[$i]['H'];
+                }
 
                 // Use cached duplicate check instead of individual query. Lowercase the key to
                 // match how the cache is built (see batchCheckDataManagerDuplicates).
@@ -1782,7 +1761,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             return [];
         }
         $changes = [];
-        foreach (['first_name', 'last_name', 'institute', 'mobile', 'secondary_email', 'view_only_access', 'country_id', 'status'] as $field) {
+        foreach (['first_name', 'last_name', 'institute', 'mobile', 'phone', 'secondary_email', 'view_only_access', 'country_id', 'status'] as $field) {
             if (!array_key_exists($field, $newData)) {
                 continue;
             }
@@ -1854,7 +1833,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         $countryId = null; // Default country ID if not found
 
         if (!empty($countryInput)) {
-            $key = strtolower(trim($countryInput));
+            $key = mb_strtolower(trim($countryInput));
             $countryId = $countryCache[$key] ?? null;
         }
 

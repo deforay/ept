@@ -128,6 +128,12 @@ class Admin_ParticipantsController extends Zend_Controller_Action
         $this->view->passLength = $commonService->getConfig('participant_login_password_length');
     }
 
+    /** The participant import template, generated in the admin's language. */
+    public function bulkImportTemplateAction()
+    {
+        Pt_Commons_ImportTemplate::send(Pt_Commons_ImportTemplate::PARTICIPANTS);
+    }
+
     public function bulkImportAction()
     {
         $bulkImportSession = new Zend_Session_Namespace('bulkImportFeedback');

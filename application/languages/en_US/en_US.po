@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: e-PT\n"
 "Report-Msgid-Bugs-To: support@deforay.com\n"
-"POT-Creation-Date: 2026-10-13 18:48+0530\n"
+"POT-Creation-Date: 2026-10-16 14:49+0530\n"
 "PO-Revision-Date: 2022-06-07 20:34+0530\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -88,6 +88,7 @@ msgstr ""
 #: application/models/Dts.php:2291
 #: application/modules/admin/views/scripts/participants/bulk-import-review.phtml:12
 #: application/modules/admin/views/scripts/participants/bulk-import.phtml:244
+#: library/Pt/Commons/ImportTemplate.php:83
 msgid "Department"
 msgstr ""
 
@@ -196,7 +197,7 @@ msgid "Early Infant Diagnosis"
 msgstr ""
 
 #: application/languages/db-translation-strings.php:81
-#: application/models/DbTable/DataManagers.php:393
+#: application/models/DbTable/DataManagers.php:394
 #: application/models/DbTable/Distribution.php:156
 #: application/models/Dts.php:2298
 #: application/modules/admin/views/scripts/audit-log/index.phtml:654
@@ -1013,6 +1014,7 @@ msgstr ""
 #: application/views/scripts/participant/tb-results.phtml:55
 #: application/views/scripts/participant/testeredit.phtml:74
 #: application/views/scripts/participant/testeredit.phtml:76
+#: library/Pt/Commons/ImportTemplate.php:88
 msgid "Region"
 msgstr ""
 
@@ -2801,55 +2803,55 @@ msgstr ""
 msgid "Overview"
 msgstr ""
 
-#: application/models/DbTable/DataManagers.php:301
+#: application/models/DbTable/DataManagers.php:302
 msgid "Bounced"
 msgstr ""
 
-#: application/models/DbTable/DataManagers.php:302
 #: application/models/DbTable/DataManagers.php:303
+#: application/models/DbTable/DataManagers.php:304
 msgid "Undeliverable"
 msgstr ""
 
-#: application/models/DbTable/DataManagers.php:304
+#: application/models/DbTable/DataManagers.php:305
 msgid "Login only"
 msgstr ""
 
-#: application/models/DbTable/DataManagers.php:327
+#: application/models/DbTable/DataManagers.php:328
 #, php-format
 msgid "+%d more"
 msgstr ""
 
-#: application/models/DbTable/DataManagers.php:328
+#: application/models/DbTable/DataManagers.php:329
 #, fuzzy
 msgid "No name"
 msgstr "Contact Us"
 
-#: application/models/DbTable/DataManagers.php:343
+#: application/models/DbTable/DataManagers.php:344
 #, fuzzy
 msgid "ePT does not send email to this address."
 msgstr "Change Password"
 
-#: application/models/DbTable/DataManagers.php:359
-#: application/models/DbTable/Participants.php:352
+#: application/models/DbTable/DataManagers.php:360
+#: application/models/DbTable/Participants.php:353
 msgid "None mapped"
 msgstr ""
 
-#: application/models/DbTable/DataManagers.php:361
-#: application/models/DbTable/Participants.php:354
-#: application/models/DbTable/Participants.php:363
+#: application/models/DbTable/DataManagers.php:362
+#: application/models/DbTable/Participants.php:355
+#: application/models/DbTable/Participants.php:364
 #, php-format
 msgid "View (%d)"
 msgstr ""
 
-#: application/models/DbTable/DataManagers.php:384
+#: application/models/DbTable/DataManagers.php:385
 #, fuzzy
 msgid "Edit this data manager"
 msgstr "Participant Login"
 
-#: application/models/DbTable/DataManagers.php:384
+#: application/models/DbTable/DataManagers.php:385
 #: application/models/DbTable/Distribution.php:133
 #: application/models/DbTable/Distribution.php:153
-#: application/models/DbTable/Participants.php:367
+#: application/models/DbTable/Participants.php:368
 #: application/modules/admin/controllers/SpotlightController.php:57
 #: application/modules/admin/views/scripts/data-managers/mapped-participants.ajax.phtml:51
 #: application/modules/admin/views/scripts/email-participants/index.phtml:1416
@@ -2859,21 +2861,21 @@ msgstr "Participant Login"
 msgid "Edit"
 msgstr ""
 
-#: application/models/DbTable/DataManagers.php:389
+#: application/models/DbTable/DataManagers.php:390
 #, fuzzy
 msgid "Map participants to this data manager"
 msgstr "Participant Login"
 
-#: application/models/DbTable/DataManagers.php:389
+#: application/models/DbTable/DataManagers.php:390
 msgid "Map"
 msgstr ""
 
-#: application/models/DbTable/DataManagers.php:392
+#: application/models/DbTable/DataManagers.php:393
 #, fuzzy
 msgid "Reset this user's password"
 msgstr "Change Password"
 
-#: application/models/DbTable/DataManagers.php:392
+#: application/models/DbTable/DataManagers.php:393
 #: application/modules/admin/views/scripts/data-managers/add.phtml:42
 #: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc.phtml:214
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:41
@@ -2888,21 +2890,22 @@ msgstr "Change Password"
 #: application/modules/admin/views/scripts/participants/_data-manager-dual-list.phtml:144
 #: application/modules/admin/views/scripts/system-admins/add.phtml:39
 #: application/modules/admin/views/scripts/system-admins/edit.phtml:31
+#: library/Pt/Commons/ImportTemplate.php:70
 #, fuzzy
 msgid "Password"
 msgstr "Reset Password"
 
-#: application/models/DbTable/DataManagers.php:393
+#: application/models/DbTable/DataManagers.php:394
 #, fuzzy
 msgid "Change the primary email address"
 msgstr "Participant Name"
 
-#: application/models/DbTable/DataManagers.php:404
+#: application/models/DbTable/DataManagers.php:405
 #: application/modules/admin/views/scripts/participants/mapped-data-managers.ajax.phtml:58
 msgid "Opens the participant UI as this user. Audited."
 msgstr ""
 
-#: application/models/DbTable/DataManagers.php:404
+#: application/models/DbTable/DataManagers.php:405
 #: application/modules/admin/views/scripts/participants/mapped-data-managers.ajax.phtml:58
 #, fuzzy
 msgid "View as"
@@ -2973,7 +2976,7 @@ msgstr ""
 msgid "View"
 msgstr ""
 
-#: application/models/DbTable/Participants.php:361
+#: application/models/DbTable/Participants.php:362
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:637
 #: application/modules/admin/views/scripts/global-config/index.phtml:1272
 #: application/modules/admin/views/scripts/global-config/index.phtml:1370
@@ -3192,6 +3195,8 @@ msgstr "Participant Name"
 #: application/views/scripts/participant/edit-participant.phtml:37
 #: application/views/scripts/participant/shipment-response-report.phtml:132
 #: application/views/scripts/participant/testeredit.phtml:41
+#: library/Pt/Commons/ImportTemplate.php:82
+#: library/Pt/Commons/ImportTemplate.php:107
 msgid "Institute Name"
 msgstr ""
 
@@ -3340,8 +3345,8 @@ msgstr ""
 
 #: application/models/Dts.php:2292 application/models/Dts.php:2374
 #: application/modules/admin/views/scripts/data-managers/add.phtml:206
-#: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc-review.phtml:13
-#: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc-review.phtml:189
+#: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc-review.phtml:14
+#: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc-review.phtml:190
 #: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc-statistics.phtml:149
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:155
 #: application/modules/admin/views/scripts/data-managers/index.phtml:220
@@ -3406,6 +3411,7 @@ msgstr ""
 #: application/models/Dts.php:2293
 #: application/modules/admin/views/scripts/participants/bulk-import-review.phtml:13
 #: application/modules/admin/views/scripts/participants/bulk-import.phtml:245
+#: library/Pt/Commons/ImportTemplate.php:84
 msgid "Address"
 msgstr ""
 
@@ -3590,30 +3596,30 @@ msgstr ""
 msgid "That action is not available."
 msgstr ""
 
-#: application/modules/admin/controllers/ParticipantsController.php:321
+#: application/modules/admin/controllers/ParticipantsController.php:327
 msgid ""
 "No participants selected — nothing was changed. Use \"Clear all mappings\" "
 "if you really meant to remove them all."
 msgstr ""
 
-#: application/modules/admin/controllers/ParticipantsController.php:323
+#: application/modules/admin/controllers/ParticipantsController.php:329
 msgid ""
 "Could not read the participant selection. Please reload the page and try "
 "again."
 msgstr ""
 
-#: application/modules/admin/controllers/ParticipantsController.php:325
+#: application/modules/admin/controllers/ParticipantsController.php:331
 #: application/modules/admin/views/scripts/participants/participant-manager-map.phtml:402
 msgid ""
 "Save failed. Please try again, or contact support if it keeps happening."
 msgstr ""
 
-#: application/modules/admin/controllers/ParticipantsController.php:327
+#: application/modules/admin/controllers/ParticipantsController.php:333
 #, fuzzy, php-format
 msgid "Mapped %d participant(s) successfully"
 msgstr "PT Participant Info"
 
-#: application/modules/admin/controllers/ParticipantsController.php:329
+#: application/modules/admin/controllers/ParticipantsController.php:335
 #: application/modules/admin/views/scripts/participants/participant-manager-map.phtml:401
 msgid "Mapping saved"
 msgstr ""
@@ -3709,7 +3715,7 @@ msgstr ""
 #: application/modules/admin/views/scripts/custom-test/import-details.phtml:115
 #: application/modules/admin/views/scripts/custom-test/index.phtml:36
 #: application/modules/admin/views/scripts/data-managers/add.phtml:190
-#: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc-review.phtml:14
+#: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc-review.phtml:15
 #: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc-statistics.phtml:145
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:141
 #: application/modules/admin/views/scripts/data-managers/index.phtml:114
@@ -3870,8 +3876,8 @@ msgstr ""
 #: application/modules/admin/views/scripts/alerts/email.phtml:42
 #: application/modules/admin/views/scripts/certificate-batches/index.phtml:160
 #: application/modules/admin/views/scripts/custom-test/import.phtml:26
-#: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc-review.phtml:83
-#: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc-review.phtml:144
+#: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc-review.phtml:84
+#: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc-review.phtml:145
 #: application/modules/admin/views/scripts/participants/bulk-import-review.phtml:91
 #: application/modules/admin/views/scripts/participants/bulk-import-review.phtml:161
 msgid "Skipped"
@@ -4066,7 +4072,7 @@ msgstr ""
 #: application/modules/admin/views/scripts/custom-test/import-details.phtml:250
 #: application/modules/admin/views/scripts/custom-test/import-details.phtml:410
 #: application/modules/admin/views/scripts/custom-test/index.phtml:37
-#: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc-review.phtml:186
+#: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc-review.phtml:187
 #: application/modules/admin/views/scripts/data-managers/index.phtml:225
 #: application/modules/admin/views/scripts/data-managers/mapped-participants.ajax.phtml:25
 #: application/modules/admin/views/scripts/distributions/index.phtml:35
@@ -4778,7 +4784,7 @@ msgstr ""
 
 #: application/modules/admin/views/scripts/certificate-templates/index.phtml:222
 #: application/modules/admin/views/scripts/certificate-templates/index.phtml:277
-#: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc-review.phtml:96
+#: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc-review.phtml:97
 #: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc-statistics.phtml:99
 #: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc.phtml:89
 #: application/modules/admin/views/scripts/participants/bulk-import-review.phtml:112
@@ -5534,7 +5540,7 @@ msgstr ""
 
 #: application/modules/admin/views/scripts/covid19-gene-type/edit.phtml:49
 #: application/modules/admin/views/scripts/custom-test/edit.phtml:415
-#: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc-review.phtml:81
+#: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc-review.phtml:82
 #: application/modules/admin/views/scripts/distributions/edit.phtml:55
 #: application/modules/admin/views/scripts/feedback-responses/edit.phtml:80
 #: application/modules/admin/views/scripts/global-config/index.phtml:1669
@@ -5650,7 +5656,7 @@ msgstr ""
 #: application/modules/admin/views/scripts/data-managers/add.phtml:155
 #: application/modules/admin/views/scripts/data-managers/add.phtml:168
 #: application/modules/admin/views/scripts/data-managers/add.phtml:182
-#: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc-review.phtml:118
+#: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc-review.phtml:119
 #: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc.phtml:144
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:103
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:114
@@ -5803,6 +5809,7 @@ msgstr ""
 #: application/views/scripts/vl/response.phtml:943
 #: application/views/scripts/vl/response.phtml:1026
 #: application/views/scripts/vl/response.phtml:1041
+#: library/Pt/Commons/ImportTemplate.php:325
 #: scheduled-jobs/report-layouts/summary-layouts/vietnam/dts.phtml:761
 msgid "Yes"
 msgstr ""
@@ -5814,7 +5821,7 @@ msgstr ""
 #: application/modules/admin/views/scripts/data-managers/add.phtml:158
 #: application/modules/admin/views/scripts/data-managers/add.phtml:171
 #: application/modules/admin/views/scripts/data-managers/add.phtml:184
-#: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc-review.phtml:118
+#: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc-review.phtml:119
 #: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc.phtml:143
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:104
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:115
@@ -5966,6 +5973,7 @@ msgstr ""
 #: application/views/scripts/vl/response.phtml:941
 #: application/views/scripts/vl/response.phtml:1027
 #: application/views/scripts/vl/response.phtml:1039
+#: library/Pt/Commons/ImportTemplate.php:325
 #: scheduled-jobs/report-layouts/summary-layouts/vietnam/dts.phtml:239
 #: scheduled-jobs/report-layouts/summary-layouts/vietnam/dts.phtml:457
 #: scheduled-jobs/report-layouts/summary-layouts/vietnam/dts.phtml:520
@@ -6408,7 +6416,7 @@ msgid "Warnings"
 msgstr ""
 
 #: application/modules/admin/views/scripts/custom-test/import.phtml:42
-#: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc-review.phtml:147
+#: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc-review.phtml:148
 #: application/modules/admin/views/scripts/participants/bulk-import-review.phtml:164
 msgid "Errors"
 msgstr ""
@@ -6551,6 +6559,7 @@ msgstr ""
 
 #: application/modules/admin/views/scripts/data-managers/add.phtml:82
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:67
+#: library/Pt/Commons/ImportTemplate.php:105
 msgid "User First Name"
 msgstr ""
 
@@ -6564,6 +6573,7 @@ msgstr ""
 
 #: application/modules/admin/views/scripts/data-managers/add.phtml:94
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:73
+#: library/Pt/Commons/ImportTemplate.php:106
 msgid "User Last Name"
 msgstr ""
 
@@ -6580,6 +6590,7 @@ msgstr ""
 
 #: application/modules/admin/views/scripts/data-managers/add.phtml:107
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:81
+#: library/Pt/Commons/ImportTemplate.php:108
 msgid "Secondary e-mail Address"
 msgstr ""
 
@@ -6593,6 +6604,7 @@ msgstr ""
 #: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc.phtml:208
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:87
 #: application/views/scripts/participant/user-info.phtml:71
+#: library/Pt/Commons/ImportTemplate.php:109
 msgid "Cell Phone Number"
 msgstr ""
 
@@ -6615,6 +6627,7 @@ msgstr ""
 #: application/views/scripts/participant/add-participant.phtml:175
 #: application/views/scripts/participant/edit-participant.phtml:219
 #: application/views/scripts/participant/user-info.phtml:78
+#: library/Pt/Commons/ImportTemplate.php:110
 msgid "Phone Number"
 msgstr ""
 
@@ -6643,6 +6656,7 @@ msgstr ""
 #: application/modules/admin/views/scripts/data-managers/add.phtml:179
 #: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc.phtml:210
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:132
+#: library/Pt/Commons/ImportTemplate.php:111
 msgid "Enable View-Only Access"
 msgstr ""
 
@@ -6686,6 +6700,7 @@ msgstr ""
 #: application/views/scripts/participant/add-participant.phtml:68
 #: application/views/scripts/participant/add.phtml:50
 #: application/views/scripts/participant/edit-participant.phtml:64
+#: library/Pt/Commons/ImportTemplate.php:113
 msgid "State/Province"
 msgstr ""
 
@@ -6706,6 +6721,8 @@ msgstr ""
 #: application/modules/admin/views/scripts/shipment/manage-enroll.phtml:162
 #: application/views/scripts/participant/add-participant.phtml:72
 #: application/views/scripts/participant/edit-participant.phtml:69
+#: library/Pt/Commons/ImportTemplate.php:86
+#: library/Pt/Commons/ImportTemplate.php:114
 msgid "District/County"
 msgstr ""
 
@@ -6808,6 +6825,18 @@ msgid "Mobile"
 msgstr ""
 
 #: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc-review.phtml:11
+#: application/modules/admin/views/scripts/participants/view-participants.phtml:10
+#: application/modules/admin/views/scripts/profile/index.phtml:232
+#: application/modules/admin/views/scripts/shipment/manage-enroll.phtml:92
+#: application/modules/admin/views/scripts/shipment/manage-enroll.phtml:125
+#: application/modules/admin/views/scripts/shipment/manage-enroll.phtml:165
+#: application/modules/admin/views/scripts/shipment/round-participants.phtml:106
+#: application/modules/admin/views/scripts/system-admins/index.phtml:17
+#: application/views/scripts/participant/view.phtml:20
+msgid "Phone"
+msgstr ""
+
+#: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc-review.phtml:12
 #: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc.phtml:207
 #: application/modules/admin/views/scripts/profile/index.phtml:223
 #: application/modules/admin/views/scripts/system-admins/add.phtml:69
@@ -6815,47 +6844,47 @@ msgstr ""
 msgid "Secondary Email"
 msgstr ""
 
-#: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc-review.phtml:12
+#: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc-review.phtml:13
 msgid "View Only Access"
 msgstr ""
 
-#: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc-review.phtml:80
+#: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc-review.phtml:81
 #: application/modules/admin/views/scripts/participants/bulk-import-review.phtml:88
 msgid "New"
 msgstr ""
 
-#: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc-review.phtml:82
+#: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc-review.phtml:83
 #: application/modules/admin/views/scripts/participants/bulk-import-review.phtml:90
 msgid "No changes"
 msgstr ""
 
-#: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc-review.phtml:84
+#: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc-review.phtml:85
 #: application/modules/admin/views/scripts/participants/bulk-import-review.phtml:92
 #: application/views/scripts/custom-test/response.phtml:513
 #: application/views/scripts/vl/response.phtml:697
 msgid "Error"
 msgstr ""
 
-#: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc-review.phtml:90
+#: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc-review.phtml:91
 #: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc-statistics.phtml:93
 #: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc-statistics.phtml:136
 #: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc.phtml:83
 msgid "Back to PTCC list"
 msgstr ""
 
-#: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc-review.phtml:91
+#: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc-review.phtml:92
 #: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc-statistics.phtml:94
 #: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc.phtml:84
 #: application/modules/admin/views/scripts/data-managers/index.phtml:95
 msgid "Bulk Import PTCC"
 msgstr ""
 
-#: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc-review.phtml:92
+#: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc-review.phtml:93
 #: application/modules/admin/views/scripts/participants/bulk-import-review.phtml:108
 msgid "Nothing has been saved yet. Check what will change, then import."
 msgstr ""
 
-#: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc-review.phtml:98
+#: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc-review.phtml:99
 #: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc-statistics.phtml:101
 #: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc.phtml:91
 #: application/modules/admin/views/scripts/participants/bulk-import-review.phtml:114
@@ -6864,7 +6893,7 @@ msgstr ""
 msgid "Review"
 msgstr ""
 
-#: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc-review.phtml:100
+#: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc-review.phtml:101
 #: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc-statistics.phtml:103
 #: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc.phtml:93
 #: application/modules/admin/views/scripts/distributions/view-shipment.phtml:42
@@ -6875,79 +6904,79 @@ msgstr ""
 msgid "Done"
 msgstr ""
 
-#: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc-review.phtml:108
+#: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc-review.phtml:109
 #: application/modules/admin/views/scripts/participants/bulk-import-review.phtml:124
 #, php-format
 msgid "%d of %d row(s) are ready to import"
 msgstr ""
 
-#: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc-review.phtml:110
+#: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc-review.phtml:111
 #: application/modules/admin/views/scripts/participants/bulk-import-review.phtml:126
 msgid "No rows can be imported from this file"
 msgstr ""
 
-#: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc-review.phtml:114
+#: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc-review.phtml:115
 #: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc.phtml:131
 msgid "If a Primary Email already exists"
 msgstr ""
 
-#: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc-review.phtml:115
+#: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc-review.phtml:116
 #: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc.phtml:134
 msgid "Update all data for that PTCC"
 msgstr ""
 
-#: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc-review.phtml:115
+#: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc-review.phtml:116
 #: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc.phtml:133
 #: application/modules/admin/views/scripts/participants/bulk-import-review.phtml:95
 msgid "Skip the row (don't update)"
 msgstr ""
 
-#: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc-review.phtml:117
+#: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc-review.phtml:118
 #: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc.phtml:141
 msgid "Deactivate Existing PTCC Before Import"
 msgstr ""
 
-#: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc-review.phtml:125
+#: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc-review.phtml:126
 #: application/modules/admin/views/scripts/participants/bulk-import-review.phtml:147
 #, fuzzy
 msgid "All rows"
 msgstr "All Schemes"
 
-#: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc-review.phtml:128
+#: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc-review.phtml:129
 msgid "New PTCCs"
 msgstr ""
 
-#: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc-review.phtml:131
+#: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc-review.phtml:132
 #: application/modules/admin/views/scripts/participants/bulk-import-review.phtml:153
 #, fuzzy
 msgid "Will be updated"
 msgstr "View PT Result"
 
-#: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc-review.phtml:135
+#: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc-review.phtml:136
 #: application/modules/admin/views/scripts/participants/bulk-import-review.phtml:157
 #, fuzzy
 msgid "Already up to date"
 msgstr "View PT Result"
 
-#: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc-review.phtml:140
+#: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc-review.phtml:141
 #, fuzzy
 msgid "Map no participants"
 msgstr "Participant Login"
 
-#: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc-review.phtml:154
+#: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc-review.phtml:155
 #, php-format
 msgid "%d active PTCC(s) are not in this file and will be deactivated."
 msgstr ""
 
-#: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc-review.phtml:156
+#: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc-review.phtml:157
 msgid "Show who"
 msgstr ""
 
-#: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc-review.phtml:164
+#: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc-review.phtml:165
 msgid "Every active PTCC is in this file, so none will be deactivated."
 msgstr ""
 
-#: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc-review.phtml:170
+#: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc-review.phtml:171
 #: application/modules/admin/views/scripts/participants/bulk-import-review.phtml:176
 #, php-format
 msgid ""
@@ -6955,33 +6984,33 @@ msgid ""
 "the file."
 msgstr ""
 
-#: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc-review.phtml:171
+#: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc-review.phtml:172
 #: application/modules/admin/views/scripts/participants/bulk-import-review.phtml:177
 msgid ""
 "Fill in the blank cells if you want to keep the current values. Look for "
 "(cleared) in the table below."
 msgstr ""
 
-#: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc-review.phtml:176
+#: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc-review.phtml:177
 #, php-format
 msgid "Passwords will be reset for %d existing PTCC(s)."
 msgstr ""
 
-#: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc-review.phtml:177
+#: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc-review.phtml:178
 msgid ""
 "Their logins will use the password in the file, or the default password "
 "where it is blank. Their participant mappings are rebuilt from the file's "
 "location."
 msgstr ""
 
-#: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc-review.phtml:185
+#: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc-review.phtml:186
 #: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc-statistics.phtml:144
 #: application/modules/admin/views/scripts/participants/bulk-import-review.phtml:201
 #: application/modules/admin/views/scripts/participants/participant-upload-statistics.phtml:155
 msgid "Row"
 msgstr ""
 
-#: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc-review.phtml:187
+#: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc-review.phtml:188
 #: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc-statistics.phtml:146
 #: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc.phtml:203
 #: application/modules/admin/views/scripts/data-managers/index.phtml:217
@@ -6990,10 +7019,11 @@ msgstr ""
 #: application/modules/admin/views/scripts/system-admins/add.phtml:27
 #: application/modules/admin/views/scripts/system-admins/edit.phtml:24
 #: application/views/scripts/data-managers/index.phtml:26
+#: library/Pt/Commons/ImportTemplate.php:104
 msgid "Primary Email"
 msgstr ""
 
-#: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc-review.phtml:188
+#: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc-review.phtml:189
 #: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc-statistics.phtml:147
 #: application/modules/admin/views/scripts/eid-assay/add.phtml:21
 #: application/modules/admin/views/scripts/eid-assay/index.phtml:69
@@ -7010,36 +7040,36 @@ msgstr ""
 msgid "Name"
 msgstr ""
 
-#: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc-review.phtml:190
+#: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc-review.phtml:191
 #, fuzzy
 msgid "Participants mapped"
 msgstr "Participant Name"
 
-#: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc-review.phtml:191
+#: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc-review.phtml:192
 #: application/modules/admin/views/scripts/participants/bulk-import-review.phtml:207
 msgid "What will happen"
 msgstr ""
 
-#: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc-review.phtml:206
+#: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc-review.phtml:207
 msgid "PTCC login will be created"
 msgstr ""
 
-#: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc-review.phtml:208
+#: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc-review.phtml:209
 #: application/modules/admin/views/scripts/participants/bulk-import-review.phtml:224
 msgid "Details already match"
 msgstr ""
 
-#: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc-review.phtml:215
+#: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc-review.phtml:216
 #: application/modules/admin/views/scripts/participants/bulk-import-review.phtml:231
 msgid "(cleared)"
 msgstr ""
 
-#: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc-review.phtml:229
+#: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc-review.phtml:230
 #: application/modules/admin/views/scripts/participants/bulk-import-review.phtml:245
 msgid "Upload a different file"
 msgstr ""
 
-#: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc-review.phtml:232
+#: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc-review.phtml:233
 #: application/modules/admin/views/scripts/participants/bulk-import-review.phtml:248
 #, php-format
 msgid "Import %d row(s)"
@@ -7227,11 +7257,14 @@ msgstr ""
 
 #: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc.phtml:202
 #: application/modules/admin/views/scripts/participants/bulk-import.phtml:238
+#: library/Pt/Commons/ImportTemplate.php:77
+#: library/Pt/Commons/ImportTemplate.php:103
 msgid "S.No."
 msgstr ""
 
 #: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc.phtml:211
 #: application/modules/admin/views/scripts/participants/bulk-import.phtml:250
+#: library/Pt/Commons/ImportTemplate.php:69
 #, fuzzy
 msgid "Country Name"
 msgstr "Contact Us"
@@ -7762,6 +7795,8 @@ msgstr ""
 #: application/views/scripts/participant/scheme.phtml:12
 #: application/views/scripts/participant/testers.phtml:19
 #: application/views/scripts/participant/view.phtml:16
+#: library/Pt/Commons/ImportTemplate.php:78
+#: library/Pt/Commons/ImportTemplate.php:122
 #: scheduled-jobs/report-layouts/summary-layouts/vietnam/dts.phtml:242
 msgid "Participant ID"
 msgstr "Participant ID"
@@ -13642,6 +13677,7 @@ msgstr "Participant Login"
 #: application/views/scripts/participant/add.phtml:18
 #: application/views/scripts/participant/edit-participant.phtml:13
 #: application/views/scripts/participant/testeredit.phtml:24
+#: library/Pt/Commons/ImportTemplate.php:79
 #, fuzzy
 msgid "Individual Participant"
 msgstr "Individual Report"
@@ -13838,6 +13874,7 @@ msgstr ""
 #: application/views/scripts/participant/edit-participant.phtml:87
 #: application/views/scripts/participant/testeredit.phtml:87
 #: application/views/scripts/participant/testeredit.phtml:90
+#: library/Pt/Commons/ImportTemplate.php:92
 msgid "Latitude"
 msgstr ""
 
@@ -13859,6 +13896,7 @@ msgstr ""
 #: application/views/scripts/participant/edit-participant.phtml:94
 #: application/views/scripts/participant/testeredit.phtml:82
 #: application/views/scripts/participant/testeredit.phtml:85
+#: library/Pt/Commons/ImportTemplate.php:91
 msgid "Longitude"
 msgstr ""
 
@@ -14017,17 +14055,20 @@ msgstr "Reset Password"
 
 #: application/modules/admin/views/scripts/participants/bulk-import-review.phtml:14
 #: application/modules/admin/views/scripts/participants/bulk-import.phtml:246
+#: library/Pt/Commons/ImportTemplate.php:85
 #, fuzzy
 msgid "Shipping Address"
 msgstr "Participant Name"
 
 #: application/modules/admin/views/scripts/participants/bulk-import-review.phtml:16
 #: application/modules/admin/views/scripts/participants/bulk-import.phtml:248
+#: library/Pt/Commons/ImportTemplate.php:87
 msgid "Province/State"
 msgstr ""
 
 #: application/modules/admin/views/scripts/participants/bulk-import-review.phtml:19
 #: application/modules/admin/views/scripts/participants/bulk-import.phtml:251
+#: library/Pt/Commons/ImportTemplate.php:90
 msgid "Zip"
 msgstr ""
 
@@ -14195,16 +14236,19 @@ msgid "For a lab or clinic, use the lab name"
 msgstr ""
 
 #: application/modules/admin/views/scripts/participants/bulk-import.phtml:254
+#: library/Pt/Commons/ImportTemplate.php:93
 #, fuzzy
 msgid "Mobile Number"
 msgstr "Participant Login"
 
 #: application/modules/admin/views/scripts/participants/bulk-import.phtml:255
+#: library/Pt/Commons/ImportTemplate.php:94
 #, fuzzy
 msgid "Email ID"
 msgstr "Participant Name"
 
 #: application/modules/admin/views/scripts/participants/bulk-import.phtml:257
+#: library/Pt/Commons/ImportTemplate.php:96
 #, fuzzy
 msgid "Additional Email ID"
 msgstr "Participant Name"
@@ -14573,17 +14617,6 @@ msgstr ""
 #, fuzzy
 msgid "Participant Details"
 msgstr "Participant ID"
-
-#: application/modules/admin/views/scripts/participants/view-participants.phtml:10
-#: application/modules/admin/views/scripts/profile/index.phtml:232
-#: application/modules/admin/views/scripts/shipment/manage-enroll.phtml:92
-#: application/modules/admin/views/scripts/shipment/manage-enroll.phtml:125
-#: application/modules/admin/views/scripts/shipment/manage-enroll.phtml:165
-#: application/modules/admin/views/scripts/shipment/round-participants.phtml:106
-#: application/modules/admin/views/scripts/system-admins/index.phtml:17
-#: application/views/scripts/participant/view.phtml:20
-msgid "Phone"
-msgstr ""
 
 #: application/modules/admin/views/scripts/participants/view-participants.phtml:37
 #, fuzzy
@@ -23974,6 +24007,29 @@ msgstr ""
 #: library/Pt/Commons/DateUtility.php:447
 msgid "Anywhere on Earth"
 msgstr ""
+
+#: library/Pt/Commons/ImportTemplate.php:69
+msgid "(Pick from dropdown)"
+msgstr ""
+
+#: library/Pt/Commons/ImportTemplate.php:70
+#, fuzzy, php-format
+msgid "- if left blank, the default password is %s"
+msgstr "Change Password"
+
+#: library/Pt/Commons/ImportTemplate.php:79
+msgid "(yes/no)"
+msgstr ""
+
+#: library/Pt/Commons/ImportTemplate.php:80
+#, fuzzy
+msgid "Participant First Name (OR) Lab Name"
+msgstr "Participant Login"
+
+#: library/Pt/Commons/ImportTemplate.php:81
+#, fuzzy
+msgid "Participant Last Name"
+msgstr "Participant Login"
 
 #: library/Pt/Plugins/PreSetter.php:31
 msgid "Your session has expired. Please sign in again."

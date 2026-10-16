@@ -1149,17 +1149,32 @@ final class Pt_Commons_MiscUtility
      */
     public static function buildCountryCache($db = null): array
     {
+        // Add each country's name in every installed language. A template downloaded in
+        // that language offers these names in its dropdown. They go last, so they never
+        // displace an ISO name, code or alias.
+        return self::buildBaseCountryCache($db) + Pt_Commons_ImportTemplate::localizedCountryIndex($db);
+    }
+
+    /**
+     * The country lookup without the names in other languages: ISO names, ISO codes and
+     * the alias map. The import templates check translated names against it, so that no
+     * translated name resolves to a different country.
+     */
+    public static function buildBaseCountryCache($db = null): array
+    {
         $db ??= Zend_Db_Table_Abstract::getDefaultAdapter();
         $results = $db->fetchAll($db->select()->from('countries', ['iso_name', 'iso2', 'iso3', 'id']));
 
+        // The keys include names in other languages, so they use mb_strtolower. The
+        // importers look cells up with mb_strtolower too.
         $cache = [];
         foreach ($results as $row) {
-            $cache[strtolower($row['iso_name'])] = $row['id'];
+            $cache[mb_strtolower($row['iso_name'])] = $row['id'];
             if (!empty($row['iso2'])) {
-                $cache[strtolower($row['iso2'])] = $row['id'];
+                $cache[mb_strtolower($row['iso2'])] = $row['id'];
             }
             if (!empty($row['iso3'])) {
-                $cache[strtolower($row['iso3'])] = $row['id'];
+                $cache[mb_strtolower($row['iso3'])] = $row['id'];
             }
         }
 

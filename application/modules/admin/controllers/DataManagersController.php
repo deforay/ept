@@ -441,6 +441,12 @@ class Admin_DataManagersController extends Zend_Controller_Action
         }
     }
 
+    /** The PTCC import template, generated in the admin's language. */
+    public function bulkImportPtccTemplateAction()
+    {
+        Pt_Commons_ImportTemplate::send(Pt_Commons_ImportTemplate::PTCC);
+    }
+
     public function bulkImportPtccAction()
     {
         /** @var Zend_Controller_Request_Http $request */
