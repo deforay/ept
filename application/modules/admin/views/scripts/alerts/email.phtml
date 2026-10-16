@@ -5,6 +5,14 @@
         width: 100%;
     }
 
+    /* Below desktop width, keep a floor so the grid scrolls sideways instead of
+       squeezing every cell to a few characters. */
+    @media (max-width: 991px) {
+        #emailTable {
+            min-width: 800px;
+        }
+    }
+
     #emailTable td {
         word-wrap: break-word;
         overflow-wrap: break-word;

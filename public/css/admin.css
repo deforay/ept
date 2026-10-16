@@ -8283,6 +8283,17 @@ td.center {
 	padding-top: 12px;
 }
 
+/* Below desktop width the shell cannot widen any further, so the grid scrolls
+   sideways inside its own box (main.js.php wraps it on DataTables init). On
+   desktop a grid that does not fit is fixed by widening the shell, not by
+   scrolling. */
+@media(max-width:991px) {
+	.data-list .data-list-scroll {
+		overflow-x: auto;
+		-webkit-overflow-scrolling: touch;
+	}
+}
+
 /* Table: same header band as the config cards, quiet hairline rows. */
 .data-list table.table {
 	margin-bottom: 0;

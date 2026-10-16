@@ -23,6 +23,15 @@
 		width: 100%;
 	}
 
+	/* A fixed-layout table always shrinks to its box, so on a narrow screen the
+	   cells broke mid-word instead of overflowing into the scroll box. Below
+	   desktop width the table keeps a floor and scrolls sideways instead. */
+	@media (max-width: 991px) {
+		#shipmentTable {
+			min-width: 1100px;
+		}
+	}
+
 	#shipmentTable th,
 	#shipmentTable td {
 		word-wrap: break-word;

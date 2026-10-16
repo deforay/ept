@@ -222,5 +222,17 @@
             ],
             "pageLength": 10
         });
+
+        // Give each .data-list grid its own scroll box. The card clips overflow,
+        // so on a narrow screen the right-hand columns were cut off with no way
+        // to reach them. Wrapping only the table keeps the search box and pager
+        // in place. admin.css turns the scrolling on below desktop width.
+        $(document).on('init.dt', function (e, settings) {
+            var $table = $(settings.nTable);
+            if (!$table.closest('.data-list').length || $table.parent().hasClass('data-list-scroll')) {
+                return;
+            }
+            $table.wrap('<div class="data-list-scroll"></div>');
+        });
     }
 </script>
