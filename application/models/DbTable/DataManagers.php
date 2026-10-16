@@ -61,7 +61,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             'qc_access' => $params['qcAccess'],
             'enable_adding_test_response_date' => $params['receiptDateOption'],
             'enable_choosing_mode_of_receipt' => $params['modeOfReceiptOption'],
-            'view_only_access' => $params['viewOnlyAccess'],
+            'view_only_access' => $params['viewOnlyAccess'] ?? 'no',
             'status' => $params['status'],
             'created_by' => $authNameSpace->admin_id,
             'created_on' => new Zend_Db_Expr('now()'),
