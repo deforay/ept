@@ -1571,6 +1571,23 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                 $originalEmail ??= MiscUtility::sanitizeAndValidateEmail($sheetData[$i]['B']);
                 $emailIsGenerated = MiscUtility::isGeneratedEmail($originalEmail);
 
+                // Stored as 'yes' or 'no' in every language. Some readers test == 'no', so
+                // any other stored value hides "Delete Response" without any error. A blank
+                // cell means no, as the edit form shows it. Any other value is refused.
+                $rawViewOnly = trim((string) $sheetData[$i]['I']);
+                $viewOnlyAccess = $rawViewOnly === '' ? 'no' : ImportTemplate::normalizeYesNo($rawViewOnly);
+                if ($viewOnlyAccess === null) {
+                    $response['error-data'][] = [
+                        's_no'          => $sheetData[$i]['A'] ?: ($i - 1),
+                        'primary_email' => $originalEmail,
+                        'name'          => trim($sheetData[$i]['C'] . ' ' . $sheetData[$i]['D']),
+                        'institute'     => $sheetData[$i]['E'],
+                        'country'       => trim((string) $sheetData[$i]['J']),
+                        'error'         => 'Skipped: Enable View-Only Access must be yes or no, not "' . $rawViewOnly . '"',
+                    ];
+                    continue;
+                }
+
                 // Use cached country lookup instead of individual query
                 $countryId = $this->getCountryIdFromCache($sheetData[$i]['J'], $countryCache);
 
@@ -1608,11 +1625,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                     // If G is blank, H stays the mobile, so those files keep their number.
                     'mobile' => trim((string) $sheetData[$i]['G']) !== '' ? $sheetData[$i]['G'] : $sheetData[$i]['H'],
                     'secondary_email' => MiscUtility::sanitizeAndValidateEmail($sheetData[$i]['F']),
-                    // Stored as 'yes' or 'no' in every language. Some readers test == 'no',
-                    // so a stored "Non", "No" or blank hides "Delete Response" without any
-                    // error. A blank cell means no, as the edit form already shows it.
-                    'view_only_access' => ImportTemplate::normalizeYesNo($sheetData[$i]['I'])
-                        ?? (trim((string) $sheetData[$i]['I']) === '' ? 'no' : $sheetData[$i]['I']),
+                    'view_only_access' => $viewOnlyAccess,
                     'country_id' => $countryId,
                     'primary_email' => MiscUtility::sanitizeAndValidateEmail($originalEmail),
                     'password' => $password,

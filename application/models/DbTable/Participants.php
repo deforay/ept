@@ -2068,7 +2068,14 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
 
                 // Prepare participant data
                 // Accepts yes and no in every installed language, such as "non" or "không".
-                $isIndividual = ImportTemplate::normalizeYesNo($row['C'] ?? '') ?? 'yes';
+                // A blank cell means yes. Any other value is refused rather than guessed.
+                $rawIndividual = trim((string) ($row['C'] ?? ''));
+                $isIndividual = ImportTemplate::normalizeYesNo($rawIndividual);
+                if ($isIndividual === null && $rawIndividual !== '') {
+                    $this->addError($response, $row, $i, "Individual Participant must be yes or no, not \"{$rawIndividual}\"");
+                    continue;
+                }
+                $isIndividual ??= 'yes';
 
                 $countryId = $this->getCountryIdFromCache($row['M'] ?? '', $countryCache);
 
