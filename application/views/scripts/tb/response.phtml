@@ -378,7 +378,7 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
 												value="<?php echo $row['instrument_serial']; ?>" name="serialNo[]"
 												id="serialNo1" class="form-control" placeholder="<?= $this->htmlTranslate("Enter serial number"); ?>"
 												title="<?= $this->htmlTranslate("Please enter the serial number"); ?>"
-												onchange="addInstrumentSerialNo(this);" /></td>
+												/></td>
 										<td><input type="text"
 												value="<?php echo $this->dateFormat($row['instrument_installed_on']); ?>"
 												name="installedOn[]" id="installedOn1" class="form-control expDatepicker"
@@ -401,7 +401,7 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
 								<tr>
 									<td><input type="text" name="serialNo[]" id="serialNo1" class="form-control"
 											placeholder="<?= $this->htmlTranslate("Enter serial number"); ?>" title="<?= $this->htmlTranslate("Please enter the serial number"); ?>"
-											onchange="addInstrumentSerialNo(this);" /></td>
+											/></td>
 									<td><input type="text" name="installedOn[]" id="installedOn1"
 											class="form-control expDatepicker" readonly
 											placeholder="<?= $this->htmlTranslate("Installation date"); ?>" title="<?= $this->htmlTranslate("Please select the installation date"); ?>" />
@@ -651,7 +651,6 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
 <script>
 	sampleCounter = 1;
 	let _detacted = false;
-	instrumentSn = [];
 
 	function goto_dashboard() {
 		window.history.back();
@@ -768,7 +767,7 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
 	function addInstrumentFacilityRow(obj) {
 		sampleCounter++;
 		var html = '<tr> \
-			<td><input type="text" name="serialNo[]" id="serialNo' + sampleCounter + '" class="form-control" placeholder="<?= $this->htmlTranslate("Enter serial number"); ?>" title="<?= $this->htmlTranslate("Please enter the serial number"); ?>" onchange="addInstrumentSerialNo(this);"/></td>\
+			<td><input type="text" name="serialNo[]" id="serialNo' + sampleCounter + '" class="form-control" placeholder="<?= $this->htmlTranslate("Enter serial number"); ?>" title="<?= $this->htmlTranslate("Please enter the serial number"); ?>"/></td>\
 			<td><input type="text" name="installedOn[]" id="installedOn' + sampleCounter + '" class="form-control expDatepicker" readonly placeholder="<?= $this->htmlTranslate("Installation date"); ?>" title="<?= $this->htmlTranslate("Please select the installation date"); ?>" /></td>\
 			<td><input type="text" name="lastCalibrated[]" id="lastCalibrated' + sampleCounter + '" class="form-control expDatepicker" readonly placeholder="<?= $this->htmlTranslate("Last calibration date"); ?>" title="<?= $this->htmlTranslate("Please select the last calibration date"); ?>" /></td>\
 			<td style=" vertical-align: middle; text-align:center; "><a href="javascript:void(0);" onclick="addInstrumentFacilityRow(this);" class="btn btn-xs btn-info"><i class="icon-plus"></i></a>&nbsp;&nbsp;<a  href="javascript:void(0);" onclick="removeInstrumentFacilityRow(this)" class="btn btn-xs btn-danger"  title="<?= $this->htmlTranslate("Remove this row completely"); ?>" alt="<?= $this->htmlTranslate("Remove this row completely"); ?>"><i class="icon-minus"></i></a></td> \
@@ -785,6 +784,7 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
 	function removeInstrumentFacilityRow(obj) {
 		$(obj.parentNode.parentNode).fadeOut("normal", function() {
 			$(this).remove();
+			syncInstrumentOptions();
 		});
 	}
 
@@ -956,11 +956,7 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
 					if (data != "") {
 						$("#ptPanelTable").html(data);
 						detectedResultChange();
-						if (instrumentSn.length > 0) {
-							$.each(instrumentSn, function(key, value) {
-								$('.instruments').append($("<option></option>").attr("value", value).text(value));
-							});
-						}
+						syncInstrumentOptions();
 					}
 					if (_short == "molbio-truenat-tb" || _short == "molbio-truenat-plus") {
 						$('#tb-plus').hide();
@@ -988,14 +984,55 @@ if ($inConfirmStep) { $_SESSION['confirmForm'] = ''; } ?>
 		}
 	}
 
-	function addInstrumentSerialNo(obj) {
-		if (obj.value != '') {
-			if (jQuery.inArray(jQuery.trim(obj.value), instrumentSn) == -1) {
-				instrumentSn.push(obj.value);
-				$('.instruments').append($("<option></option>").attr("value", obj.value).text(obj.value));
+	// Rebuild every per-sample serial dropdown from the Instruments at Facility table.
+	// A saved selection stays listed even after its instrument row is removed.
+	// Editing a serial in that table also updates the dropdowns that had the old serial.
+	// With exactly one instrument on an editable form, empty dropdowns take its serial.
+	function syncInstrumentOptions() {
+		let serials = [];
+		let renamed = {};
+		$('input[name="serialNo[]"]').each(function() {
+			let serial = $.trim($(this).val());
+			let previous = $(this).data('previousSerial');
+			if (previous !== undefined && previous !== '' && previous !== serial) {
+				renamed[previous] = serial;
 			}
-		}
+			$(this).data('previousSerial', serial);
+			if (serial !== '' && serials.indexOf(serial) === -1) {
+				serials.push(serial);
+			}
+		});
+		let autoSelect = serials.length === 1 && $('input[name="serialNo[]"]:enabled').length > 0;
+
+		$('select.instruments').each(function() {
+			let $select = $(this);
+			let current = $select.val() || '';
+			if (renamed.hasOwnProperty(current)) {
+				current = renamed[current];
+			}
+			let options = serials.slice();
+			if (current !== '' && options.indexOf(current) === -1) {
+				options.unshift(current);
+			}
+			let existing = $select.find('option[value!=""]').map(function() {
+				return this.value;
+			}).get();
+			// Rebuilding an open dropdown on mousedown can close it, so skip when nothing changed.
+			if (existing.join('\n') !== options.join('\n')) {
+				$select.find('option[value!=""]').remove();
+				$.each(options, function(i, serial) {
+					$select.append($('<option></option>').attr('value', serial).text(serial));
+				});
+			}
+			if (current === '' && autoSelect) {
+				current = serials[0];
+			}
+			$select.val(current);
+		});
 	}
+
+	$(document).on('input change', 'input[name="serialNo[]"]', syncInstrumentOptions);
+	$(document).on('focus mousedown', 'select.instruments', syncInstrumentOptions);
 
 	function manualOverrideChange(value) {
 		if (value == 'yes') {
