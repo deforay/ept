@@ -1,3 +1,9 @@
+<?php include APPLICATION_PATH . '/views/partials/report-empty-state.phtml'; ?>
+<script type="text/javascript">
+    $(function () {
+        reportEmptyState.placeholder(".js-filter-panel");
+    });
+</script>
 <style>
     .highcharts-figure,
     .highcharts-data-table table {
@@ -121,6 +127,7 @@
     </div><!-- /.js-filter-body -->
 </div><!-- /.filter-panel -->
 
+<div class="js-trends-extra">
 <div class="labPerformanceReport">
 
 
@@ -140,6 +147,7 @@
     <div id="aberraantContainer"></div>
 </figure>
 <br>
+</div><!-- /.js-trends-extra -->
 <table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered table-hover hide"
     id="shipmentTable">
     <thead>
@@ -276,6 +284,7 @@ if ((isset($this->shipmentDetails['shipment_code']) && $this->shipmentDetails['s
     }
 
     function drawTable() {
+        reportEmptyState.hidePlaceholder();
         var dateRange = $("#dateRange").val();
         var _dateRange = dateRange.split(" to ");
         startDate = _dateRange[0];
@@ -285,7 +294,7 @@ if ((isset($this->shipmentDetails['shipment_code']) && $this->shipmentDetails['s
         $.blockUI;
 
         oTable = $('#shipmentTable').dataTable({
-
+            "oLanguage": reportEmptyState.dataTableLanguage(),
             "bPaginate": paginate,
             "bJQueryUI": false,
             "bAutoWidth": false,
@@ -352,6 +361,12 @@ if ((isset($this->shipmentDetails['shipment_code']) && $this->shipmentDetails['s
                     "data": aoData,
                     "success": function (json) {
                         fnCallback(json);
+                        // The charts above the table are empty too when the filters match
+                        // nothing; hide them so the table's placeholder card stands alone.
+                        var searching = $.trim($("#shipmentTable_filter input").val() || "") !== "";
+                        if (!searching) {
+                            $(".js-trends-extra").toggleClass("hide", parseInt(json.iTotalRecords, 10) === 0);
+                        }
                         if (currentHighlighted != null && currentHighlighted != "" && currentHighlighted != 0) {
 
                             $("#shipment" + currentHighlighted + " td").addClass("highliter");
@@ -473,7 +488,7 @@ if ((isset($this->shipmentDetails['shipment_code']) && $this->shipmentDetails['s
 
         $.blockUI;
         $('#regionTable').dataTable({
-
+            "oLanguage": reportEmptyState.dataTableLanguage(),
             "bPaginate": paginate,
             "bJQueryUI": false,
             "bAutoWidth": false,

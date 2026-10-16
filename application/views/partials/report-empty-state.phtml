@@ -1,0 +1,68 @@
+<?php
+
+/**
+ * "No data for selected filters" placeholder card, shared by the report pages.
+ *
+ * Include once per page (before the page's own <script> block):
+ *
+ *   <?php include APPLICATION_PATH . '/views/partials/report-empty-state.phtml'; ?>
+ *
+ * It defines window.reportEmptyState:
+ *
+ *   reportEmptyState.html([text], [icon])  -> card markup
+ *   reportEmptyState.show(target, [text])  -> put the card into a container
+ *   reportEmptyState.dataTableLanguage()   -> oLanguage entries so a DataTable
+ *                                             with no rows shows the card
+ *   reportEmptyState.placeholder(after, [text]) -> show the card after an element
+ *                                             (e.g. the filter panel) until a
+ *                                             report is drawn
+ *   reportEmptyState.hidePlaceholder()     -> hide that card again
+ *   reportEmptyState.readyText             -> hint for the not-yet-run state
+ *
+ * The card styles (.report-empty-state) live in public/css/common.css, so
+ * server-rendered ajax partials can emit the same markup directly.
+ */
+?>
+<script type="text/javascript">
+    window.reportEmptyState = window.reportEmptyState || (function () {
+        var defaultTitle = <?= json_encode($this->translate->_("No data for selected filters")); ?>;
+        var defaultText = <?= json_encode($this->translate->_("Try changing the date range or the other filters above.")); ?>;
+        var readyText = <?= json_encode($this->translate->_("Choose your filters above and click Get Report to see results.")); ?>;
+
+        function escapeHtml(value) {
+            return $('<div/>').text(value).html();
+        }
+
+        function html(text, icon) {
+            return '<div class="report-empty-state">' +
+                '<i class="' + escapeHtml(icon || 'icon-search') + ' report-empty-icon"></i>' +
+                '<h4>' + escapeHtml(defaultTitle) + '</h4>' +
+                '<p>' + escapeHtml(text || defaultText) + '</p>' +
+                '</div>';
+        }
+
+        return {
+            readyText: readyText,
+            html: html,
+            placeholder: function (after, text) {
+                var $placeholder = $(".js-report-placeholder");
+                if (!$placeholder.length) {
+                    $placeholder = $('<div class="js-report-placeholder"></div>').insertAfter(after);
+                }
+                $placeholder.html(html(text || readyText)).removeClass("hide");
+            },
+            hidePlaceholder: function () {
+                $(".js-report-placeholder").addClass("hide");
+            },
+            show: function (target, text, icon) {
+                $(target).html(html(text, icon));
+            },
+            dataTableLanguage: function (text) {
+                return {
+                    "sEmptyTable": html(text),
+                    "sZeroRecords": html(text)
+                };
+            }
+        };
+    })();
+</script>

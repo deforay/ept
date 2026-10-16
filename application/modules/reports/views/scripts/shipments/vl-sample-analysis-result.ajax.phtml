@@ -1,3 +1,16 @@
+<?php
+$hasResults = false;
+foreach ([0, 1, 2] as $seriesIndex) {
+    if (!empty($this->vlSampleResult[$seriesIndex][0]) && array_sum($this->vlSampleResult[$seriesIndex][0]) > 0) {
+        $hasResults = true;
+        break;
+    }
+}
+if (!$hasResults) {
+    $emptyStateText = $this->translate->_("No VL responses have been evaluated for the selected shipment and date range yet.");
+    include APPLICATION_PATH . '/views/partials/report-empty-state-card.phtml';
+    return;
+} ?>
 <div id="container" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
 <script type="text/javascript">
     $(document).ready(function() {

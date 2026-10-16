@@ -59,7 +59,5 @@
         </table>
     </div>
 <?php else: ?>
-    <div class="alert alert-warning text-center">
-        <?= $this->translate->_("No data available for the selected criteria."); ?>
-    </div>
+    <?php include APPLICATION_PATH . '/views/partials/report-empty-state-card.phtml'; ?>
 <?php endif; ?>

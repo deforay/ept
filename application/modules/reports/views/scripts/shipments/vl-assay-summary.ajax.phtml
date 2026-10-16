@@ -18,7 +18,7 @@ foreach ($summary as $row) {
 }
 ?>
 <?php if (empty($summary)) { ?>
-    <div class="alert alert-info">No VL assay data found for the selected scope.</div>
+    <?php include APPLICATION_PATH . '/views/partials/report-empty-state-card.phtml'; ?>
 <?php } else { ?>
     <div id="assaySummaryChart" style="min-width: 320px; height: 460px; margin: 0 auto;"></div>
     <div class="dontPrint" style="text-align:right;margin-top:20px;">

@@ -174,7 +174,7 @@
             success: function(html) {
                 $("#reportContainer").html(html);
                 $("#loadingMessage").addClass("hide");
-                hasReportData = true;
+                hasReportData = $("#reportContainer #shipmentTable").length > 0;
                 $.unblockUI();
             },
             error: function(xhr, status, error) {

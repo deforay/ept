@@ -1,3 +1,9 @@
+<?php include APPLICATION_PATH . '/views/partials/report-empty-state.phtml'; ?>
+<script type="text/javascript">
+    $(function () {
+        reportEmptyState.placeholder(".js-filter-panel");
+    });
+</script>
 <link rel="stylesheet" href="<?php echo $this->baseUrl('css/daterangepicker.css'); ?>" type="text/css" media="all">
 <script type="text/javascript" src="<?php echo $this->baseUrl('js/moment.min.js'); ?>"></script>
 <legend>
@@ -171,6 +177,7 @@
     }
 
     function drawTable() {
+        reportEmptyState.hidePlaceholder();
         var dateRange = $("#dateRange").val();
         var _dateRange = dateRange.split(" to ");
         startDate = _dateRange[0];
@@ -181,7 +188,7 @@
         $("#shipmentTable").removeClass("hide");
         $.blockUI;
         oTable = $('#shipmentTable').dataTable({
-
+            "oLanguage": reportEmptyState.dataTableLanguage(),
             "bPaginate": paginate,
             "bJQueryUI": false,
             "bAutoWidth": false,

@@ -1,3 +1,9 @@
+<?php include APPLICATION_PATH . '/views/partials/report-empty-state.phtml'; ?>
+<script type="text/javascript">
+    $(function () {
+        reportEmptyState.show("#performance", reportEmptyState.readyText);
+    });
+</script>
 <div style=" width: 124%;margin-left: -12%; ">
     <style>
         .highcharts-figure,
@@ -187,10 +193,12 @@
                 format: "html"
             },
             function(data) {
-                if (data != "" || data != null) {
-                    $('#performance').html(data);
+                $('#performance').html(data);
+                if ($('#performance #shipmentTable').length) {
                     $('#shipmentTable').DataTable();
                     $('#exportExcel').removeClass('hide');
+                } else {
+                    $('#exportExcel').addClass('hide');
                 }
             });
     }

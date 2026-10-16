@@ -6,6 +6,10 @@ foreach ($this->result as $row) {
         $shipments[] = $row['shipment_code'];
     }
 }
+if (empty($results)) {
+    include APPLICATION_PATH . '/views/partials/report-empty-state-card.phtml';
+    return;
+}
 ?>
 
 <table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered table-hover" id="shipmentTable">

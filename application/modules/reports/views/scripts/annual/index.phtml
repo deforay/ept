@@ -1,3 +1,9 @@
+<?php include APPLICATION_PATH . '/views/partials/report-empty-state.phtml'; ?>
+<script type="text/javascript">
+    $(function () {
+        reportEmptyState.show("#summaryDiv", reportEmptyState.readyText);
+    });
+</script>
 <link rel="stylesheet" href="<?php echo $this->baseUrl('css/daterangepicker.css'); ?>" type="text/css" media="all">
 <script type="text/javascript" src="<?php echo $this->baseUrl('js/moment.min.js'); ?>"></script>
 <link href="<?php echo $this->baseUrl('css/select2.css'); ?>" rel="stylesheet" />
@@ -41,9 +47,9 @@
 <br />
 <br />
 <div align="left" style="padding-top:3px;" class="col-lg-12">
-	<span id="summaryDiv">
+	<div id="summaryDiv">
 
-	</span>
+	</div>
 </div>
 <div align="left" style="margin-top: 3em;display: none;" class="col-lg-12 certificate-btn">
 	<div style="width: 74%;display: flex;">
@@ -204,6 +210,12 @@
 				},
 				function(data) {
 					data = $.parseJSON(data);
+					if (!data.fileName) {
+						reportEmptyState.show("#summaryDiv");
+						$(".certificate-btn").hide();
+						$.unblockUI();
+						return;
+					}
 					if (data.fileName) {
 						$("#summaryDiv").html("&nbsp;&nbsp;<a href='<?php echo $this->baseUrl("temporary/annual-reports/"); ?>" + data.fileName + "' class='btn btn-info btn-sm' target='_BLANK' style='margin-top:10px;float:left;clear:both;'><i class='icon-file-text'></i> Download " + data.fileName + " </a>");
 						$(".certificate-btn").hide();
@@ -216,7 +228,8 @@
 					$.unblockUI();
 				});
 		} else {
-			alert("Shipment not available,Please select correct date and scheme");
+			reportEmptyState.show("#summaryDiv");
+			$(".certificate-btn").hide();
 		}
 	}
 

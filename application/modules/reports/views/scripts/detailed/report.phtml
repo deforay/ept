@@ -22,6 +22,11 @@ else{
   $type = "TEST EVENT";
 }
 
+if (empty($data)) {
+  include APPLICATION_PATH . '/views/partials/report-empty-state-card.phtml';
+  return;
+}
+
 ?>
  <style>
     body {

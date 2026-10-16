@@ -1,3 +1,9 @@
+<?php include APPLICATION_PATH . '/views/partials/report-empty-state.phtml'; ?>
+<script type="text/javascript">
+    $(function () {
+        reportEmptyState.show("#tableData", reportEmptyState.readyText);
+    });
+</script>
 <style>
     @media print {
 
@@ -80,7 +86,7 @@
 </table>
     </div><!-- /.js-filter-body -->
 </div><!-- /.filter-panel -->
-<div id="participant" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+<div id="participant" style="min-width: 310px; height: 400px; margin: 0 auto; display: none;"></div>
 
 <br>
 <div id="tableData">
@@ -283,7 +289,7 @@
         $("#shipmentTable").removeClass("hide");
         $.blockUI;
         oTable = $('#shipmentTable').dataTable({
-            
+            "oLanguage": reportEmptyState.dataTableLanguage(),
             "bPaginate": paginate,
             "bJQueryUI": false,
             "bAutoWidth": false,

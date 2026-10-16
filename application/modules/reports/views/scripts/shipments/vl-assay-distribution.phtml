@@ -1,3 +1,9 @@
+<?php include APPLICATION_PATH . '/views/partials/report-empty-state.phtml'; ?>
+<script type="text/javascript">
+    $(function () {
+        reportEmptyState.show("#shipmentchart", reportEmptyState.readyText);
+    });
+</script>
 <?php
 //Zend_Debug::dump($this->vlAssayCount);
 ?>

@@ -1,3 +1,4 @@
+<?php include APPLICATION_PATH . '/views/partials/report-empty-state.phtml'; ?>
 <style>
 	@media print {
 
@@ -527,7 +528,7 @@
 		$("#shipmentTable").removeClass("hide");
 		$.blockUI;
 		oTable = $('#shipmentTable').dataTable({
-
+			"oLanguage": reportEmptyState.dataTableLanguage(),
 			"bJQueryUI": false,
 			"bAutoWidth": false,
 			"bInfo": true,

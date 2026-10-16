@@ -1,3 +1,9 @@
+<?php include APPLICATION_PATH . '/views/partials/report-empty-state.phtml'; ?>
+<script type="text/javascript">
+    $(function () {
+        reportEmptyState.placeholder(".js-filter-panel");
+    });
+</script>
 <style>
 	@media print {
 
@@ -266,6 +272,7 @@
 	});
 
 	function drawTable() {
+		reportEmptyState.hidePlaceholder();
 		var dateRange = $("#dateRange").val();
 		var _dateRange = dateRange.split(" to ");
 		startDate = _dateRange[0];
@@ -273,8 +280,9 @@
 
 		$("#shipmentTable").removeClass("hide");
 		$(".participantTable").removeClass("hide");
+		$("#shipmentTable_wrapper, #participantTable_wrapper").removeClass("hide");
 		oTable = $('#shipmentTable').dataTable({
-
+			"oLanguage": reportEmptyState.dataTableLanguage(),
 			"bPaginate": paginate,
 			"bJQueryUI": false,
 			"bAutoWidth": false,
@@ -357,7 +365,7 @@
 		});
 
 		aTable = $('#participantTable').dataTable({
-
+			"oLanguage": reportEmptyState.dataTableLanguage(),
 			"bPaginate": paginate,
 			"bJQueryUI": false,
 			"bAutoWidth": false,
@@ -457,6 +465,13 @@
 			alert("<?= $this->jsTranslate("Please select a scheme type"); ?>");
 			return;
 		} else if ($("#shipmentId").val() == '') {
+			if ($("#shipmentId option").filter(function () { return this.value !== ''; }).length === 0) {
+				// The date range and scheme matched no shipments, so there is nothing to pick.
+				$("#shipmentTable, .participantTable").addClass("hide");
+				$("#shipmentTable_wrapper, #participantTable_wrapper").addClass("hide");
+				reportEmptyState.placeholder(".js-filter-panel", <?= json_encode($this->translate->_("There are no shipments for the selected date range and scheme. Try a different date range or scheme.")); ?>);
+				return;
+			}
 			alert("<?= $this->jsTranslate("Please select a shipment"); ?>");
 			return;
 		} else {
@@ -480,6 +495,7 @@
 			function (data) {
 				if (data == 0) {
 					shipmentCode = false;
+					$("#shipmentId").html("<option></option>");
 				} else {
 					$("#shipmentId").html(data);
 					shipmentCode = true;
