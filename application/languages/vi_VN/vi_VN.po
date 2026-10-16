@@ -2420,14 +2420,12 @@ msgstr "Tệp cho đơn vị tham gia"
 
 #: application/layouts/scripts/admin.phtml:389
 #: application/views/partials/spotlight.phtml:55
-#, fuzzy
 msgid "Feedback Questions"
-msgstr "Danh sách câu hỏi phản hồi"
+msgstr "Câu hỏi phản hồi"
 
 #: application/layouts/scripts/admin.phtml:392
 #: application/modules/admin/views/scripts/feedback-responses/shipment-questions.phtml:39
 #: application/views/partials/spotlight.phtml:63
-#, fuzzy
 msgid "Feedback Forms"
 msgstr "Mẫu phản hồi"
 
@@ -10803,76 +10801,69 @@ msgid "Clone"
 msgstr "Sao chép/nhân bản"
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:53
-#, fuzzy
 msgid "All participants"
-msgstr "Tất cả các đơn vị tham gia"
+msgstr "Tất cả đơn vị tham gia"
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:54
-#, fuzzy
 msgid "Every participant in the shipment."
-msgstr "Khoá danh sách đơn vị tham gia cho vòng ngoại kiểm này"
+msgstr "Mọi đơn vị tham gia trong vòng ngoại kiểm."
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:57
-#, fuzzy
 msgid "Passing only"
-msgstr "Điểm đạt"
+msgstr "Chỉ đơn vị đạt"
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:58
-#, fuzzy
 msgid "Only participants who passed this shipment."
-msgstr "Thêm đơn vị tham gia vào vòng ngoại kiểm này"
+msgstr "Chỉ những đơn vị tham gia đạt vòng ngoại kiểm này."
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:61
-#, fuzzy
 msgid "Failing only"
-msgstr "Chỉ đăng nhập"
+msgstr "Chỉ đơn vị không đạt"
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:62
-#, fuzzy
 msgid "Only participants who failed this shipment."
-msgstr "Thêm đơn vị tham gia vào vòng ngoại kiểm này"
+msgstr "Chỉ những đơn vị tham gia không đạt vòng ngoại kiểm này."
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:178
-#, fuzzy
 msgid "All feedback forms"
-msgstr "Hiển thị biểu mẫu phản hồi cho"
+msgstr "Tất cả mẫu phản hồi"
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:181
-#, fuzzy, php-format
+#, php-format
 msgid "Copy the %s feedback form"
-msgstr "Sao chép biểu mẫu phản hồi"
+msgstr "Sao chép mẫu phản hồi %s"
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:183
-#, fuzzy, php-format
+#, php-format
 msgid "Feedback form for %s"
-msgstr "Mẫu phản hồi (%d)"
+msgstr "Mẫu phản hồi cho %s"
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:185
 #: application/modules/admin/views/scripts/feedback-responses/shipment-questions.phtml:42
-#, fuzzy
 msgid "New feedback form"
-msgstr "Hiển thị biểu mẫu phản hồi cho"
+msgstr "Mẫu phản hồi mới"
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:190
-#, fuzzy
 msgid ""
 "The questions, introduction, audience and days open below come from that "
 "form. Pick the shipment to use them for and save. The original form is not "
 "changed."
 msgstr ""
-"Các câu hỏi bên dưới được sao chép từ vòng ngoại kiểm bạn đã nhân bản. Hãy "
-"chọn vòng ngoại kiểm dành cho mẫu này và lưu — mẫu gốc không bị thay đổi."
+"Các câu hỏi, phần giới thiệu, đối tượng xem và số ngày mở bên dưới được lấy "
+"từ mẫu đó. Hãy chọn vòng ngoại kiểm sẽ áp dụng và lưu. Mẫu gốc không bị thay "
+"đổi."
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:192
 msgid ""
 "The questions participants answer after a shipment, with an optional "
 "introduction and files to download."
 msgstr ""
+"Các câu hỏi đơn vị tham gia trả lời sau một vòng ngoại kiểm, kèm phần giới "
+"thiệu và tệp tải xuống không bắt buộc."
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:201
-#, fuzzy
 msgid "Shipment and audience"
-msgstr "Ngày gửi vòng ngoại kiểm"
+msgstr "Vòng ngoại kiểm và đối tượng xem"
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:204
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:355
@@ -10894,74 +10885,71 @@ msgid "Shipment"
 msgstr "Vòng ngoại kiểm"
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:210
-#, fuzzy
 msgid "has a form"
-msgstr "Hệ thống máy xét nghiệm"
+msgstr "đã có mẫu"
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:215
 msgid "Pick the shipment first. If it already has a form, that form opens."
 msgstr ""
+"Hãy chọn vòng ngoại kiểm trước. Nếu vòng đó đã có mẫu, mẫu đó sẽ được mở."
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:217
 msgid "Picking another shipment opens its form."
-msgstr ""
+msgstr "Chọn vòng ngoại kiểm khác sẽ mở mẫu của vòng đó."
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:222
 msgid "Who sees this form"
-msgstr ""
+msgstr "Ai được xem mẫu này"
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:234
-#, fuzzy
 msgid "Open for feedback"
-msgstr "Cài đặt phản hồi"
+msgstr "Thời gian nhận phản hồi"
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:237
-#, fuzzy
 msgid "days after the shipment is finalized"
-msgstr "Vui lòng nhập điểm vòng ngoại kiểm"
+msgstr "ngày sau khi vòng ngoại kiểm được hoàn tất"
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:238
 msgid "2 weeks"
-msgstr ""
+msgstr "2 tuần"
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:239
 msgid "4 weeks"
-msgstr ""
+msgstr "4 tuần"
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:240
 msgid "8 weeks"
-msgstr ""
+msgstr "8 tuần"
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:249
 msgid "Reuse an earlier form:"
-msgstr ""
+msgstr "Dùng lại mẫu trước đây:"
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:250
-#, fuzzy
 msgid "Shipment to copy the feedback form from"
-msgstr "Vui lòng chọn vòng ngoại kiểm để sao chép mẫu phản hồi."
+msgstr "Vòng ngoại kiểm để sao chép mẫu phản hồi"
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:251
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:392
-#, fuzzy
 msgid "Pick a shipment"
 msgstr "Chọn một vòng ngoại kiểm"
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:253
-#, fuzzy, php-format
+#, php-format
 msgid "%d questions"
-msgstr "câu hỏi"
+msgstr "%d câu hỏi"
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:256
-#, fuzzy
 msgid "Copy into this form"
-msgstr "không thuộc vòng này"
+msgstr "Sao chép vào mẫu này"
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:257
 msgid ""
 "Fills in its questions, introduction, audience and days open. Nothing is "
 "saved until you click Save."
 msgstr ""
+"Điền sẵn các câu hỏi, phần giới thiệu, đối tượng xem và số ngày mở của mẫu "
+"đó. Chưa có gì được lưu cho đến khi bạn nhấn Lưu."
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:263
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:357
@@ -10972,29 +10960,27 @@ msgstr "Câu hỏi"
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:264
 #: application/modules/admin/views/scripts/feedback-responses/shipment-questions.phtml:41
-#, fuzzy
 msgid "Manage questions"
-msgstr "câu hỏi"
+msgstr "Quản lý câu hỏi"
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:267
 msgid ""
 "Participants see the questions in this order. Use the arrows to move one."
 msgstr ""
+"Đơn vị tham gia sẽ thấy các câu hỏi theo thứ tự này. Dùng các mũi tên để di "
+"chuyển câu hỏi."
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:271
-#, fuzzy
 msgid "Add questions"
-msgstr "câu hỏi"
+msgstr "Thêm câu hỏi"
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:272
-#, fuzzy
 msgid "Search questions"
 msgstr "Tìm câu hỏi"
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:279
-#, fuzzy
 msgid "Introduction"
-msgstr "chiết xuất"
+msgstr "Giới thiệu"
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:279
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:288
@@ -11006,11 +10992,12 @@ msgid ""
 "Shown above the questions, for example to thank participants or explain why "
 "you ask."
 msgstr ""
+"Hiển thị phía trên các câu hỏi, ví dụ để cảm ơn đơn vị tham gia hoặc giải "
+"thích lý do khảo sát."
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:288
-#, fuzzy
 msgid "Files to download"
-msgstr "Tải xuống tệp"
+msgstr "Tệp để tải xuống"
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:293
 #: application/modules/admin/views/scripts/home-section-links/add.phtml:40
@@ -11021,64 +11008,59 @@ msgid "File"
 msgstr "Tập tin"
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:294
-#, fuzzy
 msgid "Name participants see"
-msgstr "Đơn vị tham gia mới"
+msgstr "Tên hiển thị cho đơn vị tham gia"
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:295
-#, fuzzy
 msgid "Who sees it"
-msgstr "Ai sẽ nhận"
+msgstr "Ai được xem"
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:315
 msgid "The saved file is missing. Choose it again, or remove this row."
-msgstr ""
+msgstr "Không tìm thấy tệp đã lưu. Hãy chọn lại tệp hoặc xóa dòng này."
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:318
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:708
-#, fuzzy
 msgid "Same as the file"
-msgstr "Nhập một tệp khác"
+msgstr "Giống tên tệp"
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:328
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:711
-#, fuzzy
 msgid "Remove this file from the form"
-msgstr "Xóa hoàn toàn hàng này"
+msgstr "Xóa tệp này khỏi mẫu"
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:334
 msgid ""
 "No files. Add a report, certificate or guidance document participants can "
 "download with the form."
 msgstr ""
+"Chưa có tệp. Hãy thêm báo cáo, giấy chứng nhận hoặc tài liệu hướng dẫn để "
+"đơn vị tham gia tải xuống cùng mẫu."
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:335
-#, fuzzy
 msgid "Add a file"
-msgstr "Thêm vòng ngoại kiểm"
+msgstr "Thêm tệp"
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:336
 msgid "PDF, Word, Excel, PowerPoint, CSV, text or image files."
-msgstr ""
+msgstr "Tệp PDF, Word, Excel, PowerPoint, CSV, văn bản hoặc hình ảnh."
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:342
 msgid "Saving switches on Collect Feedback for the shipment if it is off."
 msgstr ""
+"Khi lưu, Thu thập phản hồi sẽ được bật cho vòng ngoại kiểm nếu đang tắt."
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:345
-#, fuzzy
 msgid "Save feedback form"
-msgstr "Hiển thị biểu mẫu phản hồi cho"
+msgstr "Lưu mẫu phản hồi"
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:353
-#, fuzzy
 msgid "Summary"
-msgstr "Đã tạo báo cáo tổng hợp"
+msgstr "Tóm tắt"
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:356
-#, fuzzy
 msgid "Shown to"
-msgstr "Xem danh sách"
+msgstr "Hiển thị cho"
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:358
 #: application/modules/admin/views/scripts/feedback-responses/shipment-questions.phtml:78
@@ -11093,41 +11075,48 @@ msgstr "Tệp"
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:363
 msgid "Good to know"
-msgstr ""
+msgstr "Lưu ý"
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:364
 msgid ""
 "Required questions must be answered before a participant can submit the form."
 msgstr ""
+"Đơn vị tham gia phải trả lời các câu hỏi bắt buộc trước khi có thể gửi mẫu."
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:365
 msgid ""
 "A question marked Passing only or Failing only keeps that limit, even on a "
 "form shown to all participants."
 msgstr ""
+"Câu hỏi được đánh dấu Chỉ đơn vị đạt hoặc Chỉ đơn vị không đạt vẫn giữ giới "
+"hạn đó, kể cả trên mẫu hiển thị cho tất cả đơn vị tham gia."
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:366
 msgid ""
 "To change a question's wording, use Manage questions. The change shows on "
 "every form that uses it."
 msgstr ""
+"Để sửa nội dung câu hỏi, hãy dùng Quản lý câu hỏi. Thay đổi sẽ hiển thị trên "
+"mọi mẫu sử dụng câu hỏi đó."
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:384
 msgid ""
 "No questions yet. Add them from the list below, or reuse an earlier form."
 msgstr ""
+"Chưa có câu hỏi nào. Hãy thêm từ danh sách bên dưới hoặc dùng lại mẫu trước "
+"đây."
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:386
 msgid "No questions yet. Add them from the list below."
-msgstr ""
+msgstr "Chưa có câu hỏi nào. Hãy thêm từ danh sách bên dưới."
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:397
 msgid "Optional. For example: Thank you for taking part in this round."
-msgstr ""
+msgstr "Không bắt buộc. Ví dụ: Cảm ơn quý đơn vị đã tham gia vòng này."
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:458
 msgid "Enter a number of days from 1 to 365."
-msgstr ""
+msgstr "Nhập số ngày từ 1 đến 365."
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:465
 #, php-format
@@ -11135,108 +11124,99 @@ msgid ""
 "Opened on %1$s and closed on %2$s. Saving with more days opens it again "
 "until the new date."
 msgstr ""
+"Đã mở ngày %1$s và đóng ngày %2$s. Lưu với số ngày nhiều hơn sẽ mở lại mẫu "
+"đến ngày mới."
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:466
 #, php-format
 msgid "Opened on %1$s. Closes on %2$s."
-msgstr ""
+msgstr "Đã mở ngày %1$s. Đóng ngày %2$s."
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:469
-#, fuzzy
 msgid "Opens when the shipment is finalized."
-msgstr "Vui lòng nhập điểm vòng ngoại kiểm"
+msgstr "Mở khi vòng ngoại kiểm được hoàn tất."
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:536
-#, fuzzy
 msgid "Participants must answer this question"
-msgstr "Đơn vị tham gia không thể thực hiện xét nghiệm"
+msgstr "Đơn vị tham gia bắt buộc phải trả lời câu hỏi này"
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:538
-#, fuzzy
 msgid "Move up"
-msgstr "Xóa nhóm"
+msgstr "Di chuyển lên"
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:539
-#, fuzzy
 msgid "Move down"
-msgstr "Thả xuống"
+msgstr "Di chuyển xuống"
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:540
-#, fuzzy
 msgid "Remove from the form"
-msgstr "Loại khỏi nhóm"
+msgstr "Xóa khỏi mẫu"
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:559
-#, fuzzy
 msgid "No questions match your search."
-msgstr "Không có chủ đề nào phù hợp với tìm kiếm của bạn."
+msgstr "Không có câu hỏi nào phù hợp với tìm kiếm của bạn."
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:560
 msgid "Every active question is on the form."
-msgstr ""
+msgstr "Mọi câu hỏi đang hoạt động đều đã có trong mẫu."
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:629
-#, fuzzy
 msgid "required"
-msgstr "Bắt buộc"
+msgstr "bắt buộc"
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:630
-#, fuzzy
 msgid "None yet"
-msgstr "Không"
+msgstr "Chưa có"
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:639
-#, fuzzy, php-format
+#, php-format
 msgid "%d days"
-msgstr "Còn %d ngày"
+msgstr "%d ngày"
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:648
-#, fuzzy
 msgid ""
 "This shipment already has a feedback form. Saving replaces it with this one."
 msgstr ""
-"Vòng ngoại kiểm này có mẫu phản hồi. Tắt Thu thập phản hồi đồng nghĩa với "
-"việc đơn vị tham gia sẽ không bao giờ thấy mẫu này."
+"Vòng ngoại kiểm này đã có mẫu phản hồi. Khi lưu, mẫu đó sẽ được thay bằng "
+"mẫu này."
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:654
 msgid ""
 "Open the form for the other shipment? Changes you have not saved here will "
 "be lost."
-msgstr ""
+msgstr "Mở mẫu của vòng ngoại kiểm kia? Các thay đổi chưa lưu ở đây sẽ bị mất."
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:666
-#, fuzzy
 msgid "Pick the shipment to copy the feedback form from."
-msgstr "Vui lòng chọn vòng ngoại kiểm để sao chép mẫu phản hồi."
+msgstr "Hãy chọn vòng ngoại kiểm để sao chép mẫu phản hồi."
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:672
 msgid ""
 "Replace the questions, introduction, audience and days open on this form "
 "with the copied ones? Files are kept."
 msgstr ""
+"Thay các câu hỏi, phần giới thiệu, đối tượng xem và số ngày mở của mẫu này "
+"bằng nội dung được sao chép? Các tệp vẫn được giữ lại."
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:691
-#, fuzzy
 msgid "Could not load that feedback form. Please try again."
-msgstr "Không thể tải trang trợ giúp. Vui lòng thử lại."
+msgstr "Không thể tải mẫu phản hồi đó. Vui lòng thử lại."
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:731
-#, fuzzy
 msgid "Pick the shipment this feedback form is for."
-msgstr "Vòng ngoại kiểm áp dụng mẫu phản hồi này"
+msgstr "Hãy chọn vòng ngoại kiểm áp dụng mẫu phản hồi này."
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:737
-#, fuzzy
 msgid "Add at least one question to the feedback form."
-msgstr "Vui lòng chọn ít nhất một câu hỏi cho mẫu phản hồi này."
+msgstr "Hãy thêm ít nhất một câu hỏi vào mẫu phản hồi."
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:741
 msgid "Enter how many days the form stays open, from 1 to 365."
-msgstr ""
+msgstr "Nhập số ngày mẫu được mở, từ 1 đến 365."
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:746
 msgid "This shipment already has a feedback form. Replace it with this one?"
-msgstr ""
+msgstr "Vòng ngoại kiểm này đã có mẫu phản hồi. Thay bằng mẫu này?"
 
 #: application/modules/admin/views/scripts/feedback-responses/questions.phtml:7
 msgid "Feed Back Questions List"
@@ -11259,34 +11239,33 @@ msgid "Response not found for this shipment"
 msgstr "Không tìm thấy phản hồi cho vòng ngoại kiểm này"
 
 #: application/modules/admin/views/scripts/feedback-responses/shipment-questions.phtml:8
-#, fuzzy
 msgid "Passing participants only"
-msgstr "Gán đơn vị tham gia cho:"
+msgstr "Chỉ đơn vị tham gia đạt"
 
 #: application/modules/admin/views/scripts/feedback-responses/shipment-questions.phtml:9
-#, fuzzy
 msgid "Failing participants only"
-msgstr "Gán đơn vị tham gia cho:"
+msgstr "Chỉ đơn vị tham gia không đạt"
 
 #: application/modules/admin/views/scripts/feedback-responses/shipment-questions.phtml:46
 msgid ""
 "Participants can fill in a shipment's feedback form once the shipment is "
 "finalized, until its feedback deadline. Newest shipments are listed first."
 msgstr ""
+"Đơn vị tham gia có thể điền mẫu phản hồi của vòng ngoại kiểm sau khi vòng "
+"được hoàn tất, cho đến hạn phản hồi. Các vòng ngoại kiểm mới nhất được liệt "
+"kê trước."
 
 #: application/modules/admin/views/scripts/feedback-responses/shipment-questions.phtml:48
-#, fuzzy
 msgid ""
 "No feedback forms yet. Create one for a shipment to start collecting "
 "feedback."
 msgstr ""
-"Chưa có biểu mẫu phản hồi — bắt buộc phải có trước khi hoàn tất vòng ngoại "
-"kiểm này."
+"Chưa có mẫu phản hồi nào. Hãy tạo một mẫu cho vòng ngoại kiểm để bắt đầu thu "
+"thập phản hồi."
 
 #: application/modules/admin/views/scripts/feedback-responses/shipment-questions.phtml:56
-#, fuzzy
 msgid "Feedback deadline"
-msgstr "Hạn nộp kết quả"
+msgstr "Hạn phản hồi"
 
 #: application/modules/admin/views/scripts/feedback-responses/shipment-questions.phtml:58
 #: application/modules/admin/views/scripts/feedback-responses/shipment-questions.phtml:117
@@ -11297,18 +11276,19 @@ msgstr "Phản hồi"
 
 #: application/modules/admin/views/scripts/feedback-responses/shipment-questions.phtml:72
 msgid "Switched off"
-msgstr ""
+msgstr "Đã tắt"
 
 #: application/modules/admin/views/scripts/feedback-responses/shipment-questions.phtml:73
 msgid ""
 "Collect Feedback is off for this shipment, so participants don't see this "
 "form. Saving the form switches it on."
 msgstr ""
+"Thu thập phản hồi đang tắt cho vòng ngoại kiểm này nên đơn vị tham gia không "
+"thấy mẫu này. Lưu mẫu sẽ bật tính năng này."
 
 #: application/modules/admin/views/scripts/feedback-responses/shipment-questions.phtml:75
-#, fuzzy
 msgid "Opens when finalized"
-msgstr "hoàn tất gần nhất ngày"
+msgstr "Mở khi hoàn tất"
 
 #: application/modules/admin/views/scripts/feedback-responses/shipment-questions.phtml:81
 #: application/modules/admin/views/scripts/index/index.phtml:1135
@@ -11316,14 +11296,13 @@ msgid "Closed"
 msgstr "Đã đóng"
 
 #: application/modules/admin/views/scripts/feedback-responses/shipment-questions.phtml:107
-#, fuzzy, php-format
+#, php-format
 msgid "%d days after finalization"
-msgstr "Chấp nhận phản hồi sau khi hoàn tất"
+msgstr "%d ngày sau khi hoàn tất"
 
 #: application/modules/admin/views/scripts/feedback-responses/shipment-questions.phtml:115
-#, fuzzy
 msgid "Use this form for another shipment"
-msgstr "Không tìm thấy phản hồi cho vòng ngoại kiểm này"
+msgstr "Dùng mẫu này cho vòng ngoại kiểm khác"
 
 #: application/modules/admin/views/scripts/feedback-responses/shipment-questions.phtml:115
 #: application/modules/admin/views/scripts/index/ept-overview.ajax.phtml:329
@@ -11332,12 +11311,11 @@ msgstr "Sao chép"
 
 #: application/modules/admin/views/scripts/feedback-responses/shipment-questions.phtml:117
 msgid "Download the responses as a spreadsheet"
-msgstr ""
+msgstr "Tải xuống các phản hồi dưới dạng bảng tính"
 
 #: application/modules/admin/views/scripts/feedback-responses/shipment-questions.phtml:153
-#, fuzzy
 msgid "No responses found for this shipment."
-msgstr "Không tìm thấy mẫu nào cho vòng ngoại kiểm này."
+msgstr "Không tìm thấy phản hồi nào cho vòng ngoại kiểm này."
 
 #: application/modules/admin/views/scripts/files-for-participants/index.phtml:375
 msgid "Select Participants & Upload Files"
@@ -19112,9 +19090,8 @@ msgid "Late"
 msgstr "Trễ"
 
 #: application/services/Dashboard.php:1075
-#, fuzzy
 msgid "Submitted a response for this round"
-msgstr "Chưa từng phản hồi vòng này"
+msgstr "Đã nộp phản hồi cho vòng này"
 
 #: application/services/Dashboard.php:1084
 msgid "Responded after the deadline for this round"
@@ -23903,9 +23880,8 @@ msgstr ""
 "lại."
 
 #: library/Pt/Plugins/PreSetter.php:271
-#, fuzzy
 msgid "You do not have access to that participant."
-msgstr "Bạn không được phép cập nhật phản hồi cho đơn vị tham gia này."
+msgstr "Bạn không có quyền truy cập đơn vị tham gia đó."
 
 #: public/js/main.js.php:185
 msgid "Apply"

@@ -2443,16 +2443,14 @@ msgstr "Fichiers pour les participants"
 
 #: application/layouts/scripts/admin.phtml:389
 #: application/views/partials/spotlight.phtml:55
-#, fuzzy
 msgid "Feedback Questions"
-msgstr "Options de retour d'information"
+msgstr "Questions de feedback"
 
 #: application/layouts/scripts/admin.phtml:392
 #: application/modules/admin/views/scripts/feedback-responses/shipment-questions.phtml:39
 #: application/views/partials/spotlight.phtml:63
-#, fuzzy
 msgid "Feedback Forms"
-msgstr "Formulaire de feedback"
+msgstr "Formulaires de feedback"
 
 #: application/layouts/scripts/admin.phtml:420
 #: application/modules/admin/views/scripts/partials/scheme-config-open.phtml:22
@@ -10874,77 +10872,69 @@ msgid "Clone"
 msgstr "Dupliquer"
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:53
-#, fuzzy
 msgid "All participants"
 msgstr "Tous les participants"
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:54
-#, fuzzy
 msgid "Every participant in the shipment."
-msgstr "Clôturer la liste des participants de cette expédition"
+msgstr "Tous les participants de l'expédition."
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:57
-#, fuzzy
 msgid "Passing only"
-msgstr "Score de réussite"
+msgstr "Réussis uniquement"
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:58
-#, fuzzy
 msgid "Only participants who passed this shipment."
-msgstr "Ajouter des participants à cette expédition"
+msgstr "Uniquement les participants ayant réussi cette expédition."
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:61
-#, fuzzy
 msgid "Failing only"
-msgstr "Connexion uniquement"
+msgstr "Échecs uniquement"
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:62
-#, fuzzy
 msgid "Only participants who failed this shipment."
-msgstr "Ajouter des participants à cette expédition"
+msgstr "Uniquement les participants en échec pour cette expédition."
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:178
-#, fuzzy
 msgid "All feedback forms"
-msgstr "Afficher le formulaire de commentaires à"
+msgstr "Tous les formulaires de feedback"
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:181
-#, fuzzy, php-format
+#, php-format
 msgid "Copy the %s feedback form"
-msgstr "Dupliquer le formulaire de feedback"
+msgstr "Copier le formulaire de feedback de %s"
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:183
-#, fuzzy, php-format
+#, php-format
 msgid "Feedback form for %s"
-msgstr "Formulaire de feedback (%d)"
+msgstr "Formulaire de feedback pour %s"
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:185
 #: application/modules/admin/views/scripts/feedback-responses/shipment-questions.phtml:42
-#, fuzzy
 msgid "New feedback form"
-msgstr "Afficher le formulaire de commentaires à"
+msgstr "Nouveau formulaire de feedback"
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:190
-#, fuzzy
 msgid ""
 "The questions, introduction, audience and days open below come from that "
 "form. Pick the shipment to use them for and save. The original form is not "
 "changed."
 msgstr ""
-"Les questions ci-dessous sont copiées de l'expédition que vous avez "
-"dupliquée. Choisissez l'expédition à laquelle ce formulaire est destiné et "
-"enregistrez — le formulaire d'origine n'est pas modifié."
+"Les questions, l'introduction, le public et la durée d'ouverture ci-dessous "
+"proviennent de ce formulaire. Choisissez l'expédition à laquelle les "
+"appliquer, puis enregistrez. Le formulaire d'origine n'est pas modifié."
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:192
 msgid ""
 "The questions participants answer after a shipment, with an optional "
 "introduction and files to download."
 msgstr ""
+"Les questions auxquelles les participants répondent après une expédition, "
+"avec une introduction et des fichiers à télécharger facultatifs."
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:201
-#, fuzzy
 msgid "Shipment and audience"
-msgstr "Date d'expédition"
+msgstr "Expédition et public"
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:204
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:355
@@ -10966,76 +10956,72 @@ msgid "Shipment"
 msgstr "Expédition"
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:210
-#, fuzzy
 msgid "has a form"
-msgstr "Plateforme de test"
+msgstr "a un formulaire"
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:215
 msgid "Pick the shipment first. If it already has a form, that form opens."
 msgstr ""
+"Choisissez d'abord l'expédition. Si elle a déjà un formulaire, celui-ci "
+"s'ouvre."
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:217
 msgid "Picking another shipment opens its form."
-msgstr ""
+msgstr "Choisir une autre expédition ouvre son formulaire."
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:222
 msgid "Who sees this form"
-msgstr ""
+msgstr "Qui voit ce formulaire"
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:234
-#, fuzzy
 msgid "Open for feedback"
-msgstr "Configurer le retour d'information"
+msgstr "Ouvert au feedback"
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:237
-#, fuzzy
 msgid "days after the shipment is finalized"
-msgstr "Veuillez saisir le score de l'expédition"
+msgstr "jours après la finalisation de l'expédition"
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:238
 msgid "2 weeks"
-msgstr ""
+msgstr "2 semaines"
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:239
 msgid "4 weeks"
-msgstr ""
+msgstr "4 semaines"
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:240
 msgid "8 weeks"
-msgstr ""
+msgstr "8 semaines"
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:249
 msgid "Reuse an earlier form:"
-msgstr ""
+msgstr "Réutiliser un formulaire précédent :"
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:250
-#, fuzzy
 msgid "Shipment to copy the feedback form from"
-msgstr ""
-"Veuillez sélectionner l'expédition à partir de laquelle copier le formulaire "
-"de feedback."
+msgstr "Expédition dont copier le formulaire de feedback"
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:251
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:392
-#, fuzzy
 msgid "Pick a shipment"
-msgstr "Sélectionnez une expédition"
+msgstr "Choisissez une expédition"
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:253
-#, fuzzy, php-format
+#, php-format
 msgid "%d questions"
-msgstr "questions"
+msgstr "%d questions"
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:256
-#, fuzzy
 msgid "Copy into this form"
-msgstr "hors de ce cycle"
+msgstr "Copier dans ce formulaire"
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:257
 msgid ""
 "Fills in its questions, introduction, audience and days open. Nothing is "
 "saved until you click Save."
 msgstr ""
+"Reprend ses questions, son introduction, son public et sa durée d'ouverture. "
+"Rien n'est enregistré tant que vous ne cliquez pas sur Enregistrer."
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:263
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:357
@@ -11046,29 +11032,27 @@ msgstr "Questions"
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:264
 #: application/modules/admin/views/scripts/feedback-responses/shipment-questions.phtml:41
-#, fuzzy
 msgid "Manage questions"
-msgstr "questions"
+msgstr "Gérer les questions"
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:267
 msgid ""
 "Participants see the questions in this order. Use the arrows to move one."
 msgstr ""
+"Les participants voient les questions dans cet ordre. Utilisez les flèches "
+"pour en déplacer une."
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:271
-#, fuzzy
 msgid "Add questions"
-msgstr "questions"
+msgstr "Ajouter des questions"
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:272
-#, fuzzy
 msgid "Search questions"
-msgstr "Chercher une question"
+msgstr "Rechercher des questions"
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:279
-#, fuzzy
 msgid "Introduction"
-msgstr "extraction"
+msgstr "Introduction"
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:279
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:288
@@ -11080,11 +11064,12 @@ msgid ""
 "Shown above the questions, for example to thank participants or explain why "
 "you ask."
 msgstr ""
+"Affichée au-dessus des questions, par exemple pour remercier les "
+"participants ou expliquer la raison de vos questions."
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:288
-#, fuzzy
 msgid "Files to download"
-msgstr "Vos téléchargements"
+msgstr "Fichiers à télécharger"
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:293
 #: application/modules/admin/views/scripts/home-section-links/add.phtml:40
@@ -11095,64 +11080,62 @@ msgid "File"
 msgstr "Fichier"
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:294
-#, fuzzy
 msgid "Name participants see"
-msgstr "Nouveaux participants"
+msgstr "Nom affiché aux participants"
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:295
-#, fuzzy
 msgid "Who sees it"
-msgstr "Qui doit le recevoir"
+msgstr "Visible par"
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:315
 msgid "The saved file is missing. Choose it again, or remove this row."
 msgstr ""
+"Le fichier enregistré est introuvable. Choisissez-le de nouveau ou supprimez "
+"cette ligne."
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:318
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:708
-#, fuzzy
 msgid "Same as the file"
-msgstr "Importer un autre fichier"
+msgstr "Identique au fichier"
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:328
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:711
-#, fuzzy
 msgid "Remove this file from the form"
-msgstr "Supprimez complètement cette ligne"
+msgstr "Retirer ce fichier du formulaire"
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:334
 msgid ""
 "No files. Add a report, certificate or guidance document participants can "
 "download with the form."
 msgstr ""
+"Aucun fichier. Ajoutez un rapport, un certificat ou un document "
+"d'orientation que les participants pourront télécharger avec le formulaire."
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:335
-#, fuzzy
 msgid "Add a file"
-msgstr "Ajouter une expédition"
+msgstr "Ajouter un fichier"
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:336
 msgid "PDF, Word, Excel, PowerPoint, CSV, text or image files."
-msgstr ""
+msgstr "Fichiers PDF, Word, Excel, PowerPoint, CSV, texte ou image."
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:342
 msgid "Saving switches on Collect Feedback for the shipment if it is off."
 msgstr ""
+"L'enregistrement active Recueillir le feedback pour l'expédition s'il est "
+"désactivé."
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:345
-#, fuzzy
 msgid "Save feedback form"
-msgstr "Afficher le formulaire de commentaires à"
+msgstr "Enregistrer le formulaire de feedback"
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:353
-#, fuzzy
 msgid "Summary"
-msgstr "Rapport de synthèse terminé"
+msgstr "Résumé"
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:356
-#, fuzzy
 msgid "Shown to"
-msgstr "Voir qui"
+msgstr "Affiché à"
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:358
 #: application/modules/admin/views/scripts/feedback-responses/shipment-questions.phtml:78
@@ -11167,41 +11150,49 @@ msgstr "Fichiers"
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:363
 msgid "Good to know"
-msgstr ""
+msgstr "Bon à savoir"
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:364
 msgid ""
 "Required questions must be answered before a participant can submit the form."
 msgstr ""
+"Un participant doit répondre aux questions obligatoires avant de pouvoir "
+"soumettre le formulaire."
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:365
 msgid ""
 "A question marked Passing only or Failing only keeps that limit, even on a "
 "form shown to all participants."
 msgstr ""
+"Une question marquée Réussis uniquement ou Échecs uniquement conserve cette "
+"restriction, même sur un formulaire affiché à tous les participants."
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:366
 msgid ""
 "To change a question's wording, use Manage questions. The change shows on "
 "every form that uses it."
 msgstr ""
+"Pour modifier le libellé d'une question, utilisez Gérer les questions. La "
+"modification apparaît sur tous les formulaires qui l'utilisent."
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:384
 msgid ""
 "No questions yet. Add them from the list below, or reuse an earlier form."
 msgstr ""
+"Aucune question pour l'instant. Ajoutez-en depuis la liste ci-dessous ou "
+"réutilisez un formulaire précédent."
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:386
 msgid "No questions yet. Add them from the list below."
-msgstr ""
+msgstr "Aucune question pour l'instant. Ajoutez-en depuis la liste ci-dessous."
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:397
 msgid "Optional. For example: Thank you for taking part in this round."
-msgstr ""
+msgstr "Facultatif. Par exemple : Merci d'avoir participé à ce cycle."
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:458
 msgid "Enter a number of days from 1 to 365."
-msgstr ""
+msgstr "Saisissez un nombre de jours entre 1 et 365."
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:465
 #, php-format
@@ -11209,111 +11200,107 @@ msgid ""
 "Opened on %1$s and closed on %2$s. Saving with more days opens it again "
 "until the new date."
 msgstr ""
+"Ouvert le %1$s et fermé le %2$s. Enregistrer avec plus de jours le rouvre "
+"jusqu'à la nouvelle date."
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:466
 #, php-format
 msgid "Opened on %1$s. Closes on %2$s."
-msgstr ""
+msgstr "Ouvert le %1$s. Fermeture le %2$s."
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:469
-#, fuzzy
 msgid "Opens when the shipment is finalized."
-msgstr "Veuillez saisir le score de l'expédition"
+msgstr "S'ouvre lorsque l'expédition est finalisée."
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:536
-#, fuzzy
 msgid "Participants must answer this question"
-msgstr "Participant dans l'impossibilité d'effectuer le test"
+msgstr "Les participants doivent répondre à cette question"
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:538
-#, fuzzy
 msgid "Move up"
-msgstr "Supprimer le groupe"
+msgstr "Monter"
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:539
-#, fuzzy
 msgid "Move down"
-msgstr "Liste déroulante"
+msgstr "Descendre"
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:540
-#, fuzzy
 msgid "Remove from the form"
-msgstr "Retirer du groupe"
+msgstr "Retirer du formulaire"
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:559
-#, fuzzy
 msgid "No questions match your search."
-msgstr "Aucun sujet ne correspond à votre recherche."
+msgstr "Aucune question ne correspond à votre recherche."
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:560
 msgid "Every active question is on the form."
-msgstr ""
+msgstr "Toutes les questions actives sont déjà dans le formulaire."
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:629
-#, fuzzy
 msgid "required"
-msgstr "Requis"
+msgstr "obligatoires"
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:630
-#, fuzzy
 msgid "None yet"
-msgstr "Aucun"
+msgstr "Aucune pour l'instant"
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:639
-#, fuzzy, php-format
+#, php-format
 msgid "%d days"
-msgstr "Dans %d jours"
+msgstr "%d jours"
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:648
-#, fuzzy
 msgid ""
 "This shipment already has a feedback form. Saving replaces it with this one."
 msgstr ""
-"Cette expédition a un formulaire de feedback. Désactiver Recueillir le "
-"feedback signifie que les participants ne le verront jamais."
+"Cette expédition a déjà un formulaire de feedback. L'enregistrement le "
+"remplacera par celui-ci."
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:654
 msgid ""
 "Open the form for the other shipment? Changes you have not saved here will "
 "be lost."
 msgstr ""
+"Ouvrir le formulaire de l'autre expédition ? Les modifications non "
+"enregistrées ici seront perdues."
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:666
-#, fuzzy
 msgid "Pick the shipment to copy the feedback form from."
 msgstr ""
-"Veuillez sélectionner l'expédition à partir de laquelle copier le formulaire "
-"de feedback."
+"Choisissez l'expédition dont vous voulez copier le formulaire de feedback."
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:672
 msgid ""
 "Replace the questions, introduction, audience and days open on this form "
 "with the copied ones? Files are kept."
 msgstr ""
+"Remplacer les questions, l'introduction, le public et la durée d'ouverture "
+"de ce formulaire par ceux copiés ? Les fichiers sont conservés."
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:691
-#, fuzzy
 msgid "Could not load that feedback form. Please try again."
-msgstr "Impossible de charger l'aide. Veuillez réessayer."
+msgstr "Impossible de charger ce formulaire de feedback. Veuillez réessayer."
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:731
-#, fuzzy
 msgid "Pick the shipment this feedback form is for."
-msgstr "Expédition concernée par ce formulaire de feedback"
+msgstr ""
+"Choisissez l'expédition à laquelle ce formulaire de feedback est destiné."
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:737
-#, fuzzy
 msgid "Add at least one question to the feedback form."
-msgstr ""
-"Veuillez sélectionner au moins une question pour ce formulaire de feedback."
+msgstr "Ajoutez au moins une question au formulaire de feedback."
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:741
 msgid "Enter how many days the form stays open, from 1 to 365."
 msgstr ""
+"Saisissez le nombre de jours pendant lesquels le formulaire reste ouvert, "
+"entre 1 et 365."
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:746
 msgid "This shipment already has a feedback form. Replace it with this one?"
 msgstr ""
+"Cette expédition a déjà un formulaire de feedback. Le remplacer par celui-"
+"ci ?"
 
 #: application/modules/admin/views/scripts/feedback-responses/questions.phtml:7
 msgid "Feed Back Questions List"
@@ -11336,34 +11323,33 @@ msgid "Response not found for this shipment"
 msgstr "Réponse introuvable pour cette expédition"
 
 #: application/modules/admin/views/scripts/feedback-responses/shipment-questions.phtml:8
-#, fuzzy
 msgid "Passing participants only"
-msgstr "Association des participants pour :"
+msgstr "Participants ayant réussi uniquement"
 
 #: application/modules/admin/views/scripts/feedback-responses/shipment-questions.phtml:9
-#, fuzzy
 msgid "Failing participants only"
-msgstr "Association des participants pour :"
+msgstr "Participants en échec uniquement"
 
 #: application/modules/admin/views/scripts/feedback-responses/shipment-questions.phtml:46
 msgid ""
 "Participants can fill in a shipment's feedback form once the shipment is "
 "finalized, until its feedback deadline. Newest shipments are listed first."
 msgstr ""
+"Les participants peuvent remplir le formulaire de feedback d'une expédition "
+"dès qu'elle est finalisée, jusqu'à la date limite du feedback. Les "
+"expéditions les plus récentes apparaissent en premier."
 
 #: application/modules/admin/views/scripts/feedback-responses/shipment-questions.phtml:48
-#, fuzzy
 msgid ""
 "No feedback forms yet. Create one for a shipment to start collecting "
 "feedback."
 msgstr ""
-"Pas encore de formulaire de feedback — obligatoire avant de pouvoir "
-"finaliser cette expédition."
+"Aucun formulaire de feedback pour l'instant. Créez-en un pour une expédition "
+"afin de commencer à recueillir le feedback."
 
 #: application/modules/admin/views/scripts/feedback-responses/shipment-questions.phtml:56
-#, fuzzy
 msgid "Feedback deadline"
-msgstr "Options de retour d'information"
+msgstr "Date limite du feedback"
 
 #: application/modules/admin/views/scripts/feedback-responses/shipment-questions.phtml:58
 #: application/modules/admin/views/scripts/feedback-responses/shipment-questions.phtml:117
@@ -11374,18 +11360,20 @@ msgstr "Réponses"
 
 #: application/modules/admin/views/scripts/feedback-responses/shipment-questions.phtml:72
 msgid "Switched off"
-msgstr ""
+msgstr "Désactivé"
 
 #: application/modules/admin/views/scripts/feedback-responses/shipment-questions.phtml:73
 msgid ""
 "Collect Feedback is off for this shipment, so participants don't see this "
 "form. Saving the form switches it on."
 msgstr ""
+"Recueillir le feedback est désactivé pour cette expédition : les "
+"participants ne voient donc pas ce formulaire. L'enregistrement du "
+"formulaire l'active."
 
 #: application/modules/admin/views/scripts/feedback-responses/shipment-questions.phtml:75
-#, fuzzy
 msgid "Opens when finalized"
-msgstr "dernière finalisation le"
+msgstr "S'ouvre à la finalisation"
 
 #: application/modules/admin/views/scripts/feedback-responses/shipment-questions.phtml:81
 #: application/modules/admin/views/scripts/index/index.phtml:1135
@@ -11393,14 +11381,13 @@ msgid "Closed"
 msgstr "Clôturé"
 
 #: application/modules/admin/views/scripts/feedback-responses/shipment-questions.phtml:107
-#, fuzzy, php-format
+#, php-format
 msgid "%d days after finalization"
-msgstr "Accepter les réponses après finalisation"
+msgstr "%d jours après la finalisation"
 
 #: application/modules/admin/views/scripts/feedback-responses/shipment-questions.phtml:115
-#, fuzzy
 msgid "Use this form for another shipment"
-msgstr "Réponse introuvable pour cette expédition"
+msgstr "Utiliser ce formulaire pour une autre expédition"
 
 #: application/modules/admin/views/scripts/feedback-responses/shipment-questions.phtml:115
 #: application/modules/admin/views/scripts/index/ept-overview.ajax.phtml:329
@@ -11409,12 +11396,11 @@ msgstr "Copier"
 
 #: application/modules/admin/views/scripts/feedback-responses/shipment-questions.phtml:117
 msgid "Download the responses as a spreadsheet"
-msgstr ""
+msgstr "Télécharger les réponses sous forme de tableur"
 
 #: application/modules/admin/views/scripts/feedback-responses/shipment-questions.phtml:153
-#, fuzzy
 msgid "No responses found for this shipment."
-msgstr "Aucun échantillon n'a été trouvé pour cette expédition."
+msgstr "Aucune réponse trouvée pour cette expédition."
 
 #: application/modules/admin/views/scripts/files-for-participants/index.phtml:375
 msgid "Select Participants & Upload Files"
@@ -19275,9 +19261,8 @@ msgid "Late"
 msgstr "Tardives"
 
 #: application/services/Dashboard.php:1075
-#, fuzzy
 msgid "Submitted a response for this round"
-msgstr "N'a jamais répondu à ce cycle"
+msgstr "A soumis une réponse pour ce cycle"
 
 #: application/services/Dashboard.php:1084
 msgid "Responded after the deadline for this round"
@@ -24094,9 +24079,8 @@ msgstr ""
 "reconnecter."
 
 #: library/Pt/Plugins/PreSetter.php:271
-#, fuzzy
 msgid "You do not have access to that participant."
-msgstr "Vous n'êtes pas autorisé à modifier la réponse de ce participant."
+msgstr "Vous n'avez pas accès à ce participant."
 
 #: public/js/main.js.php:185
 msgid "Apply"
