@@ -395,7 +395,9 @@ include APPLICATION_PATH . '/views/partials/report-zero-state.phtml';
 			autoApply: true,
 			showDropdowns: true,
 			alwaysShowCalendars: true,
-			startDate: moment().subtract(24, 'month'),
+			// Some programmes run only one or two rounds a year, so three years
+			// shows enough of them.
+			startDate: moment().subtract(3, 'year'),
 			endDate: moment(),
 			maxDate: moment(),
 			ranges: eptDateRanges()

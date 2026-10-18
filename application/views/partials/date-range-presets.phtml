@@ -30,6 +30,7 @@
         ranges["<?= $this->jsTranslate("Last 12 Months"); ?>"] = [m().subtract(12, 'month'), m()];
         ranges["<?= $this->jsTranslate("Last 18 Months"); ?>"] = [m().subtract(18, 'month'), m()];
         ranges["<?= $this->jsTranslate("Last 24 Months"); ?>"] = [m().subtract(24, 'month'), m()];
+        ranges["<?= $this->jsTranslate("Last 3 Years"); ?>"] = [m().subtract(3, 'year'), m()];
         ranges["<?= $this->jsTranslate("Previous Year"); ?>"] = [m().subtract(1, 'year').startOf('year'), m().subtract(1, 'year').endOf('year')];
         ranges["<?= $this->jsTranslate("Current Year To Date"); ?>"] = [m().startOf('year'), m()];
         return ranges;

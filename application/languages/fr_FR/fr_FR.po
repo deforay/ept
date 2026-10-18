@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ePT\n"
 "Report-Msgid-Bugs-To: support@deforay.com\n"
-"POT-Creation-Date: 2026-10-18 12:55+0530\n"
+"POT-Creation-Date: 2026-10-18 12:57+0530\n"
 "PO-Revision-Date: 2026-07-07 08:32+0530\n"
 "Last-Translator: Amit <amit@deforay.com>\n"
 "Language-Team: ePT\n"
@@ -7888,7 +7888,7 @@ msgstr "Impossible de charger la liste des participants. Veuillez réessayer."
 #: application/modules/reports/views/scripts/participant-performance/index.phtml:204
 #: application/modules/reports/views/scripts/participant-trends/index.phtml:369
 #: application/modules/reports/views/scripts/shipment-response-report/index.phtml:529
-#: application/views/partials/shipments-report-grid.phtml:533
+#: application/views/partials/shipments-report-grid.phtml:535
 #: application/views/scripts/participant/participant-performance.phtml:384
 #: application/views/scripts/participant/participant-performance.phtml:404
 #: application/views/scripts/participant/participant-performance.phtml:533
@@ -19906,18 +19906,22 @@ msgid "Last 24 Months"
 msgstr "24 derniers mois"
 
 #: application/views/partials/date-range-presets.phtml:33
+msgid "Last 3 Years"
+msgstr "3 dernières années"
+
+#: application/views/partials/date-range-presets.phtml:34
 msgid "Previous Year"
 msgstr "Année précédente"
 
-#: application/views/partials/date-range-presets.phtml:34
+#: application/views/partials/date-range-presets.phtml:35
 msgid "Current Year To Date"
 msgstr "Année en cours à ce jour"
 
-#: application/views/partials/date-range-presets.phtml:39
+#: application/views/partials/date-range-presets.phtml:40
 msgid "Hide presets"
 msgstr "Masquer les périodes prédéfinies"
 
-#: application/views/partials/date-range-presets.phtml:40
+#: application/views/partials/date-range-presets.phtml:41
 msgid "Show presets"
 msgstr "Afficher les périodes prédéfinies"
 
@@ -20070,15 +20074,15 @@ msgstr "Inclure les annulés"
 msgid "All statuses"
 msgstr "Tous les statuts"
 
-#: application/views/partials/shipments-report-grid.phtml:437
+#: application/views/partials/shipments-report-grid.phtml:439
 msgid "Loading breakdown…"
 msgstr "Chargement de la répartition…"
 
-#: application/views/partials/shipments-report-grid.phtml:442
+#: application/views/partials/shipments-report-grid.phtml:444
 msgid "Failed to load breakdown. Please try again."
 msgstr "Échec du chargement de la répartition. Veuillez réessayer."
 
-#: application/views/partials/shipments-report-grid.phtml:518
+#: application/views/partials/shipments-report-grid.phtml:520
 msgid "No feedback responses found for this shipment"
 msgstr ""
 "Aucune réponse au formulaire de feedback n'a été trouvée pour cette "

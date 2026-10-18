@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ePT\n"
 "Report-Msgid-Bugs-To: support@deforay.com\n"
-"POT-Creation-Date: 2026-10-18 12:55+0530\n"
+"POT-Creation-Date: 2026-10-18 12:57+0530\n"
 "PO-Revision-Date: 2026-07-07 08:33+0530\n"
 "Last-Translator: Amit <amit@deforay.com>\n"
 "Language-Team: \n"
@@ -7842,7 +7842,7 @@ msgstr "Không thể tải danh sách đơn vị tham gia. Vui lòng thử lại
 #: application/modules/reports/views/scripts/participant-performance/index.phtml:204
 #: application/modules/reports/views/scripts/participant-trends/index.phtml:369
 #: application/modules/reports/views/scripts/shipment-response-report/index.phtml:529
-#: application/views/partials/shipments-report-grid.phtml:533
+#: application/views/partials/shipments-report-grid.phtml:535
 #: application/views/scripts/participant/participant-performance.phtml:384
 #: application/views/scripts/participant/participant-performance.phtml:404
 #: application/views/scripts/participant/participant-performance.phtml:533
@@ -19565,7 +19565,8 @@ msgstr "Biểu mẫu kết quả của tất cả người tham gia (ZIP)"
 
 #: application/services/Reports.php:289
 msgid "Participant list, reported results and scores (Excel workbook)"
-msgstr "Danh sách người tham gia, kết quả đã báo cáo và điểm (sổ làm việc Excel)"
+msgstr ""
+"Danh sách người tham gia, kết quả đã báo cáo và điểm (sổ làm việc Excel)"
 
 #: application/services/Reports.php:291
 msgid "Non-responders"
@@ -19732,18 +19733,22 @@ msgid "Last 24 Months"
 msgstr "24 tháng qua"
 
 #: application/views/partials/date-range-presets.phtml:33
+msgid "Last 3 Years"
+msgstr "3 năm qua"
+
+#: application/views/partials/date-range-presets.phtml:34
 msgid "Previous Year"
 msgstr "Năm trước"
 
-#: application/views/partials/date-range-presets.phtml:34
+#: application/views/partials/date-range-presets.phtml:35
 msgid "Current Year To Date"
 msgstr "Từ đầu năm đến nay"
 
-#: application/views/partials/date-range-presets.phtml:39
+#: application/views/partials/date-range-presets.phtml:40
 msgid "Hide presets"
 msgstr "Ẩn các khoảng thời gian định sẵn"
 
-#: application/views/partials/date-range-presets.phtml:40
+#: application/views/partials/date-range-presets.phtml:41
 msgid "Show presets"
 msgstr "Hiện các khoảng thời gian định sẵn"
 
@@ -19896,15 +19901,15 @@ msgstr "Bao gồm cả mục đã hủy"
 msgid "All statuses"
 msgstr "Tất cả trạng thái"
 
-#: application/views/partials/shipments-report-grid.phtml:437
+#: application/views/partials/shipments-report-grid.phtml:439
 msgid "Loading breakdown…"
 msgstr "Đang tải phân tích chi tiết…"
 
-#: application/views/partials/shipments-report-grid.phtml:442
+#: application/views/partials/shipments-report-grid.phtml:444
 msgid "Failed to load breakdown. Please try again."
 msgstr "Không thể tải phân tích chi tiết. Vui lòng thử lại."
 
-#: application/views/partials/shipments-report-grid.phtml:518
+#: application/views/partials/shipments-report-grid.phtml:520
 msgid "No feedback responses found for this shipment"
 msgstr "Không tìm thấy phản hồi nào cho vòng ngoại kiểm này"
 
