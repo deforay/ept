@@ -1703,12 +1703,6 @@ parameters:
 			message: '#^Call to an undefined method Zend_Controller_Action_Helper_Abstract\:\:addActionContext\(\)\.$#'
 			identifier: method.notFound
 			count: 1
-			path: application/modules/reports/controllers/TbParticipantsPerCountryController.php
-
-		-
-			message: '#^Call to an undefined method Zend_Controller_Action_Helper_Abstract\:\:addActionContext\(\)\.$#'
-			identifier: method.notFound
-			count: 1
 			path: application/modules/reports/controllers/TbResultsController.php
 
 		-

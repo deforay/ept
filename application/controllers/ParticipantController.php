@@ -31,8 +31,6 @@ class ParticipantController extends Zend_Controller_Action
             ->addActionContext('get-shipment-participant-list', 'html')
             ->addActionContext('tb-results', 'html')
             ->addActionContext('results-count', 'html')
-            ->addActionContext('tb-participants-per-country', 'html')
-            ->addActionContext('participants-count', 'html')
             ->addActionContext('xtpt-indicators', 'html')
             ->addActionContext('tb-all-sites-results', 'html')
             ->addActionContext('download-pending-sites', 'html')
@@ -72,7 +70,9 @@ class ParticipantController extends Zend_Controller_Action
         'tb-results',
         'results-count',
         'tb-participants-per-country',
-        'participants-count',
+        'tb-participants-per-country-data',
+        'tb-participants-per-country-shipments',
+        'tb-participants-per-country-export',
         'xtpt-indicators',
         'tb-all-sites-results',
     ];
@@ -976,25 +976,31 @@ class ParticipantController extends Zend_Controller_Action
     {
         $this->_helper->layout()->activeMenu = 'ptcc-reports';
         $this->_helper->layout()->activeSubMenu = 'tb-participants-per-country';
-        /** @var Zend_Controller_Request_Http $request */
-        $request = $this->getRequest();
-        if ($request->isPost()) {
-            $params = $this->getAllParams();
-            $reportService = new Application_Service_Reports();
-            $response = $reportService->getParticipantsPerCountryReport($params);
-            $this->view->response = $response;
-        }
+        $participants = new Application_Service_Participants();
+        $scheme = new Application_Service_Schemes();
+        $this->view->schemes = array_values(array_filter($scheme->getAllSchemes(), fn ($s) => $s['scheme_id'] === 'tb'));
+        $this->view->countries = $participants->getParticipantCountriesList();
+        $this->view->regions = $participants->getAllParticipantRegion();
+        $this->view->states = $participants->getAllParticipantStates();
+        $this->view->districts = $participants->getAllParticipantDistricts();
     }
 
-    public function participantsCountAction()
+    public function tbParticipantsPerCountryDataAction()
     {
-        /** @var Zend_Controller_Request_Http $request */
-        $request = $this->getRequest();
-        if ($request->isPost()) {
-            $params = $this->getAllParams();
-            $reportService = new Application_Service_Reports();
-            $this->view->participantsCount = $reportService->getParticipantsPerCountryCount($params);
-        }
+        $reportService = new Application_Service_Reports();
+        $this->_helper->json($reportService->getTbParticipantsPerCountry($this->getAllParams()));
+    }
+
+    public function tbParticipantsPerCountryShipmentsAction()
+    {
+        $reportService = new Application_Service_Reports();
+        $this->_helper->json($reportService->getResponseReportShipments('tb', $this->getParam('startDate'), $this->getParam('endDate')));
+    }
+
+    public function tbParticipantsPerCountryExportAction()
+    {
+        $reportService = new Application_Service_Reports();
+        $this->_helper->json(['file' => $reportService->exportTbParticipantsPerCountry($this->getAllParams())]);
     }
 
     public function xtptIndicatorsAction()

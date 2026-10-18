@@ -1,0 +1,176 @@
+<?php
+
+/**
+ * TB Participants per Country, shared by reports/tb-participants-per-country
+ * (admin) and participant/tb-participants-per-country (data managers).
+ *
+ * Set before including:
+ *
+ *   $tbcDataUrl       the action that returns the rows, one per country
+ *   $tbcShipmentsUrl  the action that returns the Shipment filter options
+ *   $tbcExportUrl     the action behind Download Excel
+ *   $this->schemes (TB only), ->countries, ->regions, ->states, ->districts
+ *
+ * Highcharts must be loaded on the page. The filters apply as soon as they
+ * change. The page includes collapsible-filters.phtml last.
+ */
+include APPLICATION_PATH . '/views/partials/report-zero-state.phtml';
+include APPLICATION_PATH . '/views/partials/report-table-styles.phtml';
+$rfShipmentsUrl = $tbcShipmentsUrl;
+include APPLICATION_PATH . '/views/partials/report-filters.phtml';
+?>
+<style>
+	#tbcChart {
+		margin-top: 8px;
+	}
+
+	#tbcTable .tbc-failed {
+		color: #a33a3a;
+		font-weight: 600;
+	}
+</style>
+
+<div class="rpt-section-head">
+	<h4><?= $this->htmlTranslate("Participants per country"); ?></h4>
+	<div class="rpt-tools">
+		<button type="button" class="rpt-download" onclick="exportTbCountries()">
+			<i class="icon-download-alt"></i> <?= $this->htmlTranslate("Download Excel"); ?>
+		</button>
+	</div>
+</div>
+<div id="tbcChart"></div>
+<table class="table table-hover rpt-table" id="tbcTable">
+	<thead>
+		<tr>
+			<th scope="col"><?= $this->htmlTranslate("Country"); ?></th>
+			<th scope="col"><?= $this->htmlTranslate("Participants"); ?></th>
+			<th scope="col"><?= $this->htmlTranslate("Enrolled"); ?></th>
+			<th scope="col"><?= $this->htmlTranslate("Responded"); ?></th>
+			<th scope="col"><?= $this->htmlTranslate("Pass rate"); ?></th>
+			<th scope="col"><?= $this->htmlTranslate("Failed"); ?></th>
+		</tr>
+	</thead>
+	<tbody></tbody>
+</table>
+
+<script type="text/javascript">
+	var tbcTable = null;
+	var tbcRequest = null;
+	var tbcNotSet = "<?= $this->jsTranslate("Not set"); ?>";
+
+	function tbcNumber(n) {
+		return Number(n || 0).toLocaleString();
+	}
+
+	function tbcEscape(value) {
+		return $('<div/>').text(value == null ? '' : String(value)).html();
+	}
+
+	function tbcRate(n, of, barClass) {
+		if (!of) {
+			return '<span class="cell-muted"><?= $this->jsTranslate("Not evaluated yet"); ?></span>';
+		}
+		var pct = Math.round(n * 100 / of);
+		return '<span class="rate-figure">' + pct + '%</span>'
+			+ '<span class="rate-bar ' + (barClass || '') + '"><span style="width:' + pct + '%"></span></span>'
+			+ '<span class="cell-sub">' + "<?= $this->jsTranslate("%s of %s"); ?>".replace('%s', tbcNumber(n)).replace('%s', tbcNumber(of)) + '</span>';
+	}
+
+	function drawTbcChart(rows) {
+		if (!rows.length || typeof Highcharts === 'undefined') {
+			$('#tbcChart').empty().hide();
+			return;
+		}
+		$('#tbcChart').show().css('height', Math.max(180, rows.length * 24 + 70) + 'px');
+		Highcharts.chart('tbcChart', {
+			chart: { type: 'bar', style: { fontFamily: 'inherit' } },
+			title: { text: null },
+			credits: { enabled: false },
+			legend: { enabled: false },
+			xAxis: {
+				categories: $.map(rows, function (r) { return r.country || tbcNotSet; }),
+				labels: { style: { fontSize: '12px' } }
+			},
+			yAxis: { title: { text: null }, allowDecimals: false },
+			tooltip: { pointFormat: '<b>{point.y}</b> <?= $this->jsTranslate("participants"); ?>' },
+			plotOptions: { bar: { borderRadius: 2, pointPadding: 0.1, groupPadding: 0.05, dataLabels: { enabled: true } } },
+			series: [{
+				name: "<?= $this->jsTranslate("Participants"); ?>",
+				color: '#4a6fa5',
+				data: $.map(rows, function (r) { return r.participants; })
+			}]
+		});
+	}
+
+	function loadTbCountries() {
+		if (tbcRequest) {
+			tbcRequest.abort();
+		}
+		tbcTable.fnClearTable();
+		$('#tbcTable_processing').css('visibility', 'visible');
+		tbcRequest = $.post("<?= $tbcDataUrl; ?>", reportFilters.values(), function (rows) {
+			rows = rows || [];
+			drawTbcChart(rows);
+			tbcTable.fnAddData($.map(rows, function (r) {
+				return [[
+					r.country ? tbcEscape(r.country) : '<span class="cell-muted">' + tbcEscape(tbcNotSet) + '</span>',
+					tbcNumber(r.participants),
+					tbcNumber(r.enrolled),
+					tbcRate(r.responded, r.enrolled),
+					tbcRate(r.passed, r.passed + r.failed, 'is-pass'),
+					r.failed > 0 ? '<span class="tbc-failed">' + tbcNumber(r.failed) + '</span>' : '0',
+					r.participants,
+					r.enrolled,
+					r.enrolled ? r.responded / r.enrolled : -1,
+					(r.passed + r.failed) ? r.passed / (r.passed + r.failed) : -1,
+					r.failed
+				]];
+			}));
+		}, 'json').always(function () {
+			tbcRequest = null;
+			$('#tbcTable_processing').css('visibility', 'hidden');
+		});
+	}
+
+	reportFilters.onChange(loadTbCountries);
+
+	reportFilters.ready(function () {
+		// Columns 6 to 10 hold the raw numbers the visible columns sort by.
+		var hidden = function () { return { "bVisible": false, "sType": "numeric" }; };
+		tbcTable = $('#tbcTable').dataTable({
+			"oLanguage": reportZeroState.dataTableLanguage(),
+			"bAutoWidth": false,
+			"bPaginate": false,
+			"bFilter": false,
+			"bInfo": false,
+			"bProcessing": true,
+			"sDom": "rt",
+			"aoColumns": [
+				{ "sWidth": "28%" },
+				{ "sWidth": "13%", "iDataSort": 6 },
+				{ "sWidth": "13%", "iDataSort": 7 },
+				{ "sWidth": "18%", "iDataSort": 8 },
+				{ "sWidth": "18%", "iDataSort": 9 },
+				{ "sWidth": "10%", "iDataSort": 10 },
+				hidden(), hidden(), hidden(), hidden(), hidden()
+			],
+			"aaSorting": [[6, "desc"]]
+		});
+		loadTbCountries();
+	});
+
+	function exportTbCountries() {
+		$.blockUI();
+		$.post("<?= $tbcExportUrl; ?>", reportFilters.values(), function (data) {
+			$.unblockUI();
+			if (!data || !data.file) {
+				alert("<?= $this->jsTranslate("Unable to generate download"); ?>");
+			} else {
+				window.open('/temporary/' + data.file, '_blank');
+			}
+		}, 'json').fail(function () {
+			$.unblockUI();
+			alert("<?= $this->jsTranslate("Unable to generate download"); ?>");
+		});
+	}
+</script>

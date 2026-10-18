@@ -3270,6 +3270,102 @@ class Application_Service_Reports
         }
     }
 
+    /**
+     * TB Participants per Country: one row per country, counted over the TB
+     * shipments that match the filters. The counts follow
+     * Application_Service_Shipments::getShipmentParticipationStats().
+     * Participants without a country come last, with an empty name.
+     */
+    public function getTbParticipantsPerCountry(array $params): array
+    {
+        $status = "IFNULL(sp.response_status, '')";
+        $sQuery = Zend_Db_Table_Abstract::getDefaultAdapter()->select()
+            ->from(['p' => 'participant'], [
+                'country_id' => 'p.country',
+                'participants' => new Zend_Db_Expr('COUNT(DISTINCT p.participant_id)'),
+            ])
+            ->join(['sp' => 'shipment_participant_map'], 'sp.participant_id=p.participant_id', [
+                'enrolled' => new Zend_Db_Expr('COUNT(sp.map_id)'),
+                'responded' => new Zend_Db_Expr("SUM($status IN ('responded','late','nottested'))"),
+                'passed' => new Zend_Db_Expr('SUM(IFNULL(sp.final_result, 0) = 1)'),
+                'failed' => new Zend_Db_Expr("SUM(IFNULL(sp.final_result, 0) = 2 AND $status IN ('responded','late'))"),
+            ])
+            ->join(['s' => 'shipment'], 's.shipment_id=sp.shipment_id', [])
+            ->joinLeft(['c' => 'countries'], 'c.id=p.country', ['country_name' => new Zend_Db_Expr("IFNULL(MAX(c.iso_name), '')")])
+            ->group('p.country')
+            ->order([new Zend_Db_Expr('MAX(c.iso_name) IS NULL'), 'participants DESC', 'country_name ASC']);
+
+        Application_Model_DbTable_Participants::applyResponseReportFilters($sQuery, ['scheme' => 'tb'] + $params);
+
+        return array_map(fn ($row) => [
+            'country' => (string) $row['country_name'],
+            'participants' => (int) $row['participants'],
+            'enrolled' => (int) $row['enrolled'],
+            'responded' => (int) $row['responded'],
+            'passed' => (int) $row['passed'],
+            'failed' => (int) $row['failed'],
+        ], Zend_Db_Table_Abstract::getDefaultAdapter()->fetchAll($sQuery));
+    }
+
+    /** TB Participants per Country as Excel, one row per country. */
+    public function exportTbParticipantsPerCountry(array $params): string
+    {
+        try {
+            $rows = $this->getTbParticipantsPerCountry($params);
+            if (empty($rows)) {
+                return '';
+            }
+            $t = fn ($text) => html_entity_decode($text, ENT_QUOTES, 'UTF-8');
+            $pct = fn (int $part, int $whole) => $whole > 0 ? round($part / $whole * 100, 1) : null;
+
+            $excel = new Spreadsheet();
+            $sheet = $excel->getActiveSheet();
+            $sheet->setTitle(mb_substr($t($this->translator->_('Countries')), 0, 31));
+            $sheet->fromArray([
+                $t($this->translator->_('Country')),
+                $t($this->translator->_('Participants')),
+                $t($this->translator->_('Enrolled')),
+                $t($this->translator->_('Responded')),
+                $t($this->translator->_('Response rate')) . ' (%)',
+                $t($this->translator->_('Passed')),
+                $t($this->translator->_('Failed')),
+                $t($this->translator->_('Pass rate')) . ' (%)',
+            ], null, 'A1');
+            $rowNo = 2;
+            foreach ($rows as $r) {
+                $sheet->fromArray([
+                    $r['country'] !== '' ? $r['country'] : $t($this->translator->_('Not set')),
+                    $r['participants'],
+                    $r['enrolled'],
+                    $r['responded'],
+                    $pct($r['responded'], $r['enrolled']),
+                    $r['passed'],
+                    $r['failed'],
+                    $pct($r['passed'], $r['passed'] + $r['failed']),
+                ], null, 'A' . $rowNo++);
+            }
+            $sheet->getStyle('1:1')->getFont()->setBold(true);
+            $sheet->freezePane('A2');
+            foreach ($sheet->getColumnIterator() as $column) {
+                $sheet->getColumnDimension($column->getColumnIndex())->setAutoSize(true);
+            }
+
+            if (!is_dir($this->tempUploadDirectory)) {
+                mkdir($this->tempUploadDirectory);
+            }
+            $filename = 'tb-participants-per-country-' . date('d-M-Y-H-i-s') . '.xlsx';
+            IOFactory::createWriter($excel, 'Xlsx')->save($this->tempUploadDirectory . DIRECTORY_SEPARATOR . $filename);
+            return $filename;
+        } catch (Throwable $exc) {
+            Pt_Commons_LoggerUtility::logError('Failed to generate TB participants per country report (Excel): ' . $exc->getMessage(), [
+                'file' => $exc->getFile(),
+                'line' => $exc->getLine(),
+                'trace' => $exc->getTraceAsString(),
+            ]);
+            return '';
+        }
+    }
+
     public function generateAnnualReportExcel($shipmentCodeArray, $participants)
     {
 
@@ -3705,194 +3801,6 @@ class Application_Service_Reports
             ['name' => 'Excluded', 'count' => $resultsCountResult['excluded']],
             ['name' => 'Not Participated', 'count' => $resultsCountResult['not_participated']],
         ];
-    }
-
-    public function getParticipantsPerCountryReport($parameters)
-    {
-
-        $searchColumns = ['country_name', 'participant_count'];
-
-        $sLimit = '';
-        if (isset($parameters['iDisplayStart']) && $parameters['iDisplayLength'] != '-1') {
-            $sOffset = $parameters['iDisplayStart'];
-            $sLimit = $parameters['iDisplayLength'];
-        }
-
-        $sOrder = '';
-        if (isset($parameters['iSortCol_0'])) {
-            $sOrder = '';
-            for ($i = 0; $i < intval($parameters['iSortingCols']); $i++) {
-                if ($parameters['bSortable_' . intval($parameters['iSortCol_' . $i])] == 'true') {
-                    $colIdx = intval($parameters['iSortCol_' . $i]);
-                    if (!isset($searchColumns[$colIdx])) {
-                        continue;
-                    }
-                    $sOrder .= $searchColumns[$colIdx] . '
-					    ' . Pt_Commons_General::sanitizeSortDirection($parameters['sSortDir_' . $i]) . ', ';
-                }
-            }
-
-            $sOrder = substr_replace($sOrder, '', -2);
-        }
-
-        $sWhere = '';
-        if (isset($parameters['sSearch']) && $parameters['sSearch'] != '') {
-            $searchArray = explode(' ', $parameters['sSearch']);
-            $sWhereSub = '';
-            foreach ($searchArray as $search) {
-                if ($sWhereSub == '') {
-                    $sWhereSub .= '(';
-                } else {
-                    $sWhereSub .= ' AND (';
-                }
-                $colSize = count($searchColumns);
-
-                for ($i = 0; $i < $colSize; $i++) {
-                    if ($searchColumns[$i] == '' || $searchColumns[$i] == null) {
-                        continue;
-                    }
-                    if ($i < $colSize - 1) {
-                        $sWhereSub .= $searchColumns[$i] . ' LIKE ' . Pt_Commons_General::sqlLikeContains($search) . ' OR ';
-                    } else {
-                        $sWhereSub .= $searchColumns[$i] . ' LIKE ' . Pt_Commons_General::sqlLikeContains($search) . ' ';
-                    }
-                }
-                $sWhereSub .= ')';
-            }
-            $sWhere .= $sWhereSub;
-        }
-
-        /* Individual column filtering */
-        for ($i = 0; $i < count($searchColumns); $i++) {
-            if (isset($parameters['bSearchable_' . $i]) && $parameters['bSearchable_' . $i] == 'true' && $parameters['sSearch_' . $i] != '') {
-                if ($sWhere == '') {
-                    $sWhere .= $searchColumns[$i] . ' LIKE ' . Pt_Commons_General::sqlLikeContains($parameters['sSearch_' . $i]) . ' ';
-                } else {
-                    $sWhere .= ' AND ' . $searchColumns[$i] . ' LIKE ' . Pt_Commons_General::sqlLikeContains($parameters['sSearch_' . $i]) . ' ';
-                }
-            }
-        }
-
-        $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $sQuery = $dbAdapter->select()
-            ->from(['spm' => 'shipment_participant_map'], [])
-            ->join(
-                ['p' => 'participant'],
-                'spm.participant_id = p.participant_id',
-                ['participant_count' => new Zend_Db_Expr('COUNT(p.participant_id)')]
-            )
-            ->join(
-                ['c' => 'countries'],
-                'p.country = c.id',
-                ['id', 'country_name' => 'c.iso_name']
-            )
-            ->group('c.id');
-
-        $scopedDmId = Application_Service_Common::getScopedDmId();
-        if (!empty($scopedDmId)) {
-            $sQuery = $sQuery
-                ->joinLeft(['pmm' => 'participant_manager_map'], 'pmm.participant_id=p.participant_id', [])
-                ->where('pmm.dm_id = ?', $scopedDmId);
-        }
-
-        if (isset($parameters['shipmentId']) && $parameters['shipmentId'] != '') {
-            $sQuery = $sQuery->where('spm.shipment_id like ?', $parameters['shipmentId']);
-        }
-
-        if (!empty($sOrder)) {
-            $sQuery = $sQuery->order($sOrder);
-        }
-
-        if (isset($sLimit) && isset($sOffset)) {
-            $sQuery = $sQuery->limit($sLimit, $sOffset);
-        }
-
-        $rResult = $dbAdapter->fetchAll($sQuery);
-
-        /* Data set length after filtering */
-        $sQuery = $sQuery->reset(Zend_Db_Select::LIMIT_COUNT);
-        $sQuery = $sQuery->reset(Zend_Db_Select::LIMIT_OFFSET);
-        $aResultFilterTotal = $dbAdapter->fetchAll($sQuery);
-        $iFilteredTotal = count($aResultFilterTotal);
-
-        /* Total data set length */
-        $sWhere = '';
-        $sQuery = $dbAdapter->select()
-            ->from(['spm' => 'shipment_participant_map'], [])
-            ->join(
-                ['p' => 'participant'],
-                'spm.participant_id = p.participant_id',
-                new Zend_Db_Expr('COUNT(DISTINCT p.country)')
-            );
-        if (isset($parameters['shipmentId']) && $parameters['shipmentId'] != '') {
-            $sQuery = $sQuery->where('spm.shipment_id like ?', $parameters['shipmentId']);
-        }
-        if (!empty($scopedDmId)) {
-            $sQuery = $sQuery
-                ->joinLeft(['pmm' => 'participant_manager_map'], 'pmm.participant_id=p.participant_id', [])
-                ->where('pmm.dm_id = ?', $scopedDmId);
-        }
-        if (isset($sWhere) && $sWhere != '') {
-            $sQuery = $sQuery->where($sWhere);
-        }
-
-        $aResultTotal = $dbAdapter->fetchAll($sQuery);
-        $iTotal = count($aResultTotal);
-
-        /*
-         * Output
-         */
-        $output = [
-            'sEcho' => intval($parameters['sEcho']),
-            'iTotalRecords' => $iTotal,
-            'iTotalDisplayRecords' => $iFilteredTotal,
-            'aaData' => [],
-        ];
-
-        foreach ($rResult as $aRow) {
-            $row = [];
-            $row[] = $aRow['country_name'];
-            $row[] = $aRow['participant_count'];
-            $output['aaData'][] = $row;
-        }
-        echo json_encode($output);
-    }
-
-    public function getParticipantsPerCountryCount($params)
-    {
-        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $resultsQuery = $db->select()
-            ->from(['spm' => 'shipment_participant_map'], [])
-            ->join(
-                ['p' => 'participant'],
-                'spm.participant_id = p.participant_id',
-                ['participant_count' => new Zend_Db_Expr('COUNT(p.participant_id)')]
-            )
-            ->join(
-                ['c' => 'countries'],
-                'p.country = c.id',
-                ['id', 'country_name' => 'c.iso_name']
-            )
-            ->where('spm.shipment_id = ?', $params['shipmentId'])
-            ->group(['c.id'])
-            ->order('participant_count DESC');
-        $scopedDmId = Application_Service_Common::getScopedDmId();
-        if (!empty($scopedDmId)) {
-            $resultsQuery = $resultsQuery
-                ->joinLeft(['pmm' => 'participant_manager_map'], 'pmm.participant_id=p.participant_id', [])
-                ->where('pmm.dm_id = ?', $scopedDmId);
-        }
-        $resultsCountResult = $db->fetchAll($resultsQuery);
-
-        $output = [];
-        foreach ($resultsCountResult as $aRow) {
-            $row = [];
-            $row['name'] = $aRow['country_name'];
-            $row['count'] = $aRow['participant_count'];
-            $output[] = $row;
-        }
-
-        return $output;
     }
 
     public function getXtptIndicatorsReport($params)

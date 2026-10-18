@@ -55,6 +55,8 @@ _('config');
 _('corrective actions');
 // admin/reports-corrective-actions#title
 _('Corrective Actions Report');
+// admin/reports-tb-participants-per-country#tags
+_('countries');
 // admin/distributions-add#tags, admin/participants-add#tags
 _('create');
 // admin/eid-assay-add#summary
@@ -217,13 +219,13 @@ _('participant-login');
 _('Participant Performance Report');
 // admin/reports-participant-response#title
 _('Participant Response Report');
-// admin/email-participants#tags, admin/enrollments-add#tags, admin/enrollments#tags, admin/evaluate-shipment#tags, admin/participants-add#tags, admin/participants-bulk-import#tags, admin/participants-edit#tags, admin/participants-manager-map#tags, admin/participants#tags, admin/reports-corrective-actions#tags, admin/reports-participant-performance#tags, admin/reports-participant-response#tags, admin/reports-shipment-response#tags, admin/shipment-enroll#tags
+// admin/email-participants#tags, admin/enrollments-add#tags, admin/enrollments#tags, admin/evaluate-shipment#tags, admin/participants-add#tags, admin/participants-bulk-import#tags, admin/participants-edit#tags, admin/participants-manager-map#tags, admin/participants#tags, admin/reports-corrective-actions#tags, admin/reports-participant-performance#tags, admin/reports-participant-response#tags, admin/reports-shipment-response#tags, admin/reports-tb-participants-per-country#tags, admin/shipment-enroll#tags
 _('participants');
 // admin/participants#title
 _('Participants');
 // admin/reports-participant-trends#title
 _('Participant Trends');
-// admin/reports-participant-performance#tags, admin/reports-participant-response#tags, admin/reports-participant-trends#tags, admin/reports-shipment-response#tags
+// admin/reports-participant-performance#tags, admin/reports-participant-response#tags, admin/reports-participant-trends#tags, admin/reports-shipment-response#tags, admin/reports-tb-participants-per-country#tags
 _('pass rate');
 // admin/data-managers#tags
 _('password');
@@ -259,11 +261,11 @@ _('re-evaluate');
 _('regions');
 // admin/vl-assay-edit#summary
 _('Rename a Viral Load assay / platform');
-// admin/evaluate#tags, admin/report-config#tags, admin/reports-corrective-actions#tags, admin/reports-distribution#tags, admin/reports-finalize#tags, admin/reports-participant-performance#tags, admin/reports-participant-response#tags, admin/reports-participant-trends#tags, admin/reports-shipment-response#tags, admin/reports-shipments#tags
+// admin/evaluate#tags, admin/report-config#tags, admin/reports-corrective-actions#tags, admin/reports-distribution#tags, admin/reports-finalize#tags, admin/reports-participant-performance#tags, admin/reports-participant-response#tags, admin/reports-participant-trends#tags, admin/reports-shipment-response#tags, admin/reports-shipments#tags, admin/reports-tb-participants-per-country#tags
 _('reports');
 // admin/reports-participant-response#summary
 _('Response and pass rates by region, district, network tier, affiliation or enrolled program');
-// admin/reports-participant-response#tags, admin/reports-participant-trends#tags, admin/reports-shipment-response#tags
+// admin/reports-participant-response#tags, admin/reports-participant-trends#tags, admin/reports-shipment-response#tags, admin/reports-tb-participants-per-country#tags
 _('response rate');
 // admin/reports-participant-trends#summary
 _('Response rate, timeliness and pass rate across shipments, with a breakdown by region');
@@ -317,8 +319,12 @@ _('status');
 _('system-admin');
 // admin/global-config#summary
 _('System-wide settings that apply across the whole ePT app');
-// admin/tb-settings#tags
+// admin/reports-tb-participants-per-country#tags, admin/tb-settings#tags
 _('tb');
+// admin/reports-tb-participants-per-country#summary
+_('TB participants, response rate and pass rate for each country');
+// admin/reports-tb-participants-per-country#title
+_('TB Participants per Country');
 // admin/tb-settings#title
 _('TB Settings');
 // admin/report-config#tags
@@ -335,7 +341,7 @@ _('The list of shipments inside a PT Survey — what they are and how to manage 
 _('theme');
 // admin/reports-participant-trends#tags
 _('trends');
-// admin/tb-settings#tags
+// admin/reports-tb-participants-per-country#tags, admin/tb-settings#tags
 _('tuberculosis');
 // admin/distributions-edit#tags, admin/participants-edit#tags
 _('update');
