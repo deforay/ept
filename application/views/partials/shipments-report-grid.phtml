@@ -205,6 +205,19 @@ include APPLICATION_PATH . '/views/partials/report-zero-state.phtml';
 		color: #fff;
 	}
 
+	#shipmentTable a.dl-btn[data-draft="yes"] {
+		border-color: #f0c98a;
+		background: #fff7ea;
+		color: #8a4b00;
+	}
+
+	#shipmentTable a.dl-btn[data-draft="yes"]:hover,
+	#shipmentTable a.dl-btn[data-draft="yes"]:focus {
+		border-color: #c98a2b;
+		background: #c98a2b;
+		color: #fff;
+	}
+
 	#shipmentTable a.dl-btn i {
 		margin-right: 2px;
 		color: inherit;

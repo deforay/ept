@@ -260,16 +260,18 @@ class Application_Service_Reports
             // Both buttons always show once reports exist for the shipment. A file
             // missing from this server shows as a disabled button that says so,
             // rather than the button silently disappearing.
+            // Until the shipment is finalized the files are drafts, and say so.
+            $isDraft = $stage === 'reports';
             $folder = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR;
             $files = [
-                [$t->_('Summary'), $t->_('Summary report (PDF)'), 'icon-file-text',
+                [$isDraft ? $t->_('Summary (draft)') : $t->_('Summary'), $t->_('Summary report (PDF)'), 'icon-file-text',
                     $folder . $aRow['shipment_code'] . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . '-summary.pdf'],
-                [$t->_('All reports'), $t->_("Every participant's report in one ZIP file"), 'icon-archive',
+                [$isDraft ? $t->_('All reports (draft)') : $t->_('All reports'), $t->_("Every participant's report in one ZIP file"), 'icon-archive',
                     $folder . $aRow['shipment_code'] . '.zip'],
             ];
             foreach ($files as [$label, $title, $icon, $path]) {
                 $reports[] = file_exists($path)
-                    ? $link($label, $title, $icon, 'target="_blank" href="' . $esc(Pt_Commons_SignedDownload::url($path)) . '"')
+                    ? $link($label, $title, $icon, ($isDraft ? 'data-draft="yes" ' : '') . 'target="_blank" href="' . $esc(Pt_Commons_SignedDownload::url($path)) . '"')
                     : '<span class="dl-btn is-missing" title="' . $esc($t->_('This file is not on this server. Generate the reports again to create it.')) . '">'
                         . '<i class="' . $icon . '" aria-hidden="true"></i> ' . $esc($label) . '</span>';
             }
