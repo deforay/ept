@@ -31,7 +31,6 @@ class ParticipantController extends Zend_Controller_Action
             ->addActionContext('get-shipment-participant-list', 'html')
             ->addActionContext('tb-results', 'html')
             ->addActionContext('results-count', 'html')
-            ->addActionContext('xtpt-indicators', 'html')
             ->addActionContext('tb-all-sites-results', 'html')
             ->addActionContext('download-pending-sites', 'html')
             //->addActionContext('download-file', 'html')
@@ -74,6 +73,7 @@ class ParticipantController extends Zend_Controller_Action
         'tb-participants-per-country-shipments',
         'tb-participants-per-country-export',
         'xtpt-indicators',
+        'xtpt-indicators-generate',
         'tb-all-sites-results',
     ];
 
@@ -1007,18 +1007,15 @@ class ParticipantController extends Zend_Controller_Action
     {
         $this->_helper->layout()->activeMenu = 'ptcc-reports';
         $this->_helper->layout()->activeSubMenu = 'tb-xtpt-indicators';
-        /** @var Zend_Controller_Request_Http $request */
-        $request = $this->getRequest();
-        if ($request->isPost()) {
-            $params = $this->getAllParams();
+        $reportService = new Application_Service_Reports();
+        $this->view->shipments = $reportService->getResponseReportShipments('tb', null, null);
+    }
 
-            /* $evalService = new Application_Service_Evaluation();
-            $evalService->getEvaluateReportsInPdf($params["shipmentId"], null, null); */
-
-            $reportService = new Application_Service_Reports();
-            $response = $reportService->getXtptIndicatorsReport($params);
-            $this->view->response = $response;
-        }
+    public function xtptIndicatorsGenerateAction()
+    {
+        $reportService = new Application_Service_Reports();
+        $result = $reportService->getXtptIndicatorsReport(['shipmentId' => (int) $this->getParam('shipmentId')]);
+        $this->_helper->json(['file' => is_array($result) ? ($result['report-name'] ?? '') : '']);
     }
 
     public function tbAllSitesResultsAction()

@@ -139,8 +139,10 @@ _('Evaluate PT Survey');
 _('evaluation');
 // admin/reports-shipments#summary
 _('Every shipment with its responses, pass rate, status and downloads');
-// admin/enrollments-bulk-enrollment#tags, admin/participants-bulk-import#tags
+// admin/enrollments-bulk-enrollment#tags, admin/participants-bulk-import#tags, admin/reports-xtpt-indicators#tags
 _('excel');
+// admin/reports-xtpt-indicators#summary
+_('Excel workbook of XTPT indicators and all sites\' results for one TB shipment');
 // admin/eid-assay-add#tags, admin/eid-assay#tags
 _('extraction');
 // admin/reports-participant-performance#tags
@@ -183,6 +185,8 @@ _('How often each DTS corrective action was given, and to which participants');
 _('How to add a shipment (sample panel) under a PT Survey');
 // admin/shipment-enroll#summary
 _('How to choose which participants get a shipment — filters, preset lists, copying from another shipment, and saving a preset');
+// admin/reports-xtpt-indicators#tags
+_('indicators');
 // admin/participants#tags
 _('labs');
 // admin/home-config#tags
@@ -213,6 +217,8 @@ _('non-responders');
 _('overview');
 // admin/shipment-add#tags, admin/shipment#tags
 _('panel');
+// admin/reports-xtpt-indicators#tags
+_('panel statistics');
 // admin/data-managers#tags
 _('participant-login');
 // admin/reports-participant-performance#title
@@ -261,7 +267,7 @@ _('re-evaluate');
 _('regions');
 // admin/vl-assay-edit#summary
 _('Rename a Viral Load assay / platform');
-// admin/evaluate#tags, admin/report-config#tags, admin/reports-corrective-actions#tags, admin/reports-distribution#tags, admin/reports-finalize#tags, admin/reports-participant-performance#tags, admin/reports-participant-response#tags, admin/reports-participant-trends#tags, admin/reports-shipment-response#tags, admin/reports-shipments#tags, admin/reports-tb-participants-per-country#tags
+// admin/evaluate#tags, admin/report-config#tags, admin/reports-corrective-actions#tags, admin/reports-distribution#tags, admin/reports-finalize#tags, admin/reports-participant-performance#tags, admin/reports-participant-response#tags, admin/reports-participant-trends#tags, admin/reports-shipment-response#tags, admin/reports-shipments#tags, admin/reports-tb-participants-per-country#tags, admin/reports-xtpt-indicators#tags
 _('reports');
 // admin/reports-participant-response#summary
 _('Response and pass rates by region, district, network tier, affiliation or enrolled program');
@@ -319,7 +325,7 @@ _('status');
 _('system-admin');
 // admin/global-config#summary
 _('System-wide settings that apply across the whole ePT app');
-// admin/reports-tb-participants-per-country#tags, admin/tb-settings#tags
+// admin/reports-tb-participants-per-country#tags, admin/reports-xtpt-indicators#tags, admin/tb-settings#tags
 _('tb');
 // admin/reports-tb-participants-per-country#summary
 _('TB participants, response rate and pass rate for each country');
@@ -341,7 +347,7 @@ _('The list of shipments inside a PT Survey — what they are and how to manage 
 _('theme');
 // admin/reports-participant-trends#tags
 _('trends');
-// admin/reports-tb-participants-per-country#tags, admin/tb-settings#tags
+// admin/reports-tb-participants-per-country#tags, admin/reports-xtpt-indicators#tags, admin/tb-settings#tags
 _('tuberculosis');
 // admin/distributions-edit#tags, admin/participants-edit#tags
 _('update');
@@ -377,5 +383,9 @@ _('VL (HIV Viral Load) Settings');
 _('VL Assays / Platforms');
 // admin/reports-shipment-response#summary
 _('Who responded to each shipment, who did not, and how they performed');
+// admin/reports-xtpt-indicators#tags
+_('xtpt');
+// admin/reports-xtpt-indicators#title
+_('XTPT Indicators & Panel Statistics');
 // admin/dashboard#summary
 _('Your home page — what is happening across PT Surveys and Participants right now');

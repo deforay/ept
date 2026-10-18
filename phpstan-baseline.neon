@@ -1718,18 +1718,6 @@ parameters:
 			path: application/modules/reports/controllers/TestkitController.php
 
 		-
-			message: '#^Call to an undefined method Zend_Controller_Action_Helper_Abstract\:\:addActionContext\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: application/modules/reports/controllers/XtptIndicatorsController.php
-
-		-
-			message: '#^Call to method Application_Service_Evaluation\:\:getEvaluateReportsInPdf\(\) on a separate line has no effect\.$#'
-			identifier: method.resultUnused
-			count: 1
-			path: application/modules/reports/controllers/XtptIndicatorsController.php
-
-		-
 			message: '#^Variable \$this might not be defined\.$#'
 			identifier: variable.undefined
 			count: 1

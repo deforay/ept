@@ -1,0 +1,172 @@
+<?php
+
+/**
+ * XTPT Indicators & Panel Statistics, shared by reports/xtpt-indicators
+ * (admin) and participant/xtpt-indicators (data managers). The page builds
+ * the XTPT workbook for one TB shipment and offers it for download.
+ *
+ * Set before including:
+ *
+ *   $xtptGenerateUrl  the action that builds the workbook and returns {file}
+ *   $this->shipments  [{id, text}], the TB shipments, newest first
+ */
+?>
+<link href="<?php echo $this->baseUrl('css/select2.css'); ?>" rel="stylesheet" />
+<style>
+	.xtpt-intro {
+		max-width: 760px;
+		margin: 4px 0 18px;
+		color: #5b6573;
+	}
+
+	.xtpt-form {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: flex-end;
+		gap: 12px 16px;
+		padding: 14px 16px;
+		border: 1px solid #e3e8ef;
+		border-radius: 6px;
+		background: #fafbfc;
+	}
+
+	.xtpt-form .xtpt-field {
+		flex: 0 1 380px;
+		min-width: 0;
+	}
+
+	.xtpt-form label {
+		display: block;
+		margin-bottom: 4px;
+		font-size: 13px;
+		font-weight: 600;
+		color: #333;
+	}
+
+	.xtpt-form .btn {
+		height: 34px;
+		padding: 6px 14px;
+	}
+
+	.xtpt-status {
+		min-height: 20px;
+		margin: 10px 0 0;
+		font-size: 13px;
+		color: #5b6573;
+	}
+
+	.xtpt-status.is-error {
+		color: #a33a3a;
+	}
+
+	.xtpt-files {
+		margin: 22px 0 0;
+		padding: 0;
+		list-style: none;
+	}
+
+	.xtpt-files:empty {
+		display: none;
+	}
+
+	.xtpt-files-head {
+		margin: 22px 0 8px;
+		font-size: 15px;
+		font-weight: 600;
+		color: #333;
+	}
+
+	.xtpt-file {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		justify-content: space-between;
+		gap: 8px 16px;
+		margin-bottom: 8px;
+		padding: 10px 14px;
+		border: 1px solid #e3e8ef;
+		border-radius: 6px;
+		background: #fff;
+	}
+
+	.xtpt-file-name {
+		font-weight: 600;
+		color: #2f4f7a;
+		word-break: break-all;
+	}
+
+	.xtpt-file-meta {
+		display: block;
+		margin-top: 2px;
+		font-size: 12px;
+		color: #98a1ad;
+	}
+
+	.xtpt-file .btn {
+		white-space: nowrap;
+	}
+</style>
+
+<p class="xtpt-intro">
+	<?= $this->htmlTranslate("Builds an Excel workbook for one TB shipment. The workbook has two sheets: Panel Statistics, with the XTPT indicators, and All Sites' Results."); ?>
+</p>
+
+<div class="xtpt-form">
+	<div class="xtpt-field">
+		<label for="xtptShipment"><?= $this->htmlTranslate("Shipment"); ?></label>
+		<select id="xtptShipment" style="width:100%;">
+			<?php foreach ($this->shipments as $shipment) { ?>
+				<option value="<?= (int) $shipment['id']; ?>"><?= $this->escape($shipment['text']); ?></option>
+			<?php } ?>
+		</select>
+	</div>
+	<button type="button" class="btn btn-primary" id="xtptGenerate" <?= empty($this->shipments) ? 'disabled' : ''; ?>>
+		<i class="icon-file"></i> <?= $this->htmlTranslate("Generate workbook"); ?>
+	</button>
+</div>
+<p class="xtpt-status" id="xtptStatus" role="status">
+	<?php if (empty($this->shipments)) { ?>
+		<?= $this->htmlTranslate("There are no TB shipments yet."); ?>
+	<?php } ?>
+</p>
+
+<div class="xtpt-files-head" id="xtptFilesHead" style="display:none;"><?= $this->htmlTranslate("Workbooks"); ?></div>
+<ul class="xtpt-files" id="xtptFiles"></ul>
+
+<script type="text/javascript" src="<?php echo $this->baseUrl('js/select2.min.js'); ?>"></script>
+<script type="text/javascript">
+	$(function () {
+		$('#xtptShipment').select2();
+
+		$('#xtptGenerate').on('click', function () {
+			var $button = $(this);
+			var shipment = $('#xtptShipment option:selected').text();
+			$button.prop('disabled', true);
+			$('#xtptStatus').removeClass('is-error').text("<?= $this->jsTranslate("Building the workbook. This can take a minute."); ?>");
+
+			$.post("<?= $xtptGenerateUrl; ?>", { shipmentId: $('#xtptShipment').val() }, function (data) {
+				if (!data || !data.file) {
+					$('#xtptStatus').addClass('is-error').text("<?= $this->jsTranslate("Unable to generate download"); ?>");
+					return;
+				}
+				$('#xtptStatus').text('');
+				var href = '/temporary/generated-tb-reports/' + encodeURIComponent(data.file);
+				var $item = $('<li class="xtpt-file"/>');
+				$('<div/>')
+					.append($('<span class="xtpt-file-name"/>').text(data.file))
+					.append($('<span class="xtpt-file-meta"/>').text(shipment + ' · ' + new Date().toLocaleTimeString()))
+					.appendTo($item);
+				$('<a class="btn btn-success btn-sm" target="_blank" rel="noopener"/>')
+					.attr('href', href)
+					.html('<i class="icon-download-alt"></i> ' + $('<span/>').text("<?= $this->jsTranslate("Download"); ?>").html())
+					.appendTo($item);
+				$('#xtptFiles').prepend($item);
+				$('#xtptFilesHead').show();
+			}, 'json').fail(function () {
+				$('#xtptStatus').addClass('is-error').text("<?= $this->jsTranslate("Unable to generate download"); ?>");
+			}).always(function () {
+				$button.prop('disabled', false);
+			});
+		});
+	});
+</script>
