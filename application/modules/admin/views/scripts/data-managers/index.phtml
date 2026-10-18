@@ -81,12 +81,12 @@ if (isset($this->ptcc) && !empty($this->ptcc) && $this->ptcc == 1) {
         <h2><?= $this->translate->_($title); ?></h2>
         <div class="data-list-actions">
             <?php if (isset($ptcc) && !empty($ptcc) && $ptcc == 1) { ?>
-            <a href="javascript:void(0);" onclick="generatePtccExport('mapped');" id="exportPtccMapped" class="btn btn-primary"><i
-                    class="icon-download"></i>&nbsp;&nbsp;<?= $this->translate->_("PTCC Mapped Participants"); ?></a>
-            <a href="javascript:void(0);" onclick="generatePtccExport('normal');" id="exportPtcc" class="btn btn-primary"><i
-                    class="icon-download"></i>&nbsp;&nbsp;<?= $this->translate->_("PTCC"); ?></a>
-            <a href="javascript:void(0);" onclick="exportActivePtcc(true);" class="btn btn-warning"><i
-                    class="icon-key"></i>&nbsp;&nbsp;<?= $this->translate->_("Active PTCC + Passwords"); ?></a>
+            <button type="button" onclick="generatePtccExport('mapped');" id="exportPtccMapped" class="btn btn-primary"><i
+                    class="icon-download"></i>&nbsp;&nbsp;<?= $this->translate->_("PTCC Mapped Participants"); ?></button>
+            <button type="button" onclick="generatePtccExport('normal');" id="exportPtcc" class="btn btn-primary"><i
+                    class="icon-download"></i>&nbsp;&nbsp;<?= $this->translate->_("PTCC"); ?></button>
+            <button type="button" onclick="exportActivePtcc(true);" class="btn btn-warning"><i
+                    class="icon-key"></i>&nbsp;&nbsp;<?= $this->translate->_("Active PTCC + Passwords"); ?></button>
             <a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'data-managers', 'action' => 'add', 'ptcc' => '1'), 'default', true); ?>"
                 class="btn btn-primary"><i
                     class="icon-user"></i>&nbsp;&nbsp;<?= $this->translate->_("Add New PTCC"); ?></a>
@@ -98,8 +98,8 @@ if (isset($this->ptcc) && !empty($this->ptcc) && $this->ptcc == 1) {
                 class="btn btn-primary"><i
                     class="icon-user"></i>&nbsp;&nbsp;<?= $this->translate->_("Add New Data Manager (Participant Login)"); ?></a>
         <?php } ?>
-            <a href="javascript:void(0);" onclick="downloadUnusableEmails();" class="btn btn-warning"><i
-                    class="icon-envelope"></i>&nbsp;&nbsp;<?= $this->translate->_("Unusable Emails"); ?></a>
+            <button type="button" onclick="downloadUnusableEmails();" class="btn btn-warning"><i
+                    class="icon-envelope"></i>&nbsp;&nbsp;<?= $this->translate->_("Unusable Emails"); ?></button>
         </div>
     </div>
     <div class="data-list-body">

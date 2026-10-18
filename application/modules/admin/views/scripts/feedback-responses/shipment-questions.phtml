@@ -114,7 +114,7 @@ $audienceLabels = [
                                 <a class="btn btn-primary btn-xs" href="/admin/feedback-responses/feedback-form/id/<?= $encodedId ?>"><i class="icon-pencil"></i> <?= $this->htmlTranslate("Edit"); ?></a>
                                 <a class="btn btn-default btn-xs" href="/admin/feedback-responses/feedback-form/id/<?= $encodedId ?>/type/clone" title="<?= $this->htmlTranslate('Use this form for another shipment'); ?>"><i class="icon-copy"></i> <?= $this->htmlTranslate("Copy"); ?></a>
                                 <?php if ((int) ($row['responseCount'] ?? 0) > 0) { ?>
-                                    <a class="btn btn-default btn-xs" href="javascript:void(0);" onclick="downloadResponses(<?= (int) $row['shipment_id'] ?>);" title="<?= $this->htmlTranslate('Download the responses as a spreadsheet'); ?>"><i class="icon-download-alt"></i> <?= $this->htmlTranslate("Responses"); ?></a>
+                                    <button type="button" class="btn btn-default btn-xs" onclick="downloadResponses(<?= (int) $row['shipment_id'] ?>);" title="<?= $this->htmlTranslate('Download the responses as a spreadsheet'); ?>"><i class="icon-download-alt"></i> <?= $this->htmlTranslate("Responses"); ?></button>
                                 <?php } ?>
                             </div>
                         </td>

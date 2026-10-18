@@ -61,8 +61,8 @@ class Application_Model_CustomTest
     }
 
     /**
-     * TODO: Sub-scheme (Multiple Sub-Tests) Evaluation Support
-     * =========================================================
+     * Known limitation: multiple sub-tests (sub-schemes)
+     * ==================================================
      * Currently, this evaluate() function does NOT support multiple sub-schemes within a single Custom Test.
      *
      * The admin UI (add.phtml/edit.phtml) allows creating multiple sub-tests with the `sub_scheme` field
@@ -77,7 +77,7 @@ class Application_Model_CustomTest
      * 6. Update failure reasons to indicate which sub_scheme failed
      *
      * For now, the multi-sub-test feature is HIDDEN in the admin UI.
-     * See: admin/views/scripts/generic-test/add.phtml for the hidden UI elements.
+     * See admin/views/scripts/custom-test/add.phtml for the hidden UI elements.
      */
     public function evaluate($shipmentResult, $shipmentId, $reEvaluate = false)
     {

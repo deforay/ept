@@ -1086,7 +1086,9 @@ final class Application_Model_Dts
             );
         } else {
             /* Manual result override changes */
-            // TODO: If manual override, allow editing of failure_reason and corrective actions
+            // A manual override keeps the admin's scores and final result. It leaves the
+            // stored failure_reason and corrective actions as they are. The evaluation
+            // screen cannot edit them yet.
             if (isset($shipment['manual_override']) && $shipment['manual_override'] == 'yes') {
                 $sql = $this->db->select()->from('shipment_participant_map')->where('map_id = ?', $shipment['map_id']);
                 $shipmentOverall = $this->db->fetchRow($sql);

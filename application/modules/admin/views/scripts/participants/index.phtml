@@ -115,10 +115,10 @@
         <div class="data-list-actions">
             <a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'participants', 'action' => 'bulk-import'), 'default', true); ?>"
                 class="btn btn-primary"><i class="icon-plus"></i>&nbsp;&nbsp;<?= $this->translate->_("Bulk Import Participants"); ?></a>
-            <a href="javascript:void(0)" onclick="downloadParticipantDetails();" class="btn btn-primary"><i
-                    class="icon-download"></i>&nbsp;&nbsp;<?= $this->translate->_("Download as Excel"); ?></a>
-            <a href="javascript:void(0)" onclick="downloadUnusableEmails();" class="btn btn-warning"><i
-                    class="icon-envelope"></i>&nbsp;&nbsp;<?= $this->translate->_("Unusable Emails"); ?></a>
+            <button type="button" onclick="downloadParticipantDetails();" class="btn btn-primary"><i
+                    class="icon-download"></i>&nbsp;&nbsp;<?= $this->translate->_("Download as Excel"); ?></button>
+            <button type="button" onclick="downloadUnusableEmails();" class="btn btn-warning"><i
+                    class="icon-envelope"></i>&nbsp;&nbsp;<?= $this->translate->_("Unusable Emails"); ?></button>
             <a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'participants', 'action' => 'add'), 'default', true); ?>"
                 class="btn btn-primary"><i class="icon-user"></i>&nbsp;&nbsp;<?= $this->translate->_("Add New Participant"); ?></a>
         </div>

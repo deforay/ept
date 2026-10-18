@@ -1,10 +1,10 @@
 <?php
 
 /**
- * TODO: Sub-scheme (Multiple Sub-Tests) Feature
- * =============================================
+ * Known limitation: multiple sub-tests (sub-schemes)
+ * ==================================================
  * The UI supports adding multiple sub-tests (e.g., Test 1, Test 2) within a single Custom Test,
- * but the evaluation logic in Application_Model_GenericTest::evaluate() does NOT currently
+ * but the evaluation logic in Application_Model_CustomTest::evaluate() does NOT currently
  * handle sub-schemes. The sub_scheme field is stored but not used during evaluation.
  *
  * Required work:
@@ -14,7 +14,7 @@
  * 4. Frontend response.phtml needs to display sub-test sections separately
  *
  * For now, the "Add New Row" button is HIDDEN to prevent users from creating multi-sub-test configurations.
- * See: Application_Model_GenericTest::evaluate() for the evaluation logic that needs updating.
+ * See Application_Model_CustomTest::evaluate() for the evaluation logic that needs updating.
  */
 ?>
 <style>
@@ -226,7 +226,7 @@
 								</tr>
 							</table>
 						</td>
-						<!-- TODO: Multiple sub-tests feature hidden until evaluation logic supports it -->
+						<!-- Multiple sub-tests stay hidden until the evaluation logic supports them -->
 						<td style="text-align:center;vertical-align: middle; display:none;" class="add-subtest-btn">
 							<a href="javascript:void(0);" onclick="addNewRow(this);" class="btn btn-xs btn-info"><i class="icon-plus"></i></a>
 						</td>

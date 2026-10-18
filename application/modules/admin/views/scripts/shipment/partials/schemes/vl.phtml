@@ -374,14 +374,16 @@ foreach ($savedSettings as $key => $savedValue) {
 <!-- VL-specific JavaScript -->
 <script type="text/javascript">
     var sampleCounter = <?php echo $count + 1; ?>;
+    var isEditMode = <?= $isEditMode ? 'true' : 'false'; ?>;
 
     $(document).ready(function() {
-        <?php if (!$isEditMode): ?>
+        if (!isEditMode) {
             // ADD mode: create reference result blocks for pre-existing controls
-            <?php for ($i = 1; $i <= $count + 1; $i++): ?>
-                addNewReferenceResultBlock('<?php echo $i; ?>');
-            <?php endfor; ?>
-        <?php endif; ?>
+            var initialSamples = sampleCounter;
+            for (var i = 1; i <= initialSamples; i++) {
+                addNewReferenceResultBlock(i);
+            }
+        }
 
         $(".datepicker").datepicker({
             dateFormat: '<?php echo $dtFormat; ?>'
