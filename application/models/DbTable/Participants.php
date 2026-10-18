@@ -2769,155 +2769,183 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         }
     }
 
+    /**
+     * Narrows a Shipment Response Report query to the page's filters. The query
+     * must join participant as p, shipment_participant_map as sp and shipment as s.
+     * The summary and the participant list share it, so they always agree.
+     * The response filter is left to the participant list.
+     */
+    public static function applyResponseReportFilters(Zend_Db_Select $sQuery, array $parameters): Zend_Db_Select
+    {
+        $sQuery->where('s.cancelled_at IS NULL');
+
+        $schemes = array_filter((array) ($parameters['scheme'] ?? []), fn ($v) => $v !== '' && $v !== null);
+        if (!empty($schemes)) {
+            $sQuery->where('s.scheme_type IN (?)', $schemes);
+        }
+
+        $shipmentIds = array_filter((array) ($parameters['shipmentId'] ?? []), fn ($v) => $v !== '' && $v !== null);
+        if (!empty($shipmentIds)) {
+            $sQuery->where('s.shipment_id IN (?)', array_map('intval', $shipmentIds));
+        } else {
+            if (!empty($parameters['startDate'])) {
+                $sQuery->where('DATE(s.shipment_date) >= ?', Common::isoDateFormat($parameters['startDate']));
+            }
+            if (!empty($parameters['endDate'])) {
+                $sQuery->where('DATE(s.shipment_date) <= ?', Common::isoDateFormat($parameters['endDate']));
+            }
+        }
+
+        foreach (['country', 'region', 'state', 'district'] as $field) {
+            if (isset($parameters[$field]) && $parameters[$field] !== '') {
+                $sQuery->where("p.$field = ?", $parameters[$field]);
+            }
+        }
+
+        $dmId = Common::getScopedDmId();
+        if ($dmId !== null) {
+            $sQuery->join(['pmm' => 'participant_manager_map'], 'pmm.participant_id=p.participant_id', [])
+                ->where('pmm.dm_id = ?', $dmId);
+        }
+
+        return $sQuery;
+    }
+
     public function fetchShipmentResponseReport($parameters)
     {
-        /* Array of database columns which should be read and sent back to DataTables. Use a space where
-         * you want to insert a non-database field (for example a counter or static image)
-         */
+        $name = self::participantNameExpr('p');
+        $responseExpr = "CASE
+            WHEN sp.response_status = 'nottested' OR sp.is_pt_test_not_performed = 'yes' THEN 'Could not test'
+            WHEN sp.response_status = 'late' OR (sp.response_status = 'responded' AND sp.is_response_late = 'yes') THEN 'Late'
+            WHEN sp.response_status = 'responded' THEN 'Responded'
+            ELSE 'Not responded' END";
 
-        $aColumns = [new Zend_Db_Expr(self::participantNameExpr('p')), 'institute_name', 'iso_name', 'state', 'district', 'shipment_code', 'response_status', 'shipment_test_report_date', 'final_result'];
-
-        $sLimit = '';
-        if (isset($parameters['iDisplayStart']) && $parameters['iDisplayLength'] != '-1') {
-            $sOffset = $parameters['iDisplayStart'];
-            $sLimit = $parameters['iDisplayLength'];
-        }
+        // Display column => sort expression.
+        $orderColumns = [
+            $name,
+            "CONCAT_WS(', ', p.district, p.state, c.iso_name)",
+            's.shipment_date',
+            'RESPONSE',
+            'sp.shipment_test_report_date',
+            'sp.final_result',
+        ];
+        $searchColumns = [$name, 'p.unique_identifier', 'p.institute_name', 'c.iso_name', 'p.state', 'p.district', 's.shipment_code'];
 
         $sOrder = [];
         if (isset($parameters['iSortCol_0'])) {
             for ($i = 0; $i < intval($parameters['iSortingCols']); $i++) {
-                if ($parameters['bSortable_' . intval($parameters['iSortCol_' . $i])] == 'true') {
-                    $sortDir = Pt_Commons_General::sanitizeSortDirection($parameters['sSortDir_' . $i]);
-                    $colIdx = intval($parameters['iSortCol_' . $i]);
-                    if (!isset($aColumns[$colIdx])) {
-                        continue;
-                    }
-                    $sOrder[] = new Zend_Db_Expr(((string) $aColumns[$colIdx]) . ' ' . $sortDir);
+                $colIdx = intval($parameters['iSortCol_' . $i]);
+                if (($parameters['bSortable_' . $colIdx] ?? '') !== 'true' || !isset($orderColumns[$colIdx])) {
+                    continue;
                 }
+                $sOrder[] = new Zend_Db_Expr($orderColumns[$colIdx] . ' ' . Pt_Commons_General::sanitizeSortDirection($parameters['sSortDir_' . $i]));
             }
         }
 
-        $sWhere = '';
-        if (isset($parameters['sSearch']) && $parameters['sSearch'] != '') {
-            $searchArray = explode(' ', $parameters['sSearch']);
-            $sWhereSub = '';
-            foreach ($searchArray as $search) {
-                if ($sWhereSub == '') {
-                    $sWhereSub .= '(';
-                } else {
-                    $sWhereSub .= ' AND (';
-                }
-                $colSize = count($aColumns);
+        $sQuery = $this->getAdapter()->select()
+            ->from(['p' => 'participant'], [
+                new Zend_Db_Expr('SQL_CALC_FOUND_ROWS p.participant_id'),
+                'p.unique_identifier',
+                'p.institute_name',
+                'p.country',
+                'p.state',
+                'p.district',
+                'participantName' => new Zend_Db_Expr($name),
+            ])
+            ->join(['sp' => 'shipment_participant_map'], 'p.participant_id=sp.participant_id', [
+                'shipment_test_report_date',
+                'final_result',
+                'is_excluded',
+                'RESPONSE' => new Zend_Db_Expr($responseExpr),
+            ])
+            ->join(['s' => 'shipment'], 's.shipment_id=sp.shipment_id', ['shipment_code', 'shipment_date', 'scheme_type'])
+            ->joinLeft(['c' => 'countries'], 'c.id=p.country', ['iso_name']);
 
-                for ($i = 0; $i < $colSize; $i++) {
-                    if ($i < $colSize - 1) {
-                        $sWhereSub .= $aColumns[$i] . ' LIKE ' . Pt_Commons_General::sqlLikeContains($search) . ' OR ';
-                    } else {
-                        $sWhereSub .= $aColumns[$i] . ' LIKE ' . Pt_Commons_General::sqlLikeContains($search) . ' ';
-                    }
+        self::applyResponseReportFilters($sQuery, $parameters);
+
+        switch ($parameters['response'] ?? '') {
+            case 'responded':
+                $sQuery->where("sp.response_status IN ('responded','late','nottested')");
+                break;
+            case 'late':
+                $sQuery->where("sp.response_status = 'late' OR (sp.response_status = 'responded' AND sp.is_response_late = 'yes')");
+                break;
+            case 'nottested':
+                $sQuery->where("sp.response_status = 'nottested' OR (sp.response_status IN ('responded','late') AND sp.is_pt_test_not_performed = 'yes')");
+                break;
+            case 'noresponse':
+                $sQuery->where("IFNULL(sp.response_status, 'noresponse') NOT IN ('responded','late','nottested')");
+                break;
+            case 'failed':
+                $sQuery->where("sp.final_result = 2 AND sp.response_status IN ('responded','late')");
+                break;
+        }
+
+        if (!empty($parameters['sSearch'])) {
+            foreach (explode(' ', $parameters['sSearch']) as $search) {
+                if ($search === '') {
+                    continue;
                 }
-                $sWhereSub .= ')';
+                $like = Pt_Commons_General::sqlLikeContains($search);
+                $sQuery->where('(' . implode(' OR ', array_map(fn ($col) => "$col LIKE $like", $searchColumns)) . ')');
             }
-            $sWhere .= $sWhereSub;
         }
 
-        /* Individual column filtering */
-        for ($i = 0; $i < count($aColumns); $i++) {
-            if (isset($parameters['bSearchable_' . $i]) && $parameters['bSearchable_' . $i] == 'true' && $parameters['sSearch_' . $i] != '') {
-                if ($sWhere == '') {
-                    $sWhere .= $aColumns[$i] . ' LIKE ' . Pt_Commons_General::sqlLikeContains($parameters['sSearch_' . $i]) . ' ';
-                } else {
-                    $sWhere .= ' AND ' . $aColumns[$i] . ' LIKE ' . Pt_Commons_General::sqlLikeContains($parameters['sSearch_' . $i]) . ' ';
-                }
-            }
-        }
+        $sQuery->order(!empty($sOrder) ? $sOrder : [new Zend_Db_Expr('s.shipment_date DESC'), new Zend_Db_Expr("$name ASC")]);
 
-        $sQuery = $this->getAdapter()->select()->from(['p' => 'participant'], [new Zend_Db_Expr('SQL_CALC_FOUND_ROWS p.participant_id'), 'p.unique_identifier', 'p.institute_name', 'p.country', 'p.state', 'p.district', 'p.status', 'participantName' => new Zend_Db_Expr(self::participantNameGroupConcatExpr('p'))])
-            ->joinLeft(['c' => 'countries'], 'c.id=p.country')
-            ->joinLeft(['sp' => 'shipment_participant_map'], 'p.participant_id=sp.participant_id', ['shipment_test_report_date', 'final_result', 'RESPONSE' => new Zend_Db_Expr("CASE WHEN (sp.is_excluded ='yes') THEN 'Excluded'  WHEN (sp.shipment_test_date not like '' AND sp.shipment_test_date!='0000-00-00' AND sp.shipment_test_date not like 'NULL') THEN 'Responded' ELSE 'Not Responded' END")])
-            ->joinLeft(['s' => 'shipment'], 's.shipment_id=sp.shipment_id', ['shipment_code', 'scheme_type', 'response_deadline', 'status'])
-            ->where('s.cancelled_at IS NULL')
-            ->group('p.participant_id');
+        // The Excel export runs this query again without the page limit.
+        $sQuerySession = new Zend_Session_Namespace('participantResponseReportQuerySession');
+        $sQuerySession->participantResponseReportQuerySession = clone $sQuery;
 
-        if (isset($parameters['scheme']) && $parameters['scheme'] != '') {
-            $sQuery = $sQuery->where('s.scheme_type IN (?)', (array) $parameters['scheme']);
-        }
-        $authNameSpace = new Zend_Session_Namespace('datamanagers');
-        if (!empty($authNameSpace->dm_id)) {
-            $sQuery = $sQuery
-                ->joinLeft(['pmm' => 'participant_manager_map'], 'pmm.participant_id=p.participant_id', [])
-                ->where('pmm.dm_id = ?', $authNameSpace->dm_id);
-        }
-        if (empty($parameters['shipmentId']) && isset($parameters['startDate']) && $parameters['startDate'] != '' && isset($parameters['endDate']) && $parameters['endDate'] != '') {
-            $sQuery = $sQuery->where('DATE(s.shipment_date) >= ?', Common::isoDateFormat($parameters['startDate']));
-            $sQuery = $sQuery->where('DATE(s.shipment_date) <= ?', Common::isoDateFormat($parameters['endDate']));
-        }
-
-        if (isset($parameters['shipmentId']) && $parameters['shipmentId'] != '') {
-            $sQuery = $sQuery->where('s.shipment_id IN (?)', (array) $parameters['shipmentId']);
-        }
-
-        if (isset($parameters['country']) && $parameters['country'] != '') {
-            $sQuery = $sQuery->where('p.country = ?', $parameters['country']);
-        }
-
-        if (isset($parameters['region']) && $parameters['region'] != '') {
-            $sQuery = $sQuery->where('p.region = ?', $parameters['region']);
-        }
-
-        if (isset($parameters['state']) && $parameters['state'] != '') {
-            $sQuery = $sQuery->where('p.state = ?', $parameters['state']);
-        }
-
-        if (isset($parameters['district']) && $parameters['district'] != '') {
-            $sQuery = $sQuery->where('p.district = ?', $parameters['district']);
-        }
-
-        if (isset($sWhere) && $sWhere != '') {
-            $sQuery = $sQuery->where($sWhere);
-        }
-
-        if (!empty($sOrder)) {
-            $sQuery = $sQuery->order($sOrder);
-        }
-
-        if (isset($sLimit) && isset($sOffset)) {
-            $sQuery = $sQuery->limit($sLimit, $sOffset);
+        if (isset($parameters['iDisplayStart']) && ($parameters['iDisplayLength'] ?? '-1') != '-1') {
+            $sQuery->limit((int) $parameters['iDisplayLength'], (int) $parameters['iDisplayStart']);
         }
 
         $rResult = $this->getAdapter()->fetchAll($sQuery);
+        $iTotal = $this->getAdapter()->fetchOne('SELECT FOUND_ROWS()');
 
-        /* Data set length after filtering */
-        $sQuery = $sQuery->reset(Zend_Db_Select::LIMIT_COUNT);
-        $sQuery = $sQuery->reset(Zend_Db_Select::LIMIT_OFFSET);
-        $sQuerySession = new Zend_Session_Namespace('participantResponseReportQuerySession');
-        $sQuerySession->participantResponseReportQuerySession = $sQuery;
-        $iTotal = $iFilteredTotal = $this->getAdapter()->fetchOne('SELECT FOUND_ROWS()');
-
-        /*
-         * Output
-         */
         $output = [
-            'sEcho' => intval($parameters['sEcho']),
+            'sEcho' => intval($parameters['sEcho'] ?? 0),
             'iTotalRecords' => $iTotal,
-            'iTotalDisplayRecords' => $iFilteredTotal,
+            'iTotalDisplayRecords' => $iTotal,
             'aaData' => [],
         ];
 
-        $finalResult = [1 => 'Pass', 2 => 'Fail', 3 => 'Excluded'];
-        foreach ($rResult as $aRow) {
-            $row = [];
+        $translate = Zend_Registry::get('translate');
+        $esc = fn ($v) => htmlspecialchars((string) $v, ENT_QUOTES, 'UTF-8', false);
+        $responseClass = [
+            'Responded' => 'is-ok',
+            'Late' => 'is-warn',
+            'Could not test' => 'is-warn',
+            'Not responded' => 'is-bad',
+        ];
+        $results = [1 => ['Pass', 'is-ok'], 2 => ['Fail', 'is-bad'], 3 => ['Excluded', 'is-muted'], 4 => ['Not evaluated', 'is-muted']];
 
-            $row[] = ($aRow['participantName']);
-            $row[] = ($aRow['institute_name']);
-            $row[] = ($aRow['iso_name']);
-            $row[] = ($aRow['state']);
-            $row[] = ($aRow['district']);
-            $row[] = $aRow['shipment_code'];
-            $row[] = ucwords($aRow['RESPONSE']);
-            $row[] = Pt_Commons_DateUtility::humanReadableDateFormat($aRow['shipment_test_report_date'] ?? '');
-            $row[] = (isset($finalResult[$aRow['final_result']]) && !empty($finalResult[$aRow['final_result']])) ? ucwords($finalResult[$aRow['final_result']]) : null;
-            $output['aaData'][] = $row;
+        foreach ($rResult as $aRow) {
+            $participant = '<span class="cell-main">' . $esc($aRow['participantName']) . '</span>';
+            $sub = array_filter([$aRow['unique_identifier'], $aRow['institute_name']]);
+            if (!empty($sub)) {
+                $participant .= '<span class="cell-sub">' . $esc(implode(' · ', $sub)) . '</span>';
+            }
+
+            $place = array_filter([$aRow['district'], $aRow['state'], $aRow['iso_name']]);
+
+            $response = $aRow['RESPONSE'];
+            $result = '';
+            if ($aRow['is_excluded'] === 'yes') {
+                $result = $results[3];
+            } elseif (isset($results[(int) $aRow['final_result']])) {
+                $result = $results[(int) $aRow['final_result']];
+            }
+
+            $output['aaData'][] = [
+                $participant,
+                $esc(implode(', ', $place)),
+                $esc($aRow['shipment_code']) . '<span class="cell-sub">' . $esc(Pt_Commons_DateUtility::humanReadableDateFormat($aRow['shipment_date'] ?? '')) . '</span>',
+                '<span class="resp-pill ' . $responseClass[$response] . '">' . $esc($translate->_($response)) . '</span>',
+                $esc(Pt_Commons_DateUtility::humanReadableDateFormat($aRow['shipment_test_report_date'] ?? '')),
+                $result ? '<span class="resp-pill ' . $result[1] . '">' . $esc($translate->_($result[0])) . '</span>' : '',
+            ];
         }
 
         echo json_encode($output);

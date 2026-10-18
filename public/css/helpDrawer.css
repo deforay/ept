@@ -427,3 +427,28 @@
     color: #92400e;
     margin-top: 4px;
 }
+
+/* Tables in help topics (filters, columns, statuses). */
+.help-prose table {
+    width: 100%;
+    margin: 10px 0 16px;
+    border-collapse: collapse;
+    font-size: 13px;
+    line-height: 1.5;
+}
+.help-prose th,
+.help-prose td {
+    padding: 6px 10px;
+    border: 1px solid #e2e8f0;
+    text-align: left;
+    vertical-align: top;
+}
+.help-prose th {
+    background: #f5f8fc;
+    font-weight: 600;
+    color: #3a4a5f;
+}
+.help-prose td:first-child {
+    white-space: nowrap;
+    font-weight: 600;
+}

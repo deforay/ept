@@ -43,6 +43,16 @@ class Reports_ShipmentResponseReportController extends Zend_Controller_Action
         $this->view->districts = $participants->getAllParticipantDistricts();
     }
 
+    public function shipmentsAction()
+    {
+        $reportService = new Application_Service_Reports();
+        $this->_helper->json($reportService->getResponseReportShipments(
+            $this->getParam('scheme'),
+            $this->getParam('startDate'),
+            $this->getParam('endDate')
+        ));
+    }
+
     public function participantResponseAction()
     {
         /** @var Zend_Controller_Request_Http $request */

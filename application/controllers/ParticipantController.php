@@ -75,6 +75,7 @@ class ParticipantController extends Zend_Controller_Action
         'region-wise-participant-report',
         'shipment-response-report',
         'participant-response',
+        'response-report-shipments',
         'export-participants-response-details',
         'shipments-reports',
         'get-shipment-participant-list',
@@ -945,6 +946,16 @@ class ParticipantController extends Zend_Controller_Action
         $this->view->regions = $participants->getAllParticipantRegion();
         $this->view->states = $participants->getAllParticipantStates();
         $this->view->districts = $participants->getAllParticipantDistricts();
+    }
+
+    public function responseReportShipmentsAction()
+    {
+        $reportService = new Application_Service_Reports();
+        $this->_helper->json($reportService->getResponseReportShipments(
+            $this->getParam('scheme'),
+            $this->getParam('startDate'),
+            $this->getParam('endDate')
+        ));
     }
 
     public function participantResponseAction()

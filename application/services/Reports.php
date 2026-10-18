@@ -3917,17 +3917,8 @@ class Application_Service_Reports
             $sQuery = $sQuery->where('DATE(s.shipment_date) >= ?', $this->common->isoDateFormat($startDate));
             $sQuery = $sQuery->where('DATE(s.shipment_date) <= ?', $this->common->isoDateFormat($endDate));
         }
-        if (isset($schemeType) && !empty($schemeType)) {
-            $sWhere = '';
-            foreach ($schemeType as $val) {
-                if ($sWhere != '') {
-                    $sWhere .= ' OR ';
-                }
-                $sWhere .= " s.scheme_type='" . $val . "' ";
-            }
-            if (!empty($sWhere)) {
-                $sQuery = $sQuery->where($sWhere);
-            }
+        if (!empty($schemeType)) {
+            $sQuery = $sQuery->where('s.scheme_type IN (?)', (array) $schemeType);
         }
         $resultArray = $db->fetchAll($sQuery);
         return $resultArray;
@@ -4053,139 +4044,144 @@ class Application_Service_Reports
         }
     }
 
+    /**
+     * Shipment Response Report summary: one row per shipment, counted over the
+     * participants that match the page's filters. The counts follow
+     * Application_Service_Shipments::getShipmentParticipationStats().
+     */
     public function getShipmentResponseReportReport($parameters)
     {
-        $searchColumns = [
-            'noOfParticipants',
-            'noOfResponded',
-            'noOfNotResponded',  // fixed: was missing
-            'noOfPassed',
-            'noOfFailed',
-        ];
-        $orderColumns = [
-            'noOfParticipants',
-            'noOfResponded',
-            'noOfNotResponded',  // fixed: was missing
-            'noOfPassed',
-            'noOfFailed',
-        ];
+        $orderColumns = ['s.shipment_date', 'sl.scheme_name', 'enrolled', 'responded / enrolled', 'notResponded', 'passed / NULLIF(passed + failed, 0)', 'failed'];
 
-        $sLimit = '';
-        $sOffset = 0;
-        if (isset($parameters['iDisplayStart']) && $parameters['iDisplayLength'] != '-1') {
-            $sOffset = $parameters['iDisplayStart'];
-            $sLimit = $parameters['iDisplayLength'];
-        }
-
-        $sOrder = '';
+        $sOrder = [];
         if (isset($parameters['iSortCol_0'])) {
             for ($i = 0; $i < intval($parameters['iSortingCols']); $i++) {
-                if ($parameters['bSortable_' . intval($parameters['iSortCol_' . $i])] == 'true') {
-                    $colIdx = intval($parameters['iSortCol_' . $i]);
-                    if (!isset($orderColumns[$colIdx])) {
-                        continue;
-                    }
-                    $sOrder .= $orderColumns[$colIdx] . ' '
-                        . Pt_Commons_General::sanitizeSortDirection($parameters['sSortDir_' . $i]) . ', ';
+                $colIdx = intval($parameters['iSortCol_' . $i]);
+                if (($parameters['bSortable_' . $colIdx] ?? '') !== 'true' || !isset($orderColumns[$colIdx])) {
+                    continue;
                 }
-            }
-            $sOrder = substr_replace($sOrder, '', -2);
-        }
-
-        $sWhere = '';
-        if (isset($parameters['sSearch']) && $parameters['sSearch'] != '') {
-            $searchArray = explode(' ', $parameters['sSearch']);
-            $sWhereSub = '';
-            foreach ($searchArray as $search) {
-                if ($sWhereSub == '') {
-                    $sWhereSub .= '(';
-                } else {
-                    $sWhereSub .= ' AND (';
-                }
-                $colSize = count($searchColumns);
-                for ($i = 0; $i < $colSize; $i++) {
-                    if ($i < $colSize - 1) {
-                        $sWhereSub .= $searchColumns[$i] . ' LIKE ' . Pt_Commons_General::sqlLikeContains($search) . ' OR ';
-                    } else {
-                        $sWhereSub .= $searchColumns[$i] . ' LIKE ' . Pt_Commons_General::sqlLikeContains($search) . ' ';
-                    }
-                }
-                $sWhereSub .= ')';
-            }
-            $sWhere .= $sWhereSub;
-        }
-
-        /* Individual column filtering */
-        for ($i = 0; $i < count($searchColumns); $i++) {
-            if (isset($parameters['bSearchable_' . $i]) && $parameters['bSearchable_' . $i] == 'true' && $parameters['sSearch_' . $i] != '') {
-                if ($sWhere == '') {
-                    $sWhere .= $searchColumns[$i] . ' LIKE ' . Pt_Commons_General::sqlLikeContains($parameters['sSearch_' . $i]) . ' ';
-                } else {
-                    $sWhere .= ' AND ' . $searchColumns[$i] . ' LIKE ' . Pt_Commons_General::sqlLikeContains($parameters['sSearch_' . $i]) . ' ';
-                }
+                $sOrder[] = new Zend_Db_Expr($orderColumns[$colIdx] . ' ' . Pt_Commons_General::sanitizeSortDirection($parameters['sSortDir_' . $i]));
             }
         }
 
+        $responded = "sp.response_status IN ('responded','late','nottested')";
         $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
-
         $sQuery = $dbAdapter->select()
-            ->from(['p' => 'participant'], [
-                'noOfParticipants' => new Zend_Db_Expr('COUNT(*)'),
-            ])
+            ->from(['p' => 'participant'], [new Zend_Db_Expr('SQL_CALC_FOUND_ROWS s.shipment_id')])
             ->join(['sp' => 'shipment_participant_map'], 'p.participant_id=sp.participant_id', [
-                'noOfResponded' => new Zend_Db_Expr("SUM(CASE WHEN sp.response_status IN ('responded', 'nottested') THEN 1 ELSE 0 END)"),
-                'noOfNotResponded' => new Zend_Db_Expr("SUM(CASE WHEN (sp.response_status LIKE '' OR sp.response_status LIKE 'noresponse' OR sp.response_status IS NULL) THEN 1 ELSE 0 END)"),
-                'noOfPassed' => new Zend_Db_Expr('SUM(CASE WHEN (sp.final_result LIKE 1) THEN 1 ELSE 0 END)'),
-                'noOfFailed' => new Zend_Db_Expr('SUM(CASE WHEN (sp.final_result LIKE 2) THEN 1 ELSE 0 END)'),
+                'enrolled' => new Zend_Db_Expr('COUNT(DISTINCT sp.map_id)'),
+                'responded' => new Zend_Db_Expr("SUM($responded)"),
+                'notResponded' => new Zend_Db_Expr("SUM(NOT ($responded) OR sp.response_status IS NULL)"),
+                'passed' => new Zend_Db_Expr('SUM(sp.final_result = 1)'),
+                'failed' => new Zend_Db_Expr("SUM(sp.final_result = 2 AND sp.response_status IN ('responded','late'))"),
             ])
             ->join(['s' => 'shipment'], 's.shipment_id=sp.shipment_id', [
-                'shipment_code',
-                'scheme_type',
-                'response_deadline',
-            ]);
+                's.shipment_code',
+                's.shipment_date',
+            ])
+            ->joinLeft(['sl' => 'scheme_list'], 'sl.scheme_id=s.scheme_type', ['sl.scheme_name'])
+            ->group('s.shipment_id');
 
-        if (isset($parameters['scheme']) && $parameters['scheme'] != '') {
-            $sQuery = $sQuery->where('s.scheme_type IN (?)', (array) $parameters['scheme']);
+        Application_Model_DbTable_Participants::applyResponseReportFilters($sQuery, $parameters);
+
+        if (!empty($parameters['sSearch'])) {
+            $like = Pt_Commons_General::sqlLikeContains($parameters['sSearch']);
+            $sQuery->where("s.shipment_code LIKE $like OR sl.scheme_name LIKE $like");
         }
 
-        if (isset($parameters['shipmentId']) && $parameters['shipmentId'] != '') {
-            $sQuery = $sQuery->where('s.shipment_id IN (?)', (array) $parameters['shipmentId']);
-        }
+        $sQuery->order(!empty($sOrder) ? $sOrder : new Zend_Db_Expr('s.shipment_date DESC'));
 
-        if (isset($parameters['country']) && $parameters['country'] != '') {
-            $sQuery = $sQuery->where('p.country = ?', $parameters['country']);
-        }
-
-        if (!empty($sOrder)) {
-            $sQuery = $sQuery->order($sOrder);
-        }
-
-        if (!empty($sLimit)) {
-            $sQuery = $sQuery->limit($sLimit, $sOffset);
+        if (isset($parameters['iDisplayStart']) && ($parameters['iDisplayLength'] ?? '-1') != '-1') {
+            $sQuery->limit((int) $parameters['iDisplayLength'], (int) $parameters['iDisplayStart']);
         }
 
         $rResult = $dbAdapter->fetchAll($sQuery);
-
-        $iFilteredTotal = $iTotal = count($rResult);
+        $iTotal = $dbAdapter->fetchOne('SELECT FOUND_ROWS()');
 
         $output = [
-            'sEcho' => intval($parameters['sEcho']),
+            'sEcho' => intval($parameters['sEcho'] ?? 0),
             'iTotalRecords' => $iTotal,
-            'iTotalDisplayRecords' => $iFilteredTotal,
+            'iTotalDisplayRecords' => $iTotal,
             'aaData' => [],
         ];
 
+        $esc = fn ($v) => htmlspecialchars((string) $v, ENT_QUOTES, 'UTF-8', false);
+        $translate = Zend_Registry::get('translate');
+        $rate = function (int $n, int $of, string $barClass = '') use ($translate) {
+            if ($of === 0) {
+                return '<span class="cell-muted">' . $translate->_('Not evaluated yet') . '</span>';
+            }
+            $pct = round($n * 100 / $of);
+            return '<span class="rate-figure">' . $pct . '%</span>'
+                . '<span class="rate-bar ' . $barClass . '"><span style="width:' . $pct . '%"></span></span>'
+                . '<span class="cell-sub">' . sprintf($translate->_('%s of %s'), number_format($n), number_format($of)) . '</span>';
+        };
+
         foreach ($rResult as $aRow) {
-            $row = [];
-            $row[] = $aRow['noOfParticipants'];   // col 1: # of Participants
-            $row[] = $aRow['noOfResponded'];      // col 2: # Responded
-            $row[] = $aRow['noOfNotResponded'];   // col 3: # Not Responded
-            $row[] = $aRow['noOfPassed'];         // col 4: # Passed
-            $row[] = $aRow['noOfFailed'];         // col 5: # Failed
-            $output['aaData'][] = $row;
+            $sid = (int) $aRow['shipment_id'];
+            $enrolled = (int) $aRow['enrolled'];
+            $notResponded = (int) $aRow['notResponded'];
+            $failed = (int) $aRow['failed'];
+            $output['aaData'][] = [
+                '<div class="shipment-cell">'
+                    . '<a href="javascript:void(0);" class="toggle-stats-row" data-sid="' . base64_encode((string) $sid) . '" title="' . $esc($translate->_('Breakdown')) . '">'
+                    . '<i class="icon-chevron-right" aria-hidden="true"></i></a>'
+                    . '<div><a href="#" class="js-pick-shipment cell-main" data-sid="' . $sid . '" title="' . $esc($translate->_('List only the participants of this shipment')) . '">' . $esc($aRow['shipment_code']) . '</a>'
+                    . '<span class="cell-sub">' . $esc(Pt_Commons_DateUtility::humanReadableDateFormat($aRow['shipment_date'] ?? '')) . '</span></div>'
+                    . '</div>',
+                $esc($aRow['scheme_name']),
+                number_format($enrolled),
+                $rate((int) $aRow['responded'], $enrolled),
+                $notResponded > 0
+                    ? '<a href="#" class="js-pick-shipment count-link is-bad" data-sid="' . $sid . '" data-response="noresponse" title="' . $esc($translate->_('List the participants who have not responded')) . '">' . number_format($notResponded) . '</a>'
+                    : '0',
+                $rate((int) $aRow['passed'], (int) $aRow['passed'] + $failed, 'is-pass'),
+                $failed > 0
+                    ? '<a href="#" class="js-pick-shipment count-link is-bad" data-sid="' . $sid . '" data-response="failed" title="' . $esc($translate->_('List the participants who failed')) . '">' . number_format($failed) . '</a>'
+                    : '0',
+            ];
         }
 
         echo json_encode($output);
+    }
+
+    /**
+     * The shipments the Shipment Response Report can show: every shipment that is
+     * not cancelled, of the given schemes, shipped in the date range.
+     */
+    public function getResponseReportShipments($schemes, ?string $startDate, ?string $endDate): array
+    {
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $sQuery = $db->select()
+            ->from(['s' => 'shipment'], ['s.shipment_id', 's.shipment_code', 's.shipment_date'])
+            ->where('s.cancelled_at IS NULL')
+            ->order('s.shipment_date DESC');
+
+        $schemes = array_filter((array) $schemes, fn ($v) => $v !== '' && $v !== null);
+        if (!empty($schemes)) {
+            $sQuery->where('s.scheme_type IN (?)', $schemes);
+        }
+        if (!empty($startDate)) {
+            $sQuery->where('DATE(s.shipment_date) >= ?', $this->common->isoDateFormat($startDate));
+        }
+        if (!empty($endDate)) {
+            $sQuery->where('DATE(s.shipment_date) <= ?', $this->common->isoDateFormat($endDate));
+        }
+
+        $dmId = Application_Service_Common::getScopedDmId();
+        if ($dmId !== null) {
+            $sQuery->where(
+                's.shipment_id IN (?)',
+                $db->select()->from(['sp' => 'shipment_participant_map'], ['sp.shipment_id'])
+                    ->join(['pmm' => 'participant_manager_map'], 'pmm.participant_id=sp.participant_id', [])
+                    ->where('pmm.dm_id = ?', $dmId)
+            );
+        }
+
+        return array_map(fn ($row) => [
+            'id' => (int) $row['shipment_id'],
+            'text' => $row['shipment_code'] . ' (' . Pt_Commons_DateUtility::humanReadableDateFormat($row['shipment_date'] ?? '') . ')',
+        ], $db->fetchAll($sQuery));
     }
 
     public function generateAnnualReportExcel($shipmentCodeArray, $participants)

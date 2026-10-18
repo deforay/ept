@@ -81,6 +81,8 @@ _('detection');
 _('distribution');
 // admin/distributions-add#tags, admin/distributions-edit#tags, admin/distributions#tags
 _('distributions');
+// admin/reports-shipments#tags
+_('downloads');
 // admin/reports-distribution#tags
 _('draft');
 // admin/dts-settings#tags, admin/testkit-standard-kit#tags, admin/testkit#tags
@@ -125,6 +127,8 @@ _('evaluate');
 _('Evaluate PT Survey');
 // admin/evaluate#tags
 _('evaluation');
+// admin/reports-shipments#summary
+_('Every shipment with its responses, pass rate, status and downloads');
 // admin/enrollments-bulk-enrollment#tags, admin/participants-bulk-import#tags
 _('excel');
 // admin/eid-assay-add#tags, admin/eid-assay#tags
@@ -187,16 +191,22 @@ _('Map Participants to Data Managers');
 _('mapping');
 // admin/testkit-standard-kit#title
 _('Map Test Kits to Tests');
-// admin/dashboard#tags
+// admin/reports-shipment-response#tags, admin/reports-shipments#tags
+_('non-responders');
+// admin/dashboard#tags, admin/reports-shipments#tags
 _('overview');
 // admin/shipment-add#tags, admin/shipment#tags
 _('panel');
 // admin/data-managers#tags
 _('participant-login');
-// admin/email-participants#tags, admin/enrollments-add#tags, admin/enrollments#tags, admin/evaluate-shipment#tags, admin/participants-add#tags, admin/participants-bulk-import#tags, admin/participants-edit#tags, admin/participants-manager-map#tags, admin/participants#tags, admin/shipment-enroll#tags
+// admin/email-participants#tags, admin/enrollments-add#tags, admin/enrollments#tags, admin/evaluate-shipment#tags, admin/participants-add#tags, admin/participants-bulk-import#tags, admin/participants-edit#tags, admin/participants-manager-map#tags, admin/participants#tags, admin/reports-shipment-response#tags, admin/shipment-enroll#tags
 _('participants');
 // admin/participants#title
 _('Participants');
+// admin/reports-participant-trends#title
+_('Participant Trends');
+// admin/reports-participant-trends#tags, admin/reports-shipment-response#tags
+_('pass rate');
 // admin/data-managers#tags
 _('password');
 // admin/report-config#tags
@@ -205,6 +215,8 @@ _('pdf');
 _('PDF Report Settings');
 // admin/users#summary
 _('People who can log in to the admin side of ePT');
+// admin/reports-participant-trends#tags
+_('performance');
 // admin/eid-assay#tags, admin/vl-assay#tags
 _('platform');
 // admin/shipment-enroll#tags
@@ -225,10 +237,16 @@ _('queue');
 _('Re-build and lock the reports — only finalized reports are visible to participants');
 // admin/evaluate-shipment#tags, admin/evaluate#tags
 _('re-evaluate');
+// admin/reports-participant-trends#tags
+_('regions');
 // admin/vl-assay-edit#summary
 _('Rename a Viral Load assay / platform');
-// admin/evaluate#tags, admin/report-config#tags, admin/reports-distribution#tags, admin/reports-finalize#tags
+// admin/evaluate#tags, admin/report-config#tags, admin/reports-distribution#tags, admin/reports-finalize#tags, admin/reports-participant-trends#tags, admin/reports-shipment-response#tags, admin/reports-shipments#tags
 _('reports');
+// admin/reports-participant-trends#tags, admin/reports-shipment-response#tags
+_('response rate');
+// admin/reports-participant-trends#summary
+_('Response rate, timeliness and pass rate across shipments, with a breakdown by region');
 // admin/users#tags
 _('roles');
 // admin/shipment-add#tags, admin/shipment#tags
@@ -261,12 +279,18 @@ _('ship');
 _('ship-it');
 // admin/shipment-add#tags, admin/shipment-enroll#tags, admin/shipment#tags
 _('shipment');
-// admin/distributions#tags, admin/shipment#tags
+// admin/reports-shipment-response#title
+_('Shipment Response Report');
+// admin/distributions#tags, admin/reports-shipment-response#tags, admin/reports-shipments#tags, admin/shipment#tags
 _('shipments');
 // admin/shipment#title
 _('Shipments');
+// admin/reports-shipments#title
+_('Shipments Report');
 // admin/global-config#tags
 _('smtp');
+// admin/reports-shipments#tags
+_('status');
 // admin/users#tags
 _('system-admin');
 // admin/global-config#summary
@@ -287,6 +311,8 @@ _('Test Kits');
 _('The list of shipments inside a PT Survey — what they are and how to manage them');
 // admin/global-config#tags
 _('theme');
+// admin/reports-participant-trends#tags
+_('trends');
 // admin/tb-settings#tags
 _('tuberculosis');
 // admin/distributions-edit#tags, admin/participants-edit#tags
@@ -321,5 +347,7 @@ _('vl');
 _('VL (HIV Viral Load) Settings');
 // admin/vl-assay#title
 _('VL Assays / Platforms');
+// admin/reports-shipment-response#summary
+_('Who responded to each shipment, who did not, and how they performed');
 // admin/dashboard#summary
 _('Your home page — what is happening across PT Surveys and Participants right now');
