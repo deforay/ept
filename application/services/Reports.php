@@ -235,8 +235,8 @@ class Application_Service_Reports
         return [$shipment, $esc($aRow['scheme_name']), $due, $responses, $pass, $status, $this->shipmentReportDownloads($aRow, $forParticipant)];
     }
 
-    // Download buttons for one shipment row: the Excel exports on one row and the
-    // generated reports (PDF and ZIP files) on the next.
+    // Download buttons for one shipment row: Overview and the other working files
+    // (Excel exports, TB forms) on one row, the generated reports on the next.
     private function shipmentReportDownloads(array $aRow, bool $forParticipant): string
     {
         $t = $this->translator;
@@ -276,12 +276,6 @@ class Application_Service_Reports
                         . '<i class="' . $icon . '" aria-hidden="true"></i> ' . $esc($label) . '</span>';
             }
         }
-        if (!$forParticipant && $aRow['scheme_type'] === 'tb' && Application_Service_Common::getConfig('instance') === 'mtbept') {
-            $tbFormPath = Application_Service_Shipments::resolveTbFormsZip($aRow['shipment_code']);
-            if ($tbFormPath !== null) {
-                $reports[] = $link($t->_('TB forms'), $t->_('Result forms for every participant (ZIP)'), 'icon-file-alt', 'target="_blank" href="/admin/shipment/download-tb/sid/' . (int) $aRow['shipment_id'] . '/file/' . base64_encode($tbFormPath) . '"');
-            }
-        }
 
         // The participant copy of the page shows the reports only.
         $exports = [];
@@ -297,7 +291,14 @@ class Application_Service_Reports
             $exports[] = $link($t->_('Feedback'), $t->_("Participants' feedback answers (Excel)"), 'icon-comments', 'href="javascript:void(0);" onclick="downloadFeedbackReport(' . (int) $aRow['shipment_id'] . ')"');
         }
 
-        // Excel exports on the first row, starting with Overview, then the reports.
+        if (!$forParticipant && $aRow['scheme_type'] === 'tb' && Application_Service_Common::getConfig('instance') === 'mtbept') {
+            $tbFormPath = Application_Service_Shipments::resolveTbFormsZip($aRow['shipment_code']);
+            if ($tbFormPath !== null) {
+                $exports[] = $link($t->_('TB forms'), $t->_('Result forms for every participant (ZIP)'), 'icon-file-alt', 'target="_blank" href="/admin/shipment/download-tb/sid/' . (int) $aRow['shipment_id'] . '/file/' . base64_encode($tbFormPath) . '"');
+            }
+        }
+
+        // Overview and the other working files on the first row, then the reports.
         $rows = '';
         foreach ([$exports, $reports] as $buttons) {
             if ($buttons) {
