@@ -81,9 +81,9 @@ if (isset($this->ptcc) && !empty($this->ptcc) && $this->ptcc == 1) {
         <h2><?= $this->translate->_($title); ?></h2>
         <div class="data-list-actions">
             <?php if (isset($ptcc) && !empty($ptcc) && $ptcc == 1) { ?>
-            <a href="javascript:void(0);" onclick="generatePtccExport('mapped');" id="exportExcel" class="btn btn-primary"><i
+            <a href="javascript:void(0);" onclick="generatePtccExport('mapped');" id="exportPtccMapped" class="btn btn-primary"><i
                     class="icon-download"></i>&nbsp;&nbsp;<?= $this->translate->_("PTCC Mapped Participants"); ?></a>
-            <a href="javascript:void(0);" onclick="generatePtccExport('normal');" id="exportExcel" class="btn btn-primary"><i
+            <a href="javascript:void(0);" onclick="generatePtccExport('normal');" id="exportPtcc" class="btn btn-primary"><i
                     class="icon-download"></i>&nbsp;&nbsp;<?= $this->translate->_("PTCC"); ?></a>
             <a href="javascript:void(0);" onclick="exportActivePtcc(true);" class="btn btn-warning"><i
                     class="icon-key"></i>&nbsp;&nbsp;<?= $this->translate->_("Active PTCC + Passwords"); ?></a>
