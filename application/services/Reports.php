@@ -468,7 +468,7 @@ class Application_Service_Reports
                 return '';
             }
 
-            $t = fn ($text) => html_entity_decode($this->translator->_($text), ENT_QUOTES, 'UTF-8');
+            $t = fn ($text) => html_entity_decode($text, ENT_QUOTES, 'UTF-8');
             $pct = fn (int $part, int $whole) => $whole > 0 ? round($part / $whole * 100, 1) : null;
             $groupLabels = [
                 'region' => $this->translator->_('Region'),
@@ -478,19 +478,19 @@ class Application_Service_Reports
                 'enrolled-programs' => $this->translator->_('Enrolled Program'),
             ];
             $groupLabel = html_entity_decode($groupLabels[$params['groupBy'] ?? ''] ?? $groupLabels['region'], ENT_QUOTES, 'UTF-8');
-            $notSet = $t('Not set');
+            $notSet = $t($this->translator->_('Not set'));
             $headings = [
-                $t('Enrolled'),
-                $t('Responded'),
-                $t('Response rate') . ' (%)',
-                $t('On time'),
-                $t('Late'),
-                $t('Could not test'),
-                $t('Not responded'),
-                $t('Passed'),
-                $t('Failed'),
-                $t('Pass rate') . ' (%)',
-                $t('Excluded'),
+                $t($this->translator->_('Enrolled')),
+                $t($this->translator->_('Responded')),
+                $t($this->translator->_('Response rate')) . ' (%)',
+                $t($this->translator->_('On time')),
+                $t($this->translator->_('Late')),
+                $t($this->translator->_('Could not test')),
+                $t($this->translator->_('Not responded')),
+                $t($this->translator->_('Passed')),
+                $t($this->translator->_('Failed')),
+                $t($this->translator->_('Pass rate')) . ' (%)',
+                $t($this->translator->_('Excluded')),
             ];
             $figures = fn (array $r) => [
                 $r['enrolled'],
@@ -509,15 +509,15 @@ class Application_Service_Reports
             $excel = new Spreadsheet();
             $sheet = $excel->getActiveSheet();
             $sheet->setTitle(mb_substr(html_entity_decode($this->translator->_('Groups'), ENT_QUOTES, 'UTF-8'), 0, 31));
-            $sheet->fromArray(array_merge([$groupLabel, $t('Participants')], $headings), null, 'A1');
+            $sheet->fromArray(array_merge([$groupLabel, $t($this->translator->_('Participants'))], $headings), null, 'A1');
             $rowNo = 2;
             foreach ($groups as $r) {
                 $sheet->fromArray(array_merge([$r['group_name'] !== '' ? $r['group_name'] : $notSet, $r['participants']], $figures($r)), null, 'A' . $rowNo++);
             }
 
             $shipmentSheet = $excel->createSheet();
-            $shipmentSheet->setTitle(mb_substr($t('By shipment'), 0, 31));
-            $shipmentSheet->fromArray(array_merge([$groupLabel, $t('Scheme'), $t('Shipment Code'), $t('Shipment Date')], $headings), null, 'A1');
+            $shipmentSheet->setTitle(mb_substr($t($this->translator->_('By shipment')), 0, 31));
+            $shipmentSheet->fromArray(array_merge([$groupLabel, $t($this->translator->_('Scheme')), $t($this->translator->_('Shipment Code')), $t($this->translator->_('Shipment Date'))], $headings), null, 'A1');
             $rowNo = 2;
             foreach ($this->getParticipantResponseGroups($params, true) as $r) {
                 $shipmentSheet->fromArray(array_merge([
@@ -1335,204 +1335,6 @@ class Application_Service_Reports
         return $db->fetchAll($sQuery);
     }
 
-    public function getCorrectiveActionReport($parameters)
-    {
-
-        $searchColumns = ['total_corrective', 'ca.corrective_action'];
-        $orderColumns = [new Zend_Db_Expr('count("cam.corrective_action_id")'), 'ca.corrective_action'];
-
-        /* Indexed column (used for fast and accurate table cardinality) */
-        $sIndexColumn = 'shipment_id';
-
-        $sLimit = '';
-        if (isset($parameters['iDisplayStart']) && $parameters['iDisplayLength'] != '-1') {
-            $sOffset = $parameters['iDisplayStart'];
-            $sLimit = $parameters['iDisplayLength'];
-        }
-
-        $sOrder = '';
-        if (isset($parameters['iSortCol_0'])) {
-            $sOrder = '';
-            for ($i = 0; $i < intval($parameters['iSortingCols']); $i++) {
-                if ($parameters['bSortable_' . intval($parameters['iSortCol_' . $i])] == 'true') {
-                    $colIdx = intval($parameters['iSortCol_' . $i]);
-                    if (!isset($orderColumns[$colIdx])) {
-                        continue;
-                    }
-                    $sOrder .= $orderColumns[$colIdx] . '
-					    ' . Pt_Commons_General::sanitizeSortDirection($parameters['sSortDir_' . $i]) . ', ';
-                }
-            }
-
-            $sOrder = substr_replace($sOrder, '', -2);
-        }
-
-        $sWhere = '';
-        if (isset($parameters['sSearch']) && $parameters['sSearch'] != '') {
-            $searchArray = explode(' ', $parameters['sSearch']);
-            $sWhereSub = '';
-            foreach ($searchArray as $search) {
-                if ($sWhereSub == '') {
-                    $sWhereSub .= '(';
-                } else {
-                    $sWhereSub .= ' AND (';
-                }
-                $colSize = count($searchColumns);
-
-                for ($i = 0; $i < $colSize; $i++) {
-                    if ($searchColumns[$i] == '' || $searchColumns[$i] == null) {
-                        continue;
-                    }
-                    if ($i < $colSize - 1) {
-                        $sWhereSub .= $searchColumns[$i] . ' LIKE ' . Pt_Commons_General::sqlLikeContains($search) . ' OR ';
-                    } else {
-                        $sWhereSub .= $searchColumns[$i] . ' LIKE ' . Pt_Commons_General::sqlLikeContains($search) . ' ';
-                    }
-                }
-                $sWhereSub .= ')';
-            }
-            $sWhere .= $sWhereSub;
-        }
-
-        /* Individual column filtering */
-        for ($i = 0; $i < count($searchColumns); $i++) {
-            if (isset($parameters['bSearchable_' . $i]) && $parameters['bSearchable_' . $i] == 'true' && $parameters['sSearch_' . $i] != '') {
-                if ($sWhere == '') {
-                    $sWhere .= $searchColumns[$i] . ' LIKE ' . Pt_Commons_General::sqlLikeContains($parameters['sSearch_' . $i]) . ' ';
-                } else {
-                    $sWhere .= ' AND ' . $searchColumns[$i] . ' LIKE ' . Pt_Commons_General::sqlLikeContains($parameters['sSearch_' . $i]) . ' ';
-                }
-            }
-        }
-
-        $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
-
-        $totalQuery = $dbAdapter->select()->from(['s' => 'shipment'], ['average_score'])
-            ->join(['sp' => 'shipment_participant_map'], 'sp.shipment_id=s.shipment_id', [
-                'total_shipped' => new Zend_Db_Expr('count("sp.map_id")'),
-                'total_responses' => new Zend_Db_Expr("SUM(sp.shipment_test_date not like '0000-00-00')"),
-                'valid_responses' => new Zend_Db_Expr("(SUM(sp.shipment_test_date not like '0000-00-00') - SUM(is_excluded = 'yes'))"),
-            ]);
-
-        if (isset($parameters['scheme']) && $parameters['scheme'] != '') {
-            $totalQuery = $totalQuery->where('s.scheme_type = ?', $parameters['scheme']);
-        }
-
-        if (isset($parameters['startDate']) && $parameters['startDate'] != '' && isset($parameters['endDate']) && $parameters['endDate'] != '') {
-
-            $totalQuery = $totalQuery->where('DATE(s.shipment_date) >= ?', $this->common->isoDateFormat($parameters['startDate']));
-            $totalQuery = $totalQuery->where('DATE(s.shipment_date) <= ?', $this->common->isoDateFormat($parameters['endDate']));
-        }
-
-        if (isset($parameters['shipmentId']) && $parameters['shipmentId'] != '') {
-            $totalQuery = $totalQuery->where('s.shipment_id = ?', $parameters['shipmentId']);
-        }
-        //die($totalQuery);
-        $totalResult = $dbAdapter->fetchRow($totalQuery);
-
-        $totalShipped = ($totalResult['total_shipped']);
-        $totalResp = ($totalResult['total_responses']);
-        $validResp = ($totalResult['valid_responses']);
-        $avgScore = ($totalResult['average_score']);
-
-        $sQuery = $dbAdapter->select()->from(['s' => 'shipment'], [])
-            ->join(['sp' => 'shipment_participant_map'], 'sp.shipment_id=s.shipment_id', [])
-            ->join(['cam' => 'dts_shipment_corrective_action_map'], 'sp.map_id=cam.shipment_map_id', ['total_corrective' => new Zend_Db_Expr("count('corrective_action_id')")])
-            ->join(['ca' => 'r_dts_corrective_actions'], 'cam.corrective_action_id=ca.action_id', ['action_id', 'corrective_action'])
-            ->where("sp.is_excluded = 'no'")
-            ->group(['ca.action_id']);
-
-        if (isset($parameters['scheme']) && $parameters['scheme'] != '') {
-            $sQuery = $sQuery->where('s.scheme_type = ?', $parameters['scheme']);
-        }
-
-        if (isset($parameters['startDate']) && $parameters['startDate'] != '' && isset($parameters['endDate']) && $parameters['endDate'] != '') {
-
-            $sQuery = $sQuery->where('DATE(s.shipment_date) >= ?', $this->common->isoDateFormat($parameters['startDate']));
-            $sQuery = $sQuery->where('DATE(s.shipment_date) <= ?', $this->common->isoDateFormat($parameters['endDate']));
-        }
-
-        if (isset($parameters['shipmentId']) && $parameters['shipmentId'] != '') {
-            $sQuery = $sQuery->where('s.shipment_id = ?', $parameters['shipmentId']);
-        }
-
-        if (isset($sWhere) && $sWhere != '') {
-            $sQuery = $sQuery->having($sWhere);
-        }
-
-        if (!empty($sOrder)) {
-            $sQuery = $sQuery->order($sOrder);
-        }
-
-        $sQuerySession = new Zend_Session_Namespace('CorrectiveActionsExcel');
-        $sQuerySession->correctiveActionsQuery = $sQuery;
-
-        if (isset($sLimit) && isset($sOffset)) {
-            $sQuery = $sQuery->limit($sLimit, $sOffset);
-        }
-
-        $rResult = $dbAdapter->fetchAll($sQuery);
-
-        /* Data set length after filtering */
-        $sQuery = $sQuery->reset(Zend_Db_Select::LIMIT_COUNT);
-        $sQuery = $sQuery->reset(Zend_Db_Select::LIMIT_OFFSET);
-        $aResultFilterTotal = $dbAdapter->fetchAll($sQuery);
-        $iFilteredTotal = count($aResultFilterTotal);
-
-        /* Total data set length */
-        $sWhere = '';
-        //$sQuery = $dbAdapter->select()->from(array('s'=>'shipment'), new Zend_Db_Expr("COUNT('" . $sIndexColumn . "')"));
-
-        $sQuery = $dbAdapter->select()->from(['s' => 'shipment'], new Zend_Db_Expr("COUNT('" . $sIndexColumn . "')"))
-            ->join(['sp' => 'shipment_participant_map'], 'sp.shipment_id=s.shipment_id', [])
-            ->join(['cam' => 'dts_shipment_corrective_action_map'], 'sp.map_id=cam.shipment_map_id', [])
-            ->join(['ca' => 'r_dts_corrective_actions'], 'cam.corrective_action_id=ca.action_id', [])
-            ->where("sp.is_excluded = 'no'")
-            ->group(['ca.action_id']);
-
-        if (isset($parameters['scheme']) && $parameters['scheme'] != '') {
-            $sQuery = $sQuery->where('s.scheme_type = ?', $parameters['scheme']);
-        }
-
-        if (isset($parameters['startDate']) && $parameters['startDate'] != '' && isset($parameters['endDate']) && $parameters['endDate'] != '') {
-
-            $sQuery = $sQuery->where('DATE(s.shipment_date) >= ?', $this->common->isoDateFormat($parameters['startDate']));
-            $sQuery = $sQuery->where('DATE(s.shipment_date) <= ?', $this->common->isoDateFormat($parameters['endDate']));
-        }
-
-        if (isset($parameters['shipmentId']) && $parameters['shipmentId'] != '') {
-            $sQuery = $sQuery->where('s.shipment_id = ?', $parameters['shipmentId']);
-        }
-
-        $aResultTotal = $dbAdapter->fetchAll($sQuery);
-        $iTotal = count($aResultTotal);
-
-        /*
-         * Output
-         */
-
-        $output = [
-            'sEcho' => intval($parameters['sEcho']),
-            'iTotalRecords' => $iTotal,
-            'iTotalDisplayRecords' => $iFilteredTotal,
-            'aaData' => [],
-            'totalShipped' => (int) $totalShipped,
-            'totalResponses' => (int) $totalResp,
-            'validResponses' => (int) $validResp,
-            'averageScore' => round((float) $avgScore, 2),
-        ];
-
-        foreach ($rResult as $aRow) {
-            $row = [];
-            $row[] = $aRow['corrective_action'];
-            $row[] = $aRow['total_corrective'];
-
-            $output['aaData'][] = $row;
-        }
-
-        echo json_encode($output);
-    }
-
     public function getCorrectiveActionReportByShipmentId($shipmentId, $testType = '')
     {
         $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
@@ -1548,240 +1350,6 @@ class Application_Service_Reports
             $sQuery = $sQuery->where("JSON_EXTRACT(sp.attributes, '$.dts_test_panel_type') = ?", $testType);
         }
         return $dbAdapter->fetchAll($sQuery);
-    }
-
-    public function exportParticipantTrendsReport($params)
-    {
-
-        $headings = [
-            $this->translator->_('Scheme'),
-            $this->translator->_('Shipment Date'),
-            $this->translator->_('Shipment Code'),
-            $this->translator->_('No. of Shipments'),
-            $this->translator->_('No. of Responses'),
-            $this->translator->_('No. of Valid Responses'),
-            $this->translator->_('No. of Passed Responses'),
-            $this->translator->_('Pass Percentage'),
-        ];
-        try {
-            $excel = new Spreadsheet();
-
-            $output = [];
-            $sheet = $excel->getActiveSheet();
-
-            $colNo = 0;
-            $sheet->mergeCells('A1:I1');
-            $sheet->getCell(Coordinate::stringFromColumnIndex(1) . 1)
-                ->setValueExplicit(html_entity_decode('Participant Performance Overview Report', ENT_QUOTES, 'UTF-8'));
-            if (isset($params['shipmentName']) && trim($params['shipmentName']) != '') {
-                $sheet->getCell(Coordinate::stringFromColumnIndex(1) . 2)
-                    ->setValueExplicit(html_entity_decode('Shipment', ENT_QUOTES, 'UTF-8'));
-                $sheet->getCell(Coordinate::stringFromColumnIndex(2) . 2)
-                    ->setValueExplicit(html_entity_decode($params['shipmentName'], ENT_QUOTES, 'UTF-8'));
-            }
-            $sheet->getCell(Coordinate::stringFromColumnIndex(1) . 3)
-                ->setValueExplicit(html_entity_decode('Selected Date Range', ENT_QUOTES, 'UTF-8'));
-            $sheet->getCell(Coordinate::stringFromColumnIndex(2) . 3)
-                ->setValueExplicit(html_entity_decode($params['dateRange'], ENT_QUOTES, 'UTF-8'));
-
-            $sheet->getStyle(Coordinate::stringFromColumnIndex(1) . 1, null, null)->getFont()->setBold(true);
-            $sheet->getStyle(Coordinate::stringFromColumnIndex(1) . 2, null, null)->getFont()->setBold(true);
-            $sheet->getStyle(Coordinate::stringFromColumnIndex(1) . 3, null, null)->getFont()->setBold(true);
-
-            foreach ($headings as $value) {
-                $sheet->getCell(Coordinate::stringFromColumnIndex($colNo + 1) . 5)
-                    ->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
-                $sheet->getStyle(Coordinate::stringFromColumnIndex($colNo + 1) . 5, null, null)->getFont()->setBold(true);
-                $colNo++;
-            }
-
-            $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-            $sQuerySession = new Zend_Session_Namespace('ParticipantTrendsExcel');
-            $rResult = $db->fetchAll($sQuerySession->participantQuery);
-            foreach ($rResult as $aRow) {
-
-                $row = [];
-                $row[] = $aRow['scheme_name'];
-                $row[] = Pt_Commons_DateUtility::humanReadableDateFormat($aRow['shipment_date']);
-                $row[] = $aRow['shipment_code'];
-                $row[] = $aRow['total_shipped'];
-                $row[] = $aRow['total_responses'];
-                $row[] = $aRow['valid_responses'];
-                $row[] = $aRow['total_passed'];
-                $row[] = round($aRow['pass_percentage'], 2);
-                //$row[] = round($aRow['average_score'], 2);
-                $output[] = $row;
-            }
-
-            foreach ($output as $rowNo => $rowData) {
-                $colNo = 0;
-                foreach ($rowData as $value) {
-                    if (!isset($value)) {
-                        $value = '';
-                    }
-                    $sheet->getCell(Coordinate::stringFromColumnIndex($colNo + 1) . $rowNo + 6)
-                        ->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
-                    if ($colNo == (sizeof($headings) - 1)) {
-                        $sheet->getColumnDimensionByColumn($colNo)->setWidth(150);
-                        $sheet->getStyle(Coordinate::stringFromColumnIndex($colNo + 1) . $rowNo + 6, null, null)->getAlignment()->setWrapText(true);
-                    }
-                    $colNo++;
-                }
-            }
-            if (!file_exists($this->tempUploadDirectory) && !is_dir($this->tempUploadDirectory)) {
-                mkdir($this->tempUploadDirectory);
-            }
-
-            $writer = IOFactory::createWriter($excel, 'Xlsx');
-            $filename = 'participant-trends-report-' . date('d-M-Y-H-i-s') . '.xlsx';
-            $writer->save($this->tempUploadDirectory . DIRECTORY_SEPARATOR . $filename);
-            return $filename;
-        } catch (Exception $exc) {
-            $sQuerySession->participantQuery = '';
-            Pt_Commons_LoggerUtility::logError('Failed to generate participant trends report (Excel): ' . $exc->getMessage(), [
-                'file' => $exc->getFile(),
-                'line' => $exc->getLine(),
-                'trace' => $exc->getTraceAsString(),
-            ]);
-
-            return '';
-        }
-    }
-
-    public function exportCorrectiveActionsReport($params)
-    {
-
-        $headings = [
-            $this->translator->_('Corrective Action'),
-            $this->translator->_('No. of Responses having this corrective action'),
-        ];
-        try {
-            $excel = new Spreadsheet();
-            $params['dateStartDate'] = $this->common->isoDateFormat($params['dateStartDate']);
-            $params['dateEndDate'] = $this->common->isoDateFormat($params['dateEndDate']);
-
-            $output = [];
-            $sheet = $excel->getActiveSheet();
-
-            $colNo = 0;
-            $sheet->mergeCells('A1:I1');
-            $sheet->getCell(Coordinate::stringFromColumnIndex(1) . 1)
-                ->setValueExplicit(html_entity_decode('Participant Corrective Action Overview', ENT_QUOTES, 'UTF-8'));
-            if (isset($params['shipmentName']) && trim($params['shipmentName']) != '') {
-                $sheet->getCell(Coordinate::stringFromColumnIndex(1) . 2)
-                    ->setValueExplicit(html_entity_decode('Shipment', ENT_QUOTES, 'UTF-8'));
-                $sheet->getCell(Coordinate::stringFromColumnIndex(2) . 2)
-                    ->setValueExplicit(html_entity_decode($params['shipmentName'], ENT_QUOTES, 'UTF-8'));
-            }
-            $sheet->getCell(Coordinate::stringFromColumnIndex(1) . 3)
-                ->setValueExplicit(html_entity_decode('Selected Date Range', ENT_QUOTES, 'UTF-8'));
-            $sheet->getCell(Coordinate::stringFromColumnIndex(2) . 3)
-                ->setValueExplicit(html_entity_decode($params['dateRange'], ENT_QUOTES, 'UTF-8'));
-
-            $sheet->getStyle(Coordinate::stringFromColumnIndex(1) . 1, null, null)->getFont()->setBold(true);
-
-            $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-            $totalQuery = $db->select()->from(['s' => 'shipment'], ['average_score'])
-                ->join(['sp' => 'shipment_participant_map'], 'sp.shipment_id=s.shipment_id', [
-                    'total_shipped' => new Zend_Db_Expr('count("sp.map_id")'),
-                    'total_responses' => new Zend_Db_Expr("SUM(sp.shipment_test_date not like '0000-00-00')"),
-                    'valid_responses' => new Zend_Db_Expr("(SUM(sp.shipment_test_date not like '0000-00-00') - SUM(is_excluded = 'yes'))"),
-                ]);
-
-            if (isset($params['scheme']) && $params['scheme'] != '') {
-                $totalQuery = $totalQuery->where('s.scheme_type = ?', $params['scheme']);
-            }
-
-            if (isset($params['dateStartDate']) && $params['dateStartDate'] != '' && isset($params['dateEndDate']) && $params['dateEndDate'] != '') {
-                $totalQuery = $totalQuery->where('DATE(s.shipment_date) >= ?', $params['dateStartDate']);
-                $totalQuery = $totalQuery->where('DATE(s.shipment_date) <= ?', $params['dateEndDate']);
-            }
-
-            if (isset($params['shipmentId']) && $params['shipmentId'] != '') {
-                $totalQuery = $totalQuery->where('s.shipment_id = ?', $params['shipmentId']);
-            }
-            //die($totalQuery);
-            $totalResult = $db->fetchRow($totalQuery);
-
-            $totalShipped = ($totalResult['total_shipped']);
-            $totalResp = ($totalResult['total_responses']);
-            $validResp = ($totalResult['valid_responses']);
-
-            $sheet->mergeCells('A4:B4');
-            $sheet->getCell(Coordinate::stringFromColumnIndex(1) . 4)
-                ->setValueExplicit(html_entity_decode('Total shipped :' . $totalShipped, ENT_QUOTES, 'UTF-8'));
-            $sheet->getStyle(Coordinate::stringFromColumnIndex(1) . 4, null, null)->getFont()->setBold(true);
-            $sheet->mergeCells('A5:B5');
-            $sheet->getCell(Coordinate::stringFromColumnIndex(1) . 5)
-                ->setValueExplicit(html_entity_decode('Total number of responses :' . $totalResp, ENT_QUOTES, 'UTF-8'));
-            $sheet->getStyle(Coordinate::stringFromColumnIndex(1) . 5, null, null)->getFont()->setBold(true);
-            $sheet->mergeCells('A6:B6');
-            $sheet->getCell(Coordinate::stringFromColumnIndex(1) . 6)
-                ->setValueExplicit(html_entity_decode('Total number of valid responses :' . $validResp, ENT_QUOTES, 'UTF-8'));
-            $sheet->getStyle(Coordinate::stringFromColumnIndex(1) . 6, null, null)->getFont()->setBold(true);
-            $sheet->mergeCells('A7:B7');
-            //$sheet->getCell(Coordinate::stringFromColumnIndex(0) . 7)
-            //->setValueExplicit(html_entity_decode('Average score :' . $avgScore, ENT_QUOTES, 'UTF-8'));
-            //$sheet->getStyle(Coordinate::stringFromColumnIndex(0) . 7)->getFont()->setBold(true);
-
-            foreach ($headings as $value) {
-                $sheet->getCell(Coordinate::stringFromColumnIndex($colNo + 1) . 9)
-                    ->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
-                $sheet->getStyle(Coordinate::stringFromColumnIndex($colNo + 1) . 9, null, null)->getFont()->setBold(true);
-                $colNo++;
-            }
-
-            $sQuerySession = new Zend_Session_Namespace('CorrectiveActionsExcel');
-            $rResult = $db->fetchAll($sQuerySession->correctiveActionsQuery);
-
-            if (count($rResult) > 0) {
-                foreach ($rResult as $aRow) {
-                    $row = [];
-                    $row[] = $aRow['corrective_action'];
-                    $row[] = $aRow['total_corrective'];
-                    $output[] = $row;
-                }
-            } else {
-                $row = [];
-                $row[] = 'No result found';
-                $output[] = $row;
-            }
-
-            foreach ($output as $rowNo => $rowData) {
-                $colNo = 0;
-                foreach ($rowData as $value) {
-                    if (!isset($value)) {
-                        $value = '';
-                    }
-                    $sheet->getCell(Coordinate::stringFromColumnIndex($colNo + 1) . $rowNo + 10)
-                        ->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
-                    if ($colNo == (sizeof($headings) - 1)) {
-                        $sheet->getColumnDimensionByColumn($colNo)->setWidth(100);
-                        $sheet->getStyle(Coordinate::stringFromColumnIndex($colNo + 1) . $rowNo + 10, null, null)->getAlignment()->setWrapText(true);
-                    }
-                    $colNo++;
-                }
-            }
-
-            if (!file_exists($this->tempUploadDirectory) && !is_dir($this->tempUploadDirectory)) {
-                mkdir($this->tempUploadDirectory);
-            }
-
-            $writer = IOFactory::createWriter($excel, 'Xlsx');
-            $filename = 'Participant-Corrective-Actions-' . date('d-M-Y-H-i-s') . '.xlsx';
-            $writer->save($this->tempUploadDirectory . DIRECTORY_SEPARATOR . $filename);
-            return $filename;
-        } catch (Exception $exc) {
-            $sQuerySession = new Zend_Session_Namespace('CorrectiveActionsExcel');
-            $sQuerySession->correctiveActionsQuery = '';
-            Pt_Commons_LoggerUtility::logError('Failed to generate participant corrective actions report (Excel): ' . $exc->getMessage(), [
-                'file' => $exc->getFile(),
-                'line' => $exc->getLine(),
-                'trace' => $exc->getTraceAsString(),
-            ]);
-
-            return '';
-        }
     }
 
     public function exportShipmentsReport($params)
@@ -1887,334 +1455,11 @@ class Application_Service_Reports
         }
     }
 
-    public function exportCorrectiveActionsReportInPdf($params)
-    {
-        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $totalQuery = $db->select()->from(['s' => 'shipment'], [])
-            ->join(['sp' => 'shipment_participant_map'], 'sp.shipment_id=s.shipment_id', [
-                'total_shipped' => new Zend_Db_Expr('count("sp.map_id")'),
-                'total_responses' => new Zend_Db_Expr("SUM(sp.shipment_test_date not like '0000-00-00')"),
-                'valid_responses' => new Zend_Db_Expr("(SUM(sp.shipment_test_date not like '0000-00-00') - SUM(is_excluded = 'yes'))"),
-                'average_score' => new Zend_Db_Expr("((SUM(Case When sp.is_excluded='yes' Then 0 Else sp.shipment_score End)+SUM(Case When sp.is_excluded='yes' Then 0 Else sp.documentation_score End))/(SUM(final_result = 1) + SUM(final_result = 2)))"),
-            ]);
-
-        if (isset($params['scheme']) && $params['scheme'] != '') {
-            $totalQuery = $totalQuery->where('s.scheme_type = ?', $params['scheme']);
-        }
-
-        if (isset($params['dateStartDate']) && $params['dateStartDate'] != '' && isset($params['dateEndDate']) && $params['dateEndDate'] != '') {
-
-            $totalQuery = $totalQuery->where('DATE(s.shipment_date) >= ?', $this->common->isoDateFormat($params['dateStartDate']));
-            $totalQuery = $totalQuery->where('DATE(s.shipment_date) <= ?', $this->common->isoDateFormat($params['dateEndDate']));
-        }
-
-        if (isset($params['shipmentId']) && $params['shipmentId'] != '') {
-            $totalQuery = $totalQuery->where('s.shipment_id = ?', $params['shipmentId']);
-        }
-        //die($totalQuery);
-        $totalResult = $db->fetchRow($totalQuery);
-
-        $sQuerySession = new Zend_Session_Namespace('CorrectiveActionsExcel');
-        $rResult = $db->fetchAll($sQuerySession->correctiveActionsQuery);
-
-        return ['countCorrectiveAction' => $totalResult, 'correctiveAction' => $rResult];
-    }
-
     public function exportShipmentsReportInPdf()
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $sQuerySession = new Zend_Session_Namespace('shipmentExportExcel');
         return $db->fetchAll($sQuerySession->shipmentExportQuery);
-    }
-
-    public function getParticipantTrendsRegionWiseReport($parameters)
-    {
-        $searchColumns = [
-            'p.region',
-            'total_responses',
-            'valid_responses',
-            'total_passed',
-            'pass_percentage',
-            'average_score',
-        ];
-        $orderColumns = [
-            'p.region',
-            new Zend_Db_Expr('count("sp.map_id")'),
-            new Zend_Db_Expr("SUM(sp.shipment_test_date not like '0000-00-00')"),
-            new Zend_Db_Expr("(SUM(sp.shipment_test_date not like '0000-00-00') - SUM(is_excluded = 'yes'))"),
-            new Zend_Db_Expr('SUM(final_result = 1)'),
-            new Zend_Db_Expr('((SUM(final_result = 1))/(SUM(final_result = 1) + SUM(final_result = 2)))*100'),
-            'average_score',
-        ];
-
-        /* Indexed column (used for fast and accurate table cardinality) */
-        $sIndexColumn = 'shipment_id';
-
-        $sLimit = '';
-        if (isset($parameters['iDisplayStart']) && $parameters['iDisplayLength'] != '-1') {
-            $sOffset = $parameters['iDisplayStart'];
-            $sLimit = $parameters['iDisplayLength'];
-        }
-
-        $sOrder = '';
-        if (isset($parameters['iSortCol_0'])) {
-            $sOrder = '';
-            for ($i = 0; $i < intval($parameters['iSortingCols']); $i++) {
-                if ($parameters['bSortable_' . intval($parameters['iSortCol_' . $i])] == 'true') {
-                    $colIdx = intval($parameters['iSortCol_' . $i]);
-                    if (!isset($orderColumns[$colIdx])) {
-                        continue;
-                    }
-                    $sOrder .= $orderColumns[$colIdx] . '
-					    ' . Pt_Commons_General::sanitizeSortDirection($parameters['sSortDir_' . $i]) . ', ';
-                }
-            }
-
-            $sOrder = substr_replace($sOrder, '', -2);
-        }
-
-        $sWhere = '';
-        if (isset($parameters['sSearch']) && $parameters['sSearch'] != '') {
-            $searchArray = explode(' ', $parameters['sSearch']);
-            $sWhereSub = '';
-            foreach ($searchArray as $search) {
-                if ($sWhereSub == '') {
-                    $sWhereSub .= '(';
-                } else {
-                    $sWhereSub .= ' AND (';
-                }
-                $colSize = count($searchColumns);
-
-                for ($i = 0; $i < $colSize; $i++) {
-                    if ($searchColumns[$i] == '' || $searchColumns[$i] == null) {
-                        continue;
-                    }
-                    if ($i < $colSize - 1) {
-                        $sWhereSub .= $searchColumns[$i] . ' LIKE ' . Pt_Commons_General::sqlLikeContains($search) . ' OR ';
-                    } else {
-                        $sWhereSub .= $searchColumns[$i] . ' LIKE ' . Pt_Commons_General::sqlLikeContains($search) . ' ';
-                    }
-                }
-                $sWhereSub .= ')';
-            }
-            $sWhere .= $sWhereSub;
-        }
-
-        /* Individual column filtering */
-        for ($i = 0; $i < count($searchColumns); $i++) {
-            if (isset($parameters['bSearchable_' . $i]) && $parameters['bSearchable_' . $i] == 'true' && $parameters['sSearch_' . $i] != '') {
-                if ($sWhere == '') {
-                    $sWhere .= $searchColumns[$i] . ' LIKE ' . Pt_Commons_General::sqlLikeContains($parameters['sSearch_' . $i]) . ' ';
-                } else {
-                    $sWhere .= ' AND ' . $searchColumns[$i] . ' LIKE ' . Pt_Commons_General::sqlLikeContains($parameters['sSearch_' . $i]) . ' ';
-                }
-            }
-        }
-
-        $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $sQuery = $dbAdapter->select()->from(['s' => 'shipment'])
-            ->join(['sl' => 'scheme_list'], 's.scheme_type=sl.scheme_id')
-            ->joinLeft(['sp' => 'shipment_participant_map'], 'sp.shipment_id=s.shipment_id', ["DATE_FORMAT(s.shipment_date,'%d-%b-%Y')", 'total_shipped' => new Zend_Db_Expr('count("sp.map_id")'), 'total_responses' => new Zend_Db_Expr("SUM(sp.shipment_test_date not like '0000-00-00')"), 'valid_responses' => new Zend_Db_Expr("(SUM(sp.shipment_test_date not like '0000-00-00') - SUM(is_excluded = 'yes'))"), 'total_passed' => new Zend_Db_Expr('(SUM(final_result = 1))'), 'pass_percentage' => new Zend_Db_Expr('((SUM(final_result = 1))/(SUM(final_result = 1) + SUM(final_result = 2)))*100'), 'average_score' => new Zend_Db_Expr("((SUM(Case When sp.is_excluded='yes' Then 0 Else sp.shipment_score End)+SUM(Case When sp.is_excluded='yes' Then 0 Else sp.documentation_score End))/(SUM(final_result = 1) + SUM(final_result = 2)))")])
-            ->joinLeft(['p' => 'participant'], 'p.participant_id=sp.participant_id', ['region'])
-            ->joinLeft(['rr' => 'r_results'], 'sp.final_result=rr.result_id')
-            ->group(['p.region']);
-
-        $scopedDmId = Application_Service_Common::getScopedDmId();
-        if (!empty($scopedDmId)) {
-            $sQuery = $sQuery
-                ->joinLeft(['pmm' => 'participant_manager_map'], 'pmm.participant_id=p.participant_id', [])
-                ->where('pmm.dm_id = ?', $scopedDmId);
-        }
-
-        if (isset($parameters['scheme']) && $parameters['scheme'] != '') {
-            $sQuery = $sQuery->where('s.scheme_type = ?', $parameters['scheme']);
-        }
-
-        if (isset($parameters['startDate']) && $parameters['startDate'] != '' && isset($parameters['endDate']) && $parameters['endDate'] != '') {
-
-            $sQuery = $sQuery->where('DATE(s.shipment_date) >= ?', $this->common->isoDateFormat($parameters['startDate']));
-            $sQuery = $sQuery->where('DATE(s.shipment_date) <= ?', $this->common->isoDateFormat($parameters['endDate']));
-        }
-
-        if (isset($parameters['shipmentId']) && $parameters['shipmentId'] != '') {
-            $sQuery = $sQuery->where('s.shipment_id = ?', $parameters['shipmentId']);
-        }
-
-        if (isset($sWhere) && $sWhere != '') {
-            $sQuery = $sQuery->having($sWhere);
-        }
-
-        if (!empty($sOrder)) {
-            $sQuery = $sQuery->order($sOrder);
-        }
-
-        $sQuerySession = new Zend_Session_Namespace('ParticipantTrendsExcel');
-        $sQuerySession->participantRegionQuery = $sQuery;
-
-        if (isset($sLimit) && isset($sOffset)) {
-            $sQuery = $sQuery->limit($sLimit, $sOffset);
-        }
-
-        $rResult = $dbAdapter->fetchAll($sQuery);
-
-        /* Data set length after filtering */
-        $sQuery = $sQuery->reset(Zend_Db_Select::LIMIT_COUNT);
-        $sQuery = $sQuery->reset(Zend_Db_Select::LIMIT_OFFSET);
-        $aResultFilterTotal = $dbAdapter->fetchAll($sQuery);
-        $iFilteredTotal = count($aResultFilterTotal);
-
-        /* Total data set length */
-        $sWhere = '';
-        //$sQuery = $dbAdapter->select()->from(array('s'=>'shipment'), new Zend_Db_Expr("COUNT('" . $sIndexColumn . "')"));
-
-        $sQuery = $dbAdapter->select()->from(['s' => 'shipment'], new Zend_Db_Expr("COUNT('" . $sIndexColumn . "')"))
-            ->join(['sl' => 'scheme_list'], 's.scheme_type=sl.scheme_id')
-            ->joinLeft(['sp' => 'shipment_participant_map'], 'sp.shipment_id=s.shipment_id', [])
-            ->joinLeft(['p' => 'participant'], 'p.participant_id=sp.participant_id', ['region'])
-            ->joinLeft(['rr' => 'r_results'], 'sp.final_result=rr.result_id')
-            ->group(['p.region']);
-        if (isset($parameters['scheme']) && $parameters['scheme'] != '') {
-            $sQuery = $sQuery->where('s.scheme_type = ?', $parameters['scheme']);
-        }
-
-        if (isset($parameters['startDate']) && $parameters['startDate'] != '' && isset($parameters['endDate']) && $parameters['endDate'] != '') {
-
-            $sQuery = $sQuery->where('DATE(s.shipment_date) >= ?', $this->common->isoDateFormat($parameters['startDate']));
-            $sQuery = $sQuery->where('DATE(s.shipment_date) <= ?', $this->common->isoDateFormat($parameters['endDate']));
-        }
-
-        if (isset($parameters['shipmentId']) && $parameters['shipmentId'] != '') {
-            $sQuery = $sQuery->where('s.shipment_id = ?', $parameters['shipmentId']);
-        }
-
-        $aResultTotal = $dbAdapter->fetchAll($sQuery);
-        $iTotal = count($aResultTotal);
-
-        /*
-         * Output
-         */
-        $output = [
-            'sEcho' => intval($parameters['sEcho']),
-            'iTotalRecords' => $iTotal,
-            'iTotalDisplayRecords' => $iFilteredTotal,
-            'aaData' => [],
-        ];
-
-        foreach ($rResult as $aRow) {
-
-            $row = [];
-
-            $row[] = $aRow['region'];
-            $row[] = $aRow['total_shipped'];
-            $row[] = $aRow['total_responses'];
-            $row[] = $aRow['valid_responses'];
-            $row[] = $aRow['total_passed'];
-            $row[] = round($aRow['pass_percentage'], 2);
-            $row[] = round($aRow['average_score'], 2);
-
-            $output['aaData'][] = $row;
-        }
-
-        echo json_encode($output);
-    }
-
-    public function exportParticipantTrendsRegionReport($params)
-    {
-        $headings = [
-            $this->translator->_('Region'),
-            $this->translator->_('No. of Shipments'),
-            $this->translator->_('No. of Responses'),
-            $this->translator->_('No. of Valid Responses'),
-            $this->translator->_('No. of Passed Responses'),
-            $this->translator->_('Pass %'),
-        ];
-
-        $sQuerySession = new Zend_Session_Namespace('ParticipantTrendsExcel');
-        try {
-            $excel = new Spreadsheet();
-
-            $output = [];
-            $sheet = $excel->getActiveSheet();
-            $colNo = 0;
-            $sheet->mergeCells('A1:I1');
-            $sheet->getCell(Coordinate::stringFromColumnIndex(1) . 1)
-                ->setValueExplicit(html_entity_decode('Region Wise Participant Performance Report ', ENT_QUOTES, 'UTF-8'));
-
-            $sheet->getCell(Coordinate::stringFromColumnIndex(1) . 2)
-                ->setValueExplicit(html_entity_decode('Scheme', ENT_QUOTES, 'UTF-8'));
-            $sheet->getCell(Coordinate::stringFromColumnIndex(2) . 2)
-                ->setValueExplicit(html_entity_decode($params['selectedScheme'], ENT_QUOTES, 'UTF-8'));
-
-            $sheet->getCell(Coordinate::stringFromColumnIndex(1) . 3)
-                ->setValueExplicit(html_entity_decode('Shipment Date', ENT_QUOTES, 'UTF-8'));
-            $sheet->getCell(Coordinate::stringFromColumnIndex(2) . 3)
-                ->setValueExplicit(html_entity_decode($params['selectedDate'], ENT_QUOTES, 'UTF-8'));
-
-            $sheet->getCell(Coordinate::stringFromColumnIndex(1) . 4)
-                ->setValueExplicit(html_entity_decode('Shipment Code', ENT_QUOTES, 'UTF-8'));
-            $sheet->getCell(Coordinate::stringFromColumnIndex(2) . 4)
-                ->setValueExplicit(html_entity_decode($params['selectedCode'], ENT_QUOTES, 'UTF-8'));
-
-            $sheet->getStyle(Coordinate::stringFromColumnIndex(1) . 1, null, null)->getFont()->setBold(true);
-            $sheet->getStyle(Coordinate::stringFromColumnIndex(1) . 2, null, null)->getFont()->setBold(true);
-            $sheet->getStyle(Coordinate::stringFromColumnIndex(1) . 3, null, null)->getFont()->setBold(true);
-            $sheet->getStyle(Coordinate::stringFromColumnIndex(1) . 4, null, null)->getFont()->setBold(true);
-
-            foreach ($headings as $value) {
-                $sheet->getCell(Coordinate::stringFromColumnIndex($colNo + 1) . 6)
-                    ->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
-                $sheet->getStyle(Coordinate::stringFromColumnIndex($colNo + 1) . 6, null, null)->getFont()->setBold(true);
-                $colNo++;
-            }
-
-            $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-            $rResult = $db->fetchAll($sQuerySession->participantRegionQuery);
-            foreach ($rResult as $aRow) {
-                $row = [];
-                $row[] = $aRow['region'];
-                $row[] = $aRow['total_shipped'];
-                $row[] = $aRow['total_responses'];
-                $row[] = $aRow['valid_responses'];
-                $row[] = $aRow['total_passed'];
-                $row[] = round($aRow['pass_percentage'], 2);
-                //$row[] = round($aRow['average_score'], 2);
-                $output[] = $row;
-            }
-
-            foreach ($output as $rowNo => $rowData) {
-                $colNo = 0;
-                foreach ($rowData as $value) {
-                    if (!isset($value)) {
-                        $value = '';
-                    }
-                    $sheet->getCell(Coordinate::stringFromColumnIndex($colNo + 1) . $rowNo + 7)
-                        ->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
-                    if ($colNo == (sizeof($headings) - 1)) {
-                        $sheet->getColumnDimensionByColumn($colNo)->setWidth(150);
-                        $sheet->getStyle(Coordinate::stringFromColumnIndex($colNo + 1) . $rowNo + 7, null, null)->getAlignment()->setWrapText(true);
-                    }
-                    $colNo++;
-                }
-            }
-
-            if (!file_exists($this->tempUploadDirectory) && !is_dir($this->tempUploadDirectory)) {
-                mkdir($this->tempUploadDirectory);
-            }
-
-            $writer = IOFactory::createWriter($excel, 'Xlsx');
-            $filename = 'participant-performance-region-wise' . date('d-M-Y-H-i-s') . '.xlsx';
-            $writer->save($this->tempUploadDirectory . DIRECTORY_SEPARATOR . $filename);
-            return $filename;
-        } catch (Exception $exc) {
-            $sQuerySession->participantRegionQuery = '';
-            Pt_Commons_LoggerUtility::logError('Failed to generate region-wise participant performance report (Excel): ' . $exc->getMessage(), [
-                'file' => $exc->getFile(),
-                'line' => $exc->getLine(),
-                'trace' => $exc->getTraceAsString(),
-            ]);
-
-            return '';
-        }
     }
 
     public function getTestKitParticipantReport($parameters)
@@ -3592,8 +2837,10 @@ class Application_Service_Reports
             $failed = (int) $r['failed'];
             $shipments = $history[$r['participant_id']] ?? [];
 
-            $participant = '<span class="cell-main">' . $esc($r['participant_name']) . '</span>';
-            $sub = array_filter([$r['unique_identifier'], $r['institute_name']]);
+            // Some participants have no name, so the first of ID and institute stands in.
+            $sub = array_values(array_filter([$r['unique_identifier'], $r['institute_name']]));
+            $name = trim((string) $r['participant_name']) !== '' ? $r['participant_name'] : array_shift($sub);
+            $participant = '<span class="cell-main">' . $esc($name) . '</span>';
             if (!empty($sub)) {
                 $participant .= '<span class="cell-sub">' . $esc(implode(' · ', $sub)) . '</span>';
             }
@@ -3681,26 +2928,26 @@ class Application_Service_Reports
                 return '';
             }
 
-            $t = fn ($text) => html_entity_decode($this->translator->_($text), ENT_QUOTES, 'UTF-8');
-            $outcomes = array_map(fn ($o) => $t($o[0]), self::PERFORMANCE_OUTCOMES);
+            $t = fn ($text) => html_entity_decode($text, ENT_QUOTES, 'UTF-8');
+            $outcomes = array_map(fn ($o) => $t($this->translator->_($o[0])), self::PERFORMANCE_OUTCOMES);
 
             $excel = new Spreadsheet();
             $sheet = $excel->getActiveSheet();
-            $sheet->setTitle(mb_substr($t('Participants'), 0, 31));
+            $sheet->setTitle(mb_substr($t($this->translator->_('Participants')), 0, 31));
             $sheet->fromArray([
-                $t('Participant'),
-                $t('Participant ID'),
-                $t('Institute Name'),
-                $t('District'),
-                $t('Province'),
-                $t('Country'),
-                $t('Shipments'),
-                $t('Responded'),
-                $t('Not responded'),
-                $t('Passed'),
-                $t('Failed'),
-                $t('Pass rate') . ' (%)',
-                $t('Average score'),
+                $t($this->translator->_('Participant')),
+                $t($this->translator->_('Participant ID')),
+                $t($this->translator->_('Institute Name')),
+                $t($this->translator->_('District')),
+                $t($this->translator->_('Province')),
+                $t($this->translator->_('Country')),
+                $t($this->translator->_('Shipments')),
+                $t($this->translator->_('Responded')),
+                $t($this->translator->_('Not responded')),
+                $t($this->translator->_('Passed')),
+                $t($this->translator->_('Failed')),
+                $t($this->translator->_('Pass rate')) . ' (%)',
+                $t($this->translator->_('Average score')),
             ], null, 'A1');
             $rowNo = 2;
             foreach ($rows as $r) {
@@ -3723,17 +2970,17 @@ class Application_Service_Reports
             }
 
             $shipmentSheet = $excel->createSheet();
-            $shipmentSheet->setTitle(mb_substr($t('By shipment'), 0, 31));
+            $shipmentSheet->setTitle(mb_substr($t($this->translator->_('By shipment')), 0, 31));
             $shipmentSheet->fromArray([
-                $t('Participant'),
-                $t('Participant ID'),
-                $t('Shipment Code'),
-                $t('Shipment Date'),
-                $t('Scheme'),
-                $t('Responded On'),
-                $t('Late'),
-                $t('Score'),
-                $t('Result'),
+                $t($this->translator->_('Participant')),
+                $t($this->translator->_('Participant ID')),
+                $t($this->translator->_('Shipment Code')),
+                $t($this->translator->_('Shipment Date')),
+                $t($this->translator->_('Scheme')),
+                $t($this->translator->_('Responded On')),
+                $t($this->translator->_('Late')),
+                $t($this->translator->_('Score')),
+                $t($this->translator->_('Result')),
             ], null, 'A1');
             $rowNo = 2;
             $included = array_flip(array_column($rows, 'participant_id'));
@@ -3748,7 +2995,7 @@ class Application_Service_Reports
                     Pt_Commons_DateUtility::humanReadableDateFormat($h['shipment_date'] ?? ''),
                     $h['scheme_name'],
                     Pt_Commons_DateUtility::humanReadableDateFormat($h['shipment_test_report_date'] ?? ''),
-                    $h['late'] ? $t('Yes') : '',
+                    $h['late'] ? $t($this->translator->_('Yes')) : '',
                     in_array($h['outcome'], ['pass', 'fail'], true) ? round((float) $h['score'], 1) : null,
                     $outcomes[$h['outcome']],
                 ], null, 'A' . $rowNo++);
@@ -3771,6 +3018,250 @@ class Application_Service_Reports
             return $filename;
         } catch (Throwable $exc) {
             Pt_Commons_LoggerUtility::logError('Failed to generate participant performance report (Excel): ' . $exc->getMessage(), [
+                'file' => $exc->getFile(),
+                'line' => $exc->getLine(),
+                'trace' => $exc->getTraceAsString(),
+            ]);
+            return '';
+        }
+    }
+
+    /**
+     * Corrective Actions Report: the DTS responses that match the filters.
+     * Only submitted responses that are not excluded count. Rounds evaluated
+     * before the non-responder guard gave corrective actions to participants
+     * who never responded, and those would swamp the counts.
+     */
+    private function correctiveActionResponses(array $params): Zend_Db_Select
+    {
+        $sQuery = Zend_Db_Table_Abstract::getDefaultAdapter()->select()
+            ->from(['p' => 'participant'], [])
+            ->join(['sp' => 'shipment_participant_map'], 'sp.participant_id=p.participant_id', [])
+            ->join(['s' => 'shipment'], 's.shipment_id=sp.shipment_id', [])
+            ->where("sp.response_status IN ('responded','late')")
+            ->where("IFNULL(sp.is_excluded, 'no') != 'yes'");
+
+        Application_Model_DbTable_Participants::applyResponseReportFilters($sQuery, ['scheme' => 'dts'] + $params);
+        return $sQuery;
+    }
+
+    /**
+     * Corrective Actions Report summary: the totals over the matching
+     * responses, and one row per corrective action, most frequent first.
+     */
+    public function getCorrectiveActionSummary(array $params): array
+    {
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $evaluated = 'IFNULL(sp.final_result, 0) IN (1, 2)';
+
+        $totals = $db->fetchRow(
+            $this->correctiveActionResponses($params)->columns([
+                'shipments' => new Zend_Db_Expr('COUNT(DISTINCT s.shipment_id)'),
+                'responses' => new Zend_Db_Expr('COUNT(DISTINCT sp.map_id)'),
+                'failed' => new Zend_Db_Expr('COUNT(DISTINCT CASE WHEN sp.final_result = 2 THEN sp.map_id END)'),
+                'average_score' => new Zend_Db_Expr("AVG(CASE WHEN $evaluated THEN IFNULL(sp.shipment_score, 0) + IFNULL(sp.documentation_score, 0) END)"),
+            ])
+        );
+
+        // The map table has no index on shipment_map_id, so a join (which
+        // MySQL hashes) is far quicker here than a correlated EXISTS.
+        $withAction = (int) $db->fetchOne(
+            $this->correctiveActionResponses($params)
+                ->join(['cam' => 'dts_shipment_corrective_action_map'], 'cam.shipment_map_id=sp.map_id', [])
+                ->columns(['with_action' => new Zend_Db_Expr('COUNT(DISTINCT sp.map_id)')])
+        );
+
+        $actions = $db->fetchAll(
+            $this->correctiveActionResponses($params)
+                ->join(['cam' => 'dts_shipment_corrective_action_map'], 'cam.shipment_map_id=sp.map_id', [])
+                ->join(['ca' => 'r_dts_corrective_actions'], 'ca.action_id=cam.corrective_action_id', ['ca.action_id', 'ca.corrective_action'])
+                ->columns([
+                    'responses' => new Zend_Db_Expr('COUNT(DISTINCT sp.map_id)'),
+                    'participants' => new Zend_Db_Expr('COUNT(DISTINCT p.participant_id)'),
+                    'failed' => new Zend_Db_Expr('COUNT(DISTINCT CASE WHEN sp.final_result = 2 THEN sp.map_id END)'),
+                ])
+                ->group('ca.action_id')
+                ->order(['responses DESC', 'ca.action_id ASC'])
+        );
+
+        foreach ($actions as &$action) {
+            $action['corrective_action'] = $this->translator->_(trim((string) $action['corrective_action']));
+            foreach (['responses', 'participants', 'failed'] as $key) {
+                $action[$key] = (int) $action[$key];
+            }
+        }
+
+        return [
+            'shipments' => (int) ($totals['shipments'] ?? 0),
+            'responses' => (int) ($totals['responses'] ?? 0),
+            'withAction' => $withAction,
+            'failed' => (int) ($totals['failed'] ?? 0),
+            'averageScore' => isset($totals['average_score']) ? round((float) $totals['average_score'], 1) : null,
+            'actions' => $actions,
+        ];
+    }
+
+    /**
+     * The responses that received corrective actions, newest shipment first.
+     * With $actionId, only the responses that received that action.
+     */
+    public function getCorrectiveActionResponses(array $params, ?int $actionId = null, ?int $limit = null): array
+    {
+        $sQuery = $this->correctiveActionResponses($params)
+            ->columns([
+                'p.participant_id',
+                'p.unique_identifier',
+                'p.institute_name',
+                'p.district',
+                'p.state',
+                'participant_name' => new Zend_Db_Expr(Application_Model_DbTable_Participants::participantNameExpr('p')),
+                's.shipment_code',
+                's.shipment_date',
+                'sp.final_result',
+                'sp.shipment_test_report_date',
+                'score' => new Zend_Db_Expr('IFNULL(sp.shipment_score, 0) + IFNULL(sp.documentation_score, 0)'),
+            ])
+            ->join(['cam' => 'dts_shipment_corrective_action_map'], 'cam.shipment_map_id=sp.map_id', [])
+            ->join(['ca' => 'r_dts_corrective_actions'], 'ca.action_id=cam.corrective_action_id', ['ca.action_id', 'ca.corrective_action'])
+            ->joinLeft(['c' => 'countries'], 'c.id=p.country', ['c.iso_name'])
+            ->order(['s.shipment_date DESC', 'participant_name ASC', 'ca.action_id ASC']);
+
+        if ($actionId !== null) {
+            $sQuery->where('ca.action_id = ?', $actionId);
+        }
+        if ($limit !== null) {
+            $sQuery->limit($limit);
+        }
+
+        $rows = Zend_Db_Table_Abstract::getDefaultAdapter()->fetchAll($sQuery);
+        foreach ($rows as &$row) {
+            $row['corrective_action'] = $this->translator->_(trim((string) $row['corrective_action']));
+        }
+        return $rows;
+    }
+
+    /**
+     * The drawer under a corrective action: the first $limit responses that
+     * received it, as table rows.
+     */
+    public function getCorrectiveActionDrawer(array $params, int $actionId, int $limit = 100): string
+    {
+        $rows = $this->getCorrectiveActionResponses($params, $actionId, $limit + 1);
+        $esc = fn ($v) => htmlspecialchars((string) $v, ENT_QUOTES, 'UTF-8', false);
+        $date = fn ($d) => Pt_Commons_DateUtility::humanReadableDateFormat($d ?? '');
+        $results = [1 => ['Pass', 'is-ok'], 2 => ['Fail', 'is-bad']];
+
+        $html = '<table class="table ca-responses"><thead><tr>'
+            . '<th>' . $esc($this->translator->_('Participant')) . '</th>'
+            . '<th>' . $esc($this->translator->_('Location')) . '</th>'
+            . '<th>' . $esc($this->translator->_('Shipment')) . '</th>'
+            . '<th>' . $esc($this->translator->_('Score')) . '</th>'
+            . '<th>' . $esc($this->translator->_('Result')) . '</th>'
+            . '</tr></thead><tbody>';
+        foreach (array_slice($rows, 0, $limit) as $r) {
+            $result = $results[(int) $r['final_result']] ?? ['Not evaluated', 'is-muted'];
+            $sub = array_values(array_filter([$r['unique_identifier'], $r['institute_name']]));
+            $name = trim((string) $r['participant_name']) !== '' ? $r['participant_name'] : array_shift($sub);
+            $html .= '<tr>'
+                . '<td><span class="cell-main">' . $esc($name) . '</span>'
+                . (!empty($sub) ? '<span class="cell-sub">' . $esc(implode(' · ', $sub)) . '</span>' : '') . '</td>'
+                . '<td>' . $esc(implode(', ', array_filter([$r['district'], $r['state'], $r['iso_name']]))) . '</td>'
+                . '<td><span class="cell-main">' . $esc($r['shipment_code']) . '</span><span class="cell-sub">' . $esc($date($r['shipment_date'])) . '</span></td>'
+                . '<td>' . (isset($results[(int) $r['final_result']]) ? round((float) $r['score']) : '') . '</td>'
+                . '<td><span class="resp-pill ' . $result[1] . '">' . $esc($this->translator->_($result[0])) . '</span></td>'
+                . '</tr>';
+        }
+        $html .= '</tbody></table>';
+        if (count($rows) > $limit) {
+            $html .= '<p class="ca-more">' . $esc(sprintf($this->translator->_('The first %s responses. Download Excel for the full list.'), $limit)) . '</p>';
+        }
+        return $html;
+    }
+
+    /**
+     * Corrective Actions Report as Excel: one sheet with a row per corrective
+     * action, one with a row per response and corrective action.
+     */
+    public function exportCorrectiveActions(array $params): string
+    {
+        try {
+            $summary = $this->getCorrectiveActionSummary($params);
+            if (empty($summary['actions'])) {
+                return '';
+            }
+            $t = fn ($text) => html_entity_decode($text, ENT_QUOTES, 'UTF-8');
+            $decode = fn ($text) => html_entity_decode((string) $text, ENT_QUOTES, 'UTF-8');
+            $results = [1 => $t($this->translator->_('Pass')), 2 => $t($this->translator->_('Fail'))];
+
+            $excel = new Spreadsheet();
+            $sheet = $excel->getActiveSheet();
+            $sheet->setTitle(mb_substr($t($this->translator->_('Corrective actions')), 0, 31));
+            $sheet->fromArray([$t($this->translator->_('Corrective Action')), $t($this->translator->_('Responses')), $t($this->translator->_('Share of responses')) . ' (%)', $t($this->translator->_('Participants')), $t($this->translator->_('Failed'))], null, 'A1');
+            $rowNo = 2;
+            foreach ($summary['actions'] as $a) {
+                $sheet->fromArray([
+                    $decode($a['corrective_action']),
+                    $a['responses'],
+                    $summary['responses'] > 0 ? round($a['responses'] / $summary['responses'] * 100, 1) : null,
+                    $a['participants'],
+                    $a['failed'],
+                ], null, 'A' . $rowNo++);
+            }
+
+            $responseSheet = $excel->createSheet();
+            $responseSheet->setTitle(mb_substr($t($this->translator->_('Responses')), 0, 31));
+            $responseSheet->fromArray([
+                $t($this->translator->_('Participant')),
+                $t($this->translator->_('Participant ID')),
+                $t($this->translator->_('Institute Name')),
+                $t($this->translator->_('District')),
+                $t($this->translator->_('Province')),
+                $t($this->translator->_('Country')),
+                $t($this->translator->_('Shipment Code')),
+                $t($this->translator->_('Shipment Date')),
+                $t($this->translator->_('Score')),
+                $t($this->translator->_('Result')),
+                $t($this->translator->_('Corrective Action')),
+            ], null, 'A1');
+            $rowNo = 2;
+            foreach ($this->getCorrectiveActionResponses($params) as $r) {
+                $evaluated = isset($results[(int) $r['final_result']]);
+                $responseSheet->fromArray([
+                    $r['participant_name'],
+                    $r['unique_identifier'],
+                    $r['institute_name'],
+                    $r['district'],
+                    $r['state'],
+                    $r['iso_name'],
+                    $r['shipment_code'],
+                    Pt_Commons_DateUtility::humanReadableDateFormat($r['shipment_date'] ?? ''),
+                    $evaluated ? round((float) $r['score'], 1) : null,
+                    $results[(int) $r['final_result']] ?? $t($this->translator->_('Not evaluated')),
+                    $decode($r['corrective_action']),
+                ], null, 'A' . $rowNo++);
+            }
+
+            foreach ([$sheet, $responseSheet] as $ws) {
+                $ws->getStyle('1:1')->getFont()->setBold(true);
+                $ws->freezePane('A2');
+                foreach ($ws->getColumnIterator() as $column) {
+                    $ws->getColumnDimension($column->getColumnIndex())->setAutoSize(true);
+                }
+            }
+            // The corrective action text is long, so it wraps instead.
+            $sheet->getColumnDimension('A')->setAutoSize(false)->setWidth(80);
+            $sheet->getStyle('A:A')->getAlignment()->setWrapText(true);
+            $responseSheet->getColumnDimension('K')->setAutoSize(false)->setWidth(80);
+            $excel->setActiveSheetIndex(0);
+
+            if (!is_dir($this->tempUploadDirectory)) {
+                mkdir($this->tempUploadDirectory);
+            }
+            $filename = 'corrective-actions-' . date('d-M-Y-H-i-s') . '.xlsx';
+            IOFactory::createWriter($excel, 'Xlsx')->save($this->tempUploadDirectory . DIRECTORY_SEPARATOR . $filename);
+            return $filename;
+        } catch (Throwable $exc) {
+            Pt_Commons_LoggerUtility::logError('Failed to generate corrective actions report (Excel): ' . $exc->getMessage(), [
                 'file' => $exc->getFile(),
                 'line' => $exc->getLine(),
                 'trace' => $exc->getTraceAsString(),
@@ -4982,20 +4473,20 @@ class Application_Service_Reports
                 return '';
             }
 
-            $t = fn ($text) => html_entity_decode($this->translator->_($text), ENT_QUOTES, 'UTF-8');
+            $t = fn ($text) => html_entity_decode($text, ENT_QUOTES, 'UTF-8');
             $pct = fn (int $part, int $whole) => $whole > 0 ? round($part / $whole * 100, 1) : null;
             $headings = [
-                $t('Enrolled'),
-                $t('Responded'),
-                $t('Response rate') . ' (%)',
-                $t('On time'),
-                $t('On time') . ' (%)',
-                $t('Passed'),
-                $t('Failed'),
-                $t('Pass rate') . ' (%)',
-                $t('Excellent'),
-                $t('Satisfactory'),
-                $t('Unsatisfactory'),
+                $t($this->translator->_('Enrolled')),
+                $t($this->translator->_('Responded')),
+                $t($this->translator->_('Response rate')) . ' (%)',
+                $t($this->translator->_('On time')),
+                $t($this->translator->_('On time')) . ' (%)',
+                $t($this->translator->_('Passed')),
+                $t($this->translator->_('Failed')),
+                $t($this->translator->_('Pass rate')) . ' (%)',
+                $t($this->translator->_('Excellent')),
+                $t($this->translator->_('Satisfactory')),
+                $t($this->translator->_('Unsatisfactory')),
             ];
             $figures = fn (array $r) => [
                 $r['enrolled'],
@@ -5013,8 +4504,8 @@ class Application_Service_Reports
 
             $excel = new Spreadsheet();
             $sheet = $excel->getActiveSheet();
-            $sheet->setTitle(mb_substr($t('Shipments'), 0, 31));
-            $sheet->fromArray(array_merge([$t('Scheme'), $t('Shipment Code'), $t('Shipment Date')], $headings), null, 'A1');
+            $sheet->setTitle(mb_substr($t($this->translator->_('Shipments')), 0, 31));
+            $sheet->fromArray(array_merge([$t($this->translator->_('Scheme')), $t($this->translator->_('Shipment Code')), $t($this->translator->_('Shipment Date'))], $headings), null, 'A1');
             $rowNo = 2;
             foreach ($shipments as $r) {
                 $sheet->fromArray(array_merge(
@@ -5024,14 +4515,14 @@ class Application_Service_Reports
             }
 
             $regionSheet = $excel->createSheet();
-            $regionSheet->setTitle(mb_substr($t('Regions'), 0, 31));
-            $regionSheet->fromArray(array_merge([$t('Shipment Code'), $t('Region')], $headings), null, 'A1');
+            $regionSheet->setTitle(mb_substr($t($this->translator->_('Regions')), 0, 31));
+            $regionSheet->fromArray(array_merge([$t($this->translator->_('Shipment Code')), $t($this->translator->_('Region'))], $headings), null, 'A1');
             $rowNo = 2;
             foreach ($shipments as $shipment) {
                 $regions = $this->getParticipantTrendsSummary(array_merge($params, ['shipmentId' => $shipment['shipment_id']]), true);
                 foreach ($regions as $r) {
                     $regionSheet->fromArray(array_merge(
-                        [$shipment['shipment_code'], $r['region'] !== '' ? $r['region'] : $t('No region')],
+                        [$shipment['shipment_code'], $r['region'] !== '' ? $r['region'] : $t($this->translator->_('No region'))],
                         $figures($r)
                     ), null, 'A' . $rowNo++);
                 }

@@ -1,319 +1,312 @@
-<?php include APPLICATION_PATH . '/views/partials/report-zero-state.phtml'; ?>
+<?php
+include APPLICATION_PATH . '/views/partials/report-zero-state.phtml';
+include APPLICATION_PATH . '/views/partials/report-table-styles.phtml';
+$caDataUrl = $this->url(['module' => 'reports', 'controller' => 'corrective-actions', 'action' => 'data'], 'default', true);
+$caResponsesUrl = $this->url(['module' => 'reports', 'controller' => 'corrective-actions', 'action' => 'responses'], 'default', true);
+$caExportUrl = $this->url(['module' => 'reports', 'controller' => 'corrective-actions', 'action' => 'export'], 'default', true);
+$caPdfUrl = $this->url(['module' => 'reports', 'controller' => 'corrective-actions', 'action' => 'pdf'], 'default', true);
+?>
+<style>
+	.ca-stats {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+		gap: 12px;
+		margin: 18px 0 4px;
+	}
+
+	.ca-stat {
+		padding: 12px 16px;
+		border: 1px solid #e3e8ef;
+		border-radius: 6px;
+		background: #fff;
+	}
+
+	.ca-stat-label {
+		display: block;
+		font-size: 12px;
+		font-weight: 600;
+		color: #5b6573;
+	}
+
+	.ca-stat-value {
+		display: block;
+		margin-top: 4px;
+		font-size: 22px;
+		font-weight: 600;
+		line-height: 1.2;
+		color: #2f4f7a;
+	}
+
+	.ca-stat-sub {
+		display: block;
+		margin-top: 2px;
+		font-size: 12px;
+		color: #98a1ad;
+	}
+
+	#caTable tbody tr:has(.ca-toggle) {
+		cursor: pointer;
+	}
+
+	#caTable .ca-action {
+		display: flex;
+		align-items: flex-start;
+		gap: 8px;
+	}
+
+	#caTable .ca-toggle {
+		display: inline-flex;
+		flex: 0 0 auto;
+		align-items: center;
+		justify-content: center;
+		width: 20px;
+		height: 20px;
+		margin-top: 1px;
+		border: 1px solid #cfdae8;
+		border-radius: 4px;
+		background: #f5f8fc;
+		color: #4a6fa5;
+	}
+
+	#caTable .ca-toggle .icon-chevron-right {
+		display: inline-block;
+		font-size: 10px;
+		transition: transform .15s ease;
+	}
+
+	#caTable tr:hover .ca-toggle,
+	#caTable tr.ca-open .ca-toggle {
+		border-color: #4a6fa5;
+		background: #4a6fa5;
+		color: #fff;
+	}
+
+	#caTable tr.ca-open .ca-toggle .icon-chevron-right {
+		transform: rotate(90deg);
+	}
+
+	#caTable tr.ca-open > td {
+		background: #eef2f7 !important;
+	}
+
+	#caTable .ca-failed {
+		color: #a33a3a;
+		font-weight: 600;
+	}
+
+	#caTable td.ca-detail {
+		padding: 14px 18px;
+		border-left: 4px solid #3f6fb0;
+		background: #eef2f7 !important;
+		box-shadow: inset 0 7px 9px -9px rgba(0, 0, 0, .45), inset 0 -7px 9px -9px rgba(0, 0, 0, .3);
+		cursor: default;
+	}
+
+	#caTable table.ca-responses {
+		width: auto;
+		min-width: 70%;
+		margin: 0;
+		background: #fff;
+		box-shadow: 0 1px 3px rgba(0, 0, 0, .1);
+	}
+
+	#caTable table.ca-responses > thead > tr > th,
+	.data-list #caTable table.table.ca-responses > thead > tr > th {
+		padding: 6px 14px;
+		text-align: left;
+		font-size: 11px;
+	}
+
+	#caTable table.ca-responses > tbody > tr > td,
+	.data-list #caTable table.table.ca-responses > tbody > tr > td {
+		padding: 6px 14px;
+		font-size: 13px;
+		vertical-align: top;
+		background: #fff;
+	}
+
+	#caTable .ca-more {
+		margin: 8px 0 0;
+		font-size: 12px;
+		color: #5b6573;
+	}
+</style>
+
+<div class="data-list">
+	<div class="data-list-head">
+		<h2><?= $this->htmlTranslate("Corrective Actions Report"); ?></h2>
+	</div>
+	<div class="data-list-body">
+		<?php
+		$rfShipmentsUrl = $this->url(['module' => 'reports', 'controller' => 'corrective-actions', 'action' => 'shipments'], 'default', true);
+		include APPLICATION_PATH . '/views/partials/report-filters.phtml';
+		?>
+
+		<div class="ca-stats" id="caStats">
+			<div class="ca-stat">
+				<span class="ca-stat-label"><?= $this->htmlTranslate("Shipments"); ?></span>
+				<span class="ca-stat-value" data-stat="shipments">&nbsp;</span>
+			</div>
+			<div class="ca-stat">
+				<span class="ca-stat-label"><?= $this->htmlTranslate("Responses"); ?></span>
+				<span class="ca-stat-value" data-stat="responses">&nbsp;</span>
+				<span class="ca-stat-sub" data-stat="failed">&nbsp;</span>
+			</div>
+			<div class="ca-stat">
+				<span class="ca-stat-label"><?= $this->htmlTranslate("With a corrective action"); ?></span>
+				<span class="ca-stat-value" data-stat="withAction">&nbsp;</span>
+				<span class="ca-stat-sub" data-stat="withActionShare">&nbsp;</span>
+			</div>
+			<div class="ca-stat">
+				<span class="ca-stat-label"><?= $this->htmlTranslate("Average score"); ?></span>
+				<span class="ca-stat-value" data-stat="averageScore">&nbsp;</span>
+			</div>
+		</div>
+
+		<div class="rpt-section-head">
+			<h4><?= $this->htmlTranslate("Corrective actions"); ?>
+				<span class="rpt-hint"><?= $this->htmlTranslate("Click a corrective action to list the responses that received it."); ?></span>
+			</h4>
+			<div class="rpt-tools">
+				<button type="button" class="rpt-download" onclick="downloadCorrectiveActions('<?= $caExportUrl; ?>')">
+					<i class="icon-download-alt"></i> <?= $this->htmlTranslate("Download Excel"); ?>
+				</button>
+				<button type="button" class="rpt-download" onclick="downloadCorrectiveActions('<?= $caPdfUrl; ?>')">
+					<i class="icon-download-alt"></i> <?= $this->htmlTranslate("Download PDF"); ?>
+				</button>
+			</div>
+		</div>
+		<table class="table table-hover rpt-table" id="caTable">
+			<thead>
+				<tr>
+					<th scope="col"><?= $this->htmlTranslate("Corrective Action"); ?></th>
+					<th scope="col"><?= $this->htmlTranslate("Responses"); ?></th>
+					<th scope="col"><?= $this->htmlTranslate("Participants"); ?></th>
+					<th scope="col"><?= $this->htmlTranslate("Failed"); ?></th>
+				</tr>
+			</thead>
+			<tbody></tbody>
+		</table>
+	</div>
+</div>
+
 <script type="text/javascript">
-    $(function () {
-        reportZeroState.showAfter(".js-filter-panel", "start");
-    });
-</script>
-<link rel="stylesheet" href="<?php echo $this->baseUrl('css/daterangepicker.css'); ?>" type="text/css" media="all">
-<script type="text/javascript" src="<?php echo $this->baseUrl('js/moment.min.js'); ?>"></script>
-<legend>
-    <h3><?= $this->translate->_("Participant Corrective Action Overview"); ?></h3>
-</legend>
-<div class="filter-panel js-filter-panel">
-    <button type="button" class="btn btn-default btn-sm js-filter-toggle" aria-expanded="false"
-        data-expand-text="<?= $this->htmlTranslate("Expand Filters"); ?>"
-        data-collapse-text="<?= $this->htmlTranslate("Collapse Filters"); ?>">
-        <i class="icon-filter"></i> <span class="js-filter-toggle-text"><?= $this->translate->_("Expand Filters"); ?></span>
-        <span class="label label-info js-filter-count" style="display:none;">0</span>
-        <span class="caret"></span>
-    </button>
-    <div class="js-filter-summary"></div>
-    <div class="js-filter-body">
-<table style="margin:20px 0;" class="table table-bordered">
-    <tr>
-        <td style="width:150px;text-align: center;font-weight:bold;">
-            <?= $this->translate->_("Pick a Date Range"); ?>
-        </td>
-        <td style="width:100px;text-align: center;font-weight:bold;">
-            <?= $this->translate->_("Select Scheme Type"); ?>
-        </td>
-        <td style="width:200px;text-align: center;font-weight:bold;">
-            <?= $this->translate->_("Select Shipment"); ?>
-        </td>
-        <td class="dontPrint" style="width:115px;text-align: center;font-weight:bold;">
-            <?= $this->translate->_("Action"); ?>
-        </td>
-    </tr>
-    <tr>
-        <td>
-            <input type="text" id="dateRange" name="dateRange" onchange="" class="form-control input-sm"
-                readonly="readonly" style="background: #fff" placeholder="<?= $this->htmlTranslate("Click here to pick a Date Range"); ?>"
-                data-filter-label="<?= $this->htmlTranslate("Date Range"); ?>" />
-        </td>
-        <td>
-            <select id="scheme" name="scheme" class="form-control input-sm" onchange="getShipmentCodes(this.value)"
-                data-filter-label="<?= $this->htmlTranslate("Scheme"); ?>">
-                <option value=""> -- <?= $this->translate->_("Select Scheme Type"); ?> --</option>
-                <?php
-                foreach ($this->schemes as $scheme) {
-                    if ($scheme['scheme_id'] == 'dts') {
-                        ?>
-                        <option value="<?php echo $scheme['scheme_id']; ?>"><?php echo $scheme['scheme_name']; ?></option>
-                        <?php
-                    }
-                }
-                ?>
-            </select>
-        </td>
-        <td>
-            <select id="shipmentId" name="shipmentId" class="form-control input-sm"
-                data-filter-label="<?= $this->htmlTranslate("Shipment"); ?>">
-                <option value=''>-- <?= $this->translate->_("Select Date Range and Scheme to populate this list"); ?> --
-                </option>
-            </select>
-        </td>
-        <td class="dontPrint"><button class="btn btn-success btn-sm" id="getReportBtn"
-                onclick="drawTable()"><span><?= $this->translate->_("Get Report"); ?></span></button> <button
-                class="btn btn-danger btn-sm"
-                onclick="document.location.href = document.location"><span><?= $this->translate->_("Reset"); ?></span></button>
-            <button class="btn btn-info btn-sm hide" id="exportExcel" onclick="correctiveExcel()"><i
-                    class="icon-download"></i> <?= $this->translate->_("Excel"); ?></button> <a href="#"
-                class="btn btn-primary btn-sm hide" id="exportPdf" target="_blank"><i class="icon-download"></i>
-                <?= $this->translate->_("PDF"); ?></a>
-        </td>
-    </tr>
-</table>
-    </div><!-- /.js-filter-body -->
-</div><!-- /.filter-panel -->
-<br />
-<table class="table table-bordered hide" id="totalTable">
-    <tr>
-        <td id="totalShippedDiv" class="center totalCountTd"></td>
-        <td id="totalRespDiv" class="center totalCountTd"></td>
-        <td id="validRespDiv" class="center totalCountTd"></td>
-        <td id="avgScoreDiv" class="center totalCountTd"></td>
-    </tr>
+	var caTable = null;
+	var caRequest = null;
 
-</table>
-<br />
-<table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered table-hover hide"
-    id="shipmentTable">
-    <thead>
-        <tr>
-            <th scope="col" style="text-align: center;"><?= $this->translate->_("Corrective Action"); ?></th>
-            <th scope="col" style="text-align: center;">
-                <?= $this->translate->_("No. of Responses having this corrective action"); ?>
-            </th>
+	function caNumber(n) {
+		return Number(n || 0).toLocaleString();
+	}
 
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td colspan="2" class="dataTables_empty"><?= $this->translate->_("Loading data from server"); ?></td>
-        </tr>
-    </tbody>
-</table>
+	function caEscape(value) {
+		return $('<div/>').text(value == null ? '' : String(value)).html();
+	}
 
-<script type="text/javascript" src="<?php echo $this->assetUrl('js/daterangepicker.js'); ?>"></script>
-<script type="text/javascript">
-    var startDate = "";
-    var endDate = "";
-    var paginate = true;
-    $(document).ready(function () {
-        $('#dateRange').daterangepicker({
-            locale: {
-                cancelLabel: 'Clear',
-                format: 'DD-MMM-YYYY',
-                separator: ' to ',
-            },
-            autoApply: true,
-            showDropdowns: true,
-            alwaysShowCalendars: true,
-            autoUpdateInput: true,
-            startDate: moment().subtract(179, 'days'),
-            endDate: moment(),
-            maxDate: moment(),
-            ranges: eptDateRanges()
-        },
-            function (start, end) {
-                startDate = start.format('DD-MMM-YYYY');
-                endDate = end.format('DD-MMM-YYYY');
-            });
-        // Start from the range the picker shows, so the shipment list matches it
-        // even before a range is picked (for example when the only scheme is pre-selected).
-        var initialRange = ($('#dateRange').val() || '').split(' to ');
-        startDate = initialRange[0] || '';
-        endDate = initialRange[1] || '';
-    });
+	function loadCorrectiveActions() {
+		if (caRequest) {
+			caRequest.abort();
+		}
+		caTable.fnClearTable();
+		$('#caTable_processing').css('visibility', 'visible');
+		caRequest = $.post("<?= $caDataUrl; ?>", reportFilters.values(), function (data) {
+			var responses = data.responses || 0;
+			var share = function (n) {
+				return responses > 0 ? Math.round(n * 100 / responses) : 0;
+			};
+			$('#caStats [data-stat="shipments"]').text(caNumber(data.shipments));
+			$('#caStats [data-stat="responses"]').text(caNumber(responses));
+			$('#caStats [data-stat="failed"]').text(responses > 0 ? "<?= $this->jsTranslate("%s failed"); ?>".replace('%s', caNumber(data.failed)) : '');
+			$('#caStats [data-stat="withAction"]').text(caNumber(data.withAction));
+			$('#caStats [data-stat="withActionShare"]').text(responses > 0 ? "<?= $this->jsTranslate("%s of responses"); ?>".replace('%s', share(data.withAction) + '%') : '');
+			$('#caStats [data-stat="averageScore"]').text(data.averageScore === null ? '–' : data.averageScore);
 
-    function getShipmentCodes(schemeType) {
-        if (schemeType == "") {
-            $("#shipmentId").html("<option value=''>-- Select Date Range and Scheme to populate this list --</option>");
-            return false;
-        }
-        if ($('#dateRange').val() == "") {
-            alert("<?= $this->jsTranslate("Please pick a date range to fetch shipment list"); ?>");
-            $('#dateRange').focus();
-            return false;
-        }
+			var rows = $.map(data.actions || [], function (action) {
+				var pct = share(action.responses);
+				return [[
+					'<div class="ca-action" data-action-id="' + action.action_id + '"><span class="ca-toggle" aria-hidden="true"><i class="icon-chevron-right"></i></span>'
+						+ '<span class="cell-main">' + caEscape(action.corrective_action) + '</span></div>',
+					'<span class="rate-figure">' + caNumber(action.responses) + '</span>'
+						+ '<span class="rate-bar"><span style="width:' + pct + '%"></span></span>'
+						+ '<span class="cell-sub">' + "<?= $this->jsTranslate("%s of responses"); ?>".replace('%s', pct + '%') + '</span>',
+					caNumber(action.participants),
+					action.failed > 0 ? '<span class="ca-failed">' + caNumber(action.failed) + '</span>' : '0',
+					action.responses
+				]];
+			});
+			caTable.fnAddData(rows);
+		}, 'json').always(function () {
+			caRequest = null;
+			$('#caTable_processing').css('visibility', 'hidden');
+		});
+	}
 
-        $.blockUI();
-        $.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'common', 'action' => 'get-shipments-by-scheme')); ?>", {
-            schemeType: schemeType,
-            startDate: startDate,
-            endDate: endDate,
-            format: "html"
-        },
-            function (data) {
-                if (data == 0 || data == "0") {
-                    $("#shipmentId").html("<option value=''>-- No Shipments Available --</option>");
-                    $("#getReportBtn").addClass("disabled");
-                    $("#shipmentTable_wrapper").addClass("hide");
-                    $("#totalTable").addClass("hide");
-                    if (oTable != null) {
-                        oTable.dataTable().fnClearTable();
+	$(function () {
+		// A corrective action opens the responses that received it.
+		$('#caTable tbody').on('click', 'tr', function () {
+			var $action = $(this).find('.ca-action');
+			if (!$action.length) {
+				return;
+			}
+			var tr = this;
+			if (caTable.fnIsOpen(tr)) {
+				caTable.fnClose(tr);
+				$(tr).removeClass('ca-open');
+				return;
+			}
+			caTable.fnOpen(tr, '<div style="padding:4px;color:#888;"><?= $this->jsTranslate("Loading data from server"); ?></div>', 'ca-detail');
+			$(tr).addClass('ca-open');
+			var params = reportFilters.values();
+			params.actionId = $action.data('action-id');
+			$.post("<?= $caResponsesUrl; ?>", params, function (data) {
+				$(tr).next('tr').find('td.ca-detail').html(data.html);
+			}, 'json').fail(function () {
+				$(tr).next('tr').find('td.ca-detail').html('<div style="padding:4px;color:#a94442;"><?= $this->jsTranslate("Failed to load. Please try again."); ?></div>');
+			});
+		});
+	});
 
-                    }
+	reportFilters.onChange(loadCorrectiveActions);
 
-                } else {
-                    $("#shipmentId").html(data);
-                    $("#getReportBtn").removeClass("disabled");
-                }
-                $.unblockUI();
-            });
-    }
+	reportFilters.ready(function () {
+		caTable = $('#caTable').dataTable({
+			"oLanguage": reportZeroState.dataTableLanguage(),
+			"bAutoWidth": false,
+			"bPaginate": false,
+			"bFilter": false,
+			"bInfo": false,
+			"bProcessing": true,
+			"sDom": "rt",
+			"aoColumns": [
+				{ "sWidth": "58%" },
+				{ "sWidth": "18%", "iDataSort": 4 },
+				{ "sWidth": "12%" },
+				{ "sWidth": "12%" },
+				{ "bVisible": false }
+			],
+			"aaSorting": [[4, "desc"]]
+		});
+		loadCorrectiveActions();
+	});
 
-    function drawTable() {
-        reportZeroState.hide();
-        var dateRange = $("#dateRange").val();
-        var _dateRange = dateRange.split(" to ");
-        startDate = _dateRange[0];
-        endDate = _dateRange[1];
-
-        $("#totalTable").removeClass("hide");
-        $("#shipmentTable_wrapper").removeClass("hide");
-        $("#shipmentTable").removeClass("hide");
-        $.blockUI;
-        oTable = $('#shipmentTable').dataTable({
-            "oLanguage": reportZeroState.dataTableLanguage(),
-            "bPaginate": paginate,
-            "bJQueryUI": false,
-            "bAutoWidth": false,
-            "bInfo": true,
-            "bScrollCollapse": true,
-            "sPaginationType": "bootstrap",
-            "bRetrieve": false,
-            "bDestroy": true,
-            "aoColumns": [{
-                "sClass": "left"
-            },
-            {
-                "sClass": "center"
-            }
-            ],
-            "aaSorting": [
-                [0, "desc"]
-            ],
-            "bProcessing": true,
-            "bServerSide": true,
-            "sAjaxSource": "<?php echo $this->url(array('module' => 'reports', 'controller' => 'corrective-actions', 'action' => 'index', 'format' => 'html')); ?>",
-            "fnServerParams": function (aoData) {
-                aoData.push({
-                    "name": "scheme",
-                    "value": $("#scheme").val()
-                });
-                aoData.push({
-                    "name": "shipmentId",
-                    "value": $("#shipmentId").val()
-                });
-                aoData.push({
-                    "name": "startDate",
-                    "value": startDate
-                });
-                aoData.push({
-                    "name": "endDate",
-                    "value": endDate
-                });
-            },
-            "fnServerData": function (sSource, aoData, fnCallback) {
-                $.ajax({
-                    "dataType": 'json',
-                    "type": "POST",
-                    "url": sSource,
-                    "data": aoData,
-                    "success": function (json) {
-                        if (json.totalResponses == 0 && json.validResponses == 0 && json.averageScore == 0) {
-                            $(".totalCountTd").html("");
-                            $("#totalTable").addClass("hide");
-                        } else {
-                            $("#totalShippedDiv").html("<strong><?= $this->htmlTranslate("Total shipped"); ?></strong> : " + json.totalShipped);
-                            $("#totalRespDiv").html("<strong><?= $this->htmlTranslate("Total number of responses"); ?></strong> : " + json.totalResponses);
-                            $("#validRespDiv").html("<strong><?= $this->htmlTranslate("Total number of valid responses"); ?></strong>: " + json.validResponses);
-                            $("#avgScoreDiv").html("<strong><?= $this->htmlTranslate("Average score"); ?> </strong>: " + json.averageScore);
-                        }
-                        fnCallback(json);
-                    }
-                });
-            },
-            "fnRowCallback": function (nRow, aData, iDisplayIndex) {
-                $.unblockUI;
-            },
-        });
-        $('#exportExcel').removeClass('hide');
-        correctiveExportPdf();
-    }
-
-    function correctiveExcel() {
-        if (startDate == "" || endDate == "" || $("#scheme").val() == "" || $("#scheme").val() == null || $("#scheme").val() == undefined) {
-            alert("<?= $this->jsTranslate("Please pick date range and Scheme Type to proceed"); ?>");
-            return false;
-        } else {
-            var dateRange = $("#dateRange").val();
-            var scheme = $("#scheme").val();
-            var dateStartDate = startDate;
-            var dateEndDate = endDate;
-            var shipmentId = $("#shipmentId").val();
-            shipmentName = "";
-            if ($("#shipmentId").val() != "") {
-                shipmentName = $("#shipmentId option:selected").text();
-            }
-            $.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'corrective-actions', 'action' => 'corrective-actions-export'), 'default', true); ?>", {
-                dateRange: dateRange,
-                scheme: scheme,
-                dateStartDate: dateStartDate,
-                dateEndDate: dateEndDate,
-                shipmentId: shipmentId,
-                shipmentName: shipmentName,
-                format: "html"
-            },
-                function (data) {
-                    if (data == "" || data == null) {
-                        alert("<?= $this->jsTranslate("Unable to generate download"); ?>");
-                    } else {
-                        document.location.href = '/temporary/' + data;
-                    }
-                });
-        }
-    }
-
-    function correctiveExportPdf() {
-        var dateRange = $("#dateRange").val();
-        var scheme = $("#scheme").val();
-        var dateStartDate = startDate;
-        var dateEndDate = endDate;
-        var shipmentId = $("#shipmentId").val();
-        shipmentName = "";
-        if ($("#shipmentId").val() != "") {
-            shipmentName = $("#shipmentId option:selected").text();
-        }
-        $.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'corrective-actions', 'action' => 'corrective-actions-export-pdf'), 'default', true); ?>", {
-            dateRange: dateRange,
-            scheme: scheme,
-            dateStartDate: dateStartDate,
-            dateEndDate: dateEndDate,
-            shipmentId: shipmentId,
-            shipmentName: shipmentName,
-            format: "html"
-        },
-            function (data) {
-                if (data == "" || data == null) {
-                    alert("<?= $this->jsTranslate("Unable to generate download"); ?>");
-                } else {
-                    $('#exportPdf').attr('href', '/temporary/' + data);
-                    $('#exportPdf').removeClass('hide');
-                }
-            });
-    }
+	function downloadCorrectiveActions(url) {
+		var params = reportFilters.values();
+		// The PDF prints the filters as the chips show them.
+		params.filterSummary = $.map($('.js-filter-summary .filter-tag'), function (tag) {
+			return $(tag).find('.filter-tag-label').text() + ': ' + $(tag).find('.filter-tag-value').text();
+		}).join(' · ');
+		$.blockUI();
+		$.post(url, params, function (data) {
+			$.unblockUI();
+			if (!data || !data.file) {
+				alert("<?= $this->jsTranslate("Unable to generate download"); ?>");
+			} else {
+				window.open('/temporary/' + data.file, '_blank');
+			}
+		}, 'json').fail(function () {
+			$.unblockUI();
+			alert("<?= $this->jsTranslate("Unable to generate download"); ?>");
+		});
+	}
 </script>
 <?php // Must stay last: the panel collapses only after the select2 widgets above have measured themselves.
 include APPLICATION_PATH . '/views/partials/collapsible-filters.phtml'; ?>

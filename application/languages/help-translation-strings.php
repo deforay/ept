@@ -51,6 +51,10 @@ _('Bulk Import Participants');
 _('communication');
 // admin/dts-settings#tags, admin/eid-assay-add#tags, admin/eid-assay#tags, admin/global-config#tags, admin/home-config#tags, admin/report-config#tags, admin/tb-settings#tags, admin/testkit-add#tags, admin/testkit-edit#tags, admin/testkit-standard-kit#tags, admin/testkit#tags, admin/vl-assay-add#tags, admin/vl-assay-edit#tags, admin/vl-assay#tags, admin/vl-settings#tags
 _('config');
+// admin/reports-corrective-actions#tags
+_('corrective actions');
+// admin/reports-corrective-actions#title
+_('Corrective Actions Report');
 // admin/distributions-add#tags, admin/participants-add#tags
 _('create');
 // admin/eid-assay-add#summary
@@ -87,7 +91,7 @@ _('districts');
 _('downloads');
 // admin/reports-distribution#tags
 _('draft');
-// admin/dts-settings#tags, admin/testkit-standard-kit#tags, admin/testkit#tags
+// admin/dts-settings#tags, admin/reports-corrective-actions#tags, admin/testkit-standard-kit#tags, admin/testkit#tags
 _('dts');
 // admin/dts-settings#title
 _('DTS (HIV Serology) Settings');
@@ -165,10 +169,14 @@ _('hero');
 _('hiv');
 // admin/dts-settings#tags, admin/testkit-standard-kit#tags, admin/testkit#tags
 _('hiv-serology');
+// admin/reports-corrective-actions#tags
+_('hiv serology');
 // admin/dashboard#tags, admin/home-config#tags
 _('home');
 // admin/home-config#title
 _('Home Page Settings');
+// admin/reports-corrective-actions#summary
+_('How often each DTS corrective action was given, and to which participants');
 // admin/shipment-add#summary
 _('How to add a shipment (sample panel) under a PT Survey');
 // admin/shipment-enroll#summary
@@ -209,7 +217,7 @@ _('participant-login');
 _('Participant Performance Report');
 // admin/reports-participant-response#title
 _('Participant Response Report');
-// admin/email-participants#tags, admin/enrollments-add#tags, admin/enrollments#tags, admin/evaluate-shipment#tags, admin/participants-add#tags, admin/participants-bulk-import#tags, admin/participants-edit#tags, admin/participants-manager-map#tags, admin/participants#tags, admin/reports-participant-performance#tags, admin/reports-participant-response#tags, admin/reports-shipment-response#tags, admin/shipment-enroll#tags
+// admin/email-participants#tags, admin/enrollments-add#tags, admin/enrollments#tags, admin/evaluate-shipment#tags, admin/participants-add#tags, admin/participants-bulk-import#tags, admin/participants-edit#tags, admin/participants-manager-map#tags, admin/participants#tags, admin/reports-corrective-actions#tags, admin/reports-participant-performance#tags, admin/reports-participant-response#tags, admin/reports-shipment-response#tags, admin/shipment-enroll#tags
 _('participants');
 // admin/participants#title
 _('Participants');
@@ -251,7 +259,7 @@ _('re-evaluate');
 _('regions');
 // admin/vl-assay-edit#summary
 _('Rename a Viral Load assay / platform');
-// admin/evaluate#tags, admin/report-config#tags, admin/reports-distribution#tags, admin/reports-finalize#tags, admin/reports-participant-performance#tags, admin/reports-participant-response#tags, admin/reports-participant-trends#tags, admin/reports-shipment-response#tags, admin/reports-shipments#tags
+// admin/evaluate#tags, admin/report-config#tags, admin/reports-corrective-actions#tags, admin/reports-distribution#tags, admin/reports-finalize#tags, admin/reports-participant-performance#tags, admin/reports-participant-response#tags, admin/reports-participant-trends#tags, admin/reports-shipment-response#tags, admin/reports-shipments#tags
 _('reports');
 // admin/reports-participant-response#summary
 _('Response and pass rates by region, district, network tier, affiliation or enrolled program');

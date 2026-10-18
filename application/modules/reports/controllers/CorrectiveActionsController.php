@@ -10,59 +10,58 @@ class Reports_CorrectiveActionsController extends Zend_Controller_Action
         $privileges = explode(',', $adminSession->privileges);
         if (!in_array('access-reports', $privileges)) {
             if ($request->isXmlHttpRequest()) {
-                return null;
+                return;
             } else {
                 $this->redirect('/admin');
             }
         }
-        /* Initialize action controller here */
-        /** @var Zend_Controller_Action_Helper_AjaxContext $ajaxContext */
-        $ajaxContext = $this->_helper->getHelper('AjaxContext');
-        $ajaxContext->addActionContext('index', 'html')
-            ->addActionContext('corrective-actions-export', 'html')
-            ->addActionContext('corrective-actions-export-pdf', 'html')
-            ->initContext();
         $this->_helper->layout()->pageName = 'report';
     }
 
     public function indexAction()
     {
-        /** @var Zend_Controller_Request_Http $request */
-        $request = $this->getRequest();
-        if ($request->isPost()) {
-            $params = $this->getAllParams();
-            $reportService = new Application_Service_Reports();
-            $response = $reportService->getCorrectiveActionReport($params);
-            $this->view->response = $response;
-        }
+        $participants = new Application_Service_Participants();
         $scheme = new Application_Service_Schemes();
-        $this->view->schemes = $scheme->getAllSchemes();
+        // Corrective actions are recorded for DTS only.
+        $this->view->schemes = array_values(array_filter($scheme->getAllSchemes(), fn ($s) => $s['scheme_id'] === 'dts'));
+        $this->view->countries = $participants->getParticipantCountriesList();
+        $this->view->regions = $participants->getAllParticipantRegion();
+        $this->view->states = $participants->getAllParticipantStates();
+        $this->view->districts = $participants->getAllParticipantDistricts();
     }
 
-    public function correctiveActionsExportAction()
+    public function dataAction()
     {
-        /** @var Zend_Controller_Request_Http $request */
-        $request = $this->getRequest();
         $reportService = new Application_Service_Reports();
-        if ($request->isPost()) {
-            $params = $this->getAllParams();
-            $this->view->exported = $reportService->exportCorrectiveActionsReport($params);
-        }
+        $this->_helper->json($reportService->getCorrectiveActionSummary($this->getAllParams()));
     }
 
-    public function correctiveActionsExportPdfAction()
+    public function responsesAction()
     {
-        /** @var Zend_Controller_Request_Http $request */
-        $request = $this->getRequest();
         $reportService = new Application_Service_Reports();
-        if ($request->isPost()) {
-            $params = $this->getAllParams();
-            $this->view->header = $reportService->getReportConfigValue('report-header');
-            $this->view->logo = $reportService->getReportConfigValue('logo');
-            $this->view->logoRight = $reportService->getReportConfigValue('logo-right');
-            $this->view->dateRange = $params['dateRange'];
-            $this->view->shipmentName = $params['shipmentName'];
-            $this->view->result = $reportService->exportCorrectiveActionsReportInPdf($params);
-        }
+        $this->_helper->json(['html' => $reportService->getCorrectiveActionDrawer($this->getAllParams(), (int) $this->getParam('actionId'))]);
+    }
+
+    public function shipmentsAction()
+    {
+        $reportService = new Application_Service_Reports();
+        $this->_helper->json($reportService->getResponseReportShipments('dts', $this->getParam('startDate'), $this->getParam('endDate')));
+    }
+
+    public function exportAction()
+    {
+        $reportService = new Application_Service_Reports();
+        $this->_helper->json(['file' => $reportService->exportCorrectiveActions($this->getAllParams())]);
+    }
+
+    public function pdfAction()
+    {
+        $this->_helper->layout()->disableLayout();
+        $reportService = new Application_Service_Reports();
+        $params = $this->getAllParams();
+        $this->view->header = $reportService->getReportConfigValue('report-header');
+        $this->view->logo = $reportService->getReportConfigValue('logo');
+        $this->view->summary = $reportService->getCorrectiveActionSummary($params);
+        $this->view->filters = $params['filterSummary'] ?? '';
     }
 }

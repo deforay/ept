@@ -1640,12 +1640,6 @@ parameters:
 			path: application/modules/reports/controllers/AnnualController.php
 
 		-
-			message: '#^Method Reports_CorrectiveActionsController\:\:init\(\) with return type void returns null but should not return anything\.$#'
-			identifier: return.void
-			count: 1
-			path: application/modules/reports/controllers/CorrectiveActionsController.php
-
-		-
 			message: '#^Method Reports_CorrectivePreventiveActionsController\:\:init\(\) with return type void returns null but should not return anything\.$#'
 			identifier: return.void
 			count: 1
