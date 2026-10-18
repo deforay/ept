@@ -12,7 +12,10 @@ class Admin_LogViewerController extends Zend_Controller_Action
         $privileges = explode(',', (string) ($adminSession->privileges ?? ''));
         if (!in_array('analyze-generate-reports', $privileges, true)) {
             if ($request->isXmlHttpRequest()) {
-                return;
+                // init() returning does not abort ZF1 dispatch; halt so the
+                // action never runs for unauthorized XHR callers.
+                $this->getResponse()->setHttpResponseCode(403)->sendResponse();
+                exit;
             }
             $this->redirect('/admin');
             return;

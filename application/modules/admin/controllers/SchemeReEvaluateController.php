@@ -20,10 +20,12 @@ class Admin_SchemeReEvaluateController extends Zend_Controller_Action
         $privileges = explode(',', $adminSession->privileges);
         if (!in_array('config-ept', $privileges)) {
             if ($request->isXmlHttpRequest()) {
-                return;
-            } else {
-                $this->redirect('/admin');
+                // init() returning does not abort ZF1 dispatch; halt so the
+                // action never runs for unauthorized XHR callers.
+                $this->getResponse()->setHttpResponseCode(403)->sendResponse();
+                exit;
             }
+            $this->redirect('/admin');
         }
     }
 

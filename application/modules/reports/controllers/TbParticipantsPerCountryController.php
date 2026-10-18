@@ -10,10 +10,12 @@ class Reports_TbParticipantsPerCountryController extends Zend_Controller_Action
         $privileges = explode(',', (string) $adminSession->privileges);
         if (!in_array('access-reports', $privileges)) {
             if ($request->isXmlHttpRequest()) {
-                return;
-            } else {
-                $this->redirect('/admin');
+                // init() returning does not abort ZF1 dispatch; halt so the
+                // action never runs for unauthorized XHR callers.
+                $this->getResponse()->setHttpResponseCode(403)->sendResponse();
+                exit;
             }
+            $this->redirect('/admin');
         }
         $this->_helper->layout()->pageName = 'report';
     }
