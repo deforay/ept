@@ -235,8 +235,8 @@ class Application_Service_Reports
         return [$shipment, $esc($aRow['scheme_name']), $due, $responses, $pass, $status, $this->shipmentReportDownloads($aRow, $forParticipant)];
     }
 
-    // Download buttons for one shipment row: the generated reports (PDF and ZIP
-    // files) first, then the Excel exports.
+    // Download buttons for one shipment row: the Excel exports on one row and the
+    // generated reports (PDF and ZIP files) on the next.
     private function shipmentReportDownloads(array $aRow, bool $forParticipant): string
     {
         $t = $this->translator;
@@ -297,8 +297,14 @@ class Application_Service_Reports
             $exports[] = $link($t->_('Feedback'), $t->_("Participants' feedback answers (Excel)"), 'icon-comments', 'href="javascript:void(0);" onclick="downloadFeedbackReport(' . (int) $aRow['shipment_id'] . ')"');
         }
 
-        $links = array_merge($reports, $exports);
-        return $links ? '<div class="download-links">' . implode('', $links) . '</div>' : '<span class="cell-muted">&ndash;</span>';
+        // Excel exports on the first row, starting with Overview, then the reports.
+        $rows = '';
+        foreach ([$exports, $reports] as $buttons) {
+            if ($buttons) {
+                $rows .= '<div class="download-links">' . implode('', $buttons) . '</div>';
+            }
+        }
+        return $rows !== '' ? $rows : '<span class="cell-muted">&ndash;</span>';
     }
 
     public function updateReportConfigs($params)
