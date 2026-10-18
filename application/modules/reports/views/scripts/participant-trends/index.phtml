@@ -1,67 +1,250 @@
 <?php include APPLICATION_PATH . '/views/partials/report-zero-state.phtml'; ?>
-<script type="text/javascript">
-    $(function () {
-        reportZeroState.showAfter(".js-filter-panel", "start");
-    });
-</script>
-<style>
-    .highcharts-figure,
-    .highcharts-data-table table {
-        min-width: 310px;
-        max-width: 100%;
-        margin: 1em auto;
-    }
-
-    #container {
-        height: 400px;
-    }
-
-    .highcharts-data-table table {
-        font-family: Verdana, sans-serif;
-        border-collapse: collapse;
-        border: 1px solid #EBEBEB;
-        margin: 10px auto;
-        text-align: center;
-        width: 100%;
-        max-width: 100%;
-    }
-
-    .highcharts-data-table caption {
-        padding: 1em 0;
-        font-size: 1.2em;
-        color: #555;
-    }
-
-    .highcharts-data-table th {
-        font-weight: 600;
-        padding: 0.5em;
-    }
-
-    .highcharts-data-table td,
-    .highcharts-data-table th,
-    .highcharts-data-table caption {
-        padding: 0.5em;
-    }
-
-    .highcharts-data-table thead tr,
-    .highcharts-data-table tr:nth-child(even) {
-        background: #f8f8f8;
-    }
-
-    .highcharts-data-table tr:hover {
-        background: #f1f7ff;
-    }
-</style>
-<script type="text/javascript" src="<?php echo $this->baseUrl('js/highstock.js'); ?>"></script>
-<script type="text/javascript" src="<?php echo $this->baseUrl('js/data.js'); ?>"></script>
-<script type="text/javascript" src="<?php echo $this->baseUrl('js/exporting.js'); ?>"></script>
-<script type="text/javascript" src="<?php echo $this->baseUrl('js/export-data.js'); ?>"></script>
 <link rel="stylesheet" href="<?php echo $this->baseUrl('css/daterangepicker.css'); ?>" type="text/css" media="all">
 <script type="text/javascript" src="<?php echo $this->baseUrl('js/moment.min.js'); ?>"></script>
+<style>
+    .trends-filters {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: flex-end;
+        gap: 12px 16px;
+        margin: 12px 0 0;
+        padding: 14px 16px;
+        border: 1px solid #e3e8ef;
+        border-radius: 6px;
+        background: #fafbfc;
+    }
+
+    .trends-filters .trends-field {
+        flex: 1 1 200px;
+    }
+
+    .trends-filters label {
+        display: block;
+        margin-bottom: 4px;
+        font-size: 13px;
+        font-weight: 600;
+        color: #333;
+    }
+
+    .trends-filters .trends-actions {
+        flex: 0 0 auto;
+    }
+
+    .trends-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin: 20px 0 12px;
+    }
+
+    .trends-head p {
+        margin: 0;
+        color: #666;
+    }
+
+    .trends-kpis {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 12px;
+        margin-bottom: 20px;
+    }
+
+    .trends-kpi {
+        padding: 14px 16px;
+        border: 1px solid #e3e8ef;
+        border-radius: 6px;
+        background: #fff;
+    }
+
+    .trends-kpi-label {
+        font-size: 12px;
+        font-weight: 600;
+        letter-spacing: .02em;
+        text-transform: uppercase;
+        color: #6b7686;
+    }
+
+    .trends-kpi-value {
+        margin-top: 4px;
+        font-size: 26px;
+        font-weight: 600;
+        line-height: 1.2;
+        color: #1f2a37;
+    }
+
+    .trends-kpi-note {
+        margin-top: 2px;
+        font-size: 12px;
+        color: #6b7686;
+    }
+
+    .trends-panel {
+        margin-bottom: 20px;
+        padding: 16px;
+        border: 1px solid #e3e8ef;
+        border-radius: 6px;
+        background: #fff;
+    }
+
+    .trends-panel h4 {
+        margin: 0 0 12px;
+        font-size: 15px;
+        font-weight: 600;
+    }
+
+    #trendsChart {
+        height: 300px;
+    }
+
+    .trends-table {
+        margin-bottom: 0;
+    }
+
+    .trends-table th {
+        font-size: 12px;
+        white-space: nowrap;
+        color: #4a5463;
+    }
+
+    .trends-table td,
+    .trends-table th {
+        vertical-align: middle !important;
+    }
+
+    .trends-table .num {
+        text-align: right;
+        white-space: nowrap;
+    }
+
+    .trends-table .sub {
+        display: block;
+        font-size: 12px;
+        color: #6b7686;
+    }
+
+    .trends-table tr.js-shipment-row {
+        cursor: pointer;
+    }
+
+    .trends-table tr.js-shipment-row:hover td {
+        background: #f4f7fb;
+    }
+
+    .trends-table .toggle-icon {
+        color: #8a9bb8;
+        transition: transform .15s ease;
+    }
+
+    .trends-table tr.is-open .toggle-icon {
+        transform: rotate(90deg);
+    }
+
+    .trends-table tr.region-row > td {
+        padding: 0 0 0 28px;
+        background: #f7f9fc;
+    }
+
+    .trends-table tr.region-row table {
+        margin: 8px 0 12px;
+        background: transparent;
+    }
+
+    .trends-table tr.region-row table th,
+    .trends-table tr.region-row table td {
+        border-top-color: #e8edf3;
+        background: transparent;
+    }
+
+    .rate-bar {
+        display: inline-block;
+        width: 60px;
+        height: 6px;
+        margin-left: 8px;
+        border-radius: 3px;
+        background: #e8edf3;
+        vertical-align: middle;
+        overflow: hidden;
+    }
+
+    .rate-bar > span {
+        display: block;
+        height: 100%;
+        background: #2e8b57;
+    }
+
+    .rating-bar {
+        display: flex;
+        width: 140px;
+        height: 10px;
+        border-radius: 3px;
+        background: #e8edf3;
+        overflow: hidden;
+    }
+
+    .rating-bar > span {
+        display: block;
+        height: 100%;
+    }
+
+    .rating-excellent {
+        background: #2e8b57;
+    }
+
+    .rating-satisfactory {
+        background: #9fd3b4;
+    }
+
+    .rating-unsatisfactory {
+        background: #d9534f;
+    }
+
+    .rating-legend {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px 14px;
+        margin-top: 10px;
+        font-size: 12px;
+        color: #6b7686;
+    }
+
+    .rating-legend i {
+        display: inline-block;
+        width: 10px;
+        height: 10px;
+        margin-right: 5px;
+        border-radius: 2px;
+        vertical-align: -1px;
+    }
+
+    .trends-table td.not-evaluated {
+        padding-left: 24px;
+        font-size: 13px;
+        color: #8a94a3;
+    }
+
+    .muted-dash {
+        color: #a0a8b4;
+    }
+
+    @media (max-width: 992px) {
+        .trends-kpis {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+    }
+
+    @media print {
+        .dontPrint {
+            display: none !important;
+        }
+    }
+</style>
+
 <legend>
     <h3><?= $this->translate->_("Participant Performance Overview"); ?></h3>
 </legend>
-<div class="filter-panel js-filter-panel" style="position: sticky;top: 58px;z-index: 200;">
+
+<div class="filter-panel js-filter-panel">
     <button type="button" class="btn btn-default btn-sm js-filter-toggle" aria-expanded="false"
         data-expand-text="<?= $this->htmlTranslate("Expand Filters"); ?>"
         data-collapse-text="<?= $this->htmlTranslate("Collapse Filters"); ?>">
@@ -71,164 +254,135 @@
     </button>
     <div class="js-filter-summary"></div>
     <div class="js-filter-body">
-<table style="margin:20px 0;padding: 10px;background: aliceblue;"
-    class="table table-bordered">
-    <tr>
-        <td style="width:20%;text-align: center;font-weight:bold;">
-            <?= $this->translate->_("Pick a Date Range"); ?>
-        </td>
-        <td style="width:20%;text-align: center;font-weight:bold;">
-            <?= $this->translate->_("Select Scheme Type"); ?>
-        </td>
-        <td style="width:20%;text-align: center;font-weight:bold;">
-            <?= $this->translate->_("Select Shipment"); ?>
-        </td>
-        <td class="dontPrint" style="width:20%;text-align: center;font-weight:bold;">
-            <?= $this->translate->_("Action"); ?>
-        </td>
-    </tr>
-    <tr>
-        <td>
-            <input type="text" id="dateRange" name="dateRange" class="form-control input-sm" readonly="readonly"
-                style="background: #fff" placeholder="<?= $this->htmlTranslate("Click here to pick a Date Range"); ?>"
-                data-filter-label="<?= $this->htmlTranslate("Date Range"); ?>" />
-        </td>
-        <td>
-            <select id="scheme" name="scheme" class="form-control input-sm" onchange="getShipmentCodes(this.value)"
-                data-filter-label="<?= $this->htmlTranslate("Scheme"); ?>">
-                <option value=""> -- <?= $this->translate->_("Select Scheme Type"); ?> --</option>
-                <?php
-                foreach ($this->schemes as $scheme) {
-                    ?>
-                    <option value="<?php echo $scheme['scheme_id']; ?>"><?php echo $scheme['scheme_name']; ?></option>
-                    <?php
-                }
-                ?>
-            </select>
-        </td>
-        <td>
-            <select id="shipmentId" name="shipmentId" class="form-control input-sm"
-                data-filter-label="<?= $this->htmlTranslate("Shipment"); ?>">
-                <option value=''>-- <?= $this->translate->_("Select Date Range and Scheme to populate this list"); ?> --
-                </option>
-            </select>
-        </td>
-        <td class="dontPrint"><button class="btn btn-success btn-sm"
-                onclick="drawTable()"><span><?= $this->translate->_("Get Report"); ?></span></button> <button
-                class="btn btn-danger btn-sm"
-                onclick="document.location.href = document.location"><span><?= $this->translate->_("Reset"); ?></span></button>
-            <button class="btn btn-info btn-sm hide" id="exportExcel" onclick="performanceExcel()"><i
-                    class="icon-download"></i> <?= $this->translate->_("Excel"); ?></button> <a href="#"
-                class="btn btn-primary btn-sm hide" id="exportPdf" target="_blank"><i class="icon-download"></i>
-                <?= $this->translate->_("PDF"); ?></a>
-        </td>
-    </tr>
-</table>
+        <div class="trends-filters">
+            <div class="trends-field">
+                <label for="dateRange"><?= $this->translate->_("Date Range"); ?></label>
+                <input type="text" id="dateRange" name="dateRange" class="form-control input-sm" readonly="readonly"
+                    style="background: #fff" placeholder="<?= $this->htmlTranslate("Click here to pick a Date Range"); ?>"
+                    data-filter-label="<?= $this->htmlTranslate("Date Range"); ?>" />
+            </div>
+            <div class="trends-field">
+                <label for="scheme"><?= $this->translate->_("Scheme"); ?></label>
+                <select id="scheme" name="scheme" class="form-control input-sm"
+                    data-filter-label="<?= $this->htmlTranslate("Scheme"); ?>">
+                    <option value="">-- <?= $this->translate->_("Select Scheme Type"); ?> --</option>
+                    <?php foreach ($this->schemes as $scheme) { ?>
+                        <option value="<?= $this->escape($scheme['scheme_id']); ?>"><?= $this->escape($scheme['scheme_name']); ?></option>
+                    <?php } ?>
+                </select>
+            </div>
+            <div class="trends-field">
+                <label for="shipmentId"><?= $this->translate->_("Shipment"); ?></label>
+                <select id="shipmentId" name="shipmentId" class="form-control input-sm"
+                    data-filter-label="<?= $this->htmlTranslate("Shipment"); ?>">
+                    <option value="">-- <?= $this->translate->_("All Shipments in the selected period"); ?> --</option>
+                </select>
+            </div>
+            <div class="trends-actions dontPrint">
+                <button type="button" class="btn btn-success btn-sm" onclick="loadTrends()"><?= $this->translate->_("Get Report"); ?></button>
+                <button type="button" class="btn btn-danger btn-sm" onclick="document.location.href = document.location"><?= $this->translate->_("Reset"); ?></button>
+            </div>
+        </div>
     </div><!-- /.js-filter-body -->
 </div><!-- /.filter-panel -->
 
-<div class="js-trends-extra">
-<div class="labPerformanceReport">
+<div id="trendsResults" class="hide">
+    <div class="trends-head">
+        <p id="trendsCaption"></p>
+        <button type="button" class="btn btn-info btn-sm dontPrint" onclick="exportTrends()">
+            <i class="icon-download"></i> <?= $this->translate->_("Download Excel"); ?>
+        </button>
+    </div>
 
+    <div class="trends-kpis">
+        <div class="trends-kpi">
+            <div class="trends-kpi-label"><?= $this->translate->_("Enrolled"); ?></div>
+            <div class="trends-kpi-value" id="kpiEnrolled"></div>
+            <div class="trends-kpi-note" id="kpiEnrolledNote"></div>
+        </div>
+        <div class="trends-kpi">
+            <div class="trends-kpi-label"><?= $this->translate->_("Response rate"); ?></div>
+            <div class="trends-kpi-value" id="kpiResponse"></div>
+            <div class="trends-kpi-note" id="kpiResponseNote"></div>
+        </div>
+        <div class="trends-kpi">
+            <div class="trends-kpi-label"><?= $this->translate->_("On time"); ?></div>
+            <div class="trends-kpi-value" id="kpiOnTime"></div>
+            <div class="trends-kpi-note" id="kpiOnTimeNote"></div>
+        </div>
+        <div class="trends-kpi">
+            <div class="trends-kpi-label"><?= $this->translate->_("Pass rate"); ?></div>
+            <div class="trends-kpi-value" id="kpiPass"></div>
+            <div class="trends-kpi-note" id="kpiPassNote"></div>
+        </div>
+    </div>
 
+    <div class="trends-panel" id="trendsChartPanel">
+        <h4><?= $this->translate->_("Trend by shipment"); ?></h4>
+        <div id="trendsChart"></div>
+    </div>
+
+    <div class="trends-panel">
+        <h4><?= $this->translate->_("Shipments"); ?> <small class="dontPrint"><?= $this->translate->_("Click a shipment to see its regions."); ?></small></h4>
+        <table class="table trends-table">
+            <thead>
+                <tr>
+                    <th scope="col"><?= $this->translate->_("Shipment"); ?></th>
+                    <th scope="col" class="num"><?= $this->translate->_("Enrolled"); ?></th>
+                    <th scope="col" class="num"><?= $this->translate->_("Responded"); ?></th>
+                    <th scope="col" class="num"><?= $this->translate->_("On time"); ?></th>
+                    <th scope="col" class="num"><?= $this->translate->_("Pass rate"); ?></th>
+                    <th scope="col"><?= $this->translate->_("Ratings"); ?></th>
+                </tr>
+            </thead>
+            <tbody id="trendsRows"></tbody>
+        </table>
+        <div class="rating-legend">
+            <span><i class="rating-excellent"></i><?= $this->translate->_("Excellent (full score)"); ?></span>
+            <span><i class="rating-satisfactory"></i><?= $this->translate->_("Satisfactory (passed)"); ?></span>
+            <span><i class="rating-unsatisfactory"></i><?= $this->translate->_("Unsatisfactory (failed)"); ?></span>
+        </div>
+    </div>
 </div>
 
-
-
-
-
-<figure class="highcharts-figure">
-    <div id="container"></div>
-</figure>
-<br>
-<hr>
-<br>
-<figure class="highcharts-figure">
-    <div id="aberraantContainer"></div>
-</figure>
-<br>
-</div><!-- /.js-trends-extra -->
-<table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered table-hover hide"
-    id="shipmentTable">
-    <thead>
-        <tr>
-            <th scope="col" style="text-align: center;"><?= $this->translate->_("Scheme"); ?></th>
-            <th scope="col" style="text-align: center;"><?= $this->translate->_("Shipment Date"); ?></th>
-            <th scope="col" style="text-align: center;"><?= $this->translate->_("Shipment Code"); ?></th>
-            <th scope="col" style="text-align: center;"><?= $this->translate->_("No. of Shipments"); ?></th>
-            <th scope="col" style="text-align: center;"><?= $this->translate->_("No. of Responses"); ?></th>
-            <th scope="col" style="text-align: center;"><?= $this->translate->_("No. of Valid Responses"); ?></th>
-            <th scope="col" style="text-align: center;"><?= $this->translate->_("No. of Passed Responses"); ?></th>
-            <th scope="col" style="text-align: center;"><?= $this->translate->_("Pass"); ?> %</th>
-            <!-- <th scope="col" style="text-align: center;">Average Score</th> -->
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td colspan="10" class="dataTables_empty"><?= $this->translate->_("Loading data from server"); ?></td>
-        </tr>
-    </tbody>
-</table>
-
-<br><br><br><br>
-<?php
-if ((isset($this->shipmentDetails['shipment_code']) && $this->shipmentDetails['shipment_code'] != '')) {
-    ?>
-    <legend class="modal-header hide" id="regionReportHeader">
-        <h4 class="modal-title" id="regionHeading">
-            <?= $this->translate->_("Region Wise Participant Performance Report For"); ?> <strong>
-                <?php echo $this->schemeDetails["scheme_name"]; ?> - <?php echo $this->shipmentDetails['shipment_code']; ?>
-                ( <?php echo $this->dateFormat($this->shipmentDetails['shipment_date']); ?> ) </strong>
-        </h4>
-    </legend>
-    <?php
-} else {
-    ?>
-    <legend class="modal-header hide" id="regionReportHeader">
-        <h4 class="modal-title" id="regionHeading"></h4>
-    </legend>
-    <?php
-}
-?>
-<button class="btn btn-info btn-sm pull-right hide" id="regionExportExcel" onclick="regionPerformanceExportExcel()"><i
-        class="icon-download"></i> <?= $this->translate->_("Excel"); ?></button>
-<table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered table-hover hide"
-    id="regionTable">
-    <thead>
-        <tr>
-            <th scope="col" style="text-align: center;"><?= $this->translate->_("Region"); ?></th>
-            <th scope="col" style="text-align: center;"><?= $this->translate->_("No. of Shipments"); ?></th>
-            <th scope="col" style="text-align: center;"><?= $this->translate->_("No. of Responses"); ?></th>
-            <th scope="col" style="text-align: center;"><?= $this->translate->_("No. of Valid Responses"); ?></th>
-            <th scope="col" style="text-align: center;"><?= $this->translate->_("No. of Passed Responses"); ?></th>
-            <th scope="col" style="text-align: center;"><?= $this->translate->_("Pass"); ?> %</th>
-            <!-- <th scope="col" style="text-align: center;">Average Score</th> -->
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td colspan="10" class="dataTables_empty"><?= $this->translate->_("Loading data from server"); ?></td>
-        </tr>
-    </tbody>
-</table>
-<input type="hidden" name="selectedScheme" id="selectedScheme"
-    value="<?php echo (isset($this->schemeDetails["scheme_name"]) && $this->schemeDetails["scheme_name"]) ? $this->schemeDetails["scheme_name"] : ""; ?>" />
-<input type="hidden" name="selectedDate" id="selectedDate"
-    value="<?php echo (isset($this->shipmentDetails["shipment_date"]) && $this->shipmentDetails["shipment_date"]) ? $this->dateFormat($this->shipmentDetails['shipment_date']) : ""; ?>" />
-<input type="hidden" name="selectedCode" id="selectedCode"
-    value="<?php echo (isset($this->shipmentDetails['shipment_code']) && $this->shipmentDetails['shipment_code']) ? $this->shipmentDetails['shipment_code'] : ""; ?>" />
-
-<script type="text/javascript" src="<?php echo $this->baseUrl('js/daterangepicker.js'); ?>"></script>
+<script type="text/javascript" src="<?php echo $this->assetUrl('js/daterangepicker.js'); ?>"></script>
 <script type="text/javascript">
-    var startDate = "";
-    var endDate = "";
-    var paginate = true;
-    var currentHighlighted = null;
-    $(document).ready(function () {
-        currentHighlighted = getCookie('did');
+    var trendsText = {
+        notEvaluated: "<?= $this->jsTranslate("Not evaluated yet"); ?>",
+        ofEnrolled: "<?= $this->jsTranslate("%s of %s enrolled"); ?>",
+        ofResponded: "<?= $this->jsTranslate("%s of %s responses"); ?>",
+        ofEvaluated: "<?= $this->jsTranslate("%s of %s evaluated"); ?>",
+        acrossShipments: "<?= $this->jsTranslate("across %s shipments"); ?>",
+        oneShipment: "<?= $this->jsTranslate("in 1 shipment"); ?>",
+        noRegion: "<?= $this->jsTranslate("No region"); ?>",
+        region: "<?= $this->jsTranslate("Region"); ?>",
+        noRegions: "<?= $this->jsTranslate("No participants in this shipment match the filters."); ?>",
+        loading: "<?= $this->jsTranslate("Loading..."); ?>",
+        responseRate: "<?= $this->jsTranslate("Response rate"); ?>",
+        onTime: "<?= $this->jsTranslate("On time"); ?>",
+        passRate: "<?= $this->jsTranslate("Pass rate"); ?>",
+        excellent: "<?= $this->jsTranslate("Excellent"); ?>",
+        satisfactory: "<?= $this->jsTranslate("Satisfactory"); ?>",
+        unsatisfactory: "<?= $this->jsTranslate("Unsatisfactory"); ?>",
+        selectScheme: "<?= $this->jsTranslate("Please select a scheme type"); ?>",
+        selectDateRange: "<?= $this->jsTranslate("Please select a date range"); ?>",
+        downloadFailed: "<?= $this->jsTranslate("Unable to generate download"); ?>",
+        allShipments: "<?= $this->jsTranslate("All Shipments in the selected period"); ?>"
+    };
+    var trendsUrls = {
+        summary: "<?php echo $this->url(['module' => 'reports', 'controller' => 'participant-trends', 'action' => 'summary'], 'default', true); ?>",
+        regions: "<?php echo $this->url(['module' => 'reports', 'controller' => 'participant-trends', 'action' => 'regions'], 'default', true); ?>",
+        exportFile: "<?php echo $this->url(['module' => 'reports', 'controller' => 'participant-trends', 'action' => 'export'], 'default', true); ?>",
+        shipments: "<?php echo $this->url(['module' => 'reports', 'controller' => 'common', 'action' => 'get-shipments-by-scheme'], 'default', true); ?>"
+    };
+    var trendsFilters = null;
+
+    $(function () {
+        reportZeroState.showAfter(".js-filter-panel", "start");
+
         $('#dateRange').daterangepicker({
             locale: {
-                cancelLabel: 'Clear',
+                cancelLabel: "<?= $this->jsTranslate("Clear"); ?>",
                 format: 'DD-MMM-YYYY',
                 separator: ' to ',
             },
@@ -239,368 +393,256 @@ if ((isset($this->shipmentDetails['shipment_code']) && $this->shipmentDetails['s
             startDate: moment().subtract(179, 'days'),
             endDate: moment(),
             maxDate: moment(),
-            ranges: {
-                'This Month': [moment().startOf('month'), moment().endOf('month')],
-                'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
-                'Last 60 Days': [moment().subtract(59, 'days'), moment()],
-                'Last 90 Days': [moment().subtract(89, 'days'), moment()],
-                'Last 180 Days': [moment().subtract(179, 'days'), moment()],
-                'Last 12 Months': [moment().subtract(12, 'month'), moment()],
-                'Last 18 Months': [moment().subtract(18, 'month'), moment()],
-            }
-        },
-            function (start, end) {
-                startDate = start.format('DD-MMM-YYYY');
-                endDate = end.format('DD-MMM-YYYY');
-            });
+            ranges: eptDateRanges()
+        }).on('apply.daterangepicker', loadShipmentList);
 
-        var dateRange = $("#dateRange").val();
-        var _dateRange = dateRange.split(" to ");
-        startDate = _dateRange[0];
-        endDate = _dateRange[1];
+        $('#scheme').on('change', loadShipmentList);
+
+        $('#trendsRows').on('click', 'tr.js-shipment-row', function () {
+            toggleRegions($(this));
+        });
     });
 
-    function getShipmentCodes(schemeType) {
-        if (schemeType == "") {
-            $("#shipmentId").html("<option value=''>-- Select Date Range and Scheme to populate this list --</option>");
-            return false;
+    // The collapsible filter panel selects the scheme when only one is active.
+    // It runs after this page's ready handlers, so check once the page has loaded:
+    // with a scheme and the default date range set, there is nothing left to choose.
+    $(window).on('load', function () {
+        if ($('#scheme').val() && $('#dateRange').val()) {
+            loadTrends();
         }
-        if ($("#dateRange").val() == "") {
-            alert("<?= $this->jsTranslate("Please pick a date range to fetch shipment list"); ?>");
-            $('#dateRange').focus();
-            return false;
+    });
+
+    function dateRangeParts() {
+        var parts = ($('#dateRange').val() || '').split(' to ');
+        return { startDate: parts[0] || '', endDate: parts[1] || '' };
+    }
+
+    function loadShipmentList() {
+        var $shipment = $('#shipmentId');
+        var blank = '<option value="">-- ' + escapeText(trendsText.allShipments) + ' --</option>';
+        var scheme = $('#scheme').val();
+        if (!scheme) {
+            $shipment.html(blank).trigger('change');
+            return;
+        }
+        var range = dateRangeParts();
+        $.post(trendsUrls.shipments, {
+            schemeType: scheme,
+            startDate: range.startDate,
+            endDate: range.endDate,
+            format: 'html'
+        }, function (data) {
+            $shipment.html($.trim(data) === '0' ? blank : data).trigger('change');
+        });
+    }
+
+    function loadTrends() {
+        var range = dateRangeParts();
+        if (!range.startDate || !range.endDate) {
+            alert(trendsText.selectDateRange);
+            return;
+        }
+        if (!$('#scheme').val()) {
+            alert(trendsText.selectScheme);
+            return;
+        }
+        trendsFilters = {
+            scheme: $('#scheme').val(),
+            shipmentId: $('#shipmentId').val(),
+            startDate: range.startDate,
+            endDate: range.endDate
+        };
+        $.blockUI();
+        $.post(trendsUrls.summary, trendsFilters, function (rows) {
+            $.unblockUI();
+            if (!rows || !rows.length) {
+                $('#trendsResults').addClass('hide');
+                reportZeroState.showAfter(".js-filter-panel", "noShipments");
+                return;
+            }
+            reportZeroState.hide();
+            renderTrends(rows);
+        }, 'json').fail(function () {
+            $.unblockUI();
+        });
+    }
+
+    function exportTrends() {
+        if (!trendsFilters) {
+            return;
         }
         $.blockUI();
-        $.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'common', 'action' => 'get-shipments-by-scheme')); ?>", {
-            schemeType: schemeType,
-            startDate: startDate,
-            endDate: endDate,
-            format: "html"
-        },
-            function (data) {
-                $("#shipmentId").html(data);
-                $.unblockUI();
-            });
-    }
-
-    function drawTable() {
-        reportZeroState.hide();
-        var dateRange = $("#dateRange").val();
-        var _dateRange = dateRange.split(" to ");
-        startDate = _dateRange[0];
-        endDate = _dateRange[1];
-
-        $("#shipmentTable").removeClass("hide");
-        $.blockUI;
-
-        oTable = $('#shipmentTable').dataTable({
-            "oLanguage": reportZeroState.dataTableLanguage(),
-            "bPaginate": paginate,
-            "bJQueryUI": false,
-            "bAutoWidth": false,
-            "bInfo": true,
-            "bScrollCollapse": true,
-            "sPaginationType": "bootstrap",
-            "bRetrieve": false,
-            "bDestroy": true,
-            "aoColumns": [{
-                "sClass": "center"
-            },
-            {
-                "sClass": "center"
-            },
-            {
-                "sClass": "center"
-            },
-            {
-                "sClass": "center"
-            },
-            {
-                "sClass": "center"
-            },
-            {
-                "sClass": "center"
-            },
-            {
-                "sClass": "center"
-            },
-            // {"sClass": "center"},
-            {
-                "sClass": "center"
+        $.post(trendsUrls.exportFile, trendsFilters, function (data) {
+            $.unblockUI();
+            if (!data || !data.file) {
+                alert(trendsText.downloadFailed);
+                return;
             }
-            ],
-            "aaSorting": [
-                [1, "desc"]
-            ],
-            "bProcessing": true,
-            "bServerSide": true,
-            "sAjaxSource": "<?php echo $this->url(array('module' => 'reports', 'controller' => 'participant-trends', 'action' => 'index', 'format' => 'html')); ?>",
-            "fnServerParams": function (aoData) {
-                aoData.push({
-                    "name": "scheme",
-                    "value": $("#scheme").val()
-                });
-                aoData.push({
-                    "name": "shipmentId",
-                    "value": $("#shipmentId").val()
-                });
-                aoData.push({
-                    "name": "startDate",
-                    "value": startDate
-                });
-                aoData.push({
-                    "name": "endDate",
-                    "value": endDate
-                });
-            },
-            "fnServerData": function (sSource, aoData, fnCallback) {
-                $.ajax({
-                    "dataType": 'json',
-                    "type": "POST",
-                    "url": sSource,
-                    "data": aoData,
-                    "success": function (json) {
-                        fnCallback(json);
-                        // The charts above the table are empty too when the filters match
-                        // nothing; hide them so the table's placeholder card stands alone.
-                        var searching = $.trim($("#shipmentTable_filter input").val() || "") !== "";
-                        if (!searching) {
-                            $(".js-trends-extra").toggleClass("hide", parseInt(json.iTotalRecords, 10) === 0);
-                        }
-                        if (currentHighlighted != null && currentHighlighted != "" && currentHighlighted != 0) {
-
-                            $("#shipment" + currentHighlighted + " td").addClass("highliter");
-                            shipmetRegionReport(currentHighlighted);
-                        }
-
-                    }
-                });
-            },
-            "fnRowCallback": function (nRow, aData, iDisplayIndex) {
-                $.unblockUI;
-            },
+            document.location.href = '/temporary/' + encodeURIComponent(data.file);
+        }, 'json').fail(function () {
+            $.unblockUI();
+            alert(trendsText.downloadFailed);
         });
-        $('#exportExcel').removeClass('hide');
-        getChart();
-
-        performanceExportPdf();
-
-        getLabPerformanceReport();
-
     }
 
-    function getLabPerformanceReport() {
-        $.blockUI;
-        $.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'participant-trends', 'action' => 'participant-lab-performance-report'), 'default', true); ?>", {
-            scheme: $("#scheme").val(),
-            shipmentId: $("#shipmentId").val(),
-            startDate: startDate,
-            endDate: endDate,
-            format: "html"
-        },
-            function (data) {
-                //alert(data);
-                $('.labPerformanceReport').html(data);
-                $.unblockUI;
-            });
+    // ---- Rendering ----
 
+    function escapeText(value) {
+        return $('<div/>').text(value == null ? '' : String(value)).html();
     }
 
-    function getChart() {
-        $.blockUI;
-        $.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'participant-trends', 'action' => 'participant-trends-timeliness-barchart'), 'default', true); ?>", {
-            scheme: $("#scheme").val(),
-            shipmentId: $("#shipmentId").val(),
-            startDate: startDate,
-            endDate: endDate,
-            format: "html"
-        },
-            function (data) {
-                $('#container').html(data);
-                $.unblockUI;
-            });
-
-        $.blockUI;
-        $.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'participant-trends', 'action' => 'aberrant-test-results'), 'default', true); ?>", {
-            scheme: $("#scheme").val(),
-            shipmentId: $("#shipmentId").val(),
-            startDate: startDate,
-            endDate: endDate,
-            format: "html"
-        },
-            function (data) {
-                $('#aberraantContainer').html(data);
-                $.unblockUI;
-            });
-
+    function fmt(n) {
+        return Number(n || 0).toLocaleString();
     }
 
-    function performanceExcel() {
-        var dateRange = $("#dateRange").val();
-        shipmentName = "";
-        if ($("#shipmentId").val() != "") {
-            shipmentName = $("#shipmentId option:selected").text();
+    function sprintf(template) {
+        var args = Array.prototype.slice.call(arguments, 1);
+        return template.replace(/%s/g, function () {
+            return args.length ? args.shift() : '';
+        });
+    }
+
+    // Percentage, or null when there is nothing to divide by.
+    function pct(part, whole) {
+        return whole > 0 ? Math.round(part / whole * 1000) / 10 : null;
+    }
+
+    function pctText(value) {
+        return value === null ? '<span class="muted-dash">&ndash;</span>' : value + '%';
+    }
+
+    function totals(rows) {
+        var sum = { enrolled: 0, responded: 0, on_time: 0, passed: 0, failed: 0, excellent: 0 };
+        rows.forEach(function (row) {
+            Object.keys(sum).forEach(function (key) {
+                sum[key] += Number(row[key] || 0);
+            });
+        });
+        return sum;
+    }
+
+    function renderTrends(rows) {
+        var sum = totals(rows);
+        var evaluated = sum.passed + sum.failed;
+
+        $('#trendsCaption').html(
+            '<strong>' + escapeText($('#scheme option:selected').text()) + '</strong> &middot; ' +
+            escapeText($('#dateRange').val())
+        );
+
+        $('#kpiEnrolled').text(fmt(sum.enrolled));
+        $('#kpiEnrolledNote').text(rows.length === 1 ? trendsText.oneShipment : sprintf(trendsText.acrossShipments, rows.length));
+        $('#kpiResponse').html(pctText(pct(sum.responded, sum.enrolled)));
+        $('#kpiResponseNote').text(sprintf(trendsText.ofEnrolled, fmt(sum.responded), fmt(sum.enrolled)));
+        $('#kpiOnTime').html(pctText(pct(sum.on_time, sum.responded)));
+        $('#kpiOnTimeNote').text(sprintf(trendsText.ofResponded, fmt(sum.on_time), fmt(sum.responded)));
+        $('#kpiPass').html(pctText(pct(sum.passed, evaluated)));
+        $('#kpiPassNote').text(evaluated > 0 ? sprintf(trendsText.ofEvaluated, fmt(sum.passed), fmt(evaluated)) : trendsText.notEvaluated);
+
+        $('#trendsRows').html(rows.map(shipmentRowHtml).join(''));
+        $('#trendsResults').removeClass('hide');
+
+        // A trend needs at least two points.
+        $('#trendsChartPanel').toggleClass('hide', rows.length < 2);
+        if (rows.length >= 2) {
+            drawChart(rows);
         }
-        $.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'participant-trends', 'action' => 'participant-trends-export'), 'default', true); ?>", {
-            dateRange: dateRange,
-            shipmentName: shipmentName,
-            format: "html"
-        },
-            function (data) {
-                if (data == "" || data == null) {
-                    alert("<?= $this->jsTranslate("Unable to generate download"); ?>");
-                } else {
-                    document.location.href = '/temporary/' + data;
-                }
-            });
     }
 
-    function performanceExportPdf() {
-        var dateRange = $("#dateRange").val();
-        shipmentName = "";
-        if ($("#shipmentId").val() != "") {
-            shipmentName = $("#shipmentId option:selected").text();
+    function figureCells(row) {
+        var evaluated = row.passed + row.failed;
+        var cells = '<td class="num">' + fmt(row.enrolled) + '</td>' +
+            '<td class="num">' + fmt(row.responded) + '<span class="sub">' + pctText(pct(row.responded, row.enrolled)) + '</span></td>' +
+            '<td class="num">' + pctText(pct(row.on_time, row.responded)) + '</td>';
+        if (!evaluated) {
+            return cells + '<td colspan="2" class="not-evaluated">' + escapeText(trendsText.notEvaluated) + '</td>';
         }
-        $.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'participant-trends', 'action' => 'participant-trends-export-pdf'), 'default', true); ?>", {
-            dateRange: dateRange,
-            shipmentName: shipmentName,
-            format: "html"
-        },
-            function (data) {
-                if (data == "" || data == null) {
-                    alert("<?= $this->jsTranslate("Unable to generate download"); ?>");
-                } else {
-                    $('#exportPdf').attr('href', '/temporary/' + data);
-                    $('#exportPdf').removeClass('hide');
-                }
-            });
+        var passRate = pct(row.passed, evaluated);
+        return cells +
+            '<td class="num">' + passRate + '%<span class="rate-bar"><span style="width:' + passRate + '%"></span></span></td>' +
+            '<td>' + ratingBarHtml(row) + '</td>';
     }
 
-    function shipmetRegionReport(shipmentId) {
-        if (startDate == "" || endDate == "" || $("#scheme").val() == "" || $("#scheme").val() == null || $("#scheme").val() == undefined) {
-            alert("<?= $this->jsTranslate("Please pick date range and Scheme Type to proceed"); ?>");
-            return false;
-        }
-        currentHighlighted = shipmentId;
-        setCookie('did', shipmentId);
-        $("#shipmentTable tr td").removeClass("highliter");
-        $("#shipment" + currentHighlighted + " td").addClass("highliter");
+    function shipmentRowHtml(row) {
+        return '<tr class="js-shipment-row" data-shipment-id="' + escapeText(row.shipment_id) + '">' +
+            '<td><i class="icon-chevron-right toggle-icon" aria-hidden="true"></i> <strong>' + escapeText(row.shipment_code) + '</strong>' +
+            '<span class="sub">' + escapeText(moment(row.shipment_date, 'YYYY-MM-DD').format('DD-MMM-YYYY')) + '</span></td>' +
+            figureCells(row) +
+            '</tr>';
+    }
 
-        $.blockUI;
-        $('#regionTable').dataTable({
-            "oLanguage": reportZeroState.dataTableLanguage(),
-            "bPaginate": paginate,
-            "bJQueryUI": false,
-            "bAutoWidth": false,
-            "bInfo": true,
-            "bScrollCollapse": true,
-            "sPaginationType": "bootstrap",
-            "bRetrieve": false,
-            "bDestroy": true,
-            "aoColumns": [{
-                "sClass": "center"
-            },
-            {
-                "sClass": "center"
-            },
-            {
-                "sClass": "center"
-            },
-            {
-                "sClass": "center"
-            },
-            {
-                "sClass": "center"
-            },
-            {
-                "sClass": "center"
-            },
-            {
-                "sClass": "center"
+    function ratingBarHtml(row) {
+        var evaluated = row.passed + row.failed;
+        var parts = [
+            ['rating-excellent', row.excellent, trendsText.excellent],
+            ['rating-satisfactory', row.passed - row.excellent, trendsText.satisfactory],
+            ['rating-unsatisfactory', row.failed, trendsText.unsatisfactory]
+        ];
+        var title = parts.map(function (p) {
+            return p[2] + ': ' + fmt(p[1]) + ' (' + pct(p[1], evaluated) + '%)';
+        }).join('\n');
+        return '<div class="rating-bar" title="' + escapeText(title) + '">' + parts.map(function (p) {
+            return p[1] > 0 ? '<span class="' + p[0] + '" style="width:' + (p[1] / evaluated * 100) + '%"></span>' : '';
+        }).join('') + '</div>';
+    }
+
+    function toggleRegions($row) {
+        var $next = $row.next('tr.region-row');
+        if ($next.length) {
+            $next.remove();
+            $row.removeClass('is-open');
+            return;
+        }
+        $row.addClass('is-open');
+        var $holder = $('<tr class="region-row"><td colspan="6"><p class="sub" style="padding:10px 0">' + escapeText(trendsText.loading) + '</p></td></tr>');
+        $row.after($holder);
+        $.post(trendsUrls.regions, $.extend({}, trendsFilters, { shipmentId: $row.data('shipment-id') }), function (regions) {
+            if (!regions || !regions.length) {
+                $holder.find('td').html('<p class="sub" style="padding:10px 0">' + escapeText(trendsText.noRegions) + '</p>');
+                return;
             }
-            ],
-            "aaSorting": [
-                [1, "desc"]
-            ],
-            "bProcessing": true,
-            "bServerSide": true,
-            "sAjaxSource": "<?php echo $this->url(array('module' => 'reports', 'controller' => 'participant-trends', 'action' => 'region-wise-participant-report', 'format' => 'html')); ?>",
-            "fnServerParams": function (aoData) {
-                aoData.push({
-                    "name": "scheme",
-                    "value": $("#scheme").val()
-                });
-                aoData.push({
-                    "name": "shipmentId",
-                    "value": shipmentId
-                });
-                aoData.push({
-                    "name": "startDate",
-                    "value": startDate
-                });
-                aoData.push({
-                    "name": "endDate",
-                    "value": endDate
-                });
+            $holder.find('td').html('<table class="table table-condensed"><thead><tr>' +
+                '<th scope="col">' + escapeText(trendsText.region) + '</th>' +
+                $row.closest('table').find('thead th').slice(1).map(function () {
+                    return '<th scope="col" class="' + this.className + '">' + escapeText($(this).text()) + '</th>';
+                }).get().join('') +
+                '</tr></thead><tbody>' +
+                regions.map(function (r) {
+                    return '<tr><td>' + escapeText(r.region || trendsText.noRegion) + '</td>' + figureCells(r) + '</tr>';
+                }).join('') +
+                '</tbody></table>');
+        }, 'json');
+    }
+
+    function drawChart(rows) {
+        var series = function (name, color, valueOf) {
+            return {
+                name: name,
+                color: color,
+                data: rows.map(valueOf)
+            };
+        };
+        Highcharts.chart('trendsChart', {
+            chart: { type: 'line', style: { fontFamily: 'inherit' } },
+            title: { text: null },
+            credits: { enabled: false },
+            exporting: { enabled: false },
+            xAxis: { categories: rows.map(function (r) { return r.shipment_code; }) },
+            yAxis: {
+                min: 0,
+                max: 100,
+                title: { text: null },
+                labels: { format: '{value}%' }
             },
-            "fnServerData": function (sSource, aoData, fnCallback) {
-                $.ajax({
-                    "dataType": 'json',
-                    "type": "POST",
-                    "url": sSource,
-                    "data": aoData,
-                    "success": fnCallback
-                });
-            },
-            "fnRowCallback": function (nRow, aData, iDisplayIndex) {
-                $.unblockUI;
-            },
+            tooltip: { shared: true, valueSuffix: '%' },
+            legend: { align: 'left', verticalAlign: 'top' },
+            plotOptions: { line: { marker: { radius: 4 } } },
+            series: [
+                series(trendsText.responseRate, '#3b6fb6', function (r) { return pct(r.responded, r.enrolled); }),
+                series(trendsText.onTime, '#8a9bb8', function (r) { return pct(r.on_time, r.responded); }),
+                series(trendsText.passRate, '#2e8b57', function (r) { return pct(r.passed, r.passed + r.failed); })
+            ]
         });
-        if ($("#shipmentTable").dataTable().fnGetData().length > 0) {
-            $("#regionTable").removeClass("hide");
-            $("#regionTable_wrapper").removeClass("hide");
-            $("#regionExportExcel").removeClass("hide");
-            $("#regionReportHeader").removeClass("hide");
-        } else {
-            $("#regionTable_wrapper").addClass("hide");
-            $("#regionExportExcel").addClass("hide");
-            $("#regionReportHeader").addClass("hide");
-        }
-
-    }
-
-    function regionDetails(scheme, date, code) {
-
-        $("#regionReportHeader").removeClass("hide");
-        $("#regionHeading").html("<?= $this->jsTranslate("Region Wise Participant Performance Report For"); ?> <strong>" + scheme + " - " + code + " ( " + date + " ) </strong>");
-        $("#selectedScheme").val(scheme);
-        $("#selectedDate").val(date);
-        $("#selectedCode").val(code);
-
-    }
-
-    function regionPerformanceExportExcel() {
-        //              var dateRange = $("#dateRange").val();
-        var selectedScheme = $("#selectedScheme").val();
-        var selectedDate = $("#selectedDate").val();
-        var selectedCode = $("#selectedCode").val();
-        //                shipmentName = "";
-        //                if ($("#shipmentId").val() != "") {
-        //                    shipmentName = $("#shipmentId option:selected").text();
-        //                }
-        $.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'participant-trends', 'action' => 'participant-trends-region-wise-export'), 'default', true); ?>", {
-            selectedScheme: selectedScheme,
-            selectedDate: selectedDate,
-            selectedCode: selectedCode,
-            format: "html"
-        },
-            function (data) {
-                if (data == "" || data == null) {
-                    alert("<?= $this->jsTranslate("Unable to generate download"); ?>");
-                } else {
-                    document.location.href = '/temporary/' + data;
-                }
-            });
     }
 </script>
 <?php // Must stay last: the panel collapses only after the select2 widgets above have measured themselves.

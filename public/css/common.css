@@ -88,28 +88,27 @@ form[name$="ResponseForm"] #respond {
 .has-filter-panel .report-zero-state .report-zero-state-action {
   display: inline-block;
 }
-/* Before a report runs, the zero state is a quiet hint, not a card. */
+/* Before a report runs, the zero state is a centred prompt without the card
+   frame, so it reads as "nothing yet" rather than "nothing found". */
 .report-zero-state.report-zero-state-start {
-  flex-direction: row;
-  margin: 8px 0;
-  padding: 10px 0;
-  text-align: left;
+  padding: 48px 20px 40px;
   border: 0;
   background: transparent;
 }
 .report-zero-state-start .report-zero-state-icon {
-  margin: 0 10px 0 0;
-  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  margin-bottom: 14px;
+  font-size: 22px;
+  border-radius: 50%;
+  background: #eef2f7;
 }
-.report-zero-state-start h4 {
-  margin: 0;
-  font-size: 14px;
-}
-.report-zero-state-start p {
-  max-width: none;
-}
-.report-zero-state-start .report-zero-state-action {
-  margin: 0 0 0 auto;
+/* The Expand Filters toggle says the same thing once the panel is open. */
+.filter-panel-open .report-zero-state-start .report-zero-state-action {
+  display: none;
 }
 /* Inside a DataTables empty row the card sits in a padded cell already. */
 td.dataTables_empty .report-zero-state {
@@ -119,4 +118,64 @@ td.dataTables_empty .report-zero-state {
 .report-zero-state-nomatch {
   padding: 6px 0;
   color: #666;
+}
+
+/* Date range picker (public/js/daterangepicker.js, ported from vlsm).
+   The shared presets come from views/partials/date-range-presets.phtml. */
+
+/* Presets sit in two columns beside the calendars, so a long list does not
+   leave a tall empty gap below them. */
+@media (min-width: 564px) {
+  .daterangepicker.show-calendar .ranges ul {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-content: start;
+    width: 280px;
+  }
+  .daterangepicker.show-calendar .ranges li {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+}
+/* Toggle that hides the presets. date-range-presets.phtml adds it. */
+.daterangepicker .drp-ranges-toggle {
+  display: none;
+  padding: 8px 12px;
+  color: #08c;
+  text-align: right;
+  cursor: pointer;
+  user-select: none;
+}
+.daterangepicker.show-calendar .drp-ranges-toggle {
+  display: block;
+}
+.daterangepicker.show-calendar.drp-ranges-collapsed .ranges ul {
+  display: none;
+}
+/* Brief highlight on the footer range when the selection changes. A
+   pseudo-element, so the footer does not reflow. */
+.daterangepicker .drp-selected {
+  position: relative;
+  display: inline-block;
+}
+.daterangepicker .drp-selected::after {
+  content: "";
+  position: absolute;
+  inset: -3px;
+  padding: 0.8em;
+  background: rgba(255, 244, 179, 0.8);
+  box-shadow: 0 0 0 2px rgb(255, 244, 179);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .4s ease;
+}
+.daterangepicker .drp-selected.drp-changed::after {
+  opacity: 1;
+  animation: drpPulse .9s ease;
+}
+@keyframes drpPulse {
+  0% { opacity: 0; }
+  25% { opacity: 1; }
+  100% { opacity: 0; }
 }

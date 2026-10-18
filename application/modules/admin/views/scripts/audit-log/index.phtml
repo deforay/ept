@@ -708,7 +708,7 @@
 </div>
 
 <script type="text/javascript" src="<?php echo $this->baseUrl('js/moment.min.js'); ?>"></script>
-<script type="text/javascript" src="<?php echo $this->baseUrl('js/daterangepicker.js'); ?>"></script>
+<script type="text/javascript" src="<?php echo $this->assetUrl('js/daterangepicker.js'); ?>"></script>
 <script type="text/javascript">
 (function() {
     var feedUrl = "<?php echo $this->url(['module' => 'admin', 'controller' => 'audit-log', 'action' => 'feed']); ?>";
@@ -947,14 +947,7 @@
             showDropdowns: true,
             alwaysShowCalendars: true,
             autoUpdateInput: false,
-            ranges: {
-                'This Month': [moment().startOf('month'), moment().endOf('month')],
-                'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
-                'Last 30 Days': [moment().subtract(29, 'days'), moment()],
-                'Last 90 Days': [moment().subtract(89, 'days'), moment()],
-                'Last 120 Days': [moment().subtract(119, 'days'), moment()],
-                'Last 180 Days': [moment().subtract(179, 'days'), moment()]
-            }
+            ranges: eptDateRanges()
         }, function(start, end) {
             state.startDate = start.format('DD-MMM-YYYY');
             state.endDate = end.format('DD-MMM-YYYY');

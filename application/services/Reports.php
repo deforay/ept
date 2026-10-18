@@ -22,266 +22,281 @@ class Application_Service_Reports
         $this->db = Zend_Db_Table_Abstract::getDefaultAdapter();
     }
 
-    public function getAllShipments($parameters)
+    /**
+     * Rows for the Shipments report grid (reports/shipments), as DataTables JSON.
+     *
+     * Columns: Shipment, Scheme, Due date, Responses, Pass rate, Status, Downloads.
+     *
+     * Filters: startDate/endDate (shipment date), scheme, stages[] (see
+     * SHIPMENT_STAGE_SQL), needsAttention ('yes') and includeCancelled ('yes').
+     * The counts follow Application_Service_Shipments::getShipmentParticipationStats():
+     * responded = responded, late or nottested, and only responders count as failed.
+     *
+     * $context 'participant' serves the data-manager copy of the page
+     * (participant/shipments-reports): the response chart link uses that module,
+     * and the admin-only Breakdown and PT admin downloads are left out.
+     */
+    private const SHIPMENT_STAGE_SQL = "CASE
+            WHEN s.cancelled_at IS NOT NULL THEN 'cancelled'
+            WHEN s.finalized_at IS NOT NULL OR s.status = 'finalized' THEN 'finalized'
+            WHEN s.reports_generated_at IS NOT NULL THEN 'reports'
+            WHEN s.evaluated_at IS NOT NULL OR s.status = 'evaluated' THEN 'evaluated'
+            WHEN s.status = 'shipped' THEN 'shipped'
+            ELSE 'notshipped'
+        END";
+
+    public function getAllShipments($parameters, string $context = 'admin')
     {
-        // Columns: PT Survey Code, PT Survey Date, Shipment Code, Result Due Date, Scheme, No. of Participants, Responses, Number Passed, Shipment Status
-        $searchColumns = ['distribution_code', "DATE_FORMAT(distribution_date,'%d-%b-%Y')", 's.shipment_code', "DATE_FORMAT(s.response_deadline,'%d-%b-%Y')", 'sl.scheme_name', 'participant_count', 'reported_count', 'number_passed', 's.status'];
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $stage = new Zend_Db_Expr(self::SHIPMENT_STAGE_SQL);
+        $responded = "IFNULL(sp.response_status, '') IN ('responded','late','nottested')";
+        $passed = 'IFNULL(sp.final_result, 0) = 1';
+        $failed = "IFNULL(sp.final_result, 0) = 2 AND IFNULL(sp.response_status, '') IN ('responded','late')";
 
-        $orderColumns = ['distribution_code', 'distribution_date', 's.shipment_code', 's.response_deadline', 'sl.scheme_name', new Zend_Db_Expr('count("participant_id")'), new Zend_Db_Expr("SUM(response_status IN ('responded', 'nottested'))"), new Zend_Db_Expr('SUM(final_result = 1)'), 's.status'];
+        $sortable = [
+            's.shipment_date',
+            'sl.scheme_name',
+            's.response_deadline',
+            new Zend_Db_Expr("SUM($responded) / NULLIF(COUNT(sp.map_id), 0)"),
+            new Zend_Db_Expr("SUM($passed) / NULLIF(SUM($passed) + SUM($failed), 0)"),
+            new Zend_Db_Expr("FIELD(stage, 'notshipped','shipped','evaluated','reports','finalized','cancelled')"),
+        ];
 
-        /* Indexed column (used for fast and accurate table cardinality) */
-        $sIndexColumn = 'shipment_id';
+        $query = $db->select()
+            ->from(['s' => 'shipment'], [
+                's.shipment_id', 's.shipment_code', 's.scheme_type', 's.shipment_date', 's.response_deadline',
+                's.status', 's.evaluated_at', 's.reports_generated_at', 's.finalized_at', 's.cancelled_at',
+                'stage' => $stage,
+                'feedback_count' => new Zend_Db_Expr('(SELECT COUNT(*) FROM participant_feedback_answer pfa WHERE pfa.shipment_id = s.shipment_id)'),
+            ])
+            ->join(['sl' => 'scheme_list'], 's.scheme_type = sl.scheme_id', ['scheme_name'])
+            ->join(['d' => 'distributions'], 'd.distribution_id = s.distribution_id', ['distribution_code', 'distribution_date'])
+            ->joinLeft(['sp' => 'shipment_participant_map'], 'sp.shipment_id = s.shipment_id', [
+                'enrolled' => new Zend_Db_Expr('COUNT(sp.map_id)'),
+                'responded' => new Zend_Db_Expr("SUM($responded)"),
+                'passed' => new Zend_Db_Expr("SUM($passed)"),
+                'failed' => new Zend_Db_Expr("SUM($failed)"),
+            ])
+            ->group('s.shipment_id');
 
-        $sLimit = '';
-        if (isset($parameters['iDisplayStart']) && $parameters['iDisplayLength'] != '-1') {
-            $sOffset = $parameters['iDisplayStart'];
-            $sLimit = $parameters['iDisplayLength'];
-        }
-
-        $sOrder = '';
-        if (isset($parameters['iSortCol_0'])) {
-            $sOrder = '';
-            for ($i = 0; $i < intval($parameters['iSortingCols']); $i++) {
-                if ($parameters['bSortable_' . intval($parameters['iSortCol_' . $i])] == 'true') {
-                    $colIdx = intval($parameters['iSortCol_' . $i]);
-                    if (!isset($orderColumns[$colIdx])) {
-                        continue;
-                    }
-                    $sOrder .= $orderColumns[$colIdx] . '
-					' . Pt_Commons_General::sanitizeSortDirection($parameters['sSortDir_' . $i]) . ', ';
-                }
-            }
-
-            $sOrder = substr_replace($sOrder, '', -2);
-        }
-
-        $sWhere = '';
-        if (isset($parameters['sSearch']) && $parameters['sSearch'] != '') {
-            $searchArray = explode(' ', $parameters['sSearch']);
-            $sWhereSub = '';
-            foreach ($searchArray as $search) {
-                if ($sWhereSub == '') {
-                    $sWhereSub .= '(';
-                } else {
-                    $sWhereSub .= ' AND (';
-                }
-                $colSize = count($searchColumns);
-
-                for ($i = 0; $i < $colSize; $i++) {
-                    if ($searchColumns[$i] == '' || $searchColumns[$i] == null) {
-                        continue;
-                    }
-                    if ($i < $colSize - 1) {
-                        $sWhereSub .= $searchColumns[$i] . ' LIKE ' . Pt_Commons_General::sqlLikeContains($search) . ' OR ';
-                    } else {
-                        $sWhereSub .= $searchColumns[$i] . ' LIKE ' . Pt_Commons_General::sqlLikeContains($search) . ' ';
-                    }
-                }
-                $sWhereSub .= ')';
-            }
-            $sWhere .= $sWhereSub;
-        }
-
-        /* Individual column filtering */
-        for ($i = 0; $i < count($searchColumns); $i++) {
-            if (isset($parameters['bSearchable_' . $i]) && $parameters['bSearchable_' . $i] == 'true' && $parameters['sSearch_' . $i] != '') {
-                if ($sWhere == '') {
-                    $sWhere .= $searchColumns[$i] . ' LIKE ' . Pt_Commons_General::sqlLikeContains($parameters['sSearch_' . $i]) . ' ';
-                } else {
-                    $sWhere .= ' AND ' . $searchColumns[$i] . ' LIKE ' . Pt_Commons_General::sqlLikeContains($parameters['sSearch_' . $i]) . ' ';
-                }
-            }
-        }
-
-        $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $feedbackCountExpr = new Zend_Db_Expr('(SELECT COUNT(*) FROM participant_feedback_answer pfa_sub WHERE pfa_sub.shipment_id = s.shipment_id)');
-        $sQuery = $dbAdapter->select()->from(['s' => 'shipment'], ['*', 'evaluated_at', 'reports_generated_at', 'finalized_at', 'feedback_count' => $feedbackCountExpr])
-            ->join(['sl' => 'scheme_list'], 's.scheme_type=sl.scheme_id', ['scheme_id', 'scheme_name', 'is_user_configured'])
-            ->join(['d' => 'distributions'], 'd.distribution_id=s.distribution_id', ['distribution_id', 'distribution_code', 'distribution_date'])
-            ->joinLeft(['sp' => 'shipment_participant_map'], 'sp.shipment_id=s.shipment_id', ['report_generated', 'participant_count' => new Zend_Db_Expr('count("participant_id")'), 'reported_count' => new Zend_Db_Expr("SUM(response_status IN ('responded', 'nottested'))"), 'reported_percentage' => new Zend_Db_Expr("ROUND((SUM(response_status IN ('responded', 'nottested'))/count('participant_id'))*100,2)"), 'number_passed' => new Zend_Db_Expr('SUM(final_result = 1)')])
-            ->joinLeft(['p' => 'participant'], 'p.participant_id=sp.participant_id', [])
-            ->joinLeft(['rr' => 'r_results'], 'sp.final_result=rr.result_id', [])
-            ->group(['s.shipment_id']);
-
-        if (isset($parameters['scheme']) && $parameters['scheme'] != '') {
-            $sQuery = $sQuery->where('s.scheme_type = ?', $parameters['scheme']);
-        }
-        // Cancelling is our soft-delete: cancelled shipments stay out of this report
-        // unless the "Include cancelled" box is ticked.
-        $includeCancelled = isset($parameters['includeCancelled']) && $parameters['includeCancelled'] == 'yes';
-        if (!$includeCancelled) {
-            $sQuery = $sQuery->where('s.cancelled_at IS NULL');
-        }
         $scopedDmId = Application_Service_Common::getScopedDmId();
         if (!empty($scopedDmId)) {
-            $sQuery = $sQuery->joinLeft(['pmm' => 'participant_manager_map'], 'pmm.participant_id=p.participant_id', [])
+            $query->joinLeft(['pmm' => 'participant_manager_map'], 'pmm.participant_id = sp.participant_id', [])
                 ->where('pmm.dm_id = ?', $scopedDmId);
         }
-        if (isset($parameters['startDate']) && $parameters['startDate'] != '' && isset($parameters['endDate']) && $parameters['endDate'] != '') {
-
-            $sQuery = $sQuery->where('s.shipment_date >= ?', $this->common->isoDateFormat($parameters['startDate']));
-            $sQuery = $sQuery->where('s.shipment_date <= ?', $this->common->isoDateFormat($parameters['endDate']));
+        if (!empty($parameters['scheme'])) {
+            $query->where('s.scheme_type = ?', $parameters['scheme']);
         }
-
-        if (isset($parameters['dataManager']) && $parameters['dataManager'] != '') {
-            $sQuery = $sQuery->joinLeft(['pmm' => 'participant_manager_map'], 'pmm.participant_id=p.participant_id');
-            $sQuery = $sQuery->where('pmm.dm_id = ?', $parameters['dataManager']);
+        if (!empty($parameters['startDate']) && !empty($parameters['endDate'])) {
+            $query->where('DATE(s.shipment_date) >= ?', $this->common->isoDateFormat($parameters['startDate']))
+                ->where('DATE(s.shipment_date) <= ?', $this->common->isoDateFormat($parameters['endDate']));
         }
-
-        if (isset($sWhere) && $sWhere != '') {
-            $sQuery = $sQuery->having($sWhere);
-        }
-
-        //if (isset($sHaving) && $sHaving != "") {
-        // $sQuery = $sQuery->having($sHaving);
-        // }
-
-        if (!empty($sOrder)) {
-            $sQuery = $sQuery->order($sOrder);
-        }
-
-        if (isset($sLimit) && isset($sOffset)) {
-            $sQuery = $sQuery->limit($sLimit, $sOffset);
-        }
-
-        $rResult = $dbAdapter->fetchAll($sQuery);
-
-        /* Data set length after filtering */
-        $sQuery = $sQuery->reset(Zend_Db_Select::LIMIT_COUNT);
-        $sQuery = $sQuery->reset(Zend_Db_Select::LIMIT_OFFSET);
-        $aResultFilterTotal = $dbAdapter->fetchAll($sQuery);
-        $iFilteredTotal = count($aResultFilterTotal);
-
-        /* Total data set length — scoped the same way as the grid, so the "of N"
-           count never includes cancelled rows the grid is hiding. */
-        $sQuery = $dbAdapter->select()->from(['s' => 'shipment'], new Zend_Db_Expr("COUNT('" . $sIndexColumn . "')"));
+        // Cancelling is our soft-delete: cancelled shipments stay out unless asked for.
+        $includeCancelled = ($parameters['includeCancelled'] ?? '') === 'yes';
         if (!$includeCancelled) {
-            $sQuery = $sQuery->where('s.cancelled_at IS NULL');
+            $query->where('s.cancelled_at IS NULL');
         }
-        $aResultTotal = $dbAdapter->fetchCol($sQuery);
-        $iTotal = $aResultTotal[0];
+        $stages = array_values(array_intersect(
+            (array) ($parameters['stages'] ?? []),
+            ['notshipped', 'shipped', 'evaluated', 'reports', 'finalized', 'cancelled']
+        ));
+        if (!empty($stages)) {
+            $query->where(self::SHIPMENT_STAGE_SQL . ' IN (?)', $stages);
+        }
+        // Needs attention: open past its due date but not evaluated, or evaluated
+        // but not finalized yet.
+        if (($parameters['needsAttention'] ?? '') === 'yes') {
+            $query->where('(' . self::SHIPMENT_STAGE_SQL . " = 'shipped' AND s.response_deadline < NOW())
+                OR " . self::SHIPMENT_STAGE_SQL . " IN ('evaluated','reports')");
+        }
+        if (!empty($parameters['sSearch'])) {
+            foreach (preg_split('/\s+/', trim($parameters['sSearch'])) as $term) {
+                $like = Pt_Commons_General::sqlLikeContains($term);
+                $query->where("(s.shipment_code LIKE $like OR d.distribution_code LIKE $like OR sl.scheme_name LIKE $like)");
+            }
+        }
 
-        /*
-         * Output
-         */
+        $filtered = clone $query;
+        $iFilteredTotal = (int) $db->fetchOne($db->select()->from(['t' => $filtered], [new Zend_Db_Expr('COUNT(*)')]));
+
+        $order = [];
+        for ($i = 0; $i < (int) ($parameters['iSortingCols'] ?? 0); $i++) {
+            $col = (int) ($parameters['iSortCol_' . $i] ?? -1);
+            if (isset($sortable[$col]) && ($parameters['bSortable_' . $col] ?? '') === 'true') {
+                $order[] = new Zend_Db_Expr($sortable[$col] . ' ' . Pt_Commons_General::sanitizeSortDirection($parameters['sSortDir_' . $i] ?? 'asc'));
+            }
+        }
+        $query->order($order ?: ['s.shipment_date DESC']);
+        if (isset($parameters['iDisplayStart'], $parameters['iDisplayLength']) && $parameters['iDisplayLength'] != '-1') {
+            $query->limit((int) $parameters['iDisplayLength'], (int) $parameters['iDisplayStart']);
+        }
+        $rows = $db->fetchAll($query);
+
+        // Scoped the same way as the grid, so the "of N" count never includes
+        // cancelled rows the grid is hiding.
+        $total = $db->select()->from(['s' => 'shipment'], [new Zend_Db_Expr('COUNT(DISTINCT s.shipment_id)')]);
+        if (!$includeCancelled) {
+            $total->where('s.cancelled_at IS NULL');
+        }
+        if (!empty($scopedDmId)) {
+            $total->join(['sp' => 'shipment_participant_map'], 'sp.shipment_id = s.shipment_id', [])
+                ->join(['pmm' => 'participant_manager_map'], 'pmm.participant_id = sp.participant_id', [])
+                ->where('pmm.dm_id = ?', $scopedDmId);
+        }
+
         $output = [
-            'sEcho' => intval($parameters['sEcho']),
-            'iTotalRecords' => $iTotal,
+            'sEcho' => (int) ($parameters['sEcho'] ?? 0),
+            'iTotalRecords' => (int) $db->fetchOne($total),
             'iTotalDisplayRecords' => $iFilteredTotal,
             'aaData' => [],
         ];
+        foreach ($rows as $aRow) {
+            $output['aaData'][] = $this->shipmentReportRow($aRow, $context === 'participant');
+        }
+        echo json_encode($output);
+    }
 
-        //$shipmentDb = new Application_Model_DbTable_Shipments();
-        //$aColumns = array('distribution_code', "DATE_FORMAT(distribution_date,'%d-%b-%Y')",
-        //'s.shipment_code' ,'sl.scheme_name' ,'s.number_of_samples' ,
-        //'sp.participant_count','sp.reported_count','sp.number_passed','s.status');
-        $isMtbeptInstance = (Application_Service_Common::getConfig('instance') === 'mtbept');
-        foreach ($rResult as $aRow) {
-            // Get button states early for use in download logic
-            $btnStates = Application_Service_Shipments::getShipmentButtonStates($aRow);
-            $isFinalized = $btnStates['isFinalized'];
-            $hasReportsGenerated = $btnStates['hasReportsGenerated'];
-            $isCancelled = !empty($aRow['cancelled_at']);
+    private function shipmentReportRow(array $aRow, bool $forParticipant): array
+    {
+        $t = $this->translator;
+        $esc = fn ($value) => htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8');
+        $sid = base64_encode((string) $aRow['shipment_id']);
+        $stage = $aRow['stage'];
+        $isDraftReports = $stage === 'reports';
+        $enrolled = (int) $aRow['enrolled'];
+        $responded = (int) $aRow['responded'];
+        $evaluated = (int) $aRow['passed'] + (int) $aRow['failed'];
 
-            $summaryDownload = $this->translator->_('Unavailable');
-            $allReportsDownload = '';
+        // Shipment: code, with the PT survey on a second line when it differs. The
+        // chevron opens the participation breakdown under the row.
+        $shipment = '<strong>' . $esc($aRow['shipment_code']) . '</strong>';
+        if ($enrolled > 0 && !$forParticipant) {
+            $shipment = '<a href="javascript:void(0);" class="toggle-stats-row" data-sid="' . $sid . '" title="' . $esc($t->_('Breakdown')) . '">'
+                . '<i class="icon-chevron-right" aria-hidden="true"></i></a> ' . $shipment;
+        }
+        $survey = [];
+        if ((string) $aRow['distribution_code'] !== (string) $aRow['shipment_code']) {
+            $survey[] = $esc($aRow['distribution_code']);
+        }
+        $survey[] = $esc(Pt_Commons_DateUtility::humanReadableDateFormat($aRow['shipment_date']));
+        $shipment .= '<span class="cell-sub">' . implode(' &middot; ', $survey) . '</span>';
 
-            // Allow downloads for both finalized and draft (reports generated) states
-            if ($isFinalized || $hasReportsGenerated) {
-                $summaryPath = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . '-summary.pdf';
-                if (file_exists($summaryPath)) {
-                    $summaryHref = Pt_Commons_SignedDownload::url($summaryPath);
-                    if ($isFinalized) {
-                        $summaryDownload = '<a target="_blank" href="' . $summaryHref . '" class="btn btn-info btn-xs"><i class="icon-download"></i> ' . $this->translator->_('Summary Report') . '</a>';
-                    } else {
-                        $summaryDownload = '<a target="_blank" href="' . $summaryHref . '" class="btn btn-warning btn-xs"><i class="icon-download"></i> ' . $this->translator->_('Summary Report (DRAFT)') . '</a>';
-                    }
-                }
-                $zipFilePath = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . '.zip';
-                if (file_exists($zipFilePath)) {
-                    $zipHref = Pt_Commons_SignedDownload::url($zipFilePath);
-                    if ($isFinalized) {
-                        $allReportsDownload = "<a href='" . $zipHref . "' class='btn btn-info btn-xs' target='_blank' style='float: none; margin-top: 5px;'><i class='icon-download'></i> " . $this->translator->_('All Reports') . '</a><br>';
-                    } else {
-                        $allReportsDownload = "<a href='" . $zipHref . "' class='btn btn-warning btn-xs' target='_blank' style='float: none; margin-top: 5px;'><i class='icon-download'></i> " . $this->translator->_('All Reports (DRAFT)') . '</a><br>';
-                    }
-                }
-            }
-
-            $tbFormPath = Application_Service_Shipments::resolveTbFormsZip($aRow['shipment_code']);
-            $downloadAllTBForms = '';
-            if ($isMtbeptInstance && $aRow['scheme_type'] == 'tb' && $tbFormPath !== null) {
-                $downloadAllTBForms = '<a href="/admin/shipment/download-tb/sid/' . $aRow['shipment_id'] . '/file/' . base64_encode($tbFormPath) . '" class="btn btn-success btn-xs" style="display:inline-block;margin:2px;" target="_BLANK"><i class="icon icon-download"></i> ' . $this->translator->_('TB Forms') . '</a>';
-            }
-
-            $viewFinalizedReports = '';
-
-            if ($isFinalized) {
-                $viewFinalizedReports = '<a href="/reports/finalize/view-finalized-shipment/sid/' . base64_encode($aRow['shipment_id']) . '" class="btn btn-info btn-xs" target="_self" style="margin-top:5px;"><i class="icon-eye-open"></i> ' . $this->translator->_('View Finalized') . '</a>';
-            } elseif ($hasReportsGenerated) {
-                $viewFinalizedReports = '<a href="/reports/distribution/shipment/sid/' . base64_encode($aRow['shipment_id']) . '" class="btn btn-warning btn-xs" target="_self" style="margin-top:5px;"><i class="icon-eye-open"></i> ' . $this->translator->_('View Draft Reports') . '</a>';
-            }
-
-            //$shipmentResults = $shipmentDb->getPendingShipmentsByDistribution($aRow['distribution_id']);
-            $responsePercentage = ($aRow['reported_percentage'] != '') ? $aRow['reported_percentage'] : '0';
-
-            $row = [];
-            // $row[] = '<input type="checkbox" class="checkShipment" '
-            //     . 'data-scheme="' . htmlspecialchars($aRow['scheme_type'], ENT_QUOTES) . '" '
-            //     . 'value="' . base64_encode($aRow['shipment_id']) . '" '
-            //     . 'onclick="toggleShipmentSelect(this);" />';
-
-            $row[] = $aRow['distribution_code'];
-            $row[] = Pt_Commons_DateUtility::humanReadableDateFormat($aRow['distribution_date']);
-            $row[] = $aRow['shipment_code'];
-            // Same treatment as the admin shipments grid: the deadline is judged in the
-            // programme's cutoff timezone, so name that zone under the date rather than
-            // leaving a reader in another zone to assume their own clock.
-            $dueDate = Pt_Commons_DateUtility::humanReadableDateFormat($aRow['response_deadline'], true);
-            $row[] = empty($dueDate)
-                ? ''
-                : $dueDate . '<br /><small class="text-muted">' . htmlspecialchars(Pt_Commons_DateUtility::cutoffTimezoneLabel($aRow['response_deadline']), ENT_QUOTES) . '</small>';
-            $row[] = $aRow['scheme_name'];
-            // $row[] = $aRow['number_of_samples'];
-            $participantsCell = $aRow['participant_count'];
-            if (!empty($aRow['participant_count'])) {
-                $participantsCell .= '<br><a href="javascript:void(0);" class="btn btn-default btn-xs toggle-stats-row" data-sid="' . base64_encode($aRow['shipment_id']) . '" style="margin-top:5px;white-space:normal;"><i class="icon-eye-open"></i> ' . $this->translator->_('Breakdown') . '</a>';
-            }
-            $row[] = $participantsCell;
-            $reportedCount = $aRow['reported_count'] ?? 0;
-            $row[] = $reportedCount . '<br>(<a href="/reports/shipments/response-chart/id/' . base64_encode($aRow['shipment_id']) . '/shipmentDate/' . base64_encode($aRow['distribution_date']) . '/shipmentCode/' . base64_encode($aRow['distribution_code']) . '" target="_blank" style="text-decoration:underline">' . $responsePercentage . '%</a>)';
-            $row[] = $aRow['number_passed'];
-            if ($isCancelled) {
-                $row[] = '<span class="label label-danger">' . $this->translator->_('Cancelled') . '</span>';
-            } else {
-                $row[] = $this->translator->_(ucwords($aRow['status'] ?? ''));
-            }
-
-            $row[] = trim("$summaryDownload $allReportsDownload $viewFinalizedReports");
-            if ($aRow['status'] != 'pending') {
-
-                $exportReport = '';
-                $notResponded = '';
-                if (!$isCancelled) {
-                    $exportReport = "<a href='javascript:void(0);' class='btn btn-success btn-xs' style='display:inline-block;margin:2px;' onclick='generateShipmentParticipantList(\"" . base64_encode($aRow['shipment_id']) . '","' . $aRow['scheme_type'] . "\")'><i class='icon-download'></i> " . $this->translator->_('Overview') . '</a>';
-                    if ($aRow['status'] != 'finalized') {
-                        $notResponded = "<a href='javascript:void(0);' class='btn btn-danger btn-xs' style='display:inline-block;margin:2px;' onclick='exportNotRespondedShipment(\"" . base64_encode($aRow['shipment_id']) . '","' . base64_encode((string) $aRow['shipment_code']) . '","' . base64_encode(Pt_Commons_DateUtility::humanReadableDateFormat($aRow['distribution_date'])) . "\")'><i class='icon icon-download'></i> " . $this->translator->_('No Response Report') . '</a>';
-                    }
-                }
-
-                $feedbackDownload = '';
-                if (!empty($aRow['feedback_count']) && $aRow['feedback_count'] > 0) {
-                    $feedbackDownload = "<a href='javascript:void(0);' class='btn btn-info btn-xs' style='display:inline-block;margin:2px;' onclick='downloadFeedbackReport(" . $aRow['shipment_id'] . ")'><i class='icon-download'></i> " . $this->translator->_('Feedback') . '</a>';
-                }
-
-                $row[] = "$exportReport $notResponded $feedbackDownload $downloadAllTBForms";
-            } else {
-                $row[] = '';
-            }
-            $output['aaData'][] = $row;
+        // Due date. The cutoff timezone is named once, in the column header, and in
+        // full on hover. An end-of-day deadline leaves its time out.
+        $due = '';
+        if (!empty($aRow['response_deadline'])) {
+            $endOfDay = in_array(substr((string) $aRow['response_deadline'], 11, 5), ['23:59', '00:00', ''], true);
+            $due = '<span title="' . $esc(Pt_Commons_DateUtility::cutoffTimezoneLabel($aRow['response_deadline'])) . '">'
+                . $esc(Pt_Commons_DateUtility::humanReadableDateFormat($aRow['response_deadline'], !$endOfDay)) . '</span>';
         }
 
-        echo json_encode($output);
+        // Responses and pass rate share one shape: the rate, a bar, then "x of y".
+        $rateCell = function (?float $rate, string $barClass, string $sub, ?string $href = null) use ($esc) {
+            $figure = $rate === null ? '' : $rate . '%';
+            if ($href !== null) {
+                $figure = '<a href="' . $href . '" target="_blank" title="' . $esc($this->translator->_('Response chart')) . '">' . $figure . '</a>';
+            }
+            return '<span class="rate-figure">' . $figure . '</span>'
+                . '<span class="rate-bar ' . $barClass . '"><span style="width:' . (float) $rate . '%"></span></span>'
+                . '<span class="cell-sub">' . $sub . '</span>';
+        };
+        $chartHref = ($forParticipant ? '/participant/response-chart/id/' : '/reports/shipments/response-chart/id/') . $sid
+            . '/shipmentDate/' . base64_encode((string) $aRow['distribution_date'])
+            . '/shipmentCode/' . base64_encode((string) $aRow['distribution_code']);
+        $responses = $rateCell(
+            $enrolled > 0 ? round($responded / $enrolled * 100, 1) : 0.0,
+            '',
+            sprintf($esc($t->_('%s of %s')), number_format($responded), number_format($enrolled)),
+            $chartHref
+        );
+
+        // Pass rate over evaluated responses only.
+        $pass = $evaluated > 0
+            ? $rateCell(
+                round((int) $aRow['passed'] / $evaluated * 100, 1),
+                'is-pass',
+                sprintf($esc($t->_('%s of %s evaluated')), number_format((int) $aRow['passed']), number_format($evaluated))
+            )
+            : '<span class="cell-muted">' . $esc($t->_('Not evaluated yet')) . '</span>';
+
+        $stageLabels = [
+            'notshipped' => $t->_('Not shipped'),
+            'shipped' => $t->_('Open for responses'),
+            'evaluated' => $t->_('Evaluated'),
+            'reports' => $t->_('Reports generated'),
+            'finalized' => $t->_('Finalized'),
+            'cancelled' => $t->_('Cancelled'),
+        ];
+        $status = '<span class="stage-pill stage-' . $esc($stage) . '">' . $esc($stageLabels[$stage] ?? $stage) . '</span>';
+        if ($stage === 'shipped' && !empty($aRow['response_deadline']) && strtotime($aRow['response_deadline']) < time()) {
+            $status .= '<span class="cell-sub is-warning">' . $esc($t->_('Past due date')) . '</span>';
+        }
+
+        return [$shipment, $esc($aRow['scheme_name']), $due, $responses, $pass, $status, $this->shipmentReportDownloads($aRow, $forParticipant)];
+    }
+
+    // Download buttons for one shipment row: the generated reports (PDF and ZIP
+    // files) first, then the Excel exports.
+    private function shipmentReportDownloads(array $aRow, bool $forParticipant): string
+    {
+        $t = $this->translator;
+        $esc = fn ($value) => htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8');
+        // Each download is a small button with its own icon, so they can be told
+        // apart at a glance. The title says what the file holds.
+        $link = fn (string $label, string $title, string $icon, string $attrs) => '<a class="dl-btn" title="' . $esc($title) . '" ' . $attrs . '>'
+            . '<i class="' . $icon . '" aria-hidden="true"></i> ' . $esc($label) . '</a>';
+        $sid = base64_encode((string) $aRow['shipment_id']);
+        $stage = $aRow['stage'];
+        $isCancelled = $stage === 'cancelled';
+
+        $reports = [];
+        if (in_array($stage, ['reports', 'finalized'], true)) {
+            if (!$forParticipant) {
+                $viewHref = $stage === 'finalized'
+                    ? '/reports/finalize/view-finalized-shipment/sid/' . $sid
+                    : '/reports/distribution/shipment/sid/' . $sid;
+                $reports[] = $link($t->_('View'), $t->_('Open the reports page for this shipment'), 'icon-eye-open', 'href="' . $viewHref . '"');
+            }
+            // Both buttons always show once reports exist for the shipment. A file
+            // missing from this server shows as a disabled button that says so,
+            // rather than the button silently disappearing.
+            $folder = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR;
+            $files = [
+                [$t->_('Summary'), $t->_('Summary report (PDF)'), 'icon-file-text',
+                    $folder . $aRow['shipment_code'] . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . '-summary.pdf'],
+                [$t->_('All reports'), $t->_("Every participant's report in one ZIP file"), 'icon-archive',
+                    $folder . $aRow['shipment_code'] . '.zip'],
+            ];
+            foreach ($files as [$label, $title, $icon, $path]) {
+                $reports[] = file_exists($path)
+                    ? $link($label, $title, $icon, 'target="_blank" href="' . $esc(Pt_Commons_SignedDownload::url($path)) . '"')
+                    : '<span class="dl-btn is-missing" title="' . $esc($t->_('This file is not on this server. Generate the reports again to create it.')) . '">'
+                        . '<i class="' . $icon . '" aria-hidden="true"></i> ' . $esc($label) . '</span>';
+            }
+        }
+        if (!$forParticipant && $aRow['scheme_type'] === 'tb' && Application_Service_Common::getConfig('instance') === 'mtbept') {
+            $tbFormPath = Application_Service_Shipments::resolveTbFormsZip($aRow['shipment_code']);
+            if ($tbFormPath !== null) {
+                $reports[] = $link($t->_('TB forms'), $t->_('Result forms for every participant (ZIP)'), 'icon-file-alt', 'target="_blank" href="/admin/shipment/download-tb/sid/' . (int) $aRow['shipment_id'] . '/file/' . base64_encode($tbFormPath) . '"');
+            }
+        }
+
+        // The participant copy of the page shows the reports only.
+        $exports = [];
+        if (!$forParticipant && $stage !== 'notshipped' && !$isCancelled) {
+            $exports[] = $link($t->_('Results'), $t->_("Each participant's response and result (Excel)"), 'icon-table', 'href="javascript:void(0);" onclick="generateShipmentParticipantList(\'' . $sid . '\', \'' . $esc($aRow['scheme_type']) . '\')"');
+            if ($stage !== 'finalized') {
+                $exports[] = $link($t->_('Non-responders'), $t->_('Participants who have not responded yet (Excel)'), 'icon-warning-sign', 'href="javascript:void(0);" onclick="exportNotRespondedShipment(\'' . $sid . '\', \''
+                    . base64_encode((string) $aRow['shipment_code']) . '\', \''
+                    . base64_encode((string) Pt_Commons_DateUtility::humanReadableDateFormat($aRow['distribution_date'])) . '\')"');
+            }
+        }
+        if (!$forParticipant && (int) $aRow['feedback_count'] > 0) {
+            $exports[] = $link($t->_('Feedback'), $t->_("Participants' feedback answers (Excel)"), 'icon-comments', 'href="javascript:void(0);" onclick="downloadFeedbackReport(' . (int) $aRow['shipment_id'] . ')"');
+        }
+
+        $links = array_merge($reports, $exports);
+        return $links ? '<div class="download-links">' . implode('', $links) . '</div>' : '<span class="cell-muted">&ndash;</span>';
     }
 
     public function updateReportConfigs($params)
@@ -5399,175 +5414,180 @@ class Application_Service_Reports
         }
     }
 
-    public function getLabPerformanceReportWithScore($parameters)
+    /**
+     * Participation and performance per shipment for the Participant Trends report.
+     *
+     * The counts follow Application_Service_Shipments::getShipmentParticipationStats():
+     * a participant responded when response_status is responded, late or nottested,
+     * and only responders count as failed. The pass rate is passed over evaluated
+     * (passed + failed), so a shipment that is not evaluated yet has no pass rate
+     * instead of showing 0%.
+     *
+     * With $byRegion the rows are per participant region, for the one shipment in
+     * $params['shipmentId'].
+     */
+    public function getParticipantTrendsSummary(array $params, bool $byRegion = false): array
     {
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
 
-        $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $responded = "IFNULL(sp.response_status, '') IN ('responded','late','nottested')";
+        $late = "(IFNULL(sp.response_status, '') = 'late'
+                    OR IFNULL(sp.is_response_late, '') = 'yes'
+                    OR IFNULL(sp.shipment_test_report_date > s.response_deadline, 0))";
+        $passed = 'IFNULL(sp.final_result, 0) = 1';
+        $failed = "IFNULL(sp.final_result, 0) = 2 AND IFNULL(sp.response_status, '') IN ('responded','late')";
+        $score = 'IFNULL(sp.shipment_score, 0) + IFNULL(sp.documentation_score, 0)';
 
-        // Passing score comes from the selected scheme's config (e.g. dts.passPercentage).
-        // Falls back to the global pass_percentage when no scheme is selected, then to 100.
-        $scheme = (isset($parameters['scheme']) && $parameters['scheme'] != '') ? $parameters['scheme'] : '';
-        $passingScore = null;
-        if ($scheme !== '') {
-            $passingScore = Pt_Commons_SchemeConfig::get($scheme . '.passPercentage');
-        }
-        if ($passingScore === null || $passingScore === '') {
-            $globalConfig = new Application_Model_DbTable_GlobalConfig();
-            $passingScore = $globalConfig->getGlobalConfig('pass_percentage');
-        }
-        $passingScore = (is_numeric($passingScore) && (int) $passingScore >= 1 && (int) $passingScore <= 100)
-            ? (int) $passingScore
-            : 100;
-
-        $columns = [
-            's.shipment_id',
-            's.shipment_code',
-            'total_participants' => new Zend_Db_Expr('COUNT(*)'),
-            'excellent' => new Zend_Db_Expr('SUM(
-                            (COALESCE(spm.shipment_score,0) + COALESCE(spm.documentation_score,0)) = 100
-                            AND spm.final_result = 1
-                        )'),
-            'unsatisfactory' => new Zend_Db_Expr('SUM(spm.final_result = 2)'),
+        $counts = [
+            'enrolled' => new Zend_Db_Expr('COUNT(sp.map_id)'),
+            'responded' => new Zend_Db_Expr("SUM($responded)"),
+            'on_time' => new Zend_Db_Expr("SUM($responded AND NOT $late)"),
+            'passed' => new Zend_Db_Expr("SUM($passed)"),
+            'failed' => new Zend_Db_Expr("SUM($failed)"),
+            // Scores are decimal(5,2) and some schemes round, so a full score can be stored as 99.99.
+            'excellent' => new Zend_Db_Expr("SUM($passed AND ($score) >= 99.99)"),
         ];
 
-        // only add satisfactory column if passingScore < 100
-        if ($passingScore < 100) {
-            $columns['satisfactory'] = new Zend_Db_Expr($dbAdapter->quoteInto(
-                'SUM((COALESCE(spm.shipment_score,0) + COALESCE(spm.documentation_score,0)) >= ? AND (COALESCE(spm.shipment_score,0) + COALESCE(spm.documentation_score,0)) < ? AND spm.final_result = 1)',
-                $passingScore,
-                100
-            ));
+        $query = $db->select()
+            ->from(['s' => 'shipment'], [])
+            ->join(['sl' => 'scheme_list'], 'sl.scheme_id = s.scheme_type', [])
+            ->join(['sp' => 'shipment_participant_map'], 'sp.shipment_id = s.shipment_id', $counts)
+            ->join(['p' => 'participant'], 'p.participant_id = sp.participant_id', [])
+            ->where('s.cancelled_at IS NULL');
+
+        if ($byRegion) {
+            $query->columns(['region' => new Zend_Db_Expr("IFNULL(NULLIF(TRIM(p.region), ''), '')")])
+                ->group(new Zend_Db_Expr("IFNULL(NULLIF(TRIM(p.region), ''), '')"))
+                // Participants without a region go last.
+                ->order([new Zend_Db_Expr("IFNULL(NULLIF(TRIM(p.region), ''), '') = ''"), 'region']);
+        } else {
+            $query->columns([
+                's.shipment_id',
+                's.shipment_code',
+                's.shipment_date',
+                'sl.scheme_name',
+            ])
+                ->group('s.shipment_id')
+                ->order(['s.shipment_date', 's.shipment_id']);
         }
 
-        $sQuery = $dbAdapter->select()
-            ->from(
-                ['spm' => 'shipment_participant_map'],
-                $columns
-            )
-            ->join(['s' => 'shipment'], 'spm.shipment_id = s.shipment_id')
-            ->where("IFNULL(spm.is_excluded, 'no') <> 'yes'")
-            ->group('s.shipment_id');
-
-        if (isset($parameters['scheme']) && $parameters['scheme'] != '') {
-            $sQuery = $sQuery->where('s.scheme_type = ?', $parameters['scheme']);
+        $scopedDmId = Application_Service_Common::getScopedDmId();
+        if (!empty($scopedDmId)) {
+            $query->join(['pmm' => 'participant_manager_map'], 'pmm.participant_id = p.participant_id', [])
+                ->where('pmm.dm_id = ?', $scopedDmId);
+        }
+        if (!empty($params['scheme'])) {
+            $query->where('s.scheme_type = ?', $params['scheme']);
+        }
+        if (!empty($params['startDate']) && !empty($params['endDate'])) {
+            $query->where('DATE(s.shipment_date) >= ?', $this->common->isoDateFormat($params['startDate']))
+                ->where('DATE(s.shipment_date) <= ?', $this->common->isoDateFormat($params['endDate']));
+        }
+        if (!empty($params['shipmentId'])) {
+            $query->where('s.shipment_id = ?', $params['shipmentId']);
+        } elseif ($byRegion) {
+            return [];
         }
 
-        if (isset($parameters['shipmentId']) && $parameters['shipmentId'] != '') {
-            $sQuery = $sQuery->where('s.shipment_id = ?', $parameters['shipmentId']);
+        $rows = [];
+        foreach ($db->fetchAll($query) as $row) {
+            foreach (['enrolled', 'responded', 'on_time', 'passed', 'failed', 'excellent'] as $key) {
+                $row[$key] = (int) ($row[$key] ?? 0);
+            }
+            $rows[] = $row;
         }
-
-        if (isset($parameters['startDate']) && $parameters['startDate'] != '' && isset($parameters['endDate']) && $parameters['endDate'] != '') {
-            $sQuery = $sQuery->where('DATE(s.shipment_date) >= ?', $this->common->isoDateFormat($parameters['startDate']));
-            $sQuery = $sQuery->where('DATE(s.shipment_date) <= ?', $this->common->isoDateFormat($parameters['endDate']));
-        }
-        // Each row already carries the per-shipment aggregates the lab-performance
-        // report view consumes directly: shipment_code, total_participants, excellent,
-        // unsatisfactory, and (when passingScore < 100) satisfactory.
-        return $dbAdapter->fetchAll($sQuery);
+        return $rows;
     }
 
     /**
-     * Server-side Excel export for the "Laboratory Performance per Shipment" report.
-     * Mirrors the on-screen matrix: shipments across columns (No. / %), ratings down rows.
-     * Returns the generated filename (served from /temporary/) or '' on failure/no data.
+     * Excel export of the Participant Trends report: a sheet with one row per shipment,
+     * and one sheet with the region breakdown of every shipment in the filters.
+     * Returns the file name in the temporary folder, or '' on failure.
      */
-    public function exportLabPerformanceReportDetails($params)
+    public function exportParticipantTrendsSummary(array $params): string
     {
         try {
-            $labPerform = $this->getLabPerformanceReportWithScore($params);
-            if (empty($labPerform)) {
-                return 'not-found';
+            $shipments = $this->getParticipantTrendsSummary($params);
+            if (empty($shipments)) {
+                return '';
             }
 
-            // Re-index so we can iterate shipments in order.
-            $shipments = array_values($labPerform);
-
-            // Satisfactory column only exists when passing score < 100 (see report query).
-            $hasSatisfactory = array_key_exists('satisfactory', $shipments[0]);
-
-            $ratings = [
-                ['label' => 'EXCELLENT', 'key' => 'excellent'],
+            $t = fn ($text) => html_entity_decode($this->translator->_($text), ENT_QUOTES, 'UTF-8');
+            $pct = fn (int $part, int $whole) => $whole > 0 ? round($part / $whole * 100, 1) : null;
+            $headings = [
+                $t('Enrolled'),
+                $t('Responded'),
+                $t('Response rate') . ' (%)',
+                $t('On time'),
+                $t('On time') . ' (%)',
+                $t('Passed'),
+                $t('Failed'),
+                $t('Pass rate') . ' (%)',
+                $t('Excellent'),
+                $t('Satisfactory'),
+                $t('Unsatisfactory'),
             ];
-            if ($hasSatisfactory) {
-                $ratings[] = ['label' => 'SATISFACTORY', 'key' => 'satisfactory'];
-            }
-            $ratings[] = ['label' => 'UNSATISFACTORY', 'key' => 'unsatisfactory'];
+            $figures = fn (array $r) => [
+                $r['enrolled'],
+                $r['responded'],
+                $pct($r['responded'], $r['enrolled']),
+                $r['on_time'],
+                $pct($r['on_time'], $r['responded']),
+                $r['passed'],
+                $r['failed'],
+                $pct($r['passed'], $r['passed'] + $r['failed']),
+                $r['excellent'],
+                $r['passed'] - $r['excellent'],
+                $r['failed'],
+            ];
 
             $excel = new Spreadsheet();
             $sheet = $excel->getActiveSheet();
-
-            // Each shipment spans two columns (No., %); column 1 holds the rating labels.
-            $totalCols = 1 + (count($shipments) * 2);
-
-            // Title row.
-            $sheet->mergeCells('A1:' . Coordinate::stringFromColumnIndex($totalCols) . '1');
-            $sheet->getCell('A1')->setValueExplicit(
-                html_entity_decode($this->translator->_('Laboratory Performance per Shipment'), ENT_QUOTES, 'UTF-8')
-            );
-            $sheet->getStyle('A1')->getFont()->setBold(true);
-
-            // Header rows 3-4. Column A label spans both header rows.
-            $sheet->mergeCells('A3:A4');
-            $sheet->getCell('A3')->setValueExplicit(
-                html_entity_decode($this->translator->_('RATING PER SHIPMENT'), ENT_QUOTES, 'UTF-8')
-            );
-            $sheet->getStyle('A3')->getFont()->setBold(true);
-
-            foreach ($shipments as $i => $shipment) {
-                $startCol = 2 + ($i * 2);
-                $startLetter = Coordinate::stringFromColumnIndex($startCol);
-                $endLetter = Coordinate::stringFromColumnIndex($startCol + 1);
-
-                $sheet->mergeCells($startLetter . '3:' . $endLetter . '3');
-                $sheet->getCell($startLetter . '3')->setValueExplicit(html_entity_decode(
-                    $shipment['shipment_code'] . ' (' . $this->translator->_('Total Participants') . ': ' . $shipment['total_participants'] . ')',
-                    ENT_QUOTES,
-                    'UTF-8'
-                ));
-                $sheet->getStyle($startLetter . '3')->getFont()->setBold(true);
-
-                $sheet->getCell($startLetter . '4')->setValueExplicit(html_entity_decode($this->translator->_('No.'), ENT_QUOTES, 'UTF-8'));
-                $sheet->getCell($endLetter . '4')->setValueExplicit(html_entity_decode('%', ENT_QUOTES, 'UTF-8'));
-                $sheet->getStyle($startLetter . '4:' . $endLetter . '4')->getFont()->setBold(true);
+            $sheet->setTitle(mb_substr($t('Shipments'), 0, 31));
+            $sheet->fromArray(array_merge([$t('Scheme'), $t('Shipment Code'), $t('Shipment Date')], $headings), null, 'A1');
+            $rowNo = 2;
+            foreach ($shipments as $r) {
+                $sheet->fromArray(array_merge(
+                    [$r['scheme_name'], $r['shipment_code'], Pt_Commons_DateUtility::humanReadableDateFormat($r['shipment_date'])],
+                    $figures($r)
+                ), null, 'A' . $rowNo++);
             }
 
-            // Rating rows start at row 5.
-            foreach ($ratings as $r => $rating) {
-                $rowNo = 5 + $r;
-                $sheet->getCell('A' . $rowNo)->setValueExplicit(
-                    html_entity_decode($this->translator->_($rating['label']), ENT_QUOTES, 'UTF-8')
-                );
-
-                foreach ($shipments as $i => $shipment) {
-                    $startCol = 2 + ($i * 2);
-                    $count = (int) ($shipment[$rating['key']] ?? 0);
-                    $total = (int) $shipment['total_participants'];
-                    $pct = $total > 0 ? number_format(($count / $total) * 100, 2, '.', '') : '0.00';
-
-                    $sheet->getCell(Coordinate::stringFromColumnIndex($startCol) . $rowNo)
-                        ->setValueExplicit((string) $count);
-                    $sheet->getCell(Coordinate::stringFromColumnIndex($startCol + 1) . $rowNo)
-                        ->setValueExplicit((string) $pct);
+            $regionSheet = $excel->createSheet();
+            $regionSheet->setTitle(mb_substr($t('Regions'), 0, 31));
+            $regionSheet->fromArray(array_merge([$t('Shipment Code'), $t('Region')], $headings), null, 'A1');
+            $rowNo = 2;
+            foreach ($shipments as $shipment) {
+                $regions = $this->getParticipantTrendsSummary(array_merge($params, ['shipmentId' => $shipment['shipment_id']]), true);
+                foreach ($regions as $r) {
+                    $regionSheet->fromArray(array_merge(
+                        [$shipment['shipment_code'], $r['region'] !== '' ? $r['region'] : $t('No region')],
+                        $figures($r)
+                    ), null, 'A' . $rowNo++);
                 }
             }
 
-            $sheet->getColumnDimension('A')->setWidth(20);
+            foreach ([$sheet, $regionSheet] as $ws) {
+                $ws->getStyle('1:1')->getFont()->setBold(true);
+                $ws->freezePane('A2');
+                foreach ($ws->getColumnIterator() as $column) {
+                    $ws->getColumnDimension($column->getColumnIndex())->setAutoSize(true);
+                }
+            }
+            $excel->setActiveSheetIndex(0);
 
-            if (!file_exists($this->tempUploadDirectory) && !is_dir($this->tempUploadDirectory)) {
+            if (!is_dir($this->tempUploadDirectory)) {
                 mkdir($this->tempUploadDirectory);
             }
-
-            $writer = IOFactory::createWriter($excel, 'Xlsx');
-            $filename = 'lab-performance-report-' . date('d-M-Y-H-i-s') . '.xlsx';
-            $writer->save($this->tempUploadDirectory . DIRECTORY_SEPARATOR . $filename);
+            $filename = 'participant-trends-' . date('d-M-Y-H-i-s') . '.xlsx';
+            IOFactory::createWriter($excel, 'Xlsx')->save($this->tempUploadDirectory . DIRECTORY_SEPARATOR . $filename);
             return $filename;
-        } catch (Exception $exc) {
-            Pt_Commons_LoggerUtility::logError('Failed to generate lab performance report (Excel): ' . $exc->getMessage(), [
+        } catch (Throwable $exc) {
+            Pt_Commons_LoggerUtility::logError('Failed to generate participant trends report (Excel): ' . $exc->getMessage(), [
                 'file' => $exc->getFile(),
                 'line' => $exc->getLine(),
                 'trace' => $exc->getTraceAsString(),
             ]);
-
             return '';
         }
     }

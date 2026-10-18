@@ -1033,14 +1033,7 @@ foreach ($this->participants as $row) {
 					format: 'DD-MMM-YYYY',
 					separator: ' to ',
 				},
-				ranges: {
-					'Last 30 Days': [moment().subtract(29, 'days'), moment()],
-					'Last 60 Days': [moment().subtract(59, 'days'), moment()],
-					'Last 90 Days': [moment().subtract(89, 'days'), moment()],
-					'Last 180 Days': [moment().subtract(179, 'days'), moment()],
-					'Last 12 Months': [moment().subtract(12, 'month'), moment()],
-					'Last 18 Months': [moment().subtract(18, 'month'), moment()],
-				}
+				ranges: eptDateRanges()
 			},
 			function(start, end) {
 				$('#dateRange').val(start.format('DD-MMM-YYYY') + ' ' + end.format('DD-MMM-YYYY'));

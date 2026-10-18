@@ -121,7 +121,13 @@
             if (!$panel.hasClass('is-open')) {
                 $panel.find('.js-filter-toggle').trigger('click');
             }
-            $('html, body').animate({ scrollTop: Math.max($panel.offset().top - 20, 0) }, 150);
+            // Scroll only when the panel is out of view. The fixed navbar covers
+            // the top of the window, so leave room for it.
+            var navHeight = $('.navbar-fixed-top').outerHeight() || 0;
+            var target = $panel.offset().top - navHeight - 10;
+            if (target < $(window).scrollTop()) {
+                $('html, body').animate({ scrollTop: Math.max(target, 0) }, 150);
+            }
         });
 
         // The filter button only makes sense on pages with the collapsible panel.

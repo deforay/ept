@@ -86,6 +86,14 @@
         margin: 2px 6px 2px 0;
         font-size: 12px;
         color: #767676;
+        cursor: pointer;
+    }
+
+    .filter-panel .js-filter-summary .filter-tag:hover,
+    .filter-panel .js-filter-summary .filter-tag:focus {
+        border-color: #3c8dbc;
+        background: #e3f0f8;
+        outline: none;
     }
 
     .filter-panel .js-filter-summary .filter-tag-value {
@@ -197,12 +205,25 @@
                 if (display === '') {
                     return null;
                 }
-                var $tag = $('<span class="filter-tag"></span>');
+                // Clicking the tag opens the panel on that field. The x only
+                // clears it.
+                var $tag = $('<span class="filter-tag" role="button" tabindex="0"></span>')
+                    .attr('title', label + ': ' + display)
+                    .on('click', function () {
+                        openField($el);
+                    })
+                    .on('keydown', function (e) {
+                        if (e.target === this && (e.key === 'Enter' || e.key === ' ')) {
+                            e.preventDefault();
+                            openField($el);
+                        }
+                    });
                 $('<span class="filter-tag-label"></span>').text(label).appendTo($tag);
                 $('<span class="filter-tag-value"></span>').text(display).appendTo($tag);
                 $('<button type="button" class="filter-tag-remove" aria-label="<?= $this->jsTranslate('Remove filter') ?>"></button>')
                     .html('&times;')
-                    .on('click', function () {
+                    .on('click', function (e) {
+                        e.stopPropagation();
                         clearField($el);
                     })
                     .appendTo($tag);
@@ -236,9 +257,38 @@
             function setOpen(open) {
                 $panel.toggleClass('is-open', open);
                 $toggle.attr('aria-expanded', open ? 'true' : 'false');
+                // Lets the report zero state hide its own "Open filters" button.
+                $('body').toggleClass('filter-panel-open', open);
                 if ($toggleText.length && expandText && collapseText) {
                     $toggleText.text(open ? collapseText : expandText);
                 }
+            }
+
+            // Opens the panel if it is closed, then puts the user in the field:
+            // a select2 or TomSelect dropdown opens, a date range picker shows
+            // its calendar, anything else gets focus.
+            function openField($el) {
+                function focusIt() {
+                    var el = $el[0];
+                    if (el.scrollIntoView) {
+                        el.scrollIntoView({ block: 'nearest' });
+                    }
+                    if ($el.data('daterangepicker')) {
+                        $el.data('daterangepicker').show();
+                    } else if ($el.data('select2')) {
+                        $el.select2('open');
+                    } else if (el.tomselect) {
+                        el.tomselect.focus();
+                    } else {
+                        $el.trigger('focus');
+                    }
+                }
+                if ($panel.hasClass('is-open')) {
+                    focusIt();
+                    return;
+                }
+                setOpen(true);
+                $body.stop(true, true).slideDown(150, focusIt);
             }
 
             $toggle.on('click', function () {
@@ -253,6 +303,21 @@
                 refreshCount();
                 refreshSummary();
             });
+
+            // The report pages need a scheme before they show anything. With only
+            // one active scheme there is nothing to choose, so select it. The
+            // change event runs the page's own handler, such as loading the
+            // shipment list.
+            var $scheme = $body.find('select#scheme');
+            if ($scheme.length && !($scheme.val() || []).length) {
+                var $schemeOptions = $scheme.find('option').filter(function () {
+                    return this.value !== '';
+                });
+                if ($schemeOptions.length === 1) {
+                    var only = $schemeOptions.val();
+                    $scheme.val($scheme.prop('multiple') ? [only] : only).trigger('change');
+                }
+            }
 
             // Always start collapsed — a field that merely defaults to a
             // preset value (e.g. Response Status = Responded) shouldn't force

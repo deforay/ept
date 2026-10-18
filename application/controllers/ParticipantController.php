@@ -982,7 +982,7 @@ class ParticipantController extends Zend_Controller_Action
         if ($request->isPost()) {
             $params = $this->getAllParams();
             $reportService = new Application_Service_Reports();
-            $reportService->getAllShipments($params);
+            $reportService->getAllShipments($params, 'participant');
         }
 
         $scheme = new Application_Service_Schemes();

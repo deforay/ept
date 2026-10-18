@@ -1,0 +1,79 @@
+<?php
+
+/**
+ * Shared presets for the date range pickers (public/js/daterangepicker.js).
+ *
+ * Both layouts include this in <head>, after jQuery. Pages pass the presets as
+ *
+ *   $('#dateRange').daterangepicker({ ..., ranges: eptDateRanges() });
+ *
+ * so every report and listing offers the same periods under the same names.
+ * Call it when the picker is built, not at page load, so "today" is current.
+ *
+ * It also adds a toggle that hides the preset list. The browser remembers the
+ * choice. Styles live in public/css/common.css.
+ */
+?>
+<script type="text/javascript">
+    window.eptDateRanges = function () {
+        var m = window.moment;
+        var ranges = {};
+        ranges["<?= $this->jsTranslate("Today"); ?>"] = [m(), m()];
+        ranges["<?= $this->jsTranslate("Yesterday"); ?>"] = [m().subtract(1, 'days'), m().subtract(1, 'days')];
+        ranges["<?= $this->jsTranslate("Last 7 Days"); ?>"] = [m().subtract(6, 'days'), m()];
+        ranges["<?= $this->jsTranslate("Last 30 Days"); ?>"] = [m().subtract(29, 'days'), m()];
+        ranges["<?= $this->jsTranslate("This Month"); ?>"] = [m().startOf('month'), m().endOf('month')];
+        ranges["<?= $this->jsTranslate("Last Month"); ?>"] = [m().subtract(1, 'month').startOf('month'), m().subtract(1, 'month').endOf('month')];
+        ranges["<?= $this->jsTranslate("Last 90 Days"); ?>"] = [m().subtract(89, 'days'), m()];
+        ranges["<?= $this->jsTranslate("Last 120 Days"); ?>"] = [m().subtract(119, 'days'), m()];
+        ranges["<?= $this->jsTranslate("Last 180 Days"); ?>"] = [m().subtract(179, 'days'), m()];
+        ranges["<?= $this->jsTranslate("Last 12 Months"); ?>"] = [m().subtract(12, 'month'), m()];
+        ranges["<?= $this->jsTranslate("Last 18 Months"); ?>"] = [m().subtract(18, 'month'), m()];
+        ranges["<?= $this->jsTranslate("Last 24 Months"); ?>"] = [m().subtract(24, 'month'), m()];
+        ranges["<?= $this->jsTranslate("Previous Year"); ?>"] = [m().subtract(1, 'year').startOf('year'), m().subtract(1, 'year').endOf('year')];
+        ranges["<?= $this->jsTranslate("Current Year To Date"); ?>"] = [m().startOf('year'), m()];
+        return ranges;
+    };
+
+    (function ($) {
+        var hideTitle = "<?= $this->jsTranslate("Hide presets"); ?>";
+        var showTitle = "<?= $this->jsTranslate("Show presets"); ?>";
+
+        function setCollapsed($container, collapsed) {
+            $container.toggleClass('drp-ranges-collapsed', collapsed);
+            $container.find('.drp-ranges-toggle')
+                .attr('title', collapsed ? showTitle : hideTitle)
+                .find('i').attr('class', collapsed ? 'icon-double-angle-right' : 'icon-double-angle-left');
+        }
+
+        function savedCollapsed() {
+            try {
+                return localStorage.getItem('drpRangesCollapsed') === 'yes';
+            } catch (e) {
+                return false;
+            }
+        }
+
+        $(document).on('show.daterangepicker', function (e, picker) {
+            var $container = picker && picker.container;
+            var $ranges = $container ? $container.find('.ranges') : $();
+            // The plugin renders an empty .ranges block on every picker, so only
+            // pickers with presets get the toggle.
+            if (!$ranges.find('li').length || picker.singleDatePicker) {
+                return;
+            }
+            if (!$ranges.find('.drp-ranges-toggle').length) {
+                $('<div class="drp-ranges-toggle" role="button" tabindex="0"><i aria-hidden="true"></i></div>')
+                    .prependTo($ranges)
+                    .on('click', function () {
+                        var collapsed = !$container.hasClass('drp-ranges-collapsed');
+                        setCollapsed($container, collapsed);
+                        try {
+                            localStorage.setItem('drpRangesCollapsed', collapsed ? 'yes' : 'no');
+                        } catch (err) {}
+                    });
+            }
+            setCollapsed($container, savedCollapsed());
+        });
+    })(jQuery);
+</script>

@@ -113,7 +113,7 @@
 <script type="text/javascript" src="<?php echo $this->baseUrl('js/bootstrap-select.min.js'); ?>"></script>
 <script type="text/javascript" src="<?php echo $this->baseUrl("js/jquery.multi-select.js"); ?>"></script>
 <script type="text/javascript" src="<?php echo $this->baseUrl("js/jquery.quicksearch.js"); ?>"></script>
-<script type="text/javascript" src="<?php echo $this->baseUrl('js/daterangepicker.js'); ?>"></script>
+<script type="text/javascript" src="<?php echo $this->assetUrl('js/daterangepicker.js'); ?>"></script>
 <script>
 	var startDate = "";
 	var endDate = "";
@@ -132,14 +132,7 @@
 				showDropdowns: true,
 				alwaysShowCalendars: true,
 				autoUpdateInput: true,
-				ranges: {
-					'Last 30 Days': [moment().subtract(29, 'days'), moment()],
-					'Last 60 Days': [moment().subtract(59, 'days'), moment()],
-					'Last 90 Days': [moment().subtract(89, 'days'), moment()],
-					'Last 180 Days': [moment().subtract(179, 'days'), moment()],
-					'Last 12 Months': [moment().subtract(12, 'month'), moment()],
-					'Last 18 Months': [moment().subtract(18, 'month'), moment()],
-				}
+				ranges: eptDateRanges()
 			},
 			function(start, end) {
 				startDate = start.format('DD-MMM-YYYY');

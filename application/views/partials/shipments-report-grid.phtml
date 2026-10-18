@@ -1,0 +1,527 @@
+<?php
+
+/**
+ * Shipments report grid, shared by reports/shipments (admin) and
+ * participant/shipments-reports (data managers). The rows come from
+ * Application_Service_Reports::getAllShipments().
+ *
+ * Set before including:
+ *
+ *   $gridAjaxUrl    the action that returns the rows
+ *   $gridStatsUrl   the Breakdown action, or null to leave Breakdown out
+ *   $gridListUrl    the action behind the Overview download
+ *   $this->schemes  the schemes for the Scheme filter
+ *
+ * The filters apply as soon as they change. The page includes
+ * collapsible-filters.phtml last, after this partial.
+ */
+$gridStatsUrl ??= null;
+include APPLICATION_PATH . '/views/partials/report-zero-state.phtml';
+?>
+<link href="<?php echo $this->baseUrl('css/select2.css'); ?>" rel="stylesheet" />
+<script type="text/javascript" src="<?php echo $this->baseUrl('js/moment.min.js'); ?>"></script>
+<style>
+	.shipments-filters {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: flex-end;
+		gap: 12px 16px;
+		margin-top: 12px;
+		padding: 14px 16px;
+		border: 1px solid #e3e8ef;
+		border-radius: 6px;
+		background: #fafbfc;
+	}
+
+	.shipments-filters .shipments-field {
+		flex: 1 1 200px;
+	}
+
+	.shipments-filters .shipments-field.is-wide {
+		flex-basis: 280px;
+	}
+
+	.shipments-filters label {
+		display: block;
+		margin-bottom: 4px;
+		font-size: 13px;
+		font-weight: 600;
+		color: #333;
+	}
+
+	.shipments-filters .shipments-checks {
+		flex: 0 0 auto;
+		padding-bottom: 6px;
+	}
+
+	.shipments-filters .shipments-checks label {
+		display: inline-block;
+		margin: 0 14px 0 0;
+		font-weight: 400;
+	}
+
+	#shipmentTable {
+		width: 100%;
+	}
+
+	#shipmentTable th {
+		font-size: 12px;
+		white-space: nowrap;
+	}
+
+	#shipmentTable th .th-sub {
+		display: block;
+		font-size: 10.5px;
+		font-weight: 400;
+		text-transform: none;
+		letter-spacing: 0;
+		color: #8a94a3;
+	}
+
+	#shipmentTable td {
+		vertical-align: top;
+	}
+
+	#shipmentTable .cell-sub {
+		display: block;
+		margin-top: 1px;
+		font-size: 11.5px;
+		line-height: 1.4;
+		color: #98a1ad;
+	}
+
+	#shipmentTable .cell-sub.is-warning {
+		color: #b06d00;
+	}
+
+	#shipmentTable .cell-muted {
+		font-size: 13px;
+		color: #8a94a3;
+	}
+
+	#shipmentTable .rate-figure {
+		display: block;
+		white-space: nowrap;
+	}
+
+	#shipmentTable .rate-figure a {
+		color: inherit;
+	}
+
+	#shipmentTable .rate-bar {
+		display: block;
+		width: 90px;
+		height: 4px;
+		margin: 4px 0 3px;
+		border-radius: 2px;
+		background: #e8edf3;
+		overflow: hidden;
+	}
+
+	#shipmentTable .rate-bar>span {
+		display: block;
+		height: 100%;
+		background: #3b6fb6;
+	}
+
+	#shipmentTable .rate-bar.is-pass>span {
+		background: #2e8b57;
+	}
+
+	#shipmentTable .stage-pill {
+		display: inline-block;
+		padding: 2px 9px;
+		border-radius: 999px;
+		font-size: 12px;
+		font-weight: 600;
+		white-space: nowrap;
+	}
+
+	.stage-pill.stage-notshipped {
+		background: #eef0f3;
+		color: #5b6573;
+	}
+
+	.stage-pill.stage-shipped {
+		background: #e3effb;
+		color: #275d9b;
+	}
+
+	.stage-pill.stage-evaluated {
+		background: #fff3d6;
+		color: #8a5a00;
+	}
+
+	.stage-pill.stage-reports {
+		background: #fdebd3;
+		color: #8a4b00;
+	}
+
+	.stage-pill.stage-finalized {
+		background: #e1f3e8;
+		color: #22693f;
+	}
+
+	.stage-pill.stage-cancelled {
+		background: #fbe4e4;
+		color: #a33a3a;
+	}
+
+	#shipmentTable .download-links {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 4px;
+	}
+
+	#shipmentTable .dl-btn.is-missing {
+		display: inline-block;
+		padding: 2px 8px;
+		border: 1px dashed #d5dbe3;
+		border-radius: 4px;
+		color: #a7afba;
+		font-size: 12px;
+		line-height: 18px;
+		white-space: nowrap;
+		cursor: help;
+	}
+
+	#shipmentTable a.dl-btn {
+		display: inline-block;
+		padding: 2px 8px;
+		border: 1px solid #cfdae8;
+		border-radius: 4px;
+		background: #f5f8fc;
+		color: #2f4f7a;
+		font-size: 12px;
+		line-height: 18px;
+		white-space: nowrap;
+		text-decoration: none;
+	}
+
+	#shipmentTable a.dl-btn:hover,
+	#shipmentTable a.dl-btn:focus {
+		border-color: #4a6fa5;
+		background: #4a6fa5;
+		color: #fff;
+	}
+
+	#shipmentTable a.dl-btn i {
+		margin-right: 2px;
+		color: inherit;
+	}
+
+	/* No zebra or sorted-column tint: the bars and pills carry the row. */
+	#shipmentTable > tbody > tr > td,
+	#shipmentTable > tbody > tr.odd > td,
+	#shipmentTable > tbody > tr > td.sorting_1 {
+		background-color: #fff;
+	}
+
+	#shipmentTable > tbody > tr:hover > td {
+		background-color: #f7f9fc;
+	}
+
+	/* Breakdown toggle: a small square button before the shipment code. The
+	   whole row opens it too, so it is never more than a click away. */
+	#shipmentTable a.toggle-stats-row {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		width: 20px;
+		height: 20px;
+		margin-right: 4px;
+		border: 1px solid #cfdae8;
+		border-radius: 4px;
+		background: #f5f8fc;
+		color: #4a6fa5;
+		text-decoration: none;
+		vertical-align: 1px;
+	}
+
+	#shipmentTable tr:hover a.toggle-stats-row,
+	#shipmentTable tr.stats-parent-open a.toggle-stats-row {
+		border-color: #4a6fa5;
+		background: #4a6fa5;
+		color: #fff;
+	}
+
+	#shipmentTable a.toggle-stats-row .icon-chevron-right {
+		display: inline-block;
+		font-size: 10px;
+		transition: transform .15s ease;
+	}
+
+	#shipmentTable tbody tr:has(a.toggle-stats-row) {
+		cursor: pointer;
+	}
+
+	#shipmentTable tr.stats-parent-open a.toggle-stats-row .icon-chevron-right {
+		transform: rotate(90deg);
+	}
+
+	/* Breakdown drawer: the participation-stats child row reads as a detail
+	   panel of the row above it. fnOpen() tags the inserted <td>. */
+	#shipmentTable td.stats-child-container {
+		padding: 14px 18px;
+		border-left: 4px solid #3f6fb0;
+		background: #eef2f7 !important;
+		box-shadow: inset 0 7px 9px -9px rgba(0, 0, 0, .45), inset 0 -7px 9px -9px rgba(0, 0, 0, .3);
+	}
+
+	#shipmentTable.table-hover tbody tr:hover>td.stats-child-container,
+	#shipmentTable tbody tr.stats-parent-open>td {
+		background: #eef2f7 !important;
+	}
+
+	#shipmentTable td.stats-child-container .pstats {
+		background: #fff;
+		box-shadow: 0 1px 3px rgba(0, 0, 0, .1);
+	}
+
+	@media print {
+		.dontPrint,
+		#shipmentTable_filter,
+		#shipmentTable_info {
+			display: none;
+		}
+	}
+</style>
+
+<div class="filter-panel js-filter-panel">
+	<button type="button" class="btn btn-default btn-sm js-filter-toggle" aria-expanded="false"
+		data-expand-text="<?= $this->htmlTranslate("Expand Filters"); ?>"
+		data-collapse-text="<?= $this->htmlTranslate("Collapse Filters"); ?>">
+		<i class="icon-filter"></i> <span class="js-filter-toggle-text"><?= $this->htmlTranslate("Expand Filters"); ?></span>
+		<span class="label label-info js-filter-count" style="display:none;">0</span>
+		<span class="caret"></span>
+	</button>
+	<div class="js-filter-summary"></div>
+	<div class="js-filter-body">
+		<div class="shipments-filters">
+			<div class="shipments-field">
+				<label for="dateRange"><?= $this->htmlTranslate("Shipment Date"); ?></label>
+				<input type="text" id="dateRange" name="dateRange" class="form-control input-sm js-grid-filter" readonly="readonly"
+					style="background: #fff" placeholder="<?= $this->htmlTranslate("All dates"); ?>"
+					data-filter-label="<?= $this->htmlTranslate("Shipment Date"); ?>" />
+			</div>
+			<div class="shipments-field">
+				<label for="scheme"><?= $this->htmlTranslate("Scheme"); ?></label>
+				<select id="scheme" name="scheme" class="form-control input-sm js-grid-filter"
+					data-filter-label="<?= $this->htmlTranslate("Scheme"); ?>">
+					<option value=""><?= $this->htmlTranslate("All schemes"); ?></option>
+					<?php foreach ($this->schemes as $scheme) { ?>
+						<option value="<?= $this->escape($scheme['scheme_id']); ?>"><?= $this->escape($scheme['scheme_name']); ?></option>
+					<?php } ?>
+				</select>
+			</div>
+			<div class="shipments-field is-wide">
+				<label for="stages"><?= $this->htmlTranslate("Status"); ?></label>
+				<select id="stages" name="stages" class="js-grid-filter" multiple="multiple" style="width:100%;"
+					data-filter-label="<?= $this->htmlTranslate("Status"); ?>">
+					<option value="notshipped"><?= $this->htmlTranslate("Not shipped"); ?></option>
+					<option value="shipped"><?= $this->htmlTranslate("Open for responses"); ?></option>
+					<option value="evaluated"><?= $this->htmlTranslate("Evaluated"); ?></option>
+					<option value="reports"><?= $this->htmlTranslate("Reports generated"); ?></option>
+					<option value="finalized"><?= $this->htmlTranslate("Finalized"); ?></option>
+				</select>
+			</div>
+			<div class="shipments-checks">
+				<label title="<?= $this->htmlTranslate("Open past the due date but not evaluated, or evaluated but not finalized"); ?>">
+					<input type="checkbox" id="needsAttention" class="js-grid-filter"
+						data-filter-label="<?= $this->htmlTranslate("Needs attention"); ?>" />
+					<?= $this->htmlTranslate("Needs attention"); ?>
+				</label>
+				<!-- Cancelling is our soft-delete, so cancelled shipments are hidden unless asked for. -->
+				<label>
+					<input type="checkbox" id="includeCancelled" class="js-grid-filter"
+						data-filter-label="<?= $this->htmlTranslate("Include cancelled"); ?>" />
+					<?= $this->htmlTranslate("Include cancelled"); ?>
+				</label>
+			</div>
+		</div>
+	</div><!-- /.js-filter-body -->
+</div><!-- /.filter-panel -->
+
+<table class="table table-hover" id="shipmentTable">
+	<thead>
+		<tr>
+			<th scope="col"><?= $this->htmlTranslate("Shipment"); ?></th>
+			<th scope="col"><?= $this->htmlTranslate("Scheme"); ?></th>
+			<th scope="col"><?= $this->htmlTranslate("Due Date"); ?>
+				<span class="th-sub"><?= $this->escape(Pt_Commons_DateUtility::cutoffTimezoneLabel()); ?></span>
+			</th>
+			<th scope="col"><?= $this->htmlTranslate("Responses"); ?></th>
+			<th scope="col"><?= $this->htmlTranslate("Pass rate"); ?></th>
+			<th scope="col"><?= $this->htmlTranslate("Status"); ?></th>
+			<th scope="col"><?= $this->htmlTranslate("Downloads"); ?></th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr>
+			<td colspan="7" class="dataTables_empty"><?= $this->htmlTranslate("Loading data from server"); ?></td>
+		</tr>
+	</tbody>
+</table>
+
+<script type="text/javascript" src="<?php echo $this->assetUrl('js/daterangepicker.js'); ?>"></script>
+<script type="text/javascript" src="<?php echo $this->baseUrl('js/select2.min.js'); ?>"></script>
+<script type="text/javascript">
+	var oTable = null;
+
+	$(function () {
+		$('#stages').select2({
+			placeholder: "<?= $this->jsTranslate("All statuses"); ?>"
+		});
+
+		$('#dateRange').daterangepicker({
+			locale: {
+				cancelLabel: "<?= $this->jsTranslate("Clear"); ?>",
+				format: 'DD-MMM-YYYY',
+				separator: ' to '
+			},
+			autoApply: true,
+			showDropdowns: true,
+			alwaysShowCalendars: true,
+			startDate: moment().subtract(24, 'month'),
+			endDate: moment(),
+			maxDate: moment(),
+			ranges: eptDateRanges()
+		}).on('apply.daterangepicker', function () {
+			$(this).trigger('change');
+		}).on('cancel.daterangepicker', function () {
+			$(this).val('').trigger('change');
+		});
+
+		// Filters apply as soon as they change. Several can change in one go
+		// (clearing a filter chip, say), so redraw once.
+		var redraw = null;
+		$(document).on('change', '.js-grid-filter', function () {
+			if (!oTable) {
+				return;
+			}
+			clearTimeout(redraw);
+			redraw = setTimeout(function () {
+				oTable.fnDraw();
+			}, 50);
+		});
+
+		<?php if ($gridStatsUrl) { ?>
+		// Breakdown: expand the row with the participation breakdown (enrolled,
+		// responded, tested, passed and failed), fetched on demand.
+		// The whole row toggles it, except clicks on the row's own links and buttons.
+		$('#shipmentTable tbody').on('click', 'tr', function (e) {
+			var $toggle = $(this).find('a.toggle-stats-row');
+			if (!$toggle.length || $(e.target).closest('a, button, input, select').not($toggle).length) {
+				return;
+			}
+			e.preventDefault();
+			var tr = this;
+			if (oTable.fnIsOpen(tr)) {
+				oTable.fnClose(tr);
+				$(tr).removeClass('stats-parent-open');
+				return;
+			}
+			oTable.fnOpen(tr, '<div style="padding:12px;color:#888;"><?= $this->jsTranslate("Loading breakdown…"); ?></div>', 'stats-child-container');
+			$(tr).addClass('stats-parent-open');
+			$.post("<?= $gridStatsUrl; ?>", { sid: $toggle.data('sid') }, function (html) {
+				$(tr).next('tr').find('td').first().html(html);
+			}).fail(function () {
+				$(tr).next('tr').find('td').first().html('<div style="padding:12px;color:#a94442;"><?= $this->jsTranslate("Failed to load breakdown. Please try again."); ?></div>');
+			});
+		});
+		<?php } ?>
+	});
+
+	// The first draw waits for the page to load, after collapsible-filters.phtml
+	// has pre-selected the only scheme, so the grid loads once with it.
+	$(window).on('load', drawShipmentsTable);
+
+	function drawShipmentsTable() {
+		oTable = $('#shipmentTable').dataTable({
+			"oLanguage": reportZeroState.dataTableLanguage(),
+			"bAutoWidth": false,
+			"bInfo": true,
+			"sPaginationType": "bootstrap",
+			"bDestroy": true,
+			"aoColumns": [
+				{ "sWidth": "15%" },
+				{ "sWidth": "14%" },
+				{ "sWidth": "11%" },
+				{ "sWidth": "13%" },
+				{ "sWidth": "12%" },
+				{ "sWidth": "11%" },
+				{ "bSortable": false }
+			],
+			"aaSorting": [[0, "desc"]],
+			"bProcessing": true,
+			"bServerSide": true,
+			"sAjaxSource": "<?= $gridAjaxUrl; ?>",
+			"fnServerParams": function (aoData) {
+				var range = ($('#dateRange').val() || '').split(' to ');
+				aoData.push({ "name": "startDate", "value": range[0] || '' });
+				aoData.push({ "name": "endDate", "value": range[1] || '' });
+				aoData.push({ "name": "scheme", "value": $('#scheme').val() });
+				$.each($('#stages').val() || [], function (i, stage) {
+					aoData.push({ "name": "stages[]", "value": stage });
+				});
+				aoData.push({ "name": "needsAttention", "value": $('#needsAttention').is(':checked') ? 'yes' : 'no' });
+				aoData.push({ "name": "includeCancelled", "value": $('#includeCancelled').is(':checked') ? 'yes' : 'no' });
+			},
+			"fnServerData": function (sSource, aoData, fnCallback) {
+				$.ajax({
+					"dataType": 'json',
+					"type": "POST",
+					"url": sSource,
+					"data": aoData,
+					"success": fnCallback
+				});
+			}
+		});
+	}
+
+	function generateShipmentParticipantList(shipmentId, schemeType) {
+		$.blockUI();
+		$.post("<?= $gridListUrl; ?>", {
+			shipmentId: shipmentId,
+			schemeType: schemeType,
+			format: "html"
+		}, function (data) {
+			if (data != "") {
+				document.location.href = '/temporary/' + data;
+			}
+			$.unblockUI();
+		});
+	}
+
+	function downloadFeedbackReport(shipmentId) {
+		$.blockUI();
+		$.post("/admin/feedback-responses/get-feedback-response-report", {
+			sid: shipmentId,
+			format: "html"
+		}, function (data) {
+			if (data != "") {
+				document.location.href = '/temporary/' + data;
+			} else {
+				alert("<?= $this->jsTranslate("No feedback responses found for this shipment"); ?>");
+			}
+			$.unblockUI();
+		});
+	}
+
+	function exportNotRespondedShipment(_shipmentId, _shipmentCode, _shipmentDate) {
+		$.blockUI();
+		$.post("<?php echo $this->url(['module' => 'admin', 'controller' => 'shipment', 'action' => 'export-shipment-not-responded-participants']); ?>", {
+			shipmentId: atob(_shipmentId),
+			shipmentCode: atob(_shipmentCode),
+			shipmentDate: atob(_shipmentDate),
+			format: "html"
+		}, function (data) {
+			if (data == "" || data == null || data == undefined) {
+				alert("<?= $this->jsTranslate("Unable to generate download"); ?>");
+			} else {
+				document.location.href = '/temporary/' + data;
+			}
+			$.unblockUI();
+		});
+	}
+</script>

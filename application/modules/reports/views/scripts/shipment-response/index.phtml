@@ -106,7 +106,7 @@ $hideSchemes = array('vl', 'tb');
     </tbody>
 </table>
 
-<script type="text/javascript" src="<?php echo $this->baseUrl('js/daterangepicker.js'); ?>"></script>
+<script type="text/javascript" src="<?php echo $this->assetUrl('js/daterangepicker.js'); ?>"></script>
 
 <script type="text/javascript">
     var startDate = "";
@@ -126,20 +126,17 @@ $hideSchemes = array('vl', 'tb');
             startDate: moment().subtract(179, 'days'),
             endDate: moment(),
             maxDate: moment(),
-            ranges: {
-                'This Month': [moment().startOf('month'), moment().endOf('month')],
-                'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
-                'Last 60 Days': [moment().subtract(59, 'days'), moment()],
-                'Last 90 Days': [moment().subtract(89, 'days'), moment()],
-                'Last 180 Days': [moment().subtract(179, 'days'), moment()],
-                'Last 12 Months': [moment().subtract(12, 'month'), moment()],
-                'Last 18 Months': [moment().subtract(18, 'month'), moment()],
-            }
+            ranges: eptDateRanges()
         },
             function (start, end) {
                 startDate = start.format('DD-MMM-YYYY');
                 endDate = end.format('DD-MMM-YYYY');
             });
+        // Start from the range the picker shows, so the shipment list matches it
+        // even before a range is picked (for example when the only scheme is pre-selected).
+        var initialRange = ($('#dateRange').val() || '').split(' to ');
+        startDate = initialRange[0] || '';
+        endDate = initialRange[1] || '';
     });
 
     function getShipmentCodes(schemeType) {

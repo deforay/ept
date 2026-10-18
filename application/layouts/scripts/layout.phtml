@@ -202,6 +202,7 @@ $resolvedHelpSlug = $helpSlugMap[$activeMenu] ?? '';
     <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha384-vtXRMe3mGCbOeY7l30aIg8H9p3GdeSe4IFlP6G8JMa7o7lXvnz3GFKzPxzJdPfGK" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="<?= $this->baseUrl('js/clientError.js'); ?>" defer></script>
 
+<?php include APPLICATION_PATH . '/views/partials/date-range-presets.phtml'; ?>
 </head>
 
 <body class="hold-transition skin-<?= $skinColorFromConfig ?> sidebar-mini">
@@ -465,7 +466,7 @@ $resolvedHelpSlug = $helpSlugMap[$activeMenu] ?? '';
     <script type="text/javascript" src="<?php echo $this->baseUrl("js/jquery.blockUI.js"); ?>"></script>
     <script type="text/javascript" src="<?php echo $this->baseUrl("js/deforayValidation.js"); ?>"></script>
     <script type="text/javascript" src="<?php echo $this->baseUrl("js/moment.min.js"); ?>"></script>
-    <script type="text/javascript" src="<?php echo $this->baseUrl('js/daterangepicker.js'); ?>"></script>
+    <script type="text/javascript" src="<?php echo $this->assetUrl("js/daterangepicker.js"); ?>"></script>
     <script type="text/javascript" src="<?php echo $this->baseUrl("js/deforayModal.js"); ?>"></script>
     <script type="text/javascript" src="<?php echo $this->baseUrl("js/bootbox.min.js"); ?>"></script>
     <link rel="stylesheet" href="<?php echo $this->baseUrl("css/bootstrap-multiselect.css"); ?>" type="text/css"

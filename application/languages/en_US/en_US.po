@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: e-PT\n"
 "Report-Msgid-Bugs-To: support@deforay.com\n"
-"POT-Creation-Date: 2026-10-18 10:50+0530\n"
+"POT-Creation-Date: 2026-10-18 12:53+0530\n"
 "PO-Revision-Date: 2022-06-07 20:34+0530\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -85,7 +85,7 @@ msgid ""
 msgstr ""
 
 #: application/languages/db-translation-strings.php:47
-#: application/models/Dts.php:2291
+#: application/models/Dts.php:2293
 #: application/modules/admin/views/scripts/participants/bulk-import-review.phtml:12
 #: application/modules/admin/views/scripts/participants/bulk-import.phtml:244
 #: library/Pt/Commons/ImportTemplate.php:83
@@ -106,8 +106,8 @@ msgid "Did not meet the minimum score required"
 msgstr ""
 
 #: application/languages/db-translation-strings.php:55
-#: application/models/Dts.php:1596 application/models/Dts.php:1614
-#: application/models/Dts.php:2295 application/models/Dts.php:2372
+#: application/models/Dts.php:1598 application/models/Dts.php:1616
+#: application/models/Dts.php:2297 application/models/Dts.php:2374
 #: application/modules/admin/views/scripts/data-managers/index.phtml:222
 #: application/modules/admin/views/scripts/data-managers/_participant-dual-list.phtml:80
 #: application/modules/admin/views/scripts/enrollments/add.phtml:29
@@ -199,7 +199,7 @@ msgstr ""
 #: application/languages/db-translation-strings.php:81
 #: application/models/DbTable/DataManagers.php:394
 #: application/models/DbTable/Distribution.php:156
-#: application/models/Dts.php:2298
+#: application/models/Dts.php:2300
 #: application/modules/admin/views/scripts/audit-log/index.phtml:654
 #: application/modules/admin/views/scripts/email-participants/index.phtml:464
 #: application/modules/admin/views/scripts/login/index.phtml:190
@@ -783,8 +783,6 @@ msgid ""
 msgstr ""
 
 #: application/languages/db-translation-strings.php:325
-#: application/modules/reports/views/scripts/participant-trends/index.phtml:162
-#: application/modules/reports/views/scripts/participant-trends/index.phtml:204
 #: application/services/Evaluation.php:2548
 #: application/views/scripts/participant/participant-performance.phtml:129
 #: application/views/scripts/participant/participant-performance.phtml:171
@@ -895,9 +893,9 @@ msgid "Private hospital"
 msgstr ""
 
 #: application/languages/db-translation-strings.php:373
-#: application/models/Dts.php:1595 application/models/Dts.php:1613
-#: application/models/Dts.php:2294 application/models/Dts.php:2324
-#: application/models/Dts.php:2344 application/models/Dts.php:2371
+#: application/models/Dts.php:1597 application/models/Dts.php:1615
+#: application/models/Dts.php:2296 application/models/Dts.php:2326
+#: application/models/Dts.php:2346 application/models/Dts.php:2373
 #: application/modules/admin/views/scripts/data-managers/_participant-dual-list.phtml:70
 #: application/modules/admin/views/scripts/evaluate/shipment.phtml:306
 #: application/modules/admin/views/scripts/evaluate/shipment.phtml:309
@@ -994,12 +992,12 @@ msgstr ""
 #: application/modules/reports/views/scripts/distribution/shipment.phtml:330
 #: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:362
 #: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:365
-#: application/modules/reports/views/scripts/participant-trends/index.phtml:199
+#: application/modules/reports/views/scripts/participant-trends/index.phtml:358
 #: application/modules/reports/views/scripts/shipment-response-report/index.phtml:127
 #: application/modules/reports/views/scripts/shipment-response-report/index.phtml:129
 #: application/modules/reports/views/scripts/testkit/index.phtml:70
 #: application/modules/reports/views/scripts/testkit/index.phtml:117
-#: application/services/Reports.php:2795 application/services/Reports.php:2894
+#: application/services/Reports.php:2810 application/services/Reports.php:2909
 #: application/views/scripts/participant/add-participant.phtml:61
 #: application/views/scripts/participant/add-participant.phtml:63
 #: application/views/scripts/participant/add.phtml:63
@@ -1442,9 +1440,9 @@ msgid ""
 msgstr ""
 
 #: application/languages/help-translation-strings.php:69
-#: application/layouts/scripts/admin.phtml:345
+#: application/layouts/scripts/admin.phtml:346
 #: application/layouts/scripts/home.phtml:122
-#: application/layouts/scripts/layout.phtml:292
+#: application/layouts/scripts/layout.phtml:293
 #: application/modules/admin/views/scripts/help/index.phtml:16
 #: application/modules/admin/views/scripts/index/index.phtml:720
 #: application/modules/admin/views/scripts/shipment/round-participants.phtml:47
@@ -1542,7 +1540,7 @@ msgid "email"
 msgstr ""
 
 #: application/languages/help-translation-strings.php:111
-#: application/layouts/scripts/admin.phtml:379
+#: application/layouts/scripts/admin.phtml:380
 #: application/modules/admin/views/scripts/email-participants/index.phtml:128
 #: application/views/partials/spotlight.phtml:369
 #, fuzzy
@@ -1614,7 +1612,7 @@ msgid "finalize"
 msgstr "View PT Result"
 
 #: application/languages/help-translation-strings.php:139
-#: application/layouts/scripts/admin.phtml:499
+#: application/layouts/scripts/admin.phtml:500
 #: application/views/partials/spotlight.phtml:425
 #, fuzzy
 msgid "Finalize Reports"
@@ -1625,7 +1623,7 @@ msgid "generate"
 msgstr ""
 
 #: application/languages/help-translation-strings.php:143
-#: application/layouts/scripts/admin.phtml:496
+#: application/layouts/scripts/admin.phtml:497
 #: application/modules/admin/controllers/SpotlightController.php:77
 #: application/modules/admin/views/scripts/evaluate/get-shipments.ajax.phtml:21
 #: application/modules/admin/views/scripts/evaluate/get-shipments.ajax.phtml:33
@@ -1669,7 +1667,7 @@ msgid "home"
 msgstr ""
 
 #: application/languages/help-translation-strings.php:161
-#: application/layouts/scripts/admin.phtml:431
+#: application/layouts/scripts/admin.phtml:432
 #: application/modules/admin/views/scripts/home-config/index.phtml:480
 #: application/modules/admin/views/scripts/home-section-links/add.phtml:20
 #: application/modules/admin/views/scripts/home-section-links/edit.phtml:19
@@ -1767,13 +1765,12 @@ msgid "participants"
 msgstr "Participant Login"
 
 #: application/languages/help-translation-strings.php:199
-#: application/layouts/scripts/layout.phtml:355
+#: application/layouts/scripts/layout.phtml:356
 #: application/modules/admin/views/scripts/email-participants/index.phtml:140
 #: application/modules/admin/views/scripts/email-participants/index.phtml:218
 #: application/modules/admin/views/scripts/index/ept-overview.ajax.phtml:285
 #: application/modules/admin/views/scripts/mail-template/get-mail-template.ajax.phtml:18
 #: application/modules/admin/views/scripts/shipment/index.phtml:65
-#: application/modules/reports/views/scripts/shipments/index.phtml:270
 #: application/modules/reports/views/scripts/shipments/vl-sample-analysis.phtml:126
 #, fuzzy
 msgid "Participants"
@@ -1789,7 +1786,7 @@ msgid "pdf"
 msgstr ""
 
 #: application/languages/help-translation-strings.php:205
-#: application/layouts/scripts/admin.phtml:434
+#: application/layouts/scripts/admin.phtml:435
 #: application/modules/admin/views/scripts/report-config/index.phtml:374
 #: application/views/partials/spotlight.phtml:211
 msgid "PDF Report Settings"
@@ -1847,7 +1844,7 @@ msgid "Rename a Viral Load assay / platform"
 msgstr ""
 
 #: application/languages/help-translation-strings.php:231
-#: application/modules/admin/views/scripts/job-tracking/index.phtml:402
+#: application/modules/admin/views/scripts/job-tracking/index.phtml:394
 #, fuzzy
 msgid "reports"
 msgstr "Summary Report"
@@ -1934,7 +1931,7 @@ msgid "shipments"
 msgstr "All Schemes"
 
 #: application/languages/help-translation-strings.php:267
-#: application/layouts/scripts/admin.phtml:481
+#: application/layouts/scripts/admin.phtml:482
 #: application/modules/admin/views/scripts/certificate-batches/index.phtml:156
 #: application/modules/admin/views/scripts/email-participants/index.phtml:168
 #: application/modules/admin/views/scripts/email-participants/index.phtml:186
@@ -1943,6 +1940,7 @@ msgstr "All Schemes"
 #: application/modules/admin/views/scripts/participants/index.phtml:219
 #: application/modules/admin/views/scripts/participants/pending.phtml:23
 #: application/modules/admin/views/scripts/shipment/index.phtml:16
+#: application/modules/reports/views/scripts/participant-trends/index.phtml:326
 #: application/views/partials/spotlight.phtml:397
 #: application/views/partials/spotlight.phtml:625
 #, fuzzy
@@ -1983,7 +1981,7 @@ msgid "testkit"
 msgstr ""
 
 #: application/languages/help-translation-strings.php:285
-#: application/layouts/scripts/admin.phtml:415
+#: application/layouts/scripts/admin.phtml:416
 #: application/modules/admin/views/scripts/partials/scheme-config-nav.phtml:150
 #: application/views/partials/spotlight.phtml:75
 msgid "Test Kits"
@@ -2092,7 +2090,7 @@ msgid ""
 "not use this for actual PT Surveys."
 msgstr ""
 
-#: application/layouts/scripts/admin.phtml:301
+#: application/layouts/scripts/admin.phtml:302
 #: application/modules/admin/views/scripts/audit-log/index.phtml:645
 #: application/modules/admin/views/scripts/audit-log/index.phtml:686
 #: application/modules/admin/views/scripts/certificate-templates/index.phtml:537
@@ -2115,27 +2113,27 @@ msgstr ""
 msgid "Close"
 msgstr ""
 
-#: application/layouts/scripts/admin.phtml:303
+#: application/layouts/scripts/admin.phtml:304
 msgid "Enter your Password to Confirm"
 msgstr ""
 
-#: application/layouts/scripts/admin.phtml:309
+#: application/layouts/scripts/admin.phtml:310
 #, fuzzy
 msgid "Enter your Password"
 msgstr "Change Password"
 
-#: application/layouts/scripts/admin.phtml:310
+#: application/layouts/scripts/admin.phtml:311
 msgid "Please enter the your password"
 msgstr ""
 
-#: application/layouts/scripts/admin.phtml:319
+#: application/layouts/scripts/admin.phtml:320
 msgid "Confirm"
 msgstr ""
 
-#: application/layouts/scripts/admin.phtml:320
+#: application/layouts/scripts/admin.phtml:321
 #: application/models/DbTable/Distribution.php:166
 #: application/modules/admin/views/scripts/announcement/compose.phtml:108
-#: application/modules/admin/views/scripts/certificate-batches/index.phtml:400
+#: application/modules/admin/views/scripts/certificate-batches/index.phtml:392
 #: application/modules/admin/views/scripts/covid19-gene-type/add.phtml:52
 #: application/modules/admin/views/scripts/covid19-gene-type/edit.phtml:51
 #: application/modules/admin/views/scripts/custom-test/add.phtml:239
@@ -2167,7 +2165,7 @@ msgstr ""
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:344
 #: application/modules/admin/views/scripts/home-section-links/add.phtml:97
 #: application/modules/admin/views/scripts/home-section-links/edit.phtml:103
-#: application/modules/admin/views/scripts/job-tracking/index.phtml:358
+#: application/modules/admin/views/scripts/job-tracking/index.phtml:350
 #: application/modules/admin/views/scripts/mail-template/get-mail-template.ajax.phtml:129
 #: application/modules/admin/views/scripts/mail-template/get-mail-template.phtml:67
 #: application/modules/admin/views/scripts/mail-template/get-push-notification.ajax.phtml:48
@@ -2229,12 +2227,12 @@ msgstr ""
 msgid "Cancel"
 msgstr ""
 
-#: application/layouts/scripts/admin.phtml:339
+#: application/layouts/scripts/admin.phtml:340
 #: application/modules/admin/views/scripts/login/index.phtml:141
 msgid "ePT Admin"
 msgstr ""
 
-#: application/layouts/scripts/admin.phtml:349
+#: application/layouts/scripts/admin.phtml:350
 #: application/views/partials/spotlight.phtml:45
 #: application/views/partials/spotlight.phtml:56
 #: application/views/partials/spotlight.phtml:64
@@ -2276,157 +2274,157 @@ msgstr ""
 msgid "Configure"
 msgstr ""
 
-#: application/layouts/scripts/admin.phtml:354
+#: application/layouts/scripts/admin.phtml:355
 #: application/views/partials/spotlight.phtml:44
 msgid "PT Managers"
 msgstr ""
 
-#: application/layouts/scripts/admin.phtml:361
+#: application/layouts/scripts/admin.phtml:362
 #: application/views/partials/spotlight.phtml:310
 #, fuzzy
 msgid "PT Participants"
 msgstr "Participant Login"
 
-#: application/layouts/scripts/admin.phtml:364
+#: application/layouts/scripts/admin.phtml:365
 #: application/views/partials/spotlight.phtml:335
 #, fuzzy
 msgid "Data Manager (Participant Login)"
 msgstr "Participant Login"
 
-#: application/layouts/scripts/admin.phtml:368
+#: application/layouts/scripts/admin.phtml:369
 #: application/views/partials/spotlight.phtml:344
 msgid "Manage PTCC"
 msgstr ""
 
-#: application/layouts/scripts/admin.phtml:372
+#: application/layouts/scripts/admin.phtml:373
 #: application/views/partials/spotlight.phtml:353
 #, fuzzy
 msgid "Participant Login Map"
 msgstr "Participant Login"
 
-#: application/layouts/scripts/admin.phtml:374
+#: application/layouts/scripts/admin.phtml:375
 #, fuzzy
 msgid "Pending PT Participants"
 msgstr "PT Participant Info"
 
-#: application/layouts/scripts/admin.phtml:376
+#: application/layouts/scripts/admin.phtml:377
 #: application/views/partials/spotlight.phtml:361
 #, fuzzy
 msgid "Scheme Enrollments"
 msgstr "Enrollment"
 
-#: application/layouts/scripts/admin.phtml:382
+#: application/layouts/scripts/admin.phtml:383
 #, fuzzy
 msgid "Files For Participants"
 msgstr "PT Participant Info"
 
-#: application/layouts/scripts/admin.phtml:389
+#: application/layouts/scripts/admin.phtml:390
 #: application/views/partials/spotlight.phtml:55
 #, fuzzy
 msgid "Feedback Questions"
 msgstr "Participant Login"
 
-#: application/layouts/scripts/admin.phtml:392
+#: application/layouts/scripts/admin.phtml:393
 #: application/modules/admin/views/scripts/feedback-responses/shipment-questions.phtml:39
 #: application/views/partials/spotlight.phtml:63
 #, fuzzy
 msgid "Feedback Forms"
 msgstr "PT Participant Info"
 
-#: application/layouts/scripts/admin.phtml:420
+#: application/layouts/scripts/admin.phtml:421
 #: application/modules/admin/views/scripts/partials/scheme-config-open.phtml:22
 #, fuzzy
 msgid "Scheme Config"
 msgstr "Scheme Information"
 
-#: application/layouts/scripts/admin.phtml:424
+#: application/layouts/scripts/admin.phtml:425
 #: application/modules/admin/views/scripts/schemes/test-results.phtml:7
 #: application/views/partials/spotlight.phtml:186
 #, fuzzy
 msgid "Scheme Test Results"
 msgstr "Result"
 
-#: application/layouts/scripts/admin.phtml:428
+#: application/layouts/scripts/admin.phtml:429
 #: application/modules/admin/views/scripts/global-config/index.phtml:619
 #: application/views/partials/spotlight.phtml:194
 msgid "ePT Global Settings"
 msgstr ""
 
-#: application/layouts/scripts/admin.phtml:438
+#: application/layouts/scripts/admin.phtml:439
 #: application/modules/admin/views/scripts/certificate-templates/index.phtml:171
 #: application/views/partials/spotlight.phtml:227
 msgid "Certificate Templates"
 msgstr ""
 
-#: application/layouts/scripts/admin.phtml:440
+#: application/layouts/scripts/admin.phtml:441
 #: application/modules/admin/views/scripts/mail-template/index.phtml:85
 #: application/views/partials/spotlight.phtml:243
 msgid "Mail Template"
 msgstr ""
 
-#: application/layouts/scripts/admin.phtml:443
+#: application/layouts/scripts/admin.phtml:444
 #: application/views/partials/spotlight.phtml:251
 msgid "Partners"
 msgstr ""
 
-#: application/layouts/scripts/admin.phtml:446
+#: application/layouts/scripts/admin.phtml:447
 #: application/views/partials/spotlight.phtml:259
 #, fuzzy
 msgid "Contact Messages"
 msgstr "Contact Us"
 
-#: application/layouts/scripts/admin.phtml:450
+#: application/layouts/scripts/admin.phtml:451
 #: application/modules/admin/views/scripts/api-history/index.phtml:4
 #: application/modules/admin/views/scripts/audit-log/index.phtml:569
 #: application/views/partials/spotlight.phtml:267
 msgid "Audit Log"
 msgstr ""
 
-#: application/layouts/scripts/admin.phtml:453
+#: application/layouts/scripts/admin.phtml:454
 #: application/modules/admin/views/scripts/log-viewer/index.phtml:52
 #: application/views/partials/spotlight.phtml:275
 msgid "Log Viewer"
 msgstr ""
 
-#: application/layouts/scripts/admin.phtml:456
+#: application/layouts/scripts/admin.phtml:457
 #: application/views/partials/spotlight.phtml:283
 msgid "API Sync History"
 msgstr ""
 
-#: application/layouts/scripts/admin.phtml:459
+#: application/layouts/scripts/admin.phtml:460
 #: application/modules/admin/views/scripts/job-tracking/index.phtml:65
 #: application/views/partials/spotlight.phtml:291
 msgid "Job Tracking"
 msgstr ""
 
-#: application/layouts/scripts/admin.phtml:462
+#: application/layouts/scripts/admin.phtml:463
 #: application/modules/admin/views/scripts/alerts/email.phtml:41
 #: application/views/partials/spotlight.phtml:235
 msgid "Failed Emails"
 msgstr ""
 
-#: application/layouts/scripts/admin.phtml:464
+#: application/layouts/scripts/admin.phtml:465
 #: application/modules/admin/views/scripts/certificate-batches/index.phtml:101
 #: application/views/partials/spotlight.phtml:299
 msgid "Certificate Batches"
 msgstr ""
 
-#: application/layouts/scripts/admin.phtml:473
-#: application/layouts/scripts/layout.phtml:347
+#: application/layouts/scripts/admin.phtml:474
+#: application/layouts/scripts/layout.phtml:348
 #: application/views/partials/spotlight.phtml:390
 #: application/views/partials/spotlight.phtml:398
 #: application/views/partials/spotlight.phtml:637
 msgid "Manage"
 msgstr ""
 
-#: application/layouts/scripts/admin.phtml:478
+#: application/layouts/scripts/admin.phtml:479
 #: application/modules/reports/views/scripts/distribution/shipment.phtml:39
 #: application/views/partials/spotlight.phtml:389
 #: scheduled-jobs/report-layouts/summary-layouts/default/dts.phtml:55
 msgid "PT Survey"
 msgstr ""
 
-#: application/layouts/scripts/admin.phtml:489
+#: application/layouts/scripts/admin.phtml:490
 #: application/views/partials/spotlight.phtml:410
 #: application/views/partials/spotlight.phtml:418
 #: application/views/partials/spotlight.phtml:426
@@ -2435,17 +2433,17 @@ msgstr ""
 msgid "Analyze"
 msgstr ""
 
-#: application/layouts/scripts/admin.phtml:493
+#: application/layouts/scripts/admin.phtml:494
 #: application/views/partials/spotlight.phtml:409
 msgid "Evaluate Responses"
 msgstr ""
 
-#: application/layouts/scripts/admin.phtml:503
+#: application/layouts/scripts/admin.phtml:504
 #: application/views/partials/spotlight.phtml:433
 msgid "View Finalized Shipments"
 msgstr ""
 
-#: application/layouts/scripts/admin.phtml:511
+#: application/layouts/scripts/admin.phtml:512
 #: application/views/partials/spotlight.phtml:455
 #: application/views/partials/spotlight.phtml:463
 #: application/views/partials/spotlight.phtml:471
@@ -2466,28 +2464,28 @@ msgstr ""
 msgid "Reports"
 msgstr ""
 
-#: application/layouts/scripts/admin.phtml:515
-#: application/modules/reports/views/scripts/shipments/index.phtml:208
+#: application/layouts/scripts/admin.phtml:516
+#: application/modules/reports/views/scripts/shipments/index.phtml:3
 #: application/views/partials/spotlight.phtml:446
 #: application/views/partials/spotlight.phtml:454
-#: application/views/scripts/participant/shipments-reports.phtml:17
+#: application/views/scripts/participant/shipments-reports.phtml:2
 #, fuzzy
 msgid "Shipments Report"
 msgstr "All Schemes"
 
-#: application/layouts/scripts/admin.phtml:518
+#: application/layouts/scripts/admin.phtml:519
 #: application/modules/reports/views/scripts/shipment-response-report/index.phtml:22
 #: application/views/partials/spotlight.phtml:462
 #: application/views/scripts/participant/shipment-response-report.phtml:15
 msgid "Shipment Response Report"
 msgstr ""
 
-#: application/layouts/scripts/admin.phtml:521
+#: application/layouts/scripts/admin.phtml:522
 #: application/views/partials/spotlight.phtml:470
 msgid "Testing Facility By Ownership"
 msgstr ""
 
-#: application/layouts/scripts/admin.phtml:525
+#: application/layouts/scripts/admin.phtml:526
 #: application/modules/reports/views/scripts/detailed/index.phtml:21
 #: application/views/partials/spotlight.phtml:478
 #: application/views/scripts/participant/response-report.phtml:15
@@ -2495,84 +2493,83 @@ msgstr ""
 msgid "Participant Response Report"
 msgstr "Participant Login"
 
-#: application/layouts/scripts/admin.phtml:528
+#: application/layouts/scripts/admin.phtml:529
 #: application/views/partials/spotlight.phtml:486
 #, fuzzy
 msgid "Participant Performance Report"
 msgstr "Participant Name"
 
-#: application/layouts/scripts/admin.phtml:531
+#: application/layouts/scripts/admin.phtml:532
 #: application/views/partials/spotlight.phtml:494
 #, fuzzy
 msgid "Participant Trends"
 msgstr "PT Participant Info"
 
-#: application/layouts/scripts/admin.phtml:534
+#: application/layouts/scripts/admin.phtml:535
 #: application/views/partials/spotlight.phtml:502
 #, fuzzy
 msgid "Corrective Actions Report"
 msgstr "Corrective Actions"
 
-#: application/layouts/scripts/admin.phtml:538
+#: application/layouts/scripts/admin.phtml:539
 #: application/views/partials/spotlight.phtml:511
 #, fuzzy
 msgid "Corrective and Preventive Actions"
 msgstr "Corrective Actions"
 
-#: application/layouts/scripts/admin.phtml:545
+#: application/layouts/scripts/admin.phtml:546
 #: application/views/partials/spotlight.phtml:522
 msgid "Test Kit Report For HIV Serology"
 msgstr ""
 
-#: application/layouts/scripts/admin.phtml:550
+#: application/layouts/scripts/admin.phtml:551
 #: application/views/partials/spotlight.phtml:533
 msgid "XTPT Indicators"
 msgstr ""
 
-#: application/layouts/scripts/admin.phtml:553
+#: application/layouts/scripts/admin.phtml:554
 #: application/views/partials/spotlight.phtml:541
 msgid "TB: Number of Participants per Country"
 msgstr ""
 
-#: application/layouts/scripts/admin.phtml:556
+#: application/layouts/scripts/admin.phtml:557
 #: application/views/partials/spotlight.phtml:549
 msgid "TB: Result of PT Panel per Site"
 msgstr ""
 
-#: application/layouts/scripts/admin.phtml:559
+#: application/layouts/scripts/admin.phtml:560
 #: application/views/partials/spotlight.phtml:557
 msgid "TB: All Sites' Results"
 msgstr ""
 
-#: application/layouts/scripts/admin.phtml:567
+#: application/layouts/scripts/admin.phtml:568
 #: application/modules/reports/views/scripts/shipments/vl-sample-analysis.phtml:67
 #: application/views/partials/spotlight.phtml:568
 msgid "VL Sample Analysis"
 msgstr ""
 
-#: application/layouts/scripts/admin.phtml:570
+#: application/layouts/scripts/admin.phtml:571
 #: application/modules/reports/views/scripts/shipments/vl-assay-distribution.phtml:24
 #: application/views/partials/spotlight.phtml:576
 msgid "VL Assay Distribution"
 msgstr ""
 
-#: application/layouts/scripts/admin.phtml:575
+#: application/layouts/scripts/admin.phtml:576
 #: application/modules/reports/views/scripts/annual/index.phtml:11
 #: application/views/partials/spotlight.phtml:585
 msgid "Annual Performance Report"
 msgstr ""
 
-#: application/layouts/scripts/admin.phtml:583
+#: application/layouts/scripts/admin.phtml:584
 #: application/modules/admin/views/scripts/partials/scheme-config-nav.phtml:192
 #: application/modules/admin/views/scripts/participants/index.phtml:160
 #: application/modules/admin/views/scripts/shipment/round-participants.phtml:96
 #: application/modules/reports/views/scripts/corrective-preventive-actions/index.phtml:74
-#: application/modules/reports/views/scripts/shipments/index.phtml:231
 #: application/views/scripts/capa/index.phtml:49 public/js/main.js.php:209
 msgid "Search"
 msgstr ""
 
-#: application/layouts/scripts/admin.phtml:589
+#: application/layouts/scripts/admin.phtml:590
 #: application/modules/admin/views/scripts/help/index.phtml:14
 #: application/modules/admin/views/scripts/help/index.phtml:17
 #: application/views/partials/help-drawer.phtml:25
@@ -2581,21 +2578,21 @@ msgstr ""
 msgid "Help"
 msgstr ""
 
-#: application/layouts/scripts/admin.phtml:645
+#: application/layouts/scripts/admin.phtml:646
 #: application/modules/admin/views/scripts/profile/index.phtml:153
 msgid "My Profile"
 msgstr ""
 
-#: application/layouts/scripts/admin.phtml:655
+#: application/layouts/scripts/admin.phtml:656
 msgid "Sign Out"
 msgstr ""
 
-#: application/layouts/scripts/admin.phtml:716
-#: application/layouts/scripts/layout.phtml:428
+#: application/layouts/scripts/admin.phtml:717
+#: application/layouts/scripts/layout.phtml:429
 msgid "some problem"
 msgstr "some problem"
 
-#: application/layouts/scripts/admin.phtml:727
+#: application/layouts/scripts/admin.phtml:728
 #: application/layouts/scripts/home.phtml:178
 #, fuzzy
 msgid ""
@@ -2607,29 +2604,29 @@ msgstr ""
 "Relief (PEPFAR) through the U.S. Centers for Disease Control and Prevention "
 "(CDC)."
 
-#: application/layouts/scripts/admin.phtml:732
+#: application/layouts/scripts/admin.phtml:733
 #: application/layouts/scripts/home.phtml:181
-#: application/layouts/scripts/layout.phtml:436
+#: application/layouts/scripts/layout.phtml:437
 msgid "Deployed commit"
 msgstr ""
 
-#: application/layouts/scripts/admin.phtml:742
+#: application/layouts/scripts/admin.phtml:743
 msgid "database not fully migrated"
 msgstr ""
 
-#: application/layouts/scripts/admin.phtml:743
+#: application/layouts/scripts/admin.phtml:744
 msgid "code older than database"
 msgstr ""
 
-#: application/layouts/scripts/admin.phtml:746
+#: application/layouts/scripts/admin.phtml:747
 msgid "App version"
 msgstr ""
 
-#: application/layouts/scripts/admin.phtml:746
+#: application/layouts/scripts/admin.phtml:747
 msgid "DB version"
 msgstr ""
 
-#: application/layouts/scripts/admin.phtml:747
+#: application/layouts/scripts/admin.phtml:748
 msgid "DB ver."
 msgstr ""
 
@@ -2662,8 +2659,8 @@ msgid "Contact"
 msgstr "Contact Us"
 
 #: application/layouts/scripts/home.phtml:117
-#: application/layouts/scripts/layout.phtml:262
-#: application/layouts/scripts/layout.phtml:393
+#: application/layouts/scripts/layout.phtml:263
+#: application/layouts/scripts/layout.phtml:394
 #: application/layouts/scripts/menu.phtml:27
 msgid "Participant Login"
 msgstr "Participant Login"
@@ -2672,50 +2669,49 @@ msgstr "Participant Login"
 msgid "Online Lab Proficiency Testing"
 msgstr "Online Lab Proficiency Testing"
 
-#: application/layouts/scripts/layout.phtml:237
+#: application/layouts/scripts/layout.phtml:238
 msgid "Toggle navigation"
 msgstr "Toggle navigation"
 
-#: application/layouts/scripts/layout.phtml:246
+#: application/layouts/scripts/layout.phtml:247
 msgid "Help (Ctrl+/)"
 msgstr ""
 
-#: application/layouts/scripts/layout.phtml:275
+#: application/layouts/scripts/layout.phtml:276
 msgid "MAIN NAVIGATION"
 msgstr "MAIN NAVIGATION"
 
-#: application/layouts/scripts/layout.phtml:281
+#: application/layouts/scripts/layout.phtml:282
 msgid "Program Information"
 msgstr "Program Information"
 
-#: application/layouts/scripts/layout.phtml:299
+#: application/layouts/scripts/layout.phtml:300
 msgid "PT Result Submission"
 msgstr "PT Result Submission"
 
-#: application/layouts/scripts/layout.phtml:307
+#: application/layouts/scripts/layout.phtml:308
 msgid "CAPA"
 msgstr ""
 
-#: application/layouts/scripts/layout.phtml:313
+#: application/layouts/scripts/layout.phtml:314
 msgid "View PT Result"
 msgstr "View PT Result"
 
-#: application/layouts/scripts/layout.phtml:318
+#: application/layouts/scripts/layout.phtml:319
 #: application/layouts/scripts/menu.phtml:44
 #: application/models/DbTable/Shipments.php:816
 #: application/views/scripts/participant/dashboard.phtml:208
 msgid "Individual Report"
 msgstr "Individual Report"
 
-#: application/layouts/scripts/layout.phtml:321
+#: application/layouts/scripts/layout.phtml:322
 #: application/layouts/scripts/menu.phtml:45
 #: application/models/DbTable/Shipments.php:807
 #: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:429
-#: application/services/Reports.php:195
 msgid "Summary Report"
 msgstr "Summary Report"
 
-#: application/layouts/scripts/layout.phtml:328
+#: application/layouts/scripts/layout.phtml:329
 #: application/models/DbTable/Shipments.php:1376
 #: application/modules/reports/views/scripts/corrective-preventive-actions/capa.phtml:81
 #: application/views/scripts/capa/capa.phtml:74
@@ -2723,7 +2719,7 @@ msgstr "Summary Report"
 msgid "Corrective Actions"
 msgstr "Corrective Actions"
 
-#: application/layouts/scripts/layout.phtml:334
+#: application/layouts/scripts/layout.phtml:335
 #: application/modules/admin/views/scripts/sample-not-tested-reasons/index.phtml:22
 #: application/modules/admin/views/scripts/shipment/index.phtml:46
 #: application/modules/admin/views/scripts/testkit/index.phtml:39
@@ -2731,47 +2727,47 @@ msgstr "Corrective Actions"
 msgid "All Schemes"
 msgstr "All Schemes"
 
-#: application/layouts/scripts/layout.phtml:341
+#: application/layouts/scripts/layout.phtml:342
 #: application/views/scripts/participant/defaulted-schemes.phtml:2
 msgid "Defaulted Schemes"
 msgstr "Defaulted Schemes"
 
-#: application/layouts/scripts/layout.phtml:352
+#: application/layouts/scripts/layout.phtml:353
 #: application/modules/admin/views/scripts/participants/index.phtml:218
 #: application/modules/admin/views/scripts/participants/pending.phtml:22
 #: application/views/scripts/data-managers/index.phtml:2
 msgid "Data Managers"
 msgstr ""
 
-#: application/layouts/scripts/layout.phtml:357
+#: application/layouts/scripts/layout.phtml:358
 #, fuzzy
 msgid "PTCC Participant Map"
 msgstr "PT Participant Info"
 
-#: application/layouts/scripts/layout.phtml:360
+#: application/layouts/scripts/layout.phtml:361
 #: application/layouts/scripts/menu.phtml:35
 #: application/views/scripts/participant/user-info.phtml:7
 msgid "My Login Information"
 msgstr "My Login Information"
 
-#: application/layouts/scripts/layout.phtml:363
+#: application/layouts/scripts/layout.phtml:364
 #: application/layouts/scripts/menu.phtml:36
 msgid "PT Participant Info"
 msgstr "PT Participant Info"
 
-#: application/layouts/scripts/layout.phtml:366
+#: application/layouts/scripts/layout.phtml:367
 #: application/layouts/scripts/menu.phtml:37
 msgid "Scheme Information"
 msgstr "Scheme Information"
 
-#: application/layouts/scripts/layout.phtml:370
+#: application/layouts/scripts/layout.phtml:371
 #: application/modules/admin/views/scripts/data-managers/change-primary-email.phtml:28
 #: application/views/scripts/data-managers/change-primary-email.phtml:26
 #: application/views/scripts/participant/change-primary-email.phtml:4
 msgid "Change Primary Email"
 msgstr ""
 
-#: application/layouts/scripts/layout.phtml:374
+#: application/layouts/scripts/layout.phtml:375
 #: application/layouts/scripts/menu.phtml:38
 #: application/modules/admin/views/scripts/profile/index.phtml:286
 #: application/views/scripts/participant/password.phtml:29
@@ -2779,25 +2775,26 @@ msgstr ""
 msgid "Change Password"
 msgstr "Change Password"
 
-#: application/layouts/scripts/layout.phtml:379
+#: application/layouts/scripts/layout.phtml:380
 #, fuzzy
 msgid "Participant Message"
 msgstr "Participant Name"
 
-#: application/layouts/scripts/layout.phtml:384
+#: application/layouts/scripts/layout.phtml:385
+#: application/views/partials/shipments-report-grid.phtml:356
 #: application/views/scripts/participant/feed-back.phtml:120
 msgid "Downloads"
 msgstr "Downloads"
 
-#: application/layouts/scripts/layout.phtml:399
+#: application/layouts/scripts/layout.phtml:400
 msgid "Logout"
 msgstr "Logout"
 
-#: application/layouts/scripts/layout.phtml:427
+#: application/layouts/scripts/layout.phtml:428
 msgid "Dialog"
 msgstr ""
 
-#: application/layouts/scripts/layout.phtml:446
+#: application/layouts/scripts/layout.phtml:447
 #: application/modules/admin/views/scripts/login/index.phtml:210
 msgid ""
 "This project is supported by the U.S. President's Emergency Plan for AIDS "
@@ -2808,12 +2805,12 @@ msgstr ""
 "Relief (PEPFAR) through the U.S. Centers for Disease Control and Prevention "
 "(CDC)."
 
-#: application/layouts/scripts/layout.phtml:591
+#: application/layouts/scripts/layout.phtml:592
 #, fuzzy
 msgid "Stop viewing as participant and return to admin"
 msgstr "PT Participant Info"
 
-#: application/layouts/scripts/layout.phtml:592
+#: application/layouts/scripts/layout.phtml:593
 msgid "Viewing as"
 msgstr ""
 
@@ -2840,7 +2837,6 @@ msgid "My PT"
 msgstr ""
 
 #: application/layouts/scripts/menu.phtml:43
-#: application/services/Reports.php:266
 msgid "Overview"
 msgstr ""
 
@@ -2959,10 +2955,10 @@ msgstr ""
 
 #: application/models/DbTable/Distribution.php:144
 #: application/modules/admin/views/scripts/alerts/email.phtml:54
-#: application/modules/admin/views/scripts/certificate-batches/index.phtml:340
+#: application/modules/admin/views/scripts/certificate-batches/index.phtml:332
 #: application/modules/admin/views/scripts/email-participants/index.phtml:1312
-#: application/modules/admin/views/scripts/job-tracking/index.phtml:328
-#: application/services/Reports.php:255 application/services/Shipments.php:561
+#: application/modules/admin/views/scripts/job-tracking/index.phtml:320
+#: application/services/Reports.php:228 application/services/Shipments.php:561
 #: application/services/Shipments.php:651
 msgid "Cancelled"
 msgstr ""
@@ -3014,6 +3010,7 @@ msgstr ""
 #: application/modules/admin/views/scripts/evaluate/get-shipments.ajax.phtml:209
 #: application/modules/admin/views/scripts/evaluate/shipment.phtml:121
 #: application/modules/reports/views/scripts/distribution/get-shipments.ajax.phtml:108
+#: application/services/Reports.php:258
 msgid "View"
 msgstr ""
 
@@ -3079,6 +3076,7 @@ msgstr "Participant Name"
 #: application/modules/admin/views/scripts/evaluate/shipment.phtml:244
 #: application/modules/reports/views/scripts/distribution/finalize.phtml:326
 #: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:314
+#: application/modules/reports/views/scripts/participant-trends/index.phtml:365
 #: application/views/scripts/participant/report.phtml:152
 msgid "Satisfactory"
 msgstr ""
@@ -3087,6 +3085,7 @@ msgstr ""
 #: application/modules/admin/views/scripts/evaluate/shipment.phtml:245
 #: application/modules/reports/views/scripts/distribution/finalize.phtml:327
 #: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:315
+#: application/modules/reports/views/scripts/participant-trends/index.phtml:366
 #: application/views/scripts/participant/report.phtml:153
 msgid "Unsatisfactory"
 msgstr ""
@@ -3116,6 +3115,7 @@ msgstr "All Schemes"
 #: application/modules/reports/views/scripts/distribution/finalize.phtml:317
 #: application/modules/reports/views/scripts/distribution/shipment.phtml:277
 #: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:304
+#: application/modules/reports/views/scripts/participant-trends/index.phtml:332
 #: application/modules/reports/views/scripts/shipment-response-report/index.phtml:170
 #: application/services/Dashboard.php:1033
 #: application/services/Evaluation.php:2010
@@ -3157,7 +3157,7 @@ msgstr "Summary Report"
 
 #: application/models/DbTable/Shipments.php:1379
 #: application/modules/admin/views/scripts/feedback-responses/shipment-questions.phtml:55
-#: application/services/Reports.php:274
+#: application/services/Reports.php:295
 #: application/views/scripts/participant/participant-message.phtml:9
 msgid "Feedback"
 msgstr ""
@@ -3183,9 +3183,9 @@ msgstr ""
 msgid "Replace Summary Report"
 msgstr "Summary Report"
 
-#: application/models/Dts.php:1592 application/models/Dts.php:1610
-#: application/models/Dts.php:2288 application/models/Dts.php:2321
-#: application/models/Dts.php:2341 application/models/Dts.php:2368
+#: application/models/Dts.php:1594 application/models/Dts.php:1612
+#: application/models/Dts.php:2290 application/models/Dts.php:2323
+#: application/models/Dts.php:2343 application/models/Dts.php:2370
 #: application/views/scripts/covid19/response.phtml:191
 #: application/views/scripts/dbs/response.phtml:66
 #: application/views/scripts/dts/response.phtml:196
@@ -3197,9 +3197,9 @@ msgstr "Summary Report"
 msgid "Participant Code"
 msgstr "Participant Code"
 
-#: application/models/Dts.php:1593 application/models/Dts.php:1611
-#: application/models/Dts.php:2289 application/models/Dts.php:2322
-#: application/models/Dts.php:2342 application/models/Dts.php:2369
+#: application/models/Dts.php:1595 application/models/Dts.php:1613
+#: application/models/Dts.php:2291 application/models/Dts.php:2324
+#: application/models/Dts.php:2344 application/models/Dts.php:2371
 #: application/modules/reports/views/scripts/corrective-preventive-actions/capa.phtml:32
 #: application/modules/reports/views/scripts/corrective-preventive-actions/index.phtml:88
 #: application/modules/reports/views/scripts/participant-performance/participant-performance.ajax.phtml:18
@@ -3221,9 +3221,9 @@ msgstr "Participant Code"
 msgid "Participant Name"
 msgstr "Participant Name"
 
-#: application/models/Dts.php:1594 application/models/Dts.php:1612
-#: application/models/Dts.php:2290 application/models/Dts.php:2323
-#: application/models/Dts.php:2343 application/models/Dts.php:2370
+#: application/models/Dts.php:1596 application/models/Dts.php:1614
+#: application/models/Dts.php:2292 application/models/Dts.php:2325
+#: application/models/Dts.php:2345 application/models/Dts.php:2372
 #: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc.phtml:206
 #: application/modules/admin/views/scripts/global-config/index.phtml:898
 #: application/modules/admin/views/scripts/participants/add.phtml:95
@@ -3244,7 +3244,7 @@ msgstr "Participant Name"
 msgid "Institute Name"
 msgstr ""
 
-#: application/models/Dts.php:1597 application/models/Dts.php:1615
+#: application/models/Dts.php:1599 application/models/Dts.php:1617
 #: application/modules/reports/views/scripts/shipments/vl-assay-distribution.phtml:85
 #: application/modules/reports/views/scripts/shipments/vl-sample-analysis.phtml:148
 #: application/views/scripts/dbs/response.phtml:91
@@ -3257,12 +3257,12 @@ msgstr ""
 msgid "Shipment Receipt Date"
 msgstr ""
 
-#: application/models/Dts.php:1598 application/models/Dts.php:1616
+#: application/models/Dts.php:1600 application/models/Dts.php:1618
 #: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:269
 msgid "Test Type"
 msgstr ""
 
-#: application/models/Dts.php:1599 application/models/Dts.php:2347
+#: application/models/Dts.php:1601 application/models/Dts.php:2349
 #: application/views/scripts/covid19/response.phtml:236
 #: application/views/scripts/dbs/response.phtml:105
 #: application/views/scripts/dts/response.phtml:258
@@ -3274,7 +3274,7 @@ msgstr ""
 msgid "Sample Rehydration Date"
 msgstr ""
 
-#: application/models/Dts.php:1600 application/models/Dts.php:1617
+#: application/models/Dts.php:1602 application/models/Dts.php:1619
 #: application/views/scripts/covid19/response.phtml:255
 #: application/views/scripts/dbs/response.phtml:120
 #: application/views/scripts/shipment-form/download.phtml:216
@@ -3285,89 +3285,89 @@ msgstr ""
 msgid "Testing Date"
 msgstr ""
 
-#: application/models/Dts.php:1601 application/models/Dts.php:1618
+#: application/models/Dts.php:1603 application/models/Dts.php:1620
 msgid "Reported On"
 msgstr ""
 
-#: application/models/Dts.php:1602 application/models/Dts.php:1622
+#: application/models/Dts.php:1604 application/models/Dts.php:1624
 msgid "Test #1 Kit Name"
 msgstr ""
 
-#: application/models/Dts.php:1603 application/models/Dts.php:1623
+#: application/models/Dts.php:1605 application/models/Dts.php:1625
 msgid "Kit Lot #1"
 msgstr ""
 
-#: application/models/Dts.php:1604 application/models/Dts.php:1624
+#: application/models/Dts.php:1606 application/models/Dts.php:1626
 msgid "Expiry Date #1"
 msgstr ""
 
-#: application/models/Dts.php:1605 application/models/Dts.php:1625
+#: application/models/Dts.php:1607 application/models/Dts.php:1627
 msgid "QC Done #1"
 msgstr ""
 
-#: application/models/Dts.php:1606 application/models/Dts.php:1626
+#: application/models/Dts.php:1608 application/models/Dts.php:1628
 msgid "QC Expiry Date #1"
 msgstr ""
 
-#: application/models/Dts.php:1619
+#: application/models/Dts.php:1621
 #: application/views/scripts/dts/response.phtml:343
 msgid "Condition Of PT Samples"
 msgstr ""
 
-#: application/models/Dts.php:1620
+#: application/models/Dts.php:1622
 #: application/views/scripts/dts/response.phtml:355
 #: application/views/scripts/dts/response.phtml:359
 #: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:286
 msgid "Room Temperature"
 msgstr ""
 
-#: application/models/Dts.php:1621
+#: application/models/Dts.php:1623
 #: application/views/scripts/dts/response.phtml:365
 #: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:290
 msgid "Stop Watch"
 msgstr ""
 
-#: application/models/Dts.php:1642
+#: application/models/Dts.php:1644
 msgid "Test #2 Kit Name"
 msgstr ""
 
-#: application/models/Dts.php:1643
+#: application/models/Dts.php:1645
 msgid "Kit Lot #2"
 msgstr ""
 
-#: application/models/Dts.php:1644
+#: application/models/Dts.php:1646
 msgid "Expiry Date #2"
 msgstr ""
 
-#: application/models/Dts.php:1645
+#: application/models/Dts.php:1647
 msgid "QC Done #2"
 msgstr ""
 
-#: application/models/Dts.php:1646
+#: application/models/Dts.php:1648
 msgid "QC Expiry Date #2"
 msgstr ""
 
-#: application/models/Dts.php:1677
+#: application/models/Dts.php:1679
 msgid "Test#3 Kit Name"
 msgstr ""
 
-#: application/models/Dts.php:1678
+#: application/models/Dts.php:1680
 msgid "Kit Lot #3"
 msgstr ""
 
-#: application/models/Dts.php:1679
+#: application/models/Dts.php:1681
 msgid "Expiry Date #3"
 msgstr ""
 
-#: application/models/Dts.php:1680
+#: application/models/Dts.php:1682
 msgid "QC Done #3"
 msgstr ""
 
-#: application/models/Dts.php:1681
+#: application/models/Dts.php:1683
 msgid "QC Expiry Date #3"
 msgstr ""
 
-#: application/models/Dts.php:1738
+#: application/models/Dts.php:1740
 #: application/modules/admin/views/scripts/test-platform/add.phtml:75
 #: application/modules/admin/views/scripts/test-platform/edit.phtml:82
 #: application/modules/admin/views/scripts/testkit/add.phtml:147
@@ -3389,7 +3389,7 @@ msgstr ""
 msgid "Comments"
 msgstr ""
 
-#: application/models/Dts.php:2292 application/models/Dts.php:2374
+#: application/models/Dts.php:2294 application/models/Dts.php:2376
 #: application/modules/admin/views/scripts/data-managers/add.phtml:206
 #: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc-review.phtml:14
 #: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc-review.phtml:190
@@ -3454,14 +3454,14 @@ msgstr ""
 msgid "Country"
 msgstr ""
 
-#: application/models/Dts.php:2293
+#: application/models/Dts.php:2295
 #: application/modules/admin/views/scripts/participants/bulk-import-review.phtml:13
 #: application/modules/admin/views/scripts/participants/bulk-import.phtml:245
 #: library/Pt/Commons/ImportTemplate.php:84
 msgid "Address"
 msgstr ""
 
-#: application/models/Dts.php:2296 application/models/Dts.php:2373
+#: application/models/Dts.php:2298 application/models/Dts.php:2375
 #: application/modules/admin/views/scripts/announcement/compose.phtml:48
 #: application/modules/admin/views/scripts/enrollments/add.phtml:33
 #: application/modules/admin/views/scripts/participants/add.phtml:169
@@ -3478,23 +3478,23 @@ msgstr ""
 msgid "City"
 msgstr ""
 
-#: application/models/Dts.php:2297
+#: application/models/Dts.php:2299
 msgid "Telephone"
 msgstr ""
 
-#: application/models/Dts.php:2327
+#: application/models/Dts.php:2329
 msgid "No. of Correct Responses"
 msgstr ""
 
-#: application/models/Dts.php:2327
+#: application/models/Dts.php:2329
 msgid "% Correct"
 msgstr ""
 
-#: application/models/Dts.php:2345
+#: application/models/Dts.php:2347
 msgid "Supervisor signature"
 msgstr ""
 
-#: application/models/Dts.php:2346
+#: application/models/Dts.php:2348
 #: application/views/scripts/custom-test/response.phtml:338
 #: application/views/scripts/dts/response.phtml:225
 #: application/views/scripts/tb/response.phtml:245
@@ -3502,27 +3502,27 @@ msgstr ""
 msgid "Panel Receipt Date"
 msgstr ""
 
-#: application/models/Dts.php:2348
+#: application/models/Dts.php:2350
 msgid "Tested Date"
 msgstr ""
 
-#: application/models/Dts.php:2349
+#: application/models/Dts.php:2351
 msgid "Rehydration Test In Specified Time"
 msgstr ""
 
-#: application/models/Dts.php:2350
+#: application/models/Dts.php:2352
 msgid "Documentation Score %"
 msgstr ""
 
-#: application/models/Dts.php:2375
+#: application/models/Dts.php:2377
 msgid "No. of Correct Samples"
 msgstr ""
 
-#: application/models/Dts.php:2376
+#: application/models/Dts.php:2378
 msgid "Panel Score"
 msgstr ""
 
-#: application/models/Dts.php:2377
+#: application/models/Dts.php:2379
 #: application/modules/admin/views/scripts/evaluate/shipment.phtml:341
 #: application/modules/admin/views/scripts/scheme-config/partials/dts.phtml:120
 #: application/modules/admin/views/scripts/scheme-config/partials/recency.phtml:35
@@ -3541,15 +3541,15 @@ msgstr ""
 msgid "Documentation Score"
 msgstr ""
 
-#: application/models/Dts.php:2378
+#: application/models/Dts.php:2380
 msgid "Total Score"
 msgstr ""
 
-#: application/models/Dts.php:2379
+#: application/models/Dts.php:2381
 msgid "Overall Performance"
 msgstr ""
 
-#: application/models/Dts.php:2380
+#: application/models/Dts.php:2382
 msgid "Warnings and/or Reasons for Failure"
 msgstr ""
 
@@ -3805,8 +3805,10 @@ msgstr ""
 #: application/modules/reports/views/scripts/distribution/index.phtml:39
 #: application/modules/reports/views/scripts/finalize/index.phtml:31
 #: application/modules/reports/views/scripts/finalize/shipments.phtml:32
-#: application/modules/reports/views/scripts/shipments/index.phtml:273
 #: application/modules/reports/views/scripts/shipments/response-chart.phtml:49
+#: application/views/partials/shipments-report-grid.phtml:318
+#: application/views/partials/shipments-report-grid.phtml:320
+#: application/views/partials/shipments-report-grid.phtml:355
 #: application/views/scripts/data-managers/index.phtml:9
 #: application/views/scripts/data-managers/index.phtml:27
 #: application/views/scripts/participant/add-participant.phtml:217
@@ -3866,18 +3868,16 @@ msgstr ""
 #: application/modules/reports/views/scripts/finalize/index.phtml:44
 #: application/modules/reports/views/scripts/finalize/shipments.phtml:45
 #: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:439
-#: application/modules/reports/views/scripts/participant-trends/index.phtml:168
-#: application/modules/reports/views/scripts/participant-trends/index.phtml:210
 #: application/modules/reports/views/scripts/shipment-response-report/index.phtml:178
 #: application/modules/reports/views/scripts/shipment-response-report/index.phtml:207
 #: application/modules/reports/views/scripts/shipment-response/index.phtml:104
-#: application/modules/reports/views/scripts/shipments/index.phtml:318
 #: application/modules/reports/views/scripts/shipments/vl-assay-distribution.phtml:91
 #: application/modules/reports/views/scripts/shipments/vl-sample-analysis.phtml:154
 #: application/modules/reports/views/scripts/tb-participants-per-country/index.phtml:77
 #: application/modules/reports/views/scripts/tb-results/index.phtml:80
 #: application/modules/reports/views/scripts/testkit/index.phtml:163
 #: application/modules/reports/views/scripts/testkit/index.phtml:181
+#: application/views/partials/shipments-report-grid.phtml:361
 #: application/views/scripts/capa/index.phtml:74
 #: application/views/scripts/data-managers/index.phtml:34
 #: application/views/scripts/participant/all-schemes.phtml:82
@@ -3895,7 +3895,6 @@ msgstr ""
 #: application/views/scripts/participant/response-report.phtml:83
 #: application/views/scripts/participant/shipment-response-report.phtml:115
 #: application/views/scripts/participant/shipment-response-report.phtml:144
-#: application/views/scripts/participant/shipments-reports.phtml:72
 #: application/views/scripts/participant/tb-participants-per-country.phtml:67
 #: application/views/scripts/participant/tb-results.phtml:62
 #: application/views/scripts/participant/view.phtml:40
@@ -3908,9 +3907,9 @@ msgid "Failed & Skipped"
 msgstr ""
 
 #: application/modules/admin/views/scripts/alerts/email.phtml:49
-#: application/modules/admin/views/scripts/certificate-batches/index.phtml:338
+#: application/modules/admin/views/scripts/certificate-batches/index.phtml:330
 #: application/modules/admin/views/scripts/email-participants/index.phtml:1313
-#: application/modules/admin/views/scripts/job-tracking/index.phtml:327
+#: application/modules/admin/views/scripts/job-tracking/index.phtml:319
 #: application/modules/reports/views/scripts/shipment-response-report/index.phtml:173
 #: application/modules/reports/views/scripts/shipments/participation-stats.ajax.phtml:21
 #: application/modules/reports/views/scripts/shipments/participation-stats.ajax.phtml:126
@@ -3931,11 +3930,10 @@ msgid "Skipped"
 msgstr ""
 
 #: application/modules/admin/views/scripts/alerts/email.phtml:51
-#: application/modules/admin/views/scripts/certificate-batches/index.phtml:333
-#: application/modules/admin/views/scripts/job-tracking/index.phtml:319
+#: application/modules/admin/views/scripts/certificate-batches/index.phtml:325
+#: application/modules/admin/views/scripts/job-tracking/index.phtml:311
 #: application/modules/admin/views/scripts/participants/index.phtml:169
 #: application/modules/admin/views/scripts/testkit/index.phtml:33
-#: application/modules/reports/views/scripts/shipments/index.phtml:304
 msgid "Pending"
 msgstr ""
 
@@ -3966,7 +3964,7 @@ msgstr ""
 #: application/modules/admin/views/scripts/data-managers/_participant-dual-list.phtml:434
 #: application/modules/admin/views/scripts/evaluate/shipment.phtml:231
 #: application/modules/admin/views/scripts/files-for-participants/index.phtml:442
-#: application/modules/admin/views/scripts/job-tracking/index.phtml:286
+#: application/modules/admin/views/scripts/job-tracking/index.phtml:278
 #: application/modules/admin/views/scripts/participants/index.phtml:180
 #: application/modules/admin/views/scripts/participants/index.phtml:187
 #: application/modules/admin/views/scripts/participants/participant-shipments.ajax.phtml:114
@@ -3983,8 +3981,6 @@ msgstr ""
 #: application/modules/reports/views/scripts/distribution/shipment.phtml:276
 #: application/modules/reports/views/scripts/distribution/shipment.phtml:286
 #: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:303
-#: application/modules/reports/views/scripts/shipments/index.phtml:290
-#: application/modules/reports/views/scripts/shipments/index.phtml:303
 #: application/views/scripts/data-managers/index.phtml:13
 msgid "All"
 msgstr ""
@@ -4036,7 +4032,7 @@ msgid "Select list of participants to send"
 msgstr ""
 
 #: application/modules/admin/views/scripts/announcement/compose.phtml:28
-#: application/modules/admin/views/scripts/announcement/compose.phtml:275
+#: application/modules/admin/views/scripts/announcement/compose.phtml:268
 msgid "Show Advanced Search"
 msgstr ""
 
@@ -4044,7 +4040,6 @@ msgstr ""
 #: application/modules/reports/views/scripts/corrective-actions/index.phtml:25
 #: application/modules/reports/views/scripts/detailed/index.phtml:36
 #: application/modules/reports/views/scripts/participant-performance/index.phtml:81
-#: application/modules/reports/views/scripts/participant-trends/index.phtml:78
 #: application/modules/reports/views/scripts/shipments/vl-assay-distribution.phtml:39
 #: application/modules/reports/views/scripts/shipments/vl-sample-analysis.phtml:82
 #: application/views/scripts/participant/participant-performance.phtml:62
@@ -4066,8 +4061,7 @@ msgstr ""
 #: application/modules/reports/views/scripts/detailed/index.phtml:57
 #: application/modules/reports/views/scripts/participant-performance/index.phtml:84
 #: application/modules/reports/views/scripts/participant-performance/index.phtml:97
-#: application/modules/reports/views/scripts/participant-trends/index.phtml:81
-#: application/modules/reports/views/scripts/participant-trends/index.phtml:99
+#: application/modules/reports/views/scripts/participant-trends/index.phtml:268
 #: application/modules/reports/views/scripts/testing-facility-by-ownership/index.phtml:66
 #: application/views/scripts/capa/index.phtml:31
 #: application/views/scripts/participant/all-schemes.phtml:61
@@ -4081,7 +4075,6 @@ msgstr ""
 #: application/views/scripts/participant/report.phtml:217
 #: application/views/scripts/participant/response-report.phtml:39
 #: application/views/scripts/participant/scheme.phtml:21
-#: application/views/scripts/participant/shipments-reports.phtml:36
 #: application/views/scripts/participant/summary-report.phtml:87
 #: application/views/scripts/participant/summary-report.phtml:173
 msgid "Select Scheme Type"
@@ -4090,7 +4083,6 @@ msgstr ""
 #: application/modules/admin/views/scripts/announcement/compose.phtml:42
 #: application/modules/reports/views/scripts/corrective-actions/index.phtml:31
 #: application/modules/reports/views/scripts/participant-performance/index.phtml:87
-#: application/modules/reports/views/scripts/participant-trends/index.phtml:84
 #: application/modules/reports/views/scripts/shipments/vl-sample-analysis.phtml:85
 #: application/views/scripts/participant/participant-performance.phtml:68
 #: application/views/scripts/participant/tb-all-sites-results.phtml:9
@@ -4162,7 +4154,6 @@ msgstr ""
 #: application/modules/reports/views/scripts/finalize/index.phtml:32
 #: application/modules/reports/views/scripts/finalize/shipments.phtml:33
 #: application/modules/reports/views/scripts/participant-performance/index.phtml:89
-#: application/modules/reports/views/scripts/participant-trends/index.phtml:87
 #: application/modules/reports/views/scripts/shipments/vl-assay-distribution.phtml:45
 #: application/modules/reports/views/scripts/shipments/vl-sample-analysis.phtml:87
 #: application/modules/reports/views/scripts/testkit/index.phtml:55
@@ -4195,9 +4186,8 @@ msgstr ""
 #: application/modules/reports/views/scripts/distribution/shipment.phtml:296
 #: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:324
 #: application/modules/reports/views/scripts/participant-performance/index.phtml:93
-#: application/modules/reports/views/scripts/participant-trends/index.phtml:93
+#: application/modules/reports/views/scripts/participant-trends/index.phtml:261
 #: application/modules/reports/views/scripts/shipment-response-report/index.phtml:92
-#: application/modules/reports/views/scripts/shipments/index.phtml:226
 #: application/modules/reports/views/scripts/shipments/vl-assay-distribution.phtml:50
 #: application/modules/reports/views/scripts/shipments/vl-sample-analysis.phtml:92
 #: application/modules/reports/views/scripts/testing-facility-by-ownership/index.phtml:60
@@ -4208,7 +4198,6 @@ msgstr ""
 #: application/views/scripts/participant/report.phtml:84
 #: application/views/scripts/participant/response-report.phtml:35
 #: application/views/scripts/participant/shipment-response-report.phtml:29
-#: application/views/scripts/participant/shipments-reports.phtml:32
 #: application/views/scripts/participant/summary-report.phtml:83
 #: application/views/scripts/participant/tb-participants-per-country.phtml:34
 #: application/views/scripts/participant/tb-results.phtml:32
@@ -4217,10 +4206,9 @@ msgid "Click here to pick a Date Range"
 msgstr "Participant Login"
 
 #: application/modules/admin/views/scripts/announcement/compose.phtml:70
-#: application/modules/admin/views/scripts/announcement/compose.phtml:152
+#: application/modules/admin/views/scripts/announcement/compose.phtml:145
 #: application/modules/reports/views/scripts/corrective-actions/index.phtml:61
 #: application/modules/reports/views/scripts/participant-performance/index.phtml:105
-#: application/modules/reports/views/scripts/participant-trends/index.phtml:112
 #: application/views/scripts/participant/participant-performance.phtml:93
 msgid "Select Date Range and Scheme to populate this list"
 msgstr ""
@@ -4254,10 +4242,9 @@ msgstr "PT Participant Info"
 #: application/modules/reports/views/scripts/corrective-preventive-actions/index.phtml:76
 #: application/modules/reports/views/scripts/detailed/index.phtml:81
 #: application/modules/reports/views/scripts/participant-performance/index.phtml:108
-#: application/modules/reports/views/scripts/participant-trends/index.phtml:119
+#: application/modules/reports/views/scripts/participant-trends/index.phtml:283
 #: application/modules/reports/views/scripts/shipment-response-report/index.phtml:159
 #: application/modules/reports/views/scripts/shipment-response/index.phtml:71
-#: application/modules/reports/views/scripts/shipments/index.phtml:233
 #: application/modules/reports/views/scripts/shipments/vl-assay-distribution.phtml:68
 #: application/modules/reports/views/scripts/shipments/vl-sample-analysis.phtml:103
 #: application/modules/reports/views/scripts/tb-all-sites-results/index.phtml:34
@@ -4270,7 +4257,6 @@ msgstr "PT Participant Info"
 #: application/views/scripts/participant/participant-performance.phtml:100
 #: application/views/scripts/participant/response-report.phtml:61
 #: application/views/scripts/participant/shipment-response-report.phtml:97
-#: application/views/scripts/participant/shipments-reports.phtml:46
 #: application/views/scripts/participant/tb-all-sites-results.phtml:24
 #: application/views/scripts/participant/tb-participants-per-country.phtml:46
 #: application/views/scripts/participant/tb-results.phtml:42
@@ -4293,54 +4279,53 @@ msgstr "PT Participant Info"
 msgid "Send"
 msgstr ""
 
-#: application/modules/admin/views/scripts/announcement/compose.phtml:156
-#: application/modules/reports/views/scripts/annual/index.phtml:196
-#: application/modules/reports/views/scripts/corrective-actions/index.phtml:148
-#: application/modules/reports/views/scripts/participant-performance/index.phtml:165
-#: application/modules/reports/views/scripts/participant-trends/index.phtml:269
-#: application/modules/reports/views/scripts/shipments/vl-assay-distribution.phtml:159
-#: application/modules/reports/views/scripts/shipments/vl-sample-analysis.phtml:223
-#: application/views/scripts/participant/participant-performance.phtml:235
-#: application/views/scripts/participant/tb-participants-per-country.phtml:111
-#: application/views/scripts/participant/tb-results.phtml:106
+#: application/modules/admin/views/scripts/announcement/compose.phtml:149
+#: application/modules/reports/views/scripts/annual/index.phtml:186
+#: application/modules/reports/views/scripts/corrective-actions/index.phtml:145
+#: application/modules/reports/views/scripts/participant-performance/index.phtml:157
+#: application/modules/reports/views/scripts/shipments/vl-assay-distribution.phtml:150
+#: application/modules/reports/views/scripts/shipments/vl-sample-analysis.phtml:215
+#: application/views/scripts/participant/participant-performance.phtml:227
+#: application/views/scripts/participant/tb-participants-per-country.phtml:103
+#: application/views/scripts/participant/tb-results.phtml:98
 #, fuzzy
 msgid "Please pick a date range to fetch shipment list"
 msgstr "All Schemes"
 
-#: application/modules/admin/views/scripts/announcement/compose.phtml:175
+#: application/modules/admin/views/scripts/announcement/compose.phtml:168
 #, fuzzy
 msgid "Select one or more city"
 msgstr "PT Participant Info"
 
-#: application/modules/admin/views/scripts/announcement/compose.phtml:181
+#: application/modules/admin/views/scripts/announcement/compose.phtml:174
 #, fuzzy
 msgid "Select one or more state"
 msgstr "PT Participant Info"
 
-#: application/modules/admin/views/scripts/announcement/compose.phtml:186
+#: application/modules/admin/views/scripts/announcement/compose.phtml:179
 #: application/modules/admin/views/scripts/shipment/ship-it.phtml:300
 msgid "Participants not yet enrolled for this scheme"
 msgstr ""
 
-#: application/modules/admin/views/scripts/announcement/compose.phtml:187
+#: application/modules/admin/views/scripts/announcement/compose.phtml:180
 #: application/modules/admin/views/scripts/shipment/ship-it.phtml:301
 #, fuzzy
 msgid "Enrolled/Selected Participants"
 msgstr "Participant Login"
 
-#: application/modules/admin/views/scripts/announcement/compose.phtml:188
-#: application/modules/admin/views/scripts/announcement/compose.phtml:189
+#: application/modules/admin/views/scripts/announcement/compose.phtml:181
+#: application/modules/admin/views/scripts/announcement/compose.phtml:182
 #: application/modules/admin/views/scripts/enrollments/add.phtml:101
 #: application/modules/admin/views/scripts/shipment/ship-it.phtml:302
 #, fuzzy
 msgid "Type Participant Name or Code To Filter"
 msgstr "PT Participant Info"
 
-#: application/modules/admin/views/scripts/announcement/compose.phtml:265
+#: application/modules/admin/views/scripts/announcement/compose.phtml:258
 msgid "Please select any one of the filter search participants"
 msgstr ""
 
-#: application/modules/admin/views/scripts/announcement/compose.phtml:273
+#: application/modules/admin/views/scripts/announcement/compose.phtml:266
 msgid "Hide Advanced Search"
 msgstr ""
 
@@ -4354,10 +4339,8 @@ msgstr ""
 
 #: application/modules/admin/views/scripts/api-history/index.phtml:10
 #: application/modules/reports/views/scripts/corrective-preventive-actions/index.phtml:36
-#: application/modules/reports/views/scripts/shipments/index.phtml:223
 #: application/modules/reports/views/scripts/testing-facility-by-ownership/index.phtml:50
 #: application/modules/reports/views/scripts/testkit/index.phtml:34
-#: application/views/scripts/participant/shipments-reports.phtml:22
 msgid "Pick a Date Range (Optional)"
 msgstr ""
 
@@ -4370,7 +4353,6 @@ msgstr ""
 #: application/modules/reports/views/scripts/detailed/index.phtml:39
 #: application/modules/reports/views/scripts/testing-facility-by-ownership/index.phtml:53
 #: application/views/scripts/participant/response-report.phtml:23
-#: application/views/scripts/participant/shipments-reports.phtml:25
 msgid "Select Scheme Type (Optional)"
 msgstr ""
 
@@ -4458,10 +4440,10 @@ msgstr ""
 #: application/modules/reports/views/scripts/detailed/index.phtml:52
 #: application/modules/reports/views/scripts/distribution/shipment.phtml:293
 #: application/modules/reports/views/scripts/participant-performance/index.phtml:93
-#: application/modules/reports/views/scripts/participant-trends/index.phtml:94
+#: application/modules/reports/views/scripts/participant-trends/index.phtml:259
+#: application/modules/reports/views/scripts/participant-trends/index.phtml:262
 #: application/modules/reports/views/scripts/shipment-response-report/index.phtml:90
 #: application/modules/reports/views/scripts/shipment-response-report/index.phtml:93
-#: application/modules/reports/views/scripts/shipments/index.phtml:227
 #: application/modules/reports/views/scripts/shipments/vl-assay-distribution.phtml:51
 #: application/modules/reports/views/scripts/shipments/vl-sample-analysis.phtml:93
 #: application/modules/reports/views/scripts/testing-facility-by-ownership/index.phtml:61
@@ -4597,8 +4579,8 @@ msgid "Failed to load audit log. Please retry."
 msgstr ""
 
 #: application/modules/admin/views/scripts/certificate-batches/index.phtml:106
-#: application/modules/admin/views/scripts/certificate-batches/index.phtml:540
-#: application/modules/admin/views/scripts/certificate-batches/index.phtml:543
+#: application/modules/admin/views/scripts/certificate-batches/index.phtml:532
+#: application/modules/admin/views/scripts/certificate-batches/index.phtml:535
 #: application/modules/admin/views/scripts/job-tracking/index.phtml:70
 msgid "Auto-refreshing every 5 seconds"
 msgstr ""
@@ -4629,21 +4611,21 @@ msgstr ""
 msgid "Participation"
 msgstr "Participant Login"
 
-#: application/modules/admin/views/scripts/certificate-batches/index.phtml:327
+#: application/modules/admin/views/scripts/certificate-batches/index.phtml:319
 msgid "more"
 msgstr ""
 
-#: application/modules/admin/views/scripts/certificate-batches/index.phtml:334
-#: application/modules/admin/views/scripts/job-tracking/index.phtml:320
+#: application/modules/admin/views/scripts/certificate-batches/index.phtml:326
+#: application/modules/admin/views/scripts/job-tracking/index.phtml:312
 msgid "Generating"
 msgstr ""
 
-#: application/modules/admin/views/scripts/certificate-batches/index.phtml:335
+#: application/modules/admin/views/scripts/certificate-batches/index.phtml:327
 #, fuzzy
 msgid "Generated"
 msgstr "View PT Result"
 
-#: application/modules/admin/views/scripts/certificate-batches/index.phtml:336
+#: application/modules/admin/views/scripts/certificate-batches/index.phtml:328
 #: application/modules/admin/views/scripts/test-platform/edit.phtml:90
 #: application/modules/admin/views/scripts/test-platform/index.phtml:46
 #: application/modules/admin/views/scripts/testkit/index.phtml:31
@@ -4651,43 +4633,43 @@ msgstr "View PT Result"
 msgid "Approved"
 msgstr ""
 
-#: application/modules/admin/views/scripts/certificate-batches/index.phtml:337
+#: application/modules/admin/views/scripts/certificate-batches/index.phtml:329
 msgid "Distributed"
 msgstr ""
 
-#: application/modules/admin/views/scripts/certificate-batches/index.phtml:339
+#: application/modules/admin/views/scripts/certificate-batches/index.phtml:331
 msgid "Rejected"
 msgstr ""
 
-#: application/modules/admin/views/scripts/certificate-batches/index.phtml:364
-#: application/modules/admin/views/scripts/job-tracking/index.phtml:496
+#: application/modules/admin/views/scripts/certificate-batches/index.phtml:356
+#: application/modules/admin/views/scripts/job-tracking/index.phtml:488
 msgid "s ago"
 msgstr ""
 
-#: application/modules/admin/views/scripts/certificate-batches/index.phtml:366
-#: application/modules/admin/views/scripts/job-tracking/index.phtml:498
+#: application/modules/admin/views/scripts/certificate-batches/index.phtml:358
+#: application/modules/admin/views/scripts/job-tracking/index.phtml:490
 msgid "m ago"
 msgstr ""
 
-#: application/modules/admin/views/scripts/certificate-batches/index.phtml:368
-#: application/modules/admin/views/scripts/job-tracking/index.phtml:500
+#: application/modules/admin/views/scripts/certificate-batches/index.phtml:360
+#: application/modules/admin/views/scripts/job-tracking/index.phtml:492
 msgid "h ago"
 msgstr ""
 
-#: application/modules/admin/views/scripts/certificate-batches/index.phtml:370
-#: application/modules/admin/views/scripts/job-tracking/index.phtml:502
+#: application/modules/admin/views/scripts/certificate-batches/index.phtml:362
+#: application/modules/admin/views/scripts/job-tracking/index.phtml:494
 msgid "d ago"
 msgstr ""
 
-#: application/modules/admin/views/scripts/certificate-batches/index.phtml:385
+#: application/modules/admin/views/scripts/certificate-batches/index.phtml:377
 #, fuzzy
 msgid "Download ZIP"
 msgstr "Downloads"
 
-#: application/modules/admin/views/scripts/certificate-batches/index.phtml:386
+#: application/modules/admin/views/scripts/certificate-batches/index.phtml:378
 #: application/modules/admin/views/scripts/home-section-links/add.phtml:70
 #: application/modules/admin/views/scripts/home-section-links/edit.phtml:76
-#: application/modules/reports/views/scripts/annual/index.phtml:220
+#: application/modules/reports/views/scripts/annual/index.phtml:210
 #: application/modules/reports/views/scripts/distribution/finalize.phtml:515
 #: application/modules/reports/views/scripts/finalize/get-shipments.ajax.phtml:100
 #: application/views/scripts/participant/file-downloads.phtml:15
@@ -4695,30 +4677,30 @@ msgstr "Downloads"
 msgid "Download"
 msgstr "Downloads"
 
-#: application/modules/admin/views/scripts/certificate-batches/index.phtml:391
+#: application/modules/admin/views/scripts/certificate-batches/index.phtml:383
 msgid "Approve and distribute certificates"
 msgstr ""
 
-#: application/modules/admin/views/scripts/certificate-batches/index.phtml:392
+#: application/modules/admin/views/scripts/certificate-batches/index.phtml:384
 msgid "Approve"
 msgstr ""
 
-#: application/modules/admin/views/scripts/certificate-batches/index.phtml:393
+#: application/modules/admin/views/scripts/certificate-batches/index.phtml:385
 #, fuzzy
 msgid "Reject this batch"
 msgstr "PT Result Submission"
 
-#: application/modules/admin/views/scripts/certificate-batches/index.phtml:394
+#: application/modules/admin/views/scripts/certificate-batches/index.phtml:386
 #: application/services/Evaluation.php:2656
 msgid "Reject"
 msgstr ""
 
-#: application/modules/admin/views/scripts/certificate-batches/index.phtml:399
+#: application/modules/admin/views/scripts/certificate-batches/index.phtml:391
 #, fuzzy
 msgid "Cancel this batch"
 msgstr "All Schemes"
 
-#: application/modules/admin/views/scripts/certificate-batches/index.phtml:421
+#: application/modules/admin/views/scripts/certificate-batches/index.phtml:413
 msgid ""
 "Are you sure you want to approve this batch and schedule certificate "
 "distribution?\n"
@@ -4726,50 +4708,50 @@ msgid ""
 "This will send certificates to all participants via email."
 msgstr ""
 
-#: application/modules/admin/views/scripts/certificate-batches/index.phtml:434
+#: application/modules/admin/views/scripts/certificate-batches/index.phtml:426
 msgid "Certificates approved and distribution scheduled successfully."
 msgstr ""
 
-#: application/modules/admin/views/scripts/certificate-batches/index.phtml:437
+#: application/modules/admin/views/scripts/certificate-batches/index.phtml:429
 msgid "Failed to approve batch: "
 msgstr ""
 
-#: application/modules/admin/views/scripts/certificate-batches/index.phtml:441
+#: application/modules/admin/views/scripts/certificate-batches/index.phtml:433
 msgid "Error approving batch. Please try again."
 msgstr ""
 
-#: application/modules/admin/views/scripts/certificate-batches/index.phtml:447
+#: application/modules/admin/views/scripts/certificate-batches/index.phtml:439
 msgid "Are you sure you want to cancel this batch?"
 msgstr ""
 
-#: application/modules/admin/views/scripts/certificate-batches/index.phtml:460
+#: application/modules/admin/views/scripts/certificate-batches/index.phtml:452
 msgid "Batch cancelled successfully."
 msgstr ""
 
-#: application/modules/admin/views/scripts/certificate-batches/index.phtml:463
+#: application/modules/admin/views/scripts/certificate-batches/index.phtml:455
 msgid "Failed to cancel batch: "
 msgstr ""
 
-#: application/modules/admin/views/scripts/certificate-batches/index.phtml:467
+#: application/modules/admin/views/scripts/certificate-batches/index.phtml:459
 msgid "Error cancelling batch. Please try again."
 msgstr ""
 
-#: application/modules/admin/views/scripts/certificate-batches/index.phtml:473
+#: application/modules/admin/views/scripts/certificate-batches/index.phtml:465
 msgid ""
 "Are you sure you want to reject this batch?\n"
 "\n"
 "The certificates will NOT be distributed to participants."
 msgstr ""
 
-#: application/modules/admin/views/scripts/certificate-batches/index.phtml:486
+#: application/modules/admin/views/scripts/certificate-batches/index.phtml:478
 msgid "Batch rejected successfully."
 msgstr ""
 
-#: application/modules/admin/views/scripts/certificate-batches/index.phtml:489
+#: application/modules/admin/views/scripts/certificate-batches/index.phtml:481
 msgid "Failed to reject batch: "
 msgstr ""
 
-#: application/modules/admin/views/scripts/certificate-batches/index.phtml:493
+#: application/modules/admin/views/scripts/certificate-batches/index.phtml:485
 msgid "Error rejecting batch. Please try again."
 msgstr ""
 
@@ -5122,11 +5104,13 @@ msgstr ""
 #: application/modules/reports/views/scripts/finalize/get-shipments.ajax.phtml:18
 #: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:75
 #: application/modules/reports/views/scripts/participant-performance/index.phtml:96
-#: application/modules/reports/views/scripts/participant-trends/index.phtml:98
-#: application/modules/reports/views/scripts/participant-trends/index.phtml:155
-#: application/modules/reports/views/scripts/shipments/index.phtml:268
+#: application/modules/reports/views/scripts/participant-trends/index.phtml:265
+#: application/modules/reports/views/scripts/participant-trends/index.phtml:267
 #: application/modules/reports/views/scripts/testing-facility-by-ownership/index.phtml:65
-#: application/services/Reports.php:1902 application/services/Reports.php:2136
+#: application/services/Reports.php:1917 application/services/Reports.php:2151
+#: application/views/partials/shipments-report-grid.phtml:308
+#: application/views/partials/shipments-report-grid.phtml:310
+#: application/views/partials/shipments-report-grid.phtml:349
 #: application/views/scripts/capa/index.phtml:66
 #: application/views/scripts/participant/all-schemes.phtml:46
 #: application/views/scripts/participant/corrective.phtml:43
@@ -5139,7 +5123,6 @@ msgstr ""
 #: application/views/scripts/participant/report.phtml:74
 #: application/views/scripts/participant/report.phtml:87
 #: application/views/scripts/participant/report.phtml:203
-#: application/views/scripts/participant/shipments-reports.phtml:59
 #: application/views/scripts/participant/summary-report.phtml:73
 #: application/views/scripts/participant/summary-report.phtml:86
 #: application/views/scripts/participant/summary-report.phtml:164
@@ -5347,8 +5330,8 @@ msgstr "Change Password"
 #: application/modules/admin/views/scripts/shipment/partials/schemes/vl.phtml:200
 #: application/modules/admin/views/scripts/shipment/partials/schemes/vl.phtml:344
 #: application/modules/admin/views/scripts/shipment/partials/schemes/vl.phtml:352
-#: application/modules/admin/views/scripts/shipment/partials/schemes/vl.phtml:399
-#: application/modules/admin/views/scripts/shipment/partials/schemes/vl.phtml:403
+#: application/modules/admin/views/scripts/shipment/partials/schemes/vl.phtml:401
+#: application/modules/admin/views/scripts/shipment/partials/schemes/vl.phtml:405
 #: application/modules/admin/views/scripts/shipment/partials/schemes/_dts-sample-modal.phtml:64
 #: application/modules/admin/views/scripts/shipment/partials/schemes/_dts-sample-modal.phtml:95
 #: application/modules/admin/views/scripts/shipment/partials/schemes/_dts-sample-modal.phtml:163
@@ -5384,13 +5367,13 @@ msgstr "Change Password"
 #: application/modules/reports/views/scripts/distribution/shipment.phtml:334
 #: application/modules/reports/views/scripts/distribution/shipment.phtml:347
 #: application/modules/reports/views/scripts/distribution/shipment.phtml:359
-#: application/modules/reports/views/scripts/distribution/shipment.phtml:737
+#: application/modules/reports/views/scripts/distribution/shipment.phtml:729
 #: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:292
 #: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:353
 #: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:367
 #: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:381
 #: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:394
-#: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:662
+#: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:654
 #: application/modules/reports/views/scripts/shipment-response-report/index.phtml:118
 #: application/modules/reports/views/scripts/shipment-response-report/index.phtml:131
 #: application/modules/reports/views/scripts/shipment-response-report/index.phtml:141
@@ -5515,7 +5498,6 @@ msgstr ""
 #: application/modules/admin/views/scripts/system-admins/edit.phtml:60
 #: application/modules/admin/views/scripts/testkit/add.phtml:153
 #: application/modules/admin/views/scripts/testkit/edit.phtml:167
-#: application/modules/reports/views/scripts/shipments/index.phtml:305
 #: application/views/scripts/data-managers/index.phtml:11
 #: application/views/scripts/participant/add-participant.phtml:221
 #: application/views/scripts/participant/edit-participant.phtml:283
@@ -5789,8 +5771,8 @@ msgstr ""
 #: application/modules/admin/views/scripts/shipment/partials/schemes/vl.phtml:208
 #: application/modules/admin/views/scripts/shipment/partials/schemes/vl.phtml:345
 #: application/modules/admin/views/scripts/shipment/partials/schemes/vl.phtml:353
-#: application/modules/admin/views/scripts/shipment/partials/schemes/vl.phtml:399
-#: application/modules/admin/views/scripts/shipment/partials/schemes/vl.phtml:403
+#: application/modules/admin/views/scripts/shipment/partials/schemes/vl.phtml:401
+#: application/modules/admin/views/scripts/shipment/partials/schemes/vl.phtml:405
 #: application/modules/admin/views/scripts/shipment/ship-it.phtml:216
 #: application/modules/admin/views/scripts/test-platform/add.phtml:89
 #: application/modules/admin/views/scripts/test-platform/edit.phtml:97
@@ -5810,7 +5792,7 @@ msgstr ""
 #: application/modules/reports/views/scripts/distribution/finalize.phtml:311
 #: application/modules/reports/views/scripts/distribution/shipment.phtml:270
 #: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:296
-#: application/views/partials/collapsible-filters.phtml:171
+#: application/views/partials/collapsible-filters.phtml:179
 #: application/views/scripts/covid19/response.phtml:306
 #: application/views/scripts/covid19/response.phtml:848
 #: application/views/scripts/covid19/response.phtml:932
@@ -5954,8 +5936,8 @@ msgstr ""
 #: application/modules/admin/views/scripts/shipment/partials/schemes/vl.phtml:209
 #: application/modules/admin/views/scripts/shipment/partials/schemes/vl.phtml:346
 #: application/modules/admin/views/scripts/shipment/partials/schemes/vl.phtml:354
-#: application/modules/admin/views/scripts/shipment/partials/schemes/vl.phtml:399
-#: application/modules/admin/views/scripts/shipment/partials/schemes/vl.phtml:403
+#: application/modules/admin/views/scripts/shipment/partials/schemes/vl.phtml:401
+#: application/modules/admin/views/scripts/shipment/partials/schemes/vl.phtml:405
 #: application/modules/admin/views/scripts/shipment/ship-it.phtml:217
 #: application/modules/admin/views/scripts/test-platform/add.phtml:90
 #: application/modules/admin/views/scripts/test-platform/edit.phtml:99
@@ -7769,19 +7751,16 @@ msgstr ""
 #: application/modules/admin/views/scripts/participants/index.phtml:614
 #: application/modules/admin/views/scripts/shipment/manage-enroll.phtml:660
 #: application/modules/admin/views/scripts/shipment/manage-enroll.phtml:686
-#: application/modules/reports/views/scripts/corrective-actions/index.phtml:284
-#: application/modules/reports/views/scripts/corrective-actions/index.phtml:313
-#: application/modules/reports/views/scripts/participant-performance/index.phtml:212
-#: application/modules/reports/views/scripts/participant-trends/index.phtml:451
-#: application/modules/reports/views/scripts/participant-trends/index.phtml:471
-#: application/modules/reports/views/scripts/participant-trends/index.phtml:599
-#: application/modules/reports/views/scripts/participant-trends/participant-lab-performance-report.phtml:73
-#: application/modules/reports/views/scripts/shipment-response-report/index.phtml:532
-#: application/modules/reports/views/scripts/shipments/index.phtml:685
-#: application/views/scripts/participant/participant-performance.phtml:392
-#: application/views/scripts/participant/participant-performance.phtml:412
-#: application/views/scripts/participant/participant-performance.phtml:541
-#: application/views/scripts/participant/shipment-response-report.phtml:451
+#: application/modules/reports/views/scripts/corrective-actions/index.phtml:281
+#: application/modules/reports/views/scripts/corrective-actions/index.phtml:310
+#: application/modules/reports/views/scripts/participant-performance/index.phtml:204
+#: application/modules/reports/views/scripts/participant-trends/index.phtml:369
+#: application/modules/reports/views/scripts/shipment-response-report/index.phtml:529
+#: application/views/partials/shipments-report-grid.phtml:520
+#: application/views/scripts/participant/participant-performance.phtml:384
+#: application/views/scripts/participant/participant-performance.phtml:404
+#: application/views/scripts/participant/participant-performance.phtml:533
+#: application/views/scripts/participant/shipment-response-report.phtml:443
 #: application/views/scripts/participant/view.phtml:184
 msgid "Unable to generate download"
 msgstr ""
@@ -8167,10 +8146,8 @@ msgstr ""
 #: application/modules/reports/views/scripts/distribution/index.phtml:36
 #: application/modules/reports/views/scripts/finalize/index.phtml:28
 #: application/modules/reports/views/scripts/finalize/shipments.phtml:29
-#: application/modules/reports/views/scripts/shipments/index.phtml:265
 #: application/views/scripts/capa/index.phtml:63
 #: application/views/scripts/participant/response-report.phtml:76
-#: application/views/scripts/participant/shipments-reports.phtml:56
 #: application/views/scripts/shipment-form/download.phtml:120
 #: application/views/scripts/shipment-form/index.phtml:35
 msgid "PT Survey Date"
@@ -8212,7 +8189,6 @@ msgstr ""
 #: application/modules/reports/views/scripts/finalize/index.phtml:29
 #: application/modules/reports/views/scripts/finalize/shipments.phtml:30
 #: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:181
-#: application/modules/reports/views/scripts/shipments/index.phtml:264
 #: application/views/scripts/capa/index.phtml:62
 #: application/views/scripts/participant/current-schemes.phtml:84
 #: application/views/scripts/participant/current-schemes.phtml:105
@@ -8220,7 +8196,6 @@ msgstr ""
 #: application/views/scripts/participant/report.phtml:131
 #: application/views/scripts/participant/report.phtml:160
 #: application/views/scripts/participant/response-report.phtml:75
-#: application/views/scripts/participant/shipments-reports.phtml:55
 #: application/views/scripts/shipment-form/download.phtml:119
 #: application/views/scripts/shipment-form/index.phtml:34
 msgid "PT Survey Code"
@@ -8432,10 +8407,8 @@ msgstr ""
 #: application/modules/reports/views/scripts/distribution/shipment.phtml:45
 #: application/modules/reports/views/scripts/finalize/get-shipments.ajax.phtml:17
 #: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:72
-#: application/modules/reports/views/scripts/participant-trends/index.phtml:157
 #: application/modules/reports/views/scripts/shipment-response-report/index.phtml:199
-#: application/modules/reports/views/scripts/shipments/index.phtml:266
-#: application/services/Reports.php:1904 application/services/Reports.php:2137
+#: application/services/Reports.php:1919 application/services/Reports.php:2152
 #: application/views/scripts/capa/index.phtml:64
 #: application/views/scripts/custom-test/response.phtml:234
 #: application/views/scripts/participant/all-schemes.phtml:47
@@ -8454,7 +8427,6 @@ msgstr ""
 #: application/views/scripts/participant/report.phtml:204
 #: application/views/scripts/participant/response-report.phtml:72
 #: application/views/scripts/participant/shipment-response-report.phtml:136
-#: application/views/scripts/participant/shipments-reports.phtml:57
 #: application/views/scripts/participant/summary-report.phtml:165
 #: application/views/scripts/shipment-form/download.phtml:117
 #: application/views/scripts/shipment-form/index.phtml:32
@@ -8468,10 +8440,11 @@ msgstr ""
 #: application/modules/admin/views/scripts/enrollments/view.phtml:14
 #: application/modules/admin/views/scripts/participants/participant-shipments.ajax.phtml:206
 #: application/modules/admin/views/scripts/shipment/manage-enroll.phtml:55
-#: application/modules/reports/views/scripts/participant-trends/index.phtml:156
 #: application/modules/reports/views/scripts/shipments/response-chart.phtml:47
 #: application/modules/reports/views/scripts/shipments/vl-assay-distribution.phtml:83
-#: application/services/Reports.php:1903
+#: application/services/Reports.php:1918
+#: application/views/partials/shipments-report-grid.phtml:302
+#: application/views/partials/shipments-report-grid.phtml:305
 #: application/views/scripts/covid19/response.phtml:212
 #: application/views/scripts/dbs/response.phtml:82
 #: application/views/scripts/dts/response.phtml:217
@@ -9216,7 +9189,7 @@ msgstr ""
 
 #: application/modules/admin/views/scripts/email-participants/index.phtml:1275
 #: application/modules/admin/views/scripts/shipment/manage-enroll.phtml:748
-#: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:722
+#: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:714
 msgid "Press Ctrl+C / Cmd+C to copy"
 msgstr ""
 
@@ -9586,12 +9559,12 @@ msgstr "All Schemes"
 #: application/modules/reports/views/scripts/finalize/index.phtml:138
 #: application/modules/reports/views/scripts/finalize/shipments.phtml:130
 #: application/views/scripts/participant/all-schemes.phtml:229
-#: application/views/scripts/participant/corrective.phtml:276
+#: application/views/scripts/participant/corrective.phtml:268
 #: application/views/scripts/participant/current-schemes.phtml:361
 #: application/views/scripts/participant/defaulted-schemes.phtml:151
-#: application/views/scripts/participant/report.phtml:446
+#: application/views/scripts/participant/report.phtml:438
 #: application/views/scripts/participant/scheme.phtml:93
-#: application/views/scripts/participant/summary-report.phtml:379
+#: application/views/scripts/participant/summary-report.phtml:371
 #: application/views/scripts/participant/testers.phtml:109
 #: application/views/scripts/participant/view.phtml:144
 msgid "Loading data managers…"
@@ -9605,12 +9578,12 @@ msgstr ""
 #: application/modules/reports/views/scripts/finalize/index.phtml:151
 #: application/modules/reports/views/scripts/finalize/shipments.phtml:143
 #: application/views/scripts/participant/all-schemes.phtml:242
-#: application/views/scripts/participant/corrective.phtml:289
+#: application/views/scripts/participant/corrective.phtml:281
 #: application/views/scripts/participant/current-schemes.phtml:374
 #: application/views/scripts/participant/defaulted-schemes.phtml:164
-#: application/views/scripts/participant/report.phtml:459
+#: application/views/scripts/participant/report.phtml:451
 #: application/views/scripts/participant/scheme.phtml:106
-#: application/views/scripts/participant/summary-report.phtml:392
+#: application/views/scripts/participant/summary-report.phtml:384
 #: application/views/scripts/participant/testers.phtml:122
 #: application/views/scripts/participant/view.phtml:157
 msgid "Failed to load data managers. Please try again."
@@ -9685,7 +9658,7 @@ msgstr ""
 
 #: application/modules/admin/views/scripts/evaluate/add-manual-limits-bulk.phtml:71
 #: application/modules/admin/views/scripts/shipment/partials/schemes/vl.phtml:243
-#: application/modules/admin/views/scripts/shipment/partials/schemes/vl.phtml:434
+#: application/modules/admin/views/scripts/shipment/partials/schemes/vl.phtml:436
 msgid "VL Assay"
 msgstr ""
 
@@ -9745,11 +9718,11 @@ msgid "Processing.."
 msgstr ""
 
 #: application/modules/admin/views/scripts/evaluate/get-shipments.ajax.phtml:44
-#: application/modules/admin/views/scripts/job-tracking/index.phtml:324
+#: application/modules/admin/views/scripts/job-tracking/index.phtml:316
 #: application/modules/reports/views/scripts/distribution/finalize.phtml:128
 #: application/modules/reports/views/scripts/finalize/get-shipments.ajax.phtml:71
-#: application/modules/reports/views/scripts/shipments/index.phtml:308
-#: application/services/Shipments.php:5150
+#: application/services/Reports.php:227 application/services/Shipments.php:5150
+#: application/views/partials/shipments-report-grid.phtml:325
 msgid "Finalized"
 msgstr ""
 
@@ -9768,7 +9741,6 @@ msgstr ""
 #: application/modules/reports/views/scripts/finalize/get-shipments.ajax.phtml:19
 #: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:78
 #: application/views/scripts/capa/index.phtml:67
-#: application/views/scripts/participant/shipments-reports.phtml:60
 msgid "No. of Samples"
 msgstr ""
 
@@ -9779,7 +9751,6 @@ msgstr ""
 #: application/modules/reports/views/scripts/distribution/shipment.phtml:48
 #: application/modules/reports/views/scripts/finalize/get-shipments.ajax.phtml:20
 #: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:81
-#: application/views/scripts/participant/shipments-reports.phtml:61
 #, fuzzy
 msgid "No. of Participants"
 msgstr "PT Participant Info"
@@ -9791,13 +9762,10 @@ msgstr "PT Participant Info"
 #: application/modules/reports/views/scripts/distribution/shipment.phtml:49
 #: application/modules/reports/views/scripts/finalize/get-shipments.ajax.phtml:21
 #: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:84
-#: application/modules/reports/views/scripts/participant-trends/index.phtml:159
-#: application/modules/reports/views/scripts/participant-trends/index.phtml:201
-#: application/services/Reports.php:1906 application/services/Reports.php:2797
-#: application/services/Reports.php:2896
+#: application/services/Reports.php:1921 application/services/Reports.php:2812
+#: application/services/Reports.php:2911
 #: application/views/scripts/participant/participant-performance.phtml:126
 #: application/views/scripts/participant/participant-performance.phtml:168
-#: application/views/scripts/participant/shipments-reports.phtml:62
 msgid "No. of Responses"
 msgstr ""
 
@@ -9813,7 +9781,6 @@ msgstr ""
 #: application/modules/reports/views/scripts/distribution/shipment.phtml:52
 #: application/modules/reports/views/scripts/finalize/get-shipments.ajax.phtml:24
 #: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:90
-#: application/views/scripts/participant/shipments-reports.phtml:64
 msgid "Number Passed"
 msgstr ""
 
@@ -9826,7 +9793,6 @@ msgstr ""
 #: application/modules/reports/views/scripts/distribution/shipment.phtml:55
 #: application/modules/reports/views/scripts/finalize/get-shipments.ajax.phtml:27
 #: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:93
-#: application/views/scripts/participant/shipments-reports.phtml:65
 msgid "Shipment Status"
 msgstr ""
 
@@ -9875,7 +9841,7 @@ msgid "Error loading VL reference scores. Please try again."
 msgstr ""
 
 #: application/modules/admin/views/scripts/evaluate/get-shipments.ajax.phtml:249
-#: application/modules/admin/views/scripts/evaluate/shipment.phtml:655
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:647
 msgid "Shipment has been added to the queue. It will be evaluated shortly."
 msgstr ""
 
@@ -9970,14 +9936,14 @@ msgid "Failed to load shipments. Please try again."
 msgstr ""
 
 #: application/modules/admin/views/scripts/evaluate/index.phtml:260
-#: application/modules/admin/views/scripts/evaluate/shipment.phtml:832
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:824
 msgid ""
 "Are you sure you want to send an email reminder to participants who have not "
 "yet responded?"
 msgstr ""
 
 #: application/modules/admin/views/scripts/evaluate/index.phtml:267
-#: application/modules/admin/views/scripts/evaluate/shipment.phtml:839
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:831
 #: application/modules/admin/views/scripts/shipment/index.phtml:574
 msgid "Mail Sent successfully"
 msgstr ""
@@ -10001,7 +9967,7 @@ msgid "Queued"
 msgstr ""
 
 #: application/modules/admin/views/scripts/evaluate/shipment.phtml:92
-#: application/modules/admin/views/scripts/job-tracking/index.phtml:322
+#: application/modules/admin/views/scripts/job-tracking/index.phtml:314
 msgid "Processing"
 msgstr ""
 
@@ -10069,14 +10035,12 @@ msgstr ""
 #: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:280
 #: application/modules/reports/views/scripts/participant-performance/index.phtml:70
 #: application/modules/reports/views/scripts/participant-performance/index.phtml:72
-#: application/modules/reports/views/scripts/participant-trends/index.phtml:66
-#: application/modules/reports/views/scripts/participant-trends/index.phtml:68
+#: application/modules/reports/views/scripts/participant-trends/index.phtml:249
+#: application/modules/reports/views/scripts/participant-trends/index.phtml:251
 #: application/modules/reports/views/scripts/shipment-response-report/index.phtml:80
 #: application/modules/reports/views/scripts/shipment-response-report/index.phtml:82
 #: application/modules/reports/views/scripts/shipment-response/index.phtml:21
 #: application/modules/reports/views/scripts/shipment-response/index.phtml:23
-#: application/modules/reports/views/scripts/shipments/index.phtml:213
-#: application/modules/reports/views/scripts/shipments/index.phtml:215
 #: application/modules/reports/views/scripts/shipments/vl-assay-distribution.phtml:28
 #: application/modules/reports/views/scripts/shipments/vl-assay-distribution.phtml:30
 #: application/modules/reports/views/scripts/shipments/vl-sample-analysis.phtml:71
@@ -10093,6 +10057,8 @@ msgstr ""
 #: application/modules/reports/views/scripts/testkit/index.phtml:25
 #: application/modules/reports/views/scripts/xtpt-indicators/index.phtml:6
 #: application/modules/reports/views/scripts/xtpt-indicators/index.phtml:8
+#: application/views/partials/shipments-report-grid.phtml:292
+#: application/views/partials/shipments-report-grid.phtml:294
 #: application/views/scripts/participant/corrective.phtml:32
 #: application/views/scripts/participant/corrective.phtml:34
 #: application/views/scripts/participant/current-schemes.phtml:72
@@ -10111,10 +10077,9 @@ msgstr ""
 #: application/modules/reports/views/scripts/distribution/finalize.phtml:667
 #: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:279
 #: application/modules/reports/views/scripts/participant-performance/index.phtml:71
-#: application/modules/reports/views/scripts/participant-trends/index.phtml:67
+#: application/modules/reports/views/scripts/participant-trends/index.phtml:250
 #: application/modules/reports/views/scripts/shipment-response-report/index.phtml:81
 #: application/modules/reports/views/scripts/shipment-response/index.phtml:22
-#: application/modules/reports/views/scripts/shipments/index.phtml:214
 #: application/modules/reports/views/scripts/shipments/vl-assay-distribution.phtml:29
 #: application/modules/reports/views/scripts/shipments/vl-sample-analysis.phtml:72
 #: application/modules/reports/views/scripts/tb-all-sites-results/index.phtml:9
@@ -10123,6 +10088,7 @@ msgstr ""
 #: application/modules/reports/views/scripts/testing-facility-by-ownership/index.phtml:40
 #: application/modules/reports/views/scripts/testkit/index.phtml:24
 #: application/modules/reports/views/scripts/xtpt-indicators/index.phtml:7
+#: application/views/partials/shipments-report-grid.phtml:293
 #: application/views/scripts/participant/corrective.phtml:33
 #: application/views/scripts/participant/current-schemes.phtml:73
 #: application/views/scripts/participant/report.phtml:64
@@ -10468,54 +10434,54 @@ msgstr "PT Participant Info"
 msgid "Select one or more districts"
 msgstr ""
 
-#: application/modules/admin/views/scripts/evaluate/shipment.phtml:756
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:748
 #: application/views/scripts/participant/defaulted-schemes.phtml:186
 msgid "Are you sure you want to remove this response? This cannot be undone!"
 msgstr ""
 
-#: application/modules/admin/views/scripts/evaluate/shipment.phtml:786
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:778
 msgid "Response has been removed successfully. Reloading this evaluation."
 msgstr ""
 
-#: application/modules/admin/views/scripts/evaluate/shipment.phtml:791
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:783
 msgid ""
 "Failed to delete the response. Please try again or contact the administrator."
 msgstr ""
 
-#: application/modules/admin/views/scripts/evaluate/shipment.phtml:798
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:790
 msgid ""
 "Approve this late submission? Its status becomes Responded, and it stays "
 "marked as late in history."
 msgstr ""
 
-#: application/modules/admin/views/scripts/evaluate/shipment.phtml:799
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:791
 #, fuzzy
 msgid "Reject this late submission?"
 msgstr "PT Result Submission"
 
-#: application/modules/admin/views/scripts/evaluate/shipment.phtml:816
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:808
 msgid ""
 "This response has been approved. Re-evaluate this shipment now to update "
 "participant scores?"
 msgstr ""
 
-#: application/modules/admin/views/scripts/evaluate/shipment.phtml:820
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:812
 msgid "Done."
 msgstr ""
 
-#: application/modules/admin/views/scripts/evaluate/shipment.phtml:822
-#: application/modules/admin/views/scripts/evaluate/shipment.phtml:827
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:814
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:819
 msgid "Could not update this late submission. Please try again."
 msgstr ""
 
-#: application/modules/admin/views/scripts/evaluate/shipment.phtml:871
-#: application/modules/reports/views/scripts/distribution/shipment.phtml:761
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:863
+#: application/modules/reports/views/scripts/distribution/shipment.phtml:753
 msgid "No Shipment to evaluate."
 msgstr ""
 
-#: application/modules/admin/views/scripts/evaluate/shipment.phtml:872
-#: application/modules/reports/views/scripts/distribution/shipment.phtml:763
-#: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:792
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:864
+#: application/modules/reports/views/scripts/distribution/shipment.phtml:755
+#: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:784
 #, fuzzy
 msgid "Click here to go back"
 msgstr "Participant Login"
@@ -10812,11 +10778,14 @@ msgstr "Participant Code"
 #: application/modules/admin/views/scripts/shipment/ship-it.phtml:48
 #: application/modules/reports/views/scripts/corrective-actions/index.phtml:60
 #: application/modules/reports/views/scripts/participant-performance/index.phtml:104
-#: application/modules/reports/views/scripts/participant-trends/index.phtml:111
+#: application/modules/reports/views/scripts/participant-trends/index.phtml:275
+#: application/modules/reports/views/scripts/participant-trends/index.phtml:277
+#: application/modules/reports/views/scripts/participant-trends/index.phtml:330
 #: application/modules/reports/views/scripts/shipment-response-report/index.phtml:106
 #: application/modules/reports/views/scripts/shipment-response-report/index.phtml:108
 #: application/modules/reports/views/scripts/shipments/vl-assay-distribution.phtml:55
 #: application/modules/reports/views/scripts/shipments/vl-sample-analysis.phtml:96
+#: application/views/partials/shipments-report-grid.phtml:348
 #: application/views/scripts/covid19/response.phtml:1314
 #: application/views/scripts/participant/all-schemes.phtml:45
 #: application/views/scripts/participant/current-schemes.phtml:140
@@ -10995,6 +10964,7 @@ msgid "Save feedback form"
 msgstr "PT Participant Info"
 
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:353
+#: application/services/Reports.php:265
 #, fuzzy
 msgid "Summary"
 msgstr "Summary Report"
@@ -11202,8 +11172,8 @@ msgstr "PT Result Submission"
 
 #: application/modules/admin/views/scripts/feedback-responses/shipment-questions.phtml:58
 #: application/modules/admin/views/scripts/feedback-responses/shipment-questions.phtml:117
-#: application/modules/reports/views/scripts/shipments/index.phtml:271
 #: application/modules/reports/views/scripts/shipments/response-chart.phtml:96
+#: application/views/partials/shipments-report-grid.phtml:353
 msgid "Responses"
 msgstr ""
 
@@ -12832,12 +12802,11 @@ msgstr ""
 #: application/modules/reports/views/scripts/distribution/shipment.phtml:50
 #: application/modules/reports/views/scripts/finalize/get-shipments.ajax.phtml:22
 #: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:87
-#: application/views/scripts/participant/shipments-reports.phtml:63
 msgid "Response %"
 msgstr ""
 
 #: application/modules/admin/views/scripts/index/index.phtml:1092
-#: application/services/Reports.php:2800 application/services/Reports.php:2899
+#: application/services/Reports.php:2815 application/services/Reports.php:2914
 msgid "Pass %"
 msgstr ""
 
@@ -12910,7 +12879,7 @@ msgid "vs"
 msgstr ""
 
 #: application/modules/admin/views/scripts/index/index.phtml:1277
-#: application/modules/reports/views/scripts/corrective-actions/index.phtml:245
+#: application/modules/reports/views/scripts/corrective-actions/index.phtml:242
 msgid "Average score"
 msgstr ""
 
@@ -12939,6 +12908,7 @@ msgstr ""
 
 #: application/modules/admin/views/scripts/index/index.phtml:1337
 #: application/modules/admin/views/scripts/shipment/partials/schemes/eid.phtml:83
+#: application/services/Reports.php:287
 #, fuzzy
 msgid "Results"
 msgstr "Result"
@@ -12985,6 +12955,7 @@ msgid "No finalized rounds yet."
 msgstr ""
 
 #: application/modules/admin/views/scripts/index/index.phtml:1445
+#: application/modules/reports/views/scripts/participant-trends/index.phtml:360
 #: public/js/main.js.php:217
 msgid "Loading..."
 msgstr ""
@@ -13064,78 +13035,77 @@ msgstr ""
 msgid "Duration"
 msgstr "View PT Result"
 
-#: application/modules/admin/views/scripts/job-tracking/index.phtml:284
+#: application/modules/admin/views/scripts/job-tracking/index.phtml:276
 #, fuzzy
 msgid "Report Generation"
 msgstr "Summary Report"
 
-#: application/modules/admin/views/scripts/job-tracking/index.phtml:285
+#: application/modules/admin/views/scripts/job-tracking/index.phtml:277
 #, fuzzy
 msgid "Shipment: "
 msgstr "All Schemes"
 
-#: application/modules/admin/views/scripts/job-tracking/index.phtml:285
-#: application/modules/admin/views/scripts/job-tracking/index.phtml:390
+#: application/modules/admin/views/scripts/job-tracking/index.phtml:277
+#: application/modules/admin/views/scripts/job-tracking/index.phtml:382
 #: application/views/scripts/tb/response.phtml:899
 msgid "N/A"
 msgstr ""
 
-#: application/modules/admin/views/scripts/job-tracking/index.phtml:286
+#: application/modules/admin/views/scripts/job-tracking/index.phtml:278
 msgid "Type: "
 msgstr ""
 
-#: application/modules/admin/views/scripts/job-tracking/index.phtml:321
+#: application/modules/admin/views/scripts/job-tracking/index.phtml:313
 #, fuzzy
 msgid "Finalizing"
 msgstr "View PT Result"
 
-#: application/modules/admin/views/scripts/job-tracking/index.phtml:323
-#: application/modules/admin/views/scripts/job-tracking/index.phtml:325
+#: application/modules/admin/views/scripts/job-tracking/index.phtml:315
+#: application/modules/admin/views/scripts/job-tracking/index.phtml:317
 msgid "Completed"
 msgstr ""
 
-#: application/modules/admin/views/scripts/job-tracking/index.phtml:326
-#: application/modules/reports/views/scripts/shipments/index.phtml:307
+#: application/modules/admin/views/scripts/job-tracking/index.phtml:318
 #: application/services/Shipments.php:5152
 msgid "Reports Generated"
 msgstr ""
 
-#: application/modules/admin/views/scripts/job-tracking/index.phtml:357
+#: application/modules/admin/views/scripts/job-tracking/index.phtml:349
 #, fuzzy
 msgid "Cancel this job"
 msgstr "All Schemes"
 
-#: application/modules/admin/views/scripts/job-tracking/index.phtml:362
+#: application/modules/admin/views/scripts/job-tracking/index.phtml:354
 msgid "Are you sure you want to cancel this job?"
 msgstr ""
 
-#: application/modules/admin/views/scripts/job-tracking/index.phtml:376
+#: application/modules/admin/views/scripts/job-tracking/index.phtml:368
 msgid "Job cancelled successfully"
 msgstr ""
 
-#: application/modules/admin/views/scripts/job-tracking/index.phtml:379
+#: application/modules/admin/views/scripts/job-tracking/index.phtml:371
 msgid "Failed to cancel job: "
 msgstr ""
 
-#: application/modules/admin/views/scripts/job-tracking/index.phtml:383
+#: application/modules/admin/views/scripts/job-tracking/index.phtml:375
 msgid "Error cancelling job. Please try again."
 msgstr ""
 
-#: application/modules/admin/views/scripts/job-tracking/index.phtml:402
+#: application/modules/admin/views/scripts/job-tracking/index.phtml:394
 msgid "emails"
 msgstr ""
 
-#: application/modules/admin/views/scripts/job-tracking/index.phtml:413
+#: application/modules/admin/views/scripts/job-tracking/index.phtml:405
 #, fuzzy
 msgid "Summary done"
 msgstr "Summary Report"
 
-#: application/modules/admin/views/scripts/job-tracking/index.phtml:415
+#: application/modules/admin/views/scripts/job-tracking/index.phtml:407
 #, fuzzy
 msgid "Summary pending"
 msgstr "Summary Report"
 
-#: application/modules/admin/views/scripts/job-tracking/index.phtml:479
+#: application/modules/admin/views/scripts/job-tracking/index.phtml:471
 msgid "Ended: "
 msgstr ""
 
@@ -13580,7 +13550,7 @@ msgstr ""
 #: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:403
 #: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:526
 #: application/modules/admin/views/scripts/shipment/partials/schemes/vl.phtml:316
-#: application/modules/admin/views/scripts/shipment/partials/schemes/vl.phtml:453
+#: application/modules/admin/views/scripts/shipment/partials/schemes/vl.phtml:455
 #: application/modules/admin/views/scripts/shipment/partials/schemes/_dts-sample-modal.phtml:374
 msgid "OK"
 msgstr ""
@@ -16079,6 +16049,7 @@ msgstr "All Schemes"
 
 #: application/modules/admin/views/scripts/shipment/index.phtml:63
 #: application/modules/reports/views/scripts/shipments/response-chart.phtml:48
+#: application/views/partials/shipments-report-grid.phtml:350
 #: scheduled-jobs/report-layouts/summary-layouts/default/dts.phtml:58
 msgid "Due Date"
 msgstr ""
@@ -16088,13 +16059,11 @@ msgid "Samples"
 msgstr ""
 
 #: application/modules/admin/views/scripts/shipment/index.phtml:74
-#: application/modules/reports/views/scripts/shipments/index.phtml:285
 #, fuzzy
 msgid "Search Shipment Code"
 msgstr "Participant Code"
 
 #: application/modules/admin/views/scripts/shipment/index.phtml:83
-#: application/modules/reports/views/scripts/shipments/index.phtml:282
 msgid "Search PT Survey Code"
 msgstr ""
 
@@ -16200,7 +16169,6 @@ msgstr "Contact Person Phone"
 #: application/modules/admin/views/scripts/shipment/manage-enroll.phtml:57
 #: application/modules/reports/views/scripts/corrective-preventive-actions/capa.phtml:60
 #: application/modules/reports/views/scripts/corrective-preventive-actions/index.phtml:93
-#: application/modules/reports/views/scripts/shipments/index.phtml:267
 #: application/views/scripts/capa/capa.phtml:54
 #: application/views/scripts/capa/index.phtml:65
 #: application/views/scripts/covid19/response.phtml:215
@@ -16209,7 +16177,6 @@ msgstr "Contact Person Phone"
 #: application/views/scripts/eid/response.phtml:255
 #: application/views/scripts/participant/current-schemes.phtml:147
 #: application/views/scripts/participant/defaulted-schemes.phtml:18
-#: application/views/scripts/participant/shipments-reports.phtml:58
 #: application/views/scripts/recency/response.phtml:163
 #: application/views/scripts/shipment-form/download.phtml:202
 #: application/views/scripts/shipment-form/download.phtml:409
@@ -16268,29 +16235,29 @@ msgid "Participant(s) enrolled successfully"
 msgstr ""
 
 #: application/modules/admin/views/scripts/shipment/manage-enroll.phtml:732
-#: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:707
+#: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:699
 msgid "No valid email addresses found for this selection"
 msgstr ""
 
 #: application/modules/admin/views/scripts/shipment/manage-enroll.phtml:738
-#: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:713
+#: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:705
 msgid "unique email address(es) copied to clipboard"
 msgstr ""
 
 #: application/modules/admin/views/scripts/shipment/manage-enroll.phtml:742
-#: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:717
+#: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:709
 #, fuzzy
 msgid "participant"
 msgstr "Participant Login"
 
 #: application/modules/admin/views/scripts/shipment/manage-enroll.phtml:743
-#: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:718
+#: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:710
 #, fuzzy
 msgid "data manager"
 msgstr "Participant Login"
 
 #: application/modules/admin/views/scripts/shipment/manage-enroll.phtml:754
-#: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:728
+#: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:720
 msgid ""
 "Unable to fetch email addresses. Please try again later or contact system "
 "admin for help"
@@ -16339,7 +16306,7 @@ msgstr "Change Password"
 #: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:687
 #: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:894
 #: application/modules/admin/views/scripts/shipment/partials/schemes/vl.phtml:134
-#: application/services/Reports.php:2138
+#: application/services/Reports.php:2153
 msgid "Sample Label"
 msgstr ""
 
@@ -16459,7 +16426,7 @@ msgstr "Change Password"
 #: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:696
 #: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:865
 #: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:899
-#: application/modules/admin/views/scripts/shipment/partials/schemes/vl.phtml:396
+#: application/modules/admin/views/scripts/shipment/partials/schemes/vl.phtml:398
 #, fuzzy
 msgid "Please enter the sample preparation date"
 msgstr "Change Password"
@@ -16489,7 +16456,7 @@ msgstr "Change Password"
 #: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:707
 #: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:873
 #: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:907
-#: application/modules/admin/views/scripts/shipment/partials/schemes/vl.phtml:398
+#: application/modules/admin/views/scripts/shipment/partials/schemes/vl.phtml:400
 #, fuzzy
 msgid "Please choose whether this sample is a control"
 msgstr "Participant Login"
@@ -16519,7 +16486,7 @@ msgstr "Participant Login"
 #: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:716
 #: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:880
 #: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:915
-#: application/modules/admin/views/scripts/shipment/partials/schemes/vl.phtml:402
+#: application/modules/admin/views/scripts/shipment/partials/schemes/vl.phtml:404
 #, fuzzy
 msgid "Please choose whether this sample/control is mandatory"
 msgstr "Change Password"
@@ -16546,7 +16513,7 @@ msgstr "Reset Password"
 #: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:469
 #: application/modules/admin/views/scripts/shipment/partials/schemes/vl.phtml:216
 #: application/modules/admin/views/scripts/shipment/partials/schemes/vl.phtml:360
-#: application/modules/admin/views/scripts/shipment/partials/schemes/vl.phtml:407
+#: application/modules/admin/views/scripts/shipment/partials/schemes/vl.phtml:409
 #, fuzzy
 msgid "Ref. Results"
 msgstr "Result"
@@ -16601,7 +16568,7 @@ msgstr ""
 #: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:786
 #: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:886
 #: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:977
-#: application/modules/admin/views/scripts/shipment/partials/schemes/vl.phtml:408
+#: application/modules/admin/views/scripts/shipment/partials/schemes/vl.phtml:410
 #: application/views/scripts/covid19/response.phtml:1282
 #: application/views/scripts/covid19/response.phtml:1306
 #: application/views/scripts/covid19/response.phtml:1352
@@ -16983,7 +16950,7 @@ msgstr ""
 #: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:690
 #: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:862
 #: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:895
-#: application/modules/admin/views/scripts/shipment/partials/schemes/vl.phtml:394
+#: application/modules/admin/views/scripts/shipment/partials/schemes/vl.phtml:396
 #, fuzzy
 msgid "Please enter the Sample Name"
 msgstr "Change Password"
@@ -17501,13 +17468,13 @@ msgid "Legacy"
 msgstr ""
 
 #: application/modules/admin/views/scripts/shipment/partials/schemes/vl.phtml:233
-#: application/modules/admin/views/scripts/shipment/partials/schemes/vl.phtml:426
+#: application/modules/admin/views/scripts/shipment/partials/schemes/vl.phtml:428
 #: application/views/scripts/eid/response.phtml:474
 msgid "Reference Results"
 msgstr ""
 
 #: application/modules/admin/views/scripts/shipment/partials/schemes/vl.phtml:246
-#: application/modules/admin/views/scripts/shipment/partials/schemes/vl.phtml:435
+#: application/modules/admin/views/scripts/shipment/partials/schemes/vl.phtml:437
 #: application/views/scripts/vl/response.phtml:603
 msgid "Viral Load"
 msgstr ""
@@ -18282,7 +18249,7 @@ msgstr ""
 #: application/modules/reports/views/scripts/corrective-actions/index.phtml:66
 #: application/modules/reports/views/scripts/detailed/index.phtml:79
 #: application/modules/reports/views/scripts/participant-performance/index.phtml:108
-#: application/modules/reports/views/scripts/participant-trends/index.phtml:117
+#: application/modules/reports/views/scripts/participant-trends/index.phtml:282
 #: application/modules/reports/views/scripts/shipment-response-report/index.phtml:157
 #: application/modules/reports/views/scripts/shipment-response/index.phtml:69
 #: application/modules/reports/views/scripts/shipments/vl-assay-distribution.phtml:66
@@ -18298,7 +18265,6 @@ msgstr ""
 #: application/views/scripts/participant/report.phtml:181
 #: application/views/scripts/participant/response-report.phtml:59
 #: application/views/scripts/participant/shipment-response-report.phtml:95
-#: application/views/scripts/participant/shipments-reports.phtml:44
 #: application/views/scripts/participant/summary-report.phtml:142
 #: application/views/scripts/participant/summary-report.phtml:153
 #: application/views/scripts/participant/tb-all-sites-results.phtml:21
@@ -18324,7 +18290,7 @@ msgid "Generate Certificates"
 msgstr "Downloads"
 
 #: application/modules/reports/views/scripts/annual/index.phtml:65
-#: application/modules/reports/views/scripts/annual/index.phtml:264
+#: application/modules/reports/views/scripts/annual/index.phtml:254
 #, fuzzy
 msgid "Generating certificates..."
 msgstr "Participant Login"
@@ -18353,32 +18319,32 @@ msgid ""
 "shortly."
 msgstr ""
 
-#: application/modules/reports/views/scripts/annual/index.phtml:254
+#: application/modules/reports/views/scripts/annual/index.phtml:244
 msgid ""
 "Please ensure the template files for the selected scheme(s) are available "
 "and readable"
 msgstr ""
 
-#: application/modules/reports/views/scripts/annual/index.phtml:269
+#: application/modules/reports/views/scripts/annual/index.phtml:259
 #, fuzzy
 msgid "No matched shipment for selected date range."
 msgstr "PT Participant Info"
 
-#: application/modules/reports/views/scripts/annual/index.phtml:274
+#: application/modules/reports/views/scripts/annual/index.phtml:264
 #, fuzzy
 msgid "Please enter the certificate name to proceed"
 msgstr "Change Password"
 
-#: application/modules/reports/views/scripts/annual/index.phtml:402
+#: application/modules/reports/views/scripts/annual/index.phtml:392
 #, fuzzy
 msgid "No batch selected"
 msgstr "PT Participant Info"
 
-#: application/modules/reports/views/scripts/annual/index.phtml:406
+#: application/modules/reports/views/scripts/annual/index.phtml:396
 msgid "Are you sure you want to approve and distribute these certificates?"
 msgstr ""
 
-#: application/modules/reports/views/scripts/annual/index.phtml:424
+#: application/modules/reports/views/scripts/annual/index.phtml:414
 msgid "Failed to approve certificates. Please try again."
 msgstr ""
 
@@ -18389,8 +18355,6 @@ msgstr "Corrective Action File"
 
 #: application/modules/reports/views/scripts/corrective-actions/index.phtml:70
 #: application/modules/reports/views/scripts/participant-performance/index.phtml:108
-#: application/modules/reports/views/scripts/participant-trends/index.phtml:121
-#: application/modules/reports/views/scripts/participant-trends/index.phtml:194
 #: application/modules/reports/views/scripts/shipments/vl-assay-distribution.phtml:70
 #: application/modules/reports/views/scripts/shipments/vl-sample-analysis.phtml:105
 #: application/views/scripts/participant/participant-performance.phtml:102
@@ -18400,7 +18364,6 @@ msgstr ""
 
 #: application/modules/reports/views/scripts/corrective-actions/index.phtml:72
 #: application/modules/reports/views/scripts/participant-performance/index.phtml:108
-#: application/modules/reports/views/scripts/participant-trends/index.phtml:123
 #: application/modules/reports/views/scripts/shipments/vl-assay-distribution.phtml:71
 #: application/modules/reports/views/scripts/shipments/vl-sample-analysis.phtml:106
 #: application/modules/reports/views/scripts/testkit/index.phtml:144
@@ -18409,7 +18372,7 @@ msgid "PDF"
 msgstr ""
 
 #: application/modules/reports/views/scripts/corrective-actions/index.phtml:93
-#: application/services/Reports.php:2000
+#: application/services/Reports.php:2015
 #: application/views/scripts/participant/corrective.phtml:90
 #: scheduled-jobs/report-layouts/summary-layouts/default/dts.phtml:210
 #: scheduled-jobs/report-layouts/summary-layouts/vietnam/dts.phtml:546
@@ -18418,34 +18381,33 @@ msgid "Corrective Action"
 msgstr "Corrective Actions"
 
 #: application/modules/reports/views/scripts/corrective-actions/index.phtml:95
-#: application/services/Reports.php:2001
+#: application/services/Reports.php:2016
 msgid "No. of Responses having this corrective action"
 msgstr ""
 
-#: application/modules/reports/views/scripts/corrective-actions/index.phtml:242
+#: application/modules/reports/views/scripts/corrective-actions/index.phtml:239
 #, fuzzy
 msgid "Total shipped"
 msgstr "All Schemes"
 
-#: application/modules/reports/views/scripts/corrective-actions/index.phtml:243
+#: application/modules/reports/views/scripts/corrective-actions/index.phtml:240
 #, fuzzy
 msgid "Total number of responses"
 msgstr "Reset Password"
 
-#: application/modules/reports/views/scripts/corrective-actions/index.phtml:244
+#: application/modules/reports/views/scripts/corrective-actions/index.phtml:241
 #, fuzzy
 msgid "Total number of valid responses"
 msgstr "PT Participant Info"
 
-#: application/modules/reports/views/scripts/corrective-actions/index.phtml:261
-#: application/modules/reports/views/scripts/participant-trends/index.phtml:481
+#: application/modules/reports/views/scripts/corrective-actions/index.phtml:258
 #: application/views/scripts/participant/corrective.phtml:119
-#: application/views/scripts/participant/corrective.phtml:313
-#: application/views/scripts/participant/participant-performance.phtml:422
+#: application/views/scripts/participant/corrective.phtml:305
+#: application/views/scripts/participant/participant-performance.phtml:414
 #: application/views/scripts/participant/report.phtml:242
-#: application/views/scripts/participant/report.phtml:481
+#: application/views/scripts/participant/report.phtml:473
 #: application/views/scripts/participant/summary-report.phtml:193
-#: application/views/scripts/participant/summary-report.phtml:413
+#: application/views/scripts/participant/summary-report.phtml:405
 msgid "Please pick date range and Scheme Type to proceed"
 msgstr ""
 
@@ -18546,23 +18508,22 @@ msgstr ""
 msgid "Print"
 msgstr ""
 
-#: application/modules/reports/views/scripts/detailed/index.phtml:137
-#: application/modules/reports/views/scripts/shipment-response-report/index.phtml:462
-#: application/modules/reports/views/scripts/shipments/index.phtml:514
-#: application/views/scripts/participant/response-report.phtml:130
-#: application/views/scripts/participant/shipment-response-report.phtml:391
-#: application/views/scripts/participant/shipments-reports.phtml:126
+#: application/modules/reports/views/scripts/detailed/index.phtml:129
+#: application/modules/reports/views/scripts/participant-trends/index.phtml:368
+#: application/modules/reports/views/scripts/shipment-response-report/index.phtml:459
+#: application/views/scripts/participant/response-report.phtml:122
+#: application/views/scripts/participant/shipment-response-report.phtml:383
 #, fuzzy
 msgid "Please select a date range"
 msgstr "PT Participant Info"
 
-#: application/modules/reports/views/scripts/detailed/index.phtml:140
-#: application/views/scripts/participant/response-report.phtml:133
+#: application/modules/reports/views/scripts/detailed/index.phtml:132
+#: application/views/scripts/participant/response-report.phtml:125
 #, fuzzy
 msgid "Please select the report type"
 msgstr "Change Password"
 
-#: application/modules/reports/views/scripts/detailed/index.phtml:278
+#: application/modules/reports/views/scripts/detailed/index.phtml:270
 msgid "Error loading view!"
 msgstr ""
 
@@ -18635,7 +18596,7 @@ msgid "Create the feedback form before finalizing."
 msgstr ""
 
 #: application/modules/reports/views/scripts/distribution/finalize.phtml:613
-#: application/views/partials/collapsible-filters.phtml:203
+#: application/views/partials/collapsible-filters.phtml:223
 msgid "Remove filter"
 msgstr ""
 
@@ -18672,7 +18633,6 @@ msgstr ""
 #: application/modules/reports/views/scripts/distribution/shipment.phtml:227
 #: application/modules/reports/views/scripts/finalize/get-shipments.ajax.phtml:80
 #: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:211
-#: application/views/scripts/participant/shipments-reports.phtml:66
 #, fuzzy
 msgid "Download Summary Report"
 msgstr "Summary Report"
@@ -18832,14 +18792,14 @@ msgstr "Summary Report"
 msgid "Participant Report"
 msgstr "Participant Name"
 
-#: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:790
+#: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:782
 #, fuzzy
 msgid "No Shipment data."
 msgstr "All Schemes"
 
 #: application/modules/reports/views/scripts/participant-performance/index.phtml:64
 #: application/modules/reports/views/scripts/participant-performance/index.phtml:66
-#: application/modules/reports/views/scripts/participant-trends/index.phtml:62
+#: application/modules/reports/views/scripts/participant-trends/index.phtml:244
 #: application/views/scripts/participant/participant-performance.phtml:56
 #: scheduled-jobs/report-layouts/summary-layouts/default/dts.phtml:186
 #: scheduled-jobs/report-layouts/summary-layouts/vietnam/dts.phtml:113
@@ -18869,83 +18829,123 @@ msgstr "Participant Login"
 msgid "Average Score"
 msgstr ""
 
-#: application/modules/reports/views/scripts/participant-trends/index.phtml:158
-#: application/modules/reports/views/scripts/participant-trends/index.phtml:200
-#: application/services/Reports.php:1905 application/services/Reports.php:2796
-#: application/services/Reports.php:2895
-#: application/views/scripts/participant/participant-performance.phtml:125
-#: application/views/scripts/participant/participant-performance.phtml:167
+#: application/modules/reports/views/scripts/participant-trends/index.phtml:278
+#: application/modules/reports/views/scripts/participant-trends/index.phtml:370
+msgid "All Shipments in the selected period"
+msgstr ""
+
+#: application/modules/reports/views/scripts/participant-trends/index.phtml:293
 #, fuzzy
-msgid "No. of Shipments"
+msgid "Download Excel"
+msgstr "Downloads"
+
+#: application/modules/reports/views/scripts/participant-trends/index.phtml:299
+#: application/modules/reports/views/scripts/participant-trends/index.phtml:331
+#: application/modules/reports/views/scripts/shipments/participation-stats.ajax.phtml:85
+#, fuzzy
+msgid "Enrolled"
+msgstr "Enrollment"
+
+#: application/modules/reports/views/scripts/participant-trends/index.phtml:304
+#: application/modules/reports/views/scripts/participant-trends/index.phtml:361
+#: application/modules/reports/views/scripts/shipments/participation-stats.ajax.phtml:77
+#, fuzzy
+msgid "Response rate"
+msgstr "Participant Login"
+
+#: application/modules/reports/views/scripts/participant-trends/index.phtml:309
+#: application/modules/reports/views/scripts/participant-trends/index.phtml:333
+#: application/modules/reports/views/scripts/participant-trends/index.phtml:362
+msgid "On time"
+msgstr ""
+
+#: application/modules/reports/views/scripts/participant-trends/index.phtml:314
+#: application/modules/reports/views/scripts/participant-trends/index.phtml:334
+#: application/modules/reports/views/scripts/participant-trends/index.phtml:363
+#: application/modules/reports/views/scripts/shipments/participation-stats.ajax.phtml:81
+#: application/views/partials/shipments-report-grid.phtml:354
+msgid "Pass rate"
+msgstr ""
+
+#: application/modules/reports/views/scripts/participant-trends/index.phtml:321
+#, fuzzy
+msgid "Trend by shipment"
 msgstr "All Schemes"
 
-#: application/modules/reports/views/scripts/participant-trends/index.phtml:160
-#: application/modules/reports/views/scripts/participant-trends/index.phtml:202
-#: application/modules/reports/views/scripts/shipments/vl-assay-summary.ajax.phtml:35
-#: application/services/Reports.php:1907 application/services/Reports.php:2798
-#: application/services/Reports.php:2897
-#: application/views/scripts/participant/participant-performance.phtml:127
-#: application/views/scripts/participant/participant-performance.phtml:169
-msgid "No. of Valid Responses"
+#: application/modules/reports/views/scripts/participant-trends/index.phtml:326
+msgid "Click a shipment to see its regions."
 msgstr ""
 
-#: application/modules/reports/views/scripts/participant-trends/index.phtml:161
-#: application/modules/reports/views/scripts/participant-trends/index.phtml:203
-#: application/services/Reports.php:1908 application/services/Reports.php:2799
-#: application/services/Reports.php:2898
-#: application/views/scripts/participant/participant-performance.phtml:128
-#: application/views/scripts/participant/participant-performance.phtml:170
-msgid "No. of Passed Responses"
+#: application/modules/reports/views/scripts/participant-trends/index.phtml:335
+msgid "Ratings"
 msgstr ""
 
-#: application/modules/reports/views/scripts/participant-trends/index.phtml:179
-#: application/modules/reports/views/scripts/participant-trends/index.phtml:575
-#: application/views/scripts/participant/participant-performance.phtml:146
-msgid "Region Wise Participant Performance Report For"
+#: application/modules/reports/views/scripts/participant-trends/index.phtml:341
+msgid "Excellent (full score)"
 msgstr ""
 
-#: application/modules/reports/views/scripts/shipment-response-report/index.phtml:169
-#: application/views/scripts/participant/shipment-response-report.phtml:106
+#: application/modules/reports/views/scripts/participant-trends/index.phtml:342
+msgid "Satisfactory (passed)"
+msgstr ""
+
+#: application/modules/reports/views/scripts/participant-trends/index.phtml:343
+msgid "Unsatisfactory (failed)"
+msgstr ""
+
+#: application/modules/reports/views/scripts/participant-trends/index.phtml:351
+#: application/services/Reports.php:220
 #, fuzzy
-msgid "of Participants"
-msgstr "PT Participant Info"
-
-#: application/modules/reports/views/scripts/shipment-response-report/index.phtml:172
-#: application/modules/reports/views/scripts/shipments/index.phtml:272
-#: application/modules/reports/views/scripts/shipments/participation-stats.ajax.phtml:20
-#: application/modules/reports/views/scripts/shipments/participation-stats.ajax.phtml:122
-#: application/modules/reports/views/scripts/shipments/vl-assay-summary.ajax.phtml:36
-#: application/views/scripts/participant/shipment-response-report.phtml:109
-msgid "Passed"
-msgstr ""
-
-#: application/modules/reports/views/scripts/shipment-response-report/index.phtml:202
-#: application/views/scripts/participant/shipment-response-report.phtml:139
-#, fuzzy
-msgid "Evaluation Result"
+msgid "Not evaluated yet"
 msgstr "View PT Result"
 
-#: application/modules/reports/views/scripts/shipment-response-report/index.phtml:465
-#: application/views/scripts/participant/shipment-response-report.phtml:394
+#: application/modules/reports/views/scripts/participant-trends/index.phtml:352
+#, fuzzy, php-format
+msgid "%s of %s enrolled"
+msgstr "Enrollment"
+
+#: application/modules/reports/views/scripts/participant-trends/index.phtml:353
+#, fuzzy, php-format
+msgid "%s of %s responses"
+msgstr "All Schemes"
+
+#: application/modules/reports/views/scripts/participant-trends/index.phtml:354
+#: application/services/Reports.php:218
+#, fuzzy, php-format
+msgid "%s of %s evaluated"
+msgstr "View PT Result"
+
+#: application/modules/reports/views/scripts/participant-trends/index.phtml:355
+#, fuzzy, php-format
+msgid "across %s shipments"
+msgstr "All Schemes"
+
+#: application/modules/reports/views/scripts/participant-trends/index.phtml:356
+#, fuzzy
+msgid "in 1 shipment"
+msgstr "All Schemes"
+
+#: application/modules/reports/views/scripts/participant-trends/index.phtml:357
+#, fuzzy
+msgid "No region"
+msgstr "All Schemes"
+
+#: application/modules/reports/views/scripts/participant-trends/index.phtml:359
+#, fuzzy
+msgid "No participants in this shipment match the filters."
+msgstr "Participant Login"
+
+#: application/modules/reports/views/scripts/participant-trends/index.phtml:364
+msgid "Excellent"
+msgstr ""
+
+#: application/modules/reports/views/scripts/participant-trends/index.phtml:367
+#: application/modules/reports/views/scripts/shipment-response-report/index.phtml:462
+#: application/views/scripts/participant/shipment-response-report.phtml:386
 msgid "Please select a scheme type"
 msgstr ""
 
-#: application/modules/reports/views/scripts/shipment-response-report/index.phtml:475
-#: application/views/scripts/participant/shipment-response-report.phtml:397
-#, fuzzy
-msgid "Please select a shipment"
-msgstr "All Schemes"
-
-#: application/modules/reports/views/scripts/shipments/index.phtml:240
-#: application/modules/reports/views/scripts/shipments/index.phtml:241
-msgid "Include cancelled"
-msgstr ""
-
-#: application/modules/reports/views/scripts/shipments/index.phtml:251
-msgid "Download Bulk Overview Reports - Selected"
-msgstr ""
-
-#: application/modules/reports/views/scripts/shipments/index.phtml:255
+#: application/modules/reports/views/scripts/participant-trends/index.phtml:385
+#: application/views/partials/shipments-report-grid.phtml:378
 #: application/views/scripts/covid19/response.phtml:232
 #: application/views/scripts/covid19/response.phtml:250
 #: application/views/scripts/covid19/response.phtml:266
@@ -19015,42 +19015,31 @@ msgstr ""
 msgid "Clear"
 msgstr ""
 
-#: application/modules/reports/views/scripts/shipments/index.phtml:275
+#: application/modules/reports/views/scripts/shipment-response-report/index.phtml:169
+#: application/views/scripts/participant/shipment-response-report.phtml:106
 #, fuzzy
-msgid "Reports for Participants"
+msgid "of Participants"
 msgstr "PT Participant Info"
 
-#: application/modules/reports/views/scripts/shipments/index.phtml:277
-msgid "Reports for PT Admin"
+#: application/modules/reports/views/scripts/shipment-response-report/index.phtml:172
+#: application/modules/reports/views/scripts/shipments/participation-stats.ajax.phtml:20
+#: application/modules/reports/views/scripts/shipments/participation-stats.ajax.phtml:122
+#: application/modules/reports/views/scripts/shipments/vl-assay-summary.ajax.phtml:36
+#: application/views/scripts/participant/shipment-response-report.phtml:109
+msgid "Passed"
 msgstr ""
 
-#: application/modules/reports/views/scripts/shipments/index.phtml:287
+#: application/modules/reports/views/scripts/shipment-response-report/index.phtml:202
+#: application/views/scripts/participant/shipment-response-report.phtml:139
 #, fuzzy
-msgid "Search Result Due Date"
-msgstr "PT Result Submission"
-
-#: application/modules/reports/views/scripts/shipments/index.phtml:306
-#: application/services/Shipments.php:5154
-#, fuzzy
-msgid "Evaluated"
+msgid "Evaluation Result"
 msgstr "View PT Result"
 
-#: application/modules/reports/views/scripts/shipments/index.phtml:428
-msgid "Unable to generate bulk download"
-msgstr ""
-
-#: application/modules/reports/views/scripts/shipments/index.phtml:496
+#: application/modules/reports/views/scripts/shipment-response-report/index.phtml:472
+#: application/views/scripts/participant/shipment-response-report.phtml:389
 #, fuzzy
-msgid "Loading breakdown…"
-msgstr "Participant Login"
-
-#: application/modules/reports/views/scripts/shipments/index.phtml:507
-msgid "Failed to load breakdown. Please try again."
-msgstr ""
-
-#: application/modules/reports/views/scripts/shipments/index.phtml:669
-msgid "No feedback responses found for this shipment"
-msgstr ""
+msgid "Please select a shipment"
+msgstr "All Schemes"
 
 #: application/modules/reports/views/scripts/shipments/participation-stats.ajax.phtml:5
 msgid "No participation data available for this shipment."
@@ -19076,23 +19065,9 @@ msgstr "Participant Name"
 msgid "No response"
 msgstr "All Schemes"
 
-#: application/modules/reports/views/scripts/shipments/participation-stats.ajax.phtml:77
-#, fuzzy
-msgid "Response rate"
-msgstr "Participant Login"
-
-#: application/modules/reports/views/scripts/shipments/participation-stats.ajax.phtml:81
-msgid "Pass rate"
-msgstr ""
-
 #: application/modules/reports/views/scripts/shipments/participation-stats.ajax.phtml:81
 msgid "of tested"
 msgstr ""
-
-#: application/modules/reports/views/scripts/shipments/participation-stats.ajax.phtml:85
-#, fuzzy
-msgid "Enrolled"
-msgstr "Enrollment"
 
 #: application/modules/reports/views/scripts/shipments/participation-stats.ajax.phtml:110
 msgid "Replied"
@@ -19149,7 +19124,7 @@ msgstr ""
 msgid "Shipment Test Date"
 msgstr ""
 
-#: application/modules/reports/views/scripts/shipments/vl-assay-distribution.phtml:187
+#: application/modules/reports/views/scripts/shipments/vl-assay-distribution.phtml:178
 #, fuzzy
 msgid "Please pick a date range (or 'All Time') to proceed"
 msgstr "All Schemes"
@@ -19166,6 +19141,14 @@ msgstr ""
 #, fuzzy
 msgid "No. of Participants Enrolled"
 msgstr "PT Participant Info"
+
+#: application/modules/reports/views/scripts/shipments/vl-assay-summary.ajax.phtml:35
+#: application/services/Reports.php:1922 application/services/Reports.php:2813
+#: application/services/Reports.php:2912
+#: application/views/scripts/participant/participant-performance.phtml:127
+#: application/views/scripts/participant/participant-performance.phtml:169
+msgid "No. of Valid Responses"
+msgstr ""
 
 #: application/modules/reports/views/scripts/shipments/vl-assay-summary.ajax.phtml:40
 msgid "Pass Rate"
@@ -19205,16 +19188,16 @@ msgstr ""
 msgid "There are no VL shipments in this date range. Try a wider date range."
 msgstr ""
 
-#: application/modules/reports/views/scripts/shipments/vl-sample-analysis.phtml:240
+#: application/modules/reports/views/scripts/shipments/vl-sample-analysis.phtml:232
 #: application/views/partials/report-zero-state-card.phtml:24
 #: application/views/partials/report-zero-state.phtml:53
 #, fuzzy
 msgid "No shipments in this date range"
 msgstr "All Schemes"
 
-#: application/modules/reports/views/scripts/shipments/vl-sample-analysis.phtml:250
-#: application/views/scripts/participant/tb-participants-per-country.phtml:132
-#: application/views/scripts/participant/tb-results.phtml:127
+#: application/modules/reports/views/scripts/shipments/vl-sample-analysis.phtml:242
+#: application/views/scripts/participant/tb-participants-per-country.phtml:124
+#: application/views/scripts/participant/tb-results.phtml:119
 msgid "Please pick date range and shipment to proceed"
 msgstr ""
 
@@ -19240,7 +19223,6 @@ msgstr ""
 
 #: application/modules/reports/views/scripts/testing-facility-by-ownership/get-report-data.phtml:14
 #: application/modules/reports/views/scripts/testing-facility-by-ownership/get-report-data.phtml:17
-#: application/services/Reports.php:5529
 msgid "No."
 msgstr ""
 
@@ -19251,7 +19233,6 @@ msgid "%"
 msgstr ""
 
 #: application/modules/reports/views/scripts/testing-facility-by-ownership/get-report-data.phtml:46
-#: application/services/Reports.php:5523
 #, fuzzy
 msgid "Total Participants"
 msgstr "Participant Login"
@@ -19268,24 +19249,24 @@ msgstr ""
 msgid "Loading report data..."
 msgstr ""
 
-#: application/modules/reports/views/scripts/testing-facility-by-ownership/index.phtml:189
+#: application/modules/reports/views/scripts/testing-facility-by-ownership/index.phtml:179
 msgid "Error loading report data:"
 msgstr ""
 
-#: application/modules/reports/views/scripts/testing-facility-by-ownership/index.phtml:189
+#: application/modules/reports/views/scripts/testing-facility-by-ownership/index.phtml:179
 #, fuzzy
 msgid "Status:"
 msgstr "Change Password"
 
-#: application/modules/reports/views/scripts/testing-facility-by-ownership/index.phtml:206
+#: application/modules/reports/views/scripts/testing-facility-by-ownership/index.phtml:196
 msgid "No data available to export. Please generate a report first."
 msgstr ""
 
-#: application/modules/reports/views/scripts/testing-facility-by-ownership/index.phtml:224
+#: application/modules/reports/views/scripts/testing-facility-by-ownership/index.phtml:214
 msgid "Error generating export file."
 msgstr ""
 
-#: application/modules/reports/views/scripts/testing-facility-by-ownership/index.phtml:229
+#: application/modules/reports/views/scripts/testing-facility-by-ownership/index.phtml:219
 msgid "Error exporting data. Please try again."
 msgstr ""
 
@@ -19543,52 +19524,123 @@ msgstr ""
 msgid "the countries listed below"
 msgstr ""
 
-#: application/services/Reports.php:186
-msgid "Unavailable"
+#: application/services/Reports.php:174
+msgid "Breakdown"
 msgstr ""
 
 #: application/services/Reports.php:197
 #, fuzzy
-msgid "Summary Report (DRAFT)"
-msgstr "Summary Report"
-
-#: application/services/Reports.php:204
-msgid "All Reports"
-msgstr ""
-
-#: application/services/Reports.php:206
-msgid "All Reports (DRAFT)"
-msgstr ""
-
-#: application/services/Reports.php:214 application/services/Shipments.php:604
-#, fuzzy
-msgid "TB Forms"
-msgstr "Downloads"
-
-#: application/services/Reports.php:220
-#, fuzzy
-msgid "View Finalized"
-msgstr "View PT Result"
-
-#: application/services/Reports.php:222
-#, fuzzy
-msgid "View Draft Reports"
-msgstr "View PT Result"
-
-#: application/services/Reports.php:248
-msgid "Breakdown"
-msgstr ""
-
-#: application/services/Reports.php:268
-#, fuzzy
-msgid "No Response Report"
+msgid "Response chart"
 msgstr "Participant Login"
 
-#: application/services/Reports.php:1909
+#: application/services/Reports.php:209
+#, fuzzy, php-format
+msgid "%s of %s"
+msgstr "Enrollment"
+
+#: application/services/Reports.php:223
+#: application/views/partials/shipments-report-grid.phtml:321
+#, fuzzy
+msgid "Not shipped"
+msgstr "All Schemes"
+
+#: application/services/Reports.php:224
+#: application/views/partials/shipments-report-grid.phtml:322
+#, fuzzy
+msgid "Open for responses"
+msgstr "All Schemes"
+
+#: application/services/Reports.php:225 application/services/Shipments.php:5154
+#: application/views/partials/shipments-report-grid.phtml:323
+#, fuzzy
+msgid "Evaluated"
+msgstr "View PT Result"
+
+#: application/services/Reports.php:226
+#: application/views/partials/shipments-report-grid.phtml:324
+#, fuzzy
+msgid "Reports generated"
+msgstr "Summary Report"
+
+#: application/services/Reports.php:232
+#, fuzzy
+msgid "Past due date"
+msgstr "Change Password"
+
+#: application/services/Reports.php:258
+#, fuzzy
+msgid "Open the reports page for this shipment"
+msgstr "All Schemes"
+
+#: application/services/Reports.php:265
+#, fuzzy
+msgid "Summary report (PDF)"
+msgstr "Summary Report"
+
+#: application/services/Reports.php:267
+#, fuzzy
+msgid "All reports"
+msgstr "Summary Report"
+
+#: application/services/Reports.php:267
+#, fuzzy
+msgid "Every participant's report in one ZIP file"
+msgstr "Participant Login"
+
+#: application/services/Reports.php:273
+msgid ""
+"This file is not on this server. Generate the reports again to create it."
+msgstr ""
+
+#: application/services/Reports.php:280
+#, fuzzy
+msgid "TB forms"
+msgstr "Downloads"
+
+#: application/services/Reports.php:280
+#, fuzzy
+msgid "Result forms for every participant (ZIP)"
+msgstr "PT Participant Info"
+
+#: application/services/Reports.php:287
+msgid "Each participant's response and result (Excel)"
+msgstr ""
+
+#: application/services/Reports.php:289
+#, fuzzy
+msgid "Non-responders"
+msgstr "All Schemes"
+
+#: application/services/Reports.php:289
+#, fuzzy
+msgid "Participants who have not responded yet (Excel)"
+msgstr "PT Participant Info"
+
+#: application/services/Reports.php:295
+#, fuzzy
+msgid "Participants' feedback answers (Excel)"
+msgstr "Participant Name"
+
+#: application/services/Reports.php:1920 application/services/Reports.php:2811
+#: application/services/Reports.php:2910
+#: application/views/scripts/participant/participant-performance.phtml:125
+#: application/views/scripts/participant/participant-performance.phtml:167
+#, fuzzy
+msgid "No. of Shipments"
+msgstr "All Schemes"
+
+#: application/services/Reports.php:1923 application/services/Reports.php:2814
+#: application/services/Reports.php:2913
+#: application/views/scripts/participant/participant-performance.phtml:128
+#: application/views/scripts/participant/participant-performance.phtml:170
+msgid "No. of Passed Responses"
+msgstr ""
+
+#: application/services/Reports.php:1924
 msgid "Pass Percentage"
 msgstr ""
 
-#: application/services/Reports.php:2139
+#: application/services/Reports.php:2154
 #: application/views/scripts/covid19/response.phtml:671
 #: application/views/scripts/dbs/response.phtml:332
 #: application/views/scripts/dts/response.phtml:1118
@@ -19601,38 +19653,34 @@ msgstr ""
 msgid "Reference Result"
 msgstr ""
 
-#: application/services/Reports.php:2140
+#: application/services/Reports.php:2155
 msgid "Total Positive Responses"
 msgstr ""
 
-#: application/services/Reports.php:2141
+#: application/services/Reports.php:2156
 msgid "Total Negative Responses"
 msgstr ""
 
-#: application/services/Reports.php:2142
+#: application/services/Reports.php:2157
 msgid "Total Indeterminate Responses"
 msgstr ""
 
-#: application/services/Reports.php:2143
+#: application/services/Reports.php:2158
 msgid "Total Responses"
 msgstr ""
 
-#: application/services/Reports.php:2144
+#: application/services/Reports.php:2159
 msgid "Total Valid Responses(Total - Excluded)"
 msgstr ""
 
-#: application/services/Reports.php:2145
+#: application/services/Reports.php:2160
 msgid "Total Passed"
 msgstr ""
 
-#: application/services/Reports.php:5505
+#: application/services/Shipments.php:604
 #, fuzzy
-msgid "Laboratory Performance per Shipment"
-msgstr "Participant Name"
-
-#: application/services/Reports.php:5512
-msgid "RATING PER SHIPMENT"
-msgstr ""
+msgid "TB Forms"
+msgstr "Downloads"
 
 #: application/services/Shipments.php:606
 msgid "Generate TB Forms"
@@ -19671,6 +19719,74 @@ msgstr ""
 msgid ""
 "This shipment collects participant feedback but no feedback form has been "
 "created yet. Create the feedback form before finalizing."
+msgstr ""
+
+#: application/views/partials/date-range-presets.phtml:21
+msgid "Today"
+msgstr ""
+
+#: application/views/partials/date-range-presets.phtml:22
+msgid "Yesterday"
+msgstr ""
+
+#: application/views/partials/date-range-presets.phtml:23
+#, fuzzy
+msgid "Last 7 Days"
+msgstr "Participant Name"
+
+#: application/views/partials/date-range-presets.phtml:24
+msgid "Last 30 Days"
+msgstr ""
+
+#: application/views/partials/date-range-presets.phtml:25
+msgid "This Month"
+msgstr ""
+
+#: application/views/partials/date-range-presets.phtml:26
+#, fuzzy
+msgid "Last Month"
+msgstr "Participant Name"
+
+#: application/views/partials/date-range-presets.phtml:27
+msgid "Last 90 Days"
+msgstr ""
+
+#: application/views/partials/date-range-presets.phtml:28
+msgid "Last 120 Days"
+msgstr ""
+
+#: application/views/partials/date-range-presets.phtml:29
+msgid "Last 180 Days"
+msgstr ""
+
+#: application/views/partials/date-range-presets.phtml:30
+msgid "Last 12 Months"
+msgstr ""
+
+#: application/views/partials/date-range-presets.phtml:31
+#, fuzzy
+msgid "Last 18 Months"
+msgstr "Participant Name"
+
+#: application/views/partials/date-range-presets.phtml:32
+msgid "Last 24 Months"
+msgstr ""
+
+#: application/views/partials/date-range-presets.phtml:33
+#, fuzzy
+msgid "Previous Year"
+msgstr "Participant Login"
+
+#: application/views/partials/date-range-presets.phtml:34
+msgid "Current Year To Date"
+msgstr ""
+
+#: application/views/partials/date-range-presets.phtml:39
+msgid "Hide presets"
+msgstr ""
+
+#: application/views/partials/date-range-presets.phtml:40
+msgid "Show presets"
 msgstr ""
 
 #: application/views/partials/help-drawer.phtml:31
@@ -19794,6 +19910,50 @@ msgstr ""
 
 #: application/views/partials/report-zero-state.phtml:65
 msgid "Clear search"
+msgstr ""
+
+#: application/views/partials/shipments-report-grid.phtml:304
+#, fuzzy
+msgid "All dates"
+msgstr "All Schemes"
+
+#: application/views/partials/shipments-report-grid.phtml:311
+#, fuzzy
+msgid "All schemes"
+msgstr "All Schemes"
+
+#: application/views/partials/shipments-report-grid.phtml:329
+msgid ""
+"Open past the due date but not evaluated, or evaluated but not finalized"
+msgstr ""
+
+#: application/views/partials/shipments-report-grid.phtml:331
+#: application/views/partials/shipments-report-grid.phtml:332
+#, fuzzy
+msgid "Needs attention"
+msgstr "View PT Result"
+
+#: application/views/partials/shipments-report-grid.phtml:337
+#: application/views/partials/shipments-report-grid.phtml:338
+msgid "Include cancelled"
+msgstr ""
+
+#: application/views/partials/shipments-report-grid.phtml:373
+#, fuzzy
+msgid "All statuses"
+msgstr "All Schemes"
+
+#: application/views/partials/shipments-report-grid.phtml:424
+#, fuzzy
+msgid "Loading breakdown…"
+msgstr "Participant Login"
+
+#: application/views/partials/shipments-report-grid.phtml:429
+msgid "Failed to load breakdown. Please try again."
+msgstr ""
+
+#: application/views/partials/shipments-report-grid.phtml:505
+msgid "No feedback responses found for this shipment"
 msgstr ""
 
 #: application/views/partials/spotlight.phtml:34
@@ -22763,7 +22923,7 @@ msgstr ""
 
 #: application/views/scripts/participant/all-schemes.phtml:265
 #: application/views/scripts/participant/current-schemes.phtml:395
-#: application/views/scripts/participant/dashboard.phtml:1184
+#: application/views/scripts/participant/dashboard.phtml:1177
 msgid ""
 "Are you sure you want to remove this response?\n"
 " This cannot be undone !"
@@ -22771,23 +22931,23 @@ msgstr ""
 
 #: application/views/scripts/participant/all-schemes.phtml:274
 #: application/views/scripts/participant/current-schemes.phtml:404
-#: application/views/scripts/participant/dashboard.phtml:1193
+#: application/views/scripts/participant/dashboard.phtml:1186
 #: application/views/scripts/participant/defaulted-schemes.phtml:195
 msgid "Response removed successfully"
 msgstr ""
 
 #: application/views/scripts/participant/all-schemes.phtml:325
-#: application/views/scripts/participant/dashboard.phtml:1244
+#: application/views/scripts/participant/dashboard.phtml:1237
 msgid "Qc details added successfully"
 msgstr ""
 
 #: application/views/scripts/participant/all-schemes.phtml:331
-#: application/views/scripts/participant/dashboard.phtml:1250
+#: application/views/scripts/participant/dashboard.phtml:1243
 msgid "Please select the date"
 msgstr ""
 
 #: application/views/scripts/participant/all-schemes.phtml:338
-#: application/views/scripts/participant/dashboard.phtml:1257
+#: application/views/scripts/participant/dashboard.phtml:1250
 msgid "Please select at least one shipment to proceed with QC"
 msgstr ""
 
@@ -23189,6 +23349,10 @@ msgid ""
 "allowed."
 msgstr ""
 
+#: application/views/scripts/participant/participant-performance.phtml:146
+msgid "Region Wise Participant Performance Report For"
+msgstr ""
+
 #: application/views/scripts/participant/password.phtml:27
 msgid "Confirm Your Account"
 msgstr ""
@@ -23312,11 +23476,11 @@ msgstr ""
 msgid "Select Response Status"
 msgstr "Participant Login"
 
-#: application/views/scripts/participant/report.phtml:537
+#: application/views/scripts/participant/report.phtml:529
 msgid "No downloadable reports found for the selected rows"
 msgstr ""
 
-#: application/views/scripts/participant/report.phtml:542
+#: application/views/scripts/participant/report.phtml:534
 msgid "Unable to generate the bulk download. Please try again."
 msgstr ""
 
@@ -23338,11 +23502,6 @@ msgstr "All Schemes"
 #: application/views/scripts/participant/schemeinfo.phtml:9
 msgid "Enrolled Labd/Tester"
 msgstr ""
-
-#: application/views/scripts/participant/shipments-reports.phtml:67
-#, fuzzy
-msgid "Download Excel Report"
-msgstr "Downloads"
 
 #: application/views/scripts/participant/summary-report.phtml:54
 msgid "Download Shipment-wise Summary Reports"
@@ -25013,6 +25172,34 @@ msgid "No participants"
 msgstr "PT Participant Info"
 
 #, fuzzy
+#~ msgid "View reports"
+#~ msgstr "View PT Result"
+
+#, fuzzy
+#~ msgid "Search Result Due Date"
+#~ msgstr "PT Result Submission"
+
+#, fuzzy
+#~ msgid "View Finalized"
+#~ msgstr "View PT Result"
+
+#, fuzzy
+#~ msgid "View Draft Reports"
+#~ msgstr "View PT Result"
+
+#, fuzzy
+#~ msgid "No Response Report"
+#~ msgstr "Participant Login"
+
+#, fuzzy
+#~ msgid "Download Excel Report"
+#~ msgstr "Downloads"
+
+#, fuzzy
+#~ msgid "Laboratory Performance per Shipment"
+#~ msgstr "Participant Name"
+
+#, fuzzy
 #~ msgid "Please enter the Sample Rehydration Date"
 #~ msgstr "Change Password"
 
@@ -25099,10 +25286,6 @@ msgstr "PT Participant Info"
 #, fuzzy
 #~ msgid "Analyst Name"
 #~ msgstr "Contact Us"
-
-#, fuzzy
-#~ msgid "Download Excel"
-#~ msgstr "Downloads"
 
 #, fuzzy
 #~ msgid "Draft Summary Report"
