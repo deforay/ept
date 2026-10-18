@@ -1,0 +1,247 @@
+<?php
+
+/**
+ * The filter panel shared by the Shipment Response Report and the Participant
+ * Performance Report: shipment date, scheme, shipment and the participant's
+ * place.
+ *
+ * Set before including:
+ *
+ *   $rfShipmentsUrl  the action that returns the Shipment filter options
+ *   $this->schemes, ->countries, ->regions, ->states, ->districts
+ *
+ * The page talks to the filters through window.reportFilters:
+ *
+ *   reportFilters.ready(fn)     runs fn once, after the first Shipment list loads
+ *   reportFilters.onChange(fn)  runs fn after any filter changes
+ *   reportFilters.params(aoData) adds the filter values to a DataTables request
+ *   reportFilters.values()      the filter values as an object
+ *
+ * The page includes collapsible-filters.phtml last.
+ */
+$locationFilters = [
+	['country', $this->translate->_("Country"), array_map(fn ($c) => [$c['id'], ucwords((string) $c['iso_name'])], $this->countries ?? [])],
+	['region', $this->translate->_("Region"), array_map(fn ($r) => [$r['region'], $r['region']], $this->regions ?? [])],
+	['state', $this->translate->_("Province"), array_map(fn ($r) => [$r['state'], $r['state']], $this->states ?? [])],
+	['district', $this->translate->_("District"), array_map(fn ($r) => [$r['district'], $r['district']], $this->districts ?? [])],
+];
+?>
+<link href="<?php echo $this->baseUrl('css/select2.css'); ?>" rel="stylesheet" />
+<script type="text/javascript" src="<?php echo $this->baseUrl('js/moment.min.js'); ?>"></script>
+<style>
+	.rpt-filters {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: flex-end;
+		gap: 12px 16px;
+		margin-top: 12px;
+		padding: 14px 16px;
+		border: 1px solid #e3e8ef;
+		border-radius: 6px;
+		background: #fafbfc;
+	}
+
+	.rpt-filters .rpt-field {
+		flex: 1 1 180px;
+		min-width: 0;
+	}
+
+	.rpt-filters .rpt-field.is-wide {
+		flex-basis: 320px;
+	}
+
+	.rpt-filters label {
+		display: block;
+		margin-bottom: 4px;
+		font-size: 13px;
+		font-weight: 600;
+		color: #333;
+	}
+
+	.rpt-filters .rpt-break {
+		flex-basis: 100%;
+		height: 0;
+	}
+</style>
+
+<div class="filter-panel js-filter-panel">
+	<button type="button" class="btn btn-default btn-sm js-filter-toggle" aria-expanded="false"
+		data-expand-text="<?= $this->htmlTranslate("Expand Filters"); ?>"
+		data-collapse-text="<?= $this->htmlTranslate("Collapse Filters"); ?>">
+		<i class="icon-filter"></i> <span class="js-filter-toggle-text"><?= $this->htmlTranslate("Expand Filters"); ?></span>
+		<span class="label label-info js-filter-count" style="display:none;">0</span>
+		<span class="caret"></span>
+	</button>
+	<div class="js-filter-summary"></div>
+	<div class="js-filter-body">
+		<div class="rpt-filters">
+			<div class="rpt-field">
+				<label for="dateRange"><?= $this->htmlTranslate("Shipment Date"); ?></label>
+				<input type="text" id="dateRange" name="dateRange" class="form-control input-sm" readonly="readonly"
+					style="background: #fff" placeholder="<?= $this->htmlTranslate("All dates"); ?>"
+					data-filter-label="<?= $this->htmlTranslate("Shipment Date"); ?>" />
+			</div>
+			<div class="rpt-field">
+				<label for="scheme"><?= $this->htmlTranslate("Scheme"); ?></label>
+				<select id="scheme" name="scheme" class="form-control input-sm"
+					data-filter-label="<?= $this->htmlTranslate("Scheme"); ?>">
+					<option value=""><?= $this->htmlTranslate("All schemes"); ?></option>
+					<?php foreach ($this->schemes as $scheme) { ?>
+						<option value="<?= $this->escape($scheme['scheme_id']); ?>"><?= $this->escape($scheme['scheme_name']); ?></option>
+					<?php } ?>
+				</select>
+			</div>
+			<div class="rpt-field is-wide">
+				<label for="shipmentId"><?= $this->htmlTranslate("Shipment"); ?></label>
+				<select id="shipmentId" name="shipmentId" multiple="multiple" style="width:100%;"
+					data-filter-label="<?= $this->htmlTranslate("Shipment"); ?>">
+				</select>
+			</div>
+			<div class="rpt-break"></div>
+			<?php foreach ($locationFilters as [$id, $label, $options]) {
+				if (empty($options)) {
+					continue;
+				} ?>
+				<div class="rpt-field">
+					<label for="<?= $id; ?>"><?= $this->escape($label); ?></label>
+					<select id="<?= $id; ?>" name="<?= $id; ?>" class="js-rpt-location" style="width:100%;"
+						data-filter-label="<?= $this->escape($label); ?>">
+						<option value=""></option>
+						<?php foreach ($options as [$value, $text]) { ?>
+							<option value="<?= $this->escape($value); ?>"><?= $this->escape($text); ?></option>
+						<?php } ?>
+					</select>
+				</div>
+			<?php } ?>
+		</div>
+	</div><!-- /.js-filter-body -->
+</div><!-- /.filter-panel -->
+
+<script type="text/javascript" src="<?php echo $this->assetUrl('js/daterangepicker.js'); ?>"></script>
+<script type="text/javascript" src="<?php echo $this->baseUrl('js/select2.min.js'); ?>"></script>
+<script type="text/javascript">
+	var reportFilters = (function () {
+		var isReady = false;
+		var readyCallbacks = [];
+		var changeCallbacks = [];
+		var changeTimer = null;
+
+		// Several filters can change in one go (clearing a filter chip, say),
+		// so the page hears about it once.
+		function changed() {
+			if (!isReady) {
+				return;
+			}
+			clearTimeout(changeTimer);
+			changeTimer = setTimeout(function () {
+				$.each(changeCallbacks, function (i, fn) { fn(); });
+			}, 50);
+		}
+
+		function dates() {
+			var range = ($('#dateRange').val() || '').split(' to ');
+			return { startDate: range[0] || '', endDate: range[1] || '' };
+		}
+
+		function values() {
+			var v = dates();
+			v.scheme = $('#scheme').val() || '';
+			v.shipmentId = $('#shipmentId').val() || [];
+			$('.js-rpt-location').each(function () {
+				v[this.name] = $(this).val() || '';
+			});
+			return v;
+		}
+
+		function params(aoData) {
+			$.each(values(), function (name, value) {
+				if ($.isArray(value)) {
+					$.each(value, function (i, item) {
+						aoData.push({ "name": name + "[]", "value": item });
+					});
+				} else {
+					aoData.push({ "name": name, "value": value });
+				}
+			});
+		}
+
+		function loadShipments() {
+			var request = dates();
+			request.scheme = $('#scheme').val();
+			return $.post("<?= $rfShipmentsUrl; ?>", request, function (shipments) {
+				var picked = $('#shipmentId').val() || [];
+				var $select = $('#shipmentId').empty();
+				var kept = [];
+				$.each(shipments || [], function (i, shipment) {
+					$select.append($('<option/>').val(shipment.id).text(shipment.text));
+					if (picked.indexOf(String(shipment.id)) !== -1) {
+						kept.push(String(shipment.id));
+					}
+				});
+				// Keep the picked shipments that are still in range. The chips read
+				// the select, so set the value the plain way too.
+				$select.val(kept);
+				$select.select2('val', kept);
+			}, 'json');
+		}
+
+		$(function () {
+			$('#shipmentId').select2({
+				placeholder: "<?= $this->jsTranslate("All shipments in the date range"); ?>"
+			});
+			$('.js-rpt-location').each(function () {
+				$(this).select2({
+					placeholder: "<?= $this->jsTranslate("All"); ?>",
+					allowClear: true
+				});
+			});
+
+			$('#dateRange').daterangepicker({
+				locale: {
+					cancelLabel: "<?= $this->jsTranslate("Clear"); ?>",
+					format: 'DD-MMM-YYYY',
+					separator: ' to '
+				},
+				autoApply: true,
+				showDropdowns: true,
+				alwaysShowCalendars: true,
+				// Some programmes run only one or two rounds a year, so three years
+				// shows enough of them.
+				startDate: moment().subtract(3, 'year'),
+				endDate: moment(),
+				maxDate: moment(),
+				ranges: eptDateRanges()
+			}).on('apply.daterangepicker', function () {
+				$(this).trigger('change');
+			}).on('cancel.daterangepicker', function () {
+				$(this).val('').trigger('change');
+			});
+
+			// The date range and the scheme decide which shipments can be picked,
+			// so they reload the Shipment list first.
+			$('#dateRange, #scheme').on('change', function () {
+				if (isReady) {
+					loadShipments().always(changed);
+				}
+			});
+			$('#shipmentId, .js-rpt-location').on('change', changed);
+		});
+
+		// The first load waits for the page to load, after
+		// collapsible-filters.phtml has pre-selected the only scheme, so the
+		// report loads once with it.
+		$(window).on('load', function () {
+			loadShipments().always(function () {
+				isReady = true;
+				$.each(readyCallbacks, function (i, fn) { fn(); });
+			});
+		});
+
+		return {
+			ready: function (fn) { readyCallbacks.push(fn); },
+			onChange: function (fn) { changeCallbacks.push(fn); },
+			params: params,
+			values: values
+		};
+	})();
+</script>

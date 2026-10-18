@@ -1,0 +1,327 @@
+<?php
+
+/**
+ * Participant Performance Report, shared by reports/participant-performance
+ * (admin) and participant/participant-performance (data managers).
+ *
+ * Set before including:
+ *
+ *   $pprDataUrl       the action that returns the participant rows
+ *   $pprShipmentsUrl  the action that returns the Shipment filter options
+ *   $pprExportUrl     the action behind Download Excel
+ *   $this->schemes, ->countries, ->regions, ->states, ->districts
+ *
+ * The filters apply as soon as they change. The page includes
+ * collapsible-filters.phtml last, after this partial.
+ */
+include APPLICATION_PATH . '/views/partials/report-zero-state.phtml';
+include APPLICATION_PATH . '/views/partials/report-table-styles.phtml';
+$rfShipmentsUrl = $pprShipmentsUrl;
+include APPLICATION_PATH . '/views/partials/report-filters.phtml';
+
+$performanceFilters = [
+	'' => $this->translate->_("All"),
+	'failed' => $this->translate->_("Failed at least once"),
+	'missed' => $this->translate->_("Missed a response"),
+	'clean' => $this->translate->_("Never failed"),
+];
+$legend = [
+	'pass' => $this->translate->_("Pass"),
+	'fail' => $this->translate->_("Fail"),
+	'none' => $this->translate->_("Not responded"),
+	'nottested' => $this->translate->_("Could not test"),
+	'excluded' => $this->translate->_("Excluded"),
+	'pending' => $this->translate->_("Not evaluated"),
+];
+?>
+<style>
+	#performanceTable tbody tr {
+		cursor: pointer;
+	}
+
+	#performanceTable .perf-participant {
+		display: flex;
+		align-items: flex-start;
+		gap: 8px;
+	}
+
+	#performanceTable .perf-toggle {
+		display: inline-flex;
+		flex: 0 0 auto;
+		align-items: center;
+		justify-content: center;
+		width: 20px;
+		height: 20px;
+		margin-top: 1px;
+		border: 1px solid #cfdae8;
+		border-radius: 4px;
+		background: #f5f8fc;
+		color: #4a6fa5;
+	}
+
+	#performanceTable .perf-toggle .icon-chevron-right {
+		display: inline-block;
+		font-size: 10px;
+		transition: transform .15s ease;
+	}
+
+	#performanceTable tr:hover .perf-toggle,
+	#performanceTable tr.perf-open .perf-toggle {
+		border-color: #4a6fa5;
+		background: #4a6fa5;
+		color: #fff;
+	}
+
+	#performanceTable tr.perf-open .perf-toggle .icon-chevron-right {
+		transform: rotate(90deg);
+	}
+
+	#performanceTable tr.perf-open > td {
+		background: #eef2f7 !important;
+	}
+
+	#performanceTable .perf-failed {
+		color: #a33a3a;
+		font-weight: 600;
+	}
+
+	/* The results strip: one square per shipment, oldest first. */
+	.perf-chips {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 3px;
+	}
+
+	.perf-chip {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		box-sizing: border-box;
+		width: 28px;
+		height: 20px;
+		border: 1px solid transparent;
+		border-radius: 4px;
+		font-size: 10.5px;
+		font-weight: 600;
+		line-height: 1;
+	}
+
+	.perf-chip.is-pass {
+		background: #d6efdf;
+		color: #1f6b3e;
+	}
+
+	.perf-chip.is-fail {
+		background: #d9534f;
+		color: #fff;
+	}
+
+	.perf-chip.is-none {
+		border: 1px dashed #b8c1cc;
+		background: #fff;
+	}
+
+	.perf-chip.is-nottested {
+		background: #ffe7ad;
+	}
+
+	.perf-chip.is-excluded {
+		background: #d5dae1;
+	}
+
+	.perf-chip.is-pending {
+		border: 1px solid #d5dae1;
+		background: #f4f6f9;
+	}
+
+	.perf-more {
+		margin-right: 2px;
+		font-size: 11px;
+		color: #98a1ad;
+	}
+
+	.perf-legend {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 4px 14px;
+		margin: 0 0 8px;
+		font-size: 12px;
+		color: #5b6573;
+	}
+
+	.perf-legend .perf-chip {
+		width: 14px;
+		height: 12px;
+		margin-right: 5px;
+		vertical-align: -1px;
+	}
+
+	#performanceTable td.perf-detail {
+		padding: 14px 18px;
+		border-left: 4px solid #3f6fb0;
+		background: #eef2f7 !important;
+		box-shadow: inset 0 7px 9px -9px rgba(0, 0, 0, .45), inset 0 -7px 9px -9px rgba(0, 0, 0, .3);
+		cursor: default;
+	}
+
+	#performanceTable table.perf-history {
+		width: auto;
+		min-width: 60%;
+		margin: 0;
+		background: #fff;
+		box-shadow: 0 1px 3px rgba(0, 0, 0, .1);
+	}
+
+	#performanceTable table.perf-history > thead > tr > th,
+	.data-list #performanceTable table.table.perf-history > thead > tr > th {
+		padding: 6px 14px;
+		text-align: left;
+		font-size: 11px;
+	}
+
+	#performanceTable table.perf-history > tbody > tr > td,
+	.data-list #performanceTable table.table.perf-history > tbody > tr > td {
+		padding: 6px 14px;
+		font-size: 13px;
+		vertical-align: top;
+		background: #fff;
+	}
+</style>
+
+<div class="rpt-section-head">
+	<h4><?= $this->htmlTranslate("Participants"); ?>
+		<span class="rpt-hint"><?= $this->htmlTranslate("Click a participant to see each shipment."); ?></span>
+	</h4>
+	<div class="rpt-tools">
+		<div class="rpt-seg" id="performanceFilter" role="group" aria-label="<?= $this->htmlTranslate("Performance"); ?>">
+			<?php foreach ($performanceFilters as $value => $label) { ?>
+				<button type="button" data-performance="<?= $value; ?>" class="<?= $value === '' ? 'active' : ''; ?>"><?= $this->escape($label); ?><span class="rpt-seg-count" data-count="<?= $value === '' ? 'all' : $value; ?>"></span></button>
+			<?php } ?>
+		</div>
+		<button type="button" class="rpt-download" onclick="exportPerformance()">
+			<i class="icon-download-alt"></i> <?= $this->htmlTranslate("Download Excel"); ?>
+		</button>
+	</div>
+</div>
+<div class="perf-legend" aria-hidden="true">
+	<?php foreach ($legend as $outcome => $label) { ?>
+		<span><span class="perf-chip is-<?= $outcome; ?>"></span><?= $this->escape($label); ?></span>
+	<?php } ?>
+</div>
+<table class="table table-hover rpt-table" id="performanceTable">
+	<thead>
+		<tr>
+			<th scope="col"><?= $this->htmlTranslate("Participant"); ?></th>
+			<th scope="col"><?= $this->htmlTranslate("Location"); ?></th>
+			<th scope="col"><?= $this->htmlTranslate("Shipments"); ?></th>
+			<th scope="col"><?= $this->htmlTranslate("Pass rate"); ?></th>
+			<th scope="col"><?= $this->htmlTranslate("Failed"); ?></th>
+			<th scope="col"><?= $this->htmlTranslate("Average score"); ?></th>
+			<th scope="col"><?= $this->htmlTranslate("Results, oldest first"); ?></th>
+			<th scope="col"></th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr>
+			<td colspan="8" class="dataTables_empty"><?= $this->htmlTranslate("Loading data from server"); ?></td>
+		</tr>
+	</tbody>
+</table>
+
+<script type="text/javascript">
+	var performanceTable = null;
+	var performanceFilter = '';
+
+	$(function () {
+		$('#performanceFilter').on('click', 'button', function () {
+			performanceFilter = String($(this).data('performance') || '');
+			$('#performanceFilter button').removeClass('active');
+			$(this).addClass('active');
+			if (performanceTable) {
+				performanceTable.fnDraw();
+			}
+		});
+
+		// A row opens the participant's shipments under it.
+		$('#performanceTable tbody').on('click', 'tr', function () {
+			if (!performanceTable || $(this).find('td.dataTables_empty, td.perf-detail').length) {
+				return;
+			}
+			var data = performanceTable.fnGetData(this);
+			if (!data) {
+				return;
+			}
+			if (performanceTable.fnIsOpen(this)) {
+				performanceTable.fnClose(this);
+				$(this).removeClass('perf-open');
+			} else {
+				performanceTable.fnOpen(this, data[7], 'perf-detail');
+				$(this).addClass('perf-open');
+			}
+		});
+	});
+
+	reportFilters.onChange(function () {
+		performanceTable.fnDraw();
+	});
+
+	reportFilters.ready(function () {
+		performanceTable = $('#performanceTable').dataTable({
+			"oLanguage": reportZeroState.dataTableLanguage(),
+			"bAutoWidth": false,
+			"sPaginationType": "bootstrap",
+			"aoColumns": [
+				{ "sWidth": "22%" },
+				{ "sWidth": "15%" },
+				{ "sWidth": "9%" },
+				{ "sWidth": "11%" },
+				{ "sWidth": "7%" },
+				{ "sWidth": "9%" },
+				{ "sWidth": "27%", "bSortable": false },
+				{ "bVisible": false, "bSortable": false }
+			],
+			"aaSorting": [[4, "desc"]],
+			"bProcessing": true,
+			"bServerSide": true,
+			"sAjaxSource": "<?= $pprDataUrl; ?>",
+			"fnServerParams": function (aoData) {
+				reportFilters.params(aoData);
+				aoData.push({ "name": "performance", "value": performanceFilter });
+			},
+			"fnServerData": function (sSource, aoData, fnCallback) {
+				$.ajax({
+					"dataType": 'json',
+					"type": "POST",
+					"url": sSource,
+					"data": aoData,
+					"success": function (json) {
+						$.each(json.counts || {}, function (key, count) {
+							$('#performanceFilter [data-count="' + key + '"]').text(count.toLocaleString());
+						});
+						fnCallback(json);
+					}
+				});
+			}
+		});
+	});
+
+	function exportPerformance() {
+		var params = reportFilters.values();
+		params.performance = performanceFilter;
+		var search = performanceTable ? performanceTable.fnSettings().oPreviousSearch.sSearch : '';
+		params.sSearch = search;
+		$.blockUI();
+		$.post("<?= $pprExportUrl; ?>", params, function (data) {
+			$.unblockUI();
+			if (!data || !data.file) {
+				alert("<?= $this->jsTranslate("Unable to generate download"); ?>");
+			} else {
+				window.open('/temporary/' + data.file, '_blank');
+			}
+		}, 'json').fail(function () {
+			$.unblockUI();
+			alert("<?= $this->jsTranslate("Unable to generate download"); ?>");
+		});
+	}
+</script>

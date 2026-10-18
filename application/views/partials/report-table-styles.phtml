@@ -1,0 +1,211 @@
+<?php
+
+/**
+ * Styles shared by the report pages built on report-filters.phtml: section
+ * headings, the segmented filter control, the download button, and the table
+ * cells (sub-lines, rate bars, pills).
+ */
+?>
+<style>
+	.rpt-section-head {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		justify-content: space-between;
+		gap: 8px 16px;
+		margin: 24px 0 8px;
+	}
+
+	.rpt-section-head h4 {
+		margin: 0;
+		font-size: 15px;
+		font-weight: 600;
+		color: #333;
+	}
+
+	.rpt-section-head .rpt-hint {
+		font-size: 12px;
+		font-weight: 400;
+		color: #8a94a3;
+	}
+
+	.rpt-tools {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 8px;
+	}
+
+	/* A light segmented control, so it reads as a filter and not as actions. */
+	.rpt-seg {
+		display: inline-flex;
+		flex-wrap: wrap;
+		border: 1px solid #cfdae8;
+		border-radius: 6px;
+		background: #fff;
+		overflow: hidden;
+	}
+
+	.rpt-seg button {
+		padding: 4px 12px;
+		border: 0;
+		border-left: 1px solid #e3e8ef;
+		background: transparent;
+		color: #2f4f7a;
+		font-size: 12.5px;
+		line-height: 20px;
+	}
+
+	.rpt-seg button:first-child {
+		border-left: 0;
+	}
+
+	.rpt-seg button:hover {
+		background: #f5f8fc;
+	}
+
+	.rpt-seg button.active {
+		background: #4a6fa5;
+		color: #fff;
+	}
+
+	.rpt-seg button .rpt-seg-count {
+		margin-left: 4px;
+		font-size: 11.5px;
+		opacity: .7;
+	}
+
+	.rpt-tools .rpt-download {
+		padding: 4px 12px;
+		border: 1px solid #cfdae8;
+		border-radius: 6px;
+		background: #f5f8fc;
+		color: #2f4f7a;
+		font-size: 12.5px;
+		line-height: 20px;
+	}
+
+	.rpt-tools .rpt-download:hover {
+		border-color: #4a6fa5;
+		background: #4a6fa5;
+		color: #fff;
+	}
+
+	.rpt-table {
+		width: 100% !important;
+	}
+
+	/* Beats the centred headers and middle-aligned cells of the .data-list
+	   card. Headers line up with the left edge of their values, and every
+	   value starts on the same line as the first line of the row. */
+	table.rpt-table > thead > tr > th,
+	.data-list table.table.rpt-table > thead > tr > th {
+		text-align: left;
+		white-space: nowrap;
+	}
+
+	table.rpt-table > tbody > tr > td,
+	.data-list table.table.rpt-table > tbody > tr > td {
+		vertical-align: top;
+	}
+
+	.rpt-table > tbody > tr > td,
+	.rpt-table > tbody > tr.odd > td,
+	.rpt-table > tbody > tr > td.sorting_1 {
+		background-color: #fff;
+	}
+
+	.rpt-table > tbody > tr:hover > td {
+		background-color: #f7f9fc;
+	}
+
+	.rpt-table a.count-link.is-bad {
+		color: #a33a3a;
+		font-weight: 600;
+	}
+
+	.rpt-table .cell-main {
+		display: block;
+	}
+
+	.rpt-table .cell-sub {
+		display: block;
+		margin-top: 1px;
+		font-size: 11.5px;
+		line-height: 1.4;
+		color: #98a1ad;
+	}
+
+	.rpt-table .cell-muted {
+		font-size: 13px;
+		color: #8a94a3;
+	}
+
+	.rpt-table .rate-figure {
+		display: block;
+		white-space: nowrap;
+	}
+
+	.rpt-table .rate-bar {
+		display: block;
+		width: 90px;
+		height: 4px;
+		margin: 4px 0 3px;
+		border-radius: 2px;
+		background: #e8edf3;
+		overflow: hidden;
+	}
+
+	.rpt-table .rate-bar > span {
+		display: block;
+		height: 100%;
+		background: #3b6fb6;
+	}
+
+	.rpt-table .rate-bar.is-pass > span {
+		background: #2e8b57;
+	}
+
+	.rpt-table .resp-pill {
+		display: inline-block;
+		padding: 2px 9px;
+		border-radius: 999px;
+		font-size: 12px;
+		font-weight: 600;
+		white-space: nowrap;
+	}
+
+	.resp-pill.is-ok {
+		background: #e1f3e8;
+		color: #22693f;
+	}
+
+	.resp-pill.is-warn {
+		background: #fff3d6;
+		color: #8a5a00;
+	}
+
+	.resp-pill.is-bad {
+		background: #fbe4e4;
+		color: #a33a3a;
+	}
+
+	.resp-pill.is-muted {
+		background: #eef0f3;
+		color: #5b6573;
+	}
+
+	/* A table that is short most of the time needs no pager until it runs long. */
+	.dataTables_wrapper .dataTables_paginate.is-single-page {
+		display: none;
+	}
+
+	@media print {
+		.dontPrint,
+		.rpt-tools,
+		.dataTables_filter,
+		.dataTables_info {
+			display: none;
+		}
+	}
+</style>

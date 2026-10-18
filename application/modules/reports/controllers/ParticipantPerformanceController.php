@@ -10,51 +10,44 @@ class Reports_ParticipantPerformanceController extends Zend_Controller_Action
         $privileges = explode(',', $adminSession->privileges);
         if (!in_array('access-reports', $privileges)) {
             if ($request->isXmlHttpRequest()) {
-                return null;
+                return;
             } else {
                 $this->redirect('/admin');
             }
         }
-        /* Initialize action controller here */
-        /** @var Zend_Controller_Action_Helper_AjaxContext $ajaxContext */
-        $ajaxContext = $this->_helper->getHelper('AjaxContext');
-        $ajaxContext->addActionContext('index', 'html')
-            ->addActionContext('participant-performance', 'html')
-            ->addActionContext('participant-performance-export', 'html')
-            ->initContext();
         $this->_helper->layout()->pageName = 'report';
     }
 
     public function indexAction()
     {
+        $participants = new Application_Service_Participants();
         $scheme = new Application_Service_Schemes();
         $this->view->schemes = $scheme->getAllSchemes();
-        if (isset($_COOKIE['did']) && $_COOKIE['did'] != '' && $_COOKIE['did'] != null && $_COOKIE['did'] != 'NULL') {
-            $shipmentService = new Application_Service_Shipments();
-            $this->view->shipmentDetails = $data = $shipmentService->getShipment($_COOKIE['did']);
-            $schemeType = $data['scheme_type'] ?? null;
-            $this->view->schemeDetails = $scheme->getScheme($schemeType);
-        }
+        $this->view->countries = $participants->getParticipantCountriesList();
+        $this->view->regions = $participants->getAllParticipantRegion();
+        $this->view->states = $participants->getAllParticipantStates();
+        $this->view->districts = $participants->getAllParticipantDistricts();
     }
 
-    public function participantPerformanceAction()
+    public function dataAction()
     {
-        /** @var Zend_Controller_Request_Http $request */
-        $request = $this->getRequest();
         $reportService = new Application_Service_Reports();
-        if ($request->isPost()) {
-            $params = $this->getAllParams();
-            $this->view->result = $reportService->getParticipantShipmentPerformanceReport($params);
-        }
+        $this->_helper->json($reportService->getParticipantPerformance($this->getAllParams()));
     }
 
-    public function participantPerformanceExportAction()
+    public function shipmentsAction()
     {
-        /** @var Zend_Controller_Request_Http $request */
-        $request = $this->getRequest();
         $reportService = new Application_Service_Reports();
-        if ($request->isPost()) {
-            $this->view->exported = $reportService->exportParticipantPerformanceReport();
-        }
+        $this->_helper->json($reportService->getResponseReportShipments(
+            $this->getParam('scheme'),
+            $this->getParam('startDate'),
+            $this->getParam('endDate')
+        ));
+    }
+
+    public function exportAction()
+    {
+        $reportService = new Application_Service_Reports();
+        $this->_helper->json(['file' => $reportService->exportParticipantPerformance($this->getAllParams())]);
     }
 }

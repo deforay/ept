@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ePT\n"
 "Report-Msgid-Bugs-To: support@deforay.com\n"
-"POT-Creation-Date: 2026-10-18 16:24+0530\n"
+"POT-Creation-Date: 2026-10-19 00:32+0530\n"
 "PO-Revision-Date: 2026-07-07 08:33+0530\n"
 "Last-Translator: Amit <amit@deforay.com>\n"
 "Language-Team: \n"
@@ -22,11 +22,11 @@ msgstr ""
 "X-Poedit-SearchPath-2: scheduled-jobs\n"
 "X-Poedit-SearchPath-3: public/js/main.js.php\n"
 
-#: application/controllers/ParticipantController.php:365
+#: application/controllers/ParticipantController.php:354
 msgid "Your message has been sent"
 msgstr "Tin nhắn của bạn đã được gửi"
 
-#: application/controllers/ParticipantController.php:368
+#: application/controllers/ParticipantController.php:357
 #: application/views/scripts/index/index.phtml:466
 #: application/views/scripts/participant/participant-message.phtml:43
 #: application/views/scripts/participant/participant-message.phtml:111
@@ -34,7 +34,7 @@ msgid "Please enter a valid email address so we can reply to you"
 msgstr ""
 "Vui lòng nhập một địa chỉ email hợp lệ để chúng tôi có thể phản hồi bạn"
 
-#: application/controllers/ParticipantController.php:373
+#: application/controllers/ParticipantController.php:362
 msgid "Sorry, we could not process this message. Please try again"
 msgstr "Xin lỗi, chúng tôi không thể xử lý tin nhắn này. Vui lòng thử lại"
 
@@ -129,8 +129,9 @@ msgstr "Không đạt điểm tối thiểu theo yêu cầu"
 #: application/modules/reports/views/scripts/distribution/shipment.phtml:376
 #: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:390
 #: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:393
-#: application/services/Reports.php:468
+#: application/services/Reports.php:475
 #: application/views/partials/participant-response-report.phtml:22
+#: application/views/partials/report-filters.phtml:26
 #: application/views/scripts/participant/report.phtml:128
 #: application/views/scripts/participant/report.phtml:139
 #: application/views/scripts/participant/summary-report.phtml:127
@@ -314,6 +315,7 @@ msgstr "lỗi"
 #: application/services/Evaluation.php:1997
 #: application/services/Evaluation.php:2317
 #: application/services/Evaluation.php:2554
+#: application/views/partials/participant-performance-report.phtml:33
 #: application/views/partials/participant-response-report.phtml:316
 #: scheduled-jobs/report-layouts/summary-layouts/vietnam/dts.phtml:800
 msgid "Excluded"
@@ -331,6 +333,7 @@ msgstr "đã loại trừ"
 #: application/languages/db-translation-strings.php:121
 #: application/services/Evaluation.php:2551
 #: application/services/Evaluation.php:2643
+#: application/views/partials/participant-performance-report.phtml:30
 msgid "Fail"
 msgstr "Không đạt"
 
@@ -825,8 +828,7 @@ msgstr ""
 
 #: application/languages/db-translation-strings.php:325
 #: application/services/Evaluation.php:2548
-#: application/views/scripts/participant/participant-performance.phtml:129
-#: application/views/scripts/participant/participant-performance.phtml:171
+#: application/views/partials/participant-performance-report.phtml:29
 msgid "Pass"
 msgstr "Đạt"
 
@@ -963,6 +965,7 @@ msgstr "Bệnh viện tư nhân"
 #: application/modules/reports/views/scripts/distribution/shipment.phtml:374
 #: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:376
 #: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:379
+#: application/views/partials/report-filters.phtml:25
 #: application/views/scripts/participant/current-schemes.phtml:83
 #: application/views/scripts/participant/current-schemes.phtml:95
 msgid "Province"
@@ -1044,16 +1047,15 @@ msgstr ""
 #: application/modules/reports/views/scripts/participant-trends/index.phtml:358
 #: application/modules/reports/views/scripts/testkit/index.phtml:70
 #: application/modules/reports/views/scripts/testkit/index.phtml:117
-#: application/services/Reports.php:467 application/services/Reports.php:2678
-#: application/services/Reports.php:2777
+#: application/services/Reports.php:474 application/services/Reports.php:2124
 #: application/views/partials/participant-response-report.phtml:21
+#: application/views/partials/report-filters.phtml:24
 #: application/views/scripts/participant/add-participant.phtml:61
 #: application/views/scripts/participant/add-participant.phtml:63
 #: application/views/scripts/participant/add.phtml:63
 #: application/views/scripts/participant/add.phtml:65
 #: application/views/scripts/participant/edit-participant.phtml:79
 #: application/views/scripts/participant/edit-participant.phtml:81
-#: application/views/scripts/participant/participant-performance.phtml:166
 #: application/views/scripts/participant/report.phtml:79
 #: application/views/scripts/participant/report.phtml:116
 #: application/views/scripts/participant/summary-report.phtml:78
@@ -1541,7 +1543,7 @@ msgstr ""
 "và Câu hỏi thường gặp"
 
 #: application/languages/help-translation-strings.php:69
-#: application/layouts/scripts/admin.phtml:350
+#: application/layouts/scripts/admin.phtml:351
 #: application/layouts/scripts/home.phtml:122
 #: application/layouts/scripts/layout.phtml:293
 #: application/modules/admin/views/scripts/help/index.phtml:16
@@ -1607,65 +1609,71 @@ msgid "dual-list"
 msgstr "danh sách kép"
 
 #: application/languages/help-translation-strings.php:97
+msgid ""
+"Each participant's results across shipments, with pass rate, failures and "
+"average score"
+msgstr "Kết quả của từng đơn vị tham gia qua các đợt gửi mẫu, kèm tỷ lệ đạt, số lần không đạt và điểm trung bình"
+
+#: application/languages/help-translation-strings.php:99
 msgid "early-infant-diagnosis"
 msgstr "chẩn đoán sớm ở trẻ sơ sinh"
 
-#: application/languages/help-translation-strings.php:99
+#: application/languages/help-translation-strings.php:101
 msgid "edit"
 msgstr "sửa"
 
-#: application/languages/help-translation-strings.php:101
+#: application/languages/help-translation-strings.php:103
 #: application/modules/admin/views/scripts/participants/edit.phtml:74
 #: application/views/scripts/participant/edit-participant.phtml:8
 msgid "Edit Participant"
 msgstr "Chỉnh sửa đơn vị tham gia"
 
-#: application/languages/help-translation-strings.php:103
+#: application/languages/help-translation-strings.php:105
 #: application/modules/admin/views/scripts/distributions/edit.phtml:19
 msgid "Edit PT Survey"
 msgstr "Chỉnh sửa khảo sát PT"
 
-#: application/languages/help-translation-strings.php:105
+#: application/languages/help-translation-strings.php:107
 #: application/modules/admin/views/scripts/testkit/edit.phtml:9
 msgid "Edit Test Kit"
 msgstr "Chỉnh sửa bộ sinh phẩm"
 
-#: application/languages/help-translation-strings.php:107
+#: application/languages/help-translation-strings.php:109
 msgid "Edit VL Assay / Platform"
 msgstr "Chỉnh sửa phương pháp xét nghiệm / hệ thống máy VL"
 
-#: application/languages/help-translation-strings.php:109
+#: application/languages/help-translation-strings.php:111
 msgid "eid"
 msgstr "eid"
 
-#: application/languages/help-translation-strings.php:111
+#: application/languages/help-translation-strings.php:113
 msgid "EID Assays / Platforms"
 msgstr "Các phương pháp xét nghiệm / hệ thống máy EID"
 
-#: application/languages/help-translation-strings.php:113
+#: application/languages/help-translation-strings.php:115
 msgid "email"
 msgstr "email"
 
-#: application/languages/help-translation-strings.php:115
-#: application/layouts/scripts/admin.phtml:384
+#: application/languages/help-translation-strings.php:117
+#: application/layouts/scripts/admin.phtml:385
 #: application/modules/admin/views/scripts/email-participants/index.phtml:128
 #: application/views/partials/spotlight.phtml:369
 msgid "Email Participants"
 msgstr "Gửi email cho đơn vị tham gia"
 
-#: application/languages/help-translation-strings.php:117
+#: application/languages/help-translation-strings.php:119
 msgid "enroll"
 msgstr "đăng ký"
 
-#: application/languages/help-translation-strings.php:119
+#: application/languages/help-translation-strings.php:121
 msgid "enrollment"
 msgstr "đăng ký"
 
-#: application/languages/help-translation-strings.php:121
+#: application/languages/help-translation-strings.php:123
 msgid "Enrollments"
 msgstr "Lượt đăng ký"
 
-#: application/languages/help-translation-strings.php:123
+#: application/languages/help-translation-strings.php:125
 msgid ""
 "Enroll or unenroll many participants in a scheme using a two-list selector "
 "with filters"
@@ -1673,61 +1681,65 @@ msgstr ""
 "Đăng ký hoặc hủy đăng ký nhiều đơn vị tham gia vào một chương trình bằng bộ "
 "chọn hai danh sách có bộ lọc"
 
-#: application/languages/help-translation-strings.php:125
+#: application/languages/help-translation-strings.php:127
 #: application/modules/admin/views/scripts/enrollments/add.phtml:6
 #: application/modules/admin/views/scripts/enrollments/index.phtml:33
 msgid "Enroll Participants"
 msgstr "Đăng ký đơn vị tham gia"
 
-#: application/languages/help-translation-strings.php:127
+#: application/languages/help-translation-strings.php:129
 msgid "evaluate"
 msgstr "đánh giá"
 
-#: application/languages/help-translation-strings.php:129
+#: application/languages/help-translation-strings.php:131
 #: application/modules/admin/views/scripts/evaluate/index.phtml:15
 msgid "Evaluate PT Survey"
 msgstr "Đánh giá cuộc khảo sát PT"
 
-#: application/languages/help-translation-strings.php:131
+#: application/languages/help-translation-strings.php:133
 msgid "evaluation"
 msgstr "đánh giá"
 
-#: application/languages/help-translation-strings.php:133
+#: application/languages/help-translation-strings.php:135
 msgid "Every shipment with its responses, pass rate, status and downloads"
 msgstr "Từng đợt gửi mẫu với phản hồi, tỷ lệ đạt, trạng thái và tệp tải xuống"
 
-#: application/languages/help-translation-strings.php:135
+#: application/languages/help-translation-strings.php:137
 msgid "excel"
 msgstr "Excel"
 
-#: application/languages/help-translation-strings.php:137
+#: application/languages/help-translation-strings.php:139
 msgid "extraction"
 msgstr "chiết xuất"
 
-#: application/languages/help-translation-strings.php:139
+#: application/languages/help-translation-strings.php:141
+msgid "failures"
+msgstr "không đạt"
+
+#: application/languages/help-translation-strings.php:143
 msgid "faq"
 msgstr "câu hỏi thường gặp"
 
-#: application/languages/help-translation-strings.php:141
+#: application/languages/help-translation-strings.php:145
 msgid "filters"
 msgstr "các bộ lọc"
 
-#: application/languages/help-translation-strings.php:143
+#: application/languages/help-translation-strings.php:147
 msgid "finalize"
 msgstr "hoàn tất"
 
-#: application/languages/help-translation-strings.php:145
-#: application/layouts/scripts/admin.phtml:504
+#: application/languages/help-translation-strings.php:149
+#: application/layouts/scripts/admin.phtml:505
 #: application/views/partials/spotlight.phtml:425
 msgid "Finalize Reports"
 msgstr "Hoàn tất báo cáo"
 
-#: application/languages/help-translation-strings.php:147
+#: application/languages/help-translation-strings.php:151
 msgid "generate"
 msgstr "tạo ra"
 
-#: application/languages/help-translation-strings.php:149
-#: application/layouts/scripts/admin.phtml:501
+#: application/languages/help-translation-strings.php:153
+#: application/layouts/scripts/admin.phtml:502
 #: application/modules/admin/controllers/SpotlightController.php:77
 #: application/modules/admin/views/scripts/evaluate/get-shipments.ajax.phtml:21
 #: application/modules/admin/views/scripts/evaluate/get-shipments.ajax.phtml:33
@@ -1738,42 +1750,42 @@ msgstr "tạo ra"
 msgid "Generate Reports"
 msgstr "Tạo báo cáo"
 
-#: application/languages/help-translation-strings.php:151
+#: application/languages/help-translation-strings.php:155
 msgid "generic-scheme"
 msgstr "chương trình chung"
 
-#: application/languages/help-translation-strings.php:153
+#: application/languages/help-translation-strings.php:157
 msgid "global"
 msgstr "toàn cầu"
 
-#: application/languages/help-translation-strings.php:155
+#: application/languages/help-translation-strings.php:159
 msgid "Global Settings"
 msgstr "Cài đặt chung"
 
-#: application/languages/help-translation-strings.php:157
+#: application/languages/help-translation-strings.php:161
 msgid "Header text, logo, layout, and PDF template used on generated reports"
 msgstr ""
 "Văn bản tiêu đề, logo, bố cục và mẫu PDF được sử dụng trong các báo cáo được "
 "tạo ra"
 
-#: application/languages/help-translation-strings.php:159
+#: application/languages/help-translation-strings.php:163
 msgid "hero"
 msgstr "banner chính"
 
-#: application/languages/help-translation-strings.php:161
+#: application/languages/help-translation-strings.php:165
 msgid "hiv"
 msgstr "HIV"
 
-#: application/languages/help-translation-strings.php:163
+#: application/languages/help-translation-strings.php:167
 msgid "hiv-serology"
 msgstr "xét nghiệm huyết thanh học HIV"
 
-#: application/languages/help-translation-strings.php:165
+#: application/languages/help-translation-strings.php:169
 msgid "home"
 msgstr "trang chủ"
 
-#: application/languages/help-translation-strings.php:167
-#: application/layouts/scripts/admin.phtml:436
+#: application/languages/help-translation-strings.php:171
+#: application/layouts/scripts/admin.phtml:437
 #: application/modules/admin/views/scripts/home-config/index.phtml:480
 #: application/modules/admin/views/scripts/home-section-links/add.phtml:20
 #: application/modules/admin/views/scripts/home-section-links/edit.phtml:19
@@ -1782,11 +1794,11 @@ msgstr "trang chủ"
 msgid "Home Page Settings"
 msgstr "Cài đặt Trang chủ"
 
-#: application/languages/help-translation-strings.php:169
+#: application/languages/help-translation-strings.php:173
 msgid "How to add a shipment (sample panel) under a PT Survey"
 msgstr "Cách thêm vòng ngoại kiểm (bộ mẫu) vào một Khảo sát PT"
 
-#: application/languages/help-translation-strings.php:171
+#: application/languages/help-translation-strings.php:175
 msgid ""
 "How to choose which participants get a shipment — filters, preset lists, "
 "copying from another shipment, and saving a preset"
@@ -1794,21 +1806,21 @@ msgstr ""
 "Cách chọn đơn vị tham gia nhận vòng ngoại kiểm — bộ lọc, danh sách thiết lập "
 "sẵn, sao chép từ vòng ngoại kiểm khác và lưu danh sách thiết lập sẵn"
 
-#: application/languages/help-translation-strings.php:173
+#: application/languages/help-translation-strings.php:177
 msgid "labs"
 msgstr "phòng xét nghiệm"
 
-#: application/languages/help-translation-strings.php:175
+#: application/languages/help-translation-strings.php:179
 msgid "landing"
 msgstr "trang chủ"
 
-#: application/languages/help-translation-strings.php:177
+#: application/languages/help-translation-strings.php:181
 msgid "List, add, and edit Viral Load assays / platforms used by participants"
 msgstr ""
 "Liệt kê, thêm và chỉnh sửa các phương pháp xét nghiệm/hệ thống máy đo tải "
 "lượng virus mà đơn vị tham gia sử dụng"
 
-#: application/languages/help-translation-strings.php:179
+#: application/languages/help-translation-strings.php:183
 msgid ""
 "List, filter, approve, and manage test kits used by participants in their "
 "response forms"
@@ -1816,7 +1828,7 @@ msgstr ""
 "Liệt kê, lọc, phê duyệt và quản lý các bộ sinh phẩm mà đơn vị tham gia sử "
 "dụng trong biểu mẫu phản hồi của họ"
 
-#: application/languages/help-translation-strings.php:181
+#: application/languages/help-translation-strings.php:185
 msgid ""
 "List Early Infant Diagnosis Extraction and Detection assays, add new ones, "
 "and toggle their active status"
@@ -1825,16 +1837,16 @@ msgstr ""
 "đoán sớm ở trẻ sơ sinh, thêm phương pháp mới và bật/tắt trạng thái hoạt động "
 "của chúng"
 
-#: application/languages/help-translation-strings.php:183
+#: application/languages/help-translation-strings.php:187
 #: application/modules/admin/views/scripts/data-managers/reset-password.phtml:117
 msgid "login"
 msgstr "đăng nhập"
 
-#: application/languages/help-translation-strings.php:185
+#: application/languages/help-translation-strings.php:189
 msgid "logo"
 msgstr "logo"
 
-#: application/languages/help-translation-strings.php:187
+#: application/languages/help-translation-strings.php:191
 msgid ""
 "Manage Data Manager / PT Login accounts and PT Country Coordinators — add, "
 "edit, reset password, change email, and link to participants"
@@ -1843,53 +1855,61 @@ msgstr ""
 "PT — thêm, chỉnh sửa, đặt lại mật khẩu, thay đổi email và liên kết với đơn "
 "vị tham gia"
 
-#: application/languages/help-translation-strings.php:189
+#: application/languages/help-translation-strings.php:193
 msgid "manual-override"
 msgstr "ghi đè thủ công"
 
-#: application/languages/help-translation-strings.php:191
+#: application/languages/help-translation-strings.php:195
 msgid "Map Participants to Data Managers"
 msgstr "Gán đơn vị tham gia cho người quản lý dữ liệu"
 
-#: application/languages/help-translation-strings.php:193
+#: application/languages/help-translation-strings.php:197
 msgid "mapping"
 msgstr "liên kết"
 
-#: application/languages/help-translation-strings.php:195
+#: application/languages/help-translation-strings.php:199
 msgid "Map Test Kits to Tests"
 msgstr "Gán các bộ sinh phẩm cho các xét nghiệm"
 
-#: application/languages/help-translation-strings.php:197
+#: application/languages/help-translation-strings.php:201
 msgid "non-responders"
 msgstr "chưa phản hồi"
 
-#: application/languages/help-translation-strings.php:199
+#: application/languages/help-translation-strings.php:203
 msgid "overview"
 msgstr "tổng quan"
 
-#: application/languages/help-translation-strings.php:201
+#: application/languages/help-translation-strings.php:205
 msgid "panel"
 msgstr "bộ mẫu"
 
-#: application/languages/help-translation-strings.php:203
+#: application/languages/help-translation-strings.php:207
 msgid "participant-login"
 msgstr "Đăng nhập đơn vị tham gia"
 
-#: application/languages/help-translation-strings.php:205
-#: application/layouts/scripts/admin.phtml:530
+#: application/languages/help-translation-strings.php:209
+#: application/layouts/scripts/admin.phtml:534
+#: application/modules/reports/views/scripts/participant-performance/index.phtml:3
+#: application/views/partials/spotlight.phtml:486
+#: application/views/scripts/participant/participant-performance.phtml:2
+msgid "Participant Performance Report"
+msgstr "Báo cáo kết quả của đơn vị tham gia"
+
+#: application/languages/help-translation-strings.php:211
+#: application/layouts/scripts/admin.phtml:531
 #: application/modules/reports/views/scripts/participant-response/index.phtml:3
 #: application/views/partials/spotlight.phtml:478
 #: application/views/scripts/participant/response-report.phtml:2
 msgid "Participant Response Report"
 msgstr "Báo cáo phản hồi của đơn vị tham gia"
 
-#: application/languages/help-translation-strings.php:207
+#: application/languages/help-translation-strings.php:213
 #: application/modules/admin/views/scripts/shipment/manage-enroll.phtml:148
 #: application/modules/admin/views/scripts/shipment/ship-it.phtml:138
 msgid "participants"
 msgstr "đơn vị tham gia"
 
-#: application/languages/help-translation-strings.php:209
+#: application/languages/help-translation-strings.php:215
 #: application/layouts/scripts/layout.phtml:356
 #: application/modules/admin/views/scripts/email-participants/index.phtml:140
 #: application/modules/admin/views/scripts/email-participants/index.phtml:218
@@ -1897,77 +1917,78 @@ msgstr "đơn vị tham gia"
 #: application/modules/admin/views/scripts/mail-template/get-mail-template.ajax.phtml:18
 #: application/modules/admin/views/scripts/shipment/index.phtml:65
 #: application/modules/reports/views/scripts/shipments/vl-sample-analysis.phtml:126
+#: application/views/partials/participant-performance-report.phtml:193
 #: application/views/partials/participant-response-report.phtml:309
-#: application/views/partials/shipment-response-report.phtml:404
+#: application/views/partials/shipment-response-report.phtml:117
 msgid "Participants"
 msgstr "Đơn vị tham gia"
 
-#: application/languages/help-translation-strings.php:211
-#: application/layouts/scripts/admin.phtml:536
+#: application/languages/help-translation-strings.php:217
+#: application/layouts/scripts/admin.phtml:537
 #: application/views/partials/spotlight.phtml:494
 msgid "Participant Trends"
 msgstr "Xu hướng của đơn vị tham gia"
 
-#: application/languages/help-translation-strings.php:213
+#: application/languages/help-translation-strings.php:219
 msgid "pass rate"
 msgstr "tỷ lệ đạt"
 
-#: application/languages/help-translation-strings.php:215
+#: application/languages/help-translation-strings.php:221
 msgid "password"
 msgstr "mật khẩu"
 
-#: application/languages/help-translation-strings.php:217
+#: application/languages/help-translation-strings.php:223
 msgid "pdf"
 msgstr "pdf"
 
-#: application/languages/help-translation-strings.php:219
-#: application/layouts/scripts/admin.phtml:439
+#: application/languages/help-translation-strings.php:225
+#: application/layouts/scripts/admin.phtml:440
 #: application/modules/admin/views/scripts/report-config/index.phtml:374
 #: application/views/partials/spotlight.phtml:211
 msgid "PDF Report Settings"
 msgstr "Cài đặt báo cáo PDF"
 
-#: application/languages/help-translation-strings.php:221
+#: application/languages/help-translation-strings.php:227
 msgid "People who can log in to the admin side of ePT"
 msgstr "Những người có thể đăng nhập vào phần quản trị của ePT"
 
-#: application/languages/help-translation-strings.php:223
+#: application/languages/help-translation-strings.php:229
 msgid "performance"
 msgstr "kết quả"
 
-#: application/languages/help-translation-strings.php:225
+#: application/languages/help-translation-strings.php:231
 msgid "platform"
 msgstr "hệ thống máy"
 
-#: application/languages/help-translation-strings.php:227
+#: application/languages/help-translation-strings.php:233
 msgid "preset"
 msgstr "thiết lập sẵn"
 
-#: application/languages/help-translation-strings.php:229
+#: application/languages/help-translation-strings.php:235
 msgid "pt-login"
 msgstr "Đăng nhập"
 
-#: application/languages/help-translation-strings.php:231
+#: application/languages/help-translation-strings.php:237
 msgid "pt-survey"
 msgstr "pt-khảo sát"
 
-#: application/languages/help-translation-strings.php:233
+#: application/languages/help-translation-strings.php:239
 msgid "ptcc"
 msgstr "ptcc"
 
-#: application/languages/help-translation-strings.php:235
+#: application/languages/help-translation-strings.php:241
 msgid "PT Surveys"
 msgstr "Khảo sát PT"
 
-#: application/languages/help-translation-strings.php:237
+#: application/languages/help-translation-strings.php:243
 msgid "publish"
 msgstr "xuất bản"
 
-#: application/languages/help-translation-strings.php:239
+#: application/languages/help-translation-strings.php:245
 msgid "queue"
 msgstr "hàng đợi"
 
-#: application/languages/help-translation-strings.php:241
+#: application/languages/help-translation-strings.php:247
 msgid ""
 "Re-build and lock the reports — only finalized reports are visible to "
 "participants"
@@ -1975,34 +1996,36 @@ msgstr ""
 "Tạo lại và khóa báo cáo — chỉ những báo cáo đã hoàn tất mới hiển thị với đơn "
 "vị tham gia"
 
-#: application/languages/help-translation-strings.php:243
+#: application/languages/help-translation-strings.php:249
 msgid "re-evaluate"
 msgstr "đánh giá lại"
 
-#: application/languages/help-translation-strings.php:245
+#: application/languages/help-translation-strings.php:251
 msgid "regions"
 msgstr "vùng"
 
-#: application/languages/help-translation-strings.php:247
+#: application/languages/help-translation-strings.php:253
 msgid "Rename a Viral Load assay / platform"
 msgstr "Đổi tên phương pháp xét nghiệm / hệ thống máy đo tải lượng virus"
 
-#: application/languages/help-translation-strings.php:249
+#: application/languages/help-translation-strings.php:255
 #: application/modules/admin/views/scripts/job-tracking/index.phtml:394
 msgid "reports"
 msgstr "báo cáo"
 
-#: application/languages/help-translation-strings.php:251
+#: application/languages/help-translation-strings.php:257
 msgid ""
 "Response and pass rates by region, district, network tier, affiliation or "
 "enrolled program"
-msgstr "Tỷ lệ phản hồi và tỷ lệ đạt theo vùng, quận/huyện, cấp độ phòng xét nghiệm, đơn vị liên kết hoặc chương trình"
+msgstr ""
+"Tỷ lệ phản hồi và tỷ lệ đạt theo vùng, quận/huyện, cấp độ phòng xét nghiệm, "
+"đơn vị liên kết hoặc chương trình"
 
-#: application/languages/help-translation-strings.php:253
+#: application/languages/help-translation-strings.php:259
 msgid "response rate"
 msgstr "tỷ lệ phản hồi"
 
-#: application/languages/help-translation-strings.php:255
+#: application/languages/help-translation-strings.php:261
 msgid ""
 "Response rate, timeliness and pass rate across shipments, with a breakdown "
 "by region"
@@ -2010,41 +2033,45 @@ msgstr ""
 "Tỷ lệ phản hồi, mức độ đúng hạn và tỷ lệ đạt qua các đợt gửi mẫu, kèm phân "
 "tích theo vùng"
 
-#: application/languages/help-translation-strings.php:257
+#: application/languages/help-translation-strings.php:263
 msgid "roles"
 msgstr "vai trò"
 
-#: application/languages/help-translation-strings.php:259
+#: application/languages/help-translation-strings.php:265
 msgid "samples"
 msgstr "mẫu"
 
-#: application/languages/help-translation-strings.php:261
+#: application/languages/help-translation-strings.php:267
 msgid "scheme"
 msgstr "chương trình"
 
-#: application/languages/help-translation-strings.php:263
+#: application/languages/help-translation-strings.php:269
 msgid "schemes"
 msgstr "các chương trình"
 
-#: application/languages/help-translation-strings.php:265
+#: application/languages/help-translation-strings.php:271
 msgid "Score participant responses, then generate and finalize reports"
 msgstr "Chấm điểm phản hồi của đơn vị tham gia, sau đó tạo và hoàn tất báo cáo"
 
-#: application/languages/help-translation-strings.php:267
+#: application/languages/help-translation-strings.php:273
+msgid "scores"
+msgstr "điểm"
+
+#: application/languages/help-translation-strings.php:275
 msgid "scoring"
 msgstr "chấm điểm"
 
-#: application/languages/help-translation-strings.php:269
+#: application/languages/help-translation-strings.php:277
 msgid "Scoring, report metadata, and report content for HIV Viral Load PT"
 msgstr ""
 "Điểm số, siêu dữ liệu báo cáo và nội dung báo cáo cho xét nghiệm tải lượng "
 "virus HIV"
 
-#: application/languages/help-translation-strings.php:271
+#: application/languages/help-translation-strings.php:279
 msgid "Scoring, report metadata, and report content for TB PT"
 msgstr "Điểm số, siêu dữ liệu báo cáo và nội dung báo cáo cho TB PT"
 
-#: application/languages/help-translation-strings.php:273
+#: application/languages/help-translation-strings.php:281
 msgid ""
 "Scoring, sample and testing options, and national algorithm test-kit rules "
 "for HIV Serology PT"
@@ -2052,7 +2079,7 @@ msgstr ""
 "Các tùy chọn chấm điểm, mẫu và xét nghiệm, cùng quy tắc sinh phẩm theo "
 "phương cách xét nghiệm quốc gia cho PT xét nghiệm huyết thanh học HIV"
 
-#: application/languages/help-translation-strings.php:275
+#: application/languages/help-translation-strings.php:283
 msgid ""
 "See each participant's response to a shipment, change results, and add a "
 "shared comment"
@@ -2060,7 +2087,7 @@ msgstr ""
 "Xem phản hồi của từng đơn vị tham gia cho một vòng ngoại kiểm, thay đổi kết "
 "quả và thêm nhận xét chung"
 
-#: application/languages/help-translation-strings.php:277
+#: application/languages/help-translation-strings.php:285
 msgid ""
 "Select which test kits appear in the participant response form for each test "
 "position (Test 1, Test 2, Test 3, etc.)"
@@ -2069,7 +2096,7 @@ msgstr ""
 "vị tham gia cho từng vị trí xét nghiệm (Xét nghiệm 1, Xét nghiệm 2, Xét "
 "nghiệm 3, v.v.)"
 
-#: application/languages/help-translation-strings.php:279
+#: application/languages/help-translation-strings.php:287
 msgid ""
 "Send a bulk email to participants, data managers, or PTCCs for a chosen "
 "shipment date range"
@@ -2077,36 +2104,36 @@ msgstr ""
 "Gửi email hàng loạt tới đơn vị tham gia, người quản lý dữ liệu hoặc PTCC "
 "trong khoảng ngày gửi vòng ngoại kiểm đã chọn"
 
-#: application/languages/help-translation-strings.php:281
+#: application/languages/help-translation-strings.php:289
 msgid "settings"
 msgstr "cài đặt"
 
-#: application/languages/help-translation-strings.php:283
+#: application/languages/help-translation-strings.php:291
 msgid "ship"
 msgstr "gửi"
 
-#: application/languages/help-translation-strings.php:285
+#: application/languages/help-translation-strings.php:293
 msgid "ship-it"
 msgstr "gửi đi"
 
-#: application/languages/help-translation-strings.php:287
+#: application/languages/help-translation-strings.php:295
 msgid "shipment"
 msgstr "vòng ngoại kiểm"
 
-#: application/languages/help-translation-strings.php:289
-#: application/layouts/scripts/admin.phtml:523
+#: application/languages/help-translation-strings.php:297
+#: application/layouts/scripts/admin.phtml:524
 #: application/modules/reports/views/scripts/shipment-response-report/index.phtml:3
 #: application/views/partials/spotlight.phtml:462
 #: application/views/scripts/participant/shipment-response-report.phtml:2
 msgid "Shipment Response Report"
 msgstr "Báo cáo phản hồi vòng ngoại kiểm"
 
-#: application/languages/help-translation-strings.php:291
+#: application/languages/help-translation-strings.php:299
 msgid "shipments"
 msgstr "vòng ngoại kiểm"
 
-#: application/languages/help-translation-strings.php:293
-#: application/layouts/scripts/admin.phtml:486
+#: application/languages/help-translation-strings.php:301
+#: application/layouts/scripts/admin.phtml:487
 #: application/modules/admin/views/scripts/certificate-batches/index.phtml:156
 #: application/modules/admin/views/scripts/email-participants/index.phtml:168
 #: application/modules/admin/views/scripts/email-participants/index.phtml:186
@@ -2116,13 +2143,14 @@ msgstr "vòng ngoại kiểm"
 #: application/modules/admin/views/scripts/participants/pending.phtml:23
 #: application/modules/admin/views/scripts/shipment/index.phtml:16
 #: application/modules/reports/views/scripts/participant-trends/index.phtml:326
+#: application/views/partials/participant-performance-report.phtml:217
 #: application/views/partials/spotlight.phtml:397
 #: application/views/partials/spotlight.phtml:625
 msgid "Shipments"
 msgstr "Vòng ngoại kiểm"
 
-#: application/languages/help-translation-strings.php:295
-#: application/layouts/scripts/admin.phtml:520
+#: application/languages/help-translation-strings.php:303
+#: application/layouts/scripts/admin.phtml:521
 #: application/modules/reports/views/scripts/shipments/index.phtml:3
 #: application/views/partials/spotlight.phtml:446
 #: application/views/partials/spotlight.phtml:454
@@ -2130,74 +2158,74 @@ msgstr "Vòng ngoại kiểm"
 msgid "Shipments Report"
 msgstr "Báo cáo vòng ngoại kiểm"
 
-#: application/languages/help-translation-strings.php:297
+#: application/languages/help-translation-strings.php:305
 msgid "smtp"
 msgstr "SMTP"
 
-#: application/languages/help-translation-strings.php:299
+#: application/languages/help-translation-strings.php:307
 msgid "status"
 msgstr "trạng thái"
 
-#: application/languages/help-translation-strings.php:301
+#: application/languages/help-translation-strings.php:309
 msgid "system-admin"
 msgstr "quản trị hệ thống"
 
-#: application/languages/help-translation-strings.php:303
+#: application/languages/help-translation-strings.php:311
 msgid "System-wide settings that apply across the whole ePT app"
 msgstr "Cài đặt toàn hệ thống áp dụng cho toàn bộ ứng dụng ePT"
 
-#: application/languages/help-translation-strings.php:305
+#: application/languages/help-translation-strings.php:313
 msgid "tb"
 msgstr "tb"
 
-#: application/languages/help-translation-strings.php:307
+#: application/languages/help-translation-strings.php:315
 #: application/views/partials/spotlight.phtml:129
 msgid "TB Settings"
 msgstr "Cài đặt TB"
 
-#: application/languages/help-translation-strings.php:309
+#: application/languages/help-translation-strings.php:317
 msgid "template"
 msgstr "biểu mẫu"
 
-#: application/languages/help-translation-strings.php:311
+#: application/languages/help-translation-strings.php:319
 msgid "templates"
 msgstr "các mẫu "
 
-#: application/languages/help-translation-strings.php:313
+#: application/languages/help-translation-strings.php:321
 msgid "testkit"
 msgstr "bộ sinh phẩm"
 
-#: application/languages/help-translation-strings.php:315
-#: application/layouts/scripts/admin.phtml:420
+#: application/languages/help-translation-strings.php:323
+#: application/layouts/scripts/admin.phtml:421
 #: application/modules/admin/views/scripts/partials/scheme-config-nav.phtml:150
 #: application/views/partials/spotlight.phtml:75
 msgid "Test Kits"
 msgstr "Bộ sinh phẩm xét nghiệm"
 
-#: application/languages/help-translation-strings.php:317
+#: application/languages/help-translation-strings.php:325
 msgid ""
 "The list of shipments inside a PT Survey — what they are and how to manage "
 "them"
 msgstr ""
 "Danh sách vòng ngoại kiểm trong một Khảo sát PT — chúng là gì và cách quản lý"
 
-#: application/languages/help-translation-strings.php:319
+#: application/languages/help-translation-strings.php:327
 msgid "theme"
 msgstr "chủ đề"
 
-#: application/languages/help-translation-strings.php:321
+#: application/languages/help-translation-strings.php:329
 msgid "trends"
 msgstr "xu hướng"
 
-#: application/languages/help-translation-strings.php:323
+#: application/languages/help-translation-strings.php:331
 msgid "tuberculosis"
 msgstr "bệnh lao"
 
-#: application/languages/help-translation-strings.php:325
+#: application/languages/help-translation-strings.php:333
 msgid "update"
 msgstr "cập nhật"
 
-#: application/languages/help-translation-strings.php:327
+#: application/languages/help-translation-strings.php:335
 msgid ""
 "Update an existing participant's details, mapped Data Managers, and enrolled "
 "schemes"
@@ -2205,13 +2233,13 @@ msgstr ""
 "Cập nhật thông tin của đơn vị tham gia hiện có, các Người quản lý dữ liệu "
 "được liên kết và các chương trình đã đăng ký"
 
-#: application/languages/help-translation-strings.php:329
+#: application/languages/help-translation-strings.php:337
 msgid "Update an existing PT Survey's code or date before it has been shipped"
 msgstr ""
 "Cập nhật mã hoặc ngày của một Khảo sát PT hiện có trước khi khảo sát được "
 "gửi đi"
 
-#: application/languages/help-translation-strings.php:331
+#: application/languages/help-translation-strings.php:339
 msgid ""
 "Update a test kit's details, approval status, scheme/test mapping, and "
 "Additional Information settings"
@@ -2219,41 +2247,41 @@ msgstr ""
 "Cập nhật thông tin chi tiết của bộ sinh phẩm, trạng thái phê duyệt, liên kết "
 "chương trình/xét nghiệm và các cài đặt Thông tin bổ sung"
 
-#: application/languages/help-translation-strings.php:333
+#: application/languages/help-translation-strings.php:341
 msgid "upload"
 msgstr "tải lên"
 
-#: application/languages/help-translation-strings.php:335
+#: application/languages/help-translation-strings.php:343
 msgid "Upload an Excel file to add or update many participants at once"
 msgstr ""
 "Tải lên tệp Excel để thêm hoặc cập nhật nhiều đơn vị tham gia cùng một lúc"
 
-#: application/languages/help-translation-strings.php:337
+#: application/languages/help-translation-strings.php:345
 msgid "Upload an Excel file to enroll many participants in a scheme at once"
 msgstr ""
 "Tải lên tệp Excel để đăng ký nhiều đơn vị tham gia vào một chương trình cùng "
 "một lúc"
 
-#: application/languages/help-translation-strings.php:339
+#: application/languages/help-translation-strings.php:347
 msgid "users"
 msgstr "người dùng"
 
-#: application/languages/help-translation-strings.php:341
+#: application/languages/help-translation-strings.php:349
 msgid "view"
 msgstr "xem"
 
-#: application/languages/help-translation-strings.php:343
+#: application/languages/help-translation-strings.php:351
 msgid ""
 "View, add, edit, and ship PT Surveys (distributions) and their shipments"
 msgstr ""
 "Xem, thêm, chỉnh sửa và gửi các Khảo sát PT (bản phân phối) cùng các vòng "
 "ngoại kiểm của chúng"
 
-#: application/languages/help-translation-strings.php:345
+#: application/languages/help-translation-strings.php:353
 msgid "View / Re-Evaluate Shipment"
 msgstr "Xem / Đánh giá lại vòng ngoại kiểm"
 
-#: application/languages/help-translation-strings.php:347
+#: application/languages/help-translation-strings.php:355
 msgid ""
 "View and manage which participants are enrolled in each scheme; bulk-import "
 "enrollments from a spreadsheet"
@@ -2261,29 +2289,29 @@ msgstr ""
 "Xem và quản lý danh sách đơn vị tham gia trong từng chương trình; nhập danh "
 "sách đăng ký hàng loạt từ bảng tính"
 
-#: application/languages/help-translation-strings.php:349
+#: application/languages/help-translation-strings.php:357
 msgid "viral-load"
 msgstr "tải lượng virus"
 
-#: application/languages/help-translation-strings.php:351
+#: application/languages/help-translation-strings.php:359
 msgid "vl"
 msgstr "vl"
 
-#: application/languages/help-translation-strings.php:353
+#: application/languages/help-translation-strings.php:361
 msgid "VL (HIV Viral Load) Settings"
 msgstr "Cài đặt VL (Tải lượng virus HIV)"
 
-#: application/languages/help-translation-strings.php:355
+#: application/languages/help-translation-strings.php:363
 msgid "VL Assays / Platforms"
 msgstr "Các phương pháp xét nghiệm / Hệ thống máy VL"
 
-#: application/languages/help-translation-strings.php:357
+#: application/languages/help-translation-strings.php:365
 msgid "Who responded to each shipment, who did not, and how they performed"
 msgstr ""
 "Đơn vị nào đã phản hồi từng vòng ngoại kiểm, đơn vị nào chưa, và kết quả của "
 "họ"
 
-#: application/languages/help-translation-strings.php:359
+#: application/languages/help-translation-strings.php:367
 msgid ""
 "Your home page — what is happening across PT Surveys and Participants right "
 "now"
@@ -2301,7 +2329,7 @@ msgstr ""
 "Đây là phiên bản dùng để đào tạo. Vui lòng chỉ sử dụng phiên bản này cho mục "
 "đích đào tạo. Không sử dụng phiên bản này cho các cuộc khảo sát PT thực tế."
 
-#: application/layouts/scripts/admin.phtml:306
+#: application/layouts/scripts/admin.phtml:307
 #: application/modules/admin/views/scripts/audit-log/index.phtml:645
 #: application/modules/admin/views/scripts/audit-log/index.phtml:686
 #: application/modules/admin/views/scripts/certificate-templates/index.phtml:537
@@ -2324,23 +2352,23 @@ msgstr ""
 msgid "Close"
 msgstr "Đóng"
 
-#: application/layouts/scripts/admin.phtml:308
+#: application/layouts/scripts/admin.phtml:309
 msgid "Enter your Password to Confirm"
 msgstr "Nhập mật khẩu của bạn để xác nhận"
 
-#: application/layouts/scripts/admin.phtml:314
+#: application/layouts/scripts/admin.phtml:315
 msgid "Enter your Password"
 msgstr "Nhập mật khẩu của bạn"
 
-#: application/layouts/scripts/admin.phtml:315
+#: application/layouts/scripts/admin.phtml:316
 msgid "Please enter the your password"
 msgstr "Vui lòng nhập mật khẩu của bạn"
 
-#: application/layouts/scripts/admin.phtml:324
+#: application/layouts/scripts/admin.phtml:325
 msgid "Confirm"
 msgstr "Xác nhận"
 
-#: application/layouts/scripts/admin.phtml:325
+#: application/layouts/scripts/admin.phtml:326
 #: application/models/DbTable/Distribution.php:166
 #: application/modules/admin/views/scripts/announcement/compose.phtml:108
 #: application/modules/admin/views/scripts/certificate-batches/index.phtml:392
@@ -2437,12 +2465,12 @@ msgstr "Xác nhận"
 msgid "Cancel"
 msgstr "Hủy"
 
-#: application/layouts/scripts/admin.phtml:344
+#: application/layouts/scripts/admin.phtml:345
 #: application/modules/admin/views/scripts/login/index.phtml:141
 msgid "ePT Admin"
 msgstr "Quản trị ePT"
 
-#: application/layouts/scripts/admin.phtml:354
+#: application/layouts/scripts/admin.phtml:355
 #: application/views/partials/spotlight.phtml:45
 #: application/views/partials/spotlight.phtml:56
 #: application/views/partials/spotlight.phtml:64
@@ -2484,131 +2512,131 @@ msgstr "Quản trị ePT"
 msgid "Configure"
 msgstr "Cấu hình"
 
-#: application/layouts/scripts/admin.phtml:359
+#: application/layouts/scripts/admin.phtml:360
 #: application/views/partials/spotlight.phtml:44
 msgid "PT Managers"
 msgstr "Quản lý chương trình PT"
 
-#: application/layouts/scripts/admin.phtml:366
+#: application/layouts/scripts/admin.phtml:367
 #: application/views/partials/spotlight.phtml:310
 msgid "PT Participants"
 msgstr "Đơn vị tham gia PT"
 
-#: application/layouts/scripts/admin.phtml:369
+#: application/layouts/scripts/admin.phtml:370
 #: application/views/partials/spotlight.phtml:335
 msgid "Data Manager (Participant Login)"
 msgstr "Người quản lý dữ liệu (Tài khoản đăng nhập của đơn vị tham gia)"
 
-#: application/layouts/scripts/admin.phtml:373
+#: application/layouts/scripts/admin.phtml:374
 #: application/views/partials/spotlight.phtml:344
 msgid "Manage PTCC"
 msgstr "Quản lý PTCC"
 
-#: application/layouts/scripts/admin.phtml:377
+#: application/layouts/scripts/admin.phtml:378
 #: application/views/partials/spotlight.phtml:353
 msgid "Participant Login Map"
 msgstr "Liên kết đơn vị tham gia với tài khoản đăng nhập"
 
-#: application/layouts/scripts/admin.phtml:379
+#: application/layouts/scripts/admin.phtml:380
 msgid "Pending PT Participants"
 msgstr "Các đơn vị tham gia PT đang chờ xử lý"
 
-#: application/layouts/scripts/admin.phtml:381
+#: application/layouts/scripts/admin.phtml:382
 #: application/views/partials/spotlight.phtml:361
 msgid "Scheme Enrollments"
 msgstr "Đăng ký chương trình"
 
-#: application/layouts/scripts/admin.phtml:387
+#: application/layouts/scripts/admin.phtml:388
 msgid "Files For Participants"
 msgstr "Tệp cho đơn vị tham gia"
 
-#: application/layouts/scripts/admin.phtml:394
+#: application/layouts/scripts/admin.phtml:395
 #: application/views/partials/spotlight.phtml:55
 msgid "Feedback Questions"
 msgstr "Câu hỏi phản hồi"
 
-#: application/layouts/scripts/admin.phtml:397
+#: application/layouts/scripts/admin.phtml:398
 #: application/modules/admin/views/scripts/feedback-responses/shipment-questions.phtml:39
 #: application/views/partials/spotlight.phtml:63
 msgid "Feedback Forms"
 msgstr "Mẫu phản hồi"
 
-#: application/layouts/scripts/admin.phtml:425
+#: application/layouts/scripts/admin.phtml:426
 #: application/modules/admin/views/scripts/partials/scheme-config-open.phtml:22
 msgid "Scheme Config"
 msgstr "Cấu hình chương trình"
 
-#: application/layouts/scripts/admin.phtml:429
+#: application/layouts/scripts/admin.phtml:430
 #: application/modules/admin/views/scripts/schemes/test-results.phtml:7
 #: application/views/partials/spotlight.phtml:186
 msgid "Scheme Test Results"
 msgstr "Kết quả xét nghiệm của chương trình"
 
-#: application/layouts/scripts/admin.phtml:433
+#: application/layouts/scripts/admin.phtml:434
 #: application/modules/admin/views/scripts/global-config/index.phtml:619
 #: application/views/partials/spotlight.phtml:194
 msgid "ePT Global Settings"
 msgstr "Cài đặt chung của ePT"
 
-#: application/layouts/scripts/admin.phtml:443
+#: application/layouts/scripts/admin.phtml:444
 #: application/modules/admin/views/scripts/certificate-templates/index.phtml:171
 #: application/views/partials/spotlight.phtml:227
 msgid "Certificate Templates"
 msgstr "Mẫu giấy chứng nhận"
 
-#: application/layouts/scripts/admin.phtml:445
+#: application/layouts/scripts/admin.phtml:446
 #: application/modules/admin/views/scripts/mail-template/index.phtml:85
 #: application/views/partials/spotlight.phtml:243
 msgid "Mail Template"
 msgstr "Mẫu email"
 
-#: application/layouts/scripts/admin.phtml:448
+#: application/layouts/scripts/admin.phtml:449
 #: application/views/partials/spotlight.phtml:251
 msgid "Partners"
 msgstr "Đối tác"
 
-#: application/layouts/scripts/admin.phtml:451
+#: application/layouts/scripts/admin.phtml:452
 #: application/views/partials/spotlight.phtml:259
 msgid "Contact Messages"
 msgstr "Thông điệp liên hệ"
 
-#: application/layouts/scripts/admin.phtml:455
+#: application/layouts/scripts/admin.phtml:456
 #: application/modules/admin/views/scripts/api-history/index.phtml:4
 #: application/modules/admin/views/scripts/audit-log/index.phtml:569
 #: application/views/partials/spotlight.phtml:267
 msgid "Audit Log"
 msgstr "Nhật ký kiểm toán"
 
-#: application/layouts/scripts/admin.phtml:458
+#: application/layouts/scripts/admin.phtml:459
 #: application/modules/admin/views/scripts/log-viewer/index.phtml:52
 #: application/views/partials/spotlight.phtml:275
 msgid "Log Viewer"
 msgstr "Trình xem nhật ký"
 
-#: application/layouts/scripts/admin.phtml:461
+#: application/layouts/scripts/admin.phtml:462
 #: application/views/partials/spotlight.phtml:283
 msgid "API Sync History"
 msgstr "Lịch sử đồng bộ hóa API"
 
-#: application/layouts/scripts/admin.phtml:464
+#: application/layouts/scripts/admin.phtml:465
 #: application/modules/admin/views/scripts/job-tracking/index.phtml:65
 #: application/views/partials/spotlight.phtml:291
 msgid "Job Tracking"
 msgstr "Theo dõi công việc"
 
-#: application/layouts/scripts/admin.phtml:467
+#: application/layouts/scripts/admin.phtml:468
 #: application/modules/admin/views/scripts/alerts/email.phtml:41
 #: application/views/partials/spotlight.phtml:235
 msgid "Failed Emails"
 msgstr "Email không gửi được"
 
-#: application/layouts/scripts/admin.phtml:469
+#: application/layouts/scripts/admin.phtml:470
 #: application/modules/admin/views/scripts/certificate-batches/index.phtml:101
 #: application/views/partials/spotlight.phtml:299
 msgid "Certificate Batches"
 msgstr "Các lô giấy chứng nhận"
 
-#: application/layouts/scripts/admin.phtml:478
+#: application/layouts/scripts/admin.phtml:479
 #: application/layouts/scripts/layout.phtml:348
 #: application/views/partials/spotlight.phtml:390
 #: application/views/partials/spotlight.phtml:398
@@ -2616,14 +2644,14 @@ msgstr "Các lô giấy chứng nhận"
 msgid "Manage"
 msgstr "Quản lý"
 
-#: application/layouts/scripts/admin.phtml:483
+#: application/layouts/scripts/admin.phtml:484
 #: application/modules/reports/views/scripts/distribution/shipment.phtml:39
 #: application/views/partials/spotlight.phtml:389
 #: scheduled-jobs/report-layouts/summary-layouts/default/dts.phtml:55
 msgid "PT Survey"
 msgstr "Khảo sát PT"
 
-#: application/layouts/scripts/admin.phtml:494
+#: application/layouts/scripts/admin.phtml:495
 #: application/views/partials/spotlight.phtml:410
 #: application/views/partials/spotlight.phtml:418
 #: application/views/partials/spotlight.phtml:426
@@ -2632,17 +2660,17 @@ msgstr "Khảo sát PT"
 msgid "Analyze"
 msgstr "Phân tích"
 
-#: application/layouts/scripts/admin.phtml:498
+#: application/layouts/scripts/admin.phtml:499
 #: application/views/partials/spotlight.phtml:409
 msgid "Evaluate Responses"
 msgstr "Đánh giá các kết quả phản hồi"
 
-#: application/layouts/scripts/admin.phtml:508
+#: application/layouts/scripts/admin.phtml:509
 #: application/views/partials/spotlight.phtml:433
 msgid "View Finalized Shipments"
 msgstr "Xem các vòng ngoại kiểm đã hoàn tất"
 
-#: application/layouts/scripts/admin.phtml:516
+#: application/layouts/scripts/admin.phtml:517
 #: application/services/Reports.php:241
 #: application/views/partials/spotlight.phtml:455
 #: application/views/partials/spotlight.phtml:463
@@ -2664,70 +2692,65 @@ msgstr "Xem các vòng ngoại kiểm đã hoàn tất"
 msgid "Reports"
 msgstr "Báo cáo"
 
-#: application/layouts/scripts/admin.phtml:526
+#: application/layouts/scripts/admin.phtml:527
 #: application/views/partials/spotlight.phtml:470
 msgid "Testing Facility By Ownership"
 msgstr "Cơ sở xét nghiệm theo hình thức sở hữu"
 
-#: application/layouts/scripts/admin.phtml:533
-#: application/views/partials/spotlight.phtml:486
-msgid "Participant Performance Report"
-msgstr "Báo cáo kết quả của đơn vị tham gia"
-
-#: application/layouts/scripts/admin.phtml:539
+#: application/layouts/scripts/admin.phtml:540
 #: application/views/partials/spotlight.phtml:502
 msgid "Corrective Actions Report"
 msgstr "Báo cáo các hành động khắc phục"
 
-#: application/layouts/scripts/admin.phtml:543
+#: application/layouts/scripts/admin.phtml:544
 #: application/views/partials/spotlight.phtml:511
 msgid "Corrective and Preventive Actions"
 msgstr "Các hành động khắc phục và phòng ngừa"
 
-#: application/layouts/scripts/admin.phtml:550
+#: application/layouts/scripts/admin.phtml:551
 #: application/views/partials/spotlight.phtml:522
 msgid "Test Kit Report For HIV Serology"
 msgstr "Báo cáo bộ sinh phẩm cho xét nghiệm huyết thanh học HIV"
 
-#: application/layouts/scripts/admin.phtml:555
+#: application/layouts/scripts/admin.phtml:556
 #: application/views/partials/spotlight.phtml:533
 msgid "XTPT Indicators"
 msgstr "Các chỉ số XTPT"
 
-#: application/layouts/scripts/admin.phtml:558
+#: application/layouts/scripts/admin.phtml:559
 #: application/views/partials/spotlight.phtml:541
 msgid "TB: Number of Participants per Country"
 msgstr "TB: Số lượng đơn vị tham gia theo quốc gia"
 
-#: application/layouts/scripts/admin.phtml:561
+#: application/layouts/scripts/admin.phtml:562
 #: application/views/partials/spotlight.phtml:549
 msgid "TB: Result of PT Panel per Site"
 msgstr "TB: Kết quả của bộ mẫu ngoại kiểm theo từng địa điểm"
 
-#: application/layouts/scripts/admin.phtml:564
+#: application/layouts/scripts/admin.phtml:565
 #: application/views/partials/spotlight.phtml:557
 msgid "TB: All Sites' Results"
 msgstr "TB: Kết quả của tất cả các đơn vị"
 
-#: application/layouts/scripts/admin.phtml:572
+#: application/layouts/scripts/admin.phtml:573
 #: application/modules/reports/views/scripts/shipments/vl-sample-analysis.phtml:67
 #: application/views/partials/spotlight.phtml:568
 msgid "VL Sample Analysis"
 msgstr "Phân tích mẫu VL"
 
-#: application/layouts/scripts/admin.phtml:575
+#: application/layouts/scripts/admin.phtml:576
 #: application/modules/reports/views/scripts/shipments/vl-assay-distribution.phtml:24
 #: application/views/partials/spotlight.phtml:576
 msgid "VL Assay Distribution"
 msgstr "Phân bố phương pháp xét nghiệm VL"
 
-#: application/layouts/scripts/admin.phtml:580
+#: application/layouts/scripts/admin.phtml:581
 #: application/modules/reports/views/scripts/annual/index.phtml:11
 #: application/views/partials/spotlight.phtml:585
 msgid "Annual Performance Report"
 msgstr "Báo cáo kết quả thực hiện hàng năm"
 
-#: application/layouts/scripts/admin.phtml:588
+#: application/layouts/scripts/admin.phtml:589
 #: application/modules/admin/views/scripts/partials/scheme-config-nav.phtml:192
 #: application/modules/admin/views/scripts/participants/index.phtml:160
 #: application/modules/admin/views/scripts/shipment/round-participants.phtml:96
@@ -2736,7 +2759,7 @@ msgstr "Báo cáo kết quả thực hiện hàng năm"
 msgid "Search"
 msgstr "Tìm kiếm"
 
-#: application/layouts/scripts/admin.phtml:594
+#: application/layouts/scripts/admin.phtml:595
 #: application/modules/admin/views/scripts/help/index.phtml:14
 #: application/modules/admin/views/scripts/help/index.phtml:17
 #: application/views/partials/help-drawer.phtml:25
@@ -2745,21 +2768,21 @@ msgstr "Tìm kiếm"
 msgid "Help"
 msgstr "Trợ giúp"
 
-#: application/layouts/scripts/admin.phtml:650
+#: application/layouts/scripts/admin.phtml:651
 #: application/modules/admin/views/scripts/profile/index.phtml:153
 msgid "My Profile"
 msgstr "Hồ sơ của tôi"
 
-#: application/layouts/scripts/admin.phtml:660
+#: application/layouts/scripts/admin.phtml:661
 msgid "Sign Out"
 msgstr "Đăng xuất"
 
-#: application/layouts/scripts/admin.phtml:721
+#: application/layouts/scripts/admin.phtml:723
 #: application/layouts/scripts/layout.phtml:429
 msgid "some problem"
 msgstr "một số vấn đề"
 
-#: application/layouts/scripts/admin.phtml:732
+#: application/layouts/scripts/admin.phtml:734
 #: application/layouts/scripts/home.phtml:178
 msgid ""
 " This project is supported by the U.S. President's Emergency Plan for AIDS "
@@ -2770,29 +2793,29 @@ msgstr ""
 "thống Hoa Kỳ (PEPFAR) thông qua Trung tâm Kiểm soát và Phòng ngừa Dịch bệnh "
 "Hoa Kỳ (CDC)."
 
-#: application/layouts/scripts/admin.phtml:737
+#: application/layouts/scripts/admin.phtml:739
 #: application/layouts/scripts/home.phtml:181
 #: application/layouts/scripts/layout.phtml:437
 msgid "Deployed commit"
 msgstr "Commit đã triển khai"
 
-#: application/layouts/scripts/admin.phtml:747
+#: application/layouts/scripts/admin.phtml:749
 msgid "database not fully migrated"
 msgstr "cơ sở dữ liệu chưa được di chuyển hoàn toàn"
 
-#: application/layouts/scripts/admin.phtml:748
+#: application/layouts/scripts/admin.phtml:750
 msgid "code older than database"
 msgstr "mã nguồn cũ hơn cơ sở dữ liệu"
 
-#: application/layouts/scripts/admin.phtml:751
+#: application/layouts/scripts/admin.phtml:753
 msgid "App version"
 msgstr "Phiên bản ứng dụng"
 
-#: application/layouts/scripts/admin.phtml:751
+#: application/layouts/scripts/admin.phtml:753
 msgid "DB version"
 msgstr "Phiên bản cơ sở dữ liệu"
 
-#: application/layouts/scripts/admin.phtml:752
+#: application/layouts/scripts/admin.phtml:754
 msgid "DB ver."
 msgstr "Phiên bản cơ sở dữ liệu"
 
@@ -3268,8 +3291,8 @@ msgstr "Phản hồi muộn"
 #: application/services/Evaluation.php:2010
 #: application/services/Evaluation.php:2351
 #: application/services/Evaluation.php:2569
-#: application/views/partials/shipment-response-report.phtml:390
-#: application/views/partials/shipment-response-report.phtml:408
+#: application/views/partials/shipment-response-report.phtml:103
+#: application/views/partials/shipment-response-report.phtml:121
 #: application/views/scripts/participant/report.phtml:172
 msgid "Responded"
 msgstr "Đã phản hồi"
@@ -3283,7 +3306,7 @@ msgstr "Đã phản hồi"
 #: application/services/Evaluation.php:2008
 #: application/services/Evaluation.php:2346
 #: application/services/Evaluation.php:2567
-#: application/views/partials/shipment-response-report.phtml:391
+#: application/views/partials/shipment-response-report.phtml:104
 #: application/views/scripts/participant/report.phtml:173
 #: scheduled-jobs/report-layouts/summary-layouts/vietnam/dts.phtml:799
 msgid "Not Responded"
@@ -3345,7 +3368,6 @@ msgstr "Mã đơn vị tham gia"
 #: application/models/Dts.php:2344 application/models/Dts.php:2371
 #: application/modules/reports/views/scripts/corrective-preventive-actions/capa.phtml:32
 #: application/modules/reports/views/scripts/corrective-preventive-actions/index.phtml:88
-#: application/modules/reports/views/scripts/participant-performance/participant-performance.ajax.phtml:18
 #: application/modules/reports/views/scripts/shipments/vl-assay-distribution.phtml:82
 #: application/modules/reports/views/scripts/shipments/vl-sample-analysis.phtml:145
 #: application/views/scripts/auth/verify-email.phtml:93
@@ -3570,6 +3592,7 @@ msgstr "Ghi chú"
 #: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:348
 #: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:351
 #: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:415
+#: application/views/partials/report-filters.phtml:23
 #: application/views/scripts/custom-test/response.phtml:256
 #: application/views/scripts/index/index.phtml:367
 #: application/views/scripts/participant/add-participant.phtml:50
@@ -4019,9 +4042,10 @@ msgstr "Nguyên nhân thất bại"
 #: application/modules/reports/views/scripts/tb-results/index.phtml:80
 #: application/modules/reports/views/scripts/testkit/index.phtml:163
 #: application/modules/reports/views/scripts/testkit/index.phtml:181
+#: application/views/partials/participant-performance-report.phtml:227
 #: application/views/partials/participant-response-report.phtml:335
-#: application/views/partials/shipment-response-report.phtml:398
-#: application/views/partials/shipment-response-report.phtml:432
+#: application/views/partials/shipment-response-report.phtml:111
+#: application/views/partials/shipment-response-report.phtml:145
 #: application/views/partials/shipments-report-grid.phtml:384
 #: application/views/scripts/capa/index.phtml:74
 #: application/views/scripts/data-managers/index.phtml:34
@@ -4035,8 +4059,6 @@ msgstr "Nguyên nhân thất bại"
 #: application/views/scripts/participant/dashboard.phtml:484
 #: application/views/scripts/participant/dashboard.phtml:544
 #: application/views/scripts/participant/defaulted-schemes.phtml:47
-#: application/views/scripts/participant/participant-performance.phtml:135
-#: application/views/scripts/participant/participant-performance.phtml:177
 #: application/views/scripts/participant/tb-participants-per-country.phtml:67
 #: application/views/scripts/participant/tb-results.phtml:62
 #: application/views/scripts/participant/view.phtml:40
@@ -4056,9 +4078,10 @@ msgstr "Thất bại và bỏ qua"
 #: application/modules/reports/views/scripts/shipments/participation-stats.ajax.phtml:126
 #: application/modules/reports/views/scripts/shipments/vl-assay-summary.ajax.phtml:37
 #: application/services/Dashboard.php:1023
+#: application/views/partials/participant-performance-report.phtml:219
 #: application/views/partials/participant-response-report.phtml:315
-#: application/views/partials/shipment-response-report.phtml:393
-#: application/views/partials/shipment-response-report.phtml:412
+#: application/views/partials/shipment-response-report.phtml:106
+#: application/views/partials/shipment-response-report.phtml:125
 msgid "Failed"
 msgstr "Thất bại"
 
@@ -4124,8 +4147,9 @@ msgstr "Bị giữ lại (tạm dừng)"
 #: application/modules/reports/views/scripts/distribution/shipment.phtml:276
 #: application/modules/reports/views/scripts/distribution/shipment.phtml:286
 #: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:303
-#: application/views/partials/shipment-response-report.phtml:407
-#: application/views/partials/shipment-response-report.phtml:450
+#: application/views/partials/participant-performance-report.phtml:23
+#: application/views/partials/report-filters.phtml:194
+#: application/views/partials/shipment-response-report.phtml:120
 #: application/views/scripts/data-managers/index.phtml:13
 msgid "All"
 msgstr "Tất cả"
@@ -4177,10 +4201,8 @@ msgstr "Hiển thị tìm kiếm nâng cao"
 
 #: application/modules/admin/views/scripts/announcement/compose.phtml:36
 #: application/modules/reports/views/scripts/corrective-actions/index.phtml:25
-#: application/modules/reports/views/scripts/participant-performance/index.phtml:81
 #: application/modules/reports/views/scripts/shipments/vl-assay-distribution.phtml:39
 #: application/modules/reports/views/scripts/shipments/vl-sample-analysis.phtml:82
-#: application/views/scripts/participant/participant-performance.phtml:62
 #: application/views/scripts/participant/tb-participants-per-country.phtml:22
 #: application/views/scripts/participant/tb-results.phtml:23
 msgid "Pick a Date Range"
@@ -4195,8 +4217,6 @@ msgstr "Chọn khoảng thời gian"
 #: application/modules/reports/views/scripts/corrective-actions/index.phtml:28
 #: application/modules/reports/views/scripts/corrective-actions/index.phtml:46
 #: application/modules/reports/views/scripts/corrective-preventive-actions/index.phtml:55
-#: application/modules/reports/views/scripts/participant-performance/index.phtml:84
-#: application/modules/reports/views/scripts/participant-performance/index.phtml:97
 #: application/modules/reports/views/scripts/participant-trends/index.phtml:268
 #: application/modules/reports/views/scripts/testing-facility-by-ownership/index.phtml:66
 #: application/views/scripts/capa/index.phtml:31
@@ -4205,8 +4225,6 @@ msgstr "Chọn khoảng thời gian"
 #: application/views/scripts/participant/corrective.phtml:98
 #: application/views/scripts/participant/current-schemes.phtml:156
 #: application/views/scripts/participant/defaulted-schemes.phtml:29
-#: application/views/scripts/participant/participant-performance.phtml:65
-#: application/views/scripts/participant/participant-performance.phtml:81
 #: application/views/scripts/participant/report.phtml:88
 #: application/views/scripts/participant/report.phtml:217
 #: application/views/scripts/participant/scheme.phtml:21
@@ -4217,9 +4235,7 @@ msgstr "Chọn loại chương trình"
 
 #: application/modules/admin/views/scripts/announcement/compose.phtml:42
 #: application/modules/reports/views/scripts/corrective-actions/index.phtml:31
-#: application/modules/reports/views/scripts/participant-performance/index.phtml:87
 #: application/modules/reports/views/scripts/shipments/vl-sample-analysis.phtml:85
-#: application/views/scripts/participant/participant-performance.phtml:68
 #: application/views/scripts/participant/tb-all-sites-results.phtml:9
 #: application/views/scripts/participant/tb-participants-per-country.phtml:25
 #: application/views/scripts/participant/tb-results.phtml:24
@@ -4286,7 +4302,6 @@ msgstr "Tỉnh"
 #: application/modules/reports/views/scripts/finalize/get-shipments.ajax.phtml:30
 #: application/modules/reports/views/scripts/finalize/index.phtml:32
 #: application/modules/reports/views/scripts/finalize/shipments.phtml:33
-#: application/modules/reports/views/scripts/participant-performance/index.phtml:89
 #: application/modules/reports/views/scripts/shipments/vl-assay-distribution.phtml:45
 #: application/modules/reports/views/scripts/shipments/vl-sample-analysis.phtml:87
 #: application/modules/reports/views/scripts/testkit/index.phtml:55
@@ -4297,7 +4312,6 @@ msgstr "Tỉnh"
 #: application/views/scripts/participant/current-schemes.phtml:149
 #: application/views/scripts/participant/dashboard.phtml:536
 #: application/views/scripts/participant/defaulted-schemes.phtml:22
-#: application/views/scripts/participant/participant-performance.phtml:71
 #: application/views/scripts/participant/summary-report.phtml:128
 #: application/views/scripts/participant/summary-report.phtml:148
 #: application/views/scripts/participant/tb-all-sites-results.phtml:11
@@ -4316,7 +4330,6 @@ msgstr "Hành động"
 #: application/modules/reports/views/scripts/distribution/finalize.phtml:335
 #: application/modules/reports/views/scripts/distribution/shipment.phtml:296
 #: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:324
-#: application/modules/reports/views/scripts/participant-performance/index.phtml:93
 #: application/modules/reports/views/scripts/participant-trends/index.phtml:261
 #: application/modules/reports/views/scripts/shipments/vl-assay-distribution.phtml:50
 #: application/modules/reports/views/scripts/shipments/vl-sample-analysis.phtml:92
@@ -4324,7 +4337,6 @@ msgstr "Hành động"
 #: application/views/scripts/capa/index.phtml:27
 #: application/views/scripts/participant/corrective.phtml:48
 #: application/views/scripts/participant/dashboard.phtml:254
-#: application/views/scripts/participant/participant-performance.phtml:77
 #: application/views/scripts/participant/report.phtml:84
 #: application/views/scripts/participant/summary-report.phtml:83
 #: application/views/scripts/participant/tb-participants-per-country.phtml:34
@@ -4335,8 +4347,6 @@ msgstr "Nhấp vào đây để chọn khoảng thời gian"
 #: application/modules/admin/views/scripts/announcement/compose.phtml:70
 #: application/modules/admin/views/scripts/announcement/compose.phtml:145
 #: application/modules/reports/views/scripts/corrective-actions/index.phtml:61
-#: application/modules/reports/views/scripts/participant-performance/index.phtml:105
-#: application/views/scripts/participant/participant-performance.phtml:93
 msgid "Select Date Range and Scheme to populate this list"
 msgstr "Chọn khoảng thời gian và chương trình để hiển thị danh sách này"
 
@@ -4365,7 +4375,6 @@ msgstr "Chọn một hoặc nhiều thành phố"
 #: application/modules/reports/views/scripts/annual/index.phtml:43
 #: application/modules/reports/views/scripts/corrective-actions/index.phtml:68
 #: application/modules/reports/views/scripts/corrective-preventive-actions/index.phtml:76
-#: application/modules/reports/views/scripts/participant-performance/index.phtml:108
 #: application/modules/reports/views/scripts/participant-trends/index.phtml:283
 #: application/modules/reports/views/scripts/shipment-response/index.phtml:71
 #: application/modules/reports/views/scripts/shipments/vl-assay-distribution.phtml:68
@@ -4377,7 +4386,6 @@ msgstr "Chọn một hoặc nhiều thành phố"
 #: application/modules/reports/views/scripts/testkit/index.phtml:140
 #: application/modules/reports/views/scripts/xtpt-indicators/index.phtml:32
 #: application/views/scripts/capa/index.phtml:51
-#: application/views/scripts/participant/participant-performance.phtml:100
 #: application/views/scripts/participant/tb-all-sites-results.phtml:24
 #: application/views/scripts/participant/tb-participants-per-country.phtml:46
 #: application/views/scripts/participant/tb-results.phtml:42
@@ -4402,10 +4410,8 @@ msgstr "Gửi"
 #: application/modules/admin/views/scripts/announcement/compose.phtml:149
 #: application/modules/reports/views/scripts/annual/index.phtml:186
 #: application/modules/reports/views/scripts/corrective-actions/index.phtml:145
-#: application/modules/reports/views/scripts/participant-performance/index.phtml:157
 #: application/modules/reports/views/scripts/shipments/vl-assay-distribution.phtml:150
 #: application/modules/reports/views/scripts/shipments/vl-sample-analysis.phtml:215
-#: application/views/scripts/participant/participant-performance.phtml:227
 #: application/views/scripts/participant/tb-participants-per-country.phtml:103
 #: application/views/scripts/participant/tb-results.phtml:98
 msgid "Please pick a date range to fetch shipment list"
@@ -4548,7 +4554,6 @@ msgstr "Đăng nhập"
 #: application/modules/reports/views/scripts/corrective-actions/index.phtml:41
 #: application/modules/reports/views/scripts/corrective-preventive-actions/index.phtml:50
 #: application/modules/reports/views/scripts/distribution/shipment.phtml:293
-#: application/modules/reports/views/scripts/participant-performance/index.phtml:93
 #: application/modules/reports/views/scripts/participant-trends/index.phtml:259
 #: application/modules/reports/views/scripts/participant-trends/index.phtml:262
 #: application/modules/reports/views/scripts/shipments/vl-assay-distribution.phtml:51
@@ -5207,16 +5212,16 @@ msgstr ""
 #: application/modules/reports/views/scripts/distribution/shipment.phtml:46
 #: application/modules/reports/views/scripts/finalize/get-shipments.ajax.phtml:18
 #: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:75
-#: application/modules/reports/views/scripts/participant-performance/index.phtml:96
 #: application/modules/reports/views/scripts/participant-trends/index.phtml:265
 #: application/modules/reports/views/scripts/participant-trends/index.phtml:267
 #: application/modules/reports/views/scripts/testing-facility-by-ownership/index.phtml:65
-#: application/services/Reports.php:1785 application/services/Reports.php:2019
+#: application/services/Reports.php:1557 application/services/Reports.php:1791
+#: application/services/Reports.php:3631
 #: application/views/partials/participant-response-report.phtml:275
 #: application/views/partials/participant-response-report.phtml:277
-#: application/views/partials/shipment-response-report.phtml:344
-#: application/views/partials/shipment-response-report.phtml:346
-#: application/views/partials/shipment-response-report.phtml:388
+#: application/views/partials/report-filters.phtml:85
+#: application/views/partials/report-filters.phtml:87
+#: application/views/partials/shipment-response-report.phtml:101
 #: application/views/partials/shipments-report-grid.phtml:331
 #: application/views/partials/shipments-report-grid.phtml:333
 #: application/views/partials/shipments-report-grid.phtml:372
@@ -5228,7 +5233,6 @@ msgstr ""
 #: application/views/scripts/participant/current-schemes.phtml:141
 #: application/views/scripts/participant/dashboard.phtml:529
 #: application/views/scripts/participant/defaulted-schemes.phtml:14
-#: application/views/scripts/participant/participant-performance.phtml:122
 #: application/views/scripts/participant/report.phtml:74
 #: application/views/scripts/participant/report.phtml:87
 #: application/views/scripts/participant/report.phtml:203
@@ -6363,7 +6367,8 @@ msgstr "Biện luận cuối cùng"
 #: application/modules/reports/views/scripts/corrective-preventive-actions/index.phtml:63
 #: application/modules/reports/views/scripts/distribution/shipment.phtml:373
 #: application/modules/reports/views/scripts/testkit/index.phtml:175
-#: application/views/partials/shipment-response-report.phtml:422
+#: application/views/partials/participant-performance-report.phtml:215
+#: application/views/partials/shipment-response-report.phtml:135
 #: application/views/scripts/participant/corrective.phtml:44
 #: application/views/scripts/participant/corrective.phtml:62
 #: application/views/scripts/participant/corrective.phtml:88
@@ -7855,14 +7860,12 @@ msgstr "Không thể tải danh sách đơn vị tham gia. Vui lòng thử lại
 #: application/modules/admin/views/scripts/shipment/manage-enroll.phtml:686
 #: application/modules/reports/views/scripts/corrective-actions/index.phtml:281
 #: application/modules/reports/views/scripts/corrective-actions/index.phtml:310
-#: application/modules/reports/views/scripts/participant-performance/index.phtml:204
 #: application/modules/reports/views/scripts/participant-trends/index.phtml:369
+#: application/views/partials/participant-performance-report.phtml:318
+#: application/views/partials/participant-performance-report.phtml:324
 #: application/views/partials/participant-response-report.phtml:339
-#: application/views/partials/shipment-response-report.phtml:681
+#: application/views/partials/shipment-response-report.phtml:298
 #: application/views/partials/shipments-report-grid.phtml:545
-#: application/views/scripts/participant/participant-performance.phtml:384
-#: application/views/scripts/participant/participant-performance.phtml:404
-#: application/views/scripts/participant/participant-performance.phtml:533
 #: application/views/scripts/participant/view.phtml:184
 msgid "Unable to generate download"
 msgstr "Không thể tạo liên kết tải xuống"
@@ -8099,7 +8102,7 @@ msgstr "Hiển thị bộ lọc nâng cao"
 #: application/modules/admin/views/scripts/participants/edit.phtml:386
 #: application/modules/admin/views/scripts/participants/participant-manager-map.phtml:122
 #: application/modules/reports/views/scripts/testkit/index.phtml:68
-#: application/services/Reports.php:469
+#: application/services/Reports.php:476
 #: application/views/partials/participant-response-report.phtml:23
 #: application/views/scripts/participant/add-participant.phtml:182
 #: application/views/scripts/participant/edit-participant.phtml:224
@@ -8117,7 +8120,7 @@ msgstr "Cấp độ phòng xét nghiệm"
 #: application/modules/admin/views/scripts/shipment/manage-enroll.phtml:166
 #: application/modules/admin/views/scripts/shipment/ship-it.phtml:85
 #: application/modules/reports/views/scripts/testkit/index.phtml:69
-#: application/services/Reports.php:470
+#: application/services/Reports.php:477
 #: application/views/partials/participant-response-report.phtml:24
 #: application/views/scripts/covid19/response.phtml:195
 #: application/views/scripts/dbs/response.phtml:70
@@ -8520,7 +8523,7 @@ msgstr "Các vòng ngoại kiểm thuộc khảo sát PT này"
 #: application/modules/reports/views/scripts/distribution/shipment.phtml:45
 #: application/modules/reports/views/scripts/finalize/get-shipments.ajax.phtml:17
 #: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:72
-#: application/services/Reports.php:1787 application/services/Reports.php:2020
+#: application/services/Reports.php:1559 application/services/Reports.php:1792
 #: application/views/scripts/capa/index.phtml:64
 #: application/views/scripts/custom-test/response.phtml:234
 #: application/views/scripts/participant/all-schemes.phtml:47
@@ -8535,7 +8538,6 @@ msgstr "Các vòng ngoại kiểm thuộc khảo sát PT này"
 #: application/views/scripts/participant/dashboard.phtml:447
 #: application/views/scripts/participant/dashboard.phtml:530
 #: application/views/scripts/participant/defaulted-schemes.phtml:15
-#: application/views/scripts/participant/participant-performance.phtml:124
 #: application/views/scripts/participant/report.phtml:204
 #: application/views/scripts/participant/summary-report.phtml:165
 #: application/views/scripts/shipment-form/download.phtml:117
@@ -8552,11 +8554,11 @@ msgstr "Mã vòng ngoại kiểm"
 #: application/modules/admin/views/scripts/shipment/manage-enroll.phtml:55
 #: application/modules/reports/views/scripts/shipments/response-chart.phtml:47
 #: application/modules/reports/views/scripts/shipments/vl-assay-distribution.phtml:83
-#: application/services/Reports.php:1786
+#: application/services/Reports.php:1558
 #: application/views/partials/participant-response-report.phtml:269
 #: application/views/partials/participant-response-report.phtml:272
-#: application/views/partials/shipment-response-report.phtml:338
-#: application/views/partials/shipment-response-report.phtml:341
+#: application/views/partials/report-filters.phtml:79
+#: application/views/partials/report-filters.phtml:82
 #: application/views/partials/shipments-report-grid.phtml:325
 #: application/views/partials/shipments-report-grid.phtml:328
 #: application/views/scripts/covid19/response.phtml:212
@@ -8572,7 +8574,6 @@ msgstr "Mã vòng ngoại kiểm"
 #: application/views/scripts/participant/dashboard.phtml:388
 #: application/views/scripts/participant/dashboard.phtml:417
 #: application/views/scripts/participant/dashboard.phtml:446
-#: application/views/scripts/participant/participant-performance.phtml:123
 #: application/views/scripts/participant/report.phtml:73
 #: application/views/scripts/participant/report.phtml:85
 #: application/views/scripts/participant/report.phtml:205
@@ -9896,10 +9897,7 @@ msgstr "Số lượng đơn vị tham gia"
 #: application/modules/reports/views/scripts/distribution/shipment.phtml:49
 #: application/modules/reports/views/scripts/finalize/get-shipments.ajax.phtml:21
 #: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:84
-#: application/services/Reports.php:1789 application/services/Reports.php:2680
-#: application/services/Reports.php:2779
-#: application/views/scripts/participant/participant-performance.phtml:126
-#: application/views/scripts/participant/participant-performance.phtml:168
+#: application/services/Reports.php:1561 application/services/Reports.php:2126
 msgid "No. of Responses"
 msgstr "Số lượng phản hồi"
 
@@ -10165,8 +10163,6 @@ msgstr "Cập nhật tệp & Bình luận"
 #: application/modules/reports/views/scripts/distribution/finalize.phtml:668
 #: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:278
 #: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:280
-#: application/modules/reports/views/scripts/participant-performance/index.phtml:70
-#: application/modules/reports/views/scripts/participant-performance/index.phtml:72
 #: application/modules/reports/views/scripts/participant-trends/index.phtml:249
 #: application/modules/reports/views/scripts/participant-trends/index.phtml:251
 #: application/modules/reports/views/scripts/shipment-response/index.phtml:21
@@ -10189,8 +10185,8 @@ msgstr "Cập nhật tệp & Bình luận"
 #: application/modules/reports/views/scripts/xtpt-indicators/index.phtml:8
 #: application/views/partials/participant-response-report.phtml:259
 #: application/views/partials/participant-response-report.phtml:261
-#: application/views/partials/shipment-response-report.phtml:328
-#: application/views/partials/shipment-response-report.phtml:330
+#: application/views/partials/report-filters.phtml:69
+#: application/views/partials/report-filters.phtml:71
 #: application/views/partials/shipments-report-grid.phtml:315
 #: application/views/partials/shipments-report-grid.phtml:317
 #: application/views/scripts/participant/corrective.phtml:32
@@ -10209,7 +10205,6 @@ msgstr "Mở rộng bộ lọc"
 #: application/modules/reports/views/scripts/corrective-preventive-actions/index.phtml:26
 #: application/modules/reports/views/scripts/distribution/finalize.phtml:667
 #: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:279
-#: application/modules/reports/views/scripts/participant-performance/index.phtml:71
 #: application/modules/reports/views/scripts/participant-trends/index.phtml:250
 #: application/modules/reports/views/scripts/shipment-response/index.phtml:22
 #: application/modules/reports/views/scripts/shipments/vl-assay-distribution.phtml:29
@@ -10221,7 +10216,7 @@ msgstr "Mở rộng bộ lọc"
 #: application/modules/reports/views/scripts/testkit/index.phtml:24
 #: application/modules/reports/views/scripts/xtpt-indicators/index.phtml:7
 #: application/views/partials/participant-response-report.phtml:260
-#: application/views/partials/shipment-response-report.phtml:329
+#: application/views/partials/report-filters.phtml:70
 #: application/views/partials/shipments-report-grid.phtml:316
 #: application/views/scripts/participant/corrective.phtml:33
 #: application/views/scripts/participant/current-schemes.phtml:73
@@ -10431,7 +10426,8 @@ msgstr "Điểm đánh giá"
 #: application/modules/reports/views/scripts/distribution/shipment.phtml:284
 #: application/modules/reports/views/scripts/distribution/shipment.phtml:385
 #: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:424
-#: application/views/partials/shipment-response-report.phtml:427
+#: application/services/Reports.php:3634
+#: application/views/partials/shipment-response-report.phtml:140
 #: application/views/scripts/custom-test/response.phtml:458
 #: application/views/scripts/participant/report.phtml:210
 #: scheduled-jobs/report-layouts/participant-layouts/vietnam/dts.phtml:372
@@ -10455,7 +10451,8 @@ msgstr "Trạng thái phản hồi"
 #: application/modules/reports/views/scripts/distribution/finalize.phtml:403
 #: application/modules/reports/views/scripts/distribution/shipment.phtml:388
 #: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:427
-#: application/views/partials/shipment-response-report.phtml:426
+#: application/services/Reports.php:3632
+#: application/views/partials/shipment-response-report.phtml:139
 msgid "Responded On"
 msgstr "Đã phản hồi vào"
 
@@ -10898,16 +10895,16 @@ msgstr "Vòng ngoại kiểm và đối tượng xem"
 #: application/modules/admin/views/scripts/files-for-participants/index.phtml:394
 #: application/modules/admin/views/scripts/shipment/ship-it.phtml:48
 #: application/modules/reports/views/scripts/corrective-actions/index.phtml:60
-#: application/modules/reports/views/scripts/participant-performance/index.phtml:104
 #: application/modules/reports/views/scripts/participant-trends/index.phtml:275
 #: application/modules/reports/views/scripts/participant-trends/index.phtml:277
 #: application/modules/reports/views/scripts/participant-trends/index.phtml:330
 #: application/modules/reports/views/scripts/shipments/vl-assay-distribution.phtml:55
 #: application/modules/reports/views/scripts/shipments/vl-sample-analysis.phtml:96
-#: application/views/partials/shipment-response-report.phtml:354
-#: application/views/partials/shipment-response-report.phtml:356
-#: application/views/partials/shipment-response-report.phtml:387
-#: application/views/partials/shipment-response-report.phtml:424
+#: application/services/Reports.php:3630
+#: application/views/partials/report-filters.phtml:95
+#: application/views/partials/report-filters.phtml:97
+#: application/views/partials/shipment-response-report.phtml:100
+#: application/views/partials/shipment-response-report.phtml:137
 #: application/views/partials/shipments-report-grid.phtml:371
 #: application/views/scripts/covid19/response.phtml:1314
 #: application/views/scripts/participant/all-schemes.phtml:45
@@ -12952,7 +12949,7 @@ msgid "Response %"
 msgstr "Tỷ lệ phản hồi %"
 
 #: application/modules/admin/views/scripts/index/index.phtml:1092
-#: application/services/Reports.php:2683 application/services/Reports.php:2782
+#: application/services/Reports.php:2129
 msgid "Pass %"
 msgstr "Tỷ lệ đạt %"
 
@@ -13020,6 +13017,7 @@ msgstr "so với"
 
 #: application/modules/admin/views/scripts/index/index.phtml:1277
 #: application/modules/reports/views/scripts/corrective-actions/index.phtml:242
+#: application/views/partials/participant-performance-report.phtml:220
 msgid "Average score"
 msgstr "Điểm Trung bình"
 
@@ -15818,8 +15816,8 @@ msgstr ""
 #: application/modules/admin/views/scripts/shipment/index.phtml:66
 #: application/modules/reports/views/scripts/distribution/finalize.phtml:98
 #: application/modules/reports/views/scripts/distribution/get-shipments.ajax.phtml:29
-#: application/views/partials/shipment-response-report.phtml:406
-#: application/views/partials/shipment-response-report.phtml:425
+#: application/views/partials/shipment-response-report.phtml:119
+#: application/views/partials/shipment-response-report.phtml:138
 #: application/views/scripts/participant/all-schemes.phtml:51
 #: application/views/scripts/participant/dashboard.phtml:534
 #: application/views/scripts/participant/defaulted-schemes.phtml:21
@@ -16351,7 +16349,7 @@ msgstr "Vui lòng nhập số điện thoại của Điều phối viên PT"
 #: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:687
 #: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:894
 #: application/modules/admin/views/scripts/shipment/partials/schemes/vl.phtml:134
-#: application/services/Reports.php:2021
+#: application/services/Reports.php:1793
 msgid "Sample Label"
 msgstr "Mã mẫu"
 
@@ -16395,6 +16393,7 @@ msgstr "Điều này có bắt buộc không?"
 #: application/modules/admin/views/scripts/shipment/partials/schemes/dbs.phtml:706
 #: application/modules/reports/views/scripts/corrective-preventive-actions/index.phtml:97
 #: application/modules/reports/views/scripts/shipments/vl-sample-analysis.phtml:146
+#: application/services/Reports.php:3633
 #: application/views/scripts/participant/tb-results.phtml:56
 #: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:459
 #: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:621
@@ -18250,7 +18249,6 @@ msgstr "Để được cấp chứng nhận"
 
 #: application/modules/reports/views/scripts/annual/index.phtml:43
 #: application/modules/reports/views/scripts/corrective-actions/index.phtml:66
-#: application/modules/reports/views/scripts/participant-performance/index.phtml:108
 #: application/modules/reports/views/scripts/participant-trends/index.phtml:282
 #: application/modules/reports/views/scripts/shipment-response/index.phtml:69
 #: application/modules/reports/views/scripts/shipments/vl-assay-distribution.phtml:66
@@ -18262,7 +18260,6 @@ msgstr "Để được cấp chứng nhận"
 #: application/modules/reports/views/scripts/testkit/index.phtml:138
 #: application/modules/reports/views/scripts/xtpt-indicators/index.phtml:29
 #: application/views/scripts/participant/corrective.phtml:72
-#: application/views/scripts/participant/participant-performance.phtml:98
 #: application/views/scripts/participant/report.phtml:181
 #: application/views/scripts/participant/summary-report.phtml:142
 #: application/views/scripts/participant/summary-report.phtml:153
@@ -18347,25 +18344,20 @@ msgid "Participant Corrective Action Overview"
 msgstr "Tổng quan về các hành động khắc phục của đơn vị tham gia"
 
 #: application/modules/reports/views/scripts/corrective-actions/index.phtml:70
-#: application/modules/reports/views/scripts/participant-performance/index.phtml:108
 #: application/modules/reports/views/scripts/shipments/vl-assay-distribution.phtml:70
 #: application/modules/reports/views/scripts/shipments/vl-sample-analysis.phtml:105
-#: application/views/scripts/participant/participant-performance.phtml:102
-#: application/views/scripts/participant/participant-performance.phtml:161
 msgid "Excel"
 msgstr "Excel"
 
 #: application/modules/reports/views/scripts/corrective-actions/index.phtml:72
-#: application/modules/reports/views/scripts/participant-performance/index.phtml:108
 #: application/modules/reports/views/scripts/shipments/vl-assay-distribution.phtml:71
 #: application/modules/reports/views/scripts/shipments/vl-sample-analysis.phtml:106
 #: application/modules/reports/views/scripts/testkit/index.phtml:144
-#: application/views/scripts/participant/participant-performance.phtml:104
 msgid "PDF"
 msgstr "PDF"
 
 #: application/modules/reports/views/scripts/corrective-actions/index.phtml:93
-#: application/services/Reports.php:1883
+#: application/services/Reports.php:1655
 #: application/views/scripts/participant/corrective.phtml:90
 #: scheduled-jobs/report-layouts/summary-layouts/default/dts.phtml:210
 #: scheduled-jobs/report-layouts/summary-layouts/vietnam/dts.phtml:546
@@ -18373,7 +18365,7 @@ msgid "Corrective Action"
 msgstr "Hành động khắc phục"
 
 #: application/modules/reports/views/scripts/corrective-actions/index.phtml:95
-#: application/services/Reports.php:1884
+#: application/services/Reports.php:1656
 msgid "No. of Responses having this corrective action"
 msgstr "Số lượng phản hồi có hành động khắc phục này"
 
@@ -18392,7 +18384,6 @@ msgstr "Tổng số phản hồi hợp lệ"
 #: application/modules/reports/views/scripts/corrective-actions/index.phtml:258
 #: application/views/scripts/participant/corrective.phtml:119
 #: application/views/scripts/participant/corrective.phtml:305
-#: application/views/scripts/participant/participant-performance.phtml:414
 #: application/views/scripts/participant/report.phtml:242
 #: application/views/scripts/participant/report.phtml:473
 #: application/views/scripts/participant/summary-report.phtml:193
@@ -18734,35 +18725,11 @@ msgstr "Báo cáo của đơn vị tham gia"
 msgid "No Shipment data."
 msgstr "Không có dữ liệu vòng ngoại kiểm."
 
-#: application/modules/reports/views/scripts/participant-performance/index.phtml:64
-#: application/modules/reports/views/scripts/participant-performance/index.phtml:66
 #: application/modules/reports/views/scripts/participant-trends/index.phtml:244
-#: application/views/scripts/participant/participant-performance.phtml:56
 #: scheduled-jobs/report-layouts/summary-layouts/default/dts.phtml:186
 #: scheduled-jobs/report-layouts/summary-layouts/vietnam/dts.phtml:113
 msgid "Participant Performance Overview"
 msgstr "Tổng quan về việc thực hiện của đơn vị tham gia"
-
-#: application/modules/reports/views/scripts/participant-performance/participant-performance-export.phtml:3
-msgid "View script for controlle"
-msgstr "Xem mã nguồn cho controlle"
-
-#: application/modules/reports/views/scripts/participant-performance/participant-performance-export.phtml:3
-msgid "ParticipantTrends"
-msgstr "Xu hướng của đơn vị tham gia"
-
-#: application/modules/reports/views/scripts/participant-performance/participant-performance-export.phtml:3
-msgid "and script/action name"
-msgstr "và tên kịch bản/hành động"
-
-#: application/modules/reports/views/scripts/participant-performance/participant-performance-export.phtml:3
-msgid "ParticipantTrendsRegionWiseExport"
-msgstr "Xu hướng của đơn vị tham gia theo khu vực"
-
-#: application/modules/reports/views/scripts/participant-performance/participant-performance.ajax.phtml:22
-#: scheduled-jobs/report-layouts/summary-layouts/default/dts.phtml:191
-msgid "Average Score"
-msgstr "Điểm Trung bình"
 
 #: application/modules/reports/views/scripts/participant-trends/index.phtml:278
 #: application/modules/reports/views/scripts/participant-trends/index.phtml:370
@@ -18770,8 +18737,9 @@ msgid "All Shipments in the selected period"
 msgstr "Tất cả các đợt gửi mẫu trong khoảng thời gian đã chọn"
 
 #: application/modules/reports/views/scripts/participant-trends/index.phtml:293
+#: application/views/partials/participant-performance-report.phtml:203
 #: application/views/partials/participant-response-report.phtml:298
-#: application/views/partials/shipment-response-report.phtml:415
+#: application/views/partials/shipment-response-report.phtml:128
 msgid "Download Excel"
 msgstr "Tải xuống Excel"
 
@@ -18779,7 +18747,7 @@ msgstr "Tải xuống Excel"
 #: application/modules/reports/views/scripts/participant-trends/index.phtml:331
 #: application/modules/reports/views/scripts/shipments/participation-stats.ajax.phtml:85
 #: application/views/partials/participant-response-report.phtml:334
-#: application/views/partials/shipment-response-report.phtml:389
+#: application/views/partials/shipment-response-report.phtml:102
 msgid "Enrolled"
 msgstr "Đã đăng ký"
 
@@ -18800,8 +18768,9 @@ msgstr "Đúng hạn"
 #: application/modules/reports/views/scripts/participant-trends/index.phtml:334
 #: application/modules/reports/views/scripts/participant-trends/index.phtml:363
 #: application/modules/reports/views/scripts/shipments/participation-stats.ajax.phtml:81
+#: application/views/partials/participant-performance-report.phtml:218
 #: application/views/partials/participant-response-report.phtml:314
-#: application/views/partials/shipment-response-report.phtml:392
+#: application/views/partials/shipment-response-report.phtml:105
 #: application/views/partials/shipments-report-grid.phtml:377
 msgid "Pass rate"
 msgstr "Tỷ lệ đạt"
@@ -18831,7 +18800,8 @@ msgid "Unsatisfactory (failed)"
 msgstr "Không đạt yêu cầu (không đạt)"
 
 #: application/modules/reports/views/scripts/participant-trends/index.phtml:351
-#: application/services/Reports.php:223 application/services/Reports.php:3973
+#: application/services/Reports.php:223 application/services/Reports.php:3322
+#: application/services/Reports.php:3601
 #: application/views/partials/participant-response-report.phtml:328
 msgid "Not evaluated yet"
 msgstr "Chưa được đánh giá"
@@ -18883,7 +18853,7 @@ msgstr "Vui lòng chọn khoảng thời gian"
 
 #: application/modules/reports/views/scripts/participant-trends/index.phtml:385
 #: application/views/partials/participant-response-report.phtml:357
-#: application/views/partials/shipment-response-report.phtml:457
+#: application/views/partials/report-filters.phtml:201
 #: application/views/partials/shipments-report-grid.phtml:401
 #: application/views/scripts/covid19/response.phtml:232
 #: application/views/scripts/covid19/response.phtml:250
@@ -18973,9 +18943,10 @@ msgid "Awaiting evaluation"
 msgstr "Đang chờ đánh giá"
 
 #: application/modules/reports/views/scripts/shipments/participation-stats.ajax.phtml:24
+#: application/views/partials/participant-performance-report.phtml:32
 #: application/views/partials/participant-response-report.phtml:312
 #: application/views/partials/participant-response-report.phtml:332
-#: application/views/partials/shipment-response-report.phtml:410
+#: application/views/partials/shipment-response-report.phtml:123
 msgid "Could not test"
 msgstr "Không thể xét nghiệm"
 
@@ -19060,10 +19031,7 @@ msgid "No. of Participants Enrolled"
 msgstr "Số đơn vị tham gia đã đăng ký"
 
 #: application/modules/reports/views/scripts/shipments/vl-assay-summary.ajax.phtml:35
-#: application/services/Reports.php:1790 application/services/Reports.php:2681
-#: application/services/Reports.php:2780
-#: application/views/scripts/participant/participant-performance.phtml:127
-#: application/views/scripts/participant/participant-performance.phtml:169
+#: application/services/Reports.php:1562 application/services/Reports.php:2127
 msgid "No. of Valid Responses"
 msgstr "Số lượng phản hồi hợp lệ"
 
@@ -19335,9 +19303,10 @@ msgid "Outstanding"
 msgstr "Chưa phản hồi"
 
 #: application/services/Dashboard.php:1034
+#: application/services/Reports.php:3587
 #: application/views/partials/participant-response-report.phtml:311
 #: application/views/partials/participant-response-report.phtml:331
-#: application/views/partials/shipment-response-report.phtml:409
+#: application/views/partials/shipment-response-report.phtml:122
 msgid "Late"
 msgstr "Trễ"
 
@@ -19450,7 +19419,7 @@ msgstr "%s quốc gia"
 msgid "the countries listed below"
 msgstr "các quốc gia được liệt kê bên dưới"
 
-#: application/services/Reports.php:179 application/services/Reports.php:3988
+#: application/services/Reports.php:179 application/services/Reports.php:3337
 msgid "Breakdown"
 msgstr "Phân tích chi tiết"
 
@@ -19458,7 +19427,8 @@ msgstr "Phân tích chi tiết"
 msgid "Response chart"
 msgstr "Biểu đồ phản hồi"
 
-#: application/services/Reports.php:212 application/services/Reports.php:3978
+#: application/services/Reports.php:212 application/services/Reports.php:3327
+#: application/services/Reports.php:3606
 #: application/views/partials/participant-response-report.phtml:329
 #, php-format
 msgid "%s of %s"
@@ -19529,34 +19499,28 @@ msgstr "Biểu mẫu Lao"
 msgid "Result forms for every participant (ZIP)"
 msgstr "Biểu mẫu kết quả của tất cả người tham gia (ZIP)"
 
-#: application/services/Reports.php:471
+#: application/services/Reports.php:478
 #: application/views/partials/participant-response-report.phtml:25
 msgid "Enrolled Program"
 msgstr "Chương trình"
 
-#: application/services/Reports.php:504
+#: application/services/Reports.php:511
 msgid "Groups"
 msgstr "Nhóm"
 
-#: application/services/Reports.php:1788 application/services/Reports.php:2679
-#: application/services/Reports.php:2778
-#: application/views/scripts/participant/participant-performance.phtml:125
-#: application/views/scripts/participant/participant-performance.phtml:167
+#: application/services/Reports.php:1560 application/services/Reports.php:2125
 msgid "No. of Shipments"
 msgstr "Số lượng vòng ngoại kiểm"
 
-#: application/services/Reports.php:1791 application/services/Reports.php:2682
-#: application/services/Reports.php:2781
-#: application/views/scripts/participant/participant-performance.phtml:128
-#: application/views/scripts/participant/participant-performance.phtml:170
+#: application/services/Reports.php:1563 application/services/Reports.php:2128
 msgid "No. of Passed Responses"
 msgstr "Số phản hồi đạt"
 
-#: application/services/Reports.php:1792
+#: application/services/Reports.php:1564
 msgid "Pass Percentage"
 msgstr "Tỷ lệ đạt"
 
-#: application/services/Reports.php:2022
+#: application/services/Reports.php:1794
 #: application/views/scripts/covid19/response.phtml:671
 #: application/views/scripts/dbs/response.phtml:332
 #: application/views/scripts/dts/response.phtml:1118
@@ -19569,41 +19533,55 @@ msgstr "Tỷ lệ đạt"
 msgid "Reference Result"
 msgstr "Kết quả tham chiếu"
 
-#: application/services/Reports.php:2023
+#: application/services/Reports.php:1795
 msgid "Total Positive Responses"
 msgstr "Tổng số phản hồi dương tính"
 
-#: application/services/Reports.php:2024
+#: application/services/Reports.php:1796
 msgid "Total Negative Responses"
 msgstr "Tổng số phản hồi âm tính"
 
-#: application/services/Reports.php:2025
+#: application/services/Reports.php:1797
 msgid "Total Indeterminate Responses"
 msgstr "Tổng số phản hồi không xác định"
 
-#: application/services/Reports.php:2026
+#: application/services/Reports.php:1798
 msgid "Total Responses"
 msgstr "Tổng số phản hồi"
 
-#: application/services/Reports.php:2027
+#: application/services/Reports.php:1799
 msgid "Total Valid Responses(Total - Excluded)"
 msgstr "Tổng số phản hồi hợp lệ (Tổng - Loại trừ)"
 
-#: application/services/Reports.php:2028
+#: application/services/Reports.php:1800
 msgid "Total Passed"
 msgstr "Tổng số đạt"
 
-#: application/services/Reports.php:3990
+#: application/services/Reports.php:3339
 msgid "List only the participants of this shipment"
 msgstr "Chỉ liệt kê các đơn vị tham gia của vòng ngoại kiểm này"
 
-#: application/services/Reports.php:3997
+#: application/services/Reports.php:3346
 msgid "List the participants who have not responded"
 msgstr "Liệt kê các đơn vị tham gia chưa phản hồi"
 
-#: application/services/Reports.php:4001
+#: application/services/Reports.php:3350
 msgid "List the participants who failed"
 msgstr "Liệt kê các đơn vị tham gia không đạt"
+
+#: application/services/Reports.php:3623
+#, php-format
+msgid "Score %s"
+msgstr "Điểm %s"
+
+#: application/services/Reports.php:3653
+#, php-format
+msgid "%s responded"
+msgstr "%s lần phản hồi"
+
+#: application/services/Reports.php:3656
+msgid "No score"
+msgstr "Không có điểm"
 
 #: application/services/Shipments.php:604
 msgid "TB Forms"
@@ -19789,23 +19767,63 @@ msgstr "Bạn đang ở trên màn hình này."
 msgid "Open this screen in a new tab"
 msgstr "Mở màn hình này trong một tab mới"
 
+#: application/views/partials/participant-performance-report.phtml:24
+msgid "Failed at least once"
+msgstr "Không đạt ít nhất một lần"
+
+#: application/views/partials/participant-performance-report.phtml:25
+msgid "Missed a response"
+msgstr "Thiếu phản hồi ít nhất một lần"
+
+#: application/views/partials/participant-performance-report.phtml:26
+msgid "Never failed"
+msgstr "Chưa từng không đạt"
+
+#: application/views/partials/participant-performance-report.phtml:31
+#: application/views/partials/participant-response-report.phtml:313
+#: application/views/partials/participant-response-report.phtml:333
+#: application/views/partials/shipment-response-report.phtml:124
+msgid "Not responded"
+msgstr "Chưa phản hồi"
+
+#: application/views/partials/participant-performance-report.phtml:34
+#: scheduled-jobs/report-layouts/participant-layouts/vietnam/dts.phtml:574
+msgid "Not evaluated"
+msgstr "Chưa được đánh giá"
+
+#: application/views/partials/participant-performance-report.phtml:194
+msgid "Click a participant to see each shipment."
+msgstr "Nhấp vào một đơn vị tham gia để xem từng đợt gửi mẫu."
+
+#: application/views/partials/participant-performance-report.phtml:197
+#: application/views/scripts/participant/dashboard.phtml:334
+#: application/views/scripts/participant/dashboard.phtml:363
+#: application/views/scripts/participant/dashboard.phtml:393
+#: application/views/scripts/participant/dashboard.phtml:422
+#: application/views/scripts/participant/dashboard.phtml:451
+msgid "Performance"
+msgstr "Kết quả thực hiện"
+
+#: application/views/partials/participant-performance-report.phtml:216
+#: application/views/partials/shipment-response-report.phtml:136
+msgid "Location"
+msgstr "Địa điểm"
+
+#: application/views/partials/participant-performance-report.phtml:221
+msgid "Results, oldest first"
+msgstr "Kết quả, cũ nhất trước"
+
 #: application/views/partials/participant-response-report.phtml:271
-#: application/views/partials/shipment-response-report.phtml:340
+#: application/views/partials/report-filters.phtml:81
 #: application/views/partials/shipments-report-grid.phtml:327
 msgid "All dates"
 msgstr "Tất cả các ngày"
 
 #: application/views/partials/participant-response-report.phtml:278
-#: application/views/partials/shipment-response-report.phtml:347
+#: application/views/partials/report-filters.phtml:88
 #: application/views/partials/shipments-report-grid.phtml:334
 msgid "All schemes"
 msgstr "Tất cả chương trình"
-
-#: application/views/partials/participant-response-report.phtml:313
-#: application/views/partials/participant-response-report.phtml:333
-#: application/views/partials/shipment-response-report.phtml:411
-msgid "Not responded"
-msgstr "Chưa phản hồi"
 
 #: application/views/partials/participant-response-report.phtml:336
 msgid "Failed to load. Please try again."
@@ -19816,13 +19834,18 @@ msgstr "Không thể tải. Vui lòng thử lại."
 msgid ""
 "The chart shows the first %s groups of the table. The table lists every "
 "group."
-msgstr "Biểu đồ hiển thị %s nhóm đầu tiên của bảng. Bảng liệt kê tất cả các nhóm."
+msgstr ""
+"Biểu đồ hiển thị %s nhóm đầu tiên của bảng. Bảng liệt kê tất cả các nhóm."
 
 #: application/views/partials/participant-response-report.phtml:338
 #: application/views/partials/report-zero-state-card.phtml:18
 #: application/views/partials/report-zero-state.phtml:47
 msgid "No results for these filters"
 msgstr "Không có kết quả cho các bộ lọc này"
+
+#: application/views/partials/report-filters.phtml:190
+msgid "All shipments in the date range"
+msgstr "Tất cả vòng ngoại kiểm trong phạm vi ngày"
 
 #: application/views/partials/report-zero-state-card.phtml:19
 #: application/views/partials/report-zero-state.phtml:48
@@ -19873,29 +19896,21 @@ msgstr "Không có dòng nào khớp với tìm kiếm của bạn."
 msgid "Clear search"
 msgstr "Xóa tìm kiếm"
 
-#: application/views/partials/shipment-response-report.phtml:380
+#: application/views/partials/shipment-response-report.phtml:93
 msgid "By shipment"
 msgstr "Theo vòng ngoại kiểm"
 
-#: application/views/partials/shipment-response-report.phtml:381
+#: application/views/partials/shipment-response-report.phtml:94
 msgid "Click a shipment to list only its participants."
 msgstr ""
 "Nhấp vào một vòng ngoại kiểm để chỉ liệt kê các đơn vị tham gia của vòng đó."
 
-#: application/views/partials/shipment-response-report.phtml:423
-msgid "Location"
-msgstr "Địa điểm"
-
-#: application/views/partials/shipment-response-report.phtml:446
-msgid "All shipments in the date range"
-msgstr "Tất cả vòng ngoại kiểm trong phạm vi ngày"
-
-#: application/views/partials/shipment-response-report.phtml:539
+#: application/views/partials/shipment-response-report.phtml:206
 #: application/views/partials/shipments-report-grid.phtml:449
 msgid "Loading breakdown…"
 msgstr "Đang tải phân tích chi tiết…"
 
-#: application/views/partials/shipment-response-report.phtml:544
+#: application/views/partials/shipment-response-report.phtml:211
 #: application/views/partials/shipments-report-grid.phtml:454
 msgid "Failed to load breakdown. Please try again."
 msgstr "Không thể tải phân tích chi tiết. Vui lòng thử lại."
@@ -23019,14 +23034,6 @@ msgstr "Điểm vòng ngoại kiểm của đơn vị tham gia trong Chương tr
 msgid "Participant Shipment Score for SARS-CoV-2 Scheme"
 msgstr "Điểm vòng ngoại kiểm của đơn vị tham gia trong Chương trình SARS-CoV-2"
 
-#: application/views/scripts/participant/dashboard.phtml:334
-#: application/views/scripts/participant/dashboard.phtml:363
-#: application/views/scripts/participant/dashboard.phtml:393
-#: application/views/scripts/participant/dashboard.phtml:422
-#: application/views/scripts/participant/dashboard.phtml:451
-msgid "Performance"
-msgstr "Kết quả thực hiện"
-
 #: application/views/scripts/participant/dashboard.phtml:469
 msgid "Schemes Overview"
 msgstr "Tổng quan về các chương trình"
@@ -23208,10 +23215,6 @@ msgid ""
 msgstr ""
 "Loại tệp không hợp lệ. Chỉ cho phép PDF, DOC, DOCX, XLS, XLSX, JPG, JPEG và "
 "PNG."
-
-#: application/views/scripts/participant/participant-performance.phtml:146
-msgid "Region Wise Participant Performance Report For"
-msgstr "Báo cáo kết quả hoạt động của các đơn vị tham gia theo khu vực cho"
 
 #: application/views/scripts/participant/password.phtml:27
 msgid "Confirm Your Account"
@@ -24694,10 +24697,6 @@ msgstr "Tương ứng với RR n (%)"
 msgid "Concordance"
 msgstr "Sự phù hợp"
 
-#: scheduled-jobs/report-layouts/participant-layouts/vietnam/dts.phtml:574
-msgid "Not evaluated"
-msgstr "Chưa được đánh giá"
-
 #: scheduled-jobs/report-layouts/participant-layouts/vietnam/dts.phtml:826
 msgid "Sample(s)"
 msgstr "Mẫu"
@@ -24750,6 +24749,10 @@ msgstr "Số lượng đơn vị tham gia"
 #: scheduled-jobs/report-layouts/summary-layouts/default/dts.phtml:190
 msgid "# of Valid Responses"
 msgstr "Số lượng phản hồi hợp lệ"
+
+#: scheduled-jobs/report-layouts/summary-layouts/default/dts.phtml:191
+msgid "Average Score"
+msgstr "Điểm Trung bình"
 
 #: scheduled-jobs/report-layouts/summary-layouts/default/dts.phtml:208
 #: scheduled-jobs/report-layouts/summary-layouts/vietnam/dts.phtml:544
@@ -24970,6 +24973,21 @@ msgstr ""
 #: scheduled-jobs/report-layouts/summary-layouts/vietnam/dts.phtml:854
 msgid "No participants"
 msgstr "Không có đơn vị tham gia"
+
+#~ msgid "View script for controlle"
+#~ msgstr "Xem mã nguồn cho controlle"
+
+#~ msgid "ParticipantTrends"
+#~ msgstr "Xu hướng của đơn vị tham gia"
+
+#~ msgid "and script/action name"
+#~ msgstr "và tên kịch bản/hành động"
+
+#~ msgid "ParticipantTrendsRegionWiseExport"
+#~ msgstr "Xu hướng của đơn vị tham gia theo khu vực"
+
+#~ msgid "Region Wise Participant Performance Report For"
+#~ msgstr "Báo cáo kết quả hoạt động của các đơn vị tham gia theo khu vực cho"
 
 #~ msgid "Please select the report type"
 #~ msgstr "Vui lòng chọn loại báo cáo"

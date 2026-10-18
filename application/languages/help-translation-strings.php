@@ -93,6 +93,8 @@ _('dts');
 _('DTS (HIV Serology) Settings');
 // admin/enrollments-add#tags
 _('dual-list');
+// admin/reports-participant-performance#summary
+_('Each participant\'s results across shipments, with pass rate, failures and average score');
 // admin/eid-assay-add#tags, admin/eid-assay#tags
 _('early-infant-diagnosis');
 // admin/distributions-edit#tags, admin/participants-edit#tags, admin/testkit-edit#tags, admin/vl-assay-edit#tags
@@ -135,6 +137,8 @@ _('Every shipment with its responses, pass rate, status and downloads');
 _('excel');
 // admin/eid-assay-add#tags, admin/eid-assay#tags
 _('extraction');
+// admin/reports-participant-performance#tags
+_('failures');
 // admin/home-config#tags
 _('faq');
 // admin/enrollments-add#tags
@@ -201,15 +205,17 @@ _('overview');
 _('panel');
 // admin/data-managers#tags
 _('participant-login');
+// admin/reports-participant-performance#title
+_('Participant Performance Report');
 // admin/reports-participant-response#title
 _('Participant Response Report');
-// admin/email-participants#tags, admin/enrollments-add#tags, admin/enrollments#tags, admin/evaluate-shipment#tags, admin/participants-add#tags, admin/participants-bulk-import#tags, admin/participants-edit#tags, admin/participants-manager-map#tags, admin/participants#tags, admin/reports-participant-response#tags, admin/reports-shipment-response#tags, admin/shipment-enroll#tags
+// admin/email-participants#tags, admin/enrollments-add#tags, admin/enrollments#tags, admin/evaluate-shipment#tags, admin/participants-add#tags, admin/participants-bulk-import#tags, admin/participants-edit#tags, admin/participants-manager-map#tags, admin/participants#tags, admin/reports-participant-performance#tags, admin/reports-participant-response#tags, admin/reports-shipment-response#tags, admin/shipment-enroll#tags
 _('participants');
 // admin/participants#title
 _('Participants');
 // admin/reports-participant-trends#title
 _('Participant Trends');
-// admin/reports-participant-response#tags, admin/reports-participant-trends#tags, admin/reports-shipment-response#tags
+// admin/reports-participant-performance#tags, admin/reports-participant-response#tags, admin/reports-participant-trends#tags, admin/reports-shipment-response#tags
 _('pass rate');
 // admin/data-managers#tags
 _('password');
@@ -219,7 +225,7 @@ _('pdf');
 _('PDF Report Settings');
 // admin/users#summary
 _('People who can log in to the admin side of ePT');
-// admin/reports-participant-trends#tags
+// admin/reports-participant-performance#tags, admin/reports-participant-trends#tags
 _('performance');
 // admin/eid-assay#tags, admin/vl-assay#tags
 _('platform');
@@ -245,7 +251,7 @@ _('re-evaluate');
 _('regions');
 // admin/vl-assay-edit#summary
 _('Rename a Viral Load assay / platform');
-// admin/evaluate#tags, admin/report-config#tags, admin/reports-distribution#tags, admin/reports-finalize#tags, admin/reports-participant-response#tags, admin/reports-participant-trends#tags, admin/reports-shipment-response#tags, admin/reports-shipments#tags
+// admin/evaluate#tags, admin/report-config#tags, admin/reports-distribution#tags, admin/reports-finalize#tags, admin/reports-participant-performance#tags, admin/reports-participant-response#tags, admin/reports-participant-trends#tags, admin/reports-shipment-response#tags, admin/reports-shipments#tags
 _('reports');
 // admin/reports-participant-response#summary
 _('Response and pass rates by region, district, network tier, affiliation or enrolled program');
@@ -263,6 +269,8 @@ _('scheme');
 _('schemes');
 // admin/evaluate#summary
 _('Score participant responses, then generate and finalize reports');
+// admin/reports-participant-performance#tags
+_('scores');
 // admin/dts-settings#tags, admin/tb-settings#tags, admin/vl-settings#tags
 _('scoring');
 // admin/vl-settings#summary

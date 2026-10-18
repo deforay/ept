@@ -25,13 +25,6 @@ class ParticipantController extends Zend_Controller_Action
             ->addActionContext('get-datamanager-names', 'html')
             ->addActionContext('get-participant', 'html')
             ->addActionContext('delete-participant', 'html')
-            ->addActionContext('participant-performance', 'html')
-            ->addActionContext('participant-performance-export-pdf', 'html')
-            ->addActionContext('aberrant-test-results', 'html')
-            ->addActionContext('participant-performance-timeliness-barchart', 'html')
-            ->addActionContext('participant-performance-export', 'html')
-            ->addActionContext('region-wise-participant-report', 'html')
-            ->addActionContext('participant-performance-region-wise-export', 'html')
             ->addActionContext('shipment-response-report', 'html')
             ->addActionContext('participant-response', 'html')
             ->addActionContext('shipments-reports', 'html')
@@ -67,12 +60,8 @@ class ParticipantController extends Zend_Controller_Action
         'response-report-group-shipments',
         'response-report-export',
         'participant-performance',
+        'participant-performance-data',
         'participant-performance-export',
-        'participant-performance-export-pdf',
-        'participant-performance-region-wise-export',
-        'participant-performance-timeliness-barchart',
-        'aberrant-test-results',
-        'region-wise-participant-report',
         'shipment-response-report',
         'participant-response',
         'response-report-shipments',
@@ -836,93 +825,25 @@ class ParticipantController extends Zend_Controller_Action
     {
         $this->_helper->layout()->activeMenu = 'ptcc-reports';
         $this->_helper->layout()->activeSubMenu = 'participant-performance-reports';
-        /** @var Zend_Controller_Request_Http $request */
-        $request = $this->getRequest();
-        if ($request->isPost()) {
-            $params = $this->getAllParams();
-            $reportService = new Application_Service_Reports();
-            $response = $reportService->getParticipantPerformanceReport($params);
-            $this->view->response = $response;
-        }
+        $participants = new Application_Service_Participants();
         $scheme = new Application_Service_Schemes();
         $this->view->schemes = $scheme->getAllSchemes();
-        if (isset($_COOKIE['did']) && $_COOKIE['did'] != '' && $_COOKIE['did'] != null && $_COOKIE['did'] != 'NULL') {
-            $shipmentService = new Application_Service_Shipments();
-            $this->view->shipmentDetails = $data = $shipmentService->getShipment($_COOKIE['did']);
-            $this->view->schemeDetails = $scheme->getScheme($data['scheme_type']);
-        }
+        $this->view->countries = $participants->getParticipantCountriesList();
+        $this->view->regions = $participants->getAllParticipantRegion();
+        $this->view->states = $participants->getAllParticipantStates();
+        $this->view->districts = $participants->getAllParticipantDistricts();
     }
 
-    public function participantPerformanceTimelinessBarchartAction()
+    public function participantPerformanceDataAction()
     {
         $reportService = new Application_Service_Reports();
-        /** @var Zend_Controller_Request_Http $request */
-        $request = $this->getRequest();
-        if ($request->isPost()) {
-            $params = $this->getAllParams();
-            $this->view->result = $reportService->getChartInfo($params);
-        }
-    }
-
-    public function aberrantTestResultsAction()
-    {
-        $reportService = new Application_Service_Reports();
-        /** @var Zend_Controller_Request_Http $request */
-        $request = $this->getRequest();
-        if ($request->isPost()) {
-            $params = $this->getAllParams();
-            $this->view->result = $reportService->getAberrantChartInfo($params);
-        }
-    }
-
-    public function participantPerformanceExportPdfAction()
-    {
-        $reportService = new Application_Service_Reports();
-        /** @var Zend_Controller_Request_Http $request */
-        $request = $this->getRequest();
-        if ($request->isPost()) {
-            $params = $this->getAllParams();
-            $this->view->header = $reportService->getReportConfigValue('report-header');
-            $this->view->logo = $reportService->getReportConfigValue('logo');
-            $this->view->logoRight = $reportService->getReportConfigValue('logo-right');
-            $this->view->result = $reportService->exportParticipantTrendsReportInPdf();
-            $this->view->dateRange = $params['dateRange'];
-            $this->view->shipmentName = $params['shipmentName'];
-        }
+        $this->_helper->json($reportService->getParticipantPerformance($this->getAllParams()));
     }
 
     public function participantPerformanceExportAction()
     {
         $reportService = new Application_Service_Reports();
-        /** @var Zend_Controller_Request_Http $request */
-        $request = $this->getRequest();
-        if ($request->isPost()) {
-            $params = $this->getAllParams();
-            $this->view->exported = $reportService->exportParticipantPerformanceReport($params);
-        }
-    }
-
-    public function regionWiseParticipantReportAction()
-    {
-        /** @var Zend_Controller_Request_Http $request */
-        $request = $this->getRequest();
-        if ($request->isPost()) {
-            $params = $this->getAllParams();
-            $reportService = new Application_Service_Reports();
-            $response = $reportService->getParticipantPerformanceRegionWiseReport($params);
-            $this->view->response = $response;
-        }
-    }
-
-    public function participantPerformanceRegionWiseExportAction()
-    {
-        $reportService = new Application_Service_Reports();
-        /** @var Zend_Controller_Request_Http $request */
-        $request = $this->getRequest();
-        if ($request->isPost()) {
-            $params = $this->getAllParams();
-            $this->view->exported = $reportService->exportParticipantPerformanceRegionReport($params);
-        }
+        $this->_helper->json(['file' => $reportService->exportParticipantPerformance($this->getAllParams())]);
     }
 
     public function shipmentResponseReportAction()

@@ -18,237 +18,11 @@
  */
 $srrStatsUrl ??= null;
 include APPLICATION_PATH . '/views/partials/report-zero-state.phtml';
-
-$locationFilters = [
-	['country', "Country", array_map(fn ($c) => [$c['id'], ucwords((string) $c['iso_name'])], $this->countries ?? [])],
-	['region', "Region", array_map(fn ($r) => [$r['region'], $r['region']], $this->regions ?? [])],
-	['state', "Province", array_map(fn ($r) => [$r['state'], $r['state']], $this->states ?? [])],
-	['district', "District", array_map(fn ($r) => [$r['district'], $r['district']], $this->districts ?? [])],
-];
+include APPLICATION_PATH . '/views/partials/report-table-styles.phtml';
+$rfShipmentsUrl = $srrShipmentsUrl;
+include APPLICATION_PATH . '/views/partials/report-filters.phtml';
 ?>
-<link href="<?php echo $this->baseUrl('css/select2.css'); ?>" rel="stylesheet" />
-<script type="text/javascript" src="<?php echo $this->baseUrl('js/moment.min.js'); ?>"></script>
 <style>
-	.srr-filters {
-		display: flex;
-		flex-wrap: wrap;
-		align-items: flex-end;
-		gap: 12px 16px;
-		margin-top: 12px;
-		padding: 14px 16px;
-		border: 1px solid #e3e8ef;
-		border-radius: 6px;
-		background: #fafbfc;
-	}
-
-	.srr-filters .srr-field {
-		flex: 1 1 180px;
-		min-width: 0;
-	}
-
-	.srr-filters .srr-field.is-wide {
-		flex-basis: 320px;
-	}
-
-	.srr-filters label {
-		display: block;
-		margin-bottom: 4px;
-		font-size: 13px;
-		font-weight: 600;
-		color: #333;
-	}
-
-	.srr-filters .srr-break {
-		flex-basis: 100%;
-		height: 0;
-	}
-
-	.srr-section-head {
-		display: flex;
-		flex-wrap: wrap;
-		align-items: center;
-		justify-content: space-between;
-		gap: 8px 16px;
-		margin: 24px 0 8px;
-	}
-
-	.srr-section-head h4 {
-		margin: 0;
-		font-size: 15px;
-		font-weight: 600;
-		color: #333;
-	}
-
-	.srr-section-head .srr-hint {
-		font-size: 12px;
-		font-weight: 400;
-		color: #8a94a3;
-	}
-
-	.srr-tools {
-		display: flex;
-		flex-wrap: wrap;
-		align-items: center;
-		gap: 8px;
-	}
-
-	/* A light segmented control, so it reads as a filter and not as actions. */
-	.srr-response {
-		display: inline-flex;
-		border: 1px solid #cfdae8;
-		border-radius: 6px;
-		background: #fff;
-		overflow: hidden;
-	}
-
-	.srr-response button {
-		padding: 4px 12px;
-		border: 0;
-		border-left: 1px solid #e3e8ef;
-		background: transparent;
-		color: #2f4f7a;
-		font-size: 12.5px;
-		line-height: 20px;
-	}
-
-	.srr-response button:first-child {
-		border-left: 0;
-	}
-
-	.srr-response button:hover {
-		background: #f5f8fc;
-	}
-
-	.srr-response button.active {
-		background: #4a6fa5;
-		color: #fff;
-	}
-
-	.srr-tools .srr-download {
-		padding: 4px 12px;
-		border: 1px solid #cfdae8;
-		border-radius: 6px;
-		background: #f5f8fc;
-		color: #2f4f7a;
-		font-size: 12.5px;
-		line-height: 20px;
-	}
-
-	.srr-tools .srr-download:hover {
-		border-color: #4a6fa5;
-		background: #4a6fa5;
-		color: #fff;
-	}
-
-	.srr-table {
-		width: 100% !important;
-	}
-
-	/* IDs, so these beat the centred headers and middle-aligned cells of the
-	   .data-list card. Headers line up with the left edge of their values, and
-	   every value starts on the same line as the shipment code. */
-	#responseSummaryTable > thead > tr > th,
-	#participantTable > thead > tr > th {
-		text-align: left;
-		white-space: nowrap;
-	}
-
-	#responseSummaryTable > tbody > tr > td,
-	#participantTable > tbody > tr > td {
-		vertical-align: top;
-	}
-
-	#responseSummaryTable a.count-link.is-bad {
-		color: #a33a3a;
-		font-weight: 600;
-	}
-
-	.srr-table > tbody > tr > td,
-	.srr-table > tbody > tr.odd > td,
-	.srr-table > tbody > tr > td.sorting_1 {
-		background-color: #fff;
-	}
-
-	.srr-table > tbody > tr:hover > td {
-		background-color: #f7f9fc;
-	}
-
-	.srr-table .cell-main {
-		display: block;
-	}
-
-	.srr-table .cell-sub {
-		display: block;
-		margin-top: 1px;
-		font-size: 11.5px;
-		line-height: 1.4;
-		color: #98a1ad;
-	}
-
-	.srr-table .cell-muted {
-		font-size: 13px;
-		color: #8a94a3;
-	}
-
-	.srr-table .rate-figure {
-		display: block;
-		white-space: nowrap;
-	}
-
-	.srr-table .rate-bar {
-		display: block;
-		width: 90px;
-		height: 4px;
-		margin: 4px 0 3px;
-		border-radius: 2px;
-		background: #e8edf3;
-		overflow: hidden;
-	}
-
-	.srr-table .rate-bar > span {
-		display: block;
-		height: 100%;
-		background: #3b6fb6;
-	}
-
-	.srr-table .rate-bar.is-pass > span {
-		background: #2e8b57;
-	}
-
-	/* The shipment list is short, so it needs no pager unless it runs long. */
-	#responseSummaryTable_wrapper .dataTables_paginate.is-single-page {
-		display: none;
-	}
-
-	.srr-table .resp-pill {
-		display: inline-block;
-		padding: 2px 9px;
-		border-radius: 999px;
-		font-size: 12px;
-		font-weight: 600;
-		white-space: nowrap;
-	}
-
-	.resp-pill.is-ok {
-		background: #e1f3e8;
-		color: #22693f;
-	}
-
-	.resp-pill.is-warn {
-		background: #fff3d6;
-		color: #8a5a00;
-	}
-
-	.resp-pill.is-bad {
-		background: #fbe4e4;
-		color: #a33a3a;
-	}
-
-	.resp-pill.is-muted {
-		background: #eef0f3;
-		color: #5b6573;
-	}
-
 	#responseSummaryTable tr.is-picked > td {
 		background-color: #eef2f7;
 	}
@@ -313,75 +87,14 @@ $locationFilters = [
 		box-shadow: 0 1px 3px rgba(0, 0, 0, .1);
 	}
 
-	@media print {
-		.dontPrint,
-		.srr-tools,
-		.dataTables_filter,
-		.dataTables_info {
-			display: none;
-		}
-	}
 </style>
 
-<div class="filter-panel js-filter-panel">
-	<button type="button" class="btn btn-default btn-sm js-filter-toggle" aria-expanded="false"
-		data-expand-text="<?= $this->htmlTranslate("Expand Filters"); ?>"
-		data-collapse-text="<?= $this->htmlTranslate("Collapse Filters"); ?>">
-		<i class="icon-filter"></i> <span class="js-filter-toggle-text"><?= $this->htmlTranslate("Expand Filters"); ?></span>
-		<span class="label label-info js-filter-count" style="display:none;">0</span>
-		<span class="caret"></span>
-	</button>
-	<div class="js-filter-summary"></div>
-	<div class="js-filter-body">
-		<div class="srr-filters">
-			<div class="srr-field">
-				<label for="dateRange"><?= $this->htmlTranslate("Shipment Date"); ?></label>
-				<input type="text" id="dateRange" name="dateRange" class="form-control input-sm" readonly="readonly"
-					style="background: #fff" placeholder="<?= $this->htmlTranslate("All dates"); ?>"
-					data-filter-label="<?= $this->htmlTranslate("Shipment Date"); ?>" />
-			</div>
-			<div class="srr-field">
-				<label for="scheme"><?= $this->htmlTranslate("Scheme"); ?></label>
-				<select id="scheme" name="scheme" class="form-control input-sm"
-					data-filter-label="<?= $this->htmlTranslate("Scheme"); ?>">
-					<option value=""><?= $this->htmlTranslate("All schemes"); ?></option>
-					<?php foreach ($this->schemes as $scheme) { ?>
-						<option value="<?= $this->escape($scheme['scheme_id']); ?>"><?= $this->escape($scheme['scheme_name']); ?></option>
-					<?php } ?>
-				</select>
-			</div>
-			<div class="srr-field is-wide">
-				<label for="shipmentId"><?= $this->htmlTranslate("Shipment"); ?></label>
-				<select id="shipmentId" name="shipmentId" multiple="multiple" style="width:100%;"
-					data-filter-label="<?= $this->htmlTranslate("Shipment"); ?>">
-				</select>
-			</div>
-			<div class="srr-break"></div>
-			<?php foreach ($locationFilters as [$id, $label, $options]) {
-				if (empty($options)) {
-					continue;
-				} ?>
-				<div class="srr-field">
-					<label for="<?= $id; ?>"><?= $this->htmlTranslate($label); ?></label>
-					<select id="<?= $id; ?>" name="<?= $id; ?>" class="js-srr-location" style="width:100%;"
-						data-filter-label="<?= $this->htmlTranslate($label); ?>">
-						<option value=""></option>
-						<?php foreach ($options as [$value, $text]) { ?>
-							<option value="<?= $this->escape($value); ?>"><?= $this->escape($text); ?></option>
-						<?php } ?>
-					</select>
-				</div>
-			<?php } ?>
-		</div>
-	</div><!-- /.js-filter-body -->
-</div><!-- /.filter-panel -->
-
-<div class="srr-section-head">
+<div class="rpt-section-head">
 	<h4><?= $this->htmlTranslate("By shipment"); ?>
-		<span class="srr-hint"><?= $this->htmlTranslate("Click a shipment to list only its participants."); ?></span>
+		<span class="rpt-hint"><?= $this->htmlTranslate("Click a shipment to list only its participants."); ?></span>
 	</h4>
 </div>
-<table class="table table-hover srr-table" id="responseSummaryTable">
+<table class="table table-hover rpt-table" id="responseSummaryTable">
 	<thead>
 		<tr>
 			<th scope="col"><?= $this->htmlTranslate("Shipment"); ?></th>
@@ -400,10 +113,10 @@ $locationFilters = [
 	</tbody>
 </table>
 
-<div class="srr-section-head srr-participants">
+<div class="rpt-section-head srr-participants">
 	<h4><?= $this->htmlTranslate("Participants"); ?></h4>
-	<div class="srr-tools">
-		<div class="srr-response" role="group" aria-label="<?= $this->htmlTranslate("Response"); ?>">
+	<div class="rpt-tools">
+		<div class="rpt-seg srr-response" role="group" aria-label="<?= $this->htmlTranslate("Response"); ?>">
 			<button type="button" class="active" data-response=""><?= $this->htmlTranslate("All"); ?></button>
 			<button type="button" data-response="responded"><?= $this->htmlTranslate("Responded"); ?></button>
 			<button type="button" data-response="late"><?= $this->htmlTranslate("Late"); ?></button>
@@ -411,12 +124,12 @@ $locationFilters = [
 			<button type="button" data-response="noresponse"><?= $this->htmlTranslate("Not responded"); ?></button>
 			<button type="button" data-response="failed"><?= $this->htmlTranslate("Failed"); ?></button>
 		</div>
-		<button type="button" class="srr-download" onclick="exportParticipantData()">
+		<button type="button" class="rpt-download" onclick="exportParticipantData()">
 			<i class="icon-download-alt"></i> <?= $this->htmlTranslate("Download Excel"); ?>
 		</button>
 	</div>
 </div>
-<table class="table table-hover srr-table" id="participantTable">
+<table class="table table-hover rpt-table" id="participantTable">
 	<thead>
 		<tr>
 			<th scope="col"><?= $this->htmlTranslate("Participant"); ?></th>
@@ -434,58 +147,12 @@ $locationFilters = [
 	</tbody>
 </table>
 
-<script type="text/javascript" src="<?php echo $this->assetUrl('js/daterangepicker.js'); ?>"></script>
-<script type="text/javascript" src="<?php echo $this->baseUrl('js/select2.min.js'); ?>"></script>
 <script type="text/javascript">
 	var summaryTable = null;
 	var participantTable = null;
 	var responseFilter = '';
 
 	$(function () {
-		$('#shipmentId').select2({
-			placeholder: "<?= $this->jsTranslate("All shipments in the date range"); ?>"
-		});
-		$('.js-srr-location').each(function () {
-			$(this).select2({
-				placeholder: "<?= $this->jsTranslate("All"); ?>",
-				allowClear: true
-			});
-		});
-
-		$('#dateRange').daterangepicker({
-			locale: {
-				cancelLabel: "<?= $this->jsTranslate("Clear"); ?>",
-				format: 'DD-MMM-YYYY',
-				separator: ' to '
-			},
-			autoApply: true,
-			showDropdowns: true,
-			alwaysShowCalendars: true,
-			// Some programmes run only one or two rounds a year, so three years
-			// shows enough of them.
-			startDate: moment().subtract(3, 'year'),
-			endDate: moment(),
-			maxDate: moment(),
-			ranges: eptDateRanges()
-		}).on('apply.daterangepicker', function () {
-			$(this).trigger('change');
-		}).on('cancel.daterangepicker', function () {
-			$(this).val('').trigger('change');
-		});
-
-		// The date range and the scheme decide which shipments can be picked,
-		// so they reload the Shipment list before the report redraws.
-		$('#dateRange, #scheme').on('change', function () {
-			if (summaryTable) {
-				loadShipments().always(redraw);
-			}
-		});
-		$('#shipmentId, .js-srr-location').on('change', function () {
-			if (summaryTable) {
-				redraw();
-			}
-		});
-
 		$('.srr-response').on('click', 'button', function () {
 			setResponseFilter($(this).data('response'));
 			if (participantTable) {
@@ -547,72 +214,22 @@ $locationFilters = [
 	});
 	<?php } ?>
 
-	// Several filters can change in one go (clearing a filter chip, say), so
-	// redraw once.
-	var redrawTimer = null;
-	function redraw() {
-		clearTimeout(redrawTimer);
-		redrawTimer = setTimeout(function () {
-			showSchemeColumn();
-			summaryTable.fnDraw();
-			participantTable.fnDraw();
-		}, 50);
-	}
+	reportFilters.onChange(function () {
+		showSchemeColumn();
+		summaryTable.fnDraw();
+		participantTable.fnDraw();
+	});
 
 	// With one scheme picked, every row has the same scheme.
 	function showSchemeColumn() {
 		summaryTable.fnSetColumnVis(1, !$('#scheme').val(), false);
 	}
 
-	function dateRangeParams() {
-		var range = ($('#dateRange').val() || '').split(' to ');
-		return { startDate: range[0] || '', endDate: range[1] || '' };
-	}
-
-	function loadShipments() {
-		var params = dateRangeParams();
-		params.scheme = $('#scheme').val();
-		return $.post("<?= $srrShipmentsUrl; ?>", params, function (shipments) {
-			var picked = $('#shipmentId').val() || [];
-			var $select = $('#shipmentId').empty();
-			var kept = [];
-			$.each(shipments || [], function (i, shipment) {
-				$select.append($('<option/>').val(shipment.id).text(shipment.text));
-				if (picked.indexOf(String(shipment.id)) !== -1) {
-					kept.push(String(shipment.id));
-				}
-			});
-			// Keep the picked shipments that are still in range. The chips read
-			// the select, so set the value the plain way too.
-			$select.val(kept);
-			$select.select2('val', kept);
-		}, 'json');
-	}
-
-	function reportParams(aoData) {
-		var dates = dateRangeParams();
-		aoData.push({ "name": "startDate", "value": dates.startDate });
-		aoData.push({ "name": "endDate", "value": dates.endDate });
-		aoData.push({ "name": "scheme", "value": $('#scheme').val() });
-		$.each($('#shipmentId').val() || [], function (i, sid) {
-			aoData.push({ "name": "shipmentId[]", "value": sid });
-		});
-		$('.js-srr-location').each(function () {
-			aoData.push({ "name": this.name, "value": $(this).val() || '' });
-		});
-	}
-
 	function postJson(sSource, aoData, fnCallback) {
 		$.ajax({ "dataType": 'json', "type": "POST", "url": sSource, "data": aoData, "success": fnCallback });
 	}
 
-	// The first draw waits for the page to load, after collapsible-filters.phtml
-	// has pre-selected the only scheme, so the report loads once with it.
-	$(window).on('load', function () {
-		loadShipments().always(drawTables);
-	});
-
-	function drawTables() {
+	reportFilters.ready(function () {
 		summaryTable = $('#responseSummaryTable').dataTable({
 			"oLanguage": reportZeroState.dataTableLanguage(),
 			"bAutoWidth": false,
@@ -632,7 +249,7 @@ $locationFilters = [
 			"bProcessing": true,
 			"bServerSide": true,
 			"sAjaxSource": "<?= $srrSummaryUrl; ?>",
-			"fnServerParams": reportParams,
+			"fnServerParams": reportFilters.params,
 			"fnServerData": postJson,
 			"fnDrawCallback": function (settings) {
 				$('#responseSummaryTable_wrapper .dataTables_paginate')
@@ -666,12 +283,12 @@ $locationFilters = [
 			"bServerSide": true,
 			"sAjaxSource": "<?= $srrParticipantsUrl; ?>",
 			"fnServerParams": function (aoData) {
-				reportParams(aoData);
+				reportFilters.params(aoData);
 				aoData.push({ "name": "response", "value": responseFilter });
 			},
 			"fnServerData": postJson
 		});
-	}
+	});
 
 	function exportParticipantData() {
 		$.blockUI();

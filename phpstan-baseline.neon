@@ -43,12 +43,6 @@ parameters:
 			path: application/controllers/LogController.php
 
 		-
-			message: '#^Method Application_Service_Reports\:\:exportParticipantPerformanceReport\(\) invoked with 1 parameter, 0 required\.$#'
-			identifier: arguments.count
-			count: 1
-			path: application/controllers/ParticipantController.php
-
-		-
 			message: '#^Property ParticipantController\:\:\$noOfItems is never read, only written\.$#'
 			identifier: property.onlyWritten
 			count: 1
@@ -1674,12 +1668,6 @@ parameters:
 			identifier: return.void
 			count: 1
 			path: application/modules/reports/controllers/FinalizeController.php
-
-		-
-			message: '#^Method Reports_ParticipantPerformanceController\:\:init\(\) with return type void returns null but should not return anything\.$#'
-			identifier: return.void
-			count: 1
-			path: application/modules/reports/controllers/ParticipantPerformanceController.php
 
 		-
 			message: '#^Call to an undefined method Application_Service_Reports\:\:exportLabPerformanceReportDetails\(\)\.$#'
