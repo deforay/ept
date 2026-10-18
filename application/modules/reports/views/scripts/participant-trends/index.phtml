@@ -1,7 +1,7 @@
-<?php include APPLICATION_PATH . '/views/partials/report-empty-state.phtml'; ?>
+<?php include APPLICATION_PATH . '/views/partials/report-zero-state.phtml'; ?>
 <script type="text/javascript">
     $(function () {
-        reportEmptyState.placeholder(".js-filter-panel");
+        reportZeroState.showAfter(".js-filter-panel", "start");
     });
 </script>
 <style>
@@ -90,7 +90,7 @@
     <tr>
         <td>
             <input type="text" id="dateRange" name="dateRange" class="form-control input-sm" readonly="readonly"
-                style="background: #fff" placeholder="Click here to pick a Date Range"
+                style="background: #fff" placeholder="<?= $this->htmlTranslate("Click here to pick a Date Range"); ?>"
                 data-filter-label="<?= $this->htmlTranslate("Date Range"); ?>" />
         </td>
         <td>
@@ -266,7 +266,7 @@ if ((isset($this->shipmentDetails['shipment_code']) && $this->shipmentDetails['s
             return false;
         }
         if ($("#dateRange").val() == "") {
-            alert('Please pick a date range to fetch shipment list');
+            alert("<?= $this->jsTranslate("Please pick a date range to fetch shipment list"); ?>");
             $('#dateRange').focus();
             return false;
         }
@@ -284,7 +284,7 @@ if ((isset($this->shipmentDetails['shipment_code']) && $this->shipmentDetails['s
     }
 
     function drawTable() {
-        reportEmptyState.hidePlaceholder();
+        reportZeroState.hide();
         var dateRange = $("#dateRange").val();
         var _dateRange = dateRange.split(" to ");
         startDate = _dateRange[0];
@@ -294,7 +294,7 @@ if ((isset($this->shipmentDetails['shipment_code']) && $this->shipmentDetails['s
         $.blockUI;
 
         oTable = $('#shipmentTable').dataTable({
-            "oLanguage": reportEmptyState.dataTableLanguage(),
+            "oLanguage": reportZeroState.dataTableLanguage(),
             "bPaginate": paginate,
             "bJQueryUI": false,
             "bAutoWidth": false,
@@ -448,7 +448,7 @@ if ((isset($this->shipmentDetails['shipment_code']) && $this->shipmentDetails['s
         },
             function (data) {
                 if (data == "" || data == null) {
-                    alert('Unable to generate download');
+                    alert("<?= $this->jsTranslate("Unable to generate download"); ?>");
                 } else {
                     document.location.href = '/temporary/' + data;
                 }
@@ -468,7 +468,7 @@ if ((isset($this->shipmentDetails['shipment_code']) && $this->shipmentDetails['s
         },
             function (data) {
                 if (data == "" || data == null) {
-                    alert('Unable to generate download');
+                    alert("<?= $this->jsTranslate("Unable to generate download"); ?>");
                 } else {
                     $('#exportPdf').attr('href', '/temporary/' + data);
                     $('#exportPdf').removeClass('hide');
@@ -478,7 +478,7 @@ if ((isset($this->shipmentDetails['shipment_code']) && $this->shipmentDetails['s
 
     function shipmetRegionReport(shipmentId) {
         if (startDate == "" || endDate == "" || $("#scheme").val() == "" || $("#scheme").val() == null || $("#scheme").val() == undefined) {
-            alert("Please pick date range and Scheme Type to proceed");
+            alert("<?= $this->jsTranslate("Please pick date range and Scheme Type to proceed"); ?>");
             return false;
         }
         currentHighlighted = shipmentId;
@@ -488,7 +488,7 @@ if ((isset($this->shipmentDetails['shipment_code']) && $this->shipmentDetails['s
 
         $.blockUI;
         $('#regionTable').dataTable({
-            "oLanguage": reportEmptyState.dataTableLanguage(),
+            "oLanguage": reportZeroState.dataTableLanguage(),
             "bPaginate": paginate,
             "bJQueryUI": false,
             "bAutoWidth": false,
@@ -572,7 +572,7 @@ if ((isset($this->shipmentDetails['shipment_code']) && $this->shipmentDetails['s
     function regionDetails(scheme, date, code) {
 
         $("#regionReportHeader").removeClass("hide");
-        $("#regionHeading").html("Region Wise Participant Performance Report For <strong>" + scheme + " - " + code + " ( " + date + " ) </strong>");
+        $("#regionHeading").html("<?= $this->jsTranslate("Region Wise Participant Performance Report For"); ?> <strong>" + scheme + " - " + code + " ( " + date + " ) </strong>");
         $("#selectedScheme").val(scheme);
         $("#selectedDate").val(date);
         $("#selectedCode").val(code);
@@ -596,7 +596,7 @@ if ((isset($this->shipmentDetails['shipment_code']) && $this->shipmentDetails['s
         },
             function (data) {
                 if (data == "" || data == null) {
-                    alert('Unable to generate download');
+                    alert("<?= $this->jsTranslate("Unable to generate download"); ?>");
                 } else {
                     document.location.href = '/temporary/' + data;
                 }

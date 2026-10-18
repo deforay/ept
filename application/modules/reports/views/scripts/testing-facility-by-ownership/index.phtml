@@ -57,7 +57,7 @@
     <tr>
         <td>
             <input type="text" id="dateRange" name="dateRange" class="form-control input-sm" readonly="readonly"
-                style="background: #fff" placeholder="Click here to pick a Date Range"
+                style="background: #fff" placeholder="<?= $this->htmlTranslate("Click here to pick a Date Range"); ?>"
                 data-filter-label="<?= $this->htmlTranslate("Date Range"); ?>" />
         </td>
         <td>
@@ -85,8 +85,13 @@
     </div><!-- /.js-filter-body -->
 </div><!-- /.filter-panel -->
 
+<?php include APPLICATION_PATH . '/views/partials/report-zero-state.phtml'; ?>
+<script type="text/javascript">
+    $(function () {
+        reportZeroState.show("#reportContainer", "start");
+    });
+</script>
 <div id="reportContainer">
-    <!-- Report will be loaded here -->
 </div>
 
 <div id="loadingMessage" class="hide text-center" style="margin: 20px 0;">
@@ -181,7 +186,7 @@
                 console.error("AJAX request failed:", xhr.responseText);
                 console.error("Status:", status);
                 console.error("Error:", error);
-                alert("Error loading report data: " + error + "\nStatus: " + status);
+                alert("<?= $this->jsTranslate("Error loading report data:"); ?> " + error + "\n<?= $this->jsTranslate("Status:"); ?> " + status);
                 $("#loadingMessage").addClass("hide");
                 $.unblockUI();
             }
@@ -198,7 +203,7 @@
 
     function exportReport() {
         if (!hasReportData) {
-            alert("No data available to export. Please generate a report first.");
+            alert("<?= $this->jsTranslate("No data available to export. Please generate a report first."); ?>");
             return;
         }
 
@@ -216,12 +221,12 @@
                     if (data && data.trim() !== "") {
                         document.location.href = '/temporary/' + data;
                     } else {
-                        alert("Error generating export file.");
+                        alert("<?= $this->jsTranslate("Error generating export file."); ?>");
                     }
                     $.unblockUI();
                 })
             .fail(function() {
-                alert("Error exporting data. Please try again.");
+                alert("<?= $this->jsTranslate("Error exporting data. Please try again."); ?>");
                 $.unblockUI();
             });
     }

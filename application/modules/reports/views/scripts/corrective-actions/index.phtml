@@ -1,7 +1,7 @@
-<?php include APPLICATION_PATH . '/views/partials/report-empty-state.phtml'; ?>
+<?php include APPLICATION_PATH . '/views/partials/report-zero-state.phtml'; ?>
 <script type="text/javascript">
     $(function () {
-        reportEmptyState.placeholder(".js-filter-panel");
+        reportZeroState.showAfter(".js-filter-panel", "start");
     });
 </script>
 <link rel="stylesheet" href="<?php echo $this->baseUrl('css/daterangepicker.css'); ?>" type="text/css" media="all">
@@ -37,7 +37,7 @@
     <tr>
         <td>
             <input type="text" id="dateRange" name="dateRange" onchange="" class="form-control input-sm"
-                readonly="readonly" style="background: #fff" placeholder="Click here to pick a Date Range"
+                readonly="readonly" style="background: #fff" placeholder="<?= $this->htmlTranslate("Click here to pick a Date Range"); ?>"
                 data-filter-label="<?= $this->htmlTranslate("Date Range"); ?>" />
         </td>
         <td>
@@ -145,7 +145,7 @@
             return false;
         }
         if ($('#dateRange').val() == "") {
-            alert('Please pick a date range to fetch shipment list');
+            alert("<?= $this->jsTranslate("Please pick a date range to fetch shipment list"); ?>");
             $('#dateRange').focus();
             return false;
         }
@@ -177,7 +177,7 @@
     }
 
     function drawTable() {
-        reportEmptyState.hidePlaceholder();
+        reportZeroState.hide();
         var dateRange = $("#dateRange").val();
         var _dateRange = dateRange.split(" to ");
         startDate = _dateRange[0];
@@ -188,7 +188,7 @@
         $("#shipmentTable").removeClass("hide");
         $.blockUI;
         oTable = $('#shipmentTable').dataTable({
-            "oLanguage": reportEmptyState.dataTableLanguage(),
+            "oLanguage": reportZeroState.dataTableLanguage(),
             "bPaginate": paginate,
             "bJQueryUI": false,
             "bAutoWidth": false,
@@ -239,10 +239,10 @@
                             $(".totalCountTd").html("");
                             $("#totalTable").addClass("hide");
                         } else {
-                            $("#totalShippedDiv").html("<strong>Total shipped</strong> : " + json.totalShipped);
-                            $("#totalRespDiv").html("<strong>Total number of responses</strong> : " + json.totalResponses);
-                            $("#validRespDiv").html("<strong>Total number of valid responses</strong>: " + json.validResponses);
-                            $("#avgScoreDiv").html("<strong>Average score </strong>: " + json.averageScore);
+                            $("#totalShippedDiv").html("<strong><?= $this->htmlTranslate("Total shipped"); ?></strong> : " + json.totalShipped);
+                            $("#totalRespDiv").html("<strong><?= $this->htmlTranslate("Total number of responses"); ?></strong> : " + json.totalResponses);
+                            $("#validRespDiv").html("<strong><?= $this->htmlTranslate("Total number of valid responses"); ?></strong>: " + json.validResponses);
+                            $("#avgScoreDiv").html("<strong><?= $this->htmlTranslate("Average score"); ?> </strong>: " + json.averageScore);
                         }
                         fnCallback(json);
                     }
@@ -258,7 +258,7 @@
 
     function correctiveExcel() {
         if (startDate == "" || endDate == "" || $("#scheme").val() == "" || $("#scheme").val() == null || $("#scheme").val() == undefined) {
-            alert("Please pick date range and Scheme Type to proceed");
+            alert("<?= $this->jsTranslate("Please pick date range and Scheme Type to proceed"); ?>");
             return false;
         } else {
             var dateRange = $("#dateRange").val();
@@ -281,7 +281,7 @@
             },
                 function (data) {
                     if (data == "" || data == null) {
-                        alert('Unable to generate download');
+                        alert("<?= $this->jsTranslate("Unable to generate download"); ?>");
                     } else {
                         document.location.href = '/temporary/' + data;
                     }
@@ -310,7 +310,7 @@
         },
             function (data) {
                 if (data == "" || data == null) {
-                    alert('Unable to generate download');
+                    alert("<?= $this->jsTranslate("Unable to generate download"); ?>");
                 } else {
                     $('#exportPdf').attr('href', '/temporary/' + data);
                     $('#exportPdf').removeClass('hide');

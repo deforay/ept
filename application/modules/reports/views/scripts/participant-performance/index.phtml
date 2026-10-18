@@ -1,7 +1,7 @@
-<?php include APPLICATION_PATH . '/views/partials/report-empty-state.phtml'; ?>
+<?php include APPLICATION_PATH . '/views/partials/report-zero-state.phtml'; ?>
 <script type="text/javascript">
     $(function () {
-        reportEmptyState.show("#performance", reportEmptyState.readyText);
+        reportZeroState.show("#performance", "start");
     });
 </script>
 <div style=" width: 124%;margin-left: -12%; ">
@@ -90,7 +90,7 @@
         </tr>
             <tr>
                 <td>
-                    <input type="text" id="dateRange" name="dateRange" class="form-control input-sm" readonly="readonly" style="background: #fff" placeholder="Click here to pick a Date Range" data-filter-label="<?= $this->htmlTranslate("Date Range"); ?>" />
+                    <input type="text" id="dateRange" name="dateRange" class="form-control input-sm" readonly="readonly" style="background: #fff" placeholder="<?= $this->htmlTranslate("Click here to pick a Date Range"); ?>" data-filter-label="<?= $this->htmlTranslate("Date Range"); ?>" />
                 </td>
                 <td>
                     <select id="scheme" name="scheme" class="form-control input-sm" onchange="getShipmentCodes(this.value)" data-filter-label="<?= $this->htmlTranslate("Scheme"); ?>">
@@ -162,7 +162,7 @@
             return false;
         }
         if ($("#dateRange").val() == "") {
-            alert('Please pick a date range to fetch shipment list');
+            alert("<?= $this->jsTranslate("Please pick a date range to fetch shipment list"); ?>");
             $('#dateRange').focus();
             return false;
         }
@@ -209,7 +209,7 @@
             },
             function(data) {
                 if (data == "" || data == null) {
-                    alert('Unable to generate download');
+                    alert("<?= $this->jsTranslate("Unable to generate download"); ?>");
                 } else {
                     document.location.href = '/temporary/' + data;
                 }

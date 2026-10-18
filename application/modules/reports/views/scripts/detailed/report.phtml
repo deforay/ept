@@ -23,7 +23,7 @@ else{
 }
 
 if (empty($data)) {
-  include APPLICATION_PATH . '/views/partials/report-empty-state-card.phtml';
+  include APPLICATION_PATH . '/views/partials/report-zero-state-card.phtml';
   return;
 }
 
@@ -66,7 +66,7 @@ if (empty($data)) {
       background-color: #e6e6e6;
     }
   </style>
- <button id="exportExcelBtn" class="btn btn-success btn-sm" style="margin: 10px; float: right;">Export to Excel</button>
+ <button id="exportExcelBtn" class="btn btn-success btn-sm" style="margin: 10px; float: right;"><?= $this->htmlTranslate("Export to Excel"); ?></button>
 
 
 <div class="">
@@ -102,7 +102,7 @@ foreach ($reportTypes as $key => $values) {
 }
 
 // Totals row
-echo "<tr><th scope='col'>Total (Participants by Test Event)</th>";
+echo "<tr><th scope='col'>" . $this->htmlTranslate("Total (Participants by Test Event)") . "</th>";
 $grandTotal = 0;
 foreach ($shipmentCodes as $code) {
     $total = 0;

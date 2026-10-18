@@ -1,7 +1,7 @@
-<?php include APPLICATION_PATH . '/views/partials/report-empty-state.phtml'; ?>
+<?php include APPLICATION_PATH . '/views/partials/report-zero-state.phtml'; ?>
 <script type="text/javascript">
     $(function () {
-        reportEmptyState.placeholder(".js-filter-panel");
+        reportZeroState.showAfter(".js-filter-panel", "start");
     });
 </script>
 <style>
@@ -89,7 +89,7 @@
 	<div class="filterCell cellNarrow">
 		<div class="filterLabel"><?= $this->translate->_("Date Range"); ?></div>
 		<input type="text" id="dateRange" name="dateRange" class="form-control input-sm" readonly="readonly"
-			style="background: #fff" placeholder="Click here to pick a Date Range"
+			style="background: #fff" placeholder="<?= $this->htmlTranslate("Click here to pick a Date Range"); ?>"
 			data-filter-label="<?= $this->htmlTranslate("Date Range"); ?>" />
 	</div>
 	<div class="filterCell cellWide">
@@ -112,7 +112,7 @@
 	<?php if (isset($this->countries) && !empty($this->countries)) { ?>
 		<div class="filterCell cellNarrow">
 			<div class="filterLabel"><?= $this->translate->_("Country"); ?></div>
-			<select class="form-control select2" id="country" name="country" title="Please select the country to filter"
+			<select class="form-control select2" id="country" name="country" title="<?= $this->htmlTranslate("Please select the country to filter"); ?>"
 				data-filter-label="<?= $this->htmlTranslate("Country"); ?>"
 				onchange="getOptions('participant', 'country', 'region', this.value, 'region');">
 				<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
@@ -125,7 +125,7 @@
 	<?php if (isset($this->regions) && !empty($this->regions)) { ?>
 		<div class="filterCell">
 			<div class="filterLabel"><?= $this->translate->_("Region"); ?></div>
-			<select class="form-control select2" id="region" name="region" title="Please select the region to filter"
+			<select class="form-control select2" id="region" name="region" title="<?= $this->htmlTranslate("Please select the region to filter"); ?>"
 				data-filter-label="<?= $this->htmlTranslate("Region"); ?>"
 				onchange="getOptions('participant', 'region', 'state', this.value, 'state');">
 				<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
@@ -135,7 +135,7 @@
 	<?php if (isset($this->states) && !empty($this->states)) { ?>
 		<div class="filterCell">
 			<div class="filterLabel"><?= $this->translate->_("Province"); ?></div>
-			<select class="form-control select2" id="state" name="state" title="Please select the province to filter"
+			<select class="form-control select2" id="state" name="state" title="<?= $this->htmlTranslate("Please select the province to filter"); ?>"
 				data-filter-label="<?= $this->htmlTranslate("Province"); ?>"
 				onchange="getOptions('participant', 'state', 'district', this.value, 'district');">
 				<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
@@ -146,7 +146,7 @@
 		<div class="filterCell">
 			<div class="filterLabel"><?= $this->translate->_("District"); ?></div>
 			<select class="form-control select2" id="district" name="district"
-				title="Please select the district to filter"
+				title="<?= $this->htmlTranslate("Please select the district to filter"); ?>"
 				data-filter-label="<?= $this->htmlTranslate("District"); ?>">
 				<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
 			</select>
@@ -272,7 +272,7 @@
 	});
 
 	function drawTable() {
-		reportEmptyState.hidePlaceholder();
+		reportZeroState.hide();
 		var dateRange = $("#dateRange").val();
 		var _dateRange = dateRange.split(" to ");
 		startDate = _dateRange[0];
@@ -282,7 +282,7 @@
 		$(".participantTable").removeClass("hide");
 		$("#shipmentTable_wrapper, #participantTable_wrapper").removeClass("hide");
 		oTable = $('#shipmentTable').dataTable({
-			"oLanguage": reportEmptyState.dataTableLanguage(),
+			"oLanguage": reportZeroState.dataTableLanguage(),
 			"bPaginate": paginate,
 			"bJQueryUI": false,
 			"bAutoWidth": false,
@@ -365,7 +365,7 @@
 		});
 
 		aTable = $('#participantTable').dataTable({
-			"oLanguage": reportEmptyState.dataTableLanguage(),
+			"oLanguage": reportZeroState.dataTableLanguage(),
 			"bPaginate": paginate,
 			"bJQueryUI": false,
 			"bAutoWidth": false,
@@ -469,7 +469,7 @@
 				// The date range and scheme matched no shipments, so there is nothing to pick.
 				$("#shipmentTable, .participantTable").addClass("hide");
 				$("#shipmentTable_wrapper, #participantTable_wrapper").addClass("hide");
-				reportEmptyState.placeholder(".js-filter-panel", <?= json_encode($this->translate->_("There are no shipments for the selected date range and scheme. Try a different date range or scheme.")); ?>);
+				reportZeroState.showAfter(".js-filter-panel", "noShipments");
 				return;
 			}
 			alert("<?= $this->jsTranslate("Please select a shipment"); ?>");

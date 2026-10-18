@@ -1,4 +1,4 @@
-<?php include APPLICATION_PATH . '/views/partials/report-empty-state.phtml'; ?>
+<?php include APPLICATION_PATH . '/views/partials/report-zero-state.phtml'; ?>
 <style>
 	@media print {
 
@@ -511,7 +511,7 @@
 
 	function getDrawable() {
 		/* if ($("#dateRange").val() == '') {
-			alert("Please select a date range");
+			alert("<?= $this->jsTranslate("Please select a date range"); ?>");
 			return false;
 		} else { */
 		$.blockUI();
@@ -528,7 +528,7 @@
 		$("#shipmentTable").removeClass("hide");
 		$.blockUI;
 		oTable = $('#shipmentTable').dataTable({
-			"oLanguage": reportEmptyState.dataTableLanguage(),
+			"oLanguage": reportZeroState.dataTableLanguage(),
 			"bJQueryUI": false,
 			"bAutoWidth": false,
 			"bInfo": true,

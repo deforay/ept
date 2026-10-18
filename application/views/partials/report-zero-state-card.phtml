@@ -1,0 +1,49 @@
+<?php
+
+/**
+ * Server-rendered zero state for report ajax partials. It matches the cards
+ * from views/partials/report-zero-state.phtml.
+ *
+ * Optional variables, set before including:
+ *
+ *   $zeroState      empty (default), noShipments or pending
+ *   $zeroStateText  replaces the hint line. Pass a string that is already translated.
+ *
+ * Styles live in public/css/common.css.
+ */
+$zeroState ??= 'empty';
+$zeroStates = [
+    'empty' => [
+        'icon' => 'icon-search',
+        'title' => $this->htmlTranslate("No results for these filters"),
+        'text' => $this->htmlTranslate("Try a wider date range or different filters."),
+        'action' => true,
+    ],
+    'noShipments' => [
+        'icon' => 'icon-calendar',
+        'title' => $this->htmlTranslate("No shipments in this date range"),
+        'text' => $this->htmlTranslate("Try a wider date range or a different scheme."),
+        'action' => true,
+    ],
+    'pending' => [
+        'icon' => 'icon-time',
+        'title' => $this->htmlTranslate("Results aren't ready yet"),
+        'text' => $this->htmlTranslate("These responses haven't been evaluated. They appear here after evaluation."),
+        'action' => false,
+    ],
+];
+$state = $zeroStates[$zeroState] ?? $zeroStates['empty'];
+$text = isset($zeroStateText) ? $this->escape($zeroStateText) : $state['text'];
+?>
+<div class="report-zero-state report-zero-state-<?= $this->escape($zeroState); ?>" role="status">
+    <i class="<?= $state['icon']; ?> report-zero-state-icon" aria-hidden="true"></i>
+    <div class="report-zero-state-body">
+        <h4><?= $state['title']; ?></h4>
+        <p><?= $text; ?></p>
+    </div>
+    <?php if ($state['action']) { ?>
+        <button type="button" class="btn btn-default btn-sm report-zero-state-action js-zero-state-open-filters">
+            <i class="icon-filter" aria-hidden="true"></i> <?= $this->htmlTranslate("Change filters"); ?>
+        </button>
+    <?php } ?>
+</div>

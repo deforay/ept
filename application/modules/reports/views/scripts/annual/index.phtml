@@ -1,7 +1,7 @@
-<?php include APPLICATION_PATH . '/views/partials/report-empty-state.phtml'; ?>
+<?php include APPLICATION_PATH . '/views/partials/report-zero-state.phtml'; ?>
 <script type="text/javascript">
     $(function () {
-        reportEmptyState.show("#summaryDiv", reportEmptyState.readyText);
+        reportZeroState.show("#summaryDiv", "start");
     });
 </script>
 <link rel="stylesheet" href="<?php echo $this->baseUrl('css/daterangepicker.css'); ?>" type="text/css" media="all">
@@ -17,7 +17,7 @@
 
 	<tr>
 		<td style="width:20%">
-			<input type="text" id="dateRange" name="dateRange" class="form-control input-sm" readonly="readonly" style="background: #fff" placeholder="Click here to pick the Date Range" />
+			<input type="text" id="dateRange" name="dateRange" class="form-control input-sm" readonly="readonly" style="background: #fff" placeholder="<?= $this->htmlTranslate("Click here to pick the Date Range"); ?>" />
 		</td>
 		<td style="width:20%">
 			<select id="scheme" name="scheme" class="form-control input-sm" multiple="multiple" onchange="getShipmentCodes()" style="width:100%;">
@@ -53,8 +53,8 @@
 </div>
 <div align="left" style="margin-top: 3em;display: none;" class="col-lg-12 certificate-btn">
 	<div style="width: 74%;display: flex;">
-		<input type="text" style="width:30%;margin-right: 34px;" class="form-control input-sm" name="certificateName" id="certificateName" placeholder="Enter certificate name" title="Please enter certificate name to filter">
-		<a href="javascript:void(0);" onclick="genarateCertificate(this);" class="btn-sm btn btn-info certificate-anchor"><i class="icon-certificate"></i> Generate Certificates</a>
+		<input type="text" style="width:30%;margin-right: 34px;" class="form-control input-sm" name="certificateName" id="certificateName" placeholder="<?= $this->htmlTranslate("Enter certificate name"); ?>" title="<?= $this->htmlTranslate("Please enter certificate name to filter"); ?>">
+		<a href="javascript:void(0);" onclick="genarateCertificate(this);" class="btn-sm btn btn-info certificate-anchor"><i class="icon-certificate"></i> <?= $this->htmlTranslate("Generate Certificates"); ?></a>
 	</div>
 </div>
 
@@ -62,7 +62,7 @@
 <div id="certificateProgressSection" class="col-lg-12" style="display: none; margin-top: 2em;">
 	<div id="certificateProgressIndicator" style="display: none;">
 		<div class="alert alert-info">
-			<i class="icon-spinner icon-spin"></i> <span id="progressMessage">Generating certificates...</span>
+			<i class="icon-spinner icon-spin"></i> <span id="progressMessage"><?= $this->htmlTranslate("Generating certificates..."); ?></span>
 		</div>
 	</div>
 
@@ -73,19 +73,19 @@
 	</div>
 
 	<div id="certificateStatsSection" style="display: none;">
-		<h4>Certificate Generation Summary</h4>
+		<h4><?= $this->htmlTranslate("Certificate Generation Summary"); ?></h4>
 		<table class="table table-bordered table-striped" style="width: 50%;">
 			<tbody>
 				<tr>
-					<td><strong>Excellence Certificates</strong></td>
+					<td><strong><?= $this->htmlTranslate("Excellence Certificates"); ?></strong></td>
 					<td id="excellenceCount">0</td>
 				</tr>
 				<tr>
-					<td><strong>Participation Certificates</strong></td>
+					<td><strong><?= $this->htmlTranslate("Participation Certificates"); ?></strong></td>
 					<td id="participationCount">0</td>
 				</tr>
 				<tr>
-					<td><strong>Skipped (No certificates)</strong></td>
+					<td><strong><?= $this->htmlTranslate("Skipped (No certificates)"); ?></strong></td>
 					<td id="skippedCount">0</td>
 				</tr>
 			</tbody>
@@ -102,7 +102,7 @@
 
 	<div id="certificateDistributionSection" style="display: none;">
 		<div class="alert alert-success">
-			<i class="icon-ok"></i> <span id="distributionMessage">Certificates approved! Distribution has been scheduled and will begin shortly.</span>
+			<i class="icon-ok"></i> <span id="distributionMessage"><?= $this->htmlTranslate("Certificates approved! Distribution has been scheduled and will begin shortly."); ?></span>
 		</div>
 	</div>
 </div>
@@ -193,7 +193,7 @@
 
 	function getAnnualReport() {
 		if (startDate == "" || endDate == "") {
-			alert('Please pick a date range to fetch shipment list');
+			alert("<?= $this->jsTranslate("Please pick a date range to fetch shipment list"); ?>");
 			return false;
 		}
 		if (shipmentCode) {
@@ -211,13 +211,13 @@
 				function(data) {
 					data = $.parseJSON(data);
 					if (!data.fileName) {
-						reportEmptyState.show("#summaryDiv");
+						reportZeroState.show("#summaryDiv", "empty");
 						$(".certificate-btn").hide();
 						$.unblockUI();
 						return;
 					}
 					if (data.fileName) {
-						$("#summaryDiv").html("&nbsp;&nbsp;<a href='<?php echo $this->baseUrl("temporary/annual-reports/"); ?>" + data.fileName + "' class='btn btn-info btn-sm' target='_BLANK' style='margin-top:10px;float:left;clear:both;'><i class='icon-file-text'></i> Download " + data.fileName + " </a>");
+						$("#summaryDiv").html("&nbsp;&nbsp;<a href='<?php echo $this->baseUrl("temporary/annual-reports/"); ?>" + data.fileName + "' class='btn btn-info btn-sm' target='_BLANK' style='margin-top:10px;float:left;clear:both;'><i class='icon-file-text'></i> <?= $this->jsTranslate("Download"); ?> " + data.fileName + " </a>");
 						$(".certificate-btn").hide();
 						$(".certificate-anchor").attr("disabled", true);
 					}
@@ -228,7 +228,7 @@
 					$.unblockUI();
 				});
 		} else {
-			reportEmptyState.show("#summaryDiv");
+			reportZeroState.show("#summaryDiv", "noShipments");
 			$(".certificate-btn").hide();
 		}
 	}
@@ -251,7 +251,7 @@
 				function(data) {
 					$.unblockUI();
 					if (data == 9999999) {
-						alert("Please ensure the template files for the selected scheme(s) are available and readable");
+						alert("<?= $this->jsTranslate("Please ensure the template files for the selected scheme(s) are available and readable"); ?>");
 					} else if (data > 0) {
 						// Store batch_id and start polling
 						currentBatchId = parseInt(data);
@@ -261,17 +261,17 @@
 						resetCertificateUI();
 						$("#certificateProgressSection").show();
 						$("#certificateProgressIndicator").show();
-						$("#progressMessage").text("Generating certificates...");
+						$("#progressMessage").text("<?= $this->jsTranslate("Generating certificates..."); ?>");
 
 						// Start polling for status
 						startStatusPolling();
 					} else {
-						alert("No matched shipment for selected date range.");
+						alert("<?= $this->jsTranslate("No matched shipment for selected date range."); ?>");
 					}
 
 				});
 		} else {
-			alert("Please enter the certificate name to proceed")
+			alert("<?= $this->jsTranslate("Please enter the certificate name to proceed"); ?>")
 		}
 	}
 
@@ -399,11 +399,11 @@
 
 	function approveCertificates() {
 		if (!currentBatchId) {
-			alert("No batch selected");
+			alert("<?= $this->jsTranslate("No batch selected"); ?>");
 			return;
 		}
 
-		if (!confirm("Are you sure you want to approve and distribute these certificates?")) {
+		if (!confirm("<?= $this->jsTranslate("Are you sure you want to approve and distribute these certificates?"); ?>")) {
 			return;
 		}
 
@@ -421,7 +421,7 @@
 			}
 		}).fail(function() {
 			$.unblockUI();
-			alert("Failed to approve certificates. Please try again.");
+			alert("<?= $this->jsTranslate("Failed to approve certificates. Please try again."); ?>");
 		});
 	}
 </script>

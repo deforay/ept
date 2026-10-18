@@ -64,7 +64,7 @@
     }
 </style>
 <legend>
-    <h3>VL Sample Analysis</h3>
+    <h3><?= $this->htmlTranslate("VL Sample Analysis"); ?></h3>
 </legend>
 <div class="filter-panel js-filter-panel">
     <button type="button" class="btn btn-default btn-sm js-filter-toggle" aria-expanded="false"
@@ -79,21 +79,21 @@
 <table style="margin:20px 0;" class="table table-bordered">
     <tr>
         <td style="width:150px;text-align: center;font-weight:bold;">
-            Pick a Date Range
+            <?= $this->htmlTranslate("Pick a Date Range"); ?>
         </td>
         <td style="width:200px;text-align: center;font-weight:bold;">
-            Select Shipment
+            <?= $this->htmlTranslate("Select Shipment"); ?>
         </td>
-        <td class="dontPrint" style="width:115px;text-align: center;font-weight:bold;">Action</td>
+        <td class="dontPrint" style="width:115px;text-align: center;font-weight:bold;"><?= $this->htmlTranslate("Action"); ?></td>
     </tr>
     <tr>
         <td>
             <input type="text" id="dateRange" name="dateRange" class="form-control input-sm" readonly="readonly"
-                style="background: #fff" placeholder="Click here to pick a Date Range"
-                data-filter-label="Date Range" />
+                style="background: #fff" placeholder="<?= $this->htmlTranslate("Click here to pick a Date Range"); ?>"
+                data-filter-label="<?= $this->htmlTranslate("Date Range"); ?>" />
         </td>
         <td>
-            <select id="shipmentId" name="shipmentId" class="form-control input-sm" data-filter-label="Shipment">
+            <select id="shipmentId" name="shipmentId" class="form-control input-sm" data-filter-label="<?= $this->htmlTranslate("Shipment"); ?>">
                 <option value=''>-- Select Date Range to populate this list --</option>
             </select>
         </td>
@@ -102,8 +102,8 @@
                 class="btn btn-danger btn-sm"
                 onclick="document.location.href = document.location"><span><?= $this->translate->_("Reset"); ?></span></button>
             <button class="btn btn-info btn-sm hide" id="exportExcel" onclick="shipmentExcel()"><span><i
-                        class="icon-download"></i> Excel</span></button> <a href="#" class="btn btn-primary btn-sm hide"
-                id="exportPdf" target="_blank"><i class="icon-download"></i> PDF</a>
+                        class="icon-download"></i> <?= $this->htmlTranslate("Excel"); ?></span></button> <a href="#" class="btn btn-primary btn-sm hide"
+                id="exportPdf" target="_blank"><i class="icon-download"></i> <?= $this->htmlTranslate("PDF"); ?></a>
         </td>
     </tr>
 </table>
@@ -111,30 +111,27 @@
 </div><!-- /.filter-panel -->
 <br />
 
-<div id="vlPlaceholder" class="report-empty-state">
-    <i class="icon-bar-chart report-empty-icon" id="vlPlaceholderIcon"></i>
-    <h4 id="vlPlaceholderTitle"><?= $this->translate->_("No data for selected filters"); ?></h4>
-    <p id="vlPlaceholderText"><?= $this->translate->_("Pick a date range and a shipment, then click Get Report to view the VL sample analysis."); ?></p>
-</div>
+<?php include APPLICATION_PATH . '/views/partials/report-zero-state.phtml'; ?>
+<div id="vlZeroState"></div>
 
 <div id="shipmentchart"></div>
 
 <br />
 
 <div class="vl-assay-section hide" id="vlAssaySection">
-    <h4 id="vlAssayDistributionsTitle" class="hide">VL Response Distribution by Assay</h4>
+    <h4 id="vlAssayDistributionsTitle" class="hide"><?= $this->htmlTranslate("VL Response Distribution by Assay"); ?></h4>
     <div id="vlScatterAxisToggle" class="vl-assay-meta dontPrint hide" style="margin-bottom:6px;">
-        <span style="margin-right:6px;">X-axis</span>
+        <span style="margin-right:6px;"><?= $this->htmlTranslate("X-axis"); ?></span>
         <div class="vl-toggle" id="vlScatterAxisMode">
-            <button type="button" class="vl-toggle-btn active" data-mode="participants">Participants</button>
+            <button type="button" class="vl-toggle-btn active" data-mode="participants"><?= $this->htmlTranslate("Participants"); ?></button>
             <button type="button" class="vl-toggle-btn" data-mode="log10">log10 VL</button>
         </div>
     </div>
     <div id="vlAssayDistributions" class="vl-assay-grid-wrapper">
-        <div class="vl-assay-meta">Select a shipment and click Get Report to view distributions.</div>
+        <div class="vl-assay-meta"><?= $this->htmlTranslate("Select a shipment and click Get Report to view distributions."); ?></div>
     </div>
     <div id="vlAssayDistributionsNote" class="vl-assay-meta hide" style="margin-top:6px;">
-        Note: Each chart aggregates all log10 reported viral loads for an assay across all samples in the shipment. Values outside assay sample ranges are excluded; 0 values are counted as Undetectable.
+        <?= $this->htmlTranslate("Note: Each chart aggregates all log10 reported viral loads for an assay across all samples in the shipment. Values outside assay sample ranges are excluded; 0 values are counted as Undetectable."); ?>
     </div>
 </div>
 
@@ -145,10 +142,10 @@
     id="shipmentTable">
     <thead>
         <tr>
-            <th scope="col" style="text-align: center;">Participant Name</th>
-            <th scope="col" style="text-align: center;">Score</th>
-            <th scope="col" style="text-align: center;">Shipment Test Date</th>
-            <th scope="col" style="text-align: center;">Shipment Receipt Date</th>
+            <th scope="col" style="text-align: center;"><?= $this->htmlTranslate("Participant Name"); ?></th>
+            <th scope="col" style="text-align: center;"><?= $this->htmlTranslate("Score"); ?></th>
+            <th scope="col" style="text-align: center;"><?= $this->htmlTranslate("Shipment Test Date"); ?></th>
+            <th scope="col" style="text-align: center;"><?= $this->htmlTranslate("Shipment Receipt Date"); ?></th>
             <!--<th scope="col" style="text-align: center;">Total Valid Responses<br/><small>(Total - Excluded)</small></th>-->
         </tr>
     </thead>
@@ -167,36 +164,24 @@
     var endDate = "";
     var paginate = true;
     var barChart = false;
-    var placeholderText = {
-        noShipments: {
-            icon: 'icon-search',
-            title: <?= json_encode($this->translate->_("No data for selected filters")); ?>,
-            text: <?= json_encode($this->translate->_("There are no VL shipments in the selected date range. Please pick a different date range.")); ?>
-        },
-        ready: {
-            icon: 'icon-bar-chart',
-            title: <?= json_encode($this->translate->_("No data for selected filters")); ?>,
-            text: <?= json_encode($this->translate->_("Pick a date range and a shipment, then click Get Report to view the VL sample analysis.")); ?>
-        }
-    };
+    var noVlShipmentsText = "<?= $this->jsTranslate("There are no VL shipments in this date range. Try a wider date range."); ?>";
 
-    function showNoDataMessage(state) {
-        $("#vlPlaceholderIcon").attr("class", state.icon + " report-empty-icon");
-        $("#vlPlaceholderTitle").text(state.title);
-        $("#vlPlaceholderText").text(state.text);
-        $("#vlPlaceholder").removeClass("hide");
+    function showZeroState(state, text) {
+        reportZeroState.show("#vlZeroState", state, text);
+        $("#vlZeroState").removeClass("hide");
         $("#shipmentchart").html('');
         $("#vlAssaySection").addClass("hide");
         $("#shipmentTableWrapper").addClass("hide");
         $("#exportExcel, #exportPdf").addClass("hide");
     }
 
-    function hideNoDataMessage() {
-        $("#vlPlaceholder").addClass("hide");
+    function hideZeroState() {
+        $("#vlZeroState").addClass("hide");
         $("#vlAssaySection").removeClass("hide");
         $("#shipmentTableWrapper").removeClass("hide");
     }
     $(document).ready(function () {
+        showZeroState("start");
         var defaultStart = moment().subtract(24, 'month');
         var defaultEnd = moment();
         $('#dateRange').daterangepicker({
@@ -235,7 +220,7 @@
     function getShipmentCodes() {
         schemeType = 'vl';
         if (startDate == "" || endDate == "") {
-            alert('Please pick a date range to fetch shipment list');
+            alert("<?= $this->jsTranslate("Please pick a date range to fetch shipment list"); ?>");
             $('#dateRange').focus();
             return false;
         }
@@ -250,11 +235,11 @@
                 if (data != 0) {
                     barChart = true;
                     $("#shipmentId").html(data);
-                    showNoDataMessage(placeholderText.ready);
+                    showZeroState("start");
                 } else {
-                    $("#shipmentId").html("<option value=''>-- No shipments found for this date range --</option>");
+                    $("#shipmentId").html("<option value=''>-- <?= $this->jsTranslate("No shipments in this date range"); ?> --</option>");
                     barChart = false;
-                    showNoDataMessage(placeholderText.noShipments);
+                    showZeroState("noShipments", noVlShipmentsText);
                 }
                 $.unblockUI();
             });
@@ -262,7 +247,7 @@
 
     function drawTable() {
         if ($("#dateRange").val() == "") {
-            alert("Please pick date range and shipment to proceed");
+            alert("<?= $this->jsTranslate("Please pick date range and shipment to proceed"); ?>");
             return false;
         } else {
             var dateRange = $("#dateRange").val();
@@ -271,10 +256,10 @@
             endDate = _dateRange[1];
 
             if (!barChart) {
-                showNoDataMessage(placeholderText.noShipments);
+                showZeroState("noShipments", noVlShipmentsText);
                 return false;
             }
-            hideNoDataMessage();
+            hideZeroState();
             $("#shipmentTable").removeClass("hide");
             $.blockUI;
             oTable = $('#shipmentTable').dataTable({

@@ -47,37 +47,76 @@ form[name$="ResponseForm"] #respond {
   display: block;
 }
 
-/* "No data for selected filters" placeholder card shared by the report pages
-   (see application/views/partials/report-empty-state.phtml). */
-.report-empty-state {
-  margin: 20px 0;
-  padding: 50px 20px;
+/* Zero states for the report pages: what a report shows when it has no rows
+   (see application/views/partials/report-zero-state.phtml). */
+.report-zero-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 16px 0;
+  padding: 32px 20px;
   text-align: center;
-  border: 2px dashed #c9d3e6;
+  border: 1px solid #e3e8ef;
   border-radius: 6px;
-  background: #f7f9fc;
+  background: #fafbfc;
   color: #555;
   white-space: normal;
 }
-.report-empty-state .report-empty-icon {
-  display: block;
-  margin-bottom: 14px;
-  font-size: 48px;
+.report-zero-state .report-zero-state-icon {
+  margin-bottom: 10px;
+  font-size: 32px;
   line-height: 1;
-  color: #3b5a9a;
+  color: #8a9bb8;
 }
-.report-empty-state h4 {
-  margin: 0 0 8px 0;
-  font-size: 18px;
+.report-zero-state h4 {
+  margin: 0 0 6px 0;
+  font-size: 16px;
   font-weight: 600;
   color: #333;
 }
-.report-empty-state p {
+.report-zero-state p {
+  max-width: 480px;
   margin: 0;
   font-size: 13px;
   color: #666;
 }
-/* Inside a DataTables empty row the card sits in a padded cell already. */
-td.dataTables_empty .report-empty-state {
+/* The filter button only shows on pages with the collapsible filter panel. */
+.report-zero-state .report-zero-state-action {
+  display: none;
+  margin-top: 14px;
+}
+.has-filter-panel .report-zero-state .report-zero-state-action {
+  display: inline-block;
+}
+/* Before a report runs, the zero state is a quiet hint, not a card. */
+.report-zero-state.report-zero-state-start {
+  flex-direction: row;
   margin: 8px 0;
+  padding: 10px 0;
+  text-align: left;
+  border: 0;
+  background: transparent;
+}
+.report-zero-state-start .report-zero-state-icon {
+  margin: 0 10px 0 0;
+  font-size: 16px;
+}
+.report-zero-state-start h4 {
+  margin: 0;
+  font-size: 14px;
+}
+.report-zero-state-start p {
+  max-width: none;
+}
+.report-zero-state-start .report-zero-state-action {
+  margin: 0 0 0 auto;
+}
+/* Inside a DataTables empty row the card sits in a padded cell already. */
+td.dataTables_empty .report-zero-state {
+  margin: 8px 0;
+  border: 0;
+}
+.report-zero-state-nomatch {
+  padding: 6px 0;
+  color: #666;
 }

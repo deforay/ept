@@ -1,0 +1,155 @@
+<?php
+
+/**
+ * Zero states for the report pages: what a report shows when it has no rows.
+ *
+ * Include once per page, before the page's own <script> block:
+ *
+ *   <?php include APPLICATION_PATH . '/views/partials/report-zero-state.phtml'; ?>
+ *
+ * It defines window.reportZeroState. Each call takes a state name:
+ *
+ *   start        the report has not been run yet
+ *   empty        the filters matched no rows
+ *   noShipments  the date range and scheme matched no shipments to pick from
+ *   pending      the shipment has responses, but none are evaluated yet
+ *
+ *   reportZeroState.html(state, [text])          -> card markup
+ *   reportZeroState.show(target, state, [text])  -> put the card into a container
+ *   reportZeroState.showAfter(after, state, [text]) -> show the card after an
+ *                                                   element, such as the filter panel
+ *   reportZeroState.hide()                       -> hide the card shown by showAfter
+ *   reportZeroState.dataTableLanguage([state])   -> oLanguage entries, so a DataTable
+ *                                                   with no rows shows the card
+ *
+ * [text] replaces the state's hint line. Pass a string that is already translated.
+ *
+ * A DataTable with an active search shows a one-line "no matching rows" message
+ * with a Clear search button instead of the card. The page needs no code for this.
+ *
+ * The cards carry a "Change filters" button that opens the collapsible filter
+ * panel (views/partials/collapsible-filters.phtml). The button only shows on
+ * pages that have that panel. The server-rendered twin of the card is
+ * views/partials/report-zero-state-card.phtml. Styles live in public/css/common.css.
+ */
+?>
+<script type="text/javascript">
+    window.reportZeroState = window.reportZeroState || (function () {
+        var states = {
+            start: {
+                icon: 'icon-filter',
+                title: "<?= $this->jsTranslate("Choose filters to see this report"); ?>",
+                text: "<?= $this->jsTranslate("Set the filters, then click Get Report."); ?>",
+                action: "<?= $this->jsTranslate("Open filters"); ?>"
+            },
+            empty: {
+                icon: 'icon-search',
+                title: "<?= $this->jsTranslate("No results for these filters"); ?>",
+                text: "<?= $this->jsTranslate("Try a wider date range or different filters."); ?>",
+                action: "<?= $this->jsTranslate("Change filters"); ?>"
+            },
+            noShipments: {
+                icon: 'icon-calendar',
+                title: "<?= $this->jsTranslate("No shipments in this date range"); ?>",
+                text: "<?= $this->jsTranslate("Try a wider date range or a different scheme."); ?>",
+                action: "<?= $this->jsTranslate("Change filters"); ?>"
+            },
+            pending: {
+                icon: 'icon-time',
+                title: "<?= $this->jsTranslate("Results aren't ready yet"); ?>",
+                text: "<?= $this->jsTranslate("These responses haven't been evaluated. They appear here after evaluation."); ?>",
+                action: ''
+            }
+        };
+        var noMatchText = "<?= $this->jsTranslate("No rows match your search."); ?>";
+        var clearSearchText = "<?= $this->jsTranslate("Clear search"); ?>";
+
+        function escapeHtml(value) {
+            return $('<div/>').text(value).html();
+        }
+
+        function html(name, text) {
+            var state = states[name] || states.empty;
+            var markup = '<div class="report-zero-state report-zero-state-' + escapeHtml(name || 'empty') + '" role="status">' +
+                '<i class="' + state.icon + ' report-zero-state-icon" aria-hidden="true"></i>' +
+                '<div class="report-zero-state-body">' +
+                '<h4>' + escapeHtml(state.title) + '</h4>' +
+                '<p>' + escapeHtml(text || state.text) + '</p>' +
+                '</div>';
+            if (state.action) {
+                markup += '<button type="button" class="btn btn-default btn-sm report-zero-state-action js-zero-state-open-filters">' +
+                    '<i class="icon-filter" aria-hidden="true"></i> ' + escapeHtml(state.action) + '</button>';
+            }
+            return markup + '</div>';
+        }
+
+        function isSearching(settings) {
+            if (settings.oPreviousSearch && settings.oPreviousSearch.sSearch) {
+                return true;
+            }
+            return $.grep(settings.aoPreSearchCols || [], function (col) {
+                return col && col.sSearch;
+            }).length > 0;
+        }
+
+        // The report endpoints do not agree on iTotalRecords, so DataTables cannot
+        // tell "no rows for these filters" from "no rows match the search". Check
+        // the search state on every draw instead.
+        $(document).on('draw.dt', function (e, settings) {
+            var $empty = $(settings.nTBody).find('td.dataTables_empty');
+            if (!$empty.length || !isSearching(settings)) {
+                return;
+            }
+            $empty.html('<div class="report-zero-state-nomatch" role="status">' +
+                '<span>' + escapeHtml(noMatchText) + '</span> ' +
+                '<button type="button" class="btn btn-link btn-sm js-zero-state-clear-search">' + escapeHtml(clearSearchText) + '</button>' +
+                '</div>');
+        });
+
+        $(document).on('click', '.js-zero-state-clear-search', function () {
+            var $table = $(this).closest('table');
+            var $wrapper = $table.closest('.dataTables_wrapper');
+            // Fire change on the column search boxes so bindColSearch() clears its
+            // own copy of the last value and refilters that column.
+            $table.find('thead .col-search').val('').trigger('change');
+            $wrapper.find('.dataTables_filter input').val('');
+            $table.DataTable().search('').draw();
+        });
+
+        $(document).on('click', '.js-zero-state-open-filters', function () {
+            var $panel = $('.js-filter-panel').first();
+            if (!$panel.hasClass('is-open')) {
+                $panel.find('.js-filter-toggle').trigger('click');
+            }
+            $('html, body').animate({ scrollTop: Math.max($panel.offset().top - 20, 0) }, 150);
+        });
+
+        // The filter button only makes sense on pages with the collapsible panel.
+        $(function () {
+            $('body').toggleClass('has-filter-panel', $('.js-filter-panel').length > 0);
+        });
+
+        return {
+            html: html,
+            show: function (target, name, text) {
+                $(target).html(html(name, text));
+            },
+            showAfter: function (after, name, text) {
+                var $holder = $('.js-report-zero-state');
+                if (!$holder.length) {
+                    $holder = $('<div class="js-report-zero-state"></div>').insertAfter(after);
+                }
+                $holder.html(html(name, text)).removeClass('hide');
+            },
+            hide: function () {
+                $('.js-report-zero-state').addClass('hide');
+            },
+            dataTableLanguage: function (name) {
+                return {
+                    "sEmptyTable": html(name || 'empty'),
+                    "sZeroRecords": html(name || 'empty')
+                };
+            }
+        };
+    })();
+</script>

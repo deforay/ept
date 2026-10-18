@@ -7,8 +7,9 @@ foreach ([0, 1, 2] as $seriesIndex) {
     }
 }
 if (!$hasResults) {
-    $emptyStateText = $this->translate->_("No VL responses have been evaluated for the selected shipment and date range yet.");
-    include APPLICATION_PATH . '/views/partials/report-empty-state-card.phtml';
+    $zeroState = 'pending';
+    $zeroStateText = $this->translate->_("VL responses for this shipment haven't been evaluated yet. They appear here after evaluation.");
+    include APPLICATION_PATH . '/views/partials/report-zero-state-card.phtml';
     return;
 } ?>
 <div id="container" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
