@@ -53,7 +53,7 @@ if (isset($this->autogeneratePtCode) && !empty($this->autogeneratePtCode) && $th
 
 <!-- Date-clash warning, shown with the deforay modal (showdefModal/hidedefModal). -->
 <div id="dateConflictModal" class="dialog">
-    <a href="javascript:void(0);" onClick="hidedefModal()" class="closeModal"></a>
+    <a href="javascript:void(0);" onClick="hidedefModal()" class="closeModal" aria-label="<?= $this->htmlTranslate("Close"); ?>" title="<?= $this->htmlTranslate("Close"); ?>"></a>
     <div class="modal-header">
         <h4 class="modal-title"><?= $this->htmlTranslate("Date already has a PT Survey"); ?></h4>
     </div>

@@ -2885,7 +2885,7 @@ class Application_Service_Evaluation
         }
 
         // Some layouts (e.g., Zimbabwe) don't use these analytics fields and computing them is expensive.
-        $includeAnalytics = !((string) $layout === 'zimbabwe');
+        $includeAnalytics = (string) $layout !== 'zimbabwe';
         $shipmentStatistics = [];
         $shipmentPerformance3 = [];
         if ($includeAnalytics) {

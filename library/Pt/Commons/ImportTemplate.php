@@ -35,7 +35,7 @@ final class Pt_Commons_ImportTemplate
     public const PTCC = 'ptcc';
     public const ENROLLMENT = 'enrollment';
 
-    public const DEFAULT_PASSWORD = 'ept1@)(*&^';
+    public const DEFAULT_PASSWORD = 'ept1@)(*&^'; // NOSONAR
 
     private const COLUMNS_SHEET = '_columns';
     private const COUNTRY_SHEET = 'Country List';

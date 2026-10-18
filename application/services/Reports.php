@@ -3944,7 +3944,6 @@ class Application_Service_Reports
                 $shipmentIdArray[] = $val['shipment_id'];
                 //$shipmentId[$val['scheme_type']][] = $val['shipment_id'];
                 $shipmentCodeArray[$val['scheme_type']][] = $val['shipment_code'];
-                $impShipmentId = implode(',', $shipmentIdArray);
             }
 
             $sQuery = $db->select()
@@ -3973,7 +3972,6 @@ class Application_Service_Reports
                 ->order('scheme_type ASC');
 
             if (isset($params['shipmentId']) && !empty($params['shipmentId']) && count($params['shipmentId']) > 0) {
-                $impShipmentId = implode(',', $params['shipmentId']);
                 $sQuery->where('spm.shipment_id IN (?)', $params['shipmentId']);
                 $shQuery = $db->select()->from(['s' => 'shipment'], ['s.shipment_code', 's.scheme_type'])
                     ->where('s.shipment_id IN (?)', $params['shipmentId'])
@@ -4801,8 +4799,8 @@ class Application_Service_Reports
 
     public function getTbAllSitesResultsSheet($db, $shipmentId, $excel, $sheetIndex)
     {
-        $db = new Application_Model_Tb();
-        return $db->fetchTbAllSitesResultsSheet($db, $shipmentId, $excel, $sheetIndex);
+        $tbDb = new Application_Model_Tb();
+        return $tbDb->fetchTbAllSitesResultsSheet($db, $shipmentId, $excel, $sheetIndex);
     }
 
     public function getTbAllSitesResultsReport($params)

@@ -120,7 +120,6 @@ class Admin_LoginController extends Zend_Controller_Action
                 // are only issued on GET, so re-rendering this POST would leave
                 // the next attempt with a spent token and bounce it silently
                 $this->redirect('/admin');
-                return;
             }
         } else {
             $commonServices = new Application_Service_Common();

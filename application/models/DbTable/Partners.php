@@ -182,22 +182,18 @@ class Application_Model_DbTable_Partners extends Zend_Db_Table_Abstract
                 //Get Min/Max partner order
                 $minMaxOrderQuery = $this->getAdapter()->select()->from(['pt' => $this->_name], [new Zend_Db_Expr('min(sort_order) as minSortOrder'), new Zend_Db_Expr('max(sort_order) as maxSortOrder')]);
                 $minMaxOrderResult = $this->getAdapter()->fetchRow($minMaxOrderQuery);
-                if ($params['sortOrder'] > $minMaxOrderResult['maxSortOrder']) {
-                    $sortOrderResult = -1;
-                } else {
+                if ($params['sortOrder'] <= $minMaxOrderResult['maxSortOrder']) {
                     $sql = $this->select()->where('partner_id = ? ', $partnerId);
                     $sqlResult = $this->fetchRow($sql);
-                    if ($params['sortOrder'] == $sqlResult['sort_order']) {
-                        $sortOrderResult = 1;
-                    } elseif ($params['sortOrder'] < $sqlResult['sort_order']) {
+                    if ($params['sortOrder'] < $sqlResult['sort_order']) {
                         $b = 1;
                         foreach ($partnerOrderResult as $ptOrder) {
                             $bSOrder = $b + 1;
                             if ($ptOrder['sort_order'] >= $params['sortOrder'] && $ptOrder['sort_order'] <= $sqlResult['sort_order']) {
                                 if ($ptOrder['partner_id'] == $partnerId) {
-                                    $sortOrderResult = $this->update(['sort_order' => $params['sortOrder']], ['partner_id = ?' => $partnerId]);
+                                    $this->update(['sort_order' => $params['sortOrder']], ['partner_id = ?' => $partnerId]);
                                 } else {
-                                    $sortOrderResult = $this->update(['sort_order' => $bSOrder], ['partner_id = ?' => $ptOrder['partner_id']]);
+                                    $this->update(['sort_order' => $bSOrder], ['partner_id = ?' => $ptOrder['partner_id']]);
                                 }
                             }
                             $b++;
@@ -208,9 +204,9 @@ class Application_Model_DbTable_Partners extends Zend_Db_Table_Abstract
                             $bSOrder = $b - 1;
                             if ($ptOrder['sort_order'] >= $sqlResult['sort_order'] && $ptOrder['sort_order'] <= $params['sortOrder']) {
                                 if ($ptOrder['partner_id'] == $partnerId) {
-                                    $sortOrderResult = $this->update(['sort_order' => $params['sortOrder']], ['partner_id = ?' => $partnerId]);
+                                    $this->update(['sort_order' => $params['sortOrder']], ['partner_id = ?' => $partnerId]);
                                 } else {
-                                    $sortOrderResult = $this->update(['sort_order' => $bSOrder], ['partner_id = ?' => $ptOrder['partner_id']]);
+                                    $this->update(['sort_order' => $bSOrder], ['partner_id = ?' => $ptOrder['partner_id']]);
                                 }
                             }
                             $b++;

@@ -170,10 +170,6 @@ var JobProgressTracker = (function () {
         $('#job-progress-tracker').slideDown(300);
     }
 
-    function hideProgressTracker() {
-        $('#job-progress-tracker').slideUp(300);
-    }
-
     function showCompletionMessage(data) {
         var $tracker = $('#job-progress-tracker');
 

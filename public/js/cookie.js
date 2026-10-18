@@ -1,6 +1,6 @@
 function setCookie(c_name,value)
 {
-    var c_value=escape(value);
+    var c_value=encodeURIComponent(value);
     document.cookie=c_name + "=" + c_value + ";path=/";
 }
 function getCookie(c_name)
@@ -8,12 +8,17 @@ function getCookie(c_name)
     var i,x,y,ARRcookies=document.cookie.split(";");
     for (i=0;i<ARRcookies.length;i++)
     {
-        x=ARRcookies[i].substr(0,ARRcookies[i].indexOf("="));
-        y=ARRcookies[i].substr(ARRcookies[i].indexOf("=")+1);
+        x=ARRcookies[i].substring(0,ARRcookies[i].indexOf("="));
+        y=ARRcookies[i].substring(ARRcookies[i].indexOf("=")+1);
         x=x.trim();
         if (x==c_name)
         {
-            return unescape(y);
+            try {
+                return decodeURIComponent(y);
+            } catch (e) {
+                // Cookies written by the old escape()-based setter may not be valid URI encoding
+                return y;
+            }
         }
     }
 }

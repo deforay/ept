@@ -231,7 +231,7 @@ $rtriEnabled = $dtsConfig['rtriEnabled'] ?? 'no';
 	     clones this markup into #mbd on show, so the fields use classes (not ids)
 	     and every lookup/handler below is scoped to #mbd. -->
 	<div id="quickAddPtSurveyTpl" class="dialog">
-		<a href="javascript:void(0);" onClick="hidedefModal()" class="closeModal"></a>
+		<a href="javascript:void(0);" onClick="hidedefModal()" class="closeModal" aria-label="<?= $this->htmlTranslate("Close"); ?>" title="<?= $this->htmlTranslate("Close"); ?>"></a>
 		<div class="modal-header">
 			<h4 class="modal-title"><?= $this->htmlTranslate("Add New PT Survey"); ?></h4>
 		</div>

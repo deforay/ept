@@ -71,8 +71,6 @@ class Application_Model_Covid19
             // 3 tests algo added for Myanmar initally, might be used in other places eventually
             //$threeTestCorrectResponses = array('NXX','PPP');
 
-            $testedOn = new DateTime($results[0]['shipment_test_date']);
-
             // Getting Test Platform Names
 
             $testPlatformDb = new Application_Model_DbTable_TestTypenameCovid19();

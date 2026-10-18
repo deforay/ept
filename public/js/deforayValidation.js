@@ -63,13 +63,7 @@ var deforayValidator = {
 };
 // returns true if the string is not empty
 function isRequired(str) {
-	if (str == null || str.length == 0) {
-		return true;
-	}
-	else {
-		return false;
-	}
-	//return (str == null) || (str.length == 0);
+	return str == null || str.length == 0;
 }
 // returns true if the string is a valid email
 function isEmail(str, required) {
@@ -102,8 +96,7 @@ function isAlpha(str, required) {
 			return false;
 	}
 	var re = /[a-zA-Z]/;
-	if (re.test(str)) return true;
-	return false;
+	return re.test(str);
 }
 // returns true if the string only contains characters 0-9 A-Z or a-z
 function isAlphaNum(str, required) {
@@ -113,8 +106,7 @@ function isAlphaNum(str, required) {
 	}
 	// var re = /[0-9a-zA-Z]/
 	var re = /^[0-9A-Za-z]+$/;
-	if (re.test(str)) return true;
-	return false;
+	return re.test(str);
 }
 // returns true if the string only contains characters OTHER THAN 0-9 A-Z or a-z
 function isSymbol(str, required) {
@@ -123,50 +115,29 @@ function isSymbol(str, required) {
 			return false;
 	}
 	var re = /[^0-9a-zA-Z]/;
-	if (re.test(str)) return true;
-	return false;
+	return re.test(str);
 }
 // checks if the string is of a specified minimum length or not
 function minLength(str, len) {
 	if ((str == null || str.length == 0)) return false;
-	if (str.length < len) {
-		return false;
-	}
-	else {
-		return true;
-	}
+	return str.length >= len;
 }
 // checks if the string is within a specified maximum length or not
 function maxLength(str, len) {
 	if ((str == null || str.length == 0)) return false;
-	if (str.length > len) {
-		return false;
-	}
-	else {
-		return true;
-	}
+	return str.length <= len;
 }
 // checks if the string is exactly equal to the specified length or not
 function exactLength(str, len) {
 	if ((str == null || str.length == 0)) return false;
-	if (str.length == len) {
-		return true;
-	}
-	else {
-		return false;
-	}
+	return str.length == len;
 }
 //confirm password validation
 function confirmPassword(name) {
 	var elements = document.getElementsByName(name);
 	//assuming that there will be only 2 fields with this name
 
-	if (elements[0].value == elements[1].value) {
-		return true;
-	}
-	else {
-		return false;
-	}
+	return elements[0].value == elements[1].value;
 
 }
 //confirm mail address validation

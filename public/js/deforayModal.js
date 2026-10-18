@@ -56,25 +56,20 @@ function scrollFix() {
 	clearTimeout(timer);
     var tp = posTop() + ((pageHeight() - hit) / 2) - 12;
     var lt = posLeft() + ((pageWidth() - wid) / 2) - 12;
-	tp = (tp < 0 ? 0 : tp);
+	tp = Math.max(tp, 0);
 	if(obbx.offsetTop < tp){
 		goingDown(obbx,tp);
 	}
 	else{
 		goingUp(obbx,tp);		
 	}
-    obbx.style.left = (lt < 0 ? 0 : lt) + 'px';
+    obbx.style.left = Math.max(lt, 0) + 'px';
 	}
 }
 function sizeFix() {
     var obol = getEl('ol');
     obol.style.height = pageHeight() + 'px';
     obol.style.width = pageWidth() + 'px';
-}
-function kp(e) {
-    var ky = e ? e.which : event.keyCode;
-    if (ky == 88 || ky == 120) hidedefModal();
-    return false
 }
 
 var wid = 0;
@@ -131,8 +126,8 @@ function showdefModal(obl, wd, ht) {
     var tp = posTop() + ((pageHeight() - ht) / 2) - 12;
     var lt = posLeft() + ((pageWidth() - wd) / 2) - 12;
     var obbx = getEl('mbox');
-    obbx.style.top = (tp < 0 ? 0 : tp) + p;
-    obbx.style.left = (lt < 0 ? 0 : lt) + p;
+    obbx.style.top = Math.max(tp, 0) + p;
+    obbx.style.left = Math.max(lt, 0) + p;
     obbx.style.width = wd + p;
     obbx.style.height = ht + p;
     obbx.style.display = b;
@@ -142,7 +137,6 @@ function hidedefModal() {
     var n = 'none';
     getEl('ol').style.display = n;
     getEl('mbox').style.display = n;
-    document.onkeypress = ''
 }
 function initmb() {
     

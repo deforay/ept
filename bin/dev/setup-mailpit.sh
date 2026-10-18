@@ -49,7 +49,7 @@ install_mailpit() {
             brew install mailpit
             ;;
         Linux)
-            curl -fsSL https://raw.githubusercontent.com/axllent/mailpit/develop/install.sh | sudo bash
+            curl --proto '=https' --tlsv1.2 -fsSL https://raw.githubusercontent.com/axllent/mailpit/develop/install.sh | sudo bash
             ;;
         *)
             print error "Unsupported OS. Run Mailpit with Docker instead:"

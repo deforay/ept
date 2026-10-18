@@ -253,11 +253,7 @@ class Application_Model_DbTable_ShipmentParticipantMap extends Zend_Db_Table_Abs
         if (!empty($shipment['cancelled_at'])) {
             return false;
         }
-        if ((isset($shipment['status']) && $shipment['status'] == 'finalized') || (isset($shipment['response_switch']) && $shipment['response_switch'] == 'off')) {
-            return false;
-        } else {
-            return true;
-        }
+        return !((isset($shipment['status']) && $shipment['status'] == 'finalized') || (isset($shipment['response_switch']) && $shipment['response_switch'] == 'off'));
     }
 
     public function addEnrollementDetails($params)

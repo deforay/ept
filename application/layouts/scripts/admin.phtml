@@ -298,7 +298,7 @@ $helpPageKey = "$controllerName/$actionName";
 <body>
 
 	<div id="removeParticipant" class="dialog" tabindex="-1" data-width="860">
-		<a href="javascript:void(0);" onClick="hidedefModal()" class="closeModal"></a>
+		<a href="javascript:void(0);" onClick="hidedefModal()" class="closeModal" aria-label="<?= $this->htmlTranslate("Close"); ?>" title="<?= $this->htmlTranslate("Close"); ?>"></a>
 		<div class="modal-header">
 			<h4 class="modal-title"><?= $this->translate->_("Enter your Password to Confirm"); ?></h4>
 		</div>

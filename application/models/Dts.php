@@ -3206,7 +3206,6 @@ final class Application_Model_Dts
                 return;
             }
             $this->warningForAlgo($out, $correctiveActions, $result['sample_label'] ?? '');
-            return;
         }
     }
 
@@ -3344,7 +3343,6 @@ final class Application_Model_Dts
                 return;
             }
             $this->warningForAlgo($out, $correctiveActions, $result['sample_label'] ?? '');
-            return;
         }
     }
 

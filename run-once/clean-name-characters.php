@@ -108,7 +108,7 @@ function cleanName(string $value, array $vocabulary): string
     $clean = str_ireplace(['&#34;', '&quot;', '&#39;', '&#039;', '&apos;', '&amp;'], ['"', '"', "'", "'", "'", '&'], $clean);
     $clean = str_replace(['"', '“', '”', '„', '«', '»'], '', $clean);
     $clean = preg_replace('/\s+/u', ' ', $clean);
-    $clean = preg_replace('/^\*+|\*+$/u', '', trim($clean));
+    $clean = trim(trim($clean), '*');
     if (str_contains($clean, '?')) {
         $clean = restoreLostLetters($clean, $vocabulary);
     }

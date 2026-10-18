@@ -463,9 +463,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
     public function updateUser($params)
     {
 
-        $db = Zend_Db_Table_Abstract::getAdapter();
         $authNameSpace = new Zend_Session_Namespace('administrators');
-        $dmNameSpace = new Zend_Session_Namespace('datamanagers');
         $data = [
             'data_manager_type' => (isset($params['ptcc']) && !empty($params['ptcc']) && $params['ptcc'] == 'yes') ? 'ptcc' : 'manager',
             'country_id' => $params['countryId'],
@@ -639,11 +637,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             ['password' => $newpassword, 'force_password_reset' => $forcePasswordReset ? 1 : 0],
             ['primary_email = ?' => $email]
         );
-        if ($noOfRows != null && $noOfRows == 1) {
-            return true;
-        } else {
-            return false;
-        }
+        return $noOfRows == 1;
     }
 
     public function updatePassword($oldpassword, $newpassword)
@@ -674,11 +668,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
     {
 
         $noOfRows = $this->update(['last_login' => new Zend_Db_Expr('now()')], ['dm_id = ?' => $dmId]);
-        if ($noOfRows != null && $noOfRows == 1) {
-            return true;
-        } else {
-            return false;
-        }
+        return $noOfRows == 1;
     }
 
     public function fetchParticipantDatamanagerSearch($searchParams)
