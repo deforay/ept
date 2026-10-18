@@ -169,17 +169,20 @@ class Application_Service_Reports
 
         // Shipment: code, with the PT survey on a second line when it differs. The
         // chevron opens the participation breakdown under the row.
-        $shipment = '<strong>' . $esc($aRow['shipment_code']) . '</strong>';
-        if ($enrolled > 0 && !$forParticipant) {
-            $shipment = '<a href="javascript:void(0);" class="toggle-stats-row" data-sid="' . $sid . '" title="' . $esc($t->_('Breakdown')) . '">'
-                . '<i class="icon-chevron-right" aria-hidden="true"></i></a> ' . $shipment;
-        }
         $survey = [];
         if ((string) $aRow['distribution_code'] !== (string) $aRow['shipment_code']) {
             $survey[] = $esc($aRow['distribution_code']);
         }
         $survey[] = $esc(Pt_Commons_DateUtility::humanReadableDateFormat($aRow['shipment_date']));
-        $shipment .= '<span class="cell-sub">' . implode(' &middot; ', $survey) . '</span>';
+        $toggle = '';
+        if ($enrolled > 0 && !$forParticipant) {
+            $toggle = '<a href="javascript:void(0);" class="toggle-stats-row" data-sid="' . $sid . '" title="' . $esc($t->_('Breakdown')) . '">'
+                . '<i class="icon-chevron-right" aria-hidden="true"></i></a>';
+        }
+        // The toggle sits in its own column, so the date lines up under the code.
+        $shipment = '<div class="shipment-cell">' . $toggle
+            . '<div><strong>' . $esc($aRow['shipment_code']) . '</strong>'
+            . '<span class="cell-sub">' . implode(' &middot; ', $survey) . '</span></div></div>';
 
         // Due date. The cutoff timezone is named once, in the column header, and in
         // full on hover. An end-of-day deadline leaves its time out.
@@ -231,19 +234,29 @@ class Application_Service_Reports
         if ($stage === 'shipped' && !empty($aRow['response_deadline']) && strtotime($aRow['response_deadline']) < time()) {
             $status .= '<span class="cell-sub is-warning">' . $esc($t->_('Past due date')) . '</span>';
         }
+        // Once reports exist, the status links to the shipment's reports page,
+        // which holds the summary, the ZIP of all reports and download tracking.
+        if (!$forParticipant && in_array($stage, ['reports', 'finalized'], true)) {
+            $status .= $stage === 'finalized'
+                ? '<a class="status-link" href="/reports/finalize/view-finalized-shipment/sid/' . $sid . '">' . $esc($t->_('Reports')) . ' &rarr;</a>'
+                : '<a class="status-link is-draft" href="/reports/distribution/shipment/sid/' . $sid . '">' . $esc($t->_('Draft reports')) . ' &rarr;</a>';
+        }
 
         return [$shipment, $esc($aRow['scheme_name']), $due, $responses, $pass, $status, $this->shipmentReportDownloads($aRow, $forParticipant)];
     }
 
-    // Download buttons for one shipment row: Overview and the other working files
-    // (Excel exports, TB forms) on one row, the generated reports on the next.
+    // Downloads for one shipment row, on one line: Overview as the button, then
+    // whichever working files apply as small links. The generated reports are
+    // reached from the Status cell instead (see shipmentReportRow()).
+    //
+    // The participant copy of the page has no reports page to link to, so it
+    // lists the summary and the ZIP of all reports here when they exist.
     private function shipmentReportDownloads(array $aRow, bool $forParticipant): string
     {
         $t = $this->translator;
         $esc = fn ($value) => htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8');
-        // Each download has its own icon, so they can be told apart at a glance.
-        // The title says what the file holds.
-        $link = fn (string $label, string $title, string $icon, string $attrs, string $class = 'dl-btn') => '<a class="' . $class . '" title="' . $esc($title) . '" ' . $attrs . '>'
+        // Each download has its own icon. The title says what the file holds.
+        $link = fn (string $label, string $title, string $icon, string $attrs, string $class = 'dl-link') => '<a class="' . $class . '" title="' . $esc($title) . '" ' . $attrs . '>'
             . '<i class="' . $icon . '" aria-hidden="true"></i> ' . $esc($label) . '</a>';
         $sid = base64_encode((string) $aRow['shipment_id']);
         $stage = $aRow['stage'];
@@ -251,66 +264,46 @@ class Application_Service_Reports
         if ($stage === 'cancelled') {
             return '<span class="cell-muted">&ndash;</span>';
         }
+        $isShipped = $stage !== 'notshipped';
 
-        $reports = [];
-        if (in_array($stage, ['reports', 'finalized'], true)) {
-            if (!$forParticipant) {
-                $viewHref = $stage === 'finalized'
-                    ? '/reports/finalize/view-finalized-shipment/sid/' . $sid
-                    : '/reports/distribution/shipment/sid/' . $sid;
-                $reports[] = $link($t->_('View'), $t->_('Open the reports page for this shipment'), 'icon-eye-open', 'href="' . $viewHref . '"');
+        $primary = '';
+        $extras = [];
+        if ($forParticipant) {
+            if (in_array($stage, ['reports', 'finalized'], true)) {
+                $folder = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR;
+                $summaryPath = $folder . $aRow['shipment_code'] . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . '-summary.pdf';
+                $zipPath = $folder . $aRow['shipment_code'] . '.zip';
+                if (file_exists($summaryPath)) {
+                    $extras[] = $link($t->_('Summary'), $t->_('Summary report (PDF)'), 'icon-file-text', 'target="_blank" href="' . $esc(Pt_Commons_SignedDownload::url($summaryPath)) . '"');
+                }
+                if (file_exists($zipPath)) {
+                    $extras[] = $link($t->_('All reports'), $t->_("Every participant's report in one ZIP file"), 'icon-archive', 'target="_blank" href="' . $esc(Pt_Commons_SignedDownload::url($zipPath)) . '"');
+                }
             }
-            // Both buttons always show once reports exist for the shipment. A file
-            // missing from this server shows as a disabled button that says so,
-            // rather than the button silently disappearing.
-            // Until the shipment is finalized the files are drafts, and say so.
-            $isDraft = $stage === 'reports';
-            $folder = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR;
-            $files = [
-                [$isDraft ? $t->_('Summary (draft)') : $t->_('Summary'), $t->_('Summary report (PDF)'), 'icon-file-text',
-                    $folder . $aRow['shipment_code'] . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . '-summary.pdf'],
-                [$isDraft ? $t->_('All reports (draft)') : $t->_('All reports'), $t->_("Every participant's report in one ZIP file"), 'icon-archive',
-                    $folder . $aRow['shipment_code'] . '.zip'],
-            ];
-            foreach ($files as [$label, $title, $icon, $path]) {
-                $reports[] = file_exists($path)
-                    ? $link($label, $title, $icon, ($isDraft ? 'data-draft="yes" ' : '') . 'target="_blank" href="' . $esc(Pt_Commons_SignedDownload::url($path)) . '"')
-                    : '<span class="dl-btn is-missing" title="' . $esc($t->_('This file is not on this server. Generate the reports again to create it.')) . '">'
-                        . '<i class="' . $icon . '" aria-hidden="true"></i> ' . $esc($label) . '</span>';
-            }
-        }
-
-        // The participant copy of the page shows the reports only.
-        $exports = [];
-        if (!$forParticipant && $stage !== 'notshipped') {
-            // Overview is the main download, so it is the one drawn as a button.
-            $exports[] = $link($t->_('Overview'), $t->_('Participant list, reported results and scores (Excel workbook)'), 'icon-table', 'href="javascript:void(0);" onclick="generateShipmentParticipantList(\'' . $sid . '\', \'' . $esc($aRow['scheme_type']) . '\')"', 'dl-btn is-primary');
+        } elseif ($isShipped) {
+            $primary = $link($t->_('Overview'), $t->_('Participant list, reported results and scores (Excel workbook)'), 'icon-table', 'href="javascript:void(0);" onclick="generateShipmentParticipantList(\'' . $sid . '\', \'' . $esc($aRow['scheme_type']) . '\')"', 'dl-btn');
             if ($stage !== 'finalized') {
-                $exports[] = $link($t->_('Non-responders'), $t->_('Participants who have not responded yet (Excel)'), 'icon-warning-sign', 'href="javascript:void(0);" onclick="exportNotRespondedShipment(\'' . $sid . '\', \''
+                $extras[] = $link($t->_('Non-responders'), $t->_('Participants who have not responded yet (Excel)'), 'icon-warning-sign', 'href="javascript:void(0);" onclick="exportNotRespondedShipment(\'' . $sid . '\', \''
                     . base64_encode((string) $aRow['shipment_code']) . '\', \''
                     . base64_encode((string) Pt_Commons_DateUtility::humanReadableDateFormat($aRow['distribution_date'])) . '\')"');
             }
+            if ((int) $aRow['feedback_count'] > 0) {
+                $extras[] = $link($t->_('Feedback'), $t->_("Participants' feedback answers (Excel)"), 'icon-comments', 'href="javascript:void(0);" onclick="downloadFeedbackReport(' . (int) $aRow['shipment_id'] . ')"');
+            }
         }
-        if (!$forParticipant && (int) $aRow['feedback_count'] > 0) {
-            $exports[] = $link($t->_('Feedback'), $t->_("Participants' feedback answers (Excel)"), 'icon-comments', 'href="javascript:void(0);" onclick="downloadFeedbackReport(' . (int) $aRow['shipment_id'] . ')"');
-        }
-
-        // The forms matter while the round is running, not once it is finalized.
+        // The forms are prepared before the round ships and matter while it runs,
+        // not once it is finalized.
         if (!$forParticipant && $stage !== 'finalized' && $aRow['scheme_type'] === 'tb' && Application_Service_Common::getConfig('instance') === 'mtbept') {
             $tbFormPath = Application_Service_Shipments::resolveTbFormsZip($aRow['shipment_code']);
             if ($tbFormPath !== null) {
-                $exports[] = $link($t->_('TB forms'), $t->_('Result forms for every participant (ZIP)'), 'icon-file-alt', 'target="_blank" href="/admin/shipment/download-tb/sid/' . (int) $aRow['shipment_id'] . '/file/' . base64_encode($tbFormPath) . '"');
+                $extras[] = $link($t->_('TB forms'), $t->_('Result forms for every participant (ZIP)'), 'icon-file-alt', 'target="_blank" href="/admin/shipment/download-tb/sid/' . (int) $aRow['shipment_id'] . '/file/' . base64_encode($tbFormPath) . '"');
             }
         }
 
-        // Overview and the other working files on the first row, then the reports.
-        $rows = '';
-        foreach ([$exports, $reports] as $buttons) {
-            if ($buttons) {
-                $rows .= '<div class="download-links">' . implode('', $buttons) . '</div>';
-            }
+        if ($primary === '' && !$extras) {
+            return '<span class="cell-muted">&ndash;</span>';
         }
-        return $rows !== '' ? $rows : '<span class="cell-muted">&ndash;</span>';
+        return '<div class="download-links">' . $primary . implode('<span class="dl-sep" aria-hidden="true">&middot;</span>', $extras) . '</div>';
     }
 
     public function updateReportConfigs($params)

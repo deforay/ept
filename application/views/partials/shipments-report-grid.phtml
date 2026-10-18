@@ -167,24 +167,22 @@ include APPLICATION_PATH . '/views/partials/report-zero-state.phtml';
 		color: #a33a3a;
 	}
 
+	/* Downloads: Overview is the one button, the other files follow as small
+	   links on the same line. */
 	#shipmentTable .download-links {
 		display: flex;
 		flex-wrap: wrap;
-		gap: 4px;
+		align-items: center;
+		gap: 4px 2px;
 	}
 
-	#shipmentTable .download-links + .download-links {
-		margin-top: 4px;
-	}
-
-	/* Downloads: Overview is a button, the rest are quiet icon links that only
-	   get a background on hover. The transparent border keeps every item the
-	   same height as the button, so the rows line up. */
-	#shipmentTable .dl-btn {
+	#shipmentTable a.dl-btn {
 		display: inline-block;
-		padding: 2px 7px;
-		border: 1px solid transparent;
+		margin-right: 6px;
+		padding: 2px 8px;
+		border: 1px solid #cfdae8;
 		border-radius: 4px;
+		background: #f5f8fc;
 		color: #2f4f7a;
 		font-size: 12px;
 		line-height: 18px;
@@ -194,37 +192,37 @@ include APPLICATION_PATH . '/views/partials/report-zero-state.phtml';
 
 	#shipmentTable a.dl-btn:hover,
 	#shipmentTable a.dl-btn:focus {
-		background: #eef3f9;
-		color: #1f3a5f;
-	}
-
-	#shipmentTable a.dl-btn.is-primary {
-		border-color: #cfdae8;
-		background: #f5f8fc;
-	}
-
-	#shipmentTable a.dl-btn.is-primary:hover,
-	#shipmentTable a.dl-btn.is-primary:focus {
 		border-color: #4a6fa5;
 		background: #4a6fa5;
 		color: #fff;
 	}
 
-	#shipmentTable a.dl-btn[data-draft="yes"] {
+	#shipmentTable a.dl-link {
+		font-size: 12px;
+		color: #2f4f7a;
+		white-space: nowrap;
+	}
+
+	#shipmentTable .dl-sep {
+		margin: 0 6px;
+		color: #c3cad4;
+	}
+
+	/* Link from the status to the shipment's reports page. */
+	#shipmentTable a.status-link {
+		display: block;
+		margin-top: 5px;
+		font-size: 12px;
+		color: #2f6b45;
+		white-space: nowrap;
+	}
+
+	#shipmentTable a.status-link.is-draft {
 		color: #8a4b00;
 	}
 
-	#shipmentTable a.dl-btn[data-draft="yes"]:hover,
-	#shipmentTable a.dl-btn[data-draft="yes"]:focus {
-		background: #fff3e0;
-	}
-
-	#shipmentTable .dl-btn.is-missing {
-		color: #b3bac4;
-		cursor: help;
-	}
-
-	#shipmentTable a.dl-btn i {
+	#shipmentTable a.dl-btn i,
+	#shipmentTable a.dl-link i {
 		margin-right: 2px;
 		color: inherit;
 	}
@@ -242,19 +240,25 @@ include APPLICATION_PATH . '/views/partials/report-zero-state.phtml';
 
 	/* Breakdown toggle: a small square button before the shipment code. The
 	   whole row opens it too, so it is never more than a click away. */
+	#shipmentTable .shipment-cell {
+		display: flex;
+		align-items: flex-start;
+		gap: 8px;
+	}
+
 	#shipmentTable a.toggle-stats-row {
 		display: inline-flex;
+		flex: 0 0 auto;
 		align-items: center;
 		justify-content: center;
 		width: 20px;
 		height: 20px;
-		margin-right: 4px;
+		margin-top: 1px;
 		border: 1px solid #cfdae8;
 		border-radius: 4px;
 		background: #f5f8fc;
 		color: #4a6fa5;
 		text-decoration: none;
-		vertical-align: 1px;
 	}
 
 	#shipmentTable tr:hover a.toggle-stats-row,
