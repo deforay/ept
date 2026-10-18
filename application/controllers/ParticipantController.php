@@ -25,8 +25,6 @@ class ParticipantController extends Zend_Controller_Action
             ->addActionContext('get-datamanager-names', 'html')
             ->addActionContext('get-participant', 'html')
             ->addActionContext('delete-participant', 'html')
-            ->addActionContext('response-report', 'html')
-            ->addActionContext('response-report-list', 'html')
             ->addActionContext('participant-performance', 'html')
             ->addActionContext('participant-performance-export-pdf', 'html')
             ->addActionContext('aberrant-test-results', 'html')
@@ -65,7 +63,9 @@ class ParticipantController extends Zend_Controller_Action
      */
     private const ADMIN_ONLY_REPORT_ACTIONS = [
         'response-report',
-        'response-report-list',
+        'response-report-data',
+        'response-report-group-shipments',
+        'response-report-export',
         'participant-performance',
         'participant-performance-export',
         'participant-performance-export-pdf',
@@ -810,28 +810,26 @@ class ParticipantController extends Zend_Controller_Action
     {
         $this->_helper->layout()->activeMenu = 'ptcc-reports';
         $this->_helper->layout()->activeSubMenu = 'participant-response-reports';
-        /** @var Zend_Controller_Request_Http $request */
-        $request = $this->getRequest();
-        if ($request->isPost()) {
-            $params = $this->getAllParams();
-            $reportService = new Application_Service_Reports();
-            $response = $reportService->getParticipantDetailedReport($params);
-            $this->view->response = $response;
-            $this->view->type = $params['reportType'];
-        }
         $scheme = new Application_Service_Schemes();
         $this->view->schemes = $scheme->getAllSchemes();
     }
 
-    public function responseReportListAction()
+    public function responseReportDataAction()
     {
-        /** @var Zend_Controller_Request_Http $request */
-        $request = $this->getRequest();
-        if ($request->isPost()) {
-            $params = $this->getAllParams();
-            $reportService = new Application_Service_Reports();
-            $reportService->getAllParticipantDetailedReport($params);
-        }
+        $reportService = new Application_Service_Reports();
+        $this->_helper->json($reportService->getParticipantResponseGroups($this->getAllParams()));
+    }
+
+    public function responseReportGroupShipmentsAction()
+    {
+        $reportService = new Application_Service_Reports();
+        $this->_helper->json($reportService->getParticipantResponseGroups($this->getAllParams(), true));
+    }
+
+    public function responseReportExportAction()
+    {
+        $reportService = new Application_Service_Reports();
+        $this->_helper->json(['file' => $reportService->exportParticipantResponseGroups($this->getAllParams())]);
     }
 
     public function participantPerformanceAction()

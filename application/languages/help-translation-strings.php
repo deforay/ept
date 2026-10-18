@@ -81,6 +81,8 @@ _('detection');
 _('distribution');
 // admin/distributions-add#tags, admin/distributions-edit#tags, admin/distributions#tags
 _('distributions');
+// admin/reports-participant-response#tags
+_('districts');
 // admin/reports-shipments#tags
 _('downloads');
 // admin/reports-distribution#tags
@@ -199,13 +201,15 @@ _('overview');
 _('panel');
 // admin/data-managers#tags
 _('participant-login');
-// admin/email-participants#tags, admin/enrollments-add#tags, admin/enrollments#tags, admin/evaluate-shipment#tags, admin/participants-add#tags, admin/participants-bulk-import#tags, admin/participants-edit#tags, admin/participants-manager-map#tags, admin/participants#tags, admin/reports-shipment-response#tags, admin/shipment-enroll#tags
+// admin/reports-participant-response#title
+_('Participant Response Report');
+// admin/email-participants#tags, admin/enrollments-add#tags, admin/enrollments#tags, admin/evaluate-shipment#tags, admin/participants-add#tags, admin/participants-bulk-import#tags, admin/participants-edit#tags, admin/participants-manager-map#tags, admin/participants#tags, admin/reports-participant-response#tags, admin/reports-shipment-response#tags, admin/shipment-enroll#tags
 _('participants');
 // admin/participants#title
 _('Participants');
 // admin/reports-participant-trends#title
 _('Participant Trends');
-// admin/reports-participant-trends#tags, admin/reports-shipment-response#tags
+// admin/reports-participant-response#tags, admin/reports-participant-trends#tags, admin/reports-shipment-response#tags
 _('pass rate');
 // admin/data-managers#tags
 _('password');
@@ -237,13 +241,15 @@ _('queue');
 _('Re-build and lock the reports — only finalized reports are visible to participants');
 // admin/evaluate-shipment#tags, admin/evaluate#tags
 _('re-evaluate');
-// admin/reports-participant-trends#tags
+// admin/reports-participant-response#tags, admin/reports-participant-trends#tags
 _('regions');
 // admin/vl-assay-edit#summary
 _('Rename a Viral Load assay / platform');
-// admin/evaluate#tags, admin/report-config#tags, admin/reports-distribution#tags, admin/reports-finalize#tags, admin/reports-participant-trends#tags, admin/reports-shipment-response#tags, admin/reports-shipments#tags
+// admin/evaluate#tags, admin/report-config#tags, admin/reports-distribution#tags, admin/reports-finalize#tags, admin/reports-participant-response#tags, admin/reports-participant-trends#tags, admin/reports-shipment-response#tags, admin/reports-shipments#tags
 _('reports');
-// admin/reports-participant-trends#tags, admin/reports-shipment-response#tags
+// admin/reports-participant-response#summary
+_('Response and pass rates by region, district, network tier, affiliation or enrolled program');
+// admin/reports-participant-response#tags, admin/reports-participant-trends#tags, admin/reports-shipment-response#tags
 _('response rate');
 // admin/reports-participant-trends#summary
 _('Response rate, timeliness and pass rate across shipments, with a breakdown by region');

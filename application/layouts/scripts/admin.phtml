@@ -106,6 +106,7 @@ $helpSlugMap = [
 	'shipments/index' => 'reports-shipments',
 	'participant-trends/index' => 'reports-participant-trends',
 	'shipment-response-report/index' => 'reports-shipment-response',
+	'participant-response/index' => 'reports-participant-response',
 
 	// Admin users
 	'system-admins/index' => 'users',
@@ -526,7 +527,7 @@ $helpPageKey = "$controllerName/$actionName";
 								</li>
 								<li class="divider"></li>
 								<li id="ParticipantResponseReport"><a
-										href="<?php echo $this->url(array('module' => 'reports', 'controller' => 'detailed'), 'default', true); ?>"><?= $this->translate->_("Participant Response Report"); ?></a>
+										href="<?php echo $this->url(array('module' => 'reports', 'controller' => 'participant-response'), 'default', true); ?>"><?= $this->translate->_("Participant Response Report"); ?></a>
 								</li>
 								<li id="ParticipantPerformanceReport"><a
 										href="<?php echo $this->url(array('module' => 'reports', 'controller' => 'participant-performance'), 'default', true); ?>"><?= $this->translate->_("Participant Performance Report"); ?></a>
@@ -877,7 +878,7 @@ $helpPageKey = "$controllerName/$actionName";
 				$('#ShipmentResponseReport').addClass('active');
 			} else if (splitsUrl[2] == 'testing-facility-by-ownership') {
 				$('#testingFacilityByOwnership').addClass('active');
-			} else if (splitsUrl[2] == 'detailed') {
+			} else if (splitsUrl[2] == 'participant-response') {
 				$('#ParticipantResponseReport').addClass('active');
 			} else if (splitsUrl[2] == 'participant-performance') {
 				$('#ParticipantPerformanceReport').addClass('active');

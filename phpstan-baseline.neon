@@ -1658,12 +1658,6 @@ parameters:
 			path: application/modules/reports/controllers/CorrectivePreventiveActionsController.php
 
 		-
-			message: '#^Method Reports_DetailedController\:\:init\(\) with return type void returns null but should not return anything\.$#'
-			identifier: return.void
-			count: 1
-			path: application/modules/reports/controllers/DetailedController.php
-
-		-
 			message: '#^Method Reports_DistributionController\:\:init\(\) with return type void returns null but should not return anything\.$#'
 			identifier: return.void
 			count: 1

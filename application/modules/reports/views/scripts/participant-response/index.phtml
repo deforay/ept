@@ -1,0 +1,15 @@
+<div class="data-list">
+	<div class="data-list-head">
+		<h2><?= $this->htmlTranslate("Participant Response Report"); ?></h2>
+	</div>
+	<div class="data-list-body">
+		<?php
+		$prrDataUrl = $this->url(['module' => 'reports', 'controller' => 'participant-response', 'action' => 'data'], 'default', true);
+		$prrShipmentsUrl = $this->url(['module' => 'reports', 'controller' => 'participant-response', 'action' => 'shipments'], 'default', true);
+		$prrExportUrl = $this->url(['module' => 'reports', 'controller' => 'participant-response', 'action' => 'export'], 'default', true);
+		include APPLICATION_PATH . '/views/partials/participant-response-report.phtml';
+		?>
+	</div>
+</div>
+<?php // Must stay last: the panel collapses only after the widgets above have measured themselves.
+include APPLICATION_PATH . '/views/partials/collapsible-filters.phtml'; ?>

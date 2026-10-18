@@ -1,0 +1,567 @@
+<?php
+
+/**
+ * Participant Response Report, shared by reports/participant-response (admin) and
+ * participant/response-report (data managers). The rows come from
+ * Application_Service_Reports::getParticipantResponseGroups().
+ *
+ * Set before including:
+ *
+ *   $prrDataUrl       the action that returns one row per group
+ *   $prrShipmentsUrl  the action that returns one group's rows per shipment
+ *   $prrExportUrl     the action behind Download Excel
+ *   $this->schemes    the schemes for the Scheme filter
+ *
+ * The page needs Highcharts. The filters apply as soon as they change. The
+ * page includes collapsible-filters.phtml last, after this partial.
+ */
+include APPLICATION_PATH . '/views/partials/report-zero-state.phtml';
+
+$groupings = [
+	'region' => $this->translate->_("Region"),
+	'district' => $this->translate->_("District"),
+	'network' => $this->translate->_("Network Tier"),
+	'affiliation' => $this->translate->_("Affiliation"),
+	'enrolled-programs' => $this->translate->_("Enrolled Program"),
+];
+?>
+<script type="text/javascript" src="<?php echo $this->baseUrl('js/moment.min.js'); ?>"></script>
+<style>
+	.prr-filters {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: flex-end;
+		gap: 12px 16px;
+		margin-top: 12px;
+		padding: 14px 16px;
+		border: 1px solid #e3e8ef;
+		border-radius: 6px;
+		background: #fafbfc;
+	}
+
+	.prr-filters .prr-field {
+		flex: 0 1 280px;
+		min-width: 0;
+	}
+
+	.prr-filters label {
+		display: block;
+		margin-bottom: 4px;
+		font-size: 13px;
+		font-weight: 600;
+		color: #333;
+	}
+
+	.prr-toolbar {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		justify-content: space-between;
+		gap: 8px 16px;
+		margin: 20px 0 12px;
+	}
+
+	.prr-toolbar .prr-label {
+		margin-right: 8px;
+		font-size: 13px;
+		font-weight: 600;
+		color: #333;
+	}
+
+	/* A light segmented control, so it reads as a choice and not as actions. */
+	.prr-seg {
+		display: inline-flex;
+		flex-wrap: wrap;
+		border: 1px solid #cfdae8;
+		border-radius: 6px;
+		background: #fff;
+		overflow: hidden;
+		vertical-align: middle;
+	}
+
+	.prr-seg button {
+		padding: 4px 12px;
+		border: 0;
+		border-left: 1px solid #e3e8ef;
+		background: transparent;
+		color: #2f4f7a;
+		font-size: 12.5px;
+		line-height: 20px;
+	}
+
+	.prr-seg button:first-child {
+		border-left: 0;
+	}
+
+	.prr-seg button:hover {
+		background: #f5f8fc;
+	}
+
+	.prr-seg button.active {
+		background: #4a6fa5;
+		color: #fff;
+	}
+
+	.prr-download {
+		padding: 4px 12px;
+		border: 1px solid #cfdae8;
+		border-radius: 6px;
+		background: #f5f8fc;
+		color: #2f4f7a;
+		font-size: 12.5px;
+		line-height: 20px;
+	}
+
+	.prr-download:hover {
+		border-color: #4a6fa5;
+		background: #4a6fa5;
+		color: #fff;
+	}
+
+	.prr-chart-note {
+		margin: -4px 0 12px;
+		font-size: 12px;
+		color: #8a94a3;
+	}
+
+	/* IDs, so these beat the centred headers and middle-aligned cells of the
+	   .data-list card. */
+	#prrTable {
+		width: 100%;
+	}
+
+	#prrTable > thead > tr > th {
+		text-align: left;
+		white-space: nowrap;
+	}
+
+	#prrTable > tbody > tr > td {
+		vertical-align: top;
+		background: #fff;
+	}
+
+	#prrTable > tbody > tr.prr-group {
+		cursor: pointer;
+	}
+
+	#prrTable > tbody > tr.prr-group:hover > td {
+		background: #f7f9fc;
+	}
+
+	#prrTable > tbody > tr.prr-group.is-open > td {
+		background: #eef2f7;
+	}
+
+	#prrTable > tbody > tr.prr-shipment > td {
+		background: #f8fafc;
+		font-size: 13px;
+	}
+
+	#prrTable > tbody > tr.prr-shipment > td:first-child {
+		padding-left: 38px;
+		border-left: 4px solid #3f6fb0;
+	}
+
+	#prrTable .prr-name {
+		display: flex;
+		align-items: flex-start;
+		gap: 8px;
+	}
+
+	#prrTable .prr-toggle {
+		display: inline-flex;
+		flex: 0 0 auto;
+		align-items: center;
+		justify-content: center;
+		width: 20px;
+		height: 20px;
+		margin-top: 1px;
+		border: 1px solid #cfdae8;
+		border-radius: 4px;
+		background: #f5f8fc;
+		color: #4a6fa5;
+	}
+
+	#prrTable tr.prr-group:hover .prr-toggle,
+	#prrTable tr.prr-group.is-open .prr-toggle {
+		border-color: #4a6fa5;
+		background: #4a6fa5;
+		color: #fff;
+	}
+
+	#prrTable .prr-toggle i {
+		font-size: 10px;
+		transition: transform .15s ease;
+	}
+
+	#prrTable tr.is-open .prr-toggle i {
+		transform: rotate(90deg);
+	}
+
+	#prrTable .is-unset {
+		font-style: italic;
+		color: #6b7480;
+	}
+
+	#prrTable .cell-sub {
+		display: block;
+		margin-top: 1px;
+		font-size: 11.5px;
+		line-height: 1.4;
+		color: #98a1ad;
+	}
+
+	#prrTable .cell-muted {
+		font-size: 13px;
+		color: #8a94a3;
+	}
+
+	#prrTable .is-bad {
+		color: #a33a3a;
+		font-weight: 600;
+	}
+
+	#prrTable .rate-figure {
+		display: block;
+		white-space: nowrap;
+	}
+
+	#prrTable .rate-bar {
+		display: block;
+		width: 90px;
+		height: 4px;
+		margin: 4px 0 3px;
+		border-radius: 2px;
+		background: #e8edf3;
+		overflow: hidden;
+	}
+
+	#prrTable .rate-bar > span {
+		display: block;
+		height: 100%;
+		background: #3b6fb6;
+	}
+
+	#prrTable .rate-bar.is-pass > span {
+		background: #2e8b57;
+	}
+
+	@media print {
+		.prr-toolbar,
+		.js-filter-panel {
+			display: none;
+		}
+	}
+</style>
+
+<div class="filter-panel js-filter-panel">
+	<button type="button" class="btn btn-default btn-sm js-filter-toggle" aria-expanded="false"
+		data-expand-text="<?= $this->htmlTranslate("Expand Filters"); ?>"
+		data-collapse-text="<?= $this->htmlTranslate("Collapse Filters"); ?>">
+		<i class="icon-filter"></i> <span class="js-filter-toggle-text"><?= $this->htmlTranslate("Expand Filters"); ?></span>
+		<span class="label label-info js-filter-count" style="display:none;">0</span>
+		<span class="caret"></span>
+	</button>
+	<div class="js-filter-summary"></div>
+	<div class="js-filter-body">
+		<div class="prr-filters">
+			<div class="prr-field">
+				<label for="dateRange"><?= $this->htmlTranslate("Shipment Date"); ?></label>
+				<input type="text" id="dateRange" name="dateRange" class="form-control input-sm" readonly="readonly"
+					style="background: #fff" placeholder="<?= $this->htmlTranslate("All dates"); ?>"
+					data-filter-label="<?= $this->htmlTranslate("Shipment Date"); ?>" />
+			</div>
+			<div class="prr-field">
+				<label for="scheme"><?= $this->htmlTranslate("Scheme"); ?></label>
+				<select id="scheme" name="scheme" class="form-control input-sm"
+					data-filter-label="<?= $this->htmlTranslate("Scheme"); ?>">
+					<option value=""><?= $this->htmlTranslate("All schemes"); ?></option>
+					<?php foreach ($this->schemes as $scheme) { ?>
+						<option value="<?= $this->escape($scheme['scheme_id']); ?>"><?= $this->escape($scheme['scheme_name']); ?></option>
+					<?php } ?>
+				</select>
+			</div>
+		</div>
+	</div><!-- /.js-filter-body -->
+</div><!-- /.filter-panel -->
+
+<div class="prr-toolbar">
+	<div>
+		<span class="prr-label"><?= $this->htmlTranslate("Group by"); ?></span>
+		<div class="prr-seg" id="prrGroupBy" role="group" aria-label="<?= $this->htmlTranslate("Group by"); ?>">
+			<?php foreach ($groupings as $value => $label) { ?>
+				<button type="button" data-group-by="<?= $value; ?>"><?= $this->escape($label); ?></button>
+			<?php } ?>
+		</div>
+	</div>
+	<button type="button" class="prr-download" onclick="exportParticipantResponse()">
+		<i class="icon-download-alt"></i> <?= $this->htmlTranslate("Download Excel"); ?>
+	</button>
+</div>
+
+<div id="prrResult">
+	<div id="prrChart"></div>
+	<p class="prr-chart-note" id="prrChartNote" style="display:none;"></p>
+	<table class="table" id="prrTable">
+		<thead>
+			<tr>
+				<th scope="col" id="prrGroupHeading"></th>
+				<th scope="col"><?= $this->htmlTranslate("Participants"); ?></th>
+				<th scope="col"><?= $this->htmlTranslate("Responses"); ?></th>
+				<th scope="col"><?= $this->htmlTranslate("Late"); ?></th>
+				<th scope="col"><?= $this->htmlTranslate("Could not test"); ?></th>
+				<th scope="col"><?= $this->htmlTranslate("Not responded"); ?></th>
+				<th scope="col"><?= $this->htmlTranslate("Pass rate"); ?></th>
+				<th scope="col"><?= $this->htmlTranslate("Failed"); ?></th>
+				<th scope="col"><?= $this->htmlTranslate("Excluded"); ?></th>
+			</tr>
+		</thead>
+		<tbody></tbody>
+	</table>
+</div>
+<div id="prrEmpty"></div>
+
+<script type="text/javascript" src="<?php echo $this->assetUrl('js/daterangepicker.js'); ?>"></script>
+<script type="text/javascript">
+	var prrText = {
+		notSet: "<?= $this->jsTranslate("Not set"); ?>",
+		notEvaluated: "<?= $this->jsTranslate("Not evaluated yet"); ?>",
+		of: "<?= $this->jsTranslate("%s of %s"); ?>",
+		onTime: "<?= $this->jsTranslate("On time"); ?>",
+		late: "<?= $this->jsTranslate("Late"); ?>",
+		notTested: "<?= $this->jsTranslate("Could not test"); ?>",
+		notResponded: "<?= $this->jsTranslate("Not responded"); ?>",
+		enrolled: "<?= $this->jsTranslate("Enrolled"); ?>",
+		loading: "<?= $this->jsTranslate("Loading data from server"); ?>",
+		failed: "<?= $this->jsTranslate("Failed to load. Please try again."); ?>",
+		chartNote: "<?= $this->jsTranslate("The chart shows the first %s groups of the table. The table lists every group."); ?>",
+		noData: "<?= $this->jsTranslate("No results for these filters"); ?>",
+		download: "<?= $this->jsTranslate("Unable to generate download"); ?>"
+	};
+	var prrGroupLabels = <?= json_encode($groupings); ?>;
+	var prrChartLimit = 15;
+	var prrGroupBy = 'region';
+	var prrRequest = null;
+	var prrReady = false;
+
+	try {
+		prrGroupBy = localStorage.getItem('prrGroupBy') || prrGroupBy;
+	} catch (e) { }
+	if (!prrGroupLabels[prrGroupBy]) {
+		prrGroupBy = 'region';
+	}
+
+	$(function () {
+		$('#dateRange').daterangepicker({
+			locale: {
+				cancelLabel: "<?= $this->jsTranslate("Clear"); ?>",
+				format: 'DD-MMM-YYYY',
+				separator: ' to '
+			},
+			autoApply: true,
+			showDropdowns: true,
+			alwaysShowCalendars: true,
+			// Some programmes run only one or two rounds a year, so three years
+			// shows enough of them.
+			startDate: moment().subtract(3, 'year'),
+			endDate: moment(),
+			maxDate: moment(),
+			ranges: eptDateRanges()
+		}).on('apply.daterangepicker', function () {
+			$(this).trigger('change');
+		}).on('cancel.daterangepicker', function () {
+			$(this).val('').trigger('change');
+		});
+
+		$('#dateRange, #scheme').on('change', function () {
+			if (prrReady) {
+				loadParticipantResponse();
+			}
+		});
+
+		$('#prrGroupBy').on('click', 'button', function () {
+			prrGroupBy = $(this).data('group-by');
+			try {
+				localStorage.setItem('prrGroupBy', prrGroupBy);
+			} catch (e) { }
+			loadParticipantResponse();
+		});
+
+		// A group row lists the group's shipments under it.
+		$('#prrTable tbody').on('click', 'tr.prr-group', function () {
+			toggleGroupShipments($(this));
+		});
+	});
+
+	// The first load waits for the page to load, after collapsible-filters.phtml
+	// has pre-selected the only scheme, so the report loads once with it.
+	$(window).on('load', function () {
+		prrReady = true;
+		loadParticipantResponse();
+	});
+
+	function prrParams(extra) {
+		var range = ($('#dateRange').val() || '').split(' to ');
+		return $.extend({
+			groupBy: prrGroupBy,
+			startDate: range[0] || '',
+			endDate: range[1] || '',
+			scheme: $('#scheme').val() || ''
+		}, extra || {});
+	}
+
+	function prrEscape(value) {
+		return $('<div/>').text(value == null ? '' : String(value)).html();
+	}
+
+	function prrNumber(n) {
+		return Number(n).toLocaleString();
+	}
+
+	function prrOf(n, total) {
+		return prrText.of.replace('%s', prrNumber(n)).replace('%s', prrNumber(total));
+	}
+
+	function prrRate(n, total, barClass) {
+		if (!total) {
+			return '<span class="cell-muted">' + prrEscape(prrText.notEvaluated) + '</span>';
+		}
+		var pct = Math.round(n * 100 / total);
+		return '<span class="rate-figure">' + pct + '%</span>' +
+			'<span class="rate-bar ' + (barClass || '') + '"><span style="width:' + pct + '%"></span></span>' +
+			'<span class="cell-sub">' + prrEscape(prrOf(n, total)) + '</span>';
+	}
+
+	function prrCount(n, bad) {
+		return n > 0 && bad ? '<span class="is-bad">' + prrNumber(n) + '</span>' : prrNumber(n);
+	}
+
+	function prrFigures(row) {
+		return '<td>' + prrRate(row.responded, row.enrolled) + '</td>' +
+			'<td>' + prrCount(row.late) + '</td>' +
+			'<td>' + prrCount(row.not_tested) + '</td>' +
+			'<td>' + prrCount(row.not_responded, true) + '</td>' +
+			'<td>' + prrRate(row.passed, row.passed + row.failed, 'is-pass') + '</td>' +
+			'<td>' + prrCount(row.failed, true) + '</td>' +
+			'<td>' + prrCount(row.excluded) + '</td>';
+	}
+
+	function prrGroupName(name) {
+		return name === '' ? '<span class="is-unset">' + prrEscape(prrText.notSet) + '</span>' : prrEscape(name);
+	}
+
+	function loadParticipantResponse() {
+		$('#prrGroupBy button').each(function () {
+			$(this).toggleClass('active', $(this).data('group-by') === prrGroupBy);
+		});
+		$('#prrGroupHeading').text(prrGroupLabels[prrGroupBy]);
+		$('#prrTable tbody').html('<tr><td colspan="9" class="cell-muted">' + prrEscape(prrText.loading) + '</td></tr>');
+
+		if (prrRequest) {
+			prrRequest.abort();
+		}
+		prrRequest = $.post("<?= $prrDataUrl; ?>", prrParams(), function (rows) {
+			rows = rows || [];
+			if (!rows.length) {
+				$('#prrResult').hide();
+				reportZeroState.show('#prrEmpty', 'empty');
+				return;
+			}
+			$('#prrEmpty').empty();
+			$('#prrResult').show();
+			drawParticipantResponseTable(rows);
+			drawParticipantResponseChart(rows);
+		}, 'json').fail(function (xhr, status) {
+			if (status !== 'abort') {
+				$('#prrTable tbody').html('<tr><td colspan="9" class="is-bad">' + prrEscape(prrText.failed) + '</td></tr>');
+			}
+		});
+	}
+
+	function drawParticipantResponseTable(rows) {
+		var html = '';
+		$.each(rows, function (i, row) {
+			html += '<tr class="prr-group" data-group="' + prrEscape(row.group_name) + '">' +
+				'<td><div class="prr-name"><span class="prr-toggle"><i class="icon-chevron-right" aria-hidden="true"></i></span>' +
+				'<span>' + prrGroupName(row.group_name) + '</span></div></td>' +
+				'<td>' + prrNumber(row.participants) + '</td>' +
+				prrFigures(row) + '</tr>';
+		});
+		$('#prrTable tbody').html(html);
+	}
+
+	function toggleGroupShipments($row) {
+		if ($row.hasClass('is-open')) {
+			$row.removeClass('is-open').nextUntil('tr.prr-group').remove();
+			return;
+		}
+		$row.addClass('is-open');
+		var $loading = $('<tr class="prr-shipment"><td colspan="9" class="cell-muted">' + prrEscape(prrText.loading) + '</td></tr>');
+		$row.after($loading);
+		$.post("<?= $prrShipmentsUrl; ?>", prrParams({ group: $row.attr('data-group') }), function (rows) {
+			var html = '';
+			$.each(rows || [], function (i, row) {
+				html += '<tr class="prr-shipment">' +
+					'<td>' + prrEscape(row.shipment_code) + '<span class="cell-sub">' +
+					prrEscape(moment(row.shipment_date).format('DD-MMM-YYYY')) +
+					($('#scheme').val() ? '' : ' · ' + prrEscape(row.scheme_name)) + '</span></td>' +
+					'<td>' + prrNumber(row.participants) + '</td>' +
+					prrFigures(row) + '</tr>';
+			});
+			$loading.replaceWith(html);
+		}, 'json').fail(function () {
+			$loading.find('td').attr('class', 'is-bad').text(prrText.failed);
+		});
+	}
+
+	// One stacked bar per group. The four parts add up to the enrolments.
+	function drawParticipantResponseChart(rows) {
+		var shown = rows.slice(0, prrChartLimit);
+		$('#prrChartNote').toggle(rows.length > prrChartLimit)
+			.text(prrText.chartNote.replace('%s', prrChartLimit));
+		var series = function (key) {
+			return $.map(shown, function (row) { return row[key]; });
+		};
+		Highcharts.chart('prrChart', {
+			chart: { type: 'bar', height: 70 + shown.length * 34, style: { fontFamily: 'inherit' } },
+			title: { text: null },
+			credits: { enabled: false },
+			exporting: { enabled: false },
+			colors: ['#3b6fb6', '#e0a526', '#8e9aab', '#d9534f'],
+			xAxis: {
+				categories: $.map(shown, function (row) { return row.group_name === '' ? prrText.notSet : row.group_name; }),
+				labels: { style: { fontSize: '12px' } }
+			},
+			yAxis: {
+				min: 0,
+				allowDecimals: false,
+				title: { text: prrText.enrolled },
+				reversedStacks: false
+			},
+			legend: { align: 'left', verticalAlign: 'top', itemStyle: { fontWeight: '400' } },
+			tooltip: { shared: true },
+			plotOptions: { series: { stacking: 'normal', borderWidth: 0, pointPadding: 0.05, groupPadding: 0.08 } },
+			series: [
+				{ name: prrText.onTime, data: series('on_time') },
+				{ name: prrText.late, data: series('late') },
+				{ name: prrText.notTested, data: series('not_tested') },
+				{ name: prrText.notResponded, data: series('not_responded') }
+			]
+		});
+	}
+
+	function exportParticipantResponse() {
+		$.blockUI();
+		$.post("<?= $prrExportUrl; ?>", prrParams(), function (data) {
+			$.unblockUI();
+			if (data && data.file) {
+				document.location.href = '/temporary/' + data.file;
+			} else {
+				alert(prrText.download);
+			}
+		}, 'json').fail(function () {
+			$.unblockUI();
+			alert(prrText.download);
+		});
+	}
+</script>
