@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ePT\n"
 "Report-Msgid-Bugs-To: support@deforay.com\n"
-"POT-Creation-Date: 2026-10-18 12:54+0530\n"
+"POT-Creation-Date: 2026-10-18 12:55+0530\n"
 "PO-Revision-Date: 2026-07-07 08:33+0530\n"
 "Last-Translator: Amit <amit@deforay.com>\n"
 "Language-Team: \n"
@@ -2943,6 +2943,7 @@ msgid "My PT"
 msgstr "PT của tôi"
 
 #: application/layouts/scripts/menu.phtml:43
+#: application/services/Reports.php:289
 msgid "Overview"
 msgstr "Tổng quan"
 
@@ -13050,7 +13051,6 @@ msgstr "không thuộc vòng này"
 
 #: application/modules/admin/views/scripts/index/index.phtml:1337
 #: application/modules/admin/views/scripts/shipment/partials/schemes/eid.phtml:83
-#: application/services/Reports.php:289
 msgid "Results"
 msgstr "Kết quả"
 
@@ -19564,8 +19564,8 @@ msgid "Result forms for every participant (ZIP)"
 msgstr "Biểu mẫu kết quả của tất cả người tham gia (ZIP)"
 
 #: application/services/Reports.php:289
-msgid "Each participant's response and result (Excel)"
-msgstr "Phản hồi và kết quả của từng người tham gia (Excel)"
+msgid "Participant list, reported results and scores (Excel workbook)"
+msgstr "Danh sách người tham gia, kết quả đã báo cáo và điểm (sổ làm việc Excel)"
 
 #: application/services/Reports.php:291
 msgid "Non-responders"

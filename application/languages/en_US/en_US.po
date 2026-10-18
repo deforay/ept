@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: e-PT\n"
 "Report-Msgid-Bugs-To: support@deforay.com\n"
-"POT-Creation-Date: 2026-10-18 12:54+0530\n"
+"POT-Creation-Date: 2026-10-18 12:55+0530\n"
 "PO-Revision-Date: 2022-06-07 20:34+0530\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -2837,6 +2837,7 @@ msgid "My PT"
 msgstr ""
 
 #: application/layouts/scripts/menu.phtml:43
+#: application/services/Reports.php:289
 msgid "Overview"
 msgstr ""
 
@@ -12908,7 +12909,6 @@ msgstr ""
 
 #: application/modules/admin/views/scripts/index/index.phtml:1337
 #: application/modules/admin/views/scripts/shipment/partials/schemes/eid.phtml:83
-#: application/services/Reports.php:289
 #, fuzzy
 msgid "Results"
 msgstr "Result"
@@ -19613,8 +19613,9 @@ msgid "Result forms for every participant (ZIP)"
 msgstr "PT Participant Info"
 
 #: application/services/Reports.php:289
-msgid "Each participant's response and result (Excel)"
-msgstr ""
+#, fuzzy
+msgid "Participant list, reported results and scores (Excel workbook)"
+msgstr "Participant Name"
 
 #: application/services/Reports.php:291
 #, fuzzy

@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ePT\n"
 "Report-Msgid-Bugs-To: support@deforay.com\n"
-"POT-Creation-Date: 2026-10-18 12:54+0530\n"
+"POT-Creation-Date: 2026-10-18 12:55+0530\n"
 "PO-Revision-Date: 2026-07-07 08:32+0530\n"
 "Last-Translator: Amit <amit@deforay.com>\n"
 "Language-Team: ePT\n"
@@ -2966,6 +2966,7 @@ msgid "My PT"
 msgstr "Mon PT"
 
 #: application/layouts/scripts/menu.phtml:43
+#: application/services/Reports.php:289
 msgid "Overview"
 msgstr "Aperçu"
 
@@ -13168,7 +13169,6 @@ msgstr "hors de ce cycle"
 
 #: application/modules/admin/views/scripts/index/index.phtml:1337
 #: application/modules/admin/views/scripts/shipment/partials/schemes/eid.phtml:83
-#: application/services/Reports.php:289
 msgid "Results"
 msgstr "Résultats"
 
@@ -19736,8 +19736,8 @@ msgid "Result forms for every participant (ZIP)"
 msgstr "Formulaires de résultats de tous les participants (ZIP)"
 
 #: application/services/Reports.php:289
-msgid "Each participant's response and result (Excel)"
-msgstr "Réponse et résultat de chaque participant (Excel)"
+msgid "Participant list, reported results and scores (Excel workbook)"
+msgstr "Liste des participants, résultats rapportés et scores (classeur Excel)"
 
 #: application/services/Reports.php:291
 msgid "Non-responders"

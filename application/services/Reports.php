@@ -286,7 +286,7 @@ class Application_Service_Reports
         // The participant copy of the page shows the reports only.
         $exports = [];
         if (!$forParticipant && $stage !== 'notshipped' && !$isCancelled) {
-            $exports[] = $link($t->_('Results'), $t->_("Each participant's response and result (Excel)"), 'icon-table', 'href="javascript:void(0);" onclick="generateShipmentParticipantList(\'' . $sid . '\', \'' . $esc($aRow['scheme_type']) . '\')"');
+            $exports[] = $link($t->_('Overview'), $t->_('Participant list, reported results and scores (Excel workbook)'), 'icon-table', 'href="javascript:void(0);" onclick="generateShipmentParticipantList(\'' . $sid . '\', \'' . $esc($aRow['scheme_type']) . '\')"');
             if ($stage !== 'finalized') {
                 $exports[] = $link($t->_('Non-responders'), $t->_('Participants who have not responded yet (Excel)'), 'icon-warning-sign', 'href="javascript:void(0);" onclick="exportNotRespondedShipment(\'' . $sid . '\', \''
                     . base64_encode((string) $aRow['shipment_code']) . '\', \''
