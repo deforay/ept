@@ -1,15 +1,54 @@
+# The Dockerfile copies the whole build context (COPY . .). Everything below
+# stays out of the image: dependencies the build reinstalls, instance secrets,
+# runtime data and local tooling. Keep this in step with .gitignore.
+
+# Reinstalled by the build
 vendor/
+vendor.prev/
 node_modules/
+
+# Version control and local tooling
 .git/
+.claude/
+.ddev/
+.vscode/
+.venv/
+.idea/
+cypress/
 site/
+TODO.md
+*.orig
+.php-cs-fixer.cache
+settings.local.json
+
+# Instance secrets and config, wherever they sit
+**/application.ini
+**/config.ini
+**/.env
+ept-setup.sh
+lamp-setup.sh
+docker/certbot/
+
+# Runtime data: participant files, caches, logs and backups.
+# Keep the index.php placeholders so the folders still exist in the image.
+application/cache/*
+!application/cache/index.php
 logs/
+backup/
 backups/
 downloads/
 public/temporary/
 public/uploads/
-application/configs/application.ini
-application/configs/config.ini
-application/configs/.env
+public/docs/*
+!public/docs/index.php
+scheduled-jobs/certificate/*
+!scheduled-jobs/certificate/index.php
+scheduled-jobs/certificates/*
+!scheduled-jobs/certificates/index.php
+scheduled-jobs/certificate-templates/*
+!scheduled-jobs/certificate-templates/index.php
+scheduled-jobs/*.docx
+
 *.log
 .DS_Store
-docker/certbot/
+Thumbs.db
