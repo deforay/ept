@@ -247,7 +247,10 @@ class Application_Service_Reports
             . '<i class="' . $icon . '" aria-hidden="true"></i> ' . $esc($label) . '</a>';
         $sid = base64_encode((string) $aRow['shipment_id']);
         $stage = $aRow['stage'];
-        $isCancelled = $stage === 'cancelled';
+        // A cancelled shipment offers nothing to download.
+        if ($stage === 'cancelled') {
+            return '<span class="cell-muted">&ndash;</span>';
+        }
 
         $reports = [];
         if (in_array($stage, ['reports', 'finalized'], true)) {
@@ -279,7 +282,7 @@ class Application_Service_Reports
 
         // The participant copy of the page shows the reports only.
         $exports = [];
-        if (!$forParticipant && $stage !== 'notshipped' && !$isCancelled) {
+        if (!$forParticipant && $stage !== 'notshipped') {
             $exports[] = $link($t->_('Overview'), $t->_('Participant list, reported results and scores (Excel workbook)'), 'icon-table', 'href="javascript:void(0);" onclick="generateShipmentParticipantList(\'' . $sid . '\', \'' . $esc($aRow['scheme_type']) . '\')"');
             if ($stage !== 'finalized') {
                 $exports[] = $link($t->_('Non-responders'), $t->_('Participants who have not responded yet (Excel)'), 'icon-warning-sign', 'href="javascript:void(0);" onclick="exportNotRespondedShipment(\'' . $sid . '\', \''
