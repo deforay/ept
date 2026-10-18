@@ -241,9 +241,9 @@ class Application_Service_Reports
     {
         $t = $this->translator;
         $esc = fn ($value) => htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8');
-        // Each download is a small button with its own icon, so they can be told
-        // apart at a glance. The title says what the file holds.
-        $link = fn (string $label, string $title, string $icon, string $attrs) => '<a class="dl-btn" title="' . $esc($title) . '" ' . $attrs . '>'
+        // Each download has its own icon, so they can be told apart at a glance.
+        // The title says what the file holds.
+        $link = fn (string $label, string $title, string $icon, string $attrs, string $class = 'dl-btn') => '<a class="' . $class . '" title="' . $esc($title) . '" ' . $attrs . '>'
             . '<i class="' . $icon . '" aria-hidden="true"></i> ' . $esc($label) . '</a>';
         $sid = base64_encode((string) $aRow['shipment_id']);
         $stage = $aRow['stage'];
@@ -283,7 +283,8 @@ class Application_Service_Reports
         // The participant copy of the page shows the reports only.
         $exports = [];
         if (!$forParticipant && $stage !== 'notshipped') {
-            $exports[] = $link($t->_('Overview'), $t->_('Participant list, reported results and scores (Excel workbook)'), 'icon-table', 'href="javascript:void(0);" onclick="generateShipmentParticipantList(\'' . $sid . '\', \'' . $esc($aRow['scheme_type']) . '\')"');
+            // Overview is the main download, so it is the one drawn as a button.
+            $exports[] = $link($t->_('Overview'), $t->_('Participant list, reported results and scores (Excel workbook)'), 'icon-table', 'href="javascript:void(0);" onclick="generateShipmentParticipantList(\'' . $sid . '\', \'' . $esc($aRow['scheme_type']) . '\')"', 'dl-btn is-primary');
             if ($stage !== 'finalized') {
                 $exports[] = $link($t->_('Non-responders'), $t->_('Participants who have not responded yet (Excel)'), 'icon-warning-sign', 'href="javascript:void(0);" onclick="exportNotRespondedShipment(\'' . $sid . '\', \''
                     . base64_encode((string) $aRow['shipment_code']) . '\', \''
@@ -294,7 +295,8 @@ class Application_Service_Reports
             $exports[] = $link($t->_('Feedback'), $t->_("Participants' feedback answers (Excel)"), 'icon-comments', 'href="javascript:void(0);" onclick="downloadFeedbackReport(' . (int) $aRow['shipment_id'] . ')"');
         }
 
-        if (!$forParticipant && $aRow['scheme_type'] === 'tb' && Application_Service_Common::getConfig('instance') === 'mtbept') {
+        // The forms matter while the round is running, not once it is finalized.
+        if (!$forParticipant && $stage !== 'finalized' && $aRow['scheme_type'] === 'tb' && Application_Service_Common::getConfig('instance') === 'mtbept') {
             $tbFormPath = Application_Service_Shipments::resolveTbFormsZip($aRow['shipment_code']);
             if ($tbFormPath !== null) {
                 $exports[] = $link($t->_('TB forms'), $t->_('Result forms for every participant (ZIP)'), 'icon-file-alt', 'target="_blank" href="/admin/shipment/download-tb/sid/' . (int) $aRow['shipment_id'] . '/file/' . base64_encode($tbFormPath) . '"');

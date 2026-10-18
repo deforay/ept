@@ -177,24 +177,14 @@ include APPLICATION_PATH . '/views/partials/report-zero-state.phtml';
 		margin-top: 4px;
 	}
 
-	#shipmentTable .dl-btn.is-missing {
+	/* Downloads: Overview is a button, the rest are quiet icon links that only
+	   get a background on hover. The transparent border keeps every item the
+	   same height as the button, so the rows line up. */
+	#shipmentTable .dl-btn {
 		display: inline-block;
-		padding: 2px 8px;
-		border: 1px dashed #d5dbe3;
+		padding: 2px 7px;
+		border: 1px solid transparent;
 		border-radius: 4px;
-		color: #a7afba;
-		font-size: 12px;
-		line-height: 18px;
-		white-space: nowrap;
-		cursor: help;
-	}
-
-	#shipmentTable a.dl-btn {
-		display: inline-block;
-		padding: 2px 8px;
-		border: 1px solid #cfdae8;
-		border-radius: 4px;
-		background: #f5f8fc;
 		color: #2f4f7a;
 		font-size: 12px;
 		line-height: 18px;
@@ -204,22 +194,34 @@ include APPLICATION_PATH . '/views/partials/report-zero-state.phtml';
 
 	#shipmentTable a.dl-btn:hover,
 	#shipmentTable a.dl-btn:focus {
+		background: #eef3f9;
+		color: #1f3a5f;
+	}
+
+	#shipmentTable a.dl-btn.is-primary {
+		border-color: #cfdae8;
+		background: #f5f8fc;
+	}
+
+	#shipmentTable a.dl-btn.is-primary:hover,
+	#shipmentTable a.dl-btn.is-primary:focus {
 		border-color: #4a6fa5;
 		background: #4a6fa5;
 		color: #fff;
 	}
 
 	#shipmentTable a.dl-btn[data-draft="yes"] {
-		border-color: #f0c98a;
-		background: #fff7ea;
 		color: #8a4b00;
 	}
 
 	#shipmentTable a.dl-btn[data-draft="yes"]:hover,
 	#shipmentTable a.dl-btn[data-draft="yes"]:focus {
-		border-color: #c98a2b;
-		background: #c98a2b;
-		color: #fff;
+		background: #fff3e0;
+	}
+
+	#shipmentTable .dl-btn.is-missing {
+		color: #b3bac4;
+		cursor: help;
 	}
 
 	#shipmentTable a.dl-btn i {
