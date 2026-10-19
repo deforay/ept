@@ -2275,9 +2275,8 @@ class Application_Model_Tb
             }
         }
 
-        foreach (range('A', 'Z') as $columnID) {
-            $sheet->getColumnDimension($columnID)
-                ->setAutoSize(true);
+        foreach ($sheet->getColumnIterator() as $column) {
+            $sheet->getColumnDimension($column->getColumnIndex())->setAutoSize(true);
         }
         return $sheet;
     }

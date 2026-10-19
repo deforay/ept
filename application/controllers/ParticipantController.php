@@ -29,9 +29,6 @@ class ParticipantController extends Zend_Controller_Action
             ->addActionContext('participant-response', 'html')
             ->addActionContext('shipments-reports', 'html')
             ->addActionContext('get-shipment-participant-list', 'html')
-            ->addActionContext('tb-results', 'html')
-            ->addActionContext('results-count', 'html')
-            ->addActionContext('tb-all-sites-results', 'html')
             ->addActionContext('download-pending-sites', 'html')
             //->addActionContext('download-file', 'html')
             ->initContext();
@@ -67,7 +64,8 @@ class ParticipantController extends Zend_Controller_Action
         'get-shipment-participant-list',
         'response-chart',
         'tb-results',
-        'results-count',
+        'tb-results-data',
+        'tb-results-export',
         'tb-participants-per-country',
         'tb-participants-per-country-data',
         'tb-participants-per-country-shipments',
@@ -75,6 +73,7 @@ class ParticipantController extends Zend_Controller_Action
         'xtpt-indicators',
         'xtpt-indicators-generate',
         'tb-all-sites-results',
+        'tb-all-sites-results-generate',
     ];
 
     public function preDispatch()
@@ -951,25 +950,25 @@ class ParticipantController extends Zend_Controller_Action
     {
         $this->_helper->layout()->activeMenu = 'ptcc-reports';
         $this->_helper->layout()->activeSubMenu = 'tb-results';
-        /** @var Zend_Controller_Request_Http $request */
-        $request = $this->getRequest();
-        if ($request->isPost()) {
-            $params = $this->getAllParams();
-            $reportService = new Application_Service_Reports();
-            $response = $reportService->getResultsPerSiteReport($params);
-            $this->view->response = $response;
-        }
+        $participants = new Application_Service_Participants();
+        $scheme = new Application_Service_Schemes();
+        $this->view->schemes = array_values(array_filter($scheme->getAllSchemes(), fn ($s) => $s['scheme_id'] === 'tb'));
+        $this->view->countries = $participants->getParticipantCountriesList();
+        $this->view->regions = $participants->getAllParticipantRegion();
+        $this->view->states = $participants->getAllParticipantStates();
+        $this->view->districts = $participants->getAllParticipantDistricts();
     }
 
-    public function resultsCountAction()
+    public function tbResultsDataAction()
     {
-        /** @var Zend_Controller_Request_Http $request */
-        $request = $this->getRequest();
-        if ($request->isPost()) {
-            $params = $this->getAllParams();
-            $reportService = new Application_Service_Reports();
-            $this->view->resultsCount = $reportService->getResultsPerSiteCount($params);
-        }
+        $reportService = new Application_Service_Reports();
+        $this->_helper->json($reportService->getTbResultsPerSite($this->getAllParams()));
+    }
+
+    public function tbResultsExportAction()
+    {
+        $reportService = new Application_Service_Reports();
+        $this->_helper->json(['file' => $reportService->exportTbResultsPerSite($this->getAllParams())]);
     }
 
     public function tbParticipantsPerCountryAction()
@@ -1022,18 +1021,15 @@ class ParticipantController extends Zend_Controller_Action
     {
         $this->_helper->layout()->activeMenu = 'ptcc-reports';
         $this->_helper->layout()->activeSubMenu = 'tb-all-sites-results';
-        /** @var Zend_Controller_Request_Http $request */
-        $request = $this->getRequest();
-        if ($request->isPost()) {
-            $params = $this->getAllParams();
+        $reportService = new Application_Service_Reports();
+        $this->view->shipments = $reportService->getResponseReportShipments('tb', null, null);
+    }
 
-            /* $evalService = new Application_Service_Evaluation();
-            $evalService->getEvaluateReportsInPdf($params["shipmentId"], null, null); */
-
-            $reportService = new Application_Service_Reports();
-            $response = $reportService->getTbAllSitesResultsReport($params);
-            $this->view->response = $response;
-        }
+    public function tbAllSitesResultsGenerateAction()
+    {
+        $reportService = new Application_Service_Reports();
+        $result = $reportService->getTbAllSitesResultsReport(['shipmentId' => (int) $this->getParam('shipmentId')]);
+        $this->_helper->json(['file' => is_array($result) ? ($result['report-name'] ?? '') : '']);
     }
 
     public function downloadPendingSitesAction()

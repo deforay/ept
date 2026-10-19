@@ -2,5 +2,6 @@
 	<h3><?= $this->translate->_("XTPT Indicators & Panel Statistics"); ?></h3>
 </legend>
 <?php
-$xtptGenerateUrl = $this->url(['module' => 'default', 'controller' => 'participant', 'action' => 'xtpt-indicators-generate'], 'default', true);
-include APPLICATION_PATH . '/views/partials/xtpt-indicators-report.phtml';
+$wbGenerateUrl = $this->url(['module' => 'default', 'controller' => 'participant', 'action' => 'xtpt-indicators-generate'], 'default', true);
+$wbIntro = $this->translate->_("Builds an Excel workbook for one TB shipment. The workbook has two sheets: Panel Statistics, with the XTPT indicators, and All Sites' Results.");
+include APPLICATION_PATH . '/views/partials/tb-workbook-report.phtml';

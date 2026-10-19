@@ -17,25 +17,19 @@ class Reports_TbAllSitesResultsController extends Zend_Controller_Action
             }
             $this->redirect('/admin');
         }
-        $ajaxContext = $this->_helper->getHelper('AjaxContext');
-        $ajaxContext->addActionContext('index', 'html')
-            ->initContext();
         $this->_helper->layout()->pageName = 'report';
     }
 
     public function indexAction()
     {
-        /** @var Zend_Controller_Request_Http $request */
-        $request = $this->getRequest();
-        if ($request->isPost()) {
-            $params = $this->getAllParams();
+        $reportService = new Application_Service_Reports();
+        $this->view->shipments = $reportService->getResponseReportShipments('tb', null, null);
+    }
 
-            $evalService = new Application_Service_Evaluation();
-            $evalService->getEvaluateReportsInPdf($params['shipmentId'], null, null);
-
-            $reportService = new Application_Service_Reports();
-            $response = $reportService->getTbAllSitesResultsReport($params);
-            $this->view->response = $response;
-        }
+    public function generateAction()
+    {
+        $reportService = new Application_Service_Reports();
+        $result = $reportService->getTbAllSitesResultsReport(['shipmentId' => (int) $this->getParam('shipmentId')]);
+        $this->_helper->json(['file' => is_array($result) ? ($result['report-name'] ?? '') : '']);
     }
 }

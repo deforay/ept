@@ -17,34 +17,35 @@ class Reports_TbResultsController extends Zend_Controller_Action
             }
             $this->redirect('/admin');
         }
-        $ajaxContext = $this->_helper->getHelper('AjaxContext');
-        $ajaxContext->addActionContext('index', 'html')
-            ->addActionContext('report', 'html')
-            ->addActionContext('results-count', 'html')
-            ->initContext();
         $this->_helper->layout()->pageName = 'report';
     }
 
     public function indexAction()
     {
-        /** @var Zend_Controller_Request_Http $request */
-        $request = $this->getRequest();
-        if ($request->isPost()) {
-            $params = $this->getAllParams();
-            $reportService = new Application_Service_Reports();
-            $response = $reportService->getResultsPerSiteReport($params);
-            $this->view->response = $response;
-        }
+        $participants = new Application_Service_Participants();
+        $scheme = new Application_Service_Schemes();
+        $this->view->schemes = array_values(array_filter($scheme->getAllSchemes(), fn ($s) => $s['scheme_id'] === 'tb'));
+        $this->view->countries = $participants->getParticipantCountriesList();
+        $this->view->regions = $participants->getAllParticipantRegion();
+        $this->view->states = $participants->getAllParticipantStates();
+        $this->view->districts = $participants->getAllParticipantDistricts();
     }
 
-    public function resultsCountAction()
+    public function dataAction()
     {
-        /** @var Zend_Controller_Request_Http $request */
-        $request = $this->getRequest();
-        if ($request->isPost()) {
-            $params = $this->getAllParams();
-            $reportService = new Application_Service_Reports();
-            $this->view->resultsCount = $reportService->getResultsPerSiteCount($params);
-        }
+        $reportService = new Application_Service_Reports();
+        $this->_helper->json($reportService->getTbResultsPerSite($this->getAllParams()));
+    }
+
+    public function shipmentsAction()
+    {
+        $reportService = new Application_Service_Reports();
+        $this->_helper->json($reportService->getResponseReportShipments('tb', $this->getParam('startDate'), $this->getParam('endDate')));
+    }
+
+    public function exportAction()
+    {
+        $reportService = new Application_Service_Reports();
+        $this->_helper->json(['file' => $reportService->exportTbResultsPerSite($this->getAllParams())]);
     }
 }

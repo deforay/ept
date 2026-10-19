@@ -4,8 +4,9 @@
 	</div>
 	<div class="data-list-body">
 		<?php
-		$xtptGenerateUrl = $this->url(['module' => 'reports', 'controller' => 'xtpt-indicators', 'action' => 'generate'], 'default', true);
-		include APPLICATION_PATH . '/views/partials/xtpt-indicators-report.phtml';
+		$wbGenerateUrl = $this->url(['module' => 'reports', 'controller' => 'xtpt-indicators', 'action' => 'generate'], 'default', true);
+		$wbIntro = $this->translate->_("Builds an Excel workbook for one TB shipment. The workbook has two sheets: Panel Statistics, with the XTPT indicators, and All Sites' Results.");
+		include APPLICATION_PATH . '/views/partials/tb-workbook-report.phtml';
 		?>
 	</div>
 </div>

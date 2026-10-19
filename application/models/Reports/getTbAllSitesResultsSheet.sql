@@ -47,7 +47,6 @@ SELECT
     ) AS `Instrument Serial`,
     flattenedevaluationresults.`Ability to test panel`,
     flattenedevaluationresults.`Reason for No Submission`,
-    flattenedevaluationresults.`Reason for No Submission`,
     flattenedevaluationresults.`1-Test Date`,
     flattenedevaluationresults.`1-Error Code`,
     flattenedevaluationresults.`1-MTB Result`,
@@ -128,10 +127,10 @@ FROM
             ) AS `Site Name/Location`,
             participant.unique_identifier AS `Participant ID`,
             CASE
-                WHEN (IFNULL(shipment_participant_map.response_status, 'noresponse') like 'responded' AND IFNULL(shipment_participant_map.is_response_late, 'no') like 'yes') THEN 'Yes (Late)'
-                WHEN IFNULL(shipment_participant_map.response_status, 'noresponse') like 'noresponse' OR shipment_participant_map.response_status like '' THEN 'No'
-                WHEN IFNULL(shipment_participant_map.response_status, 'noresponse') like 'nottested' THEN 'Yes (Not Tested)'
-                WHEN IFNULL(shipment_participant_map.response_status, 'noresponse') like 'responded' THEN 'Yes'
+                WHEN shipment_participant_map.response_status = 'late' OR (shipment_participant_map.response_status = 'responded' AND IFNULL(shipment_participant_map.is_response_late, 'no') = 'yes') THEN 'Yes (Late)'
+                WHEN shipment_participant_map.response_status = 'nottested' THEN 'Yes (Not Tested)'
+                WHEN shipment_participant_map.response_status = 'responded' THEN 'Yes'
+                ELSE 'No'
             END AS `Submitted`,
             CASE
                 WHEN shipment_participant_map.is_excluded = 'yes' THEN 'Yes' ELSE 'No'
@@ -427,7 +426,12 @@ FROM
             response_result_tb_5.calculated_score AS `5-Score`,
             CONCAT(TRIM(SUM(IFNULL(shipment_participant_map.documentation_score, 0) + IFNULL(shipment_participant_map.shipment_score, 0)))+0, '%')AS `Final score`,
             CASE
-                WHEN r_results.result_name = 'Pass' THEN 'Satisfactory' ELSE 'Unsatisfactory'
+                WHEN IFNULL(shipment_participant_map.response_status, '') NOT IN ('responded', 'late', 'nottested') THEN 'Not Submitted'
+                WHEN shipment_participant_map.response_status = 'nottested' OR IFNULL(shipment_participant_map.is_pt_test_not_performed, 'no') = 'yes' THEN 'Not Tested'
+                WHEN IFNULL(shipment_participant_map.is_excluded, 'no') = 'yes' OR shipment_participant_map.final_result = 3 THEN 'Excluded'
+                WHEN shipment_participant_map.final_result = 1 THEN 'Satisfactory'
+                WHEN shipment_participant_map.final_result = 2 THEN 'Unsatisfactory'
+                ELSE 'Not Evaluated'
             END AS `Satisfactory/Unsatisfactory`
         FROM
             shipment

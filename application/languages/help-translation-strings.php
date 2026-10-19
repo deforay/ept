@@ -31,6 +31,8 @@ _('admin');
 _('Admin Users');
 // admin/dts-settings#tags
 _('algorithm');
+// admin/reports-tb-all-sites-results#tags
+_('all sites');
 // admin/reports-annual#tags
 _('annual');
 // admin/reports-annual#title
@@ -149,12 +151,14 @@ _('Evaluate PT Survey');
 _('evaluation');
 // admin/reports-shipments#summary
 _('Every shipment with its responses, pass rate, status and downloads');
-// admin/enrollments-bulk-enrollment#tags, admin/participants-bulk-import#tags, admin/reports-annual#tags, admin/reports-xtpt-indicators#tags
+// admin/enrollments-bulk-enrollment#tags, admin/participants-bulk-import#tags, admin/reports-annual#tags, admin/reports-tb-all-sites-results#tags, admin/reports-xtpt-indicators#tags
 _('excel');
 // admin/reports-annual#tags
 _('excellence');
 // admin/reports-xtpt-indicators#summary
 _('Excel workbook of XTPT indicators and all sites\' results for one TB shipment');
+// admin/reports-tb-all-sites-results#summary
+_('Excel workbook with every TB participant\'s results for one shipment');
 // admin/eid-assay-add#tags, admin/eid-assay#tags
 _('extraction');
 // admin/reports-participant-performance#tags
@@ -281,7 +285,7 @@ _('re-evaluate');
 _('regions');
 // admin/vl-assay-edit#summary
 _('Rename a Viral Load assay / platform');
-// admin/evaluate#tags, admin/report-config#tags, admin/reports-annual#tags, admin/reports-corrective-actions#tags, admin/reports-distribution#tags, admin/reports-finalize#tags, admin/reports-participant-performance#tags, admin/reports-participant-response#tags, admin/reports-participant-trends#tags, admin/reports-shipment-response#tags, admin/reports-shipments#tags, admin/reports-tb-participants-per-country#tags, admin/reports-xtpt-indicators#tags
+// admin/evaluate#tags, admin/report-config#tags, admin/reports-annual#tags, admin/reports-corrective-actions#tags, admin/reports-distribution#tags, admin/reports-finalize#tags, admin/reports-participant-performance#tags, admin/reports-participant-response#tags, admin/reports-participant-trends#tags, admin/reports-shipment-response#tags, admin/reports-shipments#tags, admin/reports-tb-all-sites-results#tags, admin/reports-tb-participants-per-country#tags, admin/reports-tb-results#tags, admin/reports-xtpt-indicators#tags
 _('reports');
 // admin/reports-participant-response#summary
 _('Response and pass rates by region, district, network tier, affiliation or enrolled program');
@@ -289,10 +293,14 @@ _('Response and pass rates by region, district, network tier, affiliation or enr
 _('response rate');
 // admin/reports-participant-trends#summary
 _('Response rate, timeliness and pass rate across shipments, with a breakdown by region');
+// admin/reports-tb-all-sites-results#tags, admin/reports-tb-results#tags
+_('results');
 // admin/users#tags
 _('roles');
 // admin/shipment-add#tags, admin/shipment#tags
 _('samples');
+// admin/reports-tb-results#tags
+_('satisfactory');
 // admin/enrollments-add#tags, admin/enrollments-bulk-enrollment#tags, admin/enrollments#tags
 _('scheme');
 // admin/participants-edit#tags
@@ -339,12 +347,16 @@ _('status');
 _('system-admin');
 // admin/global-config#summary
 _('System-wide settings that apply across the whole ePT app');
-// admin/reports-tb-participants-per-country#tags, admin/reports-xtpt-indicators#tags, admin/tb-settings#tags
+// admin/reports-tb-all-sites-results#tags, admin/reports-tb-participants-per-country#tags, admin/reports-tb-results#tags, admin/reports-xtpt-indicators#tags, admin/tb-settings#tags
 _('tb');
+// admin/reports-tb-all-sites-results#title
+_('TB All Sites\' Results');
 // admin/reports-tb-participants-per-country#summary
 _('TB participants, response rate and pass rate for each country');
 // admin/reports-tb-participants-per-country#title
 _('TB Participants per Country');
+// admin/reports-tb-results#title
+_('TB Result of PT Panel per Site');
 // admin/tb-settings#title
 _('TB Settings');
 // admin/report-config#tags
@@ -359,10 +371,14 @@ _('Test Kits');
 _('The list of shipments inside a PT Survey — what they are and how to manage them');
 // admin/global-config#tags
 _('theme');
+// admin/reports-tb-results#summary
+_('The result of every TB participant in each shipment');
 // admin/reports-participant-trends#tags
 _('trends');
-// admin/reports-tb-participants-per-country#tags, admin/reports-xtpt-indicators#tags, admin/tb-settings#tags
+// admin/reports-tb-all-sites-results#tags, admin/reports-tb-participants-per-country#tags, admin/reports-tb-results#tags, admin/reports-xtpt-indicators#tags, admin/tb-settings#tags
 _('tuberculosis');
+// admin/reports-tb-results#tags
+_('unsatisfactory');
 // admin/distributions-edit#tags, admin/participants-edit#tags
 _('update');
 // admin/participants-edit#summary

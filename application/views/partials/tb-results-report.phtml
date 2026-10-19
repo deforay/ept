@@ -1,0 +1,180 @@
+<?php
+
+/**
+ * TB: Result of PT Panel per Site, shared by reports/tb-results (admin) and
+ * participant/tb-results (data managers).
+ *
+ * Set before including:
+ *
+ *   $tbrDataUrl       the action that returns the rows and the outcome counts
+ *   $tbrShipmentsUrl  the action that returns the Shipment filter options
+ *   $tbrExportUrl     the action behind Download Excel
+ *   $this->schemes (the active TB scheme, or empty), ->countries, ->regions,
+ *   ->states, ->districts
+ *
+ * The filters apply as soon as they change. The page includes
+ * collapsible-filters.phtml last.
+ */
+include APPLICATION_PATH . '/views/partials/report-zero-state.phtml';
+include APPLICATION_PATH . '/views/partials/report-table-styles.phtml';
+$rfShipmentsUrl = $tbrShipmentsUrl;
+// The report covers TB only, so there is no scheme to pick.
+$rfFixedScheme = 'tb';
+include APPLICATION_PATH . '/views/partials/report-filters.phtml';
+
+$outcomes = [
+	'pass' => [$this->translate->_("Satisfactory"), '#2e8b57'],
+	'fail' => [$this->translate->_("Unsatisfactory"), '#d9534f'],
+	'excluded' => [$this->translate->_("Excluded"), '#9aa3ae'],
+	'nottested' => [$this->translate->_("Could not test"), '#f0ad4e'],
+	'none' => [$this->translate->_("Not responded"), '#d5dae1'],
+	'pending' => [$this->translate->_("Not evaluated"), '#b9cbe3'],
+];
+?>
+<?php if (empty($this->schemes)) { ?>
+	<div class="alert alert-info" style="margin:14px 0 0;">
+		<?= $this->htmlTranslate("TB is not active, so this report has nothing to show."); ?>
+	</div>
+<?php } ?>
+<style>
+	.tbr-strip {
+		display: flex;
+		height: 12px;
+		margin: 18px 0 6px;
+		border-radius: 6px;
+		background: #eef1f5;
+		overflow: hidden;
+	}
+
+	.tbr-strip span {
+		display: block;
+		flex: 0 0 auto;
+		height: 100%;
+	}
+
+	#tbrOutcome .rpt-seg-dot {
+		display: inline-block;
+		width: 9px;
+		height: 9px;
+		margin-right: 6px;
+		border-radius: 2px;
+		vertical-align: 0;
+	}
+</style>
+
+<div class="tbr-strip" id="tbrStrip" aria-hidden="true">
+	<?php foreach ($outcomes as $key => [$label, $color]) { ?>
+		<span data-outcome="<?= $key; ?>" style="width:0;background:<?= $color; ?>"></span>
+	<?php } ?>
+</div>
+
+<div class="rpt-section-head">
+	<h4><?= $this->htmlTranslate("Results"); ?>
+		<span class="rpt-hint"><?= $this->htmlTranslate("One row per participant and shipment."); ?></span>
+	</h4>
+	<div class="rpt-tools">
+		<button type="button" class="rpt-download" onclick="exportTbResults()">
+			<i class="icon-download-alt"></i> <?= $this->htmlTranslate("Download Excel"); ?>
+		</button>
+	</div>
+</div>
+<div class="rpt-seg" id="tbrOutcome" role="group" aria-label="<?= $this->htmlTranslate("Result"); ?>" style="margin-bottom:10px;">
+	<button type="button" class="active" data-outcome=""><?= $this->htmlTranslate("All"); ?><span class="rpt-seg-count" data-count="all"></span></button>
+	<?php foreach ($outcomes as $key => [$label, $color]) { ?>
+		<button type="button" data-outcome="<?= $key; ?>"><span class="rpt-seg-dot" style="background:<?= $color; ?>"></span><?= $this->escape($label); ?><span class="rpt-seg-count" data-count="<?= $key; ?>"></span></button>
+	<?php } ?>
+</div>
+<table class="table table-hover rpt-table" id="tbrTable">
+	<thead>
+		<tr>
+			<th scope="col"><?= $this->htmlTranslate("Participant"); ?></th>
+			<th scope="col"><?= $this->htmlTranslate("Location"); ?></th>
+			<th scope="col"><?= $this->htmlTranslate("Shipment"); ?></th>
+			<th scope="col"><?= $this->htmlTranslate("Score"); ?></th>
+			<th scope="col"><?= $this->htmlTranslate("Result"); ?></th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr>
+			<td colspan="5" class="dataTables_empty"><?= $this->htmlTranslate("Loading data from server"); ?></td>
+		</tr>
+	</tbody>
+</table>
+
+<script type="text/javascript">
+	var tbrTable = null;
+	var tbrOutcome = '';
+
+	$(function () {
+		$('#tbrOutcome').on('click', 'button', function () {
+			tbrOutcome = String($(this).data('outcome') || '');
+			$('#tbrOutcome button').removeClass('active');
+			$(this).addClass('active');
+			if (tbrTable) {
+				tbrTable.fnDraw();
+			}
+		});
+	});
+
+	reportFilters.onChange(function () {
+		tbrTable.fnDraw();
+	});
+
+	reportFilters.ready(function () {
+		tbrTable = $('#tbrTable').dataTable({
+			"oLanguage": reportZeroState.dataTableLanguage(),
+			"bAutoWidth": false,
+			"sPaginationType": "bootstrap",
+			"aoColumns": [
+				{ "sWidth": "32%" },
+				{ "sWidth": "22%" },
+				{ "sWidth": "18%" },
+				{ "sWidth": "10%" },
+				{ "sWidth": "18%" }
+			],
+			"aaSorting": [[2, "desc"]],
+			"bProcessing": true,
+			"bServerSide": true,
+			"sAjaxSource": "<?= $tbrDataUrl; ?>",
+			"fnServerParams": function (aoData) {
+				reportFilters.params(aoData);
+				aoData.push({ "name": "outcome", "value": tbrOutcome });
+			},
+			"fnServerData": function (sSource, aoData, fnCallback) {
+				$.ajax({
+					"dataType": 'json',
+					"type": "POST",
+					"url": sSource,
+					"data": aoData,
+					"success": function (json) {
+						var counts = json.counts || {};
+						var all = counts.all || 0;
+						$.each(counts, function (key, count) {
+							$('#tbrOutcome [data-count="' + key + '"]').text(Number(count).toLocaleString());
+							$('#tbrStrip [data-outcome="' + key + '"]').css('width', all ? (count * 100 / all) + '%' : 0);
+						});
+						fnCallback(json);
+					}
+				});
+			}
+		});
+	});
+
+	function exportTbResults() {
+		var params = reportFilters.values();
+		params.outcome = tbrOutcome;
+		params.sSearch = tbrTable ? tbrTable.fnSettings().oPreviousSearch.sSearch : '';
+		$.blockUI();
+		$.post("<?= $tbrExportUrl; ?>", params, function (data) {
+			$.unblockUI();
+			if (!data || !data.file) {
+				alert("<?= $this->jsTranslate("Unable to generate download"); ?>");
+			} else {
+				window.open('/temporary/' + data.file, '_blank');
+			}
+		}, 'json').fail(function () {
+			$.unblockUI();
+			alert("<?= $this->jsTranslate("Unable to generate download"); ?>");
+		});
+	}
+</script>

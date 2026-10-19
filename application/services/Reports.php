@@ -369,6 +369,30 @@ class Application_Service_Reports
     ];
 
     /**
+     * One outcome per enrolment, the SQL twin of performanceOutcome(): none
+     * (did not respond), nottested, excluded, pass, fail or pending (responded,
+     * not evaluated yet). Each enrolment gets exactly one.
+     */
+    private const RESPONSE_OUTCOME_SQL = "CASE
+            WHEN IFNULL(sp.response_status, '') NOT IN ('responded','late','nottested') THEN 'none'
+            WHEN sp.response_status = 'nottested' OR IFNULL(sp.is_pt_test_not_performed, 'no') = 'yes' THEN 'nottested'
+            WHEN IFNULL(sp.is_excluded, 'no') = 'yes' OR IFNULL(sp.final_result, 0) = 3 THEN 'excluded'
+            WHEN sp.final_result = 1 THEN 'pass'
+            WHEN sp.final_result = 2 THEN 'fail'
+            ELSE 'pending'
+        END";
+
+    /** TB outcome => [label, pill class]. TB reports say Satisfactory and Unsatisfactory. */
+    private const TB_RESULT_OUTCOMES = [
+        'pass' => ['Satisfactory', 'is-ok'],
+        'fail' => ['Unsatisfactory', 'is-bad'],
+        'excluded' => ['Excluded', 'is-muted'],
+        'nottested' => ['Could not test', 'is-warn'],
+        'none' => ['Not responded', 'is-bad'],
+        'pending' => ['Not evaluated', 'is-muted'],
+    ];
+
+    /**
      * Participant Response Report: response and result counts per group of
      * participants (region, district, network tier, affiliation or enrolled
      * program). With $byShipment, one row per group and shipment.
@@ -3438,6 +3462,208 @@ class Application_Service_Reports
         return [strip_tags($txt), strip_tags($note)];
     }
 
+    /** The TB enrolments that match the filters and the search. */
+    private function tbResultsSelect(array $params): Zend_Db_Select
+    {
+        $name = Application_Model_DbTable_Participants::participantNameExpr('p');
+        $sQuery = Zend_Db_Table_Abstract::getDefaultAdapter()->select()
+            ->from(['p' => 'participant'], [])
+            ->join(['sp' => 'shipment_participant_map'], 'sp.participant_id=p.participant_id', [])
+            ->join(['s' => 'shipment'], 's.shipment_id=sp.shipment_id', [])
+            ->joinLeft(['c' => 'countries'], 'c.id=p.country', []);
+
+        Application_Model_DbTable_Participants::applyResponseReportFilters($sQuery, ['scheme' => 'tb'] + $params);
+
+        if (!empty($params['sSearch'])) {
+            $searchColumns = [$name, 'p.unique_identifier', 'p.institute_name', 'p.region', 'c.iso_name', 's.shipment_code'];
+            foreach (explode(' ', $params['sSearch']) as $search) {
+                if ($search === '') {
+                    continue;
+                }
+                $like = Pt_Commons_General::sqlLikeContains($search);
+                $sQuery->where(implode(' OR ', array_map(fn ($col) => "$col LIKE $like", $searchColumns)));
+            }
+        }
+        return $sQuery;
+    }
+
+    /** The TB enrolment rows, with the columns the table and the export show. */
+    private function tbResultsColumns(Zend_Db_Select $sQuery): Zend_Db_Select
+    {
+        return $sQuery->columns([
+            'p.unique_identifier',
+            'p.institute_name',
+            'p.region',
+            'participant_name' => new Zend_Db_Expr(Application_Model_DbTable_Participants::participantNameExpr('p')),
+            'country_name' => 'c.iso_name',
+            's.shipment_code',
+            's.shipment_date',
+            'sp.shipment_test_report_date',
+            'score' => new Zend_Db_Expr('IFNULL(sp.shipment_score, 0) + IFNULL(sp.documentation_score, 0)'),
+            'outcome' => new Zend_Db_Expr(self::RESPONSE_OUTCOME_SQL),
+        ]);
+    }
+
+    /**
+     * TB: Result of PT Panel per Site. One row per participant and shipment,
+     * in the DataTables server-side format, plus the number of enrolments of
+     * each outcome (over the filters and the search, before the outcome
+     * filter).
+     */
+    public function getTbResultsPerSite(array $params): array
+    {
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $outcomeExpr = self::RESPONSE_OUTCOME_SQL;
+
+        $counts = array_fill_keys(array_keys(self::TB_RESULT_OUTCOMES), 0);
+        $countRows = $db->fetchPairs(
+            $this->tbResultsSelect($params)
+                ->columns(['outcome' => new Zend_Db_Expr($outcomeExpr), 'n' => new Zend_Db_Expr('COUNT(*)')])
+                ->group('outcome')
+        );
+        foreach ($countRows as $outcome => $n) {
+            $counts[$outcome] = (int) $n;
+        }
+        $counts['all'] = array_sum($counts);
+
+        $outcome = $params['outcome'] ?? '';
+        $sQuery = $this->tbResultsColumns($this->tbResultsSelect($params));
+        if (isset(self::TB_RESULT_OUTCOMES[$outcome])) {
+            $sQuery->where("($outcomeExpr) = ?", $outcome);
+        } else {
+            $outcome = 'all';
+        }
+
+        $orderColumns = [
+            'participant_name',
+            "CONCAT_WS(', ', p.region, c.iso_name)",
+            's.shipment_date',
+            "IF(($outcomeExpr) IN ('pass','fail'), 0, 1), score",
+            "FIELD(($outcomeExpr), 'pass', 'fail', 'excluded', 'nottested', 'none', 'pending')",
+        ];
+        $sOrder = [];
+        if (isset($params['iSortCol_0'])) {
+            for ($i = 0; $i < intval($params['iSortingCols']); $i++) {
+                $colIdx = intval($params['iSortCol_' . $i]);
+                if (($params['bSortable_' . $colIdx] ?? '') !== 'true' || !isset($orderColumns[$colIdx])) {
+                    continue;
+                }
+                $direction = Pt_Commons_General::sanitizeSortDirection($params['sSortDir_' . $i]);
+                // Scored responses first either way, then by score.
+                if ($colIdx === 3) {
+                    $sOrder[] = new Zend_Db_Expr("IF(($outcomeExpr) IN ('pass','fail'), 0, 1) ASC");
+                    $sOrder[] = new Zend_Db_Expr("score $direction");
+                    continue;
+                }
+                $sOrder[] = new Zend_Db_Expr($orderColumns[$colIdx] . ' ' . $direction);
+            }
+        }
+        $sOrder[] = new Zend_Db_Expr('s.shipment_date DESC');
+        $sOrder[] = new Zend_Db_Expr('participant_name ASC');
+        $sQuery->order($sOrder);
+
+        if (isset($params['iDisplayStart']) && ($params['iDisplayLength'] ?? '-1') != '-1') {
+            $sQuery->limit((int) $params['iDisplayLength'], (int) $params['iDisplayStart']);
+        }
+
+        $output = [
+            'sEcho' => intval($params['sEcho'] ?? 0),
+            'iTotalRecords' => $counts['all'],
+            'iTotalDisplayRecords' => $counts[$outcome],
+            'counts' => $counts,
+            'aaData' => [],
+        ];
+
+        $esc = fn ($v) => htmlspecialchars((string) $v, ENT_QUOTES, 'UTF-8', false);
+        $date = fn ($d) => Pt_Commons_DateUtility::humanReadableDateFormat($d ?? '');
+        foreach ($db->fetchAll($sQuery) as $r) {
+            $sub = array_values(array_filter([$r['unique_identifier'], $r['institute_name']]));
+            $name = trim((string) $r['participant_name']) !== '' ? $r['participant_name'] : array_shift($sub);
+            [$label, $class] = self::TB_RESULT_OUTCOMES[$r['outcome']];
+            $scored = in_array($r['outcome'], ['pass', 'fail'], true);
+            $output['aaData'][] = [
+                '<span class="cell-main">' . $esc($name) . '</span>'
+                    . (!empty($sub) ? '<span class="cell-sub">' . $esc(implode(' · ', $sub)) . '</span>' : ''),
+                $esc(implode(', ', array_filter([$r['region'], $r['country_name']]))),
+                '<span class="cell-main">' . $esc($r['shipment_code']) . '</span><span class="cell-sub">' . $esc($date($r['shipment_date'])) . '</span>',
+                $scored ? (string) round((float) $r['score']) : '',
+                '<span class="resp-pill ' . $class . '">' . $esc($this->translator->_($label)) . '</span>',
+            ];
+        }
+
+        return $output;
+    }
+
+    /** TB: Result of PT Panel per Site as Excel, one row per participant and shipment. */
+    public function exportTbResultsPerSite(array $params): string
+    {
+        try {
+            $sQuery = $this->tbResultsColumns($this->tbResultsSelect($params))
+                ->order(['s.shipment_date DESC', 'participant_name ASC']);
+            $outcome = $params['outcome'] ?? '';
+            if (isset(self::TB_RESULT_OUTCOMES[$outcome])) {
+                $sQuery->where('(' . self::RESPONSE_OUTCOME_SQL . ') = ?', $outcome);
+            }
+            $rows = Zend_Db_Table_Abstract::getDefaultAdapter()->fetchAll($sQuery);
+            if (empty($rows)) {
+                return '';
+            }
+
+            $t = fn ($text) => html_entity_decode($text, ENT_QUOTES, 'UTF-8');
+            $labels = array_map(fn ($o) => $t($this->translator->_($o[0])), self::TB_RESULT_OUTCOMES);
+
+            $excel = new Spreadsheet();
+            $sheet = $excel->getActiveSheet();
+            $sheet->setTitle(mb_substr($t($this->translator->_('Results')), 0, 31));
+            $sheet->fromArray([
+                $t($this->translator->_('Participant')),
+                $t($this->translator->_('Participant ID')),
+                $t($this->translator->_('Institute Name')),
+                $t($this->translator->_('Region')),
+                $t($this->translator->_('Country')),
+                $t($this->translator->_('Shipment Code')),
+                $t($this->translator->_('Shipment Date')),
+                $t($this->translator->_('Responded On')),
+                $t($this->translator->_('Score')),
+                $t($this->translator->_('Result')),
+            ], null, 'A1');
+            $rowNo = 2;
+            foreach ($rows as $r) {
+                $sheet->fromArray([
+                    $r['participant_name'],
+                    $r['unique_identifier'],
+                    $r['institute_name'],
+                    $r['region'],
+                    $r['country_name'],
+                    $r['shipment_code'],
+                    Pt_Commons_DateUtility::humanReadableDateFormat($r['shipment_date'] ?? ''),
+                    Pt_Commons_DateUtility::humanReadableDateFormat($r['shipment_test_report_date'] ?? ''),
+                    in_array($r['outcome'], ['pass', 'fail'], true) ? round((float) $r['score'], 1) : null,
+                    $labels[$r['outcome']],
+                ], null, 'A' . $rowNo++);
+            }
+            $sheet->getStyle('1:1')->getFont()->setBold(true);
+            $sheet->freezePane('A2');
+            foreach ($sheet->getColumnIterator() as $column) {
+                $sheet->getColumnDimension($column->getColumnIndex())->setAutoSize(true);
+            }
+
+            if (!is_dir($this->tempUploadDirectory)) {
+                mkdir($this->tempUploadDirectory);
+            }
+            $filename = 'tb-results-per-site-' . date('d-M-Y-H-i-s') . '.xlsx';
+            IOFactory::createWriter($excel, 'Xlsx')->save($this->tempUploadDirectory . DIRECTORY_SEPARATOR . $filename);
+            return $filename;
+        } catch (Throwable $exc) {
+            Pt_Commons_LoggerUtility::logError('Failed to generate TB results per site report (Excel): ' . $exc->getMessage(), [
+                'file' => $exc->getFile(),
+                'line' => $exc->getLine(),
+                'trace' => $exc->getTraceAsString(),
+            ]);
+            return '';
+        }
+    }
+
     public function generateAnnualReportExcel($shipmentCodeArray, $participants)
     {
 
@@ -3617,161 +3843,6 @@ class Application_Service_Reports
         return $scheduledDb->scheduleCertificationGeneration($params);
     }
 
-    public function getResultsPerSiteReport($parameters)
-    {
-
-        $searchColumns = ['p.unique_identifier', 'c.iso_name', 'p.region', 'p.lab_name', 'spm.shipment_score', 'smp.final_result'];
-
-        $sLimit = '';
-        if (isset($parameters['iDisplayStart']) && $parameters['iDisplayLength'] != '-1') {
-            $sOffset = $parameters['iDisplayStart'];
-            $sLimit = $parameters['iDisplayLength'];
-        }
-
-        $sOrder = '';
-        if (isset($parameters['iSortCol_0'])) {
-            $sOrder = '';
-            for ($i = 0; $i < intval($parameters['iSortingCols']); $i++) {
-                if ($parameters['bSortable_' . intval($parameters['iSortCol_' . $i])] == 'true') {
-                    $colIdx = intval($parameters['iSortCol_' . $i]);
-                    if (!isset($searchColumns[$colIdx])) {
-                        continue;
-                    }
-                    $sOrder .= $searchColumns[$colIdx] . '
-					    ' . Pt_Commons_General::sanitizeSortDirection($parameters['sSortDir_' . $i]) . ', ';
-                }
-            }
-
-            $sOrder = substr_replace($sOrder, '', -2);
-        }
-
-        $sWhere = '';
-        if (isset($parameters['sSearch']) && $parameters['sSearch'] != '') {
-            $searchArray = explode(' ', $parameters['sSearch']);
-            $sWhereSub = '';
-            foreach ($searchArray as $search) {
-                if ($sWhereSub == '') {
-                    $sWhereSub .= '(';
-                } else {
-                    $sWhereSub .= ' AND (';
-                }
-                $colSize = count($searchColumns);
-
-                for ($i = 0; $i < $colSize; $i++) {
-                    if ($searchColumns[$i] == '' || $searchColumns[$i] == null) {
-                        continue;
-                    }
-                    if ($i < $colSize - 1) {
-                        $sWhereSub .= $searchColumns[$i] . ' LIKE ' . Pt_Commons_General::sqlLikeContains($search) . ' OR ';
-                    } else {
-                        $sWhereSub .= $searchColumns[$i] . ' LIKE ' . Pt_Commons_General::sqlLikeContains($search) . ' ';
-                    }
-                }
-                $sWhereSub .= ')';
-            }
-            $sWhere .= $sWhereSub;
-        }
-
-        /* Individual column filtering */
-        for ($i = 0; $i < count($searchColumns); $i++) {
-            if (isset($parameters['bSearchable_' . $i]) && $parameters['bSearchable_' . $i] == 'true' && $parameters['sSearch_' . $i] != '') {
-                if ($sWhere == '') {
-                    $sWhere .= $searchColumns[$i] . ' LIKE ' . Pt_Commons_General::sqlLikeContains($parameters['sSearch_' . $i]) . ' ';
-                } else {
-                    $sWhere .= ' AND ' . $searchColumns[$i] . ' LIKE ' . Pt_Commons_General::sqlLikeContains($parameters['sSearch_' . $i]) . ' ';
-                }
-            }
-        }
-
-        $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $sQuery = $dbAdapter->select()
-            ->from(
-                ['spm' => 'shipment_participant_map'],
-                ['map_id', 'final_result', 'shipment_score', 'documentation_score', 'shipment_test_report_date']
-            )
-            ->join(
-                ['p' => 'participant'],
-                'spm.participant_id=p.participant_id',
-                ['unique_identifier', 'lab_name', 'region']
-            )
-            ->join(['c' => 'countries'], 'p.country=c.id', ['iso_name'])
-            ->order(new Zend_Db_Expr("CASE WHEN p.unique_identifier REGEXP '\d*' THEN CAST(CAST(p.unique_identifier AS DECIMAL) AS CHAR) ELSE TRIM(LEADING '0' FROM p.unique_identifier) END"));
-
-        $scopedDmId = Application_Service_Common::getScopedDmId();
-        if (!empty($scopedDmId)) {
-            $sQuery = $sQuery
-                ->joinLeft(['pmm' => 'participant_manager_map'], 'pmm.participant_id=p.participant_id', [])
-                ->where('pmm.dm_id = ?', $scopedDmId);
-        }
-
-        if (isset($parameters['shipmentId']) && $parameters['shipmentId'] != '') {
-            $sQuery = $sQuery->where('spm.shipment_id like ?', $parameters['shipmentId']);
-        }
-
-        if (!empty($sOrder)) {
-            $sQuery = $sQuery->order($sOrder);
-        }
-
-        if (isset($sLimit) && isset($sOffset)) {
-            $sQuery = $sQuery->limit($sLimit, $sOffset);
-        }
-
-        $rResult = $dbAdapter->fetchAll($sQuery);
-
-        /* Data set length after filtering */
-        $sQuery = $sQuery->reset(Zend_Db_Select::LIMIT_COUNT);
-        $sQuery = $sQuery->reset(Zend_Db_Select::LIMIT_OFFSET);
-        $aResultFilterTotal = $dbAdapter->fetchAll($sQuery);
-        $iFilteredTotal = count($aResultFilterTotal);
-
-        /* Total data set length */
-        $sWhere = '';
-        $sQuery = $dbAdapter->select()
-            ->from(['spm' => 'shipment_participant_map'], new Zend_Db_Expr("COUNT('spm.map_id')"))
-            ->where('spm.shipment_id = ?', $parameters['shipmentId']);
-        if (!empty($scopedDmId)) {
-            $sQuery = $sQuery
-                ->joinLeft(['pmm' => 'participant_manager_map'], 'pmm.participant_id=spm.participant_id', [])
-                ->where('pmm.dm_id = ?', $scopedDmId);
-        }
-        if (isset($sWhere) && $sWhere != '') {
-            $sQuery = $sQuery->where($sWhere);
-        }
-
-        $aResultTotal = $dbAdapter->fetchAll($sQuery);
-        $iTotal = count($aResultTotal);
-
-        /*
-         * Output
-         */
-        $output = [
-            'sEcho' => intval($parameters['sEcho']),
-            'iTotalRecords' => $iTotal,
-            'iTotalDisplayRecords' => $iFilteredTotal,
-            'aaData' => [],
-        ];
-
-        foreach ($rResult as $aRow) {
-            $row = [];
-            $row[] = htmlspecialchars($aRow['lab_name'] . ' (' . $aRow['unique_identifier'] . ')', ENT_QUOTES, 'UTF-8');
-            $row[] = htmlspecialchars((string) $aRow['iso_name'], ENT_QUOTES, 'UTF-8');
-            $row[] = htmlspecialchars((string) $aRow['region'], ENT_QUOTES, 'UTF-8');
-            $row[] = $aRow['shipment_score'] + $aRow['documentation_score'];
-            if ($aRow['shipment_test_report_date'] == null) {
-                $row[] = 'Not Participated';
-            } elseif ($aRow['final_result'] == 1) {
-                $row[] = 'Satisfactory';
-            }
-            if ($aRow['final_result'] == 2) {
-                $row[] = 'Unsatisfactory';
-            } elseif ($aRow['final_result'] == 3) {
-                $row[] = 'Excluded';
-            }
-            $output['aaData'][] = $row;
-        }
-        echo json_encode($output);
-    }
-
     public function getFinalisedShipmentsByScheme($schemeType, $startDate, $endDate)
     {
 
@@ -3792,36 +3863,6 @@ class Application_Service_Reports
         return $resultArray;
     }
 
-    public function getResultsPerSiteCount($params)
-    {
-        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $resultsQuery = $db->select()
-            ->from(
-                ['spm' => 'shipment_participant_map'],
-                [
-                    'satisfactory' => 'sum(spm.final_result = 1)',
-                    'unsatisfactory' => 'sum(spm.final_result = 2)',
-                    'excluded' => 'sum(spm.final_result = 3)',
-                    'not_participated' => 'sum(spm.shipment_test_report_date is null)',
-                ]
-            )
-            ->where('spm.shipment_id = ?', $params['shipmentId'])
-            ->group(['spm.shipment_id']);
-        $scopedDmId = Application_Service_Common::getScopedDmId();
-        if (!empty($scopedDmId)) {
-            $resultsQuery = $resultsQuery
-                ->joinLeft(['pmm' => 'participant_manager_map'], 'pmm.participant_id=spm.participant_id', [])
-                ->where('pmm.dm_id = ?', $scopedDmId);
-        }
-        $resultsCountResult = $db->fetchRow($resultsQuery);
-        return [
-            ['name' => 'Satisfactory', 'count' => $resultsCountResult['satisfactory']],
-            ['name' => 'Unsatisfactory', 'count' => $resultsCountResult['unsatisfactory']],
-            ['name' => 'Excluded', 'count' => $resultsCountResult['excluded']],
-            ['name' => 'Not Participated', 'count' => $resultsCountResult['not_participated']],
-        ];
-    }
-
     public function getXtptIndicatorsReport($params)
     {
         $db = new Application_Model_Tb();
@@ -3840,6 +3881,8 @@ class Application_Service_Reports
         $tbDb = new Application_Model_Tb();
         $excel = new Spreadsheet();
         $tbDb->fetchTbAllSitesResultsSheet($db, $params['shipmentId'], $excel, 0);
+        // The sheet goes in front of the empty default one.
+        $excel->removeSheetByIndex($excel->getSheetCount() - 1);
         $excel->setActiveSheetIndex(0);
 
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();

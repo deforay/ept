@@ -1,13 +1,14 @@
 <?php
 
 /**
- * XTPT Indicators & Panel Statistics, shared by reports/xtpt-indicators
- * (admin) and participant/xtpt-indicators (data managers). The page builds
- * the XTPT workbook for one TB shipment and offers it for download.
+ * A page that builds an Excel workbook for one TB shipment and offers it for
+ * download. Used by XTPT Indicators and TB All Sites' Results, admin and
+ * data manager side.
  *
  * Set before including:
  *
- *   $xtptGenerateUrl  the action that builds the workbook and returns {file}
+ *   $wbGenerateUrl    the action that builds the workbook and returns {file}
+ *   $wbIntro          the sentence above the form, already translated
  *   $this->shipments  [{id, text}], the TB shipments, newest first
  */
 ?>
@@ -107,9 +108,7 @@
 	}
 </style>
 
-<p class="xtpt-intro">
-	<?= $this->htmlTranslate("Builds an Excel workbook for one TB shipment. The workbook has two sheets: Panel Statistics, with the XTPT indicators, and All Sites' Results."); ?>
-</p>
+<p class="xtpt-intro"><?= $this->escape($wbIntro); ?></p>
 
 <div class="xtpt-form">
 	<div class="xtpt-field">
@@ -144,7 +143,7 @@
 			$button.prop('disabled', true);
 			$('#xtptStatus').removeClass('is-error').text("<?= $this->jsTranslate("Building the workbook. This can take a minute."); ?>");
 
-			$.post("<?= $xtptGenerateUrl; ?>", { shipmentId: $('#xtptShipment').val() }, function (data) {
+			$.post("<?= $wbGenerateUrl; ?>", { shipmentId: $('#xtptShipment').val() }, function (data) {
 				if (!data || !data.file) {
 					$('#xtptStatus').addClass('is-error').text("<?= $this->jsTranslate("Unable to generate download"); ?>");
 					return;
