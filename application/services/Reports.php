@@ -2842,8 +2842,10 @@ class Application_Service_Reports
 
         $rows = $db->fetchAll($sQuery);
         $history = [];
+        $columns = [];
         foreach ($this->participantPerformanceHistory($params, array_column($rows, 'participant_id')) as $h) {
-            $history[$h['participant_id']][] = $h;
+            $history[$h['participant_id']][$h['shipment_id']] = $h;
+            $columns[$h['shipment_id']] = $h;
         }
 
         $output = [
@@ -2860,6 +2862,20 @@ class Application_Service_Reports
         $outcomes = array_map(fn ($o) => [$translate->_($o[0]), $o[1]], self::PERFORMANCE_OUTCOMES);
         $late = $translate->_('Late');
         $maxChips = 12;
+
+        // The strip has one slot per shipment on this page, oldest first, so a
+        // slot means the same shipment in every row. Only the latest fit.
+        uasort($columns, fn ($a, $b) => [$a['shipment_date'], $a['shipment_id']] <=> [$b['shipment_date'], $b['shipment_id']]);
+        $hidden = count($columns) - $maxChips;
+        $columns = array_slice($columns, max(0, $hidden), null, true);
+        $axis = '';
+        foreach ($columns as $c) {
+            $axis .= '<span class="perf-axis-label" title="' . $esc(implode(' · ', array_filter([$c['shipment_code'], $c['scheme_name'], $date($c['shipment_date'])]))) . '">'
+                . $esc($c['shipment_code']) . '</span>';
+        }
+        $output['axis'] = '<div class="perf-chips perf-axis">' . $axis . '</div>'
+            . ($hidden > 0 ? '<span class="perf-more">' . $esc(sprintf($translate->_('%s earlier shipments not shown'), $hidden)) . '</span>' : '');
+        $notEnrolled = $translate->_('Not enrolled');
 
         foreach ($rows as $r) {
             $evaluated = (int) $r['passed'] + (int) $r['failed'];
@@ -2882,13 +2898,13 @@ class Application_Service_Reports
                     . '<span class="cell-sub">' . $esc(sprintf($translate->_('%s of %s'), number_format((int) $r['passed']), number_format($evaluated))) . '</span>';
             }
 
-            // Newest last, so the strip reads left to right like a timeline.
             $chips = '';
-            $hidden = count($shipments) - $maxChips;
-            if ($hidden > 0) {
-                $chips .= '<span class="perf-more">+' . $hidden . '</span>';
-            }
-            foreach (array_slice($shipments, max(0, $hidden)) as $h) {
+            foreach ($columns as $shipmentId => $c) {
+                $h = $shipments[$shipmentId] ?? null;
+                if ($h === null) {
+                    $chips .= '<span class="perf-chip is-gap" title="' . $esc($c['shipment_code'] . ' · ' . $notEnrolled) . '"></span>';
+                    continue;
+                }
                 [$label, $class] = $outcomes[$h['outcome']];
                 $scored = in_array($h['outcome'], ['pass', 'fail'], true);
                 $title = implode(' · ', array_filter([
