@@ -1,354 +1,307 @@
 <?php
-//Zend_Debug::dump($this->vlAssayCount);
+include APPLICATION_PATH . '/views/partials/report-zero-state.phtml';
+include APPLICATION_PATH . '/views/partials/report-table-styles.phtml';
+$vsaDataUrl = $this->url(['module' => 'reports', 'controller' => 'shipments', 'action' => 'vl-sample-analysis-data'], 'default', true);
+$vsaExportUrl = $this->url(['module' => 'reports', 'controller' => 'shipments', 'action' => 'vl-sample-analysis-export'], 'default', true);
+$vsaPlotUrl = $this->url(['module' => 'reports', 'controller' => 'shipments', 'action' => 'vl-assay-distribution-plot'], 'default', true);
+
+// Sample score => [label, colour], in column order. Scoring counts a warning as a pass.
+$scores = [
+	'pass' => [$this->translate->_("Acceptable"), '#2e8b57'],
+	'warn' => [$this->translate->_("Warning"), '#f0ad4e'],
+	'fail' => [$this->translate->_("Unacceptable"), '#d9534f'],
+	'excluded' => [$this->translate->_("Excluded"), '#9aa3ae'],
+	'pending' => [$this->translate->_("Not scored"), '#b9cbe3'],
+];
+$scoreHeads = '';
+foreach ($scores as [$label]) {
+	$scoreHeads .= '<th scope="col">' . $this->escape($label) . '</th>';
+}
 ?>
-<link rel="stylesheet" href="<?php echo $this->baseUrl('css/daterangepicker.css'); ?>" type="text/css" media="all">
+<link href="<?php echo $this->baseUrl('css/select2.css'); ?>" rel="stylesheet" />
 <style>
-    @media print {
+	.vsa-picker {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: flex-end;
+		gap: 12px 16px;
+		margin-top: 4px;
+		padding: 14px 16px;
+		border: 1px solid #e3e8ef;
+		border-radius: 6px;
+		background: #fafbfc;
+	}
 
-        .dontPrint,
-        #testKitTable_filter,
-        #testKitTable_info {
-            display: none;
+	.vsa-picker .vsa-field {
+		flex: 0 1 360px;
+		min-width: 220px;
+	}
 
-        }
-    }
-    .vl-assay-section {
-        margin-top: 25px;
-    }
-    .vl-assay-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-        gap: 12px;
-    }
-    .vl-assay-grid-wrapper {
-        height: auto;
-        max-height: none;
-        overflow: visible;
-    }
-    .vl-assay-card {
-        border: 1px solid #e3e3e3;
-        border-radius: 4px;
-        padding: 10px;
-        background: #fff;
-        box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-    }
-    .vl-assay-card h5 {
-        margin: 0 0 6px 0;
-        font-size: 14px;
-        font-weight: 600;
-    }
-    .vl-assay-meta {
-        font-size: 12px;
-        color: #666;
-        margin-bottom: 6px;
-    }
-    .vl-toggle {
-        display: inline-flex;
-        border: 1px solid #3b5a9a;
-        border-radius: 6px;
-        overflow: hidden;
-        vertical-align: middle;
-        margin: 0 6px;
-    }
-    .vl-toggle .vl-toggle-btn {
-        padding: 4px 10px;
-        font-size: 12px;
-        cursor: pointer;
-        background: #fff;
-        color: #3b5a9a;
-        border: none;
-    }
-    .vl-toggle .vl-toggle-btn.active {
-        background: #3b5a9a;
-        color: #fff;
-    }
+	.vsa-picker label {
+		display: block;
+		margin-bottom: 4px;
+		font-size: 13px;
+		font-weight: 600;
+		color: #333;
+	}
+
+	.vsa-table .vsa-failed {
+		color: #a33a3a;
+		font-weight: 600;
+	}
+
+	#vsaAssayChart {
+		margin-top: 8px;
+	}
+
+	.vl-assay-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+		gap: 12px;
+	}
+
+	.vl-assay-card {
+		margin-bottom: 16px;
+		padding: 12px 14px;
+		border: 1px solid #e3e8ef;
+		border-radius: 6px;
+		background: #fff;
+	}
+
+	.vl-assay-card h5 {
+		margin: 0 0 4px;
+		font-size: 14px;
+		font-weight: 600;
+	}
+
+	.vl-assay-meta {
+		margin-bottom: 6px;
+		font-size: 12px;
+		color: #5b6573;
+	}
 </style>
-<legend>
-    <h3><?= $this->htmlTranslate("VL Sample Analysis"); ?></h3>
-</legend>
-<div class="filter-panel js-filter-panel">
-    <button type="button" class="btn btn-default btn-sm js-filter-toggle" aria-expanded="false"
-        data-expand-text="<?= $this->htmlTranslate("Expand Filters"); ?>"
-        data-collapse-text="<?= $this->htmlTranslate("Collapse Filters"); ?>">
-        <i class="icon-filter"></i> <span class="js-filter-toggle-text"><?= $this->translate->_("Expand Filters"); ?></span>
-        <span class="label label-info js-filter-count" style="display:none;">0</span>
-        <span class="caret"></span>
-    </button>
-    <div class="js-filter-summary"></div>
-    <div class="js-filter-body">
-<table style="margin:20px 0;" class="table table-bordered">
-    <tr>
-        <td style="width:150px;text-align: center;font-weight:bold;">
-            <?= $this->htmlTranslate("Pick a Date Range"); ?>
-        </td>
-        <td style="width:200px;text-align: center;font-weight:bold;">
-            <?= $this->htmlTranslate("Select Shipment"); ?>
-        </td>
-        <td class="dontPrint" style="width:115px;text-align: center;font-weight:bold;"><?= $this->htmlTranslate("Action"); ?></td>
-    </tr>
-    <tr>
-        <td>
-            <input type="text" id="dateRange" name="dateRange" class="form-control input-sm" readonly="readonly"
-                style="background: #fff" placeholder="<?= $this->htmlTranslate("Click here to pick a Date Range"); ?>"
-                data-filter-label="<?= $this->htmlTranslate("Date Range"); ?>" />
-        </td>
-        <td>
-            <select id="shipmentId" name="shipmentId" class="form-control input-sm" data-filter-label="<?= $this->htmlTranslate("Shipment"); ?>">
-                <option value=''>-- Select Date Range to populate this list --</option>
-            </select>
-        </td>
-        <td class="dontPrint"><button class="btn btn-success btn-sm"
-                onclick="drawTable()"><span><?= $this->translate->_("Get Report"); ?></span></button> <button
-                class="btn btn-danger btn-sm"
-                onclick="document.location.href = document.location"><span><?= $this->translate->_("Reset"); ?></span></button>
-            <button class="btn btn-info btn-sm hide" id="exportExcel" onclick="shipmentExcel()"><span><i
-                        class="icon-download"></i> <?= $this->htmlTranslate("Excel"); ?></span></button> <a href="#" class="btn btn-primary btn-sm hide"
-                id="exportPdf" target="_blank"><i class="icon-download"></i> <?= $this->htmlTranslate("PDF"); ?></a>
-        </td>
-    </tr>
-</table>
-    </div><!-- /.js-filter-body -->
-</div><!-- /.filter-panel -->
-<br />
 
-<?php include APPLICATION_PATH . '/views/partials/report-zero-state.phtml'; ?>
-<div id="vlZeroState"></div>
+<div class="data-list">
+	<div class="data-list-head">
+		<h2><?= $this->htmlTranslate("VL Sample Analysis"); ?></h2>
+	</div>
+	<div class="data-list-body">
+		<?php if (empty($this->vlActive)) { ?>
+			<div class="alert alert-info" style="margin:0 0 14px;">
+				<?= $this->htmlTranslate("VL is not active, so this report has nothing to show."); ?>
+			</div>
+		<?php } ?>
+		<div class="vsa-picker">
+			<div class="vsa-field">
+				<label for="vsaShipment"><?= $this->htmlTranslate("Shipment"); ?></label>
+				<select id="vsaShipment" style="width:100%;">
+					<?php foreach ($this->shipments ?? [] as $shipment) { ?>
+						<option value="<?= (int) $shipment['id']; ?>"><?= $this->escape($shipment['text']); ?></option>
+					<?php } ?>
+				</select>
+			</div>
+			<div class="rpt-tools" style="margin-left:auto;">
+				<button type="button" class="rpt-download" onclick="exportVlSamples()">
+					<i class="icon-download-alt"></i> <?= $this->htmlTranslate("Download Excel"); ?>
+				</button>
+			</div>
+		</div>
 
-<div id="shipmentchart"></div>
+		<div id="vsaZeroState"></div>
 
-<br />
+		<div id="vsaReport" style="display:none;">
+			<div class="rpt-section-head">
+				<h4><?= $this->htmlTranslate("Results per sample"); ?>
+					<span class="rpt-hint"><?= $this->htmlTranslate("Each submitted result counts once. Scoring counts a warning as a pass."); ?></span>
+				</h4>
+			</div>
+			<table class="table rpt-table vsa-table" id="vsaSamples">
+				<thead>
+					<tr>
+						<th scope="col" style="width:20%"><?= $this->htmlTranslate("Sample"); ?></th>
+						<th scope="col"><?= $this->htmlTranslate("Results"); ?></th>
+						<th scope="col" style="width:18%"><?= $this->htmlTranslate("Pass rate"); ?></th>
+						<?= $scoreHeads; ?>
+					</tr>
+				</thead>
+				<tbody></tbody>
+			</table>
 
-<div class="vl-assay-section hide" id="vlAssaySection">
-    <h4 id="vlAssayDistributionsTitle" class="hide"><?= $this->htmlTranslate("VL Response Distribution by Assay"); ?></h4>
-    <div id="vlScatterAxisToggle" class="vl-assay-meta dontPrint hide" style="margin-bottom:6px;">
-        <span style="margin-right:6px;"><?= $this->htmlTranslate("X-axis"); ?></span>
-        <div class="vl-toggle" id="vlScatterAxisMode">
-            <button type="button" class="vl-toggle-btn active" data-mode="participants"><?= $this->htmlTranslate("Participants"); ?></button>
-            <button type="button" class="vl-toggle-btn" data-mode="log10">log10 VL</button>
-        </div>
-    </div>
-    <div id="vlAssayDistributions" class="vl-assay-grid-wrapper">
-        <div class="vl-assay-meta"><?= $this->htmlTranslate("Select a shipment and click Get Report to view distributions."); ?></div>
-    </div>
-    <div id="vlAssayDistributionsNote" class="vl-assay-meta hide" style="margin-top:6px;">
-        <?= $this->htmlTranslate("Note: Each chart aggregates all log10 reported viral loads for an assay across all samples in the shipment. Values outside assay sample ranges are excluded; 0 values are counted as Undetectable."); ?>
-    </div>
+			<div class="rpt-section-head">
+				<h4><?= $this->htmlTranslate("Results per assay"); ?>
+					<span class="rpt-hint"><?= $this->htmlTranslate("All samples of each participant, under the assay in their response."); ?></span>
+				</h4>
+			</div>
+			<div id="vsaAssayChart"></div>
+			<table class="table rpt-table vsa-table" id="vsaAssays">
+				<thead>
+					<tr>
+						<th scope="col" style="width:20%"><?= $this->htmlTranslate("Assay"); ?></th>
+						<th scope="col"><?= $this->htmlTranslate("Participants"); ?></th>
+						<th scope="col"><?= $this->htmlTranslate("Results"); ?></th>
+						<th scope="col" style="width:16%"><?= $this->htmlTranslate("Pass rate"); ?></th>
+						<?= $scoreHeads; ?>
+					</tr>
+				</thead>
+				<tbody></tbody>
+			</table>
+
+			<div class="rpt-section-head">
+				<h4><?= $this->htmlTranslate("Viral load distribution per assay"); ?>
+					<span class="rpt-hint"><?= $this->htmlTranslate("One dot per result. The band shows the acceptable range."); ?></span>
+				</h4>
+				<div class="rpt-tools">
+					<div class="rpt-seg" id="vlScatterAxisMode" role="group" aria-label="<?= $this->htmlTranslate("X-axis"); ?>">
+						<button type="button" class="vl-toggle-btn active" data-mode="participants"><?= $this->htmlTranslate("By participant"); ?></button>
+						<button type="button" class="vl-toggle-btn" data-mode="log10"><?= $this->htmlTranslate("By log10 viral load"); ?></button>
+					</div>
+				</div>
+			</div>
+			<div id="vlAssayDistributions"></div>
+		</div>
+	</div>
 </div>
 
-<br />
-
-<div id="shipmentTableWrapper">
-<table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered table-hover hide"
-    id="shipmentTable">
-    <thead>
-        <tr>
-            <th scope="col" style="text-align: center;"><?= $this->htmlTranslate("Participant Name"); ?></th>
-            <th scope="col" style="text-align: center;"><?= $this->htmlTranslate("Score"); ?></th>
-            <th scope="col" style="text-align: center;"><?= $this->htmlTranslate("Shipment Test Date"); ?></th>
-            <th scope="col" style="text-align: center;"><?= $this->htmlTranslate("Shipment Receipt Date"); ?></th>
-            <!--<th scope="col" style="text-align: center;">Total Valid Responses<br/><small>(Total - Excluded)</small></th>-->
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td colspan="10" class="dataTables_empty"><?= $this->translate->_("Loading data from server"); ?></td>
-        </tr>
-    </tbody>
-</table>
-</div>
-
-<script type="text/javascript" src="<?php echo $this->baseUrl('js/moment.min.js'); ?>"></script>
-<script type="text/javascript" src="<?php echo $this->assetUrl('js/daterangepicker.js'); ?>"></script>
+<script type="text/javascript" src="<?php echo $this->baseUrl('js/select2.min.js'); ?>"></script>
 <script type="text/javascript">
-    var startDate = "";
-    var endDate = "";
-    var paginate = true;
-    var barChart = false;
-    var noVlShipmentsText = "<?= $this->jsTranslate("There are no VL shipments in this date range. Try a wider date range."); ?>";
+	var vsaScores = <?= json_encode(array_map(fn ($s) => ['label' => $s[0], 'color' => $s[1]], $scores), JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT); ?>;
+	var vsaNotReported = "<?= $this->jsTranslate("No assay reported"); ?>";
+	var vsaRequest = null;
 
-    function showZeroState(state, text) {
-        reportZeroState.show("#vlZeroState", state, text);
-        $("#vlZeroState").removeClass("hide");
-        $("#shipmentchart").html('');
-        $("#vlAssaySection").addClass("hide");
-        $("#shipmentTableWrapper").addClass("hide");
-        $("#exportExcel, #exportPdf").addClass("hide");
-    }
+	function vsaNumber(n) {
+		return Number(n || 0).toLocaleString();
+	}
 
-    function hideZeroState() {
-        $("#vlZeroState").addClass("hide");
-        $("#vlAssaySection").removeClass("hide");
-        $("#shipmentTableWrapper").removeClass("hide");
-    }
-    $(document).ready(function () {
-        showZeroState("start");
-        var defaultStart = moment().subtract(24, 'month');
-        var defaultEnd = moment();
-        $('#dateRange').daterangepicker({
-            locale: {
-                cancelLabel: 'Clear',
-                format: 'DD-MMM-YYYY',
-                separator: ' to ',
-            },
-            autoApply: true,
-            showDropdowns: true,
-            alwaysShowCalendars: true,
-            autoUpdateInput: true,
-            startDate: defaultStart,
-            endDate: defaultEnd,
-            ranges: eptDateRanges()
-        },
-            function (start, end) {
-                startDate = start.format('DD-MMM-YYYY');
-                endDate = end.format('DD-MMM-YYYY');
-                getShipmentCodes();
-            });
-        startDate = defaultStart.format('DD-MMM-YYYY');
-        endDate = defaultEnd.format('DD-MMM-YYYY');
-        $('#dateRange').val(startDate + ' to ' + endDate);
-        getShipmentCodes();
-    });
+	function vsaEscape(value) {
+		return $('<div/>').text(value == null ? '' : String(value)).html();
+	}
 
-    function getShipmentCodes() {
-        schemeType = 'vl';
-        if (startDate == "" || endDate == "") {
-            alert("<?= $this->jsTranslate("Please pick a date range to fetch shipment list"); ?>");
-            $('#dateRange').focus();
-            return false;
-        }
-        $.blockUI();
-        $.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'common', 'action' => 'get-shipments-by-scheme')); ?>", {
-            schemeType: schemeType,
-            startDate: startDate,
-            endDate: endDate,
-            format: "html"
-        },
-            function (data) {
-                if (data != 0) {
-                    barChart = true;
-                    $("#shipmentId").html(data);
-                    showZeroState("start");
-                } else {
-                    $("#shipmentId").html("<option value=''>-- <?= $this->jsTranslate("No shipments in this date range"); ?> --</option>");
-                    barChart = false;
-                    showZeroState("noShipments", noVlShipmentsText);
-                }
-                $.unblockUI();
-            });
-    }
+	// Scoring counts a warning as a pass.
+	function vsaRate(r) {
+		var passed = r.pass + r.warn;
+		var scored = passed + r.fail;
+		if (!scored) {
+			return '<span class="cell-muted"><?= $this->jsTranslate("Not evaluated yet"); ?></span>';
+		}
+		var pct = Math.round(passed * 100 / scored);
+		return '<span class="rate-figure">' + pct + '%</span>'
+			+ '<span class="rate-bar is-pass"><span style="width:' + pct + '%"></span></span>'
+			+ '<span class="cell-sub">' + "<?= $this->jsTranslate("%s of %s"); ?>".replace('%s', vsaNumber(passed)).replace('%s', vsaNumber(scored)) + '</span>';
+	}
 
-    function drawTable() {
-        if ($("#dateRange").val() == "") {
-            alert("<?= $this->jsTranslate("Please pick date range and shipment to proceed"); ?>");
-            return false;
-        } else {
-            var dateRange = $("#dateRange").val();
-            var _dateRange = dateRange.split(" to ");
-            startDate = _dateRange[0];
-            endDate = _dateRange[1];
+	function vsaScoreCells(r) {
+		return $.map(vsaScores, function (s, key) {
+			var n = r[key] || 0;
+			return '<td>' + (key === 'fail' && n > 0 ? '<span class="vsa-failed">' + vsaNumber(n) + '</span>' : vsaNumber(n)) + '</td>';
+		}).join('');
+	}
 
-            if (!barChart) {
-                showZeroState("noShipments", noVlShipmentsText);
-                return false;
-            }
-            hideZeroState();
-            $("#shipmentTable").removeClass("hide");
-            $.blockUI;
-            oTable = $('#shipmentTable').dataTable({
-                "bPaginate": paginate,
-                "bJQueryUI": false,
-                "bAutoWidth": false,
-                "bInfo": true,
-                "bScrollCollapse": true,
-                "sPaginationType": "bootstrap",
-                "bRetrieve": false,
-                "bDestroy": true,
-                "aoColumns": [{
-                    "sClass": ""
-                },
-                {
-                    "sClass": "center"
-                },
-                {
-                    "sClass": "center"
-                },
-                {
-                    "sClass": "center"
-                },
-                ],
-                "aaSorting": [
-                    [1, "asc"]
-                ],
-                "bProcessing": true,
-                "bServerSide": true,
-                "sAjaxSource": "<?php echo $this->url(array('module' => 'reports', 'controller' => 'shipments', 'action' => 'vl-sample-analysis', 'format' => 'html')); ?>",
-                "fnServerParams": function (aoData) {
-                    aoData.push({
-                        "name": "shipmentId",
-                        "value": $("#shipmentId").val()
-                    });
-                    aoData.push({
-                        "name": "startDate",
-                        "value": startDate
-                    });
-                    aoData.push({
-                        "name": "endDate",
-                        "value": endDate
-                    });
-                },
-                "fnServerData": function (sSource, aoData, fnCallback) {
-                    $.ajax({
-                        "dataType": 'json',
-                        "type": "POST",
-                        "url": sSource,
-                        "data": aoData,
-                        "success": fnCallback
-                    });
-                },
-                "fnRowCallback": function (nRow, aData, iDisplayIndex) {
-                    $.unblockUI;
-                },
-            });
-            showBarChart();
-            showAssayDistributions();
-        }
-    }
+	function vsaAssayName(r) {
+		return r.assay || vsaNotReported;
+	}
 
-    function showBarChart() {
-        shipmentId = $("#shipmentId").val();
-        $.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'shipments', 'action' => 'vl-sample-analysis-result')); ?>", {
-            shipmentId: shipmentId,
-            start: startDate,
-            end: endDate,
-            format: "html"
-        },
-            function (data) {
-                $("#shipmentchart").html(data);
-                $.unblockUI();
-            });
-    }
+	function drawVsaAssayChart(assays) {
+		if (!assays.length || typeof Highcharts === 'undefined') {
+			$('#vsaAssayChart').empty().hide();
+			return;
+		}
+		$('#vsaAssayChart').show().css('height', Math.max(160, assays.length * 26 + 90) + 'px');
+		Highcharts.chart('vsaAssayChart', {
+			chart: { type: 'bar', style: { fontFamily: 'inherit' } },
+			title: { text: null },
+			credits: { enabled: false },
+			xAxis: { categories: $.map(assays, vsaAssayName), labels: { style: { fontSize: '12px' } } },
+			yAxis: { title: { text: null }, allowDecimals: false, reversedStacks: false },
+			tooltip: { shared: true },
+			plotOptions: { bar: { stacking: 'normal', borderWidth: 0, pointPadding: 0.1, groupPadding: 0.05 } },
+			series: $.map(vsaScores, function (s, key) {
+				return [{ name: s.label, color: s.color, data: $.map(assays, function (a) { return a[key]; }) }];
+			})
+		});
+	}
 
-    function showAssayDistributions() {
-        shipmentId = $("#shipmentId").val();
-        $.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'shipments', 'action' => 'vl-assay-distribution-plot')); ?>", {
-            shipmentId: shipmentId,
-            start: startDate,
-            end: endDate,
-            format: "html"
-        },
-            function (data) {
-                $("#vlAssayDistributions").html(data);
-                if (data && data.indexOf('vl-assay-card') !== -1) {
-                    $("#vlAssayDistributionsTitle").removeClass("hide");
-                    $("#vlAssayDistributionsNote").removeClass("hide");
-                    $("#vlScatterAxisToggle").removeClass("hide");
-                } else {
-                    $("#vlAssayDistributionsTitle").addClass("hide");
-                    $("#vlAssayDistributionsNote").addClass("hide");
-                    $("#vlScatterAxisToggle").addClass("hide");
-                }
-            });
-    }
+	function showVsaDistributions(shipmentId) {
+		$('#vlAssayDistributions').html('<div class="vl-assay-meta"><?= $this->jsTranslate("Loading data from server"); ?></div>');
+		$.post("<?= $vsaPlotUrl; ?>", { shipmentId: shipmentId, format: 'html' }, function (html) {
+			$('#vlAssayDistributions').html(html);
+		});
+	}
+
+	function loadVlSamples() {
+		var shipmentId = $('#vsaShipment').val();
+		if (vsaRequest) {
+			vsaRequest.abort();
+		}
+		if (!shipmentId) {
+			$('#vsaReport').hide();
+			reportZeroState.show('#vsaZeroState', 'noShipments', "<?= $this->jsTranslate("There are no VL shipments yet."); ?>");
+			return;
+		}
+		$.blockUI();
+		vsaRequest = $.post("<?= $vsaDataUrl; ?>", { shipmentId: shipmentId }, function (data) {
+			var samples = (data && data.samples) || [];
+			var assays = (data && data.assays) || [];
+			if (!samples.length) {
+				$('#vsaReport').hide();
+				reportZeroState.show('#vsaZeroState', 'pending', "<?= $this->jsTranslate("No participant has submitted results for this shipment yet."); ?>");
+				return;
+			}
+			$('#vsaZeroState').empty();
+			$('#vsaReport').show();
+			$('#vsaSamples tbody').html($.map(samples, function (r) {
+				return '<tr><td>' + vsaEscape(r.label || r.sample_id) + '</td>'
+					+ '<td>' + vsaNumber(r.results) + '</td>'
+					+ '<td>' + vsaRate(r) + '</td>'
+					+ vsaScoreCells(r) + '</tr>';
+			}).join(''));
+			$('#vsaAssays tbody').html($.map(assays, function (r) {
+				var name = r.assay
+					? vsaEscape(r.assay) + (r.assayName && r.assayName !== r.assay ? '<span class="cell-sub">' + vsaEscape(r.assayName) + '</span>' : '')
+					: '<span class="cell-muted">' + vsaEscape(vsaNotReported) + '</span>';
+				return '<tr><td>' + name + '</td>'
+					+ '<td>' + vsaNumber(r.participants) + '</td>'
+					+ '<td>' + vsaNumber(r.results) + '</td>'
+					+ '<td>' + vsaRate(r) + '</td>'
+					+ vsaScoreCells(r) + '</tr>';
+			}).join(''));
+			drawVsaAssayChart(assays);
+			showVsaDistributions(shipmentId);
+		}, 'json').always(function () {
+			vsaRequest = null;
+			$.unblockUI();
+		});
+	}
+
+	$(function () {
+		$('#vsaShipment').select2().on('change', loadVlSamples);
+		$('#vlScatterAxisMode').on('click', 'button', function () {
+			$('#vlScatterAxisMode button').removeClass('active');
+			$(this).addClass('active');
+			if (window.renderVlAssayCharts) {
+				window.renderVlAssayCharts($(this).data('mode'));
+			}
+		});
+	});
+
+	// Highcharts loads at the end of the page.
+	$(window).on('load', loadVlSamples);
+
+	function exportVlSamples() {
+		var shipmentId = $('#vsaShipment').val();
+		if (!shipmentId) {
+			return;
+		}
+		$.blockUI();
+		$.post("<?= $vsaExportUrl; ?>", { shipmentId: shipmentId }, function (data) {
+			$.unblockUI();
+			if (!data || !data.file) {
+				alert("<?= $this->jsTranslate("Unable to generate download"); ?>");
+			} else {
+				window.open('/temporary/' + data.file, '_blank');
+			}
+		}, 'json').fail(function () {
+			$.unblockUI();
+			alert("<?= $this->jsTranslate("Unable to generate download"); ?>");
+		});
+	}
 </script>
-<?php // Must stay last: the panel collapses only after the select2 widgets above have measured themselves.
-include APPLICATION_PATH . '/views/partials/collapsible-filters.phtml'; ?>

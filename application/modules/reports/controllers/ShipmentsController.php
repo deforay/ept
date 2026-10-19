@@ -22,8 +22,6 @@ class Reports_ShipmentsController extends Zend_Controller_Action
         $ajaxContext->addActionContext('index', 'html')
             ->addActionContext('get-shipment-participant-list', 'html')
             ->addActionContext('shipments-export', 'html')
-            ->addActionContext('vl-sample-analysis', 'html')
-            ->addActionContext('vl-sample-analysis-result', 'html')
             ->addActionContext('vl-assay-distribution-plot', 'html')
             ->addActionContext('bulk-download-shipment-report-excel', 'html')
             ->addActionContext('participation-stats', 'html')
@@ -101,23 +99,22 @@ class Reports_ShipmentsController extends Zend_Controller_Action
 
     public function vlSampleAnalysisAction()
     {
-        /** @var Zend_Controller_Request_Http $request */
-        $request = $this->getRequest();
-        if ($request->isPost()) {
-            $params = $this->getAllParams();
-            $reportService = new Application_Service_Reports();
-            $reportService->getAllVlAssayDistributionReports($params);
-        }
+        $reportService = new Application_Service_Reports();
+        $adminSession = new Zend_Session_Namespace('administrators');
+        $this->view->vlActive = in_array('vl', (array) ($adminSession->activeSchemes ?? []));
+        $this->view->shipments = $reportService->getResponseReportShipments('vl', null, null);
     }
-    public function vlSampleAnalysisResultAction()
+
+    public function vlSampleAnalysisDataAction()
     {
-        /** @var Zend_Controller_Request_Http $request */
-        $request = $this->getRequest();
-        if ($request->isPost()) {
-            $params = $this->getAllParams();
-            $reportService = new Application_Service_Reports();
-            $this->view->vlSampleResult = $reportService->getAllVlSampleResult($params);
-        }
+        $reportService = new Application_Service_Reports();
+        $this->_helper->json($reportService->getVlSampleAnalysis((int) $this->getParam('shipmentId')));
+    }
+
+    public function vlSampleAnalysisExportAction()
+    {
+        $reportService = new Application_Service_Reports();
+        $this->_helper->json(['file' => $reportService->exportVlSampleAnalysis((int) $this->getParam('shipmentId'))]);
     }
 
     public function vlAssayDistributionAction()

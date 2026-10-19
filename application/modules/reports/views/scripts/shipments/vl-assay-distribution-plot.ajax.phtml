@@ -2,20 +2,18 @@
 $distributions = $this->distributions ?? [];
 ?>
 <?php if (empty($distributions)) { ?>
-    <div class="vl-assay-meta">No distribution data found for this shipment.</div>
+    <div class="vl-assay-meta"><?= $this->htmlTranslate("No viral load values were reported for this shipment."); ?></div>
 <?php } else { ?>
     <?php foreach ($distributions as $dist) { ?>
-        <div class="vl-assay-card" style="margin-bottom:16px;">
-            <h5 title="<?php echo $this->escape($dist['fullName']); ?>">
-                Assay: <?php echo $this->escape($dist['name']); ?>
-            </h5>
+        <div class="vl-assay-card">
+            <h5 title="<?php echo $this->escape($dist['fullName']); ?>"><?php echo $this->escape($dist['name']); ?></h5>
             <div class="vl-assay-meta">
-                Total Responses: <?php echo (int) $dist['count']; ?>
+                <?= $this->htmlTranslate("Participants"); ?>: <?php echo (int) $dist['count']; ?>
                 <?php if (!empty($dist['undetectable'])) { ?>
-                    | Undetectable: <?php echo (int) $dist['undetectable']; ?>
+                    &middot; <?= $this->htmlTranslate("Undetectable"); ?>: <?php echo (int) $dist['undetectable']; ?>
                 <?php } ?>
             </div>
-            <div class="vl-assay-grid" style="grid-template-columns: repeat(3, minmax(200px, 1fr));">
+            <div class="vl-assay-grid">
                 <?php foreach ($dist['samples'] as $sample) { ?>
                     <div>
                         <div class="vl-assay-meta" style="font-weight:600;">
@@ -23,7 +21,7 @@ $distributions = $this->distributions ?? [];
                         </div>
                         <div class="vl-assay-meta" style="margin-top:-2px;">
                             <?php if ($sample['median'] !== null && $sample['sd'] !== null) { ?>
-                                Median: <?php echo round($sample['median'], 2); ?> | SD: <?php echo round($sample['sd'], 2); ?>
+                                <?= $this->htmlTranslate("Median"); ?>: <?php echo round($sample['median'], 2); ?> &middot; <?= $this->htmlTranslate("SD"); ?>: <?php echo round($sample['sd'], 2); ?>
                             <?php } ?>
                         </div>
                         <div id="vl-assay-chart-<?php echo (int) $dist['assayId']; ?>-<?php echo (int) $sample['sampleId']; ?>" style="height: 200px;"></div>
@@ -41,7 +39,8 @@ $distributions = $this->distributions ?? [];
 
             window.vlAssayDistributionsData = distributions;
 
-            function renderVlAssayCharts(mode) {
+            // The page's X-axis toggle redraws the charts through this.
+            window.renderVlAssayCharts = function (mode) {
                 distributions.forEach(function (dist) {
                     if (!dist.samples) {
                         return;
@@ -148,7 +147,7 @@ $distributions = $this->distributions ?? [];
                             pointFormat: 'log10 VL: <b>{point.x:.2f}</b><br/>z: <b>{point.z:.2f}</b>'
                         } : {
                             headerFormat: '',
-                            pointFormat: 'Participant #{point.x}<br/>log10 VL: <b>{point.y:.2f}</b><br/>z: <b>{point.z:.2f}</b>'
+                            pointFormat: '<?= $this->jsTranslate("Participant"); ?> #{point.x}<br/>log10 VL: <b>{point.y:.2f}</b><br/>z: <b>{point.z:.2f}</b>'
                         };
 
                         Highcharts.chart(chartId, {
@@ -181,54 +180,31 @@ $distributions = $this->distributions ?? [];
                             },
                             series: [
                                 {
-                                    name: 'Acceptable (|z| < 2)',
+                                    name: '<?= $this->jsTranslate("Acceptable"); ?> (|z| < 2)',
                                     type: 'scatter',
                                     data: inlierData,
-                                    color: '#2e7d32'
+                                    color: '#2e8b57'
                                 },
                                 {
-                                    name: 'Warning (2 ≤ |z| < 3)',
+                                    name: '<?= $this->jsTranslate("Warning"); ?> (2 ≤ |z| < 3)',
                                     type: 'scatter',
                                     data: warnData,
-                                    color: '#f9a825'
+                                    color: '#f0ad4e'
                                 },
                                 {
-                                    name: 'Unacceptable (|z| ≥ 3)',
+                                    name: '<?= $this->jsTranslate("Unacceptable"); ?> (|z| ≥ 3)',
                                     type: 'scatter',
                                     data: failData,
-                                    color: '#c62828'
+                                    color: '#d9534f'
                                 }
                             ]
                         });
                     });
                 });
-            }
+            };
 
-            var modeToggle = document.getElementById('vlScatterAxisMode');
-            var initialMode = 'participants';
-            if (modeToggle) {
-                var activeBtn = modeToggle.querySelector('.vl-toggle-btn.active');
-                if (activeBtn && activeBtn.dataset && activeBtn.dataset.mode) {
-                    initialMode = activeBtn.dataset.mode;
-                }
-            }
-            renderVlAssayCharts(initialMode);
-
-            if (modeToggle && !modeToggle.dataset.bound) {
-                modeToggle.dataset.bound = 'true';
-                modeToggle.addEventListener('click', function (e) {
-                    var target = e.target;
-                    if (!target.classList.contains('vl-toggle-btn')) {
-                        return;
-                    }
-                    var buttons = modeToggle.querySelectorAll('.vl-toggle-btn');
-                    buttons.forEach(function (btn) {
-                        btn.classList.remove('active');
-                    });
-                    target.classList.add('active');
-                    renderVlAssayCharts(target.dataset.mode || 'participants');
-                });
-            }
+            var active = document.querySelector('#vlScatterAxisMode .active');
+            window.renderVlAssayCharts(active && active.dataset.mode ? active.dataset.mode : 'participants');
         })();
     </script>
 <?php } ?>

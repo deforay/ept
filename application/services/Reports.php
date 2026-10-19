@@ -1738,176 +1738,6 @@ class Application_Service_Reports
         return ['testkitDtsReport' => $rResult, 'testkitDtsParticipantReport' => $pResult, 'testkitChart' => $pieChart];
     }
 
-    //get vl assay distribution
-    public function getAllVlAssayDistributionReports($parameters)
-    {
-        $searchColumns = [
-            'sl.scheme_name',
-            "DATE_FORMAT(s.shipment_date,'%d-%b-%Y')",
-            's.shipment_code',
-            'sp.shipment_score',
-            'sp.documentation_score',
-            "DATE_FORMAT(sp.shipment_test_date,'%d-%b-%Y')",
-            "DATE_FORMAT(sp.shipment_receipt_date,'%d-%b-%Y')",
-        ];
-        $orderColumns = [
-            'sl.scheme_name',
-            's.shipment_date',
-            's.shipment_code',
-            'sp.shipment_score',
-            'sp.documentation_score',
-            'sp.shipment_test_date',
-            'sp.shipment_receipt_date',
-        ];
-
-        $sLimit = '';
-        if (isset($parameters['iDisplayStart']) && $parameters['iDisplayLength'] != '-1') {
-            $sOffset = $parameters['iDisplayStart'];
-            $sLimit = $parameters['iDisplayLength'];
-        }
-
-        $sOrder = '';
-        if (isset($parameters['iSortCol_0'])) {
-            $sOrder = '';
-            for ($i = 0; $i < intval($parameters['iSortingCols']); $i++) {
-                if ($parameters['bSortable_' . intval($parameters['iSortCol_' . $i])] == 'true') {
-                    $colIdx = intval($parameters['iSortCol_' . $i]);
-                    if (!isset($orderColumns[$colIdx])) {
-                        continue;
-                    }
-                    $sOrder .= $orderColumns[$colIdx] . '
-					    ' . Pt_Commons_General::sanitizeSortDirection($parameters['sSortDir_' . $i]) . ', ';
-                }
-            }
-
-            $sOrder = substr_replace($sOrder, '', -2);
-        }
-
-        $sWhere = '';
-        if (isset($parameters['sSearch']) && $parameters['sSearch'] != '') {
-            $searchArray = explode(' ', $parameters['sSearch']);
-            $sWhereSub = '';
-            foreach ($searchArray as $search) {
-                if ($sWhereSub == '') {
-                    $sWhereSub .= '(';
-                } else {
-                    $sWhereSub .= ' AND (';
-                }
-                $colSize = count($searchColumns);
-
-                for ($i = 0; $i < $colSize; $i++) {
-                    if ($searchColumns[$i] == '' || $searchColumns[$i] == null) {
-                        continue;
-                    }
-                    if ($i < $colSize - 1) {
-                        $sWhereSub .= $searchColumns[$i] . ' LIKE ' . Pt_Commons_General::sqlLikeContains($search) . ' OR ';
-                    } else {
-                        $sWhereSub .= $searchColumns[$i] . ' LIKE ' . Pt_Commons_General::sqlLikeContains($search) . ' ';
-                    }
-                }
-                $sWhereSub .= ')';
-            }
-            $sWhere .= $sWhereSub;
-        }
-
-        /* Individual column filtering */
-        for ($i = 0; $i < count($searchColumns); $i++) {
-            if (isset($parameters['bSearchable_' . $i]) && $parameters['bSearchable_' . $i] == 'true' && $parameters['sSearch_' . $i] != '') {
-                if ($sWhere == '') {
-                    $sWhere .= $searchColumns[$i] . ' LIKE ' . Pt_Commons_General::sqlLikeContains($parameters['sSearch_' . $i]) . ' ';
-                } else {
-                    $sWhere .= ' AND ' . $searchColumns[$i] . ' LIKE ' . Pt_Commons_General::sqlLikeContains($parameters['sSearch_' . $i]) . ' ';
-                }
-            }
-        }
-
-        $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $sQuery = $dbAdapter->select()->from(['s' => 'shipment'])
-            ->join(['sl' => 'scheme_list'], 's.scheme_type=sl.scheme_id')
-            ->join(
-                ['sp' => 'shipment_participant_map'],
-                'sp.shipment_id=s.shipment_id',
-                ['s.shipment_date', 'sp.shipment_test_date', 'sp.shipment_receipt_date', 'sp.shipment_score', 'sp.documentation_score']
-            )
-            ->join(['p' => 'participant'], 'p.participant_id=sp.participant_id')
-            ->where("s.scheme_type ='vl'");
-
-        if (isset($parameters['startDate']) && $parameters['startDate'] != '' && isset($parameters['endDate']) && $parameters['endDate'] != '') {
-
-            $sQuery = $sQuery->where('DATE(s.shipment_date) >= ?', $this->common->isoDateFormat($parameters['startDate']));
-            $sQuery = $sQuery->where('DATE(s.shipment_date) <= ?', $this->common->isoDateFormat($parameters['endDate']));
-        }
-
-        if (isset($parameters['shipmentId']) && $parameters['shipmentId'] != '') {
-            $sQuery = $sQuery->where('s.shipment_id = ?', $parameters['shipmentId']);
-        }
-
-        if (!empty($sOrder)) {
-            $sQuery = $sQuery->order($sOrder);
-        }
-
-        if (isset($sLimit) && isset($sOffset)) {
-            $sQuery = $sQuery->limit($sLimit, $sOffset);
-        }
-
-        $rResult = $dbAdapter->fetchAll($sQuery);
-
-        /* Data set length after filtering */
-        $sQuery = $sQuery->reset(Zend_Db_Select::LIMIT_COUNT);
-        $sQuery = $sQuery->reset(Zend_Db_Select::LIMIT_OFFSET);
-        $aResultFilterTotal = $dbAdapter->fetchAll($sQuery);
-        $iFilteredTotal = count($aResultFilterTotal);
-
-        /* Total data set length */
-        $sWhere = '';
-        $sQuery = $dbAdapter->select()->from(['s' => 'shipment'])
-            ->join(['sl' => 'scheme_list'], 's.scheme_type=sl.scheme_id')
-            ->join(
-                ['sp' => 'shipment_participant_map'],
-                'sp.shipment_id=s.shipment_id',
-                ['s.shipment_date', 'sp.shipment_test_date', 'sp.shipment_receipt_date', 'sp.shipment_score', 'sp.documentation_score']
-            )
-            ->join(['p' => 'participant'], 'p.participant_id=sp.participant_id')
-            ->where("s.scheme_type ='vl'");
-
-        if (isset($parameters['startDate']) && $parameters['startDate'] != '' && isset($parameters['endDate']) && $parameters['endDate'] != '') {
-
-            $sQuery = $sQuery->where('DATE(s.shipment_date) >= ?', $this->common->isoDateFormat($parameters['startDate']));
-            $sQuery = $sQuery->where('DATE(s.shipment_date) <= ?', $this->common->isoDateFormat($parameters['endDate']));
-        }
-
-        if (isset($parameters['shipmentId']) && $parameters['shipmentId'] != '') {
-            $sQuery = $sQuery->where('s.shipment_id = ?', $parameters['shipmentId']);
-        }
-
-        if (isset($sWhere) && $sWhere != '') {
-            $sQuery = $sQuery->where($sWhere);
-        }
-
-        $aResultTotal = $dbAdapter->fetchAll($sQuery);
-        $iTotal = count($aResultTotal);
-
-        /*
-         * Output
-         */
-        $output = [
-            'sEcho' => intval($parameters['sEcho']),
-            'iTotalRecords' => $iTotal,
-            'iTotalDisplayRecords' => $iFilteredTotal,
-            'aaData' => [],
-        ];
-
-        foreach ($rResult as $aRow) {
-            $row = [];
-            $row[] = $aRow['lab_name'];
-            $row[] = $aRow['shipment_score'];
-            $row[] = Pt_Commons_DateUtility::humanReadableDateFormat($aRow['shipment_test_date']);
-            $row[] = Pt_Commons_DateUtility::humanReadableDateFormat($aRow['shipment_receipt_date']);
-            $output['aaData'][] = $row;
-        }
-        echo json_encode($output);
-    }
-
     /** The VL Assay Distribution outcomes, in column order. */
     private const VL_ASSAY_OUTCOMES = ['pass', 'fail', 'excluded', 'nottested', 'none', 'pending'];
 
@@ -2059,79 +1889,151 @@ class Application_Service_Reports
         }
     }
 
-    public function getAllVlSampleResult($params)
+    /** VL sample score => label, in column order. Responses not scored yet count as pending. */
+    private const VL_SAMPLE_SCORES = [
+        'pass' => 'Acceptable',
+        'warn' => 'Warning',
+        'fail' => 'Unacceptable',
+        'excluded' => 'Excluded',
+        'pending' => 'Not scored',
+    ];
+
+    /**
+     * VL Sample Analysis: the sample results of one shipment, counted per
+     * sample and per assay. Only submitted responses count, so participants
+     * who could not test never show.
+     */
+    public function getVlSampleAnalysis(int $shipmentId): array
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $totalResult = [];
-        if ($params['shipmentId'] != '') {
-            $shipmentId = $params['shipmentId'];
-            $shQuery = $db->select()->from(['s' => 'shipment'])->where('s.shipment_id = ?', $shipmentId);
-            $shimentResult = $db->fetchAll($shQuery);
-        } else {
-            $shQuery = $db->select()->from(['s' => 'shipment'])->where("s.scheme_type='vl'")->where('s.cancelled_at IS NULL');
-            if (isset($params['start']) && $params['start'] != '' && isset($params['end']) && $params['end'] != '') {
-                $shQuery = $shQuery->where('DATE(s.shipment_date) >= ?', $this->common->isoDateFormat($params['start']));
-                $shQuery = $shQuery->where('DATE(s.shipment_date) <= ?', $this->common->isoDateFormat($params['end']));
-            }
-            $shimentResult = $db->fetchAll($shQuery);
+        $score = "CASE WHEN rrv.calculated_score IN ('pass','warn','fail','excluded') THEN rrv.calculated_score ELSE 'pending' END";
+        $counts = ['results' => new Zend_Db_Expr('COUNT(*)')];
+        foreach (array_keys(self::VL_SAMPLE_SCORES) as $key) {
+            $counts[$key] = new Zend_Db_Expr("SUM(($score) = '$key')");
         }
-        if ($shimentResult) {
-            $vlQuery = $db->select()->from(['vl' => 'r_vl_assay'], ['vl.id', 'vl.name', 'vl.short_name'])->where("`status` like 'active'");
-            $assayResult = $db->fetchAll($vlQuery);
-            $s = 0;
-            foreach ($shimentResult as $shipData) {
-                $shipmentId = $shipData['shipment_id'];
-                $i = 0;
-                $totalResult = [];
-                foreach ($assayResult as $assayRow) {
-                    $a = 0;
-                    $f = 0;
-                    $e = 0;
-                    $cQuery = $db->select()->from(['sp' => 'shipment_participant_map'], ['sp.map_id', 'sp.attributes'])
-                        ->where('sp.shipment_id = ?', $shipmentId);
-                    $cResult = $db->fetchAll($cQuery);
-                    foreach ($cResult as $val) {
-                        $valAttributes = Pt_Commons_JsonUtility::safeDecode($val['attributes']);
-                        if ($assayRow['id'] == $valAttributes['vl_assay']) {
-                            //check pass result
-                            $pQuery = $db->select()->from(['rrv' => 'response_result_vl'], ['passResult' => new Zend_Db_Expr("SUM(IF(rrv.calculated_score='pass',1,0))"), 'failResult' => new Zend_Db_Expr("SUM(IF(rrv.calculated_score='fail',1,0))"), 'exResult' => new Zend_Db_Expr("SUM(IF(rrv.calculated_score='excluded',1,0))")])
-                                ->where('rrv.shipment_map_id = ?', $val['map_id'])
-                                ->group('rrv.shipment_map_id');
-                            $pResult = $db->fetchRow($pQuery);
-                            if ($pResult) {
-                                $a = $a + $pResult['passResult'];
-                                $f = $f + $pResult['failResult'];
-                                $e = $e + $pResult['exResult'];
-                            }
-                        }
-                    }
-                    $totalResult[$s][$i]['accept'] = $a;
-                    $totalResult[$s][$i]['fail'] = $f;
-                    $totalResult[$s][$i]['excluded'] = $e;
-                    $totalResult[$s][$i]['name'] = $assayRow['short_name'];
-                    $i++;
-                }
-            }
-            $resultAccept = [];
-            $resultFail = [];
-            $resultEx = [];
-            foreach ($totalResult as $result) {
-                foreach ($result as $data) {
-                    array_push($resultAccept, $data['accept']);
-                    array_push($resultFail, $data['fail']);
-                    array_push($resultEx, $data['excluded']);
-                }
-            }
-            $resultAcc[] = $resultAccept;
-            $resultFa[] = $resultFail;
-            $resultExe[] = $resultEx;
 
-            $resultAcc['name'] = 'Acceptable Result';
-            $resultFa['name'] = 'Unacceptable Result';
-            $resultExe['name'] = 'Excluded from evaluation';
-            $totalResult = [$resultAcc, $resultFa, $resultExe, 'nameList' => $totalResult];
+        $base = fn () => $db->select()
+            ->from(['rrv' => 'response_result_vl'], $counts)
+            ->join(['sp' => 'shipment_participant_map'], 'sp.map_id=rrv.shipment_map_id', [])
+            ->join(['s' => 'shipment'], 's.shipment_id=sp.shipment_id', [])
+            ->where('sp.shipment_id = ?', $shipmentId)
+            ->where("s.scheme_type = 'vl'")
+            ->where('s.cancelled_at IS NULL')
+            ->where("sp.response_status IN ('responded','late')")
+            ->where("IFNULL(sp.is_pt_test_not_performed, 'no') <> 'yes'");
+
+        $samples = $base()
+            ->joinLeft(['ref' => 'reference_result_vl'], 'ref.shipment_id=sp.shipment_id AND ref.sample_id=rrv.sample_id', [
+                'label' => new Zend_Db_Expr("IFNULL(MAX(ref.sample_label), '')"),
+                'reference' => new Zend_Db_Expr("IFNULL(MAX(ref.reference_result), '')"),
+                'control' => new Zend_Db_Expr('IFNULL(MAX(ref.control), 0)'),
+            ])
+            ->columns(['sample_id' => 'rrv.sample_id'])
+            ->group('rrv.sample_id')
+            ->order(new Zend_Db_Expr('MIN(ref.sample_id)'));
+
+        $assays = $base()
+            // Compared as text: old responses hold values such as "--Select--".
+            ->joinLeft(['va' => 'r_vl_assay'], "CAST(va.id AS CHAR) = JSON_UNQUOTE(JSON_EXTRACT(sp.attributes, '$.vl_assay'))", [
+                'assay' => new Zend_Db_Expr("IFNULL(TRIM(MAX(va.short_name)), '')"),
+                'assayName' => new Zend_Db_Expr("IFNULL(TRIM(MAX(va.name)), '')"),
+                'participants' => new Zend_Db_Expr('COUNT(DISTINCT sp.map_id)'),
+            ])
+            ->group('va.id')
+            ->order([new Zend_Db_Expr('va.id IS NULL'), 'participants DESC', 'assay ASC']);
+
+        $toInts = function (array $row) {
+            foreach (array_merge(['results', 'participants', 'control'], array_keys(self::VL_SAMPLE_SCORES)) as $key) {
+                if (isset($row[$key])) {
+                    $row[$key] = (int) $row[$key];
+                }
+            }
+            return $row;
+        };
+
+        return [
+            'samples' => array_map($toInts, $db->fetchAll($samples)),
+            'assays' => array_map($toInts, $db->fetchAll($assays)),
+        ];
+    }
+
+    /** VL Sample Analysis as Excel: one sheet per sample, one per assay. */
+    public function exportVlSampleAnalysis(int $shipmentId): string
+    {
+        try {
+            $data = $this->getVlSampleAnalysis($shipmentId);
+            if (empty($data['samples'])) {
+                return '';
+            }
+            $shipmentCode = (string) Zend_Db_Table_Abstract::getDefaultAdapter()->fetchOne(
+                'SELECT shipment_code FROM shipment WHERE shipment_id = ?',
+                [$shipmentId]
+            );
+            $t = fn ($text) => html_entity_decode($text, ENT_QUOTES, 'UTF-8');
+            $scoreLabels = array_map(fn ($label) => $t($this->translator->_($label)), self::VL_SAMPLE_SCORES);
+            $passRate = fn (array $r) => ($r['pass'] + $r['warn'] + $r['fail']) > 0
+                ? round(($r['pass'] + $r['warn']) / ($r['pass'] + $r['warn'] + $r['fail']) * 100, 1) : null;
+
+            $excel = new Spreadsheet();
+            $sheets = [
+                [
+                    $t($this->translator->_('Samples')),
+                    [$t($this->translator->_('Sample')), $t($this->translator->_('Reference result'))],
+                    array_map(fn ($r) => [$r['label'] !== '' ? $r['label'] : $r['sample_id'], $r['reference']], $data['samples']),
+                    $data['samples'],
+                ],
+                [
+                    $t($this->translator->_('Assays')),
+                    [$t($this->translator->_('Assay')), $t($this->translator->_('Assay name')), $t($this->translator->_('Participants'))],
+                    array_map(fn ($r) => [
+                        $r['assay'] !== '' ? $r['assay'] : $t($this->translator->_('No assay reported')),
+                        $r['assayName'],
+                        $r['participants'],
+                    ], $data['assays']),
+                    $data['assays'],
+                ],
+            ];
+            foreach ($sheets as $index => [$title, $lead, $leadRows, $rows]) {
+                $sheet = $index === 0 ? $excel->getActiveSheet() : $excel->createSheet();
+                $sheet->setTitle(mb_substr($title, 0, 31));
+                $sheet->fromArray(array_merge(
+                    $lead,
+                    [$t($this->translator->_('Results'))],
+                    array_values($scoreLabels),
+                    [$t($this->translator->_('Pass rate')) . ' (%)']
+                ), null, 'A1');
+                $rowNo = 2;
+                foreach ($rows as $i => $r) {
+                    $line = array_merge($leadRows[$i], [$r['results']]);
+                    foreach (array_keys(self::VL_SAMPLE_SCORES) as $key) {
+                        $line[] = $r[$key];
+                    }
+                    $line[] = $passRate($r);
+                    $sheet->fromArray($line, null, 'A' . $rowNo++, true);
+                }
+                $sheet->getStyle('1:1')->getFont()->setBold(true);
+                $sheet->freezePane('A2');
+                foreach ($sheet->getColumnIterator() as $column) {
+                    $sheet->getColumnDimension($column->getColumnIndex())->setAutoSize(true);
+                }
+            }
+            $excel->setActiveSheetIndex(0);
+
+            if (!is_dir($this->tempUploadDirectory)) {
+                mkdir($this->tempUploadDirectory);
+            }
+            $code = preg_replace('/[^A-Za-z0-9_-]+/', '-', $shipmentCode);
+            $filename = 'vl-sample-analysis-' . $code . '-' . date('d-M-Y-H-i-s') . '.xlsx';
+            IOFactory::createWriter($excel, 'Xlsx')->save($this->tempUploadDirectory . DIRECTORY_SEPARATOR . $filename);
+            return $filename;
+        } catch (Throwable $exc) {
+            Pt_Commons_LoggerUtility::logError('Failed to generate VL sample analysis report (Excel): ' . $exc->getMessage(), [
+                'file' => $exc->getFile(),
+                'line' => $exc->getLine(),
+                'trace' => $exc->getTraceAsString(),
+            ]);
+            return '';
         }
-        return $totalResult;
     }
 
     // VL response distribution by assay for a given shipment (ranges already computed in reference_vl_calculation)
