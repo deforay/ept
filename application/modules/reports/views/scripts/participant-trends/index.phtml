@@ -123,11 +123,13 @@
         color: #6b7686;
     }
 
-    .trends-table tr.js-shipment-row {
+    .trends-table tr.js-shipment-row,
+    .trends-table tr.js-scheme-row {
         cursor: pointer;
     }
 
-    .trends-table tr.js-shipment-row:hover td {
+    .trends-table tr.js-shipment-row:hover td,
+    .trends-table tr.js-scheme-row:hover td {
         background: #f4f7fb;
     }
 
@@ -265,7 +267,7 @@
                 <label for="scheme"><?= $this->translate->_("Scheme"); ?></label>
                 <select id="scheme" name="scheme" class="form-control input-sm"
                     data-filter-label="<?= $this->htmlTranslate("Scheme"); ?>">
-                    <option value="">-- <?= $this->translate->_("Select Scheme Type"); ?> --</option>
+                    <option value=""><?= $this->translate->_("All schemes"); ?></option>
                     <?php foreach ($this->schemes as $scheme) { ?>
                         <option value="<?= $this->escape($scheme['scheme_id']); ?>"><?= $this->escape($scheme['scheme_name']); ?></option>
                     <?php } ?>
@@ -318,11 +320,33 @@
     </div>
 
     <div class="trends-panel" id="trendsChartPanel">
-        <h4><?= $this->translate->_("Trend by shipment"); ?></h4>
+        <h4 id="trendsChartTitle"></h4>
         <div id="trendsChart"></div>
     </div>
 
-    <div class="trends-panel">
+    <div class="trends-panel" id="trendsSchemesPanel">
+        <h4><?= $this->translate->_("Schemes"); ?> <small class="dontPrint"><?= $this->translate->_("Click a scheme to see its shipments."); ?></small></h4>
+        <table class="table trends-table">
+            <thead>
+                <tr>
+                    <th scope="col"><?= $this->translate->_("Scheme"); ?></th>
+                    <th scope="col" class="num"><?= $this->translate->_("Enrolled"); ?></th>
+                    <th scope="col" class="num"><?= $this->translate->_("Responded"); ?></th>
+                    <th scope="col" class="num"><?= $this->translate->_("On time"); ?></th>
+                    <th scope="col" class="num"><?= $this->translate->_("Pass rate"); ?></th>
+                    <th scope="col"><?= $this->translate->_("Ratings"); ?></th>
+                </tr>
+            </thead>
+            <tbody id="trendsSchemeRows"></tbody>
+        </table>
+        <div class="rating-legend">
+            <span><i class="rating-excellent"></i><?= $this->translate->_("Excellent (full score)"); ?></span>
+            <span><i class="rating-satisfactory"></i><?= $this->translate->_("Satisfactory (passed)"); ?></span>
+            <span><i class="rating-unsatisfactory"></i><?= $this->translate->_("Unsatisfactory (failed)"); ?></span>
+        </div>
+    </div>
+
+    <div class="trends-panel" id="trendsShipmentsPanel">
         <h4><?= $this->translate->_("Shipments"); ?> <small class="dontPrint"><?= $this->translate->_("Click a shipment to see its regions."); ?></small></h4>
         <table class="table trends-table">
             <thead>
@@ -364,7 +388,10 @@
         excellent: "<?= $this->jsTranslate("Excellent"); ?>",
         satisfactory: "<?= $this->jsTranslate("Satisfactory"); ?>",
         unsatisfactory: "<?= $this->jsTranslate("Unsatisfactory"); ?>",
-        selectScheme: "<?= $this->jsTranslate("Please select a scheme type"); ?>",
+        acrossSchemes: "<?= $this->jsTranslate("across %s shipments in %s schemes"); ?>",
+        shipmentCount: "<?= $this->jsTranslate("%s shipments"); ?>",
+        trendByShipment: "<?= $this->jsTranslate("Trend by shipment"); ?>",
+        passRateByScheme: "<?= $this->jsTranslate("Pass rate by scheme"); ?>",
         selectDateRange: "<?= $this->jsTranslate("Please select a date range"); ?>",
         downloadFailed: "<?= $this->jsTranslate("Unable to generate download"); ?>",
         allShipments: "<?= $this->jsTranslate("All Shipments in the selected period"); ?>"
@@ -390,7 +417,9 @@
             showDropdowns: true,
             alwaysShowCalendars: true,
             autoUpdateInput: true,
-            startDate: moment().subtract(179, 'days'),
+            // Some programmes run only one or two rounds a year, so three years
+            // shows enough of them for a trend.
+            startDate: moment().subtract(3, 'year'),
             endDate: moment(),
             maxDate: moment(),
             ranges: eptDateRanges()
@@ -401,13 +430,23 @@
         $('#trendsRows').on('click', 'tr.js-shipment-row', function () {
             toggleRegions($(this));
         });
+
+        // A scheme row opens the shipment view for that scheme.
+        $('#trendsSchemeRows').on('click', 'tr.js-scheme-row', function () {
+            var scheme = String($(this).data('scheme') || '');
+            if (!scheme) {
+                return;
+            }
+            $('#scheme').val(scheme).trigger('change');
+            loadTrends();
+        });
     });
 
     // The collapsible filter panel selects the scheme when only one is active.
-    // It runs after this page's ready handlers, so check once the page has loaded:
-    // with a scheme and the default date range set, there is nothing left to choose.
+    // It runs after this page's ready handlers, so load once the page has loaded.
+    // Without a scheme the page opens on the overview of every scheme.
     $(window).on('load', function () {
-        if ($('#scheme').val() && $('#dateRange').val()) {
+        if ($('#dateRange').val()) {
             loadTrends();
         }
     });
@@ -440,10 +479,6 @@
         var range = dateRangeParts();
         if (!range.startDate || !range.endDate) {
             alert(trendsText.selectDateRange);
-            return;
-        }
-        if (!$('#scheme').val()) {
-            alert(trendsText.selectScheme);
             return;
         }
         trendsFilters = {
@@ -521,9 +556,32 @@
         return sum;
     }
 
+    // The shipment rows of each scheme. The rows carry the scheme name, and
+    // the Scheme filter gives its id.
+    function groupByScheme(rows) {
+        var ids = {};
+        $('#scheme option').each(function () {
+            ids[$(this).text()] = this.value;
+        });
+        var groups = [];
+        var index = {};
+        rows.forEach(function (row) {
+            if (!(row.scheme_name in index)) {
+                index[row.scheme_name] = groups.length;
+                groups.push({ scheme_type: ids[row.scheme_name] || '', scheme_name: row.scheme_name, rows: [] });
+            }
+            groups[index[row.scheme_name]].rows.push(row);
+        });
+        return groups.sort(function (a, b) {
+            return String(a.scheme_name).localeCompare(String(b.scheme_name));
+        });
+    }
+
     function renderTrends(rows) {
         var sum = totals(rows);
         var evaluated = sum.passed + sum.failed;
+        var overview = !trendsFilters.scheme;
+        var schemes = groupByScheme(rows);
 
         $('#trendsCaption').html(
             '<strong>' + escapeText($('#scheme option:selected').text()) + '</strong> &middot; ' +
@@ -531,7 +589,10 @@
         );
 
         $('#kpiEnrolled').text(fmt(sum.enrolled));
-        $('#kpiEnrolledNote').text(rows.length === 1 ? trendsText.oneShipment : sprintf(trendsText.acrossShipments, rows.length));
+        $('#kpiEnrolledNote').text(
+            overview && schemes.length > 1 ? sprintf(trendsText.acrossSchemes, rows.length, schemes.length)
+                : rows.length === 1 ? trendsText.oneShipment : sprintf(trendsText.acrossShipments, rows.length)
+        );
         $('#kpiResponse').html(pctText(pct(sum.responded, sum.enrolled)));
         $('#kpiResponseNote').text(sprintf(trendsText.ofEnrolled, fmt(sum.responded), fmt(sum.enrolled)));
         $('#kpiOnTime').html(pctText(pct(sum.on_time, sum.responded)));
@@ -539,14 +600,36 @@
         $('#kpiPass').html(pctText(pct(sum.passed, evaluated)));
         $('#kpiPassNote').text(evaluated > 0 ? sprintf(trendsText.ofEvaluated, fmt(sum.passed), fmt(evaluated)) : trendsText.notEvaluated);
 
-        $('#trendsRows').html(rows.map(shipmentRowHtml).join(''));
+        // Shipments of different schemes do not compare, so the overview
+        // lists the schemes and draws one pass rate line per scheme.
+        $('#trendsSchemesPanel').toggleClass('hide', !overview);
+        $('#trendsShipmentsPanel').toggleClass('hide', overview);
+        if (overview) {
+            $('#trendsSchemeRows').html(schemes.map(schemeRowHtml).join(''));
+        } else {
+            $('#trendsRows').html(rows.map(shipmentRowHtml).join(''));
+        }
         $('#trendsResults').removeClass('hide');
 
         // A trend needs at least two points.
         $('#trendsChartPanel').toggleClass('hide', rows.length < 2);
         if (rows.length >= 2) {
-            drawChart(rows);
+            $('#trendsChartTitle').text(overview ? trendsText.passRateByScheme : trendsText.trendByShipment);
+            if (overview) {
+                drawSchemeChart(schemes);
+            } else {
+                drawChart(rows);
+            }
         }
+    }
+
+    function schemeRowHtml(group) {
+        var sum = totals(group.rows);
+        return '<tr class="js-scheme-row" data-scheme="' + escapeText(group.scheme_type) + '">' +
+            '<td><i class="icon-chevron-right toggle-icon" aria-hidden="true"></i> <strong>' + escapeText(group.scheme_name) + '</strong>' +
+            '<span class="sub">' + escapeText(group.rows.length === 1 ? trendsText.oneShipment : sprintf(trendsText.shipmentCount, group.rows.length)) + '</span></td>' +
+            figureCells(sum) +
+            '</tr>';
     }
 
     function figureCells(row) {
@@ -612,6 +695,38 @@
                 }).join('') +
                 '</tbody></table>');
         }, 'json');
+    }
+
+    function drawSchemeChart(schemes) {
+        Highcharts.chart('trendsChart', {
+            chart: { type: 'line', style: { fontFamily: 'inherit' } },
+            title: { text: null },
+            credits: { enabled: false },
+            exporting: { enabled: false },
+            xAxis: { type: 'datetime' },
+            yAxis: {
+                min: 0,
+                max: 100,
+                title: { text: null },
+                labels: { format: '{value}%' }
+            },
+            tooltip: {
+                pointFormat: '<span style="color:{point.color}">\u25CF</span> {series.name}: <b>{point.y}%</b><br/>{point.code}'
+            },
+            legend: { align: 'left', verticalAlign: 'top' },
+            plotOptions: { line: { marker: { radius: 4 } } },
+            series: schemes.map(function (group) {
+                return {
+                    name: group.scheme_name,
+                    // Shipments not evaluated yet have no pass rate.
+                    data: group.rows.filter(function (r) {
+                        return r.passed + r.failed > 0;
+                    }).map(function (r) {
+                        return { x: moment.utc(r.shipment_date, 'YYYY-MM-DD').valueOf(), y: pct(r.passed, r.passed + r.failed), code: r.shipment_code };
+                    })
+                };
+            })
+        });
     }
 
     function drawChart(rows) {
