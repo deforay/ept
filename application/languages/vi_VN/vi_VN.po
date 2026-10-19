@@ -26331,3 +26331,42 @@ msgstr "1 vòng ngoại kiểm"
 #, php-format
 msgid "%d shipments"
 msgstr "%d vòng ngoại kiểm"
+
+#: application/services/Participants.php
+#, php-format
+msgid "the %s labs listed below"
+msgstr "%s phòng xét nghiệm được liệt kê bên dưới"
+
+#: application/services/Participants.php
+msgid "Responded late"
+msgstr "Đã phản hồi trễ"
+
+#: application/services/Participants.php
+msgid "Submitted late, awaiting approval"
+msgstr "Nộp trễ, đang chờ phê duyệt"
+
+#: application/services/Participants.php
+msgid "Late, not accepted"
+msgstr "Trễ, không được chấp nhận"
+
+#: application/services/Participants.php
+msgid "Draft, not submitted"
+msgstr "Bản nháp, chưa nộp"
+
+#: application/services/Participants.php
+msgid "Not yet"
+msgstr "Chưa phản hồi"
+
+#: application/services/Participants.php
+msgid "Responded on"
+msgstr "Ngày phản hồi"
+
+#: application/services/Participants.php
+#, php-format
+msgid "Still to respond (%s)"
+msgstr "Chưa phản hồi (%s)"
+
+#: application/services/Participants.php
+#, php-format
+msgid "Responded (%s)"
+msgstr "Đã phản hồi (%s)"

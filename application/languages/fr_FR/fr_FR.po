@@ -27275,3 +27275,42 @@ msgstr "1 expédition"
 #, php-format
 msgid "%d shipments"
 msgstr "%d expéditions"
+
+#: application/services/Participants.php
+#, php-format
+msgid "the %s labs listed below"
+msgstr "les %s laboratoires listés ci-dessous"
+
+#: application/services/Participants.php
+msgid "Responded late"
+msgstr "Répondu en retard"
+
+#: application/services/Participants.php
+msgid "Submitted late, awaiting approval"
+msgstr "Soumis en retard, en attente d'approbation"
+
+#: application/services/Participants.php
+msgid "Late, not accepted"
+msgstr "En retard, non accepté"
+
+#: application/services/Participants.php
+msgid "Draft, not submitted"
+msgstr "Brouillon, non soumis"
+
+#: application/services/Participants.php
+msgid "Not yet"
+msgstr "Pas encore"
+
+#: application/services/Participants.php
+msgid "Responded on"
+msgstr "Répondu le"
+
+#: application/services/Participants.php
+#, php-format
+msgid "Still to respond (%s)"
+msgstr "En attente de réponse (%s)"
+
+#: application/services/Participants.php
+#, php-format
+msgid "Responded (%s)"
+msgstr "Ont répondu (%s)"

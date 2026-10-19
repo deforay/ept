@@ -25818,3 +25818,42 @@ msgstr ""
 #, php-format
 msgid "%d shipments"
 msgstr ""
+
+#: application/services/Participants.php
+#, php-format
+msgid "the %s labs listed below"
+msgstr ""
+
+#: application/services/Participants.php
+msgid "Responded late"
+msgstr ""
+
+#: application/services/Participants.php
+msgid "Submitted late, awaiting approval"
+msgstr ""
+
+#: application/services/Participants.php
+msgid "Late, not accepted"
+msgstr ""
+
+#: application/services/Participants.php
+msgid "Draft, not submitted"
+msgstr ""
+
+#: application/services/Participants.php
+msgid "Not yet"
+msgstr ""
+
+#: application/services/Participants.php
+msgid "Responded on"
+msgstr ""
+
+#: application/services/Participants.php
+#, php-format
+msgid "Still to respond (%s)"
+msgstr ""
+
+#: application/services/Participants.php
+#, php-format
+msgid "Responded (%s)"
+msgstr ""

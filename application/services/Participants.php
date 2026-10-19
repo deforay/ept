@@ -1313,7 +1313,7 @@ class Application_Service_Participants
                 'name'  => $labNameExpr,
                 'role'  => new Zend_Db_Expr("'participant'"),
             ] + $labColumns)
-                ->joinLeft(['spm' => 'shipment_participant_map'], 'p.participant_id=spm.participant_id', ['spm.response_status'])
+                ->joinLeft(['spm' => 'shipment_participant_map'], 'p.participant_id=spm.participant_id', ['spm.response_status', 'spm.shipment_test_report_date'])
                 ->joinLeft(['s' => 'shipment'], 's.shipment_id=spm.shipment_id', ['s.shipment_id', 's.shipment_code', 's.shipment_date', 's.response_deadline'])
                 ->joinLeft(['d' => 'distributions'], 'd.distribution_id=s.distribution_id', ['distribution_code', 'distribution_date'])
                 ->joinLeft(['sl' => 'scheme_list'], 'sl.scheme_id=s.scheme_type', ['SCHEME' => 'sl.scheme_name'])
@@ -1346,7 +1346,7 @@ class Application_Service_Participants
                 'role'  => new Zend_Db_Expr("'datamanager'"),
             ] + $labColumns)
                 ->joinLeft(['pmm' => 'participant_manager_map'], 'dm.dm_id=pmm.dm_id', [])
-                ->joinLeft(['spm' => 'shipment_participant_map'], 'spm.participant_id=pmm.participant_id', ['spm.response_status'])
+                ->joinLeft(['spm' => 'shipment_participant_map'], 'spm.participant_id=pmm.participant_id', ['spm.response_status', 'spm.shipment_test_report_date'])
                 ->joinLeft(['s' => 'shipment'], 's.shipment_id=spm.shipment_id', ['s.shipment_id', 's.shipment_code', 's.shipment_date', 's.response_deadline'])
                 ->joinLeft(['d' => 'distributions'], 'd.distribution_id=s.distribution_id', ['distribution_code', 'distribution_date'])
                 ->joinLeft(['sl' => 'scheme_list'], 'sl.scheme_id=s.scheme_type', ['SCHEME' => 'sl.scheme_name'])
@@ -1368,7 +1368,7 @@ class Application_Service_Participants
                 'role'  => new Zend_Db_Expr("'ptcc'"),
             ] + $labColumns)
                 ->joinLeft(['pmm' => 'participant_manager_map'], 'dm.dm_id=pmm.dm_id', [])
-                ->joinLeft(['spm' => 'shipment_participant_map'], 'spm.participant_id=pmm.participant_id', ['spm.response_status'])
+                ->joinLeft(['spm' => 'shipment_participant_map'], 'spm.participant_id=pmm.participant_id', ['spm.response_status', 'spm.shipment_test_report_date'])
                 ->joinLeft(['s' => 'shipment'], 's.shipment_id=spm.shipment_id', ['s.shipment_id', 's.shipment_code', 's.shipment_date', 's.response_deadline'])
                 ->joinLeft(['d' => 'distributions'], 'd.distribution_id=s.distribution_id', ['distribution_code', 'distribution_date'])
                 ->joinLeft(['sl' => 'scheme_list'], 'sl.scheme_id=s.scheme_type', ['SCHEME' => 'sl.scheme_name'])
@@ -1548,6 +1548,7 @@ class Application_Service_Participants
             'name'    => self::tidyName($pt['participant_names'] ?? ''),
             'country' => (string) ($pt['country'] ?? ''),
             'status'  => (string) ($pt['response_status'] ?? ''),
+            'responded_on' => (string) ($pt['shipment_test_report_date'] ?? ''),
         ];
     }
 
@@ -1607,9 +1608,7 @@ class Application_Service_Participants
                 $pt['participant_ids'] = $pt['labs'][0]['id'];
                 $pt['participant_names'] = $pt['labs'][0]['name'];
                 $pt['country'] = $pt['labs'][0]['country'];
-                continue;
             }
-            usort($pt['labs'], fn ($a, $b) => strnatcasecmp($a['id'], $b['id']));
         }
         unset($pt);
 
@@ -1677,7 +1676,7 @@ class Application_Service_Participants
         $labCount = self::isMultiLab($pt) ? count($pt['labs']) : 0;
         if ($labCount > 0) {
             $countries = array_unique(array_column($pt['labs'], 'country'));
-            $labsPhrase = sprintf(self::translate($isSubject ? '%s labs' : 'the %s labs listed below'), $labCount);
+            $labsPhrase = sprintf($isSubject ? self::translate('%s labs') : self::translate('the %s labs listed below'), $labCount);
             $labName = $labsPhrase;
             $labId = $isSubject ? $labsPhrase : self::translate('listed below');
             $country = count($countries) === 1
@@ -1750,42 +1749,77 @@ class Application_Service_Participants
 
     /**
      * {{lab_table}}: the labs an email is about, one row each, with how far
-     * each has got with its response. Inline styles only, since mail clients
-     * drop <style> blocks.
+     * each has got with its response. Labs still to respond come first, as
+     * they are what the email asks about, then the labs that have responded.
+     * Each group is in name order. A header row names each group when both
+     * are present. Inline styles only, since mail clients drop <style> blocks.
      */
     public static function labTableHtml(array $pt): string
     {
         $labs = $pt['labs'] ?? [self::labSummary($pt)];
 
-        $t = fn (string $text): string => htmlspecialchars(self::translate($text), ENT_QUOTES, 'UTF-8');
+        // Each literal sits inside self::translate() so the extractor finds it
+        $e = fn (string $v): string => htmlspecialchars($v, ENT_QUOTES, 'UTF-8');
         $statuses = [
-            'responded'      => $t('Responded'),
-            'late'           => $t('Responded late'),
-            'late_submitted' => $t('Submitted late, awaiting approval'),
-            'late_rejected'  => $t('Late, not accepted'),
-            'nottested'      => $t('Could not test'),
-            'draft'          => $t('Draft, not submitted'),
+            'responded'      => $e(self::translate('Responded')),
+            'late'           => $e(self::translate('Responded late')),
+            'late_submitted' => $e(self::translate('Submitted late, awaiting approval')),
+            'late_rejected'  => $e(self::translate('Late, not accepted')),
+            'nottested'      => $e(self::translate('Could not test')),
+            'draft'          => $e(self::translate('Draft, not submitted')),
         ];
-        $notYet = $t('Not yet');
+        $notYet = $e(self::translate('Not yet'));
+
+        $byName = fn (array $a, array $b): int => strnatcasecmp($a['name'], $b['name']) ?: strnatcasecmp($a['id'], $b['id']);
+        $groups = ['pending' => [], 'done' => []];
+        foreach ($labs as $lab) {
+            $groups[in_array($lab['status'], self::RESPONSE_STATUSES_DONE, true) ? 'done' : 'pending'][] = $lab;
+        }
+        usort($groups['pending'], $byName);
+        usort($groups['done'], $byName);
+
+        // A draft can carry a date too, but only a submitted response has a "responded on"
+        $respondedOn = fn (array $lab): string => in_array($lab['status'], self::RESPONSE_STATUSES_DONE, true)
+            ? (string) Pt_Commons_DateUtility::humanReadableDateFormat($lab['responded_on'] ?? '')
+            : '';
+        $showDate = false;
+        foreach ($groups['done'] as $lab) {
+            $showDate = $showDate || $respondedOn($lab) !== '';
+        }
+        $columns = $showDate ? 5 : 4;
 
         $cell = 'padding:6px 10px;border:1px solid #d9dee5;text-align:left;vertical-align:top;';
         $head = $cell . 'background:#f4f6f9;font-weight:bold;';
+        $groupHead = $cell . 'background:#eef1f5;font-weight:bold;';
 
         $html = '<table cellpadding="0" cellspacing="0" style="border-collapse:collapse;font-size:14px;margin:8px 0;">'
             . '<thead><tr>'
-            . "<th style=\"$head\">" . $t('Participant ID') . '</th>'
-            . "<th style=\"$head\">" . $t('Participant name') . '</th>'
-            . "<th style=\"$head\">" . $t('Country') . '</th>'
-            . "<th style=\"$head\">" . $t('Response') . '</th>'
+            . "<th style=\"$head\">" . $e(self::translate('Participant ID')) . '</th>'
+            . "<th style=\"$head\">" . $e(self::translate('Participant name')) . '</th>'
+            . "<th style=\"$head\">" . $e(self::translate('Country')) . '</th>'
+            . "<th style=\"$head\">" . $e(self::translate('Response')) . '</th>'
+            . ($showDate ? "<th style=\"$head\">" . $e(self::translate('Responded on')) . '</th>' : '')
             . '</tr></thead><tbody>';
-        $e = fn (string $v): string => htmlspecialchars($v, ENT_QUOTES, 'UTF-8');
-        foreach ($labs as $lab) {
-            $html .= '<tr>'
-                . "<td style=\"$cell\">" . $e($lab['id']) . '</td>'
-                . "<td style=\"$cell\">" . $e($lab['name']) . '</td>'
-                . "<td style=\"$cell\">" . $e($lab['country']) . '</td>'
-                . "<td style=\"$cell\">" . ($statuses[$lab['status']] ?? $notYet) . '</td>'
-                . '</tr>';
+
+        $titles = [
+            'pending' => self::translate('Still to respond (%s)'),
+            'done'    => self::translate('Responded (%s)'),
+        ];
+        $labelGroups = $groups['pending'] !== [] && $groups['done'] !== [];
+        foreach ($groups as $group => $rows) {
+            if ($labelGroups) {
+                $html .= "<tr><td colspan=\"$columns\" style=\"$groupHead\">"
+                    . $e(sprintf($titles[$group], count($rows))) . '</td></tr>';
+            }
+            foreach ($rows as $lab) {
+                $html .= '<tr>'
+                    . "<td style=\"$cell\">" . $e($lab['id']) . '</td>'
+                    . "<td style=\"$cell\">" . $e($lab['name']) . '</td>'
+                    . "<td style=\"$cell\">" . $e($lab['country']) . '</td>'
+                    . "<td style=\"$cell\">" . ($statuses[$lab['status']] ?? $notYet) . '</td>'
+                    . ($showDate ? "<td style=\"$cell\">" . $e($respondedOn($lab)) . '</td>' : '')
+                    . '</tr>';
+            }
         }
         return $html . '</tbody></table>';
     }
