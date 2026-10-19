@@ -243,14 +243,14 @@
 </style>
 
 <legend>
-    <h3><?= $this->translate->_("Participant Performance Overview"); ?></h3>
+    <h3><?= $this->htmlTranslate("Participant Performance Overview"); ?></h3>
 </legend>
 
 <div class="filter-panel js-filter-panel">
     <button type="button" class="btn btn-default btn-sm js-filter-toggle" aria-expanded="false"
         data-expand-text="<?= $this->htmlTranslate("Expand Filters"); ?>"
         data-collapse-text="<?= $this->htmlTranslate("Collapse Filters"); ?>">
-        <i class="icon-filter"></i> <span class="js-filter-toggle-text"><?= $this->translate->_("Expand Filters"); ?></span>
+        <i class="icon-filter"></i> <span class="js-filter-toggle-text"><?= $this->htmlTranslate("Expand Filters"); ?></span>
         <span class="label label-info js-filter-count" style="display:none;">0</span>
         <span class="caret"></span>
     </button>
@@ -258,31 +258,31 @@
     <div class="js-filter-body">
         <div class="trends-filters">
             <div class="trends-field">
-                <label for="dateRange"><?= $this->translate->_("Date Range"); ?></label>
+                <label for="dateRange"><?= $this->htmlTranslate("Date Range"); ?></label>
                 <input type="text" id="dateRange" name="dateRange" class="form-control input-sm" readonly="readonly"
                     style="background: #fff" placeholder="<?= $this->htmlTranslate("Click here to pick a Date Range"); ?>"
                     data-filter-label="<?= $this->htmlTranslate("Date Range"); ?>" />
             </div>
             <div class="trends-field">
-                <label for="scheme"><?= $this->translate->_("Scheme"); ?></label>
+                <label for="scheme"><?= $this->htmlTranslate("Scheme"); ?></label>
                 <select id="scheme" name="scheme" class="form-control input-sm"
                     data-filter-label="<?= $this->htmlTranslate("Scheme"); ?>">
-                    <option value=""><?= $this->translate->_("All schemes"); ?></option>
+                    <option value=""><?= $this->htmlTranslate("All schemes"); ?></option>
                     <?php foreach ($this->schemes as $scheme) { ?>
                         <option value="<?= $this->escape($scheme['scheme_id']); ?>"><?= $this->escape($scheme['scheme_name']); ?></option>
                     <?php } ?>
                 </select>
             </div>
             <div class="trends-field">
-                <label for="shipmentId"><?= $this->translate->_("Shipment"); ?></label>
+                <label for="shipmentId"><?= $this->htmlTranslate("Shipment"); ?></label>
                 <select id="shipmentId" name="shipmentId" class="form-control input-sm"
                     data-filter-label="<?= $this->htmlTranslate("Shipment"); ?>">
-                    <option value="">-- <?= $this->translate->_("All Shipments in the selected period"); ?> --</option>
+                    <option value="">-- <?= $this->htmlTranslate("All Shipments in the selected period"); ?> --</option>
                 </select>
             </div>
             <div class="trends-actions dontPrint">
-                <button type="button" class="btn btn-success btn-sm" onclick="loadTrends()"><?= $this->translate->_("Get Report"); ?></button>
-                <button type="button" class="btn btn-danger btn-sm" onclick="document.location.href = document.location"><?= $this->translate->_("Reset"); ?></button>
+                <button type="button" class="btn btn-success btn-sm" onclick="loadTrends()"><?= $this->htmlTranslate("Get Report"); ?></button>
+                <button type="button" class="btn btn-danger btn-sm" onclick="document.location.href = document.location"><?= $this->htmlTranslate("Reset"); ?></button>
             </div>
         </div>
     </div><!-- /.js-filter-body -->
@@ -292,28 +292,28 @@
     <div class="trends-head">
         <p id="trendsCaption"></p>
         <button type="button" class="btn btn-info btn-sm dontPrint" onclick="exportTrends()">
-            <i class="icon-download"></i> <?= $this->translate->_("Download Excel"); ?>
+            <i class="icon-download"></i> <?= $this->htmlTranslate("Download Excel"); ?>
         </button>
     </div>
 
     <div class="trends-kpis">
         <div class="trends-kpi">
-            <div class="trends-kpi-label"><?= $this->translate->_("Enrolled"); ?></div>
+            <div class="trends-kpi-label"><?= $this->htmlTranslate("Enrolled"); ?></div>
             <div class="trends-kpi-value" id="kpiEnrolled"></div>
             <div class="trends-kpi-note" id="kpiEnrolledNote"></div>
         </div>
         <div class="trends-kpi">
-            <div class="trends-kpi-label"><?= $this->translate->_("Response rate"); ?></div>
+            <div class="trends-kpi-label"><?= $this->htmlTranslate("Response rate"); ?></div>
             <div class="trends-kpi-value" id="kpiResponse"></div>
             <div class="trends-kpi-note" id="kpiResponseNote"></div>
         </div>
         <div class="trends-kpi">
-            <div class="trends-kpi-label"><?= $this->translate->_("On time"); ?></div>
+            <div class="trends-kpi-label"><?= $this->htmlTranslate("On time"); ?></div>
             <div class="trends-kpi-value" id="kpiOnTime"></div>
             <div class="trends-kpi-note" id="kpiOnTimeNote"></div>
         </div>
         <div class="trends-kpi">
-            <div class="trends-kpi-label"><?= $this->translate->_("Pass rate"); ?></div>
+            <div class="trends-kpi-label"><?= $this->htmlTranslate("Pass rate"); ?></div>
             <div class="trends-kpi-value" id="kpiPass"></div>
             <div class="trends-kpi-note" id="kpiPassNote"></div>
         </div>
@@ -325,46 +325,46 @@
     </div>
 
     <div class="trends-panel" id="trendsSchemesPanel">
-        <h4><?= $this->translate->_("Schemes"); ?> <small class="dontPrint"><?= $this->translate->_("Click a scheme to see its shipments."); ?></small></h4>
+        <h4><?= $this->htmlTranslate("Schemes"); ?> <small class="dontPrint"><?= $this->htmlTranslate("Click a scheme to see its shipments."); ?></small></h4>
         <table class="table trends-table">
             <thead>
                 <tr>
-                    <th scope="col"><?= $this->translate->_("Scheme"); ?></th>
-                    <th scope="col" class="num"><?= $this->translate->_("Enrolled"); ?></th>
-                    <th scope="col" class="num"><?= $this->translate->_("Responded"); ?></th>
-                    <th scope="col" class="num"><?= $this->translate->_("On time"); ?></th>
-                    <th scope="col" class="num"><?= $this->translate->_("Pass rate"); ?></th>
-                    <th scope="col"><?= $this->translate->_("Ratings"); ?></th>
+                    <th scope="col"><?= $this->htmlTranslate("Scheme"); ?></th>
+                    <th scope="col" class="num"><?= $this->htmlTranslate("Enrolled"); ?></th>
+                    <th scope="col" class="num"><?= $this->htmlTranslate("Responded"); ?></th>
+                    <th scope="col" class="num"><?= $this->htmlTranslate("On time"); ?></th>
+                    <th scope="col" class="num"><?= $this->htmlTranslate("Pass rate"); ?></th>
+                    <th scope="col"><?= $this->htmlTranslate("Ratings"); ?></th>
                 </tr>
             </thead>
             <tbody id="trendsSchemeRows"></tbody>
         </table>
         <div class="rating-legend">
-            <span><i class="rating-excellent"></i><?= $this->translate->_("Excellent (full score)"); ?></span>
-            <span><i class="rating-satisfactory"></i><?= $this->translate->_("Satisfactory (passed)"); ?></span>
-            <span><i class="rating-unsatisfactory"></i><?= $this->translate->_("Unsatisfactory (failed)"); ?></span>
+            <span><i class="rating-excellent"></i><?= $this->htmlTranslate("Excellent (full score)"); ?></span>
+            <span><i class="rating-satisfactory"></i><?= $this->htmlTranslate("Satisfactory (passed)"); ?></span>
+            <span><i class="rating-unsatisfactory"></i><?= $this->htmlTranslate("Unsatisfactory (failed)"); ?></span>
         </div>
     </div>
 
     <div class="trends-panel" id="trendsShipmentsPanel">
-        <h4><?= $this->translate->_("Shipments"); ?> <small class="dontPrint"><?= $this->translate->_("Click a shipment to see its regions."); ?></small></h4>
+        <h4><?= $this->htmlTranslate("Shipments"); ?> <small class="dontPrint"><?= $this->htmlTranslate("Click a shipment to see its regions."); ?></small></h4>
         <table class="table trends-table">
             <thead>
                 <tr>
-                    <th scope="col"><?= $this->translate->_("Shipment"); ?></th>
-                    <th scope="col" class="num"><?= $this->translate->_("Enrolled"); ?></th>
-                    <th scope="col" class="num"><?= $this->translate->_("Responded"); ?></th>
-                    <th scope="col" class="num"><?= $this->translate->_("On time"); ?></th>
-                    <th scope="col" class="num"><?= $this->translate->_("Pass rate"); ?></th>
-                    <th scope="col"><?= $this->translate->_("Ratings"); ?></th>
+                    <th scope="col"><?= $this->htmlTranslate("Shipment"); ?></th>
+                    <th scope="col" class="num"><?= $this->htmlTranslate("Enrolled"); ?></th>
+                    <th scope="col" class="num"><?= $this->htmlTranslate("Responded"); ?></th>
+                    <th scope="col" class="num"><?= $this->htmlTranslate("On time"); ?></th>
+                    <th scope="col" class="num"><?= $this->htmlTranslate("Pass rate"); ?></th>
+                    <th scope="col"><?= $this->htmlTranslate("Ratings"); ?></th>
                 </tr>
             </thead>
             <tbody id="trendsRows"></tbody>
         </table>
         <div class="rating-legend">
-            <span><i class="rating-excellent"></i><?= $this->translate->_("Excellent (full score)"); ?></span>
-            <span><i class="rating-satisfactory"></i><?= $this->translate->_("Satisfactory (passed)"); ?></span>
-            <span><i class="rating-unsatisfactory"></i><?= $this->translate->_("Unsatisfactory (failed)"); ?></span>
+            <span><i class="rating-excellent"></i><?= $this->htmlTranslate("Excellent (full score)"); ?></span>
+            <span><i class="rating-satisfactory"></i><?= $this->htmlTranslate("Satisfactory (passed)"); ?></span>
+            <span><i class="rating-unsatisfactory"></i><?= $this->htmlTranslate("Unsatisfactory (failed)"); ?></span>
         </div>
     </div>
 </div>
