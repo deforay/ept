@@ -57,7 +57,8 @@ class CapaController extends Zend_Controller_Action
             if ($id <= 0 || !$shipmentService->dmManagesParticipant($dmId, $id)) {
                 $this->redirect('/capa');
             }
-            $this->view->correctiveActions = $shipmentService->getCorrectiveActionByShipmentId($id);
+            // $id is a participant id. The query is scoped to the data manager too.
+            $this->view->correctiveActions = $shipmentService->getCorrectiveActionByShipmentId($id, '', $dmId);
         } else {
             $this->redirect('/capa');
         }

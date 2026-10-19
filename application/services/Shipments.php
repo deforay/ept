@@ -4752,7 +4752,12 @@ class Application_Service_Shipments
         echo json_encode($output);
     }
 
-    public function getCorrectiveActionByShipmentId($id, $type = '')
+    /**
+     * The corrective actions of one participant ($id is a participant id,
+     * despite the name). With $dmId, only when that data manager manages the
+     * participant.
+     */
+    public function getCorrectiveActionByShipmentId($id, $type = '', ?int $dmId = null)
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $sql = $db->select()->distinct()->from(['c' => 'r_dts_corrective_actions'])
@@ -4763,6 +4768,10 @@ class Application_Service_Shipments
             ->join(['d' => 'distributions'], 's.distribution_id=d.distribution_id', ['distribution_code', 'distribution_date']);
         // if(isset($type) && !empty($type) && $type == 'admin'){
         $sql = $sql->where('spm.participant_id = ?', $id);
+        if ($dmId !== null) {
+            $sql = $sql->join(['pmm' => 'participant_manager_map'], 'pmm.participant_id=spm.participant_id', [])
+                ->where('pmm.dm_id = ?', $dmId);
+        }
         $sql = $sql->group('spm.participant_id');
         $sql = $sql->group('c.action_id');
         /* }else{
