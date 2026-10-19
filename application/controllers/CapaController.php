@@ -53,12 +53,13 @@ class CapaController extends Zend_Controller_Action
             $shipmentService->savePreventiveActions($params, $dmId);
             $this->redirect('/capa');
         } elseif ($this->hasParam('id')) {
-            $id = (int) base64_decode((string) $this->_getParam('id'));
-            if ($id <= 0 || !$shipmentService->dmManagesParticipant($dmId, $id)) {
+            // The id is the response (shipment_participant_map) id. The query
+            // returns nothing unless the data manager manages that lab.
+            $mapId = (int) base64_decode((string) $this->_getParam('id'));
+            $this->view->correctiveActions = $mapId > 0 ? $shipmentService->getCorrectiveActionsByMapId($mapId, $dmId) : [];
+            if (empty($this->view->correctiveActions)) {
                 $this->redirect('/capa');
             }
-            // $id is a participant id. The query is scoped to the data manager too.
-            $this->view->correctiveActions = $shipmentService->getCorrectiveActionByShipmentId($id, '', $dmId);
         } else {
             $this->redirect('/capa');
         }

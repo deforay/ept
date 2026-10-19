@@ -58,7 +58,7 @@ $dtFormat = $genderHelper->getDateFormat();
 		</tr>
 		<tr>
 			<th scope="col" style="width: 17%;"><?= $this->translate->_("Final Result:"); ?></th>
-			<td style="width: 33%;"><?php echo ($result['final_result'] == 1) ? 'Pass' : 'Fail'; ?></td>
+			<td style="width: 33%;"><?= $this->escape($this->translate->_([1 => 'Pass', 2 => 'Fail', 3 => 'Excluded'][(int) ($this->correctiveActions[0]['final_result'] ?? 0)] ?? 'Not evaluated')); ?></td>
 			<th scope="col" style="width: 13%;"><?= $this->translate->_("Score:"); ?></th>
 			<td style="width: 37%;"><?php echo ($result['shipment_score'] + $result['documentation_score']); ?>%</td>
 		</tr>
@@ -105,12 +105,10 @@ $dtFormat = $genderHelper->getDateFormat();
 	<table>
 		<tr>
 			<td>
-				<button style=" text-align:center;" class="btn btn-success btn-sm"
-					onclick="validateNow()"><span><?= $this->translate->_("Submit"); ?></span></button>
+				<button type="submit" class="btn btn-success btn-sm"><span><?= $this->translate->_("Submit"); ?></span></button>
 				<input type="hidden" name="shipmentId"
 					value="<?= $this->escape($this->correctiveActions[0]['shipment_id'] ?? ''); ?>" />
-				<button class="btn btn-danger btn-sm"
-					onclick="document.location.href=document.location"><span><?= $this->translate->_("Cencel"); ?></span></button>
+				<a class="btn btn-danger btn-sm" href="/capa"><span><?= $this->translate->_("Cancel"); ?></span></a>
 			</td>
 		</tr>
 	</table>
@@ -122,7 +120,7 @@ $dtFormat = $genderHelper->getDateFormat();
 		flag = deforayValidator.init({
 			formId: 'capaForm'
 		});
-		if (flag && !duplicated) {
+		if (flag) {
 			$.blockUI();
 			document.getElementById('capaForm').submit();
 		}

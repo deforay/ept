@@ -4577,14 +4577,16 @@ class Application_Service_Shipments
     public function getShipmentFinalizedByParticipants($parameters)
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $authNameSpace = new Zend_Session_Namespace('datamanagers');
-        $dmId = $authNameSpace->dm_id;
-        if (isset($parameters['originatedFrom']) && !empty($parameters['originatedFrom']) && $parameters['originatedFrom'] == 'admin') {
-            $aColumns = ['p.unique_identifier', 'p.first_name', 'distribution_code', "DATE_FORMAT(distribution_date,'%d-%b-%Y')", 'shipment_code', "DATE_FORMAT(shipment_date,'%d-%b-%Y')", "DATE_FORMAT(response_deadline,'%d-%b-%Y %H:%i')", 'sl.scheme_name', 'number_of_samples', 'shipment_score', 'final_result'];
-            $orderColumns = ['p.unique_identifier', 'p.first_name', 'distribution_code', 'distribution_date', 'shipment_code', 'shipment_date', 'response_deadline', 'sl.scheme_name', 'number_of_samples', 'shipment_score', 'final_result'];
+        // A stray lab login must not narrow the admin list, so read the scoped id.
+        $dmId = Application_Service_Common::getScopedDmId();
+        $isAdmin = ($parameters['originatedFrom'] ?? '') === 'admin';
+        $participantName = Application_Model_DbTable_Participants::participantNameExpr('p');
+        // Search columns, and sort columns in the order the table shows them.
+        $aColumns = ['p.unique_identifier', $participantName, 'distribution_code', "DATE_FORMAT(distribution_date,'%d-%b-%Y')", 'shipment_code', 'sl.scheme_name'];
+        if ($isAdmin) {
+            $orderColumns = ['p.unique_identifier', $participantName, 'distribution_code', 'distribution_date', 'shipment_code', 'shipment_date', 'response_deadline', 'sl.scheme_name', 'number_of_samples', 'spm.final_result', 'score', ''];
         } else {
-            $aColumns = ['sl.scheme_name', 'shipment_code', 'distribution_code', "DATE_FORMAT(distribution_date,'%d-%b-%Y')", "DATE_FORMAT(response_deadline,'%d-%b-%Y %H:%i')", 'number_of_samples', '', '', 's.status'];
-            $orderColumns = ['sl.scheme_name', 'shipment_code', 'distribution_code', 'distribution_date', 'response_deadline', 'number_of_samples', 'total_participants', '', 's.status'];
+            $orderColumns = ['p.unique_identifier', $participantName, 'distribution_code', 'distribution_date', 'shipment_code', 'response_deadline', 'sl.scheme_name', 'number_of_samples', 'spm.final_result', ''];
         }
 
         $sLimit = '';
@@ -4612,69 +4614,43 @@ class Application_Service_Shipments
             $sOrder = substr_replace($sOrder, '', -2);
         }
 
+        // Every word of the search must match one of the search columns.
         $sWhere = '';
-        if (isset($parameters['sSearch']) && $parameters['sSearch'] != '') {
-            $searchArray = explode(' ', $parameters['sSearch']);
-            $sWhereSub = '';
-            foreach ($searchArray as $search) {
-                if ($sWhereSub == '') {
-                    $sWhereSub .= '(';
-                } else {
-                    $sWhereSub .= ' AND (';
-                }
-                $colSize = count($aColumns);
-
-                for ($i = 0; $i < $colSize; $i++) {
-                    if (isset($aColumns[$i]) && !empty($aColumns[$i])) {
-                        if ($i < $colSize - 1) {
-                            $sWhereSub .= $aColumns[$i] . ' LIKE ' . Pt_Commons_General::sqlLikeContains($search) . ' OR ';
-                        } else {
-                            $sWhereSub .= $aColumns[$i] . ' LIKE ' . Pt_Commons_General::sqlLikeContains($search) . ' ';
-                        }
-                    }
-                }
-                $sWhereSub .= ')';
+        if (isset($parameters['sSearch']) && trim((string) $parameters['sSearch']) !== '') {
+            $terms = [];
+            foreach (preg_split('/\s+/', trim((string) $parameters['sSearch'])) as $search) {
+                $like = Pt_Commons_General::sqlLikeContains($search);
+                $terms[] = '(' . implode(' OR ', array_map(fn ($col) => "$col LIKE $like", $aColumns)) . ')';
             }
-            $sWhere .= $sWhereSub;
+            $sWhere = implode(' AND ', $terms);
         }
 
-        /* Individual column filtering */
-        for ($i = 0; $i < count($aColumns); $i++) {
-            if (isset($aColumns[$i]) && !empty($aColumns[$i])) {
-                if (isset($parameters['bSearchable_' . $i]) && $parameters['bSearchable_' . $i] == 'true' && $parameters['sSearch_' . $i] != '') {
-                    if ($sWhere == '') {
-                        $sWhere .= $aColumns[$i] . ' LIKE ' . Pt_Commons_General::sqlLikeContains($parameters['sSearch_' . $i]) . ' ';
-                    } else {
-                        $sWhere .= ' AND ' . $aColumns[$i] . ' LIKE ' . Pt_Commons_General::sqlLikeContains($parameters['sSearch_' . $i]) . ' ';
-                    }
-                }
-            }
-        }
-
+        // One row per response that received a corrective action. Corrective
+        // actions are recorded for DTS only, and the lab sees them once the
+        // shipment is finalized. Non-responders never count, even when an older
+        // evaluation gave them corrective actions.
         $sQuery = $db->select()->from(
             ['spm' => 'shipment_participant_map'],
             [
-                'shipment_score',
-                'documentation_score',
-                'final_result',
-                'map_id',
-                'total_participants' => new Zend_Db_Expr('count(map_id)'),
-                'reported_count' => new Zend_Db_Expr("SUM(response_status IN ('responded', 'nottested'))"),
+                'spm.shipment_score',
+                'spm.documentation_score',
+                'spm.final_result',
+                'spm.map_id',
+                'score' => new Zend_Db_Expr('IFNULL(spm.shipment_score, 0) + IFNULL(spm.documentation_score, 0)'),
             ]
         )
             ->join(['s' => 'shipment'], 'spm.shipment_id=s.shipment_id', ['shipment_id', 'shipment_date', 'scheme_type', 'shipment_code', 'shipment_attributes', 'number_of_samples', 'response_deadline'])
-            ->join(['p' => 'participant'], 'spm.participant_id=p.participant_id', ['participant_id', 'unique_identifier', 'institute_name', 'department_name', 'participantName' => new Zend_Db_Expr(Application_Model_DbTable_Participants::participantNameExpr('p'))])
-            ->join(['pmm' => 'participant_manager_map'], 'pmm.participant_id=p.participant_id', [''])
+            ->join(['p' => 'participant'], 'spm.participant_id=p.participant_id', ['participant_id', 'unique_identifier', 'institute_name', 'department_name', 'participantName' => new Zend_Db_Expr($participantName)])
             ->join(['sl' => 'scheme_list'], 's.scheme_type=sl.scheme_id', ['SCHEME' => 'sl.scheme_name', 'is_user_configured'])
             ->join(['d' => 'distributions'], 's.distribution_id=d.distribution_id', ['distribution_code', 'distribution_date'])
-            ->where('s.status = ?', 'finalized');
-        // if(isset($parameters['originatedFrom']) && !empty($parameters['originatedFrom']) && $parameters['originatedFrom'] == 'admin'){
-        $sQuery = $sQuery->group('p.participant_id');
-        /* }else{
-            $sQuery = $sQuery->group('s.shipment_id');
-        } */
-        if (isset($dmId) && !empty($dmId)) {
-            $sQuery = $sQuery->where('pmm.dm_id = ?', $dmId);
+            ->where("s.scheme_type = 'dts'")
+            ->where("s.finalized_at IS NOT NULL OR s.status = 'finalized'")
+            ->where('s.cancelled_at IS NULL')
+            ->where("spm.response_status IN ('responded','late')")
+            ->where('spm.map_id IN (?)', $db->select()->from(['cam' => 'dts_shipment_corrective_action_map'], ['cam.shipment_map_id']));
+        if (!empty($dmId)) {
+            $sQuery = $sQuery->join(['pmm' => 'participant_manager_map'], 'pmm.participant_id=p.participant_id', [])
+                ->where('pmm.dm_id = ?', $dmId);
         }
         if (isset($parameters['scheme']) && $parameters['scheme'] != '') {
             $sQuery = $sQuery->where('s.scheme_type = ?', $parameters['scheme']);
@@ -4696,21 +4672,14 @@ class Application_Service_Shipments
             $sQuery = $sQuery->order($sOrder);
         }
         $sQuerySession = new Zend_Session_Namespace('capaExcel');
-        $sQuerySession->capaQuery = $firstQuery = $sQuery;
+        $sQuerySession->capaQuery = clone $sQuery;
+        $iFilteredTotal = (int) $db->fetchOne($db->select()->from(['x' => (clone $sQuery)->reset(Zend_Db_Select::ORDER)], [new Zend_Db_Expr('COUNT(*)')]));
+        $iTotal = $iFilteredTotal;
         if (isset($sLimit) && isset($sOffset)) {
             $sQuery = $sQuery->limit($sLimit, $sOffset);
         }
 
         $rResult = $db->fetchAll($sQuery);
-        /* Data set length after filtering */
-        $sQuery = $sQuery->reset(Zend_Db_Select::LIMIT_COUNT);
-        $sQuery = $sQuery->reset(Zend_Db_Select::LIMIT_OFFSET);
-        $aResultFilterTotal = $db->fetchAll($sQuery);
-        $iFilteredTotal = count($aResultFilterTotal);
-
-        /* Total data set length */
-        $aResultTotal = $db->fetchAll($firstQuery);
-        $iTotal = count($aResultTotal);
 
         /*
          * Output
@@ -4722,30 +4691,28 @@ class Application_Service_Shipments
             'aaData' => [],
         ];
 
+        $results = [1 => 'Pass', 2 => 'Fail', 3 => 'Excluded'];
+        $translate = Zend_Registry::get('translate');
         foreach ($rResult as $aRow) {
             $row = [];
-            // if(isset($parameters['originatedFrom']) && !empty($parameters['originatedFrom']) && $parameters['originatedFrom'] == 'admin'){
             $row[] = htmlspecialchars((string) $aRow['unique_identifier'], ENT_QUOTES, 'UTF-8');
             $row[] = htmlspecialchars((string) $aRow['participantName'], ENT_QUOTES, 'UTF-8');
-            // }
             $row[] = htmlspecialchars((string) $aRow['distribution_code'], ENT_QUOTES, 'UTF-8');
             $row[] = Pt_Commons_DateUtility::humanReadableDateFormat($aRow['distribution_date']);
             $row[] = htmlspecialchars((string) $aRow['shipment_code'], ENT_QUOTES, 'UTF-8');
-            if (isset($parameters['originatedFrom']) && !empty($parameters['originatedFrom']) && $parameters['originatedFrom'] == 'admin') {
+            if ($isAdmin) {
                 $row[] = Pt_Commons_DateUtility::humanReadableDateFormat($aRow['shipment_date']);
             }
             $row[] = Pt_Commons_DateUtility::humanReadableDateFormat($aRow['response_deadline'], true);
             $row[] = htmlspecialchars((string) $aRow['SCHEME'], ENT_QUOTES, 'UTF-8');
             $row[] = $aRow['number_of_samples'];
-            if (isset($parameters['originatedFrom']) && !empty($parameters['originatedFrom']) && $parameters['originatedFrom'] == 'admin') {
-                $row[] = $aRow['shipment_score'] + $aRow['documentation_score'];
+            $row[] = htmlspecialchars($translate->_($results[(int) $aRow['final_result']] ?? 'Not evaluated'), ENT_QUOTES, 'UTF-8');
+            if ($isAdmin) {
+                $row[] = isset($results[(int) $aRow['final_result']]) ? round((float) $aRow['score'], 2) : '';
             }
-            $row[] = ($aRow['final_result'] == 1) ? 'Pass' : 'Fail';
-            if (isset($parameters['originatedFrom']) && !empty($parameters['originatedFrom']) && $parameters['originatedFrom'] == 'admin') {
-                $row[] = '<br>&nbsp;<a class="btn btn-primary btn-xs" href="/reports/corrective-preventive-actions/capa/id/' . base64_encode($aRow['participant_id']) . '"><span><i class="icon-plus"></i> Action</span></a>';
-            } else {
-                $row[] = '<br>&nbsp;<a class="btn btn-primary btn-xs" href="/capa/capa/id/' . base64_encode($aRow['participant_id']) . '"><span><i class="icon-plus"></i> Action</span></a>';
-            }
+            $href = ($isAdmin ? '/reports/corrective-preventive-actions/capa/id/' : '/capa/capa/id/') . base64_encode((string) $aRow['map_id']);
+            $row[] = '<a class="btn btn-primary btn-xs" href="' . $href . '"><span><i class="icon-plus"></i> '
+                . htmlspecialchars($translate->_('Action'), ENT_QUOTES, 'UTF-8') . '</span></a>';
             $output['aaData'][] = $row;
         }
 
@@ -4753,30 +4720,26 @@ class Application_Service_Shipments
     }
 
     /**
-     * The corrective actions of one participant ($id is a participant id,
-     * despite the name). With $dmId, only when that data manager manages the
-     * participant.
+     * The corrective actions of one response (shipment_participant_map row),
+     * with the response, participant and shipment details on every row. With
+     * $dmId, empty unless that data manager manages the participant.
      */
-    public function getCorrectiveActionByShipmentId($id, $type = '', ?int $dmId = null)
+    public function getCorrectiveActionsByMapId(int $mapId, ?int $dmId = null): array
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $sql = $db->select()->distinct()->from(['c' => 'r_dts_corrective_actions'])
-            ->join(['map' => 'dts_shipment_corrective_action_map'], 'c.action_id=map.corrective_action_id', ['*'])
-            ->join(['spm' => 'shipment_participant_map'], 'map.shipment_map_id=spm.map_id', ['*'])
+        $sql = $db->select()->from(['c' => 'r_dts_corrective_actions'], ['c.action_id', 'c.corrective_action', 'c.description'])
+            ->join(['map' => 'dts_shipment_corrective_action_map'], 'c.action_id=map.corrective_action_id', ['map.shipment_map_id', 'map.action_taken', 'map.action_date'])
+            ->join(['spm' => 'shipment_participant_map'], 'map.shipment_map_id=spm.map_id', ['spm.final_result', 'spm.shipment_score', 'spm.documentation_score'])
             ->join(['p' => 'participant'], 'spm.participant_id=p.participant_id', ['institute_name', 'department_name', 'unique_identifier', 'participantName' => new Zend_Db_Expr(Application_Model_DbTable_Participants::participantNameExpr('p'))])
-            ->join(['s' => 'shipment'], 'spm.shipment_id=s.shipment_id', ['*'])
-            ->join(['d' => 'distributions'], 's.distribution_id=d.distribution_id', ['distribution_code', 'distribution_date']);
-        // if(isset($type) && !empty($type) && $type == 'admin'){
-        $sql = $sql->where('spm.participant_id = ?', $id);
+            ->join(['s' => 'shipment'], 'spm.shipment_id=s.shipment_id', ['s.shipment_id', 's.shipment_code', 's.shipment_date', 's.response_deadline'])
+            ->join(['d' => 'distributions'], 's.distribution_id=d.distribution_id', ['distribution_code', 'distribution_date'])
+            ->where('spm.map_id = ?', $mapId)
+            ->group('c.action_id')
+            ->order('c.action_id');
         if ($dmId !== null) {
             $sql = $sql->join(['pmm' => 'participant_manager_map'], 'pmm.participant_id=spm.participant_id', [])
                 ->where('pmm.dm_id = ?', $dmId);
         }
-        $sql = $sql->group('spm.participant_id');
-        $sql = $sql->group('c.action_id');
-        /* }else{
-            $sql = $sql->where("spm.shipment_id = ?", $id);
-        } */
         $sQuerySession = new Zend_Session_Namespace('capaViewExcel');
         $sQuerySession->capaQuery = $sql;
         return $db->fetchAll($sql);
@@ -4829,21 +4792,9 @@ class Application_Service_Shipments
         }
     }
 
-    /** Whether the participant is one of the data manager's labs. */
-    public function dmManagesParticipant(int $dmId, int $participantId): bool
-    {
-        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        return (bool) $db->fetchOne(
-            $db->select()->from('participant_manager_map', [new Zend_Db_Expr('1')])
-                ->where('dm_id = ?', $dmId)
-                ->where('participant_id = ?', $participantId)
-                ->limit(1)
-        );
-    }
-
     public function exportCaPaReport($params)
     {
-        $headings = ['PARTICIPANT ID', 'PARTICIPANT NAME', 'INSTITUDE / DEPARTMENT', 'PT SURVEY CODE', 'PT SURVEY DATE', 'SHIPMENT CODE', 'SHIPMENT DUE DATE', 'RESULT DUE DATE', 'SCHEME', 'NO OF SAMPLES', 'FINAL RESULTS', 'SCORE', 'CORRECTIVE ACTIONS', 'ACTION TAKEN', 'ACTION DATE'];
+        $headings = ['PARTICIPANT ID', 'PARTICIPANT NAME', 'INSTITUTE / DEPARTMENT', 'PT SURVEY CODE', 'PT SURVEY DATE', 'SHIPMENT CODE', 'SHIPMENT DUE DATE', 'RESULT DUE DATE', 'SCHEME', 'NO OF SAMPLES', 'FINAL RESULTS', 'SCORE', 'CORRECTIVE ACTIONS', 'ACTION TAKEN', 'ACTION DATE'];
         try {
             $excel = new Spreadsheet();
 
@@ -4866,10 +4817,12 @@ class Application_Service_Shipments
             $db = Zend_Db_Table_Abstract::getDefaultAdapter();
             $sQuerySession = new Zend_Session_Namespace('capaExcel');
             $sQuery = $sQuerySession->capaQuery;
-            $sQuery = $sQuery->join(['map' => 'dts_shipment_corrective_action_map'], 'map.shipment_map_id=spm.map_id', ['*'])
-                ->join(['c' => 'r_dts_corrective_actions'], 'c.action_id=map.corrective_action_id', ['*'])
-                ->group('c.action_id');
+            // One row per response and corrective action.
+            $sQuery = $sQuery->join(['map' => 'dts_shipment_corrective_action_map'], 'map.shipment_map_id=spm.map_id', ['map.action_taken', 'map.action_date'])
+                ->join(['c' => 'r_dts_corrective_actions'], 'c.action_id=map.corrective_action_id', ['c.corrective_action'])
+                ->group(['spm.map_id', 'c.action_id']);
             $rResult = $db->fetchAll($sQuery);
+            $results = [1 => 'Pass', 2 => 'Fail', 3 => 'Excluded'];
 
             foreach ($rResult as $aRow) {
                 $row = [];
@@ -4883,8 +4836,9 @@ class Application_Service_Shipments
                 $row[] = Pt_Commons_DateUtility::humanReadableDateFormat($aRow['response_deadline'], true);
                 $row[] = $aRow['SCHEME'];
                 $row[] = $aRow['number_of_samples'];
-                $row[] = ($aRow['final_result'] == 1) ? 'Pass' : 'Fail';
-                $row[] = ($aRow['shipment_score'] + $aRow['documentation_score']) . '%';
+                $evaluated = isset($results[(int) $aRow['final_result']]);
+                $row[] = $results[(int) $aRow['final_result']] ?? 'Not evaluated';
+                $row[] = $evaluated ? round((float) $aRow['shipment_score'] + (float) $aRow['documentation_score'], 2) . '%' : '';
                 $row[] = $aRow['corrective_action'];
                 $row[] = $aRow['action_taken'];
                 $row[] = Pt_Commons_DateUtility::humanReadableDateFormat($aRow['action_date']);
@@ -4990,7 +4944,7 @@ class Application_Service_Shipments
             $sheet->getCell(Coordinate::stringFromColumnIndex(5) . 5)
                 ->setValueExplicit(html_entity_decode(Pt_Commons_DateUtility::humanReadableDateFormat($result['response_deadline'], true), ENT_QUOTES, 'UTF-8'));
             $sheet->getCell(Coordinate::stringFromColumnIndex(2) . 6)
-                ->setValueExplicit(html_entity_decode(($result['final_result'] == 1) ? 'Pass' : 'Fail', ENT_QUOTES, 'UTF-8'));
+                ->setValueExplicit([1 => 'Pass', 2 => 'Fail', 3 => 'Excluded'][(int) $result['final_result']] ?? 'Not evaluated');
             $sheet->getCell(Coordinate::stringFromColumnIndex(5) . 6)
                 ->setValueExplicit(html_entity_decode(($result['shipment_score'] + $result['documentation_score']) . '%', ENT_QUOTES, 'UTF-8'));
             $dataRow = 8;

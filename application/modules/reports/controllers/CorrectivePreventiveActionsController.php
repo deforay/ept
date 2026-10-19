@@ -61,8 +61,12 @@ class Reports_CorrectivePreventiveActionsController extends Zend_Controller_Acti
             $shipmentService->savePreventiveActions($params);
             $this->redirect('/reports/corrective-preventive-actions');
         } elseif ($this->hasParam('id')) {
-            $id = (int) base64_decode($this->_getParam('id'));
-            $this->view->correctiveActions = $shipmentService->getCorrectiveActionByShipmentId($id, 'admin');
+            // The id is the response (shipment_participant_map) id.
+            $mapId = (int) base64_decode((string) $this->_getParam('id'));
+            $this->view->correctiveActions = $mapId > 0 ? $shipmentService->getCorrectiveActionsByMapId($mapId) : [];
+            if (empty($this->view->correctiveActions)) {
+                $this->redirect('/reports/corrective-preventive-actions');
+            }
         } else {
             $this->redirect('/reports/corrective-preventive-actions');
         }
