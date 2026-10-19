@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ePT\n"
 "Report-Msgid-Bugs-To: support@deforay.com\n"
-"POT-Creation-Date: 2026-10-19 13:26+0530\n"
+"POT-Creation-Date: 2026-10-19 13:28+0530\n"
 "PO-Revision-Date: 2026-07-07 08:32+0530\n"
 "Last-Translator: Amit <amit@deforay.com>\n"
 "Language-Team: ePT\n"
@@ -1795,7 +1795,8 @@ msgstr ""
 
 #: application/languages/help-translation-strings.php:161
 msgid "Excel workbook with every TB participant's results for one shipment"
-msgstr "Classeur Excel des résultats de chaque participant TB pour une expédition"
+msgstr ""
+"Classeur Excel des résultats de chaque participant TB pour une expédition"
 
 #: application/languages/help-translation-strings.php:163
 msgid "extraction"
@@ -19251,9 +19252,8 @@ msgid "Pass rate"
 msgstr "Taux de réussite"
 
 #: application/modules/reports/views/scripts/participant-trends/index.phtml:328
-#, fuzzy
 msgid "Click a scheme to see its shipments."
-msgstr "Cliquez sur un envoi pour voir ses régions."
+msgstr "Cliquez sur un programme pour voir ses expéditions."
 
 #: application/modules/reports/views/scripts/participant-trends/index.phtml:337
 #: application/modules/reports/views/scripts/participant-trends/index.phtml:359
@@ -19327,23 +19327,22 @@ msgid "Excellent"
 msgstr "Excellent"
 
 #: application/modules/reports/views/scripts/participant-trends/index.phtml:391
-#, fuzzy, php-format
+#, php-format
 msgid "across %s shipments in %s schemes"
-msgstr "sur %s envois"
+msgstr "sur %s expéditions dans %s programmes"
 
 #: application/modules/reports/views/scripts/participant-trends/index.phtml:392
-#, fuzzy, php-format
+#, php-format
 msgid "%s shipments"
-msgstr "expéditions"
+msgstr "%s expéditions"
 
 #: application/modules/reports/views/scripts/participant-trends/index.phtml:393
 msgid "Trend by shipment"
 msgstr "Tendance par envoi"
 
 #: application/modules/reports/views/scripts/participant-trends/index.phtml:394
-#, fuzzy
 msgid "Pass rate by scheme"
-msgstr "Participation par programme"
+msgstr "Taux de réussite par programme"
 
 #: application/modules/reports/views/scripts/participant-trends/index.phtml:395
 msgid "Please select a date range"
@@ -19537,7 +19536,9 @@ msgstr "Veuillez choisir une période et une expédition pour continuer"
 msgid ""
 "Builds an Excel workbook for one TB shipment, with one row per participant "
 "and the results of every sample."
-msgstr "Génère un classeur Excel pour une expédition TB, avec une ligne par participant et les résultats de chaque échantillon."
+msgstr ""
+"Génère un classeur Excel pour une expédition TB, avec une ligne par "
+"participant et les résultats de chaque échantillon."
 
 #: application/modules/reports/views/scripts/testing-facility-by-ownership/get-report-data.phtml:7
 msgid "Type of Testing Facility"
@@ -20020,15 +20021,14 @@ msgid "List the participants who failed"
 msgstr "Lister les participants en échec"
 
 #: application/services/Reports.php:2901
-#, fuzzy, php-format
+#, php-format
 msgid "%s earlier shipments not shown"
-msgstr "%s expéditions finalisées dans cette période."
+msgstr "%s expéditions antérieures non affichées"
 
 #: application/services/Reports.php:2902
 #: application/views/partials/participant-performance-report.phtml:35
-#, fuzzy
 msgid "Not enrolled"
-msgstr "sur %s inscrits"
+msgstr "Non inscrit"
 
 #: application/services/Reports.php:2939
 #, php-format

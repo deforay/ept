@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ePT\n"
 "Report-Msgid-Bugs-To: support@deforay.com\n"
-"POT-Creation-Date: 2026-10-19 13:26+0530\n"
+"POT-Creation-Date: 2026-10-19 13:28+0530\n"
 "PO-Revision-Date: 2026-07-07 08:33+0530\n"
 "Last-Translator: Amit <amit@deforay.com>\n"
 "Language-Team: \n"
@@ -19087,9 +19087,9 @@ msgid "Pass rate"
 msgstr "Tỷ lệ đạt"
 
 #: application/modules/reports/views/scripts/participant-trends/index.phtml:328
-#, fuzzy
 msgid "Click a scheme to see its shipments."
-msgstr "Nhấp vào một đợt gửi mẫu để xem các vùng của đợt đó."
+msgstr ""
+"Nhấp vào một chương trình để xem các vòng ngoại kiểm của chương trình đó."
 
 #: application/modules/reports/views/scripts/participant-trends/index.phtml:337
 #: application/modules/reports/views/scripts/participant-trends/index.phtml:359
@@ -19163,23 +19163,22 @@ msgid "Excellent"
 msgstr "Xuất sắc"
 
 #: application/modules/reports/views/scripts/participant-trends/index.phtml:391
-#, fuzzy, php-format
+#, php-format
 msgid "across %s shipments in %s schemes"
-msgstr "trong %s đợt gửi mẫu"
+msgstr "trong %s vòng ngoại kiểm thuộc %s chương trình"
 
 #: application/modules/reports/views/scripts/participant-trends/index.phtml:392
-#, fuzzy, php-format
+#, php-format
 msgid "%s shipments"
-msgstr "vòng ngoại kiểm"
+msgstr "%s vòng ngoại kiểm"
 
 #: application/modules/reports/views/scripts/participant-trends/index.phtml:393
 msgid "Trend by shipment"
 msgstr "Xu hướng theo đợt gửi mẫu"
 
 #: application/modules/reports/views/scripts/participant-trends/index.phtml:394
-#, fuzzy
 msgid "Pass rate by scheme"
-msgstr "Mức độ tham gia theo chương trình"
+msgstr "Tỷ lệ đạt theo chương trình"
 
 #: application/modules/reports/views/scripts/participant-trends/index.phtml:395
 msgid "Please select a date range"
@@ -19371,7 +19370,9 @@ msgstr "Vui lòng chọn khoảng thời gian và vòng ngoại kiểm để ti�
 msgid ""
 "Builds an Excel workbook for one TB shipment, with one row per participant "
 "and the results of every sample."
-msgstr "Tạo tệp Excel cho một đợt gửi mẫu TB, mỗi đơn vị tham gia một dòng với kết quả của từng mẫu."
+msgstr ""
+"Tạo tệp Excel cho một đợt gửi mẫu TB, mỗi đơn vị tham gia một dòng với kết "
+"quả của từng mẫu."
 
 #: application/modules/reports/views/scripts/testing-facility-by-ownership/get-report-data.phtml:7
 msgid "Type of Testing Facility"
@@ -19851,15 +19852,14 @@ msgid "List the participants who failed"
 msgstr "Liệt kê các đơn vị tham gia không đạt"
 
 #: application/services/Reports.php:2901
-#, fuzzy, php-format
+#, php-format
 msgid "%s earlier shipments not shown"
-msgstr "%s vòng ngoại kiểm đã hoàn tất trong khoảng này."
+msgstr "Không hiển thị %s vòng ngoại kiểm trước đó"
 
 #: application/services/Reports.php:2902
 #: application/views/partials/participant-performance-report.phtml:35
-#, fuzzy
 msgid "Not enrolled"
-msgstr "trên %s đã đăng ký"
+msgstr "Chưa đăng ký"
 
 #: application/services/Reports.php:2939
 #, php-format
