@@ -145,16 +145,6 @@ function sendNotification(?string $recipients, array $shipmentsList, string $bat
 
 
 
-function findPdftk(): ?string
-{
-	foreach (['/usr/bin/pdftk', '/usr/bin/pdftk-java', '/usr/local/bin/pdftk'] as $p) {
-		if (is_executable($p))
-			return $p;
-	}
-	$which = trim(shell_exec('command -v pdftk 2>/dev/null') ?? '');
-	return $which !== '' ? $which : null;
-}
-
 /**
  * Find a usable LibreOffice/soffice binary on Linux or macOS.
  * - Respects SOFFICE_BIN env override.
@@ -222,52 +212,6 @@ function _verifySoffice(string $bin): bool
 	return (stripos($joined, 'libreoffice') !== false || stripos($joined, 'soffice') !== false);
 }
 
-
-/* ---------- PDF (AcroForm) path  ---------- */
-
-function createFDF(array $data): string
-{
-	// UTF-16BE + BOM for reliable Unicode
-	$fdf = "%FDF-1.2\n1 0 obj\n<< /FDF << /Fields [\n";
-	foreach ($data as $key => $value) {
-		$v = str_replace(["\r\n", "\r", "\n"], "\r", (string) ($value ?? ''));
-		$k16 = "\xFE\xFF" . mb_convert_encoding((string) $key, 'UTF-16BE', 'UTF-8');
-		$v16 = "\xFE\xFF" . mb_convert_encoding($v, 'UTF-16BE', 'UTF-8');
-		$k16 = str_replace(['\\', '(', ')'], ['\\\\', '\(', '\)'], $k16);
-		$v16 = str_replace(['\\', '(', ')'], ['\\\\', '\(', '\)'], $v16);
-		$fdf .= "<< /T ({$k16}) /V ({$v16}) >>\n";
-	}
-	$fdf .= "] >> >>\nendobj\ntrailer\n<< /Root 1 0 R >>\n%%EOF";
-	$tmp = tempnam(TEMP_UPLOAD_PATH, 'fdf');
-	file_put_contents($tmp, $fdf);
-	return $tmp;
-}
-
-function fillPdfTemplate(string $templateFile, array $fields, string $outputPdf): bool
-{
-	if (!file_exists($templateFile)) {
-		Pt_Commons_LoggerUtility::logError("Template missing: $templateFile");
-		return false;
-	}
-	$pdftk = findPdftk();
-	if (!$pdftk) {
-		Pt_Commons_LoggerUtility::logError("pdftk not found");
-		return false;
-	}
-
-	@mkdir(dirname($outputPdf), 0777, true);
-	$fdf = createFDF($fields);
-	$cmd = escapeshellcmd($pdftk) . ' ' . escapeshellarg($templateFile) . ' fill_form ' .
-		escapeshellarg($fdf) . ' output ' . escapeshellarg($outputPdf) . ' flatten';
-	exec($cmd . ' 2>&1', $out, $code);
-	unlink($fdf);
-
-	if ($code !== 0 || !is_file($outputPdf) || filesize($outputPdf) === 0) {
-		Pt_Commons_LoggerUtility::logError("pdftk failed (code=$code): " . implode("\n", $out));
-		return false;
-	}
-	return true;
-}
 
 /* ---------- DOCX path (search & replace) ---------- */
 
@@ -428,8 +372,9 @@ function generateCertificate(string $shipmentType, string $certificateType, arra
 	}
 
 	if ($mode === 'pdf') {
-		$ok = fillPdfTemplate($tpl, $fields, $outputFileBase . ".pdf");
-		if (!$ok) {
+		$error = Application_Service_CertificateTemplates::fillPdf($tpl, $fields, $outputFileBase . ".pdf");
+		if ($error !== null) {
+			Pt_Commons_LoggerUtility::logError($error);
 			echo "WARNING: Failed to fill PDF template $tpl. Skipping.\n";
 			return false;
 		}
@@ -767,6 +712,7 @@ try {
 	// (Application_Service_Reports::getAnnualReport).
 	$sQuery = $db->select()->from(['spm' => 'shipment_participant_map'], ['spm.attributes', 'spm.shipment_test_report_date', 'spm.final_result'])
 		->join(['s' => 'shipment'], 's.shipment_id=spm.shipment_id', ['shipment_code', 'scheme_type', 'shipment_date'])
+		->join(['sl' => 'scheme_list'], 'sl.scheme_id=s.scheme_type', ['scheme_name'])
 		->join(['p' => 'participant'], 'p.participant_id=spm.participant_id', [
 			'unique_identifier',
 			'participantName' => new Zend_Db_Expr(Application_Model_DbTable_Participants::participantNameExpr('p')),
@@ -794,7 +740,11 @@ try {
 		// from the participant's latest shipment of the scheme.
 		$participants[$uid]['schemes'][$scheme]['attributes'] = Pt_Commons_JsonUtility::safeDecode($row['attributes']);
 		$participants[$uid]['schemes'][$scheme]['year'] = date('Y', strtotime($row['shipment_date']));
+		$participants[$uid]['schemes'][$scheme]['scheme_name'] = $row['scheme_name'];
 	}
+
+	// The issue date and the signatory are the same on every certificate.
+	$batchFields = Application_Service_CertificateTemplates::batchFields();
 
 	// One plan item per certificate to generate. The main process and every
 	// worker build the same plan from the same ordered query. Each worker
@@ -815,18 +765,15 @@ try {
 				'scheme' => $scheme,
 				'type' => $certificateType,
 				'base' => $folder . DIRECTORY_SEPARATOR . str_replace('/', '_', (string) $uid) . "-" . strtoupper($scheme) . "-" . $certificateName,
-				'fields' => [
+				'fields' => Application_Service_CertificateTemplates::expandFields(array_merge([
 					'participant_name' => $participant['name'],
-					'participantname' => $participant['name'],
-					'labname' => $participant['name'],
-					'participant' => $participant['name'],
+					'lab_id' => (string) $uid,
 					'city' => $participant['city'],
 					'country' => $participant['country'],
+					'scheme_name' => $schemeData['scheme_name'],
 					'assay' => $assay,
-					'assayname' => $assay,
 					'shipment_year' => $schemeData['year'],
-					'shipmentyear' => $schemeData['year'],
-				],
+				], $batchFields)),
 			];
 		}
 	}
@@ -841,6 +788,7 @@ try {
 
 	// Pre-check: verify templates exist for all scheme types in this run
 	if (!$isWorker) {
+		$templateService = new Application_Service_CertificateTemplates();
 		$templateProblems = [];
 		foreach (array_unique(array_column($plan, 'scheme')) as $scheme) {
 			foreach (['excellence', 'participation'] as $certType) {
@@ -849,6 +797,12 @@ try {
 					$templateProblems[] = "Template file not found: {$tpl}";
 				} elseif (!is_readable($tpl)) {
 					$templateProblems[] = "Template file not readable: {$tpl}";
+				} elseif ($templateMode === 'pdf') {
+					// Templates copied onto the server by hand skip the upload check.
+					$check = $templateService->validatePdfTemplate($tpl);
+					if (!$check['valid']) {
+						$templateProblems[] = "{$tpl}: {$check['error']}";
+					}
 				}
 			}
 		}
@@ -1021,7 +975,8 @@ try {
 	$errorMessage = null;
 	if ($totalCerts === 0) {
 		if ($templateErrors > 0) {
-			$errorMessage = "No certificates generated. {$templateErrors} template error(s) encountered.";
+			$errorMessage = "No certificates generated. {$templateErrors} template error(s) encountered."
+				. (!empty($templateProblems) ? ' ' . implode(' ', $templateProblems) : '');
 		} else {
 			$errorMessage = "No certificates generated. No eligible participants found.";
 			foreach ($shipmentCodeArray as $schemeType => $codes) {
@@ -1031,7 +986,8 @@ try {
 			}
 		}
 	} elseif ($templateErrors > 0) {
-		$errorMessage = "{$templateErrors} certificate(s) could not be generated. Check the certificate templates.";
+		$errorMessage = "{$templateErrors} certificate(s) could not be generated. Check the certificate templates."
+			. (!empty($templateProblems) ? ' ' . implode(' ', $templateProblems) : '');
 	}
 
 	$certificateBatchesModel->updateStatus($batchId, $batchStatus, [

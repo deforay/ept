@@ -92,6 +92,42 @@ class Admin_CertificateTemplatesController extends Zend_Controller_Action
     }
 
     /**
+     * Show a template filled with a real participant's details, the way a
+     * generated certificate prints.
+     * GET params: scheme (scheme_id), type (participation|excellence)
+     */
+    public function previewAction()
+    {
+        $this->_helper->layout()->disableLayout();
+        $this->_helper->viewRenderer->setNoRender(true);
+
+        $scheme = (string) $this->_getParam('scheme');
+        $type = (string) $this->_getParam('type');
+        if ($scheme === '' || !in_array($type, ['participation', 'excellence'], true)) {
+            $this->getResponse()->setHttpResponseCode(400);
+            echo 'Missing or invalid scheme or type parameter';
+            return;
+        }
+
+        $service = new Application_Service_CertificateTemplates();
+        $filePath = $service->previewTemplate($scheme, $type);
+        if ($filePath === null) {
+            $this->getResponse()->setHttpResponseCode(404);
+            echo 'The template could not be filled. Upload it again to see what is wrong.';
+            return;
+        }
+
+        $this->getResponse()
+            ->setHeader('Content-Type', 'application/pdf')
+            ->setHeader('Content-Disposition', 'inline; filename="' . $scheme . '-' . $type . '-sample.pdf"')
+            ->setHeader('Content-Length', (string) filesize($filePath))
+            ->setHeader('Cache-Control', 'private, max-age=0, must-revalidate')
+            ->sendHeaders();
+        readfile($filePath);
+        unlink($filePath);
+    }
+
+    /**
      * Validate an uploaded PDF template without saving
      * POST with file upload
      * Returns JSON: { valid: bool, fields: [], error: string }

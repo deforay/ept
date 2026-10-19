@@ -37,7 +37,11 @@ The certificate type is **Excellence** when the participant responded to and pas
 4. Enter a certificate name. The name takes letters, numbers and hyphens.
 5. Click **Generate Certificates**.
 6. When the summary shows, click **Download ZIP** to check the certificates.
-7. Click **Approve & Distribute** to send the certificates to the participants.
+7. Click **Approve & Distribute**.
+
+After approval, each participant can download their certificate from the **Certificates** page and from **File Downloads**. ePT does not email the certificates.
+
+Each certificate prints from the scheme's template. [See: Certificate Templates](certificate-templates.md)
 
 Certificates cover the same shipments as the report. Changing an option hides the certificate step until you generate the report again.
 

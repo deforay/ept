@@ -122,6 +122,37 @@
 		color: #8a94a3;
 	}
 
+	.an-templates {
+		margin: 0 0 14px;
+		padding: 10px 12px;
+		border: 1px solid #e3e8ef;
+		border-radius: 6px;
+		background: #fff;
+		font-size: 13px;
+	}
+
+	.an-templates:empty {
+		display: none;
+	}
+
+	.an-templates ul {
+		margin: 6px 0 0;
+		padding: 0;
+		list-style: none;
+	}
+
+	.an-templates li {
+		padding: 2px 0;
+	}
+
+	.an-templates .is-ok {
+		color: #2d6e45;
+	}
+
+	.an-templates .is-missing {
+		color: #a33a3a;
+	}
+
 	#certificateStatsSection table {
 		width: auto;
 		min-width: 320px;
@@ -177,6 +208,8 @@
 					</div>
 				</label>
 			</div>
+
+			<div class="an-templates" id="templateReadiness" aria-live="polite"></div>
 
 			<button type="button" class="btn btn-primary btn-sm" id="getReportBtn" onclick="getAnnualReport()">
 				<i class="icon-file"></i> <?= $this->htmlTranslate("Generate report"); ?>
@@ -256,6 +289,12 @@
 <script type="text/javascript" src="<?php echo $this->baseUrl('js/select2.min.js'); ?>"></script>
 <script type="text/javascript">
 	var currentBatchId = null;
+	// Which certificate templates each scheme has, and the scheme of each
+	// shipment in the list, to warn before certificates are generated.
+	var templateStatus = <?= json_encode($this->templateStatus ?? new stdClass()); ?>;
+	var templatesUrl = "<?= $this->url(['module' => 'admin', 'controller' => 'certificate-templates'], 'default', true); ?>";
+	var shipmentSchemes = {};
+	var templatesMissing = false;
 	var pollingInterval = null;
 	var shipmentRequest = null;
 
@@ -281,7 +320,9 @@
 			var picked = $('#shipmentId').val() || [];
 			var $select = $('#shipmentId').empty();
 			var kept = [];
+			shipmentSchemes = {};
 			$.each(shipments || [], function (i, shipment) {
+				shipmentSchemes[shipment.id] = shipment.scheme;
 				$select.append($('<option/>').val(shipment.id).text(shipment.text));
 				if (picked.indexOf(String(shipment.id)) !== -1) {
 					kept.push(String(shipment.id));
@@ -293,6 +334,7 @@
 				? "<?= $this->jsTranslate("%s finalized shipments in this range."); ?>".replace('%s', count)
 				: "<?= $this->jsTranslate("No finalized shipments in this range."); ?>");
 			$('#getReportBtn').prop('disabled', !count);
+			renderTemplateReadiness();
 		}, 'json').always(function () {
 			shipmentRequest = null;
 		});
@@ -341,6 +383,65 @@
 	function resetResult() {
 		$('#summaryDiv').empty();
 		$('.certificate-btn').hide();
+		renderTemplateReadiness();
+	}
+
+	// The schemes the certificates would cover: those of the picked
+	// shipments, or of every shipment in the list.
+	function selectedSchemes() {
+		var picked = $('#shipmentId').val() || [];
+		var ids = picked.length ? picked : Object.keys(shipmentSchemes);
+		var schemes = [];
+		$.each(ids, function (i, id) {
+			var scheme = shipmentSchemes[id];
+			if (scheme && schemes.indexOf(scheme) === -1) {
+				schemes.push(scheme);
+			}
+		});
+		return schemes;
+	}
+
+	// With "For Certification" picked, list each scheme's templates, and
+	// link to Certificate Templates for any that are missing.
+	function renderTemplateReadiness() {
+		var $box = $('#templateReadiness').empty();
+		templatesMissing = false;
+		if ($('input[name="reportType"]:checked').val() !== 'excel') {
+			return;
+		}
+		var schemes = selectedSchemes();
+		if (!schemes.length) {
+			return;
+		}
+		var $list = $('<ul/>');
+		$.each(schemes, function (i, scheme) {
+			var status = templateStatus[scheme] || { name: scheme, excellence: false, participation: false };
+			var missing = [];
+			if (!status.excellence) {
+				missing.push("<?= $this->jsTranslate("Excellence"); ?>");
+			}
+			if (!status.participation) {
+				missing.push("<?= $this->jsTranslate("Participation"); ?>");
+			}
+			var $item = $('<li/>');
+			if (missing.length) {
+				templatesMissing = true;
+				$item.addClass('is-missing')
+					.append('<i class="icon-remove"></i> ')
+					.append($('<span/>').text(status.name + ": " + "<?= $this->jsTranslate("no %s template."); ?>".replace('%s', missing.join(' / '))))
+					.append(' ')
+					.append($('<a target="_blank" rel="noopener"/>').attr('href', templatesUrl + '#scheme-' + encodeURIComponent(scheme)).text("<?= $this->jsTranslate("Upload it"); ?>"));
+			} else {
+				$item.addClass('is-ok')
+					.append('<i class="icon-ok"></i> ')
+					.append($('<span/>').text(status.name + ": " + "<?= $this->jsTranslate("templates ready"); ?>"));
+			}
+			$list.append($item);
+		});
+		$box.append($('<strong/>').text("<?= $this->jsTranslate("Certificate templates"); ?>")).append($list);
+		if (templatesMissing) {
+			$box.append($('<div class="an-hint"/>').text("<?= $this->jsTranslate("Certificates need both templates for each scheme. Upload the missing templates, then reload this page."); ?>"));
+		}
 	}
 
 	function getAnnualReport() {
@@ -376,6 +477,10 @@
 		var certificateName = $('#certificateName').val();
 		if (certificateName === '') {
 			alert("<?= $this->jsTranslate("Please enter the certificate name to proceed"); ?>");
+			return;
+		}
+		if (templatesMissing) {
+			alert("<?= $this->jsTranslate("Some schemes have no certificate template. Upload the missing templates first. The list above the Generate report button shows which ones."); ?>");
 			return;
 		}
 		if (!/^[a-zA-Z0-9-]+$/.test(certificateName)) {

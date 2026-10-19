@@ -67,6 +67,9 @@ Branding, behaviour, and defaults for the whole app.
 - **Certificate Email**: the addresses that get a notice when a
   certificate batch is generated and ready for approval. Separate
   several addresses with commas. Participants are not emailed.
+- **Certificate Signatory Name** / **Certificate Signatory Title**:
+  printed in the `signatory_name` and `signatory_title` fields of
+  certificate templates.
 
 ## Participant Settings
 

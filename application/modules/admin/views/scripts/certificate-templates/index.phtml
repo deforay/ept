@@ -1,340 +1,416 @@
 <?php
 $ct = $this->certificateTemplates;
-$baseUrl = $this->baseUrl();
 $downloadUrl = $this->url(array('module' => 'admin', 'controller' => 'certificate-templates', 'action' => 'download'), 'default', true);
 $uploadUrl = $this->url(array('module' => 'admin', 'controller' => 'certificate-templates', 'action' => 'upload'), 'default', true);
 $removeUrl = $this->url(array('module' => 'admin', 'controller' => 'certificate-templates', 'action' => 'remove'), 'default', true);
-$validateUrl = $this->url(array('module' => 'admin', 'controller' => 'certificate-templates', 'action' => 'validate'), 'default', true);
+$previewUrl = $this->url(array('module' => 'admin', 'controller' => 'certificate-templates', 'action' => 'preview'), 'default', true);
+$batchesUrl = $this->url(array('module' => 'admin', 'controller' => 'certificate-batches'), 'default', true);
+$templateDir = SCHEDULED_JOBS_FOLDER . DIRECTORY_SEPARATOR . 'certificate-templates' . DIRECTORY_SEPARATOR;
+
+// Every field name and alias ePT fills, to mark the fields it ignores.
+$knownFields = [];
+foreach (Application_Service_CertificateTemplates::FIELDS as $field => $aliases) {
+    foreach (array_merge([$field], $aliases) as $name) {
+        $knownFields[$name] = true;
+    }
+}
+$fieldHelp = [
+    'participant_name' => $this->translate->_("The lab name, or the person's name for individual participants. Required."),
+    'lab_id' => $this->translate->_("The participant's Lab ID"),
+    'city' => $this->translate->_("The participant's city"),
+    'country' => $this->translate->_("The participant's country"),
+    'scheme_name' => $this->translate->_("The scheme name"),
+    'assay' => $this->translate->_("The VL or EID assay the participant used"),
+    'shipment_year' => $this->translate->_("The year of the shipments the certificate covers"),
+    'issue_date' => $this->translate->_("The date the certificates are generated"),
+    'signatory_name' => $this->translate->_("Certificate Signatory Name, from Global Settings"),
+    'signatory_title' => $this->translate->_("Certificate Signatory Title, from Global Settings"),
+];
+
+// One slot per scheme and certificate type, Excellence first.
+$types = [
+    'excellence' => ['label' => $this->translate->_("Excellence"), 'column' => 'excellence_certificate', 'fields' => 'e_detected_fields', 'suffix' => '-e.pdf'],
+    'participation' => ['label' => $this->translate->_("Participation"), 'column' => 'participation_certificate', 'fields' => 'p_detected_fields', 'suffix' => '-p.pdf'],
+];
+$rows = [];
+$uploaded = 0;
+foreach ($this->schemes as $scheme) {
+    $schemeType = $scheme['scheme_id'];
+    $slots = [];
+    foreach ($types as $type => $def) {
+        $file = $ct[$schemeType][$def['column']] ?? '';
+        if ($file === '' || !is_file($templateDir . $file)) {
+            $file = is_file($templateDir . $schemeType . $def['suffix']) ? $schemeType . $def['suffix'] : '';
+        }
+        $fields = !empty($ct[$schemeType][$def['fields']]) ? (array) Pt_Commons_JsonUtility::safeDecode($ct[$schemeType][$def['fields']]) : [];
+        $unknown = array_values(array_filter($fields, fn ($f) => !isset($knownFields[strtolower((string) $f)])));
+        $slots[$type] = ['file' => $file, 'fields' => $fields, 'unknown' => $unknown];
+        if ($file !== '') {
+            $uploaded++;
+        }
+    }
+    $rows[] = ['type' => $schemeType, 'name' => $scheme['scheme_name'], 'slots' => $slots];
+}
+$total = count($rows) * count($types);
 ?>
 <style>
-    .template-card {
-        background: #fff;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-        padding: 15px;
-        margin-bottom: 10px;
+    .ct-intro {
+        max-width: 780px;
+        margin: 0 0 12px;
+        color: #5b6573;
     }
-    .template-card.has-template {
-        border-left: 4px solid #5cb85c;
-    }
-    .template-card.no-template {
-        border-left: 4px solid #f0ad4e;
-    }
-    .template-header {
+
+    .ct-summary {
         display: flex;
-        justify-content: space-between;
         align-items: center;
-        margin-bottom: 10px;
-    }
-    .template-type {
-        font-weight: bold;
-        color: #555;
-    }
-    .template-actions {
-        display: flex;
-        gap: 5px;
-    }
-    .template-info {
+        gap: 10px;
+        margin-bottom: 12px;
         font-size: 13px;
-        color: #777;
+        color: #333;
     }
-    .template-filename {
-        font-family: monospace;
-        background: #f5f5f5;
-        padding: 2px 6px;
+
+    .ct-summary .ct-meter {
+        flex: 0 0 160px;
+        height: 6px;
         border-radius: 3px;
+        background: #e3e8ef;
+        overflow: hidden;
     }
-    .detected-fields {
-        margin-top: 8px;
-        padding: 8px;
-        background: #f9f9f9;
-        border-radius: 3px;
-        font-size: 12px;
+
+    .ct-summary .ct-meter span {
+        display: block;
+        height: 100%;
+        background: #3c8d5a;
     }
-    .detected-fields .label {
-        margin-right: 4px;
-        margin-bottom: 4px;
-        display: inline-block;
+
+    .ct-fields {
+        margin-bottom: 16px;
+        border: 1px solid #e3e8ef;
+        border-radius: 6px;
+        background: #fafbfc;
     }
-    .upload-zone {
-        border: 2px dashed #ccc;
-        border-radius: 4px;
-        padding: 20px;
-        text-align: center;
-        background: #fafafa;
+
+    .ct-fields > summary {
+        padding: 8px 12px;
+        font-size: 13px;
+        font-weight: 600;
+        color: #3a5a8a;
         cursor: pointer;
-        transition: all 0.2s;
     }
-    .upload-zone:hover {
-        border-color: #999;
-        background: #f5f5f5;
+
+    .ct-fields table {
+        margin: 0;
+        background: #fff;
+        font-size: 12.5px;
     }
+
+    .ct-fields table td:first-child {
+        width: 180px;
+        white-space: nowrap;
+    }
+
+    .ct-fields code {
+        color: #2f4f7a;
+        background: #eef3f9;
+    }
+
+    .ct-list {
+        border: 1px solid #e3e8ef;
+        border-radius: 6px;
+    }
+
+    .ct-row {
+        display: grid;
+        grid-template-columns: minmax(180px, 1fr) 2fr 2fr;
+        gap: 12px;
+        align-items: start;
+        padding: 12px;
+        border-top: 1px solid #edf0f4;
+    }
+
+    .ct-row:first-child {
+        border-top: 0;
+    }
+
+    .ct-row.ct-row-head {
+        padding: 8px 12px;
+        background: #f4f7fb;
+        font-size: 11.5px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: #6b7685;
+    }
+
+    .ct-scheme {
+        font-weight: 600;
+        color: #333;
+        padding-top: 3px;
+    }
+
+    .ct-slot-head {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+
+    .ct-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 2px 8px;
+        border-radius: 10px;
+        font-size: 11.5px;
+        font-weight: 600;
+    }
+
+    .ct-badge.is-ready {
+        background: #e5f3ea;
+        color: #2d6e45;
+    }
+
+    .ct-badge.is-check {
+        background: #fdf3e1;
+        color: #8a5a00;
+    }
+
+    .ct-badge.is-missing {
+        background: #f1f3f6;
+        color: #6b7685;
+    }
+
+    .ct-file {
+        font-size: 12px;
+        color: #8a94a3;
+    }
+
+    .ct-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px;
+        margin-top: 8px;
+    }
+
+    .ct-actions .btn {
+        padding: 2px 9px;
+        font-size: 12px;
+        border: 1px solid #cfdae8;
+        border-radius: 4px;
+        background: #fff;
+        color: #3a5a8a;
+        text-shadow: none;
+        box-shadow: none;
+    }
+
+    .ct-actions .btn:hover,
+    .ct-actions .btn:focus {
+        background: #eef3f9;
+        color: #2f4a73;
+    }
+
+    .ct-actions .btn.is-main {
+        border-color: #3a5a8a;
+        background: #4a6fa5;
+        color: #fff;
+    }
+
+    .ct-actions .btn.is-main:hover,
+    .ct-actions .btn.is-main:focus {
+        background: #3a5a8a;
+    }
+
+    .ct-actions .btn.is-remove {
+        border-color: transparent;
+        color: #a33a3a;
+    }
+
+    .ct-note {
+        margin-top: 4px;
+        font-size: 12px;
+        color: #8a5a00;
+    }
+
+    .upload-zone {
+        margin-top: 8px;
+        padding: 14px;
+        border: 2px dashed #cfdae8;
+        border-radius: 6px;
+        background: #fafbfc;
+        text-align: center;
+        font-size: 12.5px;
+        color: #5b6573;
+        cursor: pointer;
+    }
+
     .upload-zone.dragover {
-        border-color: #337ab7;
-        background: #e8f4fc;
+        border-color: #4a6fa5;
+        background: #eef3f9;
     }
+
     .upload-zone input[type="file"] {
         display: none;
     }
+
     .upload-progress {
         display: none;
-        margin-top: 10px;
-    }
-    .upload-progress .progress {
-        margin-bottom: 5px;
-    }
-    .validation-result {
-        margin-top: 10px;
-        padding: 10px;
-        border-radius: 4px;
-        display: none;
-    }
-    .validation-result.success {
-        background: #dff0d8;
-        border: 1px solid #d6e9c6;
-        color: #3c763d;
-    }
-    .validation-result.error {
-        background: #f2dede;
-        border: 1px solid #ebccd1;
-        color: #a94442;
-    }
-    .scheme-section {
-        margin-bottom: 30px;
-        padding: 20px;
-        background: #fff;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-    }
-    .scheme-title {
-        font-size: 18px;
-        font-weight: bold;
-        margin-bottom: 15px;
-        padding-bottom: 10px;
-        border-bottom: 1px solid #eee;
-    }
-    .template-row {
-        display: flex;
-        gap: 20px;
-    }
-    .template-col {
-        flex: 1;
-    }
-    .no-template-msg {
-        color: #8a6d3b;
-        font-style: italic;
-    }
-    .btn-xs {
-        padding: 2px 8px;
-        font-size: 12px;
+        margin-top: 8px;
     }
 
-    /* Help Modal Styling */
-    #helpModal {
-        z-index: 1060 !important;
+    .upload-progress .progress {
+        height: 6px;
+        margin-bottom: 4px;
     }
-    #helpModal .modal-dialog {
-        width: 800px;
-        max-width: 90%;
-        z-index: 1061;
+
+    .validation-result {
+        display: none;
+        margin-top: 8px;
+        padding: 8px 10px;
+        border-radius: 4px;
+        font-size: 12.5px;
     }
-    #helpModal .modal-content {
-        background: #fff;
-        border-radius: 6px;
-        box-shadow: 0 5px 30px rgba(0, 0, 0, 0.3);
-        position: relative;
-        z-index: 1062;
+
+    .validation-result.success {
+        background: #e5f3ea;
+        color: #2d6e45;
     }
-    #helpModal .modal-header {
-        background: linear-gradient(135deg, #4a6fa5 0%, #3a5a8a 100%);
-        color: #fff;
-        border-radius: 4px 4px 0 0;
+
+    .validation-result.error {
+        background: #fbeaea;
+        color: #a33a3a;
     }
-    #helpModal .modal-header .close {
-        color: #fff;
-        opacity: 0.8;
-    }
-    #helpModal .modal-body h4 {
-        margin-top: 20px;
-        color: #333;
-        border-bottom: 1px solid #eee;
-        padding-bottom: 8px;
-    }
-    #helpModal .modal-body h5 {
-        margin-top: 15px;
-        color: #555;
+
+    @media (max-width: 767px) {
+        .ct-row {
+            grid-template-columns: 1fr;
+        }
+
+        .ct-row.ct-row-head {
+            display: none;
+        }
     }
 </style>
 
-<h4 style="width:100%;height:50px;border-bottom:1px solid #777;">
-    <div style="font-size:22.5px;line-height:36px;color:#333;float:left;">
-        <?= $this->translate->_("Certificate Templates"); ?>
-    </div>
-    <button type="button" class="btn btn-default btn-sm" onclick="$('#helpModal').modal('show');" style="float: right; margin-top: 3px;">
-        <i class="icon-question-sign"></i> <?= $this->translate->_("How to Create Templates"); ?>
-    </button>
-</h4>
-
-<div class="alert alert-info">
-    <strong><?= $this->translate->_("Note:"); ?></strong>
-    <?= $this->translate->_("Certificate templates must be PDF files with AcroForm fields. Required field: at least one of"); ?>
-    <code>participant_name</code>, <code>labname</code>, <code>participantname</code>, <?= $this->translate->_("or"); ?> <code>participant</code>.
-</div>
-
-<?php foreach ($this->schemes as $scheme): ?>
-    <?php
-    // scheme_id is the scheme type string (e.g., 'dts', 'vl', 'eid')
-    $schemeType = $scheme['scheme_id'];
-    $schemeName = $scheme['scheme_name'];
-    $pCert = $ct[$schemeType]['participation_certificate'] ?? null;
-    $eCert = $ct[$schemeType]['excellence_certificate'] ?? null;
-    $pFields = !empty($ct[$schemeType]['p_detected_fields']) ? Pt_Commons_JsonUtility::safeDecode($ct[$schemeType]['p_detected_fields']) : [];
-    $eFields = !empty($ct[$schemeType]['e_detected_fields']) ? Pt_Commons_JsonUtility::safeDecode($ct[$schemeType]['e_detected_fields']) : [];
-    // Check if files exist - either from DB record or by convention ({schemeType}-p.pdf / {schemeType}-e.pdf)
-    $templateDir = SCHEDULED_JOBS_FOLDER . DIRECTORY_SEPARATOR . 'certificate-templates' . DIRECTORY_SEPARATOR;
-    $pExists = (!empty($pCert) && file_exists($templateDir . $pCert)) || file_exists($templateDir . $schemeType . '-p.pdf');
-    $eExists = (!empty($eCert) && file_exists($templateDir . $eCert)) || file_exists($templateDir . $schemeType . '-e.pdf');
-    // Use standard filename
-    if ($pExists && empty($pCert)) $pCert = $schemeType . '-p.pdf';
-    if ($eExists && empty($eCert)) $eCert = $schemeType . '-e.pdf';
-    ?>
-    <div class="scheme-section">
-        <div class="scheme-title"><?= htmlspecialchars($schemeName); ?></div>
-        <div class="template-row">
-            <!-- Participation Certificate -->
-            <div class="template-col">
-                <div class="template-card <?= $pExists ? 'has-template' : 'no-template'; ?>" id="template-<?= $schemeType; ?>-participation">
-                    <div class="template-header">
-                        <span class="template-type"><?= $this->translate->_("Participation Certificate"); ?></span>
-                        <div class="template-actions">
-                            <?php if ($pExists): ?>
-                                <a href="<?= $downloadUrl; ?>?scheme=<?= $schemeType; ?>&type=participation" target="_blank" class="btn btn-info btn-xs" title="<?= $this->translate->_("View PDF"); ?>">
-                                    <i class="icon-eye-open"></i> <?= $this->translate->_("View"); ?>
-                                </a>
-                                <button type="button" class="btn btn-warning btn-xs btn-replace" data-scheme="<?= $schemeType; ?>" data-type="participation" title="<?= $this->translate->_("Replace Template"); ?>">
-                                    <i class="icon-refresh"></i> <?= $this->translate->_("Replace"); ?>
-                                </button>
-                                <button type="button" class="btn btn-danger btn-xs btn-remove" data-scheme="<?= $schemeType; ?>" data-type="participation" title="<?= $this->translate->_("Remove Template"); ?>">
-                                    <i class="icon-trash"></i>
-                                </button>
-                            <?php else: ?>
-                                <button type="button" class="btn btn-success btn-xs btn-upload-trigger" data-scheme="<?= $schemeType; ?>" data-type="participation">
-                                    <i class="icon-upload"></i> <?= $this->translate->_("Upload"); ?>
-                                </button>
-                            <?php endif; ?>
-                        </div>
-                    </div>
-                    <div class="template-info">
-                        <?php if ($pExists): ?>
-                            <span class="template-filename"><?= htmlspecialchars($pCert); ?></span>
-                            <?php if (!empty($pFields)): ?>
-                                <div class="detected-fields">
-                                    <strong><?= $this->translate->_("Detected Fields:"); ?></strong>
-                                    <?php foreach ($pFields as $field): ?>
-                                        <span class="label label-default"><?= htmlspecialchars($field); ?></span>
-                                    <?php endforeach; ?>
-                                </div>
-                            <?php endif; ?>
-                        <?php else: ?>
-                            <span class="no-template-msg"><?= $this->translate->_("No template uploaded"); ?></span>
-                        <?php endif; ?>
-                    </div>
-                    <div class="upload-container" id="upload-<?= $schemeType; ?>-participation" style="display: none;">
-                        <div class="upload-zone" data-scheme="<?= $schemeType; ?>" data-type="participation">
-                            <i class="icon-cloud-upload" style="font-size: 24px;"></i>
-                            <p><?= $this->translate->_("Drag and drop PDF file here or click to browse"); ?></p>
-                            <input type="file" accept=".pdf,application/pdf" />
-                        </div>
-                        <div class="upload-progress">
-                            <div class="progress">
-                                <div class="progress-bar progress-bar-striped active" role="progressbar" style="width: 0%"></div>
-                            </div>
-                            <span class="progress-text"><?= $this->translate->_("Uploading..."); ?></span>
-                        </div>
-                        <div class="validation-result"></div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Excellence Certificate -->
-            <div class="template-col">
-                <div class="template-card <?= $eExists ? 'has-template' : 'no-template'; ?>" id="template-<?= $schemeType; ?>-excellence">
-                    <div class="template-header">
-                        <span class="template-type"><?= $this->translate->_("Excellence Certificate"); ?></span>
-                        <div class="template-actions">
-                            <?php if ($eExists): ?>
-                                <a href="<?= $downloadUrl; ?>?scheme=<?= $schemeType; ?>&type=excellence" target="_blank" class="btn btn-info btn-xs" title="<?= $this->translate->_("View PDF"); ?>">
-                                    <i class="icon-eye-open"></i> <?= $this->translate->_("View"); ?>
-                                </a>
-                                <button type="button" class="btn btn-warning btn-xs btn-replace" data-scheme="<?= $schemeType; ?>" data-type="excellence" title="<?= $this->translate->_("Replace Template"); ?>">
-                                    <i class="icon-refresh"></i> <?= $this->translate->_("Replace"); ?>
-                                </button>
-                                <button type="button" class="btn btn-danger btn-xs btn-remove" data-scheme="<?= $schemeType; ?>" data-type="excellence" title="<?= $this->translate->_("Remove Template"); ?>">
-                                    <i class="icon-trash"></i>
-                                </button>
-                            <?php else: ?>
-                                <button type="button" class="btn btn-success btn-xs btn-upload-trigger" data-scheme="<?= $schemeType; ?>" data-type="excellence">
-                                    <i class="icon-upload"></i> <?= $this->translate->_("Upload"); ?>
-                                </button>
-                            <?php endif; ?>
-                        </div>
-                    </div>
-                    <div class="template-info">
-                        <?php if ($eExists): ?>
-                            <span class="template-filename"><?= htmlspecialchars($eCert); ?></span>
-                            <?php if (!empty($eFields)): ?>
-                                <div class="detected-fields">
-                                    <strong><?= $this->translate->_("Detected Fields:"); ?></strong>
-                                    <?php foreach ($eFields as $field): ?>
-                                        <span class="label label-default"><?= htmlspecialchars($field); ?></span>
-                                    <?php endforeach; ?>
-                                </div>
-                            <?php endif; ?>
-                        <?php else: ?>
-                            <span class="no-template-msg"><?= $this->translate->_("No template uploaded"); ?></span>
-                        <?php endif; ?>
-                    </div>
-                    <div class="upload-container" id="upload-<?= $schemeType; ?>-excellence" style="display: none;">
-                        <div class="upload-zone" data-scheme="<?= $schemeType; ?>" data-type="excellence">
-                            <i class="icon-cloud-upload" style="font-size: 24px;"></i>
-                            <p><?= $this->translate->_("Drag and drop PDF file here or click to browse"); ?></p>
-                            <input type="file" accept=".pdf,application/pdf" />
-                        </div>
-                        <div class="upload-progress">
-                            <div class="progress">
-                                <div class="progress-bar progress-bar-striped active" role="progressbar" style="width: 0%"></div>
-                            </div>
-                            <span class="progress-text"><?= $this->translate->_("Uploading..."); ?></span>
-                        </div>
-                        <div class="validation-result"></div>
-                    </div>
-                </div>
-            </div>
+<div class="data-list">
+    <div class="data-list-head">
+        <h2><?= $this->htmlTranslate("Certificate Templates"); ?></h2>
+        <div class="data-list-actions">
+            <a href="javascript:void(0);" data-help-open="1" data-help-guide="make-a-certificate-template" class="btn btn-default btn-sm">
+                <i class="icon-question-sign"></i> <?= $this->htmlTranslate("How to make a template"); ?>
+            </a>
+            <a href="<?= $batchesUrl; ?>" class="btn btn-default btn-sm">
+                <i class="icon-list-alt"></i> <?= $this->htmlTranslate("Certificate Batches"); ?>
+            </a>
         </div>
     </div>
-<?php endforeach; ?>
+    <div class="data-list-body">
+        <p class="ct-intro"><?= $this->htmlTranslate("Annual certificates print from these templates. Each scheme needs an Excellence template and a Participation template. A scheme without them gets no certificates."); ?></p>
+
+        <div class="ct-summary">
+            <div class="ct-meter" aria-hidden="true"><span style="width:<?= $total ? round($uploaded * 100 / $total) : 0; ?>%"></span></div>
+            <span><?= sprintf($this->htmlTranslate("%d of %d templates uploaded"), $uploaded, $total); ?></span>
+        </div>
+
+        <details class="ct-fields">
+            <summary><?= $this->htmlTranslate("Fields ePT fills"); ?></summary>
+            <table class="table table-condensed">
+                <tbody>
+                    <?php foreach (Application_Service_CertificateTemplates::FIELDS as $field => $aliases): ?>
+                        <tr>
+                            <td><code><?= $field; ?></code></td>
+                            <td><?= $this->escape($fieldHelp[$field] ?? ''); ?></td>
+                        </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+        </details>
+
+        <div class="ct-list">
+            <div class="ct-row ct-row-head">
+                <div><?= $this->htmlTranslate("Scheme"); ?></div>
+                <div><?= $this->htmlTranslate("Excellence"); ?></div>
+                <div><?= $this->htmlTranslate("Participation"); ?></div>
+            </div>
+            <?php foreach ($rows as $row): ?>
+                <div class="ct-row" id="scheme-<?= $this->escape($row['type']); ?>">
+                    <div class="ct-scheme"><?= $this->escape($row['name']); ?></div>
+                    <?php foreach ($row['slots'] as $type => $slot): ?>
+                        <?php
+                        $query = '?scheme=' . urlencode($row['type']) . '&type=' . $type;
+                        $slotId = 'upload-' . $row['type'] . '-' . $type;
+                        ?>
+                        <div class="ct-slot">
+                            <div class="ct-slot-head">
+                                <?php if ($slot['file'] === ''): ?>
+                                    <span class="ct-badge is-missing"><i class="icon-minus"></i> <?= $this->htmlTranslate("Missing"); ?></span>
+                                <?php elseif (!empty($slot['unknown'])): ?>
+                                    <span class="ct-badge is-check"><i class="icon-warning-sign"></i> <?= $this->htmlTranslate("Check fields"); ?></span>
+                                <?php else: ?>
+                                    <span class="ct-badge is-ready"><i class="icon-ok"></i> <?= $this->htmlTranslate("Ready"); ?></span>
+                                <?php endif; ?>
+                                <?php if ($slot['file'] !== ''): ?>
+                                    <span class="ct-file"><?= $this->escape($slot['file']); ?></span>
+                                <?php endif; ?>
+                            </div>
+                            <div class="ct-actions">
+                                <?php if ($slot['file'] !== ''): ?>
+                                    <a href="<?= $previewUrl . $query; ?>" target="_blank" class="btn btn-xs is-main" title="<?= $this->htmlTranslate("Fill the template with a real participant's details"); ?>"><?= $this->htmlTranslate("Preview"); ?></a>
+                                    <a href="<?= $downloadUrl . $query; ?>" target="_blank" class="btn btn-xs" title="<?= $this->htmlTranslate("Open the blank template"); ?>"><?= $this->htmlTranslate("View"); ?></a>
+                                    <button type="button" class="btn btn-xs btn-upload-trigger" data-target="<?= $this->escape($slotId); ?>"><?= $this->htmlTranslate("Replace"); ?></button>
+                                    <button type="button" class="btn btn-xs is-remove btn-remove" data-scheme="<?= $this->escape($row['type']); ?>" data-type="<?= $type; ?>" title="<?= $this->htmlTranslate("Remove template"); ?>"><i class="icon-trash"></i></button>
+                                <?php else: ?>
+                                    <button type="button" class="btn btn-xs is-main btn-upload-trigger" data-target="<?= $this->escape($slotId); ?>"><i class="icon-upload"></i> <?= $this->htmlTranslate("Upload"); ?></button>
+                                <?php endif; ?>
+                            </div>
+                            <?php if (!empty($slot['unknown'])): ?>
+                                <div class="ct-note" title="<?= $this->htmlTranslate("ePT does not fill these fields. They print as they are in the template."); ?>">
+                                    <?= sprintf($this->htmlTranslate("%d fields that ePT does not fill:"), count($slot['unknown'])); ?>
+                                    <?= $this->escape(implode(', ', array_slice($slot['unknown'], 0, 4)) . (count($slot['unknown']) > 4 ? ', …' : '')); ?>
+                                </div>
+                            <?php endif; ?>
+                            <div class="upload-container" id="<?= $this->escape($slotId); ?>" style="display: none;">
+                                <div class="upload-zone" data-scheme="<?= $this->escape($row['type']); ?>" data-type="<?= $type; ?>">
+                                    <i class="icon-upload"></i> <?= $this->htmlTranslate("Drop the PDF here, or click to choose it"); ?>
+                                    <input type="file" accept=".pdf,application/pdf" />
+                                </div>
+                                <div class="upload-progress">
+                                    <div class="progress">
+                                        <div class="progress-bar progress-bar-striped active" role="progressbar" style="width: 0%"></div>
+                                    </div>
+                                    <span class="progress-text"><?= $this->htmlTranslate("Uploading and checking..."); ?></span>
+                                </div>
+                                <div class="validation-result"></div>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+            <?php endforeach; ?>
+        </div>
+    </div>
+</div>
 
 <script type="text/javascript">
 $(document).ready(function() {
     var uploadUrl = '<?= $uploadUrl; ?>';
     var removeUrl = '<?= $removeUrl; ?>';
+    var previewUrl = '<?= $previewUrl; ?>';
 
-    // Show upload zone when clicking Upload or Replace button
-    $('.btn-upload-trigger, .btn-replace').on('click', function() {
-        var scheme = $(this).data('scheme');
-        var type = $(this).data('type');
-        var container = $('#upload-' + scheme + '-' + type);
-        container.slideToggle();
+    // Highlight a scheme's row when the page is reached from a link such as
+    // /admin/certificate-templates#scheme-vl
+    if (window.location.hash.indexOf('#scheme-') === 0) {
+        $(window.location.hash).css('background', '#fffbea');
+    }
+
+    $('.btn-upload-trigger').on('click', function() {
+        $('#' + $(this).data('target')).slideToggle(150);
     });
 
-    // Click on upload zone triggers file input
     $('.upload-zone').on('click', function(e) {
         if (e.target.tagName !== 'INPUT') {
             $(this).find('input[type="file"]').click();
         }
     });
 
-    // Drag and drop handling
     $('.upload-zone').on('dragover dragenter', function(e) {
         e.preventDefault();
         e.stopPropagation();
@@ -346,36 +422,27 @@ $(document).ready(function() {
     }).on('drop', function(e) {
         var files = e.originalEvent.dataTransfer.files;
         if (files.length > 0) {
-            var scheme = $(this).data('scheme');
-            var type = $(this).data('type');
-            uploadFile(files[0], scheme, type);
+            uploadFile(files[0], $(this).data('scheme'), $(this).data('type'), $(this).closest('.upload-container'));
         }
     });
 
-    // File input change
     $('.upload-zone input[type="file"]').on('change', function() {
         if (this.files.length > 0) {
             var zone = $(this).closest('.upload-zone');
-            var scheme = zone.data('scheme');
-            var type = zone.data('type');
-            uploadFile(this.files[0], scheme, type);
+            uploadFile(this.files[0], zone.data('scheme'), zone.data('type'), zone.closest('.upload-container'));
         }
     });
 
-    // Upload file function
-    function uploadFile(file, scheme, type) {
-        var container = $('#upload-' + scheme + '-' + type);
+    function uploadFile(file, scheme, type, container) {
         var progressBar = container.find('.progress-bar');
         var progressContainer = container.find('.upload-progress');
         var resultContainer = container.find('.validation-result');
 
-        // Validate file type
         if (file.type !== 'application/pdf' && !file.name.toLowerCase().endsWith('.pdf')) {
-            showResult(resultContainer, false, '<?= $this->translate->_("Please upload a PDF file"); ?>');
+            showResult(resultContainer, false, '<?= $this->jsTranslate("Please upload a PDF file"); ?>');
             return;
         }
 
-        // Show progress
         progressContainer.show();
         progressBar.css('width', '0%');
         resultContainer.hide();
@@ -395,41 +462,45 @@ $(document).ready(function() {
                 var xhr = new window.XMLHttpRequest();
                 xhr.upload.addEventListener('progress', function(e) {
                     if (e.lengthComputable) {
-                        var percent = Math.round((e.loaded / e.total) * 100);
-                        progressBar.css('width', percent + '%');
+                        progressBar.css('width', Math.round((e.loaded / e.total) * 100) + '%');
                     }
                 }, false);
                 return xhr;
             },
             success: function(response) {
                 progressContainer.hide();
-                if (response.success) {
-                    var fieldsHtml = '';
-                    if (response.fields && response.fields.length > 0) {
-                        fieldsHtml = '<br><strong><?= $this->translate->_("Detected Fields:"); ?></strong> ' + response.fields.join(', ');
-                    }
-                    showResult(resultContainer, true, response.message + fieldsHtml);
-                    // Reload page after short delay to show updated template
-                    setTimeout(function() {
-                        location.reload();
-                    }, 1500);
-                } else {
+                if (!response.success) {
                     showResult(resultContainer, false, response.message);
+                    return;
                 }
+                var $msg = $('<div/>').append($('<strong/>').text("<?= $this->jsTranslate("Template saved."); ?>"));
+                if (response.fields && response.fields.length > 0) {
+                    $msg.append($('<div/>').text("<?= $this->jsTranslate("Fields found:"); ?> " + response.fields.join(', ')));
+                }
+                if (response.unknown && response.unknown.length > 0) {
+                    $msg.append($('<div class="ct-note"/>').text("<?= $this->jsTranslate("ePT does not fill these fields, so they print as they are in the template. If one is meant to show participant details, rename it and upload again:"); ?> " + response.unknown.join(', ')));
+                }
+                $msg.append($('<div style="margin-top:8px;"/>')
+                    .append($('<a class="btn btn-primary btn-xs" target="_blank"/>')
+                        .attr('href', previewUrl + '?scheme=' + encodeURIComponent(scheme) + '&type=' + encodeURIComponent(type))
+                        .text("<?= $this->jsTranslate("Preview with a real participant"); ?>"))
+                    .append(' ')
+                    .append($('<button type="button" class="btn btn-default btn-xs"/>')
+                        .text("<?= $this->jsTranslate("Done"); ?>")
+                        .on('click', function () { location.reload(); })));
+                resultContainer.removeClass('error').addClass('success').empty().append($msg).show();
             },
             error: function(xhr, status, error) {
                 progressContainer.hide();
-                showResult(resultContainer, false, '<?= $this->translate->_("Upload failed:"); ?> ' + error);
+                showResult(resultContainer, false, '<?= $this->jsTranslate("Upload failed:"); ?> ' + error);
             }
         });
     }
 
-    // Show validation result
     function showResult(container, success, message) {
-        container.removeClass('success error').addClass(success ? 'success' : 'error').html(message).show();
+        container.removeClass('success error').addClass(success ? 'success' : 'error').text(message).show();
     }
 
-    // Remove template
     $('.btn-remove').on('click', function() {
         var scheme = $(this).data('scheme');
         var type = $(this).data('type');
@@ -439,10 +510,7 @@ $(document).ready(function() {
             $.ajax({
                 url: removeUrl,
                 type: 'POST',
-                data: {
-                    scheme: scheme,
-                    type: type
-                },
+                data: { scheme: scheme, type: type },
                 success: function(response) {
                     if (response.success) {
                         location.reload();
@@ -458,84 +526,3 @@ $(document).ready(function() {
     });
 });
 </script>
-
-<!-- Help Modal -->
-<div class="modal" id="helpModal" tabindex="-1" role="dialog" aria-labelledby="helpModalLabel">
-    <div class="modal-dialog modal-lg" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="helpModalLabel"><i class="icon-question-sign"></i> <?= $this->translate->_("How to Create PDF Form Templates"); ?></h4>
-            </div>
-            <div class="modal-body">
-                <p><?= $this->translate->_("Certificate templates must be PDF files with <strong>fillable form fields</strong>. The system will automatically populate these fields with participant data."); ?></p>
-
-                <h5><?= $this->translate->_("Required Field"); ?></h5>
-                <p><?= $this->translate->_("Your template must have at least one of these fields for the participant name:"); ?></p>
-                <ul>
-                    <li><code>participant_name</code></li>
-                    <li><code>labname</code></li>
-                    <li><code>participantname</code></li>
-                    <li><code>participant</code></li>
-                </ul>
-
-                <h5><?= $this->translate->_("Optional Fields"); ?></h5>
-                <table class="table table-bordered table-condensed">
-                    <thead>
-                        <tr><th scope="col"><?= $this->translate->_("Field Name"); ?></th><th scope="col"><?= $this->translate->_("Data"); ?></th></tr>
-                    </thead>
-                    <tbody>
-                        <tr><td><code>city</code></td><td><?= $this->translate->_("Participant's city"); ?></td></tr>
-                        <tr><td><code>country</code></td><td><?= $this->translate->_("Participant's country"); ?></td></tr>
-                        <tr><td><code>shipment_year</code> <?= $this->translate->_("or"); ?> <code>shipmentyear</code></td><td><?= $this->translate->_("Year of the shipment"); ?></td></tr>
-                        <tr><td><code>assay</code> <?= $this->translate->_("or"); ?> <code>assayname</code></td><td><?= $this->translate->_("Assay/Platform (VL/EID only)"); ?></td></tr>
-                    </tbody>
-                </table>
-
-                <hr>
-
-                <h4><?= $this->translate->_("Option A: Using LibreOffice (Free)"); ?></h4>
-                <ol>
-                    <li><?= $this->translate->_("Download and install"); ?> <a href="https://www.libreoffice.org" target="_blank">LibreOffice</a> (<?= $this->translate->_("free"); ?>)</li>
-                    <li><?= $this->translate->_("Open LibreOffice Writer and design your certificate (add logo, text, borders)"); ?></li>
-                    <li><?= $this->translate->_("Go to"); ?> <strong>View &rarr; Toolbars &rarr; Form Controls</strong></li>
-                    <li><?= $this->translate->_("Click the"); ?> <strong>Text Box</strong> <?= $this->translate->_("icon in the Form Controls toolbar"); ?></li>
-                    <li><?= $this->translate->_("Draw a text box where you want each field"); ?></li>
-                    <li><?= $this->translate->_("Right-click the text box &rarr;"); ?> <strong>Control Properties</strong></li>
-                    <li><?= $this->translate->_("Set the"); ?> <strong>Name</strong> <?= $this->translate->_("field to match the field names above (e.g.,"); ?> <code>participant_name</code>)</li>
-                    <li><?= $this->translate->_("Repeat for each field you want"); ?></li>
-                    <li><?= $this->translate->_("Go to"); ?> <strong>File &rarr; Export as PDF</strong></li>
-                    <li><?= $this->translate->_("Check"); ?> <strong>&quot;Create PDF form&quot;</strong> <?= $this->translate->_("and select"); ?> <strong>FDF</strong> <?= $this->translate->_("format"); ?></li>
-                    <li><?= $this->translate->_("Click Export and save the PDF"); ?></li>
-                    <li><?= $this->translate->_("Upload the PDF here"); ?></li>
-                </ol>
-
-                <hr>
-
-                <h4><?= $this->translate->_("Option B: Using Microsoft Word + PDFescape (Free)"); ?></h4>
-                <ol>
-                    <li><?= $this->translate->_("Design your certificate in Microsoft Word"); ?></li>
-                    <li><?= $this->translate->_("Save as PDF:"); ?> <strong>File &rarr; Save As &rarr; PDF</strong></li>
-                    <li><?= $this->translate->_("Go to"); ?> <a href="https://www.pdfescape.com" target="_blank">PDFescape.com</a> (<?= $this->translate->_("free account"); ?>)</li>
-                    <li><?= $this->translate->_("Upload your PDF"); ?></li>
-                    <li><?= $this->translate->_("Click"); ?> <strong>Form Field &rarr; Text</strong></li>
-                    <li><?= $this->translate->_("Draw a text field where you want each data field"); ?></li>
-                    <li><?= $this->translate->_("Click on the field and set its"); ?> <strong>Name</strong> <?= $this->translate->_("in the properties panel"); ?></li>
-                    <li><?= $this->translate->_("Repeat for each field"); ?></li>
-                    <li><?= $this->translate->_("Download the form-enabled PDF"); ?></li>
-                    <li><?= $this->translate->_("Upload the PDF here"); ?></li>
-                </ol>
-
-                <hr>
-
-                <div class="alert alert-warning">
-                    <strong><?= $this->translate->_("Important:"); ?></strong>
-                    <?= $this->translate->_("The PDF must have AcroForm fields, not XFA forms. LibreOffice and PDFescape create compatible AcroForm PDFs."); ?>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal"><?= $this->translate->_("Close"); ?></button>
-            </div>
-        </div>
-    </div>
-</div>

@@ -53,8 +53,10 @@ _('bulk-import');
 _('Bulk Enroll Participants');
 // admin/participants-bulk-import#title
 _('Bulk Import Participants');
-// admin/reports-annual#tags
+// admin/certificate-templates#tags, admin/reports-annual#tags
 _('certificates');
+// admin/certificate-templates#title
+_('Certificate Templates');
 // admin/email-participants#tags
 _('communication');
 // admin/dts-settings#tags, admin/eid-assay-add#tags, admin/eid-assay#tags, admin/global-config#tags, admin/home-config#tags, admin/report-config#tags, admin/tb-settings#tags, admin/testkit-add#tags, admin/testkit-edit#tags, admin/testkit-standard-kit#tags, admin/testkit#tags, admin/vl-assay-add#tags, admin/vl-assay-edit#tags, admin/vl-assay#tags, admin/vl-settings#tags
@@ -153,7 +155,7 @@ _('evaluation');
 _('Every shipment with its responses, pass rate, status and downloads');
 // admin/enrollments-bulk-enrollment#tags, admin/participants-bulk-import#tags, admin/reports-annual#tags, admin/reports-tb-all-sites-results#tags, admin/reports-xtpt-indicators#tags
 _('excel');
-// admin/reports-annual#tags
+// admin/certificate-templates#tags, admin/reports-annual#tags
 _('excellence');
 // admin/reports-xtpt-indicators#summary
 _('Excel workbook of XTPT indicators and all sites\' results for one TB shipment');
@@ -165,6 +167,8 @@ _('extraction');
 _('failures');
 // admin/home-config#tags
 _('faq');
+// admin/certificate-templates#tags
+_('fields');
 // admin/enrollments-add#tags
 _('filters');
 // admin/evaluate#tags, admin/reports-finalize#tags
@@ -247,13 +251,13 @@ _('participants');
 _('Participants');
 // admin/reports-participant-trends#title
 _('Participant Trends');
-// admin/reports-annual#tags
+// admin/certificate-templates#tags, admin/reports-annual#tags
 _('participation');
 // admin/reports-participant-performance#tags, admin/reports-participant-response#tags, admin/reports-participant-trends#tags, admin/reports-shipment-response#tags, admin/reports-tb-participants-per-country#tags, admin/reports-testkit#tags, admin/reports-vl-assay-distribution#tags
 _('pass rate');
 // admin/data-managers#tags
 _('password');
-// admin/report-config#tags
+// admin/certificate-templates#tags, admin/report-config#tags
 _('pdf');
 // admin/report-config#title
 _('PDF Report Settings');
@@ -361,7 +365,7 @@ _('TB Result of PT Panel per Site');
 _('TB Settings');
 // admin/report-config#tags
 _('template');
-// admin/email-participants#tags
+// admin/certificate-templates#tags, admin/email-participants#tags
 _('templates');
 // admin/reports-testkit#tags
 _('test 1');
@@ -381,6 +385,8 @@ _('Test Kits');
 _('The list of shipments inside a PT Survey — what they are and how to manage them');
 // admin/global-config#tags
 _('theme');
+// admin/certificate-templates#summary
+_('The PDF templates that annual certificates print from, the fields ePT fills and the checks on upload');
 // admin/reports-tb-results#summary
 _('The result of every TB participant in each shipment');
 // admin/reports-vl-sample-analysis#summary

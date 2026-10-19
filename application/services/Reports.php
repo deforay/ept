@@ -2199,6 +2199,7 @@ class Application_Service_Reports
         return array_map(fn ($row) => [
             'id' => (int) $row['shipment_id'],
             'text' => $row['shipment_code'] . ' (' . Pt_Commons_DateUtility::humanReadableDateFormat($row['shipment_date'] ?? '') . ')',
+            'scheme' => $row['scheme_type'],
         ], $this->annualReportShipments($params));
     }
 
@@ -2443,6 +2444,7 @@ class Application_Service_Reports
         return array_map(fn ($row) => [
             'id' => (int) $row['shipment_id'],
             'text' => $row['shipment_code'] . ' (' . Pt_Commons_DateUtility::humanReadableDateFormat($row['shipment_date'] ?? '') . ')',
+            'scheme' => $row['scheme_type'],
         ], $db->fetchAll($sQuery));
     }
 

@@ -1015,6 +1015,22 @@ $faqResults = json_decode($this->faqs);
 							title="<?= $this->translate->_('Enter the email address for certificate notifications'); ?>">
 					</div>
 					<div class="col-md-6">
+						<label for="certificate_signatory_name"
+							class="control-label"><?= $this->translate->_("Certificate Signatory Name"); ?></label>
+						<input type="text" value="<?= $this->escape($this->certificate_signatory_name ?? ''); ?>" class="form-control"
+							id="certificate_signatory_name" name="certificate_signatory_name"
+							placeholder="<?= $this->htmlTranslate('e.g., Dr. A. Example'); ?>"
+							title="<?= $this->htmlTranslate('Printed in the signatory_name field of certificate templates'); ?>">
+					</div>
+					<div class="col-md-6">
+						<label for="certificate_signatory_title"
+							class="control-label"><?= $this->translate->_("Certificate Signatory Title"); ?></label>
+						<input type="text" value="<?= $this->escape($this->certificate_signatory_title ?? ''); ?>" class="form-control"
+							id="certificate_signatory_title" name="certificate_signatory_title"
+							placeholder="<?= $this->htmlTranslate('e.g., Deputy Director General'); ?>"
+							title="<?= $this->htmlTranslate('Printed in the signatory_title field of certificate templates'); ?>">
+					</div>
+					<div class="col-md-6">
 						<label for="late_submission_grace_minutes"
 							class="control-label"><?= $this->translate->_("Late Submission Grace Window (minutes)"); ?></label>
 						<input type="number" min="0" step="1" class="form-control"
