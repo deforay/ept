@@ -111,6 +111,10 @@ include APPLICATION_PATH . '/views/partials/report-filters.phtml';
 		tbcRequest = $.post("<?= $tbcDataUrl; ?>", reportFilters.values(), function (rows) {
 			rows = rows || [];
 			drawTbcChart(rows);
+			// fnAddData([]) reads an empty array as one row with no cells.
+			if (!rows.length) {
+				return;
+			}
 			tbcTable.fnAddData($.map(rows, function (r) {
 				return [[
 					r.country ? tbcEscape(r.country) : '<span class="cell-muted">' + tbcEscape(tbcNotSet) + '</span>',

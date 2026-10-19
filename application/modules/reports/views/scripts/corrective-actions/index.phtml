@@ -233,7 +233,10 @@ $caPdfUrl = $this->url(['module' => 'reports', 'controller' => 'corrective-actio
 					action.responses
 				]];
 			});
-			caTable.fnAddData(rows);
+			// fnAddData([]) reads an empty array as one row with no cells.
+			if (rows.length) {
+				caTable.fnAddData(rows);
+			}
 		}, 'json').always(function () {
 			caRequest = null;
 			$('#caTable_processing').css('visibility', 'hidden');
