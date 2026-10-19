@@ -501,6 +501,14 @@ if (!empty($this->shipment)) {
                     $btn.removeClass('btn-success btn-danger btn-warning btn-default').addClass($btn.data('btn-class'));
                 }
 
+                // Ignore a late response once the row shows another list or corrective actions.
+                function fillDownloads(tr, key, html) {
+                    if ($(tr).data('downloads-open') !== key) {
+                        return;
+                    }
+                    $(tr).next('tr').find('.downloads-child-row').first().replaceWith(html);
+                }
+
                 $('#shipmentEvaluation').on('click', 'a.toggle-downloads-row', function (e) {
                     e.preventDefault();
                     var $btn = $(this);
@@ -518,9 +526,9 @@ if (!empty($this->shipment)) {
                         mapId: $btn.data('map-id'),
                         reportType: $btn.data('report-type')
                     }, function (html) {
-                        $(tr).next('tr').find('td').first().html(html);
+                        fillDownloads(tr, key, html);
                     }).fail(function () {
-                        $(tr).next('tr').find('td').first().html('<div style="padding:12px;color:#a94442;"><?= $this->jsTranslate("Failed to load downloads. Please try again."); ?></div>');
+                        fillDownloads(tr, key, '<div class="downloads-child-row" style="padding:12px;color:#a94442;"><?= $this->jsTranslate("Failed to load downloads. Please try again."); ?></div>');
                     });
                 });
 
@@ -742,23 +750,20 @@ if (!empty($this->shipment)) {
 
             function fnFormatDetails(oTable, nTr) {
                 var aData = oTable.fnGetData(nTr);
-                var sOut = '<div class="text-center"><i class="icon-spinner icon-spin"></i> Loading...</div>';
                 // map_id is in the hidden last column (index 12).
                 var mapId = aData[12];
+                // Fill the child row when the response arrives. If the row closed first, there is no slot to fill.
                 $.ajax({
                     url: '/common/get-corrective-actions/mid/' + mapId,
-                    data: {
-                        format: 'html'
-                    },
-                    async: false,
+                    data: { format: 'html' },
                     success: function (html) {
-                        sOut = '<div style="padding-left:50px;">' + html + '</div>';
+                        $(nTr).next('tr').find('.corrective-actions-slot').html('<div style="padding-left:50px;">' + html + '</div>');
                     },
                     error: function () {
-                        sOut = '<div class="text-muted">Failed to load corrective actions</div>';
+                        $(nTr).next('tr').find('.corrective-actions-slot').html('<div class="text-muted">Failed to load corrective actions</div>');
                     }
                 });
-                return sOut;
+                return '<div class="corrective-actions-slot"><div class="text-center"><i class="icon-spinner icon-spin"></i> Loading...</div></div>';
             }
         </script>
         <?php // Must stay last: the panel collapses only after the select2 widgets above have measured themselves.

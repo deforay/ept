@@ -844,20 +844,19 @@ if (!empty($this->shipment)) {
 
         function fnFormatDetails(oTable, nTr) {
             var aData = oTable.fnGetData(nTr);
-            var sOut = '<div class="text-center"><i class="icon-spinner icon-spin"></i> Loading...</div>';
             var mapId = aData[11];
+            // Fill the child row when the response arrives. If the row closed first, there is no slot to fill.
             $.ajax({
                 url: '/common/get-corrective-actions/mid/' + mapId,
                 data: { format: 'html' },
-                async: false,
                 success: function (html) {
-                    sOut = '<div style="padding-left:50px;">' + html + '</div>';
+                    $(nTr).next('tr').find('.corrective-actions-slot').html('<div style="padding-left:50px;">' + html + '</div>');
                 },
                 error: function () {
-                    sOut = '<div class="text-muted">Failed to load corrective actions</div>';
+                    $(nTr).next('tr').find('.corrective-actions-slot').html('<div class="text-muted">Failed to load corrective actions</div>');
                 }
             });
-            return sOut;
+            return '<div class="corrective-actions-slot"><div class="text-center"><i class="icon-spinner icon-spin"></i> Loading...</div></div>';
         }
 
         // Finalizing generates the reports the comment is meant to appear on, but the
