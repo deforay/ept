@@ -1,96 +1,67 @@
 ---
-title: How to make a certificate template
-summary: Turn a certificate design into a PDF that ePT can fill with each participant's details
+title: How to set up a certificate template
+summary: Upload your certificate design and place the participant details on it
 audience: admin
-estimated_minutes: 20
-tags: [guide, certificates, templates, pdf, libreoffice, excellence, participation]
+estimated_minutes: 10
+tags: [guide, certificates, templates, design, word, pdf, excellence, participation]
 steps:
   - id: 1
-    title: Open the design in LibreOffice
+    title: Save your design as a PDF
     target_pages: []
   - id: 2
-    title: Add a text field for each detail
-    target_pages: []
+    title: Upload the design
+    target_pages: [certificate-templates/index]
   - id: 3
-    title: Export a PDF form
-    target_pages: []
+    title: Place the details
+    target_pages: [certificate-templates/design]
   - id: 4
-    title: Upload the PDF
-    target_pages: [certificate-templates/index]
-  - id: 5
-    title: Check the preview
-    target_pages: [certificate-templates/index]
+    title: Check the preview and save
+    target_pages: [certificate-templates/design]
 ---
 
-# How to make a certificate template
+# How to set up a certificate template
 
-ePT prints each certificate from a template: a PDF with a form field wherever a detail such as the participant name goes. This guide turns your design into that PDF.
+ePT prints each annual certificate onto your own certificate design, with each participant's details added. This guide sets up one design.
 
-Each scheme needs two templates, one for **Excellence** and one for **Participation**. Repeat these steps for each one.
+Each scheme needs two designs, one for **Excellence** and one for **Participation**. Repeat these steps for each one.
 
-You need LibreOffice. It is a free office program that works like Microsoft Office. Microsoft Word cannot add form fields to a PDF, but LibreOffice can, and it opens Word files and PDFs. Download it from [libreoffice.org](https://www.libreoffice.org) and install it. Adobe Acrobat Pro also works, but the menu names differ.
+## Step 1: Save your design as a PDF
 
-## Step 1: Open the design in LibreOffice
+Use the design you already have, from Microsoft Word, PowerPoint, Canva or a designer.
 
-- If the design is a Word file, save it as a PDF in Word first: **File → Save As → PDF**. Then open the PDF in LibreOffice. It opens in **LibreOffice Draw**.
-- If the design is a PDF, open it in LibreOffice. It opens in **LibreOffice Draw**.
-- If there is no design yet, create one in **LibreOffice Writer**. Set **Format → Page Style → Page → Orientation** to **Landscape**.
+1. Remove every detail that changes per participant from the design. That includes the participant name and the year. ePT adds them.
+2. In Microsoft Word or PowerPoint, choose **File → Save As**, and pick **PDF** as the file type.
 
-Leave every detail that changes per participant out of the design. That includes the participant name and the year. ePT prints them.
+ePT also accepts a PNG or JPG image of the design.
 
-## Step 2: Add a text field for each detail
-
-1. Choose **View → Toolbars → Form Controls**.
-2. Click **Design Mode** on the Form Controls toolbar, if it is not already on.
-3. Click **Text Box**.
-4. Draw a box where the participant name goes. Make it as wide as the longest name.
-5. Right-click the box and choose **Control Properties**.
-6. On the **General** tab, set **Name** to `participant_name`.
-7. Set **Border** to **Without frame**.
-8. Set **Alignment** to **Center**.
-9. Set **Font** to the font and size the name must print in.
-10. Close the properties window.
-
-Add a box the same way for each other detail the certificate shows. Use the exact field names below. A misspelled name prints nothing.
-
-| Field name | Prints |
-|---|---|
-| `participant_name` | The lab name, or the person's name for individual participants. Required. |
-| `lab_id` | The participant's Lab ID |
-| `city` | The participant's city |
-| `country` | The participant's country |
-| `scheme_name` | The scheme, for example "HIV Viral Load" |
-| `assay` | The VL or EID assay the participant used |
-| `shipment_year` | The year of the shipments the certificate covers |
-| `issue_date` | The date the certificates are generated |
-| `signatory_name` | The **Certificate Signatory Name** from Global Settings |
-| `signatory_title` | The **Certificate Signatory Title** from Global Settings |
-
-[See: Certificate Templates](../certificate-templates.md) for where each value comes from.
-
-## Step 3: Export a PDF form
-
-1. Choose **File → Export As → Export as PDF**.
-2. On the **General** tab, tick **Create PDF form**.
-3. Click **Export** and save the file.
-
-## Step 4: Upload the PDF
+## Step 2: Upload the design
 
 1. Go to **Configure → Certificate Templates**.
 2. Find the scheme.
-3. On the **Excellence Certificate** or **Participation Certificate** card, click **Upload** or **Replace**.
+3. Under **Excellence** or **Participation**, click **Upload**.
 4. Drop the PDF on the upload area, or click the area to pick the file.
 
-ePT checks the PDF before saving it. If the check fails, the card says what to fix. Fix it in LibreOffice, export again and upload again.
+The designer opens with your design.
 
-If the card lists fields that ePT does not fill, check each one. ePT prints those fields as they are in the template. A field meant for a participant detail has the wrong name. Rename it in Step 2 and upload again.
+## Step 3: Place the details
 
-## Step 5: Check the preview
+1. Under **Add a detail**, click **Participant name**. A box appears on the design.
+2. Drag the box to where the name goes.
+3. Drag the box's bottom-right corner to make it as wide as the space for the name.
+4. Set the font, size, colour and alignment under **Selected box**.
+5. Add each other detail the certificate shows, such as **Shipment year** or **Signatory name**, the same way.
 
-1. Click **Preview with a real participant**.
-2. Check that every detail sits in the right place and fits its box.
-3. Click **Done**.
+To add fixed wording that changes nothing per participant, click **Other text**. To mix wording and details in one box, type the wording and use **Insert a detail into the text**.
 
-The preview uses a participant from the scheme's latest evaluated shipment. If a detail is cut off, widen its box in LibreOffice and upload again.
+## Step 4: Check the preview and save
 
-The **Preview** button on each template card shows the same check at any time.
+1. Under the design, change **Showing** to each participant in the list. The list includes the participant with the longest name.
+2. Check that each name fits its box. If a name wraps onto too many lines, make its box wider.
+3. Click **Preview PDF** to see the certificates exactly as they print.
+4. Click **Save**.
+
+On **Configure → Certificate Templates**, the design shows **Ready**.
+
+To change the design later, click **Place details** on the template.
+
+[See: Certificate Templates](../certificate-templates.md) for every detail and how text is fitted.

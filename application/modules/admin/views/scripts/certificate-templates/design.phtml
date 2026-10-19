@@ -1,0 +1,695 @@
+<?php
+$typeLabel = $this->type === 'excellence' ? $this->translate->_("Excellence certificate") : $this->translate->_("Participation certificate");
+$query = '?scheme=' . urlencode($this->scheme) . '&type=' . urlencode($this->type);
+$backUrl = $this->url(['module' => 'admin', 'controller' => 'certificate-templates'], 'default', true) . '#scheme-' . urlencode($this->scheme);
+$designUrl = $this->url(['module' => 'admin', 'controller' => 'certificate-templates', 'action' => 'download'], 'default', true) . $query;
+$saveUrl = $this->url(['module' => 'admin', 'controller' => 'certificate-templates', 'action' => 'save-layout'], 'default', true);
+$previewUrl = $this->url(['module' => 'admin', 'controller' => 'certificate-templates', 'action' => 'preview'], 'default', true) . $query;
+$fieldLabels = [
+    'participant_name' => $this->translate->_("Participant name"),
+    'lab_id' => $this->translate->_("Lab ID"),
+    'city' => $this->translate->_("City"),
+    'country' => $this->translate->_("Country"),
+    'scheme_name' => $this->translate->_("Scheme name"),
+    'assay' => $this->translate->_("Assay"),
+    'shipment_year' => $this->translate->_("Shipment year"),
+    'issue_date' => $this->translate->_("Issue date"),
+    'signatory_name' => $this->translate->_("Signatory name"),
+    'signatory_title' => $this->translate->_("Signatory title"),
+];
+$fontLabels = [
+    'helvetica' => $this->translate->_("Sans"),
+    'times' => $this->translate->_("Serif"),
+    'dejavusans' => $this->translate->_("Sans, all languages"),
+    'dejavuserif' => $this->translate->_("Serif, all languages"),
+];
+$json = fn ($v) => json_encode($v, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_UNESCAPED_UNICODE);
+?>
+<style>
+    .cd-intro {
+        margin: 0 0 12px;
+        color: #5b6573;
+    }
+
+    .cd-wrap {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 300px;
+        gap: 16px;
+        align-items: start;
+    }
+
+    .cd-stage-col {
+        min-width: 0;
+    }
+
+    .cd-stage {
+        position: relative;
+        border: 1px solid #cfdae8;
+        background: #f4f7fb;
+        user-select: none;
+        touch-action: none;
+    }
+
+    .cd-stage canvas {
+        display: block;
+        width: 100%;
+    }
+
+    .cd-loading {
+        padding: 80px 0;
+        text-align: center;
+        color: #8a94a3;
+    }
+
+    .cd-box {
+        position: absolute;
+        display: flex;
+        align-items: center;
+        overflow: hidden;
+        border: 1px dashed rgba(74, 111, 165, 0.7);
+        background: rgba(74, 111, 165, 0.06);
+        line-height: 1.15;
+        cursor: move;
+    }
+
+    .cd-box.is-selected {
+        border: 1px solid #2f6fd6;
+        background: rgba(47, 111, 214, 0.1);
+        box-shadow: 0 0 0 1px #2f6fd6;
+    }
+
+    .cd-box .cd-text {
+        width: 100%;
+        white-space: nowrap;
+    }
+
+    .cd-box.is-wrap .cd-text {
+        white-space: normal;
+    }
+
+    /* Text too long even at its smallest wraps onto lines that may spill
+       above and below the box, as the PDF prints it. */
+    .cd-box.is-overflow {
+        overflow: visible;
+    }
+
+    .cd-box.is-overflow .cd-text {
+        white-space: normal;
+    }
+
+    .cd-box .cd-handle {
+        position: absolute;
+        right: -1px;
+        bottom: -1px;
+        width: 10px;
+        height: 10px;
+        background: #2f6fd6;
+        cursor: nwse-resize;
+        display: none;
+    }
+
+    .cd-box.is-selected .cd-handle {
+        display: block;
+    }
+
+    .cd-guide {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        width: 0;
+        border-left: 1px dashed #d6336c;
+        display: none;
+        pointer-events: none;
+    }
+
+    .cd-samplebar {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 8px;
+        margin-top: 8px;
+        font-size: 12.5px;
+        color: #5b6573;
+    }
+
+    .cd-panel {
+        position: sticky;
+        top: 70px;
+    }
+
+    .cd-card {
+        margin-bottom: 12px;
+        padding: 12px;
+        border: 1px solid #e3e8ef;
+        border-radius: 6px;
+        background: #fff;
+    }
+
+    .cd-card h4 {
+        margin: 0 0 8px;
+        font-size: 13px;
+        font-weight: 600;
+        color: #3a5a8a;
+    }
+
+    .cd-add {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px;
+    }
+
+    .cd-add .btn,
+    .cd-props .btn {
+        padding: 2px 8px;
+        font-size: 12px;
+        border: 1px solid #cfdae8;
+        background: #fff;
+        color: #3a5a8a;
+        text-shadow: none;
+        box-shadow: none;
+    }
+
+    .cd-add .btn.is-required {
+        border-color: #3a5a8a;
+        font-weight: 600;
+    }
+
+    .cd-add .btn.is-used {
+        color: #8a94a3;
+    }
+
+    .cd-props label {
+        display: block;
+        margin: 8px 0 3px;
+        font-size: 12px;
+        font-weight: 600;
+        color: #333;
+    }
+
+    .cd-props .cd-row {
+        display: flex;
+        gap: 6px;
+        align-items: center;
+    }
+
+    .cd-props .btn.is-on {
+        background: #4a6fa5;
+        border-color: #3a5a8a;
+        color: #fff;
+    }
+
+    .cd-props textarea {
+        resize: vertical;
+        min-height: 54px;
+        font-size: 13px;
+    }
+
+    .cd-props input[type="color"] {
+        width: 40px;
+        height: 28px;
+        padding: 0 2px;
+    }
+
+    .cd-check li {
+        list-style: none;
+        font-size: 12.5px;
+    }
+
+    .cd-check {
+        margin: 0;
+        padding: 0;
+    }
+
+    .cd-check .is-ok {
+        color: #2d6e45;
+    }
+
+    .cd-check .is-missing {
+        color: #a33a3a;
+    }
+
+    .cd-status {
+        font-size: 12px;
+        color: #8a94a3;
+    }
+
+    @media (max-width: 991px) {
+        .cd-wrap {
+            grid-template-columns: 1fr;
+        }
+
+        .cd-panel {
+            position: static;
+        }
+    }
+</style>
+
+<div class="data-list">
+    <div class="data-list-head">
+        <h2><?= $this->escape($typeLabel . ' · ' . $this->schemeName); ?></h2>
+        <div class="data-list-actions">
+            <span class="cd-status" id="cdStatus"></span>
+            <a href="<?= $backUrl; ?>" class="btn btn-default btn-sm"><i class="icon-arrow-left"></i> <?= $this->htmlTranslate("Back to templates"); ?></a>
+            <button type="button" class="btn btn-default btn-sm" id="cdPreview"><i class="icon-file"></i> <?= $this->htmlTranslate("Preview PDF"); ?></button>
+            <button type="button" class="btn btn-primary btn-sm" id="cdSave"><i class="icon-ok"></i> <?= $this->htmlTranslate("Save"); ?></button>
+        </div>
+    </div>
+    <div class="data-list-body">
+        <p class="cd-intro"><?= $this->htmlTranslate("Click a detail on the right to add it to your design, then drag the box into place. Text that is too long for its box gets smaller. Arrow keys move the selected box, and Shift moves it further."); ?></p>
+        <div class="cd-wrap">
+            <div class="cd-stage-col">
+                <div class="cd-stage" id="cdStage">
+                    <div class="cd-loading" id="cdLoading"><?= $this->htmlTranslate("Loading the design..."); ?></div>
+                    <canvas id="cdCanvas"></canvas>
+                    <div class="cd-guide" id="cdGuide"></div>
+                </div>
+                <div class="cd-samplebar">
+                    <span><?= $this->htmlTranslate("Showing:"); ?></span>
+                    <select id="cdSample" class="form-control input-sm" style="width:auto; max-width:360px;"></select>
+                </div>
+            </div>
+            <div class="cd-panel">
+                <div class="cd-card">
+                    <h4><?= $this->htmlTranslate("Add a detail"); ?></h4>
+                    <div class="cd-add" id="cdAdd"></div>
+                    <div style="margin-top:6px;" class="cd-add">
+                        <button type="button" class="btn" id="cdAddText"><i class="icon-font"></i> <?= $this->htmlTranslate("Other text"); ?></button>
+                    </div>
+                </div>
+                <div class="cd-card cd-props" id="cdProps" style="display:none;">
+                    <h4><?= $this->htmlTranslate("Selected box"); ?></h4>
+                    <label for="cdText"><?= $this->htmlTranslate("Text"); ?></label>
+                    <textarea id="cdText" class="form-control"></textarea>
+                    <div class="cd-row" style="margin-top:4px;">
+                        <select id="cdInsert" class="form-control input-sm">
+                            <option value=""><?= $this->htmlTranslate("Insert a detail into the text..."); ?></option>
+                        </select>
+                    </div>
+                    <label for="cdFont"><?= $this->htmlTranslate("Font"); ?></label>
+                    <div class="cd-row">
+                        <select id="cdFont" class="form-control input-sm"></select>
+                        <input type="number" id="cdSize" class="form-control input-sm" min="4" max="120" step="0.5" style="width:70px;" title="<?= $this->htmlTranslate("Font size in points"); ?>" />
+                    </div>
+                    <label><?= $this->htmlTranslate("Style"); ?></label>
+                    <div class="cd-row">
+                        <button type="button" class="btn" id="cdBold" title="<?= $this->htmlTranslate("Bold"); ?>"><b>B</b></button>
+                        <button type="button" class="btn" id="cdItalic" title="<?= $this->htmlTranslate("Italic"); ?>"><i>I</i></button>
+                        <input type="color" id="cdColor" title="<?= $this->htmlTranslate("Text colour"); ?>" />
+                        <button type="button" class="btn" data-align="L" title="<?= $this->htmlTranslate("Align left"); ?>"><i class="icon-align-left"></i></button>
+                        <button type="button" class="btn" data-align="C" title="<?= $this->htmlTranslate("Align centre"); ?>"><i class="icon-align-center"></i></button>
+                        <button type="button" class="btn" data-align="R" title="<?= $this->htmlTranslate("Align right"); ?>"><i class="icon-align-right"></i></button>
+                    </div>
+                    <label><?= $this->htmlTranslate("When the text is too long"); ?></label>
+                    <div class="cd-row">
+                        <button type="button" class="btn" data-fit="shrink"><?= $this->htmlTranslate("Make it smaller"); ?></button>
+                        <button type="button" class="btn" data-fit="wrap"><?= $this->htmlTranslate("Wrap onto lines"); ?></button>
+                    </div>
+                    <div class="cd-row" style="margin-top:10px;">
+                        <button type="button" class="btn" id="cdCenter"><?= $this->htmlTranslate("Centre on page"); ?></button>
+                        <button type="button" class="btn" id="cdDelete" style="color:#a33a3a;"><i class="icon-trash"></i> <?= $this->htmlTranslate("Delete box"); ?></button>
+                    </div>
+                </div>
+                <div class="cd-card">
+                    <h4><?= $this->htmlTranslate("Before you save"); ?></h4>
+                    <ul class="cd-check" id="cdCheck"></ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<form id="cdPreviewForm" method="post" action="<?= $previewUrl; ?>" target="_blank" style="display:none;">
+    <input type="hidden" name="layout" id="cdPreviewLayout" />
+</form>
+
+<script src="<?= $this->baseUrl('js/pdfjs/pdf.min.js'); ?>"></script>
+<script type="text/javascript">
+(function () {
+    var page = <?= $json($this->pageSize); ?>;
+    var layout = <?= $json($this->layout); ?>;
+    var samples = <?= $json(array_values($this->samples)); ?>;
+    var fieldLabels = <?= $json($fieldLabels); ?>;
+    var fontLabels = <?= $json($fontLabels); ?>;
+    var cssFonts = {
+        helvetica: 'Helvetica, Arial, sans-serif',
+        times: '"Times New Roman", Times, serif',
+        dejavusans: '"DejaVu Sans", Verdana, sans-serif',
+        dejavuserif: '"DejaVu Serif", Georgia, serif'
+    };
+    var PT_TO_MM = 0.3528;
+    var elements = (layout.elements || []).map(function (el) { return $.extend({}, el); });
+    var selected = -1;
+    var sampleIndex = 0;
+    var scale = 1; // screen pixels per mm
+    var dirty = false;
+    var $stage = $('#cdStage');
+    var measure = document.createElement('canvas').getContext('2d');
+
+    // Sample participants, and the details they fill in.
+    $.each(samples, function (i, sample) {
+        $('#cdSample').append($('<option/>').val(i).text(sample.participant_name || ("Sample " + (i + 1))));
+    });
+    $('#cdSample').append($('<option/>').val('fields').text("<?= $this->jsTranslate("Detail names"); ?>"));
+    $('#cdSample').on('change', function () {
+        sampleIndex = this.value;
+        render();
+    });
+
+    $.each(fieldLabels, function (field, label) {
+        $('<button type="button" class="btn"/>')
+            .toggleClass('is-required', field === 'participant_name')
+            .attr('data-field', field)
+            .text(label)
+            .on('click', function () { addField(field); })
+            .appendTo('#cdAdd');
+        $('#cdInsert').append($('<option/>').val(field).text(label));
+    });
+    $.each(fontLabels, function (font, label) {
+        $('#cdFont').append($('<option/>').val(font).text(label));
+    });
+
+    function fill(text) {
+        return text.replace(/\{([a-z_]+)\}/g, function (m, field) {
+            if (sampleIndex === 'fields') {
+                return '[' + (fieldLabels[field] || field) + ']';
+            }
+            var sample = samples[sampleIndex] || {};
+            return sample[field] !== undefined ? sample[field] : '';
+        });
+    }
+
+    function markDirty() {
+        dirty = true;
+        $('#cdStatus').text("<?= $this->jsTranslate("Unsaved changes"); ?>");
+        renderChecks();
+    }
+
+    function newBox(text, opts) {
+        var w = opts.w || page.width * 0.5;
+        elements.push($.extend({
+            text: text,
+            x: Math.round((page.width - w) / 2 * 10) / 10,
+            y: Math.round(page.height * 0.45),
+            w: w,
+            h: opts.h || 12,
+            font: 'helvetica',
+            size: opts.size || 16,
+            bold: !!opts.bold,
+            italic: false,
+            color: '#000000',
+            align: 'C',
+            fit: opts.fit || 'shrink'
+        }, opts.extra || {}));
+        selected = elements.length - 1;
+        markDirty();
+        render();
+        $('#cdText').focus();
+    }
+
+    function addField(field) {
+        if (field === 'participant_name') {
+            newBox('{participant_name}', { w: page.width * 0.6, h: 16, size: 28, bold: true });
+        } else {
+            newBox('{' + field + '}', { w: page.width * 0.35, h: 10, size: 14 });
+        }
+    }
+
+    $('#cdAddText').on('click', function () {
+        newBox("<?= $this->jsTranslate("Your text"); ?>", { w: page.width * 0.5, h: 10, size: 14, fit: 'wrap' });
+        $('#cdText').select();
+    });
+
+    // Draw every box at its place on the page, with its text styled and
+    // shrunk the way the PDF prints it.
+    function render() {
+        $stage.find('.cd-box').remove();
+        $.each(elements, function (i, el) {
+            var $box = $('<div class="cd-box"><div class="cd-text"></div><div class="cd-handle"></div></div>')
+                .toggleClass('is-selected', i === selected)
+                .toggleClass('is-wrap', el.fit === 'wrap')
+                .attr('data-index', i)
+                .css({
+                    left: el.x * scale,
+                    top: el.y * scale,
+                    width: el.w * scale,
+                    height: el.h * scale,
+                    color: el.color,
+                    fontFamily: cssFonts[el.font],
+                    fontWeight: el.bold ? 'bold' : 'normal',
+                    fontStyle: el.italic ? 'italic' : 'normal',
+                    textAlign: { L: 'left', C: 'center', R: 'right' }[el.align]
+                });
+            var text = fill(el.text);
+            var $text = $box.find('.cd-text').text(text);
+            $stage.append($box);
+            var size = el.size;
+            var px = function (pt) { return pt * PT_TO_MM * scale; };
+            $text.css('font-size', px(size) + 'px');
+            if (el.fit === 'wrap') {
+                while (size > 4 && $text[0].scrollHeight > $box.innerHeight() + 1) {
+                    size -= 0.5;
+                    $text.css('font-size', px(size) + 'px');
+                }
+            } else {
+                // Same rule as the PDF: shrink to 60% of the size at most,
+                // then wrap, centred on the box.
+                var minSize = Math.max(4, el.size * <?= Application_Service_CertificateTemplates::MIN_SHRINK; ?>);
+                var fontAt = function (pt) { return (el.italic ? 'italic ' : '') + (el.bold ? 'bold ' : '') + px(pt) + 'px ' + cssFonts[el.font]; };
+                measure.font = fontAt(size);
+                while (size > minSize && measure.measureText(text).width > el.w * scale) {
+                    size -= 0.5;
+                    measure.font = fontAt(size);
+                }
+                $text.css('font-size', px(size) + 'px');
+                if (measure.measureText(text).width > el.w * scale) {
+                    $box.addClass('is-overflow');
+                }
+            }
+        });
+        renderProps();
+        renderChecks();
+    }
+
+    function renderProps() {
+        var el = elements[selected];
+        $('#cdProps').toggle(!!el);
+        if (!el) {
+            return;
+        }
+        if (document.activeElement !== $('#cdText')[0]) {
+            $('#cdText').val(el.text);
+        }
+        $('#cdFont').val(el.font);
+        if (document.activeElement !== $('#cdSize')[0]) {
+            $('#cdSize').val(el.size);
+        }
+        $('#cdBold').toggleClass('is-on', el.bold);
+        $('#cdItalic').toggleClass('is-on', el.italic);
+        $('#cdColor').val(el.color);
+        $('[data-align]').each(function () { $(this).toggleClass('is-on', $(this).data('align') === el.align); });
+        $('[data-fit]').each(function () { $(this).toggleClass('is-on', $(this).data('fit') === el.fit); });
+    }
+
+    function renderChecks() {
+        var all = elements.map(function (el) { return el.text; }).join(' ');
+        var $list = $('#cdCheck').empty();
+        var hasName = all.indexOf('{participant_name}') !== -1;
+        $list.append($('<li/>').addClass(hasName ? 'is-ok' : 'is-missing')
+            .append(hasName ? '<i class="icon-ok"></i> ' : '<i class="icon-remove"></i> ')
+            .append($('<span/>').text(hasName
+                ? "<?= $this->jsTranslate("The participant name is on the design."); ?>"
+                : "<?= $this->jsTranslate("Add the participant name. Certificates cannot print without it."); ?>")));
+        $list.append($('<li class="is-ok"/>').append('<i class="icon-eye-open"></i> ')
+            .append($('<span/>').text("<?= $this->jsTranslate("Switch Showing to each participant, to check that long names fit."); ?>")));
+        $('#cdAdd .btn').each(function () {
+            $(this).toggleClass('is-used', all.indexOf('{' + $(this).data('field') + '}') !== -1);
+        });
+    }
+
+    function update(changes) {
+        if (!elements[selected]) {
+            return;
+        }
+        $.extend(elements[selected], changes);
+        markDirty();
+        render();
+    }
+
+    $('#cdText').on('input', function () { update({ text: this.value }); });
+    $('#cdInsert').on('change', function () {
+        if (!this.value) {
+            return;
+        }
+        var ta = $('#cdText')[0];
+        var token = '{' + this.value + '}';
+        var at = ta.selectionStart || ta.value.length;
+        ta.value = ta.value.slice(0, at) + token + ta.value.slice(ta.selectionEnd || at);
+        this.value = '';
+        update({ text: ta.value });
+    });
+    $('#cdFont').on('change', function () { update({ font: this.value }); });
+    $('#cdSize').on('input', function () {
+        var v = parseFloat(this.value);
+        if (v >= 4 && v <= 120) {
+            update({ size: v });
+        }
+    });
+    $('#cdBold').on('click', function () { update({ bold: !elements[selected].bold }); });
+    $('#cdItalic').on('click', function () { update({ italic: !elements[selected].italic }); });
+    $('#cdColor').on('input', function () { update({ color: this.value }); });
+    $('[data-align]').on('click', function () { update({ align: $(this).data('align') }); });
+    $('[data-fit]').on('click', function () { update({ fit: $(this).data('fit') }); });
+    $('#cdCenter').on('click', function () {
+        var el = elements[selected];
+        update({ x: Math.round((page.width - el.w) / 2 * 100) / 100 });
+    });
+    $('#cdDelete').on('click', function () {
+        elements.splice(selected, 1);
+        selected = -1;
+        markDirty();
+        render();
+    });
+
+    // Drag a box to move it, or its corner handle to resize it. The box
+    // snaps to the page's centre line when it comes within 2 mm of it.
+    var drag = null;
+    $stage.on('pointerdown', '.cd-box', function (e) {
+        selected = parseInt($(this).attr('data-index'), 10);
+        var el = elements[selected];
+        drag = {
+            resize: $(e.target).hasClass('cd-handle'),
+            startX: e.clientX,
+            startY: e.clientY,
+            orig: $.extend({}, el)
+        };
+        // Capture on the stage: render() replaces the box while it moves.
+        $stage[0].setPointerCapture(e.pointerId);
+        render();
+        e.preventDefault();
+    });
+    $stage.on('pointermove', function (e) {
+        if (!drag || !elements[selected]) {
+            return;
+        }
+        var dx = (e.clientX - drag.startX) / scale;
+        var dy = (e.clientY - drag.startY) / scale;
+        var el = elements[selected];
+        var o = drag.orig;
+        if (drag.resize) {
+            el.w = Math.max(5, Math.round((o.w + dx) * 10) / 10);
+            el.h = Math.max(4, Math.round((o.h + dy) * 10) / 10);
+        } else {
+            el.x = Math.max(0, Math.min(page.width - el.w, Math.round((o.x + dx) * 10) / 10));
+            el.y = Math.max(0, Math.min(page.height - el.h, Math.round((o.y + dy) * 10) / 10));
+        }
+        var center = (page.width - el.w) / 2;
+        var snapped = !drag.resize && Math.abs(el.x - center) < 2;
+        if (snapped) {
+            el.x = Math.round(center * 100) / 100;
+        }
+        $('#cdGuide').css('left', page.width / 2 * scale).toggle(snapped);
+        markDirty();
+        render();
+    });
+    $stage.on('pointerup pointercancel', function () {
+        drag = null;
+        $('#cdGuide').hide();
+    });
+    $stage.on('pointerdown', function (e) {
+        if (e.target === $('#cdCanvas')[0]) {
+            selected = -1;
+            render();
+        }
+    });
+
+    $(document).on('keydown', function (e) {
+        var el = elements[selected];
+        if (!el || $(e.target).is('input, textarea, select')) {
+            return;
+        }
+        var step = e.shiftKey ? 5 : 0.5;
+        var moves = { ArrowLeft: [-step, 0], ArrowRight: [step, 0], ArrowUp: [0, -step], ArrowDown: [0, step] };
+        if (moves[e.key]) {
+            update({
+                x: Math.max(0, Math.round((el.x + moves[e.key][0]) * 10) / 10),
+                y: Math.max(0, Math.round((el.y + moves[e.key][1]) * 10) / 10)
+            });
+            e.preventDefault();
+        } else if (e.key === 'Delete' || e.key === 'Backspace') {
+            $('#cdDelete').click();
+            e.preventDefault();
+        }
+    });
+
+    function payload() {
+        return JSON.stringify({ version: 1, elements: elements });
+    }
+
+    $('#cdSave').on('click', function () {
+        var $btn = $(this).prop('disabled', true);
+        $.post("<?= $saveUrl; ?>", { scheme: <?= $json($this->scheme); ?>, type: <?= $json($this->type); ?>, layout: payload() }, function (response) {
+            if (response && response.success) {
+                dirty = false;
+                $('#cdStatus').text(response.hasName
+                    ? "<?= $this->jsTranslate("Saved"); ?>"
+                    : "<?= $this->jsTranslate("Saved. Add the participant name before generating certificates."); ?>");
+            } else {
+                alert((response && response.message) || "<?= $this->jsTranslate("The design could not be saved. Please try again."); ?>");
+            }
+        }, 'json').fail(function () {
+            alert("<?= $this->jsTranslate("The design could not be saved. Please try again."); ?>");
+        }).always(function () {
+            $btn.prop('disabled', false);
+        });
+    });
+
+    $('#cdPreview').on('click', function () {
+        $('#cdPreviewLayout').val(payload());
+        // submit() skips the submit handlers, including the one that adds the CSRF token.
+        if (typeof addCsrfTokenToForm === 'function') {
+            addCsrfTokenToForm($('#cdPreviewForm'));
+        }
+        $('#cdPreviewForm')[0].submit();
+    });
+
+    window.addEventListener('beforeunload', function (e) {
+        if (dirty) {
+            e.preventDefault();
+            e.returnValue = '';
+        }
+    });
+
+    // Draw the design's first page to fit the column, sharp on high-density
+    // screens, and redraw when the window size changes.
+    pdfjsLib.GlobalWorkerOptions.workerSrc = "<?= $this->baseUrl('js/pdfjs/pdf.worker.min.js'); ?>";
+    var pdfPage = null;
+    function drawPage() {
+        if (!pdfPage) {
+            return;
+        }
+        var width = $stage.width();
+        var base = pdfPage.getViewport({ scale: 1 });
+        var viewport = pdfPage.getViewport({ scale: width / base.width * (window.devicePixelRatio || 1) });
+        var canvas = document.getElementById('cdCanvas');
+        canvas.width = viewport.width;
+        canvas.height = viewport.height;
+        scale = width / page.width;
+        pdfPage.render({ canvasContext: canvas.getContext('2d'), viewport: viewport }).promise.then(render);
+    }
+    pdfjsLib.getDocument("<?= $designUrl; ?>").promise.then(function (doc) {
+        return doc.getPage(1);
+    }).then(function (p) {
+        pdfPage = p;
+        $('#cdLoading').remove();
+        drawPage();
+    }).catch(function () {
+        $('#cdLoading').text("<?= $this->jsTranslate("The design could not be shown. Upload it again from the templates page."); ?>");
+    });
+    var resizeTimer = null;
+    $(window).on('resize', function () {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(drawPage, 150);
+    });
+    renderChecks();
+})();
+</script>

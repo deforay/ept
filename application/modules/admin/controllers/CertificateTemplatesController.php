@@ -92,6 +92,65 @@ class Admin_CertificateTemplatesController extends Zend_Controller_Action
     }
 
     /**
+     * The certificate designer: the uploaded design with a box for each
+     * detail, which the admin places and styles.
+     * GET params: scheme (scheme_id), type (participation|excellence)
+     */
+    public function designAction()
+    {
+        $scheme = (string) $this->_getParam('scheme');
+        $type = (string) $this->_getParam('type');
+        $service = new Application_Service_CertificateTemplates();
+        $template = in_array($type, ['participation', 'excellence'], true) ? $service->getTemplateFilePath($scheme, $type) : null;
+        $pageSize = $template !== null ? Application_Service_CertificateTemplates::pageSize($template) : null;
+        if ($pageSize === null) {
+            $this->redirect('/admin/certificate-templates');
+            return;
+        }
+        $schemeName = $scheme;
+        foreach ((new Application_Service_Schemes())->getAllSchemes() as $row) {
+            if ($row['scheme_id'] === $scheme) {
+                $schemeName = $row['scheme_name'];
+            }
+        }
+        $this->view->scheme = $scheme;
+        $this->view->type = $type;
+        $this->view->schemeName = $schemeName;
+        $this->view->pageSize = $pageSize;
+        $this->view->layout = $service->getLayout($scheme, $type) ?? ['version' => 1, 'elements' => []];
+        $this->view->samples = $service->sampleValues($scheme);
+    }
+
+    /**
+     * Save the designer's layout.
+     * POST params: scheme, type, layout (JSON)
+     */
+    public function saveLayoutAction()
+    {
+        $this->_helper->layout()->disableLayout();
+        $this->_helper->viewRenderer->setNoRender(true);
+
+        $request = $this->getRequest();
+        $scheme = (string) $request->getPost('scheme');
+        $type = (string) $request->getPost('type');
+        $decoded = json_decode((string) $request->getPost('layout'), true);
+        $service = new Application_Service_CertificateTemplates();
+        if (!$request->isPost() || !in_array($type, ['participation', 'excellence'], true) || !is_array($decoded) || $service->getTemplateFilePath($scheme, $type) === null) {
+            $this->_helper->json(['success' => false, 'message' => 'Invalid request']);
+            return;
+        }
+
+        $layout = Application_Service_CertificateTemplates::cleanLayout($decoded);
+        (new Application_Model_DbTable_CertificateTemplates())->saveLayout($scheme, $type, $layout);
+        (new Application_Model_DbTable_AuditLog())->addNewAuditLog("Saved {$type} certificate design for scheme {$scheme}", 'certificate');
+
+        $this->_helper->json([
+            'success' => true,
+            'hasName' => Application_Service_CertificateTemplates::layoutHasName($layout),
+        ]);
+    }
+
+    /**
      * Show a template filled with a real participant's details, the way a
      * generated certificate prints.
      * GET params: scheme (scheme_id), type (participation|excellence)
@@ -109,8 +168,16 @@ class Admin_CertificateTemplatesController extends Zend_Controller_Action
             return;
         }
 
+        // The designer posts its unsaved layout, to preview before saving.
+        $layout = null;
+        $posted = $this->getRequest()->getPost('layout');
+        if (is_string($posted) && $posted !== '') {
+            $decoded = json_decode($posted, true);
+            $layout = is_array($decoded) ? Application_Service_CertificateTemplates::cleanLayout($decoded) : null;
+        }
+
         $service = new Application_Service_CertificateTemplates();
-        $filePath = $service->previewTemplate($scheme, $type);
+        $filePath = $service->previewTemplate($scheme, $type, $layout);
         if ($filePath === null) {
             $this->getResponse()->setHttpResponseCode(404);
             echo 'The template could not be filled. Upload it again to see what is wrong.';

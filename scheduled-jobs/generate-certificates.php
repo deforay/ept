@@ -347,6 +347,7 @@ $vlAssayArray = $vlModel->getVlAssay();
 $eidAssayArray = $schemeService->getEidExtractionAssay();
 
 $certificateRecipients = Application_Service_Common::getConfig('certificates');
+$GLOBALS['templateService'] = new Application_Service_CertificateTemplates();
 
 /* ---------- Templates ---------- */
 
@@ -372,7 +373,9 @@ function generateCertificate(string $shipmentType, string $certificateType, arra
 	}
 
 	if ($mode === 'pdf') {
-		$error = Application_Service_CertificateTemplates::fillPdf($tpl, $fields, $outputFileBase . ".pdf");
+		// Prints onto the design when the template has a layout, else into
+		// the fillable PDF's form fields.
+		$error = $GLOBALS['templateService']->fillTemplate($shipmentType, $certificateType, $fields, $outputFileBase . ".pdf");
 		if ($error !== null) {
 			Pt_Commons_LoggerUtility::logError($error);
 			echo "WARNING: Failed to fill PDF template $tpl. Skipping.\n";
@@ -788,7 +791,7 @@ try {
 
 	// Pre-check: verify templates exist for all scheme types in this run
 	if (!$isWorker) {
-		$templateService = new Application_Service_CertificateTemplates();
+		$templateService = $GLOBALS['templateService'];
 		$templateProblems = [];
 		foreach (array_unique(array_column($plan, 'scheme')) as $scheme) {
 			foreach (['excellence', 'participation'] as $certType) {
@@ -798,10 +801,15 @@ try {
 				} elseif (!is_readable($tpl)) {
 					$templateProblems[] = "Template file not readable: {$tpl}";
 				} elseif ($templateMode === 'pdf') {
-					// Templates copied onto the server by hand skip the upload check.
-					$check = $templateService->validatePdfTemplate($tpl);
-					if (!$check['valid']) {
-						$templateProblems[] = "{$tpl}: {$check['error']}";
+					$state = $templateService->templateState($scheme, $certType);
+					if ($state === 'needs_layout') {
+						$templateProblems[] = "The {$certType} design for {$scheme} has no participant name box. Place the details in Configure > Certificate Templates.";
+					} elseif ($templateService->getLayout($scheme, $certType) === null) {
+						// Templates copied onto the server by hand skip the upload check.
+						$check = $templateService->validatePdfTemplate($tpl);
+						if (!$check['valid']) {
+							$templateProblems[] = "{$tpl}: {$check['error']}";
+						}
 					}
 				}
 			}

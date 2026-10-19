@@ -110,6 +110,8 @@ class Application_Model_DbTable_CertificateTemplates extends Zend_Db_Table_Abstr
                 'excellence_certificate' => $ct['excellence_certificate'],
                 'p_detected_fields' => $ct['p_detected_fields'] ?? null,
                 'e_detected_fields' => $ct['e_detected_fields'] ?? null,
+                'p_layout' => $ct['p_layout'] ?? null,
+                'e_layout' => $ct['e_layout'] ?? null,
             ];
         }
         return $certificateTemplate;
@@ -124,7 +126,7 @@ class Application_Model_DbTable_CertificateTemplates extends Zend_Db_Table_Abstr
      * @param array $detectedFields Array of detected form fields from validation
      * @return array ['success' => bool, 'message' => string, 'filename' => string]
      */
-    public function saveTemplateFile(string $scheme, string $type, array $file, array $detectedFields = []): array
+    public function saveTemplateFile(string $scheme, string $type, array $file, array $detectedFields = [], bool $keepLayout = true): array
     {
         $result = [
             'success' => false,
@@ -154,8 +156,12 @@ class Application_Model_DbTable_CertificateTemplates extends Zend_Db_Table_Abstr
                 }
             }
 
-            // Move uploaded file
-            if (!move_uploaded_file($file['tmp_name'], $fullPath)) {
+            // An image upload arrives already converted to a PDF in a temp
+            // file, which is not an uploaded file.
+            $saved = is_uploaded_file($file['tmp_name'])
+                ? move_uploaded_file($file['tmp_name'], $fullPath)
+                : rename($file['tmp_name'], $fullPath);
+            if (!$saved) {
                 $result['message'] = 'Failed to save file to destination';
                 return $result;
             }
@@ -166,6 +172,11 @@ class Application_Model_DbTable_CertificateTemplates extends Zend_Db_Table_Abstr
                 $fieldsColumn => json_encode($detectedFields),
                 'updated_on' => new Zend_Db_Expr('now()'),
             ];
+            // A replaced design keeps its layout, so the admin only adjusts
+            // it. A fillable PDF has no layout.
+            if (!$keepLayout) {
+                $updateData[self::layoutColumn($type)] = null;
+            }
 
             $this->update($updateData, ['ct_id = ?' => $id]);
 
@@ -215,6 +226,7 @@ class Application_Model_DbTable_CertificateTemplates extends Zend_Db_Table_Abstr
                 $this->update([
                     $fileColumn => null,
                     $fieldsColumn => null,
+                    self::layoutColumn($type) => null,
                     'updated_on' => new Zend_Db_Expr('now()'),
                 ], ['ct_id = ?' => $row->ct_id]);
             }
@@ -229,5 +241,29 @@ class Application_Model_DbTable_CertificateTemplates extends Zend_Db_Table_Abstr
             ]);
             return false;
         }
+    }
+
+    private static function layoutColumn(string $type): string
+    {
+        return $type === 'excellence' ? 'e_layout' : 'p_layout';
+    }
+
+    /** The designer layout of a template, or null for a fillable PDF. */
+    public function getLayout(string $scheme, string $type): ?array
+    {
+        $value = $this->getAdapter()->fetchOne(
+            $this->select()->from($this->_name, [self::layoutColumn($type)])->where('scheme_type = ?', $scheme)
+        );
+        $layout = $value ? json_decode((string) $value, true) : null;
+        return is_array($layout) ? $layout : null;
+    }
+
+    public function saveLayout(string $scheme, string $type, ?array $layout): void
+    {
+        $id = $this->getOrCreateRecord($scheme);
+        $this->update([
+            self::layoutColumn($type) => $layout === null ? null : json_encode($layout, JSON_UNESCAPED_UNICODE),
+            'updated_on' => new Zend_Db_Expr('now()'),
+        ], ['ct_id = ?' => $id]);
     }
 }

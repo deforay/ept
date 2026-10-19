@@ -93,6 +93,10 @@ _('data-manager');
 _('data-managers');
 // admin/data-managers#title
 _('Data Managers (Participant Logins) and PT Country Coordinators');
+// admin/certificate-templates#tags
+_('design');
+// admin/certificate-templates#tags
+_('designer');
 // admin/eid-assay-add#tags, admin/eid-assay#tags
 _('detection');
 // admin/reports-distribution#tags, admin/reports-finalize#tags, admin/reports-vl-sample-analysis#tags
@@ -381,12 +385,12 @@ _('Test Kit Report For HIV Serology');
 _('test kits');
 // admin/testkit#title
 _('Test Kits');
+// admin/certificate-templates#summary
+_('The designs annual certificates print on, the details ePT adds and the checks on upload');
 // admin/shipment#summary
 _('The list of shipments inside a PT Survey — what they are and how to manage them');
 // admin/global-config#tags
 _('theme');
-// admin/certificate-templates#summary
-_('The PDF templates that annual certificates print from, the fields ePT fills and the checks on upload');
 // admin/reports-tb-results#summary
 _('The result of every TB participant in each shipment');
 // admin/reports-vl-sample-analysis#summary

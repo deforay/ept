@@ -264,62 +264,80 @@ class Application_Service_CertificateTemplates
     }
 
     /**
-     * Fill a template with a real participant of the scheme, so the admin
-     * sees how the certificate prints. Falls back to placeholder text when
-     * the scheme has no evaluated response yet. Returns the PDF's path, or
-     * null when the template cannot be filled.
+     * Sample values for the scheme's preview: the participant from the latest
+     * evaluated shipment, and the participant with the longest name, so a
+     * preview shows whether long names fit. Placeholder text stands in when
+     * the scheme has no evaluated response yet.
+     *
+     * @return list<array<string, string>>
      */
-    public function previewTemplate(string $schemeType, string $type): ?string
+    public function sampleValues(string $schemeType): array
+    {
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $nameExpr = Application_Model_DbTable_Participants::participantNameExpr('p');
+        $base = $db->select()
+            ->from(['spm' => 'shipment_participant_map'], ['spm.attributes'])
+            ->join(['s' => 'shipment'], 's.shipment_id = spm.shipment_id', ['s.shipment_date'])
+            ->join(['sl' => 'scheme_list'], 'sl.scheme_id = s.scheme_type', ['sl.scheme_name'])
+            ->join(['p' => 'participant'], 'p.participant_id = spm.participant_id', [
+                'p.unique_identifier',
+                'p.city',
+                'participantName' => new Zend_Db_Expr($nameExpr),
+            ])
+            ->joinLeft(['c' => 'countries'], 'c.id = p.country', ['country_name' => 'c.iso_name'])
+            ->where('s.scheme_type = ?', $schemeType)
+            ->where(Application_Service_Reports::ANNUAL_RESULT_FILTER)
+            ->limit(1);
+        $rows = array_filter([
+            $db->fetchRow((clone $base)->order('s.shipment_date DESC')),
+            $db->fetchRow((clone $base)->order(new Zend_Db_Expr("CHAR_LENGTH($nameExpr) DESC"))),
+        ]);
+
+        $batch = array_filter(self::batchFields(), fn ($v) => $v !== '');
+        if (empty($rows)) {
+            return [array_merge(self::placeholderFields(), $batch)];
+        }
+
+        $vlAssays = (new Application_Model_Vl())->getVlAssay();
+        $eidAssays = (new Application_Service_Schemes())->getEidExtractionAssay();
+        $sets = [];
+        foreach ($rows as $row) {
+            $sets[$row['unique_identifier']] = array_merge(self::placeholderFields(), [
+                'participant_name' => (string) $row['participantName'],
+                'lab_id' => (string) $row['unique_identifier'],
+                'city' => (string) $row['city'],
+                'country' => (string) ($row['country_name'] ?? ''),
+                'scheme_name' => (string) $row['scheme_name'],
+                'assay' => Application_Service_Reports::annualReportAssayName(
+                    $schemeType,
+                    Pt_Commons_JsonUtility::safeDecode($row['attributes']),
+                    $vlAssays,
+                    $eidAssays
+                ),
+                'shipment_year' => date('Y', strtotime($row['shipment_date'])),
+            ], $batch);
+        }
+        return array_values($sets);
+    }
+
+    /**
+     * Fill a template the way a generated certificate prints, with each of
+     * the scheme's sample participants on its own page. $layout previews an
+     * unsaved designer layout. Returns the PDF's path, or null when the
+     * template cannot be filled.
+     */
+    public function previewTemplate(string $schemeType, string $type, ?array $layout = null): ?string
     {
         $template = $this->getTemplateFilePath($schemeType, $type);
         if ($template === null) {
             return null;
         }
-
-        $values = self::placeholderFields();
-        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $row = $db->fetchRow(
-            $db->select()
-                ->from(['spm' => 'shipment_participant_map'], ['spm.attributes'])
-                ->join(['s' => 'shipment'], 's.shipment_id = spm.shipment_id', ['s.shipment_date'])
-                ->join(['sl' => 'scheme_list'], 'sl.scheme_id = s.scheme_type', ['sl.scheme_name'])
-                ->join(['p' => 'participant'], 'p.participant_id = spm.participant_id', [
-                    'p.unique_identifier',
-                    'p.city',
-                    'participantName' => new Zend_Db_Expr(Application_Model_DbTable_Participants::participantNameExpr('p')),
-                ])
-                ->joinLeft(['c' => 'countries'], 'c.id = p.country', ['country_name' => 'c.iso_name'])
-                ->where('s.scheme_type = ?', $schemeType)
-                ->where(Application_Service_Reports::ANNUAL_RESULT_FILTER)
-                ->order('s.shipment_date DESC')
-                ->limit(1)
-        );
-        if ($row) {
-            $vlModel = new Application_Model_Vl();
-            $schemeService = new Application_Service_Schemes();
-            $values = array_merge($values, [
-                'participant_name' => $row['participantName'],
-                'lab_id' => $row['unique_identifier'],
-                'city' => $row['city'],
-                'country' => $row['country_name'] ?? '',
-                'scheme_name' => $row['scheme_name'],
-                'assay' => Application_Service_Reports::annualReportAssayName(
-                    $schemeType,
-                    Pt_Commons_JsonUtility::safeDecode($row['attributes']),
-                    $vlModel->getVlAssay(),
-                    $schemeService->getEidExtractionAssay()
-                ),
-                'shipment_year' => date('Y', strtotime($row['shipment_date'])),
-            ]);
-        }
-        foreach (self::batchFields() as $field => $value) {
-            if ($value !== '') {
-                $values[$field] = $value;
-            }
-        }
-
+        $layout ??= $this->getLayout($schemeType, $type);
+        $samples = $this->sampleValues($schemeType);
         $output = tempnam(sys_get_temp_dir(), 'preview') . '.pdf';
-        $error = self::fillPdf($template, self::expandFields($values), $output);
+        $error = $layout !== null
+            ? self::renderDesign($template, $layout, $samples, $output)
+            : self::fillPdf($template, self::expandFields($samples[0]), $output);
         if ($error !== null) {
             Pt_Commons_LoggerUtility::logError('Certificate template preview failed: ' . $error);
             return null;
@@ -327,9 +345,217 @@ class Application_Service_CertificateTemplates
         return $output;
     }
 
+    /** Text set to shrink never goes below this share of its chosen size. */
+    public const MIN_SHRINK = 0.6;
+
+    /** The fonts the designer offers: TCPDF font name => label. */
+    public const FONTS = [
+        'helvetica' => 'Sans',
+        'times' => 'Serif',
+        'dejavusans' => 'Sans, all languages',
+        'dejavuserif' => 'Serif, all languages',
+    ];
+
+    /** The designer layout of a template, or null for a fillable PDF. */
+    public function getLayout(string $schemeType, string $type): ?array
+    {
+        $key = "$schemeType|$type";
+        if (!array_key_exists($key, $this->layoutCache)) {
+            $this->layoutCache[$key] = (new Application_Model_DbTable_CertificateTemplates())->getLayout($schemeType, $type);
+        }
+        return $this->layoutCache[$key];
+    }
+
+    /** @var array<string, array|null> */
+    private array $layoutCache = [];
+
+    /**
+     * Keep only well-formed boxes from a layout sent by the designer, with
+     * every value inside its allowed range.
+     */
+    public static function cleanLayout(array $input): array
+    {
+        $num = fn ($v, float $min, float $max) => max($min, min($max, round((float) $v, 2)));
+        $elements = [];
+        foreach (array_slice((array) ($input['elements'] ?? []), 0, 60) as $el) {
+            if (!is_array($el)) {
+                continue;
+            }
+            $text = trim(mb_substr((string) ($el['text'] ?? ''), 0, 500));
+            if ($text === '') {
+                continue;
+            }
+            $elements[] = [
+                'text' => $text,
+                'x' => $num($el['x'] ?? 0, 0, 2000),
+                'y' => $num($el['y'] ?? 0, 0, 2000),
+                'w' => $num($el['w'] ?? 50, 2, 2000),
+                'h' => $num($el['h'] ?? 10, 2, 2000),
+                'font' => isset(self::FONTS[$el['font'] ?? '']) ? $el['font'] : 'helvetica',
+                'size' => $num($el['size'] ?? 14, 4, 120),
+                'bold' => !empty($el['bold']),
+                'italic' => !empty($el['italic']),
+                'color' => preg_match('/^#[0-9a-f]{6}$/i', (string) ($el['color'] ?? '')) ? strtolower($el['color']) : '#000000',
+                'align' => in_array($el['align'] ?? '', ['L', 'C', 'R'], true) ? $el['align'] : 'C',
+                'fit' => ($el['fit'] ?? '') === 'wrap' ? 'wrap' : 'shrink',
+            ];
+        }
+        return ['version' => 1, 'elements' => $elements];
+    }
+
+    /** True when the layout prints the participant name somewhere. */
+    public static function layoutHasName(array $layout): bool
+    {
+        foreach ((array) ($layout['elements'] ?? []) as $el) {
+            if (str_contains((string) ($el['text'] ?? ''), '{' . self::NAME_FIELD . '}')) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /** Width and height in mm of a PDF's first page, or null when unreadable. */
+    public static function pageSize(string $pdfFile): ?array
+    {
+        try {
+            $pdf = new \setasign\Fpdi\Tcpdf\Fpdi();
+            $pdf->setSourceFile($pdfFile);
+            $size = $pdf->getTemplateSize($pdf->importPage(1));
+            return ['width' => round($size['width'], 2), 'height' => round($size['height'], 2)];
+        } catch (Throwable $e) {
+            return null;
+        }
+    }
+
+    /**
+     * The font to print $text in. Sans and Serif only have Western European
+     * characters, so text with others, such as Vietnamese or Cyrillic, uses
+     * the DejaVu font of the same style instead.
+     */
+    private static function fontFor(string $font, string $text): string
+    {
+        $fallback = ['helvetica' => 'dejavusans', 'times' => 'dejavuserif'];
+        if (!isset($fallback[$font])) {
+            return $font;
+        }
+        $latin = @mb_convert_encoding($text, 'Windows-1252', 'UTF-8');
+        return mb_convert_encoding($latin, 'UTF-8', 'Windows-1252') === $text ? $font : $fallback[$font];
+    }
+
+    /**
+     * Print a designer layout onto a design, one page per set of values.
+     * Text in a box shrinks until it fits the box width, or wraps and
+     * shrinks to fit the box when the box is set to wrap.
+     * Returns null on success, else the error.
+     */
+    public static function renderDesign(string $background, array $layout, array $valueSets, string $outputPdf): ?string
+    {
+        try {
+            $pdf = new \setasign\Fpdi\Tcpdf\Fpdi();
+            $pdf->setPrintHeader(false);
+            $pdf->setPrintFooter(false);
+            $pdf->SetMargins(0, 0, 0);
+            $pdf->SetAutoPageBreak(false, 0);
+            $pdf->setCellPaddings(0, 0, 0, 0);
+            $pdf->setSourceFile($background);
+            $page = $pdf->importPage(1);
+            $size = $pdf->getTemplateSize($page);
+
+            foreach ($valueSets as $values) {
+                $pdf->AddPage($size['orientation'], [$size['width'], $size['height']]);
+                $pdf->useTemplate($page, 0, 0, $size['width'], $size['height']);
+                foreach ((array) ($layout['elements'] ?? []) as $el) {
+                    $text = trim(preg_replace_callback(
+                        '/\{([a-z_]+)\}/',
+                        fn ($m) => (string) ($values[$m[1]] ?? ''),
+                        (string) $el['text']
+                    ));
+                    if ($text === '') {
+                        continue;
+                    }
+                    $style = (!empty($el['bold']) ? 'B' : '') . (!empty($el['italic']) ? 'I' : '');
+                    $el['font'] = self::fontFor($el['font'], $text);
+                    [$r, $g, $b] = sscanf($el['color'] ?? '#000000', '#%02x%02x%02x');
+                    $pdf->SetTextColor($r, $g, $b);
+                    $fontSize = (float) $el['size'];
+                    $pdf->SetFont($el['font'], $style, $fontSize);
+                    if (($el['fit'] ?? 'shrink') === 'wrap') {
+                        $pdf->MultiCell($el['w'], $el['h'], $text, 0, $el['align'], false, 1, $el['x'], $el['y'], true, 0, false, false, $el['h'], 'M', true);
+                        continue;
+                    }
+                    // Shrink to at most 60% of the chosen size. Smaller text is
+                    // hard to read, so text still too long wraps instead.
+                    $minSize = max(4, $fontSize * self::MIN_SHRINK);
+                    while ($fontSize > $minSize && $pdf->GetStringWidth($text, $el['font'], $style, $fontSize) > $el['w']) {
+                        $fontSize -= 0.5;
+                    }
+                    $pdf->SetFont($el['font'], $style, $fontSize);
+                    if ($pdf->GetStringWidth($text) > $el['w']) {
+                        // Wrapped lines sit centred on the box, above and below it if needed.
+                        $lineHeight = $fontSize / $pdf->getScaleFactor() * $pdf->getCellHeightRatio();
+                        $blockHeight = $pdf->getNumLines($text, $el['w']) * $lineHeight;
+                        $pdf->MultiCell($el['w'], $lineHeight, $text, 0, $el['align'], false, 1, $el['x'], $el['y'] + ($el['h'] - $blockHeight) / 2, true, 0, false, false);
+                        continue;
+                    }
+                    $pdf->SetXY($el['x'], $el['y']);
+                    $pdf->Cell($el['w'], $el['h'], $text, 0, 0, $el['align'], false, '', 0, false, 'T', 'M');
+                }
+            }
+            @mkdir(dirname($outputPdf), 0777, true);
+            $pdf->Output($outputPdf, 'F');
+        } catch (Throwable $e) {
+            return 'Could not print the certificate design: ' . $e->getMessage();
+        }
+        return is_file($outputPdf) && filesize($outputPdf) > 0 ? null : 'Could not write ' . $outputPdf;
+    }
+
+    /**
+     * Print one certificate from a scheme's template: onto the design when
+     * the template has a layout, else into the fillable PDF's form fields.
+     * $values holds the field values by field name. Returns null on success,
+     * else the error.
+     */
+    public function fillTemplate(string $schemeType, string $type, array $values, string $outputPdf): ?string
+    {
+        $template = $this->getTemplateFilePath($schemeType, $type);
+        if ($template === null) {
+            return "No $type template for $schemeType";
+        }
+        $layout = $this->getLayout($schemeType, $type);
+        if ($layout !== null && !self::layoutHasName($layout)) {
+            return "The $type design for $schemeType has no participant name box";
+        }
+        return $layout !== null
+            ? self::renderDesign($template, $layout, [$values], $outputPdf)
+            : self::fillPdf($template, self::expandFields($values), $outputPdf);
+    }
+
+    /**
+     * 'missing' when the scheme has no template of this type, 'needs_layout'
+     * when a design has no participant name box yet, otherwise 'ready'.
+     */
+    public function templateState(string $schemeType, string $type): string
+    {
+        if ($this->getTemplateFilePath($schemeType, $type) === null) {
+            return 'missing';
+        }
+        $layout = $this->getLayout($schemeType, $type);
+        return $layout === null || self::layoutHasName($layout) ? 'ready' : 'needs_layout';
+    }
+
+    /**
+     * The scheme names a template file and comes from the request, so it
+     * must not hold a path.
+     */
+    private static function isSafeScheme(string $schemeType): bool
+    {
+        return $schemeType !== '' && !preg_match('#[/\\\\]|\.\.#', $schemeType);
+    }
+
     /**
      * Which templates each active scheme has, keyed by scheme_id:
-     * ['name' => scheme name, 'excellence' => bool, 'participation' => bool].
+     * ['name' => scheme name, 'excellence' => state, 'participation' => state],
+     * with the states of templateState().
      */
     public function templateStatus(): array
     {
@@ -337,11 +563,37 @@ class Application_Service_CertificateTemplates
         foreach ((new Application_Service_Schemes())->getAllSchemes() as $scheme) {
             $status[$scheme['scheme_id']] = [
                 'name' => $scheme['scheme_name'],
-                'excellence' => $this->getTemplateFilePath($scheme['scheme_id'], 'excellence') !== null,
-                'participation' => $this->getTemplateFilePath($scheme['scheme_id'], 'participation') !== null,
+                'excellence' => $this->templateState($scheme['scheme_id'], 'excellence'),
+                'participation' => $this->templateState($scheme['scheme_id'], 'participation'),
             ];
         }
         return $status;
+    }
+
+    /**
+     * Turn an uploaded PNG or JPG design into a one-page PDF the size of an
+     * A4 page in the image's orientation. Returns the PDF's path, or null.
+     */
+    private static function imageToPdf(string $imageFile): ?string
+    {
+        $info = @getimagesize($imageFile);
+        if (!$info || !in_array($info[2], [IMAGETYPE_PNG, IMAGETYPE_JPEG], true)) {
+            return null;
+        }
+        [$px, $py] = $info;
+        $landscape = $px >= $py;
+        $width = $landscape ? 297 : 210;
+        $height = round($width * $py / $px, 2);
+        $pdf = new TCPDF($landscape ? 'L' : 'P', 'mm', [$width, $height]);
+        $pdf->setPrintHeader(false);
+        $pdf->setPrintFooter(false);
+        $pdf->SetMargins(0, 0, 0);
+        $pdf->SetAutoPageBreak(false, 0);
+        $pdf->AddPage($landscape ? 'L' : 'P', [$width, $height]);
+        $pdf->Image($imageFile, 0, 0, $width, $height, $info[2] === IMAGETYPE_PNG ? 'PNG' : 'JPG');
+        $output = tempnam(sys_get_temp_dir(), 'design') . '.pdf';
+        $pdf->Output($output, 'F');
+        return is_file($output) ? $output : null;
     }
 
     /**
@@ -354,6 +606,9 @@ class Application_Service_CertificateTemplates
      */
     public function getTemplateFilePath(string $schemeType, string $type): ?string
     {
+        if (!self::isSafeScheme($schemeType)) {
+            return null;
+        }
         // Standardized naming: {schemeType}-p.pdf for participation, {schemeType}-e.pdf for excellence
         $suffix = ($type === 'excellence') ? '-e.pdf' : '-p.pdf';
         $filename = $schemeType . $suffix;
@@ -395,6 +650,11 @@ class Application_Service_CertificateTemplates
             'fields' => [],
         ];
 
+        if (!self::isSafeScheme($scheme)) {
+            $result['message'] = 'Invalid scheme';
+            return $result;
+        }
+
         // Check for upload errors
         if ($file['error'] !== UPLOAD_ERR_OK) {
             $errorMessages = [
@@ -410,28 +670,103 @@ class Application_Service_CertificateTemplates
             return $result;
         }
 
-        // Validate the uploaded PDF
-        $validation = $this->validatePdfTemplate($file['tmp_name']);
-        $result['fields'] = $validation['fields'];
-        $result['unknown'] = $validation['unknown'];
+        $certificateDb = new Application_Model_DbTable_CertificateTemplates();
+        $result['unknown'] = [];
+        $result['needsLayout'] = false;
 
-        if (!$validation['valid']) {
-            $result['message'] = $validation['error'];
+        // An image is a design: make it a PDF page and place the details.
+        $imageInfo = @getimagesize($file['tmp_name']);
+        if ($imageInfo !== false) {
+            $pdf = self::imageToPdf($file['tmp_name']);
+            if ($pdf === null) {
+                $result['message'] = 'Upload the design as a PDF, PNG or JPG file.';
+                return $result;
+            }
+            $file['tmp_name'] = $pdf;
+            return $this->saveDesign($certificateDb, $scheme, $type, $file, $result);
+        }
+
+        if (file_get_contents($file['tmp_name'], false, null, 0, 5) !== '%PDF-') {
+            $result['message'] = 'Upload the design as a PDF, PNG or JPG file. In Microsoft Word, choose File > Save As > PDF.';
             return $result;
         }
 
-        // Save the template
-        $certificateDb = new Application_Model_DbTable_CertificateTemplates();
-        $saveResult = $certificateDb->saveTemplateFile($scheme, $type, $file, $validation['fields']);
-
-        if ($saveResult['success']) {
-            $result['success'] = true;
-            $result['message'] = 'Template uploaded and validated successfully';
+        // A PDF form with a participant name field is filled as a form.
+        $validation = $this->validatePdfTemplate($file['tmp_name']);
+        if ($validation['valid']) {
+            $result['fields'] = $validation['fields'];
+            $result['unknown'] = $validation['unknown'];
+            $saveResult = $certificateDb->saveTemplateFile($scheme, $type, $file, $validation['fields'], false);
+            $result['success'] = $saveResult['success'];
+            $result['message'] = $saveResult['success'] ? 'Template uploaded and validated successfully' : ($saveResult['message'] ?? 'Failed to save template');
             $result['filename'] = $saveResult['filename'] ?? '';
-        } else {
-            $result['message'] = $saveResult['message'] ?? 'Failed to save template';
+            return $result;
         }
 
+        // Any other readable PDF is a design. Word and Canva often save PDFs
+        // that FPDI cannot read, so rewrite those first.
+        if (self::pageSize($file['tmp_name']) === null) {
+            $rewritten = self::rewritePdf($file['tmp_name']);
+            if ($rewritten === null) {
+                $result['message'] = 'ePT could not read this PDF. Save the design as PDF again and upload the new file.';
+                return $result;
+            }
+            $file['tmp_name'] = $rewritten;
+        }
+        return $this->saveDesign($certificateDb, $scheme, $type, $file, $result);
+    }
+
+    /**
+     * Rewrite a PDF that FPDI cannot read, such as one with compressed
+     * cross-reference tables, into a copy it can. Tries pdftk, which keeps
+     * the content as it is, then Ghostscript. Returns the copy's path, or
+     * null when neither tool is installed or works.
+     */
+    private static function rewritePdf(string $pdfFile): ?string
+    {
+        $output = tempnam(sys_get_temp_dir(), 'design') . '.pdf';
+        $commands = [];
+        if ($pdftk = self::findPdftk()) {
+            $commands[] = escapeshellcmd($pdftk) . ' ' . escapeshellarg($pdfFile) . ' output ' . escapeshellarg($output);
+        }
+        $gs = trim(shell_exec('command -v gs 2>/dev/null') ?? '');
+        if ($gs !== '') {
+            $commands[] = escapeshellcmd($gs) . ' -q -dNOPAUSE -dBATCH -dSAFER -sDEVICE=pdfwrite -dCompatibilityLevel=1.4 -sOutputFile=' . escapeshellarg($output) . ' ' . escapeshellarg($pdfFile);
+        }
+        foreach ($commands as $cmd) {
+            @unlink($output);
+            exec($cmd . ' 2>&1', $out, $code);
+            if ($code === 0 && is_file($output) && self::pageSize($output) !== null) {
+                return $output;
+            }
+        }
+        @unlink($output);
+        return null;
+    }
+
+    /**
+     * Save an uploaded design. A replaced design keeps its layout, so the
+     * admin only adjusts the boxes. A new one gets an empty layout, which
+     * marks it as a design that needs its details placed.
+     */
+    private function saveDesign(Application_Model_DbTable_CertificateTemplates $certificateDb, string $scheme, string $type, array $file, array $result): array
+    {
+        $saveResult = $certificateDb->saveTemplateFile($scheme, $type, $file, []);
+        if (!$saveResult['success']) {
+            $result['message'] = $saveResult['message'] ?? 'Failed to save template';
+            return $result;
+        }
+        $layout = $certificateDb->getLayout($scheme, $type);
+        if ($layout === null) {
+            $layout = ['version' => 1, 'elements' => []];
+            $certificateDb->saveLayout($scheme, $type, $layout);
+        }
+        $this->layoutCache = [];
+        $result['success'] = true;
+        $result['needsLayout'] = !self::layoutHasName($layout);
+        $result['design'] = true;
+        $result['message'] = 'Design uploaded.';
+        $result['filename'] = $saveResult['filename'] ?? '';
         return $result;
     }
 }

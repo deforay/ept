@@ -415,22 +415,31 @@
 		}
 		var $list = $('<ul/>');
 		$.each(schemes, function (i, scheme) {
-			var status = templateStatus[scheme] || { name: scheme, excellence: false, participation: false };
+			var status = templateStatus[scheme] || { name: scheme, excellence: 'missing', participation: 'missing' };
 			var missing = [];
-			if (!status.excellence) {
-				missing.push("<?= $this->jsTranslate("Excellence"); ?>");
-			}
-			if (!status.participation) {
-				missing.push("<?= $this->jsTranslate("Participation"); ?>");
-			}
+			var unplaced = [];
+			$.each({ excellence: "<?= $this->jsTranslate("Excellence"); ?>", participation: "<?= $this->jsTranslate("Participation"); ?>" }, function (type, label) {
+				if (status[type] === 'missing') {
+					missing.push(label);
+				} else if (status[type] === 'needs_layout') {
+					unplaced.push(label);
+				}
+			});
 			var $item = $('<li/>');
-			if (missing.length) {
+			if (missing.length || unplaced.length) {
 				templatesMissing = true;
+				var problems = [];
+				if (missing.length) {
+					problems.push("<?= $this->jsTranslate("no %s template."); ?>".replace('%s', missing.join(' / ')));
+				}
+				if (unplaced.length) {
+					problems.push("<?= $this->jsTranslate("the %s design needs its details placed."); ?>".replace('%s', unplaced.join(' / ')));
+				}
 				$item.addClass('is-missing')
 					.append('<i class="icon-remove"></i> ')
-					.append($('<span/>').text(status.name + ": " + "<?= $this->jsTranslate("no %s template."); ?>".replace('%s', missing.join(' / '))))
+					.append($('<span/>').text(status.name + ": " + problems.join(' ')))
 					.append(' ')
-					.append($('<a target="_blank" rel="noopener"/>').attr('href', templatesUrl + '#scheme-' + encodeURIComponent(scheme)).text("<?= $this->jsTranslate("Upload it"); ?>"));
+					.append($('<a target="_blank" rel="noopener"/>').attr('href', templatesUrl + '#scheme-' + encodeURIComponent(scheme)).text("<?= $this->jsTranslate("Fix it"); ?>"));
 			} else {
 				$item.addClass('is-ok')
 					.append('<i class="icon-ok"></i> ')
@@ -440,7 +449,7 @@
 		});
 		$box.append($('<strong/>').text("<?= $this->jsTranslate("Certificate templates"); ?>")).append($list);
 		if (templatesMissing) {
-			$box.append($('<div class="an-hint"/>').text("<?= $this->jsTranslate("Certificates need both templates for each scheme. Upload the missing templates, then reload this page."); ?>"));
+			$box.append($('<div class="an-hint"/>').text("<?= $this->jsTranslate("Certificates need both templates for each scheme, with the participant name placed. Fix the templates, then reload this page."); ?>"));
 		}
 	}
 

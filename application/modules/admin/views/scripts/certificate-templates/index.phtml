@@ -5,6 +5,8 @@ $uploadUrl = $this->url(array('module' => 'admin', 'controller' => 'certificate-
 $removeUrl = $this->url(array('module' => 'admin', 'controller' => 'certificate-templates', 'action' => 'remove'), 'default', true);
 $previewUrl = $this->url(array('module' => 'admin', 'controller' => 'certificate-templates', 'action' => 'preview'), 'default', true);
 $batchesUrl = $this->url(array('module' => 'admin', 'controller' => 'certificate-batches'), 'default', true);
+$designUrl = $this->url(array('module' => 'admin', 'controller' => 'certificate-templates', 'action' => 'design'), 'default', true);
+$templateService = new Application_Service_CertificateTemplates();
 $templateDir = SCHEDULED_JOBS_FOLDER . DIRECTORY_SEPARATOR . 'certificate-templates' . DIRECTORY_SEPARATOR;
 
 // Every field name and alias ePT fills, to mark the fields it ignores.
@@ -43,9 +45,12 @@ foreach ($this->schemes as $scheme) {
             $file = is_file($templateDir . $schemeType . $def['suffix']) ? $schemeType . $def['suffix'] : '';
         }
         $fields = !empty($ct[$schemeType][$def['fields']]) ? (array) Pt_Commons_JsonUtility::safeDecode($ct[$schemeType][$def['fields']]) : [];
-        $unknown = array_values(array_filter($fields, fn ($f) => !isset($knownFields[strtolower((string) $f)])));
-        $slots[$type] = ['file' => $file, 'fields' => $fields, 'unknown' => $unknown];
-        if ($file !== '') {
+        $isDesign = $file !== '' && $templateService->getLayout($schemeType, $type) !== null;
+        // A design prints its details from the layout, so its PDF fields do not matter.
+        $unknown = $isDesign ? [] : array_values(array_filter($fields, fn ($f) => !isset($knownFields[strtolower((string) $f)])));
+        $state = $file === '' ? 'missing' : $templateService->templateState($schemeType, $type);
+        $slots[$type] = ['file' => $file, 'fields' => $fields, 'unknown' => $unknown, 'design' => $isDesign, 'state' => $state];
+        if ($state === 'ready') {
             $uploaded++;
         }
     }
@@ -296,7 +301,7 @@ $total = count($rows) * count($types);
         <h2><?= $this->htmlTranslate("Certificate Templates"); ?></h2>
         <div class="data-list-actions">
             <a href="javascript:void(0);" data-help-open="1" data-help-guide="make-a-certificate-template" class="btn btn-default btn-sm">
-                <i class="icon-question-sign"></i> <?= $this->htmlTranslate("How to make a template"); ?>
+                <i class="icon-question-sign"></i> <?= $this->htmlTranslate("How to set up a template"); ?>
             </a>
             <a href="<?= $batchesUrl; ?>" class="btn btn-default btn-sm">
                 <i class="icon-list-alt"></i> <?= $this->htmlTranslate("Certificate Batches"); ?>
@@ -304,15 +309,15 @@ $total = count($rows) * count($types);
         </div>
     </div>
     <div class="data-list-body">
-        <p class="ct-intro"><?= $this->htmlTranslate("Annual certificates print from these templates. Each scheme needs an Excellence template and a Participation template. A scheme without them gets no certificates."); ?></p>
+        <p class="ct-intro"><?= $this->htmlTranslate("Annual certificates print from these templates. Each scheme needs an Excellence template and a Participation template. Upload your certificate design as a PDF or an image, then place the participant details on it. In Microsoft Word, choose File > Save As > PDF."); ?></p>
 
         <div class="ct-summary">
             <div class="ct-meter" aria-hidden="true"><span style="width:<?= $total ? round($uploaded * 100 / $total) : 0; ?>%"></span></div>
-            <span><?= sprintf($this->htmlTranslate("%d of %d templates uploaded"), $uploaded, $total); ?></span>
+            <span><?= sprintf($this->htmlTranslate("%d of %d templates ready"), $uploaded, $total); ?></span>
         </div>
 
         <details class="ct-fields">
-            <summary><?= $this->htmlTranslate("Fields ePT fills"); ?></summary>
+            <summary><?= $this->htmlTranslate("Field names for PDF forms"); ?></summary>
             <table class="table table-condensed">
                 <tbody>
                     <?php foreach (Application_Service_CertificateTemplates::FIELDS as $field => $aliases): ?>
@@ -343,18 +348,23 @@ $total = count($rows) * count($types);
                             <div class="ct-slot-head">
                                 <?php if ($slot['file'] === ''): ?>
                                     <span class="ct-badge is-missing"><i class="icon-minus"></i> <?= $this->htmlTranslate("Missing"); ?></span>
+                                <?php elseif ($slot['state'] === 'needs_layout'): ?>
+                                    <span class="ct-badge is-check"><i class="icon-hand-right"></i> <?= $this->htmlTranslate("Needs details"); ?></span>
                                 <?php elseif (!empty($slot['unknown'])): ?>
                                     <span class="ct-badge is-check"><i class="icon-warning-sign"></i> <?= $this->htmlTranslate("Check fields"); ?></span>
                                 <?php else: ?>
                                     <span class="ct-badge is-ready"><i class="icon-ok"></i> <?= $this->htmlTranslate("Ready"); ?></span>
                                 <?php endif; ?>
                                 <?php if ($slot['file'] !== ''): ?>
-                                    <span class="ct-file"><?= $this->escape($slot['file']); ?></span>
+                                    <span class="ct-file"><?= $this->escape($slot['file']); ?> · <?= $slot['design'] ? $this->htmlTranslate("design") : $this->htmlTranslate("PDF form"); ?></span>
                                 <?php endif; ?>
                             </div>
                             <div class="ct-actions">
+                                <?php if ($slot['design']): ?>
+                                    <a href="<?= $designUrl . $query; ?>" class="btn btn-xs<?= $slot['state'] === 'needs_layout' ? ' is-main' : ''; ?>"><i class="icon-move"></i> <?= $this->htmlTranslate("Place details"); ?></a>
+                                <?php endif; ?>
                                 <?php if ($slot['file'] !== ''): ?>
-                                    <a href="<?= $previewUrl . $query; ?>" target="_blank" class="btn btn-xs is-main" title="<?= $this->htmlTranslate("Fill the template with a real participant's details"); ?>"><?= $this->htmlTranslate("Preview"); ?></a>
+                                    <a href="<?= $previewUrl . $query; ?>" target="_blank" class="btn btn-xs<?= $slot['state'] === 'ready' ? ' is-main' : ''; ?>" title="<?= $this->htmlTranslate("Fill the template with a real participant's details"); ?>"><?= $this->htmlTranslate("Preview"); ?></a>
                                     <a href="<?= $downloadUrl . $query; ?>" target="_blank" class="btn btn-xs" title="<?= $this->htmlTranslate("Open the blank template"); ?>"><?= $this->htmlTranslate("View"); ?></a>
                                     <button type="button" class="btn btn-xs btn-upload-trigger" data-target="<?= $this->escape($slotId); ?>"><?= $this->htmlTranslate("Replace"); ?></button>
                                     <button type="button" class="btn btn-xs is-remove btn-remove" data-scheme="<?= $this->escape($row['type']); ?>" data-type="<?= $type; ?>" title="<?= $this->htmlTranslate("Remove template"); ?>"><i class="icon-trash"></i></button>
@@ -370,8 +380,8 @@ $total = count($rows) * count($types);
                             <?php endif; ?>
                             <div class="upload-container" id="<?= $this->escape($slotId); ?>" style="display: none;">
                                 <div class="upload-zone" data-scheme="<?= $this->escape($row['type']); ?>" data-type="<?= $type; ?>">
-                                    <i class="icon-upload"></i> <?= $this->htmlTranslate("Drop the PDF here, or click to choose it"); ?>
-                                    <input type="file" accept=".pdf,application/pdf" />
+                                    <i class="icon-upload"></i> <?= $this->htmlTranslate("Drop the design here (PDF, PNG or JPG), or click to choose it"); ?>
+                                    <input type="file" accept=".pdf,.png,.jpg,.jpeg,application/pdf,image/png,image/jpeg" />
                                 </div>
                                 <div class="upload-progress">
                                     <div class="progress">
@@ -394,6 +404,7 @@ $(document).ready(function() {
     var uploadUrl = '<?= $uploadUrl; ?>';
     var removeUrl = '<?= $removeUrl; ?>';
     var previewUrl = '<?= $previewUrl; ?>';
+    var designUrl = '<?= $designUrl; ?>';
 
     // Highlight a scheme's row when the page is reached from a link such as
     // /admin/certificate-templates#scheme-vl
@@ -438,8 +449,8 @@ $(document).ready(function() {
         var progressContainer = container.find('.upload-progress');
         var resultContainer = container.find('.validation-result');
 
-        if (file.type !== 'application/pdf' && !file.name.toLowerCase().endsWith('.pdf')) {
-            showResult(resultContainer, false, '<?= $this->jsTranslate("Please upload a PDF file"); ?>');
+        if (!/\.(pdf|png|jpe?g)$/i.test(file.name)) {
+            showResult(resultContainer, false, '<?= $this->jsTranslate("Upload the design as a PDF, PNG or JPG file."); ?>');
             return;
         }
 
@@ -471,6 +482,19 @@ $(document).ready(function() {
                 progressContainer.hide();
                 if (!response.success) {
                     showResult(resultContainer, false, response.message);
+                    return;
+                }
+                var designLink = designUrl + '?scheme=' + encodeURIComponent(scheme) + '&type=' + encodeURIComponent(type);
+                // A new design goes straight to the designer to place its details.
+                if (response.needsLayout) {
+                    window.location = designLink;
+                    return;
+                }
+                if (response.design) {
+                    resultContainer.removeClass('error').addClass('success').empty().append(
+                        $('<div/>').append($('<strong/>').text("<?= $this->jsTranslate("Design replaced. Check that the details still sit in the right places."); ?>")),
+                        $('<div style="margin-top:8px;"/>').append($('<a class="btn btn-primary btn-xs"/>').attr('href', designLink).text("<?= $this->jsTranslate("Place details"); ?>"))
+                    ).show();
                     return;
                 }
                 var $msg = $('<div/>').append($('<strong/>').text("<?= $this->jsTranslate("Template saved."); ?>"));
