@@ -191,7 +191,7 @@
 					<label for="certificateName"><?= $this->htmlTranslate("Certificate name"); ?></label>
 					<input type="text" class="form-control input-sm" name="certificateName" id="certificateName"
 						placeholder="<?= $this->htmlTranslate("Enter certificate name"); ?>"
-						title="<?= $this->htmlTranslate("Please enter certificate name to filter"); ?>" />
+						title="<?= $this->htmlTranslate("Letters, numbers and hyphens only"); ?>" />
 				</div>
 				<div>
 					<a href="javascript:void(0);" onclick="genarateCertificate(this);" class="btn btn-info btn-sm certificate-anchor">
@@ -378,6 +378,10 @@
 			alert("<?= $this->jsTranslate("Please enter the certificate name to proceed"); ?>");
 			return;
 		}
+		if (!/^[a-zA-Z0-9-]+$/.test(certificateName)) {
+			alert("<?= $this->jsTranslate("The certificate name can only contain letters, numbers and hyphens."); ?>");
+			return;
+		}
 		var params = annualParams();
 		params.certificateName = certificateName;
 		params.format = 'html';
@@ -433,9 +437,9 @@
 			}
 			switch (response.status) {
 				case 'pending':
-				case 'processing':
-					$('#progressMessage').text(response.status === 'processing'
-						? "<?= $this->jsTranslate("Processing certificates..."); ?>"
+				case 'generating':
+					$('#progressMessage').text(response.status === 'generating'
+						? "<?= $this->jsTranslate("Generating certificates..."); ?>"
 						: "<?= $this->jsTranslate("Waiting to start..."); ?>");
 					break;
 				case 'generated':
@@ -448,9 +452,19 @@
 					break;
 				case 'approved':
 				case 'distributing':
+					// Keep polling until the distribution job finishes.
+					showDistributionStatus(response.status);
+					break;
 				case 'distributed':
 					stopStatusPolling();
-					showDistributionStatus(response.status);
+					showDistributionStatus(response.status, response.error_message);
+					break;
+				case 'cancelled':
+				case 'rejected':
+					stopStatusPolling();
+					showCertificateError(response.status === 'cancelled'
+						? "<?= $this->jsTranslate("This batch was cancelled."); ?>"
+						: "<?= $this->jsTranslate("This batch was rejected. Its certificates are not distributed."); ?>");
 					break;
 			}
 		}).fail(function () {
@@ -474,22 +488,22 @@
 		$('#participationCount').text(data.participation_count);
 		$('#skippedCount').text(data.skipped_count);
 		if (data.download_url) {
-			$('#downloadZipBtn').attr('href', data.download_url).show();
+			$('#downloadZipBtn').attr('href', "<?= $this->baseUrl(); ?>" + data.download_url).show();
 		} else {
 			$('#downloadZipBtn').hide();
 		}
 	}
 
-	function showDistributionStatus(status) {
+	function showDistributionStatus(status, problem) {
 		var messages = {
-			approved: "<?= $this->jsTranslate("Certificates approved! Distribution has been scheduled and will begin shortly."); ?>",
+			approved: "<?= $this->jsTranslate("Certificates approved. Distribution is scheduled and starts within a minute."); ?>",
 			distributing: "<?= $this->jsTranslate("Certificates are being distributed..."); ?>",
-			distributed: "<?= $this->jsTranslate("Certificates have been successfully distributed!"); ?>"
+			distributed: "<?= $this->jsTranslate("Certificates are distributed. Participants can download them from their Certificates page."); ?>"
 		};
 		resetCertificateUI();
 		$('#certificateProgressSection').show();
 		$('#certificateDistributionSection').show();
-		$('#distributionMessage').text(messages[status] || messages.approved);
+		$('#distributionMessage').text((messages[status] || messages.approved) + (problem ? ' ' + problem : ''));
 	}
 
 	function approveCertificates() {
@@ -497,7 +511,7 @@
 			alert("<?= $this->jsTranslate("No batch selected"); ?>");
 			return;
 		}
-		if (!confirm("<?= $this->jsTranslate("Are you sure you want to approve and distribute these certificates?"); ?>")) {
+		if (!confirm("<?= $this->jsTranslate("Approve these certificates? Each participant can then download theirs from the Certificates page. No email is sent."); ?>")) {
 			return;
 		}
 		$.blockUI();
@@ -508,6 +522,7 @@
 			$.unblockUI();
 			if (response.success) {
 				showDistributionStatus('approved');
+				startStatusPolling();
 			} else {
 				alert(response.message || "<?= $this->jsTranslate("Failed to approve certificates. Please try again."); ?>");
 			}

@@ -64,8 +64,9 @@ Branding, behaviour, and defaults for the whole app.
 - **Footer Text** / **Date Format** — global footer line and the
   date format used everywhere (for example, `d-M-Y`,
   `MM/DD/YYYY`).
-- **Certificate Email** — when *Yes*, completion certificates
-  are emailed to participants.
+- **Certificate Email**: the addresses that get a notice when a
+  certificate batch is generated and ready for approval. Separate
+  several addresses with commas. Participants are not emailed.
 
 ## Participant Settings
 

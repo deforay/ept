@@ -86,7 +86,11 @@ if (!$isWorker) {
 	$certificateBatchesModel = new Application_Model_DbTable_CertificateBatches();
 
 	if ($batchId) {
-		// Existing batch - just update status
+		// An admin can cancel a batch while its job waits in the queue.
+		if (($certificateBatchesModel->getBatch($batchId)['status'] ?? '') === 'cancelled') {
+			echo "Batch #{$batchId} was cancelled. Nothing to generate.\n";
+			exit(0);
+		}
 		$certificateBatchesModel->updateStatus($batchId, 'generating');
 	} else {
 		// No batch provided - auto-create one for tracking
@@ -122,21 +126,21 @@ if (empty($shipmentsToGenerate)) {
 
 /* ---------- Common helpers ---------- */
 
-function sendNotification($emailConfig, $shipmentsList, ?string $downloadUrl = null)
+function sendNotification(?string $recipients, array $shipmentsList, string $batchesUrl)
 {
-	if (!empty($emailConfig) && !empty($shipmentsList) && $emailConfig->status == "yes" && !empty($emailConfig->mails)) {
-		$common = new Application_Service_Common();
-		$emailSubject = "ePT | Certificates Generated";
-		$emailContent = "Certificates for Shipment " . implode(", ", $shipmentsList) . " have been generated.";
-
-		if ($downloadUrl) {
-			$emailContent .= "<br><br>Download link: <a href=\"$downloadUrl\">$downloadUrl</a>";
-		}
-
-		$emailContent .= "<br><br><br><small>This is a system generated email</small>";
-
-		$common->insertTempMail($emailConfig->mails, null, null, $emailSubject, $emailContent);
+	// global_config.certificates holds the comma-separated addresses set as
+	// "Certificate Email" in Configure > Global Settings.
+	$recipients = trim((string) $recipients);
+	if ($recipients === '' || empty($shipmentsList)) {
+		return;
 	}
+	$common = new Application_Service_Common();
+	$emailSubject = "ePT | Certificates Generated";
+	$emailContent = "Certificates for Shipment " . htmlspecialchars(implode(", ", $shipmentsList)) . " have been generated.";
+	$emailContent .= "<br><br>Review and approve them on the Certificate Batches page: <a href=\"$batchesUrl\">$batchesUrl</a>";
+	$emailContent .= "<br><br><br><small>This is a system generated email</small>";
+
+	$common->insertTempMail($recipients, null, null, $emailSubject, $emailContent);
 }
 
 
@@ -379,80 +383,39 @@ function docxToPdf(string $inDocx, string $outPdf, int $maxRetries = 2): ?string
 }
 
 /* ---------- Setup ---------- */
-$generalModel = new Pt_Commons_General();
-$certificatePaths = [];
-$folderPath = TEMP_UPLOAD_PATH . "/certificates/$certificateName";
+// Each batch has its own folder outside the public web root. A reused batch
+// name cannot overwrite an earlier batch, and the clean-up of public/temporary
+// cannot delete a batch that is waiting for approval.
+$folderPath = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'certificate-batches' . DIRECTORY_SEPARATOR . (int) $batchId;
 if (!$isWorker) {
 	Pt_Commons_General::rmdirRecursive($folderPath);
 }
-$certificatePaths[] = $excellenceCertPath = "$folderPath/excellence";
-$certificatePaths[] = $participationCertPath = "$folderPath/participation";
-foreach ($certificatePaths as $p)
+$excellenceCertPath = "$folderPath/excellence";
+$participationCertPath = "$folderPath/participation";
+foreach ([$excellenceCertPath, $participationCertPath] as $p)
 	if (!is_dir($p))
 		@mkdir($p, 0777, true);
 
-/* ---------- DB + business logic (unchanged) ---------- */
 $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
-$participantsDb = new Application_Model_DbTable_Participants();
-$dataManagerDb = new Application_Model_DbTable_DataManagers();
 $schemeService = new Application_Service_Schemes();
 $vlModel = new Application_Model_Vl();
 $vlAssayArray = $vlModel->getVlAssay();
 $eidAssayArray = $schemeService->getEidExtractionAssay();
 
-$certificates = Application_Service_Common::getConfig('certificates');
+$certificateRecipients = Application_Service_Common::getConfig('certificates');
 
-/* ---------- Template map ---------- */
+/* ---------- Templates ---------- */
 
-$GLOBALS['certificateTemplates'] = [
-	'excellence' => [
-		'dts' => [
-			'pdf' => SCHEDULED_JOBS_FOLDER . "/certificate-templates/dts-e.pdf",
-			'docx' => SCHEDULED_JOBS_FOLDER . "/certificate-templates/dts-e.docx",
-		],
-		'eid' => [
-			'pdf' => SCHEDULED_JOBS_FOLDER . "/certificate-templates/eid-e.pdf",
-			'docx' => SCHEDULED_JOBS_FOLDER . "/certificate-templates/eid-e.docx",
-		],
-		'vl' => [
-			'pdf' => SCHEDULED_JOBS_FOLDER . "/certificate-templates/vl-e.pdf",
-			'docx' => SCHEDULED_JOBS_FOLDER . "/certificate-templates/vl-e.docx",
-		],
-	],
-	'participation' => [
-		'dts' => [
-			'pdf' => SCHEDULED_JOBS_FOLDER . "/certificate-templates/dts-p.pdf",
-			'docx' => SCHEDULED_JOBS_FOLDER . "/certificate-templates/dts-p.docx",
-		],
-		'eid' => [
-			'pdf' => SCHEDULED_JOBS_FOLDER . "/certificate-templates/eid-p.pdf",
-			'docx' => SCHEDULED_JOBS_FOLDER . "/certificate-templates/eid-p.docx",
-		],
-		'vl' => [
-			'pdf' => SCHEDULED_JOBS_FOLDER . "/certificate-templates/vl-p.pdf",
-			'docx' => SCHEDULED_JOBS_FOLDER . "/certificate-templates/vl-p.docx",
-		],
-	],
-];
-
-/* ---------- Template resolver that supports both modes ---------- */
-
+// Configure > Certificate Templates saves each scheme's templates as
+// {scheme}-e.pdf (excellence) and {scheme}-p.pdf (participation).
+function certificateTemplatePath(string $shipmentType, string $certificateType, string $mode): string
+{
+	$suffix = $certificateType === 'excellence' ? 'e' : 'p';
+	return SCHEDULED_JOBS_FOLDER . "/certificate-templates/{$shipmentType}-{$suffix}.{$mode}";
+}
 function generateCertificate(string $shipmentType, string $certificateType, array $fields, string $outputFileBase, string $mode): bool
 {
-	$templates = $GLOBALS['certificateTemplates'];
-
-	$t = $templates[$certificateType][$shipmentType] ?? null;
-	if (!$t) {
-		echo "WARNING: No template configured for $certificateType - $shipmentType. Skipping.\n";
-		return false;
-	}
-
-	$tpl = $t[$mode] ?? '';
-
-	if (empty($tpl)) {
-		echo "WARNING: No $mode template path defined for $certificateType - $shipmentType. Skipping.\n";
-		return false;
-	}
+	$tpl = certificateTemplatePath($shipmentType, $certificateType, $mode);
 
 	if (!is_file($tpl)) {
 		echo "WARNING: Template file not found: $tpl. Skipping.\n";
@@ -484,7 +447,7 @@ function generateCertificate(string $shipmentType, string $certificateType, arra
 
 	throw new Exception("Unknown template mode: $mode");
 }
-function createZipAndGetDownloadUrl(string $folderPath, string $certificateName, string $urlToTempFolder, string $mode = 'pdf'): ?string
+function createCertificatesZip(string $folderPath, string $certificateName, string $mode = 'pdf'): ?string
 {
 	$zipFileName = "certificates-{$certificateName}-" . date('Y-m-d-H-i-s') . ".zip";
 	$zipPath = $folderPath . DIRECTORY_SEPARATOR . $zipFileName;
@@ -534,7 +497,7 @@ These PDF certificates are ready to use - no conversion needed.
 		$zip->close();
 
 		if (file_exists($zipPath)) {
-			return $urlToTempFolder . '/' . $zipFileName;
+			return $zipPath;
 		}
 		return null;
 	}
@@ -771,7 +734,7 @@ TROUBLESHOOTING:
 	$zip->close();
 
 	if (file_exists($zipPath)) {
-		return $urlToTempFolder . '/' . $zipFileName;
+		return $zipPath;
 	}
 
 	return null;
@@ -781,14 +744,12 @@ TROUBLESHOOTING:
 try {
 	$db = Zend_Db::factory($conf->resources->db);
 	$domain = rtrim($conf->domain, "/");
-	$urlToTempFolder = "$domain/temporary/certificates/$certificateName";
 	Zend_Db_Table::setDefaultAdapter($db);
-
-	$output = [];
 
 	$query = $db->select()->from(['s' => 'shipment'], ['s.shipment_id', 's.shipment_code', 's.scheme_type', 's.shipment_date',])
 		->where("shipment_id IN (?)", array_map('trim', explode(",", (string) $shipmentsToGenerate)))
-		->order("s.scheme_type");
+		->order("s.scheme_type")
+		->order("s.shipment_date");
 	$shipmentResult = $db->fetchAll($query);
 
 	$shipmentIdArray = [];
@@ -802,64 +763,89 @@ try {
 		array_merge(...array_values($shipmentCodeArray))
 	);
 
-	$sQuery = $db->select()->from(['spm' => 'shipment_participant_map'], ['spm.map_id', 'spm.attributes', 'spm.shipment_test_report_date', 'spm.shipment_id', 'spm.participant_id', 'spm.shipment_score', 'spm.documentation_score', 'spm.final_result'])
-		->join(['s' => 'shipment'], 's.shipment_id=spm.shipment_id', ['shipment_code', 'scheme_type', 'response_deadline', 'shipment_date'])
-		->join(['p' => 'participant'], 'p.participant_id=spm.participant_id', ['unique_identifier', 'first_name', 'last_name', 'email', 'city', 'state', 'address', 'country', 'institute_name'])
-		->where("spm.final_result = 1 OR spm.final_result = 2")
-		// ->where("spm.is_excluded NOT LIKE 'yes'")
+	// The same responses, name and country the review Excel shows
+	// (Application_Service_Reports::getAnnualReport).
+	$sQuery = $db->select()->from(['spm' => 'shipment_participant_map'], ['spm.attributes', 'spm.shipment_test_report_date', 'spm.final_result'])
+		->join(['s' => 'shipment'], 's.shipment_id=spm.shipment_id', ['shipment_code', 'scheme_type', 'shipment_date'])
+		->join(['p' => 'participant'], 'p.participant_id=spm.participant_id', [
+			'unique_identifier',
+			'participantName' => new Zend_Db_Expr(Application_Model_DbTable_Participants::participantNameExpr('p')),
+			'city',
+		])
+		->joinLeft(['c' => 'countries'], 'c.id=p.country', ['country_name' => 'c.iso_name'])
+		->where("spm.shipment_id IN (?)", $shipmentIdArray)
+		->where(Application_Service_Reports::ANNUAL_RESULT_FILTER)
 		->order("unique_identifier ASC")
-		->order("scheme_type ASC");
+		->order("scheme_type ASC")
+		->order("shipment_date ASC");
 
-	$sQuery->where("spm.shipment_id IN (?)", $shipmentIdArray);
-
-
-	$shipmentParticipantResult = $db->fetchAll($sQuery);
 	$participants = [];
-
-	foreach ($shipmentParticipantResult as $shipment) {
-
-		$participantName = Pt_Commons_MiscUtility::toUtf8([
-			'first_name' => $shipment['first_name'] ?? '',
-			'last_name' => $shipment['last_name'] ?? '',
-		]);
-
-		$fullNameParts = array_filter($participantName); // remove empty strings
-		$participants[$shipment['unique_identifier']]['labName'] = implode(' ', $fullNameParts);
-		$participants[$shipment['unique_identifier']]['city'] = $shipment['city'];
-		$participants[$shipment['unique_identifier']]['country'] = $shipment['country'];
-		$participants[$shipment['unique_identifier']]['shipment_year'] = date('Y', strtotime($shipment['shipment_date']));
-		//$participants[$shipment['unique_identifier']]['finalResult']=$shipment['final_result'];
-		$participants[$shipment['unique_identifier']][$shipment['scheme_type']][$shipment['shipment_code']]['score'] = (float) ($shipment['shipment_score'] + $shipment['documentation_score']);
-		$participants[$shipment['unique_identifier']][$shipment['scheme_type']][$shipment['shipment_code']]['result'] = $shipment['final_result'];
-		$participants[$shipment['unique_identifier']][$shipment['scheme_type']][$shipment['shipment_code']]['response_deadline'] = $shipment['response_deadline'];
-		$participants[$shipment['unique_identifier']][$shipment['scheme_type']][$shipment['shipment_code']]['shipment_test_report_date'] = $shipment['shipment_test_report_date'];
-		$participants[$shipment['unique_identifier']]['attribs'] = Pt_Commons_JsonUtility::safeDecode($shipment['attributes']);
-		//$participants[$shipment['unique_identifier']][$shipment['shipment_code']]=$shipment['shipment_score'];
-
+	foreach ($db->fetchAll($sQuery) as $row) {
+		$uid = $row['unique_identifier'];
+		$scheme = $row['scheme_type'];
+		$participants[$uid]['name'] = Pt_Commons_MiscUtility::toUtf8((string) $row['participantName']);
+		$participants[$uid]['city'] = $row['city'];
+		$participants[$uid]['country'] = $row['country_name'] ?? '';
+		$participants[$uid]['schemes'][$scheme]['entries'][$row['shipment_code']] = [
+			'result' => $row['final_result'],
+			'shipment_test_report_date' => $row['shipment_test_report_date'],
+		];
+		// Rows run oldest shipment first, so the assay and the year come
+		// from the participant's latest shipment of the scheme.
+		$participants[$uid]['schemes'][$scheme]['attributes'] = Pt_Commons_JsonUtility::safeDecode($row['attributes']);
+		$participants[$uid]['schemes'][$scheme]['year'] = date('Y', strtotime($row['shipment_date']));
 	}
 
-	// Worker mode: process only the assigned slice of participants
-	if ($isWorker) {
-		$participants = array_slice($participants, $workerOffset, $workerLimit, true);
+	// One plan item per certificate to generate. The main process and every
+	// worker build the same plan from the same ordered query. Each worker
+	// takes a slice, and the main process checks the files against the plan.
+	$plan = [];
+	$skipped = 0;
+	foreach ($participants as $uid => $participant) {
+		foreach ($participant['schemes'] as $scheme => $schemeData) {
+			$certificateType = Application_Service_Reports::annualCertificateType($schemeData['entries'], $shipmentCodeArray[$scheme] ?? []);
+			if ($certificateType === '') {
+				$skipped++;
+				continue;
+			}
+			$assay = Application_Service_Reports::annualReportAssayName($scheme, $schemeData['attributes'], $vlAssayArray, $eidAssayArray);
+			$folder = $certificateType === 'excellence' ? $excellenceCertPath : $participationCertPath;
+			$plan[] = [
+				'uid' => (string) $uid,
+				'scheme' => $scheme,
+				'type' => $certificateType,
+				'base' => $folder . DIRECTORY_SEPARATOR . str_replace('/', '_', (string) $uid) . "-" . strtoupper($scheme) . "-" . $certificateName,
+				'fields' => [
+					'participant_name' => $participant['name'],
+					'participantname' => $participant['name'],
+					'labname' => $participant['name'],
+					'participant' => $participant['name'],
+					'city' => $participant['city'],
+					'country' => $participant['country'],
+					'assay' => $assay,
+					'assayname' => $assay,
+					'shipment_year' => $schemeData['year'],
+					'shipmentyear' => $schemeData['year'],
+				],
+			];
+		}
 	}
 
+	$ext = ($templateMode === 'docx') ? 'docx' : 'pdf';
 	$totalParticipants = count($participants);
+	$totalPlanned = count($plan);
+
+	if ($isWorker) {
+		$plan = array_slice($plan, $workerOffset, $workerLimit);
+	}
 
 	// Pre-check: verify templates exist for all scheme types in this run
 	if (!$isWorker) {
-		$schemeTypes = array_keys($shipmentCodeArray);
 		$templateProblems = [];
-		foreach ($schemeTypes as $scheme) {
+		foreach (array_unique(array_column($plan, 'scheme')) as $scheme) {
 			foreach (['excellence', 'participation'] as $certType) {
-				$t = $GLOBALS['certificateTemplates'][$certType][$scheme] ?? null;
-				if (!$t) {
-					$templateProblems[] = "No template configured for {$certType} - {$scheme}";
-					continue;
-				}
-				$tpl = $t[$templateMode] ?? '';
-				if (empty($tpl)) {
-					$templateProblems[] = "No {$templateMode} template path for {$certType} - {$scheme}";
-				} elseif (!is_file($tpl)) {
+				$tpl = certificateTemplatePath($scheme, $certType, $templateMode);
+				if (!is_file($tpl)) {
 					$templateProblems[] = "Template file not found: {$tpl}";
 				} elseif (!is_readable($tpl)) {
 					$templateProblems[] = "Template file not readable: {$tpl}";
@@ -875,16 +861,16 @@ try {
 		}
 	}
 
-	if (!$isWorker && $procsCount > 1 && $totalParticipants > 1) {
+	if (!$isWorker && $procsCount > 1 && $totalPlanned > 1) {
 		// ---- Parallel mode: spawn worker subprocesses ----
-		echo "\nGenerating certificates using {$procsCount} parallel processes for {$totalParticipants} participants...\n";
+		echo "\nGenerating {$totalPlanned} certificates using {$procsCount} parallel processes...\n";
 
 		$phpBinary = defined('PHP_BINARY') && PHP_BINARY !== '' ? PHP_BINARY : 'php';
-		$batchSize = (int) ceil($totalParticipants / $procsCount);
+		$batchSize = (int) ceil($totalPlanned / $procsCount);
 		$processes = [];
 
-		for ($offset = 0; $offset < $totalParticipants; $offset += $batchSize) {
-			$limit = min($batchSize, $totalParticipants - $offset);
+		for ($offset = 0; $offset < $totalPlanned; $offset += $batchSize) {
+			$limit = min($batchSize, $totalPlanned - $offset);
 			$cmd = [
 				$phpBinary,
 				__FILE__,
@@ -895,6 +881,8 @@ try {
 				$certificateName,
 				'-t',
 				$templateMode,
+				'-b',
+				(string) $batchId,
 				'--offset',
 				(string) $offset,
 				'--limit',
@@ -919,112 +907,23 @@ try {
 				}
 			}
 
-			$ext = ($templateMode === 'docx') ? 'docx' : 'pdf';
 			$genCount = count(glob($excellenceCertPath . "/*.{$ext}") ?: [])
 				+ count(glob($participationCertPath . "/*.{$ext}") ?: []);
-			echo "\r  [{$genCount}] Certificates generated...    ";
+			echo "\r  [{$genCount}/{$totalPlanned}] Certificates generated...    ";
 
 			usleep(250000);
 		}
 		echo "\n";
-
-		// Count final stats from generated files
-		$ext = ($templateMode === 'docx') ? 'docx' : 'pdf';
-		$stats = [
-			'excellence' => count(glob($excellenceCertPath . "/*.{$ext}") ?: []),
-			'participation' => count(glob($participationCertPath . "/*.{$ext}") ?: []),
-			'skipped' => 0,
-			'template_errors' => 0,
-		];
 	} else {
 		// ---- Sequential mode (single process or worker subprocess) ----
-		$stats = ['excellence' => 0, 'participation' => 0, 'skipped' => 0, 'template_errors' => 0];
-		$currentParticipant = 0;
-
-		foreach ($participants as $participantUID => $arrayVal) {
-			$currentParticipant++;
+		$current = 0;
+		$count = count($plan);
+		foreach ($plan as $item) {
+			$current++;
 			if (!$isWorker) {
-				echo "\r[{$currentParticipant}/{$totalParticipants}] Processing for Participant Code : {$participantUID}                    ";
+				echo "\r[{$current}/{$count}] Generating certificate for Participant Code : {$item['uid']}                    ";
 			}
-
-			foreach ($shipmentCodeArray as $shipmentType => $shipmentsList) {
-				if (!isset($arrayVal[$shipmentType]))
-					continue;
-
-				$certificate = true;
-				$participated = true;
-				$assayName = '';
-				$attribs = $arrayVal['attribs'] ?? [];
-
-				foreach ($shipmentsList as $shipmentCode) {
-					// Determine assayName from participant/shipment attributes
-					if ($shipmentType === 'vl' && !empty($attribs['vl_assay'])) {
-						$assayName = $vlAssayArray[$attribs['vl_assay']] ?? '';
-					} elseif ($shipmentType === 'eid' && !empty($attribs['extraction_assay'])) {
-						$assayName = $eidAssayArray[$attribs['extraction_assay']] ?? '';
-					}
-
-					// result/participation checks
-					if (
-						!empty($arrayVal[$shipmentType][$shipmentCode]['result']) &&
-						$arrayVal[$shipmentType][$shipmentCode]['result'] != 3
-					) {
-						if ($arrayVal[$shipmentType][$shipmentCode]['result'] != 1) {
-							$certificate = false;
-						}
-					} else {
-						$certificate = false;
-					}
-
-					if (empty($arrayVal[$shipmentType][$shipmentCode]['shipment_test_report_date'])) {
-						$participated = false;
-					}
-				}
-
-
-				$fields = [
-					'participant_name' => $arrayVal['labName'],
-					'participantname' => $arrayVal['labName'],
-					'labname' => $arrayVal['labName'],
-					'participant' => $arrayVal['labName'],
-					'city' => $arrayVal['city'],
-					'country' => $arrayVal['country'],
-					'assay' => $assayName,
-					'assayname' => $assayName,
-					'shipment_year' => $arrayVal['shipment_year'],
-					'shipmentyear' => $arrayVal['shipment_year'],
-				];
-
-				$attribs = $arrayVal['attribs'] ?? [];
-				if ($shipmentType === 'vl') {
-					if (($attribs['vl_assay'] ?? null) == 6) {
-						$assay = $attribs['other_assay'] ?? 'Other';
-					} else {
-						$assay = (isset($attribs['vl_assay']) && isset($vlAssayArray[$attribs['vl_assay']]))
-							? $vlAssayArray[$attribs['vl_assay']]
-							: ' Other ';
-					}
-					$fields['assay'] = $assay ?? '';
-				}
-
-				if ($certificate && $participated) {
-					$base = $excellenceCertPath . DIRECTORY_SEPARATOR . str_replace('/', '_', $participantUID) . "-" . strtoupper($shipmentType) . "-" . $certificateName;
-					if (generateCertificate($shipmentType, 'excellence', $fields, $base, $templateMode)) {
-						$stats['excellence']++;
-					} else {
-						$stats['template_errors']++;
-					}
-				} elseif ($participated) {
-					$base = $participationCertPath . DIRECTORY_SEPARATOR . str_replace('/', '_', $participantUID) . "-" . strtoupper($shipmentType) . "-" . $certificateName;
-					if (generateCertificate($shipmentType, 'participation', $fields, $base, $templateMode)) {
-						$stats['participation']++;
-					} else {
-						$stats['template_errors']++;
-					}
-				} else {
-					$stats['skipped']++;
-				}
-			}
+			generateCertificate($item['scheme'], $item['type'], $item['fields'], $item['base'], $templateMode);
 		}
 
 		// Workers exit after generating their chunk
@@ -1033,9 +932,30 @@ try {
 		}
 	}
 
+	// Count what was actually written, in both modes, and record which lab
+	// each file belongs to. distribute-certificates.php reads the manifest
+	// instead of guessing the Lab ID from the file name.
+	$stats = ['excellence' => 0, 'participation' => 0, 'skipped' => $skipped, 'template_errors' => 0];
+	$manifest = [];
+	foreach ($plan as $item) {
+		$file = $item['base'] . '.' . $ext;
+		if (is_file($file)) {
+			$stats[$item['type']]++;
+			$manifest[] = [
+				'file' => substr($file, strlen($folderPath) + 1),
+				'unique_identifier' => $item['uid'],
+				'scheme_type' => $item['scheme'],
+				'certificate_type' => $item['type'],
+			];
+		} else {
+			$stats['template_errors']++;
+		}
+	}
+	file_put_contents($folderPath . DIRECTORY_SEPARATOR . 'manifest.json', json_encode($manifest, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
+
 	// Print generation summary
 	$totalCerts = $stats['excellence'] + $stats['participation'];
-	$templateErrors = $stats['template_errors'] ?? 0;
+	$templateErrors = $stats['template_errors'];
 
 	echo "\n\n=== Generation Summary ===\n";
 	echo "Participants matched:       {$totalParticipants}\n";
@@ -1046,8 +966,6 @@ try {
 		echo "Template errors:            {$templateErrors}\n";
 	}
 	echo "Total certificates:         {$totalCerts}\n";
-
-	$downloadUrl = null;
 
 	if ($totalCerts === 0) {
 		echo "\nNo certificates were generated. Skipping ZIP creation.\n";
@@ -1064,15 +982,15 @@ try {
 	} else {
 		// Create ZIP for download (both PDF and DOCX modes)
 		echo "\n=== Creating ZIP file for download... ===\n";
-		$downloadUrl = createZipAndGetDownloadUrl($folderPath, $certificateName, $urlToTempFolder, $templateMode);
+		$zipPath = createCertificatesZip($folderPath, $certificateName, $templateMode);
 
-		if ($downloadUrl) {
+		if ($zipPath) {
 			echo "\nSUCCESS: Certificates packaged successfully!\n";
-			echo "\nDOWNLOAD LINK:\n";
-			echo "$downloadUrl\n\n";
+			echo "ZIP file: $zipPath\n";
+			echo "Download it from Configure > Certificate Batches.\n\n";
 			if ($templateMode === 'docx') {
 				echo "INSTRUCTIONS:\n";
-				echo "1. Download the ZIP file from the link above\n";
+				echo "1. Download the ZIP file from Configure > Certificate Batches\n";
 				echo "2. Extract the ZIP file\n";
 				echo "3. Read the README.txt file for PDF conversion instructions\n";
 				echo "4. Use the included PowerShell script for bulk conversion\n\n";
@@ -1083,45 +1001,48 @@ try {
 		}
 	}
 
-	if (!empty($allShipmentsProcessed) && $totalCerts > 0) {
-		$downloadUrlForNotification = null;
-		if ($templateMode === 'docx' && isset($downloadUrl) && $downloadUrl) {
-			$downloadUrlForNotification = $downloadUrl;
-		}
+	// An admin may have cancelled the batch while it was generating. Keep
+	// the cancellation instead of marking the batch generated.
+	$currentStatus = $certificateBatchesModel->getBatch($batchId)['status'] ?? '';
+	if ($currentStatus === 'cancelled') {
+		echo "\nBatch #{$batchId} was cancelled while generating. Its files are kept but it cannot be approved.\n";
+		exit(0);
+	}
 
+	if (!empty($allShipmentsProcessed) && $totalCerts > 0) {
 		sendNotification(
-			$certificates ?? null,
+			$certificateRecipients,
 			array_unique($allShipmentsProcessed),
-			$downloadUrlForNotification
+			$domain . '/admin/certificate-batches'
 		);
 	}
 
-	// Update batch status
-	if (isset($certificateBatchesModel)) {
-		$batchStatus = $totalCerts > 0 ? 'generated' : 'failed';
-		$errorMessage = null;
-		if ($totalCerts === 0) {
-			if ($templateErrors > 0) {
-				$errorMessage = "No certificates generated. {$templateErrors} template error(s) encountered.";
-			} else {
-				$errorMessage = "No certificates generated. No eligible participants found.";
-				foreach ($shipmentCodeArray as $schemeType => $codes) {
-					if (count($codes) > 1) {
-						$errorMessage .= " Multiple {$schemeType} shipments selected (" . implode(', ', $codes) . ") — participants must have participated in all.";
-					}
+	$batchStatus = $totalCerts > 0 ? 'generated' : 'failed';
+	$errorMessage = null;
+	if ($totalCerts === 0) {
+		if ($templateErrors > 0) {
+			$errorMessage = "No certificates generated. {$templateErrors} template error(s) encountered.";
+		} else {
+			$errorMessage = "No certificates generated. No eligible participants found.";
+			foreach ($shipmentCodeArray as $schemeType => $codes) {
+				if (count($codes) > 1) {
+					$errorMessage .= " Multiple {$schemeType} shipments selected (" . implode(', ', $codes) . "). Participants must have participated in all of them.";
 				}
 			}
 		}
-
-		$certificateBatchesModel->updateStatus($batchId, $batchStatus, [
-			'excellence_count' => $stats['excellence'],
-			'participation_count' => $stats['participation'],
-			'skipped_count' => $stats['skipped'],
-			'download_url' => $downloadUrl,
-			'folder_path' => $folderPath,
-			'error_message' => $errorMessage
-		]);
+	} elseif ($templateErrors > 0) {
+		$errorMessage = "{$templateErrors} certificate(s) could not be generated. Check the certificate templates.";
 	}
+
+	$certificateBatchesModel->updateStatus($batchId, $batchStatus, [
+		'excellence_count' => $stats['excellence'],
+		'participation_count' => $stats['participation'],
+		'skipped_count' => $stats['skipped'],
+		'download_url' => null,
+		'folder_path' => $folderPath,
+		'error_message' => $errorMessage
+	]);
+	exit($totalCerts > 0 ? 0 : 1);
 } catch (Throwable $e) {
 	Pt_Commons_LoggerUtility::logError($e->getMessage(), [
 	    'file'  => $e->getFile(),
@@ -1135,5 +1056,5 @@ try {
 			'error_message' => $e->getMessage()
 		]);
 	}
+	exit(1);
 }
-

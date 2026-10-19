@@ -104,7 +104,7 @@ class Reports_AnnualController extends Zend_Controller_Action
         $response['excellence_count'] = (int) ($batch['excellence_count'] ?? 0);
         $response['participation_count'] = (int) ($batch['participation_count'] ?? 0);
         $response['skipped_count'] = (int) ($batch['skipped_count'] ?? 0);
-        $response['download_url'] = $batch['download_url'] ?? null;
+        $response['download_url'] = Application_Model_DbTable_CertificateBatches::zipDownloadUrl($batch);
         $response['error_message'] = $batch['error_message'] ?? null;
 
         $this->view->assign($response);
@@ -149,29 +149,10 @@ class Reports_AnnualController extends Zend_Controller_Action
             return;
         }
 
-        if ($batch['status'] !== 'generated') {
-            $response['message'] = 'Batch must be in generated status to approve';
-            $this->view->assign($response);
-            return;
-        }
-
-        // Update batch status to approved
         $adminSession = new Zend_Session_Namespace('administrators');
-        $certificateBatchesDb->updateStatus($batchId, 'approved', [
-            'approved_by' => $adminSession->admin_id,
-            'approved_on' => new Zend_Db_Expr('NOW()'),
-        ]);
-
-        // Schedule the distribution job
-        $scheduledJobsDb = new Application_Model_DbTable_ScheduledJobs();
-        $jobId = $scheduledJobsDb->scheduleCertificateDistribution($batchId);
-
-        if ($jobId > 0) {
-            $response['success'] = true;
-            $response['message'] = 'Certificates approved and distribution scheduled';
-        } else {
-            $response['message'] = 'Failed to schedule distribution job';
-        }
+        $error = $certificateBatchesDb->approveBatch($batchId, $adminSession->admin_id);
+        $response['success'] = $error === null;
+        $response['message'] = $error ?? 'Certificates approved and distribution scheduled';
 
         $this->view->assign($response);
     }

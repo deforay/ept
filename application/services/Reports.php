@@ -2253,7 +2253,7 @@ class Application_Service_Reports
             ])
             ->joinLeft(['c' => 'countries'], 'c.id=p.country', ['country_name' => 'c.iso_name'])
             ->where('spm.shipment_id IN (?)', array_column($shipments, 'shipment_id'))
-            ->where("spm.final_result = 1 OR (spm.final_result = 2 AND spm.response_status IN ('responded','late'))")
+            ->where(self::ANNUAL_RESULT_FILTER)
             ->order(['p.unique_identifier ASC', 's.scheme_type ASC', 's.shipment_date ASC']);
 
         $participants = [];
@@ -3198,11 +3198,45 @@ class Application_Service_Reports
         }
     }
 
+    /**
+     * The results that count for the annual report and its certificates.
+     * Older evaluations marked labs that did not respond as failed, so a fail
+     * needs a submitted response. generate-certificates.php uses the same
+     * filter, so the review Excel matches the certificates.
+     */
+    public const ANNUAL_RESULT_FILTER = "spm.final_result = 1 OR (spm.final_result = 2 AND spm.response_status IN ('responded','late'))";
+
+    /**
+     * The certificate a participant earns for one scheme: 'excellence' when
+     * every selected shipment passed, 'participation' when every one has a
+     * submitted response, otherwise ''. $entries maps shipment code to the
+     * response's result and shipment_test_report_date. $codes lists every
+     * selected shipment code of the scheme.
+     */
+    public static function annualCertificateType(array $entries, array $codes): string
+    {
+        $passedAll = true;
+        foreach ($codes as $code) {
+            $entry = $entries[$code] ?? null;
+            if ($entry === null || empty($entry['shipment_test_report_date'])) {
+                return '';
+            }
+            if ((int) $entry['result'] !== 1) {
+                $passedAll = false;
+            }
+        }
+        return $passedAll ? 'excellence' : 'participation';
+    }
+
     /** The VL assay or EID extraction assay of a response, by name. */
-    private function annualReportAssayName(string $shipmentType, $attributes, array $vlAssays, array $eidAssays): string
+    public static function annualReportAssayName(string $shipmentType, $attributes, array $vlAssays, array $eidAssays): string
     {
         $attributes = (array) $attributes;
         if ($shipmentType === 'vl' && !empty($attributes['vl_assay'])) {
+            // Assay 6 is "Other": the lab typed the assay name in other_assay.
+            if ((int) $attributes['vl_assay'] === 6 && !empty($attributes['other_assay'])) {
+                return (string) $attributes['other_assay'];
+            }
             return (string) ($vlAssays[$attributes['vl_assay']] ?? '');
         }
         if ($shipmentType === 'eid' && !empty($attributes['extraction_assay'])) {
@@ -3479,39 +3513,24 @@ class Application_Service_Reports
             $firstSheetRow[] = $participantArray['additional_email'];
             $firstSheetRow[] = $participantArray['scheme_name'];
             foreach ($shipmentCodeArray as $shipmentType => $shipmentsList) {
-                $certificate = true;
-                $participated = true;
                 foreach ($shipmentsList as $shipmentCode) {
                     $entry = $participantArray[$shipmentType][$shipmentCode] ?? null;
                     $firstSheetRow[] = $shipmentCode;
                     if ($entry === null) {
                         // No evaluated response to this shipment.
                         array_push($firstSheetRow, '', '', '-', '', '', '');
-                        $certificate = false;
-                        $participated = false;
                         continue;
                     }
                     $firstSheetRow[] = $entry['number_of_samples'];
-                    $firstSheetRow[] = $this->annualReportAssayName($shipmentType, $entry['attributes'], $vlAssayArray, $eidAssayArray);
+                    $firstSheetRow[] = self::annualReportAssayName($shipmentType, $entry['attributes'], $vlAssayArray, $eidAssayArray);
                     $firstSheetRow[] = $entry['score'];
-                    if ((int) $entry['result'] !== 1) {
-                        $certificate = false;
-                    }
-                    if (empty($entry['shipment_test_report_date'])) {
-                        $participated = false;
-                    }
                     $firstSheetRow[] = $entry['finalResult'];
                     [$warnings, $actions] = $this->annualReportWarnings($entry['failure_reason']);
                     $firstSheetRow[] = $warnings;
                     $firstSheetRow[] = $actions;
                 }
-                if ($certificate && $participated) {
-                    $firstSheetRow[] = 'Excellence';
-                } elseif ($participated) {
-                    $firstSheetRow[] = 'Participation';
-                } else {
-                    $firstSheetRow[] = 'N.A.';
-                }
+                $certificateType = self::annualCertificateType($participantArray[$shipmentType] ?? [], $shipmentsList);
+                $firstSheetRow[] = $certificateType === '' ? 'N.A.' : ucfirst($certificateType);
             }
 
             $output[] = $firstSheetRow;

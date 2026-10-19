@@ -100,7 +100,7 @@ class Admin_CertificateBatchesController extends Zend_Controller_Action
         $response['excellence_count'] = (int) ($batch['excellence_count'] ?? 0);
         $response['participation_count'] = (int) ($batch['participation_count'] ?? 0);
         $response['skipped_count'] = (int) ($batch['skipped_count'] ?? 0);
-        $response['download_url'] = $batch['download_url'] ?? null;
+        $response['download_url'] = Application_Model_DbTable_CertificateBatches::zipDownloadUrl($batch);
         $response['error_message'] = $batch['error_message'] ?? null;
 
         echo json_encode($response);
@@ -148,38 +148,10 @@ class Admin_CertificateBatchesController extends Zend_Controller_Action
             return;
         }
 
-        if ($batch['status'] !== 'generated') {
-            $response['message'] = 'Batch must be in generated status to approve';
-            echo json_encode($response);
-            return;
-        }
-
-        // Update batch status to approved
         $adminSession = new Zend_Session_Namespace('administrators');
-        $certificateBatchesDb->updateStatus($batchId, 'approved', [
-            'approved_by' => $adminSession->admin_id,
-            'approved_on' => new Zend_Db_Expr('NOW()'),
-        ]);
-
-        // Schedule the distribution job
-        $scheduledJobsDb = new Application_Model_DbTable_ScheduledJobs();
-        $jobId = $scheduledJobsDb->scheduleCertificateDistribution($batchId);
-
-        if ($jobId > 0) {
-            $response['success'] = true;
-            $response['message'] = 'Certificates approved and distribution scheduled';
-
-            $batchName = $batch['batch_name'] ?? "#$batchId";
-            $excellenceCount = (int) ($batch['excellence_count'] ?? 0);
-            $participationCount = (int) ($batch['participation_count'] ?? 0);
-            $auditDb = new Application_Model_DbTable_AuditLog();
-            $auditDb->addNewAuditLog(
-                "Approved certificate batch - {$batchName} ({$excellenceCount} excellence, {$participationCount} participation)",
-                'certificate'
-            );
-        } else {
-            $response['message'] = 'Failed to schedule distribution job';
-        }
+        $error = $certificateBatchesDb->approveBatch($batchId, $adminSession->admin_id);
+        $response['success'] = $error === null;
+        $response['message'] = $error ?? 'Certificates approved and distribution scheduled';
 
         echo json_encode($response);
     }

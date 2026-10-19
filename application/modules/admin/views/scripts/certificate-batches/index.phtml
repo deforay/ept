@@ -131,8 +131,10 @@
                 <option value="generating">Generating</option>
                 <option value="generated">Generated</option>
                 <option value="approved">Approved</option>
+                <option value="distributing">Distributing</option>
                 <option value="distributed">Distributed</option>
                 <option value="failed">Failed</option>
+                <option value="rejected">Rejected</option>
                 <option value="cancelled">Cancelled</option>
             </select>
         </td>
@@ -326,6 +328,7 @@
             'generating': { cls: 'batch-status-generating', icon: 'icon-spinner icon-spin', label: '<?= $this->jsTranslate('Generating') ?>' },
             'generated': { cls: 'batch-status-generated', icon: 'icon-ok', label: '<?= $this->jsTranslate('Generated') ?>' },
             'approved': { cls: 'batch-status-approved', icon: 'icon-thumbs-up', label: '<?= $this->jsTranslate('Approved') ?>' },
+            'distributing': { cls: 'batch-status-generating', icon: 'icon-spinner icon-spin', label: '<?= $this->jsTranslate('Distributing') ?>' },
             'distributed': { cls: 'batch-status-distributed', icon: 'icon-envelope', label: '<?= $this->jsTranslate('Distributed') ?>' },
             'failed': { cls: 'batch-status-failed', icon: 'icon-remove', label: '<?= $this->jsTranslate('Failed') ?>' },
             'rejected': { cls: 'batch-status-failed', icon: 'icon-ban-circle', label: '<?= $this->jsTranslate('Rejected') ?>' },
@@ -374,7 +377,7 @@
 
         // Download ZIP button (if download_url exists)
         if (row.download_url) {
-            actions.push('<a href="' + row.download_url + '" class="btn btn-success btn-action" target="_blank" title="<?= $this->jsTranslate("Download ZIP") ?>">' +
+            actions.push('<a href="<?= $this->baseUrl(); ?>' + row.download_url + '" class="btn btn-success btn-action" target="_blank" title="<?= $this->jsTranslate("Download ZIP") ?>">' +
                 '<i class="icon-download"></i> <?= $this->jsTranslate("Download") ?></a>');
         }
 
@@ -410,7 +413,7 @@
     }
 
     function approveBatch(batchId) {
-        if (!confirm('<?= $this->jsTranslate("Are you sure you want to approve this batch and schedule certificate distribution?\n\nThis will send certificates to all participants via email.") ?>')) {
+        if (!confirm('<?= $this->jsTranslate("Are you sure you want to approve this batch and schedule certificate distribution?\n\nEach participant can then download their certificate from the Certificates page. No email is sent.") ?>')) {
             return;
         }
 

@@ -350,9 +350,13 @@ class Application_Model_DbTable_ShipmentParticipantMap extends Zend_Db_Table_Abs
                 'unique_identifier' => new Zend_Db_Expr('MAX(p.unique_identifier)'),
                 'participant_id' => new Zend_Db_Expr('MAX(p.participant_id)'),
             ])
-            ->joinLeft(['cb' => 'certificate_batches'], "FIND_IN_SET(sp.shipment_id, REPLACE(cb.shipment_ids, ' ', '')) > 0", ['batch_name' => new Zend_Db_Expr('MAX(cb.batch_name)')])
+            // Only distributed batches: a rejected, failed or unapproved batch
+            // has no certificate for the participant to download.
+            ->joinLeft(['cb' => 'certificate_batches'], "FIND_IN_SET(sp.shipment_id, REPLACE(cb.shipment_ids, ' ', '')) > 0 AND cb.status = 'distributed'", ['batch_name' => new Zend_Db_Expr('MAX(cb.batch_name)')])
             ->where('sp.participant_id = ?', $pId)
-            ->where("sp.shipment_test_date!='0000-00-00'")
+            // A submitted response, the test generate-certificates.php uses.
+            // Some forms (TB) never fill shipment_test_date.
+            ->where("sp.shipment_test_report_date IS NOT NULL OR (sp.shipment_test_date IS NOT NULL AND sp.shipment_test_date != '0000-00-00')")
             ->where('s.cancelled_at IS NULL')
             ->group('s.scheme_type')
             ->group(new Zend_Db_Expr("COALESCE(CONCAT('batch-', cb.batch_id), YEAR(s.shipment_date))"));

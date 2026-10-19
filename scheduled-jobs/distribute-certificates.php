@@ -6,13 +6,15 @@ $cliOptions = getopt("b:f:");
 $batchId = !empty($cliOptions['b']) ? (int) $cliOptions['b'] : null;
 $folderPath = !empty($cliOptions['f']) ? $cliOptions['f'] : null;
 
-// Default fallback: legacy certificates folder (TEMP_UPLOAD_PATH/certificates)
+// Without a batch or a folder there is nothing approved to distribute. The
+// old default copied every certificate folder, approved or not.
 if (empty($batchId) && empty($folderPath)) {
-    $folderPath = realpath(TEMP_UPLOAD_PATH) . DIRECTORY_SEPARATOR . 'certificates';
-    echo "No parameters specified - using default path: $folderPath\n";
+    echo "Usage: php distribute-certificates.php -b <batch id> | -f <certificate folder>\n";
+    exit(1);
 }
 
 $certificateBatchesModel = new Application_Model_DbTable_CertificateBatches();
+$batch = null;
 
 try {
     $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
@@ -66,74 +68,64 @@ try {
 
     echo "Source folder: $folderPath\n\n";
 
-    $excellenceFolder = $folderPath . DIRECTORY_SEPARATOR . 'excellence';
-    $participationFolder = $folderPath . DIRECTORY_SEPARATOR . 'participation';
-
     $stats = ['distributed' => 0, 'skipped' => 0, 'errors' => 0];
 
-    /**
-     * Process PDF files from a folder and copy them to participant download folders
-     *
-     * @param string $folder The source folder containing PDF files
-     * @param array &$stats Reference to stats array for tracking
-     * @return void
-     */
-    function distributeCertificatesFromFolder($folder, &$stats)
-    {
-        if (!is_dir($folder)) {
-            echo "Folder not found: $folder\n";
-            return;
+    // generate-certificates.php writes manifest.json with the Lab ID of every
+    // file. Lab IDs can contain hyphens, so the file name alone cannot tell
+    // where the Lab ID ends. Folders from before the manifest fall back to
+    // the {uid}-{SCHEME}-{batch name} naming, matched from the right.
+    $entries = [];
+    $manifestFile = $folderPath . DIRECTORY_SEPARATOR . 'manifest.json';
+    if (is_file($manifestFile)) {
+        foreach ((array) json_decode((string) file_get_contents($manifestFile), true) as $entry) {
+            $entries[] = [
+                'path' => $folderPath . DIRECTORY_SEPARATOR . $entry['file'],
+                'uid' => (string) $entry['unique_identifier'],
+            ];
         }
-
-        // Scan for PDF files (also check for DOCX in case they weren't converted)
-        $pdfFiles = glob($folder . DIRECTORY_SEPARATOR . '*.pdf');
-        $docxFiles = glob($folder . DIRECTORY_SEPARATOR . '*.docx');
-        $allFiles = array_merge($pdfFiles, $docxFiles);
-
-        foreach ($allFiles as $file) {
-            $fileName = basename($file);
-
-            // Extract participant UID from filename
-            // Format is typically: {participantCode}_...pdf or {participantCode}-...pdf
-            // The participant code is everything before the first dash or underscore
-            if (preg_match('/^([^_-]+)/', $fileName, $matches)) {
-                $participantUID = $matches[1];
-
-                // Create participant download folder if it doesn't exist
-                $participantFolder = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . $participantUID . DIRECTORY_SEPARATOR . "certificates";
-
-                if (!is_dir($participantFolder)) {
-                    if (!@mkdir($participantFolder, 0777, true)) {
-                        Pt_Commons_LoggerUtility::logError("Failed to create directory: $participantFolder");
-                        $stats['errors']++;
-                        continue;
-                    }
-                }
-
-                // Copy the file to the participant folder
-                $destPath = $participantFolder . DIRECTORY_SEPARATOR . $fileName;
-
-                if (copy($file, $destPath)) {
-                    $stats['distributed']++;
-                    echo "Copied: $fileName -> $participantFolder\n";
+    } else {
+        // Older folders were named after the batch. A batch renamed after
+        // generation keeps the old name in the folder and the file names.
+        $names = array_unique(array_filter([$batch['batch_name'] ?? '', basename(rtrim($folderPath, DIRECTORY_SEPARATOR))]));
+        $suffix = '-(?:' . implode('|', array_map(fn ($n) => preg_quote($n, '/'), $names)) . ')';
+        foreach (['excellence', 'participation'] as $type) {
+            $typeFolder = $folderPath . DIRECTORY_SEPARATOR . $type . DIRECTORY_SEPARATOR;
+            $files = array_merge(glob($typeFolder . '*.pdf') ?: [], glob($typeFolder . '*.docx') ?: []);
+            foreach ($files as $file) {
+                if (preg_match('/^(.+)-[^-]+' . $suffix . '\.(pdf|docx)$/i', basename($file), $matches)) {
+                    $entries[] = ['path' => $file, 'uid' => $matches[1]];
                 } else {
-                    Pt_Commons_LoggerUtility::logError("Failed to copy: $file -> $destPath");
-                    $stats['errors']++;
+                    echo "Skipped (could not extract participant ID): " . basename($file) . "\n";
+                    $stats['skipped']++;
                 }
-            } else {
-                echo "Skipped (could not extract participant ID): $fileName\n";
-                $stats['skipped']++;
             }
         }
     }
 
-    // Process excellence certificates
-    echo "=== Processing Excellence Certificates ===\n";
-    distributeCertificatesFromFolder($excellenceFolder, $stats);
+    foreach ($entries as $entry) {
+        $fileName = basename($entry['path']);
+        if (!is_file($entry['path'])) {
+            Pt_Commons_LoggerUtility::logError("Certificate file missing: {$entry['path']}");
+            $stats['errors']++;
+            continue;
+        }
 
-    // Process participation certificates
-    echo "\n=== Processing Participation Certificates ===\n";
-    distributeCertificatesFromFolder($participationFolder, $stats);
+        $participantFolder = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . $entry['uid'] . DIRECTORY_SEPARATOR . "certificates";
+        if (!is_dir($participantFolder) && !@mkdir($participantFolder, 0777, true)) {
+            Pt_Commons_LoggerUtility::logError("Failed to create directory: $participantFolder");
+            $stats['errors']++;
+            continue;
+        }
+
+        $destPath = $participantFolder . DIRECTORY_SEPARATOR . $fileName;
+        if (copy($entry['path'], $destPath)) {
+            $stats['distributed']++;
+            echo "Copied: $fileName -> $participantFolder\n";
+        } else {
+            Pt_Commons_LoggerUtility::logError("Failed to copy: {$entry['path']} -> $destPath");
+            $stats['errors']++;
+        }
+    }
 
     // Print distribution summary
     echo "\n=== Distribution Summary ===\n";
@@ -143,8 +135,12 @@ try {
 
     // Update batch status to distributed (only for batch-tracked workflow)
     if ($batchId) {
+        $problems = $stats['errors'] + $stats['skipped'];
         $certificateBatchesModel->updateStatus($batchId, 'distributed', [
-            'distributed_on' => new Zend_Db_Expr('NOW()')
+            'distributed_on' => new Zend_Db_Expr('NOW()'),
+            'error_message' => $problems > 0
+                ? "{$stats['distributed']} certificate(s) distributed. {$problems} could not be distributed. See the log for details."
+                : null,
         ]);
     }
 

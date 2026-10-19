@@ -58,6 +58,61 @@ class Application_Model_DbTable_CertificateBatches extends Zend_Db_Table_Abstrac
     }
 
     /**
+     * Signed, login-only link to the batch's ZIP, or null when it has none.
+     * The ZIP lives outside the public web root, so the link is the only way
+     * to download it.
+     */
+    public static function zipDownloadUrl(array $batch): ?string
+    {
+        $folder = (string) ($batch['folder_path'] ?? '');
+        if ($folder === '' || !is_dir($folder)) {
+            return null;
+        }
+        $zips = glob($folder . DIRECTORY_SEPARATOR . 'certificates-*.zip') ?: [];
+        if (empty($zips)) {
+            return null;
+        }
+        // The names end in a timestamp, so the newest sorts first.
+        rsort($zips);
+        return Pt_Commons_SignedDownload::url($zips[0]);
+    }
+
+    /**
+     * Approve a generated batch, queue its distribution and log it.
+     * Returns null on success, else the reason the batch was not approved.
+     */
+    public function approveBatch(int $batchId, $adminId): ?string
+    {
+        $batch = $this->getBatch($batchId);
+        if (!$batch) {
+            return 'Batch not found';
+        }
+        if ($batch['status'] !== 'generated') {
+            return 'Batch must be in generated status to approve';
+        }
+
+        $this->updateStatus($batchId, 'approved', [
+            'approved_by' => $adminId,
+            'approved_on' => new Zend_Db_Expr('NOW()'),
+        ]);
+
+        $scheduledJobsDb = new Application_Model_DbTable_ScheduledJobs();
+        if ($scheduledJobsDb->scheduleCertificateDistribution($batchId) <= 0) {
+            return 'Failed to schedule distribution job';
+        }
+
+        $batchName = $batch['batch_name'] ?? "#$batchId";
+        $excellenceCount = (int) ($batch['excellence_count'] ?? 0);
+        $participationCount = (int) ($batch['participation_count'] ?? 0);
+        $auditDb = new Application_Model_DbTable_AuditLog();
+        $auditDb->addNewAuditLog(
+            "Approved certificate batch - {$batchName} ({$excellenceCount} excellence, {$participationCount} participation)",
+            'certificate'
+        );
+        return null;
+    }
+
+    /**
      * Get the most recent batch that matches the given shipment IDs
      *
      * @param string $shipmentIds Comma-separated shipment IDs
@@ -97,7 +152,7 @@ class Application_Model_DbTable_CertificateBatches extends Zend_Db_Table_Abstrac
                 'excellence_count',
                 'participation_count',
                 'skipped_count',
-                'download_url',
+                'folder_path',
                 'error_message',
                 'created_by',
                 'created_on',
@@ -207,6 +262,9 @@ class Application_Model_DbTable_CertificateBatches extends Zend_Db_Table_Abstrac
                     $row['shipment_codes'] = implode(', ', $shipments);
                 }
             }
+            $row['download_url'] = self::zipDownloadUrl($row);
+            // The browser needs the link, not the server path.
+            unset($row['folder_path']);
         }
         unset($row); // break reference
 
