@@ -152,6 +152,11 @@ $helpSlugMap = [
 $resolvedHelpSlug = $helpSlugMap["$controllerName/$actionName"]
 	?? $helpSlugMap["$controllerName/index"]
 	?? '';
+// The admin Test Kits page and the Test Kit Report share the controller name
+// testkit, so the module tells them apart.
+if ($controllerName === 'testkit' && Zend_Controller_Front::getInstance()->getRequest()->getModuleName() === 'reports') {
+	$resolvedHelpSlug = 'reports-testkit';
+}
 // Scheme Config keeps the per-scheme help topics (docs/help/admin/*/dts-settings.md
 // and friends) — one controller, but the help still follows the scheme you're on.
 // Schemes without a topic file resolve to nothing, same as any unmapped page.

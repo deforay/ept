@@ -1,574 +1,345 @@
+<?php
+include APPLICATION_PATH . '/views/partials/report-zero-state.phtml';
+include APPLICATION_PATH . '/views/partials/report-table-styles.phtml';
+$tkDataUrl = $this->url(['module' => 'reports', 'controller' => 'testkit', 'action' => 'data'], 'default', true);
+$tkResponsesUrl = $this->url(['module' => 'reports', 'controller' => 'testkit', 'action' => 'responses'], 'default', true);
+$tkExportUrl = $this->url(['module' => 'reports', 'controller' => 'testkit', 'action' => 'export'], 'default', true);
+?>
 <style>
-    @media print {
+	.tk-stats {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+		gap: 12px;
+		margin: 18px 0 4px;
+	}
 
-        .dontPrint,
-        #testKitTable_filter,
-        #testKitTable_info {
-            display: none;
+	.tk-stat {
+		padding: 12px 16px;
+		border: 1px solid #e3e8ef;
+		border-radius: 6px;
+		background: #fff;
+	}
 
-        }
-    }
+	.tk-stat-label {
+		display: block;
+		font-size: 12px;
+		font-weight: 600;
+		color: #5b6573;
+	}
 
-    /*    #participantTable_wrapper{
-            max-width:500px;
-            margin: 0 auto;
-        }*/
+	.tk-stat-value {
+		display: block;
+		margin-top: 4px;
+		font-size: 22px;
+		font-weight: 600;
+		line-height: 1.2;
+		color: #2f4f7a;
+	}
+
+	#tkTable tbody tr:has(.tk-toggle) {
+		cursor: pointer;
+	}
+
+	#tkTable .tk-kit {
+		display: flex;
+		align-items: flex-start;
+		gap: 8px;
+	}
+
+	#tkTable .tk-toggle {
+		display: inline-flex;
+		flex: 0 0 auto;
+		align-items: center;
+		justify-content: center;
+		width: 20px;
+		height: 20px;
+		margin-top: 1px;
+		border: 1px solid #cfdae8;
+		border-radius: 4px;
+		background: #f5f8fc;
+		color: #4a6fa5;
+	}
+
+	#tkTable .tk-toggle .icon-chevron-right {
+		display: inline-block;
+		font-size: 10px;
+		transition: transform .15s ease;
+	}
+
+	#tkTable tr:hover .tk-toggle,
+	#tkTable tr.tk-open .tk-toggle {
+		border-color: #4a6fa5;
+		background: #4a6fa5;
+		color: #fff;
+	}
+
+	#tkTable tr.tk-open .tk-toggle .icon-chevron-right {
+		transform: rotate(90deg);
+	}
+
+	#tkTable tr.tk-open > td {
+		background: #eef2f7 !important;
+	}
+
+	#tkTable .tk-failed {
+		color: #a33a3a;
+		font-weight: 600;
+	}
+
+	#tkTable td.tk-detail {
+		padding: 14px 18px;
+		border-left: 4px solid #3f6fb0;
+		background: #eef2f7 !important;
+		box-shadow: inset 0 7px 9px -9px rgba(0, 0, 0, .45), inset 0 -7px 9px -9px rgba(0, 0, 0, .3);
+		cursor: default;
+	}
+
+	#tkTable table.tk-responses {
+		width: auto;
+		min-width: 70%;
+		margin: 0;
+		background: #fff;
+		box-shadow: 0 1px 3px rgba(0, 0, 0, .1);
+	}
+
+	#tkTable table.tk-responses > thead > tr > th,
+	.data-list #tkTable table.table.tk-responses > thead > tr > th {
+		padding: 6px 14px;
+		text-align: left;
+		font-size: 11px;
+	}
+
+	#tkTable table.tk-responses > tbody > tr > td,
+	.data-list #tkTable table.table.tk-responses > tbody > tr > td {
+		padding: 6px 14px;
+		font-size: 13px;
+		vertical-align: top;
+		background: #fff;
+	}
+
+	#tkTable .tk-more {
+		margin: 8px 0 0;
+		font-size: 12px;
+		color: #5b6573;
+	}
 </style>
-<link rel="stylesheet" href="<?php echo $this->baseUrl('css/daterangepicker.css'); ?>" type="text/css" media="all">
-<legend>
-    <h3><?= $this->translate->_("TestKit Report For DTS"); ?></h3>
-</legend>
-<div class="filter-panel js-filter-panel">
-    <button type="button" class="btn btn-default btn-sm js-filter-toggle" aria-expanded="false"
-        data-expand-text="<?= $this->htmlTranslate("Expand Filters"); ?>"
-        data-collapse-text="<?= $this->htmlTranslate("Collapse Filters"); ?>">
-        <i class="icon-filter"></i> <span class="js-filter-toggle-text"><?= $this->translate->_("Expand Filters"); ?></span>
-        <span class="label label-info js-filter-count" style="display:none;">0</span>
-        <span class="caret"></span>
-    </button>
-    <div class="js-filter-summary"></div>
-    <div class="js-filter-body">
-<table style="margin:20px 0;" class="table table-bordered">
-    <tr>
-        <td style="width:200px;text-align: center;font-weight:bold;">
-            <?= $this->translate->_("Pick a Date Range (Optional)"); ?>
-        </td>
-        <td style="width:200px;text-align: center;font-weight:bold;">
-            <?= $this->translate->_("Select Report Type"); ?>
-        </td>
-        <td style="width:200px;text-align: center;font-weight:bold;" class="hide network">
-            <?= $this->translate->_("Select Netwok Tiers"); ?>
-        </td>
-        <td style="width:200px;text-align: center;font-weight:bold;" class="hide affiliation">
-            <?= $this->translate->_("Select Participant Affiliatiates"); ?>
-        </td>
-        <td style="width:200px;text-align: center;font-weight:bold;" class="hide region">
-            <?= $this->translate->_("Select Region"); ?>
-        </td>
-        <td style="width:200px;text-align: center;font-weight:bold;" class="hide enrolled-programs">
-            <?= $this->translate->_("Select Enrolled Programs"); ?>
-        </td>
-        <td style="width:200px;text-align: center;font-weight:bold;">
-            <?= $this->translate->_("TestKit No"); ?>.
-        </td>
-        <td class="dontPrint" style="width:200px;text-align: center;font-weight:bold;">
-            <?= $this->translate->_("Action"); ?>
-        </td>
-    </tr>
-    <tr>
-        <td>
-            <input type="text" id="dateRange" name="dateRange" class="form-control input-sm" readonly="readonly"
-                style="background: #fff" placeholder="Click here to pick a Date Range"
-                data-filter-label="<?= $this->htmlTranslate("Date Range"); ?>" />
-        </td>
-        <td>
-            <select id="reportType" name="reportType" class="form-control input-sm" onchange="getTypeList(this.value)"
-                data-filter-label="<?= $this->htmlTranslate("Report Type"); ?>">
-                <option value=""> -- <?= $this->translate->_("Select Report Type"); ?> --</option>
-                <option value="network"><?= $this->translate->_("Network Tier"); ?></option>
-                <option value="affiliation"><?= $this->translate->_("Affiliation"); ?></option>
-                <option value="region"><?= $this->translate->_("Region"); ?></option>
-                <option value="enrolled-programs"><?= $this->translate->_("Enrolled Programs"); ?></option>
-            </select>
-        </td>
-        <td class="hide enrolled-programs">
-            <select id="enrolledProgramsValue" name="enrolledProgramsValue" class="form-control input-sm"
-                data-filter-label="<?= $this->htmlTranslate("Enrolled Programs"); ?>">
-                <option value=""> -- <?= $this->translate->_("Select Enrolled Programs"); ?> --</option>
-                <?php
-                foreach ($this->enrolledProgramsList as $ep) {
-                    ?>
-                    <option value="<?php echo $ep['r_epid']; ?>"><?php echo ($ep['enrolled_programs']); ?></option>
-                    <?php
-                }
-                ?>
-            </select>
-        </td>
-        <td class="hide network">
-            <select id="networkValue" name="networkValue" class="form-control input-sm"
-                data-filter-label="<?= $this->htmlTranslate("Network Tiers"); ?>">
-                <option value=""> -- <?= $this->translate->_("Select Network Tiers"); ?> --</option>
-                <?php
-                foreach ($this->networkTierList as $network) {
-                    ?>
-                    <option value="<?php echo $network['network_id']; ?>"><?php echo ucwords($network['network_name']); ?>
-                    </option>
-                    <?php
-                }
-                ?>
-            </select>
-        </td>
-        <td class="hide affiliation">
-            <select id="affiliateValue" name="affiliateValue" class="form-control input-sm"
-                data-filter-label="<?= $this->htmlTranslate("Participant Affiliates"); ?>">
-                <option value=""> -- <?= $this->translate->_("Select Affiliates"); ?> --</option>
-                <?php
-                foreach ($this->affiliateList as $affiliates) {
-                    ?>
-                    <option value="<?php echo $affiliates['aff_id']; ?>"><?php echo ucwords($affiliates['affiliate']); ?>
-                    </option>
-                    <?php
-                }
-                ?>
-            </select>
-        </td>
-        <td class="hide region">
-            <select id="regionValue" name="regionValue" class="form-control input-sm"
-                data-filter-label="<?= $this->htmlTranslate("Region"); ?>">
-                <option value=""> -- <?= $this->translate->_("Select Region"); ?> --</option>
-                <?php
-                foreach ($this->regionList as $region) {
-                    ?>
-                    <option value="<?php echo $region['region']; ?>"><?php echo ucwords($region['region']); ?></option>
-                    <?php
-                }
-                ?>
-            </select>
-        </td>
-        <td>
-            <select id="kitType" name="kitType" class="form-control input-sm"
-                data-filter-label="<?= $this->htmlTranslate("TestKit No"); ?>">
-                <option value=""> -- <?= $this->translate->_("Select Test Kit Number"); ?>--</option>
-                <option value="testkit1"><?= $this->translate->_("Test Kit 1"); ?></option>
-                <option value="testkit2"><?= $this->translate->_("Test Kit 2"); ?></option>
-                <option value="testkit3"><?= $this->translate->_("Test Kit 3"); ?></option>
-            </select>
-        </td>
-        <td class="dontPrint"><button class="btn btn-success btn-sm"
-                onclick="drawGraph()"><span><?= $this->translate->_("Get Report"); ?></span></button> <button
-                class="btn btn-danger btn-sm"
-                onclick="document.location.href = document.location"><span><?= $this->translate->_("Reset"); ?></span></button>
-            <button class="btn btn-info btn-sm"
-                onclick="GetPrint()"><span><?= $this->translate->_("Print"); ?></span></button> <a href="#"
-                class="btn btn-primary btn-sm hide" id="exportPdf" target="_blank"><i class="icon-download"></i>
-                <?= $this->translate->_("PDF"); ?></a>
-        </td>
-    </tr>
-</table>
-    </div><!-- /.js-filter-body -->
-</div><!-- /.filter-panel -->
-<div id="testKitChart" width="450" height="450"></div>
-<table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered table-hover hide"
-    id="testKitTable">
-    <thead>
-        <tr>
-            <!--		  <th scope="col" style="text-align: center;">Lab Name/Participant Name</th>-->
-            <th scope="col" style="text-align: center;"><?= $this->translate->_("Test Kit Name"); ?></th>
-            <th scope="col" style="text-align: center;"><?= $this->translate->_("Test Count"); ?></th>
 
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td colspan="2" class="dataTables_empty"><?= $this->translate->_("Loading data from server"); ?></td>
-        </tr>
-    </tbody>
-</table>
+<div class="data-list">
+	<div class="data-list-head">
+		<h2><?= $this->htmlTranslate("Test Kit Report For HIV Serology"); ?></h2>
+	</div>
+	<div class="data-list-body">
+		<?php
+		$rfShipmentsUrl = $this->url(['module' => 'reports', 'controller' => 'testkit', 'action' => 'shipments'], 'default', true);
+		// Test kits are recorded for DTS only, so there is no scheme to pick.
+		$rfFixedScheme = 'dts';
+		include APPLICATION_PATH . '/views/partials/report-filters.phtml';
+		?>
+		<?php if (empty($this->schemes)) { ?>
+			<div class="alert alert-info" style="margin:14px 0 0;">
+				<?= $this->htmlTranslate("HIV serology (DTS) is not active, so this report has nothing to show."); ?>
+			</div>
+		<?php } ?>
 
-<legend class="modal-header hide" id="participantReportHeader">
-    <h4 class="modal-title" id="participantHeading"><?= $this->translate->_("TestKit Report For DTS"); ?></h4>
-</legend>
-<table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered table-hover hide"
-    id="participantTable">
-    <thead>
-        <tr>
-            <th scope="col" style="text-align: center;"><?= $this->translate->_("Participant"); ?></th>
-            <th style="text-align: center;" id="reportHeading"><?= $this->translate->_("Report Type"); ?></th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td colspan="1" class="dataTables_empty"><?= $this->translate->_("Loading data from server"); ?></td>
-        </tr>
-    </tbody>
-</table>
+		<div class="tk-stats" id="tkStats">
+			<div class="tk-stat">
+				<span class="tk-stat-label"><?= $this->htmlTranslate("Responses"); ?></span>
+				<span class="tk-stat-value" data-stat="responses">&nbsp;</span>
+			</div>
+			<div class="tk-stat">
+				<span class="tk-stat-label"><?= $this->htmlTranslate("Participants"); ?></span>
+				<span class="tk-stat-value" data-stat="participants">&nbsp;</span>
+			</div>
+			<div class="tk-stat">
+				<span class="tk-stat-label"><?= $this->htmlTranslate("Test kits"); ?></span>
+				<span class="tk-stat-value" data-stat="kits">&nbsp;</span>
+			</div>
+		</div>
 
-
-
-<link rel="stylesheet" href="<?php echo $this->baseUrl('css/daterangepicker.css'); ?>" type="text/css" media="all">
-<script type="text/javascript" src="<?php echo $this->baseUrl('js/moment.min.js'); ?>"></script>
-<script type="text/javascript" src="<?php echo $this->assetUrl('js/daterangepicker.js'); ?>"></script>
+		<div class="rpt-section-head">
+			<h4><?= $this->htmlTranslate("Test kits"); ?>
+				<span class="rpt-hint"><?= $this->htmlTranslate("Click a test kit to list the responses that used it."); ?></span>
+			</h4>
+			<div class="rpt-tools">
+				<div class="rpt-seg" id="tkPosition" role="group" aria-label="<?= $this->htmlTranslate("Used as test"); ?>">
+					<button type="button" class="active" data-position=""><?= $this->htmlTranslate("All tests"); ?></button>
+					<button type="button" data-position="1"><?= $this->htmlTranslate("Test 1"); ?></button>
+					<button type="button" data-position="2"><?= $this->htmlTranslate("Test 2"); ?></button>
+					<button type="button" data-position="3"><?= $this->htmlTranslate("Test 3"); ?></button>
+				</div>
+				<button type="button" class="rpt-download" onclick="exportTestKits()">
+					<i class="icon-download-alt"></i> <?= $this->htmlTranslate("Download Excel"); ?>
+				</button>
+			</div>
+		</div>
+		<table class="table table-hover rpt-table" id="tkTable">
+			<thead>
+				<tr>
+					<th scope="col"><?= $this->htmlTranslate("Test kit"); ?></th>
+					<th scope="col"><?= $this->htmlTranslate("Responses"); ?></th>
+					<th scope="col"><?= $this->htmlTranslate("Participants"); ?></th>
+					<th scope="col"><?= $this->htmlTranslate("Test 1"); ?></th>
+					<th scope="col"><?= $this->htmlTranslate("Test 2"); ?></th>
+					<th scope="col"><?= $this->htmlTranslate("Test 3"); ?></th>
+					<th scope="col"><?= $this->htmlTranslate("Pass rate"); ?></th>
+					<th scope="col"><?= $this->htmlTranslate("Failed"); ?></th>
+				</tr>
+			</thead>
+			<tbody></tbody>
+		</table>
+	</div>
+</div>
 
 <script type="text/javascript">
-    var startDate = "";
-    var endDate = "";
-    var paginate = true;
-    var currentHighlighted = null;
+	var tkTable = null;
+	var tkRequest = null;
+	var tkPosition = '';
 
-    $(document).ready(function () {
+	function tkNumber(n) {
+		return Number(n || 0).toLocaleString();
+	}
 
-        currentHighlighted = getCookie('tid');
-        currentTestKit = getCookie('tname');
-        $('#dateRange').daterangepicker({
-            locale: {
-                cancelLabel: 'Clear',
-                format: 'DD-MMM-YYYY',
-                separator: ' to ',
-            },
-            autoApply: true,
-            showDropdowns: true,
-            alwaysShowCalendars: true,
-            autoUpdateInput: true,
-            startDate: moment().subtract(179, 'days'),
-            endDate: moment(),
-            maxDate: moment(),
-            ranges: eptDateRanges()
-        },
-            function (start, end) {
-                startDate = start.format('DD-MMM-YYYY');
-                endDate = end.format('DD-MMM-YYYY');
-            });
+	function tkEscape(value) {
+		return $('<div/>').text(value == null ? '' : String(value)).html();
+	}
 
-        if (currentHighlighted != null && currentHighlighted != "" && currentHighlighted != 0) {
-            $('#participantHeading').html('TestKit Report For DTS - ').append($('<strong/>').text(currentTestKit));
-        }
+	function tkParams() {
+		var params = reportFilters.values();
+		params.position = tkPosition;
+		return params;
+	}
 
-    });
+	function tkPassRate(k) {
+		var evaluated = k.passed + k.failed;
+		if (!evaluated) {
+			return '<span class="cell-muted"><?= $this->jsTranslate("Not evaluated yet"); ?></span>';
+		}
+		var pct = Math.round(k.passed * 100 / evaluated);
+		return '<span class="rate-figure">' + pct + '%</span>'
+			+ '<span class="rate-bar is-pass"><span style="width:' + pct + '%"></span></span>'
+			+ '<span class="cell-sub">' + "<?= $this->jsTranslate("%s of %s"); ?>".replace('%s', tkNumber(k.passed)).replace('%s', tkNumber(evaluated)) + '</span>';
+	}
 
-    function drawGraph() {
-        if ($("#kitType").val() == '') {
-            //alert('Please select test kit number to proceed');
-            //return;
-        }
-        drawTable();
-        var dateRange = $("#dateRange").val();
-        var _dateRange = dateRange.split(" to ");
-        startDate = _dateRange[0];
-        endDate = _dateRange[1];
+	function loadTestKits() {
+		if (tkRequest) {
+			tkRequest.abort();
+		}
+		tkTable.fnClearTable();
+		$('#tkTable_processing').css('visibility', 'visible');
+		tkRequest = $.post("<?= $tkDataUrl; ?>", tkParams(), function (data) {
+			var responses = data.responses || 0;
+			$('#tkStats [data-stat="responses"]').text(tkNumber(responses));
+			$('#tkStats [data-stat="participants"]').text(tkNumber(data.participants));
+			$('#tkStats [data-stat="kits"]').text(tkNumber(data.kits));
 
-        $.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'testkit', 'action' => 'chart'), "default", true); ?>", {
-            startDate: startDate,
-            endDate: endDate,
-            kitType: $("#kitType").val(),
-            reportType: $("#reportType").val(),
-            networkValue: $("#networkValue").val(),
-            affiliateValue: $("#affiliateValue").val(),
-            enrolledProgramsValue: $("#enrolledProgramsValue").val(),
-            regionValue: $("#regionValue").val(),
-            format: "html"
-        },
-            function (response) {
-                Highcharts.chart('testKitChart', {
-                    colors: ['#058DC7', '#50B432', '#ED561B', '#DDDF00', '#24CBE5', '#64E572', '#FF9655', '#FFF263', '#6AF9C4', '#7cb5ec', '#318047', '#90ed7d', '#f7a35c', '#2f7ed8', '#f15c80', '#e4d354', '#8085e8', '#8d4653', '#91e8e1', '#0d233a', '#8bbc21', '#910000', '#1aadce', '#492970', '#f28f43', '#77a1e5', '#c42525', '#a6c96a', '#4572A7', '#AA4643', '#89A54E', '#80699B', '#3D96AE', '#DB843D', '#92A8CD', '#A47D7C', '#B5CA92'],
-                    chart: {
-                        plotBackgroundColor: null,
-                        plotBorderWidth: null,
-                        plotShadow: false
-                    },
-                    title: {
-                        text: 'Test Kit DTS Chart'
-                    },
-                    exporting: {
-                        enabled: true
-                    },
-                    credits: {
-                        enabled: false
-                    },
-                    tooltip: {
-                        pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
-                    },
-                    plotOptions: {
-                        pie: {
-                            allowPointSelect: true,
-                            cursor: 'pointer',
-                            dataLabels: {
-                                enabled: false
-                            },
-                            point: {
-                                events: {
-                                    legendItemClick: function () {
-                                        var visibility = this.visible ? 'visible' : 'hidden';
-                                        if (visibility == 'visible') {
-                                            participantReport(this.id, this.name)
-                                            oTable.fnFilter(this.name);
-                                        } else {
-                                            oTable.fnFilter('');
-                                            $("#participantTable_wrapper").addClass("hide");
-                                            $("#participantReportHeader").addClass("hide");
-                                            // currentHighlighted = '';
-                                        }
-                                    },
-                                    click: function (event) {
-                                        var sliced = this.sliced ? false : true;
-                                        if (sliced) {
-                                            oTable.fnFilter(this.name);
-                                            participantReport(this.id, this.name)
-                                        } else {
-                                            oTable.fnFilter('');
-                                            $("#participantTable_wrapper").addClass("hide");
-                                            $("#participantReportHeader").addClass("hide");
-                                            // currentHighlighted = '';
-                                        }
+			var rows = $.map(data.rows || [], function (k) {
+				var pct = responses > 0 ? Math.round(k.responses * 100 / responses) : 0;
+				var name = k.name
+					? '<span class="cell-main">' + tkEscape(k.name) + '</span>'
+					: '<span class="cell-main cell-muted">' + tkEscape("<?= $this->jsTranslate("Unknown kit"); ?>") + '</span><span class="cell-sub">' + tkEscape(k.id) + '</span>';
+				var evaluated = k.passed + k.failed;
+				return [[
+					'<div class="tk-kit" data-kit-id="' + tkEscape(k.id) + '"><span class="tk-toggle" aria-hidden="true"><i class="icon-chevron-right"></i></span><span>' + name + '</span></div>',
+					'<span class="rate-figure">' + tkNumber(k.responses) + '</span>'
+						+ '<span class="rate-bar"><span style="width:' + pct + '%"></span></span>'
+						+ '<span class="cell-sub">' + "<?= $this->jsTranslate("%s of responses"); ?>".replace('%s', pct + '%') + '</span>',
+					tkNumber(k.participants),
+					tkNumber(k.test1),
+					tkNumber(k.test2),
+					tkNumber(k.test3),
+					tkPassRate(k),
+					k.failed > 0 ? '<span class="tk-failed">' + tkNumber(k.failed) + '</span>' : '0',
+					k.responses,
+					evaluated ? k.passed / evaluated : -1
+				]];
+			});
+			// fnAddData([]) reads an empty array as one row with no cells.
+			if (rows.length) {
+				tkTable.fnAddData(rows);
+			}
+		}, 'json').always(function () {
+			tkRequest = null;
+			$('#tkTable_processing').css('visibility', 'hidden');
+		});
+	}
 
-                                    }
-                                },
-                            },
-                            showInLegend: true
-                        }
-                    },
-                    legend: {
-                        enabled: true,
-                        layout: 'vertical',
-                        align: 'right',
-                        verticalAlign: 'middle',
-                        itemMarginTop: 10,
-                        itemMarginBottom: 10,
-                        labelFormatter: function () {
-                            return this.name + ' - ' + this.y + '%';
-                        }
-                    },
-                    series: [{
-                        type: 'pie',
-                        name: 'Test Used',
-                        data: JSON.parse(response.stripSlashes()),
-                    }]
-                });
-            });
-    }
+	$(function () {
+		$('#tkPosition').on('click', 'button', function () {
+			tkPosition = String($(this).data('position') || '');
+			$('#tkPosition button').removeClass('active');
+			$(this).addClass('active');
+			if (tkTable) {
+				loadTestKits();
+			}
+		});
 
-    function getTypeList(typeValue) {
+		// A test kit opens the responses that used it.
+		$('#tkTable tbody').on('click', 'tr', function () {
+			var $kit = $(this).find('.tk-kit');
+			if (!$kit.length) {
+				return;
+			}
+			var tr = this;
+			if (tkTable.fnIsOpen(tr)) {
+				tkTable.fnClose(tr);
+				$(tr).removeClass('tk-open');
+				return;
+			}
+			tkTable.fnOpen(tr, '<div style="padding:4px;color:#888;"><?= $this->jsTranslate("Loading data from server"); ?></div>', 'tk-detail');
+			$(tr).addClass('tk-open');
+			var params = tkParams();
+			params.kitId = $kit.data('kit-id');
+			$.post("<?= $tkResponsesUrl; ?>", params, function (data) {
+				$(tr).next('tr').find('td.tk-detail').html(data.html);
+			}, 'json').fail(function () {
+				$(tr).next('tr').find('td.tk-detail').html('<div style="padding:4px;color:#a94442;"><?= $this->jsTranslate("Failed to load. Please try again."); ?></div>');
+			});
+		});
+	});
 
+	reportFilters.onChange(loadTestKits);
 
-        if (typeValue == 'network') {
-            $(".network").removeClass("hide dontPrint");
-            $(".affiliation").addClass("hide dontPrint");
-            $(".enrolled-programs").addClass("hide dontPrint");
-            $(".region").addClass("hide dontPrint");
-        } else if (typeValue == 'affiliation') {
-            $(".network").addClass("hide dontPrint");
-            $(".affiliation").removeClass("hide dontPrint");
-            $(".enrolled-programs").removeClass("hide dontPrint");
-            $(".region").addClass("hide dontPrint");
+	reportFilters.ready(function () {
+		var hidden = function () { return { "bVisible": false, "sType": "numeric" }; };
+		tkTable = $('#tkTable').dataTable({
+			"oLanguage": reportZeroState.dataTableLanguage(),
+			"bAutoWidth": false,
+			"bPaginate": false,
+			"bFilter": false,
+			"bInfo": false,
+			"bProcessing": true,
+			"sDom": "rt",
+			"aoColumns": [
+				{ "sWidth": "28%" },
+				{ "sWidth": "16%", "iDataSort": 8 },
+				{ "sWidth": "9%" },
+				{ "sWidth": "8%" },
+				{ "sWidth": "8%" },
+				{ "sWidth": "8%" },
+				{ "sWidth": "15%", "iDataSort": 9 },
+				{ "sWidth": "8%" },
+				hidden(),
+				hidden()
+			],
+			"aaSorting": [[8, "desc"]]
+		});
+		loadTestKits();
+	});
 
-        } else if (typeValue == 'region') {
-            $(".network").addClass("hide dontPrint");
-            $(".affiliation").addClass("hide dontPrint");
-            $(".enrolled-programs").addClass("hide dontPrint");
-            $(".region").removeClass("hide dontPrint");
-
-
-        } else if (typeValue == 'enrolled-programs') {
-            $(".network").addClass("hide dontPrint");
-            $(".affiliation").addClass("hide dontPrint");
-            $(".region").addClass("hide dontPrint");
-            $(".enrolled-programs").removeClass("hide dontPrint");
-
-        }
-
-    }
-
-    function drawTable() {
-        var dateRange = $("#dateRange").val();
-        var _dateRange = dateRange.split(" to ");
-        startDate = _dateRange[0];
-        endDate = _dateRange[1];
-
-        $("#testKitTable").removeClass("hide");
-        $("#participantTable_wrapper").addClass("hide");
-        $("#participantReportHeader").addClass("hide");
-        $.blockUI;
-        oTable = $('#testKitTable').dataTable({
-
-            "bPaginate": paginate,
-            "bJQueryUI": false,
-            "bAutoWidth": false,
-            "bInfo": true,
-            "bScrollCollapse": true,
-            "sPaginationType": "bootstrap",
-            "bRetrieve": false,
-            "bDestroy": true,
-            "aoColumns": [
-                //                {"sClass":"center"},
-                {
-                    "sClass": "center"
-                },
-                {
-                    "sClass": "center"
-                }
-            ],
-            "aaSorting": [
-                [1, "desc"]
-            ],
-            "bProcessing": true,
-            "bServerSide": true,
-            "sAjaxSource": "<?php echo $this->url(array('module' => 'reports', 'controller' => 'testkit', 'action' => 'index', 'format' => 'html')); ?>",
-            "fnServerParams": function (aoData) {
-
-                aoData.push({
-                    "name": "startDate",
-                    "value": startDate
-                });
-                aoData.push({
-                    "name": "endDate",
-                    "value": endDate
-                });
-                aoData.push({
-                    "name": "regionValue",
-                    "value": $("#regionValue").val()
-                });
-                aoData.push({
-                    "name": "affiliateValue",
-                    "value": $("#affiliateValue").val()
-                });
-                aoData.push({
-                    "name": "networkValue",
-                    "value": $("#networkValue").val()
-                });
-                aoData.push({
-                    "name": "enrolledProgramsValue",
-                    "value": $("#enrolledProgramsValue").val()
-                });
-                aoData.push({
-                    "name": "reportType",
-                    "value": $("#reportType").val()
-                });
-                aoData.push({
-                    "name": "kitType",
-                    "value": $("#kitType").val()
-                });
-            },
-            "fnServerData": function (sSource, aoData, fnCallback) {
-                $.ajax({
-                    "dataType": 'json',
-                    "type": "POST",
-                    "url": sSource,
-                    "data": aoData,
-                    "success": function (json) {
-                        fnCallback(json);
-                        if (currentHighlighted != null && currentHighlighted != "" && currentHighlighted != 0) {
-                            $("#testkitId" + currentHighlighted).find('td').addClass("highliter");
-                            participantReport(currentHighlighted, currentTestKit);
-                        }
-                    }
-                });
-
-            },
-            "fnRowCallback": function (nRow, aData, iDisplayIndex) {
-                $.unblockUI;
-            },
-        });
-
-
-
-    };
-
-    function GetPrint() {
-        paginate = false;
-        drawTable()
-        window.print();
-    }
-    jQuery(document).bind("keyup keydown", function (e) {
-        if (e.ctrlKey && e.keyCode == 80) {
-            paginate = false;
-            drawTable()
-        }
-    });
-
-    function participantReport(testkitId, testkitName) {
-        currentHighlighted = testkitId;
-        currentTestKit = testkitName;
-        setCookie('tid', testkitId);
-        setCookie('tname', currentTestKit);
-        $("#testKitTable tr td").removeClass("highliter");
-        $("#testkitId" + currentHighlighted + " td").addClass("highliter");
-        //   $("#participantTable").removeClass("hide");
-        $.blockUI;
-        rTable = $('#participantTable').dataTable({
-
-            "bPaginate": paginate,
-            "bJQueryUI": false,
-            "bAutoWidth": false,
-            "bInfo": true,
-            "bScrollCollapse": true,
-            "sPaginationType": "bootstrap",
-            "bRetrieve": false,
-            "bDestroy": true,
-            "aoColumns": [{
-                "sClass": "center"
-            },
-            {
-                "sClass": "center"
-            },
-            ],
-            "bVisible": false,
-            "aTargets": [1],
-            "aaSorting": [
-                [0, "asc"]
-            ],
-            "bProcessing": true,
-            "bServerSide": true,
-            "sAjaxSource": "<?php echo $this->url(array('module' => 'reports', 'controller' => 'testkit', 'action' => 'participant', 'format' => 'html')); ?>",
-            "fnServerParams": function (aoData) {
-
-                aoData.push({
-                    "name": "startDate",
-                    "value": startDate
-                });
-                aoData.push({
-                    "name": "endDate",
-                    "value": endDate
-                });
-                aoData.push({
-                    "name": "regionValue",
-                    "value": $("#regionValue").val()
-                });
-                aoData.push({
-                    "name": "affiliateValue",
-                    "value": $("#affiliateValue").val()
-                });
-                aoData.push({
-                    "name": "networkValue",
-                    "value": $("#networkValue").val()
-                });
-                aoData.push({
-                    "name": "enrolledProgramsValue",
-                    "value": $("#enrolledProgramsValue").val()
-                });
-                aoData.push({
-                    "name": "reportType",
-                    "value": $("#reportType").val()
-                });
-                aoData.push({
-                    "name": "kitType",
-                    "value": $("#kitType").val()
-                });
-                // aoData.push({"name": "kitType", "value": });
-                aoData.push({
-                    "name": "testkitId",
-                    "value": testkitId
-                });
-            },
-            "fnServerData": function (sSource, aoData, fnCallback) {
-                $.ajax({
-                    "dataType": 'json',
-                    "type": "POST",
-                    "url": sSource,
-                    "data": aoData,
-                    "success": fnCallback,
-                });
-            },
-            "fnRowCallback": function (nRow, aData, iDisplayIndex) {
-                $.unblockUI;
-            },
-        });
-        if ($("#reportType").val() == '') {
-            rTable.fnSetColumnVis(1, false);
-        } else {
-            rTable.fnSetColumnVis(1, true);
-            newcolumnHeading = $("#reportType option:selected").text();
-            $('#reportHeading').html(newcolumnHeading);
-        }
-        if ($("#testKitTable").dataTable().fnGetData().length > 0) {
-            $("#participantTable").removeClass("hide");
-            $("#participantReportHeader").removeClass("hide");
-            $("#participantTable_wrapper").removeClass("hide");
-        } else {
-            // currentHighlighted = '';
-            $("#participantTable_wrapper").addClass("hide");
-            $("#participantReportHeader").addClass("hide");
-        }
-
-    }
+	function exportTestKits() {
+		$.blockUI();
+		$.post("<?= $tkExportUrl; ?>", tkParams(), function (data) {
+			$.unblockUI();
+			if (!data || !data.file) {
+				alert("<?= $this->jsTranslate("Unable to generate download"); ?>");
+			} else {
+				window.open('/temporary/' + data.file, '_blank');
+			}
+		}, 'json').fail(function () {
+			$.unblockUI();
+			alert("<?= $this->jsTranslate("Unable to generate download"); ?>");
+		});
+	}
 </script>
 <?php // Must stay last: the panel collapses only after the select2 widgets above have measured themselves.
 include APPLICATION_PATH . '/views/partials/collapsible-filters.phtml'; ?>

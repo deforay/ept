@@ -1016,256 +1016,299 @@ class Application_Service_Reports
         echo json_encode($output);
     }
 
-    public function getTestKitReport($params)
+    /**
+     * The test kits of the DTS responses that match the filters: one row per
+     * response, kit and test (1, 2 or 3). A response takes its kits from its
+     * first sample row, since a response uses the same kits for every sample.
+     * $position narrows it to one test.
+     */
+    private function testKitUses(array $params, int $position = 0): Zend_Db_Select
     {
-        $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $sQuery = $dbAdapter->select()->from(['res' => 'response_result_dts'], ['totalTest' => new Zend_Db_Expr("CAST((COUNT('shipment_map_id')/s.number_of_samples) as UNSIGNED)")])
-            ->joinLeft(['sp' => 'shipment_participant_map'], 'sp.map_id=res.shipment_map_id', [])
-            ->joinLeft(['p' => 'participant'], 'sp.participant_id=p.participant_id', [])
-            ->joinLeft(['s' => 'shipment'], 's.shipment_id=sp.shipment_id', []);
-        if (isset($params['kitType']) && $params['kitType'] == 'testkit1') {
-            $sQuery = $sQuery->joinLeft(['tn' => 'r_testkitnames'], 'tn.TestKitName_ID=res.test_kit_name_1', ['TestKit_Name', 'TestKitName_ID'])
-                ->group('tn.TestKitName_ID');
-        } elseif (isset($params['kitType']) && $params['kitType'] == 'testkit2') {
-            $sQuery = $sQuery->joinLeft(['tn' => 'r_testkitnames'], 'tn.TestKitName_ID=res.test_kit_name_2', ['TestKit_Name', 'TestKitName_ID'])
-                ->group('tn.TestKitName_ID');
-        } elseif (isset($params['kitType']) && $params['kitType'] == 'testkit3') {
-            $sQuery = $sQuery->joinLeft(['tn' => 'r_testkitnames'], 'tn.TestKitName_ID=res.test_kit_name_3', ['TestKit_Name', 'TestKitName_ID'])
-                ->group('tn.TestKitName_ID');
-        } else {
-            $sQuery = $sQuery->joinLeft(['tn' => 'r_testkitnames'], 'tn.TestKitName_ID=res.test_kit_name_1 or tn.TestKitName_ID=res.test_kit_name_2 or tn.TestKitName_ID=res.test_kit_name_3', ['TestKit_Name', 'TestKitName_ID'])
-                ->group('tn.TestKitName_ID');
-        }
-        if (isset($params['reportType']) && $params['reportType'] == 'network') {
-            if (isset($params['networkValue']) && $params['networkValue'] != '') {
-                $sQuery = $sQuery->where('p.network_tier = ?', $params['networkValue']);
-            } else {
-                $sQuery = $sQuery->joinLeft(['n' => 'r_network_tiers'], 'p.network_tier=n.network_id', []);
-            }
-        }
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $responses = $db->select()
+            ->from(['res' => 'response_result_dts'], [
+                'map_id' => 'res.shipment_map_id',
+                'k1' => new Zend_Db_Expr("MAX(NULLIF(TRIM(res.test_kit_name_1), ''))"),
+                'k2' => new Zend_Db_Expr("MAX(NULLIF(TRIM(res.test_kit_name_2), ''))"),
+                'k3' => new Zend_Db_Expr("MAX(NULLIF(TRIM(res.test_kit_name_3), ''))"),
+            ])
+            ->join(['sp' => 'shipment_participant_map'], 'sp.map_id=res.shipment_map_id', [])
+            ->join(['s' => 'shipment'], 's.shipment_id=sp.shipment_id', [])
+            ->join(['p' => 'participant'], 'p.participant_id=sp.participant_id', [])
+            ->where("sp.response_status IN ('responded','late')")
+            ->where("IFNULL(sp.is_pt_test_not_performed, 'no') <> 'yes'")
+            ->group('res.shipment_map_id');
+        Application_Model_DbTable_Participants::applyResponseReportFilters($responses, ['scheme' => 'dts'] + $params);
 
-        if (isset($params['reportType']) && $params['reportType'] == 'affiliation') {
-            if (isset($params['affiliateValue']) && $params['affiliateValue'] != '') {
-                $iQuery = $dbAdapter->select()->from(['rpa' => 'r_participant_affiliates'])
-                    ->where('rpa.aff_id=?', $params['affiliateValue']);
-                $iResult = $dbAdapter->fetchRow($iQuery);
-                $appliate = $iResult['affiliate'];
-                $sQuery = $sQuery->where('p.affiliation = ' . $dbAdapter->quote($appliate) . ' OR p.affiliation = ' . $dbAdapter->quote($params['affiliateValue']));
-            } else {
-                $sQuery = $sQuery->joinLeft(['pa' => 'r_participant_affiliates'], 'p.affiliation=pa.affiliate', []);
-            }
-        }
-        if (isset($params['reportType']) && $params['reportType'] == 'region') {
-            if (isset($params['regionValue']) && $params['regionValue'] != '') {
-                $sQuery = $sQuery->where('p.region= ?', $params['regionValue']);
-            } else {
-                $sQuery = $sQuery->where('p.region IS NOT NULL')->where("p.region != ''");
-            }
-        }
-        if (isset($params['reportType']) && $params['reportType'] == 'enrolled-programs') {
-            if (isset($params['enrolledProgramsValue']) && $params['enrolledProgramsValue'] != '') {
-                $sQuery = $sQuery->joinLeft(['pe' => 'participant_enrolled_programs_map'], 'pe.participant_id=p.participant_id', [])
-                    ->joinLeft(['rep' => 'r_enrolled_programs'], 'rep.r_epid=pe.ep_id', ['rep.enrolled_programs'])
-                    ->where('rep.r_epid= ?', $params['enrolledProgramsValue']);
-            } else {
-                $sQuery = $sQuery->joinLeft(['pe' => 'participant_enrolled_programs_map'], 'pe.participant_id=p.participant_id', [])
-                    ->joinLeft(['rep' => 'r_enrolled_programs'], 'rep.r_epid=pe.ep_id', ['rep.enrolled_programs']);
-            }
-        }
+        $positions = in_array($position, [1, 2, 3], true) ? [$position] : [1, 2, 3];
+        $numbers = implode(' UNION ALL ', array_map(fn ($n) => "SELECT $n AS pos", $positions));
 
-        if (isset($params['startDate']) && $params['startDate'] != '' && isset($params['endDate']) && $params['endDate'] != '') {
-
-            $sQuery = $sQuery->where('DATE(s.shipment_date) >= ?', $this->common->isoDateFormat($params['startDate']));
-            $sQuery = $sQuery->where('DATE(s.shipment_date) <= ?', $this->common->isoDateFormat($params['endDate']));
-        }
-        $sQuery = $sQuery->where('tn.TestKit_Name IS NOT NULL');
-        return $dbAdapter->fetchAll($sQuery);
+        return $db->select()
+            ->from(['r' => $responses], [
+                'r.map_id',
+                'n.pos',
+                'kit' => new Zend_Db_Expr('CASE n.pos WHEN 1 THEN r.k1 WHEN 2 THEN r.k2 ELSE r.k3 END'),
+            ])
+            ->join(['n' => new Zend_Db_Expr("($numbers)")], '1=1', [])
+            ->having('kit IS NOT NULL');
     }
 
-    public function getTestKitDetailedReport($parameters)
+    /**
+     * Test Kit Report summary: the totals over the matching responses that
+     * name a kit, and one row per kit, most used first.
+     */
+    public function getTestKitSummary(array $params): array
     {
-        $searchColumns = [
-            'tn.TestKit_Name',
-            'totalTest',
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $rows = $db->fetchAll(
+            $db->select()
+                ->from(['u' => $this->testKitUses($params, (int) ($params['position'] ?? 0))], ['u.map_id', 'u.pos', 'u.kit'])
+                ->join(['sp' => 'shipment_participant_map'], 'sp.map_id=u.map_id', ['sp.participant_id', 'sp.final_result']),
+            [],
+            Zend_Db::FETCH_NUM
+        );
+
+        // Counted in PHP: one pass over the rows is much quicker than
+        // COUNT(DISTINCT) per column in MySQL. Sets are keyed by map id.
+        $kits = [];
+        $responses = [];
+        $participants = [];
+        foreach ($rows as [$mapId, $position, $kit, $participantId, $finalResult]) {
+            $kits[$kit] ??= ['responses' => [], 'participants' => [], 'test1' => [], 'test2' => [], 'test3' => [], 'passed' => [], 'failed' => []];
+            $kits[$kit]['responses'][$mapId] = true;
+            $kits[$kit]['participants'][$participantId] = true;
+            $kits[$kit]['test' . $position][$mapId] = true;
+            if ((int) $finalResult === 1) {
+                $kits[$kit]['passed'][$mapId] = true;
+            } elseif ((int) $finalResult === 2) {
+                $kits[$kit]['failed'][$mapId] = true;
+            }
+            $responses[$mapId] = true;
+            $participants[$participantId] = true;
+        }
+
+        $names = $this->testKitNames();
+        $out = [];
+        foreach ($kits as $kit => $sets) {
+            $out[] = ['id' => (string) $kit, 'name' => $names[(string) $kit] ?? ''] + array_map('count', $sets);
+        }
+        usort($out, fn ($a, $b) => [$b['responses'], $a['name']] <=> [$a['responses'], $b['name']]);
+
+        return [
+            'responses' => count($responses),
+            'participants' => count($participants),
+            'kits' => count($out),
+            'rows' => $out,
         ];
-        $orderColumns = [
-            'tn.TestKit_Name',
-            'totalTest',
-        ];
+    }
 
-        $sLimit = '';
-        if (isset($parameters['iDisplayStart']) && $parameters['iDisplayLength'] != '-1') {
-            $sOffset = $parameters['iDisplayStart'];
-            $sLimit = $parameters['iDisplayLength'];
+    /**
+     * The responses that used a kit (or every kit, with $kitId null), newest
+     * shipment first. Each row lists the tests the kit was used for.
+     */
+    public function getTestKitResponses(array $params, ?string $kitId = null, ?int $limit = null): array
+    {
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $sQuery = $db->select()
+            ->from(['u' => $this->testKitUses($params, (int) ($params['position'] ?? 0))], [
+                'kit_id' => 'u.kit',
+                'tests' => new Zend_Db_Expr("GROUP_CONCAT(u.pos ORDER BY u.pos SEPARATOR ', ')"),
+            ])
+            ->join(['sp' => 'shipment_participant_map'], 'sp.map_id=u.map_id', [
+                'sp.final_result',
+                'score' => new Zend_Db_Expr('IFNULL(sp.shipment_score, 0) + IFNULL(sp.documentation_score, 0)'),
+            ])
+            ->join(['s' => 'shipment'], 's.shipment_id=sp.shipment_id', ['s.shipment_code', 's.shipment_date'])
+            ->join(['p' => 'participant'], 'p.participant_id=sp.participant_id', [
+                'p.unique_identifier',
+                'p.institute_name',
+                'p.district',
+                'p.state',
+                'participant_name' => new Zend_Db_Expr(Application_Model_DbTable_Participants::participantNameExpr('p')),
+            ])
+            ->joinLeft(['c' => 'countries'], 'c.id=p.country', ['c.iso_name'])
+            ->group(['u.map_id', 'u.kit'])
+            ->order(['s.shipment_date DESC', 'participant_name ASC', 'u.kit ASC']);
+
+        if ($kitId !== null) {
+            $sQuery->where('u.kit = ?', $kitId);
         }
+        if ($limit !== null) {
+            $sQuery->limit($limit);
+        }
+        $names = $this->testKitNames();
+        return array_map(function ($row) use ($names) {
+            $row['kit_name'] = $names[$row['kit_id']] ?? '';
+            return $row;
+        }, $db->fetchAll($sQuery));
+    }
 
-        $sOrder = '';
-        if (isset($parameters['iSortCol_0'])) {
-            $sOrder = '';
-            for ($i = 0; $i < intval($parameters['iSortingCols']); $i++) {
-                if ($parameters['bSortable_' . intval($parameters['iSortCol_' . $i])] == 'true') {
-                    $colIdx = intval($parameters['iSortCol_' . $i]);
-                    if (!isset($orderColumns[$colIdx])) {
-                        continue;
-                    }
-                    $sOrder .= $orderColumns[$colIdx] . '
-					    ' . Pt_Commons_General::sanitizeSortDirection($parameters['sSortDir_' . $i]) . ', ';
-                }
+    /**
+     * Test kit id => name. Read once: r_testkitnames has no index on the id
+     * on some installs, so joining it row by row is slow.
+     */
+    private function testKitNames(): array
+    {
+        $names = [];
+        $rows = Zend_Db_Table_Abstract::getDefaultAdapter()->fetchPairs('SELECT TestKitName_ID, TestKit_Name FROM r_testkitnames');
+        foreach ($rows as $id => $name) {
+            $names[(string) $id] = html_entity_decode(stripslashes((string) $name), ENT_QUOTES, 'UTF-8');
+        }
+        return $names;
+    }
+
+    /**
+     * The drawer under a kit: the first $limit responses that used it, as
+     * table rows.
+     */
+    public function getTestKitDrawer(array $params, string $kitId, int $limit = 100): string
+    {
+        $rows = $this->getTestKitResponses($params, $kitId, $limit + 1);
+        $esc = fn ($v) => htmlspecialchars((string) $v, ENT_QUOTES, 'UTF-8', false);
+        $date = fn ($d) => Pt_Commons_DateUtility::humanReadableDateFormat($d ?? '');
+        $results = [1 => ['Pass', 'is-ok'], 2 => ['Fail', 'is-bad']];
+
+        $html = '<table class="table tk-responses"><thead><tr>'
+            . '<th>' . $esc($this->translator->_('Participant')) . '</th>'
+            . '<th>' . $esc($this->translator->_('Location')) . '</th>'
+            . '<th>' . $esc($this->translator->_('Shipment')) . '</th>'
+            . '<th>' . $esc($this->translator->_('Used as test')) . '</th>'
+            . '<th>' . $esc($this->translator->_('Score')) . '</th>'
+            . '<th>' . $esc($this->translator->_('Result')) . '</th>'
+            . '</tr></thead><tbody>';
+        foreach (array_slice($rows, 0, $limit) as $r) {
+            $result = $results[(int) $r['final_result']] ?? ['Not evaluated', 'is-muted'];
+            $sub = array_values(array_filter([$r['unique_identifier'], $r['institute_name']]));
+            $name = trim((string) $r['participant_name']) !== '' ? $r['participant_name'] : array_shift($sub);
+            $html .= '<tr>'
+                . '<td><span class="cell-main">' . $esc($name) . '</span>'
+                . (!empty($sub) ? '<span class="cell-sub">' . $esc(implode(' · ', $sub)) . '</span>' : '') . '</td>'
+                . '<td>' . $esc(implode(', ', array_filter([$r['district'], $r['state'], $r['iso_name']]))) . '</td>'
+                . '<td><span class="cell-main">' . $esc($r['shipment_code']) . '</span><span class="cell-sub">' . $esc($date($r['shipment_date'])) . '</span></td>'
+                . '<td>' . $esc($r['tests']) . '</td>'
+                . '<td>' . (isset($results[(int) $r['final_result']]) ? round((float) $r['score']) : '') . '</td>'
+                . '<td><span class="resp-pill ' . $result[1] . '">' . $esc($this->translator->_($result[0])) . '</span></td>'
+                . '</tr>';
+        }
+        $html .= '</tbody></table>';
+        if (count($rows) > $limit) {
+            $html .= '<p class="tk-more">' . $esc(sprintf($this->translator->_('The first %s responses. Download Excel for the full list.'), $limit)) . '</p>';
+        }
+        return $html;
+    }
+
+    /**
+     * Test Kit Report as Excel: one sheet with a row per kit, one with a row
+     * per response and kit.
+     */
+    public function exportTestKitReport(array $params): string
+    {
+        try {
+            // The Responses sheet holds a row per response and kit.
+            ini_set('memory_limit', '-1');
+            $summary = $this->getTestKitSummary($params);
+            if (empty($summary['rows'])) {
+                return '';
             }
+            $t = fn ($text) => html_entity_decode($text, ENT_QUOTES, 'UTF-8');
+            $decode = fn ($text) => html_entity_decode(stripslashes((string) $text), ENT_QUOTES, 'UTF-8');
+            $results = [1 => $t($this->translator->_('Pass')), 2 => $t($this->translator->_('Fail'))];
+            $pct = fn (int $part, int $whole) => $whole > 0 ? round($part / $whole * 100, 1) : null;
 
-            $sOrder = substr_replace($sOrder, '', -2);
-        }
-
-        $sWhere = '';
-        if (isset($parameters['sSearch']) && $parameters['sSearch'] != '') {
-            $searchArray = explode(' ', $parameters['sSearch']);
-            $sWhereSub = '';
-            foreach ($searchArray as $search) {
-                if ($sWhereSub == '') {
-                    $sWhereSub .= '(';
-                } else {
-                    $sWhereSub .= ' AND (';
-                }
-                $colSize = count($searchColumns);
-
-                for ($i = 0; $i < $colSize; $i++) {
-                    if ($searchColumns[$i] == '' || $searchColumns[$i] == null) {
-                        continue;
-                    }
-                    if ($i < $colSize - 1) {
-                        $sWhereSub .= $searchColumns[$i] . ' LIKE ' . Pt_Commons_General::sqlLikeContains($search) . ' OR ';
-                    } else {
-                        $sWhereSub .= $searchColumns[$i] . ' LIKE ' . Pt_Commons_General::sqlLikeContains($search) . ' ';
-                    }
-                }
-                $sWhereSub .= ')';
+            $excel = new Spreadsheet();
+            $sheet = $excel->getActiveSheet();
+            $sheet->setTitle(mb_substr($t($this->translator->_('Test kits')), 0, 31));
+            $sheet->fromArray([
+                $t($this->translator->_('Test kit')),
+                $t($this->translator->_('Responses')),
+                $t($this->translator->_('Share of responses')) . ' (%)',
+                $t($this->translator->_('Participants')),
+                $t($this->translator->_('Test 1')),
+                $t($this->translator->_('Test 2')),
+                $t($this->translator->_('Test 3')),
+                $t($this->translator->_('Passed')),
+                $t($this->translator->_('Failed')),
+                $t($this->translator->_('Pass rate')) . ' (%)',
+            ], null, 'A1');
+            $rowNo = 2;
+            foreach ($summary['rows'] as $k) {
+                $sheet->fromArray([
+                    $k['name'] !== '' ? $k['name'] : $k['id'],
+                    $k['responses'],
+                    $pct($k['responses'], $summary['responses']),
+                    $k['participants'],
+                    $k['test1'],
+                    $k['test2'],
+                    $k['test3'],
+                    $k['passed'],
+                    $k['failed'],
+                    $pct($k['passed'], $k['passed'] + $k['failed']),
+                ], null, 'A' . $rowNo++, true);
             }
-            $sWhere .= $sWhereSub;
-        }
+            $sheet->getStyle('1:1')->getFont()->setBold(true);
+            $sheet->freezePane('A2');
 
-        /* Individual column filtering */
-        for ($i = 0; $i < count($searchColumns); $i++) {
-            if (isset($parameters['bSearchable_' . $i]) && $parameters['bSearchable_' . $i] == 'true' && $parameters['sSearch_' . $i] != '') {
-                if ($sWhere == '') {
-                    $sWhere .= $searchColumns[$i] . ' LIKE ' . Pt_Commons_General::sqlLikeContains($parameters['sSearch_' . $i]) . ' ';
-                } else {
-                    $sWhere .= ' AND ' . $searchColumns[$i] . ' LIKE ' . Pt_Commons_General::sqlLikeContains($parameters['sSearch_' . $i]) . ' ';
-                }
+            $detail = $excel->createSheet();
+            $detail->setTitle(mb_substr($t($this->translator->_('Responses')), 0, 31));
+            $detail->fromArray([
+                $t($this->translator->_('Test kit')),
+                $t($this->translator->_('Used as test')),
+                $t($this->translator->_('Participant ID')),
+                $t($this->translator->_('Participant')),
+                $t($this->translator->_('Institute')),
+                $t($this->translator->_('District')),
+                $t($this->translator->_('Province')),
+                $t($this->translator->_('Country')),
+                $t($this->translator->_('Shipment')),
+                $t($this->translator->_('Shipment Date')),
+                $t($this->translator->_('Score')),
+                $t($this->translator->_('Result')),
+            ], null, 'A1');
+            $rowNo = 2;
+            foreach ($this->getTestKitResponses($params) as $r) {
+                $evaluated = isset($results[(int) $r['final_result']]);
+                $detail->fromArray([
+                    $r['kit_name'] !== '' ? $r['kit_name'] : $r['kit_id'],
+                    $r['tests'],
+                    $r['unique_identifier'],
+                    $decode($r['participant_name']),
+                    $decode($r['institute_name']),
+                    $r['district'],
+                    $r['state'],
+                    $r['iso_name'],
+                    $r['shipment_code'],
+                    Pt_Commons_DateUtility::humanReadableDateFormat($r['shipment_date'] ?? ''),
+                    $evaluated ? round((float) $r['score'], 2) : null,
+                    $evaluated ? $results[(int) $r['final_result']] : $t($this->translator->_('Not evaluated')),
+                ], null, 'A' . $rowNo++, true);
             }
-        }
+            $detail->getStyle('1:1')->getFont()->setBold(true);
+            $detail->freezePane('A2');
 
-        $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $sQuery = $dbAdapter->select()->from(['res' => 'response_result_dts'], ['totalTest' => new Zend_Db_Expr("CAST((COUNT('shipment_map_id')/s.number_of_samples) as UNSIGNED)")])
-            ->joinLeft(['sp' => 'shipment_participant_map'], 'sp.map_id=res.shipment_map_id', [])
-            ->joinLeft(['p' => 'participant'], 'sp.participant_id=p.participant_id', ['p.lab_name', 'participantName' => new Zend_Db_Expr(Application_Model_DbTable_Participants::participantNameGroupConcatExpr('p'))])
-            ->joinLeft(['s' => 'shipment'], 's.shipment_id=sp.shipment_id', []);
-        //  ->group("p.participant_id");
-
-        if (isset($parameters['kitType']) && $parameters['kitType'] == 'testkit1') {
-            $sQuery = $sQuery->joinLeft(['tn' => 'r_testkitnames'], 'tn.TestKitName_ID=res.test_kit_name_1', ['tn.TestKit_Name', 'TestKitName_ID'])
-                ->group('tn.TestKitName_ID');
-        } elseif (isset($parameters['kitType']) && $parameters['kitType'] == 'testkit2') {
-            $sQuery = $sQuery->joinLeft(['tn' => 'r_testkitnames'], 'tn.TestKitName_ID=res.test_kit_name_2', ['tn.TestKit_Name', 'TestKitName_ID'])
-                ->group('tn.TestKitName_ID');
-        } elseif (isset($parameters['kitType']) && $parameters['kitType'] == 'testkit3') {
-            $sQuery = $sQuery->joinLeft(['tn' => 'r_testkitnames'], 'tn.TestKitName_ID=res.test_kit_name_3', ['tn.TestKit_Name', 'TestKitName_ID'])
-                ->group('tn.TestKitName_ID');
-        } else {
-            $sQuery = $sQuery->joinLeft(['tn' => 'r_testkitnames'], 'tn.TestKitName_ID=res.test_kit_name_1 or tn.TestKitName_ID=res.test_kit_name_2 or tn.TestKitName_ID=res.test_kit_name_3', ['TestKit_Name', 'TestKitName_ID'])
-                ->group('tn.TestKitName_ID');
-        }
-        if (isset($parameters['reportType']) && $parameters['reportType'] == 'network') {
-            if (isset($parameters['networkValue']) && $parameters['networkValue'] != '') {
-                $sQuery = $sQuery->where('p.network_tier = ?', $parameters['networkValue']);
-            } else {
-                $sQuery = $sQuery->joinLeft(['n' => 'r_network_tiers'], 'p.network_tier=n.network_id', []);
+            foreach ($sheet->getColumnIterator() as $column) {
+                $sheet->getColumnDimension($column->getColumnIndex())->setAutoSize(true);
             }
-        }
-        if (isset($parameters['reportType']) && $parameters['reportType'] == 'affiliation') {
-            if (isset($parameters['affiliateValue']) && $parameters['affiliateValue'] != '') {
-                $iQuery = $dbAdapter->select()->from(['rpa' => 'r_participant_affiliates'])
-                    ->where('rpa.aff_id=?', $parameters['affiliateValue']);
-                $iResult = $dbAdapter->fetchRow($iQuery);
-                $appliate = $iResult['affiliate'];
-                $sQuery = $sQuery->where('p.affiliation = ' . $dbAdapter->quote($appliate) . ' OR p.affiliation = ' . $dbAdapter->quote($parameters['affiliateValue']));
-            } else {
-                $sQuery = $sQuery->joinLeft(['pa' => 'r_participant_affiliates'], 'p.affiliation=pa.affiliate', []);
+            // Autosizing tens of thousands of rows takes long, so the
+            // Responses sheet gets fixed widths.
+            foreach (['A' => 30, 'B' => 12, 'C' => 16, 'D' => 34, 'E' => 34, 'F' => 18, 'G' => 18, 'H' => 16, 'I' => 16, 'J' => 14, 'K' => 8, 'L' => 14] as $col => $width) {
+                $detail->getColumnDimension($col)->setWidth($width);
             }
-        }
-        if (isset($parameters['reportType']) && $parameters['reportType'] == 'enrolled-programs') {
-            if (isset($parameters['enrolledProgramsValue']) && $parameters['enrolledProgramsValue'] != '') {
-                $sQuery = $sQuery->joinLeft(['pe' => 'participant_enrolled_programs_map'], 'pe.participant_id=p.participant_id', [])
-                    ->joinLeft(['rep' => 'r_enrolled_programs'], 'rep.r_epid=pe.ep_id', ['rep.enrolled_programs'])
-                    ->where('rep.r_epid= ?', $parameters['enrolledProgramsValue']);
-            } else {
-                $sQuery = $sQuery->joinLeft(['pe' => 'participant_enrolled_programs_map'], 'pe.participant_id=p.participant_id', [])
-                    ->joinLeft(['rep' => 'r_enrolled_programs'], 'rep.r_epid=pe.ep_id', ['rep.enrolled_programs']);
+            $excel->setActiveSheetIndex(0);
+
+            if (!is_dir($this->tempUploadDirectory)) {
+                mkdir($this->tempUploadDirectory);
             }
+            $filename = 'test-kit-report-' . date('d-M-Y-H-i-s') . '.xlsx';
+            IOFactory::createWriter($excel, 'Xlsx')->save($this->tempUploadDirectory . DIRECTORY_SEPARATOR . $filename);
+            return $filename;
+        } catch (Throwable $exc) {
+            Pt_Commons_LoggerUtility::logError('Failed to generate test kit report (Excel): ' . $exc->getMessage(), [
+                'file' => $exc->getFile(),
+                'line' => $exc->getLine(),
+                'trace' => $exc->getTraceAsString(),
+            ]);
+            return '';
         }
-        if (isset($parameters['reportType']) && $parameters['reportType'] == 'region') {
-            if (isset($parameters['regionValue']) && $parameters['regionValue'] != '') {
-                $sQuery = $sQuery->where('p.region= ?', $parameters['regionValue']);
-            } else {
-                $sQuery = $sQuery->where('p.region IS NOT NULL')->where("p.region != ''");
-            }
-        }
-        if (isset($parameters['startDate']) && $parameters['startDate'] != '' && isset($parameters['endDate']) && $parameters['endDate'] != '') {
-
-            $sQuery = $sQuery->where('s.shipment_date >= ?', $this->common->isoDateFormat($parameters['startDate']));
-            $sQuery = $sQuery->where('s.shipment_date <= ?', $this->common->isoDateFormat($parameters['endDate']));
-        }
-        $sQuery = $sQuery->where('tn.TestKit_Name IS NOT NULL');
-
-        if (isset($sWhere) && $sWhere != '') {
-            $sQuery = $sQuery->having($sWhere);
-        }
-        if (!empty($sOrder)) {
-            $sQuery = $sQuery->order($sOrder);
-        }
-        $sQuerySession = new Zend_Session_Namespace('TestkitActionsExcel');
-        $sQuerySession->testkitActionsQuery = $sQuery;
-
-        if (isset($sLimit) && isset($sOffset)) {
-            $sQuery = $sQuery->limit($sLimit, $sOffset);
-        }
-        $rResult = $dbAdapter->fetchAll($sQuery);
-
-        /* Data set length after filtering */
-        $sQuery = $sQuery->reset(Zend_Db_Select::LIMIT_COUNT);
-        $sQuery = $sQuery->reset(Zend_Db_Select::LIMIT_OFFSET);
-        $aResultFilterTotal = $dbAdapter->fetchAll($sQuery);
-        $iFilteredTotal = count($aResultFilterTotal);
-
-        /* Total data set length */
-
-        $aResultTotal = $dbAdapter->fetchAll($sQuery);
-        $iTotal = sizeof($aResultTotal);
-
-        /*
-         * Output
-         */
-        $output = [
-            'sEcho' => intval($parameters['sEcho']),
-            'iTotalRecords' => $iTotal,
-            'iTotalDisplayRecords' => $iFilteredTotal,
-            'aaData' => [],
-        ];
-
-        foreach ($rResult as $aRow) {
-            $row = [];
-            $row['DT_RowId'] = 'testkitId' . $aRow['TestKitName_ID'];
-            //  $row[] = $aRow['participantName'];
-            // Both values go through json_encode and then HTML-escaping, so a quote
-            // in a kit name cannot break out of the onclick attribute.
-            $kitArgs = json_encode((string) $aRow['TestKitName_ID'], JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP)
-                . ',' . json_encode((string) $aRow['TestKit_Name'], JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP);
-            $row[] = '<a href="javascript:void(0);" onclick="participantReport(' . htmlspecialchars($kitArgs, ENT_QUOTES, 'UTF-8') . ')">'
-                . htmlspecialchars(stripslashes((string) $aRow['TestKit_Name']), ENT_QUOTES, 'UTF-8') . '</a>';
-            $row[] = $aRow['totalTest'];
-            $output['aaData'][] = $row;
-        }
-
-        echo json_encode($output);
     }
 
     public function getShipmentResponseCount($shipmentId, $date, $step = 5, $maxDays = 60)
@@ -1489,253 +1532,6 @@ class Application_Service_Reports
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $sQuerySession = new Zend_Session_Namespace('shipmentExportExcel');
         return $db->fetchAll($sQuerySession->shipmentExportQuery);
-    }
-
-    public function getTestKitParticipantReport($parameters)
-    {
-        /* Array of database columns which should be read and sent back to DataTables. Use a space where
-         * you want to insert a non-database field (for example a counter or static image)
-         */
-
-        if (isset($parameters['reportType']) && $parameters['reportType'] == 'network') {
-            $aColumns = ['p.first_name', 'network_name'];
-        } elseif (isset($parameters['reportType']) && $parameters['reportType'] == 'affiliation') {
-            $aColumns = ['p.first_name', 'affiliate'];
-        } elseif (isset($parameters['reportType']) && $parameters['reportType'] == 'region') {
-            $aColumns = ['p.first_name', 'region'];
-        } else {
-            $aColumns = ['p.first_name'];
-        }
-
-        $sLimit = '';
-        if (isset($parameters['iDisplayStart']) && $parameters['iDisplayLength'] != '-1') {
-            $sOffset = $parameters['iDisplayStart'];
-            $sLimit = $parameters['iDisplayLength'];
-        }
-
-        $sOrder = '';
-        if (isset($parameters['iSortCol_0'])) {
-            $sOrder = '';
-            for ($i = 0; $i < intval($parameters['iSortingCols']); $i++) {
-                if ($parameters['bSortable_' . intval($parameters['iSortCol_' . $i])] == 'true') {
-                    $colIdx = intval($parameters['iSortCol_' . $i]);
-                    if (!isset($aColumns[$colIdx])) {
-                        continue;
-                    }
-                    $sOrder .= $aColumns[$colIdx] . '
-					    ' . Pt_Commons_General::sanitizeSortDirection($parameters['sSortDir_' . $i]) . ', ';
-                }
-            }
-
-            $sOrder = substr_replace($sOrder, '', -2);
-        }
-
-        $sWhere = '';
-        if (isset($parameters['sSearch']) && $parameters['sSearch'] != '') {
-            $searchArray = explode(' ', $parameters['sSearch']);
-            $sWhereSub = '';
-            foreach ($searchArray as $search) {
-                if ($sWhereSub == '') {
-                    $sWhereSub .= '(';
-                } else {
-                    $sWhereSub .= ' AND (';
-                }
-                $colSize = count($aColumns);
-
-                for ($i = 0; $i < $colSize; $i++) {
-                    if ($aColumns[$i] == '' || $aColumns[$i] == null) {
-                        continue;
-                    }
-                    if ($i < $colSize - 1) {
-                        $sWhereSub .= $aColumns[$i] . ' LIKE ' . Pt_Commons_General::sqlLikeContains($search) . ' OR ';
-                    } else {
-                        $sWhereSub .= $aColumns[$i] . ' LIKE ' . Pt_Commons_General::sqlLikeContains($search) . ' ';
-                    }
-                }
-                $sWhereSub .= ')';
-            }
-            $sWhere .= $sWhereSub;
-        }
-
-        /* Individual column filtering */
-        for ($i = 0; $i < count($aColumns); $i++) {
-            if (isset($parameters['bSearchable_' . $i]) && $parameters['bSearchable_' . $i] == 'true' && $parameters['sSearch_' . $i] != '') {
-                if ($sWhere == '') {
-                    $sWhere .= $aColumns[$i] . ' LIKE ' . Pt_Commons_General::sqlLikeContains($parameters['sSearch_' . $i]) . ' ';
-                } else {
-                    $sWhere .= ' AND ' . $aColumns[$i] . ' LIKE ' . Pt_Commons_General::sqlLikeContains($parameters['sSearch_' . $i]) . ' ';
-                }
-            }
-        }
-
-        $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $sQuery = $dbAdapter->select()->from(['res' => 'response_result_dts'], [])
-            ->joinLeft(['sp' => 'shipment_participant_map'], 'sp.map_id=res.shipment_map_id', [])
-            ->joinLeft(['p' => 'participant'], 'sp.participant_id=p.participant_id', ['p.first_name', 'p.last_name', 'p.region', 'p.affiliation'])
-            ->joinLeft(['s' => 'shipment'], 's.shipment_id=sp.shipment_id', [])
-            ->group('p.participant_id');
-
-        if (isset($parameters['kitType']) && $parameters['kitType'] == 'testkit1') {
-            $sQuery = $sQuery->joinLeft(['tn' => 'r_testkitnames'], 'tn.TestKitName_ID=res.test_kit_name_1', [])->where('tn.TestKitName_ID = ?', $parameters['testkitId']);
-        } elseif (isset($parameters['kitType']) && $parameters['kitType'] == 'testkit2') {
-            $sQuery = $sQuery->joinLeft(['tn' => 'r_testkitnames'], 'tn.TestKitName_ID=res.test_kit_name_2', [])->where('tn.TestKitName_ID = ?', $parameters['testkitId']);
-        } elseif (isset($parameters['kitType']) && $parameters['kitType'] == 'testkit3') {
-            $sQuery = $sQuery->joinLeft(['tn' => 'r_testkitnames'], 'tn.TestKitName_ID=res.test_kit_name_3', [])->where('tn.TestKitName_ID = ?', $parameters['testkitId']);
-        } else {
-            $sQuery = $sQuery->joinLeft(['tn' => 'r_testkitnames'], 'tn.TestKitName_ID=res.test_kit_name_1 or tn.TestKitName_ID=res.test_kit_name_2 or tn.TestKitName_ID=res.test_kit_name_3', ['TestKit_Name', 'TestKitName_ID'])
-                ->group('tn.TestKitName_ID');
-        }
-        if (isset($parameters['reportType']) && $parameters['reportType'] == 'network') {
-            if (isset($parameters['networkValue']) && $parameters['networkValue'] != '') {
-                $sQuery = $sQuery->joinLeft(['n' => 'r_network_tiers'], 'p.network_tier=n.network_id', ['network_name'])->where('p.network_tier = ?', $parameters['networkValue']);
-            } else {
-                $sQuery = $sQuery->joinLeft(['n' => 'r_network_tiers'], 'p.network_tier=n.network_id', ['network_name']);
-            }
-        }
-        if (isset($parameters['reportType']) && $parameters['reportType'] == 'affiliation') {
-            if (isset($parameters['affiliateValue']) && $parameters['affiliateValue'] != '') {
-                $iQuery = $dbAdapter->select()->from(['rpa' => 'r_participant_affiliates'], ['affiliation' => 'affiliate'])
-                    ->where('rpa.aff_id=?', $parameters['affiliateValue']);
-                $iResult = $dbAdapter->fetchRow($iQuery);
-                $appliate = $iResult['affiliation'];
-                $sQuery = $sQuery->where('p.affiliation = ' . $dbAdapter->quote($appliate) . ' OR p.affiliation = ' . $dbAdapter->quote($parameters['affiliateValue']));
-            } else {
-                $sQuery = $sQuery->joinLeft(['pa' => 'r_participant_affiliates'], 'p.affiliation=pa.affiliate', ['affiliation' => 'affiliate']);
-            }
-        }
-        if (isset($parameters['reportType']) && $parameters['reportType'] == 'region') {
-            if (isset($parameters['regionValue']) && $parameters['regionValue'] != '') {
-                $sQuery = $sQuery->where('p.region= ?', $parameters['regionValue']);
-            } else {
-                $sQuery = $sQuery->where('p.region IS NOT NULL')->where("p.region != ''");
-            }
-        }
-        if (isset($parameters['startDate']) && $parameters['startDate'] != '' && isset($parameters['endDate']) && $parameters['endDate'] != '') {
-
-            $sQuery = $sQuery->where('s.shipment_date >= ?', $this->common->isoDateFormat($parameters['startDate']));
-            $sQuery = $sQuery->where('s.shipment_date <= ?', $this->common->isoDateFormat($parameters['endDate']));
-        }
-        $sQuery = $sQuery->where('tn.TestKit_Name IS NOT NULL');
-
-        if (isset($sWhere) && $sWhere != '') {
-            $sQuery = $sQuery->having($sWhere);
-        }
-        if (!empty($sOrder)) {
-            $sQuery = $sQuery->order($sOrder);
-        }
-
-        if (isset($sLimit) && isset($sOffset)) {
-            $sQuery = $sQuery->limit($sLimit, $sOffset);
-        }
-        $rResult = $dbAdapter->fetchAll($sQuery);
-
-        /* Data set length after filtering */
-        $sQuery = $sQuery->reset(Zend_Db_Select::LIMIT_COUNT);
-        $sQuery = $sQuery->reset(Zend_Db_Select::LIMIT_OFFSET);
-        $aResultFilterTotal = $dbAdapter->fetchAll($sQuery);
-        $iFilteredTotal = count($aResultFilterTotal);
-
-        /* Total data set length */
-
-        $aResultTotal = $dbAdapter->fetchAll($sQuery);
-        $iTotal = sizeof($aResultTotal);
-
-        /*
-         * Output
-         */
-        $output = [
-            'sEcho' => intval($parameters['sEcho']),
-            'iTotalRecords' => $iTotal,
-            'iTotalDisplayRecords' => $iFilteredTotal,
-            'aaData' => [],
-        ];
-
-        foreach ($rResult as $aRow) {
-            $row = [];
-            $row[] = htmlspecialchars((string) ($aRow['first_name'] . ' ' . $aRow['last_name']), ENT_QUOTES, 'UTF-8');
-            if (isset($parameters['reportType']) && $parameters['reportType'] == 'network') {
-                $row[] = htmlspecialchars((string) ($aRow['network_name']), ENT_QUOTES, 'UTF-8');
-            } elseif (isset($parameters['reportType']) && $parameters['reportType'] == 'affiliation') {
-                $row[] = htmlspecialchars((string) ($aRow['affiliation']), ENT_QUOTES, 'UTF-8');
-            } elseif (isset($parameters['reportType']) && $parameters['reportType'] == 'region') {
-                $row[] = htmlspecialchars((string) ($aRow['region']), ENT_QUOTES, 'UTF-8');
-            } else {
-                $row[] = '';
-            }
-            $output['aaData'][] = $row;
-        }
-
-        echo json_encode($output);
-    }
-
-    public function generatePdfTestKitDetailedReport($parameters)
-    {
-        $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $sQuerySession = new Zend_Session_Namespace('TestkitActionsExcel');
-        $rResult = $dbAdapter->fetchAll($sQuerySession->testkitActionsQuery);
-        $pResult = '';
-        if (isset($parameters['testkitId']) && $parameters['testkitId'] != '') {
-            $sQuery = $dbAdapter->select()->from(['res' => 'response_result_dts'], [])
-                ->joinLeft(['sp' => 'shipment_participant_map'], 'sp.map_id=res.shipment_map_id', [])
-                ->joinLeft(['p' => 'participant'], 'sp.participant_id=p.participant_id', ['p.first_name', 'p.last_name', 'p.region', 'p.affiliation'])
-                ->joinLeft(['s' => 'shipment'], 's.shipment_id=sp.shipment_id', [])
-                ->group('p.participant_id');
-
-            if (isset($parameters['kitType']) && $parameters['kitType'] == 'testkit1') {
-                $sQuery = $sQuery->joinLeft(['tn' => 'r_testkitnames'], 'tn.TestKitName_ID=res.test_kit_name_1', [])->where('tn.TestKitName_ID = ?', $parameters['testkitId']);
-            }
-            if (isset($parameters['kitType']) && $parameters['kitType'] == 'testkit2') {
-                $sQuery = $sQuery->joinLeft(['tn' => 'r_testkitnames'], 'tn.TestKitName_ID=res.test_kit_name_2', [])->where('tn.TestKitName_ID = ?', $parameters['testkitId']);
-            }
-            if (isset($parameters['kitType']) && $parameters['kitType'] == 'testkit3') {
-                $sQuery = $sQuery->joinLeft(['tn' => 'r_testkitnames'], 'tn.TestKitName_ID=res.test_kit_name_3', [])->where('tn.TestKitName_ID = ?', $parameters['testkitId']);
-            }
-            if (isset($parameters['reportType']) && $parameters['reportType'] == 'network') {
-                if (isset($parameters['networkValue']) && $parameters['networkValue'] != '') {
-                    $sQuery = $sQuery->joinLeft(['n' => 'r_network_tiers'], 'p.network_tier=n.network_id', ['network_name'])->where('p.network_tier = ?', $parameters['networkValue']);
-                } else {
-                    $sQuery = $sQuery->joinLeft(['n' => 'r_network_tiers'], 'p.network_tier=n.network_id', ['network_name']);
-                }
-            }
-            if (isset($parameters['reportType']) && $parameters['reportType'] == 'affiliation') {
-                if (isset($parameters['affiliateValue']) && $parameters['affiliateValue'] != '') {
-                    $iQuery = $dbAdapter->select()->from(['rpa' => 'r_participant_affiliates'], ['affiliation' => 'affiliate'])
-                        ->where('rpa.aff_id=?', $parameters['affiliateValue']);
-                    $iResult = $dbAdapter->fetchRow($iQuery);
-                    $appliate = $iResult['affiliation'];
-                    $sQuery = $sQuery->where('p.affiliation = ' . $dbAdapter->quote($appliate) . ' OR p.affiliation = ' . $dbAdapter->quote($parameters['affiliateValue']));
-                } else {
-                    $sQuery = $sQuery->joinLeft(['pa' => 'r_participant_affiliates'], 'p.affiliation=pa.affiliate', ['affiliation' => 'affiliate']);
-                }
-            }
-            if (isset($parameters['reportType']) && $parameters['reportType'] == 'region') {
-                if (isset($parameters['regionValue']) && $parameters['regionValue'] != '') {
-                    $sQuery = $sQuery->where('p.region= ?', $parameters['regionValue']);
-                } else {
-                    $sQuery = $sQuery->where('p.region IS NOT NULL')->where("p.region != ''");
-                }
-            }
-            if (isset($parameters['reportType']) && $parameters['reportType'] == 'enrolled-programs') {
-                if (isset($parameters['enrolledProgramsValue']) && $parameters['enrolledProgramsValue'] != '') {
-                    $sQuery = $sQuery->joinLeft(['pe' => 'participant_enrolled_programs_map'], 'pe.participant_id=p.participant_id', [])
-                        ->joinLeft(['rep' => 'r_enrolled_programs'], 'rep.r_epid=pe.ep_id', ['rep.enrolled_programs'])
-                        ->where('rep.r_epid= ?', $parameters['enrolledProgramsValue']);
-                } else {
-                    $sQuery = $sQuery->joinLeft(['pe' => 'participant_enrolled_programs_map'], 'pe.participant_id=p.participant_id', [])
-                        ->joinLeft(['rep' => 'r_enrolled_programs'], 'rep.r_epid=pe.ep_id', ['rep.enrolled_programs']);
-                }
-            }
-            if (isset($parameters['startDate']) && $parameters['startDate'] != '' && isset($parameters['endDate']) && $parameters['endDate'] != '') {
-
-                $sQuery = $sQuery->where('s.shipment_date >= ?', $this->common->isoDateFormat($parameters['startDate']));
-                $sQuery = $sQuery->where('s.shipment_date <= ?', $this->common->isoDateFormat($parameters['endDate']));
-            }
-            $sQuery = $sQuery->where('tn.TestKit_Name IS NOT NULL');
-            $pResult = $dbAdapter->fetchAll($sQuery);
-        }
-        $pieChart = $this->getTestKitReport($parameters);
-
-        return ['testkitDtsReport' => $rResult, 'testkitDtsParticipantReport' => $pResult, 'testkitChart' => $pieChart];
     }
 
     /** The VL Assay Distribution outcomes, in column order. */

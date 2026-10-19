@@ -17,59 +17,42 @@ class Reports_TestkitController extends Zend_Controller_Action
             }
             $this->redirect('/admin');
         }
-        /** @var Zend_Controller_Action_Helper_AjaxContext $ajaxContext */
-        $ajaxContext = $this->_helper->getHelper('AjaxContext');
-        $ajaxContext->addActionContext('index', 'html')
-            ->addActionContext('chart', 'html')
-            ->addActionContext('participant', 'html')
-            ->initContext();
         $this->_helper->layout()->pageName = 'report';
-    }
-
-    public function preDispatch()
-    {
-        $adminSession = new Zend_Session_Namespace('administrators');
-        if (!in_array('dts', $adminSession->activeSchemes)) {
-            $this->redirect('/admin');
-        }
     }
 
     public function indexAction()
     {
-        /** @var Zend_Controller_Request_Http $request */
-        $request = $this->getRequest();
-        if ($request->isPost()) {
-            $params = $this->getAllParams();
-            $reportService = new Application_Service_Reports();
-            $reportService->getTestKitDetailedReport($params);
-        }
-        $participantService = new Application_Service_Participants();
-        $this->view->enrolledProgramsList = $participantService->getEnrolledProgramsList();
-        $this->view->networkTierList = $participantService->getNetworkTierList();
-        $this->view->affiliateList = $participantService->getAffiliateList();
-        $this->view->regionList = $participantService->getAllParticipantRegion();
+        $participants = new Application_Service_Participants();
+        $scheme = new Application_Service_Schemes();
+        // Test kits are recorded for DTS (HIV serology) only.
+        $this->view->schemes = array_values(array_filter($scheme->getAllSchemes(), fn ($s) => $s['scheme_id'] === 'dts'));
+        $this->view->countries = $participants->getParticipantCountriesList();
+        $this->view->regions = $participants->getAllParticipantRegion();
+        $this->view->states = $participants->getAllParticipantStates();
+        $this->view->districts = $participants->getAllParticipantDistricts();
     }
 
-    public function chartAction()
+    public function dataAction()
     {
-        /** @var Zend_Controller_Request_Http $request */
-        $request = $this->getRequest();
-        if ($request->isPost()) {
-            $params = $this->getAllParams();
-            $reportService = new Application_Service_Reports();
-            $response = $reportService->getTestKitReport($params);
-            $this->view->response = $response;
-        }
+        $reportService = new Application_Service_Reports();
+        $this->_helper->json($reportService->getTestKitSummary($this->getAllParams()));
     }
 
-    public function participantAction()
+    public function responsesAction()
     {
-        /** @var Zend_Controller_Request_Http $request */
-        $request = $this->getRequest();
-        if ($request->isPost()) {
-            $params = $this->getAllParams();
-            $reportService = new Application_Service_Reports();
-            $reportService->getTestKitParticipantReport($params);
-        }
+        $reportService = new Application_Service_Reports();
+        $this->_helper->json(['html' => $reportService->getTestKitDrawer($this->getAllParams(), (string) $this->getParam('kitId'))]);
+    }
+
+    public function shipmentsAction()
+    {
+        $reportService = new Application_Service_Reports();
+        $this->_helper->json($reportService->getResponseReportShipments('dts', $this->getParam('startDate'), $this->getParam('endDate')));
+    }
+
+    public function exportAction()
+    {
+        $reportService = new Application_Service_Reports();
+        $this->_helper->json(['file' => $reportService->exportTestKitReport($this->getAllParams())]);
     }
 }

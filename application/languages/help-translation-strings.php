@@ -103,7 +103,7 @@ _('districts');
 _('downloads');
 // admin/reports-distribution#tags
 _('draft');
-// admin/dts-settings#tags, admin/reports-corrective-actions#tags, admin/testkit-standard-kit#tags, admin/testkit#tags
+// admin/dts-settings#tags, admin/reports-corrective-actions#tags, admin/reports-testkit#tags, admin/testkit-standard-kit#tags, admin/testkit#tags
 _('dts');
 // admin/dts-settings#title
 _('DTS (HIV Serology) Settings');
@@ -189,7 +189,7 @@ _('hero');
 _('hiv');
 // admin/dts-settings#tags, admin/testkit-standard-kit#tags, admin/testkit#tags
 _('hiv-serology');
-// admin/reports-corrective-actions#tags
+// admin/reports-corrective-actions#tags, admin/reports-testkit#tags
 _('hiv serology');
 // admin/dashboard#tags, admin/home-config#tags
 _('home');
@@ -249,7 +249,7 @@ _('Participants');
 _('Participant Trends');
 // admin/reports-annual#tags
 _('participation');
-// admin/reports-participant-performance#tags, admin/reports-participant-response#tags, admin/reports-participant-trends#tags, admin/reports-shipment-response#tags, admin/reports-tb-participants-per-country#tags, admin/reports-vl-assay-distribution#tags
+// admin/reports-participant-performance#tags, admin/reports-participant-response#tags, admin/reports-participant-trends#tags, admin/reports-shipment-response#tags, admin/reports-tb-participants-per-country#tags, admin/reports-testkit#tags, admin/reports-vl-assay-distribution#tags
 _('pass rate');
 // admin/data-managers#tags
 _('password');
@@ -285,7 +285,7 @@ _('re-evaluate');
 _('regions');
 // admin/vl-assay-edit#summary
 _('Rename a Viral Load assay / platform');
-// admin/evaluate#tags, admin/report-config#tags, admin/reports-annual#tags, admin/reports-corrective-actions#tags, admin/reports-distribution#tags, admin/reports-finalize#tags, admin/reports-participant-performance#tags, admin/reports-participant-response#tags, admin/reports-participant-trends#tags, admin/reports-shipment-response#tags, admin/reports-shipments#tags, admin/reports-tb-all-sites-results#tags, admin/reports-tb-participants-per-country#tags, admin/reports-tb-results#tags, admin/reports-vl-assay-distribution#tags, admin/reports-vl-sample-analysis#tags, admin/reports-xtpt-indicators#tags
+// admin/evaluate#tags, admin/report-config#tags, admin/reports-annual#tags, admin/reports-corrective-actions#tags, admin/reports-distribution#tags, admin/reports-finalize#tags, admin/reports-participant-performance#tags, admin/reports-participant-response#tags, admin/reports-participant-trends#tags, admin/reports-shipment-response#tags, admin/reports-shipments#tags, admin/reports-tb-all-sites-results#tags, admin/reports-tb-participants-per-country#tags, admin/reports-tb-results#tags, admin/reports-testkit#tags, admin/reports-vl-assay-distribution#tags, admin/reports-vl-sample-analysis#tags, admin/reports-xtpt-indicators#tags
 _('reports');
 // admin/reports-participant-response#summary
 _('Response and pass rates by region, district, network tier, affiliation or enrolled program');
@@ -363,8 +363,18 @@ _('TB Settings');
 _('template');
 // admin/email-participants#tags
 _('templates');
+// admin/reports-testkit#tags
+_('test 1');
+// admin/reports-testkit#tags
+_('test 2');
+// admin/reports-testkit#tags
+_('test 3');
 // admin/dts-settings#tags, admin/testkit-add#tags, admin/testkit-edit#tags, admin/testkit-standard-kit#tags, admin/testkit#tags
 _('testkit');
+// admin/reports-testkit#title
+_('Test Kit Report For HIV Serology');
+// admin/reports-testkit#tags
+_('test kits');
 // admin/testkit#title
 _('Test Kits');
 // admin/shipment#summary
@@ -421,6 +431,8 @@ _('VL Assays / Platforms');
 _('VL results per assay, with the pass rate of each assay');
 // admin/reports-vl-sample-analysis#title
 _('VL Sample Analysis');
+// admin/reports-testkit#summary
+_('Which test kits participants used in HIV serology (DTS) responses, and how those responses performed');
 // admin/reports-shipment-response#summary
 _('Who responded to each shipment, who did not, and how they performed');
 // admin/reports-xtpt-indicators#tags
