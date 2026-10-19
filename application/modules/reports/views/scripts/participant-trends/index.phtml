@@ -556,21 +556,16 @@
         return sum;
     }
 
-    // The shipment rows of each scheme. The rows carry the scheme name, and
-    // the Scheme filter gives its id.
+    // The shipment rows of each scheme.
     function groupByScheme(rows) {
-        var ids = {};
-        $('#scheme option').each(function () {
-            ids[$(this).text()] = this.value;
-        });
         var groups = [];
-        var index = {};
+        var index = Object.create(null);
         rows.forEach(function (row) {
-            if (!(row.scheme_name in index)) {
-                index[row.scheme_name] = groups.length;
-                groups.push({ scheme_type: ids[row.scheme_name] || '', scheme_name: row.scheme_name, rows: [] });
+            if (!(row.scheme_type in index)) {
+                index[row.scheme_type] = groups.length;
+                groups.push({ scheme_type: row.scheme_type, scheme_name: row.scheme_name, rows: [] });
             }
-            groups[index[row.scheme_name]].rows.push(row);
+            groups[index[row.scheme_type]].rows.push(row);
         });
         return groups.sort(function (a, b) {
             return String(a.scheme_name).localeCompare(String(b.scheme_name));
@@ -611,12 +606,15 @@
         }
         $('#trendsResults').removeClass('hide');
 
-        // A trend needs at least two points.
-        $('#trendsChartPanel').toggleClass('hide', rows.length < 2);
-        if (rows.length >= 2) {
+        // A trend needs at least two points. In the overview they must be in
+        // one scheme, and only evaluated shipments have a pass rate.
+        var series = overview ? schemeSeries(schemes) : null;
+        var hasTrend = overview ? series.some(function (s) { return s.data.length >= 2; }) : rows.length >= 2;
+        $('#trendsChartPanel').toggleClass('hide', !hasTrend);
+        if (hasTrend) {
             $('#trendsChartTitle').text(overview ? trendsText.passRateByScheme : trendsText.trendByShipment);
             if (overview) {
-                drawSchemeChart(schemes);
+                drawSchemeChart(series);
             } else {
                 drawChart(rows);
             }
@@ -697,7 +695,23 @@
         }, 'json');
     }
 
-    function drawSchemeChart(schemes) {
+    // One pass rate line per scheme that has an evaluated shipment.
+    function schemeSeries(schemes) {
+        return schemes.map(function (group) {
+            return {
+                name: escapeText(group.scheme_name),
+                data: group.rows.filter(function (r) {
+                    return r.passed + r.failed > 0;
+                }).map(function (r) {
+                    return { x: moment.utc(r.shipment_date, 'YYYY-MM-DD').valueOf(), y: pct(r.passed, r.passed + r.failed), code: escapeText(r.shipment_code) };
+                })
+            };
+        }).filter(function (s) {
+            return s.data.length > 0;
+        });
+    }
+
+    function drawSchemeChart(series) {
         Highcharts.chart('trendsChart', {
             chart: { type: 'line', style: { fontFamily: 'inherit' } },
             title: { text: null },
@@ -715,17 +729,7 @@
             },
             legend: { align: 'left', verticalAlign: 'top' },
             plotOptions: { line: { marker: { radius: 4 } } },
-            series: schemes.map(function (group) {
-                return {
-                    name: group.scheme_name,
-                    // Shipments not evaluated yet have no pass rate.
-                    data: group.rows.filter(function (r) {
-                        return r.passed + r.failed > 0;
-                    }).map(function (r) {
-                        return { x: moment.utc(r.shipment_date, 'YYYY-MM-DD').valueOf(), y: pct(r.passed, r.passed + r.failed), code: r.shipment_code };
-                    })
-                };
-            })
+            series: series
         });
     }
 

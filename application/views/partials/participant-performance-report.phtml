@@ -145,6 +145,11 @@ $legend = [
 		background: #cfd5dd;
 	}
 
+	.perf-chip.is-more {
+		color: #5b6573;
+		font-weight: 500;
+	}
+
 	/* Shipment codes over the strip, read bottom to top. */
 	#performanceTable thead th {
 		vertical-align: bottom;
@@ -344,10 +349,14 @@ $legend = [
 					"url": sSource,
 					"data": aoData,
 					"success": function (json) {
+						$('#performanceAxis').html(json.axis || '');
 						$.each(json.counts || {}, function (key, count) {
 							$('#performanceFilter [data-count="' + key + '"]').text(count.toLocaleString());
 						});
 						fnCallback(json);
+					},
+					"error": function () {
+						$('#performanceAxis').empty();
 					}
 				});
 			}

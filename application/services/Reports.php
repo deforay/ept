@@ -2892,13 +2892,16 @@ class Application_Service_Reports
         uasort($columns, fn ($a, $b) => [$a['shipment_date'], $a['shipment_id']] <=> [$b['shipment_date'], $b['shipment_id']]);
         $hidden = count($columns) - $maxChips;
         $columns = array_slice($columns, max(0, $hidden), null, true);
-        $axis = '';
+        $earlierLabel = $translate->_('Earlier shipments not shown: %s');
+        // When older shipments are cut, every row keeps a first slot that counts
+        // its own, so a row whose results are all older still shows them.
+        $axis = $hidden > 0 ? '<span class="perf-axis-label"></span>' : '';
         foreach ($columns as $c) {
             $axis .= '<span class="perf-axis-label" title="' . $esc(implode(' · ', array_filter([$c['shipment_code'], $c['scheme_name'], $date($c['shipment_date'])]))) . '">'
                 . $esc($c['shipment_code']) . '</span>';
         }
         $output['axis'] = '<div class="perf-chips perf-axis">' . $axis . '</div>'
-            . ($hidden > 0 ? '<span class="perf-more">' . $esc(sprintf($translate->_('%s earlier shipments not shown'), $hidden)) . '</span>' : '');
+            . ($hidden > 0 ? '<span class="perf-more">' . $esc(sprintf($earlierLabel, $hidden)) . '</span>' : '');
         $notEnrolled = $translate->_('Not enrolled');
 
         foreach ($rows as $r) {
@@ -2923,6 +2926,12 @@ class Application_Service_Reports
             }
 
             $chips = '';
+            if ($hidden > 0) {
+                $earlier = count(array_diff_key($shipments, $columns));
+                $chips .= $earlier > 0
+                    ? '<span class="perf-chip is-more" title="' . $esc(sprintf($earlierLabel, $earlier)) . '">+' . $earlier . '</span>'
+                    : '<span class="perf-chip is-spacer"></span>';
+            }
             foreach ($columns as $shipmentId => $c) {
                 $h = $shipments[$shipmentId] ?? null;
                 if ($h === null) {
@@ -4396,6 +4405,7 @@ class Application_Service_Reports
                 's.shipment_id',
                 's.shipment_code',
                 's.shipment_date',
+                's.scheme_type',
                 'sl.scheme_name',
             ])
                 ->group('s.shipment_id')
@@ -4409,6 +4419,14 @@ class Application_Service_Reports
         }
         if (!empty($params['scheme'])) {
             $query->where('s.scheme_type = ?', $params['scheme']);
+        } else {
+            // All schemes means the schemes the Scheme filter offers: active,
+            // and only the admin's own when they are limited to some.
+            $schemeIds = array_column((new Application_Model_DbTable_SchemeList())->getAllSchemes(), 'scheme_id');
+            if (empty($schemeIds)) {
+                return [];
+            }
+            $query->where('s.scheme_type IN (?)', $schemeIds);
         }
         if (!empty($params['startDate']) && !empty($params['endDate'])) {
             $query->where('DATE(s.shipment_date) >= ?', $this->common->isoDateFormat($params['startDate']))
