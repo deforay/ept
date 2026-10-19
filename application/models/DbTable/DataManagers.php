@@ -1600,9 +1600,11 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                     continue;
                 }
 
-                $plainPassword = (!isset($sheetData[$i]['M']) || empty($sheetData[$i]['M'])) ? 'ept1@)(*&^' : trim($sheetData[$i]['M']);
+                $plainPassword = (!isset($sheetData[$i]['M']) || empty($sheetData[$i]['M'])) ? DEFAULT_PASSWORD : trim($sheetData[$i]['M']);
                 if (!isset($passwordHashCache[$plainPassword])) {
-                    $passwordHashCache[$plainPassword] = Common::passwordHash($plainPassword);
+                    $passwordHashCache[$plainPassword] = $plainPassword === DEFAULT_PASSWORD
+                        ? Common::defaultPasswordHash()
+                        : Common::passwordHash($plainPassword);
                 }
                 $password = $passwordHashCache[$plainPassword];
 

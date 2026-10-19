@@ -1994,6 +1994,23 @@ class Application_Service_Common
         }
     }
 
+    /**
+     * bcrypt hash of DEFAULT_PASSWORD. At cost 14 one hash takes ~0.8s, so it is
+     * made once and kept for the request, and for the login session when one is open.
+     */
+    public static function defaultPasswordHash(): string
+    {
+        static $hash = null;
+        if ($hash !== null) {
+            return $hash;
+        }
+        if (!Zend_Session::isStarted() || !Zend_Session::isWritable()) {
+            return $hash = self::passwordHash(DEFAULT_PASSWORD);
+        }
+        $session = new Zend_Session_Namespace('defaultPassword');
+        return $hash = $session->hash ??= self::passwordHash(DEFAULT_PASSWORD);
+    }
+
     public static function passwordHash($password)
     {
         if (empty($password)) {

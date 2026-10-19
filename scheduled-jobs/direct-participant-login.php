@@ -18,6 +18,7 @@ $prefix = $globalDb->getValue('participant_login_prefix');
 $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
 $generalModel = new Pt_Commons_General();
 $common = new Application_Service_Common();
+$defaultPasswordHash = Application_Service_Common::defaultPasswordHash();
 try {
 
     $db = Zend_Db::factory($conf->resources->db);
@@ -51,7 +52,7 @@ try {
             'institute' => $pRow['institute_name'],
             'mobile' => $pRow['mobile'],
             'secondary_email' => $pRow['additional_email'],
-            'password' => 'ept1@)(*&^',
+            'password' => $defaultPasswordHash,
             'force_password_reset' => 1,
             'data_manager_type' => 'participant',
             'created_on' => new Zend_Db_Expr('now()'),

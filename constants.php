@@ -5,6 +5,9 @@ const APP_VERSION = '7.6.32';
 // Shipment statuses that indicate temporary/in-progress states (not milestones)
 const SHIPMENT_EPHEMERAL_STATUSES = ['draft', 'ready', 'queued', 'processing', 'pending'];
 
+// Shared first-login password for logins created without one (bulk imports, direct-participant-login)
+const DEFAULT_PASSWORD = 'ept1@)(*&^'; // NOSONAR
+
 // Define application environment
 defined('APPLICATION_ENV')
     || define('APPLICATION_ENV', 'production');

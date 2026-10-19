@@ -35,8 +35,6 @@ final class Pt_Commons_ImportTemplate
     public const PTCC = 'ptcc';
     public const ENROLLMENT = 'enrollment';
 
-    public const DEFAULT_PASSWORD = 'ept1@)(*&^'; // NOSONAR
-
     private const COLUMNS_SHEET = '_columns';
     private const COUNTRY_SHEET = 'Country List';
     private const SOURCE_LOCALE = 'en_US';
@@ -183,7 +181,7 @@ final class Pt_Commons_ImportTemplate
     {
         $lines = [];
         foreach ($column['header'] as $part) {
-            $lines[] = str_replace('%s', self::DEFAULT_PASSWORD, self::translate($part, $locale));
+            $lines[] = str_replace('%s', DEFAULT_PASSWORD, self::translate($part, $locale));
         }
         return implode("\n", $lines);
     }

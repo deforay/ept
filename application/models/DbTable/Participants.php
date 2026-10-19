@@ -16,18 +16,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
     {
         return parent::update(Pt_Commons_MiscUtility::withEmailStatusReset($data, ['email' => 'email_status', 'additional_email' => 'additional_email_status'], $this->getAdapter()), $where);
     }
-    // Initial onboarding password used when bulk-importing data managers from
-    // a spreadsheet whose password column is blank. Stored only as a bcrypt
-    // hash; users are expected to change it on first login. NOSONAR
-    protected $_defaultPassword = 'ept1@)(*&^'; // NOSONAR
-    protected $_defaultPasswordHash = null;
     private array $importPasswordHashes = [];
-
-    public function __construct()
-    {
-        parent::__construct();
-        $this->_defaultPasswordHash = Common::passwordHash($this->_defaultPassword);
-    }
 
     /**
      * SQL expression for a participant's display name: lab_name when the
@@ -595,7 +584,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                 'primary_email' => $params['pemail'] ?? $prefix . $params['pid'],
                 'participant_ulid' => $ulid,
                 'data_manager_type' => 'participant',
-                'password' => Common::passwordHash($params['dmPassword'] ?? 'ept1@)(*&^'),
+                'password' => Common::passwordHash($params['dmPassword']),
                 'first_name' => $params['pfname'],
                 'last_name' => $params['plname'],
                 'institute' => $params['instituteName'],
@@ -1031,7 +1020,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                                         'primary_email' => $row['D'],
                                         'secondary_email' => $row['E'],
                                         'mobile' => MiscUtility::cleanString($row['F']),
-                                        'password' => $this->_defaultPasswordHash,
+                                        'password' => Common::defaultPasswordHash(),
                                         'force_password_reset' => 0,
                                         'force_profile_check' => 0,
                                         'data_manager_type' => 'manager',
@@ -2174,7 +2163,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
 
                 // Handle password. "Reset password" only decides for logins that already
                 // exist; a login created here always gets one, or nobody could sign in.
-                $password = empty($row['S']) ? $this->_defaultPassword : trim($row['S']);
+                $password = empty($row['S']) ? DEFAULT_PASSWORD : trim($row['S']);
                 $resetPassword = isset($params['resetPassword']) && $params['resetPassword'] == 'yes';
                 if ($resetPassword || empty($dataManagerExists)) {
                     $dataManagerData['password'] = $this->hashImportPassword($password);
@@ -2383,8 +2372,8 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
     /** bcrypt is slow and most rows share a password, so hash each distinct one once. */
     private function hashImportPassword(string $password): string
     {
-        if ($password === $this->_defaultPassword) {
-            return $this->_defaultPasswordHash;
+        if ($password === DEFAULT_PASSWORD) {
+            return Common::defaultPasswordHash();
         }
         return $this->importPasswordHashes[$password] ??= Common::passwordHash($password);
     }
