@@ -2896,6 +2896,9 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         // The Excel export runs this query again without the page limit.
         $sQuerySession = new Zend_Session_Namespace('participantResponseReportQuerySession');
         $sQuerySession->participantResponseReportQuerySession = clone $sQuery;
+        // That is the last session write. Releasing the session lets the
+        // summary table load while these queries run.
+        Zend_Session::writeClose(false);
 
         if (isset($parameters['iDisplayStart']) && ($parameters['iDisplayLength'] ?? '-1') != '-1') {
             $sQuery->limit((int) $parameters['iDisplayLength'], (int) $parameters['iDisplayStart']);

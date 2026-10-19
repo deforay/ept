@@ -154,6 +154,9 @@ $outcomes = [
 							$('#tbrStrip [data-outcome="' + key + '"]').css('width', all ? (count * 100 / all) + '%' : 0);
 						});
 						fnCallback(json);
+					},
+					"error": function () {
+						rptSkeleton.failed($('#tbrTable'));
 					}
 				});
 			}

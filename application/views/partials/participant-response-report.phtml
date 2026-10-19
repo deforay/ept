@@ -16,6 +16,7 @@
  * page includes collapsible-filters.phtml last, after this partial.
  */
 include APPLICATION_PATH . '/views/partials/report-zero-state.phtml';
+include APPLICATION_PATH . '/views/partials/report-skeleton.phtml';
 
 $groupings = [
 	'region' => $this->translate->_("Region"),
@@ -455,14 +456,17 @@ $groupings = [
 			$(this).toggleClass('active', $(this).data('group-by') === prrGroupBy);
 		});
 		$('#prrGroupHeading').text(prrGroupLabels[prrGroupBy]);
-		$('#prrTable tbody').html('<tr><td colspan="9" class="cell-muted">' + prrEscape(prrText.loading) + '</td></tr>');
+		prrShowLoading();
 
 		if (prrRequest) {
 			prrRequest.abort();
 		}
 		prrRequest = $.post("<?= $prrDataUrl; ?>", prrParams(), function (rows) {
 			rows = rows || [];
+			prrHideLoading();
 			if (!rows.length) {
+				// The chart and rows still in the page are for older filters.
+				$('#prrTable').removeData('group-by');
 				$('#prrResult').hide();
 				reportZeroState.show('#prrEmpty', 'empty');
 				return;
@@ -473,9 +477,32 @@ $groupings = [
 			drawParticipantResponseChart(rows);
 		}, 'json').fail(function (xhr, status) {
 			if (status !== 'abort') {
+				prrHideLoading();
 				$('#prrTable tbody').html('<tr><td colspan="9" class="is-bad">' + prrEscape(prrText.failed) + '</td></tr>');
 			}
 		});
+	}
+
+	// The first load shows skeletons. A reload dims the chart and table that are
+	// shown, unless the grouping changed: then the rows no longer match.
+	function prrShowLoading() {
+		var hasChart = $('#prrChart').find('.highcharts-container').length > 0;
+		var sameGrouping = $('#prrTable').data('group-by') === prrGroupBy;
+		$('#prrEmpty').empty();
+		$('#prrResult').show();
+		if (hasChart && sameGrouping) {
+			rptSkeleton.dim($('#prrChart'), true);
+			rptSkeleton.dim($('#prrTable tbody'), true);
+		} else {
+			rptSkeleton.block($('#prrChart'), 260);
+			rptSkeleton.rows($('#prrTable'));
+		}
+	}
+
+	function prrHideLoading() {
+		$('#prrChart .rpt-skel-block').remove();
+		rptSkeleton.dim($('#prrChart'), false);
+		rptSkeleton.dim($('#prrTable tbody'), false);
 	}
 
 	function drawParticipantResponseTable(rows) {
@@ -487,7 +514,7 @@ $groupings = [
 				'<td>' + prrNumber(row.participants) + '</td>' +
 				prrFigures(row) + '</tr>';
 		});
-		$('#prrTable tbody').html(html);
+		$('#prrTable').data('group-by', prrGroupBy).children('tbody').html(html);
 	}
 
 	function toggleGroupShipments($row) {

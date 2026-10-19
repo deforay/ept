@@ -1,4 +1,5 @@
 <?php include APPLICATION_PATH . '/views/partials/report-zero-state.phtml'; ?>
+<?php include APPLICATION_PATH . '/views/partials/report-skeleton.phtml'; ?>
 <link rel="stylesheet" href="<?php echo $this->baseUrl('css/daterangepicker.css'); ?>" type="text/css" media="all">
 <script type="text/javascript" src="<?php echo $this->baseUrl('js/moment.min.js'); ?>"></script>
 <style>
@@ -403,6 +404,7 @@
         shipments: "<?php echo $this->url(['module' => 'reports', 'controller' => 'common', 'action' => 'get-shipments-by-scheme'], 'default', true); ?>"
     };
     var trendsFilters = null;
+    var trendsRequest = null;
 
     $(function () {
         reportZeroState.showAfter(".js-filter-panel", "start");
@@ -487,9 +489,12 @@
             startDate: range.startDate,
             endDate: range.endDate
         };
-        $.blockUI();
-        $.post(trendsUrls.summary, trendsFilters, function (rows) {
-            $.unblockUI();
+        showTrendsLoading();
+        if (trendsRequest) {
+            trendsRequest.abort();
+        }
+        trendsRequest = $.post(trendsUrls.summary, trendsFilters, function (rows) {
+            hideTrendsLoading();
             if (!rows || !rows.length) {
                 $('#trendsResults').addClass('hide');
                 reportZeroState.showAfter(".js-filter-panel", "noShipments");
@@ -497,9 +502,48 @@
             }
             reportZeroState.hide();
             renderTrends(rows);
-        }, 'json').fail(function () {
-            $.unblockUI();
+        }, 'json').fail(function (xhr, status) {
+            if (status !== 'abort') {
+                // A first load that fails has only skeletons to show.
+                if ($('#trendsResults .rpt-skel-block').length) {
+                    $('#trendsResults').addClass('hide');
+                    reportZeroState.showAfter(".js-filter-panel", "start");
+                }
+                hideTrendsLoading();
+            }
         });
+    }
+
+    // The first load shows skeletons in the shape of the report. A reload dims
+    // the report that is shown, so the page keeps its place.
+    function showTrendsLoading() {
+        var $results = $('#trendsResults');
+        if (!$results.hasClass('hide')) {
+            rptSkeleton.dim($results, true);
+            return;
+        }
+        var overview = !trendsFilters.scheme;
+        reportZeroState.hide();
+        $('#trendsCaption').text($('#dateRange').val());
+        $('.trends-kpi-value').each(function () {
+            rptSkeleton.block($(this), 26);
+        });
+        $('.trends-kpi-note').each(function () {
+            rptSkeleton.block($(this).css('width', '60%'), 10);
+        });
+        $('#trendsChartTitle').text(overview ? trendsText.passRateByScheme : trendsText.trendByShipment);
+        $('#trendsChartPanel').removeClass('hide');
+        rptSkeleton.block($('#trendsChart'), 300);
+        $('#trendsSchemesPanel').toggleClass('hide', !overview);
+        $('#trendsShipmentsPanel').toggleClass('hide', overview);
+        rptSkeleton.rows(overview ? $('#trendsSchemesPanel table') : $('#trendsShipmentsPanel table'), 4);
+        $results.removeClass('hide');
+    }
+
+    function hideTrendsLoading() {
+        $('.trends-kpi-note').css('width', '');
+        $('#trendsChart .rpt-skel-block').remove();
+        rptSkeleton.dim($('#trendsResults'), false);
     }
 
     function exportTrends() {

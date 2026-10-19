@@ -1,0 +1,160 @@
+<?php
+
+/**
+ * Loading placeholders for report pages: grey bars in the shape of the
+ * content that is on its way.
+ *
+ * A DataTable with the class rpt-table needs nothing more. Later loads dim
+ * the rows already there. A server-side table whose body starts with one
+ * td.dataTables_empty "loading" row shows skeleton rows on its first load.
+ * Keep that row out of client-side tables: DataTables reads their starting
+ * rows as data.
+ *
+ * Pages that draw their own panels call window.rptSkeleton:
+ *
+ *   rptSkeleton.rows($table)        skeleton rows in the table body
+ *   rptSkeleton.block($el, height)  a skeleton block, for a chart or a card value
+ *   rptSkeleton.dim($el, on)        dims what is shown while it reloads
+ *   rptSkeleton.failed($table)      ends the loading state of a DataTable whose
+ *                                   request failed, so it does not stay dimmed
+ *
+ * A table that draws skeletons itself adds the class rpt-skeletonized, which
+ * hides the DataTables "Processing" box. Server-side rpt-table tables get it
+ * on their first load.
+ *
+ * The page's own drawing code replaces the placeholders when the data arrives.
+ */
+if (defined('RPT_SKELETON_INCLUDED')) {
+	return;
+}
+define('RPT_SKELETON_INCLUDED', true);
+?>
+<style>
+	/* Only tables that show skeletons drop the "Processing" box. Client-side
+	   tables that clear and reload themselves still need it. */
+	.dataTables_wrapper:has(table.rpt-skeletonized) > .dataTables_processing {
+		display: none !important;
+	}
+
+	tr.rpt-skeleton > td,
+	tr.rpt-skeleton:hover > td {
+		background-color: #fff !important;
+	}
+
+	.rpt-skel,
+	.rpt-skel-block {
+		display: block;
+		border-radius: 4px;
+		background: linear-gradient(90deg, #eef1f5 0%, #e2e7ee 50%, #eef1f5 100%);
+		background-size: 200% 100%;
+		animation: rpt-skel-shine 1.4s ease-in-out infinite;
+	}
+
+	.rpt-skel {
+		height: 10px;
+		margin: 4px 0;
+	}
+
+	.rpt-skel.is-sub {
+		height: 8px;
+		margin-top: 8px;
+		opacity: .7;
+	}
+
+	.rpt-skel-block {
+		width: 100%;
+	}
+
+	@keyframes rpt-skel-shine {
+		from {
+			background-position: 100% 0;
+		}
+
+		to {
+			background-position: -100% 0;
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.rpt-skel,
+		.rpt-skel-block {
+			animation: none;
+		}
+	}
+
+	.rpt-reloading {
+		opacity: .45;
+		pointer-events: none;
+		transition: opacity .15s ease;
+	}
+</style>
+<script type="text/javascript">
+	window.rptSkeleton = (function () {
+		var widths = [72, 48, 60, 40, 66, 54, 38, 58];
+
+		function rows($table, count) {
+			var cols = 0;
+			$table.find('thead tr:first th').each(function () {
+				cols += parseInt($(this).attr('colspan') || 1, 10);
+			});
+			var html = '';
+			for (var r = 0; r < (count || 5); r++) {
+				html += '<tr class="rpt-skeleton" aria-hidden="true">';
+				for (var c = 0; c < Math.max(cols, 1); c++) {
+					var w = widths[(r * 3 + c) % widths.length];
+					html += '<td><span class="rpt-skel" style="width:' + w + '%"></span>' +
+						(c === 0 ? '<span class="rpt-skel is-sub" style="width:' + (w - 24) + '%"></span>' : '') + '</td>';
+				}
+				html += '</tr>';
+			}
+			$table.removeClass('rpt-reloading').children('tbody').removeClass('rpt-reloading').html(html);
+		}
+
+		function block($el, height) {
+			$el.removeClass('rpt-reloading')
+				.html('<span class="rpt-skel-block" aria-hidden="true" style="height:' + (height || 16) + 'px"></span>');
+		}
+
+		function dim($el, on) {
+			$el.toggleClass('rpt-reloading', on !== false);
+		}
+
+		// A first load that fails has only skeleton rows, so it shows nothing.
+		function failed($table) {
+			var $body = $table.children('tbody');
+			dim($body, false);
+			$body.children('tr.rpt-skeleton').remove();
+		}
+
+		// Before the first draw, a DataTable shows a single "loading" row.
+		$(function () {
+			$('table.rpt-table').each(function () {
+				var $table = $(this);
+				if ($table.find('> tbody > tr > td.dataTables_empty').length) {
+					rows($table);
+				}
+			});
+		});
+
+		// Later loads keep the rows in place and dim them, so the page does not jump.
+		$(document).on('processing.dt', 'table.rpt-table', function (e, settings, loading) {
+			var $table = $(this);
+			var $body = $table.children('tbody');
+			if (settings.oFeatures.bServerSide) {
+				$table.addClass('rpt-skeletonized');
+			}
+			if (!loading) {
+				dim($body, false);
+				return;
+			}
+			var $real = $body.children('tr').not('.rpt-skeleton');
+			if (!$real.length || $real.find('td.dataTables_empty').length === $real.length) {
+				rows($table);
+			} else {
+				dim($body, true);
+			}
+		});
+
+		return { rows: rows, block: block, dim: dim, failed: failed };
+	})();
+</script>

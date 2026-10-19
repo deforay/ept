@@ -226,7 +226,13 @@ include APPLICATION_PATH . '/views/partials/report-filters.phtml';
 	}
 
 	function postJson(sSource, aoData, fnCallback) {
-		$.ajax({ "dataType": 'json', "type": "POST", "url": sSource, "data": aoData, "success": fnCallback });
+		var $table = $(this);
+		$.ajax({
+			"dataType": 'json', "type": "POST", "url": sSource, "data": aoData, "success": fnCallback,
+			"error": function () {
+				rptSkeleton.failed($table);
+			}
+		});
 	}
 
 	reportFilters.ready(function () {

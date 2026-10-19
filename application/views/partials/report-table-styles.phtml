@@ -3,8 +3,10 @@
 /**
  * Styles shared by the report pages built on report-filters.phtml: section
  * headings, the segmented filter control, the download button, and the table
- * cells (sub-lines, rate bars, pills).
+ * cells (sub-lines, rate bars, pills). It includes report-skeleton.phtml, so
+ * every .rpt-table DataTable shows a skeleton while it loads.
  */
+include APPLICATION_PATH . '/views/partials/report-skeleton.phtml';
 ?>
 <style>
 	.rpt-section-head {
@@ -198,6 +200,14 @@
 	/* A table that is short most of the time needs no pager until it runs long. */
 	.dataTables_wrapper .dataTables_paginate.is-single-page {
 		display: none;
+	}
+
+	/* A section that follows a table starts a new block, with a rule above it. */
+	.dataTables_wrapper + .rpt-section-head,
+	.rpt-table + .rpt-section-head {
+		margin-top: 32px;
+		padding-top: 20px;
+		border-top: 1px solid #e3e8ef;
 	}
 
 	@media print {

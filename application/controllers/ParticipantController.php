@@ -852,6 +852,9 @@ class ParticipantController extends Zend_Controller_Action
         /** @var Zend_Controller_Request_Http $request */
         $request = $this->getRequest();
         if ($request->isPost()) {
+            // The summary only reads the session. Releasing it lets the
+            // participant table load at the same time.
+            Zend_Session::writeClose(false);
             $params = $this->getAllParams();
             $reportService = new Application_Service_Reports();
             $response = $reportService->getShipmentResponseReportReport($params);

@@ -46,7 +46,7 @@ include APPLICATION_PATH . '/views/partials/report-filters.phtml';
 	</div>
 </div>
 <div id="tbcChart"></div>
-<table class="table table-hover rpt-table" id="tbcTable">
+<table class="table table-hover rpt-table rpt-skeletonized" id="tbcTable">
 	<thead>
 		<tr>
 			<th scope="col"><?= $this->htmlTranslate("Country"); ?></th>
@@ -113,15 +113,25 @@ include APPLICATION_PATH . '/views/partials/report-filters.phtml';
 		if (tbcRequest) {
 			tbcRequest.abort();
 		}
-		tbcTable.fnClearTable();
-		$('#tbcTable_processing').css('visibility', 'visible');
+		// The first load shows skeletons. A reload dims the chart and rows shown.
+		if (!tbcTable.fnGetData().length) {
+			rptSkeleton.rows($('#tbcTable'));
+			if (!$('#tbcChart .highcharts-container').length) {
+				rptSkeleton.block($('#tbcChart').show().css('height', ''), 220);
+			}
+		} else {
+			rptSkeleton.dim($('#tbcTable tbody'), true);
+			rptSkeleton.dim($('#tbcChart'), true);
+		}
 		tbcRequest = $.post("<?= $tbcDataUrl; ?>", reportFilters.values(), function (rows) {
 			rows = rows || [];
 			drawTbcChart(rows);
 			// fnAddData([]) reads an empty array as one row with no cells.
 			if (!rows.length) {
+				tbcTable.fnClearTable();
 				return;
 			}
+			tbcTable.fnClearTable(false);
 			tbcTable.fnAddData($.map(rows, function (r) {
 				return [[
 					r.country ? tbcEscape(r.country) : '<span class="cell-muted">' + tbcEscape(tbcNotSet) + '</span>',
@@ -137,17 +147,37 @@ include APPLICATION_PATH . '/views/partials/report-filters.phtml';
 					r.failed
 				]];
 			}));
-		}, 'json').always(function () {
+		}, 'json').fail(function (xhr, status) {
+			if (status !== 'abort') {
+				$('#tbcChart .rpt-skel-block').parent().empty().hide();
+				if ($('#tbcTable tr.rpt-skeleton').length) {
+					tbcTable.fnClearTable();
+				}
+			}
+		}).always(function (data, status) {
+			if (status === 'abort') {
+				return;
+			}
 			tbcRequest = null;
-			$('#tbcTable_processing').css('visibility', 'hidden');
+			rptSkeleton.dim($('#tbcTable tbody'), false);
+			rptSkeleton.dim($('#tbcChart'), false);
 		});
 	}
 
 	reportFilters.onChange(loadTbCountries);
 
+	// The filters load their shipment list before the first request, so the
+	// chart and the table hold skeletons until then.
+	$(function () {
+		rptSkeleton.block($('#tbcChart'), 220);
+		rptSkeleton.rows($('#tbcTable'));
+	});
+
 	reportFilters.ready(function () {
 		// Columns 6 to 10 hold the raw numbers the visible columns sort by.
 		var hidden = function () { return { "bVisible": false, "sType": "numeric" }; };
+		// DataTables would read the skeleton rows as data.
+		$('#tbcTable tbody').empty();
 		tbcTable = $('#tbcTable').dataTable({
 			"oLanguage": reportZeroState.dataTableLanguage(),
 			"bAutoWidth": false,
