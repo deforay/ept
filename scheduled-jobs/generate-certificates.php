@@ -341,10 +341,6 @@ foreach ([$excellenceCertPath, $participationCertPath] as $p)
 		@mkdir($p, 0777, true);
 
 $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
-$schemeService = new Application_Service_Schemes();
-$vlModel = new Application_Model_Vl();
-$vlAssayArray = $vlModel->getVlAssay();
-$eidAssayArray = $schemeService->getEidExtractionAssay();
 
 $certificateRecipients = Application_Service_Common::getConfig('certificates');
 $GLOBALS['templateService'] = new Application_Service_CertificateTemplates();
@@ -694,95 +690,32 @@ try {
 	$domain = rtrim($conf->domain, "/");
 	Zend_Db_Table::setDefaultAdapter($db);
 
-	$query = $db->select()->from(['s' => 'shipment'], ['s.shipment_id', 's.shipment_code', 's.scheme_type', 's.shipment_date',])
-		->where("shipment_id IN (?)", array_map('trim', explode(",", (string) $shipmentsToGenerate)))
-		->order("s.scheme_type")
-		->order("s.shipment_date");
-	$shipmentResult = $db->fetchAll($query);
+	// Who gets which certificate, shared with the Annual Certificates page.
+	// The main process and every worker build the same plan from the same
+	// ordered query. Each worker takes a slice, and the main process checks
+	// the files against the plan.
+	$certificatePlan = (new Application_Service_AnnualCertificates())->plan(explode(',', (string) $shipmentsToGenerate));
+	$shipmentCodeArray = $certificatePlan['schemes'];
+	$allShipmentsProcessed = array_unique(array_merge([], ...array_values($shipmentCodeArray)));
+	$skipped = count($certificatePlan['skipped']);
 
-	$shipmentIdArray = [];
-	$shipmentCodeArray = [];
-	foreach ($shipmentResult as $val) {
-		$shipmentIdArray[] = (int) $val['shipment_id'];
-		$shipmentCodeArray[$val['scheme_type']][] = $val['shipment_code'];
-	}
-
-	$allShipmentsProcessed = array_unique(
-		array_merge(...array_values($shipmentCodeArray))
-	);
-
-	// The same responses, name and country the review Excel shows
-	// (Application_Service_Reports::getAnnualReport).
-	$sQuery = $db->select()->from(['spm' => 'shipment_participant_map'], ['spm.attributes', 'spm.shipment_test_report_date', 'spm.final_result'])
-		->join(['s' => 'shipment'], 's.shipment_id=spm.shipment_id', ['shipment_code', 'scheme_type', 'shipment_date'])
-		->join(['sl' => 'scheme_list'], 'sl.scheme_id=s.scheme_type', ['scheme_name'])
-		->join(['p' => 'participant'], 'p.participant_id=spm.participant_id', [
-			'unique_identifier',
-			'participantName' => new Zend_Db_Expr(Application_Model_DbTable_Participants::participantNameExpr('p')),
-			'city',
-		])
-		->joinLeft(['c' => 'countries'], 'c.id=p.country', ['country_name' => 'c.iso_name'])
-		->where("spm.shipment_id IN (?)", $shipmentIdArray)
-		->where(Application_Service_Reports::ANNUAL_RESULT_FILTER)
-		->order("unique_identifier ASC")
-		->order("scheme_type ASC")
-		->order("shipment_date ASC");
-
-	$participants = [];
-	foreach ($db->fetchAll($sQuery) as $row) {
-		$uid = $row['unique_identifier'];
-		$scheme = $row['scheme_type'];
-		$participants[$uid]['name'] = Pt_Commons_MiscUtility::toUtf8((string) $row['participantName']);
-		$participants[$uid]['city'] = $row['city'];
-		$participants[$uid]['country'] = $row['country_name'] ?? '';
-		$participants[$uid]['schemes'][$scheme]['entries'][$row['shipment_code']] = [
-			'result' => $row['final_result'],
-			'shipment_test_report_date' => $row['shipment_test_report_date'],
-		];
-		// Rows run oldest shipment first, so the assay and the year come
-		// from the participant's latest shipment of the scheme.
-		$participants[$uid]['schemes'][$scheme]['attributes'] = Pt_Commons_JsonUtility::safeDecode($row['attributes']);
-		$participants[$uid]['schemes'][$scheme]['year'] = date('Y', strtotime($row['shipment_date']));
-		$participants[$uid]['schemes'][$scheme]['scheme_name'] = $row['scheme_name'];
-	}
-
-	// The issue date and the signatory are the same on every certificate.
-	$batchFields = Application_Service_CertificateTemplates::batchFields();
-
-	// One plan item per certificate to generate. The main process and every
-	// worker build the same plan from the same ordered query. Each worker
-	// takes a slice, and the main process checks the files against the plan.
 	$plan = [];
-	$skipped = 0;
-	foreach ($participants as $uid => $participant) {
-		foreach ($participant['schemes'] as $scheme => $schemeData) {
-			$certificateType = Application_Service_Reports::annualCertificateType($schemeData['entries'], $shipmentCodeArray[$scheme] ?? []);
-			if ($certificateType === '') {
-				$skipped++;
-				continue;
-			}
-			$assay = Application_Service_Reports::annualReportAssayName($scheme, $schemeData['attributes'], $vlAssayArray, $eidAssayArray);
-			$folder = $certificateType === 'excellence' ? $excellenceCertPath : $participationCertPath;
-			$plan[] = [
-				'uid' => (string) $uid,
-				'scheme' => $scheme,
-				'type' => $certificateType,
-				'base' => $folder . DIRECTORY_SEPARATOR . str_replace('/', '_', (string) $uid) . "-" . strtoupper($scheme) . "-" . $certificateName,
-				'fields' => Application_Service_CertificateTemplates::expandFields(array_merge([
-					'participant_name' => $participant['name'],
-					'lab_id' => (string) $uid,
-					'city' => $participant['city'],
-					'country' => $participant['country'],
-					'scheme_name' => $schemeData['scheme_name'],
-					'assay' => $assay,
-					'shipment_year' => $schemeData['year'],
-				], $batchFields)),
-			];
-		}
+	foreach ($certificatePlan['certificates'] as $certificate) {
+		$uid = $certificate['unique_identifier'];
+		$scheme = $certificate['scheme_type'];
+		$folder = $certificate['certificate_type'] === 'excellence' ? $excellenceCertPath : $participationCertPath;
+		$plan[] = [
+			'uid' => $uid,
+			'name' => $certificate['participant_name'],
+			'scheme' => $scheme,
+			'type' => $certificate['certificate_type'],
+			'base' => $folder . DIRECTORY_SEPARATOR . str_replace('/', '_', $uid) . "-" . strtoupper($scheme) . "-" . $certificateName,
+			'fields' => Application_Service_CertificateTemplates::expandFields($certificate['fields']),
+		];
 	}
 
 	$ext = ($templateMode === 'docx') ? 'docx' : 'pdf';
-	$totalParticipants = count($participants);
+	$totalParticipants = count(array_unique(array_merge(array_column($plan, 'uid'), array_column($certificatePlan['skipped'], 'unique_identifier'))));
 	$totalPlanned = count($plan);
 
 	if ($isWorker) {
@@ -906,6 +839,7 @@ try {
 			$manifest[] = [
 				'file' => substr($file, strlen($folderPath) + 1),
 				'unique_identifier' => $item['uid'],
+				'participant_name' => $item['name'],
 				'scheme_type' => $item['scheme'],
 				'certificate_type' => $item['type'],
 			];
@@ -913,6 +847,9 @@ try {
 			$stats['template_errors']++;
 		}
 	}
+	// The participants who get no certificate, and the shipments they did not
+	// respond to, for the review step on the Annual Certificates page.
+	file_put_contents($folderPath . DIRECTORY_SEPARATOR . 'skipped.json', json_encode($certificatePlan['skipped'], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
 	file_put_contents($folderPath . DIRECTORY_SEPARATOR . 'manifest.json', json_encode($manifest, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
 
 	// Print generation summary

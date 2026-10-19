@@ -1,0 +1,709 @@
+<?php
+$u = fn (string $action) => $this->url(['module' => 'reports', 'controller' => 'certificates', 'action' => $action], 'default', true);
+$templatesUrl = $this->url(['module' => 'admin', 'controller' => 'certificate-templates'], 'default', true);
+$batchesUrl = $this->url(['module' => 'admin', 'controller' => 'certificate-batches'], 'default', true);
+$json = fn ($v) => json_encode($v, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_UNESCAPED_UNICODE);
+?>
+<style>
+    .ac-intro {
+        max-width: 820px;
+        margin: 0 0 14px;
+        color: #5b6573;
+    }
+
+    .ac-stepper {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin: 0 0 16px;
+        padding: 0;
+        list-style: none;
+        counter-reset: step;
+    }
+
+    .ac-stepper li {
+        flex: 1 1 130px;
+        padding: 7px 10px;
+        border-radius: 6px;
+        background: #f1f3f6;
+        font-size: 12.5px;
+        color: #8a94a3;
+        counter-increment: step;
+    }
+
+    .ac-stepper li:before {
+        content: counter(step) ". ";
+        font-weight: 600;
+    }
+
+    .ac-stepper li.is-current {
+        background: #4a6fa5;
+        color: #fff;
+        font-weight: 600;
+    }
+
+    .ac-stepper li.is-done {
+        background: #e5f3ea;
+        color: #2d6e45;
+    }
+
+    .ac-stepper li.is-done:before {
+        content: "\2713  ";
+    }
+
+    .ac-step {
+        margin-bottom: 12px;
+        padding: 14px 16px;
+        border: 1px solid #e3e8ef;
+        border-radius: 6px;
+        background: #fff;
+    }
+
+    .ac-step.is-current {
+        border-color: #4a6fa5;
+        box-shadow: 0 0 0 1px #4a6fa5;
+    }
+
+    .ac-step.is-todo {
+        display: none;
+    }
+
+    .ac-step h3 {
+        margin: 0;
+        font-size: 15px;
+        font-weight: 600;
+        color: #333;
+    }
+
+    .ac-step .ac-summary {
+        margin-top: 4px;
+        font-size: 13px;
+        color: #2d6e45;
+    }
+
+    .ac-step .ac-summary a {
+        margin-left: 8px;
+        font-size: 12.5px;
+    }
+
+    .ac-step.is-current .ac-summary,
+    .ac-step.is-done .ac-body {
+        display: none;
+    }
+
+    .ac-step .ac-why {
+        margin: 6px 0 12px;
+        max-width: 820px;
+        color: #5b6573;
+    }
+
+    .ac-actions {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 8px;
+        margin-top: 14px;
+    }
+
+    .ac-scheme {
+        margin-bottom: 10px;
+        padding: 10px 12px;
+        border: 1px solid #edf0f4;
+        border-radius: 6px;
+        background: #fafbfc;
+    }
+
+    .ac-scheme strong {
+        display: block;
+        margin-bottom: 4px;
+    }
+
+    .ac-scheme label {
+        display: flex;
+        gap: 8px;
+        align-items: baseline;
+        margin: 2px 0;
+        font-weight: 400;
+    }
+
+    .ac-scheme label span:first-of-type {
+        white-space: nowrap;
+    }
+
+    .ac-muted {
+        color: #8a94a3;
+        font-size: 12.5px;
+    }
+
+    .ac-ok {
+        color: #2d6e45;
+    }
+
+    .ac-bad {
+        color: #a33a3a;
+    }
+
+    .ac-warn {
+        margin: 10px 0;
+        padding: 10px 12px;
+        border-left: 4px solid #e0a100;
+        background: #fdf6e3;
+        color: #6b4e00;
+    }
+
+    .ac-table {
+        width: 100%;
+        margin-top: 8px;
+        font-size: 13px;
+    }
+
+    .ac-table th {
+        font-size: 11.5px;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: #6b7685;
+    }
+
+    .ac-progress {
+        height: 8px;
+        border-radius: 4px;
+        background: #e3e8ef;
+        overflow: hidden;
+    }
+
+    .ac-progress span {
+        display: block;
+        height: 100%;
+        width: 35%;
+        background: #4a6fa5;
+        animation: ac-slide 1.4s ease-in-out infinite;
+    }
+
+    @keyframes ac-slide {
+        0% {
+            margin-left: -35%;
+        }
+
+        100% {
+            margin-left: 100%;
+        }
+    }
+
+    .ac-tabs {
+        display: flex;
+        gap: 6px;
+        margin: 12px 0 4px;
+    }
+
+    .ac-tabs .btn.is-on {
+        background: #4a6fa5;
+        border-color: #3a5a8a;
+        color: #fff;
+    }
+
+    .ac-list {
+        max-height: 420px;
+        overflow-y: auto;
+        border: 1px solid #edf0f4;
+        border-radius: 6px;
+    }
+
+    .ac-step details > summary {
+        margin: 8px 0;
+        color: #3a5a8a;
+        font-weight: 600;
+        cursor: pointer;
+    }
+
+    .ac-resume {
+        margin-bottom: 14px;
+        padding: 10px 12px;
+        border-left: 4px solid #4a6fa5;
+        background: #eef3f9;
+    }
+</style>
+
+<div class="data-list">
+    <div class="data-list-head">
+        <h2><?= $this->htmlTranslate("Annual Certificates"); ?></h2>
+        <div class="data-list-actions">
+            <a href="javascript:void(0);" data-help-open="1" data-help-guide="issue-annual-certificates" class="btn btn-default btn-sm">
+                <i class="icon-question-sign"></i> <?= $this->htmlTranslate("How this works"); ?>
+            </a>
+            <a href="<?= $batchesUrl; ?>" class="btn btn-default btn-sm"><i class="icon-list-alt"></i> <?= $this->htmlTranslate("Past batches"); ?></a>
+        </div>
+    </div>
+    <div class="data-list-body">
+        <p class="ac-intro"><?= $this->htmlTranslate("This page takes you through issuing the year's certificates, one step at a time. Each step checks your work before the next one opens. You can leave at any time. The page opens where you stopped."); ?></p>
+
+        <div class="ac-resume" id="acResume" style="display:none;"></div>
+
+        <ol class="ac-stepper" id="acStepper">
+            <li data-step="1"><?= $this->htmlTranslate("Shipments"); ?></li>
+            <li data-step="2"><?= $this->htmlTranslate("Templates"); ?></li>
+            <li data-step="3"><?= $this->htmlTranslate("Who gets what"); ?></li>
+            <li data-step="4"><?= $this->htmlTranslate("Generate"); ?></li>
+            <li data-step="5"><?= $this->htmlTranslate("Review and approve"); ?></li>
+            <li data-step="6"><?= $this->htmlTranslate("Done"); ?></li>
+        </ol>
+
+        <!-- Step 1 -->
+        <div class="ac-step" data-step="1">
+            <h3><?= $this->htmlTranslate("1. Choose the shipments"); ?></h3>
+            <div class="ac-summary"><span></span><a href="javascript:void(0);" class="ac-change"><?= $this->htmlTranslate("Change"); ?></a></div>
+            <div class="ac-body">
+                <p class="ac-why"><?= $this->htmlTranslate("Pick the year, then tick the shipments the certificates cover. A participant gets a certificate for a scheme only if they responded to every ticked shipment of that scheme. If different labs took different shipments, such as screening and confirmatory panels, tick one group now and make another batch for the other group afterwards."); ?></p>
+                <div class="form-inline" style="margin-bottom:10px;">
+                    <label for="acYear"><?= $this->htmlTranslate("Year"); ?></label>
+                    <select id="acYear" class="form-control input-sm" style="width:auto; margin-left:6px;">
+                        <?php foreach ($this->years as $year): ?>
+                            <option value="<?= (int) $year; ?>" <?= $year === $this->defaultYear ? 'selected' : ''; ?>><?= (int) $year; ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+                <div id="acShipments"></div>
+                <div class="ac-actions">
+                    <button type="button" class="btn btn-primary btn-sm" id="acToTemplates"><?= $this->htmlTranslate("Continue"); ?></button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="ac-step" data-step="2">
+            <h3><?= $this->htmlTranslate("2. Check the certificate templates"); ?></h3>
+            <div class="ac-summary"><span></span><a href="javascript:void(0);" class="ac-change"><?= $this->htmlTranslate("Change"); ?></a></div>
+            <div class="ac-body">
+                <p class="ac-why"><?= $this->htmlTranslate("Each scheme needs an Excellence and a Participation template, with the participant name placed. Fix any template marked below, then click Check again."); ?></p>
+                <div id="acTemplates"></div>
+                <div class="ac-actions">
+                    <button type="button" class="btn btn-default btn-sm" id="acRecheck"><?= $this->htmlTranslate("Check again"); ?></button>
+                    <button type="button" class="btn btn-primary btn-sm" id="acToCheck"><?= $this->htmlTranslate("Continue"); ?></button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 3 -->
+        <div class="ac-step" data-step="3">
+            <h3><?= $this->htmlTranslate("3. Check who gets which certificate"); ?></h3>
+            <div class="ac-summary"><span></span><a href="javascript:void(0);" class="ac-change"><?= $this->htmlTranslate("Change"); ?></a></div>
+            <div class="ac-body">
+                <p class="ac-why"><?= $this->htmlTranslate("Excellence goes to participants who passed every ticked shipment of a scheme. Participation goes to those who responded to every one but did not pass them all. Check the numbers, and open the list of participants who get none."); ?></p>
+                <div id="acCounts"></div>
+                <div class="ac-actions">
+                    <label for="acName" style="margin:0;"><?= $this->htmlTranslate("Batch name"); ?></label>
+                    <input type="text" id="acName" class="form-control input-sm" style="width:260px;" maxlength="100" />
+                    <span class="ac-muted"><?= $this->htmlTranslate("Used in the certificate file names. Letters, numbers and hyphens."); ?></span>
+                </div>
+                <div class="ac-actions">
+                    <button type="button" class="btn btn-primary btn-sm" id="acGenerate"><?= $this->htmlTranslate("Generate certificates"); ?></button>
+                    <a href="javascript:void(0);" id="acSpreadsheet"><?= $this->htmlTranslate("Download the review spreadsheet (optional)"); ?></a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 4 -->
+        <div class="ac-step" data-step="4">
+            <h3><?= $this->htmlTranslate("4. Generate"); ?></h3>
+            <div class="ac-summary"><span></span></div>
+            <div class="ac-body">
+                <p class="ac-why" id="acGenMessage"></p>
+                <div class="ac-progress" id="acGenBar"><span></span></div>
+                <div id="acGenError" class="ac-bad" style="display:none; margin-top:10px;"></div>
+                <div class="ac-actions">
+                    <button type="button" class="btn btn-default btn-sm" id="acCancel"><?= $this->htmlTranslate("Cancel"); ?></button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 5 -->
+        <div class="ac-step" data-step="5">
+            <h3><?= $this->htmlTranslate("5. Review and approve"); ?></h3>
+            <div class="ac-summary"><span></span></div>
+            <div class="ac-body">
+                <p class="ac-why"><?= $this->htmlTranslate("Open a few certificates and check them. Participants cannot see anything until you approve. If something is wrong, discard the batch, fix the cause and start again."); ?></p>
+                <div id="acReviewCounts"></div>
+                <div class="ac-tabs">
+                    <button type="button" class="btn btn-default btn-sm is-on" data-tab="certificates"></button>
+                    <button type="button" class="btn btn-default btn-sm" data-tab="skipped"></button>
+                    <input type="search" id="acSearch" class="form-control input-sm" style="width:240px; margin-left:auto;" placeholder="<?= $this->htmlTranslate("Search by Lab ID or name"); ?>" />
+                </div>
+                <div class="ac-list"><table class="table table-condensed ac-table" id="acReviewTable"></table></div>
+                <div class="ac-actions">
+                    <button type="button" class="btn btn-success btn-sm" id="acApprove"><i class="icon-ok"></i> <?= $this->htmlTranslate("Approve and make available to participants"); ?></button>
+                    <button type="button" class="btn btn-default btn-sm" id="acDiscard"><?= $this->htmlTranslate("Discard this batch"); ?></button>
+                    <a href="javascript:void(0);" id="acZip" target="_blank" style="display:none;"><?= $this->htmlTranslate("Download all as ZIP"); ?></a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 6 -->
+        <div class="ac-step" data-step="6">
+            <h3><?= $this->htmlTranslate("6. Done"); ?></h3>
+            <div class="ac-body">
+                <p class="ac-why" id="acDoneMessage"></p>
+                <div class="ac-progress" id="acDoneBar"><span></span></div>
+                <div class="ac-actions">
+                    <button type="button" class="btn btn-primary btn-sm" id="acNew" style="display:none;"><?= $this->htmlTranslate("Start another batch"); ?></button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+(function () {
+    var urls = {
+        shipments: "<?= $u('shipments'); ?>",
+        check: "<?= $u('check'); ?>",
+        generate: "<?= $u('generate'); ?>",
+        status: "<?= $u('status'); ?>",
+        review: "<?= $u('review'); ?>",
+        approve: "<?= $u('approve'); ?>",
+        discard: "<?= $u('discard'); ?>",
+        spreadsheet: "<?= $u('spreadsheet'); ?>",
+        templates: "<?= $templatesUrl; ?>"
+    };
+    var T = {
+        excellence: "<?= $this->jsTranslate("Excellence"); ?>",
+        participation: "<?= $this->jsTranslate("Participation"); ?>",
+        none: "<?= $this->jsTranslate("No certificate"); ?>"
+    };
+    var activeBatch = <?= $json($this->activeBatch ? ['batch_id' => (int) $this->activeBatch['batch_id'], 'name' => $this->activeBatch['batch_name'], 'status' => $this->activeBatch['status'], 'created_on' => Pt_Commons_DateUtility::humanReadableDateFormat($this->activeBatch['created_on'])] : null); ?>;
+    var state = { step: 1, shipments: {}, check: null, batch: null, review: null, tab: 'certificates' };
+    var poll = null;
+
+    // Show the current step open, finished steps as one-line summaries and
+    // later steps hidden, with the stepper marking each.
+    function go(step) {
+        state.step = step;
+        $('#acStepper li').each(function () {
+            var n = +$(this).data('step');
+            $(this).toggleClass('is-current', n === step).toggleClass('is-done', n < step);
+        });
+        $('.ac-step').each(function () {
+            var n = +$(this).data('step');
+            $(this).toggleClass('is-current', n === step).toggleClass('is-done', n < step).toggleClass('is-todo', n > step);
+        });
+        // Before generating, earlier choices can still change. After, they cannot.
+        $('.ac-change').toggle(step <= 3);
+    }
+
+    function summary(step, text) {
+        $('.ac-step[data-step="' + step + '"] .ac-summary span').text(text);
+    }
+
+    function pickedIds() {
+        return $('#acShipments input:checked').map(function () { return this.value; }).get();
+    }
+
+    // Step 1: the year's shipments, all ticked to start with.
+    function loadShipments() {
+        $('#acShipments').html('<p class="ac-muted"><?= $this->jsTranslate("Loading..."); ?></p>');
+        $.getJSON(urls.shipments, { year: $('#acYear').val() }, function (schemes) {
+            var $box = $('#acShipments').empty();
+            state.shipments = schemes || {};
+            if ($.isEmptyObject(state.shipments)) {
+                $box.append($('<p class="ac-bad"/>').text("<?= $this->jsTranslate("No finalized shipments in this year. Pick another year."); ?>"));
+                return;
+            }
+            $.each(state.shipments, function (scheme, data) {
+                var $s = $('<div class="ac-scheme"/>').append($('<strong/>').text(data.name));
+                $.each(data.shipments, function (i, sh) {
+                    $s.append($('<label/>')
+                        .append($('<input type="checkbox" checked/>').val(sh.id))
+                        .append($('<span/>').text(sh.code))
+                        .append($('<span class="ac-muted"/>').text(sh.date + ' · ' + "<?= $this->jsTranslate("%d of %d labs responded"); ?>".replace('%d', sh.counted).replace('%d', sh.enrolled))));
+                });
+                $box.append($s);
+            });
+        });
+    }
+    $('#acYear').on('change', loadShipments);
+
+    $('#acToTemplates').on('click', function () {
+        var ids = pickedIds();
+        if (!ids.length) {
+            alert("<?= $this->jsTranslate("Tick at least one shipment."); ?>");
+            return;
+        }
+        var codes = $('#acShipments input:checked').map(function () { return $(this).next().text(); }).get();
+        summary(1, $('#acYear').val() + ': ' + codes.join(', '));
+        runCheck(function () { go(2); });
+    });
+
+    // Steps 2 and 3 share one check: templates, counts and skipped labs.
+    function runCheck(done) {
+        $.post(urls.check, { shipmentId: pickedIds(), year: $('#acYear').val() }, function (result) {
+            state.check = result;
+            renderTemplates();
+            renderCounts();
+            if (done) {
+                done();
+            }
+        }, 'json').fail(function () {
+            alert("<?= $this->jsTranslate("The check could not run. Please try again."); ?>");
+        });
+    }
+
+    function templatesReady() {
+        var ready = true;
+        $.each(state.check.schemes, function (scheme, s) {
+            if (s.excellence !== 'ready' || s.participation !== 'ready') {
+                ready = false;
+            }
+        });
+        return ready;
+    }
+
+    function renderTemplates() {
+        var $box = $('#acTemplates').empty();
+        var labels = {
+            ready: "<?= $this->jsTranslate("ready"); ?>",
+            missing: "<?= $this->jsTranslate("missing, upload it"); ?>",
+            needs_layout: "<?= $this->jsTranslate("place the participant name on it"); ?>"
+        };
+        $.each(state.check.schemes, function (scheme, s) {
+            var name = (state.shipments[scheme] || {}).name || scheme;
+            var $row = $('<div class="ac-scheme"/>').append($('<strong/>').text(name));
+            $.each({ excellence: T.excellence, participation: T.participation }, function (type, label) {
+                var ok = s[type] === 'ready';
+                $row.append($('<div/>').addClass(ok ? 'ac-ok' : 'ac-bad')
+                    .append(ok ? '<i class="icon-ok"></i> ' : '<i class="icon-remove"></i> ')
+                    .append($('<span/>').text(label + ': ' + (labels[s[type]] || s[type]))));
+            });
+            if (s.excellence !== 'ready' || s.participation !== 'ready') {
+                $row.append($('<a target="_blank" rel="noopener"/>').attr('href', urls.templates + '#scheme-' + encodeURIComponent(scheme))
+                    .text("<?= $this->jsTranslate("Fix the templates (opens in a new tab)"); ?>"));
+            }
+            $box.append($row);
+        });
+        var ready = templatesReady();
+        $('#acToCheck').prop('disabled', !ready);
+        summary(2, ready ? "<?= $this->jsTranslate("All templates ready"); ?>" : '');
+    }
+
+    $('#acRecheck').on('click', function () { runCheck(); });
+    $('#acToCheck').on('click', function () {
+        runCheck(function () {
+            if (templatesReady()) {
+                go(3);
+            }
+        });
+    });
+
+    function renderCounts() {
+        var c = state.check;
+        var $box = $('#acCounts').empty();
+        var $t = $('<table class="table table-condensed ac-table"/>').append(
+            $('<tr/>').append($('<th/>').text("<?= $this->jsTranslate("Scheme"); ?>"), $('<th/>').text(T.excellence), $('<th/>').text(T.participation), $('<th/>').text(T.none)));
+        var totals = { excellence: 0, participation: 0, skipped: 0 };
+        var heavy = [];
+        $.each(c.counts, function (scheme, n) {
+            var name = (state.shipments[scheme] || {}).name || scheme;
+            $t.append($('<tr/>').append($('<td/>').text(name), $('<td/>').text(n.excellence), $('<td/>').text(n.participation), $('<td/>').text(n.skipped)));
+            totals.excellence += n.excellence;
+            totals.participation += n.participation;
+            totals.skipped += n.skipped;
+            var all = n.excellence + n.participation + n.skipped;
+            if (c.schemes[scheme].shipments.length > 1 && all > 0 && n.skipped / all > 0.3) {
+                heavy.push(name);
+            }
+        });
+        $box.append($t);
+        if (heavy.length) {
+            $box.append($('<div class="ac-warn"/>').text("<?= $this->jsTranslate("Many labs missed one of the ticked shipments of: %s. If these shipments went to different labs, click Change in step 1, tick one group and make a separate batch for the other."); ?>".replace('%s', heavy.join(', '))));
+        }
+        if (c.skipped.length) {
+            var $details = $('<details/>').append($('<summary/>').text("<?= $this->jsTranslate("Show the %d participants who get no certificate"); ?>".replace('%d', c.skipped.length)));
+            $details.append($('<div class="ac-list"/>').append(skippedTable(c.skipped)));
+            $box.append($details);
+        }
+        $('#acName').val(c.name);
+        summary(3, T.excellence + ' ' + totals.excellence + ' · ' + T.participation + ' ' + totals.participation + ' · ' + T.none + ' ' + totals.skipped);
+    }
+
+    function skippedTable(rows) {
+        var $t = $('<table class="table table-condensed ac-table"/>').append($('<tr/>').append(
+            $('<th/>').text("<?= $this->jsTranslate("Lab ID"); ?>"), $('<th/>').text("<?= $this->jsTranslate("Participant"); ?>"),
+            $('<th/>').text("<?= $this->jsTranslate("Scheme"); ?>"), $('<th/>').text("<?= $this->jsTranslate("Reason"); ?>")));
+        $.each(rows, function (i, r) {
+            $t.append($('<tr/>').append($('<td/>').text(r.unique_identifier), $('<td/>').text(r.participant_name), $('<td/>').text(r.scheme_name),
+                $('<td/>').text("<?= $this->jsTranslate("Did not respond to %s"); ?>".replace('%s', (r.missed || []).join(', ')))));
+        });
+        return $t;
+    }
+
+    $('#acSpreadsheet').on('click', function () {
+        $.getJSON(urls.spreadsheet, { year: $('#acYear').val(), shipmentId: pickedIds() }, function (r) {
+            if (r && r.fileName) {
+                window.location = "<?= $this->baseUrl('temporary/annual-reports/'); ?>" + encodeURIComponent(r.fileName);
+            }
+        });
+    });
+
+    $('#acGenerate').on('click', function () {
+        var name = $('#acName').val();
+        if (!/^[A-Za-z0-9-]{1,100}$/.test(name)) {
+            alert("<?= $this->jsTranslate("The batch name can only contain letters, numbers and hyphens."); ?>");
+            return;
+        }
+        var $btn = $(this).prop('disabled', true);
+        $.post(urls.generate, { shipmentId: pickedIds(), name: name }, function (r) {
+            if (r && r.success) {
+                startBatch({ batch_id: r.batchId, name: name, status: 'pending' });
+            } else {
+                alert((r && r.message) || "<?= $this->jsTranslate("Certificates could not be queued. Please try again."); ?>");
+            }
+        }, 'json').always(function () { $btn.prop('disabled', false); });
+    });
+
+    $('.ac-change').on('click', function () {
+        var step = +$(this).closest('.ac-step').data('step');
+        go(step);
+    });
+
+    // Steps 4 to 6 follow the batch's status on the server.
+    function startBatch(batch) {
+        state.batch = batch;
+        $('.ac-change').hide();
+        summary(1, "<?= $this->jsTranslate("Batch %s"); ?>".replace('%s', batch.name));
+        summary(2, "<?= $this->jsTranslate("All templates ready"); ?>");
+        summary(3, "<?= $this->jsTranslate("Checked"); ?>");
+        follow();
+    }
+
+    function follow() {
+        clearTimeout(poll);
+        $.getJSON(urls.status, { batch: state.batch.batch_id }, function (b) {
+            if (!b || !b.success) {
+                return;
+            }
+            state.batch = b;
+            var again = true;
+            if (b.status === 'pending' || b.status === 'generating') {
+                go(4);
+                $('#acGenError').hide();
+                $('#acGenBar').show();
+                $('#acCancel').show();
+                $('#acGenMessage').text(b.status === 'pending'
+                    ? "<?= $this->jsTranslate("Waiting to start. Generation starts within a minute. You can leave this page. Generation carries on without you."); ?>"
+                    : "<?= $this->jsTranslate("Generating the certificates. This takes a few minutes for a large programme. You can leave this page. Generation carries on without you."); ?>");
+            } else if (b.status === 'failed') {
+                go(4);
+                again = false;
+                $('#acGenBar, #acCancel').hide();
+                $('#acGenMessage').text("<?= $this->jsTranslate("Generation stopped."); ?>");
+                $('#acGenError').show().empty().append($('<div/>').text(b.error || ''))
+                    .append($('<button type="button" class="btn btn-primary btn-sm" style="margin-top:8px;"/>').text("<?= $this->jsTranslate("Start again"); ?>").on('click', restart));
+            } else if (b.status === 'generated') {
+                again = false;
+                summary(4, T.excellence + ' ' + b.excellence + ' · ' + T.participation + ' ' + b.participation);
+                go(5);
+                loadReview();
+            } else if (b.status === 'approved' || b.status === 'distributing' || b.status === 'distributed') {
+                summary(4, T.excellence + ' ' + b.excellence + ' · ' + T.participation + ' ' + b.participation);
+                summary(5, "<?= $this->jsTranslate("Approved"); ?>");
+                go(6);
+                var finished = b.status === 'distributed';
+                again = !finished;
+                $('#acDoneBar').toggle(!finished);
+                $('#acNew').toggle(finished);
+                $('#acDoneMessage').text(finished
+                    ? "<?= $this->jsTranslate("Done. Each participant can now download their certificate from Certificates and File Downloads in their account."); ?>" + (b.error ? ' ' + b.error : '')
+                    : "<?= $this->jsTranslate("Approved. ePT is copying each certificate to its participant. This starts within a minute."); ?>");
+            } else {
+                // Cancelled or rejected: back to the start.
+                again = false;
+                restart();
+            }
+            if (again) {
+                poll = setTimeout(follow, 3000);
+            }
+        });
+    }
+
+    function loadReview() {
+        $('#acReviewCounts').text(T.excellence + ': ' + state.batch.excellence + ' · ' + T.participation + ': ' + state.batch.participation + ' · ' + T.none + ': ' + state.batch.skipped);
+        if (state.batch.download_url) {
+            $('#acZip').attr('href', "<?= $this->baseUrl(); ?>" + state.batch.download_url).show();
+        }
+        $.getJSON(urls.review, { batch: state.batch.batch_id }, function (r) {
+            state.review = r;
+            $('[data-tab="certificates"]').text("<?= $this->jsTranslate("Certificates (%d)"); ?>".replace('%d', r.certificates.length));
+            $('[data-tab="skipped"]').text("<?= $this->jsTranslate("No certificate (%d)"); ?>".replace('%d', r.skipped.length));
+            renderReview();
+        });
+    }
+
+    function renderReview() {
+        var q = ($('#acSearch').val() || '').toLowerCase();
+        var match = function (r) { return !q || (r.unique_identifier + ' ' + r.participant_name).toLowerCase().indexOf(q) !== -1; };
+        var $t = $('#acReviewTable').empty();
+        if (state.tab === 'skipped') {
+            $t.append(skippedTable($.grep(state.review.skipped, match)).children());
+            return;
+        }
+        $t.append($('<tr/>').append($('<th/>').text("<?= $this->jsTranslate("Lab ID"); ?>"), $('<th/>').text("<?= $this->jsTranslate("Participant"); ?>"),
+            $('<th/>').text("<?= $this->jsTranslate("Scheme"); ?>"), $('<th/>').text("<?= $this->jsTranslate("Certificate"); ?>"), $('<th/>')));
+        $.each($.grep(state.review.certificates, match).slice(0, 500), function (i, r) {
+            $t.append($('<tr/>').append($('<td/>').text(r.unique_identifier), $('<td/>').text(r.participant_name),
+                $('<td/>').text(r.scheme_type.toUpperCase()), $('<td/>').text(T[r.certificate_type] || r.certificate_type),
+                $('<td/>').append($('<a target="_blank" rel="noopener"/>').attr('href', "<?= $this->baseUrl(); ?>" + r.url).text("<?= $this->jsTranslate("View"); ?>"))));
+        });
+    }
+    $('#acSearch').on('input', renderReview);
+    $('.ac-tabs [data-tab]').on('click', function () {
+        state.tab = $(this).data('tab');
+        $('.ac-tabs [data-tab]').removeClass('is-on');
+        $(this).addClass('is-on');
+        renderReview();
+    });
+
+    $('#acApprove').on('click', function () {
+        if (!confirm("<?= $this->jsTranslate("Approve this batch? Each participant can then download their certificate from their account. ePT does not email them."); ?>")) {
+            return;
+        }
+        $.post(urls.approve, { batch: state.batch.batch_id }, function (r) {
+            if (r && r.success) {
+                follow();
+            } else {
+                alert((r && r.message) || "<?= $this->jsTranslate("The batch could not be approved. Please try again."); ?>");
+            }
+        }, 'json');
+    });
+
+    function discard(question) {
+        if (!confirm(question)) {
+            return;
+        }
+        $.post(urls.discard, { batch: state.batch.batch_id }, function () { restart(); }, 'json');
+    }
+    $('#acDiscard').on('click', function () {
+        discard("<?= $this->jsTranslate("Discard this batch? Participants never see it. You can start again from step 1."); ?>");
+    });
+    $('#acCancel').on('click', function () {
+        discard("<?= $this->jsTranslate("Stop generating this batch? You can start again from step 1."); ?>");
+    });
+
+    function restart() {
+        clearTimeout(poll);
+        state.batch = null;
+        $('#acResume').hide();
+        $('.ac-summary span').text('');
+        go(1);
+        loadShipments();
+    }
+    $('#acNew').on('click', restart);
+
+    // Open where the admin stopped.
+    if (activeBatch) {
+        $('#acResume').show().text((activeBatch.status === 'distributed'
+            ? "<?= $this->jsTranslate("The last batch, %s, started on %s, is done."); ?>"
+            : "<?= $this->jsTranslate("Continuing the batch %s, started on %s."); ?>").replace('%s', activeBatch.name).replace('%s', activeBatch.created_on));
+        startBatch(activeBatch);
+    } else {
+        go(1);
+        loadShipments();
+    }
+})();
+</script>

@@ -3621,12 +3621,6 @@ class Application_Service_Reports
         return $filename;
     }
 
-    public function scheduleCertificationGeneration($params)
-    {
-        $scheduledDb = new Application_Model_DbTable_ScheduledJobs();
-        return $scheduledDb->scheduleCertificationGeneration($params);
-    }
-
     public function getFinalisedShipmentsByScheme($schemeType, $startDate, $endDate)
     {
 

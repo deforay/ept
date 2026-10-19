@@ -599,6 +599,9 @@ $helpPageKey = "$controllerName/$actionName";
 								<li id="AnnualPerformanceReport"><a
 										href="<?php echo $this->url(array('module' => 'reports', 'controller' => 'annual', 'action' => 'index'), 'default', true); ?>"><?= $this->translate->_("Annual Performance Report"); ?></a>
 								</li>
+								<li id="AnnualCertificates"><a
+										href="<?php echo $this->url(array('module' => 'reports', 'controller' => 'certificates', 'action' => 'index'), 'default', true); ?>"><?= $this->translate->_("Annual Certificates"); ?></a>
+								</li>
 							</ul>
 						</li>
 					<?php } ?>
@@ -924,6 +927,8 @@ $helpPageKey = "$controllerName/$actionName";
 				$('#shipmentsReport').addClass('active');
 			} else if (splitsUrl[2] == 'annual') {
 				$('#AnnualPerformanceReport').addClass('active');
+			} else if (splitsUrl[1] == 'reports' && splitsUrl[2] == 'certificates') {
+				$('#AnnualCertificates').addClass('active');
 			} else if (splitsUrl[2] == 'feedback-responses' && splitsUrl[3] == 'questions') {
 				$('#FeedbackQuestions').addClass('active');
 			} else if (splitsUrl[2] == 'feedback-responses' && splitsUrl[3] == 'shipment-questions') {

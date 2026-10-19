@@ -553,24 +553,6 @@ class Application_Service_CertificateTemplates
     }
 
     /**
-     * Which templates each active scheme has, keyed by scheme_id:
-     * ['name' => scheme name, 'excellence' => state, 'participation' => state],
-     * with the states of templateState().
-     */
-    public function templateStatus(): array
-    {
-        $status = [];
-        foreach ((new Application_Service_Schemes())->getAllSchemes() as $scheme) {
-            $status[$scheme['scheme_id']] = [
-                'name' => $scheme['scheme_name'],
-                'excellence' => $this->templateState($scheme['scheme_id'], 'excellence'),
-                'participation' => $this->templateState($scheme['scheme_id'], 'participation'),
-            ];
-        }
-        return $status;
-    }
-
-    /**
      * Turn an uploaded PNG or JPG design into a one-page PDF the size of an
      * A4 page in the image's orientation. Returns the PDF's path, or null.
      */

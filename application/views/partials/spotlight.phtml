@@ -592,6 +592,14 @@ if (!$pstatus && in_array('access-reports', $privileges)) {
 		'url' => $this->url(['module' => 'reports', 'controller' => 'annual'], 'default', true),
 		'keywords' => ['yearly', 'annual', 'summary']
 	];
+	$spotlightItems[] = [
+		'id' => 'annual-certificates',
+		'title' => $this->translate->_('Annual Certificates'),
+		'category' => $this->translate->_('Reports'),
+		'icon' => 'icon-certificate',
+		'url' => $this->url(['module' => 'reports', 'controller' => 'certificates'], 'default', true),
+		'keywords' => ['certificate', 'annual', 'excellence', 'participation', 'generate', 'approve', 'distribute']
+	];
 }
 ?>
 

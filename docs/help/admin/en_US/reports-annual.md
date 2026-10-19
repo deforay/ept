@@ -29,20 +29,6 @@ Changing the date range or the schemes reloads the **Shipment** list. A picked s
 
 The certificate type is **Excellence** when the participant responded to and passed every shipment of the scheme. It is **Participation** when the participant responded to every shipment but did not pass them all. It is **N.A.** otherwise.
 
-## Generate certificates
+## Certificates
 
-1. Pick the options and choose **For Certification**.
-2. Click **Generate report**.
-3. Download the Excel file and check the certificate types.
-4. Enter a certificate name. The name takes letters, numbers and hyphens.
-5. Click **Generate Certificates**.
-6. When the summary shows, click **Download ZIP** to check the certificates.
-7. Click **Approve & Distribute**.
-
-After approval, each participant can download their certificate from the **Certificates** page and from **File Downloads**. ePT does not email the certificates.
-
-Each certificate prints from the scheme's template. [See: Certificate Templates](certificate-templates.md)
-
-Certificates cover the same shipments as the report. Changing an option hides the certificate step until you generate the report again.
-
-**View All Certificate Batches** lists every batch generated so far, with its status.
+Certificates are issued on **Reports → Annual Certificates**, which uses the same results as the For Certification file. [See: How to issue annual certificates](guides/issue-annual-certificates.md)

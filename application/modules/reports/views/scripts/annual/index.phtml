@@ -121,54 +121,17 @@
 		font-size: 12px;
 		color: #8a94a3;
 	}
-
-	.an-templates {
-		margin: 0 0 14px;
-		padding: 10px 12px;
-		border: 1px solid #e3e8ef;
-		border-radius: 6px;
-		background: #fff;
-		font-size: 13px;
-	}
-
-	.an-templates:empty {
-		display: none;
-	}
-
-	.an-templates ul {
-		margin: 6px 0 0;
-		padding: 0;
-		list-style: none;
-	}
-
-	.an-templates li {
-		padding: 2px 0;
-	}
-
-	.an-templates .is-ok {
-		color: #2d6e45;
-	}
-
-	.an-templates .is-missing {
-		color: #a33a3a;
-	}
-
-	#certificateStatsSection table {
-		width: auto;
-		min-width: 320px;
-		background: #fff;
-	}
 </style>
 
 <div class="data-list">
 	<div class="data-list-head an-head">
 		<h2><?= $this->htmlTranslate("Annual Performance Report"); ?></h2>
-		<a href="<?= $this->url(['module' => 'admin', 'controller' => 'certificate-batches'], 'default', true); ?>" class="btn btn-default btn-sm">
-			<i class="icon-list-alt"></i> <?= $this->htmlTranslate("View All Certificate Batches"); ?>
+		<a href="<?= $this->url(['module' => 'reports', 'controller' => 'certificates'], 'default', true); ?>" class="btn btn-default btn-sm">
+			<i class="icon-certificate"></i> <?= $this->htmlTranslate("Annual Certificates"); ?>
 		</a>
 	</div>
 	<div class="data-list-body">
-		<p class="an-intro"><?= $this->htmlTranslate("Lists every evaluated response to the finalized shipments in a date range. Use the certification file to review results before you generate certificates."); ?></p>
+		<p class="an-intro"><?= $this->htmlTranslate("Lists every evaluated response to the finalized shipments in a date range. To issue the year's certificates, use Annual Certificates. It walks you through every step."); ?></p>
 
 		<div class="an-step">
 			<h4><span class="an-step-no">1</span><?= $this->htmlTranslate("Report"); ?></h4>
@@ -209,93 +172,18 @@
 				</label>
 			</div>
 
-			<div class="an-templates" id="templateReadiness" aria-live="polite"></div>
-
 			<button type="button" class="btn btn-primary btn-sm" id="getReportBtn" onclick="getAnnualReport()">
 				<i class="icon-file"></i> <?= $this->htmlTranslate("Generate report"); ?>
 			</button>
 			<div class="an-result" id="summaryDiv"></div>
 		</div>
 
-		<div class="an-step certificate-btn" style="display:none;">
-			<h4><span class="an-step-no">2</span><?= $this->htmlTranslate("Certificates"); ?></h4>
-			<div class="an-fields">
-				<div class="an-field" style="flex:0 1 360px;">
-					<label for="certificateName"><?= $this->htmlTranslate("Certificate name"); ?></label>
-					<input type="text" class="form-control input-sm" name="certificateName" id="certificateName"
-						placeholder="<?= $this->htmlTranslate("Enter certificate name"); ?>"
-						title="<?= $this->htmlTranslate("Letters, numbers and hyphens only"); ?>" />
-				</div>
-				<div>
-					<a href="javascript:void(0);" onclick="genarateCertificate(this);" class="btn btn-info btn-sm certificate-anchor">
-						<i class="icon-certificate"></i> <?= $this->htmlTranslate("Generate Certificates"); ?>
-					</a>
-				</div>
-			</div>
-			<p class="an-hint"><?= $this->htmlTranslate("Letters, numbers and hyphens only. Certificates cover the same shipments as the report."); ?></p>
-
-			<div id="certificateProgressSection" style="display:none; margin-top:14px;">
-				<div id="certificateProgressIndicator" style="display:none;">
-					<div class="alert alert-info">
-						<i class="icon-spinner icon-spin"></i> <span id="progressMessage"><?= $this->htmlTranslate("Generating certificates..."); ?></span>
-					</div>
-				</div>
-
-				<div id="certificateErrorSection" style="display:none;">
-					<div class="alert alert-danger">
-						<strong><?= $this->htmlTranslate("Error"); ?>:</strong> <span id="certificateErrorMessage"></span>
-					</div>
-				</div>
-
-				<div id="certificateStatsSection" style="display:none;">
-					<h4><?= $this->htmlTranslate("Certificate Generation Summary"); ?></h4>
-					<table class="table table-bordered">
-						<tbody>
-							<tr>
-								<td><strong><?= $this->htmlTranslate("Excellence Certificates"); ?></strong></td>
-								<td id="excellenceCount">0</td>
-							</tr>
-							<tr>
-								<td><strong><?= $this->htmlTranslate("Participation Certificates"); ?></strong></td>
-								<td id="participationCount">0</td>
-							</tr>
-							<tr>
-								<td><strong><?= $this->htmlTranslate("Skipped (No certificates)"); ?></strong></td>
-								<td id="skippedCount">0</td>
-							</tr>
-						</tbody>
-					</table>
-					<div>
-						<a href="javascript:void(0);" id="downloadZipBtn" class="btn btn-success btn-sm" target="_blank" style="margin-right:10px;">
-							<i class="icon-download"></i> <?= $this->htmlTranslate("Download ZIP"); ?>
-						</a>
-						<a href="javascript:void(0);" onclick="approveCertificates();" id="approveDistributeBtn" class="btn btn-primary btn-sm">
-							<i class="icon-ok"></i> <?= $this->htmlTranslate("Approve & Distribute"); ?>
-						</a>
-					</div>
-				</div>
-
-				<div id="certificateDistributionSection" style="display:none;">
-					<div class="alert alert-success">
-						<i class="icon-ok"></i> <span id="distributionMessage"></span>
-					</div>
-				</div>
-			</div>
-		</div>
 	</div>
 </div>
 
 <script type="text/javascript" src="<?php echo $this->assetUrl('js/daterangepicker.js'); ?>"></script>
 <script type="text/javascript" src="<?php echo $this->baseUrl('js/select2.min.js'); ?>"></script>
 <script type="text/javascript">
-	var currentBatchId = null;
-	// Which certificate templates each scheme has, and the scheme of each
-	// shipment in the list, to warn before certificates are generated.
-	var templateStatus = <?= json_encode($this->templateStatus ?? new stdClass()); ?>;
-	var templatesUrl = "<?= $this->url(['module' => 'admin', 'controller' => 'certificate-templates'], 'default', true); ?>";
-	var shipmentSchemes = {};
-	var templatesMissing = false;
-	var pollingInterval = null;
 	var shipmentRequest = null;
 
 	function annualParams() {
@@ -320,9 +208,7 @@
 			var picked = $('#shipmentId').val() || [];
 			var $select = $('#shipmentId').empty();
 			var kept = [];
-			shipmentSchemes = {};
 			$.each(shipments || [], function (i, shipment) {
-				shipmentSchemes[shipment.id] = shipment.scheme;
 				$select.append($('<option/>').val(shipment.id).text(shipment.text));
 				if (picked.indexOf(String(shipment.id)) !== -1) {
 					kept.push(String(shipment.id));
@@ -334,7 +220,6 @@
 				? "<?= $this->jsTranslate("%s finalized shipments in this range."); ?>".replace('%s', count)
 				: "<?= $this->jsTranslate("No finalized shipments in this range."); ?>");
 			$('#getReportBtn').prop('disabled', !count);
-			renderTemplateReadiness();
 		}, 'json').always(function () {
 			shipmentRequest = null;
 		});
@@ -344,9 +229,6 @@
 		$('#scheme').select2({ placeholder: "<?= $this->jsTranslate("All schemes"); ?>", allowClear: true });
 		$('#shipmentId').select2({ placeholder: "<?= $this->jsTranslate("All finalized shipments in the range"); ?>", allowClear: true });
 
-		$('#certificateName').on('input', function () {
-			allowOnlyAlphaNumericAndHyphen('#certificateName');
-		});
 
 		$('#dateRange').daterangepicker({
 			locale: {
@@ -379,78 +261,9 @@
 		loadShipments();
 	});
 
-	// A changed choice makes the generated file and the certificate step stale.
+	// A changed choice makes the generated file stale.
 	function resetResult() {
 		$('#summaryDiv').empty();
-		$('.certificate-btn').hide();
-		renderTemplateReadiness();
-	}
-
-	// The schemes the certificates would cover: those of the picked
-	// shipments, or of every shipment in the list.
-	function selectedSchemes() {
-		var picked = $('#shipmentId').val() || [];
-		var ids = picked.length ? picked : Object.keys(shipmentSchemes);
-		var schemes = [];
-		$.each(ids, function (i, id) {
-			var scheme = shipmentSchemes[id];
-			if (scheme && schemes.indexOf(scheme) === -1) {
-				schemes.push(scheme);
-			}
-		});
-		return schemes;
-	}
-
-	// With "For Certification" picked, list each scheme's templates, and
-	// link to Certificate Templates for any that are missing.
-	function renderTemplateReadiness() {
-		var $box = $('#templateReadiness').empty();
-		templatesMissing = false;
-		if ($('input[name="reportType"]:checked').val() !== 'excel') {
-			return;
-		}
-		var schemes = selectedSchemes();
-		if (!schemes.length) {
-			return;
-		}
-		var $list = $('<ul/>');
-		$.each(schemes, function (i, scheme) {
-			var status = templateStatus[scheme] || { name: scheme, excellence: 'missing', participation: 'missing' };
-			var missing = [];
-			var unplaced = [];
-			$.each({ excellence: "<?= $this->jsTranslate("Excellence"); ?>", participation: "<?= $this->jsTranslate("Participation"); ?>" }, function (type, label) {
-				if (status[type] === 'missing') {
-					missing.push(label);
-				} else if (status[type] === 'needs_layout') {
-					unplaced.push(label);
-				}
-			});
-			var $item = $('<li/>');
-			if (missing.length || unplaced.length) {
-				templatesMissing = true;
-				var problems = [];
-				if (missing.length) {
-					problems.push("<?= $this->jsTranslate("no %s template."); ?>".replace('%s', missing.join(' / ')));
-				}
-				if (unplaced.length) {
-					problems.push("<?= $this->jsTranslate("the %s design needs its details placed."); ?>".replace('%s', unplaced.join(' / ')));
-				}
-				$item.addClass('is-missing')
-					.append('<i class="icon-remove"></i> ')
-					.append($('<span/>').text(status.name + ": " + problems.join(' ')))
-					.append(' ')
-					.append($('<a target="_blank" rel="noopener"/>').attr('href', templatesUrl + '#scheme-' + encodeURIComponent(scheme)).text("<?= $this->jsTranslate("Fix it"); ?>"));
-			} else {
-				$item.addClass('is-ok')
-					.append('<i class="icon-ok"></i> ')
-					.append($('<span/>').text(status.name + ": " + "<?= $this->jsTranslate("templates ready"); ?>"));
-			}
-			$list.append($item);
-		});
-		$box.append($('<strong/>').text("<?= $this->jsTranslate("Certificate templates"); ?>")).append($list);
-		if (templatesMissing) {
-			$box.append($('<div class="an-hint"/>').text("<?= $this->jsTranslate("Certificates need both templates for each scheme, with the participant name placed. Fix the templates, then reload this page."); ?>"));
-		}
 	}
 
 	function getAnnualReport() {
@@ -466,7 +279,6 @@
 			data = typeof data === 'string' ? $.parseJSON(data) : data;
 			if (!data || !data.fileName) {
 				reportZeroState.show('#summaryDiv', 'empty');
-				$('.certificate-btn').hide();
 				return;
 			}
 			var $link = $('<a class="btn btn-success btn-sm" target="_blank" rel="noopener"/>')
@@ -474,175 +286,9 @@
 				.append('<i class="icon-download-alt"></i> ')
 				.append($('<span/>').text("<?= $this->jsTranslate("Download"); ?> " + data.fileName));
 			$('#summaryDiv').empty().append($link);
-			$('.certificate-btn').toggle(data.reportType === 'excel');
-			$('.certificate-anchor').attr('disabled', false);
 		}).fail(function () {
 			$.unblockUI();
 			alert("<?= $this->jsTranslate("Unable to generate download"); ?>");
-		});
-	}
-
-	function genarateCertificate(obj) {
-		var certificateName = $('#certificateName').val();
-		if (certificateName === '') {
-			alert("<?= $this->jsTranslate("Please enter the certificate name to proceed"); ?>");
-			return;
-		}
-		if (templatesMissing) {
-			alert("<?= $this->jsTranslate("Some schemes have no certificate template. Upload the missing templates first. The list above the Generate report button shows which ones."); ?>");
-			return;
-		}
-		if (!/^[a-zA-Z0-9-]+$/.test(certificateName)) {
-			alert("<?= $this->jsTranslate("The certificate name can only contain letters, numbers and hyphens."); ?>");
-			return;
-		}
-		var params = annualParams();
-		params.certificateName = certificateName;
-		params.format = 'html';
-		$.blockUI();
-		$.post("<?= $this->url(['module' => 'reports', 'controller' => 'annual', 'action' => 'save-scheduled-jobs'], 'default', true); ?>", params, function (data) {
-			$.unblockUI();
-			if (data > 0) {
-				currentBatchId = parseInt(data, 10);
-				$(obj).attr('disabled', true);
-				resetCertificateUI();
-				$('#certificateProgressSection').show();
-				$('#certificateProgressIndicator').show();
-				$('#progressMessage').text("<?= $this->jsTranslate("Generating certificates..."); ?>");
-				startStatusPolling();
-			} else {
-				alert("<?= $this->jsTranslate("No matched shipment for selected date range."); ?>");
-			}
-		}).fail(function () {
-			$.unblockUI();
-			alert("<?= $this->jsTranslate("Unable to generate download"); ?>");
-		});
-	}
-
-	function resetCertificateUI() {
-		$('#certificateProgressIndicator, #certificateErrorSection, #certificateStatsSection, #certificateDistributionSection').hide();
-	}
-
-	function startStatusPolling() {
-		stopStatusPolling();
-		pollingInterval = setInterval(checkCertificateStatus, 3000);
-	}
-
-	function stopStatusPolling() {
-		if (pollingInterval) {
-			clearInterval(pollingInterval);
-			pollingInterval = null;
-		}
-	}
-
-	function checkCertificateStatus() {
-		if (!currentBatchId) {
-			stopStatusPolling();
-			return;
-		}
-		$.get("<?= $this->url(['module' => 'reports', 'controller' => 'annual', 'action' => 'get-certificate-status'], 'default', true); ?>", {
-			batch_id: currentBatchId,
-			format: 'json'
-		}, function (response) {
-			if (!response.success) {
-				stopStatusPolling();
-				showCertificateError(response.error_message || "<?= $this->jsTranslate("Failed to get status"); ?>");
-				return;
-			}
-			switch (response.status) {
-				case 'pending':
-				case 'generating':
-					$('#progressMessage').text(response.status === 'generating'
-						? "<?= $this->jsTranslate("Generating certificates..."); ?>"
-						: "<?= $this->jsTranslate("Waiting to start..."); ?>");
-					break;
-				case 'generated':
-					stopStatusPolling();
-					showCertificateStats(response);
-					break;
-				case 'failed':
-					stopStatusPolling();
-					showCertificateError(response.error_message || "<?= $this->jsTranslate("Certificate generation failed"); ?>");
-					break;
-				case 'approved':
-				case 'distributing':
-					// Keep polling until the distribution job finishes.
-					showDistributionStatus(response.status);
-					break;
-				case 'distributed':
-					stopStatusPolling();
-					showDistributionStatus(response.status, response.error_message);
-					break;
-				case 'cancelled':
-				case 'rejected':
-					stopStatusPolling();
-					showCertificateError(response.status === 'cancelled'
-						? "<?= $this->jsTranslate("This batch was cancelled."); ?>"
-						: "<?= $this->jsTranslate("This batch was rejected. Its certificates are not distributed."); ?>");
-					break;
-			}
-		}).fail(function () {
-			// Keep polling. The next check may get through.
-			console.error('Failed to check certificate status');
-		});
-	}
-
-	function showCertificateError(message) {
-		resetCertificateUI();
-		$('#certificateProgressSection').show();
-		$('#certificateErrorSection').show();
-		$('#certificateErrorMessage').text(message);
-	}
-
-	function showCertificateStats(data) {
-		resetCertificateUI();
-		$('#certificateProgressSection').show();
-		$('#certificateStatsSection').show();
-		$('#excellenceCount').text(data.excellence_count);
-		$('#participationCount').text(data.participation_count);
-		$('#skippedCount').text(data.skipped_count);
-		if (data.download_url) {
-			$('#downloadZipBtn').attr('href', "<?= $this->baseUrl(); ?>" + data.download_url).show();
-		} else {
-			$('#downloadZipBtn').hide();
-		}
-	}
-
-	function showDistributionStatus(status, problem) {
-		var messages = {
-			approved: "<?= $this->jsTranslate("Certificates approved. Distribution is scheduled and starts within a minute."); ?>",
-			distributing: "<?= $this->jsTranslate("Certificates are being distributed..."); ?>",
-			distributed: "<?= $this->jsTranslate("Certificates are distributed. Participants can download them from their Certificates page."); ?>"
-		};
-		resetCertificateUI();
-		$('#certificateProgressSection').show();
-		$('#certificateDistributionSection').show();
-		$('#distributionMessage').text((messages[status] || messages.approved) + (problem ? ' ' + problem : ''));
-	}
-
-	function approveCertificates() {
-		if (!currentBatchId) {
-			alert("<?= $this->jsTranslate("No batch selected"); ?>");
-			return;
-		}
-		if (!confirm("<?= $this->jsTranslate("Approve these certificates? Each participant can then download theirs from the Certificates page. No email is sent."); ?>")) {
-			return;
-		}
-		$.blockUI();
-		$.post("<?= $this->url(['module' => 'reports', 'controller' => 'annual', 'action' => 'approve-certificates'], 'default', true); ?>", {
-			batch_id: currentBatchId,
-			format: 'json'
-		}, function (response) {
-			$.unblockUI();
-			if (response.success) {
-				showDistributionStatus('approved');
-				startStatusPolling();
-			} else {
-				alert(response.message || "<?= $this->jsTranslate("Failed to approve certificates. Please try again."); ?>");
-			}
-		}).fail(function () {
-			$.unblockUI();
-			alert("<?= $this->jsTranslate("Failed to approve certificates. Please try again."); ?>");
 		});
 	}
 </script>
