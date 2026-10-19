@@ -98,7 +98,9 @@ if (isset($this->ptcc) && !empty($this->ptcc) && $this->ptcc == 1) {
                 class="btn btn-primary"><i
                     class="icon-user"></i>&nbsp;&nbsp;<?= $this->translate->_("Add New Data Manager (Participant Login)"); ?></a>
         <?php } ?>
-            <button type="button" onclick="downloadUnusableEmails();" class="btn btn-warning"><i
+            <button type="button" id="bulkByListBtn" class="btn btn-default"><i
+                    class="icon-paste"></i>&nbsp;&nbsp;<?= $this->translate->_("Reset by Pasted List"); ?></button>
+            <button type="button" onclick="downloadUnusableEmails();" class="btn btn-default"><i
                     class="icon-envelope"></i>&nbsp;&nbsp;<?= $this->translate->_("Unusable Emails"); ?></button>
         </div>
     </div>
@@ -129,9 +131,6 @@ if (isset($this->ptcc) && !empty($this->ptcc) && $this->ptcc == 1) {
         </div>
     <?php } ?>
     <div class="data-list-toolbar-actions">
-        <button type="button" id="bulkByListBtn" class="btn btn-default">
-            <i class="icon-paste"></i>&nbsp;<?= $this->translate->_("Reset by Pasted List"); ?>
-        </button>
         <span id="bulkActionBar" style="display:none;">
             <button type="button" id="bulkResetBtn" class="btn btn-info">
                 <i class="icon-key"></i>&nbsp;<?= $this->translate->_("Queue Reset &amp; Email"); ?>
@@ -208,40 +207,39 @@ if (isset($this->ptcc) && !empty($this->ptcc) && $this->ptcc == 1) {
     <thead>
         <tr>
             <th scope="col" style="width:32px;"><input type="checkbox" id="dmSelectAll" title="<?= $this->translate->_('Select all on this page'); ?>" /></th>
-            <th scope="col"><?= $this->translate->_("First Name"); ?></th>
-            <th scope="col"><?= $this->translate->_("Last Name"); ?></th>
-            <?php if (!isset($ptcc) || empty($ptcc) || $ptcc != 1) { ?>
-                <th scope="col"><?= $this->translate->_("Institute"); ?></th>
-            <?php } ?>
-            <th scope="col"><?= $this->translate->_("Cell/Mobile"); ?></th>
-            <th scope="col"><?= $this->translate->_("Primary Email"); ?></th>
-            <th scope="col"><?= $this->translate->_("Status"); ?></th>
-            <?php if (isset($ptcc) && !empty($ptcc) && $ptcc == 1) { ?>
+            <?php if ($ptcc == 1) { ?>
+                <th scope="col"><?= $this->translate->_("First Name"); ?></th>
+                <th scope="col"><?= $this->translate->_("Last Name"); ?></th>
+                <th scope="col"><?= $this->translate->_("Cell/Mobile"); ?></th>
+                <th scope="col"><?= $this->translate->_("Primary Email"); ?></th>
+                <th scope="col"><?= $this->translate->_("Status"); ?></th>
                 <th scope="col"><?= $this->translate->_("Country"); ?></th>
                 <th scope="col"><?= $this->translate->_("State"); ?></th>
                 <th scope="col"><?= $this->translate->_("District"); ?></th>
+            <?php } else { ?>
+                <th scope="col"><?= $this->translate->_("Name"); ?></th>
+                <th scope="col"><?= $this->translate->_("Contact"); ?></th>
             <?php } ?>
             <th scope="col"><?= $this->translate->_("Mapped Participants"); ?></th>
             <th scope="col"><?= $this->translate->_("Action"); ?></th>
         </tr>
         <tr class="column-search-row">
             <th scope="col"></th>
-            <th scope="col"><input type="text" class="form-control input-sm col-search" data-col="1" placeholder="<?= $this->htmlTranslate('Search First Name'); ?>" /></th>
-            <th scope="col"><input type="text" class="form-control input-sm col-search" data-col="2" placeholder="<?= $this->htmlTranslate('Search Last Name'); ?>" /></th>
-            <?php if (!isset($ptcc) || empty($ptcc) || $ptcc != 1) { ?>
-                <th scope="col"><input type="text" class="form-control input-sm col-search" data-col="3" placeholder="<?= $this->htmlTranslate('Search Institute'); ?>" /></th>
-                <th scope="col"><input type="text" class="form-control input-sm col-search" data-col="4" placeholder="<?= $this->htmlTranslate('Search Mobile'); ?>" /></th>
-                <th scope="col"><input type="text" class="form-control input-sm col-search" data-col="5" placeholder="<?= $this->htmlTranslate('Search Email'); ?>" /></th>
-                <th scope="col"><input type="text" class="form-control input-sm col-search" data-col="6" placeholder="<?= $this->htmlTranslate('Search Status'); ?>" /></th>
-            <?php } else { ?>
+            <?php if ($ptcc == 1) { ?>
+                <th scope="col"><input type="text" class="form-control input-sm col-search" data-col="1" placeholder="<?= $this->htmlTranslate('Search First Name'); ?>" /></th>
+                <th scope="col"><input type="text" class="form-control input-sm col-search" data-col="2" placeholder="<?= $this->htmlTranslate('Search Last Name'); ?>" /></th>
                 <th scope="col"><input type="text" class="form-control input-sm col-search" data-col="3" placeholder="<?= $this->htmlTranslate('Search Mobile'); ?>" /></th>
                 <th scope="col"><input type="text" class="form-control input-sm col-search" data-col="4" placeholder="<?= $this->htmlTranslate('Search Email'); ?>" /></th>
                 <th scope="col"><input type="text" class="form-control input-sm col-search" data-col="5" placeholder="<?= $this->htmlTranslate('Search Status'); ?>" /></th>
                 <th scope="col"><input type="text" class="form-control input-sm col-search" data-col="6" placeholder="<?= $this->htmlTranslate('Search Country'); ?>" /></th>
                 <th scope="col"><input type="text" class="form-control input-sm col-search" data-col="7" placeholder="<?= $this->htmlTranslate('Search State'); ?>" /></th>
                 <th scope="col"><input type="text" class="form-control input-sm col-search" data-col="8" placeholder="<?= $this->htmlTranslate('Search District'); ?>" /></th>
+                <th scope="col"><input type="text" class="form-control input-sm col-search" data-col="9" placeholder="<?= $this->htmlTranslate('Search Participants'); ?>" /></th>
+            <?php } else { ?>
+                <th scope="col"><input type="text" class="form-control input-sm col-search" data-col="1" placeholder="<?= $this->htmlTranslate('Search'); ?>" /></th>
+                <th scope="col"><input type="text" class="form-control input-sm col-search" data-col="2" placeholder="<?= $this->htmlTranslate('Search'); ?>" /></th>
+                <th scope="col"><input type="text" class="form-control input-sm col-search" data-col="3" placeholder="<?= $this->htmlTranslate('Search'); ?>" /></th>
             <?php } ?>
-            <th scope="col"><input type="text" class="form-control input-sm col-search" data-col="<?php echo (!isset($ptcc) || empty($ptcc) || $ptcc != 1) ? 7 : 9; ?>" placeholder="<?= $this->htmlTranslate('Search Participants'); ?>" /></th>
             <th scope="col"></th>
         </tr>
     </thead>
@@ -279,25 +277,13 @@ if (isset($this->ptcc) && !empty($this->ptcc) && $this->ptcc == 1) {
                     "bSortable": false,
                     "bSearchable": false
                 },
-                {
-                    "sClass": ""
-                },
-                <?php if (!isset($ptcc) || empty($ptcc) || $ptcc != 1) { ?> {
+                <?php if ($ptcc == 1) { ?> {
                         "sClass": ""
                     },
-                <?php } ?> {
-                    "sClass": "center"
-                },
-                {
-                    "sClass": "center"
-                },
-                {
-                    "sClass": "center"
-                },
-                {
-                    "sClass": "center"
-                },
-                <?php if (isset($ptcc) && !empty($ptcc) && $ptcc == 1) { ?> {
+                    {
+                        "sClass": "center"
+                    },
+                    {
                         "sClass": "center"
                     },
                     {
@@ -306,11 +292,30 @@ if (isset($this->ptcc) && !empty($this->ptcc) && $this->ptcc == 1) {
                     {
                         "sClass": "center"
                     },
+                    {
+                        "sClass": "center"
+                    },
+                    {
+                        "sClass": "center"
+                    },
+                    {
+                        "sClass": "center"
+                    },
+                    {
+                        "sClass": "center",
+                        "bSortable": false
+                    },
+                <?php } else { ?> {
+                        "sClass": "list-col-text"
+                    },
+                    {
+                        "sClass": "list-col-text"
+                    },
+                    {
+                        "sClass": "list-col-chip",
+                        "bSortable": false
+                    },
                 <?php } ?> {
-                    "sClass": "center",
-                    "bSortable": false
-                },
-                {
                     "sClass": "center",
                     "bSortable": false
                 }
@@ -328,6 +333,10 @@ if (isset($this->ptcc) && !empty($this->ptcc) && $this->ptcc == 1) {
                 aoData.push({
                     "name": "ptcc",
                     "value": <?php echo $ptcc; ?>
+                });
+                aoData.push({
+                    "name": "compact",
+                    "value": 1
                 });
                 aoData.push({
                     "name": "statusFilter",
@@ -369,6 +378,13 @@ if (isset($this->ptcc) && !empty($this->ptcc) && $this->ptcc == 1) {
 
         bindColSearch('#usersTable', function(value, colIdx) {
             oTable.fnFilter(value, colIdx);
+        });
+
+        // Only one child panel is open at a time, so only its chip shows as open
+        $('#usersTable tbody').on('click', 'a.map-chip', function() {
+            var wasOpen = $(this).hasClass('is-open');
+            $('#usersTable a.map-chip').removeClass('is-open');
+            $(this).toggleClass('is-open', !wasOpen);
         });
 
         // Mapped Participants column — expand/collapse child row with on-demand AJAX fetch

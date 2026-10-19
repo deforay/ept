@@ -127,6 +127,21 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
          */
 
         $aColumns = ['unique_identifier', new Zend_Db_Expr(self::participantNameExpr('p')), 'iso_name', 'p.state', 'p.district', 'email', 'status'];
+        $globalColumns = $aColumns;
+        // The admin Participants page asks for the compact layout: ID, name,
+        // location, email, data managers, shipments and actions. The
+        // participant-side list keeps one column per field.
+        $compact = !empty($parameters['compact']);
+        $columnSearch = [];
+        $dmSearchIdx = 7;
+        $shipmentSearchIdx = 8;
+        if ($compact) {
+            $aColumns = ['unique_identifier', new Zend_Db_Expr(self::participantNameExpr('p')), 'iso_name', 'email'];
+            // The location column searches every place name it shows
+            $columnSearch = [2 => ['iso_name', 'p.state', 'p.district']];
+            $dmSearchIdx = 4;
+            $shipmentSearchIdx = 5;
+        }
 
         $sLimit = '';
         if (isset($parameters['iDisplayStart']) && $parameters['iDisplayLength'] != '-1') {
@@ -158,13 +173,13 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                 } else {
                     $sWhereSub .= ' AND (';
                 }
-                $colSize = count($aColumns);
+                $colSize = count($globalColumns);
 
                 for ($i = 0; $i < $colSize; $i++) {
                     if ($i < $colSize - 1) {
-                        $sWhereSub .= $aColumns[$i] . ' LIKE ' . Pt_Commons_General::sqlLikeContains($search) . ' OR ';
+                        $sWhereSub .= $globalColumns[$i] . ' LIKE ' . Pt_Commons_General::sqlLikeContains($search) . ' OR ';
                     } else {
-                        $sWhereSub .= $aColumns[$i] . ' LIKE ' . Pt_Commons_General::sqlLikeContains($search) . ' ';
+                        $sWhereSub .= $globalColumns[$i] . ' LIKE ' . Pt_Commons_General::sqlLikeContains($search) . ' ';
                     }
                 }
                 $sWhereSub .= ')';
@@ -175,6 +190,11 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         /* Individual column filtering */
         for ($i = 0; $i < count($aColumns); $i++) {
             if (isset($parameters['bSearchable_' . $i]) && $parameters['bSearchable_' . $i] == 'true' && $parameters['sSearch_' . $i] != '') {
+                if (isset($columnSearch[$i])) {
+                    $like = Pt_Commons_General::sqlLikeContains($parameters['sSearch_' . $i]);
+                    $sWhere .= ($sWhere == '' ? '' : ' AND ') . '(' . implode(' OR ', array_map(fn ($c) => $c . ' LIKE ' . $like, $columnSearch[$i])) . ') ';
+                    continue;
+                }
                 if ($sWhere == '') {
                     $sWhere .= $aColumns[$i] . ' LIKE ' . Pt_Commons_General::sqlLikeContains($parameters['sSearch_' . $i]) . ' ';
                 } else {
@@ -229,8 +249,8 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         }
 
         // Apply Data Manager filter via subquery using shipment_participant_map
-        if (isset($parameters['bSearchable_7']) && $parameters['bSearchable_7'] == 'true' && $parameters['sSearch_7'] != '') {
-            $searchValue = $parameters['sSearch_7'];
+        if (isset($parameters['bSearchable_' . $dmSearchIdx]) && $parameters['bSearchable_' . $dmSearchIdx] == 'true' && ($parameters['sSearch_' . $dmSearchIdx] ?? '') != '') {
+            $searchValue = $parameters['sSearch_' . $dmSearchIdx];
 
             // Subquery: get participant_ids linked to matching data managers
             $dmSubquery = $this->getAdapter()->select()
@@ -245,8 +265,8 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         }
 
         // Apply Shipment filter via subquery using shipment_participant_map
-        if (isset($parameters['bSearchable_8']) && $parameters['bSearchable_8'] == 'true' && $parameters['sSearch_8'] != '') {
-            $searchValue = $parameters['sSearch_8'];
+        if (isset($parameters['bSearchable_' . $shipmentSearchIdx]) && $parameters['bSearchable_' . $shipmentSearchIdx] == 'true' && ($parameters['sSearch_' . $shipmentSearchIdx] ?? '') != '') {
+            $searchValue = $parameters['sSearch_' . $shipmentSearchIdx];
 
             // Subquery: get participant_ids linked to matching shipments
             $shipmentSubquery = $this->getAdapter()->select()
@@ -297,6 +317,24 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             }
         }
 
+        /* The compact layout names the data managers of a participant with one or
+           two, so most rows need no click to see who logs in for them. */
+        $dmLabelsByParticipant = [];
+        $fewDmIds = $compact ? array_keys(array_filter($dmCountByParticipant, fn ($c) => $c <= 2)) : [];
+        if (!empty($fewDmIds)) {
+            $dmNameSelect = $this->getAdapter()->select()
+                ->from(['pmm' => 'participant_manager_map'], ['participant_id'])
+                ->join(['d' => 'data_manager'], 'd.dm_id = pmm.dm_id', [
+                    'label' => new Zend_Db_Expr("IF(TRIM(CONCAT(IFNULL(d.first_name, ''), ' ', IFNULL(d.last_name, ''))) = '', d.primary_email, TRIM(CONCAT(IFNULL(d.first_name, ''), ' ', IFNULL(d.last_name, ''))))"),
+                ])
+                ->where('pmm.participant_id IN (?)', $fewDmIds)
+                ->order('label');
+            foreach ($this->getAdapter()->fetchAll($dmNameSelect) as $nameRow) {
+                // Escaped without re-encoding, since some names are stored already escaped
+                $dmLabelsByParticipant[$nameRow['participant_id']][] = htmlspecialchars(trim(preg_replace('/\s+/', ' ', (string) $nameRow['label'])), ENT_QUOTES, 'UTF-8', false);
+            }
+        }
+
         /*
          * Output
          */
@@ -323,6 +361,11 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             $edit = '';
             $delete = '';
             $row = [];
+            if ($compact) {
+                $this->addCompactParticipantRow($row, $aRow, $translator, $dmCountByParticipant, $shipmentCountByParticipant, $dmLabelsByParticipant);
+                $output['aaData'][] = $row;
+                continue;
+            }
             $row[] = $aRow['unique_identifier'];
             $row[] = $aRow['participantName'];
             $row[] = $aRow['iso_name'];
@@ -368,6 +411,54 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         }
 
         echo json_encode($output);
+    }
+
+    /**
+     * Cells for the compact admin Participants list. The data managers and
+     * shipments chips open the same child rows as the legacy View buttons.
+     */
+    private function addCompactParticipantRow(array &$row, array $aRow, $translator, array $dmCounts, array $shipmentCounts, array $dmLabels): void
+    {
+        $participantId = (int) $aRow['participant_id'];
+        $isActive = strtolower($aRow['status'] ?? '') === 'active';
+
+        $row[] = '<span class="is-numeric">' . $aRow['unique_identifier'] . '</span>';
+
+        $nameCell = (string) $aRow['participantName'];
+        if (!$isActive) {
+            $nameCell .= ' <span class="list-status-badge">' . $translator->_(ucwords((string) $aRow['status'])) . '</span>';
+        }
+        $row[] = $nameCell;
+
+        // Some imports store the country again as the state or district
+        $country = strtolower(trim((string) $aRow['iso_name']));
+        $places = array_unique(array_filter([trim((string) $aRow['state']), trim((string) $aRow['district'])], fn ($v) => $v !== '' && strtolower($v) !== $country));
+        $row[] = $aRow['iso_name'] . ($places ? '<span class="list-cell-sub">' . implode(', ', $places) . '</span>' : '');
+
+        $row[] = $aRow['email'];
+
+        $dmCount = $dmCounts[$participantId] ?? 0;
+        if ($dmCount === 0) {
+            // Only an active participant without a data manager needs attention
+            $row[] = '<em class="text-muted' . ($isActive ? ' unmapped-tag' : '') . '" style="font-size:11px;">' . $translator->_('None mapped') . '</em>';
+        } else {
+            $label = $dmCount === 1 ? $translator->_('1 data manager') : sprintf($translator->_('%d data managers'), $dmCount);
+            $cell = '<a href="javascript:void(0);" class="btn btn-default btn-xs map-chip toggle-dm-row" data-participant-id="' . $participantId . '"><i class="icon-user"></i> ' . $label . ' <i class="icon-caret-down map-chip-caret"></i></a>';
+            foreach ($dmCount <= 2 ? ($dmLabels[$participantId] ?? []) : [] as $dmLabel) {
+                $cell .= '<span class="list-cell-sub">' . $dmLabel . '</span>';
+            }
+            $row[] = $cell;
+        }
+
+        $shipCount = $shipmentCounts[$participantId] ?? 0;
+        if ($shipCount === 0) {
+            $row[] = '<em class="text-muted" style="font-size:11px;">' . $translator->_('None') . '</em>';
+        } else {
+            $label = $shipCount === 1 ? $translator->_('1 shipment') : sprintf($translator->_('%d shipments'), $shipCount);
+            $row[] = '<a href="javascript:void(0);" class="btn btn-default btn-xs map-chip toggle-shipments-row" data-participant-id="' . $participantId . '"><i class="icon-truck"></i> ' . $label . ' <i class="icon-caret-down map-chip-caret"></i></a>';
+        }
+
+        $row[] = '<a href="/admin/participants/edit/id/' . $participantId . '" class="btn btn-default btn-xs"><i class="icon-pencil"></i> ' . $translator->_('Edit') . '</a>';
     }
 
     public function updateParticipant($params)

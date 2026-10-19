@@ -113,10 +113,26 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
          */
         // Index 0 is the bulk-select checkbox column — not searchable/sortable,
         // empty placeholder keeps DataTables column index in sync with $aColumns.
-        if (isset($parameters['ptcc']) && $parameters['ptcc'] == 1) {
+        // The admin Data Managers page asks for the compact layout: name, contact,
+        // mapped participants and actions. The PTCC and participant-side lists keep
+        // one column per field.
+        $isPtccList = isset($parameters['ptcc']) && $parameters['ptcc'] == 1;
+        $compact = !$isPtccList && !empty($parameters['compact']);
+        // Each compact column searches every field it shows.
+        $columnSearch = [];
+        if ($isPtccList) {
             $aColumns = ['', 'u.first_name', 'u.last_name', 'u.mobile', 'u.primary_email', 'u.status', 'c.iso_name', 'state', 'district', ''];
+            $participantSearchIdx = 9;
+        } elseif ($compact) {
+            $aColumns = ['', 'u.first_name', 'u.primary_email', '', ''];
+            $columnSearch = [
+                1 => ['u.first_name', 'u.last_name', 'u.institute', "CONCAT(u.first_name, ' ', u.last_name)"],
+                2 => ['u.primary_email', 'u.mobile'],
+            ];
+            $participantSearchIdx = 3;
         } else {
             $aColumns = ['', 'u.first_name', 'u.last_name', 'u.institute', 'u.mobile', 'u.primary_email', 'u.status', ''];
+            $participantSearchIdx = 7;
         }
 
         $sLimit = '';
@@ -158,7 +174,9 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                 } else {
                     $sWhereSub .= ' AND (';
                 }
-                $searchableColumns = array_values(array_filter($aColumns, fn ($c) => $c !== ''));
+                $searchableColumns = $compact
+                    ? ['u.first_name', 'u.last_name', 'u.institute', 'u.mobile', 'u.primary_email', 'u.status']
+                    : array_values(array_filter($aColumns, fn ($c) => $c !== ''));
                 $colSize = count($searchableColumns);
 
                 for ($i = 0; $i < $colSize; $i++) {
@@ -179,9 +197,13 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                 continue;
             }
             if (isset($parameters['bSearchable_' . $i]) && $parameters['bSearchable_' . $i] == 'true' && $parameters['sSearch_' . $i] != '') {
-                // Special handling for columns index 7 or 9 (Participants search)
-                if ($i == 7 || $i == 9) {
-                    // Skip here — handled separately after query is built
+                // The participants column is searched separately after the query is built
+                if ($i == $participantSearchIdx) {
+                    continue;
+                }
+                if (isset($columnSearch[$i])) {
+                    $like = Pt_Commons_General::sqlLikeContains($parameters['sSearch_' . $i]);
+                    $sWhere .= ($sWhere == '' ? '' : ' AND ') . '(' . implode(' OR ', array_map(fn ($c) => $c . ' LIKE ' . $like, $columnSearch[$i])) . ') ';
                     continue;
                 }
                 if ($sWhere == '') {
@@ -232,8 +254,8 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             $sQuery = $sQuery->where($sWhere);
         }
         // Apply participants filter via subquery using participant_manager_map
-        if ((isset($parameters['bSearchable_7']) && $parameters['bSearchable_7'] == 'true' && $parameters['sSearch_7'] != '') || (isset($parameters['bSearchable_9']) && $parameters['bSearchable_9'] == 'true' && $parameters['sSearch_9'] != '')) {
-            $searchValue = $parameters['sSearch_7'] ?? $parameters['sSearch_9'];
+        if (isset($parameters['bSearchable_' . $participantSearchIdx]) && $parameters['bSearchable_' . $participantSearchIdx] == 'true' && ($parameters['sSearch_' . $participantSearchIdx] ?? '') != '') {
+            $searchValue = $parameters['sSearch_' . $participantSearchIdx];
 
             // Subquery: get dm_ids linked to matching data managers
             $dmSubquery = $this->getAdapter()->select()
@@ -281,12 +303,26 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
            look after instead, so the row still says who it is. */
         $participantsByNamelessDm = [];
         $namelessDmIds = array_column(array_filter($rResult, fn ($r) => trim(($r['first_name'] ?? '') . ($r['last_name'] ?? '')) === ''), 'dm_id');
+        // The compact layout also names the participants of a manager who looks
+        // after one or two, so most rows need no click to see who they are.
+        if ($compact) {
+            foreach ($participantCountByDm as $countDmId => $countValue) {
+                if ($countValue <= 2) {
+                    $namelessDmIds[] = $countDmId;
+                }
+            }
+            $namelessDmIds = array_values(array_unique($namelessDmIds));
+        }
         if (!empty($namelessDmIds)) {
             $nameSelect = $this->getAdapter()->select()
                 ->from(['pmm' => 'participant_manager_map'], ['dm_id'])
                 ->join(['p' => 'participant'], 'p.participant_id = pmm.participant_id', [
-                    // "Lab name (ID)", or just the ID when the lab has no name either
-                    'label' => new Zend_Db_Expr('IF(' . Application_Model_DbTable_Participants::participantNameExpr('p') . " = '', p.unique_identifier, CONCAT(" . Application_Model_DbTable_Participants::participantNameExpr('p') . ", ' (', p.unique_identifier, ')'))"),
+                    // "Lab name (ID)", or just the ID when the lab has no name either.
+                    // The compact layout leads with the ID, since many managers are
+                    // named after their lab and a truncated name would repeat theirs.
+                    'label' => new Zend_Db_Expr($compact
+                        ? 'IF(' . Application_Model_DbTable_Participants::participantNameExpr('p') . " = '', p.unique_identifier, CONCAT(p.unique_identifier, ' · ', " . Application_Model_DbTable_Participants::participantNameExpr('p') . '))'
+                        : 'IF(' . Application_Model_DbTable_Participants::participantNameExpr('p') . " = '', p.unique_identifier, CONCAT(" . Application_Model_DbTable_Participants::participantNameExpr('p') . ", ' (', p.unique_identifier, ')'))"),
                 ])
                 ->where('pmm.dm_id IN (?)', $namelessDmIds)
                 ->order('p.unique_identifier');
@@ -323,44 +359,83 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             //}
             $row[] = '<input type="checkbox" class="dm-select" value="' . (int) $aRow['dm_id']
                 . '" data-email="' . htmlspecialchars((string) $aRow['primary_email'], ENT_QUOTES, 'UTF-8') . '" />';
-            if (trim(($aRow['first_name'] ?? '') . ($aRow['last_name'] ?? '')) === '') {
-                $labels = $participantsByNamelessDm[$aRow['dm_id']] ?? [];
+            $isActive = strtolower($aRow['status'] ?? '') === 'active';
+            $pCount = $participantCountByDm[$aRow['dm_id']] ?? 0;
+            $labels = $participantsByNamelessDm[$aRow['dm_id']] ?? [];
+            if ($compact) {
+                $fullName = trim(($aRow['first_name'] ?? '') . ' ' . ($aRow['last_name'] ?? ''));
+                $nameCell = $fullName === ''
+                    ? '<span class="dm-noname">' . $translator->_('No name') . '</span>'
+                    : htmlspecialchars($fullName, ENT_QUOTES, 'UTF-8', false);
+                if (!$isActive) {
+                    $nameCell .= ' <span class="list-status-badge">' . $translator->_(ucwords($aRow['status'] ?? '')) . '</span>';
+                }
+                if (trim((string) ($aRow['institute'] ?? '')) !== '') {
+                    $nameCell .= '<span class="list-cell-sub">' . htmlspecialchars((string) $aRow['institute'], ENT_QUOTES, 'UTF-8', false) . '</span>';
+                }
+                $row[] = $nameCell;
+
+                // Escaped without re-encoding, since some values are stored already escaped
+                $contactCell = htmlspecialchars((string) $aRow['primary_email'], ENT_QUOTES, 'UTF-8', false);
+                if (trim((string) ($aRow['mobile'] ?? '')) !== '') {
+                    $contactCell .= '<span class="list-cell-sub is-numeric">' . htmlspecialchars((string) $aRow['mobile'], ENT_QUOTES, 'UTF-8', false) . '</span>';
+                }
+                $emailStatus = $aRow['primary_email_status'] ?? '';
+                if (isset($undeliverableLabels[$emailStatus])) {
+                    [$flagText, $flagClass] = $undeliverableLabels[$emailStatus];
+                    $contactCell .= ' <span class="dm-email-flag ' . $flagClass . '" title="' . htmlspecialchars($translator->_('ePT does not send email to this address.'), ENT_QUOTES, 'UTF-8') . '">' . $flagText . '</span>';
+                }
+                $row[] = $contactCell;
+
+                if ($pCount === 0) {
+                    // Only an active manager without participants needs attention
+                    $row[] = '<em class="text-muted' . ($isActive ? ' unmapped-tag' : '') . '" style="font-size:11px;">' . $translator->_('None mapped') . '</em>';
+                } else {
+                    $chipLabel = $pCount === 1 ? $translator->_('1 participant') : sprintf($translator->_('%d participants'), $pCount);
+                    $mapCell = '<a href="javascript:void(0);" class="btn btn-default btn-xs map-chip toggle-participant-row" data-dm-id="' . (int) $aRow['dm_id'] . '"><i class="icon-user"></i> ' . $chipLabel . ' <i class="icon-caret-down map-chip-caret"></i></a>';
+                    foreach ($pCount <= 2 ? $labels : [] as $label) {
+                        $mapCell .= '<span class="list-cell-sub">' . $label . '</span>';
+                    }
+                    $row[] = $mapCell;
+                }
+            } elseif (trim(($aRow['first_name'] ?? '') . ($aRow['last_name'] ?? '')) === '') {
                 $more = count($labels) > 1 ? ' ' . sprintf($translator->_('+%d more'), count($labels) - 1) : '';
                 $row[] = '<span class="dm-noname">' . $translator->_('No name') . '</span>'
                     . ($labels ? '<span class="dm-noname-hint">' . $labels[0] . $more . '</span>' : '');
             } else {
                 $row[] = htmlspecialchars((string) $aRow['first_name'], ENT_QUOTES, 'UTF-8', false);
             }
-            $row[] = htmlspecialchars((string) $aRow['last_name'], ENT_QUOTES, 'UTF-8', false);
-            if (!isset($parameters['ptcc']) || $parameters['ptcc'] != 1) {
-                $row[] = $aRow['institute'];
-            }
-            $row[] = $aRow['mobile'];
-            // Escaped without re-encoding, since some values are stored already escaped
-            $emailCell = htmlspecialchars((string) $aRow['primary_email'], ENT_QUOTES, 'UTF-8', false);
-            $emailStatus = $aRow['primary_email_status'] ?? '';
-            if (isset($undeliverableLabels[$emailStatus])) {
-                [$flagText, $flagClass] = $undeliverableLabels[$emailStatus];
-                $emailCell .= ' <span class="dm-email-flag ' . $flagClass . '" title="' . htmlspecialchars($translator->_('ePT does not send email to this address.'), ENT_QUOTES, 'UTF-8') . '">' . $flagText . '</span>';
-            }
-            $row[] = $emailCell;
-            //$row[] = '<a href="javascript:void(0);" onclick="layoutModal(\'/admin/participants/view-participants/id/' . $aRow['dm_id'] . '\',\'980\',\'500\');" >' . $aRow['participantCount'] . '</a>';
-            $row[] = $translator->_(ucwords($aRow['status'] ?? ''));
-            if (isset($parameters['ptcc']) && $parameters['ptcc'] == 1) {
-                $row[] = ucwords((string) ($aRow['iso_name'] ?? ''));
-                $row[] = ucwords((string) ($aRow['state'] ?? ''));
-                $row[] = ucwords((string) ($aRow['district'] ?? ''));
-            }
-            /* Mapped Participants column — compact toggle; the list loads on demand */
-            $pCount = isset($participantCountByDm[$aRow['dm_id']]) ? $participantCountByDm[$aRow['dm_id']] : 0;
-            if ($pCount === 0) {
-                // Only flag the row as "unmapped" if the DM is active —
-                // inactive + unmapped isn't actionable, so don't highlight it.
-                $unmappedClass = (strtolower($aRow['status'] ?? '') === 'active') ? ' unmapped-tag' : '';
-                $row[] = '<em class="text-muted' . $unmappedClass . '" style="font-size:11px;">' . $translator->_('None mapped') . '</em>';
-            } else {
-                $pLabel = sprintf($translator->_('View (%d)'), $pCount);
-                $row[] = '<a href="javascript:void(0);" class="btn btn-primary btn-xs toggle-participant-row" data-dm-id="' . (int) $aRow['dm_id'] . '"><i class="icon-user"></i> ' . $pLabel . '</a>';
+            if (!$compact) {
+                $row[] = htmlspecialchars((string) $aRow['last_name'], ENT_QUOTES, 'UTF-8', false);
+                if (!isset($parameters['ptcc']) || $parameters['ptcc'] != 1) {
+                    $row[] = $aRow['institute'];
+                }
+                $row[] = $aRow['mobile'];
+                // Escaped without re-encoding, since some values are stored already escaped
+                $emailCell = htmlspecialchars((string) $aRow['primary_email'], ENT_QUOTES, 'UTF-8', false);
+                $emailStatus = $aRow['primary_email_status'] ?? '';
+                if (isset($undeliverableLabels[$emailStatus])) {
+                    [$flagText, $flagClass] = $undeliverableLabels[$emailStatus];
+                    $emailCell .= ' <span class="dm-email-flag ' . $flagClass . '" title="' . htmlspecialchars($translator->_('ePT does not send email to this address.'), ENT_QUOTES, 'UTF-8') . '">' . $flagText . '</span>';
+                }
+                $row[] = $emailCell;
+                //$row[] = '<a href="javascript:void(0);" onclick="layoutModal(\'/admin/participants/view-participants/id/' . $aRow['dm_id'] . '\',\'980\',\'500\');" >' . $aRow['participantCount'] . '</a>';
+                $row[] = $translator->_(ucwords($aRow['status'] ?? ''));
+                if (isset($parameters['ptcc']) && $parameters['ptcc'] == 1) {
+                    $row[] = ucwords((string) ($aRow['iso_name'] ?? ''));
+                    $row[] = ucwords((string) ($aRow['state'] ?? ''));
+                    $row[] = ucwords((string) ($aRow['district'] ?? ''));
+                }
+                /* Mapped Participants column — compact toggle; the list loads on demand */
+                if ($pCount === 0) {
+                    // Only flag the row as "unmapped" if the DM is active —
+                    // inactive + unmapped isn't actionable, so don't highlight it.
+                    $unmappedClass = (strtolower($aRow['status'] ?? '') === 'active') ? ' unmapped-tag' : '';
+                    $row[] = '<em class="text-muted' . $unmappedClass . '" style="font-size:11px;">' . $translator->_('None mapped') . '</em>';
+                } else {
+                    $pLabel = sprintf($translator->_('View (%d)'), $pCount);
+                    $row[] = '<a href="javascript:void(0);" class="btn btn-primary btn-xs toggle-participant-row" data-dm-id="' . (int) $aRow['dm_id'] . '"><i class="icon-user"></i> ' . $pLabel . '</a>';
+                }
             }
 
             $fromParticipant = isset($parameters['from']) && $parameters['from'] == 'participant';
@@ -404,6 +479,15 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                     $viewAsUrl = '/admin/impersonate/start?dm_id=' . (int) $aRow['dm_id'];
                     $extraLine .= '<a href="' . $viewAsUrl . '" target="_blank" rel="noopener" class="btn btn-danger btn-xs" title="' . $translator->_('Opens the participant UI as this user. Audited.') . '"><i class="icon-eye-open"></i> ' . $translator->_('View as') . '</a>';
                 }
+            }
+
+            if ($compact) {
+                // One line of quiet buttons. Only View as stays red, because it
+                // leaves the admin UI and is audited.
+                $quiet = str_replace(['btn-warning', 'btn-success', 'btn-info'], 'btn-default', $recordLine . $credentialLine);
+                $row[] = '<div class="row-action-lines"><div class="row-action-line">' . $quiet . $extraLine . '</div></div>';
+                $output['aaData'][] = $row;
+                continue;
             }
 
             $actions = '';

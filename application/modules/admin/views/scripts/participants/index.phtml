@@ -114,10 +114,10 @@
         <h2><?= $this->translate->_("List of All PT Participants"); ?></h2>
         <div class="data-list-actions">
             <a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'participants', 'action' => 'bulk-import'), 'default', true); ?>"
-                class="btn btn-primary"><i class="icon-plus"></i>&nbsp;&nbsp;<?= $this->translate->_("Bulk Import Participants"); ?></a>
-            <button type="button" onclick="downloadParticipantDetails();" class="btn btn-primary"><i
+                class="btn btn-default"><i class="icon-plus"></i>&nbsp;&nbsp;<?= $this->translate->_("Bulk Import Participants"); ?></a>
+            <button type="button" onclick="downloadParticipantDetails();" class="btn btn-default"><i
                     class="icon-download"></i>&nbsp;&nbsp;<?= $this->translate->_("Download as Excel"); ?></button>
-            <button type="button" onclick="downloadUnusableEmails();" class="btn btn-warning"><i
+            <button type="button" onclick="downloadUnusableEmails();" class="btn btn-default"><i
                     class="icon-envelope"></i>&nbsp;&nbsp;<?= $this->translate->_("Unusable Emails"); ?></button>
             <a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'participants', 'action' => 'add'), 'default', true); ?>"
                 class="btn btn-primary"><i class="icon-user"></i>&nbsp;&nbsp;<?= $this->translate->_("Add New Participant"); ?></a>
@@ -163,7 +163,7 @@
         </td>
     </tr>
 </table>
-<div class="data-list-filters">
+<div class="data-list-filters is-narrow">
     <?php if (!empty($this->pendingCount)) { ?>
         <div>
             <label><?= $this->translate->_("Pending"); ?></label>
@@ -210,31 +210,25 @@
         <tr>
             <th scope="col"><?= $this->translate->_("Participant ID"); ?></th>
             <th scope="col"><?= $this->translate->_("Lab Name/Participant Name"); ?></th>
-            <th scope="col"><?= $this->translate->_("Country"); ?></th>
-            <th scope="col"><?= $this->translate->_("State/Province"); ?></th>
-            <th scope="col"><?= $this->translate->_("District/County"); ?></th>
+            <th scope="col"><?= $this->translate->_("Location"); ?></th>
             <th scope="col"><?= $this->translate->_("Email"); ?></th>
-            <th scope="col"><?= $this->translate->_("Status"); ?></th>
             <th scope="col"><?= $this->translate->_("Data Managers"); ?></th>
             <th scope="col"><?= $this->translate->_("Shipments"); ?></th>
             <th scope="col"><?= $this->translate->_("Action"); ?></th>
         </tr>
         <tr class="column-search-row">
-            <th scope="col"><input type="text" class="form-control input-sm col-search" data-col="0" placeholder="<?= $this->htmlTranslate('Search ID'); ?>" /></th>
-            <th scope="col"><input type="text" class="form-control input-sm col-search" data-col="1" placeholder="<?= $this->htmlTranslate('Search Name'); ?>" /></th>
-            <th scope="col"><input type="text" class="form-control input-sm col-search" data-col="2" placeholder="<?= $this->htmlTranslate('Search Country'); ?>" /></th>
-            <th scope="col"><input type="text" class="form-control input-sm col-search" data-col="3" placeholder="<?= $this->htmlTranslate('Search State'); ?>" /></th>
-            <th scope="col"><input type="text" class="form-control input-sm col-search" data-col="4" placeholder="<?= $this->htmlTranslate('Search District'); ?>" /></th>
-            <th scope="col"><input type="text" class="form-control input-sm col-search" data-col="5" placeholder="<?= $this->htmlTranslate('Search Email'); ?>" /></th>
-            <th scope="col"><input type="text" class="form-control input-sm col-search" data-col="6" placeholder="<?= $this->htmlTranslate('Search Status'); ?>" /></th>
-            <th scope="col"><input type="text" class="form-control input-sm col-search" data-col="7" placeholder="<?= $this->htmlTranslate('Search Data Manager'); ?>" /></th>
-            <th scope="col"><input type="text" class="form-control input-sm col-search" data-col="8" placeholder="<?= $this->htmlTranslate('Search Shipments'); ?>" /></th>
+            <th scope="col"><input type="text" class="form-control input-sm col-search" data-col="0" placeholder="<?= $this->htmlTranslate('Search'); ?>" /></th>
+            <th scope="col"><input type="text" class="form-control input-sm col-search" data-col="1" placeholder="<?= $this->htmlTranslate('Search'); ?>" /></th>
+            <th scope="col"><input type="text" class="form-control input-sm col-search" data-col="2" placeholder="<?= $this->htmlTranslate('Search'); ?>" /></th>
+            <th scope="col"><input type="text" class="form-control input-sm col-search" data-col="3" placeholder="<?= $this->htmlTranslate('Search'); ?>" /></th>
+            <th scope="col"><input type="text" class="form-control input-sm col-search" data-col="4" placeholder="<?= $this->htmlTranslate('Search'); ?>" /></th>
+            <th scope="col"><input type="text" class="form-control input-sm col-search" data-col="5" placeholder="<?= $this->htmlTranslate('Search'); ?>" /></th>
             <th scope="col"></th>
         </tr>
     </thead>
     <tbody>
         <tr>
-            <td colspan="10" class="dataTables_empty"><?= $this->translate->_("Loading data from server"); ?></td>
+            <td colspan="7" class="dataTables_empty"><?= $this->translate->_("Loading data from server"); ?></td>
         </tr>
     </tbody>
 </table>
@@ -256,32 +250,23 @@
             "bRetrieve": true,
             "bSortCellsTop": true,
             "aoColumns": [{
-                    "sClass": "center"
+                    "sClass": "list-col-id"
                 },
                 {
-                    "sClass": ""
+                    "sClass": "list-col-text"
                 },
                 {
-                    "sClass": "center"
+                    "sClass": "list-col-text"
                 },
                 {
-                    "sClass": "center"
+                    "sClass": "list-col-text"
                 },
                 {
-                    "sClass": "center"
-                },
-                {
-                    "sClass": ""
-                },
-                {
-                    "sClass": "center"
-                },
-                {
-                    "sClass": "center",
+                    "sClass": "list-col-chip",
                     "bSortable": false
                 },
                 {
-                    "sClass": "center",
+                    "sClass": "list-col-chip",
                     "bSortable": false
                 },
                 {
@@ -298,6 +283,10 @@
             "fnServerParams": function(aoData) {
                 labName = $("#labId").val();
                 country = $("#country").val();
+                aoData.push({
+                    "name": "compact",
+                    "value": 1
+                });
                 aoData.push({
                     "name": "pid",
                     "value": labName
@@ -346,6 +335,13 @@
 
         bindColSearch('#participantsTable', function(value, colIdx) {
             oTable.fnFilter(value, colIdx);
+        });
+
+        // Only one child panel is open at a time, so only its chip shows as open
+        $('#participantsTable tbody').on('click', 'a.map-chip', function() {
+            var wasOpen = $(this).hasClass('is-open');
+            $('#participantsTable a.map-chip').removeClass('is-open');
+            $(this).toggleClass('is-open', !wasOpen);
         });
 
         // Data Managers column — expand/collapse child row with on-demand AJAX fetch

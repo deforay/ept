@@ -8620,3 +8620,78 @@ td.center {
 .feedback-form-status--info .fbs-icon {
 	color: #4a7fb5;
 }
+
+/* Compact list rows (Participants, Data Managers). One cell carries a record's
+   related fields: the main value on the first line, the rest muted below it.
+   Text columns read left-aligned. Count chips open the row's child panel. */
+.data-list table.dataTable th.list-col-text,
+.data-list table.dataTable td.list-col-text,
+.data-list table.dataTable th.list-col-id,
+.data-list table.dataTable td.list-col-id,
+.data-list table.dataTable th.list-col-chip {
+	text-align: left;
+}
+
+.data-list table.dataTable td.list-col-id {
+	white-space: nowrap;
+}
+
+.data-list table.dataTable td.list-col-chip {
+	text-align: left;
+	white-space: nowrap;
+}
+
+.data-list .is-numeric {
+	font-variant-numeric: tabular-nums;
+}
+
+.data-list .list-cell-sub {
+	display: block;
+	margin-top: 2px;
+	color: #6b7380;
+	font-size: 12px;
+	line-height: 1.4;
+	white-space: normal;
+}
+
+.data-list td.list-col-chip .list-cell-sub {
+	max-width: 220px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.data-list .list-status-badge {
+	display: inline-block;
+	margin-left: 4px;
+	padding: 0 7px;
+	border: 1px solid #cfd4dc;
+	border-radius: 10px;
+	background: #f4f5f7;
+	color: #6b7380;
+	font-size: 10.5px;
+	font-weight: 600;
+	line-height: 1.6;
+	vertical-align: middle;
+}
+
+.data-list .map-chip .map-chip-caret {
+	margin-left: 2px;
+	transition: transform 0.15s;
+}
+
+.data-list .map-chip.is-open {
+	background: #4a6fa5;
+	border-color: #3a5a8a;
+	color: #fff;
+}
+
+.data-list .map-chip.is-open .map-chip-caret {
+	transform: rotate(180deg);
+}
+
+/* Few filters: keep each select at a field's width instead of stretching one
+   select across the card. */
+.data-list-filters.is-narrow {
+	grid-template-columns: repeat(auto-fill, minmax(190px, 260px));
+}
