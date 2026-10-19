@@ -139,8 +139,15 @@ $caPdfUrl = $this->url(['module' => 'reports', 'controller' => 'corrective-actio
 	<div class="data-list-body">
 		<?php
 		$rfShipmentsUrl = $this->url(['module' => 'reports', 'controller' => 'corrective-actions', 'action' => 'shipments'], 'default', true);
+		// Corrective actions are recorded for DTS only, so there is no scheme to pick.
+		$rfFixedScheme = 'dts';
 		include APPLICATION_PATH . '/views/partials/report-filters.phtml';
 		?>
+		<?php if (empty($this->schemes)) { ?>
+			<div class="alert alert-info" style="margin:14px 0 0;">
+				<?= $this->htmlTranslate("Corrective actions are recorded for DTS only. DTS is not active, so this report has nothing to show."); ?>
+			</div>
+		<?php } ?>
 
 		<div class="ca-stats" id="caStats">
 			<div class="ca-stat">

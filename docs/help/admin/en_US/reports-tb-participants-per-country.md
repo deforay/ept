@@ -12,12 +12,11 @@ The report shows as soon as the page opens. The filters apply as soon as you cha
 
 ## Filters
 
-Click **Expand Filters** to show the filters.
+Click **Expand Filters** to show the filters. The report covers TB only, so there is no scheme filter.
 
 | Filter | What it does | Default |
 |---|---|---|
 | Shipment date | Includes shipments whose shipment date falls in this range. Click **Clear** in the date picker to include all dates. | Last 3 years |
-| Scheme | Shows the TB scheme. This report covers TB only. | TB |
 | Shipment | Includes only the shipments you pick. You can pick more than one. The list holds every TB shipment in the date range that is not cancelled. | All shipments in the date range |
 | Country, Region, Province, District | Includes only participants in that place. Each filter shows only when participants have that field filled in. | All |
 

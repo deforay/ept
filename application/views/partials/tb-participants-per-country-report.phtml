@@ -9,7 +9,7 @@
  *   $tbcDataUrl       the action that returns the rows, one per country
  *   $tbcShipmentsUrl  the action that returns the Shipment filter options
  *   $tbcExportUrl     the action behind Download Excel
- *   $this->schemes (TB only), ->countries, ->regions, ->states, ->districts
+ *   $this->schemes (the active TB scheme, or empty), ->countries, ->regions, ->states, ->districts
  *
  * Highcharts must be loaded on the page. The filters apply as soon as they
  * change. The page includes collapsible-filters.phtml last.
@@ -17,8 +17,15 @@
 include APPLICATION_PATH . '/views/partials/report-zero-state.phtml';
 include APPLICATION_PATH . '/views/partials/report-table-styles.phtml';
 $rfShipmentsUrl = $tbcShipmentsUrl;
+// The report covers TB only, so there is no scheme to pick.
+$rfFixedScheme = 'tb';
 include APPLICATION_PATH . '/views/partials/report-filters.phtml';
 ?>
+<?php if (empty($this->schemes)) { ?>
+	<div class="alert alert-info" style="margin:14px 0 0;">
+		<?= $this->htmlTranslate("TB is not active, so this report has nothing to show."); ?>
+	</div>
+<?php } ?>
 <style>
 	#tbcChart {
 		margin-top: 8px;

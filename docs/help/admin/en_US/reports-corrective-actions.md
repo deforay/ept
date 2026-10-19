@@ -18,12 +18,11 @@ Cancelled shipments never show in this report.
 
 ## Filters
 
-Click **Expand Filters** to show the filters.
+Click **Expand Filters** to show the filters. The report covers DTS only, so there is no scheme filter. If DTS is not active, the page says so.
 
 | Filter | What it does | Default |
 |---|---|---|
 | Shipment date | Includes shipments whose shipment date falls in this range. Click **Clear** in the date picker to include all dates. | Last 3 years |
-| Scheme | Shows the DTS scheme. Corrective actions exist for DTS only. | DTS |
 | Shipment | Includes only the shipments you pick. You can pick more than one. The list holds every DTS shipment in the date range that is not cancelled. | All shipments in the date range |
 | Country, Region, Province, District | Includes only participants in that place. Each filter shows only when participants have that field filled in. | All |
 

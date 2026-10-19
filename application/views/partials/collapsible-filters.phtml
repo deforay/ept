@@ -143,7 +143,9 @@
                 var fields = [];
                 $body.find('select, input').each(function () {
                     var $el = $(this);
-                    if ($el.is(':button, :submit, :reset')) {
+                    // A hidden input is a fixed value the page sends, not a filter the
+                    // user set (a single-scheme report's scheme, say).
+                    if ($el.is(':button, :submit, :reset') || $el.is('input[type="hidden"]')) {
                         return;
                     }
                     // A checkbox/radio's .val() is its "value" attribute (jQuery

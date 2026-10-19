@@ -8,6 +8,8 @@
  * Set before including:
  *
  *   $rfShipmentsUrl  the action that returns the Shipment filter options
+ *   $rfFixedScheme   optional: a scheme id for a single-scheme report. The
+ *                    Scheme filter is left out and this scheme is sent instead.
  *   $this->schemes, ->countries, ->regions, ->states, ->districts
  *
  * The page talks to the filters through window.reportFilters:
@@ -19,6 +21,7 @@
  *
  * The page includes collapsible-filters.phtml last.
  */
+$rfFixedScheme ??= null;
 $locationFilters = [
 	['country', $this->translate->_("Country"), array_map(fn ($c) => [$c['id'], ucwords((string) $c['iso_name'])], $this->countries ?? [])],
 	['region', $this->translate->_("Region"), array_map(fn ($r) => [$r['region'], $r['region']], $this->regions ?? [])],
@@ -81,6 +84,9 @@ $locationFilters = [
 					style="background: #fff" placeholder="<?= $this->htmlTranslate("All dates"); ?>"
 					data-filter-label="<?= $this->htmlTranslate("Shipment Date"); ?>" />
 			</div>
+			<?php if ($rfFixedScheme !== null) { ?>
+				<input type="hidden" id="scheme" name="scheme" value="<?= $this->escape($rfFixedScheme); ?>" />
+			<?php } else { ?>
 			<div class="rpt-field">
 				<label for="scheme"><?= $this->htmlTranslate("Scheme"); ?></label>
 				<select id="scheme" name="scheme" class="form-control input-sm"
@@ -91,6 +97,7 @@ $locationFilters = [
 					<?php } ?>
 				</select>
 			</div>
+			<?php } ?>
 			<div class="rpt-field is-wide">
 				<label for="shipmentId"><?= $this->htmlTranslate("Shipment"); ?></label>
 				<select id="shipmentId" name="shipmentId" multiple="multiple" style="width:100%;"
