@@ -4353,4 +4353,32 @@ class Application_Service_Reports
             echo '';
         }
     }
+
+    /** Shipment-wide pass/fail counts. Report generation and the zimbabwe participant layouts read it. */
+    public function getParticipantPerformanceReportByShipmentId($shipmentId, $testType = '')
+    {
+        $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $sQuery = $dbAdapter->select()->from(['s' => 'shipment'])
+            ->join(['sl' => 'scheme_list'], 's.scheme_type=sl.scheme_id')
+            ->joinLeft(
+                ['sp' => 'shipment_participant_map'],
+                'sp.shipment_id=s.shipment_id',
+                [
+                    "DATE_FORMAT(s.shipment_date,'%d-%b-%Y')",
+                    'total_shipped' => new Zend_Db_Expr('count("sp.map_id")'),
+                    // "total_responses" => new Zend_Db_Expr("SUM(sp.shipment_test_date not like '0000-00-00')"),
+                    'total_responses' => new Zend_Db_Expr("SUM(response_status IN ('responded', 'nottested'))"),
+                    'valid_responses' => new Zend_Db_Expr("(SUM(sp.shipment_test_date not like '0000-00-00%' AND is_excluded != 'yes'))"),
+                    'number_failed' => new Zend_Db_Expr('SUM(CASE WHEN (sp.final_result = 2 AND sp.shipment_test_report_date <= s.response_deadline) THEN 1 ELSE 0 END)'),
+                    'score' => new Zend_Db_Expr('(SUM(sp.shipment_score) + SUM(sp.documentation_score))'),
+                    'number_passed' => new Zend_Db_Expr('SUM(CASE WHEN (sp.final_result = 1 AND sp.shipment_test_report_date <= s.response_deadline) THEN 1 ELSE 0 END)'),
+                ]
+            )
+            ->where('s.shipment_id = ?', $shipmentId);
+        if (isset($testType) && !empty($testType)) {
+            $sQuery = $sQuery->where("JSON_EXTRACT(sp.attributes, '$.dts_test_panel_type') = ?", $testType);
+        }
+
+        return $dbAdapter->fetchRow($sQuery);
+    }
 }
