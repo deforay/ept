@@ -497,15 +497,19 @@ if (!$pstatus && in_array('access-reports', $privileges)) {
 		'url' => $this->url(['module' => 'reports', 'controller' => 'participant-trends'], 'default', true),
 		'keywords' => ['participant', 'trends', 'analysis']
 	];
-	$spotlightItems[] = [
-		'id' => 'corrective-actions',
-		'title' => $this->translate->_('Corrective Actions Report'),
-		'category' => $this->translate->_('Reports'),
-		'icon' => 'icon-wrench',
-		'url' => $this->url(['module' => 'reports', 'controller' => 'corrective-actions'], 'default', true),
-		'keywords' => ['corrective', 'action', 'fix']
-	];
-	if (isset($configData['enable_capa']) && $configData['enable_capa'] == 'yes') {
+	// Corrective actions are recorded for DTS only.
+	$dtsActive = isset($adminSession->activeSchemes) && in_array('dts', $adminSession->activeSchemes);
+	if ($dtsActive) {
+		$spotlightItems[] = [
+			'id' => 'corrective-actions',
+			'title' => $this->translate->_('Corrective Actions Report'),
+			'category' => $this->translate->_('Reports'),
+			'icon' => 'icon-wrench',
+			'url' => $this->url(['module' => 'reports', 'controller' => 'corrective-actions'], 'default', true),
+			'keywords' => ['corrective', 'action', 'fix']
+		];
+	}
+	if ($dtsActive && isset($configData['enable_capa']) && $configData['enable_capa'] == 'yes') {
 		$spotlightItems[] = [
 			'id' => 'corrective-preventive-actions',
 			'title' => $this->translate->_('Corrective and Preventive Actions'),
