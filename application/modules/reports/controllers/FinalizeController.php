@@ -26,6 +26,7 @@ class Reports_FinalizeController extends Zend_Controller_Action
             ->addActionContext('send-report-mail', 'html')
             ->addActionContext('approve-replace-summary-report', 'html')
             ->addActionContext('view-finalized-shipment', 'html')
+            ->addActionContext('download-history', 'html')
             ->initContext();
         $this->_helper->layout()->pageName = 'analyze';
     }
@@ -146,6 +147,15 @@ class Reports_FinalizeController extends Zend_Controller_Action
         $evSession = new Zend_Session_Namespace('evalShipmentList');
         $evSession->editUrlList = $navUrls['editUrlList'];
         $evSession->viewUrlList = $navUrls['viewUrlList'];
+    }
+
+    /** Child row on the finalized page: who at this lab downloaded the report. */
+    public function downloadHistoryAction()
+    {
+        $reportType = $this->_getParam('reportType') === 'summary' ? 'summary' : 'individual';
+        $evalService = new Application_Service_Evaluation();
+        $this->view->reportType = $reportType;
+        $this->view->downloads = $evalService->getParticipantDownloadHistory((int) $this->_getParam('mapId'), $reportType);
     }
 
     /** Decode `shipment.shipment_attributes.dtsSchemeType` for view-side filter gating. */

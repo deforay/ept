@@ -15,36 +15,6 @@
     #shipmentEvaluation tbody td {
         vertical-align: middle;
     }
-
-    .tooltip{
-        max-width:none !important;
-    }
-
-    .tooltip-inner{
-        max-width:none !important;
-        width:350px;
-        background:#575757;
-        color:#fff;
-        border:3px solid #111;
-        border-radius:8px;
-        padding:12px;
-        text-align:left;
-    }
-
-    .tooltip-inner table{
-        /* width:50%; */
-        border:none;
-    }
-
-    .tooltip-inner th,
-    .tooltip-inner td{
-        border:none !important;
-        white-space:nowrap;
-    }
-
-    .tooltip.top .tooltip-arrow{
-        border-top-color:#575757;
-    }
 </style>
 <?php
 if (!empty($this->shipment)) {
@@ -524,10 +494,41 @@ if (!empty($this->shipment)) {
                     applyShipmentFilters();
                 });
 
+                // A row has one child row, shared by corrective actions and download lists.
+                function resetClicker(tr) {
+                    var $btn = $(tr).find('.clicker');
+                    $btn.find('i').addClass('icon-plus').removeClass('icon-minus');
+                    $btn.removeClass('btn-success btn-danger btn-warning btn-default').addClass($btn.data('btn-class'));
+                }
+
+                $('#shipmentEvaluation').on('click', 'a.toggle-downloads-row', function (e) {
+                    e.preventDefault();
+                    var $btn = $(this);
+                    var tr = $btn.closest('tr')[0];
+                    var key = $btn.data('map-id') + '-' + $btn.data('report-type');
+                    if (oTable.fnIsOpen(tr) && $(tr).data('downloads-open') === key) {
+                        oTable.fnClose(tr);
+                        $(tr).removeData('downloads-open');
+                        return;
+                    }
+                    resetClicker(tr);
+                    $(tr).data('downloads-open', key);
+                    oTable.fnOpen(tr, '<div class="downloads-child-row" style="padding:12px;color:#888;"><i class="icon-refresh"></i> <?= $this->jsTranslate("Loading downloads…"); ?></div>', 'details');
+                    $.post("<?php echo $this->url(['module' => 'reports', 'controller' => 'finalize', 'action' => 'download-history', 'format' => 'html'], 'default', true); ?>", {
+                        mapId: $btn.data('map-id'),
+                        reportType: $btn.data('report-type')
+                    }, function (html) {
+                        $(tr).next('tr').find('td').first().html(html);
+                    }).fail(function () {
+                        $(tr).next('tr').find('td').first().html('<div style="padding:12px;color:#a94442;"><?= $this->jsTranslate("Failed to load downloads. Please try again."); ?></div>');
+                    });
+                });
+
                 $('#shipmentEvaluation').on('click', ".clicker", function () {
                     nTr = $(this).parents('tr')[0];
                     aData = oTable.fnGetData(nTr);
-                    if (oTable.fnIsOpen(nTr)) {
+                    $(nTr).removeData('downloads-open');
+                    if (oTable.fnIsOpen(nTr) && $(nTr).next('tr').find('.downloads-child-row').length === 0) {
                         /* This row is already open - close it */
                         $(this).find('i').addClass("icon-plus");
                         $(this).find('i').removeClass("icon-minus");
@@ -604,17 +605,6 @@ if (!empty($this->shipment)) {
                             "url": sSource,
                             "data": aoData,
                             "success": fnCallback
-                        });
-                    },
-                    "fnDrawCallback": function () {
-                        // Rows are replaced by DataTables on every draw, so Bootstrap tooltip
-                        // bindings on the "Downloaded" badges (title/data-toggle="tooltip")
-                        // need to be re-applied here each time.
-                        $('#shipmentEvaluation [data-toggle="tooltip"]').tooltip({
-                            html: true,
-                            container: 'body',
-                            placement: 'top',
-                            sanitize: false
                         });
                     },
                     "aoColumns": [

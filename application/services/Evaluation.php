@@ -1804,51 +1804,15 @@ class Application_Service_Evaluation
         ];
         $orderColumns = $searchColumns;
 
-        // ------------------------------------------------------------------
-        // Derived tables: aggregate track_report_downloaded_history per
-        // shipment/report_type into a chronological JSON array so it can be
-        // joined 1-row-per-shipment onto the base select without duplicating
-        // participant rows. Each entry: {"name": "...", "downloaded_on": "..."}
-        // ------------------------------------------------------------------
-        $individualHistoryInner = $db->select()
-            ->from(['th' => 'track_report_downloaded_history'], ['th.shipment_id', 'th.downloaded_on'])
-            ->joinLeft(
-                ['dmh1' => 'data_manager'],
-                'dmh1.dm_id = th.downloaded_by',
-                ['dm_name' => new Zend_Db_Expr("COALESCE(NULLIF(TRIM(CONCAT(dmh1.first_name,' ',dmh1.last_name)), ''), 'Unknown')")]
-            )
-            ->where('th.report_type = ?', 'individual')
-            ->order('th.downloaded_on DESC');
-
-        $individualHistorySelect = $db->select()
-            ->from(['ihi' => $individualHistoryInner], ['shipment_id'])
-            ->columns([
-                'individualDownloadHistory' => new Zend_Db_Expr(
-                    "JSON_ARRAYAGG(JSON_OBJECT('name', dm_name, 'downloaded_on', downloaded_on))"
-                ),
-            ])
-
-            ->group('shipment_id');
-
-        $summaryHistoryInner = $db->select()
-            ->from(['th' => 'track_report_downloaded_history'], ['th.shipment_id', 'th.downloaded_on'])
-            ->joinLeft(
-                ['dmh2' => 'data_manager'],
-                'dmh2.dm_id = th.downloaded_by',
-                ['dm_name' => new Zend_Db_Expr("COALESCE(NULLIF(TRIM(CONCAT(dmh2.first_name,' ',dmh2.last_name)), ''), 'Unknown')")]
-            )
-            ->where('th.report_type = ?', 'summary')
-            ->order('th.downloaded_on DESC');
-
-        $summaryHistorySelect = $db->select()
-            ->from(['shi' => $summaryHistoryInner], ['shipment_id'])
-            ->columns([
-                'summaryDownloadHistory' => new Zend_Db_Expr(
-                    "JSON_ARRAYAGG(JSON_OBJECT('name', dm_name, 'downloaded_on', downloaded_on))"
-                ),
-            ])
-            ->order('summaryDownloadHistory DESC')
-            ->group('shipment_id');
+        // Per-lab download counts. The history table has no participant column, so a
+        // lab's downloads are those made by data managers mapped to that participant.
+        // The list itself loads on demand through getParticipantDownloadHistory().
+        $downloadCountExpr = static fn (string $type): Zend_Db_Expr => new Zend_Db_Expr(
+            '(SELECT COUNT(*) FROM track_report_downloaded_history th'
+            . ' INNER JOIN participant_manager_map pmm ON pmm.dm_id = th.downloaded_by'
+            . " WHERE th.shipment_id = sp.shipment_id AND th.report_type = '$type'"
+            . ' AND pmm.participant_id = sp.participant_id)'
+        );
 
         $baseSelect = $db->select()
             ->from(['sp' => 'shipment_participant_map'])
@@ -1881,18 +1845,10 @@ class Application_Service_Evaluation
                     'updatedByEmail' => 'dmu.primary_email',
                 ]
             )
-            // Aggregated per-shipment download history (JSON array), used to build
-            // the "Downloaded" tooltip in renderFinalizedShipmentRow().
-            ->joinLeft(
-                ['ih' => $individualHistorySelect],
-                'ih.shipment_id = s.shipment_id',
-                ['individualDownloadHistory' => 'ih.individualDownloadHistory']
-            )
-            ->joinLeft(
-                ['sh' => $summaryHistorySelect],
-                'sh.shipment_id = s.shipment_id',
-                ['summaryDownloadHistory' => 'sh.summaryDownloadHistory']
-            )
+            ->columns([
+                'individualDownloadCount' => $downloadCountExpr('individual'),
+                'summaryDownloadCount' => $downloadCountExpr('summary'),
+            ])
             ->where('s.shipment_id = ?', $shipmentId);
 
         $this->applyShipmentListFilters($baseSelect, $parameters);
@@ -1980,6 +1936,28 @@ class Application_Service_Evaluation
         echo json_encode($output);
     }
 
+    /**
+     * Downloads of one report type by the data managers mapped to a shipment row's
+     * participant, newest first. Feeds the on-demand list on the finalized page.
+     */
+    public function getParticipantDownloadHistory(int $mapId, string $reportType): array
+    {
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        return $db->fetchAll(
+            $db->select()
+                ->from(['sp' => 'shipment_participant_map'], [])
+                ->join(['th' => 'track_report_downloaded_history'], 'th.shipment_id = sp.shipment_id', ['downloaded_on'])
+                ->join(['pmm' => 'participant_manager_map'], 'pmm.dm_id = th.downloaded_by AND pmm.participant_id = sp.participant_id', [])
+                ->join(['dm' => 'data_manager'], 'dm.dm_id = pmm.dm_id', [
+                    'name' => new Zend_Db_Expr("TRIM(CONCAT(COALESCE(dm.first_name, ''), ' ', COALESCE(dm.last_name, '')))"),
+                    'email' => 'dm.primary_email',
+                ])
+                ->where('sp.map_id = ?', $mapId)
+                ->where('th.report_type = ?', $reportType)
+                ->order('th.downloaded_on DESC')
+        );
+    }
+
     // Builds the row array for the finalized-shipment participant DataTable.
     // Markup mirrors what the view used to render server-side.
     private function renderFinalizedShipmentRow($shipment)
@@ -2050,75 +2028,24 @@ class Application_Service_Evaluation
 
         $notDownloadedBadge = '<span class="badge rounded-pill" style="background-color:#fff3cd;color:#856404;font-weight:500;padding:6px 12px;"><i class="icon-remove"></i> ' . $translator->_('Not downloaded') . '</span>';
 
-        // Small local helper: turn a decoded history array into the tooltip's inner HTML.
-        // Numbered list, oldest download first, e.g. "1. Jane Roe — 28 Jul 2026, 11:47 AM".
-        $buildDownloadTooltip = function (array $history) use ($translator) {
-            if (empty($history)) {
-                return '';
+        // A badge with downloads opens that lab's download list in a child row.
+        $downloadedBadge = function (int $count, string $type) use ($translator, $shipment): string {
+            $label = '<i class="icon-check"></i> ' . $translator->_('Downloaded') . ($count > 1 ? ' (' . $count . 'x)' : '');
+            $style = 'background-color:#d4edda;color:#155724;font-weight:500;padding:6px 12px;';
+            if ($count === 0) {
+                return '<span class="badge rounded-pill" style="' . $style . '">' . $label . '</span>';
             }
-
-            // Sort latest first
-            usort($history, function ($a, $b) {
-                return strcmp($b['downloaded_on'] ?? '', $a['downloaded_on'] ?? '');
-            });
-
-            $html = "
-            <div style='max-height:260px; overflow-y:auto;'>
-            <table style='
-                width:20%;
-                color:#fff;
-                margin:0;
-                border-collapse:collapse;
-                font-size:13px;
-            '>
-                <thead style='position:sticky; top:0; background:#555; z-index:1;'>
-                    <tr style='border-bottom:1px solid #9a9a9a;'>
-                        <th style='padding:8px 12px;text-align:left;'>#</th>
-                        <th style='padding:8px 12px;text-align:left;'>Downloaded By</th>
-                        <th style='padding:8px 12px;text-align:left;'>Downloaded On</th>
-                    </tr>
-                </thead>
-                <tbody>";
-
-            foreach ($history as $i => $entry) {
-                $name = htmlspecialchars($entry['name'] ?? $translator->_('Unknown'));
-                $when = htmlspecialchars(
-                    (string) Pt_Commons_DateUtility::humanReadableDateFormat(
-                        $entry['downloaded_on'] ?? '',
-                        true
-                    )
-                );
-
-                $html .= "
-                    <tr>
-                        <td style='padding:8px 12px;'>" . ($i + 1) . "</td>
-                        <td style='padding:8px 12px;'>" . $name . "</td>
-                        <td style='padding:8px 12px;'>" . $when . '</td>
-                    </tr>';
-            }
-
-            $html .= '
-                </tbody>
-            </table>
-            </div>';
-
-            return $html;
+            return '<a href="javascript:void(0);" class="badge rounded-pill toggle-downloads-row"'
+                . ' data-map-id="' . (int) $shipment['map_id'] . '" data-report-type="' . $type . '"'
+                . ' title="' . htmlspecialchars($translator->_('Show who downloaded this report'), ENT_QUOTES, 'UTF-8') . '"'
+                . ' style="' . $style . 'cursor:pointer;text-decoration:none;">' . $label . ' <i class="icon-caret-down"></i></a>';
         };
-
-        $individualHistory = !empty($shipment['individualDownloadHistory']) ? (json_decode($shipment['individualDownloadHistory'], true) ?: []) : [];
-        $summaryHistory = !empty($shipment['summaryDownloadHistory']) ? (json_decode($shipment['summaryDownloadHistory'], true) ?: []) : [];
 
         // ---- Participant (individual) report cell ----
         $hasIndividual = !empty($reportDownloadedOn['first_individual_report_on']) || !empty($reportDownloadedOn['latest_individual_report_on']);
         if ($hasIndividual) {
             $indDate = Pt_Commons_DateUtility::humanReadableDateFormat($reportDownloadedOn['first_individual_report_on'] ?? $reportDownloadedOn['latest_individual_report_on'], true);
-            $indCount = count($individualHistory);
-            $indCountLabel = $indCount > 1 ? ' (' . $indCount . 'x)' : '';
-            $indTooltip = $buildDownloadTooltip($individualHistory);
-            $indBadge = '<span class="badge rounded-pill" data-toggle="tooltip" data-html="true"'
-                . ($indTooltip !== '' ? ' title="' . htmlspecialchars($indTooltip, ENT_QUOTES, 'UTF-8') . '"' : '')
-                . ' style="background-color:#d4edda;color:#155724;font-weight:500;padding:6px 12px;cursor:' . ($indTooltip !== '' ? 'help' : 'default') . ';">'
-                . '<i class="icon-check"></i> ' . $translator->_('Downloaded') . $indCountLabel . '</span>';
+            $indBadge = $downloadedBadge((int) ($shipment['individualDownloadCount'] ?? 0), 'individual');
             $participantReport = $indBadge . '<br>'
                 . '<strong>' . htmlspecialchars($shipment['individualParticipantName'] ?? '') . '</strong><br>'
                 . '<small class="text-body-secondary">' . htmlspecialchars((string) $indDate) . '</small>';
@@ -2130,13 +2057,7 @@ class Application_Service_Evaluation
         $hasSummary = !empty($reportDownloadedOn['first_summary_report_on']) || !empty($reportDownloadedOn['latest_summary_report_on']);
         if ($hasSummary) {
             $sumDate = Pt_Commons_DateUtility::humanReadableDateFormat($reportDownloadedOn['first_summary_report_on'] ?? $reportDownloadedOn['latest_summary_report_on'], true);
-            $sumCount = count($summaryHistory);
-            $sumCountLabel = $sumCount > 1 ? ' (' . $sumCount . 'x)' : '';
-            $sumTooltip = $buildDownloadTooltip($summaryHistory);
-            $sumBadge = '<span class="badge rounded-pill" data-toggle="tooltip" data-html="true"'
-                . ($sumTooltip !== '' ? ' title="' . htmlspecialchars($sumTooltip, ENT_QUOTES) . '"' : '')
-                . ' style="background-color:#d4edda;color:#155724;font-weight:500;padding:6px 12px;cursor:' . ($sumTooltip !== '' ? 'help' : 'default') . ';">'
-                . '<i class="icon-check"></i> ' . $translator->_('Downloaded') . $sumCountLabel . '</span>';
+            $sumBadge = $downloadedBadge((int) ($shipment['summaryDownloadCount'] ?? 0), 'summary');
             $summaryReport = $sumBadge . '<br>'
                 . '<strong>' . htmlspecialchars($shipment['summaryParticipantName'] ?? '') . '</strong><br>'
                 . '<small class="text-body-secondary">' . htmlspecialchars((string) $sumDate) . '</small>';
