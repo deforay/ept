@@ -99,9 +99,10 @@ class Admin_ParticipantsController extends Zend_Controller_Action
             $db = Zend_Db_Table_Abstract::getDefaultAdapter();
             $select = $db->select()
                 ->from(['pmm' => 'participant_manager_map'], [])
-                ->join(['dm' => 'data_manager'], 'dm.dm_id = pmm.dm_id', ['dm_id', 'first_name', 'last_name', 'primary_email', 'data_manager_type', 'status', 'institute'])
+                ->join(['dm' => 'data_manager'], 'dm.dm_id = pmm.dm_id', ['dm_id', 'first_name', 'last_name', 'primary_email', 'mobile', 'data_manager_type', 'status', 'institute'])
                 ->where('pmm.participant_id = ?', $participantId)
-                ->order(['dm.first_name', 'dm.last_name']);
+                // Active managers first. The panel folds the inactive ones into one line.
+                ->order([new Zend_Db_Expr("dm.status <> 'active'"), 'dm.first_name', 'dm.last_name']);
             $this->view->mappedDms = $db->fetchAll($select);
         }
     }

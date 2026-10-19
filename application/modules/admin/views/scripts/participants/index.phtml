@@ -395,15 +395,27 @@
         // Inline filter for the expanded DM list (only present when > 5 mapped DMs)
         $('#participantsTable tbody').on('input', 'input.dm-filter-input', function() {
             var q = $(this).val().toLowerCase().trim();
-            var $rows = $(this).closest('.dm-child-row').find('tr.dm-row');
+            var $panel = $(this).closest('.dm-child-row');
+            var $rows = $panel.find('tr.dm-row');
+            // A filter searches every row, folded or not. Clearing it restores the fold.
+            if ($panel.data('folded') === undefined) {
+                $panel.data('folded', $panel.hasClass('is-collapsed'));
+            }
             if (q === '') {
-                $rows.show();
+                $rows.css('display', '');
+                $panel.toggleClass('is-collapsed', $panel.data('folded'));
                 return;
             }
+            $panel.removeClass('is-collapsed');
             $rows.each(function() {
                 var blob = $(this).attr('data-dm-search') || '';
-                $(this).toggle(blob.indexOf(q) !== -1);
+                $(this).css('display', blob.indexOf(q) !== -1 ? '' : 'none');
             });
+        });
+
+        $('#participantsTable tbody').on('click', 'a.child-list-more', function(e) {
+            e.preventDefault();
+            $(this).closest('.dm-child-row, .shipments-child-row').removeClass('is-collapsed').data('folded', false);
         });
 
         // Shipments column — expand/collapse child row with on-demand AJAX fetch.
@@ -452,6 +464,9 @@
         // search + per-dimension dropdowns + date range together. Re-run on any input.
         function applyShipmentsFilters($container) {
             var $rows = $container.find('tr.shipment-row');
+            if ($container.data('folded') === undefined) {
+                $container.data('folded', $container.hasClass('is-collapsed'));
+            }
             var q = ($container.find('input.shipments-filter-input').val() || '').toLowerCase().trim();
             var dateFrom = $container.find('input.shipments-filter-date-from').val() || '';
             var dateTo = $container.find('input.shipments-filter-date-to').val() || '';
@@ -493,6 +508,8 @@
                 $count.hide().text('');
             }
             $container.find('tr.shipments-no-matches-row').toggle(anyFilterActive && shown === 0);
+            // A filter searches every row, folded or not. Clearing it restores the fold.
+            $container.toggleClass('is-collapsed', !anyFilterActive && $container.data('folded'));
         }
 
         $('#participantsTable tbody').on(

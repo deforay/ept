@@ -25857,3 +25857,25 @@ msgstr ""
 #, php-format
 msgid "Responded (%s)"
 msgstr ""
+
+#: application/modules/admin/views/scripts/participants/mapped-data-managers.ajax.phtml
+#, php-format
+msgid "Show all %d"
+msgstr ""
+
+#: application/modules/admin/views/scripts/data-managers/mapped-participants.ajax.phtml
+msgid "Edit participant"
+msgstr ""
+
+#: application/models/DbTable/Participants.php
+msgid "1 inactive"
+msgstr ""
+
+#: application/models/DbTable/Participants.php
+#, php-format
+msgid "%d inactive"
+msgstr ""
+
+#: application/models/DbTable/Participants.php
+msgid "No active data manager"
+msgstr ""

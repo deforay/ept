@@ -27314,3 +27314,25 @@ msgstr "En attente de réponse (%s)"
 #, php-format
 msgid "Responded (%s)"
 msgstr "Ont répondu (%s)"
+
+#: application/modules/admin/views/scripts/participants/mapped-data-managers.ajax.phtml
+#, php-format
+msgid "Show all %d"
+msgstr "Tout afficher (%d)"
+
+#: application/modules/admin/views/scripts/data-managers/mapped-participants.ajax.phtml
+msgid "Edit participant"
+msgstr "Modifier le participant"
+
+#: application/models/DbTable/Participants.php
+msgid "1 inactive"
+msgstr "1 inactif"
+
+#: application/models/DbTable/Participants.php
+#, php-format
+msgid "%d inactive"
+msgstr "%d inactifs"
+
+#: application/models/DbTable/Participants.php
+msgid "No active data manager"
+msgstr "Aucun gestionnaire de données actif"

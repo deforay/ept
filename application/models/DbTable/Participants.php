@@ -298,15 +298,24 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         /* Lightweight count of mapped DMs per participant on this page — the full list
            is loaded on demand via AJAX when the user expands a row. */
         $dmCountByParticipant = [];
+        $inactiveDmCountByParticipant = [];
         $shipmentCountByParticipant = [];
         $pageParticipantIds = array_column($rResult, 'participant_id');
         if (!empty($pageParticipantIds)) {
+            // The compact layout counts active managers. The inactive ones are
+            // counted apart, since its panel folds them into one line.
             $countSelect = $this->getAdapter()->select()
-                ->from('participant_manager_map', ['participant_id', 'cnt' => new Zend_Db_Expr('COUNT(*)')])
-                ->where('participant_id IN (?)', $pageParticipantIds)
-                ->group('participant_id');
+                ->from(['pmm' => 'participant_manager_map'], [
+                    'participant_id',
+                    'cnt' => new Zend_Db_Expr($compact ? "SUM(d.status = 'active')" : 'COUNT(*)'),
+                    'inactive' => new Zend_Db_Expr("SUM(d.status <> 'active')"),
+                ])
+                ->joinLeft(['d' => 'data_manager'], 'd.dm_id = pmm.dm_id', [])
+                ->where('pmm.participant_id IN (?)', $pageParticipantIds)
+                ->group('pmm.participant_id');
             foreach ($this->getAdapter()->fetchAll($countSelect) as $cntRow) {
                 $dmCountByParticipant[$cntRow['participant_id']] = (int) $cntRow['cnt'];
+                $inactiveDmCountByParticipant[$cntRow['participant_id']] = (int) $cntRow['inactive'];
             }
             $shipCountSelect = $this->getAdapter()->select()
                 ->from('shipment_participant_map', ['participant_id', 'cnt' => new Zend_Db_Expr('COUNT(*)')])
@@ -328,6 +337,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                     'label' => new Zend_Db_Expr("IF(TRIM(CONCAT(IFNULL(d.first_name, ''), ' ', IFNULL(d.last_name, ''))) = '', d.primary_email, TRIM(CONCAT(IFNULL(d.first_name, ''), ' ', IFNULL(d.last_name, ''))))"),
                 ])
                 ->where('pmm.participant_id IN (?)', $fewDmIds)
+                ->where("d.status = 'active'")
                 ->order('label');
             foreach ($this->getAdapter()->fetchAll($dmNameSelect) as $nameRow) {
                 // Escaped without re-encoding, since some names are stored already escaped
@@ -362,7 +372,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             $delete = '';
             $row = [];
             if ($compact) {
-                $this->addCompactParticipantRow($row, $aRow, $translator, $dmCountByParticipant, $shipmentCountByParticipant, $dmLabelsByParticipant);
+                $this->addCompactParticipantRow($row, $aRow, $translator, $dmCountByParticipant, $inactiveDmCountByParticipant, $shipmentCountByParticipant, $dmLabelsByParticipant);
                 $output['aaData'][] = $row;
                 continue;
             }
@@ -417,7 +427,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
      * Cells for the compact admin Participants list. The data managers and
      * shipments chips open the same child rows as the legacy View buttons.
      */
-    private function addCompactParticipantRow(array &$row, array $aRow, $translator, array $dmCounts, array $shipmentCounts, array $dmLabels): void
+    private function addCompactParticipantRow(array &$row, array $aRow, $translator, array $dmCounts, array $inactiveDmCounts, array $shipmentCounts, array $dmLabels): void
     {
         $participantId = (int) $aRow['participant_id'];
         $isActive = strtolower($aRow['status'] ?? '') === 'active';
@@ -438,7 +448,14 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         $row[] = $aRow['email'];
 
         $dmCount = $dmCounts[$participantId] ?? 0;
-        if ($dmCount === 0) {
+        $inactiveDmCount = $inactiveDmCounts[$participantId] ?? 0;
+        if ($dmCount === 0 && $inactiveDmCount > 0) {
+            // Nobody can log in for this participant, which needs attention. The
+            // chip still opens the panel so the inactive managers can be reactivated.
+            $label = $inactiveDmCount === 1 ? $translator->_('1 inactive') : sprintf($translator->_('%d inactive'), $inactiveDmCount);
+            $row[] = '<a href="javascript:void(0);" class="btn btn-default btn-xs map-chip toggle-dm-row" data-participant-id="' . $participantId . '"><i class="icon-user"></i> ' . $label . ' <i class="icon-caret-down map-chip-caret"></i></a>'
+                . '<span class="list-cell-sub' . ($isActive ? ' unmapped-tag' : '') . '">' . $translator->_('No active data manager') . '</span>';
+        } elseif ($dmCount === 0) {
             // Only an active participant without a data manager needs attention
             $row[] = '<em class="text-muted' . ($isActive ? ' unmapped-tag' : '') . '" style="font-size:11px;">' . $translator->_('None mapped') . '</em>';
         } else {
@@ -458,7 +475,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             $row[] = '<a href="javascript:void(0);" class="btn btn-default btn-xs map-chip toggle-shipments-row" data-participant-id="' . $participantId . '"><i class="icon-truck"></i> ' . $label . ' <i class="icon-caret-down map-chip-caret"></i></a>';
         }
 
-        $row[] = '<a href="/admin/participants/edit/id/' . $participantId . '" class="btn btn-default btn-xs"><i class="icon-pencil"></i> ' . $translator->_('Edit') . '</a>';
+        $row[] = '<a href="/admin/participants/edit/id/' . $participantId . '" class="btn btn-default btn-xs is-edit"><i class="icon-pencil"></i> ' . $translator->_('Edit') . '</a>';
     }
 
     public function updateParticipant($params)

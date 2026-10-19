@@ -74,7 +74,8 @@ class Admin_DataManagersController extends Zend_Controller_Action
                 ->join(['p' => 'participant'], 'p.participant_id = pmm.participant_id', ['participant_id', 'unique_identifier', 'first_name', 'last_name', 'institute_name', 'email', 'status'])
                 ->joinLeft(['c' => 'countries'], 'c.id = p.country', ['iso_name'])
                 ->where('pmm.dm_id = ?', $dmId)
-                ->order(['p.institute_name', 'p.unique_identifier']);
+                // Active participants first, since those are the ones an admin acts on
+                ->order([new Zend_Db_Expr("p.status <> 'active'"), 'p.institute_name', 'p.unique_identifier']);
             $this->view->mappedParticipants = $db->fetchAll($select);
         }
     }

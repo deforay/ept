@@ -484,7 +484,9 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             if ($compact) {
                 // One line of quiet buttons. Only View as stays red, because it
                 // leaves the admin UI and is audited.
-                $quiet = str_replace(['btn-warning', 'btn-success', 'btn-info'], 'btn-default', $recordLine . $credentialLine);
+                // Edit keeps its own soft amber (is-edit), so it stands apart from the rest
+                $quiet = str_replace('btn btn-warning btn-xs', 'btn btn-default btn-xs is-edit', $recordLine);
+                $quiet = str_replace(['btn-success', 'btn-info'], 'btn-default', $quiet . $credentialLine);
                 $row[] = '<div class="row-action-lines"><div class="row-action-line">' . $quiet . $extraLine . '</div></div>';
                 $output['aaData'][] = $row;
                 continue;

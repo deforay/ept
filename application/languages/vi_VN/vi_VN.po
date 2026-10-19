@@ -26370,3 +26370,25 @@ msgstr "Chưa phản hồi (%s)"
 #, php-format
 msgid "Responded (%s)"
 msgstr "Đã phản hồi (%s)"
+
+#: application/modules/admin/views/scripts/participants/mapped-data-managers.ajax.phtml
+#, php-format
+msgid "Show all %d"
+msgstr "Hiển thị tất cả (%d)"
+
+#: application/modules/admin/views/scripts/data-managers/mapped-participants.ajax.phtml
+msgid "Edit participant"
+msgstr "Chỉnh sửa đơn vị tham gia"
+
+#: application/models/DbTable/Participants.php
+msgid "1 inactive"
+msgstr "1 ngừng hoạt động"
+
+#: application/models/DbTable/Participants.php
+#, php-format
+msgid "%d inactive"
+msgstr "%d ngừng hoạt động"
+
+#: application/models/DbTable/Participants.php
+msgid "No active data manager"
+msgstr "Không có người quản lý dữ liệu đang hoạt động"

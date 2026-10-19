@@ -8695,3 +8695,153 @@ td.center {
 .data-list-filters.is-narrow {
 	grid-template-columns: repeat(auto-fill, minmax(190px, 260px));
 }
+
+/* Child panels listing a record's mapped data managers or participants. Every
+   row shows: no inner scrollbar. Rows past the first ten fold behind a
+   "Show all" link until it is clicked or the panel filter is used. */
+.data-list table.child-list {
+	margin: 0;
+}
+
+.data-list table.child-list > thead > tr > th {
+	text-align: left;
+}
+
+.data-list table.child-list > tbody > tr > td {
+	text-align: left;
+	vertical-align: middle;
+}
+
+.data-list table.child-list > tbody > tr.is-inactive > td {
+	color: #6b7380;
+}
+
+.data-list .child-list-actions {
+	justify-content: flex-start;
+}
+
+.data-list .is-collapsed tr.is-overflow {
+	display: none;
+}
+
+.data-list .child-list-more {
+	display: none;
+	padding: 7px 10px;
+	border-top: 1px solid #eef1f5;
+	font-size: 12.5px;
+	font-weight: 600;
+}
+
+.data-list .is-collapsed .child-list-more {
+	display: block;
+}
+
+/* Inactive data managers: one row of name chips under the table, no actions.
+   A chip opens the manager's edit page, which is where one is reactivated. */
+.data-list .child-list-inactive {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 6px;
+	padding: 8px 10px;
+	border-top: 1px solid #eef1f5;
+	background: #fafbfc;
+}
+
+.data-list .child-list-inactive-label {
+	margin-right: 4px;
+	color: #8a93a0;
+	font-size: 11px;
+	font-weight: 600;
+	letter-spacing: 0.03em;
+	text-transform: uppercase;
+}
+
+.data-list a.inactive-chip {
+	display: inline-flex;
+	align-items: center;
+	gap: 5px;
+	padding: 1px 9px;
+	border: 1px solid #dde1e7;
+	border-radius: 10px;
+	background: #fff;
+	color: #6b7380;
+	font-size: 12px;
+	line-height: 1.6;
+	text-decoration: none;
+}
+
+.data-list a.inactive-chip:hover,
+.data-list a.inactive-chip:focus {
+	border-color: #b8c0cc;
+	color: #3a5a8a;
+	text-decoration: none;
+}
+
+.data-list .inactive-chip-tag {
+	color: #9aa2ad;
+	font-size: 10px;
+	font-weight: 600;
+}
+
+/* Edit gets its own soft amber, so it stands apart from the blue count chips
+   and the credential buttons beside it. */
+.data-list table.dataTable .btn.is-edit,
+.data-list table.child-list .btn.is-edit {
+	background: #fff4dc;
+	border: 1px solid #f0c36d;
+	color: #8a5a00;
+}
+
+.data-list table.dataTable .btn.is-edit:hover,
+.data-list table.dataTable .btn.is-edit:focus,
+.data-list table.child-list .btn.is-edit:hover,
+.data-list table.child-list .btn.is-edit:focus {
+	background: #efb73e;
+	border-color: #e7a413;
+	color: #fff;
+}
+
+.data-list .list-status-badge.is-info {
+	background: #eef3f9;
+	border-color: #cfdae8;
+	color: #3a5a8a;
+}
+
+.data-list .dm-noname {
+	color: #8a93a0;
+	font-style: italic;
+}
+
+/* The data managers panel: the name opens the edit page, and the credential
+   actions use the same quiet bordered buttons as the main row, so a long list
+   does not become a wall of colour. View as keeps its red. */
+.data-list .child-list-name {
+	color: #2a4a7a;
+	font-weight: 600;
+}
+
+.data-list table.child-list .btn-default {
+	background: #eef3f9;
+	border: 1px solid #cfdae8;
+	color: #3a5a8a;
+}
+
+.data-list table.child-list .btn-default:hover,
+.data-list table.child-list .btn-default:focus {
+	background: #4a6fa5;
+	border-color: #3a5a8a;
+	color: #fff;
+}
+
+.data-list .list-status-badge.is-pass {
+	background: #e8f5e9;
+	border-color: #a5d6a7;
+	color: #2e6b32;
+}
+
+.data-list .list-status-badge.is-fail {
+	background: #fdecea;
+	border-color: #f1a9a0;
+	color: #a02b1f;
+}

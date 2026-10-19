@@ -38,9 +38,9 @@ foreach ($shipments as $sh) {
 
     $finalResultRaw = trim((string)($sh['final_result'] ?? ''));
     $finalResultMap = [
-        '1' => ['Pass',     'label-success'],
-        '2' => ['Fail',     'label-danger'],
-        '3' => ['Excluded', 'label-warning'],
+        '1' => ['Pass',     'is-pass'],
+        '2' => ['Fail',     'is-fail'],
+        '3' => ['Excluded', ''],
     ];
     if ($finalResultRaw === '' || $finalResultRaw === '0') {
         $finalResultText = '';
@@ -48,7 +48,7 @@ foreach ($shipments as $sh) {
     } elseif (isset($finalResultMap[$finalResultRaw])) {
         [$frText, $frClass] = $finalResultMap[$finalResultRaw];
         $finalResultText = $frText;
-        $finalResultHtml = '<span class="label ' . $frClass . '">' . htmlspecialchars($this->translate->_($frText), ENT_QUOTES, 'UTF-8') . '</span>';
+        $finalResultHtml = '<span class="list-status-badge ' . $frClass . '">' . htmlspecialchars($this->translate->_($frText), ENT_QUOTES, 'UTF-8') . '</span>';
     } else {
         $finalResultText = $finalResultRaw;
         $finalResultHtml = htmlspecialchars($finalResultRaw, ENT_QUOTES, 'UTF-8');
@@ -84,14 +84,16 @@ ksort($schemeOptions);
 ksort($shipStatusOptions);
 ksort($responseStatusOptions);
 ksort($finalResultOptions);
+// Rows past this count stay folded until "Show all" is clicked or a filter is used
+$visibleLimit = 10;
 ?>
-<div class="shipments-child-row">
+<div class="shipments-child-row<?= $shipmentCount > $visibleLimit ? ' is-collapsed' : ''; ?>">
     <?php if ($shipmentCount === 0) { ?>
         <em class="text-muted"><?= $this->translate->_('This participant is not part of any shipments.'); ?></em>
     <?php } else { ?>
         <div class="child-row-header">
             <i class="icon-truck"></i>
-            <span><?= sprintf($this->translate->_('%d Shipment(s)'), $shipmentCount); ?></span>
+            <span><?= $shipmentCount === 1 ? $this->translate->_('1 shipment') : sprintf($this->translate->_('%d shipments'), $shipmentCount); ?></span>
             <span class="shipments-filter-count text-muted" style="margin-left:6px;display:none;"></span>
             <?php if ($shipmentCount > 5) { ?>
                 <input type="text" class="form-control input-sm shipments-filter-input" placeholder="<?= $this->htmlTranslate('Filter by code, scheme, status…'); ?>" />
@@ -155,11 +157,6 @@ ksort($finalResultOptions);
             </div>
         <?php } ?>
         <style>
-            .shipments-child-row .shipments-list-wrap .table > thead > tr > th,
-            .shipments-child-row .shipments-list-wrap .table > tbody > tr > td {
-                text-align: center;
-                vertical-align: middle;
-            }
             .shipments-child-row .shipments-filter-bar {
                 display: flex;
                 flex-wrap: wrap;
@@ -199,11 +196,10 @@ ksort($finalResultOptions);
                 font-style: italic;
             }
         </style>
-        <div class="shipments-list-wrap" style="max-height:320px;overflow-y:auto;">
-            <table class="table table-condensed table-bordered table-striped" style="margin:0;">
+        <div class="shipments-list-wrap">
+            <table class="table table-condensed child-list">
                 <thead>
                     <tr>
-                        <th scope="col"><?= $this->translate->_('Shipment Date'); ?></th>
                         <th scope="col"><?= $this->translate->_('Shipment Code'); ?></th>
                         <th scope="col"><?= $this->translate->_('Scheme'); ?></th>
                         <th scope="col"><?= $this->translate->_('Shipment Status'); ?></th>
@@ -212,7 +208,7 @@ ksort($finalResultOptions);
                     </tr>
                 </thead>
                 <tbody>
-                    <?php foreach ($rowsView as $row) {
+                    <?php foreach ($rowsView as $i => $row) {
                         $searchBlob = strtolower(
                             $row['shipment_code'] . ' '
                             . $row['scheme'] . ' '
@@ -221,15 +217,19 @@ ksort($finalResultOptions);
                             . $row['final_result']
                         );
                     ?>
-                        <tr class="shipment-row"
+                        <tr class="shipment-row<?= $i >= $visibleLimit ? ' is-overflow' : ''; ?>"
                             data-shipment-search="<?= htmlspecialchars($searchBlob, ENT_QUOTES, 'UTF-8'); ?>"
                             data-shipment-date="<?= htmlspecialchars($row['ship_date_raw'], ENT_QUOTES, 'UTF-8'); ?>"
                             data-scheme="<?= htmlspecialchars($row['scheme'], ENT_QUOTES, 'UTF-8'); ?>"
                             data-ship-status="<?= htmlspecialchars($row['ship_status_disp'], ENT_QUOTES, 'UTF-8'); ?>"
                             data-response-status="<?= htmlspecialchars($row['response_status'], ENT_QUOTES, 'UTF-8'); ?>"
                             data-final-result="<?= htmlspecialchars($row['final_result'], ENT_QUOTES, 'UTF-8'); ?>">
-                            <td><?= htmlspecialchars($row['ship_date_disp'], ENT_QUOTES, 'UTF-8'); ?></td>
-                            <td><?= htmlspecialchars($row['shipment_code'], ENT_QUOTES, 'UTF-8'); ?></td>
+                            <td>
+                                <?= htmlspecialchars($row['shipment_code'], ENT_QUOTES, 'UTF-8'); ?>
+                                <?php if ($row['ship_date_disp'] !== '') { ?>
+                                    <span class="list-cell-sub"><?= htmlspecialchars($row['ship_date_disp'], ENT_QUOTES, 'UTF-8'); ?></span>
+                                <?php } ?>
+                            </td>
                             <td><?= htmlspecialchars($row['scheme'], ENT_QUOTES, 'UTF-8'); ?></td>
                             <td><?= htmlspecialchars($row['ship_status_disp'], ENT_QUOTES, 'UTF-8'); ?></td>
                             <td><?= htmlspecialchars($row['response_status'], ENT_QUOTES, 'UTF-8'); ?></td>
@@ -237,10 +237,13 @@ ksort($finalResultOptions);
                         </tr>
                     <?php } ?>
                     <tr class="shipments-no-matches-row" style="display:none;">
-                        <td colspan="6" class="shipments-no-matches"><?= $this->translate->_('No shipments match the current filters.'); ?></td>
+                        <td colspan="5" class="shipments-no-matches"><?= $this->translate->_('No shipments match the current filters.'); ?></td>
                     </tr>
                 </tbody>
             </table>
+            <?php if ($shipmentCount > $visibleLimit) { ?>
+                <a href="javascript:void(0);" class="child-list-more"><?= sprintf($this->translate->_('Show all %d'), $shipmentCount); ?></a>
+            <?php } ?>
         </div>
     <?php } ?>
 </div>

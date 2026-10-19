@@ -506,15 +506,27 @@ if (isset($this->ptcc) && !empty($this->ptcc) && $this->ptcc == 1) {
         // Inline filter for the expanded participants list (only present when > 5 mapped)
         $('#usersTable tbody').on('input', 'input.participant-filter-input', function() {
             var q = $(this).val().toLowerCase().trim();
-            var $rows = $(this).closest('.participant-child-row').find('tr.participant-row');
+            var $panel = $(this).closest('.participant-child-row');
+            var $rows = $panel.find('tr.participant-row');
+            // A filter searches every row, folded or not. Clearing it restores the fold.
+            if ($panel.data('folded') === undefined) {
+                $panel.data('folded', $panel.hasClass('is-collapsed'));
+            }
             if (q === '') {
-                $rows.show();
+                $rows.css('display', '');
+                $panel.toggleClass('is-collapsed', $panel.data('folded'));
                 return;
             }
+            $panel.removeClass('is-collapsed');
             $rows.each(function() {
                 var blob = $(this).attr('data-p-search') || '';
-                $(this).toggle(blob.indexOf(q) !== -1);
+                $(this).css('display', blob.indexOf(q) !== -1 ? '' : 'none');
             });
+        });
+
+        $('#usersTable tbody').on('click', 'a.child-list-more', function(e) {
+            e.preventDefault();
+            $(this).closest('.participant-child-row').removeClass('is-collapsed').data('folded', false);
         });
 
     });
