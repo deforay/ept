@@ -25,9 +25,6 @@ class Reports_ShipmentsController extends Zend_Controller_Action
             ->addActionContext('vl-sample-analysis', 'html')
             ->addActionContext('vl-sample-analysis-result', 'html')
             ->addActionContext('vl-assay-distribution-plot', 'html')
-            ->addActionContext('vl-assay-distribution', 'html')
-            ->addActionContext('vl-participant-count', 'html')
-            ->addActionContext('vl-assay-summary', 'html')
             ->addActionContext('bulk-download-shipment-report-excel', 'html')
             ->addActionContext('participation-stats', 'html')
             ->initContext();
@@ -125,13 +122,32 @@ class Reports_ShipmentsController extends Zend_Controller_Action
 
     public function vlAssayDistributionAction()
     {
-        /** @var Zend_Controller_Request_Http $request */
-        $request = $this->getRequest();
-        if ($request->isPost()) {
-            $params = $this->getAllParams();
-            $reportService = new Application_Service_Reports();
-            $reportService->getAllVlAssayDistributionReports($params);
-        }
+        $participants = new Application_Service_Participants();
+        $adminSession = new Zend_Session_Namespace('administrators');
+        $this->view->vlActive = in_array('vl', (array) ($adminSession->activeSchemes ?? []));
+        $this->view->countries = $participants->getParticipantCountriesList();
+        $this->view->regions = $participants->getAllParticipantRegion();
+        $this->view->states = $participants->getAllParticipantStates();
+        $this->view->districts = $participants->getAllParticipantDistricts();
+    }
+
+    public function vlAssayDistributionDataAction()
+    {
+        $reportService = new Application_Service_Reports();
+        $this->_helper->json($reportService->getVlAssayDistribution($this->getAllParams()));
+    }
+
+    public function vlAssayDistributionExportAction()
+    {
+        $reportService = new Application_Service_Reports();
+        $this->_helper->json(['file' => $reportService->exportVlAssayDistribution($this->getAllParams())]);
+    }
+
+    /** The Shipment filter options of the VL reports. */
+    public function vlShipmentsAction()
+    {
+        $reportService = new Application_Service_Reports();
+        $this->_helper->json($reportService->getResponseReportShipments('vl', $this->getParam('startDate'), $this->getParam('endDate')));
     }
 
     public function vlAssayDistributionPlotAction()
@@ -144,28 +160,6 @@ class Reports_ShipmentsController extends Zend_Controller_Action
             $this->view->distributions = $reportService->getVlAssayResponseDistributions($params);
         }
     }
-    public function vlParticipantCountAction()
-    {
-        /** @var Zend_Controller_Request_Http $request */
-        $request = $this->getRequest();
-        if ($request->isPost()) {
-            $params = $this->getAllParams();
-            $reportService = new Application_Service_Reports();
-            $this->view->vlAssayCount = $reportService->getAllVlAssayParticipantCount($params);
-        }
-    }
-
-    public function vlAssaySummaryAction()
-    {
-        /** @var Zend_Controller_Request_Http $request */
-        $request = $this->getRequest();
-        if ($request->isPost()) {
-            $params = $this->getAllParams();
-            $reportService = new Application_Service_Reports();
-            $this->view->assaySummary = $reportService->getVlAssaySummary($params);
-        }
-    }
-
     public function bulkDownloadShipmentReportExcelAction()
     {
         $shipments = $this->getRequest()->getPost('shipments', []);

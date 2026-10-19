@@ -1,243 +1,287 @@
-<?php include APPLICATION_PATH . '/views/partials/report-zero-state.phtml'; ?>
-<script type="text/javascript">
-    $(function () {
-        reportZeroState.show("#shipmentchart", "start");
-    });
-</script>
 <?php
-//Zend_Debug::dump($this->vlAssayCount);
+include APPLICATION_PATH . '/views/partials/report-zero-state.phtml';
+include APPLICATION_PATH . '/views/partials/report-table-styles.phtml';
+$rfShipmentsUrl = $this->url(['module' => 'reports', 'controller' => 'shipments', 'action' => 'vl-shipments'], 'default', true);
+// The report covers VL only, so there is no scheme to pick.
+$rfFixedScheme = 'vl';
+$vadDataUrl = $this->url(['module' => 'reports', 'controller' => 'shipments', 'action' => 'vl-assay-distribution-data'], 'default', true);
+$vadExportUrl = $this->url(['module' => 'reports', 'controller' => 'shipments', 'action' => 'vl-assay-distribution-export'], 'default', true);
+
+// Outcome => [label, colour], in column order.
+$outcomes = [
+	'pass' => [$this->translate->_("Passed"), '#2e8b57'],
+	'fail' => [$this->translate->_("Failed"), '#d9534f'],
+	'excluded' => [$this->translate->_("Excluded"), '#9aa3ae'],
+	'nottested' => [$this->translate->_("Could not test"), '#f0ad4e'],
+	'none' => [$this->translate->_("Not responded"), '#d5dae1'],
+	'pending' => [$this->translate->_("Not evaluated"), '#b9cbe3'],
+];
 ?>
-<link rel="stylesheet" href="<?php echo $this->baseUrl('css/daterangepicker.css'); ?>" type="text/css" media="all">
-<link rel="stylesheet" href="<?php echo $this->baseUrl('css/select2.css'); ?>" type="text/css" media="all">
 <style>
-    @media print {
+	#vadChart {
+		margin-top: 8px;
+	}
 
-        .dontPrint,
-        #testKitTable_filter,
-        #testKitTable_info {
-            display: none;
+	#vadTable .vad-failed {
+		color: #a33a3a;
+		font-weight: 600;
+	}
 
-        }
-    }
+	#vadTable tfoot td {
+		border-top: 2px solid #d5dae1;
+		font-weight: 600;
+	}
 </style>
-<legend>
-    <h3><?= $this->htmlTranslate("VL Assay Distribution"); ?></h3>
-</legend>
-<div class="filter-panel js-filter-panel">
-    <button type="button" class="btn btn-default btn-sm js-filter-toggle" aria-expanded="false"
-        data-expand-text="<?= $this->htmlTranslate("Expand Filters"); ?>"
-        data-collapse-text="<?= $this->htmlTranslate("Collapse Filters"); ?>">
-        <i class="icon-filter"></i> <span class="js-filter-toggle-text"><?= $this->translate->_("Expand Filters"); ?></span>
-        <span class="label label-info js-filter-count" style="display:none;">0</span>
-        <span class="caret"></span>
-    </button>
-    <div class="js-filter-summary"></div>
-    <div class="js-filter-body">
-<table style="margin:20px 0;" class="table table-bordered">
-    <tr>
-        <td style="width:230px;text-align: center;font-weight:bold;">
-            <?= $this->htmlTranslate("Pick a Date Range"); ?>
-        </td>
-        <td style="width:200px;text-align: center;font-weight:bold;">
-            Select Shipment <small style="font-weight:normal;">(optional)</small>
-        </td>
-        <td style="width:150px;text-align: center;font-weight:bold;"><?= $this->htmlTranslate("Group by"); ?></td>
-        <td class="dontPrint" style="width:115px;text-align: center;font-weight:bold;"><?= $this->htmlTranslate("Action"); ?></td>
-    </tr>
-    <tr>
-        <td>
-            <input type="text" id="dateRange" name="dateRange" class="form-control input-sm" readonly="readonly"
-                style="background: #fff" placeholder="<?= $this->htmlTranslate("Click here to pick a Date Range"); ?>"
-                data-filter-label="<?= $this->htmlTranslate("Date Range"); ?>" />
-        </td>
-        <td>
-            <select id="shipmentId" name="shipmentId[]" class="form-control input-sm" multiple style="width:100%;"
-                data-filter-label="<?= $this->htmlTranslate("Shipment"); ?>">
-            </select>
-        </td>
-        <td>
-            <select id="groupBy" name="groupBy" class="form-control input-sm" data-filter-label="<?= $this->htmlTranslate("Group by"); ?>">
-                <option value="assay"><?= $this->htmlTranslate("Assay"); ?></option>
-                <option value="yearAssay"><?= $this->htmlTranslate("Year and assay"); ?></option>
-            </select>
-        </td>
-        <td class="dontPrint">
-            <button class="btn btn-success btn-sm"
-                onclick="drawTable()"><span><?= $this->translate->_("Get Report"); ?></span></button> <button
-                class="btn btn-danger btn-sm"
-                onclick="document.location.href = document.location"><span><?= $this->translate->_("Reset"); ?></span></button>
-            <button class="btn btn-info btn-sm hide" id="exportExcel" onclick="shipmentExcel()"><span><i
-                        class="icon-download"></i> <?= $this->htmlTranslate("Excel"); ?></span></button> <a href="#" class="btn btn-primary btn-sm hide"
-                id="exportPdf" target="_blank"><i class="icon-download"></i> <?= $this->htmlTranslate("PDF"); ?></a>
-        </td>
-    </tr>
-</table>
-    </div><!-- /.js-filter-body -->
-</div><!-- /.filter-panel -->
-<br />
-<table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered table-hover hide"
-    id="shipmentTable">
-    <thead>
-        <tr>
-            <th scope="col" style="text-align: center;"><?= $this->htmlTranslate("Participant Name"); ?></th>
-            <th scope="col" style="text-align: center;"><?= $this->htmlTranslate("Shipment Date"); ?></th>
-            <th scope="col" style="text-align: center;"><?= $this->htmlTranslate("Shipment Test Date"); ?></th>
-            <th scope="col" style="text-align: center;"><?= $this->htmlTranslate("Shipment Receipt Date"); ?></th>
-            <!--<th scope="col" style="text-align: center;">Total Valid Responses<br/><small>(Total - Excluded)</small></th>-->
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td colspan="10" class="dataTables_empty"><?= $this->translate->_("Loading data from server"); ?></td>
-        </tr>
-    </tbody>
-</table>
-<div id="shipmentchart"></div>
-<script type="text/javascript" src="<?php echo $this->baseUrl('js/moment.min.js'); ?>"></script>
-<script type="text/javascript" src="<?php echo $this->assetUrl('js/daterangepicker.js'); ?>"></script>
-<script type="text/javascript" src="<?php echo $this->baseUrl('js/select2.min.js'); ?>"></script>
+
+<div class="data-list">
+	<div class="data-list-head">
+		<h2><?= $this->htmlTranslate("VL Assay Distribution"); ?></h2>
+	</div>
+	<div class="data-list-body">
+		<?php include APPLICATION_PATH . '/views/partials/report-filters.phtml'; ?>
+		<?php if (empty($this->vlActive)) { ?>
+			<div class="alert alert-info" style="margin:14px 0 0;">
+				<?= $this->htmlTranslate("VL is not active, so this report has nothing to show."); ?>
+			</div>
+		<?php } ?>
+
+		<div class="rpt-section-head">
+			<h4><?= $this->htmlTranslate("Results per assay"); ?>
+				<span class="rpt-hint"><?= $this->htmlTranslate("Each enrolment counts once, under the assay in its response."); ?></span>
+			</h4>
+			<div class="rpt-tools">
+				<div class="rpt-seg" id="vadGroupBy" role="group" aria-label="<?= $this->htmlTranslate("Group by"); ?>">
+					<button type="button" class="active" data-group=""><?= $this->htmlTranslate("Assay"); ?></button>
+					<button type="button" data-group="year"><?= $this->htmlTranslate("Year and assay"); ?></button>
+				</div>
+				<button type="button" class="rpt-download" onclick="exportVlAssays()">
+					<i class="icon-download-alt"></i> <?= $this->htmlTranslate("Download Excel"); ?>
+				</button>
+			</div>
+		</div>
+		<div id="vadChart"></div>
+		<table class="table table-hover rpt-table" id="vadTable">
+			<thead>
+				<tr>
+					<th scope="col"><?= $this->htmlTranslate("Year"); ?></th>
+					<th scope="col"><?= $this->htmlTranslate("Assay"); ?></th>
+					<th scope="col"><?= $this->htmlTranslate("Enrolments"); ?></th>
+					<th scope="col"><?= $this->htmlTranslate("Pass rate"); ?></th>
+					<?php foreach (array_slice($outcomes, 1, null, true) as [$label]) { ?>
+						<th scope="col"><?= $this->escape($label); ?></th>
+					<?php } ?>
+				</tr>
+			</thead>
+			<tbody></tbody>
+			<tfoot>
+				<tr id="vadTotal" style="display:none;">
+					<td></td>
+					<td><?= $this->htmlTranslate("Total"); ?></td>
+					<td data-total="enrolled"></td>
+					<td data-total="rate"></td>
+					<?php foreach (array_slice($outcomes, 1, null, true) as $key => $outcome) { ?>
+						<td data-total="<?= $key; ?>"></td>
+					<?php } ?>
+				</tr>
+			</tfoot>
+		</table>
+	</div>
+</div>
 
 <script type="text/javascript">
-    var startDate = "";
-    var endDate = "";
-    var allTime = false;
-    var paginate = true;
+	var vadTable = null;
+	var vadRequest = null;
+	var vadGroupBy = '';
+	var vadOutcomes = <?= json_encode(array_map(fn ($o) => ['label' => $o[0], 'color' => $o[1]], $outcomes), JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT); ?>;
+	var vadNotReported = "<?= $this->jsTranslate("No assay reported"); ?>";
 
-    function initShipmentSelect() {
-        $("#shipmentId").select2({
-            width: '100%',
-            placeholder: '-- All shipments in range --',
-            allowClear: true
-        });
-    }
+	function vadNumber(n) {
+		return Number(n || 0).toLocaleString();
+	}
 
-    $(document).ready(function () {
-        initShipmentSelect();
-        $('#dateRange').daterangepicker({
-            locale: {
-                cancelLabel: 'Clear',
-                format: 'DD-MMM-YYYY',
-                separator: ' to ',
-            },
-            autoApply: true,
-            showDropdowns: true,
-            alwaysShowCalendars: true,
-            autoUpdateInput: true,
-            ranges: eptDateRanges()
-        },
-            function (start, end, label) {
-                allTime = (label === 'All Time');
-                startDate = start.format('DD-MMM-YYYY');
-                endDate = end.format('DD-MMM-YYYY');
-                getShipmentCodes();
-            });
+	function vadEscape(value) {
+		return $('<div/>').text(value == null ? '' : String(value)).html();
+	}
 
-        // Auto-load the full "All Time" report on first paint.
-        var drp = $('#dateRange').data('daterangepicker');
-        drp.setStartDate(moment('2000-01-01'));
-        drp.setEndDate(moment());
-        allTime = true;
-        startDate = drp.startDate.format('DD-MMM-YYYY');
-        endDate = drp.endDate.format('DD-MMM-YYYY');
-        $('#dateRange').val(startDate + ' to ' + endDate);
-        getShipmentCodes();
-        showSummary();
-    });
+	function vadRate(n, of) {
+		if (!of) {
+			return '<span class="cell-muted"><?= $this->jsTranslate("Not evaluated yet"); ?></span>';
+		}
+		var pct = Math.round(n * 100 / of);
+		return '<span class="rate-figure">' + pct + '%</span>'
+			+ '<span class="rate-bar is-pass"><span style="width:' + pct + '%"></span></span>'
+			+ '<span class="cell-sub">' + "<?= $this->jsTranslate("%s of %s"); ?>".replace('%s', vadNumber(n)).replace('%s', vadNumber(of)) + '</span>';
+	}
 
-    function getShipmentCodes() {
-        schemeType = 'vl';
-        if (startDate == "" || endDate == "") {
-            alert("<?= $this->jsTranslate("Please pick a date range to fetch shipment list"); ?>");
-            $('#dateRange').focus();
-            return false;
-        }
-        $.blockUI();
-        $.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'common', 'action' => 'get-shipments-by-scheme')); ?>", {
-            schemeType: schemeType,
-            startDate: startDate,
-            endDate: endDate,
-            format: "html"
-        },
-            function (data) {
-                // Tear down Select2 before swapping the underlying <option> set, then re-init.
-                $("#shipmentId").select2('destroy');
-                if (data != 0) {
-                    $("#shipmentId").html(data);
-                    // Drop the "All shipments" placeholder option; multiselect uses an empty selection for that.
-                    $("#shipmentId option[value='']").remove();
-                } else {
-                    $("#shipmentId").html('');
-                }
-                initShipmentSelect();
-                $.unblockUI();
-            });
-    }
+	function vadAssayCell(r) {
+		if (!r.assay) {
+			return '<span class="cell-muted">' + vadEscape(vadNotReported) + '</span>';
+		}
+		var sub = r.assayName && r.assayName !== r.assay ? '<span class="cell-sub">' + vadEscape(r.assayName) + '</span>' : '';
+		return vadEscape(r.assay) + sub;
+	}
 
-    function drawTable() {
-        if ($("#dateRange").val() == "") {
-            alert("<?= $this->jsTranslate("Please pick a date range (or 'All Time') to proceed"); ?>");
-            return false;
-        }
-        var dateRange = $("#dateRange").val();
-        var _dateRange = dateRange.split(" to ");
-        startDate = _dateRange[0];
-        endDate = _dateRange[1];
-        //$("#shipmentTable").removeClass("hide");
-        //$.blockUI;
-        //oTable = $('#shipmentTable').dataTable({
-        //    "bPaginate": paginate,
-        //    "bJQueryUI": false,
-        //    "bAutoWidth": false,
-        //    "bInfo": true,
-        //    "bScrollCollapse": true,
-        //    "sPaginationType": "bootstrap",
-        //    "bRetrieve": false,
-        //    "bDestroy": true,
-        //    "aoColumns": [
-        //        {"sClass": "center"},
-        //        {"sClass": "center"},
-        //        {"sClass": "center"},
-        //        {"sClass": "center"},
-        //    ],
-        //    "aaSorting": [[1, "asc"]],
-        //    "bProcessing": true,
-        //    "bServerSide": true,
-        //    "sAjaxSource": "<?php echo $this->url(array('module' => 'reports', 'controller' => 'shipments', 'action' => 'vl-assay-distribution', 'format' => 'html')); ?>",
-        //    "fnServerParams": function(aoData) {
-        //        aoData.push({"name": "shipmentId", "value": $("#shipmentId").val()});
-        //        aoData.push({"name": "startDate", "value": startDate});
-        //        aoData.push({"name": "endDate", "value": endDate});
-        //    },
-        //    "fnServerData": function(sSource, aoData, fnCallback) {
-        //        $.ajax({
-        //            "dataType": 'json',
-        //            "type": "POST",
-        //            "url": sSource,
-        //            "data": aoData,
-        //            "success": fnCallback
-        //        });
-        //    }, "fnRowCallback": function(nRow, aData, iDisplayIndex) {
-        //        $.unblockUI;
-        //    },
-        //});
-        showSummary();
-    }
+	// One bar per assay, split by outcome. Years add up into one bar.
+	function drawVadChart(rows) {
+		var byAssay = {};
+		var order = [];
+		$.each(rows, function (i, r) {
+			var key = r.assay || '';
+			if (!byAssay[key]) {
+				byAssay[key] = { assay: r.assay, enrolled: 0 };
+				$.each(vadOutcomes, function (o) { byAssay[key][o] = 0; });
+				order.push(key);
+			}
+			byAssay[key].enrolled += r.enrolled;
+			$.each(vadOutcomes, function (o) { byAssay[key][o] += r[o]; });
+		});
+		var assays = $.map(order, function (key) { return byAssay[key]; });
+		assays.sort(function (a, b) {
+			if (!a.assay !== !b.assay) {
+				return a.assay ? -1 : 1;
+			}
+			return b.enrolled - a.enrolled;
+		});
+		if (!assays.length || typeof Highcharts === 'undefined') {
+			$('#vadChart').empty().hide();
+			return;
+		}
+		$('#vadChart').show().css('height', Math.max(180, assays.length * 26 + 90) + 'px');
+		Highcharts.chart('vadChart', {
+			chart: { type: 'bar', style: { fontFamily: 'inherit' } },
+			title: { text: null },
+			credits: { enabled: false },
+			xAxis: {
+				categories: $.map(assays, function (a) { return a.assay || vadNotReported; }),
+				labels: { style: { fontSize: '12px' } }
+			},
+			yAxis: { title: { text: null }, allowDecimals: false, reversedStacks: false },
+			legend: { reversed: false },
+			tooltip: { shared: true },
+			plotOptions: { bar: { stacking: 'normal', borderWidth: 0, pointPadding: 0.1, groupPadding: 0.05 } },
+			series: $.map(vadOutcomes, function (o, key) {
+				return [{ name: o.label, color: o.color, data: $.map(assays, function (a) { return a[key]; }) }];
+			})
+		});
+	}
 
-    function showSummary() {
-        $.blockUI();
-        $.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'shipments', 'action' => 'vl-assay-summary')); ?>", {
-            shipmentId: $("#shipmentId").val(),
-            allTime: allTime ? 1 : 0,
-            groupBy: $("#groupBy").val(),
-            startDate: startDate,
-            endDate: endDate,
-            format: "html"
-        },
-            function (data) {
-                $("#shipmentchart").html(data);
-                $.unblockUI();
-            });
-    }
+	function drawVadTotal(rows) {
+		var total = { enrolled: 0 };
+		$.each(vadOutcomes, function (o) { total[o] = 0; });
+		$.each(rows, function (i, r) {
+			total.enrolled += r.enrolled;
+			$.each(vadOutcomes, function (o) { total[o] += r[o]; });
+		});
+		var $row = $('#vadTotal').toggle(rows.length > 1);
+		$row.find('[data-total="enrolled"]').text(vadNumber(total.enrolled));
+		$row.find('[data-total="rate"]').html(vadRate(total.pass, total.pass + total.fail));
+		$.each(vadOutcomes, function (o) {
+			$row.find('[data-total="' + o + '"]').text(vadNumber(total[o]));
+		});
+	}
+
+	function loadVlAssays() {
+		if (vadRequest) {
+			vadRequest.abort();
+		}
+		var params = reportFilters.values();
+		params.groupBy = vadGroupBy;
+		vadTable.fnSetColumnVis(0, vadGroupBy === 'year', false);
+		vadTable.fnClearTable();
+		$('#vadTable_processing').css('visibility', 'visible');
+		vadRequest = $.post("<?= $vadDataUrl; ?>", params, function (rows) {
+			rows = rows || [];
+			drawVadChart(rows);
+			drawVadTotal(rows);
+			// fnAddData([]) reads an empty array as one row with no cells.
+			if (!rows.length) {
+				return;
+			}
+			vadTable.fnAddData($.map(rows, function (r) {
+				var evaluated = r.pass + r.fail;
+				return [[
+					r.year || '',
+					vadAssayCell(r),
+					vadNumber(r.enrolled),
+					r.assay ? vadRate(r.pass, evaluated) : '<span class="cell-muted">&ndash;</span>',
+					r.fail > 0 ? '<span class="vad-failed">' + vadNumber(r.fail) + '</span>' : '0',
+					vadNumber(r.excluded),
+					vadNumber(r.nottested),
+					vadNumber(r.none),
+					vadNumber(r.pending),
+					r.enrolled,
+					evaluated ? r.pass / evaluated : -1,
+					r.fail,
+					r.excluded,
+					r.nottested,
+					r.none,
+					r.pending
+				]];
+			}));
+		}, 'json').always(function () {
+			vadRequest = null;
+			$('#vadTable_processing').css('visibility', 'hidden');
+		});
+	}
+
+	$(function () {
+		$('#vadGroupBy').on('click', 'button', function () {
+			vadGroupBy = String($(this).data('group') || '');
+			$('#vadGroupBy button').removeClass('active');
+			$(this).addClass('active');
+			if (vadTable) {
+				loadVlAssays();
+			}
+		});
+	});
+
+	reportFilters.onChange(loadVlAssays);
+
+	reportFilters.ready(function () {
+		// Columns 9 to 15 hold the raw numbers the visible columns sort by.
+		var hidden = function () { return { "bVisible": false, "sType": "numeric" }; };
+		vadTable = $('#vadTable').dataTable({
+			"oLanguage": reportZeroState.dataTableLanguage(),
+			"bAutoWidth": false,
+			"bPaginate": false,
+			"bFilter": false,
+			"bInfo": false,
+			"bProcessing": true,
+			"sDom": "rt",
+			"aoColumns": [
+				{ "sWidth": "7%", "bVisible": false },
+				{ "sWidth": "25%" },
+				{ "sWidth": "10%", "iDataSort": 9 },
+				{ "sWidth": "18%", "iDataSort": 10 },
+				{ "sWidth": "8%", "iDataSort": 11 },
+				{ "sWidth": "8%", "iDataSort": 12 },
+				{ "sWidth": "9%", "iDataSort": 13 },
+				{ "sWidth": "9%", "iDataSort": 14 },
+				{ "sWidth": "9%", "iDataSort": 15 },
+				hidden(), hidden(), hidden(), hidden(), hidden(), hidden(), hidden()
+			],
+			// Keep the server order: by year, then the busiest assay first.
+			"aaSorting": []
+		});
+		loadVlAssays();
+	});
+
+	function exportVlAssays() {
+		var params = reportFilters.values();
+		params.groupBy = vadGroupBy;
+		$.blockUI();
+		$.post("<?= $vadExportUrl; ?>", params, function (data) {
+			$.unblockUI();
+			if (!data || !data.file) {
+				alert("<?= $this->jsTranslate("Unable to generate download"); ?>");
+			} else {
+				window.open('/temporary/' + data.file, '_blank');
+			}
+		}, 'json').fail(function () {
+			$.unblockUI();
+			alert("<?= $this->jsTranslate("Unable to generate download"); ?>");
+		});
+	}
 </script>
 <?php // Must stay last: the panel collapses only after the select2 widgets above have measured themselves.
 include APPLICATION_PATH . '/views/partials/collapsible-filters.phtml'; ?>

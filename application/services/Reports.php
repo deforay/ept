@@ -1908,100 +1908,155 @@ class Application_Service_Reports
         echo json_encode($output);
     }
 
-    //vl assay particpant count pie chart
-    public function getAllVlAssayParticipantCount($params)
-    {
-        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $shipmentId = null;
-        if (isset($params['shipmentId']) && $params['shipmentId'] != '') {
-            $shipmentId = $params['shipmentId'];
-        }
-        $vlQuery = $db->select()->from(['vl' => 'r_vl_assay'], ['vl.id', 'vl.name', 'vl.short_name'])->where("`status` like 'active'");
-        $assayResult = $db->fetchAll($vlQuery);
-
-        $i = 0;
-        $vlParticipantCount = [];
-        foreach ($assayResult as $assayRow) {
-            $cQuery = $db->select()->from(['sp' => 'shipment_participant_map'], ['sp.map_id', 'sp.attributes']);
-            if ($shipmentId != null) {
-                $cQuery = $cQuery->where('sp.shipment_id = ?', $shipmentId);
-            }
-
-            $cResult = $db->fetchAll($cQuery);
-            $k = 0;
-            foreach ($cResult as $val) {
-                $valAttributes = Pt_Commons_JsonUtility::safeDecode($val['attributes']);
-                if ($assayRow['id'] == $valAttributes['vl_assay']) {
-                    $k = $k + 1;
-                }
-            }
-            $vlParticipantCount[$i]['count'] = $k;
-            $vlParticipantCount[$i]['name'] = $assayRow['short_name'];
-            $i++;
-        }
-        return $vlParticipantCount;
-    }
+    /** The VL Assay Distribution outcomes, in column order. */
+    private const VL_ASSAY_OUTCOMES = ['pass', 'fail', 'excluded', 'nottested', 'none', 'pending'];
 
     /**
-     * Per-assay summary: how many participants used each VL assay and how many
-     * passed / failed / were excluded. Scope is, in order of precedence:
-     *   - a single shipment (shipmentId), else
-     *   - a date range on shipment_date (startDate/endDate), else
-     *   - all VL shipments (when allTime is set or no range is given).
+     * VL Assay Distribution: the outcome of every VL enrolment that matches
+     * the filters, counted per assay. With groupBy=year, one row per year and
+     * assay. The assay comes from the response, so enrolments without a known
+     * assay (non-responders, mostly) share one row with an empty name. That
+     * row comes last in its year.
      */
-    public function getVlAssaySummary($params)
+    public function getVlAssayDistribution(array $params): array
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $assayExpr = new Zend_Db_Expr("JSON_UNQUOTE(JSON_EXTRACT(sp.attributes, '$.vl_assay'))");
-        $byYear = !empty($params['groupBy']) && $params['groupBy'] === 'yearAssay';
-
-        // A participant who responded "PT panel not tested" is treated as excluded during VL
-        // evaluation (see Application_Model_Vl), so fold that flag into the excluded test here too.
-        $isExcluded = "(IFNULL(sp.is_excluded, 'no') = 'yes' OR IFNULL(sp.is_pt_test_not_performed, 'no') = 'yes')";
+        $byYear = ($params['groupBy'] ?? '') === 'year';
 
         $columns = [
-            'participants' => new Zend_Db_Expr('COUNT(sp.map_id)'),
-            // Valid = responded on time ('responded' already excludes 'late'/'nottested'/'noresponse') and not excluded.
-            'validResponses' => new Zend_Db_Expr("SUM(sp.response_status = 'responded' AND NOT $isExcluded)"),
-            'passed' => new Zend_Db_Expr("SUM(sp.final_result = 1 AND NOT $isExcluded)"),
-            'failed' => new Zend_Db_Expr("SUM(sp.final_result = 2 AND NOT $isExcluded)"),
-            'excluded' => new Zend_Db_Expr("SUM($isExcluded)"),
-            'pending' => new Zend_Db_Expr("SUM(COALESCE(sp.final_result, 0) NOT IN (1, 2) AND NOT $isExcluded)"),
+            'assay_id' => 'va.id',
+            'assay' => new Zend_Db_Expr("IFNULL(TRIM(MAX(va.short_name)), '')"),
+            'assay_name' => new Zend_Db_Expr("IFNULL(TRIM(MAX(va.name)), '')"),
+            'enrolled' => new Zend_Db_Expr('COUNT(sp.map_id)'),
         ];
+        foreach (self::VL_ASSAY_OUTCOMES as $outcome) {
+            $columns[$outcome] = new Zend_Db_Expr('SUM((' . self::RESPONSE_OUTCOME_SQL . ") = '$outcome')");
+        }
         if ($byYear) {
             $columns['year'] = new Zend_Db_Expr('YEAR(s.shipment_date)');
         }
 
-        $select = $db->select()
+        $sQuery = $db->select()
             ->from(['sp' => 'shipment_participant_map'], $columns)
-            ->join(['s' => 'shipment'], 's.shipment_id = sp.shipment_id', [])
-            ->join(['va' => 'r_vl_assay'], "va.id = $assayExpr", ['assayId' => 'va.id', 'name' => 'va.short_name', 'fullName' => 'va.name'])
-            ->where("s.scheme_type = 'vl'")
-            ->where("s.status = 'finalized'");
+            ->join(['s' => 'shipment'], 's.shipment_id=sp.shipment_id', [])
+            ->join(['p' => 'participant'], 'p.participant_id=sp.participant_id', [])
+            // Compared as text: old responses hold values such as "--Select--".
+            ->joinLeft(['va' => 'r_vl_assay'], "CAST(va.id AS CHAR) = JSON_UNQUOTE(JSON_EXTRACT(sp.attributes, '$.vl_assay'))", [])
+            ->group($byYear ? [new Zend_Db_Expr('YEAR(s.shipment_date)'), 'va.id'] : 'va.id')
+            ->order(array_merge(
+                $byYear ? [new Zend_Db_Expr('YEAR(s.shipment_date) DESC')] : [],
+                [new Zend_Db_Expr('va.id IS NULL'), 'enrolled DESC', 'assay ASC']
+            ));
 
-        if ($byYear) {
-            $select->group([new Zend_Db_Expr('YEAR(s.shipment_date)'), 'va.id'])
-                ->order(new Zend_Db_Expr('YEAR(s.shipment_date) DESC'))
-                ->order(new Zend_Db_Expr('participants DESC'));
-        } else {
-            $select->group('va.id')
-                ->order(new Zend_Db_Expr('participants DESC'));
+        Application_Model_DbTable_Participants::applyResponseReportFilters($sQuery, ['scheme' => 'vl'] + $params);
+
+        return array_map(function ($row) use ($byYear) {
+            $out = [
+                'year' => $byYear ? (int) $row['year'] : null,
+                'assay' => (string) $row['assay'],
+                'assayName' => (string) $row['assay_name'],
+                'enrolled' => (int) $row['enrolled'],
+            ];
+            foreach (self::VL_ASSAY_OUTCOMES as $outcome) {
+                $out[$outcome] = (int) $row[$outcome];
+            }
+            return $out;
+        }, $db->fetchAll($sQuery));
+    }
+
+    /** VL Assay Distribution as Excel, one row per assay and a total row. */
+    public function exportVlAssayDistribution(array $params): string
+    {
+        try {
+            $rows = $this->getVlAssayDistribution($params);
+            if (empty($rows)) {
+                return '';
+            }
+            $byYear = ($params['groupBy'] ?? '') === 'year';
+            $t = fn ($text) => html_entity_decode($text, ENT_QUOTES, 'UTF-8');
+            $passRate = fn (array $r) => ($r['pass'] + $r['fail']) > 0 ? round($r['pass'] / ($r['pass'] + $r['fail']) * 100, 1) : null;
+
+            $header = [
+                $t($this->translator->_('Assay')),
+                $t($this->translator->_('Assay name')),
+                $t($this->translator->_('Enrolments')),
+                $t($this->translator->_('Passed')),
+                $t($this->translator->_('Failed')),
+                $t($this->translator->_('Pass rate')) . ' (%)',
+                $t($this->translator->_('Excluded')),
+                $t($this->translator->_('Could not test')),
+                $t($this->translator->_('Not responded')),
+                $t($this->translator->_('Not evaluated')),
+            ];
+            if ($byYear) {
+                array_unshift($header, $t($this->translator->_('Year')));
+            }
+            $notReported = $t($this->translator->_('No assay reported'));
+
+            $excel = new Spreadsheet();
+            $sheet = $excel->getActiveSheet();
+            $sheet->setTitle(mb_substr($t($this->translator->_('Assays')), 0, 31));
+            $sheet->fromArray($header, null, 'A1');
+            $rowNo = 2;
+            $total = array_fill_keys(array_merge(['enrolled'], self::VL_ASSAY_OUTCOMES), 0);
+            foreach ($rows as $r) {
+                $line = [
+                    $r['assay'] !== '' ? $r['assay'] : $notReported,
+                    $r['assayName'],
+                    $r['enrolled'],
+                    $r['pass'],
+                    $r['fail'],
+                    $passRate($r),
+                    $r['excluded'],
+                    $r['nottested'],
+                    $r['none'],
+                    $r['pending'],
+                ];
+                if ($byYear) {
+                    array_unshift($line, $r['year']);
+                }
+                $sheet->fromArray($line, null, 'A' . $rowNo++, true);
+                foreach ($total as $key => $value) {
+                    $total[$key] = $value + $r[$key];
+                }
+            }
+            $line = [
+                $t($this->translator->_('Total')),
+                '',
+                $total['enrolled'],
+                $total['pass'],
+                $total['fail'],
+                $passRate($total),
+                $total['excluded'],
+                $total['nottested'],
+                $total['none'],
+                $total['pending'],
+            ];
+            if ($byYear) {
+                array_unshift($line, '');
+            }
+            $sheet->fromArray($line, null, 'A' . $rowNo, true);
+            $sheet->getStyle('1:1')->getFont()->setBold(true);
+            $sheet->getStyle($rowNo . ':' . $rowNo)->getFont()->setBold(true);
+            $sheet->freezePane('A2');
+            foreach ($sheet->getColumnIterator() as $column) {
+                $sheet->getColumnDimension($column->getColumnIndex())->setAutoSize(true);
+            }
+
+            if (!is_dir($this->tempUploadDirectory)) {
+                mkdir($this->tempUploadDirectory);
+            }
+            $filename = 'vl-assay-distribution-' . date('d-M-Y-H-i-s') . '.xlsx';
+            IOFactory::createWriter($excel, 'Xlsx')->save($this->tempUploadDirectory . DIRECTORY_SEPARATOR . $filename);
+            return $filename;
+        } catch (Throwable $exc) {
+            Pt_Commons_LoggerUtility::logError('Failed to generate VL assay distribution report (Excel): ' . $exc->getMessage(), [
+                'file' => $exc->getFile(),
+                'line' => $exc->getLine(),
+                'trace' => $exc->getTraceAsString(),
+            ]);
+            return '';
         }
-
-        $shipmentIds = [];
-        if (!empty($params['shipmentId'])) {
-            $shipmentIds = is_array($params['shipmentId']) ? $params['shipmentId'] : [$params['shipmentId']];
-            $shipmentIds = array_values(array_filter($shipmentIds, static fn ($v) => $v !== '' && $v !== null));
-        }
-
-        if (!empty($shipmentIds)) {
-            $select->where('sp.shipment_id IN (?)', $shipmentIds);
-        } elseif (empty($params['allTime']) && !empty($params['startDate']) && !empty($params['endDate'])) {
-            $select->where('DATE(s.shipment_date) >= ?', $this->common->isoDateFormat($params['startDate']));
-            $select->where('DATE(s.shipment_date) <= ?', $this->common->isoDateFormat($params['endDate']));
-        }
-
-        return $db->fetchAll($select);
     }
 
     public function getAllVlSampleResult($params)

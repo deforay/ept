@@ -39,7 +39,7 @@ _('annual');
 _('Annual Performance Report');
 // admin/testkit-edit#tags, admin/testkit#tags
 _('approval');
-// admin/eid-assay-add#tags, admin/eid-assay#tags, admin/vl-assay-add#tags, admin/vl-assay-edit#tags, admin/vl-assay#tags
+// admin/eid-assay-add#tags, admin/eid-assay#tags, admin/reports-vl-assay-distribution#tags, admin/vl-assay-add#tags, admin/vl-assay-edit#tags, admin/vl-assay#tags
 _('assay');
 // admin/participants-manager-map#summary
 _('Assign participants to a Data Manager so the right person sees the right participants when filling out responses');
@@ -249,7 +249,7 @@ _('Participants');
 _('Participant Trends');
 // admin/reports-annual#tags
 _('participation');
-// admin/reports-participant-performance#tags, admin/reports-participant-response#tags, admin/reports-participant-trends#tags, admin/reports-shipment-response#tags, admin/reports-tb-participants-per-country#tags
+// admin/reports-participant-performance#tags, admin/reports-participant-response#tags, admin/reports-participant-trends#tags, admin/reports-shipment-response#tags, admin/reports-tb-participants-per-country#tags, admin/reports-vl-assay-distribution#tags
 _('pass rate');
 // admin/data-managers#tags
 _('password');
@@ -261,7 +261,7 @@ _('PDF Report Settings');
 _('People who can log in to the admin side of ePT');
 // admin/reports-participant-performance#tags, admin/reports-participant-trends#tags
 _('performance');
-// admin/eid-assay#tags, admin/vl-assay#tags
+// admin/eid-assay#tags, admin/reports-vl-assay-distribution#tags, admin/vl-assay#tags
 _('platform');
 // admin/shipment-enroll#tags
 _('preset');
@@ -285,7 +285,7 @@ _('re-evaluate');
 _('regions');
 // admin/vl-assay-edit#summary
 _('Rename a Viral Load assay / platform');
-// admin/evaluate#tags, admin/report-config#tags, admin/reports-annual#tags, admin/reports-corrective-actions#tags, admin/reports-distribution#tags, admin/reports-finalize#tags, admin/reports-participant-performance#tags, admin/reports-participant-response#tags, admin/reports-participant-trends#tags, admin/reports-shipment-response#tags, admin/reports-shipments#tags, admin/reports-tb-all-sites-results#tags, admin/reports-tb-participants-per-country#tags, admin/reports-tb-results#tags, admin/reports-xtpt-indicators#tags
+// admin/evaluate#tags, admin/report-config#tags, admin/reports-annual#tags, admin/reports-corrective-actions#tags, admin/reports-distribution#tags, admin/reports-finalize#tags, admin/reports-participant-performance#tags, admin/reports-participant-response#tags, admin/reports-participant-trends#tags, admin/reports-shipment-response#tags, admin/reports-shipments#tags, admin/reports-tb-all-sites-results#tags, admin/reports-tb-participants-per-country#tags, admin/reports-tb-results#tags, admin/reports-vl-assay-distribution#tags, admin/reports-xtpt-indicators#tags
 _('reports');
 // admin/reports-participant-response#summary
 _('Response and pass rates by region, district, network tier, affiliation or enrolled program');
@@ -405,12 +405,18 @@ _('View / Re-Evaluate Shipment');
 _('View and manage which participants are enrolled in each scheme; bulk-import enrollments from a spreadsheet');
 // admin/vl-assay-add#tags, admin/vl-assay-edit#tags, admin/vl-assay#tags, admin/vl-settings#tags
 _('viral-load');
-// admin/vl-assay-add#tags, admin/vl-assay-edit#tags, admin/vl-assay#tags, admin/vl-settings#tags
+// admin/reports-vl-assay-distribution#tags
+_('viral load');
+// admin/reports-vl-assay-distribution#tags, admin/vl-assay-add#tags, admin/vl-assay-edit#tags, admin/vl-assay#tags, admin/vl-settings#tags
 _('vl');
 // admin/vl-settings#title
 _('VL (HIV Viral Load) Settings');
+// admin/reports-vl-assay-distribution#title
+_('VL Assay Distribution');
 // admin/vl-assay#title
 _('VL Assays / Platforms');
+// admin/reports-vl-assay-distribution#summary
+_('VL results per assay, with the pass rate of each assay');
 // admin/reports-shipment-response#summary
 _('Who responded to each shipment, who did not, and how they performed');
 // admin/reports-xtpt-indicators#tags
