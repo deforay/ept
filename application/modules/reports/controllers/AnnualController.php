@@ -44,6 +44,12 @@ class Reports_AnnualController extends Zend_Controller_Action
         $this->view->schemes = $scheme->getAllSchemes();
     }
 
+    public function shipmentsAction()
+    {
+        $reportService = new Application_Service_Reports();
+        $this->_helper->json($reportService->getAnnualReportShipmentOptions($this->getAllParams()));
+    }
+
     public function saveScheduledJobsAction()
     {
         /** @var Zend_Controller_Request_Http $request */

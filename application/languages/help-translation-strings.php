@@ -31,6 +31,10 @@ _('admin');
 _('Admin Users');
 // admin/dts-settings#tags
 _('algorithm');
+// admin/reports-annual#tags
+_('annual');
+// admin/reports-annual#title
+_('Annual Performance Report');
 // admin/testkit-edit#tags, admin/testkit#tags
 _('approval');
 // admin/eid-assay-add#tags, admin/eid-assay#tags, admin/vl-assay-add#tags, admin/vl-assay-edit#tags, admin/vl-assay#tags
@@ -47,6 +51,8 @@ _('bulk-import');
 _('Bulk Enroll Participants');
 // admin/participants-bulk-import#title
 _('Bulk Import Participants');
+// admin/reports-annual#tags
+_('certificates');
 // admin/email-participants#tags
 _('communication');
 // admin/dts-settings#tags, admin/eid-assay-add#tags, admin/eid-assay#tags, admin/global-config#tags, admin/home-config#tags, admin/report-config#tags, admin/tb-settings#tags, admin/testkit-add#tags, admin/testkit-edit#tags, admin/testkit-standard-kit#tags, admin/testkit#tags, admin/vl-assay-add#tags, admin/vl-assay-edit#tags, admin/vl-assay#tags, admin/vl-settings#tags
@@ -69,6 +75,8 @@ _('Create a new PT Survey on a specific date with a unique code');
 _('Create a new test kit, optionally enabling Additional Information capture for OD / Ct / custom values');
 // admin/vl-assay-add#summary
 _('Create a new Viral Load assay / platform');
+// admin/reports-annual#tags
+_('csv');
 // admin/home-config#summary
 _('Customize the public home page — hero text, banner image, resource cards, logos, and FAQ');
 // admin/dashboard#title
@@ -133,14 +141,18 @@ _('Enroll or unenroll many participants in a scheme using a two-list selector wi
 _('Enroll Participants');
 // admin/evaluate-shipment#tags, admin/evaluate#tags
 _('evaluate');
+// admin/reports-annual#summary
+_('Evaluated results for a date range, and the certificates that follow from them');
 // admin/evaluate#title
 _('Evaluate PT Survey');
 // admin/evaluate#tags
 _('evaluation');
 // admin/reports-shipments#summary
 _('Every shipment with its responses, pass rate, status and downloads');
-// admin/enrollments-bulk-enrollment#tags, admin/participants-bulk-import#tags, admin/reports-xtpt-indicators#tags
+// admin/enrollments-bulk-enrollment#tags, admin/participants-bulk-import#tags, admin/reports-annual#tags, admin/reports-xtpt-indicators#tags
 _('excel');
+// admin/reports-annual#tags
+_('excellence');
 // admin/reports-xtpt-indicators#summary
 _('Excel workbook of XTPT indicators and all sites\' results for one TB shipment');
 // admin/eid-assay-add#tags, admin/eid-assay#tags
@@ -231,6 +243,8 @@ _('participants');
 _('Participants');
 // admin/reports-participant-trends#title
 _('Participant Trends');
+// admin/reports-annual#tags
+_('participation');
 // admin/reports-participant-performance#tags, admin/reports-participant-response#tags, admin/reports-participant-trends#tags, admin/reports-shipment-response#tags, admin/reports-tb-participants-per-country#tags
 _('pass rate');
 // admin/data-managers#tags
@@ -267,7 +281,7 @@ _('re-evaluate');
 _('regions');
 // admin/vl-assay-edit#summary
 _('Rename a Viral Load assay / platform');
-// admin/evaluate#tags, admin/report-config#tags, admin/reports-corrective-actions#tags, admin/reports-distribution#tags, admin/reports-finalize#tags, admin/reports-participant-performance#tags, admin/reports-participant-response#tags, admin/reports-participant-trends#tags, admin/reports-shipment-response#tags, admin/reports-shipments#tags, admin/reports-tb-participants-per-country#tags, admin/reports-xtpt-indicators#tags
+// admin/evaluate#tags, admin/report-config#tags, admin/reports-annual#tags, admin/reports-corrective-actions#tags, admin/reports-distribution#tags, admin/reports-finalize#tags, admin/reports-participant-performance#tags, admin/reports-participant-response#tags, admin/reports-participant-trends#tags, admin/reports-shipment-response#tags, admin/reports-shipments#tags, admin/reports-tb-participants-per-country#tags, admin/reports-xtpt-indicators#tags
 _('reports');
 // admin/reports-participant-response#summary
 _('Response and pass rates by region, district, network tier, affiliation or enrolled program');

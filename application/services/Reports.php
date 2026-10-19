@@ -2384,124 +2384,148 @@ class Application_Service_Reports
         return $resultArray;
     }
 
+    /**
+     * The shipments the Annual Performance Report covers: finalized, not
+     * cancelled, shipped in the date range, of the picked schemes. Picked
+     * shipments narrow the list further.
+     */
+    private function annualReportShipments(array $params): array
+    {
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $query = $db->select()
+            ->from(['s' => 'shipment'], ['s.shipment_id', 's.shipment_code', 's.scheme_type', 's.shipment_date'])
+            ->where('s.cancelled_at IS NULL')
+            ->where("s.finalized_at IS NOT NULL OR s.status = 'finalized'")
+            ->where('DATE(s.shipment_date) >= ?', $this->common->isoDateFormat($params['startDate']))
+            ->where('DATE(s.shipment_date) <= ?', $this->common->isoDateFormat($params['endDate']))
+            ->order(['s.scheme_type', 's.shipment_date', 's.shipment_id']);
+
+        $schemes = array_filter((array) ($params['scheme'] ?? []), fn ($v) => $v !== '' && $v !== null);
+        if (!empty($schemes)) {
+            $query->where('s.scheme_type IN (?)', $schemes);
+        }
+        $shipmentIds = array_filter(array_map('intval', (array) ($params['shipmentId'] ?? [])));
+        if (!empty($shipmentIds)) {
+            $query->where('s.shipment_id IN (?)', $shipmentIds);
+        }
+        return $db->fetchAll($query);
+    }
+
+    /** The Shipment filter options of the Annual Performance Report. */
+    public function getAnnualReportShipmentOptions(array $params): array
+    {
+        if (empty($params['startDate']) || empty($params['endDate'])) {
+            return [];
+        }
+        unset($params['shipmentId']);
+        return array_map(fn ($row) => [
+            'id' => (int) $row['shipment_id'],
+            'text' => $row['shipment_code'] . ' (' . Pt_Commons_DateUtility::humanReadableDateFormat($row['shipment_date'] ?? '') . ')',
+        ], $this->annualReportShipments($params));
+    }
+
+    /**
+     * Annual Performance Report: every evaluated response to the finalized
+     * shipments in the range, as CSV (one row per response) or as the Excel
+     * sheet reviewed before certificates (one row per participant).
+     *
+     * Only passes and real fails count. Older evaluations marked labs that did
+     * not respond as failed, so a fail needs a submitted response.
+     */
     public function getAnnualReport($params)
     {
-        if (isset($params['startDate']) && trim($params['startDate']) != '' && trim($params['endDate']) != '') {
-
-            $startDate = $this->common->isoDateFormat($params['startDate']);
-            $endDate = $this->common->isoDateFormat($params['endDate']);
-
-            $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-            $query = $db->select()
-                ->from(['s' => 'shipment'], ['s.shipment_id', 's.shipment_code', 's.scheme_type', 's.shipment_date', 's.response_deadline'])
-                ->where('DATE(s.shipment_date) >= ?', $startDate)
-                ->where('DATE(s.shipment_date) <= ?', $endDate)
-                ->where('s.cancelled_at IS NULL')
-                ->order('s.scheme_type');
-
-            if (isset($params['scheme']) && !empty($params['scheme']) && count($params['scheme']) > 0) {
-                $sWhere = '';
-                foreach ($params['scheme'] as $val) {
-                    if ($sWhere != '') {
-                        $sWhere .= ' OR ';
-                    }
-                    $sWhere .= $db->quoteInto('s.scheme_type = ?', $val);
-                }
-                if (!empty($sWhere)) {
-                    $query = $query->where($sWhere);
-                }
-            }
-            $shipmentResult = $db->fetchAll($query);
-            $shipmentIdArray = [];
-            foreach ($shipmentResult as $val) {
-                $shipmentIdArray[] = $val['shipment_id'];
-                //$shipmentId[$val['scheme_type']][] = $val['shipment_id'];
-                $shipmentCodeArray[$val['scheme_type']][] = $val['shipment_code'];
-            }
-
-            $sQuery = $db->select()
-                ->from(['spm' => 'shipment_participant_map'], [
-                    'spm.map_id',
-                    'spm.shipment_id',
-                    'spm.participant_id',
-                    'spm.shipment_test_report_date',
-                    'spm.shipment_score',
-                    'spm.documentation_score',
-                    'spm.final_result',
-                    'spm.attributes',
-                    'finalResult' => new Zend_Db_Expr("
-                    CASE WHEN (spm.final_result = 1) THEN 'PASS' ELSE
-                        (CASE WHEN (spm.final_result = 2) THEN 'FAIL' ELSE 'EXCLUDED' END)
-                    END"),
-                    'failure_reason',
-                ])
-                ->join(['s' => 'shipment'], 's.shipment_id=spm.shipment_id', ['*'])
-                ->join(['sl' => 'scheme_list'], 's.scheme_type=sl.scheme_id', ['scheme_name'])
-                ->join(['p' => 'participant'], 'p.participant_id=spm.participant_id', ['unique_identifier', 'first_name', 'last_name', 'email', 'city', 'district', 'state', 'address', 'institute_name'])
-                ->joinLeft(['c' => 'countries'], 'c.id=p.country', ['country_name' => 'iso_name'])
-                ->where('spm.final_result = 1 OR spm.final_result = 2')
-                // ->where("spm.is_excluded NOT LIKE 'yes'")
-                ->order('unique_identifier ASC')
-                ->order('scheme_type ASC');
-
-            if (isset($params['shipmentId']) && !empty($params['shipmentId']) && count($params['shipmentId']) > 0) {
-                $sQuery->where('spm.shipment_id IN (?)', $params['shipmentId']);
-                $shQuery = $db->select()->from(['s' => 'shipment'], ['s.shipment_code', 's.scheme_type'])
-                    ->where('s.shipment_id IN (?)', $params['shipmentId'])
-                    ->order('s.scheme_type');
-                $shipmentResult = $db->fetchAll($shQuery);
-                $shipmentCodeArray = [];
-
-                foreach ($shipmentResult as $val) {
-                    $shipmentCodeArray[$val['scheme_type']][] = $val['shipment_code'];
-                }
-            } else {
-                if (empty($shipmentIdArray)) {
-                    return json_encode(['fileName' => '']);
-                }
-                $sQuery->where('spm.shipment_id IN (?)', $shipmentIdArray);
-            }
-
-            $shipmentParticipantResult = $db->fetchAll($sQuery);
-            $participants = [];
-            foreach ($shipmentParticipantResult as $shipment) {
-                if (in_array($shipment['unique_identifier'], $participants)) {
-                    $participants[$shipment['unique_identifier']][$shipment['scheme_type']][$shipment['shipment_code']] = $shipment['shipment_score'];
-                } else {
-                    $participants[$shipment['unique_identifier']]['labName'] = trim($shipment['first_name'] . ' ' . $shipment['last_name']);
-                    $participants[$shipment['unique_identifier']]['institute_name'] = $shipment['institute_name'] ?? '';
-                    $participants[$shipment['unique_identifier']]['department_name'] = $shipment['department_name'] ?? '';
-                    $participants[$shipment['unique_identifier']]['address'] = $shipment['address'] ?? '';
-                    $participants[$shipment['unique_identifier']]['city'] = $shipment['city'] ?? '';
-                    $participants[$shipment['unique_identifier']]['district'] = $shipment['district'] ?? '';
-                    $participants[$shipment['unique_identifier']]['state'] = $shipment['state'] ?? '';
-                    $participants[$shipment['unique_identifier']]['country_name'] = $shipment['country_name'] ?? '';
-                    $participants[$shipment['unique_identifier']]['contact_name'] = isset($shipment['contact_name']) ? $shipment['contact_name'] : '';
-                    $participants[$shipment['unique_identifier']]['email'] = $shipment['email'] ?? '';
-                    $participants[$shipment['unique_identifier']]['additional_email'] = isset($shipment['additional_email']) ? $shipment['additional_email'] : '';
-                    $participants[$shipment['unique_identifier']]['scheme_name'] = isset($shipment['scheme_name']) ? $shipment['scheme_name'] : '';
-                    $participants[$shipment['unique_identifier']][$shipment['scheme_type']][$shipment['shipment_code']]['score'] = (float) ($shipment['shipment_score'] + $shipment['documentation_score']);
-                    $participants[$shipment['unique_identifier']][$shipment['scheme_type']][$shipment['shipment_code']]['result'] = $shipment['final_result'] ?? '';
-                    $participants[$shipment['unique_identifier']][$shipment['scheme_type']][$shipment['shipment_code']]['finalResult'] = $shipment['finalResult'] ?? '';
-                    $participants[$shipment['unique_identifier']][$shipment['scheme_type']][$shipment['shipment_code']]['failure_reason'] = $shipment['failure_reason'] ?? '';
-                    $participants[$shipment['unique_identifier']][$shipment['scheme_type']][$shipment['shipment_code']]['number_of_samples'] = $shipment['number_of_samples'] ?? '';
-                    $participants[$shipment['unique_identifier']][$shipment['scheme_type']][$shipment['shipment_code']]['attributes'] = Pt_Commons_JsonUtility::safeDecode($shipment['attributes']);
-                    $participants[$shipment['unique_identifier']][$shipment['scheme_type']][$shipment['shipment_code']]['shipment_date'] = $shipment['shipment_date'] ?? '';
-                    $participants[$shipment['unique_identifier']][$shipment['scheme_type']][$shipment['shipment_code']]['response_deadline'] = $shipment['response_deadline'] ?? '';
-                    $participants[$shipment['unique_identifier']][$shipment['scheme_type']][$shipment['shipment_code']]['shipment_test_report_date'] = $shipment['shipment_test_report_date'] ?? '';
-                }
-            }
-            $params['reportType'] = $params['reportType'] ?? 'csv';
-            if ($params['reportType'] == 'csv') {
-                $filename = $this->generateAnnualReportCSV($shipmentCodeArray, $participants);
-            } elseif ($params['reportType'] == 'excel') {
-                $filename = $this->generateAnnualReportExcel($shipmentCodeArray, $participants);
-            } else {
-                $filename = '';
-            }
-
-            return json_encode(['fileName' => $filename, 'reportType' => $params['reportType']]);
+        if (empty($params['startDate']) || empty($params['endDate'])) {
+            return json_encode(['fileName' => '']);
         }
+
+        $shipments = $this->annualReportShipments($params);
+        if (empty($shipments)) {
+            return json_encode(['fileName' => '']);
+        }
+        $shipmentCodeArray = [];
+        foreach ($shipments as $shipment) {
+            $shipmentCodeArray[$shipment['scheme_type']][] = $shipment['shipment_code'];
+        }
+
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $sQuery = $db->select()
+            ->from(['spm' => 'shipment_participant_map'], [
+                'spm.shipment_test_report_date',
+                'spm.shipment_score',
+                'spm.documentation_score',
+                'spm.final_result',
+                'spm.attributes',
+                'spm.failure_reason',
+                'finalResult' => new Zend_Db_Expr("CASE WHEN spm.final_result = 1 THEN 'PASS' ELSE 'FAIL' END"),
+            ])
+            ->join(['s' => 'shipment'], 's.shipment_id=spm.shipment_id', ['s.shipment_code', 's.scheme_type', 's.number_of_samples', 's.shipment_date', 's.response_deadline'])
+            ->join(['sl' => 'scheme_list'], 's.scheme_type=sl.scheme_id', ['sl.scheme_name'])
+            ->join(['p' => 'participant'], 'p.participant_id=spm.participant_id', [
+                'p.unique_identifier',
+                'labName' => new Zend_Db_Expr(Application_Model_DbTable_Participants::participantNameExpr('p')),
+                'p.institute_name',
+                'p.department_name',
+                'p.contact_name',
+                'p.email',
+                'p.additional_email',
+                'p.address',
+                'p.city',
+                'p.district',
+                'p.state',
+            ])
+            ->joinLeft(['c' => 'countries'], 'c.id=p.country', ['country_name' => 'c.iso_name'])
+            ->where('spm.shipment_id IN (?)', array_column($shipments, 'shipment_id'))
+            ->where("spm.final_result = 1 OR (spm.final_result = 2 AND spm.response_status IN ('responded','late'))")
+            ->order(['p.unique_identifier ASC', 's.scheme_type ASC', 's.shipment_date ASC']);
+
+        $participants = [];
+        foreach ($db->fetchAll($sQuery) as $row) {
+            $uid = $row['unique_identifier'];
+            if (!isset($participants[$uid])) {
+                $participants[$uid] = [
+                    'labName' => $row['labName'],
+                    'institute_name' => $row['institute_name'] ?? '',
+                    'department_name' => $row['department_name'] ?? '',
+                    'contact_name' => $row['contact_name'] ?? '',
+                    'address' => $row['address'] ?? '',
+                    'city' => $row['city'] ?? '',
+                    'district' => $row['district'] ?? '',
+                    'state' => $row['state'] ?? '',
+                    'country_name' => $row['country_name'] ?? '',
+                    'email' => $row['email'] ?? '',
+                    'additional_email' => $row['additional_email'] ?? '',
+                    'schemes' => [],
+                ];
+            }
+            $participants[$uid]['schemes'][$row['scheme_name']] = true;
+            $participants[$uid][$row['scheme_type']][$row['shipment_code']] = [
+                'scheme_name' => $row['scheme_name'],
+                'score' => (float) $row['shipment_score'] + (float) $row['documentation_score'],
+                'result' => $row['final_result'],
+                'finalResult' => $row['finalResult'],
+                'failure_reason' => $row['failure_reason'] ?? '',
+                'number_of_samples' => $row['number_of_samples'] ?? '',
+                'attributes' => Pt_Commons_JsonUtility::safeDecode($row['attributes']),
+                'shipment_date' => $row['shipment_date'] ?? '',
+                'response_deadline' => $row['response_deadline'] ?? '',
+                'shipment_test_report_date' => $row['shipment_test_report_date'] ?? '',
+            ];
+        }
+        foreach ($participants as &$participant) {
+            $participant['scheme_name'] = implode(', ', array_keys($participant['schemes']));
+        }
+        unset($participant);
+
+        if (empty($participants)) {
+            return json_encode(['fileName' => '']);
+        }
+
+        $reportType = ($params['reportType'] ?? 'csv') === 'excel' ? 'excel' : 'csv';
+        $filename = $reportType === 'excel'
+            ? $this->generateAnnualReportExcel($shipmentCodeArray, $participants)
+            : $this->generateAnnualReportCSV($shipmentCodeArray, $participants);
+
+        return json_encode(['fileName' => $filename, 'reportType' => $reportType]);
     }
 
     /**
@@ -3371,9 +3395,39 @@ class Application_Service_Reports
         }
     }
 
+    /** The VL assay or EID extraction assay of a response, by name. */
+    private function annualReportAssayName(string $shipmentType, $attributes, array $vlAssays, array $eidAssays): string
+    {
+        $attributes = (array) $attributes;
+        if ($shipmentType === 'vl' && !empty($attributes['vl_assay'])) {
+            return (string) ($vlAssays[$attributes['vl_assay']] ?? '');
+        }
+        if ($shipmentType === 'eid' && !empty($attributes['extraction_assay'])) {
+            return (string) ($eidAssays[$attributes['extraction_assay']] ?? '');
+        }
+        return '';
+    }
+
+    /** The warnings and the corrective actions of a response, as plain text. */
+    private function annualReportWarnings($failureReason): array
+    {
+        if (empty($failureReason) || $failureReason === '[]') {
+            return ['', ''];
+        }
+        $txt = $note = '';
+        foreach ((array) Pt_Commons_JsonUtility::safeDecode($failureReason) as $w) {
+            $txt .= $w['warning'] ?? '';
+            $note .= $w['correctiveAction'] ?? '';
+        }
+        return [strip_tags($txt), strip_tags($note)];
+    }
+
     public function generateAnnualReportExcel($shipmentCodeArray, $participants)
     {
 
+        // One row per participant and seven columns per shipment: a year of a
+        // large programme runs past the default memory limit.
+        ini_set('memory_limit', '-1');
         $schemeService = new Application_Service_Schemes();
         $vlModel = new Application_Model_Vl();
         $vlAssayArray = $vlModel->getVlAssay();
@@ -3423,49 +3477,28 @@ class Application_Service_Reports
                 $certificate = true;
                 $participated = true;
                 foreach ($shipmentsList as $shipmentCode) {
+                    $entry = $participantArray[$shipmentType][$shipmentCode] ?? null;
                     $firstSheetRow[] = $shipmentCode;
-                    $firstSheetRow[] = $participantArray[$shipmentType][$shipmentCode]['number_of_samples'];
-                    $assayName = '';
-                    if ($shipmentType == 'vl' && !empty($participantArray[$shipmentType][$shipmentCode]['attributes']['vl_assay'])) {
-                        $assayName = $vlAssayArray[$participantArray[$shipmentType][$shipmentCode]['attributes']['vl_assay']];
-                    } elseif ($shipmentType == 'eid' && !empty($participantArray[$shipmentType][$shipmentCode]['attributes']['extraction_assay'])) {
-                        $assayName = $eidAssayArray[$participantArray[$shipmentType][$shipmentCode]['attributes']['extraction_assay']];
+                    if ($entry === null) {
+                        // No evaluated response to this shipment.
+                        array_push($firstSheetRow, '', '', '-', '', '', '');
+                        $certificate = false;
+                        $participated = false;
+                        continue;
                     }
-                    $firstSheetRow[] = $assayName;
-                    if (!empty($participantArray[$shipmentType][$shipmentCode]['result']) && $participantArray[$shipmentType][$shipmentCode]['result'] != 3) {
-
-                        $firstSheetRow[] = $participantArray[$shipmentType][$shipmentCode]['score'];
-
-                        if ($participantArray[$shipmentType][$shipmentCode]['result'] != 1) {
-                            $certificate = false;
-                        }
-                    } else {
-                        if (!empty($participantArray[$shipmentType][$shipmentCode]['result']) && $participantArray[$shipmentType][$shipmentCode]['result'] == 3) {
-                            $firstSheetRow[] = 'EXCLUDED';
-                        } else {
-                            $firstSheetRow[] = '-';
-                        }
-                        //$participated = false;
+                    $firstSheetRow[] = $entry['number_of_samples'];
+                    $firstSheetRow[] = $this->annualReportAssayName($shipmentType, $entry['attributes'], $vlAssayArray, $eidAssayArray);
+                    $firstSheetRow[] = $entry['score'];
+                    if ((int) $entry['result'] !== 1) {
                         $certificate = false;
                     }
-
-                    if (empty($participantArray[$shipmentType][$shipmentCode]['shipment_test_report_date'])) {
+                    if (empty($entry['shipment_test_report_date'])) {
                         $participated = false;
                     }
-                    $firstSheetRow[] = $participantArray[$shipmentType][$shipmentCode]['finalResult'];
-                    if (isset($participantArray[$shipmentType][$shipmentCode]['failure_reason']) && !empty($participantArray[$shipmentType][$shipmentCode]['failure_reason']) && $participantArray[$shipmentType][$shipmentCode]['failure_reason'] != '[]') {
-                        $warnings = Pt_Commons_JsonUtility::safeDecode($participantArray[$shipmentType][$shipmentCode]['failure_reason']);
-                        $txt = $note = '';
-                        foreach ($warnings as $w) {
-                            $txt .= $w['warning'] ?? '';
-                            $note .= $w['correctiveAction'] ?? '';
-                        }
-                        $firstSheetRow[] = strip_tags($txt);
-                        $firstSheetRow[] = strip_tags($note);
-                    } else {
-                        $firstSheetRow[] = '';
-                        $firstSheetRow[] = '';
-                    }
+                    $firstSheetRow[] = $entry['finalResult'];
+                    [$warnings, $actions] = $this->annualReportWarnings($entry['failure_reason']);
+                    $firstSheetRow[] = $warnings;
+                    $firstSheetRow[] = $actions;
                 }
                 if ($certificate && $participated) {
                     $firstSheetRow[] = 'Excellence';
@@ -3510,76 +3543,41 @@ class Application_Service_Reports
         $tempFile = tempnam(sys_get_temp_dir(), 'annual-report-');
         $tempFileHandle = fopen($tempFile, 'w');
 
-        $chunkSize = 50; // Adjust this value based on your memory constraints
-        $participantCount = count($participants);
-
         // Write the header row
-        fputcsv($tempFileHandle, $headings);
+        fputcsv($tempFileHandle, $headings, ',', '"', '');
 
-        for ($i = 0; $i < $participantCount; $i += $chunkSize) {
-            $participantChunk = array_slice($participants, $i, $chunkSize);
-            foreach ($participantChunk as $uniqueIdentifier => $participantArray) {
-                foreach ($shipmentCodeArray as $shipmentType => $shipmentsList) {
-                    foreach ($shipmentsList as $shipmentCode) {
-                        if (empty($participantArray[$shipmentType][$shipmentCode]['result'])) {
-                            continue;
-                        }
-
-                        $csvRow = [];
-                        $csvRow[] = $uniqueIdentifier;
-                        $csvRow[] = $participantArray['labName'];
-                        $csvRow[] = $participantArray['institute_name'];
-                        $csvRow[] = $participantArray['department_name'];
-                        $csvRow[] = $participantArray['address'];
-                        $csvRow[] = $participantArray['city'];
-                        $csvRow[] = $participantArray['district'];
-                        $csvRow[] = $participantArray['state'];
-                        $csvRow[] = $participantArray['country_name'];
-                        $csvRow[] = $participantArray['email'];
-                        $csvRow[] = $participantArray['additional_email'];
-                        $csvRow[] = $participantArray['scheme_name'];
-                        $csvRow[] = $shipmentCode;
-                        $csvRow[] = $participantArray[$shipmentType][$shipmentCode]['number_of_samples'];
-                        $csvRow[] = Pt_Commons_DateUtility::humanReadableDateFormat($participantArray[$shipmentType][$shipmentCode]['shipment_date']);
-                        $csvRow[] = Pt_Commons_DateUtility::humanReadableDateFormat($participantArray[$shipmentType][$shipmentCode]['response_deadline']);
-                        $csvRow[] = Pt_Commons_DateUtility::humanReadableDateFormat($participantArray[$shipmentType][$shipmentCode]['shipment_test_report_date']);
-
-                        $assayName = '';
-                        if ($shipmentType == 'vl' && !empty($participantArray[$shipmentType][$shipmentCode]['attributes']['vl_assay'])) {
-                            $assayName = $vlAssayArray[$participantArray[$shipmentType][$shipmentCode]['attributes']['vl_assay']];
-                        } elseif ($shipmentType == 'eid' && !empty($participantArray[$shipmentType][$shipmentCode]['attributes']['extraction_assay'])) {
-                            $assayName = $eidAssayArray[$participantArray[$shipmentType][$shipmentCode]['attributes']['extraction_assay']];
-                        }
-                        $csvRow[] = $assayName;
-
-                        if (!empty($participantArray[$shipmentType][$shipmentCode]['result']) && $participantArray[$shipmentType][$shipmentCode]['result'] != 3) {
-                            $csvRow[] = $participantArray[$shipmentType][$shipmentCode]['score'];
-                        } else {
-                            if (!empty($participantArray[$shipmentType][$shipmentCode]['result']) && $participantArray[$shipmentType][$shipmentCode]['result'] == 3) {
-                                $csvRow[] = 'EXCLUDED';
-                            } else {
-                                $csvRow[] = '-';
-                            }
-                        }
-
-                        $csvRow[] = $participantArray[$shipmentType][$shipmentCode]['finalResult'];
-
-                        if (isset($participantArray[$shipmentType][$shipmentCode]['failure_reason']) && !empty($participantArray[$shipmentType][$shipmentCode]['failure_reason']) && $participantArray[$shipmentType][$shipmentCode]['failure_reason'] != '[]') {
-                            $warnings = Pt_Commons_JsonUtility::safeDecode($participantArray[$shipmentType][$shipmentCode]['failure_reason']);
-                            $txt = $note = '';
-                            foreach ($warnings as $w) {
-                                $txt .= $w['warning'] ?? '';
-                                $note .= $w['correctiveAction'] ?? '';
-                            }
-                            $csvRow[] = strip_tags($txt);
-                            $csvRow[] = strip_tags($note);
-                        } else {
-                            $csvRow[] = '';
-                            $csvRow[] = '';
-                        }
-
-                        fputcsv($tempFileHandle, $csvRow);
+        foreach ($participants as $uniqueIdentifier => $participantArray) {
+            foreach ($shipmentCodeArray as $shipmentType => $shipmentsList) {
+                foreach ($shipmentsList as $shipmentCode) {
+                    $entry = $participantArray[$shipmentType][$shipmentCode] ?? null;
+                    if ($entry === null) {
+                        continue;
                     }
+                    [$warnings, $actions] = $this->annualReportWarnings($entry['failure_reason']);
+                    fputcsv($tempFileHandle, [
+                        (string) $uniqueIdentifier,
+                        $participantArray['labName'],
+                        $participantArray['institute_name'],
+                        $participantArray['department_name'],
+                        $participantArray['address'],
+                        $participantArray['city'],
+                        $participantArray['district'],
+                        $participantArray['state'],
+                        $participantArray['country_name'],
+                        $participantArray['email'],
+                        $participantArray['additional_email'],
+                        $entry['scheme_name'],
+                        $shipmentCode,
+                        $entry['number_of_samples'],
+                        Pt_Commons_DateUtility::humanReadableDateFormat($entry['shipment_date']),
+                        Pt_Commons_DateUtility::humanReadableDateFormat($entry['response_deadline']),
+                        Pt_Commons_DateUtility::humanReadableDateFormat($entry['shipment_test_report_date']),
+                        $this->annualReportAssayName($shipmentType, $entry['attributes'], $vlAssayArray, $eidAssayArray),
+                        $entry['score'],
+                        $entry['finalResult'],
+                        $warnings,
+                        $actions,
+                    ], ',', '"', '');
                 }
             }
         }

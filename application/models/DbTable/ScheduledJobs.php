@@ -10,24 +10,32 @@ class Application_Model_DbTable_ScheduledJobs extends Zend_Db_Table_Abstract
         $authNameSpace = new Zend_Session_Namespace('administrators');
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
 
+        // The same shipments the Annual Performance Report shows: finalized,
+        // not cancelled, in the date range and schemes, or the picked ones.
         $query = $db->select()
             ->from(['s' => 'shipment'], ['s.shipment_id', 's.shipment_code', 's.scheme_type', 's.shipment_date', 's.response_deadline'])
-            ->where("s.status = 'finalized'");
+            ->where('s.cancelled_at IS NULL')
+            ->where("s.finalized_at IS NOT NULL OR s.status = 'finalized'");
 
-        if (isset($params['shipmentId']) && !empty($params['shipmentId'])) {
-            // Sanitize shipmentId array - ensure all values are integers
-            $safeShipmentIds = array_map('intval', $params['shipmentId']);
-            $impShipmentId = implode(',', $safeShipmentIds);
-            $query = $query->where("s.shipment_id IN ($impShipmentId)");
+        $safeShipmentIds = array_filter(array_map('intval', (array) ($params['shipmentId'] ?? [])));
+        if (!empty($safeShipmentIds)) {
+            $query->where('s.shipment_id IN (?)', $safeShipmentIds);
+        } else {
+            if (empty($params['startDate']) || empty($params['endDate'])) {
+                return 0;
+            }
+            $query->where('DATE(s.shipment_date) >= ?', Pt_Commons_DateUtility::isoDateFormat($params['startDate']))
+                ->where('DATE(s.shipment_date) <= ?', Pt_Commons_DateUtility::isoDateFormat($params['endDate']));
+            $schemes = array_filter((array) ($params['scheme'] ?? []), fn ($v) => $v !== '' && $v !== null);
+            if (!empty($schemes)) {
+                $query->where('s.scheme_type IN (?)', $schemes);
+            }
         }
         $shipmentResult = $db->fetchAll($query);
 
         $shipmentId = [];
         foreach ($shipmentResult as $shipment) {
             $shipmentId[] = intval($shipment['shipment_id']);
-            if (!file_exists(SCHEDULED_JOBS_FOLDER . DIRECTORY_SEPARATOR . 'certificate-templates' . DIRECTORY_SEPARATOR . $shipment['scheme_type'] . '-e.docx')) {
-                $directory[] = $shipment['scheme_type'];
-            }
         }
 
         if (!empty($shipmentId) && isset($params['certificateName']) && $params['certificateName'] != '') {

@@ -1,287 +1,413 @@
 <?php include APPLICATION_PATH . '/views/partials/report-zero-state.phtml'; ?>
-<script type="text/javascript">
-    $(function () {
-        reportZeroState.show("#summaryDiv", "start");
-    });
-</script>
-<link rel="stylesheet" href="<?php echo $this->baseUrl('css/daterangepicker.css'); ?>" type="text/css" media="all">
-<script type="text/javascript" src="<?php echo $this->baseUrl('js/moment.min.js'); ?>"></script>
 <link href="<?php echo $this->baseUrl('css/select2.css'); ?>" rel="stylesheet" />
-<legend>
-	<h3 style="display: inline-block;"><?= $this->translate->_("Annual Performance Report"); ?></h3>
-	<a href="<?= $this->url(['module' => 'admin', 'controller' => 'certificate-batches'], 'default', true); ?>" class="btn btn-default btn-sm" style="float: right; margin-top: 5px;">
-		<i class="icon-list-alt"></i> <?= $this->translate->_("View All Certificate Batches"); ?>
-	</a>
-</legend>
-<table style="margin:20px 0;" class="table table-bordered">
+<script type="text/javascript" src="<?php echo $this->baseUrl('js/moment.min.js'); ?>"></script>
+<style>
+	.an-head {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 12px;
+	}
 
-	<tr>
-		<td style="width:20%">
-			<input type="text" id="dateRange" name="dateRange" class="form-control input-sm" readonly="readonly" style="background: #fff" placeholder="<?= $this->htmlTranslate("Click here to pick the Date Range"); ?>" />
-		</td>
-		<td style="width:20%">
-			<select id="scheme" name="scheme" class="form-control input-sm" multiple="multiple" onchange="getShipmentCodes()" style="width:100%;">
-				<option></option>
-				<?php foreach ($this->schemes as $scheme) { ?>
-					<option value="<?php echo $scheme['scheme_id']; ?>"><?php echo $scheme['scheme_name']; ?></option>
-				<?php } ?>
-			</select>
-		</td>
-		<td style="width:25%">
-			<select id="shipmentId" class="form-control input-sm" name="shipmentId" multiple="multiple" style="width:100%;">
-				<option></option>
-			</select>
-		</td>
-		<td style="width:15%">
-			<select id="reportType" class="form-control input-sm" name="reportType" style="width:100%;">
-				<option value="csv"><?= $this->translate->_("Annual Report Only"); ?></option>
-				<option value="excel"><?= $this->translate->_("For Certification"); ?></option>
-			</select>
-		</td>
-	</tr>
-	<tr>
-		<td colspan="4" class="dontPrint" style="width:15%"><button class="btn btn-success btn-sm" onclick="getAnnualReport()"><span><?= $this->translate->_("Get Report"); ?></span></button> <button class="btn btn-danger btn-sm" onclick="document.location.href = document.location"><span><?= $this->translate->_("Reset"); ?></span></button></td>
-	</tr>
+	.an-intro {
+		max-width: 780px;
+		margin: 4px 0 16px;
+		color: #5b6573;
+	}
 
-</table>
-<br />
-<br />
-<div align="left" style="padding-top:3px;" class="col-lg-12">
-	<div id="summaryDiv">
+	.an-step {
+		margin-bottom: 18px;
+		padding: 16px;
+		border: 1px solid #e3e8ef;
+		border-radius: 6px;
+		background: #fafbfc;
+	}
 
+	.an-step h4 {
+		margin: 0 0 12px;
+		font-size: 15px;
+		font-weight: 600;
+		color: #333;
+	}
+
+	.an-step h4 .an-step-no {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		width: 22px;
+		height: 22px;
+		margin-right: 8px;
+		border-radius: 50%;
+		background: #4a6fa5;
+		color: #fff;
+		font-size: 12px;
+	}
+
+	.an-fields {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: flex-end;
+		gap: 12px 16px;
+	}
+
+	.an-field {
+		flex: 1 1 220px;
+		min-width: 0;
+	}
+
+	.an-field.is-wide {
+		flex-basis: 340px;
+	}
+
+	.an-field label,
+	.an-label {
+		display: block;
+		margin-bottom: 4px;
+		font-size: 13px;
+		font-weight: 600;
+		color: #333;
+	}
+
+	.an-types {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 10px;
+		margin: 14px 0;
+	}
+
+	.an-type {
+		flex: 1 1 280px;
+		display: flex;
+		gap: 10px;
+		align-items: flex-start;
+		margin: 0;
+		padding: 10px 12px;
+		border: 1px solid #cfdae8;
+		border-radius: 6px;
+		background: #fff;
+		font-weight: 400;
+		cursor: pointer;
+	}
+
+	.an-type input {
+		margin-top: 3px;
+	}
+
+	.an-type.is-active {
+		border-color: #4a6fa5;
+		box-shadow: 0 0 0 1px #4a6fa5;
+	}
+
+	.an-type strong {
+		display: block;
+		color: #2f4f7a;
+	}
+
+	.an-type span {
+		font-size: 12.5px;
+		color: #5b6573;
+	}
+
+	.an-result {
+		margin-top: 12px;
+	}
+
+	.an-result:empty {
+		display: none;
+	}
+
+	.an-hint {
+		margin: 6px 0 0;
+		font-size: 12px;
+		color: #8a94a3;
+	}
+
+	#certificateStatsSection table {
+		width: auto;
+		min-width: 320px;
+		background: #fff;
+	}
+</style>
+
+<div class="data-list">
+	<div class="data-list-head an-head">
+		<h2><?= $this->htmlTranslate("Annual Performance Report"); ?></h2>
+		<a href="<?= $this->url(['module' => 'admin', 'controller' => 'certificate-batches'], 'default', true); ?>" class="btn btn-default btn-sm">
+			<i class="icon-list-alt"></i> <?= $this->htmlTranslate("View All Certificate Batches"); ?>
+		</a>
+	</div>
+	<div class="data-list-body">
+		<p class="an-intro"><?= $this->htmlTranslate("Lists every evaluated response to the finalized shipments in a date range. Use the certification file to review results before you generate certificates."); ?></p>
+
+		<div class="an-step">
+			<h4><span class="an-step-no">1</span><?= $this->htmlTranslate("Report"); ?></h4>
+			<div class="an-fields">
+				<div class="an-field">
+					<label for="dateRange"><?= $this->htmlTranslate("Shipment Date"); ?></label>
+					<input type="text" id="dateRange" name="dateRange" class="form-control input-sm" readonly="readonly" style="background:#fff" />
+				</div>
+				<div class="an-field">
+					<label for="scheme"><?= $this->htmlTranslate("Scheme"); ?></label>
+					<select id="scheme" name="scheme" multiple="multiple" style="width:100%;">
+						<?php foreach ($this->schemes as $scheme) { ?>
+							<option value="<?= $this->escape($scheme['scheme_id']); ?>"><?= $this->escape($scheme['scheme_name']); ?></option>
+						<?php } ?>
+					</select>
+				</div>
+				<div class="an-field is-wide">
+					<label for="shipmentId"><?= $this->htmlTranslate("Shipment"); ?></label>
+					<select id="shipmentId" name="shipmentId" multiple="multiple" style="width:100%;"></select>
+				</div>
+			</div>
+			<p class="an-hint" id="shipmentHint"></p>
+
+			<div class="an-types" role="radiogroup" aria-label="<?= $this->htmlTranslate("Report type"); ?>">
+				<label class="an-type is-active">
+					<input type="radio" name="reportType" value="csv" checked="checked" />
+					<div>
+						<strong><?= $this->htmlTranslate("Annual Report Only"); ?></strong>
+						<span><?= $this->htmlTranslate("CSV file with one row per response."); ?></span>
+					</div>
+				</label>
+				<label class="an-type">
+					<input type="radio" name="reportType" value="excel" />
+					<div>
+						<strong><?= $this->htmlTranslate("For Certification"); ?></strong>
+						<span><?= $this->htmlTranslate("Excel file with one row per participant and the certificate each one gets."); ?></span>
+					</div>
+				</label>
+			</div>
+
+			<button type="button" class="btn btn-primary btn-sm" id="getReportBtn" onclick="getAnnualReport()">
+				<i class="icon-file"></i> <?= $this->htmlTranslate("Generate report"); ?>
+			</button>
+			<div class="an-result" id="summaryDiv"></div>
+		</div>
+
+		<div class="an-step certificate-btn" style="display:none;">
+			<h4><span class="an-step-no">2</span><?= $this->htmlTranslate("Certificates"); ?></h4>
+			<div class="an-fields">
+				<div class="an-field" style="flex:0 1 360px;">
+					<label for="certificateName"><?= $this->htmlTranslate("Certificate name"); ?></label>
+					<input type="text" class="form-control input-sm" name="certificateName" id="certificateName"
+						placeholder="<?= $this->htmlTranslate("Enter certificate name"); ?>"
+						title="<?= $this->htmlTranslate("Please enter certificate name to filter"); ?>" />
+				</div>
+				<div>
+					<a href="javascript:void(0);" onclick="genarateCertificate(this);" class="btn btn-info btn-sm certificate-anchor">
+						<i class="icon-certificate"></i> <?= $this->htmlTranslate("Generate Certificates"); ?>
+					</a>
+				</div>
+			</div>
+			<p class="an-hint"><?= $this->htmlTranslate("Letters, numbers and hyphens only. Certificates cover the same shipments as the report."); ?></p>
+
+			<div id="certificateProgressSection" style="display:none; margin-top:14px;">
+				<div id="certificateProgressIndicator" style="display:none;">
+					<div class="alert alert-info">
+						<i class="icon-spinner icon-spin"></i> <span id="progressMessage"><?= $this->htmlTranslate("Generating certificates..."); ?></span>
+					</div>
+				</div>
+
+				<div id="certificateErrorSection" style="display:none;">
+					<div class="alert alert-danger">
+						<strong><?= $this->htmlTranslate("Error"); ?>:</strong> <span id="certificateErrorMessage"></span>
+					</div>
+				</div>
+
+				<div id="certificateStatsSection" style="display:none;">
+					<h4><?= $this->htmlTranslate("Certificate Generation Summary"); ?></h4>
+					<table class="table table-bordered">
+						<tbody>
+							<tr>
+								<td><strong><?= $this->htmlTranslate("Excellence Certificates"); ?></strong></td>
+								<td id="excellenceCount">0</td>
+							</tr>
+							<tr>
+								<td><strong><?= $this->htmlTranslate("Participation Certificates"); ?></strong></td>
+								<td id="participationCount">0</td>
+							</tr>
+							<tr>
+								<td><strong><?= $this->htmlTranslate("Skipped (No certificates)"); ?></strong></td>
+								<td id="skippedCount">0</td>
+							</tr>
+						</tbody>
+					</table>
+					<div>
+						<a href="javascript:void(0);" id="downloadZipBtn" class="btn btn-success btn-sm" target="_blank" style="margin-right:10px;">
+							<i class="icon-download"></i> <?= $this->htmlTranslate("Download ZIP"); ?>
+						</a>
+						<a href="javascript:void(0);" onclick="approveCertificates();" id="approveDistributeBtn" class="btn btn-primary btn-sm">
+							<i class="icon-ok"></i> <?= $this->htmlTranslate("Approve & Distribute"); ?>
+						</a>
+					</div>
+				</div>
+
+				<div id="certificateDistributionSection" style="display:none;">
+					<div class="alert alert-success">
+						<i class="icon-ok"></i> <span id="distributionMessage"></span>
+					</div>
+				</div>
+			</div>
+		</div>
 	</div>
 </div>
-<div align="left" style="margin-top: 3em;display: none;" class="col-lg-12 certificate-btn">
-	<div style="width: 74%;display: flex;">
-		<input type="text" style="width:30%;margin-right: 34px;" class="form-control input-sm" name="certificateName" id="certificateName" placeholder="<?= $this->htmlTranslate("Enter certificate name"); ?>" title="<?= $this->htmlTranslate("Please enter certificate name to filter"); ?>">
-		<a href="javascript:void(0);" onclick="genarateCertificate(this);" class="btn-sm btn btn-info certificate-anchor"><i class="icon-certificate"></i> <?= $this->htmlTranslate("Generate Certificates"); ?></a>
-	</div>
-</div>
 
-<!-- Certificate Generation Progress Section -->
-<div id="certificateProgressSection" class="col-lg-12" style="display: none; margin-top: 2em;">
-	<div id="certificateProgressIndicator" style="display: none;">
-		<div class="alert alert-info">
-			<i class="icon-spinner icon-spin"></i> <span id="progressMessage"><?= $this->htmlTranslate("Generating certificates..."); ?></span>
-		</div>
-	</div>
-
-	<div id="certificateErrorSection" style="display: none;">
-		<div class="alert alert-danger">
-			<strong>Error:</strong> <span id="certificateErrorMessage"></span>
-		</div>
-	</div>
-
-	<div id="certificateStatsSection" style="display: none;">
-		<h4><?= $this->htmlTranslate("Certificate Generation Summary"); ?></h4>
-		<table class="table table-bordered table-striped" style="width: 50%;">
-			<tbody>
-				<tr>
-					<td><strong><?= $this->htmlTranslate("Excellence Certificates"); ?></strong></td>
-					<td id="excellenceCount">0</td>
-				</tr>
-				<tr>
-					<td><strong><?= $this->htmlTranslate("Participation Certificates"); ?></strong></td>
-					<td id="participationCount">0</td>
-				</tr>
-				<tr>
-					<td><strong><?= $this->htmlTranslate("Skipped (No certificates)"); ?></strong></td>
-					<td id="skippedCount">0</td>
-				</tr>
-			</tbody>
-		</table>
-		<div style="margin-top: 1em;">
-			<a href="javascript:void(0);" id="downloadZipBtn" class="btn btn-success btn-sm" target="_blank" style="margin-right: 10px;">
-				<i class="icon-download"></i> Download ZIP
-			</a>
-			<a href="javascript:void(0);" onclick="approveCertificates();" id="approveDistributeBtn" class="btn btn-primary btn-sm">
-				<i class="icon-ok"></i> Approve &amp; Distribute
-			</a>
-		</div>
-	</div>
-
-	<div id="certificateDistributionSection" style="display: none;">
-		<div class="alert alert-success">
-			<i class="icon-ok"></i> <span id="distributionMessage"><?= $this->htmlTranslate("Certificates approved! Distribution has been scheduled and will begin shortly."); ?></span>
-		</div>
-	</div>
-</div>
 <script type="text/javascript" src="<?php echo $this->assetUrl('js/daterangepicker.js'); ?>"></script>
 <script type="text/javascript" src="<?php echo $this->baseUrl('js/select2.min.js'); ?>"></script>
 <script type="text/javascript">
-	var startDate = "";
-	var endDate = "";
-	var shipmentCode = false;
 	var currentBatchId = null;
 	var pollingInterval = null;
-	$(document).ready(function() {
-		$("#scheme").select2({
-				placeholder: "Select one or more schemes",
-				allowClear: true
-			})
-			.on("change", function(e) {
-				//console.log("change val=" + e.val);
-				//$("#scheme").select2("val","");
+	var shipmentRequest = null;
+
+	function annualParams() {
+		var range = ($('#dateRange').val() || '').split(' to ');
+		return {
+			startDate: range[0] || '',
+			endDate: range[1] || '',
+			scheme: $('#scheme').val() || [],
+			shipmentId: $('#shipmentId').val() || []
+		};
+	}
+
+	// The shipment list follows the date range and the schemes. Picked
+	// shipments stay picked while they are still in the list.
+	function loadShipments() {
+		var params = annualParams();
+		delete params.shipmentId;
+		if (shipmentRequest) {
+			shipmentRequest.abort();
+		}
+		shipmentRequest = $.post("<?= $this->url(['module' => 'reports', 'controller' => 'annual', 'action' => 'shipments'], 'default', true); ?>", params, function (shipments) {
+			var picked = $('#shipmentId').val() || [];
+			var $select = $('#shipmentId').empty();
+			var kept = [];
+			$.each(shipments || [], function (i, shipment) {
+				$select.append($('<option/>').val(shipment.id).text(shipment.text));
+				if (picked.indexOf(String(shipment.id)) !== -1) {
+					kept.push(String(shipment.id));
+				}
 			});
-
-		$("#shipmentId").select2({
-			placeholder: "Select one or more shipments",
-			allowClear: true
+			$select.val(kept).trigger('change.select2');
+			var count = (shipments || []).length;
+			$('#shipmentHint').text(count
+				? "<?= $this->jsTranslate("%s finalized shipments in this range."); ?>".replace('%s', count)
+				: "<?= $this->jsTranslate("No finalized shipments in this range."); ?>");
+			$('#getReportBtn').prop('disabled', !count);
+		}, 'json').always(function () {
+			shipmentRequest = null;
 		});
+	}
 
+	$(function () {
+		$('#scheme').select2({ placeholder: "<?= $this->jsTranslate("All schemes"); ?>", allowClear: true });
+		$('#shipmentId').select2({ placeholder: "<?= $this->jsTranslate("All finalized shipments in the range"); ?>", allowClear: true });
 
-		$('#certificateName').on('input', function(event) {
+		$('#certificateName').on('input', function () {
 			allowOnlyAlphaNumericAndHyphen('#certificateName');
 		});
 
 		$('#dateRange').daterangepicker({
-				locale: {
-					cancelLabel: 'Clear',
-					format: 'DD-MMM-YYYY',
-					separator: ' to ',
-				},
-				showDropdowns: true,
-				autoApply: true,
-				alwaysShowCalendars: true,
-				autoUpdateInput: true,
-				startDate: moment().subtract(179, 'days'),
-				endDate: moment(),
-				maxDate: moment(),
-				ranges: eptDateRanges()
+			locale: {
+				cancelLabel: "<?= $this->jsTranslate("Clear"); ?>",
+				format: 'DD-MMM-YYYY',
+				separator: ' to '
 			},
-			function(start, end) {
-				startDate = start.format('DD-MMM-YYYY');
-				endDate = end.format('DD-MMM-YYYY');
-			});
-		var dateRange = $("#dateRange").val();
-		var _dateRange = dateRange.split(" to ");
-		startDate = _dateRange[0];
-		endDate = _dateRange[1];
+			showDropdowns: true,
+			autoApply: true,
+			alwaysShowCalendars: true,
+			startDate: moment().subtract(1, 'year'),
+			endDate: moment(),
+			maxDate: moment(),
+			ranges: eptDateRanges()
+		}).on('apply.daterangepicker', function () {
+			$(this).trigger('change');
+		});
+
+		$('#dateRange, #scheme').on('change', function () {
+			resetResult();
+			loadShipments();
+		});
+		$('#shipmentId').on('change', resetResult);
+		$('input[name="reportType"]').on('change', function () {
+			$('.an-type').removeClass('is-active');
+			$(this).closest('.an-type').addClass('is-active');
+			resetResult();
+		});
+
+		loadShipments();
 	});
 
-	function getShipmentCodes() {
-		schemeType = $("#scheme").select2("val");
-		$('#shipmentId').select2('data', null);
-		$.blockUI();
-		$.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'common', 'action' => 'get-shipments-by-date')); ?>", {
-				schemeType: schemeType,
-				startDate: startDate,
-				endDate: endDate,
-				format: "html"
-			},
-			function(data) {
-				if (data == 0) {
-					shipmentCode = false;
-				} else {
-					$("#shipmentId").html(data);
-					shipmentCode = true;
-				}
-
-				$.unblockUI();
-			});
+	// A changed choice makes the generated file and the certificate step stale.
+	function resetResult() {
+		$('#summaryDiv').empty();
+		$('.certificate-btn').hide();
 	}
 
 	function getAnnualReport() {
-		if (startDate == "" || endDate == "") {
+		var params = annualParams();
+		if (!params.startDate || !params.endDate) {
 			alert("<?= $this->jsTranslate("Please pick a date range to fetch shipment list"); ?>");
-			return false;
+			return;
 		}
-		if (shipmentCode) {
-			$.blockUI();
-			scheme = $("#scheme").select2("val");
-			shipmentId = $("#shipmentId").select2("val");
-			$.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'annual', 'action' => 'index'), 'default', true); ?>", {
-					startDate: startDate,
-					endDate: endDate,
-					scheme: scheme,
-					shipmentId: shipmentId,
-					reportType: $("#reportType").val(),
-					format: "html"
-				},
-				function(data) {
-					data = $.parseJSON(data);
-					if (!data.fileName) {
-						reportZeroState.show("#summaryDiv", "empty");
-						$(".certificate-btn").hide();
-						$.unblockUI();
-						return;
-					}
-					if (data.fileName) {
-						$("#summaryDiv").html("&nbsp;&nbsp;<a href='<?php echo $this->baseUrl("temporary/annual-reports/"); ?>" + data.fileName + "' class='btn btn-info btn-sm' target='_BLANK' style='margin-top:10px;float:left;clear:both;'><i class='icon-file-text'></i> <?= $this->jsTranslate("Download"); ?> " + data.fileName + " </a>");
-						$(".certificate-btn").hide();
-						$(".certificate-anchor").attr("disabled", true);
-					}
-					if (data.reportType && data.reportType == "excel") {
-						$(".certificate-btn").show();
-						$(".certificate-anchor").attr("disabled", false);
-					}
-					$.unblockUI();
-				});
-		} else {
-			reportZeroState.show("#summaryDiv", "noShipments");
-			$(".certificate-btn").hide();
-		}
+		params.reportType = $('input[name="reportType"]:checked').val();
+		$.blockUI();
+		$.post("<?= $this->url(['module' => 'reports', 'controller' => 'annual', 'action' => 'index'], 'default', true); ?>", $.extend({ format: 'html' }, params), function (data) {
+			$.unblockUI();
+			data = typeof data === 'string' ? $.parseJSON(data) : data;
+			if (!data || !data.fileName) {
+				reportZeroState.show('#summaryDiv', 'empty');
+				$('.certificate-btn').hide();
+				return;
+			}
+			var $link = $('<a class="btn btn-success btn-sm" target="_blank" rel="noopener"/>')
+				.attr('href', "<?= $this->baseUrl('temporary/annual-reports/'); ?>" + encodeURIComponent(data.fileName))
+				.append('<i class="icon-download-alt"></i> ')
+				.append($('<span/>').text("<?= $this->jsTranslate("Download"); ?> " + data.fileName));
+			$('#summaryDiv').empty().append($link);
+			$('.certificate-btn').toggle(data.reportType === 'excel');
+			$('.certificate-anchor').attr('disabled', false);
+		}).fail(function () {
+			$.unblockUI();
+			alert("<?= $this->jsTranslate("Unable to generate download"); ?>");
+		});
 	}
 
 	function genarateCertificate(obj) {
-		var _certificateName = $("#certificateName").val();
-		if (_certificateName != "") {
-
-			$.blockUI();
-			scheme = $("#scheme").select2("val");
-			shipmentId = $("#shipmentId").select2("val");
-			$.post("<?php echo $this->url(['module' => 'reports', 'controller' => 'annual', 'action' => 'save-scheduled-jobs'], 'default', true); ?>", {
-					startDate: startDate,
-					endDate: endDate,
-					scheme: scheme,
-					shipmentId: shipmentId,
-					certificateName: _certificateName,
-					format: "html"
-				},
-				function(data) {
-					$.unblockUI();
-					if (data == 9999999) {
-						alert("<?= $this->jsTranslate("Please ensure the template files for the selected scheme(s) are available and readable"); ?>");
-					} else if (data > 0) {
-						// Store batch_id and start polling
-						currentBatchId = parseInt(data);
-						$(obj).attr("disabled", true);
-
-						// Show progress section and indicator
-						resetCertificateUI();
-						$("#certificateProgressSection").show();
-						$("#certificateProgressIndicator").show();
-						$("#progressMessage").text("<?= $this->jsTranslate("Generating certificates..."); ?>");
-
-						// Start polling for status
-						startStatusPolling();
-					} else {
-						alert("<?= $this->jsTranslate("No matched shipment for selected date range."); ?>");
-					}
-
-				});
-		} else {
-			alert("<?= $this->jsTranslate("Please enter the certificate name to proceed"); ?>")
+		var certificateName = $('#certificateName').val();
+		if (certificateName === '') {
+			alert("<?= $this->jsTranslate("Please enter the certificate name to proceed"); ?>");
+			return;
 		}
+		var params = annualParams();
+		params.certificateName = certificateName;
+		params.format = 'html';
+		$.blockUI();
+		$.post("<?= $this->url(['module' => 'reports', 'controller' => 'annual', 'action' => 'save-scheduled-jobs'], 'default', true); ?>", params, function (data) {
+			$.unblockUI();
+			if (data > 0) {
+				currentBatchId = parseInt(data, 10);
+				$(obj).attr('disabled', true);
+				resetCertificateUI();
+				$('#certificateProgressSection').show();
+				$('#certificateProgressIndicator').show();
+				$('#progressMessage').text("<?= $this->jsTranslate("Generating certificates..."); ?>");
+				startStatusPolling();
+			} else {
+				alert("<?= $this->jsTranslate("No matched shipment for selected date range."); ?>");
+			}
+		}).fail(function () {
+			$.unblockUI();
+			alert("<?= $this->jsTranslate("Unable to generate download"); ?>");
+		});
 	}
 
 	function resetCertificateUI() {
-		$("#certificateProgressIndicator").hide();
-		$("#certificateErrorSection").hide();
-		$("#certificateStatsSection").hide();
-		$("#certificateDistributionSection").hide();
+		$('#certificateProgressIndicator, #certificateErrorSection, #certificateStatsSection, #certificateDistributionSection').hide();
 	}
 
 	function startStatusPolling() {
-		// Clear any existing polling
-		if (pollingInterval) {
-			clearInterval(pollingInterval);
-		}
-
-		// Poll every 3 seconds
-		pollingInterval = setInterval(function() {
-			checkCertificateStatus();
-		}, 3000);
+		stopStatusPolling();
+		pollingInterval = setInterval(checkCertificateStatus, 3000);
 	}
 
 	function stopStatusPolling() {
@@ -296,95 +422,74 @@
 			stopStatusPolling();
 			return;
 		}
-
-		$.get("<?php echo $this->url(['module' => 'reports', 'controller' => 'annual', 'action' => 'get-certificate-status'], 'default', true); ?>", {
+		$.get("<?= $this->url(['module' => 'reports', 'controller' => 'annual', 'action' => 'get-certificate-status'], 'default', true); ?>", {
 			batch_id: currentBatchId,
-			format: "json"
-		}, function(response) {
+			format: 'json'
+		}, function (response) {
 			if (!response.success) {
 				stopStatusPolling();
-				showCertificateError(response.error_message || "Failed to get status");
+				showCertificateError(response.error_message || "<?= $this->jsTranslate("Failed to get status"); ?>");
 				return;
 			}
-
 			switch (response.status) {
 				case 'pending':
 				case 'processing':
-					// Still generating, update message and continue polling
-					$("#progressMessage").text(response.status === 'processing' ? "Processing certificates..." : "Waiting to start...");
+					$('#progressMessage').text(response.status === 'processing'
+						? "<?= $this->jsTranslate("Processing certificates..."); ?>"
+						: "<?= $this->jsTranslate("Waiting to start..."); ?>");
 					break;
-
 				case 'generated':
-					// Generation complete, show stats and buttons
 					stopStatusPolling();
 					showCertificateStats(response);
 					break;
-
 				case 'failed':
-					// Generation failed
 					stopStatusPolling();
-					showCertificateError(response.error_message || "Certificate generation failed");
+					showCertificateError(response.error_message || "<?= $this->jsTranslate("Certificate generation failed"); ?>");
 					break;
-
 				case 'approved':
 				case 'distributing':
 				case 'distributed':
-					// Already approved/distributed
 					stopStatusPolling();
 					showDistributionStatus(response.status);
 					break;
-
-				default:
-					// Unknown status, continue polling
-					break;
 			}
-		}).fail(function() {
-			// Request failed, but keep polling
-			console.error("Failed to check certificate status");
+		}).fail(function () {
+			// Keep polling. The next check may get through.
+			console.error('Failed to check certificate status');
 		});
 	}
 
 	function showCertificateError(message) {
 		resetCertificateUI();
-		$("#certificateProgressSection").show();
-		$("#certificateErrorSection").show();
-		$("#certificateErrorMessage").text(message);
+		$('#certificateProgressSection').show();
+		$('#certificateErrorSection').show();
+		$('#certificateErrorMessage').text(message);
 	}
 
 	function showCertificateStats(data) {
 		resetCertificateUI();
-		$("#certificateProgressSection").show();
-		$("#certificateStatsSection").show();
-
-		$("#excellenceCount").text(data.excellence_count);
-		$("#participationCount").text(data.participation_count);
-		$("#skippedCount").text(data.skipped_count);
-
+		$('#certificateProgressSection').show();
+		$('#certificateStatsSection').show();
+		$('#excellenceCount').text(data.excellence_count);
+		$('#participationCount').text(data.participation_count);
+		$('#skippedCount').text(data.skipped_count);
 		if (data.download_url) {
-			$("#downloadZipBtn").attr("href", data.download_url).show();
+			$('#downloadZipBtn').attr('href', data.download_url).show();
 		} else {
-			$("#downloadZipBtn").hide();
+			$('#downloadZipBtn').hide();
 		}
 	}
 
 	function showDistributionStatus(status) {
+		var messages = {
+			approved: "<?= $this->jsTranslate("Certificates approved! Distribution has been scheduled and will begin shortly."); ?>",
+			distributing: "<?= $this->jsTranslate("Certificates are being distributed..."); ?>",
+			distributed: "<?= $this->jsTranslate("Certificates have been successfully distributed!"); ?>"
+		};
 		resetCertificateUI();
-		$("#certificateProgressSection").show();
-		$("#certificateDistributionSection").show();
-
-		var message = "Certificates approved!";
-		switch (status) {
-			case 'approved':
-				message = "Certificates approved! Distribution has been scheduled and will begin shortly.";
-				break;
-			case 'distributing':
-				message = "Certificates are being distributed...";
-				break;
-			case 'distributed':
-				message = "Certificates have been successfully distributed!";
-				break;
-		}
-		$("#distributionMessage").text(message);
+		$('#certificateProgressSection').show();
+		$('#certificateDistributionSection').show();
+		$('#distributionMessage').text(messages[status] || messages.approved);
 	}
 
 	function approveCertificates() {
@@ -392,24 +497,21 @@
 			alert("<?= $this->jsTranslate("No batch selected"); ?>");
 			return;
 		}
-
 		if (!confirm("<?= $this->jsTranslate("Are you sure you want to approve and distribute these certificates?"); ?>")) {
 			return;
 		}
-
 		$.blockUI();
-		$.post("<?php echo $this->url(['module' => 'reports', 'controller' => 'annual', 'action' => 'approve-certificates'], 'default', true); ?>", {
+		$.post("<?= $this->url(['module' => 'reports', 'controller' => 'annual', 'action' => 'approve-certificates'], 'default', true); ?>", {
 			batch_id: currentBatchId,
-			format: "json"
-		}, function(response) {
+			format: 'json'
+		}, function (response) {
 			$.unblockUI();
-
 			if (response.success) {
 				showDistributionStatus('approved');
 			} else {
-				alert(response.message || "Failed to approve certificates");
+				alert(response.message || "<?= $this->jsTranslate("Failed to approve certificates. Please try again."); ?>");
 			}
-		}).fail(function() {
+		}).fail(function () {
 			$.unblockUI();
 			alert("<?= $this->jsTranslate("Failed to approve certificates. Please try again."); ?>");
 		});
