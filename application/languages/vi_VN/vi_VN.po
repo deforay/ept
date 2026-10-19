@@ -26304,3 +26304,30 @@ msgstr "Không có đơn vị tham gia"
 
 #~ msgid "Not enrolled in any scheme"
 #~ msgstr "Chưa ghi danh chương trình nào"
+
+#: application/models/DbTable/DataManagers.php
+msgid "1 participant"
+msgstr "1 đơn vị tham gia"
+
+#: application/models/DbTable/DataManagers.php
+#, php-format
+msgid "%d participants"
+msgstr "%d đơn vị tham gia"
+
+#: application/models/DbTable/Participants.php
+msgid "1 data manager"
+msgstr "1 người quản lý dữ liệu"
+
+#: application/models/DbTable/Participants.php
+#, php-format
+msgid "%d data managers"
+msgstr "%d người quản lý dữ liệu"
+
+#: application/models/DbTable/Participants.php
+msgid "1 shipment"
+msgstr "1 vòng ngoại kiểm"
+
+#: application/models/DbTable/Participants.php
+#, php-format
+msgid "%d shipments"
+msgstr "%d vòng ngoại kiểm"

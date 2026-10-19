@@ -25791,3 +25791,30 @@ msgstr "PT Participant Info"
 
 #~ msgid "ASSAYNAME"
 #~ msgstr "ASSAYNAME"
+
+#: application/models/DbTable/DataManagers.php
+msgid "1 participant"
+msgstr ""
+
+#: application/models/DbTable/DataManagers.php
+#, php-format
+msgid "%d participants"
+msgstr ""
+
+#: application/models/DbTable/Participants.php
+msgid "1 data manager"
+msgstr ""
+
+#: application/models/DbTable/Participants.php
+#, php-format
+msgid "%d data managers"
+msgstr ""
+
+#: application/models/DbTable/Participants.php
+msgid "1 shipment"
+msgstr ""
+
+#: application/models/DbTable/Participants.php
+#, php-format
+msgid "%d shipments"
+msgstr ""

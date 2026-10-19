@@ -27248,3 +27248,30 @@ msgstr "Aucun participant"
 
 #~ msgid "Not enrolled in any scheme"
 #~ msgstr "Non inscrits à un programme"
+
+#: application/models/DbTable/DataManagers.php
+msgid "1 participant"
+msgstr "1 participant"
+
+#: application/models/DbTable/DataManagers.php
+#, php-format
+msgid "%d participants"
+msgstr "%d participants"
+
+#: application/models/DbTable/Participants.php
+msgid "1 data manager"
+msgstr "1 gestionnaire de données"
+
+#: application/models/DbTable/Participants.php
+#, php-format
+msgid "%d data managers"
+msgstr "%d gestionnaires de données"
+
+#: application/models/DbTable/Participants.php
+msgid "1 shipment"
+msgstr "1 expédition"
+
+#: application/models/DbTable/Participants.php
+#, php-format
+msgid "%d shipments"
+msgstr "%d expéditions"
