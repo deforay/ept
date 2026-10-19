@@ -1231,7 +1231,12 @@ class Application_Service_Reports
             $row = [];
             $row['DT_RowId'] = 'testkitId' . $aRow['TestKitName_ID'];
             //  $row[] = $aRow['participantName'];
-            $row[] = "<a href='javascript:void(0);' onclick='participantReport(\"" . $aRow['TestKitName_ID'] . '","' . $aRow['TestKit_Name'] . "\")'>" . stripslashes($aRow['TestKit_Name']) . '</a>';
+            // Both values go through json_encode and then HTML-escaping, so a quote
+            // in a kit name cannot break out of the onclick attribute.
+            $kitArgs = json_encode((string) $aRow['TestKitName_ID'], JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP)
+                . ',' . json_encode((string) $aRow['TestKit_Name'], JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP);
+            $row[] = '<a href="javascript:void(0);" onclick="participantReport(' . htmlspecialchars($kitArgs, ENT_QUOTES, 'UTF-8') . ')">'
+                . htmlspecialchars(stripslashes((string) $aRow['TestKit_Name']), ENT_QUOTES, 'UTF-8') . '</a>';
             $row[] = $aRow['totalTest'];
             $output['aaData'][] = $row;
         }
@@ -1623,13 +1628,13 @@ class Application_Service_Reports
 
         foreach ($rResult as $aRow) {
             $row = [];
-            $row[] = $aRow['first_name'] . ' ' . $aRow['last_name'];
+            $row[] = htmlspecialchars((string) ($aRow['first_name'] . ' ' . $aRow['last_name']), ENT_QUOTES, 'UTF-8');
             if (isset($parameters['reportType']) && $parameters['reportType'] == 'network') {
-                $row[] = $aRow['network_name'];
+                $row[] = htmlspecialchars((string) ($aRow['network_name']), ENT_QUOTES, 'UTF-8');
             } elseif (isset($parameters['reportType']) && $parameters['reportType'] == 'affiliation') {
-                $row[] = $aRow['affiliation'];
+                $row[] = htmlspecialchars((string) ($aRow['affiliation']), ENT_QUOTES, 'UTF-8');
             } elseif (isset($parameters['reportType']) && $parameters['reportType'] == 'region') {
-                $row[] = $aRow['region'];
+                $row[] = htmlspecialchars((string) ($aRow['region']), ENT_QUOTES, 'UTF-8');
             } else {
                 $row[] = '';
             }
@@ -3734,9 +3739,9 @@ class Application_Service_Reports
 
         foreach ($rResult as $aRow) {
             $row = [];
-            $row[] = $aRow['lab_name'] . ' (' . $aRow['unique_identifier'] . ')';
-            $row[] = $aRow['iso_name'];
-            $row[] = $aRow['region'];
+            $row[] = htmlspecialchars($aRow['lab_name'] . ' (' . $aRow['unique_identifier'] . ')', ENT_QUOTES, 'UTF-8');
+            $row[] = htmlspecialchars((string) $aRow['iso_name'], ENT_QUOTES, 'UTF-8');
+            $row[] = htmlspecialchars((string) $aRow['region'], ENT_QUOTES, 'UTF-8');
             $row[] = $aRow['shipment_score'] + $aRow['documentation_score'];
             if ($aRow['shipment_test_report_date'] == null) {
                 $row[] = 'Not Participated';

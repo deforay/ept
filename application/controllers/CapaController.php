@@ -41,14 +41,22 @@ class CapaController extends Zend_Controller_Action
             $this->redirect('/participant/dashboard');
         }
         $shipmentService = new Application_Service_Shipments();
+        // A data manager sees and saves only their own labs' corrective actions.
+        $dmId = Application_Service_Common::getScopedDmId();
+        if ($dmId === null) {
+            $this->redirect('/participant/dashboard');
+        }
         /** @var Zend_Controller_Request_Http $request */
         $request = $this->getRequest();
         if ($request->isPost()) {
             $params = $this->getAllParams();
-            $shipmentService->savePreventiveActions($params);
+            $shipmentService->savePreventiveActions($params, $dmId);
             $this->redirect('/capa');
         } elseif ($this->hasParam('id')) {
-            $id = (int) base64_decode($this->_getParam('id'));
+            $id = (int) base64_decode((string) $this->_getParam('id'));
+            if ($id <= 0 || !$shipmentService->dmManagesParticipant($dmId, $id)) {
+                $this->redirect('/capa');
+            }
             $this->view->correctiveActions = $shipmentService->getCorrectiveActionByShipmentId($id);
         } else {
             $this->redirect('/capa');

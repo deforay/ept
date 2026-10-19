@@ -220,7 +220,7 @@
             });
 
         if (currentHighlighted != null && currentHighlighted != "" && currentHighlighted != 0) {
-            $('#participantHeading').html('TestKit Report For DTS - <strong>' + currentTestKit + '</strong>');
+            $('#participantHeading').html('TestKit Report For DTS - ').append($('<strong/>').text(currentTestKit));
         }
 
     });

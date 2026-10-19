@@ -543,9 +543,9 @@ class Application_Service_Shipments
             }
 
             //$row[] = $aRow['shipment_code'];
-            $row[] = $aRow['shipment_code'];
-            $row[] = $aRow['SCHEME'];
-            $row[] = $aRow['distribution_code'];
+            $row[] = htmlspecialchars((string) $aRow['shipment_code'], ENT_QUOTES, 'UTF-8');
+            $row[] = htmlspecialchars((string) $aRow['SCHEME'], ENT_QUOTES, 'UTF-8');
+            $row[] = htmlspecialchars((string) $aRow['distribution_code'], ENT_QUOTES, 'UTF-8');
             $row[] = Pt_Commons_DateUtility::humanReadableDateFormat($aRow['distribution_date']);
             // The deadline is judged in the programme's cutoff timezone, not the reader's,
             // so name that zone under the date — an admin abroad otherwise reads the time
@@ -4725,17 +4725,17 @@ class Application_Service_Shipments
         foreach ($rResult as $aRow) {
             $row = [];
             // if(isset($parameters['originatedFrom']) && !empty($parameters['originatedFrom']) && $parameters['originatedFrom'] == 'admin'){
-            $row[] = $aRow['unique_identifier'];
-            $row[] = $aRow['participantName'];
+            $row[] = htmlspecialchars((string) $aRow['unique_identifier'], ENT_QUOTES, 'UTF-8');
+            $row[] = htmlspecialchars((string) $aRow['participantName'], ENT_QUOTES, 'UTF-8');
             // }
-            $row[] = $aRow['distribution_code'];
+            $row[] = htmlspecialchars((string) $aRow['distribution_code'], ENT_QUOTES, 'UTF-8');
             $row[] = Pt_Commons_DateUtility::humanReadableDateFormat($aRow['distribution_date']);
-            $row[] = $aRow['shipment_code'];
+            $row[] = htmlspecialchars((string) $aRow['shipment_code'], ENT_QUOTES, 'UTF-8');
             if (isset($parameters['originatedFrom']) && !empty($parameters['originatedFrom']) && $parameters['originatedFrom'] == 'admin') {
                 $row[] = Pt_Commons_DateUtility::humanReadableDateFormat($aRow['shipment_date']);
             }
             $row[] = Pt_Commons_DateUtility::humanReadableDateFormat($aRow['response_deadline'], true);
-            $row[] = $aRow['SCHEME'];
+            $row[] = htmlspecialchars((string) $aRow['SCHEME'], ENT_QUOTES, 'UTF-8');
             $row[] = $aRow['number_of_samples'];
             if (isset($parameters['originatedFrom']) && !empty($parameters['originatedFrom']) && $parameters['originatedFrom'] == 'admin') {
                 $row[] = $aRow['shipment_score'] + $aRow['documentation_score'];
@@ -4773,27 +4773,44 @@ class Application_Service_Shipments
         return $db->fetchAll($sql);
     }
 
-    public function savePreventiveActions($params)
+    /**
+     * Saves the action taken and its date for each corrective action of a
+     * response. With $dmId, only the responses of that data manager's labs
+     * are written, so a posted map id for another lab is ignored.
+     */
+    public function savePreventiveActions($params, ?int $dmId = null)
     {
+        $alertMsg = new Zend_Session_Namespace('alertSpace');
         try {
-            $alertMsg = new Zend_Session_Namespace('alertSpace');
             $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-            if (
-                (isset($params['actionToken']) && !empty($params['actionToken']))
-                &&
-                (isset($params['shipmentId']) && !empty($params['shipmentId']))
-            ) {
-                foreach ($params['actionToken'] as $cId => $token) {
-                    if ($token) {
-                        $data = [
-                            'action_taken' => $token ?? null,
-                            'action_date' => Pt_Commons_DateUtility::isoDateFormat($params['actionDate'][$cId]),
-                        ];
-                        $db->update('dts_shipment_corrective_action_map', $data, ['shipment_map_id = ?' => $params['shipmentMapId'][$cId], 'corrective_action_id = ?' => $cId]);
-                    }
-                }
+            // The lab form posts actionTaken. Older admin forms posted actionToken.
+            $actions = $params['actionTaken'] ?? $params['actionToken'] ?? [];
+            $mapIds = array_map('intval', (array) ($params['shipmentMapId'] ?? []));
+            if (!is_array($actions) || empty($actions) || empty($mapIds)) {
+                return;
             }
-            $alertMsg->message = 'Saved successfully';
+
+            $allowed = null;
+            if ($dmId !== null) {
+                $allowed = array_flip(array_map('intval', $db->fetchCol(
+                    $db->select()->from(['spm' => 'shipment_participant_map'], ['spm.map_id'])
+                        ->join(['pmm' => 'participant_manager_map'], 'pmm.participant_id=spm.participant_id', [])
+                        ->where('pmm.dm_id = ?', $dmId)
+                        ->where('spm.map_id IN (?)', array_values($mapIds))
+                )));
+            }
+
+            foreach ($actions as $cId => $taken) {
+                $mapId = $mapIds[$cId] ?? 0;
+                if ($mapId <= 0 || trim((string) $taken) === '' || ($allowed !== null && !isset($allowed[$mapId]))) {
+                    continue;
+                }
+                $db->update('dts_shipment_corrective_action_map', [
+                    'action_taken' => $taken,
+                    'action_date' => Pt_Commons_DateUtility::isoDateFormat($params['actionDate'][$cId] ?? ''),
+                ], ['shipment_map_id = ?' => $mapId, 'corrective_action_id = ?' => (int) $cId]);
+            }
+            $alertMsg->message = Zend_Registry::get('translate')->_('Saved successfully');
         } catch (Exception $e) {
             Pt_Commons_LoggerUtility::logError($e->getMessage(), [
                 'file'  => $e->getFile(),
@@ -4801,6 +4818,18 @@ class Application_Service_Shipments
                 'trace' => $e->getTraceAsString(),
             ]);
         }
+    }
+
+    /** Whether the participant is one of the data manager's labs. */
+    public function dmManagesParticipant(int $dmId, int $participantId): bool
+    {
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        return (bool) $db->fetchOne(
+            $db->select()->from('participant_manager_map', [new Zend_Db_Expr('1')])
+                ->where('dm_id = ?', $dmId)
+                ->where('participant_id = ?', $participantId)
+                ->limit(1)
+        );
     }
 
     public function exportCaPaReport($params)

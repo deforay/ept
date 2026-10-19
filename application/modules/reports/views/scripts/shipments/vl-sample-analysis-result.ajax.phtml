@@ -29,7 +29,7 @@ if (!$hasResults) {
                 //categories: ['Name1','Name2','Name3','Name4','Name5','Name6']
                 categories: [<?php
                                 foreach ($this->vlSampleResult['nameList'][0] as $assay) {
-                                    echo "'" . $assay['name'] . "',";
+                                    echo json_encode((string) $assay['name'], JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) . ',';
                                 }
                                 ?>]
             },
@@ -79,8 +79,8 @@ if (!$hasResults) {
                 foreach ($this->vlSampleResult as $assay) {
                     if ($i < 3) {
                 ?> {
-                            name: '<?php echo $assay['name']; ?>',
-                            data: [<?php echo implode(",", $assay[0]); ?>],
+                            name: <?= json_encode((string) $assay['name'], JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP); ?>,
+                            data: [<?php echo implode(",", array_map('floatval', $assay[0])); ?>],
                             color: color<?php echo $i + 1; ?>
                         },
                 <?php
