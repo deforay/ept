@@ -7,6 +7,10 @@ if (empty($s)) {
 }
 
 $enrolled = max(0, (int) $s['enrolled']);
+if ($enrolled === 0) {
+    echo '<div style="padding:12px;color:#5b6573;">' . $this->htmlTranslate('No participants are enrolled in this shipment yet.') . '</div>';
+    return;
+}
 $pct = static function ($n) use ($enrolled) {
     return $enrolled > 0 ? round(($n / $enrolled) * 100, 1) : 0;
 };

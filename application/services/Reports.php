@@ -168,14 +168,15 @@ class Application_Service_Reports
         $evaluated = (int) $aRow['passed'] + (int) $aRow['failed'];
 
         // Shipment: code, with the PT survey on a second line when it differs. The
-        // chevron opens the participation breakdown under the row.
+        // chevron opens the participation breakdown under the row. Every row has
+        // one, so the codes line up. With no enrolments the breakdown says so.
         $survey = [];
         if ((string) $aRow['distribution_code'] !== (string) $aRow['shipment_code']) {
             $survey[] = $esc($aRow['distribution_code']);
         }
         $survey[] = $esc(Pt_Commons_DateUtility::humanReadableDateFormat($aRow['shipment_date']));
         $toggle = '';
-        if ($enrolled > 0 && !$forParticipant) {
+        if (!$forParticipant) {
             $toggle = '<a href="javascript:void(0);" class="toggle-stats-row" data-sid="' . $sid . '" title="' . $esc($t->_('Breakdown')) . '">'
                 . '<i class="icon-chevron-right" aria-hidden="true"></i></a>';
         }
