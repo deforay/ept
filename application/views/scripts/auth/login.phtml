@@ -153,7 +153,18 @@ if ($alertStatus === 'success') {
 
 					<button class="w-100 btn btn-lg btn-get-started signIn" type="submit"><?= $loginButtonText; ?></button>
 
-					<a href="/auth/reset-password" style="font-size:0.8em;color:red;"><?= $this->translate->_('Forgot Password?'); ?></a>
+					<?php if (!empty($this->mailUnavailable)) { ?>
+						<span class="text-muted" style="font-size:0.8em;cursor:not-allowed;" aria-disabled="true"><?= $this->translate->_('Forgot Password?'); ?></span>
+						<div class="text-muted" style="font-size:0.8em;margin-top:4px;">
+							<?php if (!empty($this->supportEmail)) { ?>
+								<?= sprintf($this->translate->_('Password reset by email is not available right now. To reset your password, contact %s.'), $this->escape($this->supportEmail)); ?>
+							<?php } else { ?>
+								<?= $this->translate->_('Password reset by email is not available right now. To reset your password, contact your PT provider.'); ?>
+							<?php } ?>
+						</div>
+					<?php } else { ?>
+						<a href="/auth/reset-password" style="font-size:0.8em;color:red;"><?= $this->translate->_('Forgot Password?'); ?></a>
+					<?php } ?>
 					<br /><br />
 					<!-- <a href="/#contact"><?= $this->translate->_("Don't have a login ? Click here to contact us"); ?></a> -->
 				</div>

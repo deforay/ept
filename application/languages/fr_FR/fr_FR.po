@@ -28711,3 +28711,65 @@ msgstr ""
 #: application/layouts/scripts/admin.phtml:766
 msgid "Hide until something changes"
 msgstr "Masquer jusqu'au prochain changement"
+
+#: application/views/scripts/auth/login.phtml:160
+#, php-format
+msgid ""
+"Password reset by email is not available right now. To reset your password, "
+"contact %s."
+msgstr ""
+"La réinitialisation du mot de passe par e-mail n'est pas disponible pour le "
+"moment. Pour réinitialiser votre mot de passe, contactez %s."
+
+#: application/views/scripts/auth/login.phtml:162
+msgid ""
+"Password reset by email is not available right now. To reset your password, "
+"contact your PT provider."
+msgstr ""
+"La réinitialisation du mot de passe par e-mail n'est pas disponible pour le "
+"moment. Pour réinitialiser votre mot de passe, contactez votre fournisseur "
+"PT."
+
+#: application/views/scripts/auth/reset-password.phtml:74
+msgid ""
+"ePT cannot send email right now, so it cannot send you a password reset "
+"link."
+msgstr ""
+"ePT ne peut pas envoyer d'e-mails pour le moment et ne peut donc pas vous "
+"envoyer de lien de réinitialisation du mot de passe."
+
+#: application/views/scripts/auth/reset-password.phtml:77
+#, php-format
+msgid "To reset your password, contact %s."
+msgstr "Pour réinitialiser votre mot de passe, contactez %s."
+
+#: application/views/scripts/auth/reset-password.phtml:79
+msgid "To reset your password, contact your PT provider."
+msgstr ""
+"Pour réinitialiser votre mot de passe, contactez votre fournisseur PT."
+
+#: application/views/scripts/auth/reset-password.phtml:84
+msgid "Back to login"
+msgstr "Retour à la connexion"
+
+#: application/views/scripts/participant/change-primary-email.phtml:12
+msgid ""
+"ePT confirms a new login email with a link sent to it. ePT cannot send email"
+" right now, so you cannot change your login email until email works again."
+msgstr ""
+"ePT confirme une nouvelle adresse e-mail de connexion par un lien qui lui "
+"est envoyé. ePT ne peut pas envoyer d'e-mails pour le moment, vous ne pouvez"
+" donc pas changer votre adresse e-mail de connexion tant que la messagerie "
+"ne fonctionne pas."
+
+#: application/views/scripts/participant/change-primary-email.phtml:14
+#, php-format
+msgid "For help, contact %s."
+msgstr "Pour obtenir de l'aide, contactez %s."
+
+#: application/views/scripts/participant/user-info.phtml:24
+msgid ""
+"ePT cannot send email right now, so the verification email cannot be resent."
+msgstr ""
+"ePT ne peut pas envoyer d'e-mails pour le moment, l'e-mail de vérification "
+"ne peut donc pas être renvoyé."

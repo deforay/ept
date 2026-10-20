@@ -228,6 +228,8 @@ class ParticipantController extends Zend_Controller_Action
         }
         // whether it is a GET or POST request, we always show the user info
         $this->view->rsUser = $userInfo = $userService->getUserInfo();
+        // Only a pending email change offers to resend its verification email
+        $this->view->mailUnavailable = !empty($userInfo['new_email']) && Application_Service_Common::mailDeliveryProblem() !== null;
         if ($authNameSpace->force_profile_check_primary == 'yes') {
             $userService->updateForceProfileCheck(base64_encode($userInfo['primary_email']));
         }
@@ -324,7 +326,10 @@ class ParticipantController extends Zend_Controller_Action
         $this->_helper->layout()->activeSubMenu = 'change-primary-email';
         /** @var Zend_Controller_Request_Http $request */
         $request = $this->getRequest();
-        if ($request->isPost()) {
+        // The new address is confirmed by email, so without working email the change cannot finish
+        $this->view->mailUnavailable = Application_Service_Common::mailDeliveryProblem() !== null;
+        $this->view->supportEmail = Application_Service_Common::getSupportEmail();
+        if ($request->isPost() && !$this->view->mailUnavailable) {
             $user = new Application_Service_DataManagers();
             $params = $this->getAllParams();
             $response = $user->confirmPrimaryMail((int) (new Zend_Session_Namespace('datamanagers'))->dm_id, $params, true);
@@ -523,7 +528,7 @@ class ParticipantController extends Zend_Controller_Action
 
         /** @var Zend_Controller_Request_Http $request */
         $request = $this->getRequest();
-        if ($request->isPost()) {
+        if ($request->isPost() && Application_Service_Common::mailDeliveryProblem() === null) {
             $params = $this->getAllParams();
             $dmService = new Application_Service_DataManagers();
             $this->view->result = $dmService->resentDMVerifyMail($params);

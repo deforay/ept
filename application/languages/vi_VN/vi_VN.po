@@ -27726,3 +27726,61 @@ msgstr "Quản trị viên có quyền sửa Cấu hình chung có thể khắc 
 #: application/layouts/scripts/admin.phtml:766
 msgid "Hide until something changes"
 msgstr "Ẩn cho tới khi có thay đổi"
+
+#: application/views/scripts/auth/login.phtml:160
+#, php-format
+msgid ""
+"Password reset by email is not available right now. To reset your password, "
+"contact %s."
+msgstr ""
+"Hiện chưa thể đặt lại mật khẩu qua email. Để đặt lại mật khẩu, hãy liên hệ "
+"%s."
+
+#: application/views/scripts/auth/login.phtml:162
+msgid ""
+"Password reset by email is not available right now. To reset your password, "
+"contact your PT provider."
+msgstr ""
+"Hiện chưa thể đặt lại mật khẩu qua email. Để đặt lại mật khẩu, hãy liên hệ "
+"đơn vị tổ chức ngoại kiểm của bạn."
+
+#: application/views/scripts/auth/reset-password.phtml:74
+msgid ""
+"ePT cannot send email right now, so it cannot send you a password reset "
+"link."
+msgstr ""
+"Hiện ePT không gửi được email, vì vậy không thể gửi cho bạn liên kết đặt lại"
+" mật khẩu."
+
+#: application/views/scripts/auth/reset-password.phtml:77
+#, php-format
+msgid "To reset your password, contact %s."
+msgstr "Để đặt lại mật khẩu, hãy liên hệ %s."
+
+#: application/views/scripts/auth/reset-password.phtml:79
+msgid "To reset your password, contact your PT provider."
+msgstr "Để đặt lại mật khẩu, hãy liên hệ đơn vị tổ chức ngoại kiểm của bạn."
+
+#: application/views/scripts/auth/reset-password.phtml:84
+msgid "Back to login"
+msgstr "Quay lại đăng nhập"
+
+#: application/views/scripts/participant/change-primary-email.phtml:12
+msgid ""
+"ePT confirms a new login email with a link sent to it. ePT cannot send email"
+" right now, so you cannot change your login email until email works again."
+msgstr ""
+"ePT xác nhận email đăng nhập mới bằng một liên kết gửi tới email đó. Hiện "
+"ePT không gửi được email, vì vậy bạn chưa thể đổi email đăng nhập cho tới "
+"khi email hoạt động trở lại."
+
+#: application/views/scripts/participant/change-primary-email.phtml:14
+#, php-format
+msgid "For help, contact %s."
+msgstr "Để được hỗ trợ, hãy liên hệ %s."
+
+#: application/views/scripts/participant/user-info.phtml:24
+msgid ""
+"ePT cannot send email right now, so the verification email cannot be resent."
+msgstr ""
+"Hiện ePT không gửi được email, vì vậy không thể gửi lại email xác minh."

@@ -7,24 +7,32 @@
 <section class="content">
 	<div class="box">
 		<div class="box-body">
+			<?php if (!empty($this->mailUnavailable)) { ?>
+				<div class="alert alert-warning">
+					<?= $this->translate->_("ePT confirms a new login email with a link sent to it. ePT cannot send email right now, so you cannot change your login email until email works again."); ?>
+					<?php if (!empty($this->supportEmail)) { ?>
+						<?= sprintf($this->translate->_("For help, contact %s."), $this->escape($this->supportEmail)); ?>
+					<?php } ?>
+				</div>
+			<?php } ?>
 			<form name="mailChange" id="mailChange" method="post" action="<?php echo $this->url(array("controller" => "participant", "action" => "change-primary-email"), null, true) ?>">
 				<div id="view-content">
 					<table class="table table-striped">
 						<tr align="left" class="light">
 							<td><?= $this->translate->_("Old Primary Email"); ?></td>
-							<td><input id="oldEmail" type="text" id="oldEmail" name="oldEmail" size="50" maxlength="45" class="isRequired form-control" title="<?= $this->htmlTranslate("Please enter your current mail address"); ?>" placeholder="<?= $this->htmlTranslate("Please enter your current mail address"); ?>" /></td>
+							<td><input id="oldEmail" type="text" <?= !empty($this->mailUnavailable) ? 'disabled' : ''; ?> id="oldEmail" name="oldEmail" size="50" maxlength="45" class="isRequired form-control" title="<?= $this->htmlTranslate("Please enter your current mail address"); ?>" placeholder="<?= $this->htmlTranslate("Please enter your current mail address"); ?>" /></td>
 
 						</tr>
 
 						<tr align="left" class="light">
 							<td><?= $this->translate->_("New Primary Email"); ?></td>
-							<td><input id="registeredEmail" type="text" name="registeredEmail" size="50" maxlength="45" class="isRequired form-control" title="<?= $this->htmlTranslate("Please enter your new mail address"); ?>" placeholder="<?= $this->htmlTranslate("Please enter your new mail address"); ?>" /></td>
+							<td><input id="registeredEmail" type="text" <?= !empty($this->mailUnavailable) ? 'disabled' : ''; ?> name="registeredEmail" size="50" maxlength="45" class="isRequired form-control" title="<?= $this->htmlTranslate("Please enter your new mail address"); ?>" placeholder="<?= $this->htmlTranslate("Please enter your new mail address"); ?>" /></td>
 
 						</tr>
 
 						<tr align="left" class="light">
 							<td><?= $this->translate->_("Confirm New Primary Email"); ?></td>
-							<td><input id="newMail2" type="text" id="newMail2" name="registeredEmail" size="50" maxlength="45" class="isRequired confirmMailAddress form-control" title="<?= $this->htmlTranslate("Please repeat the same mail address"); ?>" placeholder="<?= $this->htmlTranslate("Please repeat the same mail address	"); ?>" /></td>
+							<td><input id="newMail2" type="text" <?= !empty($this->mailUnavailable) ? 'disabled' : ''; ?> id="newMail2" name="registeredEmail" size="50" maxlength="45" class="isRequired confirmMailAddress form-control" title="<?= $this->htmlTranslate("Please repeat the same mail address"); ?>" placeholder="<?= $this->htmlTranslate("Please repeat the same mail address	"); ?>" /></td>
 
 						</tr>
 					</table>
@@ -33,7 +41,7 @@
 					<div id="respond" style="margin: 0px auto 0px auto; text-align: center;">
 						<p>
 							<input type="hidden" name="dmId" value="<?php echo base64_encode($authNameSpace->dm_id); ?>" />
-							<input name="submitbtn" class="btn btn-primary" type="button" tabindex="7" value="<?= $this->translate->_("Change mail address"); ?>" onclick="validateNow();return false;" />
+							<input name="submitbtn" class="btn btn-primary" type="button" tabindex="7" <?= !empty($this->mailUnavailable) ? 'disabled' : ''; ?> value="<?= $this->translate->_("Change mail address"); ?>" onclick="validateNow();return false;" />
 							&nbsp;&nbsp;&nbsp;
 							<input name="reset" class="btn btn-warning" type="reset" tabindex="8" value="<?= $this->translate->_("Cancel"); ?>" onclick="" />
 						</p>

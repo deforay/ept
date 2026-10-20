@@ -26837,3 +26837,51 @@ msgstr ""
 #: application/layouts/scripts/admin.phtml:766
 msgid "Hide until something changes"
 msgstr ""
+
+#: application/views/scripts/auth/login.phtml:160
+#, php-format
+msgid ""
+"Password reset by email is not available right now. To reset your password, "
+"contact %s."
+msgstr ""
+
+#: application/views/scripts/auth/login.phtml:162
+msgid ""
+"Password reset by email is not available right now. To reset your password, "
+"contact your PT provider."
+msgstr ""
+
+#: application/views/scripts/auth/reset-password.phtml:74
+msgid ""
+"ePT cannot send email right now, so it cannot send you a password reset "
+"link."
+msgstr ""
+
+#: application/views/scripts/auth/reset-password.phtml:77
+#, php-format
+msgid "To reset your password, contact %s."
+msgstr ""
+
+#: application/views/scripts/auth/reset-password.phtml:79
+msgid "To reset your password, contact your PT provider."
+msgstr ""
+
+#: application/views/scripts/auth/reset-password.phtml:84
+msgid "Back to login"
+msgstr ""
+
+#: application/views/scripts/participant/change-primary-email.phtml:12
+msgid ""
+"ePT confirms a new login email with a link sent to it. ePT cannot send email"
+" right now, so you cannot change your login email until email works again."
+msgstr ""
+
+#: application/views/scripts/participant/change-primary-email.phtml:14
+#, php-format
+msgid "For help, contact %s."
+msgstr ""
+
+#: application/views/scripts/participant/user-info.phtml:24
+msgid ""
+"ePT cannot send email right now, so the verification email cannot be resent."
+msgstr ""

@@ -20,8 +20,12 @@ $blockedDomains = (isset($conf->blocked->email->domains) && $conf->blocked->emai
                                 <?= $this->translate->_("Please verify your primary email change to"); ?>
                                 <b>“<?php echo $this->rsUser['new_email']; ?>”</b>
                                 <?= $this->translate->_("by clicking on the verification link sent to your email."); ?><br>
-                                <a href="javascript:void(0);"
-                                    onclick="reSentVerifyMail('<?php echo $this->rsUser['new_email']; ?>');"><?= $this->translate->_("Click here to resend the verification mail"); ?></a>
+                                <?php if (!empty($this->mailUnavailable)) { ?>
+                                    <span class="text-muted"><?= $this->translate->_("ePT cannot send email right now, so the verification email cannot be resent."); ?></span>
+                                <?php } else { ?>
+                                    <a href="javascript:void(0);"
+                                        onclick="reSentVerifyMail('<?php echo $this->rsUser['new_email']; ?>');"><?= $this->translate->_("Click here to resend the verification mail"); ?></a>
+                                <?php } ?>
                             </td>
                         </tr>
                         <tr align="left" class="alert-success" style="display: none;">
