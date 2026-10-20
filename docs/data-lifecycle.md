@@ -11,7 +11,6 @@ Paths are relative to the installation unless stated otherwise.
 | --- | --- | --- |
 | MySQL database | Accounts, participants, shipments, responses, settings and queue records | Requires a database backup and tested restore |
 | `application/configs/application.ini` | Runtime configuration and connection secrets | Requires restricted backup and preserved settings |
-| `application/configs/config.ini` | Application configuration defaults | Must match the recovered installation |
 | `application/configs/.env` | Environment secrets where configured | Requires restricted backup |
 | `public/uploads/` | Uploaded files and application-generated supporting files | Must be included in file backup scope |
 | `public/uploads/track-api/` | Compressed API request and response bodies | May contain credentials or tokens |

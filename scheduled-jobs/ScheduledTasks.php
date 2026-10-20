@@ -26,7 +26,7 @@ $schedule->run($phpPath . " " . VENDOR_BIN . "/db-tools backup")
     ->preventOverlapping()
     ->description('Backing Up Database');
 
-// Weekly config backup: snapshot application.ini, config.ini and the uploaded
+// Weekly config backup: snapshot application.ini and the uploaded
 // certificate and report templates (none under VCS) into backups/config/.
 // Skips what is unchanged, prunes old copies. Runs Sundays 01:00, just after
 // the nightly DB backup.

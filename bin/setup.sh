@@ -698,19 +698,6 @@ else
     print info "application.ini already exists. Skipping."
 fi
 
-# config.ini
-if [ ! -f "${config_dir}/config.ini" ]; then
-    if [ -f "${config_dir}/config.dist.ini" ]; then
-        print info "Creating config.ini from template..."
-        cp "${config_dir}/config.dist.ini" "${config_dir}/config.ini"
-        log_action "Created config.ini from template."
-    else
-        print warning "config.dist.ini not found. Skipping config.ini creation."
-    fi
-else
-    print info "config.ini already exists. Skipping."
-fi
-
 # .env
 if [ ! -f "${config_dir}/.env" ]; then
     print info "Generating .env with FORM_SECRET..."

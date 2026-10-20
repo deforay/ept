@@ -43,7 +43,6 @@ These keys should be present for all participant report templates:
 - `customField1` (string|null)
 - `customField2` (string|null)
 - `haveCustom` (string; `yes`/`no`)
-- `config` (`Zend_Config_Ini`; usually `config.ini` already loaded by the job)
 - `reportFormat` (string|null; report format template filename)
 - `recencyAssay` (array; recency assay lookup list)
 - `downloadDirectory` (string; resolved downloads folder path)

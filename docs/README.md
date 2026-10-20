@@ -65,7 +65,6 @@ Seven built-in schemes ship in the `scheme_list` table, alongside any number of 
 | File | Purpose |
 | --- | --- |
 | `application/configs/application.ini` | Database, sessions, modules |
-| `application/configs/config.ini` | Domain-specific settings and thresholds |
 | `constants.php` | Global paths and `APP_VERSION` |
 
 For the technology stack and hardware sizing, see [Infrastructure](infrastructure.md). For the directory layout, see [Architecture](ARCHITECTURE.md#directory-map). For documentation and code conventions, see [Engineering standards](engineering-standards.md).

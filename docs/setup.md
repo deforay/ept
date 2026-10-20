@@ -124,7 +124,7 @@ The Docker setup runs everything in two containers:
 
 On first startup, the entrypoint script automatically:
 
-1. Generates `application.ini`, `config.ini`, and `.env` from the dist templates
+1. Generates `application.ini` and `.env` from the dist templates
 2. Injects database credentials and domain from environment variables
 3. Waits for MySQL to be ready
 4. Runs database migrations
@@ -317,13 +317,12 @@ composer dump-autoload -o
 **Configuration:**
 
 - Rename `application/configs/application.dist.ini` to `application/configs/application.ini`
-- Rename `application/configs/config.dist.ini` to `application/configs/config.ini`
 - Edit `application.ini` with:
   - Domain: `domain = http://ept/`
   - Database credentials (`resources.db.params.*`)
   - Email SMTP settings (or set them later on **Configure → ePT Global Settings**, see [Keeping email delivery working](email.md))
   - Security salt (set to a random string)
-- Edit `config.ini` with your organization name and evaluation settings
+- Set your organization name on **Configure → ePT Global Settings** and the evaluation settings on **Configure → Scheme Settings** after you sign in
 
 **Virtual host setup:**
 

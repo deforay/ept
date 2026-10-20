@@ -12,8 +12,16 @@ try {
     $console = Pt_Commons_MiscUtility::console();
     $console->writeln('<info>[config-migration]</info> Starting configuration migration...');
 
+    // config.ini is retired. Installs that never had one (everything set up
+    // after the retirement) have nothing to move.
+    $iniPath = APPLICATION_PATH . '/configs/config.ini';
+    if (!is_file($iniPath)) {
+        $console->writeln('<comment>[config-migration]</comment> No config.ini. Nothing to migrate.');
+        exit(0);
+    }
+
     // Load configuration using Zend_Config_Ini
-    $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/config.ini', APPLICATION_ENV);
+    $conf = new Zend_Config_Ini($iniPath, APPLICATION_ENV);
 
     // Convert Zend_Config object to array
     $envConfig = $conf->toArray();

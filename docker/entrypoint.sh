@@ -21,11 +21,6 @@ if [ ! -f "$CONFIG_DIR/application.ini" ]; then
     echo "Generated application.ini from template."
 fi
 
-if [ ! -f "$CONFIG_DIR/config.ini" ] && [ -f "$CONFIG_DIR/config.dist.ini" ]; then
-    cp "$CONFIG_DIR/config.dist.ini" "$CONFIG_DIR/config.ini"
-    echo "Generated config.ini from template."
-fi
-
 if [ ! -f "$CONFIG_DIR/.env" ]; then
     echo "FORM_SECRET=$(openssl rand -hex 32)" > "$CONFIG_DIR/.env"
     echo "Generated .env with FORM_SECRET."

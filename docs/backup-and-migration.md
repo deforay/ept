@@ -127,7 +127,6 @@ php vendor/bin/db-tools backup --no-encrypt
 
 # Uploaded files and config secrets — copy these off the box
 #   application/configs/application.ini   (contains security.salt + DB creds)
-#   application/configs/config.ini        (org / evaluation settings)
 #   application/configs/.env              (FORM_SECRET)
 #   public/uploads/                       (participant uploads, assets)
 ```
@@ -155,7 +154,6 @@ rsync -a /path/to/old/public/uploads/  /var/www/ept/public/uploads/
 
 # Restore config secrets (review DB host/creds for the new box first)
 cp /path/to/old/application.ini  /var/www/ept/application/configs/application.ini
-cp /path/to/old/config.ini       /var/www/ept/application/configs/config.ini
 cp /path/to/old/.env             /var/www/ept/application/configs/.env
 
 # Fix ownership/permissions if needed, then run any pending migrations
@@ -176,7 +174,7 @@ Finally, log in at `http://<host>/admin`, confirm participants/shipments/reports
 | Application code | ✅ fresh from GitHub master | — |
 | Database | ✅ via `--db=<archive>` | Produce the archive with db-tools |
 | `public/uploads/` | ❌ | Copy manually |
-| `application.ini` / `config.ini` / `.env` | ❌ regenerated from templates | Copy manually |
+| `application.ini` / `.env` | ❌ regenerated from templates | Copy manually |
 | `security.salt` / `FORM_SECRET` | ❌ regenerated | **Must** copy from old machine |
 
 ---

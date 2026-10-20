@@ -11,14 +11,12 @@ declare(strict_types=1);
  * The nightly db-tools backup covers the database. This covers the files the
  * database does not hold:
  *   - application/configs/application.ini (DB creds, mail DSNs, domains)
- *   - application/configs/config.ini (the instance's scheme settings)
  *   - the uploaded templates: certificate designs and forms, report
  *     letterhead PDFs and logos. Certificate layouts (where the details sit
  *     on a design) are in the database.
  *
  * Each run writes, only for what changed since its most recent snapshot:
  *   backups/config/application.ini.<YYYY-MM-DD_His>.bak
- *   backups/config/config.ini.<YYYY-MM-DD_His>.bak
  *   backups/config/templates.<YYYY-MM-DD_His>.zip  (paths relative to the
  *     ePT folder, so unzip it there to restore)
  * so weekly runs of untouched files don't pile up identical copies. Each kind
@@ -35,7 +33,7 @@ declare(strict_types=1);
  *   php bin/backup-config.php --help          print this docblock
  *
  * Schedule: scheduled-jobs/ScheduledTasks.php (suggested weekly).
- * Writes:   backups/config/{application,config}.ini.*.bak and templates.*.zip;
+ * Writes:   backups/config/application.ini.*.bak and templates.*.zip;
  *           unlinks pruned snapshots.
  * Exit:     non-zero on failure, so cron/staleness checks can flag it.
  */
@@ -101,11 +99,8 @@ try {
     $kept = 0;
     $floor = max($keep, $minKeep);
 
-    // The two ini files: a plain copy each. config.ini is optional.
-    foreach ([$appIni, $configDir . DIRECTORY_SEPARATOR . 'config.ini'] as $source) {
-        if (!is_file($source)) {
-            continue;
-        }
+    // application.ini: a plain copy.
+    foreach ([$appIni] as $source) {
         $name = basename($source);
         $existing = snapshots($destDir, $name . '.*.bak');
         $latest = end($existing) ?: null;

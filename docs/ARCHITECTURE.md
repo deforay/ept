@@ -186,8 +186,8 @@ Configured in `application/Bootstrap.php`:
 
 - `application/configs/application.ini`:
   - ZF1 bootstrap settings, DB connection, module paths, mail settings.
-- `application/configs/config.ini`:
-  - Domain-specific defaults (evaluation thresholds, site content, locale).
+- Database tables `global_config` and `scheme_config`:
+  - Settings changed from the admin pages: organisation details, locale, and each scheme's evaluation thresholds. `config.ini` is retired.
 - `constants.php`:
   - Global paths and version.
 
@@ -351,7 +351,6 @@ application/
   cache/                  # File-based cache storage
   configs/
     application.ini       # ZF1 settings, DB, mail
-    config.ini            # Domain-specific defaults
   controllers/            # Default module controllers
   languages/              # Translation files
   layouts/                # View layouts

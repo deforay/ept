@@ -149,7 +149,6 @@ class ReportConfig
     public Application_Service_Evaluation $evalService;
     public Application_Service_SystemAdmin $adminService;
     public Pt_Commons_General $generalModel;
-    public Zend_Config_Ini $customConfig;
     public Zend_Config_Ini $appConfig;
 
     // Scheme-specific data
@@ -170,7 +169,6 @@ class ReportConfig
 
         // Load config files
         $reportsConfig->appConfig = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
-        $reportsConfig->customConfig = new Zend_Config_Ini(APPLICATION_PATH . '/configs/config.ini', APPLICATION_ENV);
 
         // Report layout settings
         $reportsConfig->header = $reportsConfig->reportService->getReportConfigValue('report-header');
@@ -1177,7 +1175,6 @@ class ReportGenerator
             'schemeService' => $this->config->schemeService,
             'shipmentService' => $this->config->shipmentService,
             'commonService' => $this->config->commonService,
-            'config' => $this->config->customConfig,
             'reportFormat' => $this->config->reportFormat,
             'recencyAssay' => $this->config->recencyAssay,
             'allGeneTypes' => $allGeneTypes,

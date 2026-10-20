@@ -11,7 +11,6 @@ Sauf indication contraire, les chemins sont relatifs au répertoire d'installati
 | --- | --- | --- |
 | Base MySQL | Comptes, participants, expéditions, réponses, paramètres et files | Nécessite une sauvegarde de la base et une restauration testée |
 | `application/configs/application.ini` | Configuration d'exécution et secrets de connexion | Nécessite une sauvegarde restreinte et la conservation des paramètres |
-| `application/configs/config.ini` | Valeurs de configuration applicative par défaut | Doit correspondre à l'installation restaurée |
 | `application/configs/.env` | Secrets d'environnement lorsqu'ils sont configurés | Nécessite une sauvegarde restreinte |
 | `public/uploads/` | Fichiers téléversés et fichiers justificatifs générés par l'application | À inclure dans les sauvegardes de fichiers |
 | `public/uploads/track-api/` | Corps compressés des requêtes et réponses API | Peuvent contenir des identifiants ou des jetons |

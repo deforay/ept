@@ -148,7 +148,7 @@ class Application_Service_Evaluation
      *  - User-configured ("custom") tests store their own passing score in
      *    user_test_config.passingScore — it varies per test, so it always wins.
      *  - Built-in schemes read <scheme>.passPercentage from SchemeConfig
-     *    (DB overlay first, then config.ini).
+     *    (the scheme_config table).
      * Falls back to 100 when neither is set.
      *
      * @param array $shipment shipment row carrying is_user_configured,
