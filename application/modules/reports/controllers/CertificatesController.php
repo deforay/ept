@@ -76,7 +76,7 @@ class Reports_CertificatesController extends Zend_Controller_Action
         $shipmentIds = array_map('intval', (array) $request->getPost('shipmentId', []));
         $name = (string) $request->getPost('name');
         if (!$request->isPost() || empty($shipmentIds) || !preg_match('/^[A-Za-z0-9-]{1,100}$/', $name)) {
-            $this->_helper->json(['success' => false, 'message' => 'Pick the shipments and a name with letters, numbers and hyphens only.']);
+            $this->_helper->json(['success' => false, 'message' => Pt_Commons_TranslateUtility::safeTranslate('Pick the shipments and a name with letters, numbers and hyphens only.')]);
             return;
         }
 
@@ -86,7 +86,9 @@ class Reports_CertificatesController extends Zend_Controller_Action
         foreach (array_keys($plan['schemes']) as $scheme) {
             foreach (['excellence', 'participation'] as $type) {
                 if ($templates->templateState($scheme, $type) !== 'ready') {
-                    $this->_helper->json(['success' => false, 'message' => "The $type template for $scheme is not ready."]);
+                    $this->_helper->json(['success' => false, 'message' => sprintf($type === 'excellence'
+                        ? Pt_Commons_TranslateUtility::safeTranslate('The Excellence template for %s is not ready.')
+                        : Pt_Commons_TranslateUtility::safeTranslate('The Participation template for %s is not ready.'), $scheme)]);
                     return;
                 }
             }

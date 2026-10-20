@@ -74,7 +74,7 @@ Participants see nothing before approval. If something is wrong, click **Discard
 
 ## Step 6: Check that it is done
 
-Step 6 shows **Done** when each participant can download their certificate. Participants find it under **Certificates** and **File Downloads** in their account. ePT does not email them.
+Step 6 shows **Done** when each participant can download their certificate. Participants find it under **Downloads** in their account. ePT does not email them.
 
 To issue certificates for another group of shipments, click **Start another batch**.
 

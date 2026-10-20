@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: e-PT\n"
 "Report-Msgid-Bugs-To: support@deforay.com\n"
-"POT-Creation-Date: 2026-10-20 13:52+0530\n"
+"POT-Creation-Date: 2026-10-20 14:22+0530\n"
 "PO-Revision-Date: 2022-06-07 20:34+0530\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -22,6 +22,17 @@ msgstr ""
 "X-Poedit-SearchPathExcluded-0: public\n"
 "X-Poedit-SearchPathExcluded-1: vendor\n"
 "X-Poedit-SearchPathExcluded-2: library\n"
+
+#: application/controllers/AuthController.php:30
+#, php-format
+msgid "Your login email has been changed. Sign in with %s."
+msgstr ""
+
+#: application/controllers/AuthController.php:33
+msgid ""
+"This confirmation link has expired or was already used. Sign in with your "
+"current login email and ask for a new link."
+msgstr ""
 
 #: application/controllers/ParticipantController.php:353
 msgid "Your message has been sent"
@@ -2154,7 +2165,7 @@ msgstr "All Schemes"
 
 #: application/languages/help-translation-strings.php:347
 #: application/layouts/scripts/admin.phtml:502
-#: application/modules/admin/views/scripts/certificate-batches/index.phtml:158
+#: application/modules/admin/views/scripts/certificate-batches/index.phtml:162
 #: application/modules/admin/views/scripts/email-participants/index.phtml:168
 #: application/modules/admin/views/scripts/email-participants/index.phtml:186
 #: application/modules/admin/views/scripts/email-participants/index.phtml:203
@@ -2464,7 +2475,7 @@ msgstr ""
 #: application/modules/admin/views/scripts/distributions/index.phtml:132
 #: application/modules/admin/views/scripts/email-participants/index.phtml:510
 #: application/modules/admin/views/scripts/evaluate/add-manual-limits-bulk.phtml:140
-#: application/modules/admin/views/scripts/global-config/index.phtml:1699
+#: application/modules/admin/views/scripts/global-config/index.phtml:1834
 #: application/modules/admin/views/scripts/login/index.phtml:170
 #: application/modules/admin/views/scripts/shipment/edit.phtml:234
 #: application/modules/admin/views/scripts/shipment/index.phtml:231
@@ -2493,7 +2504,6 @@ msgstr ""
 #: application/layouts/scripts/admin.phtml:341
 #: application/models/DbTable/Distribution.php:166
 #: application/modules/admin/views/scripts/announcement/compose.phtml:108
-#: application/modules/admin/views/scripts/certificate-batches/index.phtml:395
 #: application/modules/admin/views/scripts/covid19-gene-type/add.phtml:52
 #: application/modules/admin/views/scripts/covid19-gene-type/edit.phtml:51
 #: application/modules/admin/views/scripts/custom-test/add.phtml:239
@@ -2509,7 +2519,7 @@ msgstr ""
 #: application/modules/admin/views/scripts/data-managers/change-primary-email.phtml:94
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:208
 #: application/modules/admin/views/scripts/data-managers/index.phtml:579
-#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:374
+#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:376
 #: application/modules/admin/views/scripts/distributions/add.phtml:48
 #: application/modules/admin/views/scripts/distributions/edit.phtml:58
 #: application/modules/admin/views/scripts/distributions/index.phtml:88
@@ -2708,7 +2718,7 @@ msgid "Scheme Test Results"
 msgstr "Result"
 
 #: application/layouts/scripts/admin.phtml:449
-#: application/modules/admin/views/scripts/global-config/index.phtml:619
+#: application/modules/admin/views/scripts/global-config/index.phtml:707
 #: application/views/partials/spotlight.phtml:194
 msgid "ePT Global Settings"
 msgstr ""
@@ -2761,7 +2771,7 @@ msgid "Failed Emails"
 msgstr ""
 
 #: application/layouts/scripts/admin.phtml:485
-#: application/modules/admin/views/scripts/certificate-batches/index.phtml:101
+#: application/modules/admin/views/scripts/certificate-batches/index.phtml:102
 #: application/modules/admin/views/scripts/certificate-templates/index.phtml:307
 #: application/views/partials/spotlight.phtml:299
 msgid "Certificate Batches"
@@ -2860,6 +2870,7 @@ msgid "TB: All Sites' Results"
 msgstr ""
 
 #: application/layouts/scripts/admin.phtml:603
+#: application/modules/admin/views/scripts/certificate-batches/index.phtml:111
 #: application/modules/reports/views/scripts/annual/index.phtml:130
 #: application/modules/reports/views/scripts/certificates/index.phtml:228
 #: application/views/partials/spotlight.phtml:597
@@ -3255,9 +3266,9 @@ msgstr "Change Password"
 #: application/modules/admin/views/scripts/data-managers/add.phtml:42
 #: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc.phtml:214
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:41
-#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:474
-#: application/modules/admin/views/scripts/global-config/index.phtml:1301
-#: application/modules/admin/views/scripts/global-config/index.phtml:1404
+#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:476
+#: application/modules/admin/views/scripts/global-config/index.phtml:1389
+#: application/modules/admin/views/scripts/global-config/index.phtml:1492
 #: application/modules/admin/views/scripts/login/index.phtml:194
 #: application/modules/admin/views/scripts/participants/add.phtml:120
 #: application/modules/admin/views/scripts/participants/bulk-import.phtml:256
@@ -3266,7 +3277,7 @@ msgstr "Change Password"
 #: application/modules/admin/views/scripts/participants/_data-manager-dual-list.phtml:144
 #: application/modules/admin/views/scripts/system-admins/add.phtml:39
 #: application/modules/admin/views/scripts/system-admins/edit.phtml:31
-#: application/services/DataManagers.php:555
+#: application/services/DataManagers.php:610
 #: library/Pt/Commons/ImportTemplate.php:68
 #, fuzzy
 msgid "Password"
@@ -3296,7 +3307,8 @@ msgstr ""
 
 #: application/models/DbTable/Distribution.php:144
 #: application/modules/admin/views/scripts/alerts/email.phtml:54
-#: application/modules/admin/views/scripts/certificate-batches/index.phtml:335
+#: application/modules/admin/views/scripts/certificate-batches/index.phtml:142
+#: application/modules/admin/views/scripts/certificate-batches/index.phtml:331
 #: application/modules/admin/views/scripts/email-participants/index.phtml:1312
 #: application/modules/admin/views/scripts/job-tracking/index.phtml:320
 #: application/services/Reports.php:232 application/services/Shipments.php:561
@@ -3357,8 +3369,8 @@ msgstr ""
 #: application/models/DbTable/Participants.php:404
 #: application/models/DbTable/Participants.php:472
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:637
-#: application/modules/admin/views/scripts/global-config/index.phtml:1288
-#: application/modules/admin/views/scripts/global-config/index.phtml:1386
+#: application/modules/admin/views/scripts/global-config/index.phtml:1376
+#: application/modules/admin/views/scripts/global-config/index.phtml:1474
 #: application/modules/admin/views/scripts/schemes/manage-test-results.phtml:353
 #: application/modules/admin/views/scripts/schemes/manage-test-results.phtml:493
 #: application/modules/admin/views/scripts/schemes/manage-test-results.phtml:664
@@ -3502,7 +3514,7 @@ msgstr "All Schemes"
 #: application/services/Evaluation.php:1988
 #: application/services/Evaluation.php:2272
 #: application/services/Evaluation.php:2490
-#: application/services/Participants.php:1764
+#: application/services/Participants.php:1770
 #: application/services/Reports.php:509 application/services/Reports.php:2779
 #: application/services/Reports.php:3162 application/services/Reports.php:4237
 #: application/views/partials/shipment-response-report.phtml:103
@@ -3588,7 +3600,6 @@ msgstr "Participant Code"
 #: application/models/Dts.php:2344 application/models/Dts.php:2371
 #: application/modules/reports/views/scripts/corrective-preventive-actions/capa.phtml:32
 #: application/modules/reports/views/scripts/corrective-preventive-actions/index.phtml:88
-#: application/views/scripts/auth/verify-email.phtml:93
 #: application/views/scripts/capa/index.phtml:61
 #: application/views/scripts/covid19/response.phtml:187
 #: application/views/scripts/dbs/response.phtml:62
@@ -3606,7 +3617,7 @@ msgstr "Participant Name"
 #: application/models/Dts.php:2292 application/models/Dts.php:2325
 #: application/models/Dts.php:2345 application/models/Dts.php:2372
 #: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc.phtml:206
-#: application/modules/admin/views/scripts/global-config/index.phtml:898
+#: application/modules/admin/views/scripts/global-config/index.phtml:986
 #: application/modules/admin/views/scripts/participants/add.phtml:95
 #: application/modules/admin/views/scripts/participants/bulk-import.phtml:243
 #: application/modules/admin/views/scripts/participants/edit.phtml:130
@@ -3810,7 +3821,7 @@ msgstr ""
 #: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:318
 #: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:321
 #: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:385
-#: application/services/Participants.php:1799
+#: application/services/Participants.php:1805
 #: application/services/Reports.php:1262 application/services/Reports.php:2777
 #: application/services/Reports.php:3053 application/services/Reports.php:3159
 #: application/services/Reports.php:3422
@@ -4140,8 +4151,8 @@ msgstr ""
 #: application/modules/admin/views/scripts/alerts/email.phtml:46
 #: application/modules/admin/views/scripts/alerts/email.phtml:66
 #: application/modules/admin/views/scripts/announcement/index.phtml:19
-#: application/modules/admin/views/scripts/certificate-batches/index.phtml:119
-#: application/modules/admin/views/scripts/certificate-batches/index.phtml:159
+#: application/modules/admin/views/scripts/certificate-batches/index.phtml:123
+#: application/modules/admin/views/scripts/certificate-batches/index.phtml:163
 #: application/modules/admin/views/scripts/custom-test/add.phtml:62
 #: application/modules/admin/views/scripts/custom-test/edit.phtml:74
 #: application/modules/admin/views/scripts/custom-test/edit.phtml:168
@@ -4217,7 +4228,7 @@ msgstr ""
 #: application/modules/admin/views/scripts/alerts/email.phtml:74
 #: application/modules/admin/views/scripts/announcement/index.phtml:24
 #: application/modules/admin/views/scripts/api-history/index.phtml:78
-#: application/modules/admin/views/scripts/certificate-batches/index.phtml:169
+#: application/modules/admin/views/scripts/certificate-batches/index.phtml:173
 #: application/modules/admin/views/scripts/covid19-gene-type/index.phtml:44
 #: application/modules/admin/views/scripts/custom-test/index.phtml:42
 #: application/modules/admin/views/scripts/data-managers/index.phtml:248
@@ -4284,7 +4295,8 @@ msgid "Failed & Skipped"
 msgstr ""
 
 #: application/modules/admin/views/scripts/alerts/email.phtml:49
-#: application/modules/admin/views/scripts/certificate-batches/index.phtml:333
+#: application/modules/admin/views/scripts/certificate-batches/index.phtml:140
+#: application/modules/admin/views/scripts/certificate-batches/index.phtml:329
 #: application/modules/admin/views/scripts/email-participants/index.phtml:1313
 #: application/modules/admin/views/scripts/job-tracking/index.phtml:319
 #: application/modules/reports/views/scripts/corrective-actions/index.phtml:192
@@ -4306,7 +4318,7 @@ msgid "Failed"
 msgstr ""
 
 #: application/modules/admin/views/scripts/alerts/email.phtml:50
-#: application/modules/admin/views/scripts/certificate-batches/index.phtml:162
+#: application/modules/admin/views/scripts/certificate-batches/index.phtml:166
 #: application/modules/admin/views/scripts/custom-test/import.phtml:26
 #: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc-review.phtml:84
 #: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc-review.phtml:145
@@ -4316,7 +4328,8 @@ msgid "Skipped"
 msgstr ""
 
 #: application/modules/admin/views/scripts/alerts/email.phtml:51
-#: application/modules/admin/views/scripts/certificate-batches/index.phtml:327
+#: application/modules/admin/views/scripts/certificate-batches/index.phtml:134
+#: application/modules/admin/views/scripts/certificate-batches/index.phtml:323
 #: application/modules/admin/views/scripts/job-tracking/index.phtml:311
 #: application/modules/admin/views/scripts/participants/index.phtml:169
 #: application/modules/admin/views/scripts/testkit/index.phtml:33
@@ -4566,7 +4579,7 @@ msgstr "PT Participant Info"
 #: application/modules/admin/views/scripts/announcement/compose.phtml:87
 #: application/modules/admin/views/scripts/api-history/index.phtml:59
 #: application/modules/admin/views/scripts/audit-log/index.phtml:623
-#: application/modules/admin/views/scripts/certificate-batches/index.phtml:147
+#: application/modules/admin/views/scripts/certificate-batches/index.phtml:151
 #: application/modules/admin/views/scripts/enrollments/add.phtml:56
 #: application/modules/admin/views/scripts/enrollments/index.phtml:35
 #: application/modules/admin/views/scripts/job-tracking/index.phtml:121
@@ -4642,7 +4655,7 @@ msgid "Hide Advanced Search"
 msgstr ""
 
 #: application/modules/admin/views/scripts/announcement/index.phtml:18
-#: application/modules/admin/views/scripts/certificate-batches/index.phtml:163
+#: application/modules/admin/views/scripts/certificate-batches/index.phtml:167
 #: application/modules/admin/views/scripts/covid19-gene-type/index.phtml:38
 #: application/modules/admin/views/scripts/test-platform/index.phtml:47
 #: application/modules/admin/views/scripts/testkit/index.phtml:81
@@ -4727,7 +4740,7 @@ msgid "Feed source"
 msgstr ""
 
 #: application/modules/admin/views/scripts/audit-log/index.phtml:578
-#: application/modules/admin/views/scripts/certificate-batches/index.phtml:164
+#: application/modules/admin/views/scripts/certificate-batches/index.phtml:168
 #: application/modules/admin/views/scripts/feedback-responses/shipment-questions.phtml:59
 #: application/modules/admin/views/scripts/home-config/index.phtml:819
 #: application/modules/admin/views/scripts/job-tracking/index.phtml:139
@@ -4739,7 +4752,7 @@ msgid "Logins"
 msgstr ""
 
 #: application/modules/admin/views/scripts/audit-log/index.phtml:584
-#: application/modules/admin/views/scripts/certificate-batches/index.phtml:122
+#: application/modules/admin/views/scripts/certificate-batches/index.phtml:126
 #: application/modules/admin/views/scripts/job-tracking/index.phtml:89
 #: application/modules/reports/views/scripts/corrective-preventive-actions/index.phtml:50
 #: application/modules/reports/views/scripts/distribution/shipment.phtml:293
@@ -4778,7 +4791,7 @@ msgid "Actor email"
 msgstr ""
 
 #: application/modules/admin/views/scripts/audit-log/index.phtml:613
-#: application/modules/admin/views/scripts/global-config/index.phtml:1262
+#: application/modules/admin/views/scripts/global-config/index.phtml:1350
 #: application/modules/admin/views/scripts/login/index.phtml:191
 #: application/modules/admin/views/scripts/profile/index.phtml:217
 #: application/modules/admin/views/scripts/profile/index.phtml:226
@@ -4878,60 +4891,36 @@ msgstr "Participant Login"
 msgid "Failed to load audit log. Please retry."
 msgstr ""
 
-#: application/modules/admin/views/scripts/certificate-batches/index.phtml:106
-#: application/modules/admin/views/scripts/certificate-batches/index.phtml:535
-#: application/modules/admin/views/scripts/certificate-batches/index.phtml:538
-#: application/modules/admin/views/scripts/job-tracking/index.phtml:70
-msgid "Auto-refreshing every 5 seconds"
+#: application/modules/admin/views/scripts/certificate-batches/index.phtml:107
+msgid "Updating while a batch is in progress"
 msgstr ""
 
-#: application/modules/admin/views/scripts/certificate-batches/index.phtml:110
-#: application/modules/admin/views/scripts/job-tracking/index.phtml:74
-msgid "Refresh Now"
+#: application/modules/admin/views/scripts/certificate-batches/index.phtml:116
+msgid ""
+"Every certificate batch, past and present. To issue, review or approve "
+"certificates, use Annual Certificates."
 msgstr ""
 
-#: application/modules/admin/views/scripts/certificate-batches/index.phtml:143
-#: application/modules/admin/views/scripts/job-tracking/index.phtml:117
+#: application/modules/admin/views/scripts/certificate-batches/index.phtml:133
+#: application/views/partials/shipments-report-grid.phtml:396
 #, fuzzy
-msgid "Click to select date range"
-msgstr "PT Participant Info"
+msgid "All statuses"
+msgstr "All Schemes"
 
-#: application/modules/admin/views/scripts/certificate-batches/index.phtml:157
-#, fuzzy
-msgid "Batch Name"
-msgstr "Contact Us"
-
-#: application/modules/admin/views/scripts/certificate-batches/index.phtml:160
-#: application/modules/admin/views/scripts/certificate-templates/index.phtml:34
-#: application/modules/admin/views/scripts/certificate-templates/index.phtml:336
-#: application/modules/reports/views/scripts/certificates/index.phtml:367
-msgid "Excellence"
-msgstr ""
-
-#: application/modules/admin/views/scripts/certificate-batches/index.phtml:161
-#: application/modules/admin/views/scripts/certificate-templates/index.phtml:35
-#: application/modules/admin/views/scripts/certificate-templates/index.phtml:337
-#: application/modules/admin/views/scripts/index/index.phtml:1283
-#: application/modules/reports/views/scripts/certificates/index.phtml:368
-#, fuzzy
-msgid "Participation"
-msgstr "Participant Login"
-
-#: application/modules/admin/views/scripts/certificate-batches/index.phtml:321
-msgid "more"
-msgstr ""
-
-#: application/modules/admin/views/scripts/certificate-batches/index.phtml:328
+#: application/modules/admin/views/scripts/certificate-batches/index.phtml:135
+#: application/modules/admin/views/scripts/certificate-batches/index.phtml:324
 #: application/modules/admin/views/scripts/job-tracking/index.phtml:312
 msgid "Generating"
 msgstr ""
 
-#: application/modules/admin/views/scripts/certificate-batches/index.phtml:329
+#: application/modules/admin/views/scripts/certificate-batches/index.phtml:136
+#: application/modules/admin/views/scripts/certificate-batches/index.phtml:325
 #, fuzzy
 msgid "Generated"
 msgstr "View PT Result"
 
-#: application/modules/admin/views/scripts/certificate-batches/index.phtml:330
+#: application/modules/admin/views/scripts/certificate-batches/index.phtml:137
+#: application/modules/admin/views/scripts/certificate-batches/index.phtml:326
 #: application/modules/admin/views/scripts/test-platform/edit.phtml:90
 #: application/modules/admin/views/scripts/test-platform/index.phtml:46
 #: application/modules/admin/views/scripts/testkit/index.phtml:31
@@ -4940,45 +4929,83 @@ msgstr "View PT Result"
 msgid "Approved"
 msgstr ""
 
-#: application/modules/admin/views/scripts/certificate-batches/index.phtml:331
+#: application/modules/admin/views/scripts/certificate-batches/index.phtml:138
+#: application/modules/admin/views/scripts/certificate-batches/index.phtml:327
 #, fuzzy
 msgid "Distributing"
 msgstr "All Schemes"
 
-#: application/modules/admin/views/scripts/certificate-batches/index.phtml:332
+#: application/modules/admin/views/scripts/certificate-batches/index.phtml:139
+#: application/modules/admin/views/scripts/certificate-batches/index.phtml:328
 msgid "Distributed"
 msgstr ""
 
-#: application/modules/admin/views/scripts/certificate-batches/index.phtml:334
+#: application/modules/admin/views/scripts/certificate-batches/index.phtml:141
+#: application/modules/admin/views/scripts/certificate-batches/index.phtml:330
 msgid "Rejected"
 msgstr ""
 
-#: application/modules/admin/views/scripts/certificate-batches/index.phtml:359
+#: application/modules/admin/views/scripts/certificate-batches/index.phtml:147
+#: application/modules/admin/views/scripts/job-tracking/index.phtml:117
+#, fuzzy
+msgid "Click to select date range"
+msgstr "PT Participant Info"
+
+#: application/modules/admin/views/scripts/certificate-batches/index.phtml:161
+#, fuzzy
+msgid "Batch Name"
+msgstr "Contact Us"
+
+#: application/modules/admin/views/scripts/certificate-batches/index.phtml:164
+#: application/modules/admin/views/scripts/certificate-templates/index.phtml:34
+#: application/modules/admin/views/scripts/certificate-templates/index.phtml:336
+#: application/modules/reports/views/scripts/certificates/index.phtml:367
+msgid "Excellence"
+msgstr ""
+
+#: application/modules/admin/views/scripts/certificate-batches/index.phtml:165
+#: application/modules/admin/views/scripts/certificate-templates/index.phtml:35
+#: application/modules/admin/views/scripts/certificate-templates/index.phtml:337
+#: application/modules/admin/views/scripts/index/index.phtml:1283
+#: application/modules/reports/views/scripts/certificates/index.phtml:368
+#, fuzzy
+msgid "Participation"
+msgstr "Participant Login"
+
+#: application/modules/admin/views/scripts/certificate-batches/index.phtml:317
+msgid "more"
+msgstr ""
+
+#: application/modules/admin/views/scripts/certificate-batches/index.phtml:341
+msgid "by"
+msgstr ""
+
+#: application/modules/admin/views/scripts/certificate-batches/index.phtml:363
 #: application/modules/admin/views/scripts/job-tracking/index.phtml:488
 msgid "s ago"
 msgstr ""
 
-#: application/modules/admin/views/scripts/certificate-batches/index.phtml:361
+#: application/modules/admin/views/scripts/certificate-batches/index.phtml:365
 #: application/modules/admin/views/scripts/job-tracking/index.phtml:490
 msgid "m ago"
 msgstr ""
 
-#: application/modules/admin/views/scripts/certificate-batches/index.phtml:363
+#: application/modules/admin/views/scripts/certificate-batches/index.phtml:367
 #: application/modules/admin/views/scripts/job-tracking/index.phtml:492
 msgid "h ago"
 msgstr ""
 
-#: application/modules/admin/views/scripts/certificate-batches/index.phtml:365
+#: application/modules/admin/views/scripts/certificate-batches/index.phtml:369
 #: application/modules/admin/views/scripts/job-tracking/index.phtml:494
 msgid "d ago"
 msgstr ""
 
-#: application/modules/admin/views/scripts/certificate-batches/index.phtml:380
+#: application/modules/admin/views/scripts/certificate-batches/index.phtml:388
 #, fuzzy
 msgid "Download ZIP"
 msgstr "Downloads"
 
-#: application/modules/admin/views/scripts/certificate-batches/index.phtml:381
+#: application/modules/admin/views/scripts/certificate-batches/index.phtml:389
 #: application/modules/admin/views/scripts/home-section-links/add.phtml:70
 #: application/modules/admin/views/scripts/home-section-links/edit.phtml:76
 #: application/modules/reports/views/scripts/annual/index.phtml:287
@@ -4990,84 +5017,10 @@ msgstr "Downloads"
 msgid "Download"
 msgstr "Downloads"
 
-#: application/modules/admin/views/scripts/certificate-batches/index.phtml:386
-msgid "Approve and distribute certificates"
-msgstr ""
-
-#: application/modules/admin/views/scripts/certificate-batches/index.phtml:387
-msgid "Approve"
-msgstr ""
-
-#: application/modules/admin/views/scripts/certificate-batches/index.phtml:388
+#: application/modules/admin/views/scripts/certificate-batches/index.phtml:395
 #, fuzzy
-msgid "Reject this batch"
-msgstr "PT Result Submission"
-
-#: application/modules/admin/views/scripts/certificate-batches/index.phtml:389
-#: application/services/Evaluation.php:2577
-msgid "Reject"
-msgstr ""
-
-#: application/modules/admin/views/scripts/certificate-batches/index.phtml:394
-#, fuzzy
-msgid "Cancel this batch"
-msgstr "All Schemes"
-
-#: application/modules/admin/views/scripts/certificate-batches/index.phtml:416
-msgid ""
-"Are you sure you want to approve this batch and schedule certificate "
-"distribution?\n"
-"\n"
-"Each participant can then download their certificate from the Certificates "
-"page. No email is sent."
-msgstr ""
-
-#: application/modules/admin/views/scripts/certificate-batches/index.phtml:429
-msgid "Certificates approved and distribution scheduled successfully."
-msgstr ""
-
-#: application/modules/admin/views/scripts/certificate-batches/index.phtml:432
-msgid "Failed to approve batch: "
-msgstr ""
-
-#: application/modules/admin/views/scripts/certificate-batches/index.phtml:436
-msgid "Error approving batch. Please try again."
-msgstr ""
-
-#: application/modules/admin/views/scripts/certificate-batches/index.phtml:442
-msgid "Are you sure you want to cancel this batch?"
-msgstr ""
-
-#: application/modules/admin/views/scripts/certificate-batches/index.phtml:455
-msgid "Batch cancelled successfully."
-msgstr ""
-
-#: application/modules/admin/views/scripts/certificate-batches/index.phtml:458
-msgid "Failed to cancel batch: "
-msgstr ""
-
-#: application/modules/admin/views/scripts/certificate-batches/index.phtml:462
-msgid "Error cancelling batch. Please try again."
-msgstr ""
-
-#: application/modules/admin/views/scripts/certificate-batches/index.phtml:468
-msgid ""
-"Are you sure you want to reject this batch?\n"
-"\n"
-"The certificates will NOT be distributed to participants."
-msgstr ""
-
-#: application/modules/admin/views/scripts/certificate-batches/index.phtml:481
-msgid "Batch rejected successfully."
-msgstr ""
-
-#: application/modules/admin/views/scripts/certificate-batches/index.phtml:484
-msgid "Failed to reject batch: "
-msgstr ""
-
-#: application/modules/admin/views/scripts/certificate-batches/index.phtml:488
-msgid "Error rejecting batch. Please try again."
-msgstr ""
+msgid "Open in Annual Certificates"
+msgstr "Downloads"
 
 #: application/modules/admin/views/scripts/certificate-templates/design.phtml:2
 #, fuzzy
@@ -5082,7 +5035,7 @@ msgstr "Participant Login"
 #: application/modules/admin/views/scripts/certificate-templates/design.phtml:9
 #: application/modules/admin/views/scripts/email-participants/index.phtml:295
 #: application/modules/admin/views/scripts/mail-template/get-mail-template.ajax.phtml:92
-#: application/services/Participants.php:1798
+#: application/services/Participants.php:1804
 #, fuzzy
 msgid "Participant name"
 msgstr "Participant Name"
@@ -5518,6 +5471,7 @@ msgid "Uploading and checking..."
 msgstr ""
 
 #: application/modules/admin/views/scripts/certificate-templates/index.phtml:453
+#: application/services/CertificateTemplates.php:664
 msgid "Upload the design as a PDF, PNG or JPG file."
 msgstr ""
 
@@ -5671,13 +5625,13 @@ msgstr "Change Password"
 #: application/modules/admin/views/scripts/files-for-participants/index.phtml:425
 #: application/modules/admin/views/scripts/files-for-participants/index.phtml:434
 #: application/modules/admin/views/scripts/files-for-participants/index.phtml:1224
-#: application/modules/admin/views/scripts/global-config/index.phtml:676
-#: application/modules/admin/views/scripts/global-config/index.phtml:925
-#: application/modules/admin/views/scripts/global-config/index.phtml:944
-#: application/modules/admin/views/scripts/global-config/index.phtml:964
-#: application/modules/admin/views/scripts/global-config/index.phtml:977
-#: application/modules/admin/views/scripts/global-config/index.phtml:1284
-#: application/modules/admin/views/scripts/global-config/index.phtml:1311
+#: application/modules/admin/views/scripts/global-config/index.phtml:764
+#: application/modules/admin/views/scripts/global-config/index.phtml:1013
+#: application/modules/admin/views/scripts/global-config/index.phtml:1032
+#: application/modules/admin/views/scripts/global-config/index.phtml:1052
+#: application/modules/admin/views/scripts/global-config/index.phtml:1065
+#: application/modules/admin/views/scripts/global-config/index.phtml:1372
+#: application/modules/admin/views/scripts/global-config/index.phtml:1399
 #: application/modules/admin/views/scripts/participants/add.phtml:198
 #: application/modules/admin/views/scripts/participants/add.phtml:224
 #: application/modules/admin/views/scripts/participants/add.phtml:235
@@ -6029,7 +5983,7 @@ msgstr ""
 #: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc-review.phtml:82
 #: application/modules/admin/views/scripts/distributions/edit.phtml:55
 #: application/modules/admin/views/scripts/feedback-responses/edit.phtml:80
-#: application/modules/admin/views/scripts/global-config/index.phtml:1685
+#: application/modules/admin/views/scripts/global-config/index.phtml:1820
 #: application/modules/admin/views/scripts/home-config/index.phtml:872
 #: application/modules/admin/views/scripts/home-section-links/edit.phtml:102
 #: application/modules/admin/views/scripts/mail-template/get-mail-template.ajax.phtml:128
@@ -6149,9 +6103,9 @@ msgstr ""
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:123
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:134
 #: application/modules/admin/views/scripts/evaluate/shipment.phtml:224
-#: application/modules/admin/views/scripts/global-config/index.phtml:777
-#: application/modules/admin/views/scripts/global-config/index.phtml:965
-#: application/modules/admin/views/scripts/global-config/index.phtml:978
+#: application/modules/admin/views/scripts/global-config/index.phtml:865
+#: application/modules/admin/views/scripts/global-config/index.phtml:1053
+#: application/modules/admin/views/scripts/global-config/index.phtml:1066
 #: application/modules/admin/views/scripts/participants/add.phtml:236
 #: application/modules/admin/views/scripts/participants/edit.phtml:353
 #: application/modules/admin/views/scripts/sample-not-tested-reasons/add.phtml:37
@@ -6315,9 +6269,9 @@ msgstr ""
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:124
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:135
 #: application/modules/admin/views/scripts/evaluate/shipment.phtml:222
-#: application/modules/admin/views/scripts/global-config/index.phtml:776
-#: application/modules/admin/views/scripts/global-config/index.phtml:966
-#: application/modules/admin/views/scripts/global-config/index.phtml:979
+#: application/modules/admin/views/scripts/global-config/index.phtml:864
+#: application/modules/admin/views/scripts/global-config/index.phtml:1054
+#: application/modules/admin/views/scripts/global-config/index.phtml:1067
 #: application/modules/admin/views/scripts/participants/add.phtml:237
 #: application/modules/admin/views/scripts/participants/edit.phtml:356
 #: application/modules/admin/views/scripts/sample-not-tested-reasons/add.phtml:38
@@ -6713,7 +6667,7 @@ msgstr ""
 #: application/modules/admin/views/scripts/custom-test/import-details.phtml:298
 #: application/modules/admin/views/scripts/custom-test/import-details.phtml:431
 #: application/modules/admin/views/scripts/custom-test/import-details.phtml:561
-#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:468
+#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:470
 #: application/modules/admin/views/scripts/email-participants/index.phtml:883
 #: application/modules/admin/views/scripts/evaluate/shipment.phtml:404
 #: application/modules/admin/views/scripts/files-for-participants/index.phtml:479
@@ -7005,7 +6959,7 @@ msgstr "Change Password"
 
 #: application/modules/admin/views/scripts/data-managers/add.phtml:57
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:51
-#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:295
+#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:297
 #: application/modules/admin/views/scripts/participants/add.phtml:126
 #: application/modules/admin/views/scripts/participants/edit.phtml:180
 #: application/modules/admin/views/scripts/system-admins/add.phtml:50
@@ -7310,7 +7264,7 @@ msgid "Last Name"
 msgstr ""
 
 #: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc-review.phtml:10
-#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:194
+#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:195
 #: application/modules/admin/views/scripts/participants/bulk-import-review.phtml:22
 #: application/modules/admin/views/scripts/participants/participant-upload-statistics.phtml:160
 #: application/modules/admin/views/scripts/shipment/view-enrollments.phtml:43
@@ -7872,7 +7826,7 @@ msgstr ""
 
 #: application/modules/admin/views/scripts/data-managers/bulk-reset-by-list.phtml:141
 #: application/modules/admin/views/scripts/data-managers/bulk-reset-password.phtml:122
-#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:360
+#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:362
 #: application/modules/admin/views/scripts/email-participants/index.phtml:465
 #: application/modules/admin/views/scripts/email-participants/index.phtml:497
 msgid "Cc"
@@ -7885,15 +7839,15 @@ msgstr ""
 
 #: application/modules/admin/views/scripts/data-managers/bulk-reset-by-list.phtml:145
 #: application/modules/admin/views/scripts/data-managers/bulk-reset-password.phtml:126
-#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:364
+#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:366
 #: application/modules/admin/views/scripts/email-participants/index.phtml:499
 msgid "Bcc"
 msgstr ""
 
 #: application/modules/admin/views/scripts/data-managers/bulk-reset-by-list.phtml:145
 #: application/modules/admin/views/scripts/data-managers/bulk-reset-password.phtml:126
-#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:360
-#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:364
+#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:362
+#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:366
 msgid "(optional, comma-separated)"
 msgstr ""
 
@@ -8009,7 +7963,7 @@ msgid "From"
 msgstr ""
 
 #: application/modules/admin/views/scripts/data-managers/change-primary-email.phtml:85
-#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:336
+#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:338
 #: application/modules/admin/views/scripts/email-participants/index.phtml:169
 #: application/modules/admin/views/scripts/email-participants/index.phtml:187
 #: application/modules/admin/views/scripts/email-participants/index.phtml:495
@@ -8037,14 +7991,14 @@ msgid "Please fill in both email fields."
 msgstr ""
 
 #: application/modules/admin/views/scripts/data-managers/change-primary-email.phtml:116
-#: application/services/DataManagers.php:329
+#: application/services/DataManagers.php:328
 #: application/views/scripts/data-managers/change-primary-email.phtml:114
 #, fuzzy
 msgid "Please enter a valid email address."
 msgstr "Change Password"
 
 #: application/modules/admin/views/scripts/data-managers/change-primary-email.phtml:121
-#: application/services/DataManagers.php:332
+#: application/services/DataManagers.php:331
 #: application/views/scripts/data-managers/change-primary-email.phtml:119
 msgid "The two email addresses do not match."
 msgstr ""
@@ -8129,6 +8083,7 @@ msgid "Cell/Mobile"
 msgstr ""
 
 #: application/modules/admin/views/scripts/data-managers/index.phtml:223
+#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:200
 #, fuzzy
 msgid "Mapped Participants"
 msgstr "PT Participant Info"
@@ -8270,11 +8225,10 @@ msgstr ""
 #: application/modules/admin/views/scripts/shipment/round-participants.phtml:103
 #: application/modules/reports/views/scripts/corrective-preventive-actions/capa.phtml:28
 #: application/modules/reports/views/scripts/corrective-preventive-actions/index.phtml:87
-#: application/services/Participants.php:1797
+#: application/services/Participants.php:1803
 #: application/services/Reports.php:1257 application/services/Reports.php:2773
 #: application/services/Reports.php:2810 application/services/Reports.php:3049
 #: application/services/Reports.php:3419
-#: application/views/scripts/auth/verify-email.phtml:92
 #: application/views/scripts/capa/index.phtml:60
 #: application/views/scripts/custom-test/response.phtml:255
 #: application/views/scripts/participant/add-participant.phtml:16
@@ -8314,298 +8268,301 @@ msgid "Edit participant"
 msgstr ""
 
 #: application/modules/admin/views/scripts/data-managers/mapped-participants.ajax.phtml:61
-#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:263
+#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:265
 #: application/modules/admin/views/scripts/participants/mapped-data-managers.ajax.phtml:84
 #: application/modules/admin/views/scripts/participants/participant-shipments.ajax.phtml:245
 #, php-format
 msgid "Show all %d"
 msgstr ""
 
-#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:184
+#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:185
 #: application/views/scripts/auth/reset-password.phtml:96
 #: application/views/scripts/data-managers/reset-password.phtml:11
 #: application/views/scripts/data-managers/reset-password.phtml:34
 msgid "Reset Password"
 msgstr "Reset Password"
 
-#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:192
-#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:473
-#: application/services/DataManagers.php:554
+#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:193
+#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:475
+#: application/services/DataManagers.php:609
 msgid "Login ID"
 msgstr ""
 
-#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:196
+#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:197
 #, php-format
 msgid "Last signed in %s"
 msgstr ""
 
-#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:196
+#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:197
 #, fuzzy
 msgid "Never signed in"
 msgstr "All Schemes"
 
-#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:218
+#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:220
 #, php-format
 msgid "and %d more labs"
 msgstr ""
 
-#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:221
+#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:223
 #, fuzzy
 msgid "Not mapped to any lab."
 msgstr "PT Participant Info"
 
-#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:233
+#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:235
 #, fuzzy, php-format
 msgid "This user changed their own password on %s. They may not need a reset."
 msgstr "Change Password"
 
-#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:236
+#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:238
 #, php-format
 msgid "This user signed in on %s. They may not need a reset."
 msgstr ""
 
-#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:238
+#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:240
 msgid "Recent activity"
 msgstr ""
 
-#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:247
+#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:249
 msgid "Signed in"
 msgstr ""
 
-#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:250
+#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:252
 #, fuzzy
 msgid "Changed their own password"
 msgstr "Change Password"
 
-#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:252
+#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:254
 msgid "Login details emailed to the user"
 msgstr ""
 
-#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:253
-#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:256
-#: application/services/DataManagers.php:617
+#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:255
+#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:258
+#: application/services/DataManagers.php:672
 #, php-format
 msgid "%d times since %s"
 msgstr ""
 
-#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:255
-#: application/services/DataManagers.php:611
+#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:257
+#: application/services/DataManagers.php:666
 #, fuzzy, php-format
 msgid "Password reset by %s"
 msgstr "Change Password"
 
-#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:269
+#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:271
 #: application/views/scripts/auth/new-password.phtml:104
 #, fuzzy
 msgid "New password"
 msgstr "Reset Password"
 
-#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:273
+#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:275
 #, fuzzy
 msgid "Type a password or generate one"
 msgstr "Reset Password"
 
-#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:275
+#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:277
 #, fuzzy
 msgid "Show or hide the password"
 msgstr "Reset Password"
 
-#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:279
+#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:281
 #: application/modules/reports/views/scripts/certificates/index.phtml:245
 msgid "Generate"
 msgstr ""
 
-#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:285
+#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:287
 #, php-format
 msgid "%d+ characters"
 msgstr ""
 
-#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:286
+#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:288
 msgid "A letter"
 msgstr ""
 
-#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:287
+#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:289
 #, fuzzy
 msgid "A number"
 msgstr "Participant Login"
 
-#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:289
+#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:291
 #, fuzzy
 msgid "Generated password. No need to confirm it."
 msgstr "Change Password"
 
-#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:297
+#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:299
 msgid "Type the same password again"
 msgstr ""
 
-#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:307
+#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:309
 #, fuzzy
 msgid "After the reset"
 msgstr "Change Password"
 
-#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:311
+#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:313
 #, fuzzy
 msgid "Copy password"
 msgstr "Reset Password"
 
-#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:312
+#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:314
 msgid "Copies only the new password, for you to pass on yourself."
 msgstr ""
 
-#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:316
+#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:318
 #, fuzzy
 msgid "Copy login message"
 msgstr "Participant Name"
 
-#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:317
+#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:319
 msgid ""
 "Copies a message with the login URL, login ID and password, to paste into "
 "your own email or chat."
 msgstr ""
 
-#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:321
+#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:323
 msgid "Email to user"
 msgstr ""
 
-#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:323
+#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:325
 msgid "ePT emails the login details to the user."
 msgstr ""
 
-#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:325
+#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:327
 msgid "Unavailable: email is not set up on this server."
 msgstr ""
 
-#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:326
+#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:328
 #, fuzzy
 msgid "Email settings"
 msgstr "Participant Login"
 
-#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:328
+#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:330
 #, php-format
 msgid "Unavailable: emails have been failing since %s."
 msgstr ""
 
-#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:329
+#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:331
 #, fuzzy
 msgid "Check email settings"
 msgstr "Participant Login"
 
-#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:342
+#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:344
 msgid "The login ID is not an email address. Known addresses for this account:"
 msgstr ""
 
-#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:352
+#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:354
 msgid ""
 "The login ID is not an email address, and this account has no other email on "
 "record. Enter where to send the login details."
 msgstr ""
 
-#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:377
-#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:401
+#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:379
+#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:403
 #, fuzzy
 msgid "Reset & Copy password"
 msgstr "Change Password"
 
-#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:404
+#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:406
 msgid "Reset & Email to user"
 msgstr ""
 
-#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:407
+#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:409
 #, fuzzy
 msgid "Reset & Copy login message"
 msgstr "Change Password"
 
-#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:468
-#: application/services/DataManagers.php:508
-#: application/services/DataManagers.php:860
+#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:470
+#: application/services/DataManagers.php:507
+#: application/services/DataManagers.php:915
+#: application/services/EmailLayout.php:56
 msgid "Dear"
 msgstr ""
 
-#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:470
-#: application/services/DataManagers.php:550
+#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:472
+#: application/services/DataManagers.php:605
 msgid "Your password for ePT has been reset. Use these details to sign in."
 msgstr ""
 
-#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:472
-#: application/services/DataManagers.php:553
+#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:474
+#: application/services/DataManagers.php:608
 msgid "Sign-in page"
 msgstr ""
 
-#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:476
-#: application/services/DataManagers.php:562
+#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:478
+#: application/services/DataManagers.php:617
 #, fuzzy
 msgid "After you sign in, change this password."
 msgstr "Change Password"
 
-#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:477
-#: application/services/DataManagers.php:563
+#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:479
+#: application/services/DataManagers.php:618
 msgid "Do not share your password with anyone."
 msgstr ""
 
-#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:478
-#: application/services/DataManagers.php:564
+#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:480
+#: application/services/DataManagers.php:619
 msgid "The ePT team will never ask you for your password."
 msgstr ""
 
-#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:481
+#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:483
 msgid ""
 "If you did not expect this message, or need help, contact ePT Support at"
 msgstr ""
 
-#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:483
+#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:485
 msgid "If you did not expect this message, or need help, contact ePT Support."
 msgstr ""
 
-#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:485
-#: application/services/DataManagers.php:567
+#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:487
+#: application/services/DataManagers.php:622
+#: application/services/EmailLayout.php:89
 msgid "Thank you"
 msgstr ""
 
-#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:485
-#: application/services/DataManagers.php:567
+#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:487
+#: application/services/DataManagers.php:622
+#: application/services/EmailLayout.php:89
 msgid "ePT Support"
 msgstr ""
 
-#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:510
+#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:512
 #, fuzzy
 msgid "Type a password or generate one."
 msgstr "Reset Password"
 
-#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:515
+#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:517
 msgid "The password does not meet the requirements above."
 msgstr ""
 
-#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:520
+#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:522
 #, fuzzy
 msgid "The two passwords do not match."
 msgstr "Reset Password"
 
-#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:530
+#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:532
 #, fuzzy
 msgid "Enter at least one email address."
 msgstr "Change Password"
 
-#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:544
+#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:546
 msgid "The To address does not look like a valid email."
 msgstr ""
 
-#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:553
+#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:555
 msgid "Password copied to clipboard"
 msgstr ""
 
-#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:555
+#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:557
 msgid "Copy the password below:"
 msgstr ""
 
-#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:560
+#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:562
 msgid "Login message copied to clipboard"
 msgstr ""
 
-#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:562
+#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:564
 msgid "Copy the login message below:"
 msgstr ""
 
-#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:584
+#: application/modules/admin/views/scripts/data-managers/reset-password.phtml:586
 #, fuzzy
 msgid "Random password generated"
 msgstr "Reset Password"
@@ -9186,7 +9143,7 @@ msgstr ""
 
 #: application/modules/admin/views/scripts/email-participants/index.phtml:127
 #: application/modules/admin/views/scripts/evaluate/shipment.phtml:166
-#: application/modules/admin/views/scripts/global-config/index.phtml:1688
+#: application/modules/admin/views/scripts/global-config/index.phtml:1823
 #: application/modules/admin/views/scripts/home-config/index.phtml:875
 #: application/modules/admin/views/scripts/participant-messages/view.phtml:43
 #: application/modules/admin/views/scripts/profile/index.phtml:336
@@ -11812,7 +11769,7 @@ msgid "Load Participants"
 msgstr "PT Participant Info"
 
 #: application/modules/admin/views/scripts/files-for-participants/index.phtml:467
-#: application/modules/admin/views/scripts/global-config/index.phtml:717
+#: application/modules/admin/views/scripts/global-config/index.phtml:805
 #, fuzzy
 msgid "Select all"
 msgstr "Participant Login"
@@ -11947,193 +11904,193 @@ msgstr ""
 msgid "Select Result"
 msgstr "Result"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:630
+#: application/modules/admin/views/scripts/global-config/index.phtml:718
 #: application/modules/admin/views/scripts/home-config/index.phtml:491
 #, fuzzy
 msgid "Search settings"
 msgstr "Participant Login"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:635
-#: application/modules/admin/views/scripts/global-config/index.phtml:656
+#: application/modules/admin/views/scripts/global-config/index.phtml:723
+#: application/modules/admin/views/scripts/global-config/index.phtml:744
 msgid "General Settings"
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:636
-#: application/modules/admin/views/scripts/global-config/index.phtml:1048
+#: application/modules/admin/views/scripts/global-config/index.phtml:724
+#: application/modules/admin/views/scripts/global-config/index.phtml:1136
 #, fuzzy
 msgid "Participant Settings"
 msgstr "Participant Login"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:637
-#: application/modules/admin/views/scripts/global-config/index.phtml:1173
+#: application/modules/admin/views/scripts/global-config/index.phtml:725
+#: application/modules/admin/views/scripts/global-config/index.phtml:1261
 #: application/views/partials/spotlight.phtml:219
 msgid "Shipment Custom Fields"
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:638
-#: application/modules/admin/views/scripts/global-config/index.phtml:1222
+#: application/modules/admin/views/scripts/global-config/index.phtml:726
+#: application/modules/admin/views/scripts/global-config/index.phtml:1310
 msgid "Email Settings"
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:643
+#: application/modules/admin/views/scripts/global-config/index.phtml:731
 #: application/modules/admin/views/scripts/home-config/index.phtml:505
 msgid "Expand All"
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:646
+#: application/modules/admin/views/scripts/global-config/index.phtml:734
 #: application/modules/admin/views/scripts/home-config/index.phtml:508
 msgid "Collapse All"
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:661
+#: application/modules/admin/views/scripts/global-config/index.phtml:749
 msgid "Domain"
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:664
+#: application/modules/admin/views/scripts/global-config/index.phtml:752
 msgid "Domain for this ePT instance"
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:666
+#: application/modules/admin/views/scripts/global-config/index.phtml:754
 msgid "Auto-filled from URL. Edit if using a proxy or CDN."
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:669
+#: application/modules/admin/views/scripts/global-config/index.phtml:757
 msgid ""
 "Could not update the Domain (application.ini not writable or not a valid "
 "http(s) URL)."
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:673
+#: application/modules/admin/views/scripts/global-config/index.phtml:761
 #: application/modules/admin/views/scripts/profile/index.phtml:247
 #: application/views/scripts/participant/user-info.phtml:85
 msgid "Language"
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:675
+#: application/modules/admin/views/scripts/global-config/index.phtml:763
 msgid "Select the language for this instance"
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:678
+#: application/modules/admin/views/scripts/global-config/index.phtml:766
 #: application/modules/admin/views/scripts/profile/index.phtml:252
 #: application/views/scripts/participant/user-info.phtml:92
 msgid "English"
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:681
+#: application/modules/admin/views/scripts/global-config/index.phtml:769
 #: application/views/scripts/participant/user-info.phtml:96
 msgid "French"
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:684
+#: application/modules/admin/views/scripts/global-config/index.phtml:772
 #: application/views/scripts/participant/user-info.phtml:100
 msgid "Vietnamese"
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:705
+#: application/modules/admin/views/scripts/global-config/index.phtml:793
 #: application/modules/admin/views/scripts/index/ept-overview.ajax.phtml:252
 #, fuzzy
 msgid "Active Schemes"
 msgstr "All Schemes"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:715
+#: application/modules/admin/views/scripts/global-config/index.phtml:803
 #, fuzzy
 msgid "Search schemes..."
 msgstr "All Schemes"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:719
+#: application/modules/admin/views/scripts/global-config/index.phtml:807
 msgid "Clear all"
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:731
+#: application/modules/admin/views/scripts/global-config/index.phtml:819
 msgid "Select at least one scheme to enable"
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:737
+#: application/modules/admin/views/scripts/global-config/index.phtml:825
 msgid "Administrator Email"
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:739
+#: application/modules/admin/views/scripts/global-config/index.phtml:827
 msgid "Enter administrator email (optional)"
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:740
+#: application/modules/admin/views/scripts/global-config/index.phtml:828
 msgid "Enter the administrator email address"
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:744
+#: application/modules/admin/views/scripts/global-config/index.phtml:832
 msgid "Support Email"
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:746
+#: application/modules/admin/views/scripts/global-config/index.phtml:834
 msgid "Enter support email (optional)"
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:747
+#: application/modules/admin/views/scripts/global-config/index.phtml:835
 msgid ""
 "Where participants send questions. Separate several addresses with commas."
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:749
+#: application/modules/admin/views/scripts/global-config/index.phtml:837
 msgid "Shown to participants in emails. Blank uses the administrator email."
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:755
+#: application/modules/admin/views/scripts/global-config/index.phtml:843
 msgid "PT Program Name"
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:757
+#: application/modules/admin/views/scripts/global-config/index.phtml:845
 msgid "Enter PT program name"
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:758
+#: application/modules/admin/views/scripts/global-config/index.phtml:846
 msgid "Enter the full name of your PT program"
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:763
+#: application/modules/admin/views/scripts/global-config/index.phtml:851
 msgid "PT Program Short Name"
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:765
+#: application/modules/admin/views/scripts/global-config/index.phtml:853
 msgid "Enter PT program short name"
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:766
+#: application/modules/admin/views/scripts/global-config/index.phtml:854
 msgid "Enter an abbreviated name for your PT program"
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:773
+#: application/modules/admin/views/scripts/global-config/index.phtml:861
 msgid "Training Instance"
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:775
+#: application/modules/admin/views/scripts/global-config/index.phtml:863
 msgid "Is this ePT installation used for training purposes?"
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:784
+#: application/modules/admin/views/scripts/global-config/index.phtml:872
 msgid "Report Watermark"
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:787
+#: application/modules/admin/views/scripts/global-config/index.phtml:875
 msgid "Watermark text for training reports"
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:788
+#: application/modules/admin/views/scripts/global-config/index.phtml:876
 msgid "Enter the watermark text to display on training reports"
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:795
+#: application/modules/admin/views/scripts/global-config/index.phtml:883
 msgid "Enable Custom Tests"
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:800
-#: application/modules/admin/views/scripts/global-config/index.phtml:816
-#: application/modules/admin/views/scripts/global-config/index.phtml:835
-#: application/modules/admin/views/scripts/global-config/index.phtml:851
-#: application/modules/admin/views/scripts/global-config/index.phtml:1078
-#: application/modules/admin/views/scripts/global-config/index.phtml:1094
-#: application/modules/admin/views/scripts/global-config/index.phtml:1112
-#: application/modules/admin/views/scripts/global-config/index.phtml:1128
-#: application/modules/admin/views/scripts/global-config/index.phtml:1188
+#: application/modules/admin/views/scripts/global-config/index.phtml:888
+#: application/modules/admin/views/scripts/global-config/index.phtml:904
+#: application/modules/admin/views/scripts/global-config/index.phtml:923
+#: application/modules/admin/views/scripts/global-config/index.phtml:939
+#: application/modules/admin/views/scripts/global-config/index.phtml:1166
+#: application/modules/admin/views/scripts/global-config/index.phtml:1182
+#: application/modules/admin/views/scripts/global-config/index.phtml:1200
+#: application/modules/admin/views/scripts/global-config/index.phtml:1216
+#: application/modules/admin/views/scripts/global-config/index.phtml:1276
 #: application/modules/admin/views/scripts/report-config/index.phtml:583
 #: application/modules/admin/views/scripts/scheme-config/partials/dts.phtml:173
 #: application/modules/admin/views/scripts/scheme-config/partials/dts.phtml:190
@@ -12149,15 +12106,15 @@ msgstr ""
 msgid "YES"
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:803
-#: application/modules/admin/views/scripts/global-config/index.phtml:819
-#: application/modules/admin/views/scripts/global-config/index.phtml:838
-#: application/modules/admin/views/scripts/global-config/index.phtml:854
-#: application/modules/admin/views/scripts/global-config/index.phtml:1081
-#: application/modules/admin/views/scripts/global-config/index.phtml:1097
-#: application/modules/admin/views/scripts/global-config/index.phtml:1115
-#: application/modules/admin/views/scripts/global-config/index.phtml:1131
-#: application/modules/admin/views/scripts/global-config/index.phtml:1191
+#: application/modules/admin/views/scripts/global-config/index.phtml:891
+#: application/modules/admin/views/scripts/global-config/index.phtml:907
+#: application/modules/admin/views/scripts/global-config/index.phtml:926
+#: application/modules/admin/views/scripts/global-config/index.phtml:942
+#: application/modules/admin/views/scripts/global-config/index.phtml:1169
+#: application/modules/admin/views/scripts/global-config/index.phtml:1185
+#: application/modules/admin/views/scripts/global-config/index.phtml:1203
+#: application/modules/admin/views/scripts/global-config/index.phtml:1219
+#: application/modules/admin/views/scripts/global-config/index.phtml:1279
 #: application/modules/admin/views/scripts/report-config/index.phtml:586
 #: application/modules/admin/views/scripts/scheme-config/partials/dts.phtml:176
 #: application/modules/admin/views/scripts/scheme-config/partials/dts.phtml:193
@@ -12173,612 +12130,683 @@ msgstr ""
 msgid "NO"
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:811
+#: application/modules/admin/views/scripts/global-config/index.phtml:899
 msgid "Re-evaluate Before Finalizing"
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:830
+#: application/modules/admin/views/scripts/global-config/index.phtml:918
 msgid "Enable CAPA"
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:846
+#: application/modules/admin/views/scripts/global-config/index.phtml:934
 msgid "Admin Email Notifications"
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:865
+#: application/modules/admin/views/scripts/global-config/index.phtml:953
 msgid "Application Timezone"
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:867
+#: application/modules/admin/views/scripts/global-config/index.phtml:955
 msgid ""
 "The timezone the whole application runs in. Response deadline times are "
 "entered and judged in this zone. Changing it shifts how existing deadlines "
 "are interpreted, so set it once and avoid changing it mid-programme."
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:878
+#: application/modules/admin/views/scripts/global-config/index.phtml:966
 msgid ""
 "Could not update the Application Timezone (application.ini not writable or "
 "invalid value)."
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:883
+#: application/modules/admin/views/scripts/global-config/index.phtml:971
 msgid "Response Deadline Cutoff Policy"
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:885
+#: application/modules/admin/views/scripts/global-config/index.phtml:973
 msgid ""
 "How a response deadline is judged to have passed. Application timezone "
 "closes at the exact local time. Anywhere on Earth keeps it open until the "
 "deadline has passed in every timezone (UTC-12)."
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:887
+#: application/modules/admin/views/scripts/global-config/index.phtml:975
 msgid "Application timezone (default)"
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:890
+#: application/modules/admin/views/scripts/global-config/index.phtml:978
 msgid "Anywhere on Earth (UTC-12)"
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:900
+#: application/modules/admin/views/scripts/global-config/index.phtml:988
 msgid "Enter institute name"
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:901
+#: application/modules/admin/views/scripts/global-config/index.phtml:989
 msgid "Enter the name of your institute"
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:905
+#: application/modules/admin/views/scripts/global-config/index.phtml:993
 msgid "Institute Address"
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:907
+#: application/modules/admin/views/scripts/global-config/index.phtml:995
 msgid "Enter institute address"
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:908
+#: application/modules/admin/views/scripts/global-config/index.phtml:996
 msgid "Enter your institute address"
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:914
+#: application/modules/admin/views/scripts/global-config/index.phtml:1002
 msgid "Additional Institute Details"
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:917
+#: application/modules/admin/views/scripts/global-config/index.phtml:1005
 msgid "Enter additional institute details"
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:918
+#: application/modules/admin/views/scripts/global-config/index.phtml:1006
 msgid "Enter any additional details about your institute"
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:922
+#: application/modules/admin/views/scripts/global-config/index.phtml:1010
 msgid "Theme Color"
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:924
+#: application/modules/admin/views/scripts/global-config/index.phtml:1012
 msgid "Select a theme color for the interface"
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:926
+#: application/modules/admin/views/scripts/global-config/index.phtml:1014
 msgid "Green"
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:927
+#: application/modules/admin/views/scripts/global-config/index.phtml:1015
 msgid "Blue"
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:929
+#: application/modules/admin/views/scripts/global-config/index.phtml:1017
 msgid "Yellow"
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:932
+#: application/modules/admin/views/scripts/global-config/index.phtml:1020
 msgid "Purple"
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:934
+#: application/modules/admin/views/scripts/global-config/index.phtml:1022
 msgid "Red"
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:935
+#: application/modules/admin/views/scripts/global-config/index.phtml:1023
 msgid "Black"
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:941
+#: application/modules/admin/views/scripts/global-config/index.phtml:1029
 msgid "Instance"
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:943
+#: application/modules/admin/views/scripts/global-config/index.phtml:1031
 msgid "Select the deployment instance"
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:960
+#: application/modules/admin/views/scripts/global-config/index.phtml:1048
 msgid "Job Completion Alerts"
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:962
+#: application/modules/admin/views/scripts/global-config/index.phtml:1050
 msgid "Enable email alerts when jobs complete"
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:973
+#: application/modules/admin/views/scripts/global-config/index.phtml:1061
 msgid "Auto-generate PT Survey Code"
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:976
+#: application/modules/admin/views/scripts/global-config/index.phtml:1064
 msgid "Automatically generate PT survey codes"
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:984
+#: application/modules/admin/views/scripts/global-config/index.phtml:1072
 msgid "Footer Text"
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:987
+#: application/modules/admin/views/scripts/global-config/index.phtml:1075
 msgid "Enter footer text"
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:988
+#: application/modules/admin/views/scripts/global-config/index.phtml:1076
 msgid "Enter the text to display in the page footer"
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:995
+#: application/modules/admin/views/scripts/global-config/index.phtml:1083
 msgid "Job Completion Alert Recipients"
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:997
+#: application/modules/admin/views/scripts/global-config/index.phtml:1085
 msgid "Enter email addresses"
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:998
+#: application/modules/admin/views/scripts/global-config/index.phtml:1086
 msgid "Enter email addresses to receive job completion alerts"
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1000
+#: application/modules/admin/views/scripts/global-config/index.phtml:1088
 msgid "Enter comma-separated email addresses for multiple recipients"
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1004
+#: application/modules/admin/views/scripts/global-config/index.phtml:1092
 msgid "Date Format"
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1006
+#: application/modules/admin/views/scripts/global-config/index.phtml:1094
 msgid "e.g., d-M-Y"
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1007
+#: application/modules/admin/views/scripts/global-config/index.phtml:1095
 msgid "Enter the date format (e.g., d-M-Y)"
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1011
+#: application/modules/admin/views/scripts/global-config/index.phtml:1099
 msgid "Certificate Email"
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1014
+#: application/modules/admin/views/scripts/global-config/index.phtml:1102
 msgid "Enter certificate notification email"
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1015
+#: application/modules/admin/views/scripts/global-config/index.phtml:1103
 msgid "Enter the email address for certificate notifications"
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1019
+#: application/modules/admin/views/scripts/global-config/index.phtml:1107
 #, fuzzy
 msgid "Certificate Signatory Name"
 msgstr "Enrollment"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1022
+#: application/modules/admin/views/scripts/global-config/index.phtml:1110
 msgid "e.g., Dr. A. Example"
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1023
+#: application/modules/admin/views/scripts/global-config/index.phtml:1111
 msgid "Printed in the signatory_name field of certificate templates"
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1027
+#: application/modules/admin/views/scripts/global-config/index.phtml:1115
 #, fuzzy
 msgid "Certificate Signatory Title"
 msgstr "Enrollment"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1030
+#: application/modules/admin/views/scripts/global-config/index.phtml:1118
 msgid "e.g., Deputy Director General"
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1031
+#: application/modules/admin/views/scripts/global-config/index.phtml:1119
 msgid "Printed in the signatory_title field of certificate templates"
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1035
+#: application/modules/admin/views/scripts/global-config/index.phtml:1123
 msgid "Late Submission Grace Window (minutes)"
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1038
+#: application/modules/admin/views/scripts/global-config/index.phtml:1126
 msgid "e.g., 1440"
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1039
+#: application/modules/admin/views/scripts/global-config/index.phtml:1127
 msgid ""
 "Minutes after a shipment deadline during which a participant who opened the "
 "response form before the deadline may still submit. The submission is saved "
 "and held for admin review as a late submission. 0 disables it."
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1054
+#: application/modules/admin/views/scripts/global-config/index.phtml:1142
 msgid "Login ID Prefix"
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1056
+#: application/modules/admin/views/scripts/global-config/index.phtml:1144
 msgid "e.g., PT"
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1057
+#: application/modules/admin/views/scripts/global-config/index.phtml:1145
 #, fuzzy
 msgid "Enter the prefix for participant login IDs"
 msgstr "Participant Login"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1062
+#: application/modules/admin/views/scripts/global-config/index.phtml:1150
 msgid "Password Length"
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1065
+#: application/modules/admin/views/scripts/global-config/index.phtml:1153
 msgid "e.g., 8"
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1066
+#: application/modules/admin/views/scripts/global-config/index.phtml:1154
 msgid "Enter the minimum password length for participants"
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1073
+#: application/modules/admin/views/scripts/global-config/index.phtml:1161
 msgid "Allow Name Editing"
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1089
+#: application/modules/admin/views/scripts/global-config/index.phtml:1177
 msgid "Enable Feedback"
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1107
+#: application/modules/admin/views/scripts/global-config/index.phtml:1195
 #, fuzzy
 msgid "Direct Login"
 msgstr "Participant Login"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1123
+#: application/modules/admin/views/scripts/global-config/index.phtml:1211
 msgid "Login Attempt Ban"
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1143
+#: application/modules/admin/views/scripts/global-config/index.phtml:1231
 msgid "Temporary Ban Duration (minutes)"
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1145
+#: application/modules/admin/views/scripts/global-config/index.phtml:1233
 msgid "e.g., 5"
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1146
+#: application/modules/admin/views/scripts/global-config/index.phtml:1234
 msgid "Enter the duration for temporary login bans in minutes"
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1152
+#: application/modules/admin/views/scripts/global-config/index.phtml:1240
 msgid "Attempts Before Temporary Ban"
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1154
+#: application/modules/admin/views/scripts/global-config/index.phtml:1242
 msgid "e.g., 3"
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1155
+#: application/modules/admin/views/scripts/global-config/index.phtml:1243
 msgid "Enter the number of failed attempts before a temporary ban"
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1161
+#: application/modules/admin/views/scripts/global-config/index.phtml:1249
 msgid "Attempts Before Permanent Ban"
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1163
+#: application/modules/admin/views/scripts/global-config/index.phtml:1251
 msgid "e.g., 10"
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1164
+#: application/modules/admin/views/scripts/global-config/index.phtml:1252
 msgid "Enter the number of failed attempts before a permanent ban"
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1178
+#: application/modules/admin/views/scripts/global-config/index.phtml:1266
 msgid "These are additional fields that will be added to Response Forms."
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1183
+#: application/modules/admin/views/scripts/global-config/index.phtml:1271
 msgid "Add Custom Field(s)?"
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1196
+#: application/modules/admin/views/scripts/global-config/index.phtml:1284
 msgid "If Yes, enter at least Custom Field 1."
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1202
+#: application/modules/admin/views/scripts/global-config/index.phtml:1290
 msgid "Custom Field 1"
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1204
-#: application/modules/admin/views/scripts/global-config/index.phtml:1212
+#: application/modules/admin/views/scripts/global-config/index.phtml:1292
+#: application/modules/admin/views/scripts/global-config/index.phtml:1300
 msgid "Enter custom field name"
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1205
-#: application/modules/admin/views/scripts/global-config/index.phtml:1213
+#: application/modules/admin/views/scripts/global-config/index.phtml:1293
+#: application/modules/admin/views/scripts/global-config/index.phtml:1301
 #, fuzzy
 msgid "Please enter custom field name"
 msgstr "Change Password"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1210
+#: application/modules/admin/views/scripts/global-config/index.phtml:1298
 msgid "Custom Field 2"
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1227
+#: application/modules/admin/views/scripts/global-config/index.phtml:1315
 msgid ""
 "Email configuration is optional. You can configure it later when you have "
 "the email server details."
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1228
+#: application/modules/admin/views/scripts/global-config/index.phtml:1316
 msgid ""
 "These settings are stored in application.ini on the server, not in the "
 "database."
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1237
+#: application/modules/admin/views/scripts/global-config/index.phtml:1325
 msgid "SMTP Host"
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1240
+#: application/modules/admin/views/scripts/global-config/index.phtml:1328
 msgid "e.g., smtp.gmail.com"
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1241
+#: application/modules/admin/views/scripts/global-config/index.phtml:1329
 msgid "Enter the SMTP server hostname"
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1244
+#: application/modules/admin/views/scripts/global-config/index.phtml:1332
 msgid "SMTP Port"
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1247
+#: application/modules/admin/views/scripts/global-config/index.phtml:1335
 msgid "e.g., 587 or 465"
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1248
+#: application/modules/admin/views/scripts/global-config/index.phtml:1336
 msgid "Enter the SMTP port (typically 587 or 465)"
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1253
+#: application/modules/admin/views/scripts/global-config/index.phtml:1341
 #: application/modules/admin/views/scripts/mail-template/get-mail-template.ajax.phtml:44
 #: application/modules/admin/views/scripts/mail-template/get-mail-template.phtml:2
 #: application/modules/admin/views/scripts/mail-template/get-push-notification.phtml:17
 msgid "From Name"
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1256
+#: application/modules/admin/views/scripts/global-config/index.phtml:1344
 msgid "e.g., ePT System"
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1259
+#: application/modules/admin/views/scripts/global-config/index.phtml:1347
 #: application/modules/admin/views/scripts/mail-template/get-mail-template.ajax.phtml:50
 #: application/modules/admin/views/scripts/mail-template/get-mail-template.phtml:8
 #: application/modules/admin/views/scripts/mail-template/get-push-notification.phtml:23
 msgid "From Email"
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1267
+#: application/modules/admin/views/scripts/global-config/index.phtml:1355
 msgid "CC"
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1270
+#: application/modules/admin/views/scripts/global-config/index.phtml:1358
 msgid "Enter CC emails"
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1273
+#: application/modules/admin/views/scripts/global-config/index.phtml:1361
 msgid "BCC"
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1276
+#: application/modules/admin/views/scripts/global-config/index.phtml:1364
 msgid "Enter BCC emails"
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1281
-#: application/modules/admin/views/scripts/global-config/index.phtml:1382
+#: application/modules/admin/views/scripts/global-config/index.phtml:1369
+#: application/modules/admin/views/scripts/global-config/index.phtml:1470
 msgid "Encryption"
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1283
+#: application/modules/admin/views/scripts/global-config/index.phtml:1371
 msgid "Select the encryption type"
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1292
-#: application/modules/admin/views/scripts/global-config/index.phtml:1398
+#: application/modules/admin/views/scripts/global-config/index.phtml:1380
+#: application/modules/admin/views/scripts/global-config/index.phtml:1486
 msgid "Username"
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1295
+#: application/modules/admin/views/scripts/global-config/index.phtml:1383
 msgid "Enter email address for authentication"
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1296
+#: application/modules/admin/views/scripts/global-config/index.phtml:1384
 msgid "Enter the email address used for SMTP authentication"
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1304
-#: application/modules/admin/views/scripts/global-config/index.phtml:1407
+#: application/modules/admin/views/scripts/global-config/index.phtml:1392
+#: application/modules/admin/views/scripts/global-config/index.phtml:1495
 msgid "Password is set. Leave blank to keep it"
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1304
+#: application/modules/admin/views/scripts/global-config/index.phtml:1392
 #, fuzzy
 msgid "Enter SMTP password"
 msgstr "Change Password"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1308
+#: application/modules/admin/views/scripts/global-config/index.phtml:1396
 msgid "Authentication Type"
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1310
+#: application/modules/admin/views/scripts/global-config/index.phtml:1398
 msgid "Select the authentication method"
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1319
+#: application/modules/admin/views/scripts/global-config/index.phtml:1407
 msgid "Bounce Inbox"
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1322
+#: application/modules/admin/views/scripts/global-config/index.phtml:1410
 msgid ""
 "ePT reads delivery-failure reports from this IMAP mailbox every 30 minutes "
 "and marks addresses that no longer exist, so later emails skip them. Leave "
 "IMAP Host empty to turn this off."
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1323
+#: application/modules/admin/views/scripts/global-config/index.phtml:1411
 msgid ""
 "Leave Username empty to read the SMTP account's mailbox with the SMTP login."
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1336
+#: application/modules/admin/views/scripts/global-config/index.phtml:1424
 msgid "Not checked yet. The first check runs within 30 minutes of saving."
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1338
+#: application/modules/admin/views/scripts/global-config/index.phtml:1426
 #, php-format
 msgid "The last check failed on %s:"
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1342
+#: application/modules/admin/views/scripts/global-config/index.phtml:1430
 #, php-format
 msgid ""
 "Last checked on %s: read %d new message(s) and marked %d address(es) as "
 "bounced."
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1348
+#: application/modules/admin/views/scripts/global-config/index.phtml:1436
 #, php-format
 msgid ""
 "%d older message(s) are still waiting; up to 200 are read every 30 minutes."
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1352
+#: application/modules/admin/views/scripts/global-config/index.phtml:1440
 msgid ""
 "No check has run for over two hours. Check that the ePT scheduler (cron) is "
 "running on the server."
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1354
+#: application/modules/admin/views/scripts/global-config/index.phtml:1442
 #, php-format
 msgid "Addresses marked as bounced so far: %d."
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1356
+#: application/modules/admin/views/scripts/global-config/index.phtml:1444
 #, php-format
 msgid "Most recent on %s."
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1358
+#: application/modules/admin/views/scripts/global-config/index.phtml:1446
 msgid ""
 "To see which ones, use the Unusable Emails button on the PT Participants "
 "page."
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1368
+#: application/modules/admin/views/scripts/global-config/index.phtml:1456
 msgid "IMAP Host"
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1371
+#: application/modules/admin/views/scripts/global-config/index.phtml:1459
 msgid "e.g., imap.gmail.com"
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1374
+#: application/modules/admin/views/scripts/global-config/index.phtml:1462
 msgid "IMAP Port"
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1390
+#: application/modules/admin/views/scripts/global-config/index.phtml:1478
 msgid "Folder or Gmail Label"
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1393
+#: application/modules/admin/views/scripts/global-config/index.phtml:1481
 msgid "e.g., ept-bounces (default INBOX)"
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1401
-#: application/modules/admin/views/scripts/global-config/index.phtml:1407
+#: application/modules/admin/views/scripts/global-config/index.phtml:1489
+#: application/modules/admin/views/scripts/global-config/index.phtml:1495
 msgid "Empty: use the SMTP login"
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1702
+#: application/modules/admin/views/scripts/global-config/index.phtml:1502
+#: application/modules/admin/views/scripts/global-config/index.phtml:2163
+msgid "Mail server login"
+msgstr ""
+
+#: application/modules/admin/views/scripts/global-config/index.phtml:1503
+#: application/modules/admin/views/scripts/global-config/index.phtml:2164
+msgid "Test email"
+msgstr ""
+
+#: application/modules/admin/views/scripts/global-config/index.phtml:1504
+#: application/modules/admin/views/scripts/global-config/index.phtml:2165
+msgid "Bounce inbox"
+msgstr ""
+
+#: application/modules/admin/views/scripts/global-config/index.phtml:1509
+msgid "Verify Email Setup"
+msgstr ""
+
+#: application/modules/admin/views/scripts/global-config/index.phtml:1512
+#, php-format
+msgid ""
+"Signs in to the mail server, sends a test email to %s and opens the bounce "
+"inbox. It uses the saved settings."
+msgstr ""
+
+#: application/modules/admin/views/scripts/global-config/index.phtml:1514
+msgid ""
+"Signs in to the mail server and opens the bounce inbox. It uses the saved "
+"settings. Add an email address to your admin account to also get a test "
+"email."
+msgstr ""
+
+#: application/modules/admin/views/scripts/global-config/index.phtml:1519
+msgid ""
+"You changed the email settings. Save them first, because Verify Email Setup "
+"tests the saved settings."
+msgstr ""
+
+#: application/modules/admin/views/scripts/global-config/index.phtml:1525
+#, php-format
+msgid "Last verified on %s by %s: email works."
+msgstr ""
+
+#: application/modules/admin/views/scripts/global-config/index.phtml:1525
+#, php-format
+msgid "Last verified on %s by %s: email does not work."
+msgstr ""
+
+#: application/modules/admin/views/scripts/global-config/index.phtml:1837
 #: application/modules/admin/views/scripts/home-config/index.phtml:889
 #: application/modules/admin/views/scripts/home-section-links/add.phtml:68
 #: application/modules/admin/views/scripts/home-section-links/edit.phtml:74
 msgid "Select Icon"
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1704
+#: application/modules/admin/views/scripts/global-config/index.phtml:1839
 #: application/modules/admin/views/scripts/home-config/index.phtml:891
 msgid "Search icons..."
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1712
+#: application/modules/admin/views/scripts/global-config/index.phtml:1847
 #: application/modules/admin/views/scripts/home-config/index.phtml:897
 msgid "No icons found matching your search"
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1746
+#: application/modules/admin/views/scripts/global-config/index.phtml:1881
 msgid "Invalid email address(es)"
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1774
+#: application/modules/admin/views/scripts/global-config/index.phtml:1909
 msgid "Please select at least one Active Scheme"
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1782
+#: application/modules/admin/views/scripts/global-config/index.phtml:1917
 msgid "Please enter Custom Field 1 or set Add Custom Field(s) to No"
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1927
+#: application/modules/admin/views/scripts/global-config/index.phtml:2062
 msgid "%active of %total schemes active"
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1990
+#: application/modules/admin/views/scripts/global-config/index.phtml:2125
 #, fuzzy
 msgid "Search timezone..."
 msgstr "Participant Login"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:2005
+#: application/modules/admin/views/scripts/global-config/index.phtml:2140
 #, fuzzy
 msgid "Search instance..."
 msgstr "Participant Login"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:2079
+#: application/modules/admin/views/scripts/global-config/index.phtml:2193
+msgid "Checking the mail settings. This can take up to a minute."
+msgstr ""
+
+#: application/modules/admin/views/scripts/global-config/index.phtml:2199
+#, php-format
+msgid "Email works. Verified on %s."
+msgstr ""
+
+#: application/modules/admin/views/scripts/global-config/index.phtml:2200
+#, php-format
+msgid "Email does not work. Verified on %s."
+msgstr ""
+
+#: application/modules/admin/views/scripts/global-config/index.phtml:2203
+msgid "Open the dev mail trap"
+msgstr ""
+
+#: application/modules/admin/views/scripts/global-config/index.phtml:2207
+msgid "The check did not finish. Reload the page and try again."
+msgstr ""
+
+#: application/modules/admin/views/scripts/global-config/index.phtml:2270
 #: application/modules/admin/views/scripts/home-config/index.phtml:829
 #: application/modules/admin/views/scripts/home-config/index.phtml:848
 #: application/modules/admin/views/scripts/home-config/index.phtml:941
 msgid "Enter the question"
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:2079
+#: application/modules/admin/views/scripts/global-config/index.phtml:2270
 msgid "Enter the FAQ question"
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:2082
+#: application/modules/admin/views/scripts/global-config/index.phtml:2273
 #: application/modules/admin/views/scripts/home-config/index.phtml:833
 #: application/modules/admin/views/scripts/home-config/index.phtml:852
 #: application/modules/admin/views/scripts/home-config/index.phtml:944
 msgid "Enter the answer"
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:2082
+#: application/modules/admin/views/scripts/global-config/index.phtml:2273
 msgid "Enter the FAQ answer"
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:2085
+#: application/modules/admin/views/scripts/global-config/index.phtml:2276
 #: application/modules/admin/views/scripts/home-config/index.phtml:837
 #: application/modules/admin/views/scripts/home-config/index.phtml:856
 #: application/modules/admin/views/scripts/home-config/index.phtml:947
 msgid "Add row"
 msgstr ""
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:2086
+#: application/modules/admin/views/scripts/global-config/index.phtml:2277
 #: application/modules/admin/views/scripts/home-config/index.phtml:840
 #: application/modules/admin/views/scripts/home-config/index.phtml:948
 #: application/modules/admin/views/scripts/schemes/manage-test-results.phtml:506
@@ -13600,6 +13628,14 @@ msgstr "PT Participant Info"
 msgid "Number of participants responded"
 msgstr "PT Participant Info"
 
+#: application/modules/admin/views/scripts/job-tracking/index.phtml:70
+msgid "Auto-refreshing every 5 seconds"
+msgstr ""
+
+#: application/modules/admin/views/scripts/job-tracking/index.phtml:74
+msgid "Refresh Now"
+msgstr ""
+
 #: application/modules/admin/views/scripts/job-tracking/index.phtml:83
 #: application/modules/admin/views/scripts/job-tracking/index.phtml:131
 msgid "Job Type"
@@ -13809,7 +13845,6 @@ msgstr ""
 #: application/views/scripts/auth/login.phtml:139
 #: application/views/scripts/auth/new-password.phtml:115
 #: application/views/scripts/auth/reset-password.phtml:85
-#: application/views/scripts/auth/verify-email.phtml:70
 #: application/views/scripts/contact-us/index.phtml:67
 #: application/views/scripts/index/index.phtml:386
 msgid "Get New Image"
@@ -13828,7 +13863,6 @@ msgid "Enter text from image"
 msgstr ""
 
 #: application/modules/admin/views/scripts/login/index.phtml:202
-#: application/views/scripts/auth/verify-email.phtml:69
 #, fuzzy
 msgid "Please enter the text from the image."
 msgstr "Change Password"
@@ -16355,7 +16389,7 @@ msgstr ""
 #: application/modules/admin/views/scripts/shipment/index.phtml:66
 #: application/modules/reports/views/scripts/distribution/finalize.phtml:98
 #: application/modules/reports/views/scripts/distribution/get-shipments.ajax.phtml:29
-#: application/services/Participants.php:1800
+#: application/services/Participants.php:1806
 #: application/views/partials/shipment-response-report.phtml:119
 #: application/views/partials/shipment-response-report.phtml:138
 #: application/views/scripts/participant/all-schemes.phtml:51
@@ -18818,6 +18852,20 @@ msgstr ""
 msgid "List of all VL Assays or Platforms"
 msgstr ""
 
+#: application/modules/reports/controllers/CertificatesController.php:79
+msgid "Pick the shipments and a name with letters, numbers and hyphens only."
+msgstr ""
+
+#: application/modules/reports/controllers/CertificatesController.php:90
+#, php-format
+msgid "The Excellence template for %s is not ready."
+msgstr ""
+
+#: application/modules/reports/controllers/CertificatesController.php:91
+#, php-format
+msgid "The Participation template for %s is not ready."
+msgstr ""
+
 #: application/modules/reports/views/scripts/annual/index.phtml:134
 msgid ""
 "Lists every evaluated response to the finalized shipments in a date range. "
@@ -19204,8 +19252,8 @@ msgstr ""
 
 #: application/modules/reports/views/scripts/certificates/index.phtml:612
 msgid ""
-"Done. Each participant can now download their certificate from Certificates "
-"and File Downloads in their account."
+"Done. Each participant can now download their certificate from Downloads in "
+"their account."
 msgstr ""
 
 #: application/modules/reports/views/scripts/certificates/index.phtml:613
@@ -19922,7 +19970,7 @@ msgstr "View PT Result"
 
 #: application/modules/reports/views/scripts/shipments/participation-stats.ajax.phtml:28
 #: application/modules/reports/views/scripts/shipments/vl-assay-distribution.phtml:15
-#: application/services/Participants.php:1768
+#: application/services/Participants.php:1774
 #: application/services/Reports.php:513 application/services/Reports.php:1614
 #: application/views/partials/participant-performance-report.phtml:32
 #: application/views/partials/participant-response-report.phtml:313
@@ -20250,35 +20298,217 @@ msgid ""
 "Panel Statistics, with the XTPT indicators, and All Sites' Results."
 msgstr ""
 
-#: application/services/Common.php:2086
+#: application/services/CertificateTemplates.php:162
+msgid "The uploaded file could not be read."
+msgstr ""
+
+#: application/services/CertificateTemplates.php:166
+msgid ""
+"The file is not a PDF. Export the certificate design as PDF and upload that "
+"file."
+msgstr ""
+
+#: application/services/CertificateTemplates.php:172
+msgid ""
+"pdftk is not installed on this server, so templates cannot be checked or "
+"filled. Ask your system administrator to install pdftk."
+msgstr ""
+
+#: application/services/CertificateTemplates.php:180
+msgid ""
+"ePT could not read the form fields. The PDF may be damaged or password-"
+"protected."
+msgstr ""
+
+#: application/services/CertificateTemplates.php:199
+msgid ""
+"The PDF has no form fields. Add a text field named participant_name where "
+"the participant name goes, then export again with \"Create PDF form\" ticked."
+msgstr ""
+
+#: application/services/CertificateTemplates.php:220
+#, php-format
+msgid ""
+"The PDF has no participant name field. Name the field participant_name. "
+"Fields found: %s."
+msgstr ""
+
+#: application/services/CertificateTemplates.php:224
+#, php-format
+msgid ""
+"The field %s is not a text field. Delete it and add a text box with the same "
+"name."
+msgstr ""
+
+#: application/services/CertificateTemplates.php:235
+msgid ""
+"ePT could not fill this PDF. Make it again with LibreOffice and tick "
+"\"Create PDF form\" when exporting."
+msgstr ""
+
+#: application/services/CertificateTemplates.php:672
+msgid ""
+"Upload the design as a PDF, PNG or JPG file. In Microsoft Word, choose File "
+"> Save As > PDF."
+msgstr ""
+
+#: application/services/CertificateTemplates.php:683
+msgid "Template uploaded and validated successfully"
+msgstr ""
+
+#: application/services/CertificateTemplates.php:693
+msgid ""
+"ePT could not read this PDF. Save the design as PDF again and upload the new "
+"file."
+msgstr ""
+
+#: application/services/CertificateTemplates.php:750
+#, fuzzy
+msgid "Design uploaded."
+msgstr "Downloads"
+
+#: application/services/Common.php:1882
+msgid ""
+"email.devTrapDsn in application.ini is not a valid smtp:// address, so ePT "
+"sends no email."
+msgstr ""
+
+#: application/services/Common.php:1890
+msgid "No SMTP host is set. Enter the mail server details and save them first."
+msgstr ""
+
+#: application/services/Common.php:1909
+#, php-format
+msgid ""
+"Connected to the dev mail trap at %s. Mail from this server goes there, not "
+"to real inboxes."
+msgstr ""
+
+#: application/services/Common.php:1911
+#, php-format
+msgid "Connected to %s. No username is set, so ePT sends without signing in."
+msgstr ""
+
+#: application/services/Common.php:1913
+#, php-format
+msgid "Connected to %s and signed in as %s."
+msgstr ""
+
+#: application/services/Common.php:1919 application/services/Common.php:1950
+#, php-format
+msgid "The server said: %s"
+msgstr ""
+
+#: application/services/Common.php:1924
+msgid "Not tried, because ePT could not sign in to the mail server."
+msgstr ""
+
+#: application/services/Common.php:1926
+msgid "Not tried, because your admin account has no valid email address."
+msgstr ""
+
+#: application/services/Common.php:1928
+msgid "No From Email is set. Enter one and save it first."
+msgstr ""
+
+#: application/services/Common.php:1934
+msgid ""
+"This is a test email from ePT. It confirms that ePT can send email with the "
+"saved mail settings."
+msgstr ""
+
+#: application/services/Common.php:1935
+#, php-format
+msgid "Sent from %s by Verify Email Setup in Global Config on %s."
+msgstr ""
+
+#: application/services/Common.php:1936
+msgid "No action is needed."
+msgstr ""
+
+#: application/services/Common.php:1941
+msgid "ePT test email"
+msgstr ""
+
+#: application/services/Common.php:1946
+#, php-format
+msgid "Sent a test email to %s. The dev mail trap caught it."
+msgstr ""
+
+#: application/services/Common.php:1947
+#, php-format
+msgid ""
+"Sent a test email to %s. Check that it arrives. If it is not in the inbox, "
+"look in the spam folder."
+msgstr ""
+
+#: application/services/Common.php:1963
+msgid "Bounce processing is off, because no IMAP Host is set."
+msgstr ""
+
+#: application/services/Common.php:1969
+#, php-format
+msgid "Opened the %s folder on %s as %s. It holds %d messages."
+msgstr ""
+
+#: application/services/Common.php:1971
+#, php-format
+msgid "Could not open the bounce inbox: %s"
+msgstr ""
+
+#: application/services/Common.php:2004
+msgid ""
+"The mail server refused the username or password. Gmail and Microsoft 365 "
+"need an app password, not the account password."
+msgstr ""
+
+#: application/services/Common.php:2005
+msgid ""
+"ePT could not reach the mail server. Check the host, port and encryption, "
+"and that this server allows outgoing connections on that port."
+msgstr ""
+
+#: application/services/Common.php:2006
+msgid "The mail server refused the recipient address."
+msgstr ""
+
+#: application/services/Common.php:2007
+msgid "The mail server has hit its sending limit. Try again later."
+msgstr ""
+
+#: application/services/Common.php:2008
+msgid "The mail server refused the request."
+msgstr ""
+
+#: application/services/Common.php:2275
 msgid "Password must be a string."
 msgstr ""
 
-#: application/services/Common.php:2096
+#: application/services/Common.php:2285
 msgid "Password must not exceed 128 characters."
 msgstr ""
 
-#: application/services/Common.php:2101
+#: application/services/Common.php:2290
 msgid "Password must contain at least one letter."
 msgstr ""
 
-#: application/services/Common.php:2106
+#: application/services/Common.php:2295
 msgid "Password must contain at least one number."
 msgstr ""
 
-#: application/services/Common.php:2111
+#: application/services/Common.php:2300
 msgid "Password must contain at least one symbol."
 msgstr ""
 
-#: application/services/Common.php:2122
+#: application/services/Common.php:2311
 msgid "Password must not contain parts of your name."
 msgstr ""
 
-#: application/services/Common.php:2142
+#: application/services/Common.php:2331
 msgid "Password must not contain parts of your email address."
 msgstr ""
 
-#: application/services/Common.php:2159
+#: application/services/Common.php:2348
 msgid "Password is too weak. Please choose a more complex password."
 msgstr ""
 
@@ -20370,70 +20600,148 @@ msgstr "All Schemes"
 msgid "No response recorded yet for this round"
 msgstr "Participant Login"
 
-#: application/services/DataManagers.php:224
+#: application/services/DataManagers.php:129
+msgid "The current email does not match your login email."
+msgstr ""
+
+#: application/services/DataManagers.php:238
 msgid ""
 "If the entered email is registered, you will receive a password reset link. "
 "If not, please contact your PT provider for assistance."
 msgstr ""
 
-#: application/services/DataManagers.php:509
-#: application/services/DataManagers.php:861
+#: application/services/DataManagers.php:508
+#: application/services/DataManagers.php:916
+#: application/services/EmailLayout.php:57
 #, fuzzy
 msgid "Dear Participant"
 msgstr "Participant ID"
 
-#: application/services/DataManagers.php:510
-#: application/services/DataManagers.php:863
+#: application/services/DataManagers.php:509
+#: application/services/DataManagers.php:918
 msgid "Your ePT password has been reset"
 msgstr ""
 
+#: application/services/DataManagers.php:542
+#, php-format
+msgid "We received a request to reset the password for your ePT account, %s."
+msgstr ""
+
 #: application/services/DataManagers.php:545
+msgid "Choose a new password"
+msgstr ""
+
+#: application/services/DataManagers.php:546
+msgid "This link expires in 24 hours and works only once."
+msgstr ""
+
+#: application/services/DataManagers.php:548
+msgid ""
+"If you did not ask to reset your password, ignore this email. Your password "
+"stays the same."
+msgstr ""
+
+#: application/services/DataManagers.php:552
+msgid "Reset your ePT password"
+msgstr ""
+
+#: application/services/DataManagers.php:553
+msgid "Use this link within 24 hours to choose a new password."
+msgstr ""
+
+#: application/services/DataManagers.php:570
+#, php-format
+msgid ""
+"A request was made to change the login email for your ePT account from %1$s "
+"to %2$s."
+msgstr ""
+
+#: application/services/DataManagers.php:574
+msgid "Confirm the new address to start using it to sign in."
+msgstr ""
+
+#: application/services/DataManagers.php:575
+msgid "Confirm new login email"
+msgstr ""
+
+#: application/services/DataManagers.php:576
+msgid "This link expires in 7 days and works only once."
+msgstr ""
+
+#: application/services/DataManagers.php:578
+msgid ""
+"If you did not ask for this change, ignore this email. Your login email "
+"stays the same."
+msgstr ""
+
+#: application/services/DataManagers.php:582
+msgid "Confirm your new ePT login email"
+msgstr ""
+
+#: application/services/DataManagers.php:583
+msgid "Confirm this address to use it for signing in to ePT."
+msgstr ""
+
+#: application/services/DataManagers.php:600
 #, php-format
 msgid ""
 "If you did not expect this email, or need help, contact ePT Support at %s."
 msgstr ""
 
-#: application/services/DataManagers.php:546
+#: application/services/DataManagers.php:601
 msgid "If you did not expect this email, or need help, contact ePT Support."
 msgstr ""
 
-#: application/services/DataManagers.php:560
+#: application/services/DataManagers.php:615
 msgid "Sign in to ePT"
 msgstr ""
 
-#: application/services/DataManagers.php:606
+#: application/services/DataManagers.php:661
 msgid "You signed in"
 msgstr ""
 
-#: application/services/DataManagers.php:608
+#: application/services/DataManagers.php:663
 #, fuzzy
 msgid "You changed your password"
 msgstr "Change Password"
 
-#: application/services/DataManagers.php:612
+#: application/services/DataManagers.php:667
 #, fuzzy
 msgid "Password reset by the ePT team"
 msgstr "Change Password"
 
-#: application/services/DataManagers.php:614
+#: application/services/DataManagers.php:669
 msgid "login details emailed to you"
 msgstr ""
 
-#: application/services/DataManagers.php:624
+#: application/services/DataManagers.php:679
 msgid "Recent activity on your account"
 msgstr ""
 
-#: application/services/DataManagers.php:625
+#: application/services/DataManagers.php:680
 msgid "If you do not recognise any of these, contact us straight away."
 msgstr ""
 
-#: application/services/DataManagers.php:627
+#: application/services/DataManagers.php:682
 #, php-format
 msgid "Date (UTC%s)"
 msgstr ""
 
-#: application/services/DataManagers.php:627
+#: application/services/DataManagers.php:682
 msgid "Activity"
+msgstr ""
+
+#: application/services/EmailLayout.php:28
+#, php-format
+msgid "This is an automated email from ePT at %s."
+msgstr ""
+
+#: application/services/EmailLayout.php:29
+msgid "This is an automated email from ePT."
+msgstr ""
+
+#: application/services/EmailLayout.php:77
+msgid "If the button does not work, copy this link into your browser:"
 msgstr ""
 
 #: application/services/Evaluation.php:2029
@@ -20469,6 +20777,10 @@ msgstr "Corrective Actions"
 msgid "Approve Late Submission"
 msgstr "PT Result Submission"
 
+#: application/services/Evaluation.php:2577
+msgid "Reject"
+msgstr ""
+
 #: application/services/Evaluation.php:2614
 msgid "Invalid request."
 msgstr ""
@@ -20492,59 +20804,59 @@ msgstr ""
 msgid "Late submission rejected."
 msgstr "PT Result Submission"
 
-#: application/services/Participants.php:1679
+#: application/services/Participants.php:1685
 #, php-format
 msgid "%s labs"
 msgstr ""
 
-#: application/services/Participants.php:1679
+#: application/services/Participants.php:1685
 #, php-format
 msgid "the %s labs listed below"
 msgstr ""
 
-#: application/services/Participants.php:1681
+#: application/services/Participants.php:1687
 msgid "listed below"
 msgstr ""
 
-#: application/services/Participants.php:1685
+#: application/services/Participants.php:1691
 #, php-format
 msgid "%s countries"
 msgstr ""
 
-#: application/services/Participants.php:1686
+#: application/services/Participants.php:1692
 msgid "the countries listed below"
 msgstr ""
 
-#: application/services/Participants.php:1765
+#: application/services/Participants.php:1771
 msgid "Responded late"
 msgstr ""
 
-#: application/services/Participants.php:1766
+#: application/services/Participants.php:1772
 msgid "Submitted late, awaiting approval"
 msgstr ""
 
-#: application/services/Participants.php:1767
+#: application/services/Participants.php:1773
 msgid "Late, not accepted"
 msgstr ""
 
-#: application/services/Participants.php:1769
+#: application/services/Participants.php:1775
 msgid "Draft, not submitted"
 msgstr ""
 
-#: application/services/Participants.php:1771
+#: application/services/Participants.php:1777
 msgid "Not yet"
 msgstr ""
 
-#: application/services/Participants.php:1801
+#: application/services/Participants.php:1807
 msgid "Responded on"
 msgstr ""
 
-#: application/services/Participants.php:1805
+#: application/services/Participants.php:1811
 #, php-format
 msgid "Still to respond (%s)"
 msgstr ""
 
-#: application/services/Participants.php:1806
+#: application/services/Participants.php:1812
 #, php-format
 msgid "Responded (%s)"
 msgstr ""
@@ -21100,11 +21412,6 @@ msgstr "View PT Result"
 msgid "Include cancelled"
 msgstr ""
 
-#: application/views/partials/shipments-report-grid.phtml:396
-#, fuzzy
-msgid "All statuses"
-msgstr "All Schemes"
-
 #: application/views/partials/shipments-report-grid.phtml:530
 msgid "No feedback responses found for this shipment"
 msgstr ""
@@ -21253,7 +21560,6 @@ msgstr ""
 #: application/views/scripts/auth/login.phtml:138
 #: application/views/scripts/auth/new-password.phtml:114
 #: application/views/scripts/auth/reset-password.phtml:84
-#: application/views/scripts/auth/verify-email.phtml:67
 #: application/views/scripts/contact-us/index.phtml:66
 #: application/views/scripts/index/index.phtml:385
 msgid "Security check"
@@ -21339,75 +21645,6 @@ msgstr "Change Password"
 
 #: application/views/scripts/auth/reset-password.phtml:79
 msgid "Enter your registered email"
-msgstr ""
-
-#: application/views/scripts/auth/verify-email.phtml:30
-msgid "Reset your ePT login email"
-msgstr ""
-
-#: application/views/scripts/auth/verify-email.phtml:31
-msgid "Your old and invalid email id:"
-msgstr ""
-
-#: application/views/scripts/auth/verify-email.phtml:42
-msgid "Please note:"
-msgstr ""
-
-#: application/views/scripts/auth/verify-email.phtml:44
-msgid ""
-"Once this form is submitted, the system will send you an automated email "
-"with a verification link."
-msgstr ""
-
-#: application/views/scripts/auth/verify-email.phtml:45
-msgid ""
-"Please click on the verification link to activate your new email. You will "
-"only be able to login after you verify by clicking on the link."
-msgstr ""
-
-#: application/views/scripts/auth/verify-email.phtml:52
-msgid "Official email id"
-msgstr ""
-
-#: application/views/scripts/auth/verify-email.phtml:52
-msgid "(Should be valid and active)"
-msgstr ""
-
-#: application/views/scripts/auth/verify-email.phtml:56
-#, fuzzy
-msgid "Please enter your valid email"
-msgstr "Change Password"
-
-#: application/views/scripts/auth/verify-email.phtml:61
-msgid "Confirm your email id"
-msgstr ""
-
-#: application/views/scripts/auth/verify-email.phtml:61
-msgid "(Type same email id again)"
-msgstr ""
-
-#: application/views/scripts/auth/verify-email.phtml:63
-#, fuzzy
-msgid "Please enter your confirm email"
-msgstr "Reset Password"
-
-#: application/views/scripts/auth/verify-email.phtml:69
-msgid "Enter text from image on left"
-msgstr ""
-
-#: application/views/scripts/auth/verify-email.phtml:79
-msgid "Change my login email"
-msgstr ""
-
-#: application/views/scripts/auth/verify-email.phtml:81
-msgid ""
-"Please ensure you have entered a valid email id before submitting this form."
-msgstr ""
-
-#: application/views/scripts/auth/verify-email.phtml:88
-msgid ""
-"For your information, your login id is mapped to the following ePT "
-"participant(s):"
 msgstr ""
 
 #: application/views/scripts/capa/capa.phtml:30
@@ -26274,6 +26511,22 @@ msgid "No participants"
 msgstr "PT Participant Info"
 
 #, fuzzy
+#~ msgid "Reject this batch"
+#~ msgstr "PT Result Submission"
+
+#, fuzzy
+#~ msgid "Cancel this batch"
+#~ msgstr "All Schemes"
+
+#, fuzzy
+#~ msgid "Please enter your valid email"
+#~ msgstr "Change Password"
+
+#, fuzzy
+#~ msgid "Please enter your confirm email"
+#~ msgstr "Reset Password"
+
+#, fuzzy
 #~ msgid "Download and install"
 #~ msgstr "Downloads"
 
@@ -26548,268 +26801,3 @@ msgstr "PT Participant Info"
 
 #~ msgid "ASSAYNAME"
 #~ msgstr "ASSAYNAME"
-
-#: application/services/EmailLayout.php
-#, php-format
-msgid "This is an automated email from ePT at %s."
-msgstr ""
-
-#: application/services/EmailLayout.php
-msgid "This is an automated email from ePT."
-msgstr ""
-
-#: application/services/EmailLayout.php
-msgid "If the button does not work, copy this link into your browser:"
-msgstr ""
-
-#: application/services/DataManagers.php
-#, php-format
-msgid "We received a request to reset the password for your ePT account, %s."
-msgstr ""
-
-#: application/services/DataManagers.php
-msgid "Choose a new password"
-msgstr ""
-
-#: application/services/DataManagers.php
-msgid "This link expires in 24 hours and works only once."
-msgstr ""
-
-#: application/services/DataManagers.php
-msgid "If you did not ask to reset your password, ignore this email. Your password stays the same."
-msgstr ""
-
-#: application/services/DataManagers.php
-msgid "Reset your ePT password"
-msgstr ""
-
-#: application/services/DataManagers.php
-msgid "Use this link within 24 hours to choose a new password."
-msgstr ""
-
-#: application/services/DataManagers.php
-#, php-format
-msgid "A request was made to change the login email for your ePT account from %1$s to %2$s."
-msgstr ""
-
-#: application/services/DataManagers.php
-msgid "Confirm the new address to start using it to sign in."
-msgstr ""
-
-#: application/services/DataManagers.php
-msgid "Confirm new login email"
-msgstr ""
-
-#: application/services/DataManagers.php
-msgid "If you did not ask for this change, ignore this email. Your login email stays the same."
-msgstr ""
-
-#: application/services/DataManagers.php
-msgid "Confirm your new ePT login email"
-msgstr ""
-
-#: application/services/DataManagers.php
-msgid "Confirm this address to use it for signing in to ePT."
-msgstr ""
-
-#: application/services/Common.php:1881
-msgid ""
-"email.devTrapDsn in application.ini is not a valid smtp:// address, so ePT "
-"sends no email."
-msgstr ""
-
-#: application/services/Common.php:1889
-msgid ""
-"No SMTP host is set. Enter the mail server details and save them first."
-msgstr ""
-
-#: application/services/Common.php:1908
-#, php-format
-msgid ""
-"Connected to the dev mail trap at %s. Mail from this server goes there, not "
-"to real inboxes."
-msgstr ""
-
-#: application/services/Common.php:1910
-#, php-format
-msgid "Connected to %s. No username is set, so ePT sends without signing in."
-msgstr ""
-
-#: application/services/Common.php:1912
-#, php-format
-msgid "Connected to %s and signed in as %s."
-msgstr ""
-
-#: application/services/Common.php:1918 application/services/Common.php:1949
-#, php-format
-msgid "The server said: %s"
-msgstr ""
-
-#: application/services/Common.php:1923
-msgid "Not tried, because ePT could not sign in to the mail server."
-msgstr ""
-
-#: application/services/Common.php:1925
-msgid "Not tried, because your admin account has no valid email address."
-msgstr ""
-
-#: application/services/Common.php:1927
-msgid "No From Email is set. Enter one and save it first."
-msgstr ""
-
-#: application/services/Common.php:1933
-msgid ""
-"This is a test email from ePT. It confirms that ePT can send email with the "
-"saved mail settings."
-msgstr ""
-
-#: application/services/Common.php:1934
-#, php-format
-msgid "Sent from %s by Verify Email Setup in Global Config on %s."
-msgstr ""
-
-#: application/services/Common.php:1935
-msgid "No action is needed."
-msgstr ""
-
-#: application/services/Common.php:1940
-msgid "ePT test email"
-msgstr ""
-
-#: application/services/Common.php:1945
-#, php-format
-msgid "Sent a test email to %s. The dev mail trap caught it."
-msgstr ""
-
-#: application/services/Common.php:1946
-#, php-format
-msgid ""
-"Sent a test email to %s. Check that it arrives. If it is not in the inbox, "
-"look in the spam folder."
-msgstr ""
-
-#: application/services/Common.php:1960
-msgid "Bounce processing is off, because no IMAP Host is set."
-msgstr ""
-
-#: application/services/Common.php:1966
-#, php-format
-msgid "Opened the %s folder on %s as %s. It holds %d messages."
-msgstr ""
-
-#: application/services/Common.php:1968
-#, php-format
-msgid "Could not open the bounce inbox: %s"
-msgstr ""
-
-#: application/services/Common.php:2000
-msgid ""
-"The mail server refused the username or password. Gmail and Microsoft 365 "
-"need an app password, not the account password."
-msgstr ""
-
-#: application/services/Common.php:2001
-msgid ""
-"ePT could not reach the mail server. Check the host, port and encryption, "
-"and that this server allows outgoing connections on that port."
-msgstr ""
-
-#: application/services/Common.php:2002
-msgid "The mail server refused the recipient address."
-msgstr ""
-
-#: application/services/Common.php:2003
-msgid "The mail server has hit its sending limit. Try again later."
-msgstr ""
-
-#: application/services/Common.php:2004
-msgid "The mail server refused the request."
-msgstr ""
-
-#: application/modules/admin/views/scripts/global-config/index.phtml:1502
-#: application/modules/admin/views/scripts/global-config/index.phtml:2163
-msgid "Mail server login"
-msgstr ""
-
-#: application/modules/admin/views/scripts/global-config/index.phtml:1503
-#: application/modules/admin/views/scripts/global-config/index.phtml:2164
-msgid "Test email"
-msgstr ""
-
-#: application/modules/admin/views/scripts/global-config/index.phtml:1504
-#: application/modules/admin/views/scripts/global-config/index.phtml:2165
-msgid "Bounce inbox"
-msgstr ""
-
-#: application/modules/admin/views/scripts/global-config/index.phtml:1509
-msgid "Verify Email Setup"
-msgstr ""
-
-#: application/modules/admin/views/scripts/global-config/index.phtml:1512
-#, php-format
-msgid ""
-"Signs in to the mail server, sends a test email to %s and opens the bounce "
-"inbox. It uses the saved settings."
-msgstr ""
-
-#: application/modules/admin/views/scripts/global-config/index.phtml:1514
-msgid ""
-"Signs in to the mail server and opens the bounce inbox. It uses the saved "
-"settings. Add an email address to your admin account to also get a test "
-"email."
-msgstr ""
-
-#: application/modules/admin/views/scripts/global-config/index.phtml:1519
-msgid ""
-"You changed the email settings. Save them first, because Verify Email Setup "
-"tests the saved settings."
-msgstr ""
-
-#: application/modules/admin/views/scripts/global-config/index.phtml:1525
-#, php-format
-msgid "Last verified on %s by %s: email works."
-msgstr ""
-
-#: application/modules/admin/views/scripts/global-config/index.phtml:1525
-#, php-format
-msgid "Last verified on %s by %s: email does not work."
-msgstr ""
-
-#: application/modules/admin/views/scripts/global-config/index.phtml:2193
-msgid "Checking the mail settings. This can take up to a minute."
-msgstr ""
-
-#: application/modules/admin/views/scripts/global-config/index.phtml:2199
-#, php-format
-msgid "Email works. Verified on %s."
-msgstr ""
-
-#: application/modules/admin/views/scripts/global-config/index.phtml:2200
-#, php-format
-msgid "Email does not work. Verified on %s."
-msgstr ""
-
-#: application/modules/admin/views/scripts/global-config/index.phtml:2203
-msgid "Open the dev mail trap"
-msgstr ""
-
-#: application/modules/admin/views/scripts/global-config/index.phtml:2207
-msgid "The check did not finish. Reload the page and try again."
-msgstr ""
-
-#: application/services/DataManagers.php
-msgid "This link expires in 7 days and works only once."
-msgstr ""
-
-#: application/controllers/AuthController.php
-#, php-format
-msgid "Your login email has been changed. Sign in with %s."
-msgstr ""
-
-#: application/controllers/AuthController.php
-msgid "This confirmation link has expired or was already used. Sign in with your current login email and ask for a new link."
-msgstr ""
-
-#: application/services/DataManagers.php
-msgid "The current email does not match your login email."
-msgstr ""

@@ -159,17 +159,17 @@ class Application_Service_CertificateTemplates
         ];
 
         if (!is_file($filePath) || !is_readable($filePath)) {
-            $result['error'] = 'The uploaded file could not be read.';
+            $result['error'] = Pt_Commons_TranslateUtility::safeTranslate('The uploaded file could not be read.');
             return $result;
         }
         if (file_get_contents($filePath, false, null, 0, 5) !== '%PDF-') {
-            $result['error'] = 'The file is not a PDF. Export the certificate design as PDF and upload that file.';
+            $result['error'] = Pt_Commons_TranslateUtility::safeTranslate('The file is not a PDF. Export the certificate design as PDF and upload that file.');
             return $result;
         }
 
         $pdftk = self::findPdftk();
         if (!$pdftk) {
-            $result['error'] = 'pdftk is not installed on this server, so templates cannot be checked or filled. Ask your system administrator to install pdftk.';
+            $result['error'] = Pt_Commons_TranslateUtility::safeTranslate('pdftk is not installed on this server, so templates cannot be checked or filled. Ask your system administrator to install pdftk.');
             return $result;
         }
 
@@ -177,7 +177,7 @@ class Application_Service_CertificateTemplates
         $returnCode = 0;
         exec(escapeshellcmd($pdftk) . ' ' . escapeshellarg($filePath) . ' dump_data_fields_utf8 2>&1', $output, $returnCode);
         if ($returnCode !== 0) {
-            $result['error'] = 'ePT could not read the form fields. The PDF may be damaged or password-protected.';
+            $result['error'] = Pt_Commons_TranslateUtility::safeTranslate('ePT could not read the form fields. The PDF may be damaged or password-protected.');
             return $result;
         }
 
@@ -196,7 +196,7 @@ class Application_Service_CertificateTemplates
         $result['fields'] = $fields;
 
         if (empty($fields)) {
-            $result['error'] = 'The PDF has no form fields. Add a text field named participant_name where the participant name goes, then export again with "Create PDF form" ticked.';
+            $result['error'] = Pt_Commons_TranslateUtility::safeTranslate('The PDF has no form fields. Add a text field named participant_name where the participant name goes, then export again with "Create PDF form" ticked.');
             return $result;
         }
 
@@ -217,11 +217,11 @@ class Application_Service_CertificateTemplates
         }
 
         if ($nameField === null) {
-            $result['error'] = 'The PDF has no participant name field. Name the field participant_name. Fields found: ' . implode(', ', $fields) . '.';
+            $result['error'] = sprintf(Pt_Commons_TranslateUtility::safeTranslate('The PDF has no participant name field. Name the field participant_name. Fields found: %s.'), implode(', ', $fields));
             return $result;
         }
         if (($types[strtolower($nameField)] ?? '') !== 'Text') {
-            $result['error'] = "The field $nameField is not a text field. Delete it and add a text box with the same name.";
+            $result['error'] = sprintf(Pt_Commons_TranslateUtility::safeTranslate('The field %s is not a text field. Delete it and add a text box with the same name.'), $nameField);
             return $result;
         }
 
@@ -232,7 +232,7 @@ class Application_Service_CertificateTemplates
         @unlink($testFile);
         if ($fillError !== null) {
             Pt_Commons_LoggerUtility::logError('Certificate template test fill failed: ' . $fillError);
-            $result['error'] = 'ePT could not fill this PDF. Make it again with LibreOffice and tick "Create PDF form" when exporting.';
+            $result['error'] = Pt_Commons_TranslateUtility::safeTranslate('ePT could not fill this PDF. Make it again with LibreOffice and tick "Create PDF form" when exporting.');
             return $result;
         }
 
@@ -661,7 +661,7 @@ class Application_Service_CertificateTemplates
         if ($imageInfo !== false) {
             $pdf = self::imageToPdf($file['tmp_name']);
             if ($pdf === null) {
-                $result['message'] = 'Upload the design as a PDF, PNG or JPG file.';
+                $result['message'] = Pt_Commons_TranslateUtility::safeTranslate('Upload the design as a PDF, PNG or JPG file.');
                 return $result;
             }
             $file['tmp_name'] = $pdf;
@@ -669,7 +669,7 @@ class Application_Service_CertificateTemplates
         }
 
         if (file_get_contents($file['tmp_name'], false, null, 0, 5) !== '%PDF-') {
-            $result['message'] = 'Upload the design as a PDF, PNG or JPG file. In Microsoft Word, choose File > Save As > PDF.';
+            $result['message'] = Pt_Commons_TranslateUtility::safeTranslate('Upload the design as a PDF, PNG or JPG file. In Microsoft Word, choose File > Save As > PDF.');
             return $result;
         }
 
@@ -680,7 +680,7 @@ class Application_Service_CertificateTemplates
             $result['unknown'] = $validation['unknown'];
             $saveResult = $certificateDb->saveTemplateFile($scheme, $type, $file, $validation['fields'], false);
             $result['success'] = $saveResult['success'];
-            $result['message'] = $saveResult['success'] ? 'Template uploaded and validated successfully' : ($saveResult['message'] ?? 'Failed to save template');
+            $result['message'] = $saveResult['success'] ? Pt_Commons_TranslateUtility::safeTranslate('Template uploaded and validated successfully') : ($saveResult['message'] ?? 'Failed to save template');
             $result['filename'] = $saveResult['filename'] ?? '';
             return $result;
         }
@@ -690,7 +690,7 @@ class Application_Service_CertificateTemplates
         if (self::pageSize($file['tmp_name']) === null) {
             $rewritten = self::rewritePdf($file['tmp_name']);
             if ($rewritten === null) {
-                $result['message'] = 'ePT could not read this PDF. Save the design as PDF again and upload the new file.';
+                $result['message'] = Pt_Commons_TranslateUtility::safeTranslate('ePT could not read this PDF. Save the design as PDF again and upload the new file.');
                 return $result;
             }
             $file['tmp_name'] = $rewritten;
@@ -747,7 +747,7 @@ class Application_Service_CertificateTemplates
         $result['success'] = true;
         $result['needsLayout'] = !self::layoutHasName($layout);
         $result['design'] = true;
-        $result['message'] = 'Design uploaded.';
+        $result['message'] = Pt_Commons_TranslateUtility::safeTranslate('Design uploaded.');
         $result['filename'] = $saveResult['filename'] ?? '';
         return $result;
     }

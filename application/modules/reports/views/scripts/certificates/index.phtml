@@ -609,7 +609,7 @@ $json = fn ($v) => json_encode($v, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS |
                 $('#acDoneBar').toggle(!finished);
                 $('#acNew').toggle(finished);
                 $('#acDoneMessage').text(finished
-                    ? "<?= $this->jsTranslate("Done. Each participant can now download their certificate from Certificates and File Downloads in their account."); ?>" + (b.error ? ' ' + b.error : '')
+                    ? "<?= $this->jsTranslate("Done. Each participant can now download their certificate from Downloads in their account."); ?>" + (b.error ? ' ' + b.error : '')
                     : "<?= $this->jsTranslate("Approved. ePT is copying each certificate to its participant. This starts within a minute."); ?>");
             } else {
                 // Cancelled or rejected: back to the start.
