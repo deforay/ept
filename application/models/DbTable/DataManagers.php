@@ -828,10 +828,59 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         return $row ?: null;
     }
 
-    public function fetchVerifyEmailById($email)
+    /**
+     * Records a pending login email change and returns the one-time token for
+     * the confirmation link. Only the token's hash is stored. A new request
+     * replaces the previous token, so only the latest link works.
+     */
+    public function issueEmailChangeToken(int $dmId, string $newEmail): string
     {
-        $sql = $this->select()->from('data_manager')->where('new_email = ?', base64_decode($email));
-        return $this->fetchRow($sql);
+        $token = bin2hex(random_bytes(32));
+        $this->update([
+            'new_email' => $newEmail,
+            'email_change_token_hash' => hash('sha256', $token),
+            'email_change_expires_at' => date('Y-m-d H:i:s', strtotime('+7 days')),
+        ], ['dm_id = ?' => $dmId]);
+        return $token;
+    }
+
+    /**
+     * Applies the pending login email change that a confirmation link points
+     * to. Returns the new login email, or null when the token is unknown,
+     * expired or used, or when another data manager has taken the address
+     * since the change was requested.
+     */
+    public function confirmEmailChangeToken(string $token): ?string
+    {
+        if (!preg_match('/^[a-f0-9]{64}$/', $token)) {
+            return null;
+        }
+        $row = $this->fetchRow(
+            $this->select()
+                ->where('email_change_token_hash = ?', hash('sha256', $token))
+                ->where('email_change_expires_at > ?', date('Y-m-d H:i:s'))
+        );
+        if (!self::hasPendingEmailChange($row)) {
+            return null;
+        }
+        $newEmail = trim((string) $row['new_email']);
+        $clash = $this->fetchRow(
+            $this->select()
+                ->where('dm_id <> ?', (int) $row['dm_id'])
+                ->where('LOWER(primary_email) = ?', strtolower($newEmail))
+        );
+        if ($clash) {
+            return null;
+        }
+        $this->update([
+            'primary_email' => $newEmail,
+            'new_email' => null,
+            'email_change_token_hash' => null,
+            'email_change_expires_at' => null,
+            'force_profile_check' => 'no',
+            'updated_on' => new Zend_Db_Expr('now()'),
+        ], ['dm_id = ?' => (int) $row['dm_id']]);
+        return $newEmail;
     }
 
     public function fetchForceProfileEmail($link)
@@ -1197,10 +1246,10 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                 return ['status' => 'fail', 'message' => 'Something went wrong please try again later.'];
             }
             $resetUrl = $eptDomain . '/auth/new-password/token/' . $issued->password_reset_token;
-            $message = 'Dear Participant,<br/><br/> You have requested a password reset for the PT account for email ' . $email . ". <br/><br/>If you requested for the password reset, please click on the following link <a href='" . $resetUrl . "'>" . $resetUrl . '</a> or copy and paste it in a browser address bar.<br/><br/>This link will expire in 24 hours and can only be used once.<br/><br/> If you did not request for password reset, you can safely ignore this email.<br/><br/><small>Thanks,<br/> ePT Support</small>';
+            $mail = Application_Service_DataManagers::passwordResetLinkEmail(trim($row['first_name'] . ' ' . $row['last_name']), (string) $email, $resetUrl);
             $fromMail = Common::getConfig('admin_email');
             $fromName = Common::getConfig('admin-name');
-            $check = $common->insertTempMail($email, null, null, 'Password Reset - ePT', $message, $fromMail, $fromName);
+            $check = $common->insertTempMail($email, null, null, $mail['subject'], $mail['html'], $fromMail, $fromName);
             if (!$check) {
                 return ['status' => 'fail', 'message' => 'Something went wrong please try again later.'];
             }
@@ -1296,13 +1345,12 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         ];
         $forceLogin = false;
         if (!self::sameEmail($fetchOldMail['primary_email'], $params['primaryEmail'])) {
-            $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
             $common = new Application_Service_Common();
-            $eptDomain = rtrim($conf->domain, '/');
-            $message = 'Dear Participant,<br/><br/> You or someone using your email requested to change your ePT login email address from ' . $fetchOldMail['primary_email'] . ' to ' . $params['primaryEmail'] . ". <br/><br/> Please confirm your new primary email by clicking on the following link: <br/><br/><a href='" . $eptDomain . '/auth/verify/email/' . base64_encode($params['primaryEmail']) . "'>" . $eptDomain . '/auth/verify/email/' . base64_encode($params['primaryEmail']) . '</a> <br/><br/> If you are not able to click the link, you can copy and paste it in a browser address bar.<br/><br/> If you did not request for this update, you can safely ignore this email.<br/><br/><small>Thanks,<br/> Online PT Team<br/> <i>Please note: This is a system generated email.</i></small>';
+            $token = $this->issueEmailChangeToken((int) $fetchOldMail['dm_id'], (string) $params['primaryEmail']);
+            $mail = Application_Service_DataManagers::loginEmailChangeEmail(trim($fetchOldMail['first_name'] . ' ' . $fetchOldMail['last_name']), (string) $fetchOldMail['primary_email'], (string) $params['primaryEmail'], $token);
             $fromMail = $common->getConfig('admin_email');
             $fromName = $common->getConfig('admin-name');
-            $common->insertTempMail($params['primaryEmail'], null, null, 'ePT | Change of login email id', $message, $fromMail, $fromName);
+            $common->insertTempMail($params['primaryEmail'], null, null, $mail['subject'], $mail['html'], $fromMail, $fromName);
             // $response['status'] = 'force-login';
             $forceLogin = true;
             $updateData['new_email'] = $params['primaryEmail'];

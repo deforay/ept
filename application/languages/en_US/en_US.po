@@ -26549,6 +26549,69 @@ msgstr "PT Participant Info"
 #~ msgid "ASSAYNAME"
 #~ msgstr "ASSAYNAME"
 
+#: application/services/EmailLayout.php
+#, php-format
+msgid "This is an automated email from ePT at %s."
+msgstr ""
+
+#: application/services/EmailLayout.php
+msgid "This is an automated email from ePT."
+msgstr ""
+
+#: application/services/EmailLayout.php
+msgid "If the button does not work, copy this link into your browser:"
+msgstr ""
+
+#: application/services/DataManagers.php
+#, php-format
+msgid "We received a request to reset the password for your ePT account, %s."
+msgstr ""
+
+#: application/services/DataManagers.php
+msgid "Choose a new password"
+msgstr ""
+
+#: application/services/DataManagers.php
+msgid "This link expires in 24 hours and works only once."
+msgstr ""
+
+#: application/services/DataManagers.php
+msgid "If you did not ask to reset your password, ignore this email. Your password stays the same."
+msgstr ""
+
+#: application/services/DataManagers.php
+msgid "Reset your ePT password"
+msgstr ""
+
+#: application/services/DataManagers.php
+msgid "Use this link within 24 hours to choose a new password."
+msgstr ""
+
+#: application/services/DataManagers.php
+#, php-format
+msgid "A request was made to change the login email for your ePT account from %1$s to %2$s."
+msgstr ""
+
+#: application/services/DataManagers.php
+msgid "Confirm the new address to start using it to sign in."
+msgstr ""
+
+#: application/services/DataManagers.php
+msgid "Confirm new login email"
+msgstr ""
+
+#: application/services/DataManagers.php
+msgid "If you did not ask for this change, ignore this email. Your login email stays the same."
+msgstr ""
+
+#: application/services/DataManagers.php
+msgid "Confirm your new ePT login email"
+msgstr ""
+
+#: application/services/DataManagers.php
+msgid "Confirm this address to use it for signing in to ePT."
+msgstr ""
+
 #: application/services/Common.php:1881
 msgid ""
 "email.devTrapDsn in application.ini is not a valid smtp:// address, so ePT "
@@ -26732,4 +26795,17 @@ msgstr ""
 
 #: application/modules/admin/views/scripts/global-config/index.phtml:2207
 msgid "The check did not finish. Reload the page and try again."
+msgstr ""
+
+#: application/services/DataManagers.php
+msgid "This link expires in 7 days and works only once."
+msgstr ""
+
+#: application/controllers/AuthController.php
+#, php-format
+msgid "Your login email has been changed. Sign in with %s."
+msgstr ""
+
+#: application/controllers/AuthController.php
+msgid "This confirmation link has expired or was already used. Sign in with your current login email and ask for a new link."
 msgstr ""

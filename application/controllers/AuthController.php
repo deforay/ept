@@ -16,28 +16,22 @@ class AuthController extends Zend_Controller_Action
         $this->redirect($this->loginUri);
     }
 
+    /**
+     * Confirms a login email change from the link in the confirmation email,
+     * /auth/verify/token/<token>. Links from before 7.6.35 carried the new
+     * address in base64 and no longer work, by design.
+     */
     public function verifyAction()
     {
-        $userService = new Application_Service_DataManagers();
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
         $authNameSpace->force_profile_check_primary = 'no';
-        if ($this->hasParam('email')) {
-            $email = $this->_getParam('email');
-            $result = $userService->verifyEmailById($email);
-            if ($result) {
-                $userService->updateForceProfileCheck($email, $result);
-                $userService->setStatusByEmailDM('active', base64_decode($email));
-                $sessionAlert = new Zend_Session_Namespace('alertSpace');
-                $sessionAlert->message = 'Thank you. Your email has been verified successfully. You can now use your new email to login to ePT';
-                $sessionAlert->status = 'success';
-            } else {
-                $sessionAlert = new Zend_Session_Namespace('alertSpace');
-                $sessionAlert->message = $this->emailVerifyErrMsg;
-                $sessionAlert->status = 'failure';
-            }
+        $sessionAlert = new Zend_Session_Namespace('alertSpace');
+        $newEmail = (new Application_Model_DbTable_DataManagers())->confirmEmailChangeToken((string) $this->_getParam('token', ''));
+        if ($newEmail !== null) {
+            $sessionAlert->message = sprintf(Pt_Commons_TranslateUtility::safeTranslate('Your login email has been changed. Sign in with %s.'), $newEmail);
+            $sessionAlert->status = 'success';
         } else {
-            $sessionAlert = new Zend_Session_Namespace('alertSpace');
-            $sessionAlert->message = $this->emailVerifyErrMsg;
+            $sessionAlert->message = Pt_Commons_TranslateUtility::safeTranslate('This confirmation link has expired or was already used. Sign in with your current login email and ask for a new link.');
             $sessionAlert->status = 'failure';
         }
         $this->redirect($this->loginUri);

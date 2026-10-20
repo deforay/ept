@@ -94,13 +94,12 @@ class Application_Service_DataManagers
         /* Set lang in runtime */
         $authNameSpace->language = $params['language'];
         if (isset($params['oldpemail']) && !empty($params['oldpemail']) && isset($params['pemail']) && !empty($params['pemail']) && !Application_Model_DbTable_DataManagers::sameEmail($params['oldpemail'], $params['pemail'])) {
-            $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
-            $eptDomain = rtrim($conf->domain, '/');
             $common = new Application_Service_Common();
-            $message = 'Dear Participant,<br/><br/> You or someone using your email requested to change your ePT login email address from ' . $params['oldpemail'] . ' to ' . $params['pemail'] . ". <br/><br/> Please confirm your new primary email by clicking on the following link: <br/><br/><a href='" . $eptDomain . '/auth/verify/email/' . base64_encode($params['pemail']) . "'>" . $eptDomain . '/auth/verify/email/' . base64_encode($params['pemail']) . '</a> <br/><br/> If you are not able to click the link, you can copy and paste it in a browser address bar.<br/><br/> If you did not request for this update, you can safely ignore this email.<br/><br/><small>Thanks,<br/> Online PT Team<br/> <i>Please note: This is a system generated email.</i></small>';
+            $token = $this->datamanagersDb->issueEmailChangeToken((int) $authNameSpace->dm_id, (string) $params['pemail']);
+            $mail = self::loginEmailChangeEmail(trim($authNameSpace->first_name . ' ' . $authNameSpace->last_name), (string) $params['oldpemail'], (string) $params['pemail'], $token);
             $fromMail = Application_Service_Common::getConfig('admin_email');
             $fromName = Application_Service_Common::getConfig('admin-name');
-            $common->insertTempMail($params['pemail'], null, null, 'ePT | Change of login email id', $message, $fromMail, $fromName);
+            $common->insertTempMail($params['pemail'], null, null, $mail['subject'], $mail['html'], $fromMail, $fromName);
             $sessionAlert->message = 'Please check your email “' . $params['pemail'] . '”. Once you verify, you can use “' . $params['pemail'] . '” to login to ePT.';
             $sessionAlert->status = 'success';
             // $this->datamanagersDb->setStatusByEmail('inactive',$params['oldpemail']);
@@ -118,14 +117,14 @@ class Application_Service_DataManagers
     public function confirmPrimaryMail($params, $showAlert = false)
     {
         $sessionAlert = new Zend_Session_Namespace('alertSpace');
-        if (!Application_Model_DbTable_DataManagers::sameEmail($params['oldEmail'], $params['registeredEmail'])) {
-            $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
+        $dm = $this->dataManagerByLoginEmail((string) $params['oldEmail']);
+        if ($dm && !Application_Model_DbTable_DataManagers::sameEmail($params['oldEmail'], $params['registeredEmail'])) {
             $common = new Application_Service_Common();
-            $eptDomain = rtrim($conf->domain, '/');
-            $message = 'Dear Participant,<br/><br/> You or someone using your email requested to change your ePT login email address from ' . $params['oldEmail'] . ' to ' . $params['registeredEmail'] . ". <br/><br/> Please confirm your new login email by clicking on the following link: <br/><br/><a href='" . $eptDomain . '/auth/verify/email/' . base64_encode($params['registeredEmail']) . "'>" . $eptDomain . '/auth/verify/email/' . base64_encode($params['registeredEmail']) . '</a> <br/><br/> If you are not able to click the link, you can copy and paste it in a browser address bar.<br/><br/> If you did not request for this update, you can safely ignore this email.<br/><br/><small>Thanks,<br/> Online PT Team<br/> <i>Please note: This is a system generated email.</i></small>';
+            $token = $this->datamanagersDb->issueEmailChangeToken((int) $dm['dm_id'], (string) $params['registeredEmail']);
+            $mail = self::loginEmailChangeEmail(trim($dm['first_name'] . ' ' . $dm['last_name']), (string) $params['oldEmail'], (string) $params['registeredEmail'], $token);
             $fromMail = Application_Service_Common::getConfig('admin_email');
             $fromName = Application_Service_Common::getConfig('admin-name');
-            $common->insertTempMail($params['registeredEmail'], null, null, 'ePT | Change of login email id', $message, $fromMail, $fromName);
+            $common->insertTempMail($params['registeredEmail'], null, null, $mail['subject'], $mail['html'], $fromMail, $fromName);
             $sessionAlert->message = 'Please check your email “' . $params['registeredEmail'] . '”. Once you verify, you can use “' . $params['registeredEmail'] . '” to login to ePT.';
             $sessionAlert->status = 'success';
             // $this->datamanagersDb->setStatusByEmail('inactive',$params['oldEmail']);
@@ -148,13 +147,13 @@ class Application_Service_DataManagers
     {
         $row = $this->datamanagersDb->fetchRow($this->datamanagersDb->getAdapter()->quoteInto('new_email = ?', $params['registeredEmail']));
         if (Application_Model_DbTable_DataManagers::hasPendingEmailChange($row)) {
-            $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
             $common = new Application_Service_Common();
-            $eptDomain = rtrim($conf->domain, '/');
-            $message = 'Dear Participant,<br/><br/> You or someone using your email requested to change your ePT login email address from ' . $params['oldEmail'] . ' to ' . $params['registeredEmail'] . ". <br/><br/> Please confirm your new login email by clicking on the following link: <br/><br/><a href='" . $eptDomain . '/auth/verify/email/' . base64_encode($params['registeredEmail']) . "'>" . $eptDomain . '/auth/verify/email/' . base64_encode($params['registeredEmail']) . '</a> <br/><br/> If you are not able to click the link, you can copy and paste it in a browser address bar.<br/><br/> If you did not request for this update, you can safely ignore this email.<br/><br/><small>Thanks,<br/> Online PT Team<br/> <i>Please note: This is a system generated email.</i></small>';
+            // Use the stored addresses: the request only says which change to resend
+            $token = $this->datamanagersDb->issueEmailChangeToken((int) $row['dm_id'], (string) $row['new_email']);
+            $mail = self::loginEmailChangeEmail(trim($row['first_name'] . ' ' . $row['last_name']), (string) $row['primary_email'], (string) $row['new_email'], $token);
             $fromMail = Application_Service_Common::getConfig('admin_email');
             $fromName = Application_Service_Common::getConfig('admin-name');
-            $send = $common->insertTempMail($params['registeredEmail'], null, null, 'ePT | Change of login email id', $message, $fromMail, $fromName);
+            $send = $common->insertTempMail((string) $row['new_email'], null, null, $mail['subject'], $mail['html'], $fromMail, $fromName);
             if (isset($send) && $send > 0) {
                 return $send;
             }
@@ -231,8 +230,8 @@ class Application_Service_DataManagers
         }
 
         $common = new Application_Service_Common();
-        $participantName = trim((string) ($participant->first_name . ' ' . $participant->last_name));
-        $participantName = htmlspecialchars($participantName, ENT_QUOTES, 'UTF-8');
+        $participantNameRaw = trim((string) ($participant->first_name . ' ' . $participant->last_name));
+        $participantName = htmlspecialchars($participantNameRaw, ENT_QUOTES, 'UTF-8');
 
         // Prefer the email stored in DB
         $participantMail = Application_Service_Common::validateEmail((string) $participant->primary_email);
@@ -277,38 +276,23 @@ class Application_Service_DataManagers
         if ($validMail === true) {
             $resetUrl = "$eptDomain/auth/new-password/token/{$participant->password_reset_token}";
 
-            $message = "Dear {$participantName},<br/><br/>"
-                . 'You (or someone else) requested a password reset for your ePT account (<b>'
-                . htmlspecialchars($participantMail, ENT_QUOTES, 'UTF-8')
-                . '</b>).<br/><br/>'
-                . 'If you requested this, click the link below or paste it into your browser:<br/>'
-                . "<a href='{$resetUrl}'>{$resetUrl}</a><br/><br/>"
-                . 'This link will expire in 24 hours and can only be used once.<br/><br/>'
-                . 'If you did not request a password reset, you can safely ignore this email.<br/><br/>'
-                . '<small>Thanks,<br/>ePT Support</small>';
-
-            $common->insertTempMail(
-                $participantMail,
-                null,
-                null,
-                'Password Reset - ePT',
-                $message,
-                $adminMail,
-                $adminName
-            );
+            $mail = self::passwordResetLinkEmail($participantNameRaw, $participantMail, $resetUrl);
+            $common->insertTempMail($participantMail, null, null, $mail['subject'], $mail['html'], $adminMail, $adminName);
 
             // Generic response to the user/browser
             $sessionAlert->message = $genericOkMsg;
             $sessionAlert->status = 'success';
         } else {
             // Bad/temporary domain or no MX: notify admin, keep user message generic
-            $adminMsg = "Participant <b>{$participantName}</b> requested a password reset, "
-                . 'but their email appears invalid or undeliverable: <b>'
-                . htmlspecialchars($participantMail, ENT_QUOTES, 'UTF-8')
-                . '</b> (input: '
-                . htmlspecialchars((string) $email, ENT_QUOTES, 'UTF-8') . ').';
+            $adminMsg = Application_Service_EmailLayout::page(
+                Application_Service_EmailLayout::p("<b>{$participantName}</b> asked to reset their ePT password, but no email was sent. "
+                    . 'Their login email looks invalid or cannot receive mail: <b>'
+                    . htmlspecialchars($participantMail, ENT_QUOTES, 'UTF-8')
+                    . '</b> (they entered ' . htmlspecialchars((string) $email, ENT_QUOTES, 'UTF-8') . ').')
+                . Application_Service_EmailLayout::p('Correct the address on their data manager record, or reset the password for them from the data manager list.', true)
+            );
 
-            $common->insertTempMail($adminMail, null, null, 'Password Reset - ePT', $adminMsg);
+            $common->insertTempMail($adminMail, null, null, 'Password reset email not sent: ' . $participantNameRaw, $adminMsg);
 
             $sessionAlert->message = $genericOkMsg;
             $sessionAlert->status = 'success';
@@ -529,6 +513,70 @@ class Application_Service_DataManagers
         $alert->message = 'Password reset and login email queued for ' . $to[0];
     }
 
+    /**
+     * The email with a link to choose a new password, sent when someone asks
+     * for a reset on the sign-in page or through the API.
+     *
+     * @return array{subject: string, html: string}
+     */
+    public static function passwordResetLinkEmail(?string $name, string $loginEmail, string $resetUrl): array
+    {
+        $l = Application_Service_EmailLayout::class;
+        $body = $l::greeting($name)
+            . $l::p(sprintf(
+                Pt_Commons_TranslateUtility::safeTranslate('We received a request to reset the password for your ePT account, %s.'),
+                '<strong>' . $l::e($loginEmail) . '</strong>'
+            ))
+            . $l::button($resetUrl, Pt_Commons_TranslateUtility::safeTranslate('Choose a new password'))
+            . $l::p(Pt_Commons_TranslateUtility::safeTranslate('This link expires in 24 hours and works only once.'))
+            . $l::fallbackLink($resetUrl)
+            . $l::note(Pt_Commons_TranslateUtility::safeTranslate('If you did not ask to reset your password, ignore this email. Your password stays the same.'))
+            . $l::signoff();
+
+        return [
+            'subject' => Pt_Commons_TranslateUtility::safeTranslate('Reset your ePT password'),
+            'html' => $l::page($body, Pt_Commons_TranslateUtility::safeTranslate('Use this link within 24 hours to choose a new password.')),
+        ];
+    }
+
+    /**
+     * The email that asks someone to confirm a new login email address. It
+     * goes to the new address with a one-time token from
+     * issueEmailChangeToken(), so opening the link proves they own it.
+     *
+     * @return array{subject: string, html: string}
+     */
+    public static function loginEmailChangeEmail(?string $name, string $oldEmail, string $newEmail, string $token): array
+    {
+        $l = Application_Service_EmailLayout::class;
+        $verifyUrl = $l::siteUrl() . '/auth/verify/token/' . $token;
+        $body = $l::greeting($name)
+            . $l::p(sprintf(
+                Pt_Commons_TranslateUtility::safeTranslate('A request was made to change the login email for your ePT account from %1$s to %2$s.'),
+                '<strong>' . $l::e($oldEmail) . '</strong>',
+                '<strong>' . $l::e($newEmail) . '</strong>'
+            ))
+            . $l::p(Pt_Commons_TranslateUtility::safeTranslate('Confirm the new address to start using it to sign in.'))
+            . $l::button($verifyUrl, Pt_Commons_TranslateUtility::safeTranslate('Confirm new login email'))
+            . $l::p(Pt_Commons_TranslateUtility::safeTranslate('This link expires in 7 days and works only once.'))
+            . $l::fallbackLink($verifyUrl)
+            . $l::note(Pt_Commons_TranslateUtility::safeTranslate('If you did not ask for this change, ignore this email. Your login email stays the same.'))
+            . $l::signoff();
+
+        return [
+            'subject' => Pt_Commons_TranslateUtility::safeTranslate('Confirm your new ePT login email'),
+            'html' => $l::page($body, Pt_Commons_TranslateUtility::safeTranslate('Confirm this address to use it for signing in to ePT.')),
+        ];
+    }
+
+    /** The data manager with this login email: id and name, or null. */
+    private function dataManagerByLoginEmail(string $email): ?array
+    {
+        $db = $this->datamanagersDb->getAdapter();
+        $row = $db->fetchRow($db->select()->from('data_manager', ['dm_id', 'first_name', 'last_name', 'primary_email', 'new_email'])->where('primary_email = ?', $email));
+        return $row ?: null;
+    }
+
     /* Body of the login-credentials email, shared by the single-user and bulk
        reset flows. Inline styles and tables only, since mail clients drop <style>
        and ignore most layout CSS. The newlines keep the strip_tags() plain-text
@@ -545,7 +593,7 @@ class Application_Service_DataManagers
             ? sprintf(Pt_Commons_TranslateUtility::safeTranslate('If you did not expect this email, or need help, contact ePT Support at %s.'), '<a href="mailto:' . $e($supportEmail) . '" style="color:#1a56db;">' . $e($supportEmail) . '</a>')
             : Pt_Commons_TranslateUtility::safeTranslate('If you did not expect this email, or need help, contact ePT Support.');
 
-        return '<div style="font-family:Arial,Helvetica,sans-serif;font-size:14px;line-height:1.55;color:#222;max-width:560px;">' . "\n"
+        return Application_Service_EmailLayout::page('<div>' . "\n"
             . $p . $greeting . ',</p>' . "\n"
             . $p . Pt_Commons_TranslateUtility::safeTranslate('Your password for ePT has been reset. Use these details to sign in.') . '</p>' . "\n"
             . '<table cellpadding="0" cellspacing="0" style="border-collapse:collapse;margin:0 0 18px;background:#f5f7fa;border:1px solid #dde3ea;border-radius:6px;">'
@@ -565,7 +613,7 @@ class Application_Service_DataManagers
             . $this->renderActivityHistoryHtml($priorHistory)
             . $p . $support . '</p>' . "\n"
             . '<p style="margin:0;">' . Pt_Commons_TranslateUtility::safeTranslate('Thank you') . ',<br/>' . "\n" . Pt_Commons_TranslateUtility::safeTranslate('ePT Support') . '</p>' . "\n"
-            . '</div>';
+            . '</div>');
     }
 
     /* The "recent activity" table in credentials emails, shared by the single-user
@@ -1013,11 +1061,6 @@ class Application_Service_DataManagers
     public function resolveResetToken($token)
     {
         return $this->datamanagersDb->fetchByPasswordResetToken($token);
-    }
-
-    public function verifyEmailById($email)
-    {
-        return $this->datamanagersDb->fetchVerifyEmailById($email);
     }
 
     public function checkForceProfileEmail($link)

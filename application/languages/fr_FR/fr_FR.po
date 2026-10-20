@@ -28262,6 +28262,69 @@ msgstr "Aucun participant"
 #~ msgid "Not enrolled in any scheme"
 #~ msgstr "Non inscrits à un programme"
 
+#: application/services/EmailLayout.php
+#, php-format
+msgid "This is an automated email from ePT at %s."
+msgstr "Ceci est un e-mail automatique envoyé par ePT depuis %s."
+
+#: application/services/EmailLayout.php
+msgid "This is an automated email from ePT."
+msgstr "Ceci est un e-mail automatique envoyé par ePT."
+
+#: application/services/EmailLayout.php
+msgid "If the button does not work, copy this link into your browser:"
+msgstr "Si le bouton ne fonctionne pas, copiez ce lien dans votre navigateur :"
+
+#: application/services/DataManagers.php
+#, php-format
+msgid "We received a request to reset the password for your ePT account, %s."
+msgstr "Nous avons reçu une demande de réinitialisation du mot de passe de votre compte ePT, %s."
+
+#: application/services/DataManagers.php
+msgid "Choose a new password"
+msgstr "Choisir un nouveau mot de passe"
+
+#: application/services/DataManagers.php
+msgid "This link expires in 24 hours and works only once."
+msgstr "Ce lien expire dans 24 heures et ne fonctionne qu'une seule fois."
+
+#: application/services/DataManagers.php
+msgid "If you did not ask to reset your password, ignore this email. Your password stays the same."
+msgstr "Si vous n'avez pas demandé à réinitialiser votre mot de passe, ignorez cet e-mail. Votre mot de passe reste inchangé."
+
+#: application/services/DataManagers.php
+msgid "Reset your ePT password"
+msgstr "Réinitialiser votre mot de passe ePT"
+
+#: application/services/DataManagers.php
+msgid "Use this link within 24 hours to choose a new password."
+msgstr "Utilisez ce lien dans les 24 heures pour choisir un nouveau mot de passe."
+
+#: application/services/DataManagers.php
+#, php-format
+msgid "A request was made to change the login email for your ePT account from %1$s to %2$s."
+msgstr "Une demande a été faite pour changer l'e-mail de connexion de votre compte ePT de %1$s à %2$s."
+
+#: application/services/DataManagers.php
+msgid "Confirm the new address to start using it to sign in."
+msgstr "Confirmez la nouvelle adresse pour commencer à l'utiliser pour vous connecter."
+
+#: application/services/DataManagers.php
+msgid "Confirm new login email"
+msgstr "Confirmer le nouvel e-mail de connexion"
+
+#: application/services/DataManagers.php
+msgid "If you did not ask for this change, ignore this email. Your login email stays the same."
+msgstr "Si vous n'avez pas demandé ce changement, ignorez cet e-mail. Votre e-mail de connexion reste inchangé."
+
+#: application/services/DataManagers.php
+msgid "Confirm your new ePT login email"
+msgstr "Confirmez votre nouvel e-mail de connexion ePT"
+
+#: application/services/DataManagers.php
+msgid "Confirm this address to use it for signing in to ePT."
+msgstr "Confirmez cette adresse pour l'utiliser pour vous connecter à ePT."
+
 #: application/services/Common.php:1881
 msgid ""
 "email.devTrapDsn in application.ini is not a valid smtp:// address, so ePT "
@@ -28486,3 +28549,16 @@ msgstr "Ouvrir le piège à e-mails de développement"
 msgid "The check did not finish. Reload the page and try again."
 msgstr ""
 "La vérification ne s'est pas terminée. Rechargez la page et réessayez."
+
+#: application/services/DataManagers.php
+msgid "This link expires in 7 days and works only once."
+msgstr "Ce lien expire dans 7 jours et ne fonctionne qu'une seule fois."
+
+#: application/controllers/AuthController.php
+#, php-format
+msgid "Your login email has been changed. Sign in with %s."
+msgstr "Votre e-mail de connexion a été modifié. Connectez-vous avec %s."
+
+#: application/controllers/AuthController.php
+msgid "This confirmation link has expired or was already used. Sign in with your current login email and ask for a new link."
+msgstr "Ce lien de confirmation a expiré ou a déjà été utilisé. Connectez-vous avec votre e-mail de connexion actuel et demandez un nouveau lien."

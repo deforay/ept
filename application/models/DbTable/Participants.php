@@ -801,10 +801,14 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         $participantName = $params['pfname'] . ' ' . $params['plname'];
         $dataManager = $authNameSpace->first_name . ' ' . $authNameSpace->last_name;
         $common = new Application_Service_Common();
-        $message = "Hi,<br/>  A new participant ($participantName) was added by $dataManager <br/><small>This is a system generated email. Please do not reply.</small>";
+        $l = Application_Service_EmailLayout::class;
+        $message = $l::page(
+            $l::p(sprintf('%s added a new participant, <b>%s</b>.', $l::e(trim($dataManager)), $l::e(trim($participantName))))
+            . $l::button($l::siteUrl() . '/admin/participants', 'Open participants')
+        );
         $toMail = Common::getConfig('admin_email');
         //$fromName = Common::getConfig('admin-name');
-        $common->sendMail($toMail, null, null, "New Participant Registered  ($participantName)", $message, null, 'ePT Admin');
+        $common->sendMail($toMail, null, null, 'New participant added: ' . trim($participantName), $message, null, 'ePT Admin');
 
         // After the creator's own mapping, which a PTCC creator would otherwise collide with
         $this->mapToPtccs([(int) $participantId]);

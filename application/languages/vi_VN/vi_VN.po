@@ -27317,6 +27317,69 @@ msgstr "Không có đơn vị tham gia"
 #~ msgid "Not enrolled in any scheme"
 #~ msgstr "Chưa ghi danh chương trình nào"
 
+#: application/services/EmailLayout.php
+#, php-format
+msgid "This is an automated email from ePT at %s."
+msgstr "Đây là email tự động từ ePT tại %s."
+
+#: application/services/EmailLayout.php
+msgid "This is an automated email from ePT."
+msgstr "Đây là email tự động từ ePT."
+
+#: application/services/EmailLayout.php
+msgid "If the button does not work, copy this link into your browser:"
+msgstr "Nếu nút không hoạt động, hãy sao chép liên kết này vào trình duyệt:"
+
+#: application/services/DataManagers.php
+#, php-format
+msgid "We received a request to reset the password for your ePT account, %s."
+msgstr "Chúng tôi đã nhận được yêu cầu đặt lại mật khẩu cho tài khoản ePT của bạn, %s."
+
+#: application/services/DataManagers.php
+msgid "Choose a new password"
+msgstr "Chọn mật khẩu mới"
+
+#: application/services/DataManagers.php
+msgid "This link expires in 24 hours and works only once."
+msgstr "Liên kết này hết hạn sau 24 giờ và chỉ dùng được một lần."
+
+#: application/services/DataManagers.php
+msgid "If you did not ask to reset your password, ignore this email. Your password stays the same."
+msgstr "Nếu bạn không yêu cầu đặt lại mật khẩu, hãy bỏ qua email này. Mật khẩu của bạn vẫn giữ nguyên."
+
+#: application/services/DataManagers.php
+msgid "Reset your ePT password"
+msgstr "Đặt lại mật khẩu ePT của bạn"
+
+#: application/services/DataManagers.php
+msgid "Use this link within 24 hours to choose a new password."
+msgstr "Hãy dùng liên kết này trong vòng 24 giờ để chọn mật khẩu mới."
+
+#: application/services/DataManagers.php
+#, php-format
+msgid "A request was made to change the login email for your ePT account from %1$s to %2$s."
+msgstr "Có yêu cầu thay đổi email đăng nhập của tài khoản ePT của bạn từ %1$s sang %2$s."
+
+#: application/services/DataManagers.php
+msgid "Confirm the new address to start using it to sign in."
+msgstr "Hãy xác nhận địa chỉ mới để bắt đầu dùng địa chỉ này khi đăng nhập."
+
+#: application/services/DataManagers.php
+msgid "Confirm new login email"
+msgstr "Xác nhận email đăng nhập mới"
+
+#: application/services/DataManagers.php
+msgid "If you did not ask for this change, ignore this email. Your login email stays the same."
+msgstr "Nếu bạn không yêu cầu thay đổi này, hãy bỏ qua email này. Email đăng nhập của bạn vẫn giữ nguyên."
+
+#: application/services/DataManagers.php
+msgid "Confirm your new ePT login email"
+msgstr "Xác nhận email đăng nhập ePT mới của bạn"
+
+#: application/services/DataManagers.php
+msgid "Confirm this address to use it for signing in to ePT."
+msgstr "Hãy xác nhận địa chỉ này để dùng khi đăng nhập ePT."
+
 #: application/services/Common.php:1881
 msgid ""
 "email.devTrapDsn in application.ini is not a valid smtp:// address, so ePT "
@@ -27527,3 +27590,16 @@ msgstr "Mở bẫy thư phát triển"
 #: application/modules/admin/views/scripts/global-config/index.phtml:2207
 msgid "The check did not finish. Reload the page and try again."
 msgstr "Việc kiểm tra chưa hoàn tất. Hãy tải lại trang và thử lại."
+
+#: application/services/DataManagers.php
+msgid "This link expires in 7 days and works only once."
+msgstr "Liên kết này hết hạn sau 7 ngày và chỉ dùng được một lần."
+
+#: application/controllers/AuthController.php
+#, php-format
+msgid "Your login email has been changed. Sign in with %s."
+msgstr "Email đăng nhập của bạn đã được thay đổi. Hãy đăng nhập bằng %s."
+
+#: application/controllers/AuthController.php
+msgid "This confirmation link has expired or was already used. Sign in with your current login email and ask for a new link."
+msgstr "Liên kết xác nhận này đã hết hạn hoặc đã được sử dụng. Hãy đăng nhập bằng email đăng nhập hiện tại và yêu cầu liên kết mới."
