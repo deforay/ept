@@ -739,6 +739,9 @@ class Application_Service_Common
         if (!self::writeProductionIniValues($values)) {
             return ['ok' => false, 'message' => 'Could not write application.ini. Make it writable by the web server user and save again.'];
         }
+        if ($transportChanged) {
+            self::saveSystemConfig(self::MAIL_SETTINGS_CHANGED_CONFIG, (string) time(), 'When the SMTP sign-in settings last changed');
+        }
         return ['ok' => true, 'message' => $transportChanged ? 'Email settings saved; the mail server accepted the login.' : 'Email settings saved.'];
     }
 
@@ -956,10 +959,12 @@ class Application_Service_Common
                 $section = rtrim($section, "\r\n") . "\n" . $line . "\n";
             }
         }
-        if (!str_ends_with($section, "\n")) {
-            $section .= "\n";
-        }
+        // One blank line before the next section, so repeated saves do not add more
+        $section = rtrim($section, "\r\n") . "\n";
         $updated = substr($contents, 0, $start) . $section . ($end < strlen($contents) ? "\n" . ltrim(substr($contents, $end), "\r\n") : '');
+        if ($updated === $contents) {
+            return true;
+        }
         return @file_put_contents($iniPath, $updated, LOCK_EX) !== false;
     }
 
@@ -997,6 +1002,9 @@ class Application_Service_Common
         }
         if ($updated === null) {
             return false;
+        }
+        if ($updated === $contents) {
+            return true;
         }
         return @file_put_contents($iniPath, $updated, LOCK_EX) !== false;
     }
@@ -1820,8 +1828,10 @@ class Application_Service_Common
      * login, no connection, unusable settings) is newer than the latest successful
      * send. 'source' is 'verify' when Verify Email Setup or the automatic check
      * confirmed the failure, and 'queue' when only a queued send hit it.
-     * A failure older than the last edit of application.ini does not count, so
-     * fixing the mail settings re-enables sending without waiting for a send.
+     * A failure older than the last change to the SMTP sign-in settings in Global
+     * Config does not count, so fixing them re-enables sending without waiting
+     * for a send. A fix made by editing application.ini by hand counts once the
+     * automatic check passes, within 10 minutes.
      */
     public static function mailDeliveryProblem(): ?array
     {
@@ -1865,7 +1875,8 @@ class Application_Service_Common
                 return null;
             }
             $lastSent = (int) strtotime((string) $db->fetchOne("SELECT MAX(sent_at) FROM temp_mail WHERE status = 'sent'"));
-            $settingsChanged = (int) @filemtime(APPLICATION_PATH . '/configs/application.ini');
+            // Not the application.ini mtime: saving any Global Config setting can rewrite that file
+            $settingsChanged = (int) $db->fetchOne('SELECT `value` FROM system_config WHERE config = ?', [self::MAIL_SETTINGS_CHANGED_CONFIG]);
             if ($failedAt > max($lastSent, $settingsChanged, $verifiedAt)) {
                 return ['reason' => 'failing', 'type' => $failureType, 'when' => $failedAt, 'source' => $source];
             }
@@ -1903,6 +1914,23 @@ class Application_Service_Common
 
     /** system_config row that keeps the latest Verify Email Setup result. */
     private const MAIL_VERIFY_CONFIG = 'mail_last_verify';
+
+    /** system_config row with the time updateMailSettings() last changed the SMTP sign-in settings. */
+    private const MAIL_SETTINGS_CHANGED_CONFIG = 'mail_settings_changed';
+
+    private static function saveSystemConfig(string $config, string $value, string $displayName): void
+    {
+        try {
+            $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+            if ($db->fetchOne('SELECT 1 FROM system_config WHERE config = ?', [$config])) {
+                $db->update('system_config', ['value' => $value], ['config = ?' => $config]);
+            } else {
+                $db->insert('system_config', ['config' => $config, 'value' => $value, 'display_name' => $displayName]);
+            }
+        } catch (Throwable $e) {
+            Pt_Commons_LoggerUtility::logWarning("Could not save system_config {$config}: " . $e->getMessage());
+        }
+    }
 
     /**
      * The latest Verify Email Setup result, or null if it has never run.
@@ -2058,17 +2086,8 @@ class Application_Service_Common
             'auto' => $automatic,
             'steps' => $steps,
         ];
-        try {
-            $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-            $value = json_encode($result, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
-            if ($db->fetchOne('SELECT 1 FROM system_config WHERE config = ?', [self::MAIL_VERIFY_CONFIG])) {
-                $db->update('system_config', ['value' => $value], ['config = ?' => self::MAIL_VERIFY_CONFIG]);
-            } else {
-                $db->insert('system_config', ['config' => self::MAIL_VERIFY_CONFIG, 'value' => $value, 'display_name' => 'Latest Verify Email Setup result']);
-            }
-        } catch (Throwable $e) {
-            Pt_Commons_LoggerUtility::logWarning('verifyMailSetup(): could not save the result: ' . $e->getMessage());
-        }
+        $value = (string) json_encode($result, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+        self::saveSystemConfig(self::MAIL_VERIFY_CONFIG, $value, 'Latest Verify Email Setup result');
         return $result + ['trapUrl' => $trapUrl];
     }
 
