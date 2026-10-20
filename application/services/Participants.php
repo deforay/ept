@@ -1201,32 +1201,38 @@ class Application_Service_Participants
 
         $eptDomain = rtrim($conf->domain, '/');
 
-        if (!empty($downloads)) {
-            foreach ($downloads as $uniqueId) {
-                $path = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . $uniqueId['unique_identifier'];
-                if (is_dir($path) && count(scandir($path)) > 2) {
-                    $lab = Application_Model_DbTable_Participants::formatParticipantName($uniqueId);
-
-                    $files = [];
-                    $nameOfTheFile = [];
-                    foreach (scandir($path) as $fileName) {
-                        if ($fileName != '.' && $fileName != '..') {
-                            $files[$fileName] = filemtime($path . '/' . $fileName);
-                            $nameOfTheFile[] = $fileName;
-                        }
-                    }
-                    if (!empty($files)) {
-                        arsort($files);
-                        $i = 0;
-                        foreach (array_keys($files) as $key => $descFile) {
-                            $response[$key]['unique'] = ucfirst($uniqueId['unique_identifier']);
-                            $response[$key]['lab'] = ucfirst($lab);
-                            $response[$key]['fileName'] = ucfirst($nameOfTheFile[$i]);
-                            $response[$key]['url'] = $eptDomain . '/participant/download-file?fileName=' . urlencode(base64_encode($descFile . '#######' . $uniqueId['unique_identifier'] . '#######' . Pt_Commons_DateUtility::getCurrentDateTime()));
-                            $i++;
-                        }
+        // The same files the web File Downloads page lists: the lab folder
+        // root, then the certificates/ subfolder where distributed
+        // certificates land. A root file wins on a name clash, matching the
+        // lookup order in download-file.
+        foreach ($downloads as $uniqueId) {
+            $path = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . $uniqueId['unique_identifier'];
+            if (!is_dir($path)) {
+                continue;
+            }
+            $files = [];
+            foreach ([$path, $path . DIRECTORY_SEPARATOR . 'certificates'] as $dir) {
+                if (!is_dir($dir)) {
+                    continue;
+                }
+                foreach (scandir($dir) as $fileName) {
+                    if ($fileName != '.' && $fileName != '..' && !isset($files[$fileName]) && is_file($dir . DIRECTORY_SEPARATOR . $fileName)) {
+                        $files[$fileName] = filemtime($dir . DIRECTORY_SEPARATOR . $fileName);
                     }
                 }
+            }
+            if (empty($files)) {
+                continue;
+            }
+            arsort($files);
+            $lab = Application_Model_DbTable_Participants::formatParticipantName($uniqueId);
+            foreach (array_keys($files) as $fileName) {
+                $response[] = [
+                    'unique' => ucfirst($uniqueId['unique_identifier']),
+                    'lab' => ucfirst($lab),
+                    'fileName' => ucfirst($fileName),
+                    'url' => $eptDomain . '/participant/download-file?fileName=' . urlencode(base64_encode($fileName . '#######' . $uniqueId['unique_identifier'] . '#######' . Pt_Commons_DateUtility::getCurrentDateTime())),
+                ];
             }
         }
         return $response;
