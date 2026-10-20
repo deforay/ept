@@ -162,7 +162,6 @@ class Application_Service_Reports
         $esc = fn ($value) => htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8');
         $sid = base64_encode((string) $aRow['shipment_id']);
         $stage = $aRow['stage'];
-        $isDraftReports = $stage === 'reports';
         $enrolled = (int) $aRow['enrolled'];
         $responded = (int) $aRow['responded'];
         $evaluated = (int) $aRow['passed'] + (int) $aRow['failed'];
@@ -2694,7 +2693,7 @@ class Application_Service_Reports
                     $chips .= '<span class="perf-chip is-gap" title="' . $esc($c['shipment_code'] . ' · ' . $notEnrolled) . '"></span>';
                     continue;
                 }
-                [$label, $class] = $outcomes[$h['outcome']];
+                [$label] = $outcomes[$h['outcome']];
                 $scored = in_array($h['outcome'], ['pass', 'fail'], true);
                 $title = implode(' · ', array_filter([
                     $h['shipment_code'],

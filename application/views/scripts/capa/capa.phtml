@@ -18,12 +18,12 @@ $dtFormat = $genderHelper->getDateFormat();
 <script type="text/javascript" src="<?php echo $this->baseUrl('js/moment.min.js'); ?>"></script>
 <link rel="stylesheet" href="<?php echo $this->baseUrl("css/jquery.dataTables.css"); ?>" type="text/css" media="all">
 <link href="<?php echo $this->baseUrl('css/select2.css'); ?>" rel="stylesheet" />
-<legend>
+<div class="page-legend">
 	<h3>
 		<?= $this->translate->_("Corrective Actions and Preventive Action for"); ?><?= $this->escape($this->correctiveActions[0]['shipment_code'] ?? ''); ?>
 		<!-- <button style="margin-right: 10px;float:right; " class="btn btn-success btn-sm" onclick="generateReport()"><span><?= $this->translate->_("Export Report"); ?></span></button>  -->
 	</h3>
-</legend>
+</div>
 <table style="margin:20px 0;background-color: aliceblue;" class="table table-bordered">
 	<thead>
 		<tr>

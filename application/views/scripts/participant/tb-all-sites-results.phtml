@@ -1,6 +1,6 @@
-<legend>
+<div class="page-legend">
 	<h3><?= $this->translate->_("TB: All Sites' Results"); ?></h3>
-</legend>
+</div>
 <?php
 $wbGenerateUrl = $this->url(['module' => 'default', 'controller' => 'participant', 'action' => 'tb-all-sites-results-generate'], 'default', true);
 $wbIntro = $this->translate->_("Builds an Excel workbook for one TB shipment, with one row per participant and the results of every sample.");
