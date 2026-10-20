@@ -60,7 +60,7 @@ $eptLogo = implode('', $logos);
     <link rel="stylesheet" href="/assets/home/animate.min.css" />
 
     <!-- Template Main CSS File -->
-    <link href="/assets/home/home.css" rel="stylesheet">
+    <link href="<?php echo $this->assetUrl("assets/home/home.css"); ?>" rel="stylesheet">
 
     <!-- Tom Select for searchable dropdowns -->
     <link href="https://cdn.jsdelivr.net/npm/tom-select@2.4.3/dist/css/tom-select.bootstrap5.min.css" rel="stylesheet" integrity="sha384-oNaL7h8UJDHZ8k9XxysQRnqKxysB2lmlq7uU5Ic9CsOy89U4US8mT9pGYFf0ygyM" crossorigin="anonymous" referrerpolicy="no-referrer">
@@ -100,7 +100,7 @@ $eptLogo = implode('', $logos);
             <h1 class="logo"><a href="/"><?= $eptLogo; ?></a></h1>
             <nav id="navbar" class="navbar">
                 <ul>
-                    <li><a class="nav-link scrollto active" href="/#hero"><?= $this->translate->_("Home"); ?></a></li>
+                    <li><a class="nav-link scrollto active" href="/#home"><?= $this->translate->_("Home"); ?></a></li>
                     <?php if ($showResource) { ?>
                         <li><a class="nav-link scrollto" href="/#resources"><?= $this->translate->_("Resources"); ?></a>
                         </li>
