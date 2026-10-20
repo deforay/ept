@@ -26833,3 +26833,7 @@ msgstr ""
 #: application/layouts/scripts/admin.phtml:761
 msgid "An admin who can edit Global Config can fix this."
 msgstr ""
+
+#: application/layouts/scripts/admin.phtml:766
+msgid "Hide until something changes"
+msgstr ""

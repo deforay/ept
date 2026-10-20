@@ -27722,3 +27722,7 @@ msgstr "Mở cài đặt email"
 #: application/layouts/scripts/admin.phtml:761
 msgid "An admin who can edit Global Config can fix this."
 msgstr "Quản trị viên có quyền sửa Cấu hình chung có thể khắc phục việc này."
+
+#: application/layouts/scripts/admin.phtml:766
+msgid "Hide until something changes"
+msgstr "Ẩn cho tới khi có thay đổi"

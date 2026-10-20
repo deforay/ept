@@ -738,8 +738,10 @@ $helpPageKey = "$controllerName/$actionName";
 	?>
 	<div class="<?php echo $contentShell; ?>">
 		<?php
-		// Warn every admin when ePT cannot send email (Application_Service_Common::mailDeliveryProblem())
-		$mailProblem = Application_Service_Common::cachedMailDeliveryProblem();
+		// Tell admins on the dashboard when ePT cannot send email (Application_Service_Common::mailDeliveryProblem()).
+		// Some instances do not use email, so the bar can be dismissed until the kind of problem
+		// changes. A dashboard load with no problem clears the dismissal, so a later breakage shows.
+		$mailProblem = $controllerName === 'index' && $actionName === 'index' ? Application_Service_Common::cachedMailDeliveryProblem() : null;
 		if ($mailProblem !== null) {
 			$canEditConfig = in_array('config-ept', $privileges, true);
 			if ($mailProblem['reason'] === 'not_configured') {
@@ -753,14 +755,40 @@ $helpPageKey = "$controllerName/$actionName";
 					default => sprintf($this->translate->_('ePT cannot send email. The last attempt failed on %s.'), $failedOn),
 				};
 			} ?>
-			<div class="mail-problem-bar<?= $mailProblem['reason'] === 'not_configured' ? ' is-muted' : ''; ?>" id="mailProblemBar" role="status">
+			<div class="mail-problem-bar<?= $mailProblem['reason'] === 'not_configured' ? ' is-muted' : ''; ?>" id="mailProblemBar" role="status"
+				data-signature="<?= $this->escape($mailProblem['reason'] . '|' . ($mailProblem['type'] ?? '')); ?>">
 				<span><i class="icon-warning-sign"></i> <?= $mailProblemText; ?></span>
 				<?php if ($canEditConfig) { ?>
 					<a href="/admin/global-config#emailConfig"><?= $this->translate->_('Open Email Settings'); ?></a>
 				<?php } else { ?>
 					<span class="mail-problem-who"><?= $this->translate->_('An admin who can edit Global Config can fix this.'); ?></span>
 				<?php } ?>
+				<button type="button" class="mail-problem-close" aria-label="<?= $this->htmlTranslate('Hide until something changes'); ?>" title="<?= $this->htmlTranslate('Hide until something changes'); ?>">&times;</button>
 			</div>
+			<script>
+				(function () {
+					var bar = document.getElementById('mailProblemBar');
+					var key = 'ept.mailProblemDismissed';
+					try {
+						if (localStorage.getItem(key) === bar.getAttribute('data-signature')) {
+							bar.parentNode.removeChild(bar);
+							return;
+						}
+					} catch (e) {}
+					bar.querySelector('.mail-problem-close').addEventListener('click', function () {
+						try {
+							localStorage.setItem(key, bar.getAttribute('data-signature'));
+						} catch (e) {}
+						bar.parentNode.removeChild(bar);
+					});
+				})();
+			</script>
+		<?php } elseif ($controllerName === 'index' && $actionName === 'index') { ?>
+			<script>
+				try {
+					localStorage.removeItem('ept.mailProblemDismissed');
+				} catch (e) {}
+			</script>
 		<?php } ?>
 		<?php echo $this->layout()->content; ?>
 	</div> <!-- /container -->

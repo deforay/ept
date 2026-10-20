@@ -28707,3 +28707,7 @@ msgid "An admin who can edit Global Config can fix this."
 msgstr ""
 "Un administrateur autorisé à modifier la configuration globale peut corriger"
 " ce problème."
+
+#: application/layouts/scripts/admin.phtml:766
+msgid "Hide until something changes"
+msgstr "Masquer jusqu'au prochain changement"

@@ -8880,3 +8880,20 @@ td.center {
 .mail-problem-who {
 	opacity: .85;
 }
+
+.mail-problem-close {
+	margin-left: auto;
+	padding: 0 4px;
+	border: 0;
+	background: none;
+	color: inherit;
+	font-size: 20px;
+	line-height: 1;
+	opacity: .6;
+	cursor: pointer;
+}
+
+.mail-problem-close:hover,
+.mail-problem-close:focus {
+	opacity: 1;
+}
