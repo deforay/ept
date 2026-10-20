@@ -126,7 +126,7 @@ if (empty($shipmentsToGenerate)) {
 
 /* ---------- Common helpers ---------- */
 
-function sendNotification(?string $recipients, array $shipmentsList, string $batchesUrl)
+function sendNotification(?string $recipients, array $shipmentsList, string $pageUrl)
 {
 	// global_config.certificates holds the comma-separated addresses set as
 	// "Certificate Email" in Configure > Global Settings.
@@ -138,8 +138,8 @@ function sendNotification(?string $recipients, array $shipmentsList, string $bat
 	$emailSubject = "ePT | Certificates Generated";
 	$emailContent = Application_Service_EmailLayout::notice(null, [
 		'Certificates for shipment <b>' . Application_Service_EmailLayout::e(implode(', ', $shipmentsList)) . '</b> have been generated.',
-		'Review and approve them on the Certificate Batches page.',
-	], $batchesUrl, 'Open certificate batches');
+		'Review and approve them on Reports > Annual Certificates. Participants see nothing until you approve.',
+	], $pageUrl, 'Review and approve');
 
 	$common->insertTempMail($recipients, null, null, $emailSubject, $emailContent);
 }
@@ -913,7 +913,7 @@ try {
 		sendNotification(
 			$certificateRecipients,
 			array_unique($allShipmentsProcessed),
-			$domain . '/admin/certificate-batches'
+			$domain . '/reports/certificates'
 		);
 	}
 
