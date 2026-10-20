@@ -737,6 +737,31 @@ $helpPageKey = "$controllerName/$actionName";
 		: 'container';
 	?>
 	<div class="<?php echo $contentShell; ?>">
+		<?php
+		// Warn every admin when ePT cannot send email (Application_Service_Common::mailDeliveryProblem())
+		$mailProblem = Application_Service_Common::cachedMailDeliveryProblem();
+		if ($mailProblem !== null) {
+			$canEditConfig = in_array('config-ept', $privileges, true);
+			if ($mailProblem['reason'] === 'not_configured') {
+				$mailProblemText = $this->translate->_('Email is not set up, so ePT sends no email.');
+			} else {
+				$failedOn = $this->escape(Pt_Commons_DateUtility::humanReadableDateFormat(date('Y-m-d H:i:s', (int) $mailProblem['when']), true));
+				$mailProblemText = match ($mailProblem['type']) {
+					'smtp-auth' => sprintf($this->translate->_('ePT cannot send email. The mail server refused the login on %s.'), $failedOn),
+					'connectivity' => sprintf($this->translate->_('ePT cannot send email. It could not reach the mail server on %s.'), $failedOn),
+					'invalid_dsn' => sprintf($this->translate->_('ePT cannot send email. The saved mail settings were not usable on %s.'), $failedOn),
+					default => sprintf($this->translate->_('ePT cannot send email. The last attempt failed on %s.'), $failedOn),
+				};
+			} ?>
+			<div class="mail-problem-bar<?= $mailProblem['reason'] === 'not_configured' ? ' is-muted' : ''; ?>" id="mailProblemBar" role="status">
+				<span><i class="icon-warning-sign"></i> <?= $mailProblemText; ?></span>
+				<?php if ($canEditConfig) { ?>
+					<a href="/admin/global-config#emailConfig"><?= $this->translate->_('Open Email Settings'); ?></a>
+				<?php } else { ?>
+					<span class="mail-problem-who"><?= $this->translate->_('An admin who can edit Global Config can fix this.'); ?></span>
+				<?php } ?>
+			</div>
+		<?php } ?>
 		<?php echo $this->layout()->content; ?>
 	</div> <!-- /container -->
 	<div id="dDiv" class="dialog">

@@ -26801,3 +26801,35 @@ msgstr "PT Participant Info"
 
 #~ msgid "ASSAYNAME"
 #~ msgstr "ASSAYNAME"
+
+#: application/layouts/scripts/admin.phtml:746
+msgid "Email is not set up, so ePT sends no email."
+msgstr ""
+
+#: application/layouts/scripts/admin.phtml:750
+#, php-format
+msgid "ePT cannot send email. The mail server refused the login on %s."
+msgstr ""
+
+#: application/layouts/scripts/admin.phtml:751
+#, php-format
+msgid "ePT cannot send email. It could not reach the mail server on %s."
+msgstr ""
+
+#: application/layouts/scripts/admin.phtml:752
+#, php-format
+msgid "ePT cannot send email. The saved mail settings were not usable on %s."
+msgstr ""
+
+#: application/layouts/scripts/admin.phtml:753
+#, php-format
+msgid "ePT cannot send email. The last attempt failed on %s."
+msgstr ""
+
+#: application/layouts/scripts/admin.phtml:759
+msgid "Open Email Settings"
+msgstr ""
+
+#: application/layouts/scripts/admin.phtml:761
+msgid "An admin who can edit Global Config can fix this."
+msgstr ""

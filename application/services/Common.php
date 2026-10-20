@@ -1834,6 +1834,32 @@ class Application_Service_Common
         return null;
     }
 
+    /** Seconds the admin warning bar reuses one mailDeliveryProblem() answer. */
+    private const MAIL_PROBLEM_CACHE_SECONDS = 120;
+
+    /**
+     * mailDeliveryProblem() for the admin warning bar, kept in the admin session
+     * for two minutes so each page load does not repeat the queries. Saving or
+     * verifying the email settings calls forgetMailDeliveryProblem().
+     */
+    public static function cachedMailDeliveryProblem(): ?array
+    {
+        $session = new Zend_Session_Namespace('administrators');
+        $cached = $session->mailProblemCache;
+        if (is_array($cached) && ($cached['at'] ?? 0) > time() - self::MAIL_PROBLEM_CACHE_SECONDS) {
+            return $cached['problem'];
+        }
+        $problem = self::mailDeliveryProblem();
+        $session->mailProblemCache = ['at' => time(), 'problem' => $problem];
+        return $problem;
+    }
+
+    public static function forgetMailDeliveryProblem(): void
+    {
+        $session = new Zend_Session_Namespace('administrators');
+        unset($session->mailProblemCache);
+    }
+
     /** system_config row that keeps the latest Verify Email Setup result. */
     private const MAIL_VERIFY_CONFIG = 'mail_last_verify';
 

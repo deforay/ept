@@ -28666,3 +28666,44 @@ msgstr "Aucun participant"
 
 #~ msgid "Not enrolled in any scheme"
 #~ msgstr "Non inscrits à un programme"
+
+#: application/layouts/scripts/admin.phtml:746
+msgid "Email is not set up, so ePT sends no email."
+msgstr "La messagerie n'est pas configurée, donc ePT n'envoie aucun e-mail."
+
+#: application/layouts/scripts/admin.phtml:750
+#, php-format
+msgid "ePT cannot send email. The mail server refused the login on %s."
+msgstr ""
+"ePT ne peut pas envoyer d'e-mails. Le serveur de messagerie a refusé la "
+"connexion le %s."
+
+#: application/layouts/scripts/admin.phtml:751
+#, php-format
+msgid "ePT cannot send email. It could not reach the mail server on %s."
+msgstr ""
+"ePT ne peut pas envoyer d'e-mails. Il n'a pas pu joindre le serveur de "
+"messagerie le %s."
+
+#: application/layouts/scripts/admin.phtml:752
+#, php-format
+msgid "ePT cannot send email. The saved mail settings were not usable on %s."
+msgstr ""
+"ePT ne peut pas envoyer d'e-mails. Les paramètres de messagerie enregistrés "
+"étaient inutilisables le %s."
+
+#: application/layouts/scripts/admin.phtml:753
+#, php-format
+msgid "ePT cannot send email. The last attempt failed on %s."
+msgstr ""
+"ePT ne peut pas envoyer d'e-mails. La dernière tentative a échoué le %s."
+
+#: application/layouts/scripts/admin.phtml:759
+msgid "Open Email Settings"
+msgstr "Ouvrir les paramètres de messagerie"
+
+#: application/layouts/scripts/admin.phtml:761
+msgid "An admin who can edit Global Config can fix this."
+msgstr ""
+"Un administrateur autorisé à modifier la configuration globale peut corriger"
+" ce problème."

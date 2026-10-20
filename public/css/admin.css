@@ -8845,3 +8845,38 @@ td.center {
 	border-color: #f1a9a0;
 	color: #a02b1f;
 }
+
+/* Admin-wide warning when ePT cannot send email (layouts/scripts/admin.phtml) */
+.mail-problem-bar {
+	display: flex;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: 6px 10px;
+	margin: 0 0 14px;
+	padding: 8px 14px;
+	border: 1px solid #f5c2c0;
+	border-radius: 6px;
+	background: #fdecea;
+	color: #8a1c1c;
+	font-size: 13px;
+}
+
+.mail-problem-bar a {
+	color: #8a1c1c;
+	font-weight: 600;
+	text-decoration: underline;
+}
+
+.mail-problem-bar.is-muted {
+	border-color: #e5e7eb;
+	background: #f6f7f9;
+	color: #4b5563;
+}
+
+.mail-problem-bar.is-muted a {
+	color: #374151;
+}
+
+.mail-problem-who {
+	opacity: .85;
+}

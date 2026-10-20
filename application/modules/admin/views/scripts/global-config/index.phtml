@@ -2199,6 +2199,9 @@ id="faqTable">
 							? '<?= $this->jsTranslate('Email works. Verified on %s.'); ?>'.replace('%s', r.atText)
 							: '<?= $this->jsTranslate('Email does not work. Verified on %s.'); ?>'.replace('%s', r.atText);
 						showResult(summary, r.steps, !r.ok);
+						if (r.ok) {
+							$('#mailProblemBar').remove();
+						}
 						if (r.trapUrl) {
 							$('<a target="_blank" rel="noopener">').attr('href', r.trapUrl).text(' <?= $this->jsTranslate('Open the dev mail trap'); ?>').appendTo('#verifyMailSummary');
 						}

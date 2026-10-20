@@ -56,6 +56,7 @@ class Admin_GlobalConfigController extends Zend_Controller_Action
                 }
                 unset($params['bounceConfig']);
             }
+            Application_Service_Common::forgetMailDeliveryProblem();
             $commonServices->updateConfig($params);
         }
         $assign = $commonServices->getGlobalConfigDetails();
@@ -81,6 +82,7 @@ class Admin_GlobalConfigController extends Zend_Controller_Action
         $adminSession = new Zend_Session_Namespace('administrators');
         $adminEmail = (string) ($adminSession->primary_email ?? '');
         $result = Application_Service_Common::verifyMailSetup($adminEmail);
+        Application_Service_Common::forgetMailDeliveryProblem();
         $auditDb = new Application_Model_DbTable_AuditLog();
         $auditDb->addNewAuditLog($result['ok'] ? 'Verified email setup: passed' : 'Verified email setup: failed', 'config');
         $result['atText'] = Pt_Commons_DateUtility::humanReadableDateFormat(date('Y-m-d H:i:s', $result['at']), true);

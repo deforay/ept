@@ -27689,3 +27689,36 @@ msgstr "Không có đơn vị tham gia"
 
 #~ msgid "Not enrolled in any scheme"
 #~ msgstr "Chưa ghi danh chương trình nào"
+
+#: application/layouts/scripts/admin.phtml:746
+msgid "Email is not set up, so ePT sends no email."
+msgstr "Email chưa được cài đặt, vì vậy ePT không gửi email nào."
+
+#: application/layouts/scripts/admin.phtml:750
+#, php-format
+msgid "ePT cannot send email. The mail server refused the login on %s."
+msgstr "ePT không gửi được email. Máy chủ thư đã từ chối đăng nhập lúc %s."
+
+#: application/layouts/scripts/admin.phtml:751
+#, php-format
+msgid "ePT cannot send email. It could not reach the mail server on %s."
+msgstr ""
+"ePT không gửi được email. ePT không kết nối được tới máy chủ thư lúc %s."
+
+#: application/layouts/scripts/admin.phtml:752
+#, php-format
+msgid "ePT cannot send email. The saved mail settings were not usable on %s."
+msgstr "ePT không gửi được email. Cài đặt thư đã lưu không dùng được lúc %s."
+
+#: application/layouts/scripts/admin.phtml:753
+#, php-format
+msgid "ePT cannot send email. The last attempt failed on %s."
+msgstr "ePT không gửi được email. Lần gửi gần nhất đã thất bại lúc %s."
+
+#: application/layouts/scripts/admin.phtml:759
+msgid "Open Email Settings"
+msgstr "Mở cài đặt email"
+
+#: application/layouts/scripts/admin.phtml:761
+msgid "An admin who can edit Global Config can fix this."
+msgstr "Quản trị viên có quyền sửa Cấu hình chung có thể khắc phục việc này."
