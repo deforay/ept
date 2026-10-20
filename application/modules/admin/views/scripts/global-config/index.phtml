@@ -623,9 +623,18 @@ $faqResults = json_decode($this->faqs);
 		flex-wrap: wrap;
 	}
 
+	.verify-mail-bar .control-label {
+		margin: 0;
+	}
+
+	.verify-mail-to {
+		flex: 0 1 300px;
+		width: auto;
+	}
+
 	.verify-mail-hint {
+		margin-top: 8px;
 		color: #6b7280;
-		flex: 1 1 320px;
 	}
 
 	.verify-mail-unsaved {
@@ -1498,6 +1507,8 @@ $faqResults = json_decode($this->faqs);
 				<?php
 				$lastVerify = $this->lastMailVerification ?? null;
 				$adminEmail = (string) ((new Zend_Session_Namespace('administrators'))->primary_email ?? '');
+				// A login-only admin address may not be a real inbox. The From Email always is.
+				$verifyTo = Application_Service_Common::validateEmail($adminEmail) !== null ? $adminEmail : (string) ($this->mailSettings['fromEmail'] ?? '');
 				$verifyStepLabels = [
 					'login' => $this->translate->_('Mail server login'),
 					'send' => $this->translate->_('Test email'),
@@ -1506,26 +1517,30 @@ $faqResults = json_decode($this->faqs);
 				?>
 				<div class="verify-mail" id="verifyMail">
 					<div class="verify-mail-bar">
+						<label for="verifyMailTo" class="control-label"><?= $this->translate->_('Send the test email to'); ?></label>
+						<input type="email" id="verifyMailTo" class="form-control verify-mail-to" value="<?= $this->escape($verifyTo); ?>" placeholder="you@example.org" />
 						<button type="button" class="btn btn-default" id="verifyMailBtn"><i class="icon-ok-circle"></i> <?= $this->translate->_('Verify Email Setup'); ?></button>
-						<span class="verify-mail-hint">
-							<?php if (Application_Service_Common::validateEmail($adminEmail) !== null) { ?>
-								<?= sprintf($this->translate->_('Signs in to the mail server, sends a test email to %s and opens the bounce inbox. It uses the saved settings.'), '<strong>' . $this->escape($adminEmail) . '</strong>'); ?>
-							<?php } else { ?>
-								<?= $this->translate->_('Signs in to the mail server and opens the bounce inbox. It uses the saved settings. Add an email address to your admin account to also get a test email.'); ?>
-							<?php } ?>
-						</span>
+					</div>
+					<div class="verify-mail-hint">
+						<?= $this->translate->_('Signs in to the mail server, sends a test email to this address and opens the bounce inbox. It uses the saved settings. Leave the address empty to skip the test email.'); ?>
+						<?= $this->translate->_('ePT also signs in to the mail server on its own every hour, and every 10 minutes while email is failing.'); ?>
 					</div>
 					<div class="verify-mail-unsaved" id="verifyMailUnsaved" style="display:none;">
 						<i class="icon-warning-sign"></i> <?= $this->translate->_('You changed the email settings. Save them first, because Verify Email Setup tests the saved settings.'); ?>
 					</div>
 					<div class="verify-mail-result" id="verifyMailResult"<?= $lastVerify ? '' : ' style="display:none;"'; ?>>
 						<div class="verify-mail-summary" id="verifyMailSummary">
-							<?php if ($lastVerify) { ?>
-								<?= sprintf(
-									$lastVerify['ok'] ? $this->translate->_('Last verified on %s by %s: email works.') : $this->translate->_('Last verified on %s by %s: email does not work.'),
-									$this->escape(Pt_Commons_DateUtility::humanReadableDateFormat(date('Y-m-d H:i:s', (int) $lastVerify['at']), true)),
-									$this->escape((string) ($lastVerify['by'] ?? ''))
-								); ?>
+							<?php if ($lastVerify) {
+								$verifiedOn = $this->escape(Pt_Commons_DateUtility::humanReadableDateFormat(date('Y-m-d H:i:s', (int) $lastVerify['at']), true));
+								if (!empty($lastVerify['auto'])) { ?>
+									<?= sprintf($lastVerify['ok'] ? $this->translate->_('Checked automatically on %s: email works.') : $this->translate->_('Checked automatically on %s: email does not work.'), $verifiedOn); ?>
+								<?php } else { ?>
+									<?= sprintf(
+										$lastVerify['ok'] ? $this->translate->_('Last verified on %s by %s: email works.') : $this->translate->_('Last verified on %s by %s: email does not work.'),
+										$verifiedOn,
+										$this->escape((string) ($lastVerify['by'] ?? ''))
+									); ?>
+								<?php } ?>
 							<?php } ?>
 						</div>
 						<ul class="verify-mail-steps" id="verifyMailSteps">
@@ -2165,7 +2180,7 @@ id="faqTable">
 				bounce: '<?= $this->jsTranslate('Bounce inbox'); ?>'
 			};
 			function snapshot() {
-				return section.find('input, select, textarea').map(function () { return this.name + '=' + $(this).val(); }).get().join('&');
+				return section.find('input, select, textarea').not('#verifyMailTo').map(function () { return this.name + '=' + $(this).val(); }).get().join('&');
 			}
 			var saved = snapshot();
 			function showResult(summary, steps, isError) {
@@ -2193,7 +2208,7 @@ id="faqTable">
 				$('#verifyMailSummary').removeClass('text-danger').text('<?= $this->jsTranslate('Checking the mail settings. This can take up to a minute.'); ?>');
 				$('#verifyMailSteps').empty();
 				$('#verifyMailResult').show();
-				$.ajax({ url: '/admin/global-config/verify-email', type: 'POST', dataType: 'json' })
+				$.ajax({ url: '/admin/global-config/verify-email', type: 'POST', dataType: 'json', data: { recipient: $.trim($('#verifyMailTo').val()) } })
 					.done(function (r) {
 						var summary = r.ok
 							? '<?= $this->jsTranslate('Email works. Verified on %s.'); ?>'.replace('%s', r.atText)

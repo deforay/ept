@@ -81,7 +81,9 @@ class Admin_GlobalConfigController extends Zend_Controller_Action
         }
         $adminSession = new Zend_Session_Namespace('administrators');
         $adminEmail = (string) ($adminSession->primary_email ?? '');
-        $result = Application_Service_Common::verifyMailSetup($adminEmail);
+        // A login-only admin address may not be a real inbox, so the admin picks the recipient
+        $recipient = trim((string) $request->getPost('recipient', ''));
+        $result = Application_Service_Common::verifyMailSetup($recipient, $adminEmail);
         Application_Service_Common::forgetMailDeliveryProblem();
         $auditDb = new Application_Model_DbTable_AuditLog();
         $auditDb->addNewAuditLog($result['ok'] ? 'Verified email setup: passed' : 'Verified email setup: failed', 'config');

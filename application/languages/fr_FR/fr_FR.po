@@ -28773,3 +28773,53 @@ msgid ""
 msgstr ""
 "ePT ne peut pas envoyer d'e-mails pour le moment, l'e-mail de vérification "
 "ne peut donc pas être renvoyé."
+
+#: application/services/Common.php:1958
+msgid "Not sent. The automatic check only signs in to the mail server."
+msgstr ""
+"Non envoyé. La vérification automatique se connecte seulement au serveur de "
+"messagerie."
+
+#: application/services/Common.php:1962
+msgid "Not tried, because no valid address was given for the test email."
+msgstr ""
+"Non essayé, car aucune adresse valide n'a été indiquée pour l'e-mail de "
+"test."
+
+#: application/services/Common.php:1999
+msgid "Not checked. The automatic check only signs in to the mail server."
+msgstr ""
+"Non vérifié. La vérification automatique se connecte seulement au serveur de"
+" messagerie."
+
+#: application/modules/admin/views/scripts/global-config/index.phtml:1520
+msgid "Send the test email to"
+msgstr "Envoyer l'e-mail de test à"
+
+#: application/modules/admin/views/scripts/global-config/index.phtml:1525
+msgid ""
+"Signs in to the mail server, sends a test email to this address and opens "
+"the bounce inbox. It uses the saved settings. Leave the address empty to "
+"skip the test email."
+msgstr ""
+"Se connecte au serveur de messagerie, envoie un e-mail de test à cette "
+"adresse et ouvre la boîte de réception des rejets. Utilise les paramètres "
+"enregistrés. Laissez l'adresse vide pour ne pas envoyer d'e-mail de test."
+
+#: application/modules/admin/views/scripts/global-config/index.phtml:1526
+msgid ""
+"ePT also signs in to the mail server on its own every hour, and every 10 "
+"minutes while email is failing."
+msgstr ""
+"ePT se connecte aussi automatiquement au serveur de messagerie toutes les "
+"heures, et toutes les 10 minutes tant que la messagerie ne fonctionne pas."
+
+#: application/modules/admin/views/scripts/global-config/index.phtml:1536
+#, php-format
+msgid "Checked automatically on %s: email works."
+msgstr "Vérifié automatiquement le %s : la messagerie fonctionne."
+
+#: application/modules/admin/views/scripts/global-config/index.phtml:1536
+#, php-format
+msgid "Checked automatically on %s: email does not work."
+msgstr "Vérifié automatiquement le %s : la messagerie ne fonctionne pas."

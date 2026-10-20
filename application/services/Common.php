@@ -1780,8 +1780,10 @@ class Application_Service_Common
      *
      * Returns ['reason' => 'not_configured'] when no SMTP host is set (or a
      * dev-trap value blocks sending), and ['reason' => 'failing', 'type' => ...,
-     * 'when' => ...] when the latest server-side failure (bad login, no
-     * connection, unusable settings) is newer than the latest successful send.
+     * 'when' => ..., 'source' => ...] when the latest server-side failure (bad
+     * login, no connection, unusable settings) is newer than the latest successful
+     * send. 'source' is 'verify' when Verify Email Setup or the automatic check
+     * confirmed the failure, and 'queue' when only a queued send hit it.
      * A failure older than the last edit of application.ini does not count, so
      * fixing the mail settings re-enables sending without waiting for a send.
      */
@@ -1802,6 +1804,8 @@ class Application_Service_Common
             $db = Zend_Db_Table_Abstract::getDefaultAdapter();
             $failedAt = 0;
             $failureType = '';
+            // 'queue' when a queued send failed last, 'verify' when a check confirmed it
+            $source = 'queue';
             $lastFailure = $db->fetchRow(
                 "SELECT failure_type, updated_at FROM temp_mail
                   WHERE failure_type IN ('smtp-auth', 'connectivity', 'invalid_dsn')
@@ -1819,6 +1823,7 @@ class Application_Service_Common
             } elseif ($verify !== null && !empty($verify['broken']) && (int) $verify['at'] > $failedAt) {
                 $failedAt = (int) $verify['at'];
                 $failureType = $verify['type'];
+                $source = 'verify';
             }
             if ($failedAt === 0) {
                 return null;
@@ -1826,7 +1831,7 @@ class Application_Service_Common
             $lastSent = (int) strtotime((string) $db->fetchOne("SELECT MAX(sent_at) FROM temp_mail WHERE status = 'sent'"));
             $settingsChanged = (int) @filemtime(APPLICATION_PATH . '/configs/application.ini');
             if ($failedAt > max($lastSent, $settingsChanged, $verifiedAt)) {
-                return ['reason' => 'failing', 'type' => $failureType, 'when' => $failedAt];
+                return ['reason' => 'failing', 'type' => $failureType, 'when' => $failedAt, 'source' => $source];
             }
         } catch (Throwable) {
             // Without an answer, leave email available as before
@@ -1883,8 +1888,11 @@ class Application_Service_Common
      * Verify Email Setup: test the saved mail settings in three steps and keep the result.
      *
      * 1. login: connect to the SMTP server (or the dev mail trap) and sign in.
-     * 2. send: send one test email straight to $adminEmail, not through the queue.
+     * 2. send: send one test email straight to $recipient, not through the queue.
      * 3. bounce: open the bounce inbox folder. Skipped when bounce processing is off.
+     *
+     * $by names who ran it. The automatic check (scheduled-jobs/check-mail-setup.php)
+     * passes $automatic and runs the login step only, so it needs no recipient.
      *
      * Each step is ['status' => pass|fail|skip, 'message' => translated text]. The
      * result passes when login passes and send does not fail. The bounce inbox does
@@ -1892,7 +1900,7 @@ class Application_Service_Common
      *
      * @return array{ok: bool, at: int, steps: array<string, array{status: string, message: string}>, trapUrl: ?string}
      */
-    public static function verifyMailSetup(string $adminEmail): array
+    public static function verifyMailSetup(string $recipient, string $by, bool $automatic = false): array
     {
         $steps = [];
         $failureType = '';
@@ -1946,10 +1954,12 @@ class Application_Service_Common
             }
         }
 
-        if ($transport === null) {
+        if ($automatic) {
+            $steps['send'] = ['status' => 'skip', 'message' => Pt_Commons_TranslateUtility::safeTranslate('Not sent. The automatic check only signs in to the mail server.')];
+        } elseif ($transport === null) {
             $steps['send'] = ['status' => 'skip', 'message' => Pt_Commons_TranslateUtility::safeTranslate('Not tried, because ePT could not sign in to the mail server.')];
-        } elseif (self::validateEmail($adminEmail) === null) {
-            $steps['send'] = ['status' => 'skip', 'message' => Pt_Commons_TranslateUtility::safeTranslate('Not tried, because your admin account has no valid email address.')];
+        } elseif (self::validateEmail($recipient) === null) {
+            $steps['send'] = ['status' => 'skip', 'message' => Pt_Commons_TranslateUtility::safeTranslate('Not tried, because no valid address was given for the test email.')];
         } elseif ($settings['fromEmail'] === '' && $devTrapDsn === '') {
             $steps['send'] = ['status' => 'fail', 'message' => Pt_Commons_TranslateUtility::safeTranslate('No From Email is set. Enter one and save it first.')];
             $failureType = 'other';
@@ -1963,29 +1973,31 @@ class Application_Service_Common
             try {
                 $email = (new Symfony\Component\Mime\Email())
                     ->from(new Symfony\Component\Mime\Address($fromEmail, $fromName))
-                    ->to($adminEmail)
+                    ->to($recipient)
                     ->subject(Pt_Commons_TranslateUtility::safeTranslate('ePT test email'))
                     ->html($html)
                     ->text(html_entity_decode(strip_tags(str_replace('</p>', "\n\n", $html)), ENT_QUOTES, 'UTF-8'));
                 $transport->send($email);
                 $steps['send'] = ['status' => 'pass', 'message' => $devTrapDsn !== ''
-                    ? sprintf(Pt_Commons_TranslateUtility::safeTranslate('Sent a test email to %s. The dev mail trap caught it.'), $adminEmail)
-                    : sprintf(Pt_Commons_TranslateUtility::safeTranslate('Sent a test email to %s. Check that it arrives. If it is not in the inbox, look in the spam folder.'), $adminEmail)];
+                    ? sprintf(Pt_Commons_TranslateUtility::safeTranslate('Sent a test email to %s. The dev mail trap caught it.'), $recipient)
+                    : sprintf(Pt_Commons_TranslateUtility::safeTranslate('Sent a test email to %s. Check that it arrives. If it is not in the inbox, look in the spam folder.'), $recipient)];
             } catch (Throwable $e) {
                 $failureType = self::classifyMailFailure($e->getMessage());
                 $steps['send'] = ['status' => 'fail', 'message' => self::mailFailureHint($failureType) . ' ' . sprintf(Pt_Commons_TranslateUtility::safeTranslate('The server said: %s'), $e->getMessage())];
             }
-            try {
-                if ($transport instanceof Symfony\Component\Mailer\Transport\Smtp\SmtpTransport) {
-                    $transport->stop();
-                }
-            } catch (Throwable) {
-                // the test email has gone or failed already
+        }
+        try {
+            if ($transport instanceof Symfony\Component\Mailer\Transport\Smtp\SmtpTransport) {
+                $transport->stop();
             }
+        } catch (Throwable) {
+            // the test email has gone or failed already
         }
 
         $bounce = self::getBounceSettings(true);
-        if ($bounce['host'] === '') {
+        if ($automatic) {
+            $steps['bounce'] = ['status' => 'skip', 'message' => Pt_Commons_TranslateUtility::safeTranslate('Not checked. The automatic check only signs in to the mail server.')];
+        } elseif ($bounce['host'] === '') {
             $steps['bounce'] = ['status' => 'skip', 'message' => Pt_Commons_TranslateUtility::safeTranslate('Bounce processing is off, because no IMAP Host is set.')];
         } else {
             try {
@@ -1998,7 +2010,7 @@ class Application_Service_Common
             }
         }
 
-        // A send skipped for want of an admin address still leaves a working login
+        // A skipped send (automatic check, no recipient) still leaves a working login
         $ok = $steps['login']['status'] === 'pass' && $steps['send']['status'] !== 'fail';
         $result = [
             'at' => time(),
@@ -2006,7 +2018,8 @@ class Application_Service_Common
             // A rejected admin address says nothing about the mail settings themselves
             'broken' => !$ok && !in_array($failureType, ['', 'not_configured', 'bad-recipient'], true),
             'type' => $failureType,
-            'by' => $adminEmail,
+            'by' => $by,
+            'auto' => $automatic,
             'steps' => $steps,
         ];
         try {

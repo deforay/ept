@@ -59,6 +59,14 @@ $schedule->run($phpPath . " " . SCHEDULED_JOBS_FOLDER . "/send-emails.php")
     ->preventOverlapping()
     ->description('Sending Emails');
 
+// Sign in to the mail server: hourly while email works, every 10 minutes while it
+// is failing. A confirmed failure pauses Sending Emails until a check passes.
+$schedule->run($phpPath . " " . SCHEDULED_JOBS_FOLDER . "/check-mail-setup.php")
+    ->everyTenMinutes()
+    ->timezone($timezone)
+    ->preventOverlapping()
+    ->description('Checking the mail server login');
+
 // Queue Email Participants emails whose scheduled time has come. They then go
 // out through the Sending Emails job above.
 $schedule->run($phpPath . " " . SCHEDULED_JOBS_FOLDER . "/dispatch-scheduled-emails.php")

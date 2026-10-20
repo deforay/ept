@@ -173,6 +173,18 @@ try {
         $dsn = Application_Service_Common::smtpDsn($mailSettings);
     }
 
+    // A check (Verify Email Setup or check-mail-setup.php) confirmed that the mail
+    // server refuses ePT, so every send would fail. Leave the queue pending, and
+    // the next passing check resumes it. A failure seen only by the queue does not
+    // pause it: it makes check-mail-setup.php check within 10 minutes instead.
+    $mailProblem = Application_Service_Common::mailDeliveryProblem();
+    if (($mailProblem['source'] ?? '') === 'verify') {
+        if (stream_isatty(STDOUT)) {
+            echo "Email is paused: the latest check found that the mail server refuses ePT. Fix the settings or run Verify Email Setup.\n";
+        }
+        return;
+    }
+
     // === Pull up to N pending rows this minute ===
     // Do this BEFORE building the transport: if there's nothing to send, an
     // invalid/misconfigured DSN must not throw and flood the log every minute.

@@ -27784,3 +27784,47 @@ msgid ""
 "ePT cannot send email right now, so the verification email cannot be resent."
 msgstr ""
 "Hiện ePT không gửi được email, vì vậy không thể gửi lại email xác minh."
+
+#: application/services/Common.php:1958
+msgid "Not sent. The automatic check only signs in to the mail server."
+msgstr "Không gửi. Việc kiểm tra tự động chỉ đăng nhập vào máy chủ thư."
+
+#: application/services/Common.php:1962
+msgid "Not tried, because no valid address was given for the test email."
+msgstr "Chưa thử, vì chưa nhập địa chỉ hợp lệ cho email thử nghiệm."
+
+#: application/services/Common.php:1999
+msgid "Not checked. The automatic check only signs in to the mail server."
+msgstr "Không kiểm tra. Việc kiểm tra tự động chỉ đăng nhập vào máy chủ thư."
+
+#: application/modules/admin/views/scripts/global-config/index.phtml:1520
+msgid "Send the test email to"
+msgstr "Gửi email thử nghiệm tới"
+
+#: application/modules/admin/views/scripts/global-config/index.phtml:1525
+msgid ""
+"Signs in to the mail server, sends a test email to this address and opens "
+"the bounce inbox. It uses the saved settings. Leave the address empty to "
+"skip the test email."
+msgstr ""
+"Đăng nhập máy chủ thư, gửi email thử nghiệm tới địa chỉ này và mở hộp thư "
+"thư bị trả lại. Sử dụng cài đặt đã lưu. Để trống địa chỉ nếu không muốn gửi "
+"email thử nghiệm."
+
+#: application/modules/admin/views/scripts/global-config/index.phtml:1526
+msgid ""
+"ePT also signs in to the mail server on its own every hour, and every 10 "
+"minutes while email is failing."
+msgstr ""
+"ePT cũng tự động đăng nhập máy chủ thư mỗi giờ, và mỗi 10 phút khi email "
+"không hoạt động."
+
+#: application/modules/admin/views/scripts/global-config/index.phtml:1536
+#, php-format
+msgid "Checked automatically on %s: email works."
+msgstr "Đã kiểm tra tự động lúc %s: email hoạt động."
+
+#: application/modules/admin/views/scripts/global-config/index.phtml:1536
+#, php-format
+msgid "Checked automatically on %s: email does not work."
+msgstr "Đã kiểm tra tự động lúc %s: email không hoạt động."

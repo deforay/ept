@@ -26885,3 +26885,42 @@ msgstr ""
 msgid ""
 "ePT cannot send email right now, so the verification email cannot be resent."
 msgstr ""
+
+#: application/services/Common.php:1958
+msgid "Not sent. The automatic check only signs in to the mail server."
+msgstr ""
+
+#: application/services/Common.php:1962
+msgid "Not tried, because no valid address was given for the test email."
+msgstr ""
+
+#: application/services/Common.php:1999
+msgid "Not checked. The automatic check only signs in to the mail server."
+msgstr ""
+
+#: application/modules/admin/views/scripts/global-config/index.phtml:1520
+msgid "Send the test email to"
+msgstr ""
+
+#: application/modules/admin/views/scripts/global-config/index.phtml:1525
+msgid ""
+"Signs in to the mail server, sends a test email to this address and opens "
+"the bounce inbox. It uses the saved settings. Leave the address empty to "
+"skip the test email."
+msgstr ""
+
+#: application/modules/admin/views/scripts/global-config/index.phtml:1526
+msgid ""
+"ePT also signs in to the mail server on its own every hour, and every 10 "
+"minutes while email is failing."
+msgstr ""
+
+#: application/modules/admin/views/scripts/global-config/index.phtml:1536
+#, php-format
+msgid "Checked automatically on %s: email works."
+msgstr ""
+
+#: application/modules/admin/views/scripts/global-config/index.phtml:1536
+#, php-format
+msgid "Checked automatically on %s: email does not work."
+msgstr ""
