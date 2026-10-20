@@ -2751,49 +2751,35 @@ class Application_Service_Common
 
     public function exportConfig($data)
     {
-        if (isset($data['file']) && !empty($data['file']) && $data['file'] == 'config') {
-            $filePath = APPLICATION_PATH . DIRECTORY_SEPARATOR . 'configs' . DIRECTORY_SEPARATOR . 'config.ini';
-
-            $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
-            $eptDomain = rtrim($conf->domain, '/');
-            $eptDomain = parse_url($eptDomain, PHP_URL_HOST);
-
-            $gzdata = gzencode(file_get_contents($filePath));
-            $gipPath = realpath(TEMP_UPLOAD_PATH) . DIRECTORY_SEPARATOR . 'config-' . $eptDomain . '-' . str_replace([':', ' ', '_'], '-', Pt_Commons_DateUtility::getCurrentDateTime()) . '.ini.gz';
-            file_put_contents($gipPath, $gzdata);
-
-            return $gipPath;
-        } else {
-            $responseData = $this->unserializeForm($data);
-            /* unset the csrf token that was not needed for config export */
-            unset($responseData['csrf_token']);
-            $output = [
-                'timestamp' => time(),
-                'data' => $responseData,
-            ];
-            $tempDirectory = realpath(TEMP_UPLOAD_PATH);
-            if ($tempDirectory === false) {
-                throw new RuntimeException('Temporary upload path is not available for config export.');
-            }
-
-            // The export is downloaded using the returned path only, so the OS can safely generate
-            // the filename for us instead of deriving any part of it from request data.
-            $tempFilePath = tempnam($tempDirectory, 'config-export-');
-            if ($tempFilePath === false) {
-                throw new RuntimeException('Unable to create a temporary file for config export.');
-            }
-
-            $archivePath = $tempFilePath . '.gz';
-            if (!rename($tempFilePath, $archivePath)) {
-                @unlink($tempFilePath);
-                throw new RuntimeException('Unable to prepare the config export archive.');
-            }
-
-            $jsonPayload = json_encode($output);
-            $gzdata = gzencode($jsonPayload === false ? '{}' : $jsonPayload);
-            file_put_contents($archivePath, $gzdata);
-            return $archivePath;
+        $responseData = $this->unserializeForm($data);
+        /* unset the csrf token that was not needed for config export */
+        unset($responseData['csrf_token']);
+        $output = [
+            'timestamp' => time(),
+            'data' => $responseData,
+        ];
+        $tempDirectory = realpath(TEMP_UPLOAD_PATH);
+        if ($tempDirectory === false) {
+            throw new RuntimeException('Temporary upload path is not available for config export.');
         }
+
+        // The export is downloaded using the returned path only, so the OS can safely generate
+        // the filename for us instead of deriving any part of it from request data.
+        $tempFilePath = tempnam($tempDirectory, 'config-export-');
+        if ($tempFilePath === false) {
+            throw new RuntimeException('Unable to create a temporary file for config export.');
+        }
+
+        $archivePath = $tempFilePath . '.gz';
+        if (!rename($tempFilePath, $archivePath)) {
+            @unlink($tempFilePath);
+            throw new RuntimeException('Unable to prepare the config export archive.');
+        }
+
+        $jsonPayload = json_encode($output);
+        $gzdata = gzencode($jsonPayload === false ? '{}' : $jsonPayload);
+        file_put_contents($archivePath, $gzdata);
+        return $archivePath;
     }
 
     public function unserializeForm($str)
