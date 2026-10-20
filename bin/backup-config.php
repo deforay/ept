@@ -4,19 +4,26 @@
 declare(strict_types=1);
 
 /**
- * Config backup — snapshots application/configs/application.ini into
- * backups/config/ so a fat-fingered edit or a bad upgrade can be rolled back.
- * Idempotent; safe to re-run.
+ * Config backup — snapshots the per-instance files that are not under
+ * version control into backups/config/, so a fat-fingered edit, a bad upgrade
+ * or a lost server can be recovered. Idempotent; safe to re-run.
  *
- * application.ini is not under version control (it carries per-instance DB
- * creds, mail DSNs, domains), so nothing else captures it. The nightly
- * db-tools backup covers the database; this covers the one config file that
- * the database can't be brought back up without.
+ * The nightly db-tools backup covers the database. This covers the files the
+ * database does not hold:
+ *   - application/configs/application.ini (DB creds, mail DSNs, domains)
+ *   - application/configs/config.ini (the instance's scheme settings)
+ *   - the uploaded templates: certificate designs and forms, report
+ *     letterhead PDFs and logos. Certificate layouts (where the details sit
+ *     on a design) are in the database.
  *
- * Each run writes backups/config/application.ini.<YYYY-MM-DD_His>.bak — but
- * only if the file changed since the most recent snapshot, so weekly runs of
- * an untouched config don't pile up identical copies. Snapshots older than
- * --keep are pruned, with at least --min-keep most-recent copies always kept.
+ * Each run writes, only for what changed since its most recent snapshot:
+ *   backups/config/application.ini.<YYYY-MM-DD_His>.bak
+ *   backups/config/config.ini.<YYYY-MM-DD_His>.bak
+ *   backups/config/templates.<YYYY-MM-DD_His>.zip  (paths relative to the
+ *     ePT folder, so unzip it there to restore)
+ * so weekly runs of untouched files don't pile up identical copies. Each kind
+ * is pruned on its own: snapshots older than --keep go, with at least
+ * --min-keep most-recent copies always kept.
  *
  * Usage:
  *   php bin/backup-config.php                 snapshot if changed, then prune
@@ -28,7 +35,8 @@ declare(strict_types=1);
  *   php bin/backup-config.php --help          print this docblock
  *
  * Schedule: scheduled-jobs/ScheduledTasks.php (suggested weekly).
- * Writes:   backups/config/application.ini.*.bak; unlinks pruned snapshots.
+ * Writes:   backups/config/{application,config}.ini.*.bak and templates.*.zip;
+ *           unlinks pruned snapshots.
  * Exit:     non-zero on failure, so cron/staleness checks can flag it.
  */
 
@@ -63,15 +71,16 @@ try {
     $keep    = max(1, (int) ($opts['keep']     ?? 26));
     $minKeep = max(1, (int) ($opts['min-keep'] ?? 4));
 
-    $source  = APPLICATION_PATH . DIRECTORY_SEPARATOR . 'configs' . DIRECTORY_SEPARATOR . 'application.ini';
     $destDir = BACKUP_PATH . DIRECTORY_SEPARATOR . 'config';
+    $configDir = APPLICATION_PATH . DIRECTORY_SEPARATOR . 'configs';
 
     if (!$quiet) {
         $io->title('Config backup' . ($dryRun ? ' (dry run)' : ''));
     }
 
-    if (!is_file($source)) {
-        throw new RuntimeException("source config not found: {$source}");
+    $appIni = $configDir . DIRECTORY_SEPARATOR . 'application.ini';
+    if (!is_file($appIni)) {
+        throw new RuntimeException("source config not found: {$appIni}");
     }
 
     if (!is_dir($destDir) && !$dryRun) {
@@ -80,65 +89,103 @@ try {
         }
     }
 
-    // Existing snapshots, newest last (timestamped names sort chronologically).
-    $existing = glob($destDir . DIRECTORY_SEPARATOR . 'application.ini.*.bak') ?: [];
-    sort($existing);
-    $latest = end($existing) ?: null;
-
-    // Skip when the live config is byte-identical to the most recent snapshot.
-    $unchanged = $latest !== null && is_file($latest) && @md5_file($latest) === @md5_file($source);
-
-    $wrote = null;
-    if ($unchanged && !$force) {
+    $log = function (string $line) use ($io, $quiet): void {
         if (!$quiet) {
-            $io->writeln('  unchanged since last snapshot — skipping (use --force to override)');
+            $io->writeln('  ' . $line);
+        }
+    };
+
+    $wrote = [];
+    $pending = 0;
+    $pruned = 0;
+    $kept = 0;
+    $floor = max($keep, $minKeep);
+
+    // The two ini files: a plain copy each. config.ini is optional.
+    foreach ([$appIni, $configDir . DIRECTORY_SEPARATOR . 'config.ini'] as $source) {
+        if (!is_file($source)) {
+            continue;
+        }
+        $name = basename($source);
+        $existing = snapshots($destDir, $name . '.*.bak');
+        $latest = end($existing) ?: null;
+        if ($latest !== null && @md5_file($latest) === @md5_file($source) && !$force) {
+            $log("{$name}: unchanged since last snapshot — skipping (use --force to override)");
+        } else {
+            // date() honours the timezone cli-bootstrap set from application.ini.
+            $dest = $destDir . DIRECTORY_SEPARATOR . $name . '.' . date('Y-m-d_His') . '.bak';
+            if ($dryRun) {
+                $pending++;
+                $log('would write ' . basename($dest));
+            } else {
+                if (!@copy($source, $dest)) {
+                    throw new RuntimeException("copy failed: {$source} -> {$dest}");
+                }
+                @chmod($dest, 0640);
+                $wrote[] = basename($dest);
+                $existing[] = $dest;
+                $log('wrote ' . basename($dest) . ' (' . formatBytes((int) @filesize($dest)) . ')');
+            }
+        }
+        [$p, $k] = prune($existing, $floor, $dryRun, $log);
+        $pruned += $p;
+        $kept += $k;
+    }
+
+    // The uploaded templates: one zip. The zip comment holds a fingerprint
+    // of the files, so an unchanged set is not zipped again.
+    $files = templateFiles();
+    $existing = snapshots($destDir, 'templates.*.zip');
+    if (!empty($files)) {
+        $fingerprint = fingerprint($files);
+        $latest = end($existing) ?: null;
+        $previous = null;
+        if ($latest !== null) {
+            $zip = new ZipArchive();
+            if ($zip->open($latest) === true) {
+                $previous = $zip->getArchiveComment() ?: null;
+                $zip->close();
+            }
+        }
+        if ($previous === $fingerprint && !$force) {
+            $log('templates: unchanged since last snapshot — skipping (use --force to override)');
+        } else {
+            $dest = $destDir . DIRECTORY_SEPARATOR . 'templates.' . date('Y-m-d_His') . '.zip';
+            if ($dryRun) {
+                $pending++;
+                $log('would write ' . basename($dest) . ' (' . count($files) . ' files)');
+            } else {
+                $zip = new ZipArchive();
+                if ($zip->open($dest, ZipArchive::CREATE | ZipArchive::OVERWRITE) !== true) {
+                    throw new RuntimeException("could not create {$dest}");
+                }
+                foreach ($files as $relative => $absolute) {
+                    $zip->addFile($absolute, $relative);
+                }
+                $zip->setArchiveComment($fingerprint);
+                if (!$zip->close()) {
+                    @unlink($dest);
+                    throw new RuntimeException("could not write {$dest}");
+                }
+                @chmod($dest, 0640);
+                $wrote[] = basename($dest);
+                $existing[] = $dest;
+                $log('wrote ' . basename($dest) . ' (' . count($files) . ' files, ' . formatBytes((int) @filesize($dest)) . ')');
+            }
         }
     } else {
-        // date() honours the timezone cli-bootstrap set from application.ini.
-        $dest = $destDir . DIRECTORY_SEPARATOR . 'application.ini.' . date('Y-m-d_His') . '.bak';
-        if ($dryRun) {
-            if (!$quiet) {
-                $io->writeln('  would write ' . basename($dest));
-            }
-        } else {
-            if (!@copy($source, $dest)) {
-                throw new RuntimeException("copy failed: {$source} -> {$dest}");
-            }
-            @chmod($dest, 0640);
-            $wrote = $dest;
-            if (!in_array($dest, $existing, true)) {
-                $existing[] = $dest;
-            }
-            sort($existing);
-            if (!$quiet) {
-                $io->writeln('  wrote ' . basename($dest) . ' (' . formatBytes((int) @filesize($dest)) . ')');
-            }
-        }
+        $log('templates: none uploaded — skipping');
     }
-
-    // Prune oldest beyond --keep, but never below --min-keep newest copies.
-    $pruned = 0;
-    $floor  = max($keep, $minKeep);
-    if (count($existing) > $floor) {
-        $toPrune = array_slice($existing, 0, count($existing) - $floor);
-        foreach ($toPrune as $old) {
-            if ($dryRun) {
-                if (!$quiet) {
-                    $io->writeln('  would prune ' . basename($old));
-                }
-                $pruned++;
-            } elseif (@unlink($old)) {
-                $pruned++;
-            }
-        }
-    }
+    [$p, $k] = prune($existing, $floor, $dryRun, $log);
+    $pruned += $p;
+    $kept += $k;
 
     $summary = sprintf(
         '%sconfig backup done — %s, %d pruned, %d kept',
         $dryRun ? '[dry run] ' : '',
-        $wrote ? 'snapshot written' : ($dryRun && !$unchanged ? 'snapshot pending' : 'no new snapshot'),
+        $wrote ? count($wrote) . ' snapshot(s) written' : ($pending ? $pending . ' snapshot(s) pending' : 'no new snapshot'),
         $pruned,
-        max(0, count($existing) - ($dryRun ? 0 : $pruned))
+        $kept
     );
 
     if ($quiet) {
@@ -154,6 +201,80 @@ try {
 }
 
 // ─── helpers ───────────────────────────────────────────────────────────
+
+/** Snapshots matching $pattern in $dir, oldest first (timestamped names sort chronologically). */
+function snapshots(string $dir, string $pattern): array
+{
+    $files = glob($dir . DIRECTORY_SEPARATOR . $pattern) ?: [];
+    sort($files);
+    return $files;
+}
+
+/**
+ * Remove the oldest snapshots beyond $floor. Returns [pruned, kept].
+ */
+function prune(array $existing, int $floor, bool $dryRun, callable $log): array
+{
+    sort($existing);
+    $pruned = 0;
+    if (count($existing) > $floor) {
+        foreach (array_slice($existing, 0, count($existing) - $floor) as $old) {
+            if ($dryRun) {
+                $log('would prune ' . basename($old));
+                $pruned++;
+            } elseif (@unlink($old)) {
+                $pruned++;
+            }
+        }
+    }
+    return [$pruned, count($existing) - $pruned];
+}
+
+/**
+ * The uploaded template files, as path relative to ROOT_PATH => absolute
+ * path: certificate templates, report letterhead PDFs and logos. The
+ * index.php placeholders that keep the folders in the release are skipped.
+ */
+function templateFiles(): array
+{
+    $dirs = [
+        ROOT_PATH . '/scheduled-jobs/certificate-templates',
+        UPLOAD_PATH . '/report-formats',
+        UPLOAD_PATH . '/logo',
+        UPLOAD_PATH . '/logos',
+    ];
+    $root = rtrim(str_replace('\\', '/', (string) realpath(ROOT_PATH)), '/') . '/';
+    $files = [];
+    foreach ($dirs as $dir) {
+        $dir = realpath($dir);
+        if ($dir === false || !is_dir($dir)) {
+            continue;
+        }
+        $iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($dir, FilesystemIterator::SKIP_DOTS));
+        foreach ($iterator as $file) {
+            /** @var SplFileInfo $file */
+            if (!$file->isFile() || $file->getFilename() === 'index.php' || $file->getFilename() === '.DS_Store') {
+                continue;
+            }
+            $absolute = str_replace('\\', '/', $file->getPathname());
+            if (str_starts_with($absolute, $root)) {
+                $files[substr($absolute, strlen($root))] = $file->getPathname();
+            }
+        }
+    }
+    ksort($files);
+    return $files;
+}
+
+/** A fingerprint of the files' names and contents. */
+function fingerprint(array $files): string
+{
+    $hash = hash_init('sha256');
+    foreach ($files as $relative => $absolute) {
+        hash_update($hash, $relative . "\0" . (string) @md5_file($absolute) . "\n");
+    }
+    return 'ept-templates sha256:' . hash_final($hash);
+}
 
 function formatBytes(int $bytes): string
 {
