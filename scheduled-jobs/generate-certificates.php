@@ -136,9 +136,10 @@ function sendNotification(?string $recipients, array $shipmentsList, string $bat
 	}
 	$common = new Application_Service_Common();
 	$emailSubject = "ePT | Certificates Generated";
-	$emailContent = "Certificates for Shipment " . htmlspecialchars(implode(", ", $shipmentsList)) . " have been generated.";
-	$emailContent .= "<br><br>Review and approve them on the Certificate Batches page: <a href=\"$batchesUrl\">$batchesUrl</a>";
-	$emailContent .= "<br><br><br><small>This is a system generated email</small>";
+	$emailContent = Application_Service_EmailLayout::notice(null, [
+		'Certificates for shipment <b>' . Application_Service_EmailLayout::e(implode(', ', $shipmentsList)) . '</b> have been generated.',
+		'Review and approve them on the Certificate Batches page.',
+	], $batchesUrl, 'Open certificate batches');
 
 	$common->insertTempMail($recipients, null, null, $emailSubject, $emailContent);
 }

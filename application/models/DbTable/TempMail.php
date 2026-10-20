@@ -39,6 +39,9 @@ class Application_Model_DbTable_TempMail extends Zend_Db_Table_Abstract
                 return false;
             }
 
+            // Every queued email gets the shared ePT card, including the ones admins write
+            $message = Application_Service_EmailLayout::wrapBare((string) $message);
+
             // Load application configuration
             try {
                 $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);

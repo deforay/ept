@@ -91,8 +91,9 @@ try {
 			&& !empty($jobCompletionAlertMails)
 		) {
 			$emailSubject = "ePT | Shipment Evaluated";
-			$emailContent = 'Shipment ' . $shipmentResult[0]['shipment_code'] . ' has been evaluated <br><br> Please click on this link to see ' . $conf->domain . $link;
-			$emailContent .= "<br><br><br><small>This is a system generated email</small>";
+			$emailContent = Application_Service_EmailLayout::notice(null, [
+				'Shipment <b>' . Application_Service_EmailLayout::e($shipmentResult[0]['shipment_code']) . '</b> has been evaluated.',
+			], $link, 'Open evaluation');
 			$commonService->insertTempMail($jobCompletionAlertMails, null, null, $emailSubject, $emailContent);
 		}
 		if ($enabledAdminEmailReminder == 'yes') {
@@ -105,11 +106,10 @@ try {
 				? $adminService->getSystemAdminDetails($queueResults['initated_by'])
 				: null;
 			if (isset($adminDetails) && !empty($adminDetails) && $adminDetails['primary_email'] != "") {
-				$link = $conf->domain . '/admin/evaluate/shipment/sid/' . base64_encode($shipmentId);
-				$subject = 'Shipment for ' . $shipmentResult[0]['shipment_code'] . ' has been evalated';
-				$message = 'Hello, ' . $adminDetails['first_name'] . ', <br>
-                 Shipment ' . $shipmentResult[0]['shipment_code'] . ' has been evalated successfully. Kindly click the below link to see the evalation or copy paste into the brower address bar.<br>
-                 <a href="' . $link . '">' . $link . '</a>.';
+				$subject = 'Shipment ' . $shipmentResult[0]['shipment_code'] . ' has been evaluated';
+				$message = Application_Service_EmailLayout::notice($adminDetails['first_name'], [
+					'Shipment <b>' . Application_Service_EmailLayout::e($shipmentResult[0]['shipment_code']) . '</b> has been evaluated.',
+				], '/admin/evaluate/shipment/sid/' . base64_encode($shipmentId), 'Open evaluation');
 
 				$commonService->insertTempMail($adminDetails['primary_email'], null, null, $subject, $message, 'ePT System', 'ePT System Admin');
 			}

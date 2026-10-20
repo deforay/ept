@@ -16,30 +16,66 @@ final class Application_Service_EmailLayout
     private const MUTED = '#5f6b7a';
     private const FONT = 'Arial,Helvetica,sans-serif';
 
+    /** Marks HTML that page() produced, so wrapBare() never wraps it twice. */
+    private const MARKER = 'data-ept-layout';
+
     /**
      * Wraps the body in a white card on a grey page, with an ePT header and a
      * footer that names the site the email came from. $preheader is the
-     * preview line that inboxes show after the subject.
+     * preview line that inboxes show after the subject. Without $footer the
+     * email has no "automated email" line, for text that a person wrote.
      */
-    public static function page(string $bodyHtml, string $preheader = ''): string
+    public static function page(string $bodyHtml, string $preheader = '', bool $footer = true): string
     {
         $host = (string) (parse_url(self::siteUrl(), PHP_URL_HOST) ?: '');
-        $footer = $host !== ''
+        $footerText = $host !== ''
             ? sprintf(Pt_Commons_TranslateUtility::safeTranslate('This is an automated email from ePT at %s.'), self::e($host))
             : Pt_Commons_TranslateUtility::safeTranslate('This is an automated email from ePT.');
 
-        return '<div style="margin:0;padding:24px 12px;background:#f2f4f7;">' . "\n"
+        return '<div ' . self::MARKER . '="1" style="margin:0;padding:24px 12px;background:#f2f4f7;">' . "\n"
             . ($preheader !== ''
                 ? '<div style="display:none;max-height:0;overflow:hidden;opacity:0;color:transparent;">' . self::e($preheader) . '</div>' . "\n"
                 : '')
-            . '<table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="border-collapse:collapse;max-width:560px;margin:0 auto;">' . "\n"
+            . '<table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="border-collapse:collapse;max-width:640px;margin:0 auto;">' . "\n"
             . '<tr><td style="padding:0 4px 12px;font-family:' . self::FONT . ';font-size:18px;font-weight:bold;color:' . self::BRAND . ';">ePT</td></tr>' . "\n"
             . '<tr><td style="background:#ffffff;border:1px solid #dde3ea;border-radius:8px;padding:28px 28px 24px;font-family:' . self::FONT . ';font-size:15px;line-height:1.55;color:' . self::TEXT . ';">' . "\n"
             . $bodyHtml
             . '</td></tr>' . "\n"
-            . '<tr><td style="padding:14px 4px 0;font-family:' . self::FONT . ';font-size:12px;line-height:1.5;color:#7a8391;">' . $footer . '</td></tr>' . "\n"
+            . ($footer
+                ? '<tr><td style="padding:14px 4px 0;font-family:' . self::FONT . ';font-size:12px;line-height:1.5;color:#7a8391;">' . $footerText . '</td></tr>' . "\n"
+                : '')
             . '</table>' . "\n"
             . '</div>';
+    }
+
+    /**
+     * Puts an email that admins wrote, such as a shipment notice or an
+     * announcement, in the same card as the emails ePT writes. HTML that is
+     * already wrapped, or is a full document with its own <html> or <body>,
+     * is returned unchanged.
+     */
+    public static function wrapBare(string $html): string
+    {
+        if (str_contains($html, self::MARKER) || preg_match('/<(html|body)[\s>]/i', $html)) {
+            return $html;
+        }
+        return self::page($html, '', false);
+    }
+
+    /**
+     * A short notice to admins, such as "reports are ready": a greeting when
+     * $name is set, the paragraphs, then a button to the page in ePT. $path is a
+     * full URL or a path on the site, for example /admin/evaluate/shipment/sid/MTI=.
+     * Paragraphs are already escaped.
+     */
+    public static function notice(?string $name, array $paragraphs, string $path, string $buttonLabel): string
+    {
+        $url = preg_match('#^https?://#i', $path) ? $path : self::siteUrl() . '/' . ltrim($path, '/');
+        $body = $name !== null && trim($name) !== '' ? self::greeting($name) : '';
+        foreach ($paragraphs as $html) {
+            $body .= self::p($html);
+        }
+        return self::page($body . self::button($url, $buttonLabel) . self::fallbackLink($url));
     }
 
     /** A paragraph. $html is already escaped. */

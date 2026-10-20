@@ -1484,8 +1484,9 @@ class ReportGenerator
             && !empty($this->config->jobCompletionAlertMails)
         ) {
             $emailSubject = "ePT | Shipment Evaluated";
-            $emailContent = 'Shipment ' . $shipmentResult[0]['shipment_code'] . ' has been evaluated <br><br> Please click on this link to see ' . $this->config->appConfig->domain . $link;
-            $emailContent .= "<br><br><br><small>This is a system generated email</small>";
+            $emailContent = Application_Service_EmailLayout::notice(null, [
+                'Shipment <b>' . Application_Service_EmailLayout::e($shipmentResult[0]['shipment_code']) . '</b> has been evaluated.',
+            ], $link, 'Open evaluation');
             $this->config->commonService->insertTempMail($this->config->jobCompletionAlertMails, null, null, $emailSubject, $emailContent);
         }
     }
@@ -1598,8 +1599,9 @@ class ReportGenerator
             && !empty($this->config->jobCompletionAlertMails)
         ) {
             $emailSubject = "ePT | Reports for " . $evalRow['shipment_code'];
-            $emailContent = "Reports for Shipment " . $evalRow['shipment_code'] . " have been generated. <br><br> Please click on this link to see " . $this->config->appConfig->domain . $link;
-            $emailContent .= "<br><br><br><small>This is a system generated email</small>";
+            $emailContent = Application_Service_EmailLayout::notice(null, [
+                'Reports for shipment <b>' . Application_Service_EmailLayout::e($evalRow['shipment_code']) . '</b> have been generated.',
+            ], $link, 'Open reports');
             $this->config->commonService->insertTempMail($this->config->jobCompletionAlertMails, null, null, $emailSubject, $emailContent);
         }
 
@@ -1663,11 +1665,10 @@ class ReportGenerator
         if ($this->config->enabledAdminEmailReminder == 'yes' && !empty($evalRow['initated_by'])) {
             $adminDetails = $this->config->adminService->getSystemAdminDetails($evalRow['initated_by']);
             if (isset($adminDetails) && !empty($adminDetails) && $adminDetails['primary_email'] != "") {
-                $link = $this->config->appConfig->domain . '/reports/distribution/shipment/sid/' . base64_encode($evalRow['shipment_id']);
                 $subject = 'Shipment report for ' . $evalRow['shipment_code'] . ' has been generated';
-                $message = 'Hello, ' . $adminDetails['first_name'] . ', <br>
-                 Shipment report for ' . $evalRow['shipment_code'] . ' has been generated successfully. Kindly click the below link to check the report or copy paste into the brower address bar.<br>
-                 <a href="' . $link . '">' . $link . '</a>.';
+                $message = Application_Service_EmailLayout::notice($adminDetails['first_name'], [
+                    'Reports for shipment <b>' . Application_Service_EmailLayout::e($evalRow['shipment_code']) . '</b> have been generated.',
+                ], '/reports/distribution/shipment/sid/' . base64_encode($evalRow['shipment_id']), 'Open reports');
 
                 $this->config->commonService->insertTempMail($adminDetails['primary_email'], null, null, $subject, $message, 'ePT System', 'ePT System Admin');
             }
