@@ -28261,3 +28261,228 @@ msgstr "Aucun participant"
 
 #~ msgid "Not enrolled in any scheme"
 #~ msgstr "Non inscrits à un programme"
+
+#: application/services/Common.php:1881
+msgid ""
+"email.devTrapDsn in application.ini is not a valid smtp:// address, so ePT "
+"sends no email."
+msgstr ""
+"email.devTrapDsn dans application.ini n'est pas une adresse smtp:// valide, "
+"donc ePT n'envoie aucun e-mail."
+
+#: application/services/Common.php:1889
+msgid ""
+"No SMTP host is set. Enter the mail server details and save them first."
+msgstr ""
+"Aucun hôte SMTP n'est défini. Saisissez d'abord les informations du serveur "
+"de messagerie et enregistrez-les."
+
+#: application/services/Common.php:1908
+#, php-format
+msgid ""
+"Connected to the dev mail trap at %s. Mail from this server goes there, not "
+"to real inboxes."
+msgstr ""
+"Connecté au piège à e-mails de développement sur %s. Les e-mails de ce "
+"serveur y arrivent, pas dans de vraies boîtes de réception."
+
+#: application/services/Common.php:1910
+#, php-format
+msgid "Connected to %s. No username is set, so ePT sends without signing in."
+msgstr ""
+"Connecté à %s. Aucun nom d'utilisateur n'est défini, donc ePT envoie sans se"
+" connecter."
+
+#: application/services/Common.php:1912
+#, php-format
+msgid "Connected to %s and signed in as %s."
+msgstr "Connecté à %s avec le compte %s."
+
+#: application/services/Common.php:1918 application/services/Common.php:1949
+#, php-format
+msgid "The server said: %s"
+msgstr "Réponse du serveur : %s"
+
+#: application/services/Common.php:1923
+msgid "Not tried, because ePT could not sign in to the mail server."
+msgstr "Non essayé, car ePT n'a pas pu se connecter au serveur de messagerie."
+
+#: application/services/Common.php:1925
+msgid "Not tried, because your admin account has no valid email address."
+msgstr ""
+"Non essayé, car votre compte administrateur n'a pas d'adresse e-mail valide."
+
+#: application/services/Common.php:1927
+msgid "No From Email is set. Enter one and save it first."
+msgstr ""
+"Aucun e-mail de l'expéditeur n'est défini. Saisissez-en un et enregistrez-le"
+" d'abord."
+
+#: application/services/Common.php:1933
+msgid ""
+"This is a test email from ePT. It confirms that ePT can send email with the "
+"saved mail settings."
+msgstr ""
+"Ceci est un e-mail de test d'ePT. Il confirme qu'ePT peut envoyer des "
+"e-mails avec les paramètres de messagerie enregistrés."
+
+#: application/services/Common.php:1934
+#, php-format
+msgid "Sent from %s by Verify Email Setup in Global Config on %s."
+msgstr ""
+"Envoyé depuis %s par Vérifier la configuration de messagerie dans la "
+"configuration globale le %s."
+
+#: application/services/Common.php:1935
+msgid "No action is needed."
+msgstr "Aucune mesure n'est requise."
+
+#: application/services/Common.php:1940
+msgid "ePT test email"
+msgstr "E-mail de test d'ePT"
+
+#: application/services/Common.php:1945
+#, php-format
+msgid "Sent a test email to %s. The dev mail trap caught it."
+msgstr ""
+"Un e-mail de test a été envoyé à %s. Le piège à e-mails de développement l'a"
+" intercepté."
+
+#: application/services/Common.php:1946
+#, php-format
+msgid ""
+"Sent a test email to %s. Check that it arrives. If it is not in the inbox, "
+"look in the spam folder."
+msgstr ""
+"Un e-mail de test a été envoyé à %s. Vérifiez qu'il arrive. S'il n'est pas "
+"dans la boîte de réception, regardez dans le dossier des courriers "
+"indésirables."
+
+#: application/services/Common.php:1960
+msgid "Bounce processing is off, because no IMAP Host is set."
+msgstr ""
+"Le traitement des rejets est désactivé, car aucun hôte IMAP n'est défini."
+
+#: application/services/Common.php:1966
+#, php-format
+msgid "Opened the %s folder on %s as %s. It holds %d messages."
+msgstr ""
+"Le dossier %s a été ouvert sur %s avec le compte %s. Il contient %d "
+"messages."
+
+#: application/services/Common.php:1968
+#, php-format
+msgid "Could not open the bounce inbox: %s"
+msgstr "Impossible d'ouvrir la boîte de réception des rejets : %s"
+
+#: application/services/Common.php:2000
+msgid ""
+"The mail server refused the username or password. Gmail and Microsoft 365 "
+"need an app password, not the account password."
+msgstr ""
+"Le serveur de messagerie a refusé le nom d'utilisateur ou le mot de passe. "
+"Gmail et Microsoft 365 exigent un mot de passe d'application, et non le mot "
+"de passe du compte."
+
+#: application/services/Common.php:2001
+msgid ""
+"ePT could not reach the mail server. Check the host, port and encryption, "
+"and that this server allows outgoing connections on that port."
+msgstr ""
+"ePT n'a pas pu joindre le serveur de messagerie. Vérifiez l'hôte, le port et"
+" le chiffrement, et que ce serveur autorise les connexions sortantes sur ce "
+"port."
+
+#: application/services/Common.php:2002
+msgid "The mail server refused the recipient address."
+msgstr "Le serveur de messagerie a refusé l'adresse du destinataire."
+
+#: application/services/Common.php:2003
+msgid "The mail server has hit its sending limit. Try again later."
+msgstr ""
+"Le serveur de messagerie a atteint sa limite d'envoi. Réessayez plus tard."
+
+#: application/services/Common.php:2004
+msgid "The mail server refused the request."
+msgstr "Le serveur de messagerie a refusé la demande."
+
+#: application/modules/admin/views/scripts/global-config/index.phtml:1502
+#: application/modules/admin/views/scripts/global-config/index.phtml:2163
+msgid "Mail server login"
+msgstr "Connexion au serveur de messagerie"
+
+#: application/modules/admin/views/scripts/global-config/index.phtml:1503
+#: application/modules/admin/views/scripts/global-config/index.phtml:2164
+msgid "Test email"
+msgstr "E-mail de test"
+
+#: application/modules/admin/views/scripts/global-config/index.phtml:1504
+#: application/modules/admin/views/scripts/global-config/index.phtml:2165
+msgid "Bounce inbox"
+msgstr "Boîte de réception des rejets"
+
+#: application/modules/admin/views/scripts/global-config/index.phtml:1509
+msgid "Verify Email Setup"
+msgstr "Vérifier la configuration de messagerie"
+
+#: application/modules/admin/views/scripts/global-config/index.phtml:1512
+#, php-format
+msgid ""
+"Signs in to the mail server, sends a test email to %s and opens the bounce "
+"inbox. It uses the saved settings."
+msgstr ""
+"Se connecte au serveur de messagerie, envoie un e-mail de test à %s et ouvre"
+" la boîte de réception des rejets. Utilise les paramètres enregistrés."
+
+#: application/modules/admin/views/scripts/global-config/index.phtml:1514
+msgid ""
+"Signs in to the mail server and opens the bounce inbox. It uses the saved "
+"settings. Add an email address to your admin account to also get a test "
+"email."
+msgstr ""
+"Se connecte au serveur de messagerie et ouvre la boîte de réception des "
+"rejets. Utilise les paramètres enregistrés. Ajoutez une adresse e-mail à "
+"votre compte administrateur pour recevoir aussi un e-mail de test."
+
+#: application/modules/admin/views/scripts/global-config/index.phtml:1519
+msgid ""
+"You changed the email settings. Save them first, because Verify Email Setup "
+"tests the saved settings."
+msgstr ""
+"Vous avez modifié les paramètres de messagerie. Enregistrez-les d'abord, car"
+" Vérifier la configuration de messagerie teste les paramètres enregistrés."
+
+#: application/modules/admin/views/scripts/global-config/index.phtml:1525
+#, php-format
+msgid "Last verified on %s by %s: email works."
+msgstr "Dernière vérification le %s par %s : la messagerie fonctionne."
+
+#: application/modules/admin/views/scripts/global-config/index.phtml:1525
+#, php-format
+msgid "Last verified on %s by %s: email does not work."
+msgstr "Dernière vérification le %s par %s : la messagerie ne fonctionne pas."
+
+#: application/modules/admin/views/scripts/global-config/index.phtml:2193
+msgid "Checking the mail settings. This can take up to a minute."
+msgstr ""
+"Vérification des paramètres de messagerie. Cela peut prendre jusqu'à une "
+"minute."
+
+#: application/modules/admin/views/scripts/global-config/index.phtml:2199
+#, php-format
+msgid "Email works. Verified on %s."
+msgstr "La messagerie fonctionne. Vérifié le %s."
+
+#: application/modules/admin/views/scripts/global-config/index.phtml:2200
+#, php-format
+msgid "Email does not work. Verified on %s."
+msgstr "La messagerie ne fonctionne pas. Vérifié le %s."
+
+#: application/modules/admin/views/scripts/global-config/index.phtml:2203
+msgid "Open the dev mail trap"
+msgstr "Ouvrir le piège à e-mails de développement"
+
+#: application/modules/admin/views/scripts/global-config/index.phtml:2207
+msgid "The check did not finish. Reload the page and try again."
+msgstr ""
+"La vérification ne s'est pas terminée. Rechargez la page et réessayez."

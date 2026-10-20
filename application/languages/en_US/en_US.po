@@ -26548,3 +26548,188 @@ msgstr "PT Participant Info"
 
 #~ msgid "ASSAYNAME"
 #~ msgstr "ASSAYNAME"
+
+#: application/services/Common.php:1881
+msgid ""
+"email.devTrapDsn in application.ini is not a valid smtp:// address, so ePT "
+"sends no email."
+msgstr ""
+
+#: application/services/Common.php:1889
+msgid ""
+"No SMTP host is set. Enter the mail server details and save them first."
+msgstr ""
+
+#: application/services/Common.php:1908
+#, php-format
+msgid ""
+"Connected to the dev mail trap at %s. Mail from this server goes there, not "
+"to real inboxes."
+msgstr ""
+
+#: application/services/Common.php:1910
+#, php-format
+msgid "Connected to %s. No username is set, so ePT sends without signing in."
+msgstr ""
+
+#: application/services/Common.php:1912
+#, php-format
+msgid "Connected to %s and signed in as %s."
+msgstr ""
+
+#: application/services/Common.php:1918 application/services/Common.php:1949
+#, php-format
+msgid "The server said: %s"
+msgstr ""
+
+#: application/services/Common.php:1923
+msgid "Not tried, because ePT could not sign in to the mail server."
+msgstr ""
+
+#: application/services/Common.php:1925
+msgid "Not tried, because your admin account has no valid email address."
+msgstr ""
+
+#: application/services/Common.php:1927
+msgid "No From Email is set. Enter one and save it first."
+msgstr ""
+
+#: application/services/Common.php:1933
+msgid ""
+"This is a test email from ePT. It confirms that ePT can send email with the "
+"saved mail settings."
+msgstr ""
+
+#: application/services/Common.php:1934
+#, php-format
+msgid "Sent from %s by Verify Email Setup in Global Config on %s."
+msgstr ""
+
+#: application/services/Common.php:1935
+msgid "No action is needed."
+msgstr ""
+
+#: application/services/Common.php:1940
+msgid "ePT test email"
+msgstr ""
+
+#: application/services/Common.php:1945
+#, php-format
+msgid "Sent a test email to %s. The dev mail trap caught it."
+msgstr ""
+
+#: application/services/Common.php:1946
+#, php-format
+msgid ""
+"Sent a test email to %s. Check that it arrives. If it is not in the inbox, "
+"look in the spam folder."
+msgstr ""
+
+#: application/services/Common.php:1960
+msgid "Bounce processing is off, because no IMAP Host is set."
+msgstr ""
+
+#: application/services/Common.php:1966
+#, php-format
+msgid "Opened the %s folder on %s as %s. It holds %d messages."
+msgstr ""
+
+#: application/services/Common.php:1968
+#, php-format
+msgid "Could not open the bounce inbox: %s"
+msgstr ""
+
+#: application/services/Common.php:2000
+msgid ""
+"The mail server refused the username or password. Gmail and Microsoft 365 "
+"need an app password, not the account password."
+msgstr ""
+
+#: application/services/Common.php:2001
+msgid ""
+"ePT could not reach the mail server. Check the host, port and encryption, "
+"and that this server allows outgoing connections on that port."
+msgstr ""
+
+#: application/services/Common.php:2002
+msgid "The mail server refused the recipient address."
+msgstr ""
+
+#: application/services/Common.php:2003
+msgid "The mail server has hit its sending limit. Try again later."
+msgstr ""
+
+#: application/services/Common.php:2004
+msgid "The mail server refused the request."
+msgstr ""
+
+#: application/modules/admin/views/scripts/global-config/index.phtml:1502
+#: application/modules/admin/views/scripts/global-config/index.phtml:2163
+msgid "Mail server login"
+msgstr ""
+
+#: application/modules/admin/views/scripts/global-config/index.phtml:1503
+#: application/modules/admin/views/scripts/global-config/index.phtml:2164
+msgid "Test email"
+msgstr ""
+
+#: application/modules/admin/views/scripts/global-config/index.phtml:1504
+#: application/modules/admin/views/scripts/global-config/index.phtml:2165
+msgid "Bounce inbox"
+msgstr ""
+
+#: application/modules/admin/views/scripts/global-config/index.phtml:1509
+msgid "Verify Email Setup"
+msgstr ""
+
+#: application/modules/admin/views/scripts/global-config/index.phtml:1512
+#, php-format
+msgid ""
+"Signs in to the mail server, sends a test email to %s and opens the bounce "
+"inbox. It uses the saved settings."
+msgstr ""
+
+#: application/modules/admin/views/scripts/global-config/index.phtml:1514
+msgid ""
+"Signs in to the mail server and opens the bounce inbox. It uses the saved "
+"settings. Add an email address to your admin account to also get a test "
+"email."
+msgstr ""
+
+#: application/modules/admin/views/scripts/global-config/index.phtml:1519
+msgid ""
+"You changed the email settings. Save them first, because Verify Email Setup "
+"tests the saved settings."
+msgstr ""
+
+#: application/modules/admin/views/scripts/global-config/index.phtml:1525
+#, php-format
+msgid "Last verified on %s by %s: email works."
+msgstr ""
+
+#: application/modules/admin/views/scripts/global-config/index.phtml:1525
+#, php-format
+msgid "Last verified on %s by %s: email does not work."
+msgstr ""
+
+#: application/modules/admin/views/scripts/global-config/index.phtml:2193
+msgid "Checking the mail settings. This can take up to a minute."
+msgstr ""
+
+#: application/modules/admin/views/scripts/global-config/index.phtml:2199
+#, php-format
+msgid "Email works. Verified on %s."
+msgstr ""
+
+#: application/modules/admin/views/scripts/global-config/index.phtml:2200
+#, php-format
+msgid "Email does not work. Verified on %s."
+msgstr ""
+
+#: application/modules/admin/views/scripts/global-config/index.phtml:2203
+msgid "Open the dev mail trap"
+msgstr ""
+
+#: application/modules/admin/views/scripts/global-config/index.phtml:2207
+msgid "The check did not finish. Reload the page and try again."
+msgstr ""

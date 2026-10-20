@@ -1800,24 +1800,213 @@ class Application_Service_Common
             }
 
             $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+            $failedAt = 0;
+            $failureType = '';
             $lastFailure = $db->fetchRow(
                 "SELECT failure_type, updated_at FROM temp_mail
                   WHERE failure_type IN ('smtp-auth', 'connectivity', 'invalid_dsn')
                   ORDER BY updated_at DESC LIMIT 1"
             );
-            if (!$lastFailure) {
+            if ($lastFailure) {
+                $failedAt = (int) strtotime((string) $lastFailure['updated_at']);
+                $failureType = (string) $lastFailure['failure_type'];
+            }
+            // Verify Email Setup counts as a send: a pass clears older failures, a fail is one
+            $verifiedAt = 0;
+            $verify = self::lastMailVerification();
+            if ($verify !== null && !empty($verify['ok'])) {
+                $verifiedAt = (int) $verify['at'];
+            } elseif ($verify !== null && !empty($verify['broken']) && (int) $verify['at'] > $failedAt) {
+                $failedAt = (int) $verify['at'];
+                $failureType = $verify['type'];
+            }
+            if ($failedAt === 0) {
                 return null;
             }
-            $failedAt = strtotime((string) $lastFailure['updated_at']);
-            $lastSent = strtotime((string) $db->fetchOne("SELECT MAX(sent_at) FROM temp_mail WHERE status = 'sent'"));
+            $lastSent = (int) strtotime((string) $db->fetchOne("SELECT MAX(sent_at) FROM temp_mail WHERE status = 'sent'"));
             $settingsChanged = (int) @filemtime(APPLICATION_PATH . '/configs/application.ini');
-            if ($failedAt && $failedAt > (int) $lastSent && $failedAt > $settingsChanged) {
-                return ['reason' => 'failing', 'type' => (string) $lastFailure['failure_type'], 'when' => $failedAt];
+            if ($failedAt > max($lastSent, $settingsChanged, $verifiedAt)) {
+                return ['reason' => 'failing', 'type' => $failureType, 'when' => $failedAt];
             }
         } catch (Throwable) {
             // Without an answer, leave email available as before
         }
         return null;
+    }
+
+    /** system_config row that keeps the latest Verify Email Setup result. */
+    private const MAIL_VERIFY_CONFIG = 'mail_last_verify';
+
+    /**
+     * The latest Verify Email Setup result, or null if it has never run.
+     *
+     * @return ?array{at: int, ok: bool, broken: bool, type: string, by: string, steps: array}
+     */
+    public static function lastMailVerification(): ?array
+    {
+        try {
+            $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+            $value = json_decode((string) $db->fetchOne('SELECT `value` FROM system_config WHERE config = ?', [self::MAIL_VERIFY_CONFIG]), true);
+            return is_array($value) && isset($value['at']) ? $value : null;
+        } catch (Throwable) {
+            return null;
+        }
+    }
+
+    /**
+     * Verify Email Setup: test the saved mail settings in three steps and keep the result.
+     *
+     * 1. login: connect to the SMTP server (or the dev mail trap) and sign in.
+     * 2. send: send one test email straight to $adminEmail, not through the queue.
+     * 3. bounce: open the bounce inbox folder. Skipped when bounce processing is off.
+     *
+     * Each step is ['status' => pass|fail|skip, 'message' => translated text]. The
+     * result passes when login passes and send does not fail. The bounce inbox does
+     * not affect sending.
+     *
+     * @return array{ok: bool, at: int, steps: array<string, array{status: string, message: string}>, trapUrl: ?string}
+     */
+    public static function verifyMailSetup(string $adminEmail): array
+    {
+        $steps = [];
+        $failureType = '';
+        $trapUrl = null;
+        $dsn = null;
+        $settings = self::getMailSettings();
+        $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
+        $devTrapDsn = trim((string) ($conf->email->devTrapDsn ?? ''));
+        $server = '';
+        if ($devTrapDsn !== '') {
+            $parts = parse_url($devTrapDsn);
+            if (!$parts || ($parts['scheme'] ?? '') !== 'smtp' || empty($parts['host'])) {
+                $steps['login'] = ['status' => 'fail', 'message' => Pt_Commons_TranslateUtility::safeTranslate('email.devTrapDsn in application.ini is not a valid smtp:// address, so ePT sends no email.')];
+                $failureType = 'invalid_dsn';
+            } else {
+                $dsn = $devTrapDsn;
+                $server = $parts['host'] . (empty($parts['port']) ? '' : ':' . $parts['port']);
+                $trapUrl = self::mailTrapWebUrl();
+            }
+        } elseif ($settings['host'] === '') {
+            $steps['login'] = ['status' => 'fail', 'message' => Pt_Commons_TranslateUtility::safeTranslate('No SMTP host is set. Enter the mail server details and save them first.')];
+            $failureType = 'not_configured';
+        } else {
+            $dsn = self::smtpDsn($settings);
+            $server = $settings['host'] . ':' . ((int) $settings['port'] ?: 587);
+        }
+
+        $transport = null;
+        if ($dsn !== null) {
+            try {
+                $transport = Symfony\Component\Mailer\Transport::fromDsn($dsn);
+                if ($transport instanceof Symfony\Component\Mailer\Transport\Smtp\SmtpTransport) {
+                    $stream = $transport->getStream();
+                    if ($stream instanceof Symfony\Component\Mailer\Transport\Smtp\Stream\SocketStream) {
+                        $stream->setTimeout(20);
+                    }
+                    $transport->start();
+                }
+                if ($devTrapDsn !== '') {
+                    $message = sprintf(Pt_Commons_TranslateUtility::safeTranslate('Connected to the dev mail trap at %s. Mail from this server goes there, not to real inboxes.'), $server);
+                } elseif ($settings['username'] === '') {
+                    $message = sprintf(Pt_Commons_TranslateUtility::safeTranslate('Connected to %s. No username is set, so ePT sends without signing in.'), $server);
+                } else {
+                    $message = sprintf(Pt_Commons_TranslateUtility::safeTranslate('Connected to %s and signed in as %s.'), $server, $settings['username']);
+                }
+                $steps['login'] = ['status' => 'pass', 'message' => $message];
+            } catch (Throwable $e) {
+                $transport = null;
+                $failureType = self::classifyMailFailure($e->getMessage());
+                $steps['login'] = ['status' => 'fail', 'message' => self::mailFailureHint($failureType) . ' ' . sprintf(Pt_Commons_TranslateUtility::safeTranslate('The server said: %s'), $e->getMessage())];
+            }
+        }
+
+        if ($transport === null) {
+            $steps['send'] = ['status' => 'skip', 'message' => Pt_Commons_TranslateUtility::safeTranslate('Not tried, because ePT could not sign in to the mail server.')];
+        } elseif (self::validateEmail($adminEmail) === null) {
+            $steps['send'] = ['status' => 'skip', 'message' => Pt_Commons_TranslateUtility::safeTranslate('Not tried, because your admin account has no valid email address.')];
+        } elseif ($settings['fromEmail'] === '' && $devTrapDsn === '') {
+            $steps['send'] = ['status' => 'fail', 'message' => Pt_Commons_TranslateUtility::safeTranslate('No From Email is set. Enter one and save it first.')];
+            $failureType = 'other';
+        } else {
+            $fromEmail = $settings['fromEmail'] !== '' ? $settings['fromEmail'] : 'ept@localhost';
+            $fromName = $settings['fromName'] !== '' ? $settings['fromName'] : 'ePT';
+            $domain = rtrim(self::readIniValue('domain'), '/');
+            $html = '<p>' . htmlspecialchars(Pt_Commons_TranslateUtility::safeTranslate('This is a test email from ePT. It confirms that ePT can send email with the saved mail settings.'), ENT_QUOTES, 'UTF-8') . '</p>'
+                . '<p>' . htmlspecialchars(sprintf(Pt_Commons_TranslateUtility::safeTranslate('Sent from %s by Verify Email Setup in Global Config on %s.'), $domain !== '' ? $domain : 'ePT', date('d-M-Y H:i T')), ENT_QUOTES, 'UTF-8') . '</p>'
+                . '<p>' . htmlspecialchars(Pt_Commons_TranslateUtility::safeTranslate('No action is needed.'), ENT_QUOTES, 'UTF-8') . '</p>';
+            try {
+                $email = (new Symfony\Component\Mime\Email())
+                    ->from(new Symfony\Component\Mime\Address($fromEmail, $fromName))
+                    ->to($adminEmail)
+                    ->subject(Pt_Commons_TranslateUtility::safeTranslate('ePT test email'))
+                    ->html($html)
+                    ->text(html_entity_decode(strip_tags(str_replace('</p>', "\n\n", $html)), ENT_QUOTES, 'UTF-8'));
+                $transport->send($email);
+                $steps['send'] = ['status' => 'pass', 'message' => $devTrapDsn !== ''
+                    ? sprintf(Pt_Commons_TranslateUtility::safeTranslate('Sent a test email to %s. The dev mail trap caught it.'), $adminEmail)
+                    : sprintf(Pt_Commons_TranslateUtility::safeTranslate('Sent a test email to %s. Check that it arrives. If it is not in the inbox, look in the spam folder.'), $adminEmail)];
+            } catch (Throwable $e) {
+                $failureType = self::classifyMailFailure($e->getMessage());
+                $steps['send'] = ['status' => 'fail', 'message' => self::mailFailureHint($failureType) . ' ' . sprintf(Pt_Commons_TranslateUtility::safeTranslate('The server said: %s'), $e->getMessage())];
+            }
+            try {
+                if ($transport instanceof Symfony\Component\Mailer\Transport\Smtp\SmtpTransport) {
+                    $transport->stop();
+                }
+            } catch (Throwable) {
+                // the test email has gone or failed already
+            }
+        }
+
+        $bounce = self::getBounceSettings(true);
+        if ($bounce['host'] === '') {
+            $steps['bounce'] = ['status' => 'skip', 'message' => Pt_Commons_TranslateUtility::safeTranslate('Bounce processing is off, because no IMAP Host is set.')];
+        } else {
+            try {
+                $storage = new Zend_Mail_Storage_Imap(self::bounceImapParams($bounce));
+                $count = $storage->countMessages();
+                $storage->close();
+                $steps['bounce'] = ['status' => 'pass', 'message' => sprintf(Pt_Commons_TranslateUtility::safeTranslate('Opened the %s folder on %s as %s. It holds %d messages.'), $bounce['folder'], $bounce['host'], $bounce['username'], $count)];
+            } catch (Throwable $e) {
+                $steps['bounce'] = ['status' => 'fail', 'message' => sprintf(Pt_Commons_TranslateUtility::safeTranslate('Could not open the bounce inbox: %s'), $e->getMessage())];
+            }
+        }
+
+        // A send skipped for want of an admin address still leaves a working login
+        $ok = $steps['login']['status'] === 'pass' && $steps['send']['status'] !== 'fail';
+        $result = [
+            'at' => time(),
+            'ok' => $ok,
+            // A rejected admin address says nothing about the mail settings themselves
+            'broken' => !$ok && !in_array($failureType, ['', 'not_configured', 'bad-recipient'], true),
+            'type' => $failureType,
+            'by' => $adminEmail,
+            'steps' => $steps,
+        ];
+        try {
+            $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+            $value = json_encode($result, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+            if ($db->fetchOne('SELECT 1 FROM system_config WHERE config = ?', [self::MAIL_VERIFY_CONFIG])) {
+                $db->update('system_config', ['value' => $value], ['config = ?' => self::MAIL_VERIFY_CONFIG]);
+            } else {
+                $db->insert('system_config', ['config' => self::MAIL_VERIFY_CONFIG, 'value' => $value, 'display_name' => 'Latest Verify Email Setup result']);
+            }
+        } catch (Throwable $e) {
+            Pt_Commons_LoggerUtility::logWarning('verifyMailSetup(): could not save the result: ' . $e->getMessage());
+        }
+        return $result + ['trapUrl' => $trapUrl];
+    }
+
+    /** What to check first for a failure type from classifyMailFailure(). */
+    private static function mailFailureHint(string $type): string
+    {
+        return match ($type) {
+            'smtp-auth' => Pt_Commons_TranslateUtility::safeTranslate('The mail server refused the username or password. Gmail and Microsoft 365 need an app password, not the account password.'),
+            'connectivity' => Pt_Commons_TranslateUtility::safeTranslate('ePT could not reach the mail server. Check the host, port and encryption, and that this server allows outgoing connections on that port.'),
+            'bad-recipient' => Pt_Commons_TranslateUtility::safeTranslate('The mail server refused the recipient address.'),
+            'rate-limit' => Pt_Commons_TranslateUtility::safeTranslate('The mail server has hit its sending limit. Try again later.'),
+            default => Pt_Commons_TranslateUtility::safeTranslate('The mail server refused the request.'),
+        };
     }
 
     /**

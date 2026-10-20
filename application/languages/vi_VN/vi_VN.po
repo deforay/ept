@@ -27316,3 +27316,214 @@ msgstr "Không có đơn vị tham gia"
 
 #~ msgid "Not enrolled in any scheme"
 #~ msgstr "Chưa ghi danh chương trình nào"
+
+#: application/services/Common.php:1881
+msgid ""
+"email.devTrapDsn in application.ini is not a valid smtp:// address, so ePT "
+"sends no email."
+msgstr ""
+"email.devTrapDsn trong application.ini không phải là địa chỉ smtp:// hợp lệ,"
+" vì vậy ePT không gửi email nào."
+
+#: application/services/Common.php:1889
+msgid ""
+"No SMTP host is set. Enter the mail server details and save them first."
+msgstr ""
+"Chưa thiết lập máy chủ SMTP. Hãy nhập thông tin máy chủ thư và lưu lại "
+"trước."
+
+#: application/services/Common.php:1908
+#, php-format
+msgid ""
+"Connected to the dev mail trap at %s. Mail from this server goes there, not "
+"to real inboxes."
+msgstr ""
+"Đã kết nối tới bẫy thư phát triển tại %s. Thư từ máy chủ này được chuyển tới"
+" đó, không tới hộp thư thật."
+
+#: application/services/Common.php:1910
+#, php-format
+msgid "Connected to %s. No username is set, so ePT sends without signing in."
+msgstr ""
+"Đã kết nối tới %s. Chưa thiết lập tên đăng nhập, vì vậy ePT gửi mà không "
+"đăng nhập."
+
+#: application/services/Common.php:1912
+#, php-format
+msgid "Connected to %s and signed in as %s."
+msgstr "Đã kết nối tới %s và đăng nhập bằng %s."
+
+#: application/services/Common.php:1918 application/services/Common.php:1949
+#, php-format
+msgid "The server said: %s"
+msgstr "Máy chủ trả lời: %s"
+
+#: application/services/Common.php:1923
+msgid "Not tried, because ePT could not sign in to the mail server."
+msgstr "Chưa thử, vì ePT không đăng nhập được vào máy chủ thư."
+
+#: application/services/Common.php:1925
+msgid "Not tried, because your admin account has no valid email address."
+msgstr ""
+"Chưa thử, vì tài khoản quản trị của bạn không có địa chỉ email hợp lệ."
+
+#: application/services/Common.php:1927
+msgid "No From Email is set. Enter one and save it first."
+msgstr "Chưa thiết lập email người gửi. Hãy nhập và lưu lại trước."
+
+#: application/services/Common.php:1933
+msgid ""
+"This is a test email from ePT. It confirms that ePT can send email with the "
+"saved mail settings."
+msgstr ""
+"Đây là email thử nghiệm từ ePT. Email này xác nhận ePT có thể gửi email với "
+"cài đặt thư đã lưu."
+
+#: application/services/Common.php:1934
+#, php-format
+msgid "Sent from %s by Verify Email Setup in Global Config on %s."
+msgstr ""
+"Được gửi từ %s bởi chức năng Kiểm tra cài đặt email trong Cấu hình chung lúc"
+" %s."
+
+#: application/services/Common.php:1935
+msgid "No action is needed."
+msgstr "Không cần thực hiện thao tác nào."
+
+#: application/services/Common.php:1940
+msgid "ePT test email"
+msgstr "Email thử nghiệm ePT"
+
+#: application/services/Common.php:1945
+#, php-format
+msgid "Sent a test email to %s. The dev mail trap caught it."
+msgstr ""
+"Đã gửi email thử nghiệm tới %s. Bẫy thư phát triển đã giữ lại email này."
+
+#: application/services/Common.php:1946
+#, php-format
+msgid ""
+"Sent a test email to %s. Check that it arrives. If it is not in the inbox, "
+"look in the spam folder."
+msgstr ""
+"Đã gửi email thử nghiệm tới %s. Hãy kiểm tra email có đến không. Nếu không "
+"thấy trong hộp thư đến, hãy xem thư mục thư rác."
+
+#: application/services/Common.php:1960
+msgid "Bounce processing is off, because no IMAP Host is set."
+msgstr "Xử lý thư bị trả lại đang tắt, vì chưa thiết lập máy chủ IMAP."
+
+#: application/services/Common.php:1966
+#, php-format
+msgid "Opened the %s folder on %s as %s. It holds %d messages."
+msgstr "Đã mở thư mục %s trên %s bằng %s. Thư mục có %d thư."
+
+#: application/services/Common.php:1968
+#, php-format
+msgid "Could not open the bounce inbox: %s"
+msgstr "Không mở được hộp thư thư bị trả lại: %s"
+
+#: application/services/Common.php:2000
+msgid ""
+"The mail server refused the username or password. Gmail and Microsoft 365 "
+"need an app password, not the account password."
+msgstr ""
+"Máy chủ thư từ chối tên đăng nhập hoặc mật khẩu. Gmail và Microsoft 365 cần "
+"mật khẩu ứng dụng, không phải mật khẩu tài khoản."
+
+#: application/services/Common.php:2001
+msgid ""
+"ePT could not reach the mail server. Check the host, port and encryption, "
+"and that this server allows outgoing connections on that port."
+msgstr ""
+"ePT không kết nối được tới máy chủ thư. Hãy kiểm tra máy chủ, cổng và mã "
+"hóa, và kiểm tra máy chủ này cho phép kết nối ra ngoài qua cổng đó."
+
+#: application/services/Common.php:2002
+msgid "The mail server refused the recipient address."
+msgstr "Máy chủ thư từ chối địa chỉ người nhận."
+
+#: application/services/Common.php:2003
+msgid "The mail server has hit its sending limit. Try again later."
+msgstr "Máy chủ thư đã đạt giới hạn gửi. Hãy thử lại sau."
+
+#: application/services/Common.php:2004
+msgid "The mail server refused the request."
+msgstr "Máy chủ thư từ chối yêu cầu."
+
+#: application/modules/admin/views/scripts/global-config/index.phtml:1502
+#: application/modules/admin/views/scripts/global-config/index.phtml:2163
+msgid "Mail server login"
+msgstr "Đăng nhập máy chủ thư"
+
+#: application/modules/admin/views/scripts/global-config/index.phtml:1503
+#: application/modules/admin/views/scripts/global-config/index.phtml:2164
+msgid "Test email"
+msgstr "Email thử nghiệm"
+
+#: application/modules/admin/views/scripts/global-config/index.phtml:1504
+#: application/modules/admin/views/scripts/global-config/index.phtml:2165
+msgid "Bounce inbox"
+msgstr "Hộp thư thư bị trả lại"
+
+#: application/modules/admin/views/scripts/global-config/index.phtml:1509
+msgid "Verify Email Setup"
+msgstr "Kiểm tra cài đặt email"
+
+#: application/modules/admin/views/scripts/global-config/index.phtml:1512
+#, php-format
+msgid ""
+"Signs in to the mail server, sends a test email to %s and opens the bounce "
+"inbox. It uses the saved settings."
+msgstr ""
+"Đăng nhập máy chủ thư, gửi email thử nghiệm tới %s và mở hộp thư thư bị trả "
+"lại. Sử dụng cài đặt đã lưu."
+
+#: application/modules/admin/views/scripts/global-config/index.phtml:1514
+msgid ""
+"Signs in to the mail server and opens the bounce inbox. It uses the saved "
+"settings. Add an email address to your admin account to also get a test "
+"email."
+msgstr ""
+"Đăng nhập máy chủ thư và mở hộp thư thư bị trả lại. Sử dụng cài đặt đã lưu. "
+"Hãy thêm địa chỉ email vào tài khoản quản trị để nhận cả email thử nghiệm."
+
+#: application/modules/admin/views/scripts/global-config/index.phtml:1519
+msgid ""
+"You changed the email settings. Save them first, because Verify Email Setup "
+"tests the saved settings."
+msgstr ""
+"Bạn đã thay đổi cài đặt email. Hãy lưu lại trước, vì Kiểm tra cài đặt email "
+"dùng cài đặt đã lưu."
+
+#: application/modules/admin/views/scripts/global-config/index.phtml:1525
+#, php-format
+msgid "Last verified on %s by %s: email works."
+msgstr "Lần kiểm tra gần nhất lúc %s bởi %s: email hoạt động."
+
+#: application/modules/admin/views/scripts/global-config/index.phtml:1525
+#, php-format
+msgid "Last verified on %s by %s: email does not work."
+msgstr "Lần kiểm tra gần nhất lúc %s bởi %s: email không hoạt động."
+
+#: application/modules/admin/views/scripts/global-config/index.phtml:2193
+msgid "Checking the mail settings. This can take up to a minute."
+msgstr "Đang kiểm tra cài đặt thư. Việc này có thể mất tới một phút."
+
+#: application/modules/admin/views/scripts/global-config/index.phtml:2199
+#, php-format
+msgid "Email works. Verified on %s."
+msgstr "Email hoạt động. Đã kiểm tra lúc %s."
+
+#: application/modules/admin/views/scripts/global-config/index.phtml:2200
+#, php-format
+msgid "Email does not work. Verified on %s."
+msgstr "Email không hoạt động. Đã kiểm tra lúc %s."
+
+#: application/modules/admin/views/scripts/global-config/index.phtml:2203
+msgid "Open the dev mail trap"
+msgstr "Mở bẫy thư phát triển"
+
+#: application/modules/admin/views/scripts/global-config/index.phtml:2207
+msgid "The check did not finish. Reload the page and try again."
+msgstr "Việc kiểm tra chưa hoàn tất. Hãy tải lại trang và thử lại."

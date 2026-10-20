@@ -65,6 +65,25 @@ class Admin_GlobalConfigController extends Zend_Controller_Action
         $this->view->mailSettings = Application_Service_Common::getMailSettings();
         $this->view->bounceSettings = Application_Service_Common::getBounceSettings();
         $this->view->bounceStatus = $commonServices->getBounceStatus();
+        $this->view->lastMailVerification = Application_Service_Common::lastMailVerification();
         $this->view->allSchemes = $commonServices->getFullSchemesDetails();
+    }
+
+    /** Verify Email Setup (XHR POST): test the saved mail settings and return each step as JSON. */
+    public function verifyEmailAction()
+    {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
+        if (!$request->isPost() || !$request->isXmlHttpRequest()) {
+            $this->redirect('/admin/global-config');
+            return;
+        }
+        $adminSession = new Zend_Session_Namespace('administrators');
+        $adminEmail = (string) ($adminSession->primary_email ?? '');
+        $result = Application_Service_Common::verifyMailSetup($adminEmail);
+        $auditDb = new Application_Model_DbTable_AuditLog();
+        $auditDb->addNewAuditLog($result['ok'] ? 'Verified email setup: passed' : 'Verified email setup: failed', 'config');
+        $result['atText'] = Pt_Commons_DateUtility::humanReadableDateFormat(date('Y-m-d H:i:s', $result['at']), true);
+        $this->_helper->json($result);
     }
 }
