@@ -3,7 +3,6 @@
 class AuthController extends Zend_Controller_Action
 {
     private $loginUri = '/auth/login';
-    private $emailVerifyErrMsg = 'Sorry! Your email verification link has expired. Please contact the PT provider for further queries.';
 
     public function init()
     {
@@ -37,45 +36,14 @@ class AuthController extends Zend_Controller_Action
         $this->redirect($this->loginUri);
     }
 
+    /**
+     * Retired. This page changed a login email without signing in, from a
+     * link that carried the address in base64, so anyone could open it for
+     * any account. Login email changes now start from My Account.
+     */
     public function verifyEmailAction()
     {
-        $userService = new Application_Service_DataManagers();
-        /** @var Zend_Controller_Request_Http $request */
-        $request = $this->getRequest();
-        if ($request->isPost()) {
-            $params = $request->getPost();
-            if (
-                !empty($params['website_url']) ||
-                !Application_Service_Common::consumeFormToken($params['form_token'] ?? null, 'authVerifyEmailTokens')
-            ) {
-                $this->redirect($this->loginUri);
-                return;
-            }
-            if (!Application_Service_Common::consumeCaptcha()) {
-                $sessionAlert = new Zend_Session_Namespace('alertSpace');
-                $sessionAlert->message = 'Please enter the correct text from the image.';
-                $sessionAlert->status = 'failure';
-                $this->redirect($this->loginUri);
-                return;
-            }
-            $userService->confirmPrimaryMail($params);
-            $this->redirect('/');
-        }
-        if ($this->hasParam('t')) {
-            $link = $this->_getParam('t');
-            $result = $userService->checkForceProfileEmail($link);
-            if ($result) {
-                $this->view->result = $result;
-                $this->view->formToken = Application_Service_Common::generateFormToken();
-            } else {
-                $sessionAlert = new Zend_Session_Namespace('alertSpace');
-                $sessionAlert->message = $this->emailVerifyErrMsg;
-                $sessionAlert->status = 'failure';
-                $this->redirect($this->loginUri);
-            }
-        } else {
-            $this->redirect($this->loginUri);
-        }
+        $this->redirect($this->loginUri);
     }
 
     public function loginAction()

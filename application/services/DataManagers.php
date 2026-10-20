@@ -114,11 +114,26 @@ class Application_Service_DataManagers
         return $this->datamanagersDb->updateUser($params);
     }
 
-    public function confirmPrimaryMail($params, $showAlert = false)
+    /**
+     * Starts a login email change for the signed-in data manager $dmId. The
+     * account comes from the session, never from the form, and the current
+     * email typed on the form must match it.
+     */
+    public function confirmPrimaryMail(int $dmId, $params, $showAlert = false)
     {
         $sessionAlert = new Zend_Session_Namespace('alertSpace');
-        $dm = $this->dataManagerByLoginEmail((string) $params['oldEmail']);
-        if ($dm && !Application_Model_DbTable_DataManagers::sameEmail($params['oldEmail'], $params['registeredEmail'])) {
+        $db = $this->datamanagersDb->getAdapter();
+        $dm = $dmId > 0 ? $db->fetchRow($db->select()->from('data_manager', ['dm_id', 'first_name', 'last_name', 'primary_email'])->where('dm_id = ?', $dmId)) : null;
+        if (!$dm || !Application_Model_DbTable_DataManagers::sameEmail((string) ($params['oldEmail'] ?? ''), (string) $dm['primary_email'])) {
+            if ($showAlert) {
+                $sessionAlert->message = $this->translator->_('The current email does not match your login email.');
+                $sessionAlert->status = 'failure';
+            }
+            return false;
+        }
+        $params['oldEmail'] = $dm['primary_email'];
+        $params['dmId'] = base64_encode((string) $dmId);
+        if (!Application_Model_DbTable_DataManagers::sameEmail($params['oldEmail'], $params['registeredEmail'])) {
             $common = new Application_Service_Common();
             $token = $this->datamanagersDb->issueEmailChangeToken((int) $dm['dm_id'], (string) $params['registeredEmail']);
             $mail = self::loginEmailChangeEmail(trim($dm['first_name'] . ' ' . $dm['last_name']), (string) $params['oldEmail'], (string) $params['registeredEmail'], $token);
@@ -567,14 +582,6 @@ class Application_Service_DataManagers
             'subject' => Pt_Commons_TranslateUtility::safeTranslate('Confirm your new ePT login email'),
             'html' => $l::page($body, Pt_Commons_TranslateUtility::safeTranslate('Confirm this address to use it for signing in to ePT.')),
         ];
-    }
-
-    /** The data manager with this login email: id and name, or null. */
-    private function dataManagerByLoginEmail(string $email): ?array
-    {
-        $db = $this->datamanagersDb->getAdapter();
-        $row = $db->fetchRow($db->select()->from('data_manager', ['dm_id', 'first_name', 'last_name', 'primary_email', 'new_email'])->where('primary_email = ?', $email));
-        return $row ?: null;
     }
 
     /* Body of the login-credentials email, shared by the single-user and bulk
@@ -1061,11 +1068,6 @@ class Application_Service_DataManagers
     public function resolveResetToken($token)
     {
         return $this->datamanagersDb->fetchByPasswordResetToken($token);
-    }
-
-    public function checkForceProfileEmail($link)
-    {
-        return $this->datamanagersDb->fetchForceProfileEmail($link);
     }
 
     public function updateForceProfileCheck($email, $result = '')

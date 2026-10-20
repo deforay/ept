@@ -28562,3 +28562,7 @@ msgstr "Votre e-mail de connexion a été modifié. Connectez-vous avec %s."
 #: application/controllers/AuthController.php
 msgid "This confirmation link has expired or was already used. Sign in with your current login email and ask for a new link."
 msgstr "Ce lien de confirmation a expiré ou a déjà été utilisé. Connectez-vous avec votre e-mail de connexion actuel et demandez un nouveau lien."
+
+#: application/services/DataManagers.php
+msgid "The current email does not match your login email."
+msgstr "L'e-mail actuel ne correspond pas à votre e-mail de connexion."

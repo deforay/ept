@@ -327,7 +327,7 @@ class ParticipantController extends Zend_Controller_Action
         if ($request->isPost()) {
             $user = new Application_Service_DataManagers();
             $params = $this->getAllParams();
-            $response = $user->confirmPrimaryMail($params, true);
+            $response = $user->confirmPrimaryMail((int) (new Zend_Session_Namespace('datamanagers'))->dm_id, $params, true);
             if ($response) {
                 $newEmail = trim((string) ($params['primaryEmail'] ?? ''));
                 $auditDb = new Application_Model_DbTable_AuditLog();

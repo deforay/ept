@@ -27603,3 +27603,7 @@ msgstr "Email đăng nhập của bạn đã được thay đổi. Hãy đăng n
 #: application/controllers/AuthController.php
 msgid "This confirmation link has expired or was already used. Sign in with your current login email and ask for a new link."
 msgstr "Liên kết xác nhận này đã hết hạn hoặc đã được sử dụng. Hãy đăng nhập bằng email đăng nhập hiện tại và yêu cầu liên kết mới."
+
+#: application/services/DataManagers.php
+msgid "The current email does not match your login email."
+msgstr "Email hiện tại không khớp với email đăng nhập của bạn."

@@ -26809,3 +26809,7 @@ msgstr ""
 #: application/controllers/AuthController.php
 msgid "This confirmation link has expired or was already used. Sign in with your current login email and ask for a new link."
 msgstr ""
+
+#: application/services/DataManagers.php
+msgid "The current email does not match your login email."
+msgstr ""

@@ -883,31 +883,6 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         return $newEmail;
     }
 
-    public function fetchForceProfileEmail($link)
-    {
-        $db = Zend_Db_Table_Abstract::getAdapter();
-        $email = base64_decode($link);
-
-        $sql = $this->select()->from('data_manager')->where('primary_email=?', $email);
-
-        $list = $this->fetchRow($sql);
-
-        if (!empty($list) && $list != null) {
-
-            if (date('Ymd', strtotime($list['last_date_for_email_reset'])) >= date('Ymd')) {
-                $psql = $db->select()->from(['dm' => 'data_manager'], ['dm_id'])
-                    ->join(['pmm' => 'participant_manager_map'], 'pmm.dm_id=dm.dm_id')
-                    ->join(['p' => 'participant'], 'p.participant_id=pmm.participant_id', ['p.unique_identifier', 'p.first_name', 'p.last_name', 'p.lab_name', 'p.institute_name', 'p.state', 'country'])
-                    ->join(['c' => 'countries'], 'c.id=p.country', ['*'])
-                    ->where('dm.dm_id = ?', $list['dm_id']);
-                return ['id' => $list['dm_id'], 'email' => $list['primary_email'], 'participants' => $db->fetchAll($psql)];
-            } else {
-                return false;
-            }
-        }
-        return false;
-    }
-
     public function changeForceProfileCheckByEmail($params)
     {
         $dmId = (int) base64_decode((string) $params['dmId']);
