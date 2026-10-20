@@ -2749,52 +2749,6 @@ class Application_Service_Common
         return true;
     }
 
-    public function exportConfig($data)
-    {
-        $responseData = $this->unserializeForm($data);
-        /* unset the csrf token that was not needed for config export */
-        unset($responseData['csrf_token']);
-        $output = [
-            'timestamp' => time(),
-            'data' => $responseData,
-        ];
-        $tempDirectory = realpath(TEMP_UPLOAD_PATH);
-        if ($tempDirectory === false) {
-            throw new RuntimeException('Temporary upload path is not available for config export.');
-        }
-
-        // The export is downloaded using the returned path only, so the OS can safely generate
-        // the filename for us instead of deriving any part of it from request data.
-        $tempFilePath = tempnam($tempDirectory, 'config-export-');
-        if ($tempFilePath === false) {
-            throw new RuntimeException('Unable to create a temporary file for config export.');
-        }
-
-        $archivePath = $tempFilePath . '.gz';
-        if (!rename($tempFilePath, $archivePath)) {
-            @unlink($tempFilePath);
-            throw new RuntimeException('Unable to prepare the config export archive.');
-        }
-
-        $jsonPayload = json_encode($output);
-        $gzdata = gzencode($jsonPayload === false ? '{}' : $jsonPayload);
-        file_put_contents($archivePath, $gzdata);
-        return $archivePath;
-    }
-
-    public function unserializeForm($str)
-    {
-        $returndata = [];
-        $strArray = explode('&', $str['formPost'] ?? '');
-        foreach ($strArray as $item) {
-            $array = explode('=', $item, 2);
-            $key = str_replace('[]', '', urldecode($array[0] ?? ''));
-            $val = urldecode($array[1] ?? '');
-            $returndata[$key][] = $val;
-        }
-        return $returndata;
-    }
-
     /**
      * Compute email sending health from temp_mail.
      *

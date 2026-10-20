@@ -13,7 +13,6 @@ class Reports_CommonController extends Zend_Controller_Action
             ->addActionContext('get-ajax-drop-downs', 'html')
             ->addActionContext('generate-password', 'html')
             ->addActionContext('testkit-list', 'html')
-            ->addActionContext('export-config', 'html')
             ->initContext();
     }
 
@@ -122,18 +121,6 @@ class Reports_CommonController extends Zend_Controller_Action
         if ($request->isPost()) {
             $commonService = new Application_Service_Common();
             $this->view->result = $commonService->generatePassword();
-        }
-    }
-
-    public function exportConfigAction()
-    {
-        /** @var Zend_Controller_Request_Http $request */
-        $request = $this->getRequest();
-        $this->_helper->layout()->disableLayout();
-        if ($request->isPost()) {
-            $params = $request->getPost();
-            $commonService = new Application_Service_Common();
-            $this->view->result = $commonService->exportConfig($params);
         }
     }
 
