@@ -351,10 +351,18 @@ class Application_Service_DataManagers
         $auditDb->addNewAuditLog("Reset password for {$params['primaryMail']}", 'password-reset');
 
         // If admin chose "Reset & Email", queue a credentials email via temp_mail.
-        if (isset($params['mode']) && $params['mode'] === 'email') {
+        // Login refuses inactive accounts, so they get no credentials email.
+        if (isset($params['mode']) && $params['mode'] === 'email' && $this->isActiveLogin((string) $params['primaryMail'])) {
             $this->queueCredentialsEmail($params, $priorHistory);
         }
         return true;
+    }
+
+    private function isActiveLogin(string $email): bool
+    {
+        $db = $this->datamanagersDb->getAdapter();
+        $status = $db->fetchOne($db->select()->from('data_manager', ['status'])->where('primary_email = ?', $email));
+        return strtolower((string) $status) === 'active';
     }
 
     /* Merged + deduped recent account activity for an email, in strict
@@ -871,6 +879,11 @@ class Application_Service_DataManagers
             $name = trim(($row['first_name'] ?? '') . ' ' . ($row['last_name'] ?? ''));
             if ($email === '' || Application_Service_Common::validateEmail($email) === null) {
                 $summary['skipped'][] = ['dm_id' => (int)$row['dm_id'], 'email' => $email, 'reason' => 'invalid email'];
+                continue;
+            }
+            // Login refuses inactive accounts, so new credentials would not let them in
+            if (strtolower((string) ($row['status'] ?? '')) !== 'active') {
+                $summary['skipped'][] = ['dm_id' => (int)$row['dm_id'], 'email' => $email, 'reason' => 'inactive'];
                 continue;
             }
             $newPassword = $passGen->generatePassword();

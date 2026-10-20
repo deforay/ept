@@ -798,8 +798,12 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
 
     public function issuePasswordResetToken($email)
     {
+        // Login refuses inactive accounts, so a reset link would only lead to
+        // a new password that still cannot sign in.
         $row = $this->fetchRow(
-            $this->select()->from('data_manager')->where('primary_email = ?', $email)
+            $this->select()->from('data_manager')
+                ->where('primary_email = ?', $email)
+                ->where('status = ?', 'active')
         );
         if (!$row) {
             return false;
@@ -823,7 +827,9 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         $sql = $this->select()
             ->from('data_manager')
             ->where('password_reset_token = ?', $token)
-            ->where('password_reset_expires_at > ?', date('Y-m-d H:i:s'));
+            ->where('password_reset_expires_at > ?', date('Y-m-d H:i:s'))
+            // A link sent before the account was made inactive stops working
+            ->where('status = ?', 'active');
         $row = $this->fetchRow($sql);
         return $row ?: null;
     }
@@ -1214,6 +1220,9 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
 
         $eptDomain = rtrim($conf->domain, '/');
 
+        if ($row && strtolower((string) ($row['status'] ?? '')) !== 'active') {
+            return ['status' => 'fail', 'message' => 'Your account is inactive. Please contact your PT provider.'];
+        }
         if ($row) {
             $common = new Application_Service_Common();
             $issued = $this->issuePasswordResetToken($email);

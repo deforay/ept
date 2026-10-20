@@ -100,6 +100,12 @@ $formAction = $this->url(['module' => 'admin', 'controller' => 'data-managers', 
                         </div>
                     <?php } ?>
                 </div>
+                <?php $inactiveCount = count(array_filter($matched, fn ($d) => strtolower((string) $d['status']) !== 'active'));
+                if ($inactiveCount > 0) { ?>
+                    <div class="help-line" style="color:#8a6d3b;">
+                        <?= sprintf($this->translate->_('%d inactive account(s) will be skipped. Inactive accounts cannot log in, so their passwords stay unchanged and they get no email.'), $inactiveCount); ?>
+                    </div>
+                <?php } ?>
             </div>
         <?php } else { ?>
             <div class="alert alert-warning">
