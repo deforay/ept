@@ -28823,3 +28823,19 @@ msgstr "Vérifié automatiquement le %s : la messagerie fonctionne."
 #, php-format
 msgid "Checked automatically on %s: email does not work."
 msgstr "Vérifié automatiquement le %s : la messagerie ne fonctionne pas."
+
+#: application/modules/admin/views/scripts/global-config/index.phtml:843
+#, php-format
+msgid "Not saved: %s cannot receive email. Check the address and its domain."
+msgstr ""
+"Non enregistré : %s ne peut pas recevoir d'e-mails. Vérifiez l'adresse et "
+"son domaine."
+
+#: application/modules/admin/views/scripts/global-config/index.phtml:844
+#, php-format
+msgid ""
+"%s cannot receive email, so participants do not see it. Enter a real "
+"address."
+msgstr ""
+"%s ne peut pas recevoir d'e-mails, les participants ne la voient donc pas. "
+"Saisissez une adresse réelle."

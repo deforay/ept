@@ -59,7 +59,6 @@ class AuthController extends Zend_Controller_Action
             $this->view->maxAttemptPermBan = $globalConfigDb->getValue('max_attempts_for_perm_ban');
             $this->view->formToken = Application_Service_Common::generateFormToken();
             $this->view->mailUnavailable = Application_Service_Common::mailDeliveryProblem() !== null;
-            $this->view->supportEmail = Application_Service_Common::getSupportEmail();
             return;
         }
 
@@ -381,7 +380,6 @@ class AuthController extends Zend_Controller_Action
         $request = $this->getRequest();
         // The reset link goes by email, so without working email there is nothing to send
         $this->view->mailUnavailable = Application_Service_Common::mailDeliveryProblem() !== null;
-        $this->view->supportEmail = Application_Service_Common::getSupportEmail();
         if ($request->isPost() && $this->view->mailUnavailable) {
             $this->redirect('/auth/reset-password');
             return;

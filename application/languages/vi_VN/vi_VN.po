@@ -27828,3 +27828,17 @@ msgstr "Đã kiểm tra tự động lúc %s: email hoạt động."
 #, php-format
 msgid "Checked automatically on %s: email does not work."
 msgstr "Đã kiểm tra tự động lúc %s: email không hoạt động."
+
+#: application/modules/admin/views/scripts/global-config/index.phtml:843
+#, php-format
+msgid "Not saved: %s cannot receive email. Check the address and its domain."
+msgstr "Chưa lưu: %s không nhận được email. Hãy kiểm tra địa chỉ và tên miền."
+
+#: application/modules/admin/views/scripts/global-config/index.phtml:844
+#, php-format
+msgid ""
+"%s cannot receive email, so participants do not see it. Enter a real "
+"address."
+msgstr ""
+"%s không nhận được email, vì vậy đơn vị tham gia không thấy địa chỉ này. Hãy"
+" nhập một địa chỉ thật."

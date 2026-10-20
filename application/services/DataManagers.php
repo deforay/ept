@@ -595,7 +595,7 @@ class Application_Service_DataManagers
         $label = '<td style="padding:7px 18px 7px 0;color:#5f6b7a;white-space:nowrap;vertical-align:top;">';
         $value = '<td style="padding:7px 0;vertical-align:top;">';
         $mono  = 'font-family:Consolas,Menlo,monospace;font-size:15px;';
-        $supportEmail = trim((string) Application_Service_Common::getConfig('admin_email'));
+        $supportEmail = Application_Service_Common::getSupportEmail();
         $support = $supportEmail !== ''
             ? sprintf(Pt_Commons_TranslateUtility::safeTranslate('If you did not expect this email, or need help, contact ePT Support at %s.'), '<a href="mailto:' . $e($supportEmail) . '" style="color:#1a56db;">' . $e($supportEmail) . '</a>')
             : Pt_Commons_TranslateUtility::safeTranslate('If you did not expect this email, or need help, contact ePT Support.');

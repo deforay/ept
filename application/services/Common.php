@@ -295,23 +295,45 @@ class Application_Service_Common
 
     /**
      * Where participants send questions: support_email when set, else admin_email.
-     * Either may hold several addresses. Invalid entries are dropped and the rest
-     * come back as "a@x.org, b@y.org".
+     * Either may hold several addresses. Unusable entries are dropped (see
+     * usableEmails()) and the rest come back as "a@x.org, b@y.org".
      */
     public static function getSupportEmail(): string
     {
         foreach (['support_email', 'admin_email'] as $name) {
-            $valid = [];
-            foreach (preg_split('/[,;\s]+/', (string) self::getSetting($name), -1, PREG_SPLIT_NO_EMPTY) as $email) {
-                if (filter_var($email, FILTER_VALIDATE_EMAIL) !== false) {
-                    $valid[strtolower($email)] = $email;
-                }
-            }
-            if ($valid !== []) {
-                return implode(', ', $valid);
+            $usable = self::usableEmails((string) self::getSetting($name));
+            if ($usable !== '') {
+                return $usable;
             }
         }
         return '';
+    }
+
+    /**
+     * The addresses in a comma, semicolon or space separated list that can receive
+     * mail, as "a@x.org, b@y.org". Drops bad syntax and domains without a mail
+     * server, such as a placeholder exampleadmin@example.com left in Global Config.
+     * Configured addresses get no free pass here, because a placeholder is
+     * configured too.
+     */
+    public static function usableEmails(string $list): string
+    {
+        return implode(', ', self::partitionEmails($list)['usable']);
+    }
+
+    /**
+     * Split a comma, semicolon or space separated address list by usableEmails()'s rule.
+     *
+     * @return array{usable: string[], unusable: string[]}
+     */
+    public static function partitionEmails(string $list): array
+    {
+        $parts = ['usable' => [], 'unusable' => []];
+        foreach (preg_split('/[,;\s]+/', $list, -1, PREG_SPLIT_NO_EMPTY) as $email) {
+            $usable = filter_var($email, FILTER_VALIDATE_EMAIL) !== false && !self::isUndeliverableEmail($email, false);
+            $parts[$usable ? 'usable' : 'unusable'][strtolower($email)] = $email;
+        }
+        return ['usable' => array_values($parts['usable']), 'unusable' => array_values($parts['unusable'])];
     }
 
     // Returns true iff the session holds a passed captcha, then clears it so
@@ -1651,8 +1673,10 @@ class Application_Service_Common
      * Addresses that can never receive mail: any domain without an MX record. That covers
      * the login-only addresses bulk import makes up (<id>@<instance host>) whenever the
      * instance host takes no mail, and ones generated under an earlier instance domain.
+     * $trustConfigured lets the SMTP login, the sender and admin_email through without a
+     * lookup. Pass false to check admin_email itself.
      */
-    public static function isUndeliverableEmail(string $email): bool
+    public static function isUndeliverableEmail(string $email, bool $trustConfigured = true): bool
     {
         static $domainCache = [];
         static $dnsWorks = null;
@@ -1662,7 +1686,7 @@ class Application_Service_Common
         if ($domain === '') {
             return true;
         }
-        if (in_array(strtolower(trim($email)), self::configuredMailboxes(), true)) {
+        if ($trustConfigured && in_array(strtolower(trim($email)), self::configuredMailboxes(), true)) {
             return false;
         }
         if (isset($domainCache[$domain])) {
@@ -1685,12 +1709,24 @@ class Application_Service_Common
      * real address (earl.mantes@ritm.gov.ph on mtbept, Oct 2026). A domain with only an
      * address record still counts as taking no mail: older imports made up logins on
      * such domains, and this check is what keeps mail away from them.
+     *
+     * A "null MX" record (RFC 7505, an empty host) says the domain takes no mail.
+     * example.com publishes one, and checkdnsrr() alone counted it as a mail server.
+     * The reserved test names (RFC 2606, RFC 6761) never take mail, so they skip DNS.
      */
     public static function domainReceivesMail(string $domain): bool
     {
+        $domain = strtolower(rtrim($domain, '.'));
+        if (
+            in_array($domain, ['example.com', 'example.org', 'example.net', 'localhost'], true)
+            || preg_match('/\.(test|example|invalid|localhost)$/', $domain)
+        ) {
+            return false;
+        }
         for ($attempt = 1; $attempt <= 2; $attempt++) {
-            if (checkdnsrr($domain, 'MX')) {
-                return true;
+            $hosts = [];
+            if (getmxrr($domain, $hosts)) {
+                return array_filter($hosts, fn ($host) => rtrim((string) $host, '.') !== '') !== [];
             }
         }
         return false;

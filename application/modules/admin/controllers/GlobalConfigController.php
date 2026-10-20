@@ -57,6 +57,19 @@ class Admin_GlobalConfigController extends Zend_Controller_Action
                 unset($params['bounceConfig']);
             }
             Application_Service_Common::forgetMailDeliveryProblem();
+            // Participants are told to write to these, so an address that cannot receive
+            // mail (a placeholder such as exampleadmin@example.com) is not saved
+            $contactEmailErrors = [];
+            foreach (['admin_email', 'support_email'] as $field) {
+                if (isset($params[$field])) {
+                    $unusable = Application_Service_Common::partitionEmails((string) $params[$field])['unusable'];
+                    if ($unusable !== []) {
+                        $contactEmailErrors[$field] = $unusable;
+                        unset($params[$field]);
+                    }
+                }
+            }
+            $this->view->contactEmailErrors = $contactEmailErrors;
             $commonServices->updateConfig($params);
         }
         $assign = $commonServices->getGlobalConfigDetails();

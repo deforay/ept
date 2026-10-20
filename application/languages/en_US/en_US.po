@@ -26924,3 +26924,15 @@ msgstr ""
 #, php-format
 msgid "Checked automatically on %s: email does not work."
 msgstr ""
+
+#: application/modules/admin/views/scripts/global-config/index.phtml:843
+#, php-format
+msgid "Not saved: %s cannot receive email. Check the address and its domain."
+msgstr ""
+
+#: application/modules/admin/views/scripts/global-config/index.phtml:844
+#, php-format
+msgid ""
+"%s cannot receive email, so participants do not see it. Enter a real "
+"address."
+msgstr ""

@@ -1,7 +1,8 @@
 <?php
 
 $csrfNamespace = new Zend_Session_Namespace('csrf');
-$adminEmail = trim((string) Application_Service_Common::getConfig('admin_email'));
+// Copied onto the email, so a placeholder admin address is left out
+$adminEmail = Application_Service_Common::usableEmails((string) Application_Service_Common::getConfig('admin_email'));
 $step = $this->step ?? 'paste';
 $matched = $this->matched ?? [];
 $unresolved = $this->unresolved ?? [];

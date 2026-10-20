@@ -828,6 +828,23 @@ $faqResults = json_decode($this->faqs);
 						<small class="text-muted"><?= $this->translate->_("Select at least one scheme to enable"); ?></small>
 					</div>
 				</div>
+				<?php
+				// Under Administrator Email and Support Email: addresses that cannot receive mail.
+				// A rejected save names what was typed, otherwise the saved value is checked.
+				$contactEmailErrors = $this->contactEmailErrors ?? [];
+				$contactEmailWarning = function (string $field, string $value) use ($contactEmailErrors): string {
+					$rejected = $contactEmailErrors[$field] ?? [];
+					$unusable = $rejected !== [] ? $rejected : Application_Service_Common::partitionEmails($value)['unusable'];
+					if ($unusable === []) {
+						return '';
+					}
+					$list = $this->escape(implode(', ', $unusable));
+					$text = $rejected !== []
+						? sprintf($this->translate->_('Not saved: %s cannot receive email. Check the address and its domain.'), $list)
+						: sprintf($this->translate->_('%s cannot receive email, so participants do not see it. Enter a real address.'), $list);
+					return '<div class="text-danger" style="margin-top:4px;font-size:12px;">' . $text . '</div>';
+				};
+				?>
 				<div class="row">
 					<div class="col-md-6">
 						<label for="admin_email"
@@ -835,7 +852,8 @@ $faqResults = json_decode($this->faqs);
 						<input type="text" class="form-control" id="admin_email" name="admin_email"
 							placeholder="<?= $this->htmlTranslate('Enter administrator email (optional)'); ?>"
 							title="<?= $this->translate->_('Enter the administrator email address'); ?>"
-							value="<?= $this->admin_email; ?>" />
+							value="<?= $this->escape($this->admin_email ?? ''); ?>" />
+						<?= $contactEmailWarning('admin_email', (string) ($this->admin_email ?? '')); ?>
 					</div>
 					<div class="col-md-6">
 						<label for="support_email" class="control-label"><?= $this->htmlTranslate("Support Email"); ?></label>
@@ -844,6 +862,7 @@ $faqResults = json_decode($this->faqs);
 							title="<?= $this->htmlTranslate('Where participants send questions. Separate several addresses with commas.'); ?>"
 							value="<?= $this->escape($this->support_email ?? ''); ?>" />
 						<small class="text-muted"><?= $this->htmlTranslate("Shown to participants in emails. Blank uses the administrator email."); ?></small>
+						<?= $contactEmailWarning('support_email', (string) ($this->support_email ?? '')); ?>
 					</div>
 				</div>
 				<div class="row">
