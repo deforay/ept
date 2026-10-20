@@ -8881,6 +8881,12 @@ td.center {
 	opacity: .85;
 }
 
+/* Own line under the problem, after the close button */
+.mail-problem-contacts {
+	order: 1;
+	flex-basis: 100%;
+}
+
 .mail-problem-close {
 	margin-left: auto;
 	padding: 0 4px;

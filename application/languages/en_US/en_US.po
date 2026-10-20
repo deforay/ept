@@ -26936,3 +26936,23 @@ msgid ""
 "%s cannot receive email, so participants do not see it. Enter a real "
 "address."
 msgstr ""
+
+#, php-format
+msgid "Contact messages received since then, not emailed to anyone: %d."
+msgstr ""
+
+#, php-format
+msgid "Contact messages received in the last %d days, not emailed to anyone: %d."
+msgstr ""
+
+msgid "Open Contact Messages"
+msgstr ""
+
+msgid "Messages sent from the Contact form on the home page, newest first. Web addresses are shown as plain text, for example hxxps://example[.]com, so a click cannot open them."
+msgstr ""
+
+msgid "Received"
+msgstr ""
+
+msgid "Add PT Participant"
+msgstr ""

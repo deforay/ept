@@ -71,7 +71,7 @@ if (!empty($this->ptcc) && $this->ptcc == 1) {
                                 maxlength="255" class="form-control"
                                 title="<?= $this->translate->_('Please enter the institute name here'); ?>"
                                 placeholder="<?= $this->htmlTranslate('Please enter the institute name here'); ?>"
-                                value="<?php echo (isset($this->contact['lab'])) ? $this->contact['lab'] : "" ?>" />
+                                value="<?php echo $this->escape($this->contact['lab'] ?? ''); ?>" />
                         </div>
                     </div>
                 </div>
@@ -85,7 +85,7 @@ if (!empty($this->ptcc) && $this->ptcc == 1) {
                                 class="isRequired form-control"
                                 title="<?= $this->translate->_('Please enter the first name here'); ?>"
                                 placeholder="<?= $this->htmlTranslate('Please enter the first name here'); ?>"
-                                value="<?php echo (isset($this->contact['first_name'])) ? $this->contact['first_name'] : "" ?>" />
+                                value="<?php echo $this->escape($this->contact['first_name'] ?? ''); ?>" />
                         </div>
                     </div>
                 </div>
@@ -96,7 +96,7 @@ if (!empty($this->ptcc) && $this->ptcc == 1) {
                                 class="form-control"
                                 title="<?= $this->translate->_('Please enter the last name here'); ?>"
                                 placeholder="<?= $this->htmlTranslate('Please enter the last name here'); ?>"
-                                value="<?php echo (isset($this->contact['last_name'])) ? $this->contact['last_name'] : "" ?>" />
+                                value="<?php echo $this->escape($this->contact['last_name'] ?? ''); ?>" />
                         </div>
                     </div>
                 </div>
@@ -119,7 +119,7 @@ if (!empty($this->ptcc) && $this->ptcc == 1) {
                                 class=" form-control checkNum"
                                 title="<?= $this->translate->_('Please enter mobile/cell number here'); ?>"
                                 placeholder="<?= $this->htmlTranslate('Please enter mobile/cell number here'); ?>"
-                                value="<?php echo (isset($this->contact['phone'])) ? $this->contact['phone'] : "" ?>" />
+                                value="<?php echo $this->escape($this->contact['phone'] ?? ''); ?>" />
                         </div>
                     </div>
                 </div>

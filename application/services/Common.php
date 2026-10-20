@@ -411,8 +411,38 @@ class Application_Service_Common
         return $secret;
     }
 
+    /**
+     * Plain text from a public form: no HTML tags, no control characters other than
+     * line breaks and tabs, at most $maxLength characters. Output must still be escaped.
+     */
+    public static function cleanSubmittedText(mixed $value, int $maxLength): string
+    {
+        $text = strip_tags(is_scalar($value) ? (string) $value : '');
+        $text = (string) preg_replace('/[^\P{C}\n\t]/u', '', str_replace("\r\n", "\n", $text));
+        return mb_substr(trim($text), 0, $maxLength);
+    }
+
+    /**
+     * Make web addresses in visitor text impossible to open by a click: http becomes
+     * hxxp and dots in the address become [.] (https://evil.example/a becomes
+     * hxxps://evil[.]example/a), so neither the browser nor a mail client links them.
+     * Returns plain text, so escape it before output.
+     */
+    public static function defangLinks(string $text): string
+    {
+        return (string) preg_replace_callback(
+            '~\b(?:(?:https?|ftp)://\S+|(?:[a-z0-9-]+\.)+[a-z]{2,}\b(?:/\S*)?)~iu',
+            fn ($m) => str_replace('.', '[.]', (string) preg_replace(['~^http(?=s?://)~i', '~^ftp(?=://)~i'], ['hxxp', 'fxp'], $m[0])),
+            $text
+        );
+    }
+
     public function contactForm($params)
     {
+        // Visitor text: keep it plain. Display code escapes it and defangs links.
+        foreach (['firstName' => 255, 'lastName' => 255, 'participantId' => 255, 'subject' => 255, 'country' => 255, 'message' => 5000] as $field => $maxLength) {
+            $params[$field] = self::cleanSubmittedText($params[$field] ?? '', $maxLength);
+        }
         $name = (isset($params['firstName']) && !empty($params['firstName'])) ? true : false;
         $id = (isset($params['participantId']) && !empty($params['participantId'])) ? true : false;
         $subject = (isset($params['subject']) && !empty($params['subject'])) ? true : false;
@@ -425,19 +455,21 @@ class Application_Service_Common
         if ($name && $id && $subject) {
             $params['email'] = $replyTo;
             $e = fn ($key) => htmlspecialchars(trim((string) ($params[$key] ?? '')), ENT_QUOTES, 'UTF-8');
-            $fullName = trim($e('firstName') . ' ' . $e('lastName'));
+            // Visitor text, with links that a mail client cannot turn into clickable ones
+            $inert = fn ($key) => htmlspecialchars(self::defangLinks(trim((string) ($params[$key] ?? ''))), ENT_QUOTES, 'UTF-8');
+            $fullName = trim($inert('firstName') . ' ' . $inert('lastName'));
 
             $message = '<p style="padding:10px 12px;background:#eef5ff;border-left:4px solid #2a6ebb;">'
                 . 'To respond, reply to this email or write to '
                 . '<a href="mailto:' . $e('email') . '?subject=' . rawurlencode('Re: ' . trim((string) $params['subject'])) . '"><strong>' . $e('email') . '</strong></a>'
                 . '</p>';
-            $message .= '<h3>The following details were entered by ' . $e('participantId') . '</h3>';
+            $message .= '<h3>The following details were entered by ' . $inert('participantId') . '</h3>';
             $message .= 'Name : ' . $fullName . '<br/>';
-            $message .= 'ID : ' . $e('participantId') . '<br/>';
+            $message .= 'ID : ' . $inert('participantId') . '<br/>';
             $message .= 'Email : <a href="mailto:' . $e('email') . '">' . $e('email') . '</a><br/>';
-            $message .= 'Subject : ' . $e('subject') . '<br/>';
-            $message .= 'Country Name : ' . $e('country') . '<br/>';
-            $message .= 'Message : ' . nl2br($e('message')) . '<br/>';
+            $message .= 'Subject : ' . $inert('subject') . '<br/>';
+            $message .= 'Country Name : ' . $inert('country') . '<br/>';
+            $message .= 'Message : ' . nl2br($inert('message')) . '<br/>';
 
             $db = new Application_Model_DbTable_ContactUs();
 
@@ -1910,6 +1942,29 @@ class Application_Service_Common
     {
         $session = new Zend_Session_Namespace('administrators');
         unset($session->mailProblemCache);
+    }
+
+    /** Days of contact messages counted while email was never set up, since there is no failure time. */
+    public const UNEMAILED_CONTACT_DAYS = 30;
+
+    /**
+     * Contact form messages that reached no one by email, for the dashboard email bar.
+     * The form saves every message to contact_us, so admins can still read them in
+     * Contact Messages. Counts the messages since $problem['when'] while email is
+     * failing, or from the last UNEMAILED_CONTACT_DAYS days while it is not set up.
+     */
+    public static function unemailedContactMessages(array $problem): int
+    {
+        // contacted_on is written with MySQL now(), so compare in MySQL's time zone too
+        $failing = ($problem['reason'] ?? '') === 'failing';
+        try {
+            $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+            return (int) ($failing
+                ? $db->fetchOne('SELECT COUNT(*) FROM contact_us WHERE contacted_on >= FROM_UNIXTIME(?)', [(int) $problem['when']])
+                : $db->fetchOne('SELECT COUNT(*) FROM contact_us WHERE contacted_on >= NOW() - INTERVAL ? DAY', [self::UNEMAILED_CONTACT_DAYS]));
+        } catch (Throwable) {
+            return 0;
+        }
     }
 
     /** system_config row that keeps the latest Verify Email Setup result. */

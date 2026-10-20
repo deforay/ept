@@ -28839,3 +28839,23 @@ msgid ""
 msgstr ""
 "%s ne peut pas recevoir d'e-mails, les participants ne la voient donc pas. "
 "Saisissez une adresse réelle."
+
+#, php-format
+msgid "Contact messages received since then, not emailed to anyone: %d."
+msgstr "Messages de contact reçus depuis, non transmis par e-mail : %d."
+
+#, php-format
+msgid "Contact messages received in the last %d days, not emailed to anyone: %d."
+msgstr "Messages de contact reçus ces %d derniers jours, non transmis par e-mail : %d."
+
+msgid "Open Contact Messages"
+msgstr "Ouvrir les messages de contact"
+
+msgid "Messages sent from the Contact form on the home page, newest first. Web addresses are shown as plain text, for example hxxps://example[.]com, so a click cannot open them."
+msgstr "Messages envoyés depuis le formulaire de contact de la page d'accueil, les plus récents en premier. Les adresses web s'affichent en texte simple, par exemple hxxps://example[.]com, pour qu'un clic ne puisse pas les ouvrir."
+
+msgid "Received"
+msgstr "Reçu le"
+
+msgid "Add PT Participant"
+msgstr "Ajouter un participant PT"

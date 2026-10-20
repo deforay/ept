@@ -22,7 +22,8 @@ class Application_Model_DbTable_ContactUs extends Zend_Db_Table_Abstract
          * you want to insert a non-database field (for example a counter or static image)
          */
 
-        $aColumns = ['first_name', 'last_name', 'email', 'phone', 'reason', 'lab', 'additional_info', 'contacted_on', 'ip_address'];
+        // The first five match the table columns for sorting. The rest are searched too.
+        $aColumns = ['contacted_on', 'first_name', 'country', 'subject', 'message', 'last_name', 'email', 'participant_id', 'ip_address'];
 
         /* Indexed column (used for fast and accurate table cardinality) */
         $sIndexColumn = $this->_primary;
@@ -122,19 +123,25 @@ class Application_Model_DbTable_ContactUs extends Zend_Db_Table_Abstract
             'aaData' => [],
         ];
 
-        //$aColumns = array('name', 'email','phone', 'reason', 'lab', 'additional_info', 'contacted_on', 'IP Address');
+        // Visitor text: escape everything and defang links, so nothing in a message runs or opens by a click
+        $translator = Zend_Registry::get('translate');
+        $plain = fn ($value) => htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8');
+        $inert = fn ($value) => $plain(Application_Service_Common::defangLinks((string) $value));
         foreach ($rResult as $aRow) {
+            $name = trim($aRow['first_name'] . ' ' . $aRow['last_name']);
+            $from = '<strong>' . $inert($name) . '</strong>'
+                . '<div class="contact-meta">' . $plain($aRow['email']) . '</div>';
+            if (trim((string) $aRow['participant_id']) !== '') {
+                $from .= '<div class="contact-meta">' . $plain($translator->_('Participant Code/ID')) . ': ' . $inert($aRow['participant_id']) . '</div>';
+            }
             $row = [];
-            $row[] = $aRow['first_name'];
-            $row[] = $aRow['last_name'];
-            $row[] = $aRow['email'];
-            $row[] = $aRow['phone'];
-            $row[] = $aRow['reason'];
-            $row[] = $aRow['lab'];
-            $row[] = $aRow['additional_info'];
-            $row[] = $aRow['contacted_on'];
-            $row[] = $aRow['ip_address'];
-            $row[] = '<a href="/admin/data-managers/add/contact/' . $aRow['contact_id'] . '" class="btn btn-primary btn-xs" style="margin-right: 2px;"><i class="icon-plus"></i> Add PT Participant</a>';
+            $row[] = $plain(Pt_Commons_DateUtility::humanReadableDateFormat((string) $aRow['contacted_on'], true))
+                . '<div class="contact-meta">' . $plain($aRow['ip_address']) . '</div>';
+            $row[] = $from;
+            $row[] = $inert($aRow['country']);
+            $row[] = $inert($aRow['subject'] ?: $aRow['reason']);
+            $row[] = '<div class="contact-message">' . nl2br($inert($aRow['message'] ?: $aRow['additional_info'])) . '</div>';
+            $row[] = '<a href="/admin/data-managers/add/contact/' . (int) $aRow['contact_id'] . '" class="btn btn-default btn-xs"><i class="icon-plus"></i> ' . $plain($translator->_('Add PT Participant')) . '</a>';
 
             $output['aaData'][] = $row;
         }

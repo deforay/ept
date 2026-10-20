@@ -754,14 +754,24 @@ $helpPageKey = "$controllerName/$actionName";
 					'invalid_dsn' => sprintf($this->translate->_('ePT cannot send email. The saved mail settings were not usable on %s.'), $failedOn),
 					default => sprintf($this->translate->_('ePT cannot send email. The last attempt failed on %s.'), $failedOn),
 				};
-			} ?>
+			}
+			// The contact form keeps sending to the Administrator Email, so say how many messages only Contact Messages has
+			$unemailedContacts = $canEditConfig ? Application_Service_Common::unemailedContactMessages($mailProblem) : 0; ?>
 			<div class="mail-problem-bar<?= $mailProblem['reason'] === 'not_configured' ? ' is-muted' : ''; ?>" id="mailProblemBar" role="status"
-				data-signature="<?= $this->escape($mailProblem['reason'] . '|' . ($mailProblem['type'] ?? '')); ?>">
+				data-signature="<?= $this->escape($mailProblem['reason'] . '|' . ($mailProblem['type'] ?? '') . '|' . $unemailedContacts); ?>">
 				<span><i class="icon-warning-sign"></i> <?= $mailProblemText; ?></span>
 				<?php if ($canEditConfig) { ?>
 					<a href="/admin/global-config#emailConfig"><?= $this->translate->_('Open Email Settings'); ?></a>
 				<?php } else { ?>
 					<span class="mail-problem-who"><?= $this->translate->_('An admin who can edit Global Config can fix this.'); ?></span>
+				<?php } ?>
+				<?php if ($unemailedContacts > 0) { ?>
+					<span class="mail-problem-contacts">
+						<?= $mailProblem['reason'] === 'failing'
+							? sprintf($this->translate->_('Contact messages received since then, not emailed to anyone: %d.'), $unemailedContacts)
+							: sprintf($this->translate->_('Contact messages received in the last %d days, not emailed to anyone: %d.'), Application_Service_Common::UNEMAILED_CONTACT_DAYS, $unemailedContacts); ?>
+						<a href="/admin/contact-us"><?= $this->translate->_('Open Contact Messages'); ?></a>
+					</span>
 				<?php } ?>
 				<button type="button" class="mail-problem-close" aria-label="<?= $this->htmlTranslate('Hide until something changes'); ?>" title="<?= $this->htmlTranslate('Hide until something changes'); ?>">&times;</button>
 			</div>

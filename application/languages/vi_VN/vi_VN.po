@@ -27842,3 +27842,23 @@ msgid ""
 msgstr ""
 "%s không nhận được email, vì vậy đơn vị tham gia không thấy địa chỉ này. Hãy"
 " nhập một địa chỉ thật."
+
+#, php-format
+msgid "Contact messages received since then, not emailed to anyone: %d."
+msgstr "Tin nhắn liên hệ nhận được từ lúc đó, chưa gửi email cho ai: %d."
+
+#, php-format
+msgid "Contact messages received in the last %d days, not emailed to anyone: %d."
+msgstr "Tin nhắn liên hệ nhận được trong %d ngày qua, chưa gửi email cho ai: %d."
+
+msgid "Open Contact Messages"
+msgstr "Mở Tin nhắn liên hệ"
+
+msgid "Messages sent from the Contact form on the home page, newest first. Web addresses are shown as plain text, for example hxxps://example[.]com, so a click cannot open them."
+msgstr "Tin nhắn gửi từ biểu mẫu Liên hệ trên trang chủ, mới nhất ở trên. Địa chỉ web hiển thị dạng văn bản thường, ví dụ hxxps://example[.]com, nên không thể mở bằng một cú nhấp."
+
+msgid "Received"
+msgstr "Ngày nhận"
+
+msgid "Add PT Participant"
+msgstr "Thêm đơn vị tham gia PT"
