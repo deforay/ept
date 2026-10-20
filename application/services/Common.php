@@ -1776,6 +1776,51 @@ class Application_Service_Common
     }
 
     /**
+     * Why ePT cannot send email right now, or null when it can.
+     *
+     * Returns ['reason' => 'not_configured'] when no SMTP host is set (or a
+     * dev-trap value blocks sending), and ['reason' => 'failing', 'type' => ...,
+     * 'when' => ...] when the latest server-side failure (bad login, no
+     * connection, unusable settings) is newer than the latest successful send.
+     * A failure older than the last edit of application.ini does not count, so
+     * fixing the mail settings re-enables sending without waiting for a send.
+     */
+    public static function mailDeliveryProblem(): ?array
+    {
+        try {
+            $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
+            $devTrapDsn = trim((string) ($conf->email->devTrapDsn ?? ''));
+            if ($devTrapDsn !== '') {
+                $parts = parse_url($devTrapDsn);
+                if (!$parts || ($parts['scheme'] ?? '') !== 'smtp' || empty($parts['host'])) {
+                    return ['reason' => 'not_configured'];
+                }
+            } elseif (self::getMailSettings()['host'] === '') {
+                return ['reason' => 'not_configured'];
+            }
+
+            $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+            $lastFailure = $db->fetchRow(
+                "SELECT failure_type, updated_at FROM temp_mail
+                  WHERE failure_type IN ('smtp-auth', 'connectivity', 'invalid_dsn')
+                  ORDER BY updated_at DESC LIMIT 1"
+            );
+            if (!$lastFailure) {
+                return null;
+            }
+            $failedAt = strtotime((string) $lastFailure['updated_at']);
+            $lastSent = strtotime((string) $db->fetchOne("SELECT MAX(sent_at) FROM temp_mail WHERE status = 'sent'"));
+            $settingsChanged = (int) @filemtime(APPLICATION_PATH . '/configs/application.ini');
+            if ($failedAt && $failedAt > (int) $lastSent && $failedAt > $settingsChanged) {
+                return ['reason' => 'failing', 'type' => (string) $lastFailure['failure_type'], 'when' => $failedAt];
+            }
+        } catch (Throwable) {
+            // Without an answer, leave email available as before
+        }
+        return null;
+    }
+
+    /**
      * Mark a temp_mail row as failed with an optional failure reason.
      */
     public static function markTempMailFailed(

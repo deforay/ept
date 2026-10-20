@@ -465,7 +465,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                 $recordLine .= '<a href="javascript:void(0);" class="btn btn-success btn-xs" title="' . $translator->_('Map participants to this data manager') . '" onclick="layoutModal(\'/admin/participants/participant-manager-map/id/' . (int) $aRow['dm_id'] . '/modal/1\',\'1150\',\'700\');"><i class="icon-link"></i> ' . $translator->_('Map') . '</a>';
             }
 
-            $credentialLine .= '<a href="javascript:void(0);" class="btn btn-info btn-xs" title="' . $translator->_('Reset this user\'s password') . '" onclick="layoutModal(\'' . $resetUrl . '\',\'980\',\'500\');"><i class="icon-key"></i> ' . $translator->_('Password') . '</a>';
+            $credentialLine .= '<a href="javascript:void(0);" class="btn btn-info btn-xs" title="' . $translator->_('Reset this user\'s password') . '" onclick="layoutModal(\'' . $resetUrl . '\',\'1000\',\'720\');"><i class="icon-key"></i> ' . $translator->_('Password') . '</a>';
             $credentialLine .= '<a href="javascript:void(0);" class="btn btn-default btn-xs" title="' . $translator->_('Change the primary email address') . '" onclick="layoutModal(\'' . $changeEmailUrl . '\',\'700\',\'520\');"><i class="icon-envelope"></i> ' . $translator->_('Email') . '</a>';
 
             // "View as Participant" — only rendered for admins with the

@@ -222,10 +222,55 @@ class Admin_DataManagersController extends Zend_Controller_Action
             if ($targetEmail !== '') {
                 $this->view->recentActivity = $userService->getRecentAccountActivity($targetEmail, 6, 5);
             }
+            // The labs this login serves, so the admin can confirm who they are resetting
+            $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+            $labs = $db->fetchAll($db->select()
+                ->from(['pmm' => 'participant_manager_map'], [])
+                ->join(['p' => 'participant'], 'p.participant_id = pmm.participant_id', [
+                    'unique_identifier', 'status', 'city', 'district', 'state', 'email', 'additional_email', 'contact_person_email',
+                    'name' => new Zend_Db_Expr(Application_Model_DbTable_Participants::participantNameExpr('p')),
+                ])
+                ->joinLeft(['c' => 'countries'], 'c.id = p.country', ['iso_name'])
+                ->where('pmm.dm_id = ?', $userId)
+                ->order([new Zend_Db_Expr("p.status <> 'active'"), 'p.unique_identifier'])
+                ->limit(50));
+            $this->view->mappedLabs = $labs;
+            $this->view->labCount = (int) $db->fetchOne('SELECT COUNT(*) FROM participant_manager_map WHERE dm_id = ?', [$userId]);
+            $this->view->emailSuggestions = $this->emailSuggestionsFor((array) ($this->view->user ?? []), $labs);
         }
         $globalConfigDb = new Application_Model_DbTable_GlobalConfig();
         $this->view->passLength = $globalConfigDb->getValue('participant_login_password_length');
         $this->view->loginUrl = $loginUrl;
+    }
+
+    /**
+     * Addresses the reset email can go to when the login ID is not an email
+     * address (MTBEPT-style IDs such as PTID-14077): the manager's secondary
+     * email, then each active lab's emails. Each entry names where it came from.
+     */
+    private function emailSuggestionsFor(array $user, array $labs): array
+    {
+        if (Application_Service_Common::validateEmail((string) ($user['primary_email'] ?? '')) !== null) {
+            return [];
+        }
+        $suggestions = [];
+        $add = function (string $raw, string $source) use (&$suggestions) {
+            $valid = Application_Service_Common::validateEmail($raw);
+            if ($valid !== null && !isset($suggestions[strtolower($valid)])) {
+                $suggestions[strtolower($valid)] = ['email' => $valid, 'source' => $source];
+            }
+        };
+        $add((string) ($user['secondary_email'] ?? ''), $this->view->translate->_('Secondary email'));
+        foreach ($labs as $lab) {
+            if (strtolower((string) $lab['status']) !== 'active') {
+                continue;
+            }
+            $source = sprintf($this->view->translate->_('Lab %s'), $lab['unique_identifier']);
+            foreach (['email', 'additional_email', 'contact_person_email'] as $field) {
+                $add((string) $lab[$field], $source);
+            }
+        }
+        return array_slice(array_values($suggestions), 0, 8);
     }
 
     public function bulkResetPasswordAction()

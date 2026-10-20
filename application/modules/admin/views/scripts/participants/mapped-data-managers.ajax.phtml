@@ -68,7 +68,7 @@ $panelClass = 'dm-child-row' . ($activeCount > $visibleLimit ? ' is-collapsed' :
                             <td>
                                 <div class="row-action-line child-list-actions">
                                     <a href="<?= $editUrl; ?>" class="btn btn-default btn-xs is-edit" title="<?= $this->htmlTranslate('Edit this data manager'); ?>"><i class="icon-pencil"></i> <?= $this->translate->_('Edit'); ?></a>
-                                    <a href="javascript:void(0);" class="btn btn-default btn-xs" title="<?= $this->htmlTranslate('Reset this user\'s password'); ?>" onclick="layoutModal('<?= $resetUrl; ?>','980','500');"><i class="icon-key"></i> <?= $this->translate->_('Password'); ?></a>
+                                    <a href="javascript:void(0);" class="btn btn-default btn-xs" title="<?= $this->htmlTranslate('Reset this user\'s password'); ?>" onclick="layoutModal('<?= $resetUrl; ?>','1000','720');"><i class="icon-key"></i> <?= $this->translate->_('Password'); ?></a>
                                     <a href="javascript:void(0);" class="btn btn-default btn-xs" title="<?= $this->htmlTranslate('Change the primary email address'); ?>" onclick="layoutModal('<?= $changeEmailUrl; ?>','700','520');"><i class="icon-envelope"></i> <?= $this->translate->_('Email'); ?></a>
                                     <?php if ($canViewAsParticipant && $isActive) { ?>
                                         <a href="/admin/impersonate/start?dm_id=<?= (int)$dm['dm_id']; ?>" target="_blank" rel="noopener" class="btn btn-danger btn-xs" title="<?= $this->htmlTranslate('Opens the participant UI as this user. Audited.'); ?>"><i class="icon-eye-open"></i> <?= $this->translate->_('View as'); ?></a>
