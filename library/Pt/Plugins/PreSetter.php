@@ -14,6 +14,8 @@ class Pt_Plugins_PreSetter extends Zend_Controller_Plugin_Abstract
             return;
         }
 
+        self::normalizeGridSearch();
+
         $csrfCheck = SecurityService::checkCSRF($request);
 
         if (!$csrfCheck) {
@@ -455,5 +457,23 @@ class Pt_Plugins_PreSetter extends Zend_Controller_Plugin_Abstract
             }
         }
         return $minutes * 60;
+    }
+
+    /* Grid searches split words on a plain space only. Text pasted from email or a
+       spreadsheet often carries a tab, a non-breaking space or a zero-width space,
+       which then sits inside the search word and matches no row. This turns all of
+       them into plain spaces and trims the ends, for the global search (sSearch)
+       and every column search (sSearch_N), before any controller reads them. */
+    private static function normalizeGridSearch(): void
+    {
+        foreach (['_GET', '_POST'] as $source) {
+            foreach ($GLOBALS[$source] as $key => $value) {
+                if (!is_string($value) || !preg_match('/^sSearch(_\d+)?$/', (string) $key)) {
+                    continue;
+                }
+                $clean = preg_replace('/[\s\x{00A0}\x{200B}-\x{200D}\x{2060}\x{FEFF}]+/u', ' ', $value);
+                $GLOBALS[$source][$key] = trim($clean ?? $value);
+            }
+        }
     }
 }
