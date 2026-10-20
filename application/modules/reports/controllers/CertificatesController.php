@@ -159,12 +159,11 @@ class Reports_CertificatesController extends Zend_Controller_Action
         $batchId = (int) $request->getPost('batch');
         $model = new Application_Model_DbTable_CertificateBatches();
         $batch = $request->isPost() ? $model->getBatch($batchId) : null;
-        $adminSession = new Zend_Session_Namespace('administrators');
         $done = false;
         if ($batch && in_array($batch['status'], ['pending', 'generating'], true)) {
-            $done = $model->cancelBatch($batchId, $adminSession->admin_id);
+            $done = $model->cancelBatch($batchId);
         } elseif ($batch && $batch['status'] === 'generated') {
-            $done = $model->rejectBatch($batchId, $adminSession->admin_id);
+            $done = $model->rejectBatch($batchId);
         }
         if ($done) {
             (new Application_Model_DbTable_AuditLog())->addNewAuditLog("Discarded certificate batch - {$batch['batch_name']}", 'certificate');

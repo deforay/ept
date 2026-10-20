@@ -23,15 +23,13 @@ class Admin_CertificateBatchesController extends Zend_Controller_Action
         $ajaxContext->addActionContext('index', 'html')
             ->addActionContext('get-all-batches', 'json')
             ->addActionContext('get-batch-status', 'json')
-            ->addActionContext('approve-batch', 'json')
-            ->addActionContext('cancel-batch', 'json')
-            ->addActionContext('reject-batch', 'json')
             ->initContext();
         $this->_helper->layout()->pageName = 'configMenu';
     }
 
     /**
-     * Render the certificate batches dashboard page
+     * Every certificate batch, as history. Approving and discarding happen
+     * on Reports > Annual Certificates only.
      */
     public function indexAction()
     {
@@ -102,158 +100,6 @@ class Admin_CertificateBatchesController extends Zend_Controller_Action
         $response['skipped_count'] = (int) ($batch['skipped_count'] ?? 0);
         $response['download_url'] = Application_Model_DbTable_CertificateBatches::zipDownloadUrl($batch);
         $response['error_message'] = $batch['error_message'] ?? null;
-
-        echo json_encode($response);
-    }
-
-    /**
-     * Approve a batch and schedule certificate distribution
-     * Reuses logic from AnnualController::approveCertificatesAction
-     */
-    public function approveBatchAction()
-    {
-        $this->_helper->layout()->disableLayout();
-        $this->_helper->viewRenderer->setNoRender(true);
-
-        header('Content-Type: application/json');
-
-        /** @var Zend_Controller_Request_Http $request */
-        $request = $this->getRequest();
-
-        $response = [
-            'success' => false,
-            'message' => null,
-        ];
-
-        if (!$request->isPost()) {
-            $response['message'] = 'Invalid request method';
-            echo json_encode($response);
-            return;
-        }
-
-        $batchId = (int) $request->getParam('batch_id', 0);
-
-        if ($batchId <= 0) {
-            $response['message'] = 'Invalid batch ID';
-            echo json_encode($response);
-            return;
-        }
-
-        $certificateBatchesDb = new Application_Model_DbTable_CertificateBatches();
-        $batch = $certificateBatchesDb->getBatch($batchId);
-
-        if (!$batch) {
-            $response['message'] = 'Batch not found';
-            echo json_encode($response);
-            return;
-        }
-
-        $adminSession = new Zend_Session_Namespace('administrators');
-        $error = $certificateBatchesDb->approveBatch($batchId, $adminSession->admin_id);
-        $response['success'] = $error === null;
-        $response['message'] = $error ?? 'Certificates approved and distribution scheduled';
-
-        echo json_encode($response);
-    }
-
-    /**
-     * Cancel a pending or generating batch
-     */
-    public function cancelBatchAction()
-    {
-        $this->_helper->layout()->disableLayout();
-        $this->_helper->viewRenderer->setNoRender(true);
-
-        header('Content-Type: application/json');
-
-        /** @var Zend_Controller_Request_Http $request */
-        $request = $this->getRequest();
-
-        $response = [
-            'success' => false,
-            'message' => null,
-        ];
-
-        if (!$request->isPost()) {
-            $response['message'] = 'Invalid request method';
-            echo json_encode($response);
-            return;
-        }
-
-        $batchId = (int) $request->getParam('batch_id', 0);
-
-        if ($batchId <= 0) {
-            $response['message'] = 'Invalid batch ID';
-            echo json_encode($response);
-            return;
-        }
-
-        $adminSession = new Zend_Session_Namespace('administrators');
-        $certificateBatchesDb = new Application_Model_DbTable_CertificateBatches();
-        $batch = $certificateBatchesDb->getBatch($batchId);
-        $result = $certificateBatchesDb->cancelBatch($batchId, $adminSession->admin_id);
-
-        if ($result) {
-            $response['success'] = true;
-            $response['message'] = 'Batch cancelled successfully';
-
-            $batchName = $batch['batch_name'] ?? "#$batchId";
-            $auditDb = new Application_Model_DbTable_AuditLog();
-            $auditDb->addNewAuditLog("Cancelled certificate batch - {$batchName}", 'certificate');
-        } else {
-            $response['message'] = 'Failed to cancel batch. It may already be processed or does not exist.';
-        }
-
-        echo json_encode($response);
-    }
-
-    /**
-     * Reject a generated batch (don't distribute certificates)
-     */
-    public function rejectBatchAction()
-    {
-        $this->_helper->layout()->disableLayout();
-        $this->_helper->viewRenderer->setNoRender(true);
-
-        header('Content-Type: application/json');
-
-        /** @var Zend_Controller_Request_Http $request */
-        $request = $this->getRequest();
-
-        $response = [
-            'success' => false,
-            'message' => null,
-        ];
-
-        if (!$request->isPost()) {
-            $response['message'] = 'Invalid request method';
-            echo json_encode($response);
-            return;
-        }
-
-        $batchId = (int) $request->getParam('batch_id', 0);
-
-        if ($batchId <= 0) {
-            $response['message'] = 'Invalid batch ID';
-            echo json_encode($response);
-            return;
-        }
-
-        $adminSession = new Zend_Session_Namespace('administrators');
-        $certificateBatchesDb = new Application_Model_DbTable_CertificateBatches();
-        $batch = $certificateBatchesDb->getBatch($batchId);
-        $result = $certificateBatchesDb->rejectBatch($batchId, $adminSession->admin_id);
-
-        if ($result) {
-            $response['success'] = true;
-            $response['message'] = 'Batch rejected successfully';
-
-            $batchName = $batch['batch_name'] ?? "#$batchId";
-            $auditDb = new Application_Model_DbTable_AuditLog();
-            $auditDb->addNewAuditLog("Rejected certificate batch - {$batchName}", 'certificate');
-        } else {
-            $response['message'] = 'Failed to reject batch. It may not be in generated status or does not exist.';
-        }
 
         echo json_encode($response);
     }

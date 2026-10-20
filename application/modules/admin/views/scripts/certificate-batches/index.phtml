@@ -1,3 +1,4 @@
+<?php $certificatesUrl = $this->url(['module' => 'reports', 'controller' => 'certificates'], 'default', true); ?>
 <link rel="stylesheet" href="<?php echo $this->baseUrl('css/daterangepicker.css'); ?>" type="text/css" media="all">
 <link rel="stylesheet" href="<?php echo $this->baseUrl("css/jquery.dataTables.css"); ?>" type="text/css" media="all">
 <script type="text/javascript" src="<?php echo $this->baseUrl('js/moment.min.js'); ?>"></script>
@@ -101,16 +102,19 @@
         <i class="icon-certificate"></i> <?= $this->translate->_("Certificate Batches"); ?>
     </div>
     <div class="pull-right" style="margin-top: 5px;">
-        <span id="autoRefreshIndicator" class="auto-refresh-indicator">
+        <span id="autoRefreshIndicator" class="auto-refresh-indicator" style="display:none;">
             <i class="icon-refresh icon-spin"></i>
-            <?= $this->translate->_("Auto-refreshing every 5 seconds"); ?>
+            <?= $this->translate->_("Updating while a batch is in progress"); ?>
         </span>
-        <button class="btn btn-sm btn-info" onclick="refreshBatches()" style="margin-left: 10px;">
-            <i class="icon-refresh"></i>
-            <?= $this->translate->_("Refresh Now"); ?>
-        </button>
+        <a class="btn btn-sm btn-primary" href="<?= $certificatesUrl; ?>" style="margin-left: 10px;">
+            <i class="icon-certificate"></i>
+            <?= $this->translate->_("Annual Certificates"); ?>
+        </a>
     </div>
 </h4>
+<p class="text-muted">
+    <?= $this->translate->_("Every certificate batch, past and present. To issue, review or approve certificates, use Annual Certificates."); ?>
+</p>
 
 <!-- Filter Controls -->
 <table style="margin:20px 0;" class="table table-bordered">
@@ -126,16 +130,16 @@
     <tr>
         <td>
             <select id="filterStatus" name="filterStatus" class="form-control input-sm" onchange="applyFilters();">
-                <option value="">-- All Statuses --</option>
-                <option value="pending">Pending</option>
-                <option value="generating">Generating</option>
-                <option value="generated">Generated</option>
-                <option value="approved">Approved</option>
-                <option value="distributing">Distributing</option>
-                <option value="distributed">Distributed</option>
-                <option value="failed">Failed</option>
-                <option value="rejected">Rejected</option>
-                <option value="cancelled">Cancelled</option>
+                <option value=""><?= $this->translate->_("All statuses"); ?></option>
+                <option value="pending"><?= $this->translate->_("Pending"); ?></option>
+                <option value="generating"><?= $this->translate->_("Generating"); ?></option>
+                <option value="generated"><?= $this->translate->_("Generated"); ?></option>
+                <option value="approved"><?= $this->translate->_("Approved"); ?></option>
+                <option value="distributing"><?= $this->translate->_("Distributing"); ?></option>
+                <option value="distributed"><?= $this->translate->_("Distributed"); ?></option>
+                <option value="failed"><?= $this->translate->_("Failed"); ?></option>
+                <option value="rejected"><?= $this->translate->_("Rejected"); ?></option>
+                <option value="cancelled"><?= $this->translate->_("Cancelled"); ?></option>
             </select>
         </td>
         <td>
@@ -186,14 +190,8 @@
     });
 
     function initDateRangePicker() {
-        // Default: last 3 months to today
-        var defaultStart = moment().subtract(3, 'months');
-        var defaultEnd = moment();
-
-        startDate = defaultStart.format('DD-MMM-YYYY');
-        endDate = defaultEnd.format('DD-MMM-YYYY');
-        $('#dateRange').val(startDate + ' to ' + endDate);
-
+        // No date filter by default: batches are made once a year, so a
+        // recent-months window would hide last year's.
         $('#dateRange').daterangepicker({
             locale: {
                 cancelLabel: 'Clear',
@@ -203,9 +201,7 @@
             autoApply: true,
             showDropdowns: true,
             alwaysShowCalendars: true,
-            autoUpdateInput: true,
-            startDate: defaultStart,
-            endDate: defaultEnd,
+            autoUpdateInput: false,
             ranges: eptDateRanges()
         }, function (start, end) {
             startDate = start.format('DD-MMM-YYYY');
@@ -262,15 +258,15 @@
                         // Transform data for display
                         if (json.aaData) {
                             json.aaData = json.aaData.map(function (row) {
-                                // Check if this batch is active (pending or generating)
-                                if (row.status === 'pending' || row.status === 'generating') {
+                                // A batch still moving on its own: keep refreshing.
+                                if (['pending', 'generating', 'approved', 'distributing'].indexOf(row.status) !== -1) {
                                     hasActiveBatches = true;
                                 }
 
                                 return [
                                     formatBatchName(row),
                                     formatShipments(row),
-                                    formatStatusBadge(row.status),
+                                    formatStatus(row),
                                     formatCount(row.excellence_count, 'excellence'),
                                     formatCount(row.participation_count, 'participation'),
                                     formatCount(row.skipped_count, 'skipped'),
@@ -339,6 +335,14 @@
         return '<span class="status-badge ' + config.cls + '"><i class="' + config.icon + '"></i> ' + config.label + '</span>';
     }
 
+    function formatStatus(row) {
+        var html = formatStatusBadge(row.status);
+        if (row.approved_by_name && ['approved', 'distributing', 'distributed'].indexOf(row.status) !== -1) {
+            html += '<br><small class="text-muted"><?= $this->jsTranslate("by") ?> ' + escapeHtml(row.approved_by_name) + '</small>';
+        }
+        return html;
+    }
+
     function formatCount(count, type) {
         count = parseInt(count) || 0;
         if (count === 0) {
@@ -368,6 +372,10 @@
         // Format as readable date
         var options = { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' };
         var formatted = date.toLocaleDateString('en-US', options);
+        // Past a week, the date reads better than a count of days.
+        if (diff >= 7 * 86400) {
+            timeAgo = moment(date).format('DD-MMM-YYYY');
+        }
 
         return '<span title="' + formatted + '">' + timeAgo + '</span>';
     }
@@ -381,18 +389,10 @@
                 '<i class="icon-download"></i> <?= $this->jsTranslate("Download") ?></a>');
         }
 
-        // Approve & Distribute button (if status is generated)
-        if (row.status === 'generated') {
-            actions.push('<button class="btn btn-primary btn-action" onclick="approveBatch(' + row.batch_id + ')" title="<?= $this->jsTranslate("Approve and distribute certificates") ?>">' +
-                '<i class="icon-ok"></i> <?= $this->jsTranslate("Approve") ?></button>');
-            actions.push('<button class="btn btn-danger btn-action" onclick="rejectBatch(' + row.batch_id + ')" title="<?= $this->jsTranslate("Reject this batch") ?>">' +
-                '<i class="icon-remove"></i> <?= $this->jsTranslate("Reject") ?></button>');
-        }
-
-        // Cancel button (if status is pending or generating)
-        if (row.status === 'pending' || row.status === 'generating') {
-            actions.push('<button class="btn btn-danger btn-action" onclick="cancelBatch(' + row.batch_id + ')" title="<?= $this->jsTranslate("Cancel this batch") ?>">' +
-                '<i class="icon-remove"></i> <?= $this->jsTranslate("Cancel") ?></button>');
+        // Approving and discarding happen on the guided page only, so
+        // there is one place to do them.
+        if (['pending', 'generating', 'generated', 'approved', 'distributing'].indexOf(row.status) !== -1) {
+            actions.push('<a class="btn btn-primary btn-action" href="<?= $certificatesUrl; ?>"><i class="icon-arrow-right"></i> <?= $this->jsTranslate("Open in Annual Certificates") ?></a>');
         }
 
         if (actions.length === 0) {
@@ -412,84 +412,6 @@
             .replace(/'/g, '&#039;');
     }
 
-    function approveBatch(batchId) {
-        if (!confirm('<?= $this->jsTranslate("Are you sure you want to approve this batch and schedule certificate distribution?\n\nEach participant can then download their certificate from the Certificates page. No email is sent.") ?>')) {
-            return;
-        }
-
-        $.ajax({
-            url: '<?php echo $this->url(array('module' => 'admin', 'controller' => 'certificate-batches', 'action' => 'approve-batch')); ?>',
-            type: 'POST',
-            data: {
-                batch_id: batchId
-            },
-            dataType: 'json',
-            success: function (response) {
-                if (response.success) {
-                    alert('<?= $this->jsTranslate('Certificates approved and distribution scheduled successfully.') ?>');
-                    refreshBatches();
-                } else {
-                    alert('<?= $this->jsTranslate('Failed to approve batch: ') ?>' + response.message);
-                }
-            },
-            error: function () {
-                alert('<?= $this->jsTranslate('Error approving batch. Please try again.') ?>');
-            }
-        });
-    }
-
-    function cancelBatch(batchId) {
-        if (!confirm('<?= $this->jsTranslate('Are you sure you want to cancel this batch?') ?>')) {
-            return;
-        }
-
-        $.ajax({
-            url: '<?php echo $this->url(array('module' => 'admin', 'controller' => 'certificate-batches', 'action' => 'cancel-batch')); ?>',
-            type: 'POST',
-            data: {
-                batch_id: batchId
-            },
-            dataType: 'json',
-            success: function (response) {
-                if (response.success) {
-                    alert('<?= $this->jsTranslate('Batch cancelled successfully.') ?>');
-                    refreshBatches();
-                } else {
-                    alert('<?= $this->jsTranslate('Failed to cancel batch: ') ?>' + response.message);
-                }
-            },
-            error: function () {
-                alert('<?= $this->jsTranslate('Error cancelling batch. Please try again.') ?>');
-            }
-        });
-    }
-
-    function rejectBatch(batchId) {
-        if (!confirm('<?= $this->jsTranslate("Are you sure you want to reject this batch?\n\nThe certificates will NOT be distributed to participants.") ?>')) {
-            return;
-        }
-
-        $.ajax({
-            url: '<?php echo $this->url(array('module' => 'admin', 'controller' => 'certificate-batches', 'action' => 'reject-batch')); ?>',
-            type: 'POST',
-            data: {
-                batch_id: batchId
-            },
-            dataType: 'json',
-            success: function (response) {
-                if (response.success) {
-                    alert('<?= $this->jsTranslate('Batch rejected successfully.') ?>');
-                    refreshBatches();
-                } else {
-                    alert('<?= $this->jsTranslate('Failed to reject batch: ') ?>' + response.message);
-                }
-            },
-            error: function () {
-                alert('<?= $this->jsTranslate('Error rejecting batch. Please try again.') ?>');
-            }
-        });
-    }
-
     function refreshBatches() {
         if (oTable) {
             oTable.fnDraw(false); // false = don't reset pagination
@@ -504,21 +426,18 @@
 
     function resetFilters() {
         $('#filterStatus').val('');
-        // Reset date range to default (last 3 months)
-        var defaultStart = moment().subtract(3, 'months');
-        var defaultEnd = moment();
-        startDate = defaultStart.format('DD-MMM-YYYY');
-        endDate = defaultEnd.format('DD-MMM-YYYY');
-        $('#dateRange').val(startDate + ' to ' + endDate);
-        $('#dateRange').data('daterangepicker').setStartDate(defaultStart);
-        $('#dateRange').data('daterangepicker').setEndDate(defaultEnd);
+        startDate = "";
+        endDate = "";
+        $('#dateRange').val('');
         applyFilters();
     }
 
     function startAutoRefresh() {
         autoRefreshInterval = setInterval(function () {
-            refreshBatches();
-        }, 5000); // Refresh every 5 seconds
+            if (hasActiveBatches) {
+                refreshBatches();
+            }
+        }, 5000);
     }
 
     function stopAutoRefresh() {
@@ -529,14 +448,7 @@
     }
 
     function updateAutoRefreshIndicator() {
-        var $indicator = $('#autoRefreshIndicator');
-        if (hasActiveBatches) {
-            $indicator.removeClass('auto-refresh-paused');
-            $indicator.html('<i class="icon-refresh icon-spin"></i> <?= $this->jsTranslate("Auto-refreshing every 5 seconds") ?>');
-        } else {
-            $indicator.removeClass('auto-refresh-paused');
-            $indicator.html('<i class="icon-refresh icon-spin"></i> <?= $this->jsTranslate("Auto-refreshing every 5 seconds") ?>');
-        }
+        $('#autoRefreshIndicator').toggle(hasActiveBatches);
     }
 
     // Clean up on page leave

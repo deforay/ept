@@ -283,10 +283,9 @@ class Application_Model_DbTable_CertificateBatches extends Zend_Db_Table_Abstrac
      * Cancel a batch by marking it as cancelled
      *
      * @param int $batchId The batch ID to cancel
-     * @param int $cancelledBy Admin ID who cancelled the batch
      * @return bool True if successfully cancelled, false otherwise
      */
-    public function cancelBatch($batchId, $cancelledBy = null)
+    public function cancelBatch($batchId)
     {
         $batch = $this->getBatch($batchId);
 
@@ -300,26 +299,17 @@ class Application_Model_DbTable_CertificateBatches extends Zend_Db_Table_Abstrac
             return false;
         }
 
-        $updateData = [
-            'status' => 'cancelled',
-        ];
-
-        if ($cancelledBy) {
-            $updateData['approved_by'] = $cancelledBy; // Reusing approved_by for cancelled_by
-            $updateData['approved_on'] = new Zend_Db_Expr('NOW()');
-        }
-
-        return $this->update($updateData, ['batch_id = ?' => (int) $batchId]) > 0;
+        // approved_by stays empty: the audit log records who discarded it.
+        return $this->update(['status' => 'cancelled'], ['batch_id = ?' => (int) $batchId]) > 0;
     }
 
     /**
      * Reject a generated batch (don't distribute certificates)
      *
      * @param int $batchId The batch ID to reject
-     * @param int $rejectedBy Admin ID who rejected the batch
      * @return bool True if successfully rejected, false otherwise
      */
-    public function rejectBatch($batchId, $rejectedBy = null)
+    public function rejectBatch($batchId)
     {
         $batch = $this->getBatch($batchId);
 
@@ -332,15 +322,7 @@ class Application_Model_DbTable_CertificateBatches extends Zend_Db_Table_Abstrac
             return false;
         }
 
-        $updateData = [
-            'status' => 'rejected',
-        ];
-
-        if ($rejectedBy) {
-            $updateData['approved_by'] = $rejectedBy; // Reusing approved_by for rejected_by
-            $updateData['approved_on'] = new Zend_Db_Expr('NOW()');
-        }
-
-        return $this->update($updateData, ['batch_id = ?' => (int) $batchId]) > 0;
+        // approved_by stays empty: the audit log records who discarded it.
+        return $this->update(['status' => 'rejected'], ['batch_id = ?' => (int) $batchId]) > 0;
     }
 }
