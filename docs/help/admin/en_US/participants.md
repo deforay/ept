@@ -21,8 +21,11 @@ The page header has three main actions on the right:
 - **Bulk Import Participants** — recommended for any sizable
   list. Upload an Excel file and the system adds or updates
   rows in one go.
-- **Download as Excel** — exports the whole list (after any
-  filters you have applied) as an `.xlsx`.
+- **Export** menu:
+  - **Participants** — exports the whole list (after any
+    filters you have applied) as an `.xlsx`.
+  - **Unusable Emails** — downloads an Excel list of accounts
+    whose email is missing, has bounced, or cannot receive mail.
 
 If there are participants in a *Pending* state, a yellow **Show
 only Pending Participants** button appears with a count. Click
