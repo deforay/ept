@@ -183,8 +183,7 @@ class Admin_EnrollmentsController extends Zend_Controller_Action
                 case 'clone':
                     $toScheme = (string) $request->getPost('toScheme', '');
                     $newName = (string) $request->getPost('newName', '');
-                    // Any active scheme, or the list's own scheme even if that one is inactive.
-                    if ($toScheme === '' || ($toScheme !== $schemeId && $this->schemeName($toScheme) === $toScheme)) {
+                    if ($toScheme === '' || $this->schemeName($toScheme) === $toScheme) {
                         break;
                     }
                     $refused = $enrollments->cloneList($schemeId, $listName, $toScheme, $newName);

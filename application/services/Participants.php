@@ -69,6 +69,7 @@ class Application_Service_Participants
         // Archived lists are kept out of Ship It's preset picker.
         $sql = $db->select()->from(['eln' => 'enrollments'], ['*'])
             ->where('NOT EXISTS (SELECT 1 FROM enrollment_list_archive a WHERE a.scheme_id = eln.scheme_id AND a.list_name = eln.list_name)')
+            ->where('eln.scheme_id NOT IN (' . Application_Model_DbTable_Enrollments::INACTIVE_SCHEMES . ')')
             ->group(['list_name']);
         return $db->fetchAll($sql);
     }
@@ -82,7 +83,8 @@ class Application_Service_Participants
             }
             $db = Zend_Db_Table_Abstract::getDefaultAdapter();
             $sql = $db->select()->from(['eln' => 'enrollments'], ['*'])
-                ->where('eln.list_name IN (?)', $ids);
+                ->where('eln.list_name IN (?)', $ids)
+                ->where('eln.scheme_id NOT IN (' . Application_Model_DbTable_Enrollments::INACTIVE_SCHEMES . ')');
             // Every scheme has a Default list, so Default means the shipment's own scheme.
             if (!empty($schemeId)) {
                 $sql->where("eln.list_name <> 'default' OR eln.scheme_id = ?", (string) $schemeId);

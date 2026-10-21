@@ -8,6 +8,9 @@ class Application_Model_DbTable_Enrollments extends Zend_Db_Table_Abstract
     protected $_name = 'enrollments';
     protected $_primary = ['list_name', 'participant_id'];
 
+    /** Lists of inactive schemes are hidden everywhere and do not reserve their names. */
+    public const INACTIVE_SCHEMES = "SELECT scheme_id FROM scheme_list WHERE status <> 'active'";
+
     public function getAllEnrollments($parameters)
     {
 
@@ -78,7 +81,7 @@ class Application_Model_DbTable_Enrollments extends Zend_Db_Table_Abstract
 
         $sQuery = $this->getAdapter()->select()->from(['p' => 'participant'])
             ->join(['c' => 'countries'], 'c.id=p.country')
-            ->joinLeft(['e' => 'enrollments'], 'p.participant_id = e.participant_id')
+            ->joinLeft(['e' => 'enrollments'], 'p.participant_id = e.participant_id AND e.scheme_id NOT IN (' . self::INACTIVE_SCHEMES . ')')
             ->joinLeft(['s' => 'scheme_list'], 'e.scheme_id = s.scheme_id', [
                 'scheme_name' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT s.scheme_name ORDER BY s.scheme_name SEPARATOR ', ')"),
                 // The first enrollment, not whichever row the GROUP BY happened to keep.
@@ -488,7 +491,8 @@ class Application_Model_DbTable_Enrollments extends Zend_Db_Table_Abstract
             return null;
         }
         $db = $this->getAdapter();
-        $sql = $db->select()->from($this->_name, ['scheme_id'])->where('list_name = ?', $listName)->limit(1);
+        $sql = $db->select()->from($this->_name, ['scheme_id'])->where('list_name = ?', $listName)
+            ->where('scheme_id NOT IN (' . self::INACTIVE_SCHEMES . ')')->limit(1);
         if (!empty($exceptSchemes)) {
             $sql->where('scheme_id NOT IN (?)', $exceptSchemes);
         }
@@ -533,6 +537,8 @@ class Application_Model_DbTable_Enrollments extends Zend_Db_Table_Abstract
             ->joinLeft(['a' => 'enrollment_list_archive'], 'a.scheme_id = e.scheme_id AND a.list_name = e.list_name', [
                 'archived' => new Zend_Db_Expr('MAX(a.list_name IS NOT NULL)'),
             ])
+            // A list without a scheme has no scheme_list row and stays visible.
+            ->where("s.status = 'active' OR s.scheme_id IS NULL")
             ->group(['e.scheme_id', 'e.list_name'])
             // Within a scheme: Default first, then the most recently changed lists.
             ->order(['s.scheme_name', new Zend_Db_Expr("e.list_name <> 'default'"), new Zend_Db_Expr('MAX(e.enrolled_on) DESC'), 'e.list_name']);

@@ -488,12 +488,7 @@ $renderRow = function (array $list, string $mode) use ($defaultLabel, $schemesBy
                 }
             }
         });
-        var $scheme = dialog.find('#cloneScheme');
-        // A list of an inactive scheme can still be cloned within that scheme.
-        if ($scheme.find('option').filter(function() { return this.value === scheme; }).length === 0) {
-            $scheme.prepend($('<option>').val(scheme).text(SCHEME_NAMES[scheme] || scheme));
-        }
-        $scheme.val(scheme);
+        dialog.find('#cloneScheme').val(scheme);
         dialog.find('#cloneName').val((list === 'default' ? DEFAULT_LABEL : $.trim(list)) + " <?= $this->jsTranslate("(copy)"); ?>");
     }
 

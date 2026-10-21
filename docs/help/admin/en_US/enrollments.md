@@ -23,6 +23,9 @@ clone or an import that would reuse another scheme's list name.
 Lists that shared a name before this rule are marked *Name also
 used in another scheme*. Rename one of them.
 
+Lists of inactive schemes are not shown on this page or in Ship
+It, and their names are free to use again.
+
 ## Buttons at the top
 
 - **New list**: choose a scheme and type a list name, then pick
