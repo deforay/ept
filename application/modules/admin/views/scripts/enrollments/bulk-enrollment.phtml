@@ -1,64 +1,237 @@
-<div class="well">
-    <form name="bulkParticipantForm" id="bulkParticipantForm" method="post" action="<?php echo $this->url(array("module" => "admin", "controller" => "enrollments", "action" => "bulk-enrollment"), 'default', true) ?>" class="form-horizontal bs-example" enctype="multipart/form-data" role="form" onsubmit="validateNow();
-            return false;">
-        <fieldset>
-            <legend><?= $this->translate->_("Bulk Enroll Participants to Scheme"); ?></legend>
+<?= $this->render('participants/_import-upload-style.phtml'); ?>
+<?php
+// Existing list names per scheme, for the List field's suggestions.
+$listsByScheme = [];
+foreach ($this->lists as $list) {
+    $listsByScheme[(string) $list['scheme_id']][] = $list['list_name'] === 'default' ? $this->translate->_('Default') : $list['list_name'];
+}
+$preList = $this->preselectedList === 'default' ? $this->translate->_('Default') : $this->preselectedList;
+?>
+<div class="bulk-import-wrap">
+    <div class="bi-header">
+        <a class="bi-back" href="/admin/enrollments">&larr; <?= $this->htmlTranslate("Back to Scheme Enrollments"); ?></a>
+        <h2><?= $this->htmlTranslate("Bulk Import Enrollment"); ?></h2>
+        <div class="bi-sub"><?= $this->htmlTranslate("Upload a file of Participant IDs to fill one scheme's enrollment list. You'll review what will change before anything is saved."); ?></div>
+    </div>
 
-            <div class="form-group col-lg-12">
-                <div class="col-lg-7">
-                    <div class="row">
-                        <label class="col-lg-4 control-label" for=""><?= $this->translate->_("Scheme Types"); ?><span class="mandatory">*</span></label>
-                        <div class="col-lg-8">
-                            <select id="scheme" name="scheme" onchange="schemeSelected(this.value);" class="form-control">
-                                <option value=""> -- <?= $this->translate->_("Select Scheme Type"); ?> --</option>
-                                <?php foreach ($this->schemes as $scheme) { ?>
-                                    <option value="<?php echo $scheme['scheme_id']; ?>"><?php echo $scheme['scheme_name']; ?></option>
-                                <?php } ?>
+    <div class="bi-steps">
+        <div class="bi-step active"><span class="bi-num">1</span> <?= $this->htmlTranslate("Upload"); ?></div>
+        <span class="bi-sep">&rsaquo;</span>
+        <div class="bi-step"><span class="bi-num">2</span> <?= $this->htmlTranslate("Review"); ?></div>
+        <span class="bi-sep">&rsaquo;</span>
+        <div class="bi-step"><span class="bi-num">3</span> <?= $this->htmlTranslate("Done"); ?></div>
+    </div>
+
+    <?php if (!empty($this->validationMismatches)): ?>
+        <div class="bi-validation-error" role="alert">
+            <p class="bi-ve-title"><i class="icon-exclamation-sign"></i> <?= $this->htmlTranslate("The uploaded file does not match the template"); ?></p>
+            <p class="bi-ve-sub"><?= $this->htmlTranslate("Please download the latest template and copy your data into it. We found the following column header issues:"); ?></p>
+            <table>
+                <thead>
+                    <tr>
+                        <th scope="col" style="width: 80px;"><?= $this->htmlTranslate("Column"); ?></th>
+                        <th scope="col"><?= $this->htmlTranslate("Expected header"); ?></th>
+                        <th scope="col"><?= $this->htmlTranslate("Found in your file"); ?></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach ($this->validationMismatches as $m): ?>
+                        <tr>
+                            <td><code><?= $this->escape($m['column']); ?></code></td>
+                            <td><?= $m['expected'] !== '' ? $this->escape($m['expected']) : '<span class="bi-ve-empty">' . $this->htmlTranslate("(empty)") . '</span>'; ?></td>
+                            <td><?= $m['actual'] !== '' ? $this->escape($m['actual']) : '<span class="bi-ve-empty">' . $this->htmlTranslate("(empty)") . '</span>'; ?></td>
+                        </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+        </div>
+    <?php endif; ?>
+
+    <form name="bulkEnrollmentForm" id="bulkEnrollmentForm" method="post"
+          action="<?php echo $this->url(["module" => "admin", "controller" => "enrollments", "action" => "bulk-enrollment"], 'default', true) ?>"
+          enctype="multipart/form-data" role="form"
+          onsubmit="validateNow(); return false;">
+
+        <div class="bi-layout">
+            <div class="bi-main">
+                <div class="bi-card">
+                    <div class="bi-options">
+                        <div>
+                            <label for="scheme"><?= $this->htmlTranslate("Scheme"); ?> <span class="mandatory">*</span></label>
+                            <select id="scheme" name="scheme" class="isRequired" title="<?= $this->htmlTranslate("Please choose a scheme"); ?>">
+                                <option value=""><?= $this->htmlTranslate("Choose a scheme"); ?></option>
+                                <?php foreach ($this->schemes as $scheme): ?>
+                                    <option value="<?= $this->escape($scheme['scheme_id']); ?>" <?= (string) $scheme['scheme_id'] === $this->preselectedScheme ? 'selected' : ''; ?>><?= $this->escape($scheme['scheme_name']); ?></option>
+                                <?php endforeach; ?>
                             </select>
                         </div>
-                    </div><br>
-                    <div class="row">
-                        <label class="col-lg-4 control-label" for=""><?= $this->translate->_("Enrollment List Name"); ?></label>
-                        <div class="col-lg-8">
-                            <input type="text" name="listName" id="listName" class="form-control" placeholder="<?= $this->htmlTranslate('Enter the list name'); ?>" title="<?= $this->htmlTranslate("Please enter the list name") ?>" />
+                        <div>
+                            <label for="listName"><?= $this->htmlTranslate("Enrollment list"); ?></label>
+                            <input type="text" id="listName" name="listName" class="form-control" list="listSuggestions" autocomplete="off"
+                                value="<?= $this->escape($preList); ?>" placeholder="<?= $this->htmlTranslate("Default"); ?>">
+                            <datalist id="listSuggestions"></datalist>
+                            <div class="bi-hint"><?= $this->htmlTranslate("Pick an existing list or type a new name. Leave it blank for the scheme's Default list."); ?></div>
                         </div>
-                    </div><br>
-                    <div class="row">
-                        <label class="col-lg-4 control-label" for="fileName"><?= $this->translate->_("Select file to upload"); ?><span class="mandatory">*</span></label>
-                        <div class="col-lg-8">
-                            <input type="file" class="form-control isRequired" id="fileName" name="fileName" title="<?= $this->htmlTranslate("Please select participants import data file") ?>">
+                        <div>
+                            <label for="removeMissing"><?= $this->htmlTranslate("Participants already on the list but not in the file"); ?></label>
+                            <select id="removeMissing" name="removeMissing">
+                                <option value="no"><?= $this->htmlTranslate("Keep them on the list"); ?></option>
+                                <option value="yes"><?= $this->htmlTranslate("Remove them, so the list matches the file"); ?></option>
+                            </select>
                         </div>
                     </div>
-                </div>
-                <div class="col-lg-5 ">
 
-                    <ul>
-                        <li> <a class="text-danger" style="text-decoration:underline;" href="<?php echo $this->baseUrl('/admin/enrollments/bulk-enrollment-template'); ?>" download><i class="fa fa-fw fa-download mr-1"></i> <?= $this->translate->_("Click here to download the Excel format for importing the participants"); ?></a> </li>
-                        <li> <?= $this->translate->_("Please note that the columns marked in"); ?> <span class="mandatory"><?= $this->translate->_("red"); ?></span> <?= $this->translate->_("are mandatory."); ?> </li>
-                        <li> <?= $this->translate->_("The Unique Identifier field should have a unique id for the participant."); ?> </li>
-                        <li> <?= $this->translate->_("The Unique Identifier must match an existing Participant Unique Identifier"); ?> </li>
+                    <div class="bi-drop" id="biDrop">
+                        <div class="bi-drop-icon"><i class="icon-upload"></i></div>
+                        <div class="bi-drop-title"><?= $this->htmlTranslate("Drop your file here"); ?></div>
+                        <div class="bi-drop-sub"><?= $this->htmlTranslate("or"); ?> <span class="bi-browse"><?= $this->htmlTranslate("click to browse"); ?></span></div>
+                        <div class="bi-accepts"><?= $this->htmlTranslate("Accepts"); ?> <code>.xls</code> <code>.xlsx</code> <code>.csv</code></div>
+                        <input type="file" id="fileName" name="fileName" class="isRequired" accept=".xls,.xlsx,.csv" title="<?= $this->htmlTranslate("Please select the enrollment file"); ?>">
+                    </div>
+
+                    <div class="bi-filecard" id="biFileCard">
+                        <div class="bi-file-icon">XLS</div>
+                        <div class="bi-file-meta">
+                            <div class="bi-file-name" id="biFileName"></div>
+                            <div class="bi-file-size" id="biFileSize"></div>
+                        </div>
+                        <div class="bi-file-actions">
+                            <a id="biReplace"><i class="icon-refresh"></i> <?= $this->htmlTranslate("Replace"); ?></a>
+                            <a class="bi-remove" id="biRemove" title="<?= $this->htmlTranslate("Remove"); ?>">&times;</a>
+                        </div>
+                    </div>
+
+                    <div class="bi-actions">
+                        <button type="button" class="btn btn-default" onclick="window.location.href='/admin/enrollments';"><?= $this->htmlTranslate("Cancel"); ?></button>
+                        <button type="submit" class="btn btn-primary" id="biImportBtn" name="submitbtn"><i class="icon-eye-open"></i> <?= $this->htmlTranslate("Review import"); ?></button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bi-side">
+                <div class="bi-card">
+                    <a class="btn btn-primary bi-side-cta" href="<?php echo $this->baseUrl('/admin/enrollments/bulk-enrollment-template'); ?>" download>
+                        <i class="icon-download"></i> <?= $this->htmlTranslate("Download Excel template"); ?>
+                    </a>
+                    <h4><i class="icon-info-sign"></i> <?= $this->htmlTranslate("How to prepare your file"); ?></h4>
+                    <div class="bi-step-item">
+                        <span class="bi-step-num">1</span>
+                        <div class="bi-step-text"><?= $this->htmlTranslate("Download the template and put one Participant ID (Lab ID) per row in column A."); ?></div>
+                    </div>
+                    <div class="bi-step-item">
+                        <span class="bi-step-num">2</span>
+                        <div class="bi-step-text"><?= $this->htmlTranslate("To change a list you already have, download it from Scheme Enrollments, edit it, and upload it here."); ?></div>
+                    </div>
+                    <div class="bi-step-item">
+                        <span class="bi-step-num">3</span>
+                        <div class="bi-step-text"><?= $this->htmlTranslate("Before anything is saved, you'll see who will be added, who is already on the list, who will be removed, and which rows can't be used."); ?></div>
+                    </div>
+                </div>
+                <div class="bi-card">
+                    <h4><?= $this->htmlTranslate("Template columns"); ?></h4>
+                    <ul class="bi-columns">
+                        <li><span class="bi-col">A</span><span class="bi-req"><?= $this->htmlTranslate("Participant ID"); ?>*</span> <span class="bi-col-note"><?= $this->htmlTranslate("The participant's Lab ID"); ?></span></li>
                     </ul>
+                    <div class="bi-hint">* <?= $this->htmlTranslate("Required"); ?> &middot; <?= $this->htmlTranslate("Other columns are ignored, so a downloaded list can be uploaded as it is."); ?></div>
                 </div>
             </div>
-
-            <div id="respond" style="margin: 0px auto 0px auto; text-align: center;" class="form-group col-lg-11" align="center">
-                <input name="submitbtn" class="btn btn-primary" type="submit" tabindex="7" value="<?= $this->translate->_("Import Excel"); ?>" />
-                <input class="btn btn-danger" type="button" onclick="window.location.href = '/admin/enrollments';" tabindex="8" value="<?= $this->translate->_("Cancel"); ?>" />
-            </div>
-        </fieldset>
+        </div>
     </form>
 </div>
+
 <script type="text/javascript">
+    var LISTS_BY_SCHEME = <?= json_encode($listsByScheme, JSON_HEX_TAG | JSON_HEX_AMP); ?>;
     var duplicated = false;
 
+    var biBlockMessage = <?= json_encode(
+        '<div style="padding:10px 6px;">'
+        . '<div class="bi-spinner" style="width:38px;height:38px;margin:0 auto 14px;border:4px solid #e6e9ee;border-top-color:#337ab7;border-radius:50%;animation:bi-spin 0.8s linear infinite;"></div>'
+        . '<h4 style="margin:0 0 6px;font-weight:600;">' . $this->htmlTranslate("Checking your enrollment file…") . '</h4>'
+        . '<div style="color:#8a93a0;font-size:13px;line-height:1.5;">' . $this->htmlTranslate("Nothing is saved yet. This can take up to a minute for larger files.") . '<br>' . $this->htmlTranslate("Please keep this window open — do not refresh or close it.") . '</div>'
+        . '</div>'
+    ); ?>;
+
     function validateNow() {
-        $(".bootstrap-select").removeClass('isRequired');
-        flag = deforayValidator.init({
-            formId: 'bulkParticipantForm'
-        });
+        var flag = deforayValidator.init({ formId: 'bulkEnrollmentForm' });
         if (flag && !duplicated) {
-            $.blockUI();
-            document.getElementById('bulkParticipantForm').submit();
+            $('#biImportBtn').prop('disabled', true).html('<i class="icon-refresh"></i> <?= $this->jsTranslate("Checking…"); ?>');
+            $.blockUI({
+                message: biBlockMessage,
+                css: {
+                    border: 'none',
+                    padding: '20px 26px',
+                    borderRadius: '8px',
+                    backgroundColor: '#fff',
+                    color: '#333',
+                    width: '340px',
+                    left: '50%',
+                    marginLeft: '-170px',
+                    boxShadow: '0 4px 18px rgba(0,0,0,0.18)'
+                },
+                overlayCSS: { backgroundColor: '#000', opacity: 0.45 }
+            });
+            document.getElementById('bulkEnrollmentForm').submit();
         }
     }
+
+    function formatBytes(bytes) {
+        if (bytes < 1024) return bytes + ' B';
+        if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+        return (bytes / 1024 / 1024).toFixed(2) + ' MB';
+    }
+
+    // Suggest the chosen scheme's existing lists in the List field.
+    function fillListSuggestions() {
+        var $datalist = $('#listSuggestions').empty();
+        $.each(LISTS_BY_SCHEME[$('#scheme').val()] || [], function(_, name) {
+            $datalist.append($('<option>').attr('value', name));
+        });
+    }
+
+    $(document).ready(function() {
+        var $drop = $('#biDrop');
+        var $input = $('#fileName');
+        var $card = $('#biFileCard');
+
+        $('#scheme').on('change', fillListSuggestions);
+        fillListSuggestions();
+
+        function showFile(file) {
+            if (!file) {
+                $card.removeClass('active');
+                $drop.show();
+                return;
+            }
+            $('#biFileName').text(file.name);
+            $('#biFileSize').text(formatBytes(file.size));
+            $card.addClass('active');
+            $drop.hide();
+        }
+
+        $input.on('change', function() {
+            showFile(this.files && this.files[0]);
+        });
+        $('#biReplace').on('click', function(e) {
+            e.preventDefault();
+            $input.trigger('click');
+        });
+        $('#biRemove').on('click', function(e) {
+            e.preventDefault();
+            $input.val('');
+            showFile(null);
+        });
+        $drop.on('dragover dragenter', function(e) {
+            e.preventDefault(); e.stopPropagation();
+            $(this).addClass('dragover');
+        }).on('dragleave dragend drop', function(e) {
+            e.preventDefault(); e.stopPropagation();
+            $(this).removeClass('dragover');
+        }).on('drop', function(e) {
+            var files = e.originalEvent.dataTransfer && e.originalEvent.dataTransfer.files;
+            if (files && files.length) {
+                $input[0].files = files;
+                showFile(files[0]);
+            }
+        });
+    });
 </script>

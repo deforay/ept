@@ -17,6 +17,8 @@ _('Add a Shipment');
 _('Add EID Assay / Platform');
 // admin/testkit-add#tags, admin/testkit-edit#tags
 _('additional-info');
+// admin/enrollments-add#summary
+_('Add or remove participants on one scheme\'s enrollment list using two lists with filters');
 // admin/participants-add#title
 _('Add Participant');
 // admin/distributions-add#title
@@ -50,7 +52,7 @@ _('Build draft per-participant and summary reports for internal review (not yet 
 // admin/enrollments-bulk-enrollment#tags, admin/enrollments#tags, admin/participants-bulk-import#tags, admin/participants-manager-map#tags
 _('bulk-import');
 // admin/enrollments-bulk-enrollment#title
-_('Bulk Enroll Participants');
+_('Bulk Import Enrollment');
 // admin/participants-bulk-import#title
 _('Bulk Import Participants');
 // admin/certificate-templates#tags, admin/reports-annual#tags
@@ -115,14 +117,14 @@ _('draft');
 _('dts');
 // admin/dts-settings#title
 _('DTS (HIV Serology) Settings');
-// admin/enrollments-add#tags
-_('dual-list');
 // admin/reports-participant-performance#summary
 _('Each participant\'s results across shipments, with pass rate, failures and average score');
 // admin/eid-assay-add#tags, admin/eid-assay#tags
 _('early-infant-diagnosis');
 // admin/distributions-edit#tags, admin/participants-edit#tags, admin/testkit-edit#tags, admin/vl-assay-edit#tags
 _('edit');
+// admin/enrollments-add#title
+_('Edit an Enrollment List');
 // admin/participants-edit#title
 _('Edit Participant');
 // admin/distributions-edit#title
@@ -143,11 +145,7 @@ _('Email Participants');
 _('enroll');
 // admin/enrollments-add#tags, admin/enrollments-bulk-enrollment#tags, admin/enrollments#tags, admin/shipment-enroll#tags
 _('enrollment');
-// admin/enrollments#title
-_('Enrollments');
-// admin/enrollments-add#summary
-_('Enroll or unenroll many participants in a scheme using a two-list selector with filters');
-// admin/enrollments-add#title, admin/shipment-enroll#title
+// admin/shipment-enroll#title
 _('Enroll Participants');
 // admin/evaluate-shipment#tags, admin/evaluate#tags
 _('evaluate');
@@ -225,6 +223,8 @@ _('List, add, and edit Viral Load assays / platforms used by participants');
 _('List, filter, approve, and manage test kits used by participants in their response forms');
 // admin/eid-assay#summary
 _('List Early Infant Diagnosis Extraction and Detection assays, add new ones, and toggle their active status');
+// admin/enrollments-add#tags, admin/enrollments-bulk-enrollment#tags, admin/enrollments#tags
+_('lists');
 // admin/users#tags
 _('login');
 // admin/report-config#tags
@@ -319,6 +319,8 @@ _('samples');
 _('satisfactory');
 // admin/enrollments-add#tags, admin/enrollments-bulk-enrollment#tags, admin/enrollments#tags
 _('scheme');
+// admin/enrollments#title
+_('Scheme Enrollments');
 // admin/participants-edit#tags
 _('schemes');
 // admin/evaluate#summary
@@ -335,6 +337,8 @@ _('Scoring, report metadata, and report content for TB PT');
 _('Scoring, sample and testing options, and national algorithm test-kit rules for HIV Serology PT');
 // admin/evaluate-shipment#summary
 _('See each participant\'s response to a shipment, change results, and add a shared comment');
+// admin/enrollments#summary
+_('See every enrollment list per scheme, create and edit lists, and archive, rename, merge or delete them');
 // admin/testkit-standard-kit#summary
 _('Select which test kits appear in the participant response form for each test position (Test 1, Test 2, Test 3, etc.)');
 // admin/email-participants#summary
@@ -419,10 +423,10 @@ _('Update an existing PT Survey\'s code or date before it has been shipped');
 _('Update a test kit\'s details, approval status, scheme/test mapping, and Additional Information settings');
 // admin/participants-bulk-import#tags
 _('upload');
+// admin/enrollments-bulk-enrollment#summary
+_('Upload an Excel file of Participant IDs to fill a scheme\'s enrollment list, and review the changes before they are saved');
 // admin/participants-bulk-import#summary
 _('Upload an Excel file to add or update many participants at once');
-// admin/enrollments-bulk-enrollment#summary
-_('Upload an Excel file to enroll many participants in a scheme at once');
 // admin/users#tags
 _('users');
 // admin/evaluate-shipment#tags
@@ -431,8 +435,6 @@ _('view');
 _('View, add, edit, and ship PT Surveys (distributions) and their shipments');
 // admin/evaluate-shipment#title
 _('View / Re-Evaluate Shipment');
-// admin/enrollments#summary
-_('View and manage which participants are enrolled in each scheme; bulk-import enrollments from a spreadsheet');
 // admin/vl-assay-add#tags, admin/vl-assay-edit#tags, admin/vl-assay#tags, admin/vl-settings#tags
 _('viral-load');
 // admin/reports-vl-assay-distribution#tags, admin/reports-vl-sample-analysis#tags

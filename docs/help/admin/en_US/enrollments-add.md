@@ -1,95 +1,60 @@
 ---
-title: Enroll Participants
-summary: Enroll or unenroll many participants in a scheme using a two-list selector with filters
-tags: [enrollment, scheme, participants, dual-list, filters]
+title: Edit an Enrollment List
+summary: Add or remove participants on one scheme's enrollment list using two lists with filters
+tags: [enrollment, scheme, participants, lists, filters]
 ---
 
-# Enroll Participants
+# Edit an enrollment list
 
-Enrolls (or unenrolls) participants in a single scheme. You
-chose the scheme on the previous page (*Enrollments → Select
-Scheme Type → Enroll Participants*). This page works on that
-scheme only.
+The title shows the scheme and the list. The page has two lists:
 
-## Step 1 — Optional advanced filters
+- **Not on this list** (left): active participants who are not on
+  this list.
+- **On this list** (right): active participants on this list.
 
-- **Show advanced filters** *(button)* — opens filter
-  dropdowns. Filters narrow the **Unenrolled Participants** pane
-  on the left so you don't have to scroll through everyone.
+Click a participant to move it to the other list. Each row shows
+the Lab ID and the name. Type in a list's search box to find a
+participant by name or Lab ID.
 
-Available filters (each is multi-select with type-ahead search):
+- **Add all shown**: moves every participant the left search
+  shows to the right.
+- **Remove all shown**: moves every participant the right search
+  shows to the left.
 
-- **Institute**
-- **Country**
-- **Region**
-- **State**
-- **District**
-- **City**
-- **Network**
-- **Affiliation**
-- **Site Type**
-- **Enrolled Programs**
+## Filters
 
-After picking filter values, click:
+**Country**, **Province** and **District** narrow the left list.
+Click **More filters** for **Institute**, **Network Tier** and
+**Affiliation**. Participants already on the list always stay on
+the right. Changing a filter keeps the changes you have not saved.
 
-- **Filter** — applies the filters and reloads the dual list.
-- **Reset** — clears filters and reloads the full list.
+## Colours
 
-The right pane (*Selected Participants*) is **not** affected by
-filters. Already-enrolled participants stay visible regardless of
-the filter, so you don't accidentally unenroll someone just
-because they fall outside the current filter.
+| Mark | Meaning |
+| --- | --- |
+| Grey tick | On the list and saved |
+| Green **+** | Will be added when you save |
+| Orange **−** | Will be removed when you save |
 
-## Step 2 — Optional enrollment list name
+Unsaved rows are listed first.
 
-- **Enrollment List Name** — a free-text label for this batch.
-  Useful for audit and reporting (for example, *"Q3 2026
-  expansion — Western Province"*). Optional.
+## Save
 
-## Step 3 — Move participants between the two panes
+The bar at the bottom shows how many participants will be added and
+removed.
 
-- **Left pane — Unenrolled Participants** — participants who
-  match the current filters and are *not yet enrolled* in this
-  scheme.
-- **Right pane — Selected Participants** — participants
-  *currently enrolled* in this scheme, plus any new ones you
-  move over.
-- **Click a participant name** to move it between panes. Single
-  click — no drag-and-drop.
-- **Type in the search box** at the top of either pane to filter
-  that pane.
-- **Select All** *(left → right)* — moves every participant in
-  the left pane to the right (enrolls them).
-- **Deselect All** *(right → left)* — moves everyone in the
-  right pane back to the left (unenrolls them).
+- **Save changes**: saves the list exactly as the right side shows
+  it. Participants you moved to the left are removed from this list.
+- **Discard**: throws away your unsaved changes.
 
-The list stays fast even with very long lists.
+If you leave the page with unsaved changes, the page asks you
+first. Saving an empty list asks you to confirm.
 
-## Step 4 — Save
+Removing a participant from this list does not remove them from the
+scheme's other lists. Inactive participants are not shown, and
+saving keeps them on the list.
 
-- **Enroll Selected** — saves the right pane as the complete
-  enrollment list for this scheme.
-- **Cancel** — returns to the Enrollments list without saving.
+## Rename
 
-> **Saving replaces the existing enrollment list for that
-> scheme.** Whatever is in the right pane *replaces* the old
-> list. Anyone *not* in the right pane is unenrolled. If you
-> only want to add a few participants, check that existing
-> enrollees are still in the right pane before saving.
-
-## Tips
-
-- **Apply filters narrowly first, then expand.** Filtering by
-  Country + Institute, for example, makes the left pane
-  manageable when you are enrolling a specific group. Filters
-  work together — every active filter must match.
-- **The right pane is your source of truth.** Anything not in
-  the right pane at save time is unenrolled — including people
-  you can't see because they were filtered out. (They stay in
-  the right pane regardless of filters, just so this is safe.)
-- For a one-off enrollment of a single participant, this page is
-  overkill — you can enroll from the participant's edit page
-  instead.
-- For onboarding many participants at once, **Bulk Import
-  Enrollment** (Excel upload) is faster than this two-list
-  picker.
+Click **Rename** at the top to change the list name. The Default
+list cannot be renamed. Save or discard your changes first.

@@ -1,0 +1,156 @@
+<?= $this->render('participants/_import-review-style.phtml'); ?>
+<style>
+    .bi-tile.rem { border-left-color: #ef6c00; }
+    table#reviewTable .bi-status.rem { background: #fff1e0; color: #b45309; }
+</style>
+<?php
+$response = $this->response;
+$options = $response['options'];
+$listLabel = $options['listName'] === 'default' ? $this->translate->_('Default') : $options['listName'];
+$removeMissing = $options['removeMissing'] === 'yes';
+
+$reasons = [
+    'not_found' => $this->htmlTranslate('No participant has this Participant ID'),
+    'duplicate' => $this->htmlTranslate('Listed more than once in the file. Only the first row counts.'),
+    'inactive' => $this->htmlTranslate('Participant is not active, so it is not enrolled'),
+    'leading_zeros' => $this->htmlTranslate('Matched after adding the leading zeros that Excel removed'),
+];
+$statusLabels = [
+    'add' => $this->htmlTranslate('Add'),
+    'same' => $this->htmlTranslate('Already on list'),
+    'rem' => $this->htmlTranslate('Remove'),
+    'skip' => $this->htmlTranslate('Skipped'),
+    'err' => $this->htmlTranslate('Error'),
+];
+// The shared review styles name their badge colours new / same / skip / err.
+$badgeClass = ['add' => 'new', 'same' => 'same', 'rem' => 'rem', 'skip' => 'skip', 'err' => 'err'];
+
+$counts = ['add' => 0, 'same' => 0, 'skip' => 0, 'err' => 0];
+foreach ($response['rows'] as $row) {
+    $counts[$row['status']]++;
+}
+$removing = count($response['remove']);
+$changes = $counts['add'] + $removing;
+?>
+
+<div class="bi-review-wrap">
+    <div class="bi-header">
+        <a class="bi-back" href="/admin/enrollments">&larr; <?= $this->htmlTranslate("Back to Scheme Enrollments"); ?></a>
+        <h2><?= $this->htmlTranslate("Bulk Import Enrollment"); ?></h2>
+        <div class="bi-sub"><?= $this->htmlTranslate("Nothing has been saved yet. Check what will change, then import."); ?></div>
+    </div>
+
+    <div class="bi-steps">
+        <div class="bi-step done"><span class="bi-num">1</span> <?= $this->htmlTranslate("Upload"); ?></div>
+        <span class="bi-sep">&rsaquo;</span>
+        <div class="bi-step active"><span class="bi-num">2</span> <?= $this->htmlTranslate("Review"); ?></div>
+        <span class="bi-sep">&rsaquo;</span>
+        <div class="bi-step"><span class="bi-num">3</span> <?= $this->htmlTranslate("Done"); ?></div>
+    </div>
+
+    <div class="bi-card">
+        <div class="bi-review-head">
+            <div>
+                <h3>
+                    <?php if ($changes > 0): ?>
+                        <?= sprintf($this->htmlTranslate("%d to add and %d to remove on %s · %s"), $counts['add'], $removing, $this->escape($this->schemeName), $this->escape($listLabel)); ?>
+                    <?php else: ?>
+                        <?= sprintf($this->htmlTranslate("This file changes nothing on %s · %s"), $this->escape($this->schemeName), $this->escape($listLabel)); ?>
+                    <?php endif; ?>
+                </h3>
+                <div class="bi-options-recap">
+                    <strong><?= $this->htmlTranslate("Participants already on the list but not in the file"); ?>:</strong>
+                    <?= $removeMissing ? $this->htmlTranslate("Remove them, so the list matches the file") : $this->htmlTranslate("Keep them on the list"); ?>
+                </div>
+            </div>
+        </div>
+
+        <div class="bi-tiles">
+            <button type="button" class="bi-tile all selected" data-filter="">
+                <span class="bi-tile-num"><?= count($response['rows']) + $removing; ?></span><span class="bi-tile-label"><?= $this->htmlTranslate("All rows"); ?></span>
+            </button>
+            <button type="button" class="bi-tile new" data-filter="add">
+                <span class="bi-tile-num"><?= $counts['add']; ?></span><span class="bi-tile-label"><?= $this->htmlTranslate("Will be added"); ?></span>
+            </button>
+            <button type="button" class="bi-tile same" data-filter="same">
+                <span class="bi-tile-num"><?= $counts['same']; ?></span><span class="bi-tile-label"><?= $this->htmlTranslate("Already on the list"); ?></span>
+            </button>
+            <?php if ($removeMissing): ?>
+                <button type="button" class="bi-tile rem" data-filter="rem">
+                    <span class="bi-tile-num"><?= $removing; ?></span><span class="bi-tile-label"><?= $this->htmlTranslate("Will be removed"); ?></span>
+                </button>
+            <?php endif; ?>
+            <button type="button" class="bi-tile skip" data-filter="skip">
+                <span class="bi-tile-num"><?= $counts['skip']; ?></span><span class="bi-tile-label"><?= $this->htmlTranslate("Skipped"); ?></span>
+            </button>
+            <button type="button" class="bi-tile err" data-filter="err">
+                <span class="bi-tile-num"><?= $counts['err']; ?></span><span class="bi-tile-label"><?= $this->htmlTranslate("Errors"); ?></span>
+            </button>
+        </div>
+
+        <?php if ($removing > 0): ?>
+            <div class="bi-warn">
+                <strong><?= sprintf($this->htmlTranslate("%d participant(s) are on this list but not in the file, and will be removed from it."), $removing); ?></strong>
+                <?= $this->htmlTranslate("They stay enrolled on any other list. Go back and choose to keep them if this is not what you want."); ?>
+            </div>
+        <?php endif; ?>
+        <?php if ($counts['err'] > 0): ?>
+            <div class="bi-warn">
+                <strong><?= sprintf($this->htmlTranslate("%d row(s) have a Participant ID that matches no participant."), $counts['err']); ?></strong>
+                <?= $this->htmlTranslate("Those rows are left out. Check the IDs against the Participants list."); ?>
+            </div>
+        <?php endif; ?>
+
+        <table class="table table-bordered table-striped table-hover dataTable" id="reviewTable">
+            <thead>
+                <tr>
+                    <td><?= $this->htmlTranslate("Row"); ?></td>
+                    <td><?= $this->htmlTranslate("Action"); ?></td>
+                    <td><?= $this->htmlTranslate("Participant ID"); ?></td>
+                    <td><?= $this->htmlTranslate("Name"); ?></td>
+                    <td><?= $this->htmlTranslate("What will happen"); ?></td>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($response['rows'] as $r): ?>
+                    <tr data-status="<?= $r['status']; ?>">
+                        <td><?= (int) $r['row']; ?></td>
+                        <td><span class="bi-status <?= $badgeClass[$r['status']]; ?>"><?= $statusLabels[$r['status']]; ?></span></td>
+                        <td><?= $this->escape($r['code'] !== '' ? $r['code'] : $r['id']); ?></td>
+                        <td><?= $this->escape($r['name']); ?></td>
+                        <?php if ($r['status'] === 'err' || $r['status'] === 'skip'): ?>
+                            <td class="details reason"><?= $reasons[$r['reason']] ?? ''; ?></td>
+                        <?php elseif ($r['status'] === 'add'): ?>
+                            <td class="details"><?= $this->htmlTranslate("Will be enrolled on this list"); ?><?= $r['reason'] !== '' ? '<br><span class="muted">' . $reasons[$r['reason']] . '</span>' : ''; ?></td>
+                        <?php else: ?>
+                            <td class="details"><span class="muted"><?= $this->htmlTranslate("No change"); ?></span><?= $r['reason'] !== '' ? '<br><span class="muted">' . $reasons[$r['reason']] . '</span>' : ''; ?></td>
+                        <?php endif; ?>
+                    </tr>
+                <?php endforeach; ?>
+                <?php foreach ($response['remove'] as $r): ?>
+                    <tr data-status="rem">
+                        <td></td>
+                        <td><span class="bi-status rem"><?= $statusLabels['rem']; ?></span></td>
+                        <td><?= $this->escape($r['code']); ?></td>
+                        <td><?= $this->escape($r['name']); ?></td>
+                        <td class="details"><?= $this->htmlTranslate("Not in the file, so it will be removed from this list"); ?></td>
+                    </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+
+        <form id="biConfirmForm" method="post" action="<?= $this->url(['module' => 'admin', 'controller' => 'enrollments', 'action' => 'bulk-enrollment'], 'default', true); ?>">
+            <input type="hidden" name="reviewToken" value="<?= $this->escape($response['review_token']); ?>">
+            <div class="bi-confirm">
+                <a class="btn btn-default" href="/admin/enrollments/bulk-enrollment?scheme=<?= urlencode((string) $options['scheme']); ?>&amp;list=<?= urlencode($options['listName']); ?>"><i class="icon-arrow-left"></i> <?= $this->htmlTranslate("Upload a different file"); ?></a>
+                <?php if ($changes > 0): ?>
+                    <button type="submit" class="btn btn-primary" id="biConfirmBtn">
+                        <i class="icon-upload"></i> <?= $this->htmlTranslate("Import"); ?>
+                    </button>
+                <?php endif; ?>
+            </div>
+        </form>
+    </div>
+</div>
+
+<?= $this->render('participants/_import-review-script.phtml'); ?>

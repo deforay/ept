@@ -1,0 +1,42 @@
+<?= $this->render('participants/_import-review-style.phtml'); ?>
+<style>
+    .bi-done-head { display: flex; align-items: center; gap: 18px; }
+    .bi-done-head .bi-check { flex: 0 0 auto; width: 48px; height: 48px; border-radius: 50%; background: #dff0d8; color: #3c763d; display: inline-flex; align-items: center; justify-content: center; font-size: 20px; }
+    .bi-done-head h3 { margin: 0 0 2px; font-weight: 600; font-size: 18px; color: #333; }
+    .bi-done-head .bi-done-sub { color: #8a93a0; font-size: 13px; }
+</style>
+<?php
+$response = $this->response;
+$options = $response['options'];
+$listLabel = $options['listName'] === 'default' ? $this->translate->_('Default') : $options['listName'];
+$editUrl = '/admin/enrollments/add/scheme/' . rawurlencode((string) $options['scheme']) . '?list=' . rawurlencode($options['listName']);
+?>
+<div class="bi-review-wrap">
+    <div class="bi-header">
+        <a class="bi-back" href="/admin/enrollments">&larr; <?= $this->htmlTranslate("Back to Scheme Enrollments"); ?></a>
+        <h2><?= $this->htmlTranslate("Bulk Import Enrollment"); ?></h2>
+    </div>
+
+    <div class="bi-steps">
+        <div class="bi-step done"><span class="bi-num">1</span> <?= $this->htmlTranslate("Upload"); ?></div>
+        <span class="bi-sep">&rsaquo;</span>
+        <div class="bi-step done"><span class="bi-num">2</span> <?= $this->htmlTranslate("Review"); ?></div>
+        <span class="bi-sep">&rsaquo;</span>
+        <div class="bi-step active"><span class="bi-num">3</span> <?= $this->htmlTranslate("Done"); ?></div>
+    </div>
+
+    <div class="bi-card">
+        <div class="bi-done-head">
+            <span class="bi-check"><i class="icon-ok"></i></span>
+            <div>
+                <h3><?= sprintf($this->htmlTranslate("%s · %s is saved"), $this->escape($this->schemeName), $this->escape($listLabel)); ?></h3>
+                <div class="bi-done-sub"><?= sprintf($this->htmlTranslate("%d participant(s) added, %d removed."), (int) $response['added'], (int) $response['removed']); ?></div>
+            </div>
+        </div>
+        <div class="bi-confirm">
+            <a class="btn btn-default" href="/admin/enrollments/bulk-enrollment"><i class="icon-upload"></i> <?= $this->htmlTranslate("Import another file"); ?></a>
+            <a class="btn btn-default" href="<?= $this->escape($editUrl); ?>"><i class="icon-pencil"></i> <?= $this->htmlTranslate("Open this list"); ?></a>
+            <a class="btn btn-primary" href="/admin/enrollments"><?= $this->htmlTranslate("Back to Scheme Enrollments"); ?></a>
+        </div>
+    </div>
+</div>

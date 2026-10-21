@@ -40,7 +40,8 @@ class Application_Model_DbTable_SchemeList extends Zend_Db_Table_Abstract
 
         foreach ($sql as $scheme) {
             $sQuery = $this->getAdapter()->select()->from(['p' => 'participant'], [])
-                ->join(['e' => 'enrollments'], 'p.participant_id = e.participant_id', new Zend_Db_Expr("COUNT('e.participant_id')"))
+                // DISTINCT: a participant on several lists of the same scheme is one participant
+                ->join(['e' => 'enrollments'], 'p.participant_id = e.participant_id', new Zend_Db_Expr('COUNT(DISTINCT e.participant_id)'))
                 ->where("p.status='active'")
                 ->where('e.scheme_id=?', $scheme['scheme_id']);
             $aResult = $this->getAdapter()->fetchCol($sQuery);

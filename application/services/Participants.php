@@ -63,22 +63,13 @@ class Application_Service_Participants
         $enrollments = new Application_Model_DbTable_Enrollments();
         return $enrollments->getAllEnrollments($params);
     }
-    public function getEnrollmentDetails($pid)
-    {
-        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $sql = $db->select()->from(['p' => 'participant'])
-            ->joinLeft(['sp' => 'shipment_participant_map'], 'p.participant_id=sp.participant_id')
-            ->joinLeft(['s' => 'shipment'], 's.shipment_id=sp.shipment_id')
-            ->joinLeft(['sl' => 'scheme_list'], 'sl.scheme_id=s.scheme_type', ['scheme_name'])
-            ->where('p.participant_id = ?', (int) $pid)
-            ->order('s.shipment_date DESC');
-        return $db->fetchAll($sql);
-    }
-
     public function getParticipantsListNames()
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $sql = $db->select()->from(['eln' => 'enrollments'], ['*'])->group(['list_name']);
+        // Archived lists are kept out of Ship It's preset picker.
+        $sql = $db->select()->from(['eln' => 'enrollments'], ['*'])
+            ->where('NOT EXISTS (SELECT 1 FROM enrollment_list_archive a WHERE a.scheme_id = eln.scheme_id AND a.list_name = eln.list_name)')
+            ->group(['list_name']);
         return $db->fetchAll($sql);
     }
 
@@ -2180,10 +2171,86 @@ class Application_Service_Participants
         return $result;
     }
 
-    public function uploadBulkEnrollment($params)
+    /** Options the enrollment import keeps between its Review and Import steps. */
+    private const ENROLLMENT_IMPORT_OPTIONS = ['scheme', 'listName', 'removeMissing'];
+
+    /**
+     * Review step of the enrollment import: checks the file against the template and
+     * works out what it will change. Nothing is saved. Returns false with a flash
+     * message on a bad upload, or ['validation_error' => true, 'mismatches' => …].
+     */
+    public function previewBulkEnrollment(array $params)
     {
+        $alertMsg = new Zend_Session_Namespace('alertSpace');
+        if (empty($params['scheme'])) {
+            $alertMsg->message = 'Please choose a scheme.';
+            return false;
+        }
+        if (empty($_FILES['fileName']['name']) || !is_uploaded_file($_FILES['fileName']['tmp_name'] ?? '')) {
+            $alertMsg->message = 'File not uploaded. Please try again.';
+            return false;
+        }
+        $fileName = preg_replace('/[^A-Za-z0-9.]/', '-', $_FILES['fileName']['name']);
+        $extension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
+        if (!in_array($extension, ['xls', 'xlsx', 'csv'], true)) {
+            $alertMsg->message = 'File format not supported';
+            return false;
+        }
+        $path = realpath(TEMP_UPLOAD_PATH) . DIRECTORY_SEPARATOR . Pt_Commons_MiscUtility::generateRandomString(6) . '-' . $fileName;
+        if (file_exists($path) || !move_uploaded_file($_FILES['fileName']['tmp_name'], $path)) {
+            $alertMsg->message = 'Data import failed';
+            return false;
+        }
+
+        // Only column A is read. Extra columns, such as the Name and Country in a list
+        // downloaded from Scheme Enrollments, are ignored rather than rejected.
+        $mismatches = array_values(array_filter(
+            Pt_Commons_ImportTemplate::validate(Pt_Commons_ImportTemplate::ENROLLMENT, $path),
+            static fn (array $m): bool => $m['column'] === 'A'
+        ));
+        if (!empty($mismatches)) {
+            unlink($path);
+            return ['validation_error' => true, 'mismatches' => $mismatches];
+        }
+
+        $options = array_intersect_key($params, array_flip(self::ENROLLMENT_IMPORT_OPTIONS));
+        $options['listName'] = Application_Model_DbTable_Enrollments::normalizeListName($options['listName'] ?? '');
+        $options['removeMissing'] = ($options['removeMissing'] ?? '') === 'yes' ? 'yes' : 'no';
         $enrollments = new Application_Model_DbTable_Enrollments();
-        return $enrollments->uploadBulkEnrollmentDetails($params);
+        $plan = $enrollments->planBulkEnrollment($path, (string) $options['scheme'], $options['listName'], $options['removeMissing'] === 'yes');
+        $plan['options'] = $options;
+        $plan['review_token'] = Pt_Commons_ImportReview::stash('enrollment', $path, $options);
+        return $plan;
+    }
+
+    /** Import step: re-plans the reviewed file with its reviewed options, then saves it. */
+    public function importReviewedBulkEnrollment(string $token)
+    {
+        $alertMsg = new Zend_Session_Namespace('alertSpace');
+        $pending = Pt_Commons_ImportReview::claim('enrollment', $token);
+        if ($pending === null) {
+            $alertMsg->message = 'This review has expired or was already imported. Please upload the file again.';
+            return false;
+        }
+        $options = $pending['params'];
+        $enrollments = new Application_Model_DbTable_Enrollments();
+        try {
+            $plan = $enrollments->planBulkEnrollment($pending['path'], (string) $options['scheme'], $options['listName'], $options['removeMissing'] === 'yes');
+            $result = $enrollments->applyBulkEnrollment($plan, (string) $options['scheme'], $options['listName']);
+        } catch (Throwable $e) {
+            Pt_Commons_LoggerUtility::logError('Bulk enrollment failed: ' . $e->getMessage(), [
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+            $alertMsg->message = 'Enrollment import failed. Please try again.';
+            return false;
+        } finally {
+            if (is_file($pending['path'])) {
+                unlink($pending['path']);
+            }
+        }
+        return $result + ['options' => $options];
     }
 
     /**

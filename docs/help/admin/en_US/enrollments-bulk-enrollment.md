@@ -1,63 +1,59 @@
 ---
-title: Bulk Enroll Participants
-summary: Upload an Excel file to enroll many participants in a scheme at once
-tags: [enrollment, bulk-import, excel, scheme]
+title: Bulk Import Enrollment
+summary: Upload an Excel file of Participant IDs to fill a scheme's enrollment list, and review the changes before they are saved
+tags: [enrollment, bulk-import, excel, scheme, lists]
 ---
 
-# Bulk Enroll Participants
+# Bulk Import Enrollment
 
-Enrolls many participants in a single scheme by uploading an
-Excel spreadsheet. Faster than the two-list selector when you
-are onboarding more than ~50 participants. A good fit for
-new-country rollouts or large group expansions.
+The import has three steps: **Upload**, **Review** and **Done**.
+Nothing is saved until you click **Import** on the Review step.
 
-## Fields
+## Step 1: Upload
 
-- **Scheme Types** *(required)* — the scheme to enroll the rows
-  in the file into (DTS, VL, TB, and so on). One scheme per
-  upload.
-- **Enrollment List Name** *(optional)* — a free-text label for
-  this batch. Useful for audit and reporting (for example,
-  *"Q3 2026 expansion — Western Province"*).
-- **Select file to upload** *(required, .xlsx)* — the Excel file
-  with the rows to enroll.
+1. Choose the **Scheme**.
+2. Choose an **Enrollment list**. Pick one from the suggestions or
+   type a new name. Leave it blank for the scheme's Default list.
+3. Choose what happens to **participants already on the list but
+   not in the file**:
+   - **Keep them on the list**: the file only adds participants.
+   - **Remove them, so the list matches the file**: the list ends
+     up holding exactly the participants in the file.
+4. Drop the file on the page, or click to browse.
+5. Click **Review import**.
 
-## File Format
+### The file
 
-Click **Click here to download the Excel format for importing
-the participants** to grab the template. Important rules:
+Click **Download Excel template** to get the file layout. Put one
+Participant ID (Lab ID) per row in column A. Row 1 is the header.
+Other columns are ignored.
 
-- **Columns marked in red are required.**
-- The **Unique Identifier** field must have a unique value per
-  participant.
-- The **Unique Identifier must match an existing Participant
-  Unique Identifier**. Bulk *enrollment* does not create new
-  participants — it only enrolls people who are already in the
-  system. Add the participants first (via *Manage → Participants
-  → Bulk Import* or one by one).
+To change a list you already have, click **Download** for it on
+Scheme Enrollments, edit the file, and upload it here.
 
-## Saving
+If the header in column A does not match the template, the page
+shows what it expected and what it found.
 
-- **Import Excel** — uploads and processes the file. After
-  processing, the page reloads to the same form so you can
-  upload another file.
-- **Cancel** — returns to the Enrollments list without
-  uploading.
+## Step 2: Review
 
-## Tips
+The tiles count the rows. Click a tile to show only those rows.
 
-- **Check the participants exist first.** The most common cause
-  of a failed row is a Unique Identifier that doesn't match any
-  participant. Look in *Manage → Participants* with a Unique-ID
-  search, or do a small participant bulk-import first, then run
-  this enrollment import.
-- After import, go back to **Enrollments** and check the
-  per-scheme **count line** at the top. It should jump by the
-  number of new rows. If it didn't, some rows likely failed to
-  match.
-- **One scheme per file.** If you need to enroll the same
-  participants in several schemes, run the import once per
-  scheme. The file format has no multi-scheme column.
-- The **Enrollment List Name** is only a label — it does not
-  filter anything in the UI today. But it shows up in audit
-  logs and is useful for tracing where a row came from later.
+| Action | Meaning |
+| --- | --- |
+| Add | Will be added to the list |
+| Already on list | No change |
+| Remove | On the list but not in the file. Shown only when you chose to remove them |
+| Skipped | The participant is not active, or the row repeats an earlier row |
+| Error | No participant has this Participant ID |
+
+Excel often drops leading zeros, so *06157* becomes *6157*. If
+exactly one participant matches once the zeros are added back, the
+row is used and the review says so.
+
+Click **Import** to save, or **Upload a different file** to start
+again.
+
+## Step 3: Done
+
+The page shows how many participants were added and removed. Click
+**Open this list** to see the list.

@@ -82,16 +82,22 @@ class Application_Model_DbTable_ShipmentParticipantMap extends Zend_Db_Table_Abs
                         if (isset($exist[0]['list_name']) && $exist[0]['list_name']) {
                             $db->delete('enrollments', ['list_name IN (?)' => $ids, 'participant_id IN (?)' => $params['selectedForEnrollment']]);
                         }
-                        $db->insert('enrollments', [
-                            'list_name' => $params['listName'],
+                        $commonServices->insertIgnore('enrollments', [
+                            'enrollment_id' => Pt_Commons_General::generateULID(),
+                            'list_name' => Application_Model_DbTable_Enrollments::normalizeListName($params['listName']),
                             'scheme_id' => $params['schemeId'],
                             'participant_id' => $participant,
+                            'status' => 'enrolled',
+                            'enrolled_on' => new Zend_Db_Expr('now()'),
                         ]);
                     } else {
-                        $db->insert('enrollments', [
-                            'list_name' => $params['listName'],
+                        $commonServices->insertIgnore('enrollments', [
+                            'enrollment_id' => Pt_Commons_General::generateULID(),
+                            'list_name' => Application_Model_DbTable_Enrollments::normalizeListName($params['listName']),
                             'scheme_id' => $params['schemeId'],
                             'participant_id' => $participant,
+                            'status' => 'enrolled',
+                            'enrolled_on' => new Zend_Db_Expr('now()'),
                         ]);
                     }
                 }

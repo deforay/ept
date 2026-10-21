@@ -1,81 +1,79 @@
 ---
-title: Enrollments
-summary: View and manage which participants are enrolled in each scheme; bulk-import enrollments from a spreadsheet
-tags: [enrollment, scheme, participants, bulk-import]
+title: Scheme Enrollments
+summary: See every enrollment list per scheme, create and edit lists, and archive, rename, merge or delete them
+tags: [enrollment, scheme, participants, lists, bulk-import]
 ---
 
-# Enrollments
+# Scheme Enrollments
 
-Lists every **participant ↔ scheme enrollment** in the system. A
-participant must be enrolled in a scheme before they appear on
-shipments for that scheme — so this is where you decide which
-schemes (DTS, VL, TB, etc.) each participant takes part in.
+An **enrollment list** is a named group of participants for one
+scheme. A participant is enrolled in a scheme when they are on at
+least one of its lists.
 
-## Page header
+Each scheme has a **Default** list, marked *Main*. The participant
+form adds to it when you tick a scheme for a participant. Other
+lists are rosters you keep for a round, a region or a shipment,
+such as *Round 3 Testing Sites*. Ship It offers your lists as
+presets when you choose who gets a shipment.
 
-- **Bulk Import Enrollment** — opens the bulk-import form for
-  loading enrollments from an Excel spreadsheet.
+## Buttons at the top
 
-## Top stats
+- **New list**: choose a scheme and type a list name, then pick
+  the participants. Leave the name blank to open the scheme's
+  Default list.
+- **Bulk Import Enrollment**: fill a list from an Excel file. You
+  see what will change before anything is saved.
 
-A one-line table at the top shows the **count of active
-participants enrolled in each scheme** (for example, *DTS = 142,
-VL = 108, TB = 64*). A quick health check.
+The **scheme** box next to the tabs shows one scheme on both tabs.
 
-## Scheme filter
+## Lists tab
 
-- **Select Scheme Type** *(dropdown)* — pick which scheme's
-  enrollment list you want to see. Picking a scheme:
-  - Filters the table to participants enrolled in that scheme.
-  - Shows the **Enroll Participants** button (see below).
+Lists are grouped under their scheme. Each scheme's header shows
+how many active participants are enrolled in it, and a **New list**
+link for that scheme.
 
-## Enroll Action
+| Column | Meaning |
+| --- | --- |
+| List | The list name |
+| Participants | Active participants on the list |
+| Last changed | When a participant was last added |
 
-When a scheme is picked, two buttons appear above the table:
+Each list has these buttons:
 
-- **Enroll Participants for {Scheme}** — opens the dual-list
-  selector at *`/admin/enrollments/add/scheme/{schemeId}`*. Use
-  it to enroll / unenroll many participants at once for the
-  chosen scheme.
-- **Reset** — reloads the page without a scheme filter.
+- **Edit**: opens the list to add or remove participants.
+- **Import**: opens Bulk Import Enrollment for this list.
+- **Download**: an Excel file of the list. It uses the import
+  layout, so you can edit it and upload it again.
+- **More**: Rename, Merge into another list, Archive and Delete.
+  The Default list has no More menu.
 
-## Columns
+### Archive, rename, merge and delete
 
-- **Unique Participant ID** — the participant's unique
-  identifier.
-- **Lab Name / Participant Name**
-- **Country**
-- **Scheme** — the scheme this row's enrollment is for. With no
-  scheme filter selected, a participant enrolled in three
-  schemes appears as three rows.
-- **Enrolled On** — date of enrollment. Default sort is most
-  recent first.
-- **Action** — **Know More** *(blue, eye icon)*. Opens a
-  per-participant **Shipment History** page listing every
-  shipment the participant has ever been on, across **all**
-  their schemes: *Shipment Code*, *Shipment Date*, *Shipment
-  Type* (the scheme), and *Status*. Sort by *Shipment Type* if
-  you want to limit the view to one scheme. This is the only
-  place to see this history — *Analyze → Evaluate* is
-  per-shipment and disappears once a shipment is finalized. So
-  for **long-running, cross-shipment** lookups ("how has this
-  lab done over the last two years?"), Know More is the page
-  to use. Rows with no scheme show `--` here instead of the
-  button.
+- **Archive**: moves the list to the *Archived lists* group at the
+  bottom and stops Ship It offering it. Its participants stay
+  enrolled. Use **Reactivate** to bring it back.
+- **Rename**: if the scheme already has a list with the new name,
+  use Merge instead.
+- **Merge into another list**: adds everyone on this list to a
+  list you choose in the same scheme, then removes this list.
+- **Delete**: removes the list. Type the list name to confirm.
+  Its participants stay enrolled through any other list they are
+  on.
 
-## Tips
+### Older lists without a scheme
 
-- **Use the scheme filter before enrolling.** The *Enroll
-  Participants* button is only visible after a scheme is chosen
-  — it always operates on the selected scheme. If you don't see
-  it, pick a scheme first.
-- The **Enrolled On** date is the date the enrollment was added,
-  not the date the participant joined the program. Renaming /
-  re-enrolling participants creates a new row.
-- **Bulk Import Enrollment** is much faster than the dual-list
-  selector for >50 participants — it works against existing
-  participant Unique IDs, so make sure participants are added
-  first (via *Manage → Participants*).
-- The **per-scheme stats line** at the top is a fast sanity
-  check after a bulk import — make sure the count went up by
-  what you expected.
+Ship It once saved lists without recording their scheme. They are
+in a collapsed group at the bottom. Click **Assign scheme** to give
+one its scheme. It then becomes a normal list you can edit. If the
+scheme already has a list with that name, the two are merged.
+
+## By participant tab
+
+One row per active participant:
+
+- **Schemes**: the schemes they are enrolled in.
+- **First enrolled**: the date of their earliest enrollment.
+- **Lists**: click **View** to see each scheme and list they are
+  on. Click a list name to open it.
+
+Type in the boxes under the headings to search one column.
