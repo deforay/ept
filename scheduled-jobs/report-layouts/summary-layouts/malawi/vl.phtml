@@ -335,10 +335,11 @@ if ($resultArray['shipment'] != "") {
             }
         }
 
-        $note = '<h5>Number of Participants for each VL platform with less than 18 participants (Total ' . $noOfPaResponseTxt . '):</h5>';
-        $note .= '<span style="text-align:justify;font-size:9;font-weight:normal;">' . $assayNameTxt . '</span>';
-
-        $pdf->writeHTML($note, true, false, true, false, '');
+        if (!empty($noOfPaResponseTxt)) {
+            $note = '<h5>Number of Participants for each VL platform with less than 18 participants (Total ' . $noOfPaResponseTxt . '):</h5>';
+            $note .= '<span style="text-align:justify;font-size:9;font-weight:normal;">' . $assayNameTxt . '</span>';
+            $pdf->writeHTML($note, true, false, true, false, '');
+        }
 
         //$pdf->AddPage();
 
