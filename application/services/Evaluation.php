@@ -2864,6 +2864,9 @@ class Application_Service_Evaluation
                 'failed' => new Zend_Db_Expr('COUNT(DISTINCT CASE WHEN ' . $failedCondition . ' THEN rrd.shipment_map_id ELSE NULL END)'),
             ])
                 ->join(['rrd' => $unionQuery], 'rrd.sample_id=ref.sample_id', [])
+                // sample_id restarts at 1 in every shipment, so without this the label can come
+                // from another shipment's reference row
+                ->where('ref.shipment_id = ?', (int) $shipmentId)
                 ->group(['rrd.sample_id'])
                 ->order('rrd.sample_id ASC');
 
