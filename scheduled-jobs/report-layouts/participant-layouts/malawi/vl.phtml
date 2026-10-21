@@ -1,9 +1,5 @@
 <?php
 
-use mitoteam\jpgraph\MtJpGraph;
-
-MtJpGraph::load(['bar'], true);
-
 $schemeType = $resultArray['shipment'][0]['scheme_type'];
 
 $shipmentCode = '';
@@ -544,190 +540,98 @@ if (!empty($resultArray['shipment'])) {
         }
         //----------------Summary Statistics for this survey  Ends----------------
 
-        $performance1 = $performance2 = $performance3 = false;
+        // Performance charts, rendered with Pt_Reports_ChartService (Chart.js, falling back to
+        // JpGraph when Node is unavailable). Same data mapping as participant-layouts/default:
+        // performance1 = this lab's % score, performance2 = pass/fail for the last 5 surveys,
+        // performance3 = pass/fail per sample in this survey.
+        $chartDir = $reportsPath . DIRECTORY_SEPARATOR . $result['shipment_code'];
+        $chartW = $pdf->getPageWidth() - PDF_MARGIN_LEFT - PDF_MARGIN_RIGHT;
         // Unique per participant + worker so parallel report subprocesses don't collide on
-        // the same temp PNG (JpGraph 25111 / TCPDF "Unable to get the size of the image").
+        // the same temp PNG.
         $chartUid = preg_replace('/[^A-Za-z0-9_-]/', '', (string)($result['unique_identifier'] ?? '')) . '_' . getmypid();
-        if (isset($result['performance1']) && !empty($result['performance1'])) {
-            $performance1 = true;
-            $dataX = [];
-            $dataY = [];
-            foreach ($result['performance1'] as $key => $val) {
-                $dataX[] = $val['scored'];
-                $dataY[] = $val['distribution_code'];
+        // Place each chart at an explicit width and move below it by its real height. TCPDF's
+        // auto-width sizes by pixel count, which overflows A4 for Chart.js PNGs.
+        $renderPerfChart = function (array $config) use ($chartDir, $chartW, $pdf) {
+            try {
+                $img = Pt_Reports_ChartService::render($config, $chartDir);
+                if (!empty($img) && file_exists($img)) {
+                    $size = getimagesize($img);
+                    if ($size && $size[0] > 0) {
+                        $dispW = $chartW * 0.98;
+                        $dispX = PDF_MARGIN_LEFT + ($chartW - $dispW) / 2;
+                        $displayH = ($size[1] / $size[0]) * $dispW;
+                        $pdf->Image($img, $dispX, $pdf->getY(), $dispW, 0, '', '', '', false, 300);
+                        $pdf->SetY($pdf->getY() + $displayH + 4);
+                    }
+                    unlink($img);
+                }
+            } catch (\Throwable $e) {
+                // A chart must never blank the report
             }
+        };
 
-            // Create the graph. These two calls are always required
-            $graph = new Graph(700, 200, 'auto');
-            $graph->SetScale("textlin");
-            $graph->SetMargin(80, 30, 10, 50);
-            // Enable anti-aliasing
-            $graph->img->SetAntiAliasing();
-
-            $theme_class = new UniversalTheme;
-            $graph->SetTheme($theme_class);
-
-            // $graph->yaxis->SetTickPositions(array(0,30,60,90,120,150));
-            $graph->SetBox(false);
-
-            $graph->ygrid->SetFill(false);
-            $graph->xaxis->SetTickLabels($dataY);
-            $graph->yaxis->HideLine(false);
-            $graph->yaxis->HideTicks(false, false);
-
-            // Create the bar plots
-            $b1plot = new BarPlot($dataX);
-            // Create the grouped bar plot
-            $gbplot = new GroupBarPlot(array($b1plot));
-
-            /* $gbplot->value->SetColor('black');
-            $gbplot->value->show();
-            //$gbplot->value->SetFont(FF_ARIAL, FS_BOLD);
-            $gbplot->value->SetAngle(45);
-            $gbplot->value->SetAlign('left', 'bottom');
-            $gbplot->value->SetFormat('%01.0f'); */
-            // ...and add it to the graPH
-            // $b1plot->SetLegend("Number of participants");
-            $graph->Add($gbplot);
-
-            $b1plot->SetColor("white");
-            $b1plot->SetFillColor('#4F81BD');
-
-            // Setup the titles
-            $graph->title->Set("Your Performance");
-            $graph->xaxis->title->Set('% Score');
-            $graph->yaxis->title->Set('Number of Participants', 'center');
-
-            $graph->yaxis->SetTitleMargin(30);
-            $graph->xaxis->SetTitleMargin(32);
-            // Turn the tick mark out from the plot area
-            $graph->xaxis->SetTickSide(SIDE_DOWN);
-            $graph->yaxis->SetTickSide(SIDE_LEFT);
-
-            $image_file = $reportsPath . DIRECTORY_SEPARATOR . $result['shipment_code'] . DIRECTORY_SEPARATOR . 'bar_chart_' . $chartUid . '.png';
-            $graph->img->SetImgFormat('png'); // Ensure PNG format for better quality
-            $graph->img->SetQuality(100); // Set the highest quality
-            $graph->Stroke($image_file);
-            $pdf->Image($image_file, 5, $pdf->getY(), '', '', '', '', '', false, 600);
-            if (file_exists($image_file)) {
-                unlink($image_file);
+        if (!empty($result['performance1'])) {
+            $labels = $data = [];
+            foreach ($result['performance1'] as $row) {
+                $labels[] = $row['distribution_code'];
+                $data[] = ($row['scored'] > 0) ? round($row['scored']) : 0;
             }
+            $renderPerfChart([
+                'type' => 'bar',
+                'width' => 900, 'height' => 300, 'maxBarThickness' => 120,
+                'filename' => 'perf_last5_' . $chartUid,
+                'title' => 'Your Performance for the last 5 surveys',
+                'xAxis' => ['labels' => $labels, 'title' => 'PT Surveys'],
+                'yAxis' => ['title' => 'Percentage of Performance'],
+                'datasets' => [['data' => $data, 'colors' => ['#4F81BD']]],
+            ]);
         }
-        if (isset($result['performance2']) && !empty($result['performance2'])) {
-            $performance2 = true;
-            $data1y = $data2y = $label = [];
+
+        if (!empty($result['performance2'])) {
+            $labels = $passed = $failed = [];
             foreach ($result['performance2'] as $row) {
-                $data1y[] = $row['passed'];
-                $data2y[] = $row['failed'];
-                $label[] = $row['sample_label'];
+                $labels[] = $row['distribution_code'];
+                $passed[] = (int) ($row['passed'] ?? 0);
+                $failed[] = (int) ($row['failed'] ?? 0);
             }
-            // Create the graph. These two calls are always required
-            $graph = new Graph(700, 200, 'auto');
-            $graph->SetScale("textlin");
-
-            $theme_class = new UniversalTheme;
-            $graph->SetTheme($theme_class);
-
-            $graph->ygrid->SetFill(false);
-            $graph->xaxis->SetTickLabels($label);
-            $graph->yaxis->HideLine(false);
-            $graph->yaxis->HideTicks(false, false);
-
-            // Create the bar plots
-            $b1plot = new BarPlot($data1y);
-            $b2plot = new BarPlot($data2y);
-
-            // Create the grouped bar plot
-            $gbplot = new GroupBarPlot(array($b1plot, $b2plot));
-            // ...and add it to the graPH
-            $graph->Add($gbplot);
-
-
-            $b1plot->SetColor("white");
-            $b1plot->SetFillColor("darkgreen");
-
-            $b2plot->SetColor("white");
-            $b2plot->SetFillColor("red");
-
-            $graph->title->Set("Performance of Current Survey Panels");
-
-            // Display the graph
-            $performance_of_current_survey_anels = $reportsPath . DIRECTORY_SEPARATOR . $result['shipment_code'] . DIRECTORY_SEPARATOR . 'performance_of_current_survey_anels_' . $chartUid . '.png';
-            $graph->img->SetImgFormat('png'); // Ensure PNG format for better quality
-            $graph->img->SetQuality(100); // Set the highest quality
-            $graph->Stroke($performance_of_current_survey_anels);
-            $addPoint = 0;
-            if ($performance1) {
-                $addPoint = 65;
-            }
-            $pdf->Image($performance_of_current_survey_anels, 5, ($pdf->getY() + $addPoint), '', '', '', '', '', false, 600);
-            if (file_exists($performance_of_current_survey_anels)) {
-                unlink($performance_of_current_survey_anels);
-            }
+            $renderPerfChart([
+                'type' => 'stackedBar',
+                'width' => 900, 'height' => 300, 'maxBarThickness' => 120,
+                'filename' => 'perf_passfail5_' . $chartUid,
+                'title' => 'Participants performance for the last 5 surveys',
+                'xAxis' => ['labels' => $labels, 'title' => 'PT Surveys'],
+                'yAxis' => ['title' => 'Number of Participants'],
+                'datasets' => [
+                    ['data' => $passed, 'label' => 'Passed', 'colors' => ['#4F81BD']],
+                    ['data' => $failed, 'label' => 'Failed', 'colors' => ['#C0504D']],
+                ],
+                'legend' => ['position' => 'bottom'],
+            ]);
         }
-        if (isset($result['performance3']) && !empty($result['performance3'])) {
-            $performance3 = true;
-            $data1y = $data2y = $label = [];
+
+        if (!empty($result['performance3'])) {
+            $labels = $passed = $failed = [];
             foreach ($result['performance3'] as $row) {
-                $data1y[] = $row['passed'];
-                $data2y[] = $row['failed'];
-                $label[] = $row['distribution_code'];
+                $labels[] = $row['sample_label'];
+                $passed[] = (int) ($row['passed'] ?? 0);
+                $failed[] = (int) ($row['failed'] ?? 0);
             }
-            // Create the graph. These two calls are always required
-            $graph = new Graph(700, 200, 'auto');
-            $graph->SetScale("textlin");
-
-            $theme_class = new UniversalTheme;
-            $graph->SetTheme($theme_class);
-
-            $graph->ygrid->SetFill(false);
-            $graph->xaxis->SetTickLabels($label);
-            $graph->yaxis->HideLine(false);
-            $graph->yaxis->HideTicks(false, false);
-
-            // Create the bar plots
-            $b1plot = new BarPlot($data1y);
-            $b2plot = new BarPlot($data2y);
-
-            // Create the grouped bar plot
-            $gbplot = new GroupBarPlot(array($b1plot, $b2plot));
-            // ...and add it to the graPH
-            $graph->Add($gbplot);
-
-
-            $b1plot->SetColor("white");
-            $b1plot->SetFillColor("darkgreen");
-
-            $b2plot->SetColor("white");
-            $b2plot->SetFillColor("red");
-
-            $graph->title->Set("Performance of Surveys");
-
-            // Display the graph
-            $performance_of_surveys = $reportsPath . DIRECTORY_SEPARATOR . $result['shipment_code'] . DIRECTORY_SEPARATOR . 'performance_of_surveys_' . $chartUid . '.png';
-            $graph->img->SetImgFormat('png'); // Ensure PNG format for better quality
-            $graph->img->SetQuality(100); // Set the highest quality
-            $graph->Stroke($performance_of_surveys);
-            $addPoint = 0;
-            if ($performance1) {
-                $addPoint = 65;
-            }
-            if ($performance2 && !$performance1) {
-                $addPoint = 65;
-            } else if ($performance2) {
-                $addPoint = 130;
-            }
-            $pdf->Image($performance_of_surveys, 5, ($pdf->getY() + $addPoint), '', '', '', '', '', false, 600);
-            if (file_exists($performance_of_surveys)) {
-                unlink($performance_of_surveys);
-            }
-        }
-        $br = '';
-        if ($performance1 || $performance2 || $performance3) {
-            $br = '<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>';
+            $renderPerfChart([
+                'type' => 'stackedBar',
+                'width' => 900, 'height' => 300, 'maxBarThickness' => 120,
+                'filename' => 'perf_panels_' . $chartUid,
+                'title' => 'Participants performance for the current survey panels',
+                'xAxis' => ['labels' => $labels, 'title' => 'Samples'],
+                'yAxis' => ['title' => 'Number of Participants'],
+                'datasets' => [
+                    ['data' => $passed, 'label' => 'Passed', 'colors' => ['#4F81BD']],
+                    ['data' => $failed, 'label' => 'Failed', 'colors' => ['#C0504D']],
+                ],
+                'legend' => ['position' => 'bottom'],
+            ]);
         }
         if ($methodOfEvaluation == 'standard') {
-            $eodReportText = $br . "End of report";
+            $eodReportText = "End of report";
             if ($evalRow['report_type'] == 'finalized') {
                 $eodReportText = "End of final report";
             }
@@ -741,7 +645,7 @@ if (!empty($resultArray['shipment'])) {
 
             $pdf->writeHTML($html, true, false, true, false, '');
         } else if ($methodOfEvaluation == 'iso17043') {
-            $html = $br . '<hr>';
+            $html = '<hr>';
             if (isset($resultArray['shipment'][0]['pt_co_ordinator_name']) && $resultArray['shipment'][0]['pt_co_ordinator_name'] != "") {
                 $html .= '<span style="text-align:center;"><small>Report approved by ' . $resultArray['shipment'][0]['pt_co_ordinator_name'] . '</small></span>';
             }
