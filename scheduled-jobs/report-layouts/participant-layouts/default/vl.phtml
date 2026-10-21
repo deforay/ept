@@ -41,21 +41,21 @@ if (!empty($resultArray['shipment'])) {
 
         // Add form version if not empty
         if (!empty($formVersion)) {
-            $footerCells[] = "<td align='left' style='text-align:left; font-size:14px;'>$formVersion</td>";
+            $footerCells[] = "<td align='left' style='text-align:left;'>$formVersion</td>";
         } else {
             $footerCells[] = "<td></td>";
         }
 
         // Add issuing authority if not empty
         if (!empty($issuingAuthority)) {
-            $footerCells[] = "<td align='center' style='text-align:center; font-size:14px;'>Issuing Authority: $issuingAuthority</td>";
+            $footerCells[] = "<td align='center' style='text-align:center;'>Issuing Authority: $issuingAuthority</td>";
         } else {
             $footerCells[] = "<td></td>";
         }
 
         // Add effective date if not empty
         if (!empty($effectiveDate)) {
-            $footerCells[] = "<td align='right' style='text-align:right; font-size:14px;'>Effective Date: $effectiveDate</td>";
+            $footerCells[] = "<td align='right' style='text-align:right;'>Effective Date: $effectiveDate</td>";
         } else {
             $footerCells[] = "<td></td>";
         }
