@@ -11,15 +11,14 @@ installation — anything that does not belong to a single scheme
 (DTS, VL, TB) or a single page. Changes here affect the whole
 app.
 
-The page is long, so there are two helpers at the top:
+The page is long, so the side menu helps you find a setting:
 
-- **Search settings by keyword** — type to filter the visible
-  fields by label.
-- **Jump to Section** — pick *General Settings*, *Participant
-  Settings*, or *Email Settings* and the page scrolls there.
+- **Search settings**: type a word to show only the fields whose
+  label matches.
+- **Section names**: click one to jump to it.
+- **Expand All** and **Collapse All** open or close every section.
 
-The rest of the page is grouped into three sections you can
-collapse.
+The page has four sections.
 
 ## General Settings
 
@@ -92,6 +91,14 @@ How participants log in and what they can do.
     trigger the temporary lock (for example, 3).
   - **Attempts Before Permanent Ban** — failed logins that
     permanently disable the account (for example, 10).
+
+## Shipment Custom Fields
+
+Extra fields added to every response form.
+
+- **Add Custom Field(s)?**: *YES* adds the fields below.
+- **Custom Field 1** and **Custom Field 2**: the field labels. If
+  you choose *YES*, fill in at least Custom Field 1.
 
 ## Email Settings
 

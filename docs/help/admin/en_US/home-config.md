@@ -7,8 +7,12 @@ tags: [config, home, landing, hero, banner, faq]
 # Home Page Settings
 
 This page lets you customize the **public home page** that
-participants and visitors see at `/` before they log in. Each
-section can be collapsed — open the ones you want to edit.
+participants and visitors see at `/` before they log in.
+
+The side menu lists the five sections. Click a section name to
+jump to it. Type in **Search settings** to show only the fields
+whose label matches. **Expand All** and **Collapse All** open or
+close every section.
 
 ## Hero Content
 

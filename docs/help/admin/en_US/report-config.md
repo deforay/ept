@@ -1,82 +1,81 @@
 ---
 title: PDF Report Settings
-summary: Header text, logo, layout, and PDF template used on generated reports
-tags: [config, reports, pdf, logo, template]
+summary: Letterhead, logo, PDF template, layout and approver used on generated reports
+tags: [config, reports, pdf, logo, template, letterhead, approver]
 ---
 
 # PDF Report Settings
 
 This page controls the **look** of every PDF report the system
-produces — per-participant reports, summary reports, certificates,
-and so on. The form has three sections.
+produces: participant reports, summary reports and certificates.
 
-## Report Header
+The side menu lists the three sections. Click a section name to
+jump to it. Type in **Search settings** to show only the fields
+whose label matches. **Expand All** and **Collapse All** open or
+close every section.
 
-- **Report Header Text** *(required)* — free text that appears
-  at the top of every PDF page. Keep it short (1–2 lines is
-  best). Long header text pushes the rest of the page down.
-- **Institute Address Position** — choose where the institute
-  address (set in *Global Settings*) is shown:
-  - **Header** — print it under the report title on every page.
-  - **Footer** — print it in the page footer instead.
-  - **Don't Show** — omit it entirely.
+## Letterhead
 
-## Report Logo
+ePT builds the letterhead from these settings. If a PDF template
+is uploaded in the next section, the template provides the
+letterhead instead and these settings are not used.
 
-- **Select image / Change / Remove** — upload a logo to print on
-  every report. The widget shows the current logo if one is
-  already saved.
-- Recommended format: **PNG or JPG, around 200×150 px**. Bigger
-  images will be scaled down; transparent PNGs work well over the
-  PDF background.
-- Click **Remove** to clear the saved logo. The change only
-  saves when you click **Update**.
+- **Report Header Text** *(required)*: text at the top of every
+  report. Keep it to one or two lines. Long text pushes the rest
+  of the page down.
+- **Institute Address Position**: where the institute address
+  from *Global Config* appears.
+  - **Header**: under the report title.
+  - **Footer**: in the page footer.
+  - **Don't Show**: nowhere.
+- **Report Logo**: the logo printed on every report. The box shows
+  the current logo. Use **Select image** or **Change** to upload
+  one. Use **Remove** to clear it. PNG or JPG, about 200×150
+  pixels, works best.
 
-## Layout & Template Settings
+## PDF Template
 
-This section has two parts: choosing a layout and (optionally)
-uploading a background PDF template.
+This section is optional. A PDF uploaded here becomes the page
+background of every report, such as a pre-printed letterhead with
+a watermark and footer lines.
 
-- **Report Layout** — predefined layout templates shipped with
-  the application. Pick the one that matches your reporting
-  style. (This dropdown only appears when at least one layout is
-  available on disk.)
-- **Template Top Margin** — top padding (in pixels) before report
-  content starts. Increase if your uploaded template has a tall
-  header / logo strip; decrease for a tighter top margin.
-  Typical value: `40`.
-- **Upload Report Template** — optional PDF that becomes the
-  **background** for every generated report (think:
-  pre-printed letterhead). Useful when your organisation has a
-  branded template with letterhead, watermark, footer lines, etc.
-  - When a template is already uploaded, you will see a small
-    preview with three actions:
-    - **View Full Size** — open the PDF in a pop-up.
-    - **Replace** — swap in a new file.
-    - **Delete** — remove the template. You will be asked to
-      confirm — this cannot be undone.
-  - When no template is uploaded, you get a drop area to pick a
-    PDF.
+- **Report Template**: the PDF file. When a template is uploaded,
+  you see a preview with three buttons:
+  - **View Full Size**: opens the PDF.
+  - **Replace**: uploads a new file in its place.
+  - **Delete**: removes the template. You are asked to confirm.
+- **Template Top Margin**: how far down the page report content
+  starts, in pixels, so it clears the template's letterhead.
+  A typical value is `40`.
 
-Only `.pdf` files are accepted for the template.
+Only `.pdf` files are accepted.
+
+## Layout & Output
+
+- **Report Layout**: the layout the reports use. This field only
+  appears when the application has at least one layout.
+- **Reports for Excluded Submissions**: *YES* also makes reports
+  for participants whose submission was excluded from evaluation.
+  Non-responders never get a report.
+- **Default Approver Name**: offered as the approver when a
+  shipment is finalized. Reports finalized before an approver was
+  recorded print this name. Whoever finalizes a shipment can
+  change it for that shipment.
 
 ## Saving
 
-The **Update** button at the bottom (or the floating
-*Update / Cancel* card in the bottom-right) saves the whole form,
-including any uploaded logo or template. Required fields are
-marked with `*`.
+Click **Update** to save the whole form, including an uploaded
+logo or template. The **Update** and **Back** buttons stay in view
+as you scroll. Required fields are marked with `*`.
 
 ## Tips
 
-- Test changes by **regenerating** a single shipment's reports
-  from *Analyze → Generate Reports* — the new layout, margin or
-  template only takes effect on the next build.
-- If you replace the logo or template, **regenerate** any
-  important draft reports so the new look shows up. Finalized
-  reports keep the look from the time they were finalized.
-- Top margin too small? The content overlaps the template's
-  header. Top margin too large? You waste space on the first
-  page. Try regenerate-and-preview until it looks right.
-- Keep the **Report Header Text** short. Long headers wrap and
-  push report content down on every page.
+- Changes apply to the next reports ePT builds. Test them by
+  regenerating one shipment's reports from *Analyze → Generate
+  Reports*.
+- If you replace the logo or template, regenerate any important
+  draft reports. Finalized reports keep the look they had when
+  they were finalized.
+- If report content overlaps the template's letterhead, increase
+  **Template Top Margin**. If the first page has a large empty
+  gap, decrease it.

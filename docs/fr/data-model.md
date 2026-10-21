@@ -32,6 +32,8 @@ Elles ne garantissent pas l'existence d'une contrainte de clé étrangère pour 
 | `participant_manager_map` | Attribution d'un participant à un compte | Joint `dm_id` et `participant_id` |
 | `distributions` | Regroupement d'une enquête PT | Parent des expéditions par `distribution_id` |
 | `scheme_list` | Programmes de tests intégrés et configurés | Classe les expéditions |
+| `enrollments` | Un participant sur une liste d'inscription nommée d'un programme | Clé (`list_name`, `scheme_id`, `participant_id`) depuis 7.6.36 |
+| `enrollment_list_archive` | Listes d'inscription archivées, ajoutée en 7.6.36 | Une ligne par couple (`scheme_id`, `list_name`) archivé |
 | `shipment` | Cycle PT d'un programme | Contient les échantillons de référence et les inscriptions |
 | `shipment_participant_map` | Inscription, métadonnées de réponse et évaluation d'un participant | Relie le participant, l'expédition et les réponses par échantillon |
 | `reference_result_*` | Résultats attendus des échantillons | Appartient à une expédition |

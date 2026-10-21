@@ -32,6 +32,8 @@ joins, not a guarantee that every relationship has a database foreign-key constr
 | `participant_manager_map` | Account-to-participant assignment | Joins `dm_id` and `participant_id` |
 | `distributions` | PT survey grouping | Parent of shipments through `distribution_id` |
 | `scheme_list` | Built-in and configured test schemes | Classifies shipments |
+| `enrollments` | One participant on one named enrollment list of a scheme | Key is (`list_name`, `scheme_id`, `participant_id`) since 7.6.36 |
+| `enrollment_list_archive` | Archived enrollment lists, added in 7.6.36 | One row per archived (`scheme_id`, `list_name`) |
 | `shipment` | PT round for a scheme | Owns reference samples and enrollments |
 | `shipment_participant_map` | One participant's enrollment, response metadata and evaluation | Connects participant, shipment and per-sample responses |
 | `reference_result_*` | Expected sample results | Belongs to a shipment |

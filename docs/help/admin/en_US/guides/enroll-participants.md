@@ -59,7 +59,7 @@ Skip this step if the lab is already in your system.
 To add a new lab:
 
 - Go to **Configure → PT Participants**.
-- For one lab: click **Add** at the top right, fill in the name,
+- For one lab: click **Add New Participant**, fill in the name,
   unique code, contact details, and save.
 - For many labs at once: click **Bulk Import Participants**,
   download the Excel template, fill it in, and upload. Fields
@@ -71,25 +71,30 @@ unique Participant ID.
 ## Step 3: Enroll the participant in a scheme
 
 This is the **one-time** step that lets a lab take part in a
-scheme.
+scheme. A lab is enrolled in a scheme when it is on at least one
+of the scheme's **enrollment lists**. Each scheme has a
+**Default** list, marked *Main*.
 
-- Go to **Configure → Scheme Enrollments**.
-- Pick the scheme from the dropdown at the top (for example,
-  *HIV Serology*).
-- Click the relevant scheme enrollment link.
-- On the next page, you will see two lists side by side:
-  - **Available** (left) — labs in your system that are **not**
-    yet enrolled in this scheme.
-  - **Enrolled** (right) — labs already enrolled.
-- Move labs from left to right using the arrow buttons.
-- Click **Enroll Selected** at the bottom to save.
+1. Go to **Configure → Scheme Enrollments**.
+2. On the **Lists** tab, find the scheme's group.
+3. Click **Edit** on the **Default** list.
+4. Click a lab in **Not on this list** (left) to move it to
+   **On this list** (right).
+5. Click **Save changes**.
 
-A lab can be enrolled in more than one scheme — repeat this step
+If the scheme has no group yet, click **New list**, choose the
+scheme, leave the name blank and click **Choose participants**.
+
+A lab can be enrolled in more than one scheme. Repeat this step
 for each scheme the lab takes part in.
 
-> Many users at large programmes use the **Bulk Enrollment**
-> option instead. It lets you enroll many labs in many schemes
-> at once via an Excel upload.
+> **Other ways to fill a list**
+>
+> - **Bulk Import Enrollment** fills one list from an Excel file.
+>   You see what will change before anything is saved.
+> - **Clone list**, on a list's **More** menu, starts a new list
+>   with the same labs. The new list can be in the same scheme or
+>   another scheme.
 
 ## Step 4: Enroll the participant in a specific shipment
 

@@ -52,10 +52,13 @@ This exercise walks through a complete PT cycle for the **Dried Tube Specimen (D
 Scheme enrollment is a one-time setup. Participants must be enrolled in the HIV Serology scheme before they can be enrolled in any DTS shipment.
 
 1. Go to **Configure → Scheme Enrollments**
-2. Select **HIV Serology** from the scheme type dropdown
-3. Click on **Enroll the Participants for Dried Tube Specimen - HIV Serology**
-4. Select your 8 new participants from the **Available** list (left) and move them to the **Enrolled** list (right)
-5. Click **Enroll Selected**
+2. On the **Lists** tab, find the **Dried Tube Specimen - HIV Serology** group
+3. Click **Edit** on its **Default** list
+4. Type part of a participant's name in the search box above **Not on this list** (left)
+5. Click each of your 8 new participants to move them to **On this list** (right)
+6. Click **Save changes**
+
+> **No HIV Serology group on the Lists tab?** No one is enrolled in the scheme yet. Click **New list**, choose the scheme, leave the name blank and click **Choose participants**. Then continue from step 4.
 
 > **Don't see your participants?** Make sure you uploaded the file in Step 1 and that the participants are in **Active** status. Check **Configure → PT Participants** to verify.
 

@@ -21,7 +21,7 @@
 ## 1.2 Adding Participants
 
 **Single participant:**
-- Go to **Configure → PT Participants → Add**
+- Go to **Configure → PT Participants → Add New Participant**
 - Fill in required fields (name, unique identifier, contact details)
 - Save
 
@@ -34,11 +34,17 @@
 
 ## 1.3 Scheme Enrollment
 
+A participant is enrolled in a scheme when it is on at least one of that scheme's **enrollment lists**. Each scheme has a **Default** list. You can keep other lists for a round or a region.
+
 - Go to **Configure → Scheme Enrollments**
-- Select the scheme type from the dropdown (e.g., HIV Serology)
-- Click on the relevant scheme enrollment link
-- Move participants from the **Available** list (left) to the **Enrolled** list (right)
-- Click **Enroll Selected** to save
+- Find the scheme's group on the **Lists** tab
+- Click **Edit** on the **Default** list
+- Click participants in **Not on this list** (left) to move them to **On this list** (right)
+- Click **Save changes**
+
+To start a new list, click **New list**. To start one from an existing list, open **More** on that list and click **Clone list**. The clone can go to the same scheme or another scheme.
+
+For many participants, use **Bulk Import Enrollment**. You upload an Excel file, review what will change, then import.
 
 > **Key concept:** Participants must be enrolled in a scheme before they can be enrolled in individual shipments under that scheme.
 
@@ -47,7 +53,8 @@
 ## Trainer Notes
 - Have participant data ready in the Excel template before the session
 - Emphasize the difference between scheme enrollment (one-time setup) and shipment enrollment (per-survey)
-- If the deployment uses Data Managers, briefly explain that each participant needs at least one Data Manager assigned (**Configure → Data Managers**)
+- If the deployment uses Data Managers, briefly explain that each participant needs at least one Data Manager assigned (**Configure → Participant Login Map**)
+- Show that **Download** on a list's **More** menu gives a file that **Bulk Import Enrollment** accepts back
 
 ---
 
