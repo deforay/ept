@@ -1,0 +1,143 @@
+#!/usr/bin/env php
+<?php
+
+declare(strict_types=1);
+
+/**
+ * Checks Pt_Reports_BasePdf, the class every report PDF renders HTML through.
+ *
+ *   php test-harness/bin/pdf-html
+ *
+ * Each blocked pattern goes through writeHTML() and must leave no trace in the
+ * PDF: no image, no link, no script, no form field, and no request to a URL.
+ * Each image the report layouts really use must still render. A local web
+ * server records every request, so a fetch fails the run even when TCPDF
+ * throws the response away. No database, about two seconds.
+ *
+ * Like bin/workbook, this loads code from the app directly. BasePdf has no
+ * state outside the PDF it builds, so the PDF is the whole result.
+ */
+
+$repoRoot = dirname(__DIR__, 2);
+require_once $repoRoot . '/cli-bootstrap.php';
+
+// TCPDF reports an error by exiting PHP unless this is set, which would end
+// the run at the first bad case. Its config file defines the constant again,
+// so the warning about that is muted while TCPDF loads.
+define('K_TCPDF_THROW_EXCEPTION_ERROR', true);
+$level = error_reporting(error_reporting() & ~E_WARNING);
+class_exists('TCPDF');
+error_reporting($level);
+
+if (in_array($argv[1] ?? '', ['--help', '-h'], true)) {
+    fwrite(STDOUT, "Usage: php test-harness/bin/pdf-html\n");
+    exit(0);
+}
+
+$work = sys_get_temp_dir() . '/ept-pdf-html-' . getmypid();
+mkdir($work);
+$hits = $work . '/hits.log';
+touch($hits);
+file_put_contents($work . '/router.php', '<?php file_put_contents(' . var_export($hits, true) . ', $_SERVER["REQUEST_URI"] . "\n", FILE_APPEND); header("Content-Type: image/png"); readfile(' . var_export(WEB_ROOT . '/images/red-flag.png', true) . ');');
+
+$port = 0;
+$socket = stream_socket_server('tcp://127.0.0.1:0');
+if ($socket !== false) {
+    $port = (int) substr((string) stream_socket_get_name($socket, false), strrpos((string) stream_socket_get_name($socket, false), ':') + 1);
+    fclose($socket);
+}
+$server = proc_open([PHP_BINARY, '-S', "127.0.0.1:$port", $work . '/router.php'], [1 => ['file', '/dev/null', 'w'], 2 => ['file', '/dev/null', 'w']], $pipes);
+usleep(300000);
+$url = "http://127.0.0.1:$port";
+
+$png = (string) file_get_contents(WEB_ROOT . '/images/red-flag.png');
+$svg = base64_encode('<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10"><image href="' . $url . '/via-svg.png" width="10" height="10"/></svg>');
+// A real PNG with an <svg> element in a text chunk. TCPDF would send a raw '@'
+// stream of it to the SVG parser, which fails on the PNG bytes.
+$svgText = 'note' . "\0" . '<svg a="b"></svg>';
+$pngWithSvgText = substr($png, 0, 33) . pack('N', strlen($svgText)) . 'tEXt' . $svgText . pack('N', crc32('tEXt' . $svgText)) . substr($png, 33);
+$notAnImage = $work . '/not-an-image';
+file_put_contents($notAnImage, 'plain text');
+$rasterAsSvg = WEB_ROOT . '/temporary/pdf-html-check-' . getmypid() . '.svg';
+@mkdir(dirname($rasterAsSvg), 0775, true);
+file_put_contents($rasterAsSvg, $png);
+$outsideImage = $work . '/outside.png';
+file_put_contents($outsideImage, $png);
+
+$blocked = [
+    'remote image'              => '<img src="' . $url . '/image.png"/>',
+    'remote stylesheet'         => '<link type="text/css" href="' . $url . '/style.css"/><p>text</p>',
+    'image outside allowed dirs' => '<img src="' . $outsideImage . '"/>',
+    'file that is not an image' => '<img src="/etc/hosts"/>',
+    'SVG data image'            => '<img src="data:image/svg+xml;base64,' . $svg . '"/>',
+    'SVG data stream'           => '<img src="@' . $svg . '"/>',
+    'raster file named .svg'    => '<img src="' . $rasterAsSvg . '"/>',
+    'list bullet attribute'     => '<ul type="img|png|10|10|' . $url . '/bullet.png"><li>item</li></ul>',
+    'list bullet style'         => '<ul style="list-style-type:img|png|10|10|' . $url . '/bullet.png"><li>item</li></ul>',
+    'script link'               => '<a href="javascript:app.alert(1)">link</a>',
+    'button with script'        => '<input type="button" name="b" value="Go" onclick="app.alert(2)"/>',
+    'form without action'       => '<form><input type="text" name="t"/></form>',
+    'text area'                 => '<textarea name="t">text</textarea>',
+];
+$kept = [
+    'tick image'                => ['<img src="' . WEB_ROOT . '/images/check.jpg"/>', 'image'],
+    'root-relative image'       => ['<img src="/images/cross.jpg"/>', 'image'],
+    'chart as data stream'      => ['<img src="@' . base64_encode($png) . '"/>', 'image'],
+    'chart as data image'       => ['<img src="data:image/png;base64,' . base64_encode($png) . '"/>', 'image'],
+    'PNG with SVG text'         => ['<img src="@' . base64_encode($pngWithSvgText) . '"/>', 'image'],
+    'mailto link'               => ['<a href="mailto:pt@example.org">pt@example.org</a>', 'link'],
+    'web link'                  => ['<a href="https://example.org/">example.org</a>', 'link'],
+    'checkbox'                  => ['<input type="checkbox" name="c" value="yes" checked="checked"/>', 'field'],
+];
+
+$render = static function (string $html): array {
+    $pdf = new Pt_Reports_BasePdf();
+    $pdf->setPrintHeader(false);
+    $pdf->setPrintFooter(false);
+    $pdf->AddPage();
+    try {
+        $pdf->writeHTML('<p>x</p>' . $html, true, false, true, false, '');
+        $out = $pdf->Output('', 'S');
+    } catch (Throwable $e) {
+        return ['error' => $e->getMessage()];
+    }
+    return [
+        'image'  => preg_match('#/Subtype\s*/Image#', $out) === 1,
+        // TCPDF adds a hidden link to tcpdf.org on every page
+        'link'   => preg_match('#/URI\s*\((?!http://www\.tcpdf\.org\))#', $out) === 1,
+        'script' => str_contains($out, '/JS'),
+        'field'  => preg_match('#/FT\s*/#', $out) === 1,
+    ];
+};
+
+$failures = [];
+foreach ($blocked as $label => $html) {
+    file_put_contents($hits, '');
+    $result = $render($html);
+    usleep(50000);
+    $traces = array_keys(array_filter($result));
+    if (trim((string) file_get_contents($hits)) !== '') {
+        $traces[] = 'fetched ' . trim(str_replace("\n", ' ', (string) file_get_contents($hits)));
+    }
+    if ($traces !== []) {
+        $failures[] = sprintf('blocked  %-27s left: %s', $label, implode(', ', $traces));
+    }
+}
+foreach ($kept as $label => [$html, $expect]) {
+    $result = $render($html);
+    if (isset($result['error']) || empty($result[$expect])) {
+        $failures[] = sprintf('kept     %-27s missing its %s%s', $label, $expect, isset($result['error']) ? ' (' . $result['error'] . ')' : '');
+    }
+}
+
+proc_terminate($server);
+@unlink($rasterAsSvg);
+array_map('unlink', glob($work . '/*') ?: []);
+@rmdir($work);
+
+fwrite(STDOUT, sprintf("  blocked patterns : %d checked\n  real images/links: %d checked\n", count($blocked), count($kept)));
+foreach ($failures as $failure) {
+    fwrite(STDOUT, '  FAIL ' . $failure . "\n");
+}
+fwrite(STDOUT, $failures === [] ? "  all passed\n" : sprintf("  %d failed\n", count($failures)));
+exit($failures === [] ? 0 : 1);
