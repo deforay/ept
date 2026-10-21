@@ -2787,6 +2787,10 @@ class Application_Service_Evaluation
             $sql->where(new Zend_Db_Expr("IFNULL(sp.is_excluded, 'no') = 'no'"));
         }
 
+        // Workers each fetch one page at the same time. Without a fixed order,
+        // MySQL can return rows in a different order to each query, so pages
+        // overlap and some participants get no report.
+        $sql->order('sp.map_id');
         if (isset($sLimit) && isset($sOffset)) {
             $sql = $sql->limit($sLimit, $sOffset);
         }
