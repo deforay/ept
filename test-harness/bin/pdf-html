@@ -78,10 +78,19 @@ $blocked = [
     'button with script'        => '<input type="button" name="b" value="Go" onclick="app.alert(2)"/>',
     'form without action'       => '<form><input type="text" name="t"/></form>',
     'text area'                 => '<textarea name="t">text</textarea>',
+    'single-quoted script link' => "<a href='javascript:app.alert(3)'>link</a>",
+    'unquoted script link'      => '<a href=javascript:app.alert(4)>link</a>',
+    'stylesheet import'         => '<style>@import url("' . $url . '/import.css");</style><p>text</p>',
+    'CSS list image'            => '<ul style="list-style-image:url(' . $url . '/list.png)"><li>item</li></ul>',
+    'CSS list image, encoded'   => '<ul style="list-style-image:url&#40;' . $url . '/list-encoded.png&#41;"><li>item</li></ul>',
+    'CSS background image'      => '<div style="background-image:url(' . $url . '/background.png)">text</div>',
+    'inline SVG'                => '<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10"><image href="' . $url . '/inline.png" width="10" height="10"/></svg>',
+    'tag inside an attribute'   => '<p title="&gt;<img src=' . $url . '/split.png>">text</p>',
 ];
 $kept = [
     'tick image'                => ['<img src="' . WEB_ROOT . '/images/check.jpg"/>', 'image'],
     'root-relative image'       => ['<img src="/images/cross.jpg"/>', 'image'],
+    'single-quoted image'       => ["<img src='" . WEB_ROOT . "/images/check.jpg'/>", 'image'],
     'chart as data stream'      => ['<img src="@' . base64_encode($png) . '"/>', 'image'],
     'chart as data image'       => ['<img src="data:image/png;base64,' . base64_encode($png) . '"/>', 'image'],
     'PNG with SVG text'         => ['<img src="@' . base64_encode($pngWithSvgText) . '"/>', 'image'],
@@ -90,10 +99,23 @@ $kept = [
     'checkbox'                  => ['<input type="checkbox" name="c" value="yes" checked="checked"/>', 'field'],
 ];
 
-$render = static function (string $html): array {
-    $pdf = new Pt_Reports_BasePdf();
+// A footer drawn at a page break runs inside the writeHTML() call that broke the page
+$footerPdf = new class () extends Pt_Reports_BasePdf {
+    public string $footerHtml = '';
+
+    public function Footer()
+    {
+        $this->writeHTML($this->footerHtml);
+    }
+};
+
+$render = static function (string $html, string $footer = '') use ($footerPdf): array {
+    $pdf = $footer === '' ? new Pt_Reports_BasePdf() : new $footerPdf();
     $pdf->setPrintHeader(false);
-    $pdf->setPrintFooter(false);
+    $pdf->setPrintFooter($footer !== '');
+    if ($footer !== '') {
+        $pdf->footerHtml = $footer;
+    }
     $pdf->AddPage();
     try {
         $pdf->writeHTML('<p>x</p>' . $html, true, false, true, false, '');
@@ -111,9 +133,10 @@ $render = static function (string $html): array {
 };
 
 $failures = [];
+$blocked['script link in a footer'] = ['<p>' . str_repeat('A long page of text. ', 400) . '</p>', '<a href="javascript:app.alert(5)">link</a>'];
 foreach ($blocked as $label => $html) {
     file_put_contents($hits, '');
-    $result = $render($html);
+    $result = is_array($html) ? $render(...$html) : $render($html);
     usleep(50000);
     $traces = array_keys(array_filter($result));
     if (trim((string) file_get_contents($hits)) !== '') {

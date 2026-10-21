@@ -4,133 +4,206 @@
  * Base class for every ePT PDF that renders HTML.
  *
  * Report HTML carries text that participants typed, such as lab names and
- * comments, and TCPDF 6 receives no security fixes. TCPDF loads files from
- * HTML in three places: linked stylesheets, images and list image bullets.
- * Two hooks check all three.
+ * comments, and TCPDF 6 receives no security fixes. cleanHtml() checks the
+ * HTML string before writeHTML() and writeHTMLCell() hand it to the library,
+ * so the same check works on TCPDF 6, on TCPDF 7 and on tc-lib-pdf, which all
+ * take that string.
  *
- * getHtmlDomArray() runs before TCPDF parses the HTML. It removes <link> tags,
- * because TCPDF fetches a linked stylesheet while it parses.
- *
- * openHTMLTagHandler() sees each tag after TCPDF has parsed it:
- *  - an image must be raster data, or a raster file inside public/ or
- *    downloads/. An approved file is passed to TCPDF as its real path, with
- *    DOCUMENT_ROOT hidden, so TCPDF loads exactly the file that was checked.
- *  - a list may not use an image as its bullet
+ * Each tag is split out the way both libraries split it (<[^>]+>), checked,
+ * and written back with double-quoted attribute values, so the library sees
+ * only the attributes that passed:
+ *  - an image must be raster data, or a raster file inside public/, uploads,
+ *    temporary files or downloads/. An approved file becomes its real path, so
+ *    the library loads exactly the file that was checked.
  *  - a link may only be #..., mailto: or http(s)://, since admin-written
  *    report text such as contact blocks carries mailto and web links
  *  - a form field may only be a checkbox or a radio button, since response
  *    copies show the ticked boxes
  *  - forms, text boxes, selects and <tcpdf> tags render as plain text
- *  - on* attributes are removed
+ *  - <link>, inline <svg> and comments are removed, and so are on* attributes
+ *    and any other attribute that names a file or URL
+ *  - CSS may not use url(), @import or an image list bullet (img|...)
  * Anything else is dropped and logged. This stops injected HTML from fetching
  * URLs, embedding server files, adding scripts or script links, or stopping a
- * report batch (TCPDF throws on a <form> without an action).
+ * report batch (TCPDF 6 throws on a <form> without an action).
  *
  * vlsm's App\Helpers\BasePdf is the same check, so fixes belong in both.
  */
 class Pt_Reports_BasePdf extends TCPDF
 {
     private const INERT_TAGS = ['form', 'textarea', 'select', 'tcpdf'];
+    private const REMOVED_TAGS = ['link', 'svg', 'script', 'style', 'meta', 'base', 'object', 'embed', 'iframe', 'image', 'use'];
     private const ALLOWED_INPUT_TYPES = ['checkbox', 'radio'];
+    private const URL_ATTRIBUTES = ['src', 'href', 'background', 'action', 'formaction', 'data', 'srcset', 'poster', 'lowsrc', 'dynsrc'];
+    private const TAG_PATTERN = '/<[^>]+>/';
+    private const ATTRIBUTE_PATTERN = '/([a-zA-Z_:][a-zA-Z0-9_:\-\.]*)\s*(?:=\s*(?:"([^"]*)"|\'([^\']*)\'|([^\s"\'`=<>]+)))?/';
 
     /** @var array<string, string|false> real path of an approved image file, or false when refused */
     private static array $imageSources = [];
 
-    protected function getHtmlDomArray($html)
-    {
-        $html = preg_replace_callback('/<link([^\>]*?)>/is', function (array $match): string {
-            self::logDropped('link', $match[1]);
-            return '';
-        }, (string) $html);
+    /**
+     * TCPDF 6's writeHTMLCell() passes its cleaned HTML on to writeHTML(), which
+     * then skips cleaning it again. A header or footer drawn at a page break
+     * inside writeHTML() is different HTML, so it is still cleaned.
+     */
+    private ?string $cleanedHtml = null;
 
-        return parent::getHtmlDomArray($html);
+    /**
+     * Parameters as loose as TCPDF's own, since layouts pass 0 and 1 for flags.
+     *
+     * @param mixed $html
+     * @param mixed $ln
+     * @param mixed $fill
+     * @param mixed $reseth
+     * @param mixed $cell
+     * @param mixed $align
+     */
+    public function writeHTML($html, $ln = true, $fill = false, $reseth = false, $cell = false, $align = '')
+    {
+        return $this->writeCleanHtml((string) $html, fn (string $clean) => parent::writeHTML($clean, $ln, $fill, $reseth, $cell, $align));
     }
 
-    protected function openHTMLTagHandler($dom, $key, $cell)
+    /**
+     * @param mixed $w
+     * @param mixed $h
+     * @param mixed $x
+     * @param mixed $y
+     * @param mixed $html
+     * @param mixed $border
+     * @param mixed $ln
+     * @param mixed $fill
+     * @param mixed $reseth
+     * @param mixed $align
+     * @param mixed $autopadding
+     */
+    public function writeHTMLCell($w, $h, $x, $y, $html = '', $border = 0, $ln = 0, $fill = false, $reseth = true, $align = '', $autopadding = true)
     {
-        $tag = (string) ($dom[$key]['value'] ?? '');
-        $attributes = $dom[$key]['attribute'] ?? [];
+        return $this->writeCleanHtml((string) $html, fn (string $clean) => parent::writeHTMLCell($w, $h, $x, $y, $clean, $border, $ln, $fill, $reseth, $align, $autopadding));
+    }
 
-        if (is_array($attributes)) {
-            foreach (array_keys($attributes) as $name) {
-                if (str_starts_with(strtolower((string) $name), 'on')) {
-                    unset($dom[$key]['attribute'][$name]);
-                }
-            }
+    /**
+     * An approved image src is already a real path. TCPDF 6 prefixes
+     * DOCUMENT_ROOT to a path that does not contain it, and then tries other
+     * locations and URLs for a file it cannot find, so the library sees no
+     * DOCUMENT_ROOT while it renders.
+     */
+    private function writeCleanHtml(string $html, callable $write): mixed
+    {
+        if ($html !== $this->cleanedHtml) {
+            $html = self::cleanHtml($html);
+            $this->cleanedHtml = $html;
         }
-
-        // A list item takes its bullet from its parent list. An image bullet
-        // ("img|type|width|height|file") would load that file unchecked.
-        foreach ([$key, $dom[$key]['parent'] ?? null] as $listKey) {
-            if ($listKey === null || !isset($dom[$listKey])) {
-                continue;
-            }
-            foreach (['type', 'listtype'] as $field) {
-                $value = $field === 'type'
-                    ? ($dom[$listKey]['attribute']['type'] ?? null)
-                    : ($dom[$listKey]['listtype'] ?? null);
-                if (is_string($value) && str_starts_with(strtolower(trim($value)), 'img|')) {
-                    self::logDropped('list image', $value);
-                    if ($field === 'type') {
-                        unset($dom[$listKey]['attribute']['type']);
-                    } else {
-                        $dom[$listKey]['listtype'] = '';
-                    }
-                }
-            }
-        }
-
-        if (in_array($tag, self::INERT_TAGS, true)) {
-            self::logDropped($tag, '');
-            $dom[$key]['value'] = 'span';
-        } elseif ($tag === 'input') {
-            $type = strtolower((string) ($attributes['type'] ?? 'text'));
-            if (!in_array($type, self::ALLOWED_INPUT_TYPES, true)) {
-                self::logDropped('input', $type);
-                $dom[$key]['value'] = 'span';
-            }
-        } elseif ($tag === 'img' && isset($attributes['src'])) {
-            $src = (string) $attributes['src'];
-            if ($src !== '') {
-                $source = self::imageSource($src);
-                if ($source === false) {
-                    self::logDropped('img', $src);
-                    $source = '';
-                }
-                $dom[$key]['attribute']['src'] = $source;
-            }
-        } elseif ($tag === 'a' && isset($attributes['href'])) {
-            $href = trim((string) $attributes['href']);
-            if (!preg_match('~^(#|mailto:|https?://)~i', $href)) {
-                self::logDropped('a', $href);
-                unset($dom[$key]['attribute']['href']);
-            }
-        }
-
-        if ($tag !== 'img') {
-            return parent::openHTMLTagHandler($dom, $key, $cell);
-        }
-
-        // An approved file src is already the real path. TCPDF prefixes
-        // DOCUMENT_ROOT to a path that does not contain it, and then tries other
-        // locations and URLs for a file it cannot find, so it reads no
-        // DOCUMENT_ROOT while it loads the image.
         $documentRoot = $_SERVER['DOCUMENT_ROOT'] ?? null;
         $_SERVER['DOCUMENT_ROOT'] = '';
         try {
-            return parent::openHTMLTagHandler($dom, $key, $cell);
+            return $write($html);
         } finally {
             $_SERVER['DOCUMENT_ROOT'] = $documentRoot;
         }
     }
 
+    /** The HTML with every tag checked and rebuilt, as described on the class */
+    public static function cleanHtml(string $html): string
+    {
+        // Whole elements whose content is code or vector markup, not text
+        $html = (string) preg_replace_callback('~<(svg|script|style)\b[^>]*>.*?</\1\s*>~is', function (array $match): string {
+            self::logDropped($match[1], $match[0]);
+            return '';
+        }, $html);
+        // A < that cannot start a tag is text, as in "± 2.0 > z < ± 3.0"
+        $html = (string) preg_replace('/<(?![a-zA-Z\/!?])/', '&lt;', $html);
+
+        return (string) preg_replace_callback(self::TAG_PATTERN, fn (array $match): string => self::cleanTag($match[0]), $html);
+    }
+
+    private static function cleanTag(string $tag): string
+    {
+        $inner = substr($tag, 1, -1);
+        $closing = str_starts_with($inner, '/');
+        preg_match('/^\/?([a-zA-Z0-9]*)/', $inner, $nameMatch);
+        $name = strtolower($nameMatch[1] ?? '');
+
+        if ($name === '' || in_array($name, self::REMOVED_TAGS, true)) {
+            self::logDropped($name === '' ? 'markup' : $name, $tag);
+            return '';
+        }
+        if (in_array($name, self::INERT_TAGS, true)) {
+            if (!$closing) {
+                self::logDropped($name, '');
+            }
+            return $closing ? '</span>' : '<span>';
+        }
+        if ($closing) {
+            return '</' . $name . '>';
+        }
+
+        $attributes = [];
+        preg_match_all(self::ATTRIBUTE_PATTERN, substr($inner, strlen($nameMatch[0])), $found, PREG_SET_ORDER | PREG_UNMATCHED_AS_NULL);
+        foreach ($found as $attribute) {
+            // A valueless attribute such as "checked" stays valueless (null)
+            $attributes[strtolower((string) $attribute[1])] = $attribute[2] ?? $attribute[3] ?? $attribute[4];
+        }
+
+        if ($name === 'input') {
+            $type = strtolower((string) ($attributes['type'] ?? 'text'));
+            if (!in_array($type, self::ALLOWED_INPUT_TYPES, true)) {
+                self::logDropped('input', $type);
+                return '';
+            }
+        }
+
+        foreach ($attributes as $attribute => $value) {
+            $keep = match (true) {
+                str_starts_with($attribute, 'on') => false,
+                $attribute === 'style' => true,
+                $value !== null && str_starts_with(strtolower(trim($value)), 'img|') => false,
+                $name === 'img' && $attribute === 'src' => true,
+                $name === 'a' && $attribute === 'href' => (bool) preg_match('~^(#|mailto:|https?://)~i', trim((string) $value)),
+                in_array($attribute, self::URL_ATTRIBUTES, true), str_contains($attribute, ':') => false,
+                default => true,
+            };
+            if (!$keep) {
+                self::logDropped($name . ' ' . $attribute, (string) $value);
+                unset($attributes[$attribute]);
+            }
+        }
+
+        if (isset($attributes['style'])) {
+            $attributes['style'] = self::cleanCss(html_entity_decode((string) $attributes['style'], ENT_QUOTES | ENT_HTML5, 'UTF-8'));
+        }
+        if ($name === 'img' && ($attributes['src'] ?? '') !== '') {
+            $source = self::imageSource((string) $attributes['src']);
+            if ($source === false) {
+                self::logDropped('img', (string) $attributes['src']);
+                return '';
+            }
+            $attributes['src'] = $source;
+        }
+
+        $out = '<' . $name;
+        foreach ($attributes as $attribute => $value) {
+            // A > in a value would end the tag early when the library splits it
+            $out .= ' ' . $attribute . ($value === null ? '' : '="' . str_replace(['"', '<', '>'], ['&quot;', '&lt;', '&gt;'], $value) . '"');
+        }
+        return $out . (str_ends_with($inner, '/') ? ' />' : '>');
+    }
+
+    /** Removes the declarations that load a file: url(), @import, image list bullets and expression() */
+    private static function cleanCss(string $css): string
+    {
+        return (string) preg_replace_callback('/[^;]*(url\s*\(|@import|img\||expression\s*\()[^;]*;?/i', function (array $match): string {
+            self::logDropped('style', $match[0]);
+            return '';
+        }, $css);
+    }
+
     /**
-     * The src TCPDF should load for an image, or false to drop it.
+     * The src the library should load for an image, or false to drop it.
      *
      * A data image becomes data:image/<type>, with the type read from its
      * bytes, because TCPDF treats an '@' stream that contains "<svg" anywhere
      * as SVG, even a PNG with that text in its metadata. A file becomes its
-     * real path, so TCPDF stores an image used many times only once.
+     * real path, so the library stores an image used many times only once.
      */
     private static function imageSource(string $src): string|false
     {
@@ -142,7 +215,7 @@ class Pt_Reports_BasePdf extends TCPDF
         }
 
         if ($data !== null) {
-            // Raster only. SVG can make TCPDF fetch the files it references.
+            // Raster only. SVG can make the library fetch the files it references.
             $size = $data === false ? false : @getimagesizefromstring($data);
             return $size === false ? false : 'data:' . $size['mime'] . ';base64,' . base64_encode($data);
         }
@@ -150,10 +223,10 @@ class Pt_Reports_BasePdf extends TCPDF
         // Data images are large and rarely repeat, so only files are cached
         if (!array_key_exists($src, self::$imageSources)) {
             $file = self::imageFileInAllowedFolder($src);
-            // TCPDF picks its parser for a file from the extension: .svg, .ai
-            // and .eps go to the vector parsers whatever the file holds.
+            // The library picks its parser for a file from the extension: .svg,
+            // .ai and .eps go to the vector parsers whatever the file holds.
             $vector = $file !== null
-                && in_array(TCPDF_IMAGES::getImageFileType($file), ['svg', 'ai', 'eps'], true);
+                && in_array(strtolower(pathinfo($file, PATHINFO_EXTENSION)), ['svg', 'ai', 'eps'], true);
             self::$imageSources[$src] = $file !== null && !$vector && @getimagesize($file) !== false
                 ? $file
                 : false;

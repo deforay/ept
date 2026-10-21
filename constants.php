@@ -30,3 +30,8 @@ const SUMMARY_REPORTS_LAYOUT = SCHEDULED_JOBS_FOLDER . DIRECTORY_SEPARATOR . 're
 
 const TEMP_UPLOAD_PATH = WEB_ROOT . DIRECTORY_SEPARATOR . 'temporary';
 const UPLOAD_PATH = WEB_ROOT . DIRECTORY_SEPARATOR . 'uploads';
+
+// Folders TCPDF 7 may read report images from. Real paths, so uploads and
+// temporary files still match when a server keeps them on another disk.
+defined('K_ALLOWED_PATHS')
+    || define('K_ALLOWED_PATHS', array_values(array_filter(array_map('realpath', [WEB_ROOT, UPLOAD_PATH, TEMP_UPLOAD_PATH, DOWNLOADS_FOLDER]))));
