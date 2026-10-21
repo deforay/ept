@@ -1200,20 +1200,6 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                     $alertMsg->message = 'Participants mapped successfully';
                     return ['ok' => true, 'count' => $mappedCount];
                 }
-
-                if (isset($params['participantId']) && $params['participantId'] != '') {
-                    $dm = new Application_Model_DbTable_DataManagers();
-                    $params['participantsList'][] = $params['participantId'];
-                    $dm->dmParticipantMap($params, $params['dataManager'], false);
-
-                    $auditDb = new Application_Model_DbTable_AuditLog();
-                    $auditDb->addNewAuditLog(
-                        "Mapped participant #{$params['participantId']} to data manager #{$params['dataManager']}",
-                        'data-managers'
-                    );
-
-                    $alertMsg->message = 'Datamanager mapped successfully';
-                }
             }
         } catch (Exception $exc) {
             $traceId = 'pmm-' . bin2hex(random_bytes(4));

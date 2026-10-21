@@ -8,106 +8,108 @@ tags: [participants, data-manager, mapping, pt-login, bulk-import]
 
 This page links **participants** to a **Data Manager (Participant
 Login)**. A Data Manager logs into the participant side of the app
-and only sees the participants they are linked to. So this page
-decides who fills out responses for which participants.
+and sees only the participants mapped to them. So this page decides
+who enters results for which participants.
+
+The same screen opens as a pop-up from the **Map** button on the
+Data Managers list. In the pop-up, the Data Manager is already
+chosen and shown in the title.
 
 ## Buttons at the top
 
-*(Hidden when this page opens in a pop-up — for example, from the
-participant edit page — because the Data Manager is already
-chosen.)*
+These buttons are not in the pop-up.
 
-- **Bulk Import Participants Mapping** — opens the file-upload
-  area where you can load many links from a CSV (see *Bulk
-  Import* below).
-- **Export Participant Not Mapped to Data Managers** — downloads
-  a file listing every participant who is **not yet linked to any
-  Data Manager**. Handy as a check-list before a shipment.
+- **Bulk Import Mapping**: opens a pop-up to upload a file of
+  many mappings at once. See *Bulk import* below.
+- **Unmapped Participants**: downloads a list of every participant
+  who is **not mapped to any Data Manager**. Nobody can enter
+  results for these participants.
 
 ## Step 1: Choose a Data Manager
 
-- The **Choose a Data Manager (Participant Login)** dropdown
-  searches all PT Logins as you type (at least 1 character). It
-  shows the name, institute and email.
-- When the page opens from a participant's record (as a pop-up),
-  the Data Manager is already picked and shown in a banner at
-  the top. You go straight to picking participants.
-- **Show advanced filters** *(button)* — opens optional filters
-  to narrow the list of participants:
-  - **Country**
-  - **Province**
-  - **District**
-  - **Institute**
-  - **Network Tier**
-  - **Affiliation**
+Type a name or email in **Data Manager (Participant Login)**. The
+lists load as soon as you pick one.
 
-  Filters work together — every active filter must match. They
-  only affect the **left pane** (the *Unselected* list).
-  Already-linked participants stay in the right pane no matter
-  what.
+**Country**, **Province** and **District** narrow the participants
+on the left. Click **More filters** for **Institute**, **Network
+Tier** and **Affiliation**. The number on the button shows how many
+of those are in use.
 
-## Step 2: Move participants between the two panes
+Filters only narrow the **Not mapped** list. Participants already
+mapped stay on the right no matter what. Changing a filter keeps
+any changes you have not saved yet.
 
-Once you pick a Data Manager, the two-list selector loads:
+## Step 2: Move participants
 
-- **Left pane — Unselected PT Logins** — participants *not yet
-  linked* to this Data Manager.
-- **Right pane — Selected PT Logins** — participants *currently
-  linked*.
-- **Click a name** to move it between panes (single click — no
-  drag-and-drop).
-- **Type in the search box** at the top of either pane to filter
-  that pane.
-- **Select All** *(left → right)* — links every unlinked
-  participant.
-- **Deselect All** *(right → left)* — unlinks everyone.
+- **Not mapped** (left): active participants this Data Manager
+  does not see.
+- **Mapped** (right): active participants this Data Manager sees.
 
-The footers show live counts.
+Click a participant to move it to the other list. Each row shows
+the Lab ID and the name. Type in a list's search box to find a
+participant by name or Lab ID.
 
-> The list stays fast even with tens of thousands of
-> participants. Scroll and filter freely.
+- **Add all shown**: moves every participant the left search
+  shows to the right.
+- **Remove all shown**: moves every participant the right search
+  shows to the left.
+
+With an empty search box, these move the whole list.
+
+Colours show what saving will do:
+
+| Mark | Meaning |
+| --- | --- |
+| Grey tick | Mapped and saved |
+| Green **+** | Will be added when you save |
+| Orange **−** | Will be removed when you save |
+
+Unsaved rows are listed first, so you can always see them. The
+counts next to each list title show how many will be added or
+removed.
 
 ## Step 3: Save
 
-- **Save Selected** — saves the right pane as the complete list
-  for the chosen Data Manager. Anyone *not* in the right pane is
-  removed from the link.
-- **Cancel** — returns to a fresh page (or closes the pop-up).
+The bar at the bottom shows how many participants will be added
+and removed.
 
-> **Saving replaces the existing list for that Data Manager.**
-> Whatever is in the right pane *replaces* the old link. If you
-> only want to add a few names, make sure the existing linked
-> participants are still in the right pane before saving.
+- **Save changes**: saves the Mapped list for this Data Manager.
+- **Discard**: throws away your unsaved changes and reloads the
+  lists.
+- **Close** *(pop-up only)*: closes the pop-up.
 
-## Bulk Import
+If you pick another Data Manager, close the pop-up or leave the
+page with unsaved changes, the page asks you first.
 
-Click **Bulk Import Participants Mapping** to switch to the
-upload form:
+Saving with an empty **Mapped** list removes every participant
+from this Data Manager. The page asks you to confirm.
 
-- **Upload Bulk Importing Map File** — pick a CSV / spreadsheet
-  with participant ↔ Data Manager pairs. The file format is
-  fixed. Download the *not-mapped* export first to see the
-  columns.
-- **Upload** — processes the file and applies all links in one
-  go.
+Mappings to **inactive** participants are not shown in the lists.
+Saving keeps them.
 
-Bulk import is the right tool when you are onboarding a new
-country or loading a fresh batch of participants. Much faster
-than clicking through hundreds of names.
+## Bulk import
+
+Click **Bulk Import Mapping** and choose an Excel or CSV file.
+Row 1 is the header and is skipped. Each other row maps one
+participant to one Data Manager:
+
+| Column | Contents |
+| --- | --- |
+| B | Lab ID (required) |
+| C | Data Manager name |
+| D | Data Manager primary email (required) |
+| E | Secondary email |
+| F | Mobile |
+
+If no Data Manager has the email in column D, a new one is created
+with the default password. Bulk import only adds mappings. It never
+removes one.
 
 ## Tips
 
-- **Always pick the Data Manager first.** The participant list
-  does not load until you do.
-- **Use the export to find gaps.** *Export Participant Not
-  Mapped to Data Managers* is the quickest way to find
-  participants nobody can see.
-- **Use advanced filters for a country / institute job.**
-  Filtering by Country + Institute makes the left pane
-  manageable for clean-up work.
-- Saving with an **empty right pane** removes *all* participants
-  from that Data Manager — they will see nothing on login. That
-  is correct when you are un-assigning someone, but a surprise
-  otherwise.
-- A participant can be linked to **more than one Data Manager**
-  — just add them to each manager's right pane.
+- **Check Unmapped Participants before a shipment.** It is the
+  quickest way to find participants nobody can enter results for.
+- **Use filters for country or institute clean-up.** Filter, search,
+  then use **Add all shown**.
+- A participant can be mapped to **more than one Data Manager**.
+  Add them on each Data Manager's list.

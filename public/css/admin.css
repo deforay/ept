@@ -7983,6 +7983,285 @@ td.center {
 	padding: 14px 16px 16px;
 }
 
+/* ── Two-list mapper ─────────────────────────────────────────────────────────
+   Map Participants and the enrollment list editor: "not on" on the left, "on"
+   on the right, unsaved moves marked and counted. Markup comes from
+   partials/dual-mapper.phtml, behaviour from js/dual-mapper.js. The page wraps
+   everything in .data-list.mapper-page. */
+.mapper-page .mapper-picker {
+	grid-column: span 2;
+}
+/* Secondary controls in the quiet style of the header buttons, not Bootstrap's grey fill. */
+.mapper-page .data-list-body .btn-default {
+	background: #fff;
+	border-color: #c5d2e3;
+	color: #3a5a8a;
+}
+.mapper-page .data-list-body .btn-default:hover,
+.mapper-page .data-list-body .btn-default:focus,
+.mapper-page .data-list-body .btn-default.is-open {
+	background: #eef3f9;
+	border-color: #4a6fa5;
+	color: #2f4a73;
+}
+.mapper-page .data-list-body .btn-default[disabled] {
+	background: #fff;
+	color: #9aa3af;
+	border-color: #e2e8f0;
+}
+.mapper-page .data-list-filters {
+	margin-bottom: 0;
+}
+.mapper-page .data-list-filterbar {
+	margin: 10px 0 0;
+}
+.mapper-page .data-list-filters-collapse.is-open {
+	margin-top: 12px;
+}
+
+.mapper-empty {
+	margin: 18px 0 4px;
+	padding: 28px 16px;
+	border: 1px dashed #cfd8e3;
+	border-radius: 6px;
+	text-align: center;
+	color: #6b7280;
+	font-size: 13px;
+}
+.mapper-empty strong {
+	display: block;
+	margin-bottom: 4px;
+	font-size: 14px;
+	color: #3a5a8a;
+}
+
+.mapper-dual {
+	display: flex;
+	gap: 16px;
+	margin-top: 18px;
+}
+.mapper-pane {
+	flex: 1;
+	min-width: 0;
+	display: flex;
+	flex-direction: column;
+	border: 1px solid #e2e8f0;
+	border-radius: 6px;
+	background: #fff;
+	overflow: hidden;
+}
+.mapper-pane-head {
+	padding: 10px 12px;
+	background: #f4f7fb;
+	border-bottom: 1px solid #e2e8f0;
+}
+.mapper-pane-title {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	margin-bottom: 8px;
+	font-size: 13px;
+	font-weight: 600;
+	color: #3a5a8a;
+}
+.mapper-pane-title .mapper-count {
+	padding: 0 7px;
+	border-radius: 9px;
+	background: #e2e8f0;
+	color: #3a5a8a;
+	font-size: 11px;
+	line-height: 18px;
+}
+.mapper-chip {
+	padding: 0 7px;
+	border-radius: 9px;
+	font-size: 11px;
+	line-height: 18px;
+	color: #fff;
+}
+.mapper-chip.is-add {
+	background: #2e7d32;
+}
+.mapper-chip.is-remove {
+	background: #ef6c00;
+}
+.mapper-pane-head .form-control {
+	height: 30px;
+	font-size: 12.5px;
+}
+.mapper-scroll {
+	position: relative;
+	height: 380px;
+	overflow-y: auto;
+}
+.mapper-inner {
+	position: relative;
+	width: 100%;
+}
+.mapper-none {
+	padding: 30px 12px;
+	text-align: center;
+	color: #9aa3af;
+	font-size: 12.5px;
+}
+.mapper-row {
+	position: absolute;
+	left: 0;
+	right: 0;
+	height: 34px;
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding: 0 10px;
+	border-bottom: 1px solid #f1f4f8;
+	border-left: 3px solid transparent;
+	cursor: pointer;
+	font-size: 13px;
+}
+.mapper-row:hover {
+	background: #eef3f9;
+}
+.mapper-mark {
+	flex: none;
+	width: 16px;
+	height: 16px;
+	border-radius: 50%;
+	color: #fff;
+	font-size: 11px;
+	font-weight: 700;
+	line-height: 16px;
+	text-align: center;
+}
+.mapper-code {
+	flex: none;
+	min-width: 52px;
+	color: #6b7280;
+	font-variant-numeric: tabular-nums;
+}
+.mapper-name {
+	flex: 1;
+	min-width: 0;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+.mapper-go {
+	flex: none;
+	color: #4a6fa5;
+	font-weight: 700;
+	opacity: 0;
+}
+.mapper-row:hover .mapper-go {
+	opacity: 1;
+}
+.mapper-row.is-saved .mapper-mark {
+	background: #607d8b;
+}
+.mapper-row.is-saved .mapper-mark:before {
+	content: '\2713';
+}
+.mapper-row.is-add {
+	background: #eef7ee;
+	border-left-color: #2e7d32;
+}
+.mapper-row.is-add .mapper-mark {
+	background: #2e7d32;
+}
+.mapper-row.is-add .mapper-mark:before {
+	content: '+';
+}
+.mapper-row.is-remove {
+	background: #fff4e8;
+	border-left-color: #ef6c00;
+}
+.mapper-row.is-remove .mapper-mark {
+	background: #ef6c00;
+}
+.mapper-row.is-remove .mapper-mark:before {
+	content: '\2212';
+}
+.mapper-pane-foot {
+	padding: 8px 12px;
+	border-top: 1px solid #e2e8f0;
+	background: #fafbfd;
+}
+.mapper-pane[data-side="right"] .mapper-pane-foot {
+	text-align: right;
+}
+
+.mapper-legend {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 16px;
+	margin-top: 10px;
+	font-size: 12px;
+	color: #6b7280;
+}
+.mapper-legend span {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+}
+.mapper-legend i {
+	display: inline-block;
+	width: 10px;
+	height: 10px;
+	border-radius: 50%;
+}
+.mapper-legend i.is-saved {
+	background: #607d8b;
+}
+.mapper-legend i.is-add {
+	background: #2e7d32;
+}
+.mapper-legend i.is-remove {
+	background: #ef6c00;
+}
+.mapper-page.is-modal .mapper-scroll {
+	height: 300px;
+}
+
+.mapper-savebar {
+	display: flex;
+	align-items: center;
+	justify-content: flex-end;
+	gap: 10px;
+	margin: 16px -16px -16px;
+	padding: 12px 16px;
+	background: #fff;
+	border-top: 1px solid #e2e8f0;
+}
+.mapper-savebar .mapper-summary {
+	margin-right: auto;
+	font-size: 13px;
+	color: #6b7280;
+}
+.mapper-savebar .mapper-summary.is-dirty {
+	color: #8a5a00;
+	font-weight: 600;
+}
+
+.mapper-format {
+	width: 100%;
+	margin: 10px 0 12px;
+	font-size: 12.5px;
+}
+.mapper-format th, .mapper-format td {
+	padding: 4px 8px;
+	border: 1px solid #e2e8f0;
+}
+.mapper-format th {
+	background: #f4f7fb;
+}
+@media (max-width: 767px) {
+	.mapper-dual {
+		flex-direction: column;
+	}
+	.mapper-page .mapper-picker {
+		grid-column: auto;
+	}
+}
+
 /* ── Finalize panel ──────────────────────────────────────────────────────────
    Used by reports/distribution/finalize and /shipment. The shipment comment, the results
    approval and the two actions used to sit as three separately-centred islands

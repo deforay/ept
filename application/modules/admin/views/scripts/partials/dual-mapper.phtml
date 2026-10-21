@@ -1,0 +1,39 @@
+<?php
+// The two lists of the shared mapper (public/js/dual-mapper.js). The page sets
+// $this->mapperLabels before rendering: left, right, saved, add, remove.
+$labels = $this->mapperLabels;
+?>
+<div class="mapper-dual">
+    <div class="mapper-pane" data-side="left">
+        <div class="mapper-pane-head">
+            <div class="mapper-pane-title">
+                <?= $this->escape($labels['left']); ?> <span class="mapper-count">0</span>
+                <span class="mapper-chip is-remove" style="display:none;"></span>
+            </div>
+            <input type="text" class="form-control mapper-search" autocomplete="off" placeholder="<?= $this->htmlTranslate("Search by name or Lab ID"); ?>">
+        </div>
+        <div class="mapper-scroll"><div class="mapper-inner"></div></div>
+        <div class="mapper-pane-foot">
+            <button type="button" class="btn btn-default btn-xs mapper-move-all"><?= $this->translate->_("Add all shown"); ?>&nbsp;<i class="icon-chevron-right"></i></button>
+        </div>
+    </div>
+    <div class="mapper-pane" data-side="right">
+        <div class="mapper-pane-head">
+            <div class="mapper-pane-title">
+                <?= $this->escape($labels['right']); ?> <span class="mapper-count">0</span>
+                <span class="mapper-chip is-add" style="display:none;"></span>
+            </div>
+            <input type="text" class="form-control mapper-search" autocomplete="off" placeholder="<?= $this->htmlTranslate("Search by name or Lab ID"); ?>">
+        </div>
+        <div class="mapper-scroll"><div class="mapper-inner"></div></div>
+        <div class="mapper-pane-foot">
+            <button type="button" class="btn btn-default btn-xs mapper-move-all"><i class="icon-chevron-left"></i>&nbsp;<?= $this->translate->_("Remove all shown"); ?></button>
+        </div>
+    </div>
+</div>
+<div class="mapper-legend">
+    <span><?= $this->translate->_("Click a participant to move it to the other list."); ?></span>
+    <span><i class="is-saved"></i><?= $this->escape($labels['saved']); ?></span>
+    <span><i class="is-add"></i><?= $this->escape($labels['add']); ?></span>
+    <span><i class="is-remove"></i><?= $this->escape($labels['remove']); ?></span>
+</div>

@@ -1,403 +1,198 @@
+<?php
+$isModal = !empty($this->isModal);
+$hasCountries = !empty($this->countries);
+$hasProvinces = !empty($this->province);
+$hasDistricts = !empty($this->district);
+$hasInstitutes = !empty($this->institutes);
+$hasNetworks = !empty($this->networksTier);
+$hasAffiliations = !empty($this->affiliation);
+$hasMoreFilters = $hasInstitutes || $hasNetworks || $hasAffiliations;
+$mapUrl = $this->url(['module' => 'admin', 'controller' => 'participants', 'action' => 'participant-manager-map'], 'default', true);
+?>
 <link href="<?php echo $this->baseUrl('css/select2.css'); ?>" rel="stylesheet" />
-<?php if (!empty($this->isModal)) { ?>
-    <style>
-        .virt-dual-list { max-width: 100% !important; }
-        .virt-dual-list .virt-pane-scroll { height: 320px !important; }
-    </style>
-<?php } ?>
-<style>
-    .virt-dual-list { display: flex; gap: 20px; align-items: stretch; margin: 0 auto; max-width: 1100px; }
-    .virt-dual-list .virt-pane { flex: 1; border: 1px solid #ccc; background: #fff; display: flex; flex-direction: column; min-width: 0; }
-    .virt-dual-list .virt-pane-header { padding: 8px; border-bottom: 1px solid #eee; background: #f7f7f7; }
-    .virt-dual-list .virt-pane-header input { width: 100%; }
-    .virt-dual-list .virt-pane-scroll { position: relative; height: 400px; overflow-y: auto; background: #fff; }
-    .virt-dual-list .virt-pane-inner { position: relative; width: 100%; }
-    .virt-dual-list .virt-row { position: absolute; left: 0; right: 0; height: 30px; line-height: 30px; padding: 0 12px 0 28px; cursor: pointer; border-bottom: 1px solid #f0f0f0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 13px; box-sizing: border-box; }
-    .virt-dual-list .virt-row:hover { background: #337ab7; color: #fff; }
-    .virt-dual-list .virt-row::before { content: ''; position: absolute; left: 8px; top: 50%; transform: translateY(-50%); width: 14px; height: 14px; line-height: 14px; text-align: center; font-size: 11px; font-weight: 700; border-radius: 50%; color: #fff; }
-    .virt-dual-list .virt-row.virt-row-added { background: #e8f5e9; border-left: 3px solid #2e7d32; padding-left: 26px; }
-    .virt-dual-list .virt-row.virt-row-added::before { content: '+'; background: #2e7d32; }
-    .virt-dual-list .virt-row.virt-row-removed { background: #fff3e0; border-left: 3px solid #ef6c00; padding-left: 26px; }
-    .virt-dual-list .virt-row.virt-row-removed::before { content: '\2212'; background: #ef6c00; }
-    .virt-dual-list .virt-row.virt-row-saved::before { content: '\2713'; background: #607d8b; }
-    .virt-dual-list .virt-pane-footer { padding: 10px; background: #2c3e50; color: #fff; text-align: center; font-weight: 600; font-size: 13px; }
-    .virt-dual-list .virt-pane-footer .virt-diff { display: inline-block; margin-left: 8px; padding: 1px 8px; border-radius: 10px; font-size: 11px; font-weight: 600; }
-    .virt-dual-list .virt-pane-footer .virt-diff-added { background: #2e7d32; }
-    .virt-dual-list .virt-pane-footer .virt-diff-removed { background: #ef6c00; }
-    .virt-dual-list .virt-arrows { display: flex; flex-direction: column; justify-content: center; align-items: center; color: #888; font-size: 22px; padding: 0 4px; user-select: none; }
-    .virt-legend { max-width: 1100px; margin: 0 auto 8px auto; font-size: 12px; color: #555; display: flex; gap: 16px; flex-wrap: wrap; align-items: center; justify-content: center; }
-    .virt-legend .virt-legend-item { display: inline-flex; align-items: center; gap: 6px; }
-    .virt-legend .virt-legend-swatch { display: inline-block; width: 12px; height: 12px; border-radius: 50%; }
-</style>
-<div class="well">
-    <fieldset>
-        <legend><?= $this->translate->_("Map Participants to Data Managers (Participant Login)"); ?>
-            <?php if (empty($this->isModal)) { ?>
-                <a href="javascript:void(0);" onclick="generateParticipantMapExport();" class="btn btn-sm btn-success" style="float:right;margin-right: 10px;"><i class="eyeicon icon-download"></i>&nbsp;&nbsp;<?= $this->translate->_("Export Participant Not Mapped to Data Managers"); ?></a>
-                <a href="javascript:void(0);" onclick="bulkShowHide();" class="btn btn-sm btn-primary" style="float:right;margin-right: 10px;"><i class="eyeicon icon-eye-open"></i>&nbsp;&nbsp;<?= $this->translate->_("Bulk Import Participants Mapping"); ?></a>
-            <?php } ?>
-        </legend>
-        <div class="row form-group col-lg-12">
-            <?php if (!empty($this->isModal)) { ?>
-                <div class="row singleMap" style="margin: 0 0 15px 0;">
-                    <div class="col-lg-12">
-                        <div class="alert alert-info" style="margin:0; padding:10px 14px; display:flex; align-items:center; justify-content:space-between; gap:12px;">
-                            <div>
-                                <strong><?= $this->translate->_("Mapping participants for:"); ?></strong>
-                                <span style="margin-left:6px;"><?php echo $this->escape($this->preselectedDmLabel); ?></span>
-                            </div>
-                            <a href="javascript:void(0);" onclick="advFilter()" class="btn btn-sm btn-primary filter-btn"><?= $this->translate->_("Show advanced filters"); ?></a>
-                        </div>
-                        <select name="alldatamangers" id="alldatamangers" style="display:none;">
+
+<div class="data-list mapper-page<?= $isModal ? ' is-modal' : ''; ?>">
+    <div class="data-list-head">
+        <?php if ($isModal) { ?>
+            <h2><?= $this->translate->_("Participants mapped to"); ?> <?php echo $this->escape($this->preselectedDmLabel); ?></h2>
+        <?php } else { ?>
+            <h2><?= $this->translate->_("Map Participants to Data Managers (Participant Login)"); ?></h2>
+            <div class="data-list-actions">
+                <button type="button" class="btn btn-default btn-quiet" onclick="openBulkImport();"><i
+                        class="icon-upload"></i>&nbsp;&nbsp;<?= $this->translate->_("Bulk Import Mapping"); ?></button>
+                <button type="button" class="btn btn-default btn-quiet" onclick="generateParticipantMapExport();"><i
+                        class="icon-download"></i>&nbsp;&nbsp;<?= $this->translate->_("Unmapped Participants"); ?></button>
+            </div>
+        <?php } ?>
+    </div>
+    <div class="data-list-body">
+        <div class="data-list-filters">
+            <?php if ($isModal) { ?>
+                <select name="alldatamangers" id="alldatamangers" style="display:none;">
+                    <option value="<?php echo (int) $this->preselectedDmId; ?>" selected="selected"><?php echo $this->escape($this->preselectedDmLabel); ?></option>
+                </select>
+            <?php } else { ?>
+                <div class="mapper-picker">
+                    <label for="alldatamangers"><?= $this->translate->_("Data Manager (Participant Login)"); ?> <span class="mandatory">*</span></label>
+                    <select style="width:100%;" name="alldatamangers" id="alldatamangers">
+                        <?php if (!empty($this->preselectedDmId)) { ?>
                             <option value="<?php echo (int) $this->preselectedDmId; ?>" selected="selected"><?php echo $this->escape($this->preselectedDmLabel); ?></option>
-                        </select>
-                    </div>
-                </div>
-            <?php } else { ?>
-                <div class="row singleMap">
-                    <label class="col-lg-4 control-label"><?= $this->translate->_("Choose a Data Manager (Participant Login)"); ?> <span class="mandatory">*</span></label>
-                    <div class="col-lg-8">
-                        <select class="select2" style="width:60%;" name="alldatamangers" id="alldatamangers" placeholder="<?= $this->htmlTranslate("Please choose a PT Login") ?>" title="<?= $this->htmlTranslate("Please choose a PT Login") ?>"></select>
-                        <a href="javascript:void(0);" style=" line-height: 1.2; " onclick="advFilter()" class="btn btn-sm btn-primary filter-btn"><?= $this->translate->_("Show advanced filters"); ?></a>
-                    </div>
+                        <?php } ?>
+                    </select>
                 </div>
             <?php } ?>
-            <hr style=" margin: -3px 0px 0px 0px; ">
-            <div class="advFilter" style="display: none; padding: 20px; border: 1px solid #80808069;">
-                <?php if ((isset($this->countries) && count($this->countries) > 0) || (isset($this->province) && count($this->province) > 0)) { ?>
-                    <div class="row">
-                        <?php if (isset($this->countries) && count($this->countries) > 0) { ?>
-                            <label class="col-lg-2 control-label" style="height: 40px;" for="country"><?= $this->translate->_("Country"); ?></label>
-                            <div class="col-lg-4">
-                                <select class="select2" style="width:100%;" name="country" id="country" placeholder="<?= $this->htmlTranslate("Choose country") ?>" title="<?= $this->htmlTranslate("Please choose a country") ?>" onchange="getDataManager();getStats(this.value);">
-                                    <option value=""></option>
-                                    <?php foreach ($this->countries as $countries) { ?>
-                                        <option value="<?php echo $countries['id']; ?>"><?php echo $countries['iso_name']; ?></option>
-                                    <?php } ?>
-                                </select>
-                            </div>
-                        <?php }
-                        if (isset($this->province) && count($this->province) > 0) { ?>
-                            <label class="col-lg-2 control-label" style="height: 40px;" for="province"><?= $this->translate->_("Province"); ?></label>
-                            <div class="col-lg-4">
-                                <select class="select2" style="width:100%;" name="province" id="province" placeholder="<?= $this->htmlTranslate("Choose province") ?>" title="<?= $this->htmlTranslate("Please choose a province") ?>" onchange="getDataManager();getDistricts(this.value);">
-                                    <option value=""></option>
-                                    <?php foreach ($this->province as $province) { ?>
-                                        <option value="<?php echo $province['state']; ?>"><?php echo $province['state']; ?></option>
-                                    <?php } ?>
-                                </select>
-                            </div>
+            <?php if ($hasCountries) { ?>
+                <div>
+                    <label for="country"><?= $this->translate->_("Country"); ?></label>
+                    <select style="width:100%;" id="country" onchange="getStats(this.value);loadParticipants();">
+                        <option value=""></option>
+                        <?php foreach ($this->countries as $country) { ?>
+                            <option value="<?php echo $this->escape($country['id']); ?>"><?php echo $this->escape($country['iso_name']); ?></option>
                         <?php } ?>
-                    </div>
-                <?php }
-                if ((isset($this->district) && count($this->district) > 0) || (isset($this->networksTier) && count($this->networksTier) > 0)) { ?>
-                    <div class="row">
-                        <?php if (isset($this->district) && count($this->district) > 0) { ?>
-                            <label class="col-lg-2 control-label" style="height: 40px;" for="district"><?= $this->translate->_("District"); ?></label>
-                            <div class="col-lg-4">
-                                <select class="select2" style="width:100%;" name="district" id="district" placeholder="<?= $this->htmlTranslate("Choose district") ?>" title="<?= $this->htmlTranslate("Please choose a district") ?>" onchange="getDataManager();getInstitutes();">
-                                    <option value=""></option>
-                                    <?php foreach ($this->district as $district) { ?>
-                                        <option value="<?php echo $district['district']; ?>"><?php echo $district['district']; ?></option>
-                                    <?php } ?>
-                                </select>
-                            </div>
-                        <?php }
-                        if (isset($this->institutes) && count($this->institutes) > 0) { ?>
-                            <label class="col-lg-2 control-label" style="height: 40px;" for="institute"><?= $this->translate->_("Institute"); ?></label>
-                            <div class="col-lg-4">
-                                <select class="select2" style="width:100%;" name="institute" id="institute" placeholder="<?= $this->htmlTranslate("Choose institute") ?>" title="<?= $this->htmlTranslate("Please choose a institute") ?>" onchange="getDataManager()">
-                                    <option value=""></option>
-                                    <?php foreach ($this->institutes as $institute) { ?>
-                                        <option value="<?php echo $institute['institute_name']; ?>"><?php echo $institute['institute_name']; ?></option>
-                                    <?php } ?>
-                                </select>
-                            </div>
+                    </select>
+                </div>
+            <?php } ?>
+            <?php if ($hasProvinces) { ?>
+                <div>
+                    <label for="province"><?= $this->translate->_("Province"); ?></label>
+                    <select style="width:100%;" id="province" onchange="getDistricts(this.value);loadParticipants();">
+                        <option value=""></option>
+                        <?php foreach ($this->province as $province) { ?>
+                            <option value="<?php echo $this->escape($province['state']); ?>"><?php echo $this->escape($province['state']); ?></option>
                         <?php } ?>
-                    </div>
-                <?php }
-                if ((isset($this->afflication) && count($this->afflication) > 0) || (isset($this->institutes) && count($this->institutes) > 0)) { ?>
-                    <div class="row">
-                        <?php if (isset($this->networksTier) && count($this->networksTier) > 0) { ?>
-                            <label class="col-lg-2 control-label" style="height: 40px;" for="networkTier"><?= $this->translate->_("Network Tier"); ?></label>
-                            <div class="col-lg-4">
-                                <select class="select2" style="width:100%;" name="networkTier" id="networkTier" placeholder="<?= $this->htmlTranslate("Choose network tier") ?>" title="<?= $this->htmlTranslate("Please choose a network tier") ?>" onchange="getDataManager()">
-                                    <option value=""></option>
-                                    <?php foreach ($this->networksTier as $networksTier) { ?>
-                                        <option value="<?php echo $networksTier['network_id']; ?>"><?php echo $networksTier['network_name']; ?></option>
-                                    <?php } ?>
-                                </select>
-                            </div>
-                        <?php }
-                        if (isset($this->affiliation) && count($this->affiliation) > 0) { ?>
-                            <label class="col-lg-2 control-label" style="height: 40px;" for="affiliation"><?= $this->translate->_("Affiliation"); ?></label>
-                            <div class="col-lg-4">
-                                <select class="select2" style="width:100%;" name="affiliation" id="affiliation" placeholder="<?= $this->htmlTranslate("Choose affiliation") ?>" title="<?= $this->htmlTranslate("Please choose a affiliation") ?>" onchange="getDataManager()">
-                                    <option value=""></option>
-                                    <?php foreach ($this->affiliation as $affiliation) { ?>
-                                        <option value="<?php echo $affiliation['affiliate']; ?>"><?php echo $affiliation['affiliate']; ?></option>
-                                    <?php } ?>
-                                </select>
-                            </div>
+                    </select>
+                </div>
+            <?php } ?>
+            <?php if ($hasDistricts) { ?>
+                <div>
+                    <label for="district"><?= $this->translate->_("District"); ?></label>
+                    <select style="width:100%;" id="district" onchange="getInstitutes();loadParticipants();">
+                        <option value=""></option>
+                        <?php foreach ($this->district as $district) { ?>
+                            <option value="<?php echo $this->escape($district['district']); ?>"><?php echo $this->escape($district['district']); ?></option>
                         <?php } ?>
-                    </div>
-                <?php } ?>
+                    </select>
+                </div>
+            <?php } ?>
+        </div>
+
+        <?php if ($hasMoreFilters) { ?>
+            <div class="data-list-filterbar">
+                <button type="button" id="moreFiltersBtn" class="btn btn-default btn-sm" aria-expanded="false" aria-controls="moreFilters">
+                    <i class="icon-filter"></i>&nbsp;<?= $this->translate->_("More filters"); ?><span id="moreFiltersCount" class="filter-active-count" style="display:none;"></span><i class="icon-chevron-down filterbar-caret"></i>
+                </button>
             </div>
-    </fieldset>
+            <div id="moreFilters" class="data-list-filters-collapse">
+                <div class="data-list-filters">
+                    <?php if ($hasInstitutes) { ?>
+                        <div>
+                            <label for="institute"><?= $this->translate->_("Institute"); ?></label>
+                            <select style="width:100%;" id="institute" class="more-filter" onchange="loadParticipants();">
+                                <option value=""></option>
+                                <?php foreach ($this->institutes as $institute) { ?>
+                                    <option value="<?php echo $this->escape($institute['institute_name']); ?>"><?php echo $this->escape($institute['institute_name']); ?></option>
+                                <?php } ?>
+                            </select>
+                        </div>
+                    <?php } ?>
+                    <?php if ($hasNetworks) { ?>
+                        <div>
+                            <label for="networkTier"><?= $this->translate->_("Network Tier"); ?></label>
+                            <select style="width:100%;" id="networkTier" class="more-filter" onchange="loadParticipants();">
+                                <option value=""></option>
+                                <?php foreach ($this->networksTier as $networkTier) { ?>
+                                    <option value="<?php echo $this->escape($networkTier['network_id']); ?>"><?php echo $this->escape($networkTier['network_name']); ?></option>
+                                <?php } ?>
+                            </select>
+                        </div>
+                    <?php } ?>
+                    <?php if ($hasAffiliations) { ?>
+                        <div>
+                            <label for="affiliation"><?= $this->translate->_("Affiliation"); ?></label>
+                            <select style="width:100%;" id="affiliation" class="more-filter" onchange="loadParticipants();">
+                                <option value=""></option>
+                                <?php foreach ($this->affiliation as $affiliation) { ?>
+                                    <option value="<?php echo $this->escape($affiliation['affiliate']); ?>"><?php echo $this->escape($affiliation['affiliate']); ?></option>
+                                <?php } ?>
+                            </select>
+                        </div>
+                    <?php } ?>
+                </div>
+            </div>
+        <?php } ?>
+
+        <div id="mapperEmpty" class="mapper-empty"<?= $isModal ? ' style="display:none;"' : ''; ?>>
+            <strong><?= $this->translate->_("Choose a data manager to start"); ?></strong>
+            <?= $this->translate->_("You will see the participants they can enter results for, and can add or remove participants."); ?>
+        </div>
+
+        <form name="submitParticipantMap" id="submitParticipantMap" method="post" action="<?php echo $mapUrl; ?>">
+            <?php if ($isModal) { ?>
+                <input type="hidden" name="isModal" value="1" />
+            <?php } ?>
+            <input type="hidden" id="datamanagerId" name="datamanagerId" />
+            <input type="hidden" name="selectedForMapping" id="selectedForMapping" value="" />
+
+            <div id="mapForm" style="display:none;">
+                <?php
+                $this->mapperLabels = [
+                    'left' => $this->translate->_("Not mapped"),
+                    'right' => $this->translate->_("Mapped"),
+                    'saved' => $this->translate->_("Saved"),
+                    'add' => $this->translate->_("To add"),
+                    'remove' => $this->translate->_("To remove"),
+                ];
+                echo $this->render('partials/dual-mapper.phtml');
+                ?>
+                <div class="mapper-savebar">
+                    <span id="mapperSummary" class="mapper-summary"></span>
+                    <?php if ($isModal) { ?>
+                        <button type="button" class="btn btn-default" onclick="closeMapper();"><?= $this->translate->_("Close"); ?></button>
+                    <?php } ?>
+                    <button type="button" id="mapperDiscard" class="btn btn-default" onclick="discardChanges();" disabled><?= $this->translate->_("Discard"); ?></button>
+                    <button type="button" id="mapperSave" class="btn btn-primary" onclick="validateNow();" disabled><?= $this->translate->_("Save changes"); ?></button>
+                </div>
+            </div>
+        </form>
+    </div>
 </div>
-<form name="submitParticipantMap" id="submitParticipantMap" method="post" action="<?php echo $this->url(array('module' => 'admin', 'controller' => 'participants', 'action' => 'participant-manager-map'), 'default', true); ?>" enctype="multipart/form-data">
-    <?php if (!empty($this->isModal)) { ?>
-        <input type="hidden" name="isModal" value="1" />
-    <?php } ?>
-    <div id="mapForm" class="hide singleMap">
-        <div class="text-info" style="text-align:center;padding:10px 0;"><?= $this->translate->_("Click on the Participant Name to move them between the two sections"); ?><br /><br />
-            <div style="width:500px;margin:0 auto;clear:both;">
-                <a href='#' id='select-all-participant' style="float:left" class="btn btn-info btn-xs"><?= $this->translate->_("Select All"); ?>&nbsp;&nbsp;<i class="icon-chevron-right"></i></a> <a href='#' id='deselect-all-participant' style="float:right" class="btn btn-danger btn-xs"><i class="icon-chevron-left"></i>&nbsp;&nbsp;&nbsp;<?= $this->translate->_("Deselect All"); ?></a>
-            </div>
-        </div>
-        <br />
-        <div class="virt-legend">
-            <span class="virt-legend-item"><span class="virt-legend-swatch" style="background:#607d8b;"></span><?= $this->htmlTranslate("Saved (already mapped)"); ?></span>
-            <span class="virt-legend-item"><span class="virt-legend-swatch" style="background:#2e7d32;"></span><?= $this->htmlTranslate("Pending add (save to apply)"); ?></span>
-            <span class="virt-legend-item"><span class="virt-legend-swatch" style="background:#ef6c00;"></span><?= $this->htmlTranslate("Pending remove (save to apply)"); ?></span>
-        </div>
-        <div class="virt-dual-list">
-            <div class="virt-pane" data-side="left">
-                <div class="virt-pane-header"><input type="text" class="form-control" autocomplete="off" placeholder="<?= $this->htmlTranslate("Type PT Login Name To Filter"); ?>"></div>
-                <div class="virt-pane-scroll"><div class="virt-pane-inner"></div></div>
-                <div class="virt-pane-footer"><?= $this->htmlTranslate("Unselected PT Logins"); ?> (<span class="virt-count">0</span>)<span class="virt-diff virt-diff-removed" style="display:none;">&minus; <span class="virt-diff-count">0</span> <?= $this->htmlTranslate("pending remove"); ?></span></div>
-            </div>
-            <div class="virt-arrows">&#8646;</div>
-            <div class="virt-pane" data-side="right">
-                <div class="virt-pane-header"><input type="text" class="form-control" autocomplete="off" placeholder="<?= $this->htmlTranslate("Type PT Login Name To Filter"); ?>"></div>
-                <div class="virt-pane-scroll"><div class="virt-pane-inner"></div></div>
-                <div class="virt-pane-footer"><?= $this->htmlTranslate("Selected PT Logins"); ?> (<span class="virt-count">0</span>)<span class="virt-diff virt-diff-added" style="display:none;">+ <span class="virt-diff-count">0</span> <?= $this->htmlTranslate("pending add"); ?></span></div>
-            </div>
-        </div>
-        <br />
-        <input type="hidden" id='datamanagerId' name='datamanagerId' />
-        <input type="hidden" name="selectedForMapping" id="selectedForMapping" value="" />
-        <div class="col-md-12 col-xs-12" align="center">
-            <input name="submitbtn" class="btn btn-primary" type="button" onclick="validateNow(); return false;" tabindex="7" value="Save Selected" />
-            <?php if (!empty($this->isModal)) { ?>
-                <input type="button" onclick="if (window.parent && window.parent.closeLayoutModal) { window.parent.closeLayoutModal(); } else { window.close(); }" class="btn btn-danger" value="<?= $this->translate->_("Cancel"); ?>" />
-            <?php } else { ?>
-                <input type="button" onclick="window.location.href = '<?php echo $this->url(array('module' => 'admin', 'controller' => 'participants', 'action' => 'participant-manager-map'), 'default', true); ?>'" class="btn btn-danger" value="<?= $this->translate->_("Cancel"); ?>" />
-            <?php } ?>
-        </div>
-    </div>
 
-    <div id="bulkForm" class="row bulkForm" style="display:none;">
-        <label class="col-lg-3 control-label" style="height: 40px;"><?= $this->translate->_("Upload Bulk Importing Map File"); ?></label>
-        <div class="col-lg-6">
-            <input class="form-control" style="width:100%;" name="bulkMap" id="bulkMap" type="file" placeholder="<?= $this->htmlTranslate("Upload mapping file") ?>" title="<?= $this->htmlTranslate("Please choose a file to upload") ?>" />
-        </div>
-        <input name="submitbtn" class="btn btn-primary" type="button" onclick="validateNow(); return false;" tabindex="7" value="<?= $this->translate->_("Upload"); ?>" />
-        <input type="button" onclick="window.location.href = '<?php echo $this->url(array('module' => 'admin', 'controller' => 'participants', 'action' => 'participant-manager-map'), 'default', true); ?>'" class="btn btn-danger" value="<?= $this->translate->_("Cancel"); ?>" />
-    </div>
-</form>
+<?php if (!$isModal) { ?>
+    <script type="text/template" id="bulkImportTpl">
+        <form id="bulkMapForm" method="post" action="<?php echo $mapUrl; ?>" enctype="multipart/form-data">
+            <p><?= $this->translate->_("Upload an Excel or CSV file. Row 1 is the header and is skipped. Each other row maps one participant to one data manager."); ?></p>
+            <table class="mapper-format">
+                <tr><th><?= $this->translate->_("Column"); ?></th><th><?= $this->translate->_("Contents"); ?></th></tr>
+                <tr><td>B</td><td><?= $this->translate->_("Lab ID (required)"); ?></td></tr>
+                <tr><td>C</td><td><?= $this->translate->_("Data manager name"); ?></td></tr>
+                <tr><td>D</td><td><?= $this->translate->_("Data manager primary email (required)"); ?></td></tr>
+                <tr><td>E</td><td><?= $this->translate->_("Secondary email"); ?></td></tr>
+                <tr><td>F</td><td><?= $this->translate->_("Mobile"); ?></td></tr>
+            </table>
+            <p class="text-warning"><?= $this->translate->_("If no data manager has the email in column D, a new one is created with the default password. Existing mappings are kept."); ?></p>
+            <input class="form-control" name="bulkMap" id="bulkMap" type="file" accept=".xls,.xlsx,.csv" />
+        </form>
+    </script>
+<?php } ?>
+
 <script type="text/javascript" src="<?php echo $this->baseUrl('js/select2.min.js'); ?>"></script>
+<script type="text/javascript" src="<?php echo $this->baseUrl('js/dual-mapper.js'); ?>"></script>
 <script>
-    var GET_PARTICIPANT_URL = "<?php echo $this->url(array('module' => 'admin', 'controller' => 'participants', 'action' => 'get-participant')); ?>";
-    var GET_DM_NAMES_URL = "<?php echo $this->url(array('module' => 'admin', 'controller' => 'participants', 'action' => 'get-datamanager-names')); ?>";
-
-    var DualList = (function() {
-        var ROW_HEIGHT = 30;
-        var OVERSCAN = 6;
-        var state = { left: [], right: [] };
-        var panes = {};
-
-        function escapeHtml(s) {
-            return String(s).replace(/[&<>"']/g, function(c) {
-                return ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' })[c];
-            });
-        }
-
-        function initPane(sideKey, paneEl) {
-            var $pane = $(paneEl);
-            var pane = {
-                sideKey: sideKey,
-                $scroll: $pane.find('.virt-pane-scroll'),
-                $inner: $pane.find('.virt-pane-inner'),
-                $search: $pane.find('.virt-pane-header input'),
-                $count: $pane.find('.virt-count'),
-                $diff: $pane.find('.virt-diff'),
-                $diffCount: $pane.find('.virt-diff-count'),
-                filter: '',
-                filtered: []
-            };
-            pane.$scroll.on('scroll', function() { render(pane); });
-            pane.$search.on('input', function() {
-                pane.filter = pane.$search.val().toLowerCase();
-                recomputeFiltered(pane);
-                pane.$scroll.scrollTop(0);
-                render(pane);
-            });
-            pane.$inner.on('click', '.virt-row', function() {
-                moveItem(pane.sideKey, $(this).attr('data-id'));
-            });
-            panes[sideKey] = pane;
-        }
-
-        function recomputeFiltered(pane) {
-            var src = state[pane.sideKey];
-            if (!pane.filter) {
-                pane.filtered = src;
-            } else {
-                var f = pane.filter;
-                pane.filtered = [];
-                for (var i = 0; i < src.length; i++) {
-                    if (src[i]._lc.indexOf(f) !== -1) pane.filtered.push(src[i]);
-                }
-            }
-            pane.$count.text(pane.filtered.length);
-            pane.$inner.css('height', (pane.filtered.length * ROW_HEIGHT) + 'px');
-            updateDiffBadge(pane);
-        }
-
-        function updateDiffBadge(pane) {
-            if (!pane.$diff || pane.$diff.length === 0) return;
-            var src = state[pane.sideKey];
-            var diffCount = 0;
-            if (pane.sideKey === 'right') {
-                for (var i = 0; i < src.length; i++) if (!src[i].savedRight) diffCount++;
-            } else {
-                for (var j = 0; j < src.length; j++) if (src[j].savedRight) diffCount++;
-            }
-            pane.$diffCount.text(diffCount);
-            pane.$diff.toggle(diffCount > 0);
-        }
-
-        function rowClass(it, sideKey) {
-            if (sideKey === 'right') {
-                return it.savedRight ? 'virt-row-saved' : 'virt-row-added';
-            }
-            return it.savedRight ? 'virt-row-removed' : '';
-        }
-
-        function render(pane) {
-            var scrollTop = pane.$scroll.scrollTop();
-            var h = pane.$scroll.height();
-            var first = Math.max(0, Math.floor(scrollTop / ROW_HEIGHT) - OVERSCAN);
-            var last = Math.min(pane.filtered.length, Math.ceil((scrollTop + h) / ROW_HEIGHT) + OVERSCAN);
-            var parts = [];
-            for (var i = first; i < last; i++) {
-                var it = pane.filtered[i];
-                var cls = rowClass(it, pane.sideKey);
-                parts.push(
-                    '<div class="virt-row' + (cls ? ' ' + cls : '') + '" style="top:' + (i * ROW_HEIGHT) + 'px" data-id="' +
-                    escapeHtml(it.id) + '">' + escapeHtml(it.label) + '</div>'
-                );
-            }
-            pane.$inner.html(parts.join(''));
-        }
-
-        function moveItem(fromSide, id) {
-            var toSide = fromSide === 'left' ? 'right' : 'left';
-            var arr = state[fromSide];
-            for (var i = 0; i < arr.length; i++) {
-                if (String(arr[i].id) === String(id)) {
-                    var item = arr.splice(i, 1)[0];
-                    state[toSide].push(item);
-                    break;
-                }
-            }
-            refresh();
-        }
-
-        function refresh() {
-            recomputeFiltered(panes.left);
-            recomputeFiltered(panes.right);
-            render(panes.left);
-            render(panes.right);
-        }
-
-        function load(items) {
-            state.left = [];
-            state.right = [];
-            for (var i = 0; i < items.length; i++) {
-                var it = items[i];
-                it._lc = String(it.label).toLowerCase();
-                it.savedRight = !!it.selected;
-                if (it.selected) state.right.push(it);
-                else state.left.push(it);
-            }
-            if (panes.left) { panes.left.$search.val(''); panes.left.filter = ''; panes.left.$scroll.scrollTop(0); }
-            if (panes.right) { panes.right.$search.val(''); panes.right.filter = ''; panes.right.$scroll.scrollTop(0); }
-            refresh();
-        }
-
-        function selectAll() {
-            state.right = state.right.concat(state.left);
-            state.left = [];
-            refresh();
-        }
-
-        function deselectAll() {
-            state.left = state.left.concat(state.right);
-            state.right = [];
-            refresh();
-        }
-
-        function getSelectedIds() {
-            var ids = [];
-            for (var i = 0; i < state.right.length; i++) ids.push(state.right[i].id);
-            return ids;
-        }
-
-        return {
-            init: initPane,
-            load: load,
-            selectAll: selectAll,
-            deselectAll: deselectAll,
-            getSelectedIds: getSelectedIds
-        };
-    })();
-
-    function advFilter() {
-        $('.advFilter').toggle();
-        if ($('.filter-btn').text() == 'Show advanced filters') {
-            $('.filter-btn').text('Hide advanced filters');
-        } else {
-            $('.filter-btn').text('Show advanced filters');
-        }
-    }
-
-    function getStats(cid) {
-        $.blockUI();
-        $.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'common', 'action' => 'get-country-wise-states')); ?>", { cid: cid, format: "html" },
-            function(data) {
-                if (data != "" && data != undefined) { $('#province').html(data); }
-                $.unblockUI();
-            });
-    }
-
-    function getDistricts(pid) {
-        $.blockUI();
-        $.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'common', 'action' => 'get-state-wise-districts')); ?>", { pid: pid, format: "html" },
-            function(data) {
-                if (data != "" && data != undefined) { $('#district').html(data); }
-                $.unblockUI();
-            });
-    }
-
-    function getInstitutes() {
-        $.blockUI();
-        $.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'common', 'action' => 'get-state-districts-wise-institute')); ?>", {
-                pid: $('#province').val(),
-                did: $('#district').val(),
-                format: "html"
-            },
-            function(data) {
-                if (data != "" && data != undefined) { $('#institute').html(data); }
-                $.unblockUI();
-            });
-    }
+    var GET_PARTICIPANT_URL = "<?php echo $this->url(['module' => 'admin', 'controller' => 'participants', 'action' => 'get-participant']); ?>";
+    var GET_DM_NAMES_URL = "<?php echo $this->url(['module' => 'admin', 'controller' => 'participants', 'action' => 'get-datamanager-names']); ?>";
 
     var MAP_I18N = {
-        uploadFileRequired: "<?= $this->jsTranslate("Please upload the file to process."); ?>",
         selectDmRequired: "<?= $this->jsTranslate("Please select PT Login to map the participants"); ?>",
         confirmEmpty: "<?= $this->jsTranslate("No participants are selected. Saving now will remove ALL participant mappings for this PT Login. Continue?"); ?>",
+        confirmDiscard: "<?= $this->jsTranslate("You have unsaved changes. Discard them?"); ?>",
+        noChanges: "<?= $this->jsTranslate("No unsaved changes"); ?>",
+        changes: "<?= $this->jsTranslate("%1 to add, %2 to remove. Not saved yet."); ?>",
+        nothingHere: "<?= $this->jsTranslate("No participants here"); ?>",
+        noMatch: "<?= $this->jsTranslate("No participants match the search"); ?>",
+        uploadFileRequired: "<?= $this->jsTranslate("Please upload the file to process."); ?>",
+        bulkTitle: "<?= $this->jsTranslate("Bulk Import Mapping"); ?>",
+        upload: "<?= $this->jsTranslate("Upload"); ?>",
+        cancel: "<?= $this->jsTranslate("Cancel"); ?>",
         saved: "<?= $this->jsTranslate("Mapping saved"); ?>",
         saveFailed: "<?= $this->jsTranslate("Save failed. Please try again, or contact support if it keeps happening."); ?>",
         networkError: "<?= $this->jsTranslate("Could not reach the server. Check your connection and try again."); ?>",
@@ -406,97 +201,49 @@
         traceIdLabel: "<?= $this->jsTranslate("Reference"); ?>"
     };
 
-    function validateNow() {
-        if ($('#bulkForm').is(":visible") == true) {
-            if ($('#bulkMap').val() != "") {
-                document.getElementById('submitParticipantMap').submit();
-                return false;
-            } else {
-                alert(MAP_I18N.uploadFileRequired);
-                return false;
-            }
-        }
-        if ($('#alldatamangers').val() == "" || $('#alldatamangers').val() == null) {
-            alert(MAP_I18N.selectDmRequired);
-            return false;
-        }
+    var mapper = null;
 
-        var flag = deforayValidator.init({ formId: 'submitParticipantMap' });
-        if (flag) {
-            var selectedIds = DualList.getSelectedIds();
-            if (selectedIds.length === 0) {
-                if (!confirm(MAP_I18N.confirmEmpty)) {
-                    return;
-                }
-                $('#submitParticipantMap').find('input[name="allowEmptyMapping"]').remove();
-                $('<input>').attr({ type: 'hidden', name: 'allowEmptyMapping', value: '1' }).appendTo('#submitParticipantMap');
-            }
-            $("#selectedForMapping").val(JSON.stringify(selectedIds));
-            saveMappingAjax();
-        }
+    function currentDmId() {
+        return $('#alldatamangers').val();
     }
 
-    function saveMappingAjax() {
-        var form = document.getElementById('submitParticipantMap');
-        var fd = new FormData(form);
-        $.blockUI();
-        $.ajax({
-            url: form.action,
-            type: 'POST',
-            data: fd,
-            processData: false,
-            contentType: false,
-            dataType: 'json',
-            headers: { 'X-Requested-With': 'XMLHttpRequest' }
-        }).done(function(resp) {
-            $.unblockUI();
-            if (resp && resp.success) {
-                showMappingFlash(resp.message || MAP_I18N.saved, 'success');
-                loadParticipants();
-            } else {
-                var msg = (resp && resp.message) ? resp.message : MAP_I18N.saveFailed;
-                if (resp && resp.trace_id) {
-                    msg += ' (' + MAP_I18N.traceIdLabel + ': ' + resp.trace_id + ')';
-                }
-                showMappingFlash(msg, 'danger');
-            }
-        }).fail(function(xhr) {
-            $.unblockUI();
-            showMappingFlash(humanizeAjaxFailure(xhr), 'danger');
-        });
+    function getStats(cid) {
+        if (!$('#province').length) return;
+        $.post("<?php echo $this->url(['module' => 'default', 'controller' => 'common', 'action' => 'get-country-wise-states']); ?>", { cid: cid, format: "html" },
+            function(data) {
+                if (data != "" && data != undefined) { $('#province').html(data); }
+            });
     }
 
-    function humanizeAjaxFailure(xhr) {
-        if (!xhr || xhr.status === 0) return MAP_I18N.networkError;
-        if (xhr.status === 401 || xhr.status === 403) return MAP_I18N.sessionExpired;
-        // Server returned a JSON payload with a friendly message
-        if (xhr.responseJSON && xhr.responseJSON.message) {
-            var msg = xhr.responseJSON.message;
-            if (xhr.responseJSON.trace_id) {
-                msg += ' (' + MAP_I18N.traceIdLabel + ': ' + xhr.responseJSON.trace_id + ')';
-            }
-            return msg;
+    function getDistricts(pid) {
+        if (!$('#district').length) return;
+        $.post("<?php echo $this->url(['module' => 'default', 'controller' => 'common', 'action' => 'get-state-wise-districts']); ?>", { pid: pid, format: "html" },
+            function(data) {
+                if (data != "" && data != undefined) { $('#district').html(data); }
+            });
+    }
+
+    function getInstitutes() {
+        if (!$('#institute').length) return;
+        $.post("<?php echo $this->url(['module' => 'default', 'controller' => 'common', 'action' => 'get-state-districts-wise-institute']); ?>", {
+                pid: $('#province').val(),
+                did: $('#district').val(),
+                format: "html"
+            },
+            function(data) {
+                if (data != "" && data != undefined) { $('#institute').html(data); }
+            });
+    }
+
+    // keepPending is true for filter changes, so narrowing the list never throws
+    // away moves the admin has not saved yet.
+    function loadParticipants(keepPending) {
+        var dmId = currentDmId();
+        if (!dmId) {
+            $('#mapForm').hide();
+            $('#mapperEmpty').show();
+            return;
         }
-        return MAP_I18N.serverError + ' (HTTP ' + xhr.status + ')';
-    }
-
-    function showMappingFlash(msg, level) {
-        var cls = level === 'danger' ? 'alert-danger' : 'alert-success';
-        var $flash = $('#mappingFlash');
-        if ($flash.length === 0) {
-            $flash = $('<div id="mappingFlash" class="alert" style="margin:10px auto;max-width:1100px;"></div>')
-                .insertBefore('#mapForm');
-        }
-        $flash.removeClass('alert-success alert-danger').addClass(cls).text(msg).show();
-        clearTimeout(showMappingFlash._t);
-        // Errors stay visible longer so the user can read the trace id
-        var ttl = level === 'danger' ? 10000 : 3500;
-        showMappingFlash._t = setTimeout(function() { $flash.fadeOut(300); }, ttl);
-    }
-
-    function loadParticipants() {
-        var dmId = $('#alldatamangers').val();
-        if (!dmId) return;
         $('#datamanagerId').val(dmId);
         $.blockUI();
         $.ajax({
@@ -514,27 +261,125 @@
                 format: 'html'
             }
         }).done(function(items) {
-            $('.singleMap').removeClass('hide');
-            $('#bulkForm').hide();
-            DualList.load(items || []);
+            $('#mapperEmpty').hide();
+            $('#mapForm').show();
+            mapper.load(items || [], keepPending !== false);
         }).always(function() {
             $.unblockUI();
         });
     }
 
-    function getParticipants(datamanagerId) { loadParticipants(); }
-    function getDataManager() { loadParticipants(); }
-
-    function bulkShowHide() {
-        $('#bulkForm').toggle();
-        if ($('#bulkForm').is(':visible') == true) {
-            $('.singleMap').addClass('hide');
+    function validateNow() {
+        if (!currentDmId()) {
+            alert(MAP_I18N.selectDmRequired);
+            return;
         }
+        var $form = $('#submitParticipantMap');
+        $form.find('input[name="allowEmptyMapping"]').remove();
+        var selectedIds = mapper.getSelectedIds();
+        if (selectedIds.length === 0) {
+            if (!confirm(MAP_I18N.confirmEmpty)) return;
+            $('<input>').attr({ type: 'hidden', name: 'allowEmptyMapping', value: '1' }).appendTo($form);
+        }
+        $('#selectedForMapping').val(JSON.stringify(selectedIds));
+        saveMappingAjax();
+    }
+
+    function saveMappingAjax() {
+        var form = document.getElementById('submitParticipantMap');
+        $.blockUI();
+        $.ajax({
+            url: form.action,
+            type: 'POST',
+            data: new FormData(form),
+            processData: false,
+            contentType: false,
+            dataType: 'json',
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        }).done(function(resp) {
+            $.unblockUI();
+            if (resp && resp.success) {
+                showMappingFlash(resp.message || MAP_I18N.saved, 'success');
+                loadParticipants(false);
+            } else {
+                var msg = (resp && resp.message) ? resp.message : MAP_I18N.saveFailed;
+                if (resp && resp.trace_id) {
+                    msg += ' (' + MAP_I18N.traceIdLabel + ': ' + resp.trace_id + ')';
+                }
+                showMappingFlash(msg, 'danger');
+            }
+        }).fail(function(xhr) {
+            $.unblockUI();
+            showMappingFlash(humanizeAjaxFailure(xhr), 'danger');
+        });
+    }
+
+    function humanizeAjaxFailure(xhr) {
+        if (!xhr || xhr.status === 0) return MAP_I18N.networkError;
+        if (xhr.status === 401 || xhr.status === 403) return MAP_I18N.sessionExpired;
+        if (xhr.responseJSON && xhr.responseJSON.message) {
+            var msg = xhr.responseJSON.message;
+            if (xhr.responseJSON.trace_id) {
+                msg += ' (' + MAP_I18N.traceIdLabel + ': ' + xhr.responseJSON.trace_id + ')';
+            }
+            return msg;
+        }
+        return MAP_I18N.serverError + ' (HTTP ' + xhr.status + ')';
+    }
+
+    function showMappingFlash(msg, level) {
+        var $flash = $('#mappingFlash');
+        if ($flash.length === 0) {
+            $flash = $('<div id="mappingFlash" class="alert" style="margin:14px 0 0;"></div>').insertBefore('#mapForm .mapper-dual');
+        }
+        $flash.removeClass('alert-success alert-danger').addClass(level === 'danger' ? 'alert-danger' : 'alert-success').text(msg).show();
+        clearTimeout(showMappingFlash._t);
+        // Errors stay visible longer so the user can read the trace id
+        showMappingFlash._t = setTimeout(function() { $flash.fadeOut(300); }, level === 'danger' ? 10000 : 3500);
+    }
+
+    function discardChanges() {
+        if (mapper.isDirty() && !confirm(MAP_I18N.confirmDiscard)) return;
+        loadParticipants(false);
+    }
+
+    function closeMapper() {
+        if (mapper.isDirty() && !confirm(MAP_I18N.confirmDiscard)) return;
+        if (window.parent && window.parent.closeLayoutModal) {
+            window.parent.closeLayoutModal();
+        } else {
+            window.close();
+        }
+    }
+
+    function openBulkImport() {
+        bootbox.dialog({
+            title: MAP_I18N.bulkTitle,
+            message: $('#bulkImportTpl').html(),
+            buttons: {
+                cancel: { label: MAP_I18N.cancel, className: 'btn-default' },
+                upload: {
+                    label: MAP_I18N.upload,
+                    className: 'btn-primary',
+                    callback: function() {
+                        if (!$('#bulkMap').val()) {
+                            alert(MAP_I18N.uploadFileRequired);
+                            return false;
+                        }
+                        $.blockUI();
+                        // The dialog's form did not exist at page load, and submit() skips
+                        // the submit handler that adds the token, so add it here.
+                        addCsrfTokenToForm($('#bulkMapForm'));
+                        document.getElementById('bulkMapForm').submit();
+                    }
+                }
+            }
+        });
     }
 
     function generateParticipantMapExport() {
         $.blockUI();
-        $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'participants', 'action' => 'export-participants-map')); ?>", { format: "html" },
+        $.post("<?php echo $this->url(['module' => 'admin', 'controller' => 'participants', 'action' => 'export-participants-map']); ?>", { format: "html" },
             function(data) {
                 if (data != "") {
                     document.location.href = '/temporary/' + data;
@@ -543,50 +388,67 @@
             });
     }
 
-    $(document).ready(function() {
-        $("#country").select2({ allowClear: true, placeholder: "<?= $this->jsTranslate("Select Country"); ?>" });
-        $("#province").select2({ allowClear: true, placeholder: "<?= $this->jsTranslate("Select Province"); ?>" });
-        $("#district").select2({ allowClear: true, placeholder: "<?= $this->jsTranslate("Select District"); ?>" });
-        $("#networkTier").select2({ allowClear: true, placeholder: "<?= $this->jsTranslate("Select Network Tier"); ?>" });
-        $("#affiliation").select2({ allowClear: true, placeholder: "<?= $this->jsTranslate("Select Affiliation"); ?>" });
-        $("#institute").select2({ allowClear: true, placeholder: "<?= $this->jsTranslate("Select Institute"); ?>" });
+    function updateMoreFiltersCount() {
+        var n = $('.more-filter').filter(function() { return !!$(this).val(); }).length;
+        $('#moreFiltersCount').text(n).toggle(n > 0);
+    }
 
-        <?php if (empty($this->isModal)) { ?>
-        $("#alldatamangers").select2({
-            placeholder: "<?= $this->jsTranslate("Select PT Login"); ?>",
+    function updateSaveBar(c) {
+        var dirty = c.add + c.remove > 0;
+        $('#mapperSummary').toggleClass('is-dirty', dirty)
+            .text(dirty ? MAP_I18N.changes.replace('%1', c.add).replace('%2', c.remove) : MAP_I18N.noChanges);
+        $('#mapperSave, #mapperDiscard').prop('disabled', !dirty);
+    }
+
+    $(window).on('beforeunload', function() {
+        if (mapper && mapper.isDirty()) return MAP_I18N.confirmDiscard;
+    });
+
+    $(document).ready(function() {
+        $('#country').select2({ allowClear: true, placeholder: "<?= $this->jsTranslate("All countries"); ?>" });
+        $('#province').select2({ allowClear: true, placeholder: "<?= $this->jsTranslate("All provinces"); ?>" });
+        $('#district').select2({ allowClear: true, placeholder: "<?= $this->jsTranslate("All districts"); ?>" });
+        $('#institute').select2({ allowClear: true, placeholder: "<?= $this->jsTranslate("All institutes"); ?>" });
+        $('#networkTier').select2({ allowClear: true, placeholder: "<?= $this->jsTranslate("All network tiers"); ?>" });
+        $('#affiliation').select2({ allowClear: true, placeholder: "<?= $this->jsTranslate("All affiliations"); ?>" });
+        $('.more-filter').on('change', updateMoreFiltersCount);
+
+        $('#moreFiltersBtn').on('click', function() {
+            var open = $('#moreFilters').toggleClass('is-open').hasClass('is-open');
+            $(this).toggleClass('is-open', open).attr('aria-expanded', open ? 'true' : 'false');
+        });
+
+        <?php if (!$isModal) { ?>
+        $('#alldatamangers').select2({
+            placeholder: "<?= $this->jsTranslate("Type a name or email to search"); ?>",
             allowClear: true,
             minimumInputLength: 1,
             ajax: {
                 url: GET_DM_NAMES_URL,
                 dataType: 'json',
                 delay: 250,
-                data: function(params) {
-                    var term = (params && params.term) ? params.term : '';
-                    return { search: term };
-                },
-                results: function(data) { return { results: (data && data.result) ? data.result : [] }; },
+                data: function(params) { return { search: (params && params.term) ? params.term : '' }; },
                 processResults: function(data) { return { results: (data && data.result) ? data.result : [] }; },
                 cache: true
             }
-        }).on('change', function() { loadParticipants(); });
+        }).on('select2:selecting select2:unselecting', function(e) {
+            // Switching data manager reloads both lists, so ask before unsaved moves are lost.
+            if (mapper.isDirty() && !confirm(MAP_I18N.confirmDiscard)) {
+                e.preventDefault();
+            }
+        }).on('change', function() {
+            loadParticipants(false);
+        });
         <?php } ?>
 
-        $('.virt-pane').each(function() {
-            DualList.init($(this).attr('data-side'), this);
-        });
-
-        $('#select-all-participant').on('click', function(e) {
-            e.preventDefault();
-            DualList.selectAll();
-        });
-        $('#deselect-all-participant').on('click', function(e) {
-            e.preventDefault();
-            DualList.deselectAll();
+        mapper = DualMapper.create('#mapForm', {
+            nothingHere: MAP_I18N.nothingHere,
+            noMatch: MAP_I18N.noMatch,
+            onChange: updateSaveBar
         });
 
         <?php if (!empty($this->preselectedDmId)) { ?>
-            $('#datamanagerId').val('<?php echo (int) $this->preselectedDmId; ?>');
-            loadParticipants();
+            loadParticipants(false);
         <?php } ?>
     });
 </script>

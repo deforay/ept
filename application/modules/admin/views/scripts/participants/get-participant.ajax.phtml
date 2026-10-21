@@ -12,6 +12,8 @@ foreach ($this->participants as $participant) {
     $out[] = [
         'id'       => $participant['participant_id'],
         'label'    => $label,
+        'code'     => (string) $participant['unique_identifier'],
+        'name'     => $name,
         'selected' => isset($mapIds[$participant['participant_id']]),
     ];
 }

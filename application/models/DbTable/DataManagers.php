@@ -2170,11 +2170,15 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                     }
                     $db->beginTransaction();
                     $inTx = true;
+                    // The pickers that send this list only load active participants, so a
+                    // link to an inactive or pending one was never on screen to keep.
+                    // Only active links are replaced. The others survive the save.
+                    $onlyActive = "participant_id IN (SELECT participant_id FROM participant WHERE status = 'active')";
                     if (!empty($ids)) {
-                        $db->delete('participant_manager_map', ['participant_id NOT IN(' . implode(',', $ids) . ')', 'dm_id = ' . (int) $dmId]);
+                        $db->delete('participant_manager_map', ['participant_id NOT IN(' . implode(',', $ids) . ')', 'dm_id = ' . (int) $dmId, $onlyActive]);
                     } else {
                         // explicit clear-all
-                        $db->delete('participant_manager_map', 'dm_id = ' . (int) $dmId);
+                        $db->delete('participant_manager_map', ['dm_id = ' . (int) $dmId, $onlyActive]);
                     }
                     $data = [];
                     foreach ($ids as $p) {
