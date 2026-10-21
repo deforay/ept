@@ -128,17 +128,27 @@ if (function_exists('pcntl_signal')) {
 fwrite(STDOUT, sprintf("Comparing %s (%s) with the working tree, on %s.\n", $base, substr($baseSha, 0, 9), $config->dbName));
 $sandbox->setAsideReports();
 
-// The base tree shares vendor/ and node_modules/, and gets its own copy of the
-// untracked config and of public/uploads. A symlinked uploads folder resolves
-// outside the tree, and the PDF HTML check would drop its images.
+// The base tree shares node_modules/, and shares vendor/ unless composer.lock
+// differs, as it does when the change is a library upgrade. It gets its own
+// copy of the untracked config and of public/uploads. A symlinked uploads
+// folder resolves outside the tree, and the PDF HTML check would drop its images.
 shell_exec(sprintf('git -C %s worktree add --detach --quiet %s %s 2>&1', escapeshellarg($repoRoot), escapeshellarg($worktree), escapeshellarg($baseSha)));
 if (!is_dir($worktree)) {
     fwrite(STDERR, "Could not create the worktree at $worktree.\n");
     exit(1);
 }
-foreach (['vendor', 'node_modules'] as $shared) {
-    if (is_dir("$repoRoot/$shared")) {
-        symlink("$repoRoot/$shared", "$worktree/$shared");
+if (is_dir("$repoRoot/node_modules")) {
+    symlink("$repoRoot/node_modules", "$worktree/node_modules");
+}
+if (file_get_contents("$worktree/composer.lock") === file_get_contents("$repoRoot/composer.lock")) {
+    symlink("$repoRoot/vendor", "$worktree/vendor");
+} else {
+    fwrite(STDOUT, "composer.lock differs, so installing the base's packages.\n");
+    // No scripts: post-install runs bin/run-once.php against the database.
+    exec(sprintf('composer install --working-dir=%s --no-interaction --no-progress --no-scripts --quiet 2>&1', escapeshellarg($worktree)), $output, $status);
+    if ($status !== 0) {
+        fwrite(STDERR, "composer install failed in the worktree:\n" . implode("\n", $output) . "\n");
+        exit(1);
     }
 }
 $untracked = array_filter(explode("\n", (string) shell_exec('git -C ' . escapeshellarg($repoRoot) . ' ls-files --others --ignored --exclude-standard application/configs')));

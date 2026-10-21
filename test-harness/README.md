@@ -39,7 +39,7 @@ APPLICATION_ENV=development php test-harness/bin/reports --shipment 60 --shipmen
 APPLICATION_ENV=development php test-harness/bin/reports --shipment 60 --base origin/master --keep
 ```
 
-`bin/reports` compares two code versions on the same data, so pick shipments that exercise the change: a layout change needs that layout's scheme and country. Missing image files, such as signatures not uploaded on a dev machine, show as dropped tags on both sides and do not count as a difference. `--keep` leaves both PDF sets in the temp folder it prints, for checking by eye.
+`bin/reports` compares two code versions on the same data, so pick shipments that exercise the change: a layout change needs that layout's scheme and country. Missing image files, such as signatures not uploaded on a dev machine, show as dropped tags on both sides and do not count as a difference. `--keep` leaves both PDF sets in the temp folder it prints, for checking by eye. If `composer.lock` differs between the two versions, the base gets its own `composer install`, so a library upgrade compares old library against new.
 
 `bin/dts` follows `application.ini`, so the database it points at must be migrated up to date — provisioning reads `report_config` (added in 7.2.2) and fails with a "table not found" if the dev database is behind.
 
