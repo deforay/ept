@@ -16,6 +16,42 @@ class Application_Service_Evaluation
     private const SQL_DID_NOT_RESPOND = "SUM(IFNULL(sp.response_status, 'noresponse') NOT IN ('responded', 'late', 'nottested'))";
 
     /**
+     * Fields that participants and data managers can type into, which report
+     * layouts place in PDF HTML. Results, scores and unique_identifier stay
+     * out: layouts compare results as numbers ("<20" would break), and the
+     * identifier names the PDF files. Admin-written fields such as
+     * evaluation comments may carry HTML on purpose and stay out too.
+     */
+    private const REPORT_TEXT_FIELDS = [
+        'first_name', 'last_name', 'institute_name', 'department_name', 'lab_name', 'affiliation',
+        'address', 'shipping_address', 'city', 'district', 'region', 'state', 'zip',
+        'email', 'additional_email', 'phone', 'mobile', 'contact_name',
+        'contact_person_name', 'contact_person_email', 'contact_person_telephone',
+        'lab_director_name', 'lab_director_email', 'participant_supervisor', 'qc_done_by',
+        'user_comment', 'pt_support_comments', 'pt_test_not_performed_comments',
+        'custom_field_1', 'custom_field_2', 'other_assay', 'comment', 'comments', 'lab_comment',
+        'additional_detail', 'lot_no_1', 'lot_no_2', 'lot_no_3',
+        'repeat_lot_no_1', 'repeat_lot_no_2', 'repeat_lot_no_3',
+    ];
+
+    /**
+     * Escapes REPORT_TEXT_FIELDS anywhere in report data, so text a participant
+     * typed prints as text and cannot add tags, links or styling to a report.
+     * Existing entities are kept, since some names are stored already escaped.
+     */
+    private static function escapeReportText(array $data): array
+    {
+        foreach ($data as $key => $value) {
+            if (is_array($value)) {
+                $data[$key] = self::escapeReportText($value);
+            } elseif (is_string($value) && in_array($key, self::REPORT_TEXT_FIELDS, true)) {
+                $data[$key] = htmlspecialchars($value, ENT_QUOTES, 'UTF-8', false);
+            }
+        }
+        return $data;
+    }
+
+    /**
      * Split a getResponseReports() row into the disjoint slices of the participation pie.
      *
      * Returns one entry per non-empty slice, in reading order, each with a stable key, its
@@ -3200,7 +3236,7 @@ class Application_Service_Evaluation
             'vlGraphResult' => $vlGraphResult,
             'meanScore' => $meanScore,
         ];
-        return $result;
+        return self::escapeReportText($result);
     }
 
     public function getSummaryReportsDataForPDF($shipmentId, $testType = '')
@@ -4087,7 +4123,7 @@ class Application_Service_Evaluation
                 $shipmentResult = array_merge($shipmentResult, $summaryPDFData);
             }
         }
-        return ['shipment' => $shipmentResult];
+        return ['shipment' => self::escapeReportText($shipmentResult)];
     }
 
     public function getResponseReports($shipmentId, $testType = '')

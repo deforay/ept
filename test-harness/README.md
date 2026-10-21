@@ -4,10 +4,11 @@ Dev-only tools. Each provisions a synthetic shipment, fills bulk responses (corr
 
 Lives in `test-harness/` at the repo root and is **architecturally independent** of the app: it does not load any class from `application/` or `library/`. It reads `application/configs/application.ini` as plain text, opens its own PDO connection, writes synthetic rows by raw SQL, and shells out to `scheduled-jobs/evaluate-shipments.php` for evaluation.
 
-Three entry points:
+Four entry points:
 
 - `bin/dts` — DTS schemes (algorithm-driven; Vietnam + updated-3-tests). Provisions its own synthetic shipment + asserts against declared expectations.
 - `bin/workbook` — Vietnam only, no database. Checks the NIHE accepted-interpretation matrix (every row of the assessment workbook, verdict **and** feedback text) directly against `algoVietnam`, in about a second. This is the one place the harness loads a class from `application/`; see **Spec coverage** below for why that exception is drawn where it is.
+- `bin/pdf-html` — no database. Checks `Pt_Reports_BasePdf`, the class every report PDF renders HTML through. Each blocked pattern (remote images and stylesheets, server files, SVG, list image bullets, script links, form tags) must leave no trace in the PDF and make no request. Each image and link kind the report layouts use must still render. About two seconds. Like `bin/workbook`, it loads the class from the app directly.
 - `bin/custom-test` — qualitative custom (user-configured) tests. You pick an **existing** scheme at startup (HBV, HCV, SYP, …); it provisions a shipment against that scheme using its own FINAL result codes, fills correct/incorrect responses, and asserts per-sample correctness from `response_result_generic_test.calculated_score`. It never creates or alters a scheme.
 
 Both bins also accept **`--shipment <id|code>`** (attach mode): instead of provisioning a synthetic shipment, attach to one **you already created** and do the rest — enroll participants if none, fill responses against the shipment's own reference results (mostly pass, some fail), evaluate, and generate reports. Only participants without a response are filled (existing responses are never touched), and no assertions/cleanup run since it's your shipment. `bin/dts --shipment` handles DTS `updated-3-tests`; `bin/custom-test --shipment` handles custom qualitative. Pass the wrong kind and it points you at the other bin.
@@ -28,6 +29,9 @@ Both refuse to run unless `APPLICATION_ENV` is `development` or `testing`. There
 # Vietnam workbook matrix only — no DB, no provisioning, ~1s:
 php test-harness/bin/workbook
 php test-harness/bin/workbook --sheet screening
+
+# Report PDF HTML check — no DB, ~2s:
+php test-harness/bin/pdf-html
 ```
 
 `bin/dts` follows `application.ini`, so the database it points at must be migrated up to date — provisioning reads `report_config` (added in 7.2.2) and fails with a "table not found" if the dev database is behind.
@@ -82,6 +86,7 @@ Adding a new variant = drop one file in `src/Aberrations/` + one file in `expect
 test-harness/
 ├── README.md
 ├── bin/dts                      — entry point (synthetic mode + --shipment attach mode)
+├── bin/pdf-html                 — report PDF HTML check, no database
 ├── src/
 │   ├── Config.php               — application.ini parser, env gate
 │   ├── Db.php                   — PDO wrapper

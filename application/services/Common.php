@@ -3015,6 +3015,10 @@ class Application_Service_Common
 
     public static function makeFileNameFriendly($str, $toLowerCase = false)
     {
+        // Report data arrives HTML-escaped, so Murang&#039;a must name the file
+        // MURANGA, not MURANG039A
+        $str = html_entity_decode((string) $str, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+
         // Remove special characters except hyphens
         $str = preg_replace('/[^a-zA-Z0-9\-]/', '', trim($str));
 
