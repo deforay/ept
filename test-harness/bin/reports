@@ -1,0 +1,315 @@
+#!/usr/bin/env php
+<?php
+
+declare(strict_types=1);
+
+/**
+ * Shows whether a code change alters the reports a reader sees.
+ *
+ *   APPLICATION_ENV=development php test-harness/bin/reports --shipment 60 --shipment 52
+ *   APPLICATION_ENV=development php test-harness/bin/reports --shipment 60 --base origin/master
+ *
+ * Generates every report of each shipment twice: once with the code at --base
+ * (default HEAD) in a temporary git worktree, once with the working tree. Then
+ * it compares each pair of PDFs on pages, words, word positions, images,
+ * links and form fields, and counts the tags the PDF HTML check dropped.
+ *
+ * The run writes to the database and downloads/reports, as report generation
+ * always does. Both are put back afterwards, even when the run fails. Use a
+ * development database: the comparison is only as good as its data, and
+ * generation queues notice emails when the template is set.
+ *
+ * Needs poppler (pdfinfo, pdftotext, pdfimages).
+ */
+
+namespace EptTestHarness;
+
+use EptTestHarness\Reports\PdfFacts;
+use EptTestHarness\Reports\Sandbox;
+
+$root = dirname(__DIR__);
+$repoRoot = dirname($root);
+require_once $root . '/src/Config.php';
+require_once $root . '/src/Db.php';
+require_once $root . '/src/Evaluator.php';
+require_once $root . '/src/Reports/Sandbox.php';
+require_once $root . '/src/Reports/PdfFacts.php';
+
+$shipmentIds = [];
+$base = 'HEAD';
+$keep = false;
+$procs = 8;
+for ($i = 1; $i < $argc; $i++) {
+    $arg = $argv[$i];
+    if ($arg === '--shipment' && isset($argv[$i + 1])) {
+        $shipmentIds[] = (int) $argv[++$i];
+    } elseif (str_starts_with($arg, '--shipment=')) {
+        $shipmentIds[] = (int) substr($arg, 11);
+    } elseif ($arg === '--base' && isset($argv[$i + 1])) {
+        $base = $argv[++$i];
+    } elseif (str_starts_with($arg, '--base=')) {
+        $base = substr($arg, 7);
+    } elseif ($arg === '--keep') {
+        $keep = true;
+    } elseif ($arg === '--help' || $arg === '-h') {
+        fwrite(STDOUT, "Usage: php test-harness/bin/reports --shipment <id> [--shipment <id> ...] [--base <git ref>] [--keep]\n");
+        exit(0);
+    } else {
+        fwrite(STDERR, "Unknown argument: $arg. Run with --help.\n");
+        exit(2);
+    }
+}
+$shipmentIds = array_values(array_unique(array_filter($shipmentIds)));
+if ($shipmentIds === []) {
+    fwrite(STDERR, "Name at least one shipment: --shipment <id>\n");
+    exit(2);
+}
+foreach (['pdfinfo', 'pdftotext', 'pdfimages'] as $tool) {
+    if (trim((string) shell_exec('command -v ' . $tool)) === '') {
+        fwrite(STDERR, "$tool is missing. Install poppler (brew install poppler, or apt-get install poppler-utils).\n");
+        exit(2);
+    }
+}
+$baseSha = trim((string) shell_exec('git -C ' . escapeshellarg($repoRoot) . ' rev-parse --verify --quiet ' . escapeshellarg($base . '^{commit}')));
+if ($baseSha === '') {
+    fwrite(STDERR, "Unknown git ref: $base\n");
+    exit(2);
+}
+
+$config = Config::load($repoRoot);
+$db = new Db($config);
+
+// Two runs on one database would each restore the other's half-finished
+// state. The lock lives as long as this process.
+$lock = fopen(sys_get_temp_dir() . '/ept-reports-' . md5($config->dbHost . '/' . $config->dbName) . '.lock', 'c');
+if ($lock === false || !flock($lock, LOCK_EX | LOCK_NB)) {
+    fwrite(STDERR, "Another bin/reports run is using {$config->dbName}. Wait for it to finish.\n");
+    exit(2);
+}
+$work = sys_get_temp_dir() . '/ept-reports-' . date('Ymd-His') . '-' . getmypid();
+mkdir($work, 0775, true);
+$sandbox = new Sandbox($db, $config, $shipmentIds, $work);
+$sandbox->snapshot();
+
+$worktree = $work . '/base-tree';
+$cleanedUp = false;
+$cleanup = static function () use (&$cleanedUp, $sandbox, $repoRoot, $worktree, $work, $keep): void {
+    if ($cleanedUp) {
+        return;
+    }
+    $cleanedUp = true;
+    $sandbox->restoreReports();
+    $sandbox->restore();
+    if (is_dir($worktree)) {
+        shell_exec('git -C ' . escapeshellarg($repoRoot) . ' worktree remove --force ' . escapeshellarg($worktree) . ' 2>&1');
+        shell_exec('git -C ' . escapeshellarg($repoRoot) . ' worktree prune 2>&1');
+    }
+    if (!$keep) {
+        Sandbox::remove($work);
+    }
+};
+register_shutdown_function($cleanup);
+$codes = $sandbox->shipmentCodes();
+foreach ($shipmentIds as $id) {
+    if (!isset($codes[$id])) {
+        fwrite(STDERR, "No shipment with id $id.\n");
+        exit(2);
+    }
+}
+if (function_exists('pcntl_signal')) {
+    pcntl_async_signals(true);
+    pcntl_signal(SIGINT, static function () use ($cleanup): void {
+        fwrite(STDERR, "\nInterrupted. Putting the database and reports back.\n");
+        $cleanup();
+        exit(130);
+    });
+}
+
+fwrite(STDOUT, sprintf("Comparing %s (%s) with the working tree, on %s.\n", $base, substr($baseSha, 0, 9), $config->dbName));
+$sandbox->setAsideReports();
+
+// The base tree shares vendor/ and node_modules/, and gets its own copy of the
+// untracked config and of public/uploads. A symlinked uploads folder resolves
+// outside the tree, and the PDF HTML check would drop its images.
+shell_exec(sprintf('git -C %s worktree add --detach --quiet %s %s 2>&1', escapeshellarg($repoRoot), escapeshellarg($worktree), escapeshellarg($baseSha)));
+if (!is_dir($worktree)) {
+    fwrite(STDERR, "Could not create the worktree at $worktree.\n");
+    exit(1);
+}
+foreach (['vendor', 'node_modules'] as $shared) {
+    if (is_dir("$repoRoot/$shared")) {
+        symlink("$repoRoot/$shared", "$worktree/$shared");
+    }
+}
+$untracked = array_filter(explode("\n", (string) shell_exec('git -C ' . escapeshellarg($repoRoot) . ' ls-files --others --ignored --exclude-standard application/configs')));
+foreach ($untracked as $path) {
+    @mkdir(dirname("$worktree/$path"), 0775, true);
+    copy("$repoRoot/$path", "$worktree/$path");
+}
+Sandbox::remove("$worktree/public/uploads");
+shell_exec(sprintf('cp -R %s %s', escapeshellarg("$repoRoot/public/uploads"), escapeshellarg("$worktree/public/uploads")));
+foreach (['logs', 'downloads/reports', 'public/temporary'] as $dir) {
+    @mkdir("$worktree/$dir", 0775, true);
+}
+
+$trees = ['base' => $worktree, 'new' => $repoRoot];
+$logNotes = [];
+foreach ($trees as $label => $tree) {
+    $treeConfig = clone $config;
+    $treeConfig->repoRoot = $tree;
+    $evaluator = new Evaluator($treeConfig);
+    // Report generation resolves some paths from the working directory, so a
+    // tree's reports land in that tree only when it runs from there.
+    chdir($tree);
+    $logs = glob("$tree/logs/*.log") ?: [];
+    $offsets = array_combine($logs, array_map('filesize', $logs)) ?: [];
+    foreach ($shipmentIds as $id) {
+        $code = $codes[$id];
+        $started = microtime(true);
+        fwrite(STDOUT, sprintf('  %-4s %-28s ', $label, $code));
+        try {
+            $evaluator->generateReports($id);
+        } catch (\RuntimeException $e) {
+            fwrite(STDOUT, "failed\n");
+            fwrite(STDERR, $e->getMessage() . "\n");
+            exit(1);
+        }
+        @mkdir("$work/$label", 0775, true);
+        foreach ([$code, "$code.zip"] as $name) {
+            if (file_exists("$tree/downloads/reports/$name")) {
+                rename("$tree/downloads/reports/$name", "$work/$label/$name");
+            }
+        }
+        $count = count(glob("$work/$label/$code/*.pdf") ?: []);
+        fwrite(STDOUT, sprintf("%5d PDFs  %4.0fs\n", $count, microtime(true) - $started));
+    }
+    $dropped = 0;
+    $errors = 0;
+    foreach (glob("$tree/logs/*.log") ?: [] as $log) {
+        $handle = fopen($log, 'r');
+        fseek($handle, $offsets[$log] ?? 0);
+        while (($line = fgets($handle)) !== false) {
+            $dropped += (int) str_contains($line, 'PDF HTML: dropped');
+            $errors += (int) (str_contains($line, '.ERROR:') || str_contains($line, '.CRITICAL:'));
+        }
+        fclose($handle);
+    }
+    $logNotes[$label] = [$dropped, $errors];
+}
+chdir($repoRoot);
+
+fwrite(STDOUT, "Reading PDFs...\n");
+$pairs = [];
+$missing = [];
+foreach ($codes as $code) {
+    foreach (glob("$work/base/$code/*.pdf") ?: [] as $file) {
+        $pairs["$code/" . basename($file)] = [$file, "$work/new/$code/" . basename($file)];
+    }
+    foreach (glob("$work/new/$code/*.pdf") ?: [] as $file) {
+        if (!file_exists("$work/base/$code/" . basename($file))) {
+            $missing[] = 'only with the new code: ' . "$code/" . basename($file);
+        }
+    }
+}
+foreach ($pairs as $name => [$baseFile, $newFile]) {
+    if (!file_exists($newFile)) {
+        $missing[] = "only with the base code: $name";
+        unset($pairs[$name]);
+    }
+}
+$aspects = ['pages', 'words', 'positions', 'images', 'placements', 'links', 'fields'];
+$differing = array_fill_keys($aspects, 0);
+$examples = [];
+// A batch at a time: the word positions of a few thousand PDFs do not fit
+// in memory at once.
+foreach (array_chunk($pairs, 100, true) as $batch) {
+    $facts = PdfFacts::collect(array_merge(...array_values(array_map('array_values', $batch))), $procs);
+    foreach ($batch as $name => [$baseFile, $newFile]) {
+        foreach ($aspects as $aspect) {
+            $a = $facts[$baseFile][$aspect];
+            $b = $facts[$newFile][$aspect];
+            if ($a === $b) {
+                continue;
+            }
+            $differing[$aspect]++;
+            if (count($examples[$aspect] ?? []) < 3) {
+                $examples[$aspect][] = "$name: " . describe($a, $b);
+            }
+        }
+    }
+    unset($facts);
+}
+
+fwrite(STDOUT, sprintf("\n%d PDFs compared\n", count($pairs)));
+foreach ($aspects as $aspect) {
+    fwrite(STDOUT, sprintf("  %-10s %s\n", $aspect, $differing[$aspect] === 0 ? 'same' : $differing[$aspect] . ' differ'));
+}
+foreach ($logNotes as $label => [$dropped, $errors]) {
+    fwrite(STDOUT, sprintf("  %-4s log  %d dropped tags, %d errors\n", $label, $dropped, $errors));
+}
+foreach (array_slice($missing, 0, 10) as $line) {
+    fwrite(STDOUT, "  $line\n");
+}
+if (count($missing) > 10) {
+    fwrite(STDOUT, sprintf("  ...and %d more files only on one side\n", count($missing) - 10));
+}
+foreach ($examples as $aspect => $lines) {
+    fwrite(STDOUT, "\nFirst $aspect differences:\n");
+    foreach ($lines as $line) {
+        fwrite(STDOUT, "  $line\n");
+    }
+}
+if ($keep) {
+    fwrite(STDOUT, "\nPDFs kept in $work/base and $work/new\n");
+}
+
+$changed = $missing !== [] || array_sum($differing) > 0 || $logNotes['new'][0] > $logNotes['base'][0];
+fwrite(STDOUT, $changed ? "\nThe reports differ.\n" : "\nThe reports are the same.\n");
+exit($changed ? 1 : 0);
+
+/**
+ * What changed between two fact lists, for a person to look at: the items
+ * removed and added when only some are, else the first point where they part.
+ */
+function describe(mixed $a, mixed $b): string
+{
+    if (!is_array($a) || !is_array($b)) {
+        return "base $a, new $b";
+    }
+    $removed = multisetMinus($a, $b);
+    $added = multisetMinus($b, $a);
+    if ($removed !== [] || $added !== []) {
+        $show = static fn (array $items): string => $items === []
+            ? 'nothing'
+            : '"' . implode('", "', array_slice($items, 0, 6)) . '"' . (count($items) > 6 ? sprintf(' and %d more', count($items) - 6) : '');
+        return 'removed ' . $show($removed) . '; added ' . $show($added);
+    }
+    // Same items in a different order
+    foreach ($a as $i => $value) {
+        if (($b[$i] ?? null) !== $value) {
+            return sprintf('item %d: base "%s", new "%s"', $i + 1, $value, $b[$i] ?? '(none)');
+        }
+    }
+    return sprintf('item %d: base (none), new "%s"', count($a) + 1, $b[count($a)] ?? '');
+}
+
+/**
+ * Items of $a left after taking out one match in $b for each, keeping repeats
+ *
+ * @param list<string> $a
+ * @param list<string> $b
+ * @return list<string>
+ */
+function multisetMinus(array $a, array $b): array
+{
+    $left = array_count_values($b);
+    $out = [];
+    foreach ($a as $item) {
+        if (($left[$item] ?? 0) > 0) {
+            $left[$item]--;
+        } else {
+            $out[] = $item;
+        }
+    }
+    return $out;
+}
