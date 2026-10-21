@@ -1,57 +1,6 @@
+<?= $this->render('participants/_import-upload-style.phtml'); ?>
 <style>
-    .bulk-import-wrap { max-width: 1200px; margin: 0 auto; }
-    .bulk-import-wrap .bi-header { padding: 0 4px 8px; }
-    .bulk-import-wrap .bi-header h2 { margin: 0 0 4px; font-weight: 600; font-size: 22px; }
-    .bulk-import-wrap .bi-header .bi-sub { color: #888; font-size: 13px; }
-    .bulk-import-wrap .bi-header .bi-back { float: right; color: #337ab7; text-decoration: none; font-size: 13px; }
-    .bulk-import-wrap .bi-header .bi-back:hover { text-decoration: underline; }
-
-    .bi-steps { display: flex; align-items: center; gap: 10px; margin: 8px 4px 18px; font-size: 13px; color: #9aa3ad; }
-    .bi-steps .bi-step { display: flex; align-items: center; gap: 6px; }
-    .bi-steps .bi-step .bi-num { width: 22px; height: 22px; border-radius: 50%; background: #e6e9ee; color: #6b7380; display: inline-flex; align-items: center; justify-content: center; font-weight: 600; font-size: 12px; }
-    .bi-steps .bi-step.active { color: #333; }
-    .bi-steps .bi-step.active .bi-num { background: #555; color: #fff; }
-    .bi-steps .bi-sep { color: #c4cbd4; }
-
-    .bi-layout { display: flex; gap: 18px; align-items: flex-start; }
-    .bi-layout .bi-main { flex: 1 1 0; min-width: 0; }
-    .bi-layout .bi-side { flex: 0 0 360px; display: flex; flex-direction: column; gap: 14px; }
-
-    .bi-card { background: #fff; border: 1px solid #e6e9ee; border-radius: 8px; padding: 18px; box-shadow: 0 1px 2px rgba(0,0,0,0.04); }
-    .bi-card h4 { margin: 0 0 12px; font-size: 14px; font-weight: 600; color: #333; }
-
-    .bi-drop { position: relative; border: 2px dashed #cfd4dc; border-radius: 8px; padding: 32px 20px; text-align: center; background: #fbfcfd; transition: all 0.15s ease; cursor: pointer; }
-    .bi-drop:hover, .bi-drop.dragover { border-color: #66afe9; background: #f4f9ff; }
-    .bi-drop .bi-drop-icon { width: 44px; height: 44px; border-radius: 50%; background: #eef1f5; color: #6b7380; display: inline-flex; align-items: center; justify-content: center; font-size: 18px; margin-bottom: 10px; }
-    .bi-drop .bi-drop-title { font-weight: 600; color: #333; margin: 0 0 4px; }
-    .bi-drop .bi-drop-sub { color: #8a93a0; font-size: 13px; }
-    .bi-drop .bi-drop-sub .bi-browse { color: #337ab7; text-decoration: underline; }
-    .bi-drop .bi-accepts { color: #9aa3ad; font-size: 12px; margin-top: 8px; }
-    .bi-drop .bi-accepts code { background: #f1f3f5; padding: 1px 5px; border-radius: 3px; font-size: 11px; color: #333; }
-    .bi-drop input[type=file] { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
-
-    .bi-filecard { display: none; align-items: center; gap: 12px; border: 1px dashed #b6c4e0; background: #f3f7fd; border-radius: 8px; padding: 14px 16px; }
-    .bi-filecard.active { display: flex; }
-    .bi-filecard .bi-file-icon { flex: 0 0 auto; width: 40px; height: 40px; border-radius: 4px; background: #dde6f7; color: #337ab7; display: inline-flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; }
-    .bi-filecard .bi-file-meta { flex: 1 1 auto; min-width: 0; }
-    .bi-filecard .bi-file-name { font-weight: 600; color: #333; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .bi-filecard .bi-file-size { color: #8a93a0; font-size: 12px; }
-    .bi-filecard .bi-file-actions { flex: 0 0 auto; display: flex; align-items: center; gap: 8px; }
-    .bi-filecard .bi-file-actions a { color: #337ab7; font-size: 13px; text-decoration: none; cursor: pointer; }
-    .bi-filecard .bi-file-actions a:hover { text-decoration: underline; }
-    .bi-filecard .bi-file-actions .bi-remove { color: #8a93a0; font-size: 18px; line-height: 1; }
-
-    .bi-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 14px; }
-
-    .bi-validation-error { background: #fdecea; border: 1px solid #f5c2bd; border-left: 4px solid #c0392b; border-radius: 6px; padding: 14px 16px; margin-bottom: 16px; color: #5a1a13; }
-    .bi-validation-error .bi-ve-title { font-weight: 600; font-size: 14px; margin: 0 0 6px; color: #a02b1f; display: flex; align-items: center; gap: 6px; }
-    .bi-validation-error .bi-ve-sub { font-size: 13px; margin: 0 0 10px; color: #6b2a22; }
-    .bi-validation-error table { width: 100%; border-collapse: collapse; background: #fff; border-radius: 4px; overflow: hidden; font-size: 13px; }
-    .bi-validation-error th, .bi-validation-error td { padding: 7px 10px; text-align: left; border-bottom: 1px solid #f1d6d2; }
-    .bi-validation-error th { background: #f9e3e0; color: #6b2a22; font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: 0.04em; }
-    .bi-validation-error tr:last-child td { border-bottom: 0; }
-    .bi-validation-error code { background: #f1f3f5; padding: 1px 6px; border-radius: 3px; font-size: 12px; color: #333; }
-    .bi-validation-error .bi-ve-empty { color: #8a93a0; font-style: italic; }
+    /* Page-specific only. The shared upload-step look is in participants/_import-upload-style.phtml. */
 
     .bi-section { margin-bottom: 18px; }
     .bi-section-title { font-size: 13px; font-weight: 600; color: #333; margin: 0 0 8px; }
@@ -75,27 +24,10 @@
     .bi-switch input:checked + span { color: #fff; }
     .bi-switch label.selected { background: #337ab7; color: #fff; }
     .bi-switch input:focus-visible + span { outline: 2px solid #66afe9; outline-offset: 2px; }
-    .bi-hint { color: #8a93a0; font-size: 12px; margin-top: 6px; }
-
-    .bi-columns { list-style: none; margin: 0; padding: 0; border-top: 1px solid #f0f2f5; }
-    .bi-columns li { display: grid; grid-template-columns: 22px 1fr; column-gap: 10px; align-items: baseline; padding: 5px 0; border-bottom: 1px solid #f0f2f5; font-size: 13px; color: #444; }
-    .bi-columns .bi-col { flex: 0 0 22px; text-align: center; font-family: Menlo, Consolas, monospace; font-size: 11px; color: #6b7380; background: #f1f3f5; border-radius: 3px; padding: 1px 0; }
-    .bi-columns .bi-req { color: #a94442; font-weight: 600; }
-    .bi-columns .bi-col-note { grid-column: 2; color: #8a93a0; font-size: 11px; }
-
-    .bi-side .bi-side-cta { display: block; width: 100%; text-align: center; margin-bottom: 14px; }
-    .bi-side .bi-step-item { display: flex; gap: 10px; margin-bottom: 10px; }
-    .bi-side .bi-step-item .bi-step-num { flex: 0 0 22px; width: 22px; height: 22px; border-radius: 50%; background: #eef1f5; color: #6b7380; font-size: 12px; font-weight: 600; display: inline-flex; align-items: center; justify-content: center; }
-    .bi-side .bi-step-item .bi-step-text { color: #555; font-size: 13px; line-height: 1.45; }
-    .bi-side .bi-note code { background: #f1f3f5; padding: 1px 5px; border-radius: 3px; font-size: 11px; color: #333; }
 
     @media (max-width: 992px) {
         .bi-choice-grid { grid-template-columns: 1fr; }
-        .bi-layout { flex-direction: column; }
-        .bi-layout .bi-side { flex: 1 1 auto; width: 100%; }
     }
-
-    @keyframes bi-spin { to { transform: rotate(360deg); } }
 </style>
 
 <div class="bulk-import-wrap">
