@@ -418,7 +418,7 @@ class Application_Service_CertificateTemplates
     public static function pageSize(string $pdfFile): ?array
     {
         try {
-            $pdf = new \setasign\Fpdi\Tcpdf\Fpdi();
+            $pdf = new \setasign\Fpdi\Fpdi();
             $pdf->setSourceFile($pdfFile);
             $size = $pdf->getTemplateSize($pdf->importPage(1));
             return ['width' => round($size['width'], 2), 'height' => round($size['height'], 2)];
@@ -451,19 +451,19 @@ class Application_Service_CertificateTemplates
     public static function renderDesign(string $background, array $layout, array $valueSets, string $outputPdf): ?string
     {
         try {
-            $pdf = new \setasign\Fpdi\Tcpdf\Fpdi();
+            $reader = new \setasign\Fpdi\Fpdi();
+            $reader->setSourceFile($background);
+            $size = $reader->getTemplateSize($reader->importPage(1));
+
+            $pdf = new TCPDF();
             $pdf->setPrintHeader(false);
             $pdf->setPrintFooter(false);
             $pdf->SetMargins(0, 0, 0);
             $pdf->SetAutoPageBreak(false, 0);
             $pdf->setCellPaddings(0, 0, 0, 0);
-            $pdf->setSourceFile($background);
-            $page = $pdf->importPage(1);
-            $size = $pdf->getTemplateSize($page);
 
             foreach ($valueSets as $values) {
                 $pdf->AddPage($size['orientation'], [$size['width'], $size['height']]);
-                $pdf->useTemplate($page, 0, 0, $size['width'], $size['height']);
                 foreach ((array) ($layout['elements'] ?? []) as $el) {
                     $text = trim(preg_replace_callback(
                         '/\{([a-z_]+)\}/',
@@ -502,11 +502,32 @@ class Application_Service_CertificateTemplates
                 }
             }
             @mkdir(dirname($outputPdf), 0777, true);
-            $pdf->Output($outputPdf, 'F');
+            file_put_contents($outputPdf, self::underlayDesign((string) $pdf->Output('', 'S'), $background));
         } catch (Throwable $e) {
             return 'Could not print the certificate design: ' . $e->getMessage();
         }
         return is_file($outputPdf) && filesize($outputPdf) > 0 ? null : 'Could not write ' . $outputPdf;
+    }
+
+    /**
+     * Lay the design's first page under each page of the printed text.
+     * FPDF-based FPDI only reads finished PDFs, so the text layer is plain
+     * TCPDF and does not depend on TCPDF internals (see Pt_Reports_FpdiReport).
+     */
+    private static function underlayDesign(string $text, string $background): string
+    {
+        $out = new \setasign\Fpdi\Fpdi();
+        $out->setSourceFile($background);
+        $design = $out->importPage(1);
+        $pageCount = $out->setSourceFile(\setasign\Fpdi\PdfParser\StreamReader::createByString($text));
+        for ($i = 1; $i <= $pageCount; $i++) {
+            $page = $out->importPage($i);
+            $size = $out->getTemplateSize($page);
+            $out->AddPage($size['orientation'], [$size['width'], $size['height']]);
+            $out->useTemplate($design, 0, 0, $size['width'], $size['height']);
+            $out->useTemplate($page);
+        }
+        return $out->Output('S');
     }
 
     /**
