@@ -5,7 +5,7 @@ $extractor = new Zend_Pdf_Resource_Extractor();
 $font = Zend_Pdf_Font::fontWithName(Zend_Pdf_Font::FONT_HELVETICA);
 
 
-class MYPDF extends TCPDF
+class MYPDF extends Pt_Reports_BasePdf
 {
 	protected $header = "";
 	protected $scheme_name = "";

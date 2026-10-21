@@ -33,7 +33,7 @@ if (in_array("ghanaNationalDtsAlgo", $allowedAlgorithms)) {
 	$optionalTest3 = $allowRepeatTests = "no";
 	$width = $syphilisActive ? 14.29 : 16.66;
 }
-class MYPDF extends TCPDF
+class MYPDF extends Pt_Reports_BasePdf
 {
 	protected $header = "";
 	protected $logo = "";

@@ -1,6 +1,6 @@
 <?php
 
-class Pt_Reports_FpdiReport extends TCPDF
+class Pt_Reports_FpdiReport extends Pt_Reports_BasePdf
 {
     public $resultStatus = '';
     public $dateTime = '';

@@ -1,6 +1,6 @@
 <?php
 
-class Pt_Reports_IndividualPdf extends TCPDF
+class Pt_Reports_IndividualPdf extends Pt_Reports_BasePdf
 {
     public $scheme_name = '';
     public $header = '';
