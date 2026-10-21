@@ -3,6 +3,23 @@
 use mitoteam\jpgraph\MtJpGraph;
 
 MtJpGraph::load(['bar', 'line', 'scatter'], true);
+
+// Participants on this test kit for this sample. Falls back to no_of_responses so the layout
+// still renders against data built before the count was added. no_of_responses is the n behind
+// the assigned value, so it is not a safe pass-rate denominator.
+if (!function_exists('vlPlatformParticipants')) {
+    function vlPlatformParticipants(array $val): int
+    {
+        return (int) ($val['participants_on_platform'] ?? $val['no_of_responses'] ?? 0);
+    }
+}
+if (!function_exists('vlPassPercent')) {
+    function vlPassPercent(array $val): int
+    {
+        $n = vlPlatformParticipants($val);
+        return $n > 0 ? (int) round((((int) ($val['NumberPassed'] ?? 0)) / $n) * 100) : 0;
+    }
+}
 if (!empty($resultArray['shipment']) && $resultArray['shipment'] != "") {
     $shipmentAttributes = Pt_Commons_JsonUtility::safeDecode($resultArray['shipment']['shipment_attributes']);
     $shipmentAttributes['shipment_id'] = $resultArray['shipment']['shipment_id'];
@@ -272,7 +289,7 @@ if (!empty($resultArray['shipment']) && $resultArray['shipment'] != "") {
                         $val['sd'] = $val['manual_sd'];
                     }
                     if (isset($val['median'])) {
-                        $sample[$k]['response'] += $val['no_of_responses'];
+                        $sample[$k]['response'] += vlPlatformParticipants($val);
                         $sample[$k]['median'] = $val['median'];
                         $sample[$k]['lowLimit'] = $val['low_limit'];
                         $sample[$k]['highLimit'] = $val['high_limit'];
@@ -288,7 +305,7 @@ if (!empty($resultArray['shipment']) && $resultArray['shipment'] != "") {
                         $assayNameTxt .= 'Other - ' . $otherAssayName . '(n=' . $otherAssayCount . '), ';
                     }
                 } else {
-                    $assayNameTxt .= $vlCal['vlAssay'] . '(n=' . $vlCal[0]['no_of_responses'] . '), ';
+                    $assayNameTxt .= $vlCal['vlAssay'] . '(n=' . vlPlatformParticipants($vlCal[0]) . '), ';
                 }
             } else {
                 $maninAssay = $vlCal['vlAssay'];
@@ -313,12 +330,12 @@ if (!empty($resultArray['shipment']) && $resultArray['shipment'] != "") {
                         $val['sd'] = $val['manual_sd'];
                     }
                     if (isset($val['median'])) {
-                        $score = round((($val['NumberPassed'] / $val['no_of_responses']) * 100));
+                        $score = vlPassPercent($val);
 
                         $calRes .= '<tr>';
                         $calRes .= '
                             <td style="font-weight:normal;text-align:center;width:20%;">' . $val['sample_label'] . '</td>
-                            <td style="font-weight:normal;text-align:center;width:20%;">' . $val['no_of_responses'] . '</td>
+                            <td style="font-weight:normal;text-align:center;width:20%;">' . vlPlatformParticipants($val) . '</td>
                             <td style="font-weight:normal;text-align:center;">' . number_format(round($val['median'], 2), 2, '.', '') . '</td>';
                         /* $calRes .= '                                    <td style="font-weight:normal;text-align:center;">' . number_format(round($val['low_limit'], 2), 2, '.', '') . '</td>
                                 <td style="font-weight:normal;text-align:center;">' . number_format(round($val['high_limit'], 2), 2, '.', '') . '</td>
@@ -359,7 +376,7 @@ if (!empty($resultArray['shipment']) && $resultArray['shipment'] != "") {
         $calRes .= '<th style="background-color:#8ECF64;text-align:center;font-size:10;width:40%;" colspan="2">Participants with <br/>Passing Results <br/>(z ≤ ± 3.0)</th>
                             </tr>';
         foreach ($sample as $point => $label) {
-            $score = round((($label['NumberPassed'] / $label['response']) * 100));
+            $score = $label['response'] > 0 ? round(($label['NumberPassed'] / $label['response']) * 100) : 0;
             $calRes .= '<tr>';
             $calRes .= '
                     <td style="font-weight:normal;text-align:center;width:20%;">' . $label['label'] . '</td>

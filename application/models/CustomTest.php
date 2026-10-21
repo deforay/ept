@@ -908,6 +908,9 @@ class Application_Model_CustomTest
                         'res.shipment_map_id = sp.map_id and res.sample_id = refVl.sample_id',
                         [
                             'NumberPassed' => new Zend_Db_Expr("SUM(CASE WHEN calculated_score = 'pass' OR calculated_score = 'warn' THEN 1 ELSE 0 END)"),
+                            // Denominator of the passing-results column: participants on THIS test kit,
+                            // which is not vlCal.no_of_responses (the n behind the assigned value).
+                            'participants_on_platform' => new Zend_Db_Expr('COUNT(*)'),
                         ]
                     )
                     ->where('vlCal.shipment_id=?', $shipmentId)
