@@ -62,6 +62,8 @@ _('Dried Blood Spot - HIV Serology');
 // scheme_list.scheme_name
 _('Dried Tube Specimen - Hepatitis B Serology');
 // scheme_list.scheme_name
+_('Dried Tube Specimen - Hepatitis B Serology (Legacy)');
+// scheme_list.scheme_name
 _('Dried Tube Specimen - Hepatitis C Serology');
 // scheme_list.scheme_name
 _('Dried Tube Specimen - HIV Serology');
@@ -71,6 +73,8 @@ _('Dried Tube Specimen - HIV Viral Load');
 _('Dried Tube Specimen - Malaria Serology');
 // scheme_list.scheme_name
 _('Dried Tube Specimen - Syphilis Serology');
+// scheme_list.scheme_name
+_('Dried Tube Specimen - Syphilis Serology (Legacy)');
 // scheme_list.scheme_name
 _('Dried Tube Specimen - Tuberculosis');
 // r_dts_corrective_actions.corrective_action
