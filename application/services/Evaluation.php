@@ -4789,6 +4789,7 @@ class Application_Service_Evaluation
         ];
 
         $sLimit = '';
+        $sOffset = 0;
         if (isset($parameters['iDisplayStart']) && $parameters['iDisplayLength'] != '-1') {
             $sOffset = $parameters['iDisplayStart'];
             $sLimit = $parameters['iDisplayLength'];
@@ -4867,7 +4868,7 @@ class Application_Service_Evaluation
             $sQuery = $sQuery->order(['p.first_name ASC', 'p.last_name ASC']);
         }
 
-        if (isset($sLimit) && $sLimit !== '' && isset($sOffset)) {
+        if ($sLimit !== '') {
             $sQuery = $sQuery->limit($sLimit, $sOffset);
         }
 

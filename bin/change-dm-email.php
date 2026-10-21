@@ -181,7 +181,7 @@ try {
 
             $userInput = trim($input);
             break;
-        } while ($attempts < 3);
+        } while (true);
     }
 
     // Step 2: Determine if input is email or participant code
@@ -279,12 +279,7 @@ try {
 
             $newEmail = trim($emailInput);
             break;
-        } while ($attempts < 3);
-    }
-
-    if ($newEmail === null) {
-        $io->error('Failed to get new email after multiple attempts.');
-        exit(1);
+        } while (true);
     }
 
     // Validate new email format

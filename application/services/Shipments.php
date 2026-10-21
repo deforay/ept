@@ -4872,7 +4872,6 @@ class Application_Service_Shipments
             $writer->save($this->tempUploadDirectory . DIRECTORY_SEPARATOR . $filename);
             return $filename;
         } catch (Exception $exc) {
-            $sQuerySession->participantQuery = '';
             Pt_Commons_LoggerUtility::logError('Failed to generate CAPA report (Excel): ' . $exc->getMessage(), [
                 'file'  => $exc->getFile(),
                 'line'  => $exc->getLine(),
@@ -4997,7 +4996,6 @@ class Application_Service_Shipments
             $writer->save($this->tempUploadDirectory . DIRECTORY_SEPARATOR . $filename);
             return $filename;
         } catch (Exception $exc) {
-            $sQuerySession->participantQuery = '';
             Pt_Commons_LoggerUtility::logError('Failed to generate CAPA view report (Excel): ' . $exc->getMessage(), [
                 'file'  => $exc->getFile(),
                 'line'  => $exc->getLine(),

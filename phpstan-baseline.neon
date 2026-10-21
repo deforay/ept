@@ -2380,12 +2380,6 @@ parameters:
 			path: application/services/Shipments.php
 
 		-
-			message: '#^Variable \$sQuerySession might not be defined\.$#'
-			identifier: variable.undefined
-			count: 1
-			path: application/services/Shipments.php
-
-		-
 			message: '#^Variable \$sWhere in isset\(\) always exists and is not nullable\.$#'
 			identifier: isset.variable
 			count: 2

@@ -174,7 +174,7 @@ try {
 
             $userInput = trim($input);
             break;
-        } while ($attempts < 3);
+        } while (true);
     }
 
     // Step 2: Determine if input is email or participant code
@@ -293,6 +293,7 @@ try {
             $newPassword = trim($passwordInput);
             if (strlen($newPassword) < 6) {
                 $io->warning('Password must be at least 6 characters long. Please try again.');
+                $newPassword = null;
                 continue;
             }
 
