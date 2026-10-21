@@ -39,7 +39,14 @@ $segments = [
     ['key' => 'unable',     'label' => $label['unable'],     'val' => (int) $s['unable_to_test'], 'color' => '#c9a227'],
     ['key' => 'noresponse', 'label' => $label['noresponse'], 'val' => (int) $s['not_responded'],  'color' => '#9aa0a6'],
 ];
-$segments = array_values(array_filter($segments, static function ($seg) {
+// Before evaluation nothing has been scored, so "0 passed / 0 failed / 0% pass rate"
+// would read as a result. Outcome buckets only appear once at least one response is scored.
+$evaluated = ((int) $s['passed'] + (int) $s['failed'] + (int) $s['not_scored']) > 0;
+$outcomeKeys = ['passed', 'failed', 'not_scored'];
+$segments = array_values(array_filter($segments, static function ($seg) use ($evaluated, $outcomeKeys) {
+    if (!$evaluated && in_array($seg['key'], $outcomeKeys, true)) {
+        return false;
+    }
     return $seg['key'] !== 'awaiting' || $seg['val'] > 0;
 }));
 ?>
@@ -81,8 +88,13 @@ $segments = array_values(array_filter($segments, static function ($seg) {
             <div class="l"><?= $this->htmlTranslate('Response rate') ?></div>
         </div>
         <div class="ps-kpi">
-            <div class="n" style="color:#1f9d63;"><?= $s['pass_rate'] ?>%</div>
-            <div class="l"><?= $this->htmlTranslate('Pass rate') ?> · <?= $this->htmlTranslate('of tested') ?></div>
+            <?php if ($evaluated) { ?>
+                <div class="n" style="color:#1f9d63;"><?= $s['pass_rate'] ?>%</div>
+                <div class="l"><?= $this->htmlTranslate('Pass rate') ?> · <?= $this->htmlTranslate('of tested') ?></div>
+            <?php } else { ?>
+                <div class="n" style="color:#aab0b8;">&ndash;</div>
+                <div class="l"><?= $this->htmlTranslate('Pass rate') ?> · <?= $this->htmlTranslate('Not evaluated yet') ?></div>
+            <?php } ?>
         </div>
         <div class="ps-kpi">
             <div class="n"><?= $enrolled ?></div>
@@ -121,6 +133,7 @@ $segments = array_values(array_filter($segments, static function ($seg) {
                 <div class="sub"><?= sprintf($this->htmlTranslate('%s replied but could not test'), (int) $s['unable_to_test']) ?></div>
             <?php } ?>
         </div>
+        <?php if ($evaluated) { ?>
         <div class="ps-tile" style="border-left-color:#1f9d63;">
             <div class="n" style="color:#1f9d63;"><?= $s['passed'] ?></div>
             <div class="l"><?= $this->htmlTranslate('Passed') ?></div>
@@ -129,10 +142,17 @@ $segments = array_values(array_filter($segments, static function ($seg) {
             <div class="n" style="color:#d64550;"><?= $s['failed'] ?></div>
             <div class="l"><?= $this->htmlTranslate('Failed') ?></div>
         </div>
+        <?php } else { ?>
+        <div class="ps-tile" style="border-left-color:#3f6fb0;">
+            <div class="n"><?= $s['awaiting_eval'] ?></div>
+            <div class="l"><?= $label['awaiting'] ?></div>
+        </div>
+        <?php } ?>
         <div class="ps-tile" style="border-left-color:#9aa0a6;">
             <div class="n"><?= $s['not_responded'] ?></div>
             <div class="l"><?= $label['noresponse'] ?></div>
         </div>
+        <?php if ($evaluated) { ?>
         <div class="ps-tile" style="border-left-color:#c9a227;">
             <div class="n"><?= $s['excluded'] ?></div>
             <div class="l"><?= $this->htmlTranslate('Excluded from scoring') ?></div>
@@ -158,6 +178,7 @@ $segments = array_values(array_filter($segments, static function ($seg) {
                 <div class="sub"><?= implode(' &middot; ', $excParts) ?></div>
             <?php } ?>
         </div>
+        <?php } ?>
     </div>
 
     <!-- Secondary metrics -->
