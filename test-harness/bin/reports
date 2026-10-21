@@ -14,6 +14,9 @@ declare(strict_types=1);
  * (default HEAD) in a temporary git worktree, once with the working tree. Then
  * it compares each pair of PDFs on pages, words, word positions, images,
  * links and form fields, and counts the tags the PDF HTML check dropped.
+ * It also lists the problems a PDF has by itself, such as a graphics state
+ * never restored or a font not embedded, and the PHP warnings each side
+ * printed. These show bugs both versions share, which a comparison cannot.
  *
  * The run writes to the database and downloads/reports, as report generation
  * always does. Both are put back afterwards, even when the run fails. Use a
@@ -211,6 +214,7 @@ foreach (['logs', 'downloads/reports', 'public/temporary'] as $dir) {
 
 $trees = ['base' => $worktree, 'new' => $repoRoot];
 $logNotes = [];
+$warnings = ['base' => [], 'new' => []];
 foreach ($trees as $label => $tree) {
     $treeConfig = clone $config;
     $treeConfig->repoRoot = $tree;
@@ -225,7 +229,12 @@ foreach ($trees as $label => $tree) {
         $started = microtime(true);
         fwrite(STDOUT, sprintf('  %-4s %-28s ', $label, $code));
         try {
-            $evaluator->generateReports($id);
+            $output = $evaluator->generateReports($id);
+            foreach ($output as $line) {
+                if (preg_match('/^(PHP )?(Warning|Notice|Deprecated|Fatal error):/', $line)) {
+                    $warnings[$label][] = $line;
+                }
+            }
         } catch (\RuntimeException $e) {
             fwrite(STDOUT, "failed\n");
             fwrite(STDERR, $e->getMessage() . "\n");
@@ -239,6 +248,11 @@ foreach ($trees as $label => $tree) {
         }
         $count = count(glob("$work/$label/$code/*.pdf") ?: []);
         fwrite(STDOUT, sprintf("%5d PDFs  %4.0fs\n", $count, microtime(true) - $started));
+        if ($count === 0) {
+            foreach (array_slice(array_values(array_filter(array_map('trim', $output))), 0, 3) as $line) {
+                fwrite(STDOUT, "       $line\n");
+            }
+        }
     }
     $dropped = 0;
     $errors = 0;
@@ -254,6 +268,11 @@ foreach ($trees as $label => $tree) {
     $logNotes[$label] = [$dropped, $errors];
 }
 chdir($repoRoot);
+
+if ((glob("$work/*/*/*.pdf") ?: []) === []) {
+    fwrite(STDERR, "\nNo reports were generated, so there is nothing to compare.\n");
+    exit(2);
+}
 
 fwrite(STDOUT, "Reading PDFs...\n");
 $pairs = [];
@@ -274,14 +293,25 @@ foreach ($pairs as $name => [$baseFile, $newFile]) {
         unset($pairs[$name]);
     }
 }
-$aspects = ['pages', 'words', 'positions', 'images', 'placements', 'links', 'fields'];
+$aspects = ['pages', 'words', 'positions', 'images', 'placements', 'links', 'fields', 'problems'];
 $differing = array_fill_keys($aspects, 0);
 $examples = [];
+// Problem kind => side => PDFs with it, and the first PDF the new side has it in
+$problems = [];
 // A batch at a time: the word positions of a few thousand PDFs do not fit
 // in memory at once.
 foreach (array_chunk($pairs, 100, true) as $batch) {
     $facts = PdfFacts::collect(array_merge(...array_values(array_map('array_values', $batch))), $procs);
     foreach ($batch as $name => [$baseFile, $newFile]) {
+        foreach (['base' => $baseFile, 'new' => $newFile] as $label => $file) {
+            $kinds = array_unique(array_map(static fn (string $p): string => (string) preg_replace('/^page \d+/', 'page', $p), $facts[$file]['problems']));
+            foreach ($kinds as $kind) {
+                $problems[$kind][$label] = ($problems[$kind][$label] ?? 0) + 1;
+                if ($label === 'new') {
+                    $problems[$kind]['example'] ??= $name;
+                }
+            }
+        }
         foreach ($aspects as $aspect) {
             $a = $facts[$baseFile][$aspect];
             $b = $facts[$newFile][$aspect];
@@ -302,7 +332,17 @@ foreach ($aspects as $aspect) {
     fwrite(STDOUT, sprintf("  %-10s %s\n", $aspect, $differing[$aspect] === 0 ? 'same' : $differing[$aspect] . ' differ'));
 }
 foreach ($logNotes as $label => [$dropped, $errors]) {
-    fwrite(STDOUT, sprintf("  %-4s log  %d dropped tags, %d errors\n", $label, $dropped, $errors));
+    fwrite(STDOUT, sprintf("  %-4s log  %d dropped tags, %d errors, %d PHP warnings\n", $label, $dropped, $errors, count($warnings[$label])));
+}
+if ($problems !== []) {
+    fwrite(STDOUT, "\nProblems in a PDF by itself (PDFs with it: base, new):\n");
+    ksort($problems);
+    foreach ($problems as $kind => $counts) {
+        fwrite(STDOUT, sprintf("  %5d %5d  %s%s\n", $counts['base'] ?? 0, $counts['new'] ?? 0, $kind, isset($counts['example']) ? "  e.g. {$counts['example']}" : ''));
+    }
+}
+foreach (array_slice(array_values(array_unique($warnings['new'])), 0, 5) as $line) {
+    fwrite(STDOUT, "  new  $line\n");
 }
 foreach (array_slice($missing, 0, 10) as $line) {
     fwrite(STDOUT, "  $line\n");
@@ -320,7 +360,8 @@ if ($keep) {
     fwrite(STDOUT, "\nPDFs kept in $work/base and $work/new\n");
 }
 
-$changed = $missing !== [] || array_sum($differing) > 0 || $logNotes['new'][0] > $logNotes['base'][0];
+$changed = $missing !== [] || array_sum($differing) > 0 || $logNotes['new'][0] > $logNotes['base'][0]
+    || count($warnings['new']) > count($warnings['base']);
 fwrite(STDOUT, $changed ? "\nThe reports differ.\n" : "\nThe reports are the same.\n");
 exit($changed ? 1 : 0);
 
