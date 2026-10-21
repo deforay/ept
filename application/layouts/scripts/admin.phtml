@@ -159,6 +159,14 @@ $resolvedHelpSlug = $helpSlugMap["$controllerName/$actionName"]
 if ($controllerName === 'testkit' && Zend_Controller_Front::getInstance()->getRequest()->getModuleName() === 'reports') {
 	$resolvedHelpSlug = 'reports-testkit';
 }
+// The PTCC list and forms share the data-managers controller with the Data
+// Manager pages, so the ptcc flag and the PTCC-only actions pick their own topic.
+if (
+	$controllerName === 'data-managers'
+	&& (Zend_Controller_Front::getInstance()->getRequest()->getParam('ptcc') == 1 || str_contains($actionName, 'ptcc'))
+) {
+	$resolvedHelpSlug = 'ptcc';
+}
 // Scheme Config keeps the per-scheme help topics (docs/help/admin/*/dts-settings.md
 // and friends) — one controller, but the help still follows the scheme you're on.
 // Schemes without a topic file resolve to nothing, same as any unmapped page.

@@ -81,27 +81,42 @@ if (isset($this->ptcc) && !empty($this->ptcc) && $this->ptcc == 1) {
         <h2><?= $this->translate->_($title); ?></h2>
         <div class="data-list-actions">
             <?php if (isset($ptcc) && !empty($ptcc) && $ptcc == 1) { ?>
-            <button type="button" onclick="generatePtccExport('mapped');" id="exportPtccMapped" class="btn btn-primary"><i
-                    class="icon-download"></i>&nbsp;&nbsp;<?= $this->translate->_("PTCC Mapped Participants"); ?></button>
-            <button type="button" onclick="generatePtccExport('normal');" id="exportPtcc" class="btn btn-primary"><i
-                    class="icon-download"></i>&nbsp;&nbsp;<?= $this->translate->_("PTCC"); ?></button>
-            <button type="button" onclick="exportActivePtcc(true);" class="btn btn-warning"><i
-                    class="icon-key"></i>&nbsp;&nbsp;<?= $this->translate->_("Active PTCC + Passwords"); ?></button>
+            <!-- Three groups: add, passwords, exports. "Active PTCC + Passwords" resets
+                 every active PTCC password, so it sits with the password actions, not the exports. -->
             <a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'data-managers', 'action' => 'add', 'ptcc' => '1'), 'default', true); ?>"
                 class="btn btn-primary"><i
                     class="icon-user"></i>&nbsp;&nbsp;<?= $this->translate->_("Add New PTCC"); ?></a>
             <a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'data-managers', 'action' => 'bulk-import-ptcc'), 'default', true); ?>"
-                class="btn btn-primary"><i
-                    class="icon-user"></i>&nbsp;&nbsp;<?= $this->translate->_("Bulk Import PTCC"); ?></a>
+                class="btn btn-default btn-quiet"><i
+                    class="icon-upload"></i>&nbsp;&nbsp;<?= $this->translate->_("Bulk Import PTCC"); ?></a>
+            <div class="btn-group">
+                <button type="button" class="btn btn-default btn-quiet dropdown-toggle" data-toggle="dropdown"><i
+                        class="icon-key"></i>&nbsp;&nbsp;<?= $this->translate->_("Reset Password"); ?> <span class="caret"></span></button>
+                <ul class="dropdown-menu dropdown-menu-right">
+                    <li><a href="javascript:void(0);" id="bulkByListBtn"><i
+                                class="icon-paste"></i>&nbsp;&nbsp;<?= $this->translate->_("Reset by Pasted List"); ?></a></li>
+                    <li><a href="javascript:void(0);" onclick="exportActivePtcc(true);"><i
+                                class="icon-warning-sign"></i>&nbsp;&nbsp;<?= $this->translate->_("Active PTCC + Passwords"); ?></a></li>
+                </ul>
+            </div>
+            <div class="btn-group">
+                <button type="button" class="btn btn-default btn-quiet dropdown-toggle" data-toggle="dropdown"><i
+                        class="icon-download"></i>&nbsp;&nbsp;<?= $this->translate->_("Export"); ?> <span class="caret"></span></button>
+                <ul class="dropdown-menu dropdown-menu-right">
+                    <li><a href="javascript:void(0);" onclick="generatePtccExport('normal');" id="exportPtcc"><?= $this->translate->_("PTCC"); ?></a></li>
+                    <li><a href="javascript:void(0);" onclick="generatePtccExport('mapped');" id="exportPtccMapped"><?= $this->translate->_("PTCC Mapped Participants"); ?></a></li>
+                    <li><a href="javascript:void(0);" onclick="downloadUnusableEmails();"><?= $this->translate->_("Unusable Emails"); ?></a></li>
+                </ul>
+            </div>
         <?php } else { ?>
             <a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'data-managers', 'action' => 'add'), 'default', true); ?>"
                 class="btn btn-primary"><i
                     class="icon-user"></i>&nbsp;&nbsp;<?= $this->translate->_("Add New Data Manager (Participant Login)"); ?></a>
-        <?php } ?>
-            <button type="button" id="bulkByListBtn" class="btn btn-default"><i
+            <button type="button" id="bulkByListBtn" class="btn btn-default btn-quiet"><i
                     class="icon-paste"></i>&nbsp;&nbsp;<?= $this->translate->_("Reset by Pasted List"); ?></button>
-            <button type="button" onclick="downloadUnusableEmails();" class="btn btn-default"><i
-                    class="icon-envelope"></i>&nbsp;&nbsp;<?= $this->translate->_("Unusable Emails"); ?></button>
+            <button type="button" onclick="downloadUnusableEmails();" class="btn btn-default btn-quiet"><i
+                    class="icon-download"></i>&nbsp;&nbsp;<?= $this->translate->_("Unusable Emails"); ?></button>
+        <?php } ?>
         </div>
     </div>
     <div class="data-list-body">
@@ -440,7 +455,9 @@ if (isset($this->ptcc) && !empty($this->ptcc) && $this->ptcc == 1) {
             $('#bulkActionBar').toggle(count > 0);
             // "Reset by Pasted List" and reset-by-selection are alternative paths;
             // hide the pasted-list button while a selection is active to avoid clutter.
-            $('#bulkByListBtn').toggle(count === 0);
+            // On the PTCC page the button is a menu item, so hide its <li>.
+            var $byList = $('#bulkByListBtn');
+            ($byList.parent('li').length ? $byList.parent() : $byList).toggle(count === 0);
             // Sync the header "select all" checkbox state with this page.
             var $pageBoxes = $('#usersTable tbody input.dm-select');
             var visible = $pageBoxes.length;

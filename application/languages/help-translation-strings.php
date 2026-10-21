@@ -61,6 +61,8 @@ _('Certificate Templates');
 _('communication');
 // admin/dts-settings#tags, admin/eid-assay-add#tags, admin/eid-assay#tags, admin/global-config#tags, admin/home-config#tags, admin/report-config#tags, admin/tb-settings#tags, admin/testkit-add#tags, admin/testkit-edit#tags, admin/testkit-standard-kit#tags, admin/testkit#tags, admin/vl-assay-add#tags, admin/vl-assay-edit#tags, admin/vl-assay#tags, admin/vl-settings#tags
 _('config');
+// admin/ptcc#tags
+_('coordinator');
 // admin/reports-corrective-actions#tags
 _('corrective actions');
 // admin/reports-corrective-actions#title
@@ -92,7 +94,7 @@ _('data-manager');
 // admin/email-participants#tags, admin/participants-add#tags, admin/participants-edit#tags, admin/participants#tags
 _('data-managers');
 // admin/data-managers#title
-_('Data Managers (Participant Logins) and PT Country Coordinators');
+_('Data Managers (Participant Logins)');
 // admin/certificate-templates#tags
 _('design');
 // admin/certificate-templates#tags
@@ -165,6 +167,8 @@ _('excellence');
 _('Excel workbook of XTPT indicators and all sites\' results for one TB shipment');
 // admin/reports-tb-all-sites-results#summary
 _('Excel workbook with every TB participant\'s results for one shipment');
+// admin/ptcc#tags
+_('export');
 // admin/eid-assay-add#tags, admin/eid-assay#tags
 _('extraction');
 // admin/reports-participant-performance#tags
@@ -226,7 +230,9 @@ _('login');
 // admin/report-config#tags
 _('logo');
 // admin/data-managers#summary
-_('Manage Data Manager / PT Login accounts and PT Country Coordinators — add, edit, reset password, change email, and link to participants');
+_('Manage Data Manager / PT Login accounts — add, edit, reset password, change email, and link to participants');
+// admin/ptcc#summary
+_('Manage PT Country Coordinators — add, bulk import, reset passwords, export, and see the participants in each region');
 // admin/evaluate-shipment#tags
 _('manual-override');
 // admin/participants-manager-map#title
@@ -259,7 +265,7 @@ _('Participant Trends');
 _('participation');
 // admin/reports-participant-performance#tags, admin/reports-participant-response#tags, admin/reports-participant-trends#tags, admin/reports-shipment-response#tags, admin/reports-tb-participants-per-country#tags, admin/reports-testkit#tags, admin/reports-vl-assay-distribution#tags
 _('pass rate');
-// admin/data-managers#tags
+// admin/data-managers#tags, admin/ptcc#tags
 _('password');
 // admin/certificate-templates#tags, admin/report-config#tags
 _('pdf');
@@ -277,8 +283,10 @@ _('preset');
 _('pt-login');
 // admin/distributions-add#tags, admin/distributions-edit#tags, admin/distributions#tags
 _('pt-survey');
-// admin/data-managers#tags, admin/email-participants#tags
+// admin/email-participants#tags, admin/ptcc#tags
 _('ptcc');
+// admin/ptcc#title
+_('PT Country Coordinators (PTCC)');
 // admin/distributions#title
 _('PT Surveys');
 // admin/reports-finalize#tags
@@ -355,7 +363,7 @@ _('status');
 _('system-admin');
 // admin/global-config#summary
 _('System-wide settings that apply across the whole ePT app');
-// admin/reports-tb-all-sites-results#tags, admin/reports-tb-participants-per-country#tags, admin/reports-tb-results#tags, admin/reports-xtpt-indicators#tags, admin/tb-settings#tags
+// admin/ptcc#tags, admin/reports-tb-all-sites-results#tags, admin/reports-tb-participants-per-country#tags, admin/reports-tb-results#tags, admin/reports-xtpt-indicators#tags, admin/tb-settings#tags
 _('tb');
 // admin/reports-tb-all-sites-results#title
 _('TB All Sites\' Results');

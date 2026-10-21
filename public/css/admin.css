@@ -7945,6 +7945,40 @@ td.center {
 	color: #fff;
 }
 
+/* Opt-in secondary action. With every header button the same blue, the main
+   action ("Add …") had nothing to stand out against. */
+.data-list-actions .btn-default.btn-quiet {
+	background: #fff;
+	border-color: #c5d2e3;
+	color: #3a5a8a;
+}
+
+.data-list-actions .btn-default.btn-quiet:hover,
+.data-list-actions .btn-default.btn-quiet:focus,
+.data-list-actions .open > .btn-default.btn-quiet {
+	background: #eef3f9;
+	border-color: #4a6fa5;
+	color: #2f4a73;
+}
+
+.data-list-actions .btn-quiet .caret {
+	border-top-color: currentColor;
+	border-bottom-color: currentColor;
+}
+
+/* admin.css bundles an older Bootstrap without .dropdown-menu-right. The
+   actions sit at the card's right edge and .data-list clips overflow, so a
+   left-anchored menu would be cut off. */
+.data-list-actions .dropdown-menu {
+	left: auto;
+	right: 0;
+}
+
+.data-list-actions .dropdown-menu > li > a {
+	font-size: 12.5px;
+	padding: 6px 14px;
+}
+
 .data-list > .data-list-body {
 	padding: 14px 16px 16px;
 }
