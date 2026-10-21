@@ -200,7 +200,7 @@ class Admin_ShipmentController extends Zend_Controller_Action
         if ($request->isPost()) {
             $params = $this->getAllParams();
             $participantService = new Application_Service_Participants();
-            $this->view->participantListsName = $participantService->getParticipantsListNamesByUniqueId($params['unique']);
+            $this->view->participantListsName = $participantService->getParticipantsListNamesByUniqueId($params['unique'], $params['scheme'] ?? null);
         }
     }
 

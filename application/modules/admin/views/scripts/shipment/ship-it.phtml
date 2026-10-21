@@ -481,6 +481,7 @@
 			$.post("<?php echo $this->url(['module' => 'admin', 'controller' => 'shipment', 'action' => 'get-enrollment-list'], 'default', true); ?>", {
 					sid: shipId,
 					unique: presetList,
+					scheme: $('#schemeId').val(),
 					format: "html"
 				},
 				function(data) {

@@ -59,6 +59,19 @@ class Application_Model_DbTable_ShipmentParticipantMap extends Zend_Db_Table_Abs
                 $db->delete('shipment_participant_map', 'map_id IN (' . $idList . ')');
                 $db->query('SET FOREIGN_KEY_CHECKS = 1');
             }
+            // "Save as a list": adds the selected participants to that list of this
+            // scheme. It no longer removes anyone from the preset lists that were applied.
+            $saveAsList = null;
+            $listNameTaken = false;
+            if (!empty($params['listName']) && ($params['showName'] ?? '') === 'yes') {
+                $saveAsList = Application_Model_DbTable_Enrollments::normalizeListName($params['listName']);
+                $enrollments = new Application_Model_DbTable_Enrollments();
+                if (!$enrollments->listExists((string) $params['schemeId'], $saveAsList)
+                    && $enrollments->listNameOwner($saveAsList, (string) $params['schemeId']) !== null) {
+                    $listNameTaken = true;
+                    $saveAsList = null;
+                }
+            }
             foreach ($params['selectedForEnrollment'] as $participant) {
                 $data = [
                     'shipment_id' => $params['shipmentId'],
@@ -70,36 +83,15 @@ class Application_Model_DbTable_ShipmentParticipantMap extends Zend_Db_Table_Abs
                 $commonServices->insertIgnore($this->_name, $data);
                 // $this->insert($data);
 
-                if (isset($params['listName']) && $params['listName'] != '' && (isset($params['showName']) && !empty($params['showName']) && $params['showName'] == 'yes')) {
-                    $db = Zend_Db_Table_Abstract::getAdapter();
-                    if (!empty($params['participantList'])) {
-                        $ids = [];
-                        foreach ($params['participantList'] as $d) {
-                            $ids[] = base64_decode($d);
-                        }
-                        $exist = $db->fetchAll($db->select()->from(['eln' => 'enrollments'])
-                            ->where('list_name IN (?)', $ids)->where('participant_id = ?', $participant));
-                        if (isset($exist[0]['list_name']) && $exist[0]['list_name']) {
-                            $db->delete('enrollments', ['list_name IN (?)' => $ids, 'participant_id IN (?)' => $params['selectedForEnrollment']]);
-                        }
-                        $commonServices->insertIgnore('enrollments', [
-                            'enrollment_id' => Pt_Commons_General::generateULID(),
-                            'list_name' => Application_Model_DbTable_Enrollments::normalizeListName($params['listName']),
-                            'scheme_id' => $params['schemeId'],
-                            'participant_id' => $participant,
-                            'status' => 'enrolled',
-                            'enrolled_on' => new Zend_Db_Expr('now()'),
-                        ]);
-                    } else {
-                        $commonServices->insertIgnore('enrollments', [
-                            'enrollment_id' => Pt_Commons_General::generateULID(),
-                            'list_name' => Application_Model_DbTable_Enrollments::normalizeListName($params['listName']),
-                            'scheme_id' => $params['schemeId'],
-                            'participant_id' => $participant,
-                            'status' => 'enrolled',
-                            'enrolled_on' => new Zend_Db_Expr('now()'),
-                        ]);
-                    }
+                if ($saveAsList !== null) {
+                    $commonServices->insertIgnore('enrollments', [
+                        'enrollment_id' => Pt_Commons_General::generateULID(),
+                        'list_name' => $saveAsList,
+                        'scheme_id' => $params['schemeId'],
+                        'participant_id' => $participant,
+                        'status' => 'enrolled',
+                        'enrolled_on' => new Zend_Db_Expr('now()'),
+                    ]);
                 }
             }
 
@@ -148,6 +140,10 @@ class Application_Model_DbTable_ShipmentParticipantMap extends Zend_Db_Table_Abs
                 "Shipped shipment - {$shipmentCode} ({$participantCount} participants)",
                 'shipment'
             );
+            if ($listNameTaken) {
+                $alertMsg = new Zend_Session_Namespace('alertSpace');
+                $alertMsg->message = Zend_Registry::get('translate')->_('Participants enrolled. The list was not saved because another scheme already has a list with this name. Each list name can be used in one scheme only.');
+            }
 
             return true;
         } catch (Throwable $e) {

@@ -145,7 +145,8 @@ $hasMoreFilters = $hasInstitutes || $hasNetworks || $hasAffiliations;
         noMatch: "<?= $this->jsTranslate("No participants match the search"); ?>",
         saved: "<?= $this->jsTranslate("List saved: %1 added, %2 removed."); ?>",
         saveFailed: "<?= $this->jsTranslate("Save failed. Please try again, or contact support if it keeps happening."); ?>",
-        traceIdLabel: "<?= $this->jsTranslate("Reference"); ?>"
+        traceIdLabel: "<?= $this->jsTranslate("Reference"); ?>",
+        nameTaken: "<?= $this->jsTranslate("Another scheme already has a list with this name. Each list name can be used in one scheme only. Go back and choose another name."); ?>"
     };
     var mapper = null;
 
@@ -223,6 +224,8 @@ $hasMoreFilters = $hasInstitutes || $hasNetworks || $hasAffiliations;
             if (resp && resp.success) {
                 showFlash(I18N.saved.replace('%1', resp.added).replace('%2', resp.removed), 'success');
                 loadParticipants(false);
+            } else if (resp && resp.error === 'name_taken') {
+                showFlash(I18N.nameTaken, 'danger');
             } else {
                 showFlash(I18N.saveFailed + (resp && resp.trace_id ? ' (' + I18N.traceIdLabel + ': ' + resp.trace_id + ')' : ''), 'danger');
             }

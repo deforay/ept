@@ -30,6 +30,11 @@ A preset list is a named, saved set of participants you (or a
 colleague) created earlier. Choosing one and clicking **Apply**
 **replaces** the current selection with that list.
 
+The presets are the enrollment lists from **Configure → Scheme
+Enrollments**. Create, clone, rename or archive them there.
+Archived lists are not offered here. **Default** means this
+shipment's scheme's Default list.
+
 ### Copy from an Existing Shipment
 
 This pulls in the participants who were enrolled in another
@@ -75,10 +80,15 @@ and the search box above each list to filter by name or code.
 
 ## Saving the selection as a preset
 
-At the bottom, you can choose **Yes** to save this exact selection
-as a **preset participant list** and give it a name. Next time you
-enroll a shipment, that list will appear in the **Preset
-Participant List** dropdown so you can reuse it in one click.
+At the bottom, you can choose **Yes** to save the selection as a
+**preset participant list** and give it a name. The selected
+participants are added to that list in this shipment's scheme.
+Next time you enroll a shipment, that list appears in the
+**Preset Participant List** dropdown.
+
+A list name can be used in one scheme only. If another scheme
+already has a list with that name, the shipment is still saved
+but the list is not, and a message says so.
 
 ## Saving your work
 

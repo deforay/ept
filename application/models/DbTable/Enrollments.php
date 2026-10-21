@@ -199,6 +199,11 @@ class Application_Model_DbTable_Enrollments extends Zend_Db_Table_Abstract
 
         $schemeId = (string) $params['schemeId'];
         $listName = self::normalizeListName($params['listName'] ?? '');
+        // A new list cannot take a name another scheme uses. Lists that already share
+        // a name before this rule can still be saved.
+        if (!$this->listExists($schemeId, $listName) && $this->listNameOwner($listName, $schemeId) !== null) {
+            return ['ok' => false, 'count' => 0, 'error' => 'name_taken'];
+        }
         $db = $this->getAdapter();
         $common = new Application_Service_Common();
         $enrollmentListId = Pt_Commons_General::generateULID();
@@ -301,8 +306,12 @@ class Application_Model_DbTable_Enrollments extends Zend_Db_Table_Abstract
      * can be edited like any other list. If the scheme already has a list of that name,
      * the two are merged.
      */
+    /** Returns the rows moved, or -1 when another scheme already uses the name. */
     public function assignSchemeToList(string $listName, string $schemeId): int
     {
+        if ($this->listNameOwner($listName, $schemeId, '') !== null) {
+            return -1;
+        }
         $db = $this->getAdapter();
         $db->beginTransaction();
         try {
@@ -347,13 +356,17 @@ class Application_Model_DbTable_Enrollments extends Zend_Db_Table_Abstract
     }
 
     /** Returns false when the scheme already has a list with the new name (merge instead). */
-    public function renameList(string $schemeId, string $listName, string $newName): bool
+    /** Returns null when renamed, or why not: 'exists' in this scheme, 'taken' by another. */
+    public function renameList(string $schemeId, string $listName, string $newName): ?string
     {
         $this->refuseDefault($listName);
         $newName = self::normalizeListName(trim($newName));
         $db = $this->getAdapter();
         if ($newName === 'default' || $this->listExists($schemeId, $newName)) {
-            return false;
+            return 'exists';
+        }
+        if ($this->listNameOwner($newName, $schemeId) !== null) {
+            return 'taken';
         }
         $db->beginTransaction();
         try {
@@ -365,7 +378,7 @@ class Application_Model_DbTable_Enrollments extends Zend_Db_Table_Abstract
             throw $e;
         }
         $this->audit("Renamed enrollment list {$listName} to {$newName} for scheme {$schemeId}");
-        return true;
+        return null;
     }
 
     /** Moves everyone on $listName onto $intoList (same scheme), then removes $listName. */
@@ -396,6 +409,54 @@ class Application_Model_DbTable_Enrollments extends Zend_Db_Table_Abstract
         return $moved;
     }
 
+    /**
+     * Copies the active participants on a list into a new list, in the same scheme or
+     * another one. Returns null when done, or why not: 'exists' in the target scheme,
+     * 'taken' by another scheme, or 'empty' when no active participant is on the list.
+     */
+    public function cloneList(string $schemeId, string $listName, string $toSchemeId, string $newName): ?string
+    {
+        $newName = self::normalizeListName(trim($newName));
+        if (!$this->listExists($schemeId, $listName)) {
+            return 'empty';
+        }
+        if ($this->listExists($toSchemeId, $newName)) {
+            return 'exists';
+        }
+        if ($this->listNameOwner($newName, $toSchemeId) !== null) {
+            return 'taken';
+        }
+        $db = $this->getAdapter();
+        $participantIds = $db->fetchCol(
+            $db->select()->distinct()->from(['e' => $this->_name], ['participant_id'])
+                ->join(['p' => 'participant'], 'p.participant_id = e.participant_id', [])
+                ->where('e.scheme_id = ?', $schemeId)->where('e.list_name = ?', $listName)
+                ->where("p.status = 'active'")
+        );
+        if (empty($participantIds)) {
+            return 'empty';
+        }
+        $db->beginTransaction();
+        try {
+            foreach ($participantIds as $participantId) {
+                $db->insert($this->_name, [
+                    'enrollment_id' => Pt_Commons_General::generateULID(),
+                    'list_name' => $newName,
+                    'scheme_id' => $toSchemeId,
+                    'participant_id' => (int) $participantId,
+                    'status' => 'enrolled',
+                    'enrolled_on' => new Zend_Db_Expr('now()'),
+                ]);
+            }
+            $db->commit();
+        } catch (Throwable $e) {
+            $db->rollBack();
+            throw $e;
+        }
+        $this->audit("Cloned enrollment list {$listName} of scheme {$schemeId} to {$newName} of scheme {$toSchemeId} (" . count($participantIds) . ' participants)');
+        return null;
+    }
+
     /** Participants stay enrolled through any other list they are on. */
     public function deleteList(string $schemeId, string $listName): int
     {
@@ -414,7 +475,28 @@ class Application_Model_DbTable_Enrollments extends Zend_Db_Table_Abstract
         return $removed;
     }
 
-    private function listExists(string $schemeId, string $listName): bool
+    /**
+     * A list name belongs to one scheme only, because Ship It offers lists by name.
+     * Returns the scheme that already uses $listName outside $exceptSchemes, or null.
+     * Default is per scheme, so it never clashes. A legacy list without a scheme
+     * returns ''.
+     */
+    public function listNameOwner(string $listName, string ...$exceptSchemes): ?string
+    {
+        $listName = self::normalizeListName(trim($listName));
+        if ($listName === 'default') {
+            return null;
+        }
+        $db = $this->getAdapter();
+        $sql = $db->select()->from($this->_name, ['scheme_id'])->where('list_name = ?', $listName)->limit(1);
+        if (!empty($exceptSchemes)) {
+            $sql->where('scheme_id NOT IN (?)', $exceptSchemes);
+        }
+        $owner = $db->fetchOne($sql);
+        return $owner === false ? null : (string) $owner;
+    }
+
+    public function listExists(string $schemeId, string $listName): bool
     {
         $db = $this->getAdapter();
         return (bool) $db->fetchOne(

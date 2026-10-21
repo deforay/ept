@@ -423,6 +423,27 @@ sequenceDiagram
 | `participantManagerMapAction` | GET/POST | Assign data managers |
 | `exportParticipantsDetailsAction` | POST (AJAX) | Export to Excel |
 
+### EnrollmentsController
+
+**Location:** `application/modules/admin/controllers/EnrollmentsController.php`
+
+**Required Privilege:** `config-ept` OR `manage-participants`
+
+Enrollment lists are per scheme. The `enrollments` key is (`list_name`, `scheme_id`, `participant_id`). Archived lists live in `enrollment_list_archive`. The `default` list cannot be renamed, merged, archived or deleted. Other list names are unique across schemes because Ship It applies presets by name. `Enrollments::listNameOwner()` is the check every create, rename, clone, import and assign path uses.
+
+#### Key Actions
+
+| Action | Method | Purpose |
+|--------|--------|---------|
+| `indexAction` | GET/POST | Lists tab (GET) and By participant DataTables JSON (POST) |
+| `addAction` | GET/POST | List editor. An XHR save returns JSON |
+| `listItemsAction` | POST (AJAX) | Editor rows for the current filters |
+| `exportListAction` | POST (AJAX) | Download one list as Excel in the import layout |
+| `listActionAction` | POST | `op` = `archive`, `reactivate`, `rename`, `clone`, `merge` or `delete` |
+| `assignSchemeAction` | POST | Give a list saved without a scheme its scheme |
+| `bulkEnrollmentAction` | GET/POST | Bulk import: Upload, Review, Done |
+| `bulkEnrollmentTemplateAction` | GET | Import template in the admin's language |
+
 ---
 
 ## AJAX Patterns

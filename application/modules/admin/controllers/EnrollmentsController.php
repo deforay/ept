@@ -79,8 +79,19 @@ class Admin_EnrollmentsController extends Zend_Controller_Action
             $this->redirect('/admin/enrollments');
             return;
         }
+        $listName = Application_Model_DbTable_Enrollments::normalizeListName($this->_getParam('list', ''));
+        $enrollments = new Application_Model_DbTable_Enrollments();
+        if (!$enrollments->listExists($schemeId, $listName)) {
+            $owner = $enrollments->listNameOwner($listName, $schemeId);
+            if ($owner !== null) {
+                $alertMsg = new Zend_Session_Namespace('alertSpace');
+                $alertMsg->message = $this->nameTakenMessage($owner);
+                $this->redirect('/admin/enrollments');
+                return;
+            }
+        }
         $this->view->scheme = $scheme;
-        $this->view->listName = Application_Model_DbTable_Enrollments::normalizeListName($this->_getParam('list', ''));
+        $this->view->listName = $listName;
 
         $participantService = new Application_Service_Participants();
         $commonService = new Application_Service_Common();
@@ -147,20 +158,46 @@ class Admin_EnrollmentsController extends Zend_Controller_Action
                     break;
                 case 'rename':
                     $newName = (string) $request->getPost('newName', '');
-                    if ($enrollments->renameList($schemeId, $listName, $newName)) {
+                    $refused = $enrollments->renameList($schemeId, $listName, $newName);
+                    if ($refused === null) {
                         $alertMsg->message = 'List renamed.';
                         // Renamed from the list editor: go back to it under the new name.
                         if ($request->getPost('returnTo') === 'edit') {
                             $this->redirect('/admin/enrollments/add/scheme/' . rawurlencode($schemeId) . '?list=' . rawurlencode(trim($newName)));
                             return;
                         }
+                    } elseif ($refused === 'taken') {
+                        $alertMsg->message = $this->nameTakenMessage($enrollments->listNameOwner($newName, $schemeId));
                     } else {
                         $alertMsg->message = 'This scheme already has a list with that name. Use Merge to combine the two lists.';
+                    }
+                    if ($request->getPost('returnTo') === 'edit') {
+                        $this->redirect('/admin/enrollments/add/scheme/' . rawurlencode($schemeId) . '?list=' . rawurlencode($listName));
+                        return;
                     }
                     break;
                 case 'merge':
                     $enrollments->mergeList($schemeId, $listName, (string) $request->getPost('into', ''));
                     $alertMsg->message = 'Lists merged.';
+                    break;
+                case 'clone':
+                    $toScheme = (string) $request->getPost('toScheme', '');
+                    $newName = (string) $request->getPost('newName', '');
+                    // Any active scheme, or the list's own scheme even if that one is inactive.
+                    if ($toScheme === '' || ($toScheme !== $schemeId && $this->schemeName($toScheme) === $toScheme)) {
+                        break;
+                    }
+                    $refused = $enrollments->cloneList($schemeId, $listName, $toScheme, $newName);
+                    if ($refused === null) {
+                        $alertMsg->message = 'List cloned. You can now add or remove participants.';
+                        $this->redirect('/admin/enrollments/add/scheme/' . rawurlencode($toScheme) . '?list=' . rawurlencode(Application_Model_DbTable_Enrollments::normalizeListName(trim($newName))));
+                        return;
+                    }
+                    $alertMsg->message = match ($refused) {
+                        'taken' => $this->nameTakenMessage($enrollments->listNameOwner($newName, $toScheme)),
+                        'exists' => 'Nothing was cloned. That scheme already has a list with this name.',
+                        default => 'Nothing was cloned. This list has no active participants.',
+                    };
                     break;
                 case 'delete':
                     // The admin types the list name to confirm.
@@ -186,9 +223,13 @@ class Admin_EnrollmentsController extends Zend_Controller_Action
         $schemeId = (string) $request->getPost('scheme', '');
         if ($request->isPost() && $schemeId !== '' && $this->schemeName($schemeId) !== $schemeId) {
             $enrollments = new Application_Model_DbTable_Enrollments();
-            $enrollments->assignSchemeToList((string) $request->getPost('list', ''), $schemeId);
+            $listName = (string) $request->getPost('list', '');
             $alertMsg = new Zend_Session_Namespace('alertSpace');
-            $alertMsg->message = 'The list now belongs to the scheme and can be edited.';
+            if ($enrollments->assignSchemeToList($listName, $schemeId) < 0) {
+                $alertMsg->message = $this->nameTakenMessage($enrollments->listNameOwner($listName, $schemeId, ''));
+            } else {
+                $alertMsg->message = 'The list now belongs to the scheme and can be edited.';
+            }
         }
         $this->redirect('/admin/enrollments');
     }
@@ -246,6 +287,20 @@ class Admin_EnrollmentsController extends Zend_Controller_Action
         $this->view->lists = $enrollments->getEnrollmentLists();
         $this->view->preselectedScheme = (string) $this->_getParam('scheme', '');
         $this->view->preselectedList = (string) $this->_getParam('list', '');
+    }
+
+    /** Says which scheme already uses a list name. List names are unique across schemes. */
+    private function nameTakenMessage(?string $ownerScheme): string
+    {
+        $t = $this->view->translate;
+        if ($ownerScheme === '') {
+            return $t->_('A list without a scheme already uses this name. Choose another name, or assign that list a scheme first.');
+        }
+        $names = (new Application_Model_DbTable_SchemeList())->getFullSchemeList(true);
+        if ($ownerScheme === null || !isset($names[$ownerScheme])) {
+            return $t->_('Another scheme already has a list with this name. Each list name can be used in one scheme only. Choose another name.');
+        }
+        return sprintf($t->_('The scheme %s already has a list with this name. Each list name can be used in one scheme only. Choose another name.'), $names[$ownerScheme]);
     }
 
     private function schemeName(string $schemeId): string

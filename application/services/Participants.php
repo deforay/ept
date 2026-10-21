@@ -73,7 +73,7 @@ class Application_Service_Participants
         return $db->fetchAll($sql);
     }
 
-    public function getParticipantsListNamesByUniqueId($id)
+    public function getParticipantsListNamesByUniqueId($id, $schemeId = null)
     {
         if (isset($id) && sizeof($id) > 0) {
             $ids = [];
@@ -83,6 +83,10 @@ class Application_Service_Participants
             $db = Zend_Db_Table_Abstract::getDefaultAdapter();
             $sql = $db->select()->from(['eln' => 'enrollments'], ['*'])
                 ->where('eln.list_name IN (?)', $ids);
+            // Every scheme has a Default list, so Default means the shipment's own scheme.
+            if (!empty($schemeId)) {
+                $sql->where("eln.list_name <> 'default' OR eln.scheme_id = ?", (string) $schemeId);
+            }
             return $db->fetchAll($sql);
         }
     }
@@ -2217,6 +2221,24 @@ class Application_Service_Participants
         $options['listName'] = Application_Model_DbTable_Enrollments::normalizeListName($options['listName'] ?? '');
         $options['removeMissing'] = ($options['removeMissing'] ?? '') === 'yes' ? 'yes' : 'no';
         $enrollments = new Application_Model_DbTable_Enrollments();
+        $translate = Zend_Registry::get('translate');
+        $schemeNames = (new Application_Model_DbTable_SchemeList())->getFullSchemeList(true);
+        if (!isset($schemeNames[(string) $options['scheme']])) {
+            unlink($path);
+            $alertMsg->message = 'Please choose a scheme.';
+            return false;
+        }
+        // List names are unique across schemes, so a new list cannot take a name another scheme uses.
+        if (!$enrollments->listExists((string) $options['scheme'], $options['listName'])) {
+            $owner = $enrollments->listNameOwner($options['listName'], (string) $options['scheme']);
+            if ($owner !== null) {
+                unlink($path);
+                $alertMsg->message = $owner === ''
+                    ? $translate->_('A list without a scheme already uses this name. Choose another name, or assign that list a scheme first.')
+                    : sprintf($translate->_('The scheme %s already has a list with this name. Each list name can be used in one scheme only. Choose another name.'), $schemeNames[$owner] ?? $owner);
+                return false;
+            }
+        }
         $plan = $enrollments->planBulkEnrollment($path, (string) $options['scheme'], $options['listName'], $options['removeMissing'] === 'yes');
         $plan['options'] = $options;
         $plan['review_token'] = Pt_Commons_ImportReview::stash('enrollment', $path, $options);

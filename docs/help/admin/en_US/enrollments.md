@@ -1,6 +1,6 @@
 ---
 title: Scheme Enrollments
-summary: See every enrollment list per scheme, create and edit lists, and archive, rename, merge or delete them
+summary: See every enrollment list per scheme, create and edit lists, and clone, archive, rename, merge or delete them
 tags: [enrollment, scheme, participants, lists, bulk-import]
 ---
 
@@ -15,6 +15,13 @@ form adds to it when you tick a scheme for a participant. Other
 lists are rosters you keep for a round, a region or a shipment,
 such as *Round 3 Testing Sites*. Ship It offers your lists as
 presets when you choose who gets a shipment.
+
+Each list name can be used in **one scheme only**, because Ship It
+offers lists by name. Every scheme has its own Default list, so
+Default is the one exception. ePT refuses a new name, a rename, a
+clone or an import that would reuse another scheme's list name.
+Lists that shared a name before this rule are marked *Name also
+used in another scheme*. Rename one of them.
 
 ## Buttons at the top
 
@@ -41,11 +48,29 @@ link for that scheme.
 Each list has these buttons:
 
 - **Edit**: opens the list to add or remove participants.
-- **Import**: opens Bulk Import Enrollment for this list.
-- **Download**: an Excel file of the list. It uses the import
-  layout, so you can edit it and upload it again.
-- **More**: Rename, Merge into another list, Archive and Delete.
-  The Default list has no More menu.
+- **More**: the other actions for the list.
+  - **Import from file**: opens Bulk Import Enrollment for this
+    list.
+  - **Download**: an Excel file of the list. It uses the import
+    layout, so you can edit it and upload it again.
+  - **Clone list**: starts a new list with the same participants.
+  - **Rename**, **Merge into another list**, **Archive** and
+    **Delete**. The Default list does not have these.
+
+### Clone a list
+
+Use **Clone list** to start a new list from an existing one, for
+example next round's list from this round's list.
+
+1. Open **More** on the list and click **Clone list**.
+2. Choose the scheme for the new list. It can be the same scheme
+   or another one.
+3. Type a name for the new list and click **Clone**. The name
+   cannot be one that another list already uses.
+
+The new list has the active participants of the original list. It
+opens so you can add or remove participants. The original list
+does not change.
 
 ### Archive, rename, merge and delete
 

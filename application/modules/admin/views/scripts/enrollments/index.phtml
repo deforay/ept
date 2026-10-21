@@ -7,6 +7,13 @@ $groups = [];
 $noScheme = [];
 $archived = [];
 $listNamesByScheme = [];
+// List names are unique across schemes. Lists that shared a name before that rule are flagged.
+$schemesByName = [];
+foreach ($this->lists as $list) {
+    if ($list['list_name'] !== 'default') {
+        $schemesByName[mb_strtolower($list['list_name'])][] = $list['scheme_name'] ?? $this->translate->_('No scheme');
+    }
+}
 foreach ($this->lists as $list) {
     $schemeId = (string) $list['scheme_id'];
     $listsByScheme[$schemeId][] = $list['list_name'] === 'default' ? $defaultLabel : $list['list_name'];
@@ -30,7 +37,7 @@ foreach ($this->lists as $list) {
     $groups[$schemeId]['lists'][] = $list;
 }
 
-$renderRow = function (array $list, string $mode) use ($defaultLabel) {
+$renderRow = function (array $list, string $mode) use ($defaultLabel, $schemesByName) {
     $schemeId = (string) $list['scheme_id'];
     $isDefault = $list['list_name'] === 'default';
     $editUrl = '/admin/enrollments/add/scheme/' . rawurlencode($schemeId) . '?list=' . rawurlencode($list['list_name']);
@@ -42,6 +49,10 @@ $renderRow = function (array $list, string $mode) use ($defaultLabel) {
             <span class="enr-list-name"><?= $this->escape($isDefault ? $defaultLabel : $list['list_name']); ?></span>
             <?php if ($isDefault && $mode === 'active') { ?><span class="enr-default" title="<?= $this->htmlTranslate('The list the participant form adds to'); ?>"><?= $this->translate->_("Main"); ?></span><?php } ?>
             <?php if ($mode === 'archived') { ?><span class="enr-scheme-tag"><?= $this->escape($list['scheme_name']); ?></span><?php } ?>
+            <?php $sharedWith = $isDefault ? [] : ($schemesByName[mb_strtolower($list['list_name'])] ?? []);
+            if (count($sharedWith) > 1) { ?>
+                <span class="enr-shared" title="<?= $this->escape(implode(', ', $sharedWith)); ?>"><i class="icon-warning-sign"></i> <?= $this->translate->_("Name also used in another scheme. Rename one of them."); ?></span>
+            <?php } ?>
         </td>
         <td class="enr-num"><?= (int) $list['participants']; ?></td>
         <td><?= $this->escape(Pt_Commons_DateUtility::humanReadableDateFormat($list['last_changed'])); ?></td>
@@ -60,6 +71,9 @@ $renderRow = function (array $list, string $mode) use ($defaultLabel) {
                         <li><a href="<?= $this->escape($importUrl); ?>"><i class="icon-upload"></i> <?= $this->translate->_("Import from file"); ?></a></li>
                     <?php } ?>
                     <li><a href="javascript:void(0);" onclick="downloadList(<?= $args; ?>);"><i class="icon-download"></i> <?= $this->translate->_("Download"); ?></a></li>
+                    <?php if ($mode !== 'legacy') { ?>
+                        <li><a href="javascript:void(0);" onclick="cloneList(<?= $args; ?>);"><i class="icon-copy"></i> <?= $this->translate->_("Clone list"); ?></a></li>
+                    <?php } ?>
                     <?php if (!$isDefault || $mode === 'legacy') { ?>
                         <li class="divider"></li>
                         <?php if ($mode !== 'legacy') { ?>
@@ -104,6 +118,7 @@ $renderRow = function (array $list, string $mode) use ($defaultLabel) {
     #listsTable .enr-list-name { font-weight: 500; color: #2f3a48; }
     #listsTable .enr-num { text-align: right; color: #4b5563; font-variant-numeric: tabular-nums; }
     #listsTable .enr-default { margin-left: 8px; padding: 1px 7px; border-radius: 9px; background: #eef2f7; color: #3a5a8a; font-size: 10.5px; font-weight: 600; }
+    #listsTable .enr-shared { margin-left: 8px; color: #b7791f; font-size: 12px; }
     #listsTable .enr-scheme-tag { margin-left: 8px; color: #8a93a0; font-size: 12px; font-weight: 400; }
     #listsTable .enr-actions { white-space: nowrap; text-align: right; }
     #listsTable .enr-actions .btn { font-size: 12px; line-height: 1.5; padding: 3px 10px; }
@@ -246,6 +261,22 @@ $renderRow = function (array $list, string $mode) use ($defaultLabel) {
     </div>
 </script>
 
+<script type="text/template" id="cloneListTpl">
+    <p><?= $this->translate->_("The new list starts with the active participants on this list. You can then add or remove participants."); ?></p>
+    <div class="form-group">
+        <label for="cloneScheme"><?= $this->translate->_("Scheme"); ?></label>
+        <select id="cloneScheme" class="form-control">
+            <?php foreach ($this->schemes as $scheme) { ?>
+                <option value="<?= $this->escape($scheme['scheme_id']); ?>"><?= $this->escape($scheme['scheme_name']); ?></option>
+            <?php } ?>
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="cloneName"><?= $this->translate->_("New list name"); ?> <span class="mandatory">*</span></label>
+        <input type="text" id="cloneName" class="form-control" autocomplete="off">
+    </div>
+</script>
+
 <script type="text/template" id="assignSchemeTpl">
     <p><?= $this->translate->_("Which scheme is this list for? It then becomes a normal list you can edit. If that scheme already has a list with this name, the two are merged."); ?></p>
     <select id="assignSchemeSelect" class="form-control">
@@ -285,6 +316,11 @@ $renderRow = function (array $list, string $mode) use ($defaultLabel) {
                             alert("<?= $this->jsTranslate("Please choose a scheme"); ?>");
                             return false;
                         }
+                        var owner = listNameOwner($('#newListName').val(), scheme);
+                        if (owner !== null) {
+                            nameTakenAlert(owner);
+                            return false;
+                        }
                         window.location.href = '/admin/enrollments/add/scheme/' + encodeURIComponent(scheme) +
                             '?list=' + encodeURIComponent($.trim($('#newListName').val()));
                     }
@@ -303,7 +339,32 @@ $renderRow = function (array $list, string $mode) use ($defaultLabel) {
     }
 
     var LIST_NAMES_BY_SCHEME = <?= json_encode($listNamesByScheme, JSON_HEX_TAG | JSON_HEX_AMP); ?>;
+    var SCHEME_NAMES = <?= json_encode(array_column($this->lists, 'scheme_name', 'scheme_id'), JSON_HEX_TAG | JSON_HEX_AMP); ?>;
     var DEFAULT_LABEL = <?= json_encode($defaultLabel, JSON_HEX_TAG | JSON_HEX_AMP); ?>;
+
+    // List names are unique across schemes, except Default. Returns the scheme that
+    // already uses the name outside exceptScheme ('' for a list without a scheme), or null.
+    function listNameOwner(name, exceptScheme) {
+        var key = $.trim(name).toLowerCase();
+        if (key === '' || key === 'default' || key === DEFAULT_LABEL.toLowerCase()) return null;
+        var owner = null;
+        $.each(LIST_NAMES_BY_SCHEME, function(scheme, names) {
+            if (scheme === exceptScheme) return;
+            $.each(names, function(_, n) {
+                if (n.toLowerCase() === key) { owner = scheme; return false; }
+            });
+            if (owner !== null) return false;
+        });
+        return owner;
+    }
+
+    function nameTakenAlert(owner) {
+        if (owner === '') {
+            alert("<?= $this->jsTranslate("A list without a scheme already uses this name. Choose another name, or assign that list a scheme first."); ?>");
+            return;
+        }
+        alert("<?= $this->jsTranslate("The scheme %s already has a list with this name. Each list name can be used in one scheme only. Choose another name."); ?>".replace('%s', SCHEME_NAMES[owner] || owner));
+    }
 
     function postListAction(fields) {
         var $form = $('<form method="post" action="/admin/enrollments/list-action"></form>').appendTo('body');
@@ -335,6 +396,11 @@ $renderRow = function (array $list, string $mode) use ($defaultLabel) {
                 callback: function(value) {
                     if (value === null) return;
                     if ($.trim(value) === '' || $.trim(value) === $.trim(list)) return false;
+                    var owner = listNameOwner(value, scheme);
+                    if (owner !== null) {
+                        nameTakenAlert(owner);
+                        return false;
+                    }
                     postListAction($.extend(base, { newName: value }));
                 }
             });
@@ -386,6 +452,49 @@ $renderRow = function (array $list, string $mode) use ($defaultLabel) {
                 }
             });
         }
+    }
+
+    function cloneList(scheme, list) {
+        var dialog = bootbox.dialog({
+            title: "<?= $this->jsTranslate("Clone %s"); ?>".replace('%s', $('<div>').text(list === 'default' ? DEFAULT_LABEL : list).html()),
+            message: $('#cloneListTpl').html(),
+            buttons: {
+                cancel: { label: "<?= $this->jsTranslate("Cancel"); ?>", className: 'btn-default' },
+                ok: {
+                    label: "<?= $this->jsTranslate("Clone"); ?>",
+                    className: 'btn-primary',
+                    callback: function() {
+                        var toScheme = $('#cloneScheme').val();
+                        var newName = $.trim($('#cloneName').val());
+                        if (newName === '') {
+                            alert("<?= $this->jsTranslate("Please enter a name for the new list"); ?>");
+                            return false;
+                        }
+                        var taken = $.grep(LIST_NAMES_BY_SCHEME[toScheme] || [], function(n) {
+                            var label = n === 'default' ? DEFAULT_LABEL : n;
+                            return $.trim(label).toLowerCase() === newName.toLowerCase();
+                        });
+                        if (taken.length > 0) {
+                            alert("<?= $this->jsTranslate("That scheme already has a list with this name."); ?>");
+                            return false;
+                        }
+                        var owner = listNameOwner(newName, toScheme);
+                        if (owner !== null) {
+                            nameTakenAlert(owner);
+                            return false;
+                        }
+                        postListAction({ op: 'clone', scheme: scheme, list: list, toScheme: toScheme, newName: newName });
+                    }
+                }
+            }
+        });
+        var $scheme = dialog.find('#cloneScheme');
+        // A list of an inactive scheme can still be cloned within that scheme.
+        if ($scheme.find('option').filter(function() { return this.value === scheme; }).length === 0) {
+            $scheme.prepend($('<option>').val(scheme).text(SCHEME_NAMES[scheme] || scheme));
+        }
+        $scheme.val(scheme);
+        dialog.find('#cloneName').val((list === 'default' ? DEFAULT_LABEL : $.trim(list)) + " <?= $this->jsTranslate("(copy)"); ?>");
     }
 
     function assignScheme(list) {
