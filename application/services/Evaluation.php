@@ -3871,7 +3871,7 @@ class Application_Service_Evaluation
                         $extAssayResult[8]['eidAssay'][] = $edata['eidAssay'];
                         $extAssayResult[8]['eidAssayWithCount'][] = $edata['eidAssay'] . '(n=' . $edata['participantCount'] . ')';
                         $extAssayResult[8]['participantCount'] += $edata['participantCount'];
-                        $extAssayResult[8]['maxScore'] += $edata['maxScore'];
+                        $extAssayResult[8]['maxScore'] += $edata['maxScore'] ?? 0;
                         //$extAssayResult[8]['belowScore'] += isset($edata['belowScore']) ? $edata['belowScore'] : 0;
                         $extAssayResult[8]['belowScore'] += isset($edata['belowScore']) ? $edata['belowScore'] : 0;
 

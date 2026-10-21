@@ -120,9 +120,9 @@ if (!empty($resultArray['shipment']) && $resultArray['shipment'] != "") {
             if (isset($tbTestType) && !empty($tbTestType) && $tbTestType != 'microscopy') {
                 $referenceResultContent .= '<td style="border:solid 1px #000000;text-align:center;font-weight:normal;">' . $ref['tb_isolate'] . '</td>';
             }
-            $referenceResultContent .= '<td style="border:solid 1px #000000;text-align:center;font-weight:normal;">' . ucwords(str_replace("-", " ", $ref['mtb_detected'])) . '</td>';
+            $referenceResultContent .= '<td style="border:solid 1px #000000;text-align:center;font-weight:normal;">' . ucwords(str_replace("-", " ", $ref['mtb_detected'] ?? '')) . '</td>';
             if (isset($tbTestType) && !empty($tbTestType) && $tbTestType != 'microscopy') {
-                $referenceResultContent .= '<td style="border:solid 1px #000000;text-align:center;font-weight:normal;">' . ucwords(str_replace("-", " ", $ref['rif_resistance'])) . '</td>';
+                $referenceResultContent .= '<td style="border:solid 1px #000000;text-align:center;font-weight:normal;">' . ucwords(str_replace("-", " ", $ref['rif_resistance'] ?? '')) . '</td>';
             }
             $referenceResultContent .= '</tr>';
         }
