@@ -29,7 +29,7 @@ $editUrl = '/admin/enrollments/add/scheme/' . rawurlencode((string) $options['sc
         <div class="bi-done-head">
             <span class="bi-check"><i class="icon-ok"></i></span>
             <div>
-                <h3><?= sprintf($this->htmlTranslate("%s · %s is saved"), $this->escape($this->schemeName), $this->escape($listLabel)); ?></h3>
+                <h3><?= sprintf($this->htmlTranslate("%s: %s is saved"), $this->escape($this->schemeName), $this->escape($listLabel)); ?></h3>
                 <div class="bi-done-sub"><?= sprintf($this->htmlTranslate("%d participant(s) added, %d removed."), (int) $response['added'], (int) $response['removed']); ?></div>
             </div>
         </div>

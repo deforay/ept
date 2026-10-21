@@ -53,9 +53,9 @@ $changes = $counts['add'] + $removing;
             <div>
                 <h3>
                     <?php if ($changes > 0): ?>
-                        <?= sprintf($this->htmlTranslate("%d to add and %d to remove on %s · %s"), $counts['add'], $removing, $this->escape($this->schemeName), $this->escape($listLabel)); ?>
+                        <?= sprintf($this->htmlTranslate("%d to add and %d to remove on %s: %s"), $counts['add'], $removing, $this->escape($this->schemeName), $this->escape($listLabel)); ?>
                     <?php else: ?>
-                        <?= sprintf($this->htmlTranslate("This file changes nothing on %s · %s"), $this->escape($this->schemeName), $this->escape($listLabel)); ?>
+                        <?= sprintf($this->htmlTranslate("This file changes nothing on %s: %s"), $this->escape($this->schemeName), $this->escape($listLabel)); ?>
                     <?php endif; ?>
                 </h3>
                 <div class="bi-options-recap">
