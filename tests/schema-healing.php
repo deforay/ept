@@ -147,6 +147,48 @@ $DRY_RUN = false;
 check(handle_idempotent_ddl($db, "ALTER TABLE `t` ADD `a` INT, DROP `b`") === MIG_NOT_HANDLED,
     'Mixed ALTER actions must not use the single-column handler.');
 
+class KeyTestAdapter extends HealingTestAdapter
+{
+    public array $primaryKey = ['list_name', 'participant_id'];
+
+    public function fetchOne($sql, $bind = [])
+    {
+        if (str_contains($sql, 'information_schema.TABLES')) {
+            return 1;
+        }
+        return parent::fetchOne($sql, $bind);
+    }
+
+    public function fetchCol($sql, $bind = [], $fetchMode = null)
+    {
+        return $this->primaryKey;
+    }
+
+    public function query($sql, $bind = [])
+    {
+        $this->queries[] = $sql;
+        if (preg_match('/ADD PRIMARY KEY \((.+)\)/i', $sql, $m)) {
+            $this->primaryKey = array_map(fn ($c) => trim($c, '` '), explode(',', $m[1]));
+        }
+        return null;
+    }
+}
+
+$keyDb = new KeyTestAdapter();
+$replaceKey = 'ALTER TABLE `enrollments` DROP PRIMARY KEY, ADD PRIMARY KEY (`list_name`, `scheme_id`, `participant_id`);';
+check(handle_idempotent_ddl($keyDb, $replaceKey) === MIG_EXECUTED, 'Replace a primary key that differs.');
+check(str_contains($keyDb->queries[0], 'DROP PRIMARY KEY, ADD PRIMARY KEY'), 'Swap the key in one statement.');
+check(handle_idempotent_ddl($keyDb, $replaceKey) === MIG_SKIPPED, 'A matching primary key must be skipped.');
+check(count($keyDb->queries) === 1, 'A rerun must not rebuild the table.');
+$keyDb->primaryKey = [];
+$keyDb->queries = [];
+check(handle_idempotent_ddl($keyDb, $replaceKey) === MIG_EXECUTED && !str_contains($keyDb->queries[0], 'DROP'),
+    'Add the key without a DROP when the table has none.');
+check(handle_idempotent_ddl($keyDb, 'ALTER TABLE `t` DROP PRIMARY KEY') === MIG_NOT_HANDLED,
+    'DROP PRIMARY KEY must not be read as dropping a column named PRIMARY.');
+check(handle_idempotent_ddl($db, 'ALTER TABLE `t` DROP `missing_col`') === MIG_SKIPPED,
+    'The DROP `col` shorthand still skips a missing column.');
+
 $composer = json_decode(file_get_contents(__DIR__ . '/../composer.json'), true, 512, JSON_THROW_ON_ERROR);
 check($composer['scripts']['migrate'][0] === '@heal-schema', 'Composer must repair before migrating.');
 check(in_array('@migrate', $composer['scripts']['post-update'], true), 'Post-update must include repair via migrate.');

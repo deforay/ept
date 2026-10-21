@@ -290,6 +290,29 @@ function _apply_add_primary_key(Zend_Db_Adapter_Abstract $db, string $table, str
     return MIG_SKIPPED;
 }
 
+/**
+ * `ALTER TABLE t DROP PRIMARY KEY, ADD PRIMARY KEY (...)` is how a migration says it
+ * means to replace a key, so it needs no MIG_REPLACE_PK. Skipped when the key already
+ * matches, so a re-run of the current version does not rebuild the table.
+ */
+function _apply_replace_primary_key(Zend_Db_Adapter_Abstract $db, string $table, string $colsList): int
+{
+    if (!table_exists($db, $table)) {
+        mig_trace('_apply_replace_primary_key', "{$table} missing; skip");
+        return MIG_SKIPPED;
+    }
+    $wantedCols = parse_cols_list($colsList);
+    $haveCols = table_primary_key($db, $table);
+    if ($haveCols === $wantedCols) {
+        return MIG_SKIPPED;
+    }
+    $colsSql = implode(',', array_map(fn ($c) => "`$c`", $wantedCols));
+    run_sql($db, empty($haveCols)
+        ? "ALTER TABLE `{$table}` ADD PRIMARY KEY ($colsSql)"
+        : "ALTER TABLE `{$table}` DROP PRIMARY KEY, ADD PRIMARY KEY ($colsSql)");
+    return MIG_EXECUTED;
+}
+
 /** Verbose trace helper. Set MIG_VERBOSE=1 to enable. */
 function mig_trace(string $tag, string $detail = ''): void
 {
@@ -329,6 +352,11 @@ function handle_idempotent_ddl(Zend_Db_Adapter_Abstract $db, string $query): int
     // Normalize occasional parser artifacts
     $q = preg_replace('/NULL\s*AFTER/i', 'NULL AFTER', $q);
     mig_trace('handle_idempotent_ddl', substr($q, 0, 160));
+
+    // ALTER TABLE ... DROP PRIMARY KEY, ADD PRIMARY KEY (...): a deliberate key change
+    if (preg_match('/^alter\s+table\s+`?([a-z0-9_]+)`?\s+drop\s+primary\s+key\s*,\s*add\s+primary\s+key\s*\((.+?)\)\s*;?$/is', $q, $m)) {
+        return _apply_replace_primary_key($db, $m[1], $m[2]);
+    }
 
     // A successful first ADD does not prove that the remaining ADDs landed.
     // Split only column additions. Other ALTER actions can depend on atomic execution.
@@ -401,8 +429,9 @@ function handle_idempotent_ddl(Zend_Db_Adapter_Abstract $db, string $query): int
         return drop_column_if_exists($db, $m[1], $m[2]);
     }
 
-    // ALTER TABLE ... DROP `col` (shorthand)
-    if (preg_match('/^alter\s+table\s+`?([a-z0-9_]+)`?\s+drop\s+`?([a-z0-9_]+)`?/i', $q, $m)) {
+    // ALTER TABLE ... DROP `col` (shorthand). Not DROP PRIMARY KEY / INDEX / FOREIGN KEY:
+    // this used to read those as a column named PRIMARY, INDEX or FOREIGN and skip them.
+    if (preg_match('/^alter\s+table\s+`?([a-z0-9_]+)`?\s+drop\s+(?!(?:primary|index|key|foreign|constraint|check|unique|fulltext|spatial)\b)`?([a-z0-9_]+)`?/i', $q, $m)) {
         return drop_column_if_exists($db, $m[1], $m[2]);
     }
 
