@@ -1,9 +1,10 @@
 #
+#: application/views/partials/help-drawer.phtml:102
 msgid ""
 msgstr ""
 "Project-Id-Version: ePT\n"
 "Report-Msgid-Bugs-To: support@deforay.com\n"
-"POT-Creation-Date: 2026-10-21 16:56+0530\n"
+"POT-Creation-Date: 2026-10-22 17:59+0530\n"
 "PO-Revision-Date: 2026-07-07 08:33+0530\n"
 "Last-Translator: Amit <amit@deforay.com>\n"
 "Language-Team: \n"
@@ -334,10 +335,10 @@ msgstr "lỗi"
 #: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:286
 #: application/modules/reports/views/scripts/shipments/vl-assay-distribution.phtml:14
 #: application/modules/reports/views/scripts/shipments/vl-sample-analysis.phtml:13
-#: application/services/Evaluation.php:1973
-#: application/services/Evaluation.php:1975
-#: application/services/Evaluation.php:2238
-#: application/services/Evaluation.php:2475
+#: application/services/Evaluation.php:2009
+#: application/services/Evaluation.php:2011
+#: application/services/Evaluation.php:2274
+#: application/services/Evaluation.php:2511
 #: application/services/Reports.php:517 application/services/Reports.php:1612
 #: application/views/partials/participant-performance-report.phtml:33
 #: application/views/partials/participant-response-report.phtml:317
@@ -356,8 +357,8 @@ msgid "excluded"
 msgstr "đã loại trừ"
 
 #: application/languages/db-translation-strings.php:125
-#: application/services/Evaluation.php:2472
-#: application/services/Evaluation.php:2564
+#: application/services/Evaluation.php:2508
+#: application/services/Evaluation.php:2600
 #: application/services/Reports.php:1215 application/services/Reports.php:3027
 #: application/views/partials/participant-performance-report.phtml:30
 msgid "Fail"
@@ -742,11 +743,11 @@ msgstr "không phát hiện"
 #: application/modules/admin/views/scripts/evaluate/shipment.phtml:247
 #: application/modules/reports/views/scripts/distribution/finalize.phtml:329
 #: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:287
-#: application/services/Evaluation.php:1969
-#: application/services/Evaluation.php:1976
-#: application/services/Evaluation.php:2232
-#: application/services/Evaluation.php:2239
-#: application/services/Evaluation.php:2506
+#: application/services/Evaluation.php:2005
+#: application/services/Evaluation.php:2012
+#: application/services/Evaluation.php:2268
+#: application/services/Evaluation.php:2275
+#: application/services/Evaluation.php:2542
 msgid "Not Evaluated"
 msgstr "Chưa được đánh giá"
 
@@ -788,9 +789,9 @@ msgstr "chưa được báo cáo"
 #: application/modules/reports/views/scripts/distribution/finalize.phtml:320
 #: application/modules/reports/views/scripts/distribution/shipment.phtml:280
 #: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:277
-#: application/services/Evaluation.php:1996
-#: application/services/Evaluation.php:2281
-#: application/services/Evaluation.php:2498
+#: application/services/Evaluation.php:2032
+#: application/services/Evaluation.php:2317
+#: application/services/Evaluation.php:2534
 #: application/views/scripts/participant/report.phtml:175
 msgid "Not Tested"
 msgstr "Chưa xét nghiệm"
@@ -852,7 +853,7 @@ msgstr ""
 "trong khi điểm yêu cầu là 95)"
 
 #: application/languages/db-translation-strings.php:329
-#: application/services/Evaluation.php:2469
+#: application/services/Evaluation.php:2505
 #: application/services/Reports.php:1215 application/services/Reports.php:3027
 #: application/views/partials/participant-performance-report.phtml:29
 msgid "Pass"
@@ -2694,7 +2695,7 @@ msgstr "Xác nhận"
 #: application/modules/admin/views/scripts/enrollments/index.phtml:423
 #: application/modules/admin/views/scripts/enrollments/index.phtml:439
 #: application/modules/admin/views/scripts/enrollments/index.phtml:462
-#: application/modules/admin/views/scripts/enrollments/index.phtml:505
+#: application/modules/admin/views/scripts/enrollments/index.phtml:500
 #: application/modules/admin/views/scripts/evaluate/shipment.phtml:426
 #: application/modules/admin/views/scripts/evaluate/vl-range.ajax.phtml:454
 #: application/modules/admin/views/scripts/feedback-responses/add.phtml:70
@@ -3422,7 +3423,7 @@ msgid "+%d more"
 msgstr "+%d khác"
 
 #: application/models/DbTable/DataManagers.php:436
-#: application/models/DbTable/Enrollments.php:152
+#: application/models/DbTable/Enrollments.php:155
 #: application/models/DbTable/Participants.php:397
 #: application/models/DbTable/Participants.php:406
 #, php-format
@@ -3446,7 +3447,7 @@ msgstr "Chỉnh sửa người quản lý dữ liệu này"
 #: application/modules/admin/views/scripts/enrollments/index.phtml:61
 #: application/modules/admin/views/scripts/feedback-responses/shipment-questions.phtml:114
 #: application/modules/admin/views/scripts/participants/mapped-data-managers.ajax.phtml:70
-#: application/services/Evaluation.php:2547
+#: application/services/Evaluation.php:2583
 msgid "Edit"
 msgstr "Chỉnh sửa"
 
@@ -3548,7 +3549,7 @@ msgstr "Hủy khảo sát PT"
 #: application/modules/admin/views/scripts/enrollments/index.phtml:87
 #: application/modules/admin/views/scripts/enrollments/index.phtml:441
 #: application/modules/admin/views/scripts/report-config/index.phtml:226
-#: application/services/Evaluation.php:2562
+#: application/services/Evaluation.php:2598
 msgid "Delete"
 msgstr "Xóa"
 
@@ -3565,7 +3566,7 @@ msgstr "Xóa"
 msgid "View"
 msgstr "Xem"
 
-#: application/models/DbTable/Enrollments.php:266
+#: application/models/DbTable/Enrollments.php:269
 #: application/modules/admin/views/scripts/enrollments/add.phtml:4
 #: application/modules/admin/views/scripts/enrollments/bulk-enrollment-done.phtml:11
 #: application/modules/admin/views/scripts/enrollments/bulk-enrollment-review.phtml:9
@@ -3577,7 +3578,7 @@ msgstr "Xem"
 msgid "Default"
 msgstr "Mặc định"
 
-#: application/models/DbTable/Enrollments.php:611
+#: application/models/DbTable/Enrollments.php:617
 #: application/modules/admin/views/scripts/data-managers/mapped-participants.ajax.phtml:22
 #: application/modules/admin/views/scripts/email-participants/index.phtml:296
 #: application/modules/admin/views/scripts/enrollments/bulk-enrollment-review.phtml:109
@@ -3598,7 +3599,7 @@ msgstr "Mặc định"
 #: application/modules/admin/views/scripts/shipment/round-participants.phtml:103
 #: application/modules/reports/views/scripts/corrective-preventive-actions/capa.phtml:28
 #: application/modules/reports/views/scripts/corrective-preventive-actions/index.phtml:87
-#: application/services/Participants.php:1798
+#: application/services/Participants.php:1800
 #: application/services/Reports.php:1256 application/services/Reports.php:2772
 #: application/services/Reports.php:2809 application/services/Reports.php:3048
 #: application/services/Reports.php:3418
@@ -3619,7 +3620,7 @@ msgstr "Mặc định"
 msgid "Participant ID"
 msgstr "Mã số đơn vị tham gia"
 
-#: application/models/DbTable/Enrollments.php:611
+#: application/models/DbTable/Enrollments.php:617
 #: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc-review.phtml:189
 #: application/modules/admin/views/scripts/data-managers/bulk-import-ptcc-statistics.phtml:147
 #: application/modules/admin/views/scripts/data-managers/index.phtml:235
@@ -3640,7 +3641,7 @@ msgstr "Mã số đơn vị tham gia"
 msgid "Name"
 msgstr "Tên"
 
-#: application/models/DbTable/Enrollments.php:611
+#: application/models/DbTable/Enrollments.php:617
 #: application/models/Dts.php:2294 application/models/Dts.php:2376
 #: application/modules/admin/views/scripts/certificate-templates/design.phtml:12
 #: application/modules/admin/views/scripts/contact-us/index.phtml:27
@@ -3684,7 +3685,7 @@ msgstr "Tên"
 #: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:318
 #: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:321
 #: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:385
-#: application/services/Participants.php:1800
+#: application/services/Participants.php:1802
 #: application/services/Reports.php:1261 application/services/Reports.php:2776
 #: application/services/Reports.php:3052 application/services/Reports.php:3158
 #: application/services/Reports.php:3421
@@ -3840,9 +3841,9 @@ msgstr "Bị loại trừ khỏi đánh giá"
 #: application/modules/reports/views/scripts/distribution/finalize.phtml:319
 #: application/modules/reports/views/scripts/distribution/shipment.phtml:279
 #: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:276
-#: application/services/Evaluation.php:1990
-#: application/services/Evaluation.php:2275
-#: application/services/Evaluation.php:2492
+#: application/services/Evaluation.php:2026
+#: application/services/Evaluation.php:2311
+#: application/services/Evaluation.php:2528
 #: application/views/scripts/participant/report.phtml:174
 msgid "Late Response"
 msgstr "Phản hồi muộn"
@@ -3857,10 +3858,10 @@ msgstr "Phản hồi muộn"
 #: application/modules/reports/views/scripts/participant-trends/index.phtml:335
 #: application/modules/reports/views/scripts/participant-trends/index.phtml:357
 #: application/services/Dashboard.php:1033
-#: application/services/Evaluation.php:1988
-#: application/services/Evaluation.php:2272
-#: application/services/Evaluation.php:2490
-#: application/services/Participants.php:1765
+#: application/services/Evaluation.php:2024
+#: application/services/Evaluation.php:2308
+#: application/services/Evaluation.php:2526
+#: application/services/Participants.php:1767
 #: application/services/Reports.php:508 application/services/Reports.php:2778
 #: application/services/Reports.php:3161 application/services/Reports.php:4236
 #: application/views/partials/shipment-response-report.phtml:103
@@ -3876,9 +3877,9 @@ msgstr "Đã phản hồi"
 #: application/modules/reports/views/scripts/distribution/finalize.phtml:318
 #: application/modules/reports/views/scripts/distribution/shipment.phtml:278
 #: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:275
-#: application/services/Evaluation.php:1986
-#: application/services/Evaluation.php:2267
-#: application/services/Evaluation.php:2488
+#: application/services/Evaluation.php:2022
+#: application/services/Evaluation.php:2303
+#: application/services/Evaluation.php:2524
 #: application/views/partials/shipment-response-report.phtml:104
 #: application/views/scripts/participant/report.phtml:173
 #: scheduled-jobs/report-layouts/summary-layouts/vietnam/dts.phtml:799
@@ -3910,7 +3911,7 @@ msgid "Select report"
 msgstr "Chọn báo cáo"
 
 #: application/models/DbTable/Shipments.php:1781
-#: application/services/Evaluation.php:2262
+#: application/services/Evaluation.php:2298
 msgid "Download Report"
 msgstr "Tải báo cáo"
 
@@ -4326,9 +4327,9 @@ msgstr ""
 msgid "That action is not available."
 msgstr "Thao tác này không khả dụng."
 
-#: application/modules/admin/controllers/EnrollmentsController.php:297
+#: application/modules/admin/controllers/EnrollmentsController.php:296
 #: application/modules/admin/views/scripts/enrollments/index.phtml:363
-#: application/services/Participants.php:2237
+#: application/services/Participants.php:2239
 msgid ""
 "A list without a scheme already uses this name. Choose another name, or "
 "assign that list a scheme first."
@@ -4336,7 +4337,7 @@ msgstr ""
 "Một danh sách chưa có chương trình đã dùng tên này. Hãy chọn tên khác, hoặc "
 "gán chương trình cho danh sách đó trước."
 
-#: application/modules/admin/controllers/EnrollmentsController.php:301
+#: application/modules/admin/controllers/EnrollmentsController.php:300
 msgid ""
 "Another scheme already has a list with this name. Each list name can be used "
 "in one scheme only. Choose another name."
@@ -4344,9 +4345,9 @@ msgstr ""
 "Một chương trình khác đã có danh sách cùng tên. Mỗi tên danh sách chỉ được "
 "dùng trong một chương trình. Hãy chọn tên khác."
 
-#: application/modules/admin/controllers/EnrollmentsController.php:303
+#: application/modules/admin/controllers/EnrollmentsController.php:302
 #: application/modules/admin/views/scripts/enrollments/index.phtml:366
-#: application/services/Participants.php:2238
+#: application/services/Participants.php:2240
 #, php-format
 msgid ""
 "The scheme %s already has a list with this name. Each list name can be used "
@@ -5319,7 +5320,7 @@ msgstr "Giấy chứng nhận Tham gia"
 #: application/modules/admin/views/scripts/certificate-templates/design.phtml:9
 #: application/modules/admin/views/scripts/email-participants/index.phtml:295
 #: application/modules/admin/views/scripts/mail-template/get-mail-template.ajax.phtml:92
-#: application/services/Participants.php:1799
+#: application/services/Participants.php:1801
 msgid "Participant name"
 msgstr "Tên đơn vị tham gia"
 
@@ -5614,7 +5615,7 @@ msgstr "Tên trường cho biểu mẫu PDF"
 #: application/modules/admin/views/scripts/enrollments/index.phtml:153
 #: application/modules/admin/views/scripts/enrollments/index.phtml:248
 #: application/modules/admin/views/scripts/enrollments/index.phtml:267
-#: application/modules/admin/views/scripts/enrollments/index.phtml:586
+#: application/modules/admin/views/scripts/enrollments/index.phtml:581
 #: application/modules/admin/views/scripts/evaluate/get-shipments.ajax.phtml:63
 #: application/modules/admin/views/scripts/evaluate/shipment.phtml:69
 #: application/modules/admin/views/scripts/index/ept-overview.ajax.phtml:277
@@ -5755,7 +5756,7 @@ msgid "Uploading and checking..."
 msgstr "Đang tải lên và kiểm tra..."
 
 #: application/modules/admin/views/scripts/certificate-templates/index.phtml:453
-#: application/services/CertificateTemplates.php:664
+#: application/services/CertificateTemplates.php:685
 msgid "Upload the design as a PDF, PNG or JPG file."
 msgstr "Hãy tải lên mẫu thiết kế dưới dạng tệp PDF, PNG hoặc JPG."
 
@@ -10455,7 +10456,7 @@ msgstr ""
 
 #: application/modules/admin/views/scripts/enrollments/bulk-enrollment.phtml:61
 #: application/modules/admin/views/scripts/enrollments/index.phtml:316
-#: application/modules/admin/views/scripts/enrollments/index.phtml:512
+#: application/modules/admin/views/scripts/enrollments/index.phtml:507
 msgid "Please choose a scheme"
 msgstr "Vui lòng chọn chương trình"
 
@@ -10516,7 +10517,7 @@ msgid "Checking your enrollment file…"
 msgstr "Đang kiểm tra tệp đăng ký…"
 
 #: application/modules/admin/views/scripts/enrollments/index.phtml:14
-#: application/modules/admin/views/scripts/enrollments/index.phtml:584
+#: application/modules/admin/views/scripts/enrollments/index.phtml:579
 msgid "No scheme"
 msgstr "Không có chương trình"
 
@@ -10595,7 +10596,7 @@ msgstr ""
 "vị tham gia vào một chương trình."
 
 #: application/modules/admin/views/scripts/enrollments/index.phtml:168
-#: application/modules/admin/views/scripts/enrollments/index.phtml:586
+#: application/modules/admin/views/scripts/enrollments/index.phtml:581
 msgid "List"
 msgstr "Danh sách"
 
@@ -10774,15 +10775,15 @@ msgstr "Vui lòng nhập tên cho danh sách mới"
 msgid "That scheme already has a list with this name."
 msgstr "Chương trình đó đã có danh sách cùng tên."
 
-#: application/modules/admin/views/scripts/enrollments/index.phtml:497
+#: application/modules/admin/views/scripts/enrollments/index.phtml:492
 msgid "(copy)"
 msgstr "(bản sao)"
 
-#: application/modules/admin/views/scripts/enrollments/index.phtml:502
+#: application/modules/admin/views/scripts/enrollments/index.phtml:497
 msgid "Assign a scheme"
 msgstr "Gán chương trình"
 
-#: application/modules/admin/views/scripts/enrollments/index.phtml:507
+#: application/modules/admin/views/scripts/enrollments/index.phtml:502
 msgid "Assign"
 msgstr "Gán"
 
@@ -11332,16 +11333,16 @@ msgid "Response status"
 msgstr "Trạng thái phản hồi"
 
 #: application/modules/admin/views/scripts/evaluate/shipment.phtml:235
-#: application/services/Evaluation.php:1992
-#: application/services/Evaluation.php:2277
-#: application/services/Evaluation.php:2494
+#: application/services/Evaluation.php:2028
+#: application/services/Evaluation.php:2313
+#: application/services/Evaluation.php:2530
 msgid "Late Submission (pending approval)"
 msgstr "Nộp muộn (đang chờ phê duyệt)"
 
 #: application/modules/admin/views/scripts/evaluate/shipment.phtml:236
-#: application/services/Evaluation.php:1994
-#: application/services/Evaluation.php:2279
-#: application/services/Evaluation.php:2496
+#: application/services/Evaluation.php:2030
+#: application/services/Evaluation.php:2315
+#: application/services/Evaluation.php:2532
 msgid "Late Submission (rejected)"
 msgstr "Nộp muộn (bị từ chối)"
 
@@ -17017,7 +17018,7 @@ msgstr ""
 #: application/modules/admin/views/scripts/shipment/index.phtml:66
 #: application/modules/reports/views/scripts/distribution/finalize.phtml:98
 #: application/modules/reports/views/scripts/distribution/get-shipments.ajax.phtml:29
-#: application/services/Participants.php:1801
+#: application/services/Participants.php:1803
 #: application/views/partials/shipment-response-report.phtml:119
 #: application/views/partials/shipment-response-report.phtml:138
 #: application/views/scripts/participant/all-schemes.phtml:51
@@ -20560,7 +20561,7 @@ msgstr "Đang chờ đánh giá"
 
 #: application/modules/reports/views/scripts/shipments/participation-stats.ajax.phtml:28
 #: application/modules/reports/views/scripts/shipments/vl-assay-distribution.phtml:15
-#: application/services/Participants.php:1769
+#: application/services/Participants.php:1771
 #: application/services/Reports.php:512 application/services/Reports.php:1613
 #: application/views/partials/participant-performance-report.phtml:32
 #: application/views/partials/participant-response-report.phtml:313
@@ -20937,7 +20938,7 @@ msgstr ""
 "ePT không điền được tệp PDF này. Hãy tạo lại bằng LibreOffice và đánh dấu "
 "\"Create PDF form\" khi xuất."
 
-#: application/services/CertificateTemplates.php:672
+#: application/services/CertificateTemplates.php:693
 msgid ""
 "Upload the design as a PDF, PNG or JPG file. In Microsoft Word, choose File "
 "> Save As > PDF."
@@ -20945,11 +20946,11 @@ msgstr ""
 "Hãy tải mẫu thiết kế lên dưới dạng tệp PDF, PNG hoặc JPG. Trong Microsoft "
 "Word, chọn File > Save As > PDF."
 
-#: application/services/CertificateTemplates.php:683
+#: application/services/CertificateTemplates.php:704
 msgid "Template uploaded and validated successfully"
 msgstr "Đã tải lên và kiểm tra bản mẫu thành công"
 
-#: application/services/CertificateTemplates.php:693
+#: application/services/CertificateTemplates.php:714
 msgid ""
 "ePT could not read this PDF. Save the design as PDF again and upload the new "
 "file."
@@ -20957,7 +20958,7 @@ msgstr ""
 "ePT không đọc được tệp PDF này. Hãy lưu lại mẫu thiết kế dưới dạng PDF và "
 "tải tệp mới lên."
 
-#: application/services/CertificateTemplates.php:750
+#: application/services/CertificateTemplates.php:771
 msgid "Design uploaded."
 msgstr "Đã tải mẫu thiết kế lên."
 
@@ -21367,51 +21368,51 @@ msgstr "Đây là email tự động từ ePT."
 msgid "If the button does not work, copy this link into your browser:"
 msgstr "Nếu nút không hoạt động, hãy sao chép liên kết này vào trình duyệt:"
 
-#: application/services/Evaluation.php:2029
+#: application/services/Evaluation.php:2065
 msgid "Not downloaded"
 msgstr "Chưa tải xuống"
 
-#: application/services/Evaluation.php:2033
+#: application/services/Evaluation.php:2069
 msgid "Downloaded"
 msgstr "Đã tải xuống"
 
-#: application/services/Evaluation.php:2040
+#: application/services/Evaluation.php:2076
 msgid "Show who downloaded this report"
 msgstr "Hiển thị ai đã tải xuống báo cáo này"
 
-#: application/services/Evaluation.php:2270
+#: application/services/Evaluation.php:2306
 msgid "PT Not Tested"
 msgstr "PT chưa được xét nghiệm"
 
-#: application/services/Evaluation.php:2516
+#: application/services/Evaluation.php:2552
 msgid "late — approved"
 msgstr "trễ hạn — đã phê duyệt"
 
-#: application/services/Evaluation.php:2565
+#: application/services/Evaluation.php:2601
 msgid "Download Corrective Action"
 msgstr "Tải xuống hành động khắc phục"
 
-#: application/services/Evaluation.php:2575
+#: application/services/Evaluation.php:2611
 msgid "Approve Late Submission"
 msgstr "Phê duyệt nộp trễ hạn"
 
-#: application/services/Evaluation.php:2577
+#: application/services/Evaluation.php:2613
 msgid "Reject"
 msgstr "Từ chối"
 
-#: application/services/Evaluation.php:2614
+#: application/services/Evaluation.php:2650
 msgid "Invalid request."
 msgstr "Yêu cầu không hợp lệ."
 
-#: application/services/Evaluation.php:2625
+#: application/services/Evaluation.php:2661
 msgid "This response is not a pending late submission."
 msgstr "Phản hồi này không phải là lần nộp muộn đang chờ duyệt."
 
-#: application/services/Evaluation.php:2630
+#: application/services/Evaluation.php:2666
 msgid "No change."
 msgstr "Không có thay đổi."
 
-#: application/services/Evaluation.php:2651
+#: application/services/Evaluation.php:2687
 msgid ""
 "Late submission approved. Its status is now Responded (kept marked as late "
 "in history)."
@@ -21419,63 +21420,63 @@ msgstr ""
 "Đã phê duyệt lần nộp muộn. Trạng thái hiện là Đã phản hồi (vẫn được đánh dấu "
 "là nộp muộn trong lịch sử)."
 
-#: application/services/Evaluation.php:2652
+#: application/services/Evaluation.php:2688
 msgid "Late submission rejected."
 msgstr "Đã từ chối nộp trễ hạn."
 
-#: application/services/Participants.php:1680
+#: application/services/Participants.php:1682
 #, php-format
 msgid "%s labs"
 msgstr "%s phòng xét nghiệm"
 
-#: application/services/Participants.php:1680
+#: application/services/Participants.php:1682
 #, php-format
 msgid "the %s labs listed below"
 msgstr "%s phòng xét nghiệm được liệt kê bên dưới"
 
-#: application/services/Participants.php:1682
+#: application/services/Participants.php:1684
 msgid "listed below"
 msgstr "được liệt kê bên dưới"
 
-#: application/services/Participants.php:1686
+#: application/services/Participants.php:1688
 #, php-format
 msgid "%s countries"
 msgstr "%s quốc gia"
 
-#: application/services/Participants.php:1687
+#: application/services/Participants.php:1689
 msgid "the countries listed below"
 msgstr "các quốc gia được liệt kê bên dưới"
 
-#: application/services/Participants.php:1766
+#: application/services/Participants.php:1768
 msgid "Responded late"
 msgstr "Đã phản hồi trễ"
 
-#: application/services/Participants.php:1767
+#: application/services/Participants.php:1769
 msgid "Submitted late, awaiting approval"
 msgstr "Nộp trễ, đang chờ phê duyệt"
 
-#: application/services/Participants.php:1768
+#: application/services/Participants.php:1770
 msgid "Late, not accepted"
 msgstr "Trễ, không được chấp nhận"
 
-#: application/services/Participants.php:1770
+#: application/services/Participants.php:1772
 msgid "Draft, not submitted"
 msgstr "Bản nháp, chưa nộp"
 
-#: application/services/Participants.php:1772
+#: application/services/Participants.php:1774
 msgid "Not yet"
 msgstr "Chưa phản hồi"
 
-#: application/services/Participants.php:1802
+#: application/services/Participants.php:1804
 msgid "Responded on"
 msgstr "Ngày phản hồi"
 
-#: application/services/Participants.php:1806
+#: application/services/Participants.php:1808
 #, php-format
 msgid "Still to respond (%s)"
 msgstr "Chưa phản hồi (%s)"
 
-#: application/services/Participants.php:1807
+#: application/services/Participants.php:1809
 #, php-format
 msgid "Responded (%s)"
 msgstr "Đã phản hồi (%s)"

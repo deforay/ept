@@ -116,7 +116,8 @@ try {
             }
 
             $io->text('Merging catalog updates');
-            mergeCatalog($poFile, $potFile);
+            // A fuzzy match in the source locale is always wrong: it maps one English string to another.
+            mergeCatalog($poFile, $potFile, $locale !== DEFAULT_SOURCE_LOCALE);
 
             if ($shouldRunAi) {
                 if ($locale === DEFAULT_SOURCE_LOCALE) {
@@ -369,15 +370,18 @@ function discoverLocales(array $requestedLocales): array
     return $filteredLocales;
 }
 
-function mergeCatalog(string $poFile, string $potFile): void
+function mergeCatalog(string $poFile, string $potFile, bool $fuzzyMatching = true): void
 {
     $command = [
         'msgmerge',
         '--update',
         '--backup=none',
-        $poFile,
-        $potFile,
     ];
+    if (!$fuzzyMatching) {
+        $command[] = '--no-fuzzy-matching';
+    }
+    $command[] = $poFile;
+    $command[] = $potFile;
 
     runCommand($command);
 }
