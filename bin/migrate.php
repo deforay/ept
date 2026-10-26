@@ -52,6 +52,8 @@ if (!file_exists($logsDir)) {
 
 try {
     $db = Zend_Db::factory($conf->resources->db);
+    // The adapter connects lazily. Connect now so a refused connection lands in this catch.
+    $db->getConnection();
     Zend_Db_Table::setDefaultAdapter($db);
 } catch (Throwable $e) {
     echo 'Error: Failed to connect to database: ' . $e->getMessage() . "\n";

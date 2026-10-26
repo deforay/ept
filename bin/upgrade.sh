@@ -360,8 +360,10 @@ else
     log_buffer="64M"
 fi
 
-# Calculate max connections (cap at 1000)
+# Calculate max connections (floor 100, cap at 1000). total_mem_gb rounds down,
+# so a box under 1 GB gets 0, which MySQL raises to its minimum of 1.
 max_connections=$((total_mem_gb * 100))
+[ $max_connections -lt 100 ] && max_connections=100
 [ $max_connections -gt 1000 ] && max_connections=1000
 
 # Detect SSD for io_capacity
@@ -477,7 +479,7 @@ print info "RAM detected: ${total_mem_gb}GB - Configuring MySQL with buffer pool
 
 changes_needed=false
 for setting in "${!mysql_settings[@]}"; do
-    if ! grep -qE "^[[:space:]]*$setting[[:space:]]*=[[:space:]]*${mysql_settings[$setting]}" "$MYSQL_CONFIG_FILE"; then
+    if ! grep -qE "^[[:space:]]*$setting[[:space:]]*=[[:space:]]*${mysql_settings[$setting]}[[:space:]]*$" "$MYSQL_CONFIG_FILE"; then
         changes_needed=true
         break
     fi
@@ -488,7 +490,7 @@ if [ "$changes_needed" = true ]; then
     cp "$MYSQL_CONFIG_FILE" "${MYSQL_CONFIG_FILE}.bak.${backup_timestamp}"
 
     for setting in "${!mysql_settings[@]}"; do
-        if ! grep -qE "^[[:space:]]*$setting[[:space:]]*=[[:space:]]*${mysql_settings[$setting]}" "$MYSQL_CONFIG_FILE"; then
+        if ! grep -qE "^[[:space:]]*$setting[[:space:]]*=[[:space:]]*${mysql_settings[$setting]}[[:space:]]*$" "$MYSQL_CONFIG_FILE"; then
             if grep -qE "^[[:space:]]*$setting[[:space:]]*=" "$MYSQL_CONFIG_FILE"; then
                 sed -i "/^[[:space:]]*$setting[[:space:]]*=.*/s/^/#/" "$MYSQL_CONFIG_FILE"
             fi
