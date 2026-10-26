@@ -34,7 +34,7 @@ UPDATE `system_config` SET `value` = '7.6.4' WHERE `config` = 'app_version';
 -- reference key -> FINAL namespace
 UPDATE reference_result_generic_test ref
 JOIN shipment s         ON s.shipment_id = ref.shipment_id AND COALESCE(s.status, '') <> 'finalized'
-JOIN r_possibleresult t ON t.scheme_id = s.scheme_type AND t.result_code = ref.reference_result AND UPPER(TRIM(t.scheme_sub_group)) = 'TEST'
+JOIN r_possibleresult t ON t.scheme_id = s.scheme_type AND t.result_code COLLATE utf8mb4_general_ci = ref.reference_result AND UPPER(TRIM(t.scheme_sub_group)) = 'TEST'
 JOIN r_possibleresult f ON f.scheme_id = s.scheme_type AND f.response = t.response AND UPPER(TRIM(f.scheme_sub_group)) = 'FINAL'
 SET ref.reference_result = f.result_code;
 
@@ -42,7 +42,7 @@ SET ref.reference_result = f.result_code;
 UPDATE response_result_generic_test res
 JOIN shipment_participant_map sp ON sp.map_id = res.shipment_map_id
 JOIN shipment s         ON s.shipment_id = sp.shipment_id AND COALESCE(s.status, '') <> 'finalized'
-JOIN r_possibleresult t ON t.scheme_id = s.scheme_type AND t.result_code = res.reported_result AND UPPER(TRIM(t.scheme_sub_group)) = 'TEST'
+JOIN r_possibleresult t ON t.scheme_id = s.scheme_type AND t.result_code COLLATE utf8mb4_general_ci = res.reported_result AND UPPER(TRIM(t.scheme_sub_group)) = 'TEST'
 JOIN r_possibleresult f ON f.scheme_id = s.scheme_type AND f.response = t.response AND UPPER(TRIM(f.scheme_sub_group)) = 'FINAL'
 SET res.reported_result = f.result_code;
 
@@ -50,20 +50,20 @@ SET res.reported_result = f.result_code;
 UPDATE response_result_generic_test res
 JOIN shipment_participant_map sp ON sp.map_id = res.shipment_map_id
 JOIN shipment s         ON s.shipment_id = sp.shipment_id AND COALESCE(s.status, '') <> 'finalized'
-JOIN r_possibleresult f ON f.scheme_id = s.scheme_type AND f.result_code = res.result_1 AND UPPER(TRIM(f.scheme_sub_group)) = 'FINAL'
+JOIN r_possibleresult f ON f.scheme_id = s.scheme_type AND f.result_code COLLATE utf8mb4_general_ci = res.result_1 AND UPPER(TRIM(f.scheme_sub_group)) = 'FINAL'
 JOIN r_possibleresult t ON t.scheme_id = s.scheme_type AND t.response = f.response AND UPPER(TRIM(t.scheme_sub_group)) = 'TEST'
 SET res.result_1 = t.result_code;
 
 UPDATE response_result_generic_test res
 JOIN shipment_participant_map sp ON sp.map_id = res.shipment_map_id
 JOIN shipment s         ON s.shipment_id = sp.shipment_id AND COALESCE(s.status, '') <> 'finalized'
-JOIN r_possibleresult f ON f.scheme_id = s.scheme_type AND f.result_code = res.result_2 AND UPPER(TRIM(f.scheme_sub_group)) = 'FINAL'
+JOIN r_possibleresult f ON f.scheme_id = s.scheme_type AND f.result_code COLLATE utf8mb4_general_ci = res.result_2 AND UPPER(TRIM(f.scheme_sub_group)) = 'FINAL'
 JOIN r_possibleresult t ON t.scheme_id = s.scheme_type AND t.response = f.response AND UPPER(TRIM(t.scheme_sub_group)) = 'TEST'
 SET res.result_2 = t.result_code;
 
 UPDATE response_result_generic_test res
 JOIN shipment_participant_map sp ON sp.map_id = res.shipment_map_id
 JOIN shipment s         ON s.shipment_id = sp.shipment_id AND COALESCE(s.status, '') <> 'finalized'
-JOIN r_possibleresult f ON f.scheme_id = s.scheme_type AND f.result_code = res.result_3 AND UPPER(TRIM(f.scheme_sub_group)) = 'FINAL'
+JOIN r_possibleresult f ON f.scheme_id = s.scheme_type AND f.result_code COLLATE utf8mb4_general_ci = res.result_3 AND UPPER(TRIM(f.scheme_sub_group)) = 'FINAL'
 JOIN r_possibleresult t ON t.scheme_id = s.scheme_type AND t.response = f.response AND UPPER(TRIM(t.scheme_sub_group)) = 'TEST'
 SET res.result_3 = t.result_code;
