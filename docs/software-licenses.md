@@ -20,7 +20,6 @@ Source: `composer.lock`. License expressions are reproduced from package metadat
 | --- | --- | --- | --- |
 | amitdugar/archiveutil | 2.0.0 | MIT | Runtime |
 | amitdugar/db-tools | 3.3.0 | MIT | Runtime |
-| carbonphp/carbon-doctrine-types | 3.2.1 | MIT | Runtime |
 | composer/pcre | 3.4.0 | MIT | Runtime |
 | crunzphp/crunz | v3.9.4 | MIT | Runtime |
 | dflydev/dot-access-data | v3.0.3 | MIT | Runtime |
@@ -28,7 +27,6 @@ Source: `composer.lock`. License expressions are reproduced from package metadat
 | dragonmantank/cron-expression | v3.6.0 | MIT | Runtime |
 | egulias/email-validator | 4.0.4 | MIT | Runtime |
 | gregwar/captcha | v2.1.1 | MIT | Runtime |
-| hackzilla/password-generator | 1.7.0 | MIT | Runtime |
 | laravel/serializable-closure | v2.0.16 | MIT | Runtime |
 | league/commonmark | 2.10.1 | BSD-3-Clause | Runtime |
 | league/config | v1.2.0 | BSD-3-Clause | Runtime |
@@ -42,7 +40,6 @@ Source: `composer.lock`. License expressions are reproduced from package metadat
 | mpdf/psr-log-aware-trait | v3.0.0 | MIT | Runtime |
 | myclabs/deep-copy | 1.14.0 | MIT | Runtime |
 | myclabs/php-enum | 1.8.5 | MIT | Runtime |
-| nesbot/carbon | 3.14.0 | MIT | Runtime |
 | nette/schema | v1.3.6 | BSD-3-Clause, GPL-2.0-only, GPL-3.0-only | Runtime |
 | nette/utils | v4.1.5 | BSD-3-Clause, GPL-2.0-only, GPL-3.0-only | Runtime |
 | paragonie/random_compat | v9.99.100 | MIT | Runtime |
@@ -50,7 +47,6 @@ Source: `composer.lock`. License expressions are reproduced from package metadat
 | phpoffice/math | 0.3.0 | MIT | Runtime |
 | phpoffice/phpspreadsheet | 5.10.0 | MIT | Runtime |
 | phpoffice/phpword | 1.4.0 | LGPL-3.0-only | Runtime |
-| psr/clock | 1.0.0 | MIT | Runtime |
 | psr/container | 2.0.2 | MIT | Runtime |
 | psr/event-dispatcher | 1.0.0 | MIT | Runtime |
 | psr/http-message | 1.1 | MIT | Runtime |
@@ -59,7 +55,6 @@ Source: `composer.lock`. License expressions are reproduced from package metadat
 | setasign/fpdf | 1.9.0 | MIT | Runtime |
 | setasign/fpdi | v2.6.8 | MIT | Runtime |
 | shardj/zf1-future | 1.25.2 | BSD-3-Clause | Runtime |
-| symfony/clock | v8.1.0 | MIT | Runtime |
 | symfony/config | v8.1.5 | MIT | Runtime |
 | symfony/console | v8.1.7 | MIT | Runtime |
 | symfony/dependency-injection | v8.1.7 | MIT | Runtime |
@@ -86,8 +81,6 @@ Source: `composer.lock`. License expressions are reproduced from package metadat
 | symfony/process | v8.1.7 | MIT | Runtime |
 | symfony/service-contracts | v3.7.3 | MIT | Runtime |
 | symfony/string | v8.1.7 | MIT | Runtime |
-| symfony/translation | v8.1.5 | MIT | Runtime |
-| symfony/translation-contracts | v3.7.1 | MIT | Runtime |
 | symfony/uid | v8.1.5 | MIT | Runtime |
 | symfony/var-exporter | v8.1.6 | MIT | Runtime |
 | symfony/yaml | v8.1.6 | MIT | Runtime |
@@ -112,7 +105,6 @@ Source: `composer.lock`. License expressions are reproduced from package metadat
 | symfony/options-resolver | v8.1.0 | MIT | Development |
 | symfony/polyfill-php84 | v1.38.1 | MIT | Development |
 | symfony/stopwatch | v8.1.0 | MIT | Development |
-| symfony/var-dumper | v5.4.48 | MIT | Development |
 
 ## Node packages
 

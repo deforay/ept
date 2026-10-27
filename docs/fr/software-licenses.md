@@ -20,7 +20,6 @@ Source : `composer.lock`. Les expressions de licence reproduisent les métadonn�
 | --- | --- | --- | --- |
 | amitdugar/archiveutil | 2.0.0 | MIT | Exécution |
 | amitdugar/db-tools | 3.3.0 | MIT | Exécution |
-| carbonphp/carbon-doctrine-types | 3.2.1 | MIT | Exécution |
 | composer/pcre | 3.4.0 | MIT | Exécution |
 | crunzphp/crunz | v3.9.4 | MIT | Exécution |
 | dflydev/dot-access-data | v3.0.3 | MIT | Exécution |
@@ -28,7 +27,6 @@ Source : `composer.lock`. Les expressions de licence reproduisent les métadonn�
 | dragonmantank/cron-expression | v3.6.0 | MIT | Exécution |
 | egulias/email-validator | 4.0.4 | MIT | Exécution |
 | gregwar/captcha | v2.1.1 | MIT | Exécution |
-| hackzilla/password-generator | 1.7.0 | MIT | Exécution |
 | laravel/serializable-closure | v2.0.16 | MIT | Exécution |
 | league/commonmark | 2.10.1 | BSD-3-Clause | Exécution |
 | league/config | v1.2.0 | BSD-3-Clause | Exécution |
@@ -42,7 +40,6 @@ Source : `composer.lock`. Les expressions de licence reproduisent les métadonn�
 | mpdf/psr-log-aware-trait | v3.0.0 | MIT | Exécution |
 | myclabs/deep-copy | 1.14.0 | MIT | Exécution |
 | myclabs/php-enum | 1.8.5 | MIT | Exécution |
-| nesbot/carbon | 3.14.0 | MIT | Exécution |
 | nette/schema | v1.3.6 | BSD-3-Clause, GPL-2.0-only, GPL-3.0-only | Exécution |
 | nette/utils | v4.1.5 | BSD-3-Clause, GPL-2.0-only, GPL-3.0-only | Exécution |
 | paragonie/random_compat | v9.99.100 | MIT | Exécution |
@@ -50,7 +47,6 @@ Source : `composer.lock`. Les expressions de licence reproduisent les métadonn�
 | phpoffice/math | 0.3.0 | MIT | Exécution |
 | phpoffice/phpspreadsheet | 5.10.0 | MIT | Exécution |
 | phpoffice/phpword | 1.4.0 | LGPL-3.0-only | Exécution |
-| psr/clock | 1.0.0 | MIT | Exécution |
 | psr/container | 2.0.2 | MIT | Exécution |
 | psr/event-dispatcher | 1.0.0 | MIT | Exécution |
 | psr/http-message | 1.1 | MIT | Exécution |
@@ -59,7 +55,6 @@ Source : `composer.lock`. Les expressions de licence reproduisent les métadonn�
 | setasign/fpdf | 1.9.0 | MIT | Exécution |
 | setasign/fpdi | v2.6.8 | MIT | Exécution |
 | shardj/zf1-future | 1.25.2 | BSD-3-Clause | Exécution |
-| symfony/clock | v8.1.0 | MIT | Exécution |
 | symfony/config | v8.1.5 | MIT | Exécution |
 | symfony/console | v8.1.7 | MIT | Exécution |
 | symfony/dependency-injection | v8.1.7 | MIT | Exécution |
@@ -86,8 +81,6 @@ Source : `composer.lock`. Les expressions de licence reproduisent les métadonn�
 | symfony/process | v8.1.7 | MIT | Exécution |
 | symfony/service-contracts | v3.7.3 | MIT | Exécution |
 | symfony/string | v8.1.7 | MIT | Exécution |
-| symfony/translation | v8.1.5 | MIT | Exécution |
-| symfony/translation-contracts | v3.7.1 | MIT | Exécution |
 | symfony/uid | v8.1.5 | MIT | Exécution |
 | symfony/var-exporter | v8.1.6 | MIT | Exécution |
 | symfony/yaml | v8.1.6 | MIT | Exécution |
@@ -112,7 +105,6 @@ Source : `composer.lock`. Les expressions de licence reproduisent les métadonn�
 | symfony/options-resolver | v8.1.0 | MIT | Développement |
 | symfony/polyfill-php84 | v1.38.1 | MIT | Développement |
 | symfony/stopwatch | v8.1.0 | MIT | Développement |
-| symfony/var-dumper | v5.4.48 | MIT | Développement |
 
 ## Paquets Node
 
