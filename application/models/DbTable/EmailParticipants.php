@@ -177,6 +177,10 @@ class Application_Model_DbTable_EmailParticipants extends Zend_Db_Table_Abstract
         if ($to === 'cancelled') {
             $set['failure_reason'] = 'Cancelled by an admin before it was sent';
         }
+        // Resuming is a fresh decision to send, so restart the mail job's age limit
+        if ($to === 'pending') {
+            $set['queued_on'] = new Zend_Db_Expr('NOW()');
+        }
         return $this->getAdapter()->update('temp_mail', $set, [
             'email_participant_id = ?' => $id,
             'status IN (?)' => $from,

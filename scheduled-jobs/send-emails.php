@@ -16,6 +16,7 @@ const RECIPIENTS_PER_EMAIL = 100; // To+Cc+Bcc cap per message
 const BATCH_SLEEP_MS = 150; // tiny delay between batches; set 0 to disable
 const LOCK_TTL_SEC = 600; // lock auto-expires after 10 minutes
 const ROW_SLEEP_MS = 25; // tiny delay between rows; set 0 to disable
+const QUEUE_MAX_AGE_DAYS = 7; // pending mail older than this is expired, never sent
 /* ============================ */
 
 $LOCK_FILE = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'ept_mail_cron.lock';
@@ -183,6 +184,25 @@ try {
             echo "Email is paused: the latest check found that the mail server refuses ePT. Fix the settings or run Verify Email Setup.\n";
         }
         return;
+    }
+
+    // Mail that waited out a long outage is stale: a months-old announcement
+    // reads as new to the people who get it. Expire it instead of sending it.
+    $expired = $db->update(
+        'temp_mail',
+        [
+            'status' => 'skipped',
+            'failure_type' => 'expired',
+            'failure_reason' => 'Not sent: it waited in the queue for more than ' . QUEUE_MAX_AGE_DAYS . ' days.',
+            'updated_at' => new Zend_Db_Expr('NOW()'),
+        ],
+        [
+            'status = ?' => 'pending',
+            'queued_on < NOW() - INTERVAL ? DAY' => QUEUE_MAX_AGE_DAYS,
+        ]
+    );
+    if ($expired > 0) {
+        Pt_Commons_LoggerUtility::logWarning("send-emails: expired {$expired} pending mail(s) queued more than " . QUEUE_MAX_AGE_DAYS . ' days ago.');
     }
 
     // === Pull up to N pending rows this minute ===
