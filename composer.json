@@ -16,12 +16,10 @@
         "amitdugar/db-tools": "^3.3",
         "crunzphp/crunz": "^3.9",
         "gregwar/captcha": "^2.1",
-        "hackzilla/password-generator": "^1.7",
         "league/commonmark": "^2.10",
         "mitoteam/jpgraph": "^10.5",
         "monolog/monolog": "^3.12",
         "mpdf/mpdf": "^8.3",
-        "nesbot/carbon": "^3.14",
         "phpmyadmin/sql-parser": "^6.0",
         "phpoffice/phpspreadsheet": "^5.10",
         "phpoffice/phpword": "^1.4",
@@ -45,8 +43,7 @@
     "require-dev": {
         "friendsofphp/php-cs-fixer": "^3.95",
         "league/iso3166": "^4.4",
-        "phpstan/phpstan": "^2.1",
-        "symfony/var-dumper": "^8.1"
+        "phpstan/phpstan": "^2.1"
     },
     "scripts": {
         "db-backup": "@php vendor/bin/db-tools backup",
