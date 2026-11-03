@@ -193,3 +193,9 @@ td.dataTables_empty .report-zero-state {
     border: 0;
     border-bottom: 1px solid #e5e5e5;
 }
+
+/* Participant scheme grids (Report PT Data, All PT Schemes): plain-words response
+   status and a green tint on rows the lab has already submitted. */
+.response-badge { display: inline-block; font-size: 90%; padding: 4px 8px; }
+.table tr.row-submitted > td { background-color: #eef8ee !important; }
+.table tr.row-submitted:hover > td { background-color: #e2f2e2 !important; }

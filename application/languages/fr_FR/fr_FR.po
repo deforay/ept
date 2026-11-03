@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ePT\n"
 "Report-Msgid-Bugs-To: support@deforay.com\n"
-"POT-Creation-Date: 2026-11-03 12:18+0530\n"
+"POT-Creation-Date: 2026-11-03 12:29+0530\n"
 "PO-Revision-Date: 2026-07-07 08:32+0530\n"
 "Last-Translator: Amit <amit@deforay.com>\n"
 "Language-Team: ePT\n"
@@ -789,7 +789,7 @@ msgid "not reported"
 msgstr "non déclaré"
 
 #: application/languages/db-translation-strings.php:307
-#: application/models/DbTable/Shipments.php:1337
+#: application/models/DbTable/Shipments.php:1344
 #: application/modules/admin/views/scripts/evaluate/shipment.phtml:237
 #: application/modules/reports/views/scripts/distribution/finalize.phtml:320
 #: application/modules/reports/views/scripts/distribution/shipment.phtml:280
@@ -1004,8 +1004,8 @@ msgstr "Hôpital privé"
 #: application/services/Reports.php:1260 application/services/Reports.php:2775
 #: application/services/Reports.php:3051
 #: application/views/partials/report-filters.phtml:28
-#: application/views/scripts/participant/current-schemes.phtml:65
-#: application/views/scripts/participant/current-schemes.phtml:77
+#: application/views/scripts/participant/current-schemes.phtml:61
+#: application/views/scripts/participant/current-schemes.phtml:73
 msgid "Province"
 msgstr "Province"
 
@@ -3266,20 +3266,20 @@ msgstr "Voir le résultat du PT"
 
 #: application/layouts/scripts/layout.phtml:327
 #: application/layouts/scripts/menu.phtml:44
-#: application/models/DbTable/Shipments.php:883
+#: application/models/DbTable/Shipments.php:890
 #: application/views/scripts/participant/dashboard.phtml:208
 msgid "Individual Report"
 msgstr "Rapport individuel"
 
 #: application/layouts/scripts/layout.phtml:330
 #: application/layouts/scripts/menu.phtml:45
-#: application/models/DbTable/Shipments.php:874
+#: application/models/DbTable/Shipments.php:881
 #: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:399
 msgid "Summary Report"
 msgstr "Rapport de synthèse"
 
 #: application/layouts/scripts/layout.phtml:337
-#: application/models/DbTable/Shipments.php:1443
+#: application/models/DbTable/Shipments.php:1450
 #: application/modules/reports/views/scripts/corrective-preventive-actions/capa.phtml:81
 #: application/views/scripts/capa/capa.phtml:74
 #: application/views/scripts/participant/corrective.phtml:22
@@ -3290,7 +3290,7 @@ msgstr "Actions correctives"
 #: application/modules/admin/views/scripts/sample-not-tested-reasons/index.phtml:22
 #: application/modules/admin/views/scripts/shipment/index.phtml:46
 #: application/modules/admin/views/scripts/testkit/index.phtml:39
-#: application/views/scripts/participant/current-schemes.phtml:45
+#: application/views/scripts/participant/current-schemes.phtml:41
 msgid "All Schemes"
 msgstr "Tous les programmes"
 
@@ -3595,8 +3595,8 @@ msgstr "Supprimer"
 
 #: application/models/DbTable/Distribution.php:591
 #: application/models/DbTable/Shipments.php:442
-#: application/models/DbTable/Shipments.php:846
-#: application/models/DbTable/Shipments.php:2111
+#: application/models/DbTable/Shipments.php:851
+#: application/models/DbTable/Shipments.php:2118
 #: application/modules/admin/views/scripts/certificate-templates/index.phtml:368
 #: application/modules/admin/views/scripts/evaluate/get-shipments.ajax.phtml:142
 #: application/modules/admin/views/scripts/evaluate/get-shipments.ajax.phtml:209
@@ -3646,7 +3646,6 @@ msgstr "Par défaut"
 #: application/views/scripts/capa/index.phtml:60
 #: application/views/scripts/custom-test/response.phtml:255
 #: application/views/scripts/participant/add-participant.phtml:16
-#: application/views/scripts/participant/all-schemes.phtml:48
 #: application/views/scripts/participant/edit-participant.phtml:18
 #: application/views/scripts/participant/edit-participant.phtml:21
 #: application/views/scripts/participant/password.phtml:114
@@ -3813,13 +3812,13 @@ msgstr "Afficher/Modifier le brouillon"
 
 #: application/models/DbTable/Shipments.php:426
 #: application/models/DbTable/Shipments.php:658
-#: application/models/DbTable/Shipments.php:856
+#: application/models/DbTable/Shipments.php:862
 msgid "Delete Response"
 msgstr "Supprimer la réponse"
 
 #: application/models/DbTable/Shipments.php:430
 #: application/models/DbTable/Shipments.php:661
-#: application/models/DbTable/Shipments.php:859
+#: application/models/DbTable/Shipments.php:865
 msgid "Enter Response"
 msgstr "Saisir la réponse"
 
@@ -3861,24 +3860,24 @@ msgstr "Soumis"
 msgid "Could not test"
 msgstr "N'a pas pu tester"
 
-#: application/models/DbTable/Shipments.php:1088
-#: application/models/DbTable/Shipments.php:1399
-#: application/models/DbTable/Shipments.php:1813
+#: application/models/DbTable/Shipments.php:1095
+#: application/models/DbTable/Shipments.php:1406
+#: application/models/DbTable/Shipments.php:1820
 #: application/modules/reports/views/scripts/finalize/download-history.ajax.phtml:27
 msgid "Unknown"
 msgstr "Inconnu"
 
-#: application/models/DbTable/Shipments.php:1317
-#: application/models/DbTable/Shipments.php:1851
+#: application/models/DbTable/Shipments.php:1324
+#: application/models/DbTable/Shipments.php:1858
 #: application/views/scripts/dts/response.phtml:371
 msgid "Not Available"
 msgstr "Non disponible"
 
-#: application/models/DbTable/Shipments.php:1324
+#: application/models/DbTable/Shipments.php:1331
 msgid "Participant unable to test"
 msgstr "Participant dans l'impossibilité d'effectuer le test"
 
-#: application/models/DbTable/Shipments.php:1326
+#: application/models/DbTable/Shipments.php:1333
 #: application/modules/admin/views/scripts/evaluate/shipment.phtml:244
 #: application/modules/reports/views/scripts/distribution/finalize.phtml:326
 #: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:284
@@ -3889,7 +3888,7 @@ msgstr "Participant dans l'impossibilité d'effectuer le test"
 msgid "Satisfactory"
 msgstr "Satisfaisant"
 
-#: application/models/DbTable/Shipments.php:1328
+#: application/models/DbTable/Shipments.php:1335
 #: application/modules/admin/views/scripts/evaluate/shipment.phtml:245
 #: application/modules/reports/views/scripts/distribution/finalize.phtml:327
 #: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:285
@@ -3900,12 +3899,12 @@ msgstr "Satisfaisant"
 msgid "Unsatisfactory"
 msgstr "Insatisfaisant"
 
-#: application/models/DbTable/Shipments.php:1330
+#: application/models/DbTable/Shipments.php:1337
 #: application/views/scripts/participant/report.phtml:154
 msgid "Excluded from evaluation"
 msgstr "Exclus de l'évaluation"
 
-#: application/models/DbTable/Shipments.php:1339
+#: application/models/DbTable/Shipments.php:1346
 #: application/modules/admin/views/scripts/evaluate/shipment.phtml:234
 #: application/modules/reports/views/scripts/distribution/finalize.phtml:319
 #: application/modules/reports/views/scripts/distribution/shipment.phtml:279
@@ -3917,7 +3916,7 @@ msgstr "Exclus de l'évaluation"
 msgid "Late Response"
 msgstr "Réponse tardive"
 
-#: application/models/DbTable/Shipments.php:1341
+#: application/models/DbTable/Shipments.php:1348
 #: application/modules/admin/views/scripts/evaluate/shipment.phtml:232
 #: application/modules/admin/views/scripts/index/index.phtml:1089
 #: application/modules/admin/views/scripts/shipment/manage-enroll.phtml:65
@@ -3940,7 +3939,7 @@ msgstr "Réponse tardive"
 msgid "Responded"
 msgstr "Répondu"
 
-#: application/models/DbTable/Shipments.php:1343
+#: application/models/DbTable/Shipments.php:1350
 #: application/modules/admin/views/scripts/evaluate/shipment.phtml:233
 #: application/modules/admin/views/scripts/shipment/manage-enroll.phtml:67
 #: application/modules/reports/views/scripts/distribution/finalize.phtml:318
@@ -3955,40 +3954,40 @@ msgstr "Répondu"
 msgid "Not Responded"
 msgstr "Pas de réponse"
 
-#: application/models/DbTable/Shipments.php:1438
+#: application/models/DbTable/Shipments.php:1445
 #: application/modules/reports/views/scripts/annual/index.phtml:137
 #: application/modules/reports/views/scripts/distribution/finalize.phtml:404
 #: application/modules/reports/views/scripts/distribution/shipment.phtml:83
 #: application/modules/reports/views/scripts/distribution/shipment.phtml:87
 #: application/modules/reports/views/scripts/distribution/shipment.phtml:390
-#: application/views/scripts/participant/all-schemes.phtml:53
+#: application/views/scripts/participant/all-schemes.phtml:56
 #: application/views/scripts/participant/dashboard.phtml:537
 #: application/views/scripts/participant/report.phtml:211
 #: application/views/scripts/participant/summary-report.phtml:167
 msgid "Report"
 msgstr "Rapport"
 
-#: application/models/DbTable/Shipments.php:1446
+#: application/models/DbTable/Shipments.php:1453
 #: application/modules/admin/views/scripts/feedback-responses/shipment-questions.phtml:55
 #: application/services/Reports.php:291
 #: application/views/scripts/participant/participant-message.phtml:9
 msgid "Feedback"
 msgstr "Retour d'information"
 
-#: application/models/DbTable/Shipments.php:1462
+#: application/models/DbTable/Shipments.php:1469
 msgid "Select report"
 msgstr "Sélectionner le rapport"
 
-#: application/models/DbTable/Shipments.php:1848
+#: application/models/DbTable/Shipments.php:1855
 #: application/services/Evaluation.php:2298
 msgid "Download Report"
 msgstr "Télécharger le rapport"
 
-#: application/models/DbTable/Shipments.php:2110
+#: application/models/DbTable/Shipments.php:2117
 msgid "Send Reports via Email"
 msgstr "Envoyer des rapports par e-mail"
 
-#: application/models/DbTable/Shipments.php:2113
+#: application/models/DbTable/Shipments.php:2120
 #: application/modules/reports/views/scripts/finalize/replace-summary-report.phtml:61
 msgid "Replace Summary Report"
 msgstr "Remplacer le rapport de synthèse"
@@ -4017,7 +4016,6 @@ msgstr "Code du participant"
 #: application/views/scripts/dbs/response.phtml:62
 #: application/views/scripts/dts/response.phtml:192
 #: application/views/scripts/eid/response.phtml:233
-#: application/views/scripts/participant/all-schemes.phtml:49
 #: application/views/scripts/participant/file-downloads.phtml:14
 #: application/views/scripts/participant/password.phtml:115
 #: application/views/scripts/recency/response.phtml:136
@@ -4665,7 +4663,7 @@ msgstr "Raisons de l'échec"
 #: application/views/scripts/capa/index.phtml:74
 #: application/views/scripts/data-managers/index.phtml:34
 #: application/views/scripts/participant/all-schemes.phtml:82
-#: application/views/scripts/participant/current-schemes.phtml:152
+#: application/views/scripts/participant/current-schemes.phtml:148
 #: application/views/scripts/participant/dashboard.phtml:340
 #: application/views/scripts/participant/dashboard.phtml:369
 #: application/views/scripts/participant/dashboard.phtml:399
@@ -4835,10 +4833,10 @@ msgstr "Choisissez une plage de dates"
 #: application/modules/reports/views/scripts/corrective-preventive-actions/index.phtml:55
 #: application/modules/reports/views/scripts/testing-facility-by-ownership/index.phtml:66
 #: application/views/scripts/capa/index.phtml:31
-#: application/views/scripts/participant/all-schemes.phtml:61
+#: application/views/scripts/participant/all-schemes.phtml:63
 #: application/views/scripts/participant/corrective.phtml:52
 #: application/views/scripts/participant/corrective.phtml:98
-#: application/views/scripts/participant/current-schemes.phtml:133
+#: application/views/scripts/participant/current-schemes.phtml:129
 #: application/views/scripts/participant/defaulted-schemes.phtml:29
 #: application/views/scripts/participant/report.phtml:88
 #: application/views/scripts/participant/report.phtml:217
@@ -4913,8 +4911,8 @@ msgstr "État"
 #: application/views/scripts/capa/index.phtml:69
 #: application/views/scripts/covid19/response.phtml:1324
 #: application/views/scripts/data-managers/index.phtml:28
-#: application/views/scripts/participant/all-schemes.phtml:52
-#: application/views/scripts/participant/current-schemes.phtml:126
+#: application/views/scripts/participant/all-schemes.phtml:55
+#: application/views/scripts/participant/current-schemes.phtml:122
 #: application/views/scripts/participant/dashboard.phtml:536
 #: application/views/scripts/participant/defaulted-schemes.phtml:22
 #: application/views/scripts/participant/summary-report.phtml:128
@@ -5732,11 +5730,11 @@ msgstr "Noms des champs pour les formulaires PDF"
 #: application/views/partials/shipments-report-grid.phtml:333
 #: application/views/partials/shipments-report-grid.phtml:372
 #: application/views/scripts/capa/index.phtml:66
-#: application/views/scripts/participant/all-schemes.phtml:46
+#: application/views/scripts/participant/all-schemes.phtml:52
 #: application/views/scripts/participant/corrective.phtml:43
 #: application/views/scripts/participant/corrective.phtml:51
 #: application/views/scripts/participant/corrective.phtml:86
-#: application/views/scripts/participant/current-schemes.phtml:122
+#: application/views/scripts/participant/current-schemes.phtml:118
 #: application/views/scripts/participant/dashboard.phtml:529
 #: application/views/scripts/participant/defaulted-schemes.phtml:14
 #: application/views/scripts/participant/report.phtml:74
@@ -7079,12 +7077,13 @@ msgstr "Interprétation finale"
 #: application/views/partials/participant-performance-report.phtml:268
 #: application/views/partials/shipment-response-report.phtml:135
 #: application/views/partials/tb-results-report.phtml:90
+#: application/views/scripts/participant/all-schemes.phtml:53
 #: application/views/scripts/participant/corrective.phtml:44
 #: application/views/scripts/participant/corrective.phtml:62
 #: application/views/scripts/participant/corrective.phtml:88
-#: application/views/scripts/participant/current-schemes.phtml:67
-#: application/views/scripts/participant/current-schemes.phtml:97
-#: application/views/scripts/participant/current-schemes.phtml:123
+#: application/views/scripts/participant/current-schemes.phtml:63
+#: application/views/scripts/participant/current-schemes.phtml:93
+#: application/views/scripts/participant/current-schemes.phtml:119
 #: application/views/scripts/participant/dashboard.phtml:332
 #: application/views/scripts/participant/dashboard.phtml:361
 #: application/views/scripts/participant/dashboard.phtml:391
@@ -9176,8 +9175,8 @@ msgstr ""
 #: application/modules/reports/views/scripts/finalize/shipments.phtml:30
 #: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:151
 #: application/views/scripts/capa/index.phtml:62
-#: application/views/scripts/participant/current-schemes.phtml:66
-#: application/views/scripts/participant/current-schemes.phtml:87
+#: application/views/scripts/participant/current-schemes.phtml:62
+#: application/views/scripts/participant/current-schemes.phtml:83
 #: application/views/scripts/participant/report.phtml:131
 #: application/views/scripts/participant/report.phtml:160
 #: application/views/scripts/shipment-form/download.phtml:119
@@ -9408,10 +9407,9 @@ msgstr "Expéditions dans le cadre de cette enquête PT"
 #: application/services/Reports.php:4275
 #: application/views/scripts/capa/index.phtml:64
 #: application/views/scripts/custom-test/response.phtml:234
-#: application/views/scripts/participant/all-schemes.phtml:47
 #: application/views/scripts/participant/corrective.phtml:84
-#: application/views/scripts/participant/current-schemes.phtml:64
-#: application/views/scripts/participant/current-schemes.phtml:72
+#: application/views/scripts/participant/current-schemes.phtml:60
+#: application/views/scripts/participant/current-schemes.phtml:68
 #: application/views/scripts/participant/dashboard.phtml:330
 #: application/views/scripts/participant/dashboard.phtml:359
 #: application/views/scripts/participant/dashboard.phtml:389
@@ -10755,7 +10753,6 @@ msgstr "Première inscription"
 
 #: application/modules/admin/views/scripts/enrollments/index.phtml:228
 #: application/modules/admin/views/scripts/shipment/round-participants.phtml:112
-#: application/views/scripts/participant/all-schemes.phtml:73
 #: application/views/scripts/participant/corrective.phtml:109
 #: application/views/scripts/participant/defaulted-schemes.phtml:36
 #: application/views/scripts/participant/report.phtml:230
@@ -10767,7 +10764,6 @@ msgstr "Rechercher par ID"
 
 #: application/modules/admin/views/scripts/enrollments/index.phtml:229
 #: application/modules/admin/views/scripts/shipment/round-participants.phtml:113
-#: application/views/scripts/participant/all-schemes.phtml:74
 #: application/views/scripts/participant/corrective.phtml:110
 #: application/views/scripts/participant/defaulted-schemes.phtml:37
 #: application/views/scripts/participant/report.phtml:231
@@ -10779,7 +10775,7 @@ msgstr "Rechercher un nom"
 
 #: application/modules/admin/views/scripts/enrollments/index.phtml:231
 #: application/views/scripts/participant/corrective.phtml:96
-#: application/views/scripts/participant/current-schemes.phtml:131
+#: application/views/scripts/participant/current-schemes.phtml:127
 #: application/views/scripts/participant/summary-report.phtml:171
 msgid "Search Scheme"
 msgstr "Rechercher un programme"
@@ -11180,7 +11176,6 @@ msgstr "Rechercher un code d'enquête"
 #: application/modules/reports/views/scripts/distribution/index.phtml:45
 #: application/modules/reports/views/scripts/finalize/index.phtml:37
 #: application/modules/reports/views/scripts/finalize/shipments.phtml:38
-#: application/views/scripts/participant/all-schemes.phtml:72
 #: application/views/scripts/participant/corrective.phtml:93
 #: application/views/scripts/participant/defaulted-schemes.phtml:35
 #: application/views/scripts/participant/report.phtml:228
@@ -11235,9 +11230,9 @@ msgstr ""
 #: application/modules/reports/views/scripts/distribution/index.phtml:146
 #: application/modules/reports/views/scripts/finalize/index.phtml:138
 #: application/modules/reports/views/scripts/finalize/shipments.phtml:130
-#: application/views/scripts/participant/all-schemes.phtml:229
+#: application/views/scripts/participant/all-schemes.phtml:207
 #: application/views/scripts/participant/corrective.phtml:268
-#: application/views/scripts/participant/current-schemes.phtml:308
+#: application/views/scripts/participant/current-schemes.phtml:304
 #: application/views/scripts/participant/defaulted-schemes.phtml:151
 #: application/views/scripts/participant/report.phtml:438
 #: application/views/scripts/participant/scheme.phtml:93
@@ -11253,9 +11248,9 @@ msgstr "Chargement des gestionnaires de données…"
 #: application/modules/reports/views/scripts/distribution/index.phtml:159
 #: application/modules/reports/views/scripts/finalize/index.phtml:151
 #: application/modules/reports/views/scripts/finalize/shipments.phtml:143
-#: application/views/scripts/participant/all-schemes.phtml:242
+#: application/views/scripts/participant/all-schemes.phtml:220
 #: application/views/scripts/participant/corrective.phtml:281
-#: application/views/scripts/participant/current-schemes.phtml:321
+#: application/views/scripts/participant/current-schemes.phtml:317
 #: application/views/scripts/participant/defaulted-schemes.phtml:164
 #: application/views/scripts/participant/report.phtml:451
 #: application/views/scripts/participant/scheme.phtml:106
@@ -11392,8 +11387,8 @@ msgstr "Mettre à jour le fichier et le commentaire"
 #: application/views/partials/shipments-report-grid.phtml:317
 #: application/views/scripts/participant/corrective.phtml:32
 #: application/views/scripts/participant/corrective.phtml:34
-#: application/views/scripts/participant/current-schemes.phtml:54
-#: application/views/scripts/participant/current-schemes.phtml:56
+#: application/views/scripts/participant/current-schemes.phtml:50
+#: application/views/scripts/participant/current-schemes.phtml:52
 #: application/views/scripts/participant/report.phtml:63
 #: application/views/scripts/participant/report.phtml:65
 #: application/views/scripts/participant/summary-report.phtml:62
@@ -11412,7 +11407,7 @@ msgstr "Afficher les filtres"
 #: application/views/partials/report-filters.phtml:73
 #: application/views/partials/shipments-report-grid.phtml:316
 #: application/views/scripts/participant/corrective.phtml:33
-#: application/views/scripts/participant/current-schemes.phtml:55
+#: application/views/scripts/participant/current-schemes.phtml:51
 #: application/views/scripts/participant/report.phtml:64
 #: application/views/scripts/participant/summary-report.phtml:63
 msgid "Collapse Filters"
@@ -11965,9 +11960,9 @@ msgstr "Afficher la question de rétroaction à"
 
 #: application/modules/admin/views/scripts/feedback-responses/add.phtml:23
 #: application/modules/admin/views/scripts/feedback-responses/edit.phtml:23
-#: application/views/scripts/participant/current-schemes.phtml:263
-#: application/views/scripts/participant/current-schemes.phtml:270
-#: application/views/scripts/participant/current-schemes.phtml:279
+#: application/views/scripts/participant/current-schemes.phtml:259
+#: application/views/scripts/participant/current-schemes.phtml:266
+#: application/views/scripts/participant/current-schemes.phtml:275
 msgid "--Select--"
 msgstr "--Sélectionner--"
 
@@ -12104,8 +12099,8 @@ msgstr "Expédition et public"
 #: application/views/partials/tb-results-report.phtml:92
 #: application/views/partials/tb-workbook-report.phtml:115
 #: application/views/scripts/covid19/response.phtml:1314
-#: application/views/scripts/participant/all-schemes.phtml:45
-#: application/views/scripts/participant/current-schemes.phtml:121
+#: application/views/scripts/participant/all-schemes.phtml:51
+#: application/views/scripts/participant/current-schemes.phtml:117
 #: application/views/scripts/participant/dashboard.phtml:527
 #: application/views/scripts/participant/defaulted-schemes.phtml:13
 msgid "Shipment"
@@ -17228,7 +17223,6 @@ msgstr ""
 #: application/services/Participants.php:1803
 #: application/views/partials/shipment-response-report.phtml:119
 #: application/views/partials/shipment-response-report.phtml:138
-#: application/views/scripts/participant/all-schemes.phtml:51
 #: application/views/scripts/participant/dashboard.phtml:534
 #: application/views/scripts/participant/defaulted-schemes.phtml:21
 #: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:629
@@ -17483,12 +17477,12 @@ msgid "New Scheme"
 msgstr "Nouveau programme"
 
 #: application/modules/admin/views/scripts/shipment/index.phtml:47
-#: application/views/scripts/participant/current-schemes.phtml:47
+#: application/views/scripts/participant/current-schemes.phtml:43
 msgid "Active Schemes only"
 msgstr "Programmes actifs uniquement"
 
 #: application/modules/admin/views/scripts/shipment/index.phtml:48
-#: application/views/scripts/participant/current-schemes.phtml:49
+#: application/views/scripts/participant/current-schemes.phtml:45
 msgid "Inactive Schemes only"
 msgstr "Programmes inactifs uniquement"
 
@@ -17629,7 +17623,7 @@ msgstr "Copier les e-mails : PTCC"
 #: application/views/scripts/dbs/response.phtml:85
 #: application/views/scripts/dts/response.phtml:220
 #: application/views/scripts/eid/response.phtml:255
-#: application/views/scripts/participant/current-schemes.phtml:124
+#: application/views/scripts/participant/current-schemes.phtml:120
 #: application/views/scripts/participant/defaulted-schemes.phtml:18
 #: application/views/scripts/recency/response.phtml:163
 #: application/views/scripts/shipment-form/download.phtml:202
@@ -18929,7 +18923,7 @@ msgid "Site Type"
 msgstr "Type de site"
 
 #: application/modules/admin/views/scripts/shipment/ship-it.phtml:99
-#: application/views/scripts/participant/current-schemes.phtml:105
+#: application/views/scripts/participant/current-schemes.phtml:101
 msgid "Filter"
 msgstr "Filtre"
 
@@ -19863,7 +19857,6 @@ msgstr ""
 #: application/modules/reports/views/scripts/certificates/index.phtml:257
 #: application/modules/reports/views/scripts/shipments/vl-assay-distribution.phtml:66
 #: application/services/Reports.php:1618
-#: application/views/scripts/participant/all-schemes.phtml:43
 #: application/views/scripts/participant/certificate.phtml:20
 #: application/views/scripts/participant/dashboard.phtml:525
 #: application/views/scripts/participant/defaulted-schemes.phtml:11
@@ -20283,7 +20276,7 @@ msgstr "Nom du participant (facultatif)"
 #: application/modules/reports/views/scripts/corrective-preventive-actions/index.phtml:64
 #: application/views/scripts/capa/index.phtml:39
 #: application/views/scripts/participant/corrective.phtml:137
-#: application/views/scripts/participant/current-schemes.phtml:251
+#: application/views/scripts/participant/current-schemes.phtml:247
 msgid "Select Participant"
 msgstr "Choisir un participant"
 
@@ -25034,41 +25027,45 @@ msgstr "Sélectionnez un ou plusieurs programmes auxquels vous êtes inscrit"
 msgid "Please enter the participant's first name"
 msgstr "Veuillez saisir le prénom du participant"
 
-#: application/views/scripts/participant/all-schemes.phtml:8
+#: application/views/scripts/participant/all-schemes.phtml:16
 msgid "All PT Schemes"
 msgstr "Tous les programmes PT"
 
-#: application/views/scripts/participant/all-schemes.phtml:22
+#: application/views/scripts/participant/all-schemes.phtml:30
 #: application/views/scripts/participant/dashboard.phtml:504
 msgid "Filter QC Checked Responses"
 msgstr "Filtrer les réponses vérifiées par le CQ"
 
-#: application/views/scripts/participant/all-schemes.phtml:23
+#: application/views/scripts/participant/all-schemes.phtml:31
 #: application/views/scripts/participant/dashboard.phtml:505
 msgid "Show QC Checked Responses"
 msgstr "Afficher les réponses vérifiées par le CQ"
 
-#: application/views/scripts/participant/all-schemes.phtml:24
+#: application/views/scripts/participant/all-schemes.phtml:32
 #: application/views/scripts/participant/dashboard.phtml:506
 msgid "Show Not QC Checked Responses"
 msgstr "Afficher les réponses non vérifiées par le CQ"
 
-#: application/views/scripts/participant/all-schemes.phtml:33
+#: application/views/scripts/participant/all-schemes.phtml:41
 #: application/views/scripts/participant/dashboard.phtml:515
 msgid "Selected for Bulk Quality Check"
 msgstr "Sélectionné pour le contrôle qualité groupé"
 
-#: application/views/scripts/participant/all-schemes.phtml:45
-#: application/views/scripts/participant/all-schemes.phtml:51
-#: application/views/scripts/participant/dashboard.phtml:527
-#: application/views/scripts/participant/dashboard.phtml:534
-#: application/views/scripts/participant/defaulted-schemes.phtml:13
-#: application/views/scripts/participant/defaulted-schemes.phtml:21
-#: application/views/scripts/tb/assay-formats.ajax.phtml:142
-#: application/views/scripts/tb/assay-formats.ajax.phtml:259
-#: application/views/scripts/tb/assay-formats.ajax.phtml:572
-msgid "Date"
-msgstr "Date"
+#: application/views/scripts/participant/all-schemes.phtml:54
+#: application/views/scripts/participant/current-schemes.phtml:121
+#: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:621
+msgid "Your Response"
+msgstr "Votre réponse"
+
+#: application/views/scripts/participant/all-schemes.phtml:60
+#: application/views/scripts/participant/current-schemes.phtml:125
+msgid "Search Shipment"
+msgstr "Rechercher une expédition"
+
+#: application/views/scripts/participant/all-schemes.phtml:74
+#: application/views/scripts/participant/current-schemes.phtml:140
+msgid "Search Participant"
+msgstr "Rechercher un participant"
 
 #: application/views/scripts/participant/all-schemes.phtml:94
 #: application/views/scripts/participant/dashboard.phtml:558
@@ -25080,8 +25077,8 @@ msgstr "Contrôle de qualité effectué"
 msgid "QC Done on"
 msgstr "CQ effectué le"
 
-#: application/views/scripts/participant/all-schemes.phtml:265
-#: application/views/scripts/participant/current-schemes.phtml:342
+#: application/views/scripts/participant/all-schemes.phtml:243
+#: application/views/scripts/participant/current-schemes.phtml:338
 #: application/views/scripts/participant/dashboard.phtml:1177
 msgid ""
 "Are you sure you want to remove this response?\n"
@@ -25090,24 +25087,24 @@ msgstr ""
 "Êtes-vous sûr de vouloir supprimer cette réponse ?\n"
 " Cette action est irréversible !"
 
-#: application/views/scripts/participant/all-schemes.phtml:274
-#: application/views/scripts/participant/current-schemes.phtml:351
+#: application/views/scripts/participant/all-schemes.phtml:252
+#: application/views/scripts/participant/current-schemes.phtml:347
 #: application/views/scripts/participant/dashboard.phtml:1186
 #: application/views/scripts/participant/defaulted-schemes.phtml:195
 msgid "Response removed successfully"
 msgstr "La réponse a été supprimée avec succès"
 
-#: application/views/scripts/participant/all-schemes.phtml:325
+#: application/views/scripts/participant/all-schemes.phtml:303
 #: application/views/scripts/participant/dashboard.phtml:1237
 msgid "Qc details added successfully"
 msgstr "Détails du Qc ajoutés avec succès"
 
-#: application/views/scripts/participant/all-schemes.phtml:331
+#: application/views/scripts/participant/all-schemes.phtml:309
 #: application/views/scripts/participant/dashboard.phtml:1243
 msgid "Please select the date"
 msgstr "Veuillez sélectionner la date"
 
-#: application/views/scripts/participant/all-schemes.phtml:338
+#: application/views/scripts/participant/all-schemes.phtml:316
 #: application/views/scripts/participant/dashboard.phtml:1250
 msgid "Please select at least one shipment to proceed with QC"
 msgstr ""
@@ -25175,7 +25172,7 @@ msgstr ""
 "Télécharger les actions correctives par participant pour chaque expédition"
 
 #: application/views/scripts/participant/corrective.phtml:61
-#: application/views/scripts/participant/current-schemes.phtml:96
+#: application/views/scripts/participant/current-schemes.phtml:92
 msgid "Please select the participant to filter"
 msgstr "Veuillez sélectionner le participant pour filtrer"
 
@@ -25200,49 +25197,36 @@ msgstr "ID du participant"
 msgid "Please pick date range and Scheme Type to proceed"
 msgstr "Veuillez choisir la période et le type de programme pour continuer"
 
-#: application/views/scripts/participant/current-schemes.phtml:38
+#: application/views/scripts/participant/current-schemes.phtml:34
 msgid "Report PT Data"
 msgstr "Rapport sur les données de PT"
 
-#: application/views/scripts/participant/current-schemes.phtml:73
+#: application/views/scripts/participant/current-schemes.phtml:69
 msgid "Select Code"
 msgstr "Sélectionnez le code"
 
-#: application/views/scripts/participant/current-schemes.phtml:78
+#: application/views/scripts/participant/current-schemes.phtml:74
 msgid "Select State"
 msgstr "Sélectionnez un État"
 
-#: application/views/scripts/participant/current-schemes.phtml:86
+#: application/views/scripts/participant/current-schemes.phtml:82
 msgid "Please select the PT survey code to filter"
 msgstr "Veuillez sélectionner le code d'enquête PT pour filtrer"
 
-#: application/views/scripts/participant/current-schemes.phtml:114
+#: application/views/scripts/participant/current-schemes.phtml:110
 msgid "Download Participants Response Status"
 msgstr "Télécharger l'état de la réponse des participants"
 
-#: application/views/scripts/participant/current-schemes.phtml:125
-#: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:621
-msgid "Your Response"
-msgstr "Votre réponse"
-
-#: application/views/scripts/participant/current-schemes.phtml:129
-msgid "Search Shipment"
-msgstr "Rechercher une expédition"
-
-#: application/views/scripts/participant/current-schemes.phtml:144
-msgid "Search Participant"
-msgstr "Rechercher un participant"
-
-#: application/views/scripts/participant/current-schemes.phtml:247
+#: application/views/scripts/participant/current-schemes.phtml:243
 #: application/views/scripts/participant/report.phtml:279
 msgid "Select PT Survey Code"
 msgstr "Sélectionnez le code d'enquête PT"
 
-#: application/views/scripts/participant/current-schemes.phtml:373
+#: application/views/scripts/participant/current-schemes.phtml:369
 msgid "There is no pending sites available."
 msgstr "Aucun site en attente n'est disponible."
 
-#: application/views/scripts/participant/current-schemes.phtml:396
+#: application/views/scripts/participant/current-schemes.phtml:392
 msgid "Please choose Shipment Code or Province to proceed"
 msgstr "Veuillez choisir le code d'expédition ou la province pour continuer"
 
@@ -25350,6 +25334,16 @@ msgstr "Réponses <br>pas encore reçues"
 #: application/views/scripts/participant/dashboard.phtml:494
 msgid "All Shipments"
 msgstr "Toutes les expéditions"
+
+#: application/views/scripts/participant/dashboard.phtml:527
+#: application/views/scripts/participant/dashboard.phtml:534
+#: application/views/scripts/participant/defaulted-schemes.phtml:13
+#: application/views/scripts/participant/defaulted-schemes.phtml:21
+#: application/views/scripts/tb/assay-formats.ajax.phtml:142
+#: application/views/scripts/tb/assay-formats.ajax.phtml:259
+#: application/views/scripts/tb/assay-formats.ajax.phtml:572
+msgid "Date"
+msgstr "Date"
 
 #: application/views/scripts/participant/download-tb.phtml:7
 msgid "Requested file does not exist"

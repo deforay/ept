@@ -685,8 +685,16 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
          * you want to insert a non-database field (for example a counter or static image)
          */
 
-        $aColumns = ['s.shipment_id', 'year(shipment_date)', 'DATE_FORMAT(shipment_date,"%d-%b-%Y")', 'scheme_name', 'shipment_code', 'unique_identifier', 'first_name', 'DATE_FORMAT(spm.shipment_test_report_date,"%d-%b-%Y")'];
-        $orderColumns = ['s.shipment_id', 'shipment_date', 'shipment_date', 'scheme_name', 'shipment_code', 'unique_identifier', 'first_name', 'spm.shipment_test_report_date'];
+        // 0=QC checkbox, 1=Shipment, 2=Scheme, 3=Participant, 4=Your Response.
+        // Shipment and Participant bundle several fields, so their search runs over all of them.
+        $aColumns = [
+            's.shipment_id',
+            new Zend_Db_Expr('CONCAT_WS(" ", s.shipment_code, DATE_FORMAT(s.shipment_date,"%d-%b-%Y"))'),
+            'scheme_name',
+            new Zend_Db_Expr('CONCAT_WS(" ", p.unique_identifier, p.first_name, p.last_name)'),
+            'DATE_FORMAT(spm.shipment_test_report_date,"%d-%b-%Y")',
+        ];
+        $orderColumns = ['s.shipment_id', 'shipment_date', 'scheme_name', 'first_name', 'spm.shipment_test_report_date'];
 
         $sLimit = '';
         if (isset($parameters['iDisplayStart']) && $parameters['iDisplayLength'] != '-1') {
@@ -745,7 +753,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
 
         $sQuery = $this->getAdapter()->select()
             ->from(['s' => 'shipment'], [new Zend_Db_Expr('SQL_CALC_FOUND_ROWS s.scheme_type'), 'SHIP_YEAR' => 'year(s.shipment_date)', 's.shipment_date', 's.shipment_code', 's.response_deadline', 's.shipment_id', 's.status', 's.response_switch'])
-            ->join(['spm' => 'shipment_participant_map'], 'spm.shipment_id=s.shipment_id', ['spm.report_generated', 'spm.map_id', 'spm.evaluation_status', 'qc_date', 'spm.participant_id', 'RESPONSEDATE' => "DATE_FORMAT(spm.shipment_test_report_date,'%Y-%m-%d')", 'RESPONSE' => new Zend_Db_Expr("CASE  WHEN substr(spm.evaluation_status,3,1)='1' THEN 'View' WHEN (substr(spm.evaluation_status,3,1)='9' AND s.response_deadline >= NOW()) OR (substr(spm.evaluation_status,3,1)='9' AND s.status= 'finalized') THEN 'Enter Result' END"), 'REPORT' => new Zend_Db_Expr("CASE  WHEN spm.report_generated='yes' AND s.status='finalized' THEN 'Report' END")])
+            ->join(['spm' => 'shipment_participant_map'], 'spm.shipment_id=s.shipment_id', ['spm.report_generated', 'spm.map_id', 'spm.evaluation_status', 'spm.response_status', 'qc_date', 'spm.participant_id', 'RESPONSEDATE' => "DATE_FORMAT(spm.shipment_test_report_date,'%Y-%m-%d')", 'RESPONSEDATETIME' => 'spm.shipment_test_report_date', 'RESPONSE' => new Zend_Db_Expr("CASE  WHEN substr(spm.evaluation_status,3,1)='1' THEN 'View' WHEN (substr(spm.evaluation_status,3,1)='9' AND s.response_deadline >= NOW()) OR (substr(spm.evaluation_status,3,1)='9' AND s.status= 'finalized') THEN 'Enter Result' END"), 'REPORT' => new Zend_Db_Expr("CASE  WHEN spm.report_generated='yes' AND s.status='finalized' THEN 'Report' END")])
             ->join(['sl' => 'scheme_list'], 'sl.scheme_id=s.scheme_type', ['scheme_name', 'is_user_configured'])
             ->join(['p' => 'participant'], 'p.participant_id=spm.participant_id', ['p.unique_identifier', 'p.first_name', 'p.last_name', 'p.participant_id'])
 
@@ -823,13 +831,10 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 }
             }
             $row[] = $qcChkbox;
-            $row[] = $aRow['SHIP_YEAR'];
-            $row[] = Pt_Commons_DateUtility::humanReadableDateFormat($aRow['shipment_date']);
-            $row[] = ($aRow['scheme_name']);
-            $row[] = $aRow['shipment_code'];
-            $row[] = $aRow['unique_identifier'];
-            $row[] = $aRow['first_name'] . ' ' . $aRow['last_name'];
-            $row[] = Pt_Commons_DateUtility::humanReadableDateFormat($aRow['RESPONSEDATE']);
+            $row[] = $this->shipmentCell($aRow);
+            $row[] = htmlspecialchars((string) $aRow['scheme_name']);
+            $row[] = $this->participantCell($aRow);
+            $row[] = $this->responseStatusCell($aRow, $isEditable);
 
             //            if($aRow['status']!='finalized' && $aRow['RESPONSEDATE']!='' && $aRow['RESPONSEDATE']!='0000-00-00'){
             //             $delete='<a href="javascript:void(0);" onclick="removeSchemes(\'' . $aRow['scheme_type']. '\',\'' . base64_encode($aRow['map_id']) . '\', \'' . $aRow['is_user_configured'] . '\')" style="text-decoration : underline;"> Delete</a>';
@@ -844,6 +849,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             //            }
 
             $buttonText = Pt_Commons_TranslateUtility::htmlTranslate('View');
+            $buttonType = 'btn-primary';
             $download = '';
             $delete = '';
             if (isset($aRow['is_user_configured']) && $aRow['is_user_configured'] == 'yes') {
@@ -857,11 +863,12 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                     }
                 } else {
                     $buttonText = Pt_Commons_TranslateUtility::htmlTranslate('Enter Response');
+                    $buttonType = 'btn-success';
                     $download = ''; //<br/><a href="/' . $aRow['scheme_type'] . '/download/sid/' . $aRow['shipment_id'] . '/pid/' . $aRow['participant_id'] . '/eid/' . $aRow['evaluation_status'] . '" class="btn btn-default"  style="margin:3px 0;" target="_BLANK"> <i class="icon icon-download"></i> Download Form</a>';
                 }
             }
 
-            $row[] = '<a href="/' . $aRow['scheme_type'] . '/response/sid/' . $aRow['shipment_id'] . '/pid/' . $aRow['participant_id'] . '/eid/' . $aRow['evaluation_status'] . '/comingFrom/all-schemes' . '" class="btn btn-success"  style="margin:3px 0;"> <i class="icon icon-edit"></i>  ' . $buttonText . ' </a>'
+            $row[] = '<a href="/' . $aRow['scheme_type'] . '/response/sid/' . $aRow['shipment_id'] . '/pid/' . $aRow['participant_id'] . '/eid/' . $aRow['evaluation_status'] . '/comingFrom/all-schemes' . '" class="btn ' . $buttonType . '"  style="margin:3px 0;"> <i class="icon icon-edit"></i>  ' . $buttonText . ' </a>'
                 . $delete
                 . $download
                 . $qcResponse;

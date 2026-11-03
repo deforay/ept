@@ -4,6 +4,14 @@ $genderHelper = $this->getHelper('DateFormat');
 $dtFormat = $genderHelper->getDateFormat();
 ?>
 
+<style>
+	/* 2=Shipment, 3=Scheme, 4=Participant, 5=Your Response, 6=Action, 7=Report
+	   (column 1 is the QC checkbox, hidden unless QC is on). */
+	#allSchemeTable > tbody > tr > td { vertical-align: middle; text-align: left; }
+	#allSchemeTable td small { line-height: 1.6; }
+	#allSchemeTable .column-search-row > th { padding: 4px 6px; }
+	#allSchemeTable .col-search { min-width: 0; width: 100%; box-sizing: border-box; display: block; }
+</style>
 <section class="content-header">
 	<h1> <?= $this->translate->_("All PT Schemes"); ?> </h1>
 </section>
@@ -40,24 +48,18 @@ $dtFormat = $genderHelper->getDateFormat();
 				<thead>
 					<tr>
 						<th scope="col"></th>
-						<th scope="col" style="width:30px;"><?= $this->translate->_("Year"); ?></th>
-						<th scope="col" style="width:100px;">
-							<?= $this->translate->_("Shipment"); ?><br /><?= $this->translate->_("Date"); ?></th>
-						<th scope="col" style="width:50px;"><?= $this->translate->_("Scheme"); ?></th>
-						<th scope="col" style="width:100px;"><?= $this->translate->_("Shipment Code"); ?></th>
-						<th scope="col"><?= $this->translate->_("Participant ID"); ?></th>
-						<th scope="col"><?= $this->translate->_("Participant Name"); ?></th>
-						<th scope="col" style="width:100px;">
-							<?= $this->translate->_("Response"); ?><br /><?= $this->translate->_("Date"); ?></th>
-						<th scope="col" style="width:100px;"><?= $this->translate->_("Action"); ?></th>
+						<th scope="col"><?= $this->translate->_("Shipment"); ?></th>
+						<th scope="col"><?= $this->translate->_("Scheme"); ?></th>
+						<th scope="col"><?= $this->translate->_("Participant"); ?></th>
+						<th scope="col"><?= $this->translate->_("Your Response"); ?></th>
+						<th scope="col"><?= $this->translate->_("Action"); ?></th>
 						<th scope="col"><?= $this->translate->_("Report"); ?></th>
 					</tr>
 					<tr class="column-search-row">
 						<th scope="col"></th>
-						<th scope="col"></th>
-						<th scope="col"></th>
+						<th scope="col"><input type="text" class="form-control input-sm col-search" data-col="1" placeholder="<?= $this->htmlTranslate('Search Shipment'); ?>" /></th>
 						<th scope="col">
-							<select id="scheme" name="scheme" class="form-control input-sm col-search" data-col="3">
+							<select id="scheme" name="scheme" class="form-control input-sm col-search" data-col="2">
                                 <option value=""> -- <?= $this->translate->_("Select Scheme Type"); ?> --</option>
                                 <?php
                                 foreach ($this->schemes as $scheme) {
@@ -69,9 +71,7 @@ $dtFormat = $genderHelper->getDateFormat();
                                 ?>
                             </select>
 						</th>
-						<th scope="col"><input type="text" class="form-control input-sm col-search" data-col="4" placeholder="<?= $this->htmlTranslate('Search Code'); ?>" /></th>
-						<th scope="col"><input type="text" class="form-control input-sm col-search" data-col="5" placeholder="<?= $this->htmlTranslate('Search ID'); ?>" /></th>
-						<th scope="col"><input type="text" class="form-control input-sm col-search" data-col="6" placeholder="<?= $this->htmlTranslate('Search Name'); ?>" /></th>
+						<th scope="col"><input type="text" class="form-control input-sm col-search" data-col="3" placeholder="<?= $this->htmlTranslate('Search Participant'); ?>" /></th>
 						<th scope="col"></th>
 						<th scope="col"></th>
 						<th scope="col"></th>
@@ -79,7 +79,7 @@ $dtFormat = $genderHelper->getDateFormat();
 				</thead>
 				<tbody>
 					<tr>
-						<td colspan="10" class="dataTables_empty"><?= $this->translate->_("Loading data from server"); ?>
+						<td colspan="7" class="dataTables_empty"><?= $this->translate->_("Loading data from server"); ?>
 						</td>
 					</tr>
 				</tbody>
@@ -121,38 +121,15 @@ $dtFormat = $genderHelper->getDateFormat();
 			"bScrollCollapse": true,
 			"sPaginationType": "full_numbers",
 			"bRetrieve": true,
-			"aoColumns": [{
-				"bSortable": false
-			},
-			{
-				"sClass": "center"
-			},
-			{
-				"sClass": "center"
-			},
-			{
-				"sClass": "center"
-			},
-			{
-				"sClass": "center"
-			},
-			{
-				"sClass": "center"
-			},
-			{
-				"sClass": ""
-			},
-			{
-				"sClass": "center"
-			},
-			{
-				"sClass": "center",
-				"bSortable": false
-			},
-			{
-				"sClass": "center",
-				"bSortable": false
-			}
+			// The QC checkbox column only shows for data managers with QC access.
+			"aoColumns": [
+				{ "bSortable": false, "bVisible": <?= ($this->globalQcAccess == 'yes' && ($authNameSpace->qc_access ?? '') == 'yes') ? 'true' : 'false' ?> },
+				{},
+				{},
+				{},
+				{},
+				{ "bSortable": false },
+				{ "bSortable": false }
 			],
 			"aaSorting": [
 				[1, "desc"]
@@ -198,6 +175,7 @@ $dtFormat = $genderHelper->getDateFormat();
                 } else {
                     $(nRow).removeClass('row-unmapped');
                 }
+                $(nRow).toggleClass('row-submitted', $(nRow).find('.response-submitted').length > 0);
                 return nRow;
             }
 		});
