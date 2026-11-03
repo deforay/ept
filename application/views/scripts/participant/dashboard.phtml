@@ -15,6 +15,9 @@ foreach ($this->participants as $row) {
 ?>
 <link rel="stylesheet" href="<?php echo $this->baseUrl('css/daterangepicker.css'); ?>" type="text/css" media="all">
 <style>
+	#allSchemeTable > tbody > tr > td { vertical-align: middle; text-align: left; }
+	#allSchemeTable td small { line-height: 1.6; }
+
 	.highcharts-figure,
 	.highcharts-data-table table {
 		min-width: 360px;
@@ -522,25 +525,17 @@ foreach ($this->participants as $row) {
 				<thead>
 					<tr>
 						<th scope="col"></th>
-						<th scope="col" style="width:30px;"><?= $this->translate->_("Year"); ?></th>
-						<th scope="col" style="width:100px;">
-							<?= $this->translate->_("Shipment"); ?><br /><?= $this->translate->_("Date"); ?>
-						</th>
-						<th scope="col" style="width:50px;"><?= $this->translate->_("Scheme"); ?></th>
-						<th scope="col" style="width:100px;"><?= $this->translate->_("Shipment Code"); ?></th>
-						<th scope="col"><?= $this->translate->_("Participant Id"); ?></th>
+						<th scope="col"><?= $this->translate->_("Shipment"); ?></th>
+						<th scope="col"><?= $this->translate->_("Scheme"); ?></th>
 						<th scope="col"><?= $this->translate->_("Participant"); ?></th>
-						<th scope="col" style="width:100px;">
-							<?= $this->translate->_("Response"); ?><br /><?= $this->translate->_("Date"); ?>
-						</th>
-						<th scope="col" style="width:100px;"><?= $this->translate->_("Action"); ?></th>
+						<th scope="col"><?= $this->translate->_("Your Response"); ?></th>
+						<th scope="col"><?= $this->translate->_("Action"); ?></th>
 						<th scope="col"><?= $this->translate->_("Report"); ?></th>
-
 					</tr>
 				</thead>
 				<tbody>
 					<tr>
-						<td colspan="10" class="dataTables_empty text-center">
+						<td colspan="7" class="dataTables_empty text-center">
 							<?= $this->translate->_("Loading data from server"); ?>
 						</td>
 					</tr>
@@ -1093,38 +1088,16 @@ foreach ($this->participants as $row) {
 			"bScrollCollapse": true,
 			"sPaginationType": "full_numbers",
 			"bRetrieve": true,
-			"aoColumns": [{
-					"bSortable": false
-				},
-				{
-					"sClass": "center"
-				},
-				{
-					"sClass": "center"
-				},
-				{
-					"sClass": "center"
-				},
-				{
-					"sClass": "center"
-				},
-				{
-					"sClass": ""
-				},
-				{
-					"sClass": ""
-				},
-				{
-					"sClass": "center"
-				},
-				{
-					"sClass": "center",
-					"bSortable": false
-				},
-				{
-					"sClass": "center",
-					"bSortable": false
-				}
+			// Same columns as participant/all-schemes, which serves this data.
+			// The QC checkbox column only shows for data managers with QC access.
+			"aoColumns": [
+				{ "bSortable": false, "bVisible": <?= ($this->globalQcAccess == 'yes' && ($authNameSpace->qc_access ?? '') == 'yes') ? 'true' : 'false' ?> },
+				{},
+				{},
+				{},
+				{},
+				{ "bSortable": false },
+				{ "bSortable": false }
 			],
 			"aaSorting": [
 				[1, "desc"]
@@ -1161,6 +1134,10 @@ foreach ($this->participants as $row) {
 					"data": aoData,
 					"success": fnCallback
 				});
+			},
+			"fnRowCallback": function(nRow) {
+				$(nRow).toggleClass('row-submitted', $(nRow).find('.response-submitted').length > 0);
+				return nRow;
 			}
 		});
 	}
