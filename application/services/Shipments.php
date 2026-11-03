@@ -3740,6 +3740,9 @@ class Application_Service_Shipments
         if (!empty($authNameSpace->dm_id)) {
             $select->join(['pmm' => 'participant_manager_map'], 'pmm.participant_id = p.participant_id', [])
                 ->where('pmm.dm_id = ?', (int) $authNameSpace->dm_id);
+        } else {
+            // Participant-only query. No data manager in session means no scope, so return no rows.
+            $select->where('1 = 0');
         }
 
         $rows = $db->fetchAll($select);
@@ -4196,6 +4199,9 @@ class Application_Service_Shipments
             $sQuery = $sQuery
                 ->joinLeft(['pmm' => 'participant_manager_map'], 'pmm.participant_id=sp.participant_id', [])
                 ->where('pmm.dm_id = ?', $authNameSpace->dm_id);
+        } else {
+            // Participant-only query. No data manager in session means no scope, so return no rows.
+            $sQuery->where('1 = 0');
         }
         if (isset($shipmentDate[0]) && $shipmentDate[0] != '') {
             $sQuery->where('s.shipment_date >= ?', date('Y-m-01', strtotime($shipmentDate[0])));

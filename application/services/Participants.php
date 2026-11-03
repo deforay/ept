@@ -107,6 +107,10 @@ class Application_Service_Participants
             $sql = $sql
                 ->joinLeft(['pmm' => 'participant_manager_map'], 'pmm.participant_id=p.participant_id', [])
                 ->where('pmm.dm_id = ?', $authNameSpace->dm_id);
+        } else {
+            // Participant-only query. No data manager in session means no scope.
+            // Return early because the query already filters on pmm, which only the branch above joins.
+            return [];
         }
         return $db->fetchAll($sql);
     }
@@ -320,6 +324,9 @@ class Application_Service_Participants
             $sql = $sql
                 ->joinLeft(['pmm' => 'participant_manager_map'], 'pmm.participant_id = p.participant_id', [])
                 ->where('pmm.dm_id = ?', $authNameSpace->dm_id);
+        } else {
+            // Participant-only query. No data manager in session means no scope, so return no rows.
+            $sql->where('1 = 0');
         }
         return $db->fetchAll($sql);
     }
@@ -347,6 +354,9 @@ class Application_Service_Participants
             $sql = $sql
                 ->joinLeft(['pmm' => 'participant_manager_map'], 'pmm.participant_id = p.participant_id', [])
                 ->where('pmm.dm_id = ?', $authNameSpace->dm_id);
+        } else {
+            // Participant-only query. No data manager in session means no scope, so return no rows.
+            $sql->where('1 = 0');
         }
         return $db->fetchAll($sql);
     }
@@ -377,6 +387,9 @@ class Application_Service_Participants
             $sql = $sql
                 ->joinLeft(['pmm' => 'participant_manager_map'], 'pmm.participant_id = p.participant_id', [])
                 ->where('pmm.dm_id = ?', $authNameSpace->dm_id);
+        } else {
+            // Participant-only query. No data manager in session means no scope, so return no rows.
+            $sql->where('1 = 0');
         }
         return $db->fetchAll($sql);
     }
@@ -403,6 +416,9 @@ class Application_Service_Participants
             $sql = $sql
                 ->joinLeft(['pmm' => 'participant_manager_map'], 'pmm.participant_id = p.participant_id', [])
                 ->where('pmm.dm_id = ?', $authNameSpace->dm_id);
+        } else {
+            // Participant-only query. No data manager in session means no scope, so return no rows.
+            $sql->where('1 = 0');
         }
         return $db->fetchAll($sql);
     }
