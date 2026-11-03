@@ -5,41 +5,23 @@ $authNameSpace = new Zend_Session_Namespace('datamanagers');
     #currentSchemeTable > tbody > tr > td { vertical-align: middle; }
     #currentSchemeTable tr.row-unmapped > td { background-color: #fcf8e3 !important; }
     #currentSchemeTable tr.row-unmapped:hover > td { background-color: #faf2cc !important; }
+    /* Submitted rows get a green tint so "already done" reads at a glance. */
+    #currentSchemeTable tr.row-submitted > td { background-color: #eef8ee !important; }
+    #currentSchemeTable tr.row-submitted:hover > td { background-color: #e2f2e2 !important; }
+    #currentSchemeTable .response-badge { display: inline-block; font-size: 90%; padding: 4px 8px; }
 
-    /* Constrain narrow columns so they don't waste horizontal space.
-       Columns are 1-indexed: 1=Shipment Date, 2=Scheme, 3=Shipment Code,
-       4=PT Survey Code, 5=Participant ID, 6=Participant, 7=Institute Name,
-       8=Result Due Date, 9=Response Date, 10=Action.
-       Headers wrap (so "Shipment Code" can stack vertically); body cells
-       stay nowrap so dates/codes/IDs don't break mid-token. */
-    #currentSchemeTable td:nth-child(1),
-    #currentSchemeTable td:nth-child(3),
-    #currentSchemeTable td:nth-child(4),
-    #currentSchemeTable td:nth-child(5),
-    #currentSchemeTable td:nth-child(8),
-    #currentSchemeTable td:nth-child(9),
-    #currentSchemeTable td:nth-child(10) {
+    /* 1=Shipment, 2=Scheme, 3=Participant, 4=Result Due Date, 5=Your Response, 6=Action.
+       Scheme and Participant take the spare width and wrap. The rest shrink
+       to their content and never break mid-date. */
+    #currentSchemeTable th:nth-child(1), #currentSchemeTable td:nth-child(1),
+    #currentSchemeTable th:nth-child(4), #currentSchemeTable td:nth-child(4),
+    #currentSchemeTable th:nth-child(5), #currentSchemeTable td:nth-child(5),
+    #currentSchemeTable th:nth-child(6), #currentSchemeTable td:nth-child(6) {
+        width: 1%;
         white-space: nowrap;
     }
-    #currentSchemeTable th:nth-child(1),
-    #currentSchemeTable th:nth-child(3),
-    #currentSchemeTable th:nth-child(4),
-    #currentSchemeTable th:nth-child(5),
-    #currentSchemeTable th:nth-child(8),
-    #currentSchemeTable th:nth-child(9),
-    #currentSchemeTable th:nth-child(10) {
-        width: 1%;
-        white-space: normal;
-    }
-    /* Scheme + Participant + Institute Name get the remaining space and may wrap */
-    #currentSchemeTable th:nth-child(2),
-    #currentSchemeTable td:nth-child(2),
-    #currentSchemeTable th:nth-child(6),
-    #currentSchemeTable td:nth-child(6),
-    #currentSchemeTable th:nth-child(7),
-    #currentSchemeTable td:nth-child(7) {
-        white-space: normal;
-    }
+    #currentSchemeTable td { text-align: left; }
+    #currentSchemeTable td small { line-height: 1.6; }
     /* Keep per-column search inputs from forcing minimum column width;
        trim cell padding so the input visually fills the column. */
     #currentSchemeTable .column-search-row > th {
@@ -136,20 +118,15 @@ $authNameSpace = new Zend_Session_Namespace('datamanagers');
 				class="display datatable table table-bordered table-hover table-striped " id="currentSchemeTable">
 				<thead>
 					<tr>
-						<th scope="col">
-							<?= $this->translate->_("Shipment"); ?><br /><?= $this->translate->_("Date"); ?></th>
+						<th scope="col"><?= $this->translate->_("Shipment"); ?></th>
 						<th scope="col"><?= $this->translate->_("Scheme"); ?></th>
-						<th scope="col"><?= $this->translate->_("Shipment Code"); ?></th>
-						<th scope="col"><?= $this->translate->_("PT Survey Code"); ?></th>
-						<th scope="col"><?= $this->translate->_("Participant ID"); ?></th>
 						<th scope="col"><?= $this->translate->_("Participant"); ?></th>
-						<th scope="col"><?= $this->translate->_("Institute Name"); ?></th>
 						<th scope="col"><?= $this->translate->_("Result Due Date"); ?></th>
-						<th scope="col"><?= $this->translate->_("Response<br />Date"); ?></th>
+						<th scope="col"><?= $this->translate->_("Your Response"); ?></th>
 						<th scope="col"><?= $this->translate->_("Action"); ?></th>
 					</tr>
 					<tr class="column-search-row">
-						<th scope="col"></th>
+						<th scope="col"><input type="text" class="form-control input-sm col-search" data-col="0" placeholder="<?= $this->htmlTranslate('Search Shipment'); ?>" /></th>
 						<th scope="col">
 							<!-- <input type="text" class="form-control input-sm col-search" data-col="1" placeholder="<?= $this->htmlTranslate('Search Scheme'); ?>" /> -->
 							 <select id="scheme" name="scheme" class="form-control input-sm col-search" data-col="1">
@@ -164,11 +141,7 @@ $authNameSpace = new Zend_Session_Namespace('datamanagers');
                                 ?>
                             </select>
 						</th>
-						<th scope="col"><input type="text" class="form-control input-sm col-search" data-col="2" placeholder="<?= $this->htmlTranslate('Search Code'); ?>" /></th>
-						<th scope="col"><input type="text" class="form-control input-sm col-search" data-col="3" placeholder="<?= $this->htmlTranslate('Search Survey Code'); ?>" /></th>
-						<th scope="col"><input type="text" class="form-control input-sm col-search" data-col="4" placeholder="<?= $this->htmlTranslate('Search Participant ID'); ?>" /></th>
-						<th scope="col"><input type="text" class="form-control input-sm col-search" data-col="5" placeholder="<?= $this->htmlTranslate('Search Name'); ?>" /></th>
-						<th scope="col"><input type="text" class="form-control input-sm col-search" data-col="6" placeholder="<?= $this->htmlTranslate('Search Institute Name'); ?>" /></th>
+						<th scope="col"><input type="text" class="form-control input-sm col-search" data-col="2" placeholder="<?= $this->htmlTranslate('Search Participant'); ?>" /></th>
 						<th scope="col"></th>
 						<th scope="col"></th>
 						<th scope="col"></th>
@@ -176,7 +149,7 @@ $authNameSpace = new Zend_Session_Namespace('datamanagers');
 				</thead>
 				<tbody>
 					<tr>
-						<td colspan="10" class="dataTables_empty"><?= $this->translate->_("Loading data from server"); ?>
+						<td colspan="6" class="dataTables_empty"><?= $this->translate->_("Loading data from server"); ?>
 						</td>
 					</tr>
 				</tbody>
@@ -199,47 +172,20 @@ $authNameSpace = new Zend_Session_Namespace('datamanagers');
 			"bRetrieve": false,
 			"bDestroy": true,
 			"bSortCellsTop": true,
-			// Columns 1-6 carry a per-column search box. They were made unsortable to
-			// stop what looked like the grid re-sorting itself when you clicked into a
-			// search field — that was actually bindColSearch firing a no-op filter on
-			// blur (fixed in main.js.php). Sorting never came from the search row:
-			// bSortCellsTop keeps the listeners on the title row. All six are backed by
-			// $orderColumns in getShipmentCurrentDetails().
-			"aoColumns": [{
-					"sClass": "center",
-				},
-				{
-					"sClass": "center"
-				},
-				{
-					"sClass": "center"
-				},
-				{
-					"sClass": "center"
-				},
-				{
-					"sClass": "center"
-				},
-				{
-					"sClass": "center"
-				},
-				{
-					"sClass": "center"
-				},
-				{
-					"sClass": "center",
-				},
-				{
-					"sClass": "center",
-					"bSortable": false
-				},
-				{
-					"sClass": "center",
-					"bSortable": false
-				}
+			// Sorting listens on the title row only (bSortCellsTop), so clicking into a
+			// search box never re-sorts. Each sortable column maps to $orderColumns in
+			// getShipmentCurrentDetails(). Shipment sorts by shipped date and Participant
+			// by name.
+			"aoColumns": [
+				{},
+				{},
+				{},
+				{},
+				{},
+				{ "bSortable": false }
 			],
 			"order": [
-				[7, "desc"]
+				[3, "desc"]
 			],
 			"bProcessing": true,
 			"bServerSide": true,
@@ -285,6 +231,7 @@ $authNameSpace = new Zend_Session_Namespace('datamanagers');
                 } else {
                     $(nRow).removeClass('row-unmapped');
                 }
+                $(nRow).toggleClass('row-submitted', $(nRow).find('.response-submitted').length > 0);
                 return nRow;
             }
 		});

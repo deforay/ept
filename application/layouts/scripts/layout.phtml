@@ -99,6 +99,14 @@ $resolvedHelpSlug = $helpSlugMap[$activeMenu] ?? '';
             text-align: center;
         }
 
+        /* Most participant views open with their own <section class="content">,
+           which nests inside the layout's one and doubles the side padding. */
+        .content-wrapper > .content > .content,
+        .content-wrapper > .content > .content-header {
+            padding-left: 0;
+            padding-right: 0;
+        }
+
         .mandatory {
             color: red;
         }
