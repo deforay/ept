@@ -462,6 +462,10 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
      */
     public function fetchDashboardOpenShipments(?int $dmId, int $limit = 5): array
     {
+        // No data manager means no scope. Return nothing rather than every lab.
+        if (empty($dmId)) {
+            return ['rows' => [], 'total' => 0];
+        }
         $db = $this->getAdapter();
         $sQuery = $db->select()
             ->from(['s' => 'shipment'], [
@@ -490,10 +494,8 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             ->where("(spm.shipment_test_report_date IS NULL OR spm.response_status = 'draft')")
             ->group('s.shipment_id')
             ->order('response_deadline ASC');
-        if (!empty($dmId)) {
-            $sQuery->join(['pmm' => 'participant_manager_map'], 'pmm.participant_id = p.participant_id', [])
-                ->where('pmm.dm_id = ?', $dmId);
-        }
+        $sQuery->join(['pmm' => 'participant_manager_map'], 'pmm.participant_id = p.participant_id', [])
+            ->where('pmm.dm_id = ?', $dmId);
         $rows = $db->fetchAll($sQuery);
 
         return ['rows' => array_slice($rows, 0, $limit), 'total' => count($rows)];
@@ -507,16 +509,18 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
      */
     public function fetchDashboardRecentResults(?int $dmId, int $perScheme = 5): array
     {
+        // No data manager means no scope. Return nothing rather than every lab.
+        if (empty($dmId)) {
+            return [];
+        }
         $db = $this->getAdapter();
         $base = $db->select()
             ->from(['s' => 'shipment'], [])
             ->join(['spm' => 'shipment_participant_map'], 'spm.shipment_id = s.shipment_id', [])
             ->where("s.status = 'finalized'")
             ->where('s.cancelled_at IS NULL');
-        if (!empty($dmId)) {
-            $base->join(['pmm' => 'participant_manager_map'], 'pmm.participant_id = spm.participant_id', [])
-                ->where('pmm.dm_id = ?', $dmId);
-        }
+        $base->join(['pmm' => 'participant_manager_map'], 'pmm.participant_id = spm.participant_id', [])
+            ->where('pmm.dm_id = ?', $dmId);
 
         $schemeQuery = (clone $base)
             ->join(['sl' => 'scheme_list'], 'sl.scheme_id = s.scheme_type', ['sl.scheme_id', 'sl.scheme_name'])
