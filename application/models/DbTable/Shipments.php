@@ -450,6 +450,95 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         echo json_encode($output);
     }
 
+    /**
+     * Dashboard "waiting for your results" list. Returns one row per open
+     * shipment with the number of the data manager's labs that have not
+     * submitted yet, drafts included. The soonest deadline comes first.
+     *
+     * The WHERE clause mirrors ShipmentParticipantMap::isShipmentEditable():
+     * shipped or evaluated, response switch on, not cancelled.
+     *
+     * @return array{rows: array<int, array<string, mixed>>, total: int}
+     */
+    public function fetchDashboardOpenShipments(?int $dmId, int $limit = 5): array
+    {
+        $db = $this->getAdapter();
+        $sQuery = $db->select()
+            ->from(['s' => 'shipment'], [
+                's.shipment_id',
+                'shipment_code' => new Zend_Db_Expr('MAX(s.shipment_code)'),
+                'scheme_type' => new Zend_Db_Expr('MAX(s.scheme_type)'),
+                'response_deadline' => new Zend_Db_Expr('MAX(s.response_deadline)'),
+                'panelName' => new Zend_Db_Expr("MAX(JSON_UNQUOTE(JSON_EXTRACT(s.shipment_attributes, '$.panelName')))"),
+                'scheme_name' => new Zend_Db_Expr('MAX(sl.scheme_name)'),
+                'is_user_configured' => new Zend_Db_Expr('MAX(sl.is_user_configured)'),
+                'labs' => new Zend_Db_Expr('COUNT(DISTINCT spm.participant_id)'),
+                'drafts' => new Zend_Db_Expr("SUM(spm.response_status = 'draft')"),
+                // Only read when labs = 1, so MIN() is that one lab.
+                'participant_id' => new Zend_Db_Expr('MIN(spm.participant_id)'),
+                'evaluation_status' => new Zend_Db_Expr('MIN(spm.evaluation_status)'),
+                'unique_identifier' => new Zend_Db_Expr('MIN(p.unique_identifier)'),
+                'first_name' => new Zend_Db_Expr('MIN(p.first_name)'),
+                'last_name' => new Zend_Db_Expr('MIN(p.last_name)'),
+            ])
+            ->join(['sl' => 'scheme_list'], 'sl.scheme_id = s.scheme_type', [])
+            ->join(['spm' => 'shipment_participant_map'], 'spm.shipment_id = s.shipment_id', [])
+            ->join(['p' => 'participant'], 'p.participant_id = spm.participant_id', [])
+            ->where("s.status IN ('shipped', 'evaluated')")
+            ->where("s.response_switch = 'on'")
+            ->where('s.cancelled_at IS NULL')
+            ->where("(spm.shipment_test_report_date IS NULL OR spm.response_status = 'draft')")
+            ->group('s.shipment_id')
+            ->order('response_deadline ASC');
+        if (!empty($dmId)) {
+            $sQuery->join(['pmm' => 'participant_manager_map'], 'pmm.participant_id = p.participant_id', [])
+                ->where('pmm.dm_id = ?', $dmId);
+        }
+        $rows = $db->fetchAll($sQuery);
+
+        return ['rows' => array_slice($rows, 0, $limit), 'total' => count($rows)];
+    }
+
+    /**
+     * Dashboard "Recent results": the latest finalized rows for each scheme a data
+     * manager's labs took part in, keyed by scheme name.
+     *
+     * @return array<string, array<int, array<string, mixed>>>
+     */
+    public function fetchDashboardRecentResults(?int $dmId, int $perScheme = 5): array
+    {
+        $db = $this->getAdapter();
+        $base = $db->select()
+            ->from(['s' => 'shipment'], [])
+            ->join(['spm' => 'shipment_participant_map'], 'spm.shipment_id = s.shipment_id', [])
+            ->where("s.status = 'finalized'")
+            ->where('s.cancelled_at IS NULL');
+        if (!empty($dmId)) {
+            $base->join(['pmm' => 'participant_manager_map'], 'pmm.participant_id = spm.participant_id', [])
+                ->where('pmm.dm_id = ?', $dmId);
+        }
+
+        $schemeQuery = (clone $base)
+            ->join(['sl' => 'scheme_list'], 'sl.scheme_id = s.scheme_type', ['sl.scheme_id', 'sl.scheme_name'])
+            ->columns(['latest' => new Zend_Db_Expr('MAX(s.shipment_date)')])
+            ->group(['sl.scheme_id', 'sl.scheme_name'])
+            ->order('latest DESC');
+
+        $results = [];
+        foreach ($db->fetchAll($schemeQuery) as $scheme) {
+            $rowsQuery = (clone $base)
+                ->columns(['s.shipment_code', 's.shipment_date'])
+                ->join(['p' => 'participant'], 'p.participant_id = spm.participant_id', ['p.unique_identifier', 'p.first_name', 'p.last_name'])
+                ->columns(['spm.shipment_score', 'spm.documentation_score', 'spm.final_result', 'spm.is_excluded', 'spm.response_status', 'spm.shipment_test_report_date'], 'spm')
+                ->where('s.scheme_type = ?', $scheme['scheme_id'])
+                ->order(['s.shipment_date DESC', 'p.unique_identifier ASC'])
+                ->limit($perScheme);
+            $results[$scheme['scheme_name']] = $db->fetchAll($rowsQuery);
+        }
+
+        return $results;
+    }
+
     /** Shipment cell: code in bold, survey code only when it differs, shipped date. */
     private function shipmentCell(array $aRow): string
     {
