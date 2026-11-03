@@ -3736,14 +3736,7 @@ class Application_Service_Shipments
             ->where('s.cancelled_at IS NULL')
             ->group('spm.map_id');
 
-        $authNameSpace = new Zend_Session_Namespace('datamanagers');
-        if (!empty($authNameSpace->dm_id)) {
-            $select->join(['pmm' => 'participant_manager_map'], 'pmm.participant_id = p.participant_id', [])
-                ->where('pmm.dm_id = ?', (int) $authNameSpace->dm_id);
-        } else {
-            // Participant-only query. No data manager in session means no scope, so return no rows.
-            $select->where('1 = 0');
-        }
+        Application_Service_Common::scopeToSessionDataManager($select);
 
         $rows = $db->fetchAll($select);
         if (empty($rows)) {
@@ -4194,15 +4187,7 @@ class Application_Service_Shipments
             ->group('s.shipment_id')
             // ->group("DATE_FORMAT(s.shipment_code,'%b-%Y')")
             ->order('s.shipment_id');
-        $authNameSpace = new Zend_Session_Namespace('datamanagers');
-        if (!empty($authNameSpace->dm_id)) {
-            $sQuery = $sQuery
-                ->joinLeft(['pmm' => 'participant_manager_map'], 'pmm.participant_id=sp.participant_id', [])
-                ->where('pmm.dm_id = ?', $authNameSpace->dm_id);
-        } else {
-            // Participant-only query. No data manager in session means no scope, so return no rows.
-            $sQuery->where('1 = 0');
-        }
+        Application_Service_Common::scopeToSessionDataManager($sQuery, 'sp.participant_id');
         if (isset($shipmentDate[0]) && $shipmentDate[0] != '') {
             $sQuery->where('s.shipment_date >= ?', date('Y-m-01', strtotime($shipmentDate[0])));
         }
