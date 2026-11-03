@@ -1,3 +1,11 @@
+<style>
+	/* 1=Shipment, 2=Scheme, 3=Participant, 4=Result Due Date, 5=Your Response, 6=Action */
+	#defaultedSchemeTable > tbody > tr > td { vertical-align: middle; text-align: left; }
+	#defaultedSchemeTable td small { line-height: 1.6; }
+	#defaultedSchemeTable td:nth-child(4), #defaultedSchemeTable td:nth-child(5), #defaultedSchemeTable td:nth-child(6) { white-space: nowrap; }
+	#defaultedSchemeTable .column-search-row > th { padding: 4px 6px; }
+	#defaultedSchemeTable .col-search { min-width: 0; width: 100%; box-sizing: border-box; display: block; }
+</style>
 <section class="content-header">
 	<h1> <?= $this->translate->_("Defaulted Schemes"); ?> </h1>
 </section>
@@ -8,42 +16,32 @@
 				class="display datatable table table-bordered table-hover table-striped " id="defaultedSchemeTable">
 				<thead>
 					<tr>
-						<th scope="col" style="width:30px;"><?= $this->translate->_("Year"); ?></th>
-						<th scope="col" style="width:100px;">
-							<?= $this->translate->_("Shipment"); ?><br /><?= $this->translate->_("Date"); ?></th>
-						<th scope="col" style="width:50px;"><?= $this->translate->_("Scheme"); ?></th>
-						<th scope="col" style="width:100px;"><?= $this->translate->_("Shipment Code"); ?></th>
-						<th scope="col"><?= $this->translate->_("Participant Id"); ?></th>
+						<th scope="col"><?= $this->translate->_("Shipment"); ?></th>
+						<th scope="col"><?= $this->translate->_("Scheme"); ?></th>
 						<th scope="col"><?= $this->translate->_("Participant"); ?></th>
-						<th scope="col" style="width:100px;"><?= $this->translate->_("Result Due Date"); ?></th>
-						<th scope="col"><?= $this->translate->_("Status"); ?></th>
-						<th scope="col" style="width:100px;">
-							<?= $this->translate->_("Response"); ?><br /><?= $this->translate->_("Date"); ?></th>
-						<th scope="col" style="width:100px;"><?= $this->translate->_("Action"); ?></th>
+						<th scope="col"><?= $this->translate->_("Result Due Date"); ?></th>
+						<th scope="col"><?= $this->translate->_("Your Response"); ?></th>
+						<th scope="col"><?= $this->translate->_("Action"); ?></th>
 					</tr>
-				<tr class="column-search-row">
-					<th scope="col"></th>
-					<th scope="col"></th>
-					<th scope="col">
-						<select id="scheme" name="scheme" class="form-control input-sm col-search" data-col="2">
-							<option value=""> -- <?= $this->translate->_("Select Scheme Type"); ?> --</option>
-							<?php foreach ($this->schemes as $scheme) { ?>
-								<option value="<?php echo $scheme['scheme_name']; ?>"><?php echo $scheme['scheme_name']; ?></option>
-							<?php } ?>
-						</select>
-					</th>
-					<th scope="col"><input type="text" class="form-control input-sm col-search" data-col="3" placeholder="<?= $this->htmlTranslate('Search Code'); ?>" /></th>
-					<th scope="col"><input type="text" class="form-control input-sm col-search" data-col="4" placeholder="<?= $this->htmlTranslate('Search ID'); ?>" /></th>
-					<th scope="col"><input type="text" class="form-control input-sm col-search" data-col="5" placeholder="<?= $this->htmlTranslate('Search Name'); ?>" /></th>
-					<th scope="col"></th>
-					<th scope="col"></th>
-					<th scope="col"></th>
-					<th scope="col"></th>
-				</tr>
+					<tr class="column-search-row">
+						<th scope="col"><input type="text" class="form-control input-sm col-search" data-col="0" placeholder="<?= $this->htmlTranslate('Search Shipment'); ?>" /></th>
+						<th scope="col">
+							<select id="scheme" name="scheme" class="form-control input-sm col-search" data-col="1">
+								<option value=""> -- <?= $this->translate->_("Select Scheme Type"); ?> --</option>
+								<?php foreach ($this->schemes as $scheme) { ?>
+									<option value="<?php echo $scheme['scheme_name']; ?>"><?php echo $scheme['scheme_name']; ?></option>
+								<?php } ?>
+							</select>
+						</th>
+						<th scope="col"><input type="text" class="form-control input-sm col-search" data-col="2" placeholder="<?= $this->htmlTranslate('Search Participant'); ?>" /></th>
+						<th scope="col"></th>
+						<th scope="col"></th>
+						<th scope="col"></th>
+					</tr>
 				</thead>
 				<tbody>
 					<tr>
-						<td colspan="10" class="dataTables_empty">
+						<td colspan="6" class="dataTables_empty">
 							<?= $this->translate->_("Loading data from server"); ?></td>
 					</tr>
 				</tbody>
@@ -64,37 +62,13 @@
 			"bScrollCollapse": true,
 			"sPaginationType": "full_numbers",
 			"bRetrieve": true,
-			"aoColumns": [{
-					"sClass": "center"
-				},
-				{
-					"sClass": "center"
-				},
-				{
-					"sClass": "center"
-				},
-				{
-					"sClass": "center"
-				},
-				{
-					"sClass": ""
-				},
-				{
-					"sClass": ""
-				},
-				{
-					"sClass": "center"
-				},
-				{
-					"sClass": "center"
-				},
-				{
-					"sClass": "center"
-				},
-				{
-					"sClass": "center",
-					"bSortable": false
-				}
+			"aoColumns": [
+				{},
+				{},
+				{},
+				{},
+				{},
+				{ "bSortable": false }
 			],
 			"aaSorting": [
 				[0, "desc"]
@@ -119,6 +93,7 @@
                 } else {
                     $(nRow).removeClass('row-unmapped');
                 }
+                $(nRow).toggleClass('row-submitted', $(nRow).find('.response-submitted').length > 0);
                 return nRow;
             }
 		});

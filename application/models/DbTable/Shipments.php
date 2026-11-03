@@ -505,6 +505,10 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         if ($aRow['response_status'] === 'nottested') {
             $html .= '<br><small>' . $t::htmlTranslate('Could not test') . '</small>';
         }
+        // Third evaluation_status digit: 1 = on time, 2 = late.
+        if (substr((string) ($aRow['evaluation_status'] ?? ''), 2, 1) === '2') {
+            $html .= '<br><small class="text-warning"><strong>' . $t::htmlTranslate('Submitted late') . '</strong></small>';
+        }
         // responseDateForDisplay appends the time only when the stored value carries one.
         $html .= '<br><small class="text-muted">'
             . htmlspecialchars((string) Pt_Commons_DateUtility::responseDateForDisplay($aRow['RESPONSEDATETIME']))
@@ -519,8 +523,16 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
          * you want to insert a non-database field (for example a counter or static image)
          */
 
-        $aColumns = ['year(shipment_date)', 'DATE_FORMAT(shipment_date,"%d-%b-%Y")', 'scheme_name', 'shipment_code', 'unique_identifier', 'first_name', 'DATE_FORMAT(response_deadline,"%d-%b-%Y %H:%i")', 'DATE_FORMAT(spm.shipment_test_report_date,"%d-%b-%Y")'];
-        $orderColumns = ['shipment_date', 'shipment_date', 'scheme_name', 'shipment_code', 'unique_identifier', 'first_name', 'response_deadline', 'spm.shipment_test_report_date'];
+        // 0=Shipment, 1=Scheme, 2=Participant, 3=Result Due Date, 4=Your Response.
+        // Shipment and Participant bundle several fields, so their search runs over all of them.
+        $aColumns = [
+            new Zend_Db_Expr('CONCAT_WS(" ", s.shipment_code, DATE_FORMAT(s.shipment_date,"%d-%b-%Y"))'),
+            'scheme_name',
+            new Zend_Db_Expr('CONCAT_WS(" ", p.unique_identifier, p.first_name, p.last_name)'),
+            'DATE_FORMAT(response_deadline,"%d-%b-%Y %H:%i")',
+            'DATE_FORMAT(spm.shipment_test_report_date,"%d-%b-%Y")',
+        ];
+        $orderColumns = ['shipment_date', 'scheme_name', 'first_name', 'response_deadline', 'spm.shipment_test_report_date'];
 
         $sLimit = '';
         if (isset($parameters['iDisplayStart']) && $parameters['iDisplayLength'] != '-1') {
@@ -578,7 +590,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
 
         $sQuery = $this->getAdapter()->select()
             ->from(['s' => 'shipment'], [new Zend_Db_Expr('SQL_CALC_FOUND_ROWS s.scheme_type'), 's.status', 'SHIP_YEAR' => 'year(s.shipment_date)', 's.shipment_date', 's.shipment_code', 's.response_deadline', 's.shipment_id', 's.response_switch'])
-            ->join(['spm' => 'shipment_participant_map'], 'spm.shipment_id=s.shipment_id', ['spm.map_id', 'spm.evaluation_status', 'spm.participant_id', 'RESPONSEDATE' => "DATE_FORMAT(spm.shipment_test_report_date,'%Y-%m-%d')", 'ACTION' => new Zend_Db_Expr("CASE  WHEN substr(spm.evaluation_status,2,1)='1' THEN 'View' WHEN (substr(spm.evaluation_status,2,1)='9' AND s.response_deadline >= NOW()) OR (s.status= 'finalized') THEN 'Enter Result' END"), 'STATUS' => new Zend_Db_Expr("CASE substr(spm.evaluation_status,3,1) WHEN 1 THEN 'On Time' WHEN '2' THEN 'Late' WHEN '0' THEN 'No Response' END")])
+            ->join(['spm' => 'shipment_participant_map'], 'spm.shipment_id=s.shipment_id', ['spm.map_id', 'spm.evaluation_status', 'spm.response_status', 'spm.participant_id', 'RESPONSEDATE' => "DATE_FORMAT(spm.shipment_test_report_date,'%Y-%m-%d')", 'RESPONSEDATETIME' => 'spm.shipment_test_report_date', 'ACTION' => new Zend_Db_Expr("CASE  WHEN substr(spm.evaluation_status,2,1)='1' THEN 'View' WHEN (substr(spm.evaluation_status,2,1)='9' AND s.response_deadline >= NOW()) OR (s.status= 'finalized') THEN 'Enter Result' END"), 'STATUS' => new Zend_Db_Expr("CASE substr(spm.evaluation_status,3,1) WHEN 1 THEN 'On Time' WHEN '2' THEN 'Late' WHEN '0' THEN 'No Response' END")])
             ->join(['sl' => 'scheme_list'], 'sl.scheme_id=s.scheme_type', ['scheme_name', 'is_user_configured'])
             ->join(['p' => 'participant'], 'p.participant_id=spm.participant_id', ['p.unique_identifier', 'p.first_name', 'p.last_name', 'p.participant_id', 'p.country'])
             ->joinLeft(['c' => 'countries'], 'p.country=c.id', ['c.iso_name'])
@@ -587,9 +599,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             ->where('year(s.shipment_date)  + 5 > year(CURDATE())')
             ->where('s.response_deadline < NOW()')
             ->where("substr(spm.evaluation_status,3,1) <> '1'")
-            ->where('s.cancelled_at IS NULL')
-            ->order('s.shipment_date')
-            ->order('spm.participant_id');
+            ->where('s.cancelled_at IS NULL');
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
         if (!empty($authNameSpace->dm_id)) {
             $sQuery = $sQuery
@@ -636,17 +646,14 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 }
             }
 
-            $row[] = $aRow['SHIP_YEAR'];
-            $row[] = Pt_Commons_DateUtility::humanReadableDateFormat($aRow['shipment_date']);
-            $row[] = ($aRow['scheme_name']);
-            $row[] = $aRow['shipment_code'];
-            $row[] = $aRow['unique_identifier'];
-            $row[] = $aRow['first_name'] . ' ' . $aRow['last_name'];
+            $row[] = $this->shipmentCell($aRow);
+            $row[] = htmlspecialchars((string) $aRow['scheme_name']);
+            $row[] = $this->participantCell($aRow);
             $row[] = Pt_Commons_DateUtility::humanReadableDateFormat($aRow['response_deadline'], true);
-            $row[] = $aRow['STATUS'];
-            $row[] = Pt_Commons_DateUtility::humanReadableDateFormat($aRow['RESPONSEDATE']);
+            $row[] = $this->responseStatusCell($aRow, $isEditable);
 
             $buttonText = Pt_Commons_TranslateUtility::htmlTranslate('View/Edit');
+            $buttonType = 'btn-primary';
             $download = '';
             $delete = '';
             if (isset($aRow['is_user_configured']) && $aRow['is_user_configured'] == 'yes') {
@@ -659,6 +666,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                     }
                 } else {
                     $buttonText = Pt_Commons_TranslateUtility::htmlTranslate('Enter Response');
+                    $buttonType = 'btn-success';
                     if ($aRow['scheme_type'] == 'tb') {
                         if ($isMtbeptInstance) {
                             $download = '<br/><a href="/participant/download-tb/sid/' . $aRow['shipment_id'] . '/pid/' . $aRow['participant_id'] . '" class="btn btn-default" style="margin:3px 0;" target="_BLANK"> <i class="icon icon-download"></i> ' . Pt_Commons_TranslateUtility::htmlTranslate('Download Form') . '</a>';
@@ -669,7 +677,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 }
             }
 
-            $row[] = '<a href="/' . $aRow['scheme_type'] . '/response/sid/' . $aRow['shipment_id'] . '/pid/' . $aRow['participant_id'] . '/eid/' . $aRow['evaluation_status'] . '/comingFrom/defaulted-schemes' . '" class="btn btn-success"  style="margin:3px 0;"> <i class="icon icon-edit"></i>  ' . $buttonText . ' </a>'
+            $row[] = '<a href="/' . $aRow['scheme_type'] . '/response/sid/' . $aRow['shipment_id'] . '/pid/' . $aRow['participant_id'] . '/eid/' . $aRow['evaluation_status'] . '/comingFrom/defaulted-schemes' . '" class="btn ' . $buttonType . '"  style="margin:3px 0;"> <i class="icon icon-edit"></i>  ' . $buttonText . ' </a>'
                 . $delete
                 . $download;
 
