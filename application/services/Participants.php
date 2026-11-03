@@ -298,20 +298,7 @@ class Application_Service_Participants
      */
     public function getParticipantSurveyList()
     {
-        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $sql = $db->select()
-            ->from(['d' => 'distributions'], ['d.distribution_id', 'd.distribution_code'])
-            ->join(['s' => 'shipment'], 's.distribution_id = d.distribution_id', [])
-            ->join(['spm' => 'shipment_participant_map'], 'spm.shipment_id = s.shipment_id', [])
-            ->join(['p' => 'participant'], 'p.participant_id = spm.participant_id', [])
-            ->where("s.status = 'finalized'")
-            ->where('s.cancelled_at IS NULL')
-            ->where('d.distribution_code IS NOT NULL')
-            ->where("d.distribution_code != ''")
-            ->group('d.distribution_id')
-            ->order('d.distribution_code');
-        Application_Service_Common::scopeToSessionDataManager($sql);
-        return $db->fetchAll($sql);
+        return $this->surveyPickerList(["s.status = 'finalized'"]);
     }
 
     /**
@@ -322,18 +309,11 @@ class Application_Service_Participants
      */
     public function getCorrectiveActionParticipantList()
     {
-        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $sql = $db->select()
-            ->from(['p' => 'participant'], ['p.participant_id', 'p.unique_identifier', 'p.first_name', 'p.last_name'])
-            ->join(['spm' => 'shipment_participant_map'], 'spm.participant_id = p.participant_id', [])
-            ->join(['s' => 'shipment'], 's.shipment_id = spm.shipment_id', [])
-            ->where("s.status = 'finalized'")
-            ->where("s.corrective_action_file NOT LIKE ''")
-            ->where('spm.final_result = 2')
-            ->group('p.participant_id')
-            ->order('p.first_name');
-        Application_Service_Common::scopeToSessionDataManager($sql);
-        return $db->fetchAll($sql);
+        return $this->participantPickerList([
+            "s.status = 'finalized'",
+            "s.corrective_action_file NOT LIKE ''",
+            'spm.final_result = 2',
+        ]);
     }
 
     /**
@@ -345,20 +325,7 @@ class Application_Service_Participants
      */
     public function getCurrentSchemeSurveyList()
     {
-        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $sql = $db->select()
-            ->from(['d' => 'distributions'], ['d.distribution_id', 'd.distribution_code'])
-            ->join(['s' => 'shipment'], 's.distribution_id = d.distribution_id', [])
-            ->join(['spm' => 'shipment_participant_map'], 'spm.shipment_id = s.shipment_id', [])
-            ->join(['p' => 'participant'], 'p.participant_id = spm.participant_id', [])
-            ->where("(s.status = 'shipped' OR s.status = 'evaluated')")
-            ->where('s.cancelled_at IS NULL')
-            ->where('d.distribution_code IS NOT NULL')
-            ->where("d.distribution_code != ''")
-            ->group('d.distribution_id')
-            ->order('d.distribution_code');
-        Application_Service_Common::scopeToSessionDataManager($sql);
-        return $db->fetchAll($sql);
+        return $this->surveyPickerList(["(s.status = 'shipped' OR s.status = 'evaluated')"]);
     }
 
     /**
@@ -369,15 +336,56 @@ class Application_Service_Participants
      */
     public function getCurrentSchemeParticipantList()
     {
+        return $this->participantPickerList([
+            "(s.status = 'shipped' OR s.status = 'evaluated')",
+            's.cancelled_at IS NULL',
+        ]);
+    }
+
+    /**
+     * PT Survey picker options for the data manager in session: surveys with a
+     * shipment that matches $conditions, a code, and no cancellation.
+     *
+     * @param string[] $conditions extra WHERE clauses on shipment `s`
+     */
+    private function surveyPickerList(array $conditions): array
+    {
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $sql = $db->select()
+            ->from(['d' => 'distributions'], ['d.distribution_id', 'd.distribution_code'])
+            ->join(['s' => 'shipment'], 's.distribution_id = d.distribution_id', [])
+            ->join(['spm' => 'shipment_participant_map'], 'spm.shipment_id = s.shipment_id', [])
+            ->join(['p' => 'participant'], 'p.participant_id = spm.participant_id', [])
+            ->where('s.cancelled_at IS NULL')
+            ->where('d.distribution_code IS NOT NULL')
+            ->where("d.distribution_code != ''")
+            ->group('d.distribution_id')
+            ->order('d.distribution_code');
+        foreach ($conditions as $condition) {
+            $sql->where($condition);
+        }
+        Application_Service_Common::scopeToSessionDataManager($sql);
+        return $db->fetchAll($sql);
+    }
+
+    /**
+     * Participant picker options for the data manager in session: labs with a
+     * shipment that matches $conditions.
+     *
+     * @param string[] $conditions WHERE clauses on shipment `s` and map `spm`
+     */
+    private function participantPickerList(array $conditions): array
+    {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $sql = $db->select()
             ->from(['p' => 'participant'], ['p.participant_id', 'p.unique_identifier', 'p.first_name', 'p.last_name'])
             ->join(['spm' => 'shipment_participant_map'], 'spm.participant_id = p.participant_id', [])
             ->join(['s' => 'shipment'], 's.shipment_id = spm.shipment_id', [])
-            ->where("(s.status = 'shipped' OR s.status = 'evaluated')")
-            ->where('s.cancelled_at IS NULL')
             ->group('p.participant_id')
             ->order('p.first_name');
+        foreach ($conditions as $condition) {
+            $sql->where($condition);
+        }
         Application_Service_Common::scopeToSessionDataManager($sql);
         return $db->fetchAll($sql);
     }
