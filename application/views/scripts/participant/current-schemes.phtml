@@ -248,12 +248,18 @@ $authNameSpace = new Zend_Session_Namespace('datamanagers');
 			allowClear: true
 		});
 
-		currentSchemes();
 		<?php foreach ($this->shipment as $shipment) {
 			if (isset($shipment['response_switch']) && !empty($shipment['response_switch']) && $shipment['response_switch'] == 'on') { ?>
 				$('#shipmentCode').append('<option value="<?php echo $shipment['shipment_code']; ?>"><?php echo $shipment['shipment_code']; ?></option>');
 		<?php }
 		} ?>
+
+		// The dashboard links here with ?shipmentCode=X to show one shipment's labs.
+		var linkedCode = new URLSearchParams(window.location.search).get('shipmentCode');
+		if (linkedCode && $('#shipmentCode option').filter(function () { return this.value === linkedCode; }).length) {
+			$('#shipmentCode').val(linkedCode).trigger('change');
+		}
+		currentSchemes();
 
 		$('#currentType1').click(function() {
 			$('#shipmentCode').html('<option value=""><?= $this->jsTranslate('--Select--') ?></option>');

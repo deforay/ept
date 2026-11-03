@@ -127,6 +127,11 @@ class ParticipantController extends Zend_Controller_Action
         $this->view->participants = $dm->getParticipantsByDM();
         $this->view->schemes = $scheme->getAllSchemes();
         $this->view->authNameSpace = $authNameSpace;
+
+        $dmId = !empty($authNameSpace->dm_id) ? (int) $authNameSpace->dm_id : null;
+        $shipmentDb = new Application_Model_DbTable_Shipments();
+        $this->view->openShipments = $shipmentDb->fetchDashboardOpenShipments($dmId);
+        $this->view->recentResults = $shipmentDb->fetchDashboardRecentResults($dmId);
     }
 
     public function reportAction()

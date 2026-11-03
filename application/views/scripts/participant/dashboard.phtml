@@ -15,8 +15,6 @@ foreach ($this->participants as $row) {
 ?>
 <link rel="stylesheet" href="<?php echo $this->baseUrl('css/daterangepicker.css'); ?>" type="text/css" media="all">
 <style>
-	#allSchemeTable > tbody > tr > td { vertical-align: middle; text-align: left; }
-	#allSchemeTable td small { line-height: 1.6; }
 
 	.highcharts-figure,
 	.highcharts-data-table table {
@@ -115,6 +113,31 @@ foreach ($this->participants as $row) {
 		margin-bottom: 24px;
 	}
 
+	/* Dashboard panels: one question each, readable at a glance. */
+	.dash-section { padding-bottom: 0; min-height: 0; }
+	.dash-section + .content { padding-top: 0; }
+	.dash-list:last-child { margin-bottom: 0; }
+	.dash-title { font-size: 20px; margin: 4px 0 8px; }
+	.dash-count { font-size: 14px; vertical-align: middle; margin-left: 6px; }
+	.dash-all-done { font-size: 16px; color: #00a65a; margin: 6px 0; }
+	.dash-list { list-style: none; padding: 0; margin: 10px 0; }
+	.dash-item { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 0; border-top: 1px solid #eee; }
+	.dash-item:first-child { border-top: 0; }
+	.dash-item-main { font-size: 15px; line-height: 1.5; }
+	.dash-item-action .btn { white-space: nowrap; }
+	.dash-tabs { margin-top: 10px; }
+	.dash-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+	/* Blue outline: visible, but quieter than the green "Enter results" actions. */
+	.dash-head-btn { color: #3c8dbc; background: #fff; border: 2px solid #3c8dbc; font-weight: 600; white-space: nowrap; }
+	.dash-head-btn:hover, .dash-head-btn:focus { color: #fff; background: #3c8dbc; }
+	.dash-head { align-items: center; }
+	.dash-results { margin-bottom: 0; }
+	.dash-results th:last-child, .dash-results td:last-child { width: 20%; }
+	.dash-results td { vertical-align: middle !important; }
+	@media (max-width: 600px) {
+		.dash-item { flex-direction: column; align-items: flex-start; }
+	}
+
 	.quick-card {
 		flex: 1 1 220px;
 		min-width: 220px;
@@ -190,9 +213,6 @@ foreach ($this->participants as $row) {
 		}
 	}
 </style>
-<section class="content-header">
-	<h1> <?= $this->translate->_("Dashboard"); ?> </h1>
-</section><br>
 <div class="quick-links-header text-center">
 	<h2><?= $this->translate->_("What do you want to do today?"); ?></h2>
 	<p><?= $this->translate->_("Choose an action to get started"); ?></p>
@@ -227,6 +247,67 @@ foreach ($this->participants as $row) {
 		</span>
 	</a>
 </div>
+<?php
+$esc = fn ($v) => htmlspecialchars((string) $v, ENT_QUOTES, 'UTF-8');
+$multiLab = count((array) $this->participants) > 1;
+$labName = fn (array $r) => trim(($r['first_name'] ?? '') . ' ' . ($r['last_name'] ?? ''));
+$open = $this->openShipments ?? ['rows' => [], 'total' => 0];
+?>
+<section class="content dash-section">
+	<div class="box dash-panel">
+		<div class="box-body">
+			<h2 class="dash-title">
+				<?= $this->translate->_("Shipments waiting for your results"); ?>
+				<?php if ($open['total'] > 0) { ?><span class="label label-danger dash-count"><?= (int) $open['total']; ?></span><?php } ?>
+			</h2>
+			<?php if ($open['total'] === 0) { ?>
+				<p class="dash-all-done"><i class="icon-ok-sign"></i> <?= $this->translate->_("You are all caught up. No shipments are waiting for your results."); ?></p>
+			<?php } else { ?>
+				<p class="text-muted"><?= $this->translate->_("Enter your results for each shipment before its due date."); ?></p>
+				<ul class="dash-list">
+					<?php foreach ($open['rows'] as $r) {
+						$labs = (int) $r['labs'];
+						$deadline = strtotime((string) $r['response_deadline']);
+						$dueSoon = $deadline !== false && $deadline - time() < 3 * 86400;
+						if ($labs === 1) {
+							$schemeType = ($r['is_user_configured'] ?? 'no') === 'yes' ? 'custom-test' : $r['scheme_type'];
+							$url = '/' . rawurlencode($schemeType) . '/response/sid/' . (int) $r['shipment_id'] . '/pid/' . (int) $r['participant_id']
+								. '/eid/' . rawurlencode((string) $r['evaluation_status']) . '/uc/' . rawurlencode((string) ($r['is_user_configured'] ?? 'no'));
+						} else {
+							$url = '/participant/current-schemes?shipmentCode=' . rawurlencode((string) $r['shipment_code']);
+						}
+					?>
+						<li class="dash-item">
+							<div class="dash-item-main">
+								<strong><?= $esc($r['panelName'] ?: $r['scheme_name']); ?></strong>
+								<span class="text-muted">&middot; <?= $esc($r['shipment_code']); ?></span>
+								<?php if ($labs === 1 && $multiLab) { ?>
+									<br><small class="text-muted"><?= $esc($labName($r)); ?> (<?= $esc($r['unique_identifier']); ?>)</small>
+								<?php } elseif ($labs > 1) { ?>
+									<br><small class="text-muted"><?= sprintf($this->translate->_("%d labs still need results"), $labs); ?><?php if ((int) $r['drafts'] > 0) { ?>, <?= sprintf($this->translate->_("%d saved as drafts"), (int) $r['drafts']); ?><?php } ?></small>
+								<?php } ?>
+								<br><small class="<?= $dueSoon ? 'text-danger' : 'text-muted'; ?>">
+									<?= $this->translate->_("Due"); ?> <?= $esc(Pt_Commons_DateUtility::humanReadableDateFormat($r['response_deadline'], true)); ?>
+									<?php if ($dueSoon) { ?><strong> &middot; <?= $this->translate->_("Due soon"); ?></strong><?php } ?>
+								</small>
+							</div>
+							<div class="dash-item-action">
+								<?php if ($labs === 1 && (int) $r['drafts'] === 1) { ?>
+									<a href="<?= $esc($url); ?>" class="btn btn-warning"><i class="icon-pencil"></i> <?= $this->translate->_("Finish your draft"); ?></a>
+								<?php } else { ?>
+									<a href="<?= $esc($url); ?>" class="btn btn-success"><i class="icon-edit"></i> <?= $this->translate->_("Enter results"); ?></a>
+								<?php } ?>
+							</div>
+						</li>
+					<?php } ?>
+				</ul>
+				<?php if ($open['total'] > count($open['rows'])) { ?>
+					<a href="/participant/current-schemes" class="btn btn-default"><?= sprintf($this->translate->_("See all %d shipments waiting for results"), (int) $open['total']); ?></a>
+				<?php } ?>
+			<?php } ?>
+		</div>
+	</div>
+</section>
 <section class="content">
 
 	<?php if (!empty($this->showEmailCriticalAlert)): ?>
@@ -319,704 +400,86 @@ foreach ($this->participants as $row) {
 			<?php } ?>
 		</div>
 	</div>
-	<?php
-	if (count($activeSchemes) > 0 && in_array('vl', $activeSchemes)) {
-	?>
-		<div class="box">
-			<div class="box-body">
-				<h3 class="txt text-info"><?= $this->translate->_("Dried Tube Specimen - HIV Viral Load"); ?></h3>
-				<table cellpadding="0" cellspacing="0" border="0"
-					class="display datatable table table-bordered table-hover table-striped " id="dtsViralLoadTable">
-					<thead>
-						<tr>
-							<th scope="col"><?= $this->translate->_("Shipment Date"); ?></th>
-							<th scope="col"><?= $this->translate->_("Shipment Code"); ?></th>
-							<th scope="col"><?= $this->translate->_("Participant Id"); ?></th>
-							<th scope="col"><?= $this->translate->_("Participant"); ?></th>
-							<th scope="col"><?= $this->translate->_("Response Date"); ?></th>
-							<th scope="col"><?= $this->translate->_("Performance"); ?></th>
-						</tr>
-					</thead>
-					<tbody>
-						<tr>
-							<td colspan="6" class="dataTables_empty text-center">
-								<?= $this->translate->_("Loading data from server"); ?>
-							</td>
-						</tr>
-					</tbody>
-				</table>
-			</div>
-		</div>
-	<?php } ?>
-	<?php
-	if (count($activeSchemes) > 0 && in_array('tb', $activeSchemes)) {
-	?>
-		<div class="box">
-			<div class="box-body">
-				<h3 class="txt text-info"><?= $this->translate->_("Dried Tube Specimen - Tuberculosis"); ?></h3>
-				<table cellpadding="0" cellspacing="0" border="0"
-					class="display datatable table table-bordered table-hover table-striped " id="dtsTuberculosisTable">
-					<thead>
-						<tr>
-							<th scope="col"><?= $this->translate->_("Shipment Date"); ?></th>
-							<th scope="col"><?= $this->translate->_("Shipment Code"); ?></th>
-							<th scope="col"><?= $this->translate->_("Participant Id"); ?></th>
-							<th scope="col"><?= $this->translate->_("Participant"); ?></th>
-							<th scope="col"><?= $this->translate->_("Response Date"); ?></th>
-							<th scope="col"><?= $this->translate->_("Performance"); ?></th>
-						</tr>
-					</thead>
-					<tbody>
-						<tr>
-							<td colspan="6" class="dataTables_empty text-center">
-								<?= $this->translate->_("Loading data from server"); ?>
-							</td>
-						</tr>
-					</tbody>
-				</table>
-			</div>
-		</div>
-	<?php } ?>
-	<?php
-	if (count($activeSchemes) > 0 && in_array('eid', $activeSchemes)) {
-	?>
-		<div class="box">
-			<div class="box-body">
-				<h3 class="txt text-info"><?= $this->translate->_("Dried Blood Spot - Early Infant Diagnosis"); ?></h3>
-				<table cellpadding="0" cellspacing="0" border="0"
-					class="display datatable table table-bordered table-hover table-striped "
-					id="earlyInfantDiagnosisTable">
-					<thead>
-						<tr>
-							<th scope="col"><?= $this->translate->_("Shipment Date"); ?></th>
-							<th scope="col"><?= $this->translate->_("Shipment Code"); ?></th>
-							<th scope="col"><?= $this->translate->_("Participant Id"); ?></th>
-							<th scope="col"><?= $this->translate->_("Participant"); ?></th>
-							<th scope="col"><?= $this->translate->_("Response Date"); ?></th>
-							<th scope="col"><?= $this->translate->_("Performance"); ?></th>
-						</tr>
-					</thead>
-					<tbody>
-						<tr>
-							<td colspan="6" class="dataTables_empty text-center">
-								<?= $this->translate->_("Loading data from server"); ?>
-							</td>
-						</tr>
-					</tbody>
-				</table>
-			</div>
-		</div>
-	<?php } ?>
-	<?php
-	if (count($activeSchemes) > 0 && in_array('dts', $activeSchemes)) {
-	?>
-		<div class="box">
-			<div class="box-body">
-				<h3 class="txt text-info"><?= $this->translate->_("HIV Serology"); ?></h3>
-				<table cellpadding="0" cellspacing="0" border="0"
-					class="display datatable table table-bordered table-hover table-striped " id="dtsHIVSerologyTable">
-					<thead>
-						<tr>
-							<th scope="col"><?= $this->translate->_("Shipment Date"); ?></th>
-							<th scope="col"><?= $this->translate->_("Shipment Code"); ?></th>
-							<th scope="col"><?= $this->translate->_("Participant Id"); ?></th>
-							<th scope="col"><?= $this->translate->_("Participant"); ?></th>
-							<th scope="col"><?= $this->translate->_("Response Date"); ?></th>
-							<th scope="col"><?= $this->translate->_("Performance"); ?></th>
-						</tr>
-					</thead>
-					<tbody>
-						<tr>
-							<td colspan="6" class="dataTables_empty text-center">
-								<?= $this->translate->_("Loading data from server"); ?>
-							</td>
-						</tr>
-					</tbody>
-				</table>
-			</div>
-		</div>
-	<?php } ?>
-	<?php
-	if (count($activeSchemes) > 0 && in_array('dbs', $activeSchemes)) {
-	?>
-		<div class="box">
-			<div class="box-body">
-				<h3 class="txt text-info"><?= $this->translate->_("Dried Blood Spot - HIV Serology"); ?></h3>
-				<table cellpadding="0" cellspacing="0" border="0"
-					class="display datatable table table-bordered table-hover table-striped " id="dbsHIVSerologyTable">
-					<thead>
-						<tr>
-							<th scope="col"><?= $this->translate->_("Shipment Date"); ?></th>
-							<th scope="col"><?= $this->translate->_("Shipment Code"); ?></th>
-							<th scope="col"><?= $this->translate->_("Participant Id"); ?></th>
-							<th scope="col"><?= $this->translate->_("Participant"); ?></th>
-							<th scope="col"><?= $this->translate->_("Response Date"); ?></th>
-							<th scope="col"><?= $this->translate->_("Performance"); ?></th>
-						</tr>
-					</thead>
-					<tbody>
-						<tr>
-							<td colspan="6" class="dataTables_empty text-center">
-								<?= $this->translate->_("Loading data from server"); ?>
-							</td>
-						</tr>
-					</tbody>
-				</table>
-			</div>
-		</div>
-	<?php } ?>
-
-
-	<div class="box" style="display:none;">
+	<?php $recent = (array) ($this->recentResults ?? []); ?>
+	<div class="box dash-panel">
 		<div class="box-body">
-			<h3 class="txt text-info"><?= $this->translate->_("Schemes Overview"); ?></h3>
-			<table cellpadding="0" cellspacing="0" border="0"
-				class="display datatable table table-bordered table-hover table-striped " id="overviewTable">
-				<thead>
-					<tr>
-						<th scope="col"><?= $this->translate->_("Yea"); ?>r</th>
-						<th scope="col"><?= $this->translate->_("Scheme Type"); ?></th>
-						<th scope="col"><?= $this->translate->_("Total Schemes <br>Shipped"); ?></th>
-						<th scope="col"><?= $this->translate->_("Reported Within <br>Due Date"); ?></th>
-						<th scope="col"><?= $this->translate->_("Responses <br>not received yet"); ?></th>
-					</tr>
-				</thead>
-				<tbody>
-					<tr>
-						<td colspan="5" class="dataTables_empty text-center">
-							<?= $this->translate->_("Loading data from server"); ?>
-						</td>
-					</tr>
-				</tbody>
-			</table>
-		</div>
-	</div>
-
-	<div class="box">
-		<div class="box-body">
-			<h3 class="txt text-info"><?= $this->translate->_("All Shipments"); ?></h3>
-
-			<?php
-			if ($this->globalQcAccess == 'yes' && (isset($authNameSpace->qc_access) && $authNameSpace->qc_access == 'yes')) {
-			?>
-				<table class="table">
-					<tr>
-						<td style="width:100%;">
-							<select id="qualityChecked" name="qualityChecked" onchange="schemeTable.fnDraw()"
-								class="form-control">
-								<option value=""> -- <?= $this->translate->_("Filter QC Checked Responses"); ?> --</option>
-								<option value="yes"><?= $this->translate->_("Show QC Checked Responses"); ?></option>
-								<option value="no"><?= $this->translate->_("Show Not QC Checked Responses"); ?></option>
-							</select>
-						</td>
-					</tr>
-				</table>
-				<input type="hidden" name="participantMapId" id="participantMapId" />
-				<div style="padding-top:20px;display:none;" id="qcTopButton">
-					<a href="javascript:void(0)" onclick="checkQcStatus()" class="btn btn-primary btn-sm"
-						style="margin-bottom: 15px;"><i class="fa fa-cogs"></i>&nbsp;<b>(<span id="qcCount">0</span>)
-							<?= $this->translate->_("Selected for Bulk Quality Check"); ?></b></a>
+			<div class="dash-head">
+				<h2 class="dash-title"><?= $this->translate->_("Your recent results"); ?></h2>
+				<a href="/participant/all-schemes" class="btn dash-head-btn"><i class="icon-list"></i> <?= $this->translate->_("See all your shipments"); ?> <i class="icon-chevron-right"></i></a>
+			</div>
+			<?php if (empty($recent)) { ?>
+				<p class="text-muted"><?= $this->translate->_("Your results appear here after each shipment is finalized."); ?></p>
+			<?php } else { ?>
+				<p class="text-muted"><?= $this->translate->_("Your latest results for each scheme. Choose a scheme to see its results."); ?></p>
+				<ul class="nav nav-tabs dash-tabs" role="tablist">
+					<?php $i = 0; foreach ($recent as $schemeName => $rows) { ?>
+						<li role="presentation" class="<?= $i === 0 ? 'active' : ''; ?>">
+							<a href="#dash-scheme-<?= $i; ?>" role="tab" data-toggle="tab"><?= $esc($schemeName); ?></a>
+						</li>
+					<?php $i++; } ?>
+				</ul>
+				<div class="tab-content">
+					<?php $i = 0; foreach ($recent as $schemeName => $rows) { ?>
+						<div role="tabpanel" class="tab-pane <?= $i === 0 ? 'active' : ''; ?>" id="dash-scheme-<?= $i; ?>">
+							<table class="table dash-results">
+								<thead>
+									<tr>
+										<th scope="col"><?= $this->translate->_("Shipment"); ?></th>
+										<?php if ($multiLab) { ?><th scope="col"><?= $this->translate->_("Participant"); ?></th><?php } ?>
+										<th scope="col"><?= $this->translate->_("Result"); ?></th>
+									</tr>
+								</thead>
+								<tbody>
+									<?php foreach ($rows as $r) {
+										// Older rounds stored Fail for labs that never responded,
+										// so "no response" wins over whatever final_result says.
+										$responded = !empty($r['shipment_test_report_date']) && !in_array($r['response_status'], ['noresponse', 'draft'], true);
+										if (!$responded) {
+											$label = ['label-default', $this->translate->_("No response")];
+										} elseif (($r['is_excluded'] ?? '') === 'yes' || (int) $r['final_result'] === 3) {
+											$label = ['label-default', $this->translate->_("Excluded")];
+										} elseif ((int) $r['final_result'] === 1) {
+											$label = ['label-success', $this->translate->_("Pass")];
+										} elseif ((int) $r['final_result'] === 2) {
+											$label = ['label-danger', $this->translate->_("Fail")];
+										} else {
+											$label = ['label-info', $this->translate->_("Not Evaluated")];
+										}
+										$showScore = $responded && in_array((int) $r['final_result'], [1, 2], true);
+										$score = (float) $r['shipment_score'] + (float) $r['documentation_score'];
+									?>
+										<tr>
+											<td>
+												<strong><?= $esc($r['shipment_code']); ?></strong>
+												<br><small class="text-muted"><?= $this->translate->_("Shipped"); ?> <?= $esc(Pt_Commons_DateUtility::humanReadableDateFormat($r['shipment_date'])); ?></small>
+											</td>
+											<?php if ($multiLab) { ?>
+												<td><?= $esc($labName($r)); ?><br><small class="text-muted"><?= $this->translate->_("ID"); ?> <?= $esc($r['unique_identifier']); ?></small></td>
+											<?php } ?>
+											<td>
+												<span class="label <?= $label[0]; ?> response-badge"><?= $esc($label[1]); ?></span>
+												<?php if ($showScore) { ?><br><small class="text-muted"><?= $this->translate->_("Score"); ?> <?= $esc(rtrim(rtrim(number_format($score, 2), '0'), '.')); ?></small><?php } ?>
+											</td>
+										</tr>
+									<?php } ?>
+								</tbody>
+							</table>
+						</div>
+					<?php $i++; } ?>
 				</div>
-			<?php
-			}
-			?>
-			<table cellpadding="0" cellspacing="0" border="0"
-				class="display datatable table table-bordered table-hover table-striped " id="allSchemeTable">
-				<thead>
-					<tr>
-						<th scope="col"></th>
-						<th scope="col"><?= $this->translate->_("Shipment"); ?></th>
-						<th scope="col"><?= $this->translate->_("Scheme"); ?></th>
-						<th scope="col"><?= $this->translate->_("Participant"); ?></th>
-						<th scope="col"><?= $this->translate->_("Your Response"); ?></th>
-						<th scope="col"><?= $this->translate->_("Action"); ?></th>
-						<th scope="col"><?= $this->translate->_("Report"); ?></th>
-					</tr>
-				</thead>
-				<tbody>
-					<tr>
-						<td colspan="7" class="dataTables_empty text-center">
-							<?= $this->translate->_("Loading data from server"); ?>
-						</td>
-					</tr>
-				</tbody>
-			</table>
+			<?php } ?>
 		</div>
 	</div>
-
-
 </section>
-
-<div class="deleteAction dialog" id="migrateBox">
-	<div style="padding:10px;">
-		<span onClick="hidedefModal()" class="closeModal"></span>
-		<h3><?= $this->translate->_("Quality Check Done"); ?></h3>
-		<table class="display datatable table table-bordered table-hover table-striped ">
-			<tr>
-				<th scope="col"><?= $this->translate->_("QC Done on"); ?> </th>
-				<td><input type="text" id="qcDate" name="qcDate" style="width:180px;float:left;" maxlength="11" value=""
-						class="isRequired form-control" readonly="readonly" /></td>
-			</tr>
-		</table>
-
-		<div class="box-footer" style="text-align: center">
-			<button class="btn btn-primary"
-				onclick="submitQcForm();return false;"><?= $this->translate->_("Submit"); ?></button>
-		</div>
-	</div>
-</div>
 
 <script>
 	var startDate = "";
 	var endDate = "";
 
-	var s1Table = null;
-	var s2Table = null;
-	var s3Table = null;
-	var s4Table = null;
-	var s5Table = null;
-	sOneLastShipmentRow = [];
-	sOneLastShipmentRowColor = [];
-	<?php
-	if (count($activeSchemes) > 0 && in_array('vl', $activeSchemes)) {
-	?>
-
-		function dtsViralLoadSchemes() {
-			s1Table = $('#dtsViralLoadTable').dataTable({
-
-				"bJQueryUI": false,
-				"bAutoWidth": false,
-				"bInfo": true,
-				"bScrollCollapse": true,
-				"sPaginationType": "full_numbers",
-				"bRetrieve": true,
-				"aoColumns": [{
-						"sClass": "center"
-					},
-					{
-						"sClass": "center"
-					},
-					{
-						"sClass": "center"
-					},
-					{
-						"sClass": "center"
-					},
-					{
-						"sClass": "center"
-					},
-					{
-						"sClass": "center"
-					}
-				],
-				"fnRowCallback": function(nRow, aData, iDisplayIndex, iDisplayIndexFull) {
-					if ($.inArray(aData[1], sOneLastShipmentRow) == -1) {
-						sOneLastShipmentRow = [];
-						sOneLastShipmentRow.push(aData[1]);
-						if ($.inArray("#ecf1ef", sOneLastShipmentRowColor) == -1) {
-							sOneLastShipmentRowColor = [];
-							sOneLastShipmentRowColor.push("#ecf1ef");
-							$(nRow).attr("class", "");
-							$(nRow).css("background-color", "#ecf1ef");
-						} else {
-							sOneLastShipmentRowColor = [];
-							sOneLastShipmentRowColor.push("#fffff2");
-							$(nRow).attr("class", "");
-							$(nRow).css("background-color", "#fffff2");
-						}
-					} else {
-						if ($.inArray("#ecf1ef", sOneLastShipmentRowColor) == -1) {
-							$(nRow).attr("class", "");
-							$(nRow).css("background-color", "#fffff2");
-						}
-						if ($.inArray("#fffff2", sOneLastShipmentRowColor) == -1) {
-							$(nRow).attr("class", "");
-							$(nRow).css("background-color", "#ecf1ef");
-						}
-					}
-				},
-				"aaSorting": [
-					[0, "desc"]
-				],
-				"bProcessing": true,
-				"bServerSide": true,
-				"sAjaxSource": "<?php echo $this->url(array('module' => 'default', 'controller' => 'participant', 'action' => 'scheme', 'format' => 'html')); ?>",
-				"fnServerData": function(sSource, aoData, fnCallback) {
-					aoData.push({
-						"name": "scheme",
-						"value": "vl"
-					});
-					$.ajax({
-						"dataType": 'json',
-						"type": "POST",
-						"url": sSource,
-						"data": aoData,
-						"success": function(json) {
-							fnCallback(json);
-						}
-					});
-				}
-			});
-		}
-	<?php } ?>
-	sTwoLastShipmentRow = [];
-	sTwoLastShipmentRowColor = [];
-	<?php
-	if (count($activeSchemes) > 0 && in_array('tb', $activeSchemes)) {
-	?>
-
-		function dtsTuberculosisSchemes() {
-			s2Table = $('#dtsTuberculosisTable').dataTable({
-
-				"bJQueryUI": false,
-				"bAutoWidth": false,
-				"bInfo": true,
-				"bScrollCollapse": true,
-				"sPaginationType": "full_numbers",
-				"bRetrieve": true,
-				"aoColumns": [{
-						"sClass": "center"
-					},
-					{
-						"sClass": "center"
-					},
-					{
-						"sClass": "center"
-					},
-					{
-						"sClass": "center"
-					},
-					{
-						"sClass": "center"
-					},
-					{
-						"sClass": "center"
-					}
-				],
-				"fnRowCallback": function(nRow, aData, iDisplayIndex, iDisplayIndexFull) {
-					if ($.inArray(aData[1], sTwoLastShipmentRow) == -1) {
-						sTwoLastShipmentRow = [];
-						sTwoLastShipmentRow.push(aData[1]);
-						if ($.inArray("#ecf1ef", sTwoLastShipmentRowColor) == -1) {
-							sTwoLastShipmentRowColor = [];
-							sTwoLastShipmentRowColor.push("#ecf1ef");
-							$(nRow).attr("class", "");
-							$(nRow).css("background-color", "#ecf1ef");
-						} else {
-							sTwoLastShipmentRowColor = [];
-							sTwoLastShipmentRowColor.push("#fffff2");
-							$(nRow).attr("class", "");
-							$(nRow).css("background-color", "#fffff2");
-						}
-					} else {
-						if ($.inArray("#ecf1ef", sTwoLastShipmentRowColor) == -1) {
-							$(nRow).attr("class", "");
-							$(nRow).css("background-color", "#fffff2");
-						}
-						if ($.inArray("#fffff2", sTwoLastShipmentRowColor) == -1) {
-							$(nRow).attr("class", "");
-							$(nRow).css("background-color", "#ecf1ef");
-						}
-					}
-				},
-				"aaSorting": [
-					[0, "desc"]
-				],
-				"bProcessing": true,
-				"bServerSide": true,
-				"sAjaxSource": "<?php echo $this->url(array('module' => 'default', 'controller' => 'participant', 'action' => 'scheme', 'format' => 'html')); ?>",
-				"fnServerData": function(sSource, aoData, fnCallback) {
-					aoData.push({
-						"name": "scheme",
-						"value": "tb"
-					});
-					$.ajax({
-						"dataType": 'json',
-						"type": "POST",
-						"url": sSource,
-						"data": aoData,
-						"success": fnCallback
-					});
-				}
-			});
-		}
-	<?php } ?>
-	sThreeLastShipmentRow = [];
-	sThreeLastShipmentRowColor = [];
-	<?php
-	if (count($activeSchemes) > 0 && in_array('eid', $activeSchemes)) {
-	?>
-
-		function dbsEarlyInfantDiagnosisSchemes() {
-			s3Table = $('#earlyInfantDiagnosisTable').dataTable({
-
-				"bJQueryUI": false,
-				"bAutoWidth": false,
-				"bInfo": true,
-				"bScrollCollapse": true,
-				"sPaginationType": "full_numbers",
-				"bRetrieve": true,
-				"aoColumns": [{
-						"sClass": "center"
-					},
-					{
-						"sClass": "center"
-					},
-					{
-						"sClass": "center"
-					},
-					{
-						"sClass": "center"
-					},
-					{
-						"sClass": "center"
-					},
-					{
-						"sClass": "center"
-					}
-				],
-				"fnRowCallback": function(nRow, aData, iDisplayIndex, iDisplayIndexFull) {
-					if ($.inArray(aData[1], sThreeLastShipmentRow) == -1) {
-						sThreeLastShipmentRow = [];
-						sThreeLastShipmentRow.push(aData[1]);
-						if ($.inArray("#ecf1ef", sThreeLastShipmentRowColor) == -1) {
-							sThreeLastShipmentRowColor = [];
-							sThreeLastShipmentRowColor.push("#ecf1ef");
-							$(nRow).attr("class", "");
-							$(nRow).css("background-color", "#ecf1ef");
-						} else {
-							sThreeLastShipmentRowColor = [];
-							sThreeLastShipmentRowColor.push("#fffff2");
-							$(nRow).attr("class", "");
-							$(nRow).css("background-color", "#fffff2");
-						}
-					} else {
-						if ($.inArray("#ecf1ef", sThreeLastShipmentRowColor) == -1) {
-							$(nRow).attr("class", "");
-							$(nRow).css("background-color", "#fffff2");
-						}
-						if ($.inArray("#fffff2", sThreeLastShipmentRowColor) == -1) {
-							$(nRow).attr("class", "");
-							$(nRow).css("background-color", "#ecf1ef");
-						}
-					}
-				},
-				"aaSorting": [
-					[0, "desc"]
-				],
-				"bProcessing": true,
-				"bServerSide": true,
-				"sAjaxSource": "<?php echo $this->url(array('module' => 'default', 'controller' => 'participant', 'action' => 'scheme', 'format' => 'html')); ?>",
-				"fnServerData": function(sSource, aoData, fnCallback) {
-					aoData.push({
-						"name": "scheme",
-						"value": "eid"
-					});
-					$.ajax({
-						"dataType": 'json',
-						"type": "POST",
-						"url": sSource,
-						"data": aoData,
-						"success": fnCallback
-					});
-				}
-			});
-		}
-	<?php } ?>
-	sFourLastShipmentRow = [];
-	sFourLastShipmentRowColor = [];
-	<?php
-	if (count($activeSchemes) > 0 && in_array('dts', $activeSchemes)) {
-	?>
-
-		function dtsHIVSerologySchemes() {
-			s4Table = $('#dtsHIVSerologyTable').dataTable({
-
-				"bJQueryUI": false,
-				"bAutoWidth": false,
-				"bInfo": true,
-				"bScrollCollapse": true,
-				"sPaginationType": "full_numbers",
-				"bRetrieve": true,
-				"aoColumns": [{
-						"sClass": "center"
-					},
-					{
-						"sClass": "center"
-					},
-					{
-						"sClass": "center"
-					},
-					{
-						"sClass": "center"
-					},
-					{
-						"sClass": "center"
-					},
-					{
-						"sClass": "center"
-					}
-				],
-				"fnRowCallback": function(nRow, aData, iDisplayIndex, iDisplayIndexFull) {
-					if ($.inArray(aData[1], sFourLastShipmentRow) == -1) {
-						sFourLastShipmentRow = [];
-						sFourLastShipmentRow.push(aData[1]);
-						if ($.inArray("#ecf1ef", sFourLastShipmentRowColor) == -1) {
-							sFourLastShipmentRowColor = [];
-							sFourLastShipmentRowColor.push("#ecf1ef");
-							$(nRow).attr("class", "");
-							$(nRow).css("background-color", "#ecf1ef");
-						} else {
-							sFourLastShipmentRowColor = [];
-							sFourLastShipmentRowColor.push("#fffff2");
-							$(nRow).attr("class", "");
-							$(nRow).css("background-color", "#fffff2");
-						}
-					} else {
-						if ($.inArray("#ecf1ef", sFourLastShipmentRowColor) == -1) {
-							$(nRow).attr("class", "");
-							$(nRow).css("background-color", "#fffff2");
-						}
-						if ($.inArray("#fffff2", sFourLastShipmentRowColor) == -1) {
-							$(nRow).attr("class", "");
-							$(nRow).css("background-color", "#ecf1ef");
-						}
-					}
-				},
-				"aaSorting": [
-					[0, "desc"]
-				],
-				"bProcessing": true,
-				"bServerSide": true,
-				"sAjaxSource": "<?php echo $this->url(array('module' => 'default', 'controller' => 'participant', 'action' => 'scheme', 'format' => 'html')); ?>",
-				"fnServerData": function(sSource, aoData, fnCallback) {
-					aoData.push({
-						"name": "scheme",
-						"value": "dts"
-					});
-					$.ajax({
-						"dataType": 'json',
-						"type": "POST",
-						"url": sSource,
-						"data": aoData,
-						"success": fnCallback
-					});
-				}
-			});
-		}
-	<?php } ?>
-	sFiveLastShipmentRow = [];
-	sFiveLastShipmentRowColor = [];
-	<?php
-	if (count($activeSchemes) > 0 && in_array('dbs', $activeSchemes)) {
-	?>
-
-		function dbsHIVSerologySchemes() {
-			s4Table = $('#dbsHIVSerologyTable').dataTable({
-
-				"bJQueryUI": false,
-				"bAutoWidth": false,
-				"bInfo": true,
-				"bScrollCollapse": true,
-				"sPaginationType": "full_numbers",
-				"bRetrieve": true,
-				"aoColumns": [{
-						"sClass": "center"
-					},
-					{
-						"sClass": "center"
-					},
-					{
-						"sClass": "center"
-					},
-					{
-						"sClass": "center"
-					},
-					{
-						"sClass": "center"
-					},
-					{
-						"sClass": "center"
-					}
-				],
-				"fnRowCallback": function(nRow, aData, iDisplayIndex, iDisplayIndexFull) {
-					if ($.inArray(aData[1], sFiveLastShipmentRow) == -1) {
-						sFiveLastShipmentRow = [];
-						sFiveLastShipmentRow.push(aData[1]);
-						if ($.inArray("#ecf1ef", sFiveLastShipmentRowColor) == -1) {
-							sFiveLastShipmentRowColor = [];
-							sFiveLastShipmentRowColor.push("#ecf1ef");
-							$(nRow).attr("class", "");
-							$(nRow).css("background-color", "#ecf1ef");
-						} else {
-							sFiveLastShipmentRowColor = [];
-							sFiveLastShipmentRowColor.push("#fffff2");
-							$(nRow).attr("class", "");
-							$(nRow).css("background-color", "#fffff2");
-						}
-					} else {
-						if ($.inArray("#ecf1ef", sFiveLastShipmentRowColor) == -1) {
-							$(nRow).attr("class", "");
-							$(nRow).css("background-color", "#fffff2");
-						}
-						if ($.inArray("#fffff2", sFiveLastShipmentRowColor) == -1) {
-							$(nRow).attr("class", "");
-							$(nRow).css("background-color", "#ecf1ef");
-						}
-					}
-				},
-				"aaSorting": [
-					[0, "desc"]
-				],
-				"bProcessing": true,
-				"bServerSide": true,
-				"sAjaxSource": "<?php echo $this->url(array('module' => 'default', 'controller' => 'participant', 'action' => 'scheme', 'format' => 'html')); ?>",
-				"fnServerData": function(sSource, aoData, fnCallback) {
-					aoData.push({
-						"name": "scheme",
-						"value": "dbs"
-					});
-					$.ajax({
-						"dataType": 'json',
-						"type": "POST",
-						"url": sSource,
-						"data": aoData,
-						"success": fnCallback
-					});
-				}
-			});
-		}
-	<?php } ?>
 	$(document).ready(function() {
 		$('.multipleSelect').multiselect({
 			includeSelectAllOption: true
 		});
-		<?php
-		if (count($activeSchemes) > 0 && in_array('vl', $activeSchemes)) {
-		?>
-			dtsViralLoadSchemes();
-		<?php } ?>
-		<?php
-		if (count($activeSchemes) > 0 && in_array('tb', $activeSchemes)) {
-		?>
-			dtsTuberculosisSchemes();
-		<?php } ?>
-		<?php
-		if (count($activeSchemes) > 0 && in_array('eid', $activeSchemes)) {
-		?>
-			dbsEarlyInfantDiagnosisSchemes();
-		<?php } ?>
-		<?php
-		if (count($activeSchemes) > 0 && in_array('dts', $activeSchemes)) {
-		?>
-			dtsHIVSerologySchemes();
-		<?php } ?>
-		<?php
-		if (!empty($activeSchemes) && in_array('dbs', $activeSchemes)) {
-		?>
-			dbsHIVSerologySchemes();
-		<?php } ?>
-
 		$('#dateRange').daterangepicker({
 				maxDate: moment(),
 				autoApply: true,
@@ -1076,159 +539,9 @@ foreach ($this->participants as $row) {
 	// 	overviewSchemes();
 	// });
 
-	var schemeTable = null;
-	var selectedQc = [];
-
-	function allSchemes() {
-		schemeTable = $('#allSchemeTable').dataTable({
-
-			"bJQueryUI": false,
-			"bAutoWidth": false,
-			"bInfo": true,
-			"bScrollCollapse": true,
-			"sPaginationType": "full_numbers",
-			"bRetrieve": true,
-			// Same columns as participant/all-schemes, which serves this data.
-			// The QC checkbox column only shows for data managers with QC access.
-			"aoColumns": [
-				{ "bSortable": false, "bVisible": <?= ($this->globalQcAccess == 'yes' && ($authNameSpace->qc_access ?? '') == 'yes') ? 'true' : 'false' ?> },
-				{},
-				{},
-				{},
-				{},
-				{ "bSortable": false },
-				{ "bSortable": false }
-			],
-			"aaSorting": [
-				[1, "desc"]
-			],
-			"fnDrawCallback": function() {
-				var checkBoxes = document.getElementsByName("subchk[]");
-				len = checkBoxes.length;
-				for (c = 0; c < len; c++) {
-					if (jQuery.inArray(checkBoxes[c].id, selectedQc) != -1) {
-						checkBoxes[c].setAttribute("checked", true);
-					}
-				}
-
-			},
-			"bProcessing": true,
-			"bServerSide": true,
-			"sAjaxSource": "<?php echo $this->url(array('module' => 'default', 'controller' => 'participant', 'action' => 'all-schemes', 'format' => 'html')); ?>",
-			"fnServerParams": function(aoData) {
-				aoData.push({
-					"name": "qualityChecked",
-					"value": $("#qualityChecked").val()
-				});
-				if ($("#qualityChecked").val() == 'yes') {
-					$("#qcTopButton").show();
-				} else {
-					$("#qcTopButton").hide();
-				}
-			},
-			"fnServerData": function(sSource, aoData, fnCallback) {
-				$.ajax({
-					"dataType": 'json',
-					"type": "POST",
-					"url": sSource,
-					"data": aoData,
-					"success": fnCallback
-				});
-			},
-			"fnRowCallback": function(nRow) {
-				$(nRow).toggleClass('row-submitted', $(nRow).find('.response-submitted').length > 0);
-				return nRow;
-			}
-		});
-	}
-
-
 	$(document).ready(function() {
-		allSchemes();
 		participantChartContainer('', '');
 	});
-
-
-
-	function removeSchemes(schemeType, mid, userConfiguration = 'no') {
-		if (window.confirm("<?= $this->jsTranslate("Are you sure you want to remove this response?\n This cannot be undone !") ?>")) {
-			$.blockUI();
-			$.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'common', 'action' => 'delete-response')); ?>", {
-					schemeType: schemeType,
-					userConfig: userConfiguration,
-					mid: mid,
-					format: "html"
-				},
-				function(data) {
-					alert("<?= $this->jsTranslate("Response removed successfully") ?>");
-					schemeTable.fnDraw();
-					$.unblockUI();
-				});
-		}
-
-	}
-
-	function addQc(mapId, obj) {
-		if (obj.checked == true) {
-			if ($.inArray(mapId, selectedQc) == -1) {
-				selectedQc.push(mapId);
-			}
-		} else {
-			selectedQc.remove(mapId);
-		}
-		$("#participantMapId").val(selectedQc);
-		$("#qcCount").text(selectedQc.length);
-
-	}
-
-	function addSingleQc(mapId, qcDate) {
-		//$("#qcDate").val(qcDate);
-		if ($.inArray(mapId, selectedQc) == -1) {
-			selectedQc.push(mapId);
-			$("#participantMapId").val(selectedQc);
-		}
-		showQcForm();
-	}
-
-	function showQcForm() {
-		showdefModal("migrateBox", 600, 400);
-		$("#qcDate").datepicker({
-			dateFormat: '<?php echo $dtFormat; ?>'
-		});
-	}
-
-	function submitQcForm() {
-		participantMapId = $("#participantMapId").val();
-		qcDate = $("#qcDate").val();
-		if (participantMapId != "" && qcDate != "") {
-			$.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'participant', 'action' => 'add-qc')); ?>", {
-					mapId: participantMapId,
-					qcDate: qcDate,
-					format: "html"
-				},
-				function(data) {
-					if (data > 0) {
-						schemeTable.fnDraw();
-						$("#countChecksPending").text("0");
-						selectedQc = '';
-						alert("<?= $this->jsTranslate("Qc details added successfully") ?>");
-						hidedefModal();
-					}
-				});
-
-		} else {
-			alert("<?= $this->jsTranslate("Please select the date") ?>");
-		}
-
-	}
-
-	function checkQcStatus() {
-		if (selectedQc.length == 0) {
-			alert("<?= $this->jsTranslate("Please select at least one shipment to proceed with QC") ?>");
-		} else {
-			showQcForm();
-		}
-	}
 
 	function participantChartContainer(val, obj) {
 		if (val == "search") {
@@ -1386,21 +699,6 @@ foreach ($this->participants as $row) {
 			$(obj).html('Hide/Filters');
 		} else {
 			$(obj).html('Show/Filters');
-		}
-	}
-
-	function updateReportDownloadDateTime(id, type) {
-		if (id != "") {
-			// $.blockUI();
-			$.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'common', 'action' => 'update-report-download-datetime'), 'default', true); ?>", {
-					id: id,
-					type: type,
-					format: "html"
-				},
-				function(data) {
-					$.unblockUI();
-				}
-			);
 		}
 	}
 </script>
