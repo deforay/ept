@@ -53,6 +53,25 @@ class Application_Service_Common
         return $dmId;
     }
 
+    /**
+     * Limits a participant-only query to the labs of the data manager in session.
+     * With no data manager in session, the query returns no rows.
+     *
+     * Use this only where admin pages never run the query. Queries shared with
+     * admin pages use getScopedDmId(), where no data manager means every lab.
+     */
+    public static function scopeToSessionDataManager(Zend_Db_Select $select, string $participantColumn = 'p.participant_id'): Zend_Db_Select
+    {
+        $authNameSpace = new Zend_Session_Namespace('datamanagers');
+        $dmId = (int) ($authNameSpace->dm_id ?? 0);
+        if ($dmId <= 0) {
+            return $select->where('1 = 0');
+        }
+
+        return $select->join(['pmm' => 'participant_manager_map'], "pmm.participant_id = $participantColumn", [])
+            ->where('pmm.dm_id = ?', $dmId);
+    }
+
     public static function isDateValid($date): bool
     {
         $date = trim($date ?? '');
