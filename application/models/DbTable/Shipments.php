@@ -257,8 +257,18 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
          * you want to insert a non-database field (for example a counter or static image)
          */
 
-        $aColumns = ['DATE_FORMAT(shipment_date,"%d-%b-%Y")', 'scheme_name', 'shipment_code', 'distribution_code', 'unique_identifier', new Zend_Db_Expr(Application_Model_DbTable_Participants::participantNameExpr('p')), 'p.institute_name', 'DATE_FORMAT(response_deadline,"%d-%b-%Y %H:%i")', 'DATE_FORMAT(spm.shipment_test_report_date,"%d-%b-%Y")'];
-        $orderColumns = ['shipment_date', 'scheme_name', 'shipment_code', 'distribution_code', 'unique_identifier', 'first_name', 'p.institute_name', 'response_deadline', 'spm.shipment_test_report_date'];
+        // Six grid columns. Shipment and Participant each bundle several fields, so
+        // their search expression is CONCAT_WS over all of them: one box finds a
+        // shipment by code, survey code or date, a participant by ID, name or institute.
+        $participantName = Application_Model_DbTable_Participants::participantNameExpr('p');
+        $aColumns = [
+            new Zend_Db_Expr('CONCAT_WS(" ", s.shipment_code, d.distribution_code, DATE_FORMAT(s.shipment_date,"%d-%b-%Y"))'),
+            'scheme_name',
+            new Zend_Db_Expr("CONCAT_WS(' ', p.unique_identifier, $participantName, p.institute_name)"),
+            'DATE_FORMAT(response_deadline,"%d-%b-%Y %H:%i")',
+            'DATE_FORMAT(spm.shipment_test_report_date,"%d-%b-%Y")',
+        ];
+        $orderColumns = ['shipment_date', 'scheme_name', 'first_name', 'response_deadline', 'spm.shipment_test_report_date'];
 
         $sLimit = '';
         if (isset($parameters['iDisplayStart']) && $parameters['iDisplayLength'] != '-1') {
@@ -391,17 +401,11 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             $download = '';
             $isEditable = $shipmentParticipantDb->isShipmentEditable($aRow['shipment_id'], $aRow['participant_id']);
             $row = [];
-            $row[] = Pt_Commons_DateUtility::humanReadableDateFormat($aRow['shipment_date']);
-            $row[] = ($aRow['panelName'] ?? $aRow['scheme_name']);
-            $row[] = $aRow['shipment_code'];
-            $row[] = $aRow['distribution_code'];
-            $row[] = $aRow['unique_identifier'];
-            $row[] = $aRow['first_name'] . ' ' . $aRow['last_name'];
-            $row[] = $aRow['institute_name'];
+            $row[] = $this->shipmentCell($aRow);
+            $row[] = htmlspecialchars((string) ($aRow['panelName'] ?? $aRow['scheme_name']));
+            $row[] = $this->participantCell($aRow);
             $row[] = Pt_Commons_DateUtility::humanReadableDateFormat($aRow['response_deadline'], true);
-            // Response Date shows the time of day too (responseDateForDisplay appends it
-            // only when the stored value actually carries one - legacy rows stay date-only).
-            $row[] = (string) Pt_Commons_DateUtility::responseDateForDisplay($aRow['RESPONSEDATETIME']);
+            $row[] = $this->responseStatusCell($aRow, $isEditable);
 
             $buttonText = Pt_Commons_TranslateUtility::htmlTranslate('View/Edit');
             $buttonType = 'btn-primary';
@@ -444,6 +448,69 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         }
 
         echo json_encode($output);
+    }
+
+    /** Shipment cell: code in bold, survey code only when it differs, shipped date. */
+    private function shipmentCell(array $aRow): string
+    {
+        $html = '<strong>' . htmlspecialchars((string) $aRow['shipment_code']) . '</strong>';
+        if (!empty($aRow['distribution_code']) && $aRow['distribution_code'] !== $aRow['shipment_code']) {
+            $html .= '<br><small class="text-muted">' . Pt_Commons_TranslateUtility::htmlTranslate('PT Survey')
+                . ': ' . htmlspecialchars((string) $aRow['distribution_code']) . '</small>';
+        }
+        $html .= '<br><small class="text-muted">' . Pt_Commons_TranslateUtility::htmlTranslate('Shipped') . ' '
+            . htmlspecialchars((string) Pt_Commons_DateUtility::humanReadableDateFormat($aRow['shipment_date'])) . '</small>';
+
+        return $html;
+    }
+
+    /** Participant cell: name in bold, then Lab ID and institute. */
+    private function participantCell(array $aRow): string
+    {
+        $html = '<strong>' . htmlspecialchars(trim($aRow['first_name'] . ' ' . $aRow['last_name'])) . '</strong>'
+            . '<br><small class="text-muted">' . Pt_Commons_TranslateUtility::htmlTranslate('ID') . ' '
+            . htmlspecialchars((string) $aRow['unique_identifier']) . '</small>';
+        if (!empty($aRow['institute_name'])) {
+            $html .= '<br><small class="text-muted">' . htmlspecialchars((string) $aRow['institute_name']) . '</small>';
+        }
+
+        return $html;
+    }
+
+    /**
+     * "Your Response" cell on the participant Report PT Data grid. It states in
+     * words whether the lab has sent its result, so nobody has to infer it from
+     * an empty date or a button colour. The submitted wrapper also lets the page
+     * tint the whole row.
+     */
+    private function responseStatusCell(array $aRow, bool $isEditable): string
+    {
+        $t = Pt_Commons_TranslateUtility::class;
+        $hasDate = !empty($aRow['RESPONSEDATE']) && $aRow['RESPONSEDATE'] !== '0000-00-00';
+
+        if ($aRow['response_status'] === 'draft') {
+            return '<span class="label label-warning response-badge"><i class="icon-pencil"></i> '
+                . $t::htmlTranslate('Draft, not submitted') . '</span>';
+        }
+
+        if (!$hasDate) {
+            // Still open: red, because the lab must act. Closed: grey, nothing left to do.
+            $class = $isEditable ? 'label-danger' : 'label-default';
+            return '<span class="label ' . $class . ' response-badge"><i class="icon-time"></i> '
+                . $t::htmlTranslate('Not submitted') . '</span>';
+        }
+
+        $html = '<span class="response-submitted"><span class="label label-success response-badge"><i class="icon-ok"></i> '
+            . $t::htmlTranslate('Submitted') . '</span>';
+        if ($aRow['response_status'] === 'nottested') {
+            $html .= '<br><small>' . $t::htmlTranslate('Could not test') . '</small>';
+        }
+        // responseDateForDisplay appends the time only when the stored value carries one.
+        $html .= '<br><small class="text-muted">'
+            . htmlspecialchars((string) Pt_Commons_DateUtility::responseDateForDisplay($aRow['RESPONSEDATETIME']))
+            . '</small></span>';
+
+        return $html;
     }
 
     public function getDefaultedShipments($parameters)
