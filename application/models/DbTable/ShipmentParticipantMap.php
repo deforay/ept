@@ -366,6 +366,9 @@ class Application_Model_DbTable_ShipmentParticipantMap extends Zend_Db_Table_Abs
         if (!empty($authNameSpace->dm_id)) {
             $query = $query->joinLeft(['pmm' => 'participant_manager_map'], 'pmm.participant_id=p.participant_id', [])
                 ->where('pmm.dm_id = ?', $authNameSpace->dm_id);
+        } else {
+            // Participant-only query. No data manager in session means no scope, so return no rows.
+            $query->where('1 = 0');
         }
         $rows = $this->getAdapter()->fetchAll($query);
 

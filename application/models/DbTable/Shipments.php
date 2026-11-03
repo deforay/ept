@@ -210,6 +210,9 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             $sQuery = $sQuery
                 ->joinLeft(['pmm' => 'participant_manager_map'], 'pmm.participant_id=p.participant_id', [])
                 ->where('pmm.dm_id = ?', $authNameSpace->dm_id);
+        } else {
+            // Participant-only query. No data manager in session means no scope, so return no rows.
+            $sQuery = $sQuery->where('1 = 0');
         }
         if (isset($sWhere) && $sWhere != '') {
             $sQuery = $sQuery->where($sWhere);
@@ -344,6 +347,9 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             $sQuery = $sQuery
                 ->joinLeft(['pmm' => 'participant_manager_map'], 'pmm.participant_id=p.participant_id', [])
                 ->where('pmm.dm_id = ?', $authNameSpace->dm_id);
+        } else {
+            // Participant-only query. No data manager in session means no scope, so return no rows.
+            $sQuery = $sQuery->where('1 = 0');
         }
 
         if (isset($parameters['currentType'])) {
@@ -698,6 +704,9 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             $sQuery = $sQuery
                 ->joinLeft(['pmm' => 'participant_manager_map'], 'pmm.participant_id=p.participant_id', [])
                 ->where('pmm.dm_id = ?', $authNameSpace->dm_id);
+        } else {
+            // Participant-only query. No data manager in session means no scope, so return no rows.
+            $sQuery = $sQuery->where('1 = 0');
         }
         if (isset($sWhere) && $sWhere != '') {
             $sQuery = $sQuery->where($sWhere);
@@ -867,6 +876,9 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         if (!empty($authNameSpace->dm_id)) {
             $sQuery = $sQuery->joinLeft(['pmm' => 'participant_manager_map'], 'pmm.participant_id=p.participant_id', [])
                 ->where('pmm.dm_id = ?', $authNameSpace->dm_id);
+        } else {
+            // Participant-only query. No data manager in session means no scope, so return no rows.
+            $sQuery = $sQuery->where('1 = 0');
         }
         if (isset($sWhere) && $sWhere != '') {
             $sQuery = $sQuery->where($sWhere);
@@ -1110,6 +1122,9 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             $sQuery = $sQuery
                 ->joinLeft(['pmm' => 'participant_manager_map'], 'pmm.participant_id=p.participant_id', [])
                 ->where('pmm.dm_id = ?', $authNameSpace->dm_id);
+        } else {
+            // Participant-only query. No data manager in session means no scope, so return no rows.
+            $sQuery = $sQuery->where('1 = 0');
         }
         if (isset($sWhere) && $sWhere != '') {
             $sQuery = $sQuery->where($sWhere);
@@ -1342,6 +1357,9 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             $sQuery = $sQuery
                 ->join(['pmm' => 'participant_manager_map'], 'pmm.participant_id=p.participant_id', [])
                 ->where('pmm.dm_id = ?', $authNameSpace->dm_id);
+        } else {
+            // Participant-only query. No data manager in session means no scope, so return no rows.
+            $sQuery = $sQuery->where('1 = 0');
         }
         if (isset($parameters['scheme']) && $parameters['scheme'] != '') {
             $sQuery = $sQuery->where('s.scheme_type = ?', $parameters['scheme']);
@@ -1656,6 +1674,9 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             $sQuery = $sQuery
                 ->joinLeft(['pmm' => 'participant_manager_map'], 'pmm.participant_id=p.participant_id', [])
                 ->where('pmm.dm_id = ?', $authNameSpace->dm_id);
+        } else {
+            // Participant-only query. No data manager in session means no scope, so return no rows.
+            $sQuery = $sQuery->where('1 = 0');
         }
         if (isset($parameters['scheme']) && $parameters['scheme'] != '') {
             $sQuery = $sQuery->where('s.scheme_type = ?', $parameters['scheme']);
@@ -1822,6 +1843,9 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             $sQuery = $sQuery
                 ->join(['pmm' => 'participant_manager_map'], 'pmm.participant_id=p.participant_id', [])
                 ->where('pmm.dm_id = ?', $authNameSpace->dm_id);
+        } else {
+            // Participant-only query. No data manager in session means no scope, so return no rows.
+            $sQuery = $sQuery->where('1 = 0');
         }
 
         if (isset($parameters['scheme']) && $parameters['scheme'] != '') {
@@ -2301,6 +2325,9 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             $sQuery = $sQuery
                 ->joinLeft(['pmm' => 'participant_manager_map'], 'pmm.participant_id=p.participant_id', [])
                 ->where('pmm.dm_id = ?', $authNameSpace->dm_id);
+        } else {
+            // Participant-only query. No data manager in session means no scope, so return no rows.
+            $sQuery = $sQuery->where('1 = 0');
         }
         if (isset($sWhere) && $sWhere != '') {
             $sQuery = $sQuery->where($sWhere);
@@ -5491,6 +5518,9 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             $sQuery = $sQuery
                 ->joinLeft(['pmm' => 'participant_manager_map'], 'pmm.participant_id=p.participant_id', [])
                 ->where('pmm.dm_id = ?', $authNameSpace->dm_id);
+        } else {
+            // Participant-only query. No data manager in session means no scope, so return no rows.
+            $sQuery = $sQuery->where('1 = 0');
         }
 
         if (isset($parameters['currentType'])) {
