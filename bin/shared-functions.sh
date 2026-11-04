@@ -1540,10 +1540,10 @@ install_npm_packages() {
     fi
 
     print info "Installing npm packages in ${app_path}..."
-    # Lifecycle scripts stay off for the dependency tree; only skia-canvas needs
-    # its install script (it fetches the prebuilt native binary).
-    sudo -u www-data sh -c "npm ${npm_cmd} --omit=dev --ignore-scripts && npm rebuild skia-canvas" 2>/dev/null \
-        || { npm "${npm_cmd}" --omit=dev --ignore-scripts && npm rebuild skia-canvas; }
+    # Lifecycle scripts stay off. skia-canvas ships its native binary as an
+    # optional npm package, so no install script has to run.
+    sudo -u www-data sh -c "npm ${npm_cmd} --omit=dev --ignore-scripts" 2>/dev/null \
+        || npm "${npm_cmd}" --omit=dev --ignore-scripts
 
     # Record the lockfile checksum so the next upgrade can skip a no-op install.
     if [ -n "${current_sum}" ] && [ -d "node_modules" ]; then

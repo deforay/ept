@@ -13,6 +13,6 @@
   "dependencies": {
     "@sgratzl/chartjs-chart-boxplot": "^4.4.5",
     "chart.js": "^4.4.0",
-    "skia-canvas": "^3.0.8"
+    "skia-canvas": "^4.0.0"
   }
 }
