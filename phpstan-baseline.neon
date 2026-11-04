@@ -109,12 +109,6 @@ parameters:
 			path: application/models/Covid19.php
 
 		-
-			message: '#^Variable \$refResult might not be defined\.$#'
-			identifier: variable.undefined
-			count: 1
-			path: application/models/Covid19.php
-
-		-
 			message: '#^Variable \$shipmentCode might not be defined\.$#'
 			identifier: variable.undefined
 			count: 1
@@ -1138,12 +1132,6 @@ parameters:
 		-
 			message: '#^Variable \$name in isset\(\) always exists and is not nullable\.$#'
 			identifier: isset.variable
-			count: 1
-			path: application/models/Tb.php
-
-		-
-			message: '#^Variable \$refResult might not be defined\.$#'
-			identifier: variable.undefined
 			count: 1
 			path: application/models/Tb.php
 
