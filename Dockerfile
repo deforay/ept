@@ -59,8 +59,8 @@ COPY . .
 RUN composer install --prefer-dist --no-dev --no-interaction --optimize-autoloader
 
 # Install Node dependencies for chart rendering
-# Lifecycle scripts off except skia-canvas, which fetches its prebuilt native binary
-RUN npm ci --ignore-scripts && npm rebuild skia-canvas
+# Lifecycle scripts stay off. skia-canvas ships its native binary as an optional npm package.
+RUN npm ci --ignore-scripts
 
 # Create required directories
 RUN mkdir -p application/cache logs downloads backups public/temporary public/uploads

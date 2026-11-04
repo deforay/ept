@@ -115,16 +115,16 @@ Source : `package-lock.json`. Les emplacements imbriqués restent distincts lors
 | `node_modules/@kurkle/color` | 0.3.4 | MIT |
 | `node_modules/@sgratzl/boxplots` | 2.0.0 | MIT |
 | `node_modules/@sgratzl/chartjs-chart-boxplot` | 4.4.5 | MIT |
-| `node_modules/agent-base` | 7.1.4 | MIT |
-| `node_modules/chart.js` | 4.5.1 | MIT |
+| `node_modules/@skia-canvas/<platform>` | 4.0.0 | MIT |
+| `node_modules/agent-base` | 9.0.0 | MIT |
+| `node_modules/chart.js` | 4.6.1 | MIT |
 | `node_modules/debug` | 4.4.3 | MIT |
 | `node_modules/detect-libc` | 2.1.2 | Apache-2.0 |
-| `node_modules/follow-redirects` | 1.16.0 | MIT |
-| `node_modules/https-proxy-agent` | 7.0.6 | MIT |
+| `node_modules/follow-redirects` | 1.16.2 | MIT |
+| `node_modules/https-proxy-agent` | 9.1.0 | MIT |
 | `node_modules/ms` | 2.1.3 | MIT |
-| `node_modules/parenthesis` | 3.1.8 | MIT |
-| `node_modules/skia-canvas` | 3.0.8 | MIT |
-| `node_modules/string-split-by` | 1.0.0 | MIT |
+| `node_modules/proxy-agent-negotiate` | 1.1.0 | MIT |
+| `node_modules/skia-canvas` | 4.0.0 | MIT |
 
 ## Limites de l'inventaire
 
