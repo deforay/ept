@@ -477,6 +477,7 @@ class Application_Model_Tb
             $query = $db->select()->from('shipment', ['shipment_id', 'shipment_code', 'scheme_type', 'number_of_samples'])
                 ->where('shipment_id = ?', $shipmentId);
             $result = $db->fetchRow($query);
+            $refResult = [];
 
             if ($result['scheme_type'] == 'tb') {
 

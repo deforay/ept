@@ -472,6 +472,7 @@ class Application_Model_Covid19
         $query = $db->select()->from('shipment', ['shipment_id', 'shipment_code', 'scheme_type', 'number_of_samples'])
             ->where('shipment_id = ?', $shipmentId);
         $result = $db->fetchRow($query);
+        $refResult = [];
 
         if ($result['scheme_type'] == 'covid19') {
 
