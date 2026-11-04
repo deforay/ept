@@ -19,7 +19,7 @@ Source: `composer.lock`. License expressions are reproduced from package metadat
 | Package | Locked version | Declared license | Scope |
 | --- | --- | --- | --- |
 | amitdugar/archiveutil | 2.0.0 | MIT | Runtime |
-| amitdugar/db-tools | 3.3.6 | MIT | Runtime |
+| amitdugar/db-tools | 3.3.7 | MIT | Runtime |
 | composer/pcre | 3.4.0 | MIT | Runtime |
 | crunzphp/crunz | v3.9.4 | MIT | Runtime |
 | dflydev/dot-access-data | v3.0.3 | MIT | Runtime |
