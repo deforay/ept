@@ -19,7 +19,7 @@ Source : `composer.lock`. Les expressions de licence reproduisent les métadonn�
 | Paquet | Version verrouillée | Licence déclarée | Périmètre |
 | --- | --- | --- | --- |
 | amitdugar/archiveutil | 2.0.0 | MIT | Exécution |
-| amitdugar/db-tools | 3.3.6 | MIT | Exécution |
+| amitdugar/db-tools | 3.3.7 | MIT | Exécution |
 | composer/pcre | 3.4.0 | MIT | Exécution |
 | crunzphp/crunz | v3.9.4 | MIT | Exécution |
 | dflydev/dot-access-data | v3.0.3 | MIT | Exécution |
