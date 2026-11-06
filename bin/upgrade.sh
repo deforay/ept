@@ -607,6 +607,12 @@ else
     print success "PHP version is already ${desired_php_version}."
 fi
 
+# switch-php only checks major.minor. Bring the patch release up to the floor.
+if ! ensure_php_min_version; then
+    log_action "PHP is below the minimum supported version. Upgrade aborted."
+    exit 1
+fi
+
 
 # Ensure OPCache is installed and enabled
 ensure_opcache

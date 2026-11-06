@@ -12,7 +12,7 @@
         }
     ],
     "require": {
-        "php": "^8.4",
+        "php": "^8.4.27",
         "amitdugar/db-tools": "^3.3.7",
         "crunzphp/crunz": "^3.9",
         "gregwar/captcha": "^2.1",
@@ -36,8 +36,8 @@
         "sort-packages": true,
         "secure-http": true,
         "platform": {
-            "php": "8.4.1",
-            "php-64bit": "8.4.1"
+            "php": "8.4.27",
+            "php-64bit": "8.4.27"
         }
     },
     "require-dev": {
