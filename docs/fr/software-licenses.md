@@ -55,15 +55,15 @@ Source : `composer.lock`. Les expressions de licence reproduisent les métadonn�
 | setasign/fpdf | 1.9.0 | MIT | Exécution |
 | setasign/fpdi | v2.6.9 | MIT | Exécution |
 | shardj/zf1-future | 1.26.0 | BSD-3-Clause | Exécution |
-| symfony/config | v8.1.5 | MIT | Exécution |
-| symfony/console | v8.1.10 | MIT | Exécution |
-| symfony/dependency-injection | v8.1.9 | MIT | Exécution |
-| symfony/deprecation-contracts | v3.7.1 | MIT | Exécution |
+| symfony/config | v8.1.11 | MIT | Exécution |
+| symfony/console | v8.1.11 | MIT | Exécution |
+| symfony/dependency-injection | v8.1.11 | MIT | Exécution |
+| symfony/deprecation-contracts | v3.8.1 | MIT | Exécution |
 | symfony/event-dispatcher | v8.1.5 | MIT | Exécution |
-| symfony/event-dispatcher-contracts | v3.7.1 | MIT | Exécution |
-| symfony/filesystem | v8.1.9 | MIT | Exécution |
-| symfony/finder | v8.1.8 | MIT | Exécution |
-| symfony/lock | v8.1.9 | MIT | Exécution |
+| symfony/event-dispatcher-contracts | v3.8.1 | MIT | Exécution |
+| symfony/filesystem | v8.1.11 | MIT | Exécution |
+| symfony/finder | v8.1.11 | MIT | Exécution |
+| symfony/lock | v8.1.11 | MIT | Exécution |
 | symfony/mailer | v8.1.10 | MIT | Exécution |
 | symfony/mime | v8.1.10 | MIT | Exécution |
 | symfony/polyfill-ctype | v1.37.0 | MIT | Exécution |
@@ -79,11 +79,11 @@ Source : `composer.lock`. Les expressions de licence reproduisent les métadonn�
 | symfony/polyfill-php85 | v1.43.0 | MIT | Exécution |
 | symfony/polyfill-uuid | v1.43.0 | MIT | Exécution |
 | symfony/process | v8.1.10 | MIT | Exécution |
-| symfony/service-contracts | v3.7.3 | MIT | Exécution |
+| symfony/service-contracts | v3.8.1 | MIT | Exécution |
 | symfony/string | v8.1.10 | MIT | Exécution |
 | symfony/uid | v8.1.9 | MIT | Exécution |
-| symfony/var-exporter | v8.1.9 | MIT | Exécution |
-| symfony/yaml | v8.1.9 | MIT | Exécution |
+| symfony/var-exporter | v8.1.10 | MIT | Exécution |
+| symfony/yaml | v8.1.11 | MIT | Exécution |
 | tecnickcom/tcpdf | 6.11.4 | LGPL-3.0-or-later | Exécution |
 | clue/ndjson-react | v1.3.0 | MIT | Développement |
 | composer/semver | 3.5.2 | MIT | Développement |
@@ -102,7 +102,7 @@ Source : `composer.lock`. Les expressions de licence reproduisent les métadonn�
 | react/socket | v1.17.0 | MIT | Développement |
 | react/stream | v1.4.0 | MIT | Développement |
 | sebastian/diff | 9.0.1 | BSD-3-Clause | Développement |
-| symfony/options-resolver | v8.1.0 | MIT | Développement |
+| symfony/options-resolver | v8.1.10 | MIT | Développement |
 | symfony/polyfill-php84 | v1.43.0 | MIT | Développement |
 | symfony/stopwatch | v8.1.0 | MIT | Développement |
 
