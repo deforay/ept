@@ -23,7 +23,7 @@ Read [About ePT](https://deforay.github.io/ept/about-ept/) for the longer versio
 
 ### Ubuntu server
 
-For a server that runs real PT rounds. Requires Ubuntu 22.04 LTS or later, and 24.04 LTS is preferred. The script installs Apache, PHP 8.4, MySQL 8, and Node.js, sets up the cron scheduler, and can issue a Let's Encrypt certificate if the machine has a public domain.
+For a server that runs real PT rounds. Requires Ubuntu 22.04 LTS or later, and 24.04 LTS is preferred. The script installs Apache, PHP 8.4 (8.4.27 or later), MySQL 8, and Node.js, sets up the cron scheduler, and can issue a Let's Encrypt certificate if the machine has a public domain.
 
 ```bash
 cd ~

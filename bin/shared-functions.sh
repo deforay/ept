@@ -1124,6 +1124,61 @@ ensure_switch_php() {
 }
 
 
+# Lowest PHP release ePT accepts. 8.4.27 fixes PHP2Shell
+# (CVE-2026-109618, CVE-2026-109619). Keep in step with "php" in composer.json.
+EPT_MIN_PHP_VERSION="8.4.27"
+
+# Upgrade the installed PHP packages in place when the running PHP is older
+# than EPT_MIN_PHP_VERSION. switch-php only checks major.minor, so a box on
+# 8.4.x below the floor otherwise stays there.
+# Usage: ensure_php_min_version [min_version]
+ensure_php_min_version() {
+    local min="${1:-$EPT_MIN_PHP_VERSION}"
+    local branch="${min%.*}"
+    local current pkgs
+
+    current="$(php -r 'echo PHP_VERSION;' 2>/dev/null)"
+    if [ -n "$current" ] && dpkg --compare-versions "$current" ge "$min"; then
+        print success "PHP ${current} meets the minimum ${min}."
+        return 0
+    fi
+
+    print info "PHP ${current:-unknown} is below ${min}. Upgrading the PHP ${branch} packages..."
+    log_action "Upgrading PHP ${current:-unknown} to at least ${min}"
+
+    pkgs="$(dpkg-query -W -f='${Package} ${Status}\n' "php${branch}*" "libapache2-mod-php${branch}" 2>/dev/null \
+        | awk '/ install ok installed$/ {print $1}')"
+    if [ -z "$pkgs" ]; then
+        print error "No PHP ${branch} packages are installed, so there is nothing to upgrade."
+        return 1
+    fi
+
+    apt-get update -y
+    # shellcheck disable=SC2086
+    DEBIAN_FRONTEND=noninteractive apt-get install -y --only-upgrade $pkgs || {
+        print error "apt-get could not upgrade the PHP ${branch} packages."
+        return 1
+    }
+
+    current="$(php -r 'echo PHP_VERSION;' 2>/dev/null)"
+    if ! dpkg --compare-versions "${current:-0}" ge "$min"; then
+        print error "PHP is still ${current:-unknown} after the upgrade. ePT needs ${min} or later."
+        print error "Check that the ppa:ondrej/php repository is enabled, then run this script again."
+        log_action "PHP upgrade stopped at ${current:-unknown}, below ${min}"
+        return 1
+    fi
+
+    # mod_php and PHP-FPM keep the old binary loaded until they restart.
+    restart_service apache || true
+    if systemctl is-active --quiet "php${branch}-fpm" 2>/dev/null; then
+        systemctl restart "php${branch}-fpm" || true
+    fi
+
+    print success "PHP upgraded to ${current}."
+    log_action "PHP upgraded to ${current}"
+}
+
+
 ensure_composer() {
     ensure_path
 

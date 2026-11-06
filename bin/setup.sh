@@ -364,6 +364,11 @@ chmod u+x ./lamp-setup.sh
 ./lamp-setup.sh $PHP_VERSION
 rm -f ./lamp-setup.sh
 
+if ! ensure_php_min_version; then
+    log_action "PHP is below the minimum supported version. Setup aborted."
+    exit 1
+fi
+
 # Configure PHP INI settings (session timeout, opcache, security, etc.)
 configure_php_ini "${PHP_VERSION}"
 
