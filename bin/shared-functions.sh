@@ -1125,7 +1125,8 @@ ensure_switch_php() {
 
 
 # Lowest PHP release ePT accepts. 8.4.27 fixes PHP2Shell
-# (CVE-2026-109618, CVE-2026-109619). Keep in step with "php" in composer.json.
+# (CVE-2026-109618, CVE-2026-109619). Keep in step with "php" in composer.json
+# and the 8.5 PHP_VERSION_ID check in constants.php.
 EPT_MIN_PHP_VERSION="8.4.27"
 
 # Upgrade the installed PHP packages in place when the running PHP is older
