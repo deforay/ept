@@ -12,7 +12,7 @@
         }
     ],
     "require": {
-        "php": "^8.4.27",
+        "php": "~8.4.27 || ^8.5.12",
         "amitdugar/db-tools": "^3.3.7",
         "crunzphp/crunz": "^3.9",
         "gregwar/captcha": "^2.1",
