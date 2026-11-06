@@ -55,15 +55,15 @@ Source: `composer.lock`. License expressions are reproduced from package metadat
 | setasign/fpdf | 1.9.0 | MIT | Runtime |
 | setasign/fpdi | v2.6.9 | MIT | Runtime |
 | shardj/zf1-future | 1.26.0 | BSD-3-Clause | Runtime |
-| symfony/config | v8.1.5 | MIT | Runtime |
-| symfony/console | v8.1.10 | MIT | Runtime |
-| symfony/dependency-injection | v8.1.9 | MIT | Runtime |
-| symfony/deprecation-contracts | v3.7.1 | MIT | Runtime |
+| symfony/config | v8.1.11 | MIT | Runtime |
+| symfony/console | v8.1.11 | MIT | Runtime |
+| symfony/dependency-injection | v8.1.11 | MIT | Runtime |
+| symfony/deprecation-contracts | v3.8.1 | MIT | Runtime |
 | symfony/event-dispatcher | v8.1.5 | MIT | Runtime |
-| symfony/event-dispatcher-contracts | v3.7.1 | MIT | Runtime |
-| symfony/filesystem | v8.1.9 | MIT | Runtime |
-| symfony/finder | v8.1.8 | MIT | Runtime |
-| symfony/lock | v8.1.9 | MIT | Runtime |
+| symfony/event-dispatcher-contracts | v3.8.1 | MIT | Runtime |
+| symfony/filesystem | v8.1.11 | MIT | Runtime |
+| symfony/finder | v8.1.11 | MIT | Runtime |
+| symfony/lock | v8.1.11 | MIT | Runtime |
 | symfony/mailer | v8.1.10 | MIT | Runtime |
 | symfony/mime | v8.1.10 | MIT | Runtime |
 | symfony/polyfill-ctype | v1.37.0 | MIT | Runtime |
@@ -79,11 +79,11 @@ Source: `composer.lock`. License expressions are reproduced from package metadat
 | symfony/polyfill-php85 | v1.43.0 | MIT | Runtime |
 | symfony/polyfill-uuid | v1.43.0 | MIT | Runtime |
 | symfony/process | v8.1.10 | MIT | Runtime |
-| symfony/service-contracts | v3.7.3 | MIT | Runtime |
+| symfony/service-contracts | v3.8.1 | MIT | Runtime |
 | symfony/string | v8.1.10 | MIT | Runtime |
 | symfony/uid | v8.1.9 | MIT | Runtime |
-| symfony/var-exporter | v8.1.9 | MIT | Runtime |
-| symfony/yaml | v8.1.9 | MIT | Runtime |
+| symfony/var-exporter | v8.1.10 | MIT | Runtime |
+| symfony/yaml | v8.1.11 | MIT | Runtime |
 | tecnickcom/tcpdf | 6.11.4 | LGPL-3.0-or-later | Runtime |
 | clue/ndjson-react | v1.3.0 | MIT | Development |
 | composer/semver | 3.5.2 | MIT | Development |
@@ -102,7 +102,7 @@ Source: `composer.lock`. License expressions are reproduced from package metadat
 | react/socket | v1.17.0 | MIT | Development |
 | react/stream | v1.4.0 | MIT | Development |
 | sebastian/diff | 9.0.1 | BSD-3-Clause | Development |
-| symfony/options-resolver | v8.1.0 | MIT | Development |
+| symfony/options-resolver | v8.1.10 | MIT | Development |
 | symfony/polyfill-php84 | v1.43.0 | MIT | Development |
 | symfony/stopwatch | v8.1.0 | MIT | Development |
 
