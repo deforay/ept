@@ -1296,6 +1296,8 @@ configure_php_ini() {
     local desired_sid_length="session.sid_length = 48"
     local desired_sid_bits="session.sid_bits_per_character = 6"
     local desired_gc_maxlifetime="session.gc_maxlifetime = 28800"
+    # Blocks the PHP2Shell bypass vector reported on 2026-10-23. ePT does not use upload progress.
+    local desired_upload_progress="session.upload_progress.enabled = 0"
     local desired_expose_php="expose_php = Off"
     local desired_opcache_enable="opcache.enable=1"
     local desired_opcache_enable_cli="opcache.enable_cli=0"
@@ -1318,7 +1320,7 @@ configure_php_ini() {
         print info "Checking PHP settings in $ini_file..."
 
         # Check which settings are already correctly set
-        local er_set de_set le_set pms_set umf_set miv_set mit_set met_set ml_set auto_start_set sm_set sid_len_set sid_bits_set gc_maxlifetime_set expose_set
+        local er_set de_set le_set pms_set umf_set miv_set mit_set met_set ml_set auto_start_set sm_set sid_len_set sid_bits_set gc_maxlifetime_set upload_progress_set expose_set
         local opcache_enable_set opcache_enable_cli_set opcache_memory_set opcache_max_files_set
         local opcache_validate_set opcache_save_comments_set opcache_jit_set opcache_interned_set opcache_override_set
 
@@ -1336,6 +1338,7 @@ configure_php_ini() {
         sid_len_set=$(grep -q "^${desired_sid_length}$" "$ini_file" && echo true || echo false)
         sid_bits_set=$(grep -q "^${desired_sid_bits}$" "$ini_file" && echo true || echo false)
         gc_maxlifetime_set=$(grep -q "^${desired_gc_maxlifetime}$" "$ini_file" && echo true || echo false)
+        upload_progress_set=$(grep -q "^${desired_upload_progress}$" "$ini_file" && echo true || echo false)
         expose_set=$(grep -q "^${desired_expose_php}$" "$ini_file" && echo true || echo false)
         opcache_enable_set=$(grep -q "^${desired_opcache_enable}$" "$ini_file" && echo true || echo false)
         opcache_enable_cli_set=$(grep -q "^${desired_opcache_enable_cli}$" "$ini_file" && echo true || echo false)
@@ -1351,7 +1354,7 @@ configure_php_ini() {
         if [ "$er_set" = false ] || [ "$de_set" = false ] || [ "$le_set" = false ] || [ "$pms_set" = false ] || [ "$umf_set" = false ] \
             || [ "$miv_set" = false ] || [ "$mit_set" = false ] || [ "$met_set" = false ] || [ "$ml_set" = false ] \
             || [ "$auto_start_set" = false ] || [ "$sm_set" = false ] || [ "$sid_len_set" = false ] || [ "$sid_bits_set" = false ] || [ "$gc_maxlifetime_set" = false ] \
-            || [ "$expose_set" = false ] \
+            || [ "$upload_progress_set" = false ] || [ "$expose_set" = false ] \
             || [ "$opcache_enable_set" = false ] || [ "$opcache_enable_cli_set" = false ] || [ "$opcache_memory_set" = false ] \
             || [ "$opcache_max_files_set" = false ] || [ "$opcache_validate_set" = false ] || [ "$opcache_save_comments_set" = false ] || [ "$opcache_jit_set" = false ] \
             || [ "$opcache_interned_set" = false ] || [ "$opcache_override_set" = false ]; then
@@ -1394,6 +1397,8 @@ configure_php_ini() {
                     echo ";$line" >>"$temp_file"; echo "$desired_sid_bits" >>"$temp_file"; sid_bits_set=true
                 elif [[ "$line" =~ ^[[:space:]]*session\.gc_maxlifetime[[:space:]]*= ]] && [ "$gc_maxlifetime_set" = false ]; then
                     echo ";$line" >>"$temp_file"; echo "$desired_gc_maxlifetime" >>"$temp_file"; gc_maxlifetime_set=true
+                elif [[ "$line" =~ ^[[:space:]]*session\.upload_progress\.enabled[[:space:]]*= ]] && [ "$upload_progress_set" = false ]; then
+                    echo ";$line" >>"$temp_file"; echo "$desired_upload_progress" >>"$temp_file"; upload_progress_set=true
                 elif [[ "$line" =~ ^[[:space:]]*expose_php[[:space:]]*= ]] && [ "$expose_set" = false ]; then
                     echo ";$line" >>"$temp_file"; echo "$desired_expose_php" >>"$temp_file"; expose_set=true
                 elif [[ "$line" =~ ^[[:space:]]*opcache\.enable[[:space:]]*= ]] && [ "$opcache_enable_set" = false ]; then
@@ -1434,6 +1439,7 @@ configure_php_ini() {
             [ "$sid_len_set" = true ] || echo "$desired_sid_length" >>"$temp_file"
             [ "$sid_bits_set" = true ] || echo "$desired_sid_bits" >>"$temp_file"
             [ "$gc_maxlifetime_set" = true ] || echo "$desired_gc_maxlifetime" >>"$temp_file"
+            [ "$upload_progress_set" = true ] || echo "$desired_upload_progress" >>"$temp_file"
             [ "$expose_set" = true ] || echo "$desired_expose_php" >>"$temp_file"
             [ "$opcache_enable_set" = true ] || echo "$desired_opcache_enable" >>"$temp_file"
             [ "$opcache_enable_cli_set" = true ] || echo "$desired_opcache_enable_cli" >>"$temp_file"
