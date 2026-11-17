@@ -229,7 +229,24 @@ class Application_Service_ApiServices
             foreach ($parameters['data'] as $key => $param) {
                 $param = (array) $param;
                 $schemeType = $param['schemeType'];
-                if (!$this->shipmentService->isShipmentEditable($param['shipmentId'], $param['participantId'])) {
+                // The token's data manager must manage this lab
+                if (!(new Application_Model_DbTable_Participants())->checkParticipantAccess($param['participantId'] ?? null, $aResult['dm_id'], 'API')) {
+                    $this->db->rollBack();
+                    return ['status' => 'fail', 'message' => 'You do not have access to this participant'];
+                }
+                // mapId must be this lab's row for this shipment
+                $mapRow = $this->db->fetchRow(
+                    $this->db->select()->from('shipment_participant_map', ['map_id'])
+                        ->where('map_id = ?', $param['mapId'] ?? null)
+                        ->where('shipment_id = ?', $param['shipmentId'] ?? null)
+                        ->where('participant_id = ?', $param['participantId'])
+                );
+                if (empty($mapRow)) {
+                    $this->db->rollBack();
+                    return ['status' => 'fail', 'message' => 'You do not have access to this participant'];
+                }
+                // isShipmentEditable() reads view-only access from the web session, so check the API data manager here
+                if (($aResult['view_only_access'] ?? null) === 'yes' || !$this->shipmentService->isShipmentEditable($param['shipmentId'], $param['participantId'])) {
                     $this->db->rollBack();
                     return ['status' => 'fail', 'message' => 'Responding for this shipment is not allowed at this time. Please contact your PT Provider for any clarifications..'];
                 }
@@ -237,6 +254,7 @@ class Application_Service_ApiServices
 
                 $mandatoryCheckErrors = $this->shipmentService->mandatoryFieldsCheck($param, $mandatoryFields);
                 if (!empty($mandatoryCheckErrors)) {
+                    $this->db->rollBack();
                     return ['status' => 'fail', 'message' => 'Please send the required Fields and sync the shipment data'];
                 }
                 $attributes['sample_rehydration_date'] = Pt_Commons_DateUtility::isoDateFormat($param['sampleRehydrationDate'] ?? '');
@@ -351,7 +369,7 @@ class Application_Service_ApiServices
                             'contact_person_email' => $param['contactPersonEmail'],
                             'contact_person_telephone' => $param['contactPersonTelephone'],
                         ],
-                        'map_id = ' . $param['mapId']
+                        ['map_id = ?' => $param['mapId']]
                     );
                     /* Participant table updation */
                     $dbAdapter->update(
@@ -363,7 +381,7 @@ class Application_Service_ApiServices
                             'contact_person_email' => $param['contactPersonEmail'],
                             'contact_person_telephone' => $param['contactPersonTelephone'],
                         ],
-                        'participant_id = ' . $param['participantId']
+                        ['participant_id = ?' => $param['participantId']]
                     );
                 }
                 $shipmentUpdate = $this->mapDb->updateShipmentByAPIV2($data, $param['dmId'], $param);
