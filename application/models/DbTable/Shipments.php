@@ -4972,8 +4972,23 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
     public function saveShipmentByType($params, $dm)
     {
         /* Save shipments form details */
+        // The data manager must be mapped to this participant
+        if (empty($params['participantId']) || !(new Application_Model_DbTable_Participants())->checkParticipantAccess($params['participantId'], $dm['dm_id'], 'API')) {
+            return false;
+        }
         $schemeService = new Application_Service_Schemes();
         $spMap = new Application_Model_DbTable_ShipmentParticipantMap();
+        // mapId must be the shipment_participant_map row for this shipment and participant
+        $mapRow = $spMap->getAdapter()->fetchOne(
+            $spMap->getAdapter()->select()
+                ->from('shipment_participant_map', ['map_id'])
+                ->where('map_id = ?', $params['mapId'] ?? 0)
+                ->where('shipment_id = ?', $params['shipmentId'] ?? 0)
+                ->where('participant_id = ?', $params['participantId'])
+        );
+        if (empty($mapRow)) {
+            return false;
+        }
         $isEditable = $spMap->isShipmentEditable($params['shipmentId'], $params['participantId']);
         if ($params['schemeType'] == 'dts') {
             $dtsModel = new Application_Model_Dts();
@@ -4991,8 +5006,8 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         if ($params['schemeType'] == 'covid19') {
             $allSamples = $schemeService->getCovid19Samples($params['shipmentId'], $params['participantId']);
         }
-        if (!$isEditable && $dm['view_only_access'] == 'yes') {
-            return ['status' => 'fail', 'message' => 'Responding for this shipment is not allowed at this time. Please contact your PT Provider for any clarifications..'];
+        if (!$isEditable || $dm['view_only_access'] == 'yes') {
+            return false;
         }
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $db->beginTransaction();
@@ -5035,7 +5050,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                     'mode_id' => (isset($params['vlData']->Section2->data->modeOfReceiptSelected) && $params['vlData']->Section2->data->modeOfReceiptSelected != '' && isset($dm['enable_choosing_mode_of_receipt']) && $dm['enable_choosing_mode_of_receipt'] == 'yes') ? $params['vlData']->Section2->data->modeOfReceiptSelected : null,
                     'updated_on_user' => new Zend_Db_Expr('now()'),
                 ];
-                if (isset($params['vlData']->Section2->data->responseStatus) && $params['vlData']->Section2->data->responseStatus = 'deleted') {
+                if (isset($params['vlData']->Section2->data->responseStatus) && $params['vlData']->Section2->data->responseStatus === 'deleted') {
                     $shipmentService = new Application_Service_Shipments();
                     $shipmentService->removeDtsVlResults($params['mapId']);
                 }
@@ -5127,7 +5142,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                     'mode_id' => (isset($params['dtsData']->Section2->data->modeOfReceiptSelected) && $params['dtsData']->Section2->data->modeOfReceiptSelected != '' && isset($dm['enable_choosing_mode_of_receipt']) && $dm['enable_choosing_mode_of_receipt'] == 'yes') ? $params['dtsData']->Section2->data->modeOfReceiptSelected : '',
                     'updated_on_user' => new Zend_Db_Expr('now()'),
                 ];
-                if (isset($params['dtsData']->Section2->data->responseStatus) && $params['dtsData']->Section2->data->responseStatus = 'deleted') {
+                if (isset($params['dtsData']->Section2->data->responseStatus) && $params['dtsData']->Section2->data->responseStatus === 'deleted') {
                     $shipmentService = new Application_Service_Shipments();
                     $shipmentService->removeDtsResults($params['mapId']);
                 }
@@ -5207,7 +5222,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                     'mode_id' => (isset($dm['enable_choosing_mode_of_receipt']) && $dm['enable_choosing_mode_of_receipt'] == 'yes') ? $params['eidData']->Section2->data->modeOfReceiptSelected : '',
                     'updated_on_user' => new Zend_Db_Expr('now()'),
                 ];
-                if (isset($params['eidData']->Section2->data->responseStatus) && $params['eidData']->Section2->data->responseStatus = 'deleted') {
+                if (isset($params['eidData']->Section2->data->responseStatus) && $params['eidData']->Section2->data->responseStatus === 'deleted') {
                     $shipmentService = new Application_Service_Shipments();
                     $shipmentService->removeDtsEidResults($params['mapId']);
                 }
@@ -5301,7 +5316,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 } else {
                     $data['shipment_test_report_date'] = new Zend_Db_Expr('now()');
                 }
-                if (isset($params['recencyData']->Section2->data->responseStatus) && $params['recencyData']->Section2->data->responseStatus = 'deleted') {
+                if (isset($params['recencyData']->Section2->data->responseStatus) && $params['recencyData']->Section2->data->responseStatus === 'deleted') {
                     $shipmentService = new Application_Service_Shipments();
                     $shipmentService->removeRecencyResults($params['mapId']);
                 }
@@ -5362,7 +5377,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                     'updated_on_user' => new Zend_Db_Expr('now()'),
                 ];
 
-                if (isset($params['covid19Data']->Section2->data->responseStatus) && $params['covid19Data']->Section2->data->responseStatus = 'deleted') {
+                if (isset($params['covid19Data']->Section2->data->responseStatus) && $params['covid19Data']->Section2->data->responseStatus === 'deleted') {
                     $shipmentService = new Application_Service_Shipments();
                     $shipmentService->removeCovid19Results($params['mapId']);
                 }

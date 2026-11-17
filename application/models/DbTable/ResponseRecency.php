@@ -48,7 +48,7 @@ class Application_Model_DbTable_ResponseRecency extends Zend_Db_Table_Abstract
         foreach ($sampleIds as $key => $sampleId) {
             $res = $this->fetchRow(['shipment_map_id = ?' => $params['mapId'], 'sample_id = ?' => $sampleId]);
 
-            if ($res == null || count($res) == 0) {
+            if ($res === null) {
                 $this->insert([
                     'shipment_map_id'   => $params['mapId'],
                     'sample_id'         => $sampleId,
