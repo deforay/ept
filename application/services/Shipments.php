@@ -276,6 +276,23 @@ class Application_Service_Shipments
         return ['responseStatus' => $responseStatus, 'columns' => $columns];
     }
 
+    /**
+     * The web saves check the lock by shipmentId/participantId but write by smid, so the
+     * posted smid must be the map row for that same shipment and participant - otherwise
+     * an open shipment's id could be used to overwrite a finalized response.
+     */
+    private function mapMatchesShipment(array $params): bool
+    {
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        return (bool) $db->fetchOne(
+            $db->select()
+                ->from('shipment_participant_map', ['map_id'])
+                ->where('map_id = ?', (int) ($params['smid'] ?? 0))
+                ->where('shipment_id = ?', (int) ($params['shipmentId'] ?? 0))
+                ->where('participant_id = ?', (int) ($params['participantId'] ?? 0))
+        );
+    }
+
     private function logResponseSave($scheme, $params)
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
@@ -707,6 +724,10 @@ class Application_Service_Shipments
     public function updateEidResults($params)
     {
         $alertMsg = new Zend_Session_Namespace('alertSpace');
+        if (!$this->mapMatchesShipment($params)) {
+            $alertMsg->message = 'You are not allowed to update the response for this participant.';
+            return false;
+        }
         if (!$this->isShipmentEditable($params['shipmentId'], $params['participantId'])
             && !self::isAdminEdit($params)
             && !$this->isWithinLateSubmissionGrace($params['shipmentId'], $params['participantId'])) {
@@ -918,6 +939,10 @@ class Application_Service_Shipments
     public function updateRecencyResults($params)
     {
         $alertMsg = new Zend_Session_Namespace('alertSpace');
+        if (!$this->mapMatchesShipment($params)) {
+            $alertMsg->message = 'You are not allowed to update the response for this participant.';
+            return false;
+        }
         if (!$this->isShipmentEditable($params['shipmentId'], $params['participantId'])
             && !self::isAdminEdit($params)
             && !$this->isWithinLateSubmissionGrace($params['shipmentId'], $params['participantId'])) {
@@ -1061,6 +1086,10 @@ class Application_Service_Shipments
     public function updateDtsResults($params)
     {
         $alertMsg = new Zend_Session_Namespace('alertSpace');
+        if (!$this->mapMatchesShipment($params)) {
+            $alertMsg->message = 'You are not allowed to update the response for this participant.';
+            return false;
+        }
         if (!$this->isShipmentEditable($params['shipmentId'], $params['participantId'])
             && !self::isAdminEdit($params)
             && !$this->isWithinLateSubmissionGrace($params['shipmentId'], $params['participantId'])) {
@@ -1226,6 +1255,10 @@ class Application_Service_Shipments
     public function updateCovid19Results($params)
     {
         $alertMsg = new Zend_Session_Namespace('alertSpace');
+        if (!$this->mapMatchesShipment($params)) {
+            $alertMsg->message = 'You are not allowed to update the response for this participant.';
+            return false;
+        }
         if (!$this->isShipmentEditable($params['shipmentId'], $params['participantId'])
             && !self::isAdminEdit($params)
             && !$this->isWithinLateSubmissionGrace($params['shipmentId'], $params['participantId'])) {
@@ -1759,6 +1792,10 @@ class Application_Service_Shipments
     {
 
         $alertMsg = new Zend_Session_Namespace('alertSpace');
+        if (!$this->mapMatchesShipment($params)) {
+            $alertMsg->message = 'You are not allowed to update the response for this participant.';
+            return false;
+        }
         if (!$this->isShipmentEditable($params['shipmentId'], $params['participantId'])
             && !self::isAdminEdit($params)
             && !$this->isWithinLateSubmissionGrace($params['shipmentId'], $params['participantId'])) {
@@ -1845,6 +1882,10 @@ class Application_Service_Shipments
     public function updateTbResults($params)
     {
         $alertMsg = new Zend_Session_Namespace('alertSpace');
+        if (!$this->mapMatchesShipment($params)) {
+            $alertMsg->message = 'You are not allowed to update the response for this participant.';
+            return false;
+        }
         if (!$this->isShipmentEditable($params['shipmentId'], $params['participantId'])
             && !self::isAdminEdit($params)
             && !$this->isWithinLateSubmissionGrace($params['shipmentId'], $params['participantId'])) {
@@ -1998,6 +2039,10 @@ class Application_Service_Shipments
     public function updateGenericTestResults($params)
     {
         $alertMsg = new Zend_Session_Namespace('alertSpace');
+        if (!$this->mapMatchesShipment($params)) {
+            $alertMsg->message = 'You are not allowed to update the response for this participant.';
+            return false;
+        }
         if (!$this->isShipmentEditable($params['shipmentId'], $params['participantId'])
             && !self::isAdminEdit($params)
             && !$this->isWithinLateSubmissionGrace($params['shipmentId'], $params['participantId'])) {
@@ -2122,6 +2167,10 @@ class Application_Service_Shipments
     public function updateVlResults($params)
     {
         $alertMsg = new Zend_Session_Namespace('alertSpace');
+        if (!$this->mapMatchesShipment($params)) {
+            $alertMsg->message = 'You are not allowed to update the response for this participant.';
+            return false;
+        }
         if (!$this->isShipmentEditable($params['shipmentId'], $params['participantId'])
             && !self::isAdminEdit($params)
             && !$this->isWithinLateSubmissionGrace($params['shipmentId'], $params['participantId'])) {
