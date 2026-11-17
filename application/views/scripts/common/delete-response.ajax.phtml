@@ -1,2 +1,7 @@
 <?php
-echo $this->result;
+// A refused delete prints its message; a successful one prints nothing.
+if (!empty($this->message)) {
+    echo $this->escape(Pt_Commons_TranslateUtility::safeTranslate($this->message));
+} else {
+    echo $this->result;
+}

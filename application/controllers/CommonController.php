@@ -86,6 +86,24 @@ class CommonController extends Zend_Controller_Action
                 $userConfig = $this->_getParam('userConfig');
                 $schemeType = ($this->_getParam('schemeType'));
                 $shipmentService = new Application_Service_Shipments();
+
+                // The grids only hide the Delete button; enforce the same locks here.
+                $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+                $map = $db->fetchRow($db->select()
+                    ->from(['spm' => 'shipment_participant_map'], ['shipment_id', 'participant_id'])
+                    ->join(['s' => 'shipment'], 's.shipment_id = spm.shipment_id', ['allow_editing_response'])
+                    ->where('spm.map_id = ?', $mapId));
+                $dmSession = new Zend_Session_Namespace('datamanagers');
+                if (
+                    empty($map)
+                    || $dmSession->view_only_access === 'yes'
+                    || $map['allow_editing_response'] === 'no'
+                    || !$shipmentService->isShipmentEditable($map['shipment_id'], $map['participant_id'])
+                ) {
+                    $this->view->message = 'Unable to delete. This response can no longer be changed.';
+                    return;
+                }
+
                 if ($schemeType == 'dts') {
                     $this->view->result = $shipmentService->removeDtsResults($mapId);
                 } elseif ($schemeType == 'eid') {
