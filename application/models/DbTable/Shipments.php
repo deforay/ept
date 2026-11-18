@@ -5429,6 +5429,8 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                     return false;
                 }
             }
+            $db->rollBack();
+            return false;
         } catch (Throwable $e) {
             // If any of the queries failed and threw an exception,
             // we want to roll back the whole transaction, reversing

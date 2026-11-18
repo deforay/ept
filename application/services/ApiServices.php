@@ -228,6 +228,8 @@ class Application_Service_ApiServices
             $this->db->beginTransaction();
             foreach ($parameters['data'] as $key => $param) {
                 $param = (array) $param;
+                // Record the token's data manager as the editor, never a dmId sent in the body
+                $param['dmId'] = $aResult['dm_id'];
                 $schemeType = $param['schemeType'];
                 // The token's data manager must manage this lab
                 if (!(new Application_Model_DbTable_Participants())->checkParticipantAccess($param['participantId'] ?? null, $aResult['dm_id'], 'API')) {
@@ -384,7 +386,7 @@ class Application_Service_ApiServices
                         ['participant_id = ?' => $param['participantId']]
                     );
                 }
-                $shipmentUpdate = $this->mapDb->updateShipmentByAPIV2($data, $param['dmId'], $param);
+                $shipmentUpdate = $this->mapDb->updateShipmentByAPIV2($data, $aResult['dm_id'], $param);
                 $resultUpdate = $this->updateResults($param);
                 if ($shipmentUpdate || $resultUpdate) {
                     $response[$key]['status'] = 'success';
