@@ -725,6 +725,7 @@ class ParticipantController extends Zend_Controller_Action
 
     public function editParticipantAction()
     {
+        $partSysId = null;
         $this->_helper->layout()->activeMenu = 'my-account';
         $this->_helper->layout()->activeSubMenu = 'ptcc-participant';
         $participantService = new Application_Service_Participants();

@@ -320,7 +320,7 @@ class Pt_Plugins_PreSetter extends Zend_Controller_Plugin_Abstract
     /**
      * Whether every lab (participant) and shipment-map id in the request belongs to
      * this data manager. `participantId`, `smid` and `mapId` are ids wherever they
-     * appear; `pid` and `mid` only on the pages where they are (elsewhere `pid` is a
+     * appear; `pid`, `mid`, `psid` and `id` only on the pages where they are (elsewhere `pid` is a
      * typed Lab ID, for example). Ids may be plain or base64. A request without these
      * params is allowed; one with them and no data manager ($dmId 0) is not, and
      * neither is the admin-only `from=admin` view.
@@ -351,6 +351,13 @@ class Pt_Plugins_PreSetter extends Zend_Controller_Plugin_Abstract
             || ($controller === 'shipment-form' && $action === 'tb-download')
         ) {
             $participantParams[] = 'pid';
+        }
+        // psid and id are lab ids only on these pages; `id` means other things elsewhere
+        if ($controller === 'participant' && $action === 'testeredit') {
+            $participantParams[] = 'psid';
+        }
+        if ($controller === 'participant' && $action === 'edit-participant') {
+            $participantParams[] = 'id';
         }
         if ($controller === 'common' || ($controller === 'participant' && $action === 'feed-back')) {
             $mapParams[] = 'mid';
