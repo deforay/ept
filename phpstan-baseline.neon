@@ -49,12 +49,6 @@ parameters:
 			path: application/controllers/ParticipantController.php
 
 		-
-			message: '#^Variable \$partSysId might not be defined\.$#'
-			identifier: variable.undefined
-			count: 1
-			path: application/controllers/ParticipantController.php
-
-		-
 			message: '#^Loose comparison using \!\= between true and '''' will always evaluate to true\.$#'
 			identifier: notEqual.alwaysTrue
 			count: 1
