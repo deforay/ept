@@ -353,6 +353,8 @@ _('Response rate, timeliness and pass rate across shipments, with a breakdown by
 _('results');
 // admin/users#tags
 _('roles');
+// admin/dashboard#tags
+_('rounds');
 // admin/reports-vl-sample-analysis#tags, admin/shipment-add#tags, admin/shipment#tags
 _('samples');
 // admin/reports-tb-results#tags
@@ -516,6 +518,6 @@ _('XTPT Indicators & Panel Statistics');
 // participant/dashboard#summary
 _('Your home page: shipments waiting for results, your latest scores, and quick links');
 // admin/dashboard#summary
-_('Your home page — what is happening across PT Surveys and Participants right now');
+_('Your home page: the rounds in progress, what each one needs next, and how labs are taking part');
 // admin/reports-vl-sample-analysis#tags
 _('z-score');
