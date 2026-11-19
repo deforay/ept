@@ -216,6 +216,68 @@ class Application_Model_DbTable_SystemAdmin extends Zend_Db_Table_Abstract
         return $adminId;
     }
 
+    /**
+     * Saves the signed-in admin's own profile. The admin id comes from the session, never
+     * from the request, and only profile fields are written: status, privileges and schemes
+     * stay as they are. A new password needs the current one, checked here on the server.
+     *
+     * @return string '' on success, otherwise the reason it was not saved
+     */
+    public function updateOwnProfile(int $adminId, array $params): string
+    {
+        $row = $this->fetchRow(['admin_id = ?' => $adminId]);
+        if ($row === null) {
+            return 'Profile not updated!';
+        }
+        $primaryEmail = trim((string) ($params['primaryEmail'] ?? ''));
+        if ($primaryEmail === '' || !filter_var($primaryEmail, FILTER_VALIDATE_EMAIL)) {
+            return 'Please enter a valid primary email.';
+        }
+        $data = [
+            'first_name' => trim((string) ($params['firstName'] ?? '')) ?: null,
+            'last_name' => trim((string) ($params['lastName'] ?? '')) ?: null,
+            'primary_email' => $primaryEmail,
+            'secondary_email' => trim((string) ($params['secondaryEmail'] ?? '')) ?: null,
+            'phone' => trim((string) ($params['phone'] ?? '')) ?: null,
+            'updated_by' => $adminId,
+            'updated_on' => new Zend_Db_Expr('now()'),
+        ];
+        $language = trim((string) ($params['language'] ?? ''));
+        if ($language !== '') {
+            $data['language'] = $language;
+        }
+
+        $newPassword = (string) ($params['password'] ?? '');
+        $changes = [];
+        if ($newPassword !== '') {
+            if (!password_verify((string) ($params['oldPassword'] ?? ''), (string) $row['password'])) {
+                return 'Your current password is not correct. Nothing was changed.';
+            }
+            if ($newPassword !== (string) ($params['confirmPassword'] ?? '')) {
+                return 'The new passwords do not match. Nothing was changed.';
+            }
+            $minLength = Application_Service_Common::minimumPasswordLength();
+            if (mb_strlen($newPassword, 'UTF-8') < $minLength) {
+                return "The new password must be at least {$minLength} characters long.";
+            }
+            $data['password'] = Application_Service_Common::passwordHash($newPassword);
+            $changes[] = 'password changed';
+        }
+        if (strcasecmp($primaryEmail, (string) $row['primary_email']) !== 0) {
+            $changes[] = 'primary email changed';
+        }
+
+        $this->update($data, ['admin_id = ?' => $adminId]);
+        if ($language !== '') {
+            $session = new Zend_Session_Namespace('administrators');
+            $session->language = $language;
+        }
+        $name = trim(($data['first_name'] ?? '') . ' ' . ($data['last_name'] ?? '')) ?: $primaryEmail;
+        $detail = empty($changes) ? '' : ' (' . implode(', ', $changes) . ')';
+        (new Application_Model_DbTable_AuditLog())->addNewAuditLog("Updated own profile - {$name}{$detail}", 'admin');
+        return '';
+    }
+
     public function fetchSystemAllAdmin()
     {
         return $this->fetchAll($this->select());

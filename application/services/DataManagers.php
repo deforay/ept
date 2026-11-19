@@ -87,6 +87,31 @@ class Application_Service_DataManagers
         ];
     }
 
+    /**
+     * My Login Information for the signed-in data manager. The record is the one in the
+     * session, never one named in the request, so a forged userSystemId, status or password
+     * field has no effect. The login email changes only through Change Primary Email.
+     */
+    public function updateOwnInfo(array $params): int
+    {
+        $authNameSpace = new Zend_Session_Namespace('datamanagers');
+        $dmId = (int) ($authNameSpace->dm_id ?? 0);
+        if ($dmId <= 0) {
+            return 0;
+        }
+        $language = trim((string) ($params['language'] ?? ''));
+        if ($language !== '') {
+            $authNameSpace->language = $language;
+        }
+        if (($authNameSpace->force_profile_check_primary ?? '') == 'yes') {
+            $own = $this->datamanagersDb->fetchRow(['dm_id = ?' => $dmId]);
+            if ($own !== null) {
+                $this->datamanagersDb->updateForceProfileCheckByEmail(base64_encode((string) $own['primary_email']));
+            }
+        }
+        return $this->datamanagersDb->updateOwnInfo($dmId, $params);
+    }
+
     public function updateUser($params)
     {
         $authNameSpace = new Zend_Session_Namespace('datamanagers');

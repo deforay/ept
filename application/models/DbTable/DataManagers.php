@@ -546,6 +546,28 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         return $this->fetchRow($sql);
     }
 
+    /**
+     * Saves a data manager's own contact details from My Login Information. Only these
+     * fields are written, for the dm_id the caller takes from the session. Login email,
+     * password, status, access options and participant links are never changed here.
+     */
+    public function updateOwnInfo(int $dmId, array $params): int
+    {
+        $data = [
+            'first_name' => trim((string) ($params['fname'] ?? '')) ?: null,
+            'last_name' => trim((string) ($params['lname'] ?? '')) ?: null,
+            'mobile' => trim((string) ($params['phone1'] ?? '')) ?: null,
+            'phone' => trim((string) ($params['phone2'] ?? '')) ?: null,
+            'secondary_email' => trim((string) ($params['semail'] ?? '')) ?: null,
+            'updated_on' => new Zend_Db_Expr('now()'),
+        ];
+        $language = trim((string) ($params['language'] ?? ''));
+        if ($language !== '') {
+            $data['language'] = $language;
+        }
+        return $this->update($data, ['dm_id = ?' => $dmId]);
+    }
+
     public function updateUser($params)
     {
 
