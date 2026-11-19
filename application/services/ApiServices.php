@@ -142,7 +142,7 @@ class Application_Service_ApiServices
         /* End Custom Test References */
         $payload = ['status' => 'success', 'data' => $response];
         $transactionId = $transactionId ?? Pt_Commons_General::generateULID();
-        self::addApiTracking($transactionId, $aResult['dm_id'], count($response), 'save-shipments', 'common', $_SERVER['REQUEST_URI'], $params, $payload, 'json');
+        self::addApiTracking($transactionId, $aResult['dm_id'], count($response), 'get-references', 'common', $_SERVER['REQUEST_URI'], $params, $payload, 'json');
         return $payload;
     }
 
@@ -644,7 +644,7 @@ class Application_Service_ApiServices
             $row[] = strtoupper((string) $aRow['test_type']);
             $row[] = $aRow['api_url'];
             $row[] = Pt_Commons_DateUtility::humanReadableDateFormat($aRow['requested_on'], true);
-            $row[] = '<a href="javascript:void(0);" class="btn btn-success btn-xs" style="margin-right: 2px;" title="Result" onclick="layoutModal(\'/admin/api-history/api-params?id=' . base64_encode((string) $aRow['api_track_id']) . '\',1200,720);"> Show Params</a>';
+            $row[] = '<a href="javascript:void(0);" class="btn btn-success btn-xs" style="margin-right: 2px;" title="' . Pt_Commons_TranslateUtility::htmlTranslate('Result') . '" onclick="layoutModal(\'/admin/api-history/api-params?id=' . base64_encode((string) $aRow['api_track_id']) . '\',1200,720);"> ' . Pt_Commons_TranslateUtility::htmlTranslate('Show Params') . '</a>';
 
             $output['aaData'][] = $row;
         }

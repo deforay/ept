@@ -49,7 +49,7 @@ d'affichage**.
 
 ## Modifier ou masquer un lien
 
-1. Cliquez sur **Edit** dans la ligne du lien.
+1. Cliquez sur **Modifier** dans la ligne du lien.
 2. Modifiez les champs. Pour remplacer un fichier, choisissez-en un
    nouveau. Pour garder le fichier actuel, laissez **Fichier** vide.
 3. Cliquez sur **Mettre à jour**.

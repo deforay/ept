@@ -33,7 +33,8 @@ if (!empty($this->ptcc) && $this->ptcc == 1) {
                                 title="<?= $this->translate->_('Please enter the correct primary email id here'); ?>"
                                 placeholder="<?= $this->htmlTranslate('Please enter the primary email id here'); ?>"
                                 autocomplete="off"
-                                onblur="checkDuplicate('data_manager', 'primary_email', this, null, 'This primary e-mail ID already exists for another PT login. Please try something else.')" />
+                                value="<?php echo $this->escape($this->contact['email'] ?? ''); ?>"
+                                onblur="checkDuplicate('data_manager', 'primary_email', this, null, '<?= $this->jsTranslate('This primary e-mail ID already exists for another PT login. Please try something else.'); ?>')" />
                         </div>
                     </div>
                 </div>
@@ -273,7 +274,14 @@ if (!empty($this->ptcc) && $this->ptcc == 1) {
                     format: "html"
                 },
                 function(data) {
-                    if (data > 0) {
+                    // Converting an existing data manager is offered only when adding a PTCC.
+                    // On the plain Data Manager form an existing email is a duplicate.
+                    if (data > 0 && !<?= $ptccFlag ? 'true' : 'false'; ?>) {
+                        alert("<?= $this->jsTranslate('This primary e-mail ID already exists for another PT login. Please try something else.'); ?>");
+                        $('#dmUserId').focus();
+                        $('#dmUserId').val('');
+                        duplicated = true;
+                    } else if (data > 0) {
                         if (confirm("<?= $this->jsTranslate("This email is already linked to a Data Manager account. Do you want to add this user as a PTCC? If you choose yes, then this data manager will be converted to PTCC and all old Participant mappings will be removed"); ?>")) {
                             $('#respond').append('<input type="hidden" id="userSystemId" name="userSystemId" value="' + data + '" />');
                             $('#addUserForm').attr('action', "/admin/data-managers/edit");

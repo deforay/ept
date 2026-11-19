@@ -32,8 +32,8 @@ class Admin_LogViewerController extends Zend_Controller_Action
         $channel = $this->resolveChannel();
         $this->view->channel  = $channel;
         $this->view->channels = [
-            Pt_Commons_LoggerUtility::APP_CHANNEL    => 'Application Errors',
-            Pt_Commons_LoggerUtility::CLIENT_CHANNEL => 'Client (Browser) Errors',
+            Pt_Commons_LoggerUtility::APP_CHANNEL    => $this->view->translate->_('Application Errors'),
+            Pt_Commons_LoggerUtility::CLIENT_CHANNEL => $this->view->translate->_('Client (Browser) Errors'),
         ];
         $this->view->files  = Pt_Commons_LoggerUtility::listLogFiles($channel);
         $this->view->levels = ['', 'DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'];

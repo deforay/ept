@@ -83,7 +83,6 @@
         <div class="tabContainer">
             <ul class="tabs">
                 <li class="tab-link current" data-tab="tab-mail"><?= $this->translate->_("Mail Template"); ?></li>
-                <li class="tab-link" data-tab="tab-push"><?= $this->translate->_("Push Notification Template"); ?></li>
             </ul>
             <div id="tab-mail" class="tab-content current">
                 <a href="javascript:void(0);" class="accordion"><?= $this->translate->_("New Shipment Mail Template"); ?></a>
@@ -103,19 +102,6 @@
 
                 <a href="javascript:void(0);" class="accordion"><?= $this->translate->_("Announcement Mail Template"); ?></a>
                 <div class="panel" id="announcement"></div>
-            </div>
-            <div id="tab-push" class="tab-content">
-                <a href="javascript:void(0);" class="accordion"><?= $this->translate->_("New Shipment Push Notification"); ?></a>
-                <div class="panel" id="newShipmentPush"></div>
-
-                <a href="javascript:void(0);" class="accordion"><?= $this->translate->_("Not Responded Push Notification"); ?></a>
-                <div class="panel" id="notParticipantPush"></div>
-
-                <a href="javascript:void(0);" class="accordion"><?= $this->translate->_("Report Push Notification"); ?></a>
-                <div class="panel" id="reportPush"></div>
-
-                <a href="javascript:void(0);" class="accordion"><?= $this->translate->_("Announcement Push Notification"); ?></a>
-                <div class="panel" id="announcementPush"></div>
             </div>
         </div>
     </fieldset>
@@ -191,34 +177,5 @@
                 $('#announcement').html(data);
             });
 
-
-        $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'mail-template', 'action' => 'get-push-notification'), 'default', true); ?>", {
-                template: 'new-shipment',
-                format: "html"
-            },
-            function(data) {
-                $('#newShipmentPush').html(data);
-            });
-        $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'mail-template', 'action' => 'get-push-notification'), 'default', true); ?>", {
-                template: 'not-participated',
-                format: "html"
-            },
-            function(data) {
-                $('#notParticipantPush').html(data);
-            });
-        $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'mail-template', 'action' => 'get-push-notification'), 'default', true); ?>", {
-                template: 'report',
-                format: "html"
-            },
-            function(data) {
-                $('#reportPush').html(data);
-            });
-        $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'mail-template', 'action' => 'get-push-notification'), 'default', true); ?>", {
-                template: 'announcement',
-                format: "html"
-            },
-            function(data) {
-                $('#announcementPush').html(data);
-            });
     });
 </script>

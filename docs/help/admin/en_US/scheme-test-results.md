@@ -65,8 +65,9 @@ including the test results.
 
 ## Locked results
 
-A lock icon in the **Action** column marks a locked row. All its
-fields are greyed out, and it has no remove button. Hover over the
+A lock icon in the **Action** column marks a locked row. Its code
+and label are greyed out, and it has no remove button. You can
+still change its **Displayed To** and **Sort Order**. Hover over the
 lock icon to see why the row is locked.
 
 A row is locked for one of two reasons:

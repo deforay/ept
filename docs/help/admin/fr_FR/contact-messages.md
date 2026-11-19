@@ -43,15 +43,16 @@ contact** dans cette barre pour les lire ici.
 | **Pays** | Le pays choisi par l'expéditeur |
 | **Objet** | L'objet saisi par l'expéditeur |
 | **Message** | Le texte du message |
-| **Action** | **Ajouter un participant PT** |
+| **Action** | **Créer un identifiant de gestionnaire de données** |
 
 Les adresses web d'un message s'affichent en texte simple, par
 exemple `hxxps://example[.]com`. Un clic ne peut pas les ouvrir.
 
 ## Ajouter un identifiant pour l'expéditeur
 
-Cliquez sur **Ajouter un participant PT** pour ouvrir **Ajouter un
-nouveau gestionnaire de données (identifiant du participant)**. Le
-prénom et le nom de l'expéditeur sont déjà remplis. Complétez le
+Cliquez sur **Créer un identifiant de gestionnaire de données** pour
+ouvrir **Ajouter un nouveau gestionnaire de données (identifiant du
+participant)**. L'e-mail, le nom, le laboratoire et le téléphone de
+l'expéditeur sont déjà remplis. Complétez le
 formulaire et enregistrez-le. Voir [Formulaire du gestionnaire de
 données](data-managers-form.md).

@@ -126,7 +126,7 @@ $audienceNames = [
             <br>
             <div id="respond" style="margin: 0px auto 0px auto; text-align: center;" align="center">
                 <a href="javascript:void(0);" class="btn btn-primary" onclick="saveMailTemplate('<?php echo $this->mailPurpose; ?>');"><?= $this->translate->_("Update"); ?></a>
-                <input class="btn btn-danger" type="button" onclick="window.location.href = '/admin';" tabindex="8" value="<?= $this->translate->_("Cancel"); ?>" />
+                <input class="btn btn-danger" type="button" onclick="window.location.href = '/admin/mail-template';" tabindex="8" value="<?= $this->translate->_("Cancel"); ?>" />
             </div>
         </form>
     </fieldset>
@@ -152,7 +152,7 @@ $audienceNames = [
     }
 
     function saveMailTemplate(purpose) {
-        if ($('#adminName' + purpose).val() != '' && $('#adminEmail' + purpose).val() != '' && $('#subject' + purpose) && $('#mailMessage' + purpose)) {
+        if ($.trim($('#adminName' + purpose).val()) != '' && $.trim($('#adminEmail' + purpose).val()) != '' && $.trim($('#subject' + purpose).val()) != '' && $.trim($('#mailMessage' + purpose).val()) != '') {
             $.blockUI();
             $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'mail-template', 'action' => 'index')); ?>", {
                     adminName: $('#adminName' + purpose).val(),
@@ -175,16 +175,16 @@ $audienceNames = [
                     }
                 });
         } else {
-            if ($('#adminName' + purpose).val() == '') {
+            if ($.trim($('#adminName' + purpose).val()) == '') {
                 alert($('#adminName' + purpose).attr('title'));
                 $('#adminName' + purpose).focus();
-            } else if ($('#adminEmail' + purpose).val() == '') {
+            } else if ($.trim($('#adminEmail' + purpose).val()) == '') {
                 alert($('#adminEmail' + purpose).attr('title'));
                 $('#adminEmail' + purpose).focus();
-            } else if ($('#subject' + purpose).val() == '') {
+            } else if ($.trim($('#subject' + purpose).val()) == '') {
                 alert($('#subject' + purpose).attr('title'));
                 $('#subject' + purpose).focus();
-            } else if ($('#mailMessage' + purpose).val() == '') {
+            } else if ($.trim($('#mailMessage' + purpose).val()) == '') {
                 alert($('#mailMessage' + purpose).attr('title'));
                 $('#mailMessage' + purpose).focus();
             }

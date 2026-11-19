@@ -152,7 +152,8 @@ class Application_Model_DbTable_RCovid19GeneTypes extends Zend_Db_Table_Abstract
             $sQuery = $sQuery->where($sWhere);
         }
         if (isset($parameters['status']) && $parameters['status'] != '') {
-            $sQuery = $sQuery->where('approval = ? ', $parameters['status']);
+            // Gene types have no approval flag. The filter is on gene_status.
+            $sQuery = $sQuery->where('gene_status = ?', $parameters['status']);
         }
 
         if (!empty($sOrder)) {
@@ -193,7 +194,7 @@ class Application_Model_DbTable_RCovid19GeneTypes extends Zend_Db_Table_Abstract
             $row[] = ucwords($aRow['gene_name']);
             $row[] = $aRow['scheme_name'];
             $row[] = Pt_Commons_DateUtility::humanReadableDateFormat($createdDate[0]) . ' ' . $createdDate[1];
-            $row[] = '<a href="/admin/covid19-gene-type/edit/53s5k85_8d/' . base64_encode($aRow['gene_id']) . '" class="btn btn-warning btn-xs" style="margin-right: 2px;"><i class="icon-pencil"></i> Edit</a>';
+            $row[] = '<a href="/admin/covid19-gene-type/edit/53s5k85_8d/' . base64_encode($aRow['gene_id']) . '" class="btn btn-warning btn-xs" style="margin-right: 2px;"><i class="icon-pencil"></i> ' . Pt_Commons_TranslateUtility::htmlTranslate('Edit') . '</a>';
 
             $output['aaData'][] = $row;
         }

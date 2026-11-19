@@ -144,7 +144,7 @@ class Application_Model_DbTable_ResponseNotTestedReasons extends Zend_Db_Table_A
             $row[] = $chips ? '<div class="scheme-chips">' . implode('', $chips) . '</div>' : '';
             $row[] = ucwords($aRow['collect_panel_receipt_date']);
             $row[] = ucwords($aRow['ntr_status']);
-            $row[] = '<a href="/admin/sample-not-tested-reasons/edit/53s5k85_8d/' . base64_encode($aRow['ntr_id']) . '" class="btn btn-warning btn-xs" style="margin-right: 2px;"><i class="icon-pencil"></i> Edit</a>';
+            $row[] = '<a href="/admin/sample-not-tested-reasons/edit/53s5k85_8d/' . base64_encode($aRow['ntr_id']) . '" class="btn btn-warning btn-xs" style="margin-right: 2px;"><i class="icon-pencil"></i> ' . Pt_Commons_TranslateUtility::htmlTranslate('Edit') . '</a>';
 
             $output['aaData'][] = $row;
         }

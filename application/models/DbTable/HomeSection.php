@@ -26,6 +26,12 @@ class Application_Model_DbTable_HomeSection extends Zend_Db_Table_Abstract
             $extension = strtolower(pathinfo($fileNameSanitized, PATHINFO_EXTENSION));
             $imageName = Pt_Commons_MiscUtility::generateRandomString(4) . '.' . $extension;
 
+            if (!in_array($extension, $allowedExtensions)) {
+                // Refuse the save rather than storing the link without its file.
+                $alert = new Zend_Session_Namespace('alertSpace');
+                $alert->message = Zend_Registry::get('translate')->_('This file type is not allowed. Upload a JPG, PNG, PDF, Word or Excel file.');
+                return false;
+            }
             if (in_array($extension, $allowedExtensions)) {
                 // Determine the section folder based on $params['section']
                 if ($params['section'] == 'section1') {
@@ -191,7 +197,7 @@ class Application_Model_DbTable_HomeSection extends Zend_Db_Table_Abstract
             $row[] = $aRow['icon'];
             $row[] = $aRow['display_order'];
             $row[] = ucwords($aRow['status']);
-            $row[] = '<a href="/admin/home-section-links/edit/id/' . base64_encode($aRow['id']) . '" class="btn btn-primary btn-xs" style="margin-right: 2px;"><i class="icon-pencil"></i> Edit</a>';
+            $row[] = '<a href="/admin/home-section-links/edit/id/' . base64_encode($aRow['id']) . '" class="btn btn-primary btn-xs" style="margin-right: 2px;"><i class="icon-pencil"></i> ' . Pt_Commons_TranslateUtility::htmlTranslate('Edit') . '</a>';
 
             $output['aaData'][] = $row;
         }

@@ -49,11 +49,9 @@ que les motifs d'un programme.
 
 ## Modifier ou retirer un motif
 
-1. Cliquez sur **Edit** dans la ligne du motif.
+1. Cliquez sur **Modifier** dans la ligne du motif.
 2. Modifiez les champs.
-3. Cliquez sur **Ajouter** pour enregistrer. Le formulaire de
-   modification utilise le même libellé de bouton que le formulaire
-   d'ajout.
+3. Cliquez sur **Mettre à jour** pour enregistrer.
 
 Pour ne plus proposer un motif, réglez son **Statut** sur **Inactif**.
 La page n'a pas de bouton de suppression.

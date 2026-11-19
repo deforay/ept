@@ -118,7 +118,7 @@ class Application_Model_DbTable_SystemAdmin extends Zend_Db_Table_Abstract
             $row[] = $aRow['last_name'];
             $row[] = $aRow['primary_email'];
             $row[] = $aRow['phone'];
-            $row[] = '<a href="/admin/system-admins/edit/id/' . $aRow['admin_id'] . '" class="btn btn-warning btn-xs" style="margin-right: 2px;"><i class="icon-pencil"></i> Edit</a>';
+            $row[] = '<a href="/admin/system-admins/edit/id/' . $aRow['admin_id'] . '" class="btn btn-warning btn-xs" style="margin-right: 2px;"><i class="icon-pencil"></i> ' . Pt_Commons_TranslateUtility::htmlTranslate('Edit') . '</a>';
 
             $output['aaData'][] = $row;
         }

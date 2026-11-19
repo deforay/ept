@@ -12,7 +12,7 @@ résultats dans leurs listes déroulantes. Les programmes quantitatifs,
 comme la charge virale, n'ont pas de liste ici.
 
 Ouvrez **Configurer → Résultats des tests du programme**. La page
-liste chaque programme qualitatif actif. Cliquez sur **Test Results**
+liste chaque programme qualitatif actif. Cliquez sur **Résultats des tests**
 dans la ligne d'un programme pour ouvrir sa liste de résultats.
 
 Vous pouvez aussi ouvrir la liste d'un programme depuis **Configurer →
@@ -74,8 +74,9 @@ tous les codes, y compris les résultats de test.
 ## Résultats verrouillés
 
 Une icône de cadenas dans la colonne **Action** signale une ligne
-verrouillée. Tous ses champs sont grisés et elle n'a pas de bouton de
-suppression. Survolez le cadenas pour voir pourquoi la ligne est
+verrouillée. Son code et son libellé sont grisés et elle n'a pas de
+bouton de suppression. Vous pouvez encore modifier ses champs
+**Affiché à** et **Ordre de tri**. Survolez le cadenas pour voir pourquoi la ligne est
 verrouillée.
 
 Une ligne est verrouillée pour l'une de ces deux raisons :

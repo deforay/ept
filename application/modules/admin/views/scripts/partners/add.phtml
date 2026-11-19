@@ -24,6 +24,13 @@
                         placeholder="<?= $this->htmlTranslate("Please enter the link here") ?>" />
                 </div>
             </div>
+            <div class="form-group">
+                <label class="col-lg-3 control-label" for="logoImage"><?= $this->translate->_("Logo"); ?></label>
+                <div class="col-lg-5">
+                    <input type="file" id="logoImage" name="logoImage" class="form-control" accept=".png,.jpg,.jpeg,.gif,.webp" />
+                    <span class="help-block"><?= $this->translate->_("PNG, JPG, GIF or WebP. The home page shows a partner only when it has a logo."); ?></span>
+                </div>
+            </div>
             <br>
 
             <div id="respond" style="margin: 0px auto 0px auto; text-align: center;" align="center">

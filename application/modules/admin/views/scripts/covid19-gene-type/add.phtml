@@ -12,7 +12,7 @@
 					<input type="text" id="geneTypeName" name="geneTypeName" size="50" maxlength="255"
 						class="isRequired form-control" title="<?= $this->htmlTranslate("Please enter the GeneType Name here") ?>"
 						placeholder="<?= $this->htmlTranslate("Please enter the GeneType Name here") ?>"
-						onblur="checkDuplicate('r_covid19_gene_types', 'gene_id', this, null, '<?= $this->jsTranslate("This GeneType Name already exists for another GeneType. Please try something else.") ?>')" />
+						onblur="checkDuplicate('r_covid19_gene_types', 'gene_name', this, null, '<?= $this->jsTranslate("This GeneType Name already exists for another GeneType. Please try something else.") ?>')" />
 				</div>
 			</div>
 

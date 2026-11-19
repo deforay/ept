@@ -33,7 +33,7 @@ Un nouveau partenaire est actif et se place en fin de liste.
 
 ## Modifier un partenaire
 
-1. Cliquez sur **Edit** dans la ligne du partenaire.
+1. Cliquez sur **Modifier** dans la ligne du partenaire.
 2. Modifiez le **Nom du partenaire** ou le **Lien**.
 3. Pour déplacer le partenaire, saisissez un nouvel **Ordre de tri**.
    Les partenaires situés entre les deux positions se décalent d'une

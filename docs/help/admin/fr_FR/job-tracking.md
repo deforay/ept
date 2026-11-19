@@ -53,8 +53,7 @@ l'onglet **Planifiés** de **Envoyer un e-mail aux participants**.
 
 ## Filtres
 
-Les choix des listes **Type de tâche** et **Statut** s'affichent
-en anglais.
+Filtrez par **Type de tâche** et par **Statut**.
 
 | Filtre | Effet |
 | --- | --- |

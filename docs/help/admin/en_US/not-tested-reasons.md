@@ -48,8 +48,7 @@ scheme.
 
 1. Click **Edit** on the reason's row.
 2. Change the fields.
-3. Click **Add** to save. The edit form uses the same button label as
-   the add form.
+3. Click **Update** to save.
 
 To stop offering a reason, set its **Status** to **Inactive**. The
 page has no delete button.

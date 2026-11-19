@@ -10,9 +10,9 @@
                 <div class="col-lg-8">
                     <select class="form-control isRequired" name="testStages" id="testStages" title="<?= $this->htmlTranslate("Please choose a test stage") ?>" onchange="getTestType(this.value)">
                         <option value=""><?= $this->translate->_("Select Test Platform"); ?></option>
-                        <option value="test_type_1">Test 1</option>
-                        <option value="test_type_2">Test 2</option>
-                        <option value="test_type_3">Test 3</option>
+                        <option value="test_type_1"><?= $this->translate->_("Test 1"); ?></option>
+                        <option value="test_type_2"><?= $this->translate->_("Test 2"); ?></option>
+                        <option value="test_type_3"><?= $this->translate->_("Test 3"); ?></option>
                     </select>
                 </div>
             </div>
@@ -30,7 +30,7 @@
             <input type="hidden" name="testPlatformStage" id="testPlatformStage" value="">
             <br />
             <div class="col-md-12 col-xs-12" align="center">
-                <input type="submit" class="btn btn-primary" value="Save Selected" />
+                <input type="submit" class="btn btn-primary" value="<?= $this->htmlTranslate("Save Selected"); ?>" />
                 <input type="button" onclick="window.location.href = '<?php echo $this->url(array('module' => 'admin', 'controller' => 'test-platform', 'action' => 'standard-type'), 'default', true); ?>'" class="btn btn-danger" value="<?= $this->translate->_("Cancel"); ?>" />
             </div>
         </form>

@@ -13,7 +13,7 @@
 					<input type="text" id="testPlatformName" name="testPlatformName" size="50" maxlength="255"
 						class="isRequired form-control" title="<?= $this->htmlTranslate("Please enter the Test Platform Name here") ?>"
 						placeholder="<?= $this->htmlTranslate("Please enter the Test Platform Name here") ?>"
-						onblur="checkDuplicate('r_test_type_covid19', 'test_type_id', this, null, 'This Test Platform Name already exists for another Test Platform. Please try something else.')" />
+						onblur="checkDuplicate('r_test_type_covid19', 'test_type_name', this, null, '<?= $this->jsTranslate("This Test Platform Name already exists for another Test Platform. Please try something else."); ?>')" />
 				</div>
 			</div>
 

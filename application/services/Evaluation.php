@@ -4494,7 +4494,7 @@ class Application_Service_Evaluation
                 if ($filterStatus === 'processing') {
                     $reportJobsQuery->where("qrg.status IN ('generating', 'finalizing')");
                 } elseif ($filterStatus === 'completed') {
-                    $reportJobsQuery->where("qrg.status IN ('evaluated', 'finalized')");
+                    $reportJobsQuery->where("qrg.status IN ('evaluated', 'reports generated', 'finalized')");
                 } else {
                     $reportJobsQuery->where('qrg.status = ?', $filterStatus);
                 }

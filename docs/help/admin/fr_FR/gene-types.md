@@ -31,7 +31,7 @@ latéral, ouvrez **SARS-CoV-2** et cliquez sur **Types de gènes**.
 
 ## Modifier un type de gène
 
-1. Cliquez sur **Edit** dans la ligne du type de gène.
+1. Cliquez sur **Modifier** dans la ligne du type de gène.
 2. Modifiez le nom, le programme ou le statut. Si un autre type de
    gène porte déjà ce nom, la page vous le signale et vide le champ.
 3. Cliquez sur **Mettre à jour**.

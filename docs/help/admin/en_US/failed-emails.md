@@ -26,14 +26,14 @@ sent, or was stopped.
 
 | Failure Type | Cause | What to do |
 | --- | --- | --- |
-| **Smtp Auth** | The mail server refused ePT's login | Correct the login in the **Email Settings** section of **Configure → ePT Global Settings**. Then click **Verify Email Setup** |
-| **Connectivity** | ePT could not reach the mail server | Check **SMTP Host** and **SMTP Port** in **Email Settings**. Ask your server administrator to check the network |
-| **Invalid Dsn** | The saved mail settings cannot be used | Correct the mail settings in **Email Settings** |
-| **Bad Recipient** | The mail server rejected the recipient's address | Correct the address on the participant or data manager |
-| **Rate Limit** | The mail account reached its sending limit | Wait, or ask your mail provider to raise the limit |
-| **Content** | The mail server blocked the email as spam | Ask your mail provider why the email was blocked |
+| **Mail login refused** | The mail server refused ePT's login | Correct the login in the **Email Settings** section of **Configure → ePT Global Settings**. Then click **Verify Email Setup** |
+| **Connection problem** | ePT could not reach the mail server | Check **SMTP Host** and **SMTP Port** in **Email Settings**. Ask your server administrator to check the network |
+| **Mail settings not usable** | The saved mail settings cannot be used | Correct the mail settings in **Email Settings** |
+| **Bad recipient** | The mail server rejected the recipient's address | Correct the address on the participant or data manager |
+| **Sending limit reached** | The mail account reached its sending limit | Wait, or ask your mail provider to raise the limit |
+| **Message content rejected** | The mail server blocked the email as spam | Ask your mail provider why the email was blocked |
 | **Expired** | The email waited in the queue for more than 7 days, so ePT did not send it | Send the email again from the page that created it |
-| **Dev Trap Block** | A test mail setting on the server blocks all email | Ask your server administrator to fix the test mail setting |
+| **Held by the development mail trap** | A test mail setting on the server blocks all email | Ask your server administrator to fix the test mail setting |
 | **Other** | Any other error | Read the **Failure Reason**. Ask your server administrator if it is unclear |
 
 ## Filter by status
