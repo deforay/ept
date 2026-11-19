@@ -15,9 +15,6 @@ per-participant report.
 - **Passing Score** *(required, 0–100)* — the minimum score a
   participant needs to pass a VL shipment. A common value is
   `95`.
-- **Documentation Score** *(required, 0–100)* — the
-  documentation share of the score. The panel result and
-  documentation together make up the final score.
 - **Report Version** — version text printed in the **PDF report
   footer** (for example, `v2.1`). Use this to record which set
   of rules produced the report.
@@ -38,8 +35,8 @@ per-participant report.
 
 ## Tips
 
-- **Re-evaluate VL shipments after changing scoring** — the new
-  passing or documentation score only takes effect on the next
+- **Re-evaluate VL shipments after changing scoring** — a new
+  passing score only takes effect on the next
   evaluation pass.
 - Setting **Manual VL Reference Ranges** for a specific
   shipment is done from *Analyze → Evaluate Responses →* (open

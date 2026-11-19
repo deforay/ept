@@ -86,16 +86,29 @@ One row per participant, with these columns:
 
 ## Action buttons on each row
 
-- **View** — see exactly what the participant submitted,
-  read-only.
 - **Edit** — open the participant's response form so you can
   correct typos or obvious entry errors on their behalf. Your
   changes are marked as a manual change.
-- **Override Result** — change the Pass / Fail, or mark the
-  participant as Excluded with a reason.
-- **Delete Response** — clear the participant's response so they
-  can re-submit. You will be asked to type to confirm — this
-  protects against accidental clicks.
+- **Delete** — clear the participant's response so they can
+  re-submit. You will be asked to confirm.
+- **Download Corrective Action** — shown on a failed row that has
+  a corrective action file.
+- **Approve Late Submission** and **Reject** — shown on a response
+  sent after the deadline that waits for your decision.
+
+## Review a late submission
+
+A participant who started before the deadline and submitted after
+it is held for review.
+
+1. Open the filters and set **Response status** to **Late
+   Submission (pending approval)**.
+2. Click **Edit** on the row to check the response.
+3. Click **Approve Late Submission** to count it, or **Reject**
+   to leave it out. You can still approve a rejected response
+   later.
+4. Evaluate the shipment again so the scores include the
+   decision.
 
 ## Tips
 
