@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ePT\n"
 "Report-Msgid-Bugs-To: support@deforay.com\n"
-"POT-Creation-Date: 2026-11-19 19:17+0530\n"
+"POT-Creation-Date: 2026-11-19 19:27+0530\n"
 "PO-Revision-Date: 2026-07-07 08:32+0530\n"
 "Last-Translator: Amit <amit@deforay.com>\n"
 "Language-Team: ePT\n"
@@ -1499,37 +1499,45 @@ msgid "Admin Users"
 msgstr "Utilisateurs administrateurs"
 
 #: application/languages/help-translation-strings.php:37
+msgid ""
+"After shipping, see who responded, add participants who are not enrolled, "
+"remove participants, and copy email lists"
+msgstr ""
+"Après l'expédition, voyez qui a répondu, ajoutez des participants non "
+"inscrits, retirez des participants et copiez les listes d'e-mails"
+
+#: application/languages/help-translation-strings.php:39
 msgid "algorithm"
 msgstr "algorithme"
 
-#: application/languages/help-translation-strings.php:39
+#: application/languages/help-translation-strings.php:41
 msgid "all sites"
 msgstr "tous les sites"
 
-#: application/languages/help-translation-strings.php:41
+#: application/languages/help-translation-strings.php:43
 msgid "annual"
 msgstr "annuel"
 
-#: application/languages/help-translation-strings.php:43
+#: application/languages/help-translation-strings.php:45
 #: application/layouts/scripts/admin.phtml:609
 #: application/modules/reports/views/scripts/annual/index.phtml:128
 #: application/views/partials/spotlight.phtml:589
 msgid "Annual Performance Report"
 msgstr "Rapport annuel de performance"
 
-#: application/languages/help-translation-strings.php:45
+#: application/languages/help-translation-strings.php:47
 msgid "approval"
 msgstr "autorisation"
 
-#: application/languages/help-translation-strings.php:47
+#: application/languages/help-translation-strings.php:49
 msgid "approver"
 msgstr "approbateur"
 
-#: application/languages/help-translation-strings.php:49
+#: application/languages/help-translation-strings.php:51
 msgid "assay"
 msgstr "technique"
 
-#: application/languages/help-translation-strings.php:51
+#: application/languages/help-translation-strings.php:53
 msgid ""
 "Assign participants to a Data Manager so the right person sees the right "
 "participants when filling out responses"
@@ -1537,11 +1545,11 @@ msgstr ""
 "Associer des participants à un gestionnaire de données afin que la bonne "
 "personne voie les bons participants lors de la saisie des réponses"
 
-#: application/languages/help-translation-strings.php:53
+#: application/languages/help-translation-strings.php:55
 msgid "banner"
 msgstr "bannière"
 
-#: application/languages/help-translation-strings.php:55
+#: application/languages/help-translation-strings.php:57
 msgid ""
 "Build draft per-participant and summary reports for internal review (not yet "
 "visible to participants)"
@@ -1549,11 +1557,11 @@ msgstr ""
 "Générer des rapports provisoires par participant et de synthèse pour "
 "révision interne (pas encore visibles par les participants)"
 
-#: application/languages/help-translation-strings.php:57
+#: application/languages/help-translation-strings.php:59
 msgid "bulk-import"
 msgstr "importation en masse"
 
-#: application/languages/help-translation-strings.php:59
+#: application/languages/help-translation-strings.php:61
 #: application/modules/admin/views/scripts/enrollments/bulk-enrollment-done.phtml:17
 #: application/modules/admin/views/scripts/enrollments/bulk-enrollment-review.phtml:39
 #: application/modules/admin/views/scripts/enrollments/bulk-enrollment.phtml:13
@@ -1561,7 +1569,7 @@ msgstr "importation en masse"
 msgid "Bulk Import Enrollment"
 msgstr "Importation en masse d'inscriptions"
 
-#: application/languages/help-translation-strings.php:61
+#: application/languages/help-translation-strings.php:63
 #: application/modules/admin/views/scripts/participants/bulk-import-review.phtml:107
 #: application/modules/admin/views/scripts/participants/bulk-import.phtml:36
 #: application/modules/admin/views/scripts/participants/index.phtml:119
@@ -1569,54 +1577,54 @@ msgstr "Importation en masse d'inscriptions"
 msgid "Bulk Import Participants"
 msgstr "Importation groupée des participants"
 
-#: application/languages/help-translation-strings.php:63
+#: application/languages/help-translation-strings.php:65
 msgid "capa"
 msgstr "capa"
 
-#: application/languages/help-translation-strings.php:65
+#: application/languages/help-translation-strings.php:67
 msgid "certificates"
 msgstr "certificats"
 
-#: application/languages/help-translation-strings.php:67
+#: application/languages/help-translation-strings.php:69
 #: application/layouts/scripts/admin.phtml:468
 #: application/modules/admin/views/scripts/certificate-templates/index.phtml:301
 #: application/views/partials/spotlight.phtml:227
 msgid "Certificate Templates"
 msgstr "Modèles de certificats"
 
-#: application/languages/help-translation-strings.php:69
+#: application/languages/help-translation-strings.php:71
 msgid "Check your login and lab details, change your password or login email"
 msgstr ""
 "Vérifiez votre identifiant et les informations du laboratoire, changez votre "
 "mot de passe ou votre e-mail de connexion"
 
-#: application/languages/help-translation-strings.php:71
+#: application/languages/help-translation-strings.php:73
 msgid "communication"
 msgstr "communication"
 
-#: application/languages/help-translation-strings.php:73
+#: application/languages/help-translation-strings.php:75
 msgid "config"
 msgstr "config"
 
-#: application/languages/help-translation-strings.php:75
+#: application/languages/help-translation-strings.php:77
 msgid "coordinator"
 msgstr "coordinateur"
 
-#: application/languages/help-translation-strings.php:77
+#: application/languages/help-translation-strings.php:79
 msgid "corrective action"
 msgstr "mesure corrective"
 
-#: application/languages/help-translation-strings.php:79
+#: application/languages/help-translation-strings.php:81
 msgid "corrective actions"
 msgstr "mesures correctives"
 
-#: application/languages/help-translation-strings.php:81
+#: application/languages/help-translation-strings.php:83
 #: application/modules/reports/views/scripts/corrective-actions/index.phtml:174
 #: application/services/Reports.php:3031
 msgid "Corrective actions"
 msgstr "Mesures correctives"
 
-#: application/languages/help-translation-strings.php:83
+#: application/languages/help-translation-strings.php:85
 #: application/layouts/scripts/admin.phtml:567
 #: application/modules/reports/views/scripts/corrective-actions/index.phtml:137
 #: application/modules/reports/views/scripts/corrective-actions/pdf.phtml:39
@@ -1625,32 +1633,32 @@ msgstr "Mesures correctives"
 msgid "Corrective Actions Report"
 msgstr "Rapport sur les actions correctives"
 
-#: application/languages/help-translation-strings.php:85
+#: application/languages/help-translation-strings.php:87
 msgid "countries"
 msgstr "pays"
 
-#: application/languages/help-translation-strings.php:87
+#: application/languages/help-translation-strings.php:89
 msgid "create"
 msgstr "créer"
 
-#: application/languages/help-translation-strings.php:89
+#: application/languages/help-translation-strings.php:91
 msgid "Create a new Early Infant Diagnosis Extraction or Detection assay"
 msgstr ""
 "Créer une nouvelle technique d'extraction ou de détection pour le diagnostic "
 "précoce chez le nourrisson"
 
-#: application/languages/help-translation-strings.php:91
+#: application/languages/help-translation-strings.php:93
 msgid ""
 "Create a new participant record and map them to one or more Data Managers"
 msgstr ""
 "Créer une nouvelle fiche de participant et l'associer à un ou plusieurs "
 "gestionnaires de données"
 
-#: application/languages/help-translation-strings.php:93
+#: application/languages/help-translation-strings.php:95
 msgid "Create a new PT Survey on a specific date with a unique code"
 msgstr "Créer une nouvelle enquête PT à une date précise avec un code unique"
 
-#: application/languages/help-translation-strings.php:95
+#: application/languages/help-translation-strings.php:97
 msgid ""
 "Create a new test kit, optionally enabling Additional Information capture "
 "for OD / Ct / custom values"
@@ -1658,15 +1666,15 @@ msgstr ""
 "Créer un nouveau kit de test, en activant éventuellement la saisie "
 "d'informations supplémentaires pour les valeurs OD, Ct et personnalisées"
 
-#: application/languages/help-translation-strings.php:97
+#: application/languages/help-translation-strings.php:99
 msgid "Create a new Viral Load assay / platform"
 msgstr "Créer une nouvelle technique / plateforme de charge virale"
 
-#: application/languages/help-translation-strings.php:99
+#: application/languages/help-translation-strings.php:101
 msgid "csv"
 msgstr "csv"
 
-#: application/languages/help-translation-strings.php:101
+#: application/languages/help-translation-strings.php:103
 msgid ""
 "Customize the public home page — hero text, banner image, resource cards, "
 "logos, and FAQ"
@@ -1674,7 +1682,7 @@ msgstr ""
 "Personnaliser la page d'accueil publique : texte d'en-tête, image de "
 "bannière, fiches de ressources, logos et FAQ"
 
-#: application/languages/help-translation-strings.php:103
+#: application/languages/help-translation-strings.php:105
 #: application/layouts/scripts/admin.phtml:375
 #: application/layouts/scripts/home.phtml:122
 #: application/layouts/scripts/layout.phtml:302
@@ -1685,83 +1693,83 @@ msgstr ""
 msgid "Dashboard"
 msgstr "Tableau de bord"
 
-#: application/languages/help-translation-strings.php:105
+#: application/languages/help-translation-strings.php:107
 msgid "dashboard"
 msgstr "tableau de bord"
 
-#: application/languages/help-translation-strings.php:107
+#: application/languages/help-translation-strings.php:109
 msgid "data-manager"
 msgstr "gestionnaire de données"
 
-#: application/languages/help-translation-strings.php:109
+#: application/languages/help-translation-strings.php:111
 msgid "data-managers"
 msgstr "gestionnaires de données"
 
-#: application/languages/help-translation-strings.php:111
+#: application/languages/help-translation-strings.php:113
 msgid "Data Managers (Participant Logins)"
 msgstr "Gestionnaires de données (connexions des participants)"
 
-#: application/languages/help-translation-strings.php:113
+#: application/languages/help-translation-strings.php:115
 #: application/modules/admin/views/scripts/certificate-templates/index.phtml:359
 msgid "design"
 msgstr "maquette"
 
-#: application/languages/help-translation-strings.php:115
+#: application/languages/help-translation-strings.php:117
 msgid "designer"
 msgstr "éditeur de maquette"
 
-#: application/languages/help-translation-strings.php:117
+#: application/languages/help-translation-strings.php:119
 msgid "detection"
 msgstr "détection"
 
-#: application/languages/help-translation-strings.php:119
+#: application/languages/help-translation-strings.php:121
 msgid "distribution"
 msgstr "distribution"
 
-#: application/languages/help-translation-strings.php:121
+#: application/languages/help-translation-strings.php:123
 msgid "distributions"
 msgstr "distributions"
 
-#: application/languages/help-translation-strings.php:123
+#: application/languages/help-translation-strings.php:125
 msgid "districts"
 msgstr "districts"
 
-#: application/languages/help-translation-strings.php:125
+#: application/languages/help-translation-strings.php:127
 msgid "documents"
 msgstr "documents"
 
-#: application/languages/help-translation-strings.php:127
+#: application/languages/help-translation-strings.php:129
 msgid "download"
 msgstr "télécharger"
 
-#: application/languages/help-translation-strings.php:129
+#: application/languages/help-translation-strings.php:131
 msgid "downloads"
 msgstr "téléchargements"
 
-#: application/languages/help-translation-strings.php:131
+#: application/languages/help-translation-strings.php:133
 #: application/layouts/scripts/layout.phtml:394
 #: application/views/partials/shipments-report-grid.phtml:379
 #: application/views/scripts/participant/feed-back.phtml:120
 msgid "Downloads"
 msgstr "Téléchargements"
 
-#: application/languages/help-translation-strings.php:133
+#: application/languages/help-translation-strings.php:135
 msgid "draft"
 msgstr "brouillon"
 
-#: application/languages/help-translation-strings.php:135
+#: application/languages/help-translation-strings.php:137
 msgid "dts"
 msgstr "dts"
 
-#: application/languages/help-translation-strings.php:137
+#: application/languages/help-translation-strings.php:139
 msgid "DTS (HIV Serology) Settings"
 msgstr "Paramètres DTS (sérologie du VIH)"
 
-#: application/languages/help-translation-strings.php:139
+#: application/languages/help-translation-strings.php:141
 msgid "due date"
 msgstr "date limite"
 
-#: application/languages/help-translation-strings.php:141
+#: application/languages/help-translation-strings.php:143
 msgid ""
 "Each participant's results across shipments, with pass rate, failures and "
 "average score"
@@ -1769,167 +1777,172 @@ msgstr ""
 "Les résultats de chaque participant sur les expéditions, avec le taux de "
 "réussite, les échecs et le score moyen"
 
-#: application/languages/help-translation-strings.php:143
+#: application/languages/help-translation-strings.php:145
 msgid "early-infant-diagnosis"
 msgstr "diagnostic précoce chez le nourrisson"
 
-#: application/languages/help-translation-strings.php:145
+#: application/languages/help-translation-strings.php:147
 msgid "edit"
 msgstr "modifier"
 
-#: application/languages/help-translation-strings.php:147
+#: application/languages/help-translation-strings.php:149
 msgid "Edit an Enrollment List"
 msgstr "Modifier une liste d'inscription"
 
-#: application/languages/help-translation-strings.php:149
+#: application/languages/help-translation-strings.php:151
 #: application/modules/admin/views/scripts/participants/edit.phtml:74
 #: application/views/scripts/participant/edit-participant.phtml:8
 msgid "Edit Participant"
 msgstr "Modifier le participant"
 
-#: application/languages/help-translation-strings.php:151
+#: application/languages/help-translation-strings.php:153
 #: application/modules/admin/views/scripts/distributions/edit.phtml:19
 msgid "Edit PT Survey"
 msgstr "Modifier l'enquête PT"
 
-#: application/languages/help-translation-strings.php:153
+#: application/languages/help-translation-strings.php:155
 #: application/modules/admin/views/scripts/testkit/edit.phtml:9
 msgid "Edit Test Kit"
 msgstr "Modifier le kit de test"
 
-#: application/languages/help-translation-strings.php:155
+#: application/languages/help-translation-strings.php:157
 msgid "Edit VL Assay / Platform"
 msgstr "Modifier la technique / plateforme VL"
 
-#: application/languages/help-translation-strings.php:157
+#: application/languages/help-translation-strings.php:159
 msgid "eid"
 msgstr "eid"
 
-#: application/languages/help-translation-strings.php:159
+#: application/languages/help-translation-strings.php:161
 msgid "EID Assays / Platforms"
 msgstr "Techniques / plateformes EID"
 
-#: application/languages/help-translation-strings.php:161
+#: application/languages/help-translation-strings.php:163
 msgid "email"
 msgstr "e-mail"
 
-#: application/languages/help-translation-strings.php:163
+#: application/languages/help-translation-strings.php:165
 #: application/layouts/scripts/admin.phtml:409
 #: application/modules/admin/views/scripts/email-participants/index.phtml:128
 #: application/views/partials/spotlight.phtml:369
 msgid "Email Participants"
 msgstr "Envoyer un e-mail aux participants"
 
-#: application/languages/help-translation-strings.php:165
+#: application/languages/help-translation-strings.php:167
+#: application/modules/admin/views/scripts/job-tracking/index.phtml:394
+msgid "emails"
+msgstr "e-mails"
+
+#: application/languages/help-translation-strings.php:169
 msgid "enroll"
 msgstr "inscrire"
 
-#: application/languages/help-translation-strings.php:167
+#: application/languages/help-translation-strings.php:171
 msgid "enrollment"
 msgstr "inscription"
 
-#: application/languages/help-translation-strings.php:169
+#: application/languages/help-translation-strings.php:173
 msgid "Enroll Participants"
 msgstr "Inscrire les participants"
 
-#: application/languages/help-translation-strings.php:171
+#: application/languages/help-translation-strings.php:175
 msgid "evaluate"
 msgstr "évaluer"
 
-#: application/languages/help-translation-strings.php:173
+#: application/languages/help-translation-strings.php:177
 msgid ""
 "Evaluated results for a date range, and the certificates that follow from "
 "them"
 msgstr ""
 "Les résultats évalués d'une période, et les certificats qui en découlent"
 
-#: application/languages/help-translation-strings.php:175
+#: application/languages/help-translation-strings.php:179
 #: application/modules/admin/views/scripts/evaluate/index.phtml:15
 msgid "Evaluate PT Survey"
 msgstr "Évaluer l'enquête PT"
 
-#: application/languages/help-translation-strings.php:177
+#: application/languages/help-translation-strings.php:181
 msgid "evaluation"
 msgstr "évaluation"
 
-#: application/languages/help-translation-strings.php:179
+#: application/languages/help-translation-strings.php:183
 msgid "Every shipment with its responses, pass rate, status and downloads"
 msgstr ""
 "Chaque envoi avec ses réponses, son taux de réussite, son statut et ses "
 "téléchargements"
 
-#: application/languages/help-translation-strings.php:181
+#: application/languages/help-translation-strings.php:185
 msgid "excel"
 msgstr "excel"
 
-#: application/languages/help-translation-strings.php:183
+#: application/languages/help-translation-strings.php:187
 #: application/modules/admin/views/scripts/certificate-templates/index.phtml:531
 msgid "excellence"
 msgstr "excellence"
 
-#: application/languages/help-translation-strings.php:185
+#: application/languages/help-translation-strings.php:189
 msgid ""
 "Excel workbook of XTPT indicators and all sites' results for one TB shipment"
 msgstr ""
 "Classeur Excel des indicateurs XTPT et des résultats de tous les sites pour "
 "une expédition TB"
 
-#: application/languages/help-translation-strings.php:187
+#: application/languages/help-translation-strings.php:191
 msgid "Excel workbook with every TB participant's results for one shipment"
 msgstr ""
 "Classeur Excel des résultats de chaque participant TB pour une expédition"
 
-#: application/languages/help-translation-strings.php:189
+#: application/languages/help-translation-strings.php:193
 msgid "export"
 msgstr "exporter"
 
-#: application/languages/help-translation-strings.php:191
+#: application/languages/help-translation-strings.php:195
 msgid "extraction"
 msgstr "extraction"
 
-#: application/languages/help-translation-strings.php:193
+#: application/languages/help-translation-strings.php:197
 msgid "failures"
 msgstr "échecs"
 
-#: application/languages/help-translation-strings.php:195
+#: application/languages/help-translation-strings.php:199
 msgid "faq"
 msgstr "faq"
 
-#: application/languages/help-translation-strings.php:197
+#: application/languages/help-translation-strings.php:201
 msgid "fields"
 msgstr "champs"
 
-#: application/languages/help-translation-strings.php:199
+#: application/languages/help-translation-strings.php:203
 msgid "files"
 msgstr "fichiers"
 
-#: application/languages/help-translation-strings.php:201
+#: application/languages/help-translation-strings.php:205
 msgid "Files your PT provider shared with your lab"
 msgstr "Fichiers partagés par votre fournisseur PT avec votre laboratoire"
 
-#: application/languages/help-translation-strings.php:203
+#: application/languages/help-translation-strings.php:207
 msgid "filters"
 msgstr "filtres"
 
-#: application/languages/help-translation-strings.php:205
+#: application/languages/help-translation-strings.php:209
 msgid "finalize"
 msgstr "finaliser"
 
-#: application/languages/help-translation-strings.php:207
+#: application/languages/help-translation-strings.php:211
 #: application/layouts/scripts/admin.phtml:529
 #: application/views/partials/spotlight.phtml:425
 msgid "Finalize Reports"
 msgstr "Finaliser les rapports"
 
-#: application/languages/help-translation-strings.php:209
+#: application/languages/help-translation-strings.php:213
 msgid "follow-up"
 msgstr "suivi"
 
-#: application/languages/help-translation-strings.php:211
+#: application/languages/help-translation-strings.php:215
 msgid "generate"
 msgstr "générer"
 
-#: application/languages/help-translation-strings.php:213
+#: application/languages/help-translation-strings.php:217
 #: application/layouts/scripts/admin.phtml:526
 #: application/modules/admin/controllers/SpotlightController.php:77
 #: application/modules/admin/views/scripts/evaluate/get-shipments.ajax.phtml:21
@@ -1941,39 +1954,39 @@ msgstr "générer"
 msgid "Generate Reports"
 msgstr "Générer les rapports"
 
-#: application/languages/help-translation-strings.php:215
+#: application/languages/help-translation-strings.php:219
 msgid "generic-scheme"
 msgstr "programme générique"
 
-#: application/languages/help-translation-strings.php:217
+#: application/languages/help-translation-strings.php:221
 msgid "global"
 msgstr "global"
 
-#: application/languages/help-translation-strings.php:219
+#: application/languages/help-translation-strings.php:223
 msgid "Global Settings"
 msgstr "Paramètres globaux"
 
-#: application/languages/help-translation-strings.php:221
+#: application/languages/help-translation-strings.php:225
 msgid "hero"
 msgstr "bannière principale"
 
-#: application/languages/help-translation-strings.php:223
+#: application/languages/help-translation-strings.php:227
 msgid "hiv"
 msgstr "vih"
 
-#: application/languages/help-translation-strings.php:225
+#: application/languages/help-translation-strings.php:229
 msgid "hiv-serology"
 msgstr "sérologie du VIH"
 
-#: application/languages/help-translation-strings.php:227
+#: application/languages/help-translation-strings.php:231
 msgid "hiv serology"
 msgstr "sérologie du VIH"
 
-#: application/languages/help-translation-strings.php:229
+#: application/languages/help-translation-strings.php:233
 msgid "home"
 msgstr "accueil"
 
-#: application/languages/help-translation-strings.php:231
+#: application/languages/help-translation-strings.php:235
 #: application/layouts/scripts/admin.phtml:461
 #: application/modules/admin/views/scripts/home-config/index.phtml:232
 #: application/modules/admin/views/scripts/home-section-links/add.phtml:20
@@ -1983,19 +1996,19 @@ msgstr "accueil"
 msgid "Home Page Settings"
 msgstr "Réglages de la page d’accueil"
 
-#: application/languages/help-translation-strings.php:233
+#: application/languages/help-translation-strings.php:237
 msgid ""
 "How often each DTS corrective action was given, and to which participants"
 msgstr ""
 "La fréquence de chaque mesure corrective DTS, et les participants qui l'ont "
 "reçue"
 
-#: application/languages/help-translation-strings.php:235
+#: application/languages/help-translation-strings.php:239
 msgid "How to add a shipment (sample panel) under a PT Survey"
 msgstr ""
 "Comment ajouter une expédition (panel d'échantillons) dans une enquête PT"
 
-#: application/languages/help-translation-strings.php:237
+#: application/languages/help-translation-strings.php:241
 msgid ""
 "How to choose which participants get a shipment — filters, preset lists, "
 "copying from another shipment, and saving a preset"
@@ -2004,7 +2017,7 @@ msgstr ""
 "listes prédéfinies, copie depuis une autre expédition et enregistrement "
 "d'une liste prédéfinie"
 
-#: application/languages/help-translation-strings.php:239
+#: application/languages/help-translation-strings.php:243
 msgid ""
 "How to find a shipment, enter your results and confirm them before the due "
 "date"
@@ -2012,40 +2025,40 @@ msgstr ""
 "Comment trouver une expédition, saisir vos résultats et les confirmer avant "
 "la date limite"
 
-#: application/languages/help-translation-strings.php:241
+#: application/languages/help-translation-strings.php:245
 msgid "indicators"
 msgstr "indicateurs"
 
-#: application/languages/help-translation-strings.php:243
+#: application/languages/help-translation-strings.php:247
 msgid "individual report"
 msgstr "rapport individuel"
 
-#: application/languages/help-translation-strings.php:245
+#: application/languages/help-translation-strings.php:249
 msgid "labs"
 msgstr "laboratoires"
 
-#: application/languages/help-translation-strings.php:247
+#: application/languages/help-translation-strings.php:251
 msgid "landing"
 msgstr "page d'accueil"
 
-#: application/languages/help-translation-strings.php:249
+#: application/languages/help-translation-strings.php:253
 msgid "letterhead"
 msgstr "en-tête"
 
-#: application/languages/help-translation-strings.php:251
+#: application/languages/help-translation-strings.php:255
 msgid ""
 "Letterhead, logo, PDF template, layout and approver used on generated reports"
 msgstr ""
 "En-tête, logo, modèle PDF, mise en page et approbateur utilisés dans les "
 "rapports générés"
 
-#: application/languages/help-translation-strings.php:253
+#: application/languages/help-translation-strings.php:257
 msgid "List, add, and edit Viral Load assays / platforms used by participants"
 msgstr ""
 "Répertorier, ajouter et modifier les techniques et les plateformes de charge "
 "virale utilisées par les participants"
 
-#: application/languages/help-translation-strings.php:255
+#: application/languages/help-translation-strings.php:259
 msgid ""
 "List, filter, approve, and manage test kits used by participants in their "
 "response forms"
@@ -2053,7 +2066,7 @@ msgstr ""
 "Répertorier, filtrer, valider et gérer les kits de test utilisés par les "
 "participants dans leurs formulaires de réponse"
 
-#: application/languages/help-translation-strings.php:257
+#: application/languages/help-translation-strings.php:261
 msgid ""
 "List Early Infant Diagnosis Extraction and Detection assays, add new ones, "
 "and toggle their active status"
@@ -2062,19 +2075,19 @@ msgstr ""
 "diagnostic précoce du nourrisson, en ajouter de nouvelles et activer ou "
 "désactiver leur statut"
 
-#: application/languages/help-translation-strings.php:259
+#: application/languages/help-translation-strings.php:263
 msgid "lists"
 msgstr "listes"
 
-#: application/languages/help-translation-strings.php:261
+#: application/languages/help-translation-strings.php:265
 msgid "login"
 msgstr "connexion"
 
-#: application/languages/help-translation-strings.php:263
+#: application/languages/help-translation-strings.php:267
 msgid "logo"
 msgstr "logo"
 
-#: application/languages/help-translation-strings.php:265
+#: application/languages/help-translation-strings.php:269
 msgid ""
 "Manage Data Manager / PT Login accounts — add, edit, reset password, change "
 "email, and link to participants"
@@ -2083,7 +2096,13 @@ msgstr ""
 "modifier, réinitialiser le mot de passe, changer l'e-mail et associer aux "
 "participants"
 
-#: application/languages/help-translation-strings.php:267
+#: application/languages/help-translation-strings.php:271
+#: application/modules/admin/controllers/SpotlightController.php:62
+#: application/modules/admin/views/scripts/shipment/manage-enroll.phtml:15
+msgid "Manage Enrollment"
+msgstr "Gérer l'inscription"
+
+#: application/languages/help-translation-strings.php:273
 msgid ""
 "Manage PT Country Coordinators — add, bulk import, reset passwords, export, "
 "and see the participants in each region"
@@ -2092,48 +2111,52 @@ msgstr ""
 "réinitialiser les mots de passe, exporter et voir les participants de chaque "
 "région"
 
-#: application/languages/help-translation-strings.php:269
+#: application/languages/help-translation-strings.php:275
 msgid "manual-override"
 msgstr "remplacement manuel"
 
-#: application/languages/help-translation-strings.php:271
+#: application/languages/help-translation-strings.php:277
 msgid "Map Participants to Data Managers"
 msgstr ""
 "Mettre en correspondance les participants et les gestionnaires de données"
 
-#: application/languages/help-translation-strings.php:273
+#: application/languages/help-translation-strings.php:279
 msgid "mapping"
 msgstr "association"
 
-#: application/languages/help-translation-strings.php:275
+#: application/languages/help-translation-strings.php:281
 msgid "Map Test Kits to Tests"
 msgstr "Associer les kits de test aux tests"
 
-#: application/languages/help-translation-strings.php:277
+#: application/languages/help-translation-strings.php:283
 msgid "My account"
 msgstr "Mon compte"
 
-#: application/languages/help-translation-strings.php:279
+#: application/languages/help-translation-strings.php:285
 msgid "non-responders"
 msgstr "non-répondants"
 
-#: application/languages/help-translation-strings.php:281
+#: application/languages/help-translation-strings.php:287
+msgid "not responded"
+msgstr "pas de réponse"
+
+#: application/languages/help-translation-strings.php:289
 msgid "overview"
 msgstr "aperçu"
 
-#: application/languages/help-translation-strings.php:283
+#: application/languages/help-translation-strings.php:291
 msgid "panel"
 msgstr "panel"
 
-#: application/languages/help-translation-strings.php:285
+#: application/languages/help-translation-strings.php:293
 msgid "panel statistics"
 msgstr "statistiques du panel"
 
-#: application/languages/help-translation-strings.php:287
+#: application/languages/help-translation-strings.php:295
 msgid "participant-login"
 msgstr "Connexion des participants"
 
-#: application/languages/help-translation-strings.php:289
+#: application/languages/help-translation-strings.php:297
 #: application/layouts/scripts/admin.phtml:558
 #: application/modules/reports/views/scripts/participant-performance/index.phtml:3
 #: application/views/partials/spotlight.phtml:486
@@ -2141,7 +2164,7 @@ msgstr "Connexion des participants"
 msgid "Participant Performance Report"
 msgstr "Rapport sur les performances des participants"
 
-#: application/languages/help-translation-strings.php:291
+#: application/languages/help-translation-strings.php:299
 #: application/layouts/scripts/admin.phtml:555
 #: application/modules/reports/views/scripts/participant-response/index.phtml:3
 #: application/views/partials/spotlight.phtml:478
@@ -2149,14 +2172,14 @@ msgstr "Rapport sur les performances des participants"
 msgid "Participant Response Report"
 msgstr "Rapport sur les réponses des participants"
 
-#: application/languages/help-translation-strings.php:293
+#: application/languages/help-translation-strings.php:301
 #: application/modules/admin/views/scripts/shipment/manage-enroll.phtml:148
 #: application/modules/admin/views/scripts/shipment/ship-it.phtml:138
 #: application/views/partials/tb-participants-per-country-report.phtml:102
 msgid "participants"
 msgstr "participants"
 
-#: application/languages/help-translation-strings.php:295
+#: application/languages/help-translation-strings.php:303
 #: application/layouts/scripts/layout.phtml:365
 #: application/modules/admin/views/scripts/email-participants/index.phtml:140
 #: application/modules/admin/views/scripts/email-participants/index.phtml:218
@@ -2182,85 +2205,85 @@ msgstr "participants"
 msgid "Participants"
 msgstr "Participants"
 
-#: application/languages/help-translation-strings.php:297
+#: application/languages/help-translation-strings.php:305
 #: application/layouts/scripts/admin.phtml:561
 #: application/views/partials/spotlight.phtml:494
 msgid "Participant Trends"
 msgstr "Tendances des participants"
 
-#: application/languages/help-translation-strings.php:299
+#: application/languages/help-translation-strings.php:307
 #: application/modules/admin/views/scripts/certificate-templates/index.phtml:531
 msgid "participation"
 msgstr "participation"
 
-#: application/languages/help-translation-strings.php:301
+#: application/languages/help-translation-strings.php:309
 msgid "pass rate"
 msgstr "taux de réussite"
 
-#: application/languages/help-translation-strings.php:303
+#: application/languages/help-translation-strings.php:311
 msgid "password"
 msgstr "mot de passe"
 
-#: application/languages/help-translation-strings.php:305
+#: application/languages/help-translation-strings.php:313
 msgid "pdf"
 msgstr "pdf"
 
-#: application/languages/help-translation-strings.php:307
+#: application/languages/help-translation-strings.php:315
 #: application/layouts/scripts/admin.phtml:464
 #: application/modules/admin/views/scripts/report-config/index.phtml:74
 #: application/views/partials/spotlight.phtml:211
 msgid "PDF Report Settings"
 msgstr "Paramètres du rapport PDF"
 
-#: application/languages/help-translation-strings.php:309
+#: application/languages/help-translation-strings.php:317
 msgid "People who can log in to the admin side of ePT"
 msgstr "Personnes autorisées à se connecter à l’espace d’administration d’ePT"
 
-#: application/languages/help-translation-strings.php:311
+#: application/languages/help-translation-strings.php:319
 msgid "performance"
 msgstr "performance"
 
-#: application/languages/help-translation-strings.php:313
+#: application/languages/help-translation-strings.php:321
 msgid "platform"
 msgstr "plateforme"
 
-#: application/languages/help-translation-strings.php:315
+#: application/languages/help-translation-strings.php:323
 msgid "preset"
 msgstr "préréglage"
 
-#: application/languages/help-translation-strings.php:317
+#: application/languages/help-translation-strings.php:325
 msgid "profile"
 msgstr "profil"
 
-#: application/languages/help-translation-strings.php:319
+#: application/languages/help-translation-strings.php:327
 msgid "pt-login"
 msgstr "pt-login"
 
-#: application/languages/help-translation-strings.php:321
+#: application/languages/help-translation-strings.php:329
 msgid "pt-survey"
 msgstr "pt-enquête"
 
-#: application/languages/help-translation-strings.php:323
+#: application/languages/help-translation-strings.php:331
 msgid "ptcc"
 msgstr "ptcc"
 
-#: application/languages/help-translation-strings.php:325
+#: application/languages/help-translation-strings.php:333
 msgid "PT Country Coordinators (PTCC)"
 msgstr "Coordinateurs PT de pays (PTCC)"
 
-#: application/languages/help-translation-strings.php:327
+#: application/languages/help-translation-strings.php:335
 msgid "PT Surveys"
 msgstr "Enquêtes PT"
 
-#: application/languages/help-translation-strings.php:329
+#: application/languages/help-translation-strings.php:337
 msgid "publish"
 msgstr "publier"
 
-#: application/languages/help-translation-strings.php:331
+#: application/languages/help-translation-strings.php:339
 msgid "queue"
 msgstr "queue"
 
-#: application/languages/help-translation-strings.php:333
+#: application/languages/help-translation-strings.php:341
 msgid ""
 "Re-build and lock the reports — only finalized reports are visible to "
 "participants"
@@ -2268,32 +2291,36 @@ msgstr ""
 "Régénérer et verrouiller les rapports — seuls les rapports finalisés sont "
 "visibles par les participants"
 
-#: application/languages/help-translation-strings.php:335
+#: application/languages/help-translation-strings.php:343
 msgid "re-evaluate"
 msgstr "réévaluer"
 
-#: application/languages/help-translation-strings.php:337
+#: application/languages/help-translation-strings.php:345
 msgid "regions"
 msgstr "régions"
 
-#: application/languages/help-translation-strings.php:339
+#: application/languages/help-translation-strings.php:347
 msgid "reminder"
 msgstr "relance"
 
-#: application/languages/help-translation-strings.php:341
+#: application/languages/help-translation-strings.php:349
 msgid "Rename a Viral Load assay / platform"
 msgstr "Renommer une technique ou une plateforme de charge virale"
 
-#: application/languages/help-translation-strings.php:343
+#: application/languages/help-translation-strings.php:351
 #: application/modules/admin/views/scripts/job-tracking/index.phtml:394
 msgid "reports"
 msgstr "rapports"
 
-#: application/languages/help-translation-strings.php:345
+#: application/languages/help-translation-strings.php:353
+msgid "responded"
+msgstr "répondu"
+
+#: application/languages/help-translation-strings.php:355
 msgid "response"
 msgstr "réponse"
 
-#: application/languages/help-translation-strings.php:347
+#: application/languages/help-translation-strings.php:357
 msgid ""
 "Response and pass rates by region, district, network tier, affiliation or "
 "enrolled program"
@@ -2301,11 +2328,11 @@ msgstr ""
 "Taux de réponse et de réussite par région, district, niveau du réseau, "
 "affiliation ou programme"
 
-#: application/languages/help-translation-strings.php:349
+#: application/languages/help-translation-strings.php:359
 msgid "response rate"
 msgstr "taux de réponse"
 
-#: application/languages/help-translation-strings.php:351
+#: application/languages/help-translation-strings.php:361
 msgid ""
 "Response rate, timeliness and pass rate across shipments, with a breakdown "
 "by region"
@@ -2313,70 +2340,70 @@ msgstr ""
 "Taux de réponse, ponctualité et taux de réussite sur plusieurs envois, avec "
 "une répartition par région"
 
-#: application/languages/help-translation-strings.php:353
+#: application/languages/help-translation-strings.php:363
 msgid "results"
 msgstr "résultats"
 
-#: application/languages/help-translation-strings.php:355
+#: application/languages/help-translation-strings.php:365
 msgid "roles"
 msgstr "rôles"
 
-#: application/languages/help-translation-strings.php:357
+#: application/languages/help-translation-strings.php:367
 #: application/modules/admin/views/scripts/index/index.phtml:1411
 msgid "rounds"
 msgstr "derniers cycles"
 
-#: application/languages/help-translation-strings.php:359
+#: application/languages/help-translation-strings.php:369
 msgid "samples"
 msgstr "échantillons"
 
-#: application/languages/help-translation-strings.php:361
+#: application/languages/help-translation-strings.php:371
 msgid "satisfactory"
 msgstr "satisfaisant"
 
-#: application/languages/help-translation-strings.php:363
+#: application/languages/help-translation-strings.php:373
 msgid "schedule"
 msgstr "planifier"
 
-#: application/languages/help-translation-strings.php:365
+#: application/languages/help-translation-strings.php:375
 msgid "scheme"
 msgstr "programme"
 
-#: application/languages/help-translation-strings.php:367
+#: application/languages/help-translation-strings.php:377
 #: application/layouts/scripts/admin.phtml:406
 #: application/modules/admin/views/scripts/enrollments/index.phtml:141
 #: application/views/partials/spotlight.phtml:361
 msgid "Scheme Enrollments"
 msgstr "Inscriptions au programme"
 
-#: application/languages/help-translation-strings.php:369
+#: application/languages/help-translation-strings.php:379
 msgid "schemes"
 msgstr "programmes"
 
-#: application/languages/help-translation-strings.php:371
+#: application/languages/help-translation-strings.php:381
 msgid "Score participant responses, then generate and finalize reports"
 msgstr ""
 "Évaluer les réponses des participants, puis générer et finaliser les rapports"
 
-#: application/languages/help-translation-strings.php:373
+#: application/languages/help-translation-strings.php:383
 msgid "scores"
 msgstr "scores"
 
-#: application/languages/help-translation-strings.php:375
+#: application/languages/help-translation-strings.php:385
 msgid "scoring"
 msgstr "notation"
 
-#: application/languages/help-translation-strings.php:377
+#: application/languages/help-translation-strings.php:387
 msgid "Scoring, report metadata, and report content for HIV Viral Load PT"
 msgstr ""
 "Notation, métadonnées du rapport et contenu du rapport pour le test de "
 "charge virale du VIH"
 
-#: application/languages/help-translation-strings.php:379
+#: application/languages/help-translation-strings.php:389
 msgid "Scoring, report metadata, and report content for TB PT"
 msgstr "Notation, métadonnées du rapport et contenu du rapport pour le PT TB"
 
-#: application/languages/help-translation-strings.php:381
+#: application/languages/help-translation-strings.php:391
 msgid ""
 "Scoring, sample and testing options, and national algorithm test-kit rules "
 "for HIV Serology PT"
@@ -2384,7 +2411,7 @@ msgstr ""
 "Options de score, d'échantillons et de test, et règles de kits de test de "
 "l'algorithme national pour le PT de sérologie du VIH"
 
-#: application/languages/help-translation-strings.php:383
+#: application/languages/help-translation-strings.php:393
 msgid ""
 "See each participant's response to a shipment, change results, and add a "
 "shared comment"
@@ -2392,7 +2419,7 @@ msgstr ""
 "Consulter la réponse de chaque participant à une expédition, modifier les "
 "résultats et ajouter un commentaire commun"
 
-#: application/languages/help-translation-strings.php:385
+#: application/languages/help-translation-strings.php:395
 msgid ""
 "See every enrollment list per scheme, create and edit lists, and clone, "
 "archive, rename, merge or delete them"
@@ -2400,7 +2427,7 @@ msgstr ""
 "Voir toutes les listes d'inscription par programme, créer et modifier des "
 "listes, et les cloner, archiver, renommer, fusionner ou supprimer"
 
-#: application/languages/help-translation-strings.php:387
+#: application/languages/help-translation-strings.php:397
 msgid ""
 "Select which test kits appear in the participant response form for each test "
 "position (Test 1, Test 2, Test 3, etc.)"
@@ -2409,7 +2436,7 @@ msgstr ""
 "réponse du participant pour chaque poste de test (Test 1, Test 2, Test 3, "
 "etc.)"
 
-#: application/languages/help-translation-strings.php:389
+#: application/languages/help-translation-strings.php:399
 msgid ""
 "Send or schedule an email about one or more shipments, such as a reminder to "
 "labs that have not responded"
@@ -2417,23 +2444,23 @@ msgstr ""
 "Envoyez ou planifiez un e-mail concernant une ou plusieurs expéditions, par "
 "exemple une relance aux laboratoires qui n'ont pas répondu"
 
-#: application/languages/help-translation-strings.php:391
+#: application/languages/help-translation-strings.php:401
 msgid "settings"
 msgstr "paramètres"
 
-#: application/languages/help-translation-strings.php:393
+#: application/languages/help-translation-strings.php:403
 msgid "ship"
 msgstr "expédier"
 
-#: application/languages/help-translation-strings.php:395
+#: application/languages/help-translation-strings.php:405
 msgid "ship-it"
 msgstr "expédier"
 
-#: application/languages/help-translation-strings.php:397
+#: application/languages/help-translation-strings.php:407
 msgid "shipment"
 msgstr "expédition"
 
-#: application/languages/help-translation-strings.php:399
+#: application/languages/help-translation-strings.php:409
 #: application/layouts/scripts/admin.phtml:548
 #: application/modules/reports/views/scripts/shipment-response-report/index.phtml:3
 #: application/views/partials/spotlight.phtml:462
@@ -2441,11 +2468,11 @@ msgstr "expédition"
 msgid "Shipment Response Report"
 msgstr "Rapport des réponses à l'expédition"
 
-#: application/languages/help-translation-strings.php:401
+#: application/languages/help-translation-strings.php:411
 msgid "shipments"
 msgstr "expéditions"
 
-#: application/languages/help-translation-strings.php:403
+#: application/languages/help-translation-strings.php:413
 #: application/layouts/scripts/admin.phtml:511
 #: application/modules/admin/views/scripts/certificate-batches/index.phtml:162
 #: application/modules/admin/views/scripts/email-participants/index.phtml:168
@@ -2466,7 +2493,7 @@ msgstr "expéditions"
 msgid "Shipments"
 msgstr "Expéditions"
 
-#: application/languages/help-translation-strings.php:405
+#: application/languages/help-translation-strings.php:415
 #: application/layouts/scripts/admin.phtml:545
 #: application/modules/reports/views/scripts/shipments/index.phtml:3
 #: application/views/partials/spotlight.phtml:446
@@ -2475,104 +2502,104 @@ msgstr "Expéditions"
 msgid "Shipments Report"
 msgstr "Rapport sur les expéditions"
 
-#: application/languages/help-translation-strings.php:407
+#: application/languages/help-translation-strings.php:417
 msgid "smtp"
 msgstr "SMTP"
 
-#: application/languages/help-translation-strings.php:409
+#: application/languages/help-translation-strings.php:419
 msgid "status"
 msgstr "statut"
 
-#: application/languages/help-translation-strings.php:411
+#: application/languages/help-translation-strings.php:421
 msgid "submit"
 msgstr "envoyer"
 
-#: application/languages/help-translation-strings.php:413
+#: application/languages/help-translation-strings.php:423
 msgid "Submit PT results"
 msgstr "Envoyer les résultats PT"
 
-#: application/languages/help-translation-strings.php:415
+#: application/languages/help-translation-strings.php:425
 msgid "summary report"
 msgstr "rapport de synthèse"
 
-#: application/languages/help-translation-strings.php:417
+#: application/languages/help-translation-strings.php:427
 msgid "system-admin"
 msgstr "administrateur système"
 
-#: application/languages/help-translation-strings.php:419
+#: application/languages/help-translation-strings.php:429
 msgid "System-wide settings that apply across the whole ePT app"
 msgstr "Paramètres globaux qui s'appliquent à l'ensemble de l'application ePT"
 
-#: application/languages/help-translation-strings.php:421
+#: application/languages/help-translation-strings.php:431
 msgid "tb"
 msgstr "tb"
 
-#: application/languages/help-translation-strings.php:423
+#: application/languages/help-translation-strings.php:433
 msgid "TB All Sites' Results"
 msgstr "TB : résultats de tous les sites"
 
-#: application/languages/help-translation-strings.php:425
+#: application/languages/help-translation-strings.php:435
 msgid "TB participants, response rate and pass rate for each country"
 msgstr "Participants TB, taux de réponse et taux de réussite par pays"
 
-#: application/languages/help-translation-strings.php:427
+#: application/languages/help-translation-strings.php:437
 #: application/modules/reports/views/scripts/tb-participants-per-country/index.phtml:3
 #: application/views/scripts/participant/tb-participants-per-country.phtml:2
 msgid "TB Participants per Country"
 msgstr "Participants TB par pays"
 
-#: application/languages/help-translation-strings.php:429
+#: application/languages/help-translation-strings.php:439
 msgid "TB Result of PT Panel per Site"
 msgstr "TB : résultat du panel de PT par site"
 
-#: application/languages/help-translation-strings.php:431
+#: application/languages/help-translation-strings.php:441
 #: application/views/partials/spotlight.phtml:129
 msgid "TB Settings"
 msgstr "Paramètres TB"
 
-#: application/languages/help-translation-strings.php:433
+#: application/languages/help-translation-strings.php:443
 msgid "template"
 msgstr "modèle"
 
-#: application/languages/help-translation-strings.php:435
+#: application/languages/help-translation-strings.php:445
 msgid "templates"
 msgstr "modèles"
 
-#: application/languages/help-translation-strings.php:437
+#: application/languages/help-translation-strings.php:447
 msgid "test 1"
 msgstr "test 1"
 
-#: application/languages/help-translation-strings.php:439
+#: application/languages/help-translation-strings.php:449
 msgid "test 2"
 msgstr "test 2"
 
-#: application/languages/help-translation-strings.php:441
+#: application/languages/help-translation-strings.php:451
 msgid "test 3"
 msgstr "test 3"
 
-#: application/languages/help-translation-strings.php:443
+#: application/languages/help-translation-strings.php:453
 msgid "testkit"
 msgstr "kit de test"
 
-#: application/languages/help-translation-strings.php:445
+#: application/languages/help-translation-strings.php:455
 #: application/layouts/scripts/admin.phtml:579
 #: application/modules/reports/views/scripts/testkit/index.phtml:129
 #: application/views/partials/spotlight.phtml:526
 msgid "Test Kit Report For HIV Serology"
 msgstr "Rapport sur le kit de test pour la sérologie VIH"
 
-#: application/languages/help-translation-strings.php:447
+#: application/languages/help-translation-strings.php:457
 msgid "test kits"
 msgstr "kits de test"
 
-#: application/languages/help-translation-strings.php:449
+#: application/languages/help-translation-strings.php:459
 #: application/layouts/scripts/admin.phtml:445
 #: application/modules/admin/views/scripts/partials/scheme-config-nav.phtml:150
 #: application/views/partials/spotlight.phtml:75
 msgid "Test Kits"
 msgstr "Kits de test"
 
-#: application/languages/help-translation-strings.php:451
+#: application/languages/help-translation-strings.php:461
 msgid ""
 "The designs annual certificates print on, the details ePT adds and the "
 "checks on upload"
@@ -2580,7 +2607,7 @@ msgstr ""
 "Les maquettes sur lesquelles s'impriment les certificats annuels, les "
 "informations ajoutées par ePT et les vérifications au téléversement"
 
-#: application/languages/help-translation-strings.php:453
+#: application/languages/help-translation-strings.php:463
 msgid ""
 "The list of shipments inside a PT Survey — what they are and how to manage "
 "them"
@@ -2588,15 +2615,15 @@ msgstr ""
 "La liste des expéditions d'une enquête PT — ce qu'elles sont et comment les "
 "gérer"
 
-#: application/languages/help-translation-strings.php:455
+#: application/languages/help-translation-strings.php:465
 msgid "theme"
 msgstr "thème"
 
-#: application/languages/help-translation-strings.php:457
+#: application/languages/help-translation-strings.php:467
 msgid "The result of every TB participant in each shipment"
 msgstr "Le résultat de chaque participant TB dans chaque expédition"
 
-#: application/languages/help-translation-strings.php:459
+#: application/languages/help-translation-strings.php:469
 msgid ""
 "The sample results of one VL shipment, per sample and per assay, with the "
 "viral load distribution of each assay"
@@ -2604,23 +2631,23 @@ msgstr ""
 "Les résultats d'une expédition VL, par échantillon et par technique, avec la "
 "répartition des charges virales de chaque technique"
 
-#: application/languages/help-translation-strings.php:461
+#: application/languages/help-translation-strings.php:471
 msgid "trends"
 msgstr "tendances"
 
-#: application/languages/help-translation-strings.php:463
+#: application/languages/help-translation-strings.php:473
 msgid "tuberculosis"
 msgstr "tuberculose"
 
-#: application/languages/help-translation-strings.php:465
+#: application/languages/help-translation-strings.php:475
 msgid "unsatisfactory"
 msgstr "insatisfaisant"
 
-#: application/languages/help-translation-strings.php:467
+#: application/languages/help-translation-strings.php:477
 msgid "update"
 msgstr "mettre à jour"
 
-#: application/languages/help-translation-strings.php:469
+#: application/languages/help-translation-strings.php:479
 msgid ""
 "Update an existing participant's details, mapped Data Managers, and enrolled "
 "schemes"
@@ -2628,12 +2655,12 @@ msgstr ""
 "Mettre à jour les coordonnées d'un participant existant, les gestionnaires "
 "de données associés et les programmes auxquels il est inscrit"
 
-#: application/languages/help-translation-strings.php:471
+#: application/languages/help-translation-strings.php:481
 msgid "Update an existing PT Survey's code or date before it has been shipped"
 msgstr ""
 "Modifier le code ou la date d'une enquête PT existante avant son expédition"
 
-#: application/languages/help-translation-strings.php:473
+#: application/languages/help-translation-strings.php:483
 msgid ""
 "Update a test kit's details, approval status, scheme/test mapping, and "
 "Additional Information settings"
@@ -2642,11 +2669,11 @@ msgstr ""
 "correspondance entre le programme et le test, ainsi que les paramètres des "
 "informations supplémentaires"
 
-#: application/languages/help-translation-strings.php:475
+#: application/languages/help-translation-strings.php:485
 msgid "upload"
 msgstr "téléverser"
 
-#: application/languages/help-translation-strings.php:477
+#: application/languages/help-translation-strings.php:487
 msgid ""
 "Upload an Excel file of Participant IDs to fill a scheme's enrollment list, "
 "and review the changes before they are saved"
@@ -2655,7 +2682,7 @@ msgstr ""
 "d'inscription d'un programme, et vérifier les changements avant leur "
 "enregistrement"
 
-#: application/languages/help-translation-strings.php:479
+#: application/languages/help-translation-strings.php:489
 msgid ""
 "Upload an Excel or CSV file, review what will change, then import many "
 "participants at once"
@@ -2663,76 +2690,76 @@ msgstr ""
 "Téléversez un fichier Excel ou CSV, vérifiez les changements, puis importez "
 "de nombreux participants en une fois"
 
-#: application/languages/help-translation-strings.php:481
+#: application/languages/help-translation-strings.php:491
 msgid "users"
 msgstr "utilisateurs"
 
-#: application/languages/help-translation-strings.php:483
+#: application/languages/help-translation-strings.php:493
 msgid "view"
 msgstr "voir"
 
-#: application/languages/help-translation-strings.php:485
+#: application/languages/help-translation-strings.php:495
 msgid ""
 "View, add, edit, and ship PT Surveys (distributions) and their shipments"
 msgstr ""
 "Consulter, ajouter, modifier et expédier les enquêtes PT (distributions) et "
 "leurs expéditions"
 
-#: application/languages/help-translation-strings.php:487
+#: application/languages/help-translation-strings.php:497
 msgid "View / Re-Evaluate Shipment"
 msgstr "Afficher / Réévaluer l'expédition"
 
-#: application/languages/help-translation-strings.php:489
+#: application/languages/help-translation-strings.php:499
 msgid "View your reports"
 msgstr "Consulter vos rapports"
 
-#: application/languages/help-translation-strings.php:491
+#: application/languages/help-translation-strings.php:501
 msgid "viral-load"
 msgstr "charge virale"
 
-#: application/languages/help-translation-strings.php:493
+#: application/languages/help-translation-strings.php:503
 msgid "viral load"
 msgstr "charge virale"
 
-#: application/languages/help-translation-strings.php:495
+#: application/languages/help-translation-strings.php:505
 msgid "vl"
 msgstr "vl"
 
-#: application/languages/help-translation-strings.php:497
+#: application/languages/help-translation-strings.php:507
 msgid "VL (HIV Viral Load) Settings"
 msgstr "Paramètres VL (charge virale du VIH)"
 
-#: application/languages/help-translation-strings.php:499
+#: application/languages/help-translation-strings.php:509
 #: application/layouts/scripts/admin.phtml:604
 #: application/modules/reports/views/scripts/shipments/vl-assay-distribution.phtml:38
 #: application/views/partials/spotlight.phtml:580
 msgid "VL Assay Distribution"
 msgstr "Répartition des techniques VL"
 
-#: application/languages/help-translation-strings.php:501
+#: application/languages/help-translation-strings.php:511
 msgid "VL Assays / Platforms"
 msgstr "Techniques VL / Plateformes"
 
-#: application/languages/help-translation-strings.php:503
+#: application/languages/help-translation-strings.php:513
 msgid "VL results per assay, with the pass rate of each assay"
 msgstr ""
 "Résultats VL par technique, avec le taux de réussite de chaque technique"
 
-#: application/languages/help-translation-strings.php:505
+#: application/languages/help-translation-strings.php:515
 #: application/layouts/scripts/admin.phtml:601
 #: application/modules/reports/views/scripts/shipments/vl-sample-analysis.phtml:86
 #: application/views/partials/spotlight.phtml:572
 msgid "VL Sample Analysis"
 msgstr "Analyse des échantillons VL"
 
-#: application/languages/help-translation-strings.php:507
+#: application/languages/help-translation-strings.php:517
 msgid ""
 "Where to download your individual report and the shipment summary report"
 msgstr ""
 "Où télécharger votre rapport individuel et le rapport de synthèse de "
 "l'expédition"
 
-#: application/languages/help-translation-strings.php:509
+#: application/languages/help-translation-strings.php:519
 msgid ""
 "Where to see the corrective actions for a shipment, and the CAPA form if "
 "your PT provider uses it"
@@ -2740,7 +2767,7 @@ msgstr ""
 "Où consulter les mesures correctives d'une expédition, et le formulaire CAPA "
 "si votre fournisseur PT l'utilise"
 
-#: application/languages/help-translation-strings.php:511
+#: application/languages/help-translation-strings.php:521
 msgid ""
 "Which test kits participants used in HIV serology (DTS) responses, and how "
 "those responses performed"
@@ -2748,22 +2775,22 @@ msgstr ""
 "Les kits de test utilisés dans les réponses de sérologie VIH (DTS), et les "
 "résultats de ces réponses"
 
-#: application/languages/help-translation-strings.php:513
+#: application/languages/help-translation-strings.php:523
 msgid "Who responded to each shipment, who did not, and how they performed"
 msgstr ""
 "Qui a répondu à chaque expédition, qui n'a pas répondu, et leurs résultats"
 
-#: application/languages/help-translation-strings.php:515
+#: application/languages/help-translation-strings.php:525
 msgid "xtpt"
 msgstr "xtpt"
 
-#: application/languages/help-translation-strings.php:517
+#: application/languages/help-translation-strings.php:527
 #: application/modules/reports/views/scripts/xtpt-indicators/index.phtml:3
 #: application/views/scripts/participant/xtpt-indicators.phtml:2
 msgid "XTPT Indicators & Panel Statistics"
 msgstr "Indicateurs et statistiques du panel XTPT"
 
-#: application/languages/help-translation-strings.php:519
+#: application/languages/help-translation-strings.php:529
 msgid ""
 "Your home page: shipments waiting for results, your latest scores, and quick "
 "links"
@@ -2771,7 +2798,7 @@ msgstr ""
 "Votre page d'accueil : expéditions en attente de résultats, vos derniers "
 "scores et des liens rapides"
 
-#: application/languages/help-translation-strings.php:521
+#: application/languages/help-translation-strings.php:531
 msgid ""
 "Your home page: the rounds in progress, what each one needs next, and how "
 "labs are taking part"
@@ -2779,7 +2806,7 @@ msgstr ""
 "Votre page d'accueil : les campagnes en cours, la prochaine étape de chacune "
 "et la participation des laboratoires"
 
-#: application/languages/help-translation-strings.php:523
+#: application/languages/help-translation-strings.php:533
 msgid "z-score"
 msgstr "z-score"
 
@@ -4596,11 +4623,6 @@ msgstr "%d participant(s) associé(s) avec succès"
 #: application/modules/admin/views/scripts/participants/participant-manager-map.phtml:196
 msgid "Mapping saved"
 msgstr "Association enregistrée"
-
-#: application/modules/admin/controllers/SpotlightController.php:62
-#: application/modules/admin/views/scripts/shipment/manage-enroll.phtml:15
-msgid "Manage Enrollment"
-msgstr "Gérer l'inscription"
 
 #: application/modules/admin/controllers/SpotlightController.php:72
 #: application/modules/admin/views/scripts/evaluate/shipment.phtml:98
@@ -14703,10 +14725,6 @@ msgstr "Échec de l'annulation de la tâche : "
 #: application/modules/admin/views/scripts/job-tracking/index.phtml:375
 msgid "Error cancelling job. Please try again."
 msgstr "Erreur lors de l'annulation de la tâche. Veuillez réessayer."
-
-#: application/modules/admin/views/scripts/job-tracking/index.phtml:394
-msgid "emails"
-msgstr "e-mails"
 
 #: application/modules/admin/views/scripts/job-tracking/index.phtml:405
 msgid "Summary done"
