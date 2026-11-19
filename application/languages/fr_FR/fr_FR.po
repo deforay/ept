@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ePT\n"
 "Report-Msgid-Bugs-To: support@deforay.com\n"
-"POT-Creation-Date: 2026-11-19 21:33+0530\n"
+"POT-Creation-Date: 2026-11-19 21:47+0530\n"
 "PO-Revision-Date: 2026-07-07 08:32+0530\n"
 "Last-Translator: Amit <amit@deforay.com>\n"
 "Language-Team: ePT\n"
@@ -4087,7 +4087,7 @@ msgstr "Modifier ce gestionnaire de données"
 #: application/models/DbTable/Distribution.php:133
 #: application/models/DbTable/Distribution.php:153
 #: application/models/DbTable/FeedBackTable.php:524
-#: application/models/DbTable/HomeSection.php:200
+#: application/models/DbTable/HomeSection.php:205
 #: application/models/DbTable/Participants.php:410
 #: application/models/DbTable/Participants.php:478
 #: application/models/DbTable/Partners.php:188
@@ -4374,12 +4374,17 @@ msgstr "Pays"
 msgid "Clone"
 msgstr "Dupliquer"
 
-#: application/models/DbTable/HomeSection.php:32
+#: application/models/DbTable/HomeSection.php:33
 msgid ""
 "This file type is not allowed. Upload a JPG, PNG, PDF, Word or Excel file."
 msgstr ""
 "Ce type de fichier n'est pas autorisé. Téléversez un fichier JPG, PNG, PDF, "
 "Word ou Excel."
+
+#: application/models/DbTable/HomeSection.php:57
+msgid "The file could not be saved on the server. Nothing was changed."
+msgstr ""
+"Le fichier n'a pas pu être enregistré sur le serveur. Rien n'a été modifié."
 
 #: application/models/DbTable/Participants.php:404
 #: application/models/DbTable/Participants.php:472
@@ -12287,7 +12292,7 @@ msgstr "Score de réponse"
 #: application/modules/reports/views/scripts/distribution/shipment.phtml:284
 #: application/modules/reports/views/scripts/distribution/shipment.phtml:385
 #: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:394
-#: application/services/ApiServices.php:647
+#: application/services/ApiServices.php:649
 #: application/services/Reports.php:1177 application/services/Reports.php:1265
 #: application/services/Reports.php:2714 application/services/Reports.php:2816
 #: application/services/Reports.php:2992 application/services/Reports.php:3056
@@ -21801,7 +21806,7 @@ msgstr ""
 "feuilles : Panel Statistics, avec les indicateurs XTPT, et All Sites' "
 "Results."
 
-#: application/services/ApiServices.php:647
+#: application/services/ApiServices.php:649
 msgid "Show Params"
 msgstr "Afficher les paramètres"
 
