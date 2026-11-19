@@ -39,14 +39,20 @@ _('After shipping, see who responded, add participants who are not enrolled, rem
 _('algorithm');
 // admin/reports-tb-all-sites-results#tags
 _('all sites');
-// admin/reports-annual#tags
+// admin/certificates#tags, admin/reports-annual#tags
 _('annual');
+// admin/certificates#title
+_('Annual Certificates');
 // admin/reports-annual#title
 _('Annual Performance Report');
 // admin/testkit-edit#tags, admin/testkit#tags
 _('approval');
+// admin/certificates#tags
+_('approve');
 // admin/report-config#tags
 _('approver');
+// admin/feedback-forms#summary
+_('Ask participants questions after a shipment is finalized, and download their answers');
 // admin/eid-assay-add#tags, admin/eid-assay#tags, admin/reports-vl-assay-distribution#tags, admin/reports-vl-sample-analysis#tags, admin/vl-assay-add#tags, admin/vl-assay-edit#tags, admin/vl-assay#tags
 _('assay');
 // admin/participants-manager-map#summary
@@ -63,7 +69,7 @@ _('Bulk Import Enrollment');
 _('Bulk Import Participants');
 // participant/corrective-action#tags
 _('capa');
-// admin/certificate-templates#tags, admin/reports-annual#tags
+// admin/certificate-templates#tags, admin/certificates#tags, admin/reports-annual#tags
 _('certificates');
 // admin/certificate-templates#title
 _('Certificate Templates');
@@ -101,6 +107,10 @@ _('Create a new Viral Load assay / platform');
 _('csv');
 // admin/home-config#summary
 _('Customize the public home page — hero text, banner image, resource cards, logos, and FAQ');
+// admin/custom-tests#title
+_('Custom Tests');
+// admin/custom-tests#tags
+_('custom tests');
 // admin/dashboard#title, participant/dashboard#title
 _('Dashboard');
 // admin/dashboard#tags, participant/dashboard#tags
@@ -183,13 +193,13 @@ _('evaluation');
 _('Every shipment with its responses, pass rate, status and downloads');
 // admin/enrollments-bulk-enrollment#tags, admin/participants-bulk-import#tags, admin/reports-annual#tags, admin/reports-tb-all-sites-results#tags, admin/reports-xtpt-indicators#tags
 _('excel');
-// admin/certificate-templates#tags, admin/reports-annual#tags
+// admin/certificate-templates#tags, admin/certificates#tags, admin/reports-annual#tags
 _('excellence');
 // admin/reports-xtpt-indicators#summary
 _('Excel workbook of XTPT indicators and all sites\' results for one TB shipment');
 // admin/reports-tb-all-sites-results#summary
 _('Excel workbook with every TB participant\'s results for one shipment');
-// admin/ptcc#tags
+// admin/custom-tests#tags, admin/ptcc#tags
 _('export');
 // admin/eid-assay-add#tags, admin/eid-assay#tags
 _('extraction');
@@ -197,6 +207,12 @@ _('extraction');
 _('failures');
 // admin/home-config#tags
 _('faq');
+// admin/feedback-forms#tags, admin/feedback-questions#tags
+_('feedback');
+// admin/feedback-forms#title
+_('Feedback Forms');
+// admin/feedback-questions#title
+_('Feedback Questions');
 // admin/certificate-templates#tags
 _('fields');
 // participant/file-download#tags
@@ -205,12 +221,14 @@ _('files');
 _('Files your PT provider shared with your lab');
 // admin/enrollments-add#tags
 _('filters');
-// admin/evaluate#tags, admin/reports-finalize#tags
+// admin/evaluate#tags, admin/feedback-forms#tags, admin/reports-finalize#tags
 _('finalize');
 // admin/reports-finalize#title
 _('Finalize Reports');
 // participant/corrective-action#tags
 _('follow-up');
+// admin/feedback-forms#tags
+_('forms');
 // admin/reports-distribution#tags
 _('generate');
 // admin/reports-distribution#title
@@ -241,10 +259,14 @@ _('How to add a shipment (sample panel) under a PT Survey');
 _('How to choose which participants get a shipment — filters, preset lists, copying from another shipment, and saving a preset');
 // participant/result-submission#summary
 _('How to find a shipment, enter your results and confirm them before the due date');
+// admin/custom-tests#tags
+_('import');
 // admin/reports-xtpt-indicators#tags
 _('indicators');
 // participant/view-reports#tags
 _('individual report');
+// admin/certificates#summary
+_('Issue the year\'s Excellence and Participation certificates, one step at a time');
 // admin/participants#tags
 _('labs');
 // admin/home-config#tags
@@ -253,6 +275,8 @@ _('landing');
 _('letterhead');
 // admin/report-config#summary
 _('Letterhead, logo, PDF template, layout and approver used on generated reports');
+// admin/feedback-questions#tags
+_('library');
 // admin/vl-assay#summary
 _('List, add, and edit Viral Load assays / platforms used by participants');
 // admin/testkit#summary
@@ -303,7 +327,7 @@ _('participants');
 _('Participants');
 // admin/reports-participant-trends#title
 _('Participant Trends');
-// admin/certificate-templates#tags, admin/reports-annual#tags
+// admin/certificate-templates#tags, admin/certificates#tags, admin/reports-annual#tags
 _('participation');
 // admin/reports-participant-performance#tags, admin/reports-participant-response#tags, admin/reports-participant-trends#tags, admin/reports-shipment-response#tags, admin/reports-tb-participants-per-country#tags, admin/reports-testkit#tags, admin/reports-vl-assay-distribution#tags
 _('pass rate');
@@ -335,6 +359,8 @@ _('PT Country Coordinators (PTCC)');
 _('PT Surveys');
 // admin/reports-finalize#tags
 _('publish');
+// admin/feedback-forms#tags, admin/feedback-questions#tags
+_('questions');
 // admin/reports-distribution#tags, admin/reports-finalize#tags
 _('queue');
 // admin/reports-finalize#summary
@@ -359,7 +385,7 @@ _('Response and pass rates by region, district, network tier, affiliation or enr
 _('response rate');
 // admin/reports-participant-trends#summary
 _('Response rate, timeliness and pass rate across shipments, with a breakdown by region');
-// admin/reports-tb-all-sites-results#tags, admin/reports-tb-results#tags, participant/result-submission#tags
+// admin/custom-tests#tags, admin/reports-tb-all-sites-results#tags, admin/reports-tb-results#tags, participant/result-submission#tags
 _('results');
 // admin/users#tags
 _('roles');
@@ -375,7 +401,7 @@ _('schedule');
 _('scheme');
 // admin/enrollments#title
 _('Scheme Enrollments');
-// admin/participants-edit#tags
+// admin/custom-tests#tags, admin/participants-edit#tags
 _('schemes');
 // admin/evaluate#summary
 _('Score participant responses, then generate and finalize reports');
@@ -399,6 +425,8 @@ _('Select which test kits appear in the participant response form for each test 
 _('Send or schedule an email about one or more shipments, such as a reminder to labs that have not responded');
 // admin/global-config#tags
 _('settings');
+// admin/custom-tests#summary
+_('Set up a test type that ePT does not have built in, with its own results and scoring');
 // admin/distributions#tags
 _('ship');
 // admin/shipment-enroll#tags
@@ -423,6 +451,8 @@ _('submit');
 _('Submit PT results');
 // participant/view-reports#tags
 _('summary report');
+// admin/feedback-forms#tags
+_('survey');
 // admin/users#tags
 _('system-admin');
 // admin/global-config#summary
@@ -459,6 +489,8 @@ _('test kits');
 _('Test Kits');
 // admin/certificate-templates#summary
 _('The designs annual certificates print on, the details ePT adds and the checks on upload');
+// admin/feedback-questions#summary
+_('The library of questions you pick from when you build a feedback form');
 // admin/shipment#summary
 _('The list of shipments inside a PT Survey — what they are and how to manage them');
 // admin/global-config#tags
