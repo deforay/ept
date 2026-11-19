@@ -29,19 +29,20 @@ This page shows all the shipments in your system. You can:
 
 - **Search** by shipment code, scheme, or PT Survey.
 - **Sort** by clicking the column headers.
-- Click **View / Edit** on any row to open that shipment.
+- Click **Edit** on any row to open that shipment.
 - Use **Enroll** (red button) to add or remove participants for
   that shipment.
 
 ## Common things you do here
 
-- **Add a new shipment** — go to **Manage → PT Survey**, find your
-  survey, and click **Add Scheme** next to it. The new shipment
-  will then appear on this page.
+- **Add a new shipment** — pick the test type in **Scheme Type**
+  at the top of this page, then click **New Shipment**. Or go to
+  **Manage → PT Survey** and click **Add Shipment** next to your
+  survey. That opens this page for that survey.
 - **Add or remove participants** — find your shipment, click
-  **Enroll**, move names between **Available** and **Enrolled**,
+  **Enroll**, click names to move them between the two sides,
   then click **Enroll** to save.
-- **Edit samples or the result due date** — click **View / Edit**
+- **Edit samples or the result due date** — click **Edit**
   on the shipment, change the fields, then save.
 
 ## When a shipment becomes visible to participants

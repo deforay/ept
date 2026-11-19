@@ -9,14 +9,14 @@ steps:
     title: Make sure you have a PT Survey
     target_pages: [distributions/index]
   - id: 2
-    title: Click "Add Scheme" next to your survey
-    target_pages: [distributions/index]
+    title: Click "Add Shipment" next to your survey
+    target_pages: [distributions/index, shipment/index]
   - id: 3
     title: Fill in the shipment details
     target_pages: [shipment/add]
   - id: 4
     title: Enroll participants in this shipment
-    target_pages: [shipment/manage-enroll, shipment/view-enrollments, shipment/add-enrollments]
+    target_pages: [shipment/index, shipment/ship-it, shipment/manage-enroll]
   - id: 5
     title: Ship it
     target_pages: [distributions/index]
@@ -45,18 +45,21 @@ Surveys in your system.
 Don't worry — the PT Survey by itself does not send anything to
 participants. It is just a folder for one round of testing.
 
-## Step 2: Click "Add Scheme" next to your survey
+## Step 2: Click "Add Shipment" next to your survey
 
 On the PT Survey list, find your survey's row. In the **Action**
-column, click **Add Scheme**.
+column, click **Add Shipment**. The shipment list for that survey
+opens.
 
-"Add Scheme" is the same thing as "Add Shipment" — it adds a new
-shipment under that survey for one test type.
+At the top of the shipment list, pick the test type in **Scheme
+Type**. Then click **New Shipment**. The shipment form opens
+below.
 
 If your survey already has one shipment and you want to add
 another (for example, you want to send both an HIV Serology panel
-and a VL panel on the same date), just click **Add Scheme**
-again. You can have more than one shipment per survey.
+and a VL panel on the same date), pick the other test type and
+click **New Shipment** again. You can have more than one shipment
+per survey.
 
 ## Step 3: Fill in the shipment details
 
@@ -81,18 +84,20 @@ Click **Add Shipment** at the bottom to save.
 
 ## Step 4: Enroll participants in this shipment
 
-After saving, you are taken to the **Enroll** page for this
-shipment.
+After saving, you are back on the shipment list. Your new
+shipment has a red **Enroll** button. Click it.
 
-- On the **left** is a list of **Available** participants — these
-  are the labs that are already enrolled in the scheme you picked.
-- On the **right** is the **Enrolled** list — the labs that will
-  get this shipment.
+- On the **left** are the participants **not** on this shipment
+  yet. These are the labs already enrolled in the scheme you
+  picked.
+- On the **right** are the participants who **will** get this
+  shipment.
 
-Move names from left to right using the arrow buttons. Click
-**Enroll** to save.
+Click a participant name to move it to the other side. To move
+everyone, click **Select All**. Click **Enroll** at the bottom to
+save.
 
-> If a lab you want is missing from the **Available** list, it
+> If a lab you want is missing from the left side, it
 > probably is not yet enrolled in the scheme. See the guide
 > *How to enroll participants* — it explains the difference
 > between scheme enrollment and shipment enrollment.
