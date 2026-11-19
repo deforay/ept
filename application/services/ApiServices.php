@@ -63,11 +63,12 @@ class Application_Service_ApiServices
 
         // Load dts testing kit into a init as separate tests
         $allTestKits = $dtsModel->getAllDtsTestKitList();
+        $approvedOnly = Application_Service_Common::participantTestkitsApprovedOnly();
         // To load kit attributes for each kit
         $testKit = [];
         foreach ($allTestKits as $kit) {
-            // The app offers participants only approved kits, like the web form.
-            if ((int) ($kit['APPROVED'] ?? 0) !== 1) {
+            // With the approved-only setting on, the app offers only approved kits, like the web form.
+            if ($approvedOnly && (int) ($kit['APPROVED'] ?? 0) !== 1) {
                 continue;
             }
             foreach (range(1, 3) as $no) {

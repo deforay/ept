@@ -704,6 +704,25 @@ $faqResults = json_decode($this->faqs);
 				</div>
 				<div class="row">
 					<div class="col-md-6">
+						<label for="participant_testkits_approved_only"
+							class="control-label"><?= $this->translate->_("Only Approved Test Kits for Participants"); ?></label>
+						<div class="input-group">
+							<div class="btn-group radioBtn">
+								<a class="btn btn-primary btn-sm <?php echo (isset($this->participant_testkits_approved_only) && $this->participant_testkits_approved_only == "yes") ? " active " : "notActive"; ?>"
+									data-toggle="participant_testkits_approved_only" data-title="yes"
+									onclick="toggleRadios(this);"><?= $this->translate->_("YES"); ?></a>
+								<a class="btn btn-primary btn-sm <?php echo (!isset($this->participant_testkits_approved_only) || $this->participant_testkits_approved_only != "yes") ? " active " : "notActive"; ?>"
+									data-toggle="participant_testkits_approved_only" data-title="no"
+									onclick="toggleRadios(this);"><?= $this->translate->_("NO"); ?></a>
+							</div>
+							<input type="hidden" name="participant_testkits_approved_only" id="participant_testkits_approved_only"
+								value="<?php echo $this->participant_testkits_approved_only ?? "no"; ?>">
+						</div>
+						<span class="help-block"><?= $this->translate->_("When Yes, participants can pick only test kits marked Approved. A kit already saved on a response stays on it."); ?></span>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-md-6">
 						<label for="app_timezone"
 							class="control-label"><?= $this->translate->_("Application Timezone"); ?></label>
 						<select class="form-control" id="app_timezone" name="app_timezone"

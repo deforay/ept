@@ -56,6 +56,9 @@ Branding, behaviour, and defaults for the whole app.
   settings, so they can change from the last evaluation.
 - **Enable CAPA** — turns on the Corrective / Preventive Action
   module across the app.
+- **Only Approved Test Kits for Participants** — when *Yes*,
+  participants can pick only test kits marked **Approved**. A kit
+  already saved on a response stays on it. Default is *No*.
 - **Admin Email Notifications** — global on/off switch for
   emails sent to admins.
 - **Institute Name / Address / Additional Details** — shown on
